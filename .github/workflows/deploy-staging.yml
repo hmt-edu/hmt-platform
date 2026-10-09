@@ -89,6 +89,13 @@ jobs:
           STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
         run: npx supabase db push --db-url "$STAGING_DB_URL" --yes
 
+      # Dữ liệu giả CHỈ cho thử nghiệm (seed.sql chạy lại được, không nhân đôi).
+      # Bản chạy thật (hmt-deploy) không bao giờ chạy bước này.
+      - name: Nạp dữ liệu giả vào hmt-staging
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f supabase/seed.sql
+
       - name: Build bản thử nghiệm
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}

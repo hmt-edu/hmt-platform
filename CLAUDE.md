@@ -33,7 +33,17 @@
 - Tiền: `bigint` đồng. Giờ học: `numeric(6,2)`. Thời điểm: `timestamptz` (UTC), hiển thị `Asia/Ho_Chi_Minh`. Ngày học: `date`.
 - Bảng nghiệp vụ có: `id uuid`, `created_at`, `created_by`, `updated_at`, `updated_by`, trigger ghi `audit_log` (chỉ thêm, không ai sửa/xoá được). Không xoá cứng: huỷ là đổi trạng thái.
 - Bảng nhận dữ liệu từ Sheet có cột `legacy_ref` (mã cũ), có chỉ mục để tìm.
-- Mã nghiệp vụ theo `docs/spec/02-chuan-ma-va-danh-muc.md`, cấp bằng hàm + sequence trong DB, không cho sửa.
+- Mã nghiệp vụ theo `docs/spec/02-chuan-ma-va-danh-muc.md`, cấp bằng hàm + bảng đếm khoá dòng trong DB (không nhảy số), không cho sửa.
+
+## Quy ước viết nghiệp vụ bằng SQL
+1. Mỗi hàm một việc, tên nói rõ việc đó; quá ~80 dòng thì tách hàm con.
+2. Đầu mỗi hàm có chú thích tiếng Việt: làm gì, ai được gọi, đầu vào, kết quả, các luật áp dụng trỏ về mục trong docs/spec/.
+3. Mỗi luật một đoạn code có chú thích riêng; không gộp nhiều luật vào một câu SQL khó đọc.
+4. Mỗi luật có kiểm thử pgTAP cho trường hợp đúng và trường hợp bị chặn; tên bài kiểm thử ghi luật bằng tiếng Việt.
+5. Lỗi có mã (ví dụ HMT_QUY_GIO_AM) và câu tiếng Việt để giao diện hiện thẳng.
+6. Không dùng SQL động trừ khi bắt buộc, có ghi lý do.
+7. Luật quá rắc rối cho SQL (nhiều nhánh, tính toán dài, gọi dịch vụ ngoài, chạy lâu): dừng lại, báo anh, đề xuất Edge Function hoặc service riêng.
+8. docs/nghiep-vu/ liệt kê các hàm nghiệp vụ, cập nhật trong cùng PR.
 
 ## Cấu hình (không viết cứng)
 1. **Danh mục**: bảng có `code` (không đổi), `name`, `sort_order`, `is_active`. Không xoá, chỉ Ngừng.

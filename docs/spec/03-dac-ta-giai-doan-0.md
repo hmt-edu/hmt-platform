@@ -82,12 +82,22 @@ Quyền = vai trò × phạm vi dữ liệu × hành động trên từng phân 
 | Thành phần | Luật |
 |---|---|
 | Danh mục | Mỗi danh mục: mã (không đổi), tên hiển thị, thứ tự, Đang dùng/Ngừng. Ngừng thay cho xoá |
-| Cấp mã | Hàm trong cơ sở dữ liệu, dùng sequence Postgres: không trùng, không dùng lại, kể cả khi hai người tạo cùng lúc |
+| Cấp mã | Hàm trong cơ sở dữ liệu, dùng bảng đếm khoá dòng: không trùng, không dùng lại, không nhảy số, kể cả khi hai người tạo cùng lúc |
 | Nhật ký thao tác | Mọi bảng nghiệp vụ tự ghi ai, lúc nào, trường nào đổi từ gì sang gì. Không ai sửa, xoá được nhật ký |
 | Ghi chú trao đổi | Một khung dùng chung cho mọi bản ghi |
 | Không xoá cứng | Huỷ là đổi trạng thái. Chỉ Admin xoá bản ghi nhập nhầm, vẫn có nhật ký |
 | Tiền, giờ, ngày | Tiền lưu số nguyên đồng. Giờ học lưu số thập phân. Thời điểm lưu UTC, hiển thị giờ Việt Nam |
 | Mã cũ | Mọi bảng chuyển từ Sheet có cột mã tham chiếu, tìm kiếm được |
+
+## Quy ước viết nghiệp vụ bằng SQL
+1. Mỗi hàm một việc, tên nói rõ việc đó; quá ~80 dòng thì tách hàm con.
+2. Đầu mỗi hàm có chú thích tiếng Việt: làm gì, ai được gọi, đầu vào, kết quả, các luật áp dụng trỏ về mục trong docs/spec/.
+3. Mỗi luật một đoạn code có chú thích riêng; không gộp nhiều luật vào một câu SQL khó đọc.
+4. Mỗi luật có kiểm thử pgTAP cho trường hợp đúng và trường hợp bị chặn; tên bài kiểm thử ghi luật bằng tiếng Việt.
+5. Lỗi có mã (ví dụ HMT_QUY_GIO_AM) và câu tiếng Việt để giao diện hiện thẳng.
+6. Không dùng SQL động trừ khi bắt buộc, có ghi lý do.
+7. Luật quá rắc rối cho SQL (nhiều nhánh, tính toán dài, gọi dịch vụ ngoài, chạy lâu): dừng lại, báo anh, đề xuất Edge Function hoặc service riêng.
+8. docs/nghiep-vu/ liệt kê các hàm nghiệp vụ, cập nhật trong cùng PR.
 
 ## Cấu hình trên giao diện (4 tầng)
 | Tầng | Gồm | Ai sửa | Luật |

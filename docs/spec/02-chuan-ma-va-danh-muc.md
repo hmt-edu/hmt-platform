@@ -5,7 +5,7 @@
 ## Nguyên tắc
 1. **Hai lớp định danh.** ID nội bộ (uuid) chỉ máy dùng, không hiển thị, không bao giờ đổi. Mã nghiệp vụ cho người đọc, nói, tìm kiếm.
 2. **Mã không chứa thông tin có thể đổi**: tên, số điện thoại, khối hiện tại, giáo viên, cơ sở của học sinh.
-3. **Cấp một lần, không sửa, không dùng lại**, kể cả khi bản ghi bị huỷ. Mã do cơ sở dữ liệu cấp (sequence), không ai tự gõ.
+3. **Cấp một lần, không sửa, không dùng lại**, kể cả khi bản ghi bị huỷ. Mã do cơ sở dữ liệu cấp (bảng đếm khoá dòng, không nhảy số), không ai tự gõ.
 4. **Định dạng cố định**: in hoa, không dấu, không khoảng trắng, số đủ chữ số.
 5. **Danh mục dùng mã ngắn, tên hiển thị để riêng.** Đổi tên hiển thị không ảnh hưởng dữ liệu.
 6. **Mã cũ trên Sheet giữ làm mã tham chiếu** (cột `legacy_ref`), tìm kiếm được.
