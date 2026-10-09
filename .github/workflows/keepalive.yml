@@ -1,0 +1,28 @@
+# Giữ project Supabase Free hmt-staging không bị tạm dừng (tự dừng sau 1 tuần không dùng).
+name: Keepalive staging
+
+on:
+  schedule:
+    - cron: '17 1 * * *' # 01:17 UTC = 08:17 giờ Việt Nam
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Gọi app.heartbeat() trên hmt-staging
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          if [ -z "$STAGING_DB_URL" ]; then
+            echo "::notice::Chưa có secret STAGING_DB_URL, bỏ qua."
+            exit 0
+          fi
+          # Ảnh ubuntu-24.04 có sẵn psql; phòng khi ảnh đổi thì cài thêm.
+          if ! command -v psql > /dev/null; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client > /dev/null
+          fi
+          psql "$STAGING_DB_URL" -v ON_ERROR_STOP=1 -At -c "select app.heartbeat();"

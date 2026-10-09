@@ -1,0 +1,38 @@
+# Kiểm tra nhanh dùng chung (gọi từ ci.yml và deploy-staging.yml).
+name: _checks
+
+on:
+  workflow_call:
+    inputs:
+      format-check:
+        description: Chạy thêm prettier --check
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: lint, typecheck, test, hardcode
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run check:hardcode
+
+      - if: inputs.format-check
+        run: npm run format:check

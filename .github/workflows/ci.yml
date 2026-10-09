@@ -1,0 +1,262 @@
+# Kiểm thử mỗi PR: kiểm tra nhanh, DB (pgTAP) + Playwright, bản xem trước trên Cloudflare Pages.
+name: CI
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  workflow_dispatch:
+
+# Mỗi PR chỉ giữ lượt chạy mới nhất (tiết kiệm phút Actions).
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  checks:
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_checks.yml
+    with:
+      format-check: true
+
+  db-e2e:
+    name: DB (pgTAP) + Playwright
+    # Chờ kiểm tra nhanh xanh rồi mới chạy (đỡ tốn phút khi lint/test đã trượt).
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Khởi động Supabase local (chỉ dịch vụ cần)
+        run: >-
+          npx supabase start
+          -x studio,imgproxy,mailpit,logflare,vector,realtime,storage-api,edge-runtime,supavisor,postgres-meta
+
+      - name: Dựng lại DB từ migration + seed
+        run: npx supabase db reset
+
+      - name: Kiểm thử DB (pgTAP)
+        run: npx supabase test db
+
+      - name: Lấy địa chỉ, khoá công khai của Supabase local
+        # Khoá local là giá trị mặc định công khai của Supabase CLI; vẫn che trong log.
+        run: |
+          status_env="$(npx supabase status -o env)"
+          api_url="$(printf '%s\n' "$status_env" | sed -n 's/^API_URL="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p')"
+          key="$(printf '%s\n' "$status_env" | sed -n 's/^PUBLISHABLE_KEY="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p')"
+          if [ -z "$key" ]; then
+            key="$(printf '%s\n' "$status_env" | sed -n 's/^ANON_KEY="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p')"
+          fi
+          if [ -z "$api_url" ] || [ -z "$key" ]; then
+            echo "::error::Không đọc được API_URL hoặc khoá công khai từ supabase status."
+            exit 1
+          fi
+          echo "::add-mask::$key"
+          {
+            echo "VITE_SUPABASE_URL=$api_url"
+            echo "VITE_SUPABASE_PUBLISHABLE_KEY=$key"
+            echo "VITE_APP_ENV=local"
+          } >> "$GITHUB_ENV"
+
+      - name: Phiên bản Playwright
+        id: pw
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/playwright-core'].version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache trình duyệt Playwright
+        id: pw-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium-webkit
+
+      - name: Cài trình duyệt Playwright
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Cài thư viện hệ thống cho trình duyệt (khi dùng cache)
+        if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium webkit
+
+      - name: Playwright (máy tính + iPhone)
+        run: npm run e2e
+
+      - name: Lưu báo cáo Playwright khi trượt
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  preview:
+    name: Bản xem trước (Cloudflare Pages)
+    needs: [checks, db-e2e]
+    # Chỉ PR từ chính repo (PR từ fork không có secrets).
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    # Khoá Cloudflare chỉ đưa vào đúng bước cần, không để npm ci thấy.
+    env:
+      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_APP_ENV: preview
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Kiểm tra cấu hình
+        id: cfg
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          missing=""
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
+          [ -n "$VITE_SUPABASE_URL" ] || missing="$missing VITE_SUPABASE_URL"
+          [ -n "$VITE_SUPABASE_PUBLISHABLE_KEY" ] || missing="$missing VITE_SUPABASE_PUBLISHABLE_KEY"
+          if [ -n "$missing" ]; then
+            echo "::notice::Bỏ qua bản xem trước vì chưa cài:$missing"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.cfg.outputs.ready == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - if: steps.cfg.outputs.ready == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - if: steps.cfg.outputs.ready == 'true'
+        run: npm ci
+
+      - if: steps.cfg.outputs.ready == 'true'
+        run: npm run build
+
+      - name: Tạo project Pages hmt-staging nếu chưa có
+        if: steps.cfg.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          if ! out="$(npx wrangler pages project create hmt-staging --production-branch=main 2>&1)"; then
+            if printf '%s' "$out" | grep -qiE 'already exists|8000002'; then
+              echo "Project hmt-staging đã có."
+            else
+              printf '%s\n' "$out"
+              exit 1
+            fi
+          fi
+
+      - name: Triển khai bản xem trước
+        id: deploy
+        if: steps.cfg.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          # Tên nhánh theo luật của Cloudflare: chữ thường, số, gạch ngang, tối đa 28 ký tự.
+          branch="$(printf '%s' "$HEAD_REF" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9-]+/-/g; s/-+/-/g; s/^-//; s/-$//' | cut -c1-28 | sed -E 's/-$//')"
+          # Không bao giờ ghi đè nhánh production (main) của hmt-staging từ PR.
+          if [ -z "$branch" ] || [ "$branch" = "main" ]; then
+            branch="pr-$PR_NUMBER"
+          fi
+          out="$(npx wrangler pages deploy dist --project-name=hmt-staging --branch="$branch" 2>&1)" || {
+            printf '%s\n' "$out"
+            exit 1
+          }
+          printf '%s\n' "$out"
+          alias_url="https://$branch.hmt-staging.pages.dev"
+          deploy_url="$(printf '%s\n' "$out" | grep -oE 'https://[a-z0-9.-]+\.pages\.dev' | head -n 1)"
+          echo "alias_url=$alias_url" >> "$GITHUB_OUTPUT"
+          echo "deploy_url=$deploy_url" >> "$GITHUB_OUTPUT"
+
+      - name: Ghi link xem trước vào PR
+        if: steps.cfg.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ALIAS_URL: ${{ steps.deploy.outputs.alias_url }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.deploy_url }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          marker='<!-- hmt-preview -->'
+          body="$marker
+          **Bản xem trước** (nối DB thử nghiệm \`hmt-staging\`)
+
+          - Link theo nhánh: $ALIAS_URL
+          - Link lần triển khai này: ${DEPLOY_URL:-chưa đọc được}
+          - Commit: \`$SHA\`"
+          comment_id="$(gh api --paginate "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | startswith(\"$marker\"))) | .id" | head -n 1)"
+          if [ -n "$comment_id" ]; then
+            gh api --method PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" -f body="$body" > /dev/null
+          else
+            gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -f body="$body" > /dev/null
+          fi
+          echo "Bản xem trước: $ALIAS_URL" >> "$GITHUB_STEP_SUMMARY"

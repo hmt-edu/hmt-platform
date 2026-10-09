@@ -57,7 +57,9 @@
 ## Quy trình git và đưa lên chạy thật
 - Nhánh riêng (`feat/…`, `fix/…`) → PR → CI xanh → gộp `main` → môi trường thử nghiệm tự cập nhật → anh Trường thử. Commit nhỏ, thông điệp rõ.
 - Claude Code dùng tài khoản GitHub `hmt-vanhanh` (chủ repo `hmt-platform`) trên máy Mac của anh Trường.
-- Repo `hmt-deploy` nằm ở **một tài khoản GitHub khác** chỉ anh Trường dùng; tài khoản đó không bao giờ đăng nhập trên máy Mac này (cả `gh`, git lẫn trình duyệt mà Claude Code điều khiển).
+- Repo `hmt-deploy` nằm ở **tài khoản GitHub riêng của anh Trường `caotruong276` (đăng ký bằng `truongcx.work@gmail.com`)**, anh chỉ dùng trên trình duyệt. Tài khoản này không bao giờ đăng nhập trên máy Mac này (`gh`, git, Keychain). Commit trong `hmt-platform` ghi tên tác giả bằng email noreply của `hmt-vanhanh`, không dùng email `truongcx.work`.
+- Cloudflare: tài khoản **thử nghiệm** đăng ký bằng `lead.vanhanh.hmt+staging@gmail.com` (token nằm trong Secrets của `hmt-platform`); tài khoản **chạy thật** đăng ký bằng `truongcx.work@gmail.com`, chỉ dùng trên trình duyệt, token nằm trong Secrets của `hmt-deploy`.
+- `hmt-deploy` đọc `hmt-platform` bằng `PLATFORM_READ_TOKEN`: token fine-grained tạo từ `hmt-vanhanh`, chỉ đọc đúng repo `hmt-platform`.
 - **Bản chạy thật chỉ được cập nhật từ repo `hmt-deploy`** mà chỉ anh Trường có quyền: khoá của bản chạy thật nằm ở đó, anh bấm chạy workflow (chọn tag/commit của `hmt-platform` đã qua thử nghiệm). Claude Code không có và không xin khoá chạy thật.
 - Sao lưu bản chạy thật mỗi đêm cũng chạy từ `hmt-deploy`: xuất DB, mã hoá, đẩy lên Google Drive của `lead.vanhanh.hmt@gmail.com`.
 - **Khoá chạy thật không bao giờ nằm trên máy Mac**: không `supabase login`, không `wrangler login` bằng tài khoản thật; chuỗi kết nối DB prod và token Cloudflare prod chỉ dán thẳng vào GitHub Secrets của `hmt-deploy` trên web. Lấy token rclone xong thì xoá `~/.config/rclone/rclone.conf`.
@@ -66,4 +68,11 @@
 - Khôi phục thử bản sao lưu: anh Trường tự chạy vào DB Docker tạm trên máy anh, xong xoá; Claude Code không chạy.
 
 ## Lệnh hay dùng
-(Bổ sung sau bước 1.)
+- `npm ci`: cài phụ thuộc (Node 24, Docker Desktop cho Supabase local).
+- `npm run dev`: chạy giao diện (cần `.env.local`, xem `README.md`).
+- `npm run db:start` / `npm run db:stop`: bật/tắt Supabase local; `npx supabase status` lấy URL, khoá công khai local.
+- `npm run db:reset`: dựng lại DB local từ migration + `supabase/seed.sql`.
+- `npm run db:test`: pgTAP (RLS, hàm nghiệp vụ).
+- `npm run lint`, `npm run typecheck`, `npm run test`, `npm run check:hardcode`, `npm run format:check`: bộ kiểm tra nhanh như CI.
+- `npm run e2e`: Playwright máy tính + iPhone (lần đầu: `npx playwright install chromium webkit`).
+- `npx supabase migration new <ten>`: tạo file migration mới.

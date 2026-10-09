@@ -1,0 +1,29 @@
+{
+  "$comment": "Cấu hình bộ dò số nghiệp vụ viết cứng (scripts/check-hardcoded.mjs).",
+  "ignoreDirs": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "playwright-report",
+    "test-results",
+    ".git",
+    ".wrangler",
+    "supabase/.temp",
+    "supabase/.branches"
+  ],
+  "zones": {
+    "strict": {
+      "description": "Code nghiệp vụ: chỉ cho 0, 1, -1.",
+      "include": ["src/domain/**/*.{ts,tsx}", "supabase/functions/**/*.ts"],
+      "sqlFunctionBodies": ["supabase/migrations/*.sql"],
+      "exclude": ["**/*.test.*", "**/*.spec.*"],
+      "allowed": [0, 1, -1]
+    },
+    "ui": {
+      "description": "Giao diện: chỉ bắt số có giá trị tuyệt đối từ ngưỡng trở lên.",
+      "include": ["src/**/*.{ts,tsx}"],
+      "exclude": ["src/**/*.test.*", "src/**/*.spec.*", "src/**/*.d.ts"],
+      "minAbsValue": 100
+    }
+  }
+}

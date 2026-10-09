@@ -1,0 +1,163 @@
+# Gộp vào main: kiểm tra nhanh, áp migration lên hmt-staging, triển khai bản thử nghiệm, gắn tag.
+# Repo variable STAGING_READY = 'true' bật workflow này (xem README).
+name: Deploy staging
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '**/*.md'
+  workflow_dispatch:
+
+# Không huỷ lượt đang chạy: migration phải chạy trọn.
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  not-ready:
+    name: Chưa bật staging
+    if: vars.STAGING_READY != 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - run: echo "::warning::Bỏ qua triển khai thử nghiệm vì repo variable STAGING_READY chưa đặt là 'true' (xem README)."
+
+  checks:
+    if: vars.STAGING_READY == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/_checks.yml
+
+  deploy-staging:
+    name: deploy-staging
+    needs: checks
+    if: vars.STAGING_READY == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write # chỉ để đẩy tag staging-…
+    steps:
+      - name: Kiểm tra secrets, variables
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          missing=""
+          [ -n "$STAGING_DB_URL" ] || missing="$missing STAGING_DB_URL"
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
+          [ -n "$VITE_SUPABASE_URL" ] || missing="$missing VITE_SUPABASE_URL"
+          [ -n "$VITE_SUPABASE_PUBLISHABLE_KEY" ] || missing="$missing VITE_SUPABASE_PUBLISHABLE_KEY"
+          if [ -n "$missing" ]; then
+            echo "::error::Thiếu cấu hình cho môi trường thử nghiệm:$missing. Vào Settings > Secrets and variables > Actions của hmt-platform để thêm, hoặc đặt STAGING_READY khác 'true' để tạm tắt."
+            exit 1
+          fi
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Áp migration lên hmt-staging
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: npx supabase db push --db-url "$STAGING_DB_URL" --yes
+
+      - name: Build bản thử nghiệm
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_APP_ENV: staging
+        run: npm run build
+
+      - name: Tạo project Pages hmt-staging nếu chưa có
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          if ! out="$(npx wrangler pages project create hmt-staging --production-branch=main 2>&1)"; then
+            if printf '%s' "$out" | grep -qiE 'already exists|8000002'; then
+              echo "Project hmt-staging đã có."
+            else
+              printf '%s\n' "$out"
+              exit 1
+            fi
+          fi
+
+      - name: Triển khai lên Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler pages deploy dist --project-name=hmt-staging --branch=main
+
+      - name: Gắn tag staging
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          tag="staging-$(date -u +%Y%m%d-%H%M)-$(git rev-parse --short=7 HEAD)"
+          auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          git -c user.name='github-actions[bot]' \
+              -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              tag -a "$tag" -m "Bản đã lên thử nghiệm (hmt-staging) lúc $(date -u '+%Y-%m-%d %H:%M') UTC"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $auth" \
+              push origin "refs/tags/$tag"
+          {
+            echo "### Đã lên thử nghiệm"
+            echo "- Tag: \`$tag\`"
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Địa chỉ: https://hmt-staging.pages.dev"
+            echo "- Đưa lên chạy thật: repo \`hmt-deploy\` > Actions > Deploy production > nhập \`$tag\`"
+          } >> "$GITHUB_STEP_SUMMARY"

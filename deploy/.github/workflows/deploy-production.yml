@@ -1,0 +1,279 @@
+# Đưa một bản đã qua thử nghiệm của hmt-vanhanh/hmt-platform lên chạy thật.
+# Chỉ anh Trường bấm chạy (Actions > Deploy production > Run workflow).
+name: Deploy production
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Tag staging-… hoặc mã commit của hmt-platform đã lên thử nghiệm'
+        required: true
+        type: string
+
+# Mỗi lúc chỉ một lượt; không huỷ lượt đang chạy (migration phải chạy trọn).
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  PLATFORM_REPO: hmt-vanhanh/hmt-platform
+  SUPABASE_CLI_VERSION: 2.120.0
+  WRANGLER_VERSION: 4.149.0
+  PAGES_PROJECT: hmt-prod
+
+jobs:
+  verify:
+    name: Kiểm tra bản được chọn
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      sha: ${{ steps.check.outputs.sha }}
+      started_at: ${{ steps.check.outputs.started_at }}
+    steps:
+      - name: Kiểm tra ref, nhánh main, lượt thử nghiệm
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.PLATFORM_READ_TOKEN }}
+          INPUT_REF: ${{ inputs.ref }}
+        run: |
+          set -euo pipefail
+          started_at="$(date -u '+%Y-%m-%d %H:%M:%S') UTC"
+          echo "started_at=$started_at" >> "$GITHUB_OUTPUT"
+
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Thiếu secret PLATFORM_READ_TOKEN."
+            exit 1
+          fi
+          ref="$(printf '%s' "$INPUT_REF" | tr -d '[:space:]')"
+          if ! printf '%s' "$ref" | grep -qE '^[A-Za-z0-9._-]{1,100}$'; then
+            echo "::error::Ref '$ref' không hợp lệ. Nhập tag dạng staging-YYYYMMDD-HHMM-xxxxxxx hoặc mã commit."
+            exit 1
+          fi
+
+          api() {
+            curl -sS --fail-with-body \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$PLATFORM_REPO/$1"
+          }
+
+          # 1. Ref -> mã commit đầy đủ.
+          if ! commit_json="$(api "commits/$ref")"; then
+            echo "::error::Không tìm thấy '$ref' trong $PLATFORM_REPO (hoặc PLATFORM_READ_TOKEN hết hạn/sai quyền)."
+            exit 1
+          fi
+          sha="$(printf '%s' "$commit_json" | jq -r '.sha')"
+          if ! printf '%s' "$sha" | grep -qE '^[0-9a-f]{40}$'; then
+            echo "::error::Không đọc được mã commit của '$ref'."
+            exit 1
+          fi
+          echo "Ref $ref -> $sha"
+
+          # 2. Commit phải nằm trên main.
+          status="$(api "compare/main...$sha" | jq -r '.status')" || status="không so sánh được"
+          if [ "$status" != "behind" ] && [ "$status" != "identical" ]; then
+            echo "::error::Commit $sha không nằm trên nhánh main của $PLATFORM_REPO (trạng thái: $status). Chỉ được đưa lên chạy thật bản đã gộp vào main."
+            exit 1
+          fi
+
+          # 3. Phải có lượt deploy-staging.yml thành công cho đúng commit này,
+          #    và job deploy-staging trong lượt đó phải thật sự chạy xong (không bị bỏ qua).
+          if ! runs="$(api "actions/workflows/deploy-staging.yml/runs?head_sha=$sha&status=success&per_page=20")"; then
+            echo "::error::Không đọc được lịch sử Actions của $PLATFORM_REPO (PLATFORM_READ_TOKEN cần quyền Actions: Read)."
+            exit 1
+          fi
+          ok_run=""
+          for run_id in $(printf '%s' "$runs" | jq -r --arg sha "$sha" '.workflow_runs[] | select(.head_sha == $sha and .conclusion == "success") | .id'); do
+            if api "actions/runs/$run_id/jobs?per_page=50" \
+              | jq -e '.jobs[] | select(.name == "deploy-staging" and .conclusion == "success")' > /dev/null; then
+              ok_run="$run_id"
+              break
+            fi
+          done
+          if [ -z "$ok_run" ]; then
+            echo "::error::Commit $sha chưa có lượt 'Deploy staging' thành công trong $PLATFORM_REPO. Bản phải lên thử nghiệm và chạy xanh trước khi lên chạy thật."
+            exit 1
+          fi
+          echo "Lượt thử nghiệm thành công: https://github.com/$PLATFORM_REPO/actions/runs/$ok_run"
+
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Đưa lên chạy thật"
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Ref nhập | \`$ref\` |"
+            echo "| Commit | \`$sha\` |"
+            echo "| Lượt thử nghiệm | https://github.com/$PLATFORM_REPO/actions/runs/$ok_run |"
+            echo "| Bắt đầu | $started_at |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Build
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ env.PLATFORM_REPO }}
+          ref: ${{ needs.verify.outputs.sha }}
+          token: ${{ secrets.PLATFORM_READ_TOKEN }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build bản chạy thật
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          VITE_APP_ENV: production
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::Thiếu variable VITE_SUPABASE_URL hoặc VITE_SUPABASE_PUBLISHABLE_KEY."
+            exit 1
+          fi
+          npm run build
+
+      - name: Gom bản build + migration (không có seed)
+        run: |
+          set -euo pipefail
+          mkdir -p bundle/supabase
+          cp -R dist bundle/dist
+          cp -R supabase/migrations bundle/supabase/migrations
+          cp supabase/config.toml bundle/supabase/config.toml
+          rm -f bundle/supabase/seed.sql
+          if find bundle -name 'seed*.sql' | grep -q .; then
+            echo "::error::Gói triển khai không được chứa seed."
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: bundle
+          path: bundle/
+          retention-days: 7
+          if-no-files-found: error
+
+  migrate:
+    name: Áp migration lên hmt-prod
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: bundle
+          path: bundle
+
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+        with:
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+
+      - name: supabase db push
+        working-directory: bundle
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+        run: |
+          PROD_DB_URL="$(printf '%s' "$PROD_DB_URL" | tr -d '[:space:]')"; [ -z "$PROD_DB_URL" ] || echo "::add-mask::$PROD_DB_URL"
+          if [ -z "$PROD_DB_URL" ]; then
+            echo "::error::Thiếu secret PROD_DB_URL."
+            exit 1
+          fi
+          supabase db push --db-url "$PROD_DB_URL" --yes
+          echo "- Migration: xong lúc $(date -u '+%Y-%m-%d %H:%M:%S') UTC" >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Triển khai Cloudflare Pages (hmt-prod)
+    needs: [verify, migrate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: bundle
+          path: bundle
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      - name: Tạo project Pages nếu chưa có
+        working-directory: bundle
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Thiếu secret CLOUDFLARE_API_TOKEN hoặc CLOUDFLARE_ACCOUNT_ID."
+            exit 1
+          fi
+          if ! out="$(npx --yes "wrangler@$WRANGLER_VERSION" pages project create "$PAGES_PROJECT" --production-branch=main 2>&1)"; then
+            if printf '%s' "$out" | grep -qiE 'already exists|8000002'; then
+              echo "Project $PAGES_PROJECT đã có."
+            else
+              printf '%s\n' "$out"
+              exit 1
+            fi
+          fi
+
+      - name: wrangler pages deploy
+        working-directory: bundle
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SHA: ${{ needs.verify.outputs.sha }}
+          STARTED_AT: ${{ needs.verify.outputs.started_at }}
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          out="$(npx --yes "wrangler@$WRANGLER_VERSION" pages deploy dist --project-name="$PAGES_PROJECT" --branch=main --commit-hash="$SHA" 2>&1)" || {
+            printf '%s\n' "$out"
+            exit 1
+          }
+          printf '%s\n' "$out"
+          deploy_url="$(printf '%s\n' "$out" | grep -oE 'https://[a-z0-9.-]+\.pages\.dev' | head -n 1)"
+          {
+            echo "- Triển khai: xong lúc $(date -u '+%Y-%m-%d %H:%M:%S') UTC (bắt đầu $STARTED_AT)"
+            echo "- Địa chỉ chạy thật: https://$PAGES_PROJECT.pages.dev (sau này: https://app.hoamatoan.edu.vn)"
+            echo "- Lần triển khai này: ${deploy_url:-chưa đọc được}"
+          } >> "$GITHUB_STEP_SUMMARY"

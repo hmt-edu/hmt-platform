@@ -1,0 +1,191 @@
+# Báo cáo sử dụng hằng tuần: dung lượng DB, bảng lớn, truy vấn chậm, kết nối, hạn token.
+# Tạo một issue trong repo này; GitHub tự gửi email cho chủ repo.
+name: Usage report
+
+on:
+  schedule:
+    - cron: '30 1 * * 1' # Thứ Hai 01:30 UTC = 08:30 giờ Việt Nam
+  workflow_dispatch:
+
+permissions: {}
+
+env:
+  # --- Ngưỡng (sửa ở đây, chỉ ở đây) ---
+  # Dung lượng DB: giới hạn gói Supabase Free là 500 MB; cảnh báo từ 400 MB (ngưỡng cân nhắc nâng Pro).
+  DB_LIMIT_MB: 500
+  DB_WARN_MB: 400
+  # Lượng tải ra (egress): giới hạn gói Free 5 GB/tháng; cảnh báo từ 4 GB. Chưa đọc tự động.
+  EGRESS_LIMIT_GB: 5
+  EGRESS_WARN_GB: 4
+  # Truy vấn chậm: cảnh báo khi thời gian trung bình vượt ngưỡng này (mili giây).
+  SLOW_QUERY_WARN_MS: 500
+  # Kết nối: cảnh báo khi số kết nối vượt tỉ lệ này (%) của max_connections.
+  CONN_WARN_PCT: 80
+  # PLATFORM_READ_TOKEN: cảnh báo khi còn ít hơn số ngày này là hết hạn.
+  TOKEN_WARN_DAYS: 30
+  PLATFORM_REPO: hmt-vanhanh/hmt-platform
+
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Thu số liệu, tạo issue
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+          PLATFORM_READ_TOKEN: ${{ secrets.PLATFORM_READ_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+          PROD_DB_URL="$(printf '%s' "$PROD_DB_URL" | tr -d '[:space:]')"; [ -z "$PROD_DB_URL" ] || echo "::add-mask::$PROD_DB_URL"
+          report="$RUNNER_TEMP/report.md"
+          warnings=()
+          week="$(date -u +%G-W%V)"
+          title="Báo cáo sử dụng tuần $week"
+
+          q() { psql "$PROD_DB_URL" -X -v ON_ERROR_STOP=1 -At -F $'\t' -c "$1"; }
+          # Thoát ký tự làm vỡ bảng markdown.
+          md() { sed -e 's/|/\\|/g' -e 's/`/'"'"'/g'; }
+
+          {
+            echo "Thời điểm: $(TZ=Asia/Ho_Chi_Minh date '+%Y-%m-%d %H:%M') giờ Việt Nam"
+            echo
+          } > "$report"
+
+          # ---------------- Cơ sở dữ liệu ----------------
+          db_section="$RUNNER_TEMP/db.md"
+          : > "$db_section"
+          if [ -z "$PROD_DB_URL" ]; then
+            warnings+=("Thiếu secret PROD_DB_URL: không đọc được số liệu DB.")
+          elif ! db_bytes="$(q "select pg_database_size(current_database());")"; then
+            warnings+=("Không kết nối được DB chạy thật.")
+          else
+            db_mb=$(( db_bytes / 1024 / 1024 ))
+            db_pct=$(( db_mb * 100 / DB_LIMIT_MB ))
+            if [ "$db_mb" -ge "$DB_WARN_MB" ]; then
+              db_state="**CẢNH BÁO**"
+              warnings+=("DB ${db_mb} MB, đã chạm ngưỡng ${DB_WARN_MB} MB: cân nhắc nâng Supabase Pro.")
+            else
+              db_state="Ổn"
+            fi
+
+            conn="$(q "select count(*) from pg_stat_activity where datname = current_database();")"
+            max_conn="$(q "show max_connections;")"
+            conn_pct=$(( conn * 100 / max_conn ))
+            if [ "$conn_pct" -ge "$CONN_WARN_PCT" ]; then
+              conn_state="**CẢNH BÁO**"
+              warnings+=("Kết nối ${conn}/${max_conn} (${conn_pct}%).")
+            else
+              conn_state="Ổn"
+            fi
+
+            {
+              echo "## Tổng quan"
+              echo
+              echo "| Mục | Hiện tại | Giới hạn / ngưỡng | Đánh giá |"
+              echo "|---|---|---|---|"
+              echo "| Dung lượng DB | ${db_mb} MB (${db_pct}%) | ${DB_LIMIT_MB} MB, cảnh báo từ ${DB_WARN_MB} MB | $db_state |"
+              echo "| Kết nối đang mở | ${conn} | ${max_conn} tối đa, cảnh báo từ ${CONN_WARN_PCT}% | $conn_state |"
+              echo "| Lượng tải ra (egress) tháng này | Chưa đọc tự động | ${EGRESS_LIMIT_GB} GB, cảnh báo từ ${EGRESS_WARN_GB} GB | Anh xem tay (link dưới) |"
+              echo
+              echo "## 10 bảng lớn nhất"
+              echo
+              echo "| Bảng | Dung lượng (gồm chỉ mục) |"
+              echo "|---|---|"
+              q "select n.nspname || '.' || c.relname, pg_size_pretty(pg_total_relation_size(c.oid))
+                 from pg_class c join pg_namespace n on n.oid = c.relnamespace
+                 where c.relkind in ('r', 'p', 'm')
+                   and n.nspname not in ('pg_catalog', 'information_schema')
+                   and n.nspname not like 'pg_toast%'
+                 order by pg_total_relation_size(c.oid) desc
+                 limit 10;" | md | awk -F '\t' '{ printf "| `%s` | %s |\n", $1, $2 }'
+              echo
+              echo "## 5 truy vấn chậm nhất (thời gian trung bình)"
+              echo
+            } >> "$db_section"
+
+            pss_schema="$(q "select extnamespace::regnamespace from pg_extension where extname = 'pg_stat_statements';")"
+            if [ -z "$pss_schema" ]; then
+              echo "Không có extension pg_stat_statements nên chưa đo được truy vấn chậm." >> "$db_section"
+            elif ! slow="$(q "select round(mean_exec_time::numeric, 1), calls, left(regexp_replace(query, '\s+', ' ', 'g'), 120)
+                               from $pss_schema.pg_stat_statements
+                               where dbid = (select oid from pg_database where datname = current_database())
+                               order by mean_exec_time desc
+                               limit 5;")"; then
+              echo "Không đọc được pg_stat_statements (thiếu quyền?)." >> "$db_section"
+            else
+              {
+                echo "| TB (ms) | Số lần gọi | Truy vấn (rút gọn) |"
+                echo "|---|---|---|"
+                printf '%s\n' "$slow" | md | awk -F '\t' 'NF { printf "| %s | %s | `%s` |\n", $1, $2, $3 }'
+              } >> "$db_section"
+              top_ms="$(printf '%s\n' "$slow" | head -n 1 | cut -f1 | cut -d. -f1)"
+              if [ -n "$top_ms" ] && [ "$top_ms" -ge "$SLOW_QUERY_WARN_MS" ]; then
+                warnings+=("Có truy vấn trung bình ${top_ms} ms (ngưỡng ${SLOW_QUERY_WARN_MS} ms).")
+              fi
+            fi
+            echo >> "$db_section"
+          fi
+
+          # ---------------- Hạn PLATFORM_READ_TOKEN ----------------
+          token_line=""
+          if [ -z "$PLATFORM_READ_TOKEN" ]; then
+            token_line="Thiếu secret PLATFORM_READ_TOKEN."
+            warnings+=("$token_line")
+          else
+            headers="$RUNNER_TEMP/headers.txt"
+            code="$(curl -sS -o /dev/null -D "$headers" -w '%{http_code}' \
+              -H "Authorization: Bearer $PLATFORM_READ_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$PLATFORM_REPO")"
+            expiry="$({ grep -i '^github-authentication-token-expiration:' "$headers" || true; } | cut -d' ' -f2- | tr -d '\r')"
+            rm -f "$headers"
+            if [ "$code" != "200" ]; then
+              token_line="Token không đọc được $PLATFORM_REPO (HTTP $code): có thể đã hết hạn hoặc sai quyền."
+              warnings+=("$token_line")
+            elif [ -z "$expiry" ]; then
+              token_line="Token không có ngày hết hạn."
+            else
+              days_left=$(( ( $(date -u -d "$expiry" +%s) - $(date -u +%s) ) / 86400 ))
+              token_line="Hết hạn $expiry (còn $days_left ngày)."
+              if [ "$days_left" -lt "$TOKEN_WARN_DAYS" ]; then
+                warnings+=("PLATFORM_READ_TOKEN còn $days_left ngày là hết hạn: làm mới theo README.")
+              fi
+            fi
+          fi
+
+          # ---------------- Ghép báo cáo ----------------
+          {
+            echo "## Cần chú ý"
+            echo
+            if [ "${#warnings[@]}" -eq 0 ]; then
+              echo "Không có gì vượt ngưỡng."
+            else
+              for w in "${warnings[@]}"; do echo "- $w"; done
+            fi
+            echo
+            cat "$db_section"
+            echo "## Lượng tải ra (egress)"
+            echo
+            echo "Chưa đọc tự động. Anh mở https://supabase.com/dashboard/project/_/settings/billing/usage (chọn project hmt-prod), xem mục Egress: giới hạn ${EGRESS_LIMIT_GB} GB/tháng, nâng Pro khi vượt ${EGRESS_WARN_GB} GB."
+            echo
+            echo "## PLATFORM_READ_TOKEN"
+            echo
+            echo "$token_line"
+            echo
+            echo "_Ngưỡng khai báo ở đầu file .github/workflows/usage-report.yml._"
+          } >> "$report"
+          rm -f "$db_section"
+
+          cat "$report" >> "$GITHUB_STEP_SUMMARY"
+
+          # Chạy lại trong cùng tuần thì thêm bình luận vào issue cũ, không tạo issue mới.
+          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" \
+            --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -n 1)"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body-file "$report"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file "$report"
+          fi

@@ -1,0 +1,210 @@
+# Sao lưu DB chạy thật (hmt-prod) mỗi đêm: xuất, nén, mã hoá bằng age, đẩy lên Google Drive.
+# Giữ 30 bản hằng ngày + 12 bản hằng tháng. Khoá giải mã (age) KHÔNG nằm trên Drive hay GitHub.
+name: Backup production
+
+on:
+  schedule:
+    - cron: '5 19 * * *' # 19:05 UTC = 02:05 giờ Việt Nam
+  workflow_dispatch:
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  SUPABASE_CLI_VERSION: 2.120.0
+  # rclone tải từ GitHub releases, ghim phiên bản và mã băm SHA256 (đã đối chiếu
+  # SHA256SUMS ở github.com/rclone/rclone/releases và downloads.rclone.org).
+  # Không đặt tên bắt đầu bằng RCLONE_: rclone hiểu các biến đó là tham số của nó.
+  PIN_RCLONE_VERSION: v1.75.1
+  PIN_RCLONE_SHA256: 982b5aa772841168f8e380f139e9e787b2a105403e32b94da8676a0e1c0a13ab
+  # Số bản giữ lại trên Drive.
+  KEEP_DAILY: 30
+  KEEP_MONTHLY: 12
+  DRIVE_DIR: HMT-backup
+
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      # rclone đọc cấu hình remote "gdrive" thẳng từ biến môi trường, không ghi file.
+      RCLONE_CONFIG_GDRIVE_TYPE: drive
+      RCLONE_CONFIG_GDRIVE_SCOPE: drive.file
+      RCLONE_CONFIG_GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+      RCLONE_CONFIG_GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+      RCLONE_CONFIG_GDRIVE_TOKEN: ${{ secrets.GDRIVE_TOKEN }}
+      AGE_RECIPIENT: ${{ vars.AGE_RECIPIENT }}
+    steps:
+      - name: Kiểm tra cấu hình
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+        run: |
+          missing=""
+          [ -n "$PROD_DB_URL" ] || missing="$missing PROD_DB_URL"
+          [ -n "$RCLONE_CONFIG_GDRIVE_CLIENT_ID" ] || missing="$missing GDRIVE_CLIENT_ID"
+          [ -n "$RCLONE_CONFIG_GDRIVE_CLIENT_SECRET" ] || missing="$missing GDRIVE_CLIENT_SECRET"
+          [ -n "$RCLONE_CONFIG_GDRIVE_TOKEN" ] || missing="$missing GDRIVE_TOKEN"
+          [ -n "$AGE_RECIPIENT" ] || missing="$missing AGE_RECIPIENT"
+          if [ -n "$missing" ]; then
+            echo "::error::Thiếu cấu hình sao lưu:$missing"
+            exit 1
+          fi
+          case "$AGE_RECIPIENT" in
+            age1*) ;;
+            *) echo "::error::AGE_RECIPIENT phải là khoá công khai age (bắt đầu bằng age1…)."; exit 1 ;;
+          esac
+          # Chẩn đoán chuỗi kết nối, KHÔNG in mật khẩu: chỉ in user, máy chủ, độ dài mật khẩu.
+          python3 - <<'PY'
+          import os, sys, urllib.parse
+          raw = os.environ["PROD_DB_URL"]
+          url = raw.strip()
+          ref = urllib.parse.urlparse(os.environ.get("VITE_SUPABASE_URL", "")).hostname or ""
+          ref = ref.split(".")[0]
+          u = urllib.parse.urlparse(url)
+          pw = urllib.parse.unquote(u.password or "")
+          print(f"Khoảng trắng/xuống dòng thừa ở đầu/cuối: {'CÓ' if raw != url else 'không'}")
+          print(f"Kiểu: {u.scheme} | user: {u.username} | máy chủ: {u.hostname}:{u.port} | db: {u.path.lstrip('/')}")
+          print(f"Độ dài mật khẩu: {len(pw)} | ref project theo VITE_SUPABASE_URL: {ref or '(chưa đặt)'}")
+          errs = []
+          if "[YOUR-PASSWORD]" in url or "YOUR-PASSWORD" in pw:
+              errs.append("Chuỗi vẫn còn chữ [YOUR-PASSWORD], chưa thay mật khẩu thật.")
+          if not pw:
+              errs.append("Chuỗi không có mật khẩu.")
+          if u.port != 5432 or not (u.hostname or "").endswith("pooler.supabase.com"):
+              errs.append("Không phải chuỗi Session pooler (máy chủ *.pooler.supabase.com, cổng 5432).")
+          if ref and u.username != f"postgres.{ref}":
+              errs.append(f"User phải là postgres.{ref} (đúng project hmt-prod), đang là {u.username}.")
+          for e in errs:
+              print(f"::error::PROD_DB_URL: {e}")
+          sys.exit(1 if errs else 0)
+          PY
+
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+        with:
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+
+      - name: Cài age, rclone
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq age > /dev/null
+          cd "$RUNNER_TEMP"
+          zip="rclone-$PIN_RCLONE_VERSION-linux-amd64.zip"
+          curl -sSfL -o "$zip" "https://github.com/rclone/rclone/releases/download/$PIN_RCLONE_VERSION/$zip"
+          echo "$PIN_RCLONE_SHA256  $zip" | sha256sum -c -
+          unzip -q "$zip"
+          sudo install -m 0755 "rclone-$PIN_RCLONE_VERSION-linux-amd64/rclone" /usr/local/bin/rclone
+          rm -rf "$zip" "rclone-$PIN_RCLONE_VERSION-linux-amd64"
+          age --version
+          rclone version | head -n 1
+
+      - name: Xuất DB, nén, mã hoá
+        id: dump
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+        run: |
+          set -euo pipefail
+          PROD_DB_URL="$(printf '%s' "$PROD_DB_URL" | tr -d '[:space:]')"; [ -z "$PROD_DB_URL" ] || echo "::add-mask::$PROD_DB_URL"
+          umask 077
+          stamp="$(TZ=Asia/Ho_Chi_Minh date +%Y%m%d-%H%M)"
+          name="hmt-prod-$stamp"
+          work="$RUNNER_TEMP/backup"
+          mkdir -p "$work/$name"
+          cd "$work"
+          # Xoá bản rõ dù bước lỗi giữa chừng.
+          trap 'rm -rf "$work/$name" "$work/$name.tar.gz"' EXIT
+
+          supabase db dump --db-url "$PROD_DB_URL" -f "$name/roles.sql" --role-only
+          supabase db dump --db-url "$PROD_DB_URL" -f "$name/schema.sql"
+          supabase db dump --db-url "$PROD_DB_URL" -f "$name/data.sql" --data-only --use-copy
+
+          tar -czf "$name.tar.gz" "$name"
+          rm -rf "$name"
+          age -r "$AGE_RECIPIENT" -o "$name.tar.gz.age" "$name.tar.gz"
+          rm -f "$name.tar.gz"
+
+          file="$name.tar.gz.age"
+          size="$(stat -c %s "$file")"
+          {
+            echo "file=$file"
+            echo "size=$size"
+            echo "path=$work/$file"
+          } >> "$GITHUB_OUTPUT"
+          echo "Đã tạo $file ($size byte)"
+
+      - name: Đẩy lên Google Drive
+        env:
+          FILE: ${{ steps.dump.outputs.file }}
+          FILE_PATH: ${{ steps.dump.outputs.path }}
+          SIZE: ${{ steps.dump.outputs.size }}
+        run: |
+          set -euo pipefail
+          rclone copyto "$FILE_PATH" "gdrive:$DRIVE_DIR/daily/$FILE"
+
+          # Kiểm tra: kích thước trên Drive phải đúng bằng file vừa tạo.
+          remote_size="$(rclone lsf --files-only --format s "gdrive:$DRIVE_DIR/daily/$FILE")"
+          if [ "$remote_size" != "$SIZE" ]; then
+            echo "::error::Kích thước trên Drive ($remote_size) khác file gốc ($SIZE)."
+            exit 1
+          fi
+
+          # Ngày 1 (giờ Việt Nam): giữ thêm một bản hằng tháng.
+          if [ "$(TZ=Asia/Ho_Chi_Minh date +%d)" = "01" ]; then
+            rclone copyto "gdrive:$DRIVE_DIR/daily/$FILE" "gdrive:$DRIVE_DIR/monthly/$FILE"
+            remote_size="$(rclone lsf --files-only --format s "gdrive:$DRIVE_DIR/monthly/$FILE")"
+            if [ "$remote_size" != "$SIZE" ]; then
+              echo "::error::Bản hằng tháng trên Drive sai kích thước."
+              exit 1
+            fi
+            echo "Đã lưu thêm bản hằng tháng."
+          fi
+          rm -f "$FILE_PATH"
+
+      - name: Xoá bản cũ (giữ ${{ env.KEEP_DAILY }} ngày, ${{ env.KEEP_MONTHLY }} tháng)
+        run: |
+          set -euo pipefail
+          prune() {
+            dir="$1"; keep="$2"
+            # Tên file có ngày giờ nên sắp theo tên là sắp theo thời gian; giữ bản mới nhất.
+            rclone lsf --files-only --include 'hmt-prod-*.tar.gz.age' "gdrive:$DRIVE_DIR/$dir/" \
+              | sort -r | tail -n +"$((keep + 1))" \
+              | while IFS= read -r old; do
+                  echo "Xoá $dir/$old"
+                  rclone deletefile "gdrive:$DRIVE_DIR/$dir/$old"
+                done
+          }
+          prune daily "$KEEP_DAILY"
+          if rclone lsf --dirs-only "gdrive:$DRIVE_DIR/" | grep -qx 'monthly/'; then
+            prune monthly "$KEEP_MONTHLY"
+          fi
+          echo "Hằng ngày: $(rclone lsf --files-only "gdrive:$DRIVE_DIR/daily/" | wc -l) bản"
+
+      - name: Nhịp giữ project hoạt động
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+        run: |
+          PROD_DB_URL="$(printf '%s' "$PROD_DB_URL" | tr -d '[:space:]')"; [ -z "$PROD_DB_URL" ] || echo "::add-mask::$PROD_DB_URL"
+          # DB chạy thật chưa có migration nào thì chưa có hàm heartbeat: bỏ qua, bản dump đã là hoạt động DB.
+          if [ "$(psql "$PROD_DB_URL" -X -At -c "select to_regprocedure('app.heartbeat()') is not null;")" = "t" ]; then
+            psql "$PROD_DB_URL" -X -v ON_ERROR_STOP=1 -At -c "select app.heartbeat();"
+          else
+            echo "::notice::Chưa có app.heartbeat() (DB chạy thật chưa áp migration); bỏ qua nhịp."
+          fi
+
+      - name: Tóm tắt
+        env:
+          FILE: ${{ steps.dump.outputs.file }}
+          SIZE: ${{ steps.dump.outputs.size }}
+        run: |
+          {
+            echo "## Sao lưu hmt-prod"
+            echo "- File: \`$FILE\` ($SIZE byte, đã mã hoá age)"
+            echo "- Nơi lưu: Google Drive > $DRIVE_DIR/daily (ngày 1 thêm vào $DRIVE_DIR/monthly)"
+            echo "- Giữ: $KEEP_DAILY bản hằng ngày, $KEEP_MONTHLY bản hằng tháng"
+          } >> "$GITHUB_STEP_SUMMARY"

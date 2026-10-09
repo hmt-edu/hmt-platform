@@ -1,0 +1,3 @@
+-- Dữ liệu giả cho local và môi trường thử nghiệm.
+-- CHỈ dữ liệu giả: không bao giờ đưa tên, số điện thoại thật của học sinh, phụ huynh vào đây.
+-- Giai đoạn 0 bước 1: chưa có dữ liệu.
