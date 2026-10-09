@@ -1,0 +1,27 @@
+# Phụ thuộc, bản build
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Kiểm thử
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars*
+
+# Biến môi trường: KHÔNG đưa vào repo (trừ file mẫu)
+.env*
+!.env.example
+
+# Hệ điều hành, editor
+.DS_Store
+*.log
