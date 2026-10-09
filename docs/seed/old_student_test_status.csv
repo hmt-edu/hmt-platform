@@ -1,0 +1,12 @@
+Status,Reason Cancel,Sub-stage Opp
+Draft,"Huỷ test, không liên hệ được","L5C: Huỷ test, không liên hệ được"
+Testing,"Huỷ test, PH bận không đưa đón được","L5D: Huỷ test, PH bận không đưa đón được"
+Teacher Review,"Huỷ test, con bận không tham gia được","L5E: Huỷ test, con bận không tham gia được"
+Completed,"Huỷ test, con không muốn tham gia","L5F: Huỷ test, con không muốn tham gia"
+Cancelled,"Huỷ test, con đang ôn thi","L5G: Huỷ test, con đang ôn thi"
+Rejected,"Huỷ test, con ốm","L5H: Huỷ test, con ốm"
+,"Huỷ test, gia đình đi du lịch","L5I: Huỷ test, gia đình đi du lịch"
+,"Huỷ test, thời tiết không thuận lợi","L5K: Huỷ test, thời tiết không thuận lợi"
+,"Huỷ test, con đang ở quê","L5N: Huỷ test, con đang ở quê"
+,"Huỷ test, lý do khác","L5M: Huỷ test, lý do khác"
+,Huỷ test nhiều lần,L5O: Huỷ test nhiều lần

@@ -1,0 +1,7 @@
+Role ID,Tên vai trò,Mô tả,Data Scope Default
+ADMIN,BAN GIÁM ĐỐC/IT,Toàn quyền quản trị hệ thống,ALL
+BRANCH_MANAGER,Trưởng cơ sở,Quản lý mọi hoạt động tại cơ sở phụ trách,BRANCH
+SALES,Chuyên viên tuyển sinh,"Tìm kiếm, tư vấn Lead, Opp, tạo lịch test",BRANCH
+TEACHER,Giáo viên chấm thi,"Xem lịch thi, chấm điểm, nhận xét",BRANCH
+CSKH,Chăm sóc khách hàng,"Chăm sóc phụ huynh, tái tục, xử lý yêu cầu",BRANCH
+ACCOUNTANT,Kế toán,Đối soát và duyệt chứng từ thu tiền,ALL

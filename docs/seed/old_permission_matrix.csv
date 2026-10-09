@@ -1,0 +1,44 @@
+Role ID,Module Key,Tên phân hệ,Can Read,Can Create,Can Edit,Can Delete,Can Export,Assign,Can Approve,Data Scope Override
+ADMIN,ALL,Toàn bộ hệ thống,True,True,True,True,True,True,True,ALL
+BRANCH_MANAGER,ALL,Toàn bộ hệ thống,True,True,True,True,False,True,True,BRANCH
+SALES,lead,Tuyển sinh - Lead,True,True,True,False,False,False,False,BRANCH
+SALES,opportunity,Cơ hội bán hàng,True,True,True,False,False,False,False,BRANCH
+SALES,student_test,Lịch kiểm tra test,True,True,True,False,False,False,False,BRANCH
+TEACHER,student_test,Lịch kiểm tra test,True,True,True,False,False,False,False,BRANCH
+CSKH,lead,Tuyển sinh - Lead,True,True,True,False,False,False,False,BRANCH
+CSKH,opportunity,Cơ hội bán hàng,True,True,True,False,False,False,False,BRANCH
+CSKH,student_test,Lịch kiểm tra test,True,True,True,False,False,False,False,BRANCH
+SALES,parent,Hồ sơ phụ huynh,True,True,True,False,False,False,False,BRANCH
+CSKH,parent,Hồ sơ phụ huynh,True,True,True,False,False,False,False,BRANCH
+SALES,sales_order,Sales Order,True,True,True,False,False,False,False,BRANCH
+SALES,student,Hồ sơ học sinh,True,True,True,False,False,False,False,BRANCH
+CSKH,sales_order,Sales Order,True,True,True,False,False,False,False,BRANCH
+CSKH,student,Hồ sơ học sinh,True,True,True,False,False,False,False,BRANCH
+TEACHER,student,Hồ sơ học sinh,True,False,False,False,False,False,False,BRANCH
+SALES,receipt,Chứng từ thu,True,True,True,False,False,False,False,BRANCH
+CSKH,receipt,Chứng từ thu,True,True,True,False,False,False,False,BRANCH
+SALES,enrollment,Ghi danh,True,False,False,False,False,False,False,BRANCH
+CSKH,enrollment,Ghi danh,True,True,True,False,False,False,False,BRANCH
+TEACHER,enrollment,Ghi danh,True,False,False,False,False,False,False,BRANCH
+ACCOUNTANT,receipt,Chứng từ thu,True,True,True,False,True,False,True,ALL
+ACCOUNTANT,sales_order,Sales Order,True,False,False,False,True,False,False,ALL
+ACCOUNTANT,so_accounting,SO_ACCOUNTING,True,False,False,False,True,False,True,ALL
+ACCOUNTANT,student,Hồ sơ học sinh,True,False,False,False,False,False,False,ALL
+BRANCH_MANAGER,batch,Lớp học,True,True,True,False,True,False,True,BRANCH
+CSKH,batch,Lớp học,True,True,True,False,False,False,False,BRANCH
+SALES,batch,Lớp học,True,False,False,False,False,False,False,BRANCH
+TEACHER,batch,Lớp học,True,False,False,False,False,False,False,BRANCH
+BRANCH_MANAGER,session,Buổi học,True,True,True,False,True,False,True,BRANCH
+SALES,session,Buổi học,True,False,False,False,False,False,False,BRANCH
+CSKH,session,Buổi học,True,True,True,False,False,False,False,BRANCH
+TEACHER,session,Buổi học,True,False,True,False,False,False,False,BRANCH
+BRANCH_MANAGER,attendance,Điểm danh,True,True,True,False,True,False,True,BRANCH
+CSKH,attendance,Điểm danh,True,True,True,False,False,False,False,BRANCH
+SALES,attendance,Điểm danh,True,False,False,False,False,False,False,BRANCH
+TEACHER,attendance,Điểm danh,True,False,True,False,False,False,False,BRANCH
+SALES,quotation,Báo giá,True,True,True,False,True,False,False,BRANCH
+CSKH,quotation,Báo giá,True,True,True,False,True,False,False,BRANCH
+BRANCH_MANAGER,quotation,Báo giá,True,True,True,False,True,True,True,BRANCH
+SALES,upsale,Phiếu tái tục,True,True,True,False,True,False,False,BRANCH
+CSKH,upsale,Phiếu tái tục,True,True,True,False,True,False,False,BRANCH
+BRANCH_MANAGER,upsale,Phiếu tái tục,True,True,True,False,True,True,True,BRANCH

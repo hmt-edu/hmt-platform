@@ -1,0 +1,52 @@
+Level_Stage_Opp,Stage_Name_Opp,Stage_Opp,Level_Sub_Stage_Opp,Sub_Stage_Name_Opp,Sub_Stage_Opp
+L1,Khách hàng mới,L1: Khách hàng mới,,,
+L2,Chưa liên hệ được,L2: Chưa liên hệ được,L2A,Không liên lạc được,L2A: Không liên lạc được
+L2,Chưa liên hệ được,L2: Chưa liên hệ được,L2B,Không liên lạc được,L2B: Không liên lạc được
+L2,Chưa liên hệ được,L2: Chưa liên hệ được,L2C,Bận gọi lại sau,L2C: Bận gọi lại sau
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3A,Không có nhu cầu,L3A: Không có nhu cầu
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3B,Chưa có nhu cầu ở thời điểm hiện tại,L3B: Chưa có nhu cầu ở thời điểm hiện tại
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3C,Đang học ở nơi khác,L3C: Đang học ở nơi khác
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3D,Không phù hợp về sản phẩm,L3D: Không phù hợp về sản phẩm
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3E,Không phù hợp về giá,L3E: Không phù hợp về giá
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3F,Không phù hợp về độ tuổi,L3F: Không phù hợp về độ tuổi
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3G,Không phù hợp về địa điểm,L3G: Không phù hợp về địa điểm
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3H,Không có nhu cầu về địa điểm,L3H: Không có nhu cầu về địa điểm
+L3,Không có nhu cầu,L3: Không có nhu cầu,L3I,Không nghe máy nhiều lần,L3I: Không nghe máy nhiều lần
+L4,Khách hàng tiềm năng,L4: Khách hàng tiềm năng,L4A,"Tiềm năng, cần gửi thêm thông tin","L4A: Tiềm năng, cần gửi thêm thông tin"
+L4,Khách hàng tiềm năng,L4: Khách hàng tiềm năng,L4B,"Tiềm năng, cần tư vấn thêm","L4B: Tiềm năng, cần tư vấn thêm"
+L4,Khách hàng tiềm năng,L4: Khách hàng tiềm năng,L4C,"Tiềm năng, cần tham khảo ý kiến","L4C: Tiềm năng, cần tham khảo ý kiến"
+L4,Khách hàng tiềm năng,L4: Khách hàng tiềm năng,L4D,"Tiềm năng, cần gọi lại vào dịp khác","L4D: Tiềm năng, cần gọi lại vào dịp khác"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5A,Đồng ý tham gia test,L5A: Đồng ý tham gia test
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5B,"Đồng ý tham gia test, đã xếp lớp thành công","L5B: Đồng ý tham gia test, đã xếp lớp thành công"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5C,"Huỷ test, không liên hệ được","L5C: Huỷ test, không liên hệ được"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5D,"Huỷ test, PH bận không đưa đón được","L5D: Huỷ test, PH bận không đưa đón được"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5E,"Huỷ test, con bận không tham gia được","L5E: Huỷ test, con bận không tham gia được"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5F,"Huỷ test, con không muốn tham gia","L5F: Huỷ test, con không muốn tham gia"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5G,"Huỷ test, con đang ôn thi","L5G: Huỷ test, con đang ôn thi"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5H,"Huỷ test, con ốm","L5H: Huỷ test, con ốm"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5I,"Huỷ test, gia đình đi du lịch","L5I: Huỷ test, gia đình đi du lịch"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5K,"Huỷ test, thời tiết không thuận lợi","L5K: Huỷ test, thời tiết không thuận lợi"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5N,"Huỷ test, con đang ở quê","L5N: Huỷ test, con đang ở quê"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5M,"Huỷ test, lý do khác","L5M: Huỷ test, lý do khác"
+L5,Đồng ý tham gia test,L5: Đồng ý tham gia test,L5O,Huỷ test nhiều lần,L5O: Huỷ test nhiều lần
+L6,Đã tham gia test,L6: Đã tham gia test,L6A,"Đã tham gia test, chưa có kết quả test","L6A: Đã tham gia test, chưa có kết quả test"
+L6,Đã tham gia test,L6: Đã tham gia test,L6B,"Đã tham gia test, có kết quả test, cần phân loại","L6B: Đã tham gia test, có kết quả test, cần phân loại"
+L6,Đã tham gia test,L6: Đã tham gia test,L6C,"Đã tham gia test, học xuất sắc","L6C: Đã tham gia test, học xuất sắc"
+L6,Đã tham gia test,L6: Đã tham gia test,L6D,"Đã tham gia test, học tốt","L6D: Đã tham gia test, học tốt"
+L6,Đã tham gia test,L6: Đã tham gia test,L6E,"Đã tham gia test, học khá","L6E: Đã tham gia test, học khá"
+L6,Đã tham gia test,L6: Đã tham gia test,L6F,"Đã tham gia test, học trung bình","L6F: Đã tham gia test, học trung bình"
+L6,Đã tham gia test,L6: Đã tham gia test,L6G,"Đã tham gia test, học yếu","L6G: Đã tham gia test, học yếu"
+L7,Tư vấn,L7: Tư vấn,L7A,Cần đặt lịch tư vấn,L7A: Cần đặt lịch tư vấn
+L7,Tư vấn,L7: Tư vấn,L7B,"Đã tư vấn, khách hàng tiềm năng","L7B: Đã tư vấn, khách hàng tiềm năng"
+L7,Tư vấn,L7: Tư vấn,L7C,"Đã tư vấn, dự thu","L7C: Đã tư vấn, dự thu"
+L7,Tư vấn,L7: Tư vấn,L7D,"Đã tư vấn, cần trao đổi thêm","L7D: Đã tư vấn, cần trao đổi thêm"
+L7,Tư vấn,L7: Tư vấn,L7E,"Đã tư vấn, PH cân nhắc học phí","L7E: Đã tư vấn, PH cân nhắc học phí"
+L7,Tư vấn,L7: Tư vấn,L7F,"Đã tư vấn, PH cân nhắc chương trình học","L7F: Đã tư vấn, PH cân nhắc chương trình học"
+L7,Tư vấn,L7: Tư vấn,L7G,"Đã tư vấn, PH cân nhắc thời gian học","L7G: Đã tư vấn, PH cân nhắc thời gian học"
+L7,Tư vấn,L7: Tư vấn,L7H,"Đã tư vấn, PH cân nhắc địa điểm học","L7H: Đã tư vấn, PH cân nhắc địa điểm học"
+L7,Tư vấn,L7: Tư vấn,L7I,"Đã tư vấn, PH cân nhắc hình thức học","L7I: Đã tư vấn, PH cân nhắc hình thức học"
+L7,Tư vấn,L7: Tư vấn,L7K,"Đã tư vấn, PH cần trao đổi với người thân","L7K: Đã tư vấn, PH cần trao đổi với người thân"
+L7,Tư vấn,L7: Tư vấn,L7L,"Đã tư vấn, PH cần trao đổi với con","L7L: Đã tư vấn, PH cần trao đổi với con"
+L8,Đăng ký học,L8: Đăng ký học,L8A,PH đặt cọc,L8A: PH đặt cọc
+L8,Đăng ký học,L8: Đăng ký học,L8B,PH thanh toán chia để trả,L8B: PH thanh toán chia để trả
+L8,Đăng ký học,L8: Đăng ký học,L8C,PH hoàn thành 100% học phí,L8C: PH hoàn thành 100% học phí

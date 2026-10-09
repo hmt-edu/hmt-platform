@@ -1,0 +1,17 @@
+Level Stage,Stage Name,Stage,Sub-Stage,Sub-Stage Name,Sub-stage
+C1,Data mới,C1: Data mới,,,
+C2,Chưa liên hệ được,C2: Chưa liên hệ được,C2A,Không nghe máy,C2A: Không nghe máy
+C2,Chưa liên hệ được,C2: Chưa liên hệ được,C2B,Không liên lạc được,C2B: Không liên lạc được
+C2,Chưa liên hệ được,C2: Chưa liên hệ được,C2C,Bận gọi lại sau,C2C: Bận gọi lại sau
+C3,Không có nhu cầu,C3: Không có nhu cầu,C3A,Không có nhu cầu,C3A: Không có nhu cầu
+C3,Không có nhu cầu,C3: Không có nhu cầu,C3B,Chưa có nhu cầu ở thời điểm hiện tại,C3B: Chưa có nhu cầu ở thời điểm hiện tại
+C3,Không có nhu cầu,C3: Không có nhu cầu,C3C,Đang học ở nơi khác,C3C: Đang học ở nơi khác
+C3,Không có nhu cầu,C3: Không có nhu cầu,C3D,Không phù hợp về sản phẩm,C3D: Không phù hợp về sản phẩm
+C3,Không có nhu cầu,C3: Không có nhu cầu,C3E,Không phù hợp về giá,C3E: Không phù hợp về giá
+C3,Không có nhu cầu,C3: Không có nhu cầu,C3F,Không phù hợp về độ tuổi,C3F: Không phù hợp về độ tuổi
+C3,Không có nhu cầu,C3: Không có nhu cầu,C3G,Không phù hợp về địa điểm,C3G: Không phù hợp về địa điểm
+C3,Không có nhu cầu,C3: Không có nhu cầu,C3H,Không nghe máy nhiều lần,C3H: Không nghe máy nhiều lần
+C4,Khách hàng tiềm năng,C4: Khách hàng tiềm năng,C4A,Cần gửi thêm thông tin,C4A: Cần gửi thêm thông tin
+C4,Khách hàng tiềm năng,C4: Khách hàng tiềm năng,C4B,Cần trao đổi thêm,C4B: Cần trao đổi thêm
+C4,Khách hàng tiềm năng,C4: Khách hàng tiềm năng,C4C,Đủ điều kiện tạo opp,C4C: Đủ điều kiện tạo opp
+C4,Khách hàng tiềm năng,C4: Khách hàng tiềm năng,C4D,Tạo opp thành công,C4D: Tạo opp thành công
