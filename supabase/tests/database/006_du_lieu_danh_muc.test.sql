@@ -22,9 +22,12 @@ select is(pg_temp.codes('ATTENDANCE_STATUS'), array['CO_MAT', 'DI_MUON', 'VANG_C
 select is(pg_temp.codes('SESSION_TYPE'), array['CHINH', 'CUNG_CO', 'HOC_BU', 'BO_TRO'], 'Loại buổi: chính, củng cố, học bù, bổ trợ');
 select is(pg_temp.codes('CLASS_TYPE'), array['CB', 'NC', 'LR'], 'Phân loại lớp CB, NC, LR');
 select is(pg_temp.codes('STUDY_MODE'), array['OFF', 'ONL'], 'Hình thức OFF, ONL');
-select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC'], 'Loại chứng từ BG, DH, PT, PC');
+select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC', 'DN', 'KN'], 'Loại chứng từ BG, DH, PT, PC và ticket DN, KN (R-CS-01)');
+select is(pg_temp.codes('HOMEWORK_STATUS'), array['DA_CHAM', 'LAM_CHUA_XONG', 'KHONG_LAM', 'NOP_SAU', 'KHONG_AP_DUNG'],
+          'Trạng thái BTVN đúng R-GV-11');
 select is(pg_temp.codes('MODULE'), array['BAN_HANG', 'VAN_HANH_LOP', 'CONG_GIAO_VIEN', 'HOC_TAP', 'BAO_CAO'], 'Phân hệ cho công tắc');
-select is((select count(*)::int from app.catalog where kind = 'HE_THONG'), 9, '9 danh mục hệ thống');
+select is((select count(*)::int from app.catalog where kind = 'HE_THONG'), 10, '10 danh mục hệ thống');
+select is((select kind from app.catalog where code = 'HOMEWORK_STATUS'), 'HE_THONG', 'Trạng thái BTVN là danh mục hệ thống (không thêm bớt)');
 
 -- Danh mục mở theo spec 02.
 select is(pg_temp.codes('SUBJECT'), array['TOAN', 'DAI', 'HINH', 'LY', 'HOA', 'VAN', 'ANH', 'KHTN', 'TRUNG', 'SAT'], 'Môn đúng spec 02');

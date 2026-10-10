@@ -41,7 +41,7 @@ Huỷ thay cho xoá: bảng nghiệp vụ dùng trạng thái + `cancelled_at/by
 - Danh mục nhiều tầng: mục cha phải thuộc danh mục cha (`HMT_MUC_CHA_SAI`); mục nối đúng danh mục nối (`HMT_MUC_NOI_SAI`).
 - Phòng không chuyển cơ sở; mã phòng không trùng trong một cơ sở.
 
-**Danh mục hệ thống (9):** STUDENT_STATUS, ENROLLMENT_STATUS, ATTENDANCE_STATUS, SESSION_TYPE, CLASS_TYPE, STUDY_MODE, TEST_STATUS, DOC_TYPE, MODULE.
+**Danh mục hệ thống (10):** STUDENT_STATUS, ENROLLMENT_STATUS, ATTENDANCE_STATUS, SESSION_TYPE, CLASS_TYPE, STUDY_MODE, TEST_STATUS, DOC_TYPE (BG, DH, PT, PC, ticket DN, KN), MODULE, HOMEWORK_STATUS (R-GV-11: Đã chấm, Làm chưa xong, Không làm, Nộp sau, Không áp dụng).
 **Danh mục mở:** SUBJECT, GRADE, LEVEL, FRAMEWORK_LEVEL, SOURCE_TYPE → SOURCE → SOURCE_CHANNEL, LEAD_STAGE → LEAD_SUBSTAGE,
 OPP_STAGE → OPP_SUBSTAGE, TEST_CANCEL_REASON (nối OPP_SUBSTAGE), ACTIVITY_TYPE, PROVINCE → WARD; cùng cơ sở, năm học, phòng học.
 Dữ liệu và chỗ đã làm sạch: `docs/nghiep-vu/lam-sach-du-lieu-cu.md`.
@@ -72,7 +72,7 @@ giao dịch huỷ thì số được trả lại, không nhảy số. Bộ đế
 | `app.build_framework_code(môn, khối, cấp độ, năm, [phiên bản])` | `TOAN-K03-CB-2627`, bản sửa `TOAN-K03-CB-2627-V2` | Hàm tạo khung |
 | `app.build_lesson_code(mã khung, số bài)` | `TOAN-K03-CB-2627-B05` | Hàm tạo bài |
 | `app.build_package_code(loại, môn, khối, hình thức)` | `LC-TOAN-K09-OFF` (không có gói DAI/HINH) | Hàm tạo gói |
-| `app.issue_document_number(loại, CS, [thời điểm])` | `PT-CS1-2610-0001`; STT riêng loại, cơ sở, tháng (giờ VN) | Hàm tạo chứng từ |
+| `app.issue_document_number(loại, CS, [thời điểm])` | `PT-CS1-2610-0001`, ticket `DN-CS5-2610-0001`, `KN-…`; STT riêng loại, cơ sở, tháng (giờ VN) | Hàm tạo chứng từ, ticket |
 
 Hàm `issue_*` không mở cho API: mã chỉ cấp trong cùng giao dịch với lệnh tạo bản ghi.
 
@@ -94,6 +94,13 @@ Giá trị sai kiểu, ngoài khoảng bị chặn kể cả khi sửa thẳng b
 | `quotation_validity_days` hạn hiệu lực báo giá | 14 ngày | 1–90 | có |
 | `deposit_min_amount` tiền cọc tối thiểu | 1.000.000 đồng | 0–100.000.000 | có |
 | `reservation_max_months` bảo lưu tối đa một lần | 6 tháng | 1–24 | có |
+| `refund_processing_fee_percent` phí xử lý hoàn phí (R-TIEN-28) | 10 % | 0–100 | **không** |
+| `discount_total_cap_percent` trần tổng chiết khấu (R-TIEN-29) | 20 % | 0–100 | **không** |
+| `sla_complaint_response_hours` / `sla_complaint_resolve_days` khiếu nại thường (R-CS-08) | 24 giờ / 3 ngày | 1–168 / 1–30 | có |
+| `sla_complaint_critical_response_hours` / `sla_complaint_critical_resolve_days` khiếu nại nghiêm trọng | 2 giờ / 1 ngày | 1–168 / 1–30 | có |
+| `sla_request_response_hours` / `sla_request_resolve_days` đề nghị | 24 giờ / 2 ngày | 1–168 / 1–30 | có |
+| `sla_refund_resolve_days` đề nghị hoàn tiền | 7 ngày | 1–60 | có |
+| `complaint_reopen_max_days` mở lại khiếu nại (R-CS-06) | 7 ngày | 0–90 | có |
 
 Hai ngưỡng tái tục chạy song song: chạm ngưỡng nào trước thì cảnh báo, sinh phiếu tái tục (GĐ1).
 

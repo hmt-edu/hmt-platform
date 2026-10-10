@@ -56,6 +56,10 @@ select is(app.issue_document_number('PT', 'CS1', timestamptz '2026-10-31 17:30+0
           'Chứng từ: tháng tính theo giờ Việt Nam (00:30 ngày 1/11 giờ VN là tháng 11)');
 select is(app.issue_document_number('DH', 'CS1', timestamptz '2026-10-15 10:00+07'), 'DH-CS1-2610-0001',
           'Chứng từ: STT riêng từng loại');
+select is(app.issue_document_number('DN', 'CS5', timestamptz '2026-10-15 10:00+07'), 'DN-CS5-2610-0001',
+          'Mã ticket đề nghị: DN-CS-NămTháng-STT (R-CS-01)');
+select is(app.issue_document_number('KN', 'CS5', timestamptz '2026-10-15 10:00+07'), 'KN-CS5-2610-0001',
+          'Mã ticket khiếu nại: KN-CS-NămTháng-STT, đếm riêng với DN');
 select is(pg_temp.err($$select app.issue_document_number('XX', 'CS1')$$),
           'HMT_DANH_MUC_KHONG_CO', 'Không cấp số cho loại chứng từ lạ');
 

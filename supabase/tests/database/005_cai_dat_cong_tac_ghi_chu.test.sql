@@ -29,6 +29,21 @@ select is(app.get_setting_int('quotation_validity_days'), 14::bigint, 'Báo giá
 select is(app.get_setting_int('deposit_min_amount'), 1000000::bigint, 'Cọc tối thiểu 1.000.000 đồng');
 select is(app.get_setting_int('reservation_max_months'), 6::bigint, 'Bảo lưu tối đa 6 tháng một lần');
 
+select is(app.get_setting_numeric('refund_processing_fee_percent'), 10::numeric, 'Phí xử lý hoàn phí 10% (R-TIEN-28)');
+select is(app.get_setting_numeric('discount_total_cap_percent'), 20::numeric, 'Trần tổng chiết khấu 20% (R-TIEN-29)');
+select is(app.get_setting_int('sla_complaint_response_hours'), 24::bigint, 'SLA khiếu nại thường: phản hồi 24 giờ (R-CS-08)');
+select is(app.get_setting_int('sla_complaint_resolve_days'), 3::bigint, 'SLA khiếu nại thường: xong 3 ngày');
+select is(app.get_setting_int('sla_complaint_critical_response_hours'), 2::bigint, 'SLA khiếu nại nghiêm trọng: phản hồi 2 giờ');
+select is(app.get_setting_int('sla_complaint_critical_resolve_days'), 1::bigint, 'SLA khiếu nại nghiêm trọng: xong 1 ngày');
+select is(app.get_setting_int('sla_request_response_hours'), 24::bigint, 'SLA đề nghị: phản hồi 24 giờ');
+select is(app.get_setting_int('sla_request_resolve_days'), 2::bigint, 'SLA đề nghị: xong 2 ngày');
+select is(app.get_setting_int('sla_refund_resolve_days'), 7::bigint, 'SLA đề nghị hoàn tiền: xong 7 ngày');
+select is(app.get_setting_int('complaint_reopen_max_days'), 7::bigint, 'Mở lại khiếu nại trong 7 ngày (R-CS-06)');
+select is(pg_temp.err($$select app.set_setting('discount_total_cap_percent', '150')$$), 'HMT_CAI_DAT_NGOAI_KHOANG',
+          'Trần chiết khấu quá 100% bị chặn');
+select is(pg_temp.err($$select app.set_setting('refund_processing_fee_percent', '5', (select id from app.branch where code = 'CS5'))$$),
+          'HMT_KHONG_DUOC_GHI_DE', 'Phí hoàn phí dùng chung toàn hệ thống, không ghi đè theo cơ sở');
+
 -- Sửa giá trị chung trong khoảng: được, có nhật ký.
 select is(pg_temp.err($$select app.set_setting('quotation_validity_days', '21')$$), null, 'Sửa tham số trong khoảng: được');
 select is(app.get_setting_int('quotation_validity_days'), 21::bigint, 'Giá trị chung đã đổi');
