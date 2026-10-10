@@ -69,6 +69,8 @@
 - Claude Code dùng tài khoản GitHub `hmt-vanhanh` (chủ repo `hmt-platform`) trên máy Mac của anh Trường.
 - Repo `hmt-deploy` nằm ở **tài khoản GitHub riêng của anh Trường `caotruong276` (đăng ký bằng `truongcx.work@gmail.com`)**, anh chỉ dùng trên trình duyệt. Tài khoản này không bao giờ đăng nhập trên máy Mac này (`gh`, git, Keychain). Commit trong `hmt-platform` ghi tên tác giả bằng email noreply của `hmt-vanhanh`, không dùng email `truongcx.work`.
 - Cloudflare: tài khoản **thử nghiệm** đăng ký bằng `lead.vanhanh.hmt+staging@gmail.com` (token nằm trong Secrets của `hmt-platform`); tài khoản **chạy thật** đăng ký bằng `truongcx.work@gmail.com`, chỉ dùng trên trình duyệt, token nằm trong Secrets của `hmt-deploy`.
+- Supabase tách theo môi trường (10/10/2026): `hmt-staging` ở organization **HMT** của tài khoản `hmt-vanhanh` (đăng nhập bằng GitHub); `hmt-prod` ở organization **HMT Prod** do tài khoản Supabase đăng ký bằng `truongcx.work@gmail.com` làm chủ (email + xác thực hai bước, chỉ dùng trên trình duyệt, không đăng nhập trên máy Mac). `hmt-vanhanh` không là thành viên HMT Prod.
+- **Không khoá nào trong `hmt-platform` được chạm `hmt-prod`.** CI có bài kiểm chủ động: dùng token của `hmt-platform` thử đọc `hmt-prod`, phải bị từ chối.
 - `hmt-deploy` đọc `hmt-platform` bằng `PLATFORM_READ_TOKEN`: token fine-grained tạo từ `hmt-vanhanh`, chỉ đọc đúng repo `hmt-platform`.
 - **Bản chạy thật chỉ được cập nhật từ repo `hmt-deploy`** mà chỉ anh Trường có quyền: khoá của bản chạy thật nằm ở đó, anh bấm chạy workflow (chọn tag/commit của `hmt-platform` đã qua thử nghiệm). Claude Code không có và không xin khoá chạy thật.
 - Sao lưu bản chạy thật mỗi đêm cũng chạy từ `hmt-deploy`: xuất DB, mã hoá, đẩy lên Google Drive của `lead.vanhanh.hmt@gmail.com`.

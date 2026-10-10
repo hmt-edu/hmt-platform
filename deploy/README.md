@@ -12,6 +12,7 @@ Code nằm ở repo `hmt-vanhanh/hmt-platform`; repo này chỉ đọc code đó
 
 ## Bốn luật bảo mật
 
+0. **Supabase chạy thật (`hmt-prod`)** nằm ở organization **HMT Prod** của tài khoản Supabase `truongcx.work@gmail.com` (email + xác thực hai bước). Chuỗi kết nối DB, khoá của `hmt-prod` lấy từ tài khoản này, chỉ trên trình duyệt.
 1. **Khoá chạy thật không bao giờ nằm trên máy Mac.** Không chạy `supabase login` hay `wrangler login` bằng tài khoản thật. Chuỗi kết nối DB `hmt-prod` và token Cloudflare chạy thật chỉ dán thẳng vào GitHub Secrets của repo này trên web.
 2. **Lấy token rclone xong thì xoá file cấu hình rclone** (xem mục Google Drive bên dưới): `rm ~/.config/rclone/rclone.conf`.
 3. **Claude Code không đọc, không xin, không tìm khoá chạy thật.** Không dán khoá vào khung chat.
