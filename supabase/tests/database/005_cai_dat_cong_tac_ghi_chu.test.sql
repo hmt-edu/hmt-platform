@@ -12,6 +12,8 @@ exception when others then
   get stacked diagnostics v_hint = pg_exception_hint, v_state = returned_sqlstate;
   return case when v_hint like 'HMT\_%' then v_hint else v_state end;
 end $$;
+-- Hàm mới mặc định không cấp quyền chạy cho ai (migration 014): cấp cho hàm trợ giúp của bài kiểm thử.
+grant execute on all functions in schema pg_temp to public;
 
 create temp table b as select code, id from app.branch;
 
@@ -125,7 +127,7 @@ select is(pg_temp.err(format($$delete from app.note where id = %L$$, (select id 
 
 set local role authenticated;
 select set_config('request.jwt.claims', '{"role":"authenticated"}', true);
-select is(pg_temp.err($$select count(*) from app.note$$), '42501', 'Qua API: chưa đọc được ghi chú ở bước 2');
+select is((select count(*)::int from app.note), 0, 'Qua API: không có tài khoản HMT thì không thấy ghi chú nào (bước 3)');
 reset role;
 select set_config('request.jwt.claims', '', true);
 

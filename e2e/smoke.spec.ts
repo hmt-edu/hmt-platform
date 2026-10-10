@@ -10,14 +10,11 @@ test('trang chủ hiện môi trường và ô trạng thái cơ sở dữ liệ
   await expect(page.getByTestId('db-status')).toBeVisible();
 });
 
-for (const [path, title] of [
-  ['/crm', 'Cổng CRM'],
-  ['/gv', 'Cổng Giáo viên'],
-  ['/hoc', 'Cổng Học tập'],
-] as const) {
-  test(`${path} hiện tiêu đề "${title}"`, async ({ page }) => {
+for (const path of ['/crm', '/gv', '/hoc']) {
+  test(`${path} khi chưa đăng nhập chuyển sang trang đăng nhập`, async ({ page }) => {
     await page.goto(path);
-    await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
+    await expect(page).toHaveURL(/\/dang-nhap/);
+    await expect(page.getByRole('heading', { level: 1, name: 'Đăng nhập' })).toBeVisible();
   });
 }
 

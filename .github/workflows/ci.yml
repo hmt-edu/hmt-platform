@@ -46,7 +46,7 @@ jobs:
       - name: Khởi động Supabase local (chỉ dịch vụ cần)
         run: >-
           npx supabase start
-          -x studio,imgproxy,mailpit,logflare,vector,realtime,storage-api,edge-runtime,supavisor,postgres-meta
+          -x studio,imgproxy,mailpit,logflare,vector,realtime,storage-api,supavisor,postgres-meta
 
       - name: Dựng lại DB từ migration + seed
         run: npx supabase db reset
@@ -67,12 +67,25 @@ jobs:
             echo "::error::Không đọc được API_URL hoặc khoá công khai từ supabase status."
             exit 1
           fi
+          secret="$(printf '%s\n' "$status_env" | sed -n 's/^SECRET_KEY="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p')"
+          db_url="$(printf '%s\n' "$status_env" | sed -n 's/^DB_URL="\{0,1\}\([^"]*\)"\{0,1\}$/\1/p')"
           echo "::add-mask::$key"
+          echo "::add-mask::$secret"
+          # Mật khẩu tài khoản giả: sinh ngẫu nhiên mỗi lượt CI, không nằm trong repo.
+          seed_password="Ci$(openssl rand -hex 12)9"
+          echo "::add-mask::$seed_password"
           {
             echo "VITE_SUPABASE_URL=$api_url"
             echo "VITE_SUPABASE_PUBLISHABLE_KEY=$key"
             echo "VITE_APP_ENV=local"
+            echo "API_URL=$api_url"
+            echo "SECRET_KEY=$secret"
+            echo "DB_URL=$db_url"
+            echo "SEED_PASSWORD=$seed_password"
           } >> "$GITHUB_ENV"
+
+      - name: Tạo tài khoản giả cho kiểm thử đăng nhập
+        run: npm run db:seed-users
 
       - name: Phiên bản Playwright
         id: pw
@@ -122,6 +135,7 @@ jobs:
       VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
       VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
       VITE_APP_ENV: preview
+      VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
       HEAD_REF: ${{ github.event.pull_request.head.ref }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:

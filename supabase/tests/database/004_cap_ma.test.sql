@@ -13,6 +13,8 @@ exception when others then
   get stacked diagnostics v_hint = pg_exception_hint, v_state = returned_sqlstate;
   return case when v_hint like 'HMT\_%' then v_hint else v_state end;
 end $$;
+-- Hàm mới mặc định không cấp quyền chạy cho ai (migration 014): cấp cho hàm trợ giúp của bài kiểm thử.
+grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Mẫu mã đúng spec 02 ----------
 select matches(app.issue_person_code('HS'), '^HS[0-9]{6}$', 'Mã học sinh: HS + 6 số');

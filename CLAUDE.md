@@ -86,6 +86,7 @@
 - `npm run db:start` / `npm run db:stop`: bật/tắt Supabase local; `npx supabase status` lấy URL, khoá công khai local.
 - `npm run db:reset`: dựng lại DB local từ migration + `supabase/seed.sql`.
 - `npm run db:test`: pgTAP (RLS, hàm nghiệp vụ).
+- `npm run db:seed-users`: tạo tài khoản giả mỗi vai trò (cần `API_URL`, `SECRET_KEY`, `DB_URL`, `SEED_PASSWORD`, xem `README.md`).
 - `npm run lint`, `npm run typecheck`, `npm run test`, `npm run check:hardcode`, `npm run format:check`: bộ kiểm tra nhanh như CI.
 - `npm run e2e`: Playwright máy tính + iPhone (lần đầu: `npx playwright install chromium webkit`).
 - `npx supabase migration new <ten>`: tạo file migration mới.

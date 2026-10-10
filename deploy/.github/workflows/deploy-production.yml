@@ -139,6 +139,7 @@ jobs:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_APP_ENV: production
+          VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
         run: |
           if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
             echo "::error::Thiếu variable VITE_SUPABASE_URL hoặc VITE_SUPABASE_PUBLISHABLE_KEY."
@@ -153,6 +154,7 @@ jobs:
           cp -R dist bundle/dist
           cp -R supabase/migrations bundle/supabase/migrations
           cp supabase/config.toml bundle/supabase/config.toml
+          cp -R supabase/functions bundle/supabase/functions
           rm -f bundle/supabase/seed.sql
           if find bundle -name 'seed*.sql' | grep -q .; then
             echo "::error::Gói triển khai không được chứa seed."
@@ -196,9 +198,44 @@ jobs:
           supabase db push --db-url "$PROD_DB_URL" --yes
           echo "- Migration: xong lúc $(date -u '+%Y-%m-%d %H:%M:%S') UTC" >> "$GITHUB_STEP_SUMMARY"
 
+  functions:
+    name: Triển khai Edge Function lên hmt-prod
+    needs: migrate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: bundle
+          path: bundle
+
+      - uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+        with:
+          version: ${{ env.SUPABASE_CLI_VERSION }}
+
+      # Chỉ dùng PROD_SUPABASE_ACCESS_TOKEN: token của tài khoản Supabase truongcx.work, giới hạn project hmt-prod.
+      - name: supabase functions deploy
+        working-directory: bundle
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.PROD_SUPABASE_ACCESS_TOKEN }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+        run: |
+          SUPABASE_ACCESS_TOKEN="$(printf '%s' "$SUPABASE_ACCESS_TOKEN" | tr -d '[:space:]')"
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "::warning::Chưa có secret PROD_SUPABASE_ACCESS_TOKEN: chưa triển khai Edge Function (đăng nhập chưa chạy trên bản chạy thật)."
+            exit 0
+          fi
+          echo "::add-mask::$SUPABASE_ACCESS_TOKEN"
+          export SUPABASE_ACCESS_TOKEN
+          ref="$(printf '%s' "$VITE_SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')"
+          supabase functions deploy --project-ref "$ref" --use-api
+          echo "- Edge Function: xong lúc $(date -u '+%Y-%m-%d %H:%M:%S') UTC" >> "$GITHUB_STEP_SUMMARY"
+
   deploy:
     name: Triển khai Cloudflare Pages (hmt-prod)
-    needs: [verify, migrate]
+    needs: [verify, migrate, functions]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

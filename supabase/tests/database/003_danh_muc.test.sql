@@ -12,6 +12,8 @@ exception when others then
   get stacked diagnostics v_hint = pg_exception_hint, v_state = returned_sqlstate;
   return case when v_hint like 'HMT\_%' then v_hint else v_state end;
 end $$;
+-- Hàm mới mặc định không cấp quyền chạy cho ai (migration 014): cấp cho hàm trợ giúp của bài kiểm thử.
+grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Mã không đổi được ----------
 select is(pg_temp.err($$update app.catalog_item set code = 'TOAN2' where catalog_code = 'SUBJECT' and code = 'TOAN'$$),
@@ -90,8 +92,8 @@ select is(pg_temp.err($$select app.catalog_add_item('ACTIVITY_TYPE', 'API_THU', 
           'HMT_KHONG_CO_QUYEN', 'Qua API: chưa có quyền sửa danh mục (bước 3 mở theo ma trận quyền)');
 select is(pg_temp.err($$update app.catalog_item set name = 'x' where code = 'TOAN'$$),
           '42501', 'Qua API: không ghi thẳng vào bảng danh mục được');
-select ok((select count(*) from app.catalog_item where catalog_code = 'SUBJECT') > 0,
-          'Qua API: người đã đăng nhập đọc được danh mục');
+select is((select count(*)::int from app.catalog_item), 0,
+          'Qua API: đăng nhập nhưng chưa có tài khoản HMT thì không đọc được danh mục (bước 3)');
 reset role;
 select set_config('request.jwt.claims', '', true);
 

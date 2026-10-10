@@ -13,6 +13,8 @@ exception when others then
   get stacked diagnostics v_hint = pg_exception_hint, v_state = returned_sqlstate;
   return case when v_hint like 'HMT\_%' then v_hint else v_state end;
 end $$;
+-- Hàm mới mặc định không cấp quyền chạy cho ai (migration 014): cấp cho hàm trợ giúp của bài kiểm thử.
+grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Tự điền người, giờ tạo/sửa ----------
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-1111-1111-111111111111"}', true);
@@ -70,8 +72,8 @@ select is(pg_temp.err('truncate app.audit_log'), 'HMT_NHAT_KY_CHI_THEM',
 
 set local role authenticated;
 select set_config('request.jwt.claims', '{"role":"authenticated"}', true);
-select is(pg_temp.err('select count(*) from app.audit_log'), '42501',
-          'Người dùng qua API không đọc được nhật ký (bước 2)');
+select is((select count(*)::int from app.audit_log), 0,
+          'Người dùng qua API không phải Admin: không thấy dòng nhật ký nào (bước 3)');
 select is(pg_temp.err('insert into app.audit_log (table_id, record_id, action) values (1, gen_random_uuid(), ''I'')'), '42501',
           'Người dùng qua API không tự ghi được nhật ký');
 reset role;

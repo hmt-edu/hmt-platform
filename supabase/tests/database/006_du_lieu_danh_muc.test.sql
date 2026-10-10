@@ -26,7 +26,7 @@ select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC', 'DN', 'KN'], 
 select is(pg_temp.codes('HOMEWORK_STATUS'), array['DA_CHAM', 'LAM_CHUA_XONG', 'KHONG_LAM', 'NOP_SAU', 'KHONG_AP_DUNG'],
           'Trạng thái BTVN đúng R-GV-11');
 select is(pg_temp.codes('MODULE'), array['BAN_HANG', 'VAN_HANH_LOP', 'CONG_GIAO_VIEN', 'HOC_TAP', 'BAO_CAO'], 'Phân hệ cho công tắc');
-select is((select count(*)::int from app.catalog where kind = 'HE_THONG'), 10, '10 danh mục hệ thống');
+select is((select count(*)::int from app.catalog where kind = 'HE_THONG'), 13, '13 danh mục hệ thống (thêm PERM_MODULE, PERM_ACTION, PERM_SCOPE ở bước 3)');
 select is((select kind from app.catalog where code = 'HOMEWORK_STATUS'), 'HE_THONG', 'Trạng thái BTVN là danh mục hệ thống (không thêm bớt)');
 
 -- Danh mục mở theo spec 02.

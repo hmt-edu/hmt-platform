@@ -31,15 +31,19 @@ Vào repo `hmt-deploy` > **Settings** > **Secrets and variables** > **Actions**.
 | `CLOUDFLARE_API_TOKEN`                     | Cloudflare (tài khoản chạy thật) > ảnh đại diện > **My Profile** > **API Tokens** > **Create Token** > **Create Custom Token**: quyền _Account / Cloudflare Pages / Edit_, Account Resources chọn đúng tài khoản này. Tài khoản chạy thật đăng ký bằng `truongcx.work@gmail.com`. Chỉ copy ô token (chuỗi liền, không dấu cách), **không** copy ô lệnh `curl` bên dưới |
 | `CLOUDFLARE_ACCOUNT_ID`                    | Cloudflare > **Workers & Pages** > cột phải, dòng **Account ID**                                                                                                                                                                                                                                                                                                       |
 | `GDRIVE_CLIENT_ID`, `GDRIVE_CLIENT_SECRET` | Google Cloud Console, xem mục Google Drive                                                                                                                                                                                                                                                                                                                             |
+| `PROD_SUPABASE_ACCESS_TOKEN`               | Supabase **tài khoản `truongcx.work`** > Account > **Access Tokens** > Generate new token: chọn **chỉ project `hmt-prod`**, quyền **Edge Functions: Read-write**. Để triển khai Edge Function (đăng nhập). Dán thẳng vào đây, không lưu trên máy Mac                                                                                                                   |
 | `GDRIVE_TOKEN`                             | Dòng `token = {...}` lấy bằng rclone, xem mục Google Drive                                                                                                                                                                                                                                                                                                             |
 
 ### Variables (tab Variables > New repository variable)
 
-| Tên                             | Lấy ở đâu                                                                                                                                      |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `VITE_SUPABASE_URL`             | Supabase `hmt-prod` > **Project Settings** > **Data API** > Project URL (`https://….supabase.co`)                                              |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase `hmt-prod` > **Project Settings** > **API Keys** > **Publishable key** (`sb_publishable_…`). **Không** dùng Secret key / service_role |
-| `AGE_RECIPIENT`                 | Khoá công khai age (`age1…`), xem mục Khoá mã hoá                                                                                              |
+| Tên                              | Lấy ở đâu                                                                                                                                       |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_SUPABASE_URL`              | Supabase `hmt-prod` > **Project Settings** > **Data API** > Project URL (`https://….supabase.co`)                                               |
+| `VITE_SUPABASE_PUBLISHABLE_KEY`  | Supabase `hmt-prod` > **Project Settings** > **API Keys** > **Publishable key** (`sb_publishable_…`). **Không** dùng Secret key / service_role  |
+| `VITE_TURNSTILE_SITE_KEY`        | Cloudflare (tài khoản chạy thật) > **Turnstile** > widget `hmt-prod` > **Site key** (công khai)                                                 |
+| `AGE_RECIPIENT`                  | Khoá công khai age (`age1…`), xem mục Khoá mã hoá                                                                                               |
+| `PROD_SUPABASE_TOKEN_EXPIRES`    | Ngày hết hạn của `PROD_SUPABASE_ACCESS_TOKEN`, dạng `2027-10-10` (Supabase hiện ngày này lúc tạo token). Báo cáo tuần nhắc khi còn dưới 30 ngày |
+| `STAGING_SUPABASE_TOKEN_EXPIRES` | Ngày hết hạn của `SUPABASE_ACCESS_TOKEN` bên `hmt-platform` (thử nghiệm), dạng `2027-10-10`. Chỉ là ngày, không phải khoá                       |
 
 ## Đưa một bản lên chạy thật
 
@@ -49,6 +53,17 @@ Vào repo `hmt-deploy` > **Settings** > **Secrets and variables** > **Actions**.
 4. Chờ 4 bước xanh: _Kiểm tra bản được chọn_ → _Build_ → _Áp migration lên hmt-prod_ → _Triển khai Cloudflare Pages_. Mở lượt chạy để xem tóm tắt (commit, giờ, địa chỉ).
 
 Bước kiểm tra sẽ dừng và báo lỗi tiếng Việt nếu: tag không tồn tại, commit không nằm trên `main`, hoặc commit chưa từng lên thử nghiệm thành công. Migration lỗi thì giao diện không được đưa lên.
+
+## Chống dò mật khẩu (làm một lần, trước khi cho người dùng đăng nhập)
+
+Bật Turnstile và giới hạn đăng nhập theo IP trong Supabase Auth của `hmt-prod`, đặt `HMT_ALLOWED_ORIGINS` cho Edge Function:
+làm theo `docs/van-hanh/chong-do-mat-khau.md` trong repo `hmt-platform` (phần Chạy thật). Khoá tạm của HMT chỉ là lớp thứ hai.
+
+## Tài khoản Admin đầu tiên (làm một lần)
+
+1. Supabase (tài khoản `truongcx.work`) > `hmt-prod` > **Authentication** > **Users** > **Add user** > **Create new user**: gõ email, mật khẩu (trình quản lý mật khẩu tạo), tick **Auto Confirm User**.
+2. Repo này > **Actions** > **Bootstrap admin** > **Run workflow**: nhập đúng email đó, tên hiển thị, cơ sở. Workflow chỉ gán vai trò ADMIN, và **từ chối nếu `hmt-prod` đã có ADMIN**.
+3. Mở bản chạy thật, đăng nhập bằng email đó, cài xác thực hai bước theo hướng dẫn trên màn hình. Các tài khoản khác tạo trên màn quản trị (bước 4).
 
 ## Sao lưu
 
@@ -135,6 +150,14 @@ Báo cáo tuần sẽ cảnh báo khi token còn dưới 30 ngày.
 2. Mở token đang dùng > **Regenerate token** (hoặc tạo mới): Expiration 1 năm; Repository access: **Only select repositories** > `hmt-vanhanh/hmt-platform`; Permissions: **Contents: Read-only**, **Actions: Read-only** (Metadata tự thêm).
 3. Chép token, vào `hmt-deploy` > **Settings** > **Secrets and variables** > **Actions** > `PLATFORM_READ_TOKEN` > **Update** > dán > lưu. Đóng tab, không lưu token ở đâu khác.
 4. Chạy thử **Usage report** (Run workflow): mục PLATFORM_READ_TOKEN phải hiện ngày hết hạn mới.
+
+## Làm mới token Supabase (trước ngày hết hạn)
+
+Báo cáo tuần nhắc khi token còn dưới 30 ngày. Supabase không cho sửa hạn token cũ: tạo token mới rồi xoá token cũ.
+
+- **`PROD_SUPABASE_ACCESS_TOKEN`**: đăng nhập Supabase `truongcx.work` > **Account** > **Access Tokens** > tạo token mới như bảng Secrets ở trên > dán vào secret `PROD_SUPABASE_ACCESS_TOKEN` của repo này > sửa variable `PROD_SUPABASE_TOKEN_EXPIRES` thành ngày hết hạn mới > xoá token cũ trên Supabase.
+- **`SUPABASE_ACCESS_TOKEN` (hmt-platform)**: đăng nhập Supabase `hmt-vanhanh` > tạo token mới > dán vào secret `SUPABASE_ACCESS_TOKEN` của `hmt-platform` > sửa variable `STAGING_SUPABASE_TOKEN_EXPIRES` **của repo này** > xoá token cũ.
+- Chạy thử **Usage report**: mục Token Supabase phải hiện ngày mới.
 
 ## Ghi chú
 

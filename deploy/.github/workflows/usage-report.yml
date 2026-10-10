@@ -21,7 +21,7 @@ env:
   SLOW_QUERY_WARN_MS: 500
   # Kết nối: cảnh báo khi số kết nối vượt tỉ lệ này (%) của max_connections.
   CONN_WARN_PCT: 80
-  # PLATFORM_READ_TOKEN: cảnh báo khi còn ít hơn số ngày này là hết hạn.
+  # PLATFORM_READ_TOKEN, token Supabase: cảnh báo khi còn ít hơn số ngày này là hết hạn.
   TOKEN_WARN_DAYS: 30
   PLATFORM_REPO: hmt-vanhanh/hmt-platform
 
@@ -36,6 +36,11 @@ jobs:
         env:
           PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
           PLATFORM_READ_TOKEN: ${{ secrets.PLATFORM_READ_TOKEN }}
+          PROD_SUPABASE_ACCESS_TOKEN: ${{ secrets.PROD_SUPABASE_ACCESS_TOKEN }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          # Supabase không trả ngày hết hạn token qua API: anh ghi ngày (YYYY-MM-DD) vào variable lúc tạo token.
+          PROD_SUPABASE_TOKEN_EXPIRES: ${{ vars.PROD_SUPABASE_TOKEN_EXPIRES }}
+          STAGING_SUPABASE_TOKEN_EXPIRES: ${{ vars.STAGING_SUPABASE_TOKEN_EXPIRES }}
           GH_TOKEN: ${{ github.token }}
         run: |
           set -uo pipefail
@@ -156,6 +161,47 @@ jobs:
             fi
           fi
 
+          # ---------------- Hạn token Supabase ----------------
+          # $1: tên token, $2: ngày hết hạn ghi trong variable, $3: tên variable. Kết quả ở expiry_line
+          # (không chạy trong $(...) để danh sách cảnh báo không bị mất).
+          supabase_expiry() {
+            if [ -z "$2" ]; then
+              warnings+=("Chưa ghi ngày hết hạn $1 (variable $3).")
+              expiry_line="Chưa ghi ngày hết hạn (variable $3)."
+            elif ! exp_s="$(date -u -d "$2" +%s 2> /dev/null)"; then
+              warnings+=("Variable $3 không phải ngày hợp lệ (cần dạng YYYY-MM-DD).")
+              expiry_line="Ngày hết hạn ghi sai dạng: $2."
+            else
+              left=$(( ( exp_s - $(date -u +%s) ) / 86400 ))
+              if [ "$left" -lt "$TOKEN_WARN_DAYS" ]; then
+                warnings+=("$1 còn $left ngày là hết hạn: làm mới theo README.")
+              fi
+              expiry_line="Hết hạn $2 (còn $left ngày)."
+            fi
+          }
+
+          # Token của hmt-prod (repo này): kiểm thêm còn dùng được không (đọc danh sách Edge Function).
+          supabase_expiry PROD_SUPABASE_ACCESS_TOKEN "$PROD_SUPABASE_TOKEN_EXPIRES" PROD_SUPABASE_TOKEN_EXPIRES
+          prod_token_line="$expiry_line"
+          PROD_SUPABASE_ACCESS_TOKEN="$(printf '%s' "$PROD_SUPABASE_ACCESS_TOKEN" | tr -d '[:space:]')"
+          if [ -z "$PROD_SUPABASE_ACCESS_TOKEN" ]; then
+            warnings+=("Thiếu secret PROD_SUPABASE_ACCESS_TOKEN.")
+          else
+            echo "::add-mask::$PROD_SUPABASE_ACCESS_TOKEN"
+            prod_ref="$(printf '%s' "$VITE_SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')"
+            code="$(curl -sS -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $PROD_SUPABASE_ACCESS_TOKEN" \
+              "https://api.supabase.com/v1/projects/$prod_ref/functions")"
+            if [ "$code" != "200" ]; then
+              warnings+=("PROD_SUPABASE_ACCESS_TOKEN không dùng được (HTTP $code): có thể đã hết hạn hoặc sai quyền.")
+              prod_token_line="$prod_token_line Kiểm thử: KHÔNG dùng được (HTTP $code)."
+            else
+              prod_token_line="$prod_token_line Kiểm thử: còn dùng được."
+            fi
+          fi
+          # Token SUPABASE_ACCESS_TOKEN của hmt-platform (thử nghiệm): repo này không giữ token đó, chỉ nhắc theo ngày.
+          supabase_expiry 'SUPABASE_ACCESS_TOKEN (hmt-platform)' "$STAGING_SUPABASE_TOKEN_EXPIRES" STAGING_SUPABASE_TOKEN_EXPIRES
+          staging_token_line="$expiry_line"
+
           # ---------------- Ghép báo cáo ----------------
           {
             echo "## Cần chú ý"
@@ -174,6 +220,11 @@ jobs:
             echo "## PLATFORM_READ_TOKEN"
             echo
             echo "$token_line"
+            echo
+            echo "## Token Supabase"
+            echo
+            echo "- PROD_SUPABASE_ACCESS_TOKEN (repo này, hmt-prod): $prod_token_line"
+            echo "- SUPABASE_ACCESS_TOKEN (hmt-platform, thử nghiệm): $staging_token_line"
             echo
             echo "_Ngưỡng khai báo ở đầu file .github/workflows/usage-report.yml._"
           } >> "$report"

@@ -1,0 +1,71 @@
+# Tạo tài khoản Admin ĐẦU TIÊN cho bản chạy thật (chạy một lần).
+# Trước đó anh Trường tự tạo người dùng trong Supabase hmt-prod > Authentication > Add user (gõ email,
+# mật khẩu trên trình duyệt, tick Auto Confirm). Workflow này chỉ gán vai trò ADMIN cho email đó,
+# và TỪ CHỐI nếu hmt-prod đã có ADMIN (các Admin sau tạo trên màn quản trị).
+name: Bootstrap admin
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Email người dùng đã tạo trong Supabase hmt-prod > Authentication'
+        required: true
+        type: string
+      display_name:
+        description: 'Tên hiển thị'
+        required: true
+        type: string
+      branch_code:
+        description: 'Cơ sở (CS1, CS2, CS4, CS5)'
+        required: true
+        default: 'CS1'
+        type: string
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Gán vai trò ADMIN (chỉ khi chưa có ADMIN nào)
+        env:
+          PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+          EMAIL: ${{ inputs.email }}
+          DISPLAY_NAME: ${{ inputs.display_name }}
+          BRANCH_CODE: ${{ inputs.branch_code }}
+        run: |
+          set -euo pipefail
+          PROD_DB_URL="$(printf '%s' "$PROD_DB_URL" | tr -d '[:space:]')"; [ -z "$PROD_DB_URL" ] || echo "::add-mask::$PROD_DB_URL"
+          psql "$PROD_DB_URL" -X -v ON_ERROR_STOP=1 -q \
+            -v email="$EMAIL" -v display_name="$DISPLAY_NAME" -v branch_code="$BRANCH_CODE" <<'SQL'
+          begin;
+          do $$
+          begin
+            if exists (select from app.user_role where role_code = 'ADMIN' and is_active) then
+              raise exception 'hmt-prod đã có ADMIN. Admin tiếp theo tạo trên màn quản trị.';
+            end if;
+          end $$;
+          select set_config('hmt.bootstrap_email', lower(trim(:'email')), true);
+          do $$
+          declare v_id uuid;
+          begin
+            select id into v_id from auth.users where lower(email) = current_setting('hmt.bootstrap_email');
+            if v_id is null then
+              raise exception 'Không thấy người dùng có email này trong Supabase hmt-prod > Authentication.';
+            end if;
+          end $$;
+          insert into app.user_account (id, display_name, login_name, branch_id)
+          select u.id, trim(:'display_name'), lower(u.email), (select id from app.branch where code = trim(:'branch_code'))
+            from auth.users u where lower(u.email) = current_setting('hmt.bootstrap_email');
+          insert into app.user_role (user_id, role_code)
+          select id, 'ADMIN' from app.user_account where login_name = current_setting('hmt.bootstrap_email');
+          commit;
+          SQL
+          echo "Đã gán ADMIN cho $EMAIL. Đăng nhập bản chạy thật và cài xác thực hai bước ngay." >> "$GITHUB_STEP_SUMMARY"
