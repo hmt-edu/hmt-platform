@@ -155,9 +155,11 @@ cá nhân hay tiền của ai; token cũ hết hạn sau tối đa một giờ v
 tự kiểm quyền người gọi.
 
 **Còn phải làm:**
-- T5 (trước khi Deploy production): Edge Function `ip-check` (chỉ trả lời trên thử nghiệm, nơi khác 404) cho biết hạ tầng
-  Supabase gửi header IP nào. Gọi nó kèm `X-Forwarded-For` giả để xem header nào người gọi không giả được, rồi sửa
-  `clientIp` theo kết quả.
+- **T5 xong (10/10/2026, thử trên hmt-staging bằng Edge Function `ip-check`).** `cf-connecting-ip` luôn là IP thật; gửi kèm
+  `CF-Connecting-IP` giả thì Cloudflare chặn cả yêu cầu (error 1000). `x-forwarded-for` bị hạ tầng viết lại: giá trị giả bị
+  bỏ, phần tử đầu là IP thật. `True-Client-IP`, `Forwarded`, `X-Envoy-External-Address` đi nguyên từ người gọi (giả được),
+  HMT không dùng. Kết luận: `clientIp` (ưu tiên `cf-connecting-ip`, rồi phần tử đầu `x-forwarded-for`) đúng trên Supabase,
+  không cần sửa. `ip-check` giữ lại để thử lại khi Supabase đổi hạ tầng; chỉ trả lời trên thử nghiệm.
 
 ## Việc phải làm trước giai đoạn 4 (học sinh, phụ huynh dùng thật)
 - **L2.** Hiện mọi người đã đăng nhập (kể cả học sinh, giáo viên) đọc được toàn bộ ma trận quyền, Cài đặt (trần chiết
