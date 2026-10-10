@@ -54,10 +54,14 @@ Theo dòng "Secret key cho Edge Function" trong bảng:
 
 Kết quả đúng: gọi thẳng Supabase Auth không có mã bị chặn (`captcha_failed`); trang đăng nhập có ô xác minh, đăng nhập được.
 
-## Bước 5. Hạ giới hạn đăng nhập theo IP
+## Bước 5. Hạ giới hạn đăng nhập theo IP, bật nhận IP thật
 
 1. Supabase > project > **Authentication** > **Rate Limits**.
 2. Mục giới hạn đăng nhập (**sign-ups and sign-ins**, tính theo 5 phút, mỗi IP): đặt **20** > **Save**.
+
+3. Cùng trang, phần **IP Address Forwarding**: bật **Enable IP address forwarding** > **Save changes**. Thiếu bước này thì
+   Supabase Auth không nhận IP thật do Edge Function chuyển sang (`Sb-Forwarded-For`), tính mọi lần đăng nhập là của một IP
+   máy chủ, và giới hạn trên áp chung cho cả trung tâm.
 
 Vì sao 20: mặc định 30. Nhân viên một cơ sở dùng chung một đường mạng (cùng IP) nên đặt quá thấp thì đầu giờ nhiều
 người đăng nhập cùng lúc sẽ bị chặn. 20 lần mỗi 5 phút đủ cho một cơ sở, vẫn làm chậm việc dò mật khẩu. Nếu cơ sở báo bị
