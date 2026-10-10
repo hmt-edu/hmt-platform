@@ -101,6 +101,7 @@ jobs:
       - name: Triển khai Edge Function lên hmt-staging
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          STAGING_SUPABASE_SECRET_KEY: ${{ secrets.STAGING_SUPABASE_SECRET_KEY }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
         run: |
           if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
@@ -109,8 +110,18 @@ jobs:
           fi
           ref="$(printf '%s' "$VITE_SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')"
           # CORS: chỉ thử nghiệm nhận trang xem trước của từng PR (L4); tên miền chính của thử nghiệm.
-          npx supabase secrets set --project-ref "$ref" \
-            HMT_ALLOW_STAGING_PREVIEWS=true HMT_ALLOWED_ORIGINS=https://hmt-staging.pages.dev
+          # HMT_SECRET_KEY: khoá sb_secret_ để Edge Function login chuyển IP thật của người dùng sang Supabase Auth
+          # (Sb-Forwarded-For); thiếu thì mọi lần đăng nhập bị tính chung IP máy chủ. Ghi qua file tạm, không lộ trên log.
+          env_file="$RUNNER_TEMP/functions.env"
+          {
+            echo "HMT_ALLOW_STAGING_PREVIEWS=true"
+            echo "HMT_ALLOWED_ORIGINS=https://hmt-staging.pages.dev"
+            key="$(printf '%s' "$STAGING_SUPABASE_SECRET_KEY" | tr -d '[:space:]')"
+            if [ -n "$key" ]; then echo "HMT_SECRET_KEY=$key"; fi
+          } > "$env_file"
+          [ -n "$STAGING_SUPABASE_SECRET_KEY" ] || echo "::warning::Chưa có STAGING_SUPABASE_SECRET_KEY: Edge Function chưa chuyển được IP thật."
+          npx supabase secrets set --project-ref "$ref" --env-file "$env_file"
+          rm -f "$env_file"
           npx supabase functions deploy --project-ref "$ref" --use-api
 
       # Bài kiểm chủ động: khoá của hmt-platform KHÔNG được chạm hmt-prod (chốt 10/10/2026).
