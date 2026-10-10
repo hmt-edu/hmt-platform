@@ -137,6 +137,12 @@ Sửa ở migration `20261010000014_sua_loi_soat_bao_mat.sql`.
 | L4 | Bản chạy thật nhận gọi từ trang xem trước của thử nghiệm | Chỉ bật khi `HMT_ALLOW_STAGING_PREVIEWS=true` (CI đặt cho thử nghiệm) |
 | L5 | Bài kiểm cách ly chưa thử token Cloudflare; token hết hạn hay mã project gõ sai vẫn xanh | `scripts/check-isolation.sh`: mỗi khoá thử hai chiều, kiểm mã project có thật |
 
+**S1 (phát hiện trên thử nghiệm sau khi gộp, 10/10/2026).** Edge Function `login` gọi Supabase Auth bằng khoá secret, mà
+Supabase Auth bỏ qua Turnstile với lời gọi bằng khoá secret, nên mã chống máy giả vẫn qua. Sửa: Function tự kiểm mã với
+Cloudflare (`supabase/functions/_shared/captcha.ts`, gửi kèm IP thật) trước mọi bước khác; mã sai thì dừng, không đếm khoá
+tạm, không ghi nhật ký; thiếu khoá `HMT_TURNSTILE_SECRET` thì từ chối đăng nhập. Bài kiểm: `captcha.test.ts`, và bước
+"Kiểm Edge Function login chặn mã chống máy giả" trong Deploy staging (gọi bản thử nghiệm thật).
+
 **Khoá tạm là lớp bảo vệ thứ hai.** Khoá công khai (publishable) cho phép gọi thẳng Supabase Auth, không qua Edge
 Function `login`, nên lần sai ở đường đó không được đếm, không vào `app.login_event` (gói Free không có hook kiểm mật
 khẩu). Lớp chính: **Turnstile** (mỗi lần thử cần một mã chống máy), **giới hạn đăng nhập theo IP** của Supabase Auth, và
@@ -149,8 +155,9 @@ cá nhân hay tiền của ai; token cũ hết hạn sau tối đa một giờ v
 tự kiểm quyền người gọi.
 
 **Còn phải làm:**
-- T5 (ngay sau khi gộp, trên thử nghiệm, trước khi Deploy production): xác định header IP thật trên Supabase
-  (`cf-connecting-ip` có hay không); nếu không có thì lấy IP do hạ tầng thêm vào, không lấy phần tử đầu `x-forwarded-for`.
+- T5 (trước khi Deploy production): Edge Function `ip-check` (chỉ trả lời trên thử nghiệm, nơi khác 404) cho biết hạ tầng
+  Supabase gửi header IP nào. Gọi nó kèm `X-Forwarded-For` giả để xem header nào người gọi không giả được, rồi sửa
+  `clientIp` theo kết quả.
 
 ## Việc phải làm trước giai đoạn 4 (học sinh, phụ huynh dùng thật)
 - **L2.** Hiện mọi người đã đăng nhập (kể cả học sinh, giáo viên) đọc được toàn bộ ma trận quyền, Cài đặt (trần chiết

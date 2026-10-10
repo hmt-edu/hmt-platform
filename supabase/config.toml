@@ -390,8 +390,10 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
-# [edge_runtime.secrets]
-# secret_key = "env(SECRET_VALUE)"
+# HMT: khoá Turnstile THỬ công khai của Cloudflare (luôn qua), chỉ cho local và CI.
+# Thử nghiệm, chạy thật đặt khoá thật trong Edge Function secrets (docs/van-hanh/chong-do-mat-khau.md).
+[edge_runtime.secrets]
+HMT_TURNSTILE_SECRET = "1x0000000000000000000000000000000AA"
 
 [analytics]
 # HMT: tắt Logflare local cho nhẹ máy; bật lại khi cần xem log.
@@ -432,3 +434,7 @@ verify_jwt = false
 
 [functions.admin-users]
 verify_jwt = true
+
+# T5: chẩn đoán header IP, chỉ trả lời trên thử nghiệm (HMT_ALLOW_STAGING_PREVIEWS=true); nơi khác trả 404.
+[functions.ip-check]
+verify_jwt = false

@@ -50,6 +50,11 @@ select u.id, v.role from u join (values
   ('kiem', 'BRANCH_MANAGER'), ('kiem', 'SALES')
 ) as v (key, role) on v.key = u.key;
 
+-- Bài "ADMIN cuối cùng" cần biết chắc số ADMIN: tắt vai trò ADMIN của tài khoản ngoài bộ giả này
+-- (vd tài khoản giả do db:seed-users tạo trên DB local). Cả bài chạy trong giao dịch, kết thúc thì hoàn tác.
+update app.user_role set is_active = false
+ where role_code = 'ADMIN' and is_active and user_id not in (select id from u);
+
 -- Dữ liệu để thử tách cơ sở: ghi chú gắn phòng P101 của CS1 và của CS5, sự kiện đăng nhập.
 insert into app.room (branch_id, code, name) select id, 'TP1', 'Phòng thử' from app.branch where code in ('CS1', 'CS5');
 insert into app.note (entity_type, entity_id, body)

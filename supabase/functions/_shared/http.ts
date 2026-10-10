@@ -48,6 +48,7 @@ export const HTTP = {
   BAD_REQUEST: 400, // allow-number: mã HTTP chuẩn
   UNAUTHORIZED: 401, // allow-number: mã HTTP chuẩn
   FORBIDDEN: 403, // allow-number: mã HTTP chuẩn
+  NOT_FOUND: 404, // allow-number: mã HTTP chuẩn
   METHOD_NOT_ALLOWED: 405, // allow-number: mã HTTP chuẩn
   TOO_MANY_REQUESTS: 429, // allow-number: mã HTTP chuẩn
   SERVER_ERROR: 500, // allow-number: mã HTTP chuẩn

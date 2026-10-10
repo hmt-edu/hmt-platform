@@ -3,8 +3,11 @@
 // theo IP vẫn đúng), ghi sự kiện đăng nhập, trả phiên về trình duyệt.
 // Sai tên, sai mật khẩu, tài khoản không có, bị khoá: cùng một câu trả lời (decideLogin); lý do thật
 // chỉ ghi ở app.login_event.
+// Mã Turnstile kiểm ngay ở đây (verifyCaptcha), trước mọi bước khác: Supabase Auth bỏ qua Turnstile khi
+// được gọi bằng khoá secret như Function này.
 // KHÔNG BAO GIỜ in mật khẩu hay nội dung yêu cầu ra log.
 import { createClient } from 'npm:@supabase/supabase-js@2.117.3';
+import { verifyCaptcha } from '../_shared/captcha.ts';
 import { corsHeaders, fail, HTTP, json, secretKey } from '../_shared/http.ts';
 import { type AuthAttempt, clientIp, decideLogin, LOGIN_MESSAGES, type LoginRecord, toAuthEmail } from '../_shared/login-rules.ts';
 
@@ -37,6 +40,17 @@ Deno.serve(async (req) => {
 
   const email = toAuthEmail(login);
   const ip = clientIp(req.headers);
+
+  // Luật: mã chống máy tự động sai hoặc thiếu thì dừng ngay: không kiểm mật khẩu, không đếm khoá tạm,
+  // không ghi nhật ký (đường này ai cũng gọi được, không được làm đầy DB).
+  const captcha = await verifyCaptcha(captchaToken, { secret: Deno.env.get('HMT_TURNSTILE_SECRET'), ip, fetcher: fetch });
+  if (captcha === 'SAI') {
+    return fail(req, OUTCOME_STATUS.CAPTCHA, LOGIN_MESSAGES.CAPTCHA.code, LOGIN_MESSAGES.CAPTCHA.message);
+  }
+  if (captcha !== 'OK') {
+    console.error('Kiểm Turnstile không chạy được:', captcha);
+    return fail(req, HTTP.UNAVAILABLE, LOGIN_MESSAGES.LOI.code, LOGIN_MESSAGES.LOI.message);
+  }
   const userAgent = req.headers.get('user-agent') ?? '';
   const key = secretKey();
   const db = createClient(SUPABASE_URL, key, { db: { schema: 'app' }, auth: { persistSession: false } });
@@ -57,10 +71,14 @@ Deno.serve(async (req) => {
     // Sb-Forwarded-For chỉ được nhận khi gọi bằng khoá sb_secret_.
     const headers: Record<string, string> = { apikey: key, 'Content-Type': 'application/json' };
     if (ip && key.startsWith('sb_secret_')) headers['Sb-Forwarded-For'] = ip;
+    // Khoá dạng JWT cũ (local, CI) phải đi kèm Authorization mới được coi là lời gọi máy chủ, giống khoá sb_secret_
+    // trên Supabase thật (cổng API tự gắn). Như vậy Supabase Auth bỏ qua Turnstile ở cả hai nơi; mã đã kiểm ở trên.
+    if (!key.startsWith('sb_')) headers.Authorization = `Bearer ${key}`;
     const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ email, password, gotrue_meta_security: { captcha_token: captchaToken } }),
+      // Không gửi lại mã Turnstile: mã chỉ dùng được một lần và đã kiểm ở trên.
+      body: JSON.stringify({ email, password }),
     });
     session = (await authResponse.json().catch(() => ({}))) as Record<string, unknown>;
     auth = {
