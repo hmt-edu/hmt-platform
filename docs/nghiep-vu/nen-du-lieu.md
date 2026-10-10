@@ -46,6 +46,8 @@ Huỷ thay cho xoá: bảng nghiệp vụ dùng trạng thái + `cancelled_at/by
 OPP_STAGE → OPP_SUBSTAGE, TEST_CANCEL_REASON (nối OPP_SUBSTAGE), ACTIVITY_TYPE, PROVINCE → WARD; cùng cơ sở, năm học, phòng học.
 Dữ liệu và chỗ đã làm sạch: `docs/nghiep-vu/lam-sach-du-lieu-cu.md`.
 
+**Chưa nạp, để giai đoạn 2 (chốt 10/10/2026):** nhóm, nhóm con ticket đề nghị và khiếu nại, mức độ khiếu nại, kênh tiếp nhận (R-CS-03, R-CS-04, R-CS-11).
+
 **Loại buổi (luật lõi):** `CHINH`, `CUNG_CO` trừ giờ; `HOC_BU`, `BO_TRO` không trừ giờ. Huỷ (nghỉ cả lớp, `N` cũ) là tình trạng buổi,
 không phải loại buổi. Học thử là tư cách học sinh trong buổi (GĐ2). Kiểm tra đầu vào là lịch test, không phải buổi.
 

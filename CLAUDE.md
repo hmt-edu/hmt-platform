@@ -74,7 +74,8 @@
 - Sao lưu bản chạy thật mỗi đêm cũng chạy từ `hmt-deploy`: xuất DB, mã hoá, đẩy lên Google Drive của `lead.vanhanh.hmt@gmail.com`.
 - **Khoá chạy thật không bao giờ nằm trên máy Mac**: không `supabase login`, không `wrangler login` bằng tài khoản thật; chuỗi kết nối DB prod và token Cloudflare prod chỉ dán thẳng vào GitHub Secrets của `hmt-deploy` trên web. Lấy token rclone xong thì xoá `~/.config/rclone/rclone.conf`.
 - Claude Code không đọc, không xin, không tìm khoá chạy thật trên máy.
-- Claude Code chỉ gộp PR khi CI xanh **và** anh Trường đã OK (comment "OK" trên PR hoặc nhắn trong chat).
+- Claude Code chỉ gộp PR khi CI xanh **và** có comment "OK" trên PR **từ tài khoản `caotruong276`** (không tính comment của `hmt-vanhanh`, không tính OK trong chat). Ghi link comment OK vào commit gộp. (Chốt 10/10/2026.)
+- Mục nào trong yêu cầu ghi "anh duyệt trước" / "để anh duyệt" thì **dừng, gửi anh, chờ duyệt rồi mới làm/nạp**; không làm trước rồi báo sau.
 - Khôi phục thử bản sao lưu: anh Trường tự chạy vào DB Docker tạm trên máy anh, xong xoá; Claude Code không chạy.
 
 ## Lệnh hay dùng
