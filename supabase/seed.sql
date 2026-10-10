@@ -2,7 +2,7 @@
 -- CHỈ dữ liệu giả: không bao giờ đưa tên, số điện thoại thật của học sinh, phụ huynh vào đây.
 -- Chạy lại nhiều lần không nhân đôi dữ liệu (on conflict do nothing / where not exists).
 
--- Phòng học giả: mỗi cơ sở 3 phòng.
+-- Phòng học giả: mỗi cơ sở dạy học 3 phòng (Hội sở là văn phòng, không có phòng).
 insert into app.room (branch_id, code, name, capacity, sort_order)
 select b.id, r.code, r.name, r.capacity, r.sort_order
   from app.branch b
@@ -11,6 +11,7 @@ select b.id, r.code, r.name, r.capacity, r.sort_order
    ('P102', 'Phòng 102 (giả)', 8, 2),
    ('ONL1', 'Phòng online 1 (giả)', 20, 3)
  ) as r (code, name, capacity, sort_order)
+ where not b.is_office
 on conflict (branch_id, code) do nothing;
 
 -- Ngày nghỉ giả để thử: một ngày chung, một ngày riêng CS5.

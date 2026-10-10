@@ -13,7 +13,7 @@
 ## Danh mục gốc
 | Danh mục | Mã | Ghi chú |
 |---|---|---|
-| Cơ sở | `CS1` Nguyễn Chí Thanh, `CS2` Đỗ Quang, `CS4` Hà Đông, `CS5` Mỹ Đình | Không có CS3 (Config cũ có dòng CS3 thừa, bỏ), không đánh số lại |
+| Cơ sở | `CS1` Nguyễn Chí Thanh, `CS2` Đỗ Quang, `CS4` Hà Đông, `CS5` Mỹ Đình; `CS3` Hội sở | `CS3` Hội sở là văn phòng: chỉ gắn tài khoản nhân viên, không có phòng học, lớp, học sinh (chốt 11/10/2026). Không đánh số lại |
 | Năm học | `2627` | Từ tháng 6 tới tháng 5 năm sau |
 | Môn | `TOAN`, `DAI`, `HINH`, `LY`, `HOA`, `VAN`, `ANH`, `KHTN`, `TRUNG`, `SAT` | `DAI`, `HINH` chỉ dùng cho lớp, xem mục Đại/Hình |
 | Khối | `K02` … `K12` | Hai chữ số |

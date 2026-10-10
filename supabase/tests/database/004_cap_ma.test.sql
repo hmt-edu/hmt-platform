@@ -36,8 +36,10 @@ select is(pg_temp.err($$select app.issue_class_code('CS2', '2627', 'TOAN', 'K09'
           'HMT_MA_LOP_SAI', 'Lớp riêng không được có trình độ');
 select is(pg_temp.err($$select app.issue_class_code('CS2', '2627', 'TOAN', 'K09', 'CB')$$),
           'HMT_MA_LOP_SAI', 'Lớp cơ bản phải có trình độ');
+select is(pg_temp.err($$select app.issue_class_code('CS9', '2627', 'TOAN', 'K09', 'CB', 'A')$$),
+          'HMT_DANH_MUC_KHONG_CO', 'Không cấp mã lớp cho cơ sở không có (CS9)');
 select is(pg_temp.err($$select app.issue_class_code('CS3', '2627', 'TOAN', 'K09', 'CB', 'A')$$),
-          'HMT_DANH_MUC_KHONG_CO', 'Không cấp mã lớp cho cơ sở không có (CS3)');
+          'HMT_CO_SO_VAN_PHONG', 'Không cấp mã lớp cho Hội sở (văn phòng)');
 select is(pg_temp.err($$select app.issue_class_code('CS1', '2627', 'TOAN', 'K13', 'CB', 'A')$$),
           'HMT_DANH_MUC_KHONG_CO', 'Không cấp mã lớp cho khối không có');
 

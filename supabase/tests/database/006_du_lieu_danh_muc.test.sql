@@ -8,8 +8,9 @@ create function pg_temp.codes(p_catalog text) returns text[] language sql as $$
 $$;
 
 -- Cơ sở, năm học.
-select is((select array_agg(code order by sort_order) from app.branch), array['CS1', 'CS2', 'CS4', 'CS5'],
-          'Cơ sở: CS1, CS2, CS4, CS5 (không có CS3)');
+select is((select array_agg(code order by sort_order) from app.branch), array['CS1', 'CS2', 'CS4', 'CS5', 'CS3'],
+          'Cơ sở: CS1, CS2, CS4, CS5 dạy học; CS3 là Hội sở (chốt 11/10/2026)');
+select is((select array_agg(code order by code) from app.branch where is_office), array['CS3'], 'Chỉ Hội sở (CS3) là văn phòng');
 select is((select name from app.branch where code = 'CS5'), 'Mỹ Đình', 'CS5 là Mỹ Đình');
 select is((select array[start_date, end_date] from app.academic_year where code = '2627'),
           array[date '2026-06-01', date '2027-05-31'], 'Năm học 2627: 01/06/2026 – 31/05/2027');

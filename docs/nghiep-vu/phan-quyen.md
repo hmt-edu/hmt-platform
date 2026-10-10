@@ -49,9 +49,9 @@ Người nhiều vai trò lấy phạm vi rộng nhất trong các vai trò có 
   - Thêm TA (quyền như giáo viên), STUDENT (Học tập, chính mình).
   - Tách quyền tiền (R-TIEN-01): **chỉ Kế toán** Duyệt phiếu thu (`RECEIPT`) và kế toán (`ACCOUNTING`: khoản tiền vào,
     đảo khoản, phiếu chi); ADMIN, Trưởng cơ sở không duyệt. Trưởng cơ sở chỉ Xem phân hệ Kế toán; vẫn duyệt đơn hàng.
-  - Phiếu tái tục (`UPSALE`) không có bước Duyệt; Trưởng cơ sở chỉ Xem, Giao việc. Đơn hàng sinh từ tái tục duyệt như
-    đơn thường (`SALES_ORDER`).
-- Số dòng mặc định: ADMIN 132 (trừ Duyệt tiền, Duyệt tái tục; có Xem, Xuất Tài khoản), BRANCH_MANAGER 108, CSKH 44, SALES 37, ACCOUNTANT 15,
+  - Phiếu tái tục (`UPSALE`) không có bước Duyệt; Trưởng cơ sở Xem, Giao việc, Xuất file (danh sách sắp hết giờ của
+    cơ sở mình, chốt 11/10/2026). Đơn hàng sinh từ tái tục duyệt như đơn thường (`SALES_ORDER`).
+- Số dòng mặc định: ADMIN 132 (trừ Duyệt tiền, Duyệt tái tục; có Xem, Xuất Tài khoản), BRANCH_MANAGER 109, CSKH 44, SALES 37, ACCOUNTANT 15,
   TEACHER 14, TA 14, STUDENT 3.
 
 ## Kế toán vắng: gán tạm vai trò ACCOUNTANT

@@ -32,7 +32,8 @@ Huỷ thay cho xoá: bảng nghiệp vụ dùng trạng thái + `cancelled_at/by
 ## Danh mục
 - `app.catalog`: định nghĩa danh mục, `kind` = `HE_THONG` | `MO`, tầng cha (`parent_catalog`), danh mục nối (`linked_catalog`).
 - `app.catalog_item`: `code` (không đổi), `name`, `sort_order`, `is_active`, `is_locked`, `parent_id`, `linked_item_id`, `legacy_ref`.
-- Bảng riêng: `app.branch` (cơ sở), `app.academic_year` (năm học), `app.room` (phòng theo cơ sở), `app.holiday` (ngày nghỉ, `branch_id` NULL = mọi cơ sở).
+- Bảng riêng: `app.branch` (cơ sở; `is_office` = văn phòng: CS3 Hội sở, chỉ gắn tài khoản nhân viên, không có phòng, lớp, học sinh,
+  chặn bằng `app.assert_teaching_branch` mã `HMT_CO_SO_VAN_PHONG`; bảng lớp, ghi danh sau này gọi lại hàm này), `app.academic_year` (năm học), `app.room` (phòng theo cơ sở), `app.holiday` (ngày nghỉ, `branch_id` NULL = mọi cơ sở).
 
 **Luật (chặn trong DB):**
 - Mã không đổi được (`HMT_MA_KHONG_DOI_DUOC`), không xoá được (`HMT_KHONG_XOA`).

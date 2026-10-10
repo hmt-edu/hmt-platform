@@ -16,7 +16,7 @@ on:
         required: true
         type: string
       branch_code:
-        description: 'Cơ sở (CS1, CS2, CS4, CS5)'
+        description: 'Cơ sở (CS1, CS2, CS3 Hội sở, CS4, CS5)'
         required: true
         default: 'CS1'
         type: string
