@@ -1,0 +1,532 @@
+<!-- @dsCard group="Màn 5.2 · Quản trị" height=1040 subtitle="Mức A · K10 · Sửa mục danh mục: 32 danh mục chốt 12/10 (A-29, A-40); ba loại khoá; thêm, đổi tên hiển thị, đổi thứ tự, Ngừng; không xoá, không đổi mã; tối đa 3 cấp" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>QT-07 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+/* Dữ liệu mẫu dùng chung cho các màn đợt 5.2 — dữ liệu giả */
+const STAFF = [
+    { code: "NV0001", name: "Đặng Quốc Huy", email: "huy.dq@hoamatoan.edu.vn", phone: "0901 234 561", roles: ["AD"], campus: "CS3", status: "active", last: "11/10/2026 08:12", twofa: true },
+    { code: "NV0007", name: "Phạm Ngọc Ánh", email: "anh.pn@hoamatoan.edu.vn", phone: "0912 345 672", roles: ["KT"], campus: "CS3", status: "active", last: "11/10/2026 07:58", twofa: true },
+    { code: "NV0009", name: "Ngô Thị Lan", email: "lan.nt@hoamatoan.edu.vn", phone: "0934 112 093", roles: ["CS"], campus: "CS2", status: "locked", last: "30/09/2026 17:40", note: "Nghỉ việc từ 01/10/2026" },
+    { code: "NV0012", name: "Trần Thu Hà", email: "ha.tt@hoamatoan.edu.vn", phone: "0987 654 321", roles: ["SA"], campus: "CS1", status: "active", last: "11/10/2026 09:03" },
+    { code: "NV0021", name: "Nguyễn Hoàng Long", email: "long.nh@hoamatoan.edu.vn", phone: "0976 220 418", roles: ["BM"], campus: "CS1", status: "active", last: "11/10/2026 08:41" },
+    { code: "NV0026", name: "Vũ Thị Thanh Tâm", email: "tam.vtt@hoamatoan.edu.vn", phone: "0965 330 512", roles: ["CS"], campus: "CS1", status: "active", last: "11/10/2026 08:20" },
+    { code: "NV0030", name: "Hoàng Minh Đức", email: "duc.hm@hoamatoan.edu.vn", phone: "0943 871 206", roles: ["BM"], campus: "CS5", status: "active", last: "10/10/2026 21:15" },
+    { code: "NV0034", name: "Phạm Thu Trang", email: "trang.pt@hoamatoan.edu.vn", phone: "0918 406 733", roles: ["CS", "GV"], gvCode: "GV2011", campus: "CS5", status: "active", last: "11/10/2026 07:45" },
+    { code: "NV0041", name: "Bùi Anh Tuấn", email: "tuan.ba@hoamatoan.edu.vn", phone: "0904 519 870", roles: ["SA"], campus: "CS4", status: "temp", last: "11/10/2026 09:31", note: "Sai mật khẩu 10 lần lúc 09:31 · tự mở lúc 09:46" },
+    { code: "GV2007", name: "Lê Văn Khánh", email: "khanh.lv@hoamatoan.edu.vn", phone: "0983 172 640", roles: ["GV"], campus: "CS1", status: "active", last: "10/10/2026 19:02" },
+    { code: "GV2015", name: "Trịnh Mai Phương", email: "phuong.tm@hoamatoan.edu.vn", phone: "0936 504 128", roles: ["GV"], campus: "CS4", status: "active", last: "09/10/2026 20:47" },
+    { code: "TG8002", name: "Đỗ Thị Hạnh", email: "hanh.dt@hoamatoan.edu.vn", phone: "0971 803 255", roles: ["TG"], campus: "CS2", status: "active", last: "11/10/2026 06:55" },
+];
+const ACC_STATUS = { active: ["success", "Đang dùng", "check"], locked: ["danger", "Khoá", "lock"], temp: ["warning", "Tạm khoá", "timer"], never: ["neutral", "Chưa cấp", "minus"], first: ["info", "Chờ đổi mật khẩu", "info"] };
+const CAMPUS_NAME = { CS1: "Nguyễn Chí Thanh", CS2: "Đỗ Quang", CS3: "Hội sở", CS4: "Hà Đông", CS5: "Mỹ Đình" };
+const ROLE_FULL = { AD: "Admin", BM: "Trưởng cơ sở", SA: "Tuyển sinh", CS: "CSKH, vận hành lớp", KT: "Kế toán", GV: "Giáo viên", TG: "Trợ giảng" };
+function AccBadge({ s }) { const [t, l, i] = ACC_STATUS[s]; return React.createElement(HMT.Badge, { tone: t, icon: t === "neutral" ? false : i }, l); }
+function Shell({ role = "BM", user, active, children, mobile, notifications = 7, badges, loading, collapsed, campus: campusIn, onCampus }) {
+    const [campus0, setCampus0] = useState("ALL");
+    const campus = campusIn !== undefined ? campusIn : campus0;
+    const setCampus = onCampus || setCampus0;
+    const u = user || STAFF.find((x) => x.roles.includes(role)) || STAFF[0];
+    return React.createElement(HMT.AppShell, { role: role, user: { name: u.name, campus: u.campus }, campus: campus, onCampusChange: setCampus, activeId: active, onNavigate: () => { }, notifications: notifications, onSearch: () => { }, onNotifications: () => { }, mobile: mobile, badges: badges, loading: loading, multiPortal: u.roles.length > 1, defaultCollapsed: collapsed }, children);
+}
+/* Khuôn K01–K13 (đợt 5.1 phần 2) */
+function TplFrame({ code, name, kind, uses, states, state, onState, devices, device, onDevice, extra, zones, onZones, note, height, product, children }) {
+    const { Chip } = HMT;
+    return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+        React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+            React.createElement("p", { className: "hmt-demo-label" },
+                React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+                " \u00B7 ",
+                name,
+                " \u00B7 Khu\u00F4n",
+                kind ? ` · ${kind}` : ""),
+            devices ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Thi\u1EBFt b\u1ECB" }, devices.map(([k, l]) => React.createElement(Chip, { key: k, selected: device === k, onToggle: () => onDevice(k) }, l))) : null,
+            devices && states ? React.createElement("span", { className: "hmt-tpl-bar", "aria-hidden": "true" }) : null,
+            states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+            extra,
+            React.createElement("span", { style: { marginLeft: "auto" } },
+                React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i"))),
+        uses ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } },
+            React.createElement("b", null, "D\u00F9ng cho:"),
+            " ",
+            uses) : null,
+        note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+        zones ? React.createElement("p", { className: "hmt-zone-legend" },
+            React.createElement("span", null,
+                React.createElement("i", { "data-k": "fixed" }),
+                "C\u1ED1 \u0111\u1ECBnh: gi\u1ED1ng nhau \u1EDF m\u1ECDi m\u00E0n d\u00F9ng khu\u00F4n"),
+            React.createElement("span", null,
+                React.createElement("i", null),
+                "Thay \u0111\u1ED5i: m\u1ED7i m\u00E0n t\u1EF1 \u0111i\u1EC1n")) : null,
+        React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height, overflow: "auto" } }, children));
+}
+function Z({ k = "vary", l, children, style }) { return React.createElement("div", { "data-zone": k, "data-zone-label": (k === "fixed" ? "CỐ ĐỊNH · " : "THAY ĐỔI · ") + l, style: style }, children); }
+const TPL_STATES = [["data", "Có dữ liệu"], ["empty", "Trống"], ["loading", "Đang tải"], ["error", "Lỗi"], ["noaccess", "Không có quyền"]];
+function TplState({ st, what, emptyTitle, emptyDesc, emptyAction, compact }) {
+    const { StateView, Button } = HMT;
+    if (st === "empty")
+        return React.createElement(StateView, { kind: "empty", compact: compact, title: emptyTitle, description: emptyDesc, actions: emptyAction });
+    if (st === "error")
+        return React.createElement(StateView, { kind: "error", compact: compact, title: `Không tải được ${what}`, description: "L\u1ED7i m\u00E1y ch\u1EE7 (m\u00E3 E-500). Th\u1EED l\u1EA1i; n\u1EBFu v\u1EABn l\u1ED7i, g\u1EEDi m\u00E3 n\u00E0y cho IT.", actions: React.createElement(Button, { variant: "secondary", iconStart: "refresh" }, "Th\u1EED l\u1EA1i") });
+    return React.createElement(StateView, { kind: "no-access", compact: compact, title: "Kh\u00F4ng c\u00F3 quy\u1EC1n", description: `Bạn không có quyền xem ${what}. Cần quyền thì nhờ Trưởng cơ sở hoặc Admin.`, actions: React.createElement(Button, { variant: "secondary", iconStart: "home" }, "V\u1EC1 trang ch\u1EE7") });
+}
+/* Lớp mẫu CS1 năm học 2026–2027 (đợt 5.4) — dữ liệu giả */
+const CLS = [
+    { code: "CS1-2627-DAI-K08-CB-A-001", short: "8A1 Đại", subj: "DAI", grade: 8, kind: "CB", lvl: "A", step: "duyet", op: "Đang học", n: 13, max: 15, sched: "Thứ 2, 5 · 17:30–19:00", room: "P101", gv: "Lê Văn Khánh", start: "03/09/2026", end: "25/02/2027", total: 48, done: 11, frame: "DAI-K08-CB-2627" },
+    { code: "CS1-2627-HINH-K08-CB-A-001", short: "8A1 Hình", subj: "HINH", grade: 8, kind: "CB", lvl: "A", step: "duyet", op: "Đang học", n: 12, max: 15, sched: "Thứ 7 · 08:00–09:30", room: "P101", gv: "Nguyễn Thị Mai", start: "05/09/2026", end: "20/02/2027", total: 24, done: 6, frame: "HINH-K08-CB-2627" },
+    { code: "CS1-2627-DAI-K09-CB-A-002", short: "9A2 Đại", subj: "DAI", grade: 9, kind: "CB", lvl: "A", step: "duyet", op: "Đang học", n: 12, max: 15, sched: "Thứ 2, 5 · 19:15–20:45", room: "P102", gv: "Lê Văn Khánh", start: "01/10/2026", end: "25/03/2027", total: 48, done: 3, frame: "DAI-K09-CB-2627" },
+    { code: "CS1-2627-HINH-K09-CB-A-002", short: "9A2 Hình", subj: "HINH", grade: 9, kind: "CB", lvl: "A", step: "duyet", op: "Chưa khai giảng", n: 10, max: 15, sched: "Thứ 7 · 08:00–09:30", room: "P102", gv: "Trần Quốc Bảo", start: "17/10/2026", end: "03/04/2027", total: 24, done: 0, frame: "HINH-K09-CB-2627" },
+    { code: "CS1-2627-DAI-K09-NC-S-001", short: "9S1 Đại", subj: "DAI", grade: 9, kind: "NC", lvl: "S", step: "duyet", op: "Đang học", n: 15, max: 15, sched: "Thứ 3, 6 · 19:15–20:45", room: "P102", gv: "Lê Văn Khánh", start: "04/09/2026", end: "02/03/2027", total: 48, done: 11, frame: "DAI-K09-NC-2627" },
+    { code: "CS1-2627-TOAN-K08-LR-006", short: "Lớp riêng · Nguyễn Bảo Ngọc", subj: "TOAN", grade: 8, kind: "LR", lvl: "", step: "duyet", op: "Đang học", n: 1, max: 2, sched: "Thứ 4 · 18:00–19:30", room: "P103", gv: "Nguyễn Thị Mai", start: "16/09/2026", end: "04/11/2026", total: 8, done: 4, frame: "" },
+    { code: "CS1-2627-TOAN-K06-CB-B-004", short: "6B2", subj: "TOAN", grade: 6, kind: "CB", lvl: "B", step: "trinh", op: "Chưa khai giảng", n: 0, max: 15, sched: "Thứ 3, 6 · 17:30–19:00", room: "P101", gv: "Nguyễn Thị Mai", start: "16/10/2026", end: "13/04/2027", total: 48, done: 0, frame: "TOAN-K06-CB-2627" },
+    { code: "CS1-2627-HINH-K07-CB-A-003", short: "7A1 Hình", subj: "HINH", grade: 7, kind: "CB", lvl: "A", step: "xacnhan", op: "Chưa khai giảng", n: 0, max: 15, sched: "Thứ 6 · 17:30–19:00", room: "P103", gv: "Trần Quốc Bảo", start: "23/10/2026", end: "23/04/2027", total: 24, done: 0, frame: "HINH-K07-CB-2627" },
+    { code: "CS1-2627-DAI-K07-CB-A-005", short: "7A2 Đại", subj: "DAI", grade: 7, kind: "CB", lvl: "A", step: "nhap", op: "Chưa khai giảng", n: 0, max: 15, sched: "Chưa có thời khoá biểu", room: "—", gv: "—", start: "20/10/2026", end: "—", total: 48, done: 0, frame: "DAI-K07-CB-2627" },
+    { code: "CS1-2526-DAI-K08-NC-S-002", short: "8S2 Đại (2025–2026)", subj: "DAI", grade: 8, kind: "NC", lvl: "S", step: "duyet", op: "Kết thúc", n: 2, max: 15, sched: "Thứ 4, 7 · 18:00–19:30", room: "P103", gv: "Phùng Văn Tài", start: "06/09/2025", end: "30/05/2026", total: 64, done: 64, frame: "DAI-K08-NC-2526" },
+];
+const CLS_STEP = { nhap: "Nháp", trinh: "Đã trình", xacnhan: "Đã xác nhận", duyet: "Đã duyệt", dong: "Đã đóng", tuchoi: "Từ chối", huy: "Huỷ" };
+const LOP_STEPS = [{ id: "nhap", label: "Nháp" }, { id: "trinh", label: "Đã trình" }, { id: "xacnhan", label: "Đã xác nhận" }, { id: "duyet", label: "Đã duyệt" }, { id: "dong", label: "Đã đóng" }];
+const GD_STATUS = { wait: ["neutral", "Chờ xếp lớp"], placed: ["info", "Đã xếp lớp"], on: ["success", "Đang học"], hold: ["info", "Bảo lưu"], done: ["neutral", "Hoàn thành"], move: ["info", "Chuyển lớp"], stop: ["danger", "Dừng"], refund: ["danger", "Hoàn phí"] };
+function GdBadge({ s }) { const [t, l] = GD_STATUS[s]; return React.createElement(HMT.Badge, { tone: t, icon: t === "neutral" ? false : undefined }, l); }
+const hrsVN = (n) => `${n.toLocaleString("vi-VN")} giờ`;
+/* Sổ giờ mẫu GD000076 · Trịnh Minh Châu (HS000377) · LC-TOAN-K08 · Offline — chỉ thêm dòng */
+const CHAU_LEDGER = (() => {
+    const L = [
+        { d: "01/09/2026", k: "receipt", v: 48, t: "Phiếu thu PT-CS1-2609-0012 được duyệt · thu đủ 10.560.000 đ", by: "Phạm Ngọc Ánh" },
+        { d: "01/09/2026", k: "bonus", v: 4, t: "Giờ tặng · Tặng giờ khai giảng (cấp khi thu đủ)", by: "Hệ thống" },
+    ];
+    const DAI = [["03/09", "present"], ["07/09", "present"], ["10/09", "present"], ["14/09", "late"], ["17/09", "present"], ["21/09", "present"], ["24/09", "present"], ["28/09", "absent"], ["01/10", "present"], ["05/10", "present"], ["08/10", "excused"]];
+    const HINH = [["05/09", "present"], ["12/09", "present"], ["19/09", "present"], ["26/09", "excused"], ["03/10", "late"], ["10/10", "present"]];
+    const ev = [];
+    DAI.forEach(([d, s], i) => ev.push({ d: `${d}/2026`, k: "session", v: -1.5, t: `8A1 Đại · Buổi ${i + 1} · ${d}/2026`, att: s, by: "Lê Văn Khánh" }));
+    HINH.forEach(([d, s], i) => ev.push({ d: `${d}/2026`, k: "session", v: -1.5, t: `8A1 Hình · Buổi ${i + 1} · ${d}/2026`, att: s, by: "Nguyễn Thị Mai" }));
+    ev.push({ d: "29/09/2026", k: "adjust", v: 1.5, t: "Điều chỉnh: bớt khỏi danh sách 8A1 Hình · Buổi 4 · 26/09/2026 (đã xin nghỉ trước giờ chốt danh sách)", by: "Nguyễn Hoàng Long" });
+    const key = (x) => x.d.split("/").reverse().join("");
+    ev.sort((a, b) => key(a).localeCompare(key(b)));
+    const all = [...L, ...ev];
+    let bal = 0;
+    return all.map((x, i) => { bal += x.v; return { ...x, id: i + 1, bal }; });
+})();
+/* Đợt 5.5 · buổi dạy mẫu: 9A2 Đại · Buổi 4 · Thứ Hai 12/10/2026 19:15–20:45 · P102 · Lê Văn Khánh (GV2007) · 12 em */
+const GV_SESSION = { cls: "9A2 Đại", code: "CS1-2627-DAI-K09-CB-A-002", no: 4, date: "12/10/2026", dow: "Thứ Hai", time: "19:15–20:45", end: "20:45", room: "P102", deadline: "13/10/2026 04:45", teacher: "Lê Văn Khánh", gv: "GV2007" };
+const GV_ROSTER = [
+    { id: "s1", name: "Bạch Ngọc Ánh", code: "HS000411" }, { id: "s2", name: "Cao Minh Đức", code: "HS000412" }, { id: "s3", name: "Đào Thu Hà", code: "HS000414" },
+    { id: "s4", name: "Giang Tuấn Kiệt", code: "HS000416" }, { id: "s5", name: "Hà Phương Linh", code: "HS000417" }, { id: "s6", name: "Khúc Bảo Nam", code: "HS000420" },
+    { id: "s7", name: "Lê Gia Huy", code: "HS000435", note: "Buổi đầu · vào lớp 12/10" }, { id: "s8", name: "Mai Anh Thư", code: "HS000421" }, { id: "s9", name: "Nông Đức Trí", code: "HS000423" },
+    { id: "s10", name: "Phí Khánh Vân", code: "HS000424" }, { id: "s11", name: "Quan Thảo My", code: "HS000426" }, { id: "s12", name: "Tạ Hoàng Long", code: "HS000428" },
+];
+const GV_ATT_COLS = [
+    { key: "present", label: "Có mặt", kind: "radio", field: "att", value: "present", hotkey: "1", tone: "success", icon: "check" },
+    { key: "late", label: "Đi muộn", kind: "radio", field: "att", value: "late", hotkey: "2", tone: "warning", icon: "clock" },
+    { key: "excused", label: "Vắng có phép", kind: "radio", field: "att", value: "excused", hotkey: "3", tone: "danger", icon: "fileCheck" },
+    { key: "absent", label: "Vắng không phép", kind: "radio", field: "att", value: "absent", hotkey: "4", tone: "danger", icon: "userX" },
+];
+const GV_CRIT = [["td1", "Tập trung", "Thái độ"], ["td2", "Chủ động", "Thái độ"], ["td3", "Tinh thần học tập", "Thái độ"], ["kt1", "Nắm kiến thức", "Kiến thức"], ["kt2", "Hiểu bản chất", "Kiến thức"], ["kt3", "Ghi nhớ", "Kiến thức"]];
+const GV_LINES = ["Điều kiện xác định của căn thức", "Hằng đẳng thức √(A²) = |A|", "Liên hệ phép nhân và phép khai phương"];
+const GV_RUBRIC = {
+    td1: ["Thường xuyên mất tập trung, cần nhắc nhiều lần", "Hay mất tập trung, cần nhắc", "Tập trung phần lớn buổi", "Tập trung tốt suốt buổi", "Tập trung cao, chủ động ghi chép"],
+    td2: ["Không phát biểu, không hỏi", "Ít phát biểu khi được gọi", "Phát biểu khi được gọi", "Tự giơ tay, hỏi khi chưa hiểu", "Chủ động hỏi, đề xuất cách giải"],
+    td3: ["Chưa làm bài, chưa chuẩn bị", "Chuẩn bị chưa đủ", "Chuẩn bị đủ", "Chuẩn bị tốt, làm thêm bài", "Rất chăm, giúp bạn cùng học"],
+    kt1: ["Chưa nắm nội dung buổi", "Nắm một phần", "Nắm nội dung chính", "Nắm chắc nội dung", "Nắm chắc, mở rộng được"],
+    kt2: ["Làm theo mẫu chưa đúng", "Làm theo mẫu", "Giải thích được cách làm", "Hiểu vì sao, áp dụng bài tương tự", "Tự suy ra cách giải mới"],
+    kt3: ["Quên bài cũ", "Nhớ một phần bài cũ", "Nhớ bài cũ khi được gợi ý", "Nhớ bài cũ", "Nhớ lâu, liên hệ được"],
+};
+const GV_GRADE_COLS = (lines) => [
+    ...GV_CRIT.map(([k, l, g]) => ({ key: k, label: l, kind: "score", min: 1, max: 5, group: `${g} (1–5)`, disabled: (v) => v.att === "excused" || v.att === "absent" ? "Vắng" : null })),
+    ...lines.map((l, i) => ({ key: `vd${i + 1}`, label: `Dòng ${i + 1}`, sub: l.length > 18 ? l.slice(0, 17) + "…" : l, help: l, kind: "score", min: 1, max: 5, group: "Vận dụng (1–5)", disabled: (v) => v.att === "excused" || v.att === "absent" ? "Vắng" : null })),
+    { key: "vdtb", label: "TB vận dụng", sub: "hệ thống tính", kind: "read", group: "Vận dụng (1–5)", render: (v) => { const xs = lines.map((_, i) => v[`vd${i + 1}`]).filter((x) => x != null); return xs.length ? React.createElement("span", { className: "hmt-tabular" }, (xs.reduce((a, b) => a + b, 0) / xs.length).toLocaleString("vi-VN", { maximumFractionDigits: 1 })) : React.createElement("span", { className: "hmt-help" }, "\u2014"); } },
+    { key: "msg", label: "Lời nhắn phụ huynh", kind: "text", group: "Lời nhắn", disabled: (v) => v.att === "excused" || v.att === "absent" ? "Vắng" : null },
+];
+/* Kết quả buổi mẫu 9A2 Đại · Buổi 4 */
+const GV_ATT = { s1: "present", s2: "present", s3: "late", s4: "present", s5: "excused", s6: "present", s7: "present", s8: "present", s9: "absent", s10: "present", s11: "present", s12: "present" };
+const GV_OPS = { s3: "Vận hành 19:20 · Đã nhắc vào lớp", s5: "Vận hành 18:40 · Xin nghỉ học: mẹ báo em sốt", s9: "Vận hành 19:25 · Không nghe máy" };
+const GV_SC = { s1: [4, 3, 4, 4, 3, 4, 4, 3, 3], s2: [5, 4, 4, 4, 4, 4, 4, 4, 3], s3: [3, 3, 3, 3, 3, 2, 3, 3, 2], s4: [4, 4, 5, 5, 4, 4, 5, 4, 4], s6: [3, 2, 3, 3, 3, 3, 3, 2, 3], s7: [4, 3, 4, 4, 3, 3, 4, 3, 3], s8: [5, 5, 5, 5, 5, 4, 5, 5, 4], s10: [4, 4, 4, 4, 3, 4, 4, 4, 3], s11: [3, 4, 3, 3, 3, 3, 3, 3, 3], s12: [4, 3, 4, 3, 3, 3, 4, 3, 3] };
+const GV_MSG = { s1: "Ánh làm bài cẩn thận; về nhà ôn lại điều kiện xác định của căn thức.", s2: "Đức hiểu bài nhanh, hay giúp bạn. Cần trình bày lời giải đủ bước hơn.", s3: "Hà vào lớp muộn 10 phút nên hụt phần đầu; nhờ anh chị nhắc em làm lại bài 2.", s4: "Kiệt phát biểu tốt, giải được bài nâng cao về |A|.", s6: "Nam còn mất tập trung nửa sau buổi; nhờ anh chị nhắc em làm đủ BTVN.", s7: "Buổi đầu của Huy: em hoà nhập tốt, cần ôn lại căn bậc hai đã học ở trường.", s8: "Thư nắm chắc bài, làm thêm được bài khó.", s10: "Vân tiến bộ so với buổi trước, cẩn thận hơn khi rút gọn.", s11: "My còn nhầm dấu giá trị tuyệt đối; nhờ anh chị cho em làm lại bài 5.", s12: "Long nắm bài, cần chủ động hỏi khi chưa hiểu." };
+const GV_HW = { s1: { status: "graded", score: 4 }, s2: { status: "partial", score: 3 }, s3: { status: "none" }, s4: { status: "graded", score: 4.5 }, s5: { status: "late" }, s6: { status: "graded", score: 4 }, s7: { status: "na" }, s8: { status: "graded", score: 5 }, s9: { status: "late" }, s10: { status: "graded", score: 4 }, s11: { status: "partial", score: 3 }, s12: { status: "graded", score: 3.5 } };
+const GV_HW_TITLE = "BTVN Buổi 3 · bài 1–6 trang 6 SGK (căn bậc hai)";
+const GV_NEW_HW = "Bài 7–12 trang 10 SGK · hạn Buổi 5 (Thứ Năm 15/10/2026)";
+const GV_KEYS = ["td1", "td2", "td3", "kt1", "kt2", "kt3", "vd1", "vd2", "vd3"];
+const gvGradeVals = (opts = {}) => { const v = {}; GV_ROSTER.forEach((r) => { const o = { att: GV_ATT[r.id] }; const sc = GV_SC[r.id]; if (sc && !(opts.upTo && Number(r.id.slice(1)) > opts.upTo)) {
+    GV_KEYS.forEach((k, i) => (o[k] = sc[i]));
+    o.msg = GV_MSG[r.id];
+} v[r.id] = o; }); if (opts.missing) {
+    delete v.s2.kt3;
+    delete v.s2.msg;
+    delete v.s8.msg;
+} return v; };
+const gvHwVals = (missing) => { const v = {}; GV_ROSTER.forEach((r) => { var _a; const h = GV_HW[r.id]; v[r.id] = { hw: h.status, hws: (_a = h.score) !== null && _a !== void 0 ? _a : null }; }); if (missing)
+    v.s4 = {}; return v; };
+const GV_STEPS = (cur, done = []) => [["att", "Điểm danh", "Điểm danh"], ["content", "Nội dung buổi và giao BTVN", "Nội dung"], ["grade", "Chấm từng em", "Chấm"], ["hw", "Chấm BTVN buổi trước", "BTVN"], ["done", "Hoàn tất", "Xong"]].map(([id, label, short]) => ({ id, label, short, status: done.includes(id) ? "done" : id === cur ? "current" : "todo" }));
+function DevChips({ dev, setDev, extra }) { const { Chip } = HMT; return React.createElement("div", { style: { padding: "8px 12px", borderBottom: "1px solid var(--hmt-border)", background: "var(--hmt-surface)" }, "data-product": "crm" },
+    React.createElement("div", { className: "hmt-demo-row" },
+        [["phone", "Điện thoại"], ["laptop", "Laptop"]].map(([k, l]) => React.createElement(Chip, { key: k, selected: dev === k, onToggle: () => setDev(k) }, l)),
+        extra)); }
+/* ===== Đợt 5.6 · Học tập + Phụ huynh — dữ liệu giả =====
+   Học sinh chính: Khúc Bảo Nam (HS000420) · 9A2 Đại (Thứ 2, 5 · 19:15–20:45 · P102 · thầy Lê Văn Khánh) + 9A2 Hình (khai giảng Thứ Bảy 17/10/2026).
+   Phụ huynh: Anh Khúc Văn Thành (PH000233) · 0975 418 263 · hai con: Nam (lớp 9), Khúc Bảo Ngọc (HS000515, lớp 3, 3A1 Toán).
+   Mốc "hiện tại" phía học sinh/phụ huynh: Thứ Ba 13/10/2026 20:00 (sau Buổi 4, trước hạn BTVN Buổi 4). GV-18: Thứ Hai 12/10/2026 17:00 (trước Buổi 4). */
+function hwPage(name, lines, seed = 0) {
+    const W = 600, H = 800, L = 34;
+    const tilt = ((seed * 37) % 7 - 3) * 0.25;
+    const rows = Array.from({ length: Math.floor((H - 90) / L) }, (_, i) => `<line x1="0" x2="${W}" y1="${100 + i * L}" y2="${100 + i * L}" stroke="#c9d8ea" stroke-width="1.2"/>`).join("");
+    const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const txt = lines.map((t, i) => `<text x="${/^Bài/.test(t) ? 82 : 104}" y="${94 + (i + 1) * L}" font-size="${/^Bài/.test(t) ? 23 : 22}" ${/^Bài/.test(t) ? 'font-weight="700" text-decoration="underline"' : ""}>${esc(t)}</text>`).join("");
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#e8e4dc"/><g transform="rotate(${tilt} 300 400)"><rect x="12" y="10" width="${W - 24}" height="${H - 20}" fill="#fdfcf7"/>${rows}<line x1="70" x2="70" y1="10" y2="${H - 10}" stroke="#e3a1a1" stroke-width="1.5"/><text x="${W - 40}" y="56" text-anchor="end" font-size="18" fill="#3a4f8f" font-family="Segoe Print, Comic Sans MS, cursive">${esc(name)}</text><g fill="#24408f" font-family="Segoe Print, Comic Sans MS, cursive">${txt}</g></g></svg>`;
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+const NAM = { name: "Khúc Bảo Nam", short: "Nam", code: "HS000420", grade: 9, gd: "GD000098", ph: "Anh Khúc Văn Thành", phc: "PH000233", phone: "0975 418 263" };
+const NGOC = { name: "Khúc Bảo Ngọc", short: "Ngọc", code: "HS000515", grade: 3, gd: "GD000058" };
+const LINH = { name: "Võ Thuỳ Dương", short: "Dương", code: "HS000298", grade: 11 };
+/* BTVN Buổi 3 (đã chấm online ở GV-18, 12/10) — Nam nộp 10/10 21:05 (2 ảnh), nộp lại 11/10 20:40 (3 ảnh) */
+const NAM_B3_LINES = [
+    ["Bài 1. Căn bậc hai số học", "a) √121 = 11      b) √144 = 12", "c) √169 = 13      d) √225 = 15", "Bài 2. So sánh", "a) 2 = √4 > √3  ⇒  2 > √3", "b) 6 = √36 < √41  ⇒  6 < √41", "c) 7 = √49 > √47  ⇒  7 > √47", "Bài 3. Giải phương trình", "a) x² = 2  ⇒  x = √2 hoặc x = −√2", "b) x² = 3  ⇒  x = ±√3 ≈ ±1,732", "c) x² = 3,5  ⇒  x ≈ ±1,871"],
+    ["Bài 4. Tìm x không âm", "a) √x = 15  ⇒  x = 225", "b) 2√x = 14  ⇒  √x = 7  ⇒  x = 49", "c) √x < √2  ⇒  0 ≤ x < 2", "d) √(2x) < 4  ⇒  0 ≤ 2x < 16", "     ⇒  0 ≤ x < 8", "Bài 5. Hình vuông có diện tích bằng", "hình chữ nhật 3,5 m × 14 m", "S = 3,5 · 14 = 49 (m²)", "Cạnh hình vuông: √49 = 7 (m)", "Đáp số: 7 m"],
+    ["Bài 6. Căn thức có nghĩa khi nào", "a) √(a/3) có nghĩa  ⇔  a ≥ 0", "b) √(−5a) có nghĩa  ⇔  −5a ≥ 0", "     ⇔  a ≤ 0", "c) √(4 − a)  ⇔  4 − a ≥ 0  ⇔  a ≤ 4", "d) √(3a + 7)  ⇔  3a + 7 ≥ 0", "     ⇔  a ≥ 7/3"],
+];
+const b3Pages = (who, n = 3, seed = 1) => NAM_B3_LINES.slice(0, n).map((l, i) => ({ id: `b3p${i + 1}`, src: hwPage(`${who} · 9A2`, l, i + seed), label: `Trang ${i + 1}` }));
+const NAM_B3_PAGES = b3Pages("Khúc Bảo Nam");
+/* BTVN Buổi 4 (HT-04 Nam đang nộp) — bài 7–12 trang 10 */
+const NAM_B4_LINES = [
+    ["Bài 7. Khai phương một tích", "a) √(0,09 · 64) = 0,3 · 8 = 2,4", "b) √(2⁴ · (−7)²) = 4 · 7 = 28", "c) √(12,1 · 360) = √(121 · 36)", "     = 11 · 6 = 66", "Bài 8. Nhân các căn bậc hai", "a) √2 · √8 = √16 = 4", "b) √5 · √45 = √225 = 15", "c) √0,4 · √6,4 = √2,56 = 1,6"],
+    ["Bài 9. Rút gọn", "a) √(0,36a²) = 0,6|a|", "     Với a < 0:  = −0,6a", "b) √(a⁴(3 − a)²) = a²|3 − a|", "     Với a > 3:  = a²(a − 3)", "Bài 10. Chứng minh", "(√2 − 1)(√2 + 1) = 2 − 1 = 1", "⇒ hai số là nghịch đảo của nhau"],
+    ["Bài 11. Tính", "a) √(1,6 · 250) = √400 = 20", "b) √(2,5 · 14,4) = √36 = 6", "Bài 12. Tìm x", "a) √(16x) = 8  ⇒  16x = 64", "     ⇒  x = 4", "b) √(4x) = √5  ⇒  4x = 5  ⇒  x = 1,25"],
+];
+const NAM_B4_PAGES = NAM_B4_LINES.map((l, i) => ({ id: `b4p${i + 1}`, kind: "img", src: hwPage("Khúc Bảo Nam · 9A2", l, i + 4), name: `IMG_20261014_${2131 + i * 2}.jpg`, size: [462000, 431000, 418000][i], status: "done" }));
+/* Kết quả Nam theo buổi (9A2 Đại) — Buổi 4 khớp GV-07 (GV_SC.s6) */
+const NAM_SESS = [
+    { no: 1, d: "01/10/2026", dow: "Thứ Năm", att: "present", td: 3.0, kt: 2.7, vd: 2.5, msg: "Nam theo kịp bài mở đầu, còn rụt rè khi được gọi lên bảng.", topic: "Căn bậc hai, căn bậc hai số học" },
+    { no: 2, d: "05/10/2026", dow: "Thứ Hai", att: "present", td: 2.7, kt: 3.0, vd: 3.0, msg: "Nam so sánh căn bậc hai tốt, cần luyện thêm dạng giải x² = a.", topic: "So sánh căn bậc hai, giải x² = a" },
+    { no: 3, d: "08/10/2026", dow: "Thứ Năm", att: "late", td: 3.3, kt: 3.0, vd: 3.0, msg: "Nam vào lớp muộn 10 phút nhưng bắt kịp nhanh. BTVN Buổi 2 em chưa làm; nhờ anh chị nhắc em.", topic: "Căn thức bậc hai, điều kiện xác định" },
+    { no: 4, d: "12/10/2026", dow: "Thứ Hai", att: "present", td: 2.7, kt: 3.0, vd: 2.7, msg: "Nam còn mất tập trung nửa sau buổi; nhờ anh chị nhắc em làm đủ BTVN.", topic: "Hằng đẳng thức √(A²) = |A|, liên hệ phép nhân và phép khai phương" },
+];
+/* BTVN của Nam: bài giao ở buổi n, chấm ở buổi n+1 (R-GV-11). Tỉ lệ làm bài và điểm TB tách riêng (R-GV-12) */
+const NAM_HW = [
+    { no: 1, t: "BTVN Buổi 1 · bài 1–4 trang 4", st: "graded", sc: 3.5, at: "05/10/2026" },
+    { no: 2, t: "BTVN Buổi 2 · bài 5–8 trang 5", st: "none", sc: null, at: "08/10/2026" },
+    { no: 3, t: "BTVN Buổi 3 · bài 1–6 trang 6", st: "graded", sc: 4, at: "12/10/2026" },
+];
+const NAM_B3_COMMENT = "Bài 1–5 đúng, trình bày rõ ràng. Bài 6d em chuyển vế sai dấu: 3a + 7 ≥ 0 ⇔ a ≥ −7/3. Xem lại ví dụ 2 trang 5 nhé.";
+const HW_B4 = { title: "BTVN Buổi 4 · Bài 7–12 trang 10 SGK", cls: "9A2 Đại", teacher: "Lê Văn Khánh", given: "12/10/2026 20:40", due: "15/10/2026 19:15", dueText: "Thứ Năm 15/10/2026 · 19:15", file: "BTVN-9A2-Buoi4.pdf", desc: "Làm bài 7, 8, 9, 10, 11, 12 trang 10 SGK Toán 9 tập một. Bài 9 nhớ xét dấu trước khi bỏ giá trị tuyệt đối. Chụp đủ các trang, rõ chữ, theo thứ tự bài." };
+const HW_HINH0 = { title: "Chuẩn bị Buổi 1 Hình · Ôn định lí Py-ta-go", cls: "9A2 Hình", teacher: "Trần Quốc Bảo", given: "12/10/2026 09:00", due: "17/10/2026 08:00", dueText: "Thứ Bảy 17/10/2026 · 08:00", file: "On-tap-Pytago.pdf", desc: "Làm 5 bài ôn trong tệp đính kèm trước buổi khai giảng." };
+function LmsSec({ title, action, children, gap = 10 }) { return React.createElement("section", { style: { display: "grid", gap }, "aria-label": typeof title === "string" ? title : undefined },
+    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 } },
+        React.createElement("h2", { style: { margin: 0, fontSize: "1.0625em", lineHeight: 1.3 } }, title),
+        action),
+    children); }
+function HwCard({ title, cls, due, left, badge, tone = "warning", onOpen, cta = "Mở bài" }) {
+    const { Button } = HMT;
+    return React.createElement("article", { className: "hmt-lms-card", style: { display: "grid", gap: 6, padding: 14, borderLeft: `4px solid var(--hmt-${tone === "neutral" ? "border" : tone + "-border"})` } },
+        React.createElement("span", { className: "hmt-help", style: { margin: 0 } }, cls),
+        React.createElement("b", { style: { lineHeight: 1.35 } }, title),
+        React.createElement("span", { style: { display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" } },
+            React.createElement(HMT.Icon, { name: "clock" }),
+            React.createElement("span", null, due),
+            left ? React.createElement("span", { className: "hmt-lms-chip" }, left) : null),
+        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" } },
+            badge,
+            React.createElement(Button, { size: "sm", variant: "secondary", iconEnd: "arrowRight", onClick: onOpen }, cta)));
+}
+function LmsMetric({ label, value, unit, sub, children }) {
+    return React.createElement("div", { className: "hmt-lms-card", style: { display: "grid", gap: 4, padding: 14, alignContent: "start" } },
+        React.createElement("span", { style: { fontSize: 14, lineHeight: "20px", color: "var(--hmt-fg-muted)" } }, label),
+        React.createElement("span", { className: "hmt-tabular", style: { fontSize: 26, lineHeight: "32px", fontWeight: 700 } },
+            value,
+            unit ? React.createElement("span", { style: { fontSize: 15, fontWeight: 500, color: "var(--hmt-fg-muted)" } },
+                " ",
+                unit) : null),
+        children,
+        sub ? React.createElement("span", { style: { fontSize: 13, lineHeight: "18px", color: "var(--hmt-fg-muted)" } }, sub) : null);
+}
+/* Kết quả học tập của Nam (HT-07, PH-02): hai chỉ số BTVN tách riêng (R-GV-12) */
+function NamResults({ who = "hs", range = "all" }) {
+    const { LineChart, ProgressBar, AttBadge, HomeworkStatus } = HMT;
+    const S = range === "2w" ? NAM_SESS.slice(2) : NAM_SESS;
+    const H = range === "2w" ? NAM_HW.filter((h) => h.no >= 2) : NAM_HW;
+    const done = H.filter((h) => h.st === "graded" || h.st === "partial");
+    const rate = Math.round((done.length / H.length) * 100);
+    const avg = done.length ? done.reduce((a, h) => a + h.sc, 0) / done.length : null;
+    const f1 = (n) => n.toFixed(1).replace(".", ",");
+    const late = S.filter((s) => s.att === "late").length;
+    const you = who === "hs" ? "em" : "con";
+    return React.createElement("div", { style: { display: "grid", gridTemplateColumns: "minmax(0,1fr)", gap: 14 } },
+        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 10 } },
+            React.createElement(LmsMetric, { label: "Chuy\u00EAn c\u1EA7n", value: `${S.length}/${S.length}`, unit: "bu\u1ED5i", sub: late ? `Có mặt đủ · ${late} lần đi muộn` : "Có mặt đủ" }),
+            React.createElement(LmsMetric, { label: "T\u1EC9 l\u1EC7 l\u00E0m BTVN", value: `${rate}%`, sub: `${done.length}/${H.length} bài có làm · ${H.length - done.length} bài Không làm` },
+                React.createElement(ProgressBar, { variant: "lms", value: done.length, max: H.length, valueText: `${done.length}/${H.length}` })),
+            React.createElement(LmsMetric, { label: "\u0110i\u1EC3m BTVN trung b\u00ECnh", value: avg == null ? "—" : f1(avg), unit: "/5", sub: `Tính trên ${done.length} bài đã làm; bài Không làm không tính là 0` }),
+            React.createElement(LmsMetric, { label: "Ti\u00EAu ch\u00ED TB (1\u20135)", value: f1(S.reduce((a, s) => a + (s.td + s.kt + s.vd) / 3, 0) / S.length), sub: "Trung b\u00ECnh Th\u00E1i \u0111\u1ED9, Ki\u1EBFn th\u1EE9c, V\u1EADn d\u1EE5ng" })),
+        React.createElement("div", { className: "hmt-lms-card", style: { padding: 12 } },
+            React.createElement(LineChart, { label: `Điểm Thái độ, Kiến thức, Vận dụng của ${who === "hs" ? "em" : "Nam"} theo buổi, thang 1–5`, labels: S.map((s) => `Buổi ${s.no}`), yMax: 5, height: 220, series: [{ name: "Thái độ", short: "Thái độ", values: S.map((s) => s.td) }, { name: "Kiến thức", short: "Kiến thức", values: S.map((s) => s.kt) }, { name: "Vận dụng", short: "Vận dụng", values: S.map((s) => s.vd) }], format: (n) => n.toFixed(1).replace(".", ","), axisFormat: (n) => String(n) })),
+        React.createElement("section", { style: { display: "grid", gap: 8 } },
+            React.createElement("h3", { style: { margin: 0, fontSize: 16 } }, "Theo t\u1EEBng bu\u1ED5i"),
+            React.createElement("ul", { style: { listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 } }, [...S].reverse().map((s) => {
+                const hw = NAM_HW.find((h) => h.no === s.no - 1);
+                return React.createElement("li", { key: s.no, className: "hmt-lms-card", style: { display: "grid", gap: 6, padding: 12 } },
+                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center", flexWrap: "wrap" } },
+                        React.createElement("b", null,
+                            "Bu\u1ED5i ",
+                            s.no,
+                            " \u00B7 ",
+                            s.dow,
+                            " ",
+                            s.d),
+                        React.createElement(AttBadge, { value: s.att })),
+                    React.createElement("span", { className: "hmt-help", style: { margin: 0 } }, s.topic),
+                    React.createElement("span", { className: "hmt-tabular", style: { fontSize: 14 } },
+                        "Th\u00E1i \u0111\u1ED9 ",
+                        f1(s.td),
+                        " \u00B7 Ki\u1EBFn th\u1EE9c ",
+                        f1(s.kt),
+                        " \u00B7 V\u1EADn d\u1EE5ng ",
+                        f1(s.vd)),
+                    hw ? React.createElement("span", { style: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", fontSize: 14 } },
+                        "BTVN Bu\u1ED5i ",
+                        hw.no,
+                        " ch\u1EA5m bu\u1ED5i n\u00E0y: ",
+                        React.createElement(HomeworkStatus, { readOnly: true, value: { status: hw.st, score: hw.sc } })) : null,
+                    React.createElement("p", { style: { margin: 0, padding: "8px 10px", background: "var(--hmt-surface-subtle)", borderRadius: 8, fontSize: 15 } },
+                        React.createElement("span", { className: "hmt-help", style: { margin: 0, display: "block" } },
+                            "Th\u1EA7y Kh\u00E1nh nh\u1EAFn ",
+                            who === "hs" ? "" : "anh chị"),
+                        s.msg));
+            }))));
+}
+function Demo() {
+    // USE_SHARED
+    const { PageHeader, Button, Badge, Icon, TextInput, Field, StateView, Skeleton, Alert, ConfirmDialog, Select } = HMT;
+    const STATES = [["default", "Mặc định"], ["empty", "Danh mục trống"], ["loading", "Đang tải"], ["error", "Lỗi"], ["noaccess", "Không có quyền"]];
+    // số "đang dùng ở" là dữ liệu mẫu; tên và mã là giá trị nạp sẵn (HMT_DANH_MUC_VA_THAM_SO.md)
+    let seed = 7;
+    const rn = (k) => { seed = (seed * 37 + 11) % 997; return Math.max(3, Math.round(seed * k / 997)); };
+    const L = (pairs, k = 900) => pairs.map((p) => Array.isArray(p) ? { code: p[0], name: p[1], n: rn(k), sys: p[2], tag: p[3], kids: p[4] ? L(p[4], k / 3) : [] } : p);
+    const tk = (pre, names, k = 900) => L(names.map((x, i) => [`${pre}${String(i + 1).padStart(2, "0")}`, x]), k);
+    const L5LINK = "Nối lý do huỷ test";
+    const C = [
+        [1, "CO_SO", "Cơ sở", 1, "lock", "Mọi bản ghi; mã đối tượng", L([["CS1", "Nguyễn Chí Thanh"], ["CS2", "Đỗ Quang"], ["CS3", "Hội sở"], ["CS4", "Hà Đông"], ["CS5", "Mỹ Đình"]])],
+        [2, "PHONG", "Phòng học", 1, "open", "Lớp, buổi, phiếu kiểm tra (QT-08)", L([["CS1-P101", "P101"], ["CS1-P102", "P102"], ["CS1-P103", "P103"], ["CS1-P201", "P201"], ["CS1-P202", "P202"], ["CS1-P203", "P203"]]), "campus"],
+        [3, "MON", "Môn", 1, "lock", "Gói, lớp, mã lớp", L([["TOAN", "Toán"], ["DAI", "Đại số"], ["HINH", "Hình học"], ["LY", "Vật lý"], ["HOA", "Hoá học"], ["VAN", "Ngữ văn"], ["ANH", "Tiếng Anh"], ["KHTN", "Khoa học tự nhiên"], ["TRUNG", "Tiếng Trung"], ["SAT", "SAT"]])],
+        [4, "KHOI", "Khối", 1, "lock", "Gói, lớp, mã lớp", L(["02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"].map((x) => [`K${x}`, `Lớp ${Number(x)}`]))],
+        [5, "PHAN_LOAI_LOP", "Phân loại lớp", 1, "lock", "Lớp, mã lớp", L([["CB", "Cơ bản"], ["NC", "Nâng cao"], ["LR", "Lớp riêng"]])],
+        [6, "TRINH_DO", "Trình độ", 1, "lock", "Lớp, mã lớp", L([["S", "S"], ["A", "A"], ["B", "B"], ["C", "C"]])],
+        [7, "HINH_THUC_HOC", "Hình thức học", 1, "lock", "Gói, lớp, bảng giá", L([["OFF", "Offline"], ["ONL", "Online"]])],
+        [8, "LOAI_GOI", "Loại gói", 1, "lock", "Gói, mã gói (CH-01)", L([["LC", "Lớp chung"], ["VIP", "VIP 1:1 và 1:2"], ["VNN", "VIP nhóm nhỏ"], ["KR", "Kèm riêng"], ["DV", "Dịch vụ"], ["TL", "Tài liệu"]])],
+        [9, "NGUON_LEAD", "Nguồn lead", 3, "open", "Lead, cơ hội (TS-01, TS-07); loại → nguồn → kênh", L([
+                ["MKT", "Marketing", 0, 0, [["MKT-FB", "Facebook Ads", 0, 0, [["MKT-FB-CHAT", "Chat"], ["MKT-FB-CMT", "Comment"], ["MKT-FB-INBOX", "Inbox"], ["MKT-FB-FORM", "Lead Form"]]], ["MKT-GG", "Google Ads"], ["MKT-WEB", "Website"], ["MKT-HOT", "Hotline"], ["MKT-WALK", "Walk-in"], ["MKT-ZALO", "Zalo"]]],
+                ["TELE", "Telemarketing", 0, 0, [["TELE-CC", "Cold Call", 0, 0, [["TELE-CC-BUY", "Buy"], ["TELE-CC-CRAWL", "Crawl"], ["TELE-CC-FLYER", "Flyer"]]]]],
+                ["EVT", "Event", 0, 0, [["EVT-EVT", "Event", 0, 0, [["EVT-IN", "Indoor"], ["EVT-OUT", "Outdoor"]]]]],
+                ["REF", "Referral", 0, 0, [["REF-REF", "Referral", 0, 0, [["REF-CUS", "By Customer"], ["REF-HMT", "By HMT"]]]]],
+                ["UP", "Upsale", 0, 0, [["UP-UP", "Upsale", 0, 0, [["UP-RL", "Renew Lost"], ["UP-NO", "New Opp"], ["UP-CS", "Cross-Sale"]]]]],
+                ["BGD", "Ban Giám Đốc", 0, 0, [["BGD-BGD", "Ban Giám Đốc"]]]
+            ], 2400)],
+        [10, "GD_LEAD", "Giai đoạn lead", 2, "parent", "Lead (TS-01, TS-02)", L([
+                ["C1", "Data mới"],
+                ["C2", "Chưa liên hệ được", 0, 0, [["C2A", "Không nghe máy"], ["C2B", "Không liên lạc được"], ["C2C", "Bận gọi lại sau"]]],
+                ["C3", "Không có nhu cầu", 0, 0, [["C3A", "Không có nhu cầu"], ["C3B", "Chưa có nhu cầu ở thời điểm hiện tại"], ["C3C", "Đang học ở nơi khác"], ["C3D", "Không phù hợp về sản phẩm"], ["C3E", "Không phù hợp về giá"], ["C3F", "Không phù hợp về độ tuổi"], ["C3G", "Không phù hợp về địa điểm"], ["C3H", "Không nghe máy nhiều lần"]]],
+                ["C4", "Khách hàng tiềm năng", 0, 0, [["C4A", "Cần gửi thêm thông tin"], ["C4B", "Cần trao đổi thêm"], ["C4C", "Đủ điều kiện tạo cơ hội"], ["C4D", "Tạo cơ hội thành công", true, "Hệ thống tự gắn"]]]
+            ], 600)],
+        [11, "GD_CO_HOI", "Giai đoạn cơ hội", 2, "parent", "Cơ hội (TS-07, TS-08); chỉ đi tới", L([
+                ["L1", "Khách hàng mới"],
+                ["L2", "Chưa liên hệ được", 0, 0, [["L2A", "Không nghe máy"], ["L2B", "Không liên lạc được"], ["L2C", "Bận gọi lại sau"]]],
+                ["L3", "Không có nhu cầu", 0, 0, [["L3A", "Không có nhu cầu"], ["L3B", "Chưa có nhu cầu ở thời điểm hiện tại"], ["L3C", "Đang học ở nơi khác"], ["L3D", "Không phù hợp về sản phẩm"], ["L3E", "Không phù hợp về giá"], ["L3F", "Không phù hợp về độ tuổi"], ["L3G", "Không phù hợp về địa điểm"], ["L3H", "Không nghe máy nhiều lần"]]],
+                ["L4", "Khách hàng tiềm năng", 0, 0, [["L4A", "Cần gửi thêm thông tin"], ["L4B", "Cần tư vấn thêm"], ["L4C", "Cần tham khảo ý kiến"], ["L4D", "Cần gọi lại vào dịp khác"]]],
+                ["L5", "Đồng ý tham gia test", 0, 0, [["L5A", "Đồng ý tham gia test"], ["L5B", "Đã xếp lịch test"], ["L5C", "Huỷ test, không liên hệ được", true, L5LINK], ["L5D", "Huỷ test, PH bận không đưa đón được", true, L5LINK], ["L5E", "Huỷ test, con bận", true, L5LINK], ["L5F", "Huỷ test, con không muốn tham gia", true, L5LINK], ["L5G", "Huỷ test, con đang ôn thi", true, L5LINK], ["L5H", "Huỷ test, con ốm", true, L5LINK], ["L5I", "Huỷ test, gia đình đi du lịch", true, L5LINK], ["L5K", "Huỷ test, thời tiết không thuận lợi", true, L5LINK], ["L5N", "Huỷ test, con đang ở quê", true, L5LINK], ["L5M", "Huỷ test, lý do khác", true, L5LINK], ["L5O", "Huỷ test nhiều lần", true, L5LINK]]],
+                ["L6", "Đã tham gia test", 0, 0, [["L6A", "Chưa có kết quả"], ["L6B", "Có kết quả, cần phân loại"], ["L6C", "Học xuất sắc"], ["L6D", "Học tốt"], ["L6E", "Học khá"], ["L6F", "Học trung bình"], ["L6G", "Học yếu"]]],
+                ["L7", "Tư vấn", 0, 0, [["L7A", "Cần đặt lịch tư vấn"], ["L7B", "Đã tư vấn, khách hàng tiềm năng"], ["L7C", "Đã tư vấn, dự thu"], ["L7D", "Cần trao đổi thêm"], ["L7E", "PH cân nhắc học phí"], ["L7F", "PH cân nhắc chương trình"], ["L7G", "PH cân nhắc thời gian"], ["L7H", "PH cân nhắc địa điểm"], ["L7I", "PH cân nhắc hình thức học"], ["L7K", "PH cần trao đổi với người thân"], ["L7L", "PH cần trao đổi với con"]]],
+                ["L8", "Đăng ký học", 0, 0, [["L8A", "PH đặt cọc"], ["L8B", "PH thanh toán chia đợt"], ["L8C", "PH hoàn thành 100% học phí"]]]
+            ], 400)],
+        [12, "GD_TAI_TUC", "Giai đoạn phiếu tái tục", 2, "parent", "Phiếu tái tục (TT-01, TT-02)", L([
+                ["L1", "Chờ tái tục", 0, 0, [["L1A", "Hệ thống sinh tự động"], ["L1B", "Tạo thủ công"]]], ["L2", "Đã liên hệ"], ["L3", "Đang tư vấn"], ["L4", "Đang cân nhắc"],
+                ["L5", "Không tái tục", 0, "Kết thúc · bắt buộc lý do"], ["L6", "Đồng ý tái tục"], ["L7", "Dự thu", 0, 0, [["L7A", "Đã gửi báo giá"], ["L7B", "Đã có đơn, chờ đóng tiền"]]], ["L8", "Hoàn thành tái tục", 0, 0, [["L8A", "Đã đóng đủ, đã cộng quỹ giờ"]]]
+            ], 200)],
+        [13, "LD_HUY_TEST", "Lý do huỷ test", 1, "open", "Huỷ phiếu kiểm tra (TS-19); mỗi lý do nối một nhóm con L5", L([["L5C", "Không liên hệ được", 0, "→ L5C"], ["L5D", "PH bận không đưa đón được", 0, "→ L5D"], ["L5E", "Con bận", 0, "→ L5E"], ["L5F", "Con không muốn tham gia", 0, "→ L5F"], ["L5G", "Con đang ôn thi", 0, "→ L5G"], ["L5H", "Con ốm", 0, "→ L5H"], ["L5I", "Gia đình đi du lịch", 0, "→ L5I"], ["L5K", "Thời tiết không thuận lợi", 0, "→ L5K"], ["L5N", "Con đang ở quê", 0, "→ L5N"], ["L5M", "Lý do khác", 0, "→ L5M"], ["L5O", "Huỷ test nhiều lần", 0, "→ L5O"]], 120)],
+        [14, "HT_TEST", "Hình thức test", 1, "open", "Phiếu kiểm tra đầu vào", tk("HTT", ["Offline", "Online"])],
+        [15, "CAP_DO_DE", "Cấp độ đề test", 1, "open", "Phiếu kiểm tra đầu vào", tk("CDD", ["Cơ bản", "Nâng cao"])],
+        [16, "LOAI_HD", "Loại hoạt động (lịch hẹn)", 1, "open", "Lịch hẹn (TS-04)", tk("HD", ["Gọi điện", "Zalo", "Email", "Gặp trực tiếp", "Thu tiền"], 3000)],
+        [17, "LD_LIEN_HE", "Lý do liên hệ khi điểm danh", 1, "open", "Điểm danh vận hành (BUOI-03)", tk("LH", ["Không nghe máy", "Đã nhắc vào lớp", "Đã vào lớp", "Xin nghỉ học", "Khác"], 5000)],
+        [18, "TT_BTVN", "Trạng thái BTVN", 1, "lock", "Chấm BTVN, báo cáo BTVN (R-GV-12)", L([["GRADED", "Đã chấm"], ["PARTIAL", "Làm chưa xong"], ["NONE", "Không làm"], ["LATE", "Nộp sau"], ["NA", "Không áp dụng"]], 18000)],
+        [19, "NHOM_DN", "Nhóm, nhóm con đề nghị", 2, "parent", "Ticket đề nghị (CS-04); nhóm con nghiệp vụ mở hộp thoại Thực hiện riêng", L([
+                ["CL", "Chuyển lớp", 0, 0, [["CL-CM", "Cùng môn", true, "Nghiệp vụ"], ["CL-KM", "Khác môn", true, "Nghiệp vụ"]]], ["CCS", "Chuyển cơ sở", 0, 0, [["CCS-CCS", "Chuyển cơ sở", true, "Nghiệp vụ"]]],
+                ["BL", "Bảo lưu", 0, 0, [["BL-MOI", "Mới", true, "Nghiệp vụ"], ["BL-GH", "Gia hạn", true, "Nghiệp vụ"], ["BL-QL", "Quay lại sớm", true, "Nghiệp vụ"]]],
+                ["CP", "Chuyển phí", 0, 0, [["CP-MON", "Sang môn khác", true, "Nghiệp vụ"], ["CP-ACE", "Sang anh/chị/em", true, "Nghiệp vụ"], ["CP-GOI", "Sang gói khác", true, "Nghiệp vụ"]]],
+                ["HT", "Hoàn tiền", 0, 0, [["HT-TB", "Toàn bộ", true, "Nghiệp vụ"], ["HT-MP", "Một phần", true, "Nghiệp vụ"]]],
+                ["DL", "Đổi lịch học", 0, 0, [["DL-1B", "Dời một buổi", true, "Nghiệp vụ"], ["DL-CA", "Đổi ca cố định", true, "Nghiệp vụ"], ["DL-HB", "Xin học bù", true, "Nghiệp vụ"]]],
+                ["DH", "Dừng học", 0, 0, [["DH-DH", "Dừng học", true, "Nghiệp vụ"]]]
+            ], 60)],
+        [20, "NHOM_KN", "Nhóm, nhóm con khiếu nại", 2, "open", "Ticket khiếu nại (CS-04); theo R-CS-04 (A-41)", L([
+                ["CT", "Chương trình học", 0, 0, [["CT-KD", "Nội dung khó/dễ"], ["CT-TD", "Tiến độ"], ["CT-BCT", "Không bám chương trình trên trường"], ["CT-TL", "Tài liệu"]]],
+                ["GV", "Giáo viên", 0, 0, [["GV-TD", "Thái độ"], ["GV-CM", "Chuyên môn"], ["GV-MN", "Đi muộn, nghỉ dạy"], ["GV-THAY", "Thay giáo viên nhiều"], ["GV-NX", "Nhận xét, chấm bài"]]],
+                ["PP", "Phương pháp giảng dạy", 0, 0, [["PP-KH", "Cách giảng khó hiểu"], ["PP-BTVN", "BTVN nhiều/ít"], ["PP-KT", "Kiểm tra đánh giá"], ["PP-QL", "Quản lý lớp"]]],
+                ["TV", "Tư vấn tuyển sinh", 0, 0, [["TV-CK", "Không đúng cam kết"], ["TV-TD", "Thái độ"], ["TV-CHAM", "Chậm phản hồi"], ["TV-XL", "Xếp lớp sai trình độ"]]],
+                ["VH", "Vận hành", 0, 0, [["VH-DL", "Đổi lịch đột xuất"], ["VH-CSVC", "Phòng học, cơ sở vật chất"], ["VH-SS", "Sĩ số"], ["VH-AT", "Đưa đón, an toàn"], ["VH-TB", "Thông báo chậm"]]],
+                ["CSO", "Chăm sóc", 0, 0, [["CSO-PH", "Không phản hồi"], ["CSO-TD", "Thái độ"], ["CSO-NX", "Không gửi nhận xét, báo cáo"]]],
+                ["KHAC", "Khác"]
+            ], 40)],
+        [21, "MUC_DO_KN", "Mức độ khiếu nại", 1, "lock", "Ticket khiếu nại; SLA (R-CS-08)", L([["THAP", "Thấp"], ["TB", "Trung bình"], ["CAO", "Cao"], ["NT", "Nghiêm trọng"]], 120)],
+        [22, "KENH_TICKET", "Kênh tiếp nhận ticket", 1, "open", "Ticket (CS-04)", tk("KT", ["Gọi điện", "Zalo", "Trực tiếp", "Email", "Giáo viên báo", "Khác"], 300)],
+        [23, "LD_HUY_BUOI", "Lý do huỷ buổi", 1, "open", "Huỷ buổi (BUOI-04); nhóm Trung tâm hoặc Học sinh", L([["HB01", "Nghỉ lễ đột xuất", 0, "Trung tâm"], ["HB02", "Giáo viên nghỉ", 0, "Trung tâm"], ["HB03", "Sự cố cơ sở vật chất", 0, "Trung tâm"], ["HB04", "Thời tiết", 0, "Trung tâm"], ["HB05", "Ốm", 0, "Học sinh"], ["HB06", "Việc gia đình", 0, "Học sinh"], ["HB07", "Thi ở trường", 0, "Học sinh"], ["HB08", "Khác", 0, "Học sinh"]], 200)],
+        [24, "LD_TU_CHOI", "Lý do từ chối", 1, "open", "Từ chối báo giá, đơn, phiếu thu, lớp, ticket, yêu cầu buổi; cột Áp dụng cho lọc theo loại (A-40)", L([["TC01", "Thiếu thông tin", 0, "Tất cả"], ["TC02", "Sai số tiền", 0, "Báo giá · đơn · phiếu thu"], ["TC03", "Sai chứng từ", 0, "Phiếu thu"], ["TC04", "Không đúng chính sách", 0, "Báo giá · đơn · lớp · ticket · yêu cầu buổi"], ["TC05", "Khác", 0, "Tất cả · bắt buộc ghi chú"]], 150)],
+        [25, "LD_DIEU_CHINH_GIO", "Lý do điều chỉnh giờ", 1, "open", "Điều chỉnh sổ giờ (GD-05)", L([["DCG01", "Sửa sai danh sách/điểm danh"], ["DCG02", "Bù giờ do lỗi trung tâm"], ["DCG03", "Tặng giờ chăm sóc", 0, "Cần duyệt"], ["DCG04", "Chuyển dữ liệu từ hệ thống cũ"], ["DCG05", "Khác", 0, "Bắt buộc ghi chú"]], 150)],
+        [26, "HT_THU", "Hình thức thu tiền", 1, "open", "Phiếu thu (TC-02)", tk("HTTT", ["Tiền mặt", "Chuyển khoản", "Quẹt thẻ"], 2000)],
+        [27, "TK_NHAN", "Tài khoản nhận tiền", 1, "open", "Phiếu thu, phiếu chi; do Kế toán khai", L([["CS1-VCB", "Vietcombank · ****2026 · HMT CS1"], ["CS1-TCB", "Techcombank · ****8810 · HMT CS1"]], 900), "campus"],
+        [28, "LD_KHONG_TT", "Lý do không tái tục", 1, "open", "Phiếu tái tục chuyển L5 Không tái tục (TT-02)", tk("KTT", ["Học phí", "Chất lượng", "Lịch học", "Chuyển nhà", "Học nơi khác", "Đủ mục tiêu", "Khác"], 80)],
+        [29, "DIA_GIOI", "Tỉnh, phường", 2, "open", "Địa chỉ phụ huynh (KH-03); nạp từ file seed 143 phường, xã", L([["HN", "Hà Nội", 0, "143 phường, xã", [["HN-LANG", "Phường Láng"], ["HN-DDA", "Phường Đống Đa"], ["HN-CGI", "Phường Cầu Giấy"], ["HN-HDO", "Phường Hà Đông"], ["HN-TLI", "Phường Từ Liêm"], ["HN-YHO", "Phường Yên Hoà"]]]], 2300)],
+        [30, "TEN_BUOC", "Tên hiển thị các bước trạng thái", 1, "lock", "Thanh trạng thái mọi bản ghi (file luật mục 4)", L([["GD-CHO", "Ghi danh · Chờ xếp lớp"], ["GD-XEP", "Ghi danh · Đã xếp lớp"], ["GD-HOC", "Ghi danh · Đang học"], ["GD-BL", "Ghi danh · Bảo lưu"], ["GD-HT", "Ghi danh · Hoàn thành"], ["GD-CL", "Ghi danh · Chuyển lớp"], ["GD-DUNG", "Ghi danh · Dừng"], ["GD-HP", "Ghi danh · Hoàn phí"], ["BUOI-NHAP", "Buổi học · Nháp"], ["BUOI-CHOT", "Buổi học · Đã chốt"], ["BUOI-DONE", "Buổi học · Done"], ["PC-NHAP", "Phiếu chi · Nháp"], ["PC-DUYET", "Phiếu chi · Đã duyệt"], ["PC-CHI", "Phiếu chi · Đã chi"]], 9000)],
+        [31, "LD_DAO_KHOAN", "Lý do đảo khoản", 1, "open", "Đảo khoản tiền vào (TC-09) · A-40", L([["DK01", "Nhập sai số tiền"], ["DK02", "Trùng phiếu"], ["DK03", "Sai đơn hoặc sai khách"], ["DK04", "Khác", 0, "Bắt buộc ghi chú"]], 20)],
+        [32, "LD_KHOA_TK", "Lý do khoá tài khoản", 1, "open", "Khoá tài khoản nhân viên, giáo viên, học sinh (QT-02, QT-13) · A-40", L([["KH01", "Nghỉ việc"], ["KH02", "Dừng học"], ["KH03", "Tạm nghỉ"], ["KH04", "Nghi lộ mật khẩu"], ["KH05", "Khác", 0, "Bắt buộc ghi chú"]], 30)]
+    ].map(([no, code, name, levels, lock, use, items, scope]) => ({ no, code, name, levels, lock, use, items, scope }));
+    const LOCKNAME = { lock: "Khoá", parent: "Khoá mục cha", open: "Mở" };
+    const byCode = (k) => C.find((c) => c.code === k);
+    const [st, setSt] = useState("default");
+    const [cat, setCat] = useState("GD_LEAD");
+    const [cs, setCs] = useState("CS1");
+    const [data, setData] = useState(() => Object.fromEntries(C.map((c) => [c.code, c.items])));
+    const [open, setOpen] = useState({ C2: true, C4: true, MKT: true, "MKT-FB": true, TELE: true, "TELE-CC": true, CL: true, HN: true, L5: true });
+    const [ren, setRen] = useState(null);
+    const [stop, setStop] = useState(null);
+    const [adding, setAdding] = useState(null);
+    const curCode = st === "empty" ? "TK_NHAN" : cat;
+    const c = byCode(curCode);
+    const items = st === "empty" ? [] : data[curCode];
+    const rowLocked = (it, lvl) => c.lock === "lock" || (c.lock === "parent" && lvl === 1) || !!it.sys;
+    const mapDeep = (list, fn) => list.map((x) => fn({ ...x, kids: mapDeep(x.kids || [], fn) }));
+    const moveIn = (list, code, d) => { const i = list.findIndex((x) => x.code === code); if (i >= 0) {
+        const n = [...list];
+        const [x] = n.splice(i, 1);
+        n.splice(i + d, 0, x);
+        return n;
+    } return list.map((x) => ({ ...x, kids: moveIn(x.kids || [], code, d) })); };
+    const update = (fn) => setData({ ...data, [curCode]: fn(items) });
+    const Row = ({ it, lvl, i, list }) => {
+        const lk = rowLocked(it, lvl);
+        const isRen = ren && ren.code === it.code;
+        const hasKids = lvl < c.levels;
+        return (React.createElement(Fragment, null,
+            React.createElement("tr", { "data-stopped": it.stopped ? "true" : undefined },
+                React.createElement("td", { style: { width: 70 } }, lk ? React.createElement("span", { className: "hmt-qt5-lock", title: it.tag && it.sys ? `${it.tag}: chỉ đổi tên` : "Khoá: chỉ đổi tên" },
+                    React.createElement(Icon, { name: "lock" })) : React.createElement("span", { className: "hmt-qt7-move" },
+                    React.createElement("span", { className: "hmt-qt7-grip", "aria-hidden": "true" },
+                        React.createElement(Icon, { name: "grip" })),
+                    React.createElement(Button, { variant: "tertiary", neutral: true, size: "sm", iconOnly: "arrowUp", label: `Đưa ${it.name} lên`, disabled: i === 0, onClick: () => update((x) => moveIn(x, it.code, -1)) }),
+                    React.createElement(Button, { variant: "tertiary", neutral: true, size: "sm", iconOnly: "arrowDown", label: `Đưa ${it.name} xuống`, disabled: i === list.length - 1, onClick: () => update((x) => moveIn(x, it.code, 1)) }))),
+                React.createElement("td", null,
+                    React.createElement("span", { style: { paddingLeft: (lvl - 1) * 28, display: "inline-flex", gap: 6, alignItems: "center", flexWrap: "wrap" } },
+                        hasKids && (it.kids || []).length ? React.createElement("button", { type: "button", className: "hmt-pw-toggle", "aria-expanded": !!open[it.code], "aria-label": `${open[it.code] ? "Thu" : "Mở"} mục con của ${it.name}`, onClick: () => setOpen({ ...open, [it.code]: !open[it.code] }) },
+                            React.createElement(Icon, { name: open[it.code] ? "chevronDown" : "chevronRight" })) : null,
+                        isRen ? React.createElement("span", { style: { display: "inline-flex", gap: 6 } },
+                            React.createElement(TextInput, { "aria-label": "T\u00EAn hi\u1EC3n th\u1ECB m\u1EDBi", defaultValue: it.name, autoFocus: true, onKeyDown: (e) => { if (e.key === "Escape")
+                                    setRen(null); if (e.key === "Enter") {
+                                    const v = e.target.value.trim();
+                                    if (v) {
+                                        update((x) => mapDeep(x, (p) => p.code === it.code ? { ...p, name: v } : p));
+                                        setRen(null);
+                                    }
+                                } } }),
+                            React.createElement(Button, { size: "sm", variant: "secondary", onClick: () => setRen(null) }, "Hu\u1EF7"))
+                            : React.createElement("span", { style: { fontWeight: lvl === 1 && c.levels > 1 ? 600 : 400 } }, it.name),
+                        it.tag ? React.createElement(Badge, { tone: "neutral", icon: false }, it.tag) : null)),
+                React.createElement("td", { className: "hmt-ph-code" }, it.code),
+                React.createElement("td", null, it.stopped ? React.createElement(Badge, { tone: "neutral", icon: false }, "Ng\u1EEBng") : React.createElement(Badge, { tone: "success" }, "\u0110ang d\u00F9ng")),
+                React.createElement("td", { className: "hmt-num" }, it.n.toLocaleString("vi-VN")),
+                React.createElement("td", { style: { whiteSpace: "nowrap" } },
+                    React.createElement(Button, { variant: "tertiary", size: "sm", onClick: () => setRen(it) }, "\u0110\u1ED5i t\u00EAn"),
+                    c.lock !== "lock" && hasKids ? React.createElement(Button, { variant: "tertiary", size: "sm", iconStart: "plus", onClick: () => setAdding(it.code) }, "M\u1EE5c con") : null,
+                    !lk ? (it.stopped ? React.createElement(Button, { variant: "tertiary", size: "sm", onClick: () => update((x) => mapDeep(x, (p) => p.code === it.code ? { ...p, stopped: false } : p)) }, "D\u00F9ng l\u1EA1i") : React.createElement(Button, { variant: "tertiary", size: "sm", neutral: true, onClick: () => setStop(it) }, "Ng\u1EEBng")) : null)),
+            hasKids && open[it.code] ? (it.kids || []).map((k, j) => React.createElement(Row, { key: k.code, it: k, lvl: lvl + 1, i: j, list: it.kids })) : null,
+            hasKids && adding === it.code ? React.createElement(NewRow, { lvl: lvl + 1, onDone: () => setAdding(null) }) : null));
+    };
+    const NewRow = ({ lvl, onDone }) => React.createElement("tr", null,
+        React.createElement("td", null),
+        React.createElement("td", { colSpan: 5 },
+            React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "flex-end", paddingLeft: (lvl - 1) * 28, flexWrap: "wrap" } },
+                React.createElement(Field, { label: "M\u00E3 (kh\u00F4ng \u0111\u1ED5i \u0111\u01B0\u1EE3c sau khi l\u01B0u)", required: true, helper: "Ch\u1EEF in hoa, s\u1ED1, g\u1EA1ch n\u1ED1i" },
+                    React.createElement(TextInput, { placeholder: curCode === "NGUON_LEAD" ? "VD: MKT-TIKTOK" : "VD: KHAC2" })),
+                React.createElement(Field, { label: "T\u00EAn hi\u1EC3n th\u1ECB", required: true },
+                    React.createElement(TextInput, { placeholder: curCode === "NGUON_LEAD" ? "VD: TikTok Ads" : "Tên mục" })),
+                React.createElement(Button, { onClick: onDone }, "Th\u00EAm"),
+                React.createElement(Button, { variant: "secondary", onClick: onDone }, "Hu\u1EF7"))));
+    const total = (list) => list.reduce((s, x) => s + 1 + total(x.kids || []), 0);
+    const editor = st === "loading" ? React.createElement("div", { style: { display: "grid", gap: 10 } }, [0, 1, 2, 3, 4].map((i) => React.createElement(Skeleton, { key: i, height: 36 })))
+        : st === "error" ? React.createElement(StateView, { kind: "error", title: "Kh\u00F4ng t\u1EA3i \u0111\u01B0\u1EE3c danh m\u1EE5c", description: "L\u1ED7i m\u00E1y ch\u1EE7 (E-500-CAT). Ch\u01B0a c\u00F3 thay \u0111\u1ED5i n\u00E0o b\u1ECB m\u1EA5t.", actions: React.createElement(Button, { iconStart: "refresh" }, "Th\u1EED l\u1EA1i") })
+            : (React.createElement(Fragment, null,
+                React.createElement(PageHeader, { title: `${c.no}. ${c.name}`, code: c.code, breadcrumb: [{ label: "Quản trị" }, { label: "Danh mục" }, { label: c.name }], meta: React.createElement("span", null,
+                        LOCKNAME[c.lock],
+                        " \u00B7 ",
+                        c.levels,
+                        " c\u1EA5p \u00B7 ",
+                        total(items),
+                        " m\u1EE5c \u00B7 d\u00F9ng \u1EDF ",
+                        c.use), actions: c.lock === "open" ? React.createElement(Button, { iconStart: "plus", onClick: () => setAdding("root") },
+                        "Th\u00EAm m\u1EE5c",
+                        c.levels > 1 ? " cấp 1" : "") : null }),
+                c.scope === "campus" ? React.createElement("div", { style: { maxWidth: 260, marginBottom: 12 } },
+                    React.createElement(Field, { label: "C\u01A1 s\u1EDF" },
+                        React.createElement(Select, { value: cs, onChange: (e) => setCs(e.target.value), options: ["CS1", "CS2", "CS4", "CS5"].map((k) => ({ value: k, label: `${k} · ${CAMPUS_NAME[k]}` })) }))) : null,
+                c.lock === "lock" ? React.createElement(Alert, { tone: "info", title: "Danh m\u1EE5c kho\u00E1: ch\u1EC9 \u0111\u1ED5i t\u00EAn hi\u1EC3n th\u1ECB" }, "M\u00E3 d\u00F9ng trong lu\u1EADt ho\u1EB7c trong m\u00E3 \u0111\u1ED1i t\u01B0\u1EE3ng. Kh\u00F4ng th\u00EAm, kh\u00F4ng Ng\u1EEBng, kh\u00F4ng \u0111\u1ED5i th\u1EE9 t\u1EF1, kh\u00F4ng \u0111\u1ED5i m\u00E3.") : null,
+                c.lock === "parent" ? React.createElement(Alert, { tone: "info", title: "Kho\u00E1 m\u1EE5c cha" },
+                    "M\u1EE5c c\u1EA5p 1 ch\u1EC9 \u0111\u1ED5i t\u00EAn. M\u1EE5c con th\u00EAm, \u0111\u1ED5i t\u00EAn, \u0111\u1ED5i th\u1EE9 t\u1EF1, Ng\u1EEBng \u0111\u01B0\u1EE3c",
+                    curCode === "GD_LEAD" ? "; riêng C4D do hệ thống tự gắn nên chỉ đổi tên" : curCode === "GD_CO_HOI" ? "; riêng L5C–L5O nối với lý do huỷ test nên chỉ đổi tên" : curCode === "NHOM_DN" ? "; nhóm con gắn nghiệp vụ (có hộp thoại Thực hiện) chỉ đổi tên" : "",
+                    ".") : null,
+                !items.length && adding !== "root" ? React.createElement(StateView, { kind: "empty", title: `${cs} chưa có tài khoản nhận tiền`, description: "Th\u00EAm t\u00E0i kho\u1EA3n theo th\u00F4ng tin K\u1EBF to\u00E1n cung c\u1EA5p. T\u00E0i kho\u1EA3n \u0110ang d\u00F9ng hi\u1EC7n trong \u00F4 T\u00E0i kho\u1EA3n nh\u1EADn \u1EDF phi\u1EBFu thu (TC-02) c\u1EE7a c\u01A1 s\u1EDF n\u00E0y.", actions: React.createElement(Button, { iconStart: "plus", onClick: () => setAdding("root") }, "Th\u00EAm t\u00E0i kho\u1EA3n") })
+                    : React.createElement("div", { className: "hmt-table-wrap", style: { border: "1px solid var(--hmt-border)", borderRadius: 8, background: "var(--hmt-surface)", marginTop: 12, maxHeight: 560, overflow: "auto" } },
+                        React.createElement("table", { className: "hmt-table" },
+                            React.createElement("caption", { className: "hmt-sr" },
+                                "C\u00E1c m\u1EE5c c\u1EE7a ",
+                                c.name),
+                            React.createElement("thead", null,
+                                React.createElement("tr", null,
+                                    React.createElement("th", { scope: "col" }, "Th\u1EE9 t\u1EF1"),
+                                    React.createElement("th", { scope: "col" }, "T\u00EAn hi\u1EC3n th\u1ECB"),
+                                    React.createElement("th", { scope: "col" }, "M\u00E3"),
+                                    React.createElement("th", { scope: "col" }, "Tr\u1EA1ng th\u00E1i"),
+                                    React.createElement("th", { scope: "col", className: "hmt-num" }, "\u0110ang d\u00F9ng \u1EDF"),
+                                    React.createElement("th", { scope: "col" }, "Thao t\u00E1c"))),
+                            React.createElement("tbody", null,
+                                adding === "root" ? React.createElement(NewRow, { lvl: 1, onDone: () => setAdding(null) }) : null,
+                                items.map((it, i) => React.createElement(Row, { key: it.code, it: it, lvl: 1, i: i, list: items }))))),
+                React.createElement("p", { className: "hmt-help" }, "D\u00F9ng n\u00FAt m\u0169i t\u00EAn (ho\u1EB7c k\u00E9o \u22EE\u22EE) \u0111\u1EC3 \u0111\u1ED5i th\u1EE9 t\u1EF1. M\u1EE5c Ng\u1EEBng kh\u00F4ng hi\u1EC7n trong \u00F4 ch\u1ECDn m\u1EDBi; b\u1EA3n ghi c\u0169 gi\u1EEF nguy\u00EAn. Kh\u00F4ng danh m\u1EE5c n\u00E0o c\u00F3 Xo\u00E1 hay \u0111\u1ED5i m\u00E3."),
+                React.createElement(ConfirmDialog, { open: !!stop, onClose: () => setStop(null), onConfirm: () => { update((x) => mapDeep(x, (p) => p.code === stop.code ? { ...p, stopped: true } : p)); setStop(null); }, tone: "warning", title: stop ? `Ngừng “${stop.name}”?` : "", description: stop ? `Mục đang dùng ở ${stop.n.toLocaleString("vi-VN")} bản ghi. Các bản ghi này giữ nguyên; mục không hiện trong ô chọn mới. Dùng lại được.` : "", confirmLabel: "Ng\u1EEBng m\u1EE5c" })));
+    const list = (React.createElement("nav", { "aria-label": "Danh m\u1EE5c", className: "hmt-panel", style: { padding: 6, alignSelf: "start", maxHeight: 790, overflow: "auto" } },
+        ["lock", "parent", "open"].map((lk) => React.createElement(Fragment, { key: lk },
+            React.createElement("div", { className: "hmt-cnav-sub" },
+                LOCKNAME[lk],
+                " \u00B7 ",
+                C.filter((x) => x.lock === lk).length),
+            React.createElement("ul", { className: "hmt-cnav", style: { gap: 1 } }, C.filter((x) => x.lock === lk).map((x) => React.createElement("li", { key: x.code },
+                React.createElement("a", { href: "#", className: "hmt-cnav-i", "aria-current": curCode === x.code ? "page" : undefined, onClick: (e) => { e.preventDefault(); setCat(x.code); setSt("default"); setAdding(null); setRen(null); } },
+                    React.createElement("span", null,
+                        React.createElement("span", { className: "hmt-help", style: { display: "inline-block", minWidth: 22 } }, x.no),
+                        x.name),
+                    lk === "lock" ? React.createElement(Icon, { name: "lock" }) : null)))))),
+        React.createElement("a", { href: "#", className: "hmt-link", style: { display: "block", padding: "8px 10px" }, onClick: (e) => e.preventDefault() }, "T\u1EA5t c\u1EA3 danh m\u1EE5c (QT-06)")));
+    return (React.createElement(ScreenFrame, { code: "QT-07", name: "Danh m\u1EE5c \u00B7 s\u1EEDa c\u00E1c m\u1EE5c", level: "A", tpl: "K10 trong K01 \u00B7 m\u00E1y t\u00EDnh", states: STATES, state: st, onState: (s) => setSt(s), height: 940, note: "30 danh m\u1EE5c v\u00E0 gi\u00E1 tr\u1ECB n\u1EA1p s\u1EB5n l\u1EA5y t\u1EEB HMT_DANH_MUC_VA_THAM_SO.md (A-29); ch\u1EC9 s\u1ED1 \u201C\u0110ang d\u00F9ng \u1EDF\u201D l\u00E0 m\u1EABu. Th\u1EED: ch\u1ECDn danh m\u1EE5c b\u00EAn tr\u00E1i (Ngu\u1ED3n lead 3 c\u1EA5p, Giai \u0111o\u1EA1n c\u01A1 h\u1ED9i c\u00F3 L5C\u2013L5O kho\u00E1); \u0110\u1ED5i t\u00EAn (Enter l\u01B0u, Esc hu\u1EF7); m\u0169i t\u00EAn \u0111\u1ED5i th\u1EE9 t\u1EF1; Ng\u1EEBng m\u1EDF h\u1ED9p tho\u1EA1i c\u1EA3nh b\u00E1o. Tr\u1EA1ng th\u00E1i Danh m\u1EE5c tr\u1ED1ng m\u1EDF T\u00E0i kho\u1EA3n nh\u1EADn ti\u1EC1n. Nh\u00F3m con khi\u1EBFu n\u1EA1i theo R-CS-04 (A-41); danh m\u1EE5c 24 c\u00F3 c\u1ED9t \u00C1p d\u1EE5ng cho, 31, 32 th\u00EAm theo A-40." },
+        React.createElement("div", { style: { height: "100%" } },
+            React.createElement(Shell, { role: "AD", active: "QT-06", user: STAFF[0], collapsed: true }, st === "noaccess" ? React.createElement(StateView, { kind: "no-access", title: "Ch\u1EC9 Admin s\u1EEDa \u0111\u01B0\u1EE3c danh m\u1EE5c", description: "Vai tr\u00F2 c\u1EE7a b\u1EA1n kh\u00F4ng c\u00F3 quy\u1EC1n \u1EDF Qu\u1EA3n tr\u1ECB (CHUNG-16).", actions: React.createElement(Button, { variant: "secondary", iconStart: "home" }, "V\u1EC1 trang ch\u1EE7") })
+                : React.createElement("div", { style: { display: "grid", gridTemplateColumns: "270px minmax(0,1fr)", gap: 16 } },
+                    list,
+                    React.createElement("div", { style: { minWidth: 0 } }, editor))))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

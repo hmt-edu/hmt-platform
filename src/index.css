@@ -1,1 +1,44 @@
+/* Nền giao diện HMT: token lấy thẳng từ gói thiết kế (một nguồn duy nhất), font tự host. */
 @import 'tailwindcss';
+/* Không quét gói thiết kế (HTML mẫu) khi sinh CSS. */
+@source not "../design";
+@import '../design/hmt-platform/tokens/HMT_DESIGN_TOKENS.css';
+
+/* Inter: giao diện và số. Be Vietnam Pro: tiêu đề. File font nằm trong bản build, không gọi CDN. */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/inter/700.css';
+@import '@fontsource/be-vietnam-pro/600.css';
+@import '@fontsource/be-vietnam-pro/700.css';
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100dvh;
+  }
+  a {
+    color: inherit;
+  }
+}
+
+/* P-100: vùng bấm tối thiểu 44px trên điện thoại (cả CRM vốn dùng control 36px). */
+@utility tap {
+  @media (width < 48rem) {
+    min-height: var(--hmt-target-min);
+  }
+}
+
+/* Mảng nhận diện của trang đăng nhập (khuôn K11): nền cam hành động, kẻ ô mờ. */
+@utility auth-grid {
+  background-color: var(--hmt-action);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--hmt-on-action) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--hmt-on-action) 12%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 3rem 3rem;
+}

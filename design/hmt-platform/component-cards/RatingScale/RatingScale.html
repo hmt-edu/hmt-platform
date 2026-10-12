@@ -1,0 +1,55 @@
+<!-- @dsCard group="Học vụ" height=620 subtitle="Thang 1–5 có mô tả mức; "chưa chấm" khác hẳn điểm 0; nhóm Thái độ 3 · Kiến thức 3 · Vận dụng theo dòng nội dung; thao tác một tay" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>RatingScale — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="teacher"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { RatingScale, Field, Textarea } = HMT;
+    const R = { 1: "Chưa đạt, cần kèm sát", 2: "Đạt một phần, còn nhiều lỗi", 3: "Đạt yêu cầu", 4: "Tốt, ít lỗi", 5: "Rất tốt, chủ động mở rộng" };
+    const crit = [["Thái độ", ["Tập trung", "Chủ động", "Tinh thần học tập"]], ["Kiến thức", ["Nắm kiến thức", "Hiểu bản chất", "Ghi nhớ"]], ["Vận dụng", ["Bài 1: Phân tích đa thức thành nhân tử", "Bài 2: Hằng đẳng thức đáng nhớ"]]];
+    const [v, setV] = useState({ "Tập trung": 4, "Chủ động": 3 });
+    const [msg, setMsg] = useState("");
+    const scored = Object.values(v).filter((x) => x != null).length;
+    return (React.createElement("div", { className: "hmt-demo", style: { alignItems: "center" } },
+        React.createElement("div", { className: "hmt-phone", style: { padding: 16, display: "grid", gap: 16 } },
+            React.createElement("p", { style: { margin: 0 } },
+                React.createElement("b", null, "Nguy\u1EC5n Minh Kh\u00F4i"),
+                " \u00B7 HS000123",
+                React.createElement("br", null),
+                React.createElement("span", { className: "hmt-person-meta", style: { display: "inline" } },
+                    "8A1 \u00B7 Bu\u1ED5i 12 \u00B7 15/10/2026 \u00B7 \u0111\u00E3 ch\u1EA5m ",
+                    scored,
+                    "/8")),
+            crit.map(([g, items]) => (React.createElement("section", { key: g, style: { display: "grid", gap: 12 } },
+                React.createElement("h4", { style: { margin: 0, fontSize: 13, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--hmt-fg-muted)" } }, g),
+                items.map((c) => { var _a; return React.createElement(RatingScale, { key: c, name: c, label: c, required: g !== "Vận dụng", value: (_a = v[c]) !== null && _a !== void 0 ? _a : null, onChange: (n) => setV({ ...v, [c]: n }), descriptions: R }); })))),
+            React.createElement("p", { className: "hmt-help" }, "\u0110i\u1EC3m trung b\u00ECnh v\u1EADn d\u1EE5ng do h\u1EC7 th\u1ED1ng t\u00EDnh. M\u00F4 t\u1EA3 t\u1EEBng m\u1EE9c \u0111ang l\u00E0 ch\u1EEF m\u1EABu \u2014 b\u1EA3n th\u1EADt l\u1EA5y t\u1EEB c\u1EA5u h\u00ECnh rubric (Qu\u1EA3n tr\u1ECB)."),
+            React.createElement(Field, { label: "L\u1EDDi nh\u1EAFn ph\u1EE5 huynh", required: true },
+                React.createElement(Textarea, { value: msg, onChange: (e) => setMsg(e.target.value), maxLength: 500, placeholder: "V\u00ED d\u1EE5: H\u00F4m nay Kh\u00F4i t\u1EADp trung t\u1ED1t\u2026" })))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

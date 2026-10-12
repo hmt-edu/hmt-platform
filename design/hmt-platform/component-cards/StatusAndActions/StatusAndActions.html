@@ -1,0 +1,61 @@
+<!-- @dsCard group="Foundations" height=520 width=960 subtitle="Nút, focus, disabled và 4 trạng thái — icon + chữ, không chỉ màu" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@600;700&display=swap">
+<style>
+  body{margin:0;background:var(--hmt-canvas);color:var(--hmt-fg);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:20px}
+  .wrap{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .card{background:var(--hmt-surface);border:1px solid var(--hmt-border);border-radius:8px;padding:16px}
+  h4{margin:0 0 12px;font:600 13px/18px Inter,sans-serif;color:var(--hmt-fg-muted);text-transform:uppercase;letter-spacing:.05em}
+  .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .btn{height:36px;padding:0 14px;border-radius:6px;font:500 14px/1 Inter,sans-serif;border:1px solid transparent;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+  .primary{background:var(--hmt-action);color:var(--hmt-on-action)}
+  .primary.hover{background:var(--hmt-action-hover)} .primary.pressed{background:var(--hmt-action-pressed)}
+  .outline{background:var(--hmt-surface);color:var(--hmt-fg);border-color:var(--hmt-border-strong)}
+  .danger-o{background:var(--hmt-surface);color:var(--hmt-danger);border-color:var(--hmt-danger-border)}
+  .danger-s{background:var(--hmt-danger-solid);color:var(--hmt-on-danger-solid)}
+  .disabled{background:var(--hmt-disabled-bg);color:var(--hmt-disabled-fg);border-color:var(--hmt-disabled-border);cursor:not-allowed}
+  .focus{box-shadow:0 0 0 2px var(--hmt-surface),0 0 0 4px var(--hmt-focus)}
+  .cap{font-size:12px;line-height:16px;color:var(--hmt-fg-muted)}
+  .alert{display:flex;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid;margin-bottom:8px}
+  .alert b{display:block;font-weight:600}
+  .ic{width:20px;height:20px;flex:none;border-radius:50%;display:grid;place-items:center;font:700 12px/1 Inter,sans-serif}
+  .success{background:var(--hmt-success-subtle);color:var(--hmt-on-success-subtle);border-color:var(--hmt-success-border)}
+  .warning{background:var(--hmt-warning-subtle);color:var(--hmt-on-warning-subtle);border-color:var(--hmt-warning-border)}
+  .danger{background:var(--hmt-danger-subtle);color:var(--hmt-on-danger-subtle);border-color:var(--hmt-danger-border)}
+  .info{background:var(--hmt-info-subtle);color:var(--hmt-on-info-subtle);border-color:var(--hmt-info-border)}
+  .success .ic{background:var(--hmt-success-solid);color:var(--hmt-on-success-solid)}
+  .warning .ic{background:var(--hmt-warning-solid);color:var(--hmt-on-warning-solid)}
+  .danger .ic{background:var(--hmt-danger-solid);color:var(--hmt-on-danger-solid)}
+  .info .ic{background:var(--hmt-info-solid);color:var(--hmt-on-info-solid)}
+  .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font:500 13px/18px Inter,sans-serif}
+  .t-success{color:var(--hmt-success)}.t-warning{color:var(--hmt-warning)}.t-danger{color:var(--hmt-danger)}.t-info{color:var(--hmt-info)}
+  .input{height:36px;border:1px solid var(--hmt-border-strong);border-radius:6px;padding:0 10px;display:flex;align-items:center;background:var(--hmt-surface);color:var(--hmt-fg);width:220px}
+  .input.err{border-color:var(--hmt-danger-border)}
+  .link{color:var(--hmt-link);font-weight:500;text-decoration:underline;text-underline-offset:2px}
+</style><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head><body>
+<div class="wrap">
+  <div class="card">
+    <h4>Hành động</h4>
+    <div class="row"><button class="btn primary">Tạo phiếu thu</button><button class="btn primary hover">Hover</button><button class="btn primary pressed">Pressed</button></div>
+    <div class="row"><button class="btn outline">Xuất Excel</button><button class="btn primary focus">Focus</button><button class="btn disabled" aria-disabled="true">Disabled</button></div>
+    <div class="row"><button class="btn danger-o">✕ Huỷ phiếu thu</button><span class="cap">Nguy hiểm: mặc định dạng viền</span></div>
+    <div class="row"><button class="btn danger-s">✕ Xoá học sinh</button><span class="cap">Nền đặc: chỉ trong hộp xác nhận</span></div>
+    <h4 style="margin-top:16px">Form</h4>
+    <div class="row"><span class="input">Nguyễn An</span><span class="input err">0912 345</span></div>
+    <div class="row"><span class="cap t-danger">✕ Số điện thoại cần đủ 10 chữ số</span></div>
+    <p style="margin:0">Xem <a class="link" href="#">lịch sử thanh toán</a> của học sinh.</p>
+  </div>
+  <div class="card">
+    <h4>Trạng thái</h4>
+    <div class="alert success"><span class="ic">✓</span><div><b>Đã lưu điểm danh</b>28 có mặt · 2 vắng</div></div>
+    <div class="alert warning"><span class="ic">!</span><div><b>Sắp đến hạn học phí</b>3 học sinh đến hạn trong 5 ngày</div></div>
+    <div class="alert danger"><span class="ic">✕</span><div><b>Quá hạn học phí</b>Lê Chi · 4C3 · quá 12 ngày</div></div>
+    <div class="alert info"><span class="ic">i</span><div><b>Lịch nghỉ lễ</b>CS1–CS5 nghỉ ngày 2/9</div></div>
+    <div class="row" style="margin-top:12px">
+      <span class="badge success">✓ Đã thu</span><span class="badge warning">⚠ Sắp hạn</span><span class="badge danger">✕ Quá hạn</span><span class="badge info">ⓘ Mới</span>
+    </div>
+    <div class="row"><span class="t-success">✓ Có mặt</span><span class="t-warning">⚠ Đi muộn</span><span class="t-danger">✕ Vắng</span><span class="t-info">ⓘ Học bù</span></div>
+  </div>
+</div>
+</body></html>

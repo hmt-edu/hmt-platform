@@ -1,0 +1,66 @@
+<!-- @dsCard group="Data display" height=620 subtitle="Bảng CRM: sắp xếp, chọn nhiều, thao tác hàng loạt, loading, rỗng, dạng thẻ trên mobile" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>Table — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Table, Badge, Button, Pagination, Chip, StateView, PersonLine } = HMT;
+    const DATA = [
+        { id: 1, name: "Nguyễn An", cls: "7A2", campus: "CS1", due: 0, status: "paid" },
+        { id: 2, name: "Trần Bình", cls: "9B1", campus: "CS2", due: 1250000, status: "soon" },
+        { id: 3, name: "Lê Chi", cls: "4C3", campus: "CS4", due: 12400000, status: "late" },
+        { id: 4, name: "Phạm Dũng", cls: "6A1", campus: "CS1", due: 850000, status: "soon" },
+        { id: 5, name: "Hoàng Gia Hân", cls: "9B1", campus: "CS5", due: 0, status: "paid" },
+        { id: 6, name: "Vũ Khánh Linh", cls: "11T", campus: "CS4", due: 3200000, status: "late" },
+    ];
+    const ST = { paid: ["success", "Đã thu"], soon: ["warning", "Sắp hạn"], late: ["danger", "Quá hạn"] };
+    const [sort, setSort] = useState({ key: "due", dir: "desc" });
+    const [sel, setSel] = useState([2]);
+    const [mode, setMode] = useState("data");
+    const [page, setPage] = useState(1);
+    const rows = mode === "empty" ? [] : [...DATA].sort((a, b) => { const x = a[sort.key], y = b[sort.key]; return (x > y ? 1 : x < y ? -1 : 0) * (sort.dir === "asc" ? 1 : -1); });
+    const vnd = (n) => n.toLocaleString("vi-VN") + " đ";
+    const cols = [
+        { key: "name", header: "Học sinh", sortable: true, render: (r) => React.createElement(PersonLine, { name: r.name, meta: r.campus, size: "sm" }) },
+        { key: "cls", header: "Lớp", sortable: true },
+        { key: "due", header: "Còn nợ", numeric: true, sortable: true, render: (r) => vnd(r.due) },
+        { key: "status", header: "Trạng thái", render: (r) => React.createElement(Badge, { tone: ST[r.status][0] }, ST[r.status][1]) },
+        { key: "act", header: React.createElement("span", { className: "hmt-sr" }, "Thao t\u00E1c"), render: (r) => React.createElement(Button, { variant: "tertiary", neutral: true, size: "sm", iconOnly: "more", label: `Thao tác cho ${r.name}` }) },
+    ];
+    return (React.createElement("div", { className: "hmt-demo" },
+        React.createElement("div", { className: "hmt-demo-row" },
+            React.createElement(Chip, { selected: mode === "data", onToggle: () => setMode("data") }, "C\u00F3 d\u1EEF li\u1EC7u"),
+            React.createElement(Chip, { selected: mode === "loading", onToggle: () => setMode("loading") }, "\u0110ang t\u1EA3i"),
+            React.createElement(Chip, { selected: mode === "empty", onToggle: () => setMode("empty") }, "Kh\u00F4ng c\u00F3 k\u1EBFt qu\u1EA3"),
+            React.createElement(Chip, { selected: mode === "narrow", onToggle: () => setMode("narrow") }, "M\u00E0n h\u1EB9p (th\u1EBB)")),
+        React.createElement("div", { style: { maxWidth: mode === "narrow" ? 360 : undefined } },
+            React.createElement(Table, { caption: "C\u00F4ng n\u1EE3 h\u1ECDc ph\u00ED", columns: cols, rows: rows, selectable: true, selected: sel, onSelectedChange: setSel, sort: sort, onSortChange: setSort, loading: mode === "loading", bulkActions: React.createElement(Button, { size: "sm", variant: "secondary" }, "G\u1EEDi nh\u1EAFc h\u1ECDc ph\u00ED"), empty: React.createElement(StateView, { kind: "no-results", compact: true, title: "Kh\u00F4ng c\u00F3 h\u1ECDc sinh kh\u1EDBp b\u1ED9 l\u1ECDc", description: "Th\u1EED b\u1ECF b\u1EDBt \u0111i\u1EC1u ki\u1EC7n l\u1ECDc ho\u1EB7c \u0111\u1ED5i c\u01A1 s\u1EDF.", actions: React.createElement(Button, { variant: "secondary", size: "sm" }, "Xo\u00E1 b\u1ED9 l\u1ECDc") }) })),
+        mode === "data" ? React.createElement(Pagination, { page: page, pageCount: 24, onPageChange: setPage, total: 1287, pageSize: 6 }) : null,
+        React.createElement("p", { className: "hmt-help" }, "B\u1EA5m ti\u00EAu \u0111\u1EC1 c\u1ED9t \u0111\u1EC3 s\u1EAFp x\u1EBFp (aria-sort), ch\u1ECDn h\u00E0ng \u0111\u1EC3 hi\u1EC7n thanh thao t\u00E1c h\u00E0ng lo\u1EA1t; s\u1ED1 ti\u1EC1n canh ph\u1EA3i, ch\u1EEF s\u1ED1 \u0111\u1EC1u chi\u1EC1u r\u1ED9ng.")));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

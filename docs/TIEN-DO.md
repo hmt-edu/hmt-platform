@@ -1,17 +1,26 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 12/10/2026 (sau PR #14). Người làm tiếp đọc file này trước, rồi CLAUDE.md, `docs/spec/` (01, 02, 03, 04, 06), `docs/design/ban-do-man-hinh.md`, `docs/nghiep-vu/`.
+Cập nhật: 12/10/2026 (sau PR 4a của bước 4). Người làm tiếp đọc file này trước, rồi CLAUDE.md, `docs/quy-trinh-phoi-hop.md`, `docs/spec/` (01, 02, 03, 04, 06), `docs/design/ban-do-man-hinh.md`, `docs/nghiep-vu/`.
 
 ## Đang ở đâu
 
-**Giai đoạn 0 (GĐ0), xong bước 3. Bước tiếp theo: bước 4 (màn quản trị), chờ anh Trường gửi yêu cầu.**
+**Giai đoạn 0 (GĐ0), đang làm bước 4 (khung giao diện ba cổng + màn quản trị). Xong PR 4a; tiếp theo là PR 4b.**
+
+Bước 4 chia bốn PR (anh Trường đã OK kế hoạch 12/10):
+
+| PR | Nội dung | Trạng thái |
+|---|---|---|
+| 4a | Gói thiết kế vào `design/hmt-platform/`, token, khung ba cổng (CHUNG-10, GV-01, HT-09), đăng nhập và các màn CHUNG-01…09, 13, 16, 17, 24, 25 | Xong |
+| 4b | Khuôn dùng chung: bảng danh sách, bộ lọc, bản ghi (thanh trạng thái, nút liên kết, ghi chú + lịch sử), ô tìm kiếm, thông báo, các ô nhập (Combobox, DateRange, MoneyInput…), hộp thoại chặn/xác nhận | Chưa bắt đầu |
+| 4c-1 | Tham số, danh mục, cơ sở và phòng học, công tắc tính năng | Chưa bắt đầu |
+| 4c-2 | Người dùng, vai trò, ma trận quyền, nhật ký, tài khoản học sinh, CHUNG-20; file workflow khôi phục `bootstrap-admin` soạn ở `docs/hmt-deploy/` | Chưa bắt đầu |
 
 | Bước GĐ0 | Trạng thái | PR |
 |---|---|---|
 | 1. Hạ tầng: React/Vite, Supabase, CI, Cloudflare Pages, repo `hmt-deploy`, sao lưu, báo cáo tuần | Xong, đã lên chạy thật | #1 |
 | 2. Nền dữ liệu: danh mục, nhật ký thao tác, cấp mã, Cài đặt, công tắc, ghi chú | Xong, đã lên chạy thật | #2–#5 |
 | 3. Đăng nhập, phân quyền: Edge Function đăng nhập, 9 vai trò, ma trận quyền, RLS, quản trị tài khoản (hàm + Edge Function), soát bảo mật | Xong, đã lên chạy thật (trừ #12) | #6–#12 |
-| 4. Màn quản trị (tài khoản, quyền, danh mục, Cài đặt, nhật ký) | Chưa bắt đầu | |
+| 4. Khung giao diện ba cổng + màn quản trị (tài khoản, quyền, danh mục, Cài đặt, nhật ký) | Đang làm: xong 4a, còn 4b, 4c-1, 4c-2 | #15 |
 | 5. Khôi phục thử sao lưu, cảnh báo | Chưa bắt đầu | |
 
 Bản chạy thật (`hmt-prod.pages.dev`) đang ở tag `staging-20261010-1642-75637cf` (trước #12). Đã cấu hình Supabase
@@ -20,7 +29,7 @@ chữ + số, TOTP). Đã có Admin đầu tiên là anh Trường (gắn tạm 
 
 ## PR đang mở
 
-Không có. Mọi PR #1–#14 đã gộp, mỗi commit gộp có link comment "OK" của `caotruong276`.
+Không có. Mọi PR #1–#15 đã gộp, mỗi commit gộp có link comment "OK" của `caotruong276`.
 
 ## Việc dở, việc tiếp theo
 
@@ -32,7 +41,9 @@ Không có. Mọi PR #1–#14 đã gộp, mỗi commit gộp có link comment "O
 2. **Đưa #12 (CS3 Hội sở) lên chạy thật** khi anh muốn: hmt-deploy > Deploy production, tag
    `staging-20261010-1840-c3bc365`. Cùng lúc chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang hmt-deploy (chỉ đổi
    mô tả ô cơ sở).
-3. **Bước 4** (chờ yêu cầu của anh; phân tích, đề xuất trước, anh OK mới code). Đã hứa làm kèm:
+3. **Hai bước tối đa 2 thiết bị**: anh Trường đã đặt "Maximum number of per-user MFA factors" = 2 trên cả hmt-staging và
+   hmt-prod (12/10; mặc định Supabase là 10). Local đặt trong `supabase/config.toml`.
+4. **Bước 4, các PR còn lại** (4b, 4c-1, 4c-2). Đã hứa làm kèm:
    - Màn quản trị tài khoản (tạo, vai trò, cơ sở, khoá/mở, đặt lại mật khẩu) dùng Edge Function `admin-users` có sẵn.
    - Cơ sở là danh mục khoá (chốt 12/10): không thêm, không ngừng trên giao diện; màn QT-08 sửa tên hiển thị, địa chỉ,
      hotline và quản lý phòng học. Mở cơ sở mới qua migration.
@@ -41,9 +52,9 @@ Không có. Mọi PR #1–#14 đã gộp, mỗi commit gộp có link comment "O
      L5B, lý do khoá tài khoản theo danh mục, hai bước tối đa 2 thiết bị, đặt lại hai bước, vai trò gán tạm có thời hạn,
      hotline cơ sở, công tắc tính năng không có CS3, chế độ khôi phục của workflow `bootstrap-admin`. Màn QT-13 (tài
      khoản học sinh) ở bước 4 chỉ Admin dùng; CSKH từ giai đoạn 4.
-4. **Trước GĐ4**: L2 trong `docs/nghiep-vu/phan-quyen.md` (học sinh, phụ huynh chỉ đọc phần của mình). Giai đoạn 3: chốt
+5. **Trước GĐ4**: L2 trong `docs/nghiep-vu/phan-quyen.md` (học sinh, phụ huynh chỉ đọc phần của mình). Giai đoạn 3: chốt
    trường dữ liệu giáo viên được xem (đề xuất: không thấy số điện thoại, địa chỉ phụ huynh).
-5. **Để sau, khi anh sẵn sàng**: quên mật khẩu qua email (Resend/SMTP + DNS, Edge Function `send-email` đã có), tên miền
+6. **Để sau, khi anh sẵn sàng**: quên mật khẩu qua email (Resend/SMTP + DNS, Edge Function `send-email` đã có), tên miền
    riêng (CNAME `app` → `hmt-prod.pages.dev`), bước 5.
 
 ## Quyết định gần đây chưa nằm trong docs/spec
@@ -63,11 +74,22 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
   bị xoá. Luôn còn ít nhất một ADMIN hoạt động.
 - **CS3 = Hội sở**, cơ sở văn phòng (chỉ gắn tài khoản nhân viên). Spec 02 trong repo đã sửa; anh Trường sửa bản gốc.
 - **Hàm mới trong schema `app` mặc định không ai chạy được**: mỗi migration phải `GRANT` rõ hàm nào cho ai.
+- **Giao diện (từ PR 4a)**: màu, cỡ chữ, khoảng cách chỉ lấy từ `design/hmt-platform/tokens/HMT_DESIGN_TOKENS.css`
+  (Tailwind 4, `src/index.css`); thành phần dựng lại trên Radix ở `src/ui/`, giữ tên như gói thiết kế; biểu tượng qua từ
+  điển `src/ui/icons.tsx`. Menu CRM (`src/nav/crmMenu.ts`) chỉ khai cấu trúc và quyền cần có; ai thấy mục nào đọc từ ma
+  trận quyền và công tắc tính năng trong DB. Khi vênh: spec 04 > bản đồ màn hình > gói thiết kế, ghi vào PR.
+- **Đường dẫn**: `/dang-nhap`, `/dang-nhap/hoc-sinh`, `/xac-thuc-hai-buoc`, `/thiet-lap-hai-buoc`, `/quen-mat-khau`,
+  `/dat-mat-khau`, `/doi-mat-khau`, `/khong-dang-nhap-duoc`, `/chon-cong`, `/khong-co-quyen`, `/trang-thai` (trang kiểm
+  tra kết nối cũ), `/crm/...`, `/gv/...`, `/hoc/...`. Hồ sơ cá nhân: `/<cổng>/tai-khoan`.
+- **Quên mật khẩu**: hai màn đã dựng nhưng chưa gửi thư; màn luôn trả cùng một câu và bảo liên hệ quản trị viên.
 
 ## Lưu ý cho người làm tiếp
 
-- **Trước khi bắt đầu bước 4**: bật lại Docker Desktop (đang tạm dừng từ 12/10; nhờ anh Trường bật nếu không tự bật được),
-  chạy `npm run db:reset` và `npm run db:test` đủ 348 bài pgTAP. PR #14 chỉ có tài liệu nên chưa chạy pgTAP.
+- **Ảnh so sánh với thiết kế**: `SO_SANH=1 npx playwright test e2e/so-sanh.spec.ts --project=may-tinh` ghép ảnh thiết kế
+  và bản dựng vào `docs/so-sanh/<MÃ>.jpg`; chạy xong chạy lại `npm run db:seed-users`. Màn mới thì thêm vào kịch bản này.
+- **Kiểm thử giao diện**: Playwright hai cỡ `may-tinh` (1440×900) và `dien-thoai` (390×844), mỗi màn gọi
+  `expectAccessible` (axe, chặn lỗi nghiêm trọng). Tua thời gian bằng `page.clock`, không sửa tay mốc thời gian.
+- **File anh Trường đưa vào** nằm ở `_inbox/` (không commit), dùng xong xoá.
 - **Mỗi PR** cập nhật luôn file này (viết như sau khi PR đã gộp).
 
 - **Duyệt PR**: chỉ gộp khi CI xanh **và** có comment "OK" từ `caotruong276` **sau commit cuối**. Trước khi nhắc anh

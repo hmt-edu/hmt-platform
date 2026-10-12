@@ -1,0 +1,47 @@
+<!-- @dsCard group="Feedback" height=440 subtitle="Một component cho trạng thái rỗng, không có kết quả, lỗi, mất mạng, không có quyền" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>StateView — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { StateView, Button, Tabs } = HMT;
+    const [k, setK] = useState("empty");
+    const C = {
+        empty: { title: "Lớp chưa có học sinh", description: "Thêm học sinh từ danh sách chờ xếp lớp hoặc nhập từ file.", actions: React.createElement(Fragment, null,
+                React.createElement(Button, { iconStart: "plus" }, "Th\u00EAm h\u1ECDc sinh"),
+                React.createElement(Button, { variant: "secondary" }, "Nh\u1EADp t\u1EEB Excel")) },
+        "no-results": { title: "Không tìm thấy “Nguyễn Văn Ann”", description: "Kiểm tra lại chính tả hoặc tìm theo số điện thoại phụ huynh.", actions: React.createElement(Button, { variant: "secondary" }, "Xo\u00E1 t\u00ECm ki\u1EBFm") },
+        error: { title: "Không tải được danh sách lớp", description: "Lỗi máy chủ (mã 503). Dữ liệu của bạn không bị mất.", actions: React.createElement(Button, { iconStart: "refresh" }, "Th\u1EED l\u1EA1i") },
+        offline: { title: "Đang mất kết nối", description: "Điểm danh vẫn được lưu trên máy và tự gửi khi có mạng.", actions: null },
+        "no-access": { title: "Bạn chưa có quyền xem công nợ CS4", description: "Liên hệ quản lý cơ sở để được cấp quyền.", actions: null },
+    };
+    return (React.createElement("div", { className: "hmt-demo" },
+        React.createElement(Tabs, { label: "Lo\u1EA1i tr\u1EA1ng th\u00E1i", value: k, onChange: setK, items: [{ value: "empty", label: "Rỗng" }, { value: "no-results", label: "Không có kết quả" }, { value: "error", label: "Lỗi" }, { value: "offline", label: "Mất mạng" }, { value: "no-access", label: "Không có quyền" }] },
+            React.createElement(StateView, { kind: k, ...C[k] }))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

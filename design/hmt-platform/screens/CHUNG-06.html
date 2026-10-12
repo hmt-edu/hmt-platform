@@ -1,0 +1,69 @@
+<!-- @dsCard group="Màn 5.2 · Đăng nhập" height=900 subtitle="Mức A · K11 · Đăng nhập học sinh trên điện thoại: mã HS + mật khẩu trung tâm cấp; quên mật khẩu nhờ CSKH; lần đầu đổi mật khẩu" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>CHUNG-06 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="lms"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { AuthLayout, Field, TextInput, PasswordInput, TurnstileSlot, Button, Alert, Spinner } = HMT;
+    const STATES = [["default", "Mặc định"], ["missing", "Thiếu thông tin"], ["wrong", "Sai thông tin"], ["sending", "Đang đăng nhập"], ["robot", "Turnstile lỗi"], ["temp", "Tạm khoá"], ["locked", "Khoá"], ["forgot", "Quên mật khẩu"], ["server", "Lỗi hệ thống"]];
+    const [st, setSt] = useState("default");
+    const [z, setZ] = useState(false);
+    const [code, setCode] = useState("HS000123");
+    const [pw, setPw] = useState("HMT-8k2q");
+    useEffect(() => { if (st === "missing") {
+        setCode("");
+        setPw("");
+    }
+    else {
+        setCode("HS000123");
+        setPw("HMT-8k2q");
+    } }, [st]);
+    const body = st === "forgot" ? (React.createElement("div", { style: { display: "grid", gap: 16 } },
+        React.createElement(Alert, { tone: "info", title: "Em qu\u00EAn m\u1EADt kh\u1EA9u?" }, "Em nh\u1EAFn ho\u1EB7c g\u1ECDi CSKH c\u01A1 s\u1EDF \u0111ang h\u1ECDc \u0111\u1EC3 \u0111\u01B0\u1EE3c c\u1EA5p m\u1EADt kh\u1EA9u m\u1EDBi. HMT kh\u00F4ng g\u1EEDi m\u1EADt kh\u1EA9u qua email cho h\u1ECDc sinh."),
+        React.createElement("ul", { style: { margin: 0, paddingLeft: 18, display: "grid", gap: 6 } },
+            React.createElement("li", null, "CS1 Nguy\u1EC5n Ch\u00ED Thanh \u00B7 0900 100 288"),
+            React.createElement("li", null, "CS2 \u0110\u1ED7 Quang \u00B7 0900 100 289"),
+            React.createElement("li", null, "CS4 H\u00E0 \u0110\u00F4ng \u00B7 0900 100 291"),
+            React.createElement("li", null, "CS5 M\u1EF9 \u0110\u00ECnh \u00B7 0900 100 292")),
+        React.createElement(Button, { variant: "secondary", fullWidth: true, iconStart: "chevronLeft", onClick: () => setSt("default") }, "Quay l\u1EA1i \u0111\u0103ng nh\u1EADp"))) : (React.createElement("form", { style: { display: "grid", gap: 16 }, onSubmit: (e) => e.preventDefault(), noValidate: true },
+        st === "wrong" ? React.createElement(Alert, { tone: "danger", title: "Ch\u01B0a \u0111\u0103ng nh\u1EADp \u0111\u01B0\u1EE3c" }, "M\u00E3 h\u1ECDc sinh ho\u1EB7c m\u1EADt kh\u1EA9u ch\u01B0a \u0111\u00FAng. Em ki\u1EC3m tra l\u1EA1i nh\u00E9.") : null,
+        st === "temp" ? React.createElement(Alert, { tone: "warning", title: "T\u00E0i kho\u1EA3n \u0111ang t\u1EA1m kho\u00E1" }, "Em nh\u1EADp sai 10 l\u1EA7n li\u00EAn ti\u1EBFp n\u00EAn t\u00E0i kho\u1EA3n t\u1EA1m kho\u00E1 15 ph\u00FAt. Em th\u1EED l\u1EA1i sau 09:46, ho\u1EB7c nh\u1EDD CSKH m\u1EDF gi\u00FAp.") : null,
+        st === "locked" ? React.createElement(Alert, { tone: "danger", title: "T\u00E0i kho\u1EA3n \u0111\u00E3 b\u1ECB kho\u00E1" }, "T\u00E0i kho\u1EA3n h\u1ECDc t\u1EADp c\u1EE7a em \u0111ang kho\u00E1. Em li\u00EAn h\u1EC7 CSKH c\u1EE7a c\u01A1 s\u1EDF \u0111\u1EC3 \u0111\u01B0\u1EE3c h\u1ED7 tr\u1EE3.") : null,
+        st === "server" ? React.createElement(Alert, { tone: "danger", title: "HMT ch\u01B0a k\u1EBFt n\u1ED1i \u0111\u01B0\u1EE3c", actions: React.createElement(Button, { variant: "tertiary", size: "sm", iconStart: "refresh" }, "Th\u1EED l\u1EA1i") }, "L\u1ED7i t\u1EA1m th\u1EDDi. Em \u0111\u1EE3i m\u1ED9t ch\u00FAt r\u1ED3i th\u1EED l\u1EA1i.") : null,
+        React.createElement(Field, { label: "M\u00E3 h\u1ECDc sinh", required: true, helper: "V\u00ED d\u1EE5 HS000123 \u2014 in tr\u00EAn phi\u1EBFu HMT g\u1EEDi em", error: st === "missing" ? "Em nhập mã học sinh" : undefined },
+            React.createElement(TextInput, { autoComplete: "username", autoCapitalize: "characters", value: code, onChange: (e) => setCode(e.target.value.toUpperCase()), placeholder: "HS000123" })),
+        React.createElement(Field, { label: "M\u1EADt kh\u1EA9u", required: true, error: st === "missing" ? "Em nhập mật khẩu" : undefined },
+            React.createElement(PasswordInput, { value: pw, onChange: (e) => setPw(e.target.value) })),
+        React.createElement(TurnstileSlot, { state: st === "robot" ? "error" : "success", onRetry: () => setSt("default") }),
+        React.createElement(Button, { type: "submit", fullWidth: true, loading: st === "sending", loadingLabel: "\u0110ang v\u00E0o\u2026", disabled: st === "robot" || st === "locked" }, "V\u00E0o h\u1ECDc"),
+        React.createElement("button", { type: "button", className: "hmt-link hmt-focus", style: { all: "unset", cursor: "pointer", color: "var(--hmt-link)", fontWeight: 500, justifySelf: "center", display: "inline-flex", alignItems: "center", minHeight: 44, padding: "0 12px", borderRadius: 8 }, onClick: () => setSt("forgot") }, "Em qu\u00EAn m\u1EADt kh\u1EA9u")));
+    return (React.createElement(ScreenFrame, { code: "CHUNG-06", name: "\u0110\u0103ng nh\u1EADp h\u1ECDc sinh", level: "A", tpl: "K11 \u00B7 \u0111i\u1EC7n tho\u1EA1i", states: STATES, state: st, onState: setSt, zones: z, onZones: setZ, height: 800, note: "L\u1EA7n \u0111\u1EA7u \u0111\u0103ng nh\u1EADp b\u1EB1ng m\u1EADt kh\u1EA9u t\u1EA1m \u2192 CHUNG-07 (\u0111\u1ED5i m\u1EADt kh\u1EA9u). Xong \u2192 HT-01. Gi\u1ECDng H\u1ECDc t\u1EADp: HMT g\u1ECDi h\u1ECDc sinh l\u00E0 \"em\" (O-10)." },
+        React.createElement("div", { className: "hmt-phone", style: { margin: "0 auto", height: 780, borderRadius: 0 } },
+            React.createElement(AuthLayout, { product: "lms", mobile: true, logoSrc: LOGO, title: st === "forgot" ? "Quên mật khẩu" : "Chào em!", subtitle: st === "forgot" ? undefined : "Đăng nhập để vào Cổng học tập HMT." }, body))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

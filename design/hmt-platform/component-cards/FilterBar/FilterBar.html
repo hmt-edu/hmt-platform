@@ -1,0 +1,59 @@
+<!-- @dsCard group="Danh sách" height=420 subtitle="Tìm kiếm, lọc nhanh chia nhóm (trong nhóm HOẶC, giữa nhóm VÀ — R-CRM-07), lọc nâng cao, nhóm theo, yêu thích, chọn cột, đổi kiểu xem, số kết quả" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>FilterBar — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { FilterBar, Drawer, Field, Select, DateRange, Button } = HMT;
+    const [p, setP] = useState("crm");
+    const [q, setQ] = useState("");
+    const [v, setV] = useState({ mine: ["sale"], time: ["overdue", "today"] });
+    const [gb, setGb] = useState("");
+    const [view, setView] = useState("list");
+    const [adv, setAdv] = useState(false);
+    const [favs, setFavs] = useState([{ name: "Lịch hẹn quá hạn của tôi", isDefault: true }, { name: "Cơ hội L5–L6 cả cơ sở", shared: true }]);
+    const [cols, setCols] = useState([{ key: "code", label: "Mã cơ hội", visible: true, locked: true }, { key: "name", label: "Học sinh", visible: true }, { key: "stage", label: "Giai đoạn", visible: true }, { key: "next", label: "Lịch hẹn kế tiếp", visible: true }, { key: "sale", label: "Sale phụ trách", visible: false }]);
+    const [range, setRange] = useState({ from: new Date(2026, 9, 1), to: new Date(2026, 9, 31) });
+    const n = 128 - (v.mine || []).length * 37 - (v.time || []).length * 11 - (q ? 90 : 0);
+    return (React.createElement("div", { className: "hmt-demo", "data-product": p },
+        React.createElement(ProductSwitch, { value: p, onChange: setP }),
+        React.createElement(FilterBar, { search: q, onSearch: setQ, value: v, onChange: setV, resultCount: Math.max(0, n), groups: [{ id: "mine", label: "Của tôi", options: [{ id: "sale", label: "Tôi là sale" }, { id: "grader", label: "Tôi là giáo viên chấm" }] },
+                { id: "time", label: "Thời gian", options: [{ id: "overdue", label: "Quá hạn", count: 9 }, { id: "today", label: "Hôm nay", count: 14 }, { id: "soon", label: "Sắp tới", count: 31 }, { id: "none", label: "Chưa có lịch", count: 22 }] }], advancedCount: 2, onAdvanced: () => setAdv(true), groupByOptions: [{ value: "stage", label: "Giai đoạn" }, { value: "sale", label: "Sale phụ trách" }, { value: "source", label: "Nguồn" }], groupBy: gb, onGroupBy: setGb, favorites: favs, onSaveFavorite: (f) => setFavs([...favs, f]), columns: cols, onColumnsChange: setCols, views: ["list", "kanban", "calendar"], view: view, onViewChange: setView }),
+        React.createElement(Drawer, { open: adv, onClose: () => setAdv(false), title: "L\u1ECDc n\u00E2ng cao", footer: React.createElement(Fragment, null,
+                React.createElement(Button, { variant: "secondary", onClick: () => setAdv(false) }, "\u0110\u1EB7t l\u1EA1i"),
+                React.createElement(Button, { onClick: () => setAdv(false) }, "\u00C1p d\u1EE5ng")) },
+            React.createElement("div", { style: { display: "grid", gap: 12 } },
+                React.createElement(Field, { label: "Ng\u00E0y t\u1EA1o" },
+                    React.createElement(DateRange, { value: range, onChange: setRange })),
+                React.createElement(Field, { label: "Ngu\u1ED3n" },
+                    React.createElement(Select, { defaultValue: "fb", options: [{ value: "fb", label: "Marketing › Facebook Ads" }, { value: "web", label: "Marketing › Website" }, { value: "ref", label: "Referral › By Customer" }] })),
+                React.createElement(Field, { label: "Kh\u1ED1i" },
+                    React.createElement(Select, { defaultValue: "K09", options: ["K06", "K07", "K08", "K09"].map((k) => ({ value: k, label: `Lớp ${+k.slice(1)}` })) })))),
+        React.createElement("p", { className: "hmt-help" }, "D\u01B0\u1EDBi 640px: \u00F4 t\u00ECm ki\u1EBFm chi\u1EBFm c\u1EA3 d\u00F2ng, c\u00E1c n\u00FAt c\u00F2n icon, nh\u00F3m chip cu\u1ED9n ngang.")));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

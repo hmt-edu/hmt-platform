@@ -1,0 +1,55 @@
+<!-- @dsCard group="Actions" height=300 subtitle="Primary, secondary, tertiary, destructive · loading, disabled · mật độ theo sản phẩm" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>Button — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Button, SegmentedControl } = HMT;
+    const [product, setProduct] = useState("crm");
+    const [loading, setLoading] = useState(false);
+    const run = () => { setLoading(true); setTimeout(() => setLoading(false), 1600); };
+    return (React.createElement("div", { className: "hmt-demo", "data-product": product },
+        React.createElement("div", { style: { maxWidth: 420 } },
+            React.createElement(SegmentedControl, { name: "p", layout: "row", label: "S\u1EA3n ph\u1EA9m", value: product, onChange: setProduct, options: [{ value: "crm", label: "CRM · 36px" }, { value: "teacher", label: "Teacher · 48px" }, { value: "lms", label: "LMS · 44px" }] })),
+        React.createElement("div", { className: "hmt-demo-row" },
+            React.createElement(Button, { onClick: run, loading: loading, loadingLabel: "\u0110ang l\u01B0u\u2026" }, "L\u01B0u phi\u1EBFu thu"),
+            React.createElement(Button, { variant: "secondary", iconStart: "file" }, "Xu\u1EA5t Excel"),
+            React.createElement(Button, { variant: "tertiary" }, "Xem l\u1ECBch s\u1EED"),
+            React.createElement(Button, { variant: "destructive", iconStart: "trash" }, "Hu\u1EF7 phi\u1EBFu thu"),
+            React.createElement(Button, { variant: "secondary", iconOnly: "more", label: "Thao t\u00E1c kh\u00E1c" })),
+        React.createElement("div", { className: "hmt-demo-row" },
+            React.createElement(Button, { disabled: true }, "L\u01B0u phi\u1EBFu thu"),
+            React.createElement(Button, { variant: "secondary", disabled: true }, "Xu\u1EA5t Excel"),
+            React.createElement(Button, { variant: "tertiary", disabled: true }, "Xem l\u1ECBch s\u1EED"),
+            React.createElement("span", { className: "hmt-help" }, "Disabled: kh\u00F4ng hover, c\u00F3 aria-disabled, n\u00EAn k\u00E8m l\u00FD do \u2014 vd. \"Ch\u1ECDn \u00EDt nh\u1EA5t 1 h\u1ECDc sinh\".")),
+        React.createElement("div", { className: "hmt-demo-row" },
+            React.createElement(Button, { variant: "destructive", solid: true, iconStart: "trash" }, "Xo\u00E1 h\u1ECDc sinh"),
+            React.createElement("span", { className: "hmt-help" }, "N\u1EC1n \u0111\u1EB7c nguy hi\u1EC3m: ch\u1EC9 trong h\u1ED9p x\u00E1c nh\u1EADn.")),
+        React.createElement("p", { className: "hmt-help" }, "B\u1EA5m \"L\u01B0u phi\u1EBFu thu\" \u0111\u1EC3 xem tr\u1EA1ng th\u00E1i loading \u00B7 Tab \u0111\u1EC3 xem focus \u00B7 r\u00EA v\u00E0o n\u00FAt \"\u2026\" \u0111\u1EC3 xem tooltip.")));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

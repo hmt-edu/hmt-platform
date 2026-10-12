@@ -1,0 +1,52 @@
+<!-- @dsCard group="Màn 5.2 · Đăng nhập" height=640 subtitle="Mức B · K11 · Quên mật khẩu: gửi link đặt lại qua email; thông báo chung, không lộ email có tồn tại hay không" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>CHUNG-04 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { AuthLayout, Field, TextInput, TurnstileSlot, Button, Alert } = HMT;
+    const [sent, setSent] = useState(false);
+    const [email, setEmail] = useState("long.nh@hoamatoan.edu.vn");
+    return (React.createElement(ScreenFrame, { code: "CHUNG-04", name: "Qu\u00EAn m\u1EADt kh\u1EA9u", level: "B", tpl: "K11 \u00B7 c\u1EA3 hai", height: 600, note: "B\u1EA5m G\u1EEDi \u0111\u1EC3 xem tr\u1EA1ng th\u00E1i sau khi g\u1EEDi. Link trong email m\u1EDF CHUNG-05 (\u0111\u1EB7t m\u1EADt kh\u1EA9u m\u1EDBi, m\u1EE9c C, d\u00F9ng PasswordInput + PasswordRules nh\u01B0 CHUNG-07)." },
+        React.createElement(AuthLayout, { logoSrc: LOGO, logoWhiteSrc: LOGO_W, title: sent ? "Kiểm tra hộp thư" : "Quên mật khẩu", subtitle: sent ? undefined : "Nhập email công việc. HMT gửi link đặt lại mật khẩu, link dùng một lần." }, sent ? React.createElement(Fragment, null,
+            React.createElement(Alert, { tone: "success", title: "\u0110\u00E3 g\u1EEDi y\u00EAu c\u1EA7u" },
+                "N\u1EBFu ",
+                email,
+                " l\u00E0 t\u00E0i kho\u1EA3n trong h\u1EC7 th\u1ED1ng, email \u0111\u1EB7t l\u1EA1i m\u1EADt kh\u1EA9u s\u1EBD \u0111\u1EBFn trong v\u00E0i ph\u00FAt. Xem c\u1EA3 th\u01B0 m\u1EE5c Spam."),
+            React.createElement("div", { className: "hmt-demo-row" },
+                React.createElement(Button, { variant: "secondary", onClick: () => setSent(false) }, "G\u1EEDi l\u1EA1i"),
+                React.createElement(Button, { variant: "tertiary", iconStart: "chevronLeft" }, "V\u1EC1 \u0111\u0103ng nh\u1EADp")))
+            : React.createElement("form", { style: { display: "grid", gap: 16 }, onSubmit: (e) => { e.preventDefault(); setSent(true); } },
+                React.createElement(Field, { label: "Email", required: true },
+                    React.createElement(TextInput, { type: "email", autoComplete: "username", value: email, onChange: (e) => setEmail(e.target.value) })),
+                React.createElement(TurnstileSlot, { state: "success" }),
+                React.createElement(Button, { type: "submit", fullWidth: true, iconStart: "send" }, "G\u1EEDi link \u0111\u1EB7t l\u1EA1i"),
+                React.createElement(Button, { variant: "tertiary", iconStart: "chevronLeft" }, "V\u1EC1 \u0111\u0103ng nh\u1EADp"),
+                React.createElement("p", { className: "hmt-help" }, "H\u1ECDc sinh qu\u00EAn m\u1EADt kh\u1EA9u: nh\u1EDD CSKH c\u01A1 s\u1EDF (kh\u00F4ng \u0111\u1EB7t l\u1EA1i qua email).")))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

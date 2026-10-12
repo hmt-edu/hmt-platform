@@ -5,6 +5,7 @@ playwright-report/
 test-results/
 package-lock.json
 docs/
+design/
 supabase/
 CLAUDE.md
 PROMPT-*.md

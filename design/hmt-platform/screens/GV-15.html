@@ -1,0 +1,62 @@
+<!-- @dsCard group="Màn 5.3 · Kiểm tra đầu vào" height=900 subtitle="Mức B · K12 · Chấm kiểm tra đầu vào trong cổng Giáo viên bản tối giản (GĐ1, chỉ mục chấm test): kết quả, nhận xét, đề xuất lớp/trình độ, tải bài làm; Lưu; Trả về sale" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>GV-15 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="teacher"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Field, ScoreInput, Textarea, Select, FileUpload, Button, Badge, TopNav, StudentListItem, Alert } = HMT;
+    const [sc, setSc] = useState(7.5);
+    const [open, setOpen] = useState(true);
+    return (React.createElement(ScreenFrame, { code: "GV-15", name: "Ch\u1EA5m ki\u1EC3m tra \u0111\u1EA7u v\u00E0o", level: "B", tpl: "K12 \u00B7 c\u1EA3 hai (\u0111i\u1EC7n tho\u1EA1i tr\u01B0\u1EDBc)", height: 820, product: "teacher", note: "Giai \u0111o\u1EA1n 1 c\u1ED5ng Gi\u00E1o vi\u00EAn ch\u1EC9 c\u00F3 m\u1EE5c n\u00E0y, n\u00EAn kh\u00F4ng c\u00F3 thanh d\u01B0\u1EDBi. \u0110\u1ECBnh d\u1EA1ng k\u1EBFt qu\u1EA3 (\u0111i\u1EC3m 0\u201310?) ch\u01B0a c\u00F3 trong lu\u1EADt \u2014 \u0111ang v\u1EBD \u0111i\u1EC3m + nh\u1EADn x\u00E9t (Q-17)." },
+        React.createElement("div", { style: { display: "flex", gap: 24, justifyContent: "center", padding: 12, alignItems: "flex-start" } },
+            React.createElement("div", { className: "hmt-phone", style: { height: 760, overflow: "auto", borderRadius: 0 } },
+                React.createElement(TopNav, { title: "Ch\u1EA5m ki\u1EC3m tra \u0111\u1EA7u v\u00E0o", actions: React.createElement(Badge, { tone: "warning" }, "2 phi\u1EBFu") }),
+                React.createElement("ul", { style: { listStyle: "none", margin: 0, padding: 0 } },
+                    React.createElement(StudentListItem, { name: "L\u00EA Gia Huy", meta: "PKT000105 \u00B7 To\u00E1n l\u1EDBp 9 \u00B7 11/10 09:00 \u00B7 qu\u00E1 h\u1EA1n ch\u1EA5m", trailing: React.createElement(Badge, { tone: "danger", icon: "alert" }, "Qu\u00E1 h\u1EA1n"), onClick: () => setOpen(true) }),
+                    React.createElement(StudentListItem, { name: "Phan B\u1EA3o Ng\u00E2n", meta: "PKT000107 \u00B7 To\u00E1n l\u1EDBp 7 \u00B7 13/10 18:00", trailing: React.createElement(Badge, { tone: "info", icon: false }, "S\u1EAFp t\u1EDBi") }))),
+            React.createElement("div", { className: "hmt-phone", style: { height: 760, overflow: "auto", borderRadius: 0 } },
+                React.createElement(TopNav, { leading: React.createElement(Button, { variant: "tertiary", neutral: true, iconOnly: "chevronLeft", label: "Quay l\u1EA1i danh s\u00E1ch" }), title: "L\u00EA Gia Huy \u00B7 To\u00E1n 9" }),
+                React.createElement("div", { style: { padding: 16, display: "grid", gap: 14 } },
+                    React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, "PKT000105 \u00B7 n\u0103m sinh 2011 \u00B7 test 11/10/2026 09:00 \u00B7 P102 \u00B7 sale Tr\u1EA7n Thu H\u00E0"),
+                    React.createElement(FileUpload, { mobile: true, label: "B\u00E0i l\u00E0m", helper: "Ch\u1EE5p t\u1EEBng trang \u00B7 \u1EA3nh, PDF \u2264 10 MB" }),
+                    React.createElement(Field, { label: "\u0110i\u1EC3m", required: true },
+                        React.createElement(ScoreInput, { value: sc, onChange: setSc, min: 0, max: 10 })),
+                    React.createElement(Field, { label: "Nh\u1EADn x\u00E9t", required: true },
+                        React.createElement(Textarea, { maxLength: 500, defaultValue: "N\u1EAFm ch\u1EAFc \u0111\u1EA1i s\u1ED1, h\u00ECnh h\u1ECDc c\u00F2n y\u1EBFu ph\u1EA7n t\u1EE9 gi\u00E1c n\u1ED9i ti\u1EBFp." })),
+                    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 } },
+                        React.createElement(Field, { label: "Ph\u00E2n lo\u1EA1i" },
+                            React.createElement(Select, { defaultValue: "CB", options: [{ value: "CB", label: "Cơ bản" }, { value: "NC", label: "Nâng cao" }] })),
+                        React.createElement(Field, { label: "Tr\u00ECnh \u0111\u1ED9" },
+                            React.createElement(Select, { defaultValue: "A", options: ["S", "A", "B", "C"].map((x) => ({ value: x, label: x })) }))),
+                    React.createElement(Field, { label: "\u0110\u1EC1 xu\u1EA5t l\u1EDBp", optional: true },
+                        React.createElement(Select, { defaultValue: "1", options: [{ value: "1", label: "CS1-2627-DAI-K09-CB-A-002" }, { value: "2", label: "CS1-2627-DAI-K09-NC-S-001" }] })),
+                    React.createElement(Button, { variant: "secondary", fullWidth: true }, "L\u01B0u nh\u00E1p"),
+                    React.createElement(Button, { fullWidth: true, iconEnd: "send" }, "Tr\u1EA3 k\u1EBFt qu\u1EA3 v\u1EC1 sale"),
+                    React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, "Tr\u1EA3 v\u1EC1 sale: phi\u1EBFu sang Ho\u00E0n th\u00E0nh, sale th\u1EA5y k\u1EBFt qu\u1EA3 \u1EDF TS-17."))))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

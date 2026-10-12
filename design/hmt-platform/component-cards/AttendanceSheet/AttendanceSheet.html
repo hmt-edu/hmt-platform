@@ -1,0 +1,60 @@
+<!-- @dsCard group="Lớp · học sinh · điểm danh" height=1000 subtitle="R-DD-01/02/03: 4 trạng thái, mặc định trống, có màu; "Còn lại: Có mặt"; giáo viên điện thoại / máy tính · vận hành ghi lý do liên hệ · xem hai cột; đang lưu / đã lưu / chưa lưu được" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>AttendanceSheet — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="teacher"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { AttendanceSheet, ToastProvider, Chip, Button } = HMT;
+    const [mode, setMode] = useState("teacher");
+    const [k, setK] = useState(0);
+    const [fail, setFail] = useState(false);
+    const students = [
+        { id: 1, name: "Nguyễn Minh Khôi", code: "HS000123", meta: "HS000123 · có mặt 11/11 buổi" },
+        { id: 2, name: "Lê Bảo Ngọc", code: "HS000231", meta: "HS000231 · vắng 1 buổi tháng này", note: "Phụ huynh báo đến muộn 15 phút" },
+        { id: 3, name: "Phan Đức Anh", code: "HS000318", meta: "HS000318 · vắng 3 buổi — rủi ro tái tục" },
+        { id: 4, name: "Vũ Hà My", code: "HS000402", meta: "HS000402 · học thử buổi này" },
+        { id: 5, name: "Đỗ Gia Bảo", code: "HS000415", meta: "HS000415" },
+    ];
+    const session = { className: "8A1 · Buổi 12 · 15/10/2026", label: "CS1-2627-TOAN-K08-CB-A-001", time: "17:30–19:00", campus: "CS1 Nguyễn Chí Thanh" };
+    const ops = { 1: { status: "present", reason: "Đã vào lớp" }, 2: { status: "late", reason: "Đã nhắc vào lớp" }, 3: { status: "absent", reason: "Không nghe máy" }, 4: { status: "present", reason: "Đã vào lớp" }, 5: { status: "excused", reason: "Xin nghỉ học" } };
+    const teacher = { 1: "present", 2: "late", 3: "absent", 4: "present", 5: "absent" };
+    return (React.createElement(ToastProvider, { placement: "bottom" },
+        React.createElement("div", { className: "hmt-demo", style: { alignItems: "center" } },
+            React.createElement("div", { className: "hmt-demo-row", style: { justifyContent: "center" }, "data-product": "crm", role: "group", "aria-label": "Ch\u1EBF \u0111\u1ED9" },
+                React.createElement(Chip, { selected: mode === "teacher", onToggle: () => { setMode("teacher"); setK(k + 1); } }, "Gi\u00E1o vi\u00EAn (\u0111i\u1EC7n tho\u1EA1i)"),
+                React.createElement(Chip, { selected: mode === "desktop", onToggle: () => { setMode("desktop"); setK(k + 1); } }, "Gi\u00E1o vi\u00EAn (m\u00E1y t\u00EDnh)"),
+                React.createElement(Chip, { selected: mode === "ops", onToggle: () => { setMode("ops"); setK(k + 1); } }, "V\u1EADn h\u00E0nh ghi l\u00FD do"),
+                React.createElement(Chip, { selected: mode === "compare", onToggle: () => { setMode("compare"); setK(k + 1); } }, "Xem hai c\u1ED9t (b\u1EA3n ghi bu\u1ED5i)"),
+                mode !== "compare" ? React.createElement(Chip, { selected: fail, onToggle: () => { setFail(!fail); setK(k + 1); } }, "M\u00F4 ph\u1ECFng m\u1EA5t m\u1EA1ng") : null),
+            mode === "compare" ? React.createElement("div", { style: { width: "100%" }, "data-product": "crm" },
+                React.createElement(AttendanceSheet, { key: k, mode: "compare", session: session, students: students, initial: teacher, opsMarks: ops })) : mode === "desktop" ? (React.createElement("div", { style: { width: "100%", maxHeight: 760, overflow: "auto", border: "1px solid var(--hmt-border)", borderRadius: 12 }, "data-product": "teacher", "data-device": "desktop" },
+                React.createElement(AttendanceSheet, { key: k, mode: "teacher", session: session, students: students, failNext: fail, onRequestNext: () => { } }))) : (React.createElement("div", { className: "hmt-phone", style: { maxHeight: 900, overflow: "auto" } },
+                React.createElement(AttendanceSheet, { key: k, mode: mode, session: session, students: students, failNext: fail, onRequestNext: mode === "teacher" ? () => { } : undefined }))),
+            React.createElement("p", { className: "hmt-help", style: { maxWidth: 560, textAlign: "center" } }, "T\u1EF1 l\u01B0u sau m\u1ED7i l\u1EA7n ch\u1ECDn. \"M\u00F4 ph\u1ECFng m\u1EA5t m\u1EA1ng\": l\u1EA7n ch\u1ECDn th\u1EE9 ba b\u00E1o \"Ch\u01B0a l\u01B0u \u0111\u01B0\u1EE3c\" + Th\u1EED l\u1EA1i. B\u1EA5m \"Ti\u1EBFp\" khi c\u00F2n em ch\u01B0a \u0111i\u1EC3m danh \u2192 h\u1ED9p tho\u1EA1i ch\u1EB7n c\u00F3 n\u00FAt \u0111\u1EBFn t\u1EEBng em. C\u00F9ng m\u1ED9t th\u00E0nh ph\u1EA7n: khung r\u1ED9ng t\u1EEB 760px t\u1EF1 chuy\u1EC3n sang d\u1EA1ng b\u1EA3ng (m\u00E1y t\u00EDnh)."))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

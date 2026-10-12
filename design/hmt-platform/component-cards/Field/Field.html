@@ -1,0 +1,82 @@
+<!-- @dsCard group="Form" height=620 subtitle="Text input, select, textarea · helper, lỗi theo trường, tóm tắt lỗi khi gửi" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>Field — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Field, TextInput, Select, Textarea, Button, Alert } = HMT;
+    const [v, setV] = useState({ name: "", phone: "", campus: "", note: "" });
+    const [touched, setTouched] = useState({});
+    const [submitted, setSubmitted] = useState(false);
+    const [done, setDone] = useState(false);
+    const errs = {};
+    if (!v.name.trim())
+        errs.name = "Nhập họ tên học sinh";
+    if (!/^0\d{9}$/.test(v.phone.replace(/\s/g, "")))
+        errs.phone = v.phone ? "Số điện thoại cần 10 chữ số, bắt đầu bằng 0" : "Nhập số điện thoại phụ huynh";
+    if (!v.campus)
+        errs.campus = "Chọn cơ sở học";
+    if (v.note.length > 200)
+        errs.note = "Ghi chú tối đa 200 ký tự";
+    const show = (k) => (submitted || touched[k]) && errs[k];
+    const upd = (k) => (e) => { setDone(false); setV({ ...v, [k]: e.target.value }); };
+    const blur = (k) => () => setTouched({ ...touched, [k]: true });
+    const keys = Object.keys(errs);
+    const submit = (e) => { e.preventDefault(); setSubmitted(true); if (!keys.length)
+        setDone(true);
+    else
+        setTimeout(() => { const el = document.getElementById("errsum"); el && el.focus(); }, 0); };
+    const LABEL = { name: "Họ tên học sinh", phone: "SĐT phụ huynh", campus: "Cơ sở", note: "Ghi chú" };
+    return (React.createElement("form", { className: "hmt-demo", onSubmit: submit, noValidate: true, style: { maxWidth: 520 } },
+        submitted && keys.length ? (React.createElement("div", { id: "errsum", tabIndex: -1, className: "hmt-errsum", role: "alert" },
+            React.createElement("b", null,
+                "C\u00F3 ",
+                keys.length,
+                " m\u1EE5c c\u1EA7n s\u1EEDa:"),
+            React.createElement("ul", { style: { margin: "6px 0 0", paddingLeft: 20 } }, keys.map((k) => React.createElement("li", { key: k },
+                React.createElement("a", { href: `#f-${k}`, onClick: (e) => { e.preventDefault(); const el = document.querySelector(`[data-k="${k}"]`); el && el.focus(); } },
+                    LABEL[k],
+                    ": ",
+                    errs[k])))))) : null,
+        done ? React.createElement(HMT.Alert, { tone: "success", title: "\u0110\u00E3 l\u01B0u h\u1ECDc sinh", live: true }, "Th\u00F4ng tin \u0111\u00E3 \u0111\u01B0\u1EE3c th\u00EAm v\u00E0o danh s\u00E1ch l\u1EDBp ch\u1EDD x\u1EBFp.") : null,
+        React.createElement(Field, { label: "H\u1ECD t\u00EAn h\u1ECDc sinh", required: true, error: show("name") },
+            React.createElement(TextInput, { "data-k": "name", value: v.name, onChange: upd("name"), onBlur: blur("name"), autoComplete: "off" })),
+        React.createElement(Field, { label: "S\u0110T ph\u1EE5 huynh", required: true, helper: "D\u00F9ng \u0111\u1EC3 g\u1EEDi th\u00F4ng b\u00E1o h\u1ECDc ph\u00ED, l\u1ECBch h\u1ECDc", error: show("phone") },
+            React.createElement(TextInput, { "data-k": "phone", type: "tel", inputMode: "tel", value: v.phone, onChange: upd("phone"), onBlur: blur("phone"), placeholder: "0912 345 678" })),
+        React.createElement(Field, { label: "C\u01A1 s\u1EDF", required: true, error: show("campus") },
+            React.createElement(Select, { "data-k": "campus", value: v.campus, onChange: upd("campus"), onBlur: blur("campus"), placeholder: "Ch\u1ECDn c\u01A1 s\u1EDF", options: [["CS1", "Nguyễn Chí Thanh"], ["CS2", "Đỗ Quang"], ["CS4", "Hà Đông"], ["CS5", "Mỹ Đình"]].map(([c, n]) => ({ value: c, label: `${c} ${n}` })) })),
+        React.createElement(Field, { label: "Ghi ch\u00FA", optional: true, error: show("note") },
+            React.createElement(Textarea, { "data-k": "note", value: v.note, onChange: upd("note"), onBlur: blur("note"), maxLength: 200, placeholder: "H\u1ECDc l\u1EF1c, nguy\u1EC7n v\u1ECDng c\u1EE7a ph\u1EE5 huynh\u2026" })),
+        React.createElement(Field, { label: "M\u00E3 h\u1ECDc sinh", helper: "T\u1EF1 sinh khi l\u01B0u" },
+            React.createElement(TextInput, { value: "HS000142", disabled: true })),
+        React.createElement("div", { className: "hmt-demo-row" },
+            React.createElement(Button, { type: "submit" }, "L\u01B0u h\u1ECDc sinh"),
+            React.createElement(Button, { variant: "tertiary", onClick: () => { setV({ name: "", phone: "", campus: "", note: "" }); setTouched({}); setSubmitted(false); setDone(false); } }, "L\u00E0m l\u1EA1i")),
+        React.createElement("p", { className: "hmt-help" }, "L\u1ED7i hi\u1EC7n khi r\u1EDDi \u00F4 (blur) ho\u1EB7c khi b\u1EA5m L\u01B0u; khi g\u1EEDi, t\u00F3m t\u1EAFt l\u1ED7i nh\u1EADn focus v\u00E0 m\u1ED7i d\u00F2ng d\u1EABn t\u1EDBi \u00F4 l\u1ED7i.")));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

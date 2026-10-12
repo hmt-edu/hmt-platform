@@ -1,0 +1,45 @@
+<!-- @dsCard group="Danh sách" height=520 subtitle="Cột theo giai đoạn có số thẻ; thẻ có mã, tên, thông tin chính, người phụ trách, hạn; kéo thả lùi bị chặn kèm lý do" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>Kanban — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Kanban } = HMT;
+    const mk = (code, title, lines, owner, due) => ({ id: code, code, title, lines, owner, due });
+    const [cols, setCols] = useState([
+        { id: "L4", label: "L4 Khách hàng tiềm năng", cards: [mk("CO000112", "Nguyễn Minh Khôi", ["Lớp 8 · Toán · Offline", "Hẹn gọi lại 16/10/2026"], "Trần Thu Hà", "Hôm nay")] },
+        { id: "L5", label: "L5 Đồng ý tham gia test", cards: [mk("CO000109", "Lê Bảo Ngọc", ["Lớp 9 · Toán · Offline", "Test 18/10/2026 · 09:00"], "Trần Thu Hà", "Còn 3 ngày")] },
+        { id: "L6", label: "L6 Đã tham gia test", cards: [mk("CO000104", "Phan Đức Anh", ["Lớp 7 · Toán", "Điểm test: chờ giáo viên chấm"], "Đinh Mai", "Quá hạn 1 ngày")] },
+        { id: "L7", label: "L7 Tư vấn", cards: [] },
+    ]);
+    const ord = (x) => +x.slice(1);
+    return (React.createElement("div", { className: "hmt-demo" },
+        React.createElement(Kanban, { columns: cols, label: "C\u01A1 h\u1ED9i theo giai \u0111o\u1EA1n", canMove: (id, from, to) => ord(to) < ord(from) ? { ok: false, reason: `Cơ hội chỉ đi tới, không lùi từ ${from} về ${to} (R-CRM-02).`, detail: "Nếu khách huỷ test, chọn nhóm con L5C–L5O ở bước hiện tại." } : { ok: true }, onMove: (id, from, to) => setCols(cols.map((c) => c.id === from ? { ...c, cards: c.cards.filter((x) => x.id !== id) } : c.id === to ? { ...c, cards: [...c.cards, cols.find((y) => y.id === from).cards.find((x) => x.id === id)] } : c)) }),
+        React.createElement("p", { className: "hmt-help" }, "K\u00E9o th\u1EBB sang c\u1ED9t tr\u01B0\u1EDBc \u0111\u1EC3 th\u1EA5y h\u1ED9p tho\u1EA1i ch\u1EB7n. Kh\u00F4ng d\u00F9ng chu\u1ED9t: n\u00FAt \"\u22EE\" tr\u00EAn th\u1EBB \u2192 Chuy\u1EC3n sang.")));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

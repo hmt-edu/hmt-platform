@@ -1,0 +1,43 @@
+<!-- @dsCard group="Học vụ" height=420 subtitle="Biểu đồ đường 1–4 chuỗi, một trục y; chú giải + nhãn cuối đường; chuỗi 2 trở đi nét đứt; rê chuột hoặc phím mũi tên hiện hộp số; có bảng ẩn" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>LineChart — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { LineChart } = HMT;
+    const days = ["01/10", "02/10", "03/10", "04/10", "05/10", "06/10", "07/10", "08/10", "09/10", "10/10", "11/10"];
+    const rev = [108.4, 103.0, 146.3, 92.1, 108.4, 103.0, 97.5, 108.4, 103.0, 146.3, 92.0];
+    const cash = [214.6, 96.3, 88.0, 41.2, 152.8, 74.5, 61.9, 118.4, 93.0, 135.7, 66.2];
+    const tr = (n) => `${(Math.round(n * 1e6)).toLocaleString("vi-VN")} đ`;
+    return (React.createElement("div", { className: "hmt-demo", style: { gap: 16 } },
+        React.createElement("section", { className: "hmt-panel" },
+            React.createElement("h3", { style: { margin: "0 0 8px", fontSize: 15 } }, "Hai chu\u1ED7i c\u00F9ng \u0111\u01A1n v\u1ECB (\u0111) \u00B7 m\u1ED9t tr\u1EE5c"),
+            React.createElement(LineChart, { label: "Doanh thu ghi nh\u1EADn v\u00E0 ti\u1EC1n \u0111\u00E3 thu theo ng\u00E0y, 01/10\u201311/10/2026", labels: days, series: [{ name: "Doanh thu ghi nhận", short: "Ghi nhận", values: rev }, { name: "Tiền đã thu", short: "Đã thu", values: cash }], format: tr, axisFormat: (n) => `${n.toLocaleString("vi-VN")} tr`, height: 220 })),
+        React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, "M\u00E0u t\u1EEB b\u1EA3ng ph\u00E2n lo\u1EA1i P-4 (cat-1 xanh d\u01B0\u01A1ng, cat-3 xanh ng\u1ECDc; \u0111\u00E3 ch\u1EA1y b\u1ED9 ki\u1EC3m tra: \u0111\u1EA1t, cat-3 t\u01B0\u01A1ng ph\u1EA3n 2,7:1 n\u00EAn lu\u00F4n c\u00F3 nh\u00E3n cu\u1ED1i \u0111\u01B0\u1EDDng + b\u1EA3ng s\u1ED1). Chu\u1ED7i th\u1EE9 hai n\u00E9t \u0111\u1EE9t. Hai \u0111\u01A1n v\u1ECB kh\u00E1c nhau th\u00EC t\u00E1ch hai bi\u1EC3u \u0111\u1ED3, kh\u00F4ng d\u00F9ng hai tr\u1EE5c.")));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

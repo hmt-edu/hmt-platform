@@ -1,0 +1,59 @@
+<!-- @dsCard group="Màn 5.3 · Tuyển sinh" height=620 subtitle="Mức B · K08 · Tạo cơ hội từ lead: lead đã có cơ hội → hiện mã cũ, xác nhận lần hai để vẫn tạo hoặc gộp (R-CRM-01)" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>TS-06 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Dialog, Button, Alert, Field, Select } = HMT;
+    const [open, setOpen] = useState(true);
+    const [pick, setPick] = useState("merge");
+    const [ok2, setOk2] = useState(false);
+    return (React.createElement(ScreenFrame, { code: "TS-06", name: "T\u1EA1o c\u01A1 h\u1ED9i t\u1EEB lead", level: "B", tpl: "K08 \u00B7 m\u00E1y t\u00EDnh", height: 560, note: "\u0110\u00E2y l\u00E0 c\u1EA3nh b\u00E1o, kh\u00F4ng ch\u1EB7n. Ch\u1ECDn V\u1EABn t\u1EA1o m\u1EDBi th\u00EC ph\u1EA3i t\u00EDch x\u00E1c nh\u1EADn l\u1EA7n hai." },
+        React.createElement("div", { className: "hmt-demo" },
+            React.createElement(Button, { onClick: () => setOpen(true) }, "M\u1EDF l\u1EA1i h\u1ED9p tho\u1EA1i"),
+            React.createElement(Dialog, { open: open, onClose: () => setOpen(false), tone: "warning", title: "Lead n\u00E0y \u0111\u00E3 c\u00F3 c\u01A1 h\u1ED9i", description: "LD000227 \u00B7 Ch\u1ECB L\u00EA Thu H\u1EB1ng", footer: React.createElement(Fragment, null,
+                    React.createElement(Button, { variant: "secondary", onClick: () => setOpen(false) }, "Hu\u1EF7"),
+                    pick === "merge" ? React.createElement(Button, { onClick: () => setOpen(false) }, "M\u1EDF c\u01A1 h\u1ED9i c\u0169 \u0111\u1EC3 c\u1EADp nh\u1EADt") : React.createElement(Button, { disabled: !ok2, onClick: () => setOpen(false) }, "V\u1EABn t\u1EA1o c\u01A1 h\u1ED9i m\u1EDBi")) },
+                React.createElement("div", { style: { display: "grid", gap: 12 } },
+                    React.createElement(Alert, { tone: "warning", title: "C\u01A1 h\u1ED9i \u0111ang m\u1EDF: CO000121" }, "To\u00E1n l\u1EDBp 9 \u00B7 L4 Kh\u00E1ch h\u00E0ng ti\u1EC1m n\u0103ng \u00B7 sale Tr\u1EA7n Thu H\u00E0 \u00B7 t\u1EA1o 08/10/2026"),
+                    React.createElement("fieldset", { style: { border: 0, padding: 0, margin: 0, display: "grid", gap: 8 } },
+                        React.createElement("legend", { className: "hmt-label" }, "B\u1EA1n mu\u1ED1n"),
+                        React.createElement("label", { style: { display: "flex", gap: 8 } },
+                            React.createElement("input", { type: "radio", name: "p", checked: pick === "merge", onChange: () => setPick("merge") }),
+                            " G\u1ED9p v\u00E0o c\u01A1 h\u1ED9i c\u0169 (c\u00F9ng h\u1ECDc sinh, c\u00F9ng m\u00F4n)"),
+                        React.createElement("label", { style: { display: "flex", gap: 8 } },
+                            React.createElement("input", { type: "radio", name: "p", checked: pick === "new", onChange: () => setPick("new") }),
+                            " V\u1EABn t\u1EA1o c\u01A1 h\u1ED9i m\u1EDBi (v\u00ED d\u1EE5 m\u00F4n kh\u00E1c, con kh\u00E1c)")),
+                    pick === "new" ? React.createElement(Fragment, null,
+                        React.createElement(Field, { label: "M\u00F4n c\u1EE7a c\u01A1 h\u1ED9i m\u1EDBi", required: true },
+                            React.createElement(Select, { defaultValue: "LY", options: [{ value: "LY", label: "Lý" }, { value: "HOA", label: "Hoá" }, { value: "TOAN", label: "Toán" }] })),
+                        React.createElement("label", { style: { display: "flex", gap: 8, alignItems: "center" } },
+                            React.createElement("input", { type: "checkbox", checked: ok2, onChange: (e) => setOk2(e.target.checked), style: { width: 18, height: 18 } }),
+                            "T\u00F4i x\u00E1c nh\u1EADn lead n\u00E0y s\u1EBD c\u00F3 hai c\u01A1 h\u1ED9i \u0111ang m\u1EDF")) : null)))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

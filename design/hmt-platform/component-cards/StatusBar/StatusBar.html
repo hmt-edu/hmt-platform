@@ -1,0 +1,56 @@
+<!-- @dsCard group="Bản ghi" height=520 subtitle="Bước ngang, bước hiện tại nổi bật, nhánh Huỷ/Từ chối riêng, nút hành động bên trái, khoá; điện thoại: bước hiện tại + "Các bước"" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>StatusBar — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { StatusBar, Button, BlockingDialog, ConfirmDialog } = HMT;
+    const [p, setP] = useState("crm");
+    const OPP = [["L1", "Khách hàng mới"], ["L2", "Chưa liên hệ được"], ["L3", "Không có nhu cầu"], ["L4", "Khách hàng tiềm năng"], ["L5", "Đồng ý tham gia test"], ["L6", "Đã tham gia test"], ["L7", "Tư vấn"], ["L8", "Đăng ký học"]].map(([id, l]) => ({ id, label: `${id} ${l}`, short: id }));
+    const [cur, setCur] = useState("L4");
+    const [block, setBlock] = useState(false);
+    const ORDER = [["nhap", "Nháp"], ["trinh", "Đã trình"], ["duyet", "Đã duyệt"]].map(([id, label]) => ({ id, label }));
+    const [rej, setRej] = useState(false);
+    return (React.createElement("div", { className: "hmt-demo", "data-product": p },
+        React.createElement(ProductSwitch, { value: p, onChange: setP }),
+        React.createElement("p", { className: "hmt-demo-label" }, "C\u01A1 h\u1ED9i \u00B7 ch\u1EC9 \u0111i t\u1EDBi (R-CRM-02) \u00B7 c\u00F3 nh\u00F3m con"),
+        React.createElement(StatusBar, { steps: OPP, current: cur, forwardOnly: true, substatus: "L4B C\u1EA7n t\u01B0 v\u1EA5n th\u00EAm", onStepClick: (id) => id >= "L5" && cur < "L5" ? setBlock(true) : setCur(id), actions: React.createElement(Fragment, null,
+                React.createElement(Button, { size: "sm", iconStart: "calendar" }, "\u0110\u1EB7t l\u1ECBch test"),
+                React.createElement(Button, { size: "sm", variant: "secondary" }, "T\u1EA1o b\u00E1o gi\u00E1")) }),
+        React.createElement(BlockingDialog, { open: block, onClose: () => setBlock(false), title: "Ch\u01B0a chuy\u1EC3n \u0111\u01B0\u1EE3c sang L5 \u0110\u1ED3ng \u00FD tham gia test", description: "T\u1EEB L5 b\u1EAFt bu\u1ED9c c\u00F3 t\u00EAn v\u00E0 n\u0103m sinh h\u1ECDc sinh (R-CRM-03).", reasons: [{ text: "Thiếu tên học sinh", actionLabel: "Nhập tên" }, { text: "Thiếu năm sinh học sinh", actionLabel: "Nhập năm sinh" }] }),
+        React.createElement("p", { className: "hmt-demo-label" }, "\u0110\u01A1n h\u00E0ng DH-CS1-2610-0001 \u00B7 \u0111\u00E3 duy\u1EC7t, t\u1EF1 kho\u00E1 (R-TIEN-03)"),
+        React.createElement(StatusBar, { steps: ORDER, current: "duyet", locked: true, actions: React.createElement(Button, { size: "sm", variant: "secondary", iconStart: "printer" }, "In \u0111\u01A1n") }),
+        React.createElement("p", { className: "hmt-demo-label" }, "Phi\u1EBFu thu PT-CS2-2610-0007 \u00B7 nh\u00E1nh T\u1EEB ch\u1ED1i"),
+        React.createElement(StatusBar, { steps: ORDER, current: "trinh", terminal: { label: "Từ chối", tone: "danger" }, actions: React.createElement(Fragment, null,
+                React.createElement(Button, { size: "sm", onClick: () => setRej(true) }, "\u0110\u01B0a v\u1EC1 Nh\u00E1p \u0111\u1EC3 s\u1EEDa")) }),
+        React.createElement(ConfirmDialog, { open: rej, onClose: () => setRej(false), onConfirm: () => setRej(false), tone: "warning", title: "\u0110\u01B0a phi\u1EBFu thu v\u1EC1 Nh\u00E1p?", confirmLabel: "\u0110\u01B0a v\u1EC1 Nh\u00E1p", reasonLabel: "L\u00FD do", description: "K\u1EBF to\u00E1n \u0111\u00E3 t\u1EEB ch\u1ED1i: sai s\u1ED1 ti\u1EC1n chuy\u1EC3n kho\u1EA3n." }),
+        React.createElement("div", { style: { maxWidth: 375 }, "data-product": "teacher" },
+            React.createElement("p", { className: "hmt-demo-label" }, "\u0110i\u1EC7n tho\u1EA1i (375px)"),
+            React.createElement(StatusBar, { steps: OPP, current: "L4", forwardOnly: true, substatus: "L4B C\u1EA7n t\u01B0 v\u1EA5n th\u00EAm", actions: React.createElement(Button, { size: "sm", fullWidth: true }, "\u0110\u1EB7t l\u1ECBch test") }))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

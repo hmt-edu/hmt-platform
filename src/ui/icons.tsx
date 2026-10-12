@@ -1,0 +1,116 @@
+// Từ điển biểu tượng chung (Lucide, nét 1,5px, cỡ 16/20/24: quyết định O-12 của thiết kế).
+// Mọi màn lấy biểu tượng qua tên ở đây, không import thẳng lucide-react.
+import {
+  ArrowLeft,
+  Bell,
+  BookOpen,
+  BookOpenCheck,
+  CalendarDays,
+  ChartColumn,
+  ChevronDown,
+  ChevronRight,
+  CircleAlert,
+  CircleCheck,
+  CircleUser,
+  ClipboardList,
+  CreditCard,
+  Eye,
+  EyeOff,
+  GraduationCap,
+  Hourglass,
+  House,
+  Info,
+  KeyRound,
+  Layers,
+  ListChecks,
+  LoaderCircle,
+  Lock,
+  LogOut,
+  MapPin,
+  Menu,
+  MessageSquare,
+  PanelLeft,
+  Repeat,
+  Search,
+  Settings,
+  ShieldCheck,
+  SlidersHorizontal,
+  Smartphone,
+  Trash2,
+  TriangleAlert,
+  UserRoundSearch,
+  Users,
+  X,
+  type LucideIcon,
+} from 'lucide-react';
+
+export const ICONS = {
+  alert: CircleAlert,
+  back: ArrowLeft,
+  bell: Bell,
+  calendar: CalendarDays,
+  check: CircleCheck,
+  chevronDown: ChevronDown,
+  chevronRight: ChevronRight,
+  classes: BookOpen,
+  close: X,
+  comingSoon: Hourglass,
+  config: SlidersHorizontal,
+  customers: Users,
+  eye: Eye,
+  eyeOff: EyeOff,
+  forbidden: Lock,
+  home: House,
+  homework: BookOpenCheck,
+  info: Info,
+  key: KeyRound,
+  loading: LoaderCircle,
+  location: MapPin,
+  logout: LogOut,
+  menu: Menu,
+  phone: Smartphone,
+  recruit: UserRoundSearch,
+  reports: Layers,
+  results: ChartColumn,
+  sales: CreditCard,
+  search: Search,
+  service: MessageSquare,
+  settings: Settings,
+  shield: ShieldCheck,
+  sidebar: PanelLeft,
+  switchPortal: Repeat,
+  tasks: ListChecks,
+  todo: ClipboardList,
+  training: GraduationCap,
+  trash: Trash2,
+  user: CircleUser,
+  warning: TriangleAlert,
+} satisfies Record<string, LucideIcon>;
+
+export type IconName = keyof typeof ICONS;
+export type IconSize = 16 | 20 | 24; // allow-number: ba cỡ biểu tượng của hệ thống thiết kế
+
+const STROKE_WIDTH = 1.5;
+
+/** Biểu tượng trang trí: ẩn với trình đọc màn hình; nghĩa luôn có chữ đi kèm. */
+export function Icon({
+  name,
+  size = 20,
+  className,
+}: {
+  name: IconName;
+  size?: IconSize | undefined;
+  className?: string | undefined;
+}) {
+  const Component = ICONS[name];
+  return (
+    <Component
+      size={size}
+      strokeWidth={STROKE_WIDTH}
+      absoluteStrokeWidth
+      aria-hidden="true"
+      focusable="false"
+      className={className}
+    />
+  );
+}

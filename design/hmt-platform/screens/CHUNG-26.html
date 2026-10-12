@@ -1,0 +1,45 @@
+<!-- @dsCard group="Màn 5.2 · Khung và trang chủ" height=560 subtitle="Mức B · K08 · Hộp thoại xác nhận chung + cảnh báo rời trang chưa lưu (thay hộp thoại của trình duyệt)" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>CHUNG-26 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Dialog, ConfirmDialog, Button } = HMT;
+    const [a, setA] = useState(false);
+    const [b, setB] = useState(false);
+    return (React.createElement(ScreenFrame, { code: "CHUNG-26", name: "X\u00E1c nh\u1EADn chung, r\u1EDDi trang ch\u01B0a l\u01B0u", level: "B", tpl: "K08 \u00B7 c\u1EA3 hai", height: 420, note: "Kh\u00F4ng bao gi\u1EDD d\u00F9ng h\u1ED9p tho\u1EA1i m\u1EB7c \u0111\u1ECBnh c\u1EE7a tr\u00ECnh duy\u1EC7t. N\u00FAt m\u1EB7c \u0111\u1ECBnh l\u00E0 l\u1EF1a ch\u1ECDn an to\u00E0n (\u1EDE l\u1EA1i / Hu\u1EF7)." },
+        React.createElement("div", { className: "hmt-demo", style: { alignItems: "flex-start" } },
+            React.createElement("div", { className: "hmt-demo-row" },
+                React.createElement(Button, { variant: "secondary", onClick: () => setA(true) }, "R\u1EDDi trang khi c\u00F2n thay \u0111\u1ED5i ch\u01B0a l\u01B0u"),
+                React.createElement(Button, { variant: "secondary", onClick: () => setB(true) }, "X\u00E1c nh\u1EADn chung (v\u00ED d\u1EE5 kho\u00E1 t\u00E0i kho\u1EA3n)")),
+            React.createElement(Dialog, { open: a, onClose: () => setA(false), tone: "warning", title: "R\u1EDDi trang khi ch\u01B0a l\u01B0u?", description: "B\u1EA1n \u0111\u00E3 s\u1EEDa 3 tr\u01B0\u1EDDng \u1EDF QT-09 C\u00E0i \u0111\u1EB7t tham s\u1ED1 nh\u01B0ng ch\u01B0a l\u01B0u. R\u1EDDi trang th\u00EC c\u00E1c thay \u0111\u1ED5i n\u00E0y m\u1EA5t.", footer: React.createElement(Fragment, null,
+                    React.createElement(Button, { variant: "secondary", onClick: () => setA(false) }, "R\u1EDDi trang, b\u1ECF thay \u0111\u1ED5i"),
+                    React.createElement(Button, { onClick: () => setA(false) }, "\u1EDE l\u1EA1i")), initialFocus: ".hmt-ov-foot .hmt-btn--primary" }),
+            React.createElement(ConfirmDialog, { open: b, onClose: () => setB(false), onConfirm: () => setB(false), tone: "danger", title: "Kho\u00E1 t\u00E0i kho\u1EA3n Ng\u00F4 Th\u1ECB Lan (NV0009)?", description: "Ng\u01B0\u1EDDi n\u00E0y kh\u00F4ng \u0111\u0103ng nh\u1EADp \u0111\u01B0\u1EE3c n\u1EEFa; d\u1EEF li\u1EC7u v\u00E0 l\u1ECBch s\u1EED v\u1EABn gi\u1EEF. M\u1EDF kho\u00E1 l\u1EA1i \u0111\u01B0\u1EE3c.", confirmLabel: "Kho\u00E1 t\u00E0i kho\u1EA3n", reasonLabel: "L\u00FD do kho\u00E1", reasonOptions: [{ value: "KH01", label: "Nghỉ việc" }, { value: "KH02", label: "Dừng học" }, { value: "KH03", label: "Tạm nghỉ" }, { value: "KH04", label: "Nghi lộ mật khẩu" }] }))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

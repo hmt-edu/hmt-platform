@@ -1,0 +1,62 @@
+<!-- @dsCard group="In ấn" height=1180 subtitle="K13: khổ A4 cho cả ba mẫu — đầu trang logo + cơ sở, bảng dòng, tổng tiền, chữ ký; báo giá, biên nhận phiếu thu, phiếu chi" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>PrintLayout — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { PrintLayout, SegmentedControl, Button } = HMT;
+    const [k, setK] = useState("receipt");
+    const campus = { code: "CS1", name: "Nguyễn Chí Thanh", address: "Số 20, ngõ 62 Nguyễn Chí Thanh, Láng, Hà Nội", phone: "0900 100 288" };
+    const D = {
+        quote: { size: "A4", docTitle: "Báo giá", code: "BG-CS1-2610-0001", date: "11/10/2026", status: "Hiệu lực đến 25/10/2026",
+            party: [{ k: "Phụ huynh", v: "Chị Nguyễn Thị Lan (PH000045)" }, { k: "Điện thoại", v: "0912 345 018" }, { k: "Học sinh", v: "Nguyễn Minh Khôi (HS000123)" }, { k: "Tư vấn", v: "Trần Thu Hà (NV0012)" }],
+            columns: [{ key: "pkg", header: "Gói" }, { key: "form", header: "Hình thức" }, { key: "h", header: "Số giờ", numeric: true }, { key: "p", header: "Đơn giá", numeric: true }, { key: "disc", header: "Chiết khấu", numeric: true }, { key: "amt", header: "Thành tiền", numeric: true }],
+            lines: [{ pkg: "LC-TOAN-K09 · Toán lớp 9", form: "Offline", h: "48", p: "220.000 đ", disc: "10% + 4 giờ tặng (8,3%)", amt: "9.504.000 đ" }],
+            totals: [{ k: "Cộng", v: "10.560.000 đ" }, { k: "Chiết khấu", v: "−1.056.000 đ" }, { k: "Tổng cộng", v: "9.504.000 đ", strong: true }], amountInWords: "Chín triệu năm trăm linh bốn nghìn đồng",
+            notes: "Giá tính theo giờ. Giờ tặng chỉ cấp khi thu đủ tiền.", signatures: [{ role: "Phụ huynh" }, { role: "Người lập", name: "Trần Thu Hà" }] },
+        receipt: { size: "A4", docTitle: "Biên nhận", code: "PT-CS1-2610-0019", date: "14/10/2026", status: "Đã duyệt",
+            party: [{ k: "Người nộp", v: "Chị Nguyễn Thị Lan" }, { k: "Học sinh", v: "Nguyễn Minh Khôi (HS000123)" }, { k: "Theo đơn", v: "DH-CS1-2610-0001" }, { k: "Hình thức", v: "Chuyển khoản" }],
+            columns: [{ key: "c", header: "Nội dung" }, { key: "amt", header: "Số tiền", numeric: true }],
+            lines: [{ c: "Học phí đợt 1 · Toán lớp 9 · Offline", amt: "5.000.000 đ" }], totals: [{ k: "Tổng thu", v: "5.000.000 đ", strong: true }], amountInWords: "Năm triệu đồng",
+            signatures: [{ role: "Người nộp tiền" }, { role: "Người thu tiền", name: "Phạm Ngọc Ánh" }] },
+        pay: { size: "A4", docTitle: "Phiếu chi", code: "PC-CS1-2609-0004", date: "30/09/2026", status: "Đã duyệt",
+            party: [{ k: "Người nhận", v: "Anh Bùi Văn Tuấn" }, { k: "Theo đề nghị", v: "DN-CS1-2609-0021" }, { k: "Học sinh", v: "Bùi Thanh Hà (HS000287)" }, { k: "Hình thức", v: "Chuyển khoản" }],
+            columns: [{ key: "c", header: "Nội dung" }, { key: "amt", header: "Số tiền", numeric: true }],
+            lines: [{ c: "Tiền đã đóng", amt: "9.504.000 đ" }, { c: "Trừ giờ đã học: 20 giờ × 220.000 đ", amt: "−4.400.000 đ" }, { c: "Trừ phí xử lý 10%", amt: "−510.400 đ" }],
+            totals: [{ k: "Số tiền hoàn", v: "4.593.600 đ", strong: true }], amountInWords: "Bốn triệu năm trăm chín mươi ba nghìn sáu trăm đồng", notes: "Giờ tặng không hoàn (R-TIEN-28).",
+            signatures: [{ role: "Người nhận" }, { role: "Người lập", name: "Phạm Ngọc Ánh" }, { role: "Kế toán" }, { role: "Quản lý cơ sở" }] },
+    };
+    return (React.createElement("div", { className: "hmt-demo" },
+        React.createElement("div", { className: "hmt-demo-row" },
+            React.createElement("div", { style: { minWidth: 380 } },
+                React.createElement(SegmentedControl, { name: "pk", layout: "row", label: "M\u1EABu in", value: k, onChange: setK, options: [{ value: "quote", label: "Báo giá" }, { value: "receipt", label: "Biên nhận phiếu thu" }, { value: "pay", label: "Phiếu chi" }] })),
+            React.createElement(Button, { variant: "secondary", iconStart: "printer", onClick: () => window.print() }, "In")),
+        React.createElement("div", { style: { overflow: "auto", background: "var(--hmt-surface-subtle)", padding: 16, borderRadius: 8 } },
+            React.createElement(PrintLayout, { logoSrc: LOGO, campus: campus, ...D[k] }))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

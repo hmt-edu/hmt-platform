@@ -1,0 +1,341 @@
+<!-- @dsCard group="Màn 5.4 · Tái tục" height=760 subtitle="Mức B · K03, K04 · Phiếu tái tục (danh sách / kanban L1–L8): tự sinh khi chạm ngưỡng giờ hoặc ngày; cờ rủi ro vắng nhiều; giao; xuất; không có nút Tạo" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>TT-01 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+/* Dữ liệu mẫu dùng chung cho các màn đợt 5.2 — dữ liệu giả */
+const STAFF = [
+    { code: "NV0001", name: "Đặng Quốc Huy", email: "huy.dq@hoamatoan.edu.vn", phone: "0901 234 561", roles: ["AD"], campus: "CS3", status: "active", last: "11/10/2026 08:12", twofa: true },
+    { code: "NV0007", name: "Phạm Ngọc Ánh", email: "anh.pn@hoamatoan.edu.vn", phone: "0912 345 672", roles: ["KT"], campus: "CS3", status: "active", last: "11/10/2026 07:58", twofa: true },
+    { code: "NV0009", name: "Ngô Thị Lan", email: "lan.nt@hoamatoan.edu.vn", phone: "0934 112 093", roles: ["CS"], campus: "CS2", status: "locked", last: "30/09/2026 17:40", note: "Nghỉ việc từ 01/10/2026" },
+    { code: "NV0012", name: "Trần Thu Hà", email: "ha.tt@hoamatoan.edu.vn", phone: "0987 654 321", roles: ["SA"], campus: "CS1", status: "active", last: "11/10/2026 09:03" },
+    { code: "NV0021", name: "Nguyễn Hoàng Long", email: "long.nh@hoamatoan.edu.vn", phone: "0976 220 418", roles: ["BM"], campus: "CS1", status: "active", last: "11/10/2026 08:41" },
+    { code: "NV0026", name: "Vũ Thị Thanh Tâm", email: "tam.vtt@hoamatoan.edu.vn", phone: "0965 330 512", roles: ["CS"], campus: "CS1", status: "active", last: "11/10/2026 08:20" },
+    { code: "NV0030", name: "Hoàng Minh Đức", email: "duc.hm@hoamatoan.edu.vn", phone: "0943 871 206", roles: ["BM"], campus: "CS5", status: "active", last: "10/10/2026 21:15" },
+    { code: "NV0034", name: "Phạm Thu Trang", email: "trang.pt@hoamatoan.edu.vn", phone: "0918 406 733", roles: ["CS", "GV"], gvCode: "GV2011", campus: "CS5", status: "active", last: "11/10/2026 07:45" },
+    { code: "NV0041", name: "Bùi Anh Tuấn", email: "tuan.ba@hoamatoan.edu.vn", phone: "0904 519 870", roles: ["SA"], campus: "CS4", status: "temp", last: "11/10/2026 09:31", note: "Sai mật khẩu 10 lần lúc 09:31 · tự mở lúc 09:46" },
+    { code: "GV2007", name: "Lê Văn Khánh", email: "khanh.lv@hoamatoan.edu.vn", phone: "0983 172 640", roles: ["GV"], campus: "CS1", status: "active", last: "10/10/2026 19:02" },
+    { code: "GV2015", name: "Trịnh Mai Phương", email: "phuong.tm@hoamatoan.edu.vn", phone: "0936 504 128", roles: ["GV"], campus: "CS4", status: "active", last: "09/10/2026 20:47" },
+    { code: "TG8002", name: "Đỗ Thị Hạnh", email: "hanh.dt@hoamatoan.edu.vn", phone: "0971 803 255", roles: ["TG"], campus: "CS2", status: "active", last: "11/10/2026 06:55" },
+];
+const ACC_STATUS = { active: ["success", "Đang dùng", "check"], locked: ["danger", "Khoá", "lock"], temp: ["warning", "Tạm khoá", "timer"], never: ["neutral", "Chưa cấp", "minus"], first: ["info", "Chờ đổi mật khẩu", "info"] };
+const CAMPUS_NAME = { CS1: "Nguyễn Chí Thanh", CS2: "Đỗ Quang", CS3: "Hội sở", CS4: "Hà Đông", CS5: "Mỹ Đình" };
+const ROLE_FULL = { AD: "Admin", BM: "Trưởng cơ sở", SA: "Tuyển sinh", CS: "CSKH, vận hành lớp", KT: "Kế toán", GV: "Giáo viên", TG: "Trợ giảng" };
+function AccBadge({ s }) { const [t, l, i] = ACC_STATUS[s]; return React.createElement(HMT.Badge, { tone: t, icon: t === "neutral" ? false : i }, l); }
+function Shell({ role = "BM", user, active, children, mobile, notifications = 7, badges, loading, collapsed, campus: campusIn, onCampus }) {
+    const [campus0, setCampus0] = useState("ALL");
+    const campus = campusIn !== undefined ? campusIn : campus0;
+    const setCampus = onCampus || setCampus0;
+    const u = user || STAFF.find((x) => x.roles.includes(role)) || STAFF[0];
+    return React.createElement(HMT.AppShell, { role: role, user: { name: u.name, campus: u.campus }, campus: campus, onCampusChange: setCampus, activeId: active, onNavigate: () => { }, notifications: notifications, onSearch: () => { }, onNotifications: () => { }, mobile: mobile, badges: badges, loading: loading, multiPortal: u.roles.length > 1, defaultCollapsed: collapsed }, children);
+}
+/* Khuôn K01–K13 (đợt 5.1 phần 2) */
+function TplFrame({ code, name, kind, uses, states, state, onState, devices, device, onDevice, extra, zones, onZones, note, height, product, children }) {
+    const { Chip } = HMT;
+    return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+        React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+            React.createElement("p", { className: "hmt-demo-label" },
+                React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+                " \u00B7 ",
+                name,
+                " \u00B7 Khu\u00F4n",
+                kind ? ` · ${kind}` : ""),
+            devices ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Thi\u1EBFt b\u1ECB" }, devices.map(([k, l]) => React.createElement(Chip, { key: k, selected: device === k, onToggle: () => onDevice(k) }, l))) : null,
+            devices && states ? React.createElement("span", { className: "hmt-tpl-bar", "aria-hidden": "true" }) : null,
+            states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+            extra,
+            React.createElement("span", { style: { marginLeft: "auto" } },
+                React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i"))),
+        uses ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } },
+            React.createElement("b", null, "D\u00F9ng cho:"),
+            " ",
+            uses) : null,
+        note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+        zones ? React.createElement("p", { className: "hmt-zone-legend" },
+            React.createElement("span", null,
+                React.createElement("i", { "data-k": "fixed" }),
+                "C\u1ED1 \u0111\u1ECBnh: gi\u1ED1ng nhau \u1EDF m\u1ECDi m\u00E0n d\u00F9ng khu\u00F4n"),
+            React.createElement("span", null,
+                React.createElement("i", null),
+                "Thay \u0111\u1ED5i: m\u1ED7i m\u00E0n t\u1EF1 \u0111i\u1EC1n")) : null,
+        React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height, overflow: "auto" } }, children));
+}
+function Z({ k = "vary", l, children, style }) { return React.createElement("div", { "data-zone": k, "data-zone-label": (k === "fixed" ? "CỐ ĐỊNH · " : "THAY ĐỔI · ") + l, style: style }, children); }
+const TPL_STATES = [["data", "Có dữ liệu"], ["empty", "Trống"], ["loading", "Đang tải"], ["error", "Lỗi"], ["noaccess", "Không có quyền"]];
+function TplState({ st, what, emptyTitle, emptyDesc, emptyAction, compact }) {
+    const { StateView, Button } = HMT;
+    if (st === "empty")
+        return React.createElement(StateView, { kind: "empty", compact: compact, title: emptyTitle, description: emptyDesc, actions: emptyAction });
+    if (st === "error")
+        return React.createElement(StateView, { kind: "error", compact: compact, title: `Không tải được ${what}`, description: "L\u1ED7i m\u00E1y ch\u1EE7 (m\u00E3 E-500). Th\u1EED l\u1EA1i; n\u1EBFu v\u1EABn l\u1ED7i, g\u1EEDi m\u00E3 n\u00E0y cho IT.", actions: React.createElement(Button, { variant: "secondary", iconStart: "refresh" }, "Th\u1EED l\u1EA1i") });
+    return React.createElement(StateView, { kind: "no-access", compact: compact, title: "Kh\u00F4ng c\u00F3 quy\u1EC1n", description: `Bạn không có quyền xem ${what}. Cần quyền thì nhờ Trưởng cơ sở hoặc Admin.`, actions: React.createElement(Button, { variant: "secondary", iconStart: "home" }, "V\u1EC1 trang ch\u1EE7") });
+}
+/* Lớp mẫu CS1 năm học 2026–2027 (đợt 5.4) — dữ liệu giả */
+const CLS = [
+    { code: "CS1-2627-DAI-K08-CB-A-001", short: "8A1 Đại", subj: "DAI", grade: 8, kind: "CB", lvl: "A", step: "duyet", op: "Đang học", n: 13, max: 15, sched: "Thứ 2, 5 · 17:30–19:00", room: "P101", gv: "Lê Văn Khánh", start: "03/09/2026", end: "25/02/2027", total: 48, done: 11, frame: "DAI-K08-CB-2627" },
+    { code: "CS1-2627-HINH-K08-CB-A-001", short: "8A1 Hình", subj: "HINH", grade: 8, kind: "CB", lvl: "A", step: "duyet", op: "Đang học", n: 12, max: 15, sched: "Thứ 7 · 08:00–09:30", room: "P101", gv: "Nguyễn Thị Mai", start: "05/09/2026", end: "20/02/2027", total: 24, done: 6, frame: "HINH-K08-CB-2627" },
+    { code: "CS1-2627-DAI-K09-CB-A-002", short: "9A2 Đại", subj: "DAI", grade: 9, kind: "CB", lvl: "A", step: "duyet", op: "Đang học", n: 12, max: 15, sched: "Thứ 2, 5 · 19:15–20:45", room: "P102", gv: "Lê Văn Khánh", start: "01/10/2026", end: "25/03/2027", total: 48, done: 3, frame: "DAI-K09-CB-2627" },
+    { code: "CS1-2627-HINH-K09-CB-A-002", short: "9A2 Hình", subj: "HINH", grade: 9, kind: "CB", lvl: "A", step: "duyet", op: "Chưa khai giảng", n: 10, max: 15, sched: "Thứ 7 · 08:00–09:30", room: "P102", gv: "Trần Quốc Bảo", start: "17/10/2026", end: "03/04/2027", total: 24, done: 0, frame: "HINH-K09-CB-2627" },
+    { code: "CS1-2627-DAI-K09-NC-S-001", short: "9S1 Đại", subj: "DAI", grade: 9, kind: "NC", lvl: "S", step: "duyet", op: "Đang học", n: 15, max: 15, sched: "Thứ 3, 6 · 19:15–20:45", room: "P102", gv: "Lê Văn Khánh", start: "04/09/2026", end: "02/03/2027", total: 48, done: 11, frame: "DAI-K09-NC-2627" },
+    { code: "CS1-2627-TOAN-K08-LR-006", short: "Lớp riêng · Nguyễn Bảo Ngọc", subj: "TOAN", grade: 8, kind: "LR", lvl: "", step: "duyet", op: "Đang học", n: 1, max: 2, sched: "Thứ 4 · 18:00–19:30", room: "P103", gv: "Nguyễn Thị Mai", start: "16/09/2026", end: "04/11/2026", total: 8, done: 4, frame: "" },
+    { code: "CS1-2627-TOAN-K06-CB-B-004", short: "6B2", subj: "TOAN", grade: 6, kind: "CB", lvl: "B", step: "trinh", op: "Chưa khai giảng", n: 0, max: 15, sched: "Thứ 3, 6 · 17:30–19:00", room: "P101", gv: "Nguyễn Thị Mai", start: "16/10/2026", end: "13/04/2027", total: 48, done: 0, frame: "TOAN-K06-CB-2627" },
+    { code: "CS1-2627-HINH-K07-CB-A-003", short: "7A1 Hình", subj: "HINH", grade: 7, kind: "CB", lvl: "A", step: "xacnhan", op: "Chưa khai giảng", n: 0, max: 15, sched: "Thứ 6 · 17:30–19:00", room: "P103", gv: "Trần Quốc Bảo", start: "23/10/2026", end: "23/04/2027", total: 24, done: 0, frame: "HINH-K07-CB-2627" },
+    { code: "CS1-2627-DAI-K07-CB-A-005", short: "7A2 Đại", subj: "DAI", grade: 7, kind: "CB", lvl: "A", step: "nhap", op: "Chưa khai giảng", n: 0, max: 15, sched: "Chưa có thời khoá biểu", room: "—", gv: "—", start: "20/10/2026", end: "—", total: 48, done: 0, frame: "DAI-K07-CB-2627" },
+    { code: "CS1-2526-DAI-K08-NC-S-002", short: "8S2 Đại (2025–2026)", subj: "DAI", grade: 8, kind: "NC", lvl: "S", step: "duyet", op: "Kết thúc", n: 2, max: 15, sched: "Thứ 4, 7 · 18:00–19:30", room: "P103", gv: "Phùng Văn Tài", start: "06/09/2025", end: "30/05/2026", total: 64, done: 64, frame: "DAI-K08-NC-2526" },
+];
+const CLS_STEP = { nhap: "Nháp", trinh: "Đã trình", xacnhan: "Đã xác nhận", duyet: "Đã duyệt", dong: "Đã đóng", tuchoi: "Từ chối", huy: "Huỷ" };
+const LOP_STEPS = [{ id: "nhap", label: "Nháp" }, { id: "trinh", label: "Đã trình" }, { id: "xacnhan", label: "Đã xác nhận" }, { id: "duyet", label: "Đã duyệt" }, { id: "dong", label: "Đã đóng" }];
+const GD_STATUS = { wait: ["neutral", "Chờ xếp lớp"], placed: ["info", "Đã xếp lớp"], on: ["success", "Đang học"], hold: ["info", "Bảo lưu"], done: ["neutral", "Hoàn thành"], move: ["info", "Chuyển lớp"], stop: ["danger", "Dừng"], refund: ["danger", "Hoàn phí"] };
+function GdBadge({ s }) { const [t, l] = GD_STATUS[s]; return React.createElement(HMT.Badge, { tone: t, icon: t === "neutral" ? false : undefined }, l); }
+const hrsVN = (n) => `${n.toLocaleString("vi-VN")} giờ`;
+/* Sổ giờ mẫu GD000076 · Trịnh Minh Châu (HS000377) · LC-TOAN-K08 · Offline — chỉ thêm dòng */
+const CHAU_LEDGER = (() => {
+    const L = [
+        { d: "01/09/2026", k: "receipt", v: 48, t: "Phiếu thu PT-CS1-2609-0012 được duyệt · thu đủ 10.560.000 đ", by: "Phạm Ngọc Ánh" },
+        { d: "01/09/2026", k: "bonus", v: 4, t: "Giờ tặng · Tặng giờ khai giảng (cấp khi thu đủ)", by: "Hệ thống" },
+    ];
+    const DAI = [["03/09", "present"], ["07/09", "present"], ["10/09", "present"], ["14/09", "late"], ["17/09", "present"], ["21/09", "present"], ["24/09", "present"], ["28/09", "absent"], ["01/10", "present"], ["05/10", "present"], ["08/10", "excused"]];
+    const HINH = [["05/09", "present"], ["12/09", "present"], ["19/09", "present"], ["26/09", "excused"], ["03/10", "late"], ["10/10", "present"]];
+    const ev = [];
+    DAI.forEach(([d, s], i) => ev.push({ d: `${d}/2026`, k: "session", v: -1.5, t: `8A1 Đại · Buổi ${i + 1} · ${d}/2026`, att: s, by: "Lê Văn Khánh" }));
+    HINH.forEach(([d, s], i) => ev.push({ d: `${d}/2026`, k: "session", v: -1.5, t: `8A1 Hình · Buổi ${i + 1} · ${d}/2026`, att: s, by: "Nguyễn Thị Mai" }));
+    ev.push({ d: "29/09/2026", k: "adjust", v: 1.5, t: "Điều chỉnh: bớt khỏi danh sách 8A1 Hình · Buổi 4 · 26/09/2026 (đã xin nghỉ trước giờ chốt danh sách)", by: "Nguyễn Hoàng Long" });
+    const key = (x) => x.d.split("/").reverse().join("");
+    ev.sort((a, b) => key(a).localeCompare(key(b)));
+    const all = [...L, ...ev];
+    let bal = 0;
+    return all.map((x, i) => { bal += x.v; return { ...x, id: i + 1, bal }; });
+})();
+/* Đợt 5.5 · buổi dạy mẫu: 9A2 Đại · Buổi 4 · Thứ Hai 12/10/2026 19:15–20:45 · P102 · Lê Văn Khánh (GV2007) · 12 em */
+const GV_SESSION = { cls: "9A2 Đại", code: "CS1-2627-DAI-K09-CB-A-002", no: 4, date: "12/10/2026", dow: "Thứ Hai", time: "19:15–20:45", end: "20:45", room: "P102", deadline: "13/10/2026 04:45", teacher: "Lê Văn Khánh", gv: "GV2007" };
+const GV_ROSTER = [
+    { id: "s1", name: "Bạch Ngọc Ánh", code: "HS000411" }, { id: "s2", name: "Cao Minh Đức", code: "HS000412" }, { id: "s3", name: "Đào Thu Hà", code: "HS000414" },
+    { id: "s4", name: "Giang Tuấn Kiệt", code: "HS000416" }, { id: "s5", name: "Hà Phương Linh", code: "HS000417" }, { id: "s6", name: "Khúc Bảo Nam", code: "HS000420" },
+    { id: "s7", name: "Lê Gia Huy", code: "HS000435", note: "Buổi đầu · vào lớp 12/10" }, { id: "s8", name: "Mai Anh Thư", code: "HS000421" }, { id: "s9", name: "Nông Đức Trí", code: "HS000423" },
+    { id: "s10", name: "Phí Khánh Vân", code: "HS000424" }, { id: "s11", name: "Quan Thảo My", code: "HS000426" }, { id: "s12", name: "Tạ Hoàng Long", code: "HS000428" },
+];
+const GV_ATT_COLS = [
+    { key: "present", label: "Có mặt", kind: "radio", field: "att", value: "present", hotkey: "1", tone: "success", icon: "check" },
+    { key: "late", label: "Đi muộn", kind: "radio", field: "att", value: "late", hotkey: "2", tone: "warning", icon: "clock" },
+    { key: "excused", label: "Vắng có phép", kind: "radio", field: "att", value: "excused", hotkey: "3", tone: "danger", icon: "fileCheck" },
+    { key: "absent", label: "Vắng không phép", kind: "radio", field: "att", value: "absent", hotkey: "4", tone: "danger", icon: "userX" },
+];
+const GV_CRIT = [["td1", "Tập trung", "Thái độ"], ["td2", "Chủ động", "Thái độ"], ["td3", "Tinh thần học tập", "Thái độ"], ["kt1", "Nắm kiến thức", "Kiến thức"], ["kt2", "Hiểu bản chất", "Kiến thức"], ["kt3", "Ghi nhớ", "Kiến thức"]];
+const GV_LINES = ["Điều kiện xác định của căn thức", "Hằng đẳng thức √(A²) = |A|", "Liên hệ phép nhân và phép khai phương"];
+const GV_RUBRIC = {
+    td1: ["Thường xuyên mất tập trung, cần nhắc nhiều lần", "Hay mất tập trung, cần nhắc", "Tập trung phần lớn buổi", "Tập trung tốt suốt buổi", "Tập trung cao, chủ động ghi chép"],
+    td2: ["Không phát biểu, không hỏi", "Ít phát biểu khi được gọi", "Phát biểu khi được gọi", "Tự giơ tay, hỏi khi chưa hiểu", "Chủ động hỏi, đề xuất cách giải"],
+    td3: ["Chưa làm bài, chưa chuẩn bị", "Chuẩn bị chưa đủ", "Chuẩn bị đủ", "Chuẩn bị tốt, làm thêm bài", "Rất chăm, giúp bạn cùng học"],
+    kt1: ["Chưa nắm nội dung buổi", "Nắm một phần", "Nắm nội dung chính", "Nắm chắc nội dung", "Nắm chắc, mở rộng được"],
+    kt2: ["Làm theo mẫu chưa đúng", "Làm theo mẫu", "Giải thích được cách làm", "Hiểu vì sao, áp dụng bài tương tự", "Tự suy ra cách giải mới"],
+    kt3: ["Quên bài cũ", "Nhớ một phần bài cũ", "Nhớ bài cũ khi được gợi ý", "Nhớ bài cũ", "Nhớ lâu, liên hệ được"],
+};
+const GV_GRADE_COLS = (lines) => [
+    ...GV_CRIT.map(([k, l, g]) => ({ key: k, label: l, kind: "score", min: 1, max: 5, group: `${g} (1–5)`, disabled: (v) => v.att === "excused" || v.att === "absent" ? "Vắng" : null })),
+    ...lines.map((l, i) => ({ key: `vd${i + 1}`, label: `Dòng ${i + 1}`, sub: l.length > 18 ? l.slice(0, 17) + "…" : l, help: l, kind: "score", min: 1, max: 5, group: "Vận dụng (1–5)", disabled: (v) => v.att === "excused" || v.att === "absent" ? "Vắng" : null })),
+    { key: "vdtb", label: "TB vận dụng", sub: "hệ thống tính", kind: "read", group: "Vận dụng (1–5)", render: (v) => { const xs = lines.map((_, i) => v[`vd${i + 1}`]).filter((x) => x != null); return xs.length ? React.createElement("span", { className: "hmt-tabular" }, (xs.reduce((a, b) => a + b, 0) / xs.length).toLocaleString("vi-VN", { maximumFractionDigits: 1 })) : React.createElement("span", { className: "hmt-help" }, "\u2014"); } },
+    { key: "msg", label: "Lời nhắn phụ huynh", kind: "text", group: "Lời nhắn", disabled: (v) => v.att === "excused" || v.att === "absent" ? "Vắng" : null },
+];
+/* Kết quả buổi mẫu 9A2 Đại · Buổi 4 */
+const GV_ATT = { s1: "present", s2: "present", s3: "late", s4: "present", s5: "excused", s6: "present", s7: "present", s8: "present", s9: "absent", s10: "present", s11: "present", s12: "present" };
+const GV_OPS = { s3: "Vận hành 19:20 · Đã nhắc vào lớp", s5: "Vận hành 18:40 · Xin nghỉ học: mẹ báo em sốt", s9: "Vận hành 19:25 · Không nghe máy" };
+const GV_SC = { s1: [4, 3, 4, 4, 3, 4, 4, 3, 3], s2: [5, 4, 4, 4, 4, 4, 4, 4, 3], s3: [3, 3, 3, 3, 3, 2, 3, 3, 2], s4: [4, 4, 5, 5, 4, 4, 5, 4, 4], s6: [3, 2, 3, 3, 3, 3, 3, 2, 3], s7: [4, 3, 4, 4, 3, 3, 4, 3, 3], s8: [5, 5, 5, 5, 5, 4, 5, 5, 4], s10: [4, 4, 4, 4, 3, 4, 4, 4, 3], s11: [3, 4, 3, 3, 3, 3, 3, 3, 3], s12: [4, 3, 4, 3, 3, 3, 4, 3, 3] };
+const GV_MSG = { s1: "Ánh làm bài cẩn thận; về nhà ôn lại điều kiện xác định của căn thức.", s2: "Đức hiểu bài nhanh, hay giúp bạn. Cần trình bày lời giải đủ bước hơn.", s3: "Hà vào lớp muộn 10 phút nên hụt phần đầu; nhờ anh chị nhắc em làm lại bài 2.", s4: "Kiệt phát biểu tốt, giải được bài nâng cao về |A|.", s6: "Nam còn mất tập trung nửa sau buổi; nhờ anh chị nhắc em làm đủ BTVN.", s7: "Buổi đầu của Huy: em hoà nhập tốt, cần ôn lại căn bậc hai đã học ở trường.", s8: "Thư nắm chắc bài, làm thêm được bài khó.", s10: "Vân tiến bộ so với buổi trước, cẩn thận hơn khi rút gọn.", s11: "My còn nhầm dấu giá trị tuyệt đối; nhờ anh chị cho em làm lại bài 5.", s12: "Long nắm bài, cần chủ động hỏi khi chưa hiểu." };
+const GV_HW = { s1: { status: "graded", score: 4 }, s2: { status: "partial", score: 3 }, s3: { status: "none" }, s4: { status: "graded", score: 4.5 }, s5: { status: "late" }, s6: { status: "graded", score: 4 }, s7: { status: "na" }, s8: { status: "graded", score: 5 }, s9: { status: "late" }, s10: { status: "graded", score: 4 }, s11: { status: "partial", score: 3 }, s12: { status: "graded", score: 3.5 } };
+const GV_HW_TITLE = "BTVN Buổi 3 · bài 1–6 trang 6 SGK (căn bậc hai)";
+const GV_NEW_HW = "Bài 7–12 trang 10 SGK · hạn Buổi 5 (Thứ Năm 15/10/2026)";
+const GV_KEYS = ["td1", "td2", "td3", "kt1", "kt2", "kt3", "vd1", "vd2", "vd3"];
+const gvGradeVals = (opts = {}) => { const v = {}; GV_ROSTER.forEach((r) => { const o = { att: GV_ATT[r.id] }; const sc = GV_SC[r.id]; if (sc && !(opts.upTo && Number(r.id.slice(1)) > opts.upTo)) {
+    GV_KEYS.forEach((k, i) => (o[k] = sc[i]));
+    o.msg = GV_MSG[r.id];
+} v[r.id] = o; }); if (opts.missing) {
+    delete v.s2.kt3;
+    delete v.s2.msg;
+    delete v.s8.msg;
+} return v; };
+const gvHwVals = (missing) => { const v = {}; GV_ROSTER.forEach((r) => { var _a; const h = GV_HW[r.id]; v[r.id] = { hw: h.status, hws: (_a = h.score) !== null && _a !== void 0 ? _a : null }; }); if (missing)
+    v.s4 = {}; return v; };
+const GV_STEPS = (cur, done = []) => [["att", "Điểm danh", "Điểm danh"], ["content", "Nội dung buổi và giao BTVN", "Nội dung"], ["grade", "Chấm từng em", "Chấm"], ["hw", "Chấm BTVN buổi trước", "BTVN"], ["done", "Hoàn tất", "Xong"]].map(([id, label, short]) => ({ id, label, short, status: done.includes(id) ? "done" : id === cur ? "current" : "todo" }));
+function DevChips({ dev, setDev, extra }) { const { Chip } = HMT; return React.createElement("div", { style: { padding: "8px 12px", borderBottom: "1px solid var(--hmt-border)", background: "var(--hmt-surface)" }, "data-product": "crm" },
+    React.createElement("div", { className: "hmt-demo-row" },
+        [["phone", "Điện thoại"], ["laptop", "Laptop"]].map(([k, l]) => React.createElement(Chip, { key: k, selected: dev === k, onToggle: () => setDev(k) }, l)),
+        extra)); }
+/* ===== Đợt 5.6 · Học tập + Phụ huynh — dữ liệu giả =====
+   Học sinh chính: Khúc Bảo Nam (HS000420) · 9A2 Đại (Thứ 2, 5 · 19:15–20:45 · P102 · thầy Lê Văn Khánh) + 9A2 Hình (khai giảng Thứ Bảy 17/10/2026).
+   Phụ huynh: Anh Khúc Văn Thành (PH000233) · 0975 418 263 · hai con: Nam (lớp 9), Khúc Bảo Ngọc (HS000515, lớp 3, 3A1 Toán).
+   Mốc "hiện tại" phía học sinh/phụ huynh: Thứ Ba 13/10/2026 20:00 (sau Buổi 4, trước hạn BTVN Buổi 4). GV-18: Thứ Hai 12/10/2026 17:00 (trước Buổi 4). */
+function hwPage(name, lines, seed = 0) {
+    const W = 600, H = 800, L = 34;
+    const tilt = ((seed * 37) % 7 - 3) * 0.25;
+    const rows = Array.from({ length: Math.floor((H - 90) / L) }, (_, i) => `<line x1="0" x2="${W}" y1="${100 + i * L}" y2="${100 + i * L}" stroke="#c9d8ea" stroke-width="1.2"/>`).join("");
+    const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const txt = lines.map((t, i) => `<text x="${/^Bài/.test(t) ? 82 : 104}" y="${94 + (i + 1) * L}" font-size="${/^Bài/.test(t) ? 23 : 22}" ${/^Bài/.test(t) ? 'font-weight="700" text-decoration="underline"' : ""}>${esc(t)}</text>`).join("");
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#e8e4dc"/><g transform="rotate(${tilt} 300 400)"><rect x="12" y="10" width="${W - 24}" height="${H - 20}" fill="#fdfcf7"/>${rows}<line x1="70" x2="70" y1="10" y2="${H - 10}" stroke="#e3a1a1" stroke-width="1.5"/><text x="${W - 40}" y="56" text-anchor="end" font-size="18" fill="#3a4f8f" font-family="Segoe Print, Comic Sans MS, cursive">${esc(name)}</text><g fill="#24408f" font-family="Segoe Print, Comic Sans MS, cursive">${txt}</g></g></svg>`;
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+const NAM = { name: "Khúc Bảo Nam", short: "Nam", code: "HS000420", grade: 9, gd: "GD000098", ph: "Anh Khúc Văn Thành", phc: "PH000233", phone: "0975 418 263" };
+const NGOC = { name: "Khúc Bảo Ngọc", short: "Ngọc", code: "HS000515", grade: 3, gd: "GD000058" };
+const LINH = { name: "Võ Thuỳ Dương", short: "Dương", code: "HS000298", grade: 11 };
+/* BTVN Buổi 3 (đã chấm online ở GV-18, 12/10) — Nam nộp 10/10 21:05 (2 ảnh), nộp lại 11/10 20:40 (3 ảnh) */
+const NAM_B3_LINES = [
+    ["Bài 1. Căn bậc hai số học", "a) √121 = 11      b) √144 = 12", "c) √169 = 13      d) √225 = 15", "Bài 2. So sánh", "a) 2 = √4 > √3  ⇒  2 > √3", "b) 6 = √36 < √41  ⇒  6 < √41", "c) 7 = √49 > √47  ⇒  7 > √47", "Bài 3. Giải phương trình", "a) x² = 2  ⇒  x = √2 hoặc x = −√2", "b) x² = 3  ⇒  x = ±√3 ≈ ±1,732", "c) x² = 3,5  ⇒  x ≈ ±1,871"],
+    ["Bài 4. Tìm x không âm", "a) √x = 15  ⇒  x = 225", "b) 2√x = 14  ⇒  √x = 7  ⇒  x = 49", "c) √x < √2  ⇒  0 ≤ x < 2", "d) √(2x) < 4  ⇒  0 ≤ 2x < 16", "     ⇒  0 ≤ x < 8", "Bài 5. Hình vuông có diện tích bằng", "hình chữ nhật 3,5 m × 14 m", "S = 3,5 · 14 = 49 (m²)", "Cạnh hình vuông: √49 = 7 (m)", "Đáp số: 7 m"],
+    ["Bài 6. Căn thức có nghĩa khi nào", "a) √(a/3) có nghĩa  ⇔  a ≥ 0", "b) √(−5a) có nghĩa  ⇔  −5a ≥ 0", "     ⇔  a ≤ 0", "c) √(4 − a)  ⇔  4 − a ≥ 0  ⇔  a ≤ 4", "d) √(3a + 7)  ⇔  3a + 7 ≥ 0", "     ⇔  a ≥ 7/3"],
+];
+const b3Pages = (who, n = 3, seed = 1) => NAM_B3_LINES.slice(0, n).map((l, i) => ({ id: `b3p${i + 1}`, src: hwPage(`${who} · 9A2`, l, i + seed), label: `Trang ${i + 1}` }));
+const NAM_B3_PAGES = b3Pages("Khúc Bảo Nam");
+/* BTVN Buổi 4 (HT-04 Nam đang nộp) — bài 7–12 trang 10 */
+const NAM_B4_LINES = [
+    ["Bài 7. Khai phương một tích", "a) √(0,09 · 64) = 0,3 · 8 = 2,4", "b) √(2⁴ · (−7)²) = 4 · 7 = 28", "c) √(12,1 · 360) = √(121 · 36)", "     = 11 · 6 = 66", "Bài 8. Nhân các căn bậc hai", "a) √2 · √8 = √16 = 4", "b) √5 · √45 = √225 = 15", "c) √0,4 · √6,4 = √2,56 = 1,6"],
+    ["Bài 9. Rút gọn", "a) √(0,36a²) = 0,6|a|", "     Với a < 0:  = −0,6a", "b) √(a⁴(3 − a)²) = a²|3 − a|", "     Với a > 3:  = a²(a − 3)", "Bài 10. Chứng minh", "(√2 − 1)(√2 + 1) = 2 − 1 = 1", "⇒ hai số là nghịch đảo của nhau"],
+    ["Bài 11. Tính", "a) √(1,6 · 250) = √400 = 20", "b) √(2,5 · 14,4) = √36 = 6", "Bài 12. Tìm x", "a) √(16x) = 8  ⇒  16x = 64", "     ⇒  x = 4", "b) √(4x) = √5  ⇒  4x = 5  ⇒  x = 1,25"],
+];
+const NAM_B4_PAGES = NAM_B4_LINES.map((l, i) => ({ id: `b4p${i + 1}`, kind: "img", src: hwPage("Khúc Bảo Nam · 9A2", l, i + 4), name: `IMG_20261014_${2131 + i * 2}.jpg`, size: [462000, 431000, 418000][i], status: "done" }));
+/* Kết quả Nam theo buổi (9A2 Đại) — Buổi 4 khớp GV-07 (GV_SC.s6) */
+const NAM_SESS = [
+    { no: 1, d: "01/10/2026", dow: "Thứ Năm", att: "present", td: 3.0, kt: 2.7, vd: 2.5, msg: "Nam theo kịp bài mở đầu, còn rụt rè khi được gọi lên bảng.", topic: "Căn bậc hai, căn bậc hai số học" },
+    { no: 2, d: "05/10/2026", dow: "Thứ Hai", att: "present", td: 2.7, kt: 3.0, vd: 3.0, msg: "Nam so sánh căn bậc hai tốt, cần luyện thêm dạng giải x² = a.", topic: "So sánh căn bậc hai, giải x² = a" },
+    { no: 3, d: "08/10/2026", dow: "Thứ Năm", att: "late", td: 3.3, kt: 3.0, vd: 3.0, msg: "Nam vào lớp muộn 10 phút nhưng bắt kịp nhanh. BTVN Buổi 2 em chưa làm; nhờ anh chị nhắc em.", topic: "Căn thức bậc hai, điều kiện xác định" },
+    { no: 4, d: "12/10/2026", dow: "Thứ Hai", att: "present", td: 2.7, kt: 3.0, vd: 2.7, msg: "Nam còn mất tập trung nửa sau buổi; nhờ anh chị nhắc em làm đủ BTVN.", topic: "Hằng đẳng thức √(A²) = |A|, liên hệ phép nhân và phép khai phương" },
+];
+/* BTVN của Nam: bài giao ở buổi n, chấm ở buổi n+1 (R-GV-11). Tỉ lệ làm bài và điểm TB tách riêng (R-GV-12) */
+const NAM_HW = [
+    { no: 1, t: "BTVN Buổi 1 · bài 1–4 trang 4", st: "graded", sc: 3.5, at: "05/10/2026" },
+    { no: 2, t: "BTVN Buổi 2 · bài 5–8 trang 5", st: "none", sc: null, at: "08/10/2026" },
+    { no: 3, t: "BTVN Buổi 3 · bài 1–6 trang 6", st: "graded", sc: 4, at: "12/10/2026" },
+];
+const NAM_B3_COMMENT = "Bài 1–5 đúng, trình bày rõ ràng. Bài 6d em chuyển vế sai dấu: 3a + 7 ≥ 0 ⇔ a ≥ −7/3. Xem lại ví dụ 2 trang 5 nhé.";
+const HW_B4 = { title: "BTVN Buổi 4 · Bài 7–12 trang 10 SGK", cls: "9A2 Đại", teacher: "Lê Văn Khánh", given: "12/10/2026 20:40", due: "15/10/2026 19:15", dueText: "Thứ Năm 15/10/2026 · 19:15", file: "BTVN-9A2-Buoi4.pdf", desc: "Làm bài 7, 8, 9, 10, 11, 12 trang 10 SGK Toán 9 tập một. Bài 9 nhớ xét dấu trước khi bỏ giá trị tuyệt đối. Chụp đủ các trang, rõ chữ, theo thứ tự bài." };
+const HW_HINH0 = { title: "Chuẩn bị Buổi 1 Hình · Ôn định lí Py-ta-go", cls: "9A2 Hình", teacher: "Trần Quốc Bảo", given: "12/10/2026 09:00", due: "17/10/2026 08:00", dueText: "Thứ Bảy 17/10/2026 · 08:00", file: "On-tap-Pytago.pdf", desc: "Làm 5 bài ôn trong tệp đính kèm trước buổi khai giảng." };
+function LmsSec({ title, action, children, gap = 10 }) { return React.createElement("section", { style: { display: "grid", gap }, "aria-label": typeof title === "string" ? title : undefined },
+    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 } },
+        React.createElement("h2", { style: { margin: 0, fontSize: "1.0625em", lineHeight: 1.3 } }, title),
+        action),
+    children); }
+function HwCard({ title, cls, due, left, badge, tone = "warning", onOpen, cta = "Mở bài" }) {
+    const { Button } = HMT;
+    return React.createElement("article", { className: "hmt-lms-card", style: { display: "grid", gap: 6, padding: 14, borderLeft: `4px solid var(--hmt-${tone === "neutral" ? "border" : tone + "-border"})` } },
+        React.createElement("span", { className: "hmt-help", style: { margin: 0 } }, cls),
+        React.createElement("b", { style: { lineHeight: 1.35 } }, title),
+        React.createElement("span", { style: { display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" } },
+            React.createElement(HMT.Icon, { name: "clock" }),
+            React.createElement("span", null, due),
+            left ? React.createElement("span", { className: "hmt-lms-chip" }, left) : null),
+        React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" } },
+            badge,
+            React.createElement(Button, { size: "sm", variant: "secondary", iconEnd: "arrowRight", onClick: onOpen }, cta)));
+}
+function LmsMetric({ label, value, unit, sub, children }) {
+    return React.createElement("div", { className: "hmt-lms-card", style: { display: "grid", gap: 4, padding: 14, alignContent: "start" } },
+        React.createElement("span", { style: { fontSize: 14, lineHeight: "20px", color: "var(--hmt-fg-muted)" } }, label),
+        React.createElement("span", { className: "hmt-tabular", style: { fontSize: 26, lineHeight: "32px", fontWeight: 700 } },
+            value,
+            unit ? React.createElement("span", { style: { fontSize: 15, fontWeight: 500, color: "var(--hmt-fg-muted)" } },
+                " ",
+                unit) : null),
+        children,
+        sub ? React.createElement("span", { style: { fontSize: 13, lineHeight: "18px", color: "var(--hmt-fg-muted)" } }, sub) : null);
+}
+/* Kết quả học tập của Nam (HT-07, PH-02): hai chỉ số BTVN tách riêng (R-GV-12) */
+function NamResults({ who = "hs", range = "all" }) {
+    const { LineChart, ProgressBar, AttBadge, HomeworkStatus } = HMT;
+    const S = range === "2w" ? NAM_SESS.slice(2) : NAM_SESS;
+    const H = range === "2w" ? NAM_HW.filter((h) => h.no >= 2) : NAM_HW;
+    const done = H.filter((h) => h.st === "graded" || h.st === "partial");
+    const rate = Math.round((done.length / H.length) * 100);
+    const avg = done.length ? done.reduce((a, h) => a + h.sc, 0) / done.length : null;
+    const f1 = (n) => n.toFixed(1).replace(".", ",");
+    const late = S.filter((s) => s.att === "late").length;
+    const you = who === "hs" ? "em" : "con";
+    return React.createElement("div", { style: { display: "grid", gridTemplateColumns: "minmax(0,1fr)", gap: 14 } },
+        React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 10 } },
+            React.createElement(LmsMetric, { label: "Chuy\u00EAn c\u1EA7n", value: `${S.length}/${S.length}`, unit: "bu\u1ED5i", sub: late ? `Có mặt đủ · ${late} lần đi muộn` : "Có mặt đủ" }),
+            React.createElement(LmsMetric, { label: "T\u1EC9 l\u1EC7 l\u00E0m BTVN", value: `${rate}%`, sub: `${done.length}/${H.length} bài có làm · ${H.length - done.length} bài Không làm` },
+                React.createElement(ProgressBar, { variant: "lms", value: done.length, max: H.length, valueText: `${done.length}/${H.length}` })),
+            React.createElement(LmsMetric, { label: "\u0110i\u1EC3m BTVN trung b\u00ECnh", value: avg == null ? "—" : f1(avg), unit: "/5", sub: `Tính trên ${done.length} bài đã làm; bài Không làm không tính là 0` }),
+            React.createElement(LmsMetric, { label: "Ti\u00EAu ch\u00ED TB (1\u20135)", value: f1(S.reduce((a, s) => a + (s.td + s.kt + s.vd) / 3, 0) / S.length), sub: "Trung b\u00ECnh Th\u00E1i \u0111\u1ED9, Ki\u1EBFn th\u1EE9c, V\u1EADn d\u1EE5ng" })),
+        React.createElement("div", { className: "hmt-lms-card", style: { padding: 12 } },
+            React.createElement(LineChart, { label: `Điểm Thái độ, Kiến thức, Vận dụng của ${who === "hs" ? "em" : "Nam"} theo buổi, thang 1–5`, labels: S.map((s) => `Buổi ${s.no}`), yMax: 5, height: 220, series: [{ name: "Thái độ", short: "Thái độ", values: S.map((s) => s.td) }, { name: "Kiến thức", short: "Kiến thức", values: S.map((s) => s.kt) }, { name: "Vận dụng", short: "Vận dụng", values: S.map((s) => s.vd) }], format: (n) => n.toFixed(1).replace(".", ","), axisFormat: (n) => String(n) })),
+        React.createElement("section", { style: { display: "grid", gap: 8 } },
+            React.createElement("h3", { style: { margin: 0, fontSize: 16 } }, "Theo t\u1EEBng bu\u1ED5i"),
+            React.createElement("ul", { style: { listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 8 } }, [...S].reverse().map((s) => {
+                const hw = NAM_HW.find((h) => h.no === s.no - 1);
+                return React.createElement("li", { key: s.no, className: "hmt-lms-card", style: { display: "grid", gap: 6, padding: 12 } },
+                    React.createElement("div", { style: { display: "flex", justifyContent: "space-between", gap: 8, alignItems: "center", flexWrap: "wrap" } },
+                        React.createElement("b", null,
+                            "Bu\u1ED5i ",
+                            s.no,
+                            " \u00B7 ",
+                            s.dow,
+                            " ",
+                            s.d),
+                        React.createElement(AttBadge, { value: s.att })),
+                    React.createElement("span", { className: "hmt-help", style: { margin: 0 } }, s.topic),
+                    React.createElement("span", { className: "hmt-tabular", style: { fontSize: 14 } },
+                        "Th\u00E1i \u0111\u1ED9 ",
+                        f1(s.td),
+                        " \u00B7 Ki\u1EBFn th\u1EE9c ",
+                        f1(s.kt),
+                        " \u00B7 V\u1EADn d\u1EE5ng ",
+                        f1(s.vd)),
+                    hw ? React.createElement("span", { style: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", fontSize: 14 } },
+                        "BTVN Bu\u1ED5i ",
+                        hw.no,
+                        " ch\u1EA5m bu\u1ED5i n\u00E0y: ",
+                        React.createElement(HomeworkStatus, { readOnly: true, value: { status: hw.st, score: hw.sc } })) : null,
+                    React.createElement("p", { style: { margin: 0, padding: "8px 10px", background: "var(--hmt-surface-subtle)", borderRadius: 8, fontSize: 15 } },
+                        React.createElement("span", { className: "hmt-help", style: { margin: 0, display: "block" } },
+                            "Th\u1EA7y Kh\u00E1nh nh\u1EAFn ",
+                            who === "hs" ? "" : "anh chị"),
+                        s.msg));
+            }))));
+}
+function Demo() {
+    // USE_SHARED
+    const { PageHeader, Table, Badge, Button, FilterBar, Kanban } = HMT;
+    const [view, setView] = useState("kanban");
+    const ST = ["L1 Chờ tái tục", "L2 Đã liên hệ", "L3 Đang tư vấn", "L4 Đang cân nhắc", "L5 Không tái tục", "L6 Đồng ý tái tục", "L7 Dự thu", "L8 Hoàn thành tái tục"];
+    const rows = [
+        { id: "TT000057", hs: "Nguyễn Bảo Ngọc", gd: "GD000063 · KR-TOAN-K08", h: "6 giờ", end: "04/11/2026", why: "Giờ ≤ 10", risk: false, st: 0, own: "Trần Thu Hà" },
+        { id: "TT000058", hs: "Vũ Hà My", gd: "GD000129 · LC-TOAN-K08", h: "7 giờ", end: "26/10/2026", why: "Giờ ≤ 10", risk: false, st: 0, own: "Trần Thu Hà" },
+        { id: "TT000059", hs: "Lâm Thu Trang", gd: "GD000052 · LC-TOAN-K08", h: "13,5 giờ", end: "05/11/2026", why: "Hết giờ trong 30 ngày", risk: true, st: 1, own: "Trần Thu Hà" },
+        { id: "TT000052", hs: "Lý Thành Đạt", gd: "GD000097 · LC-TOAN-K08", h: "9 giờ", end: "29/10/2026", why: "Giờ ≤ 10", risk: false, st: 5, own: "Trần Thu Hà" },
+        { id: "TT000047", hs: "Đỗ Thùy Dương", gd: "GD000044 · LC-TOAN-K09", h: "2 giờ", end: "15/10/2026", why: "Lý do: Học nơi khác", risk: false, st: 4, own: "Trần Thu Hà" },
+        { id: "TT000049", hs: "Hoàng Nhật Minh", gd: "GD000041 · LC-TOAN-K09", h: "0 giờ", end: "—", why: "Giờ ≤ 10", risk: false, st: 7, own: "Trần Thu Hà" },
+    ];
+    const cols = ST.map((l, i) => ({ id: String(i), label: l, cards: rows.filter((r) => r.st === i).map((r) => ({ id: r.id, code: r.id, onOpen: () => { }, openLabel: `Mở phiếu tái tục ${r.id} (TT-02)`, title: r.hs, lines: [`${r.gd} · còn ${r.h}`, r.risk ? "⚠ Rủi ro: vắng 3 buổi trong 30 ngày gần nhất" : r.st === 4 ? "Kết thúc · lý do bắt buộc" : `Hết giờ dự kiến ${r.end}`], owner: r.own, due: r.why })) }));
+    return (React.createElement(ScreenFrame, { code: "TT-01", name: "Phi\u1EBFu t\u00E1i t\u1EE5c", level: "B", tpl: "K03, K04 trong K01 \u00B7 m\u00E1y t\u00EDnh", height: 760, note: "M\u00E3 phi\u1EBFu tr\u00EAn th\u1EBB v\u00E0 trong b\u1EA3ng m\u1EDF b\u1EA3n ghi TT-02 (lu\u1ED3ng L6). Kh\u00F4ng c\u00F3 n\u00FAt T\u1EA1o (phi\u1EBFu t\u1EF1 sinh khi gi\u1EDD c\u00F2n \u2264 10 ho\u1EB7c h\u1EBFt gi\u1EDD d\u1EF1 ki\u1EBFn \u2264 30 ng\u00E0y; t\u1EA1o tay \u1EDF ghi danh, TT-03). C\u1EDD r\u1EE7i ro khi v\u1EAFng \u2265 3 bu\u1ED5i. Giai \u0111o\u1EA1n theo danh m\u1EE5c 12 (A-35); L5 Kh\u00F4ng t\u00E1i t\u1EE5c l\u00E0 k\u1EBFt th\u00FAc, chuy\u1EC3n tr\u00EAn b\u1EA3n ghi \u0111\u1EC3 ch\u1ECDn l\u00FD do (danh m\u1EE5c 28). C\u1EDD r\u1EE7i ro: v\u1EAFng \u2265 3 bu\u1ED5i trong 30 ng\u00E0y g\u1EA7n nh\u1EA5t, c\u1EA3 hai l\u00E0 tham s\u1ED1 (A-36)." },
+        React.createElement("div", { style: { height: "100%" } },
+            React.createElement(Shell, { role: "SA", active: "TT-01", collapsed: true },
+                React.createElement(PageHeader, { title: "Phi\u1EBFu t\u00E1i t\u1EE5c", code: "TT-01", meta: "CS1 \u00B7 6 phi\u1EBFu \u00B7 1 c\u00F3 c\u1EDD r\u1EE7i ro", actions: React.createElement(Button, { variant: "secondary", iconStart: "download" }, "Xu\u1EA5t") }),
+                React.createElement("div", { style: { marginBottom: 12 } },
+                    React.createElement(FilterBar, { search: "", onSearch: () => { }, value: { x: [] }, onChange: () => { }, resultCount: 6, groups: [{ id: "x", label: "Lọc", options: [{ id: "risk", label: "Có cờ rủi ro", count: 1 }, { id: "mine", label: "Tôi phụ trách", count: 6 }] }], views: ["list", "kanban"], view: view, onViewChange: setView })),
+                view === "kanban" ? React.createElement(Kanban, { columns: cols, label: "Phi\u1EBFu t\u00E1i t\u1EE5c theo giai \u0111o\u1EA1n", canMove: (id, from, to) => from === "4" ? { ok: false, reason: "L5 Không tái tục là giai đoạn kết thúc." } : to === "4" ? { ok: false, reason: "Chuyển L5 Không tái tục trên bản ghi để chọn lý do (danh mục 28)." } : { ok: true }, onMove: () => { } })
+                    : React.createElement(Table, { caption: "Phi\u1EBFu t\u00E1i t\u1EE5c", rows: rows, columns: [{ key: "id", header: "Mã", render: (r) => React.createElement("a", { href: "#", className: "hmt-link hmt-tabular", onClick: (e) => e.preventDefault() }, r.id) }, { key: "hs", header: "Học sinh" }, { key: "gd", header: "Ghi danh · gói" }, { key: "h", header: "Giờ còn", numeric: true }, { key: "end", header: "Hết giờ dự kiến" }, { key: "st", header: "Giai đoạn", render: (r) => ST[r.st] }, { key: "risk", header: "Cờ", render: (r) => r.risk ? React.createElement(Badge, { tone: "danger", icon: "alert" }, "R\u1EE7i ro \u00B7 v\u1EAFng 3 bu\u1ED5i") : null }, { key: "own", header: "Phụ trách" }] })))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

@@ -1,0 +1,651 @@
+/* ==========================================================================
+   HMT_DESIGN_TOKENS.css — HMT Platform UI Design System Foundation
+   Version 1.1 · 2026-10-11 · P3 đã duyệt; bổ sung đợt 5.0 (token phân loại — PROPOSED).
+   Chỉ làm giao diện sáng (O-13): khối dark giữ lại, chưa kiểm thử cho thành phần mới.
+
+   Nguồn chuẩn bản sắc: HMT_BRAND_GUIDELINES.md (đã duyệt).
+   Giá trị màu thương hiệu/neutral/LMS: APPROVED (Brand Guidelines §3–4).
+   Mọi giá trị còn lại trong file này: PROPOSED cho tới khi P3 được duyệt.
+   Xem HMT_DESIGN_SYSTEM_SPEC.md để biết vai trò từng token và danh sách
+   quyết định chưa duyệt.
+
+   Cách dùng (React + Tailwind CSS v4), trong file CSS gốc của app:
+     @import "tailwindcss";
+     @import "./HMT_DESIGN_TOKENS.css";
+
+   Gắn trên <html>:
+     data-theme="light" | "dark"          (bắt buộc — app tự đặt theo
+                                           prefers-color-scheme + lựa chọn
+                                           của người dùng)
+     data-product="crm" | "teacher" | "lms"  (mật độ + cỡ chữ theo sản phẩm)
+
+   Ba tầng token:
+     1. Primitive  --hmt-p-*   giá trị thô. KHÔNG dùng trực tiếp trong component.
+     2. Semantic   --hmt-*     vai trò (nền, chữ, hành động, trạng thái…);
+                               đổi theo theme.
+     3. Tailwind   @theme      ánh xạ semantic → utility (bg-surface, text-fg…)
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. PRIMITIVES — không đổi theo theme
+   -------------------------------------------------------------------------- */
+:root {
+  /* Brand — APPROVED (Brand Guidelines §3) */
+  --hmt-p-logo-orange: #EF6926;
+  --hmt-p-logo-black:  #010101;
+
+  /* Cam hành động — APPROVED (light/dark), pressed — PROPOSED */
+  --hmt-p-orange-700: #7A2E0E;  /* pressed light */
+  --hmt-p-orange-650: #933812;  /* hover light */
+  --hmt-p-orange-600: #B54515;  /* action light */
+  --hmt-p-orange-300: #F28A52;  /* action dark */
+  --hmt-p-orange-250: #F7A372;  /* hover dark */
+  --hmt-p-orange-200: #FBC4A1;  /* pressed dark */
+  --hmt-p-orange-tint-l: #FBEDE5;
+  --hmt-p-orange-tint-d: #3A2418;
+  --hmt-p-orange-on-tint-l: #8F3510;
+  --hmt-p-orange-on-tint-d: #F7B48C;
+
+  /* Xanh thép (secondary) — APPROVED */
+  --hmt-p-steel-700: #2E4A66;
+  --hmt-p-steel-300: #8DB0D4;
+  --hmt-p-steel-tint-l: #E8EEF4;
+  --hmt-p-steel-tint-d: #1F2A36;
+
+  /* Neutral xám ấm — APPROVED (Brand Guidelines §4); 950/850 overlay — PROPOSED */
+  --hmt-p-warm-0:    #FFFFFF;
+  --hmt-p-warm-25:   #F7F5F2;
+  --hmt-p-warm-50:   #F0ECE8;
+  --hmt-p-warm-75:   #EFEBE6;  /* disabled bg light — PROPOSED */
+  --hmt-p-warm-150:  #DDD6CF;
+  --hmt-p-warm-200:  #EDE8E2;  /* chữ chính dark */
+  --hmt-p-warm-350:  #A39A90;
+  --hmt-p-warm-450:  #8A8178;
+  --hmt-p-warm-500:  #7A7067;
+  --hmt-p-warm-550:  #6E655D;  /* disabled fg dark — PROPOSED */
+  --hmt-p-warm-600:  #6B635B;
+  --hmt-p-warm-750:  #3A332C;
+  --hmt-p-warm-800:  #2E2822;  /* overlay dark — PROPOSED */
+  --hmt-p-warm-850:  #25201B;
+  --hmt-p-warm-900:  #1C1814;
+  --hmt-p-warm-950:  #141110;
+  --hmt-p-warm-ink:  #211C16;
+  --hmt-p-warm-ink-d:#1A1612;
+
+  /* LMS — APPROVED, chỉ dùng trong LMS */
+  --hmt-p-teal-700: #0F766E;
+  --hmt-p-teal-300: #5EC4B6;
+  --hmt-p-sun-400:  #F6C343;
+
+  /* Trạng thái — PROPOSED (P3) */
+  --hmt-p-green-700: #127436;  --hmt-p-green-800: #0F5F2D;
+  --hmt-p-green-300: #6CCB8F;  --hmt-p-green-200: #9BDDB2;
+  --hmt-p-green-50:  #E8F5EC;  --hmt-p-green-950: #16281D;
+  --hmt-p-green-500: #3E9A5E;  --hmt-p-green-550: #3E8F5C;
+
+  --hmt-p-amber-700: #8A5A00;  --hmt-p-amber-800: #6B4500;
+  --hmt-p-amber-400: #F0B429;  --hmt-p-amber-300: #F0C04A;
+  --hmt-p-amber-200: #F5D27A;  --hmt-p-amber-50:  #FDF3D7;
+  --hmt-p-amber-950: #2E2410;  --hmt-p-amber-500: #B98A1E;
+  --hmt-p-amber-550: #9C7A24;
+
+  --hmt-p-red-700: #B42318;  --hmt-p-red-800: #8E1B12;
+  --hmt-p-red-300: #FF8A80;  --hmt-p-red-200: #FFB4AC;
+  --hmt-p-red-50:  #FDECEA;  --hmt-p-red-950: #3A1714;
+  --hmt-p-red-500: #D2493E;  --hmt-p-red-550: #C2524A;
+  --hmt-p-red-ink-d: #2A0D0A;
+
+  --hmt-p-blue-700: #1F5FBF;  --hmt-p-blue-800: #174A96;
+  --hmt-p-blue-300: #8AB8F5;  --hmt-p-blue-200: #B5D2F9;
+  --hmt-p-blue-50:  #E8F0FB;  --hmt-p-blue-950: #152338;
+  --hmt-p-blue-500: #4C7FCB;  --hmt-p-blue-550: #4A79B8;
+  --hmt-p-blue-ink-d: #0D1A2B;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. SEMANTIC — LIGHT (mặc định)
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Brand */
+  --hmt-brand:            var(--hmt-p-logo-orange);   /* mảng nhận diện; KHÔNG làm chữ nhỏ */
+  --hmt-on-brand:         var(--hmt-p-warm-ink);      /* 5.41:1 */
+
+  /* Nền & bề mặt — elevation bằng bóng ở light */
+  --hmt-canvas:           var(--hmt-p-warm-25);       /* nền trang */
+  --hmt-surface:          var(--hmt-p-warm-0);        /* thẻ, bảng, form */
+  --hmt-surface-subtle:   var(--hmt-p-warm-50);       /* header bảng, dòng xen kẽ, sidebar */
+  --hmt-surface-raised:   var(--hmt-p-warm-0);        /* dropdown, popover (kèm shadow-2) */
+  --hmt-surface-overlay:  var(--hmt-p-warm-0);        /* modal, drawer (kèm shadow-3) */
+  --hmt-scrim:            rgb(20 17 16 / 0.48);       /* lớp phủ sau modal */
+
+  /* Chữ */
+  --hmt-fg:               var(--hmt-p-warm-ink);      /* 16.9:1 trên surface */
+  --hmt-fg-muted:         var(--hmt-p-warm-600);      /* 5.90:1 trên surface */
+  --hmt-fg-inverse:       var(--hmt-p-warm-200);
+
+  /* Viền */
+  --hmt-border:           var(--hmt-p-warm-150);      /* chỉ trang trí, 1.44:1 */
+  --hmt-border-strong:    var(--hmt-p-warm-450);      /* control, 3.82:1 */
+
+  /* Tương tác chính (cam hành động) */
+  --hmt-action:           var(--hmt-p-orange-600);
+  --hmt-action-hover:     var(--hmt-p-orange-650);
+  --hmt-action-pressed:   var(--hmt-p-orange-700);
+  --hmt-on-action:        var(--hmt-p-warm-0);        /* 5.49 / 7.46 / 9.44 */
+  --hmt-link:             var(--hmt-p-orange-600);    /* 5.49:1 trên surface */
+  --hmt-selected:         var(--hmt-p-orange-tint-l); /* hàng/tab/chip đang chọn */
+  --hmt-on-selected:      var(--hmt-p-orange-on-tint-l); /* 6.83:1 */
+
+  /* Secondary */
+  --hmt-secondary:        var(--hmt-p-steel-700);     /* 9.18:1 */
+  --hmt-secondary-subtle: var(--hmt-p-steel-tint-l);
+
+  /* Lớp phủ trạng thái tương tác cho phần tử trung tính */
+  --hmt-hover-overlay:    rgb(33 28 22 / 0.05);
+  --hmt-pressed-overlay:  rgb(33 28 22 / 0.10);
+
+  /* Focus — vòng 2px, cách phần tử 2px bằng màu nền */
+  --hmt-focus:            var(--hmt-p-blue-700);      /* ≥5.18:1 trên canvas/surface/subtle */
+  --hmt-focus-offset:     var(--hmt-surface);
+
+  /* Disabled — không cần đạt tương phản (WCAG miễn) nhưng phải có
+     aria-disabled/disabled + không hover + cursor-not-allowed */
+  --hmt-disabled-bg:      var(--hmt-p-warm-75);
+  --hmt-disabled-fg:      var(--hmt-p-warm-350);
+  --hmt-disabled-border:  var(--hmt-p-warm-150);
+
+  /* Trạng thái: fg = chữ/icon trên surface/canvas; subtle = nền nhạt;
+     on-subtle = chữ trên subtle; border = viền mang nghĩa (≥3:1);
+     solid = nền đậm (badge đặc, nút xác nhận nguy hiểm); on-solid = chữ trên solid */
+  --hmt-success:            var(--hmt-p-green-700);   /* 5.87 */
+  --hmt-success-subtle:     var(--hmt-p-green-50);
+  --hmt-on-success-subtle:  var(--hmt-p-green-800);   /* 6.94 */
+  --hmt-success-border:     var(--hmt-p-green-500);   /* 3.51 */
+  --hmt-success-solid:      var(--hmt-p-green-700);
+  --hmt-on-success-solid:   var(--hmt-p-warm-0);      /* 5.87 */
+
+  --hmt-warning:            var(--hmt-p-amber-700);   /* 5.93 */
+  --hmt-warning-subtle:     var(--hmt-p-amber-50);
+  --hmt-on-warning-subtle:  var(--hmt-p-amber-800);   /* 7.66 */
+  --hmt-warning-border:     var(--hmt-p-amber-500);   /* 3.13 */
+  --hmt-warning-solid:      var(--hmt-p-amber-400);
+  --hmt-on-warning-solid:   var(--hmt-p-warm-ink);    /* 9.07 */
+
+  --hmt-danger:             var(--hmt-p-red-700);     /* 6.57 */
+  --hmt-danger-subtle:      var(--hmt-p-red-50);
+  --hmt-on-danger-subtle:   var(--hmt-p-red-800);     /* 7.93 */
+  --hmt-danger-border:      var(--hmt-p-red-500);     /* 4.41 */
+  --hmt-danger-solid:       var(--hmt-p-red-700);
+  --hmt-on-danger-solid:    var(--hmt-p-warm-0);      /* 6.57 */
+
+  --hmt-info:               var(--hmt-p-blue-700);    /* 6.09 */
+  --hmt-info-subtle:        var(--hmt-p-blue-50);
+  --hmt-on-info-subtle:     var(--hmt-p-blue-800);    /* 7.45 */
+  --hmt-info-border:        var(--hmt-p-blue-500);    /* 4.03 */
+  --hmt-info-solid:         var(--hmt-p-blue-700);
+  --hmt-on-info-solid:      var(--hmt-p-warm-0);      /* 6.09 */
+
+  /* LMS — APPROVED, chỉ dùng khi data-product="lms" */
+  --hmt-lms-progress:       var(--hmt-p-teal-700);    /* 5.47 trên surface */
+  --hmt-lms-progress-track: var(--hmt-p-warm-50);
+  --hmt-lms-reward:         var(--hmt-p-sun-400);     /* chỉ làm nền/hình */
+  --hmt-on-lms-reward:      var(--hmt-p-warm-ink);    /* 10.31 */
+
+
+  /* Elevation */
+  --hmt-shadow-1: 0 1px 2px rgb(33 28 22 / 0.06), 0 1px 1px rgb(33 28 22 / 0.04);
+  --hmt-shadow-2: 0 4px 12px rgb(33 28 22 / 0.10), 0 1px 3px rgb(33 28 22 / 0.06);
+  --hmt-shadow-3: 0 16px 40px rgb(33 28 22 / 0.18), 0 2px 6px rgb(33 28 22 / 0.08);
+  /* Phân loại (lịch buổi, biểu đồ) — PROPOSED đợt 5.0; luôn kèm nhãn chữ */
+  --hmt-cat-1: #2A78D6;
+  --hmt-cat-1-subtle: #E6F0FB;
+  --hmt-cat-2: #E87BA4;
+  --hmt-cat-2-subtle: #FCEBF2;
+  --hmt-cat-3: #1BAF7A;
+  --hmt-cat-3-subtle: #E2F6EE;
+  --hmt-cat-4: #8A8178;
+  --hmt-cat-4-subtle: #F0ECE8;
+  --hmt-chart-1: #2A78D6;
+}
+
+
+/* --------------------------------------------------------------------------
+   3. SEMANTIC — DARK
+   Không đảo màu máy móc:
+   - Nền xám-nâu ấm, không đen tuyền; elevation bằng bề mặt sáng dần.
+   - Cam hành động sáng hơn, chữ trên nút chuyển sang tối.
+   - Màu trạng thái nhạt + giảm bão hoà; nền trạng thái là sắc tối cùng họ.
+   - Cam logo giữ nguyên #EF6926 (đạt 6.0:1 trên nền tối).
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --hmt-brand:            var(--hmt-p-logo-orange);   /* 6.01 trên canvas */
+  --hmt-on-brand:         var(--hmt-p-warm-ink);
+
+  --hmt-canvas:           var(--hmt-p-warm-950);
+  --hmt-surface:          var(--hmt-p-warm-900);
+  --hmt-surface-subtle:   var(--hmt-p-warm-850);
+  --hmt-surface-raised:   var(--hmt-p-warm-850);
+  --hmt-surface-overlay:  var(--hmt-p-warm-800);
+  --hmt-scrim:            rgb(0 0 0 / 0.60);
+
+  --hmt-fg:               var(--hmt-p-warm-200);      /* 14.49 */
+  --hmt-fg-muted:         var(--hmt-p-warm-350);      /* 6.37 */
+  --hmt-fg-inverse:       var(--hmt-p-warm-ink);
+
+  --hmt-border:           var(--hmt-p-warm-750);
+  --hmt-border-strong:    var(--hmt-p-warm-500);      /* 3.65; 3.01 trên overlay */
+
+  --hmt-action:           var(--hmt-p-orange-300);
+  --hmt-action-hover:     var(--hmt-p-orange-250);
+  --hmt-action-pressed:   var(--hmt-p-orange-200);
+  --hmt-on-action:        var(--hmt-p-warm-ink-d);    /* 7.31 / 8.94 / 11.57 */
+  --hmt-link:             var(--hmt-p-orange-300);    /* 7.17 */
+  --hmt-selected:         var(--hmt-p-orange-tint-d);
+  --hmt-on-selected:      var(--hmt-p-orange-on-tint-d); /* 8.21 */
+
+  --hmt-secondary:        var(--hmt-p-steel-300);     /* 7.81 */
+  --hmt-secondary-subtle: var(--hmt-p-steel-tint-d);
+
+  --hmt-hover-overlay:    rgb(237 232 226 / 0.06);
+  --hmt-pressed-overlay:  rgb(237 232 226 / 0.12);
+
+  --hmt-focus:            var(--hmt-p-blue-300);      /* ≥7.11 trên mọi bề mặt tối */
+  --hmt-focus-offset:     var(--hmt-surface);
+
+  --hmt-disabled-bg:      var(--hmt-p-warm-850);
+  --hmt-disabled-fg:      var(--hmt-p-warm-550);
+  --hmt-disabled-border:  var(--hmt-p-warm-750);
+
+  --hmt-success:            var(--hmt-p-green-300);   /* 8.89 */
+  --hmt-success-subtle:     var(--hmt-p-green-950);
+  --hmt-on-success-subtle:  var(--hmt-p-green-200);   /* 9.87 */
+  --hmt-success-border:     var(--hmt-p-green-550);   /* 4.44 */
+  --hmt-success-solid:      var(--hmt-p-green-300);
+  --hmt-on-success-solid:   #0E1A12;                  /* 9.0 */
+
+  --hmt-warning:            var(--hmt-p-amber-300);   /* 10.37 */
+  --hmt-warning-subtle:     var(--hmt-p-amber-950);
+  --hmt-on-warning-subtle:  var(--hmt-p-amber-200);   /* 10.45 */
+  --hmt-warning-border:     var(--hmt-p-amber-550);   /* 4.39 */
+  --hmt-warning-solid:      var(--hmt-p-amber-300);
+  --hmt-on-warning-solid:   var(--hmt-p-warm-ink);    /* 9.94 */
+
+  --hmt-danger:             var(--hmt-p-red-300);     /* 7.73 */
+  --hmt-danger-subtle:      var(--hmt-p-red-950);
+  --hmt-on-danger-subtle:   var(--hmt-p-red-200);     /* 9.43 */
+  --hmt-danger-border:      var(--hmt-p-red-550);     /* 3.86 */
+  --hmt-danger-solid:       var(--hmt-p-red-300);
+  --hmt-on-danger-solid:    var(--hmt-p-red-ink-d);   /* 7.93 */
+
+  --hmt-info:               var(--hmt-p-blue-300);    /* 8.62 */
+  --hmt-info-subtle:        var(--hmt-p-blue-950);
+  --hmt-on-info-subtle:     var(--hmt-p-blue-200);    /* 10.19 */
+  --hmt-info-border:        var(--hmt-p-blue-550);    /* 3.96 */
+  --hmt-info-solid:         var(--hmt-p-blue-300);
+  --hmt-on-info-solid:      var(--hmt-p-blue-ink-d);  /* 8.55 */
+
+  --hmt-lms-progress:       var(--hmt-p-teal-300);    /* 8.44 */
+  --hmt-lms-progress-track: var(--hmt-p-warm-850);
+  --hmt-lms-reward:         var(--hmt-p-sun-400);
+  --hmt-on-lms-reward:      var(--hmt-p-warm-ink);
+
+
+  /* Bóng gần như không thấy trên nền tối → elevation chủ yếu bằng
+     surface-raised/overlay + viền; bóng chỉ hỗ trợ */
+  --hmt-shadow-1: 0 0 0 1px rgb(237 232 226 / 0.04);
+  --hmt-shadow-2: 0 0 0 1px rgb(237 232 226 / 0.06), 0 8px 20px rgb(0 0 0 / 0.40);
+  --hmt-shadow-3: 0 0 0 1px rgb(237 232 226 / 0.08), 0 20px 48px rgb(0 0 0 / 0.55);
+  /* Phân loại — dark (giao diện tối để sau, O-13) */
+  --hmt-cat-1: #3987E5;
+  --hmt-cat-1-subtle: #14243A;
+  --hmt-cat-2: #D55181;
+  --hmt-cat-2-subtle: #3A1A27;
+  --hmt-cat-3: #199E70;
+  --hmt-cat-3-subtle: #12302A;
+  --hmt-cat-4: #7A7067;
+  --hmt-cat-4-subtle: #25201B;
+  --hmt-chart-1: #3987E5;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. KÍCH THƯỚC CHUNG (không đổi theo theme) — PROPOSED
+   -------------------------------------------------------------------------- */
+:root {
+  /* Font — OPEN DECISION (xem spec §5). Mặc định đề xuất:
+     Inter cho giao diện + số liệu, Be Vietnam Pro cho tiêu đề/display. */
+  --hmt-font-sans:    "Inter", "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --hmt-font-display: "Be Vietnam Pro", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --hmt-font-mono:    ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  /* Typography scale (Brand Guidelines §5.3) — size / line-height */
+  --hmt-text-display: 2rem;      --hmt-text-display-lh: 2.5rem;    /* 32/40 · 700 */
+  --hmt-text-h1:      1.5rem;    --hmt-text-h1-lh:      2rem;      /* 24/32 · 700 */
+  --hmt-text-h2:      1.25rem;   --hmt-text-h2-lh:      1.75rem;   /* 20/28 · 600 */
+  --hmt-text-h3:      1rem;      --hmt-text-h3-lh:      1.5rem;    /* 16/24 · 600 */
+  --hmt-text-body-sm: 0.875rem;  --hmt-text-body-sm-lh: 1.25rem;   /* 14/20 · 400 */
+  --hmt-text-body-lg: 1rem;      --hmt-text-body-lg-lh: 1.5rem;    /* 16/24 · 400 */
+  --hmt-text-label:   0.8125rem; --hmt-text-label-lh:   1.125rem;  /* 13/18 · 500 */
+  --hmt-text-caption: 0.75rem;   --hmt-text-caption-lh: 1rem;      /* 12/16 · 400 */
+
+  /* Spacing — bước 4px */
+  --hmt-space-0: 0;
+  --hmt-space-0_5: 0.125rem;  /* 2  */
+  --hmt-space-1: 0.25rem;     /* 4  */
+  --hmt-space-2: 0.5rem;      /* 8  */
+  --hmt-space-3: 0.75rem;     /* 12 */
+  --hmt-space-4: 1rem;        /* 16 */
+  --hmt-space-5: 1.25rem;     /* 20 */
+  --hmt-space-6: 1.5rem;      /* 24 */
+  --hmt-space-8: 2rem;        /* 32 */
+  --hmt-space-10: 2.5rem;     /* 40 */
+  --hmt-space-12: 3rem;       /* 48 */
+  --hmt-space-16: 4rem;       /* 64 */
+
+  /* Radius */
+  --hmt-radius-xs: 2px;     /* checkbox */
+  --hmt-radius-sm: 4px;     /* badge, tag */
+  --hmt-radius-md: 6px;     /* nút, input */
+  --hmt-radius-lg: 8px;     /* thẻ CRM, dropdown */
+  --hmt-radius-xl: 12px;    /* thẻ LMS, modal */
+  --hmt-radius-2xl: 16px;   /* banner LMS, bottom sheet */
+  --hmt-radius-full: 9999px;
+
+  /* Focus ring */
+  --hmt-focus-width: 2px;
+  --hmt-focus-gap:   2px;
+
+  /* Touch target */
+  --hmt-target-min: 44px;   /* WCAG 2.5.8 AA chỉ yêu cầu 24px; HMT dùng 44px cho chạm */
+
+  /* Motion */
+  --hmt-duration-instant: 80ms;   /* hover, đổi màu */
+  --hmt-duration-fast:    150ms;  /* nút, checkbox, toggle */
+  --hmt-duration-base:    220ms;  /* dropdown, tooltip, accordion */
+  --hmt-duration-slow:    320ms;  /* modal, drawer, toast */
+  --hmt-ease-standard:    cubic-bezier(0.2, 0, 0, 1);
+  --hmt-ease-enter:       cubic-bezier(0, 0, 0.2, 1);
+  --hmt-ease-exit:        cubic-bezier(0.4, 0, 1, 1);
+
+  /* Z-index */
+  --hmt-z-sticky: 10;  --hmt-z-dropdown: 30;  --hmt-z-overlay: 40;
+  --hmt-z-modal: 50;   --hmt-z-toast: 60;     --hmt-z-tooltip: 70;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --hmt-duration-instant: 0ms;
+    --hmt-duration-fast:    0ms;
+    --hmt-duration-base:    0ms;
+    --hmt-duration-slow:    0ms;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   5. MẬT ĐỘ THEO SẢN PHẨM — PROPOSED
+   Cùng token, khác mật độ. Component đọc --hmt-density-* thay vì số cứng.
+   -------------------------------------------------------------------------- */
+:root,
+[data-product="crm"] {
+  /* CRM — desktop-first, mật độ cao, chuột + bàn phím */
+  --hmt-density-text:        var(--hmt-text-body-sm);     /* 14px */
+  --hmt-density-text-lh:     var(--hmt-text-body-sm-lh);
+  --hmt-density-control-h:   2.25rem;                      /* 36px nút/input */
+  --hmt-density-control-px:  var(--hmt-space-3);
+  --hmt-density-row-h:       2.5rem;                       /* 40px hàng bảng */
+  --hmt-density-cell-px:     var(--hmt-space-3);
+  --hmt-density-gap:         var(--hmt-space-3);
+  --hmt-density-card-pad:    var(--hmt-space-4);
+  --hmt-density-card-radius: var(--hmt-radius-lg);
+}
+
+[data-product="teacher"] {
+  /* Teacher Portal — mobile-first, chạm bằng ngón cái, chống bấm nhầm */
+  --hmt-density-text:        var(--hmt-text-body-lg);     /* 16px — tránh iOS tự zoom input */
+  --hmt-density-text-lh:     var(--hmt-text-body-lg-lh);
+  --hmt-density-control-h:   3rem;                         /* 48px */
+  --hmt-density-control-px:  var(--hmt-space-4);
+  --hmt-density-row-h:       3.5rem;                       /* 56px hàng điểm danh */
+  --hmt-density-cell-px:     var(--hmt-space-4);
+  --hmt-density-gap:         var(--hmt-space-2);           /* ≥8px giữa hai vùng chạm */
+  --hmt-density-card-pad:    var(--hmt-space-4);
+  --hmt-density-card-radius: var(--hmt-radius-xl);
+}
+
+[data-product="teacher"][data-device="desktop"] {
+  /* Teacher Portal trên máy tính (PROPOSED P-12): app đặt data-device="desktop" khi màn ≥ 1024px.
+     Dùng thuộc tính thay vì media query để khung điện thoại xem thử trên màn rộng không bị đổi. */
+  --hmt-density-control-h:   2.5rem;                       /* 40px */
+  --hmt-density-control-px:  0.875rem;
+  --hmt-density-row-h:       3rem;                         /* 48px */
+  --hmt-density-cell-px:     var(--hmt-space-3);
+  --hmt-density-gap:         var(--hmt-space-3);
+}
+
+[data-product="lms"] {
+  /* LMS — thoáng, thân thiện, nhiều độ tuổi */
+  --hmt-density-text:        var(--hmt-text-body-lg);     /* 16px */
+  --hmt-density-text-lh:     var(--hmt-text-body-lg-lh);
+  --hmt-density-control-h:   2.75rem;                      /* 44px */
+  --hmt-density-control-px:  var(--hmt-space-5);
+  --hmt-density-row-h:       3.5rem;
+  --hmt-density-cell-px:     var(--hmt-space-4);
+  --hmt-density-gap:         var(--hmt-space-4);
+  --hmt-density-card-pad:    var(--hmt-space-6);
+  --hmt-density-card-radius: var(--hmt-radius-xl);
+}
+
+
+/* --------------------------------------------------------------------------
+   6. TAILWIND CSS v4 — ánh xạ semantic → utility
+   Bỏ bảng màu mặc định của Tailwind để không ai dùng nhầm bg-orange-500.
+   -------------------------------------------------------------------------- */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@custom-variant crm (&:where([data-product="crm"], [data-product="crm"] *));
+@custom-variant teacher (&:where([data-product="teacher"], [data-product="teacher"] *));
+@custom-variant lms (&:where([data-product="lms"], [data-product="lms"] *));
+
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-brand: var(--hmt-brand);
+  --color-on-brand: var(--hmt-on-brand);
+
+  --color-canvas: var(--hmt-canvas);
+  --color-surface: var(--hmt-surface);
+  --color-surface-subtle: var(--hmt-surface-subtle);
+  --color-surface-raised: var(--hmt-surface-raised);
+  --color-surface-overlay: var(--hmt-surface-overlay);
+  --color-scrim: var(--hmt-scrim);
+
+  --color-fg: var(--hmt-fg);
+  --color-fg-muted: var(--hmt-fg-muted);
+  --color-fg-inverse: var(--hmt-fg-inverse);
+
+  --color-border: var(--hmt-border);
+  --color-border-strong: var(--hmt-border-strong);
+
+  --color-action: var(--hmt-action);
+  --color-action-hover: var(--hmt-action-hover);
+  --color-action-pressed: var(--hmt-action-pressed);
+  --color-on-action: var(--hmt-on-action);
+  --color-link: var(--hmt-link);
+  --color-selected: var(--hmt-selected);
+  --color-on-selected: var(--hmt-on-selected);
+
+  --color-secondary: var(--hmt-secondary);
+  --color-secondary-subtle: var(--hmt-secondary-subtle);
+
+  --color-hover-overlay: var(--hmt-hover-overlay);
+  --color-pressed-overlay: var(--hmt-pressed-overlay);
+
+  --color-focus: var(--hmt-focus);
+  --color-focus-offset: var(--hmt-focus-offset);
+
+  --color-disabled: var(--hmt-disabled-bg);
+  --color-on-disabled: var(--hmt-disabled-fg);
+  --color-disabled-border: var(--hmt-disabled-border);
+
+  --color-success: var(--hmt-success);
+  --color-success-subtle: var(--hmt-success-subtle);
+  --color-on-success-subtle: var(--hmt-on-success-subtle);
+  --color-success-border: var(--hmt-success-border);
+  --color-success-solid: var(--hmt-success-solid);
+  --color-on-success-solid: var(--hmt-on-success-solid);
+
+  --color-warning: var(--hmt-warning);
+  --color-warning-subtle: var(--hmt-warning-subtle);
+  --color-on-warning-subtle: var(--hmt-on-warning-subtle);
+  --color-warning-border: var(--hmt-warning-border);
+  --color-warning-solid: var(--hmt-warning-solid);
+  --color-on-warning-solid: var(--hmt-on-warning-solid);
+
+  --color-danger: var(--hmt-danger);
+  --color-danger-subtle: var(--hmt-danger-subtle);
+  --color-on-danger-subtle: var(--hmt-on-danger-subtle);
+  --color-danger-border: var(--hmt-danger-border);
+  --color-danger-solid: var(--hmt-danger-solid);
+  --color-on-danger-solid: var(--hmt-on-danger-solid);
+
+  --color-info: var(--hmt-info);
+  --color-info-subtle: var(--hmt-info-subtle);
+  --color-on-info-subtle: var(--hmt-on-info-subtle);
+  --color-info-border: var(--hmt-info-border);
+  --color-info-solid: var(--hmt-info-solid);
+  --color-on-info-solid: var(--hmt-on-info-solid);
+
+  --color-lms-progress: var(--hmt-lms-progress);
+  --color-lms-progress-track: var(--hmt-lms-progress-track);
+  --color-lms-reward: var(--hmt-lms-reward);
+  --color-on-lms-reward: var(--hmt-on-lms-reward);
+  --color-cat-1: var(--hmt-cat-1);
+  --color-cat-1-subtle: var(--hmt-cat-1-subtle);
+  --color-cat-2: var(--hmt-cat-2);
+  --color-cat-2-subtle: var(--hmt-cat-2-subtle);
+  --color-cat-3: var(--hmt-cat-3);
+  --color-cat-3-subtle: var(--hmt-cat-3-subtle);
+  --color-cat-4: var(--hmt-cat-4);
+  --color-cat-4-subtle: var(--hmt-cat-4-subtle);
+  --color-chart-1: var(--hmt-chart-1);
+
+  /* Font */
+  --font-sans: var(--hmt-font-sans);
+  --font-display: var(--hmt-font-display);
+  --font-mono: var(--hmt-font-mono);
+
+  /* Typography → text-display, text-h1 … */
+  --text-*: initial;
+  --text-display: var(--hmt-text-display);
+  --text-display--line-height: var(--hmt-text-display-lh);
+  --text-display--font-weight: 700;
+  --text-h1: var(--hmt-text-h1);
+  --text-h1--line-height: var(--hmt-text-h1-lh);
+  --text-h1--font-weight: 700;
+  --text-h2: var(--hmt-text-h2);
+  --text-h2--line-height: var(--hmt-text-h2-lh);
+  --text-h2--font-weight: 600;
+  --text-h3: var(--hmt-text-h3);
+  --text-h3--line-height: var(--hmt-text-h3-lh);
+  --text-h3--font-weight: 600;
+  --text-body: var(--hmt-density-text);
+  --text-body--line-height: var(--hmt-density-text-lh);
+  --text-body-sm: var(--hmt-text-body-sm);
+  --text-body-sm--line-height: var(--hmt-text-body-sm-lh);
+  --text-body-lg: var(--hmt-text-body-lg);
+  --text-body-lg--line-height: var(--hmt-text-body-lg-lh);
+  --text-label: var(--hmt-text-label);
+  --text-label--line-height: var(--hmt-text-label-lh);
+  --text-label--font-weight: 500;
+  --text-caption: var(--hmt-text-caption);
+  --text-caption--line-height: var(--hmt-text-caption-lh);
+
+  /* Spacing: Tailwind v4 nhân --spacing (p-4 = 16px) */
+  --spacing: 0.25rem;
+  --spacing-control: var(--hmt-density-control-h);   /* h-control */
+  --spacing-row: var(--hmt-density-row-h);           /* h-row */
+  --spacing-target: var(--hmt-target-min);           /* min-h-target, min-w-target */
+  --spacing-card: var(--hmt-density-card-pad);       /* p-card */
+  --spacing-gap: var(--hmt-density-gap);             /* gap-gap */
+
+  /* Radius */
+  --radius-*: initial;
+  --radius-xs: var(--hmt-radius-xs);
+  --radius-sm: var(--hmt-radius-sm);
+  --radius-md: var(--hmt-radius-md);
+  --radius-lg: var(--hmt-radius-lg);
+  --radius-xl: var(--hmt-radius-xl);
+  --radius-2xl: var(--hmt-radius-2xl);
+  --radius-full: var(--hmt-radius-full);
+  --radius-card: var(--hmt-density-card-radius);
+
+  /* Elevation */
+  --shadow-*: initial;
+  --shadow-1: var(--hmt-shadow-1);
+  --shadow-2: var(--hmt-shadow-2);
+  --shadow-3: var(--hmt-shadow-3);
+
+  /* Motion */
+  --ease-standard: var(--hmt-ease-standard);
+  --ease-enter: var(--hmt-ease-enter);
+  --ease-exit: var(--hmt-ease-exit);
+}
+
+/* Breakpoints: giữ mặc định Tailwind (sm 40rem · md 48rem · lg 64rem ·
+   xl 80rem · 2xl 96rem), thêm 3xl cho màn CRM rộng. Không dùng inline vì
+   media query không đọc được CSS variable. */
+@theme {
+  --breakpoint-3xl: 120rem;   /* 1920px */
+}
+
+
+/* --------------------------------------------------------------------------
+   7. UTILITY & BASE DÙNG CHUNG — PROPOSED
+   -------------------------------------------------------------------------- */
+
+/* Vòng focus chuẩn: 2px màu focus, cách phần tử 2px màu nền.
+   Dùng với :focus-visible (không hiện khi bấm chuột). */
+@utility focus-ring {
+  outline: none;
+  &:focus-visible {
+    box-shadow:
+      0 0 0 var(--hmt-focus-gap) var(--hmt-focus-offset),
+      0 0 0 calc(var(--hmt-focus-gap) + var(--hmt-focus-width)) var(--hmt-focus);
+  }
+}
+
+/* Số liệu: chữ số đều chiều rộng cho bảng tiền, điểm, lịch */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Vùng chạm tối thiểu 44×44 (Teacher Portal, LMS, mọi icon button) */
+@utility touch-target {
+  min-height: var(--hmt-target-min);
+  min-width: var(--hmt-target-min);
+}
+
+@layer base {
+  html {
+    background: var(--hmt-canvas);
+    color: var(--hmt-fg);
+    font-family: var(--hmt-font-sans);
+    font-size: 100%;  /* không khoá cỡ chữ gốc — tôn trọng cài đặt người dùng */
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-size: var(--hmt-density-text);
+    line-height: var(--hmt-density-text-lh);
+  }
+  h1, h2, h3, .font-display { font-family: var(--hmt-font-display); }
+  ::selection { background: var(--hmt-selected); color: var(--hmt-on-selected); }
+}

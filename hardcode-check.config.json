@@ -2,6 +2,7 @@
   "$comment": "Cấu hình bộ dò số nghiệp vụ viết cứng (scripts/check-hardcoded.mjs).",
   "ignoreDirs": [
     "node_modules",
+    "design",
     "dist",
     "coverage",
     "playwright-report",

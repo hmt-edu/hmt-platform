@@ -1,6 +1,8 @@
 # HMT Platform: luật làm việc cho Claude Code
 
-Đầu mỗi phiên, đọc docs/TIEN-DO.md trước.
+Đầu mỗi phiên đọc docs/TIEN-DO.md và docs/quy-trinh-phoi-hop.md.
+
+File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; dùng xong thì xoá file). Gói thiết kế ở `design/hmt-platform/` (đọc `00_DOC_TRUOC.md` trước). Khi các nguồn vênh nhau: luật (`docs/spec/` 04, 02, 06) > `docs/design/ban-do-man-hinh.md` > `design/hmt-platform/`; làm theo luật, ghi chỗ vênh vào PR, không tự chọn.
 
 Đọc file này và `docs/spec/` trước mỗi việc; làm giao diện thì đọc thêm `docs/design/ban-do-man-hinh.md` (bản đồ màn hình). Spec trong `docs/spec/` là chép từ tài liệu gốc của anh Trường; lệch nhau hoặc thiếu thì hỏi, không đoán.
 

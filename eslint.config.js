@@ -18,6 +18,7 @@ export default defineConfig(
     'test-results',
     'supabase',
     'docs',
+    'design',
     'node_modules',
   ]),
   {

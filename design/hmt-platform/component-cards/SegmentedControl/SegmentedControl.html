@@ -1,0 +1,50 @@
+<!-- @dsCard group="Lớp · học sinh · điểm danh" height=260 subtitle="Chọn 1 trong 2–4 lựa chọn luôn hiển thị · radio gốc, phím mũi tên · tô màu theo trạng thái khi có nghĩa (điểm danh)" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>SegmentedControl — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="teacher"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { SegmentedControl, ATT_STATUSES } = HMT;
+    const [a, setA] = useState("late");
+    const [b, setB] = useState("absent");
+    const [v, setV] = useState("week");
+    const [c, setC] = useState(null);
+    return (React.createElement("div", { className: "hmt-demo", style: { maxWidth: 420 } },
+        React.createElement(SegmentedControl, { name: "v", layout: "row", label: "Kho\u1EA3ng th\u1EDDi gian", value: v, onChange: setV, options: [{ value: "day", label: "Ngày" }, { value: "week", label: "Tuần" }, { value: "month", label: "Tháng" }] }),
+        React.createElement("div", null,
+            React.createElement("p", { className: "hmt-demo-label" }, "\u0110i\u1EC3m danh \u00B7 ch\u01B0a ch\u1ECDn (\u00F4 tr\u1ED1ng = ch\u01B0a \u0111i\u1EC3m danh)"),
+            React.createElement(SegmentedControl, { name: "c", label: "\u0110i\u1EC3m danh V\u0169 H\u00E0 My", options: ATT_STATUSES, value: c, onChange: setC, colored: true })),
+        React.createElement("div", null,
+            React.createElement("p", { className: "hmt-demo-label" }, "\u0110i mu\u1ED9n (v\u00E0ng)"),
+            React.createElement(SegmentedControl, { name: "a", label: "\u0110i\u1EC3m danh L\u00EA B\u1EA3o Ng\u1ECDc", options: ATT_STATUSES, value: a, onChange: setA, colored: true })),
+        React.createElement("div", null,
+            React.createElement("p", { className: "hmt-demo-label" }, "V\u1EAFng kh\u00F4ng ph\u00E9p (\u0111\u1EADm)"),
+            React.createElement(SegmentedControl, { name: "b", label: "\u0110i\u1EC3m danh Phan \u0110\u1EE9c Anh", options: ATT_STATUSES, value: b, onChange: setB, colored: true })),
+        React.createElement(SegmentedControl, { name: "d", layout: "row", label: "T\u1EAFt", value: "week", onChange: () => { }, disabled: true, options: [{ value: "day", label: "Ngày" }, { value: "week", label: "Tuần" }] })));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

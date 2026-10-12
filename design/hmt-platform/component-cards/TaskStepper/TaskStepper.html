@@ -1,0 +1,80 @@
+<!-- @dsCard group="Học vụ" height=860 subtitle="K12: các bước một buổi dạy · điện thoại: thanh bước trên, em trước / em sau dưới · máy tính: cột bước bên trái, danh sách em + phiếu chấm" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>TaskStepper — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="teacher"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { TaskStepper, SlaBadge, RatingScale, Button, StateView, Field, Textarea, Sidebar, Badge, Chip } = HMT;
+    const STEPS = [["att", "Điểm danh", "Điểm danh"], ["content", "Nội dung buổi và giao BTVN", "Nội dung"], ["grade", "Chấm từng em", "Chấm"], ["hw", "Chấm BTVN buổi trước", "BTVN"], ["done", "Hoàn tất", "Xong"]];
+    const [dev, setDev] = useState("phone");
+    const [cur, setCur] = useState("grade");
+    const [i, setI] = useState(1);
+    const names = ["Nguyễn Minh Khôi", "Lê Bảo Ngọc", "Phan Đức Anh", "Vũ Hà My", "Đỗ Gia Bảo", "Trịnh Khánh Linh"];
+    const CRIT = [["Thái độ", ["Tập trung", "Chủ động", "Tinh thần học tập"]], ["Kiến thức", ["Nắm kiến thức", "Hiểu bản chất", "Ghi nhớ"]]];
+    const [sc, setSc] = useState({ 0: { "Tập trung": 4, "Chủ động": 4, "Tinh thần học tập": 5, "Nắm kiến thức": 4, "Hiểu bản chất": 3, "Ghi nhớ": 4 }, 1: { "Tập trung": 3 } });
+    const [msg, setMsg] = useState({ 0: "Hôm nay Khôi tập trung tốt, cần ôn thêm hằng đẳng thức." });
+    const steps = STEPS.map(([id, label, short], k) => ({ id, label, short, status: k < 2 ? "done" : "todo" }));
+    const k = i - 1;
+    const v = sc[k] || {};
+    const filled = (n) => Object.values(sc[n] || {}).filter((x) => x != null).length;
+    const form = (cols) => (React.createElement("div", { style: { display: "grid", gap: 16 } },
+        React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" } },
+            React.createElement("b", { style: { fontSize: 18 } }, names[k]),
+            React.createElement(Badge, { tone: "success", icon: "check" }, "C\u00F3 m\u1EB7t"),
+            React.createElement("span", { className: "hmt-help" },
+                "\u0111\u00E3 ch\u1EA5m ",
+                filled(k),
+                "/6 ti\u00EAu ch\u00ED")),
+        React.createElement("div", { style: { display: "grid", gap: 20, gridTemplateColumns: cols ? "1fr 1fr" : "1fr" } }, CRIT.map(([g, items]) => React.createElement("section", { key: g, style: { display: "grid", gap: 12, alignContent: "start" } },
+            React.createElement("h4", { style: { margin: 0, fontSize: 13, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--hmt-fg-muted)" } }, g),
+            items.map((c) => { var _a; return React.createElement(RatingScale, { key: c + k, name: c + k, label: c, required: true, value: (_a = v[c]) !== null && _a !== void 0 ? _a : null, onChange: (n) => setSc({ ...sc, [k]: { ...v, [c]: n } }) }); })))),
+        React.createElement("p", { className: "hmt-help" }, "V\u1EADn d\u1EE5ng: ch\u1EA5m theo t\u1EEBng d\u00F2ng n\u1ED9i dung bu\u1ED5i; \u0111i\u1EC3m trung b\u00ECnh do h\u1EC7 th\u1ED1ng t\u00EDnh. M\u00F4 t\u1EA3 t\u1EEBng m\u1EE9c l\u1EA5y t\u1EEB c\u1EA5u h\u00ECnh rubric."),
+        React.createElement(Field, { label: "L\u1EDDi nh\u1EAFn ph\u1EE5 huynh", required: true },
+            React.createElement(Textarea, { value: msg[k] || "", onChange: (e) => setMsg({ ...msg, [k]: e.target.value }), maxLength: 500, placeholder: "V\u00ED d\u1EE5: H\u00F4m nay con t\u1EADp trung t\u1ED1t\u2026" }))));
+    const nav = cur === "grade" ? { index: i, total: 6, hasPrev: i > 1, hasNext: i < 6, onPrev: () => setI(i - 1), onNext: () => setI(i + 1) } : null;
+    const body = (desktop) => cur === "grade" ? (desktop ? (React.createElement("div", { style: { display: "grid", gridTemplateColumns: "240px minmax(0,1fr)", minHeight: "100%" } },
+        React.createElement("ul", { style: { listStyle: "none", margin: 0, padding: 8, borderRight: "1px solid var(--hmt-border)", background: "var(--hmt-surface)", display: "grid", gap: 2, alignContent: "start" }, "aria-label": "H\u1ECDc sinh c\u00F3 m\u1EB7t" }, names.map((n, j) => {
+            const f = filled(j);
+            return React.createElement("li", { key: n },
+                React.createElement("button", { type: "button", className: "hmt-focus", "aria-current": j === k ? "true" : undefined, onClick: () => setI(j + 1), style: { all: "unset", boxSizing: "border-box", width: "100%", display: "flex", justifyContent: "space-between", gap: 8, padding: "8px 10px", borderRadius: 6, cursor: "pointer", background: j === k ? "var(--hmt-selected)" : undefined, fontWeight: j === k ? 600 : 400 } },
+                    React.createElement("span", null, n),
+                    React.createElement("span", { className: "hmt-tabular", style: { color: f === 6 ? "var(--hmt-success)" : "var(--hmt-fg-muted)", fontSize: 13 } }, f === 6 ? "Đủ" : `${f}/6`)));
+        })),
+        React.createElement("div", { style: { padding: 20, background: "var(--hmt-surface)" } }, form(true)))) : React.createElement("div", { style: { padding: 16, background: "var(--hmt-surface)" } }, form(false)))
+        : React.createElement(StateView, { compact: true, kind: "empty", title: steps.find((s) => s.id === cur).label, description: "N\u1ED9i dung b\u01B0\u1EDBc" });
+    return (React.createElement("div", { className: "hmt-demo", style: { alignItems: "center" } },
+        React.createElement("div", { className: "hmt-demo-row", "data-product": "crm", role: "group", "aria-label": "Thi\u1EBFt b\u1ECB" },
+            React.createElement(Chip, { selected: dev === "phone", onToggle: () => setDev("phone") }, "\u0110i\u1EC7n tho\u1EA1i"),
+            React.createElement(Chip, { selected: dev === "desktop", onToggle: () => setDev("desktop") }, "M\u00E1y t\u00EDnh")),
+        dev === "phone" ? (React.createElement("div", { className: "hmt-phone", style: { height: 720, overflow: "auto" } },
+            React.createElement(TaskStepper, { title: "8A1 \u00B7 Bu\u1ED5i 12 \u00B7 15/10/2026", steps: steps, current: cur, onStepChange: setCur, deadline: React.createElement(SlaBadge, { kind: "remaining", hours: 5 }), nav: nav, footer: cur !== "grade" ? React.createElement(Button, { fullWidth: true, iconEnd: "arrowRight" }, "Ti\u1EBFp") : null }, body(false)))) : (React.createElement("div", { "data-product": "teacher", "data-device": "desktop", style: { width: "100%", height: 720, display: "flex", border: "1px solid var(--hmt-border)", borderRadius: 12, overflow: "hidden" } },
+            React.createElement(Sidebar, { subtitle: "C\u1ED5ng Gi\u00E1o vi\u00EAn", collapsed: true, onCollapsedChange: () => { }, activeId: "today", onNavigate: () => { }, sections: [{ items: [{ id: "today", label: "Hôm nay", icon: "home" }, { id: "classes", label: "Lớp của tôi", icon: "book" }, { id: "cal", label: "Lịch dạy", icon: "calendar" }, { id: "tickets", label: "Ticket", icon: "message" }] }] }),
+            React.createElement("div", { style: { flex: 1, minWidth: 0, overflow: "auto" } },
+                React.createElement(TaskStepper, { title: "8A1 \u00B7 Bu\u1ED5i 12 \u00B7 15/10/2026", steps: steps, current: cur, onStepChange: setCur, deadline: React.createElement(SlaBadge, { kind: "remaining", hours: 5 }), nav: nav, footer: cur !== "grade" ? React.createElement(Button, { iconEnd: "arrowRight" }, "Ti\u1EBFp") : null }, body(true)))))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

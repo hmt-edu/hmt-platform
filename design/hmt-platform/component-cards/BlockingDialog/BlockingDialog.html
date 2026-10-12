@@ -1,0 +1,42 @@
+<!-- @dsCard group="Phản hồi" height=300 subtitle="Lỗi chặn liệt kê lý do kèm link tới chỗ sửa; khác rõ với cảnh báo vẫn làm tiếp được" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>BlockingDialog — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { BlockingDialog, Button } = HMT;
+    const [a, setA] = useState(false);
+    const [b, setB] = useState(false);
+    return (React.createElement("div", { className: "hmt-demo" },
+        React.createElement("div", { className: "hmt-demo-row" },
+            React.createElement(Button, { variant: "secondary", onClick: () => setA(true) }, "\u0110\u00F3ng l\u1EDBp (b\u1ECB ch\u1EB7n)"),
+            React.createElement(Button, { variant: "secondary", onClick: () => setB(true) }, "Duy\u1EC7t phi\u1EBFu thu (c\u1EA3nh b\u00E1o)")),
+        React.createElement(BlockingDialog, { open: a, onClose: () => setA(false), title: "Ch\u01B0a \u0111\u00F3ng \u0111\u01B0\u1EE3c l\u1EDBp 8A1", description: "L\u1EDBp c\u00F2n h\u1ECDc sinh c\u00F2n gi\u1EDD (R-LOP-04). Chuy\u1EC3n l\u1EDBp ho\u1EB7c d\u1EEBng h\u1ECDc qua ticket tr\u01B0\u1EDBc.", reasons: [{ text: "Nguyễn Minh Khôi (HS000123) còn 18 giờ", actionLabel: "Mở ghi danh" }, { text: "Lê Bảo Ngọc (HS000231) còn 6 giờ", actionLabel: "Mở ghi danh" }] }),
+        React.createElement(BlockingDialog, { open: b, kind: "warn", onClose: () => setB(false), title: "Duy\u1EC7t phi\u1EBFu thu sau ng\u00E0y v\u00E0o l\u1EDBp?", description: "PT-CS1-2610-0019 \u00B7 Nguy\u1EC5n Minh Kh\u00F4i", reasons: [{ text: "Ngày vào lớp 08/10/2026 — đã qua 2 buổi (R-TIEN-27)" }], continueLabel: "V\u1EABn duy\u1EC7t" })));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

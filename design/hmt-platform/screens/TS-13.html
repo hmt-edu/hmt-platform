@@ -1,0 +1,54 @@
+<!-- @dsCard group="Màn 5.3 · Tuyển sinh" height=620 subtitle="Mức B · K08 · Tạo / dời lịch hẹn: loại hoạt động, thời gian, ghi chú; nhiều lịch song song" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>TS-13 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Dialog, Field, Select, DateInput, TextInput, Textarea, Button, Alert } = HMT;
+    const [open, setOpen] = useState(true);
+    return (React.createElement(ScreenFrame, { code: "TS-13", name: "T\u1EA1o / d\u1EDDi l\u1ECBch h\u1EB9n", level: "B", tpl: "K08 \u00B7 m\u00E1y t\u00EDnh", height: 600, note: "M\u1ED9t lead/c\u01A1 h\u1ED9i c\u00F3 th\u1EC3 c\u00F3 nhi\u1EC1u l\u1ECBch h\u1EB9n m\u1EDF c\u00F9ng l\u00FAc (R-CRM-04). L\u1ECBch h\u1EB9n k\u1EBF ti\u1EBFp tr\u00EAn b\u1EA3n ghi t\u1EF1 t\u00EDnh l\u1EA1i sau khi l\u01B0u." },
+        React.createElement("div", { className: "hmt-demo" },
+            React.createElement(Button, { onClick: () => setOpen(true) }, "M\u1EDF l\u1EA1i h\u1ED9p tho\u1EA1i"),
+            React.createElement(Dialog, { open: open, onClose: () => setOpen(false), title: "Th\u00EAm l\u1ECBch h\u1EB9n", description: "CO000121 \u00B7 Ch\u1ECB L\u00EA Thu H\u1EB1ng", footer: React.createElement(Fragment, null,
+                    React.createElement(Button, { variant: "secondary", onClick: () => setOpen(false) }, "Hu\u1EF7"),
+                    React.createElement(Button, { onClick: () => setOpen(false) }, "L\u01B0u l\u1ECBch h\u1EB9n")) },
+                React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } },
+                    React.createElement(Field, { label: "Lo\u1EA1i ho\u1EA1t \u0111\u1ED9ng", required: true },
+                        React.createElement(Select, { defaultValue: "meet", options: [{ value: "call", label: "Gọi điện" }, { value: "meet", label: "Hẹn gặp tại cơ sở" }, { value: "quote", label: "Gửi báo giá" }] })),
+                    React.createElement(Field, { label: "Ng\u01B0\u1EDDi ph\u1EE5 tr\u00E1ch", required: true },
+                        React.createElement(Select, { defaultValue: "NV0012", options: [{ value: "NV0012", label: "Trần Thu Hà" }, { value: "NV0026", label: "Vũ Thị Thanh Tâm" }] })),
+                    React.createElement(Field, { label: "Ng\u00E0y", required: true },
+                        React.createElement(DateInput, { value: "14/10/2026", onChange: () => { } })),
+                    React.createElement(Field, { label: "Gi\u1EDD", required: true },
+                        React.createElement(TextInput, { defaultValue: "17:30", inputMode: "numeric" })),
+                    React.createElement("div", { style: { gridColumn: "1 / -1" } },
+                        React.createElement(Field, { label: "Ghi ch\u00FA", optional: true },
+                            React.createElement(Textarea, { maxLength: 500, defaultValue: "Ph\u1EE5 huynh \u0111\u1EBFn c\u01A1 s\u1EDF xem l\u1EDBp 9B1." })))),
+                React.createElement(Alert, { tone: "info", title: "\u0110ang c\u00F3 1 l\u1ECBch m\u1EDF" }, "G\u1EEDi b\u00E1o gi\u00E1 \u00B7 h\u00F4m nay 14:00. L\u1ECBch m\u1EDBi th\u00EAm song song, kh\u00F4ng thay l\u1ECBch c\u0169.")))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

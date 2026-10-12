@@ -1,0 +1,54 @@
+<!-- @dsCard group="Overlay" height=300 subtitle="Nội dung nổi không chặn trang: menu thao tác, bộ lọc nhanh · Esc/click ngoài để đóng" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>Popover — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Popover, Button, Chip } = HMT;
+    return (React.createElement("div", { className: "hmt-demo" },
+        React.createElement("div", { className: "hmt-demo-row" },
+            React.createElement(Popover, { label: "Thao t\u00E1c cho Tr\u1EA7n B\u00ECnh", trigger: React.createElement(Button, { variant: "secondary", iconEnd: "chevronDown" }, "Thao t\u00E1c") }, (close) => React.createElement("ul", { className: "hmt-menu", style: { margin: -12 } },
+                React.createElement("li", null,
+                    React.createElement("button", { onClick: close },
+                        React.createElement(HMT.Icon, { name: "edit" }),
+                        "S\u1EEDa th\u00F4ng tin")),
+                React.createElement("li", null,
+                    React.createElement("button", { onClick: close },
+                        React.createElement(HMT.Icon, { name: "wallet" }),
+                        "Xem c\u00F4ng n\u1EE3 h\u1ECDc ph\u00ED")),
+                React.createElement("li", null,
+                    React.createElement("button", { onClick: close, className: "hmt-menu-danger" },
+                        React.createElement(HMT.Icon, { name: "trash" }),
+                        "Xo\u00E1 kh\u1ECFi l\u1EDBp\u2026")))),
+            React.createElement(Popover, { label: "L\u1ECDc theo c\u01A1 s\u1EDF", trigger: React.createElement(Button, { variant: "secondary", iconStart: "mapPin" }, "C\u01A1 s\u1EDF: T\u1EA5t c\u1EA3") },
+                React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 8, maxWidth: 240 } }, [1, 2, 4, 5].map((n) => React.createElement(Chip, { key: n },
+                    "CS",
+                    n))))),
+        React.createElement("p", { className: "hmt-help" }, "H\u00E0nh \u0111\u1ED9ng nguy hi\u1EC3m trong menu m\u1EDF ConfirmDialog, kh\u00F4ng th\u1EF1c hi\u1EC7n ngay.")));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

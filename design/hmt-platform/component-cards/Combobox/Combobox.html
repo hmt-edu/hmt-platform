@@ -1,0 +1,59 @@
+<!-- @dsCard group="Form" height=420 subtitle="Tìm học sinh, lớp, gói theo tên, mã, mã cũ (không cần dấu); dòng phụ; chọn một, chọn nhiều; không có kết quả; lỗi; tắt" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>Combobox — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Field, Combobox } = HMT;
+    const [p, setP] = useState("crm");
+    const classes = [
+        { value: "c1", label: "8A1 · Toán cơ bản", code: "CS1-2627-TOAN-K08-CB-A-001", legacyCode: "8A1-NCT", meta: "T3, T5 · 17:30 · Sĩ số 13/15 · Còn 2 chỗ" },
+        { value: "c2", label: "8A2 · Toán cơ bản", code: "CS1-2627-TOAN-K08-CB-B-002", meta: "T4, T6 · 18:00 · Sĩ số 15/15", disabled: true, disabledReason: "Hết chỗ" },
+        { value: "c3", label: "8N1 · Toán nâng cao", code: "CS1-2627-TOAN-K08-NC-S-003", meta: "T7 · 08:00 · Sĩ số 9/12 · Còn 3 chỗ" },
+    ];
+    const students = [
+        { value: "s1", label: "Nguyễn Minh Khôi", code: "HS000123", legacyCode: "NCT-0456", meta: "Lớp 8 · CS1 · PH: chị Lan 0912 345 018" },
+        { value: "s2", label: "Nguyễn Minh Khang", code: "HS000124", meta: "Lớp 6 · CS1 · anh em với HS000123" },
+        { value: "s3", label: "Lê Bảo Ngọc", code: "HS000231", meta: "Lớp 9 · CS2" },
+    ];
+    const [c, setC] = useState(null);
+    const [s, setS] = useState(["s1"]);
+    const [e, setE] = useState(null);
+    return (React.createElement("div", { className: "hmt-demo", "data-product": p, style: { maxWidth: 560 } },
+        React.createElement(ProductSwitch, { value: p, onChange: setP }),
+        React.createElement(Field, { label: "L\u1EDBp tr\u00EAn d\u00F2ng \u0111\u01A1n", helper: "Ch\u1EC9 l\u1EDBp \u0110\u00E3 duy\u1EC7t, \u0111\u00FAng m\u00F4n, kh\u1ED1i, c\u01A1 s\u1EDF (R-GD-08)" },
+            React.createElement(Combobox, { options: classes, value: c, onChange: setC })),
+        React.createElement(Field, { label: "H\u1ECDc sinh nh\u1EADn th\u00F4ng b\u00E1o (ch\u1ECDn nhi\u1EC1u)" },
+            React.createElement(Combobox, { multiple: true, options: students, value: s, onChange: setS, placeholder: "G\u00F5 t\u00EAn ho\u1EB7c m\u00E3 HS" })),
+        React.createElement(Field, { label: "G\u00F3i b\u00E1n", required: true, error: "Ch\u1ECDn g\u00F3i tr\u01B0\u1EDBc khi tr\u00ECnh \u0111\u01A1n" },
+            React.createElement(Combobox, { options: [{ value: "g1", label: "Lớp chung Toán lớp 9", code: "LC-TOAN-K09", meta: "Offline 220.000 đ/giờ · Online 190.000 đ/giờ" }], value: e, onChange: setE })),
+        React.createElement(Field, { label: "C\u01A1 s\u1EDF", helper: "Kh\u00F4ng \u0111\u1ED5i \u0111\u01B0\u1EE3c sau khi duy\u1EC7t" },
+            React.createElement(Combobox, { options: [{ value: "cs1", label: "CS1 Nguyễn Chí Thanh", code: "CS1" }], value: "cs1", onChange: () => { }, disabled: true })),
+        React.createElement("p", { className: "hmt-help" }, "G\u00F5 \"nguyen minh\" (kh\u00F4ng d\u1EA5u) ho\u1EB7c \"NCT-0456\" (m\u00E3 c\u0169); g\u00F5 \"xyz\" \u0111\u1EC3 th\u1EA5y tr\u1EA1ng th\u00E1i kh\u00F4ng c\u00F3 k\u1EBFt qu\u1EA3. \u2191 \u2193 Enter Esc.")));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

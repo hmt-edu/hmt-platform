@@ -1,0 +1,36 @@
+<!-- @dsCard height=300 -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@700;800&family=Inter:wght@400&display=swap">
+<style>
+  html,body{margin:0}
+  body{width:960px;height:300px;position:relative;overflow:hidden;background:var(--hmt-canvas);font-family:"Be Vietnam Pro",Inter,system-ui,sans-serif}
+  svg{position:absolute;inset:0}
+  .logo{fill:var(--hmt-brand)}.ops{fill:var(--hmt-action)}
+  .ink{fill:var(--hmt-fg)}.teal{fill:var(--hmt-lms-progress)}.tint{fill:var(--hmt-selected)}
+  .plus{fill:var(--hmt-canvas)}
+  .txt{position:absolute;left:40px;bottom:36px;max-width:440px}
+  h1{margin:0;font-size:88px;line-height:.95;font-weight:800;letter-spacing:-.02em;color:var(--hmt-fg)}
+  p{margin:14px 0 0;font-family:Inter,system-ui,sans-serif;font-size:14px;color:var(--hmt-fg-muted)}
+</style><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head><body>
+<svg width="960" height="300" viewBox="0 0 960 300" aria-hidden="true">
+  <!-- blocks: hmt-brand 150×300 slab + 75×80, hmt-action 150×180, hmt-selected 140×120, hmt-fg 140×180, hmt-lms-progress 75×80 -->
+  <!-- arrangement: one tall slab with satellites, bleeding top/bottom/right; the confirmed logo orange takes the largest field -->
+  <!-- pattern: plus grid cut in hmt-canvas over the hmt-fg block — a literal motif for a math school (Hòa Ma Toán), pitch 32 -->
+  <!-- steps/radii: square corners (CRM-like precision; radius tokens reserved for components); 12 plus units, pitch 32 = hmt-space-8 -->
+  <rect class="logo" x="520" y="0" width="150" height="300"/>
+  <rect class="ops" x="670" y="40" width="150" height="180"/>
+  <rect class="tint" x="820" y="0" width="140" height="120"/>
+  <rect class="ink" x="820" y="120" width="140" height="180"/>
+  <rect class="teal" x="670" y="220" width="75" height="80"/>
+  <rect class="logo" x="745" y="220" width="75" height="80"/>
+  <g id="pl"></g>
+</svg>
+<script>
+  const g=document.getElementById('pl');let s='';
+  for(let r=0;r<4;r++)for(let c=0;c<3;c++){const x=858+c*32,y=158+r*32;
+    s+=`<rect class="plus" x="${x-7}" y="${y-2}" width="14" height="4"/><rect class="plus" x="${x-2}" y="${y-7}" width="4" height="14"/>`;}
+  g.innerHTML=s;
+</script>
+<div class="txt"><h1>HMT<br>Platform</h1><p>Brand Guidelines · UI Design System Foundation</p></div>
+</body></html>

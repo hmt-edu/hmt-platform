@@ -1,0 +1,57 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, type Page } from '@playwright/test';
+
+// Tài khoản giả do scripts/seed-users.ts tạo. Cần SEED_PASSWORD (CI tự sinh; local đặt trong môi trường).
+export const PASSWORD = process.env.SEED_PASSWORD ?? '';
+export const DOMAIN = 'thu.hoamatoan.invalid';
+
+export function isPhone(page: Page): boolean {
+  return (page.viewportSize()?.width ?? 0) < 1024;
+}
+
+export async function fillLogin(
+  page: Page,
+  label: 'Email' | 'Mã học sinh',
+  login: string,
+  password = PASSWORD,
+) {
+  await page.getByLabel(label, { exact: true }).fill(login);
+  await page.getByLabel('Mật khẩu', { exact: true }).fill(password);
+  await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+}
+
+export async function loginStaff(page: Page, account: string, password = PASSWORD) {
+  await page.goto('/dang-nhap');
+  await fillLogin(page, 'Email', `${account}@${DOMAIN}`, password);
+}
+
+export async function loginStudent(page: Page, code: string, password = PASSWORD) {
+  await page.goto('/dang-nhap/hoc-sinh');
+  await fillLogin(page, 'Mã học sinh', code, password);
+}
+
+/** Mở menu CRM: laptop có sẵn bên trái, điện thoại nằm trong ngăn kéo. */
+export async function openCrmMenu(page: Page) {
+  if (isPhone(page)) await page.getByRole('button', { name: 'Mở menu' }).click();
+  return page.getByRole('navigation', { name: 'Menu CRM' }).last();
+}
+
+export async function signOut(page: Page) {
+  await page.getByRole('button', { name: /^Tài khoản:/ }).click();
+  await page.getByRole('menuitem', { name: 'Đăng xuất' }).click();
+}
+
+/** Kiểm truy cập bằng axe: không có lỗi mức nghiêm trọng (critical) hay nặng (serious). */
+export async function expectAccessible(page: Page) {
+  const results = await new AxeBuilder({ page })
+    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+    .analyze();
+  const blocking = results.violations.filter(
+    (v) => v.impact === 'critical' || v.impact === 'serious',
+  );
+  expect(
+    blocking.map(
+      (v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join('; ')})`,
+    ),
+  ).toEqual([]);
+}

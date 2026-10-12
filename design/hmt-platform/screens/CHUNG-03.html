@@ -1,0 +1,72 @@
+<!-- @dsCard group="Màn 5.2 · Đăng nhập" height=820 subtitle="Mức B · K11 · Thiết lập hai bước lần đầu: quét QR → nhập mã → lưu mã dự phòng" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>CHUNG-03 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { AuthLayout, OtpInput, Button, Field, TaskStepper, Alert, Icon } = HMT;
+    const [step, setStep] = useState(1);
+    const [code, setCode] = useState("");
+    const [saved, setSaved] = useState(false);
+    const qr = Array.from({ length: 21 * 21 }, (_, i) => { const x = i % 21, y = Math.floor(i / 21); const f = (a, b) => x >= a && x < a + 7 && y >= b && y < b + 7 && (x === a || x === a + 6 || y === b || y === b + 6 || (x > a + 1 && x < a + 5 && y > b + 1 && y < b + 5)); if (f(0, 0) || f(14, 0) || f(0, 14))
+        return 1; if ((x < 8 && y < 8) || (x > 12 && y < 8) || (x < 8 && y > 12))
+        return 0; return ((x * 7 + y * 13 + x * y) % 5) < 2 ? 1 : 0; });
+    const codes = ["4KQ7-29MD", "8ZT3-61PW", "2HV9-07XC", "5RN2-84LB", "9GF6-13JS", "3MD8-52QT", "7XP1-90HV", "6BC4-38RN", "1WT5-77GF", "0LS3-46ZD"];
+    const Steps = () => React.createElement("ol", { className: "hmt-pwr", style: { display: "flex", gap: 16, listStyle: "none", padding: 0 } }, ["Quét mã", "Nhập mã", "Lưu mã dự phòng"].map((t, i) => React.createElement("li", { key: t, "data-ok": i + 1 < step ? "true" : undefined, "aria-current": i + 1 === step ? "step" : undefined, style: { fontWeight: i + 1 === step ? 600 : 400, color: i + 1 === step ? "var(--hmt-fg)" : undefined } },
+        React.createElement(Icon, { name: i + 1 < step ? "check" : "info" }),
+        i + 1,
+        ". ",
+        t)));
+    return (React.createElement(ScreenFrame, { code: "CHUNG-03", name: "Thi\u1EBFt l\u1EADp hai b\u01B0\u1EDBc l\u1EA7n \u0111\u1EA7u", level: "B", tpl: "K11 \u00B7 c\u1EA3 hai", height: 760, note: "B\u1EAFt bu\u1ED9c v\u1EDBi AD, KT \u1EDF l\u1EA7n \u0111\u0103ng nh\u1EADp \u0111\u1EA7u ho\u1EB7c sau khi Admin \u0111\u1EB7t l\u1EA1i. C\u00E1c b\u01B0\u1EDBc ch\u1EC9 \u0111i t\u1EDBi; kh\u00F4ng b\u1ECF qua \u0111\u01B0\u1EE3c." },
+        React.createElement(AuthLayout, { logoSrc: LOGO, logoWhiteSrc: LOGO_W, title: "B\u1EADt x\u00E1c th\u1EF1c hai b\u01B0\u1EDBc", subtitle: "T\u00E0i kho\u1EA3n K\u1EBF to\u00E1n b\u1EAFt bu\u1ED9c d\u00F9ng m\u00E3 6 s\u1ED1 t\u1EEB \u1EE9ng d\u1EE5ng x\u00E1c th\u1EF1c (v\u00ED d\u1EE5 \u1EE9ng d\u1EE5ng x\u00E1c th\u1EF1c tr\u00EAn \u0111i\u1EC7n tho\u1EA1i)." },
+            React.createElement(Steps, null),
+            step === 1 ? React.createElement(Fragment, null,
+                React.createElement("div", { style: { display: "flex", gap: 16, alignItems: "center", flexWrap: "wrap" } },
+                    React.createElement("svg", { viewBox: "0 0 21 21", width: "148", height: "148", role: "img", "aria-label": "M\u00E3 QR m\u1EABu", style: { background: "#fff", padding: 6, border: "1px solid var(--hmt-border)", borderRadius: 6, shapeRendering: "crispEdges" } }, qr.map((v, i) => v ? React.createElement("rect", { key: i, x: i % 21, y: Math.floor(i / 21), width: "1", height: "1", fill: "#111" }) : null)),
+                    React.createElement("div", { style: { display: "grid", gap: 6, minWidth: 0 } },
+                        React.createElement("span", { className: "hmt-help" }, "Kh\u00F4ng qu\u00E9t \u0111\u01B0\u1EE3c? Nh\u1EADp kho\u00E1 n\u00E0y v\u00E0o \u1EE9ng d\u1EE5ng:"),
+                        React.createElement("code", { style: { fontSize: 14, wordBreak: "break-all" } }, "JBSW Y3DP EHPK 3PXP"),
+                        React.createElement(Button, { size: "sm", variant: "secondary", iconStart: "file" }, "Sao ch\u00E9p kho\u00E1"))),
+                React.createElement(Button, { fullWidth: true, iconEnd: "arrowRight", onClick: () => setStep(2) }, "T\u00F4i \u0111\u00E3 qu\u00E9t xong")) : null,
+            step === 2 ? React.createElement(Fragment, null,
+                React.createElement(Field, { label: "M\u00E3 6 s\u1ED1 tr\u00EAn \u1EE9ng d\u1EE5ng", required: true },
+                    React.createElement(OtpInput, { value: code, onChange: setCode, autoFocus: true })),
+                React.createElement(Button, { fullWidth: true, disabled: code.length < 6, onClick: () => setStep(3) }, "X\u00E1c nh\u1EADn m\u00E3")) : null,
+            step === 3 ? React.createElement(Fragment, null,
+                React.createElement(Alert, { tone: "warning", title: "L\u01B0u 10 m\u00E3 d\u1EF1 ph\u00F2ng ngay b\u00E2y gi\u1EDD" }, "M\u1ED7i m\u00E3 d\u00F9ng m\u1ED9t l\u1EA7n khi kh\u00F4ng c\u00F3 \u0111i\u1EC7n tho\u1EA1i. M\u00E3 ch\u1EC9 hi\u1EC7n m\u1ED9t l\u1EA7n."),
+                React.createElement("ol", { style: { margin: 0, padding: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px 16px", listStyle: "none", fontFamily: "ui-monospace, Menlo, monospace", background: "var(--hmt-surface-subtle)", borderRadius: 8 } }, codes.map((c) => React.createElement("li", { key: c }, c))),
+                React.createElement("div", { className: "hmt-demo-row" },
+                    React.createElement(Button, { variant: "secondary", size: "sm", iconStart: "download" }, "T\u1EA3i t\u1EC7p .txt"),
+                    React.createElement(Button, { variant: "secondary", size: "sm", iconStart: "printer" }, "In"),
+                    React.createElement(Button, { variant: "secondary", size: "sm", iconStart: "file" }, "Sao ch\u00E9p")),
+                React.createElement("label", { style: { display: "flex", gap: 8, alignItems: "center" } },
+                    React.createElement("input", { type: "checkbox", checked: saved, onChange: (e) => setSaved(e.target.checked), style: { width: 20, height: 20 } }),
+                    "T\u00F4i \u0111\u00E3 l\u01B0u m\u00E3 d\u1EF1 ph\u00F2ng \u1EDF n\u01A1i an to\u00E0n"),
+                React.createElement(Button, { fullWidth: true, disabled: !saved }, "Ho\u00E0n t\u1EA5t, v\u00E0o CRM")) : null)));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

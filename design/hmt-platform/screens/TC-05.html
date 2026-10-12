@@ -1,0 +1,103 @@
+<!-- @dsCard group="Màn 5.3 · Thu chi" height=880 subtitle="Mức A · K08 · Kế toán duyệt / từ chối phiếu thu: tóm tắt "sẽ sinh khoản tiền vào, cấp X giờ, tạo ghi danh"; cảnh báo "đã qua N buổi"; từ chối bắt buộc lý do" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>TC-05 — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../tokens/tokens.runtime.css"><link rel="stylesheet" href="../components/bundle.css"><script src="../components/lib/react.production.min.js"></script><script src="../components/lib/react-dom.production.min.js"></script><script src="../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { Dialog, ConfirmDialog, Button, Alert, Badge, Icon, Chip, Skeleton, StateView } = HMT;
+    const STATES = [["review", "Xem trước khi duyệt"], ["late", "Đã qua 2 buổi"], ["small", "Dưới 1.000.000 đ"], ["full", "Thu đủ (cấp giờ tặng)"], ["admin", "Admin duyệt thay"], ["reject", "Từ chối"], ["done", "Đã duyệt"], ["loading", "Đang tải"], ["error", "Lỗi"], ["noaccess", "Không có quyền (Trưởng cơ sở)"]];
+    const [st, setSt] = useState("late");
+    const D = {
+        review: { pt: "PT-CS1-2610-0051", hs: "Lê Gia Huy (HS000435)", dh: "DH-CS1-2610-0001", amt: "4.752.000 đ", tot: "9.504.000 đ", after: "4.752.000 đ / 9.504.000 đ", h: "24 giờ (50% của 48 giờ)", gd: "Tạo ghi danh GD000131 · Toán lớp 9", bonus: "4 giờ tặng: chưa cấp — chưa thu đủ" },
+        late: { pt: "PT-CS1-2610-0048", hs: "Vũ Hà My (HS000402)", dh: "DH-CS1-2609-0034", amt: "2.200.000 đ", tot: "8.800.000 đ", after: "2.200.000 đ / 8.800.000 đ", h: "10 giờ (25% của 40 giờ)", gd: "Tạo ghi danh GD000129 · Toán lớp 8 · lớp 8A1 Đại, vào lớp 05/10/2026", bonus: "Không có giờ tặng" },
+        small: { pt: "PT-CS2-2610-0027", hs: "Ngô Tuấn Kiệt (HS000441)", dh: "DH-CS2-2610-0012", amt: "500.000 đ", tot: "7.920.000 đ", after: "500.000 đ / 7.920.000 đ", h: "Chưa cấp giờ", gd: "Chưa tạo ghi danh: tiền vào 500.000 đ < 1.000.000 đ (R-TIEN-20)", bonus: "—" },
+        full: { pt: "PT-CS1-2611-0003", hs: "Lê Gia Huy (HS000435)", dh: "DH-CS1-2610-0001", amt: "4.752.000 đ", tot: "9.504.000 đ", after: "9.504.000 đ / 9.504.000 đ · đã thu đủ", h: "thêm 24 giờ → đủ 48 giờ", gd: "Cập nhật ghi danh GD000131", bonus: "Cấp 4 giờ tặng (đã thu đủ — R-TIEN-24)" },
+    };
+    const d = D[st] || D.late;
+    const rows = [["Khoản tiền vào", `Sinh khoản ${d.amt} · trỏ về ${d.pt}`], ["Đơn sau khi duyệt", `Đã vào ${d.after}`], ["Giờ cấp", d.h], ["Ghi danh", d.gd], ["Giờ tặng", d.bonus]];
+    return (React.createElement(ScreenFrame, { code: "TC-05", name: "K\u1EBF to\u00E1n duy\u1EC7t / t\u1EEB ch\u1ED1i phi\u1EBFu thu", level: "A", tpl: "K08 \u00B7 m\u00E1y t\u00EDnh", states: STATES, state: st, onState: setSt, height: 800, note: "Admin duy\u1EC7t thay \u0111\u01B0\u1EE3c khi K\u1EBF to\u00E1n v\u1EAFng; l\u1ECBch s\u1EED ghi \u201CAdmin duy\u1EC7t thay\u201D (A-39). Ch\u1EC9 K\u1EBF to\u00E1n c\u00F3 n\u00FAt duy\u1EC7t; Tr\u01B0\u1EDFng c\u01A1 s\u1EDF kh\u00F4ng bao gi\u1EDD th\u1EA5y n\u00FAt n\u00E0y (lu\u1EADt \u00A71). \"\u0110\u00E3 qua N bu\u1ED5i\" l\u00E0 c\u1EA3nh b\u00E1o, kh\u00F4ng ch\u1EB7n (R-TIEN-27). Gi\u1EDD c\u1EA5p theo t\u1EC9 l\u1EC7 ti\u1EC1n \u0111\u00E3 thu (R-TIEN-21)." },
+        React.createElement("div", { style: { height: "100%", background: "rgb(20 17 16 / .48)", display: "grid", placeItems: "center", padding: 16 } }, st === "loading" ? React.createElement("div", { className: "hmt-panel", style: { width: 640, display: "grid", gap: 12, padding: 20 }, "aria-busy": "true" },
+            React.createElement(Skeleton, { width: "60%", height: 26 }),
+            React.createElement(Skeleton, { height: 120 }),
+            React.createElement(Skeleton, { height: 110 }),
+            React.createElement("div", { className: "hmt-demo-row", style: { justifyContent: "flex-end" } },
+                React.createElement(Skeleton, { width: 90, height: 36 }),
+                React.createElement(Skeleton, { width: 140, height: 36 })))
+            : st === "error" ? React.createElement("div", { className: "hmt-panel", style: { width: 560 } },
+                React.createElement(StateView, { compact: true, kind: "error", title: "Kh\u00F4ng t\u1EA3i \u0111\u01B0\u1EE3c phi\u1EBFu thu PT-CS1-2610-0048", description: "L\u1ED7i m\u00E1y ch\u1EE7 (E-500-RCPT). Ch\u01B0a c\u00F3 g\u00EC \u0111\u01B0\u1EE3c duy\u1EC7t; th\u1EED l\u1EA1i ho\u1EB7c g\u1EEDi m\u00E3 l\u1ED7i cho IT.", actions: React.createElement(Fragment, null,
+                        React.createElement(Button, { variant: "secondary" }, "\u0110\u00F3ng"),
+                        React.createElement(Button, { iconStart: "refresh" }, "Th\u1EED l\u1EA1i")) }))
+                : st === "noaccess" ? React.createElement("div", { className: "hmt-panel", style: { width: 560 } },
+                    React.createElement(StateView, { compact: true, kind: "no-access", title: "Kh\u00F4ng c\u00F3 quy\u1EC1n duy\u1EC7t phi\u1EBFu thu", description: "Tr\u01B0\u1EDFng c\u01A1 s\u1EDF kh\u00F4ng duy\u1EC7t ti\u1EC1n: phi\u1EBFu thu, \u0111\u1EA3o kho\u1EA3n, phi\u1EBFu chi do K\u1EBF to\u00E1n duy\u1EC7t (Admin duy\u1EC7t thay khi c\u1EA7n). B\u1EA1n v\u1EABn xem \u0111\u01B0\u1EE3c phi\u1EBFu thu \u1EDF TC-02.", actions: React.createElement(Button, { variant: "secondary", iconStart: "receipt" }, "M\u1EDF phi\u1EBFu thu PT-CS1-2610-0048") }))
+                    : st === "done" ? React.createElement("div", { className: "hmt-panel", style: { width: 560 } },
+                        React.createElement(Alert, { tone: "success", title: "\u0110\u00E3 duy\u1EC7t PT-CS1-2610-0048" },
+                            "Sinh kho\u1EA3n ti\u1EC1n v\u00E0o KTV-CS1-2610-0219 \u00B7 t\u1EA1o ghi danh GD000129 \u00B7 c\u1EA5p 10 gi\u1EDD. ",
+                            React.createElement("a", { href: "#", className: "hmt-link", onClick: (e) => e.preventDefault() }, "M\u1EDF ghi danh")),
+                        React.createElement("p", { className: "hmt-help" }, "Toast c\u00F3 Ho\u00E0n t\u00E1c trong 8 gi\u00E2y; sau \u0111\u00F3 mu\u1ED1n s\u1EEDa ph\u1EA3i \u0111\u1EA3o kho\u1EA3n (TC-09)."))
+                        : st === "reject" ? React.createElement(ConfirmDialog, { open: true, onClose: () => setSt("late"), onConfirm: () => setSt("late"), tone: "danger", title: "T\u1EEB ch\u1ED1i phi\u1EBFu thu PT-CS1-2610-0048?", description: "Phi\u1EBFu v\u1EC1 Nh\u00E1p; ng\u01B0\u1EDDi l\u1EADp s\u1EEDa r\u1ED3i tr\u00ECnh l\u1EA1i. Kh\u00F4ng sinh kho\u1EA3n ti\u1EC1n v\u00E0o.", confirmLabel: "T\u1EEB ch\u1ED1i", reasonLabel: "L\u00FD do t\u1EEB ch\u1ED1i", reasonOptions: [{ value: "TC01", label: "Thiếu thông tin" }, { value: "TC02", label: "Sai số tiền" }, { value: "TC03", label: "Sai chứng từ" }, { value: "TC04", label: "Không đúng chính sách" }] })
+                            : React.createElement("div", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tc5t", className: "hmt-panel", style: { width: 640, boxShadow: "var(--hmt-shadow-3)", display: "grid", gap: 14, padding: 20 } },
+                                React.createElement("div", null,
+                                    React.createElement("h2", { id: "tc5t", style: { margin: 0, fontSize: 20 } },
+                                        "Duy\u1EC7t phi\u1EBFu thu ",
+                                        d.pt),
+                                    React.createElement("p", { className: "hmt-help", style: { margin: "4px 0 0" } },
+                                        d.hs,
+                                        " \u00B7 \u0111\u01A1n ",
+                                        d.dh,
+                                        " \u00B7 t\u1ED5ng \u0111\u01A1n ",
+                                        d.tot)),
+                                React.createElement("dl", { style: { display: "grid", gridTemplateColumns: "150px 1fr", gap: "6px 12px", margin: 0, padding: 12, background: "var(--hmt-surface-subtle)", borderRadius: 8 } },
+                                    React.createElement("dt", { className: "hmt-help" }, "S\u1ED1 ti\u1EC1n"),
+                                    React.createElement("dd", { style: { margin: 0 } },
+                                        React.createElement("b", { className: "hmt-tabular", style: { fontSize: 18 } }, d.amt)),
+                                    React.createElement("dt", { className: "hmt-help" }, "H\u00ECnh th\u1EE9c"),
+                                    React.createElement("dd", { style: { margin: 0 } }, "Chuy\u1EC3n kho\u1EA3n \u00B7 VCB ****6688 \u00B7 m\u00E3 GD FT26285103917"),
+                                    React.createElement("dt", { className: "hmt-help" }, "Ng\u00E0y nh\u1EADn"),
+                                    React.createElement("dd", { style: { margin: 0 } }, "09/10/2026"),
+                                    React.createElement("dt", { className: "hmt-help" }, "Ch\u1EE9ng t\u1EEB"),
+                                    React.createElement("dd", { style: { margin: 0 } },
+                                        React.createElement("a", { href: "#", className: "hmt-link", onClick: (e) => e.preventDefault() }, "anh-chuyen-khoan.jpg")),
+                                    React.createElement("dt", { className: "hmt-help" }, "C\u1EA5n v\u00E0o d\u00F2ng"),
+                                    React.createElement("dd", { style: { margin: 0 } }, "Tr\u1ED1ng \u00B7 chia theo t\u1EC9 l\u1EC7")),
+                                st === "late" ? React.createElement(Alert, { tone: "warning", title: "\u0110\u00E3 qua 2 bu\u1ED5i k\u1EC3 t\u1EEB ng\u00E0y v\u00E0o l\u1EDBp 05/10/2026" }, "8A1 \u0110\u1EA1i \u00B7 Bu\u1ED5i 2 (05/10) v\u00E0 Bu\u1ED5i 3 (08/10) \u0111\u00E3 di\u1EC5n ra tr\u01B0\u1EDBc khi duy\u1EC7t. Ki\u1EC3m tra \u0111\u00FAng ng\u00E0y nh\u1EADn ti\u1EC1n tr\u01B0\u1EDBc khi duy\u1EC7t (R-TIEN-27).") : null,
+                                st === "admin" ? React.createElement(Alert, { tone: "info", title: "B\u1EA1n \u0111ang duy\u1EC7t thay K\u1EBF to\u00E1n" }, "\u0110\u1EB7ng Qu\u1ED1c Huy (Admin). L\u1ECBch s\u1EED phi\u1EBFu thu ghi \u201CAdmin duy\u1EC7t thay \u00B7 \u0110\u1EB7ng Qu\u1ED1c Huy \u00B7 12/10/2026 09:40\u201D (R-HT-01).") : null,
+                                st === "small" ? React.createElement(Alert, { tone: "info", title: "Ch\u01B0a \u0111\u1EE7 ti\u1EC1n c\u1ECDc t\u1ED1i thi\u1EC3u" }, "Duy\u1EC7t v\u1EABn sinh kho\u1EA3n ti\u1EC1n v\u00E0o; ghi danh ch\u1EC9 t\u1EA1o khi ti\u1EC1n \u0111\u00E3 v\u00E0o \u2265 1.000.000 \u0111.") : null,
+                                React.createElement("section", { "aria-label": "Sau khi duy\u1EC7t" },
+                                    React.createElement("h3", { style: { margin: "0 0 6px", fontSize: 14 } }, "Duy\u1EC7t s\u1EBD"),
+                                    React.createElement("ul", { style: { listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 6 } }, rows.map(([k, v]) => React.createElement("li", { key: k, style: { display: "grid", gridTemplateColumns: "150px 1fr", gap: 12 } },
+                                        React.createElement("span", { className: "hmt-help" },
+                                            React.createElement(Icon, { name: "check" }),
+                                            " ",
+                                            k),
+                                        React.createElement("span", null, v))))),
+                                React.createElement("div", { className: "hmt-demo-row", style: { justifyContent: "flex-end" } },
+                                    React.createElement(Button, { variant: "secondary" }, "\u0110\u00F3ng"),
+                                    React.createElement(Button, { variant: "secondary", onClick: () => setSt("reject") }, "T\u1EEB ch\u1ED1i"),
+                                    React.createElement(Button, { iconStart: "check", onClick: () => setSt("done") }, st === "admin" ? "Duyệt thay" : "Duyệt phiếu thu"))))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

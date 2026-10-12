@@ -1,0 +1,39 @@
+<!-- @dsCard group="Lớp · học sinh · điểm danh" height=340 subtitle="Thẻ lớp: cơ sở, lịch, giáo viên, sĩ số · cả thẻ là một liên kết" -->
+<!doctype html>
+<html data-theme="light"><head><meta charset="utf-8"><title>ClassCard — preview</title><script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script><link rel="stylesheet" href="../../tokens/tokens.runtime.css"><link rel="stylesheet" href="../../components/bundle.css"><script src="../../components/lib/react.production.min.js"></script><script src="../../components/lib/react-dom.production.min.js"></script><script src="../../components/bundle.js"></script></head>
+<body>
+<div id="root" class="hmt-root" data-product="crm"></div>
+<script>
+"use strict";
+const { useState, useEffect, useRef, Fragment } = React;
+const LOGO = '../../assets/hmt-logo-cropped.svg';
+const LOGO_W = '../../assets/hmt-logo-white-cropped.svg';
+function ScreenFrame({ code, name, level, tpl, states, state, onState, zones, onZones, note, children, height, product }) { const { Chip } = HMT; return React.createElement("div", { className: "hmt-demo", style: { gap: 12 } },
+    React.createElement("div", { className: "hmt-screen-bar", style: { borderRadius: 10, border: "1px solid var(--hmt-border)" }, "data-product": "crm" },
+        React.createElement("p", { className: "hmt-demo-label" },
+            React.createElement("b", { style: { color: "var(--hmt-fg)" } }, code),
+            " \u00B7 ",
+            name,
+            " \u00B7 M\u1EE9c ",
+            level,
+            " \u00B7 ",
+            tpl),
+        states ? React.createElement("div", { className: "hmt-demo-row", role: "group", "aria-label": "Tr\u1EA1ng th\u00E1i \u0111\u1EC3 xem" }, states.map(([k, l]) => React.createElement(Chip, { key: k, selected: state === k, onToggle: () => onState(k) }, l))) : null,
+        onZones ? React.createElement("span", { style: { marginLeft: "auto" } },
+            React.createElement(Chip, { selected: zones, onToggle: () => onZones(!zones) }, "Hi\u1EC7n v\u00F9ng c\u1ED1 \u0111\u1ECBnh / thay \u0111\u1ED5i")) : null),
+    note ? React.createElement("p", { className: "hmt-help", style: { margin: 0 } }, note) : null,
+    React.createElement("div", { className: "hmt-screen", "data-zones": zones ? "true" : undefined, "data-product": product, style: { height } }, children)); }
+function ProductSwitch({ value, onChange }) { return React.createElement("div", { style: { maxWidth: 440 }, "data-product": "crm" },
+    React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
+function Demo() {
+    const { ClassCard, Badge, ProgressBar } = HMT;
+    return (React.createElement("div", { className: "hmt-demo", style: { display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))" } },
+        React.createElement(ClassCard, { href: "#", name: "9B1 \u00B7 To\u00E1n n\u00E2ng cao", campus: "CS2", schedule: "T3, T5 \u00B7 18:00\u201319:30", teacher: "C\u00F4 H\u01B0\u01A1ng", enrolled: 14, capacity: 15, status: React.createElement(Badge, { tone: "success" }, "\u0110ang h\u1ECDc") }),
+        React.createElement(ClassCard, { href: "#", name: "7A2 \u00B7 To\u00E1n c\u01A1 b\u1EA3n", campus: "CS1", schedule: "T4, T7 \u00B7 18:00\u201319:30", teacher: "Th\u1EA7y Minh", enrolled: 15, capacity: 15, status: React.createElement(Badge, { tone: "info" }, "H\u00F4m nay") }),
+        React.createElement("div", { "data-product": "lms" },
+            React.createElement(ClassCard, { name: "L\u1EDBp 4C3 \u00B7 To\u00E1n t\u01B0 duy", schedule: "T2, T6 \u00B7 17:30", teacher: "C\u00F4 Lan", footer: React.createElement(ProgressBar, { variant: "lms", label: "Ti\u1EBFn \u0111\u1ED9 kho\u00E1 h\u1ECDc", value: 18, max: 32, valueText: "18/32 bu\u1ED5i" }) }))));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(Demo));
+
+</script>
+</body></html>

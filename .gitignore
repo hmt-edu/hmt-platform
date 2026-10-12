@@ -25,3 +25,6 @@ supabase/.branches/
 # Hệ điều hành, editor
 .DS_Store
 *.log
+
+# Hộp thư đến: file anh Trường đưa vào (không bao giờ commit; dùng xong thì xoá)
+_inbox/

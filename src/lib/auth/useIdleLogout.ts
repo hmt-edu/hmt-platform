@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { IDLE_SETTING_KEY, idleGroup } from './claims';
 import { readIntSetting } from './api';
 import { useAuth } from './authContext';
+import { markSessionEnded } from './sessionEnd';
 
 const LAST_ACTIVITY_KEY = 'hmt:last-activity';
 const ACTIVITY_EVENTS = ['pointerdown', 'keydown', 'scroll', 'touchstart'] as const;
@@ -30,8 +31,11 @@ function writeLastActivity(): void {
  * Lưu lần thao tác cuối ở trình duyệt để tính cả khi đóng tab rồi mở lại.
  */
 export function useIdleLogout(): void {
-  const { supabase, claims, signOut } = useAuth();
+  const { supabase, claims, session, signOut } = useAuth();
   const roles = claims?.roles.join(',') ?? '';
+  // Lần đăng nhập gần nhất cũng là một lần thao tác: không có mốc này thì người vừa đăng nhập lại sau
+  // khi bị tự đăng xuất sẽ bị đăng xuất tiếp vì mốc thao tác cũ.
+  const signedInAt = Date.parse(session?.user.last_sign_in_at ?? '') || null;
 
   useEffect(() => {
     if (!supabase || !roles) return;
@@ -39,12 +43,17 @@ export function useIdleLogout(): void {
     let cancelled = false;
 
     const check = () => {
-      const last = readLastActivity();
+      const stored = readLastActivity();
+      const last =
+        stored !== null && signedInAt !== null
+          ? Math.max(stored, signedInAt)
+          : (stored ?? signedInAt);
       if (
         limitMinutes !== null &&
         last !== null &&
         Date.now() - last > limitMinutes * MS_PER_MINUTE
       ) {
+        markSessionEnded('idle');
         void signOut();
       }
     };
@@ -64,5 +73,5 @@ export function useIdleLogout(): void {
       window.clearInterval(timer);
       ACTIVITY_EVENTS.forEach((e) => window.removeEventListener(e, writeLastActivity));
     };
-  }, [supabase, roles, signOut]);
+  }, [supabase, roles, signedInAt, signOut]);
 }
