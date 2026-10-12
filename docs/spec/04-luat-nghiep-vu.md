@@ -1,6 +1,6 @@
 # Luật nghiệp vụ
 
-Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nhật 10/10/2026), lấy từ các vòng làm việc trên hệ thống Apps Script cũ và các buổi đặc tả hệ thống mới. Đây là nguồn luật cho mọi giai đoạn từ 1 trở đi.
+Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nhật 12/10/2026: thêm các quyết định trong lúc thiết kế giao diện P5, đánh dấu **(12/10)**), lấy từ các vòng làm việc trên hệ thống Apps Script cũ và các buổi đặc tả hệ thống mới. Đây là nguồn luật cho mọi giai đoạn từ 1 trở đi.
 
 **Cách dùng file này**
 - Mỗi luật có mã `R-<NHÓM>-<số>`. Hàm SQL và bài kiểm thử ghi mã luật trong chú thích (ví dụ `-- Luật R-GIO-03`).
@@ -22,6 +22,9 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-CRM-06 | Phiếu kiểm tra bị huỷ thì bắt buộc chọn lý do huỷ (danh mục, nối với giai đoạn con L5C–L5O của cơ hội). | [CHỐT] |
 | R-CRM-07 | Bộ lọc nhanh: nhóm "của tôi" (tôi là sale, tôi là giáo viên chấm) và nhóm thời gian (quá hạn, hôm nay, sắp tới, chưa có lịch). Trong cùng nhóm là HOẶC, khác nhóm là VÀ. | [CHỐT] |
 | R-CRM-08 | Bảng đối chiếu mã giai đoạn cũ → mới khi chuyển dữ liệu: L3H cũ → L3G, L3I cũ → L3H. | [CHỐT] |
+| R-CRM-09 | **(12/10)** Giai đoạn **lead** (C1–C4 và nhóm con) đổi tự do cả hai chiều; mọi lần đổi ghi lịch sử. Riêng nhóm con C4D "Tạo cơ hội thành công" do hệ thống tự gắn khi tạo cơ hội, người dùng không chọn được. Chỉ cơ hội mới chặn lùi (R-CRM-02). | [CHỐT] |
+| R-CRM-10 | **(12/10)** Phiếu kiểm tra đầu vào: hình thức test (danh mục: Offline, Online), cấp độ đề (danh mục: Cơ bản, Nâng cao). Kết quả gồm điểm **0–10** (một chữ số thập phân), nhận xét, trình độ đề xuất S/A/B/C, phân loại đề xuất CB/NC, lớp đề xuất (không bắt buộc), đính kèm đề, bài làm, phiếu đánh giá. Phiếu bị huỷ/từ chối đưa về Nháp được, bắt buộc lý do. | [CHỐT] |
+| R-CRM-11 | **(12/10)** Giáo viên chấm kiểm tra đầu vào trong **cổng giáo viên** (từ giai đoạn 1 có bản tối giản chỉ gồm mục chấm test). Giữ chiến dịch marketing và nhập lead từ file như bản cũ. | [CHỐT] |
 
 ## 2. Bán hàng và tiền
 
@@ -32,7 +35,10 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-TIEN-02 | Đơn hàng, phiếu thu, báo giá, phiếu tái tục, ghi danh **không có nút tạo mới tay**: chỉ sinh ra từ luồng nghiệp vụ (cơ hội → báo giá/đơn; đơn → phiếu thu; phiếu thu duyệt → khoản tiền → ghi danh; quỹ giờ → phiếu tái tục). | [CHỐT] |
 | R-TIEN-03 | Đơn hàng tự khoá khi được duyệt. Khoá không phải là một giai đoạn. Sửa sau khi khoá đi qua nghiệp vụ khác (xếp lớp, chuyển lớp trên ghi danh), không mở khoá đơn. | [CHỐT] |
 | R-TIEN-04 | Một đơn có nhiều phiếu thu (đặt cọc, trả nhiều đợt) mà không cần luồng riêng. | [CHỐT] |
-| R-TIEN-05 | Báo giá có hạn hiệu lực (`quotation_validity_days`, mặc định 14 ngày). | [CHỐT] |
+| R-TIEN-05 | Báo giá có hạn hiệu lực (`quotation_validity_days`, mặc định 14 ngày). **(12/10)** Báo giá hết hạn tạo lại được từ chính nó. | [CHỐT] |
+| R-TIEN-06 | **(12/10)** Đơn hàng, phiếu thu bị từ chối thì **về Nháp**, người lập sửa rồi trình lại; lịch sử giữ lần từ chối và lý do. Trình bị chặn thì báo đúng dòng, đúng ô còn thiếu. | [CHỐT] |
+| R-TIEN-07 | **(12/10)** **Điều khoản thanh toán** (cấu hình có hiệu lực: số đợt, % hoặc số tiền mỗi đợt, số ngày đến hạn) chọn trên đơn để sinh **lịch đóng tiền từng đợt**. Lịch này dùng để theo dõi công nợ, nhắc sắp đến hạn và quá hạn; **không chặn học** (bỏ tham số chặn học khi nợ của bản cũ; học trước khi đóng tiền đi theo R-GD-12). | [CHỐT] |
+| R-TIEN-08 | **(12/10)** Có bản in: báo giá, biên nhận phiếu thu, phiếu chi. | [CHỐT] |
 
 ### 2.2 Giá
 | Mã | Luật | |
@@ -42,6 +48,7 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-TIEN-12 | Không có giá OMO. Lớp OMO nhận cả học sinh online và offline; **hình thức học thuộc về ghi danh**, mỗi em trả giá theo hình thức của mình. Hình thức chọn trên dòng báo giá/đơn, chép sang ghi danh. | [CHỐT] |
 | R-TIEN-13 | Cơ sở dữ liệu tự tính lại giá và thành tiền; không tin con số giao diện gửi lên. | [CHỐT] |
 | R-TIEN-14 | Đơn hàng chụp lại đơn giá, chiết khấu, số giờ tại lúc tạo. Đổi bảng giá sau đó không làm đổi đơn cũ. | [CHỐT] |
+| R-TIEN-15 | **(12/10)** Loại gói (danh mục khoá): `LC` lớp chung, `VIP` VIP 1:1 và 1:2 (chung giá), `VNN` VIP nhóm nhỏ, `KR` kèm riêng, `DV` dịch vụ (tính theo tháng), `TL` tài liệu (tính theo bộ). **Một gói có hai giá** (offline, online); hình thức chọn trên dòng đơn (R-TIEN-12). Gói có thể áp cho một khối hoặc một nhóm khối. `DV`, `TL` không có giá online, không có quỹ giờ, không sinh ghi danh. | [CHỐT] |
 
 ### 2.3 Đóng tiền từng phần, cấp giờ
 | Mã | Luật | |
@@ -52,10 +59,15 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-TIEN-23 | "Cấn vào dòng": phiếu thu có thể chọn một dòng của đơn. Tiền phiếu đó dồn vào dòng được chọn trước, tối đa bằng thành tiền dòng; phần thừa chia tỉ lệ cho các dòng khác. Để trống = chia tỉ lệ. Khoá lựa chọn khi phiếu rời trạng thái nháp. | [CHỐT] |
 | R-TIEN-24 | Giờ tặng chỉ cấp khi đơn đã thu đủ. | [CHỐT] |
 | R-TIEN-25 | Một em học hai lớp và hai anh em cùng một đơn xử lý giống nhau (mỗi dòng một ghi danh). | [CHỐT] |
-| R-TIEN-26 | Đảo một khoản tiền: giữ nguyên khoản gốc, thêm một khoản âm trỏ về khoản gốc. Không sửa, không xoá khoản gốc. Chặn đảo hai lần. Giờ đã cấp được tính lại theo tiền còn lại. | [CHỐT] |
+| R-TIEN-26 | Đảo một khoản tiền: giữ nguyên khoản gốc, thêm một khoản âm trỏ về khoản gốc (**(12/10)** cùng dãy mã `KTV`, ghi "Đảo của …"). Không sửa, không xoá khoản gốc. Chặn đảo hai lần. Giờ đã cấp được tính lại theo tiền còn lại. **(12/10)** Bắt buộc chọn lý do đảo (danh mục). | [CHỐT] |
 | R-TIEN-27 | Phiếu thu duyệt sau ngày vào lớp: giữ nguyên ngày vào lớp, cảnh báo kế toán "đã qua N buổi" (em không bị trừ các buổi đã qua vì không có tên trong danh sách các buổi đó). | [CHỐT] |
 | R-TIEN-28 | **Hoàn phí** (chỉ qua ticket đề nghị đã duyệt, mục 9): tính lại số giờ đã học theo **giá gốc, bỏ chiết khấu lộ trình**; tiền hoàn = tiền đã đóng − giờ đã học × giá gốc − phí xử lý (`refund_processing_fee_percent`, mặc định 10% số tiền còn lại). Giờ tặng không hoàn. Kế toán lập phiếu chi (PC). Ví dụ: mua 48 giờ × 220.000 đ, chiết khấu 10%, đóng 9.504.000 đ, học 20 giờ → còn 9.504.000 − 4.400.000 = 5.104.000 đ → trừ 10% → hoàn 4.593.600 đ. | [CHỐT] |
-| R-TIEN-29 | Chiết khấu theo % hoặc theo giờ tặng; mỗi chính sách có hiệu lực từ/đến, mức tối đa, có cần duyệt không. Nhiều chiết khấu trên một dòng thì **cộng dồn** (5% + 10% = 15%), tổng không quá `discount_total_cap_percent` (mặc định 20%); vượt trần phải quản lý cơ sở duyệt. | [CHỐT] |
+| R-TIEN-29 | Chiết khấu theo % hoặc theo giờ tặng; mỗi chính sách có hiệu lực từ/đến, mức tối đa, có cần duyệt không. Nhiều chiết khấu trên một dòng thì **cộng dồn** (5% + 10% = 15%), tổng không quá `discount_total_cap_percent` (mặc định 20%); vượt trần phải quản lý cơ sở duyệt. **(12/10)** **Giờ tặng tính vào trần**, quy ra % = giờ tặng ÷ giờ mua (ví dụ giảm 15% + tặng 4/48 giờ ≈ 8,3% → tổng 23,3%, vượt trần, cần duyệt). Không có giới hạn chiết khấu riêng theo vai trò. | [CHỐT] |
+| R-TIEN-30 | **(12/10)** **Quà tặng** tài liệu, dịch vụ (dòng `DV`/`TL` giá 0 đ) là chính sách quà tặng riêng, **không tính vào trần** R-TIEN-29; mỗi chính sách quà tặng có hiệu lực, mức tối đa, có cần duyệt không. | [CHỐT] |
+| R-TIEN-31 | **(12/10)** **Hoàn một phần**: tiền hoàn = giờ hoàn × giá sau chiết khấu − phí xử lý (`refund_processing_fee_percent`). **Hoàn toàn bộ** (dừng hẳn) tính theo R-TIEN-28. | [CHỐT] |
+| R-TIEN-32 | **(12/10)** **Chuyển phí**: giá trị chuyển = giờ còn lại × giá sau chiết khấu, **không trừ phí** (tiền vẫn ở HMT). Sang đơn mới thiếu thì đóng thêm; dư thì hoàn (R-TIEN-31) hoặc giữ thành số dư (R-TIEN-33). Giờ tặng còn lại không quy ra tiền. | [CHỐT] |
+| R-TIEN-33 | **(12/10)** **Số dư khách hàng** (của phụ huynh): sinh từ chuyển phí, dừng học; không hết hạn; dùng cho đơn sau bằng thao tác "Dùng số dư" (ghi như một khoản tiền vào của đơn mới). Sổ số dư chỉ thêm dòng, không sửa, không xoá. | [CHỐT] |
+| R-TIEN-34 | **(12/10)** Phiếu chi: Kế toán lập; một Kế toán được vừa lập vừa duyệt (ticket hoàn tiền đã qua quản lý cơ sở và kế toán duyệt); mọi thao tác ghi nhật ký. Phiếu chi ghi theo cơ sở của học sinh, không ghi CS3. | [CHỐT] |
 
 ## 3. Ghi danh, xếp lớp, quỹ giờ
 
@@ -65,7 +77,7 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-GD-02 | Ghi danh có các **dòng xếp lớp** (lớp, ngày vào, ngày rời, tình trạng). Một ghi danh xếp được vào nhiều lớp; buổi Done ở lớp nào cũng trừ cùng một quỹ. Sĩ số, danh sách lớp, điểm danh đọc từ dòng xếp lớp. Chi tiết Đại/Hình: spec 02 mục "Luật ghi danh và xếp lớp". | [CHỐT] |
 | R-GD-03 | **Khác bản cũ:** quỹ giờ gắn với ghi danh. Bản cũ gom quỹ theo "học sinh + môn + loại quỹ", gây lỗi kết thúc ghi danh này thu hồi giờ của ghi danh khác. | [CHỐT] |
 | R-GD-04 | Số dư quỹ giờ luôn tính từ sổ giờ. Sổ giờ chỉ thêm dòng, không sửa, không xoá; điều chỉnh bằng dòng ngược dấu kèm lý do. | [CHỐT] |
-| R-GD-05 | Tình trạng ghi danh: Chờ xếp lớp, Đang học, Bảo lưu, Hoàn thành, Chuyển lớp, Dừng, Hoàn phí (spec 02). Ghi danh chuyển sang Đang học khi có buổi Done đầu tiên. | [CHỐT] |
+| R-GD-05 | Tình trạng ghi danh: Chờ xếp lớp, **Đã xếp lớp (12/10)**, Đang học, Bảo lưu, Hoàn thành, Chuyển lớp, Dừng, Hoàn phí (spec 02). Chờ xếp lớp = chưa có dòng xếp lớp đang mở; Đã xếp lớp = có lớp nhưng chưa có buổi Done; chuyển sang Đang học khi có buổi Done đầu tiên. Hàng chờ xếp lớp chỉ gồm ghi danh Chờ xếp lớp. | [CHỐT] |
 | R-GD-06 | Ngày vào lớp: không bao giờ mặc định theo ngày duyệt phiếu thu. Chọn trên dòng đơn khi đã chọn lớp (bắt buộc có ngày nếu có lớp, chặn khi trình duyệt đơn); lớp đã có buổi thì chọn từ danh sách buổi sắp tới, chưa có buổi thì chọn ngày, kiểm ngày đúng thứ có lịch và không trước ngày khai giảng. Không chọn lớp thì ghi danh ở Chờ xếp lớp, vận hành xếp sau. | [CHỐT] |
 | R-GD-07 | Thời hạn gói (`package_default_validity_months`, mặc định 6 tháng, tính từ ngày vào lớp) **chỉ để dự báo và báo cáo, không chặn gì**: quá hạn mà còn giờ thì em vẫn học tiếp bình thường, không mất giờ, không cần gia hạn. | [CHỐT] |
 | R-GD-08 | Đơn chỉ chọn được lớp đã duyệt (Approved), còn chỗ (sĩ số tối đa; 0 = không giới hạn), đúng môn, khối, cơ sở. | [CHỐT] |
@@ -73,7 +85,11 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-GD-10 | Chuyển lớp, chuyển cơ sở (chỉ qua ticket đề nghị đã duyệt): đóng dòng xếp lớp cũ, mở dòng mới; giờ còn lại đi theo ghi danh. Giá các cơ sở như nhau nên chuyển cơ sở giữ nguyên số giờ. Doanh thu ghi cho cơ sở nơi buổi học Done. Chuyển lớp khác môn là chuyển phí (mục 9). | [CHỐT] |
 | R-GD-11 | Học thử: miễn phí, không trừ giờ. Học thử là tư cách của học sinh trong một buổi, không phải loại buổi. | [CHỐT] |
 | R-GD-12 | **Cho học trước, đóng tiền sau:** quản lý cơ sở bật trên đơn đã duyệt chưa thu tiền → ghi danh tạo sớm, quỹ được phép âm, tối đa `max_sessions_ahead` buổi chưa đóng tiền (mặc định 2). Vượt hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale. Khi thu tiền: các buổi đã học vẫn tính là đã học và trừ vào giờ được cấp. | [CHỐT] |
-| R-GD-13 | Phiếu tái tục sinh tự động khi chạm một trong hai ngưỡng, ngưỡng nào trước tính ngưỡng đó: giờ còn ≤ `upsale_hours_left_threshold` (10 giờ), hoặc ngày hết giờ dự kiến còn ≤ `upsale_days_left_threshold` (30 ngày). Ngày hết giờ dự kiến tính từ lịch các buổi đã xếp của mọi lớp đang xếp (đã trừ nghỉ lễ, dời buổi). Vắng ≥ `absence_risk_sessions` (3) buổi thì gắn cờ rủi ro trên phiếu tái tục. Phiếu tái tục có vòng đời L1 (Chờ tái tục) … L8. | [CHỐT] |
+| R-GD-13 | Phiếu tái tục sinh tự động khi chạm một trong hai ngưỡng, ngưỡng nào trước tính ngưỡng đó: giờ còn ≤ `upsale_hours_left_threshold` (10 giờ), hoặc ngày hết giờ dự kiến còn ≤ `upsale_days_left_threshold` (30 ngày). Ngày hết giờ dự kiến tính từ lịch các buổi đã xếp của mọi lớp đang xếp (đã trừ nghỉ lễ, dời buổi). Vắng ≥ `absence_risk_sessions` (3) buổi **trong `absence_risk_window_days` (30) ngày gần nhất (12/10)** thì gắn cờ rủi ro trên phiếu tái tục. **(12/10)** Vòng đời phiếu tái tục: L1 Chờ tái tục (L1A hệ thống sinh, L1B tạo tay) · L2 Đã liên hệ · L3 Đang tư vấn · L4 Đang cân nhắc · **L5 Không tái tục** (kết thúc, bắt buộc lý do từ danh mục) · L6 Đồng ý tái tục · L7 Dự thu (L7A đã gửi báo giá, L7B đã có đơn chờ đóng tiền) · L8 Hoàn thành tái tục. | [CHỐT] |
+| R-GD-14 | **(12/10)** Toán Đại + Hình là **một dòng đơn** gói TOAN: trên dòng chọn tối đa hai lớp (một DAI, một HINH), mỗi lớp một ngày vào; thành hai dòng xếp lớp của cùng một ghi danh, chung một quỹ giờ. | [CHỐT] |
+| R-GD-15 | **(12/10)** Xếp lớp **chặn** nếu trùng giờ với bất kỳ lớp nào em đang học (kể cả lớp của ghi danh khác); lớp trùng vẫn hiện nhưng không chọn được, kèm lý do. | [CHỐT] |
+| R-GD-16 | **(12/10)** **Dừng học** chỉ qua ticket đề nghị nhóm "Dừng học" đã duyệt. Giờ còn lại chọn một trong hai: hoàn tiền (R-TIEN-28) hoặc giữ thành số dư khách hàng (giờ còn lại × giá sau chiết khấu, không trừ phí, R-TIEN-33). Giờ tặng còn lại bị huỷ. Không có lựa chọn "giữ nguyên giờ": nghỉ tạm thì dùng Bảo lưu. | [CHỐT] |
+| R-GD-17 | **(12/10)** Học thử: tối đa `trial_sessions_max_per_opportunity` (2) buổi cho mỗi cơ hội, vượt thì chặn. Không tính vào sĩ số lớp, không tính vào chỗ còn trống khi bán; có tính vào số em của buổi (hiện "Sĩ số 12/15 · học thử 1"), vượt sĩ số tối đa chỉ cảnh báo. Cơ hội khác khối với lớp chỉ cảnh báo, không chặn. | [CHỐT] |
 
 ## 4. Lớp học
 
@@ -89,6 +105,8 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-LOP-08 | Thời khoá biểu: mỗi thứ có thể nhiều khung giờ; mỗi khung có giờ, giáo viên, trợ giảng, phòng riêng. Trùng phòng thì cảnh báo, không chặn. | [CHỐT] |
 | R-LOP-09 | Ngày kết thúc dự kiến: chạy lịch từ ngày bắt đầu, lấy các thứ trong thời khoá biểu, bỏ ngày nghỉ lễ (bảng ngày nghỉ), đếm đủ số buổi. | [CHỐT] |
 | R-LOP-10 | Bình thường một lớp một giáo viên; đổi giáo viên = sửa lớp và sinh lại các buổi chưa diễn ra. Giáo viên ghi theo từng khung giờ, từng buổi. | [CHỐT] |
+| R-LOP-11 | **(12/10)** Đổi lịch cố định của lớp đã duyệt (ca, phòng, thứ): xem trước các buổi chưa diễn ra bị đổi, rồi sinh lại. Đổi giáo viên **một buổi** (dạy thay) sửa trên buổi đó; giờ dạy tính cho người dạy thật. | [CHỐT] |
+| R-LOP-12 | **(12/10)** Ngày nghỉ lễ áp dụng cho mọi cơ sở hoặc từng cơ sở (mặc định mọi cơ sở). Thêm ngày nghỉ sau khi đã sinh buổi thì xem trước các buổi bị ảnh hưởng rồi dời. | [CHỐT] |
 
 ## 5. Buổi học, danh sách, trừ giờ
 
@@ -103,6 +121,8 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-BUOI-06 | Trung tâm huỷ buổi (cả lớp nghỉ, ký hiệu N cũ) → Huỷ không tính phí, tự thêm một buổi vào cuối lịch và dời bài theo. | [CHỐT] |
 | R-BUOI-07 | Học sinh huỷ buổi lớp riêng: **người huỷ tự chọn** "Huỷ có tính phí" (không bù) hoặc "Huỷ không tính phí" (xếp buổi bù), bắt buộc ghi lý do. Không áp mốc giờ cố định. | [CHỐT] |
 | R-BUOI-08 | Buổi học không có mã cho người đọc; hiển thị "tên lớp · Buổi N · ngày". | [CHỐT] |
+| R-BUOI-09 | **(12/10)** Huỷ buổi được tới khi buổi Done, kể cả sau khi đã chốt danh sách. Người huỷ: CSKH, quản lý cơ sở; giáo viên không được huỷ. Huỷ thì các dòng điểm danh đã sinh bị vô hiệu. Buổi Done không huỷ được; sai thì sửa theo R-GIO-07. | [CHỐT] |
+| R-BUOI-10 | **(12/10)** Yêu cầu củng cố (trừ giờ) phải ghi nhận **phụ huynh đã đồng ý**: kênh xác nhận, ngày, người xác nhận; chưa có thì không gửi duyệt được. Sau đó quản lý cơ sở duyệt như R-BUOI-04. | [CHỐT] |
 
 ### 5.2 Danh sách buổi và trừ giờ
 | Mã | Luật | |
@@ -113,6 +133,7 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-GIO-04 | Một em một dòng điểm danh mỗi buổi, kể cả khi có hai ghi danh cùng xếp vào lớp đó; trừ giờ đúng một lần, vào ghi danh có **hạn sử dụng sớm nhất** (hết giờ thì sang ghi danh kế tiếp). | [CHỐT] |
 | R-GIO-05 | Tự chốt buổi: định kỳ mỗi `session_autoclose_before_minutes` (30 phút), chốt các buổi bắt đầu trong `session_autoclose_scan_hours` (2 giờ) tới. | [CHỐT] |
 | R-GIO-06 | Tự Done: buổi đã kết thúc và giáo viên đã hoàn tất điểm danh + nhận xét + **trạng thái BTVN** của mọi em có mặt (R-GV-11; buổi trước không giao BTVN thì bỏ qua phần này) → Done. Chưa đủ thì giữ Đã chốt và ghi lý do chưa Done. | [CHỐT] |
+| R-GIO-07 | **(12/10)** Sửa điểm danh sau khi buổi Done: chỉ quản lý cơ sở (hoặc Admin), bắt buộc lý do. Đổi giữa các trạng thái đi học không đổi giờ (vẫn trừ theo R-GIO-01). Thêm hoặc bớt em khỏi danh sách thì thêm dòng điều chỉnh sổ giờ (R-GD-04). | [CHỐT] |
 
 ## 6. Điểm danh
 
@@ -136,10 +157,14 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-GV-08 | Giáo viên KHÔNG được: tạo dòng điểm danh, đổi tình trạng buổi, ghi sổ giờ. Chỉ ghi điểm danh, điểm, nhận xét, nội dung buổi, BTVN giao mới. Chỉ thấy buổi của mình. | [CHỐT] |
 | R-GV-09 | Trợ giảng có quyền như giáo viên trong các lớp được phân công. | [CHỐT] |
 | R-GV-10 | Hạn chấm BTVN: BTVN giao ở buổi N được chấm ở buổi N+1, trong hạn hoàn tất của buổi N+1 (`teacher_session_complete_hours`). Khi có LMS (giai đoạn 4) học sinh nộp trên app thì xét lại hạn riêng. | [CHỐT] |
-| R-GV-11 | Mỗi em mỗi bài BTVN có đúng một trạng thái: **Đã chấm** (điểm 1–5) · **Làm chưa xong** (vẫn có điểm) · **Không làm** · **Nộp sau** (chờ cập nhật ở buổi sau, sửa được điểm mà không mở lại buổi cũ) · **Không áp dụng** (vắng buổi giao bài, hoặc giáo viên miễn). Danh sách trạng thái là danh mục hệ thống (đổi tên được, không thêm bớt). | [CHỐT] |
+| R-GV-11 | Mỗi em mỗi bài BTVN có đúng một trạng thái: **Đã chấm** (điểm 1–5) · **Làm chưa xong** (vẫn có điểm) · **Không làm** · **Nộp sau** (chờ cập nhật ở buổi sau, sửa được điểm mà không mở lại buổi cũ) · **Không áp dụng** (vắng buổi giao bài, hoặc giáo viên miễn). Danh sách trạng thái là danh mục hệ thống (đổi tên được, không thêm bớt). Điểm BTVN theo **thang 1–5** (12/10: nhắc lại vì bản vẽ từng dùng thang 10). | [CHỐT] |
 | R-GV-12 | Báo cáo BTVN tách **hai chỉ số**, không gộp "không làm" thành điểm 0: **Tỉ lệ làm bài** = (Đã chấm + Làm chưa xong) ÷ số bài phải làm (không tính Không áp dụng; Nộp sau chưa tính tới khi cập nhật). **Điểm BTVN trung bình** = trung bình điểm các bài Đã chấm và Làm chưa xong. | [CHỐT] |
+| R-GV-13 | **(12/10)** Giáo viên, trợ giảng chỉ dùng **cổng Giáo viên** (không vào CRM), chỉ thấy lớp, buổi, học sinh được phân công. Cổng có hai bố cục: điện thoại (từng bước, từng em) và laptop (bảng chấm nhanh cả lớp). | [CHỐT] |
+| R-GV-14 | **(12/10)** **Giờ dạy tính lương**: buổi Done, mọi loại buổi thực dạy (Chính, Củng cố, Học bù, Học bổ trợ), theo thời lượng buổi, tính cho người dạy thật, cả giáo viên và trợ giảng. Buổi huỷ (kể cả huỷ có tính phí) không tính. Kế toán hoặc Admin **chốt tháng**; tháng đã chốt giữ nguyên, sửa buổi sau đó thì chênh lệch đưa vào tháng sau. | [CHỐT] |
 
 ## 8. Tham số Cài đặt dùng trong file này
+
+Tên tham số là tên đã đặt trong repo (GĐ0 bước 2, bước 3). Tham số đánh dấu **(12/10)** là mới, chưa khai báo trong cơ sở dữ liệu. Khoảng cho phép và cột "ghi đè theo cơ sở": xem `docs/spec/06-danh-muc-va-tham-so.md` mục 2. Nguyên tắc **(12/10)**: tham số về tiền, giá, chiết khấu, đăng nhập dùng một giá trị chung; chỉ một số tham số vận hành được ghi đè theo cơ sở.
 
 | Tham số | Mặc định | Luật |
 |---|---|---|
@@ -152,18 +177,52 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | `upsale_hours_left_threshold` | 10 giờ | R-GD-13 |
 | `upsale_days_left_threshold` | 30 ngày | R-GD-13 |
 | `absence_risk_sessions` | 3 buổi | R-GD-13 |
+| `absence_risk_window_days` **(12/10)** | 30 ngày | R-GD-13 |
+| `trial_sessions_max_per_opportunity` **(12/10)** | 2 buổi mỗi cơ hội | R-GD-17 |
 | `quotation_validity_days` | 14 ngày | R-TIEN-05 |
 | `deposit_min_amount` | 1.000.000 đ | R-TIEN-20 |
 | `reservation_max_months` | 6 tháng | R-GD-09 |
-| `refund_processing_fee_percent` | 10% | R-TIEN-28 |
+| `refund_processing_fee_percent` | 10% | R-TIEN-28, R-TIEN-31 |
 | `discount_total_cap_percent` | 20% | R-TIEN-29 |
 | `sla_complaint_response_hours` / `sla_complaint_resolve_days` | 24 giờ / 3 ngày | R-CS-08 |
 | `sla_complaint_critical_response_hours` / `sla_complaint_critical_resolve_days` | 2 giờ / 1 ngày | R-CS-08 |
 | `sla_request_response_hours` / `sla_request_resolve_days` | 24 giờ / 2 ngày | R-CS-08 |
 | `sla_refund_resolve_days` | 7 ngày | R-CS-08 |
 | `complaint_reopen_max_days` | 7 ngày | R-CS-06 |
+| `complaint_parent_confirm_days` **(12/10)** | 3 ngày | R-CS-14 |
+| `login_lock_after_failures`, `login_lock_minutes` | 10 lần, 15 phút | R-HT-03 |
+| `staff_idle_logout_minutes`, `teacher_idle_logout_minutes`, `student_idle_logout_minutes` | 60 phút, 7 ngày, 7 ngày (lưu bằng phút: 10.080) | R-HT-03 |
 
-Tên tham số đã khớp với tên đặt ở GĐ0 bước 2 (xem `docs/nghiep-vu/nen-du-lieu.md`, sửa 10/10/2026).
+### Đối chiếu tên tham số: tài liệu gốc → repo
+
+Tài liệu gốc của anh Trường (bản 12/10) dùng tên tiếng Việt; repo giữ tên đã đặt từ bước 2, bước 3. Khi chép luật mới từ tài liệu gốc thì đổi tên theo bảng này.
+
+| Tên trong tài liệu gốc | Tên trong repo | Ghi chú |
+|---|---|---|
+| `cho_hoc_truoc_toi_da` | `max_sessions_ahead` | |
+| `tu_chot_truoc_phut` | `session_autoclose_before_minutes` | Nghĩa đúng là **chu kỳ quét** (R-GIO-05); tên và mô tả trong repo đang ghi "trước giờ học", xem mục Mâu thuẫn của PR 12/10 |
+| `tu_chot_quet_gio` | `session_autoclose_scan_hours` | |
+| `han_gv_hoan_tat_gio` | `teacher_session_complete_hours` | |
+| `khoi_tach_dai_hinh` | `algebra_geometry_split_grade` | |
+| `thoi_han_goi_mac_dinh` | `package_default_validity_months` | |
+| `nguong_tai_tuc_gio` | `upsale_hours_left_threshold` | |
+| `nguong_tai_tuc_ngay` | `upsale_days_left_threshold` | |
+| `so_buoi_vang_rui_ro` | `absence_risk_sessions` | |
+| `so_ngay_dem_vang` | `absence_risk_window_days` | Mới (12/10), chưa có trong cơ sở dữ liệu |
+| `hoc_thu_toi_da` | `trial_sessions_max_per_opportunity` | Mới (12/10), chưa có trong cơ sở dữ liệu |
+| `han_hieu_luc_bao_gia` | `quotation_validity_days` | |
+| `tien_coc_toi_thieu` | `deposit_min_amount` | |
+| `bao_luu_toi_da` | `reservation_max_months` | |
+| `phi_xu_ly_hoan_phi` | `refund_processing_fee_percent` | |
+| `tran_chiet_khau_tong` | `discount_total_cap_percent` | |
+| `sla_*` | `sla_complaint_response_hours`, `sla_complaint_resolve_days`, `sla_complaint_critical_response_hours`, `sla_complaint_critical_resolve_days`, `sla_request_response_hours`, `sla_request_resolve_days`, `sla_refund_resolve_days` | |
+| `cs_mo_lai_toi_da_ngay` | `complaint_reopen_max_days` | |
+| `cs_han_ph_xac_nhan_ngay` | `complaint_parent_confirm_days` | Mới (12/10), chưa có trong cơ sở dữ liệu |
+| `so_lan_sai_tam_khoa` | `login_lock_after_failures` | Đã có từ bước 3 |
+| `thoi_gian_tam_khoa_phut` | `login_lock_minutes` | Đã có từ bước 3 |
+| `tu_dang_xuat_nhan_vien_phut` | `staff_idle_logout_minutes` | Đã có từ bước 3 |
+| `tu_dang_xuat_gv_ngay` | `teacher_idle_logout_minutes` | Đã có từ bước 3; repo lưu bằng **phút** (7 ngày = 10.080) |
+| `tu_dang_xuat_hs_ngay` | `student_idle_logout_minutes` | Đã có từ bước 3; repo lưu bằng **phút** |
 
 ## 9. Chăm sóc khách hàng (ticket đề nghị, khiếu nại)
 
@@ -172,18 +231,50 @@ Lộ trình: ticket **đề nghị** làm ở giai đoạn 2 (cùng chuyển l�
 | Mã | Luật | |
 |---|---|---|
 | R-CS-01 | Hai loại ticket: **Đề nghị** và **Khiếu nại** (không có loại góp ý/khen ngợi). Mã: `DN-<CS>-<YYMM>-<STT>`, `KN-<CS>-<YYMM>-<STT>`, cấp như chứng từ (liên tục theo cơ sở, theo tháng). | [CHỐT] |
-| R-CS-02 | **Bắt buộc qua ticket đề nghị đã duyệt** mới được: chuyển lớp, chuyển cơ sở, bảo lưu, chuyển phí, hoàn tiền. Thao tác thật chạy bằng hàm nghiệp vụ và gắn ngược mã ticket; cơ sở dữ liệu chặn nếu không có ticket hợp lệ. | [CHỐT] |
-| R-CS-03 | Nhóm và nhóm con đề nghị (dữ liệu nạp sẵn): **Chuyển lớp** (cùng môn: đổi giờ học · đổi trình độ · đổi giáo viên; khác môn) · **Chuyển cơ sở** · **Bảo lưu** (bảo lưu mới · gia hạn bảo lưu · quay lại học sớm) · **Chuyển phí** (sang môn khác · sang anh/chị/em · sang gói khác) · **Hoàn tiền** (toàn bộ · một phần) · **Đổi lịch học** (dời một buổi · đổi ca cố định · xin học bù). Chuyển lớp khác môn xử lý như chuyển phí: dừng ghi danh môn cũ, quy tiền còn lại sang đơn môn mới (thiếu đóng thêm, dư hoàn hoặc giữ). | [CHỐT] |
+| R-CS-02 | **Bắt buộc qua ticket đề nghị đã duyệt** mới được: chuyển lớp, chuyển cơ sở, bảo lưu, chuyển phí, hoàn tiền, dừng học (12/10). Thao tác thật chạy bằng hàm nghiệp vụ và gắn ngược mã ticket; cơ sở dữ liệu chặn nếu không có ticket hợp lệ. | [CHỐT] |
+| R-CS-03 | Nhóm và nhóm con đề nghị (dữ liệu nạp sẵn): **Chuyển lớp** (cùng môn: đổi giờ học · đổi trình độ · đổi giáo viên; khác môn) · **Chuyển cơ sở** · **Bảo lưu** (bảo lưu mới · gia hạn bảo lưu · quay lại học sớm) · **Chuyển phí** (sang môn khác · sang anh/chị/em · sang gói khác) · **Hoàn tiền** (toàn bộ · một phần) · **Đổi lịch học** (dời một buổi · đổi ca cố định · xin học bù) · **Dừng học (12/10)**. Chuyển lớp khác môn xử lý như chuyển phí: dừng ghi danh môn cũ, quy tiền còn lại sang đơn môn mới (thiếu đóng thêm, dư hoàn hoặc giữ). | [CHỐT] |
 | R-CS-04 | Nhóm và nhóm con khiếu nại (dữ liệu nạp sẵn): **Chương trình học** (nội dung khó/dễ · tiến độ · không bám chương trình trên trường · tài liệu) · **Giáo viên** (thái độ · chuyên môn · đi muộn, nghỉ dạy · thay giáo viên nhiều · nhận xét, chấm bài) · **Phương pháp giảng dạy** (cách giảng khó hiểu · BTVN nhiều/ít · kiểm tra đánh giá · quản lý lớp) · **Tư vấn tuyển sinh** (không đúng cam kết · thái độ · chậm phản hồi · xếp lớp sai trình độ) · **Vận hành** (đổi lịch đột xuất · phòng học, cơ sở vật chất · sĩ số · đưa đón, an toàn · thông báo chậm) · **Chăm sóc** (không phản hồi · thái độ · không gửi nhận xét, báo cáo) · **Khác**. Khiếu nại có mức độ: Thấp, Trung bình, Cao, Nghiêm trọng; Nghiêm trọng báo Ban giám đốc ngay. | [CHỐT] |
 | R-CS-05 | Các bước **đề nghị**: Mới → Đang xử lý → Chờ duyệt → Đã duyệt → Đang thực hiện → Hoàn thành; nhánh Từ chối (bắt buộc lý do), Khách huỷ. | [CHỐT] |
 | R-CS-06 | Các bước **khiếu nại**: Mới → Đã tiếp nhận → Đang xác minh → Có phương án → Chờ phụ huynh xác nhận → Đóng – hài lòng / Đóng – không hài lòng; nhánh Mở lại (trong `complaint_reopen_max_days` ngày sau khi đóng), Nâng cấp (quá hạn hoặc nghiêm trọng: lên quản lý cơ sở, rồi Ban giám đốc). | [CHỐT] |
-| R-CS-07 | Ai duyệt theo nhóm con (mặc định, sửa được trong cấu hình): chuyển lớp cùng môn, bảo lưu, đổi lịch → quản lý cơ sở; chuyển lớp khác môn, chuyển phí, hoàn tiền → quản lý cơ sở rồi kế toán; chuyển cơ sở → quản lý **cả hai** cơ sở. | [CHỐT] |
+| R-CS-07 | Ai duyệt theo nhóm con (mặc định, sửa được trong cấu hình): chuyển lớp cùng môn, bảo lưu, đổi lịch → quản lý cơ sở; chuyển lớp khác môn, chuyển phí, hoàn tiền, dừng học (12/10) → quản lý cơ sở rồi kế toán; chuyển cơ sở → quản lý **cả hai** cơ sở. | [CHỐT] |
 | R-CS-08 | Hạn xử lý (SLA) mặc định: khiếu nại thường phản hồi 24 giờ, xử lý xong 3 ngày; khiếu nại nghiêm trọng phản hồi 2 giờ, xong 1 ngày; đề nghị phản hồi 24 giờ, xong 2 ngày (hoàn tiền 7 ngày). Quá hạn thì cảnh báo người phụ trách, rồi tự nâng cấp lên quản lý cơ sở. | [CHỐT] |
 | R-CS-09 | Ticket gắn: học sinh, phụ huynh, ghi danh, lớp; khiếu nại gắn thêm người bị khiếu nại (giáo viên, sale, CSKH) để vào báo cáo của người đó. Thông tin: kênh tiếp nhận, mức độ, người phụ trách, hạn phản hồi, hạn xử lý, mô tả, đính kèm, phương án, kết quả, mức hài lòng của phụ huynh; ghi chú trao đổi và lịch sử như mọi bản ghi. | [CHỐT] |
 | R-CS-10 | Ai tạo ticket: CSKH, sale, quản lý cơ sở, **giáo viên** (từ cổng giáo viên; chỉ tạo, không duyệt, không xem ticket của người khác ngoài lớp mình). | [CHỐT] |
 | R-CS-11 | **Cấu hình, không viết cứng:** nhóm, nhóm con, mức độ, kênh tiếp nhận là danh mục (nhóm con kéo theo nghiệp vụ của R-CS-02 là danh mục khoá: đổi tên được, không ngừng được); SLA từng loại và mức độ, số ngày được mở lại là tham số Cài đặt; ai duyệt từng nhóm con là cấu hình có hiệu lực (như ma trận quyền). Các bước xử lý (R-CS-05, R-CS-06) là luật lõi trong code, tên hiển thị đổi được. | [CHỐT] |
 | R-CS-12 | Báo cáo: số ticket theo loại, nhóm, cơ sở; tỉ lệ đúng hạn; thời gian xử lý trung bình; khiếu nại theo từng giáo viên, sale, CSKH; lý do chuyển lớp, bảo lưu, chuyển phí, hoàn tiền. | [CHỐT] |
+| R-CS-13 | **(12/10)** Khi phụ huynh chưa có tài khoản: màn "Nhận xét chờ gửi phụ huynh" cho CSKH lấy lời nhắn sau buổi đã chấm xong (sao chép hoặc xuất ảnh để gửi Zalo tay) và đánh dấu đã gửi. | [CHỐT] |
+| R-CS-14 | **(12/10)** Phụ huynh chấm hài lòng 5 mức: 4–5 đóng "hài lòng", 1–3 đóng "không hài lòng". "Chưa đồng ý phương án" đưa ticket về Đang xác minh. Hạn phụ huynh xác nhận `complaint_parent_confirm_days` (3 ngày); quá hạn thì nhắc CSKH gọi xác nhận, **không tự đóng**. | [CHỐT] |
 
-## 10. Còn mở
+## 10. Báo cáo (12/10)
+
+| Mã | Luật | |
+|---|---|---|
+| R-BC-01 | Báo cáo tổng hợp làm trên **Looker Studio** (nối view chỉ đọc). Trong app chỉ có: tổng quan Ban giám đốc, báo cáo giáo viên trễ hạn (R-GV-06), giờ dạy giáo viên (R-GV-14), và các danh sách theo dõi vận hành. | [CHỐT] |
+| R-BC-02 | **Học sinh đang học** = số em có ít nhất một ghi danh Đang học tại ngày cuối của khoảng đang xem. Em đang bảo lưu hiện thành con số riêng, không cộng vào. | [CHỐT] |
+| R-BC-03 | **Tỉ lệ tái tục** = số phiếu L8 ÷ (L8 + L5), chỉ tính phiếu kết thúc trong khoảng đang xem. | [CHỐT] |
+| R-BC-04 | **Doanh thu ghi nhận** của một buổi Done = giờ trừ × đơn giá ghi nhận; đơn giá ghi nhận = tiền dòng đơn ÷ (giờ mua + giờ tặng), chia đều mọi giờ. Buổi huỷ có tính phí vẫn ghi nhận. Học bù, học bổ trợ ghi nhận 0 đ. Doanh thu tính cho cơ sở nơi buổi Done (R-GD-10). | [CHỐT] |
+| R-BC-05 | **Quỹ giờ còn quy ra tiền** = tổng (giờ còn của từng ghi danh × đơn giá ghi nhận của ghi danh đó, R-BC-04). Giờ đã dạy cộng giờ còn phải dạy, quy ra tiền, bằng đúng tiền đã thu. | [CHỐT] |
+
+## 11. Học tập (LMS) (12/10)
+
+| Mã | Luật | |
+|---|---|---|
+| R-LMS-01 | Giáo viên giao bài cho cả lớp hoặc từng em; hạn mặc định là giờ vào buổi sau; có công tắc "Cho nộp lại" và "Nhận bài muộn". Giai đoạn 4 bản đầu soạn đề mỗi lần, chưa có kho đề. | [CHỐT] |
+| R-LMS-02 | Nộp sau hạn nhưng trước khi giáo viên chấm: chấm bình thường, kèm **nhãn** "Nộp muộn" (không phải trạng thái). Tới lúc chấm chưa nộp: giáo viên chọn "Nộp sau" hoặc "Không làm" (R-GV-11). Tắt "Nhận bài muộn" thì quá hạn không nộp được. | [CHỐT] |
+| R-LMS-03 | Nộp lại không giới hạn số lần trước khi chấm; chấm rồi thì khoá, trừ khi giáo viên mở lại. | [CHỐT] |
+| R-LMS-04 | Tệp nộp tối đa 10 MB mỗi tệp, 20 trang mỗi bài. Ảnh tự nén trên máy trước khi tải (cạnh dài khoảng 2.000px). | [CHỐT] |
+| R-LMS-05 | Phần thưởng: sao và chuỗi bài nộp đúng hạn; không điểm thưởng, không xếp hạng; bật tắt theo cơ sở bằng công tắc tính năng. | [CHỐT] |
+
+## 12. Quyền và hệ thống (12/10)
+
+| Mã | Luật | |
+|---|---|---|
+| R-HT-01 | Admin làm được mọi màn, mọi việc **không dính tiền** ở mọi cơ sở, kể cả làm thay khi người phụ trách vắng: duyệt yêu cầu buổi, đơn hàng, lớp, ticket; lịch sử ghi "Admin duyệt thay". **Việc tiền** (duyệt phiếu thu, đảo khoản, phiếu chi) Admin **không duyệt trực tiếp** (giữ chốt 10/10): kế toán vắng thì Admin gán tạm vai trò Kế toán cho người làm thay, có nhật ký, **có thời hạn**. (Chốt lại chiều 12/10; bản 12/10 đầu ghi Admin duyệt cả phiếu thu, đảo khoản.) | [CHỐT] |
+| R-HT-02 | Ô chọn cơ sở khi xem dữ liệu nghiệp vụ không có CS3 Hội sở; riêng màn người dùng có CS3 (nhân viên Hội sở thuộc CS3). Công tắc tính năng không có cột CS3. | [CHỐT] |
+| R-HT-03 | Đăng nhập sai `login_lock_after_failures` (10) lần thì tạm khoá `login_lock_minutes` (15) phút; đăng nhập học sinh cũng dùng Turnstile. Thời gian tự đăng xuất là tham số theo nhóm người dùng. | [CHỐT] |
+| R-HT-04 | Danh mục lý do luôn có "Khác"; chọn "Khác" thì bắt buộc ghi chú. Danh mục "Lý do từ chối" có trường "Áp dụng cho" (báo giá, đơn, phiếu thu, lớp, ticket, yêu cầu buổi). Có danh mục riêng "Lý do đảo khoản", "Lý do khoá tài khoản", "Lý do không tái tục", "Lý do điều chỉnh giờ". Danh sách đầy đủ: `docs/spec/06-danh-muc-va-tham-so.md` mục 1. | [CHỐT] |
+| R-HT-05 | CRM ưu tiên máy tính; các màn duyệt (hàng chờ duyệt, duyệt đơn, duyệt yêu cầu buổi, duyệt ticket) và điểm danh vận hành có bố cục điện thoại. | [CHỐT] |
+
+## 13. Còn mở
 
 Hiện không còn luật [CẦN CHỐT]. Luật mới phát sinh thì thêm vào đúng mục, đánh dấu [CẦN CHỐT] cho tới khi anh Trường quyết.

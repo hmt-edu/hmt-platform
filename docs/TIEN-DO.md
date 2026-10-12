@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 12/10/2026. Người làm tiếp đọc file này trước, rồi CLAUDE.md, `docs/spec/`, `docs/nghiep-vu/`.
+Cập nhật: 12/10/2026 (sau PR #14). Người làm tiếp đọc file này trước, rồi CLAUDE.md, `docs/spec/` (01, 02, 03, 04, 06), `docs/design/ban-do-man-hinh.md`, `docs/nghiep-vu/`.
 
 ## Đang ở đâu
 
@@ -20,25 +20,27 @@ chữ + số, TOTP). Đã có Admin đầu tiên là anh Trường (gắn tạm 
 
 ## PR đang mở
 
-Không có. Mọi PR #1–#12 đã gộp, mỗi commit gộp có link comment "OK" của `caotruong276`.
+Không có. Mọi PR #1–#14 đã gộp, mỗi commit gộp có link comment "OK" của `caotruong276`.
 
 ## Việc dở, việc tiếp theo
 
-1. **Tài liệu cập nhật 12/10 của anh Trường** nằm ở `_cap-nhat-1210/` (chưa đưa vào git): `02-chuan-ma-va-danh-muc.md`,
-   `04-luat-nghiep-vu.md`, `HMT_BAN_DO_MAN_HINH.md`, `HMT_DANH_MUC_VA_THAM_SO.md`. **Chưa xử lý.** Việc đầu tiên: so với
-   `docs/spec/` (lưu ý spec 02 trong repo đã sửa mục Cơ sở thành CS3 Hội sở ở #12), báo anh chỗ lệch, anh chốt rồi mới
-   chép vào `docs/spec/` bằng PR.
+1. **Tài liệu 12/10 của anh Trường đã gộp vào repo (PR #14)**: spec 04 (132 luật, §10 Báo cáo, §11 Học tập, §12 Quyền và hệ
+   thống), spec 02, mới `docs/spec/06-danh-muc-va-tham-so.md`, `docs/design/ban-do-man-hinh.md`,
+   `docs/design/luat-cho-thiet-ke.md`, `docs/design/ma-luat-S02-S03.md`, `docs/van-hanh/so-tay-van-hanh.md`. **Chưa sửa code.** Mọi chỗ luật mới vênh với
+   code, kèm bước nên sửa: `docs/nghiep-vu/doi-chieu-luat-1210.md` (mục A: các điểm anh đã chốt 12/10; mục B, C: việc
+   phải sửa, phần lớn ở bước 4).
 2. **Đưa #12 (CS3 Hội sở) lên chạy thật** khi anh muốn: hmt-deploy > Deploy production, tag
    `staging-20261010-1840-c3bc365`. Cùng lúc chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang hmt-deploy (chỉ đổi
    mô tả ô cơ sở).
 3. **Bước 4** (chờ yêu cầu của anh; phân tích, đề xuất trước, anh OK mới code). Đã hứa làm kèm:
    - Màn quản trị tài khoản (tạo, vai trò, cơ sở, khoá/mở, đặt lại mật khẩu) dùng Edge Function `admin-users` có sẵn.
-   - Quản lý cơ sở trên giao diện (thêm, đổi tên, thứ tự, Ngừng; mã `CS` + số, không dùng lại; không Ngừng cơ sở còn
-     nhân viên hoạt động hoặc lớp đang học). Hiện chỉ thêm được bằng migration.
-   - Đổi tài khoản Admin của anh từ CS5 sang CS3 (qua màn quản trị, không sửa tay DB chạy thật).
-   - Sau đăng nhập: địa chỉ cũ (`next`) không thuộc cổng được vào thì tự về cổng của mình.
-   - Trang Đổi mật khẩu: gắn tên đăng nhập (trường username ẩn, `autocomplete`) để Chrome lưu đúng tài khoản.
-   - Giao diện tự đưa về trang đăng nhập khi phiên bị thu hồi (khoá, bỏ vai trò, đổi cơ sở).
+   - Cơ sở là danh mục khoá (chốt 12/10): không thêm, không ngừng trên giao diện; màn QT-08 sửa tên hiển thị, địa chỉ,
+     hotline và quản lý phòng học. Mở cơ sở mới qua migration.
+   - Các mục "Bước 4" trong `docs/nghiep-vu/doi-chieu-luat-1210.md` (anh đã đồng ý thứ tự): tham số (đổi "ghi đè theo cơ
+     sở", 3 tham số mới, giữ khoảng cho phép), khoá danh mục Môn/Khối/Trình độ và mục cha giai đoạn, đổi tên C4C, C4D,
+     L5B, lý do khoá tài khoản theo danh mục, hai bước tối đa 2 thiết bị, đặt lại hai bước, vai trò gán tạm có thời hạn,
+     hotline cơ sở, công tắc tính năng không có CS3, chế độ khôi phục của workflow `bootstrap-admin`. Màn QT-13 (tài
+     khoản học sinh) ở bước 4 chỉ Admin dùng; CSKH từ giai đoạn 4.
 4. **Trước GĐ4**: L2 trong `docs/nghiep-vu/phan-quyen.md` (học sinh, phụ huynh chỉ đọc phần của mình). Giai đoạn 3: chốt
    trường dữ liệu giáo viên được xem (đề xuất: không thấy số điện thoại, địa chỉ phụ huynh).
 5. **Để sau, khi anh sẵn sàng**: quên mật khẩu qua email (Resend/SMTP + DNS, Edge Function `send-email` đã có), tên miền
@@ -64,6 +66,10 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
 
 ## Lưu ý cho người làm tiếp
 
+- **Trước khi bắt đầu bước 4**: bật lại Docker Desktop (đang tạm dừng từ 12/10; nhờ anh Trường bật nếu không tự bật được),
+  chạy `npm run db:reset` và `npm run db:test` đủ 348 bài pgTAP. PR #14 chỉ có tài liệu nên chưa chạy pgTAP.
+- **Mỗi PR** cập nhật luôn file này (viết như sau khi PR đã gộp).
+
 - **Duyệt PR**: chỉ gộp khi CI xanh **và** có comment "OK" từ `caotruong276` **sau commit cuối**. Trước khi nhắc anh
   duyệt, kiểm comment trên PR trước (anh hay OK sẵn). Gộp squash, ghi link comment OK vào thân commit gộp.
 - **Khoá chạy thật**: không bao giờ đọc, xin, tìm. Mọi việc với hmt-prod, Cloudflare thật, `hmt-deploy` do anh làm trên
@@ -80,4 +86,4 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
   chạy pgTAP vẫn đúng (bài ADMIN cuối cùng đã tự loại ADMIN giả), nhưng `db:reset` cho sạch thì chắc hơn.
 - **Chẩn đoán trên thử nghiệm** (không có khoá staging trên máy): tạo nhánh tạm thêm job `workflow_dispatch` vào `ci.yml`
   đọc secret, chạy `gh workflow run ci.yml --ref <nhánh>`, đọc log job, huỷ lượt chạy, xoá nhánh. Không in khoá.
-- **Thư mục không đưa vào git**: `PROMPT-GD0-BUOC1.md`, `_cap-nhat-1210/`.
+- **File không đưa vào git**: `PROMPT-GD0-BUOC1.md`.

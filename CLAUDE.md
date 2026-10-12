@@ -2,7 +2,7 @@
 
 Đầu mỗi phiên, đọc docs/TIEN-DO.md trước.
 
-Đọc file này và `docs/spec/` trước mỗi việc. Spec trong `docs/spec/` là chép từ tài liệu gốc của anh Trường; lệch nhau hoặc thiếu thì hỏi, không đoán.
+Đọc file này và `docs/spec/` trước mỗi việc; làm giao diện thì đọc thêm `docs/design/ban-do-man-hinh.md` (bản đồ màn hình). Spec trong `docs/spec/` là chép từ tài liệu gốc của anh Trường; lệch nhau hoặc thiếu thì hỏi, không đoán.
 
 ## Người làm việc cùng
 - Anh Trường (Trưởng phòng vận hành HMT, Admin hệ thống). Trao đổi bằng tiếng Việt, ngắn gọn, không thuật ngữ thừa.
@@ -68,6 +68,7 @@
 
 ## Quy trình git và đưa lên chạy thật
 - Nhánh riêng (`feat/…`, `fix/…`) → PR → CI xanh → gộp `main` → môi trường thử nghiệm tự cập nhật → anh Trường thử. Commit nhỏ, thông điệp rõ.
+- Mỗi PR gộp xong thì `docs/TIEN-DO.md` phải đúng với hiện trạng: cập nhật file này ngay trong PR (viết như sau khi PR đã gộp); việc phát sinh sau khi gộp thì ghi vào PR kế tiếp.
 - Claude Code dùng tài khoản GitHub `hmt-vanhanh` (chủ repo `hmt-platform`) trên máy Mac của anh Trường.
 - Repo `hmt-deploy` nằm ở **tài khoản GitHub riêng của anh Trường `caotruong276` (đăng ký bằng `truongcx.work@gmail.com`)**, anh chỉ dùng trên trình duyệt. Tài khoản này không bao giờ đăng nhập trên máy Mac này (`gh`, git, Keychain). Commit trong `hmt-platform` ghi tên tác giả bằng email noreply của `hmt-vanhanh`, không dùng email `truongcx.work`.
 - Cloudflare: tài khoản **thử nghiệm** đăng ký bằng `lead.vanhanh.hmt+staging@gmail.com` (token nằm trong Secrets của `hmt-platform`); tài khoản **chạy thật** đăng ký bằng `truongcx.work@gmail.com`, chỉ dùng trên trình duyệt, token nằm trong Secrets của `hmt-deploy`.

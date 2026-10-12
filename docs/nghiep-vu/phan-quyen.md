@@ -61,6 +61,9 @@ ADMIN không có quyền duyệt tiền. Khi kế toán vắng:
 2. Kế toán về: Admin bỏ vai trò `ACCOUNTANT` của người làm thay; mọi phiên của người đó bị đăng xuất, quyền duyệt mất ngay.
 3. Cả hai lần gán, bỏ đều ghi nhật ký thao tác (`app.user_role`: ai, lúc nào); phiếu thu (làm ở giai đoạn sau) sẽ ghi người duyệt.
 
+**Chốt lại 12/10/2026 (R-HT-01):** cách này giữ nguyên, thêm yêu cầu gán tạm **có thời hạn** (hết hạn tự tắt vai trò, thu hồi
+phiên). Phần thời hạn chưa có trong code, làm ở bước 4 (mục B17 của `docs/nghiep-vu/doi-chieu-luat-1210.md`).
+
 Admin có thể tự gán `ACCOUNTANT` cho mình; luật "giữ ADMIN cuối cùng" vẫn áp: bỏ `ACCOUNTANT` được, bỏ `ADMIN` mà không
 còn ADMIN khác thì bị chặn.
 
