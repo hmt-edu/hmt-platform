@@ -1,5 +1,7 @@
 # HMT Platform: luật làm việc cho Claude Code
 
+Đầu mỗi phiên, đọc docs/TIEN-DO.md trước.
+
 Đọc file này và `docs/spec/` trước mỗi việc. Spec trong `docs/spec/` là chép từ tài liệu gốc của anh Trường; lệch nhau hoặc thiếu thì hỏi, không đoán.
 
 ## Người làm việc cùng
