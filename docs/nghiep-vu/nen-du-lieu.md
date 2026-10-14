@@ -123,6 +123,8 @@ Hai ngưỡng tái tục chạy song song: chạm ngưỡng nào trước thì c
 | `app.set_feature(phân hệ, cơ sở, bật?)` | Bật/tắt | Admin (bước 3) |
 
 ## Ghi chú trao đổi
+
+Nhắc tên, thông báo, lịch sử bản ghi, bộ lọc yêu thích, tìm kiếm (bước 4b): xem `khuon-dung-chung.md`.
 `app.note` gắn vào bản ghi của loại đã đăng ký ở `app.note_target` (hiện: BRANCH, ROOM, CATALOG_ITEM, SETTING; bảng nghiệp vụ mới
 đăng ký thêm bằng migration). Bản ghi phải tồn tại; không chuyển sang bản ghi khác; huỷ thay cho xoá; sửa có nhật ký.
 

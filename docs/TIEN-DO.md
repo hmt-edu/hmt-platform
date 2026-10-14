@@ -1,26 +1,45 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 12/10/2026 (sau PR 4a của bước 4). Người làm tiếp đọc file này trước, rồi CLAUDE.md, `docs/quy-trinh-phoi-hop.md`, `docs/spec/` (01, 02, 03, 04, 06), `docs/design/ban-do-man-hinh.md`, `docs/nghiep-vu/`.
+Cập nhật: 14/10/2026 (quy trình thiết kế đổi 13/10 và 14/10, xem mục ngay dưới; #16 tách phần dữ liệu ra PR riêng). Người làm tiếp đọc file này trước, rồi CLAUDE.md, `docs/quy-trinh-phoi-hop.md`, `docs/spec/` (01, 02, 03, 04, 06), `docs/design/ban-do-man-hinh.md`, `docs/nghiep-vu/`.
+
+## Thay đổi quy trình thiết kế (anh Trường báo 13/10/2026): đọc trước khi làm gì
+
+- **Không bắt đầu PR dựng giao diện mới nào khi chưa có "thiết kế đã duyệt" từ anh Trường.**
+- Bộ thiết kế `design/hmt-platform/` (P5) sẽ được thay bằng bản kiểu Odoo mới. **Không dựng thêm màn nào theo bộ cũ.**
+  Prompt "bước 4 giai đoạn 0" cũ (PR 4a, 4b, 4c) đã hết hiệu lực: **không làm PR 4c-1, 4c-2 phần giao diện.**
+- **14/10: anh Trường sẽ vẽ lại wireframe màn đăng nhập và khung các cổng** (thay câu "giữ nguyên trang đăng nhập" của
+  13/10). Tạm dừng mọi việc giao diện của các màn đó; chỉ làm phần nền, dữ liệu, quyền.
+- **Việc không phụ thuộc giao diện thì làm tiếp**: cơ sở dữ liệu, quyền, pgTAP, logic đăng nhập (tự đăng xuất, tạm
+  khoá, hai bước). Các luật an toàn giữ nguyên.
+- **Quy trình mới, mỗi phân hệ qua 4 cổng**: wireframe (anh duyệt) → thiết kế Claude Design (anh duyệt) → code (anh
+  comment "OK" trên PR) → staging (anh thử, rồi tự cập nhật bản chạy thật qua hmt-deploy). Thiết kế được duyệt thì anh
+  đưa file vào `_inbox/` kèm prompt mới.
+- **Khi các nguồn vênh nhau**: theo tài liệu quyết định thiết kế 13/10 (chưa có trong repo, chờ anh đưa vào), rồi tới
+  luật nghiệp vụ. Dòng thứ tự ưu tiên trong CLAUDE.md còn ghi theo bộ P5; sửa khi tài liệu 13/10 vào repo.
 
 ## Đang ở đâu
 
-**Giai đoạn 0 (GĐ0), đang làm bước 4 (khung giao diện ba cổng + màn quản trị). Xong PR 4a; tiếp theo là PR 4b.**
-
-Bước 4 chia bốn PR (anh Trường đã OK kế hoạch 12/10):
+**Giai đoạn 0 (GĐ0), bước 4. Phần giao diện tạm dừng chờ thiết kế mới; phần cơ sở dữ liệu, quyền làm tiếp.**
 
 | PR | Nội dung | Trạng thái |
 |---|---|---|
-| 4a | Gói thiết kế vào `design/hmt-platform/`, token, khung ba cổng (CHUNG-10, GV-01, HT-09), đăng nhập và các màn CHUNG-01…09, 13, 16, 17, 24, 25 | Xong |
-| 4b | Khuôn dùng chung: bảng danh sách, bộ lọc, bản ghi (thanh trạng thái, nút liên kết, ghi chú + lịch sử), ô tìm kiếm, thông báo, các ô nhập (Combobox, DateRange, MoneyInput…), hộp thoại chặn/xác nhận | Chưa bắt đầu |
-| 4c-1 | Tham số, danh mục, cơ sở và phòng học, công tắc tính năng | Chưa bắt đầu |
-| 4c-2 | Người dùng, vai trò, ma trận quyền, nhật ký, tài khoản học sinh, CHUNG-20; file workflow khôi phục `bootstrap-admin` soạn ở `docs/hmt-deploy/` | Chưa bắt đầu |
+| 4a (#15) | Gói thiết kế P5, token, khung ba cổng, đăng nhập và các màn CHUNG-01…09, 13, 16, 17, 24, 25 | Đã gộp 12/10 |
+| 4b (#16) | Giao diện khuôn dùng chung (bảng, bộ lọc, bản ghi, ghi chú + lịch sử, ô nhập, hộp thoại), CHUNG-11, 12, 14, 18, 19, 22, 26, màn Người dùng QT-01, QT-02, trang mẫu | **Nháp (draft), không gộp.** Dựng theo bộ P5 cũ, chờ thiết kế mới. Nhánh `feat/gd0-b4b-khuon-dung-chung` giữ nguyên |
+| 4b-dữ-liệu | Chỉ phần dữ liệu của #16: migration `20261012000016` + 68 bài pgTAP, không có giao diện (xem `docs/nghiep-vu/khuon-dung-chung.md`) | PR riêng, chờ anh OK |
+| 4c-1, 4c-2 | Màn quản trị | **Huỷ theo prompt cũ.** Phần giao diện chờ thiết kế mới; phần cơ sở dữ liệu tách ra làm riêng (mục "Việc dở") |
+
+**Luồng đăng nhập đã code (giao diện chờ wireframe mới của anh Trường):** đăng nhập nhân viên (CHUNG-01) và học sinh (CHUNG-06); hai bước: nhập mã
+(CHUNG-02), thiết lập lần đầu (CHUNG-03), tối đa 2 thiết bị; quên mật khẩu (CHUNG-04) và đặt mật khẩu mới (CHUNG-05),
+chưa gửi thư nên bảo liên hệ quản trị viên; đổi mật khẩu bắt buộc lần đầu (CHUNG-07); không đăng nhập được, gồm tài
+khoản bị khoá và tạm chặn (CHUNG-08); hết phiên, tự đăng xuất (CHUNG-09); hồ sơ cá nhân (CHUNG-13); không có quyền
+(CHUNG-16); không tìm thấy, lỗi hệ thống (CHUNG-17); phân hệ chưa bật (CHUNG-24); chọn cổng (CHUNG-25).
 
 | Bước GĐ0 | Trạng thái | PR |
 |---|---|---|
 | 1. Hạ tầng: React/Vite, Supabase, CI, Cloudflare Pages, repo `hmt-deploy`, sao lưu, báo cáo tuần | Xong, đã lên chạy thật | #1 |
 | 2. Nền dữ liệu: danh mục, nhật ký thao tác, cấp mã, Cài đặt, công tắc, ghi chú | Xong, đã lên chạy thật | #2–#5 |
 | 3. Đăng nhập, phân quyền: Edge Function đăng nhập, 9 vai trò, ma trận quyền, RLS, quản trị tài khoản (hàm + Edge Function), soát bảo mật | Xong, đã lên chạy thật (trừ #12) | #6–#12 |
-| 4. Khung giao diện ba cổng + màn quản trị (tài khoản, quyền, danh mục, Cài đặt, nhật ký) | Đang làm: xong 4a, còn 4b, 4c-1, 4c-2 | #15 |
+| 4. Khung giao diện ba cổng + màn quản trị (tài khoản, quyền, danh mục, Cài đặt, nhật ký) | Giao diện tạm dừng chờ thiết kế mới (4a đã gộp, 4b nháp); phần cơ sở dữ liệu làm tiếp | #15, #16, PR dữ liệu |
 | 5. Khôi phục thử sao lưu, cảnh báo | Chưa bắt đầu | |
 
 Bản chạy thật (`hmt-prod.pages.dev`) đang ở tag `staging-20261010-1642-75637cf` (trước #12). Đã cấu hình Supabase
@@ -29,7 +48,8 @@ chữ + số, TOTP). Đã có Admin đầu tiên là anh Trường (gắn tạm 
 
 ## PR đang mở
 
-Không có. Mọi PR #1–#15 đã gộp, mỗi commit gộp có link comment "OK" của `caotruong276`.
+**#16** (4b, giao diện): **nháp, không gộp**, chờ thiết kế mới. **PR dữ liệu** (nhánh `feat/gd0-du-lieu-khuon-chung`, chỉ migration 016 + pgTAP + tài liệu): chờ anh Trường comment "OK".
+Mọi PR #1–#15 đã gộp, mỗi commit gộp có link comment "OK" của `caotruong276`.
 
 ## Việc dở, việc tiếp theo
 
@@ -43,18 +63,32 @@ Không có. Mọi PR #1–#15 đã gộp, mỗi commit gộp có link comment "O
    mô tả ô cơ sở).
 3. **Hai bước tối đa 2 thiết bị**: anh Trường đã đặt "Maximum number of per-user MFA factors" = 2 trên cả hmt-staging và
    hmt-prod (12/10; mặc định Supabase là 10). Local đặt trong `supabase/config.toml`.
-4. **Bước 4, các PR còn lại** (4b, 4c-1, 4c-2). Đã hứa làm kèm:
-   - Màn quản trị tài khoản (tạo, vai trò, cơ sở, khoá/mở, đặt lại mật khẩu) dùng Edge Function `admin-users` có sẵn.
-   - Cơ sở là danh mục khoá (chốt 12/10): không thêm, không ngừng trên giao diện; màn QT-08 sửa tên hiển thị, địa chỉ,
-     hotline và quản lý phòng học. Mở cơ sở mới qua migration.
+4. **Anh Trường chốt 12/10** (phần ma trận quyền trong cơ sở dữ liệu làm ở PR cơ sở dữ liệu kế tiếp; phần menu chờ
+   thiết kế mới; ghi vào `docs/nghiep-vu/phan-quyen.md` và phần
+   phân quyền của spec 03 trong chính PR đó):
+   - Gửi anh danh sách chỗ lệch giữa ma trận quyền trong DB và bảng vai trò (RoleMenu) của gói thiết kế.
+   - Tách quyền menu Cấu hình/Quản trị thành 3 phân hệ (hiện cả 20 mục dùng chung quyền Quản trị · Xem):
+     **Quản trị** (người dùng, vai trò, quyền, nhật ký, công tắc, tham số, danh mục): chỉ Admin.
+     **Cấu hình bán hàng** (gói, bảng giá, chiết khấu, điều khoản thanh toán, chiến dịch): Admin sửa; Kế toán, Trưởng
+     cơ sở, Tuyển sinh, CSKH xem.
+     **Cấu hình đào tạo** (khung chương trình, rubric, ngày nghỉ lễ): Admin sửa; Trưởng cơ sở sửa ngày nghỉ lễ và xem
+     phần còn lại; CSKH, giáo viên xem khung chương trình.
+5. **Chờ anh Trường chốt (hỏi trong PR 4b)**: (a) ai được lưu bộ lọc dùng chung (hiện chỉ Admin); (b) Trưởng cơ sở được
+   DB cho xem tài khoản cơ sở mình nhưng menu Quản trị chỉ Admin, nên khi được nhắc tên trong ghi chú của một tài khoản
+   thì nhận thông báo mà mở ra gặp "Không có quyền".
+6. **QT-01, QT-02 còn thiếu (giao diện chờ thiết kế mới)**: tạo người dùng, sửa vai trò và cơ sở, đặt lại mật khẩu, đặt lại hai bước,
+   thu hồi phiên, lý do khoá chọn từ danh mục (hiện gõ tay), mã nhân viên cho tài khoản giả.
+7. **Phần cơ sở dữ liệu của bước 4, làm tiếp không cần giao diện** (mỗi việc có migration + pgTAP). Đã hứa làm:
+   - Cơ sở là danh mục khoá (chốt 12/10): thêm cột hotline; mở cơ sở mới qua migration. (Màn QT-08 chờ thiết kế mới.)
+   - Tách ma trận quyền Cấu hình/Quản trị thành 3 phân hệ (mục 4), nạp danh mục theo spec 06 (trừ #27, #30).
    - Các mục "Bước 4" trong `docs/nghiep-vu/doi-chieu-luat-1210.md` (anh đã đồng ý thứ tự): tham số (đổi "ghi đè theo cơ
      sở", 3 tham số mới, giữ khoảng cho phép), khoá danh mục Môn/Khối/Trình độ và mục cha giai đoạn, đổi tên C4C, C4D,
      L5B, lý do khoá tài khoản theo danh mục, hai bước tối đa 2 thiết bị, đặt lại hai bước, vai trò gán tạm có thời hạn,
-     hotline cơ sở, công tắc tính năng không có CS3, chế độ khôi phục của workflow `bootstrap-admin`. Màn QT-13 (tài
-     khoản học sinh) ở bước 4 chỉ Admin dùng; CSKH từ giai đoạn 4.
-5. **Trước GĐ4**: L2 trong `docs/nghiep-vu/phan-quyen.md` (học sinh, phụ huynh chỉ đọc phần của mình). Giai đoạn 3: chốt
+     hotline cơ sở, công tắc tính năng không có CS3, chế độ khôi phục của workflow `bootstrap-admin` (soạn ở
+     `docs/hmt-deploy/`, anh tự chép sang hmt-deploy).
+8. **Trước GĐ4**: L2 trong `docs/nghiep-vu/phan-quyen.md` (học sinh, phụ huynh chỉ đọc phần của mình). Giai đoạn 3: chốt
    trường dữ liệu giáo viên được xem (đề xuất: không thấy số điện thoại, địa chỉ phụ huynh).
-6. **Để sau, khi anh sẵn sàng**: quên mật khẩu qua email (Resend/SMTP + DNS, Edge Function `send-email` đã có), tên miền
+9. **Để sau, khi anh sẵn sàng**: quên mật khẩu qua email (Resend/SMTP + DNS, Edge Function `send-email` đã có), tên miền
    riêng (CNAME `app` → `hmt-prod.pages.dev`), bước 5.
 
 ## Quyết định gần đây chưa nằm trong docs/spec
@@ -81,6 +115,14 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
 - **Đường dẫn**: `/dang-nhap`, `/dang-nhap/hoc-sinh`, `/xac-thuc-hai-buoc`, `/thiet-lap-hai-buoc`, `/quen-mat-khau`,
   `/dat-mat-khau`, `/doi-mat-khau`, `/khong-dang-nhap-duoc`, `/chon-cong`, `/khong-co-quyen`, `/trang-thai` (trang kiểm
   tra kết nối cũ), `/crm/...`, `/gv/...`, `/hoc/...`. Hồ sơ cá nhân: `/<cổng>/tai-khoan`.
+- **Khuôn dùng chung (từ PR 4b)**: màn mới dựng bằng các thành phần có sẵn, không tự chế: danh sách = `PageHeader` +
+  `FilterBar` + `Table` + `Pagination` (+ `BulkActionBar`, `SavedFiltersMenu`, `ExportDialog`); bản ghi = `PageHeader`
+  + `StatusBar` + `RecordLayout` + `Tabs` + `RecordChatter`; hộp thoại = `ConfirmDialog` (có lý do), `BlockingDialog`,
+  `UnsavedGuard`; ô nhập = `Combobox`, `DateRange`, `MoneyInput`, `FileUpload`. Xem mẫu sống ở `/crm/khuon-mau` (chỉ
+  Admin mở được, dữ liệu giả). Hàm DB đi kèm: `docs/nghiep-vu/khuon-dung-chung.md`. Màn QT-01 là ví dụ đầy đủ nhất.
+- **Gọi DB từ giao diện**: `rpc`, `fetchRows`, `callFunction` trong `src/lib/db.ts` (lỗi nghiệp vụ thành `HmtError` có
+  mã `HMT_*` và câu tiếng Việt hiện thẳng). Số trang, giới hạn đọc bằng `useIntSetting`, không viết số.
+- **Đính kèm tệp**: giao diện đã có nhưng nút tải lên tắt (chưa bật R2, giai đoạn 4).
 - **Quên mật khẩu**: hai màn đã dựng nhưng chưa gửi thư; màn luôn trả cùng một câu và bảo liên hệ quản trị viên.
 
 ## Lưu ý cho người làm tiếp
@@ -88,7 +130,8 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
 - **Ảnh so sánh với thiết kế**: `SO_SANH=1 npx playwright test e2e/so-sanh.spec.ts --project=may-tinh` ghép ảnh thiết kế
   và bản dựng vào `docs/so-sanh/<MÃ>.jpg`; chạy xong chạy lại `npm run db:seed-users`. Màn mới thì thêm vào kịch bản này.
 - **Kiểm thử giao diện**: Playwright hai cỡ `may-tinh` (1440×900) và `dien-thoai` (390×844), mỗi màn gọi
-  `expectAccessible` (axe, chặn lỗi nghiêm trọng). Tua thời gian bằng `page.clock`, không sửa tay mốc thời gian.
+  `expectAccessible` (axe, chặn lỗi nghiêm trọng). Tua thời gian bằng `page.clock`, không sửa tay mốc thời gian. Cần
+  quản trị viên thì dùng `loginAdmin` (tài khoản giả `admin.hs1` cho máy tính, `admin.hs2` cho điện thoại).
 - **File anh Trường đưa vào** nằm ở `_inbox/` (không commit), dùng xong xoá.
 - **Mỗi PR** cập nhật luôn file này (viết như sau khi PR đã gộp).
 
