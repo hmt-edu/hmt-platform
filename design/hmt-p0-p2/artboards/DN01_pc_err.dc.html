@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Đăng nhập nhân viên · Máy tính · Sai thông tin</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/hmt/handoff/hmt-tokens.css">
+<link rel="stylesheet" href="ds/hmt/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap&amp;subset=vietnamese">
+<style>
+body{margin:0;font-family:var(--font-ui);color:var(--text-primary);background:var(--bg-surface)}
+*{box-sizing:border-box}
+a{color:var(--text-link);text-decoration:none}a:hover{color:var(--brand-800);text-decoration:underline}
+button{font-family:inherit;cursor:pointer}
+.lg-pc{display:flex;width:1440px;height:1000px;overflow:hidden;background:var(--bg-surface)}
+.lg-mb{display:flex;flex-direction:column;width:390px;height:844px;overflow:hidden;background:var(--bg-surface)}
+.lg-brand{position:relative;overflow:hidden;flex:0 0 46%;background:linear-gradient(180deg,rgba(101,41,16,0) 45%,rgba(101,41,16,.28)),#CB4D0E;color:#FFFFFF;padding:150px 64px 48px;display:flex;flex-direction:column;justify-content:flex-start;gap:20px}
+.lg-brand>*:not(.lg-art):not(.lg-robot){position:relative;z-index:1}
+.lg-brand h1{margin:0;font-family:var(--font-heading);font-size:38px;line-height:1.22;font-weight:700;letter-spacing:-.01em;max-width:520px;color:#FFFFFF}
+.lg-brand p{margin:0;font-size:16px;line-height:1.65;max-width:440px;color:#FFFFFF}
+.lg-cs{display:flex;flex-direction:column;gap:10px;margin-top:12px;padding-top:22px;border-top:1px solid rgba(255,255,255,.45);max-width:440px}
+.lg-cs span{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;color:#FFFFFF}
+.lg-cs i{width:8px;height:8px;border-radius:4px;background:#FFFFFF;flex:none}
+.lg-bf{margin-top:20px;font-size:13px;line-height:1.5;color:#FFFFFF;max-width:440px}
+.lg-art{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.lg-art .ln{stroke:#FFFFFF;stroke-width:1;opacity:.22;stroke-dasharray:4 6;animation:lgdash 14s linear infinite}
+.lg-art .nd{fill:#FFFFFF;opacity:.5;transform-box:fill-box;transform-origin:center;animation:lgpulse 3.6s ease-in-out infinite}
+.lg-art .sy{fill:#FFFFFF;font-family:var(--font-heading);font-weight:600;opacity:0;animation:lgfloat 16s ease-in-out infinite}
+@keyframes lgdash{to{stroke-dashoffset:-200}}
+@keyframes lgpulse{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.9);opacity:.65}}
+@keyframes lgfloat{0%{opacity:0;transform:translateY(40px)}20%{opacity:.3}80%{opacity:.3}100%{opacity:0;transform:translateY(-90px)}}
+.lg-robot{position:absolute;right:28px;bottom:28px;width:160px;height:auto;z-index:0;pointer-events:none;overflow:visible}
+.lg-bob{animation:lgbob 3s ease-in-out infinite}
+.lg-pen{transform-origin:84px 106px;animation:lgpen .8s ease-in-out infinite}
+.lg-q2{opacity:0}.lg-q1{animation:lgq1 6s ease-in-out infinite}.lg-q2{animation:lgq2 6s ease-in-out infinite}
+.lg-ant{animation:lgblink 2s ease-in-out infinite}
+.lg-bub{animation:lgbub 6s ease-in-out infinite}
+@keyframes lgbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes lgpen{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(8deg)}}
+@keyframes lgq1{0%,40%{opacity:1}50%,92%{opacity:0}100%{opacity:1}}
+@keyframes lgq2{0%,42%{opacity:0}52%,90%{opacity:1}100%{opacity:0}}
+@keyframes lgblink{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes lgbub{0%,8%{opacity:0}16%,80%{opacity:1}90%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.lg-art .ln,.lg-art .nd,.lg-art .sy,.lg-bob,.lg-pen,.lg-q1,.lg-q2,.lg-ant,.lg-bub{animation:none}.lg-art .sy{opacity:.2}.lg-bub{opacity:1}}
+.lg-side{flex:1;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;padding:40px;overflow-y:auto;background:var(--bg-surface)}
+.lg-pc .lg-side{align-items:flex-start;padding:150px 40px 40px}
+.lg-mb .lg-side{align-items:flex-start;padding:36px 24px 28px}
+.lg-form{width:400px;max-width:100%;display:flex;flex-direction:column;gap:18px}
+.lg-logo{display:block;width:176px;height:auto;margin:0 auto 6px}
+.lg-mb .lg-logo{width:150px}
+h2.lg-h{margin:0;font-family:var(--font-heading);font-size:26px;line-height:1.25;font-weight:700;letter-spacing:-.01em;text-align:center;color:var(--text-primary)}
+.lg-mb h2.lg-h{font-size:22px}
+.lg-sub{margin:-8px 0 0;text-align:center;font-size:14px;line-height:1.6;color:var(--text-secondary)}
+.lg-field{display:flex;flex-direction:column;gap:6px;text-align:left}
+.lg-field label{font-size:13px;font-weight:600;color:var(--text-label)}
+.lg-inp{height:44px;width:100%;border:1px solid #8A8076;border-radius:var(--radius-md);padding:0 12px;font-family:inherit;font-size:14px;background:#FFFFFF;color:var(--text-primary)}
+.lg-inp:focus{outline:none;box-shadow:var(--focus-ring);border-color:#CB4D0E}
+.lg-inp.err{border-color:var(--danger-solid)}
+.lg-pw{position:relative}.lg-pw .lg-inp{padding-right:48px}
+.lg-eye{position:absolute;right:4px;top:4px;width:36px;height:36px;border:none;background:transparent;border-radius:var(--radius-md);color:#524A41;display:flex;align-items:center;justify-content:center}
+.lg-eye:hover{background:var(--brand-50)}
+.lg-btn{height:44px;padding:0 16px;border-radius:var(--radius-md);border:1px solid #8A8076;background:#FFFFFF;color:var(--text-primary);display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:600;font-size:14px;white-space:nowrap;text-decoration:none}
+.lg-btn:hover{background:var(--brand-50)}
+.lg-btn.pri{background:#CB4D0E;border-color:#CB4D0E;color:#FFFFFF}
+.lg-btn.pri:hover{background:#AB420F;border-color:#AB420F}
+.lg-btn:disabled{background:#ECE7E0;border-color:#ECE7E0;color:#6B6157;cursor:not-allowed}
+.lg-full{width:100%}
+.lg-row2{display:flex;gap:8px}.lg-row2 .lg-btn{flex:1}
+.lg-ts{border:1px dashed #8A8076;border-radius:var(--radius-md);min-height:58px;display:flex;align-items:center;gap:10px;padding:0 14px;color:#524A41;font-size:13px;background:var(--bg-page)}
+.lg-ts i{width:22px;height:22px;border:1.5px solid var(--success-solid);border-radius:5px;display:flex;align-items:center;justify-content:center;color:var(--success-solid);flex:none;background:#FFFFFF}
+.lg-lnk{text-align:center;font-size:14px}
+.lg-note{font-size:13px;color:var(--text-secondary);line-height:1.55}
+.lg-ctr{text-align:center}
+.lg-alert{display:flex;gap:10px;align-items:flex-start;border-radius:var(--radius-lg);padding:11px 14px;font-size:13px;line-height:1.5;text-align:left}
+.lg-alert svg{flex:0 0 18px;margin-top:1px}
+.lg-err{background:var(--danger-bg);color:var(--danger-text)}
+.lg-ok{background:var(--success-bg);color:#175C2F}
+.lg-info{background:var(--info-bg);color:#1A4F8F}
+.lg-otp{display:flex;gap:8px;justify-content:center}
+.lg-otp input{width:48px;height:56px;text-align:center;font-size:22px;font-weight:600;border:1px solid #8A8076;border-radius:var(--radius-md);font-family:inherit;font-variant-numeric:tabular-nums;color:var(--text-primary);background:#FFFFFF}
+.lg-otp input.err{border-color:var(--danger-solid)}
+.lg-otp input:focus{outline:none;box-shadow:var(--focus-ring);border-color:#CB4D0E}
+.lg-mb .lg-otp{gap:6px}.lg-mb .lg-otp input{width:46px;height:54px}
+.lg-steps{display:flex;gap:6px}.lg-steps span{flex:1;height:4px;border-radius:2px;background:#E3DDD5}.lg-steps .on{background:#CB4D0E}
+.lg-stepl{font-size:12px;font-weight:600;letter-spacing:.05em;color:var(--brand-800)}
+.lg-qr{width:172px;height:172px;margin:0 auto;border:1px solid #E3DDD5;border-radius:var(--radius-lg);padding:10px;background:#FFFFFF}
+.lg-secret{font-family:ui-monospace,Menlo,monospace;font-size:14px;background:var(--bg-subtle);border-radius:var(--radius-md);padding:9px 10px;text-align:center;letter-spacing:.08em}
+.lg-codes{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.lg-codes span{font-family:ui-monospace,Menlo,monospace;font-size:13px;background:var(--bg-subtle);border-radius:var(--radius-md);padding:8px 10px;text-align:center;letter-spacing:.04em}
+.lg-cb{display:flex;align-items:center;gap:10px;font-size:14px;min-height:44px}
+.lg-cb input{width:18px;height:18px;accent-color:#CB4D0E}
+hr.lg-hr{border:none;border-top:1px solid #E3DDD5;margin:0}
+</style>
+</helmet>
+<div class="lg-pc"><div class="lg-brand"><svg class="lg-robot" viewBox="0 0 170 190" aria-hidden="true"><g class="lg-bob">
+<g class="lg-bub" transform="translate(-6,-10)"><rect x="0" y="0" width="82" height="26" rx="13" fill="#FFFFFF"/><path d="M52 24 L62 36 L40 25Z" fill="#FFFFFF"/><text x="41" y="17.5" font-size="12" font-weight="700" fill="#AB420F" font-family="Be Vietnam Pro,Inter,sans-serif" text-anchor="middle">Xin chào!</text></g>
+<rect x="96" y="64" width="68" height="54" rx="8" fill="#FFFFFF"/><rect x="101" y="69" width="58" height="44" rx="5" fill="#FFF4ED"/>
+<text x="108" y="97" font-size="14" font-weight="700" fill="#CB4D0E" font-family="Be Vietnam Pro,Inter,sans-serif">2+3=</text>
+<text class="lg-q1" x="145" y="97" font-size="17" font-weight="700" fill="#AB420F" font-family="Be Vietnam Pro,Inter,sans-serif">?</text>
+<text class="lg-q2" x="145" y="97" font-size="17" font-weight="700" fill="#1F7A3E" font-family="Be Vietnam Pro,Inter,sans-serif">5</text>
+<path d="M104 118 L96 170 M156 118 L164 170" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/><rect x="108" y="114" width="46" height="5" rx="2.5" fill="#FDC6A6"/>
+<line x1="62" y1="22" x2="62" y2="40" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/><circle class="lg-ant" cx="62" cy="19" r="5.5" fill="#FDC6A6"/>
+<rect x="24" y="56" width="8" height="18" rx="4" fill="#FFFFFF"/><rect x="92" y="56" width="8" height="18" rx="4" fill="#FFFFFF"/>
+<rect x="30" y="38" width="64" height="52" rx="18" fill="#FFFFFF"/><rect x="38" y="47" width="48" height="34" rx="12" fill="#FFE4D3"/>
+<circle cx="52" cy="62" r="6.5" fill="#CB4D0E"/><circle cx="72" cy="62" r="6.5" fill="#CB4D0E"/><circle cx="54.5" cy="63.5" r="2.4" fill="#FFFFFF"/><circle cx="74.5" cy="63.5" r="2.4" fill="#FFFFFF"/>
+<path d="M46 52 Q52 49 58 52" stroke="#8C3510" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M66 50 Q72 48 78 52" stroke="#8C3510" stroke-width="2" fill="none" stroke-linecap="round"/>
+<circle cx="45" cy="73" r="3.2" fill="#FDC6A6"/><circle cx="79" cy="73" r="3.2" fill="#FDC6A6"/><path d="M57 74 Q62 78 67 74" stroke="#CB4D0E" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+<rect x="36" y="94" width="52" height="46" rx="16" fill="#FFFFFF"/><rect x="48" y="104" width="28" height="18" rx="6" fill="#FFE4D3"/>
+<text x="62" y="118" font-size="14" font-weight="700" fill="#CB4D0E" text-anchor="middle" font-family="Be Vietnam Pro,Inter,sans-serif">π</text>
+<rect x="22" y="100" width="12" height="30" rx="6" fill="#FFFFFF" transform="rotate(8 28 102)"/>
+<g class="lg-pen"><path d="M84 106 L102 92" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round"/><circle cx="104" cy="90" r="6.5" fill="#FFFFFF"/><g transform="rotate(-35 104 90)"><rect x="103" y="76" width="4.4" height="20" rx="1.6" fill="#FDC6A6"/><path d="M103 76 L105.2 69 L107.4 76Z" fill="#8C3510"/></g></g>
+<rect x="42" y="142" width="14" height="16" rx="6" fill="#FFFFFF"/><rect x="68" y="142" width="14" height="16" rx="6" fill="#FFFFFF"/>
+</g></svg><svg class="lg-art" viewBox="0 0 640 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(0,40)"><line class="ln" x1="80" y1="760" x2="210" y2="690"/><line class="ln" x1="210" y1="690" x2="330" y2="800"/><line class="ln" x1="330" y1="800" x2="470" y2="720"/><line class="ln" x1="470" y1="720" x2="560" y2="820"/><line class="ln" x1="80" y1="760" x2="150" y2="880"/><line class="ln" x1="150" y1="880" x2="300" y2="920"/><line class="ln" x1="300" y1="920" x2="450" y2="900"/><line class="ln" x1="450" y1="900" x2="560" y2="820"/><line class="ln" x1="210" y1="690" x2="150" y2="880"/><line class="ln" x1="330" y1="800" x2="300" y2="920"/><line class="ln" x1="470" y1="720" x2="450" y2="900"/><line class="ln" x1="210" y1="690" x2="120" y2="640"/><line class="ln" x1="120" y1="640" x2="260" y2="600"/><line class="ln" x1="260" y1="600" x2="400" y2="590"/><line class="ln" x1="400" y1="590" x2="540" y2="640"/><line class="ln" x1="540" y1="640" x2="470" y2="720"/><line class="ln" x1="260" y1="600" x2="210" y2="690"/><line class="ln" x1="400" y1="590" x2="470" y2="720"/><circle class="nd" cx="80" cy="760" r="4" style="animation-delay:0.00s"/><circle class="nd" cx="210" cy="690" r="4" style="animation-delay:0.45s"/><circle class="nd" cx="330" cy="800" r="4" style="animation-delay:0.90s"/><circle class="nd" cx="470" cy="720" r="4" style="animation-delay:1.35s"/><circle class="nd" cx="560" cy="820" r="4" style="animation-delay:1.80s"/><circle class="nd" cx="150" cy="880" r="4" style="animation-delay:2.25s"/><circle class="nd" cx="300" cy="920" r="4" style="animation-delay:2.70s"/><circle class="nd" cx="450" cy="900" r="4" style="animation-delay:3.15s"/><circle class="nd" cx="540" cy="640" r="4" style="animation-delay:0.00s"/><circle class="nd" cx="400" cy="590" r="4" style="animation-delay:0.45s"/><circle class="nd" cx="260" cy="600" r="4" style="animation-delay:0.90s"/><circle class="nd" cx="120" cy="640" r="4" style="animation-delay:1.35s"/></g><text class="sy" x="70" y="700" font-size="44" style="animation-delay:0.0s">π</text><text class="sy" x="520" y="640" font-size="52" style="animation-delay:1.8s">∑</text><text class="sy" x="430" y="780" font-size="34" style="animation-delay:3.6s">√x</text><text class="sy" x="100" y="860" font-size="56" style="animation-delay:5.4s">∫</text><text class="sy" x="300" y="620" font-size="34" style="animation-delay:7.2s">x²</text><text class="sy" x="400" y="880" font-size="28" style="animation-delay:9.0s">f(x)</text><text class="sy" x="200" y="780" font-size="40" style="animation-delay:10.8s">Δ</text><text class="sy" x="150" y="600" font-size="40" style="animation-delay:12.6s">∞</text><text class="sy" x="260" y="900" font-size="30" style="animation-delay:14.4s">%</text></svg><h1>Hệ thống quản lý trung tâm</h1><p>Tuyển sinh, bán hàng, lớp học, buổi học và chăm sóc khách hàng ở một nơi. Giáo viên điểm danh, chấm bài ngay trên điện thoại.</p><div class="lg-cs"><span><i></i>CS1 Nguyễn Chí Thanh</span><span><i></i>CS2 Đỗ Quang</span><span><i></i>CS4 Hà Đông</span><span><i></i>CS5 Mỹ Đình</span></div><div class="lg-bf">Cần hỗ trợ đăng nhập: liên hệ quản trị viên của trung tâm.</div></div><div class="lg-side"><div class="lg-form"><img class="lg-logo" src="/_blob/87483624c2475460ed5028600d465ffe" alt="Hoà Ma Toán · 18+ năm kinh nghiệm luyện thi"><h2 class="lg-h">Đăng nhập</h2><p class="lg-sub">Dành cho nhân viên, giáo viên và trợ giảng.</p><div class="lg-alert lg-err" role="alert"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa.</span></div><div class="lg-field"><label for="dn-em">Email</label><input id="dn-em" class="lg-inp err" placeholder="ten@hoamatoan.vn" value="ha.nguyen@hoamatoan.vn" ></div><div class="lg-field"><label for="dn-pw">Mật khẩu</label><div class="lg-pw"><input id="dn-pw" class="lg-inp err" type="password" value="matkhau123"><button class="lg-eye" type="button" aria-label="Hiện mật khẩu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div><div class="lg-ts"><i><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></i>Turnstile · xác minh không phải robot</div><button class="lg-btn pri lg-full" type="button">Đăng nhập</button><div class="lg-lnk"><a href="#">Quên mật khẩu?</a></div><div class="lg-note lg-ctr">Học sinh? <a href="#">Đăng nhập bằng mã học sinh</a></div></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

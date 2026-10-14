@@ -17,6 +17,27 @@ Cập nhật: 14/10/2026 (quy trình thiết kế đổi 13/10 và 14/10, xem m�
 - **Khi các nguồn vênh nhau**: theo tài liệu quyết định thiết kế 13/10 (chưa có trong repo, chờ anh đưa vào), rồi tới
   luật nghiệp vụ. Dòng thứ tự ưu tiên trong CLAUDE.md còn ghi theo bộ P5; sửa khi tài liệu 13/10 vào repo.
 
+## Kế hoạch dựng P0, P1, P2 (anh Trường OK 14/10/2026)
+
+Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0). Gói P5 cũ `design/hmt-platform/` giữ cạnh bên, chỉ lấy logo
+(`assets/hmt-logo-cropped.svg`, bản nền sáng chữ đen + cam). Thứ tự PR:
+
+| PR | Nội dung | Trạng thái |
+|---|---|---|
+| 0 | Đưa gói thiết kế vào repo | Chờ anh OK |
+| 1 | Hệ thiết kế: token, `hmt-theme.css`, font, icon, build thử Tailwind v4 (PR 4d) | Chưa |
+| 2 | Thành phần cơ bản + khung ứng dụng CRM | Chưa |
+| 3 | Danh sách, Kanban, Calendar (dừng hỏi anh nếu gói chưa có khung Filters, Group By, Cột, Favorites) | Chưa |
+| 4 | Bản ghi, hộp thoại, biểu mẫu, trạng thái chung, trang mẫu `/dev/khuon` | Chưa |
+| 5 | P1 đăng nhập: 5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động | Chưa |
+| 6 | PR dữ liệu: bảng đối chiếu đủ 32 danh mục với spec 06, nạp danh mục thiếu, "phiên bản" ma trận quyền | Chưa |
+| 7 | P2 Cấu hình | Chưa |
+| 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
+
+Anh đã chốt: bỏ mã dự phòng, thiết lập hai bước còn 2 bước (giữ chốt 12/10); màn khoá một câu chung (S03-18); hàm công
+khai chỉ trả tên cơ sở dạy học (CS1, CS2, CS4, CS5); mỗi lần Lưu ma trận quyền là một phiên bản, hiệu lực ngay;
+**không đổi cấu trúc quyền trong cơ sở dữ liệu**, màn theo cơ sở dữ liệu.
+
 ## Đang ở đâu
 
 **Giai đoạn 0 (GĐ0), bước 4. Phần giao diện tạm dừng chờ thiết kế mới; phần cơ sở dữ liệu, quyền làm tiếp.**
