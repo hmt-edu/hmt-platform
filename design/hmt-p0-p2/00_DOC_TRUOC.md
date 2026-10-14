@@ -2,25 +2,27 @@
 
 Đọc file này trước khi mở gói. Gói chỉ gồm 3 phân hệ đã duyệt: **P0 Khuôn chung**, **P1 Đăng nhập & xác thực**, **P2 Cấu hình & phân quyền**. P3 (Tuyển sinh TS-xx), P13 Báo cáo, P14 Tìm kiếm & thông báo **không nằm trong gói**.
 
+Bản này đã gồm đợt bổ sung: bốn khung mở ra của K1 (Filters, Group By, Cột, Favorites) và lịch sử phiên bản của Ma trận quyền (mục 6).
+
 ## 0. Cấu trúc gói
 ```
 00_DOC_TRUOC.md
 ds/hmt/handoff/hmt-tokens.css      token màu, chữ, khoảng cách, bo góc
 ds/hmt/components/bundle.css       thành phần dùng chung (.hmt-btn, .hmt-toast, ...)
 ds/hmt/tokens.json                 cùng token dạng JSON
-artboards/*.dc.html                59 artboard (P0 15, P1 42, P2 2)
+artboards/*.dc.html                76 artboard (P0 30, P1 42, P2 4)
 artboards/ds/hmt/...               bản sao token để mở artboard độc lập (đường dẫn tương đối ds/hmt/...)
 png/*.png                          ảnh từng artboard; tên PNG trùng tên artboard
 ```
-- Artboard 1440×1000 là bản **máy tính**; 390×844 là bản **điện thoại** (tên có `_mb` hoặc K4e). P1 có đủ pc và mb. P0 và P2 chỉ có bản máy tính, riêng K4e là bản điện thoại.
+- Artboard 1440×1000 là bản **máy tính**; 390×844 là bản **điện thoại** (tên có `_mb`, `K1m_` hoặc K4e). P1 có đủ pc và mb. P0 và P2 chủ yếu là bản máy tính; điện thoại chỉ có K4e và K1m_*.
 - Ảnh PNG xuất bằng trình duyệt không có phông Inter / Be Vietnam Pro nên chữ là phông thay thế, hơi lệch so với bản thật. Kích thước và màu đúng. Phông chuẩn lấy theo token (`--font-ui` Inter, `--font-heading` Be Vietnam Pro).
 - Các file `.dc.html` là artboard của Design canvas. Mỗi file tham chiếu `ds/hmt/...` theo đường dẫn tương đối; cần có `support.js` của công cụ canvas mới mở độc lập được. Khi dựng thật, lấy HTML trong `<x-dc>` và CSS token làm chuẩn, không cần chạy `support.js`.
-- Quy ước thiết kế: giao diện sáng, màu thương hiệu cam (`--brand-600` #CB4D0E), mỗi màn một nút chính, nút nguy hiểm viền đỏ có biểu tượng. Nút và bố cục chỉ lấy từ wireframe/brief; chỗ chưa có thì liệt kê ở mục 5.
+- Quy ước thiết kế: giao diện sáng, màu thương hiệu cam (`--brand-600` #CB4D0E), mỗi màn một nút chính, nút nguy hiểm viền đỏ có biểu tượng. Nút và bố cục chỉ lấy từ wireframe/brief; chỗ chưa có thì liệt kê ở mục 5 và 6.
 
 
 ## 1. Danh sách mã màn trong gói
 
-### P0 · Khuôn chung (15 artboard, máy tính; K4e là điện thoại)
+### P0 · Khuôn chung (30 artboard, máy tính; K4e và K1m_* là điện thoại)
 
 | Artboard | Mã màn | Nội dung | PNG |
 |---|---|---|---|
@@ -39,6 +41,21 @@ png/*.png                          ảnh từng artboard; tên PNG trùng tên a
 | K07c | TS-03 | Hộp thoại cảnh báo trùng SĐT, đè lên ngăn kéo | `png/K07c.png` |
 | K09b | CHUNG-14 | Trang chủ theo vai trò (Sale / CSKH / Trưởng cơ sở / Kế toán / Admin) | `png/K09b.png` |
 | K0x | — | Trạng thái chung: tải (skeleton), rỗng, thông báo lỗi/cảnh báo | `png/K0x.png` |
+| K1_loc | K1+ | Filters: khung lọc nhanh thả xuống (đã tick vài lọc) | `png/K1_loc.png` |
+| K1_loc_chip | K1+ | Filters: đã áp dụng, chip lọc trên thanh tìm, bảng đã lọc | `png/K1_loc_chip.png` |
+| K1_loc_nc | K1+ | Lọc nâng cao: hộp thoại có 3 dòng điều kiện | `png/K1_loc_nc.png` |
+| K1_loc_nc0 | K1+ | Lọc nâng cao: rỗng, chưa có điều kiện | `png/K1_loc_nc0.png` |
+| K1_nhom | K1+ | Group By: khung thả xuống, đã chọn 2 cấp | `png/K1_nhom.png` |
+| K1_nhom_bang | K1+ | Group By: bảng đã nhóm 2 cấp (Stage › Source), dòng nhóm gập/mở, có đếm | `png/K1_nhom_bang.png` |
+| K1_nhom0 | K1+ | Group By: rỗng, chưa chọn cấp nào (bảng phẳng) | `png/K1_nhom0.png` |
+| K1_cot | K1+ | Cột: tick cột hiển thị, kéo đổi thứ tự, nút Mặc định | `png/K1_cot.png` |
+| K1_fav | K1+ | Favorites: danh sách bộ lọc đã lưu của tôi | `png/K1_fav.png` |
+| K1_fav_luu | K1+ | Favorites: lưu bộ lọc hiện tại (đặt tên, tick Dùng cho mọi người) | `png/K1_fav_luu.png` |
+| K1_fav0 | K1+ | Favorites: rỗng “Chưa có bộ lọc nào được lưu” | `png/K1_fav0.png` |
+| K1m_loc | K1+ | Filters (điện thoại): bottom sheet | `png/K1m_loc.png` |
+| K1m_nhom | K1+ | Group By (điện thoại): bottom sheet | `png/K1m_nhom.png` |
+| K1m_cot | K1+ | Cột (điện thoại): bottom sheet | `png/K1m_cot.png` |
+| K1m_fav | K1+ | Favorites (điện thoại): bottom sheet | `png/K1m_fav.png` |
 
 ### P1 · Đăng nhập & xác thực (10 màn, 42 artboard: máy tính + điện thoại)
 
@@ -57,38 +74,41 @@ png/*.png                          ảnh từng artboard; tên PNG trùng tên a
 
 Tên file đầy đủ = `<DNxx>_<biến thể>`, ví dụ `DN03_pc_code_err.dc.html` và `png/DN03_pc_code_err.png`.
 
-### P2 · Cấu hình & phân quyền (2 artboard, máy tính)
+### P2 · Cấu hình & phân quyền (4 artboard, máy tính)
 
 | Artboard | Mã màn | Nội dung | PNG |
 |---|---|---|---|
 | CauHinh | QT-07 / QT-09 | Cấu hình: Danh mục, Tham số nghiệp vụ, Công tắc tính năng | `png/CauHinh.png` |
-| MaTranQuyen | QT-05 | Ma trận quyền theo vai trò | `png/MaTranQuyen.png` |
+| MaTranQuyen | QT-05 | Ma trận quyền theo vai trò; đầu màn ghi “Phiên bản 12 · lưu bởi … lúc …”; đã bỏ ngày hiệu lực | `png/MaTranQuyen.png` |
+| MaTranQuyen_ls | QT-05 | Lịch sử thay đổi quyền: danh sách phiên bản (ngăn kéo) | `png/MaTranQuyen_ls.png` |
+| MaTranQuyen_ct | QT-05 | Lịch sử thay đổi quyền: chi tiết một phiên bản (ô đã đổi: vai trò · phân hệ · hành động · từ → sang) | `png/MaTranQuyen_ct.png` |
 
 ## 2. Khuôn dùng cho màn nào
 
 | Khuôn | Dùng cho | Ghi chú |
 |---|---|---|
-| Vỏ CRM (thanh trái + thanh trên) | K1, K2, K3, K5, K07b, K07c, K09b, CauHinh, MaTranQuyen | Thanh trái: Tổng quan, Tuyển sinh, Khách hàng, Bán hàng & thu chi, Đào tạo, Chăm sóc KH, Báo cáo, Cấu hình, Quản trị |
+| Vỏ CRM (thanh trái + thanh trên) | K1, K2, K3, K5, K07b, K07c, K09b, K1_*, CauHinh, MaTranQuyen, MaTranQuyen_* | Thanh trái: Tổng quan, Tuyển sinh, Khách hàng, Bán hàng & thu chi, Đào tạo, Chăm sóc KH, Báo cáo, Cấu hình, Quản trị |
 | K1 List / K2 Kanban | Mọi danh sách và bảng Kanban cùng nhóm | Mẫu là “Cơ hội” |
+| Khung thả xuống (popover) neo dưới nút | K1_loc, K1_nhom, K1_cot, K1_fav* | Rộng 300–340, bóng md, bo góc lớn; dùng cho mọi danh sách có Filters, Group By, Cột, Favorites |
 | K3 Chi tiết bản ghi | Mọi chi tiết có giai đoạn | Mẫu là CO000121 |
-| K4 Hộp thoại 5 biến thể | Huỷ/từ chối có lý do, Assign, chặn, cảnh báo | Biến thể ①②③③b④⑤ |
+| K4 Hộp thoại 5 biến thể | Huỷ/từ chối có lý do, Assign, chặn, cảnh báo; K1_loc_nc* (Lọc nâng cao) | Biến thể ①②③③b④⑤ |
 | K4b Nhiều bước | Nhập từ file và quy trình tương tự | 3 bước |
 | K4c Xem trước tác động | Đổi giáo viên, đổi lịch hàng loạt | Cảnh báo, không chặn |
 | K4d Chọn từ danh sách có kiểm tra | Chọn lớp cho dòng đơn | Tối đa 2 lý do, rồi “+N lý do” |
-| K4e Bottom sheet | Duyệt/từ chối trên điện thoại | 390×844 |
+| K4e Bottom sheet | Duyệt/từ chối trên điện thoại; K1m_* (4 khung của K1) | 390×844 |
 | K5 Calendar | Lịch hẹn tuần | |
-| K07b Ngăn kéo biểu mẫu | Tạo nhanh bản ghi | Nút: Huỷ, Lưu |
+| K07b Ngăn kéo biểu mẫu | Tạo nhanh bản ghi; MaTranQuyen_ls/ct (ngăn kéo lịch sử, chỉ xem) | Nút K07b: Huỷ, Lưu |
 | K07c Hộp thoại cảnh báo trùng | Trùng SĐT khi tạo | Nút: Vẫn tạo mới, Gắn vào hồ sơ có sẵn; đóng bằng X |
 | K09b Trang chủ theo vai trò | CHUNG-14 | Năm vai trò |
 | K0x Trạng thái chung | Tải, rỗng, thông báo lỗi/cảnh báo | |
 | Khuôn đăng nhập (thẻ giữa trang, logo, tiêu đề, 1 nút chính) | DN01–DN10 | Máy tính: thẻ giữa nền; điện thoại: toàn màn |
-| Khuôn ngăn kéo/bảng cấu hình | CauHinh, MaTranQuyen | |
+| Khuôn trang cấu hình / ma trận | CauHinh, MaTranQuyen | |
 
 Mỗi artboard P1 đi theo khuôn đăng nhập; DN04 và DN10 có phần bố cục riêng (3 bước; hai thẻ cổng).
 
 ## 3. Chữ trên nút và thông báo của từng màn
 
-Danh sách được trích tự động từ các artboard. Đã bỏ nhãn thanh điều hướng chung (Tổng quan … Quản trị). Chữ dạng “lấy từ dữ liệu” là nhãn do dữ liệu quyết định (giai đoạn, tab…), không cố định.
+Danh sách được trích tự động từ các artboard. Đã bỏ nhãn thanh điều hướng chung (Tổng quan … Quản trị). Với các artboard K1_*, K1m_* và MaTranQuyen_* đã bỏ thêm nút của màn nền; phần “Chữ trong khung” ghi tay. Chữ dạng “lấy từ dữ liệu” là nhãn do dữ liệu quyết định (giai đoạn, tab…), không cố định.
 
 ### P0
 
@@ -157,6 +177,103 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
   - **Thông báo / chữ cảnh báo:**
     - “Không lưu được. Kiểm tra kết nối rồi thử lại.”
     - “Lead này đã có người phụ trách khác.”
+- **K1_loc** (K1+) — Filters: khung lọc nhanh thả xuống (đã tick vài lọc)
+  - K1 + khung thả xuống (popover) neo dưới nút Filters
+  - **Nút:** “Lọc nâng cao…”
+  - **Chữ trong khung:**
+    - Tên khung: “Lọc nhanh”
+    - Nhóm “Của tôi”: Tôi là sale · Tôi hỗ trợ
+    - Nhóm “Lịch hẹn”: Hôm nay · Quá hạn chăm (phụ: “lịch hẹn kế tiếp đã quá hạn, chưa xong”) · Chưa có lịch hẹn
+    - Gợi ý: “Cùng nhóm là HOẶC, khác nhóm là VÀ.”
+    - Mục mở hộp thoại: “Lọc nâng cao…”
+    - Chip sau khi chọn: “Của tôi: Tôi là sale”, “Lịch hẹn: Hôm nay hoặc Quá hạn chăm”
+- **K1_loc_chip** (K1+) — Filters: đã áp dụng, chip lọc trên thanh tìm, bảng đã lọc
+  - K1 (trạng thái)
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Chip: Của tôi: Tôi là sale · Lịch hẹn: Hôm nay hoặc Quá hạn chăm · Tìm Tên: Toán · Group By: Stage
+    - Bộ đếm: “1–5 / 5”
+- **K1_loc_nc** (K1+) — Lọc nâng cao: hộp thoại có 3 dòng điều kiện
+  - Khuôn hộp thoại (như K4) đè lên K1 mờ
+  - **Nút:** “Source” · “là” · “Facebook Ads” · “Stage” · “là một trong” · “L4 Khách hàng tiềm năng L5 Đồng ý…” · “từ ngày” · “Thêm điều kiện” · “Xoá lọc” · “Áp dụng”
+  - **Chữ trong khung:**
+    - Tên hộp: “Lọc nâng cao” (đóng bằng X)
+    - Dòng điều kiện: trường · phép so sánh · giá trị; nút xoá dòng (biểu tượng thùng rác); “Thêm điều kiện”
+    - Phép so sánh mẫu: là · là một trong · từ ngày
+    - Gợi ý: “Cơ hội phải khớp tất cả các điều kiện. Bộ lọc này gộp với các lọc nhanh đang chọn.”
+    - Nút: “Xoá lọc”, “Áp dụng” (nút chính)
+- **K1_loc_nc0** (K1+) — Lọc nâng cao: rỗng, chưa có điều kiện
+  - Khuôn hộp thoại (như K4)
+  - **Nút:** “Thêm điều kiện” · “Xoá lọc” · “Áp dụng”
+  - **Chữ trong khung:**
+    - Rỗng: “Chưa có điều kiện nào” · “Bấm “Thêm điều kiện” để chọn trường, phép so sánh và giá trị.”
+    - “Xoá lọc” và “Áp dụng” bị tắt
+- **K1_nhom** (K1+) — Group By: khung thả xuống, đã chọn 2 cấp
+  - K1 + khung thả xuống neo dưới nút Group By
+  - **Nút:** “Cấp 1 Stage” · “Sub-stage” · “Cấp 2 Source” · “Sub-source” · “Sale phụ trách” · “Cơ sở”
+  - **Chữ trong khung:**
+    - Tên khung: “Nhóm theo”; dòng “Thứ tự nhóm: Stage › Source”
+    - Trường để nhóm: Stage · Sub-stage · Source · Sub-source · Sale phụ trách · Cơ sở; nhãn “Cấp 1”, “Cấp 2” trên trường đã chọn
+    - Khi đủ 2 cấp: “Đã đủ 2 cấp. Bỏ một trường để chọn trường khác. Bấm lại một trường để bỏ chọn.” (các trường còn lại mờ)
+- **K1_nhom_bang** (K1+) — Group By: bảng đã nhóm 2 cấp (Stage › Source), dòng nhóm gập/mở, có đếm
+  - K1 (trạng thái)
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Chip: Group By: Stage › Source
+    - Dòng nhóm: tên nhóm + số đếm, mũi tên gập/mở (cấp 1 và cấp 2)
+- **K1_nhom0** (K1+) — Group By: rỗng, chưa chọn cấp nào (bảng phẳng)
+  - K1 + khung thả xuống
+  - **Nút:** “Stage” · “Sub-stage” · “Source” · “Sub-source” · “Sale phụ trách” · “Cơ sở”
+  - **Chữ trong khung:**
+    - Rỗng: “Chưa chọn cấp nào, bảng đang hiện dạng phẳng. Chọn tối đa 2 cấp.” · “Thứ tự nhóm: chưa chọn”
+- **K1_cot** (K1+) — Cột: tick cột hiển thị, kéo đổi thứ tự, nút Mặc định
+  - K1 + khung thả xuống neo dưới nút Cột
+  - **Nút:** “Mặc định”
+  - **Chữ trong khung:**
+    - Tên khung: “Cột hiển thị”, bộ đếm “8 / 12”
+    - Danh sách: Mã, Cơ hội (khoá, luôn hiện), Phụ huynh · SĐT, Stage · Sub-stage, Source · Sub-source, Sale phụ trách, Cơ sở, Lịch hẹn kế tiếp, Ngày tạo, Nhân sự hỗ trợ, Chiến dịch, Trường học
+    - Gợi ý: “Tick để hiện hoặc ẩn. Kéo tay nắm bên trái để đổi thứ tự. Mã và Cơ hội luôn hiện.”
+    - Nút: “Mặc định”
+- **K1_fav** (K1+) — Favorites: danh sách bộ lọc đã lưu của tôi
+  - K1 + khung thả xuống neo dưới nút Favorites
+  - **Nút:** “Lưu bộ lọc hiện tại”
+  - **Chữ trong khung:**
+    - Tên khung: “Bộ lọc đã lưu của tôi”
+    - Mỗi dòng: tên, mô tả điều kiện, thẻ “Dùng chung” (nếu có), nút xoá (thùng rác)
+    - Nút: “Lưu bộ lọc hiện tại”
+- **K1_fav_luu** (K1+) — Favorites: lưu bộ lọc hiện tại (đặt tên, tick Dùng cho mọi người)
+  - K1 + khung thả xuống
+  - **Nút:** “Huỷ” · “Lưu”
+  - **Chữ trong khung:**
+    - Tên khung: “Lưu bộ lọc hiện tại”; khối “Điều kiện đang áp dụng”
+    - Ô “Tên bộ lọc” (bắt buộc); tick “Dùng cho mọi người”; gợi ý “Ô này chỉ hiện với người có quyền chia sẻ bộ lọc.”
+    - Nút: “Huỷ”, “Lưu” (nút chính)
+- **K1_fav0** (K1+) — Favorites: rỗng “Chưa có bộ lọc nào được lưu”
+  - K1 + khung thả xuống
+  - **Nút:** “Lưu bộ lọc hiện tại”
+  - **Chữ trong khung:**
+    - Rỗng: “Chưa có bộ lọc nào được lưu” · “Chọn bộ lọc rồi bấm “Lưu bộ lọc hiện tại” để dùng lại lần sau.”
+    - Nút: “Lưu bộ lọc hiện tại”
+- **K1m_loc** (K1+) — Filters (điện thoại): bottom sheet
+  - Khuôn K4e (bottom sheet 390×844)
+  - **Nút:** “Lọc nâng cao…” · “Xoá lọc” · “Áp dụng”
+  - **Chữ trong khung:**
+    - Sheet “Filters”: như bản máy tính; nút “Xoá lọc”, “Áp dụng” (nút chính); mục “Lọc nâng cao…”
+- **K1m_nhom** (K1+) — Group By (điện thoại): bottom sheet
+  - Khuôn K4e
+  - **Nút:** “Áp dụng”
+  - **Chữ trong khung:**
+    - Sheet “Group By”: “Thứ tự nhóm: Stage › Source”, nhãn Cấp 1, Cấp 2; nút “Áp dụng” (nút chính)
+- **K1m_cot** (K1+) — Cột (điện thoại): bottom sheet
+  - Khuôn K4e
+  - **Nút:** “Mặc định” · “Áp dụng”
+  - **Chữ trong khung:**
+    - Sheet “Cột hiển thị”; nút “Mặc định”, “Áp dụng” (nút chính)
+- **K1m_fav** (K1+) — Favorites (điện thoại): bottom sheet
+  - Khuôn K4e
+  - **Nút:** “Lưu bộ lọc hiện tại”
+  - **Chữ trong khung:**
+    - Sheet “Bộ lọc đã lưu của tôi”; nút “Lưu bộ lọc hiện tại” (nút chính)
 
 ### P1
 
@@ -292,11 +409,30 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
 ### P2
 
 - **CauHinh** (QT-07 / QT-09) — Cấu hình: Danh mục, Tham số nghiệp vụ, Công tắc tính năng
-  - Khuôn K5-biến thể trang Cấu hình (vỏ CRM + cột trái nhóm danh mục + bảng)
+  - Khuôn trang Cấu hình (vỏ CRM + cột trái nhóm danh mục + bảng)
   - **Nút:** “Lịch sử thay đổi” · “Danh mục” · “Tham số nghiệp vụ” · “Công tắc tính năng” · “Giai đoạn cơ hội Khoá 8” · “Nguồn lead 7” · “Môn học 10” · “Phân loại lớp Khoá 3” · “Trình độ Khoá 4” · “Hình thức học Khoá 2” · “Loại gói 6” · “Loại hoạt động 5” · “Hình thức test 2” · “Cấp độ đề test 2” · “Lý do từ chối 5” · “Lý do huỷ buổi 8” · “Lý do không tái tục 7” · “Hình thức thu tiền 3” · “Mức độ khiếu nại 4” · “Kênh tiếp nhận ticket 6” · “Source” · “Sub-source” · “Ngừng” · “Thêm” · “Huỷ” · “Lưu” · (một số nhãn lấy từ dữ liệu: giai đoạn, sub-stage, tab…)
-- **MaTranQuyen** (QT-05) — Ma trận quyền theo vai trò
+- **MaTranQuyen** (QT-05) — Ma trận quyền theo vai trò; đầu màn ghi “Phiên bản 12 · lưu bởi … lúc …”; đã bỏ ngày hiệu lực
   - Khuôn trang Ma trận quyền (vỏ CRM + bảng ô quyền)
   - **Nút:** “Lịch sử thay đổi quyền” · “Cơ sở” · “Của tôi” · “Không có” · “Tất cả” · “Huỷ” · “Lưu thay đổi” · “Sửa”
+  - **Chữ trong khung:**
+    - Đầu màn: thẻ “Hiện hành” + “Phiên bản 12” + “lưu bởi Cao Trường lúc 12/10/2026 16:20”
+    - Thanh lưu: “Lưu tạo phiên bản mới, có hiệu lực ngay.”; thông báo sau lưu: “Đã lưu N thay đổi thành phiên bản mới, có hiệu lực ngay.”
+- **MaTranQuyen_ls** (QT-05) — Lịch sử thay đổi quyền: danh sách phiên bản (ngăn kéo)
+  - Khuôn ngăn kéo (như K07b) đè lên Ma trận quyền
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Tên ngăn kéo: “Lịch sử thay đổi quyền”; dòng phụ “Phiên bản hiện hành: 12. Mỗi lần lưu tạo một phiên bản mới, có hiệu lực ngay.”
+    - Mỗi dòng: “Phiên bản N”, thẻ “Hiện hành” (bản mới nhất), “Đổi X ô”, người lưu · giờ lưu
+    - Chân: “Bấm một dòng để xem các ô đã đổi. Chỉ xem, không khôi phục phiên bản cũ.”
+    - Không có nút khôi phục
+- **MaTranQuyen_ct** (QT-05) — Lịch sử thay đổi quyền: chi tiết một phiên bản (ô đã đổi: vai trò · phân hệ · hành động · từ → sang)
+  - Khuôn ngăn kéo
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Dòng phụ: “Phiên bản 11 · lưu bởi … lúc … · đổi 3 ô”; nút quay lại danh sách
+    - Cột: Vai trò · Phân hệ · Hành động · Từ → Sang
+    - Chân: “Chỉ xem. Muốn đổi lại, sửa trong ma trận rồi lưu thành phiên bản mới.”
+    - Không có nút khôi phục
 
 **Chuỗi tương tác nhúng trong MaTranQuyen.dc.html (bản mẫu, chưa phải chữ chính thức):**
 - “Đang xem quyền của vai trò ”
@@ -322,13 +458,15 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
 - **Quyền xem từng khối** theo Ma trận quyền (QT-05), chốt sau.
 - **Ngưỡng “sắp quá hạn”**: còn ≤ 25% thời hạn xử lý của ticket (ví dụ ticket đề nghị 2 ngày thì từ 12 giờ cuối). Chưa phải luật chính thức.
 - **Lưu nháp**: chỉ khi bản ghi có giai đoạn Nháp (lớp, đơn hàng, báo giá, phiếu thu). Lead không có bước Nháp.
-- **Cơ hội quá hạn chăm**: cơ hội có lịch hẹn kế tiếp đã quá hạn, chưa hoàn thành.
+- **Cơ hội quá hạn chăm**: cơ hội có lịch hẹn kế tiếp đã quá hạn, chưa hoàn thành (dùng làm lọc nhanh “Quá hạn chăm” ở K1).
 - **Mã ticket**: `DN-<CS>-<YYMM>-<STT>` (đề nghị) và `KN-…` (khiếu nại), ví dụ DN-CS1-2610-0007.
 - **Source / Sub-source** là hai ô riêng; “Loại” tự hiện dưới Source. **Chiến dịch** là ô độc lập, có “+ Tạo chiến dịch mới”.
 - **Nhập lead từ file**: bỏ qua dòng trùng SĐT; tổng kết “Đã nhập 112 · Bỏ qua 9 trùng SĐT · 7 dòng lỗi”; dòng trùng hiện mã sẵn có (“Trùng với LD000231”).
 - **Đổi giáo viên**: trùng lịch chỉ cảnh báo, vẫn bấm Xác nhận được.
 - **Chọn lớp (K4d)**: mỗi dòng hiện tối đa 2 lý do không chọn được, còn lại gộp “+N lý do”; lớp trùng giờ với lớp em đang học thì mờ đi.
 - **Trang chủ theo vai trò (K09b)**: nút “Mở danh sách” dẫn tới đích theo bảng của anh; quyền xem từng khối chờ QT-05.
+- **Ma trận quyền (10/10)**: mỗi lần bấm “Lưu thay đổi” tạo MỘT phiên bản mới, có hiệu lực ngay, không hẹn ngày. Lịch sử chỉ xem, không khôi phục.
+- **Bộ lọc nhanh của K1**: cùng nhóm là HOẶC, khác nhóm là VÀ. Group By tối đa 2 cấp.
 
 ## 5. Những chỗ còn chưa chắc
 1. **P1 còn thiếu (Đợt 3)**: chưa vẽ màn không có quyền, module chưa bật, 404, lỗi hệ thống, và khung cổng KC.
@@ -340,5 +478,22 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
 7. **Hộp cảnh báo trùng SĐT** ở TS-03 đã thống nhất theo K07c (bỏ nút “Huỷ”, đóng bằng X). TS-03 thuộc P3 nên không nằm trong gói; K07b/K07c là bản chuẩn.
 8. **Source 3 cấp** trong danh mục chỉ hiện 2 ô (Source, Sub-source); “Loại” hiện như chữ phụ. Chưa rõ có cần ô thứ ba không.
 9. **Tiêu đề trong file** CauHinh.dc.html ghi “K5 · Cấu hình” và MaTranQuyen.dc.html ghi “Đ1 · Ma trận quyền”: tên cũ, mã đúng là QT-07/QT-09 và QT-05.
-10. **K1, K2, K3, K5, K4*, K0x** chưa có mã màn trong brief nên cột “Mã màn” để “—”; gọi theo tên artboard.
+10. **K1, K2, K3, K5, K4*, K0x, K1_*** chưa có mã màn trong brief nên cột “Mã màn” để “—” hoặc “K1+”; gọi theo tên artboard.
 11. Ảnh PNG dùng phông thay thế (xem mục 0); các màn có tương tác (chọn vai trò K09b, các bước K4b, mở hộp thoại) chỉ chụp ở trạng thái mở đầu. Muốn xem các trạng thái khác thì mở file `.dc.html`.
+12. Các chỗ chưa chắc của đợt bổ sung nằm ở mục 6.
+
+
+## 6. Đợt bổ sung: K1 bốn khung mở ra và lịch sử phiên bản Ma trận quyền
+Luật chốt (10/10): mỗi lần bấm “Lưu thay đổi” tạo MỘT phiên bản mới của ma trận, có hiệu lực ngay, không hẹn ngày. Đã bỏ ô “Có hiệu lực từ” và câu “có hiệu lực từ ngày chọn” trong màn Ma trận quyền.
+
+| Khung | Artboard | Chưa chắc |
+|---|---|---|
+| Filters (khung thả xuống) | K1_loc, K1_loc_chip | Nội dung hai nhóm lọc nhanh em lấy từ chip và định nghĩa có sẵn: “Của tôi” (Tôi là sale, Tôi hỗ trợ) và “Lịch hẹn” (Hôm nay, Quá hạn chăm, Chưa có lịch hẹn). “Tôi hỗ trợ” và “Chưa có lịch hẹn” em thêm cho đủ hai nhóm; chờ anh chốt danh sách. Tick lọc nhanh áp dụng ngay, không có nút Áp dụng riêng. |
+| Lọc nâng cao | K1_loc_nc, K1_loc_nc0 | Các dòng điều kiện nối bằng VÀ (chưa có ô chọn HOẶC). Danh sách trường và phép so sánh theo kiểu dữ liệu (là, là một trong, từ ngày…) mới là ví dụ. Chưa vẽ ô chọn giá trị đang mở. Hộp thoại có thêm nút đóng X ngoài hai nút anh liệt kê. |
+| Group By | K1_nhom, K1_nhom_bang, K1_nhom0 | Danh sách trường nhóm lấy từ các cột của K1 (Stage, Sub-stage, Source, Sub-source, Sale phụ trách, Cơ sở). Bấm lại để bỏ chọn; khi đủ 2 cấp các trường còn lại mờ. Nhóm cấp 2 gập/mở độc lập với cấp 1. Chưa vẽ đổi thứ tự cấp (chỉ đổi bằng cách bỏ chọn rồi chọn lại). |
+| Cột | K1_cot | Mã và Cơ hội luôn hiện (khoá) là em tự đặt. Bốn cột thêm (Ngày tạo, Nhân sự hỗ trợ, Chiến dịch, Trường học) lấy từ trang chi tiết K3, chờ anh chốt. Không có trạng thái rỗng vì Mã và Cơ hội luôn bật. Chưa rõ “Mặc định” là bộ cột nào. |
+| Favorites | K1_fav, K1_fav_luu, K1_fav0 | Ô “Dùng cho mọi người” chỉ hiện với người có quyền chia sẻ; em chưa biết tên quyền này, đang ghi “quyền chia sẻ bộ lọc”, cần đối chiếu Ma trận quyền (QT-05). Tên ba bộ lọc mẫu là em đặt. Chưa vẽ lỗi trùng tên và hỏi xác nhận khi xoá. |
+| Bản điện thoại (4 bottom sheet) | K1m_loc, K1m_nhom, K1m_cot, K1m_fav | Điện thoại dùng nút “Áp dụng” vì sheet đóng lại, khác bản máy tính (áp dụng ngay). Nền điện thoại là danh sách thẻ cơ hội do em phác (K1 chưa có bản điện thoại). Chưa vẽ: Lọc nâng cao trên điện thoại, lưu bộ lọc trên điện thoại, và trạng thái rỗng của Favorites trên điện thoại. |
+| Ma trận quyền: đầu màn | MaTranQuyen | Câu “Phiên bản 12 · lưu bởi Cao Trường lúc 12/10/2026 16:20” là ví dụ. Mục “Lịch sử thay đổi gần đây” ở cuối màn (đã duyệt) vẫn ghi theo từng thay đổi, chưa gắn số phiên bản; nội dung dòng đầu (“Giao việc trên Ticket”) không khớp 5 hành động của ma trận (Xem, Tạo, Sửa, Duyệt, Xuất). |
+| Lịch sử phiên bản | MaTranQuyen_ls, MaTranQuyen_ct | Dữ liệu phiên bản 7 đến 12 là mẫu em đặt. Phiên bản 10 ghi “đổi 40 ô” vì thêm vai trò mới, chưa chắc cách đếm này. Chưa vẽ: lọc theo người lưu hoặc ngày, phân trang khi nhiều phiên bản. Quyền xem lịch sử chưa rõ. |
+| Cấu hình (CauHinh) | CauHinh | Màn Cấu hình vẫn còn ô “Có hiệu lực từ” cho tham số nghiệp vụ. Luật 10/10 chỉ nói về ma trận quyền nên em không sửa, cần anh xác nhận có áp dụng cho tham số không. |

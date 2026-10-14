@@ -19,15 +19,15 @@ Cập nhật: 14/10/2026 (quy trình thiết kế đổi 13/10 và 14/10, xem m�
 
 ## Kế hoạch dựng P0, P1, P2 (anh Trường OK 14/10/2026)
 
-Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0). Gói P5 cũ `design/hmt-platform/` giữ cạnh bên, chỉ lấy logo
+Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/10** (thêm 4 khung mở ra của K1: Filters, Lọc nâng cao, Group By, Cột, Favorites, kèm bản điện thoại; thêm lịch sử phiên bản của Ma trận quyền; ma trận bỏ ô "hiệu lực từ"). Gói P5 cũ `design/hmt-platform/` giữ cạnh bên, chỉ lấy logo
 (`assets/hmt-logo-cropped.svg`, bản nền sáng chữ đen + cam). Thứ tự PR:
 
 | PR | Nội dung | Trạng thái |
 |---|---|---|
-| 0 | Đưa gói thiết kế vào repo | Chờ anh OK |
+| 0 | Đưa gói thiết kế vào repo | Đã gộp (#19); bản v2 ở PR "Cập nhật gói thiết kế v2" |
 | 1 | Hệ thiết kế: token, `hmt-theme.css`, font, icon, build thử Tailwind v4 (PR 4d) | Chưa |
 | 2 | Thành phần cơ bản + khung ứng dụng CRM | Chưa |
-| 3 | Danh sách, Kanban, Calendar (dừng hỏi anh nếu gói chưa có khung Filters, Group By, Cột, Favorites) | Chưa |
+| 3 | Danh sách, Kanban, Calendar (gói v2 đã có 4 khung của K1; còn vài chỗ Design ghi "chưa chắc", xem PR gói v2) | Chưa |
 | 4 | Bản ghi, hộp thoại, biểu mẫu, trạng thái chung, trang mẫu `/dev/khuon` | Chưa |
 | 5 | P1 đăng nhập: 5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động | Chưa |
 | 6 | PR dữ liệu: bảng đối chiếu đủ 32 danh mục với spec 06, nạp danh mục thiếu, "phiên bản" ma trận quyền | Chưa |
