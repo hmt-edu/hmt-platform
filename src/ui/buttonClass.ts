@@ -3,7 +3,7 @@ import { cn } from './cn';
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
 const BASE =
-  'focus-ring tap inline-flex h-control items-center justify-center gap-2 rounded-md px-[var(--hmt-density-control-px)] text-body font-medium whitespace-nowrap transition-colors duration-150 select-none';
+  'focus-ring tap inline-flex h-control items-center justify-center gap-2 rounded-control px-3 text-body font-medium whitespace-nowrap transition-colors duration-150 select-none';
 
 const VARIANTS: Record<ButtonVariant, string> = {
   // Một nút cam mỗi vùng (nguyên tắc "cam có kỷ luật").

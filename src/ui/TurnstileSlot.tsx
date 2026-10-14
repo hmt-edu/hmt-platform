@@ -65,7 +65,7 @@ export function TurnstileSlot({
 
   if (!siteKey) {
     return (
-      <p className="flex min-h-16 items-center gap-2 rounded-md border border-border-strong bg-surface-subtle px-3 text-body text-fg">
+      <p className="flex min-h-16 items-center gap-2 rounded-control border border-border-strong bg-surface-subtle px-3 text-body text-fg">
         <Icon name="check" className="text-success" />
         Đã xác minh (môi trường thử)
       </p>

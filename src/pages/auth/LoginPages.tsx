@@ -1,7 +1,7 @@
 import { Link, useSearchParams } from 'react-router';
 import { LoginForm } from './LoginForm';
 
-const LINK = 'focus-ring rounded-sm text-link underline underline-offset-2';
+const LINK = 'focus-ring rounded-tag text-link underline underline-offset-2';
 
 function withNext(path: string, next: string | null): string {
   return next ? `${path}?next=${encodeURIComponent(next)}` : path;

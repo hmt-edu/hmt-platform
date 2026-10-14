@@ -59,7 +59,7 @@ export function TotpEnroll({ deviceName, onDone }: { deviceName: string; onDone:
       <img
         src={enrollment.qrCode}
         alt="Mã QR để cài xác thực hai bước"
-        className="mx-auto size-48 rounded-md bg-surface p-2"
+        className="mx-auto size-48 rounded-control bg-surface p-2"
       />
       <p className="text-caption text-fg-muted">
         Không quét được thì nhập khoá:{' '}

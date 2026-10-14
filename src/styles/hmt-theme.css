@@ -1,0 +1,241 @@
+/* Hệ thiết kế HMT (gói thiết kế P0–P2, bản 14/10/2026) cho Tailwind v4.
+   Nguồn token DUY NHẤT: design/hmt-p0-p2/ds/hmt/handoff/hmt-tokens.css (biến :root, nhập ngay bên dưới).
+   Tệp này chỉ làm ba việc: (1) ánh xạ token thành tên tiện ích Tailwind, (2) giữ vài tên cũ của PR 4a để các màn
+   chưa dựng lại không vỡ, (3) vài tiện ích và nền dùng chung.
+   Không viết màu, cỡ chữ, khoảng cách ở nơi khác: thiếu thì thêm token trong gói thiết kế, rồi ánh xạ ở đây.
+   Chỉ giao diện sáng. */
+@import '../../design/hmt-p0-p2/ds/hmt/handoff/hmt-tokens.css';
+
+/* Cỡ mà gói chưa đặt tên token (lấy từ bundle.css của gói): chiều cao hàng bảng. */
+:root {
+  --row-height: 36px;
+}
+
+@theme inline {
+  /* Bỏ bảng màu mặc định của Tailwind: không ai dùng nhầm bg-orange-500. */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-white: var(--neutral-0);
+
+  /* Thang màu gốc của gói (dùng khi token ngữ nghĩa chưa có tên). */
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-neutral-0: var(--neutral-0);
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  --color-logo-orange: var(--logo-orange);
+  --color-logo-ink: var(--logo-ink);
+
+  /* Ngữ nghĩa: nền, chữ, đường kẻ. */
+  --color-canvas: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-surface-subtle: var(--bg-subtle);
+  --color-surface-raised: var(--bg-surface);
+  --color-surface-overlay: var(--bg-surface);
+  --color-scrim: var(--overlay);
+  --color-fg: var(--text-primary);
+  --color-fg-muted: var(--text-secondary);
+  --color-fg-label: var(--text-label);
+  --color-fg-disabled: var(--text-disabled);
+  --color-fg-inverse: var(--neutral-0);
+  --color-link: var(--text-link);
+  --color-border: var(--divider);
+  --color-border-strong: var(--input-border);
+  --color-border-selected: var(--border-selected);
+  --color-hover: var(--bg-hover);
+  --color-selected: var(--bg-selected);
+  --color-on-selected: var(--brand-900);
+  --color-focus: var(--focus);
+
+  /* Hành động. Chữ trắng chỉ đặt trên brand-600 trở đi (không đặt trên #EF6926). */
+  --color-action: var(--action-primary-bg);
+  --color-action-hover: var(--action-primary-bg-hover);
+  --color-action-pressed: var(--brand-800);
+  --color-on-action: var(--action-primary-text);
+  --color-danger-action: var(--action-danger-fg);
+
+  /* Khung ứng dụng: thanh bên, giai đoạn. */
+  --color-sidebar: var(--sidebar-bg);
+  --color-sidebar-hover: var(--sidebar-bg-hover);
+  --color-sidebar-fg: var(--sidebar-text);
+  --color-sidebar-fg-muted: var(--sidebar-text-muted);
+  --color-sidebar-marker: var(--sidebar-marker);
+  --color-stage-current: var(--stage-current-bg);
+
+  /* Trạng thái: solid (nền đậm, chữ trắng), subtle (nền nhạt), on-subtle (chữ trên nền nhạt). */
+  --color-success-solid: var(--success-solid);
+  --color-success-subtle: var(--success-bg);
+  --color-on-success-subtle: var(--success-text);
+  --color-warning-solid: var(--warning-solid);
+  --color-warning-subtle: var(--warning-bg);
+  --color-on-warning-subtle: var(--warning-text);
+  --color-danger-solid: var(--danger-solid);
+  --color-danger-subtle: var(--danger-bg);
+  --color-on-danger-subtle: var(--danger-text);
+  --color-info-solid: var(--info-solid);
+  --color-info-subtle: var(--info-bg);
+  --color-on-info-subtle: var(--info-text);
+  --color-info-border: var(--info-border);
+  --color-on-solid: var(--neutral-0);
+
+  /* Tên cũ của PR 4a (bộ P5), ánh xạ sang token mới. XOÁ khi các màn đó được dựng lại theo gói mới
+     (đăng nhập, khung ba cổng: PR 2 và PR 5). Màn mới không dùng các tên này. */
+  --color-hover-overlay: var(--bg-hover);
+  --color-pressed-overlay: var(--brand-100);
+  --color-disabled: var(--bg-subtle);
+  --color-on-disabled: var(--text-disabled);
+  --color-disabled-border: var(--divider);
+  --color-success: var(--success-solid);
+  --color-warning: var(--warning-text);
+  --color-danger: var(--danger-solid);
+  --color-info: var(--info-solid);
+  --color-secondary: var(--info-solid);
+  --color-secondary-subtle: var(--info-bg);
+  --color-success-border: color-mix(in srgb, var(--success-solid) 35%, white);
+  --color-warning-border: color-mix(in srgb, var(--warning-solid) 45%, white);
+  --color-danger-border: color-mix(in srgb, var(--danger-solid) 35%, white);
+  --color-on-danger-solid: var(--neutral-0);
+  --color-on-success-solid: var(--neutral-0);
+  --color-on-info-solid: var(--neutral-0);
+  --color-on-warning-solid: var(--neutral-900);
+
+  /* Chữ: Inter cho giao diện và số, Be Vietnam Pro cho tiêu đề. */
+  --font-sans: var(--font-ui);
+  --font-display: var(--font-heading);
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --text-*: initial;
+  --text-display: 34px;
+  --text-display--line-height: 40px;
+  --text-display--font-weight: 700;
+  --text-h1: 26px;
+  --text-h1--line-height: 32px;
+  --text-h1--font-weight: 600;
+  --text-h1--letter-spacing: -0.01em;
+  --text-h2: 20px;
+  --text-h2--line-height: 28px;
+  --text-h2--font-weight: 600;
+  --text-h3: 16px;
+  --text-h3--line-height: 24px;
+  --text-h3--font-weight: 600;
+  --text-h4: 14px;
+  --text-h4--line-height: 20px;
+  --text-h4--font-weight: 600;
+  --text-body: 13px;
+  --text-body--line-height: 20px;
+  --text-body-lg: 15px;
+  --text-body-lg--line-height: 22px;
+  /* Nhãn trường, chữ phụ: 12/16 (nhãn thì thêm font-semibold). Không đặt tên text-label vì
+     --text-label đã là biến MÀU trong token của gói. */
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+
+  /* Khoảng cách: p-4 = 16px (space-4 của gói). */
+  --spacing: 4px;
+  --spacing-control-sm: var(--control-sm);
+  --spacing-control: var(--control-md);
+  --spacing-control-lg: var(--control-lg);
+  --spacing-row: var(--row-height);
+  --spacing-stage: var(--stage-height);
+  --spacing-topbar: var(--topbar-height);
+  --spacing-sidebar: var(--sidebar-wide);
+  --spacing-sidebar-narrow: var(--sidebar-narrow);
+  --spacing-card: var(--space-5);
+  --spacing-target: 44px;
+
+  /* Bo góc và bóng: KHÔNG đặt khoá --radius-sm/md/lg, --shadow-sm/md/lg vì trùng tên biến token của gói
+     (Tailwind xuất khoá theme ra :root nên thành vòng lặp var(--x) = var(--x)). Dùng tên riêng:
+     rounded-tag (4px), rounded-control (6px), rounded-box = rounded-card (8px); shadow-1/2/3. */
+  --radius-*: initial;
+  --radius-tag: var(--radius-sm);
+  --radius-control: var(--radius-md);
+  --radius-box: var(--radius-lg);
+  --radius-card: var(--radius-lg);
+
+  --shadow-*: initial;
+  --shadow-1: var(--shadow-sm);
+  --shadow-2: var(--shadow-md);
+  --shadow-3: var(--shadow-lg);
+}
+
+@theme {
+  --breakpoint-3xl: 120rem;
+}
+
+/* Vòng focus chuẩn của gói: 2px trắng rồi 2px cam. */
+@utility focus-ring {
+  outline: none;
+  &:focus-visible {
+    box-shadow: var(--focus-ring);
+  }
+}
+
+/* Chữ số đều chiều rộng cho bảng tiền, ngày, mã. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Vùng chạm tối thiểu 44px (biểu tượng bấm được, mọi cỡ). */
+@utility touch-target {
+  min-height: var(--spacing-target);
+  min-width: var(--spacing-target);
+}
+
+/* P-100: trên điện thoại (dưới 768px) mọi nút, ô nhập cao tối thiểu 44px. */
+@utility tap {
+  @media (width < 48rem) {
+    min-height: var(--spacing-target);
+  }
+}
+
+@layer base {
+  html {
+    background: var(--bg-page);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 100%; /* không khoá cỡ chữ gốc: tôn trọng cài đặt người dùng */
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-size: 13px;
+    line-height: 20px;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-display {
+    font-family: var(--font-heading);
+  }
+  ::selection {
+    background: var(--bg-selected);
+    color: var(--brand-900);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

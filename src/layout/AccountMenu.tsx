@@ -44,12 +44,15 @@ export function AccountMenu({
         <button
           type="button"
           aria-label={`Tài khoản: ${claims.name}`}
-          className="focus-ring touch-target flex items-center gap-2 rounded-md px-1 text-left hover:bg-hover-overlay"
+          className="focus-ring touch-target flex items-center gap-2 rounded-control px-1 text-left hover:bg-hover-overlay"
         >
           <Avatar name={claims.name} />
           {!compact && (
             <span className="hidden min-w-0 sm:block">
-              <span className="block truncate text-label text-fg" data-testid="ten-nguoi-dung">
+              <span
+                className="block truncate text-caption font-semibold text-fg"
+                data-testid="ten-nguoi-dung"
+              >
                 {claims.name}
               </span>
               <span className="block truncate text-caption text-fg-muted">{roleLine}</span>

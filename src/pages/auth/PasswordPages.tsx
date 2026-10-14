@@ -10,7 +10,7 @@ import { TextField } from '../../ui/Field';
 import { TurnstileSlot } from '../../ui/TurnstileSlot';
 import { NewPasswordForm } from './NewPasswordForm';
 
-const LINK = 'focus-ring rounded-sm text-link underline underline-offset-2';
+const LINK = 'focus-ring rounded-tag text-link underline underline-offset-2';
 
 /** CHUNG-04 · Quên mật khẩu: nhân viên tự đặt lại qua email. Học sinh nhờ CSKH. */
 export function ForgotPasswordPage() {

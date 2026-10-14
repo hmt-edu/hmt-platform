@@ -49,7 +49,7 @@ export function TabShell({ portal, product, title, tabs, sidebar, contentClass }
               end={tab.end ?? false}
               className={({ isActive }) =>
                 cn(
-                  'focus-ring flex rounded-md text-fg',
+                  'focus-ring flex rounded-control text-fg',
                   sidebar === 'rail'
                     ? 'min-h-14 flex-col items-center justify-center gap-1 px-1 text-center text-caption'
                     : 'min-h-11 items-center gap-3 px-3 text-body',

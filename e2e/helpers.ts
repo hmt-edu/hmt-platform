@@ -43,6 +43,11 @@ export async function signOut(page: Page) {
 
 /** Kiểm truy cập bằng axe: không có lỗi mức nghiêm trọng (critical) hay nặng (serious). */
 export async function expectAccessible(page: Page) {
+  // Đo sau khi mọi hiệu ứng chuyển màu đã xong: nút vừa đổi từ mờ sang sáng có màu trung gian chưa đạt
+  // tương phản (white trên #CB4D0E chỉ vừa đủ 4,56:1). WebKit không huỷ ngay hiệu ứng đang chạy nên chờ hết.
+  await page.addStyleTag({ content: '*, *::before, *::after { transition: none !important; }' });
+  await page.waitForFunction('document.getAnimations().length === 0');
+  await page.waitForTimeout(100);
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .analyze();
@@ -51,7 +56,22 @@ export async function expectAccessible(page: Page) {
   );
   expect(
     blocking.map(
-      (v) => `${v.id}: ${v.help} (${v.nodes.map((n) => n.target.join(' ')).join('; ')})`,
+      (v) =>
+        `${v.id}: ${v.help} (${v.nodes
+          .map((n) => {
+            // Với color-contrast, ghi màu chữ, màu nền, tỉ lệ để biết ngay phần tử nào và vì sao trượt.
+            const data = (n.any[0]?.data ?? {}) as {
+              contrastRatio?: number;
+              fgColor?: string;
+              bgColor?: string;
+            };
+            const detail =
+              data.contrastRatio !== undefined
+                ? ` [chữ ${data.fgColor ?? '?'} trên ${data.bgColor ?? '?'}, tỉ lệ ${data.contrastRatio}]`
+                : '';
+            return `${n.target.join(' ')}${detail} ${n.html.slice(0, 160)}`;
+          })
+          .join('; ')})`,
     ),
   ).toEqual([]);
 }

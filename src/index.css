@@ -2,7 +2,7 @@
 @import 'tailwindcss';
 /* Không quét gói thiết kế (HTML mẫu) khi sinh CSS. */
 @source not "../design";
-@import '../design/hmt-platform/tokens/HMT_DESIGN_TOKENS.css';
+@import './styles/hmt-theme.css';
 
 /* Inter: giao diện và số. Be Vietnam Pro: tiêu đề. File font nằm trong bản build, không gọi CDN. */
 @import '@fontsource/inter/400.css';
@@ -23,21 +23,17 @@
   }
 }
 
-/* P-100: vùng bấm tối thiểu 44px trên điện thoại (cả CRM vốn dùng control 36px). */
-@utility tap {
-  @media (width < 48rem) {
-    min-height: var(--hmt-target-min);
-  }
-}
-
 /* Mảng nhận diện của trang đăng nhập (khuôn K11): nền cam hành động, kẻ ô mờ. */
 @utility auth-grid {
-  background-color: var(--hmt-action);
+  background-color: var(--action-primary-bg);
   background-image:
-    linear-gradient(color-mix(in srgb, var(--hmt-on-action) 12%, transparent) 1px, transparent 1px),
+    linear-gradient(
+      color-mix(in srgb, var(--action-primary-text) 12%, transparent) 1px,
+      transparent 1px
+    ),
     linear-gradient(
       90deg,
-      color-mix(in srgb, var(--hmt-on-action) 12%, transparent) 1px,
+      color-mix(in srgb, var(--action-primary-text) 12%, transparent) 1px,
       transparent 1px
     );
   background-size: 3rem 3rem;

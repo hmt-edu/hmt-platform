@@ -34,7 +34,7 @@ export function Alert({
     <div
       role={tone === 'danger' ? 'alert' : 'status'}
       className={cn(
-        'flex items-start gap-2 rounded-md border px-3 py-2 text-body',
+        'flex items-start gap-2 rounded-control border px-3 py-2 text-body',
         style.box,
         className,
       )}

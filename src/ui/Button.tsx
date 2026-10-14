@@ -74,7 +74,7 @@ export function IconButton({
       aria-label={label}
       title={label}
       className={cn(
-        'focus-ring touch-target inline-flex items-center justify-center rounded-md text-fg hover:bg-hover-overlay active:bg-pressed-overlay',
+        'focus-ring touch-target inline-flex items-center justify-center rounded-control text-fg hover:bg-hover-overlay active:bg-pressed-overlay',
         className,
       )}
     >

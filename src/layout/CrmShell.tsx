@@ -23,7 +23,7 @@ function readCollapsed(): boolean {
 
 function entryClass({ isActive }: { isActive: boolean }): string {
   return cn(
-    'focus-ring tap relative flex min-h-9 items-center rounded-md py-1 pr-2 pl-9 text-body',
+    'focus-ring tap relative flex min-h-9 items-center rounded-control py-1 pr-2 pl-9 text-body',
     isActive
       ? 'bg-selected font-medium text-on-selected before:absolute before:inset-y-1.5 before:left-6 before:w-0.5 before:rounded-full before:bg-action'
       : 'text-fg hover:bg-hover-overlay',
@@ -51,7 +51,7 @@ function MenuGroupSection({
         aria-expanded={expanded}
         aria-controls={panelId}
         onClick={() => setOpen(!expanded)}
-        className="focus-ring tap flex min-h-9 w-full items-center gap-2 rounded-md px-2 text-left text-body font-semibold text-fg hover:bg-hover-overlay"
+        className="focus-ring tap flex min-h-9 w-full items-center gap-2 rounded-control px-2 text-left text-body font-semibold text-fg hover:bg-hover-overlay"
       >
         <Icon name={group.icon} className="shrink-0 text-fg-muted" />
         <span className="min-w-0 flex-1 truncate">{group.label}</span>
@@ -188,7 +188,7 @@ export function CrmShell() {
             <button
               type="button"
               onClick={toggleCollapsed}
-              className="focus-ring flex min-h-9 w-full items-center gap-2 rounded-md px-2 text-body text-fg hover:bg-hover-overlay"
+              className="focus-ring flex min-h-9 w-full items-center gap-2 rounded-control px-2 text-body text-fg hover:bg-hover-overlay"
             >
               <Icon name="sidebar" />
               Thu gọn

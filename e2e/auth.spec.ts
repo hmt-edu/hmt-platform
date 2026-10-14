@@ -253,6 +253,8 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
     const menu = await openCrmMenu(page);
     await expect(menu.getByRole('button', { name: 'Quản trị', exact: true })).toBeVisible();
     // Ô chọn cơ sở của dữ liệu nghiệp vụ không có Hội sở CS3 (R-HT-02).
+    // Chờ trang chủ dựng xong (quyền đã tải) rồi mới mở danh sách: bấm sớm quá thì Radix chưa nhận.
+    await expect(page.getByRole('heading', { level: 1, name: 'Trang chủ' })).toBeVisible();
     await page.getByRole('combobox', { name: 'Cơ sở đang xem' }).click();
     await expect(page.getByRole('option')).toHaveText([
       'Tất cả cơ sở',

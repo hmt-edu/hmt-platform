@@ -37,7 +37,7 @@ export function Dialog({
           onEscapeKeyDown={block}
           onPointerDownOutside={block}
           onInteractOutside={block}
-          className="fixed top-1/2 left-1/2 z-50 flex max-h-[90dvh] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-xl bg-surface-overlay p-6 shadow-3 focus:outline-none"
+          className="fixed top-1/2 left-1/2 z-50 flex max-h-[90dvh] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-box bg-surface-overlay p-6 shadow-3 focus:outline-none"
         >
           <div className="flex items-start justify-between gap-4">
             <RadixDialog.Title className="text-h2">{title}</RadixDialog.Title>
@@ -98,7 +98,7 @@ export type MenuItem =
   | { kind: 'action'; label: string; onSelect: () => void; icon?: IconName };
 
 const MENU_ITEM =
-  'flex min-h-9 cursor-pointer items-center gap-2 rounded-sm px-2 text-body text-fg outline-none data-[highlighted]:bg-hover-overlay max-md:min-h-11';
+  'flex min-h-9 cursor-pointer items-center gap-2 rounded-tag px-2 text-body text-fg outline-none data-[highlighted]:bg-hover-overlay max-md:min-h-11';
 
 /** Menu thả xuống (menu tài khoản). */
 export function DropdownMenu({ trigger, items }: { trigger: ReactNode; items: MenuItem[] }) {
@@ -109,7 +109,7 @@ export function DropdownMenu({ trigger, items }: { trigger: ReactNode; items: Me
         <RadixMenu.Content
           align="end"
           sideOffset={4}
-          className="z-30 min-w-52 rounded-lg border border-border bg-surface-raised p-1 shadow-2"
+          className="z-30 min-w-52 rounded-box border border-border bg-surface-raised p-1 shadow-2"
         >
           {items.map((item) =>
             item.kind === 'link' ? (
@@ -154,7 +154,7 @@ export function Select({
       <RadixSelect.Trigger
         aria-label={label}
         className={cn(
-          'focus-ring tap inline-flex h-control items-center gap-2 rounded-md border border-border-strong bg-surface px-3 text-body text-fg',
+          'focus-ring tap inline-flex h-control items-center gap-2 rounded-control border border-border-strong bg-surface px-3 text-body text-fg',
           className,
         )}
       >
@@ -170,14 +170,14 @@ export function Select({
         <RadixSelect.Content
           position="popper"
           sideOffset={4}
-          className="z-30 max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-y-auto rounded-lg border border-border bg-surface-raised p-1 shadow-2"
+          className="z-30 max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-y-auto rounded-box border border-border bg-surface-raised p-1 shadow-2"
         >
           <RadixSelect.Viewport>
             {options.map((option) => (
               <RadixSelect.Item
                 key={option.value}
                 value={option.value}
-                className="flex min-h-9 cursor-pointer items-center rounded-sm px-2 text-body text-fg outline-none data-[highlighted]:bg-hover-overlay data-[state=checked]:bg-selected data-[state=checked]:text-on-selected max-md:min-h-11"
+                className="flex min-h-9 cursor-pointer items-center rounded-tag px-2 text-body text-fg outline-none data-[highlighted]:bg-hover-overlay data-[state=checked]:bg-selected data-[state=checked]:text-on-selected max-md:min-h-11"
               >
                 <RadixSelect.ItemText>{option.label}</RadixSelect.ItemText>
               </RadixSelect.Item>

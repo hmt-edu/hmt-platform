@@ -3,7 +3,7 @@ import { cn } from './cn';
 import { Icon } from './icons';
 
 export const INPUT_CLASS =
-  'focus-ring tap h-control w-full rounded-md border border-border-strong bg-surface px-[var(--hmt-density-control-px)] text-body text-fg placeholder:text-fg-muted disabled:cursor-not-allowed disabled:border-disabled-border disabled:bg-disabled disabled:text-on-disabled aria-[invalid=true]:border-danger-border';
+  'focus-ring tap h-control w-full rounded-control border border-border-strong bg-surface px-3 text-body text-fg placeholder:text-fg-muted disabled:cursor-not-allowed disabled:border-disabled-border disabled:bg-disabled disabled:text-on-disabled aria-[invalid=true]:border-danger-border';
 
 type FieldRenderProps = {
   id: string;
@@ -36,7 +36,10 @@ export function Field({
       {/* Dấu sao bắt buộc vẽ bằng CSS để không lẫn vào tên nhãn; trình đọc màn hình nghe qua aria-required. */}
       <label
         htmlFor={id}
-        className={cn('text-label text-fg', required && "after:text-danger after:content-['_*']")}
+        className={cn(
+          'text-caption font-semibold text-fg',
+          required && "after:text-danger after:content-['_*']",
+        )}
       >
         {label}
       </label>
@@ -47,7 +50,7 @@ export function Field({
         'aria-required': required ? true : undefined,
       })}
       {error && (
-        <p id={errorId} className="flex items-start gap-1 text-label text-danger">
+        <p id={errorId} className="flex items-start gap-1 text-caption font-semibold text-danger">
           <Icon name="alert" size={16} className="mt-px shrink-0" />
           {error}
         </p>
@@ -93,7 +96,7 @@ export function PasswordInput({ label, help, error, required, ...input }: TextFi
             onClick={() => setShown((v) => !v)}
             aria-pressed={shown}
             aria-label={shown ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-            className="focus-ring absolute inset-y-1 right-1 rounded-sm px-2 text-label text-link hover:bg-hover-overlay"
+            className="focus-ring absolute inset-y-1 right-1 rounded-tag px-2 text-caption font-semibold text-link hover:bg-hover-overlay"
           >
             {shown ? 'Ẩn' : 'Hiện'}
           </button>
