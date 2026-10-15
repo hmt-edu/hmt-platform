@@ -1,14 +1,43 @@
 // Lớp phủ dựng trên Radix: đúng chuẩn bàn phím (Esc, Tab giữ trong hộp, trả focus) và trình đọc màn hình.
-import type { ReactNode } from 'react';
-import { Dialog as RadixDialog, DropdownMenu as RadixMenu, Select as RadixSelect } from 'radix-ui';
+// Kích thước và màu theo .hmt-dialog, .hmt-menu, .hmt-tab của gói thiết kế.
+import { useRef, type ReactNode } from 'react';
+import {
+  Dialog as RadixDialog,
+  DropdownMenu as RadixMenu,
+  Popover as RadixPopover,
+  Select as RadixSelect,
+  Tabs as RadixTabs,
+} from 'radix-ui';
 import { Link } from 'react-router';
 import { IconButton } from './Button';
 import { cn } from './cn';
+import { INPUT_BUTTON_CLASS } from './Field';
 import { Icon, type IconName } from './icons';
 
 const SCRIM = 'fixed inset-0 z-40 bg-scrim';
 
-/** Hộp thoại giữa màn hình. `dismissible=false`: bắt buộc chọn một nút (không đóng bằng Esc, bấm ngoài). */
+/**
+ * Trả focus về nút đã mở hộp thoại. Radix chỉ tự trả focus khi hộp mở bằng Radix.Trigger; các hộp của HMT mở
+ * bằng trạng thái (open) từ nút bất kỳ nên phải nhớ phần tử đang focus lúc mở rồi trả lại lúc đóng.
+ */
+function useReturnFocus() {
+  const opener = useRef<HTMLElement | null>(null);
+  return {
+    onOpenAutoFocus: () => {
+      opener.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    },
+    onCloseAutoFocus: (event: Event) => {
+      event.preventDefault();
+      opener.current?.focus();
+    },
+  };
+}
+
+/**
+ * Hộp thoại giữa màn hình: đầu (tiêu đề + nút đóng), thân, chân (nút phụ bên trái nút chính, canh phải).
+ * `dismissible=false`: bắt buộc chọn một nút (không đóng bằng Esc, bấm ngoài).
+ */
 export function Dialog({
   open,
   onOpenChange,
@@ -17,6 +46,7 @@ export function Dialog({
   children,
   footer,
   dismissible = true,
+  wide = false,
 }: {
   open: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -25,10 +55,13 @@ export function Dialog({
   children?: ReactNode | undefined;
   footer?: ReactNode | undefined;
   dismissible?: boolean | undefined;
+  /** Hộp rộng 720px (nhiều bước, xem trước); mặc định 440px. */
+  wide?: boolean | undefined;
 }) {
   const block = (event: Event) => {
     if (!dismissible) event.preventDefault();
   };
+  const focus = useReturnFocus();
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
@@ -37,56 +70,84 @@ export function Dialog({
           onEscapeKeyDown={block}
           onPointerDownOutside={block}
           onInteractOutside={block}
-          className="fixed top-1/2 left-1/2 z-50 flex max-h-[90dvh] w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-box bg-surface-overlay p-6 shadow-3 focus:outline-none"
+          {...focus}
+          className={cn(
+            'fixed top-1/2 left-1/2 z-50 flex max-h-[90dvh] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-box bg-surface shadow-3 focus:outline-none',
+            wide ? 'max-w-[720px]' : 'max-w-[440px]',
+          )}
         >
-          <div className="flex items-start justify-between gap-4">
-            <RadixDialog.Title className="text-h2">{title}</RadixDialog.Title>
+          <div className="flex items-center gap-2 px-4 pt-4 pb-2">
+            <RadixDialog.Title className="font-display text-h3">{title}</RadixDialog.Title>
             {dismissible && (
               <RadixDialog.Close asChild>
-                <IconButton icon="close" label="Đóng" className="-mt-2 -mr-2" />
+                <IconButton icon="close" label="Đóng" className="ml-auto -mr-2" />
               </RadixDialog.Close>
             )}
           </div>
-          {description ? (
-            <RadixDialog.Description className="text-fg-muted">
-              {description}
-            </RadixDialog.Description>
-          ) : (
-            <RadixDialog.Description className="sr-only">{title}</RadixDialog.Description>
+          <div className="flex min-h-0 flex-col gap-2.5 overflow-y-auto px-4 pt-1 pb-3 text-body-lg">
+            {description ? (
+              <RadixDialog.Description className="text-fg-muted">
+                {description}
+              </RadixDialog.Description>
+            ) : (
+              <RadixDialog.Description className="sr-only">{title}</RadixDialog.Description>
+            )}
+            {children}
+          </div>
+          {footer && (
+            <div className="flex flex-wrap justify-end gap-2 border-t border-border px-4 py-3">
+              {footer}
+            </div>
           )}
-          {children}
-          {footer && <div className="flex flex-wrap justify-end gap-2">{footer}</div>}
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>
   );
 }
 
-/** Ngăn kéo từ cạnh trái (menu trên điện thoại). */
+/**
+ * Ngăn kéo từ cạnh trái (menu trên điện thoại) hoặc cạnh phải (biểu mẫu tạo nhanh, K07b).
+ */
 export function Drawer({
   open,
   onOpenChange,
   title,
   children,
+  footer,
+  side = 'left',
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
   children: ReactNode;
+  footer?: ReactNode | undefined;
+  side?: 'left' | 'right' | undefined;
 }) {
+  const focus = useReturnFocus();
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
         <RadixDialog.Overlay className={SCRIM} />
-        <RadixDialog.Content className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col bg-surface shadow-3 focus:outline-none">
-          <div className="flex items-center justify-between border-b border-border px-4 py-2">
-            <RadixDialog.Title className="text-h3">{title}</RadixDialog.Title>
+        <RadixDialog.Content
+          {...focus}
+          className={cn(
+            'fixed inset-y-0 z-50 flex flex-col bg-surface shadow-3 focus:outline-none',
+            side === 'left' ? 'left-0 w-72 max-w-[85vw]' : 'right-0 w-[480px] max-w-[100vw]',
+          )}
+        >
+          <div className="flex items-center gap-2 border-b border-border px-4 py-2">
+            <RadixDialog.Title className="font-display text-h3">{title}</RadixDialog.Title>
             <RadixDialog.Close asChild>
-              <IconButton icon="close" label="Đóng menu" />
+              <IconButton icon="close" label="Đóng" className="ml-auto" />
             </RadixDialog.Close>
           </div>
           <RadixDialog.Description className="sr-only">{title}</RadixDialog.Description>
           <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+          {footer && (
+            <div className="flex flex-wrap justify-end gap-2 border-t border-border px-4 py-3">
+              {footer}
+            </div>
+          )}
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>
@@ -97,20 +158,26 @@ export type MenuItem =
   | { kind: 'link'; label: string; to: string; icon?: IconName }
   | { kind: 'action'; label: string; onSelect: () => void; icon?: IconName };
 
+// .hmt-opt: dòng 13px, lề 8px, bo 4px, hover nền cam nhạt.
 const MENU_ITEM =
-  'flex min-h-9 cursor-pointer items-center gap-2 rounded-tag px-2 text-body text-fg outline-none data-[highlighted]:bg-hover-overlay max-md:min-h-11';
+  'flex min-h-8 cursor-pointer items-center gap-2 rounded-tag px-2 py-1.5 text-body text-fg outline-none data-[highlighted]:bg-hover max-md:min-h-target';
+const MENU_PANEL = 'z-30 min-w-60 rounded-box border border-border bg-surface p-1.5 shadow-2';
 
-/** Menu thả xuống (menu tài khoản). */
-export function DropdownMenu({ trigger, items }: { trigger: ReactNode; items: MenuItem[] }) {
+/** Menu thả xuống (menu tài khoản, thêm thao tác). */
+export function DropdownMenu({
+  trigger,
+  items,
+  align = 'end',
+}: {
+  trigger: ReactNode;
+  items: MenuItem[];
+  align?: 'start' | 'end' | undefined;
+}) {
   return (
     <RadixMenu.Root>
       <RadixMenu.Trigger asChild>{trigger}</RadixMenu.Trigger>
       <RadixMenu.Portal>
-        <RadixMenu.Content
-          align="end"
-          sideOffset={4}
-          className="z-30 min-w-52 rounded-box border border-border bg-surface-raised p-1 shadow-2"
-        >
+        <RadixMenu.Content align={align} sideOffset={4} className={MENU_PANEL}>
           {items.map((item) =>
             item.kind === 'link' ? (
               <RadixMenu.Item key={item.label} asChild>
@@ -132,7 +199,7 @@ export function DropdownMenu({ trigger, items }: { trigger: ReactNode; items: Me
   );
 }
 
-/** Ô chọn một giá trị trong danh sách ngắn (ô chọn cơ sở). */
+/** Ô chọn một giá trị trong danh sách ngắn (ô chọn cơ sở, vai trò). */
 export function Select({
   label,
   value,
@@ -140,6 +207,7 @@ export function Select({
   options,
   icon,
   className,
+  placeholder,
 }: {
   /** Nhãn cho trình đọc màn hình (ô không có nhãn hiện). */
   label: string;
@@ -148,19 +216,18 @@ export function Select({
   options: { value: string; label: string }[];
   icon?: IconName | undefined;
   className?: string | undefined;
+  /** Chữ hiện khi chưa chọn (value rỗng). */
+  placeholder?: string | undefined;
 }) {
   return (
     <RadixSelect.Root value={value} onValueChange={onChange}>
       <RadixSelect.Trigger
         aria-label={label}
-        className={cn(
-          'focus-ring tap inline-flex h-control items-center gap-2 rounded-control border border-border-strong bg-surface px-3 text-body text-fg',
-          className,
-        )}
+        className={cn(INPUT_BUTTON_CLASS, 'justify-between', className)}
       >
         {icon && <Icon name={icon} size={16} className="shrink-0 text-fg-muted" />}
         <span className="min-w-0 flex-1 truncate text-left">
-          <RadixSelect.Value />
+          <RadixSelect.Value placeholder={placeholder} />
         </span>
         <RadixSelect.Icon>
           <Icon name="chevronDown" size={16} />
@@ -170,14 +237,20 @@ export function Select({
         <RadixSelect.Content
           position="popper"
           sideOffset={4}
-          className="z-30 max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-y-auto rounded-box border border-border bg-surface-raised p-1 shadow-2"
+          className={cn(
+            MENU_PANEL,
+            'max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-y-auto',
+          )}
         >
           <RadixSelect.Viewport>
             {options.map((option) => (
               <RadixSelect.Item
                 key={option.value}
                 value={option.value}
-                className="flex min-h-9 cursor-pointer items-center rounded-tag px-2 text-body text-fg outline-none data-[highlighted]:bg-hover-overlay data-[state=checked]:bg-selected data-[state=checked]:text-on-selected max-md:min-h-11"
+                className={cn(
+                  MENU_ITEM,
+                  'data-[state=checked]:bg-selected data-[state=checked]:font-semibold data-[state=checked]:text-on-selected',
+                )}
               >
                 <RadixSelect.ItemText>{option.label}</RadixSelect.ItemText>
               </RadixSelect.Item>
@@ -186,5 +259,92 @@ export function Select({
         </RadixSelect.Content>
       </RadixSelect.Portal>
     </RadixSelect.Root>
+  );
+}
+
+/** Khung nổi neo dưới một nút (Filters, Group By, Cột, Favorites: PR danh sách). */
+export function Popover({
+  trigger,
+  children,
+  align = 'start',
+  open,
+  onOpenChange,
+  className,
+}: {
+  trigger: ReactNode;
+  children: ReactNode;
+  align?: 'start' | 'end' | undefined;
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  className?: string | undefined;
+}) {
+  return (
+    <RadixPopover.Root
+      {...(open === undefined ? {} : { open })}
+      {...(onOpenChange ? { onOpenChange } : {})}
+    >
+      <RadixPopover.Trigger asChild>{trigger}</RadixPopover.Trigger>
+      <RadixPopover.Portal>
+        <RadixPopover.Content
+          align={align}
+          sideOffset={4}
+          className={cn(
+            'z-30 max-w-[calc(100vw-2rem)] rounded-box border border-border bg-surface p-3 shadow-2 focus:outline-none',
+            className,
+          )}
+        >
+          {children}
+        </RadixPopover.Content>
+      </RadixPopover.Portal>
+    </RadixPopover.Root>
+  );
+}
+
+export type TabItem = {
+  value: string;
+  label: string;
+  count?: number | undefined;
+  content: ReactNode;
+};
+
+/** Tab nội dung (.hmt-tab): gạch chân cam đậm ở tab đang chọn. Mũi tên trái/phải đổi tab. */
+export function Tabs({
+  label,
+  items,
+  value,
+  onChange,
+}: {
+  label: string;
+  items: TabItem[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <RadixTabs.Root value={value} onValueChange={onChange} className="flex flex-col gap-3">
+      <RadixTabs.List
+        aria-label={label}
+        className="flex gap-0.5 overflow-x-auto border-b border-border"
+      >
+        {items.map((item) => (
+          <RadixTabs.Trigger
+            key={item.value}
+            value={item.value}
+            className="focus-ring tap -mb-px inline-flex h-control items-center gap-2 border-b-2 border-transparent px-3 text-body font-medium whitespace-nowrap text-fg-label data-[state=active]:border-brand-500 data-[state=active]:font-semibold data-[state=active]:text-brand-800"
+          >
+            {item.label}
+            {item.count !== undefined && (
+              <span className="tabular rounded-full bg-surface-subtle px-1.5 text-caption text-fg">
+                {item.count}
+              </span>
+            )}
+          </RadixTabs.Trigger>
+        ))}
+      </RadixTabs.List>
+      {items.map((item) => (
+        <RadixTabs.Content key={item.value} value={item.value} className="focus:outline-none">
+          {item.content}
+        </RadixTabs.Content>
+      ))}
+    </RadixTabs.Root>
   );
 }

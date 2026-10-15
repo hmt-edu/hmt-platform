@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router';
 import { useAuth } from '../lib/auth/authContext';
 import { PORTALS, portalAccess, type Portal } from '../lib/auth/claims';
 import { Avatar } from '../ui/Feedback';
-import { Icon } from '../ui/icons';
 import { DropdownMenu, type MenuItem } from '../ui/Overlays';
 import { PORTAL_NAMES } from './portalNames';
 
@@ -44,13 +43,13 @@ export function AccountMenu({
         <button
           type="button"
           aria-label={`Tài khoản: ${claims.name}`}
-          className="focus-ring touch-target flex items-center gap-2 rounded-control px-1 text-left hover:bg-hover-overlay"
+          className="focus-ring touch-target flex items-center gap-2 rounded-control px-1 text-left hover:bg-hover"
         >
-          <Avatar name={claims.name} />
+          <Avatar name={claims.name} large />
           {!compact && (
             <span className="hidden min-w-0 sm:block">
               <span
-                className="block truncate text-caption font-semibold text-fg"
+                className="block truncate text-body font-semibold text-fg"
                 data-testid="ten-nguoi-dung"
               >
                 {claims.name}
@@ -58,7 +57,6 @@ export function AccountMenu({
               <span className="block truncate text-caption text-fg-muted">{roleLine}</span>
             </span>
           )}
-          <Icon name="chevronDown" size={16} className="text-fg-muted" />
         </button>
       }
     />

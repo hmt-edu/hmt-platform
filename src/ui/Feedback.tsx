@@ -4,17 +4,12 @@ import { Icon, type IconName } from './icons';
 
 export type AlertTone = 'info' | 'success' | 'warning' | 'danger';
 
+// Theo .hmt-alert của gói: nền nhạt theo tông, chữ đậm, bo 6px, không viền; luôn có biểu tượng.
 const TONES: Record<AlertTone, { box: string; icon: IconName }> = {
-  info: { box: 'border-info-border bg-info-subtle text-on-info-subtle', icon: 'info' },
-  success: {
-    box: 'border-success-border bg-success-subtle text-on-success-subtle',
-    icon: 'check',
-  },
-  warning: {
-    box: 'border-warning-border bg-warning-subtle text-on-warning-subtle',
-    icon: 'warning',
-  },
-  danger: { box: 'border-danger-border bg-danger-subtle text-on-danger-subtle', icon: 'alert' },
+  info: { box: 'bg-info-subtle text-on-info-subtle', icon: 'info' },
+  success: { box: 'bg-success-subtle text-on-success-subtle', icon: 'check' },
+  warning: { box: 'bg-warning-subtle text-on-warning-subtle', icon: 'warning' },
+  danger: { box: 'bg-danger-subtle text-on-danger-subtle', icon: 'alert' },
 };
 
 /** Thông báo tại chỗ: luôn có biểu tượng + chữ (không chỉ dùng màu). Lỗi thì đọc ngay (role=alert). */
@@ -34,7 +29,7 @@ export function Alert({
     <div
       role={tone === 'danger' ? 'alert' : 'status'}
       className={cn(
-        'flex items-start gap-2 rounded-control border px-3 py-2 text-body',
+        'flex items-start gap-2.5 rounded-control px-3 py-2.5 text-body',
         style.box,
         className,
       )}
@@ -87,12 +82,12 @@ export function StateView({
   return (
     <section
       role={kind === 'error' || kind === 'forbidden' ? 'alert' : undefined}
-      className="mx-auto flex max-w-lg flex-col items-center gap-3 px-4 py-12 text-center"
+      className="mx-auto flex max-w-lg flex-col items-center gap-2 px-4 py-12 text-center"
     >
-      <span className="flex size-12 items-center justify-center rounded-full bg-surface-subtle text-fg-muted">
+      <span className="flex size-10 items-center justify-center text-fg-muted">
         <Icon name={STATE_ICON[kind]} size={24} />
       </span>
-      <Heading className="text-h2">{title}</Heading>
+      <Heading className="text-h4">{title}</Heading>
       {children && <div className="text-fg-muted">{children}</div>}
       {actions && <div className="mt-2 flex flex-wrap justify-center gap-2">{actions}</div>}
     </section>
@@ -100,7 +95,7 @@ export function StateView({
 }
 
 /** Ảnh đại diện bằng chữ cái đầu của hai từ cuối trong tên. */
-export function Avatar({ name }: { name: string }) {
+export function Avatar({ name, large = false }: { name: string; large?: boolean }) {
   const words = name
     .replace(/\(.*?\)/g, '')
     .trim()
@@ -113,7 +108,10 @@ export function Avatar({ name }: { name: string }) {
   return (
     <span
       aria-hidden="true"
-      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary-subtle text-caption font-semibold text-secondary"
+      className={cn(
+        'flex shrink-0 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-800',
+        large ? 'size-[30px]' : 'size-6',
+      )}
     >
       {initials || '?'}
     </span>
@@ -124,7 +122,7 @@ export function Avatar({ name }: { name: string }) {
 export function CountBadge({ count, label }: { count: number; label: string }) {
   if (count <= 0) return null;
   return (
-    <span className="tabular inline-flex min-w-5 items-center justify-center rounded-full bg-action px-1.5 text-caption font-semibold text-on-action">
+    <span className="tabular inline-flex min-w-5 items-center justify-center rounded-full bg-danger-solid px-1 text-caption font-semibold text-on-solid">
       <span aria-hidden="true">{count}</span>
       <span className="sr-only">
         {count} {label}

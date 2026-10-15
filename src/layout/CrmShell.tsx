@@ -21,12 +21,15 @@ function readCollapsed(): boolean {
   }
 }
 
+const crmPath = (slug: string) => (slug ? `/crm/${slug}` : '/crm');
+
+// Mục cấp 2 theo .hmt-sb-l2 của gói: chữ phụ, lề trái 37px; mục đang mở có vạch cam 3px bên trái.
 function entryClass({ isActive }: { isActive: boolean }): string {
   return cn(
-    'focus-ring tap relative flex min-h-9 items-center rounded-control py-1 pr-2 pl-9 text-body',
+    'focus-ring tap flex min-h-8 items-center rounded-control border-l-[3px] py-1.5 pr-2.5 pl-[37px] text-body',
     isActive
-      ? 'bg-selected font-medium text-on-selected before:absolute before:inset-y-1.5 before:left-6 before:w-0.5 before:rounded-full before:bg-action'
-      : 'text-fg hover:bg-hover-overlay',
+      ? 'border-sidebar-marker bg-sidebar-hover font-semibold text-neutral-0'
+      : 'border-transparent text-sidebar-fg-muted hover:bg-sidebar-hover hover:text-neutral-0',
   );
 }
 
@@ -38,27 +41,29 @@ function MenuGroupSection({
   onNavigate?: (() => void) | undefined;
 }) {
   const location = useLocation();
-  const hasActive = group.entries.some(
-    (e) => location.pathname === `/crm${e.slug ? `/${e.slug}` : ''}`,
-  );
+  const hasActive = group.entries.some((e) => location.pathname === crmPath(e.slug));
   const [open, setOpen] = useState(hasActive || group.id === 'tong-quan');
   const expanded = open || hasActive;
   const panelId = `menu-${group.id}`;
   return (
     <li>
+      {/* Mục cấp 1 theo .hmt-sb-l1: biểu tượng 20px, chữ 13px/500, mũi tên ở cuối. */}
       <button
         type="button"
         aria-expanded={expanded}
         aria-controls={panelId}
         onClick={() => setOpen(!expanded)}
-        className="focus-ring tap flex min-h-9 w-full items-center gap-2 rounded-control px-2 text-left text-body font-semibold text-fg hover:bg-hover-overlay"
+        className={cn(
+          'focus-ring tap flex min-h-9 w-full items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-body font-medium hover:bg-sidebar-hover hover:text-neutral-0',
+          expanded ? 'bg-sidebar-hover text-neutral-0' : 'text-sidebar-fg',
+        )}
       >
-        <Icon name={group.icon} className="shrink-0 text-fg-muted" />
+        <Icon name={group.icon} className="shrink-0" />
         <span className="min-w-0 flex-1 truncate">{group.label}</span>
         <Icon
           name={expanded ? 'chevronDown' : 'chevronRight'}
           size={16}
-          className="text-fg-muted"
+          className="shrink-0 text-sidebar-fg-muted"
         />
       </button>
       {expanded && (
@@ -70,16 +75,11 @@ function MenuGroupSection({
             return (
               <li key={entry.code}>
                 {heading && (
-                  <p className="pt-2 pb-0.5 pl-9 text-caption font-medium text-fg-muted">
+                  <p className="pt-2 pb-0.5 pl-[37px] text-caption font-semibold text-sidebar-fg-muted">
                     {heading}
                   </p>
                 )}
-                <NavLink
-                  to={entry.slug ? `/crm/${entry.slug}` : '/crm'}
-                  end
-                  onClick={onNavigate}
-                  className={entryClass}
-                >
+                <NavLink to={crmPath(entry.slug)} end onClick={onNavigate} className={entryClass}>
                   <span className="truncate">{entry.label}</span>
                 </NavLink>
               </li>
@@ -92,16 +92,9 @@ function MenuGroupSection({
 }
 
 function BranchPicker({ className }: { className?: string }) {
-  const { claims } = useAuth();
   const access = useAccess();
-  if (!access.seesAllBranches) {
-    return (
-      <p className={cn('flex items-center gap-2 text-body text-fg-muted', className)}>
-        <Icon name="location" size={16} />
-        <span>Cơ sở: {claims?.branchCode ?? 'chưa gán'}</span>
-      </p>
-    );
-  }
+  // Người một cơ sở không chọn cơ sở: cơ sở của mình nằm ở dòng dưới tên (xem AccountMenu).
+  if (!access.seesAllBranches) return null;
   // Ô chọn cơ sở của dữ liệu nghiệp vụ không có Hội sở CS3 (R-HT-02).
   const options = [
     { value: ALL_BRANCHES, label: 'Tất cả cơ sở' },
@@ -110,7 +103,7 @@ function BranchPicker({ className }: { className?: string }) {
   return (
     <Select
       label="Cơ sở đang xem"
-      icon="location"
+      icon="branch"
       value={access.selectedBranch}
       onChange={access.setSelectedBranch}
       options={options}
@@ -119,7 +112,22 @@ function BranchPicker({ className }: { className?: string }) {
   );
 }
 
-/** CHUNG-10 · Khung ứng dụng CRM (khuôn K01): menu trái theo quyền, thanh trên, vùng nội dung. */
+/** Đường dẫn "Nhóm > Mục" của trang đang mở, lấy từ menu (cùng nguồn với thanh bên). */
+function useBreadcrumb(menu: MenuGroup[]): string[] {
+  const { pathname } = useLocation();
+  for (const group of menu) {
+    const entry = group.entries.find((e) => crmPath(e.slug) === pathname);
+    if (entry) return pathname === '/crm' ? [entry.label] : [group.label, entry.label];
+  }
+  if (pathname === '/crm/tai-khoan') return ['Hồ sơ cá nhân'];
+  return ['CRM'];
+}
+
+/**
+ * Khung ứng dụng CRM (khuôn K01 của gói): thanh bên tối 236px (thu gọn 64px) dựng từ ma trận quyền,
+ * thanh trên 52px gồm đường dẫn, chọn cơ sở, chuông, tài khoản. Dưới 1024px thanh bên nằm trong ngăn kéo.
+ * Ô tìm kiếm toàn hệ thống và danh sách thông báo (P14) chưa có trong thiết kế nên chưa dựng.
+ */
 export function CrmShell() {
   useProduct('crm');
   const { claims } = useAuth();
@@ -127,7 +135,9 @@ export function CrmShell() {
   const [collapsed, setCollapsed] = useState(readCollapsed);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const menu = useMemo(() => visibleMenu(CRM_MENU, access), [access]);
-  const roleLine = [access.roleNames.join(', '), claims?.branchCode].filter(Boolean).join(' · ');
+  const crumbs = useBreadcrumb(menu);
+  const branchName = access.branchName(claims?.branchCode ?? null);
+  const roleLine = [access.roleNames.join(', '), branchName].filter(Boolean).join(' · ');
 
   const toggleCollapsed = () => {
     const next = !collapsed;
@@ -140,7 +150,7 @@ export function CrmShell() {
   };
 
   const menuList = (onNavigate?: () => void) => (
-    <ul className="flex flex-col gap-1 p-2">
+    <ul className="flex flex-col gap-0.5">
       {menu.map((group) => (
         <MenuGroupSection key={group.id} group={group} onNavigate={onNavigate} />
       ))}
@@ -149,31 +159,42 @@ export function CrmShell() {
 
   return (
     <div className="flex min-h-dvh bg-canvas">
-      {/* Menu trái: từ 1024px. Hẹp hơn thì nằm trong ngăn kéo. */}
       <aside
         className={cn(
-          'sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-border bg-surface lg:flex',
-          collapsed ? 'w-14' : 'w-64',
+          'sticky top-0 hidden h-dvh shrink-0 flex-col bg-sidebar text-sidebar-fg lg:flex',
+          collapsed ? 'w-sidebar-narrow' : 'w-sidebar',
         )}
       >
-        <div className="flex h-14 items-center gap-2 border-b border-border px-3">
-          {!collapsed && (
-            <p className="min-w-0 leading-tight">
-              <span className="block truncate font-display text-h3">Hòa Ma Toán</span>
-              <span className="block text-caption text-fg-muted">CRM</span>
-            </p>
+        {/* Đầu thanh bên trắng, cao bằng thanh trên (.hmt-sb-head). */}
+        <div
+          className={cn(
+            'flex h-topbar shrink-0 items-center border-b border-border bg-surface',
+            collapsed ? 'justify-center' : 'gap-2 pr-2 pl-3.5',
           )}
+        >
+          {!collapsed && (
+            <p className="min-w-0 flex-1 truncate font-display text-h3 font-bold text-fg">CRM</p>
+          )}
+          <IconButton
+            icon="collapse"
+            label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+            onClick={toggleCollapsed}
+          />
         </div>
-        <nav aria-label="Menu CRM" className="min-h-0 flex-1 overflow-y-auto">
+        <nav aria-label="Menu CRM" className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-2.5 pb-3.5">
           {collapsed ? (
-            <ul className="flex flex-col items-center gap-1 p-2">
+            <ul className="flex flex-col items-center gap-0.5">
               {menu.map((group) => (
                 <li key={group.id}>
-                  <IconButton
-                    icon={group.icon}
-                    label={`${group.label} (mở rộng menu)`}
+                  <button
+                    type="button"
+                    aria-label={`${group.label} (mở rộng menu)`}
+                    title={group.label}
                     onClick={toggleCollapsed}
-                  />
+                    className="focus-ring flex size-10 items-center justify-center rounded-control text-sidebar-fg hover:bg-sidebar-hover hover:text-neutral-0"
+                  >
+                    <Icon name={group.icon} />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -181,47 +202,55 @@ export function CrmShell() {
             menuList()
           )}
         </nav>
-        <div className="border-t border-border p-2">
-          {collapsed ? (
-            <IconButton icon="sidebar" label="Mở rộng menu" onClick={toggleCollapsed} />
-          ) : (
-            <button
-              type="button"
-              onClick={toggleCollapsed}
-              className="focus-ring flex min-h-9 w-full items-center gap-2 rounded-control px-2 text-body text-fg hover:bg-hover-overlay"
-            >
-              <Icon name="sidebar" />
-              Thu gọn
-            </button>
-          )}
-        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b border-border bg-surface px-2 sm:px-4">
+        <header className="sticky top-0 z-10 flex h-topbar shrink-0 items-center gap-3 border-b border-border bg-surface px-3 lg:gap-4 lg:px-5">
           <IconButton
             icon="menu"
             label="Mở menu"
             className="lg:hidden"
             onClick={() => setDrawerOpen(true)}
           />
-          <p className="min-w-0 flex-1 truncate font-display text-h3 lg:hidden">
-            Hòa Ma Toán · CRM
-          </p>
-          <div className="hidden min-w-0 flex-1 lg:block" />
-          <BranchPicker className="hidden w-56 lg:flex" />
+          <nav aria-label="Đường dẫn" className="min-w-0 flex-1">
+            <ol className="flex min-w-0 items-center gap-1.5 text-body text-fg-muted">
+              {crumbs.map((crumb, index) => {
+                const last = index === crumbs.length - 1;
+                return (
+                  <li key={crumb} className="flex min-w-0 items-center gap-1.5">
+                    {index > 0 && <Icon name="chevronRight" size={16} className="shrink-0" />}
+                    <span
+                      aria-current={last ? 'page' : undefined}
+                      className={cn('truncate', last && 'font-semibold text-fg')}
+                    >
+                      {crumb}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
+          <div className="ml-auto hidden shrink-0 lg:block">
+            <BranchPicker className="w-56" />
+          </div>
+          {/* Chuông: vỏ thanh trên. Danh sách thông báo làm ở phân hệ P14 (làm sau cùng). */}
+          <IconButton icon="bell" label="Thông báo (sắp có)" disabled />
           <AccountMenu portal="crm" roleLine={roleLine} />
         </header>
-        <main className="min-w-0 flex-1 p-4 lg:p-6">
-          <Outlet />
+        <main className="min-w-0 flex-1">
+          <div className="p-4 lg:p-5">
+            <Outlet />
+          </div>
         </main>
       </div>
 
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="Hòa Ma Toán · CRM">
-        <div className="border-b border-border p-3">
-          <BranchPicker className="w-full" />
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="CRM">
+        <div className="bg-sidebar px-2.5 py-2.5 text-sidebar-fg">
+          <div className="pb-2.5 [&_button]:w-full">
+            <BranchPicker className="w-full" />
+          </div>
+          <nav aria-label="Menu CRM">{menuList(() => setDrawerOpen(false))}</nav>
         </div>
-        <nav aria-label="Menu CRM">{menuList(() => setDrawerOpen(false))}</nav>
       </Drawer>
     </div>
   );

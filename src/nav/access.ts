@@ -13,6 +13,8 @@ export type AccessView = MenuAccess & {
   teachingBranches: BranchRow[];
   /** Tên các vai trò của người dùng, để hiện ở góc tài khoản. */
   roleNames: string[];
+  /** "CS1 Nguyễn Chí Thanh" từ mã cơ sở; không thấy thì trả mã. */
+  branchName: (code: string | null) => string | null;
 };
 
 export function buildAccess(
@@ -44,5 +46,10 @@ export function buildAccess(
     seesAllBranches,
     teachingBranches,
     roleNames: myRoles.map((r) => r.name),
+    branchName: (code) => {
+      if (!code) return null;
+      const branch = data.branches.find((b) => b.code === code);
+      return branch ? `${branch.code} ${branch.name}` : code;
+    },
   };
 }

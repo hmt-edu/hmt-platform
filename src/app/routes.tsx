@@ -14,7 +14,12 @@ import { CrmHomePage, CrmSectionPage, PortalTabPage } from '../pages/common/Port
 import { ProfilePage } from '../pages/common/ProfilePage';
 import { NotFoundView, RouteErrorPage } from '../pages/common/StatePages';
 import { HomePage } from '../pages/HomePage';
+import { parseAppEnv } from '../lib/env';
+import { PatternPage } from '../pages/dev/PatternPage';
 import { NoPortalPage, RequirePortal, RootRedirect } from './guards';
+
+// Trang mẫu thành phần: chỉ có ở bản thử nghiệm, xem trước và local; bản chạy thật không có route này.
+const SHOW_PATTERNS = parseAppEnv(import.meta.env.VITE_APP_ENV) !== 'production';
 
 const GD3 = 'giai đoạn 3';
 const GD4 = 'giai đoạn 4';
@@ -36,6 +41,19 @@ export const routes: RouteObject[] = [
       { path: 'khong-dang-nhap-duoc', element: <CannotLoginPage /> },
       { path: 'chon-cong', element: <ChoosePortalPage /> },
       { path: 'khong-co-quyen', element: <NoPortalPage /> },
+      ...(SHOW_PATTERNS
+        ? [
+            {
+              path: 'dev',
+              element: (
+                <RequirePortal portal="crm">
+                  <CrmShell />
+                </RequirePortal>
+              ),
+              children: [{ path: 'khuon', element: <PatternPage /> }],
+            } satisfies RouteObject,
+          ]
+        : []),
       // Trang kiểm tra kết nối (bước 1), không nằm trong menu.
       { path: 'trang-thai', element: <HomePage /> },
       {

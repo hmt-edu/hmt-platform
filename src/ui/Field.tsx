@@ -1,9 +1,26 @@
-import { useId, useState, type InputHTMLAttributes, type ReactNode } from 'react';
+import {
+  useId,
+  useState,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type TextareaHTMLAttributes,
+} from 'react';
 import { cn } from './cn';
 import { Icon } from './icons';
 
-export const INPUT_CLASS =
-  'focus-ring tap h-control w-full rounded-control border border-border-strong bg-surface px-3 text-body text-fg placeholder:text-fg-muted disabled:cursor-not-allowed disabled:border-disabled-border disabled:bg-disabled disabled:text-on-disabled aria-[invalid=true]:border-danger-border';
+// Theo .hmt-input của gói: cao 32px, viền #8A8076 1px, bo 6px, lề 10px; lỗi: viền đỏ 2px; chỉ đọc: nền xám nhạt.
+// cn() chỉ nối chuỗi, không gỡ lớp trùng thuộc tính: ô cần cao hay rộng khác thì dùng hằng riêng, không ghi đè.
+const INPUT_FRAME =
+  'focus-ring tap rounded-control border border-border-strong bg-surface px-2.5 text-fg placeholder:text-fg-muted focus-visible:border-focus [&[readonly]]:border-border [&[readonly]]:bg-surface-subtle disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-subtle disabled:text-fg-disabled aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger-solid';
+
+/** Ô nhập một dòng. */
+export const INPUT_CLASS = `${INPUT_FRAME} h-control w-full text-body`;
+/** Ô nhập nhiều dòng (cao tối thiểu 72px). */
+export const TEXTAREA_CLASS = `${INPUT_FRAME} min-h-[72px] w-full py-2 text-body`;
+/** Nút có hình ô nhập, rộng theo nội dung (ô chọn khoảng ngày, chọn một giá trị). */
+export const INPUT_BUTTON_CLASS = `${INPUT_FRAME} inline-flex h-control items-center gap-2 text-body whitespace-nowrap`;
+/** Ô mã 6 số: chữ to, giãn cách rộng. */
+const OTP_CLASS = `${INPUT_FRAME} h-control w-full tabular text-center text-h2 tracking-[0.5em]`;
 
 type FieldRenderProps = {
   id: string;
@@ -37,8 +54,8 @@ export function Field({
       <label
         htmlFor={id}
         className={cn(
-          'text-caption font-semibold text-fg',
-          required && "after:text-danger after:content-['_*']",
+          'text-caption font-semibold text-fg-label',
+          required && "after:text-on-danger-subtle after:content-['_*']",
         )}
       >
         {label}
@@ -50,7 +67,7 @@ export function Field({
         'aria-required': required ? true : undefined,
       })}
       {error && (
-        <p id={errorId} className="flex items-start gap-1 text-caption font-semibold text-danger">
+        <p id={errorId} className="flex items-start gap-1 text-caption text-on-danger-subtle">
           <Icon name="alert" size={16} className="mt-px shrink-0" />
           {error}
         </p>
@@ -96,7 +113,7 @@ export function PasswordInput({ label, help, error, required, ...input }: TextFi
             onClick={() => setShown((v) => !v)}
             aria-pressed={shown}
             aria-label={shown ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-            className="focus-ring absolute inset-y-1 right-1 rounded-tag px-2 text-caption font-semibold text-link hover:bg-hover-overlay"
+            className="focus-ring absolute inset-y-1 right-1 rounded-tag px-2 text-caption font-semibold text-link hover:bg-hover"
           >
             {shown ? 'Ẩn' : 'Hiện'}
           </button>
@@ -138,9 +155,54 @@ export function OtpInput({
           autoFocus={autoFocus}
           value={value}
           onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH))}
-          className={cn(INPUT_CLASS, 'tabular text-center text-h2 tracking-[0.5em]')}
+          className={OTP_CLASS}
         />
       )}
     </Field>
+  );
+}
+
+/** Ô nhập nhiều dòng (ghi chú, lý do). */
+export function TextAreaField({
+  label,
+  help,
+  error,
+  required,
+  ...input
+}: {
+  label: string;
+  help?: ReactNode | undefined;
+  error?: string | null | undefined;
+} & Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'id' | 'className'>) {
+  return (
+    <Field label={label} help={help} error={error} required={required}>
+      {(field) => <textarea {...input} {...field} className={TEXTAREA_CLASS} />}
+    </Field>
+  );
+}
+
+/** Ô tick. Nhãn đi kèm là chữ, bấm vào nhãn cũng bật tắt; trên điện thoại cao 44px. */
+export function Checkbox({
+  label,
+  className,
+  ...input
+}: { label: ReactNode } & Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'className'> & {
+    className?: string | undefined;
+  }) {
+  return (
+    <label
+      className={cn(
+        'flex min-h-control cursor-pointer items-center gap-2 text-body max-md:min-h-target',
+        input.disabled && 'cursor-not-allowed text-fg-disabled',
+        className,
+      )}
+    >
+      <input
+        {...input}
+        type="checkbox"
+        className="focus-ring size-4 shrink-0 accent-[var(--action-primary-bg)]"
+      />
+      {label}
+    </label>
   );
 }

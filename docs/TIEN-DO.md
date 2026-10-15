@@ -25,8 +25,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | PR | Nội dung | Trạng thái |
 |---|---|---|
 | 0 | Đưa gói thiết kế vào repo | Đã gộp (#19); bản v2 ở PR "Cập nhật gói thiết kế v2" |
-| 1 | Hệ thiết kế: token, `hmt-theme.css`, font, icon, build thử Tailwind v4 (PR 4d) | Đã code, chờ anh OK (nhánh `feat/p0-he-thiet-ke`) |
-| 2 | Thành phần cơ bản + khung ứng dụng CRM | Chưa |
+| 1 | Hệ thiết kế: token, `hmt-theme.css`, font, icon, build thử Tailwind v4 (PR 4d) | Đã gộp (#21) |
+| 2 | Thành phần cơ bản + khung ứng dụng CRM (trang mẫu `/dev/khuon`) | Đã code, chờ anh OK (nhánh `feat/p0-thanh-phan-khung-crm`) |
 | 3 | Danh sách, Kanban, Calendar (gói v2 đã có 4 khung của K1; còn vài chỗ Design ghi "chưa chắc", xem PR gói v2) | Chưa |
 | 4 | Bản ghi, hộp thoại, biểu mẫu, trạng thái chung, trang mẫu `/dev/khuon` | Chưa |
 | 5 | P1 đăng nhập: 5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động | Chưa |

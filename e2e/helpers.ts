@@ -46,7 +46,10 @@ export async function expectAccessible(page: Page) {
   // Đo sau khi mọi hiệu ứng chuyển màu đã xong: nút vừa đổi từ mờ sang sáng có màu trung gian chưa đạt
   // tương phản (white trên #CB4D0E chỉ vừa đủ 4,56:1). WebKit không huỷ ngay hiệu ứng đang chạy nên chờ hết.
   await page.addStyleTag({ content: '*, *::before, *::after { transition: none !important; }' });
-  await page.waitForFunction('document.getAnimations().length === 0');
+  // Chỉ chờ hiệu ứng chuyển màu (CSSTransition); vòng quay "đang tải" chạy mãi nên không tính.
+  await page.waitForFunction(
+    "document.getAnimations().every((a) => !(a instanceof CSSTransition) || a.playState !== 'running')",
+  );
   await page.waitForTimeout(100);
   const results = await new AxeBuilder({ page })
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
