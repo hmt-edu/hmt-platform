@@ -77,6 +77,9 @@ test('K1: Group By hai cấp, gập mở nhóm; Cột; Lọc nâng cao', async (
 
 test('K2 Kanban: kéo thẻ chỉ đi tới; cột hệ thống không thả tay vào được', async ({ page }) => {
   await page.getByRole('button', { name: 'Kanban' }).click();
+  // Khung hiện đủ mọi cột được cấu hình, kể cả cột ít thẻ (L3) và cột chưa có thẻ nào (L8).
+  await expect(page.getByRole('region', { name: /^L3 Không có nhu cầu: 1 thẻ/ })).toBeVisible();
+  await expect(page.getByRole('region', { name: /^L8 Đăng ký học: 0 thẻ/ })).toBeAttached();
   const l4 = page.getByRole('region', { name: /^L4 Khách hàng tiềm năng/ });
   const card = l4.getByRole('listitem').filter({ hasText: 'CO000121' });
   await expect(card).toBeVisible();
@@ -98,6 +101,61 @@ test('K2 Kanban: kéo thẻ chỉ đi tới; cột hệ thống không thả tay
     page.getByRole('region', { name: /^L5 Đồng ý tham gia test/ }).getByText('CO000121'),
   ).toBeVisible();
   await expectAccessible(page);
+});
+
+test('K2 Kanban: thanh tỷ lệ đầu cột lọc theo khúc màu; chỉ đi tới là tuỳ chọn', async ({
+  page,
+}) => {
+  await page.getByRole('button', { name: 'Kanban' }).click();
+  const l4 = page.getByRole('region', { name: /^L4 Khách hàng tiềm năng/ });
+  await expect(l4.getByRole('listitem').filter({ hasText: 'CO000121' })).toBeVisible();
+  await expect(l4.getByRole('listitem').filter({ hasText: 'CO000127' })).toBeVisible();
+
+  // Bấm khúc "Hôm nay" thì cột chỉ còn thẻ hôm nay; bấm lại thì bỏ lọc.
+  const bar = l4.getByRole('group', { name: /^Tỷ lệ thẻ/ });
+  await bar.getByRole('button', { name: /^Hôm nay: 1 thẻ/ }).click();
+  await expect(l4.getByRole('listitem').filter({ hasText: 'CO000121' })).toBeVisible();
+  await expect(l4.getByRole('listitem').filter({ hasText: 'CO000127' })).toHaveCount(0);
+  await bar.getByRole('button', { name: /^Hôm nay: 1 thẻ/ }).click();
+  await expect(l4.getByRole('listitem').filter({ hasText: 'CO000127' })).toBeVisible();
+  await expectAccessible(page);
+
+  // Tắt "chỉ đi tới": kéo lùi được.
+  await page.getByLabel(/Kanban: chỉ đi tới/).uncheck();
+  const card = l4.getByRole('listitem').filter({ hasText: 'CO000121' });
+  await card.getByRole('button', { name: /Chuyển giai đoạn/ }).click();
+  await page.getByRole('menuitem', { name: 'Chuyển sang L2 Chưa liên hệ được' }).click();
+  await expect(
+    page.getByRole('region', { name: /^L2 Chưa liên hệ được/ }).getByText('CO000121'),
+  ).toBeVisible();
+});
+
+test('ô ngày luôn dd/mm/yyyy; ô "là một trong" là ô chọn có tìm', async ({ page }) => {
+  await page.getByRole('button', { name: 'Filters', exact: true }).click();
+  await page.getByRole('button', { name: /Lọc nâng cao/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Lọc nâng cao' });
+  await dialog.getByRole('button', { name: 'Thêm điều kiện' }).click();
+  // Đổi trường sang Stage (là một trong): ô giá trị là ô chọn có tìm.
+  await dialog.getByRole('combobox', { name: 'Trường, điều kiện 1' }).click();
+  await page.getByRole('option', { name: 'Stage' }).click();
+  await dialog.getByRole('combobox', { name: 'Giá trị, điều kiện 1' }).click();
+  await page.getByPlaceholder('Gõ để tìm (không cần dấu)').fill('tiem nang');
+  await page.getByRole('option', { name: /L4 Khách hàng tiềm năng/ }).click();
+  await page.keyboard.press('Escape');
+  // Thêm điều kiện ngày: gõ tay 8 chữ số tự thành dd/mm/yyyy.
+  await dialog.getByRole('button', { name: 'Thêm điều kiện' }).click();
+  await dialog.getByRole('combobox', { name: 'Trường, điều kiện 2' }).click();
+  await page.getByRole('option', { name: 'Ngày tạo' }).click();
+  const date = dialog.getByLabel('Giá trị, điều kiện 2', { exact: true });
+  await date.fill('01102026');
+  await expect(date).toHaveValue('01/10/2026');
+  await dialog.getByRole('button', { name: 'Áp dụng' }).click();
+  await expect(
+    page.getByRole('button', { name: /Bỏ điều kiện: Ngày tạo từ ngày 01\/10\/2026/ }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: /Bỏ điều kiện: Stage là một trong/ }),
+  ).toBeVisible();
 });
 
 test('K5 Calendar: tuần, tháng, ngày; bấm sự kiện mở thao tác', async ({ page }) => {

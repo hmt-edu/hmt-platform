@@ -6,6 +6,14 @@ import { Button, IconButton } from '../../ui/Button';
 import { Code, Pagination, Skeleton, Table, Tag, type Column } from '../../ui/Data';
 import { Alert, Avatar, CountBadge, StateView } from '../../ui/Feedback';
 import { Checkbox, PasswordInput, TextAreaField, TextField } from '../../ui/Field';
+import {
+  Combobox,
+  DateInput,
+  DateRange,
+  FileUpload,
+  MoneyInput,
+  type DateRangeValue,
+} from '../../ui/Inputs';
 import { Dialog, Drawer, DropdownMenu, Popover, Select, Tabs } from '../../ui/Overlays';
 import { StageBar, type StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
@@ -17,6 +25,15 @@ const STEPS: StageStep[] = [
   { code: 'L4', label: 'Khách hàng tiềm năng' },
   { code: 'L5', label: 'Đồng ý tham gia test' },
   { code: 'L6', label: 'Đã tham gia test' },
+];
+
+const DEMO_DEPOSIT = 500_000; // allow-number: số tiền giả để minh hoạ ô nhập tiền
+const DEMO_PRICE = 220_000; // allow-number: số tiền giả cho ô "hệ thống tính"
+const CLASSES = [
+  { value: '8a1', label: '8A1 Đại', hint: 'CS1 · 13/15 em', keywords: 'LOP-CS1-0001' },
+  { value: '9a2', label: '9A2 Đại', hint: 'CS1 · 12/15 em', keywords: 'LOP-CS1-0002' },
+  { value: '7a1', label: '7A1 Hình', hint: 'CS5 · 15/15 em', disabledReason: 'Hết chỗ' },
+  { value: '6b1', label: '6B1 Số học', hint: 'CS5 · 9/15 em', keywords: 'LOP-CS5-0004' },
 ];
 
 const DEMO_PAGE_SIZE = 25; // allow-number: số giả của trang mẫu, không phải số nghiệp vụ
@@ -91,6 +108,11 @@ export function PatternPage() {
   const [select, setSelect] = useState('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [page, setPage] = useState(1);
+  const [one, setOne] = useState<string[]>([]);
+  const [many, setMany] = useState<string[]>(['8a1']);
+  const [day, setDay] = useState<Date | null>(null);
+  const [range, setRange] = useState<DateRangeValue>(null);
+  const [money, setMoney] = useState<number | null>(DEMO_DEPOSIT);
 
   return (
     <div className="flex flex-col gap-4">
@@ -144,6 +166,46 @@ export function PatternPage() {
           />
           <Checkbox label="Dùng cho mọi người" />
           <TextAreaField label="Ghi chú" placeholder="Ghi chú…" />
+        </div>
+      </Section>
+
+      <Section title="Ô chọn có tìm, ngày, tiền, đính kèm">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Combobox
+            label="Lớp"
+            options={CLASSES}
+            value={one}
+            onChange={setOne}
+            placeholder="Chọn lớp"
+            required
+            help="Gõ tên hoặc mã lớp, không cần dấu."
+          />
+          <Combobox
+            label="Lớp (chọn nhiều)"
+            options={CLASSES}
+            value={many}
+            onChange={setMany}
+            multiple
+          />
+          <DateInput
+            label="Ngày vào lớp"
+            value={day}
+            onChange={setDay}
+            help="Gõ dd/mm/yyyy hoặc bấm biểu tượng lịch."
+          />
+          <div className="flex flex-col gap-1">
+            <span className="text-caption font-semibold text-fg-label">Khoảng ngày</span>
+            <DateRange label="Khoảng ngày" value={range} onChange={setRange} />
+          </div>
+          <MoneyInput
+            label="Tiền cọc"
+            value={money}
+            onChange={setMoney}
+            required
+            error={money === null ? 'Hãy nhập số tiền cọc.' : null}
+          />
+          <MoneyInput label="Đơn giá một giờ" value={DEMO_PRICE} readOnly />
+          <FileUpload label="Tải chứng từ lên" available={false} />
         </div>
       </Section>
 

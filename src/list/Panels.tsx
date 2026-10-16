@@ -1,10 +1,12 @@
 // Bốn khung mở ra của K1 (Filters, Group By, Cột, Favorites) và hộp Lọc nâng cao, theo gói thiết kế v2.
 // Máy tính: khung nổi, áp dụng ngay. Điện thoại: tấm trượt từ dưới lên, có nút Áp dụng.
 import { useState, type DragEvent, type ReactNode } from 'react';
+import { fromIsoDate, toIsoDate } from '../lib/dateText';
 import { Button, IconButton } from '../ui/Button';
 import { cn } from '../ui/cn';
 import { Checkbox, TextField } from '../ui/Field';
 import { Icon } from '../ui/icons';
+import { Combobox, DateInput } from '../ui/Inputs';
 import { Dialog, Drawer, Popover, Select } from '../ui/Overlays';
 import { MAX_GROUP_LEVELS, blankCondition, defaultColumnKeys, visibleColumnKeys } from './state';
 import {
@@ -463,31 +465,32 @@ function ValueInput({
     );
   }
   if (type === 'multi') {
-    const picked = Array.isArray(value) ? value : [];
     return (
-      <fieldset className="flex flex-wrap gap-x-4 gap-y-1 rounded-control border border-border-strong px-2.5 py-1">
-        <legend className="sr-only">{label}</legend>
-        {(options ?? []).map((o) => (
-          <Checkbox
-            key={o.value}
-            label={o.label}
-            checked={picked.includes(o.value)}
-            onChange={() =>
-              onChange(
-                picked.includes(o.value)
-                  ? picked.filter((v) => v !== o.value)
-                  : [...picked, o.value],
-              )
-            }
-          />
-        ))}
-      </fieldset>
+      <Combobox
+        compact
+        multiple
+        label={label}
+        placeholder="Chọn…"
+        options={options ?? []}
+        value={Array.isArray(value) ? value : []}
+        onChange={onChange}
+      />
+    );
+  }
+  if (type === 'date') {
+    // Ngày lưu dạng "yyyy-mm-dd"; hiện và gõ luôn là dd/mm/yyyy (không phụ thuộc ngôn ngữ trình duyệt).
+    return (
+      <DateInput
+        compact
+        label={label}
+        value={typeof value === 'string' ? fromIsoDate(value) : null}
+        onChange={(date) => onChange(date ? toIsoDate(date) : '')}
+      />
     );
   }
   return (
     <TextField
       label={label}
-      type={type === 'date' ? 'date' : 'text'}
       value={typeof value === 'string' ? value : ''}
       onChange={(e) => onChange(e.target.value)}
     />

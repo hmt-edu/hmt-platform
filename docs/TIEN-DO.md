@@ -27,8 +27,9 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | 0 | Đưa gói thiết kế vào repo | Đã gộp (#19); bản v2 ở PR "Cập nhật gói thiết kế v2" |
 | 1 | Hệ thiết kế: token, `hmt-theme.css`, font, icon, build thử Tailwind v4 (PR 4d) | Đã gộp (#21) |
 | 2 | Thành phần cơ bản + khung ứng dụng CRM (trang mẫu `/dev/khuon`) | Đã gộp (#22) |
-| 3 | Danh sách (K1) + Filters, Group By, Cột, Favorites, Lọc nâng cao; Kanban (K2); Calendar (K5); trang mẫu `/dev/danh-sach` | Đã code, chờ anh OK (nhánh `feat/p0-danh-sach-kanban-lich`) |
-| 4 | Bản ghi, hộp thoại, biểu mẫu, trạng thái chung, trang mẫu `/dev/khuon` | Chưa |
+| 3 | Danh sách (K1) + Filters, Group By, Cột, Favorites, Lọc nâng cao; Kanban (K2); Calendar (K5); trang mẫu `/dev/danh-sach` | Đã gộp (#23) |
+| 4a | Ô chọn có tìm, ô ngày dd/mm/yyyy (lịch của gói), ô tiền, đính kèm; Kanban: thanh tỷ lệ đầu cột, "chỉ đi tới" là tuỳ chọn | Đã code, chờ anh OK (nhánh `feat/p0-o-nhap-kanban`) |
+| 4b | Bản ghi (K3), hộp thoại các loại, biểu mẫu và ngăn kéo, trạng thái chung, trang chủ theo vai trò (K09) | Chưa |
 | 5 | P1 đăng nhập: 5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động | Chưa |
 | 6 | PR dữ liệu: bảng đối chiếu đủ 32 danh mục với spec 06, nạp danh mục thiếu, "phiên bản" ma trận quyền | Chưa |
 | 7 | P2 Cấu hình | Chưa |

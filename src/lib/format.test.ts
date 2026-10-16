@@ -38,3 +38,24 @@ describe('định dạng', () => {
     expect(foldText('Đặng Quốc Huy')).toBe('dang quoc huy');
   });
 });
+
+describe('ngày dd/mm/yyyy nhập tay', () => {
+  it('chèn dấu / khi gõ số và bỏ ký tự lạ', async () => {
+    const { maskDmy } = await import('./dateText');
+    expect(maskDmy('0')).toBe('0');
+    expect(maskDmy('051')).toBe('05/1');
+    expect(maskDmy('05102026')).toBe('05/10/2026');
+    expect(maskDmy('05/10/2026999')).toBe('05/10/2026');
+    expect(maskDmy('ab05')).toBe('05');
+  });
+
+  it('đọc chặt: sai định dạng hoặc ngày không có thật thì null', async () => {
+    const { parseDmy, formatDmy, fromIsoDate, toIsoDate } = await import('./dateText');
+    expect(formatDmy(parseDmy('05/10/2026'))).toBe('05/10/2026');
+    expect(parseDmy('31/02/2026')).toBeNull();
+    expect(parseDmy('5/10/2026')).toBeNull();
+    expect(parseDmy('2026-10-05')).toBeNull();
+    expect(toIsoDate(parseDmy('05/10/2026') as Date)).toBe('2026-10-05');
+    expect(formatDmy(fromIsoDate('2026-10-05'))).toBe('05/10/2026');
+  });
+});

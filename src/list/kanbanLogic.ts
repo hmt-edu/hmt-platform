@@ -21,3 +21,14 @@ export function forwardOnlyRule(order: string[], systemOnly: string[] = []): Mov
     return { ok: true };
   };
 }
+
+/** Mặc định của khung: kéo đi đâu cũng được (trừ cột đang đứng); cột `systemOnly` vẫn không thả tay vào. */
+export function freeMoveRule(systemOnly: string[] = []): MoveRule {
+  return (from, to) => {
+    if (from === to) return { ok: false, reason: 'Thẻ đang ở giai đoạn này.' };
+    if (systemOnly.includes(to)) {
+      return { ok: false, reason: 'Giai đoạn này do hệ thống tự chuyển, không kéo tay vào được.' };
+    }
+    return { ok: true };
+  };
+}

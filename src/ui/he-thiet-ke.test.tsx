@@ -1,8 +1,10 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { Button } from './Button';
 import { Code, Tag } from './Data';
 import { Checkbox, TextAreaField, TextField } from './Field';
+import { Combobox, DateInput } from './Inputs';
 import { Dialog } from './Overlays';
 import { StageBar, type StageStep } from './Stage';
 
@@ -96,5 +98,53 @@ describe('Dialog', () => {
       </Dialog>,
     );
     expect(screen.queryByRole('button', { name: 'Đóng' })).toBeNull();
+  });
+});
+
+describe('Combobox, DateInput (PR 4a)', () => {
+  it('tìm không cần dấu; lựa chọn có lý do thì không chọn được', async () => {
+    const onChange = vi.fn();
+    render(
+      <Combobox
+        label="Lớp"
+        value={[]}
+        onChange={onChange}
+        options={[
+          { value: 'a', label: '6B1 Số học' },
+          { value: 'b', label: '7A1 Hình', disabledReason: 'Hết chỗ' },
+        ]}
+      />,
+    );
+    fireEvent.click(screen.getByRole('combobox', { name: /Lớp/ }));
+    const input = await screen.findByPlaceholderText('Gõ để tìm (không cần dấu)');
+    fireEvent.change(input, { target: { value: 'so hoc' } });
+    expect(screen.queryByText('7A1 Hình')).toBeNull();
+    fireEvent.click(await screen.findByText('6B1 Số học'));
+    expect(onChange).toHaveBeenCalledWith(['a']);
+  });
+
+  it('ô ngày gõ tay luôn là dd/mm/yyyy và tự chèn dấu "/"', () => {
+    const onChange = vi.fn();
+    function Holder() {
+      const [value, setValue] = useState<Date | null>(null);
+      return (
+        <DateInput
+          label="Ngày vào lớp"
+          value={value}
+          onChange={(d) => {
+            onChange(d);
+            setValue(d);
+          }}
+        />
+      );
+    }
+    render(<Holder />);
+    const input = screen.getByLabelText<HTMLInputElement>('Ngày vào lớp');
+    fireEvent.change(input, { target: { value: '05102026' } });
+    expect(input.value).toBe('05/10/2026');
+    const picked = onChange.mock.calls.at(-1)?.[0] as Date;
+    expect([picked.getDate(), picked.getMonth(), picked.getFullYear()]).toEqual([5, 9, 2026]);
+    fireEvent.change(input, { target: { value: '31022026' } });
+    expect(screen.getByText(/Ngày không đúng/)).toBeTruthy();
   });
 });

@@ -38,3 +38,20 @@
     );
   background-size: 3rem 3rem;
 }
+
+/* Lịch chọn ngày (react-day-picker): màu lấy từ token của gói, không dùng màu mặc định của thư viện. */
+@import 'react-day-picker/style.css';
+.hmt-day-picker {
+  --rdp-accent-color: var(--action-primary-bg);
+  --rdp-accent-background-color: var(--bg-selected);
+  --rdp-range_start-date-background-color: var(--action-primary-bg);
+  --rdp-range_end-date-background-color: var(--action-primary-bg);
+  --rdp-range_start-color: var(--action-primary-text);
+  --rdp-range_end-color: var(--action-primary-text);
+  --rdp-today-color: var(--text-link);
+  --rdp-day-height: 32px;
+  --rdp-day-width: 32px;
+  --rdp-day_button-height: 32px;
+  --rdp-day_button-width: 32px;
+  font-size: 13px;
+}

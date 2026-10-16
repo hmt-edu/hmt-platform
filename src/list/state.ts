@@ -1,5 +1,6 @@
 // Logic thuần của khuôn danh sách: trạng thái bộ lọc, chip, tóm tắt, lọc trong trình duyệt, nhóm, khoảng ngày.
 // Không phụ thuộc giao diện nên có kiểm thử; màn dữ liệu lớn dùng `ListState` để dựng truy vấn ở máy chủ.
+import { datePresetRange } from '../lib/dateRange';
 import {
   OPERATORS_BY_TYPE,
   type Condition,
@@ -11,6 +12,8 @@ import {
 } from './types';
 
 export const MAX_GROUP_LEVELS = 2; // allow-number: Group By tối đa hai cấp theo thiết kế (K1_nhom)
+
+export { datePresetRange };
 
 export const DATE_PRESETS = [
   { key: '', label: 'Tất cả thời gian' },
@@ -146,34 +149,6 @@ export function activeCount<Row>(state: ListState, config: ListConfig<Row>): num
 export function summarize<Row>(state: ListState, config: ListConfig<Row>): string {
   const chips = chipsOf(state, config);
   return chips.length === 0 ? 'Chưa có điều kiện nào.' : chips.map((c) => c.label).join(' · ');
-}
-
-/** Khoảng ngày của một mốc nhanh. Tuần bắt đầu từ thứ Hai. `to` tính hết ngày. */
-export function datePresetRange(preset: string, today: Date): { from: Date; to: Date } | null {
-  const day = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const DAY = 86_400_000; // allow-number: số mili giây trong một ngày
-  const WEEK = 7; // allow-number: số ngày trong tuần
-  const endOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime() - 1;
-  switch (preset) {
-    case 'today':
-      return { from: day, to: new Date(endOf(day)) };
-    case 'week': {
-      const monday = new Date(day.getTime() - ((day.getDay() + WEEK - 1) % WEEK) * DAY);
-      return { from: monday, to: new Date(endOf(new Date(monday.getTime() + (WEEK - 1) * DAY))) };
-    }
-    case 'month':
-      return {
-        from: new Date(day.getFullYear(), day.getMonth(), 1),
-        to: new Date(endOf(new Date(day.getFullYear(), day.getMonth() + 1, 0))),
-      };
-    case 'last-month':
-      return {
-        from: new Date(day.getFullYear(), day.getMonth() - 1, 1),
-        to: new Date(endOf(new Date(day.getFullYear(), day.getMonth(), 0))),
-      };
-    default:
-      return null;
-  }
 }
 
 function conditionMatches<Row>(row: Row, cond: Condition, field: FilterField<Row>): boolean {

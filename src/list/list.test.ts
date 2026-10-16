@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { layoutDay, monthGrid, sameDay, weekDays, type CalendarEvent } from './calendarLogic';
-import { forwardOnlyRule } from './kanbanLogic';
+import { forwardOnlyRule, freeMoveRule } from './kanbanLogic';
 import {
   applyFilters,
   buildGroupTree,
@@ -199,6 +199,16 @@ describe('Kanban: luật kéo thả', () => {
     expect(rule('L4', 'L2')).toMatchObject({ ok: false });
     expect(rule('L4', 'L4')).toMatchObject({ ok: false });
     expect(rule('L4', 'L6')).toMatchObject({ ok: false });
+  });
+});
+
+describe('Kanban: "chỉ đi tới" là tuỳ chọn', () => {
+  it('luật tự do cho kéo lùi; cột hệ thống vẫn chặn; cùng cột thì không', () => {
+    const rule = freeMoveRule(['L6']);
+    expect(rule('L4', 'L2')).toEqual({ ok: true });
+    expect(rule('L1', 'L5')).toEqual({ ok: true });
+    expect(rule('L4', 'L6')).toMatchObject({ ok: false });
+    expect(rule('L4', 'L4')).toMatchObject({ ok: false });
   });
 });
 

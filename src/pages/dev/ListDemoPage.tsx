@@ -2,11 +2,12 @@
 // khuôn; bộ lọc thật của từng màn sẽ có ở đặc tả từng phân hệ. Chỉ có ở bản không phải chạy thật.
 import { useMemo, useState } from 'react';
 import { Button } from '../../ui/Button';
+import { Checkbox } from '../../ui/Field';
 import { Code, Tag } from '../../ui/Data';
 import { useToast } from '../../ui/toastContext';
 import { CalendarView, type CalendarMode } from '../../list/Calendar';
 import { addDays, startOfDay, type CalendarEvent } from '../../list/calendarLogic';
-import { forwardOnlyRule } from '../../list/kanbanLogic';
+import { forwardOnlyRule, freeMoveRule } from '../../list/kanbanLogic';
 import { KanbanBoard } from '../../list/Kanban';
 import { ListScreen } from '../../list/ListScreen';
 import { applyFilters, emptyState } from '../../list/state';
@@ -28,6 +29,7 @@ type Opp = {
 const STAGES = [
   { code: 'L1', label: 'L1 Khách hàng mới' },
   { code: 'L2', label: 'L2 Chưa liên hệ được' },
+  { code: 'L3', label: 'L3 Không có nhu cầu' },
   { code: 'L4', label: 'L4 Khách hàng tiềm năng' },
   { code: 'L5', label: 'L5 Đồng ý tham gia test' },
   { code: 'L6', label: 'L6 Đã tham gia test' },
@@ -75,6 +77,18 @@ const DATA: Opp[] = [
     branch: 'CS1',
     created: at(-3, 10),
     due: dueOf(-3, 10),
+  },
+  {
+    id: '9',
+    code: 'CO000096',
+    name: 'Toán lớp 8 · Mai Anh Thư',
+    parent: 'Chị Mai Thanh Vân',
+    stage: 'L3',
+    source: 'Google Ads',
+    owner: 'Nguyễn Hoàng Long',
+    branch: 'CS2',
+    created: at(-14, 10),
+    due: null,
   },
   {
     id: '3',
@@ -222,9 +236,15 @@ const CONFIG: ListConfig<Opp> = {
       label: 'Source',
       type: 'select',
       get: (r) => r.source,
-      options: ['Website', 'Hotline', 'Facebook Ads', 'Referral', 'Event', 'Cold Call'].map(
-        (v) => ({ value: v, label: v }),
-      ),
+      options: [
+        'Website',
+        'Hotline',
+        'Facebook Ads',
+        'Referral',
+        'Event',
+        'Cold Call',
+        'Google Ads',
+      ].map((v) => ({ value: v, label: v })),
     },
     {
       key: 'stage',
@@ -271,6 +291,8 @@ export function ListDemoPage() {
   const [mode, setMode] = useState<CalendarMode>('week');
   const [anchor, setAnchor] = useState(startOfDay(TODAY));
   const [resourceMode, setResourceMode] = useState<'all' | 'people' | 'rooms'>('all');
+  // "Chỉ đi tới" là tuỳ chọn của từng màn: ở trang mẫu bật tắt được để thấy cả hai cách.
+  const [forwardOnly, setForwardOnly] = useState(true);
   const [stages, setStages] = useState<Record<string, string>>({});
 
   const rows = useMemo(
@@ -308,6 +330,11 @@ export function ListDemoPage() {
         Trang mẫu khuôn danh sách, Kanban, Calendar. Dữ liệu giả, không lưu. Bộ lọc nhanh, trường
         lọc nâng cao, trường nhóm là cấu hình của màn “Cơ hội” giả này.
       </p>
+      <Checkbox
+        label="Kanban: chỉ đi tới (tuỳ chọn của từng màn, tắt thì kéo tự do)"
+        checked={forwardOnly}
+        onChange={(e) => setForwardOnly(e.target.checked)}
+      />
       <ListScreen
         config={CONFIG}
         state={state}
@@ -340,17 +367,41 @@ export function ListDemoPage() {
             }))}
             cardKey={(c) => c.id}
             cardLabel={(c) => c.name}
-            rule={forwardOnlyRule(
-              STAGES.map((s) => s.code),
-              ['L6', 'L8'],
-            )}
+            rule={
+              forwardOnly
+                ? forwardOnlyRule(
+                    STAGES.map((s) => s.code),
+                    ['L6', 'L8'],
+                  )
+                : freeMoveRule(['L6', 'L8'])
+            }
+            bar={{
+              segments: [
+                { key: 'ok', label: 'Còn hạn', tone: 'success' },
+                { key: 'today', label: 'Hôm nay', tone: 'warning' },
+                { key: 'late', label: 'Quá hạn', tone: 'danger' },
+                { key: 'none', label: 'Chưa có lịch', tone: 'neutral' },
+              ],
+              of: (c) =>
+                c.due === null
+                  ? 'none'
+                  : c.due.tone === 'danger'
+                    ? 'late'
+                    : c.due.tone === 'warning'
+                      ? 'today'
+                      : 'ok',
+            }}
             onMove={(card, _from, to) => {
               setStages((m) => ({ ...m, [card.id]: to }));
               toast({ title: `Đã chuyển ${card.code} sang ${to}` });
             }}
             onBlocked={(reason) => toast({ tone: 'warning', title: reason })}
             onAdd={() => toast({ title: 'Mở ngăn kéo tạo nhanh (PR 4)' })}
-            note="Kéo thẻ chỉ thả được vào giai đoạn phía trước; L6, L8 do hệ thống tự chuyển."
+            note={
+              forwardOnly
+                ? 'Kéo thẻ chỉ thả được vào giai đoạn phía trước; L6, L8 do hệ thống tự chuyển.'
+                : 'Kéo thẻ tự do; L6, L8 do hệ thống tự chuyển.'
+            }
             renderCard={(c) => (
               <div className="flex flex-col gap-1.5">
                 <Code>{c.code}</Code>
