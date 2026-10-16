@@ -41,49 +41,53 @@ select u.id, 'Giả ' || u.key, u.key || '@pb.hoamatoan.invalid', (select id fro
 insert into app.user_role (user_id, role_code)
 select u.id, v.role from u join (values ('admin', 'ADMIN'), ('sales', 'SALES')) as v (key, role) on v.key = u.key;
 
+-- Phiên bản hiện hành lúc bắt đầu bài (đã có các phiên bản do migration nạp); các phiên bản mới của bài tính từ đây.
+create temp table base as select app.permission_current_version() as v;
+grant select on base to authenticated;
+
 -- Phiên bản khởi tạo.
 select is((select version_no from app.permission_version order by version_no limit 1), 1, 'Phiên bản 1 có sẵn');
 select is((select note from app.permission_version where version_no = 1), 'Khởi tạo', 'Phiên bản 1 là bản khởi tạo');
-select is(app.permission_current_version(), 1, 'Phiên bản hiện hành lúc đầu là 1');
+select ok((select v from base) >= 1, 'Có phiên bản hiện hành');
 
 -- Admin (đã xác thực hai bước) lưu.
 set local role authenticated;
 select pg_temp.claims((select id from u where key = 'admin'), 'aal2');
 
-select is(pg_temp.save(jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'HUY', 'CO_SO'))), 2,
-          'Lưu một ô: tạo phiên bản 2');
+select is(pg_temp.save(jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'HUY', 'CO_SO'))), (select v + 1 from base),
+          'Lưu một ô: tạo phiên bản mới');
 select is((select scope_code from app.permission where role_code = 'SALES' and module_code = 'LEAD' and action_code = 'HUY' and is_active),
           'CO_SO', 'Có hiệu lực ngay: ô quyền đã đổi');
-select is((select changed_count from app.permission_version where version_no = 2), 1, 'Phiên bản 2 ghi đúng số ô đổi');
-select is((select saved_by from app.permission_version where version_no = 2), (select id from u where key = 'admin'),
+select is((select changed_count from app.permission_version where version_no = (select v + 1 from base)), 1, 'Phiên bản mới ghi đúng số ô đổi');
+select is((select saved_by from app.permission_version where version_no = (select v + 1 from base)), (select id from u where key = 'admin'),
           'Phiên bản ghi người lưu');
 select is((select array[from_scope, to_scope] from app.permission_change c
-           join app.permission_version v on v.id = c.version_id where v.version_no = 2 and c.role_code = 'SALES'),
+           join app.permission_version v on v.id = c.version_id where v.version_no = (select v + 1 from base) and c.role_code = 'SALES'),
           array[null, 'CO_SO'], 'Ô đã đổi ghi từ (chưa có quyền) sang CO_SO');
 
 -- Luật: phiên bản đang xem phải là hiện hành.
-select is(pg_temp.err($$select app.save_permission_matrix(1, jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'HUY', 'CHINH_MINH')))$$),
+select is(pg_temp.err($$select app.save_permission_matrix((select v - 1 from base), jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'HUY', 'CHINH_MINH')))$$),
           'HMT_PHIEN_BAN_CU', 'Đang xem phiên bản cũ: báo có người vừa lưu, không ghi đè');
-select is(app.permission_current_version(), 2, 'Lưu bị từ chối thì không tạo phiên bản');
+select is(app.permission_current_version(), (select v + 1 from base), 'Lưu bị từ chối thì không tạo phiên bản');
 
 -- Luật: phải có ô đổi thật.
 select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'HUY', 'CO_SO')))$$),
           'HMT_KHONG_CO_THAY_DOI', 'Lưu ô giữ nguyên: không có thay đổi, không tạo phiên bản');
 select is(pg_temp.err($$select pg_temp.save('[]'::jsonb)$$), 'HMT_KHONG_CO_THAY_DOI', 'Lưu danh sách rỗng: không có thay đổi');
-select is(app.permission_current_version(), 2, 'Không đổi thật thì phiên bản vẫn là 2');
+select is(app.permission_current_version(), (select v + 1 from base), 'Không đổi thật thì không có phiên bản mới');
 
 -- Nhiều ô một lần: bỏ quyền, thêm quyền; ô giữ nguyên bị bỏ qua, không tính.
 select is(pg_temp.save(jsonb_build_array(
             pg_temp.cell('SALES', 'LEAD', 'HUY', null),
             pg_temp.cell('SALES', 'LEAD', 'GIAO_VIEC', 'CUA_TOI'),
-            pg_temp.cell('SALES', 'LEAD', 'XEM', 'CO_SO'))), 3, 'Lưu nhiều ô: phiên bản 3');
-select is((select changed_count from app.permission_version where version_no = 3), 2,
+            pg_temp.cell('SALES', 'LEAD', 'XEM', 'CO_SO'))), (select v + 2 from base), 'Lưu nhiều ô: một phiên bản mới');
+select is((select changed_count from app.permission_version where version_no = (select v + 2 from base)), 2,
           'Chỉ tính ô đổi thật (ô giữ nguyên bị bỏ qua)');
 select is((select is_active from app.permission where role_code = 'SALES' and module_code = 'LEAD' and action_code = 'HUY'), false,
           'Bỏ quyền: dòng tắt, không xoá');
 select is((select array[from_scope, to_scope] from app.permission_change c
            join app.permission_version v on v.id = c.version_id
-           where v.version_no = 3 and c.action_code = 'HUY'), array['CO_SO', null], 'Ô bỏ quyền ghi từ CO_SO sang rỗng');
+           where v.version_no = (select v + 2 from base) and c.action_code = 'HUY'), array['CO_SO', null], 'Ô bỏ quyền ghi từ CO_SO sang rỗng');
 
 -- Hoàn tác cả lần lưu khi một ô sai.
 select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(
@@ -91,7 +95,7 @@ select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(
           'HMT_QUYEN_QUAN_TRI', 'Cấp phân hệ Quản trị cho vai trò khác ADMIN: bị chặn');
 select is((select scope_code from app.permission where role_code = 'SALES' and module_code = 'LEAD' and action_code = 'SUA'),
           'CO_SO', 'Một ô sai thì cả lần lưu hoàn tác: ô hợp lệ cùng lần không đổi');
-select is(app.permission_current_version(), 3, 'Lưu hỏng thì không tạo phiên bản');
+select is(app.permission_current_version(), (select v + 2 from base), 'Lưu hỏng thì không tạo phiên bản');
 select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(pg_temp.cell('KHONG_CO', 'LEAD', 'XEM', 'CO_SO')))$$),
           'HMT_O_QUYEN_SAI', 'Vai trò không có: báo ô sai');
 select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'XEM', 'KHONG_CO')))$$),
@@ -105,7 +109,7 @@ select is(pg_temp.err($$select app.set_permission('SALES', 'LEAD', 'SUA', 'CUA_T
           'Giao diện không gọi được hàm sửa từng ô (chỉ qua lưu phiên bản)');
 
 -- Admin đọc được lịch sử.
-select is((select count(*)::int from app.permission_version), 3, 'Admin đọc được danh sách phiên bản');
+select is((select count(*)::int from app.permission_version), (select v + 2 from base), 'Admin đọc được danh sách phiên bản');
 select ok((select count(*) from app.permission_change) >= 1, 'Admin đọc được ô đã đổi');
 
 -- Người không phải Admin: không lưu được, không đọc được lịch sử.
@@ -124,8 +128,12 @@ select is(pg_temp.err($$update app.permission_version set changed_count = 9 wher
           'Lịch sử phiên bản không sửa được');
 select is(pg_temp.err($$update app.permission_change set to_scope = 'TOAN_HE_THONG'$$), 'HMT_LICH_SU_QUYEN_CHI_THEM',
           'Ô đã đổi không sửa được');
-select is(pg_temp.err($$delete from app.permission_version where version_no = 2$$), 'HMT_KHONG_XOA', 'Phiên bản không xoá được');
-select is((select array_agg(version_no order by version_no) from app.permission_version), array[1, 2, 3],
+select is(pg_temp.err($$delete from app.permission_version where version_no = 2$$), 'HMT_LICH_SU_QUYEN_CHI_THEM', 'Phiên bản không xoá được');
+select is(pg_temp.err($$delete from app.permission_change$$), 'HMT_LICH_SU_QUYEN_CHI_THEM', 'Ô đã đổi không xoá được');
+select is(pg_temp.err($$truncate app.permission_version cascade$$), 'HMT_LICH_SU_QUYEN_CHI_THEM', 'Không xoá sạch được bảng phiên bản');
+select is(pg_temp.err($$truncate app.permission_change$$), 'HMT_LICH_SU_QUYEN_CHI_THEM', 'Không xoá sạch được bảng ô đã đổi');
+select is((select array_agg(version_no order by version_no) from app.permission_version),
+          (select array_agg(g order by g) from generate_series(1, (select v + 2 from base)) g),
           'Số phiên bản liền nhau');
 
 select * from finish();

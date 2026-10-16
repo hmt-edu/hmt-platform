@@ -37,8 +37,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | 6a | Danh mục sửa lệch: Môn, Khối, Trình độ thành Khoá; khoá mục cha giai đoạn lead và cơ hội, khoá C4D; C4C, C4D đổi chữ "opp" thành "cơ hội"; hai cột mới của mục danh mục (`requires_note`, `applies_to`); sửa dòng #30 của spec 06. migration `20261016000018` + 20 bài pgTAP | Đã gộp (#29) |
 | 6b | Danh mục phẳng nạp theo spec 06: #8 Loại gói, #14 Hình thức test, #15 Cấp độ đề test, #17, #21, #22, #23, #24, #25, #26, #28, #31, #32 (13 danh mục, migration `20261016000019`, 21 bài pgTAP). #14, #15 tách riêng; #2 Phòng học để rỗng ở bản chạy thật; #30 nạp dần theo giai đoạn; #27 làm cùng phiếu thu | Đã gộp (#30) |
 | 6c | Danh mục hai cấp: #12 Giai đoạn phiếu tái tục (8 + 5 nhóm con), #19 Nhóm đề nghị (7 nhóm, 15 nhóm con; 12 nhóm con có nghiệp vụ bị khoá theo R-CS-11), #20 Nhóm khiếu nại (7 nhóm, 25 nhóm con); #23 Lý do huỷ buổi gắn `applies_to` (TRUNG_TAM, HOC_SINH). Migration `20261016000020`, 29 bài pgTAP | Đã gộp (#31) |
-| 6d | Phiên bản ma trận quyền: hàm `app.save_permission_matrix` (một lần Lưu = một phiên bản, hiệu lực ngay, hoàn tác cả lần nếu một ô sai, chặn ghi đè khi có người vừa lưu), bảng `permission_version`, `permission_change` (chỉ thêm, chỉ Quản trị đọc); `app.set_permission` thành hàm nội bộ. Migration `20261016000021`, 34 bài pgTAP mới | Đã code, chờ anh OK (nhánh `feat/gd1-phien-ban-ma-tran-quyen`) |
-| 6e | Tách phân hệ quyền: Quản trị, Cấu hình bán hàng, Cấu hình đào tạo, **Ngày nghỉ lễ** (Trưởng cơ sở sửa), **Lịch hẹn** (nhóm menu Tuyển sinh). Gửi anh bảng quyền TRƯỚC và SAU từng vai trò để soát trước khi code | Chưa |
+| 6d | Phiên bản ma trận quyền: hàm `app.save_permission_matrix` (một lần Lưu = một phiên bản, hiệu lực ngay, hoàn tác cả lần nếu một ô sai, chặn ghi đè khi có người vừa lưu), bảng `permission_version`, `permission_change` (chỉ thêm, chỉ Quản trị đọc); `app.set_permission` thành hàm nội bộ. Migration `20261016000021`, 34 bài pgTAP mới | Đã gộp (#32) |
+| 6e | Tách phân hệ quyền: thêm Cấu hình bán hàng, Cấu hình đào tạo, Ngày nghỉ lễ, Lịch hẹn (quyền theo bảng anh duyệt 16/10, nạp thành phiên bản 2 gồm 57 ô); menu Cấu hình, Ngày nghỉ lễ, Lịch hẹn đổi sang phân hệ mới; luật ADMIN luôn giữ đủ quyền Quản trị; chặn xoá, xoá sạch lịch sử phiên bản. Migration `20261016000022`, 25 bài pgTAP và 4 bài Vitest | Đã code, chờ anh OK (nhánh `feat/gd1-tach-phan-he-quyen`) |
 | 7 | P2 Cấu hình | Chưa |
 | 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
 
@@ -54,6 +54,7 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Danh mục #25 Lý do điều chỉnh giờ: mục "Tặng giờ chăm sóc (cần duyệt)" cần một **cờ "cần duyệt" thật** (cột hoặc cấu hình) khi viết hàm điều chỉnh giờ; hiện chỉ là chữ trong tên mục.
 - Danh mục #23 Lý do huỷ buổi: hàm nghiệp vụ lọc theo cột `applies_to` (TRUNG_TAM, HOC_SINH), không đọc tiền tố mã.
 - Hàm phiếu tái tục: khoá các giai đoạn con **L7A, L7B, L8A** của `UPSALE_SUBSTAGE` (không Ngừng được), cùng cách khoá L5A, L5B, L5P của cơ hội, khi viết hàm dùng chúng.
+- Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
 
 ## Đang ở đâu

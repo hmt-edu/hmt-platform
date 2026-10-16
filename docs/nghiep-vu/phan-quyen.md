@@ -51,8 +51,29 @@ Người nhiều vai trò lấy phạm vi rộng nhất trong các vai trò có 
     đảo khoản, phiếu chi); ADMIN, Trưởng cơ sở không duyệt. Trưởng cơ sở chỉ Xem phân hệ Kế toán; vẫn duyệt đơn hàng.
   - Phiếu tái tục (`UPSALE`) không có bước Duyệt; Trưởng cơ sở Xem, Giao việc, Xuất file (danh sách sắp hết giờ của
     cơ sở mình, chốt 11/10/2026). Đơn hàng sinh từ tái tục duyệt như đơn thường (`SALES_ORDER`).
-- Số dòng mặc định: ADMIN 132 (trừ Duyệt tiền, Duyệt tái tục; có Xem, Xuất Tài khoản), BRANCH_MANAGER 109, CSKH 44, SALES 37, ACCOUNTANT 15,
-  TEACHER 14, TA 14, STUDENT 3.
+- Số dòng mặc định (sau PR 6e): ADMIN 160 (trừ Duyệt tiền, Duyệt tái tục; có Xem, Xuất Tài khoản), BRANCH_MANAGER 122, CSKH 51, SALES 43,
+  ACCOUNTANT 16, TEACHER 15, TA 15, STUDENT 3.
+
+## Tách phân hệ quyền (PR 6e, anh Trường chốt 12/10 và 16/10)
+Trước: cả menu Cấu hình và Quản trị dùng chung quyền "Quản trị · Xem", nên chỉ Admin thấy menu Cấu hình. Sau: Quản trị giữ
+nguyên (chỉ Admin), thêm bốn phân hệ quyền (danh mục `PERM_MODULE`):
+
+| Phân hệ | Mục menu | Quyền (ngoài ADMIN, ADMIN đủ 7 hành động toàn hệ thống) |
+|---|---|---|
+| Cấu hình bán hàng `CONFIG_SALES` | Gói bán, Bảng giá, Chiết khấu, Điều khoản thanh toán, Chiến dịch marketing | Xem, toàn hệ thống: Trưởng cơ sở, Kế toán, Tuyển sinh, CSKH |
+| Cấu hình đào tạo `CONFIG_TRAINING` | Khung chương trình, Rubric | Xem, toàn hệ thống: Trưởng cơ sở, CSKH, giáo viên, trợ giảng |
+| Ngày nghỉ lễ `HOLIDAY` | Ngày nghỉ lễ | Trưởng cơ sở: Xem, Tạo, Sửa, Huỷ, cơ sở mình. Tuyển sinh, CSKH: Xem, cơ sở mình |
+| Lịch hẹn `APPOINTMENT` | Lịch hẹn (nhóm Tuyển sinh) | Trưởng cơ sở: như Cơ hội (đủ 7 hành động, cơ sở mình). Tuyển sinh, CSKH: Xem, Tạo, Sửa, Huỷ, cơ sở mình (mở lại tính là Sửa) |
+
+- Giáo viên, trợ giảng, học sinh, phụ huynh không có Lịch hẹn, Ngày nghỉ lễ; học sinh, phụ huynh không có phân hệ mới nào.
+- "Người duyệt ticket" (QT-15) vẫn thuộc Quản trị, chỉ Admin.
+- Nạp bằng `app.save_permission_matrix`, nên là phiên bản 2 của ma trận, có danh sách 57 ô.
+- **Luật khi viết hàm sửa ngày nghỉ lễ (chưa có hàm):** ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ
+  tạo, sửa, huỷ ngày nghỉ của cơ sở mình; mọi vai trò có quyền Xem thấy cả ngày nghỉ chung.
+- **Luật mới:** vai trò ADMIN luôn giữ đủ quyền phân hệ Quản trị (7 hành động, toàn hệ thống). Lần lưu nào bỏ hoặc thu hẹp
+  thì báo `HMT_ADMIN_GIU_QUYEN_QUAN_TRI`, hoàn tác cả lần lưu; ngay cả sửa trực tiếp bảng quyền cũng bị chặn (trigger).
+- Lịch sử phiên bản quyền (`permission_version`, `permission_change`): chặn sửa, xoá, xoá sạch, báo
+  `HMT_LICH_SU_QUYEN_CHI_THEM`.
 
 ## Kế toán vắng: gán tạm vai trò ACCOUNTANT
 ADMIN không có quyền duyệt tiền. Khi kế toán vắng:
@@ -173,7 +194,7 @@ tự kiểm quyền người gọi.
   chỉ xem, không khôi phục.
 - Lưu gửi kèm số phiên bản đang xem. Có người vừa lưu thì báo `HMT_PHIEN_BAN_CU`, không ghi đè. Không có ô đổi thật thì
   `HMT_KHONG_CO_THAY_DOI`, không tạo phiên bản. Một ô sai thì hoàn tác cả lần lưu.
-- Chưa chặn Admin tự bỏ quyền của chính vai trò ADMIN (luật chưa nêu); xem hỏi anh Trường trong PR 6d.
+- Admin không bỏ được quyền Quản trị của vai trò ADMIN (luật thêm ở PR 6e, xem mục Tách phân hệ quyền).
 
 ## Việc phải làm trước giai đoạn 4 (học sinh, phụ huynh dùng thật)
 - **L2.** Hiện mọi người đã đăng nhập (kể cả học sinh, giáo viên) đọc được toàn bộ ma trận quyền, Cài đặt (trần chiết
