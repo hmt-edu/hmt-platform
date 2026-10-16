@@ -121,7 +121,7 @@ export function Drawer({
   title: string;
   children: ReactNode;
   footer?: ReactNode | undefined;
-  side?: 'left' | 'right' | undefined;
+  side?: 'left' | 'right' | 'bottom' | undefined;
 }) {
   const focus = useReturnFocus();
   return (
@@ -131,8 +131,11 @@ export function Drawer({
         <RadixDialog.Content
           {...focus}
           className={cn(
-            'fixed inset-y-0 z-50 flex flex-col bg-surface shadow-3 focus:outline-none',
-            side === 'left' ? 'left-0 w-72 max-w-[85vw]' : 'right-0 w-[480px] max-w-[100vw]',
+            'fixed z-50 flex flex-col bg-surface shadow-3 focus:outline-none',
+            side === 'left' && 'inset-y-0 left-0 w-72 max-w-[85vw]',
+            side === 'right' && 'inset-y-0 right-0 w-[480px] max-w-[100vw]',
+            // Tấm trượt từ dưới lên (điện thoại): bộ lọc, nhóm, cột, yêu thích.
+            side === 'bottom' && 'inset-x-0 bottom-0 max-h-[85dvh] w-full rounded-t-box',
           )}
         >
           <div className="flex items-center gap-2 border-b border-border px-4 py-2">
@@ -161,7 +164,7 @@ export type MenuItem =
 // .hmt-opt: dòng 13px, lề 8px, bo 4px, hover nền cam nhạt.
 const MENU_ITEM =
   'flex min-h-8 cursor-pointer items-center gap-2 rounded-tag px-2 py-1.5 text-body text-fg outline-none data-[highlighted]:bg-hover max-md:min-h-target';
-const MENU_PANEL = 'z-30 min-w-60 rounded-box border border-border bg-surface p-1.5 shadow-2';
+const MENU_PANEL = 'z-[70] min-w-60 rounded-box border border-border bg-surface p-1.5 shadow-2';
 
 /** Menu thả xuống (menu tài khoản, thêm thao tác). */
 export function DropdownMenu({
@@ -289,7 +292,7 @@ export function Popover({
           align={align}
           sideOffset={4}
           className={cn(
-            'z-30 max-w-[calc(100vw-2rem)] rounded-box border border-border bg-surface p-3 shadow-2 focus:outline-none',
+            'z-[70] max-w-[calc(100vw-2rem)] rounded-box border border-border bg-surface p-3 shadow-2 focus:outline-none',
             className,
           )}
         >

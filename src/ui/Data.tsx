@@ -1,5 +1,5 @@
 // Hiển thị dữ liệu: nhãn trạng thái, khung chờ, phân trang, bảng (K03), thanh thao tác hàng loạt.
-import { useId, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { formatNumber } from '../lib/format';
 import { Button, IconButton } from './Button';
 import { cn } from './cn';
@@ -115,6 +115,35 @@ export function Pagination({
   );
 }
 
+/** Nút nhóm (Group By) của bảng: tên, số dòng, nhóm con hoặc dòng của nhóm lá. */
+export type TableGroup<Row> = {
+  key: string;
+  label: string;
+  count: number;
+  children: TableGroup<Row>[];
+  rows: Row[];
+};
+
+type DisplayItem<Row> =
+  | { kind: 'group'; group: TableGroup<Row>; depth: number; open: boolean }
+  | { kind: 'row'; row: Row };
+
+function flatten<Row>(
+  groups: TableGroup<Row>[],
+  collapsed: ReadonlySet<string>,
+  depth = 0,
+): DisplayItem<Row>[] {
+  return groups.flatMap<DisplayItem<Row>>((group) => {
+    const open = !collapsed.has(group.key);
+    const inner: DisplayItem<Row>[] = open
+      ? group.children.length > 0
+        ? flatten(group.children, collapsed, depth + 1)
+        : group.rows.map((row) => ({ kind: 'row' as const, row }))
+      : [];
+    return [{ kind: 'group' as const, group, depth, open }, ...inner];
+  });
+}
+
 export type SortState = { key: string; direction: 'asc' | 'desc' } | null;
 
 export type Column<Row> = {
@@ -174,6 +203,7 @@ export function Table<Row>({
   selected,
   onSelectedChange,
   skeletonRows = 5,
+  groups,
 }: {
   /** Tên bảng cho trình đọc màn hình. */
   caption: string;
@@ -191,7 +221,20 @@ export function Table<Row>({
   selected?: ReadonlySet<string> | undefined;
   onSelectedChange?: ((selected: Set<string>) => void) | undefined;
   skeletonRows?: number | undefined;
+  /** Có thì bảng hiện theo nhóm (Group By), `rows` chỉ dùng để chọn tất cả và đếm. */
+  groups?: TableGroup<Row>[] | undefined;
 }) {
+  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());
+  const items: DisplayItem<Row>[] = groups
+    ? flatten(groups, collapsed)
+    : rows.map((row) => ({ kind: 'row' as const, row }));
+  const toggleGroup = (key: string) =>
+    setCollapsed((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
   const narrow = useMedia(NARROW_TABLE);
   const headingId = useId();
   const selectable = selected !== undefined && onSelectedChange !== undefined;
@@ -236,7 +279,15 @@ export function Table<Row>({
                 <Skeleton className="w-3/4" />
               </li>
             ))
-          : rows.map((row) => {
+          : items.map((item) => {
+              if (item.kind === 'group') {
+                return (
+                  <li key={item.group.key} style={{ paddingLeft: `${item.depth * 12}px` }}>
+                    <GroupToggle group={item.group} open={item.open} onToggle={toggleGroup} />
+                  </li>
+                );
+              }
+              const row = item.row;
               const key = rowKey(row);
               return (
                 <li
@@ -352,7 +403,20 @@ export function Table<Row>({
                   ))}
                 </tr>
               ))
-            : rows.map((row) => {
+            : items.map((item) => {
+                if (item.kind === 'group') {
+                  return (
+                    <tr key={item.group.key} className="h-[34px] bg-canvas">
+                      <td
+                        colSpan={columns.length + (selectable ? 1 : 0)}
+                        style={{ paddingLeft: `${16 + item.depth * 20}px` }}
+                      >
+                        <GroupToggle group={item.group} open={item.open} onToggle={toggleGroup} />
+                      </td>
+                    </tr>
+                  );
+                }
+                const row = item.row;
                 const key = rowKey(row);
                 const isSelected = selectable && selected.has(key);
                 return (
@@ -393,5 +457,28 @@ export function Table<Row>({
         </tbody>
       </table>
     </div>
+  );
+}
+
+function GroupToggle<Row>({
+  group,
+  open,
+  onToggle,
+}: {
+  group: TableGroup<Row>;
+  open: boolean;
+  onToggle: (key: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-expanded={open}
+      onClick={() => onToggle(group.key)}
+      className="focus-ring tap inline-flex min-h-8 items-center gap-1.5 rounded-control text-left text-body font-semibold"
+    >
+      <Icon name={open ? 'chevronDown' : 'chevronRight'} size={16} />
+      {group.label}
+      <span className="tabular font-medium text-fg-muted">({group.count})</span>
+    </button>
   );
 }

@@ -18,7 +18,8 @@ test('trang mẫu thành phần: đạt kiểm truy cập, đổi Stage, hộp t
   await expect(stage.getByRole('button', { name: /^L4/ })).toHaveAttribute('aria-current', 'step');
   await expect(stage.getByRole('button', { name: /^L2/ })).toHaveAttribute('aria-disabled', 'true');
   await stage.getByRole('button', { name: /^L5/ }).click();
-  await expect(page.getByText('Đã chuyển sang L5')).toBeVisible();
+  // Toast có hai bản (hiện và vùng đọc cho trình đọc màn hình): lấy bản đầu.
+  await expect(page.getByText('Đã chuyển sang L5').first()).toBeVisible();
   await expect(stage.getByRole('button', { name: /^L5/ })).toHaveAttribute('aria-current', 'step');
 
   // Hộp thoại: focus vào trong hộp, Esc đóng, focus trả về nút đã mở.

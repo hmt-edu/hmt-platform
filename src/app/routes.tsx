@@ -15,6 +15,7 @@ import { ProfilePage } from '../pages/common/ProfilePage';
 import { NotFoundView, RouteErrorPage } from '../pages/common/StatePages';
 import { HomePage } from '../pages/HomePage';
 import { parseAppEnv } from '../lib/env';
+import { ListDemoPage } from '../pages/dev/ListDemoPage';
 import { PatternPage } from '../pages/dev/PatternPage';
 import { NoPortalPage, RequirePortal, RootRedirect } from './guards';
 
@@ -50,7 +51,10 @@ export const routes: RouteObject[] = [
                   <CrmShell />
                 </RequirePortal>
               ),
-              children: [{ path: 'khuon', element: <PatternPage /> }],
+              children: [
+                { path: 'khuon', element: <PatternPage /> },
+                { path: 'danh-sach', element: <ListDemoPage /> },
+              ],
             } satisfies RouteObject,
           ]
         : []),
