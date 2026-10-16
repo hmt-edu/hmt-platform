@@ -35,8 +35,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | 6 | PR dữ liệu: bảng đối chiếu đủ 33 danh mục với spec 06, nạp danh mục thiếu (kể cả L5P, L6 đánh lại A–F, danh mục 33 "Lý do bỏ qua test" theo luật 16/10), "phiên bản" ma trận quyền | Chưa |
 | 6.0 | Nạp danh mục theo luật 16/10 (migration `20261016000017`): nhóm con L5P, L6 đánh lại A–F (bỏ L6G), L5B "Đã xếp lịch test", danh mục 33 "Lý do bỏ qua test" (mã `TEST_SKIP_REASON`); 18 bài pgTAP. Ngoại lệ một lần với nguyên tắc "mã không đổi nghĩa", chỉ vì hệ thống chưa chạy thật | Đã gộp (PR này) |
 | 6a | Danh mục sửa lệch: Môn, Khối, Trình độ thành Khoá; khoá mục cha giai đoạn lead và cơ hội, khoá C4D; C4C, C4D đổi chữ "opp" thành "cơ hội"; hai cột mới của mục danh mục (`requires_note`, `applies_to`); sửa dòng #30 của spec 06. migration `20261016000018` + 20 bài pgTAP | Đã gộp (#29) |
-| 6b | Danh mục phẳng nạp theo spec 06: #8 Loại gói, #14 Hình thức test, #15 Cấp độ đề test, #17, #21, #22, #23, #24, #25, #26, #28, #31, #32 (13 danh mục, migration `20261016000019`, 21 bài pgTAP). #14, #15 tách riêng; #2 Phòng học để rỗng ở bản chạy thật; #30 nạp dần theo giai đoạn; #27 làm cùng phiếu thu | Đã code, chờ anh OK (nhánh `feat/gd1-danh-muc-6b-phang`) |
-| 6c | Danh mục hai cấp: #12 giai đoạn phiếu tái tục, #19 nhóm đề nghị, #20 nhóm khiếu nại | Chưa |
+| 6b | Danh mục phẳng nạp theo spec 06: #8 Loại gói, #14 Hình thức test, #15 Cấp độ đề test, #17, #21, #22, #23, #24, #25, #26, #28, #31, #32 (13 danh mục, migration `20261016000019`, 21 bài pgTAP). #14, #15 tách riêng; #2 Phòng học để rỗng ở bản chạy thật; #30 nạp dần theo giai đoạn; #27 làm cùng phiếu thu | Đã gộp (#30) |
+| 6c | Danh mục hai cấp: #12 Giai đoạn phiếu tái tục (8 + 5 nhóm con), #19 Nhóm đề nghị (7 nhóm, 15 nhóm con; 12 nhóm con có nghiệp vụ bị khoá theo R-CS-11), #20 Nhóm khiếu nại (7 nhóm, 25 nhóm con); #23 Lý do huỷ buổi gắn `applies_to` (TRUNG_TAM, HOC_SINH). Migration `20261016000020`, 29 bài pgTAP | Đã code, chờ anh OK (nhánh `feat/gd1-danh-muc-6c-hai-cap`) |
 | 6d | Phiên bản ma trận quyền (mỗi lần Lưu một phiên bản, hiệu lực ngay) | Chưa (anh OK sau khi nhận bảng quyền) |
 | 6e | Tách phân hệ quyền: Quản trị, Cấu hình bán hàng, Cấu hình đào tạo, **Ngày nghỉ lễ** (Trưởng cơ sở sửa), **Lịch hẹn** (nhóm menu Tuyển sinh). Gửi anh bảng quyền TRƯỚC và SAU từng vai trò để soát trước khi code | Chưa |
 | 7 | P2 Cấu hình | Chưa |
@@ -51,6 +51,8 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm duyệt phiếu thu gọi kiểm tra R-CRM-17 trong cùng giao dịch; đối chiếu "lệch" theo R-CRM-18.
 - Hàm/trigger phiếu test: đổi trạng thái phiếu cập nhật nhóm con L5 (R-CRM-15) và lên L6A (R-CRM-13).
 - R-CRM-19: bấm Tạo chỉ mở form trắng, Lưu mới cấp mã; nút Tạo nằm trên bản ghi cơ hội, danh sách đơn và báo giá không có nút Tạo (R-TIEN-02).
+- Danh mục #25 Lý do điều chỉnh giờ: mục "Tặng giờ chăm sóc (cần duyệt)" cần một **cờ "cần duyệt" thật** (cột hoặc cấu hình) khi viết hàm điều chỉnh giờ; hiện chỉ là chữ trong tên mục.
+- Danh mục #23 Lý do huỷ buổi: hàm nghiệp vụ lọc theo cột `applies_to` (TRUNG_TAM, HOC_SINH), không đọc tiền tố mã.
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
 
 ## Đang ở đâu

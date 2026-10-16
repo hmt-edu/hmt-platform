@@ -71,11 +71,10 @@ Vẫn được ghi đè: `max_sessions_ahead`, `upsale_hours_left_threshold`, `u
 
 ## D. Danh mục trong spec 06 chưa có trong cơ sở dữ liệu (làm mới, không vênh)
 
-Đã nạp ở PR 6b: #8, 14, 15, 17, 21, 22, 23, 24, 25, 26, 28, 31, 32. Còn lại:
+Đã nạp ở PR 6b: #8, 14, 15, 17, 21, 22, 23, 24, 25, 26, 28, 31, 32; ở PR 6c: #12, 19, 20. Còn lại:
 
 | Danh mục spec 06 | Làm ở |
 |---|---|
-| #12 Giai đoạn phiếu tái tục; #19 Nhóm đề nghị (thêm "Dừng học"); #20 Nhóm khiếu nại | PR 6c |
 | #27 Tài khoản nhận tiền (theo cơ sở, kế toán khai) | Giai đoạn 1, cùng phiếu thu |
 | #30 Tên hiển thị các bước trạng thái | Theo từng giai đoạn có trạng thái đó (danh sách ở `docs/design/luat-cho-thiet-ke.md`) |
 | #2 Phòng học | Để rỗng ở bản chạy thật; cơ sở khai qua màn QT-08 |
