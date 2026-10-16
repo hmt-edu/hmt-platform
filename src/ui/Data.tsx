@@ -339,7 +339,7 @@ export function Table<Row>({
           {caption}
         </caption>
         <thead className="sticky top-0 bg-surface-subtle text-caption font-semibold text-fg-label">
-          <tr className="h-8">
+          <tr className="h-table-head">
             {selectable && (
               <th scope="col" className="w-11 px-3 text-left">
                 <input

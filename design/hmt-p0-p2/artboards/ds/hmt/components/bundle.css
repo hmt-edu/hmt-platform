@@ -125,10 +125,10 @@ a.hmt-count:hover { background: var(--bg-hover); }
 /* Table */
 .hmt-table-wrap { background: var(--bg-surface); border: var(--border-1) solid var(--divider); border-radius: var(--radius-lg); overflow: auto; }
 .hmt-table { border-collapse: collapse; width: 100%; font-size: 13px; }
-.hmt-table th { background: var(--bg-subtle); text-align: left; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--text-label); padding: 0 10px; height: 32px; white-space: nowrap; }
+.hmt-table th { background: var(--bg-subtle); text-align: left; font-size: 12px; line-height: 16px; font-weight: 600; color: var(--text-label); padding: 0 10px; height: var(--table-head-height); white-space: nowrap; }
 .hmt-table th button { font: inherit; color: inherit; background: none; border: none; padding: 0; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
 .hmt-table th[aria-sort="ascending"], .hmt-table th[aria-sort="descending"] { color: var(--text-primary); }
-.hmt-table td { padding: 0 10px; height: 36px; border-bottom: var(--border-1) solid var(--bg-subtle); white-space: nowrap; }
+.hmt-table td { padding: 0 10px; height: var(--table-row-height); border-bottom: var(--border-1) solid var(--bg-subtle); white-space: nowrap; }
 .hmt-table th:first-child, .hmt-table td:first-child { padding-left: var(--space-4); }
 .hmt-table th:last-child, .hmt-table td:last-child { padding-right: var(--space-4); }
 .hmt-table tbody tr:hover { background: var(--bg-hover); }

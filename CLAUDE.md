@@ -2,7 +2,7 @@
 
 Đầu mỗi phiên đọc docs/TIEN-DO.md và docs/quy-trinh-phoi-hop.md.
 
-File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; dùng xong thì xoá file). Gói thiết kế hiện hành (P0 khuôn chung, P1 đăng nhập, P2 cấu hình và phân quyền) ở `design/hmt-p0-p2/` (đọc `00_DOC_TRUOC.md` trước). Gói P5 cũ ở `design/hmt-platform/` giữ cạnh bên: chỉ lấy logo và tài sản trong `assets/`, không dựng màn theo P5. Khi các nguồn vênh nhau: luật (`docs/spec/` 04, 02, 06) > `docs/design/ban-do-man-hinh.md` > gói thiết kế `design/hmt-p0-p2/`; làm theo luật, ghi chỗ vênh vào PR, không tự chọn.
+File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; dùng xong thì xoá file). Gói thiết kế hiện hành (P0 khuôn chung, P1 đăng nhập, P2 cấu hình và phân quyền) ở `design/hmt-p0-p2/` (đọc `00_DOC_TRUOC.md` trước). Gói P5 cũ ở `design/hmt-platform/` giữ cạnh bên: chỉ lấy logo và tài sản trong `assets/`, không dựng màn theo P5. Khi các nguồn vênh nhau: luật (`docs/spec/` 04, 02, 06) > `docs/design/quyet-dinh-thiet-ke-13-10.md` (quyết định thiết kế 13/10) > `docs/design/ban-do-man-hinh.md` > gói thiết kế `design/hmt-p0-p2/`; làm theo luật, ghi chỗ vênh vào PR, không tự chọn.
 
 Đọc file này và `docs/spec/` trước mỗi việc; làm giao diện thì đọc thêm `docs/design/ban-do-man-hinh.md` (bản đồ màn hình). Spec trong `docs/spec/` là chép từ tài liệu gốc của anh Trường; lệch nhau hoặc thiếu thì hỏi, không đoán.
 

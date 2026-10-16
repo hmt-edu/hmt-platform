@@ -36,6 +36,9 @@
   --info-bg: #E2ECF8;
   --info-text: #1F5FAD;
   --info-border: #B9CFEC;
+  --success-border: #BAD9C4;
+  --warning-border: #F2DE9D;
+  --danger-border: #ECBBC2;
   --action-primary-bg: var(--brand-600);
   --action-primary-bg-hover: var(--brand-700);
   --action-primary-text: var(--neutral-0);
@@ -87,6 +90,8 @@
   --control-md: 32px;
   --control-lg: 40px;
   --stage-height: 34px;
+  --table-head-height: 32px;
+  --table-row-height: 36px;
   --topbar-height: 52px;
   --sidebar-wide: 236px;
   --sidebar-narrow: 64px;

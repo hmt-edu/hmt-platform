@@ -38,7 +38,7 @@ Tài liệu chính trong repo:
 3. **Design → repo.** Design xuất zip. Anh chép vào `_inbox/`. Claude Code đưa vào `design/hmt-platform/` bằng PR.
 4. **Repo → Design.** Mỗi lần nhờ Design vẽ hay sửa, anh đính kèm bản mới nhất của: luật 04, bản đồ màn hình, danh mục và tham số, và file ngữ cảnh `ngu-canh-cho-claude-design.md`. Lấy trên GitHub (mở file, bấm Download), hoặc nhờ Chat gửi.
 
-Thứ tự ưu tiên khi các nguồn vênh nhau: **luật (spec 04, 02, 06) > bản đồ màn hình > gói thiết kế**.
+Thứ tự ưu tiên khi các nguồn vênh nhau: **luật (spec 04, 02, 06) > quyết định thiết kế 13/10 (`docs/design/quyet-dinh-thiet-ke-13-10.md`) > bản đồ màn hình > gói thiết kế**.
 
 ## 4. Vòng làm việc mỗi phân hệ
 1. **Design vẽ** cả phân hệ (artboard 1440 × 1000; điện thoại 390 × 844).

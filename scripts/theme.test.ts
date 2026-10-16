@@ -47,4 +47,14 @@ describe('hmt-theme.css', () => {
     expect(tokens).toMatch(/--action-primary-bg:\s*var\(--brand-600\)/);
     expect(theme).not.toMatch(/--color-action:\s*var\(--brand-500\)/);
   });
+
+  it('không còn giá trị tạm: chiều cao hàng bảng và viền thông báo lấy từ token của gói', () => {
+    expect(tokens).toMatch(/--table-row-height:\s*36px/);
+    expect(tokens).toMatch(/--success-border:\s*#BAD9C4/i);
+    expect(theme).toMatch(/--spacing-row:\s*var\(--table-row-height\)/);
+    expect(theme).toMatch(/--color-success-border:\s*var\(--success-border\)/);
+    expect(theme).toMatch(/--color-warning-border:\s*var\(--warning-border\)/);
+    expect(theme).toMatch(/--color-danger-border:\s*var\(--danger-border\)/);
+    expect(theme).not.toMatch(/color-mix/);
+  });
 });

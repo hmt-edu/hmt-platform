@@ -73,6 +73,15 @@ chữ + số, TOTP). Đã có Admin đầu tiên là anh Trường (gắn tạm 
 **#16** (4b, giao diện): **nháp, không gộp**, chờ thiết kế mới. **PR dữ liệu** (nhánh `feat/gd0-du-lieu-khuon-chung`, chỉ migration 016 + pgTAP + tài liệu): chờ anh Trường comment "OK".
 Mọi PR #1–#15 đã gộp, mỗi commit gộp có link comment "OK" của `caotruong276`.
 
+## Anh Trường chốt 16/10/2026 (ghi để PR sau làm đúng)
+
+- **Trưởng cơ sở** xem được danh sách người dùng của cơ sở mình, **chỉ xem** (không sửa, không khoá, không đặt lại mật khẩu). Quyền xem đã có trong ma trận (`ACCOUNT · Xem`, phạm vi cơ sở); màn Người dùng (PR 7 trở đi) phải ẩn mọi nút sửa với vai trò này.
+- **Thông báo khi được @**: chỉ ghi ai nhắc và ở bản ghi nào, bấm thì mở bản ghi; **không chép nội dung ghi chú** (đã đúng trong `app.notification`, đã có bài pgTAP).
+- **Kanban:** thanh tỷ lệ đầu cột (xanh còn hạn, vàng hôm nay, đỏ quá hạn, xám chưa có lịch); "chỉ đi tới" là tuỳ chọn của từng màn, luôn hiện đủ cột. Riêng **Cơ hội** thì "chỉ đi tới" phải chặn **ở cơ sở dữ liệu** (R-CRM-02): hiện chưa có bảng cơ hội và hàm đổi giai đoạn nên chưa có gì để kiểm; khi làm giai đoạn 1, hàm đổi giai đoạn của Cơ hội từ chối lùi kèm bài pgTAP (ghi vào PR dữ liệu giai đoạn 1).
+- **Smart button ở K3 (PR 4b):** nhiều bản ghi thì mở danh sách K1 đã lọc theo bản ghi cha (chip kiểu "Cơ hội: CO000121", đường dẫn "Cơ hội / CO000121 / Lịch hẹn", bấm mã để quay lại); đúng một bản ghi thì mở thẳng bản ghi đó; không có bản ghi nào là tuỳ chọn của khung, tạm mở danh sách rỗng có câu "Chưa có …".
+- **Thứ tự ưu tiên khi vênh:** luật (spec 04, 02, 06) > `docs/design/quyet-dinh-thiet-ke-13-10.md` (chỉ phần giao diện, màu, thương hiệu, khuôn; mục 1 quy trình đã cũ) > bản đồ màn hình > gói thiết kế.
+- **Quyết định thiết kế 13/10 §4 vênh với gói v4 ở một chỗ cần anh xác nhận trước PR 4b:** quyết định ghi "bấm Tạo mở thẳng khuôn Chi tiết ở trạng thái trống, bỏ biểu mẫu tạo riêng", còn gói có ngăn kéo "Tạo nhanh lead" (K07b, K07c). Em làm theo quyết định 13/10 trừ khi anh nói giữ ngăn kéo.
+
 ## Việc dở, việc tiếp theo
 
 1. **Tài liệu 12/10 của anh Trường đã gộp vào repo (PR #14)**: spec 04 (132 luật, §10 Báo cáo, §11 Học tập, §12 Quyền và hệ

@@ -6,11 +6,6 @@
    Chỉ giao diện sáng. */
 @import '../../design/hmt-p0-p2/ds/hmt/handoff/hmt-tokens.css';
 
-/* Cỡ mà gói chưa đặt tên token (lấy từ bundle.css của gói): chiều cao hàng bảng. */
-:root {
-  --row-height: 36px;
-}
-
 @theme inline {
   /* Bỏ bảng màu mặc định của Tailwind: không ai dùng nhầm bg-orange-500. */
   --color-*: initial;
@@ -108,9 +103,9 @@
   --color-info: var(--info-solid);
   --color-secondary: var(--info-solid);
   --color-secondary-subtle: var(--info-bg);
-  --color-success-border: color-mix(in srgb, var(--success-solid) 35%, white);
-  --color-warning-border: color-mix(in srgb, var(--warning-solid) 45%, white);
-  --color-danger-border: color-mix(in srgb, var(--danger-solid) 35%, white);
+  --color-success-border: var(--success-border);
+  --color-warning-border: var(--warning-border);
+  --color-danger-border: var(--danger-border);
   --color-on-danger-solid: var(--neutral-0);
   --color-on-success-solid: var(--neutral-0);
   --color-on-info-solid: var(--neutral-0);
@@ -152,7 +147,8 @@
   --spacing-control-sm: var(--control-sm);
   --spacing-control: var(--control-md);
   --spacing-control-lg: var(--control-lg);
-  --spacing-row: var(--row-height);
+  --spacing-table-head: var(--table-head-height);
+  --spacing-row: var(--table-row-height);
   --spacing-stage: var(--stage-height);
   --spacing-topbar: var(--topbar-height);
   --spacing-sidebar: var(--sidebar-wide);

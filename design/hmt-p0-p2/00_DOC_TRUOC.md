@@ -2,7 +2,24 @@
 
 Đọc file này trước khi mở gói. Gói chỉ gồm 3 phân hệ đã duyệt: **P0 Khuôn chung**, **P1 Đăng nhập & xác thực**, **P2 Cấu hình & phân quyền**. P3 (Tuyển sinh TS-xx), P13 Báo cáo, P14 Tìm kiếm & thông báo **không nằm trong gói**.
 
-Bản này đã gồm đợt bổ sung: bốn khung mở ra của K1 (Filters, Group By, Cột, Favorites) và lịch sử phiên bản của Ma trận quyền (mục 6).
+**Bản v4 (16/10/2026)** sửa P1 và P2 theo các quyết định anh Trường đã chốt, thêm 2 token còn nợ. Gói gồm **70 artboard** (P0 38, P1 28, P2 4). Đọc bảng "Đổi gì so với v3" ngay dưới đây trước. Các đợt bổ sung cũ vẫn giữ ở mục 6 (K1 bốn khung, lịch sử phiên bản Ma trận quyền) và mục 7 (ô tìm toàn hệ thống, chuông). Mục 8 là chỗ chưa chắc của đợt v4.
+
+## Đổi gì so với v3
+
+| # | Màn / tệp | v3 | v4 | Lý do |
+|---|---|---|---|---|
+| 1 | DN03 · Xác thực hai bước | 8 artboard: mã từ ứng dụng + mã dự phòng (`*_backup`, `*_backup_err`) | **Còn 4**: `DN03_pc_code`, `DN03_pc_code_err`, `DN03_mb_code`, `DN03_mb_code_err`. Bỏ 4 artboard mã dự phòng | Bỏ mã dự phòng |
+| 2 | DN03 · dòng dưới nút | Liên kết "Mất điện thoại? Dùng mã dự phòng" | Chữ thường (không phải liên kết): "Mất điện thoại? Liên hệ quản trị viên để đặt lại xác thực hai bước" | Bỏ mã dự phòng |
+| 3 | DN04 · Thiết lập 2FA | 3 bước (bước 3 lưu mã dự phòng) | **2 bước**. Bỏ `DN04_pc_s3`, `DN04_mb_s3`. Thanh bước còn 2 khúc; nhãn "BƯỚC 1/2 · QUÉT MÃ", "BƯỚC 2/2 · NHẬP MÃ". Nút chính bước 2 đổi "Xác nhận" → **"Hoàn tất"** (vẫn có "Quay lại") | Bỏ mã dự phòng |
+| 4 | DN05 · Quên mật khẩu | Ô nhập email, Turnstile, nút "Gửi link đặt lại", câu học sinh nhờ CSKH; biến thể "đã gửi" (`*_sent`) | Chỉ còn câu "Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm." và nút chính **"Quay lại đăng nhập"**. Bỏ `DN05_pc_sent`, `DN05_mb_sent`. Giữ tên `DN05_pc_form`, `DN05_mb_form` | Quên mật khẩu chỉ liên hệ quản trị viên |
+| 5 | DN06 · Đặt mật khẩu mới (link email) | Trong gói (4 artboard) | **Hoãn.** Giữ artboard trên canvas, gắn nhãn "HOÃN", **không đưa vào gói** | Không còn luồng đặt lại qua email |
+| 6 | DN08 · Tài khoản bị khoá | 4 artboard: tạm khoá 15 phút, khoá hẳn (`*_temp`, `*_perm`) | **Gộp 1 màn mỗi thiết bị**: `DN08_pc_lock`, `DN08_mb_lock`. Tiêu đề "Không thể đăng nhập", một câu chung: "Không thể đăng nhập lúc này. Vui lòng thử lại sau hoặc liên hệ quản trị viên của trung tâm." Không nói thời gian khoá, không nói lý do. Một nút "Quay lại đăng nhập" | Luật S03-18: không để lộ tài khoản có tồn tại hay không |
+| 7 | CauHinh · tab Tham số nghiệp vụ | Dòng đang sửa có ô "Có hiệu lực từ" (ngày); câu cuối "Sửa một tham số thì có hiệu lực từ ngày chọn, bản cũ vẫn giữ trong lịch sử." | Bỏ ô "Có hiệu lực từ". Câu cuối: "Sửa một tham số thì có hiệu lực ngay; giá trị cũ vẫn giữ trong lịch sử thay đổi." | Tham số có hiệu lực ngay |
+| 8 | Token mới (`tokens.json` v4, `hmt-tokens.css`) | Chưa có | `--success-border` #BAD9C4, `--warning-border` #F2DE9D, `--danger-border` #ECBBC2 (cùng cách pha với `--info-border` có sẵn); `--table-head-height` 32px, `--table-row-height` 36px | Hai token còn nợ |
+| 9 | `bundle.css` | `.hmt-table th` cao 32px, `td` cao 36px viết thẳng | Dùng `var(--table-head-height)` và `var(--table-row-height)`. Giá trị không đổi, ảnh chụp mọi màn giống v3 | Dùng token thay giá trị viết thẳng |
+| 10 | K2 Kanban | Thanh màu trên đầu cột chưa có giải thích | Ghi nghĩa ở mục 4 (không đổi bản vẽ) | Anh Trường yêu cầu |
+
+Tổng số artboard: v3 84 → v4 70 (bỏ 4 DN03, 2 DN04, 2 DN05, 4 DN06 hoãn; DN08 4 → 2). P0 và các màn P1, P2 khác **không đổi**.
 
 ## 0. Cấu trúc gói
 ```
@@ -10,10 +27,12 @@ Bản này đã gồm đợt bổ sung: bốn khung mở ra của K1 (Filters, G
 ds/hmt/handoff/hmt-tokens.css      token màu, chữ, khoảng cách, bo góc
 ds/hmt/components/bundle.css       thành phần dùng chung (.hmt-btn, .hmt-toast, ...)
 ds/hmt/tokens.json                 cùng token dạng JSON
-artboards/*.dc.html                76 artboard (P0 30, P1 42, P2 4)
+artboards/*.dc.html                70 artboard (P0 38, P1 28, P2 4)
 artboards/ds/hmt/...               bản sao token để mở artboard độc lập (đường dẫn tương đối ds/hmt/...)
 png/*.png                          ảnh từng artboard; tên PNG trùng tên artboard
+assets/Logo-HMT-cropped.svg        logo dùng ở màn đăng nhập (thêm v4)
 ```
+- **Logo (thêm v4):** trong các artboard `DN*`, thẻ `<img class="lg-logo">` trỏ tới `/_blob/98cf606dea491365f7cf1aba35be25ee`, là đường dẫn nội bộ của canvas. Khi dựng thật, thay bằng file `assets/Logo-HMT-cropped.svg` trong gói (cùng một file). Bản nền tối và bản đủ khổ nằm trong hệ thiết kế HMT Platform.
 - Artboard 1440×1000 là bản **máy tính**; 390×844 là bản **điện thoại** (tên có `_mb`, `K1m_` hoặc K4e). P1 có đủ pc và mb. P0 và P2 chủ yếu là bản máy tính; điện thoại chỉ có K4e và K1m_*.
 - Ảnh PNG xuất bằng trình duyệt không có phông Inter / Be Vietnam Pro nên chữ là phông thay thế, hơi lệch so với bản thật. Kích thước và màu đúng. Phông chuẩn lấy theo token (`--font-ui` Inter, `--font-heading` Be Vietnam Pro).
 - Các file `.dc.html` là artboard của Design canvas. Mỗi file tham chiếu `ds/hmt/...` theo đường dẫn tương đối; cần có `support.js` của công cụ canvas mới mở độc lập được. Khi dựng thật, lấy HTML trong `<x-dc>` và CSS token làm chuẩn, không cần chạy `support.js`.
@@ -22,7 +41,7 @@ png/*.png                          ảnh từng artboard; tên PNG trùng tên a
 
 ## 1. Danh sách mã màn trong gói
 
-### P0 · Khuôn chung (30 artboard, máy tính; K4e và K1m_* là điện thoại)
+### P0 · Khuôn chung (38 artboard, máy tính; K4e và K1m_* là điện thoại)
 
 | Artboard | Mã màn | Nội dung | PNG |
 |---|---|---|---|
@@ -56,19 +75,27 @@ png/*.png                          ảnh từng artboard; tên PNG trùng tên a
 | K1m_nhom | K1+ | Group By (điện thoại): bottom sheet | `png/K1m_nhom.png` |
 | K1m_cot | K1+ | Cột (điện thoại): bottom sheet | `png/K1m_cot.png` |
 | K1m_fav | K1+ | Favorites (điện thoại): bottom sheet | `png/K1m_fav.png` |
+| K1_tim | K1+ | Thanh trên: ô tìm kiếm toàn hệ thống (đóng, có phím tắt “/”) | `png/K1_tim.png` |
+| K1_tim_go | K1+ | Tìm kiếm: đang gõ, khung kết quả nhóm theo loại | `png/K1_tim_go.png` |
+| K1_tim0 | K1+ | Tìm kiếm: “Không tìm thấy” | `png/K1_tim0.png` |
+| K1_chuong | K1+ | Chuông thông báo: danh sách ngắn (3 dòng mẫu) | `png/K1_chuong.png` |
+| K1_chuong0 | K1+ | Chuông thông báo: rỗng “Chưa có thông báo” | `png/K1_chuong0.png` |
+| K1m_tim_dong | K1+ | Điện thoại: ô tìm thu thành biểu tượng | `png/K1m_tim_dong.png` |
+| K1m_tim | K1+ | Điện thoại: tìm kiếm toàn màn hình (đang gõ) | `png/K1m_tim.png` |
+| K1m_tim0 | K1+ | Điện thoại: tìm kiếm toàn màn hình (không tìm thấy) | `png/K1m_tim0.png` |
 
-### P1 · Đăng nhập & xác thực (10 màn, 42 artboard: máy tính + điện thoại)
+### P1 · Đăng nhập & xác thực (9 màn trong gói, 28 artboard: máy tính + điện thoại; DN06 hoãn)
 
 | Artboard (gốc) | Mã màn | Nội dung | Các biến thể (có `pc_` và `mb_`) |
 |---|---|---|---|
 | DN01 | CHUNG-01 | Đăng nhập nhân viên | pc_ok, pc_err, mb_ok, mb_err |
 | DN02 | CHUNG-06 | Đăng nhập học sinh | pc_ok, pc_err, mb_ok, mb_err |
-| DN03 | CHUNG-02 | Xác thực hai bước (nhập mã) | pc_code, pc_code_err, pc_backup, pc_backup_err, mb_code, mb_code_err, mb_backup, mb_backup_err |
-| DN04 | CHUNG-03 | Thiết lập 2FA lần đầu (3 bước) | pc_s1, pc_s2, pc_s3, mb_s1, mb_s2, mb_s3 |
-| DN05 | CHUNG-04 | Quên mật khẩu | pc_form, pc_sent, mb_form, mb_sent |
-| DN06 | CHUNG-05 | Đặt mật khẩu mới (link từ email) | pc_new, pc_ok, mb_new, mb_ok |
+| DN03 | CHUNG-02 | Xác thực hai bước (nhập mã, không có mã dự phòng) | pc_code, pc_code_err, mb_code, mb_code_err |
+| DN04 | CHUNG-03 | Thiết lập 2FA lần đầu (2 bước) | pc_s1, pc_s2, mb_s1, mb_s2 |
+| DN05 | CHUNG-04 | Quên mật khẩu (chỉ hướng dẫn liên hệ quản trị viên) | pc_form, mb_form |
+| ~~DN06~~ | CHUNG-05 | Đặt mật khẩu mới (link từ email): **HOÃN, không có trong gói** | — |
 | DN07 | CHUNG-07 | Đổi mật khẩu lần đầu | pc_new, pc_ok, mb_new, mb_ok |
-| DN08 | CHUNG-08 | Tài khoản bị khoá (tạm 15 phút / khoá hẳn) | pc_temp, pc_perm, mb_temp, mb_perm |
+| DN08 | CHUNG-08 | Không thể đăng nhập (một câu chung, gộp tạm khoá và khoá hẳn) | pc_lock, mb_lock |
 | DN09 | CHUNG-09 | Hộp thoại hết phiên đăng nhập | pc_end, mb_end |
 | DN10 | CHUNG-25 | Chọn cổng (CRM / Giáo viên) | pc_ok, mb_ok |
 
@@ -104,7 +131,7 @@ Tên file đầy đủ = `<DNxx>_<biến thể>`, ví dụ `DN03_pc_code_err.dc.
 | Khuôn đăng nhập (thẻ giữa trang, logo, tiêu đề, 1 nút chính) | DN01–DN10 | Máy tính: thẻ giữa nền; điện thoại: toàn màn |
 | Khuôn trang cấu hình / ma trận | CauHinh, MaTranQuyen | |
 
-Mỗi artboard P1 đi theo khuôn đăng nhập; DN04 và DN10 có phần bố cục riêng (3 bước; hai thẻ cổng).
+Mỗi artboard P1 đi theo khuôn đăng nhập; DN04 và DN10 có phần bố cục riêng (2 bước; hai thẻ cổng).
 
 ## 3. Chữ trên nút và thông báo của từng màn
 
@@ -274,6 +301,49 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
   - **Nút:** “Lưu bộ lọc hiện tại”
   - **Chữ trong khung:**
     - Sheet “Bộ lọc đã lưu của tôi”; nút “Lưu bộ lọc hiện tại” (nút chính)
+- **K1_tim** (K1+) — Thanh trên: ô tìm kiếm toàn hệ thống (đóng, có phím tắt “/”)
+  - Vỏ CRM: thanh trên
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Thanh trên: ô tìm kiếm đặt sau đường dẫn; gợi ý “Tìm khách hàng, học sinh, lớp, mã…”; phím tắt “/”
+- **K1_tim_go** (K1+) — Tìm kiếm: đang gõ, khung kết quả nhóm theo loại
+  - Vỏ CRM + khung kết quả thả xuống
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Đang gõ “huy”: viền cam, nút xoá nội dung (X)
+    - Khung kết quả nhóm theo loại, tiêu đề nhóm có số đếm: “Học sinh · 2”, “Khách hàng · 1”, “Cơ hội · 1”; mỗi dòng: mã, tên (tô đậm phần khớp), mô tả, thẻ trạng thái
+    - Dòng đầu được tô nền (đang chọn)
+- **K1_tim0** (K1+) — Tìm kiếm: “Không tìm thấy”
+  - Vỏ CRM + khung kết quả thả xuống
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - “Không tìm thấy” · “Không có kết quả cho “xyzabc”. Thử mã, số điện thoại hoặc tên khác.”
+- **K1_chuong** (K1+) — Chuông thông báo: danh sách ngắn (3 dòng mẫu)
+  - Vỏ CRM + khung thả xuống
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Tên khung: “Thông báo”; 3 dòng mẫu có chấm chưa đọc: “Lịch hẹn 14:00 với Lê Gia Huy sắp đến”, “Ticket DN-CS1-2610-0007 sắp quá hạn”, “Đơn hàng DH-CS1-2610-0388 đã được duyệt”
+    - Không có nút “Xem tất cả” hay “Đánh dấu đã đọc”
+- **K1_chuong0** (K1+) — Chuông thông báo: rỗng “Chưa có thông báo”
+  - Vỏ CRM + khung thả xuống
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - “Chưa có thông báo” · “Thông báo mới sẽ hiện ở đây.”; chuông không còn số đỏ
+- **K1m_tim_dong** (K1+) — Điện thoại: ô tìm thu thành biểu tượng
+  - Khuôn điện thoại
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Ô tìm thu thành biểu tượng kính lúp ở góc phải thanh tiêu đề
+- **K1m_tim** (K1+) — Điện thoại: tìm kiếm toàn màn hình (đang gõ)
+  - Khuôn điện thoại
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Toàn màn hình: nút quay lại, ô tìm có viền cam và nút xoá; kết quả nhóm theo loại như bản máy tính
+- **K1m_tim0** (K1+) — Điện thoại: tìm kiếm toàn màn hình (không tìm thấy)
+  - Khuôn điện thoại
+  - **Nút:** —
+  - **Chữ trong khung:**
+    - Toàn màn hình: “Không tìm thấy” · “Không có kết quả cho “xyzabc”. Thử mã, số điện thoại hoặc tên khác.”
 
 ### P1
 
@@ -310,65 +380,37 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
     - “Mã học sinh hoặc mật khẩu chưa đúng. Em kiểm tra lại nhé.”
     - “Quên mật khẩu? Em nhờ thầy cô hoặc bộ phận chăm sóc khách hàng ở cơ sở cấp lại.”
 #### DN03 · CHUNG-02 — Xác thực hai bước (nhập mã)
+Dưới nút của cả 4 artboard có dòng chữ thường: “Mất điện thoại? Liên hệ quản trị viên để đặt lại xác thực hai bước” và “Bắt buộc với tài khoản Admin và Kế toán.”
 - `DN03_pc_code` — Máy tính · Mã từ ứng dụng
   - **Nút:** “Xác nhận”
 - `DN03_pc_code_err` — Máy tính · Mã từ ứng dụng · Sai mã
   - **Nút:** “Xác nhận”
   - **Thông báo / chữ cảnh báo:**
     - “Mã không đúng. Kiểm tra lại mã đang hiện trong ứng dụng rồi nhập lại.”
-- `DN03_pc_backup` — Máy tính · Mã dự phòng
-  - **Nút:** “Xác nhận”
-- `DN03_pc_backup_err` — Máy tính · Mã dự phòng · Sai hoặc đã dùng
-  - **Nút:** “Xác nhận”
-  - **Thông báo / chữ cảnh báo:**
-    - “Mã dự phòng không đúng hoặc đã được dùng. Mỗi mã chỉ dùng một lần.”
 - `DN03_mb_code` — Điện thoại · Mã từ ứng dụng
   - **Nút:** “Xác nhận”
 - `DN03_mb_code_err` — Điện thoại · Mã từ ứng dụng · Sai mã
   - **Nút:** “Xác nhận”
   - **Thông báo / chữ cảnh báo:**
     - “Mã không đúng. Kiểm tra lại mã đang hiện trong ứng dụng rồi nhập lại.”
-- `DN03_mb_backup` — Điện thoại · Mã dự phòng
-  - **Nút:** “Xác nhận”
-- `DN03_mb_backup_err` — Điện thoại · Mã dự phòng · Sai hoặc đã dùng
-  - **Nút:** “Xác nhận”
-  - **Thông báo / chữ cảnh báo:**
-    - “Mã dự phòng không đúng hoặc đã được dùng. Mỗi mã chỉ dùng một lần.”
-#### DN04 · CHUNG-03 — Thiết lập 2FA lần đầu (3 bước)
-- `DN04_pc_s1` — Máy tính · Bước 1
+#### DN04 · CHUNG-03 — Thiết lập 2FA lần đầu (2 bước)
+- `DN04_pc_s1` — Máy tính · Bước 1/2 · Quét mã
   - **Nút:** “Tiếp”
-- `DN04_pc_s2` — Máy tính · Bước 2
-  - **Nút:** “Quay lại” · “Xác nhận”
-- `DN04_pc_s3` — Máy tính · Bước 3
-  - **Nút:** “Tải xuống” · “Sao chép” · “Hoàn tất”
-- `DN04_mb_s1` — Điện thoại · Bước 1
+- `DN04_pc_s2` — Máy tính · Bước 2/2 · Nhập mã (bước cuối)
+  - **Nút:** “Quay lại” · “Hoàn tất”
+- `DN04_mb_s1` — Điện thoại · Bước 1/2 · Quét mã
   - **Nút:** “Tiếp”
-- `DN04_mb_s2` — Điện thoại · Bước 2
-  - **Nút:** “Quay lại” · “Xác nhận”
-- `DN04_mb_s3` — Điện thoại · Bước 3
-  - **Nút:** “Tải xuống” · “Sao chép” · “Hoàn tất”
+- `DN04_mb_s2` — Điện thoại · Bước 2/2 · Nhập mã (bước cuối)
+  - **Nút:** “Quay lại” · “Hoàn tất”
 #### DN05 · CHUNG-04 — Quên mật khẩu
-- `DN05_pc_form` — Máy tính · Nhập email
-  - **Nút:** “Gửi link đặt lại”
-- `DN05_pc_sent` — Máy tính · Đã gửi
-  - **Nút:** “Gửi lại” · “Mở link trong email (minh hoạ)”
-  - **Thông báo / chữ cảnh báo:**
-    - “Nếu email này có trong hệ thống, link đặt lại mật khẩu đã được gửi. Kiểm tra hộp thư, cả mục Spam.”
-- `DN05_mb_form` — Điện thoại · Nhập email
-  - **Nút:** “Gửi link đặt lại”
-- `DN05_mb_sent` — Điện thoại · Đã gửi
-  - **Nút:** “Gửi lại” · “Mở link trong email (minh hoạ)”
-  - **Thông báo / chữ cảnh báo:**
-    - “Nếu email này có trong hệ thống, link đặt lại mật khẩu đã được gửi. Kiểm tra hộp thư, cả mục Spam.”
+- `DN05_pc_form` — Máy tính · Liên hệ quản trị viên
+  - **Nút:** “Quay lại đăng nhập”
+  - **Chữ:** “Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm.”
+- `DN05_mb_form` — Điện thoại · Liên hệ quản trị viên
+  - **Nút:** “Quay lại đăng nhập”
+  - **Chữ:** “Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm.”
 #### DN06 · CHUNG-05 — Đặt mật khẩu mới (link từ email)
-- `DN06_pc_new` — Máy tính · Mới mở, chưa nhập
-  - **Nút:** “Lưu mật khẩu”
-- `DN06_pc_ok` — Máy tính · Đủ điều kiện
-  - **Nút:** “Lưu mật khẩu”
-- `DN06_mb_new` — Điện thoại · Mới mở, chưa nhập
-  - **Nút:** “Lưu mật khẩu”
-- `DN06_mb_ok` — Điện thoại · Đủ điều kiện
-  - **Nút:** “Lưu mật khẩu”
+- **HOÃN.** Không có trong gói v4. Artboard vẫn trên canvas, gắn nhãn “HOÃN”.
 #### DN07 · CHUNG-07 — Đổi mật khẩu lần đầu
 - `DN07_pc_new` — Máy tính · Mới mở, chưa nhập
   - **Nút:** “Đổi mật khẩu và tiếp tục”
@@ -386,15 +428,14 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
   - **Nút:** “Đổi mật khẩu và tiếp tục”
   - **Thông báo / chữ cảnh báo:**
     - “Mật khẩu hiện tại là mật khẩu tạm do trung tâm cấp. Đặt mật khẩu của riêng mình để tiếp tục.”
-#### DN08 · CHUNG-08 — Tài khoản bị khoá (tạm 15 phút / khoá hẳn)
-- `DN08_pc_temp` — Máy tính · Tạm khoá 15 phút
-  - **Nút:** “Quên mật khẩu?” · “Quay lại đăng nhập”
-- `DN08_pc_perm` — Máy tính · Khoá hẳn
+#### DN08 · CHUNG-08 — Không thể đăng nhập (một câu chung)
+- `DN08_pc_lock` — Máy tính
   - **Nút:** “Quay lại đăng nhập”
-- `DN08_mb_temp` — Điện thoại · Tạm khoá 15 phút
-  - **Nút:** “Quên mật khẩu?” · “Quay lại đăng nhập”
-- `DN08_mb_perm` — Điện thoại · Khoá hẳn
+  - **Thông báo:** tiêu đề “Không thể đăng nhập”; câu “Không thể đăng nhập lúc này. Vui lòng thử lại sau hoặc liên hệ quản trị viên của trung tâm.”
+- `DN08_mb_lock` — Điện thoại
   - **Nút:** “Quay lại đăng nhập”
+  - **Thông báo:** như bản máy tính.
+- Dùng chung cho mọi trường hợp không cho đăng nhập (tạm khoá do sai nhiều lần, tài khoản bị khoá). Không nói thời gian khoá, không nói lý do (luật S03-18).
 #### DN09 · CHUNG-09 — Hộp thoại hết phiên đăng nhập
 - `DN09_pc_end` — Máy tính · Hết phiên
   - **Nút:** “Đăng nhập lại”
@@ -410,6 +451,7 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
 
 - **CauHinh** (QT-07 / QT-09) — Cấu hình: Danh mục, Tham số nghiệp vụ, Công tắc tính năng
   - Khuôn trang Cấu hình (vỏ CRM + cột trái nhóm danh mục + bảng)
+  - **Tham số (v4):** không còn ô “Có hiệu lực từ”; câu cuối tab Tham số: “Sửa một tham số thì có hiệu lực ngay; giá trị cũ vẫn giữ trong lịch sử thay đổi.”
   - **Nút:** “Lịch sử thay đổi” · “Danh mục” · “Tham số nghiệp vụ” · “Công tắc tính năng” · “Giai đoạn cơ hội Khoá 8” · “Nguồn lead 7” · “Môn học 10” · “Phân loại lớp Khoá 3” · “Trình độ Khoá 4” · “Hình thức học Khoá 2” · “Loại gói 6” · “Loại hoạt động 5” · “Hình thức test 2” · “Cấp độ đề test 2” · “Lý do từ chối 5” · “Lý do huỷ buổi 8” · “Lý do không tái tục 7” · “Hình thức thu tiền 3” · “Mức độ khiếu nại 4” · “Kênh tiếp nhận ticket 6” · “Source” · “Sub-source” · “Ngừng” · “Thêm” · “Huỷ” · “Lưu” · (một số nhãn lấy từ dữ liệu: giai đoạn, sub-stage, tab…)
 - **MaTranQuyen** (QT-05) — Ma trận quyền theo vai trò; đầu màn ghi “Phiên bản 12 · lưu bởi … lúc …”; đã bỏ ngày hiệu lực
   - Khuôn trang Ma trận quyền (vỏ CRM + bảng ô quyền)
@@ -467,10 +509,13 @@ Danh sách được trích tự động từ các artboard. Đã bỏ nhãn than
 - **Trang chủ theo vai trò (K09b)**: nút “Mở danh sách” dẫn tới đích theo bảng của anh; quyền xem từng khối chờ QT-05.
 - **Ma trận quyền (10/10)**: mỗi lần bấm “Lưu thay đổi” tạo MỘT phiên bản mới, có hiệu lực ngay, không hẹn ngày. Lịch sử chỉ xem, không khôi phục.
 - **Bộ lọc nhanh của K1**: cùng nhóm là HOẶC, khác nhóm là VÀ. Group By tối đa 2 cấp.
+- **Thanh màu trên đầu cột Kanban (K2)** (`.hmt-kbar`, ghi thêm v4): chia khúc theo tình trạng lịch hẹn của các thẻ trong cột. **Xanh** (`.ok`, `--success-solid`) = lịch hẹn còn hạn; **vàng** (`.warn`, `--warning-solid`) = lịch hẹn hôm nay; **đỏ** (`.bad`, `--danger-solid`) = quá hạn; **xám** (phần nền còn lại, `--divider`) = chưa có lịch. Độ dài mỗi khúc theo tỉ lệ số thẻ. **Bấm một khúc màu thì lọc cột theo nhóm đó** (bản vẽ chưa thể hiện trạng thái đang lọc).
+- **Tham số nghiệp vụ** (v4): có hiệu lực ngay khi lưu, không hẹn ngày; giá trị cũ giữ trong lịch sử thay đổi.
+- **Đăng nhập** (v4): không có mã dự phòng; quên mật khẩu chỉ liên hệ quản trị viên; mọi trường hợp bị chặn đăng nhập dùng một câu chung (DN08).
 
 ## 5. Những chỗ còn chưa chắc
 1. **P1 còn thiếu (Đợt 3)**: chưa vẽ màn không có quyền, module chưa bật, 404, lỗi hệ thống, và khung cổng KC.
-2. **Chữ lỗi OTP** (DN03: “Sai mã”, “Sai hoặc đã dùng”, hết hạn mã) chưa được duyệt từng câu.
+2. **Chữ lỗi OTP** (DN03: “Sai mã”, hết hạn mã) chưa được duyệt từng câu. (v4 đã bỏ lỗi mã dự phòng.)
 3. **Mã mẫu tự đặt**: mã đơn hàng, ticket, phiếu thu/PKT/PT trong dữ liệu mẫu em tự đặt theo định dạng trong file ngữ cảnh; chưa có bảng mã thật.
 4. **Quyền từng khối của K09b** chưa khớp Ma trận quyền (QT-05); đây mới là bản tạm theo bảng vai trò.
 5. **Ngưỡng 25%** cho “sắp quá hạn” chưa phải luật chính thức.
@@ -496,4 +541,29 @@ Luật chốt (10/10): mỗi lần bấm “Lưu thay đổi” tạo MỘT phi�
 | Bản điện thoại (4 bottom sheet) | K1m_loc, K1m_nhom, K1m_cot, K1m_fav | Điện thoại dùng nút “Áp dụng” vì sheet đóng lại, khác bản máy tính (áp dụng ngay). Nền điện thoại là danh sách thẻ cơ hội do em phác (K1 chưa có bản điện thoại). Chưa vẽ: Lọc nâng cao trên điện thoại, lưu bộ lọc trên điện thoại, và trạng thái rỗng của Favorites trên điện thoại. |
 | Ma trận quyền: đầu màn | MaTranQuyen | Câu “Phiên bản 12 · lưu bởi Cao Trường lúc 12/10/2026 16:20” là ví dụ. Mục “Lịch sử thay đổi gần đây” ở cuối màn (đã duyệt) vẫn ghi theo từng thay đổi, chưa gắn số phiên bản; nội dung dòng đầu (“Giao việc trên Ticket”) không khớp 5 hành động của ma trận (Xem, Tạo, Sửa, Duyệt, Xuất). |
 | Lịch sử phiên bản | MaTranQuyen_ls, MaTranQuyen_ct | Dữ liệu phiên bản 7 đến 12 là mẫu em đặt. Phiên bản 10 ghi “đổi 40 ô” vì thêm vai trò mới, chưa chắc cách đếm này. Chưa vẽ: lọc theo người lưu hoặc ngày, phân trang khi nhiều phiên bản. Quyền xem lịch sử chưa rõ. |
-| Cấu hình (CauHinh) | CauHinh | Màn Cấu hình vẫn còn ô “Có hiệu lực từ” cho tham số nghiệp vụ. Luật 10/10 chỉ nói về ma trận quyền nên em không sửa, cần anh xác nhận có áp dụng cho tham số không. |
+| Cấu hình (CauHinh) | CauHinh | **Đã xử lý ở v4**: anh xác nhận tham số có hiệu lực ngay, đã bỏ ô “Có hiệu lực từ”. |
+
+
+## 7. Đợt bổ sung v3: ô tìm kiếm toàn hệ thống và chuông thông báo (chỉ vẽ vỏ)
+
+| Khung | Artboard | Chưa chắc |
+|---|---|---|
+| Ô tìm toàn hệ thống (đóng) | K1_tim | Vị trí: ngay sau đường dẫn, rộng 460. Trên K1 vẫn còn ô “Tìm tên, SĐT, mã (cả mã cũ)…” riêng của danh sách; hai ô này đứng cạnh nhau, cần anh xác nhận không gây nhầm. Phím tắt “/” là ví dụ anh đưa; chưa vẽ hành vi phím. |
+| Đang gõ + kết quả | K1_tim_go | Các nhóm em vẽ là Học sinh, Khách hàng, Cơ hội (chỉ hiện nhóm có kết quả, tối đa vài dòng mỗi nhóm). Chữ “lớp” trong gợi ý chưa có dòng mẫu vì từ khoá “huy” không khớp lớp nào; nhóm Lớp chưa vẽ. Chưa vẽ mục “Xem tất cả kết quả”, lịch sử tìm, tìm gần đây. Dữ liệu là mẫu. |
+| Không tìm thấy | K1_tim0 | Câu gợi ý dưới “Không tìm thấy” là em viết. |
+| Chuông: danh sách | K1_chuong | Ba dòng mẫu là em đặt (lịch hẹn, ticket, đơn hàng). Chưa có “Xem tất cả” và “Đánh dấu đã đọc” vì chưa thuộc danh sách anh nêu. Chưa rõ bấm một dòng mở đâu. |
+| Chuông: rỗng | K1_chuong0 | Câu phụ “Thông báo mới sẽ hiện ở đây.” là em viết. |
+| Điện thoại | K1m_tim_dong, K1m_tim, K1m_tim0 | Chuông thông báo trên điện thoại chưa vẽ (anh chưa yêu cầu). Chưa vẽ trạng thái vừa mở, chưa gõ (bàn phím và gợi ý). |
+
+
+## 8. Đợt v4: chỗ còn chưa chắc
+
+| Khung | Artboard | Chưa chắc |
+|---|---|---|
+| DN03 dòng "Mất điện thoại?" | DN03_* | Em để là chữ thường, không phải liên kết, vì không có nơi để bấm tới. Nếu anh muốn liên kết mở thông tin liên hệ quản trị viên thì cần nêu đích. |
+| DN05 tên artboard | DN05_pc_form, DN05_mb_form | Giữ tên `_form` cho khỏi đổi mã, dù màn không còn biểu mẫu. Câu “Học sinh quên mật khẩu thì nhờ chăm sóc khách hàng cấp lại.” đã bỏ theo yêu cầu “chỉ có câu … và nút”. Học sinh vẫn có câu riêng ở DN02. |
+| DN08 tên và nội dung | DN08_pc_lock, DN08_mb_lock | Tên `_lock` là em đặt cho màn gộp. Tiêu đề “Không thể đăng nhập” em lấy từ câu anh đưa (cần có tiêu đề theo khuôn). Biểu tượng ổ khoá giữ từ bản cũ; nếu sợ gợi ý “tài khoản bị khoá” thì có thể đổi sang biểu tượng thông tin. Bỏ nút “Quên mật khẩu?” của bản tạm khoá cũ (màn gộp lấy theo bản khoá hẳn, một nút). |
+| DN09 hết phiên | DN09_* | Không đổi; chưa đối chiếu lại với quyết định đăng nhập mới. |
+| Token viền trạng thái | tokens.json, hmt-tokens.css | Ba màu viền mới em pha 21% màu đậm vào màu nền, cùng cách với `--info-border` có sẵn. **Chưa gắn vào `.hmt-alert` / `.hmt-toast`** để khỏi đổi các màn đã duyệt; dùng khi dựng thành phần mới hoặc khi anh duyệt thêm viền cho thông báo. |
+| Chiều cao hàng bảng | bundle.css | Chỉ đưa hàng tiêu đề (32) và hàng dữ liệu (36) của `.hmt-table` vào token. Hàng nhóm `.ghead` (34) và `.grp` (28) cùng các bảng tự dựng bằng lưới (CauHinh 40–44, MaTranQuyen) vẫn viết thẳng; hai kiểu hàng nhóm cao khác nhau, cần anh chốt một số. |
+| Thanh màu K2 | K2 | Bản vẽ chưa có trạng thái “đang lọc theo khúc màu” và chưa có chú thích màu trên màn. |
