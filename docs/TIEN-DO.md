@@ -33,6 +33,7 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | 5a | Trang chủ theo vai trò (K09b), gồm "Việc tuyển sinh hôm nay" (TS-12) trong trang chủ của Sale: PR riêng, **sau PR dữ liệu, trước khi code P3** (anh chốt 16/10) | Chưa |
 | 5 | P1 đăng nhập: 5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động | Chưa |
 | 6 | PR dữ liệu: bảng đối chiếu đủ 33 danh mục với spec 06, nạp danh mục thiếu (kể cả L5P, L6 đánh lại A–F, danh mục 33 "Lý do bỏ qua test" theo luật 16/10), "phiên bản" ma trận quyền | Chưa |
+| 6a | Nạp danh mục theo luật 16/10 (migration `20261016000017`): nhóm con L5P, L6 đánh lại A–F (bỏ L6G), L5B "Đã xếp lịch test", danh mục 33 "Lý do bỏ qua test" (mã `TEST_SKIP_REASON`); 18 bài pgTAP. Ngoại lệ một lần với nguyên tắc "mã không đổi nghĩa", chỉ vì hệ thống chưa chạy thật | Đã gộp (PR này) |
 | 7 | P2 Cấu hình | Chưa |
 | 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
 
@@ -44,7 +45,6 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm tạo đơn và hàm chuyển báo giá thành đơn kiểm R-CRM-16 (phải ở L8).
 - Hàm duyệt phiếu thu gọi kiểm tra R-CRM-17 trong cùng giao dịch; đối chiếu "lệch" theo R-CRM-18.
 - Hàm/trigger phiếu test: đổi trạng thái phiếu cập nhật nhóm con L5 (R-CRM-15) và lên L6A (R-CRM-13).
-- Nạp danh mục: L5P, L6 đánh lại A–F, danh mục 33 (bốn giá trị đã chốt ở spec 06).
 - R-CRM-19: bấm Tạo chỉ mở form trắng, Lưu mới cấp mã; nút Tạo nằm trên bản ghi cơ hội, danh sách đơn và báo giá không có nút Tạo (R-TIEN-02).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
 
