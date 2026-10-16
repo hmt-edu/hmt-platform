@@ -21,7 +21,7 @@ Tài liệu chính trong repo:
 |---|---|
 | `docs/spec/04-luat-nghiep-vu.md` | Luật nghiệp vụ, mã R-* |
 | `docs/spec/02-chuan-ma-va-danh-muc.md` | Chuẩn mã, danh mục gốc |
-| `docs/spec/06-danh-muc-va-tham-so.md` | 32 danh mục, tham số Cài đặt |
+| `docs/spec/06-danh-muc-va-tham-so.md` | 33 danh mục, tham số Cài đặt |
 | `docs/design/ban-do-man-hinh.md` | 197 màn, mã màn |
 | `docs/design/luat-cho-thiet-ke.md` | Luật rút gọn cho Design |
 | `docs/design/ma-luat-S02-S03.md` | Định nghĩa mã luật S02-*, S03-* dùng trong bản đồ màn hình |

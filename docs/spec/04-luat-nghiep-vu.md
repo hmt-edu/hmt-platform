@@ -1,6 +1,6 @@
 # Luật nghiệp vụ
 
-Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nhật 12/10/2026: thêm các quyết định trong lúc thiết kế giao diện P5, đánh dấu **(12/10)**), lấy từ các vòng làm việc trên hệ thống Apps Script cũ và các buổi đặc tả hệ thống mới. Đây là nguồn luật cho mọi giai đoạn từ 1 trở đi.
+Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nhật 12/10/2026: thêm các quyết định trong lúc thiết kế giao diện P5, đánh dấu **(12/10)**; cập nhật 16/10/2026: bổ sung cơ hội, phiếu kiểm tra đầu vào, L8, tạo đơn và báo giá, đánh dấu **(16/10)**), lấy từ các vòng làm việc trên hệ thống Apps Script cũ và các buổi đặc tả hệ thống mới. Đây là nguồn luật cho mọi giai đoạn từ 1 trở đi.
 
 **Cách dùng file này**
 - Mỗi luật có mã `R-<NHÓM>-<số>`. Hàm SQL và bài kiểm thử ghi mã luật trong chú thích (ví dụ `-- Luật R-GIO-03`).
@@ -16,7 +16,7 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 |---|---|---|
 | R-CRM-01 | Một lead có thể sinh nhiều cơ hội. Lead đã có cơ hội mà tạo thêm thì cảnh báo kèm mã cơ hội cũ; người dùng xác nhận lần hai để tạo thêm, hoặc chọn gộp. | [CHỐT] |
 | R-CRM-02 | Giai đoạn cơ hội chỉ đi tới, không lùi. Chặn ở cơ sở dữ liệu, không chỉ ẩn nút. | [CHỐT] |
-| R-CRM-03 | Cơ hội từ L5 trở lên bắt buộc có tên và năm sinh học sinh. | [CHỐT] |
+| R-CRM-03 | Cơ hội từ L5 trở lên bắt buộc có tên và năm sinh học sinh. **(16/10)** Bắt buộc cho mọi bước từ L5 trở lên, kể cả khi bấm thẳng L7, L8. Hộp chặn trên giao diện nói rõ thiếu ô nào. | [CHỐT] |
 | R-CRM-04 | Lịch hẹn (hoạt động) là bản ghi riêng; một bản ghi có nhiều lịch hẹn song song. "Lịch hẹn kế tiếp" trên lead, cơ hội là giá trị hệ thống tự tính, không ai gõ tay. Hoàn thành, huỷ lịch hẹn: bấm một lần là xong. | [CHỐT] |
 | R-CRM-05 | Phiếu kiểm tra đầu vào tạo từ cơ hội; ngày, giờ, phòng, ghi chú để trống khi tạo. Có "ngày giờ xác nhận" thì tự sinh lịch hẹn nhắc. | [CHỐT] |
 | R-CRM-06 | Phiếu kiểm tra bị huỷ thì bắt buộc chọn lý do huỷ (danh mục, nối với giai đoạn con L5C–L5O của cơ hội). | [CHỐT] |
@@ -25,6 +25,15 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-CRM-09 | **(12/10)** Giai đoạn **lead** (C1–C4 và nhóm con) đổi tự do cả hai chiều; mọi lần đổi ghi lịch sử. Riêng nhóm con C4D "Tạo cơ hội thành công" do hệ thống tự gắn khi tạo cơ hội, người dùng không chọn được. Chỉ cơ hội mới chặn lùi (R-CRM-02). | [CHỐT] |
 | R-CRM-10 | **(12/10)** Phiếu kiểm tra đầu vào: hình thức test (danh mục: Offline, Online), cấp độ đề (danh mục: Cơ bản, Nâng cao). Kết quả gồm điểm **0–10** (một chữ số thập phân), nhận xét, trình độ đề xuất S/A/B/C, phân loại đề xuất CB/NC, lớp đề xuất (không bắt buộc), đính kèm đề, bài làm, phiếu đánh giá. Phiếu bị huỷ/từ chối đưa về Nháp được, bắt buộc lý do. | [CHỐT] |
 | R-CRM-11 | **(12/10)** Giáo viên chấm kiểm tra đầu vào trong **cổng giáo viên** (từ giai đoạn 1 có bản tối giản chỉ gồm mục chấm test). Giữ chiến dịch marketing và nhập lead từ file như bản cũ. | [CHỐT] |
+| R-CRM-12 | **(16/10)** Phiếu test dang dở là phiếu ở trạng thái Nháp, Đang test hoặc Chờ giáo viên chấm. Cơ hội còn ít nhất một phiếu dang dở thì không bấm tay được L7, L8. Chặn trong hàm cơ sở dữ liệu, có mã lỗi và câu tiếng Việt, kèm tên phiếu còn dang dở. Phiếu Huỷ, Từ chối, Hoàn thành không tính là dang dở. | [CHỐT] |
+| R-CRM-13 | **(16/10)** Phiếu test Hoàn thành thì cơ hội tự lên L6, nhóm con L6A, chỉ khi cơ hội đang ở L5 trở xuống. Cơ hội đã ở L7, L8 thì không đổi (R-CRM-02). L6 chỉ do hệ thống chuyển, người dùng không bấm tay được. | [CHỐT] |
+| R-CRM-14 | **(16/10)** Bỏ qua test: cơ hội không có phiếu, hoặc mọi phiếu đều Huỷ/Từ chối, thì bấm tay L7, L8 được nhưng bắt buộc chọn "lý do bỏ qua test" (danh mục 33) và ghi lịch sử. Phiếu Huỷ/Từ chối vẫn bắt chọn lý do huỷ như R-CRM-06. Không giới hạn vai trò huỷ phiếu, kể cả khi học sinh đã làm bài (anh Trường chấp nhận). Phiếu Từ chối đối xử như Huỷ khi xét khoá L7/L8. | [CHỐT] |
+| R-CRM-15 | **(16/10)** Nhóm con L5 chạy theo phiếu, hệ thống tự gắn: chưa có lịch → L5A; đã xếp lịch hoặc đang test → L5B; chờ giáo viên chấm → L5P; Huỷ/Từ chối → L5C–L5O theo lý do huỷ; phiếu đưa về Nháp → L5A. Chỉ áp dụng khi cơ hội đang ở L5. | [CHỐT] |
+| R-CRM-16 | **(16/10)** L8 do nhân viên bấm sau khi phụ huynh đã thanh toán thật (thu tiền làm trước, ghi đơn trên hệ thống làm sau). Khi bấm bắt buộc chọn nhóm con L8A, L8B hoặc L8C (L8C khi phụ huynh đóng đủ 100% ngay lần đầu), có câu xác nhận, không có Hoàn tác (cơ hội chỉ đi tới). Chưa ở L8 thì không tạo được đơn hàng từ cơ hội: chặn trong hàm tạo đơn và hàm chuyển báo giá thành đơn, nút mờ trên giao diện chỉ là gợi ý. Luật này chỉ nói về đơn tạo từ cơ hội. Đơn sinh từ phiếu tái tục, chuyển phí: anh Trường làm màn tái tục riêng và tính sau, chưa quy định ở đây. | [CHỐT] |
+| R-CRM-17 | **(16/10)** Cơ hội đang L8A hoặc L8B tự nâng lên L8C khi tất cả đơn đã duyệt của cơ hội đều thu đủ (xét từng đơn, không cộng gộp; chỉ tính phiếu thu đã duyệt). Xét lại mỗi lần kế toán duyệt phiếu thu, trong cùng giao dịch. Chỉ đi tới: đã L8C thì không lùi dù có đơn mới chưa thu hoặc hoàn tiền sau đó. Ghi lịch sử "Hệ thống chuyển L8C". L8A và L8B nhân viên chọn tay, hệ thống không tự đổi giữa hai nhóm này. | [CHỐT] |
+| R-CRM-18 | **(16/10)** Đối chiếu: cơ hội ghi L8C do nhân viên chọn tay, đã có phiếu thu được duyệt mà chưa đơn nào thu đủ → cảnh báo "lệch" cho Trưởng cơ sở và kế toán. Hệ thống không tự sửa. Đơn thứ hai chưa thu không gây cảnh báo. | [CHỐT] |
+| R-CRM-19 | **(16/10)** Tạo đơn hàng, tạo báo giá: bấm "Tạo" chỉ mở form trắng, chưa có bản ghi, chưa cấp mã. Bấm Lưu mới tạo bản ghi (Nháp) và cấp mã (không nhảy số, spec 02); bấm Huỷ thì bỏ hết. Đã Lưu mà không dùng nữa thì đổi trạng thái Huỷ, không xoá cứng. Nút Tạo nằm trên bản ghi cơ hội; danh sách đơn, danh sách báo giá không có nút Tạo (R-TIEN-02). | [CHỐT] |
+| R-CRM-20 | **(16/10)** Tạo báo giá bấm được ở mọi giai đoạn cơ hội. | [CHỐT] |
 
 ## 2. Bán hàng và tiền
 

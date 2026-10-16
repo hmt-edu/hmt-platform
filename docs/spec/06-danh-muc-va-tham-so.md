@@ -2,7 +2,7 @@
 
 > Ghi chú của repo: chép nguyên từ `HMT_DANH_MUC_VA_THAM_SO.md` của anh Trường. Tên tham số trong code (key): xem bảng ở `docs/spec/04-luat-nghiep-vu.md` mục 8. Chỗ khác với dữ liệu đã nạp: `docs/nghiep-vu/doi-chieu-luat-1210.md`.
 
-Mọi danh mục lý do có "Khác"; chọn "Khác" thì bắt buộc ghi chú. Danh mục số 31, 32 xếp sau số 30 về nghĩa; thứ tự dòng trong bảng không quan trọng.
+Mọi danh mục lý do có "Khác"; chọn "Khác" thì bắt buộc ghi chú. Danh mục số 31, 32, 33 xếp sau số 30 về nghĩa; thứ tự dòng trong bảng không quan trọng.
 
 Dùng cho QT-07 (danh mục) và QT-09 (Cài đặt). Giá trị ở đây là dữ liệu thật để nạp sẵn, không phải dữ liệu mẫu.
 
@@ -27,7 +27,7 @@ Không danh mục nào được xoá hay đổi mã.
 | 8 | Loại gói | 1 | Khoá | LC Lớp chung, VIP VIP 1:1 và 1:2, VNN VIP nhóm nhỏ, KR Kèm riêng, DV Dịch vụ, TL Tài liệu |
 | 9 | Nguồn lead | 3 (loại → nguồn → kênh) | Mở | Xem 1.1 |
 | 10 | Giai đoạn lead | 2 | Khoá mục cha; C4D khoá | Xem 1.2 |
-| 11 | Giai đoạn cơ hội | 2 | Khoá mục cha; L5C–L5O nối với lý do huỷ test | Xem 1.3 |
+| 11 | Giai đoạn cơ hội | 2 | Khoá mục cha; L5C–L5O nối với lý do huỷ test (L5P không nối) | Xem 1.3 |
 | 12 | Giai đoạn phiếu tái tục | 2 | Khoá mục cha | Xem 1.4 |
 | 13 | Lý do huỷ test | 1 | Mở, mỗi lý do nối một nhóm con L5 | Như các nhóm con L5C–L5O ở 1.3 |
 | 14 | Hình thức test | 1 | Mở | Offline, Online |
@@ -47,6 +47,7 @@ Không danh mục nào được xoá hay đổi mã.
 | 28 | Lý do không tái tục | 1 | Mở | Học phí, Chất lượng, Lịch học, Chuyển nhà, Học nơi khác, Đủ mục tiêu, Khác |
 | 31 | Lý do đảo khoản tiền | 1 | Mở | Nhập sai số tiền, Trùng phiếu, Sai đơn hoặc sai khách, Khác |
 | 32 | Lý do khoá tài khoản | 1 | Mở | Nghỉ việc, Dừng học, Tạm nghỉ, Nghi lộ mật khẩu, Khác |
+| 33 | Lý do bỏ qua test **(16/10)** | 1 | Mở, luôn có "Khác" (bắt buộc ghi chú) | Học sinh cũ đã biết trình độ, Phụ huynh không muốn test, Đã có kết quả test nơi khác, Khác |
 | 29 | Tỉnh, phường | 2 | Mở | Nạp từ file seed (126 phường, xã của Hà Nội; **chốt 12/10**: lấy theo số đã nạp trong repo) |
 | 30 | Tên hiển thị các bước trạng thái (lớp, buổi, ghi danh, đơn, phiếu thu, ticket…) | 1 | Khoá | Theo file luật mục 4 |
 
@@ -80,10 +81,11 @@ Không có C3K.
 | L2 | Chưa liên hệ được | L2A Không nghe máy · L2B Không liên lạc được · L2C Bận gọi lại sau |
 | L3 | Không có nhu cầu | L3A Không có nhu cầu · L3B Chưa có nhu cầu ở thời điểm hiện tại · L3C Đang học ở nơi khác · L3D Không phù hợp về sản phẩm · L3E Không phù hợp về giá · L3F Không phù hợp về độ tuổi · L3G Không phù hợp về địa điểm · L3H Không nghe máy nhiều lần |
 | L4 | Khách hàng tiềm năng | L4A Tiềm năng, cần gửi thêm thông tin · L4B Tiềm năng, cần tư vấn thêm · L4C Tiềm năng, cần tham khảo ý kiến · L4D Tiềm năng, cần gọi lại vào dịp khác |
-| L5 | Đồng ý tham gia test | L5A Đồng ý tham gia test · L5B Đã xếp lịch test · L5C Huỷ test, không liên hệ được · L5D Huỷ test, PH bận không đưa đón được · L5E Huỷ test, con bận không tham gia được · L5F Huỷ test, con không muốn tham gia · L5G Huỷ test, con đang ôn thi · L5H Huỷ test, con ốm · L5I Huỷ test, gia đình đi du lịch · L5K Huỷ test, thời tiết không thuận lợi · L5N Huỷ test, con đang ở quê · L5M Huỷ test, lý do khác · L5O Huỷ test nhiều lần |
-| L6 | Đã tham gia test | L6A Đã tham gia test, chưa có kết quả test · L6B Đã tham gia test, có kết quả test, cần phân loại · L6C Đã tham gia test, học xuất sắc · L6D Đã tham gia test, học tốt · L6E Đã tham gia test, học khá · L6F Đã tham gia test, học trung bình · L6G Đã tham gia test, học yếu |
+| L5 | Đồng ý tham gia test | L5A Đồng ý tham gia test · L5B Đã xếp lịch test · L5P Đã làm bài, chờ giáo viên chấm **(16/10, hệ thống tự gắn, không nối lý do huỷ test)** · L5C Huỷ test, không liên hệ được · L5D Huỷ test, PH bận không đưa đón được · L5E Huỷ test, con bận không tham gia được · L5F Huỷ test, con không muốn tham gia · L5G Huỷ test, con đang ôn thi · L5H Huỷ test, con ốm · L5I Huỷ test, gia đình đi du lịch · L5K Huỷ test, thời tiết không thuận lợi · L5N Huỷ test, con đang ở quê · L5M Huỷ test, lý do khác · L5O Huỷ test nhiều lần |
+| L6 | Đã tham gia test | **(16/10, L6 chỉ do hệ thống chuyển, R-CRM-13)** L6A Có kết quả, cần phân loại · L6B Học xuất sắc · L6C Học tốt · L6D Học khá · L6E Học trung bình · L6F Học yếu |
 | L7 | Tư vấn | L7A Cần đặt lịch tư vấn · L7B Đã tư vấn, khách hàng tiềm năng · L7C Đã tư vấn, dự thu · L7D Đã tư vấn, cần trao đổi thêm · L7E Đã tư vấn, PH cân nhắc học phí · L7F Đã tư vấn, PH cân nhắc chương trình học · L7G Đã tư vấn, PH cân nhắc thời gian học · L7H Đã tư vấn, PH cân nhắc địa điểm học · L7I Đã tư vấn, PH cân nhắc hình thức học · L7K Đã tư vấn, PH cần trao đổi với người thân · L7L Đã tư vấn, PH cần trao đổi với con |
-| L8 | Đăng ký học | L8A PH đặt cọc · L8B PH thanh toán chia để trả · L8C PH hoàn thành 100% học phí |
+| L8 | Đăng ký học | L8A PH đặt cọc · L8B PH thanh toán chia để trả · L8C PH hoàn thành 100% học phí. **(16/10)** Cả ba chọn tay được lúc bấm L8 (R-CRM-16); tự nâng lên L8C theo R-CRM-17 |
+
 
 ### 1.4 Giai đoạn phiếu tái tục
 | Mã | Tên | Ghi chú |
