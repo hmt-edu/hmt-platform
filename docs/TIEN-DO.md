@@ -28,8 +28,9 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | 1 | Hệ thiết kế: token, `hmt-theme.css`, font, icon, build thử Tailwind v4 (PR 4d) | Đã gộp (#21) |
 | 2 | Thành phần cơ bản + khung ứng dụng CRM (trang mẫu `/dev/khuon`) | Đã gộp (#22) |
 | 3 | Danh sách (K1) + Filters, Group By, Cột, Favorites, Lọc nâng cao; Kanban (K2); Calendar (K5); trang mẫu `/dev/danh-sach` | Đã gộp (#23) |
-| 4a | Ô chọn có tìm, ô ngày dd/mm/yyyy (lịch của gói), ô tiền, đính kèm; Kanban: thanh tỷ lệ đầu cột, "chỉ đi tới" là tuỳ chọn | Đã code, chờ anh OK (nhánh `feat/p0-o-nhap-kanban`) |
-| 4b | Bản ghi (K3), hộp thoại các loại, biểu mẫu và ngăn kéo, trạng thái chung, trang chủ theo vai trò (K09) | Chưa |
+| 4a | Ô chọn có tìm, ô ngày dd/mm/yyyy (lịch của gói), ô tiền, đính kèm; Kanban: thanh tỷ lệ đầu cột, "chỉ đi tới" là tuỳ chọn | Đã gộp (#24) |
+| 4b | Chi tiết (K3: giai đoạn, smart button, Ghi chú & hoạt động có @), các hộp thoại K4 (xác nhận, lý do, điền trường, chặn/cảnh báo, nhiều bước, xem trước tác động, chọn có kiểm tra, cảnh báo trùng SĐT), tấm trượt trên điện thoại; trang mẫu `/dev/chi-tiet`, `/dev/hop-thoai` | Đã code, chờ anh OK (nhánh `feat/p0-ban-ghi-hop-thoai`). Chưa làm: trang chủ theo vai trò (K09/Đ9, bản tạm, ưu tiên sau); ngăn kéo "Tạo nhanh" (K07b) bỏ theo quyết định 13/10 |
+| 5a | Trang chủ theo vai trò (K09b), gồm "Việc tuyển sinh hôm nay" (TS-12) trong trang chủ của Sale: PR riêng, **sau PR dữ liệu, trước khi code P3** (anh chốt 16/10) | Chưa |
 | 5 | P1 đăng nhập: 5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động | Chưa |
 | 6 | PR dữ liệu: bảng đối chiếu đủ 32 danh mục với spec 06, nạp danh mục thiếu, "phiên bản" ma trận quyền | Chưa |
 | 7 | P2 Cấu hình | Chưa |
@@ -38,6 +39,7 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 Anh đã chốt: bỏ mã dự phòng, thiết lập hai bước còn 2 bước (giữ chốt 12/10); màn khoá một câu chung (S03-18); hàm công
 khai chỉ trả tên cơ sở dạy học (CS1, CS2, CS4, CS5); mỗi lần Lưu ma trận quyền là một phiên bản, hiệu lực ngay;
 **không đổi cấu trúc quyền trong cơ sở dữ liệu**, màn theo cơ sở dữ liệu.
+Giai đoạn cơ hội (anh chốt 16/10, ghi cho PR dữ liệu giai đoạn 1): **L6 do hệ thống tự chuyển khi phiếu kiểm tra Hoàn thành**; **L8 do người dùng chọn**, và phải lên L8 trước thì mới tạo được đơn hàng.
 
 ## Đang ở đâu
 

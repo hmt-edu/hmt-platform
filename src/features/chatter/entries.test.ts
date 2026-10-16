@@ -1,0 +1,76 @@
+import { describe, expect, it } from 'vitest';
+import { buildEntries, describeChanges, type FieldFormat } from './entries';
+
+const format: FieldFormat = {
+  labels: { display_name: 'Họ tên', branch_id: 'Cơ sở', is_locked: 'Khoá tài khoản' },
+  value: (column, value) => (column === 'branch_id' ? (value === 'b1' ? 'Cơ sở 1' : null) : null),
+};
+
+describe('lịch sử thay đổi của bản ghi', () => {
+  it('đổi tên cột thành nhãn, giá trị đúng/sai thành Có/Không, trống thành "trống"', () => {
+    const changes = describeChanges(
+      {
+        id: 1,
+        at: '2026-10-12T02:00:00Z',
+        actor_name: 'A',
+        action: 'U',
+        changes: { is_locked: [false, true], display_name: [null, 'Trần Thu Hà'] },
+      },
+      format,
+    );
+    expect(changes).toContainEqual({ label: 'Khoá tài khoản', from: 'Không', to: 'Có' });
+    expect(changes).toContainEqual({ label: 'Họ tên', from: 'trống', to: 'Trần Thu Hà' });
+  });
+
+  it('id cơ sở đổi thành tên; cột không có nhãn (kỹ thuật) thì bỏ; vai trò ghi tên vai trò', () => {
+    const changes = describeChanges(
+      {
+        id: 2,
+        at: '2026-10-12T02:00:00Z',
+        actor_name: 'A',
+        action: 'U',
+        changes: { branch_id: ['b0', 'b1'], some_internal: [1, 2], 'role:Kế toán': [false, true] },
+      },
+      format,
+    );
+    expect(changes).toEqual([
+      { label: 'Cơ sở', from: 'b0', to: 'Cơ sở 1' },
+      { label: 'Vai trò Kế toán', from: 'Không', to: 'Có' },
+    ]);
+  });
+
+  it('gộp ghi chú và lịch sử, mới nhất trước; dòng tạo thành câu hệ thống; dòng rỗng thì bỏ', () => {
+    const entries = buildEntries(
+      [
+        {
+          id: 'n1',
+          at: '2026-10-12T03:00:00Z',
+          author_name: 'B',
+          body: 'Ghi chú',
+          mention_names: [],
+        },
+      ],
+      [
+        { id: 1, at: '2026-10-10T01:00:00Z', actor_name: 'Hệ thống', action: 'I', changes: null },
+        {
+          id: 2,
+          at: '2026-10-12T04:00:00Z',
+          actor_name: 'A',
+          action: 'U',
+          changes: { is_locked: [false, true] },
+        },
+        {
+          id: 3,
+          at: '2026-10-12T05:00:00Z',
+          actor_name: 'A',
+          action: 'U',
+          changes: { some_internal: [1, 2] },
+        },
+      ],
+      format,
+      'Tạo tài khoản.',
+    );
+    expect(entries.map((e) => e.kind)).toEqual(['change', 'note', 'system']);
+    expect(entries[2]).toMatchObject({ kind: 'system', text: 'Tạo tài khoản.' });
+  });
+});

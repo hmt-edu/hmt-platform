@@ -15,6 +15,8 @@ import { ProfilePage } from '../pages/common/ProfilePage';
 import { NotFoundView, RouteErrorPage } from '../pages/common/StatePages';
 import { HomePage } from '../pages/HomePage';
 import { parseAppEnv } from '../lib/env';
+import { DetailDemoPage } from '../pages/dev/DetailDemoPage';
+import { DialogsDemoPage } from '../pages/dev/DialogsDemoPage';
 import { ListDemoPage } from '../pages/dev/ListDemoPage';
 import { PatternPage } from '../pages/dev/PatternPage';
 import { NoPortalPage, RequirePortal, RootRedirect } from './guards';
@@ -54,6 +56,8 @@ export const routes: RouteObject[] = [
               children: [
                 { path: 'khuon', element: <PatternPage /> },
                 { path: 'danh-sach', element: <ListDemoPage /> },
+                { path: 'chi-tiet', element: <DetailDemoPage /> },
+                { path: 'hop-thoai', element: <DialogsDemoPage /> },
               ],
             } satisfies RouteObject,
           ]

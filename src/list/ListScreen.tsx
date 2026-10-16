@@ -56,6 +56,7 @@ export function ListScreen<Row>({
   kanban,
   calendar,
   emptyMessage,
+  parent,
 }: {
   config: ListConfig<Row>;
   state: ListState;
@@ -84,6 +85,19 @@ export function ListScreen<Row>({
   kanban?: ReactNode;
   calendar?: ReactNode;
   emptyMessage?: { title: string; hint: string } | undefined;
+  /**
+   * Danh sách mở từ nút liên kết (smart button) của một bản ghi cha: hiện đường dẫn "Cơ hội / CO000121 / Lịch hẹn"
+   * (bấm mã để quay lại bản ghi) và chip lọc "Cơ hội: CO000121" (bỏ chip thì bỏ lọc theo bản ghi cha).
+   */
+  parent?:
+    | {
+        entityLabel: string;
+        code: string;
+        childLabel: string;
+        onOpenParent: () => void;
+        onClear: () => void;
+      }
+    | undefined;
 }) {
   const sheet = useMedia('(max-width: 639px)');
   const [open, setOpen] = useState<'filters' | 'group' | 'cols' | 'fav' | 'save' | null>(null);
@@ -218,6 +232,27 @@ export function ListScreen<Row>({
 
   return (
     <div className="flex flex-col gap-3">
+      {parent && (
+        <nav aria-label="Đường dẫn" className="text-body text-fg-muted">
+          <ol className="flex flex-wrap items-center gap-1.5">
+            <li>{parent.entityLabel}</li>
+            <Icon name="chevronRight" size={16} />
+            <li>
+              <button
+                type="button"
+                onClick={parent.onOpenParent}
+                className="focus-ring rounded-tag font-medium text-link hover:underline"
+              >
+                {parent.code}
+              </button>
+            </li>
+            <Icon name="chevronRight" size={16} />
+            <li aria-current="page" className="font-semibold text-fg">
+              {parent.childLabel}
+            </li>
+          </ol>
+        </nav>
+      )}
       <div className="flex flex-wrap items-center gap-2">
         <h1 className="mr-1 font-display text-h2">{config.title}</h1>
         {actions.map((a) => (
@@ -344,11 +379,24 @@ export function ListScreen<Row>({
         </div>
       </div>
 
-      {chips.length > 0 && (
+      {(chips.length > 0 || parent) && (
         <div
           className="flex flex-wrap items-center gap-2 border-t border-surface-subtle pt-2"
           aria-label="Điều kiện đang áp dụng"
         >
+          {parent && (
+            <span className="inline-flex h-control-sm items-center gap-1 rounded-full border border-brand-200 bg-brand-50 pr-1 pl-2.5 text-caption font-medium text-brand-800">
+              {parent.entityLabel}: {parent.code}
+              <button
+                type="button"
+                aria-label={`Bỏ điều kiện: ${parent.entityLabel}: ${parent.code}`}
+                onClick={parent.onClear}
+                className="focus-ring inline-flex size-5 items-center justify-center rounded-full hover:bg-selected"
+              >
+                <Icon name="close" size={16} />
+              </button>
+            </span>
+          )}
           {chips.map((chip) => (
             <span
               key={chip.id}
@@ -422,7 +470,9 @@ export function ListScreen<Row>({
               title={
                 chips.length > 0
                   ? 'Không có kết quả khớp bộ lọc'
-                  : (emptyMessage?.title ?? 'Chưa có dữ liệu')
+                  : parent
+                    ? `Chưa có ${parent.childLabel.toLowerCase()}`
+                    : (emptyMessage?.title ?? 'Chưa có dữ liệu')
               }
               headingLevel={2}
               actions={
@@ -433,7 +483,9 @@ export function ListScreen<Row>({
             >
               {chips.length > 0
                 ? 'Thử bớt điều kiện hoặc đổi từ khoá.'
-                : (emptyMessage?.hint ?? 'Khi có dữ liệu, danh sách sẽ hiện ở đây.')}
+                : parent
+                  ? `${parent.entityLabel} ${parent.code} chưa có ${parent.childLabel.toLowerCase()} nào.`
+                  : (emptyMessage?.hint ?? 'Khi có dữ liệu, danh sách sẽ hiện ở đây.')}
             </StateView>
           }
         />

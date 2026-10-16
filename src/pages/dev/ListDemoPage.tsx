@@ -1,12 +1,14 @@
 // Trang mẫu của khuôn danh sách, Kanban, Calendar (PR 3). Cấu hình "Cơ hội" dưới đây chỉ là dữ liệu giả để thử
 // khuôn; bộ lọc thật của từng màn sẽ có ở đặc tả từng phân hệ. Chỉ có ở bản không phải chạy thật.
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { Button } from '../../ui/Button';
 import { Checkbox } from '../../ui/Field';
 import { Code, Tag } from '../../ui/Data';
 import { useToast } from '../../ui/toastContext';
 import { CalendarView, type CalendarMode } from '../../list/Calendar';
 import { addDays, startOfDay, type CalendarEvent } from '../../list/calendarLogic';
+import { ChildListDemo } from './ChildListDemo';
 import { forwardOnlyRule, freeMoveRule } from '../../list/kanbanLogic';
 import { KanbanBoard } from '../../list/Kanban';
 import { ListScreen } from '../../list/ListScreen';
@@ -283,7 +285,7 @@ const KINDS = [
   { key: 'pay', label: 'Thu tiền', icon: 'payment', tone: 'warning' },
 ] as const;
 
-export function ListDemoPage() {
+function OpportunityListDemo() {
   const toast = useToast();
   const [state, setState] = useState<ListState>(() => emptyState(CONFIG));
   const [view, setView] = useState<ViewMode>('list');
@@ -295,7 +297,7 @@ export function ListDemoPage() {
   const [forwardOnly, setForwardOnly] = useState(true);
   const [stages, setStages] = useState<Record<string, string>>({});
 
-  const rows = useMemo(
+  const allRows = useMemo(
     () =>
       applyFilters(
         DATA.map((r) => ({ ...r, stage: stages[r.id] ?? r.stage })),
@@ -306,6 +308,8 @@ export function ListDemoPage() {
       ),
     [state, stages],
   );
+
+  const rows = allRows;
 
   const events: CalendarEvent[] = DATA.flatMap((r, i) =>
     r.due
@@ -467,4 +471,14 @@ export function ListDemoPage() {
       />
     </div>
   );
+}
+
+// Có `?cha=` là danh sách con mở từ smart button của K3; không có là danh sách Cơ hội.
+export function ListDemoPage() {
+  const [params] = useSearchParams();
+  const parentCode = params.get('cha');
+  if (parentCode) {
+    return <ChildListDemo parentCode={parentCode} childKey={params.get('loai') ?? 'lich-hen'} />;
+  }
+  return <OpportunityListDemo />;
 }

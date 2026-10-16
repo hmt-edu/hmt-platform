@@ -13,6 +13,7 @@ import { IconButton } from './Button';
 import { cn } from './cn';
 import { INPUT_BUTTON_CLASS } from './Field';
 import { Icon, type IconName } from './icons';
+import { useMedia } from './useMedia';
 
 const SCRIM = 'fixed inset-0 z-40 bg-scrim';
 
@@ -62,6 +63,8 @@ export function Dialog({
     if (!dismissible) event.preventDefault();
   };
   const focus = useReturnFocus();
+  // Điện thoại (dưới 640px): hộp thoại thành tấm trượt từ dưới lên (K4e), có thanh nắm.
+  const sheet = useMedia('(max-width: 639px)');
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
@@ -72,10 +75,21 @@ export function Dialog({
           onInteractOutside={block}
           {...focus}
           className={cn(
-            'fixed top-1/2 left-1/2 z-50 flex max-h-[90dvh] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-box bg-surface shadow-3 focus:outline-none',
-            wide ? 'max-w-[720px]' : 'max-w-[440px]',
+            'fixed z-50 flex flex-col overflow-hidden bg-surface shadow-3 focus:outline-none',
+            sheet
+              ? 'inset-x-0 bottom-0 max-h-[90dvh] w-full rounded-t-box'
+              : cn(
+                  'top-1/2 left-1/2 max-h-[90dvh] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-box',
+                  wide ? 'max-w-[720px]' : 'max-w-[440px]',
+                ),
           )}
         >
+          {sheet && (
+            <span
+              aria-hidden="true"
+              className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-neutral-300"
+            />
+          )}
           <div className="flex items-center gap-2 px-4 pt-4 pb-2">
             <RadixDialog.Title className="font-display text-h3">{title}</RadixDialog.Title>
             {dismissible && (
