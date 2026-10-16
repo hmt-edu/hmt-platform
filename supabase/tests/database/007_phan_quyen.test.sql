@@ -93,7 +93,7 @@ select is(pg_temp.err($$insert into app.user_account (id, display_name, login_na
                         values (gen_random_uuid(), 'x', 'x', (select id from app.branch where code = 'CS1'))$$),
           '42501', 'SALES: không tự tạo tài khoản');
 select is(pg_temp.err($$select app.set_setting('quotation_validity_days', '20')$$), 'HMT_KHONG_CO_QUYEN', 'SALES: không sửa Cài đặt');
-select is(pg_temp.err($$select app.set_permission('SALES', 'LEAD', 'HUY', 'CO_SO')$$), 'HMT_KHONG_CO_QUYEN', 'SALES: không tự cấp quyền');
+select is(pg_temp.err($$select app.save_permission_matrix(app.permission_current_version(), jsonb_build_array(jsonb_build_object('role', 'SALES', 'module', 'LEAD', 'action', 'HUY', 'scope', 'CO_SO')))$$), 'HMT_KHONG_CO_QUYEN', 'SALES: không tự cấp quyền');
 select is(pg_temp.err($$select app.catalog_add_item('ACTIVITY_TYPE', 'X1', 'x')$$), 'HMT_KHONG_CO_QUYEN', 'SALES: không sửa danh mục');
 select is(pg_temp.err($$select app.log_export('LEAD', '{}', 5)$$), 'HMT_KHONG_CO_QUYEN', 'SALES: không xuất file lead');
 select is(pg_temp.err($$select app.admin_hard_delete('app.room', gen_random_uuid(), 'thử')$$), 'HMT_KHONG_CO_QUYEN',
@@ -156,9 +156,9 @@ select ok(app.can_see_branch('LEAD', 'XEM', (select id from app.branch where cod
 select is(pg_temp.err($$select app.set_setting('quotation_validity_days', '20')$$), null, 'ADMIN: sửa Cài đặt được');
 select ok((select count(*) from app.audit_log) > 0, 'ADMIN: đọc được nhật ký thao tác');
 select ok((select count(*) from app.user_account) >= 10, 'ADMIN: thấy mọi tài khoản');
-select is(pg_temp.err($$select app.set_permission('SALES', 'ADMIN', 'XEM', 'CO_SO')$$), 'HMT_QUYEN_QUAN_TRI',
+select is(pg_temp.err($$select app.save_permission_matrix(app.permission_current_version(), jsonb_build_array(jsonb_build_object('role', 'SALES', 'module', 'ADMIN', 'action', 'XEM', 'scope', 'CO_SO')))$$), 'HMT_QUYEN_QUAN_TRI',
           'Không cấp được phân hệ Quản trị cho vai trò khác ADMIN');
-select is(pg_temp.err($$select app.set_permission('SALES', 'LEAD', 'HUY', 'CO_SO')$$), null, 'ADMIN: sửa ma trận quyền được');
+select is(pg_temp.err($$select app.save_permission_matrix(app.permission_current_version(), jsonb_build_array(jsonb_build_object('role', 'SALES', 'module', 'LEAD', 'action', 'HUY', 'scope', 'CO_SO')))$$), null, 'ADMIN: sửa ma trận quyền được');
 select is(pg_temp.err($$select app.admin_hard_delete('app.room', (select id from app.room where code = 'TP1' limit 1), '')$$),
           'HMT_THIEU_LY_DO', 'Admin xoá nhập nhầm: bắt buộc lý do');
 select is(pg_temp.err($$select app.admin_hard_delete('app.catalog_item', (select id from app.catalog_item limit 1), 'thử')$$),

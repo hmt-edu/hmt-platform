@@ -40,7 +40,7 @@ Người nhiều vai trò lấy phạm vi rộng nhất trong các vai trò có 
 
 ## Ma trận quyền `app.permission`
 - Một dòng = vai trò × phân hệ (`PERM_MODULE`) × hành động (`PERM_ACTION`: Xem, Tạo, Sửa, Huỷ, Duyệt, Xuất, Giao việc) → phạm vi.
-  Không có dòng = không có quyền. Admin sửa qua `app.set_permission` (ghi nhật ký). Phân hệ Quản trị chỉ ADMIN.
+  Không có dòng = không có quyền. Admin sửa qua `app.save_permission_matrix` (từ PR 6d; mỗi lần Lưu một phiên bản, xem mục dưới). Phân hệ Quản trị chỉ ADMIN.
 - Nạp từ `docs/seed/old_permission_matrix.csv`, đã sửa:
   - "Delete" cũ → Huỷ (không xoá cứng); phạm vi BRANCH → Cơ sở, ALL → Toàn hệ thống.
   - Trưởng cơ sở được Xuất file mọi phân hệ trong cơ sở; mỗi lần xuất ghi `app.export_log`.
@@ -89,7 +89,9 @@ còn ADMIN khác thì bị chặn.
 | `app.permission_scope(phân hệ, hành động)` | Phạm vi rộng nhất được cấp | RLS, hàm |
 | `app.has_permission(phân hệ, hành động)` | Có quyền không | RLS, hàm |
 | `app.can_see_branch(phân hệ, hành động, cơ sở)` | Được thao tác dữ liệu cơ sở đó không | RLS |
-| `app.set_permission(vai trò, phân hệ, hành động, phạm vi)` | Sửa ma trận (NULL = bỏ quyền) | Admin |
+| `app.save_permission_matrix(phiên bản đang xem, danh sách ô đổi)` | Lưu nhiều ô quyền thành MỘT phiên bản mới, hiệu lực ngay (ô: vai trò, phân hệ, hành động, phạm vi hoặc null = bỏ quyền) | Admin (màn QT-05) |
+| `app.permission_current_version()` | Số phiên bản hiện hành | Màn QT-05 |
+| `app.set_permission(vai trò, phân hệ, hành động, phạm vi)` | Sửa một ô; **hàm nội bộ**, giao diện không gọi được (từ PR 6d) | Migration, kết nối thẳng DB |
 | `app.log_export(phân hệ, bộ lọc, số dòng)` | Ghi nhật ký xuất file | Giao diện trước khi xuất |
 | `app.admin_hard_delete(bảng, id, lý do)` | Xoá cứng bản ghi nhập nhầm | Admin |
 | `app.login_precheck`, `app.login_record` | Kiểm khoá, ghi lần đăng nhập | Edge Function `login` |
@@ -163,6 +165,15 @@ tự kiểm quyền người gọi.
   bỏ, phần tử đầu là IP thật. `True-Client-IP`, `Forwarded`, `X-Envoy-External-Address` đi nguyên từ người gọi (giả được),
   HMT không dùng. Kết luận: `clientIp` (ưu tiên `cf-connecting-ip`, rồi phần tử đầu `x-forwarded-for`) đúng trên Supabase,
   không cần sửa. `ip-check` giữ lại để thử lại khi Supabase đổi hạ tầng; chỉ trả lời trên thử nghiệm.
+
+## Phiên bản ma trận quyền (PR 6d)
+- `app.permission_version` (số phiên bản liền nhau, người lưu, giờ lưu, số ô đổi) và `app.permission_change` (ô đổi: vai trò,
+  phân hệ, hành động, phạm vi cũ → mới; rỗng = không có quyền). Chỉ thêm, không sửa, không xoá; chỉ Quản trị đọc.
+- Phiên bản 1 là "Khởi tạo" (ma trận lúc triển khai). Mỗi lần Lưu là một phiên bản, có hiệu lực ngay, không hẹn ngày; lịch sử
+  chỉ xem, không khôi phục.
+- Lưu gửi kèm số phiên bản đang xem. Có người vừa lưu thì báo `HMT_PHIEN_BAN_CU`, không ghi đè. Không có ô đổi thật thì
+  `HMT_KHONG_CO_THAY_DOI`, không tạo phiên bản. Một ô sai thì hoàn tác cả lần lưu.
+- Chưa chặn Admin tự bỏ quyền của chính vai trò ADMIN (luật chưa nêu); xem hỏi anh Trường trong PR 6d.
 
 ## Việc phải làm trước giai đoạn 4 (học sinh, phụ huynh dùng thật)
 - **L2.** Hiện mọi người đã đăng nhập (kể cả học sinh, giáo viên) đọc được toàn bộ ma trận quyền, Cài đặt (trần chiết
