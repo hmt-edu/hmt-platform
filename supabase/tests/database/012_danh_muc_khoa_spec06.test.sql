@@ -58,7 +58,8 @@ select ok(not exists (select from app.catalog_item where name ilike '%opp%' and 
 -- Hai cột mới của mục danh mục.
 select is((select requires_note from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and code = 'KHAC'), true,
           'R-CRM-14: "Khác" của lý do bỏ qua test bắt buộc ghi chú');
-select is((select count(*)::int from app.catalog_item where requires_note), 1, 'Hiện chỉ một mục bắt buộc ghi chú');
+select is((select count(*)::int from app.catalog_item where requires_note and catalog_code = 'TEST_SKIP_REASON'), 1,
+          'Danh mục 33: chỉ "Khác" bắt buộc ghi chú');
 select is((select applies_to from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TOAN'), '{}'::text[],
           '"Áp dụng cho" mặc định rỗng (mọi nơi)');
 

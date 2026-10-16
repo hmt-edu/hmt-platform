@@ -25,7 +25,6 @@ Mỗi dòng: chỗ vênh, file liên quan, nên sửa ở bước nào. Sửa xo
 |---|---|---|---|
 | B1 | Tình trạng ghi danh thiếu **`DA_XEP_LOP` Đã xếp lớp** (R-GD-05); danh mục hệ thống `ENROLLMENT_STATUS` có 7 mục | migration 003; `006_du_lieu_danh_muc.test.sql` | Giai đoạn 2 (ghi danh), hoặc gộp vào đợt danh mục bước 4 |
 | B2 | **Mã gói**: `app.build_package_code(loại, môn, khối, hình thức)` trả `LC-TOAN-K09-OFF`; luật mới không có hình thức, có dải khối `K03K07`, và mã `DV-…`, `TL-…` không có môn, khối | `20261010000004_cap_ma.sql`; `004_cap_ma.test.sql`; `docs/nghiep-vu/nen-du-lieu.md` | Giai đoạn 1 (cấu hình bán hàng), trước khi có gói nào |
-| B3 | Chưa có danh mục khoá **Loại gói** (`LC`, `VIP`, `VNN`, `KR`, `DV`, `TL`); hàm trên nhận loại bất kỳ viết hoa | như B2 | Giai đoạn 1 |
 | B4 | **Loại cấp mã mới** `LD`, `CO`, `PKT`, `GD`, `TT` (6 số, toàn hệ thống) chưa có trong `app.code_format`; `app.issue_person_code` chỉ nhận `HS`, `PH`, `NV`, `GV`, `TG` | `20261010000004_cap_ma.sql` | Giai đoạn 1 (`LD`, `CO`, `PKT`), giai đoạn 2 (`GD`, `TT`) |
 | B5 | Chứng từ **`KTV`** (khoản tiền vào, khoản đảo dùng chung dãy) chưa có trong danh mục `DOC_TYPE` (đang có BG, DH, PT, PC, DN, KN) | migration 003, 008 | Giai đoạn 1 |
 | B6 | Chứng từ **không ghi CS3** (R-TIEN-34, R-HT-02): `app.issue_document_number` chưa chặn cơ sở văn phòng (mã lớp đã chặn) | `20261010000004_cap_ma.sql`, `20261011000015_hoi_so_cs3.sql` | Giai đoạn 1 |
@@ -72,16 +71,14 @@ Vẫn được ghi đè: `max_sessions_ahead`, `upsale_hours_left_threshold`, `u
 
 ## D. Danh mục trong spec 06 chưa có trong cơ sở dữ liệu (làm mới, không vênh)
 
+Đã nạp ở PR 6b: #8, 14, 15, 17, 21, 22, 23, 24, 25, 26, 28, 31, 32. Còn lại:
+
 | Danh mục spec 06 | Làm ở |
 |---|---|
-| #8 Loại gói; #14 Hình thức test; #15 Cấp độ đề test; #24 Lý do từ chối; #26 Hình thức thu tiền; #27 Tài khoản nhận tiền (theo cơ sở); #31 Lý do đảo khoản | Giai đoạn 1 |
-| #12 Giai đoạn phiếu tái tục; #17 Lý do liên hệ khi điểm danh; #19 Nhóm đề nghị (thêm "Dừng học"); #20 Nhóm khiếu nại; #21 Mức độ khiếu nại; #22 Kênh tiếp nhận; #23 Lý do huỷ buổi; #25 Lý do điều chỉnh giờ; #28 Lý do không tái tục | Giai đoạn 2 |
-| #32 Lý do khoá tài khoản | Bước 4 |
-| #30 Tên hiển thị các bước trạng thái | Theo từng giai đoạn có trạng thái đó |
-
-Đã có và khớp: #1 Cơ sở (5, CS3 văn phòng), #2 Phòng học, #3 Môn (10), #4 Khối (K02–K12), #5 Phân loại lớp, #6 Trình độ, #7 Hình
-thức học (`OFF`, `ONL`), #9 Nguồn lead (6 loại, 11 nguồn, 14 kênh), #10 Giai đoạn lead (4 + 15), #11 Giai đoạn cơ hội (8 + 49),
-#13 Lý do huỷ test (11, nối L5C–L5O), #18 Trạng thái BTVN (5).
+| #12 Giai đoạn phiếu tái tục; #19 Nhóm đề nghị (thêm "Dừng học"); #20 Nhóm khiếu nại | PR 6c |
+| #27 Tài khoản nhận tiền (theo cơ sở, kế toán khai) | Giai đoạn 1, cùng phiếu thu |
+| #30 Tên hiển thị các bước trạng thái | Theo từng giai đoạn có trạng thái đó (danh sách ở `docs/design/luat-cho-thiet-ke.md`) |
+| #2 Phòng học | Để rỗng ở bản chạy thật; cơ sở khai qua màn QT-08 |
 
 ## E. Luật mới chỉ cần nhớ khi làm (chưa có code liên quan)
 
