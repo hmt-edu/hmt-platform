@@ -49,7 +49,7 @@ Không danh mục nào được xoá hay đổi mã.
 | 32 | Lý do khoá tài khoản | 1 | Mở | Nghỉ việc, Dừng học, Tạm nghỉ, Nghi lộ mật khẩu, Khác |
 | 33 | Lý do bỏ qua test **(16/10)** | 1 | Mở, luôn có "Khác" (bắt buộc ghi chú) | Học sinh cũ đã biết trình độ, Phụ huynh không muốn test, Đã có kết quả test nơi khác, Khác |
 | 29 | Tỉnh, phường | 2 | Mở | Nạp từ file seed (126 phường, xã của Hà Nội; **chốt 12/10**: lấy theo số đã nạp trong repo) |
-| 30 | Tên hiển thị các bước trạng thái (lớp, buổi, ghi danh, đơn, phiếu thu, ticket…) | 1 | Khoá | Theo file luật mục 4 |
+| 30 | Tên hiển thị các bước trạng thái (lớp, buổi, ghi danh, đơn, phiếu thu, ticket…) | 1 | Khoá | Danh sách tên ở `docs/design/luat-cho-thiet-ke.md`; nạp dần theo từng giai đoạn có trạng thái đó |
 
 ### 1.1 Nguồn lead (loại → nguồn → kênh)
 | Loại | Nguồn | Kênh |

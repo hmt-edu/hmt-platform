@@ -63,8 +63,8 @@ select is(pg_temp.err($$select app.assert_catalog_code_active('ACTIVITY_TYPE', '
           'HMT_DANH_MUC_KHONG_CO', 'Mục đã Ngừng không dùng được cho dữ liệu mới');
 
 -- ---------- Mục bị khoá ----------
-update app.catalog_item set is_locked = true where catalog_code = 'OPP_STAGE' and code = 'L5';
-select is(pg_temp.err($$update app.catalog_item set is_active = false where catalog_code = 'OPP_STAGE' and code = 'L5'$$),
+update app.catalog_item set is_locked = true where catalog_code = 'OPP_SUBSTAGE' and code = 'L5A';
+select is(pg_temp.err($$update app.catalog_item set is_active = false where catalog_code = 'OPP_SUBSTAGE' and code = 'L5A'$$),
           'HMT_MUC_BI_KHOA', 'Mục bị khoá (luật code bám vào) không Ngừng được');
 
 -- ---------- Nhiều tầng: mục cha đúng danh mục cha ----------
@@ -76,7 +76,7 @@ select is(pg_temp.err($$select app.catalog_add_item('OPP_SUBSTAGE', 'L9A', 'Cha 
 select is(pg_temp.err($$select app.catalog_add_item('OPP_SUBSTAGE', 'L1A', 'Con của L1', null,
                                                     app.catalog_item_id('OPP_STAGE', 'L1'))$$),
           null, 'Danh mục 2 tầng: thêm mục con đúng cha được');
-select is(pg_temp.err($$select app.catalog_add_item('SUBJECT', 'XYZ', 'Môn có cha', null,
+select is(pg_temp.err($$select app.catalog_add_item('FRAMEWORK_LEVEL', 'XYZ', 'Cấp độ có cha', null,
                                                     app.catalog_item_id('GRADE', 'K02'))$$),
           'HMT_MUC_CHA_SAI', 'Danh mục 1 tầng không có mục cha');
 

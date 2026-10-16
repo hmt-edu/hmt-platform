@@ -18,48 +18,48 @@ grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Tự điền người, giờ tạo/sửa ----------
 select set_config('request.jwt.claims', '{"sub":"11111111-1111-1111-1111-111111111111"}', true);
-select app.catalog_add_item('SUBJECT', 'TEST_MON', 'Môn thử');
-select is((select created_by from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON'),
+select app.catalog_add_item('ACTIVITY_TYPE', 'TEST_MON', 'Môn thử');
+select is((select created_by from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON'),
           '11111111-1111-1111-1111-111111111111'::uuid,
           'Tạo mới: tự điền người tạo từ người đăng nhập');
 
 select set_config('request.jwt.claims', '{"sub":"22222222-2222-2222-2222-222222222222"}', true);
 update app.catalog_item set name = 'Môn thử đổi tên', created_by = null
- where catalog_code = 'SUBJECT' and code = 'TEST_MON';
-select is((select created_by from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON'),
+ where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON';
+select is((select created_by from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON'),
           '11111111-1111-1111-1111-111111111111'::uuid,
           'Sửa: không đổi được người tạo');
-select is((select updated_by from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON'),
+select is((select updated_by from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON'),
           '22222222-2222-2222-2222-222222222222'::uuid,
           'Sửa: tự điền người sửa');
 
 -- ---------- Nhật ký chỉ ghi trường đổi ----------
 select is((select changes from app.audit_log
-            where record_id = (select id from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON')
+            where record_id = (select id from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON')
               and action = 'U' order by id desc limit 1),
           '{"name": ["Môn thử", "Môn thử đổi tên"]}'::jsonb,
           'Nhật ký sửa chỉ ghi trường đổi (cũ → mới), không ghi updated_*');
 
 select is((select actor from app.audit_log
-            where record_id = (select id from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON')
+            where record_id = (select id from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON')
               and action = 'U' order by id desc limit 1),
           '22222222-2222-2222-2222-222222222222'::uuid,
           'Nhật ký ghi đúng người sửa');
 
 select is((select changes from app.audit_log
-            where record_id = (select id from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON')
+            where record_id = (select id from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON')
               and action = 'I'),
           null,
           'Nhật ký tạo mới không chép dữ liệu');
 
 select is((select count(*)::int from app.audit_log
-            where record_id = (select id from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON')),
+            where record_id = (select id from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON')),
           2, 'Mỗi thao tác một dòng nhật ký (1 tạo + 1 sửa)');
 
 -- Sửa mà không đổi gì thật thì không ghi nhật ký.
-update app.catalog_item set name = name where catalog_code = 'SUBJECT' and code = 'TEST_MON';
+update app.catalog_item set name = name where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON';
 select is((select count(*)::int from app.audit_log
-            where record_id = (select id from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON')),
+            where record_id = (select id from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON')),
           2, 'Sửa không đổi giá trị thì không ghi nhật ký');
 
 -- ---------- Nhật ký không sửa, không xoá được ----------
@@ -80,7 +80,7 @@ reset role;
 select set_config('request.jwt.claims', '', true);
 
 -- ---------- Chặn xoá ----------
-select is(pg_temp.err($$delete from app.catalog_item where catalog_code = 'SUBJECT' and code = 'TEST_MON'$$),
+select is(pg_temp.err($$delete from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'TEST_MON'$$),
           'HMT_KHONG_XOA', 'Không xoá được bản ghi (huỷ/Ngừng thay cho xoá)');
 
 -- ---------- RLS bật cho mọi bảng trong schema app ----------

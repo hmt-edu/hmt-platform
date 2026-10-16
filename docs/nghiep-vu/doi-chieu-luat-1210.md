@@ -16,7 +16,7 @@ Mỗi dòng: chỗ vênh, file liên quan, nên sửa ở bước nào. Sửa xo
 | A6 | Loại hoạt động | **Giữ 6 mục đã nạp** (Gọi điện, Zalo, Email, Gặp trực tiếp, SMS, Nhắc thu tiền) | spec 06 #16 | Không |
 | A7 | Ai cấp tài khoản học sinh | CSKH quản lý tài khoản học sinh cơ sở mình **từ giai đoạn 4**. Bước 4: màn QT-13 chỉ Admin dùng | QT-13 | B24 (giai đoạn 4) |
 | A8 | File luật cho thiết kế, bảng mã `S02-*`, `S03-*` | Đưa vào `docs/design/luat-cho-thiet-ke.md` và `docs/design/ma-luat-S02-S03.md`, có link trong bản đồ màn hình | `docs/design/` | Không |
-| — | Tên giai đoạn con khác spec 06 | **Giữ tên đã nạp trong repo**; chỉ đổi hai chỗ: "opp" thành "cơ hội" ở C4C, C4D; L5B thành "Đã xếp lịch test" | spec 06 mục 1.2, 1.3 | Xem B10 |
+| — | Tên giai đoạn con khác spec 06 | **Giữ tên đã nạp trong repo**; chỉ đổi hai chỗ: "opp" thành "cơ hội" ở C4C, C4D; L5B thành "Đã xếp lịch test" | spec 06 mục 1.2, 1.3 | Đã làm (PR danh mục 16/10 và PR 6a) |
 | — | Khoảng cho phép, ghi đè theo cơ sở của tham số | **Khoảng cho phép giữ như cơ sở dữ liệu**; "ghi đè theo cơ sở" theo spec 06; thêm 3 tham số mới với khoảng của spec 06 | spec 06 mục 2 | B13, B14, bảng C |
 
 ## B. Dữ liệu, hàm đã có nhưng khác luật mới (sửa bằng migration, không sửa migration cũ)
@@ -30,11 +30,7 @@ Mỗi dòng: chỗ vênh, file liên quan, nên sửa ở bước nào. Sửa xo
 | B5 | Chứng từ **`KTV`** (khoản tiền vào, khoản đảo dùng chung dãy) chưa có trong danh mục `DOC_TYPE` (đang có BG, DH, PT, PC, DN, KN) | migration 003, 008 | Giai đoạn 1 |
 | B6 | Chứng từ **không ghi CS3** (R-TIEN-34, R-HT-02): `app.issue_document_number` chưa chặn cơ sở văn phòng (mã lớp đã chặn) | `20261010000004_cap_ma.sql`, `20261011000015_hoi_so_cs3.sql` | Giai đoạn 1 |
 | B7 | **Công tắc tính năng không có CS3** (R-HT-02): `app.set_feature` chưa chặn cơ sở văn phòng | `20261010000006_cong_tac_tinh_nang.sql` | Bước 4 (QT-10) |
-| B8 | Danh mục **Môn, Khối, Trình độ** đang là loại Mở (`MO`); spec 06 ghi **Khoá** | migration 003 | Bước 4 (QT-07) |
-| B9 | **Giai đoạn lead, cơ hội**: spec 06 ghi "khoá mục cha" (C1–C4, L1–L8 không thêm, không ngừng), **C4D khoá**; hiện là danh mục Mở, chưa khoá mục nào | migration 003 | Bước 4 (QT-07) |
-| B10 | **Tên hiển thị giai đoạn con**: giữ tên đã nạp; chỉ đổi hai chỗ: C4C, C4D dùng "cơ hội" thay "opp"; L5B thành "Đã xếp lịch test" | migration 003 | Bước 4, một migration |
 | B11 | **Lý do khoá tài khoản** là danh mục (#32) và "Khác" bắt buộc ghi chú (R-HT-04); `app.admin_set_locked` đang nhận lý do gõ tự do | `20261010000013_bao_ve_admin_thu_hoi_phien.sql`, Edge Function `admin-users` | Bước 4 (QT-02) |
-| B12 | Danh mục lý do có **"Khác" bắt buộc ghi chú** (R-HT-04); danh mục #24 có trường **"Áp dụng cho"** (nhiều giá trị): bảng `app.catalog_item` chưa có thuộc tính nào cho hai việc này | `20261010000002_danh_muc.sql` | Bước 4 (thiết kế QT-07), dùng từ giai đoạn 1 |
 | B13 | **Tham số**: đổi "ghi đè theo cơ sở" thành Không ở 7 tham số và nhóm SLA; thêm 3 tham số mới; sửa tên hiển thị, mô tả của `session_autoclose_before_minutes` (bảng C). Khoảng cho phép **không đổi** | migration 005, 008, 011 | Bước 4 (QT-09) |
 | B14 | `seed.sql` và bài kiểm `005` ghi đè `quotation_validity_days` cho CS5; tham số này không còn được ghi đè | `supabase/seed.sql`, `005_cai_dat_cong_tac_ghi_chu.test.sql` | Cùng B13: đổi sang `max_sessions_ahead` (được ghi đè) |
 | B15 | Ma trận quyền: **CSKH huỷ buổi** (R-BUOI-09) nhưng CSKH chưa có `SESSION · Huỷ`; **chốt tháng giờ dạy** (R-GV-14: Kế toán, Admin) chưa có phân hệ/hành động tương ứng | migration 010 | Giai đoạn 2 (buổi học), giai đoạn 3 (giờ dạy) |
