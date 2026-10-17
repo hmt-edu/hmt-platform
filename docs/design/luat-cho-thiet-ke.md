@@ -75,9 +75,9 @@ Thanh trạng thái đặt trên đầu bản ghi. Bước nào chỉ đi tới 
 | Đối tượng | Các bước (tên hiển thị) | Ai bấm, ghi chú |
 |---|---|---|
 | Lead | C1 Data mới · C2 Chưa liên hệ được · C3 Không có nhu cầu · C4 Khách hàng tiềm năng; mỗi bước có nhóm con (ví dụ C2A Không nghe máy, C3H Không nghe máy nhiều lần, C4C Đủ điều kiện tạo cơ hội) | SA, CS. Lead sinh được nhiều cơ hội (R-CRM-01) |
-| Cơ hội | L1 Khách hàng mới · L2 Chưa liên hệ được · L3 Không có nhu cầu · L4 Khách hàng tiềm năng · L5 Đồng ý tham gia test · L6 Đã tham gia test · L7 Tư vấn · L8 Đăng ký học; có nhóm con | **Chỉ đi tới, không lùi** (R-CRM-02). Từ L5 bắt buộc có tên và năm sinh học sinh (R-CRM-03). Huỷ test thì về nhóm con L5C–L5O |
-| Lịch hẹn | Mới · Hoàn thành · Huỷ | Hoàn thành, huỷ chỉ bằng một bấm. "Lịch hẹn kế tiếp" trên lead, cơ hội do hệ thống tự tính (R-CRM-04) |
-| Phiếu kiểm tra đầu vào | Nháp · Đang test · Chờ giáo viên chấm · Hoàn thành; nhánh Huỷ, Từ chối; đưa về Nháp được (bắt buộc lý do) | Tạo từ cơ hội, để trống ngày, giờ, phòng (R-CRM-05). Huỷ bắt buộc chọn lý do (R-CRM-06). Có ngày giờ xác nhận thì tự sinh lịch hẹn nhắc |
+| Cơ hội | L1 Khách hàng mới · L2 Chưa liên hệ được · L3 Không có nhu cầu · L4 Khách hàng tiềm năng · L5 Đồng ý tham gia test · L6 Đã tham gia test · L7 Tư vấn · L8 Đăng ký học; có nhóm con | **Chỉ đi tới, không lùi** (R-CRM-02). Từ L5 bắt buộc có tên và năm sinh học sinh (R-CRM-03). Huỷ test thì về nhóm con L5C–L5Q (R-CRM-15) |
+| Lịch hẹn | Chưa làm · Hoàn thành · Huỷ | Hoàn thành bấm một lần. Huỷ chọn lý do từ danh mục 34. Mở lại được, có xác nhận. Không đổi giai đoạn, không tạo việc, không gửi thông báo. "Lịch hẹn kế tiếp" trên lead, cơ hội do hệ thống tự tính (R-CRM-04) |
+| Phiếu kiểm tra đầu vào | Nháp · Đang test · Chờ giáo viên chấm · Hoàn thành; nhánh Huỷ (không còn Từ chối); đưa về Nháp được (bắt buộc lý do) | Tạo từ cơ hội ở L5 trở đi, **ngày giờ test bắt buộc** (R-CRM-05). Huỷ bắt buộc chọn lý do (R-CRM-06). Có ngày giờ test thì tự sinh lịch hẹn nhắc |
 | Báo giá | Nháp · Đã gửi · Đã chuyển đơn · Từ chối · Hết hạn | Hạn hiệu lực mặc định 14 ngày. Báo giá hết hạn thì có nút "Tạo lại" |
 | Đơn hàng | Nháp · Đã trình · Đã duyệt · Từ chối · Huỷ | BM duyệt. **Duyệt xong tự khoá**; "khoá" là một biểu tượng, không phải một bước (R-TIEN-03). Bị từ chối thì về Nháp, sửa, trình lại |
 | Phiếu thu | Nháp · Đã trình · Đã duyệt · Từ chối · Huỷ | KT duyệt từng phiếu. Bị từ chối thì về Nháp, sửa, trình lại |

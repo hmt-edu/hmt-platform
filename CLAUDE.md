@@ -63,6 +63,19 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 - Mỗi lỗi sửa xong phải có bài kiểm thử tái hiện nó.
 - CI chạy lint, typecheck, unit, `supabase db reset` + `supabase test db`, Playwright, và bước dò số nghiệp vụ viết cứng. Trượt thì không gộp.
 
+## Hiệu năng (bắt buộc)
+- **Chỉ mục:** mỗi bảng nghiệp vụ có chỉ mục cho khoá ngoại và cột lọc, sắp xếp, tìm kiếm. Migration ghi lý do cho từng chỉ mục.
+- **Danh sách:** phân trang ở máy chủ, mặc định 50 dòng, tối đa 100. Lọc, sắp xếp, tìm kiếm làm ở DB. Chỉ lấy các cột màn đang hiện. Cấm tải cả bảng về trình duyệt.
+- **Gọi dữ liệu:** một màn tải bằng một đến vài lần gọi (rpc hoặc join). Cấm gọi lặp theo từng dòng.
+- **RLS:** hàm quyền viết dạng `(select app.has_permission(...))`; cột dùng trong chính sách có chỉ mục. Mỗi PR có bảng mới chạy EXPLAIN cho 2–3 câu chính trên dữ liệu giả lớn và dán kết quả vào PR.
+- **Dữ liệu giả lớn:** thêm bộ seed riêng (khoảng 50.000 lead, 20.000 cơ hội) chỉ để thử tốc độ ở local, không nằm trong seed thường, không dùng dữ liệu thật.
+- **Giao diện:** tách gói tải theo cổng và theo màn (lazy load). Trang đầu cổng CRM dưới khoảng 250 KB nén. CI có bước dò dung lượng, vượt thì trượt.
+- **Trải nghiệm:** có trạng thái đang tải, khoá nút khi đang lưu, thử lại khi lỗi mạng. Chỉ tải lại phần cần, không tải lại cả trang.
+- **Mục tiêu tham chiếu (không phải cứng):** danh sách mở dưới 1 giây, lưu một thao tác dưới 1 giây trên mạng 4G bình thường.
+- **Băng thông gói Free:** tải ra 5 GB mỗi tháng. Không lấy cột không dùng.
+- **PR:** mẫu mô tả PR thêm dòng "Đã kiểm hiệu năng: chỉ mục, phân trang, EXPLAIN".
+- Bước dò dung lượng trong CI: nếu chưa đo được chính xác thì báo anh Trường trước khi đặt ngưỡng, không tự nới.
+
 ## Giao diện
 - Chữ trên giao diện bằng tiếng Việt; tên biến, bảng, hàm bằng tiếng Anh.
 - Hệ thống thiết kế HMT (Claude Design làm): cam `#EF6925`, nền tối `#211C16`. Chưa có thì dùng component trung tính, không tự chế phong cách.

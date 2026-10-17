@@ -118,7 +118,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | TS-09 | Chuyển giai đoạn cơ hội (chọn nhóm con, lý do) | Hộp thoại · K08 | C | Máy tính | SA, CS, BM, AD | Chỉ hiện giai đoạn phía trước; L5+ đòi tên, năm sinh học sinh | Xác nhận | — | R-CRM-02, R-CRM-03 |
 | TS-10 | Gộp lead / cơ hội trùng | Hộp thoại · K08 | C | Máy tính | BM, AD | Chọn bản giữ lại, gộp lịch hẹn, ghi chú | Gộp | — | R-CRM-01 |
 | TS-11 | Lịch hẹn (danh sách + lịch tuần) | Lịch · K03, K05 | A | Máy tính | SA, CS, BM, AD | Mọi lịch hẹn của tôi: quá hạn, hôm nay, sắp tới | Hoàn thành (1 bấm); Huỷ (1 bấm); Dời | TS-02, TS-08 | R-CRM-04, R-CRM-07 |
-| TS-12 | Việc tuyển sinh hôm nay (lọc sẵn) | Tổng quan · K09 | C | Máy tính | SA, AD | Lịch hẹn, phiếu test hôm nay, cơ hội quá hạn chăm | Mở | TS-11, TS-16 | R-CRM-07 |
+| TS-12 | Việc tuyển sinh hôm nay (lọc sẵn) | Tổng quan · K09 | C | Máy tính | SA, AD | **Gộp vào trang chủ theo vai trò K09b (CHUNG-14), không làm riêng trong P3.** Lịch hẹn, phiếu test hôm nay, cơ hội quá hạn chăm | Mở | TS-11, TS-16 | R-CRM-07 |
 | TS-13 | Tạo / dời lịch hẹn | Hộp thoại · K08 | B | Máy tính | SA, CS, BM, AD | Loại hoạt động, thời gian, ghi chú; nhiều lịch song song | Lưu | — | R-CRM-04 |
 | TS-14 | Cảnh báo trùng khách hàng | Hộp thoại · K08 | C | Máy tính | SA, CS, AD | SĐT trùng với phụ huynh, lead có sẵn: mở hoặc gắn vào hồ sơ cũ | Gắn vào hồ sơ có sẵn; Vẫn tạo mới | KH-02 | — |
 
@@ -126,11 +126,9 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| TS-15 | Tạo phiếu kiểm tra từ cơ hội | Hộp thoại · K08 | B | Máy tính | SA, CS, AD | Môn, hình thức test; ngày giờ phòng để trống khi tạo | Tạo | TS-17 | R-CRM-05 |
-| TS-16 | Phiếu kiểm tra (danh sách + lịch) | Danh sách · K03, K05 | B | Máy tính | SA, CS, BM, AD | Lọc tôi là sale / tôi là GV chấm; quá hạn, hôm nay, sắp tới, chưa có lịch | Mở; Xếp lịch | TS-17 | R-CRM-07 |
-| TS-17 | Phiếu kiểm tra (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Thanh trạng thái Nháp → Đang test → Chờ GV chấm → Hoàn thành; nhánh Huỷ, Từ chối; đính kèm đề, bài làm, phiếu đánh giá; kết quả, gợi ý lớp phù hợp | Xếp lịch; Bắt đầu; Nhập kết quả; Đính kèm; Gợi ý lớp; Huỷ; Đưa về Nháp (lý do) | TS-18, TS-19, GV-15, BH-02, BH-08, CHUNG-21 | R-CRM-05, R-CRM-06, R-CRM-10 |
-| TS-18 | Xếp lịch kiểm tra (ngày giờ xác nhận, phòng, GV chấm) | Hộp thoại · K08 | B | Máy tính | SA, CS, AD | Có ngày giờ xác nhận thì tự sinh lịch hẹn nhắc | Lưu | — | R-CRM-05 |
-| TS-19 | Huỷ / từ chối phiếu kiểm tra (bắt buộc lý do) | Hộp thoại · K08 | B | Máy tính | SA, CS, GV, AD | Lý do huỷ từ danh mục, nối giai đoạn con L5C–L5O | Xác nhận | — | R-CRM-06 |
+| TS-15 | Tạo phiếu kiểm tra từ cơ hội (gồm xếp lịch, đổi lịch) | Hộp thoại · K08 | B | Máy tính | SA, CS, AD | Môn, hình thức test; **ngày giờ test bắt buộc**; phòng và giáo viên chấm chọn sau | Tạo | TS-17 | R-CRM-05 |
+| TS-16 | Phiếu kiểm tra (danh sách + Kanban + lịch) | Danh sách · K03, K05 | B | Máy tính | SA, CS, BM, AD | Lọc Tôi tạo / Tôi phụ trách / Tôi chấm bài; quá hạn, hôm nay, sắp tới (không còn "chưa có lịch"); mặc định "Tuần này" | Mở; Đổi lịch | TS-17 | R-CRM-07 |
+| TS-17 | Phiếu kiểm tra (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Thanh trạng thái Nháp → Đang test → Chờ GV chấm → Hoàn thành; nhánh Huỷ; đính kèm đề, bài làm, phiếu đánh giá; kết quả, gợi ý lớp phù hợp | Đổi lịch; Bắt đầu; Nhập kết quả; Đính kèm; Gợi ý lớp; Huỷ; Đưa về Nháp (lý do) | GV-15, BH-02, BH-08, CHUNG-21 | R-CRM-05, R-CRM-06, R-CRM-10 |
 
 ### Khách hàng
 
@@ -403,7 +401,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 ## Luồng phải đi liền mạch (dùng ở đợt 5.1 và kiểm ở P6)
 
-- **L1 Tuyển sinh tới đăng ký:** Nhập/tạo lead (TS-03/TS-04) → Gọi, ghi lịch hẹn (TS-13/TS-11) → Tạo cơ hội (TS-06) → Tạo phiếu test (TS-15) → Xếp lịch test (TS-18) → GV chấm test (GV-15) → Báo giá (BH-02) → Gửi báo giá (BH-03) → Chuyển đơn, chọn lớp + ngày vào (BH-05/BH-08) → Trình, BM duyệt đơn (BH-07) → Tạo phiếu thu (TC-03) → KT duyệt (TC-05) → Ghi danh tự sinh (GD-02) → Xếp lớp nếu chưa chọn (GD-06/GD-03)
+- **L1 Tuyển sinh tới đăng ký:** Nhập/tạo lead (TS-03/TS-04) → Gọi, ghi lịch hẹn (TS-13/TS-11) → Tạo cơ hội (TS-06) → Tạo phiếu test (TS-15) → Xếp lịch test (TS-15) → GV chấm test (GV-15) → Báo giá (BH-02) → Gửi báo giá (BH-03) → Chuyển đơn, chọn lớp + ngày vào (BH-05/BH-08) → Trình, BM duyệt đơn (BH-07) → Tạo phiếu thu (TC-03) → KT duyệt (TC-05) → Ghi danh tự sinh (GD-02) → Xếp lớp nếu chưa chọn (GD-06/GD-03)
 - **L2 Đóng tiền nhiều đợt:** Phiếu thu đợt 1 (cọc) (TC-03) → KT duyệt → ghi danh, cấp giờ theo tỉ lệ (TC-05) → Theo dõi còn phải thu (TC-13) → Phiếu thu đợt 2, cấn vào dòng (TC-03) → KT duyệt → cấp thêm giờ, giờ tặng khi đủ (TC-05) → Đảo khoản nếu sai (TC-09)
 - **L3 Mở lớp tới buổi đầu:** Tạo lớp nháp (LOP-03) → Thời khoá biểu (LOP-04) → Trình → xác nhận → duyệt (LOP-05) → Buổi tự sinh, xem lịch (LOP-08) → Xếp học sinh (GD-03) → Tự chốt danh sách (BUOI-02)
 - **L4 Một buổi học:** Vận hành gọi nhắc (BUOI-11/BUOI-03) → GV điểm danh (GV-05) → Nội dung + giao BTVN (GV-06) → Chấm từng em (GV-07) → Chấm BTVN buổi trước (GV-08) → Hoàn tất (GV-09) → Buổi Done, trừ giờ (BUOI-02/GD-04) → Theo dõi buổi kẹt (BUOI-12)
