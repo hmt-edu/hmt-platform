@@ -32,8 +32,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P3a | Tài liệu P3 Tuyển sinh: luật 04c (R-CRM-04, 05, 06, 11, 12, 14, 15 sửa; R-CRM-21…24 mới) vào spec 04; spec 06 (L5Q, danh mục 13 thêm 2 lý do, danh mục 34); đặc tả `docs/design/dac-ta/P3-tuyen-sinh.md`; gói thiết kế `design/hmt-p3/`; sửa `luat-cho-thiet-ke.md`, `ban-do-man-hinh.md`; mục "Hiệu năng" của CLAUDE.md (commit riêng) | Đã gộp (#34) |
 | P3b1 | Dữ liệu nền: danh mục (L5Q, 2 lý do huỷ test, danh mục 34, tên tình trạng phiếu), mã LD/CO/PKT, 6 tham số, bảng chiến dịch, phụ huynh, học sinh, lead, lịch hẹn; hàm lead, lịch hẹn, kiểm trùng SĐT, giao người phụ trách, danh sách phân trang; RLS; seed lớn `db:seed-lon`; EXPLAIN. Migration `20261017000023`…`026` (026: ma trận quyền phiên bản 3, 15 ô, anh duyệt 17/10), 163 bài pgTAP mới. Sửa R-CRM-10 (bỏ "từ chối") | Đã gộp (#35) |
 | Nguồn Design | Lưu nguồn canvas Design (P4, P5a, P5b) và nhật ký bàn giao | Đã gộp (#37) |
-| Tách gói tải + luật 17/10 | Tách gói tải theo cổng và màn (trang đầu CRM 295 → 235 KB nén; `npm run size`, bước CI chỉ báo số); đưa luật 04d, 04e, 04f vào spec | Chờ anh OK (#36) |
-| Nền tảng phối hợp | `docs/nhat-ky/` (ba file), `docs/phoi-hop/` (khởi động Chat, Design, prompt, luật chờ đưa vào spec), quy trình phối hợp mới, TIEN-DO | Chờ anh OK (PR này) |
+| Tách gói tải | Tách gói tải theo cổng và màn (trang đầu CRM 295 → 235 KB nén; `npm run size`, bước CI chỉ báo số, chưa ngưỡng). Luật 04d đến 04g chưa vào spec (để ở `docs/phoi-hop/luat-cho-dua-vao-spec/`) | Đã gộp (#36) |
+| Nền tảng phối hợp | `docs/nhat-ky/` (ba file), `docs/phoi-hop/` (khởi động Chat, Design, prompt, luật chờ đưa vào spec), quy trình phối hợp mới, TIEN-DO | Đã gộp (#38) |
 | P3b2 | Cơ hội + phiếu kiểm tra: đổi giai đoạn (R-CRM-02, 03, 12, 13, 14, 16), tính lại L5/L6 (R-CRM-15) | Chưa |
 | P3b3 | Hàm gộp trùng (R-CRM-22), nhập lô từ file | Chưa |
 | P3c–P3f | Màn: Lead + Lịch hẹn (c), Cơ hội (d), Phiếu kiểm tra (e), Gộp trùng + Nhập file (f) | Chưa |
@@ -67,10 +67,11 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 | Ma trận quyền: phiên bản, tách phân hệ (Cấu hình bán hàng, Cấu hình đào tạo, Ngày nghỉ lễ, Lịch hẹn) | #32, #33 |
 | P3 Tuyển sinh: tài liệu (P3a), dữ liệu nền lead và lịch hẹn, ma trận quyền phiên bản 3 (P3b1) | #34, #35 |
 | Nguồn canvas Design (P4, P5a, P5b) và nhật ký bàn giao | #37 |
+| Tách gói tải theo cổng và màn; nền tảng phối hợp ba bên (nhật ký, khởi động, quy trình mới) | #36, #38 |
 
 #16 đã đóng (không gộp; dữ liệu ở #17, giao diện làm lại ở #22 đến #26).
 
-**Đang mở:** #36 (tách gói tải theo cổng và màn; đưa luật 04d, 04e, 04f vào spec) và PR nền tảng phối hợp (PR này).
+**Đang mở:** không có PR nào. Luật 04d đến 04g đợi PR riêng "Đưa luật 17/10 (04d–04g) vào spec" (nháp ở nhánh `docs/luat-17-10-ban-nhap`).
 
 **Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 026) và toàn bộ giao diện mới.
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
@@ -78,7 +79,7 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 ## Thứ tự tiếp theo (anh chốt 17/10)
 
-1. Gộp #36.
+1. PR "Đưa luật 17/10 (04d–04g) vào spec" (chỉ tài liệu; không đưa các mục [CHỜ]: chặn môn theo khối khi tạo lớp, một phiếu tái tục cho mỗi ghi danh, R-GD-07).
 2. PR 5 Đăng nhập (5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động).
 3. PR 5a Trang chủ theo vai trò (K09b, gồm "Việc tuyển sinh hôm nay" TS-12).
 4. P3b2a Cơ hội (kèm ma trận quyền phiên bản 4), P3b2b Phiếu kiểm tra, P3b3 Gộp trùng và nhập file; rồi các màn P3c đến P3f.
@@ -87,8 +88,7 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 ## Đang chờ anh Trường
 
-- OK #36; quyết phần luật 04d đến 04f trong #36 (đưa vào spec ngay hay để ở `docs/phoi-hop/luat-cho-dua-vao-spec/`); ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén).
-- OK PR nền tảng phối hợp và dòng thêm vào `CLAUDE.md`.
+- Ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén; bước CI hiện chỉ báo số).
 - Bảng quyền phiên bản 4 (17 ô trên Phụ huynh, Học sinh) và 4 câu hỏi của P3b2.
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
 

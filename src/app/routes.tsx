@@ -1,25 +1,43 @@
 import type { RouteObject } from 'react-router';
-import { CrmShell } from '../layout/CrmShell';
-import { StudentShell, TeacherShell } from '../layout/TabShell';
-import { LoginPage, StudentLoginPage } from '../pages/auth/LoginPages';
-import { MfaSetupPage, MfaVerifyPage } from '../pages/auth/MfaPages';
-import {
-  CannotLoginPage,
-  ChangePasswordPage,
-  ForgotPasswordPage,
-  ResetPasswordPage,
-} from '../pages/auth/PasswordPages';
-import { ChoosePortalPage } from '../pages/common/ChoosePortalPage';
-import { CrmHomePage, CrmSectionPage, PortalTabPage } from '../pages/common/PortalPages';
-import { ProfilePage } from '../pages/common/ProfilePage';
-import { NotFoundView, RouteErrorPage } from '../pages/common/StatePages';
-import { HomePage } from '../pages/HomePage';
 import { parseAppEnv } from '../lib/env';
-import { DetailDemoPage } from '../pages/dev/DetailDemoPage';
-import { DialogsDemoPage } from '../pages/dev/DialogsDemoPage';
-import { ListDemoPage } from '../pages/dev/ListDemoPage';
-import { PatternPage } from '../pages/dev/PatternPage';
+import { NotFoundView, RouteErrorPage } from '../pages/common/StatePages';
 import { NoPortalPage, RequirePortal, RootRedirect } from './guards';
+import { lazyScreen } from './lazyScreen';
+
+// Tách gói tải theo cổng và theo màn: vào cổng nào chỉ tải khung của cổng đó, mở màn nào chỉ tải màn đó.
+const CrmShell = lazyScreen(() => import('../layout/CrmShell'), 'CrmShell');
+const TeacherShell = lazyScreen(() => import('../layout/TabShell'), 'TeacherShell');
+const StudentShell = lazyScreen(() => import('../layout/TabShell'), 'StudentShell');
+const LoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'LoginPage');
+const StudentLoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'StudentLoginPage');
+const MfaSetupPage = lazyScreen(() => import('../pages/auth/MfaPages'), 'MfaSetupPage');
+const MfaVerifyPage = lazyScreen(() => import('../pages/auth/MfaPages'), 'MfaVerifyPage');
+const CannotLoginPage = lazyScreen(() => import('../pages/auth/PasswordPages'), 'CannotLoginPage');
+const ChangePasswordPage = lazyScreen(
+  () => import('../pages/auth/PasswordPages'),
+  'ChangePasswordPage',
+);
+const ForgotPasswordPage = lazyScreen(
+  () => import('../pages/auth/PasswordPages'),
+  'ForgotPasswordPage',
+);
+const ResetPasswordPage = lazyScreen(
+  () => import('../pages/auth/PasswordPages'),
+  'ResetPasswordPage',
+);
+const ChoosePortalPage = lazyScreen(
+  () => import('../pages/common/ChoosePortalPage'),
+  'ChoosePortalPage',
+);
+const CrmHomePage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmHomePage');
+const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
+const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
+const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
+const HomePage = lazyScreen(() => import('../pages/HomePage'), 'HomePage');
+const DetailDemoPage = lazyScreen(() => import('../pages/dev/DetailDemoPage'), 'DetailDemoPage');
+const DialogsDemoPage = lazyScreen(() => import('../pages/dev/DialogsDemoPage'), 'DialogsDemoPage');
+const ListDemoPage = lazyScreen(() => import('../pages/dev/ListDemoPage'), 'ListDemoPage');
+const PatternPage = lazyScreen(() => import('../pages/dev/PatternPage'), 'PatternPage');
 
 // Trang mẫu thành phần: chỉ có ở bản thử nghiệm, xem trước và local; bản chạy thật không có route này.
 const SHOW_PATTERNS = parseAppEnv(import.meta.env.VITE_APP_ENV) !== 'production';

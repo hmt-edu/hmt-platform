@@ -4,6 +4,8 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  // Bản kê các gói để scripts/bundle-size.mjs đo dung lượng tải theo từng cổng, màn.
+  build: { manifest: true },
   test: {
     environment: 'jsdom',
     include: [

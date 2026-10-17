@@ -36,3 +36,9 @@ jobs:
 
       - if: inputs.format-check
         run: npm run format:check
+
+      # Chỉ BÁO dung lượng tải (nén) từng cổng, màn; chưa có ngưỡng vì chờ anh Trường quyết sau khi xem số đo (CLAUDE.md, Hiệu năng).
+      - name: Đo dung lượng gói tải (chỉ báo số, không trượt)
+        run: |
+          npm run build
+          npm run size
