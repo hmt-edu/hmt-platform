@@ -1,0 +1,24 @@
+const { chromium } = require('playwright');
+(async()=>{
+ const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'});
+ const p=await b.newPage({viewport:{width:1440,height:1000}});
+ const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ await p.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort());
+ await p.goto('http://127.0.0.1:8765/TS11_K5r.dc.html',{waitUntil:'load'}); await p.waitForTimeout(800);
+ const vis=()=>p.evaluate(()=>document.querySelectorAll('.hmt-ev:not(.ix-off)').length);
+ console.log('start',await vis());
+ await p.click('.hmt-toolbar >> text=Filters'); await p.click('.ix-pop >> text=Gặp trực tiếp'); await p.click('.ix-pop >> text=Gọi điện');
+ console.log('filtered',await vis(), await p.evaluate(()=>Array.from(document.querySelectorAll('.hmt-chip-f')).map(e=>e.textContent.trim())));
+ await p.screenshot({path:'k1i/k5_a.png'});
+ await p.keyboard.press('Escape');
+ await p.click('.hmt-chip-f:has-text("Loại hoạt động") button');
+ console.log('chip removed',await vis());
+ await p.click('[aria-label="Khoảng thời gian"]'); await p.click('.ix-pop >> text=Tuần trước');
+ console.log('prev week',await vis(), await p.textContent('.hmt-calv-bar h2'));
+ await p.click('text=Hôm nay >> nth=0').catch(()=>{});
+ await p.click('.hmt-calv-bar >> text=Hôm nay'); console.log('today',await vis(), await p.textContent('.hmt-calv-bar h2'));
+ await p.click('.hmt-toolbar >> text=Group By'); await p.click('.ix-pop >> text=Trạng thái'); 
+ await p.click('.hmt-ev-meet >> nth=0'); await p.waitForTimeout(200); await p.screenshot({path:'k1i/k5_b.png'});
+ await p.click('.hmt-menu >> text=Hoàn thành'); console.log('done evs',await p.evaluate(()=>document.querySelectorAll('.hmt-ev-done').length));
+ await p.click('.hmt-facets >> text=Xoá tất cả'); console.log('cleared',await vis());
+ console.log('ERR',errs); await b.close();})();

@@ -1,0 +1,22 @@
+const { chromium } = require('playwright');
+(async()=>{
+ const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'});
+ const name=process.argv[2]||'TS01p';
+ const p=await b.newPage({viewport:{width:1440,height:1000}});
+ const errs=[]; p.on('pageerror',e=>errs.push(e.message));
+ await p.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort());
+ await p.goto('http://127.0.0.1:8765/'+name+'.dc.html',{waitUntil:'load'}); await p.waitForTimeout(800);
+ const O='k1i/'+name+'_';
+ await p.click('.hmt-toolbar >> text=Filters'); await p.waitForTimeout(200); await p.screenshot({path:O+'1.png'});
+ await p.fill('.ix-fsearch','cs'); await p.waitForTimeout(200); await p.screenshot({path:O+'2.png'});
+ await p.fill('.ix-fsearch',''); await p.click('.ix-pop >> text=Thêm bộ lọc tuỳ chỉnh'); await p.waitForTimeout(300);
+ await p.click('.hmt-dialog:visible .hmt-select >> nth=0'); await p.waitForTimeout(300); await p.screenshot({path:O+'3.png'});
+ await p.fill('.ix-pop input','stag'); await p.waitForTimeout(200); await p.screenshot({path:O+'4.png'});
+ await p.click('.ix-pop >> text=Stage >> nth=0'); await p.waitForTimeout(300);
+ await p.click('.hmt-dialog:visible [data-a=vs]'); await p.waitForTimeout(300); await p.screenshot({path:O+'5.png'});
+ await p.click('.ix-pop .hmt-opt >> nth=0'); await p.click('.ix-pop .hmt-opt >> nth=1'); await p.waitForTimeout(300); await p.screenshot({path:O+'6.png'});
+ await p.keyboard.press('Escape'); await p.waitForTimeout(200);
+ console.log('dialog after 1st esc:', await p.isVisible('.ix-cf'));
+ await p.keyboard.press('Escape'); await p.waitForTimeout(200);
+ console.log('dialog after 2nd esc:', await p.isVisible('.ix-cf').catch(()=>false));
+ console.log('ERR',errs); await b.close();})();

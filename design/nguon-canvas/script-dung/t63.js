@@ -1,0 +1,12 @@
+const { chromium } = require('playwright');
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'});
+const p=await b.newPage({viewport:{width:1440,height:1000}});p.on('pageerror',e=>console.log('ERR',e.message));await p.route(/fonts\./,r=>r.abort());
+await p.goto('http://127.0.0.1:8765/V_TS17.dc.html');await p.waitForTimeout(1000);
+await p.screenshot({path:'audit/n_17a.png'});
+console.log('upc vis',await p.$eval('[data-upc]',e=>getComputedStyle(e).display));
+await p.click('[data-assign]');await p.waitForTimeout(200);await p.click('.ix-pop >> text=Lê Mai Anh');await p.waitForTimeout(300);
+console.log('who',await p.$eval('[data-upc-who]',e=>e.textContent), (await p.innerText('body')).includes('giao phiếu'));
+await p.click('[data-upc-a="Huỷ"]');await p.waitForTimeout(200);
+await p.click('text=Bắt đầu test');await p.waitForTimeout(200);console.log('after start',await p.$eval('[data-upc]',e=>getComputedStyle(e).display));
+await p.click('text=Nộp bài');await p.waitForTimeout(300);console.log('ps2 upc',await p.$eval('[data-upc]',e=>getComputedStyle(e).display));
+await p.screenshot({path:'audit/n_17b.png'});await b.close();})();

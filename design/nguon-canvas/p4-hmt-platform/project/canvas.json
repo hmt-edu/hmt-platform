@@ -1,0 +1,1593 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-16T04:10:00Z"
+  },
+  "title": "HMT Platform",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "K1.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1 Tổng quan dạng List (Cơ hội)",
+      "expand": "fill"
+    },
+    "K2.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1000,
+      "title": "K2 Tổng quan dạng Kanban (Cơ hội)",
+      "expand": "fill"
+    },
+    "K3.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 1000,
+      "title": "K3 Chi tiết Cơ hội CO000121",
+      "expand": "fill"
+    },
+    "K4.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 1000,
+      "title": "K4 Hộp thoại, 5 biến thể",
+      "expand": "fill"
+    },
+    "K5.dc.html": {
+      "x": 6080,
+      "y": 0,
+      "w": 1440,
+      "h": 1000,
+      "title": "K5 Calendar (Lịch hẹn, tuần)",
+      "expand": "fill"
+    },
+    "K4b.dc.html": {
+      "x": 0,
+      "y": 1430,
+      "w": 1440,
+      "h": 1000,
+      "title": "K4b · Hộp thoại nhiều bước (Nhập lead từ file)",
+      "expand": "fill"
+    },
+    "K4c.dc.html": {
+      "x": 1520,
+      "y": 1430,
+      "w": 1440,
+      "h": 1000,
+      "title": "K4c · Hộp thoại xem trước tác động",
+      "expand": "fill"
+    },
+    "K4d.dc.html": {
+      "x": 3040,
+      "y": 1430,
+      "w": 1440,
+      "h": 1000,
+      "title": "K4d · Hộp thoại chọn từ danh sách có kiểm tra",
+      "expand": "fill"
+    },
+    "K07b.dc.html": {
+      "x": 4560,
+      "y": 1430,
+      "w": 1440,
+      "h": 1000,
+      "title": "K07b · Biểu mẫu dạng ngăn kéo (Tạo nhanh lead)",
+      "expand": "fill"
+    },
+    "K07c.dc.html": {
+      "x": 6080,
+      "y": 1430,
+      "w": 1440,
+      "h": 1000,
+      "title": "K07c · Hộp thoại cảnh báo trùng khách hàng (đè lên ngăn kéo)",
+      "expand": "fill"
+    },
+    "K09b.dc.html": {
+      "x": 7600,
+      "y": 1430,
+      "w": 1440,
+      "h": 1000,
+      "title": "K09b · Trang chủ theo vai trò (CHUNG-14)",
+      "expand": "fill"
+    },
+    "K0x.dc.html": {
+      "x": 9120,
+      "y": 1430,
+      "w": 1440,
+      "h": 1000,
+      "title": "K0x · Trạng thái chung (tải, rỗng, thông báo)",
+      "expand": "fill"
+    },
+    "K4e1.dc.html": {
+      "x": 10640,
+      "y": 1430,
+      "w": 390,
+      "h": 844,
+      "title": "K4e1 · K4e · Bottom sheet: Duyệt đơn hàng (điện thoại)",
+      "radius": 28
+    },
+    "K4e3.dc.html": {
+      "x": 11110,
+      "y": 1430,
+      "w": 390,
+      "h": 844,
+      "title": "K4e3 · K4e · Bottom sheet: Từ chối đơn hàng, bước 2 (điện thoại)",
+      "radius": 28
+    },
+    "K4e2.dc.html": {
+      "x": 11580,
+      "y": 1430,
+      "w": 390,
+      "h": 844,
+      "title": "K4e2 · K4e · Bottom sheet: Từ chối ticket (điện thoại)",
+      "radius": 28
+    },
+    "K1_loc.dc.html": {
+      "x": 0,
+      "y": 2860,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_loc · K1 · Filters (khung thả xuống, đã tick vài lọc)",
+      "expand": "fill"
+    },
+    "K1_loc_chip.dc.html": {
+      "x": 1520,
+      "y": 2860,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_loc_chip · K1 · Filters (đã áp dụng, chip lọc trên thanh tìm)",
+      "expand": "fill"
+    },
+    "K1_loc_nc.dc.html": {
+      "x": 3040,
+      "y": 2860,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_loc_nc · K1 · Lọc nâng cao (có 3 dòng điều kiện)",
+      "expand": "fill"
+    },
+    "K1_loc_nc0.dc.html": {
+      "x": 4560,
+      "y": 2860,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_loc_nc0 · K1 · Lọc nâng cao (rỗng, chưa có điều kiện)",
+      "expand": "fill"
+    },
+    "K1_nhom.dc.html": {
+      "x": 6080,
+      "y": 2860,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_nhom · K1 · Group By (khung thả xuống, đã chọn 2 cấp)",
+      "expand": "fill"
+    },
+    "K1_nhom_bang.dc.html": {
+      "x": 7600,
+      "y": 2860,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_nhom_bang · K1 · Group By (bảng đã nhóm 2 cấp, gập/mở)",
+      "expand": "fill"
+    },
+    "K1_nhom0.dc.html": {
+      "x": 9120,
+      "y": 2860,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_nhom0 · K1 · Group By (rỗng, chưa chọn cấp nào)",
+      "expand": "fill"
+    },
+    "K1_cot.dc.html": {
+      "x": 10640,
+      "y": 2860,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_cot · K1 · Cột (chọn cột hiển thị, kéo đổi thứ tự)",
+      "expand": "fill"
+    },
+    "K1_fav.dc.html": {
+      "x": 0,
+      "y": 4290,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_fav · K1 · Favorites (danh sách bộ lọc đã lưu)",
+      "expand": "fill"
+    },
+    "K1_fav_luu.dc.html": {
+      "x": 1520,
+      "y": 4290,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_fav_luu · K1 · Favorites (lưu bộ lọc hiện tại)",
+      "expand": "fill"
+    },
+    "K1_fav0.dc.html": {
+      "x": 3040,
+      "y": 4290,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_fav0 · K1 · Favorites (rỗng)",
+      "expand": "fill"
+    },
+    "K1_tim.dc.html": {
+      "x": 4560,
+      "y": 4290,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_tim · K1 · Thanh trên: ô tìm kiếm toàn hệ thống (đóng)",
+      "expand": "fill"
+    },
+    "K1_tim_go.dc.html": {
+      "x": 6080,
+      "y": 4290,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_tim_go · K1 · Tìm kiếm: đang gõ, kết quả nhóm theo loại",
+      "expand": "fill"
+    },
+    "K1_tim0.dc.html": {
+      "x": 7600,
+      "y": 4290,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_tim0 · K1 · Tìm kiếm: không tìm thấy",
+      "expand": "fill"
+    },
+    "K1_chuong.dc.html": {
+      "x": 9120,
+      "y": 4290,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_chuong · K1 · Chuông thông báo: danh sách ngắn (3 dòng)",
+      "expand": "fill"
+    },
+    "K1_chuong0.dc.html": {
+      "x": 10640,
+      "y": 4290,
+      "w": 1440,
+      "h": 1000,
+      "title": "K1_chuong0 · K1 · Chuông thông báo: rỗng",
+      "expand": "fill"
+    },
+    "K1m_loc.dc.html": {
+      "x": 0,
+      "y": 5720,
+      "w": 390,
+      "h": 844,
+      "title": "K1m_loc · K1 · Filters (điện thoại, bottom sheet)",
+      "radius": 28
+    },
+    "K1m_nhom.dc.html": {
+      "x": 470,
+      "y": 5720,
+      "w": 390,
+      "h": 844,
+      "title": "K1m_nhom · K1 · Group By (điện thoại, bottom sheet)",
+      "radius": 28
+    },
+    "K1m_cot.dc.html": {
+      "x": 940,
+      "y": 5720,
+      "w": 390,
+      "h": 844,
+      "title": "K1m_cot · K1 · Cột (điện thoại, bottom sheet)",
+      "radius": 28
+    },
+    "K1m_fav.dc.html": {
+      "x": 1410,
+      "y": 5720,
+      "w": 390,
+      "h": 844,
+      "title": "K1m_fav · K1 · Favorites (điện thoại, bottom sheet)",
+      "radius": 28
+    },
+    "K1m_tim_dong.dc.html": {
+      "x": 1880,
+      "y": 5720,
+      "w": 390,
+      "h": 844,
+      "title": "K1m_tim_dong · K1 · Điện thoại: ô tìm thu thành biểu tượng",
+      "radius": 28
+    },
+    "K1m_tim.dc.html": {
+      "x": 2350,
+      "y": 5720,
+      "w": 390,
+      "h": 844,
+      "title": "K1m_tim · K1 · Điện thoại: tìm kiếm toàn màn hình (đang gõ)",
+      "radius": 28
+    },
+    "K1m_tim0.dc.html": {
+      "x": 2820,
+      "y": 5720,
+      "w": 390,
+      "h": 844,
+      "title": "K1m_tim0 · K1 · Điện thoại: tìm kiếm toàn màn hình (không tìm thấy)",
+      "radius": 28
+    },
+    "DN01_pc_err.dc.html": {
+      "x": 0,
+      "y": 7850,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN01_pc_err · Đăng nhập nhân viên · Máy tính · Sai thông tin",
+      "expand": "fill"
+    },
+    "DN01_pc_ok.dc.html": {
+      "x": 1520,
+      "y": 7850,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN01_pc_ok · Đăng nhập nhân viên · Máy tính · Bình thường",
+      "expand": "fill"
+    },
+    "DN01_mb_err.dc.html": {
+      "x": 3040,
+      "y": 7850,
+      "w": 390,
+      "h": 844,
+      "title": "DN01_mb_err · Đăng nhập nhân viên · Điện thoại · Sai thông tin",
+      "radius": 28
+    },
+    "DN01_mb_ok.dc.html": {
+      "x": 3510,
+      "y": 7850,
+      "w": 390,
+      "h": 844,
+      "title": "DN01_mb_ok · Đăng nhập nhân viên · Điện thoại · Bình thường",
+      "radius": 28
+    },
+    "DN02_pc_err.dc.html": {
+      "x": 0,
+      "y": 9280,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN02_pc_err · Đăng nhập học sinh · Máy tính · Sai thông tin",
+      "expand": "fill"
+    },
+    "DN02_pc_ok.dc.html": {
+      "x": 1520,
+      "y": 9280,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN02_pc_ok · Đăng nhập học sinh · Máy tính · Bình thường",
+      "expand": "fill"
+    },
+    "DN02_mb_err.dc.html": {
+      "x": 3040,
+      "y": 9280,
+      "w": 390,
+      "h": 844,
+      "title": "DN02_mb_err · Đăng nhập học sinh · Điện thoại · Sai thông tin",
+      "radius": 28
+    },
+    "DN02_mb_ok.dc.html": {
+      "x": 3510,
+      "y": 9280,
+      "w": 390,
+      "h": 844,
+      "title": "DN02_mb_ok · Đăng nhập học sinh · Điện thoại · Bình thường",
+      "radius": 28
+    },
+    "DN03_pc_code.dc.html": {
+      "x": 0,
+      "y": 10710,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN03_pc_code · Xác thực hai bước · Máy tính · Mã từ ứng dụng",
+      "expand": "fill"
+    },
+    "DN03_pc_code_err.dc.html": {
+      "x": 1520,
+      "y": 10710,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN03_pc_code_err · Xác thực hai bước · Máy tính · Mã từ ứng dụng · Sai mã",
+      "expand": "fill"
+    },
+    "DN03_mb_code.dc.html": {
+      "x": 3040,
+      "y": 10710,
+      "w": 390,
+      "h": 844,
+      "title": "DN03_mb_code · Xác thực hai bước · Điện thoại · Mã từ ứng dụng",
+      "radius": 28
+    },
+    "DN03_mb_code_err.dc.html": {
+      "x": 3510,
+      "y": 10710,
+      "w": 390,
+      "h": 844,
+      "title": "DN03_mb_code_err · Xác thực hai bước · Điện thoại · Mã từ ứng dụng · Sai mã",
+      "radius": 28
+    },
+    "DN04_pc_s1.dc.html": {
+      "x": 0,
+      "y": 12140,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN04_pc_s1 · Thiết lập 2FA · Máy tính · Bước 1/2",
+      "expand": "fill"
+    },
+    "DN04_pc_s2.dc.html": {
+      "x": 1520,
+      "y": 12140,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN04_pc_s2 · Thiết lập 2FA · Máy tính · Bước 2/2 (Hoàn tất)",
+      "expand": "fill"
+    },
+    "DN04_mb_s1.dc.html": {
+      "x": 3040,
+      "y": 12140,
+      "w": 390,
+      "h": 844,
+      "title": "DN04_mb_s1 · Thiết lập 2FA · Điện thoại · Bước 1/2",
+      "radius": 28
+    },
+    "DN04_mb_s2.dc.html": {
+      "x": 3510,
+      "y": 12140,
+      "w": 390,
+      "h": 844,
+      "title": "DN04_mb_s2 · Thiết lập 2FA · Điện thoại · Bước 2/2 (Hoàn tất)",
+      "radius": 28
+    },
+    "DN05_pc_form.dc.html": {
+      "x": 0,
+      "y": 13570,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN05_pc_form · Quên mật khẩu · Máy tính · Liên hệ quản trị viên",
+      "expand": "fill"
+    },
+    "DN05_mb_form.dc.html": {
+      "x": 1520,
+      "y": 13570,
+      "w": 390,
+      "h": 844,
+      "title": "DN05_mb_form · Quên mật khẩu · Điện thoại · Liên hệ quản trị viên",
+      "radius": 28
+    },
+    "DN06_pc_new.dc.html": {
+      "x": 0,
+      "y": 15000,
+      "w": 1440,
+      "h": 1000,
+      "title": "HOÃN · DN06_pc_new · Đặt mật khẩu mới · Máy tính · Mới mở, chưa nhập",
+      "expand": "fill"
+    },
+    "DN06_pc_ok.dc.html": {
+      "x": 1520,
+      "y": 15000,
+      "w": 1440,
+      "h": 1000,
+      "title": "HOÃN · DN06_pc_ok · Đặt mật khẩu mới · Máy tính · Đủ điều kiện",
+      "expand": "fill"
+    },
+    "DN06_mb_new.dc.html": {
+      "x": 3040,
+      "y": 15000,
+      "w": 390,
+      "h": 844,
+      "title": "HOÃN · DN06_mb_new · Đặt mật khẩu mới · Điện thoại · Mới mở, chưa nhập",
+      "radius": 28
+    },
+    "DN06_mb_ok.dc.html": {
+      "x": 3510,
+      "y": 15000,
+      "w": 390,
+      "h": 844,
+      "title": "HOÃN · DN06_mb_ok · Đặt mật khẩu mới · Điện thoại · Đủ điều kiện",
+      "radius": 28
+    },
+    "DN07_pc_new.dc.html": {
+      "x": 0,
+      "y": 16430,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN07_pc_new · Đổi mật khẩu lần đầu · Máy tính · Mới mở, chưa nhập",
+      "expand": "fill"
+    },
+    "DN07_pc_ok.dc.html": {
+      "x": 1520,
+      "y": 16430,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN07_pc_ok · Đổi mật khẩu lần đầu · Máy tính · Đủ điều kiện",
+      "expand": "fill"
+    },
+    "DN07_mb_new.dc.html": {
+      "x": 3040,
+      "y": 16430,
+      "w": 390,
+      "h": 844,
+      "title": "DN07_mb_new · Đổi mật khẩu lần đầu · Điện thoại · Mới mở, chưa nhập",
+      "radius": 28
+    },
+    "DN07_mb_ok.dc.html": {
+      "x": 3510,
+      "y": 16430,
+      "w": 390,
+      "h": 844,
+      "title": "DN07_mb_ok · Đổi mật khẩu lần đầu · Điện thoại · Đủ điều kiện",
+      "radius": 28
+    },
+    "DN09_pc_end.dc.html": {
+      "x": 0,
+      "y": 19290,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN09_pc_end · Hộp thoại phiên đăng nhập · Máy tính · Hết phiên",
+      "expand": "fill"
+    },
+    "DN09_mb_end.dc.html": {
+      "x": 1520,
+      "y": 19290,
+      "w": 390,
+      "h": 844,
+      "title": "DN09_mb_end · Hộp thoại phiên đăng nhập · Điện thoại · Hết phiên",
+      "radius": 28
+    },
+    "DN10_pc_ok.dc.html": {
+      "x": 0,
+      "y": 20720,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN10_pc_ok · Chọn cổng · Máy tính · Chọn cổng",
+      "expand": "fill"
+    },
+    "DN10_mb_ok.dc.html": {
+      "x": 1520,
+      "y": 20720,
+      "w": 390,
+      "h": 844,
+      "title": "DN10_mb_ok · Chọn cổng · Điện thoại · Chọn cổng",
+      "radius": 28
+    },
+    "CauHinh.dc.html": {
+      "x": 0,
+      "y": 22850,
+      "w": 1440,
+      "h": 1000,
+      "title": "CauHinh · K5 · Cấu hình",
+      "expand": "fill"
+    },
+    "MaTranQuyen.dc.html": {
+      "x": 1520,
+      "y": 22850,
+      "w": 1440,
+      "h": 1000,
+      "title": "MaTranQuyen · Đ1 · Ma trận quyền",
+      "expand": "fill"
+    },
+    "MaTranQuyen_ls.dc.html": {
+      "x": 3040,
+      "y": 22850,
+      "w": 1440,
+      "h": 1000,
+      "title": "MaTranQuyen_ls · Đ1 · Ma trận quyền: lịch sử phiên bản (danh sách)",
+      "expand": "fill"
+    },
+    "MaTranQuyen_ct.dc.html": {
+      "x": 4560,
+      "y": 22850,
+      "w": 1440,
+      "h": 1000,
+      "title": "MaTranQuyen_ct · Đ1 · Ma trận quyền: lịch sử phiên bản (chi tiết một phiên bản)",
+      "expand": "fill"
+    },
+    "BaoCao.dc.html": {
+      "x": 0,
+      "y": 31730,
+      "w": 1440,
+      "h": 1000,
+      "title": "TC-15 · Báo cáo trong app (Đối soát thu tiền)",
+      "expand": "fill"
+    },
+    "TimKiem.dc.html": {
+      "x": 0,
+      "y": 33630,
+      "w": 1440,
+      "h": 1000,
+      "title": "CHUNG-11/12 · Tìm kiếm + thông báo",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS01.dc.html": {
+      "x": 0,
+      "y": 25280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-01 · Lead · danh sách",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS01b.dc.html": {
+      "x": 1520,
+      "y": 25280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-01b · Lead · kanban",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS02.dc.html": {
+      "x": 3040,
+      "y": 25280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-02 · Lead · chi tiết",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS03.dc.html": {
+      "x": 4560,
+      "y": 25280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-03 · Tạo lead (cảnh báo trùng SĐT)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS06.dc.html": {
+      "x": 6080,
+      "y": 25280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-06 · Hộp thoại Tạo cơ hội khi đã có cơ hội",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS09.dc.html": {
+      "x": 6080,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-09 · Chuyển CO000121 từ L6A sang L7 (phiếu đã Hoàn thành)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS11b.dc.html": {
+      "x": 1520,
+      "y": 28280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-11b · Lịch hẹn · danh sách",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS13.dc.html": {
+      "x": 3040,
+      "y": 28280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-13 · Hộp thoại tạo / dời lịch hẹn",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS16.dc.html": {
+      "x": 0,
+      "y": 29780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-16 · Phiếu kiểm tra · danh sách",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS17.dc.html": {
+      "x": 1520,
+      "y": 29780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-17 · Phiếu kiểm tra · chi tiết",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS15.dc.html": {
+      "x": 3040,
+      "y": 29780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-15 · Hộp thoại Tạo phiếu kiểm tra",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS18.dc.html": {
+      "x": 7600,
+      "y": 29780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-18 · Hộp thoại Xếp lịch kiểm tra",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS19.dc.html": {
+      "x": 9120,
+      "y": 29780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-19 · Hộp thoại Huỷ / Từ chối phiếu",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "DN08_pc_lock.dc.html": {
+      "x": 0,
+      "y": 17860,
+      "w": 1440,
+      "h": 1000,
+      "title": "DN08_pc_lock · Không thể đăng nhập · Máy tính · Một câu chung",
+      "expand": "fill"
+    },
+    "DN08_mb_lock.dc.html": {
+      "x": 1520,
+      "y": 17860,
+      "w": 390,
+      "h": 844,
+      "title": "DN08_mb_lock · Không thể đăng nhập · Điện thoại · Một câu chung",
+      "radius": 28
+    },
+    "TS07_K1.dc.html": {
+      "x": 0,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-07 · K1 Tổng quan dạng List (Cơ hội)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS07_K2.dc.html": {
+      "x": 1520,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-07 · K2 Tổng quan dạng Kanban (Cơ hội)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS08_K3.dc.html": {
+      "x": 3040,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-08 · K3 Chi tiết Cơ hội CO000121",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS11_K5.dc.html": {
+      "x": 0,
+      "y": 28280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-11 · K5 Calendar (Lịch hẹn)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS11c.dc.html": {
+      "x": 4560,
+      "y": 28280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-11c · Lịch hẹn · Kanban (cột = trạng thái)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS16b.dc.html": {
+      "x": 4560,
+      "y": 29780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-16b · Phiếu kiểm tra · kanban",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS16c.dc.html": {
+      "x": 6080,
+      "y": 29780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-16c · Phiếu kiểm tra · calendar",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS09a.dc.html": {
+      "x": 7600,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-09a · Chuyển L7/L8 bị chặn: còn phiếu test dang dở",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS09b.dc.html": {
+      "x": 9120,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-09b · Chuyển L7/L8 khi chưa có phiếu (hoặc phiếu đều Huỷ): lý do bỏ qua test",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS09c.dc.html": {
+      "x": 10640,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-09c · Chuyển L8: chọn L8A/L8B/L8C, không hoàn tác",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS10.dc.html": {
+      "x": 13680,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-10 · Gộp lead / cơ hội trùng",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS04.dc.html": {
+      "x": 7600,
+      "y": 25280,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-04 · Nhập lead từ file",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS08b_K3.dc.html": {
+      "x": 4560,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-08b · K3 Cơ hội CO000099 có 2 phiếu test (Huỷ + Hoàn thành)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS09d.dc.html": {
+      "x": 12160,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-09d · Chuyển sang L5 khi thiếu thông tin học sinh",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "TS10b.dc.html": {
+      "x": 15200,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-10b · Lead ở trạng thái Đã gộp (LD000241)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "P0_v5.dc.html": {
+      "x": 9120,
+      "y": 25280,
+      "w": 1440,
+      "h": 1000,
+      "title": "P0 v5 · Đổi gì so với v4 (gom từ P3 và P4)",
+      "expand": "fill",
+      "is_interactive": false
+    },
+    "TS10c.dc.html": {
+      "x": 16720,
+      "y": 26780,
+      "w": 1440,
+      "h": 1000,
+      "title": "TS-10c · Gộp bị khoá: hai lead khác cơ sở",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH01.dc.html": {
+      "x": 0,
+      "y": 35700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-01 · Phụ huynh · danh sách",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH01_admin.dc.html": {
+      "x": 1520,
+      "y": 35700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-01 · Phụ huynh · danh sách · Admin (có Xuất)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH01_trong.dc.html": {
+      "x": 3040,
+      "y": 35700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-01 · Phụ huynh · danh sách · trống",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH01_tai.dc.html": {
+      "x": 4560,
+      "y": 35700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-01 · Phụ huynh · danh sách · đang tải",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH01_khong_ket_qua.dc.html": {
+      "x": 6080,
+      "y": 35700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-01 · Phụ huynh · danh sách · không có kết quả tìm",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH01_khong_quyen.dc.html": {
+      "x": 7600,
+      "y": 35700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-01 · Phụ huynh · danh sách · không có quyền",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH04.dc.html": {
+      "x": 0,
+      "y": 37200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-04 · Học sinh · danh sách",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH04_admin.dc.html": {
+      "x": 1520,
+      "y": 37200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-04 · Học sinh · danh sách · Admin (có Xuất)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH04_trong.dc.html": {
+      "x": 3040,
+      "y": 37200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-04 · Học sinh · danh sách · trống",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH04_tai.dc.html": {
+      "x": 4560,
+      "y": 37200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-04 · Học sinh · danh sách · đang tải",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH04_khong_ket_qua.dc.html": {
+      "x": 6080,
+      "y": 37200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-04 · Học sinh · danh sách · không có kết quả tìm",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH04_khong_quyen.dc.html": {
+      "x": 7600,
+      "y": 37200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-04 · Học sinh · danh sách · không có quyền",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH02.dc.html": {
+      "x": 0,
+      "y": 38700,
+      "w": 1440,
+      "h": 1000,
+      "title": "PH-01 · Phụ huynh · Tổng quan (giai đoạn 1)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH02_tai_chinh.dc.html": {
+      "x": 3040,
+      "y": 38700,
+      "w": 1440,
+      "h": 1000,
+      "title": "PH-03 · Phụ huynh · Tài chính",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH02_tai_chinh_mo.dc.html": {
+      "x": 4560,
+      "y": 38700,
+      "w": 1440,
+      "h": 1000,
+      "title": "PH-03 · Phụ huynh · Tài chính (giai đoạn 1: mờ)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH02_tai.dc.html": {
+      "x": 0,
+      "y": 40200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-02 · Phụ huynh · đang tải",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH02_khong_quyen.dc.html": {
+      "x": 1520,
+      "y": 40200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-02 · Phụ huynh · không có quyền",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH02_kt.dc.html": {
+      "x": 3040,
+      "y": 40200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-02 · Phụ huynh · Kế toán xem (chỉ đọc)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH03.dc.html": {
+      "x": 4560,
+      "y": 40200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-03 · Phụ huynh · Sửa",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH03_loi.dc.html": {
+      "x": 6080,
+      "y": 40200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-03 · Phụ huynh · Sửa · lỗi bắt buộc nhập",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05.dc.html": {
+      "x": 0,
+      "y": 41700,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-01 · Học sinh · Tổng quan (giai đoạn 1)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_day_du.dc.html": {
+      "x": 1520,
+      "y": 41700,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-01 · Học sinh · Tổng quan (đầy đủ)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_trong.dc.html": {
+      "x": 3040,
+      "y": 41700,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-01 · Học sinh · Tổng quan · hồ sơ mới sinh, chưa có hoạt động",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_hoc_tap.dc.html": {
+      "x": 4560,
+      "y": 41700,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-02 · Học sinh · Học tập",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_hoc_tap_mo.dc.html": {
+      "x": 6080,
+      "y": 41700,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-02 · Học sinh · Học tập (giai đoạn 1: mờ)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_diem_danh_chi_tiet.dc.html": {
+      "x": 1520,
+      "y": 43200,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-04 · Học sinh · Điểm danh, chi tiết một lớp",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_diem_kiem_tra.dc.html": {
+      "x": 3040,
+      "y": 43200,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-05 · Học sinh · Điểm kiểm tra (chỉ bảng điểm, biểu đồ làm giai đoạn 3)",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_cham_soc.dc.html": {
+      "x": 4560,
+      "y": 43200,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-06 · Học sinh · Chăm sóc",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_de_nghi.dc.html": {
+      "x": 6080,
+      "y": 43200,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-07 · Học sinh · Đề nghị và khiếu nại",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_tai.dc.html": {
+      "x": 0,
+      "y": 44700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-05 · Học sinh · đang tải",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_khong_quyen.dc.html": {
+      "x": 1520,
+      "y": 44700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-05 · Học sinh · không có quyền",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH06.dc.html": {
+      "x": 3040,
+      "y": 44700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-06 · Học sinh · Sửa",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH06_loi.dc.html": {
+      "x": 4560,
+      "y": 44700,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-06 · Học sinh · Sửa · lỗi bắt buộc nhập",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH07.dc.html": {
+      "x": 0,
+      "y": 46200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-07 · Gộp trùng · phụ huynh / học sinh",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH07_trong.dc.html": {
+      "x": 1520,
+      "y": 46200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-07 · Gộp trùng · chưa chọn hồ sơ trùng",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH07_tai.dc.html": {
+      "x": 3040,
+      "y": 46200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-07 · Gộp trùng · đang kiểm tra xung đột",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH07_hs.dc.html": {
+      "x": 4560,
+      "y": 46200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-07 · Gộp trùng · học sinh",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH07_chan.dc.html": {
+      "x": 6080,
+      "y": 46200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-07 · Gộp trùng · bị chặn do xung đột",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH07_khac_co_so.dc.html": {
+      "x": 7600,
+      "y": 46200,
+      "w": 1440,
+      "h": 1000,
+      "title": "KH-07 · Gộp trùng · hai hồ sơ khác cơ sở",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH02_cac_con.dc.html": {
+      "x": 1520,
+      "y": 38700,
+      "w": 1440,
+      "h": 1000,
+      "title": "PH-01 · Phụ huynh · Các con",
+      "expand": "fill",
+      "is_interactive": true
+    },
+    "KH05_diem_danh.dc.html": {
+      "x": 0,
+      "y": 43200,
+      "w": 1440,
+      "h": 1000,
+      "title": "HS-03 · Học sinh · Điểm danh, tổng quan các lớp",
+      "expand": "fill",
+      "is_interactive": true
+    }
+  },
+  "order": [
+    "K1.dc.html",
+    "K2.dc.html",
+    "K3.dc.html",
+    "K4.dc.html",
+    "K5.dc.html",
+    "K4b.dc.html",
+    "K4c.dc.html",
+    "K4d.dc.html",
+    "K07b.dc.html",
+    "K07c.dc.html",
+    "K09b.dc.html",
+    "K0x.dc.html",
+    "K4e1.dc.html",
+    "K4e3.dc.html",
+    "K4e2.dc.html",
+    "K1_loc.dc.html",
+    "K1_loc_chip.dc.html",
+    "K1_loc_nc.dc.html",
+    "K1_loc_nc0.dc.html",
+    "K1_nhom.dc.html",
+    "K1_nhom_bang.dc.html",
+    "K1_nhom0.dc.html",
+    "K1_cot.dc.html",
+    "K1_fav.dc.html",
+    "K1_fav_luu.dc.html",
+    "K1_fav0.dc.html",
+    "K1_tim.dc.html",
+    "K1_tim_go.dc.html",
+    "K1_tim0.dc.html",
+    "K1_chuong.dc.html",
+    "K1_chuong0.dc.html",
+    "K1m_loc.dc.html",
+    "K1m_nhom.dc.html",
+    "K1m_cot.dc.html",
+    "K1m_fav.dc.html",
+    "K1m_tim_dong.dc.html",
+    "K1m_tim.dc.html",
+    "K1m_tim0.dc.html",
+    "DN01_pc_err.dc.html",
+    "DN01_pc_ok.dc.html",
+    "DN01_mb_err.dc.html",
+    "DN01_mb_ok.dc.html",
+    "DN02_pc_err.dc.html",
+    "DN02_pc_ok.dc.html",
+    "DN02_mb_err.dc.html",
+    "DN02_mb_ok.dc.html",
+    "DN03_pc_code.dc.html",
+    "DN03_pc_code_err.dc.html",
+    "DN03_mb_code.dc.html",
+    "DN03_mb_code_err.dc.html",
+    "DN04_pc_s1.dc.html",
+    "DN04_pc_s2.dc.html",
+    "DN04_mb_s1.dc.html",
+    "DN04_mb_s2.dc.html",
+    "DN05_pc_form.dc.html",
+    "DN05_mb_form.dc.html",
+    "DN06_pc_new.dc.html",
+    "DN06_pc_ok.dc.html",
+    "DN06_mb_new.dc.html",
+    "DN06_mb_ok.dc.html",
+    "DN07_pc_new.dc.html",
+    "DN07_pc_ok.dc.html",
+    "DN07_mb_new.dc.html",
+    "DN07_mb_ok.dc.html",
+    "DN08_pc_lock.dc.html",
+    "DN08_mb_lock.dc.html",
+    "DN09_pc_end.dc.html",
+    "DN09_mb_end.dc.html",
+    "DN10_pc_ok.dc.html",
+    "DN10_mb_ok.dc.html",
+    "CauHinh.dc.html",
+    "MaTranQuyen.dc.html",
+    "MaTranQuyen_ls.dc.html",
+    "MaTranQuyen_ct.dc.html",
+    "BaoCao.dc.html",
+    "TimKiem.dc.html",
+    "TS01.dc.html",
+    "TS01b.dc.html",
+    "TS02.dc.html",
+    "TS03.dc.html",
+    "TS06.dc.html",
+    "TS09.dc.html",
+    "TS11b.dc.html",
+    "TS11c.dc.html",
+    "TS13.dc.html",
+    "TS16.dc.html",
+    "TS17.dc.html",
+    "TS15.dc.html",
+    "TS18.dc.html",
+    "TS19.dc.html",
+    "TS07_K1.dc.html",
+    "TS07_K2.dc.html",
+    "TS08_K3.dc.html",
+    "TS11_K5.dc.html",
+    "TS16b.dc.html",
+    "TS16c.dc.html",
+    "TS09a.dc.html",
+    "TS09b.dc.html",
+    "TS09c.dc.html",
+    "TS10.dc.html",
+    "TS04.dc.html",
+    "TS08b_K3.dc.html",
+    "TS09d.dc.html",
+    "TS10b.dc.html",
+    "P0_v5.dc.html",
+    "TS10c.dc.html",
+    "KH01.dc.html",
+    "KH01_admin.dc.html",
+    "KH01_trong.dc.html",
+    "KH01_tai.dc.html",
+    "KH01_khong_ket_qua.dc.html",
+    "KH01_khong_quyen.dc.html",
+    "KH04.dc.html",
+    "KH04_admin.dc.html",
+    "KH04_trong.dc.html",
+    "KH04_tai.dc.html",
+    "KH04_khong_ket_qua.dc.html",
+    "KH04_khong_quyen.dc.html",
+    "KH02.dc.html",
+    "KH02_tai_chinh.dc.html",
+    "KH02_tai_chinh_mo.dc.html",
+    "KH02_tai.dc.html",
+    "KH02_khong_quyen.dc.html",
+    "KH02_kt.dc.html",
+    "KH03.dc.html",
+    "KH03_loi.dc.html",
+    "KH05.dc.html",
+    "KH05_day_du.dc.html",
+    "KH05_trong.dc.html",
+    "KH05_hoc_tap.dc.html",
+    "KH05_hoc_tap_mo.dc.html",
+    "KH05_diem_danh.dc.html",
+    "KH05_diem_danh_chi_tiet.dc.html",
+    "KH05_diem_kiem_tra.dc.html",
+    "KH05_cham_soc.dc.html",
+    "KH05_de_nghi.dc.html",
+    "KH05_tai.dc.html",
+    "KH05_khong_quyen.dc.html",
+    "KH06.dc.html",
+    "KH06_loi.dc.html",
+    "KH07.dc.html",
+    "KH07_trong.dc.html",
+    "KH07_tai.dc.html",
+    "KH07_hs.dc.html",
+    "KH07_chan.dc.html",
+    "KH07_khac_co_so.dc.html",
+    "KH02_cac_con.dc.html"
+  ],
+  "notes": {
+    "P0_t": {
+      "x": 0,
+      "y": -300,
+      "text": "P0 · KHUÔN CHUNG",
+      "kind": "title1",
+      "maxW": 12080
+    },
+    "P0_s": {
+      "x": 0,
+      "y": -200,
+      "text": "Đã duyệt: K1–K5, K4b–K4e, K07b/c, K09b, K0x. Các khung bổ sung của K1 (Filters, Group By, Cột, Favorites, ô tìm toàn hệ thống, chuông): chờ anh xem.",
+      "fill": "orange",
+      "w": 1400,
+      "maxH": 150
+    },
+    "P1_t": {
+      "x": 0,
+      "y": 7550,
+      "text": "P1 · ĐĂNG NHẬP & KHUNG CỔNG",
+      "kind": "title1",
+      "maxW": 7880
+    },
+    "P1_s": {
+      "x": 0,
+      "y": 7650,
+      "text": "Đã duyệt 10 màn đăng nhập. 16/10 sửa theo quyết định: bỏ mã dự phòng (DN03, DN04 còn 2 bước), Quên mật khẩu chỉ liên hệ quản trị viên (DN05), DN06 hoãn, DN08 một câu chung. Khung các cổng và Đợt 3: chưa vẽ.",
+      "fill": "orange",
+      "w": 1400,
+      "maxH": 150
+    },
+    "P2_t": {
+      "x": 0,
+      "y": 22550,
+      "text": "P2 · QUẢN TRỊ & CHUNG",
+      "kind": "title1",
+      "maxW": 6000
+    },
+    "P2_s": {
+      "x": 0,
+      "y": 22650,
+      "text": "Đã duyệt: Cấu hình (16/10 bỏ \"Có hiệu lực từ\" ở tham số), Ma trận quyền. Lịch sử phiên bản Ma trận quyền: chờ anh xem. Các màn QT còn lại: chưa vẽ. Ma trận quyền chưa vẽ lại, chờ Code gửi bảng đối chiếu.",
+      "fill": "orange",
+      "w": 1400,
+      "maxH": 150
+    },
+    "p3": {
+      "kind": "title1",
+      "maxW": 7600,
+      "text": "P3 · TUYỂN SINH",
+      "w": 240,
+      "x": 0,
+      "y": 24680
+    },
+    "p3s": {
+      "fill": "green",
+      "maxH": 120,
+      "size": 22,
+      "w": 420,
+      "x": 0,
+      "y": 24770,
+      "text": "Đã duyệt 16/10 (v48)"
+    },
+    "p3l": {
+      "kind": "title1",
+      "maxW": 7600,
+      "text": "Lead",
+      "w": 240,
+      "x": 0,
+      "y": 25020
+    },
+    "p3c": {
+      "kind": "title1",
+      "maxW": 7600,
+      "text": "Cơ hội",
+      "w": 240,
+      "x": 0,
+      "y": 26520
+    },
+    "p3h": {
+      "kind": "title1",
+      "maxW": 7600,
+      "text": "Lịch hẹn",
+      "w": 240,
+      "x": 0,
+      "y": 28020
+    },
+    "p3k": {
+      "kind": "title1",
+      "maxW": 7600,
+      "text": "Kiểm tra đầu vào",
+      "w": 240,
+      "x": 0,
+      "y": 29520
+    },
+    "ts0708": {
+      "fill": "orange",
+      "maxH": 300,
+      "size": 24,
+      "text": "TS-07 = K1, K2; TS-08 = K3",
+      "w": 700,
+      "x": 0,
+      "y": 26620
+    },
+    "ts11": {
+      "fill": "orange",
+      "maxH": 300,
+      "size": 24,
+      "text": "TS-11 Calendar = K5 (P0)",
+      "w": 700,
+      "x": 0,
+      "y": 28120
+    },
+    "p13": {
+      "kind": "title1",
+      "maxW": 7600,
+      "text": "P13 · BÁO CÁO",
+      "w": 240,
+      "x": 0,
+      "y": 31380
+    },
+    "p13s": {
+      "fill": "orange",
+      "maxH": 120,
+      "size": 22,
+      "w": 900,
+      "x": 0,
+      "y": 31470,
+      "text": "Làm sau cùng, khi các phân hệ nghiệp vụ đã xong"
+    },
+    "p14": {
+      "kind": "title1",
+      "maxW": 7600,
+      "text": "P14 · TÌM KIẾM & THÔNG BÁO",
+      "w": 240,
+      "x": 0,
+      "y": 33280
+    },
+    "p14s": {
+      "fill": "orange",
+      "maxH": 120,
+      "size": 22,
+      "w": 900,
+      "x": 0,
+      "y": 33370,
+      "text": "Làm sau cùng, cần dữ liệu từ các phân hệ khác"
+    },
+    "dn06_hoan": {
+      "x": 3980,
+      "y": 15000,
+      "text": "HOÃN · DN06 Đặt mật khẩu mới (link từ email). Giữ artboard để tham khảo, không đưa vào gói bàn giao. Quên mật khẩu hiện chỉ hướng dẫn liên hệ quản trị viên (DN05).",
+      "fill": "red",
+      "w": 520,
+      "maxH": 300,
+      "size": "l",
+      "bold": true
+    },
+    "P4_t": {
+      "x": 0,
+      "y": 35400,
+      "text": "P4 · KHÁCH HÀNG (giai đoạn 1)",
+      "kind": "title1",
+      "maxW": 8000
+    },
+    "P4_s": {
+      "x": 0,
+      "y": 35500,
+      "text": "P4 v2 (17/10), dựng lại theo wireframe hồ sơ học sinh, phụ huynh đã duyệt; từ v55 các màn hồ sơ bấm được (tab, Sửa/Lưu, ghi chú, Dời, Huỷ, Ghi nhận liên hệ, Gộp). Danh sách KH-01, KH-04 (không Tạo, Xuất chỉ Admin); hồ sơ KH-02, KH-05 nhiều tab; KH-03, KH-06 chỉ còn Sửa; KH-07 gộp trùng. Giai đoạn 1: chỉ tab Tổng quan mở, các tab còn lại mờ (rê chuột \"Làm ở phân hệ sau\"). HS-03 dùng khuôn mới \"bảng nhóm cột\" (P0 v5). HS-05 chỉ có bảng điểm.",
+      "fill": "orange",
+      "w": 1400,
+      "maxH": 150
+    }
+  },
+  "designSystems": [
+    {
+      "title": "HMT Platform",
+      "namespace": "hmt",
+      "artifact": "https://claude.ai/artifact/3Yco5qmVbyDiyfZm9HcJqN",
+      "version": "1792124962-8639",
+      "copiedAt": "2026-10-16T04:46:00Z"
+    }
+  ]
+}

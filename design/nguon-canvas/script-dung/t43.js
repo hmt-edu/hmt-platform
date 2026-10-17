@@ -1,0 +1,23 @@
+const { chromium } = require('playwright');
+(async()=>{
+ const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell'});
+ const errs=[]; const p=await b.newPage({viewport:{width:1440,height:1000}}); p.on('pageerror',e=>errs.push(e.message)); await p.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort());
+ await p.goto('http://127.0.0.1:8765/V_TS17.dc.html',{waitUntil:'load'}); await p.waitForTimeout(900);
+ const st=()=>p.evaluate(()=>({stage:document.querySelector('.hmt-stage [aria-current]').innerText.trim(), bar:Array.from(document.querySelectorAll('[aria-label="Nút nghiệp vụ và Sub-stage"] button')).map(b=>b.innerText.trim()+(b.disabled?'(off)':'')), menu:Array.from(document.querySelectorAll('.hmt-rbar-l .hmt-menu button')).map(b=>b.innerText.trim())}));
+ console.log('init',JSON.stringify(await st())); await p.screenshot({path:'scripts/k1i/t17a.png'});
+ await p.click('.hmt-stage .hmt-step >> nth=3'); console.log('stage click toast:',await p.textContent('.ix-toast'));
+ await p.click('[aria-label="Nút nghiệp vụ và Sub-stage"] button:has-text("Bắt đầu test")'); console.log('1',JSON.stringify(await st()), await p.textContent('.ix-toast'));
+ await p.click('.ix-toast button'); console.log('undo',JSON.stringify(await st()));
+ await p.click('[aria-label="Nút nghiệp vụ và Sub-stage"] button:has-text("Bắt đầu test")'); await p.click('[aria-label="Nút nghiệp vụ và Sub-stage"] button:has-text("Nộp bài")'); console.log('2',JSON.stringify(await st()));
+ await p.click('[data-fs=gv]'); await p.waitForTimeout(100); await p.click('.ix-pop .hmt-opt >> nth=0');
+ await p.fill('[data-fi=score]','7.5'); await p.fill('[data-fi=nx]','Nắm chắc Đại số'); console.log('3',JSON.stringify(await st()));
+ await p.click('[data-ff=bai]'); console.log('4',JSON.stringify(await st()));
+ await p.screenshot({path:'scripts/k1i/t17b.png'});
+ await p.click('[aria-label="Nút nghiệp vụ và Sub-stage"] button:has-text("Hoàn thành")'); console.log('5',JSON.stringify(await st()));
+ await p.screenshot({path:'scripts/k1i/t17c.png'});
+ await p.click('.hmt-rbar-l button:has-text("Hành động")'); await p.click('.hmt-rbar-l .hmt-menu button:has-text("Huỷ phiếu")'); await p.waitForTimeout(100);
+ await p.click('.ix-ap button[data-a=ok]'); console.log('err',await p.textContent('.ix-ap .ix-rm')); await p.click('.ix-ap button[data-r] >> nth=2'); await p.click('.ix-ap button[data-a=ok]'); await p.waitForTimeout(100);
+ console.log('6',JSON.stringify(await st()), await p.textContent('[aria-label="Giai đoạn"].hmt-box > div:last-child'));
+ await p.click('.hmt-rbar-l button:has-text("Hành động")'); await p.click('.hmt-rbar-l .hmt-menu button:has-text("Mở lại phiếu")'); console.log('7',JSON.stringify(await st()));
+ await p.click('.hmt-rbar-l button:has-text("Hành động")'); await p.click('.hmt-rbar-l .hmt-menu button:has-text("Lùi về")'); console.log('8',JSON.stringify(await st()));
+ console.log(errs); await b.close();})();

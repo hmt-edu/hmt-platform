@@ -1,0 +1,400 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-17T10:30:00Z"
+ },
+ "title": "P5b Đào tạo",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "P5b_Tong_quan.dc.html": {
+   "x": 0,
+   "y": 300,
+   "w": 1440,
+   "h": 1000,
+   "title": "P5b · Tổng quan",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD01.dc.html": {
+   "x": 0,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-01 · Ghi danh · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD01_trong.dc.html": {
+   "x": 1520,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-01 · Ghi danh · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD01_tai.dc.html": {
+   "x": 3040,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-01 · Ghi danh · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD01_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-01 · Ghi danh · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_dang_hoc.dc.html": {
+   "x": 0,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Đang học (quỹ giờ, chuyển lớp)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_da_xep.dc.html": {
+   "x": 1520,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Đã xếp lớp, chưa có buổi Done",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_cho_xep.dc.html": {
+   "x": 3040,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Chờ xếp lớp",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_bao_luu.dc.html": {
+   "x": 4560,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Bảo lưu",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_het_gio.dc.html": {
+   "x": 6080,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Hết giờ (chặn điểm danh trừ giờ)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_hoc_truoc.dc.html": {
+   "x": 7600,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Học trước, quỹ âm trong hạn mức",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_hoan_phi.dc.html": {
+   "x": 9120,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Hoàn phí (chỉ đọc)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_tai.dc.html": {
+   "x": 10640,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD02_quyen.dc.html": {
+   "x": 0,
+   "y": 3960,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-02 · Ghi danh · Không có quyền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD05_dieu_chinh.dc.html": {
+   "x": 1520,
+   "y": 3960,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-05 · Điều chỉnh giờ (dòng ngược dấu, bắt buộc lý do)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD03_nhom.dc.html": {
+   "x": 0,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-03 · Xếp lớp cho ghi danh · Xếp theo nhóm lớp (luân phiên Đại, Hình)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD03_le.dc.html": {
+   "x": 1520,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-03 · Xếp lớp cho ghi danh · Xếp một lớp lẻ",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD03_trung_gio.dc.html": {
+   "x": 3040,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-03 · Xếp lớp cho ghi danh · Lớp trùng buổi: hiện mờ kèm lý do",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD03_nhac_mem.dc.html": {
+   "x": 4560,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-03 · Xếp lớp cho ghi danh · Nhắc mềm: mới có ghi danh Hình",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD03_trong.dc.html": {
+   "x": 6080,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-03 · Xếp lớp cho ghi danh · Không có lớp phù hợp",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD03_tai.dc.html": {
+   "x": 7600,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-03 · Xếp lớp cho ghi danh · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD04.dc.html": {
+   "x": 0,
+   "y": 6800,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-04 · Sổ giờ · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD04_trong.dc.html": {
+   "x": 1520,
+   "y": 6800,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-04 · Sổ giờ · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD04_tai.dc.html": {
+   "x": 3040,
+   "y": 6800,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-04 · Sổ giờ · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD04_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 6800,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-04 · Sổ giờ · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD06.dc.html": {
+   "x": 0,
+   "y": 8220,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-06 · Hàng chờ xếp lớp · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD06_trong.dc.html": {
+   "x": 1520,
+   "y": 8220,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-06 · Hàng chờ xếp lớp · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD06_tai.dc.html": {
+   "x": 3040,
+   "y": 8220,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-06 · Hàng chờ xếp lớp · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD06_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 8220,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-06 · Hàng chờ xếp lớp · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD07.dc.html": {
+   "x": 0,
+   "y": 9340,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-07 · Sắp hết giờ · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD07_trong.dc.html": {
+   "x": 1520,
+   "y": 9340,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-07 · Sắp hết giờ · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD07_tai.dc.html": {
+   "x": 3040,
+   "y": 9340,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-07 · Sắp hết giờ · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "GD07_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 9340,
+   "w": 1440,
+   "h": 1000,
+   "title": "GD-07 · Sắp hết giờ · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  }
+ },
+ "order": [
+  "P5b_Tong_quan.dc.html",
+  "GD01.dc.html",
+  "GD01_trong.dc.html",
+  "GD01_tai.dc.html",
+  "GD01_khong_quyen.dc.html",
+  "GD02_dang_hoc.dc.html",
+  "GD02_da_xep.dc.html",
+  "GD02_cho_xep.dc.html",
+  "GD02_bao_luu.dc.html",
+  "GD02_het_gio.dc.html",
+  "GD02_hoc_truoc.dc.html",
+  "GD02_hoan_phi.dc.html",
+  "GD02_tai.dc.html",
+  "GD02_quyen.dc.html",
+  "GD05_dieu_chinh.dc.html",
+  "GD03_nhom.dc.html",
+  "GD03_le.dc.html",
+  "GD03_trung_gio.dc.html",
+  "GD03_nhac_mem.dc.html",
+  "GD03_trong.dc.html",
+  "GD03_tai.dc.html",
+  "GD04.dc.html",
+  "GD04_trong.dc.html",
+  "GD04_tai.dc.html",
+  "GD04_khong_quyen.dc.html",
+  "GD06.dc.html",
+  "GD06_trong.dc.html",
+  "GD06_tai.dc.html",
+  "GD06_khong_quyen.dc.html",
+  "GD07.dc.html",
+  "GD07_trong.dc.html",
+  "GD07_tai.dc.html",
+  "GD07_khong_quyen.dc.html"
+ ],
+ "notes": {
+  "t0": {
+   "x": 0,
+   "y": 0,
+   "text": "P5b · ĐÀO TẠO",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "s1": {
+   "x": 0,
+   "y": 100,
+   "text": "Giai đoạn 2, máy tính. Cụm 1: Ghi danh. Mọi màn bấm được (hộp thoại, tab, trạng thái). Ghi chú lệch khuôn và câu hỏi: khung cuối canvas (khi xong hết các cụm).",
+   "fill": "orange",
+   "w": 1400,
+   "maxH": 150
+  },
+  "t2": {
+   "x": 0,
+   "y": 1420,
+   "text": "GD · GHI DANH (danh sách, bản ghi)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t3": {
+   "x": 0,
+   "y": 5080,
+   "text": "GD · XẾP LỚP (hộp thoại GD-03)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t4": {
+   "x": 0,
+   "y": 6500,
+   "text": "GD · SỔ GIỜ (GD-04)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t5": {
+   "x": 0,
+   "y": 7920,
+   "text": "GD · HÀNG CHỜ XẾP LỚP (GD-06), SẮP HẾT GIỜ (GD-07)",
+   "kind": "title1",
+   "maxW": 12080
+  }
+ },
+ "designSystems": [
+  {
+   "title": "HMT Platform",
+   "namespace": "hmt",
+   "artifact": "https://claude.ai/artifact/3Yco5qmVbyDiyfZm9HcJqN",
+   "version": "1792124962-8639",
+   "copiedAt": "2026-10-17T10:30:00Z"
+  }
+ ]
+}

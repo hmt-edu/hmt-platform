@@ -1,0 +1,988 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-10-17T09:40:00Z"
+ },
+ "title": "P5a Bán hàng và Thu chi",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "P5a_Tong_quan.dc.html": {
+   "x": 0,
+   "y": 300,
+   "w": 1440,
+   "h": 1000,
+   "title": "P5a · Tổng quan",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH01.dc.html": {
+   "x": 0,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-01 · Báo giá · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH01_trong.dc.html": {
+   "x": 1520,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-01 · Báo giá · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH01_tai.dc.html": {
+   "x": 3040,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-01 · Báo giá · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH01_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-01 · Báo giá · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH03_in.dc.html": {
+   "x": 6080,
+   "y": 1720,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-03 · Bản in báo giá (khuôn K13, A4)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH02_nhap.dc.html": {
+   "x": 0,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-02 · Báo giá · Nháp",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH02_sua.dc.html": {
+   "x": 1520,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-02 · Báo giá · Sửa nháp (có lỗi)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH02_gui.dc.html": {
+   "x": 3040,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-02 · Báo giá · Đã gửi",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH02_don.dc.html": {
+   "x": 4560,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-02 · Báo giá · Đã chuyển đơn",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH02_tu_choi.dc.html": {
+   "x": 6080,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-02 · Báo giá · Từ chối",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH02_het_han.dc.html": {
+   "x": 7600,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-02 · Báo giá · Hết hạn",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH02_tai.dc.html": {
+   "x": 9120,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-02 · Báo giá · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH02_quyen.dc.html": {
+   "x": 10640,
+   "y": 2840,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-02 · Báo giá · Không có quyền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH06.dc.html": {
+   "x": 0,
+   "y": 4260,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-06 · Đơn hàng · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH06_trong.dc.html": {
+   "x": 1520,
+   "y": 4260,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-06 · Đơn hàng · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH06_tai.dc.html": {
+   "x": 3040,
+   "y": 4260,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-06 · Đơn hàng · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH06_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 4260,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-06 · Đơn hàng · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_nhap.dc.html": {
+   "x": 0,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Nháp (có nhắc Đại và Hình)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_nhap_loi.dc.html": {
+   "x": 1520,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Nháp (trình bị chặn: báo đúng dòng, ô thiếu)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_trinh.dc.html": {
+   "x": 3040,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Đã trình (chờ duyệt)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_tran.dc.html": {
+   "x": 4560,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Đã trình, chiết khấu vượt trần (Quản lý duyệt)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_tu_choi.dc.html": {
+   "x": 6080,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Bị từ chối (về Nháp)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_duyet.dc.html": {
+   "x": 7600,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Đã duyệt (khoá)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_duyet_ht.dc.html": {
+   "x": 9120,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Đã duyệt, cho học trước",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_thu.dc.html": {
+   "x": 10640,
+   "y": 5380,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Đã duyệt, đã có phiếu thu và ghi danh",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_huy.dc.html": {
+   "x": 0,
+   "y": 6500,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Huỷ",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_tai.dc.html": {
+   "x": 1520,
+   "y": 6500,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH05_quyen.dc.html": {
+   "x": 3040,
+   "y": 6500,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Không có quyền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH07_duyet.dc.html": {
+   "x": 4560,
+   "y": 6500,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-07 · Duyệt hoặc từ chối đơn hàng (máy tính)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH09_bat.dc.html": {
+   "x": 6080,
+   "y": 6500,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-09 · Bật cho học trước, đóng tiền sau",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH08_co_buoi.dc.html": {
+   "x": 0,
+   "y": 7920,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-08 · Chọn lớp và ngày vào lớp · Lớp đã có buổi",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH08_luan_phien.dc.html": {
+   "x": 1520,
+   "y": 7920,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-08 · Chọn lớp và ngày vào lớp · Lớp Đại, Hình luân phiên: chọn được, không báo trùng",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH08_chua_buoi.dc.html": {
+   "x": 3040,
+   "y": 7920,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-08 · Chọn lớp và ngày vào lớp · Lớp chưa có buổi, ngày sai thứ",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH08_trong.dc.html": {
+   "x": 4560,
+   "y": 7920,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-08 · Chọn lớp và ngày vào lớp · Không có lớp phù hợp",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "BH08_tai.dc.html": {
+   "x": 6080,
+   "y": 7920,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-08 · Chọn lớp và ngày vào lớp · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC01.dc.html": {
+   "x": 0,
+   "y": 9340,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-01 · Phiếu thu · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC01_trong.dc.html": {
+   "x": 1520,
+   "y": 9340,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-01 · Phiếu thu · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC01_tai.dc.html": {
+   "x": 3040,
+   "y": 9340,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-01 · Phiếu thu · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC01_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 9340,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-01 · Phiếu thu · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_nhap.dc.html": {
+   "x": 0,
+   "y": 10460,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Nháp",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_nhap_loi.dc.html": {
+   "x": 1520,
+   "y": 10460,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Nháp (trình bị chặn: báo đúng ô thiếu)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_trinh.dc.html": {
+   "x": 3040,
+   "y": 10460,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Đã trình (người lập xem)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_trinh_kt.dc.html": {
+   "x": 4560,
+   "y": 10460,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Đã trình (Kế toán)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_trinh_ad.dc.html": {
+   "x": 6080,
+   "y": 10460,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Đã trình (Admin chỉ xem)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_duyet.dc.html": {
+   "x": 7600,
+   "y": 10460,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Đã duyệt",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_tu_choi.dc.html": {
+   "x": 9120,
+   "y": 10460,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Bị từ chối (về Nháp)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_huy.dc.html": {
+   "x": 10640,
+   "y": 10460,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Huỷ",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_tai.dc.html": {
+   "x": 0,
+   "y": 11580,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC02_quyen.dc.html": {
+   "x": 1520,
+   "y": 11580,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-02 · Phiếu thu · Không có quyền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC03_tao.dc.html": {
+   "x": 3040,
+   "y": 11580,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-03 · Tạo phiếu thu từ đơn hàng",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC07_in.dc.html": {
+   "x": 4560,
+   "y": 11580,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-07 · Bản in biên nhận (khuôn K13, A5)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC05_du_coc.dc.html": {
+   "x": 0,
+   "y": 13000,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-05 · Kế toán duyệt, từ chối phiếu thu · Duyệt, đủ cọc: sinh khoản tiền vào và ghi danh",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC05_chua_du.dc.html": {
+   "x": 1520,
+   "y": 13000,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-05 · Kế toán duyệt, từ chối phiếu thu · Duyệt, chưa đủ cọc: chưa sinh ghi danh",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC05_qua_buoi.dc.html": {
+   "x": 3040,
+   "y": 13000,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-05 · Kế toán duyệt, từ chối phiếu thu · Cảnh báo đã qua N buổi",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC05_tu_choi.dc.html": {
+   "x": 4560,
+   "y": 13000,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-05 · Kế toán duyệt, từ chối phiếu thu · Từ chối, thiếu lý do",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC05_admin.dc.html": {
+   "x": 6080,
+   "y": 13000,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-05 · Kế toán duyệt, từ chối phiếu thu · Admin chỉ xem, không có nút Duyệt",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC05_tai.dc.html": {
+   "x": 7600,
+   "y": 13000,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-05 · Kế toán duyệt, từ chối phiếu thu · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC04.dc.html": {
+   "x": 0,
+   "y": 14420,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-04 · Hàng chờ kế toán duyệt · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC04_trong.dc.html": {
+   "x": 1520,
+   "y": 14420,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-04 · Hàng chờ kế toán duyệt · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC04_tai.dc.html": {
+   "x": 3040,
+   "y": 14420,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-04 · Hàng chờ kế toán duyệt · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC04_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 14420,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-04 · Hàng chờ kế toán duyệt · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC04_admin.dc.html": {
+   "x": 6080,
+   "y": 14420,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-04 · Hàng chờ kế toán duyệt · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC08.dc.html": {
+   "x": 0,
+   "y": 15840,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-08 · Khoản tiền vào · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC08_trong.dc.html": {
+   "x": 1520,
+   "y": 15840,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-08 · Khoản tiền vào · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC08_tai.dc.html": {
+   "x": 3040,
+   "y": 15840,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-08 · Khoản tiền vào · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC08_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 15840,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-08 · Khoản tiền vào · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC08_bm.dc.html": {
+   "x": 6080,
+   "y": 15840,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-08 · Khoản tiền vào · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC09_dao.dc.html": {
+   "x": 7600,
+   "y": 15840,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-09 · Đảo khoản tiền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC09_chan.dc.html": {
+   "x": 9120,
+   "y": 15840,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-09 · Đảo khoản tiền · đã đảo, chặn đảo hai lần",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC15.dc.html": {
+   "x": 0,
+   "y": 17260,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-15 · Đối soát thu tiền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC15_trong.dc.html": {
+   "x": 1520,
+   "y": 17260,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-15 · Đối soát thu tiền · trống",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC15_tai.dc.html": {
+   "x": 3040,
+   "y": 17260,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-15 · Đối soát thu tiền · đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC15_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 17260,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-15 · Đối soát thu tiền · không có quyền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC10.dc.html": {
+   "x": 0,
+   "y": 18680,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-10 · Phiếu chi · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC10_trong.dc.html": {
+   "x": 1520,
+   "y": 18680,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-10 · Phiếu chi · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC10_tai.dc.html": {
+   "x": 3040,
+   "y": 18680,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-10 · Phiếu chi · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC10_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 18680,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-10 · Phiếu chi · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC11.dc.html": {
+   "x": 6080,
+   "y": 18680,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-11 · Phiếu chi · Đã trình (Kế toán)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC11_tai.dc.html": {
+   "x": 7600,
+   "y": 18680,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-11 · Phiếu chi · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC11_khong_quyen.dc.html": {
+   "x": 9120,
+   "y": 18680,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-11 · Phiếu chi · Không có quyền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC13.dc.html": {
+   "x": 0,
+   "y": 20100,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-13 · Công nợ · danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC13_trong.dc.html": {
+   "x": 1520,
+   "y": 20100,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-13 · Công nợ · danh sách (trống)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC13_tai.dc.html": {
+   "x": 3040,
+   "y": 20100,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-13 · Công nợ · danh sách (đang tải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "TC13_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 20100,
+   "w": 1440,
+   "h": 1000,
+   "title": "TC-13 · Công nợ · danh sách (không có quyền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "P5a_Ghi_chu.dc.html": {
+   "x": 0,
+   "y": 21520,
+   "w": 1440,
+   "h": 1000,
+   "title": "P5a · Ghi chú",
+   "expand": "fill",
+   "is_interactive": true
+  }
+ },
+ "order": [
+  "P5a_Tong_quan.dc.html",
+  "BH01.dc.html",
+  "BH01_trong.dc.html",
+  "BH01_tai.dc.html",
+  "BH01_khong_quyen.dc.html",
+  "BH03_in.dc.html",
+  "BH02_nhap.dc.html",
+  "BH02_sua.dc.html",
+  "BH02_gui.dc.html",
+  "BH02_don.dc.html",
+  "BH02_tu_choi.dc.html",
+  "BH02_het_han.dc.html",
+  "BH02_tai.dc.html",
+  "BH02_quyen.dc.html",
+  "BH06.dc.html",
+  "BH06_trong.dc.html",
+  "BH06_tai.dc.html",
+  "BH06_khong_quyen.dc.html",
+  "BH05_nhap.dc.html",
+  "BH05_nhap_loi.dc.html",
+  "BH05_trinh.dc.html",
+  "BH05_tran.dc.html",
+  "BH05_tu_choi.dc.html",
+  "BH05_duyet.dc.html",
+  "BH05_duyet_ht.dc.html",
+  "BH05_thu.dc.html",
+  "BH05_huy.dc.html",
+  "BH05_tai.dc.html",
+  "BH05_quyen.dc.html",
+  "BH07_duyet.dc.html",
+  "BH09_bat.dc.html",
+  "BH08_co_buoi.dc.html",
+  "BH08_luan_phien.dc.html",
+  "BH08_chua_buoi.dc.html",
+  "BH08_trong.dc.html",
+  "BH08_tai.dc.html",
+  "TC01.dc.html",
+  "TC01_trong.dc.html",
+  "TC01_tai.dc.html",
+  "TC01_khong_quyen.dc.html",
+  "TC02_nhap.dc.html",
+  "TC02_nhap_loi.dc.html",
+  "TC02_trinh.dc.html",
+  "TC02_trinh_kt.dc.html",
+  "TC02_trinh_ad.dc.html",
+  "TC02_duyet.dc.html",
+  "TC02_tu_choi.dc.html",
+  "TC02_huy.dc.html",
+  "TC02_tai.dc.html",
+  "TC02_quyen.dc.html",
+  "TC03_tao.dc.html",
+  "TC07_in.dc.html",
+  "TC05_du_coc.dc.html",
+  "TC05_chua_du.dc.html",
+  "TC05_qua_buoi.dc.html",
+  "TC05_tu_choi.dc.html",
+  "TC05_admin.dc.html",
+  "TC05_tai.dc.html",
+  "TC04.dc.html",
+  "TC04_trong.dc.html",
+  "TC04_tai.dc.html",
+  "TC04_khong_quyen.dc.html",
+  "TC04_admin.dc.html",
+  "TC08.dc.html",
+  "TC08_trong.dc.html",
+  "TC08_tai.dc.html",
+  "TC08_khong_quyen.dc.html",
+  "TC08_bm.dc.html",
+  "TC09_dao.dc.html",
+  "TC09_chan.dc.html",
+  "TC15.dc.html",
+  "TC15_trong.dc.html",
+  "TC15_tai.dc.html",
+  "TC15_khong_quyen.dc.html",
+  "TC10.dc.html",
+  "TC10_trong.dc.html",
+  "TC10_tai.dc.html",
+  "TC10_khong_quyen.dc.html",
+  "TC11.dc.html",
+  "TC11_tai.dc.html",
+  "TC11_khong_quyen.dc.html",
+  "TC13.dc.html",
+  "TC13_trong.dc.html",
+  "TC13_tai.dc.html",
+  "TC13_khong_quyen.dc.html",
+  "P5a_Ghi_chu.dc.html"
+ ],
+ "notes": {
+  "t0": {
+   "x": 0,
+   "y": 0,
+   "text": "P5a · BÁN HÀNG VÀ THU CHI",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "s1": {
+   "x": 0,
+   "y": 100,
+   "text": "Giai đoạn 1, máy tính. Cụm 1: Báo giá, Đơn hàng. Cụm 2: Phiếu thu, Kế toán duyệt, Khoản tiền vào, Đối soát. Cụm 3: Phiếu chi, Công nợ. Mọi màn bấm được (hộp thoại, tab, trạng thái). Ghi chú lệch khuôn và câu hỏi: khung cuối canvas.",
+   "fill": "orange",
+   "w": 1400,
+   "maxH": 150
+  },
+  "n2": {
+   "x": 1520,
+   "y": 300,
+   "text": "MỨC C, KHÔNG VẼ (chỉ ghi dựng từ khuôn nào): BH-04 Từ chối báo giá = hộp K08 có lý do (giống hộp Từ chối ở P3). BH-10 Huỷ đơn = hộp K08 có lý do, đơn có tiền thì chỉ dẫn đi ticket CS-05. BH-11 Cơ hội đã có đơn nháp = hộp K08 xác nhận hai nút. TC-06 Huỷ phiếu thu = hộp K08 có lý do. TC-12 Bản in phiếu chi = K13 (khuôn mới đề xuất, đã duyệt). TC-14 Số dư khách hàng = danh sách K03. TC-16 Dùng số dư = hộp K08 xác nhận.",
+   "fill": "orange",
+   "w": 900,
+   "maxH": 420,
+   "size": "m"
+  },
+  "t3": {
+   "x": 0,
+   "y": 1420,
+   "text": "BH · BÁO GIÁ",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t4": {
+   "x": 0,
+   "y": 3960,
+   "text": "BH · ĐƠN HÀNG",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t5": {
+   "x": 0,
+   "y": 7620,
+   "text": "BH · CHỌN LỚP VÀ NGÀY VÀO LỚP (hộp thoại)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t6": {
+   "x": 0,
+   "y": 9040,
+   "text": "TC · PHIẾU THU (danh sách, bản ghi, tạo từ đơn)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t7": {
+   "x": 0,
+   "y": 12700,
+   "text": "TC · KẾ TOÁN DUYỆT, TỪ CHỐI (TC-05, hộp thoại)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t8": {
+   "x": 0,
+   "y": 14120,
+   "text": "TC · HÀNG CHỜ KẾ TOÁN DUYỆT (TC-04)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t9": {
+   "x": 0,
+   "y": 15540,
+   "text": "TC · KHOẢN TIỀN VÀO, ĐẢO KHOẢN (TC-08, TC-09)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t10": {
+   "x": 0,
+   "y": 16960,
+   "text": "TC · ĐỐI SOÁT THU TIỀN (TC-15, khuôn K09)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t11": {
+   "x": 0,
+   "y": 18380,
+   "text": "TC · PHIẾU CHI (danh sách, bản ghi từ ticket hoàn tiền)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t12": {
+   "x": 0,
+   "y": 19800,
+   "text": "TC · CÔNG NỢ (TC-13)",
+   "kind": "title1",
+   "maxW": 12080
+  },
+  "t13": {
+   "x": 0,
+   "y": 21220,
+   "text": "GHI CHÚ CUỐI CANVAS: chỗ lệch, câu hỏi, màn dừng",
+   "kind": "title1",
+   "maxW": 12080
+  }
+ },
+ "designSystems": [
+  {
+   "title": "HMT Platform",
+   "namespace": "hmt",
+   "artifact": "https://claude.ai/artifact/3Yco5qmVbyDiyfZm9HcJqN",
+   "version": "1792124962-8639",
+   "copiedAt": "2026-10-17T09:40:00Z"
+  }
+ ]
+}

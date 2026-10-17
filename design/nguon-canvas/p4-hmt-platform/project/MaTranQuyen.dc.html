@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Đ1 · Ma trận quyền</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/hmt/handoff/hmt-tokens.css">
+<link rel="stylesheet" href="ds/hmt/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap&amp;subset=vietnamese">
+<style>
+body{margin:0;font-family:var(--font-ui);background:var(--bg-page);color:var(--text-primary)}
+a{color:var(--text-link)}a:hover{color:var(--brand-800)}
+</style>
+</helmet>
+<div data-ix="root" style="position:relative;width:1440px;height:1000px;overflow:hidden"><style>.ix-toast{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);background:var(--neutral-900);color:var(--neutral-0);padding:10px 16px;border-radius:var(--radius-md);font-size:13px;z-index:300;opacity:0;pointer-events:none;transition:opacity .15s;max-width:760px;text-align:center}
+.ix-toast.on{opacity:1}
+.ix-pop{position:absolute;left:0;min-width:100%;top:calc(100% + 4px);z-index:90;background:var(--bg-surface);border:1px solid var(--divider);border-radius:var(--radius-md);box-shadow:var(--shadow-md);max-height:240px;overflow:auto;padding:4px;display:flex;flex-direction:column}
+.ix-pop .hmt-opt{display:block;width:100%;text-align:left}
+.ix-pop-r{left:auto;right:-8px;top:40px;min-width:200px}
+.ix-err{color:var(--danger-text);font-size:12px}
+.hmt-app-fixed .hmt-content{overflow:auto;min-height:0}
+.bgblur{position:absolute;inset:0;filter:blur(1.5px)}
+.hmt-sw{position:relative;display:inline-block;width:36px;height:20px;flex:0 0 auto}
+.hmt-sw input{appearance:none;margin:0;width:36px;height:20px;border-radius:var(--radius-full);background:var(--input-border);cursor:pointer;transition:background .15s}
+.hmt-sw input:checked{background:var(--action-primary-bg)}
+.hmt-sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:var(--radius-full);background:var(--bg-surface);pointer-events:none;transition:transform .15s}
+.hmt-sw:has(input:checked)::after{transform:translateX(16px)}
+.hmt-sc{border:var(--border-1) solid var(--divider);border-radius:var(--radius-lg);background:var(--bg-surface);overflow:hidden}
+.hmt-grid-h{background:var(--bg-subtle);font-size:12px;font-weight:600;color:var(--text-label)}
+.hmt-rowl{display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-4);min-height:44px;border-top:var(--border-1) solid var(--divider)}
+.hmt-rowl.sel{background:var(--brand-50)}
+button.hmt-rowl:not(.sel){background:transparent}
+.hmt-dim{opacity:.45;pointer-events:none}
+.hmt-bar{height:10px;border-radius:var(--radius-full);background:var(--bg-subtle);overflow:hidden;flex:1}
+.hmt-bar i{display:block;height:100%;background:var(--brand-500);border-radius:var(--radius-full)}
+</style><div class="hmt-app hmt-app-fixed"><nav class="hmt-sb hmt-sb-wide" aria-label="Phân hệ"><div class="hmt-sb-head"><span class="hmt-sb-portal">CRM</span><button class="hmt-sb-all" type="button" aria-label="Mở rộng tất cả" title="Mở rộng tất cả"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5" /> <path d="m7 9 5-5 5 5" /></svg></button><button class="hmt-iconbtn" type="button" aria-label="Thu gọn menu"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M9 3v18" /> <path d="m16 15-3-3 3-3" /></svg></button></div><div class="hmt-sb-list"><button class="hmt-sb-l1" type="button" title="Tổng quan" data-g="0" aria-expanded="false"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1" /> <rect width="7" height="5" x="14" y="3" rx="1" /> <rect width="7" height="9" x="14" y="12" rx="1" /> <rect width="7" height="5" x="3" y="16" rx="1" /></svg><span>Tổng quan</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button><a class="hmt-sb-l2" href="#" data-p="0" style="display:none">Trang chủ</a><a class="hmt-sb-l2" href="#" data-p="0" style="display:none">Việc chờ tôi duyệt</a><button class="hmt-sb-l1" type="button" title="Tuyển sinh" data-g="1" aria-expanded="false"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <line x1="19" x2="19" y1="8" y2="14" /> <line x1="22" x2="16" y1="11" y2="11" /></svg><span>Tuyển sinh</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button><a class="hmt-sb-l2" href="#" data-p="1" style="display:none">Lead</a><a class="hmt-sb-l2" href="#" data-p="1" style="display:none">Cơ hội</a><a class="hmt-sb-l2" href="#" data-p="1" style="display:none">Lịch hẹn</a><a class="hmt-sb-l2" href="#" data-p="1" style="display:none">Kiểm tra đầu vào</a><button class="hmt-sb-l1" type="button" title="Khách hàng" data-g="2" aria-expanded="false"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /> <circle cx="9" cy="7" r="4" /> <path d="M22 21v-2a4 4 0 0 0-3-3.87" /> <path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg><span>Khách hàng</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button><a class="hmt-sb-l2" href="#" data-p="2" style="display:none">Phụ huynh</a><a class="hmt-sb-l2" href="#" data-p="2" style="display:none">Học sinh</a><button class="hmt-sb-l1" type="button" title="Bán hàng &amp; thu chi" data-g="3" aria-expanded="false"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" /> <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" /> <path d="M12 17.5v-11" /></svg><span>Bán hàng &amp; thu chi</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button><button class="hmt-sb-l1" type="button" title="Đào tạo" data-g="4" aria-expanded="false"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" /> <path d="M22 10v6" /> <path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5" /></svg><span>Đào tạo</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button><button class="hmt-sb-l1" type="button" title="Chăm sóc KH" data-g="5" aria-expanded="false"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5Zm0 0a9 9 0 1 1 18 0m0 0v5a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3Z" /> <path d="M21 16v2a4 4 0 0 1-4 4h-5" /></svg><span>Chăm sóc KH</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button><button class="hmt-sb-l1" type="button" title="Báo cáo" data-g="6" aria-expanded="false"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v16a2 2 0 0 0 2 2h16" /> <path d="M18 17V9" /> <path d="M13 17V5" /> <path d="M8 17v-3" /></svg><span>Báo cáo</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button><a class="hmt-sb-l2" href="#" data-p="6" style="display:none">Tổng quan Ban giám đốc</a><a class="hmt-sb-l2" href="#" data-p="6" style="display:none">Đối soát thu tiền</a><a class="hmt-sb-l2" href="#" data-p="6" style="display:none">Giờ dạy giáo viên</a><a class="hmt-sb-l2" href="#" data-p="6" style="display:none">Giáo viên trễ hạn</a><a class="hmt-sb-l2" href="#" data-p="6" style="display:none">Báo cáo Looker Studio ↗</a><button class="hmt-sb-l1" type="button" title="Cấu hình" data-g="7" aria-expanded="false"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" /> <circle cx="12" cy="12" r="3" /></svg><span>Cấu hình</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg></button><a class="hmt-sb-l2" href="#" data-p="7" style="display:none">Bán hàng: gói, giá, chiết khấu</a><a class="hmt-sb-l2" href="#" data-p="7" style="display:none">Đào tạo: khung, rubric, ngày nghỉ</a><a class="hmt-sb-l2" href="#" data-p="7" style="display:none">Danh mục</a><a class="hmt-sb-l2" href="#" data-p="7" style="display:none">Tham số nghiệp vụ</a><a class="hmt-sb-l2" href="#" data-p="7" style="display:none">Công tắc tính năng</a><button class="hmt-sb-l1" type="button" title="Quản trị" data-g="8" aria-expanded="true"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></svg><span>Quản trị</span><svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button><a class="hmt-sb-l2" href="#" data-p="8">Người dùng</a><a class="hmt-sb-l2" href="#" data-p="8" aria-current="page">Vai trò &amp; quyền</a><a class="hmt-sb-l2" href="#" data-p="8">Cơ sở &amp; phòng</a><a class="hmt-sb-l2" href="#" data-p="8">Tài khoản học sinh, phụ huynh</a><a class="hmt-sb-l2" href="#" data-p="8">Nhật ký</a></div></nav><div class="hmt-main"><header class="hmt-topbar"><nav class="hmt-crumb" aria-label="Đường dẫn"><a href="#">Quản trị</a><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg><span aria-current="page">Vai trò &amp; quyền</span></nav><div class="hmt-tb-right"><button class="hmt-site" type="button"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" /> <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" /> <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" /> <path d="M10 6h4" /> <path d="M10 10h4" /> <path d="M10 14h4" /> <path d="M10 18h4" /></svg>Tất cả cơ sở<svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></button><button class="hmt-iconbtn" type="button" aria-label="Thông báo, 3 chưa đọc" style="position:relative"><svg class="hmt-ic hmt-ic-md" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0" /> <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" /></svg><span class="hmt-badge">3</span></button><div class="hmt-user"><span class="hmt-avatar hmt-avatar-lg">CT</span><span class="hmt-user-n"><b>Cao Trường</b><span>Admin · Tất cả cơ sở</span></span></div></div></header><div class="hmt-header"><h1>Vai trò &amp; quyền</h1><div class="sz"><button class="hmt-btn" type="button"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>Lịch sử thay đổi quyền</button></div></div><div class="hmt-content"><div style="display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;font-size:13px"><span class="hmt-tag hmt-tag-success">Hiện hành</span><b>Phiên bản 12</b><span class="hmt-help">· lưu bởi Cao Trường lúc 12/10/2026 16:20</span></div><div style="display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap;font-size:12px;color:var(--text-secondary)"><b>Phạm vi dữ liệu:</b><span style="display:flex;align-items:center;gap:var(--space-1)"><span class="hmt-tag ">Không có</span>không thấy, không làm được</span><span style="display:flex;align-items:center;gap:var(--space-1)"><span class="hmt-tag hmt-tag-warning">Của tôi</span>chỉ bản ghi mình phụ trách</span><span style="display:flex;align-items:center;gap:var(--space-1)"><span class="hmt-tag hmt-tag-info">Cơ sở</span>mọi bản ghi của cơ sở mình</span><span style="display:flex;align-items:center;gap:var(--space-1)"><span class="hmt-tag hmt-tag-success">Tất cả</span>mọi bản ghi, mọi cơ sở</span><span>· Bấm vào ô để chọn từ danh sách, ô đã sửa có viền cam. Ô mờ là hành động không áp dụng.</span></div><div style="display:flex;gap:var(--space-4);align-items:flex-start"><section class="hmt-sc" style="width:260px;flex:0 0 260px"><div style="padding:var(--space-3) var(--space-4);font-family:var(--font-heading);font-weight:600;font-size:14px">Vai trò</div><div class="hmt-rowl" style="min-height:44px"><span class="hmt-avatar" style="border-radius:var(--radius-sm);background:var(--neutral-900);color:var(--neutral-0)">AD</span><span style="flex:1;font-size:13px;">Admin</span><span class="hmt-help">2 người</span></div><div class="hmt-rowl" style="min-height:44px"><span class="hmt-avatar" style="border-radius:var(--radius-sm);background:var(--neutral-900);color:var(--neutral-0)">BM</span><span style="flex:1;font-size:13px;">Trưởng cơ sở</span><span class="hmt-help">4 người</span></div><div class="hmt-rowl" style="min-height:44px"><span class="hmt-avatar" style="border-radius:var(--radius-sm);background:var(--neutral-900);color:var(--neutral-0)">SA</span><span style="flex:1;font-size:13px;">Tuyển sinh</span><span class="hmt-help">9 người</span></div><div class="hmt-rowl sel" style="min-height:44px"><span class="hmt-avatar" style="border-radius:var(--radius-sm);background:var(--neutral-900);color:var(--neutral-0)">CS</span><span style="flex:1;font-size:13px;font-weight:600">CSKH, vận hành lớp</span><span class="hmt-help">8 người</span></div><div class="hmt-rowl" style="min-height:44px"><span class="hmt-avatar" style="border-radius:var(--radius-sm);background:var(--neutral-900);color:var(--neutral-0)">KT</span><span style="flex:1;font-size:13px;">Kế toán</span><span class="hmt-help">2 người</span></div><div class="hmt-rowl" style="min-height:44px"><span class="hmt-avatar" style="border-radius:var(--radius-sm);background:var(--neutral-900);color:var(--neutral-0)">GV</span><span style="flex:1;font-size:13px;">Giáo viên</span><span class="hmt-help">56 người</span></div><div class="hmt-rowl" style="min-height:44px"><span class="hmt-avatar" style="border-radius:var(--radius-sm);background:var(--neutral-900);color:var(--neutral-0)">TG</span><span style="flex:1;font-size:13px;">Trợ giảng</span><span class="hmt-help">14 người</span></div></section><div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--space-4)"><section class="hmt-sc"><div class="hmt-rowl hmt-grid-h" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:36px;border-top:none"><span>Phân hệ (CSKH, vận hành lớp)</span><span style="text-align:center">Xem</span><span style="text-align:center">Tạo</span><span style="text-align:center">Sửa</span><span style="text-align:center">Duyệt</span><span style="text-align:center">Xuất</span></div><div class="hmt-rowl" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:44px"><span style="font-size:13px">Tuyển sinh</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Tuyển sinh · Xem: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-warning" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Tuyển sinh · Tạo: Của tôi">Của tôi</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-warning" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Tuyển sinh · Sửa: Của tôi">Của tôi</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Tuyển sinh · Duyệt: Không có">Không có</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Tuyển sinh · Xuất: Cơ sở">Cơ sở</button></span></div><div class="hmt-rowl" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:44px"><span style="font-size:13px">Khách hàng</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Khách hàng · Xem: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Khách hàng · Tạo: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Khách hàng · Sửa: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Khách hàng · Duyệt: Không có">Không có</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Khách hàng · Xuất: Cơ sở">Cơ sở</button></span></div><div class="hmt-rowl" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:44px"><span style="font-size:13px">Bán hàng &amp; thu chi</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-warning" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Bán hàng &amp; thu chi · Xem: Của tôi">Của tôi</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Bán hàng &amp; thu chi · Tạo: Không có">Không có</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Bán hàng &amp; thu chi · Sửa: Không có">Không có</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Bán hàng &amp; thu chi · Duyệt: Không có">Không có</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Bán hàng &amp; thu chi · Xuất: Không có">Không có</button></span></div><div class="hmt-rowl" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:44px"><span style="font-size:13px">Đào tạo</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Đào tạo · Xem: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Đào tạo · Tạo: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Đào tạo · Sửa: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Đào tạo · Duyệt: Không có">Không có</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Đào tạo · Xuất: Cơ sở">Cơ sở</button></span></div><div class="hmt-rowl" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:44px"><span style="font-size:13px">Chăm sóc KH</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Chăm sóc KH · Xem: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Chăm sóc KH · Tạo: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Chăm sóc KH · Sửa: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-success" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Chăm sóc KH · Duyệt: Tất cả">Tất cả</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Chăm sóc KH · Xuất: Cơ sở">Cơ sở</button></span></div><div class="hmt-rowl" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:44px"><span style="font-size:13px">Báo cáo</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Báo cáo · Xem: Cơ sở">Cơ sở</button></span><span style="display:flex;justify-content:center;opacity:.35" title="Hành động không áp dụng">—</span><span style="display:flex;justify-content:center;opacity:.35" title="Hành động không áp dụng">—</span><span style="display:flex;justify-content:center;opacity:.35" title="Hành động không áp dụng">—</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag hmt-tag-info" style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Báo cáo · Xuất: Cơ sở">Cơ sở</button></span></div><div class="hmt-rowl" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:44px"><span style="font-size:13px">Cấu hình</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Cấu hình · Xem: Không có">Không có</button></span><span style="display:flex;justify-content:center;opacity:.35" title="Hành động không áp dụng">—</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Cấu hình · Sửa: Không có">Không có</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Cấu hình · Duyệt: Không có">Không có</button></span><span style="display:flex;justify-content:center;opacity:.35" title="Hành động không áp dụng">—</span></div><div class="hmt-rowl" style="display:grid;grid-template-columns:minmax(0,1.6fr) repeat(5,minmax(0,1fr));min-height:44px"><span style="font-size:13px">Quản trị</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Quản trị · Xem: Không có">Không có</button></span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Quản trị · Tạo: Không có">Không có</button></span><span style="display:flex;justify-content:center;opacity:.35" title="Hành động không áp dụng">—</span><span style="display:flex;justify-content:center"><button type="button" class="hmt-tag " style="border:none;cursor:pointer;height:28px;padding:0 var(--space-3);min-width:76px;justify-content:center;" aria-label="Quản trị · Duyệt: Không có">Không có</button></span><span style="display:flex;justify-content:center;opacity:.35" title="Hành động không áp dụng">—</span></div><div class="hmt-rowl" data-bar="edit" style="display:none;background:var(--brand-50);gap:var(--space-3);border-top:var(--border-1) solid var(--brand-200)"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" /> <path d="M12 16v-4" /> <path d="M12 8h.01" /></svg><span style="font-size:13px;flex:1">Đã đổi <b>0 ô</b> của vai trò CSKH, vận hành lớp.</span><span class="hmt-help">Lưu tạo phiên bản mới, có hiệu lực ngay.</span><button class="hmt-btn " type="button">Huỷ</button><button class="hmt-btn hmt-btn-primary" type="button">Lưu thay đổi</button></div><div class="hmt-rowl" data-bar="view" style="gap:var(--space-3);border-top:var(--border-1) solid var(--border-subtle)"><span class="hmt-help" style="flex:1">Đang xem quyền của vai trò CSKH, vận hành lớp. Bấm Sửa để thay đổi.</span><button class="hmt-btn hmt-btn-primary" type="button"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /> <path d="m15 5 4 4" /></svg>Sửa</button></div></section><section class="hmt-sc"><div style="padding:var(--space-3) var(--space-4);font-family:var(--font-heading);font-weight:600;font-size:14px">Lịch sử thay đổi gần đây</div><div class="hmt-rowl" style="min-height:36px;font-size:13px"><span class="hmt-num hmt-help" style="width:120px">12/10/2026 16:20</span><span><b>Admin Cao Trường</b> cho CSKH quyền Giao việc trên Ticket</span></div><div class="hmt-rowl" style="min-height:36px;font-size:13px"><span class="hmt-num hmt-help" style="width:120px">09/10/2026 09:05</span><span><b>Admin Cao Trường</b> giới hạn Kế toán chỉ Xem trên Lớp học</span></div><div class="hmt-rowl" style="min-height:36px;font-size:13px"><span class="hmt-num hmt-help" style="width:120px">01/10/2026 14:40</span><span><b>Admin Cao Trường</b> tạo vai trò Trợ giảng</span></div></section><span class="hmt-help">Phân hệ mới tự thêm thành hàng mới, mặc định Không có quyền với mọi vai trò. Số liệu trong màn này chỉ để minh hoạ.</span></div></div></div></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return { yes: true }; }
+  componentDidMount() {
+    const CFG = {
+  init:x => { x.qa('.hmt-tag[aria-label*=": "]').forEach(b => { b.setAttribute('data-o', b.textContent.trim()); b.style.cursor = 'default'; }); window.__setEdit = on => { x.qa('[data-bar=edit]').forEach(e => e.style.display = on ? '' : 'none'); x.qa('[data-bar=view]').forEach(e => e.style.display = on ? 'none' : ''); window.__editing = on; x.qa('.hmt-tag[data-o]').forEach(b => b.style.cursor = on ? 'pointer' : 'default'); }; window.__editing = false; },
+  raw:(t, x) => {
+    const role = t.closest('.hmt-rowl');
+    const left = t.closest('section.hmt-sc'); 
+    if (role && left && left.style.width === '260px' && role.querySelector('.hmt-avatar')) {
+      x.qa('.hmt-rowl', left).forEach(r => { r.classList.remove('sel'); const sp = r.children[1]; if (sp) sp.style.fontWeight = ''; });
+      role.classList.add('sel'); const sp = role.children[1]; if (sp) sp.style.fontWeight = '600';
+      const nm = x.tx(sp); const h = x.q('.hmt-grid-h span'); if (h) h.textContent = 'Phân hệ (' + nm + ')'; const vb = x.q('[data-bar=view] span'); if (vb) vb.textContent = 'Đang xem quyền của vai trò ' + nm + '. Bấm Sửa để thay đổi.'; const eb = x.q('[data-bar=edit] span'); if (eb) { const n0 = x.q('b', eb); eb.innerHTML = 'Đã đổi <b>' + (n0 ? n0.textContent : '0 ô') + '</b> của vai trò ' + nm + '.'; } if (window.__setEdit) window.__setEdit(false);
+      x.toast('Đang xem quyền của vai trò ' + nm + ' (số liệu minh hoạ).'); return true; }
+    return false; },
+  btn:(l, b, x) => {
+    const al = b.getAttribute('aria-label') || '';
+    const CY = [['Không có', '', 'không thấy, không làm được'], ['Của tôi', 'hmt-tag-warning', 'chỉ bản ghi mình phụ trách'], ['Cơ sở', 'hmt-tag-info', 'mọi bản ghi của cơ sở mình'], ['Tất cả', 'hmt-tag-success', 'mọi bản ghi, mọi cơ sở']];
+    if (l === 'Sửa') { window.__setEdit(true); return true; }
+    if (/: /.test(al) && b.classList.contains('hmt-tag')) {
+      if (!window.__editing) { x.toast('Bấm Sửa để thay đổi quyền.'); return true; }
+      const pp = x.openPop(b, CY.map(c => (c[0] === l ? '✓ ' : '') + c[0]), v => {
+        const nm = v.replace('✓ ', ''); const nx = CY.filter(c => c[0] === nm)[0];
+        b.textContent = nx[0]; b.className = 'hmt-tag ' + nx[1]; b.setAttribute('aria-label', al.replace(/: .*$/, ': ' + nx[0]));
+        const o = b.getAttribute('data-o'); const edited = nx[0] !== o;
+        b.style.outline = edited ? '2px solid var(--brand-500)' : ''; b.style.outlineOffset = edited ? '-2px' : '';
+        const n = x.qa('.hmt-tag[data-o]').filter(z => z.style.outline).length;
+        const bb = x.qa('b').filter(z => /ô$/.test(x.tx(z)))[0]; if (bb) bb.textContent = n + ' ô'; });
+      pp.style.minWidth = '120px'; return true; }
+    if (l === 'Huỷ') { x.qa('.hmt-tag[data-o]').forEach(z => { const o = z.getAttribute('data-o'); const c = CY.filter(k => k[0] === o)[0]; z.textContent = o; z.className = 'hmt-tag ' + c[1]; z.style.outline = ''; }); const bb = x.qa('b').filter(z => /ô$/.test(x.tx(z)))[0]; if (bb) bb.textContent = '0 ô'; window.__setEdit(false); x.toast('Đã bỏ các thay đổi chưa lưu.'); return true; }
+    if (l === 'Lưu thay đổi') { const n = x.qa('.hmt-tag[data-o]').filter(z => z.style.outline).length; x.qa('.hmt-tag[data-o]').forEach(z => { z.setAttribute('data-o', z.textContent.trim()); z.style.outline = ''; }); const bb = x.qa('b').filter(z => /ô$/.test(x.tx(z)))[0]; if (bb) bb.textContent = '0 ô'; window.__setEdit(false); x.toast(n ? 'Đã lưu ' + n + ' thay đổi thành phiên bản mới, có hiệu lực ngay.' : 'Chưa có thay đổi để lưu.'); return true; }
+    return false; },
+  toasts:{'Lịch sử thay đổi quyền':'Mở lịch sử thay đổi quyền.'} };
+const ROOT = document.querySelector('[data-ix=root]');
+if (!ROOT) { return; }
+const q = (s, r) => (r || ROOT).querySelector(s);
+const qa = (s, r) => Array.from((r || ROOT).querySelectorAll(s));
+const tx = e => ((e && e.textContent) || '').replace(/\s+/g, ' ').trim();
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd');
+const SALES = ['Trần Thu Hà', 'Nguyễn Văn Nam', 'Lê Mai Anh'];
+const pad = n => (n < 10 ? '0' : '') + n;
+const nowHM = () => { const d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); };
+const vn = iso => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return m ? m[3] + '/' + m[2] + '/' + m[1] : ''; };
+
+function toast(m) {
+  let t = q('.ix-toast');
+  if (!t) { t = document.createElement('div'); t.className = 'ix-toast'; ROOT.appendChild(t); }
+  t.textContent = m; t.classList.add('on'); clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('on'), 2800);
+}
+
+// ---------- danh sách lựa chọn ----------
+const KHOI = Array.from({ length: 11 }, (_, i) => 'Lớp ' + (i + 2));
+const SUBSRC = { 'Facebook Ads': ['Chat', 'Comment', 'Inbox', 'Lead Form'], 'Cold Call': ['Buy', 'Crawl', 'Flyer'], 'Event': ['Indoor', 'Outdoor'], 'Referral': ['By Customer', 'By HMT'], 'Upsale': ['Renew Lost', 'New Opp', 'Cross-Sale'] };
+const SOURCES = ['Facebook Ads', 'Google Ads', 'Website', 'Hotline', 'Walk-in', 'Zalo', 'Cold Call', 'Event', 'Referral', 'Upsale', 'Ban Giám Đốc'];
+const C3 = ['C3A Không có nhu cầu', 'C3B Chưa có nhu cầu ở thời điểm hiện tại', 'C3C Đang học ở nơi khác', 'C3D Không phù hợp về sản phẩm', 'C3E Không phù hợp về giá', 'C3F Không phù hợp về độ tuổi', 'C3G Không phù hợp về địa điểm', 'C3H Không nghe máy nhiều lần'];
+const C_SUB = { C1: [], C2: ['C2A Không nghe máy', 'C2B Không liên lạc được', 'C2C Bận gọi lại sau'], C3: C3, C4: ['C4A Cần gửi thêm thông tin', 'C4B Cần trao đổi thêm', 'C4C Đủ điều kiện tạo cơ hội'] };
+const MON = ['TOAN · Toán', 'DAI · Đại số', 'HINH · Hình học', 'LY · Vật lý', 'HOA · Hoá học', 'VAN · Ngữ văn', 'ANH · Tiếng Anh', 'KHTN · Khoa học tự nhiên', 'TRUNG · Tiếng Trung', 'SAT · SAT'];
+const REASONS_HUY = ['L5C Không liên hệ được', 'L5D PH bận, không đưa đón được', 'L5E Con bận', 'L5F Con không muốn tham gia', 'L5G Con đang ôn thi', 'L5H Con ốm', 'L5I Gia đình đi du lịch', 'L5K Thời tiết không thuận lợi', 'L5N Con đang ở quê', 'L5M Lý do khác', 'L5O Huỷ test nhiều lần'];
+const REASONS_TC = ['Thiếu thông tin', 'Sai số tiền', 'Sai chứng từ', 'Không đúng chính sách', 'Khác'];
+function optionsFor(label, btn) {
+  const inDlg = !!btn.closest('.hmt-dialog');
+  if (label === 'Sub-stage') {
+    if (inDlg) return ['L5A Đồng ý tham gia test', 'L5B Đã xếp lịch test'];
+    const cur = q('.hmt-stage [aria-current]');
+    return cur ? (C_SUB[tx(cur).slice(0, 2)] || []) : [];
+  }
+  if (label === 'Khối') return KHOI;
+  if (label === 'Source') return SOURCES;
+  if (label === 'Sub-source') {
+    const k = btn.closest('dl') ? qa('.hmt-kv', btn.closest('dl')) : qa('.hmt-kv');
+    const src = k.map(x => [tx(q('dt', x)), x]).filter(a => a[0].indexOf('Source') === 0 && a[0] !== 'Sub-source')[0];
+    const v = src ? tx(q('button span, dd', src[1])) : '';
+    return SUBSRC[v] || [];
+  }
+  if (label === 'Sale phụ trách' || label === 'Người phụ trách') return SALES;
+  if (label === 'Loại hoạt động') return ['Gọi điện', 'Zalo', 'Email', 'Gặp trực tiếp', 'Thu tiền'];
+  if (label === 'Môn') return MON;
+  if (label === 'Hình thức test') return ['Offline', 'Online'];
+  if (label === 'Cấp độ đề') return ['Cơ bản', 'Nâng cao'];
+  if (label === 'Phòng') return ['P101 · 12 chỗ · CS1', 'P102 · 8 chỗ · CS1', 'P201 · 10 chỗ · CS1', 'Online'];
+  if (label === 'GV chấm') return ['Nguyễn Thị Lan · GV2007', 'Lê Hoài Nam · GV2011', 'Trần Văn Hùng · GV2015'];
+  if (label === 'Lý do huỷ') return REASONS_HUY;
+  if (label === 'Lý do từ chối') return REASONS_TC;
+  return [];
+}
+const labelOf = b => {
+  const f = b.closest('.hmt-field');
+  if (f) return tx(q('label', f)).replace(/\s*\*$/, '');
+  const k = b.closest('.hmt-kv');
+  if (k) return tx(q('dt', k)).replace(/\s*\*$/, '');
+  if (b.closest('.hmt-substage')) return 'Sub-stage';
+  return '';
+};
+function closePops() { qa('.ix-pop').forEach(p => p.remove()); }
+function openPop(anchor, items, onPick, host, cls) {
+  closePops();
+  const h = host || anchor.parentElement;
+  if (getComputedStyle(h).position === 'static') h.style.position = 'relative';
+  const p = document.createElement('div');
+  p.className = 'ix-pop hmt-menu' + (cls ? ' ' + cls : ''); p.setAttribute('role', 'listbox');
+  items.forEach(t => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'hmt-opt'; b.textContent = t;
+    b.addEventListener('click', ev => { ev.stopPropagation(); closePops(); onPick(t); });
+    p.appendChild(b);
+  });
+  if (!items.length) { const s = document.createElement('span'); s.className = 'hmt-help'; s.style.padding = '8px 12px'; s.textContent = 'Chọn mục cha trước'; p.appendChild(s); }
+  h.appendChild(p);
+  if (!cls && anchor.tagName === 'BUTTON' && !anchor.classList.contains('hmt-select')) { p.style.left = anchor.offsetLeft + 'px'; p.style.minWidth = Math.max(anchor.offsetWidth, 180) + 'px'; }
+  return p;
+}
+function setSel(btn, val) {
+  const s = q('span', btn); if (!s) return;
+  s.textContent = val; s.style.color = ''; s.classList.remove('hmt-ph');
+  btn.classList.remove('hmt-input-err'); clearErr(btn);
+}
+function clearErr(el) {
+  const h = el.closest('.hmt-field') || el.closest('dd');
+  if (h) qa('.ix-err', h).forEach(x => x.remove());
+  el.classList.remove('hmt-input-err');
+}
+function showErr(el, msg) {
+  el.classList.add('hmt-input-err');
+  const h = el.closest('.hmt-field') || el.closest('dd');
+  if (h && !q('.ix-err', h)) { const s = document.createElement('span'); s.className = 'ix-err'; s.textContent = msg; h.appendChild(s); }
+}
+const valOf = el => el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ? el.value.trim() : (q('span', el).classList.contains('hmt-ph') ? '' : tx(q('span', el)));
+
+// ---------- hộp thoại ----------
+const scrim = q('.hmt-scrim');
+const bgblur = q('.bgblur');
+const dlgs = scrim ? qa('.hmt-dialog', scrim) : [];
+function openDlg(i) {
+  if (!scrim) return;
+  closePops();
+  scrim.style.display = 'flex'; if (bgblur) bgblur.style.filter = '';
+  dlgs.forEach((d, k) => { d.style.display = k === i ? '' : 'none'; });
+  if (CFG.onOpen) CFG.onOpen(i, dlgs[i]);
+}
+function closeDlg(i) {
+  if (!scrim) return;
+  dlgs[i].style.display = 'none';
+  if (dlgs.every(d => d.style.display === 'none')) { scrim.style.display = 'none'; if (bgblur) bgblur.style.filter = 'none'; }
+}
+function validateDlg(d) {
+  let ok = true;
+  qa('.hmt-field', d).forEach(f => {
+    const star = q('.hmt-req', f); if (!star) return;
+    const c = q('.hmt-input, .hmt-textarea', f); if (!c) return;
+    if (!valOf(c)) { showErr(c, 'Bắt buộc nhập'); ok = false; }
+  });
+  return ok;
+}
+function validateForm() {
+  let ok = true;
+  qa('.hmt-kv').forEach(k => { if (!q('dt .hmt-req', k)) return; const c = q('.hmt-input', k); if (c && !valOf(c)) { showErr(c, 'Bắt buộc nhập'); ok = false; } });
+  return ok;
+}
+function dangerState(d) {
+  const b = q('.hmt-btn-danger', q('.hmt-dialog-f', d)); if (!b) return;
+  const reasonBtn = q('.hmt-select', d); const note = q('textarea', d);
+  const r = reasonBtn ? valOf(reasonBtn) : ''; const khac = /khác/i.test(r);
+  b.disabled = !(r && (!khac || (note && note.value.trim())));
+}
+
+// ---------- bộ lọc, chọn dòng, nhóm ----------
+function tbl() { return q('.hmt-table'); }
+function hdrIdx(name) { const t = tbl(); if (!t) return -1; return qa('thead th', t).findIndex(th => tx(th).indexOf(name) === 0); }
+const TODAY = '14/10/2026';
+function rowCat(tr, gname) {
+  const cells = qa('td', tr);
+  let i = hdrIdx('Lịch hẹn kế tiếp');
+  if (i >= 0) { const t = tx(cells[i]); if (/Quá hạn/.test(t)) return 'Quá hạn'; if (/Hôm nay/.test(t)) return 'Hôm nay'; if (/Chưa có lịch/.test(t)) return 'Chưa có lịch'; return 'Sắp tới'; }
+  if (gname) return gname;
+  i = hdrIdx('Ngày giờ xác nhận');
+  if (i >= 0) {
+    const t = tx(cells[i]); if (/Chưa có lịch/.test(t)) return 'Chưa có lịch';
+    const st = tx(cells[cells.length - 1]); if (/Hoàn thành|Huỷ/.test(st)) return '';
+    const m = /(\d{2})\/(\d{2})\/(\d{4})/.exec(t); if (!m) return '';
+    const k = m[3] + m[2] + m[1], td = '20261014';
+    return k < td ? 'Quá hạn' : k === td ? 'Hôm nay' : 'Sắp tới';
+  }
+  return '';
+}
+function applyFilters() {
+  const t = tbl(); if (!t) return;
+  const sb = q('.hmt-search input'); const term = sb ? norm(sb.value.trim()) : '';
+  const pressed = lbl => qa('.hmt-pills[aria-label="' + lbl + '"] button[aria-pressed=true]').map(tx);
+  const times = pressed('Thời gian'), mine = pressed('Của tôi');
+  const si = Math.max(hdrIdx('Sale phụ trách'), hdrIdx('Người phụ trách'));
+  let g = '', vis = 0, ghead = null, gcount = 0;
+  const flush = () => { if (ghead) { ghead.style.display = gcount ? '' : 'none'; const n = q('.n', ghead); if (n) n.textContent = '(' + gcount + ')'; } };
+  qa('tbody tr', t).forEach(tr => {
+    if (tr.classList.contains('ghead')) { flush(); ghead = tr; gcount = 0; g = tr.classList.contains('ix-g') ? '' : tx(tr).replace(/\(\d+\)/, '').trim(); return; }
+    let show = true;
+    if (term && norm(tx(tr)).indexOf(term) < 0) show = false;
+    if (show && times.length && times.indexOf(rowCat(tr, g)) < 0) show = false;
+    if (show && mine.indexOf('Tôi là sale') >= 0 && si >= 0 && tx(qa('td', tr)[si]).indexOf('Trần Thu Hà') < 0) show = false;
+    tr.style.display = show ? '' : 'none'; if (show) { vis++; gcount++; }
+  });
+  flush();
+  const pg = q('.hmt-toolbar .hmt-pager span'); if (pg) pg.textContent = vis ? '1–' + vis + ' / ' + vis : '0 / 0';
+  let em = q('.ix-empty');
+  if (!vis) { if (!em) { em = document.createElement('div'); em.className = 'ix-empty hmt-help'; em.style.padding = '24px'; em.style.textAlign = 'center'; em.textContent = 'Không có bản ghi nào khớp bộ lọc.'; t.parentElement.appendChild(em); } } else if (em) em.remove();
+  updateBulk();
+}
+function updateBulk() {
+  const t = tbl(); if (!t) return;
+  const rows = qa('tbody tr', t).filter(tr => !tr.classList.contains('ghead'));
+  rows.forEach(tr => { const c = q('input[type=checkbox]', tr); if (c) { if (c.checked) tr.setAttribute('aria-selected', 'true'); else tr.removeAttribute('aria-selected'); } });
+  const n = rows.filter(tr => tr.style.display !== 'none' && q('input[type=checkbox]', tr) && q('input[type=checkbox]', tr).checked).length;
+  const bar = qa('.hmt-fbar').filter(x => /Đã chọn/.test(tx(x)))[0];
+  if (bar) { bar.style.display = n ? '' : 'none'; const b = q('b', bar); if (b) b.textContent = 'Đã chọn ' + n; }
+  const all = q('thead input[type=checkbox]', t);
+  if (all) { const vr = rows.filter(tr => tr.style.display !== 'none'); all.checked = vr.length > 0 && n === vr.length; }
+}
+function selectedRows() { return qa('tbody tr', tbl()).filter(tr => !tr.classList.contains('ghead') && tr.style.display !== 'none' && q('input[type=checkbox]', tr) && q('input[type=checkbox]', tr).checked); }
+let origOrder = null;
+function groupBy(key) {
+  const t = tbl(); const tb = q('tbody', t);
+  if (!origOrder) origOrder = qa('tr', tb).filter(tr => !tr.classList.contains('ghead'));
+  qa('.ix-g', tb).forEach(r => r.remove());
+  const rows = origOrder.slice();
+  const colN = qa('thead th', t).length;
+  if (!key) { rows.forEach(r => tb.appendChild(r)); applyFilters(); return; }
+  const idx = hdrIdx(key === 'Giai đoạn' ? 'Stage' : key === 'Nguồn' ? 'Source' : 'Sale');
+  const keyOf = tr => { const c = qa('td', tr)[idx]; const f = c.innerText.split('\n')[0].trim(); return key === 'Giai đoạn' ? f : f; };
+  const groups = {}; const order = [];
+  rows.forEach(r => { const k = keyOf(r); if (!groups[k]) { groups[k] = []; order.push(k); } groups[k].push(r); });
+  order.sort();
+  order.forEach(k => {
+    const h = document.createElement('tr'); h.className = 'ghead ix-g';
+    h.innerHTML = '<td colspan="' + colN + '"><b>' + k + '</b><span class="n">(' + groups[k].length + ')</span></td>';
+    tb.appendChild(h); groups[k].forEach(r => tb.appendChild(r));
+  });
+  applyFilters();
+}
+
+// ---------- thanh Stage ----------
+const LOCK = (q('.hmt-step-past svg') || { outerHTML: '' }).outerHTML;
+function setStage(btn) {
+  const steps = qa('.hmt-stage .hmt-step');
+  const i = steps.indexOf(btn), cur = steps.findIndex(s => s.getAttribute('aria-current') === 'step');
+  if (CFG.stage === 'forward') {
+    if (i < cur) { toast('Giai đoạn đã qua bị khoá. Muốn quay lại Nháp: Hành động → Đưa về Nháp (bắt buộc lý do).'); return; }
+    steps.forEach((s, k) => {
+      s.removeAttribute('aria-current'); s.className = 'hmt-step' + (k < i ? ' hmt-step-past' : '');
+      qa('svg', s).forEach(x => x.remove()); if (k < i && LOCK) s.insertAdjacentHTML('afterbegin', LOCK);
+    });
+    btn.setAttribute('aria-current', 'step'); btn.className = 'hmt-step';
+    const nm = tx(btn);
+    qa('span').filter(s => /Phiếu đang ở/.test(tx(s)) && s.children.length === 0).forEach(s => { s.textContent = '· Phiếu đang ở ' + nm + (nm === 'Hoàn thành' ? ', chỉ đưa về Nháp được (bắt buộc lý do).' : '.'); });
+    toast('Đã chuyển sang ' + nm + '. Mọi lần đổi ghi vào lịch sử.');
+    return;
+  }
+  steps.forEach(s => s.removeAttribute('aria-current')); btn.setAttribute('aria-current', 'step');
+  // lead: đổi stage thì sub-stage xoá
+  const sb = q('#sub-st');
+  if (sb) { sb.classList.remove('hmt-input-ro'); const lk = q('svg', sb); if (lk) lk.outerHTML = `<svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>`; const sp = q('span', sb); sp.textContent = 'Chưa có'; sp.classList.add('hmt-ph'); const hp = q('.hmt-substage .hmt-help'); if (hp) hp.style.display = 'none'; }
+  toast('Đã chuyển lead sang ' + tx(btn) + '. Sub-stage được xoá để chọn lại; lịch sử đã ghi.');
+}
+
+// ---------- chuyển giai đoạn có hỏi thêm (TS-09) ----------
+function ts09Reset() {
+  const d = dlgs[0]; if (!d) return;
+  const nm = q('input[data-ix=sname]'), yr = q('input[data-ix=syear]');
+  const ok = nm && yr && nm.value.trim() && yr.value.trim();
+  const al = q('.hmt-alert-danger', d); if (al) al.style.display = ok ? 'none' : '';
+  const p = q('.hmt-btn-primary', d); if (p) p.disabled = !ok;
+}
+
+// ---------- sự kiện ----------
+const dayIso = { 'Hôm nay': '2026-10-14', 'Ngày mai': '2026-10-15', 'Ngày kia': '2026-10-16', 'T7 17/10': '2026-10-17', 'CN 18/10': '2026-10-18', 'T2 19/10': '2026-10-19', 'Tuần sau': '2026-10-21' };
+function X() { return { openDlg, closeDlg, toast, openPop, setSel, showErr, clearErr, valOf, validateDlg, validateForm, dlgs, q, qa, tx, vn, closePops }; }
+function onClick(e) {
+  const t = e.target;
+  if (t.closest && t.closest('.hmt-sb')) return;
+  const a = t.closest('a[href="#"]'); if (a) { e.preventDefault(); if (CFG.link) toast(CFG.link); return; }
+  if (!ROOT.contains(t)) { closePops(); return; }
+  const pickedPop = t.closest('.ix-pop');
+  if (!pickedPop) closePops();
+  if (CFG.raw && CFG.raw(t, X())) return;
+  const chip = t.closest('.hmt-stage + div .hmt-tag-danger, .hmt-box .hmt-tag-danger');
+  if (chip && CFG.chip && !t.closest('.hmt-dialog')) { CFG.chip(tx(chip), X()); return; }
+
+  // kanban thẻ, hàng nút trong cột
+  // hộp thoại: đóng, chấp nhận
+  const dlg = t.closest('.hmt-dialog');
+  if (dlg) {
+    const di = dlgs.indexOf(dlg);
+    const btn = t.closest('button');
+    if (!btn) return;
+    if (btn.getAttribute('aria-label') === 'Đóng') { closeDlg(di); return; }
+    // dropdown trong hộp thoại
+    if (btn.classList.contains('hmt-select') && !btn.classList.contains('hmt-input-ro')) {
+      e.stopPropagation();
+      const lb = labelOf(btn);
+      openPop(btn, optionsFor(lb, btn), v => { setSel(btn, v); if (dlg.querySelector('.hmt-dialog-f .hmt-btn-danger')) dangerState(dlg); if (CFG.onPick) CFG.onPick(lb, v, dlg); });
+      return;
+    }
+    // pills
+    const pb = t.closest('.hmt-pills button');
+    if (pb) {
+      qa('button', pb.parentElement).forEach(x => x.setAttribute('aria-pressed', 'false')); pb.setAttribute('aria-pressed', 'true');
+      const lb = tx(q('label', pb.closest('.hmt-field')));
+      if (/ngày/.test(lb)) { const di2 = qa('input[type=date]', dlg)[0]; if (di2) di2.value = dayIso[tx(pb)] || ''; }
+      else { const ti = qa('input[type=time]', dlg)[0]; if (ti) ti.value = tx(pb); }
+      return;
+    }
+    const f = btn.closest('.hmt-dialog-f');
+    if (CFG.dlgAction && CFG.dlgAction(btn, dlg, di, X())) return;
+    if (btn.closest('.hmt-alert') && /Đi tới/.test(tx(btn))) { return; }
+    if (f) {
+      const label = tx(btn);
+      if (/^(Huỷ|Giữ lại)$/.test(label)) { closeDlg(di); return; }
+      if (btn.disabled) return;
+      if (!validateDlg(dlg)) { toast('Còn ô bắt buộc chưa điền.'); return; }
+      const bad = CFG.check ? CFG.check(label, dlg, X()) : ''; if (bad) { toast(bad); return; }
+      const am = CFG.after ? CFG.after(label, di, dlg, X()) : '';
+      toast(am || (CFG.okMsg && CFG.okMsg[label]) || ('Đã thực hiện: ' + label)); closeDlg(di);
+    }
+    return;
+  }
+
+  const btn = t.closest('button'); if (!btn) {
+    // hàng danh sách: chỉ chọn qua checkbox
+    return;
+  }
+  const label = tx(btn);
+
+  // dropdown ô nhập (form chi tiết)
+  if (btn.classList.contains('hmt-select') && !btn.closest('.hmt-dialog') && !btn.classList.contains('hmt-input-ro') && !btn.closest('.hmt-toolbar')) {
+    e.stopPropagation();
+    const lb = labelOf(btn);
+    const items = optionsFor(lb, btn);
+    openPop(btn, items, v => {
+      setSel(btn, v);
+      if (lb === 'Source') { qa('.hmt-kv').forEach(k => { if (tx(q('dt', k)).indexOf('Sub-source') === 0) { const b2 = q('.hmt-select', k); if (b2) { const s = q('span', b2); s.textContent = 'Chọn sub-source'; s.classList.add('hmt-ph'); } } }); }
+    });
+    return;
+  }
+
+  // thanh Stage
+  if (btn.classList.contains('hmt-step')) { if (CFG.step && CFG.step(btn, X())) return; setStage(btn); return; }
+  if (CFG.chips && btn.closest('.hmt-stage')) { return; }
+
+  // pills
+  const pb = btn.closest('.hmt-pills');
+  if (pb) {
+    const lbl = pb.getAttribute('aria-label') || '';
+    if (lbl === 'Lọc dòng thời gian') {
+      qa('button', pb).forEach(x => x.setAttribute('aria-pressed', 'false')); btn.setAttribute('aria-pressed', 'true');
+      const kind = label;
+      qa('.hmt-msg').forEach(m => { const meta = tx(q('.hmt-meta', m)); m.style.display = (kind === 'Tất cả' || meta.indexOf(kind) >= 0) ? '' : 'none'; });
+      return;
+    }
+    btn.setAttribute('aria-pressed', btn.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+    applyFilters(); return;
+  }
+
+  // bộ chuyển kiểu xem
+  if (btn.closest('.hmt-seg')) { if (CFG.views && CFG.views[btn.getAttribute('aria-label')]) toast(CFG.views[btn.getAttribute('aria-label')]); return; }
+
+  // pager chi tiết
+  const pgd = btn.closest('.hmt-rbar-r .hmt-pager');
+  if (pgd) { const sp = q('span', pgd); const m = /(\d+) \/ (\d+)/.exec(tx(sp)); if (m) { let n = +m[1] + (btn.getAttribute('aria-label') === 'Bản ghi sau' ? 1 : -1); n = Math.max(1, Math.min(+m[2], n)); sp.textContent = n + ' / ' + m[2]; toast('Chuyển sang bản ghi ' + n + ' / ' + m[2] + ' (cùng bộ lọc danh sách).'); } return; }
+  if (btn.getAttribute('aria-label') === 'Làm mới' || /^Làm mới/.test(label)) { toast('Đã làm mới lúc ' + nowHM()); return; }
+
+  // Hành động menu
+  if (/^Hành động/.test(label)) {
+    e.stopPropagation();
+    const m = q('.hmt-rbar-l .hmt-menu:not(.ix-pop)'); if (m) m.style.display = (m.style.display === 'none') ? '' : 'none';
+    return;
+  }
+  const mi = btn.closest('.hmt-rbar-l .hmt-menu');
+  if (mi && !mi.classList.contains('ix-pop')) {
+    mi.style.display = 'none';
+    if (CFG.menu && CFG.menu(label, X())) return;
+    toast('Hành động: ' + label); return;
+  }
+
+  // thanh công cụ
+  if (btn.closest('.hmt-toolbar') && /Group By/.test(label)) {
+    e.stopPropagation();
+    if (!tbl()) { toast('Nhóm theo: Giai đoạn, Nguồn, Sale.'); return; }
+    openPop(btn, ['Không nhóm', 'Giai đoạn', 'Nguồn', 'Sale'], v => { groupBy(v === 'Không nhóm' ? '' : v); toast(v === 'Không nhóm' ? 'Đã bỏ nhóm' : 'Nhóm theo ' + v); }); return;
+  }
+  if (btn.closest('.hmt-toolbar')) { toast(label + ': mở bộ lọc (chưa dùng trong wireframe này).'); return; }
+  if (/^(Cột)$/.test(label)) { toast('Chọn cột hiển thị'); return; }
+
+  // Giao sale hàng loạt
+  if (/Giao sale/.test(label) && btn.closest('.hmt-fbar')) {
+    e.stopPropagation();
+    openPop(btn, SALES, v => {
+      const si = hdrIdx('Sale phụ trách'); const rows = selectedRows();
+      rows.forEach(tr => { qa('td', tr)[si].textContent = v; });
+      toast('Đã giao ' + rows.length + ' lead cho ' + v + '. Lịch sử đã ghi.');
+    }); return;
+  }
+  if (label === 'Bỏ chọn') { qa('tbody input[type=checkbox], thead input[type=checkbox]', tbl()).forEach(c => { c.checked = false; }); updateBulk(); return; }
+
+  // hoạt động hẹn trên dòng / cột phải
+  if (btn.closest('.hmt-act-btns')) {
+    const a2 = btn.closest('.hmt-act');
+    if (/Hoàn thành|Huỷ/.test(label)) {
+      const c = q('.hmt-csec-t', btn.closest('.hmt-csec')); a2.remove();
+      const n = qa('.hmt-act').length; if (c) c.textContent = 'HOẠT ĐỘNG SẮP TỚI (' + n + ')';
+      toast(/Hoàn thành/.test(label) ? 'Đã hoàn thành lịch hẹn (một bấm).' : 'Đã huỷ lịch hẹn.');
+    } else toast('Dời lịch hẹn: mở hộp thoại Dời (TS-13).');
+    return;
+  }
+  const tr = btn.closest('tr');
+  if (tr && tbl() && /^(Hoàn thành|Huỷ|Dời)$/.test(label)) {
+    if (label === 'Dời') { CFG.lastRow = tr; if (CFG.openDoi) { openDlg(CFG.openDoi.i); } else toast('Dời lịch hẹn: mở hộp thoại Dời (TS-13).'); return; }
+    const tg = q('.hmt-tag', qa('td', tr)[6]);
+    if (tg) { tg.textContent = label === 'Huỷ' ? 'Huỷ' : 'Hoàn thành'; tg.className = 'hmt-tag' + (label === 'Hoàn thành' ? ' hmt-tag-success' : ''); }
+    const cell = btn.closest('td'); if (cell) cell.innerHTML = '';
+    toast(label === 'Hoàn thành' ? 'Đã hoàn thành (một bấm).' : 'Đã huỷ lịch hẹn.'); return;
+  }
+
+  // Gửi ghi chú
+  if (/Gửi ghi chú/.test(label)) {
+    const ta = q('textarea.hmt-textarea', btn.closest('.hmt-csec')); const v = ta ? ta.value.trim() : '';
+    if (!v) { toast('Nhập nội dung ghi chú trước.'); return; }
+    const day = q('.hmt-day');
+    const html = '<div class="hmt-msg"><span class="hmt-avatar hmt-avatar-lg">TH</span><div class="hmt-msg-b"><span class="hmt-meta"><b>Trần Thu Hà</b> · <span class="hmt-num">' + nowHM() + '</span> · Ghi chú</span><div class="hmt-note"></div></div></div>';
+    if (day) { day.insertAdjacentHTML('afterend', html); q('.hmt-msg .hmt-note', day.parentElement).textContent = v; }
+    ta.value = ''; toast('Đã gửi ghi chú.'); return;
+  }
+  if (/Theo dõi/.test(label)) { const on = /Đang theo dõi/.test(label); btn.lastChild.textContent = on ? 'Theo dõi' : 'Đang theo dõi'; toast(on ? 'Đã bỏ theo dõi' : 'Đang theo dõi bản ghi này.'); return; }
+  if (label === 'Mở bản ghi trùng') { toast('Mở bản ghi trùng: LD000227 (TS-02).'); return; }
+
+  // nút riêng của từng board
+  if (CFG.btn && CFG.btn(label, btn, X())) return;
+  if (CFG.toasts && CFG.toasts[label]) { toast(CFG.toasts[label]); return; }
+}
+function onChange(e) {
+  const c = e.target;
+  if (c.type === 'checkbox' && tbl() && tbl().contains(c)) {
+    if (c.closest('thead')) { qa('tbody tr', tbl()).forEach(tr => { if (!tr.classList.contains('ghead') && tr.style.display !== 'none') { const k = q('input[type=checkbox]', tr); if (k) k.checked = c.checked; } }); }
+    updateBulk();
+  }
+}
+function onInput(e) {
+  const c = e.target;
+  if (c.closest('.hmt-search')) { applyFilters(); return; }
+  if (CFG.onInput) CFG.onInput(c, X());
+  if (c.value) clearErr(c);
+  const d = c.closest('.hmt-dialog');
+  if (d && q('.hmt-dialog-f .hmt-btn-danger', d)) dangerState(d);
+  if (CFG.ts09) ts09Reset();
+}
+document.addEventListener('click', onClick);
+ROOT.addEventListener('change', onChange);
+ROOT.addEventListener('input', onInput);
+
+// ---------- kanban kéo thả ----------
+if (CFG.kanban) {
+  let drag = null;
+  qa('.hmt-kcard').forEach(c => { c.setAttribute('draggable', 'true'); c.style.cursor = 'grab'; });
+  ROOT.addEventListener('dragstart', e => { const c = e.target.closest && e.target.closest('.hmt-kcard'); if (c) { drag = c; c.style.opacity = '.5'; try { e.dataTransfer.setData('text/plain', 'x'); } catch (_) { } } });
+  ROOT.addEventListener('dragend', () => { if (drag) drag.style.opacity = ''; drag = null; qa('.hmt-kcol').forEach(c => { c.style.outline = ''; }); });
+  ROOT.addEventListener('dragover', e => { const col = e.target.closest && e.target.closest('.hmt-kcol'); if (col && drag) { e.preventDefault(); qa('.hmt-kcol').forEach(c => { c.style.outline = c === col ? '2px dashed var(--brand-500)' : ''; }); } });
+  ROOT.addEventListener('drop', e => {
+    const col = e.target.closest && e.target.closest('.hmt-kcol'); if (!col || !drag) return; e.preventDefault();
+    const from = drag.closest('.hmt-kcol'); col.appendChild(drag); drag.style.opacity = '';
+    if (from !== col) { const st = tx(q('.hmt-kcol-h', col)).slice(0, 2); const sub = q('.hmt-tag-brand', drag); if (sub) sub.remove(); toast('Đã chuyển ' + tx(q('.hmt-code', drag)) + ' sang ' + st + '. Sub-stage được xoá; lịch sử đã ghi.'); }
+    qa('.hmt-kcol').forEach(c => { const n = q('.n', c); if (n) n.textContent = qa('.hmt-kcard', c).length; c.style.outline = ''; });
+    drag = null;
+  });
+}
+
+// ---------- khởi tạo ----------
+if (CFG.init) CFG.init(X());
+if (q('.hmt-fbar') && tbl()) updateBulk();
+if (dlgs.some(d => q('.hmt-dialog-f .hmt-btn-danger', d))) dlgs.forEach(d => dangerState(d));
+if (CFG.ts09) ts09Reset();
+this._off = () => { document.removeEventListener('click', onClick); };
+
+
+const SBR = document.querySelector('[data-ix=root]');
+const SB_RIGHT = `<svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>`, SB_DOWN = `<svg class="hmt-ic chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>`;
+function sbToast(m) {
+  let t = SBR.querySelector('.ix-toast');
+  if (!t) { t = document.createElement('div'); t.className = 'ix-toast'; SBR.appendChild(t); }
+  t.textContent = m; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 2800);
+}
+function sbClick(e) {
+  if (!SBR || !SBR.contains(e.target)) return;
+  const l1 = e.target.closest('.hmt-sb-l1');
+  if (l1) {
+    const g = l1.getAttribute('data-g'), open = l1.getAttribute('aria-expanded') === 'true';
+    l1.setAttribute('aria-expanded', open ? 'false' : 'true');
+    const cv = l1.querySelector('svg.chev'); if (cv) cv.outerHTML = open ? SB_RIGHT : SB_DOWN;
+    SBR.querySelectorAll('[data-p="' + g + '"]').forEach(x => { x.style.display = open ? 'none' : ''; });
+    return;
+  }
+  const l2 = e.target.closest('.hmt-sb-l2');
+  if (l2 && !l2.hasAttribute('data-hole')) { e.preventDefault(); sbToast('Mở màn "' + l2.textContent.trim() + '" (màn khác, không nằm trong canvas này).'); }
+}
+document.addEventListener('click', sbClick);
+this._sbOff = () => document.removeEventListener('click', sbClick);
+
+  }
+  componentWillUnmount() { if (this._off) this._off(); if (this._sbOff) this._sbOff(); }
+}
+</script>
+</body>
+</html>
