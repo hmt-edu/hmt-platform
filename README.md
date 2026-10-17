@@ -35,6 +35,9 @@ export API_URL=http://127.0.0.1:54321 SECRET_KEY=<Secret key trong supabase stat
 npm run db:seed-users     # vd sale.cs5@thu.hoamatoan.invalid, học sinh HS900001
 ```
 
+Thử tốc độ với dữ liệu giả lớn (chỉ ở local, sau `db:seed-users`): `npm run db:seed-lon` nạp 50.000 lead, 30.000 phụ huynh,
+100.000 lịch hẹn giả (`supabase/seed-lon.sql`, mã `LDL…`, `PHL…`). Muốn làm lại thì `npm run db:reset`. Không chạy ở thử nghiệm hay chạy thật.
+
 `.env.local` không đưa vào repo. Biến `VITE_*` lộ ra trình duyệt: chỉ dùng khoá công khai, không bao giờ dùng secret / service_role.
 
 ## Kiểm thử

@@ -22,7 +22,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
-    "db:seed-users": "node scripts/seed-users.ts"
+    "db:seed-users": "node scripts/seed-users.ts",
+    "db:seed-lon": "docker exec -i supabase_db_hmt-platform psql -U postgres -q < supabase/seed-lon.sql"
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "5.3.0",

@@ -60,7 +60,8 @@ select is((select array_agg(c order by c) from (
           array['ACCOUNT_LOCK_REASON', 'ATTENDANCE_CONTACT_REASON', 'HOURS_ADJUST_REASON', 'REJECT_REASON',
                 'RENEWAL_LOST_REASON', 'REVERSAL_REASON', 'SESSION_CANCEL_REASON', 'TEST_SKIP_REASON'],
           'R-HT-04: mọi danh mục lý do có "Khác" bắt buộc ghi chú');
-select is((select count(*)::int from app.catalog_item where requires_note and name <> 'Khác'), 0, 'Chỉ mục "Khác" bắt buộc ghi chú');
+select is((select count(*)::int from app.catalog_item where requires_note and name <> 'Khác' and catalog_code <> 'TEST_CANCEL_REASON'), 0,
+          'Chỉ mục "Khác" bắt buộc ghi chú (ngoại lệ: "lý do khác" của huỷ test, R-CRM-06)');
 
 -- Lý do từ chối: "Áp dụng cho" để trống = mọi nơi.
 select is((select count(*)::int from app.catalog_item where catalog_code = 'REJECT_REASON' and applies_to <> '{}'), 0,
