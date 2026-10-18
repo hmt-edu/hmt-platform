@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 18/10/2026, 22:00. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 18/10/2026, 23:00. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
 ## Quy trình (đọc `docs/quy-trinh-phoi-hop.md`)
 
@@ -39,7 +39,7 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P3b2a | Cơ hội: bảng `app.opportunity` (mã CO, RLS, 14 chỉ mục có lý do), lịch hẹn gắn được cơ hội; hàm tạo (R-CRM-01, 09), sửa, đổi giai đoạn và nhóm con (R-CRM-02, 03, 13, 14, 16; ba ngoại lệ đổi nhóm con), giao người phụ trách, danh sách và Kanban một lần gọi; tìm hoặc tạo phụ huynh, học sinh (R-CRM-27, 28); khoá nhóm con; `seed-lon` thêm 20.000 cơ hội; sửa hiệu năng `list_leads`. Migration `20261018000028`, 134 bài pgTAP | Đã gộp (PR P3b2a) |
 | Ma trận v4 | Bảng quyền phiên bản 4 (17 ô Phụ huynh, Học sinh; R-CRM-26, 27, 29): migration `20261018000029`, bài pgTAP 021, chỉnh bài 017, 018, `phan-quyen.md` | Đã gộp (PR Ma trận quyền phiên bản 4) |
 | P3b2b | Phiếu kiểm tra: bảng `app.student_test` (mã PKT, RLS có phạm vi được phân công), lịch hẹn nhắc tự sinh (gắn phiếu), hàm tạo / đổi lịch / sửa / bắt đầu / nộp bài / nhập kết quả / hoàn thành / lùi bước / huỷ / mở lại, danh sách và Kanban, thay thân `opportunity_test_state` và `opportunity_l5_substage`, cơ hội tự lên L6A khi phiếu hoàn thành; R-CRM-05, 06, 10, 11, 12, 13, 14, 15, 21, 27; `seed-lon` thêm 10.000 học sinh, 15.000 phiếu. Migration `20261018000030`, 174 bài pgTAP mới | Đã gộp (PR P3b2b) |
-| P3b3 | Hàm gộp trùng (R-CRM-22, 25), nhập lô từ file; **làm trước các màn P3c đến P3f** (anh chốt 18/10) | Chưa |
+| P3b3 | Hàm gộp trùng (R-CRM-22, 25, 37), nhập lô lead từ file (quyền Lead · Tạo; CSV trước, Excel sau), ngoại lệ chuyển ghi chú chỉ trong hàm gộp, lịch nhắc phiếu tự đóng khi sang Đang test; **làm trước các màn P3c đến P3f** (anh chốt 18/10). Kế hoạch chờ anh duyệt | Chưa |
 | P3c–P3f | Màn: Lead + Lịch hẹn (c), Cơ hội (d), Phiếu kiểm tra (e), Gộp trùng + Nhập file (f) | Chưa |
 | 7 | P2 Cấu hình | Chưa |
 | 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
@@ -93,11 +93,11 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 - **Giờ test ở quá khứ:** giữ chặn khi tạo và đổi lịch như #47 (không có trường hợp test tại chỗ rồi mới tạo phiếu).
 - **Ngưỡng dung lượng gói tải:** giữ "chỉ báo số" (`npm run size`, bước CI chỉ in số), **không đặt ngưỡng trượt** (anh chốt 18/10). Đo hiện tại: trang đầu CRM 238 KB nén. `CLAUDE.md` mục Hiệu năng còn dòng "vượt thì trượt": chờ anh OK sửa cho khớp.
+- **P3b3 anh chốt 18/10:** nhập lô lead dùng quyền Lead · Tạo (CSKH nhập được; bản đồ TS-04 đã thêm CSKH); CSV trước, Excel sau; gộp lead chuyển cả cơ hội sang lead giữ lại và vẫn chặn khi bản bị gộp đã có báo giá hoặc đơn (R-CRM-22); nguồn, chiến dịch, cơ sở, người phụ trách của file nhập như đề xuất; nút TS-06 đổi thành "Mở cơ hội cũ" (đã ghi bản đồ, dựng ở P3d); ngoại lệ chuyển ghi chú chỉ trong các hàm gộp (gọi trực tiếp vẫn bị chặn, có bài kiểm); R-CRM-37 vào luật [CHỐT]. Điều kiện chặn "học sinh cùng học hai lớp trùng giờ" (R-CRM-25) vẫn [CHỜ].
 - **R-CRM-36** (cơ hội mới luôn bắt đầu ở L1) đã vào `docs/spec/04` [CHỐT]; `create_opportunity` khớp (xem `code.md`).
 
 ## Đang chờ anh Trường
 
-- **Lịch nhắc tự sinh của phiếu:** có tự đóng khi phiếu sang Đang test không (đề xuất ở mục "Cho P3e" bên dưới); anh quyết trước khi dựng màn P3e.
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
 
 ## Việc phải nhớ khi viết hàm (luật đã chốt)
@@ -107,7 +107,7 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 - Đã vào luật 18/10: R-CRM-34 (nhóm con L6), R-CRM-35 (đổi nhóm con cùng giai đoạn).
 - **Kiểm lại quyền (anh dặn 18/10):** `update_opportunity` kiểm quyền Học sinh · Sửa theo cơ sở của hồ sơ học sinh. Hồ sơ học sinh nay sinh tự động khi tạo phiếu (cơ sở tiếp nhận = cơ sở cơ hội); nhân viên cơ sở khác sửa học sinh ở cơ hội của mình sẽ bị chặn nếu học sinh tiếp nhận ở cơ sở khác. Xem lại khi làm màn.
 - Phụ huynh, học sinh (R-CRM-26 đến 28): chỉ sinh trong hàm (phụ huynh khi tạo cơ hội, khớp SĐT chuẩn hoá; học sinh khi tạo phiếu hoặc duyệt đơn, khớp phụ huynh + tên + năm sinh chuẩn hoá); chặn ghi trực tiếp.
-- **Cho P3e (ghi 18/10):** (1) bản vẽ TS15 cho **chọn Khối** (ô "Lớp" là danh sách chọn, không khoá; đã kiểm bản vẽ), bản đồ TS-15 đã sửa "Khối chọn khi tạo". (2) **Cơ sở test khác cơ sở cơ hội:** phiếu chép `branch_id` của cơ hội để xét quyền, nên nhân viên cơ sở test chưa thấy phiếu (giáo viên chấm được phân công thì thấy); xem lại ở P3e. (3) **Lịch hẹn nhắc tự sinh còn Chưa làm khi phiếu đã sang Đang test trở đi (Hoàn thành thì càng vậy):** sau giờ hẹn nó thành "Quá hạn", làm tăng thẻ QUÁ HẠN ở Trang chủ và thanh đỏ của Kanban dù việc nhắc đã hết ý nghĩa. Hiện chỉ có phiếu huỷ mới huỷ lịch nhắc. **Đề xuất (chờ anh quyết trước khi dựng màn P3e):** hệ thống tự đóng (Hoàn thành) lịch nhắc tự sinh còn Chưa làm khi phiếu sang Đang test; lịch nhắc người dùng sửa tay hoặc tự tạo thì giữ nguyên; mở lại hoặc lùi phiếu về Nháp thì không mở lại lịch đã đóng (nếu giờ test còn ở tương lai thì sinh lịch nhắc mới). Cần sửa `start_student_test` và bài kiểm. (4) Khối "Phiếu kiểm tra hôm nay" của Trang chủ thêm một dòng vào cấu hình khối khi làm P3e.
+- **Cho P3e (ghi 18/10):** (1) bản vẽ TS15 cho **chọn Khối** (ô "Lớp" là danh sách chọn, không khoá; đã kiểm bản vẽ), bản đồ TS-15 đã sửa "Khối chọn khi tạo". (2) **Cơ sở test khác cơ sở cơ hội:** phiếu chép `branch_id` của cơ hội để xét quyền, nên nhân viên cơ sở test chưa thấy phiếu (giáo viên chấm được phân công thì thấy); xem lại ở P3e. (3) **Lịch nhắc tự sinh của phiếu (anh chốt 18/10):** hệ thống tự đóng (Hoàn thành) lịch nhắc tự sinh còn Chưa làm khi phiếu sang Đang test, để thẻ QUÁ HẠN ở Trang chủ và thanh đỏ Kanban không tăng oan; lịch nhắc người dùng sửa tay hoặc tự tạo giữ nguyên; lùi về Nháp không tự mở lại lịch đã đóng. Làm ở P3b3 (sửa `start_student_test`, kèm bài kiểm), trước khi dựng màn P3e. (4) Khối "Phiếu kiểm tra hôm nay" của Trang chủ thêm một dòng vào cấu hình khối khi làm P3e.
 - Hàm tạo đơn, chuyển báo giá thành đơn kiểm R-CRM-16 (phải ở L8); hàm duyệt phiếu thu gọi kiểm tra R-CRM-17 trong cùng giao dịch, đối chiếu "lệch" R-CRM-18.
 - R-CRM-19: bấm Tạo chỉ mở form trắng, Lưu mới cấp mã; nút Tạo nằm trên bản ghi cơ hội (R-TIEN-02).
 - Danh mục #25: mục "Tặng giờ chăm sóc (cần duyệt)" cần cờ "cần duyệt" thật khi viết hàm điều chỉnh giờ. Danh mục #23: hàm lọc theo cột `applies_to`, không đọc tiền tố mã.
