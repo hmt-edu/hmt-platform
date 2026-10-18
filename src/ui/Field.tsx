@@ -19,8 +19,6 @@ export const INPUT_CLASS = `${INPUT_FRAME} h-control w-full text-body`;
 export const TEXTAREA_CLASS = `${INPUT_FRAME} min-h-[72px] w-full py-2 text-body`;
 /** Nút có hình ô nhập, rộng theo nội dung (ô chọn khoảng ngày, chọn một giá trị). */
 export const INPUT_BUTTON_CLASS = `${INPUT_FRAME} inline-flex h-control items-center gap-2 text-body whitespace-nowrap`;
-/** Ô mã 6 số: chữ to, giãn cách rộng. */
-const OTP_CLASS = `${INPUT_FRAME} h-control w-full tabular text-center text-h2 tracking-[0.5em]`;
 
 type FieldRenderProps = {
   id: string;
@@ -35,6 +33,7 @@ export function Field({
   required,
   help,
   error,
+  invalid,
   children,
   className,
 }: {
@@ -42,6 +41,8 @@ export function Field({
   required?: boolean | undefined;
   help?: ReactNode | undefined;
   error?: string | null | undefined;
+  /** Tô viền đỏ mà không hiện câu lỗi riêng (lỗi đã nói ở khối cảnh báo của trang). */
+  invalid?: boolean | undefined;
   children: (props: FieldRenderProps) => ReactNode;
   className?: string | undefined;
 }) {
@@ -63,7 +64,7 @@ export function Field({
       {children({
         id,
         'aria-describedby': [errorId, helpId].filter(Boolean).join(' ') || undefined,
-        'aria-invalid': error ? true : undefined,
+        'aria-invalid': error || invalid ? true : undefined,
         'aria-required': required ? true : undefined,
       })}
       {error && (
@@ -85,21 +86,22 @@ type TextFieldProps = {
   label: string;
   help?: ReactNode | undefined;
   error?: string | null | undefined;
+  invalid?: boolean | undefined;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, 'id' | 'className'>;
 
-export function TextField({ label, help, error, required, ...input }: TextFieldProps) {
+export function TextField({ label, help, error, invalid, required, ...input }: TextFieldProps) {
   return (
-    <Field label={label} help={help} error={error} required={required}>
+    <Field label={label} help={help} error={error} invalid={invalid} required={required}>
       {(field) => <input {...input} {...field} className={INPUT_CLASS} />}
     </Field>
   );
 }
 
 /** Ô mật khẩu có nút Hiện/Ẩn (nút là chữ, không chỉ biểu tượng). */
-export function PasswordInput({ label, help, error, required, ...input }: TextFieldProps) {
+export function PasswordInput({ label, help, error, invalid, required, ...input }: TextFieldProps) {
   const [shown, setShown] = useState(false);
   return (
-    <Field label={label} help={help} error={error} required={required}>
+    <Field label={label} help={help} error={error} invalid={invalid} required={required}>
       {(field) => (
         <div className="relative">
           <input
@@ -126,39 +128,63 @@ export function PasswordInput({ label, help, error, required, ...input }: TextFi
 const OTP_LENGTH = 6;
 
 /**
- * Ô nhập mã 6 số (TOTP). Một ô duy nhất thay cho 6 ô rời như bản vẽ: để điện thoại tự điền mã
- * (autocomplete one-time-code), dán mã và trình đọc màn hình đều chạy đúng.
+ * Ô nhập mã 6 số (TOTP) vẽ thành sáu ô rời như bản vẽ P1, nhưng bên dưới vẫn là **một** ô nhập thật (trong suốt,
+ * phủ kín sáu ô): điện thoại tự điền mã (autocomplete one-time-code), dán mã, bàn phím và trình đọc màn hình
+ * chạy đúng như một ô. `invalid` tô viền đỏ; câu lỗi do trang hiện ở khối cảnh báo.
  */
 export function OtpInput({
   label,
   value,
   onChange,
-  error,
+  invalid,
   autoFocus,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
-  error?: string | null | undefined;
+  invalid?: boolean | undefined;
   autoFocus?: boolean | undefined;
 }) {
+  const id = useId();
+  const [focused, setFocused] = useState(false);
+  const active = Math.min(value.length, OTP_LENGTH - 1);
   return (
-    <Field label={label} error={error} required help={`Mã gồm ${OTP_LENGTH} chữ số.`}>
-      {(field) => (
+    <div className="flex flex-col items-center">
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
+      <div className="relative flex gap-2">
+        {Array.from({ length: OTP_LENGTH }, (_, i) => (
+          <span
+            key={i}
+            aria-hidden="true"
+            className={cn(
+              'flex h-14 w-12 items-center justify-center rounded-control border bg-surface text-h2 tabular text-fg',
+              invalid ? 'border-danger-solid' : 'border-border-strong',
+              focused && i === active && 'border-focus ring-2 ring-focus/40',
+            )}
+          >
+            {value[i] ?? ''}
+          </span>
+        ))}
         <input
-          {...field}
+          id={id}
           name="totp"
           inputMode="numeric"
           autoComplete="one-time-code"
           pattern={`[0-9]{${OTP_LENGTH}}`}
           maxLength={OTP_LENGTH}
           autoFocus={autoFocus}
+          aria-required="true"
+          aria-invalid={invalid ? true : undefined}
           value={value}
           onChange={(e) => onChange(e.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH))}
-          className={OTP_CLASS}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          className="absolute inset-0 h-full w-full cursor-text opacity-0"
         />
-      )}
-    </Field>
+      </div>
+    </div>
   );
 }
 

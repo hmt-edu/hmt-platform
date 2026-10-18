@@ -16,6 +16,7 @@ export function LoginPage() {
       subtitle="Dành cho nhân viên, giáo viên, trợ giảng"
       loginLabel="Email"
       loginInputMode="email"
+      wrongText="Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa."
       footer={
         <>
           <Link to="/quen-mat-khau" className={LINK}>
@@ -39,11 +40,13 @@ export function StudentLoginPage() {
       subtitle="Dành cho học sinh Hòa Ma Toán"
       product="lms"
       loginLabel="Mã học sinh"
+      submitLabel="Vào học"
+      wrongText="Mã học sinh hoặc mật khẩu chưa đúng. Em kiểm tra lại nhé."
       loginHelp="Ví dụ: HS000123. Mã có trên thẻ học sinh hoặc do thầy cô gửi."
       footer={
         <>
           <p className="text-fg-muted">
-            Quên mật khẩu? Em nhờ thầy cô chăm sóc lớp đặt lại mật khẩu giúp nhé.
+            Quên mật khẩu? Em nhờ thầy cô hoặc bộ phận chăm sóc khách hàng ở cơ sở cấp lại.
           </p>
           <Link to={withNext('/dang-nhap', params.get('next'))} className={LINK}>
             Nhân viên, giáo viên đăng nhập bằng email

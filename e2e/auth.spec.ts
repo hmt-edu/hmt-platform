@@ -15,7 +15,7 @@ import {
 // Đăng nhập từng vai trò bằng tài khoản giả, ở hai cỡ màn. Cần Supabase local đã chạy seed-users.
 test.skip(!PASSWORD, 'Chưa có SEED_PASSWORD: bỏ qua kiểm thử đăng nhập.');
 
-const WRONG = 'Tên đăng nhập hoặc mật khẩu không đúng.';
+const WRONG = 'Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa.';
 
 for (const [account, portal, heading] of [
   ['sale.cs5', '/crm', 'Trang chủ'],
@@ -224,8 +224,11 @@ async function clearTotp(email: string) {
 async function enrollDevice(page: Page): Promise<string> {
   const secret = (await page.locator('code').first().textContent())?.trim() ?? '';
   expect(secret.length).toBeGreaterThan(10);
+  // Trang thiết lập lần đầu chia hai bước (Tiếp → Hoàn tất); hồ sơ cá nhân thêm thiết bị một bước (Xác nhận).
+  const next = page.getByRole('button', { name: 'Tiếp', exact: true });
+  if (await next.isVisible()) await next.click();
   await page.getByLabel('Mã xác thực').fill(generateSync({ secret }));
-  await page.getByRole('button', { name: 'Xác nhận' }).click();
+  await page.getByRole('button', { name: /^(Hoàn tất|Xác nhận)$/ }).click();
   return secret;
 }
 

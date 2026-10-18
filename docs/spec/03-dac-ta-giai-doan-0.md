@@ -55,7 +55,7 @@ Project Supabase Free tự tạm dừng sau 1 tuần không dùng: workflow hằ
 | Phụ huynh | Chốt sau | CSKH | 4 |
 
 - Nghỉ việc, dừng học thì **khoá** tài khoản, không xoá.
-- Quên mật khẩu: nhân viên tự đặt lại qua email; học sinh nhờ CSKH.
+- Quên mật khẩu: giai đoạn 0 nhân viên liên hệ quản trị viên (theo thiết kế P1 v4, anh OK 18/10); tự đặt lại qua email làm sau; học sinh nhờ CSKH.
 - Admin và Kế toán bật xác thực hai bước.
 - **Không chuyển mật khẩu từ hệ thống cũ.**
 

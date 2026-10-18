@@ -100,8 +100,9 @@ test('hai bước, khung CRM của Admin, hồ sơ cá nhân, chọn cổng', as
   await expect(page.locator('code')).toBeVisible();
   await save(browser, page, 'CHUNG-03');
   const secret = (await page.locator('code').first().textContent())?.trim() ?? '';
+  await page.getByRole('button', { name: 'Tiếp', exact: true }).click();
   await page.getByLabel('Mã xác thực').fill(generateSync({ secret }));
-  await page.getByRole('button', { name: 'Xác nhận' }).click();
+  await page.getByRole('button', { name: 'Hoàn tất' }).click();
   await expect(page).toHaveURL(/\/crm$/);
   await page.getByRole('button', { name: 'Quản trị', exact: true }).click();
   await save(browser, page, 'CHUNG-10');

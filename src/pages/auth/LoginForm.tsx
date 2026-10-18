@@ -14,6 +14,8 @@ import { TurnstileSlot } from '../../ui/TurnstileSlot';
 
 /** Mã lỗi do Edge Function login trả khi đang tạm chặn (không nói tài khoản có tồn tại hay không). */
 const TEMP_BLOCKED_CODE = 'HMT_DANG_NHAP_TAM_CHAN';
+/** Mã lỗi khi sai tên đăng nhập hoặc mật khẩu: chữ hiện ra lấy từ thiết kế từng cổng. */
+const WRONG_CODE = 'HMT_SAI_DANG_NHAP';
 
 const SESSION_END_TEXT: Record<SessionEndReason, string> = {
   idle: 'Bạn không thao tác quá thời gian cho phép nên hệ thống đã tự đăng xuất để giữ an toàn.',
@@ -27,6 +29,10 @@ export type LoginFormProps = {
   loginLabel: string;
   loginHelp?: string | undefined;
   loginInputMode?: 'email' | 'text' | undefined;
+  /** Chữ nút gửi (học sinh: "Vào học"). */
+  submitLabel?: string | undefined;
+  /** Câu hiện khi sai tên đăng nhập hoặc mật khẩu (theo thiết kế từng cổng). */
+  wrongText: string;
   /** Phần dưới nút Đăng nhập: quên mật khẩu, chuyển sang trang đăng nhập khác. */
   footer: ReactNode;
 };
@@ -39,6 +45,8 @@ export function LoginForm({
   loginLabel,
   loginHelp,
   loginInputMode,
+  submitLabel = 'Đăng nhập',
+  wrongText,
   footer,
 }: LoginFormProps) {
   const { supabase, claims } = useAuth();
@@ -84,7 +92,7 @@ export function LoginForm({
     setPassword('');
     if (result.code === TEMP_BLOCKED_CODE)
       return void navigate('/khong-dang-nhap-duoc?ly-do=tam-chan');
-    setError(result.message);
+    setError(result.code === WRONG_CODE ? wrongText : result.message);
   }
 
   return (
@@ -101,6 +109,7 @@ export function LoginForm({
           required
           help={loginHelp}
           error={missing.login}
+          invalid={Boolean(error)}
           value={login}
           onChange={(e) => setLogin(e.target.value)}
         />
@@ -110,13 +119,14 @@ export function LoginForm({
           autoComplete="current-password"
           required
           error={missing.password}
+          invalid={Boolean(error)}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <TurnstileSlot onToken={onToken} attempt={attempt} />
         {error && <Alert tone="danger">{error}</Alert>}
         <Button type="submit" variant="primary" fullWidth loading={busy}>
-          {busy ? 'Đang đăng nhập…' : 'Đăng nhập'}
+          {busy ? 'Đang đăng nhập…' : submitLabel}
         </Button>
         <div className="flex flex-col gap-2 text-body">{footer}</div>
       </form>

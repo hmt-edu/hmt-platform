@@ -10,6 +10,11 @@
 - Mục chờ anh quyết, chưa thành luật (ghi chú ở `docs/spec/04` mục 13): R-GD-07, R-GD-13 (một phiếu tái tục mỗi ghi danh), ticket chọn nhiều ghi danh, R-GIO-03/04, spec 02 mục 3, 6, 7, chặn môn theo khối khi tạo lớp.
 - Thứ tự: PR 5 (5a, 5b, 5c), PR 5a (Trang chủ), P3b2a (Cơ hội, kèm ma trận v4), P3b2b (Phiếu), P3b3, P3c đến P3f.
 
+## PR 5a (18/10)
+- Dựng khung đăng nhập hai cột (cột giới thiệu + thẻ), CHUNG-01/06, hai bước (CHUNG-02), thiết lập 2 bước (CHUNG-03) theo P1 v4. Chữ lỗi lấy theo thiết kế ở giao diện; Edge Function giữ nguyên.
+- Thêm ngoài đề xuất: hàm công khai `public.login_branch_names()` (migration 027, chỉ mã và tên cơ sở dạy học đang hoạt động) cho cột giới thiệu.
+- Nền động chưa làm (5c); robot đứng yên.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

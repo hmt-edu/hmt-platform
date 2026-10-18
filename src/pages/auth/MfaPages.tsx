@@ -60,7 +60,7 @@ export function MfaVerifyPage() {
     if (!ok) {
       setBusy(false);
       setCode('');
-      return setError('Mã không đúng hoặc đã hết hạn. Nhập mã mới đang hiện trên ứng dụng.');
+      return setError('Mã không đúng. Kiểm tra lại mã đang hiện trong ứng dụng rồi nhập lại.');
     }
     await refresh();
     setBusy(false);
@@ -77,13 +77,21 @@ export function MfaVerifyPage() {
         <Alert tone="danger">Không tải được thông tin xác thực. Tải lại trang rồi thử lại.</Alert>
       ) : (
         <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-4">
-          <OtpInput label="Mã xác thực" value={code} onChange={setCode} error={error} autoFocus />
+          {error ? <Alert tone="danger">{error}</Alert> : null}
+          <OtpInput
+            label="Mã xác thực"
+            value={code}
+            onChange={setCode}
+            invalid={Boolean(error)}
+            autoFocus
+          />
           <Button type="submit" variant="primary" fullWidth loading={busy}>
             Xác nhận
           </Button>
           <p className="text-caption text-fg-muted">
-            Mất điện thoại? Liên hệ quản trị viên để đặt lại xác thực hai bước.
+            Mất điện thoại? Liên hệ quản trị viên để đặt lại xác thực hai bước
           </p>
+          <p className="text-caption text-fg-muted">Bắt buộc với tài khoản Admin và Kế toán.</p>
         </form>
       )}
       <SignOutLink />
@@ -93,6 +101,7 @@ export function MfaVerifyPage() {
 
 /** CHUNG-03 · Thiết lập xác thực hai bước lần đầu: quét QR, nhập mã xác nhận. */
 export function MfaSetupPage() {
+  const [step, setStep] = useState<1 | 2>(1);
   const { claims } = useAuth();
   const navigate = useNavigate();
   const devices = useTotpDevices();
@@ -106,12 +115,15 @@ export function MfaSetupPage() {
     <AuthLayout
       title="Thiết lập xác thực hai bước"
       subtitle="Vai trò của bạn bắt buộc xác thực hai bước. Làm một lần, mất khoảng 2 phút."
+      eyebrow={step === 1 ? 'BƯỚC 1/2 · QUÉT MÃ' : 'BƯỚC 2/2 · NHẬP MÃ'}
+      progress={{ step, total: 2 }}
     >
       {devices.isPending ? (
         <Spinner />
       ) : (
         <TotpEnroll
           deviceName="Thiết bị 1"
+          onStep={setStep}
           onDone={() => void navigate('/dang-nhap', { replace: true })}
         />
       )}

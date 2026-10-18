@@ -55,3 +55,40 @@
   --rdp-day_button-width: 32px;
   font-size: 13px;
 }
+
+/* Hình minh hoạ cột giới thiệu của trang đăng nhập (xem src/layout/BrandArt.tsx). Bản đứng yên; chuyển động ở PR 5c. */
+.auth-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.auth-art .auth-ln {
+  stroke: #fff;
+  stroke-width: 1;
+  opacity: 0.22;
+  stroke-dasharray: 4 6;
+}
+.auth-art .auth-nd {
+  fill: #fff;
+  opacity: 0.5;
+}
+.auth-art .auth-sy {
+  fill: #fff;
+  font-family: var(--font-display, sans-serif);
+  font-weight: 600;
+  opacity: 0;
+}
+.auth-robot {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  width: 160px;
+  height: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+.auth-robot .auth-q2 {
+  opacity: 0;
+}

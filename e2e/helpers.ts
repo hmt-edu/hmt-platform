@@ -17,7 +17,9 @@ export async function fillLogin(
 ) {
   await page.getByLabel(label, { exact: true }).fill(login);
   await page.getByLabel('Mật khẩu', { exact: true }).fill(password);
-  await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+  await page
+    .getByRole('button', { name: label === 'Email' ? 'Đăng nhập' : 'Vào học', exact: true })
+    .click();
 }
 
 export async function loginStaff(page: Page, account: string, password = PASSWORD) {

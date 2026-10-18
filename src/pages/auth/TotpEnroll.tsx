@@ -6,7 +6,22 @@ import { Alert, Spinner } from '../../ui/Feedback';
 import { OtpInput } from '../../ui/Field';
 
 /** Đăng ký một thiết bị TOTP: quét QR (hoặc nhập khoá), rồi nhập mã 6 số để xác nhận. */
-export function TotpEnroll({ deviceName, onDone }: { deviceName: string; onDone: () => void }) {
+export function TotpEnroll({
+  deviceName,
+  onDone,
+  onStep,
+}: {
+  deviceName: string;
+  onDone: () => void;
+  /** Có hàm này thì chia hai bước (DN04): 1 quét mã, 2 nhập mã; trang gọi dùng số bước để vẽ thanh bước. */
+  onStep?: ((step: 1 | 2) => void) | undefined;
+}) {
+  const [step, setStep] = useState<1 | 2>(1);
+  const split = onStep !== undefined;
+  const go = (next: 1 | 2) => {
+    setStep(next);
+    onStep?.(next);
+  };
   const { supabase, refresh } = useAuth();
   const [enrollment, setEnrollment] = useState<TotpEnrollment | null>(null);
   const [code, setCode] = useState('');
@@ -48,27 +63,49 @@ export function TotpEnroll({ deviceName, onDone }: { deviceName: string; onDone:
 
   return (
     <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-4">
-      <ol className="flex list-decimal flex-col gap-2 pl-5 text-body text-fg">
-        <li>
-          Mở ứng dụng xác thực trên điện thoại (Mật khẩu của iPhone, Google Authenticator, Microsoft
-          Authenticator…).
-        </li>
-        <li>Chọn thêm tài khoản rồi quét mã dưới đây.</li>
-        <li>Nhập mã 6 số ứng dụng hiện ra.</li>
-      </ol>
-      <img
-        src={enrollment.qrCode}
-        alt="Mã QR để cài xác thực hai bước"
-        className="mx-auto size-48 rounded-control bg-surface p-2"
-      />
-      <p className="text-caption text-fg-muted">
-        Không quét được thì nhập khoá:{' '}
-        <code className="font-mono break-all text-fg">{enrollment.secret}</code>
-      </p>
-      <OtpInput label="Mã xác thực" value={code} onChange={setCode} error={error} />
-      <Button type="submit" variant="primary" fullWidth loading={busy}>
-        Xác nhận
-      </Button>
+      {(!split || step === 1) && (
+        <>
+          <ol className="flex list-decimal flex-col gap-2 pl-5 text-body text-fg">
+            <li>
+              Mở ứng dụng xác thực trên điện thoại (Mật khẩu của iPhone, Google Authenticator,
+              Microsoft Authenticator…).
+            </li>
+            <li>Chọn thêm tài khoản rồi quét mã dưới đây.</li>
+            <li>Nhập mã 6 số ứng dụng hiện ra.</li>
+          </ol>
+          <img
+            src={enrollment.qrCode}
+            alt="Mã QR để cài xác thực hai bước"
+            className="mx-auto size-48 rounded-control bg-surface p-2"
+          />
+          <p className="text-caption text-fg-muted">
+            Không quét được thì nhập khoá:{' '}
+            <code className="font-mono break-all text-fg">{enrollment.secret}</code>
+          </p>
+        </>
+      )}
+      {(!split || step === 2) && (
+        <>
+          {error ? <Alert tone="danger">{error}</Alert> : null}
+          <OtpInput label="Mã xác thực" value={code} onChange={setCode} invalid={Boolean(error)} />
+        </>
+      )}
+      {split && step === 1 ? (
+        <Button type="button" variant="primary" fullWidth onClick={() => go(2)}>
+          Tiếp
+        </Button>
+      ) : (
+        <div className="flex gap-3">
+          {split && (
+            <Button type="button" variant="secondary" onClick={() => go(1)}>
+              Quay lại
+            </Button>
+          )}
+          <Button type="submit" variant="primary" fullWidth loading={busy}>
+            {split ? 'Hoàn tất' : 'Xác nhận'}
+          </Button>
+        </div>
+      )}
     </form>
   );
 }
