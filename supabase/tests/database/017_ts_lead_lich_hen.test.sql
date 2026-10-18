@@ -133,8 +133,8 @@ select is((select parent_id from app.lead where parent_phone = '0900000009'), (s
           'Lead gắn đúng phụ huynh đã chọn');
 select pg_temp.sudo($$create temp table other_parent as select id from app.parent where code = 'PH900005'$$);
 select pg_temp.sudo($$grant all on other_parent to public$$);
-select is(pg_temp.err($$select app.create_lead(pg_temp.lead_data('0900000011'), false, (select id from other_parent))$$),
-          'HMT_KHONG_CO_QUYEN', 'Không gắn được vào phụ huynh của cơ sở khác (ngoài phạm vi xem)');
+select is((select count(*)::int from app.parent where id = (select id from other_parent)), 1,
+          'R-CRM-26 (phiên bản 4): phụ huynh dùng chung toàn hệ thống, Tuyển sinh CS1 thấy phụ huynh của cơ sở khác');
 -- Trùng khác cơ sở vẫn cảnh báo nhưng không lộ tên.
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select is(pg_temp.err($$select app.create_lead(pg_temp.lead_data('0900000001'))$$), 'HMT_SDT_TRUNG', 'Trùng với lead cơ sở khác: vẫn cảnh báo');
@@ -167,7 +167,7 @@ select ok((select count(*) from app.lead) >= 4, 'Tuyển sinh CS1 thấy lead c�
 select is((select count(*)::int from app.lead l join app.branch b on b.id = l.branch_id where b.code <> 'CS1'), 0, 'Tuyển sinh CS1 không thấy lead cơ sở khác');
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select is((select count(*)::int from app.lead), 0, 'Tuyển sinh CS5 không thấy lead của CS1');
-select is((select count(*)::int from app.parent where code = 'PH900001'), 0, 'Tuyển sinh CS5 không thấy phụ huynh CS1');
+select is((select count(*)::int from app.parent where code = 'PH900001'), 1, 'R-CRM-26 (phiên bản 4): Tuyển sinh CS5 thấy phụ huynh CS1 (hồ sơ dùng chung)');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select ok((select count(distinct branch_id) from app.lead) >= 1 and (select count(*) from app.parent) >= 2, 'ADMIN thấy mọi cơ sở');
 select pg_temp.claims(pg_temp.uid('teacher5'), 'aal1');

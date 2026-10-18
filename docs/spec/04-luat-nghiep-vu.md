@@ -316,4 +316,3 @@ Luật mới phát sinh thì thêm vào đúng mục, đánh dấu [CẦN CHỐT
 - Spec 02 mục 3 (gợi ý Đại + Hình chuyển lên bước lập đơn, khi xếp lớp chỉ nhắc nếu thiếu lớp còn lại), mục 6, 7 (quỹ và dự báo hết giờ theo từng ghi danh).
 - Kiểm môn theo khối khi tạo lớp (R-LOP-14).
 - **Phát hiện khi đưa luật vào, chưa ai quyết:** spec 02 mục "Toán tách Đại số và Hình học" còn ghi "Phụ huynh mua tổng giờ Toán; gói và ghi danh chỉ có môn `TOAN`; không có giờ Đại, giờ Hình", vênh R-GD-14 mới (hai ghi danh riêng, mỗi ghi danh một quỹ giờ riêng) và mục 8 ("gói `TOAN` → lớp `TOAN`, `DAI`, `HINH`").
-- `docs/nghiep-vu/phan-quyen.md` còn ghi "Trưởng cơ sở được Xuất file mọi phân hệ trong cơ sở": R-CRM-29 chỉ để Admin xuất Phụ huynh, Học sinh; sửa ở ma trận phiên bản 4.

@@ -1,4 +1,5 @@
 -- P3b1: ma trận quyền phiên bản 3 (15 ô cho Tuyển sinh, CSKH; anh Trường duyệt 17/10).
+-- Phiên bản 4 (021) đã đổi Phụ huynh, Học sinh sau đó: các bài về hai phân hệ này kiểm giá trị sau phiên bản 4.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -23,9 +24,9 @@ select is(pg_temp.perms('SALES', array['LEAD', 'OPPORTUNITY']),
                 'OPPORTUNITY:DUYET:CO_SO', 'OPPORTUNITY:GIAO_VIEC:CO_SO', 'OPPORTUNITY:SUA:CO_SO', 'OPPORTUNITY:TAO:CO_SO',
                 'OPPORTUNITY:XEM:CO_SO'], 'Tuyển sinh: Lead, Cơ hội có thêm Giao việc và Duyệt (gộp trùng)');
 select is(pg_temp.perms('SALES', array['PARENT', 'STUDENT']),
-          array['PARENT:DUYET:CO_SO', 'PARENT:SUA:CO_SO', 'PARENT:TAO:CO_SO', 'PARENT:XEM:CO_SO',
-                'STUDENT:DUYET:CO_SO', 'STUDENT:SUA:CO_SO', 'STUDENT:TAO:CO_SO', 'STUDENT:XEM:CO_SO'],
-          'Tuyển sinh: Phụ huynh, Học sinh có thêm Duyệt (gộp trùng)');
+          array['PARENT:DUYET:CO_SO', 'PARENT:SUA:CO_SO', 'PARENT:XEM:TOAN_HE_THONG',
+                'STUDENT:DUYET:CO_SO', 'STUDENT:SUA:CO_SO', 'STUDENT:XEM:TOAN_HE_THONG'],
+          'Tuyển sinh: Phụ huynh, Học sinh có Duyệt (gộp trùng); phiên bản 4 bỏ Tạo, Xem toàn hệ thống');
 select is(pg_temp.perms('SALES', array['STUDENT_TEST']),
           array['STUDENT_TEST:GIAO_VIEC:CO_SO', 'STUDENT_TEST:HUY:CO_SO', 'STUDENT_TEST:SUA:CO_SO', 'STUDENT_TEST:TAO:CO_SO', 'STUDENT_TEST:XEM:CO_SO'],
           'Tuyển sinh: Kiểm tra đầu vào có thêm Huỷ');
@@ -34,9 +35,9 @@ select is(pg_temp.perms('CSKH', array['LEAD', 'OPPORTUNITY']),
                 'OPPORTUNITY:DUYET:CO_SO', 'OPPORTUNITY:GIAO_VIEC:CO_SO', 'OPPORTUNITY:SUA:CO_SO', 'OPPORTUNITY:TAO:CO_SO',
                 'OPPORTUNITY:XEM:CO_SO'], 'CSKH: Lead, Cơ hội có thêm Giao việc và Duyệt (gộp trùng)');
 select is(pg_temp.perms('CSKH', array['PARENT', 'STUDENT']),
-          array['PARENT:DUYET:CO_SO', 'PARENT:SUA:CO_SO', 'PARENT:TAO:CO_SO', 'PARENT:XEM:CO_SO',
-                'STUDENT:DUYET:CO_SO', 'STUDENT:SUA:CO_SO', 'STUDENT:TAO:CO_SO', 'STUDENT:XEM:CO_SO'],
-          'CSKH: Phụ huynh, Học sinh có thêm Duyệt (gộp trùng)');
+          array['PARENT:DUYET:CO_SO', 'PARENT:SUA:CO_SO', 'PARENT:XEM:TOAN_HE_THONG',
+                'STUDENT:DUYET:CO_SO', 'STUDENT:SUA:CO_SO', 'STUDENT:XEM:TOAN_HE_THONG'],
+          'CSKH: Phụ huynh, Học sinh có Duyệt (gộp trùng); phiên bản 4 bỏ Tạo, Xem toàn hệ thống');
 select is(pg_temp.perms('CSKH', array['STUDENT_TEST']),
           array['STUDENT_TEST:GIAO_VIEC:CO_SO', 'STUDENT_TEST:HUY:CO_SO', 'STUDENT_TEST:SUA:CO_SO', 'STUDENT_TEST:TAO:CO_SO', 'STUDENT_TEST:XEM:CO_SO'],
           'CSKH: Kiểm tra đầu vào có thêm Giao việc và Huỷ');
@@ -45,7 +46,7 @@ select is(pg_temp.perms('CSKH', array['STUDENT_TEST']),
 select is(pg_temp.perms('TEACHER', array['LEAD', 'OPPORTUNITY', 'PARENT', 'STUDENT']), array['STUDENT:XEM:DUOC_PHAN_CONG'], 'Giáo viên không đổi');
 select is(pg_temp.perms('TA', array['LEAD', 'OPPORTUNITY', 'PARENT', 'STUDENT']), array['STUDENT:XEM:DUOC_PHAN_CONG'], 'Trợ giảng không đổi');
 select is((select count(*)::int from app.permission where role_code = 'ACCOUNTANT' and is_active
-           and module_code in ('LEAD', 'OPPORTUNITY', 'PARENT')), 0, 'Kế toán không có quyền ở Lead, Cơ hội, Phụ huynh');
+           and module_code in ('LEAD', 'OPPORTUNITY')), 0, 'Kế toán không có quyền ở Lead, Cơ hội (Phụ huynh: xem 021)');
 select is((select count(*)::int from app.permission where role_code = 'BRANCH_MANAGER' and is_active and action_code = 'DUYET'
            and module_code in ('LEAD', 'OPPORTUNITY', 'PARENT', 'STUDENT')), 4, 'Trưởng cơ sở vẫn có Duyệt (gộp trùng) cả bốn phân hệ');
 select is((select count(*)::int from app.permission where role_code = 'ADMIN' and is_active and action_code = 'DUYET'
@@ -53,13 +54,13 @@ select is((select count(*)::int from app.permission where role_code = 'ADMIN' an
 
 -- Hàm lưu: ghi chú tuỳ chọn, lời gọi hai tham số vẫn chạy.
 select is(app.save_permission_matrix(app.permission_current_version(),
-          jsonb_build_array(jsonb_build_object('role', 'TEACHER', 'module', 'HOLIDAY', 'action', 'XEM', 'scope', 'CO_SO'))), 4,
-          'Lưu hai tham số (không ghi chú) vẫn chạy: phiên bản 4');
-select is((select note from app.permission_version where version_no = 4), null, 'Không ghi chú thì để trống');
+          jsonb_build_array(jsonb_build_object('role', 'TEACHER', 'module', 'HOLIDAY', 'action', 'XEM', 'scope', 'CO_SO'))), 5,
+          'Lưu hai tham số (không ghi chú) vẫn chạy: phiên bản 5 (sau phiên bản 4)');
+select is((select note from app.permission_version where version_no = 5), null, 'Không ghi chú thì để trống');
 select is(app.save_permission_matrix(app.permission_current_version(),
-          jsonb_build_array(jsonb_build_object('role', 'TEACHER', 'module', 'HOLIDAY', 'action', 'XEM', 'scope', null)), '  Thu hồi thử  '), 5,
-          'Lưu có ghi chú: phiên bản 5');
-select is((select note from app.permission_version where version_no = 5), 'Thu hồi thử', 'Ghi chú được cắt khoảng trắng đầu cuối');
+          jsonb_build_array(jsonb_build_object('role', 'TEACHER', 'module', 'HOLIDAY', 'action', 'XEM', 'scope', null)), '  Thu hồi thử  '), 6,
+          'Lưu có ghi chú: phiên bản 6');
+select is((select note from app.permission_version where version_no = 6), 'Thu hồi thử', 'Ghi chú được cắt khoảng trắng đầu cuối');
 
 select * from finish();
 rollback;

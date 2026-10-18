@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
-- Vừa gộp #41 đến #44. PR P3b2a (Cơ hội) chờ OK. Ma trận quyền phiên bản 4: chưa nạp, chờ anh OK riêng sau khi xem TRƯỚC / SAU. Tiếp: P3b2b (phiếu), P3b3 (gộp trùng) trước các màn.
+- Vừa gộp #41 đến #45. PR Ma trận quyền phiên bản 4 (migration 029) chờ OK. Tiếp: đề xuất P3b2b (phiếu kiểm tra), rồi P3b3.
 
 ## Đã chốt (chưa vào repo)
 - Anh OK 18/10: PR 5 theo đề xuất (giữ trang đặt mật khẩu mới nhưng không dẫn tới; sửa bản đồ CHUNG-04, 05, 08 cho khớp thiết kế); bốn câu P3b2 như em đề xuất (không chặn tạo cơ hội theo C4C; sửa học sinh ở cơ hội = sửa hồ sơ học sinh; phụ huynh khớp SĐT khác tên: dùng hồ sơ cũ không ghi đè tên; học sinh trùng tên khác năm sinh = hai hồ sơ); **bảng quyền phiên bản 4** (17 ô Phụ huynh, Học sinh): nạp trong P3b2a.
@@ -30,6 +30,9 @@
 - Migration `20261018000028` (bảng cơ hội, lịch hẹn gắn cơ hội, hàm tạo, sửa, đổi giai đoạn, danh sách, Kanban; tìm hoặc tạo phụ huynh, học sinh). Migration `029` (ma trận v4) CHƯA viết vào repo, chờ OK riêng.
 - Điểm nối với phiếu: `opportunity_test_state`, `opportunity_l5_substage` (thân tạm); P3b2b thay thân. Hoãn: R-CRM-16 (chặn tạo đơn), 17, 18.
 - Phát hiện khi đo: CTE dùng hai lần bị Postgres cho "materialized" làm danh sách quét cả bảng; đã sửa `list_leads`, `list_appointments`, `list_opportunities` bằng `not materialized`.
+
+## PR Ma trận quyền phiên bản 4 (18/10)
+- Migration `20261018000029`: 17 ô Phụ huynh, Học sinh (bỏ Tạo 8, bỏ Xuất Trưởng cơ sở 2, Xem toàn hệ thống 6, Kế toán Xem Phụ huynh 1). Bài pgTAP 021; chỉnh 017 (phụ huynh cơ sở khác nay đọc được), 018 (đếm quyền, số phiên bản).
 
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).

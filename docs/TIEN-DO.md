@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 18/10/2026, 19:00. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 18/10/2026, 20:00. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
 ## Quy trình (đọc `docs/quy-trinh-phoi-hop.md`)
 
@@ -37,7 +37,7 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | Bàn giao 17/10 | Nhật ký Design (kiểm lại phiên bản canvas), nhật ký Chat, quy trình mục 13 bản 2 (đổi tài khoản: mở canvas gốc đã Share trước; Design đẩy nhánh mới từ `main`), `khoi-dong-design.md` | Đã gộp (#40) |
 | Nền tảng phối hợp | `docs/nhat-ky/` (ba file), `docs/phoi-hop/` (khởi động Chat, Design, prompt, luật chờ đưa vào spec), quy trình phối hợp mới, TIEN-DO | Đã gộp (#38) |
 | P3b2a | Cơ hội: bảng `app.opportunity` (mã CO, RLS, 14 chỉ mục có lý do), lịch hẹn gắn được cơ hội; hàm tạo (R-CRM-01, 09), sửa, đổi giai đoạn và nhóm con (R-CRM-02, 03, 13, 14, 16; ba ngoại lệ đổi nhóm con), giao người phụ trách, danh sách và Kanban một lần gọi; tìm hoặc tạo phụ huynh, học sinh (R-CRM-27, 28); khoá nhóm con; `seed-lon` thêm 20.000 cơ hội; sửa hiệu năng `list_leads`. Migration `20261018000028`, 134 bài pgTAP | Đã gộp (PR P3b2a) |
-| P3b2a (ma trận v4) | Bảng quyền phiên bản 4 (17 ô Phụ huynh, Học sinh): **chưa nạp**, anh OK riêng sau khi xem TRƯỚC / SAU (migration `029` làm sau OK) | Chờ anh |
+| Ma trận v4 | Bảng quyền phiên bản 4 (17 ô Phụ huynh, Học sinh; R-CRM-26, 27, 29): migration `20261018000029`, bài pgTAP 021, chỉnh bài 017, 018, `phan-quyen.md` | Đã gộp (PR Ma trận quyền phiên bản 4) |
 | P3b2b | Phiếu kiểm tra: bảng phiếu, R-CRM-05, 06, 10, 12, 13, 15, 21; thay thân `opportunity_test_state`, `opportunity_l5_substage` | Chưa |
 | P3b3 | Hàm gộp trùng (R-CRM-22, 25), nhập lô từ file; **làm trước các màn P3c đến P3f** (anh chốt 18/10) | Chưa |
 | P3c–P3f | Màn: Lead + Lịch hẹn (c), Cơ hội (d), Phiếu kiểm tra (e), Gộp trùng + Nhập file (f) | Chưa |
@@ -85,14 +85,13 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 1. PR 5 Đăng nhập (5a, 5b, 5c; đã OK đề xuất 18/10).
 2. PR 5a Trang chủ theo vai trò (K09b, gồm "Việc tuyển sinh hôm nay" TS-12).
-3. P3b2b Phiếu kiểm tra, P3b3 Gộp trùng và nhập file (làm trước các màn), ma trận quyền phiên bản 4 khi anh OK; rồi các màn P3c đến P3f.
+3. P3b2b Phiếu kiểm tra, P3b3 Gộp trùng và nhập file (làm trước các màn); rồi các màn P3c đến P3f.
 
 Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Ghi danh (xem `docs/nhat-ky/design.md`).
 
 ## Đang chờ anh Trường
 
 - Ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén; bước CI hiện chỉ báo số).
-- OK riêng bảng quyền phiên bản 4 (17 ô trên Phụ huynh, Học sinh) sau khi xem TRƯỚC / SAU; em chưa nạp migration `029` cho tới lúc đó.
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
 
 ## Việc phải nhớ khi viết hàm (luật đã chốt)

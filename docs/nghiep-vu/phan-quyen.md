@@ -43,7 +43,7 @@ Người nhiều vai trò lấy phạm vi rộng nhất trong các vai trò có 
   Không có dòng = không có quyền. Admin sửa qua `app.save_permission_matrix` (từ PR 6d; mỗi lần Lưu một phiên bản, xem mục dưới). Phân hệ Quản trị chỉ ADMIN.
 - Nạp từ `docs/seed/old_permission_matrix.csv`, đã sửa:
   - "Delete" cũ → Huỷ (không xoá cứng); phạm vi BRANCH → Cơ sở, ALL → Toàn hệ thống.
-  - Trưởng cơ sở được Xuất file mọi phân hệ trong cơ sở; mỗi lần xuất ghi `app.export_log`.
+  - Trưởng cơ sở được Xuất file mọi phân hệ trong cơ sở, **trừ Phụ huynh, Học sinh (chỉ Admin Xuất, R-CRM-29, phiên bản 4)**; mỗi lần xuất ghi `app.export_log`.
   - CSKH giữ quyền lead, cơ hội như cũ.
   - Giáo viên, trợ giảng: phạm vi Được phân công; chấm phiếu test được giao (SALES, BM giao việc).
   - Thêm TA (quyền như giáo viên), STUDENT (Học tập, chính mình).
@@ -90,9 +90,22 @@ Nạp 15 ô, phạm vi cơ sở mình, ghi chú của phiên bản: "Duyệt tr�
 - **Duyệt** trên Lead, Cơ hội, Phụ huynh, Học sinh = **gộp trùng** (R-CRM-22, R-CRM-25): Tuyển sinh, CSKH, Trưởng cơ sở gộp trong cơ sở
   mình; Admin mọi cơ sở; hai hồ sơ khác cơ sở chỉ Admin. Các phân hệ này chưa có luồng duyệt nào khác.
 - Giáo viên, trợ giảng vẫn không Huỷ phiếu kiểm tra (xem lại khi làm cổng giáo viên).
-- **Luật 17/10 chưa vào ma trận (phiên bản 4: 17 ô; anh OK riêng bảng TRƯỚC / SAU rồi mới nạp migration, chưa nạp ở P3b2a):** R-CRM-27 bỏ Tạo trên Phụ huynh,
-  Học sinh; R-CRM-29 chỉ Admin còn Xuất trên hai phân hệ này (hiện Trưởng cơ sở còn Xuất, chữ ở mục trên "Trưởng cơ sở được
-  Xuất file mọi phân hệ trong cơ sở" sẽ chỉnh theo); R-CRM-26 Xem toàn hệ thống cho Tuyển sinh, CSKH, Trưởng cơ sở; Kế toán thêm Xem Phụ huynh.
+
+## Ma trận phiên bản 4: Phụ huynh, Học sinh dùng chung (anh duyệt TRƯỚC / SAU 18/10, migration `20261018000029`)
+Nạp 17 ô theo R-CRM-26, 27, 29. Ghi chú của phiên bản: "R-CRM-26, 27, 29: hồ sơ phụ huynh, học sinh dùng chung toàn hệ thống, không Tạo tay, chỉ Admin Xuất".
+
+| Thay đổi | Vai trò | TRƯỚC | SAU | Số ô |
+|---|---|---|---|---|
+| Bỏ Tạo (R-CRM-27) | Tuyển sinh, CSKH, Trưởng cơ sở, Admin | có Tạo | không | 8 |
+| Bỏ Xuất (R-CRM-29) | Trưởng cơ sở | Xuất, cơ sở mình | không (chỉ Admin còn Xuất) | 2 |
+| Xem toàn hệ thống (R-CRM-26) | Tuyển sinh, CSKH, Trưởng cơ sở | Xem, cơ sở mình | Xem, **toàn hệ thống** (Sửa, Duyệt vẫn cơ sở mình) | 6 |
+| Thêm Xem Phụ huynh | Kế toán | không có | Xem, toàn hệ thống | 1 |
+| Giữ nguyên | Giáo viên, trợ giảng | Xem Học sinh (được phân công) | không đổi | 0 |
+
+- Hồ sơ phụ huynh, học sinh ở mọi cơ sở đọc được (RLS đọc theo phạm vi của ô Xem); hộp "trùng SĐT" thấy đủ thông tin phụ huynh cơ sở khác. Sửa, Duyệt (gộp trùng) vẫn trong cơ sở mình.
+- Hồ sơ chỉ sinh trong hàm nghiệp vụ (R-CRM-27); Admin cũng không còn Tạo ở hai phân hệ này. Luật "ADMIN giữ quyền Quản trị" chỉ bảo vệ phân hệ Quản trị nên không bị ảnh hưởng.
+- Kiểm thử: `supabase/tests/database/021_ma_tran_quyen_phien_ban_4.test.sql`; các bài đếm quyền của 017, 018 đã chỉnh theo.
+
 
 ## Kế toán vắng: gán tạm vai trò ACCOUNTANT
 ADMIN không có quyền duyệt tiền. Khi kế toán vắng:
