@@ -43,6 +43,11 @@
 - R-CRM-36 (cơ hội mới luôn bắt đầu ở L1) đã vào spec. `create_opportunity` (migration 028) khớp: câu `insert` ghi cứng `stage_code = 'L1'`, `substage_code` trống; `p_data` không có đường nào đặt giai đoạn (chỉ đọc nhu cầu, học sinh, người phụ trách, người hỗ trợ). Thêm bài pgTAP: truyền giai đoạn, nhóm con, lý do bỏ qua trong `p_data` vẫn ra L1.
 - **Màn tạo cơ hội:** chưa dựng (P3d); bản vẽ TS-06 chỉ có hộp cảnh báo "lead đã có cơ hội", không có ô giai đoạn. Khi dựng màn tạo, không đặt ô chọn giai đoạn.
 
+## PR P3b3a Gộp trùng (18/10)
+- Migration `20261018000031`: bốn hàm gộp, xem trước, bản đã gộp chỉ đọc, ghi chú chuyển chỉ trong hàm gộp (cờ `hmt.merge` trong giao dịch), ghi chú hệ thống trên cả hai bản, lịch nhắc tự đóng khi phiếu sang Đang test.
+- Chỉnh theo anh 18/10: `merge_parents` không chặn báo giá, đơn; `merge_opportunities` giữ nguyên giai đoạn bản giữ lại, cảnh báo nếu bản bị gộp ở giai đoạn cao hơn; lịch nhắc đóng bằng Huỷ.
+- Việc kế: P3b3b nhập lô lead.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

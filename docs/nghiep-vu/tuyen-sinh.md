@@ -114,3 +114,28 @@ RLS đọc theo phạm vi của ô Xem: toàn hệ thống, đúng cơ sở củ
 
 ### Hiệu năng (đo trên `seed-lon`: 15.000 phiếu)
 Số đo và EXPLAIN nằm trong mô tả PR P3b2b.
+
+## P3b3a: gộp trùng (migration `20261018000031`)
+Kiểm thử: `supabase/tests/database/023_gop_trung.test.sql` (106 bài), `022` thêm 25 bài lịch nhắc tự đóng. Luật: R-CRM-22, 25, 37. Màn: TS-10, KH-07 (K4), dựng ở P3f.
+
+### Bảng
+`app.parent`, `app.student` thêm `record_status` ("Đang dùng" hoặc "Đã gộp") và `merged_into_id` (như lead, cơ hội); ghi chú gắn được vào Phụ huynh, Học sinh.
+
+### Hàm
+| Hàm | Làm gì | Luật |
+|---|---|---|
+| `app.merge_preview(loại, giữ, gộp)` | Xem trước: số bản ghi sẽ chuyển, điều kiện chặn, cảnh báo; cùng kiểm quyền như gộp thật | TS-10, KH-07 |
+| `app.merge_leads` | Chuyển lịch hẹn, ghi chú, cơ hội sang lead giữ lại | R-CRM-22 |
+| `app.merge_opportunities` | Chuyển lịch hẹn, ghi chú, phiếu; ô trống của bản giữ lại lấy của bản kia; **giai đoạn bản giữ lại giữ nguyên**; chặn: khác phụ huynh, khác học sinh, bản bị gộp có báo giá hoặc đơn; cảnh báo: bản bị gộp ở giai đoạn cao hơn | R-CRM-22, 37(a), 02 |
+| `app.merge_students` | Chuyển cơ hội, phiếu, ghi chú; chặn nếu khác phụ huynh | R-CRM-37(b) |
+| `app.merge_parents` | Chuyển lead, cơ hội, học sinh, ghi chú; không tự gộp học sinh; trả danh sách học sinh trùng; không chặn theo báo giá, đơn (R-CRM-25 còn [CHỜ]) | R-CRM-25, 37(c) |
+| `app.duplicate_students_of_parent` | Các cặp học sinh trùng tên (chuẩn hoá) và năm sinh dưới một phụ huynh | R-CRM-37(c) |
+| Nội bộ: `merge_common`, `merge_check_opportunities`, `merge_check_students`, `move_notes`, `add_system_note`, `opportunity_sales_documents` | Kiểm chung, điều kiện chặn từng loại, chuyển ghi chú (cờ trong giao dịch), ghi chú hệ thống, điểm nối báo giá và đơn (rỗng, P5 thay thân) | |
+
+Quyền: hành động Duyệt của phân hệ, kiểm cho **cả hai** hồ sơ; người một cơ sở chỉ gộp khi cả hai ở cơ sở mình; hai cơ sở khác nhau chỉ Admin. Không hoàn tác, cần xác nhận. Làm phẳng chuỗi gộp (A→B rồi B→C thì A cũng trỏ về C). Tìm hoặc tạo phụ huynh, học sinh và dò trùng SĐT gặp hồ sơ đã gộp thì trỏ về bản giữ lại; danh sách lead, cơ hội: bản đã gộp vẫn tìm được bằng mã.
+
+### Lịch nhắc của phiếu
+`start_student_test` đóng (Huỷ, lý do Khác, ghi chú "Phiếu đã bắt đầu") lịch nhắc tự sinh còn Chưa làm và chưa sửa tay; lịch người dùng sửa tay hoặc tự tạo giữ nguyên. Lùi về Nháp, đổi lịch sau đó: không mở lại, không sinh mới. Mở lại phiếu đã huỷ: chỉ bật lại lịch nhắc bị huỷ theo phiếu.
+
+### Hiệu năng
+Số đo và EXPLAIN trên `seed-lon` nằm trong mô tả PR P3b3a.

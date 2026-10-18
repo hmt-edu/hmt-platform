@@ -66,6 +66,7 @@ select app.create_lead(pg_temp.lead_data('0900000302', '{"student_name": "Em Hai
 select app.create_lead(pg_temp.lead_data('0900000303', '{"student_name": "Em Ba", "student_birth_year": 2011}'));
 select app.create_lead(pg_temp.lead_data('0900000304', '{"student_name": "Em Bốn", "student_birth_year": 2010}'));
 select app.create_lead(pg_temp.lead_data('0900000305', '{"student_name": "Em Năm", "student_birth_year": 2012}'));
+select app.create_lead(pg_temp.lead_data('0900000306', '{"student_name": "Em Sáu", "student_birth_year": 2011}'));
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select app.create_lead(pg_temp.lead_data('0900000399', '{"student_name": "Em Chín", "student_birth_year": 2012}'));
 select pg_temp.sudo($$create temp table lead_ids as select id, parent_phone from app.lead$$);
@@ -100,6 +101,8 @@ select app.create_opportunity(pg_temp.lid('0900000305'));
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select app.create_opportunity(pg_temp.lid('0900000399'));
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select app.create_opportunity(pg_temp.lid('0900000306'));
+select app.change_opportunity_stage(pg_temp.oid('CO000007'), 'L5');
 -- CO000001 ở L1, CO000002 ở L4 (chưa đủ L5); CO000003, 4, 5 ở L5.
 select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L4');
 select app.change_opportunity_stage(pg_temp.oid('CO000003'), 'L5');
@@ -311,6 +314,49 @@ select is(pg_temp.err($$select app.start_student_test(pg_temp.tid('PKT000006'))$
 select is(pg_temp.err($$select app.step_back_student_test(pg_temp.tid('PKT000006'))$$), null, 'Lùi Đang test → Nháp không cần lý do');
 select is((select status_code from app.student_test where code = 'PKT000006'), 'DRAFT', 'Phiếu về Nháp');
 select is(pg_temp.err($$select app.submit_student_test(pg_temp.tid('PKT000006'))$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'Chưa bắt đầu thì chưa nộp');
+
+
+-- ================= Lịch nhắc tự đóng khi phiếu sang Đang test (anh chốt 18/10) =================
+select pg_temp.sudo($$create function pg_temp.tx(p_name text) returns uuid language sql stable security definer as 'select id from app.student_test where exam_name = p_name'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.tx(text) to public$$);
+select pg_temp.sudo($$create function pg_temp.rem(p_name text) returns app.appointment language sql stable security definer as
+  'select a from app.appointment a where a.student_test_id = (select id from app.student_test where exam_name = p_name) and a.is_auto_reminder order by a.created_at limit 1'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.rem(text) to public$$);
+select pg_temp.sudo($$create temp table ov (n integer)$$);
+select pg_temp.sudo($$grant all on ov to public$$);
+select is(pg_temp.err($$select app.create_student_test(pg_temp.oid('CO000007'), pg_temp.test_data('{"exam_name": "REM-A"}'))$$), null, 'Chuẩn bị: phiếu A cho cơ hội CO000007');
+select is((pg_temp.rem('REM-A')).status, 'CHUA_LAM', 'Phiếu mới: lịch nhắc tự sinh còn Chưa làm');
+insert into ov select app.appointment_overdue_count(now() + interval '60 days', true);
+select is(pg_temp.err($$select app.start_student_test(pg_temp.tx('REM-A'))$$), null, 'Phiếu A bắt đầu test');
+select is((select array[(pg_temp.rem('REM-A')).status, (pg_temp.rem('REM-A')).cancel_reason_code, (pg_temp.rem('REM-A')).cancel_note]),
+          array['HUY', 'KHAC', 'Phiếu đã bắt đầu'], 'Phiếu sang Đang test: lịch nhắc tự sinh chưa sửa tay được đóng bằng Huỷ, lý do Khác, ghi chú "Phiếu đã bắt đầu"');
+select is(app.appointment_overdue_count(now() + interval '60 days', true), (select n - 1 from ov), 'Lịch nhắc đã đóng không còn tính vào QUÁ HẠN');
+select is(pg_temp.err($$select app.step_back_student_test(pg_temp.tx('REM-A'))$$), null, 'Lùi phiếu A về Nháp');
+select is((pg_temp.rem('REM-A')).status, 'HUY', 'Lùi về Nháp không tự mở lại lịch nhắc đã đóng');
+select is(pg_temp.err($$select app.reschedule_student_test(pg_temp.tx('REM-A'), now() + interval '6 days')$$), null, 'Đổi lịch phiếu A sau khi lùi về Nháp');
+select is((select count(*)::int from app.appointment where student_test_id = pg_temp.tx('REM-A')), 1, 'Đổi lịch sau khi lùi về Nháp không sinh lịch nhắc mới');
+select is((pg_temp.rem('REM-A')).status, 'HUY', 'Lịch nhắc vẫn đóng sau khi đổi lịch');
+select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tx('REM-A'), 'L5C')$$), null, 'Huỷ phiếu A');
+select is(pg_temp.err($$select app.reopen_student_test(pg_temp.tx('REM-A'), 'Mở lại thử')$$), null, 'Mở lại phiếu A');
+select is((pg_temp.rem('REM-A')).cancel_note, 'Phiếu đã bắt đầu', 'Mở lại phiếu không bật lại lịch nhắc đã đóng vì phiếu bắt đầu test (chỉ lịch huỷ theo phiếu mới bật lại)');
+-- Lịch nhắc đã sửa tay giữ nguyên.
+select is(pg_temp.err($$select app.create_student_test(pg_temp.oid('CO000007'), pg_temp.test_data('{"exam_name": "REM-B"}'))$$), null, 'Chuẩn bị: phiếu B');
+select pg_temp.sudo($$update app.appointment set scheduled_at = scheduled_at - interval '1 hour' where student_test_id = (select id from app.student_test where exam_name = 'REM-B')$$);
+select is(pg_temp.err($$select app.start_student_test(pg_temp.tx('REM-B'))$$), null, 'Phiếu B bắt đầu test');
+select is((pg_temp.rem('REM-B')).status, 'CHUA_LAM', 'Lịch nhắc người dùng đã sửa tay giữ nguyên (không tự đóng)');
+-- Lịch người dùng tự tạo giữ nguyên.
+select is(pg_temp.err($$select app.create_student_test(pg_temp.oid('CO000007'), pg_temp.test_data('{"exam_name": "REM-C"}'))$$), null, 'Chuẩn bị: phiếu C');
+select pg_temp.sudo($$insert into app.appointment (student_test_id, is_auto_reminder, activity_code, scheduled_at, title, owner_id, branch_id)
+  select t.id, false, 'GOI_DIEN', now() + interval '1 day', 'Lịch người dùng tự tạo', t.owner_id, t.branch_id from app.student_test t where t.exam_name = 'REM-C'$$);
+select is(pg_temp.err($$select app.start_student_test(pg_temp.tx('REM-C'))$$), null, 'Phiếu C bắt đầu test');
+select is((select status from app.appointment where student_test_id = pg_temp.tx('REM-C') and not is_auto_reminder), 'CHUA_LAM', 'Lịch người dùng tự tạo giữ nguyên');
+select is((pg_temp.rem('REM-C')).status, 'HUY', 'Cùng phiếu: lịch nhắc tự sinh được đóng');
+-- Huỷ phiếu vẫn huỷ lịch nhắc, mở lại thì bật lại.
+select is(pg_temp.err($$select app.create_student_test(pg_temp.oid('CO000007'), pg_temp.test_data('{"exam_name": "REM-D"}'))$$), null, 'Chuẩn bị: phiếu D');
+select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tx('REM-D'), 'L5D')$$), null, 'Huỷ phiếu D khi còn Nháp');
+select is((pg_temp.rem('REM-D')).cancel_note, 'Phiếu kiểm tra đã huỷ', 'Huỷ phiếu: lịch nhắc huỷ theo (ghi chú khác lịch đóng vì bắt đầu)');
+select is(pg_temp.err($$select app.reopen_student_test(pg_temp.tx('REM-D'), 'Mở lại D')$$), null, 'Mở lại phiếu D');
+select is((pg_temp.rem('REM-D')).status, 'CHUA_LAM', 'Mở lại phiếu đã huỷ: lịch nhắc huỷ theo phiếu được bật lại');
 
 -- ================= Giáo viên được phân công (cổng giáo viên làm sau): chỉ phiếu mình chấm, mình phụ trách =================
 select pg_temp.claims(pg_temp.uid('teacher5'), 'aal1');
