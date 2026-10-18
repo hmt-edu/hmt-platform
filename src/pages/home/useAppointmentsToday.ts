@@ -7,8 +7,9 @@ export type TodayAppointment = {
   id: string;
   scheduled_at: string;
   title: string;
-  lead_code: string | null;
-  lead_label: string | null;
+  /** Mã và nhãn của hồ sơ gắn (lead hoặc cơ hội). */
+  record_code: string | null;
+  record_label: string | null;
   branch_code: string;
 };
 

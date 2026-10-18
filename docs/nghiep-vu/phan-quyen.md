@@ -90,7 +90,7 @@ Nạp 15 ô, phạm vi cơ sở mình, ghi chú của phiên bản: "Duyệt tr�
 - **Duyệt** trên Lead, Cơ hội, Phụ huynh, Học sinh = **gộp trùng** (R-CRM-22, R-CRM-25): Tuyển sinh, CSKH, Trưởng cơ sở gộp trong cơ sở
   mình; Admin mọi cơ sở; hai hồ sơ khác cơ sở chỉ Admin. Các phân hệ này chưa có luồng duyệt nào khác.
 - Giáo viên, trợ giảng vẫn không Huỷ phiếu kiểm tra (xem lại khi làm cổng giáo viên).
-- **Luật 17/10 chưa vào ma trận (chờ phiên bản 4, anh duyệt bảng TRƯỚC / SAU trước khi nạp):** R-CRM-27 bỏ Tạo trên Phụ huynh,
+- **Luật 17/10 chưa vào ma trận (phiên bản 4: 17 ô; anh OK riêng bảng TRƯỚC / SAU rồi mới nạp migration, chưa nạp ở P3b2a):** R-CRM-27 bỏ Tạo trên Phụ huynh,
   Học sinh; R-CRM-29 chỉ Admin còn Xuất trên hai phân hệ này (hiện Trưởng cơ sở còn Xuất, chữ ở mục trên "Trưởng cơ sở được
   Xuất file mọi phân hệ trong cơ sở" sẽ chỉnh theo); R-CRM-26 Xem toàn hệ thống cho Tuyển sinh, CSKH, Trưởng cơ sở; Kế toán thêm Xem Phụ huynh.
 

@@ -46,6 +46,8 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-CRM-31 | **(17/10)** **Mục tiêu học tập** của HS là **một ô chữ tự do** (không có bảng mục tiêu, mốc ngày). Điểm bài kiểm tra tháng do giáo viên nhập trong App Giáo viên. Nhận xét từng buổi nằm ở App Giáo viên; hồ sơ HS chỉ có đường dẫn tới nhận xét đó, không lặp lại. | [CHỐT] |
 | R-CRM-32 | **(17/10)** **Tài khoản app học sinh** (giai đoạn sau): hồ sơ có ba thao tác Cấp tài khoản, Đặt lại mật khẩu, Khoá tài khoản (quyền như QT-13). **Mật khẩu không bao giờ hiển thị**, chỉ đặt lại để tạo mật khẩu mới. Giai đoạn 1: nút mờ, chưa làm. | [CHỐT]; làm ở giai đoạn 4 |
 | R-CRM-33 | **(17/10)** **Mã học sinh cũ.** Hồ sơ học sinh (KH-05) hiện ô **"Mã cũ (Sheet)"** cạnh mã HS, tìm được ở KH-04; cùng cách dùng như R-LOP-15. **Phụ huynh không có mã cũ** (anh Trường xác nhận 17/10: hệ thống Sheet hiện tại không có mã phụ huynh); KH-01, KH-02 không có ô mã cũ. | [CHỐT] |
+| R-CRM-34 | **(18/10)** **Nhóm con L6.** Cơ hội vào L6 là do hệ thống chuyển, nhóm con L6A "Có kết quả, cần phân loại" (R-CRM-13). Sau đó người dùng tự chọn L6B, L6C, L6D, L6E hoặc L6F (xuất sắc đến yếu), mỗi lần chọn ghi lịch sử. Người dùng không chọn lại được L6A. | [CHỐT] |
+| R-CRM-35 | **(18/10)** Đổi nhóm con trong cùng một giai đoạn được phép, kể cả lùi (ví dụ L7C về L7B), có ghi lịch sử. Ba ngoại lệ: (1) cơ hội đã ở L8C không đổi sang nhóm con khác (R-CRM-17); (2) nhóm con của L5 do hệ thống gắn, người dùng không đổi tay (R-CRM-15); (3) L6A do hệ thống gắn, người dùng không chọn lại (R-CRM-34). L8A và L8B do người dùng chọn tay, đổi qua lại giữa hai nhóm được. Luật này không làm thay R-CRM-02: giai đoạn vẫn chỉ đi tới. | [CHỐT] |
 
 ## 2. Bán hàng và tiền
 

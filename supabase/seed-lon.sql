@@ -1,8 +1,8 @@
 -- Dữ liệu GIẢ LỚN chỉ để thử tốc độ ở máy local (CLAUDE.md, Hiệu năng). KHÔNG chạy ở thử nghiệm hay chạy thật,
 -- KHÔNG nằm trong seed.sql thường, KHÔNG dùng dữ liệu thật: tên ghép từ danh sách giả, SĐT dạng 0999xxxxxx giả.
 -- Cần tài khoản giả đã có: npm run db:seed-users (dùng sale.cs1, sale.cs5).
--- Chạy: npm run db:seed-lon. Tạo 50.000 lead (mã LDL000001…), 30.000 phụ huynh (mã PHL…), 100.000 lịch hẹn.
--- Cơ hội (20.000) và phiếu kiểm tra thêm ở P3b2.
+-- Chạy: npm run db:seed-lon. Tạo 50.000 lead (mã LDL000001…), 30.000 phụ huynh (mã PHL…), 100.000 lịch hẹn, 20.000 cơ hội.
+-- Cơ hội giả (20.000, mã COL…) và 20.000 lịch hẹn của cơ hội thêm ở P3b2a; phiếu kiểm tra thêm ở P3b2b.
 -- Mã tiền tố LDL/PHL để không đụng mã thật. Chạy lại sẽ báo lỗi (đã có), muốn làm lại thì npm run db:reset.
 \set ON_ERROR_STOP on
 \timing on
@@ -27,6 +27,8 @@ alter table app.lead disable trigger lead_audit;
 alter table app.appointment disable trigger appointment_fill_standard;
 alter table app.appointment disable trigger appointment_audit;
 alter table app.appointment disable trigger appointment_refresh_next;
+alter table app.opportunity disable trigger opportunity_fill_standard;
+alter table app.opportunity disable trigger opportunity_audit;
 
 create temp table seed_names as
 select * from (values
@@ -92,6 +94,32 @@ update app.lead l set next_appointment_at = a.next
   from (select lead_id, min(scheduled_at) as next from app.appointment where status = 'CHUA_LAM' group by lead_id) a
  where a.lead_id = l.id and l.code like 'LDL%';
 
+-- Cơ hội giả: 20.000, từ 20.000 lead đầu (lead đã có học sinh nên hợp luật R-CRM-03); 8 giai đoạn L1–L8, phụ huynh giả theo vòng.
+-- Cơ hội L7, L8 ghi lý do bỏ qua test (R-CRM-14) cho hợp luật.
+insert into app.opportunity (code, lead_id, parent_id, branch_id, owner_id, student_name, student_birth_year, school,
+                             source_type_code, source_code, channel_code, stage_code, skip_reason_code,
+                             assigned_at, created_at, updated_at)
+select 'COL' || lpad(g::text, 6, '0'), l.id,
+       (select id from app.parent where code = 'PHL' || lpad((1 + g % 30000)::text, 6, '0')),
+       l.branch_id, l.owner_id, l.student_name, l.student_birth_year, l.school,
+       l.source_type_code, l.source_code, l.channel_code, 'L' || (1 + g % 8),
+       case when g % 8 in (6, 7) then 'HOC_SINH_CU' end,
+       now() - ((g % 200) || ' days')::interval, now() - ((g % 200) || ' days')::interval - ((g % 1440) || ' minutes')::interval, now()
+  from generate_series(1, 20000) g
+  join app.lead l on l.code = 'LDL' || lpad(g::text, 6, '0');
+
+-- Lịch hẹn giả của cơ hội: một lịch mỗi cơ hội, rải ±30 ngày quanh hôm nay.
+insert into app.appointment (opportunity_id, activity_code, scheduled_at, title, owner_id, branch_id, status, created_at, updated_at)
+select o.id, (array['GOI_DIEN', 'ZALO', 'EMAIL', 'GAP_TRUC_TIEP'])[1 + g % 4],
+       now() + (((g * 11) % 61) - 30 || ' days')::interval + ((g % 600) || ' minutes')::interval,
+       'Lịch hẹn cơ hội giả ' || g, o.owner_id, o.branch_id, case when g % 6 = 0 then 'HOAN_THANH' else 'CHUA_LAM' end, now(), now()
+  from generate_series(1, 20000) g
+  join app.opportunity o on o.code = 'COL' || lpad(g::text, 6, '0');
+update app.opportunity o set next_appointment_at = a.next
+  from (select opportunity_id, min(scheduled_at) as next from app.appointment
+         where status = 'CHUA_LAM' and opportunity_id is not null group by opportunity_id) a
+ where a.opportunity_id = o.id and o.code like 'COL%';
+
 alter table app.parent enable trigger parent_fill_standard;
 alter table app.parent enable trigger parent_audit;
 alter table app.lead enable trigger lead_fill_standard;
@@ -99,11 +127,14 @@ alter table app.lead enable trigger lead_audit;
 alter table app.appointment enable trigger appointment_fill_standard;
 alter table app.appointment enable trigger appointment_audit;
 alter table app.appointment enable trigger appointment_refresh_next;
+alter table app.opportunity enable trigger opportunity_fill_standard;
+alter table app.opportunity enable trigger opportunity_audit;
 
 -- Đặt đếm mã để mã thật (LD…) không đụng mã giả (LDL…): mã giả có tiền tố khác nên không cần; chỉ cập nhật thống kê.
 analyze app.parent;
 analyze app.lead;
 analyze app.appointment;
+analyze app.opportunity;
 
 select (select count(*) from app.lead) as leads, (select count(*) from app.parent) as parents,
-       (select count(*) from app.appointment) as appointments;
+       (select count(*) from app.appointment) as appointments, (select count(*) from app.opportunity) as opportunities;

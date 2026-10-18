@@ -115,8 +115,8 @@ function AppointmentsBlock() {
                   <span className="truncate font-medium">{row.title}</span>
                   <span className="truncate text-caption text-fg-muted">
                     {[
-                      row.lead_label,
-                      row.lead_code,
+                      row.record_label,
+                      row.record_code,
                       access.seesAllBranches ? row.branch_code : null,
                     ]
                       .filter(Boolean)

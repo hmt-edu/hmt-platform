@@ -221,7 +221,7 @@ select is(pg_temp.err(format($f$select app.assign_owner('LEAD', array[(select le
 select is(pg_temp.err($$select app.assign_owner('LEAD', '{}'::uuid[], null)$$), 'HMT_THIEU_THONG_TIN', 'Giao mà không chọn bản ghi: bị chặn');
 select is(pg_temp.err(format($f$select app.assign_owner('LEAD', (select array_agg(gen_random_uuid()) from generate_series(1, 101)), '%s')$f$,
                               pg_temp.uid('sales1b'))), 'HMT_QUA_NHIEU_BAN_GHI', 'Giao quá số bản ghi tối đa một lần: bị chặn');
-select is(pg_temp.err($$select app.assign_owner('OPPORTUNITY', array[gen_random_uuid()], null)$$), 'HMT_LOAI_BAN_GHI_SAI',
+select is(pg_temp.err($$select app.assign_owner('PARENT', array[gen_random_uuid()], null)$$), 'HMT_LOAI_BAN_GHI_SAI',
           'Loại bản ghi chưa hỗ trợ: báo rõ');
 
 -- Bản "Đã gộp" chỉ đọc (R-CRM-22).
