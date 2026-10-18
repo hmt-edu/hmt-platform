@@ -1,4 +1,6 @@
-# Nhật ký Claude Design (bản lưu 17/10/2026)
+# Nhật ký Claude Design (bản lưu 17/10/2026, kiểm lại 23:06)
+
+Đã so lại với canvas đang chạy lúc 23:06 ngày 17/10: `canvas.json` của cả ba canvas trùng với nguồn trong repo, không có ai sửa thêm sau lần xuất bản cuối của Design (mã phiên bản: P4 1792228500-368a, P5a 1792232446-fbdd, P5b 1792233478-4d11).
 
 Mục đích: tài khoản Claude mới mở phiên Design đọc file này là làm tiếp được ngay. Nguồn các canvas đã lưu ở `design/nguon-canvas/` (xem mục 5).
 
@@ -6,8 +8,8 @@ Mục đích: tài khoản Claude mới mở phiên Design đọc file này là 
 | Canvas | Link | Phiên bản lúc lưu | Tình trạng |
 |---|---|---|---|
 | "HMT Platform" (P0 khuôn, P1 đăng nhập, P2 cấu hình, P3 tuyển sinh, P4 khách hàng): 147 khung | https://claude.ai/artifact/RkrASNia4wUgbRwXiYRmFY | v57 (mã phiên bản 1792228500-368a) | P4 xong, chờ anh duyệt |
-| "P5a Bán hàng và Thu chi": 86 khung | https://claude.ai/artifact/7NZAWMvx8QkYgMArFSkULp | v6 | Xong, **đóng băng**. Anh tự xem và sửa. Chưa đóng gói. |
-| "P5b Đào tạo": 33 khung | https://claude.ai/artifact/RjJn6GwhSHkycVRNiCXvpU | v3 | Mới xong cụm Ghi danh. |
+| "P5a Bán hàng và Thu chi": 86 khung | https://claude.ai/artifact/7NZAWMvx8QkYgMArFSkULp | v6 (mã 1792232446-fbdd) | Xong, **đóng băng**. Anh tự xem và sửa. Chưa đóng gói. |
+| "P5b Đào tạo": 33 khung | https://claude.ai/artifact/RjJn6GwhSHkycVRNiCXvpU | v3 (mã 1792233478-4d11) | Mới xong cụm Ghi danh. |
 | Hệ thống thiết kế "HMT Platform" | https://claude.ai/artifact/3Yco5qmVbyDiyfZm9HcJqN | bản chép trong canvas: 1792124962-8639 | Dùng chung cho mọi canvas |
 
 Khung tạo canvas mới: tạo từ loại Design (https://claude.ai/artifact/QKN21svewxgyPb6SYRqWnd), rồi xuất bản tệp vào link của canvas đó.

@@ -1,21 +1,24 @@
-# Nhật ký Claude Chat (cập nhật 17/10/2026, 18:55)
+# Nhật ký Claude Chat (cập nhật 17/10/2026, 23:10)
 
 ## Đang làm
-- Thiết lập nền tảng phối hợp ba bên qua repo (file này nằm trong PR đó). Anh đã nối GitHub (hmt-vanhanh, chỉ hmt-platform) cho cả ba tài khoản Claude. Anh sắp đổi tài khoản vì hết hạn mức: chat Chat mới đọc file này và `docs/phoi-hop/khoi-dong-chat.md`.
+- Nền tảng phối hợp ba bên đã xong và đã gộp (#36 tách gói tải, #37 nguồn canvas Design, #38 nền tảng phối hợp). Không còn PR mở.
+- Tài khoản `truongcx.work` gần hết hạn mức tuần (89%, reset thứ Sáu 23/10, 1:00). Từ 18/10 làm việc ở các tài khoản khác (`truongcx.biz`, `lead.vanhanh.hmt`).
 
-## Đã chốt (chưa vào repo spec)
-- Luật `04d` đến `04g` (đang ở `docs/phoi-hop/luat-cho-dua-vao-spec/`): gộp trùng và quyền; mỗi dòng đơn một lớp, một ghi danh, một quỹ giờ; mô hình phụ huynh, học sinh dùng chung; lớp Toán Đại + Hình luân phiên, nhóm lớp, mã cũ.
-- Báo giá Toán khối 7+ có hai dòng riêng Đại và Hình (mỗi dòng giờ, giá, chiết khấu riêng); báo giá không chọn học sinh.
-- Lịch đóng từng đợt tự sinh từ danh mục "Điều khoản thanh toán" (R-TIEN-07), không nhập tay; tiền phiếu thu tính từ đợt cũ nhất, chỉ để theo dõi công nợ.
-- Khuôn in K13 (A4 báo giá, phiếu chi; A5 biên nhận) đã duyệt.
-- Phụ huynh không có mã cũ; sửa spec 02 mục "Mã cũ" bỏ `CUST-…`.
+## Đã chốt (chưa vào repo)
+- Luật `04d` đến `04g` còn ở `docs/phoi-hop/luat-cho-dua-vao-spec/`, chưa vào spec. Code sẽ mở PR "Đưa luật 17/10 (04d–04g) vào spec" (nháp ở nhánh `docs/luat-17-10-ban-nhap`). Không đưa các mục [CHỜ]: chặn môn theo khối khi tạo lớp; một phiếu tái tục cho mỗi ghi danh (04e mục 3); R-GD-07.
+- Share canvas: P4, P5a, P5b và artifact hệ thiết kế (`3Yco5qmVbyDiyfZm9HcJqN`) đã Share quyền Editor cho `lead.vanhanh.hmt` và `truongcx.biz`. `truongcx.biz` cần bấm nhận lời mời (P5a hết hạn 16/11).
+- Design ở tài khoản `lead` đã dựng lại canvas **P5b mới** (v2, chủ `lead`, 33 khung, chưa có link trong repo) vì Tin 4 cũ bảo "dựng lại". Quyết: **dùng canvas gốc P5b** (`https://claude.ai/artifact/RjJn6GwhSHkycVRNiCXvpU`, v3, chủ `truongcx.work`) nếu tài khoản mới sửa được; bản v2 chỉ để dự phòng, không xoá.
+- Quy tắc đổi tài khoản Design: mở canvas gốc đã Share trước; chỉ dựng lại từ `design/nguon-canvas/` khi không sửa được. Quy trình mục 13, Tin 4 (Design) cần sửa chữ theo quy tắc này.
+- Design được đẩy lên nhánh `design/…`, không đẩy `main`. Code gộp bằng squash. `main` không khoá được (GitHub Free), chỉ dựa vào quy trình.
+- Trả lời 6 câu treo của Design (P5b cụm Lớp): 1 menu con Đào tạo OK; 2 nút Xuất chỉ CS, Trưởng cơ sở, Kế toán, Admin OK; 3 chặn môn theo khối chưa quyết, vẽ nhắc mềm, đánh dấu "chờ anh quyết"; 4 dự báo hết giờ và tái tục theo từng ghi danh vẽ theo đề xuất, đánh dấu "chờ duyệt 04e mục 3"; 5 K12 và K14 OK, ghi "mới đề xuất"; 6 mã cũ chỉ ở lớp và học sinh OK. Nếu Design chưa nhận thì gửi lại.
+- Bài thử Chat ở tài khoản `.biz` đạt (đọc repo đúng, nói đúng trạng thái).
 
 ## Đang chờ ai
-- **Anh Trường:** OK PR #35 (ma trận quyền v3) nếu còn mở; chặn môn theo khối khi tạo lớp (đề xuất chờ duyệt); một phiếu tái tục cho mỗi ghi danh (04e mục 3); xem và sửa canvas P5a; duyệt bảng TRƯỚC / SAU ma trận quyền v4 khi Code gửi.
-- **Claude Code:** đưa `04d`–`04g` vào spec 04, spec 02, bản đồ màn hình; thêm danh mục "Điều khoản thanh toán" vào spec 06 (khi anh OK); tạo thư mục `docs/phoi-hop/` và `docs/nhat-ky/` trong PR tài liệu.
-- **Claude Design:** P4 xong; P5a xong v6, đang đóng băng, chờ anh sửa BH-03 và TC-07 rồi báo; P5b xong cụm Ghi danh, còn Lớp, Buổi, Tái tục; P5c, P5d chưa bắt đầu. Design cần lưu nguồn lên nhánh `design/luu-nguon-17-10` (xem mục 13 quy trình).
+- **Anh Trường:** kiểm Design (tài khoản mới) mở và sửa được canvas gốc P5b không; bấm nhận lời mời ở `.biz`; ngưỡng dung lượng gói tải (Chat đề xuất giữ "chỉ báo số", chưa đặt cứng); bốn câu P3b2 và bảng quyền phiên bản 4 (17 ô Phụ huynh, Học sinh); chặn môn theo khối; 04e mục 3.
+- **Claude Code:** PR luật 04d–04g; đề xuất PR 5 Đăng nhập (chưa code, chờ OK); chuẩn bị bốn câu P3b2 và bảng quyền v4 dạng TRƯỚC / SAU; sửa quy trình mục 13 (Tin 4 Design) và `docs/nhat-ky/code.md`; bản đồ màn hình (nút Xuất ở BH-01, BH-06, TC-13; ô tìm KH-01 bỏ mã phụ huynh); kiểm lại TS18, TS19 của P4.
+- **Claude Design:** làm cụm Lớp (LOP-01 đến LOP-08, LOP-10) trên canvas gốc P5b, rồi Buổi, Tái tục; sửa dòng "Wireframe thắng P0–P2" trong `docs/nhat-ky/design.md` (thứ tự đúng: luật > quyết định thiết kế 13/10 > bản đồ màn hình > gói thiết kế).
 
 ## File và link mới
-- Project "HMT - CRM HOÀ MA TOÁN" (tài khoản truongcx.work) giữ bản sao tài liệu; bản đúng là repo. Tài khoản khác không thấy Project này.
-- Canvas P4: https://claude.ai/artifact/RkrASNia4wUgbRwXiYRmFY ; canvas P5a (v6): https://claude.ai/artifact/7NZAWMvx8QkYgMArFSkULp ; canvas P5b: xem `design.md`.
-- Việc dở nhỏ: bản đồ màn hình ghi nút Xuất cho SA/CS ở BH-01, BH-06, TC-13 (đúng luật: chỉ Trưởng cơ sở, Kế toán, Admin); tìm kiếm KH-01 còn ghi mã PH; prompt `P4-v2` trong Project còn chữ "đã phân bổ" (bản trong repo đã sửa).
+- Canvas: P4 `https://claude.ai/artifact/RkrASNia4wUgbRwXiYRmFY` (v57); P5a `https://claude.ai/artifact/7NZAWMvx8QkYgMArFSkULp` (v6, đóng băng); P5b gốc `https://claude.ai/artifact/RjJn6GwhSHkycVRNiCXvpU` (v3). Hệ thiết kế `https://claude.ai/artifact/3Yco5qmVbyDiyfZm9HcJqN`.
+- Gợi ý phân bổ tài khoản: Chat tốn ít token nhất, để ở tài khoản còn ít hạn mức; Design và Code (tốn nhiều) để ở tài khoản còn nhiều hạn mức. Khi đổi, dùng đúng tin bàn giao mục 13 quy trình.
+- Project "HMT - CRM HOÀ MA TOÁN" thuộc tài khoản `truongcx.work`; tài khoản khác không thấy. Bản đúng là repo.

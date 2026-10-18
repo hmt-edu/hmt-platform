@@ -117,7 +117,7 @@ Mục tiêu: anh chỉ cần chuyển **link**, không dán chat; và luôn bi�
   5. Nhắc ghi nhật ký nếu đây là cuối phiên.
 - Việc anh luôn tự làm: quyết định, thử trên staging, bình luận "OK" trên PR từ `caotruong276`.
 
-## 13. Bàn giao khi sắp hết giới hạn (17/10/2026)
+## 13. Bàn giao khi sắp hết giới hạn (bản 2, 17/10/2026)
 Nguyên tắc: **xong cụm nào lưu cụm đó** (nhật ký + nguồn), để lúc đổi tài khoản gần như không mất gì. Khi trang Usage của tài khoản khoảng 80%, anh ngừng giao việc mới, chờ cụm đang dở xong, rồi gửi tin dưới đây. Anh chỉ cần copy, dán.
 
 **Tin 1: gửi Claude Design**
@@ -125,34 +125,49 @@ Nguyên tắc: **xong cụm nào lưu cụm đó** (nhật ký + nguồn), để
 BÀN GIAO. Anh sắp đổi tài khoản.
 Em làm đủ 4 việc, không làm việc mới:
 1. Cập nhật docs/nhat-ky/design.md (link canvas, số phiên bản, màn xong, màn dở, câu hỏi treo, ghi chú bàn giao cho chat mới).
-2. Đẩy nguồn (script, project/, nhật ký) lên nhánh design/<tên-ngắn>. Không đẩy lên main.
-3. Gửi anh: tên nhánh, link các canvas, và danh sách màn dở.
-4. Gửi kèm một câu để anh dán cho Claude Code mở PR.
+2. Lấy main mới nhất, tạo NHÁNH MỚI tên design/luu-nguon-<ngày-giờ> (ví dụ design/luu-nguon-18-10-0930), đẩy nguồn (script, project/, nhật ký) lên đó. Không dùng lại nhánh cũ, không đẩy lên main.
+3. Gửi anh: tên nhánh, link các canvas (kèm số phiên bản), danh sách màn dở.
+4. KHÔNG soạn câu dán cho Claude Code. Anh đã có tin riêng.
 ```
 
 **Tin 2: gửi Claude Chat**
 ```
 BÀN GIAO. Anh sắp đổi tài khoản.
 Em viết nội dung docs/nhat-ky/chat.md (việc đã xong, việc đang treo, quyết định mới, việc anh phải làm) và các luật mới chưa vào repo.
-Gửi anh trong một khối để anh dán thẳng cho Claude Code. Kèm sẵn câu để anh dán cho Code.
+Gửi anh trong một khối để anh dán thẳng cho Claude Code. Không cần soạn câu cho Code.
 ```
 
-**Tin 3: gửi Claude Code (một PR cho cả hai bên)**
+**Tin 3: gửi Claude Code (một lần cho cả hai, dán nội dung vào luôn)**
 ```
-Em mở một PR "bàn giao <ngày>" vào main gồm:
-- Nhánh design/<tên-ngắn> mà Design vừa đẩy (nếu có).
-- Nội dung nhật ký Chat dưới đây, lưu vào docs/nhat-ky/chat.md:
+Em mở PR "bàn giao <ngày>" vào main (chỉ tài liệu và thiết kế), gồm:
+- Nhánh Design vừa đẩy: <tên nhánh Design gửi> (nếu có).
+- docs/nhat-ky/chat.md: nội dung dưới đây.
 <dán nội dung Chat gửi>
-PR chỉ có file tài liệu và thiết kế. Em gửi anh link PR. Anh sẽ comment OK bằng caotruong276, rồi em gộp.
+Nếu nhánh Design bị xung đột (vì commit cũ đã squash vào main), đừng ép: tạo nhánh mới từ main, lấy các file đã đổi ở nhánh Design bỏ vào.
+Gộp bằng squash. Em gửi anh link PR. Anh sẽ comment OK bằng caotruong276, rồi em gộp.
 ```
-Bên nào không có gì để đưa thì xoá dòng của bên đó.
+Bên nào không có gì để đưa thì anh xoá dòng của bên đó.
 
 **Tin 4: mở chat mới ở tài khoản mới**
-- Design: `Đọc docs/phoi-hop/khoi-dong-design.md và docs/nhat-ky/design.md trong repo hmt-vanhanh/hmt-platform, rồi làm theo. Dựng lại canvas từ nguồn trong design/. Báo anh bạn đã đọc xong và cụm kế tiếp là gì.`
-- Chat: `Đọc docs/phoi-hop/khoi-dong-chat.md và docs/nhat-ky/chat.md trong repo hmt-vanhanh/hmt-platform, rồi làm theo. Báo anh trạng thái hiện tại và việc anh cần làm tiếp.`
-- Nếu chat mới không đọc được repo thì anh dán thẳng nội dung file `khoi-dong-…`. Chat ở tài khoản mới không thấy Project cũ, nên mọi luật phải nằm trong repo.
+- Design:
+```
+Đọc docs/phoi-hop/khoi-dong-design.md và docs/nhat-ky/design.md trong repo hmt-vanhanh/hmt-platform, rồi làm theo. Mở canvas gốc đã Share (link trong nhật ký) và hệ thiết kế gốc, báo anh có sửa được không. Sửa được thì làm tiếp trên bản gốc. Chỉ khi không sửa được mới dựng lại từ nguồn trong design/nguon-canvas/. Báo anh bạn đã đọc xong và cụm kế tiếp là gì.
+```
+- Chat:
+```
+Đọc docs/phoi-hop/khoi-dong-chat.md và docs/nhat-ky/chat.md trong repo hmt-vanhanh/hmt-platform, rồi làm theo. Báo anh trạng thái hiện tại và việc anh cần làm tiếp.
+```
+- Chat mới không đọc được repo thì anh dán thẳng nội dung file `khoi-dong-…` và `chat.md` vào chat. Chat ở tài khoản mới không thấy Project cũ, nên mọi luật phải nằm trong repo (`docs/spec/`).
+
+**Việc anh làm một lần khi bắt đầu dùng tài khoản mới**
+- Share canvas gốc và artifact hệ thiết kế cho tài khoản mới (quyền Editor), bấm nhận lời mời ở email.
 
 **Quy tắc đẩy nhánh của Design**
-- Chỉ nhánh `design/…`; chỉ ghi vào `design/` và `docs/nhat-ky/design.md`; không chạm `docs/spec/`, `supabase/`, `src/`.
-- Gộp vào `main` vẫn do Claude Code làm, sau CI xanh (PR chỉ có tài liệu thì không chạy CI) và comment "OK" từ `caotruong276`.
-- Việc nên làm một lần: nhờ Code kiểm `main` đã khoá nhánh (bắt buộc PR) chưa, nếu chưa thì bật.
+- Mỗi lần bàn giao một nhánh mới `design/luu-nguon-<ngày-giờ>`, tạo từ `main` mới nhất. Không dùng lại nhánh đã gộp.
+- Chỉ ghi vào `design/` và `docs/nhat-ky/design.md`; không chạm `docs/spec/`, `supabase/`, `src/`.
+- Gộp vào `main` do Claude Code làm (squash), sau comment "OK" từ `caotruong276`.
+
+**Anh nhớ ba điều**
+- Ngừng giao việc cho Design hoặc Chat: dùng Tin 1 hoặc Tin 2. Không nhớ tên nhánh hay đường dẫn.
+- Việc với Code luôn là Tin 3.
+- Việc anh làm ở GitHub chỉ là comment OK vào PR bằng `caotruong276`.

@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 17/10/2026, 21:30. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 18/10/2026, 15:30. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
 ## Quy trình (đọc `docs/quy-trinh-phoi-hop.md`)
 
@@ -33,7 +33,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P3b1 | Dữ liệu nền: danh mục (L5Q, 2 lý do huỷ test, danh mục 34, tên tình trạng phiếu), mã LD/CO/PKT, 6 tham số, bảng chiến dịch, phụ huynh, học sinh, lead, lịch hẹn; hàm lead, lịch hẹn, kiểm trùng SĐT, giao người phụ trách, danh sách phân trang; RLS; seed lớn `db:seed-lon`; EXPLAIN. Migration `20261017000023`…`026` (026: ma trận quyền phiên bản 3, 15 ô, anh duyệt 17/10), 163 bài pgTAP mới. Sửa R-CRM-10 (bỏ "từ chối") | Đã gộp (#35) |
 | Nguồn Design | Lưu nguồn canvas Design (P4, P5a, P5b) và nhật ký bàn giao | Đã gộp (#37) |
 | Tách gói tải | Tách gói tải theo cổng và màn (trang đầu CRM 295 → 235 KB nén; `npm run size`, bước CI chỉ báo số, chưa ngưỡng). Luật 04d đến 04g đã vào spec ở PR "Đưa luật 17/10" | Đã gộp (#36) |
-| Luật 17/10 | Đưa luật 04d đến 04g vào `docs/spec/04`, `02`, `06`, bản đồ màn hình, `phan-quyen.md`: R-CRM-22, 25 đến 33; R-GD-01, 02, 03, 14, 15, 18; R-LOP-08, 09, 13, 14, 15; tham số `class_slot_repeat_weeks_max`; mục chờ anh quyết giữ ghi chú (không thành luật); xoá thư mục chờ | Chờ anh OK |
+| Luật 17/10 | Đưa luật 04d đến 04g vào `docs/spec/04`, `02`, `06`, bản đồ màn hình, `phan-quyen.md`: R-CRM-22, 25 đến 33; R-GD-01, 02, 03, 14, 15, 18; R-LOP-08, 09, 13, 14, 15; tham số `class_slot_repeat_weeks_max`; mục chờ anh quyết giữ ghi chú (không thành luật); xoá thư mục chờ | Đã gộp (#39) |
+| Bàn giao 17/10 | Nhật ký Design (kiểm lại phiên bản canvas), nhật ký Chat, quy trình mục 13 bản 2 (đổi tài khoản: mở canvas gốc đã Share trước; Design đẩy nhánh mới từ `main`), `khoi-dong-design.md` | Đã gộp (#40) |
 | Nền tảng phối hợp | `docs/nhat-ky/` (ba file), `docs/phoi-hop/` (khởi động Chat, Design, prompt, luật chờ đưa vào spec), quy trình phối hợp mới, TIEN-DO | Đã gộp (#38) |
 | P3b2 | Cơ hội + phiếu kiểm tra: đổi giai đoạn (R-CRM-02, 03, 12, 13, 14, 16), tính lại L5/L6 (R-CRM-15) | Chưa |
 | P3b3 | Hàm gộp trùng (R-CRM-22), nhập lô từ file | Chưa |
@@ -72,7 +73,7 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 
 #16 đã đóng (không gộp; dữ liệu ở #17, giao diện làm lại ở #22 đến #26).
 
-**Đang mở:** PR "Đưa luật 17/10 (04d–04g) vào spec" (chỉ tài liệu).
+**Đang mở:** không có PR nào.
 
 **Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 026) và toàn bộ giao diện mới.
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
@@ -80,10 +81,9 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 ## Thứ tự tiếp theo (anh chốt 17/10)
 
-1. Gộp PR luật 17/10 (các mục [CHỜ] chưa thành luật: xem mục "13. Còn mở" của `docs/spec/04`).
-2. PR 5 Đăng nhập (5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động).
-3. PR 5a Trang chủ theo vai trò (K09b, gồm "Việc tuyển sinh hôm nay" TS-12).
-4. P3b2a Cơ hội (kèm ma trận quyền phiên bản 4), P3b2b Phiếu kiểm tra, P3b3 Gộp trùng và nhập file; rồi các màn P3c đến P3f.
+1. PR 5 Đăng nhập (5a, 5b, 5c; đã OK đề xuất 18/10).
+2. PR 5a Trang chủ theo vai trò (K09b, gồm "Việc tuyển sinh hôm nay" TS-12).
+3. P3b2a Cơ hội (kèm ma trận quyền phiên bản 4), P3b2b Phiếu kiểm tra, P3b3 Gộp trùng và nhập file; rồi các màn P3c đến P3f.
 
 Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Ghi danh (xem `docs/nhat-ky/design.md`).
 
