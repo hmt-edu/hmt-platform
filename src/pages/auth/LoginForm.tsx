@@ -86,8 +86,7 @@ export function LoginForm({
     // Mã chống máy chỉ dùng được một lần: lấy mã mới cho lần thử sau.
     setAttempt((n) => n + 1);
     setPassword('');
-    if (result.code === TEMP_BLOCKED_CODE)
-      return void navigate('/khong-dang-nhap-duoc?ly-do=tam-chan');
+    if (result.code === TEMP_BLOCKED_CODE) return void navigate('/khong-dang-nhap-duoc');
     setError(result.code === WRONG_CODE ? wrongText : result.message);
   }
 

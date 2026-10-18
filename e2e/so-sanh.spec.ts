@@ -3,6 +3,7 @@
 //   SO_SANH=1 npx playwright test e2e/so-sanh.spec.ts --project=may-tinh
 // Chạy xong thì chạy lại `npm run db:seed-users` (kịch bản đổi mật khẩu học sinh giả để vào cổng Học tập).
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import { generateSync } from 'otplib';
@@ -12,7 +13,11 @@ import { DOMAIN, PASSWORD, fillLogin, loginStaff, loginStudent, signOut } from '
 const DB_URL = process.env.DB_URL ?? '';
 // Playwright chạy từ thư mục gốc của repo.
 const DESIGN_DIR = join(process.cwd(), 'design', 'hmt-platform', 'screens');
-const OUT_DIR = join(process.cwd(), 'docs', 'so-sanh');
+// Mặc định ảnh ra thư mục tạm để không ghi đè ảnh đã lưu trong repo; chỉ ghi vào docs/so-sanh khi đặt SO_SANH_GHI_VAO_REPO=1
+// (màn mới dựng, hoặc anh yêu cầu chụp lại).
+const OUT_DIR = process.env.SO_SANH_GHI_VAO_REPO
+  ? join(process.cwd(), 'docs', 'so-sanh')
+  : join(tmpdir(), 'hmt-so-sanh');
 const DESKTOP = { width: 1440, height: 900 };
 const PHONE = { width: 390, height: 844 };
 const JPEG_QUALITY = 70;
@@ -80,7 +85,7 @@ test('màn đăng nhập và các trang đơn (K11)', async ({ page, browser }) 
   await save(browser, page, 'CHUNG-04');
   await page.goto('/dat-mat-khau');
   await save(browser, page, 'CHUNG-05');
-  await page.goto('/khong-dang-nhap-duoc?ly-do=tam-chan');
+  await page.goto('/khong-dang-nhap-duoc');
   await save(browser, page, 'CHUNG-08');
   await page.goto('/khong-ton-tai');
   await save(browser, page, 'CHUNG-17');

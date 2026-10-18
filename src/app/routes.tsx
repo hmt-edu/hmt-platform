@@ -29,7 +29,7 @@ const ChoosePortalPage = lazyScreen(
   () => import('../pages/common/ChoosePortalPage'),
   'ChoosePortalPage',
 );
-const CrmHomePage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmHomePage');
+const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
@@ -90,7 +90,7 @@ export const routes: RouteObject[] = [
           </RequirePortal>
         ),
         children: [
-          { index: true, element: <CrmHomePage /> },
+          { index: true, element: <CrmHome /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <CrmSectionPage /> },
         ],

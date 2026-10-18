@@ -10,7 +10,7 @@ export type PermissionRow = {
   action_code: string;
   scope_code: string;
 };
-export type RoleRow = { code: string; name: string; default_scope: string };
+export type RoleRow = { code: string; name: string; default_scope: string; portals: string[] };
 export type BranchRow = { id: string; code: string; name: string; is_office: boolean };
 export type FeatureRow = { module_code: string; branch_id: string; enabled: boolean };
 
@@ -45,7 +45,9 @@ export async function loadAccessData(
         .eq('is_active', true)
         .in('role_code', roleCodes),
     ),
-    rows<RoleRow>(app.from('role').select('code, name, default_scope')),
+    rows<RoleRow>(
+      app.from('role').select('code, name, default_scope, portals').order('sort_order'),
+    ),
     rows<BranchRow>(
       app
         .from('branch')

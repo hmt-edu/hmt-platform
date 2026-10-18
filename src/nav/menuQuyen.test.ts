@@ -13,7 +13,7 @@ function menuFor(modules: string[]) {
       action_code: 'XEM',
       scope_code: 'TOAN_HE_THONG',
     })),
-    roles: [{ code: 'R', name: 'Vai trò thử', default_scope: 'TOAN_HE_THONG' }],
+    roles: [{ code: 'R', name: 'Vai trò thử', default_scope: 'TOAN_HE_THONG', portals: ['crm'] }],
     branches: [CS5],
     // Nhóm Tuyển sinh nằm sau công tắc Bán hàng: bật ở cơ sở thử.
     features: [{ module_code: 'BAN_HANG', branch_id: 'b5', enabled: true }],

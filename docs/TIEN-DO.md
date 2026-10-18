@@ -20,7 +20,7 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | 3 | Danh sách (K1) + Filters, Group By, Cột, Favorites, Lọc nâng cao; Kanban (K2); Calendar (K5); trang mẫu `/dev/danh-sach` | Đã gộp (#23) |
 | 4a | Ô chọn có tìm, ô ngày dd/mm/yyyy (lịch của gói), ô tiền, đính kèm; Kanban: thanh tỷ lệ đầu cột, "chỉ đi tới" là tuỳ chọn | Đã gộp (#24) |
 | 4b | Chi tiết (K3: giai đoạn, smart button, Ghi chú & hoạt động có @), các hộp thoại K4 (xác nhận, lý do, điền trường, chặn/cảnh báo, nhiều bước, xem trước tác động, chọn có kiểm tra, cảnh báo trùng SĐT), tấm trượt trên điện thoại; trang mẫu `/dev/chi-tiet`, `/dev/hop-thoai` | Đã gộp (#26). Chưa làm: trang chủ theo vai trò (K09/Đ9, bản tạm, ưu tiên sau); ngăn kéo "Tạo nhanh" (K07b) bỏ theo quyết định 13/10 |
-| 5a | Trang chủ theo vai trò (K09b), gồm "Việc tuyển sinh hôm nay" (TS-12) trong trang chủ của Sale: PR riêng, **sau PR dữ liệu, trước khi code P3** (anh chốt 16/10) | Chưa |
+| 5a | Trang chủ theo vai trò (K09b), gồm "Việc tuyển sinh hôm nay" (TS-12) trong trang chủ của Sale: PR riêng, **sau PR dữ liệu, trước khi code P3** (anh chốt 16/10) | Đã gộp (PR Trang chủ theo vai trò): khung theo K09b, khối lịch hẹn (thẻ số HÔM NAY, QUÁ HẠN, danh sách 5 dòng), khối hiện theo quyền và công tắc tính năng, Admin xem thử bố cục vai trò khác. Các khối cơ hội, phiếu kiểm tra, ticket, phiếu thu, buổi chưa điểm danh, việc chờ duyệt thêm khi phân hệ có dữ liệu |
 | 5 | P1 đăng nhập: 5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động | 5a đã gộp (#41: khung hai cột, đăng nhập nhân viên và học sinh, hai bước 2 bước, hàm công khai tên cơ sở); 5b đã gộp (#43: quên mật khẩu chỉ hướng dẫn liên hệ quản trị viên, đổi mật khẩu lần đầu, không thể đăng nhập, hết phiên có số thời gian theo nhóm vai trò, chọn cổng; sửa nền cột giới thiệu); 5c chưa |
 | 6 | PR dữ liệu: bảng đối chiếu đủ 34 danh mục với spec 06, nạp danh mục thiếu (kể cả L5P, L6 đánh lại A–F, danh mục 33 "Lý do bỏ qua test" theo luật 16/10), "phiên bản" ma trận quyền | Đã gộp (6.0 đến 6e: #28 đến #33) |
 | 6.0 | Nạp danh mục theo luật 16/10 (migration `20261016000017`): nhóm con L5P, L6 đánh lại A–F (bỏ L6G), L5B "Đã xếp lịch test", danh mục 33 "Lý do bỏ qua test" (mã `TEST_SKIP_REASON`); 18 bài pgTAP. Ngoại lệ một lần với nguyên tắc "mã không đổi nghĩa", chỉ vì hệ thống chưa chạy thật | Đã gộp (#28) |
@@ -159,7 +159,7 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
 ## Lưu ý cho người làm tiếp
 
 - **Ảnh so sánh với thiết kế**: `SO_SANH=1 npx playwright test e2e/so-sanh.spec.ts --project=may-tinh` ghép ảnh thiết kế
-  và bản dựng vào `docs/so-sanh/<MÃ>.jpg`; chạy xong chạy lại `npm run db:seed-users`. Màn mới thì thêm vào kịch bản này.
+  và bản dựng, mặc định ra thư mục tạm (không ghi đè ảnh trong repo). Chỉ khi màn mới dựng hoặc anh yêu cầu thì thêm `SO_SANH_GHI_VAO_REPO=1` để ghi vào `docs/so-sanh/<MÃ>.jpg`; chạy xong chạy lại `npm run db:seed-users`. Màn mới thì thêm vào kịch bản này.
 - **Kiểm thử giao diện**: Playwright hai cỡ `may-tinh` (1440×900) và `dien-thoai` (390×844), mỗi màn gọi
   `expectAccessible` (axe, chặn lỗi nghiêm trọng). Tua thời gian bằng `page.clock`, không sửa tay mốc thời gian. Cần
   quản trị viên thì dùng `loginAdmin` (tài khoản giả `admin.hs1` cho máy tính, `admin.hs2` cho điện thoại).

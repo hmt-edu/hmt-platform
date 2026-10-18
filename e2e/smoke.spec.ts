@@ -38,7 +38,7 @@ for (const [name, path] of [
   ['CHUNG-06 đăng nhập học sinh', '/dang-nhap/hoc-sinh'],
   ['CHUNG-04 quên mật khẩu', '/quen-mat-khau'],
   ['CHUNG-05 đặt mật khẩu (đường dẫn hết hạn)', '/dat-mat-khau'],
-  ['CHUNG-08 không đăng nhập được', '/khong-dang-nhap-duoc?ly-do=tam-chan'],
+  ['CHUNG-08 không đăng nhập được', '/khong-dang-nhap-duoc'],
   ['CHUNG-17 không tìm thấy', '/khong-ton-tai'],
 ] as const) {
   test(`kiểm truy cập (axe): ${name}`, async ({ page }) => {
@@ -75,7 +75,7 @@ test('CHUNG-04: chỉ hướng dẫn liên hệ quản trị viên, không có �
 });
 
 test('CHUNG-08: một câu chung, không nói lý do hay thời gian khoá', async ({ page }) => {
-  await page.goto('/khong-dang-nhap-duoc?ly-do=tam-chan');
+  await page.goto('/khong-dang-nhap-duoc');
   await expect(page.getByRole('heading', { level: 1, name: 'Không thể đăng nhập' })).toBeVisible();
   await expect(
     page.getByText(
@@ -83,8 +83,8 @@ test('CHUNG-08: một câu chung, không nói lý do hay thời gian khoá', asy
     ),
   ).toBeVisible();
   await expect(page.getByText(/bị khoá|tạm thời bị chặn|phút/)).toHaveCount(0);
-  await page.goto('/khong-dang-nhap-duoc');
-  await expect(page.getByText(/bị khoá|tạm thời bị chặn|phút/)).toHaveCount(0);
+  // Địa chỉ không mang tham số nào (trước đây có đuôi nói lý do tạm chặn).
+  await expect(page).toHaveURL(/\/khong-dang-nhap-duoc$/);
 });
 
 test('cột giới thiệu của trang đăng nhập có nền cam (lỗi đã gặp: khai báo nền sai nên cột trắng, chữ trắng không đọc được)', async ({

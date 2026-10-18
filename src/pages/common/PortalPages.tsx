@@ -1,25 +1,7 @@
 import { useLocation } from 'react-router';
-import { useAuth } from '../../lib/auth/authContext';
 import { useAccess } from '../../nav/AccessContext';
 import { CRM_MENU, checkRoute } from '../../nav/crmMenu';
-import { StateView } from '../../ui/Feedback';
 import { ComingSoonView, FeatureOffView, ForbiddenView, NotFoundView } from './StatePages';
-
-/** Trang chủ CRM tạm (CHUNG-14 "việc của tôi hôm nay" dựng ở bản tiếp theo của bước 4). */
-export function CrmHomePage() {
-  const { claims } = useAuth();
-  return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-h1">Trang chủ</h1>
-      <div className="rounded-card border border-border bg-surface">
-        <StateView kind="coming-soon" title={`Xin chào, ${claims?.name ?? ''}`} headingLevel={2}>
-          Sắp có: việc của bạn hôm nay sẽ hiện ở đây. Menu bên trái chỉ gồm các phân hệ bạn được
-          dùng.
-        </StateView>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Mọi đường dẫn khác dưới /crm: có trong menu và có quyền thì hiện "Sắp có"; không có quyền thì

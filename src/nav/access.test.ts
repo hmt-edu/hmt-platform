@@ -11,8 +11,8 @@ function data(over: Partial<AccessData> = {}): AccessData {
   return {
     permissions: [],
     roles: [
-      { code: 'SALE', name: 'Tư vấn tuyển sinh', default_scope: 'CO_SO' },
-      { code: 'ADMIN', name: 'Quản trị', default_scope: 'TOAN_HE_THONG' },
+      { code: 'SALE', name: 'Tư vấn tuyển sinh', default_scope: 'CO_SO', portals: ['crm'] },
+      { code: 'ADMIN', name: 'Quản trị', default_scope: 'TOAN_HE_THONG', portals: ['crm'] },
     ],
     branches: [CS1, CS3, CS5],
     // Bán hàng chỉ bật ở CS5.

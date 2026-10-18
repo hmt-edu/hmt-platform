@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
-- Vừa gộp #41 (PR 5a) và #42 (tiến độ). PR 5b (#43) chờ OK. Việc sau: bỏ đuôi `?ly-do=tam-chan` khỏi địa chỉ trang Không thể đăng nhập; ngừng ghi đè ảnh `docs/so-sanh` mỗi PR, chỉ chụp khi cần.
+- Vừa gộp #41, #42, #43. PR Trang chủ theo vai trò (CHUNG-14, TS-12) chờ OK; 5c (nền động) chưa làm.
 
 ## Đã chốt (chưa vào repo)
 - Anh OK 18/10: PR 5 theo đề xuất (giữ trang đặt mật khẩu mới nhưng không dẫn tới; sửa bản đồ CHUNG-04, 05, 08 cho khớp thiết kế); bốn câu P3b2 như em đề xuất (không chặn tạo cơ hội theo C4C; sửa học sinh ở cơ hội = sửa hồ sơ học sinh; phụ huynh khớp SĐT khác tên: dùng hồ sơ cũ không ghi đè tên; học sinh trùng tên khác năm sinh = hai hồ sơ); **bảng quyền phiên bản 4** (17 ô Phụ huynh, Học sinh): nạp trong P3b2a.
@@ -20,13 +20,19 @@
 - Hết phiên (DN09): số thời gian lấy từ tham số có sẵn `staff_idle_logout_minutes` (60), `teacher_idle_logout_minutes`, `student_idle_logout_minutes` (10080), theo `idleGroup`; hiện phút, giờ hoặc ngày. Số phút lưu cùng lúc bị đăng xuất (`sessionEnd.ts`), không tạo tham số mới.
 - Sửa lỗi của 5a: nền cam cột giới thiệu không hiện (khai báo `background-image` lẫn màu nên trình duyệt bỏ cả dòng); có bài kiểm tái hiện.
 
+## PR Trang chủ theo vai trò (18/10)
+- `src/pages/home/`: `CrmHome` (khung K09b), `homeBlocks` (khối khai báo theo module, quyền, công tắc tính năng; thêm phân hệ mới = thêm một dòng), `useAppointmentsToday` (hai lần gọi: `list_appointments` và `appointment_overdue_count`, không thêm migration).
+- "Hôm nay" tính theo Asia/Ho_Chi_Minh (`src/lib/vnDay.ts`), không theo múi giờ trình duyệt. Thẻ QUÁ HẠN dùng mốc đầu ngày hôm nay; hàm đó chỉ có tham số "của tôi", nên thẻ này không theo ô chọn cơ sở.
+- Xem thử vai trò: chỉ người có quyền Quản trị; đổi khối nào hiện, số liệu vẫn theo quyền thật.
+- Ngoài ra: bỏ đuôi `?ly-do=tam-chan`; bài so sánh ảnh mặc định không ghi đè `docs/so-sanh` (đặt `SO_SANH_GHI_VAO_REPO=1` mới ghi).
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).
 - **Claude Design:** cụm Lớp trên canvas gốc P5b (xem `docs/nhat-ky/design.md`).
 
 ## File và link mới
-- Đã gộp: #42, #41 (PR 5a), #34 (P3a), #35 (P3b1), #36 (tách gói tải), #37 (nguồn canvas Design), #38 (nền tảng phối hợp), #39 (luật 17/10), #40 (bàn giao 17/10).
+- Đã gộp: #43, #42, #41 (PR 5a), #34 (P3a), #35 (P3b1), #36 (tách gói tải), #37 (nguồn canvas Design), #38 (nền tảng phối hợp), #39 (luật 17/10), #40 (bàn giao 17/10).
 - Còn việc nhỏ: kiểm lại TS18, TS19 của P4 (bản chép cũ trong `design/nguon-canvas/p4-hmt-platform/`).
 - `scripts/bundle-size.ts` (`npm run size`); bộ seed lớn `supabase/seed-lon.sql` (`npm run db:seed-lon`).
 - `main` chưa bắt buộc PR (GitHub Free không cho bật); chỉ do em tuân thủ CLAUDE.md.

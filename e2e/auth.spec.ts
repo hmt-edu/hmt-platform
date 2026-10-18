@@ -18,9 +18,9 @@ test.skip(!PASSWORD, 'Chưa có SEED_PASSWORD: bỏ qua kiểm thử đăng nh�
 const WRONG = 'Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa.';
 
 for (const [account, portal, heading] of [
-  ['sale.cs5', '/crm', 'Trang chủ'],
-  ['truongcs.cs5', '/crm', 'Trang chủ'],
-  ['cskh.cs1', '/crm', 'Trang chủ'],
+  ['sale.cs5', '/crm', 'Việc của tôi hôm nay'],
+  ['truongcs.cs5', '/crm', 'Việc của tôi hôm nay'],
+  ['cskh.cs1', '/crm', 'Việc của tôi hôm nay'],
   ['gv.cs5', '/gv', 'Hôm nay'],
   ['tg.cs5', '/gv', 'Hôm nay'],
 ] as const) {
@@ -171,7 +171,7 @@ test('CHUNG-09: không thao tác quá thời gian trong Cài đặt thì tự đ
   await page.clock.install();
   await loginStaff(page, 'sale.cs1');
   await expect(page).toHaveURL(/\/crm$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Trang chủ' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Việc của tôi hôm nay' })).toBeVisible();
   // Nhân viên: tự đăng xuất sau 60 phút không thao tác (tham số staff_idle_logout_minutes). Tua 65 phút.
   await page.clock.fastForward('01:05:00');
   await expect(page).toHaveURL(/\/dang-nhap/);
@@ -190,7 +190,7 @@ test('CHUNG-09: không thao tác quá thời gian trong Cài đặt thì tự đ
   await expect(page).toHaveURL(/\/crm$/);
   await page.waitForTimeout(1500);
   await expect(page).toHaveURL(/\/crm$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Trang chủ' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Việc của tôi hôm nay' })).toBeVisible();
 });
 
 test('P-100: trên điện thoại, nút và ô nhập của trang đăng nhập cao tối thiểu 44px', async ({
@@ -258,7 +258,9 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
     await expect(menu.getByRole('button', { name: 'Quản trị', exact: true })).toBeVisible();
     // Ô chọn cơ sở của dữ liệu nghiệp vụ không có Hội sở CS3 (R-HT-02).
     // Chờ trang chủ dựng xong (quyền đã tải) rồi mới mở danh sách: bấm sớm quá thì Radix chưa nhận.
-    await expect(page.getByRole('heading', { level: 1, name: 'Trang chủ' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Việc của tôi hôm nay' }),
+    ).toBeVisible();
     await page.getByRole('combobox', { name: 'Cơ sở đang xem' }).click();
     await expect(page.getByRole('option')).toHaveText([
       'Tất cả cơ sở',
