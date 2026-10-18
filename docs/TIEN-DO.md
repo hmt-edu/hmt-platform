@@ -32,7 +32,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P3a | Tài liệu P3 Tuyển sinh: luật 04c (R-CRM-04, 05, 06, 11, 12, 14, 15 sửa; R-CRM-21…24 mới) vào spec 04; spec 06 (L5Q, danh mục 13 thêm 2 lý do, danh mục 34); đặc tả `docs/design/dac-ta/P3-tuyen-sinh.md`; gói thiết kế `design/hmt-p3/`; sửa `luat-cho-thiet-ke.md`, `ban-do-man-hinh.md`; mục "Hiệu năng" của CLAUDE.md (commit riêng) | Đã gộp (#34) |
 | P3b1 | Dữ liệu nền: danh mục (L5Q, 2 lý do huỷ test, danh mục 34, tên tình trạng phiếu), mã LD/CO/PKT, 6 tham số, bảng chiến dịch, phụ huynh, học sinh, lead, lịch hẹn; hàm lead, lịch hẹn, kiểm trùng SĐT, giao người phụ trách, danh sách phân trang; RLS; seed lớn `db:seed-lon`; EXPLAIN. Migration `20261017000023`…`026` (026: ma trận quyền phiên bản 3, 15 ô, anh duyệt 17/10), 163 bài pgTAP mới. Sửa R-CRM-10 (bỏ "từ chối") | Đã gộp (#35) |
 | Nguồn Design | Lưu nguồn canvas Design (P4, P5a, P5b) và nhật ký bàn giao | Đã gộp (#37) |
-| Tách gói tải | Tách gói tải theo cổng và màn (trang đầu CRM 295 → 235 KB nén; `npm run size`, bước CI chỉ báo số, chưa ngưỡng). Luật 04d đến 04g chưa vào spec (để ở `docs/phoi-hop/luat-cho-dua-vao-spec/`) | Đã gộp (#36) |
+| Tách gói tải | Tách gói tải theo cổng và màn (trang đầu CRM 295 → 235 KB nén; `npm run size`, bước CI chỉ báo số, chưa ngưỡng). Luật 04d đến 04g đã vào spec ở PR "Đưa luật 17/10" | Đã gộp (#36) |
+| Luật 17/10 | Đưa luật 04d đến 04g vào `docs/spec/04`, `02`, `06`, bản đồ màn hình, `phan-quyen.md`: R-CRM-22, 25 đến 33; R-GD-01, 02, 03, 14, 15, 18; R-LOP-08, 09, 13, 14, 15; tham số `class_slot_repeat_weeks_max`; mục chờ anh quyết giữ ghi chú (không thành luật); xoá thư mục chờ | Chờ anh OK |
 | Nền tảng phối hợp | `docs/nhat-ky/` (ba file), `docs/phoi-hop/` (khởi động Chat, Design, prompt, luật chờ đưa vào spec), quy trình phối hợp mới, TIEN-DO | Đã gộp (#38) |
 | P3b2 | Cơ hội + phiếu kiểm tra: đổi giai đoạn (R-CRM-02, 03, 12, 13, 14, 16), tính lại L5/L6 (R-CRM-15) | Chưa |
 | P3b3 | Hàm gộp trùng (R-CRM-22), nhập lô từ file | Chưa |
@@ -71,7 +72,7 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 
 #16 đã đóng (không gộp; dữ liệu ở #17, giao diện làm lại ở #22 đến #26).
 
-**Đang mở:** không có PR nào. Luật 04d đến 04g đợi PR riêng "Đưa luật 17/10 (04d–04g) vào spec" (nháp ở nhánh `docs/luat-17-10-ban-nhap`).
+**Đang mở:** PR "Đưa luật 17/10 (04d–04g) vào spec" (chỉ tài liệu).
 
 **Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 026) và toàn bộ giao diện mới.
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
@@ -79,7 +80,7 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 ## Thứ tự tiếp theo (anh chốt 17/10)
 
-1. PR "Đưa luật 17/10 (04d–04g) vào spec" (chỉ tài liệu; không đưa các mục [CHỜ]: chặn môn theo khối khi tạo lớp, một phiếu tái tục cho mỗi ghi danh, R-GD-07).
+1. Gộp PR luật 17/10 (các mục [CHỜ] chưa thành luật: xem mục "13. Còn mở" của `docs/spec/04`).
 2. PR 5 Đăng nhập (5a form + hai bước, 5b khoá + phiên + cổng, 5c nền động).
 3. PR 5a Trang chủ theo vai trò (K09b, gồm "Việc tuyển sinh hôm nay" TS-12).
 4. P3b2a Cơ hội (kèm ma trận quyền phiên bản 4), P3b2b Phiếu kiểm tra, P3b3 Gộp trùng và nhập file; rồi các màn P3c đến P3f.
@@ -100,7 +101,8 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 - R-CRM-19: bấm Tạo chỉ mở form trắng, Lưu mới cấp mã; nút Tạo nằm trên bản ghi cơ hội (R-TIEN-02).
 - Danh mục #25: mục "Tặng giờ chăm sóc (cần duyệt)" cần cờ "cần duyệt" thật khi viết hàm điều chỉnh giờ. Danh mục #23: hàm lọc theo cột `applies_to`, không đọc tiền tố mã.
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình. Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
-- Quỹ giờ riêng từng lớp (04e) và các luật còn vênh: xem `docs/phoi-hop/luat-cho-dua-vao-spec/` và mục "Còn mở" của `docs/spec/04`.
+- Mỗi lớp một dòng đơn, một ghi danh, một quỹ giờ (R-GD-01, 02, 03, 14, 18); lớp Đại + Hình xen kẽ, nhóm lớp (R-LOP-13 đến 15): khi làm Ghi danh, Lớp học, Buổi. Các mục chờ anh quyết: mục "13. Còn mở" của `docs/spec/04`.
+- Tham số mới cần khai báo bằng migration: `class_slot_repeat_weeks_max` (4 tuần, khoảng 1 đến 8, R-LOP-13).
 - Cách tính phạm vi quyền hiện coi mọi phạm vi khác "toàn hệ thống" là "cùng cơ sở": xử lý khi có phạm vi "được phân công" (`docs/nghiep-vu/tuyen-sinh.md`).
 
 ## Việc để sau

@@ -35,7 +35,7 @@
 | Phiếu tái tục **(12/10)** | `TT` + 6 số | `TT000123` | Lịch hẹn không có mã cho người đọc, giống buổi học |
 | Giáo viên, trợ giảng | `GV`/`TG` + số đang dùng | `GV2007`, `TG8002` | Giữ số hiện tại (2xxx GV, 8xxx TG) |
 | Nhân viên | `NV` + 4 số | `NV0012` | |
-| Lớp chung | `CS-Năm-Môn-Khối-Phânloại-Trìnhđộ-STT` | `CS5-2627-TOAN-K08-CB-A-001` | Tên cũ `8A1` là tham chiếu |
+| Lớp chung | `CS-Năm-Môn-Khối-Phânloại-Trìnhđộ-STT` | `CS5-2627-TOAN-K08-CB-A-001` | Tên cũ `8A1` là tham chiếu. **(17/10)** Lớp thuộc nhóm lớp (R-LOP-14): nhóm không có mã riêng, số thứ tự cấp riêng từng lớp |
 | Lớp riêng | `CS-Năm-Môn-Khối-LR-STT` | `CS2-2627-TOAN-K09-LR-014` | Không có trình độ |
 | Khung chương trình | `Môn-Khối-Cấpđộ-Năm` | `TOAN-K03-CB-2627` | Sửa khung thì tạo bản mới, lớp cũ giữ khung cũ |
 | Bài học | Mã khung + `B` + số bài | `TOAN-K03-CB-2627-B05` | Tên bài lấy từ khung |
@@ -61,19 +61,20 @@
 
 ## Toán tách Đại số và Hình học
 - Từ **khối 7**, lớp Toán chia thành hai lớp riêng `DAI` và `HINH`, mỗi lớp có giáo viên, lịch, khung chương trình riêng. Khối 2-6 học một lớp `TOAN`.
-- Phụ huynh mua **tổng giờ Toán**. Gói và ghi danh chỉ có môn `TOAN`; không có giờ Đại, giờ Hình.
+- Phụ huynh mua **tổng giờ Toán**. Gói và ghi danh chỉ có môn `TOAN`; không có giờ Đại, giờ Hình. *[17/10: vênh R-GD-14 mới (hai ghi danh riêng, mỗi ghi danh một quỹ giờ); chờ anh quyết, chưa đổi chữ.]*
+- **(17/10) Nhóm lớp** (R-LOP-14): hai lớp `DAI` và `HINH` cùng khối, cùng cơ sở gắn vào một nhóm; nhóm **không có mã riêng**, mã mỗi lớp giữ nguyên; tên chung của nhóm (ví dụ tên cũ 9M1) là tham chiếu tự do, tuỳ chọn. Mỗi lớp vẫn độc lập. **Luân phiên** Đại, Hình cùng thứ, giờ: dùng cách lặp "mỗi N tuần" của khung giờ (R-LOP-13); trùng giờ kiểm ở cấp buổi thật (R-GD-15).
 
 ### Luật ghi danh và xếp lớp
-1. Mỗi lần mua sinh **một ghi danh, một quỹ giờ**. **(12/10)** Toán Đại + Hình là **một dòng đơn** gói TOAN, trên dòng chọn tối đa hai lớp (DAI, HINH), mỗi lớp một ngày vào (R-GD-14).
-2. Ghi danh có các **dòng xếp lớp**: lớp, ngày vào, ngày rời, tình trạng. Sĩ số, danh sách lớp, điểm danh đọc từ dòng xếp lớp.
-3. Ghi danh Toán khối 7+ vào lớp chung: gợi ý xếp một lớp `DAI` và một lớp `HINH`. Chỉ một lớp thì cảnh báo, không chặn.
+1. **(17/10)** Mỗi dòng đơn sinh **một ghi danh, một quỹ giờ**, và mỗi dòng đơn chỉ chọn **một lớp**. Toán khối 7+ học cả Đại và Hình thì **hai dòng đơn riêng** (một lớp DAI, một lớp HINH), thành hai ghi danh riêng, mỗi ghi danh một quỹ giờ riêng; khi lập đơn hệ thống nhắc (không chặn) nếu học sinh mới có một trong hai (R-GD-14, thay bản 12/10).
+2. Ghi danh có các **dòng xếp lớp**: lớp, ngày vào, ngày rời, tình trạng. **(17/10)** Bình thường một ghi danh có một lớp đang học; chuyển lớp thì đóng dòng cũ, mở dòng mới, giờ còn lại đi theo ghi danh (R-GD-02). Sĩ số, danh sách lớp, điểm danh đọc từ dòng xếp lớp.
+3. Ghi danh Toán khối 7+ vào lớp chung: gợi ý xếp một lớp `DAI` và một lớp `HINH`. Chỉ một lớp thì cảnh báo, không chặn. *[CHỜ anh quyết 17/10: chuyển gợi ý Đại + Hình lên bước lập đơn; chưa đổi chữ.]*
 4. Đổi lớp Hình thì đóng dòng xếp lớp Hình, mở dòng mới; lớp Đại giữ nguyên. Đại và Hình được ở hai lớp khác số.
-5. Bảo lưu, dừng, hết giờ, hoàn phí thao tác ở cấp ghi danh, áp cho mọi lớp đang xếp.
-6. Buổi Done ở lớp nào cũng trừ cùng một quỹ. Số giờ Đại/Hình xem trong báo cáo.
-7. Dự báo ngày hết giờ cộng lịch mọi lớp đang xếp.
+5. Bảo lưu, dừng, hết giờ, hoàn phí thao tác ở cấp ghi danh, áp cho mọi lớp đang xếp. *[CHỜ anh quyết 17/10: một ticket đề nghị chọn nhiều ghi danh; chưa đổi chữ.]*
+6. Buổi Done ở lớp nào cũng trừ cùng một quỹ. Số giờ Đại/Hình xem trong báo cáo. *[CHỜ anh quyết 17/10: quỹ theo từng ghi danh; chưa đổi chữ.]*
+7. Dự báo ngày hết giờ cộng lịch mọi lớp đang xếp. *[CHỜ anh quyết 17/10: dự báo theo từng ghi danh; chưa đổi chữ.]*
 8. Hợp lệ khi xếp: đúng môn của gói (gói `TOAN` → lớp `TOAN`, `DAI`, `HINH`), đúng loại lớp, đúng cơ sở, không trùng giờ với bất kỳ lớp nào em đang học (chặn, R-GD-15) **(12/10)**.
 9. Lớp riêng khối 7+ giữ một lớp `TOAN`.
 
 ## Mã cũ (12/10)
 
-Mã hệ thống Apps Script (`LEAD-2609-0001`, `OPP-…`, `TEST-…`, `ENR-…`, `UPS-…`, `SO-…`, `RCP-…`, `PAY-…`, `CUST-…`, `STU-…`) giữ ở cột `legacy_ref`, tìm kiếm được, hiện nhỏ dưới mã mới.
+Mã hệ thống Apps Script (`LEAD-2609-0001`, `OPP-…`, `TEST-…`, `ENR-…`, `UPS-…`, `SO-…`, `RCP-…`, `PAY-…`, `STU-…`) giữ ở cột `legacy_ref`, tìm kiếm được, hiện nhỏ dưới mã mới. **(17/10)** Phụ huynh **không có mã cũ** (hệ thống Sheet hiện tại không có mã phụ huynh): bỏ `CUST-…` khỏi danh sách; mã học sinh cũ `STU-…` hiện ở ô "Mã cũ (Sheet)" của hồ sơ học sinh (R-CRM-33), mã lớp cũ ở màn lớp (R-LOP-15).

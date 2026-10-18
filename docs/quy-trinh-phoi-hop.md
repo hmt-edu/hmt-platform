@@ -90,7 +90,7 @@ Em tiếp quản dự án HMT Platform từ một phiên Claude Code khác. Chư
 - Đầu mỗi phiên, cả ba bên đọc ba file này (và `docs/TIEN-DO.md`). Cuối phiên, anh nhắc "ghi nhật ký".
 - **Claude Chat** không ghi lên GitHub: soạn `chat.md`, anh dán nội dung cho Claude Code (hoặc bỏ file vào `_inbox/`), Code đưa vào repo trong PR tài liệu kế tiếp (PR chỉ có tài liệu không chạy CI nên không tốn phút Actions).
 - **Claude Design** được đẩy file lên **nhánh `design/<tên-ngắn>`** (xem mục 13). Không đẩy lên `main`, không ghi ngoài `design/` và `docs/nhat-ky/design.md`.
-- Luật anh đã chốt nhưng Code chưa đưa vào spec để ở `docs/phoi-hop/luat-cho-dua-vao-spec/`; Code đưa vào spec rồi xoá file. Prompt cho Design lưu ở `docs/phoi-hop/prompt-design/`.
+- Luật anh đã chốt nhưng Code chưa đưa vào spec để ở `docs/phoi-hop/luat-cho-dua-vao-spec/` (tạo thư mục khi có luật chờ); Code đưa vào spec rồi xoá file. Prompt cho Design lưu ở `docs/phoi-hop/prompt-design/`.
 
 ## 10. Kết nối GitHub cho Claude Chat và Claude Design
 - **Chỉ kết nối repo `hmt-platform`, quyền chỉ đọc** ("Only select repositories"). **Không bao giờ kết nối `hmt-deploy`** (nơi chạy bản thật).

@@ -123,6 +123,7 @@ Không có C3K.
 | Buổi học | Tự chốt danh sách: chu kỳ quét | 30 phút | 0–240 | Không |
 | Buổi học | Tự chốt danh sách: các buổi bắt đầu trong | 2 giờ tới | 1–24 | Có |
 | Buổi học | Học thử tối đa mỗi cơ hội (mới) | 2 buổi | 0–5 | Có |
+| Lớp | Số tuần lặp tối đa của khung giờ (mới, 17/10) | 4 tuần | 1–8 | Không |
 | Giáo viên | Hạn hoàn tất buổi | 8 giờ | 1–72 | Không |
 | CSKH | SLA phản hồi, xử lý (từng loại, mức độ) | Theo R-CS-08 | Phản hồi 1–168 giờ; xử lý xong 1–30 ngày (hoàn tiền 1–60 ngày) | Không |
 | CSKH | Mở lại khiếu nại trong | 7 ngày | 0–90 | Không |

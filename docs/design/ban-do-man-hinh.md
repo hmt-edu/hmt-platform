@@ -116,7 +116,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | TS-07 | Cơ hội (danh sách / kanban L1–L8) | Danh sách · K03, K04 | B | Máy tính | SA, CS, BM, AD | Kanban theo giai đoạn chỉ kéo tới; lọc của tôi, thời gian | Mở; Xuất; Giao sale | TS-08 | R-CRM-02, R-CRM-07 |
 | TS-08 | Cơ hội (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Thanh giai đoạn L1–L8 chỉ đi tới, nhóm con; học sinh (bắt buộc tên, năm sinh từ L5); lịch hẹn; phiếu test; báo giá; đơn | Chuyển giai đoạn; Tạo phiếu test; Tạo báo giá; Tạo đơn; Thêm lịch hẹn | TS-09, TS-15, BH-02, BH-05, TS-13 | R-CRM-02, R-CRM-03, R-CRM-04, R-TIEN-02 |
 | TS-09 | Chuyển giai đoạn cơ hội (chọn nhóm con, lý do) | Hộp thoại · K08 | C | Máy tính | SA, CS, BM, AD | Chỉ hiện giai đoạn phía trước; L5+ đòi tên, năm sinh học sinh | Xác nhận | — | R-CRM-02, R-CRM-03 |
-| TS-10 | Gộp lead / cơ hội trùng | Hộp thoại · K08 | C | Máy tính | BM, AD | Chọn bản giữ lại, gộp lịch hẹn, ghi chú | Gộp | — | R-CRM-01 |
+| TS-10 | Gộp lead / cơ hội trùng | Hộp thoại · K08 | C | Máy tính | SA, CS, BM, AD | Chọn bản giữ lại, gộp lịch hẹn, ghi chú, phiếu test; quyền Duyệt trong cơ sở mình, hai cơ sở khác nhau chỉ Admin | Gộp | — | R-CRM-01, R-CRM-22 |
 | TS-11 | Lịch hẹn (danh sách + lịch tuần) | Lịch · K03, K05 | A | Máy tính | SA, CS, BM, AD | Mọi lịch hẹn của tôi: quá hạn, hôm nay, sắp tới | Hoàn thành (1 bấm); Huỷ (1 bấm); Dời | TS-02, TS-08 | R-CRM-04, R-CRM-07 |
 | TS-12 | Việc tuyển sinh hôm nay (lọc sẵn) | Tổng quan · K09 | C | Máy tính | SA, AD | **Gộp vào trang chủ theo vai trò K09b (CHUNG-14), không làm riêng trong P3.** Lịch hẹn, phiếu test hôm nay, cơ hội quá hạn chăm | Mở | TS-11, TS-16 | R-CRM-07 |
 | TS-13 | Tạo / dời lịch hẹn | Hộp thoại · K08 | B | Máy tính | SA, CS, BM, AD | Loại hoạt động, thời gian, ghi chú; nhiều lịch song song | Lưu | — | R-CRM-04 |
@@ -128,30 +128,30 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 |---|---|---|---|---|---|---|---|---|---|
 | TS-15 | Tạo phiếu kiểm tra từ cơ hội (gồm xếp lịch, đổi lịch) | Hộp thoại · K08 | B | Máy tính | SA, CS, AD | Môn, hình thức test; **ngày giờ test bắt buộc**; phòng và giáo viên chấm chọn sau | Tạo | TS-17 | R-CRM-05 |
 | TS-16 | Phiếu kiểm tra (danh sách + Kanban + lịch) | Danh sách · K03, K05 | B | Máy tính | SA, CS, BM, AD | Lọc Tôi tạo / Tôi phụ trách / Tôi chấm bài; quá hạn, hôm nay, sắp tới (không còn "chưa có lịch"); mặc định "Tuần này" | Mở; Đổi lịch | TS-17 | R-CRM-07 |
-| TS-17 | Phiếu kiểm tra (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Thanh trạng thái Nháp → Đang test → Chờ GV chấm → Hoàn thành; nhánh Huỷ; đính kèm đề, bài làm, phiếu đánh giá; kết quả, gợi ý lớp phù hợp | Đổi lịch; Bắt đầu; Nhập kết quả; Đính kèm; Gợi ý lớp; Huỷ; Đưa về Nháp (lý do) | GV-15, BH-02, BH-08, CHUNG-21 | R-CRM-05, R-CRM-06, R-CRM-10 |
+| TS-17 | Phiếu kiểm tra (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Thanh trạng thái Nháp → Đang test → Chờ GV chấm → Hoàn thành; nhánh Huỷ; kết quả, gợi ý lớp phù hợp (đính kèm file làm ở giai đoạn 4) | Đổi lịch; Bắt đầu; Nhập kết quả; Gợi ý lớp; Huỷ; Đưa về Nháp (lý do) | GV-15, BH-02, BH-08, CHUNG-21 | R-CRM-05, R-CRM-06, R-CRM-10 |
 
 ### Khách hàng
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| KH-01 | Phụ huynh (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Tìm theo tên, SĐT, mã PH, mã cũ | Tạo; Xuất | KH-02 | S03-15 |
-| KH-02 | Phụ huynh (bản ghi) | Bản ghi · K06 | B | Máy tính | SA, CS, BM, KT, AD | Thông tin, các con, đơn, phiếu thu, số dư, ticket; nút liên kết có số đếm | Sửa; Thêm con; Tạo ticket | KH-05, BH-05, TC-02, CS-04 | R-TIEN-25 |
-| KH-03 | Tạo / sửa phụ huynh | Biểu mẫu · K07 | C | Máy tính | SA, CS, AD | Thông tin liên hệ, địa chỉ (tỉnh, phường) | Lưu | KH-02 | — |
-| KH-04 | Học sinh (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Tình trạng Tiềm năng, Đang học, Bảo lưu, Dừng học; lọc khối, cơ sở, lớp | Tạo; Xuất | KH-05 | S02-TT-HS |
-| KH-05 | Học sinh (hồ sơ 360°) | Bản ghi · K06 | B | Máy tính | SA, CS, BM, KT, AD | Ghi danh, quỹ giờ, lớp đang học, điểm danh, nhận xét, BTVN, ticket, tài khoản học tập | Sửa; Tạo ticket; Cấp tài khoản | GD-02, LOP-02, CS-04, QT-13 | S02-TT-HS, R-GD-02 |
-| KH-06 | Tạo / sửa học sinh | Biểu mẫu · K07 | C | Máy tính | SA, CS, AD | Tên, năm sinh, khối, trường, phụ huynh | Lưu | KH-05 | R-CRM-03 |
-| KH-07 | Gộp phụ huynh / học sinh trùng | Hộp thoại · K08 | C | Máy tính | AD | Chọn hồ sơ giữ lại, gộp đơn, ghi danh, ghi chú; mã bị gộp vẫn tìm được | Gộp | — | S03-15 |
+| KH-01 | Phụ huynh (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Tìm theo tên, SĐT (phụ huynh không có mã cũ, R-CRM-33) | Xuất (chỉ Admin, R-CRM-29) | KH-02 | S03-15 |
+| KH-02 | Phụ huynh (bản ghi) | Bản ghi · K06 | B | Máy tính | SA, CS, BM, KT, AD | Thông tin, các con, đơn, phiếu thu, số dư, ticket; nút liên kết có số đếm | Sửa; Gộp; Tạo ticket (không có Tạo tay, R-CRM-27) | KH-05, BH-05, TC-02, CS-04 | R-TIEN-25 |
+| KH-03 | Sửa phụ huynh (không có Tạo tay) | Biểu mẫu · K07 | C | Máy tính | SA, CS, AD | Thông tin liên hệ, địa chỉ (tỉnh, phường); Cơ sở tiếp nhận chỉ Admin sửa | Lưu | KH-02 | R-CRM-27, R-CRM-28 |
+| KH-04 | Học sinh (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Tình trạng Tiềm năng, Đang học, Bảo lưu, Dừng học; lọc khối, cơ sở, lớp | Xuất (chỉ Admin, R-CRM-29) | KH-05 | S02-TT-HS |
+| KH-05 | Học sinh (hồ sơ 360°) | Bản ghi · K06 | B | Máy tính | SA, CS, BM, KT, AD | Ghi danh, quỹ giờ, lớp đang học, điểm danh, nhận xét, BTVN, ticket, tài khoản học tập; ô "Mã cũ (Sheet)" | Sửa; Gộp; Tạo ticket; Cấp tài khoản (giai đoạn 4) | GD-02, LOP-02, CS-04, QT-13 | S02-TT-HS, R-GD-02, R-CRM-33 |
+| KH-06 | Sửa học sinh (không có Tạo tay) | Biểu mẫu · K07 | C | Máy tính | SA, CS, AD | Tên, năm sinh, khối, trường, mục tiêu (một ô chữ); Cơ sở tiếp nhận chỉ Admin sửa | Lưu | KH-05 | R-CRM-03, R-CRM-27, R-CRM-31 |
+| KH-07 | Gộp phụ huynh / học sinh trùng | Hộp thoại · K08 | C | Máy tính | SA, CS, BM, AD | Chọn hồ sơ giữ lại, gộp đơn, ghi danh, ghi chú; mã bị gộp vẫn tìm được; quyền Duyệt trong cơ sở mình, hai cơ sở khác nhau chỉ Admin | Gộp | — | S03-15, R-CRM-25 |
 
 ### Bán hàng
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| BH-01 | Báo giá (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, AD | QT1 Nháp, Đã gửi, Đã chuyển đơn, Từ chối, Hết hạn | Mở; Xuất | BH-02 | R-TIEN-02, R-TIEN-05 |
+| BH-01 | Báo giá (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, AD | QT1 Nháp, Đã gửi, Đã chuyển đơn, Từ chối, Hết hạn | Mở; Xuất (chỉ Trưởng cơ sở, Kế toán, Admin) | BH-02 | R-TIEN-02, R-TIEN-05 |
 | BH-02 | Báo giá (bản ghi, dòng gói) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Dòng gói, hình thức, giờ, giá, chiết khấu, hạn hiệu lực; không có nút tạo tay | Gửi; Chuyển thành đơn; Từ chối; Tạo lại khi hết hạn; In | BH-03, BH-04, BH-05 | R-TIEN-01, R-TIEN-05, R-TIEN-10, R-TIEN-12, R-TIEN-13, R-TIEN-29 |
 | BH-03 | Bản in / gửi báo giá cho phụ huynh | Bản in · K13 | B | Máy tính | SA, CS, AD | Bản A4 hoặc ảnh gửi qua tin nhắn | In; Tải PDF | — | R-TIEN-05, R-TIEN-08 |
 | BH-04 | Từ chối báo giá (lý do) | Hộp thoại · K08 | C | Máy tính | SA, CS, BM, AD | Lý do từ chối | Xác nhận | — | — |
 | BH-05 | Đơn hàng (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, KT, AD | Dòng: học sinh, gói, hình thức, lớp, ngày vào lớp, giờ, giá, chiết khấu cộng dồn, giờ tặng; tiền đã vào, còn lại; khoá khi duyệt; phiếu thu, ghi danh; lịch đóng tiền từng đợt theo điều khoản thanh toán | Trình duyệt (báo đúng dòng, ô còn thiếu); Sửa và trình lại khi bị từ chối; Tạo phiếu thu; Cho học trước; Huỷ đơn | BH-07, BH-08, BH-09, TC-03, GD-02 | R-TIEN-01, R-TIEN-03, R-TIEN-04, R-TIEN-12, R-TIEN-13, R-TIEN-14, R-TIEN-22, R-TIEN-24, R-TIEN-25, R-TIEN-29, R-GD-01, R-GD-06, R-GD-08, R-TIEN-06, R-TIEN-07, R-TIEN-15, R-TIEN-30 |
-| BH-06 | Đơn hàng (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Nháp, Đã trình, Đã duyệt (khoá), Từ chối, Huỷ; đã thu đủ/chưa | Mở; Xuất | BH-05 | R-TIEN-02 |
+| BH-06 | Đơn hàng (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Nháp, Đã trình, Đã duyệt (khoá), Từ chối, Huỷ; đã thu đủ/chưa | Mở; Xuất (chỉ Trưởng cơ sở, Kế toán, Admin) | BH-05 | R-TIEN-02 |
 | BH-07 | Duyệt / từ chối đơn hàng | Hộp thoại · K08 | B | Cả hai | BM, AD | Xem tóm tắt, chiết khấu vượt trần, lớp + ngày vào lớp; duyệt thì khoá | Duyệt; Từ chối (lý do) | — | R-TIEN-03, R-TIEN-29, R-GD-06, R-HT-05 |
 | BH-08 | Chọn lớp và ngày vào lớp cho dòng đơn | Hộp thoại · K08 | A | Máy tính | SA, CS, AD | Chỉ lớp đã duyệt, còn chỗ, đúng môn/khối/cơ sở; chọn buổi sắp tới hoặc ngày đúng thứ có lịch | Chọn | — | R-GD-06, R-GD-08, S02-XL-3, S02-XL-8, R-GD-14, R-GD-15 |
 | BH-09 | Bật "Cho học trước, đóng tiền sau" | Hộp thoại · K08 | B | Máy tính | BM, AD | Trên đơn đã duyệt chưa thu tiền; hiện hạn mức buổi | Bật; Tắt | — | R-GD-12 |
@@ -171,7 +171,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | TC-07 | Bản in phiếu thu / biên nhận | Bản in · K13 | B | Máy tính | SA, CS, KT, AD | Biên nhận A5/A4 gửi phụ huynh | In; Tải PDF | — | R-TIEN-08 |
 | TC-08 | Khoản tiền vào (sổ thu tiền) | Danh sách · K03 | B | Máy tính | KT, BM, AD | Khoản tự sinh khi duyệt phiếu, khoản đảo âm trỏ về khoản gốc; chỉ đọc | Đảo khoản (chỉ KT); Xuất | TC-09 | R-TIEN-01, R-TIEN-26 |
 | TC-09 | Đảo khoản tiền (lý do) | Hộp thoại · K08 | B | Máy tính | KT, AD | Thêm khoản âm, chặn đảo hai lần, báo giờ cấp sẽ tính lại | Xác nhận | — | R-TIEN-26, R-HT-01 |
-| TC-13 | Công nợ (đơn chưa thu đủ) | Danh sách · K03 | B | Máy tính | KT, BM, SA, CS, AD | Đơn còn phải thu theo lịch đóng từng đợt; sắp đến hạn, quá hạn; theo cơ sở, sale | Mở đơn; Xuất | BH-05 | R-TIEN-07 |
+| TC-13 | Công nợ (đơn chưa thu đủ) | Danh sách · K03 | B | Máy tính | KT, BM, SA, CS, AD | Đơn còn phải thu theo lịch đóng từng đợt; sắp đến hạn, quá hạn; theo cơ sở, sale | Mở đơn; Xuất (chỉ Trưởng cơ sở, Kế toán, Admin) | BH-05 | R-TIEN-07 |
 | TC-15 | Đối soát thu tiền | Báo cáo · K09 | B | Máy tính | KT, AD | Theo ngày, tài khoản nhận, hình thức, mã giao dịch; khớp sao kê; xuất | Lọc; Đánh dấu đã khớp; Xuất | TC-02 | S03-21 |
 
 ### Cổng giáo viên
@@ -222,7 +222,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 |---|---|---|---|---|---|---|---|---|---|
 | GD-01 | Ghi danh (danh sách) | Danh sách · K03 | B | Máy tính | CS, BM, SA, KT, AD | Tình trạng Chờ xếp lớp, Đã xếp lớp, Đang học, Bảo lưu, Hoàn thành, Chuyển lớp, Dừng, Hoàn phí; giờ còn | Mở; Xuất | GD-02 | R-GD-05, R-TIEN-02 |
 | GD-02 | Ghi danh (bản ghi) | Bản ghi · K06 | A | Máy tính | CS, BM, SA, KT, AD | Quỹ giờ (cấp, đã dùng, còn, tặng), dòng xếp lớp, sổ giờ, ngày hết giờ dự kiến, hạn gói (chỉ dự báo), hình thức học, ticket liên quan | Xếp lớp; Điều chỉnh giờ; Tạo ticket | GD-03, GD-04, GD-05, CS-04 | R-GD-01, R-GD-02, R-GD-03, R-GD-04, R-GD-05, R-GD-07, R-GD-13, R-TIEN-12, R-TIEN-21, S02-XL-1, S02-XL-2, S02-XL-5, S02-XL-6, S02-XL-7 |
-| GD-03 | Xếp lớp cho ghi danh (gợi ý Đại + Hình) | Hộp thoại · K08 | A | Máy tính | CS, BM, AD | Toán khối 7+: gợi ý một lớp DAI và một lớp HINH, chỉ một thì cảnh báo; kiểm đúng môn, loại lớp, cơ sở, trùng giờ; chọn ngày vào | Xếp | — | S02-XL-3, S02-XL-4, S02-XL-8, S02-XL-9, R-GD-06, R-GD-08, R-GD-14, R-GD-15 |
+| GD-03 | Xếp lớp cho ghi danh (theo nhóm hoặc theo lớp) | Hộp thoại · K08 | A | Máy tính | CS, BM, AD | xếp theo **nhóm lớp** (ghi danh Đại vào lớp DAI, ghi danh Hình vào lớp HINH) hoặc theo từng lớp; mỗi ghi danh một lớp; kiểm đúng môn, loại lớp, cơ sở, trùng giờ; chọn ngày vào | Xếp | — | S02-XL-3, S02-XL-4, S02-XL-8, S02-XL-9, R-GD-06, R-GD-08, R-GD-14, R-GD-15, R-LOP-14 |
 | GD-04 | Sổ giờ của ghi danh | Danh sách · K03 | B | Máy tính | CS, BM, KT, AD | Mọi dòng cộng/trừ giờ, nguồn (buổi, phiếu thu, điều chỉnh); chỉ thêm, không sửa | Xuất | — | R-GD-04, R-GIO-01, R-GIO-04 |
 | GD-05 | Điều chỉnh giờ (dòng ngược dấu, bắt buộc lý do) | Hộp thoại · K08 | B | Máy tính | BM, AD | Thêm dòng điều chỉnh, không sửa dòng cũ | Xác nhận | — | R-GD-04 |
 | GD-06 | Hàng chờ xếp lớp | Danh sách · K03 | B | Máy tính | CS, BM, AD | Ghi danh chưa có lớp, Toán 7+ mới xếp một lớp, đang học trước chưa đóng tiền | Xếp lớp | GD-03 | R-GD-06, S02-XL-3, R-GD-12 |
@@ -240,14 +240,14 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| LOP-01 | Lớp (danh sách / kanban theo bước duyệt) | Danh sách · K03, K04 | B | Máy tính | CS, BM, SA, AD | Tình trạng duyệt và tình trạng vận hành; sĩ số, còn chỗ; lọc cơ sở, môn, khối | Tạo; Mở; Xuất | LOP-02, LOP-03 | R-LOP-01, R-LOP-05 |
-| LOP-02 | Lớp (bản ghi) | Bản ghi · K06 | A | Máy tính | CS, BM, SA, AD | Thanh duyệt; thông tin; thời khoá biểu; học sinh (dòng xếp lớp); buổi; khung, bài bắt đầu; ngày kết thúc dự kiến | Trình; Xác nhận; Duyệt; Từ chối; Huỷ; Đóng; Đổi giáo viên; Yêu cầu bổ trợ | LOP-04, LOP-05, LOP-06, LOP-07, BUOI-02, BUOI-09 | R-LOP-01, R-LOP-02, R-LOP-03, R-LOP-05, R-LOP-07, R-LOP-09, R-GD-02 |
-| LOP-03 | Tạo / sửa lớp (chỉ ở Nháp, Từ chối) | Biểu mẫu · K07 | B | Máy tính | CS, BM, AD | Cơ sở mình, môn, khối, phân loại, trình độ, sĩ số tối đa, khung, bài bắt đầu, ngày khai giảng; mã lớp tự cấp | Lưu nháp | LOP-02, LOP-04 | R-LOP-02, R-LOP-06, R-LOP-07, S03-24 |
-| LOP-04 | Thời khoá biểu lớp | Biểu mẫu · K07 | A | Máy tính | CS, BM, AD | Mỗi thứ nhiều khung giờ; mỗi khung có giờ, giáo viên, trợ giảng, phòng; cảnh báo trùng phòng; xem trước ngày kết thúc | Thêm khung; Lưu | — | R-LOP-08, R-LOP-09, R-LOP-10 |
+| LOP-01 | Lớp (danh sách / kanban theo bước duyệt) | Danh sách · K03, K04 | B | Máy tính | CS, BM, SA, AD | Tình trạng duyệt và tình trạng vận hành; sĩ số, còn chỗ; lọc cơ sở, môn, khối; tìm theo mã cũ (R-LOP-15) | Tạo; Mở; Xuất | LOP-02, LOP-03 | R-LOP-01, R-LOP-05 |
+| LOP-02 | Lớp (bản ghi) | Bản ghi · K06 | A | Máy tính | CS, BM, SA, AD | Thanh duyệt; thông tin; thời khoá biểu; học sinh (dòng xếp lớp); buổi; khung, bài bắt đầu; ngày kết thúc dự kiến; ô "Mã cũ (Sheet)"; tên chung của nhóm lớp (nhỏ dưới mã) | Trình; Xác nhận; Duyệt; Từ chối; Huỷ; Đóng; Đổi giáo viên; Yêu cầu bổ trợ | LOP-04, LOP-05, LOP-06, LOP-07, BUOI-02, BUOI-09 | R-LOP-01, R-LOP-02, R-LOP-03, R-LOP-05, R-LOP-07, R-LOP-09, R-GD-02, R-LOP-14, R-LOP-15 |
+| LOP-03 | Tạo / sửa lớp (chỉ ở Nháp, Từ chối) | Biểu mẫu · K07 | B | Máy tính | CS, BM, AD | Cơ sở mình, môn, khối, phân loại, trình độ, sĩ số tối đa, khung, bài bắt đầu, ngày khai giảng; **Nhóm lớp** (chọn nhóm có sẵn hoặc tạo nhóm mới, tên chung tuỳ chọn; "Tạo lớp còn lại cho nhóm này"); mã lớp tự cấp | Lưu nháp | LOP-02, LOP-04 | R-LOP-02, R-LOP-06, R-LOP-07, S03-24, R-LOP-14 |
+| LOP-04 | Thời khoá biểu lớp | Biểu mẫu · K07 | A | Máy tính | CS, BM, AD | Mỗi thứ nhiều khung giờ; mỗi khung có giờ, giáo viên, trợ giảng, phòng; **mỗi khung có "Lặp mỗi N tuần" và "Buổi đầu tiên"** (luân phiên Đại, Hình); cảnh báo trùng phòng (ở cấp buổi thật); xem trước ngày kết thúc | Thêm khung; Lưu | — | R-LOP-08, R-LOP-09, R-LOP-10, R-LOP-13 |
 | LOP-05 | Trình / xác nhận / duyệt / từ chối lớp | Hộp thoại · K08 | B | Máy tính | CS, BM, AD | Duyệt bắt buộc có thời khoá biểu; duyệt xong tự sinh buổi (xem trước số buổi) | Trình; Xác nhận; Duyệt; Từ chối; Đưa về Nháp; Huỷ | — | R-LOP-01, R-LOP-02, R-LOP-03 |
 | LOP-06 | Đóng / huỷ lớp (bị chặn thì liệt kê lý do) | Hộp thoại · K08 | B | Máy tính | BM, AD | Đóng chặn khi còn em còn giờ (liệt kê tên); huỷ chặn khi đã có buổi Done | Xác nhận | — | R-LOP-01, R-LOP-04 |
 | LOP-07 | Đổi giáo viên và sinh lại buổi chưa diễn ra | Hộp thoại · K08 | B | Máy tính | CS, BM, AD | Chọn GV mới từ ngày nào, xem trước các buổi bị đổi | Xác nhận | — | R-LOP-10 |
-| LOP-08 | Lịch tuần cơ sở (theo phòng, giáo viên) | Lịch · K05 | A | Máy tính | CS, BM, AD | Mọi buổi trong tuần theo phòng hoặc giáo viên; thấy trùng phòng, trùng GV | Mở buổi; Lọc | BUOI-02 | R-LOP-08 |
+| LOP-08 | Lịch tuần cơ sở (theo phòng, giáo viên) | Lịch · K05 | A | Máy tính | CS, BM, AD | Mọi buổi trong tuần theo phòng hoặc giáo viên; thấy trùng phòng, trùng GV; hai lớp cùng nhóm cùng màu viền, luân phiên không báo trùng | Mở buổi; Lọc | BUOI-02 | R-LOP-08, R-LOP-13, R-LOP-14 |
 | LOP-09 | Danh sách học sinh của lớp (dòng xếp lớp) | Danh sách · K03 | C | Máy tính | CS, BM, AD | Ngày vào, ngày rời, tình trạng, giờ còn, Đại/Hình | Xếp thêm; Xuất | GD-02 | R-GD-02, S02-XL-2 |
 | LOP-10 | Đổi lịch cố định của lớp đã duyệt | Hộp thoại · K08 | B | Máy tính | CS, BM, AD | Đổi ca, phòng, thứ cho mọi buổi chưa diễn ra; xem trước buổi bị đổi, sinh lại | Xác nhận | LOP-04 | R-LOP-10, R-LOP-08, R-LOP-09, R-LOP-11 |
 

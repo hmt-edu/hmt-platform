@@ -75,6 +75,25 @@ nguyên (chỉ Admin), thêm bốn phân hệ quyền (danh mục `PERM_MODULE`)
 - Lịch sử phiên bản quyền (`permission_version`, `permission_change`): chặn sửa, xoá, xoá sạch, báo
   `HMT_LICH_SU_QUYEN_CHI_THEM`.
 
+## Ma trận phiên bản 3: Giao việc, Huỷ, Duyệt = gộp trùng (PR P3b1, anh duyệt 17/10)
+Nạp 15 ô, phạm vi cơ sở mình, ghi chú của phiên bản: "Duyệt trên Lead, Cơ hội, Phụ huynh, Học sinh = gộp trùng (R-CRM-22)".
+
+| Vai trò | Phân hệ | Hành động thêm |
+|---|---|---|
+| Tuyển sinh | Lead, Cơ hội | Giao việc, Duyệt |
+| Tuyển sinh | Phụ huynh, Học sinh | Duyệt |
+| Tuyển sinh | Kiểm tra đầu vào | Huỷ |
+| CSKH | Lead, Cơ hội | Giao việc, Duyệt |
+| CSKH | Phụ huynh, Học sinh | Duyệt |
+| CSKH | Kiểm tra đầu vào | Huỷ, Giao việc |
+
+- **Duyệt** trên Lead, Cơ hội, Phụ huynh, Học sinh = **gộp trùng** (R-CRM-22, R-CRM-25): Tuyển sinh, CSKH, Trưởng cơ sở gộp trong cơ sở
+  mình; Admin mọi cơ sở; hai hồ sơ khác cơ sở chỉ Admin. Các phân hệ này chưa có luồng duyệt nào khác.
+- Giáo viên, trợ giảng vẫn không Huỷ phiếu kiểm tra (xem lại khi làm cổng giáo viên).
+- **Luật 17/10 chưa vào ma trận (chờ phiên bản 4, anh duyệt bảng TRƯỚC / SAU trước khi nạp):** R-CRM-27 bỏ Tạo trên Phụ huynh,
+  Học sinh; R-CRM-29 chỉ Admin còn Xuất trên hai phân hệ này (hiện Trưởng cơ sở còn Xuất, chữ ở mục trên "Trưởng cơ sở được
+  Xuất file mọi phân hệ trong cơ sở" sẽ chỉnh theo); R-CRM-26 Xem toàn hệ thống cho Tuyển sinh, CSKH, Trưởng cơ sở; Kế toán thêm Xem Phụ huynh.
+
 ## Kế toán vắng: gán tạm vai trò ACCOUNTANT
 ADMIN không có quyền duyệt tiền. Khi kế toán vắng:
 1. Admin vào quản trị tài khoản, thêm vai trò `ACCOUNTANT` cho người làm thay (giữ vai trò cũ của họ). Người đó phải
@@ -110,7 +129,7 @@ còn ADMIN khác thì bị chặn.
 | `app.permission_scope(phân hệ, hành động)` | Phạm vi rộng nhất được cấp | RLS, hàm |
 | `app.has_permission(phân hệ, hành động)` | Có quyền không | RLS, hàm |
 | `app.can_see_branch(phân hệ, hành động, cơ sở)` | Được thao tác dữ liệu cơ sở đó không | RLS |
-| `app.save_permission_matrix(phiên bản đang xem, danh sách ô đổi)` | Lưu nhiều ô quyền thành MỘT phiên bản mới, hiệu lực ngay (ô: vai trò, phân hệ, hành động, phạm vi hoặc null = bỏ quyền) | Admin (màn QT-05) |
+| `app.save_permission_matrix(phiên bản đang xem, danh sách ô đổi, [ghi chú])` | Lưu nhiều ô quyền thành MỘT phiên bản mới, hiệu lực ngay (ô: vai trò, phân hệ, hành động, phạm vi hoặc null = bỏ quyền); ghi chú tuỳ chọn của phiên bản | Admin (màn QT-05) |
 | `app.permission_current_version()` | Số phiên bản hiện hành | Màn QT-05 |
 | `app.set_permission(vai trò, phân hệ, hành động, phạm vi)` | Sửa một ô; **hàm nội bộ**, giao diện không gọi được (từ PR 6d) | Migration, kết nối thẳng DB |
 | `app.log_export(phân hệ, bộ lọc, số dòng)` | Ghi nhật ký xuất file | Giao diện trước khi xuất |

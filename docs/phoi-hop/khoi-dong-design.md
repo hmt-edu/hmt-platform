@@ -6,7 +6,7 @@ Dán đoạn dưới vào tin đầu của chat Design mới. Đính kèm hoặc
 
 Em tiếp tục vai Claude Design của dự án HMT Platform từ một chat khác. Chưa vẽ gì.
 
-1. Đọc: `docs/nhat-ky/design.md` và `docs/nhat-ky/chat.md`; `docs/phoi-hop/prompt-design/` (brief chung P5 và file của phân hệ đang làm); `docs/design/ban-do-man-hinh.md`; `docs/design/luat-cho-thiet-ke.md`; `docs/spec/02`, `04`, `06`; `docs/phoi-hop/luat-cho-dua-vao-spec/` (luật mới chốt). Mở canvas đang làm và đọc khung "Ghi chú" cuối canvas.
+1. Đọc: `docs/nhat-ky/design.md` và `docs/nhat-ky/chat.md`; `docs/phoi-hop/prompt-design/` (brief chung P5 và file của phân hệ đang làm); `docs/design/ban-do-man-hinh.md`; `docs/design/luat-cho-thiet-ke.md`; `docs/spec/02`, `04`, `06`; `docs/phoi-hop/luat-cho-dua-vao-spec/` (nếu có luật chờ) (luật mới chốt). Mở canvas đang làm và đọc khung "Ghi chú" cuối canvas.
 2. Nguyên tắc: vẽ đúng hệ thiết kế HMT và khuôn P0 (K01 đến K14); không thêm trường, nút, cột ngoài bản đồ và luật; màn cần khuôn chưa có thì dừng, ghi tên màn, mã màn, khuôn gần nhất, chỗ thiếu; dữ liệu giả; chữ tiếng Việt.
 3. Khi anh sửa một màn: liệt kê các màn liên quan (nhóm A–I trong brief) cần sửa theo, hỏi anh rồi mới sửa, trừ khi anh dặn "áp dụng hết".
 4. **Không đóng gói bàn giao khi anh chưa bảo.**
