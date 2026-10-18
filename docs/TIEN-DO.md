@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 18/10/2026, 21:00. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 18/10/2026, 22:00. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
 ## Quy trình (đọc `docs/quy-trinh-phoi-hop.md`)
 
@@ -89,9 +89,15 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Ghi danh (xem `docs/nhat-ky/design.md`).
 
+## Đã chốt 18/10 (tối)
+
+- **Giờ test ở quá khứ:** giữ chặn khi tạo và đổi lịch như #47 (không có trường hợp test tại chỗ rồi mới tạo phiếu).
+- **Ngưỡng dung lượng gói tải:** giữ "chỉ báo số" (`npm run size`, bước CI chỉ in số), **không đặt ngưỡng trượt** (anh chốt 18/10). Đo hiện tại: trang đầu CRM 238 KB nén. `CLAUDE.md` mục Hiệu năng còn dòng "vượt thì trượt": chờ anh OK sửa cho khớp.
+- **R-CRM-36** (cơ hội mới luôn bắt đầu ở L1) đã vào `docs/spec/04` [CHỐT]; `create_opportunity` khớp (xem `code.md`).
+
 ## Đang chờ anh Trường
 
-- Ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén; bước CI hiện chỉ báo số).
+- **Lịch nhắc tự sinh của phiếu:** có tự đóng khi phiếu sang Đang test không (đề xuất ở mục "Cho P3e" bên dưới); anh quyết trước khi dựng màn P3e.
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
 
 ## Việc phải nhớ khi viết hàm (luật đã chốt)
@@ -101,7 +107,7 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 - Đã vào luật 18/10: R-CRM-34 (nhóm con L6), R-CRM-35 (đổi nhóm con cùng giai đoạn).
 - **Kiểm lại quyền (anh dặn 18/10):** `update_opportunity` kiểm quyền Học sinh · Sửa theo cơ sở của hồ sơ học sinh. Hồ sơ học sinh nay sinh tự động khi tạo phiếu (cơ sở tiếp nhận = cơ sở cơ hội); nhân viên cơ sở khác sửa học sinh ở cơ hội của mình sẽ bị chặn nếu học sinh tiếp nhận ở cơ sở khác. Xem lại khi làm màn.
 - Phụ huynh, học sinh (R-CRM-26 đến 28): chỉ sinh trong hàm (phụ huynh khi tạo cơ hội, khớp SĐT chuẩn hoá; học sinh khi tạo phiếu hoặc duyệt đơn, khớp phụ huynh + tên + năm sinh chuẩn hoá); chặn ghi trực tiếp.
-- **Cho P3e (ghi 18/10):** (1) bản vẽ TS15 cho **chọn Khối** (ô "Lớp" là danh sách chọn, không khoá; đã kiểm bản vẽ), bản đồ TS-15 đã sửa "Khối chọn khi tạo". (2) **Cơ sở test khác cơ sở cơ hội:** phiếu chép `branch_id` của cơ hội để xét quyền, nên nhân viên cơ sở test chưa thấy phiếu (giáo viên chấm được phân công thì thấy); xem lại ở P3e. (3) Lịch hẹn nhắc của phiếu huỷ được huỷ theo (lý do Khác, ghi chú "Phiếu kiểm tra đã huỷ"); phiếu Hoàn thành thì lịch nhắc giữ nguyên: chưa quy định, xem lại ở P3e. (4) Khối "Phiếu kiểm tra hôm nay" của Trang chủ thêm một dòng vào cấu hình khối khi làm P3e.
+- **Cho P3e (ghi 18/10):** (1) bản vẽ TS15 cho **chọn Khối** (ô "Lớp" là danh sách chọn, không khoá; đã kiểm bản vẽ), bản đồ TS-15 đã sửa "Khối chọn khi tạo". (2) **Cơ sở test khác cơ sở cơ hội:** phiếu chép `branch_id` của cơ hội để xét quyền, nên nhân viên cơ sở test chưa thấy phiếu (giáo viên chấm được phân công thì thấy); xem lại ở P3e. (3) **Lịch hẹn nhắc tự sinh còn Chưa làm khi phiếu đã sang Đang test trở đi (Hoàn thành thì càng vậy):** sau giờ hẹn nó thành "Quá hạn", làm tăng thẻ QUÁ HẠN ở Trang chủ và thanh đỏ của Kanban dù việc nhắc đã hết ý nghĩa. Hiện chỉ có phiếu huỷ mới huỷ lịch nhắc. **Đề xuất (chờ anh quyết trước khi dựng màn P3e):** hệ thống tự đóng (Hoàn thành) lịch nhắc tự sinh còn Chưa làm khi phiếu sang Đang test; lịch nhắc người dùng sửa tay hoặc tự tạo thì giữ nguyên; mở lại hoặc lùi phiếu về Nháp thì không mở lại lịch đã đóng (nếu giờ test còn ở tương lai thì sinh lịch nhắc mới). Cần sửa `start_student_test` và bài kiểm. (4) Khối "Phiếu kiểm tra hôm nay" của Trang chủ thêm một dòng vào cấu hình khối khi làm P3e.
 - Hàm tạo đơn, chuyển báo giá thành đơn kiểm R-CRM-16 (phải ở L8); hàm duyệt phiếu thu gọi kiểm tra R-CRM-17 trong cùng giao dịch, đối chiếu "lệch" R-CRM-18.
 - R-CRM-19: bấm Tạo chỉ mở form trắng, Lưu mới cấp mã; nút Tạo nằm trên bản ghi cơ hội (R-TIEN-02).
 - Danh mục #25: mục "Tặng giờ chăm sóc (cần duyệt)" cần cờ "cần duyệt" thật khi viết hàm điều chỉnh giờ. Danh mục #23: hàm lọc theo cột `applies_to`, không đọc tiền tố mã.

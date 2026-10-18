@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
-- Vừa gộp #41 đến #46. PR P3b2b (phiếu kiểm tra) chờ OK. Tiếp: P3b3 (gộp trùng, nhập file), rồi các màn P3c đến P3f.
+- Vừa gộp #41 đến #47. Chờ anh quyết: lịch nhắc tự sinh của phiếu tự đóng khi phiếu sang Đang test (TIEN-DO). Tiếp: P3b3 (gộp trùng, nhập file), đã gửi đề xuất.
 
 ## Đã chốt (chưa vào repo)
 - Anh OK 18/10: PR 5 theo đề xuất (giữ trang đặt mật khẩu mới nhưng không dẫn tới; sửa bản đồ CHUNG-04, 05, 08 cho khớp thiết kế); bốn câu P3b2 như em đề xuất (không chặn tạo cơ hội theo C4C; sửa học sinh ở cơ hội = sửa hồ sơ học sinh; phụ huynh khớp SĐT khác tên: dùng hồ sơ cũ không ghi đè tên; học sinh trùng tên khác năm sinh = hai hồ sơ); **bảng quyền phiên bản 4** (17 ô Phụ huynh, Học sinh): nạp trong P3b2a.
@@ -39,13 +39,17 @@
 - Quyền theo phạm vi của phiếu (`test_scope_ok`): toàn hệ thống, cơ sở của cơ hội, được phân công (giáo viên chấm, người phụ trách). Lỗi bắt được nhờ bài kiểm: so với null cho null chứ không false, nên giáo viên chưa phân công lọt qua kiểm quyền.
 - Kiểm bản vẽ TS15: Khối chọn được (không khoá). Đã sửa bản đồ TS-15 và dòng tương ứng ở `dac-ta/P3-tuyen-sinh.md`.
 
+## R-CRM-36 đối chiếu (18/10)
+- R-CRM-36 (cơ hội mới luôn bắt đầu ở L1) đã vào spec. `create_opportunity` (migration 028) khớp: câu `insert` ghi cứng `stage_code = 'L1'`, `substage_code` trống; `p_data` không có đường nào đặt giai đoạn (chỉ đọc nhu cầu, học sinh, người phụ trách, người hỗ trợ). Thêm bài pgTAP: truyền giai đoạn, nhóm con, lý do bỏ qua trong `p_data` vẫn ra L1.
+- **Màn tạo cơ hội:** chưa dựng (P3d); bản vẽ TS-06 chỉ có hộp cảnh báo "lead đã có cơ hội", không có ô giai đoạn. Khi dựng màn tạo, không đặt ô chọn giai đoạn.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).
 - **Claude Design:** cụm Lớp trên canvas gốc P5b (xem `docs/nhat-ky/design.md`).
 
 ## File và link mới
-- Đã gộp: #43, #42, #41 (PR 5a), #34 (P3a), #35 (P3b1), #36 (tách gói tải), #37 (nguồn canvas Design), #38 (nền tảng phối hợp), #39 (luật 17/10), #40 (bàn giao 17/10).
+- Đã gộp: #47, #46, #45, #44, #43, #42, #41 (PR 5a), #34 (P3a), #35 (P3b1), #36 (tách gói tải), #37 (nguồn canvas Design), #38 (nền tảng phối hợp), #39 (luật 17/10), #40 (bàn giao 17/10).
 - Còn việc nhỏ: kiểm lại TS18, TS19 của P4 (bản chép cũ trong `design/nguon-canvas/p4-hmt-platform/`).
 - `scripts/bundle-size.ts` (`npm run size`); bộ seed lớn `supabase/seed-lon.sql` (`npm run db:seed-lon`).
 - `main` chưa bắt buộc PR (GitHub Free không cho bật); chỉ do em tuân thủ CLAUDE.md.

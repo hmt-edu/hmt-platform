@@ -175,7 +175,10 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 
 -- ================= Đổi giai đoạn: R-CRM-02, 03, 13, 14, 15, 16, 17 =================
 -- Cơ hội CO000003 (lead 0900000104) có học sinh; CO000002 (lead 0900000101) cũng có. Cơ hội của lead 0900000102 không có học sinh.
-select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000102'))$$), null, 'Lead không có học sinh: vẫn tạo cơ hội (R-CRM-03 chỉ bắt từ L5)');
+select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000102'), '{"stage_code": "L5", "substage_code": "L5B", "skip_reason_code": "KHAC"}')$$), null,
+          'Lead không có học sinh: vẫn tạo cơ hội (R-CRM-03 chỉ bắt từ L5); truyền giai đoạn lúc tạo cũng không được dùng');
+select is((select array[stage_code, coalesce(substage_code, 'trống'), coalesce(skip_reason_code, 'trống')] from app.opportunity where code = 'CO000004'),
+          array['L1', 'trống', 'trống'], 'R-CRM-36: cơ hội mới luôn bắt đầu ở L1, người dùng không chọn giai đoạn lúc tạo');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L4')$$), null, 'Chuyển L1 → L4: được');
 select is((select stage_code from app.opportunity where code = 'CO000004'), 'L4', 'Cơ hội ở L4');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L2')$$), 'HMT_CO_HOI_KHONG_LUI', 'R-CRM-02: không lùi L4 → L2');
