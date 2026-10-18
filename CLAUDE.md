@@ -69,7 +69,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 - **Gọi dữ liệu:** một màn tải bằng một đến vài lần gọi (rpc hoặc join). Cấm gọi lặp theo từng dòng.
 - **RLS:** hàm quyền viết dạng `(select app.has_permission(...))`; cột dùng trong chính sách có chỉ mục. Mỗi PR có bảng mới chạy EXPLAIN cho 2–3 câu chính trên dữ liệu giả lớn và dán kết quả vào PR.
 - **Dữ liệu giả lớn:** thêm bộ seed riêng (khoảng 50.000 lead, 20.000 cơ hội) chỉ để thử tốc độ ở local, không nằm trong seed thường, không dùng dữ liệu thật.
-- **Giao diện:** tách gói tải theo cổng và theo màn (lazy load). Trang đầu cổng CRM dưới khoảng 250 KB nén. CI có bước dò dung lượng, vượt thì trượt.
+- **Giao diện:** tách gói tải theo cổng và theo màn (lazy load). Trang đầu cổng CRM dưới khoảng 250 KB nén. CI có bước dò dung lượng chỉ báo số, không đặt ngưỡng trượt (anh Trường chốt 18/10/2026).
 - **Trải nghiệm:** có trạng thái đang tải, khoá nút khi đang lưu, thử lại khi lỗi mạng. Chỉ tải lại phần cần, không tải lại cả trang.
 - **Mục tiêu tham chiếu (không phải cứng):** danh sách mở dưới 1 giây, lưu một thao tác dưới 1 giây trên mạng 4G bình thường.
 - **Băng thông gói Free:** tải ra 5 GB mỗi tháng. Không lấy cột không dùng.
