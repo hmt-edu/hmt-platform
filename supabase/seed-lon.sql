@@ -1,8 +1,8 @@
 -- Dữ liệu GIẢ LỚN chỉ để thử tốc độ ở máy local (CLAUDE.md, Hiệu năng). KHÔNG chạy ở thử nghiệm hay chạy thật,
 -- KHÔNG nằm trong seed.sql thường, KHÔNG dùng dữ liệu thật: tên ghép từ danh sách giả, SĐT dạng 0999xxxxxx giả.
 -- Cần tài khoản giả đã có: npm run db:seed-users (dùng sale.cs1, sale.cs5).
--- Chạy: npm run db:seed-lon. Tạo 50.000 lead (mã LDL000001…), 30.000 phụ huynh (mã PHL…), 100.000 lịch hẹn, 20.000 cơ hội.
--- Cơ hội giả (20.000, mã COL…) và 20.000 lịch hẹn của cơ hội thêm ở P3b2a; phiếu kiểm tra thêm ở P3b2b.
+-- Chạy: npm run db:seed-lon. Tạo 50.000 lead (mã LDL000001…), 30.000 phụ huynh (mã PHL…), 100.000 lịch hẹn, 20.000 cơ hội, 10.000 học sinh, 15.000 phiếu kiểm tra.
+-- Cơ hội giả (20.000, mã COL…) và 20.000 lịch hẹn của cơ hội thêm ở P3b2a; 10.000 học sinh (HSL…) và 15.000 phiếu kiểm tra (PKL…) ở P3b2b.
 -- Mã tiền tố LDL/PHL để không đụng mã thật. Chạy lại sẽ báo lỗi (đã có), muốn làm lại thì npm run db:reset.
 \set ON_ERROR_STOP on
 \timing on
@@ -29,6 +29,10 @@ alter table app.appointment disable trigger appointment_audit;
 alter table app.appointment disable trigger appointment_refresh_next;
 alter table app.opportunity disable trigger opportunity_fill_standard;
 alter table app.opportunity disable trigger opportunity_audit;
+alter table app.student disable trigger student_fill_standard;
+alter table app.student disable trigger student_audit;
+alter table app.student_test disable trigger student_test_fill_standard;
+alter table app.student_test disable trigger student_test_audit;
 
 create temp table seed_names as
 select * from (values
@@ -120,6 +124,40 @@ update app.opportunity o set next_appointment_at = a.next
          where status = 'CHUA_LAM' and opportunity_id is not null group by opportunity_id) a
  where a.opportunity_id = o.id and o.code like 'COL%';
 
+-- Học sinh giả cho 10.000 cơ hội ở L5–L8 (cơ hội có phiếu phải có học sinh), gắn vào cơ hội.
+insert into app.student (code, parent_id, full_name, birth_year, school, branch_id, created_at, updated_at)
+select 'HSL' || lpad(g::text, 6, '0'), o.parent_id, o.student_name, o.student_birth_year, o.school, o.branch_id, o.created_at, now()
+  from generate_series(1, 20000) g
+  join app.opportunity o on o.code = 'COL' || lpad(g::text, 6, '0')
+ where o.stage_code in ('L5', 'L6', 'L7', 'L8');
+update app.opportunity o set student_id = s.id
+  from app.student s
+ where s.code = 'HSL' || substr(o.code, 4) and o.code like 'COL%' and o.stage_code in ('L5', 'L6', 'L7', 'L8');
+
+-- Phiếu kiểm tra giả: 15.000 (cơ hội L5–L8: một phiếu, cơ hội số chẵn thêm phiếu thứ hai), 5 trạng thái, rải ±30 ngày,
+-- hai cơ sở, một phần có giáo viên chấm (gv.cs5) và điểm.
+insert into app.student_test (code, opportunity_id, student_id, branch_id, test_branch_id, created_branch_id, subject_code,
+                              grade_code, mode_code, level_code, exam_name, scheduled_at, grader_id, owner_id, status_code,
+                              cancel_reason_code, cancelled_at, score, result_note, completed_at, created_at, updated_at)
+select 'PKL' || lpad((row_number() over (order by o.code, k.k))::text, 6, '0'), o.id, o.student_id, o.branch_id, o.branch_id, o.branch_id,
+       (array['TOAN', 'VAN', 'ANH'])[1 + (g + k.k) % 3],
+       (select code from app.catalog_item where catalog_code = 'GRADE' order by sort_order offset ((g + k.k) % 6) limit 1),
+       (array['OFFLINE', 'ONLINE'])[1 + (g + k.k) % 2], (array['CO_BAN', 'NANG_CAO'])[1 + (g + k.k) % 2],
+       'Đề giả ' || g || '-' || k.k,
+       now() + (((g * 7 + k.k * 13) % 61) - 30 || ' days')::interval + ((g % 600) || ' minutes')::interval,
+       case when (g + k.k) % 5 in (2, 3) then (select id from app.user_account where login_name like 'gv.cs5@%') end,
+       o.owner_id,
+       (array['DRAFT', 'TESTING', 'TEACHER_REVIEW', 'COMPLETED', 'CANCELLED'])[1 + (g + k.k) % 5],
+       case when (g + k.k) % 5 = 4 then (array['L5C', 'L5D', 'L5E', 'L5F', 'TAO_PHIEU_SAI'])[1 + g % 5] end,
+       case when (g + k.k) % 5 = 4 then now() - ((g % 30) || ' days')::interval end,
+       case when (g + k.k) % 5 in (2, 3) then round(((g % 100) / 10.0)::numeric, 1) end,
+       case when (g + k.k) % 5 = 3 then 'Nhận xét giả' end,
+       case when (g + k.k) % 5 = 3 then now() end,
+       o.created_at, now()
+  from generate_series(1, 20000) g
+  join app.opportunity o on o.code = 'COL' || lpad(g::text, 6, '0') and o.stage_code in ('L5', 'L6', 'L7', 'L8')
+  cross join lateral (select 1 as k union all select 2 where g % 2 = 0) k;
+
 alter table app.parent enable trigger parent_fill_standard;
 alter table app.parent enable trigger parent_audit;
 alter table app.lead enable trigger lead_fill_standard;
@@ -129,12 +167,19 @@ alter table app.appointment enable trigger appointment_audit;
 alter table app.appointment enable trigger appointment_refresh_next;
 alter table app.opportunity enable trigger opportunity_fill_standard;
 alter table app.opportunity enable trigger opportunity_audit;
+alter table app.student enable trigger student_fill_standard;
+alter table app.student enable trigger student_audit;
+alter table app.student_test enable trigger student_test_fill_standard;
+alter table app.student_test enable trigger student_test_audit;
 
 -- Đặt đếm mã để mã thật (LD…) không đụng mã giả (LDL…): mã giả có tiền tố khác nên không cần; chỉ cập nhật thống kê.
 analyze app.parent;
 analyze app.lead;
 analyze app.appointment;
 analyze app.opportunity;
+analyze app.student;
+analyze app.student_test;
 
 select (select count(*) from app.lead) as leads, (select count(*) from app.parent) as parents,
-       (select count(*) from app.appointment) as appointments, (select count(*) from app.opportunity) as opportunities;
+       (select count(*) from app.appointment) as appointments, (select count(*) from app.opportunity) as opportunities,
+       (select count(*) from app.student_test) as tests;

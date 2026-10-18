@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
-- Vừa gộp #41 đến #45. PR Ma trận quyền phiên bản 4 (migration 029) chờ OK. Tiếp: đề xuất P3b2b (phiếu kiểm tra), rồi P3b3.
+- Vừa gộp #41 đến #46. PR P3b2b (phiếu kiểm tra) chờ OK. Tiếp: P3b3 (gộp trùng, nhập file), rồi các màn P3c đến P3f.
 
 ## Đã chốt (chưa vào repo)
 - Anh OK 18/10: PR 5 theo đề xuất (giữ trang đặt mật khẩu mới nhưng không dẫn tới; sửa bản đồ CHUNG-04, 05, 08 cho khớp thiết kế); bốn câu P3b2 như em đề xuất (không chặn tạo cơ hội theo C4C; sửa học sinh ở cơ hội = sửa hồ sơ học sinh; phụ huynh khớp SĐT khác tên: dùng hồ sơ cũ không ghi đè tên; học sinh trùng tên khác năm sinh = hai hồ sơ); **bảng quyền phiên bản 4** (17 ô Phụ huynh, Học sinh): nạp trong P3b2a.
@@ -33,6 +33,11 @@
 
 ## PR Ma trận quyền phiên bản 4 (18/10)
 - Migration `20261018000029`: 17 ô Phụ huynh, Học sinh (bỏ Tạo 8, bỏ Xuất Trưởng cơ sở 2, Xem toàn hệ thống 6, Kế toán Xem Phụ huynh 1). Bài pgTAP 021; chỉnh 017 (phụ huynh cơ sở khác nay đọc được), 018 (đếm quyền, số phiên bản).
+
+## PR P3b2b Phiếu kiểm tra (18/10)
+- Migration `20261018000030`: bảng `student_test`, lịch hẹn gắn phiếu (`student_test_id`, `is_auto_reminder`, `auto_scheduled_at`), hàm tạo, đổi lịch, sửa, bắt đầu, nộp bài, nhập kết quả, hoàn thành, lùi bước, huỷ, mở lại; danh sách, Kanban; thay thân `opportunity_test_state`, `opportunity_l5_substage`.
+- Quyền theo phạm vi của phiếu (`test_scope_ok`): toàn hệ thống, cơ sở của cơ hội, được phân công (giáo viên chấm, người phụ trách). Lỗi bắt được nhờ bài kiểm: so với null cho null chứ không false, nên giáo viên chưa phân công lọt qua kiểm quyền.
+- Kiểm bản vẽ TS15: Khối chọn được (không khoá). Đã sửa bản đồ TS-15 và dòng tương ứng ở `dac-ta/P3-tuyen-sinh.md`.
 
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).

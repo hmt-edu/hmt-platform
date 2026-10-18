@@ -181,7 +181,7 @@ Thứ tự kiểm khi bấm L7/L8: R-CRM-03 → R-CRM-12 → R-CRM-14 → (L8) R
 - Ô "Gắn với" bắt buộc: chưa có thì nút Tạo mờ. Cột "Gắn với" là link.
 
 ### TS-15 Tạo phiếu / Đổi lịch
-- Tên học sinh, lớp lấy từ cơ hội, khoá.
+- Tên học sinh lấy từ cơ hội, khoá. **Khối (Lớp) chọn khi tạo phiếu, không lấy từ cơ hội** (cơ hội, học sinh chưa có khối; anh chốt 18/10); bản vẽ TS15 cho chọn (không khoá).
 - Ngày test, giờ test **bắt buộc**, mở ra để trống, có chọn nhanh.
 - Cơ sở test mặc định cơ sở người tạo. Người phụ trách bắt buộc, mặc định người tạo. Tên đề: ô chữ.
 - Lịch hẹn nhắc tạo cùng phiếu: Gọi điện, giờ theo tham số mục 3; sửa tay thì không bị ghi đè; giờ nhắc phải trước giờ test.

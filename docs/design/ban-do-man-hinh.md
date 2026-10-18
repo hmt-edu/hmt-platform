@@ -126,7 +126,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| TS-15 | Tạo phiếu kiểm tra từ cơ hội (gồm xếp lịch, đổi lịch) | Hộp thoại · K08 | B | Máy tính | SA, CS, AD | Môn, hình thức test; **ngày giờ test bắt buộc**; phòng và giáo viên chấm chọn sau | Tạo | TS-17 | R-CRM-05 |
+| TS-15 | Tạo phiếu kiểm tra từ cơ hội (gồm xếp lịch, đổi lịch) | Hộp thoại · K08 | B | Máy tính | SA, CS, AD | Môn; **Khối chọn khi tạo, không lấy từ cơ hội** (cơ hội chưa có khối; chốt 18/10); hình thức test, cấp độ đề; **ngày giờ test bắt buộc và ở tương lai**; phòng và giáo viên chấm chọn sau; lịch hẹn nhắc tạo cùng phiếu | Tạo | TS-17 | R-CRM-05 |
 | TS-16 | Phiếu kiểm tra (danh sách + Kanban + lịch) | Danh sách · K03, K05 | B | Máy tính | SA, CS, BM, AD | Lọc Tôi tạo / Tôi phụ trách / Tôi chấm bài; quá hạn, hôm nay, sắp tới (không còn "chưa có lịch"); mặc định "Tuần này" | Mở; Đổi lịch | TS-17 | R-CRM-07 |
 | TS-17 | Phiếu kiểm tra (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Thanh trạng thái Nháp → Đang test → Chờ GV chấm → Hoàn thành; nhánh Huỷ; kết quả, gợi ý lớp phù hợp (đính kèm file làm ở giai đoạn 4) | Đổi lịch; Bắt đầu; Nhập kết quả; Gợi ý lớp; Huỷ; Đưa về Nháp (lý do) | GV-15, BH-02, BH-08, CHUNG-21 | R-CRM-05, R-CRM-06, R-CRM-10 |
 
