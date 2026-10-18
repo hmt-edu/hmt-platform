@@ -134,7 +134,7 @@ test('CHUNG-06, CHUNG-07: học sinh đăng nhập bằng mã HS, bị yêu cầ
 }) => {
   await loginStudent(page, 'hs900001');
   await expect(page).toHaveURL(/\/doi-mat-khau$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Đổi mật khẩu' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Đổi mật khẩu lần đầu' })).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-product', 'lms');
   // Ô tên đăng nhập ẩn giúp trình quản lý mật khẩu lưu đúng tài khoản (mã HS).
   await expect(page.locator('input[name="username"]')).toHaveValue('HS900001');
@@ -175,8 +175,9 @@ test('CHUNG-09: không thao tác quá thời gian trong Cài đặt thì tự đ
   // Nhân viên: tự đăng xuất sau 60 phút không thao tác (tham số staff_idle_logout_minutes). Tua 65 phút.
   await page.clock.fastForward('01:05:00');
   await expect(page).toHaveURL(/\/dang-nhap/);
-  const dialog = page.getByRole('dialog', { name: 'Hết phiên làm việc' });
+  const dialog = page.getByRole('dialog', { name: 'Phiên làm việc đã hết' });
   await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('Bạn không thao tác quá 60 phút nên');
   await expectAccessible(page);
   await dialog.getByRole('button', { name: 'Đăng nhập lại' }).click();
   await expect(dialog).toHaveCount(0);

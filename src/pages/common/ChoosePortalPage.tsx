@@ -1,14 +1,17 @@
-import { Navigate } from 'react-router';
+import { Link, Navigate } from 'react-router';
 import { AuthLayout } from '../../layout/AuthLayout';
 import { PORTAL_NAMES } from '../../layout/portalNames';
 import { useAuth } from '../../lib/auth/authContext';
 import { PORTALS, pendingStep, portalAccess, type Portal } from '../../lib/auth/claims';
-import { ButtonLink } from '../../ui/Button';
+import { Icon, type IconName } from '../../ui/icons';
 
-const PORTAL_HINT: Record<Portal, string> = {
-  crm: 'Tuyển sinh, bán hàng, vận hành lớp, chăm sóc khách hàng',
-  gv: 'Lịch dạy, điểm danh, chấm bài, nhận xét',
-  hoc: 'Bài tập, lịch học, kết quả',
+const PORTAL_CARD: Record<Portal, { icon: IconName; hint: string }> = {
+  crm: {
+    icon: 'sidebar',
+    hint: 'Tuyển sinh, khách hàng, bán hàng, lớp, buổi học, chăm sóc khách hàng.',
+  },
+  gv: { icon: 'training', hint: 'Lịch dạy, điểm danh, chấm nhận xét, bài tập về nhà.' },
+  hoc: { icon: 'homework', hint: 'Bài tập, lịch học, kết quả.' },
 };
 
 /** CHUNG-25 · Chọn cổng: người vừa là nhân viên vừa là giáo viên chọn vào CRM hoặc cổng Giáo viên. */
@@ -21,28 +24,30 @@ export function ChoosePortalPage() {
 
   return (
     <AuthLayout
-      title="Chọn cổng làm việc"
-      subtitle={`Xin chào ${claims.name}. Bạn dùng được các cổng sau:`}
+      title={`Chào ${claims.name}`}
+      subtitle={`Tài khoản của bạn vào được ${allowed.length === 2 ? 'hai' : allowed.length} cổng. Chọn cổng để bắt đầu.`}
     >
-      <ul className="flex flex-col gap-3">
+      <ul className="grid gap-3 sm:grid-cols-2">
         {allowed.map((portal) => (
           <li key={portal}>
-            <ButtonLink
+            <Link
               to={`/${portal}`}
-              fullWidth
-              className="h-auto min-h-16 flex-col items-start gap-0 py-2 whitespace-normal"
+              className="focus-ring flex h-full flex-col gap-2 rounded-box border border-border bg-surface p-4 hover:border-border-strong"
             >
-              <span className="font-semibold">
-                Cổng {PORTAL_NAMES[portal]}
+              <span className="flex size-11 items-center justify-center rounded-control bg-selected text-on-selected">
+                <Icon name={PORTAL_CARD[portal].icon} size={20} />
+              </span>
+              <span className="font-display text-h3">
+                {PORTAL_NAMES[portal]}
                 {portalAccess(claims, portal) === 'view' ? ' (chỉ xem)' : ''}
               </span>
-              <span className="text-caption font-normal text-fg-muted">{PORTAL_HINT[portal]}</span>
-            </ButtonLink>
+              <span className="text-caption text-fg-muted">{PORTAL_CARD[portal].hint}</span>
+            </Link>
           </li>
         ))}
       </ul>
-      <p className="text-caption text-fg-muted">
-        Đổi cổng bất cứ lúc nào từ menu tài khoản ở góc trên.
+      <p className="text-center text-caption text-fg-muted">
+        Đổi cổng bất cứ lúc nào ở menu tài khoản (ảnh đại diện góc trên).
       </p>
     </AuthLayout>
   );

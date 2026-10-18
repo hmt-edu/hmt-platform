@@ -16,10 +16,13 @@ const TONES: Record<AlertTone, { box: string; icon: IconName }> = {
 export function Alert({
   tone = 'info',
   title,
+  icon,
   children,
   className,
 }: {
   tone?: AlertTone | undefined;
+  /** Biểu tượng riêng thay cho biểu tượng mặc định của tông. */
+  icon?: IconName | undefined;
   title?: string | undefined;
   children: ReactNode;
   className?: string | undefined;
@@ -34,7 +37,7 @@ export function Alert({
         className,
       )}
     >
-      <Icon name={style.icon} className="mt-px shrink-0" />
+      <Icon name={icon ?? style.icon} className="mt-px shrink-0" />
       <div className="min-w-0">
         {title && <p className="font-semibold">{title}</p>}
         <div>{children}</div>

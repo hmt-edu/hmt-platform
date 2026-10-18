@@ -5,7 +5,8 @@ import type { Product } from '../../layout/useProduct';
 import { loginWithPassword } from '../../lib/auth/api';
 import { useAuth } from '../../lib/auth/authContext';
 import { afterLoginPath } from '../../lib/auth/redirect';
-import { takeSessionEnded, type SessionEndReason } from '../../lib/auth/sessionEnd';
+import { sessionEndText } from '../../lib/auth/formatIdle';
+import { takeSessionEnded, type SessionEnd } from '../../lib/auth/sessionEnd';
 import { Button } from '../../ui/Button';
 import { Alert } from '../../ui/Feedback';
 import { PasswordInput, TextField } from '../../ui/Field';
@@ -16,11 +17,6 @@ import { TurnstileSlot } from '../../ui/TurnstileSlot';
 const TEMP_BLOCKED_CODE = 'HMT_DANG_NHAP_TAM_CHAN';
 /** Mã lỗi khi sai tên đăng nhập hoặc mật khẩu: chữ hiện ra lấy từ thiết kế từng cổng. */
 const WRONG_CODE = 'HMT_SAI_DANG_NHAP';
-
-const SESSION_END_TEXT: Record<SessionEndReason, string> = {
-  idle: 'Bạn không thao tác quá thời gian cho phép nên hệ thống đã tự đăng xuất để giữ an toàn.',
-  ended: 'Phiên đăng nhập của bạn đã kết thúc. Đăng nhập lại để tiếp tục.',
-};
 
 export type LoginFormProps = {
   title: string;
@@ -67,7 +63,7 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   // CHUNG-09: hộp thoại "Hết phiên làm việc" hiện một lần sau khi bị tự đăng xuất.
-  const [sessionEnded, setSessionEnded] = useState<SessionEndReason | null>(takeSessionEnded);
+  const [sessionEnded, setSessionEnded] = useState<SessionEnd | null>(takeSessionEnded);
   const onToken = useCallback((token: string | null) => setCaptcha(token), []);
 
   if (claims) return <Navigate to={afterLoginPath(claims, next)} replace />;
@@ -134,14 +130,18 @@ export function LoginForm({
       <Dialog
         open={sessionEnded !== null}
         onOpenChange={() => setSessionEnded(null)}
-        title="Hết phiên làm việc"
-        description={sessionEnded ? SESSION_END_TEXT[sessionEnded] : undefined}
+        title="Phiên làm việc đã hết"
+        description={sessionEnded ? sessionEndText(sessionEnded) : undefined}
         footer={
-          <Button variant="primary" onClick={() => setSessionEnded(null)}>
+          <Button variant="primary" fullWidth onClick={() => setSessionEnded(null)}>
             Đăng nhập lại
           </Button>
         }
-      />
+      >
+        <p className="text-caption text-fg-muted">
+          Đăng nhập lại xong sẽ quay về đúng trang đang mở.
+        </p>
+      </Dialog>
     </AuthLayout>
   );
 }

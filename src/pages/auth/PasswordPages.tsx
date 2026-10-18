@@ -1,86 +1,30 @@
-import { useCallback, useState, type FormEvent } from 'react';
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import { AuthLayout } from '../../layout/AuthLayout';
 import { useAuth } from '../../lib/auth/authContext';
 import { homePortal } from '../../lib/auth/claims';
 import { afterLoginPath } from '../../lib/auth/redirect';
-import { Button, ButtonLink } from '../../ui/Button';
+import { ButtonLink } from '../../ui/Button';
 import { Alert, Spinner } from '../../ui/Feedback';
-import { TextField } from '../../ui/Field';
-import { TurnstileSlot } from '../../ui/TurnstileSlot';
 import { NewPasswordForm } from './NewPasswordForm';
 
-const LINK = 'focus-ring rounded-tag text-link underline underline-offset-2';
-
-/** CHUNG-04 · Quên mật khẩu: nhân viên tự đặt lại qua email. Học sinh nhờ CSKH. */
+/**
+ * CHUNG-04 · Quên mật khẩu (DN05, thiết kế P1 v4): giai đoạn 0 chỉ hướng dẫn liên hệ quản trị viên, không gửi
+ * email. Tự đặt lại qua email làm sau (spec 03). Trang `ResetPasswordPage` giữ nguyên nhưng chưa có màn dẫn tới.
+ */
 export function ForgotPasswordPage() {
-  const { supabase } = useAuth();
-  const [email, setEmail] = useState('');
-  const [captcha, setCaptcha] = useState<string | null>(null);
-  const [attempt, setAttempt] = useState(0);
-  const [missing, setMissing] = useState<string | null>(null);
-  const [sent, setSent] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const onToken = useCallback((token: string | null) => setCaptcha(token), []);
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    if (!email.trim()) return setMissing('Nhập email đăng nhập của bạn.');
-    setMissing(null);
-    if (!supabase || !captcha) return;
-    setBusy(true);
-    // Kết quả không được lộ email có tài khoản hay không: gửi được hay không đều hiện cùng một câu.
-    await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
-      redirectTo: `${window.location.origin}/dat-mat-khau`,
-      captchaToken: captcha,
-    });
-    setBusy(false);
-    setAttempt((n) => n + 1);
-    setSent(true);
-  }
-
   return (
-    <AuthLayout title="Quên mật khẩu" subtitle="Dành cho nhân viên, giáo viên, trợ giảng">
-      {sent ? (
-        <>
-          <Alert tone="info" title="Đã ghi nhận yêu cầu">
-            Nếu email này có tài khoản, hệ thống sẽ gửi thư kèm đường dẫn đặt lại mật khẩu. Không
-            nhận được thư sau ít phút thì liên hệ quản trị viên để được đặt lại mật khẩu.
-          </Alert>
-          <ButtonLink to="/dang-nhap" variant="primary" fullWidth>
-            Về trang đăng nhập
-          </ButtonLink>
-        </>
-      ) : (
-        <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-4">
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            inputMode="email"
-            autoComplete="username"
-            required
-            error={missing}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TurnstileSlot onToken={onToken} attempt={attempt} />
-          <Button type="submit" variant="primary" fullWidth loading={busy} disabled={!captcha}>
-            Gửi email đặt lại mật khẩu
-          </Button>
-          <p className="text-body text-fg-muted">
-            Học sinh quên mật khẩu thì nhờ thầy cô chăm sóc lớp đặt lại.
-          </p>
-          <Link to="/dang-nhap" className={LINK}>
-            Về trang đăng nhập
-          </Link>
-        </form>
-      )}
+    <AuthLayout title="Quên mật khẩu">
+      <p className="text-body text-fg-muted">
+        Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm.
+      </p>
+      <ButtonLink to="/dang-nhap" variant="primary" fullWidth icon="back">
+        Quay lại đăng nhập
+      </ButtonLink>
     </AuthLayout>
   );
 }
 
-/** CHUNG-05 · Đặt mật khẩu mới từ đường dẫn trong email. */
+/** CHUNG-05 · Đặt mật khẩu mới từ email: HOÃN (thiết kế P1 v4); giữ trang, chưa có màn nào dẫn tới. */
 export function ResetPasswordPage() {
   const { session, claims } = useAuth();
   const navigate = useNavigate();
@@ -103,10 +47,10 @@ export function ResetPasswordPage() {
       ) : (
         <>
           <Alert tone="warning" title="Đường dẫn không còn dùng được">
-            Đường dẫn đặt lại mật khẩu đã hết hạn hoặc đã dùng rồi. Hãy gửi lại yêu cầu.
+            Đường dẫn đặt lại mật khẩu đã hết hạn hoặc đã dùng rồi. Hãy liên hệ quản trị viên.
           </Alert>
           <ButtonLink to="/quen-mat-khau" variant="primary" fullWidth>
-            Gửi lại yêu cầu
+            Xem hướng dẫn
           </ButtonLink>
         </>
       )}
@@ -129,13 +73,13 @@ export function ChangePasswordPage() {
   };
 
   return (
-    <AuthLayout
-      title="Đổi mật khẩu"
-      subtitle="Đây là lần đầu bạn đăng nhập bằng mật khẩu được cấp. Hãy đặt mật khẩu của riêng bạn."
-      product={homePortal(claims) === 'hoc' ? 'lms' : 'crm'}
-    >
+    <AuthLayout title="Đổi mật khẩu lần đầu" product={homePortal(claims) === 'hoc' ? 'lms' : 'crm'}>
+      <Alert tone="info" icon="forbidden">
+        Mật khẩu hiện tại là mật khẩu tạm do trung tâm cấp. Đặt mật khẩu của riêng mình để tiếp tục.
+      </Alert>
       <NewPasswordForm
-        submitLabel="Lưu mật khẩu mới"
+        submitLabel="Đổi mật khẩu và tiếp tục"
+        footnote="Áp dụng cho học sinh và nhân viên được cấp mật khẩu tạm. Chưa đổi thì chưa vào được trang nào khác."
         afterAuthUpdate={confirmChange}
         onDone={() => void navigate('/dang-nhap', { replace: true })}
       />
@@ -144,22 +88,15 @@ export function ChangePasswordPage() {
 }
 
 /**
- * CHUNG-08 · Không đăng nhập được (chốt 12/10): thông báo chung kèm hướng dẫn liên hệ quản trị.
- * Không nói tài khoản bị khoá hay không tồn tại (đăng nhập không lộ trạng thái tài khoản).
+ * CHUNG-08 · Không thể đăng nhập (DN08, chốt 12/10): một câu chung cho tạm khoá và khoá hẳn. Không nói thời gian
+ * khoá, không nói lý do, không nói tài khoản có tồn tại hay không (luật S03-18).
  */
 export function CannotLoginPage() {
-  const [params] = useSearchParams();
-  const tempBlocked = params.get('ly-do') === 'tam-chan';
   return (
-    <AuthLayout title="Không đăng nhập được">
-      {tempBlocked && <Alert tone="warning">Đăng nhập tạm thời bị chặn, thử lại sau.</Alert>}
-      <div className="flex flex-col gap-2 text-body text-fg">
-        <p>Nếu bạn chắc đã nhập đúng mà vẫn không vào được:</p>
-        <ul className="flex list-disc flex-col gap-1 pl-5">
-          <li>Nhân viên, giáo viên: liên hệ quản trị viên hoặc Trưởng cơ sở của bạn.</li>
-          <li>Học sinh: nhờ thầy cô chăm sóc lớp kiểm tra tài khoản.</li>
-        </ul>
-      </div>
+    <AuthLayout title="Không thể đăng nhập">
+      <p className="text-body text-fg-muted">
+        Không thể đăng nhập lúc này. Vui lòng thử lại sau hoặc liên hệ quản trị viên của trung tâm.
+      </p>
       <ButtonLink to="/dang-nhap" variant="primary" fullWidth icon="back">
         Quay lại đăng nhập
       </ButtonLink>

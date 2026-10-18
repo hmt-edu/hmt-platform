@@ -13,6 +13,7 @@ import {
   ChartColumn,
   ChevronDown,
   ChevronRight,
+  Circle,
   CircleAlert,
   CircleCheck,
   CircleUser,
@@ -81,6 +82,7 @@ import {
 
 export const ICONS = {
   alert: CircleAlert,
+  circle: Circle,
   viewKanban: Kanban,
   viewList: List,
   refresh: RefreshCw,

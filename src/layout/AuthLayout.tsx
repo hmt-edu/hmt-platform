@@ -11,7 +11,7 @@ function BrandPanel() {
   return (
     <aside
       aria-label="Giới thiệu hệ thống"
-      className="relative hidden flex-col gap-5 overflow-hidden bg-[linear-gradient(180deg,transparent_45%,rgb(101_41_16/0.28)),var(--action-primary-bg)] px-16 pt-[150px] pb-12 text-neutral-0 lg:flex"
+      className="relative hidden flex-col gap-5 overflow-hidden bg-action bg-[linear-gradient(180deg,transparent_45%,rgb(101_41_16/0.28))] px-16 pt-[150px] pb-12 text-neutral-0 lg:flex"
     >
       <BrandArt />
       <BrandRobot />

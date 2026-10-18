@@ -53,7 +53,7 @@ export function useIdleLogout(): void {
         last !== null &&
         Date.now() - last > limitMinutes * MS_PER_MINUTE
       ) {
-        markSessionEnded('idle');
+        markSessionEnded('idle', limitMinutes);
         void signOut();
       }
     };

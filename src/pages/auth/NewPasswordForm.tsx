@@ -1,9 +1,14 @@
 import { useState, type FormEvent } from 'react';
-import { checkPassword } from '../../../supabase/functions/_shared/login-rules.ts';
+import {
+  checkPassword,
+  type PasswordPolicy,
+} from '../../../supabase/functions/_shared/login-rules.ts';
 import { useAuth } from '../../lib/auth/authContext';
-import { policyHint, usePasswordPolicy } from '../../lib/auth/usePasswordPolicy';
+import { usePasswordPolicy } from '../../lib/auth/usePasswordPolicy';
 import { Button } from '../../ui/Button';
 import { Alert } from '../../ui/Feedback';
+import { Icon } from '../../ui/icons';
+import { cn } from '../../ui/cn';
 import { PasswordInput } from '../../ui/Field';
 
 /** Tên đăng nhập để trình quản lý mật khẩu lưu đúng tài khoản: học sinh là mã HS, còn lại là email. */
@@ -13,16 +18,32 @@ function loginNameOf(email: string | undefined): string {
   return domain.startsWith('hocsinh.') ? local.toUpperCase() : email;
 }
 
+/** Các điều kiện hiện thành danh sách có dấu tích (DN07); số ký tối thiểu lấy từ luật mật khẩu trong Cài đặt. */
+function passwordRules(password: string, policy: PasswordPolicy) {
+  const rules = [
+    { label: `Tối thiểu ${policy.minLength} ký tự`, ok: password.length >= policy.minLength },
+  ];
+  if (policy.requireLetterDigit)
+    rules.push(
+      { label: 'Có chữ cái', ok: /\p{L}/u.test(password) },
+      { label: 'Có chữ số', ok: /\d/.test(password) },
+    );
+  return rules;
+}
+
 /**
  * Ô đặt mật khẩu mới (dùng cho đổi lần đầu, đặt lại từ email, đổi trong hồ sơ cá nhân).
  * `afterAuthUpdate`: việc phải làm thêm sau khi Supabase Auth nhận mật khẩu mới.
  */
 export function NewPasswordForm({
   submitLabel,
+  footnote,
   afterAuthUpdate,
   onDone,
 }: {
   submitLabel: string;
+  /** Dòng chú nhỏ dưới nút (DN07). */
+  footnote?: string;
   afterAuthUpdate?: () => Promise<string | null>;
   onDone: () => void;
 }) {
@@ -83,11 +104,24 @@ export function NewPasswordForm({
         name="new-password"
         autoComplete="new-password"
         required
-        help={policyHint(policy)}
         error={fieldError.password}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+      {policy && (
+        <ul className="flex flex-col gap-1.5 text-body" aria-label="Điều kiện mật khẩu">
+          {passwordRules(password, policy).map((rule) => (
+            <li
+              key={rule.label}
+              className={cn('flex items-center gap-2', rule.ok ? 'text-success' : 'text-fg-muted')}
+            >
+              <Icon name={rule.ok ? 'check' : 'circle'} size={16} />
+              {rule.label}
+              <span className="sr-only">{rule.ok ? ' (đạt)' : ' (chưa đạt)'}</span>
+            </li>
+          ))}
+        </ul>
+      )}
       <PasswordInput
         label="Nhập lại mật khẩu mới"
         name="confirm-password"
@@ -101,6 +135,7 @@ export function NewPasswordForm({
       <Button type="submit" variant="primary" fullWidth loading={busy} disabled={!policy}>
         {submitLabel}
       </Button>
+      {footnote && <p className="text-body text-fg-muted">{footnote}</p>}
     </form>
   );
 }

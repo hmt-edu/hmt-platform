@@ -110,6 +110,7 @@ test('hai bước, khung CRM của Admin, hồ sơ cá nhân, chọn cổng', as
   await expect(page.getByText('Thiết bị 1')).toBeVisible();
   await save(browser, page, 'CHUNG-13');
   await page.goto('/chon-cong');
+  await expect(page.getByText('Lịch dạy, điểm danh, chấm nhận xét, bài tập về nhà.')).toBeVisible();
   await save(browser, page, 'CHUNG-25');
 
   await page.setViewportSize(PHONE);
@@ -133,7 +134,7 @@ test('không có quyền, phân hệ chưa bật, hết phiên', async ({ page, 
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await save(browser, page, 'CHUNG-16');
   await page.clock.fastForward('01:05:00');
-  await expect(page.getByRole('dialog', { name: 'Hết phiên làm việc' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Phiên làm việc đã hết' })).toBeVisible();
   await save(browser, page, 'CHUNG-09');
   await page.getByRole('button', { name: 'Đăng nhập lại' }).click();
   await page.clock.setSystemTime(new Date());
@@ -161,7 +162,7 @@ test('khung cổng Giáo viên và cổng Học tập', async ({ page, browser }
   const newPassword = `Moi${Date.now()}a`;
   await page.getByLabel('Mật khẩu mới', { exact: true }).fill(newPassword);
   await page.getByLabel('Nhập lại mật khẩu mới', { exact: true }).fill(newPassword);
-  await page.getByRole('button', { name: 'Lưu mật khẩu mới' }).click();
+  await page.getByRole('button', { name: 'Đổi mật khẩu và tiếp tục' }).click();
   await expect(page).toHaveURL(/\/hoc$/);
   await save(browser, page, 'HT-09');
   await page.setViewportSize(PHONE);

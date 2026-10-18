@@ -56,18 +56,43 @@ test('CHUNG-01: thiếu thông tin thì báo ngay tại ô, không gửi đi', a
   await expect(page.getByLabel('Email', { exact: true })).toHaveAttribute('aria-invalid', 'true');
 });
 
-test('CHUNG-04: gửi yêu cầu đặt lại mật khẩu luôn trả cùng một câu (không lộ email có tài khoản hay không)', async ({
+test('CHUNG-04: chỉ hướng dẫn liên hệ quản trị viên, không có ô email và không gửi email', async ({
   page,
 }) => {
+  const mail: string[] = [];
+  page.on('request', (r) => {
+    if (r.url().includes('/auth/v1/recover')) mail.push(r.url());
+  });
   await page.goto('/quen-mat-khau');
-  await page.getByLabel('Email', { exact: true }).fill('khongco@thu.hoamatoan.invalid');
-  await page.getByRole('button', { name: 'Gửi email đặt lại mật khẩu' }).click();
-  await expect(page.getByText('Nếu email này có tài khoản')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Quên mật khẩu' })).toBeVisible();
+  await expect(
+    page.getByText('Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm.'),
+  ).toBeVisible();
+  await expect(page.getByLabel('Email')).toHaveCount(0);
+  await page.getByRole('link', { name: 'Quay lại đăng nhập' }).click();
+  await expect(page).toHaveURL(/\/dang-nhap$/);
+  expect(mail).toHaveLength(0);
 });
 
-test('CHUNG-08: thông báo chung, không nói tài khoản bị khoá', async ({ page }) => {
+test('CHUNG-08: một câu chung, không nói lý do hay thời gian khoá', async ({ page }) => {
   await page.goto('/khong-dang-nhap-duoc?ly-do=tam-chan');
-  await expect(page.getByRole('heading', { level: 1, name: 'Không đăng nhập được' })).toBeVisible();
-  await expect(page.getByText('Đăng nhập tạm thời bị chặn, thử lại sau.')).toBeVisible();
-  await expect(page.getByText(/bị khoá/)).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 1, name: 'Không thể đăng nhập' })).toBeVisible();
+  await expect(
+    page.getByText(
+      'Không thể đăng nhập lúc này. Vui lòng thử lại sau hoặc liên hệ quản trị viên của trung tâm.',
+    ),
+  ).toBeVisible();
+  await expect(page.getByText(/bị khoá|tạm thời bị chặn|phút/)).toHaveCount(0);
+  await page.goto('/khong-dang-nhap-duoc');
+  await expect(page.getByText(/bị khoá|tạm thời bị chặn|phút/)).toHaveCount(0);
+});
+
+test('cột giới thiệu của trang đăng nhập có nền cam (lỗi đã gặp: khai báo nền sai nên cột trắng, chữ trắng không đọc được)', async ({
+  page,
+}) => {
+  await page.goto('/dang-nhap');
+  const panel = page.getByRole('complementary', { name: 'Giới thiệu hệ thống' });
+  test.skip(!(await panel.isVisible()), 'Điện thoại không có cột giới thiệu.');
+  await expect(panel).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(panel).not.toHaveCSS('background-color', 'rgb(255, 255, 255)');
 });
