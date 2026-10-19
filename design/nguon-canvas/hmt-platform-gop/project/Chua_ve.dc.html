@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Mã màn chưa có khung</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/hmt/handoff/hmt-tokens.css">
+<link rel="stylesheet" href="ds/hmt/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap&amp;subset=vietnamese">
+<style>
+body{margin:0;font-family:var(--font-ui);background:var(--bg-page);color:var(--text-primary)}
+.t td,.t th{white-space:normal;vertical-align:top;height:auto;padding:6px 10px;font-size:12px;line-height:1.45}.t th{height:28px;white-space:nowrap}
+h2.s{font-family:var(--font-heading);font-size:15px;margin:16px 0 6px}
+.li{font-size:12.5px;line-height:1.55;margin:0 0 5px;padding-left:14px;text-indent:-14px}
+</style>
+</helmet>
+<div style="width:1440px;height:1000px;box-sizing:border-box;background:var(--bg-page);overflow:hidden;position:relative"><div style="padding:28px 40px"><h1 style="font-family:var(--font-heading);font-size:28px;margin:0 0 10px">Màn chưa vẽ</h1><p style="font-size:12.5px;color:var(--text-secondary);margin:0 0 10px;line-height:1.5">Đối chiếu docs/design/ban-do-man-hinh.md (195 mã màn) với canvas: 72 mã có khung, <b>123 mã chưa có khung</b> (Mức C, không vẽ: 27 · Đang làm tiếp (P5b): 21 · Chưa vẽ (giai đoạn đã mở): 30 · Giai đoạn sau: 45). Mức C của P5a, P5b: BH-04, BH-10, BH-11, TC-06, TC-12, TC-14, TC-16, LOP-09, BUOI-14, TT-03.</p><div class="hmt-table-wrap"><table class="hmt-table t"><thead><tr><th style="width:190px">Lý do</th><th style="width:170px">Giai đoạn dự kiến</th><th style="width:50px">Số</th><th>Mã màn chưa có khung</th></tr></thead><tbody><tr><td><span class="hmt-tag hmt-tag-warning">Mức C, không vẽ</span></td><td>Giai đoạn 0 (Đợt 5.2)</td><td><span style="font-size:11px;color:var(--text-secondary)">6 mã</span></td><td style="line-height:1.55">CHUNG-13, CHUNG-17, CHUNG-18, CHUNG-20, CHUNG-24, QT-12</td></tr><tr><td><span class="hmt-tag hmt-tag-warning">Mức C, không vẽ</span></td><td>Giai đoạn 1 (Đợt 5.3)</td><td><span style="font-size:11px;color:var(--text-secondary)">11 mã</span></td><td style="line-height:1.55">BH-04, BH-10, BH-11, CH-02, CH-08, CH-09, CHUNG-21, TC-06, TS-05, TS-12, TS-14</td></tr><tr><td><span class="hmt-tag hmt-tag-warning">Mức C, không vẽ</span></td><td>Giai đoạn 2 (Đợt 5.4)</td><td><span style="font-size:11px;color:var(--text-secondary)">10 mã</span></td><td style="line-height:1.55">BUOI-14, CS-12, CS-13, CS-14, KH-08, LOP-09, TC-12, TC-14, TC-16, TT-03</td></tr><tr><td><span class="hmt-tag hmt-tag-brand">Đang làm tiếp (P5b)</span></td><td>Giai đoạn 2, làm tiếp ở P5b</td><td><span style="font-size:11px;color:var(--text-secondary)">21 mã</span></td><td style="line-height:1.55">BUOI-01, BUOI-02, BUOI-03, BUOI-04, BUOI-05, BUOI-06, BUOI-07, BUOI-08, BUOI-09, BUOI-10, BUOI-11, BUOI-12, BUOI-13, LOP-04, LOP-05, LOP-06, LOP-07, LOP-08, LOP-10, TT-01, TT-02</td></tr><tr><td><span class="hmt-tag">Chưa vẽ (giai đoạn đã mở)</span></td><td>Giai đoạn 0 (Đợt 5.2)</td><td><span style="font-size:11px;color:var(--text-secondary)">9 mã</span></td><td style="line-height:1.55">CHUNG-10, CHUNG-22, QT-01, QT-02, QT-03, QT-04, QT-08, QT-11, QT-13</td></tr><tr><td><span class="hmt-tag">Chưa vẽ (giai đoạn đã mở)</span></td><td>Giai đoạn 1 (Đợt 5.3)</td><td><span style="font-size:11px;color:var(--text-secondary)">5 mã</span></td><td style="line-height:1.55">CH-01, CH-03, CH-04, CHUNG-15, GV-15</td></tr><tr><td><span class="hmt-tag">Chưa vẽ (giai đoạn đã mở)</span></td><td>Giai đoạn 2 (Đợt 5.4)</td><td><span style="font-size:11px;color:var(--text-secondary)">16 mã</span></td><td style="line-height:1.55">CH-05, CH-06, CS-01, CS-02, CS-03, CS-04, CS-05, CS-06, CS-07, CS-08, CS-09, CS-10, CS-11, QT-14, QT-15, QT-16</td></tr><tr><td><span class="hmt-tag hmt-tag-info">Giai đoạn sau</span></td><td>Giai đoạn 3 (Đợt 5.5)</td><td><span style="font-size:11px;color:var(--text-secondary)">19 mã</span></td><td style="line-height:1.55">BC-08, BC-09, CH-07, CS-16, GV-01, GV-02, GV-03, GV-04, GV-05, GV-06, GV-07, GV-08, GV-09, GV-10, GV-11, GV-12, GV-13, GV-14, GV-16</td></tr><tr><td><span class="hmt-tag hmt-tag-info">Giai đoạn sau</span></td><td>Giai đoạn 4 (Đợt 5.6)</td><td><span style="font-size:11px;color:var(--text-secondary)">18 mã</span></td><td style="line-height:1.55">CHUNG-23, GV-17, GV-18, HT-01, HT-02, HT-03, HT-04, HT-05, HT-06, HT-07, HT-08, HT-09, PH-01, PH-02, PH-03, PH-04, PH-05, QT-17</td></tr><tr><td><span class="hmt-tag hmt-tag-info">Giai đoạn sau</span></td><td>Giai đoạn 5 (Đợt 5.7)</td><td><span style="font-size:11px;color:var(--text-secondary)">8 mã</span></td><td style="line-height:1.55">BC-01, BC-02, BC-03, BC-04, BC-05, BC-06, BC-07, BC-10</td></tr></tbody></table></div><p style="font-size:11.5px;color:var(--text-secondary);margin:8px 0 0;line-height:1.5">Mã có khung dưới tên khác, tính là đã có: CHUNG-01..09, 25 = DN01–DN10 · CHUNG-11, 12 = TimKiem · CHUNG-14 = K09b · CHUNG-16 = các khung _khong_quyen · CHUNG-19 = K1_fav · CHUNG-26 = K4 · QT-06, 07, 09, 10 = CauHinh · QT-05 = MaTranQuyen. “Chưa vẽ (giai đoạn đã mở)”: màn thuộc giai đoạn đã vẽ nhưng chưa có lệnh vẽ; chờ anh quyết thứ tự.</p></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return { yes: true }; }
+}
+</script>
+</body>
+</html>

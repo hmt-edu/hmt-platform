@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>P5b · Tổng quan</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/hmt/handoff/hmt-tokens.css">
+<link rel="stylesheet" href="ds/hmt/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap&amp;subset=vietnamese">
+<style>
+body{margin:0;font-family:var(--font-ui);background:var(--bg-page);color:var(--text-primary)}
+a{color:var(--text-link)}a:hover{color:var(--brand-800)}
+.t td,.t th{white-space:normal;vertical-align:top;height:auto;padding:5px 8px;font-size:12px;line-height:1.4}.t th{height:26px;white-space:nowrap}
+.t.l td:not(:last-child),.t.l th{white-space:nowrap}.t.l td{padding:3px 8px}
+h2.s{font-family:var(--font-heading);font-size:15px;margin:16px 0 6px}
+</style>
+</helmet>
+<div style="width:1440px;height:1000px;box-sizing:border-box;padding:32px 40px;background:var(--bg-page);overflow:hidden;display:flex;gap:28px"><div style="flex:0 0 790px"><h1 style="font-family:var(--font-heading);font-size:26px;margin:0 0 4px">P5b · Đào tạo</h1><p class="hmt-help" style="font-size:13px;margin:0 0 10px">Giai đoạn 2, máy tính, vài màn cả điện thoại. Mã màn: GD-01..07, LOP-01..10, BUOI-01..14, TT-01..03. Mức A đủ trạng thái, B một trạng thái chính (danh sách thêm trống, đang tải, không có quyền), C không vẽ. </p><div class="hmt-table-wrap"><table class="hmt-table t l"><thead><tr><th>Mã</th><th>Màn</th><th>Khuôn</th><th>Mức</th><th>Ai dùng</th><th>Nối tới</th></tr></thead><tbody><tr><td><b>GD-01</b></td><td>Ghi danh (danh sách)</td><td>K03</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>CS BM KT AD</td><td>GD-02</td></tr><tr><td><b>GD-02</b></td><td>Ghi danh (bản ghi)</td><td>K06</td><td><span class="hmt-tag hmt-tag-success">A</span></td><td>CS BM KT AD</td><td>GD-03 GD-04 GD-05 BH-05 KH-05</td></tr><tr><td><b>GD-03</b></td><td>Xếp lớp (hộp thoại)</td><td>K08</td><td><span class="hmt-tag hmt-tag-success">A</span></td><td>CS BM AD</td><td>LOP-02 LOP-04</td></tr><tr><td><b>GD-04</b></td><td>Sổ giờ</td><td>K03</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>BM KT AD</td><td>BUOI-02 TC-02</td></tr><tr><td><b>GD-05</b></td><td>Điều chỉnh giờ (hộp thoại)</td><td>K08</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>BM AD</td><td>GD-04</td></tr><tr><td><b>GD-06</b></td><td>Hàng chờ xếp lớp</td><td>K03</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>CS BM AD</td><td>GD-03</td></tr><tr><td><b>GD-07</b></td><td>Sắp hết giờ</td><td>K03</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>CS BM AD</td><td>TT-02</td></tr><tr><td><b>LOP-01</b></td><td>Lớp (danh sách, kanban)</td><td>K03, K04</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>BM AD CS</td><td>LOP-02</td></tr><tr><td><b>LOP-02</b></td><td>Lớp (bản ghi)</td><td>K06</td><td><span class="hmt-tag hmt-tag-success">A</span></td><td>BM AD</td><td>LOP-03..07</td></tr><tr><td><b>LOP-03</b></td><td>Tạo lớp</td><td>K07</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>BM AD</td><td>LOP-04</td></tr><tr><td><b>LOP-04</b></td><td>Thời khoá biểu lớp</td><td>K07</td><td><span class="hmt-tag hmt-tag-success">A</span></td><td>BM AD</td><td>LOP-08</td></tr><tr><td><b>LOP-05..07</b></td><td>Trình, xác nhận, duyệt lớp</td><td>K08</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>BM AD</td><td>LOP-02</td></tr><tr><td><b>LOP-08</b></td><td>Lịch tuần cơ sở</td><td>K05</td><td><span class="hmt-tag hmt-tag-success">A</span></td><td>BM CS AD</td><td>BUOI-02</td></tr><tr><td><b>LOP-09</b></td><td>Danh sách học sinh của lớp</td><td>K03</td><td><span class="hmt-tag">C</span></td><td>BM CS AD</td><td>GD-02</td></tr><tr><td><b>LOP-10</b></td><td>Đóng lớp, huỷ lớp</td><td>K08</td><td><span class="hmt-tag hmt-tag-info">B</span></td><td>BM AD</td><td>LOP-02</td></tr><tr><td><b>BUOI-01..14</b></td><td>Buổi học, huỷ buổi, học bù, củng cố, bổ trợ, điểm danh</td><td>K03 K06 K08 K12</td><td><span class="hmt-tag">A/B/C</span></td><td>BM CS GV AD</td><td>LOP-02 GD-04</td></tr><tr><td><b>TT-01..03</b></td><td>Tái tục: danh sách, kanban, bản ghi</td><td>K03 K04 K06</td><td><span class="hmt-tag">B/C</span></td><td>CS BM AD</td><td>GD-07</td></tr></tbody></table></div></div><div style="flex:1;min-width:0"><h2 class="s" style="margin-top:0">Luật chính thể hiện</h2><p style="font-size:12px;line-height:1.6;margin:0">Một ghi danh = một lớp = một quỹ giờ. Toán lớp 7 trở lên là hai lớp độc lập Đại và Hình, nối bằng “nhóm lớp” (không có mã riêng, có thể có tên chung như 9M1). Lớp duyệt cần thời khoá biểu và tự sinh buổi. Trùng giờ xét theo buổi thật: lớp luân phiên không báo trùng. Sổ giờ chỉ thêm dòng; điều chỉnh bằng dòng ngược dấu kèm lý do. Hết giờ thì chặn điểm danh trừ giờ, trừ “cho học trước”. End Date và hạn gói chỉ để dự báo.</p><h2 class="s">Bản đồ nhóm liên quan (A–I)</h2><p style="font-size:12px;line-height:1.6;margin:0">Nhóm D lớp (LOP-01..10) · E buổi, điểm danh (BUOI) · F yêu cầu buổi (BUOI-07..10) · H giáo viên · I hồ sơ phụ huynh, học sinh, đơn hàng (KH-02, KH-05, BH-05). Sửa một màn trong nhóm thì em liệt kê các màn cùng nhóm và hỏi anh trước.</p><h2 class="s">Vai trò</h2><p class="hmt-help" style="font-size:12px;margin:0">CS CSKH · BM Trưởng cơ sở · KT Kế toán · GV Giáo viên · AD Admin. Menu con của Đào tạo là em đề xuất (P0 chưa có mục cấp 2).</p><h2 class="s">Cách đọc canvas</h2><p style="font-size:12px;line-height:1.6;margin:0">Mỗi hàng là một cụm; tên khung = mã màn + trạng thái. Hộp thoại (K08) nổi trên màn gọi nó. Mọi bản vẽ bấm được. Chỗ lệch khuôn và câu hỏi ở khung cuối canvas.</p></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return { yes: true }; }
+}
+</script>
+</body>
+</html>

@@ -24,7 +24,8 @@ def build_list(c, state, role):
     s = s.replace('<h1>Cơ hội</h1>', '<h1>%s</h1>' % c['h1'], 1)
     s = re.sub(r'<button class="hmt-btn " type="button"><svg[^>]*>(?:(?!</svg>).)*</svg>Nhập</button>', '', s, count=1, flags=re.S)
     s = re.sub(r'<span class="hmt-vsep"></span><div class="hmt-seg hmt-seg-ic".*?</div>', '', s, count=1, flags=re.S)
-    s = re.sub(r'<button class="hmt-btn hmt-btn-primary" type="button"><svg[^>]*>(?:(?!</svg>).)*</svg>Tạo</button>', '', s, count=1, flags=re.S)
+    if not c.get('create'):
+        s = re.sub(r'<button class="hmt-btn hmt-btn-primary" type="button"><svg[^>]*>(?:(?!</svg>).)*</svg>Tạo</button>', '', s, count=1, flags=re.S)
     if role not in c.get('export', ('kt', 'bm', 'ad')):
         s = re.sub(r'<button class="hmt-btn " type="button"><svg[^>]*>(?:(?!</svg>).)*</svg>Xuất</button>', '', s, count=1, flags=re.S)
     s = s.replace('placeholder="Tìm tên, SĐT, mã (cả mã cũ)…"', 'placeholder="%s"' % c['ph'], 1)
@@ -65,7 +66,7 @@ def build_list(c, state, role):
         h = bg.index('<div class="hmt-header">')
         box = ('<div class="hmt-content"><div class="hmt-box hmt-empty" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:48px 20px;text-align:center;min-height:420px;margin:var(--space-6) auto;max-width:560px">'
                '<span style="color:var(--text-secondary)">' + SVG(IC['lock'], 'hmt-ic hmt-ic-lg') + '</span><b style="color:var(--text-primary);font-size:16px;font-family:var(--font-heading)">Bạn không có quyền xem %s</b>'
-               '<span class="hmt-help" style="max-width:420px">Vai trò Giáo viên chưa được cấp quyền xem phân hệ Bán hàng và thu chi. Nếu cần xem, hãy liên hệ quản trị viên của trung tâm.</span>'
+               '<span class="hmt-help" style="max-width:420px">' + c.get('who', 'Vai trò Giáo viên chưa được cấp quyền xem phân hệ Bán hàng và thu chi.') + ' Nếu cần xem, hãy liên hệ quản trị viên của trung tâm.</span>'
                '<button class="hmt-btn hmt-btn-primary" type="button" data-act="home">Về trang chủ</button></div></div>') % c['noun']
         bg = bg[:h] + box + '</div></div></div>'; title += ' (không có quyền)'
     s = s[:a] + bg + rest_wo
