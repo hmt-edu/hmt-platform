@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
-- Vừa gộp #41 đến #51 (#50: R-CRM-37; #51: P3b3a gộp trùng). PR P3b3b (nhập lô lead) chờ OK. Việc kế: các màn P3c đến P3f (cần bản vẽ đã duyệt), P5 thay thân `opportunity_sales_documents`.
+- Vừa gộp #41 đến #53. PR P3c-1a (dữ liệu màn Lead: bộ lọc, Kanban, Group By, Giao, Xuất) chờ OK. Việc kế: P3c-1b (giao diện) sau khi 1a gộp; P5 thay thân `opportunity_sales_documents`.
 
 ## Đã chốt (chưa vào repo)
 - Anh OK 18/10: PR 5 theo đề xuất (giữ trang đặt mật khẩu mới nhưng không dẫn tới; sửa bản đồ CHUNG-04, 05, 08 cho khớp thiết kế); bốn câu P3b2 như em đề xuất (không chặn tạo cơ hội theo C4C; sửa học sinh ở cơ hội = sửa hồ sơ học sinh; phụ huynh khớp SĐT khác tên: dùng hồ sơ cũ không ghi đè tên; học sinh trùng tên khác năm sinh = hai hồ sơ); **bảng quyền phiên bản 4** (17 ô Phụ huynh, Học sinh): nạp trong P3b2a.
@@ -50,6 +50,12 @@
 
 ## PR P3b3b Nhập lô lead (19/10)
 - Migration `20261019000032`: `import_leads` (xem trước = nhập thật rồi hoàn tác), `import_one_lead`, `lead_import_log`. Mỗi hàng đi qua `create_lead` nên không có luật lặp. Đo 500 dòng: 1 đến 3 giây ở máy em.
+
+## PR P3c-1a Dữ liệu màn Lead (19/10)
+- Migration `20261019000033`: `lead_board`, `lead_group_counts`, `list_assignable_staff`, `export_leads`, bộ lọc và cột mới của `list_leads`, tham số `export_max_rows`. Tách hai PR theo anh: 1a là DB, 1b là giao diện.
+- Điều kiện lọc lặp ở bốn hàm (cùng khuôn) nên có bài kiểm tổng khớp giữa chúng. Thanh màu Kanban tính trên cả cột, "hôm nay" theo giờ Việt Nam trong DB.
+- Bài kiểm C4/C4D (anh dặn): kéo sang C4 không tự gắn C4D.
+- Sửa bài 017: danh sách cột của `list_leads` thêm bốn cột mới.
 
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).

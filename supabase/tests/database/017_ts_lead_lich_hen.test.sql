@@ -318,9 +318,9 @@ select is((app.list_leads('{"mine": true}') ->> 'total')::int, (select count(*):
 select is(app.list_leads('{}', 'name_asc', 1) -> 'rows' -> 0 ->> 'parent_name', (select min(parent_name) from app.lead where record_status = 'DANG_DUNG'),
           'Sắp xếp theo tên ở DB');
 select is((select array_agg(k order by k) from jsonb_object_keys(app.list_leads('{}', 'created_desc', 1) -> 'rows' -> 0) k),
-          array['branch_code', 'channel_code', 'code', 'created_at', 'id', 'merged_into_code', 'next_appointment_at', 'owner_id', 'owner_name',
-                'parent_name', 'parent_phone', 'record_status', 'source_code', 'source_type_code', 'stage_code', 'student_name',
-                'substage_code', 'supporter_id'], 'Danh sách chỉ lấy các cột màn hiện (không có ô Nhu cầu, Mục tiêu…)');
+          array['assigned_at', 'branch_code', 'campaign_id', 'campaign_name', 'channel_code', 'code', 'created_at', 'id', 'merged_into_code',
+                'next_appointment_at', 'owner_id', 'owner_name', 'parent_name', 'parent_phone', 'record_status', 'source_code',
+                'source_type_code', 'stage_code', 'student_birth_year', 'student_name', 'substage_code', 'supporter_id', 'supporter_name'], 'Danh sách chỉ lấy các cột màn hiện (không có ô Nhu cầu, Mục tiêu…)');
 select ok(app.list_leads('{}', 'created_desc', 1) -> 'rows' -> 0 ->> 'owner_name' is not null, 'Danh sách có tên người phụ trách');
 select pg_temp.sudo($$update app.lead set record_status = 'DA_GOP',
   merged_into_id = (select id from app.lead where code = 'LDT2') where code = 'LDT1'$$);

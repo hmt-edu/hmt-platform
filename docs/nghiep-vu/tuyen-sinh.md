@@ -153,3 +153,19 @@ Cột của hàng: `parent_name`, `parent_phone`, `student_name`, `student_birth
 
 ### Hiệu năng
 Số đo trên `seed-lon` nằm trong mô tả PR P3b3b.
+
+## P3c-1a: dữ liệu màn Lead danh sách và Kanban (migration `20261019000033`)
+Kiểm thử: `supabase/tests/database/025_lead_danh_sach.test.sql` (49 bài). Luật: R-CRM-07 (lọc nhanh), R-CRM-09 (C4D chỉ hệ thống gắn), R-CRM-22 (bản "Đã gộp"), R-CRM-29 (xuất file). Màn: TS-01, TS-01b, TS-05 (dựng ở P3c-1b). Tham số mới: `export_max_rows` (5.000 dòng, 1 đến 20.000).
+
+| Hàm | Làm gì | Quyền |
+|---|---|---|
+| `app.list_leads(bộ lọc, sắp xếp, limit, offset)` | Thêm bộ lọc `channel`, `campaign_id`, `next_from`, `next_to`, `next_before` (quá hạn), `no_appointment`, `only_merged`; thêm cột `supporter_name`, `campaign_name`, `assigned_at`, `student_birth_year` | Lead · Xem |
+| `app.lead_board(bộ lọc, số thẻ/cột)` | Bốn cột C1 đến C4: tổng cột, N thẻ mới nhất, số đếm thanh màu (còn xa, hôm nay, quá hạn, chưa có lịch) tính trên CẢ cột, "hôm nay" theo giờ Việt Nam | Lead · Xem |
+| `app.lead_group_counts(bộ lọc, trường nhóm[])` | Đếm cho Group By một đến hai cấp (giai đoạn, nhóm con, loại nguồn, nguồn, người phụ trách, cơ sở); chỗ rỗng là "Chưa có"; lỗi `HMT_NHOM_SAI` | Lead · Xem |
+| `app.list_assignable_staff(loại bản ghi, cơ sở)` | Nhân sự đang hoạt động có vai trò ở cổng CRM, đúng cơ sở, cho hộp Giao (LEAD, OPPORTUNITY, STUDENT_TEST, APPOINTMENT) | Quyền Giao việc của loại đó |
+| `app.export_leads(bộ lọc)` | Kiểm quyền, ghi nhật ký xuất, lấy tối đa `export_max_rows` dòng (có tên danh mục) trong một giao dịch; quá thì `truncated` | Lead · Xuất |
+
+Bốn hàm danh sách dùng chung một khuôn bộ lọc; bài kiểm đối chiếu tổng giữa `list_leads`, `lead_board`, `lead_group_counts`. Bài kiểm `change_lead_stage`: kéo sang C4 không tự gắn C4D, người dùng không gắn được C4D, lead rời rồi về C4 không lấy lại C4D.
+
+### Hiệu năng
+Đo trên `seed-lon` (50.000 lead), tài khoản Admin (phạm vi rộng nhất): `list_leads` 22 đến 31 ms, `lead_board` 36 đến 40 ms, `lead_group_counts` 24 đến 29 ms, `list_assignable_staff` 2 ms, `export_leads` 5.000 dòng 376 ms. Không thêm chỉ mục mới (dùng chỉ mục sẵn có của lead).
