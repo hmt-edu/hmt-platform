@@ -3,6 +3,7 @@ import { AuthLayout } from '../../layout/AuthLayout';
 import { PORTAL_NAMES } from '../../layout/portalNames';
 import { useAuth } from '../../lib/auth/authContext';
 import { PORTALS, pendingStep, portalAccess, type Portal } from '../../lib/auth/claims';
+import { AuthNote } from '../auth/authParts';
 import { Icon, type IconName } from '../../ui/icons';
 
 const PORTAL_CARD: Record<Portal, { icon: IconName; hint: string }> = {
@@ -26,29 +27,28 @@ export function ChoosePortalPage() {
     <AuthLayout
       title={`Chào ${claims.name}`}
       subtitle={`Tài khoản của bạn vào được ${allowed.length === 2 ? 'hai' : allowed.length} cổng. Chọn cổng để bắt đầu.`}
+      wide
     >
       <ul className="grid gap-3 sm:grid-cols-2">
         {allowed.map((portal) => (
           <li key={portal}>
             <Link
               to={`/${portal}`}
-              className="focus-ring flex h-full flex-col gap-2 rounded-box border border-border bg-surface p-4 hover:border-border-strong"
+              className="focus-ring flex h-full min-h-11 flex-col gap-2 rounded-box border border-border bg-surface p-5 text-left text-[13px] leading-[1.5] text-fg-muted hover:border-action hover:bg-brand-50"
             >
               <span className="flex size-11 items-center justify-center rounded-control bg-selected text-on-selected">
                 <Icon name={PORTAL_CARD[portal].icon} size={20} />
               </span>
-              <span className="font-display text-h3">
+              <b className="font-display text-[17px] font-semibold text-fg">
                 {PORTAL_NAMES[portal]}
                 {portalAccess(claims, portal) === 'view' ? ' (chỉ xem)' : ''}
-              </span>
-              <span className="text-caption text-fg-muted">{PORTAL_CARD[portal].hint}</span>
+              </b>
+              <span>{PORTAL_CARD[portal].hint}</span>
             </Link>
           </li>
         ))}
       </ul>
-      <p className="text-center text-caption text-fg-muted">
-        Đổi cổng bất cứ lúc nào ở menu tài khoản (ảnh đại diện góc trên).
-      </p>
+      <AuthNote center>Đổi cổng bất cứ lúc nào ở menu tài khoản (ảnh đại diện góc trên).</AuthNote>
     </AuthLayout>
   );
 }

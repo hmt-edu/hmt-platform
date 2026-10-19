@@ -5,6 +5,7 @@ import { homePortal } from '../../lib/auth/claims';
 import { afterLoginPath } from '../../lib/auth/redirect';
 import { ButtonLink } from '../../ui/Button';
 import { Alert, Spinner } from '../../ui/Feedback';
+import { AuthAlert, AuthBigIcon, AuthNote } from './authParts';
 import { NewPasswordForm } from './NewPasswordForm';
 
 /**
@@ -13,11 +14,11 @@ import { NewPasswordForm } from './NewPasswordForm';
  */
 export function ForgotPasswordPage() {
   return (
-    <AuthLayout title="Quên mật khẩu">
-      <p className="text-body text-fg-muted">
-        Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm.
-      </p>
-      <ButtonLink to="/dang-nhap" variant="primary" fullWidth icon="back">
+    <AuthLayout
+      title="Quên mật khẩu"
+      subtitle="Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm."
+    >
+      <ButtonLink to="/dang-nhap" variant="primary" size="xl" fullWidth>
         Quay lại đăng nhập
       </ButtonLink>
     </AuthLayout>
@@ -49,7 +50,7 @@ export function ResetPasswordPage() {
           <Alert tone="warning" title="Đường dẫn không còn dùng được">
             Đường dẫn đặt lại mật khẩu đã hết hạn hoặc đã dùng rồi. Hãy liên hệ quản trị viên.
           </Alert>
-          <ButtonLink to="/quen-mat-khau" variant="primary" fullWidth>
+          <ButtonLink to="/quen-mat-khau" variant="primary" size="xl" fullWidth>
             Xem hướng dẫn
           </ButtonLink>
         </>
@@ -74,11 +75,12 @@ export function ChangePasswordPage() {
 
   return (
     <AuthLayout title="Đổi mật khẩu lần đầu" product={homePortal(claims) === 'hoc' ? 'lms' : 'crm'}>
-      <Alert tone="info" icon="forbidden">
+      <AuthAlert tone="plain">
         Mật khẩu hiện tại là mật khẩu tạm do trung tâm cấp. Đặt mật khẩu của riêng mình để tiếp tục.
-      </Alert>
+      </AuthAlert>
       <NewPasswordForm
         submitLabel="Đổi mật khẩu và tiếp tục"
+        disableUntilFilled
         footnote="Áp dụng cho học sinh và nhân viên được cấp mật khẩu tạm. Chưa đổi thì chưa vào được trang nào khác."
         afterAuthUpdate={confirmChange}
         onDone={() => void navigate('/dang-nhap', { replace: true })}
@@ -93,11 +95,11 @@ export function ChangePasswordPage() {
  */
 export function CannotLoginPage() {
   return (
-    <AuthLayout title="Không thể đăng nhập">
-      <p className="text-body text-fg-muted">
+    <AuthLayout title="Không thể đăng nhập" icon={<AuthBigIcon tone="danger" icon="forbidden" />}>
+      <AuthNote center>
         Không thể đăng nhập lúc này. Vui lòng thử lại sau hoặc liên hệ quản trị viên của trung tâm.
-      </p>
-      <ButtonLink to="/dang-nhap" variant="primary" fullWidth icon="back">
+      </AuthNote>
+      <ButtonLink to="/dang-nhap" variant="primary" size="xl" fullWidth>
         Quay lại đăng nhập
       </ButtonLink>
     </AuthLayout>

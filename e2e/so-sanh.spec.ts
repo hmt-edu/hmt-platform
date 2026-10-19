@@ -1,4 +1,5 @@
-// Chụp từng màn ở trạng thái mặc định, đặt cạnh ảnh thiết kế (design/hmt-platform/screens/<MÃ>.png),
+// Chụp từng màn ở trạng thái mặc định, đặt cạnh ảnh thiết kế (design/hmt-platform/screens/<MÃ>.png: gói cũ, chỉ còn dùng cho
+// khung cổng Giáo viên, Học tập GV-01, HT-09 vì gói hiện hành chưa có; nhóm đăng nhập dùng so-sanh-dang-nhap.spec.ts),
 // lưu docs/so-sanh/<MÃ>.jpg (đã nén) để đưa vào mô tả PR. Chỉ chạy khi đặt SO_SANH=1:
 //   SO_SANH=1 npx playwright test e2e/so-sanh.spec.ts --project=may-tinh
 // Chạy xong thì chạy lại `npm run db:seed-users` (kịch bản đổi mật khẩu học sinh giả để vào cổng Học tập).
@@ -6,7 +7,6 @@ import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { expect, test, type Browser, type Page } from '@playwright/test';
-import { generateSync } from 'otplib';
 import pg from 'pg';
 import { DOMAIN, PASSWORD, fillLogin, loginStaff, loginStudent, signOut } from './helpers';
 
@@ -69,70 +69,6 @@ async function save(browser: Browser, page: Page, code: string, suffix = '') {
   await composer.close();
 }
 
-async function clearTotp(email: string) {
-  const db = new pg.Client({ connectionString: DB_URL });
-  await db.connect();
-  await db.query(
-    'delete from auth.mfa_factors where user_id = (select id from auth.users where email = $1)',
-    [email],
-  );
-  await db.end();
-}
-
-test('màn đăng nhập và các trang đơn (K11)', async ({ page, browser }) => {
-  await page.setViewportSize(DESKTOP);
-  await page.goto('/dang-nhap');
-  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await save(browser, page, 'CHUNG-01');
-  await page.goto('/quen-mat-khau');
-  await save(browser, page, 'CHUNG-04');
-  await page.goto('/dat-mat-khau');
-  await save(browser, page, 'CHUNG-05');
-  await page.goto('/khong-dang-nhap-duoc');
-  await save(browser, page, 'CHUNG-08');
-  await page.goto('/khong-ton-tai');
-  await save(browser, page, 'CHUNG-17');
-
-  await page.setViewportSize(PHONE);
-  await page.goto('/dang-nhap');
-  await save(browser, page, 'CHUNG-01', 'điện thoại');
-  await page.goto('/dang-nhap/hoc-sinh');
-  await save(browser, page, 'CHUNG-06', 'điện thoại');
-});
-
-test('hai bước, khung CRM của Admin, hồ sơ cá nhân, chọn cổng', async ({ page, browser }) => {
-  await page.setViewportSize(DESKTOP);
-  await clearTotp(`admin.cs1@${DOMAIN}`);
-  await loginStaff(page, 'admin.cs1');
-  await expect(page).toHaveURL(/\/thiet-lap-hai-buoc$/);
-  await expect(page.locator('code')).toBeVisible();
-  await save(browser, page, 'CHUNG-03');
-  const secret = (await page.locator('code').first().textContent())?.trim() ?? '';
-  await page.getByRole('button', { name: 'Tiếp', exact: true }).click();
-  await page.getByLabel('Mã xác thực').fill(generateSync({ secret }));
-  await page.getByRole('button', { name: 'Hoàn tất' }).click();
-  await expect(page).toHaveURL(/\/crm$/);
-  await page.getByRole('button', { name: 'Quản trị', exact: true }).click();
-  await save(browser, page, 'CHUNG-10');
-  await page.goto('/crm/tai-khoan');
-  await expect(page.getByText('Thiết bị 1')).toBeVisible();
-  await save(browser, page, 'CHUNG-13');
-  await page.goto('/chon-cong');
-  await expect(page.getByText('Lịch dạy, điểm danh, chấm nhận xét, bài tập về nhà.')).toBeVisible();
-  await save(browser, page, 'CHUNG-25');
-
-  await page.setViewportSize(PHONE);
-  await page.goto('/crm');
-  await page.getByRole('button', { name: 'Mở menu' }).click();
-  await save(browser, page, 'CHUNG-10', 'điện thoại');
-  await page.keyboard.press('Escape');
-  await page.setViewportSize(DESKTOP);
-  await signOut(page);
-  await fillLogin(page, 'Email', `admin.cs1@${DOMAIN}`);
-  await expect(page).toHaveURL(/\/xac-thuc-hai-buoc$/);
-  await save(browser, page, 'CHUNG-02');
-});
-
 test('không có quyền, phân hệ chưa bật, hết phiên', async ({ page, browser }) => {
   await page.setViewportSize(DESKTOP);
   await page.clock.install();
@@ -143,7 +79,6 @@ test('không có quyền, phân hệ chưa bật, hết phiên', async ({ page, 
   await save(browser, page, 'CHUNG-16');
   await page.clock.fastForward('01:05:00');
   await expect(page.getByRole('dialog', { name: 'Phiên làm việc đã hết' })).toBeVisible();
-  await save(browser, page, 'CHUNG-09');
   await page.getByRole('button', { name: 'Đăng nhập lại' }).click();
   await page.clock.setSystemTime(new Date());
 

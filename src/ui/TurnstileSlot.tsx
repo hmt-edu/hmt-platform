@@ -65,11 +65,17 @@ export function TurnstileSlot({
 
   if (!siteKey) {
     return (
-      <p className="flex min-h-16 items-center gap-2 rounded-control border border-border-strong bg-surface-subtle px-3 text-body text-fg">
-        <Icon name="check" className="text-success" />
-        Đã xác minh (môi trường thử)
+      // Môi trường thử: hộp mẫu như bản vẽ DN01 (bản thật dùng khung Cloudflare ở dưới).
+      <p className="flex min-h-[58px] items-center gap-2.5 rounded-control border border-dashed border-border-strong bg-canvas px-3.5 text-[13px] text-fg-label">
+        <span
+          aria-hidden="true"
+          className="flex size-[22px] shrink-0 items-center justify-center rounded-[5px] border-[1.5px] border-success-solid bg-surface text-success-solid"
+        >
+          <Icon name="checkMark" size={16} />
+        </span>
+        Turnstile · xác minh không phải robot
       </p>
     );
   }
-  return <div ref={box} className="min-h-16" />;
+  return <div ref={box} className="min-h-[65px]" />;
 }

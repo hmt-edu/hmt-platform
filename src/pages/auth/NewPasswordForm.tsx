@@ -6,9 +6,9 @@ import {
 import { useAuth } from '../../lib/auth/authContext';
 import { usePasswordPolicy } from '../../lib/auth/usePasswordPolicy';
 import { Button } from '../../ui/Button';
-import { Alert } from '../../ui/Feedback';
 import { Icon } from '../../ui/icons';
 import { cn } from '../../ui/cn';
+import { AuthAlert, AuthNote } from './authParts';
 import { PasswordInput } from '../../ui/Field';
 
 /** Tên đăng nhập để trình quản lý mật khẩu lưu đúng tài khoản: học sinh là mã HS, còn lại là email. */
@@ -38,12 +38,15 @@ function passwordRules(password: string, policy: PasswordPolicy) {
 export function NewPasswordForm({
   submitLabel,
   footnote,
+  disableUntilFilled = false,
   afterAuthUpdate,
   onDone,
 }: {
   submitLabel: string;
   /** Dòng chú nhỏ dưới nút (DN07). */
   footnote?: string;
+  /** Nút mờ cho tới khi cả hai ô đã nhập (DN07, đổi mật khẩu lần đầu). */
+  disableUntilFilled?: boolean;
   afterAuthUpdate?: () => Promise<string | null>;
   onDone: () => void;
 }) {
@@ -87,7 +90,7 @@ export function NewPasswordForm({
   }
 
   return (
-    <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-4">
+    <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-[18px]">
       {/* Ô tên đăng nhập ẩn: để Chrome, ứng dụng Mật khẩu gắn mật khẩu mới vào đúng tài khoản. */}
       <input
         type="text"
@@ -100,7 +103,9 @@ export function NewPasswordForm({
         className="sr-only"
       />
       <PasswordInput
+        size="lg"
         label="Mật khẩu mới"
+        placeholder="Gõ thử để xem kiểm tra"
         name="new-password"
         autoComplete="new-password"
         required
@@ -109,13 +114,26 @@ export function NewPasswordForm({
         onChange={(e) => setPassword(e.target.value)}
       />
       {policy && (
-        <ul className="flex flex-col gap-1.5 text-body" aria-label="Điều kiện mật khẩu">
+        <ul className="-my-1 flex flex-col gap-1.5 text-[13px]" aria-label="Điều kiện mật khẩu">
           {passwordRules(password, policy).map((rule) => (
             <li
               key={rule.label}
-              className={cn('flex items-center gap-2', rule.ok ? 'text-success' : 'text-fg-muted')}
+              className={cn(
+                'flex items-center gap-2',
+                rule.ok ? 'font-medium text-on-success-subtle' : 'text-fg-muted',
+              )}
             >
-              <Icon name={rule.ok ? 'check' : 'circle'} size={16} />
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'flex size-4 shrink-0 items-center justify-center rounded-full border-[1.5px]',
+                  rule.ok
+                    ? 'border-success-solid bg-success-solid text-on-solid'
+                    : 'border-border-strong',
+                )}
+              >
+                {rule.ok && <Icon name="check" size={16} />}
+              </span>
               {rule.label}
               <span className="sr-only">{rule.ok ? ' (đạt)' : ' (chưa đạt)'}</span>
             </li>
@@ -123,6 +141,7 @@ export function NewPasswordForm({
         </ul>
       )}
       <PasswordInput
+        size="lg"
         label="Nhập lại mật khẩu mới"
         name="confirm-password"
         autoComplete="new-password"
@@ -131,11 +150,18 @@ export function NewPasswordForm({
         value={confirm}
         onChange={(e) => setConfirm(e.target.value)}
       />
-      {error && <Alert tone="danger">{error}</Alert>}
-      <Button type="submit" variant="primary" fullWidth loading={busy} disabled={!policy}>
+      {error && <AuthAlert tone="danger">{error}</AuthAlert>}
+      <Button
+        type="submit"
+        variant="primary"
+        size="xl"
+        fullWidth
+        loading={busy}
+        disabled={!policy || (disableUntilFilled && (password === '' || confirm === ''))}
+      >
         {submitLabel}
       </Button>
-      {footnote && <p className="text-body text-fg-muted">{footnote}</p>}
+      {footnote && <AuthNote>{footnote}</AuthNote>}
     </form>
   );
 }

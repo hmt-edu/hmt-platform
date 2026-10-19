@@ -6,8 +6,9 @@ import { useAuth } from '../../lib/auth/authContext';
 import { listTotpDevices, verifyTotpAnyDevice } from '../../lib/auth/mfa';
 import { afterLoginPath } from '../../lib/auth/redirect';
 import { Button } from '../../ui/Button';
-import { Alert, Spinner } from '../../ui/Feedback';
+import { Spinner } from '../../ui/Feedback';
 import { OtpInput } from '../../ui/Field';
+import { AuthAlert, AuthLinkButton, AuthNote } from './authParts';
 import { TotpEnroll } from './TotpEnroll';
 
 function useTotpDevices() {
@@ -23,21 +24,20 @@ function useTotpDevices() {
   });
 }
 
+/** Liên kết "Đăng nhập tài khoản khác" (DN03): đăng xuất rồi về trang đăng nhập. */
 function SignOutLink() {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   return (
-    <Button
-      variant="ghost"
-      fullWidth
-      onClick={() => void signOut().then(() => navigate('/dang-nhap'))}
-    >
-      Đăng nhập bằng tài khoản khác
-    </Button>
+    <p className="text-center text-[14px]">
+      <AuthLinkButton onClick={() => void signOut().then(() => navigate('/dang-nhap'))}>
+        Đăng nhập tài khoản khác
+      </AuthLinkButton>
+    </p>
   );
 }
 
-/** CHUNG-02 · Xác thực hai bước: nhập mã 6 số sau khi đăng nhập (Admin, Kế toán). Không có mã dự phòng. */
+/** DN03 · Xác thực hai bước: nhập mã 6 số sau khi đăng nhập (Admin, Kế toán). Không có mã dự phòng. */
 export function MfaVerifyPage() {
   const { supabase, claims, refresh } = useAuth();
   const devices = useTotpDevices();
@@ -59,7 +59,6 @@ export function MfaVerifyPage() {
     const ok = await verifyTotpAnyDevice(supabase, devices.data, code);
     if (!ok) {
       setBusy(false);
-      setCode('');
       return setError('Mã không đúng. Kiểm tra lại mã đang hiện trong ứng dụng rồi nhập lại.');
     }
     await refresh();
@@ -69,15 +68,17 @@ export function MfaVerifyPage() {
   return (
     <AuthLayout
       title="Xác thực hai bước"
-      subtitle="Nhập mã 6 số đang hiện trên ứng dụng xác thực của bạn."
+      subtitle="Mở ứng dụng xác thực trên điện thoại, nhập mã 6 số đang hiện cho tài khoản HMT."
     >
       {devices.isPending ? (
         <Spinner />
       ) : devices.isError ? (
-        <Alert tone="danger">Không tải được thông tin xác thực. Tải lại trang rồi thử lại.</Alert>
+        <AuthAlert tone="danger">
+          Không tải được thông tin xác thực. Tải lại trang rồi thử lại.
+        </AuthAlert>
       ) : (
-        <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-4">
-          {error ? <Alert tone="danger">{error}</Alert> : null}
+        <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-[18px]">
+          {error ? <AuthAlert tone="danger">{error}</AuthAlert> : null}
           <OtpInput
             label="Mã xác thực"
             value={code}
@@ -85,13 +86,13 @@ export function MfaVerifyPage() {
             invalid={Boolean(error)}
             autoFocus
           />
-          <Button type="submit" variant="primary" fullWidth loading={busy}>
+          <Button type="submit" variant="primary" size="xl" fullWidth loading={busy}>
             Xác nhận
           </Button>
-          <p className="text-caption text-fg-muted">
+          <AuthNote center>
             Mất điện thoại? Liên hệ quản trị viên để đặt lại xác thực hai bước
-          </p>
-          <p className="text-caption text-fg-muted">Bắt buộc với tài khoản Admin và Kế toán.</p>
+          </AuthNote>
+          <AuthNote center>Bắt buộc với tài khoản Admin và Kế toán.</AuthNote>
         </form>
       )}
       <SignOutLink />
@@ -99,7 +100,7 @@ export function MfaVerifyPage() {
   );
 }
 
-/** CHUNG-03 · Thiết lập xác thực hai bước lần đầu: quét QR, nhập mã xác nhận. */
+/** DN04 · Thiết lập xác thực hai bước lần đầu: quét QR (bước 1), nhập mã xác nhận (bước 2). */
 export function MfaSetupPage() {
   const [step, setStep] = useState<1 | 2>(1);
   const { claims } = useAuth();
@@ -113,8 +114,12 @@ export function MfaSetupPage() {
 
   return (
     <AuthLayout
-      title="Thiết lập xác thực hai bước"
-      subtitle="Vai trò của bạn bắt buộc xác thực hai bước. Làm một lần, mất khoảng 2 phút."
+      title={step === 1 ? 'Bật xác thực hai bước' : 'Nhập mã từ ứng dụng'}
+      subtitle={
+        step === 1
+          ? 'Tài khoản Admin và Kế toán phải bật trước khi dùng hệ thống. Cài ứng dụng xác thực (Google Authenticator, Microsoft Authenticator…) rồi quét mã dưới đây.'
+          : 'Nhập mã 6 số ứng dụng đang hiện để xác nhận đã cài đúng.'
+      }
       eyebrow={step === 1 ? 'BƯỚC 1/2 · QUÉT MÃ' : 'BƯỚC 2/2 · NHẬP MÃ'}
       progress={{ step, total: 2 }}
     >
@@ -127,7 +132,6 @@ export function MfaSetupPage() {
           onDone={() => void navigate('/dang-nhap', { replace: true })}
         />
       )}
-      <SignOutLink />
     </AuthLayout>
   );
 }

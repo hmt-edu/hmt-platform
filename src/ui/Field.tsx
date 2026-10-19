@@ -15,6 +15,8 @@ const INPUT_FRAME =
 
 /** Ô nhập một dòng. */
 export const INPUT_CLASS = `${INPUT_FRAME} h-control w-full text-body`;
+/** Ô nhập lớn (khuôn K11 các trang đăng nhập, P1): cao 44px, chữ 14px, lề 12px. */
+export const INPUT_LG_CLASS = `${INPUT_FRAME.replace('px-2.5', 'px-3').replace('aria-[invalid=true]:border-2', 'aria-[invalid=true]:border')} h-11 w-full text-[14px]`;
 /** Ô nhập nhiều dòng (cao tối thiểu 72px). */
 export const TEXTAREA_CLASS = `${INPUT_FRAME} min-h-[72px] w-full py-2 text-body`;
 /** Nút có hình ô nhập, rộng theo nội dung (ô chọn khoảng ngày, chọn một giá trị). */
@@ -36,9 +38,12 @@ export function Field({
   invalid,
   children,
   className,
+  size = 'md',
 }: {
   label: string;
   required?: boolean | undefined;
+  /** `lg`: nhãn 13px, không vẽ dấu `*` (trang đăng nhập, P1); vẫn báo bắt buộc cho trình đọc màn hình. */
+  size?: 'md' | 'lg' | undefined;
   help?: ReactNode | undefined;
   error?: string | null | undefined;
   /** Tô viền đỏ mà không hiện câu lỗi riêng (lỗi đã nói ở khối cảnh báo của trang). */
@@ -55,8 +60,9 @@ export function Field({
       <label
         htmlFor={id}
         className={cn(
-          'text-caption font-semibold text-fg-label',
-          required && "after:text-on-danger-subtle after:content-['_*']",
+          size === 'lg' ? 'text-body' : 'text-caption',
+          'font-semibold text-fg-label',
+          required && size !== 'lg' && "after:text-on-danger-subtle after:content-['_*']",
         )}
       >
         {label}
@@ -87,37 +93,74 @@ type TextFieldProps = {
   help?: ReactNode | undefined;
   error?: string | null | undefined;
   invalid?: boolean | undefined;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, 'id' | 'className'>;
+  size?: 'md' | 'lg' | undefined;
+} & Omit<InputHTMLAttributes<HTMLInputElement>, 'id' | 'className' | 'size'>;
 
-export function TextField({ label, help, error, invalid, required, ...input }: TextFieldProps) {
+export function TextField({
+  label,
+  help,
+  error,
+  invalid,
+  required,
+  size = 'md',
+  ...input
+}: TextFieldProps) {
   return (
-    <Field label={label} help={help} error={error} invalid={invalid} required={required}>
-      {(field) => <input {...input} {...field} className={INPUT_CLASS} />}
+    <Field
+      label={label}
+      help={help}
+      error={error}
+      invalid={invalid}
+      required={required}
+      size={size}
+    >
+      {(field) => (
+        <input {...input} {...field} className={size === 'lg' ? INPUT_LG_CLASS : INPUT_CLASS} />
+      )}
     </Field>
   );
 }
 
-/** Ô mật khẩu có nút Hiện/Ẩn (nút là chữ, không chỉ biểu tượng). */
-export function PasswordInput({ label, help, error, invalid, required, ...input }: TextFieldProps) {
+/** Ô mật khẩu có nút con mắt Hiện/Ẩn (nút có tên đọc được "Hiện mật khẩu", "Ẩn mật khẩu"). */
+export function PasswordInput({
+  label,
+  help,
+  error,
+  invalid,
+  required,
+  size = 'md',
+  ...input
+}: TextFieldProps) {
   const [shown, setShown] = useState(false);
+  const large = size === 'lg';
   return (
-    <Field label={label} help={help} error={error} invalid={invalid} required={required}>
+    <Field
+      label={label}
+      help={help}
+      error={error}
+      invalid={invalid}
+      required={required}
+      size={size}
+    >
       {(field) => (
         <div className="relative">
           <input
             {...input}
             {...field}
             type={shown ? 'text' : 'password'}
-            className={cn(INPUT_CLASS, 'pr-16')}
+            className={cn(large ? INPUT_LG_CLASS : INPUT_CLASS, large ? 'pr-12' : 'pr-10')}
           />
           <button
             type="button"
             onClick={() => setShown((v) => !v)}
             aria-pressed={shown}
             aria-label={shown ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
-            className="focus-ring absolute inset-y-1 right-1 rounded-tag px-2 text-caption font-semibold text-link hover:bg-hover"
+            className={cn(
+              'focus-ring absolute flex items-center justify-center rounded-control text-fg-label hover:bg-brand-50',
+              large ? 'top-1 right-1 size-9' : 'inset-y-1 right-1 w-8',
+            )}
           >
-            {shown ? 'Ẩn' : 'Hiện'}
+            <Icon name={shown ? 'eyeOff' : 'eye'} size={16} />
           </button>
         </div>
       )}

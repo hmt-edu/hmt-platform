@@ -8,10 +8,10 @@ import { afterLoginPath } from '../../lib/auth/redirect';
 import { sessionEndText } from '../../lib/auth/formatIdle';
 import { takeSessionEnded, type SessionEnd } from '../../lib/auth/sessionEnd';
 import { Button } from '../../ui/Button';
-import { Alert } from '../../ui/Feedback';
 import { PasswordInput, TextField } from '../../ui/Field';
-import { Dialog } from '../../ui/Overlays';
 import { TurnstileSlot } from '../../ui/TurnstileSlot';
+import { AuthAlert } from './authParts';
+import { SessionEndDialog } from './SessionEndDialog';
 
 /** Mã lỗi do Edge Function login trả khi đang tạm chặn (không nói tài khoản có tồn tại hay không). */
 const TEMP_BLOCKED_CODE = 'HMT_DANG_NHAP_TAM_CHAN';
@@ -23,8 +23,9 @@ export type LoginFormProps = {
   subtitle: string;
   product?: Product | undefined;
   loginLabel: string;
-  loginHelp?: string | undefined;
   loginInputMode?: 'email' | 'text' | undefined;
+  /** Chữ mờ trong ô tên đăng nhập (bản vẽ: ten@hoamatoan.vn, HS000212). */
+  loginPlaceholder?: string | undefined;
   /** Chữ nút gửi (học sinh: "Vào học"). */
   submitLabel?: string | undefined;
   /** Câu hiện khi sai tên đăng nhập hoặc mật khẩu (theo thiết kế từng cổng). */
@@ -39,7 +40,7 @@ export function LoginForm({
   subtitle,
   product,
   loginLabel,
-  loginHelp,
+  loginPlaceholder,
   loginInputMode,
   submitLabel = 'Đăng nhập',
   wrongText,
@@ -85,15 +86,16 @@ export function LoginForm({
     if (!result) return; // Phiên đã có: phần đầu hàm tự chuyển trang.
     // Mã chống máy chỉ dùng được một lần: lấy mã mới cho lần thử sau.
     setAttempt((n) => n + 1);
-    setPassword('');
     if (result.code === TEMP_BLOCKED_CODE) return void navigate('/khong-dang-nhap-duoc');
     setError(result.code === WRONG_CODE ? wrongText : result.message);
   }
 
   return (
     <AuthLayout title={title} subtitle={subtitle} product={product}>
-      <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-4">
+      <form onSubmit={(e) => void submit(e)} noValidate className="flex flex-col gap-[18px]">
+        {error && <AuthAlert tone="danger">{error}</AuthAlert>}
         <TextField
+          size="lg"
           label={loginLabel}
           name="login"
           type={loginInputMode === 'email' ? 'email' : 'text'}
@@ -101,14 +103,15 @@ export function LoginForm({
           autoComplete="username"
           autoCapitalize="none"
           spellCheck={false}
+          placeholder={loginPlaceholder}
           required
-          help={loginHelp}
           error={missing.login}
           invalid={Boolean(error)}
           value={login}
           onChange={(e) => setLogin(e.target.value)}
         />
         <PasswordInput
+          size="lg"
           label="Mật khẩu"
           name="password"
           autoComplete="current-password"
@@ -119,28 +122,17 @@ export function LoginForm({
           onChange={(e) => setPassword(e.target.value)}
         />
         <TurnstileSlot onToken={onToken} attempt={attempt} />
-        {error && <Alert tone="danger">{error}</Alert>}
-        <Button type="submit" variant="primary" fullWidth loading={busy}>
+        <Button type="submit" variant="primary" size="xl" fullWidth loading={busy}>
           {busy ? 'Đang đăng nhập…' : submitLabel}
         </Button>
-        <div className="flex flex-col gap-2 text-body">{footer}</div>
+        {footer}
       </form>
 
-      <Dialog
+      <SessionEndDialog
         open={sessionEnded !== null}
-        onOpenChange={() => setSessionEnded(null)}
-        title="Phiên làm việc đã hết"
-        description={sessionEnded ? sessionEndText(sessionEnded) : undefined}
-        footer={
-          <Button variant="primary" fullWidth onClick={() => setSessionEnded(null)}>
-            Đăng nhập lại
-          </Button>
-        }
-      >
-        <p className="text-caption text-fg-muted">
-          Đăng nhập lại xong sẽ quay về đúng trang đang mở.
-        </p>
-      </Dialog>
+        onClose={() => setSessionEnded(null)}
+        reason={sessionEnded ? sessionEndText(sessionEnded) : null}
+      />
     </AuthLayout>
   );
 }

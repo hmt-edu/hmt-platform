@@ -49,6 +49,8 @@ export function AuthLayout({
   product = 'crm',
   eyebrow,
   progress,
+  wide = false,
+  icon,
   children,
 }: {
   title: string;
@@ -58,6 +60,10 @@ export function AuthLayout({
   eyebrow?: string | undefined;
   /** Thanh bước: bước hiện tại trên tổng số. */
   progress?: { step: number; total: number } | undefined;
+  /** Biểu mẫu rộng 560px (chọn cổng, DN10) thay vì 400px. */
+  wide?: boolean | undefined;
+  /** Biểu tượng tròn lớn giữa logo và tiêu đề (DN08). */
+  icon?: ReactNode | undefined;
   children: ReactNode;
 }) {
   useProduct(product);
@@ -66,12 +72,18 @@ export function AuthLayout({
     <div className="grid min-h-dvh bg-surface lg:grid-cols-[46fr_54fr]">
       <BrandPanel />
       <main className="flex justify-center px-6 pt-9 pb-7 lg:px-10 lg:pt-[150px] lg:pb-10">
-        <div className="flex w-full max-w-[400px] flex-col gap-[18px]">
+        <div
+          className={cn(
+            'flex w-full flex-col gap-[18px]',
+            wide ? 'max-w-[560px]' : 'max-w-[400px]',
+          )}
+        >
           <img
             src={logo}
             alt="Hòa Ma Toán · 18+ năm kinh nghiệm luyện thi"
             className="mx-auto mb-1.5 h-auto w-[150px] lg:w-[176px]"
           />
+          {icon}
           {progress && (
             <div
               className="flex gap-2"
@@ -89,16 +101,16 @@ export function AuthLayout({
               ))}
             </div>
           )}
-          <div className={start ? 'flex flex-col gap-2' : 'flex flex-col gap-2 text-center'}>
-            {eyebrow && (
-              <p className="text-caption font-bold tracking-wider text-on-selected uppercase">
-                {eyebrow}
-              </p>
-            )}
+          {eyebrow && (
+            <p className="text-caption font-bold tracking-wider text-on-selected uppercase">
+              {eyebrow}
+            </p>
+          )}
+          <div className={start ? 'flex flex-col gap-2' : 'flex flex-col gap-2.5 text-center'}>
             <h1 className="font-display text-[22px] leading-tight font-bold tracking-tight lg:text-[26px]">
               {title}
             </h1>
-            {subtitle && <p className="text-body text-fg-muted">{subtitle}</p>}
+            {subtitle && <p className="text-[14px] leading-[1.6] text-fg-muted">{subtitle}</p>}
           </div>
           {children}
         </div>

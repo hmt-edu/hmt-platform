@@ -19,7 +19,7 @@ test('đường dẫn gốc khi chưa đăng nhập: về trang đăng nhập', 
 for (const [path, loginUrl, heading] of [
   ['/crm', /\/dang-nhap\?next=%2Fcrm$/, 'Đăng nhập'],
   ['/gv', /\/dang-nhap\?next=%2Fgv$/, 'Đăng nhập'],
-  ['/hoc', /\/dang-nhap\/hoc-sinh\?next=%2Fhoc$/, 'Đăng nhập học tập'],
+  ['/hoc', /\/dang-nhap\/hoc-sinh\?next=%2Fhoc$/, 'Chào em'],
 ] as const) {
   test(`${path} khi chưa đăng nhập chuyển sang trang đăng nhập`, async ({ page }) => {
     await page.goto(path);

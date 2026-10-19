@@ -225,7 +225,7 @@ async function clearTotp(email: string) {
 }
 
 async function enrollDevice(page: Page): Promise<string> {
-  const secret = (await page.locator('code').first().textContent())?.trim() ?? '';
+  const secret = (await page.locator('code').first().textContent())?.replace(/\s+/g, '') ?? '';
   expect(secret.length).toBeGreaterThan(10);
   // Trang thiết lập lần đầu chia hai bước (Tiếp → Hoàn tất); hồ sơ cá nhân thêm thiết bị một bước (Xác nhận).
   const next = page.getByRole('button', { name: 'Tiếp', exact: true });
@@ -246,7 +246,7 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
   await loginStaff(page, account);
   await expect(page).toHaveURL(/\/thiet-lap-hai-buoc$/);
   await expect(
-    page.getByRole('heading', { level: 1, name: 'Thiết lập xác thực hai bước' }),
+    page.getByRole('heading', { level: 1, name: 'Bật xác thực hai bước' }),
   ).toBeVisible();
   await expectAccessible(page);
   // Chưa xong hai bước thì không vào được cổng.

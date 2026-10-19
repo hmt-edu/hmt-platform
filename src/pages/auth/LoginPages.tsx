@@ -1,56 +1,60 @@
-import { Link, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
+import { AuthAlert, AuthLink, AuthNote } from './authParts';
 import { LoginForm } from './LoginForm';
-
-const LINK = 'focus-ring rounded-tag text-link underline underline-offset-2';
 
 function withNext(path: string, next: string | null): string {
   return next ? `${path}?next=${encodeURIComponent(next)}` : path;
 }
 
-/** CHUNG-01 · Đăng nhập nhân viên, giáo viên, trợ giảng: email + mật khẩu, có Turnstile. */
+/** DN01 · Đăng nhập nhân viên, giáo viên, trợ giảng: email + mật khẩu, có Turnstile. */
 export function LoginPage() {
   const [params] = useSearchParams();
   return (
     <LoginForm
       title="Đăng nhập"
-      subtitle="Dành cho nhân viên, giáo viên, trợ giảng"
+      subtitle="Dành cho nhân viên, giáo viên và trợ giảng."
       loginLabel="Email"
       loginInputMode="email"
+      loginPlaceholder="ten@hoamatoan.vn"
       wrongText="Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa."
       footer={
         <>
-          <Link to="/quen-mat-khau" className={LINK}>
-            Quên mật khẩu?
-          </Link>
-          <Link to={withNext('/dang-nhap/hoc-sinh', params.get('next'))} className={LINK}>
-            Em là học sinh: đăng nhập bằng mã học sinh
-          </Link>
+          <p className="text-center text-[14px]">
+            <AuthLink to="/quen-mat-khau">Quên mật khẩu?</AuthLink>
+          </p>
+          <AuthNote center>
+            Học sinh?{' '}
+            <AuthLink to={withNext('/dang-nhap/hoc-sinh', params.get('next'))}>
+              Đăng nhập bằng mã học sinh
+            </AuthLink>
+          </AuthNote>
         </>
       }
     />
   );
 }
 
-/** CHUNG-06 · Đăng nhập học sinh: mã HS + mật khẩu trung tâm cấp; quên mật khẩu thì nhờ CSKH. */
+/** DN02 · Đăng nhập học sinh: mã HS + mật khẩu trung tâm cấp; quên mật khẩu thì nhờ CSKH. */
 export function StudentLoginPage() {
   const [params] = useSearchParams();
   return (
     <LoginForm
-      title="Đăng nhập học tập"
-      subtitle="Dành cho học sinh Hòa Ma Toán"
+      title="Chào em"
+      subtitle="Đăng nhập để xem bài tập, lịch học và kết quả."
       product="lms"
       loginLabel="Mã học sinh"
+      loginPlaceholder="HS000212"
       submitLabel="Vào học"
       wrongText="Mã học sinh hoặc mật khẩu chưa đúng. Em kiểm tra lại nhé."
-      loginHelp="Ví dụ: HS000123. Mã có trên thẻ học sinh hoặc do thầy cô gửi."
       footer={
         <>
-          <p className="text-fg-muted">
+          <AuthAlert tone="info">
             Quên mật khẩu? Em nhờ thầy cô hoặc bộ phận chăm sóc khách hàng ở cơ sở cấp lại.
-          </p>
-          <Link to={withNext('/dang-nhap', params.get('next'))} className={LINK}>
-            Nhân viên, giáo viên đăng nhập bằng email
-          </Link>
+          </AuthAlert>
+          <AuthNote center>
+            Nhân viên, giáo viên:{' '}
+            <AuthLink to={withNext('/dang-nhap', params.get('next'))}>đăng nhập ở đây</AuthLink>
+          </AuthNote>
         </>
       }
     />

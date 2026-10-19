@@ -72,6 +72,11 @@
 - R-CRM-39 (lead mới luôn ở C1) vào spec 04 theo lời anh "OK ĐƯA VÀO LUẬT" 19/10. `create_lead` đã khớp (câu `insert` ghi cứng C1), thêm bài 027.
 - Bài học quy trình: bản xem trước nối DB thử nghiệm chỉ có migration đã gộp; PR có migration mới tách PR DB gộp trước (đã ghi `quy-trinh-phoi-hop.md`).
 
+## PR P1-sửa Nhóm đăng nhập (19/10)
+- Nguyên nhân: màn đăng nhập (P1) dựng và so sánh theo gói cũ `design/hmt-platform/screens/CHUNG-xx`, gói hiện hành là `design/hmt-p0-p2` (DN01 đến DN10). Đã so từng màn máy tính và điện thoại, sửa mọi chỗ lệch; ảnh `docs/so-sanh/DN*.jpg` (kịch bản `e2e/so-sanh-dang-nhap.spec.ts`). Các ảnh `CHUNG-01..09, 25` của gói cũ đã xoá.
+- Khuôn: ô nhập và nút cỡ lớn (`size="lg"` của TextField, PasswordInput; `xl` của Button), nút con mắt thay chữ "Hiện", `authParts.tsx` (thông báo, dòng chú, liên kết, biểu tượng tròn), hộp hết phiên `SessionEndDialog`.
+- Bài kiểm giữ các nét chính của bản vẽ: `e2e/dang-nhap-thiet-ke.spec.ts` (cao 44px, không `*`, con mắt, lỗi nằm trên ô, liên kết căn giữa không gạch chân, "Chào em", hộp hết phiên không nút đóng).
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

@@ -1,7 +1,7 @@
 import { cn } from './cn';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'text';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'xl';
 
 // Theo .hmt-btn của gói thiết kế: cao 32px, bo 6px, viền #8A8076, chữ 13px/500. Mỗi màn một nút chính.
 const BASE =
@@ -11,6 +11,8 @@ const SIZES: Record<ButtonSize, string> = {
   sm: 'h-control-sm px-2 text-caption',
   md: 'h-control',
   lg: 'h-control-lg px-4 text-body-lg',
+  // Nút của khuôn K11 (các trang đăng nhập, P1): cao 44px, chữ 14px.
+  xl: 'h-11 px-4 text-[14px]',
 };
 
 const VARIANTS: Record<ButtonVariant, string> = {
