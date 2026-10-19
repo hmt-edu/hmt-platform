@@ -520,7 +520,10 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                   label: 'Lịch hẹn',
                   icon: 'calendar',
                   count: record.appointments_total,
-                  onOpen: () => void navigate('/crm/lich-hen'),
+                  onOpen: () =>
+                    void navigate(
+                      `/crm/lich-hen?lead=${record.id}&ma=${encodeURIComponent(record.code)}`,
+                    ),
                 },
                 {
                   key: 'co-hoi',

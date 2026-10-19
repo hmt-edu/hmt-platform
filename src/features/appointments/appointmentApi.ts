@@ -1,4 +1,4 @@
-// Gọi dữ liệu lịch hẹn của một hồ sơ (lead): danh sách sắp tới và các thao tác (tạo, dời, hoàn thành, huỷ).
+// Gọi dữ liệu lịch hẹn của một hồ sơ (lead): danh sách sắp tới và các thao tác (tạo, dời, hoàn thành, huỷ, mở lại).
 // Luật nằm ở hàm cơ sở dữ liệu (R-CRM-04, R-CRM-38); giao diện chỉ gọi và hiện lỗi.
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -89,6 +89,11 @@ export async function cancelAppointment(
     p_reason_code: reason,
     p_note: note.trim() === '' ? null : note.trim(),
   });
+}
+
+/** Mở lại lịch hẹn Hoàn thành hoặc Huỷ về Chưa làm (R-CRM-04): không đổi giai đoạn, không tạo việc, không báo ai. */
+export async function reopenAppointment(supabase: SupabaseClient, id: string): Promise<void> {
+  await rpc<null>(supabase, 'reopen_appointment', { p_id: id });
 }
 
 /** Tải lại khối lịch hẹn, ghi chú và hoạt động, số đếm của lead sau một thao tác ghi. */

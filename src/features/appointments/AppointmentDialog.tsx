@@ -1,6 +1,6 @@
 // TS-13 Tạo và Dời lịch hẹn (khuôn K4 ③ FormDialog). Tạo: gắn cố định với hồ sơ đang mở (ô tìm hồ sơ khác làm cùng màn
 // Lịch hẹn). Dời (R-CRM-38): giờ mới, người phụ trách (chỉ đổi được khi có quyền Giao việc), ghi chú.
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { errorOf } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
@@ -34,7 +34,10 @@ export type AppointmentToReschedule = {
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  target: AppointmentTarget;
+  /** Hồ sơ gắn cố định; `null` khi dùng `targetPicker` mà chưa chọn. */
+  target: AppointmentTarget | null;
+  /** Có thì ô "Gắn với" là ô chọn này (tạo từ màn Lịch hẹn), thay cho ô chỉ đọc. */
+  targetPicker?: ReactNode | undefined;
   activityOptions: Option[];
   /** Có thì là hộp Dời lịch hẹn, không có là hộp Tạo. */
   reschedule?: AppointmentToReschedule | undefined;
@@ -97,6 +100,7 @@ function Chips({
 function AppointmentForm({
   onOpenChange,
   target,
+  targetPicker,
   activityOptions,
   reschedule,
   onCreate,
@@ -106,8 +110,8 @@ function AppointmentForm({
   const access = useAccess();
   const rescheduling = reschedule !== undefined;
   const canAssign = access.can('APPOINTMENT', 'GIAO_VIEC');
-  const branchId = reschedule?.branchId ?? target.branchId;
-  const staff = useAssignableStaff('APPOINTMENT', branchId, canAssign);
+  const branchId = reschedule?.branchId ?? target?.branchId ?? null;
+  const staff = useAssignableStaff('APPOINTMENT', branchId, canAssign && branchId !== null);
 
   const [activity, setActivity] = useState(activityOptions[0]?.value ?? '');
   const [date, setDate] = useState<Date | null>(null);
@@ -133,7 +137,7 @@ function AppointmentForm({
         ]
       : staffOptions;
 
-  const canSubmit = when !== null && (rescheduling || activity !== '');
+  const canSubmit = when !== null && (rescheduling || (activity !== '' && target !== null));
 
   async function submit() {
     if (!when) return;
@@ -168,7 +172,7 @@ function AppointmentForm({
       open
       onOpenChange={onOpenChange}
       title={rescheduling ? 'Dời lịch hẹn' : 'Tạo lịch hẹn'}
-      subtitle={rescheduling ? `${reschedule.label} · ${target.label}` : undefined}
+      subtitle={rescheduling ? `${reschedule.label} · ${target?.label ?? ''}` : undefined}
       confirmLabel={rescheduling ? 'Dời lịch' : 'Tạo lịch hẹn'}
       canSubmit={canSubmit}
       busy={busy}
@@ -195,15 +199,17 @@ function AppointmentForm({
                 />
               )}
             </Field>
-            <Field
-              label="Gắn với"
-              required
-              help="Bắt buộc: lịch hẹn phải gắn với 1 đối tượng. Tạo từ trang Lead thì tự điền và khoá."
-            >
-              {(field) => (
-                <input {...field} readOnly value={target.label} className={INPUT_CLASS} />
-              )}
-            </Field>
+            {targetPicker ?? (
+              <Field
+                label="Gắn với"
+                required
+                help="Bắt buộc: lịch hẹn phải gắn với 1 đối tượng. Tạo từ trang Lead thì tự điền và khoá."
+              >
+                {(field) => (
+                  <input {...field} readOnly value={target?.label ?? ''} className={INPUT_CLASS} />
+                )}
+              </Field>
+            )}
           </>
         )}
         <div className="grid grid-cols-2 gap-3">

@@ -64,6 +64,8 @@ export function ListScreen<Row>({
   emptyMessage,
   parent,
   groupTree,
+  groupsOpenByDefault,
+  belowToolbar,
   onGroupToggle,
   rowMuted,
   onRowClick,
@@ -100,6 +102,10 @@ export function ListScreen<Row>({
    * `rows` ở trình duyệt, mọi nhóm đóng tới khi mở; `rows` chỉ là các dòng đã tải (để chọn tất cả).
    */
   groupTree?: TableGroup<Row>[] | undefined;
+  /** Nhóm mở sẵn hay đóng sẵn khi truyền `groupTree`; mặc định đóng (nhóm của máy chủ tải dòng khi mở). Nhóm do màn tự dựng từ dòng đã tải thì đặt true. */
+  groupsOpenByDefault?: boolean | undefined;
+  /** Dải thông báo của màn dưới thanh lọc (ví dụ "Còn N lịch quá hạn đang bị ẩn bởi bộ lọc thời gian"). */
+  belowToolbar?: ReactNode;
   onGroupToggle?: ((key: string, open: boolean) => void) | undefined;
   /** Dòng làm mờ (bản "Đã gộp": chỉ đọc). */
   rowMuted?: ((row: Row) => boolean) | undefined;
@@ -452,6 +458,8 @@ export function ListScreen<Row>({
           </span>
         </div>
       )}
+      {belowToolbar}
+
       <p className="sr-only" aria-live="polite">
         {activeCount(state, config)} điều kiện đang áp dụng
       </p>
@@ -482,7 +490,7 @@ export function ListScreen<Row>({
           rowLabel={rowLabel}
           loading={loading}
           groups={tree}
-          groupsDefaultOpen={groupTree === undefined}
+          groupsDefaultOpen={groupsOpenByDefault ?? groupTree === undefined}
           onGroupToggle={onGroupToggle}
           rowMuted={rowMuted}
           onRowClick={onRowClick}

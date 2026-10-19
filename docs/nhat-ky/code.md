@@ -86,6 +86,12 @@
 ## PR 5c Nền động đăng nhập (19/10)
 - CSS động của `.auth-*` (chép từ DN01), tắt khi `prefers-reduced-motion`; bài Playwright `e2e/nen-dong.spec.ts` (bình thường: có chuyển động, `?` đổi thành `5`; giảm chuyển động: `animation-name: none`).
 
+## PR P3c-3b Màn Lịch hẹn (19/10)
+- `src/pages/lich-hen/*`: danh sách, Kanban, Lịch trên khuôn K1, K2, K5; lọc, tìm, phân trang ở máy chủ (`list_appointments`, migration 037); Kanban mỗi cột một lần gọi; Lịch tải từng trang (tối đa 5) rồi báo nếu còn thừa. Thao tác dùng chung hộp Dời, Huỷ của trang Lead; thêm hộp Mở lại (`reopen_appointment`).
+- Khuôn: `ListScreen` thêm `groupsOpenByDefault` (nhóm do màn tự dựng từ dòng đã tải) và `belowToolbar` (dải thông báo); `AppointmentDialog` nhận `targetPicker` (ô chọn lead, `LeadPicker`).
+- Luật thể hiện: Quá hạn = Chưa làm và trước đầu ngày hôm nay giờ Việt Nam; Hoàn thành ⇄ Huỷ không kéo thả (chỉ qua Mở lại); không đổi giai đoạn, không tạo việc, không báo ai.
+- Bài kiểm: Vitest `appointmentFilters.test.ts` (bộ lọc), Playwright `e2e/lich-hen.spec.ts` (máy tính và điện thoại; có chờ chọn chip, mở ô chọn lại khi hộp đang hiện hiệu ứng), ảnh so sánh bản vẽ `e2e/so-sanh-lich-hen.spec.ts`.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).
