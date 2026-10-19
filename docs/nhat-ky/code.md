@@ -62,6 +62,9 @@
 - Phát hiện khi dựng: bản 033 nối các mốc Lịch hẹn bằng VÀ nên không chọn được "Quá hạn" cùng "Hôm nay" (trái R-CRM-07). Migration `034` thêm bộ lọc dạng danh sách `appointment[]`, `mine_roles[]` cho bốn hàm, mốc "hôm nay" tính trong DB.
 - Ghi chú vênh bản vẽ và quyết định nằm trong mô tả PR.
 
+## PR P3c-2a DB trang Lead (19/10)
+- Migration `20261019000035` (`get_lead`, `reschedule_appointment` mở rộng) tách khỏi PR giao diện: DB thử nghiệm chỉ áp migration sau khi gộp nên bản xem trước của #57 (cần `get_lead`) báo lỗi khi anh thử. Quy trình ghi ở `quy-trinh-phoi-hop.md` mục 4. R-CRM-38 vào spec 04.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

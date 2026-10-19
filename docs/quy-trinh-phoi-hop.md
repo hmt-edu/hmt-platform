@@ -45,6 +45,7 @@ Thứ tự ưu tiên khi các nguồn vênh nhau: **luật (spec 04, 02, 06) > q
 2. **Anh duyệt** trên canvas.
 3. **Chat viết đặc tả màn hình** (trường, nút, trạng thái, lỗi, mã luật; chỉ dẫn mã luật, không chép lại). Anh duyệt, đưa vào repo bằng PR tài liệu.
 4. **Code:** gửi kế hoạch, anh OK, rồi làm từng PR. Mỗi PR có bản xem trước, mục "Anh kiểm", ảnh so với thiết kế.
+   **PR có migration mới:** tách một PR DB nhỏ (migration, bài pgTAP, luật, tài liệu) gộp trước. DB thử nghiệm chỉ được áp migration sau khi gộp vào `main`, nên bản xem trước của PR giao diện chỉ chạy được khi migration của nó đã gộp. PR giao diện làm sau, rebase từ `main`.
 5. **Anh** thử trên staging. Dán báo cáo PR cho Chat soát. Ổn thì bình luận "OK" trên PR.
 6. Xong giai đoạn thì anh cập nhật bản chạy thật qua `hmt-deploy`.
 

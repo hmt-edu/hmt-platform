@@ -182,3 +182,17 @@ Các bộ lọc cũ (`next_from`, `next_to`, `next_before`, `no_appointment`, `m
 
 ### Hiệu năng
 Đo trên `seed-lon` (50.000 lead), Admin: `list_leads` với `appointment` hai mốc 81 ms (lần đầu), `appointment` + `mine_roles` 2 ms, `lead_board` 32 ms, `lead_group_counts` hai cấp 31 ms, dòng của một nhóm lá 13 ms. Không thêm chỉ mục.
+
+## P3c-2a: `get_lead` và dời lịch hẹn (migration `20261019000035`)
+Kiểm thử: `supabase/tests/database/026_lead_ban_ghi.test.sql` (42 bài). Luật: R-CRM-04, R-CRM-22 (bản "Đã gộp" chỉ đọc), R-CRM-38 (dời lịch hẹn, vào luật 19/10). Màn dùng hai hàm này (trang Lead TS-02, hộp Dời lịch hẹn TS-13) làm ở PR giao diện P3c-2.
+
+| Hàm | Làm gì | Quyền |
+|---|---|---|
+| `app.get_lead(id)` | Một lần gọi đủ cho trang bản ghi: các cột của lead (trừ cột tìm kiếm), tên người phụ trách, hỗ trợ, tạo, sửa, cơ sở, chiến dịch, mã bản giữ lại (bản "Đã gộp"), số lịch hẹn (tổng, chưa làm), số cơ hội đang dùng | Lead · Xem ở cơ sở của lead |
+| `app.reschedule_appointment(id, giờ mới, người phụ trách mới, ghi chú)` | Thay hàm hai tham số: dời lịch Chưa làm; đổi người phụ trách khi dời cần quyền Lịch hẹn · Giao việc (người mới đúng cơ sở); ghi nhật ký của lịch hẹn (giờ, người phụ trách) và **một ghi chú trên hồ sơ gắn** (lead, cơ hội hoặc phiếu) nêu giờ cũ, giờ mới, người phụ trách mới, ghi chú | Lịch hẹn · Sửa; đổi người: thêm Giao việc |
+
+**Ghi chú khi dời lưu ở đâu:** trong ghi chú của hồ sơ gắn (cột "Ghi chú và hoạt động"), cùng dòng "Dời lịch hẹn "…" từ … sang …"; không ghi đè cột `note` của lịch hẹn. Lỗi: `HMT_LICH_HEN_TRANG_THAI_SAI` (không còn Chưa làm), `HMT_KHONG_CO_QUYEN` (đổi người phụ trách thiếu Giao việc), `HMT_NGUOI_PHU_TRACH_SAI` (người mới khác cơ sở), `HMT_THIEU_THONG_TIN` (thiếu giờ mới).
+
+### Hiệu năng
+Đo trên `seed-lon` (50.000 lead, 120.000 lịch hẹn), Trưởng cơ sở CS5: `get_lead` 3 ms (lead có nhiều lịch hẹn nhất); 10 lead liên tiếp 21 ms. Dùng chỉ mục sẵn có (`appointment_lead_idx`, `opportunity_lead_idx`), không thêm chỉ mục.
+
