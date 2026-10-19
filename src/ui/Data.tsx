@@ -122,23 +122,37 @@ export type TableGroup<Row> = {
   count: number;
   children: TableGroup<Row>[];
   rows: Row[];
+  /** Nhóm lá tải dòng khi mở (Group By ở máy chủ): đang tải, và nút "Xem thêm" khi còn dòng chưa tải. */
+  loading?: boolean | undefined;
+  more?: { remaining: number; loading: boolean; onMore: () => void } | undefined;
 };
 
 type DisplayItem<Row> =
   | { kind: 'group'; group: TableGroup<Row>; depth: number; open: boolean }
-  | { kind: 'row'; row: Row };
+  | { kind: 'row'; row: Row }
+  | { kind: 'more'; group: TableGroup<Row>; depth: number }
+  | { kind: 'loading'; group: TableGroup<Row>; depth: number };
 
+/** `toggled`: các nhóm người dùng đã đảo trạng thái so với mặc định (mặc định mở, hoặc đóng khi `defaultOpen` sai). */
 function flatten<Row>(
   groups: TableGroup<Row>[],
-  collapsed: ReadonlySet<string>,
+  toggled: ReadonlySet<string>,
+  defaultOpen: boolean,
   depth = 0,
 ): DisplayItem<Row>[] {
   return groups.flatMap<DisplayItem<Row>>((group) => {
-    const open = !collapsed.has(group.key);
+    const open = defaultOpen !== toggled.has(group.key);
+    const leaf: DisplayItem<Row>[] = [
+      ...group.rows.map((row) => ({ kind: 'row' as const, row })),
+      ...(group.loading && group.rows.length === 0
+        ? [{ kind: 'loading' as const, group, depth: depth + 1 }]
+        : []),
+      ...(group.more ? [{ kind: 'more' as const, group, depth: depth + 1 }] : []),
+    ];
     const inner: DisplayItem<Row>[] = open
       ? group.children.length > 0
-        ? flatten(group.children, collapsed, depth + 1)
-        : group.rows.map((row) => ({ kind: 'row' as const, row }))
+        ? flatten(group.children, toggled, defaultOpen, depth + 1)
+        : leaf
       : [];
     return [{ kind: 'group' as const, group, depth, open }, ...inner];
   });
@@ -204,6 +218,9 @@ export function Table<Row>({
   onSelectedChange,
   skeletonRows = 5,
   groups,
+  groupsDefaultOpen = true,
+  onGroupToggle,
+  rowMuted,
 }: {
   /** Tên bảng cho trình đọc màn hình. */
   caption: string;
@@ -223,18 +240,24 @@ export function Table<Row>({
   skeletonRows?: number | undefined;
   /** Có thì bảng hiện theo nhóm (Group By), `rows` chỉ dùng để chọn tất cả và đếm. */
   groups?: TableGroup<Row>[] | undefined;
+  /** Mặc định các nhóm mở; đặt sai thì mọi nhóm đóng tới khi người dùng mở (nhóm tải dòng khi mở). */
+  groupsDefaultOpen?: boolean | undefined;
+  /** Báo khi người dùng mở hoặc đóng một nhóm (để tải dòng của nhóm lá). */
+  onGroupToggle?: ((key: string, open: boolean) => void) | undefined;
+  /** Dòng làm mờ (bản đã gộp: chỉ đọc). */
+  rowMuted?: ((row: Row) => boolean) | undefined;
 }) {
-  const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set());
+  const [toggled, setToggled] = useState<ReadonlySet<string>>(new Set());
   const items: DisplayItem<Row>[] = groups
-    ? flatten(groups, collapsed)
+    ? flatten(groups, toggled, groupsDefaultOpen)
     : rows.map((row) => ({ kind: 'row' as const, row }));
-  const toggleGroup = (key: string) =>
-    setCollapsed((current) => {
-      const next = new Set(current);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
+  const toggleGroup = (key: string) => {
+    const next = new Set(toggled);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    setToggled(next);
+    onGroupToggle?.(key, groupsDefaultOpen !== next.has(key));
+  };
   const narrow = useMedia(NARROW_TABLE);
   const headingId = useId();
   const selectable = selected !== undefined && onSelectedChange !== undefined;
@@ -263,7 +286,7 @@ export function Table<Row>({
     else onSortChange(null);
   };
 
-  if (!loading && rows.length === 0) {
+  if (!loading && (groups ? groups.length === 0 : rows.length === 0)) {
     return <div className="rounded-card border border-border bg-surface">{empty}</div>;
   }
 
@@ -287,6 +310,23 @@ export function Table<Row>({
                   </li>
                 );
               }
+              if (item.kind === 'loading') {
+                return (
+                  <li key={`${item.group.key}#loading`} className="p-3">
+                    <Skeleton className="w-3/4" />
+                  </li>
+                );
+              }
+              if (item.kind === 'more') {
+                return (
+                  <li
+                    key={`${item.group.key}#more`}
+                    style={{ paddingLeft: `${item.depth * 12}px` }}
+                  >
+                    <MoreButton group={item.group} />
+                  </li>
+                );
+              }
               const row = item.row;
               const key = rowKey(row);
               return (
@@ -295,6 +335,7 @@ export function Table<Row>({
                   className={cn(
                     'rounded-card border border-border bg-surface p-3',
                     selectable && selected.has(key) && 'border-l-[3px] border-l-action bg-selected',
+                    rowMuted?.(row) && 'opacity-55',
                   )}
                 >
                   <div className="flex items-start gap-3">
@@ -416,6 +457,30 @@ export function Table<Row>({
                     </tr>
                   );
                 }
+                if (item.kind === 'loading') {
+                  return (
+                    <tr key={`${item.group.key}#loading`} className="h-row">
+                      <td
+                        colSpan={columns.length + (selectable ? 1 : 0)}
+                        style={{ paddingLeft: `${16 + item.depth * 20}px` }}
+                      >
+                        <Skeleton className="w-1/3" />
+                      </td>
+                    </tr>
+                  );
+                }
+                if (item.kind === 'more') {
+                  return (
+                    <tr key={`${item.group.key}#more`} className="h-[34px]">
+                      <td
+                        colSpan={columns.length + (selectable ? 1 : 0)}
+                        style={{ paddingLeft: `${16 + item.depth * 20}px` }}
+                      >
+                        <MoreButton group={item.group} />
+                      </td>
+                    </tr>
+                  );
+                }
                 const row = item.row;
                 const key = rowKey(row);
                 const isSelected = selectable && selected.has(key);
@@ -425,6 +490,7 @@ export function Table<Row>({
                     className={cn(
                       'h-row border-b border-surface-subtle last:border-b-0 hover:bg-hover',
                       isSelected && 'bg-selected shadow-[inset_3px_0_0_var(--border-selected)]',
+                      rowMuted?.(row) && 'opacity-55',
                     )}
                   >
                     {selectable && (
@@ -480,5 +546,15 @@ function GroupToggle<Row>({
       {group.label}
       <span className="tabular font-medium text-fg-muted">({group.count})</span>
     </button>
+  );
+}
+
+/** Nút "Xem thêm" cuối một nhóm lá còn dòng chưa tải. */
+function MoreButton<Row>({ group }: { group: TableGroup<Row> }) {
+  if (!group.more) return null;
+  return (
+    <Button variant="text" loading={group.more.loading} onClick={group.more.onMore}>
+      Xem thêm (còn {group.more.remaining})
+    </Button>
   );
 }

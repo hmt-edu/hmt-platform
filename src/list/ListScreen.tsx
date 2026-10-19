@@ -4,7 +4,7 @@
 import { useState, type ReactNode } from 'react';
 import { Button, IconButton } from '../ui/Button';
 import { cn } from '../ui/cn';
-import { Table, type Column, type SortState } from '../ui/Data';
+import { Table, type Column, type SortState, type TableGroup } from '../ui/Data';
 import { StateView } from '../ui/Feedback';
 import { Icon, type IconName } from '../ui/icons';
 import { Select } from '../ui/Overlays';
@@ -30,7 +30,13 @@ const VIEW_ICON: Record<ViewMode, { icon: IconName; label: string }> = {
   calendar: { icon: 'calendar', label: 'Calendar' },
 };
 
-type Action = { label: string; icon?: IconName; onClick: () => void; primary?: boolean };
+type Action = {
+  label: string;
+  icon?: IconName;
+  onClick: () => void;
+  primary?: boolean;
+  loading?: boolean;
+};
 
 export function ListScreen<Row>({
   config,
@@ -57,6 +63,9 @@ export function ListScreen<Row>({
   calendar,
   emptyMessage,
   parent,
+  groupTree,
+  onGroupToggle,
+  rowMuted,
 }: {
   config: ListConfig<Row>;
   state: ListState;
@@ -85,6 +94,14 @@ export function ListScreen<Row>({
   kanban?: ReactNode;
   calendar?: ReactNode;
   emptyMessage?: { title: string; hint: string } | undefined;
+  /**
+   * Group By ở máy chủ: cây nhóm do màn dựng từ số đếm của máy chủ (nhóm lá tải dòng khi mở). Có thì khung không tự nhóm
+   * `rows` ở trình duyệt, mọi nhóm đóng tới khi mở; `rows` chỉ là các dòng đã tải (để chọn tất cả).
+   */
+  groupTree?: TableGroup<Row>[] | undefined;
+  onGroupToggle?: ((key: string, open: boolean) => void) | undefined;
+  /** Dòng làm mờ (bản "Đã gộp": chỉ đọc). */
+  rowMuted?: ((row: Row) => boolean) | undefined;
   /**
    * Danh sách mở từ nút liên kết (smart button) của một bản ghi cha: hiện đường dẫn "Cơ hội / CO000121 / Lịch hẹn"
    * (bấm mã để quay lại bản ghi) và chip lọc "Cơ hội: CO000121" (bỏ chip thì bỏ lọc theo bản ghi cha).
@@ -134,7 +151,8 @@ export function ListScreen<Row>({
       : [];
   });
   const tree =
-    state.group.length > 0 ? buildGroupTree(rows, state.group, config.groupFields) : undefined;
+    groupTree ??
+    (state.group.length > 0 ? buildGroupTree(rows, state.group, config.groupFields) : undefined);
 
   const sheetFooter = (
     <>
@@ -260,6 +278,7 @@ export function ListScreen<Row>({
             key={a.label}
             variant={a.primary ? 'primary' : 'secondary'}
             icon={a.icon}
+            loading={a.loading}
             onClick={a.onClick}
           >
             {a.label}
@@ -460,6 +479,9 @@ export function ListScreen<Row>({
           rowLabel={rowLabel}
           loading={loading}
           groups={tree}
+          groupsDefaultOpen={groupTree === undefined}
+          onGroupToggle={onGroupToggle}
+          rowMuted={rowMuted}
           sort={sort}
           onSortChange={onSortChange}
           selected={selected}

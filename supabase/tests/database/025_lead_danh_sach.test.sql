@@ -157,6 +157,35 @@ select is((select count(*) from app.list_assignable_staff('LEAD', (select id fro
 select pg_temp.claims(pg_temp.uid('teacher5'), 'aal1');
 select is(pg_temp.err($$select * from app.list_assignable_staff('LEAD')$$), 'HMT_KHONG_CO_QUYEN', 'Giáo viên không có quyền giao việc');
 
+-- ================= Lọc nhiều lựa chọn cùng nhóm (R-CRM-07, migration 034) =================
+reset role;
+-- B1 (của sales1b) do sales1 hỗ trợ: để thử "Tôi phụ trách" HOẶC "Tôi hỗ trợ".
+update app.lead set supporter_id = pg_temp.uid('sales1') where id = (select id from ld where k = 'B1');
+set local role authenticated;
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal2');
+select is(pg_temp.n(pg_temp.base() || '{"appointment": ["OVERDUE"]}'), 1::bigint, 'Lịch hẹn Quá hạn: 1 (L1)');
+select is(pg_temp.n(pg_temp.base() || '{"appointment": ["TODAY"]}'), 1::bigint, 'Lịch hẹn Hôm nay: 1 (L2)');
+select is(pg_temp.n(pg_temp.base() || '{"appointment": ["UPCOMING"]}'), 2::bigint, 'Lịch hẹn Sắp tới: từ ngày mai (L3, L4)');
+select is(pg_temp.n(pg_temp.base() || '{"appointment": ["NONE"]}'), 2::bigint, 'Lịch hẹn Chưa có: L5 và B1 (L6 đã gộp)');
+select is(pg_temp.n(pg_temp.base() || '{"appointment": ["OVERDUE", "UPCOMING"]}'), 3::bigint, 'Cùng nhóm Lịch hẹn là HOẶC: Quá hạn hoặc Sắp tới (hai mốc không liền nhau)');
+select is(pg_temp.n(pg_temp.base() || '{"appointment": ["OVERDUE", "TODAY", "UPCOMING", "NONE"]}'), 6::bigint, 'Chọn đủ bốn mốc = không lọc');
+select is(pg_temp.n(pg_temp.base() || '{"appointment": ["OVERDUE", "TODAY"], "stage": ["C2"]}'), 1::bigint, 'Khác nhóm là VÀ: Quá hạn hoặc Hôm nay, và ở C2');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.n(pg_temp.base() || '{"mine_roles": ["OWNER"]}'), 5::bigint, 'Tôi phụ trách: 5 lead đang dùng');
+select is(pg_temp.n(pg_temp.base() || '{"mine_roles": ["SUPPORT"]}'), 1::bigint, 'Tôi hỗ trợ: 1 lead (B1)');
+select is(pg_temp.n(pg_temp.base() || '{"mine_roles": ["OWNER", "SUPPORT"]}'), 6::bigint, 'Cùng nhóm Của tôi là HOẶC: phụ trách hoặc hỗ trợ');
+-- Nhất quán giữa bốn hàm với cùng bộ lọc mới.
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal2');
+select is((select sum((c ->> 'total')::int) from jsonb_array_elements(app.lead_board(pg_temp.base() || '{"appointment": ["OVERDUE", "UPCOMING"]}')) c), 3::bigint,
+          'Nhất quán: lead_board với appointment cùng tổng list_leads');
+select is((select (c -> 'bar') from jsonb_array_elements(app.lead_board(pg_temp.base() || '{"appointment": ["OVERDUE"]}')) c where c ->> 'stage_code' = 'C1'),
+          '{"ok": 1, "today": 0, "overdue": 1, "none": 2}'::jsonb, 'Lọc Lịch hẹn không đổi số đếm thanh màu');
+select is((app.lead_group_counts(pg_temp.base() || '{"appointment": ["OVERDUE", "UPCOMING"]}', array['stage']) ->> 'total')::bigint, 3::bigint,
+          'Nhất quán: lead_group_counts với appointment cùng tổng list_leads');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is((select (c ->> 'total')::int from jsonb_array_elements(app.lead_board(pg_temp.base() || '{"mine_roles": ["OWNER", "SUPPORT"]}')) c where c ->> 'stage_code' = 'C1'), 4,
+          'Nhất quán: lead_board với mine_roles (C1: L1, L4, L5, B1)');
+
 -- ================= Xuất export_leads (R-CRM-29) =================
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.export_leads('{}')$$), 'HMT_KHONG_CO_QUYEN', 'Nhân viên kinh doanh không có quyền xuất');
@@ -164,6 +193,7 @@ select pg_temp.claims(pg_temp.uid('bm1'), 'aal2');
 select is((app.export_leads(pg_temp.base()) ->> 'exported')::int, 6, 'Trưởng cơ sở xuất được đúng số lead trong phạm vi');
 select is((select count(*) from app.export_log where module_code = 'LEAD' and row_count = 6), 1::bigint, 'Xuất file ghi nhật ký xuất');
 select isnt(app.export_leads(pg_temp.base()) -> 'rows' -> 0 ->> 'stage', null, 'Dòng xuất có tên giai đoạn (không phải mã)');
+select is((app.export_leads(pg_temp.base() || '{"appointment": ["OVERDUE", "UPCOMING"]}') ->> 'exported')::int, 3, 'Xuất cũng theo bộ lọc nhiều lựa chọn cùng nhóm');
 select is((app.export_leads('{"q": "Cơ Sở Năm"}') ->> 'exported')::int, 0, 'Xuất không lấy lead cơ sở khác');
 reset role;
 update app.setting_def set value = '2' where key = 'export_max_rows';

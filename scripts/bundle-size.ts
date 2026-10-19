@@ -50,6 +50,10 @@ const screens: [string, string[]][] = [
     'Màn danh sách mẫu /dev/danh-sach (thêm vào khung CRM)',
     ['layout/CrmShell.tsx', 'pages/dev/ListDemoPage.tsx'],
   ],
+  [
+    'Màn Lead /crm/lead (thêm vào khung CRM)',
+    ['layout/CrmShell.tsx', 'pages/lead/LeadListPage.tsx'],
+  ],
 ];
 
 const rows: { name: string; kb: number; files: number }[] = [];

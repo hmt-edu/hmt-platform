@@ -169,3 +169,16 @@ Bốn hàm danh sách dùng chung một khuôn bộ lọc; bài kiểm đối ch
 
 ### Hiệu năng
 Đo trên `seed-lon` (50.000 lead), tài khoản Admin (phạm vi rộng nhất): `list_leads` 22 đến 31 ms, `lead_board` 36 đến 40 ms, `lead_group_counts` 24 đến 29 ms, `list_assignable_staff` 2 ms, `export_leads` 5.000 dòng 376 ms. Không thêm chỉ mục mới (dùng chỉ mục sẵn có của lead).
+
+## P3c-1b: lọc nhiều lựa chọn cùng nhóm (migration `20261019000034`)
+Kiểm thử: thêm vào `supabase/tests/database/025_lead_danh_sach.test.sql` (15 bài). Luật: R-CRM-07 (cùng nhóm HOẶC, khác nhóm VÀ). Thay thân bốn hàm P3c-1a (`list_leads`, `lead_board`, `lead_group_counts`, `export_leads`), thêm hai bộ lọc dạng danh sách:
+
+| Khoá lọc | Giá trị | Nghĩa |
+|---|---|---|
+| `appointment[]` | `OVERDUE`, `TODAY`, `UPCOMING`, `NONE` | Lịch hẹn kế tiếp: trước đầu ngày hôm nay, hôm nay, từ ngày mai, chưa có. Chọn nhiều thì HOẶC. Mốc ngày tính trong DB theo giờ Việt Nam |
+| `mine_roles[]` | `OWNER`, `SUPPORT` | Tôi phụ trách, tôi hỗ trợ. Chọn nhiều thì HOẶC |
+
+Các bộ lọc cũ (`next_from`, `next_to`, `next_before`, `no_appointment`, `mine`, `supporter_mine`) vẫn dùng được. Ở `lead_board`, `appointment` lọc tổng và thẻ của cột như `next_*`, không đổi số đếm thanh màu.
+
+### Hiệu năng
+Đo trên `seed-lon` (50.000 lead), Admin: `list_leads` với `appointment` hai mốc 81 ms (lần đầu), `appointment` + `mine_roles` 2 ms, `lead_board` 32 ms, `lead_group_counts` hai cấp 31 ms, dòng của một nhóm lá 13 ms. Không thêm chỉ mục.

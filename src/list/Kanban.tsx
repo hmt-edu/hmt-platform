@@ -1,7 +1,7 @@
 // K2 Kanban: cột theo giai đoạn, thẻ, số thẻ, nút + thêm nhanh. Kéo thả chỉ đi tới khi luật yêu cầu; nút "⋮"
 // trên thẻ là cách thay thế cho bàn phím, màn hình cảm ứng. Luật nằm ở `rule`, khung không biết giai đoạn nào.
 import { useState, type ReactNode } from 'react';
-import { IconButton } from '../ui/Button';
+import { Button, IconButton } from '../ui/Button';
 import { cn } from '../ui/cn';
 import { DropdownMenu } from '../ui/Overlays';
 import { freeMoveRule, type MoveRule } from './kanbanLogic';
@@ -10,6 +10,8 @@ export type KanbanColumn<Card> = {
   code: string;
   label: string;
   cards: Card[];
+  /** Tổng thẻ của cột khi chỉ tải một phần (máy chủ trả tổng); không có thì lấy số thẻ đã tải. */
+  total?: number | undefined;
 };
 
 /** Một khúc của thanh tỷ lệ: khoá trạng thái, nhãn, tông màu. */
@@ -27,6 +29,8 @@ export type KanbanBar<Card> = {
   segments: BarSegment[];
   /** Trạng thái của một thẻ (khoá của một khúc). */
   of: (card: Card) => string;
+  /** Số đếm theo khúc do máy chủ tính trên cả cột (khi cột chỉ tải một phần); không có thì đếm từ các thẻ đã tải. */
+  counts?: ((columnCode: string) => Record<string, number> | undefined) | undefined;
 };
 
 const BAR_TONE: Record<BarSegment['tone'], string> = {
@@ -39,21 +43,26 @@ const BAR_TONE: Record<BarSegment['tone'], string> = {
 function ColumnBar<Card>({
   bar,
   cards,
+  columnCode,
   active,
   onToggle,
   columnLabel,
 }: {
   bar: KanbanBar<Card>;
   cards: Card[];
-  active: string | null;
+  columnCode: string;
+  active: readonly string[];
   onToggle: (key: string) => void;
   columnLabel: string;
 }) {
+  const server = bar.counts?.(columnCode);
   const counts = bar.segments.map((seg) => ({
     seg,
-    count: cards.filter((c) => bar.of(c) === seg.key).length,
+    count: server ? (server[seg.key] ?? 0) : cards.filter((c) => bar.of(c) === seg.key).length,
   }));
   const total = counts.reduce((sum, c) => sum + c.count, 0);
+  // Cột chưa có lịch hẹn nào (chỉ khúc xám) thì không vẽ thanh (P0 v5, số 12).
+  if (counts.every((c) => c.count === 0 || c.seg.tone === 'neutral')) return null;
   return (
     <div
       role="group"
@@ -66,15 +75,15 @@ function ColumnBar<Card>({
           <button
             key={seg.key}
             type="button"
-            aria-pressed={active === seg.key}
-            aria-label={`${seg.label}: ${count} thẻ${active === seg.key ? ' (đang lọc, bấm để bỏ)' : ''}`}
+            aria-pressed={active.includes(seg.key)}
+            aria-label={`${seg.label}: ${count} thẻ${active.includes(seg.key) ? ' (đang lọc, bấm để bỏ)' : ''}`}
             title={`${seg.label}: ${count}`}
             onClick={() => onToggle(seg.key)}
             style={{ flexGrow: count, flexBasis: 0 }}
             className={cn(
               'focus-ring relative min-w-2 transition-opacity before:absolute before:-inset-y-2 before:inset-x-0 before:content-[""]',
               BAR_TONE[seg.tone],
-              active !== null && active !== seg.key && 'opacity-30',
+              active.length > 0 && !active.includes(seg.key) && 'opacity-30',
               total === 0 && 'hidden',
             )}
           />
@@ -93,6 +102,10 @@ export function KanbanBoard<Card>({
   bar,
   onBlocked,
   onAdd,
+  showAdd,
+  onLoadMore,
+  barActive,
+  onBarSelect,
   note,
 }: {
   columns: KanbanColumn<Card>[];
@@ -109,6 +122,13 @@ export function KanbanBoard<Card>({
   /** Gọi khi giao diện chặn sớm (hiện hộp thoại chặn có lý do). */
   onBlocked: (reason: string, card: Card) => void;
   onAdd?: ((columnCode: string) => void) | undefined;
+  /** Cột nào có nút "+" (mặc định mọi cột khi có `onAdd`). */
+  showAdd?: ((columnCode: string) => boolean) | undefined;
+  /** Cột còn thẻ chưa tải: nút "Xem thêm" cuối cột. */
+  onLoadMore?: ((columnCode: string) => void) | undefined;
+  /** Lọc theo khúc của thanh tỷ lệ do màn quản lý (máy chủ lọc): khúc đang chọn, và gọi khi bấm một khúc. */
+  barActive?: readonly string[] | undefined;
+  onBarSelect?: ((segmentKey: string) => void) | undefined;
   /** Dòng chú thích dưới bảng ("Kéo thẻ chỉ thả được vào giai đoạn phía trước…"). */
   note?: string | undefined;
 }) {
@@ -128,13 +148,23 @@ export function KanbanBoard<Card>({
       <div className="flex gap-3 overflow-x-auto pb-2">
         {columns.map((column) => {
           const verdict = dragging ? rule(dragging.from, column.code) : null;
+          const controlled = barActive !== undefined && onBarSelect !== undefined;
           const activeSeg = barFilter[column.code] ?? null;
+          const activeSegs: readonly string[] = controlled
+            ? barActive
+            : activeSeg
+              ? [activeSeg]
+              : [];
+          // Máy chủ đã lọc thì không lọc lại ở trình duyệt.
           const shownCards =
-            bar && activeSeg ? column.cards.filter((c) => bar.of(c) === activeSeg) : column.cards;
+            bar && activeSeg && !controlled
+              ? column.cards.filter((c) => bar.of(c) === activeSeg)
+              : column.cards;
+          const total = column.total ?? column.cards.length;
           return (
             <section
               key={column.code}
-              aria-label={`${column.label}: ${column.cards.length} thẻ`}
+              aria-label={`${column.label}: ${total} thẻ`}
               onDragOver={(e) => {
                 if (dragging) {
                   e.preventDefault();
@@ -156,10 +186,8 @@ export function KanbanBoard<Card>({
             >
               <header className="flex items-center gap-2 px-1.5 py-1 font-display text-h4">
                 <h2 className="min-w-0 flex-1">{column.label}</h2>
-                <span className="tabular text-caption font-semibold text-fg-muted">
-                  {column.cards.length}
-                </span>
-                {onAdd && (
+                <span className="tabular text-caption font-semibold text-fg-muted">{total}</span>
+                {onAdd && (showAdd?.(column.code) ?? true) && (
                   <IconButton
                     icon="plus"
                     label={`Thêm vào ${column.label}`}
@@ -171,10 +199,16 @@ export function KanbanBoard<Card>({
                 <ColumnBar
                   bar={bar}
                   cards={column.cards}
-                  active={activeSeg}
+                  columnCode={column.code}
+                  active={activeSegs}
                   columnLabel={column.label}
                   onToggle={(k) =>
-                    setBarFilter((m) => ({ ...m, [column.code]: m[column.code] === k ? null : k }))
+                    controlled
+                      ? onBarSelect(k)
+                      : setBarFilter((m) => ({
+                          ...m,
+                          [column.code]: m[column.code] === k ? null : k,
+                        }))
                   }
                 />
               )}
@@ -217,6 +251,11 @@ export function KanbanBoard<Card>({
                   );
                 })}
               </ul>
+              {onLoadMore && total > column.cards.length && (
+                <Button variant="text" onClick={() => onLoadMore(column.code)}>
+                  Xem thêm (còn {total - column.cards.length})
+                </Button>
+              )}
             </section>
           );
         })}

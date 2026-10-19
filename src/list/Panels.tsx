@@ -401,7 +401,9 @@ function AdvancedBody<Row>({
                 label={`Phép so sánh, điều kiện ${index + 1}`}
                 value={row.op}
                 onChange={(op) => update(row.id, { op: op as Operator })}
-                options={OPERATORS_BY_TYPE[type].map((o) => ({ value: o.op, label: o.label }))}
+                options={OPERATORS_BY_TYPE[type]
+                  .filter((o) => !field?.ops || field.ops.includes(o.op))
+                  .map((o) => ({ value: o.op, label: o.label }))}
               />
               <div className="col-span-2 md:col-span-1">
                 <ValueInput

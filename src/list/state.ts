@@ -255,6 +255,7 @@ export function newConditionId(): string {
 
 /** Điều kiện trống mới cho một trường: phép so sánh đầu tiên của kiểu trường. */
 export function blankCondition<Row>(field: FilterField<Row>): Condition {
-  const op = OPERATORS_BY_TYPE[field.type][0]?.op ?? 'eq';
+  const op =
+    OPERATORS_BY_TYPE[field.type].find((o) => !field.ops || field.ops.includes(o.op))?.op ?? 'eq';
   return { id: newConditionId(), field: field.key, op, value: field.type === 'multi' ? [] : '' };
 }

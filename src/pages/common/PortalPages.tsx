@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useLocation } from 'react-router';
 import { useAccess } from '../../nav/AccessContext';
 import { CRM_MENU, checkRoute } from '../../nav/crmMenu';
@@ -27,4 +28,40 @@ export function CrmSectionPage() {
 /** Trang trống của cổng Giáo viên, Học tập: khung và quyền đã đúng, nội dung làm ở giai đoạn 3, 4. */
 export function PortalTabPage({ title, stage }: { title: string; stage: string }) {
   return <ComingSoonView title={title} stage={stage} />;
+}
+
+/**
+ * Màn thật của một mục menu CRM: kiểm quyền và công tắc phân hệ như CrmSectionPage (CHUNG-16, CHUNG-24),
+ * qua cửa thì hiện `children`.
+ */
+export function GatedCrmEntry({ slug, children }: { slug: string; children: ReactNode }) {
+  const access = useAccess();
+  const result = checkRoute(CRM_MENU, slug, access);
+  switch (result.status) {
+    case 'ok':
+      return <>{children}</>;
+    case 'forbidden':
+      return <ForbiddenView />;
+    case 'feature-off':
+      return <FeatureOffView />;
+    case 'not-found':
+      return <NotFoundView />;
+  }
+}
+
+/** Trang bản ghi chưa dựng: mã lead mở được tới đây, màn thật làm ở P3c-2. */
+export function RecordComingSoon({
+  slug,
+  title,
+  stage,
+}: {
+  slug: string;
+  title: string;
+  stage: string;
+}) {
+  return (
+    <GatedCrmEntry slug={slug}>
+      <ComingSoonView title={title} stage={stage} />
+    </GatedCrmEntry>
+  );
 }

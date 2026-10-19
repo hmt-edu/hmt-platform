@@ -31,6 +31,12 @@ const ChoosePortalPage = lazyScreen(
 );
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
+const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
+const RecordComingSoon = lazyScreen(
+  () => import('../pages/common/PortalPages'),
+  'RecordComingSoon',
+);
+const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
 const HomePage = lazyScreen(() => import('../pages/HomePage'), 'HomePage');
@@ -92,6 +98,18 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: <CrmHome /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          {
+            path: 'lead',
+            element: (
+              <GatedCrmEntry slug="lead">
+                <LeadListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'lead/:id',
+            element: <RecordComingSoon slug="lead" title="Lead" stage="P3c-2" />,
+          },
           { path: '*', element: <CrmSectionPage /> },
         ],
       },

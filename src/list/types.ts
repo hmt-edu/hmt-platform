@@ -30,6 +30,8 @@ export type FilterField<Row> = {
   label: string;
   type: FieldType;
   options?: { value: string; label: string }[] | undefined;
+  /** Chỉ cho các phép so sánh này (mặc định mọi phép của kiểu trường): dùng khi máy chủ không hiểu hết các phép. */
+  ops?: Operator[] | undefined;
   /** Lấy giá trị của dòng (chuỗi; trường nhiều giá trị thì chuỗi chuẩn hoá). Chỉ dùng khi lọc trong trình duyệt. */
   get?: ((row: Row) => string) | undefined;
 };

@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
-- Vừa gộp #41 đến #53. PR P3c-1a (dữ liệu màn Lead: bộ lọc, Kanban, Group By, Giao, Xuất) chờ OK. Việc kế: P3c-1b (giao diện) sau khi 1a gộp; P5 thay thân `opportunity_sales_documents`.
+- Vừa gộp #41 đến #54. PR P3c-1b (giao diện Lead: danh sách, Kanban, hộp Giao, Xuất) chờ anh thử trên bản xem trước rồi OK. Việc kế: P3c-2 (TS-13, 03, 14, 02); P5 thay thân `opportunity_sales_documents`.
 
 ## Đã chốt (chưa vào repo)
 - Anh OK 18/10: PR 5 theo đề xuất (giữ trang đặt mật khẩu mới nhưng không dẫn tới; sửa bản đồ CHUNG-04, 05, 08 cho khớp thiết kế); bốn câu P3b2 như em đề xuất (không chặn tạo cơ hội theo C4C; sửa học sinh ở cơ hội = sửa hồ sơ học sinh; phụ huynh khớp SĐT khác tên: dùng hồ sơ cũ không ghi đè tên; học sinh trùng tên khác năm sinh = hai hồ sơ); **bảng quyền phiên bản 4** (17 ô Phụ huynh, Học sinh): nạp trong P3b2a.
@@ -56,6 +56,11 @@
 - Điều kiện lọc lặp ở bốn hàm (cùng khuôn) nên có bài kiểm tổng khớp giữa chúng. Thanh màu Kanban tính trên cả cột, "hôm nay" theo giờ Việt Nam trong DB.
 - Bài kiểm C4/C4D (anh dặn): kéo sang C4 không tự gắn C4D.
 - Sửa bài 017: danh sách cột của `list_leads` thêm bốn cột mới.
+
+## PR P3c-1b Giao diện Lead (19/10)
+- Màn `/crm/lead` (`src/pages/lead/`): K1 và K2 nối `list_leads`, `lead_board`, `lead_group_counts`, `export_leads`; hộp Giao ở `src/features/assign/`. Khuôn chung sửa: bảng có nhóm tải dòng khi mở, dòng mờ, "Xem thêm"; Kanban nhận tổng và số đếm thanh màu từ máy chủ, ẩn thanh khi cột chưa có lịch hẹn (P0 v5 số 12), có thể giới hạn cột có dấu "+".
+- Phát hiện khi dựng: bản 033 nối các mốc Lịch hẹn bằng VÀ nên không chọn được "Quá hạn" cùng "Hôm nay" (trái R-CRM-07). Migration `034` thêm bộ lọc dạng danh sách `appointment[]`, `mine_roles[]` cho bốn hàm, mốc "hôm nay" tính trong DB.
+- Ghi chú vênh bản vẽ và quyết định nằm trong mô tả PR.
 
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).

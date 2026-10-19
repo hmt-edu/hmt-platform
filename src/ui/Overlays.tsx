@@ -225,9 +225,14 @@ export function Select({
   icon,
   className,
   placeholder,
+  id,
+  disabled,
 }: {
   /** Nhãn cho trình đọc màn hình (ô không có nhãn hiện). */
   label: string;
+  /** Mã của nút (để nhãn hiện `htmlFor` trỏ tới). */
+  id?: string | undefined;
+  disabled?: boolean | undefined;
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
@@ -237,8 +242,9 @@ export function Select({
   placeholder?: string | undefined;
 }) {
   return (
-    <RadixSelect.Root value={value} onValueChange={onChange}>
+    <RadixSelect.Root value={value} onValueChange={onChange} disabled={disabled}>
       <RadixSelect.Trigger
+        id={id}
         aria-label={label}
         className={cn(INPUT_BUTTON_CLASS, 'justify-between', className)}
       >

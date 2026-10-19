@@ -12,7 +12,10 @@ import { DOMAIN, PASSWORD, fillLogin, loginStaff, loginStudent, signOut } from '
 
 const DB_URL = process.env.DB_URL ?? '';
 // Playwright chạy từ thư mục gốc của repo.
-const DESIGN_DIR = join(process.cwd(), 'design', 'hmt-platform', 'screens');
+const DESIGN_DIRS = [
+  join(process.cwd(), 'design', 'hmt-platform', 'screens'),
+  join(process.cwd(), 'design', 'hmt-p3', 'png'),
+];
 // Mặc định ảnh ra thư mục tạm để không ghi đè ảnh đã lưu trong repo; chỉ ghi vào docs/so-sanh khi đặt SO_SANH_GHI_VAO_REPO=1
 // (màn mới dựng, hoặc anh yêu cầu chụp lại).
 const OUT_DIR = process.env.SO_SANH_GHI_VAO_REPO
@@ -36,8 +39,8 @@ async function save(browser: Browser, page: Page, code: string, suffix = '') {
     type: 'png',
     mask: [page.locator('img[alt^="Mã QR"]'), page.locator('code')],
   });
-  const designPath = join(DESIGN_DIR, `${code}.png`);
-  const design = existsSync(designPath) ? readFileSync(designPath).toString('base64') : null;
+  const designPath = DESIGN_DIRS.map((dir) => join(dir, `${code}.png`)).find((p) => existsSync(p));
+  const design = designPath ? readFileSync(designPath).toString('base64') : null;
   const narrow = suffix !== '';
   const composer = await browser.newPage({
     viewport: { width: design ? 1800 : narrow ? 480 : 1000, height: 800 },
@@ -172,4 +175,119 @@ test('khung cổng Giáo viên và cổng Học tập', async ({ page, browser }
   await save(browser, page, 'HT-09');
   await page.setViewportSize(PHONE);
   await save(browser, page, 'HT-09', 'điện thoại');
+});
+
+// TS-01, TS-01b, TS-05: Lead danh sách, Kanban, hộp Giao. Dựng sáu lead giả của Trưởng CS5 (Tuyển sinh đang bật ở CS5) để giống bản vẽ.
+test('Lead: danh sách, Kanban, hộp Giao (TS-01, TS-01b, TS-05)', async ({ page, browser }) => {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query('begin');
+    await db.query("set local session_replication_role = 'replica'");
+    await db.query("delete from app.lead where parent_name like '%(so sánh)%'");
+    await db.query("delete from app.parent where full_name like '%(so sánh)%'");
+    await db.query('commit');
+    await db.query('begin');
+    await db.query(
+      `select set_config('request.jwt.claims', (app.custom_access_token_hook(jsonb_build_object(
+         'user_id', u.id, 'claims', jsonb_build_object('sub', u.id, 'role', 'authenticated', 'aal', 'aal1'))) -> 'claims')::text, true)
+         from app.user_account u where u.login_name = $1`,
+      [`truongcs.cs5@${DOMAIN}`],
+    );
+    await db.query('set local role authenticated');
+    const leads = [
+      [
+        'Chị Lê Thu Hằng',
+        'Lê Gia Huy',
+        '0912000121',
+        'FACEBOOK_ADS',
+        'FACEBOOK_ADS_LEAD_FORM',
+        'C4',
+        'C4D',
+      ],
+      ['Anh Phạm Văn Tú', 'Phạm Minh Khôi', '0903000124', 'WEBSITE', null, 'C4', 'C4C'],
+      ['Anh Vũ Đức Long', null, '0938000130', 'HOTLINE', null, 'C2', 'C2A'],
+      ['Anh Bùi Quang Vinh', null, '0919000109', 'EVENT', 'EVENT_INDOOR', 'C1', null],
+      [
+        'Chị Trần Thị Mai',
+        'Trần Bảo Long',
+        '0985000127',
+        'REFERRAL',
+        'REFERRAL_BY_HMT',
+        'C4',
+        'C4B',
+      ],
+      [
+        'Chị Đặng Thu Phương',
+        'Đặng Minh Châu',
+        '0914000133',
+        'COLD_CALL',
+        'COLD_CALL_FLYER',
+        'C1',
+        null,
+      ],
+    ] as const;
+    const types: Record<string, string> = {
+      FACEBOOK_ADS: 'MARKETING',
+      WEBSITE: 'MARKETING',
+      HOTLINE: 'MARKETING',
+      EVENT: 'EVENT',
+      REFERRAL: 'REFERRAL',
+      COLD_CALL: 'TELEMARKETING',
+    };
+    for (const [parent, student, phone, source, channel] of leads) {
+      await db.query(
+        `select app.create_lead(jsonb_build_object('parent_name', $1::text, 'parent_phone', $2::text, 'student_name', $3::text,
+           'source_type_code', $4::text, 'source_code', $5::text, 'channel_code', $6::text))`,
+        [`${parent} (so sánh)`, phone, student, types[source], source, channel],
+      );
+    }
+    await db.query('reset role');
+    await db.query(
+      `update app.lead set stage_code = x.stage, substage_code = x.sub
+         from (values ('Chị Lê Thu Hằng', 'C4', 'C4D'), ('Anh Phạm Văn Tú', 'C4', 'C4C'), ('Anh Vũ Đức Long', 'C2', 'C2A'),
+                      ('Chị Trần Thị Mai', 'C4', 'C4B')) as x (name, stage, sub)
+        where parent_name = x.name || ' (so sánh)'`,
+    );
+    await db.query(
+      `update app.lead set next_appointment_at = x.at
+         from (values ('Chị Lê Thu Hằng', (date_trunc('day', now() at time zone 'Asia/Ho_Chi_Minh') + interval '14 hours') at time zone 'Asia/Ho_Chi_Minh'),
+                      ('Anh Phạm Văn Tú', now() - interval '7 days'), ('Anh Vũ Đức Long', now() - interval '9 days'),
+                      ('Chị Trần Thị Mai', now() + interval '3 days'),
+                      ('Chị Đặng Thu Phương', (date_trunc('day', now() at time zone 'Asia/Ho_Chi_Minh') + interval '17 hours') at time zone 'Asia/Ho_Chi_Minh'))
+              as x (name, at) where parent_name = x.name || ' (so sánh)'`,
+    );
+    await db.query('commit');
+  } catch (error) {
+    await db.query('rollback');
+    throw error;
+  } finally {
+    await db.end();
+  }
+
+  await page.setViewportSize(DESKTOP);
+  await loginStaff(page, 'truongcs.cs5');
+  await expect(page).toHaveURL(/\/crm$/);
+  await page.goto('/crm/lead');
+  await page.getByRole('searchbox').fill('(so sánh)');
+  await expect(page.getByText('1–6 / 6')).toBeVisible();
+  await page.getByRole('searchbox').fill('');
+  await page.getByRole('button', { name: 'Filters', exact: true }).click();
+  await page.getByLabel('Tôi phụ trách', { exact: true }).check();
+  await page.keyboard.press('Escape');
+  await expect(page.getByText('1–6 / 6')).toBeVisible();
+  await page.getByLabel(/^Chọn LD\d+ Chị Lê Thu Hằng/).check();
+  await page.getByLabel(/^Chọn LD\d+ Anh Phạm Văn Tú/).check();
+  await save(browser, page, 'TS01');
+  await page.getByRole('button', { name: 'Assign', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Assign lead' })).toBeVisible();
+  await save(browser, page, 'TS05');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Bỏ chọn' }).click();
+  await page.getByRole('button', { name: 'Kanban', exact: true }).click();
+  await expect(page.getByRole('region', { name: /^C1 Data mới/ })).toBeVisible();
+  await save(browser, page, 'TS01b');
+  await page.setViewportSize(PHONE);
+  await page.getByRole('button', { name: 'Danh sách', exact: true }).click();
+  await save(browser, page, 'TS01', 'điện thoại');
 });

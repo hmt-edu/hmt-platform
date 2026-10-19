@@ -75,3 +75,10 @@ export function formatVnTime(value: string | Date): string {
     hourCycle: 'h23',
   }).format(typeof value === 'string' ? new Date(value) : value);
 }
+
+/** 00:00 theo giờ Việt Nam của một ngày dạng "yyyy-mm-dd" (ô chọn ngày); chuỗi sai thì null. */
+export function vnDayStartOf(isoDate: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
+  if (!match) return null;
+  return startOfVnDate(Number(match[1]), Number(match[2]), Number(match[3]));
+}
