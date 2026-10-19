@@ -89,7 +89,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| CHUNG-15 | Hàng việc chờ tôi duyệt (gộp mọi loại) | Danh sách · K03 | A | Cả hai | BM, KT, AD | Một chỗ thấy mọi thứ chờ mình duyệt: đơn, phiếu thu, lớp, yêu cầu buổi, ticket, chiết khấu vượt trần | Duyệt; Từ chối; Mở bản ghi | BH-07, TC-05, LOP-05, BUOI-10, CS-08 | R-TIEN-01, R-LOP-02, R-BUOI-03, R-CS-07, S03-22, R-HT-05 |
+| CHUNG-15 | Hàng việc chờ tôi duyệt (gộp mọi loại) | Danh sách · K03 | A | Cả hai | BM, KT, AD | Một chỗ thấy mọi thứ chờ mình duyệt: đơn, phiếu thu, lớp, yêu cầu buổi, ticket, chiết khấu vượt trần | Duyệt; Từ chối; Mở bản ghi | BH-07, TC-17, TC-05, LOP-05, BUOI-10, CS-08 | R-TIEN-01, R-LOP-02, R-BUOI-03, R-CS-07, S03-22, R-HT-05 |
 | CHUNG-21 | Đính kèm tệp (tải lên, xem trước) | Hộp thoại · K08 | C | Cả hai | Tất cả NV, GV | Tải ảnh, PDF vào ghi chú trao đổi hoặc chứng từ | Tải lên; Xem; Gỡ | — | S03-13, R-CS-09 |
 
 ### Cấu hình bán hàng
@@ -146,13 +146,13 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| BH-01 | Báo giá (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, AD | QT1 Nháp, Đã gửi, Đã chuyển đơn, Từ chối, Hết hạn | Mở; Xuất (chỉ Trưởng cơ sở, Kế toán, Admin) | BH-02 | R-TIEN-02, R-TIEN-05 |
-| BH-02 | Báo giá (bản ghi, dòng gói) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Dòng gói, hình thức, giờ, giá, chiết khấu, hạn hiệu lực; không có nút tạo tay | Gửi; Chuyển thành đơn; Từ chối; Tạo lại khi hết hạn; In | BH-03, BH-04, BH-05 | R-TIEN-01, R-TIEN-05, R-TIEN-10, R-TIEN-12, R-TIEN-13, R-TIEN-29 |
+| BH-01 | Báo giá (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, AD | QT1 Nháp, Đã gửi, Đã chuyển đơn, Từ chối (không còn Hết hạn; quá hạn hiện nhãn "Đã quá hạn N ngày"); cột Học sinh | Mở; Xuất (chỉ Trưởng cơ sở, Kế toán, Admin) | BH-02 | R-TIEN-02, R-TIEN-05, R-TIEN-35 |
+| BH-02 | Báo giá (bản ghi, dòng gói) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, AD | Dòng gói kèm học sinh (ba cách chọn), hình thức, giờ mua và giờ tặng do nhân viên điền, giá, chiết khấu, hạn hiệu lực tính từ ngày Gửi; không có nút tạo tay | Gửi; Chuyển thành đơn (chọn dòng; một báo giá tạo nhiều đơn); Từ chối; In | BH-03, BH-04, BH-05 | R-TIEN-01, R-TIEN-02, R-TIEN-05, R-TIEN-10, R-TIEN-12, R-TIEN-13, R-TIEN-29, R-TIEN-35, R-TIEN-36 |
 | BH-03 | Bản in / gửi báo giá cho phụ huynh | Bản in · K13 | B | Máy tính | SA, CS, AD | Bản A4 hoặc ảnh gửi qua tin nhắn | In; Tải PDF | — | R-TIEN-05, R-TIEN-08 |
 | BH-04 | Từ chối báo giá (lý do) | Hộp thoại · K08 | C | Máy tính | SA, CS, BM, AD | Lý do từ chối | Xác nhận | — | — |
-| BH-05 | Đơn hàng (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, KT, AD | Dòng: học sinh, gói, hình thức, lớp, ngày vào lớp, giờ, giá, chiết khấu cộng dồn, giờ tặng; tiền đã vào, còn lại; khoá khi duyệt; phiếu thu, ghi danh; lịch đóng tiền từng đợt theo điều khoản thanh toán | Trình duyệt (báo đúng dòng, ô còn thiếu); Sửa và trình lại khi bị từ chối; Tạo phiếu thu; Cho học trước; Huỷ đơn | BH-07, BH-08, BH-09, TC-03, GD-02 | R-TIEN-01, R-TIEN-03, R-TIEN-04, R-TIEN-12, R-TIEN-13, R-TIEN-14, R-TIEN-22, R-TIEN-24, R-TIEN-25, R-TIEN-29, R-GD-01, R-GD-06, R-GD-08, R-TIEN-06, R-TIEN-07, R-TIEN-15, R-TIEN-30 |
+| BH-05 | Đơn hàng (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, KT, AD | Dòng: học sinh (trước khi duyệt hiện tên, năm sinh, nhãn "chưa có hồ sơ"), gói, hình thức, lớp, ngày vào lớp, giờ, giá, chiết khấu cộng dồn, giờ tặng; tiền đã vào, còn lại; khoá khi duyệt; phiếu thu, ghi danh; lịch đóng tiền từng đợt theo điều khoản thanh toán | Trình duyệt (báo đúng dòng, ô còn thiếu); Sửa và trình lại khi bị từ chối; Tạo phiếu thu; Cho học trước; Huỷ đơn | BH-07, BH-08, BH-09, TC-03, GD-02 | R-TIEN-01, R-TIEN-03, R-TIEN-04, R-TIEN-12, R-TIEN-13, R-TIEN-14, R-TIEN-22, R-TIEN-24, R-TIEN-25, R-TIEN-29, R-GD-01, R-GD-06, R-GD-08, R-TIEN-06, R-TIEN-07, R-TIEN-15, R-TIEN-30, R-TIEN-35, R-TIEN-36, R-HT-06 |
 | BH-06 | Đơn hàng (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Nháp, Đã trình, Đã duyệt (khoá), Từ chối, Huỷ; đã thu đủ/chưa | Mở; Xuất (chỉ Trưởng cơ sở, Kế toán, Admin) | BH-05 | R-TIEN-02 |
-| BH-07 | Duyệt / từ chối đơn hàng | Hộp thoại · K08 | B | Cả hai | BM, AD | Xem tóm tắt, chiết khấu vượt trần, lớp + ngày vào lớp; duyệt thì khoá | Duyệt; Từ chối (lý do) | — | R-TIEN-03, R-TIEN-29, R-GD-06, R-HT-05 |
+| BH-07 | Duyệt / từ chối đơn hàng | Hộp thoại · K08 | B | Cả hai | BM, AD | Xem tóm tắt, mỗi dòng ghi "sẽ tạo hồ sơ mới" hoặc "dùng HS…", chiết khấu vượt trần, lớp + ngày vào lớp; duyệt thì khoá. Người duyệt là quản lý trực tiếp của người lập (Trưởng cơ sở lập thì tự duyệt, Admin thay khi vắng) | Duyệt; Từ chối (lý do) | — | R-TIEN-03, R-TIEN-29, R-TIEN-35, R-GD-06, R-HT-05, R-HT-06 |
 | BH-08 | Chọn lớp và ngày vào lớp cho dòng đơn | Hộp thoại · K08 | A | Máy tính | SA, CS, AD | Chỉ lớp đã duyệt, còn chỗ, đúng môn/khối/cơ sở; chọn buổi sắp tới hoặc ngày đúng thứ có lịch | Chọn | — | R-GD-06, R-GD-08, S02-XL-3, S02-XL-8, R-GD-14, R-GD-15 |
 | BH-09 | Bật "Cho học trước, đóng tiền sau" | Hộp thoại · K08 | B | Máy tính | BM, AD | Trên đơn đã duyệt chưa thu tiền; hiện hạn mức buổi | Bật; Tắt | — | R-GD-12 |
 | BH-10 | Huỷ đơn hàng (lý do) | Hộp thoại · K08 | C | Máy tính | SA, BM, AD | Huỷ đơn chưa có tiền; đơn đã có tiền phải qua ticket hoàn tiền | Xác nhận | CS-05 | R-TIEN-03, R-CS-02 |
@@ -162,10 +162,10 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| TC-01 | Phiếu thu (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Nháp, Đã trình, Đã duyệt, Từ chối, Huỷ; lọc chờ kế toán duyệt | Mở; Xuất | TC-02 | R-TIEN-01 |
+| TC-01 | Phiếu thu (danh sách) | Danh sách · K03 | B | Máy tính | SA, CS, BM, KT, AD | Nháp, Đã trình, **Chờ kế toán** (quản lý đã duyệt), Đã duyệt, Từ chối, Huỷ; lọc chờ quản lý duyệt, chờ kế toán duyệt | Mở; Xuất | TC-02 | R-TIEN-01 |
 | TC-02 | Phiếu thu (bản ghi) | Bản ghi · K06 | A | Máy tính | SA, CS, BM, KT, AD | Số tiền, hình thức, ngày nhận, tài khoản, mã giao dịch, ảnh chứng từ, cấn vào dòng (khoá khi rời nháp) | Trình kế toán; Sửa và trình lại khi bị từ chối; Huỷ; In | TC-05, TC-06, TC-07 | R-TIEN-04, R-TIEN-23, R-TIEN-06 |
 | TC-03 | Tạo phiếu thu từ đơn hàng | Hộp thoại · K08 | B | Máy tính | SA, CS, AD | Số tiền gợi ý = còn lại; chọn cấn vào dòng (trống = chia tỉ lệ) | Tạo nháp | TC-02 | R-TIEN-02, R-TIEN-22, R-TIEN-23 |
-| TC-04 | Hàng chờ kế toán duyệt | Danh sách · K03 | B | Máy tính | KT, AD | Phiếu thu chờ duyệt mọi cơ sở, đối chiếu sao kê | Duyệt; Từ chối | TC-05 | R-TIEN-01, S03-22 |
+| TC-04 | Hàng chờ kế toán duyệt | Danh sách · K03 | B | Máy tính | KT, AD | Phiếu thu **đã qua quản lý** (trạng thái Chờ kế toán) mọi cơ sở, đối chiếu sao kê | Duyệt; Từ chối | TC-05 | R-TIEN-01, S03-22 |
 | TC-05 | Kế toán duyệt / từ chối phiếu thu | Hộp thoại · K08 | A | Máy tính | KT, AD | Duyệt sinh khoản tiền vào và ghi danh (nếu đủ cọc); cảnh báo "đã qua N buổi" | Duyệt; Từ chối (lý do) | TC-08, GD-02 | R-TIEN-01, R-TIEN-20, R-TIEN-21, R-TIEN-24, R-TIEN-27, S03-22, R-HT-01 |
 | TC-06 | Huỷ phiếu thu (lý do) | Hộp thoại · K08 | C | Máy tính | SA, CS, AD | Chỉ phiếu chưa duyệt | Xác nhận | — | — |
 | TC-07 | Bản in phiếu thu / biên nhận | Bản in · K13 | B | Máy tính | SA, CS, KT, AD | Biên nhận A5/A4 gửi phụ huynh | In; Tải PDF | — | R-TIEN-08 |
@@ -215,6 +215,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | TC-12 | Bản in phiếu chi | Bản in · K13 | C | Máy tính | KT, AD | Mẫu phiếu chi | In; Tải PDF | — | R-TIEN-28, R-TIEN-08 |
 | TC-14 | Số dư khách hàng (tiền dư giữ lại) | Danh sách · K03 | C | Máy tính | KT, BM, AD | Tiền dư của phụ huynh sau chuyển phí, dùng cho đơn sau | Xem lịch sử; Cấn vào đơn mới | KH-02 | R-CS-03, R-TIEN-33 |
 | TC-16 | Dùng số dư khách hàng cho đơn mới | Hộp thoại · K08 | C | Máy tính | KT, CS, AD | Trừ số dư, ghi vào đơn mới như một khoản tiền vào | Xác nhận | BH-05 | R-CS-03, R-TIEN-33 |
+| TC-17 | Quản lý duyệt phiếu thu | Hộp thoại · K08 | B | Máy tính | BM, AD | Phiếu thu đã trình chờ quản lý trực tiếp của người lập (Trưởng cơ sở lập thì tự duyệt bước này, Admin duyệt thay khi vắng); duyệt thì phiếu sang "Chờ kế toán", từ chối thì về Nháp kèm lý do. Hàng chờ của quản lý nằm trong CHUNG-15 | Duyệt; Từ chối (lý do) | TC-05 | R-TIEN-01, R-HT-06 |
 
 ### Ghi danh
 
