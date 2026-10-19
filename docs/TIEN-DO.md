@@ -131,6 +131,7 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 ## Việc để sau
 
+- **Nền động trang đăng nhập (PR 5c):** robot, đường nét, ký hiệu toán chuyển động theo bản vẽ DN01; bật "giảm chuyển động" thì đứng yên. Ảnh và video: `docs/so-sanh/DN-dong-*`.
 - Giao diện QT-01, QT-02 (tạo người dùng, đặt lại mật khẩu, hai bước, thu hồi phiên, lý do khoá từ danh mục) và QT-08: chờ thiết kế; phần cơ sở dữ liệu đã làm một phần (xem lịch sử PR).
 - Trước giai đoạn 4: L2 trong `docs/nghiep-vu/phan-quyen.md` (học sinh, phụ huynh chỉ đọc phần của mình). Giai đoạn 3: chốt trường dữ liệu giáo viên được xem.
 - Quên mật khẩu qua email (Resend hoặc SMTP + DNS); khôi phục thử sao lưu, cảnh báo (bước 5).

@@ -77,6 +77,9 @@
 - Khuôn: ô nhập và nút cỡ lớn (`size="lg"` của TextField, PasswordInput; `xl` của Button), nút con mắt thay chữ "Hiện", `authParts.tsx` (thông báo, dòng chú, liên kết, biểu tượng tròn), hộp hết phiên `SessionEndDialog`.
 - Bài kiểm giữ các nét chính của bản vẽ: `e2e/dang-nhap-thiet-ke.spec.ts` (cao 44px, không `*`, con mắt, lỗi nằm trên ô, liên kết căn giữa không gạch chân, "Chào em", hộp hết phiên không nút đóng).
 
+## PR 5c Nền động đăng nhập (19/10)
+- CSS động của `.auth-*` (chép từ DN01), tắt khi `prefers-reduced-motion`; bài Playwright `e2e/nen-dong.spec.ts` (bình thường: có chuyển động, `?` đổi thành `5`; giảm chuyển động: `animation-name: none`).
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

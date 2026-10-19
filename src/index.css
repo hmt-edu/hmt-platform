@@ -56,7 +56,8 @@
   font-size: 13px;
 }
 
-/* Hình minh hoạ cột giới thiệu của trang đăng nhập (xem src/layout/BrandArt.tsx). Bản đứng yên; chuyển động ở PR 5c. */
+/* Hình minh hoạ cột giới thiệu của trang đăng nhập (xem src/layout/BrandArt.tsx). Chuyển động theo thiết kế P1 v4 (DN01);
+   người bật "giảm chuyển động" thấy bản đứng yên (khối cuối phần này). */
 .auth-art {
   position: absolute;
   inset: 0;
@@ -69,16 +70,21 @@
   stroke-width: 1;
   opacity: 0.22;
   stroke-dasharray: 4 6;
+  animation: auth-dash 14s linear infinite;
 }
 .auth-art .auth-nd {
   fill: #fff;
   opacity: 0.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: auth-pulse 3.6s ease-in-out infinite;
 }
 .auth-art .auth-sy {
   fill: #fff;
   font-family: var(--font-display, sans-serif);
   font-weight: 600;
   opacity: 0;
+  animation: auth-float 16s ease-in-out infinite;
 }
 .auth-robot {
   position: absolute;
@@ -91,4 +97,193 @@
 }
 .auth-robot .auth-q2 {
   opacity: 0;
+  animation: auth-q2 6s ease-in-out infinite;
+}
+.auth-robot .auth-q1 {
+  animation: auth-q1 6s ease-in-out infinite;
+}
+.auth-robot .auth-bob {
+  animation: auth-bob 3s ease-in-out infinite;
+}
+.auth-robot .auth-pen {
+  transform-origin: 84px 106px;
+  animation: auth-pen 0.8s ease-in-out infinite;
+}
+.auth-robot .auth-ant {
+  animation: auth-blink 2s ease-in-out infinite;
+}
+.auth-robot .auth-bub {
+  animation: auth-bub 6s ease-in-out infinite;
+}
+/* Mỗi nút lệch 0,45 giây, mỗi ký hiệu toán lệch 1,8 giây (như bản thiết kế). */
+.auth-art .auth-nd:nth-of-type(2) {
+  animation-delay: 0.45s;
+}
+.auth-art .auth-nd:nth-of-type(3) {
+  animation-delay: 0.9s;
+}
+.auth-art .auth-nd:nth-of-type(4) {
+  animation-delay: 1.35s;
+}
+.auth-art .auth-nd:nth-of-type(5) {
+  animation-delay: 1.8s;
+}
+.auth-art .auth-nd:nth-of-type(6) {
+  animation-delay: 2.25s;
+}
+.auth-art .auth-nd:nth-of-type(7) {
+  animation-delay: 2.7s;
+}
+.auth-art .auth-nd:nth-of-type(8) {
+  animation-delay: 3.15s;
+}
+.auth-art .auth-nd:nth-of-type(9) {
+  animation-delay: 3.6s;
+}
+.auth-art .auth-nd:nth-of-type(10) {
+  animation-delay: 4.05s;
+}
+.auth-art .auth-nd:nth-of-type(11) {
+  animation-delay: 4.5s;
+}
+.auth-art .auth-nd:nth-of-type(12) {
+  animation-delay: 4.95s;
+}
+.auth-art .auth-sy:nth-of-type(2) {
+  animation-delay: 1.8s;
+}
+.auth-art .auth-sy:nth-of-type(3) {
+  animation-delay: 3.6s;
+}
+.auth-art .auth-sy:nth-of-type(4) {
+  animation-delay: 5.4s;
+}
+.auth-art .auth-sy:nth-of-type(5) {
+  animation-delay: 7.2s;
+}
+.auth-art .auth-sy:nth-of-type(6) {
+  animation-delay: 9s;
+}
+.auth-art .auth-sy:nth-of-type(7) {
+  animation-delay: 10.8s;
+}
+.auth-art .auth-sy:nth-of-type(8) {
+  animation-delay: 12.6s;
+}
+.auth-art .auth-sy:nth-of-type(9) {
+  animation-delay: 14.4s;
+}
+@keyframes auth-dash {
+  to {
+    stroke-dashoffset: -200;
+  }
+}
+@keyframes auth-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.9);
+    opacity: 0.65;
+  }
+}
+@keyframes auth-float {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  20%,
+  80% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-90px);
+  }
+}
+@keyframes auth-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes auth-pen {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+@keyframes auth-q1 {
+  0%,
+  40% {
+    opacity: 1;
+  }
+  50%,
+  92% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes auth-q2 {
+  0%,
+  42% {
+    opacity: 0;
+  }
+  52%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes auth-blink {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes auth-bub {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  16%,
+  80% {
+    opacity: 1;
+  }
+  90%,
+  100% {
+    opacity: 0;
+  }
+}
+/* Giảm chuyển động: hình đứng yên (đường nét liền nhạt, ký hiệu toán mờ, robot hiện câu chào và dấu "?"). */
+@media (prefers-reduced-motion: reduce) {
+  .auth-art .auth-ln,
+  .auth-art .auth-nd,
+  .auth-art .auth-sy,
+  .auth-robot .auth-q1,
+  .auth-robot .auth-q2,
+  .auth-robot .auth-bob,
+  .auth-robot .auth-pen,
+  .auth-robot .auth-ant,
+  .auth-robot .auth-bub {
+    animation: none !important;
+  }
+  .auth-art .auth-sy {
+    opacity: 0.2;
+  }
 }

@@ -1,5 +1,5 @@
 // Hình minh hoạ của cột giới thiệu trang đăng nhập (thiết kế P1 v4, DN01): mạng nút nối nhau, ký hiệu toán và
-// robot thầy giáo. Mã SVG lấy từ gói thiết kế. Bản này đứng yên; chuyển động (PR 5c) thêm bằng CSS ở `index.css`.
+// robot thầy giáo. Mã SVG lấy từ gói thiết kế; chuyển động bằng CSS ở `index.css` (tắt khi người dùng bật giảm chuyển động).
 
 export function BrandArt() {
   return (
