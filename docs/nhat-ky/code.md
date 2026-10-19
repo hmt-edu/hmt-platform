@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
-- Vừa gộp #41 đến #49 (#48, #49: chốt giờ test, dung lượng, R-CRM-36, CLAUDE.md). PR docs R-CRM-37 + chốt P3b3 chờ OK; kế hoạch P3b3 gửi anh duyệt trước khi code.
+- Vừa gộp #41 đến #51 (#50: R-CRM-37; #51: P3b3a gộp trùng). PR P3b3b (nhập lô lead) chờ OK. Việc kế: các màn P3c đến P3f (cần bản vẽ đã duyệt), P5 thay thân `opportunity_sales_documents`.
 
 ## Đã chốt (chưa vào repo)
 - Anh OK 18/10: PR 5 theo đề xuất (giữ trang đặt mật khẩu mới nhưng không dẫn tới; sửa bản đồ CHUNG-04, 05, 08 cho khớp thiết kế); bốn câu P3b2 như em đề xuất (không chặn tạo cơ hội theo C4C; sửa học sinh ở cơ hội = sửa hồ sơ học sinh; phụ huynh khớp SĐT khác tên: dùng hồ sơ cũ không ghi đè tên; học sinh trùng tên khác năm sinh = hai hồ sơ); **bảng quyền phiên bản 4** (17 ô Phụ huynh, Học sinh): nạp trong P3b2a.
@@ -47,6 +47,9 @@
 - Migration `20261018000031`: bốn hàm gộp, xem trước, bản đã gộp chỉ đọc, ghi chú chuyển chỉ trong hàm gộp (cờ `hmt.merge` trong giao dịch), ghi chú hệ thống trên cả hai bản, lịch nhắc tự đóng khi phiếu sang Đang test.
 - Chỉnh theo anh 18/10: `merge_parents` không chặn báo giá, đơn; `merge_opportunities` giữ nguyên giai đoạn bản giữ lại, cảnh báo nếu bản bị gộp ở giai đoạn cao hơn; lịch nhắc đóng bằng Huỷ.
 - Việc kế: P3b3b nhập lô lead.
+
+## PR P3b3b Nhập lô lead (19/10)
+- Migration `20261019000032`: `import_leads` (xem trước = nhập thật rồi hoàn tác), `import_one_lead`, `lead_import_log`. Mỗi hàng đi qua `create_lead` nên không có luật lặp. Đo 500 dòng: 1 đến 3 giây ở máy em.
 
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).

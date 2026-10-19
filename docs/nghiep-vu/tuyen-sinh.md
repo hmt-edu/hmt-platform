@@ -139,3 +139,17 @@ Quyền: hành động Duyệt của phân hệ, kiểm cho **cả hai** hồ s�
 
 ### Hiệu năng
 Số đo và EXPLAIN trên `seed-lon` nằm trong mô tả PR P3b3a.
+
+## P3b3b: nhập lô lead (migration `20261019000032`)
+Kiểm thử: `supabase/tests/database/024_nhap_lo_lead.test.sql` (53 bài). Luật: R-CRM-11 (giữ như bản cũ), `lead_import_max_rows`. Màn: TS-04 (K4b), dựng ở P3f.
+
+| Hàm, bảng | Làm gì | Quyền |
+|---|---|---|
+| `app.import_leads(hàng, nhập thật?, mặc định, tên file)` | Mỗi hàng chạy qua `create_lead` trong một khối con bắt lỗi: HOP_LE (kèm mã), TRUNG (kèm mã bản có sẵn, kể cả dòng trước trong file), LOI (câu tiếng Việt). Xem trước chạy hết rồi hoàn tác nên khớp nhập thật, mã không nhảy số. Nhập thật: một giao dịch, bỏ dòng lỗi và trùng, ghi nhật ký. Tối đa `lead_import_max_rows` hàng, quá thì chặn cả lô | Lead · Tạo ở cơ sở nhập (CSKH nhập được) |
+| `app.import_one_lead` | Nội bộ: ghép hàng với giá trị mặc định rồi gọi `create_lead` | |
+| `app.lead_import_log` | Một dòng mỗi lần nhập thật: người nhập, cơ sở, tên file, số liệu | Người nhập, Admin đọc |
+
+Cột của hàng: `parent_name`, `parent_phone`, `student_name`, `student_birth_year`, `source_type_code`, `source_code`, `channel_code`, `need` (ô "ghi chú" của file), `owner_email` (chỉ có tác dụng khi người nhập có Giao việc, cùng cơ sở). Mặc định chọn một lần: nguồn, kênh, chiến dịch, cơ sở, người phụ trách. Hàng có nguồn riêng thì không thừa kế kênh mặc định.
+
+### Hiệu năng
+Số đo trên `seed-lon` nằm trong mô tả PR P3b3b.
