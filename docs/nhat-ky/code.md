@@ -92,6 +92,9 @@
 - Luật thể hiện: Quá hạn = Chưa làm và trước đầu ngày hôm nay giờ Việt Nam; Hoàn thành ⇄ Huỷ không kéo thả (chỉ qua Mở lại); không đổi giai đoạn, không tạo việc, không báo ai.
 - Bài kiểm: Vitest `appointmentFilters.test.ts` (bộ lọc), Playwright `e2e/lich-hen.spec.ts` (máy tính và điện thoại; có chờ chọn chip, mở ô chọn lại khi hộp đang hiện hiệu ứng), ảnh so sánh bản vẽ `e2e/so-sanh-lich-hen.spec.ts`.
 
+## PR P3d-1 DB Cơ hội (20/10)
+- Migration `20261019000038`: `get_opportunity`, `list_opportunities` và `opportunity_board` mở rộng bộ lọc như Lead, `opportunity_group_counts`, `export_opportunities`. Bài kiểm 030 (59 bài). EXPLAIN trên seed lớn trong mô tả PR.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

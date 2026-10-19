@@ -166,6 +166,17 @@ Kiểm thử: `supabase/tests/database/025_lead_danh_sach.test.sql` (49 bài). L
 | `app.list_assignable_staff(loại bản ghi, cơ sở)` | Nhân sự đang hoạt động có vai trò ở cổng CRM, đúng cơ sở, cho hộp Giao (LEAD, OPPORTUNITY, STUDENT_TEST, APPOINTMENT) | Quyền Giao việc của loại đó |
 | `app.export_leads(bộ lọc)` | Kiểm quyền, ghi nhật ký xuất, lấy tối đa `export_max_rows` dòng (có tên danh mục) trong một giao dịch; quá thì `truncated` | Lead · Xuất |
 
+### P3d-1: dữ liệu màn Cơ hội (migration `20261019000038`)
+
+| Hàm | Việc | Quyền |
+|---|---|---|
+| `app.get_opportunity(id)` | Một lần gọi cho trang bản ghi (TS-08): cột cơ hội, phụ huynh (mã, tên, SĐT, tỉnh, phường, địa chỉ), tên người phụ trách, hỗ trợ, tạo, sửa, cơ sở, chiến dịch, lead gốc, bản giữ lại; số đếm cho sáu nút liên kết; trạng thái phiếu test (cho hộp chặn R-CRM-12, 14); danh sách phiếu kiểm tra (tab "Kiểm tra đầu vào", chỉ khi người gọi có Phiếu kiểm tra · Xem) | Cơ hội · Xem ở cơ sở của cơ hội |
+| `app.list_opportunities(...)`, `app.opportunity_board(...)` (thay thân) | Thêm bộ lọc nguồn, loại nguồn, kênh, chiến dịch, lịch hẹn (`appointment[]`: Quá hạn, Hôm nay, Sắp tới, Chưa có), `mine_roles[]`, `only_merged`; cột nguồn, chiến dịch, người hỗ trợ; Kanban có thanh màu tính cả cột (`bar`), thẻ có SĐT và nguồn | Cơ hội · Xem |
+| `app.opportunity_group_counts(bộ lọc, trường nhóm[])` | Đếm cho Group By một đến hai cấp (giai đoạn, nhóm con, loại nguồn, nguồn, người phụ trách, cơ sở) | Cơ hội · Xem |
+| `app.export_opportunities(bộ lọc)` | Kiểm quyền, ghi nhật ký xuất, tối đa `export_max_rows` dòng có tên danh mục trong một giao dịch | Cơ hội · Xuất (Trưởng cơ sở trong cơ sở mình, Admin) |
+
+Cùng khuôn bộ lọc với Lead (R-CRM-07: cùng nhóm HOẶC, khác nhóm VÀ). Không bảng mới, không chỉ mục mới. Kiểm thử: `supabase/tests/database/030_co_hoi_ban_ghi.test.sql`. Đo trên `seed-lon` (20.000 cơ hội, 25.000 lead), Trưởng cơ sở CS1: danh sách 12 đến 38 ms, lọc lịch hẹn và nguồn 14 ms, Kanban 15 ms, Group By hai cấp 11 ms, `get_opportunity` 15 ms.
+
 Bốn hàm danh sách dùng chung một khuôn bộ lọc; bài kiểm đối chiếu tổng giữa `list_leads`, `lead_board`, `lead_group_counts`. Bài kiểm `change_lead_stage`: kéo sang C4 không tự gắn C4D, người dùng không gắn được C4D, lead rời rồi về C4 không lấy lại C4D.
 
 ### Hiệu năng
