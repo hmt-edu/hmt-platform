@@ -131,6 +131,10 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 ## Việc để sau
 
+- **Quản lý trực tiếp (PR DB `feat/hts-quan-ly-truc-tiep`):** cột, `set_manager`, `approval_route`, `can_approve_as_manager` đã có. **Trường "Quản lý trực tiếp" trên màn Người dùng (QT-01) chưa làm được vì màn QT-01 chưa dựng**; thêm trường khi dựng QT-01 (gọi `app.set_manager`).
+- **Quyết định cho Bán hàng (P5), anh chốt 19/10:** Q-P5 người duyệt chốt lúc trình, đổi quản lý sau không đổi; Q-P6 Trưởng cơ sở trình đơn thì mở hộp BH-07, một lần xác nhận, đơn sang Đã duyệt trong cùng giao dịch, lịch sử ghi "trình" và "tự duyệt", vượt trần vẫn phải tick; phiếu thu của Trưởng cơ sở đi thẳng "Chờ kế toán". Văn bản luật vào spec khi anh gõ "OK ĐƯA VÀO LUẬT".
+- **Điểm mở Q-P7:** giữ cách nhận trùng phụ huynh theo họ tên + năm sinh học sinh; trường hợp hai học sinh trùng tên cùng năm sinh của một phụ huynh chưa có cách phân biệt, bàn lại khi gặp.
+
 - **Nền động trang đăng nhập (PR 5c):** robot, đường nét, ký hiệu toán chuyển động theo bản vẽ DN01; bật "giảm chuyển động" thì đứng yên. Ảnh và video: `docs/so-sanh/DN-dong-*`.
 - Giao diện QT-01, QT-02 (tạo người dùng, đặt lại mật khẩu, hai bước, thu hồi phiên, lý do khoá từ danh mục) và QT-08: chờ thiết kế; phần cơ sở dữ liệu đã làm một phần (xem lịch sử PR).
 - Trước giai đoạn 4: L2 trong `docs/nghiep-vu/phan-quyen.md` (học sinh, phụ huynh chỉ đọc phần của mình). Giai đoạn 3: chốt trường dữ liệu giáo viên được xem.

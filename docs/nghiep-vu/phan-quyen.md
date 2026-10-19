@@ -120,6 +120,17 @@ phiên). Phần thời hạn chưa có trong code, làm ở bước 4 (mục B17
 Admin có thể tự gán `ACCOUNTANT` cho mình; luật "giữ ADMIN cuối cùng" vẫn áp: bỏ `ACCOUNTANT` được, bỏ `ADMIN` mà không
 còn ADMIN khác thì bị chặn.
 
+## Quản lý trực tiếp và người duyệt (migration `20261019000036`, R-HT-06)
+Cột `app.user_account.manager_id`: quản lý trực tiếp của nhân viên (tuỳ chọn). Chỉ Admin (đã qua hai bước) đổi, qua `app.set_manager`; ghi thẳng cột bị chặn (`HMT_LUAT_LOI`). Có nhật ký thao tác. Quản lý nghỉ việc (khoá) thì cột giữ nguyên, Admin duyệt thay đơn.
+
+| Hàm | Việc | Ai gọi |
+|---|---|---|
+| `app.set_manager(người, quản lý hoặc null)` | Đặt hoặc bỏ quản lý trực tiếp. Chặn: tự làm quản lý (`HMT_QUAN_LY_TU_THAN`), vòng (`HMT_QUAN_LY_VONG`), học sinh hoặc tài khoản khoá (`HMT_QUAN_LY_SAI`) | Admin (màn Người dùng QT-01 khi dựng) |
+| `app.approval_route(người lập)` | Đường duyệt lúc trình: Trưởng cơ sở lập → `TU_DUYET` (chính mình); có quản lý → `QUAN_LY`; còn lại → lỗi `HMT_KHONG_CO_QUAN_LY` ("không trình được") | Hàm trình đơn, phiếu thu (P5) |
+| `app.can_approve_as_manager(người lập, loại 'DON' hoặc 'PHIEU_THU', người duyệt đã chốt)` | Người đang đăng nhập có duyệt được ở bước quản lý không: người duyệt đã chốt lúc trình (hoặc tính theo hiện tại nếu chưa chốt); riêng **đơn**, Admin (đã qua hai bước) duyệt thay; **phiếu thu** Admin không duyệt thay (R-HT-01) | Hàm duyệt (P5) |
+
+Người duyệt **chốt lúc trình** (Q-P5, anh chốt 19/10): hàm trình ghi người duyệt vào đơn; đổi quản lý sau đó không đổi người duyệt đơn đã trình. Chưa có bảng đơn, phiếu thu nên các hàm trên chờ P5 gọi. Kiểm thử: `supabase/tests/database/028_quan_ly_truc_tiep.test.sql`.
+
 ## Token và RLS
 - Hook `app.custom_access_token_hook` ghi vào token: vai trò, cơ sở, cổng được vào, cổng chỉ xem, cần hai bước,
   phải đổi mật khẩu. Tài khoản bị khoá: hook từ chối cấp token.
