@@ -65,6 +65,9 @@
 ## PR P3c-2a DB trang Lead (19/10)
 - Migration `20261019000035` (`get_lead`, `reschedule_appointment` mở rộng) tách khỏi PR giao diện: DB thử nghiệm chỉ áp migration sau khi gộp nên bản xem trước của #57 (cần `get_lead`) báo lỗi khi anh thử. Quy trình ghi ở `quy-trinh-phoi-hop.md` mục 4. R-CRM-38 vào spec 04.
 
+## PR P3c-3a DB Lịch hẹn (19/10)
+- Migration `20261019000037`: `list_appointments` thêm bộ lọc `q` và `owner_id` (màn TS-11). Bài kiểm 029. EXPLAIN trên seed lớn (120.000 lịch hẹn, 50.000 lead): tìm khó chọn lọc 68 ms, chọn lọc 28 ms.
+
 ## PR P3c-2b Giao diện trang Lead (19/10)
 - Giao diện: `src/pages/lead/LeadRecordPage.tsx` (K3), `src/features/appointments/` (hộp lịch hẹn, Hoạt động sắp tới), `src/layout/CrumbTail.ts` (chữ cuối của đường dẫn). Theo anh 19/10: Tỉnh/Thành phố trên Phường/Xã, ô bắt buộc trống viền cam nền cam nhạt (trạng thái `requiredEmpty` của ô dùng chung), thanh giai đoạn chiếm hết chiều ngang, bấm cả dòng mở lead.
 - **Lỗi đã sửa kèm (phát hiện khi viết bài kiểm Tạo lead):** màn Lead P3c-1b (#56) và hộp Giao bắt lỗi bằng `toHmtError(e)` cho lỗi đã qua `rpc` (HmtError, không có `hint`), nên mọi lỗi nghiệp vụ hiện câu chung "Có lỗi xảy ra". Thêm `errorOf` (giữ mã và câu của hàm DB), có bài Vitest tái hiện và bài Playwright hộp trùng SĐT.
