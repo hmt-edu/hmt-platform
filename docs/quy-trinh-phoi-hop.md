@@ -109,12 +109,13 @@ Ba tài khoản Claude Pro (`truongcx.work`, `truongcx.biz`, `lead.vanhanh.hmt`)
 Mục tiêu: anh chỉ cần chuyển **link**, không dán chat; và luôn biết bước tiếp theo của mình.
 - **Claude Code**, cuối mỗi việc (PR): báo anh ngắn gọn, **luôn kèm link PR** và câu "Anh gửi link này cho Claude Chat để soát". Giữ mục "Anh kiểm" và việc còn dở như hiện nay.
 - **Claude Design**, cuối mỗi cụm màn: báo anh **link canvas** (kèm số phiên bản), danh sách khung đã vẽ hoặc đã sửa, câu hỏi còn treo (đánh số, kèm đề xuất), và câu "Anh gửi link này cho Claude Chat để đối chiếu luật". Cập nhật khung "Ghi chú" cuối canvas.
-- **Claude Chat**, mỗi khi anh gửi link: đọc rồi trả lời theo mẫu cố định:
-  1. Kết quả: ổn hay còn vênh luật (chỉ nêu chỗ vênh, kèm mã luật).
-  2. **Anh làm gì với Claude Code**: dán gì, thử gì trên staging, có cần bình luận "OK" không.
-  3. **Anh làm gì với Claude Design**: dán đoạn nào, đính kèm file nào, có cần sửa gì trên canvas không.
-  4. Việc anh phải quyết (nếu có), mỗi việc một dòng, kèm đề xuất để anh trả lời "OK".
-  5. Nhắc ghi nhật ký nếu đây là cuối phiên.
+- **Claude Chat**, mỗi khi anh gửi link: đọc rồi trả lời theo mẫu cố định, đúng thứ tự (anh đổi thứ tự 19/10/2026):
+  1. **Kết quả:** ổn hay còn vênh luật (chỉ nêu chỗ vênh, kèm mã luật).
+  2. **Việc anh quyết:** mỗi việc một dòng, kèm đề xuất để anh trả lời "OK". Không có việc thì ghi "không có việc".
+  3. **Anh làm gì với Claude Code:** dán gì, thử gì trên staging, có cần bình luận "OK" không.
+  4. **Anh làm gì với Claude Design:** dán đoạn nào, đính kèm file nào, có cần sửa gì trên canvas không. Ghi "không có việc" nếu không có.
+  5. **Nhắc ghi nhật ký** nếu đây là cuối phiên.
+  - **Khi còn việc anh quyết (mục 2), Chat chờ anh trả lời rồi mới soạn tin cho Claude Code và Claude Design** (mục 3 và 4 chỉ soạn sau khi anh đã quyết xong), để không soạn tin theo một quyết định chưa chốt.
 - Việc anh luôn tự làm: quyết định, thử trên staging, bình luận "OK" trên PR từ `caotruong276`.
 
 ## 13. Bàn giao khi sắp hết giới hạn (bản 2, 17/10/2026)
