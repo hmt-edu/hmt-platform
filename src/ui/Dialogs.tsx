@@ -842,20 +842,33 @@ export function ChoiceDialog({
  * Cảnh báo trùng (K07c, TS-14): hiện khi bấm Lưu mà số điện thoại đã có hồ sơ. Không có nút Huỷ: đóng bằng dấu
  * X ở góc (đóng là quay lại biểu mẫu, chưa lưu). Hai lựa chọn: gắn vào hồ sơ có sẵn, hoặc vẫn tạo mới.
  */
+/** Nhóm hồ sơ trùng trong hộp cảnh báo (TS-14): "Lead đã có", "Phụ huynh đã có" kèm các dòng mã · tên. */
+export type DuplicateGroup = { title: string; lines: ReactNode[] };
+
 export function DuplicateDialog({
   open,
   onOpenChange,
   title = 'Số điện thoại này đã có hồ sơ',
   existingCode,
   existingName,
+  groups,
+  phone,
+  canAttach = true,
   onAttach,
   onCreateNew,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title?: string | undefined;
-  existingCode: string;
-  existingName: string;
+  /** Một hồ sơ trùng (bản gọn). Có `groups` thì dùng danh sách nhóm, bỏ hai ô này. */
+  existingCode?: string | undefined;
+  existingName?: string | undefined;
+  /** Danh sách hồ sơ trùng theo nhóm (lead, phụ huynh): dùng cho TS-14. */
+  groups?: DuplicateGroup[] | undefined;
+  /** Số điện thoại đã định dạng, nêu trong câu giải thích khi dùng `groups`. */
+  phone?: string | undefined;
+  /** Không có hồ sơ phụ huynh để gắn vào thì ẩn nút "Gắn vào hồ sơ có sẵn". */
+  canAttach?: boolean | undefined;
   onAttach: () => void;
   onCreateNew: () => void;
 }) {
@@ -874,25 +887,48 @@ export function DuplicateDialog({
           >
             Vẫn tạo mới
           </Button>
-          <Button
-            variant="primary"
-            onClick={() => {
-              onOpenChange(false);
-              onAttach();
-            }}
-          >
-            Gắn vào hồ sơ có sẵn
-          </Button>
+          {canAttach && (
+            <Button
+              variant="primary"
+              onClick={() => {
+                onOpenChange(false);
+                onAttach();
+              }}
+            >
+              Gắn vào hồ sơ có sẵn
+            </Button>
+          )}
         </>
       }
     >
-      <div className="flex items-start gap-2 rounded-control bg-warning-subtle px-3 py-2.5 text-body text-on-warning-subtle">
-        <Icon name="warning" className="mt-px shrink-0" />
-        <p>
-          Số này đã có <b>{existingCode}</b> ({existingName}). Không chặn: bạn gắn vào hồ sơ có sẵn
-          hoặc vẫn tạo hồ sơ mới.
-        </p>
-      </div>
+      {groups ? (
+        <div className="flex flex-col gap-3">
+          {groups.map((group) => (
+            <section key={group.title} aria-label={group.title}>
+              <h3 className="mb-1 text-caption font-semibold text-fg-muted">{group.title}</h3>
+              <ul className="flex flex-col gap-1 rounded-control bg-warning-subtle px-3 py-2.5 text-body text-on-warning-subtle">
+                {group.lines.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+          <p className="text-fg-muted">
+            {phone ? `Số ${phone} trùng với hồ sơ trên. ` : ''}
+            {canAttach
+              ? 'Gắn vào hồ sơ có sẵn nếu là cùng một khách, hoặc vẫn tạo mới nếu là khách khác.'
+              : 'Vẫn tạo mới nếu là khách khác.'}
+          </p>
+        </div>
+      ) : (
+        <div className="flex items-start gap-2 rounded-control bg-warning-subtle px-3 py-2.5 text-body text-on-warning-subtle">
+          <Icon name="warning" className="mt-px shrink-0" />
+          <p>
+            Số này đã có <b>{existingCode}</b> ({existingName}). Không chặn: bạn gắn vào hồ sơ có
+            sẵn hoặc vẫn tạo hồ sơ mới.
+          </p>
+        </div>
+      )}
     </Dialog>
   );
 }

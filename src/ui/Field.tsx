@@ -11,7 +11,7 @@ import { Icon } from './icons';
 // Theo .hmt-input của gói: cao 32px, viền #8A8076 1px, bo 6px, lề 10px; lỗi: viền đỏ 2px; chỉ đọc: nền xám nhạt.
 // cn() chỉ nối chuỗi, không gỡ lớp trùng thuộc tính: ô cần cao hay rộng khác thì dùng hằng riêng, không ghi đè.
 const INPUT_FRAME =
-  'focus-ring tap rounded-control border border-border-strong bg-surface px-2.5 text-fg placeholder:text-fg-muted focus-visible:border-focus [&[readonly]]:border-border [&[readonly]]:bg-surface-subtle disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-subtle disabled:text-fg-disabled aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger-solid';
+  'focus-ring tap rounded-control border border-border-strong bg-surface px-2.5 text-fg placeholder:text-fg-muted focus-visible:border-focus [&[readonly]]:border-border [&[readonly]]:bg-surface-subtle disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-subtle disabled:text-fg-disabled aria-[invalid=true]:border-2 aria-[invalid=true]:border-danger-solid data-[required-empty=true]:border-brand-500 data-[required-empty=true]:bg-brand-50';
 
 /** Ô nhập một dòng. */
 export const INPUT_CLASS = `${INPUT_FRAME} h-control w-full text-body`;

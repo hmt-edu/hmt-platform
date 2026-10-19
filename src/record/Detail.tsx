@@ -149,6 +149,7 @@ export function RecordDetail({
   menu,
   pager,
   onRefresh,
+  readOnly = false,
   stage,
   businessActions,
   subStage,
@@ -174,6 +175,8 @@ export function RecordDetail({
   menu?: { label: string; items: MenuItem[] } | undefined;
   pager?: DetailPager | undefined;
   onRefresh?: (() => void) | undefined;
+  /** Chỉ đọc (bản "Đã gộp", hoặc người xem không có quyền Sửa): ẩn Sửa và các nút cạnh Sửa, khoá thanh giai đoạn. */
+  readOnly?: boolean | undefined;
   stage?:
     | {
         steps: StageStep[];
@@ -208,9 +211,11 @@ export function RecordDetail({
           </>
         ) : (
           <>
-            <Button variant="primary" icon="edit" onClick={onEdit}>
-              Sửa
-            </Button>
+            {!readOnly && (
+              <Button variant="primary" icon="edit" onClick={onEdit}>
+                Sửa
+              </Button>
+            )}
             {headerActions}
           </>
         )}
@@ -268,7 +273,7 @@ export function RecordDetail({
                 forwardOnly={stage.forwardOnly}
                 onSelect={stage.onSelect}
                 onLockedClick={stage.onLockedClick}
-                disabled={creating}
+                disabled={creating || readOnly}
               />
             </div>
           )}

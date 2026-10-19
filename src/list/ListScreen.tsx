@@ -66,6 +66,7 @@ export function ListScreen<Row>({
   groupTree,
   onGroupToggle,
   rowMuted,
+  onRowClick,
 }: {
   config: ListConfig<Row>;
   state: ListState;
@@ -102,6 +103,8 @@ export function ListScreen<Row>({
   onGroupToggle?: ((key: string, open: boolean) => void) | undefined;
   /** Dòng làm mờ (bản "Đã gộp": chỉ đọc). */
   rowMuted?: ((row: Row) => boolean) | undefined;
+  /** Bấm cả dòng để mở bản ghi (giữ liên kết ở cột tên cho bàn phím, trình đọc màn hình). */
+  onRowClick?: ((row: Row) => void) | undefined;
   /**
    * Danh sách mở từ nút liên kết (smart button) của một bản ghi cha: hiện đường dẫn "Cơ hội / CO000121 / Lịch hẹn"
    * (bấm mã để quay lại bản ghi) và chip lọc "Cơ hội: CO000121" (bỏ chip thì bỏ lọc theo bản ghi cha).
@@ -482,6 +485,7 @@ export function ListScreen<Row>({
           groupsDefaultOpen={groupTree === undefined}
           onGroupToggle={onGroupToggle}
           rowMuted={rowMuted}
+          onRowClick={onRowClick}
           sort={sort}
           onSortChange={onSortChange}
           selected={selected}

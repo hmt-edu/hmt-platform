@@ -227,12 +227,18 @@ export function Select({
   placeholder,
   id,
   disabled,
+  requiredEmpty,
+  invalid,
 }: {
   /** Nhãn cho trình đọc màn hình (ô không có nhãn hiện). */
   label: string;
   /** Mã của nút (để nhãn hiện `htmlFor` trỏ tới). */
   id?: string | undefined;
   disabled?: boolean | undefined;
+  /** Ô bắt buộc còn trống (chưa báo lỗi): viền cam, nền cam nhạt như bản vẽ. */
+  requiredEmpty?: boolean | undefined;
+  /** Ô đang báo lỗi: viền đỏ. */
+  invalid?: boolean | undefined;
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
@@ -245,6 +251,8 @@ export function Select({
     <RadixSelect.Root value={value} onValueChange={onChange} disabled={disabled}>
       <RadixSelect.Trigger
         id={id}
+        data-required-empty={requiredEmpty && !invalid ? 'true' : undefined}
+        aria-invalid={invalid ? true : undefined}
         aria-label={label}
         className={cn(INPUT_BUTTON_CLASS, 'justify-between', className)}
       >

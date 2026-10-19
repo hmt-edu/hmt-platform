@@ -27,6 +27,19 @@ export function toHmtError(error: DbError): HmtError {
   return new HmtError('HMT_LOI', GENERIC);
 }
 
+/**
+ * Lỗi bất kỳ (bắt trong catch) thành HmtError để hiện câu tiếng Việt: HmtError do `rpc` ném ra giữ nguyên mã và câu của hàm
+ * cơ sở dữ liệu; lỗi thô của Supabase đổi qua toHmtError; còn lại dùng câu chung. KHÔNG gọi toHmtError cho lỗi đã qua `rpc`
+ * (HmtError không có `hint` nên sẽ bị đổi thành câu chung, mất mã và câu nghiệp vụ).
+ */
+export function errorOf(error: unknown): HmtError {
+  if (error instanceof HmtError) return error;
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    return toHmtError(error as DbError);
+  }
+  return new HmtError('HMT_LOI', GENERIC);
+}
+
 export async function rpc<T>(
   supabase: SupabaseClient,
   fn: string,

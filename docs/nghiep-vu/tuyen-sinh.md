@@ -196,3 +196,6 @@ Kiểm thử: `supabase/tests/database/026_lead_ban_ghi.test.sql` (42 bài). Lu�
 ### Hiệu năng
 Đo trên `seed-lon` (50.000 lead, 120.000 lịch hẹn), Trưởng cơ sở CS5: `get_lead` 3 ms (lead có nhiều lịch hẹn nhất); 10 lead liên tiếp 21 ms. Dùng chỉ mục sẵn có (`appointment_lead_idx`, `opportunity_lead_idx`), không thêm chỉ mục.
 
+## P3c-2b: giao diện trang Lead (không migration mới)
+Kiểm thử: `supabase/tests/database/027_lead_giai_doan_khoi_dau.test.sql` (9 bài, R-CRM-39). Màn: TS-02 `/crm/lead/:id`, TS-03 `/crm/lead/moi`, TS-14 (hộp trùng SĐT), TS-13 (hộp Tạo, Dời lịch hẹn), Huỷ lịch hẹn chọn lý do. Dùng `get_lead`, `create_lead`, `update_lead`, `change_lead_stage`, `find_duplicate_contacts`, các hàm lịch hẹn, `record_notes`, `record_history`. `create_lead` luôn đặt lead mới ở C1, bỏ qua giai đoạn người gọi truyền vào (R-CRM-39).
+

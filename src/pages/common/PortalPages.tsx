@@ -34,12 +34,21 @@ export function PortalTabPage({ title, stage }: { title: string; stage: string }
  * Màn thật của một mục menu CRM: kiểm quyền và công tắc phân hệ như CrmSectionPage (CHUNG-16, CHUNG-24),
  * qua cửa thì hiện `children`.
  */
-export function GatedCrmEntry({ slug, children }: { slug: string; children: ReactNode }) {
+export function GatedCrmEntry({
+  slug,
+  need,
+  children,
+}: {
+  slug: string;
+  /** Thêm một quyền (phân hệ, hành động) bắt buộc, vd màn Tạo cần Lead · Tạo. */
+  need?: [string, string] | undefined;
+  children: ReactNode;
+}) {
   const access = useAccess();
   const result = checkRoute(CRM_MENU, slug, access);
   switch (result.status) {
     case 'ok':
-      return <>{children}</>;
+      return need && !access.can(need[0], need[1]) ? <ForbiddenView /> : <>{children}</>;
     case 'forbidden':
       return <ForbiddenView />;
     case 'feature-off':
@@ -47,21 +56,4 @@ export function GatedCrmEntry({ slug, children }: { slug: string; children: Reac
     case 'not-found':
       return <NotFoundView />;
   }
-}
-
-/** Trang bản ghi chưa dựng: mã lead mở được tới đây, màn thật làm ở P3c-2. */
-export function RecordComingSoon({
-  slug,
-  title,
-  stage,
-}: {
-  slug: string;
-  title: string;
-  stage: string;
-}) {
-  return (
-    <GatedCrmEntry slug={slug}>
-      <ComingSoonView title={title} stage={stage} />
-    </GatedCrmEntry>
-  );
 }

@@ -1,6 +1,7 @@
 // Nối Chatter (CHUNG-22) với cơ sở dữ liệu: ghi chú (app.record_notes), lịch sử (app.record_history),
 // gửi ghi chú có nhắc tên (app.add_note_mentioning), gợi ý đồng nghiệp (app.mention_candidates).
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 import { FORBIDDEN_CODE, HmtError, rpc, useDb } from '../../lib/db';
 import { Chatter, type Person } from '../../ui/Chatter';
 import {
@@ -16,12 +17,24 @@ export function RecordChatter({
   entityId,
   format,
   createdText,
+  actions,
+  upcoming,
+  headerRight,
+  canWrite,
 }: {
   entityType: string;
   entityId: string;
   format: FieldFormat;
   /** Câu cho dòng "đã tạo": "Tạo tài khoản." */
   createdText: string;
+  /** Hàng nút nghiệp vụ trên ô ghi chú (Lên lịch hẹn). */
+  actions?: ReactNode | undefined;
+  /** Khối "Hoạt động sắp tới" do màn truyền vào. */
+  upcoming?: ReactNode | undefined;
+  /** Góc phải của tiêu đề (nút Theo dõi, khi có hàm). */
+  headerRight?: ReactNode | undefined;
+  /** Bản ghi chỉ đọc (Đã gộp): tắt ô viết ghi chú. */
+  canWrite?: boolean | undefined;
 }) {
   const supabase = useDb();
   const queryClient = useQueryClient();
@@ -47,6 +60,10 @@ export function RecordChatter({
         query.isPending ? 'loading' : forbidden ? 'forbidden' : query.isError ? 'error' : 'ready'
       }
       onRetry={() => void query.refetch()}
+      actions={actions}
+      upcoming={upcoming}
+      headerRight={headerRight}
+      canWrite={canWrite}
       onSend={async (body, mentionIds) => {
         await rpc(supabase, 'add_note_mentioning', {
           p_entity_type: entityType,

@@ -125,7 +125,7 @@ async function pickFilters(page: Page, labels: string[]) {
   else await page.keyboard.press('Escape');
 }
 
-test('Sale thấy danh sách của cơ sở mình, không có nút Tạo, Nhập, Xuất; mã lead mở trang "Sắp có"', async ({
+test('Sale thấy danh sách của cơ sở mình, có nút Tạo; không có Nhập, Xuất; tên phụ huynh mở trang Lead', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -135,13 +135,15 @@ test('Sale thấy danh sách của cơ sở mình, không có nút Tạo, Nhập
   await expect(list(page).getByText(seeded.names.none)).toBeVisible();
   // Đã gộp: ẩn mặc định.
   await expect(list(page).getByText(seeded.names.merged)).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Nhập', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Xuất', exact: true })).toHaveCount(0);
   await expectAccessible(page);
   await page.getByRole('link', { name: seeded.names.over }).click();
   await expect(page).toHaveURL(/\/crm\/lead\/[0-9a-f-]{36}$/);
-  await expect(page.getByText('Sắp có')).toBeVisible();
+  await expect(
+    page.getByRole('heading', { level: 2, name: new RegExp(seeded.names.over) }),
+  ).toBeVisible();
 });
 
 test('Lọc nhanh Lịch hẹn: cùng nhóm HOẶC, khác nhóm VÀ, tính ở máy chủ', async ({
@@ -219,8 +221,9 @@ test('Kanban: số thẻ và thanh màu của cột, chuyển giai đoạn bằn
       .getByRole('region', { name: /^C4 Khách hàng tiềm năng/ })
       .getByRole('group', { name: /^Tỷ lệ/ }),
   ).toHaveCount(0);
-  // Dấu "+" chưa có (Tạo ẩn tới P3c-2).
-  await expect(page.getByRole('button', { name: /^Thêm vào/ })).toHaveCount(0);
+  // Dấu "+" chỉ ở cột C1 (lead mới luôn bắt đầu ở C1).
+  await expect(page.getByRole('button', { name: /^Thêm vào/ })).toHaveCount(1);
+  await expect(c1.getByRole('button', { name: /^Thêm vào C1/ })).toBeVisible();
 
   await c1
     .getByRole('button', {

@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
-- Vừa gộp #41 đến #54. PR P3c-1b (giao diện Lead: danh sách, Kanban, hộp Giao, Xuất) chờ anh thử trên bản xem trước rồi OK. Việc kế: P3c-2 (TS-13, 03, 14, 02); P5 thay thân `opportunity_sales_documents`.
+- Vừa gộp #41 đến #58 (#58: DB trang Lead, migration 035). PR P3c-2b (giao diện trang Lead, #57) chờ anh thử trên bản xem trước rồi OK. Việc kế: PR sửa nhóm đăng nhập; P3c-3 (TS-11 Lịch hẹn, kèm Mở lại lịch hẹn); P5 thay thân `opportunity_sales_documents`.
 
 ## Đã chốt (chưa vào repo)
 - Anh OK 18/10: PR 5 theo đề xuất (giữ trang đặt mật khẩu mới nhưng không dẫn tới; sửa bản đồ CHUNG-04, 05, 08 cho khớp thiết kế); bốn câu P3b2 như em đề xuất (không chặn tạo cơ hội theo C4C; sửa học sinh ở cơ hội = sửa hồ sơ học sinh; phụ huynh khớp SĐT khác tên: dùng hồ sơ cũ không ghi đè tên; học sinh trùng tên khác năm sinh = hai hồ sơ); **bảng quyền phiên bản 4** (17 ô Phụ huynh, Học sinh): nạp trong P3b2a.
@@ -64,6 +64,13 @@
 
 ## PR P3c-2a DB trang Lead (19/10)
 - Migration `20261019000035` (`get_lead`, `reschedule_appointment` mở rộng) tách khỏi PR giao diện: DB thử nghiệm chỉ áp migration sau khi gộp nên bản xem trước của #57 (cần `get_lead`) báo lỗi khi anh thử. Quy trình ghi ở `quy-trinh-phoi-hop.md` mục 4. R-CRM-38 vào spec 04.
+
+## PR P3c-2b Giao diện trang Lead (19/10)
+- Giao diện: `src/pages/lead/LeadRecordPage.tsx` (K3), `src/features/appointments/` (hộp lịch hẹn, Hoạt động sắp tới), `src/layout/CrumbTail.ts` (chữ cuối của đường dẫn). Theo anh 19/10: Tỉnh/Thành phố trên Phường/Xã, ô bắt buộc trống viền cam nền cam nhạt (trạng thái `requiredEmpty` của ô dùng chung), thanh giai đoạn chiếm hết chiều ngang, bấm cả dòng mở lead.
+- **Lỗi đã sửa kèm (phát hiện khi viết bài kiểm Tạo lead):** màn Lead P3c-1b (#56) và hộp Giao bắt lỗi bằng `toHmtError(e)` cho lỗi đã qua `rpc` (HmtError, không có `hint`), nên mọi lỗi nghiệp vụ hiện câu chung "Có lỗi xảy ra". Thêm `errorOf` (giữ mã và câu của hàm DB), có bài Vitest tái hiện và bài Playwright hộp trùng SĐT.
+- Khuôn: `RecordDetail` thêm `readOnly`; `DuplicateDialog` thêm danh sách nhóm (TS-14); `RecordChatter` nhận nút nghiệp vụ, khối Hoạt động sắp tới; `Table` thêm `onRowClick`.
+- R-CRM-39 (lead mới luôn ở C1) vào spec 04 theo lời anh "OK ĐƯA VÀO LUẬT" 19/10. `create_lead` đã khớp (câu `insert` ghi cứng C1), thêm bài 027.
+- Bài học quy trình: bản xem trước nối DB thử nghiệm chỉ có migration đã gộp; PR có migration mới tách PR DB gộp trước (đã ghi `quy-trinh-phoi-hop.md`).
 
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).

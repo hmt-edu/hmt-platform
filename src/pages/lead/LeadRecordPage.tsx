@@ -1,0 +1,1067 @@
+// TS-02 Trang Lead (xem, Sửa) và TS-03 Tạo lead nhanh: khuôn K3 nối cơ sở dữ liệu. Thông tin đọc bằng get_lead (một lần gọi),
+// lưu bằng create_lead, update_lead; đổi giai đoạn bằng change_lead_stage (tự do hai chiều, có Hoàn tác, R-CRM-09);
+// lịch hẹn ở cột phải (TS-13, R-CRM-04, R-CRM-38). Nút Tạo cơ hội (P3d-1), Gộp trùng (P3f), Đính kèm (giai đoạn 4),
+// phân trang "n / tổng" chưa có nên chưa hiện.
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router';
+import { AssignDialog } from '../../features/assign/AssignDialog';
+import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
+import {
+  cancelAppointment,
+  completeAppointment,
+  createLeadAppointment,
+  rescheduleAppointment,
+  useLeadUpcoming,
+  useRefreshLeadRecord,
+  type UpcomingAppointment,
+} from '../../features/appointments/appointmentApi';
+import { AppointmentDialog } from '../../features/appointments/AppointmentDialog';
+import { UpcomingActivities } from '../../features/appointments/UpcomingActivities';
+import { RecordChatter } from '../../features/chatter/RecordChatter';
+import { HmtError, rpc, errorOf, useDb } from '../../lib/db';
+import { formatDate, formatDateTime } from '../../lib/format';
+import { useAccess } from '../../nav/AccessContext';
+import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
+import { Button } from '../../ui/Button';
+import { Chatter } from '../../ui/Chatter';
+import { Tag } from '../../ui/Data';
+import { ConfirmDialog, DuplicateDialog, ReasonDialog } from '../../ui/Dialogs';
+import { StateView, Spinner } from '../../ui/Feedback';
+import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
+import { Icon } from '../../ui/icons';
+import { DateInput } from '../../ui/Inputs';
+import { Select, Tabs } from '../../ui/Overlays';
+import type { StageStep } from '../../ui/Stage';
+import { useToast } from '../../ui/toastContext';
+import { useCrumbTail } from '../../layout/CrumbTail';
+import { useAuth } from '../../lib/auth/authContext';
+import { appointmentTag, codeAndName, formatPhone } from './leadFormat';
+import {
+  BLANK_DRAFT,
+  LEAD_FIELD_LABELS,
+  dateToIso,
+  draftPayload,
+  isoToDate,
+  leadHistoryValue,
+  toDraft,
+  validateDraft,
+  type DraftErrors,
+  type LeadDraft,
+  type LeadRecord,
+} from './leadRecord';
+import { changeLeadStage } from './useLeadData';
+import { useLeadCatalogs } from './useCatalogs';
+
+/** Giai đoạn con do hệ thống gắn (R-CRM-09): ô khoá, không đặt lại bằng tay nên rời khỏi thì không có Hoàn tác. */
+const SYSTEM_SUBSTAGE = 'C4D';
+const NONE = '__none';
+
+type Duplicate = {
+  kind: 'LEAD' | 'PARENT';
+  id: string;
+  code: string;
+  label: string;
+  branch_code: string;
+  visible: boolean;
+};
+
+function useLead(id: string | undefined) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['lead-record', id],
+    enabled: id !== undefined,
+    queryFn: () => rpc<LeadRecord>(supabase, 'get_lead', { p_id: id }),
+    retry: false,
+  });
+}
+
+/** Ô chọn cho phép bỏ chọn ("Chưa chọn"): giá trị rỗng là chưa chọn. */
+function OptionalSelect({
+  label,
+  value,
+  onChange,
+  options,
+  placeholder,
+  disabled,
+  invalid,
+  requiredEmpty,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { value: string; label: string }[];
+  placeholder: string;
+  disabled?: boolean;
+  invalid?: boolean;
+  /** Ô bắt buộc còn trống: viền cam, nền cam nhạt. */
+  requiredEmpty?: boolean;
+}) {
+  return (
+    <Select
+      label={label}
+      value={value === '' ? NONE : value}
+      onChange={(v) => onChange(v === NONE ? '' : v)}
+      options={[{ value: NONE, label: placeholder }, ...options]}
+      disabled={disabled}
+      invalid={invalid}
+      requiredEmpty={requiredEmpty}
+      className="w-full"
+    />
+  );
+}
+
+export function LeadRecordPage({ creating = false }: { creating?: boolean }) {
+  const { id } = useParams<{ id: string }>();
+  const query = useLead(creating ? undefined : id);
+  if (creating) return <LeadRecordView record={null} />;
+  if (query.isPending) return <Spinner label="Đang tải lead…" />;
+  if (query.isError) {
+    const error = query.error;
+    const forbidden = error instanceof HmtError && error.code === 'HMT_KHONG_CO_QUYEN';
+    const missing = error instanceof HmtError && error.code === 'HMT_KHONG_TIM_THAY';
+    return (
+      <StateView
+        kind={forbidden ? 'forbidden' : missing ? 'not-found' : 'error'}
+        title={
+          forbidden
+            ? 'Bạn không có quyền xem lead này'
+            : missing
+              ? 'Không tìm thấy lead'
+              : 'Không tải được lead'
+        }
+        actions={
+          <>
+            <Link to="/crm/lead" className="font-medium text-link hover:underline">
+              Về danh sách Lead
+            </Link>
+            {!forbidden && !missing && (
+              <Button onClick={() => void query.refetch()}>Thử lại</Button>
+            )}
+          </>
+        }
+      >
+        {errorOf(error).message}
+      </StateView>
+    );
+  }
+  return <LeadRecordView key={query.data.id} record={query.data} />;
+}
+
+function LeadRecordView({ record }: { record: LeadRecord | null }) {
+  const supabase = useDb();
+  const navigate = useNavigate();
+  const toast = useToast();
+  const access = useAccess();
+  const { claims } = useAuth();
+  const queryClient = useQueryClient();
+  const catalogs = useLeadCatalogs();
+
+  const creating = record === null;
+  const merged = record?.record_status === 'DA_GOP';
+  const canEdit = access.can('LEAD', 'SUA') && !merged;
+  const canAssign = access.can('LEAD', 'GIAO_VIEC') && !merged;
+  const canCreate = access.can('LEAD', 'TAO');
+  const canAppt = access.can('APPOINTMENT', 'TAO') && !merged;
+  const refreshRecord = useRefreshLeadRecord(record?.id ?? '');
+
+  const myBranch = access.teachingBranches.find((b) => b.code === claims?.branchCode);
+  const initial = useMemo<LeadDraft>(
+    () =>
+      record
+        ? toDraft(record)
+        : { ...BLANK_DRAFT, branch_id: myBranch?.id ?? '', owner_id: claims?.userId ?? '' },
+    [record, myBranch?.id, claims?.userId],
+  );
+  const [mode, setMode] = useState<DetailMode>(creating ? 'create' : 'view');
+  const [draft, setDraft] = useState<LeadDraft>(initial);
+  const [errors, setErrors] = useState<DraftErrors>({});
+  const [saving, setSaving] = useState(false);
+  const [tab, setTab] = useState('source');
+  const [duplicates, setDuplicates] = useState<Duplicate[] | null>(null);
+  const [confirmPhone, setConfirmPhone] = useState(false);
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [apptOpen, setApptOpen] = useState(false);
+  const [moving, setMoving] = useState<AppointmentRow | null>(null);
+  const [canceling, setCanceling] = useState<UpcomingAppointment | null>(null);
+  const [cancelBusy, setCancelBusy] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  // Rời trang có chủ ý (tạo xong, Huỷ khi Tạo): bỏ cờ "chưa lưu" rồi mới chuyển, để hộp hỏi rời trang không hiện.
+  const [exitTo, setExitTo] = useState<string | null>(null);
+  useEffect(() => {
+    if (exitTo !== null) void navigate(exitTo, { replace: true });
+  }, [exitTo, navigate]);
+
+  const editing = mode !== 'view';
+  const dirty = editing && exitTo === null && JSON.stringify(draft) !== JSON.stringify(initial);
+  const view: LeadDraft = editing ? draft : initial;
+  const set = <K extends keyof LeadDraft>(key: K, value: LeadDraft[K]) => {
+    setDraft((d) => ({ ...d, [key]: value }));
+    setErrors((e) => ({ ...e, [key]: undefined }));
+  };
+
+  const branchId = draft.branch_id || record?.branch_id || '';
+  const staff = useAssignableStaff('LEAD', branchId || null, editing && branchId !== '');
+  const staffOptions = (staff.data ?? []).map((s) => ({ value: s.id, label: s.display_name }));
+  const upcoming = useLeadUpcoming(record?.id ?? null);
+
+  const channelOptions = catalogs.childrenOf('SOURCE_CHANNEL', 'SOURCE', draft.source_code);
+  const sourceOptions = catalogs.options('SOURCE');
+  const wardOptions = catalogs.childrenOf('WARD', 'PROVINCE', draft.province_code);
+
+  // ---- Lưu ----
+  async function save(confirmDuplicate = false, parentId: string | null = null) {
+    const found = validateDraft(draft, { creating, channelRequired: channelOptions.length > 0 });
+    setErrors(found);
+    if (Object.keys(found).length > 0) return;
+    setSaving(true);
+    try {
+      const payload = draftPayload(draft, catalogs, { creating });
+      if (creating) {
+        const created = await rpc<{ id: string; code: string }>(supabase, 'create_lead', {
+          p_data: payload,
+          p_confirm_duplicate: confirmDuplicate,
+          p_parent_id: parentId,
+        });
+        await queryClient.invalidateQueries({ queryKey: ['lead-list'] });
+        await queryClient.invalidateQueries({ queryKey: ['lead-board'] });
+        toast({ title: `Đã tạo lead ${created.code}.` });
+        setExitTo(`/crm/lead/${created.id}`);
+      } else if (record) {
+        await rpc<null>(supabase, 'update_lead', {
+          p_id: record.id,
+          p_data: payload,
+          p_confirm_duplicate: confirmDuplicate,
+        });
+        await refreshRecord();
+        setMode('view');
+        toast({ title: 'Đã lưu.' });
+      }
+    } catch (e) {
+      const error = errorOf(e);
+      if (error.code === 'HMT_SDT_TRUNG') {
+        if (creating) {
+          const rows = await rpc<Duplicate[]>(supabase, 'find_duplicate_contacts', {
+            p_phone: draft.parent_phone.replace(/[\s.-]/g, ''),
+            p_exclude_lead_id: null,
+          });
+          setDuplicates(rows);
+        } else setConfirmPhone(true);
+      } else if (error.code === 'HMT_SDT_SAI')
+        setErrors((x) => ({ ...x, parent_phone: error.message }));
+      else if (error.code === 'HMT_THIEU_NGUON')
+        setErrors((x) => ({ ...x, source_code: error.message }));
+      else toast({ tone: 'danger', title: error.message });
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function cancelEdit() {
+    setDraft(initial);
+    setErrors({});
+    if (creating) setExitTo('/crm/lead');
+    else setMode('view');
+  }
+
+  // ---- Đổi giai đoạn, nhóm con (R-CRM-09) ----
+  async function moveStage(stage: string, substage: string | null) {
+    if (!record) return;
+    const previous = { stage: record.stage_code, substage: record.substage_code };
+    try {
+      await changeLeadStage(supabase, record.id, stage, substage);
+      await refreshRecord();
+      toast({
+        title: `Đã chuyển sang ${codeAndName(stage, catalogs.name('LEAD_STAGE', stage))}.`,
+        ...(previous.substage !== SYSTEM_SUBSTAGE
+          ? {
+              action: {
+                label: 'Hoàn tác',
+                onClick: () => {
+                  void changeLeadStage(supabase, record.id, previous.stage, previous.substage)
+                    .then(refreshRecord)
+                    .then(() => toast({ title: 'Đã hoàn tác.' }))
+                    .catch((e: unknown) =>
+                      toast({
+                        tone: 'danger',
+                        title: errorOf(e).message,
+                      }),
+                    );
+                },
+              },
+            }
+          : {}),
+      });
+    } catch (e) {
+      toast({ tone: 'danger', title: errorOf(e).message });
+    }
+  }
+
+  async function changeSubstage(next: string) {
+    if (!record) return;
+    const previous = record.substage_code;
+    try {
+      await changeLeadStage(supabase, record.id, record.stage_code, next === '' ? null : next);
+      await refreshRecord();
+      toast({
+        title: 'Đã đổi nhóm con.',
+        action: {
+          label: 'Hoàn tác',
+          onClick: () => {
+            void changeLeadStage(supabase, record.id, record.stage_code, previous)
+              .then(refreshRecord)
+              .then(() => toast({ title: 'Đã hoàn tác.' }))
+              .catch((e: unknown) => toast({ tone: 'danger', title: errorOf(e).message }));
+          },
+        },
+      });
+    } catch (e) {
+      toast({ tone: 'danger', title: errorOf(e).message });
+    }
+  }
+
+  // ---- Lịch hẹn (R-CRM-04) ----
+  async function complete(row: UpcomingAppointment) {
+    setBusyId(row.id);
+    try {
+      await completeAppointment(supabase, row.id);
+      await refreshRecord();
+      toast({ title: 'Đã hoàn thành lịch hẹn.' });
+    } catch (e) {
+      toast({ tone: 'danger', title: errorOf(e).message });
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  const activityName = (code: string) => catalogs.name('ACTIVITY_TYPE', code) ?? code;
+  const target = record
+    ? {
+        label: [record.code, record.parent_name, record.student_name].filter(Boolean).join(' · '),
+        branchId: record.branch_id,
+      }
+    : null;
+
+  const stageSteps: StageStep[] = catalogs.options('LEAD_STAGE').map((o) => ({
+    code: o.value,
+    label: o.label,
+  }));
+  const substageOptions = record
+    ? catalogs
+        .childrenOf('LEAD_SUBSTAGE', 'LEAD_STAGE', record.stage_code)
+        .filter((o) => o.value !== SYSTEM_SUBSTAGE)
+    : [];
+  const lockedSubstage = record?.substage_code === SYSTEM_SUBSTAGE;
+
+  const title = creating ? '' : [view.parent_name, view.student_name].filter(Boolean).join(' · ');
+  useCrumbTail(creating ? 'Tạo mới' : title);
+
+  // ---- Ô nhập ----
+  // Ô bắt buộc còn trống (chưa báo lỗi): viền cam, nền cam nhạt như bản vẽ; báo lỗi thì viền đỏ.
+  const emptyRequired = (key: keyof LeadDraft, needed = true) =>
+    editing && needed && draft[key].trim() === '' && !errors[key];
+
+  const text = (
+    key:
+      | 'parent_name'
+      | 'parent_phone'
+      | 'address'
+      | 'student_name'
+      | 'school'
+      | 'self_rating'
+      | 'goal',
+    label: string,
+    extra?: {
+      required?: boolean;
+      hint?: string;
+      placeholder?: string;
+      show?: (value: string) => string;
+    },
+  ) => (
+    <DetailField
+      label={label}
+      required={extra?.required}
+      hint={extra?.hint}
+      mode={mode}
+      value={extra?.show ? extra.show(view[key]) : view[key]}
+      error={errors[key] ?? null}
+      editor={
+        <input
+          aria-label={label}
+          value={draft[key]}
+          placeholder={extra?.placeholder}
+          onChange={(e) => set(key, e.target.value)}
+          aria-invalid={errors[key] ? true : undefined}
+          data-required-empty={extra?.required && emptyRequired(key) ? 'true' : undefined}
+          className={INPUT_CLASS}
+        />
+      }
+    />
+  );
+
+  const sourceView = [
+    catalogs.name('SOURCE', view.source_code),
+    catalogs.name('SOURCE_TYPE', catalogs.parentCode('SOURCE', view.source_code, 'SOURCE_TYPE')),
+  ];
+
+  return (
+    <>
+      <RecordDetail
+        kind="Lead"
+        title={title}
+        mode={mode}
+        dirty={dirty}
+        saving={saving}
+        readOnly={!canEdit}
+        onEdit={() => {
+          setDraft(initial);
+          setErrors({});
+          setMode('edit');
+        }}
+        onSave={() => void save()}
+        onCancel={cancelEdit}
+        headerActions={
+          <>
+            {canCreate && (
+              <Button icon="plus" onClick={() => void navigate('/crm/lead/moi')}>
+                Tạo
+              </Button>
+            )}
+            {canAssign && (
+              <Button icon="user" onClick={() => setAssignOpen(true)}>
+                Assign
+              </Button>
+            )}
+          </>
+        }
+        menu={
+          canAssign
+            ? {
+                label: 'Hành động',
+                items: [
+                  {
+                    kind: 'action',
+                    label: 'Giao người phụ trách',
+                    onSelect: () => setAssignOpen(true),
+                  },
+                ],
+              }
+            : undefined
+        }
+        onRefresh={() => void refreshRecord()}
+        stage={
+          stageSteps.length > 0
+            ? {
+                steps: stageSteps,
+                // Lead mới chưa lưu: luôn bắt đầu ở giai đoạn đầu C1 (R-CRM-39), nêu mờ; người dùng không chọn lúc tạo.
+                current: record?.stage_code ?? stageSteps[0]?.code ?? '',
+                forwardOnly: false,
+                onSelect: (step) => void moveStage(step.code, null),
+              }
+            : undefined
+        }
+        subStage={
+          record === null ? (
+            // Lead mới chưa lưu (R-CRM-39: bắt đầu ở C1, chưa có nhóm con): ô Sub-stage "Chưa có", mờ cùng cả hàng (khuôn K3).
+            <>
+              <span className="text-caption font-semibold text-fg-label">Sub-stage</span>
+              <input
+                readOnly
+                aria-label="Sub-stage"
+                value="Chưa có"
+                className={`${INPUT_CLASS} w-60`}
+              />
+            </>
+          ) : substageOptions.length > 0 || lockedSubstage ? (
+            <>
+              <span className="text-caption font-semibold text-fg-label">Sub-stage</span>
+              {lockedSubstage ? (
+                <span
+                  className="relative"
+                  title="Nhóm con do hệ thống tự gắn khi tạo cơ hội thành công, không đổi được."
+                >
+                  <input
+                    readOnly
+                    aria-label="Sub-stage"
+                    value={codeAndName(
+                      SYSTEM_SUBSTAGE,
+                      catalogs.name('LEAD_SUBSTAGE', SYSTEM_SUBSTAGE),
+                    )}
+                    className={`${INPUT_CLASS} w-60 pr-8`}
+                  />
+                  <Icon
+                    name="forbidden"
+                    size={16}
+                    className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-fg-muted"
+                  />
+                </span>
+              ) : (
+                <OptionalSelect
+                  label="Sub-stage"
+                  value={record.substage_code ?? ''}
+                  onChange={(v) => void changeSubstage(v)}
+                  options={substageOptions.map((o) => ({
+                    value: o.value,
+                    label: `${o.value} ${o.label}`,
+                  }))}
+                  placeholder="Chưa có"
+                  disabled={!canEdit}
+                />
+              )}
+            </>
+          ) : undefined
+        }
+        smart={
+          record
+            ? [
+                {
+                  key: 'lich-hen',
+                  label: 'Lịch hẹn',
+                  icon: 'calendar',
+                  count: record.appointments_total,
+                  onOpen: () => void navigate('/crm/lich-hen'),
+                },
+                {
+                  key: 'co-hoi',
+                  label: 'Cơ hội',
+                  icon: 'sales',
+                  count: record.opportunities_total,
+                  onOpen: () => void navigate('/crm/co-hoi'),
+                },
+              ]
+            : [
+                {
+                  key: 'lich-hen',
+                  label: 'Lịch hẹn',
+                  icon: 'calendar',
+                  count: 0,
+                  onOpen: () => undefined,
+                },
+                {
+                  key: 'co-hoi',
+                  label: 'Cơ hội',
+                  icon: 'sales',
+                  count: 0,
+                  onOpen: () => undefined,
+                },
+              ]
+        }
+        aside={
+          record ? (
+            <RecordChatter
+              entityType="LEAD"
+              entityId={record.id}
+              createdText="Tạo lead."
+              format={{
+                labels: LEAD_FIELD_LABELS,
+                value: leadHistoryValue(catalogs, record),
+              }}
+              canWrite={!merged}
+              actions={
+                canAppt ? (
+                  <Button icon="calendar" onClick={() => setApptOpen(true)}>
+                    Lên lịch hẹn
+                  </Button>
+                ) : undefined
+              }
+              upcoming={
+                <UpcomingActivities
+                  rows={upcoming.data?.rows ?? []}
+                  activityName={activityName}
+                  canEdit={access.can('APPOINTMENT', 'SUA') && !merged}
+                  canCancel={access.can('APPOINTMENT', 'HUY') && !merged}
+                  busyId={busyId}
+                  onComplete={(row) => void complete(row)}
+                  onReschedule={(row) => setMoving({ ...row, branchId: record.branch_id })}
+                  onCancel={(row) => {
+                    setCancelError(null);
+                    setCanceling(row);
+                  }}
+                />
+              }
+            />
+          ) : (
+            <Chatter
+              entries={[]}
+              status="ready"
+              disabled
+              onSend={() => Promise.resolve()}
+              searchPeople={() => Promise.resolve([])}
+            />
+          )
+        }
+      >
+        {merged && record?.merged_into_code && (
+          <p className="mb-4 rounded-control bg-surface-subtle px-3 py-2 text-fg-muted">
+            <Tag>Đã gộp</Tag> Lead này đã gộp vào <b>{record.merged_into_code}</b>, chỉ đọc.
+          </p>
+        )}
+        <div className="grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
+          <DetailSection title="Thông tin phụ huynh">
+            {text('parent_name', 'Họ tên', { required: true })}
+            {text('parent_phone', 'Số điện thoại', {
+              required: true,
+              show: formatPhone,
+              placeholder: '0912 000 121',
+            })}
+            <DetailField
+              label="Tỉnh/Thành phố"
+              mode={mode}
+              value={catalogs.name('PROVINCE', view.province_code) ?? ''}
+              editor={
+                <OptionalSelect
+                  label="Tỉnh/Thành phố"
+                  value={draft.province_code}
+                  onChange={(v) => setDraft((d) => ({ ...d, province_code: v, ward_code: '' }))}
+                  options={catalogs.options('PROVINCE')}
+                  placeholder="Chọn tỉnh/thành phố"
+                />
+              }
+            />
+            <DetailField
+              label="Phường/Xã"
+              mode={mode}
+              value={catalogs.name('WARD', view.ward_code) ?? ''}
+              editor={
+                <OptionalSelect
+                  label="Phường/Xã"
+                  value={draft.ward_code}
+                  onChange={(v) => set('ward_code', v)}
+                  options={wardOptions}
+                  placeholder="Chọn phường/xã"
+                  disabled={draft.province_code === ''}
+                />
+              }
+            />
+            {text('address', 'Địa chỉ', { placeholder: 'Số nhà, ngõ, đường' })}
+            <DetailField
+              label="Nhu cầu"
+              mode={mode}
+              value={view.need}
+              editor={
+                <TextAreaField
+                  label="Nhu cầu"
+                  value={draft.need}
+                  placeholder="Nhu cầu của phụ huynh"
+                  onChange={(e) => set('need', e.target.value)}
+                />
+              }
+            />
+          </DetailSection>
+          <DetailSection title="Thông tin học sinh">
+            {text('student_name', 'Tên học sinh', {
+              hint: 'bắt buộc từ L5',
+              placeholder: 'Tên (bắt buộc từ L5)',
+            })}
+            <DetailField
+              label="Ngày sinh"
+              mode={mode}
+              value={
+                view.student_birth_date
+                  ? formatDate(`${view.student_birth_date}T00:00:00+07:00`)
+                  : ''
+              }
+              editor={
+                <DateInput
+                  label="Ngày sinh"
+                  compact
+                  value={isoToDate(draft.student_birth_date)}
+                  onChange={(d) => set('student_birth_date', dateToIso(d))}
+                />
+              }
+            />
+            <DetailField
+              label="Năm sinh"
+              hint="bắt buộc từ L5"
+              mode={mode}
+              value={view.student_birth_year}
+              error={errors.student_birth_year ?? null}
+              editor={
+                <input
+                  aria-label="Năm sinh"
+                  inputMode="numeric"
+                  value={draft.student_birth_year}
+                  placeholder="VD 2012 (bắt buộc từ L5)"
+                  onChange={(e) => set('student_birth_year', e.target.value)}
+                  aria-invalid={errors.student_birth_year ? true : undefined}
+                  className={INPUT_CLASS}
+                />
+              }
+            />
+            {text('school', 'Trường học', { placeholder: 'Tên trường' })}
+            {text('self_rating', 'Học lực tự đánh giá', { placeholder: 'VD Khá, yếu phần Hình' })}
+            {text('goal', 'Mục tiêu', { placeholder: 'Mục tiêu của học sinh' })}
+          </DetailSection>
+        </div>
+        <div className="mt-6">
+          <Tabs
+            label="Nội dung bản ghi"
+            value={tab}
+            onChange={setTab}
+            items={[
+              {
+                value: 'source',
+                label: 'Nguồn và phụ trách',
+                content: (
+                  <div className="grid grid-cols-1 gap-x-10 lg:grid-cols-2">
+                    <dl className="flex flex-col">
+                      <DetailField
+                        label="Cơ sở"
+                        mode={mode}
+                        value={
+                          record
+                            ? `${record.branch_code} ${record.branch_name}`
+                            : myBranch
+                              ? `${myBranch.code} ${myBranch.name}`
+                              : ''
+                        }
+                        error={errors.branch_id ?? null}
+                        editor={
+                          creating && access.seesAllBranches ? (
+                            <OptionalSelect
+                              label="Cơ sở"
+                              value={draft.branch_id}
+                              onChange={(v) =>
+                                setDraft((d) => ({
+                                  ...d,
+                                  branch_id: v,
+                                  owner_id: '',
+                                  supporter_id: '',
+                                }))
+                              }
+                              options={access.teachingBranches.map((b) => ({
+                                value: b.id,
+                                label: `${b.code} ${b.name}`,
+                              }))}
+                              placeholder="Chọn cơ sở"
+                              invalid={Boolean(errors.branch_id)}
+                            />
+                          ) : (
+                            <input
+                              readOnly
+                              aria-label="Cơ sở"
+                              title="Cơ sở của lead không đổi được"
+                              value={
+                                record
+                                  ? `${record.branch_code} ${record.branch_name}`
+                                  : myBranch
+                                    ? `${myBranch.code} ${myBranch.name}`
+                                    : ''
+                              }
+                              className={INPUT_CLASS}
+                            />
+                          )
+                        }
+                      />
+                      <DetailField
+                        label="Nhân sự phụ trách"
+                        required={creating}
+                        mode={mode}
+                        value={record?.owner_name ?? ''}
+                        error={errors.owner_id ?? null}
+                        editor={
+                          creating ? (
+                            <OptionalSelect
+                              label="Nhân sự phụ trách"
+                              value={draft.owner_id}
+                              onChange={(v) => set('owner_id', v)}
+                              options={
+                                staffOptions.length > 0
+                                  ? staffOptions
+                                  : claims
+                                    ? [{ value: claims.userId, label: 'Bạn' }]
+                                    : []
+                              }
+                              placeholder="Chọn nhân sự"
+                              invalid={Boolean(errors.owner_id)}
+                              requiredEmpty={emptyRequired('owner_id')}
+                            />
+                          ) : (
+                            <input
+                              readOnly
+                              aria-label="Nhân sự phụ trách"
+                              title="Đổi người phụ trách bằng nút Assign"
+                              value={record?.owner_name ?? ''}
+                              className={INPUT_CLASS}
+                            />
+                          )
+                        }
+                      />
+                      <DetailField
+                        label="Nhân sự hỗ trợ"
+                        mode={mode}
+                        value={record?.supporter_name ?? ''}
+                        editor={
+                          <OptionalSelect
+                            label="Nhân sự hỗ trợ"
+                            value={draft.supporter_id}
+                            onChange={(v) => set('supporter_id', v)}
+                            options={staffOptions}
+                            placeholder="Chọn nhân sự"
+                          />
+                        }
+                      />
+                    </dl>
+                    <dl className="flex flex-col">
+                      <DetailField
+                        label="Source"
+                        required
+                        mode={mode}
+                        value={
+                          <>
+                            {sourceView[0]}
+                            {sourceView[1] && (
+                              <span className="ml-1.5 text-caption text-fg-muted">
+                                ({sourceView[1]})
+                              </span>
+                            )}
+                          </>
+                        }
+                        error={errors.source_code ?? null}
+                        editor={
+                          <OptionalSelect
+                            label="Source"
+                            value={draft.source_code}
+                            onChange={(v) =>
+                              setDraft((d) => ({ ...d, source_code: v, channel_code: '' }))
+                            }
+                            options={sourceOptions}
+                            placeholder="Chọn source"
+                            invalid={Boolean(errors.source_code)}
+                            requiredEmpty={emptyRequired('source_code')}
+                          />
+                        }
+                      />
+                      <DetailField
+                        label="Sub-source"
+                        required={channelOptions.length > 0}
+                        mode={mode}
+                        value={catalogs.name('SOURCE_CHANNEL', view.channel_code) ?? ''}
+                        error={errors.channel_code ?? null}
+                        editor={
+                          <OptionalSelect
+                            label="Sub-source"
+                            value={draft.channel_code}
+                            onChange={(v) => set('channel_code', v)}
+                            options={channelOptions}
+                            placeholder={
+                              draft.source_code === '' ? 'Chọn source trước' : 'Chọn sub-source'
+                            }
+                            disabled={channelOptions.length === 0}
+                            invalid={Boolean(errors.channel_code)}
+                            requiredEmpty={emptyRequired('channel_code', channelOptions.length > 0)}
+                          />
+                        }
+                      />
+                      <DetailField
+                        label="Chiến dịch"
+                        mode={mode}
+                        value={catalogs.campaignName(view.campaign_id) ?? ''}
+                        editor={
+                          <OptionalSelect
+                            label="Chiến dịch"
+                            value={draft.campaign_id}
+                            onChange={(v) => set('campaign_id', v)}
+                            options={catalogs.campaigns}
+                            placeholder="Chọn chiến dịch"
+                          />
+                        }
+                      />
+                    </dl>
+                  </div>
+                ),
+              },
+              {
+                value: 'time',
+                label: 'Mốc thời gian',
+                content: record ? (
+                  <dl className="grid grid-cols-1 gap-x-10 lg:grid-cols-2">
+                    <DetailField
+                      label="Ngày tạo"
+                      mode="view"
+                      value={`${formatDateTime(record.created_at)}${record.created_by_name ? ` · ${record.created_by_name}` : ''}`}
+                    />
+                    <DetailField
+                      label="Cập nhật lần cuối"
+                      mode="view"
+                      value={`${formatDateTime(record.updated_at)}${record.updated_by_name ? ` · ${record.updated_by_name}` : ''}`}
+                    />
+                    <DetailField
+                      label="Ngày giao"
+                      mode="view"
+                      value={formatDateTime(record.assigned_at)}
+                    />
+                    <DetailField
+                      label="Lịch hẹn kế tiếp"
+                      mode="view"
+                      value={<NextAppointment at={record.next_appointment_at} />}
+                    />
+                    {record.legacy_ref && (
+                      <DetailField label="Mã cũ (Sheet)" mode="view" value={record.legacy_ref} />
+                    )}
+                  </dl>
+                ) : (
+                  <p className="text-fg-muted">Mốc thời gian có sau khi lưu.</p>
+                ),
+              },
+            ]}
+          />
+        </div>
+      </RecordDetail>
+
+      {record && (
+        <AssignDialog
+          open={assignOpen}
+          onOpenChange={setAssignOpen}
+          entityType="LEAD"
+          noun="lead"
+          codes={[record.code]}
+          branchCodes={[record.branch_code]}
+          onAssign={async (ownerId, ownerName) => {
+            await rpc<number>(supabase, 'assign_owner', {
+              p_entity_type: 'LEAD',
+              p_ids: [record.id],
+              p_owner_id: ownerId,
+            });
+            await refreshRecord();
+            toast({ title: `Đã giao ${record.code} cho ${ownerName}.` });
+          }}
+        />
+      )}
+
+      {record && target && (
+        <AppointmentDialog
+          open={apptOpen}
+          onOpenChange={setApptOpen}
+          target={target}
+          activityOptions={catalogs.options('ACTIVITY_TYPE')}
+          onCreate={async (args) => {
+            const noteText = args.note.trim();
+            await createLeadAppointment(supabase, {
+              leadId: record.id,
+              activityCode: args.activityCode,
+              scheduledAt: args.scheduledAt,
+              // Bản vẽ không có ô "Nội dung": ghi chú là nội dung hiện ở danh sách; để trống thì lấy tên loại hoạt động.
+              title: noteText === '' ? activityName(args.activityCode) : noteText,
+              ownerId: args.ownerId,
+            });
+            await refreshRecord();
+            toast({ title: 'Đã tạo lịch hẹn.' });
+          }}
+          onReschedule={() => Promise.resolve()}
+        />
+      )}
+      {record && target && moving && (
+        <AppointmentDialog
+          open
+          onOpenChange={(open) => !open && setMoving(null)}
+          target={target}
+          activityOptions={[]}
+          reschedule={{
+            id: moving.id,
+            label:
+              moving.title === activityName(moving.activity_code)
+                ? moving.title
+                : `${activityName(moving.activity_code)} · ${moving.title}`,
+            scheduledAt: moving.scheduled_at,
+            ownerId: moving.owner_id,
+            ownerName: moving.owner_name,
+            branchId: moving.branchId,
+          }}
+          onCreate={() => Promise.resolve()}
+          onReschedule={async (args) => {
+            await rescheduleAppointment(supabase, args);
+            await refreshRecord();
+            toast({ title: 'Đã dời lịch hẹn.' });
+          }}
+        />
+      )}
+
+      <ReasonDialog
+        open={canceling !== null}
+        onOpenChange={(open) => !open && setCanceling(null)}
+        title="Huỷ lịch hẹn"
+        description={
+          canceling ? `${activityName(canceling.activity_code)} · ${canceling.title}` : undefined
+        }
+        options={catalogs.options('APPOINTMENT_CANCEL_REASON').map((o) => ({
+          ...o,
+          needsNote: catalogs.requiresNote('APPOINTMENT_CANCEL_REASON', o.value),
+        }))}
+        confirmLabel="Huỷ lịch hẹn"
+        busy={cancelBusy}
+        error={cancelError}
+        onConfirm={(result) => {
+          if (!canceling) return;
+          setCancelBusy(true);
+          setCancelError(null);
+          void cancelAppointment(supabase, canceling.id, result.option, result.note)
+            .then(refreshRecord)
+            .then(() => {
+              setCanceling(null);
+              toast({ title: 'Đã huỷ lịch hẹn.' });
+            })
+            .catch((e: unknown) => setCancelError(errorOf(e).message))
+            .finally(() => setCancelBusy(false));
+        }}
+      />
+
+      <DuplicateDialog
+        open={duplicates !== null}
+        onOpenChange={(open) => !open && setDuplicates(null)}
+        title="Số điện thoại này đã có khách hàng"
+        phone={formatPhone(draft.parent_phone.replace(/[\s.-]/g, ''))}
+        groups={duplicateGroups(duplicates ?? [])}
+        canAttach={(duplicates ?? []).some((d) => d.kind === 'PARENT' && d.visible)}
+        onAttach={() => {
+          const parent = (duplicates ?? []).find((d) => d.kind === 'PARENT' && d.visible);
+          void save(false, parent?.id ?? null);
+        }}
+        onCreateNew={() => void save(true)}
+      />
+      <ConfirmDialog
+        open={confirmPhone}
+        onOpenChange={setConfirmPhone}
+        title="Số điện thoại này đã có hồ sơ"
+        description="Đã có lead hoặc phụ huynh dùng số này. Xác nhận nếu vẫn muốn dùng số này cho lead đang sửa."
+        confirmLabel="Vẫn dùng số này"
+        onConfirm={() => {
+          setConfirmPhone(false);
+          void save(true);
+        }}
+      />
+    </>
+  );
+}
+
+type AppointmentRow = UpcomingAppointment & { branchId: string };
+
+function NextAppointment({ at }: { at: string | null }) {
+  const tag = appointmentTag(at);
+  return (
+    <Tag tone={tag.tone} dot>
+      {tag.label}
+    </Tag>
+  );
+}
+
+/** Hai nhóm của hộp trùng SĐT (TS-14): lead đã có, phụ huynh đã có; hồ sơ ngoài phạm vi chỉ lộ mã và cơ sở. */
+function duplicateGroups(rows: Duplicate[]) {
+  const line = (d: Duplicate) =>
+    d.visible ? (
+      d.kind === 'LEAD' ? (
+        <Link to={`/crm/lead/${d.id}`} className="font-medium text-link hover:underline">
+          {d.code} · {d.label}
+        </Link>
+      ) : (
+        `${d.code} · ${d.label}`
+      )
+    ) : (
+      `${d.code} · hồ sơ ở cơ sở ${d.branch_code}, ngoài phạm vi bạn xem`
+    );
+  return [
+    { title: 'Lead đã có', lines: rows.filter((d) => d.kind === 'LEAD').map(line) },
+    { title: 'Phụ huynh đã có', lines: rows.filter((d) => d.kind === 'PARENT').map(line) },
+  ].filter((g) => g.lines.length > 0);
+}

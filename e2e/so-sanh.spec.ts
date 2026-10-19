@@ -291,3 +291,93 @@ test('Lead: danh sách, Kanban, hộp Giao (TS-01, TS-01b, TS-05)', async ({ pag
   await page.getByRole('button', { name: 'Danh sách', exact: true }).click();
   await save(browser, page, 'TS01', 'điện thoại');
 });
+
+// TS-02, TS-03, TS-13, TS-14: trang Lead, Tạo lead, hộp lịch hẹn, hộp trùng SĐT. Dựng một lead giả của Trưởng CS5.
+test('Lead: bản ghi, tạo, lịch hẹn, trùng SĐT (TS-02, TS-03, TS-13, TS-14)', async ({
+  page,
+  browser,
+}) => {
+  const phone = `09${String(Date.now() % 1e8).padStart(8, '0')}`;
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  let leadId: string;
+  try {
+    await db.query('begin');
+    await db.query("set local session_replication_role = 'replica'");
+    await db.query(
+      "delete from app.appointment where lead_id in (select id from app.lead where parent_name like '%(bản ghi so sánh)%')",
+    );
+    await db.query(
+      "delete from app.note where entity_type = 'LEAD' and entity_id in (select id from app.lead where parent_name like '%(bản ghi so sánh)%')",
+    );
+    await db.query("delete from app.lead where parent_name like '%(bản ghi so sánh)%'");
+    await db.query('commit');
+    await db.query('begin');
+    await db.query(
+      `select set_config('request.jwt.claims', (app.custom_access_token_hook(jsonb_build_object(
+         'user_id', u.id, 'claims', jsonb_build_object('sub', u.id, 'role', 'authenticated', 'aal', 'aal1'))) -> 'claims')::text, true)
+         from app.user_account u where u.login_name = $1`,
+      [`truongcs.cs5@${DOMAIN}`],
+    );
+    await db.query('set local role authenticated');
+    const lead = await db.query<{ id: string }>(
+      `select (app.create_lead(jsonb_build_object('parent_name', 'Chị Lê Thu Hằng (bản ghi so sánh)', 'parent_phone', $1::text,
+         'student_name', 'Lê Gia Huy', 'student_birth_year', 2012, 'school', 'THCS Giảng Võ', 'self_rating', 'Khá, yếu phần Hình',
+         'goal', 'Đỗ vào lớp 10 trường chuyên', 'need', 'Ôn thi vào lớp 10, học buổi tối', 'address', 'Số 12, ngõ 31 phố Núi Trúc',
+         'source_type_code', 'MARKETING', 'source_code', 'FACEBOOK_ADS', 'channel_code', 'FACEBOOK_ADS_LEAD_FORM'))) ->> 'id' as id`,
+      [phone],
+    );
+    leadId = lead.rows[0]?.id ?? '';
+    await db.query(
+      `select app.create_appointment($1::uuid, 'GOI_DIEN', now() - interval '3 days', 'Gọi lại hỏi lịch học')`,
+      [leadId],
+    );
+    await db.query(
+      `select app.create_appointment($1::uuid, 'EMAIL', now() + interval '2 hours', 'Gửi báo giá lớp Toán 9')`,
+      [leadId],
+    );
+    await db.query(`select app.add_note($1::text, $2::uuid, $3::text)`, [
+      'LEAD',
+      leadId,
+      'Chị Hằng muốn con học tối T3, T5; hỏi có học thử được không.',
+    ]);
+    await db.query('reset role');
+    await db.query(`update app.lead set stage_code = 'C4', substage_code = 'C4D' where id = $1`, [
+      leadId,
+    ]);
+    await db.query('commit');
+  } catch (error) {
+    await db.query('rollback');
+    throw error;
+  } finally {
+    await db.end();
+  }
+
+  await page.setViewportSize(DESKTOP);
+  await loginStaff(page, 'truongcs.cs5');
+  await expect(page).toHaveURL(/\/crm$/);
+  await page.goto(`/crm/lead/${leadId}`);
+  await expect(page.getByText(/^Hoạt động sắp tới \(2\)/)).toBeVisible();
+  await save(browser, page, 'TS02');
+  await page.getByRole('button', { name: 'Lên lịch hẹn' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tạo lịch hẹn' });
+  await dialog.getByRole('button', { name: 'Ngày mai' }).click();
+  await dialog.getByRole('button', { name: '17:00' }).click();
+  await save(browser, page, 'TS13');
+  await page.keyboard.press('Escape');
+  await page.goto('/crm/lead/moi');
+  await page.getByLabel('Họ tên', { exact: true }).fill('Chị Lê Thu Hằng');
+  await page.getByLabel('Số điện thoại', { exact: true }).fill(phone);
+  await save(browser, page, 'TS03');
+  await page.getByRole('combobox', { name: 'Source', exact: true }).click();
+  await page.getByRole('option', { name: 'Website', exact: true }).click();
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(
+    page.getByRole('dialog', { name: 'Số điện thoại này đã có khách hàng' }),
+  ).toBeVisible();
+  await save(browser, page, 'TS14');
+  await page.setViewportSize(PHONE);
+  await page.goto(`/crm/lead/${leadId}`);
+  await expect(page.getByText(/^Hoạt động sắp tới \(2\)/)).toBeVisible();
+  await save(browser, page, 'TS02', 'điện thoại');
+});

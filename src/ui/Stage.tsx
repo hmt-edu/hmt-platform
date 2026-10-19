@@ -37,7 +37,7 @@ export function StageBar({
   const index = steps.findIndex((s) => s.code === current);
   return (
     <nav aria-label={label} className={cn('overflow-x-auto', disabled && 'opacity-50')}>
-      <ol className="flex flex-nowrap">
+      <ol className="flex w-full flex-nowrap">
         {steps.map((step, i) => {
           const isCurrent = i === index;
           const isPast = i < index;
@@ -49,7 +49,7 @@ export function StageBar({
               ? '[clip-path:polygon(0_0,calc(100%-12px)_0,100%_50%,calc(100%-12px)_100%,0_100%)] pl-3.5'
               : '[clip-path:polygon(0_0,calc(100%-12px)_0,100%_50%,calc(100%-12px)_100%,0_100%,12px_50%)] -ml-2 pl-6';
           return (
-            <li key={step.code} className="flex">
+            <li key={step.code} className="flex min-w-max flex-1">
               <button
                 type="button"
                 aria-current={isCurrent ? 'step' : undefined}
@@ -61,7 +61,7 @@ export function StageBar({
                   else if (!blocked) onSelect?.(step);
                 }}
                 className={cn(
-                  'focus-ring inline-flex h-stage shrink-0 items-center gap-1.5 pr-4.5 text-body whitespace-nowrap',
+                  'focus-ring inline-flex h-stage w-full shrink-0 items-center gap-1.5 pr-4.5 text-body whitespace-nowrap',
                   shape,
                   isCurrent
                     ? 'cursor-default bg-stage-current font-bold text-fg'

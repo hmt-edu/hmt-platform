@@ -3,7 +3,7 @@
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { rpc, toHmtError, useDb } from '../../lib/db';
+import { rpc, errorOf, useDb } from '../../lib/db';
 import type { LeadFilters } from './leadFilters';
 import type { BoardColumn, ExportResult, GroupCounts, LeadPage, LeadRow } from './leadTypes';
 
@@ -86,7 +86,7 @@ export function useLeafRows(
           p_offset: offset,
         });
       } catch (error) {
-        onError(toHmtError(error as { message: string }).message);
+        onError(errorOf(error).message);
         return null;
       } finally {
         inflight.current.delete(`${resetKey}|${key}|${offset}`);

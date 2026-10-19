@@ -2,7 +2,7 @@
 // bản ghi. Hàm trong cơ sở dữ liệu kiểm quyền Giao việc và cùng cơ sở; hộp chỉ hiện lỗi của hàm.
 import { useMemo, useState } from 'react';
 import { useAuth } from '../../lib/auth/authContext';
-import { toHmtError } from '../../lib/db';
+import { errorOf } from '../../lib/db';
 import { useAccess } from '../../nav/AccessContext';
 import { FormDialog } from '../../ui/Dialogs';
 import { Field } from '../../ui/Field';
@@ -66,7 +66,7 @@ function AssignForm({
     label:
       s.role_names.length > 0 ? `${s.display_name} · ${s.role_names.join(', ')}` : s.display_name,
   }));
-  const staffError = staff.isError ? toHmtError(staff.error).message : null;
+  const staffError = staff.isError ? errorOf(staff.error).message : null;
 
   async function submit() {
     const owner = staff.data?.find((s) => s.id === ownerId);
@@ -77,7 +77,7 @@ function AssignForm({
       await onAssign(owner.id, owner.display_name);
       onOpenChange(false);
     } catch (e) {
-      setError(toHmtError(e as { message: string }).message);
+      setError(errorOf(e).message);
     } finally {
       setBusy(false);
     }

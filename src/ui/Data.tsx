@@ -1,5 +1,5 @@
 // Hiển thị dữ liệu: nhãn trạng thái, khung chờ, phân trang, bảng (K03), thanh thao tác hàng loạt.
-import { useId, useState, type ReactNode } from 'react';
+import { useId, useState, type MouseEvent, type ReactNode } from 'react';
 import { formatNumber } from '../lib/format';
 import { Button, IconButton } from './Button';
 import { cn } from './cn';
@@ -221,6 +221,7 @@ export function Table<Row>({
   groupsDefaultOpen = true,
   onGroupToggle,
   rowMuted,
+  onRowClick,
 }: {
   /** Tên bảng cho trình đọc màn hình. */
   caption: string;
@@ -246,6 +247,8 @@ export function Table<Row>({
   onGroupToggle?: ((key: string, open: boolean) => void) | undefined;
   /** Dòng làm mờ (bản đã gộp: chỉ đọc). */
   rowMuted?: ((row: Row) => boolean) | undefined;
+  /** Bấm vào chỗ trống của dòng thì mở bản ghi (bấm nút, liên kết, ô chọn trong dòng vẫn làm việc của chúng). */
+  onRowClick?: ((row: Row) => void) | undefined;
 }) {
   const [toggled, setToggled] = useState<ReadonlySet<string>>(new Set());
   const items: DisplayItem<Row>[] = groups
@@ -279,6 +282,16 @@ export function Table<Row>({
     else keys.forEach((k) => next.add(k));
     onSelectedChange(next);
   };
+  const rowClick = (row: Row) =>
+    onRowClick
+      ? {
+          onClick: (event: MouseEvent<HTMLElement>) => {
+            if ((event.target as HTMLElement).closest('a,button,input,label,select,textarea'))
+              return;
+            onRowClick(row);
+          },
+        }
+      : {};
   const toggleSort = (key: string) => {
     if (!onSortChange) return;
     if (sort?.key !== key) onSortChange({ key, direction: 'asc' });
@@ -332,8 +345,10 @@ export function Table<Row>({
               return (
                 <li
                   key={key}
+                  {...rowClick(row)}
                   className={cn(
                     'rounded-card border border-border bg-surface p-3',
+                    onRowClick && 'cursor-pointer',
                     selectable && selected.has(key) && 'border-l-[3px] border-l-action bg-selected',
                     rowMuted?.(row) && 'opacity-55',
                   )}
@@ -487,8 +502,10 @@ export function Table<Row>({
                 return (
                   <tr
                     key={key}
+                    {...rowClick(row)}
                     className={cn(
                       'h-row border-b border-surface-subtle last:border-b-0 hover:bg-hover',
+                      onRowClick && 'cursor-pointer',
                       isSelected && 'bg-selected shadow-[inset_3px_0_0_var(--border-selected)]',
                       rowMuted?.(row) && 'opacity-55',
                     )}

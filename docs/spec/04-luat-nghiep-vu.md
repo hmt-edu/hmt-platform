@@ -51,6 +51,7 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-CRM-36 | **(18/10)** **Giai đoạn khởi đầu:** cơ hội mới tạo luôn bắt đầu ở giai đoạn L1, người dùng không chọn giai đoạn lúc tạo. Giai đoạn chỉ tiến lên theo R-CRM-02 và các luật chuyển giai đoạn khác. | [CHỐT] |
 | R-CRM-37 | **(18/10)** **Điều kiện gộp theo hồ sơ cha:** (a) Gộp cơ hội chỉ khi hai bên cùng phụ huynh và học sinh không khác nhau; một bên chưa có học sinh thì lấy học sinh của bên kia; khác phụ huynh thì gộp phụ huynh trước; khác học sinh thì gộp học sinh trước. (b) Gộp học sinh chỉ khi cùng phụ huynh; khác phụ huynh thì gộp phụ huynh trước. (c) Gộp phụ huynh không tự gộp học sinh; sau khi gộp, nếu có hai học sinh trùng tên và năm sinh dưới cùng phụ huynh thì hệ thống báo để người dùng gộp học sinh. | [CHỐT] |
 | R-CRM-38 | **(19/10)** **Dời lịch hẹn:** chỉ lịch hẹn Chưa làm dời được. Khi dời có thể đổi người phụ trách lịch hẹn (cần quyền Giao việc theo ma trận quyền; không có quyền thì không đổi được người phụ trách) và ghi chú. Mọi thay đổi ghi lịch sử. | [CHỐT] |
+| R-CRM-39 | **(19/10)** **Giai đoạn khởi đầu của lead:** lead mới tạo luôn bắt đầu ở C1 (Data mới); người dùng không chọn giai đoạn lúc tạo. Sau đó giai đoạn lead đổi theo R-CRM-09. | [CHỐT] |
 
 ## 2. Bán hàng và tiền
 

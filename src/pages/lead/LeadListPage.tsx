@@ -1,14 +1,14 @@
 // TS-01 Lead (danh sách) và TS-01b (Kanban): khuôn K1 và K2 nối với các hàm Lead trong cơ sở dữ liệu.
 // Lọc, sắp xếp, phân trang, Group By, số đếm Kanban đều tính ở máy chủ; trình duyệt chỉ giữ trang đang xem.
-// Nút Tạo và Nhập chưa có ở màn này (ẩn tới P3c-2 và P3f), nên cột C1 cũng chưa có dấu "+".
+// Nút Tạo và dấu "+" ở cột C1 hiện cho ai có quyền Lead · Tạo (mở màn Tạo, P3c-2); nút Nhập chưa có (ẩn tới P3f).
 import { useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
 import { KanbanBoard } from '../../list/Kanban';
 import { freeMoveRule } from '../../list/kanbanLogic';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
-import { toHmtError, useDb, useIntSetting } from '../../lib/db';
+import { errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { vnDayBounds } from '../../lib/vnDay';
@@ -72,6 +72,7 @@ const EXPORT_COLUMNS = [
 
 export function LeadListPage() {
   const supabase = useDb();
+  const navigate = useNavigate();
   const access = useAccess();
   const toast = useToast();
   const refreshData = useRefreshLeads();
@@ -173,7 +174,7 @@ export function LeadListPage() {
 
   const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
   const activeQuery = view === 'kanban' ? board : grouped ? counts : list;
-  const errorText = activeQuery.isError ? toHmtError(activeQuery.error).message : null;
+  const errorText = activeQuery.isError ? errorOf(activeQuery.error).message : null;
 
   const refresh = () => {
     setTick((t) => t + 1);
@@ -203,7 +204,7 @@ export function LeadListPage() {
           : { title: `Đã xuất ${result.exported} dòng.` },
       );
     } catch (e) {
-      toast({ tone: 'danger', title: toHmtError(e as { message: string }).message });
+      toast({ tone: 'danger', title: errorOf(e).message });
     } finally {
       setExporting(false);
     }
@@ -233,7 +234,7 @@ export function LeadListPage() {
                     .catch((e: unknown) =>
                       toast({
                         tone: 'danger',
-                        title: toHmtError(e as { message: string }).message,
+                        title: errorOf(e).message,
                       }),
                     );
                 },
@@ -242,7 +243,7 @@ export function LeadListPage() {
           : {}),
       });
     } catch (e) {
-      toast({ tone: 'danger', title: toHmtError(e as { message: string }).message });
+      toast({ tone: 'danger', title: errorOf(e).message });
     } finally {
       moving.current = false;
     }
@@ -271,6 +272,7 @@ export function LeadListPage() {
 
   const canExport = access.can('LEAD', 'XUAT');
   const canAssign = access.can('LEAD', 'GIAO_VIEC');
+  const canCreate = access.can('LEAD', 'TAO');
 
   return (
     <>
@@ -290,18 +292,28 @@ export function LeadListPage() {
         }
         error={errorText}
         onRetry={() => void activeQuery.refetch()}
-        actions={
-          canExport
+        actions={[
+          ...(canCreate
+            ? [
+                {
+                  label: 'Tạo',
+                  icon: 'plus' as const,
+                  primary: true,
+                  onClick: () => void navigate('/crm/lead/moi'),
+                },
+              ]
+            : []),
+          ...(canExport
             ? [
                 {
                   label: 'Xuất',
-                  icon: 'download',
+                  icon: 'download' as const,
                   onClick: () => void exportFile(),
                   loading: exporting,
                 },
               ]
-            : []
-        }
+            : []),
+        ]}
         onRefresh={refresh}
         pager={
           view === 'kanban'
@@ -340,6 +352,7 @@ export function LeadListPage() {
           if (spec) leaves.toggle(key, spec.filters, open);
         }}
         rowMuted={(r) => r.record_status === 'DA_GOP'}
+        onRowClick={(r) => void navigate(`/crm/lead/${r.id}`)}
         kanban={
           board.isPending ? (
             <Spinner label="Đang tải Kanban…" />
@@ -375,6 +388,13 @@ export function LeadListPage() {
               }
               onBlocked={(reason) => toast({ tone: 'warning', title: reason })}
               onLoadMore={() => setPaging({ ...current, more: moreCards + 1 })}
+              {...(canCreate
+                ? {
+                    onAdd: () => void navigate('/crm/lead/moi'),
+                    // Lead mới luôn bắt đầu ở C1 (R-CRM-39): dấu "+" chỉ ở cột đầu.
+                    showAdd: (code: string) => code === columns[0]?.code,
+                  }
+                : {})}
               note={NOTE}
               renderCard={(c) => <LeadCard card={c} catalogs={catalogs} />}
             />
