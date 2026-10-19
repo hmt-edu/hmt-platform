@@ -215,7 +215,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | TC-12 | Bản in phiếu chi | Bản in · K13 | C | Máy tính | KT, AD | Mẫu phiếu chi | In; Tải PDF | — | R-TIEN-28, R-TIEN-08 |
 | TC-14 | Số dư khách hàng (tiền dư giữ lại) | Danh sách · K03 | C | Máy tính | KT, BM, AD | Tiền dư của phụ huynh sau chuyển phí, dùng cho đơn sau | Xem lịch sử; Cấn vào đơn mới | KH-02 | R-CS-03, R-TIEN-33 |
 | TC-16 | Dùng số dư khách hàng cho đơn mới | Hộp thoại · K08 | C | Máy tính | KT, CS, AD | Trừ số dư, ghi vào đơn mới như một khoản tiền vào | Xác nhận | BH-05 | R-CS-03, R-TIEN-33 |
-| TC-17 | Quản lý duyệt phiếu thu | Hộp thoại · K08 | B | Máy tính | BM, AD | Phiếu thu đã trình chờ quản lý trực tiếp của người lập (Trưởng cơ sở lập thì tự duyệt bước này, Admin duyệt thay khi vắng); duyệt thì phiếu sang "Chờ kế toán", từ chối thì về Nháp kèm lý do. Hàng chờ của quản lý nằm trong CHUNG-15 | Duyệt; Từ chối (lý do) | TC-05 | R-TIEN-01, R-HT-06 |
+| TC-17 | Quản lý duyệt phiếu thu | Hộp thoại · K08 | B | Máy tính | BM, AD | Phiếu thu đã trình chờ quản lý trực tiếp của người lập (Trưởng cơ sở lập thì tự duyệt bước này; Admin không duyệt thay, quản lý vắng thì Admin dùng "Chuyển người duyệt" sang người khác đủ điều kiện, có nhật ký); duyệt thì phiếu sang "Chờ kế toán", từ chối thì về Nháp kèm lý do. Hàng chờ của quản lý nằm trong CHUNG-15 | Duyệt; Từ chối (lý do) | TC-05 | R-TIEN-01, R-HT-06 |
 
 ### Ghi danh
 
