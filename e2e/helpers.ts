@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 // Tài khoản giả do scripts/seed-users.ts tạo. Cần SEED_PASSWORD (CI tự sinh; local đặt trong môi trường).
 export const PASSWORD = process.env.SEED_PASSWORD ?? '';
@@ -79,4 +79,21 @@ export async function expectAccessible(page: Page) {
           .join('; ')})`,
     ),
   ).toEqual([]);
+}
+
+// Hộp thoại đang hiện hiệu ứng thì nhấp đầu tiên có thể rơi vào khoảng trống: bấm lại tới khi nút "chip" đã được chọn.
+export async function pickChip(scope: Locator, name: string) {
+  const chip = scope.getByRole('button', { name, exact: true });
+  await expect(async () => {
+    await chip.click();
+    await expect(chip).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 });
+  }).toPass({ timeout: 10000 });
+}
+
+// Mở ô chọn rồi chọn một mục; mở chưa được (hộp đang hiện) thì mở lại.
+export async function pickOption(page: Page, combobox: Locator, option: string | RegExp) {
+  await expect(async () => {
+    if ((await combobox.getAttribute('aria-expanded')) !== 'true') await combobox.click();
+    await page.getByRole('option', { name: option }).click({ timeout: 2000 });
+  }).toPass({ timeout: 10000 });
 }

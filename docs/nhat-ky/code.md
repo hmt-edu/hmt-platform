@@ -95,6 +95,12 @@
 ## PR P3d-1 DB Cơ hội (20/10)
 - Migration `20261019000038`: `get_opportunity`, `list_opportunities` và `opportunity_board` mở rộng bộ lọc như Lead, `opportunity_group_counts`, `export_opportunities`. Bài kiểm 030 (59 bài). EXPLAIN trên seed lớn trong mô tả PR.
 
+## PR P3d-2 Giao diện Cơ hội (20/10)
+- `src/pages/co-hoi/*`: danh sách + Kanban (khuôn K1, K2; lọc dùng chung `buildLeadFilters` với Lead), trang bản ghi (K3), hộp chuyển giai đoạn `StageDialog` + `StageMoveHost` (tải cơ hội để chọn đúng dạng khi kéo thẻ), `CreateOpportunityDialog` (TS-06). Luật chọn hộp nằm ở `oppStage.ts` (hàm thuần, có kiểm thử); DB kiểm lại mọi luật.
+- Khuôn: `StageBar` tự cuộn bước hiện tại vào tầm nhìn; `SmartItem.unavailable` (nút liên kết chưa có màn đích: mờ, kèm chú thích); `OptionalSelect` tách ra `src/ui`; `useLeafRows`, `buildLeadGroupTree` thành hàm chung theo kiểu dòng; ô "Gắn với" của Lịch hẹn thành `RecordPicker` (lead và cơ hội).
+- Bài kiểm: Vitest `oppStage.test.ts`, `oppRecord.test.ts`; Playwright `e2e/co-hoi.spec.ts` (máy tính và điện thoại, 10 bài: danh sách, Kanban, bản ghi, đủ năm dạng hộp, Sửa, lịch hẹn, tạo từ lead); ảnh so sánh `e2e/so-sanh-co-hoi.spec.ts`.
+- Bài học: bước giai đoạn `aria-disabled` không bấm được bằng `click()` thường của Playwright (chờ "enabled" mãi), dùng `force`; truy vấn của hộp cảnh báo phải `gcTime: 0` để không dùng bản nhớ của lần mở trước.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

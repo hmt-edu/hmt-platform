@@ -64,8 +64,8 @@ test('CHUNG-10: menu dựng từ ma trận quyền; mở link ngoài quyền g�
   await menu.getByRole('link', { name: 'Lead' }).click();
   await expect(page).toHaveURL(/\/crm\/lead$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Lead' })).toBeVisible();
-  // Màn Lead là màn thật (P3c-1b); màn Cơ hội chưa dựng nên vẫn là trang "Sắp có".
-  await page.goto('/crm/co-hoi');
+  // Màn Lead, Cơ hội là màn thật (P3c, P3d); màn Phiếu kiểm tra chưa dựng (P3e) nên vẫn là trang "Sắp có".
+  await page.goto('/crm/phieu-kiem-tra');
   await expect(page.getByText('Sắp có: màn này làm ở giai đoạn 1.')).toBeVisible();
 
   await page.goto('/crm/quan-tri/nguoi-dung');

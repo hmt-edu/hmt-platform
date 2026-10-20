@@ -42,6 +42,43 @@ export function useLeadUpcoming(leadId: string | null) {
   });
 }
 
+/** Lịch hẹn Chưa làm của một cơ hội, gần nhất trước (khối "Hoạt động sắp tới" của trang Cơ hội). */
+export function useOpportunityUpcoming(opportunityId: string | null) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['opp-upcoming', opportunityId],
+    enabled: opportunityId !== null,
+    queryFn: () =>
+      rpc<{ total: number; rows: UpcomingAppointment[] }>(supabase, 'list_appointments', {
+        p_filters: { opportunity_id: opportunityId, status: ['CHUA_LAM'] },
+        p_sort: 'time_asc',
+        p_limit: null,
+        p_offset: 0,
+      }),
+  });
+}
+
+export async function createOpportunityAppointment(
+  supabase: SupabaseClient,
+  args: {
+    opportunityId: string;
+    activityCode: string;
+    scheduledAt: Date;
+    title: string;
+    ownerId: string | null;
+  },
+): Promise<void> {
+  await rpc<string>(supabase, 'create_appointment', {
+    p_lead_id: null,
+    p_activity_code: args.activityCode,
+    p_scheduled_at: args.scheduledAt.toISOString(),
+    p_title: args.title,
+    p_note: null,
+    p_owner_id: args.ownerId,
+    p_opportunity_id: args.opportunityId,
+  });
+}
+
 export async function createLeadAppointment(
   supabase: SupabaseClient,
   args: {

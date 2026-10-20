@@ -82,6 +82,13 @@ export function RecordLink({ row }: { row: AppointmentRow }) {
         <Link to={`/crm/lead/${row.lead_id}`} className="font-medium text-link hover:underline">
           {row.record_code}
         </Link>
+      ) : kind === 'OPPORTUNITY' && row.opportunity_id ? (
+        <Link
+          to={`/crm/co-hoi/${row.opportunity_id}`}
+          className="font-medium text-link hover:underline"
+        >
+          {row.record_code}
+        </Link>
       ) : (
         <Code>{row.record_code}</Code>
       )}

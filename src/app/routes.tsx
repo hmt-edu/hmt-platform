@@ -33,6 +33,14 @@ const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
+const OpportunityListPage = lazyScreen(
+  () => import('../pages/co-hoi/OpportunityListPage'),
+  'OpportunityListPage',
+);
+const OpportunityRecordPage = lazyScreen(
+  () => import('../pages/co-hoi/OpportunityRecordPage'),
+  'OpportunityRecordPage',
+);
 const AppointmentListPage = lazyScreen(
   () => import('../pages/lich-hen/AppointmentListPage'),
   'AppointmentListPage',
@@ -120,6 +128,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="lead">
                 <LeadRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'co-hoi',
+            element: (
+              <GatedCrmEntry slug="co-hoi">
+                <OpportunityListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'co-hoi/:id',
+            element: (
+              <GatedCrmEntry slug="co-hoi">
+                <OpportunityRecordPage />
               </GatedCrmEntry>
             ),
           },

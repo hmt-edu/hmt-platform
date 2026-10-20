@@ -19,6 +19,8 @@ export type SmartItem = {
   label: string;
   icon: IconName;
   count: number;
+  /** Nút chưa dùng được (chưa có màn đích): mờ, kèm chú thích. */
+  unavailable?: string | undefined;
   /** Gọi khi bấm: `target` cho biết mở danh sách (nhiều), mở thẳng bản ghi (một) hay danh sách rỗng (không có). */
   onOpen: (target: Exclude<SmartTarget, 'none'>) => void;
 };
@@ -50,7 +52,8 @@ export function SmartButtons({
           >
             <button
               type="button"
-              disabled={disabled || target === 'none'}
+              disabled={disabled || target === 'none' || item.unavailable !== undefined}
+              title={item.unavailable}
               aria-label={`${item.label}: ${item.count}`}
               onClick={() => target !== 'none' && item.onOpen(target)}
               className="focus-ring flex min-h-14 w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-hover disabled:cursor-not-allowed disabled:hover:bg-transparent"

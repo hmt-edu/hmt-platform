@@ -2,7 +2,7 @@
 // Hàm thuần, có kiểm thử. Nhóm lá tải dòng khi người dùng mở; "Xem thêm" tải trang kế tiếp.
 import type { TableGroup } from '../../ui/Data';
 import { GROUP_FIELD_OF, groupFilter, type LeadFilters } from './leadFilters';
-import type { GroupCounts, LeadRow } from './leadTypes';
+import type { GroupCounts } from './leadTypes';
 import type { Leaf } from './useLeadData';
 
 /** Nhãn nhóm: giai đoạn kèm mã như ở cột và Kanban ("C1 Data mới"); khác thì tên máy chủ trả. */
@@ -13,18 +13,18 @@ function labelOf(field: string | undefined, key: string | null, label: string | 
 
 export type LeafSpec = { filters: LeadFilters };
 
-export type GroupTreeResult = {
-  tree: TableGroup<LeadRow>[];
+export type GroupTreeResult<Row> = {
+  tree: TableGroup<Row>[];
   /** Khoá nhóm lá → bộ lọc của nhóm đó (để tải dòng khi mở). */
   specs: Map<string, LeafSpec>;
 };
 
-export function buildLeadGroupTree(
+export function buildLeadGroupTree<Row>(
   counts: GroupCounts,
   fields: string[],
-  leaves: Record<string, Leaf>,
+  leaves: Record<string, Leaf<Row>>,
   onMore: (key: string, spec: LeafSpec) => void,
-): GroupTreeResult {
+): GroupTreeResult<Row> {
   const specs = new Map<string, LeafSpec>();
   const [f1, f2] = fields.map((f) => GROUP_FIELD_OF[f] ?? f);
 
@@ -33,7 +33,7 @@ export function buildLeadGroupTree(
     label: string,
     count: number,
     filters: LeadFilters,
-  ): TableGroup<LeadRow> => {
+  ): TableGroup<Row> => {
     const spec = { filters };
     specs.set(key, spec);
     const data = leaves[key];
@@ -59,7 +59,7 @@ export function buildLeadGroupTree(
     return { tree, specs };
   }
 
-  const parents = new Map<string, TableGroup<LeadRow>>();
+  const parents = new Map<string, TableGroup<Row>>();
   for (const g of counts.groups) {
     const parentKey = `g:${f1}=${g.k1}`;
     let parent = parents.get(g.k1);

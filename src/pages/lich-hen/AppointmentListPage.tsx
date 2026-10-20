@@ -9,11 +9,12 @@ import {
   cancelAppointment,
   completeAppointment,
   createLeadAppointment,
+  createOpportunityAppointment,
   reopenAppointment,
   rescheduleAppointment,
 } from '../../features/appointments/appointmentApi';
 import { AppointmentDialog } from '../../features/appointments/AppointmentDialog';
-import { LeadPicker, type PickedLead } from '../../features/appointments/LeadPicker';
+import { RecordPicker, type PickedRecord } from '../../features/appointments/RecordPicker';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { KanbanBoard } from '../../list/Kanban';
 import { CalendarView, type CalendarKind, type CalendarMode } from '../../list/Calendar';
@@ -120,9 +121,16 @@ export function AppointmentListPage() {
   // Mở từ nút "Lịch hẹn" của trang Lead: chỉ lịch hẹn của lead đó, mọi thời gian (bỏ chip thì về danh sách chung).
   const [params, setParams] = useSearchParams();
   const parentLead = params.get('lead');
+  const parentOpp = params.get('co-hoi');
   const parentCode = params.get('ma') ?? '';
+  const hasParent = parentLead !== null || parentOpp !== null;
+  const parentFilter = parentLead
+    ? { lead_id: parentLead }
+    : parentOpp
+      ? { opportunity_id: parentOpp }
+      : {};
   const [state, setState] = useState<ListState>(() =>
-    parentLead ? { ...EMPTY_APPOINTMENT_STATE, datePreset: '' } : EMPTY_APPOINTMENT_STATE,
+    hasParent ? { ...EMPTY_APPOINTMENT_STATE, datePreset: '' } : EMPTY_APPOINTMENT_STATE,
   );
   const [view, setView] = useState<ViewMode>('list');
   const [sort, setSort] = useState<SortState>(null);
@@ -131,7 +139,7 @@ export function AppointmentListPage() {
   const [anchor, setAnchor] = useState(() => startOfDay(new Date()));
   const [busyId, setBusyId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
-  const [picked, setPicked] = useState<PickedLead | null>(null);
+  const [picked, setPicked] = useState<PickedRecord | null>(null);
   const [moving, setMoving] = useState<AppointmentRow | null>(null);
   const [canceling, setCanceling] = useState<AppointmentRow | null>(null);
   const [cancelBusy, setCancelBusy] = useState(false);
@@ -152,16 +160,20 @@ export function AppointmentListPage() {
   const filters = useMemo(
     () => ({
       ...buildAppointmentFilters(searchState),
-      ...(parentLead ? { lead_id: parentLead } : {}),
+      ...parentFilter,
     }),
-    [searchState, parentLead],
+    // parentFilter suy ra từ hai tham số địa chỉ.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [searchState, parentLead, parentOpp],
   );
   const calendarFilters = useMemo(
     () => ({
       ...buildAppointmentFilters(searchState, new Date(), window),
-      ...(parentLead ? { lead_id: parentLead } : {}),
+      ...parentFilter,
     }),
-    [searchState, window, parentLead],
+    // parentFilter suy ra từ hai tham số địa chỉ.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [searchState, window, parentLead, parentOpp],
   );
   const sortValue = sortParam(sort);
   const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
@@ -357,12 +369,15 @@ export function AppointmentListPage() {
           hint: 'Không có lịch hẹn nào trong bộ lọc này. Đổi bộ lọc hoặc bấm Tạo để thêm lịch hẹn.',
         }}
         parent={
-          parentLead
+          hasParent
             ? {
-                entityLabel: 'Lead',
+                entityLabel: parentLead ? 'Lead' : 'Cơ hội',
                 code: parentCode,
                 childLabel: 'Lịch hẹn',
-                onOpenParent: () => void navigate(`/crm/lead/${parentLead}`),
+                onOpenParent: () =>
+                  void navigate(
+                    parentLead ? `/crm/lead/${parentLead}` : `/crm/co-hoi/${parentOpp}`,
+                  ),
                 onClear: () => setParams({}),
               }
             : undefined
@@ -466,18 +481,25 @@ export function AppointmentListPage() {
         open={creating}
         onOpenChange={setCreating}
         target={picked}
-        targetPicker={<LeadPicker value={picked} onChange={setPicked} />}
+        targetPicker={<RecordPicker value={picked} onChange={setPicked} />}
         activityOptions={catalogs.options('ACTIVITY_TYPE')}
         onCreate={async (args) => {
           if (!picked) return;
           const noteText = args.note.trim();
-          await createLeadAppointment(supabase, {
-            leadId: picked.leadId,
+          const args2 = {
             activityCode: args.activityCode,
             scheduledAt: args.scheduledAt,
             title: noteText === '' ? activityName(args.activityCode) : noteText,
             ownerId: args.ownerId,
-          });
+          };
+          if (picked.kind === 'OPPORTUNITY') {
+            await createOpportunityAppointment(supabase, {
+              ...args2,
+              opportunityId: picked.recordId,
+            });
+          } else {
+            await createLeadAppointment(supabase, { ...args2, leadId: picked.recordId });
+          }
           await refreshData();
           toast({ title: 'Đã tạo lịch hẹn.' });
         }}
@@ -638,9 +660,13 @@ function CalendarDetail({
         {formatDateTime(row.scheduled_at)}
         {row.owner_name ? ` · ${row.owner_name}` : ''}
       </p>
-      {row.lead_id && (
-        <ButtonLink variant="primary" icon="arrowRight" to={`/crm/lead/${row.lead_id}`}>
-          Mở lead {row.lead_code}
+      {(row.lead_id || row.opportunity_id) && (
+        <ButtonLink
+          variant="primary"
+          icon="arrowRight"
+          to={row.lead_id ? `/crm/lead/${row.lead_id}` : `/crm/co-hoi/${row.opportunity_id}`}
+        >
+          {row.lead_id ? `Mở lead ${row.lead_code}` : `Mở cơ hội ${row.opportunity_code}`}
         </ButtonLink>
       )}
       <AppointmentButtons row={row} actions={actions} />

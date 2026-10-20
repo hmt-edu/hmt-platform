@@ -51,35 +51,41 @@ export function useGroupCounts(filters: LeadFilters, fields: string[], enabled: 
   });
 }
 
-export type Leaf = { rows: LeadRow[]; total: number; loading: boolean };
-const LOADING_LEAF: Leaf = { rows: [], total: 0, loading: true };
+export type Leaf<Row = LeadRow> = { rows: Row[]; total: number; loading: boolean };
 
-type LeafStore = { key: string; leaves: Record<string, Leaf> };
+type LeafStore<Row> = { key: string; leaves: Record<string, Leaf<Row>> };
 
 /**
  * Dòng của các nhóm lá (Group By ở máy chủ): tải khi người dùng mở nhóm, "Xem thêm" tải trang kế tiếp.
  * `resetKey` đổi (đổi bộ lọc, sắp xếp, làm mới) thì bỏ dữ liệu cũ và tải lại các nhóm đang mở.
  * Nhóm đang mở mà chưa có dữ liệu coi là đang tải. Lỗi báo qua `onError` (hộp thông báo của màn).
  */
-export function useLeafRows(
+export function useLeafRows<Row = LeadRow>(
   baseFilters: LeadFilters,
   sort: string | undefined,
   pageSize: number | null,
   resetKey: string,
   onError: (message: string) => void,
+  /** Hàm danh sách phân trang gọi để tải dòng của nhóm (mặc định danh sách lead). */
+  listFunction: string = 'list_leads',
 ) {
   const supabase = useDb();
-  const [store, setStore] = useState<LeafStore>({ key: resetKey, leaves: {} });
+  const [store, setStore] = useState<LeafStore<Row>>({ key: resetKey, leaves: {} });
+  const loadingLeaf: Leaf<Row> = { rows: [], total: 0, loading: true };
   const [open, setOpen] = useState<Record<string, LeadFilters>>({});
   const latestKey = useRef(resetKey);
   const inflight = useRef(new Set<string>());
   const loaded = store.key === resetKey ? store.leaves : undefined;
 
   const fetchPage = useCallback(
-    async (key: string, groupFilters: LeadFilters, offset: number): Promise<LeadPage | null> => {
+    async (
+      key: string,
+      groupFilters: LeadFilters,
+      offset: number,
+    ): Promise<{ total: number; rows: Row[] } | null> => {
       if (pageSize === null) return null;
       try {
-        return await rpc<LeadPage>(supabase, 'list_leads', {
+        return await rpc<{ total: number; rows: Row[] }>(supabase, listFunction, {
           p_filters: { ...baseFilters, ...groupFilters },
           p_sort: sort ?? 'created_desc',
           p_limit: pageSize,
@@ -92,17 +98,17 @@ export function useLeafRows(
         inflight.current.delete(`${resetKey}|${key}|${offset}`);
       }
     },
-    [supabase, baseFilters, sort, pageSize, resetKey, onError],
+    [supabase, baseFilters, sort, pageSize, resetKey, onError, listFunction],
   );
 
   const apply = useCallback(
-    (key: string, page: LeadPage | null, append: boolean) => {
+    (key: string, page: { total: number; rows: Row[] } | null, append: boolean) => {
       // Trả lời của bộ lọc cũ (đã đổi trong lúc chờ): bỏ.
       if (latestKey.current !== resetKey) return;
       setStore((prev) => {
         const base = prev.key === resetKey ? prev.leaves : {};
         const old = base[key];
-        const next: Leaf = page
+        const next: Leaf<Row> = page
           ? {
               rows: append ? [...(old?.rows ?? []), ...page.rows] : page.rows,
               total: page.total,
@@ -129,8 +135,8 @@ export function useLeafRows(
     }
   }, [open, loaded, resetKey, fetchPage, apply]);
 
-  const leaves: Record<string, Leaf> = {};
-  for (const key of Object.keys(open)) leaves[key] = loaded?.[key] ?? LOADING_LEAF;
+  const leaves: Record<string, Leaf<Row>> = {};
+  for (const key of Object.keys(open)) leaves[key] = loaded?.[key] ?? loadingLeaf;
 
   const toggle = (key: string, groupFilters: LeadFilters, isOpen: boolean) =>
     setOpen((current) => {

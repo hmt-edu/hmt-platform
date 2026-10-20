@@ -1,7 +1,7 @@
 // P3c-3b: màn Lịch hẹn (TS-11): danh sách, Kanban, Lịch; Hoàn thành, Dời, Huỷ, Mở lại; Tạo gắn với lead; dải "quá hạn bị ẩn".
 // Dữ liệu giả dựng bằng create_lead, create_appointment; tìm bằng dấu riêng của từng dự án.
-import { expect, test, type Locator, type Page } from '@playwright/test';
-import { PASSWORD, expectAccessible, isPhone, loginStaff } from './helpers';
+import { expect, test, type Page } from '@playwright/test';
+import { PASSWORD, expectAccessible, isPhone, loginStaff, pickChip, pickOption } from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded, type Setup } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lịch hẹn giả).');
@@ -32,23 +32,6 @@ const rows = (page: Page) =>
     ? page.getByRole('list', { name: 'Lịch hẹn' }).getByRole('listitem')
     : page.getByRole('table', { name: 'Lịch hẹn' }).getByRole('row');
 const row = (page: Page, title: string) => rows(page).filter({ hasText: title });
-// Hộp thoại đang hiện hiệu ứng thì nhấp đầu tiên có thể rơi vào khoảng trống: bấm lại tới khi nút "chip" đã được chọn.
-async function pickChip(scope: Locator, name: string) {
-  const chip = scope.getByRole('button', { name, exact: true });
-  await expect(async () => {
-    await chip.click();
-    await expect(chip).toHaveAttribute('aria-pressed', 'true', { timeout: 1000 });
-  }).toPass({ timeout: 10000 });
-}
-
-// Mở ô chọn rồi chọn một mục; mở chưa được (hộp đang hiện) thì mở lại.
-async function pickOption(page: Page, combobox: Locator, option: string | RegExp) {
-  await expect(async () => {
-    if ((await combobox.getAttribute('aria-expanded')) !== 'true') await combobox.click();
-    await page.getByRole('option', { name: option }).click({ timeout: 2000 });
-  }).toPass({ timeout: 10000 });
-}
-
 const toastText = (page: Page, text: string | RegExp) => page.getByText(text).first();
 
 test('Danh sách: nhóm Hôm nay, đủ nút theo trạng thái; Hoàn thành một bấm', async ({

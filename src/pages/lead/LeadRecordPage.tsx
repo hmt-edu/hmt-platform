@@ -1,6 +1,6 @@
 // TS-02 Trang Lead (xem, Sửa) và TS-03 Tạo lead nhanh: khuôn K3 nối cơ sở dữ liệu. Thông tin đọc bằng get_lead (một lần gọi),
 // lưu bằng create_lead, update_lead; đổi giai đoạn bằng change_lead_stage (tự do hai chiều, có Hoàn tác, R-CRM-09);
-// lịch hẹn ở cột phải (TS-13, R-CRM-04, R-CRM-38). Nút Tạo cơ hội (P3d-1), Gộp trùng (P3f), Đính kèm (giai đoạn 4),
+// lịch hẹn ở cột phải (TS-13, R-CRM-04, R-CRM-38). Nút Tạo cơ hội mở hộp TS-06 (P3d); Gộp trùng (P3f), Đính kèm (giai đoạn 4),
 // phân trang "n / tổng" chưa có nên chưa hiện.
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
@@ -20,6 +20,8 @@ import { AppointmentDialog } from '../../features/appointments/AppointmentDialog
 import { UpcomingActivities } from '../../features/appointments/UpcomingActivities';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { HmtError, rpc, errorOf, useDb } from '../../lib/db';
+import { CreateOpportunityDialog } from '../co-hoi/CreateOpportunityDialog';
+import type { OpportunityPage } from '../co-hoi/oppTypes';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
@@ -31,7 +33,8 @@ import { StateView, Spinner } from '../../ui/Feedback';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
 import { DateInput } from '../../ui/Inputs';
-import { Select, Tabs } from '../../ui/Overlays';
+import { OptionalSelect } from '../../ui/OptionalSelect';
+import { Tabs } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { useCrumbTail } from '../../layout/CrumbTail';
@@ -55,7 +58,6 @@ import { useLeadCatalogs } from './useCatalogs';
 
 /** Giai đoạn con do hệ thống gắn (R-CRM-09): ô khoá, không đặt lại bằng tay nên rời khỏi thì không có Hoàn tác. */
 const SYSTEM_SUBSTAGE = 'C4D';
-const NONE = '__none';
 
 type Duplicate = {
   kind: 'LEAD' | 'PARENT';
@@ -74,41 +76,6 @@ function useLead(id: string | undefined) {
     queryFn: () => rpc<LeadRecord>(supabase, 'get_lead', { p_id: id }),
     retry: false,
   });
-}
-
-/** Ô chọn cho phép bỏ chọn ("Chưa chọn"): giá trị rỗng là chưa chọn. */
-function OptionalSelect({
-  label,
-  value,
-  onChange,
-  options,
-  placeholder,
-  disabled,
-  invalid,
-  requiredEmpty,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: { value: string; label: string }[];
-  placeholder: string;
-  disabled?: boolean;
-  invalid?: boolean;
-  /** Ô bắt buộc còn trống: viền cam, nền cam nhạt. */
-  requiredEmpty?: boolean;
-}) {
-  return (
-    <Select
-      label={label}
-      value={value === '' ? NONE : value}
-      onChange={(v) => onChange(v === NONE ? '' : v)}
-      options={[{ value: NONE, label: placeholder }, ...options]}
-      disabled={disabled}
-      invalid={invalid}
-      requiredEmpty={requiredEmpty}
-      className="w-full"
-    />
-  );
 }
 
 export function LeadRecordPage({ creating = false }: { creating?: boolean }) {
@@ -163,6 +130,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const canAssign = access.can('LEAD', 'GIAO_VIEC') && !merged;
   const canCreate = access.can('LEAD', 'TAO');
   const canAppt = access.can('APPOINTMENT', 'TAO') && !merged;
+  const canCreateOpp = access.can('OPPORTUNITY', 'TAO') && !merged;
   const refreshRecord = useRefreshLeadRecord(record?.id ?? '');
 
   const myBranch = access.teachingBranches.find((b) => b.code === claims?.branchCode);
@@ -182,6 +150,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const [confirmPhone, setConfirmPhone] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [apptOpen, setApptOpen] = useState(false);
+  const [oppOpen, setOppOpen] = useState(false);
   const [moving, setMoving] = useState<AppointmentRow | null>(null);
   const [canceling, setCanceling] = useState<UpcomingAppointment | null>(null);
   const [cancelBusy, setCancelBusy] = useState(false);
@@ -335,6 +304,29 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
     }
   }
 
+  /** Nút "Cơ hội": một cơ hội thì mở thẳng bản ghi, nhiều thì mở danh sách đã lọc theo lead (K3, smart button). */
+  async function openOpportunities(rec: LeadRecord, target: 'list' | 'record' | 'empty-list') {
+    if (target === 'record') {
+      try {
+        const page = await rpc<OpportunityPage>(supabase, 'list_opportunities', {
+          p_filters: { lead_id: rec.id },
+          p_sort: 'created_asc',
+          p_limit: 1,
+          p_offset: 0,
+        });
+        const only = page.rows[0];
+        if (only) {
+          void navigate(`/crm/co-hoi/${only.id}`);
+          return;
+        }
+      } catch (e) {
+        toast({ tone: 'danger', title: errorOf(e).message });
+        return;
+      }
+    }
+    void navigate(`/crm/co-hoi?lead=${rec.id}&ma=${encodeURIComponent(rec.code)}`);
+  }
+
   const activityName = (code: string) => catalogs.name('ACTIVITY_TYPE', code) ?? code;
   const target = record
     ? {
@@ -461,6 +453,11 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
               }
             : undefined
         }
+        businessActions={
+          record && canCreateOpp ? (
+            <Button onClick={() => setOppOpen(true)}>Tạo cơ hội</Button>
+          ) : undefined
+        }
         subStage={
           record === null ? (
             // Lead mới chưa lưu (R-CRM-39: bắt đầu ở C1, chưa có nhóm con): ô Sub-stage "Chưa có", mờ cùng cả hàng (khuôn K3).
@@ -530,7 +527,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                   label: 'Cơ hội',
                   icon: 'sales',
                   count: record.opportunities_total,
-                  onOpen: () => void navigate('/crm/co-hoi'),
+                  onOpen: (target) => void openOpportunities(record, target),
                 },
               ]
             : [
@@ -1009,6 +1006,23 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
             .finally(() => setCancelBusy(false));
         }}
       />
+
+      {record && (
+        <CreateOpportunityDialog
+          open={oppOpen}
+          onOpenChange={setOppOpen}
+          lead={record}
+          catalogs={catalogs}
+          onCreated={async (created) => {
+            await refreshRecord();
+            await queryClient.invalidateQueries({ queryKey: ['opp-list'] });
+            await queryClient.invalidateQueries({ queryKey: ['opp-board'] });
+            toast({ title: `Đã tạo cơ hội ${created.code}.` });
+            void navigate(`/crm/co-hoi/${created.id}`);
+          }}
+          onOpenExisting={(id) => void navigate(`/crm/co-hoi/${id}`)}
+        />
+      )}
 
       <DuplicateDialog
         open={duplicates !== null}

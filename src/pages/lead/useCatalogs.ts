@@ -16,6 +16,9 @@ type Campaign = { id: string; name: string; is_active: boolean };
 const CATALOGS = [
   'LEAD_STAGE',
   'LEAD_SUBSTAGE',
+  'OPP_STAGE',
+  'OPP_SUBSTAGE',
+  'TEST_SKIP_REASON',
   'SOURCE_TYPE',
   'SOURCE',
   'SOURCE_CHANNEL',

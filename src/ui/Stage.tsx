@@ -1,6 +1,7 @@
 // Thanh Stage của bản ghi (.hmt-stage của gói): các bước hình mũi tên; bước đang ở nền cam, chữ đậm.
 // Bấm vào một Stage để đổi giai đoạn (không có nút "chuyển giai đoạn"). Bước đã qua mờ, không bấm được
 // khi luật chỉ cho đi tới (R-CRM-02); luật chặn nào thì hàm cơ sở dữ liệu trả lý do, hộp thoại chặn hiện ra.
+import { useEffect, useRef } from 'react';
 import { cn } from './cn';
 import { Icon } from './icons';
 
@@ -35,6 +36,11 @@ export function StageBar({
   disabled?: boolean | undefined;
 }) {
   const index = steps.findIndex((s) => s.code === current);
+  // Thanh dài (L1–L8) cuộn ngang: đưa bước hiện tại vào tầm nhìn khi mở và khi đổi giai đoạn.
+  const currentRef = useRef<HTMLLIElement | null>(null);
+  useEffect(() => {
+    currentRef.current?.scrollIntoView({ inline: 'center', block: 'nearest' });
+  }, [current]);
   return (
     <nav aria-label={label} className={cn('overflow-x-auto', disabled && 'opacity-50')}>
       <ol className="flex w-full flex-nowrap">
@@ -49,7 +55,11 @@ export function StageBar({
               ? '[clip-path:polygon(0_0,calc(100%-12px)_0,100%_50%,calc(100%-12px)_100%,0_100%)] pl-3.5'
               : '[clip-path:polygon(0_0,calc(100%-12px)_0,100%_50%,calc(100%-12px)_100%,0_100%,12px_50%)] -ml-2 pl-6';
           return (
-            <li key={step.code} className="flex min-w-max flex-1">
+            <li
+              key={step.code}
+              ref={isCurrent ? currentRef : undefined}
+              className="flex min-w-max flex-1"
+            >
               <button
                 type="button"
                 aria-current={isCurrent ? 'step' : undefined}
