@@ -177,6 +177,18 @@ Kiểm thử: `supabase/tests/database/025_lead_danh_sach.test.sql` (49 bài). L
 
 Cùng khuôn bộ lọc với Lead (R-CRM-07: cùng nhóm HOẶC, khác nhóm VÀ). Không bảng mới, không chỉ mục mới. Kiểm thử: `supabase/tests/database/030_co_hoi_ban_ghi.test.sql`. Đo trên `seed-lon` (50.000 lead, 20.000 cơ hội; Trưởng cơ sở CS1 chỉ thấy một nửa vì lọc theo cơ sở), Trưởng cơ sở CS1: danh sách 12 đến 38 ms, lọc lịch hẹn và nguồn 14 ms, Kanban 15 ms, Group By hai cấp 11 ms, `get_opportunity` 15 ms.
 
+### P3e-1: dữ liệu màn Phiếu kiểm tra (migration `20261023000039`)
+
+| Hàm | Việc | Quyền |
+|---|---|---|
+| `app.get_student_test(id)` | Một lần gọi cho trang phiếu (TS-17): cột phiếu, tên danh mục (trạng thái, môn, khối, hình thức, cấp độ, trình độ và phân loại đề xuất, lý do huỷ), cơ sở của cơ hội và cơ sở test, phòng (tên, sức chứa), giáo viên chấm, người phụ trách, người tạo, người nhập kết quả (cờ "nhập thay"), học sinh, phụ huynh, cơ hội, lead gốc, số lịch hẹn | Kiểm tra đầu vào · Xem theo phạm vi của phiếu (toàn hệ thống, cơ sở, được phân công) |
+| `app.list_student_tests(...)`, `app.student_test_board(...)` (thay thân) | Thêm lọc môn, hình thức, cấp độ; `mine_roles[]` (tôi phụ trách, tôi tạo, tôi chấm: HOẶC); `when[]` (quá hạn là phiếu Nháp quá giờ test, hôm nay, sắp tới: HOẶC, mốc theo giờ Việt Nam); cột người tạo; Kanban có `bar` (sắp tới, hôm nay, quá giờ) tính trên cả cột | Kiểm tra đầu vào · Xem |
+| `app.student_test_group_counts(bộ lọc, trường nhóm[])` | Đếm cho Group By một đến hai cấp (trạng thái, môn, hình thức, cấp độ, người phụ trách, giáo viên chấm, cơ sở test) | Kiểm tra đầu vào · Xem |
+| `app.export_student_tests(bộ lọc)` | Kiểm quyền, ghi nhật ký xuất, tối đa `export_max_rows` dòng có tên danh mục trong một giao dịch | Kiểm tra đầu vào · Xuất (Trưởng cơ sở trong cơ sở mình, Admin) |
+| `app.list_test_graders(cơ sở)`, `app.list_test_rooms(cơ sở)` | Giáo viên đang hoạt động của cơ sở, phòng đang dùng (kèm sức chứa) để chọn trong hộp tạo, sửa phiếu | Kiểm tra đầu vào · Tạo hoặc Sửa |
+
+Không bảng mới, không chỉ mục mới. Kiểm thử: `supabase/tests/database/031_phieu_kiem_tra_ban_ghi.test.sql`. Đo trên `seed-lon` (15.000 phiếu; Trưởng cơ sở CS1 thấy 10.000), danh sách 8 đến 35 ms (lần đầu), tìm `q` 11 ms, Kanban 3 đến 30 ms, Group By hai cấp 12 ms, `get_student_test` 7 ms.
+
 Bốn hàm danh sách dùng chung một khuôn bộ lọc; bài kiểm đối chiếu tổng giữa `list_leads`, `lead_board`, `lead_group_counts`. Bài kiểm `change_lead_stage`: kéo sang C4 không tự gắn C4D, người dùng không gắn được C4D, lead rời rồi về C4 không lấy lại C4D.
 
 ### Hiệu năng

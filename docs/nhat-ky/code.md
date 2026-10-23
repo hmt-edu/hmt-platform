@@ -107,6 +107,9 @@
 - Seed lớn đã đủ 50.000 lead, 20.000 cơ hội (số đếm 25.000 lead, 10.000 cơ hội trong các số đo trước là phần Trưởng cơ sở CS1 thấy, vì lọc theo cơ sở); không cần tăng thêm.
 - Hoàn tác sau Hoàn thành, Huỷ: `useUndoAppointment` dùng chung (Lead, Cơ hội, Lịch hẹn).
 
+## PR P3e-1 DB Phiếu kiểm tra (23/10)
+- Migration `20261023000039`: `get_student_test`, `list_student_tests` và `student_test_board` thay thân (lọc nhiều lựa chọn HOẶC), `student_test_group_counts`, `export_student_tests`, `list_test_graders`, `list_test_rooms`. Bài kiểm 031 (76 bài). EXPLAIN trên seed lớn trong mô tả PR.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

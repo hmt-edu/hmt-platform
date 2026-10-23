@@ -50,7 +50,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P3d-1 | DB màn Cơ hội (migration `038`): `get_opportunity`, `list_opportunities` và `opportunity_board` mở rộng bộ lọc như Lead (nguồn, chiến dịch, lịch hẹn dạng HOẶC, tôi phụ trách/hỗ trợ, chỉ bản đã gộp, thanh màu Kanban), `opportunity_group_counts`, `export_opportunities`; bài kiểm 030, EXPLAIN trên seed lớn | Đã gộp (PR P3d-1) |
 | P3d-2 | Màn `/crm/co-hoi` (TS-07 danh sách, Group By, Xuất, Assign hàng loạt; Kanban L1–L8 chỉ đi tới, L6 do hệ thống chuyển), trang Cơ hội (TS-08: thanh giai đoạn khoá bước đã qua, nhóm con theo R-CRM-15, 17, 34, 35, sáu nút liên kết, Sửa thông tin học sinh, tab Kiểm tra đầu vào chỉ đọc, ghi chú và lịch hẹn), hộp chuyển giai đoạn TS-09 đủ năm dạng (R-CRM-03, 12, 14, 16), Tạo cơ hội từ lead TS-06 kèm cảnh báo đã có cơ hội (R-CRM-01), ô "Gắn với" của Lịch hẹn chọn được cơ hội; 10 ảnh so sánh `docs/so-sanh/TS0*_pc.jpg` | Đã gộp (PR P3d-2) |
 | Nợ nhỏ P3c, P3d | Sửa gốc lỗi bài kiểm chập chờn: hộp Tạo lịch hẹn chốt loại hoạt động mặc định lúc mở, danh mục tải sau thì ô trống mãi (cả người dùng thật gặp khi mạng chậm), nay lấy mặc định theo danh mục đang có; bài tái hiện bằng cách làm chậm danh mục; Playwright chờ kết quả tối đa 10 giây; Hoàn tác sau Hoàn thành, Huỷ ở Lead, Cơ hội, Lịch hẹn | Đã gộp (PR nợ nhỏ) |
-| P3e–P3f | Màn: Phiếu kiểm tra (e), Gộp trùng + Nhập file (f) | Chưa |
+| P3e-1 | DB màn Phiếu kiểm tra (migration `039`): `get_student_test`, `list_student_tests` và `student_test_board` thêm lọc nhiều lựa chọn (tôi tạo, tôi phụ trách, tôi chấm; quá hạn, hôm nay, sắp tới; môn, hình thức, cấp độ), `student_test_group_counts`, `export_student_tests`, `list_test_graders`, `list_test_rooms`; bài kiểm 031, EXPLAIN trên seed lớn | Đã gộp (PR P3e-1) |
+| P3e-2, P3f | Giao diện Phiếu kiểm tra (e), Gộp trùng + Nhập file (f) | Chưa |
 | 7 | P2 Cấu hình | Chưa |
 | 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
 
@@ -90,7 +91,9 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 
 #16 đã đóng (không gộp; dữ liệu ở #17, giao diện làm lại ở #22 đến #26).
 
-**Đang mở (chờ OK của anh):** #68 (nợ nhỏ: sửa gốc bài kiểm chập chờn, Hoàn tác), #69 (lưu canvas Design v22, khuôn K4g, K4e4), và PR tài liệu 23/10 (luật TD14, bản đồ màn hình, TIEN-DO). Cả #68 lẫn #69 đã xanh hoặc không cần CI; chỉ còn chờ comment OK.
+**Đã gộp 23/10:** #68 (nợ nhỏ: sửa gốc bài kiểm chập chờn, Hoàn tác), #70 (luật TD14, QĐ-Đ7, bản đồ màn hình, TIEN-DO).
+
+**Đang mở:** #69 (lưu canvas Design v22, khuôn K4g, K4e4): chờ Design đẩy bản 23 lên cùng nhánh rồi mới gộp. PR DB P3e-1 (migration 039) chờ OK của anh.
 
 **Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 038) và toàn bộ giao diện mới.
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
@@ -98,7 +101,7 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 ## Thứ tự tiếp theo (anh chốt 23/10)
 
-1. **P3e Phiếu kiểm tra:** PR 1 DB (migration 039: `get_student_test`, đếm nhóm, Xuất, danh sách giáo viên chấm và phòng) rồi PR 2 giao diện (TS-16 danh sách + Kanban + Lịch, TS-17 trang phiếu, TS-15 tạo và đổi lịch; mở khoá mã phiếu ở trang Cơ hội và hộp chặn L7, L8). Anh duyệt kế hoạch 23/10 (QĐ-T6: gộp ba kiểu xem một PR). Chưa bắt đầu viết code.
+1. **P3e Phiếu kiểm tra:** PR 1 DB (migration 039: `get_student_test`, đếm nhóm, Xuất, danh sách giáo viên chấm và phòng) rồi PR 2 giao diện (TS-16 danh sách + Kanban + Lịch, TS-17 trang phiếu, TS-15 tạo và đổi lịch; mở khoá mã phiếu ở trang Cơ hội và hộp chặn L7, L8). Anh duyệt kế hoạch 23/10 (QĐ-T6: gộp ba kiểu xem một PR). **PR 1 DB đã mở** (chờ OK); PR 2 giao diện làm sau khi PR 1 gộp.
 2. **P3f:** Gộp trùng (TS-10) và Nhập file (TS-04).
 3. **PR "Lịch hẹn bổ sung":** Xuất, Group By, chọn hàng loạt kèm Giao việc, Lịch "Theo người" (anh chốt QĐ-Đ6); bỏ "Theo phòng" và "Nhập".
 4. **QT-01, QT-02, QT-03 Người dùng** (kèm ô "Quản lý trực tiếp"): khuôn hộp mật khẩu tạm K4g, K4e4 đã có trong canvas v22 (PR #69).
@@ -115,7 +118,7 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 ## Đang chờ anh Trường
 
-- Comment OK cho #68, #69 và PR tài liệu 23/10.
+- Comment OK cho PR DB P3e-1 (và #69 khi Design đã đẩy bản 23).
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
 - Chưa có quyết định nào khác đang chờ (23/10). Việc sắp tới cần anh duyệt: kế hoạch P3f (khi tới lượt), kế hoạch P5a-DB1 (khi tới lượt).
 
