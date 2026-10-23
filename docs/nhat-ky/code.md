@@ -116,6 +116,9 @@
 - Mở khoá: mã phiếu ở trang Cơ hội và màn Lịch hẹn (lọc `?phieu=`), nút Mở phiếu ở hộp chặn L7, "Tạo lịch Test" ở L5+.
 - Bài kiểm: Vitest `testLogic`, `testFilters`, `testHistory`; Playwright `e2e/phieu.spec.ts` (9 bài, máy tính và điện thoại).
 
+## PR P3f-1 DB Gộp trùng gợi ý, xem trước (23/10)
+- Migration `20261023000040`: `merge_candidates` (gợi ý bản trùng, chỉ trong phạm vi xem của người gọi), `merge_preview` thêm `sides`, `items`; tham số `merge_preview_max_items`. Bài kiểm 032 (50 bài: đúng và bị chặn theo từng vai trò, cơ sở khác không lộ, HMT_GOP_KHAC_CO_SO bằng quyền Xem tạm trong giao dịch). Bài học: trigger chuẩn hoá `created_at` nên bài kiểm không dựa vào thứ tự ghi chú tạo cùng giao dịch.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

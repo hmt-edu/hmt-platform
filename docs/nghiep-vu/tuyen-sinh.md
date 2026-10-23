@@ -223,3 +223,12 @@ Kiểm thử: `supabase/tests/database/026_lead_ban_ghi.test.sql` (42 bài). Lu�
 ## P3c-2b: giao diện trang Lead (không migration mới)
 Kiểm thử: `supabase/tests/database/027_lead_giai_doan_khoi_dau.test.sql` (9 bài, R-CRM-39). Màn: TS-02 `/crm/lead/:id`, TS-03 `/crm/lead/moi`, TS-14 (hộp trùng SĐT), TS-13 (hộp Tạo, Dời lịch hẹn), Huỷ lịch hẹn chọn lý do. Dùng `get_lead`, `create_lead`, `update_lead`, `change_lead_stage`, `find_duplicate_contacts`, các hàm lịch hẹn, `record_notes`, `record_history`. `create_lead` luôn đặt lead mới ở C1, bỏ qua giai đoạn người gọi truyền vào (R-CRM-39).
 
+### P3f-1: dữ liệu hộp Gộp trùng TS-10 (migration `20261023000040`)
+
+| Hàm | Việc | Quyền |
+|---|---|---|
+| `app.merge_candidates(loại, id)` | Gợi ý "bản kia" cho lead (cùng SĐT chuẩn hoá) hoặc cơ hội (cùng phụ huynh): mã, nhãn, cơ sở, giai đoạn, `can_merge` kèm mã và câu tiếng Việt khi không gộp được; tối đa `merge_preview_max_items` dòng, mới nhất trước. **Chỉ trả bản trong phạm vi xem của người gọi** (như RLS): người không phải Admin không thấy bản ở cơ sở khác; hồ sơ gốc ngoài phạm vi trả `HMT_KHONG_TIM_THAY`. `HMT_GOP_KHAC_CO_SO` chỉ gặp ở người xem được nhiều cơ sở mà không phải Admin. Báo giá, đơn của bản bị gộp phụ thuộc chiều gộp nên để `merge_preview` báo | Lead, Cơ hội · Duyệt (R-CRM-22) |
+| `app.merge_preview(...)` (thay thân) | Thêm `sides` (so sánh hai bên: mã, phụ huynh, SĐT, học sinh, nguồn hoặc giai đoạn, người phụ trách, cơ sở, ngày tạo, số lịch hẹn, ghi chú, cơ hội hoặc phiếu) và `items` (lịch hẹn: tiêu đề, giờ, trạng thái; ghi chú: người viết, giờ, 200 ký tự đầu) của bản bị gộp, chỉ cho lead và cơ hội; số thật vẫn ở `move` | như gộp thật |
+
+Hàm nội bộ: `app.merge_side`, `app.merge_items` (không cấp cho giao diện). Tham số mới `merge_preview_max_items` (INT, mục, 5 đến 100, mặc định 20). Không bảng mới, không chỉ mục mới (dùng `lead_phone_idx`, `opportunity_parent_idx`, `appointment_lead_idx`, `note_entity_idx`). Luật gộp (`merge_leads`, `merge_opportunities`) giữ nguyên. Gộp Phụ huynh, Học sinh và điều kiện lớp trùng giờ ở phân hệ Khách hàng, Ghi danh (QĐ-P3f-1); KD6 (học sinh trùng tên, năm sinh dưới một phụ huynh) giữ nguyên hành vi (QĐ-P3f-2). Mã lỗi dùng lại mã đã có. Kiểm thử: `supabase/tests/database/032_gop_trung_goi_y.test.sql`.
+
