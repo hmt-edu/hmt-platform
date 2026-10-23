@@ -43,8 +43,11 @@ jobs:
           cache: npm
 
       - run: npm ci
+        timeout-minutes: 5
 
       - name: Khởi động Supabase local (chỉ dịch vụ cần)
+        # Bình thường khoảng 1,5 đến 2 phút.
+        timeout-minutes: 8
         run: >-
           npx supabase start
           -x studio,imgproxy,mailpit,logflare,vector,realtime,storage-api,supavisor,postgres-meta
@@ -98,16 +101,44 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium-webkit
+          # Đổi phiên bản Playwright thì lấy bản cũ làm nền, chỉ tải phần thiếu.
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
+      # Hai bước cài dưới đây từng treo hơn 22 phút (apt hoặc tải trình duyệt, không ra dòng log nào) cho tới khi hết giờ của cả
+      # job. Bình thường mất dưới 1 phút (lần đầu không có cache khoảng 5 phút). Mỗi lần thử bị cắt sau 6 phút; thử lại đúng một
+      # lần và chỉ ở bước cài (không thử lại bộ kiểm thử, lỗi thật không bị che). Trước lần thử lại dọn tiến trình apt còn kẹt.
       - name: Cài trình duyệt Playwright
         if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: npx playwright install --with-deps chromium webkit
+        timeout-minutes: 14
+        run: |
+          for attempt in 1 2; do
+            if timeout -k 15 360 npx playwright install --with-deps chromium webkit; then exit 0; fi
+            echo "::warning::Lần $attempt cài trình duyệt hỏng hoặc quá 6 phút."
+            sudo pkill -9 -x apt-get || true
+            sudo pkill -9 -x dpkg || true
+            sudo dpkg --configure -a || true
+          done
+          echo "::error::Cài trình duyệt Playwright hỏng sau 2 lần thử."
+          exit 1
 
       - name: Cài thư viện hệ thống cho trình duyệt (khi dùng cache)
         if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: npx playwright install-deps chromium webkit
+        timeout-minutes: 14
+        run: |
+          for attempt in 1 2; do
+            if timeout -k 15 360 npx playwright install-deps chromium webkit; then exit 0; fi
+            echo "::warning::Lần $attempt cài thư viện hệ thống hỏng hoặc quá 6 phút."
+            sudo pkill -9 -x apt-get || true
+            sudo pkill -9 -x dpkg || true
+            sudo dpkg --configure -a || true
+          done
+          echo "::error::Cài thư viện hệ thống cho trình duyệt hỏng sau 2 lần thử."
+          exit 1
 
       - name: Playwright (máy tính + iPhone)
+        # Bình thường 10 đến 12 phút.
+        timeout-minutes: 20
         run: npm run e2e
 
       - name: Lưu báo cáo Playwright khi trượt
