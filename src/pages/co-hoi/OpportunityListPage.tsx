@@ -391,6 +391,7 @@ export function OpportunityListPage() {
             toast({ title: `Đã chuyển sang ${stageName}.` });
           }}
           onFillMissing={(id) => void navigate(`/crm/co-hoi/${id}`)}
+          onOpenTest={(testId) => void navigate(`/crm/phieu-kiem-tra/${testId}`)}
         />
       )}
       <AssignDialog

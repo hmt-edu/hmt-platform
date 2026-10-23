@@ -58,6 +58,22 @@ export function useOpportunityUpcoming(opportunityId: string | null) {
   });
 }
 
+/** Lịch hẹn Chưa làm gắn với một phiếu kiểm tra (lịch nhắc tự sinh, R-CRM-05), gần nhất trước (khối "Hoạt động sắp tới" của trang phiếu). */
+export function useTestUpcoming(testId: string | null) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['test-upcoming', testId],
+    enabled: testId !== null,
+    queryFn: () =>
+      rpc<{ total: number; rows: UpcomingAppointment[] }>(supabase, 'list_appointments', {
+        p_filters: { student_test_id: testId, status: ['CHUA_LAM'] },
+        p_sort: 'time_asc',
+        p_limit: null,
+        p_offset: 0,
+      }),
+  });
+}
+
 export async function createOpportunityAppointment(
   supabase: SupabaseClient,
   args: {

@@ -124,13 +124,16 @@ export function AppointmentListPage() {
   const [params, setParams] = useSearchParams();
   const parentLead = params.get('lead');
   const parentOpp = params.get('co-hoi');
+  const parentTest = params.get('phieu');
   const parentCode = params.get('ma') ?? '';
-  const hasParent = parentLead !== null || parentOpp !== null;
+  const hasParent = parentLead !== null || parentOpp !== null || parentTest !== null;
   const parentFilter = parentLead
     ? { lead_id: parentLead }
     : parentOpp
       ? { opportunity_id: parentOpp }
-      : {};
+      : parentTest
+        ? { student_test_id: parentTest }
+        : {};
   const [state, setState] = useState<ListState>(() =>
     hasParent ? { ...EMPTY_APPOINTMENT_STATE, datePreset: '' } : EMPTY_APPOINTMENT_STATE,
   );
@@ -166,7 +169,7 @@ export function AppointmentListPage() {
     }),
     // parentFilter suy ra từ hai tham số địa chỉ.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [searchState, parentLead, parentOpp],
+    [searchState, parentLead, parentOpp, parentTest],
   );
   const calendarFilters = useMemo(
     () => ({
@@ -175,7 +178,7 @@ export function AppointmentListPage() {
     }),
     // parentFilter suy ra từ hai tham số địa chỉ.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [searchState, window, parentLead, parentOpp],
+    [searchState, window, parentLead, parentOpp, parentTest],
   );
   const sortValue = sortParam(sort);
   const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
@@ -378,12 +381,16 @@ export function AppointmentListPage() {
         parent={
           hasParent
             ? {
-                entityLabel: parentLead ? 'Lead' : 'Cơ hội',
+                entityLabel: parentLead ? 'Lead' : parentOpp ? 'Cơ hội' : 'Phiếu',
                 code: parentCode,
                 childLabel: 'Lịch hẹn',
                 onOpenParent: () =>
                   void navigate(
-                    parentLead ? `/crm/lead/${parentLead}` : `/crm/co-hoi/${parentOpp}`,
+                    parentLead
+                      ? `/crm/lead/${parentLead}`
+                      : parentOpp
+                        ? `/crm/co-hoi/${parentOpp}`
+                        : `/crm/phieu-kiem-tra/${parentTest}`,
                   ),
                 onClear: () => setParams({}),
               }

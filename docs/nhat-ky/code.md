@@ -110,6 +110,12 @@
 ## PR P3e-1 DB Phiếu kiểm tra (23/10)
 - Migration `20261023000039`: `get_student_test`, `list_student_tests` và `student_test_board` thay thân (lọc nhiều lựa chọn HOẶC), `student_test_group_counts`, `export_student_tests`, `list_test_graders`, `list_test_rooms`. Bài kiểm 031 (76 bài). EXPLAIN trên seed lớn trong mô tả PR.
 
+## PR P3e-2 Giao diện Phiếu kiểm tra (23/10)
+- `src/pages/phieu/*`: danh sách, Kanban (thanh đầu cột đếm cả cột, thẻ có nút Bắt đầu test / Nộp bài, kéo thả bị chặn), Lịch; trang phiếu (thanh trạng thái chỉ đọc, nút theo trạng thái, menu Hành động); `CreateTestDialog` (TS-15), `TestDialogs` (kết quả, lý do, đổi lịch). Luật hiển thị ở `testLogic.ts` (giờ nhắc mặc định khớp `app.test_reminder_time`).
+- Khuôn: `StageBar`/`RecordDetail` thêm `showCode`/`stageShowCode` (phiếu không hiện mã kỹ thuật DRAFT, TESTING); `Chips.tsx` tách khỏi `AppointmentDialog`.
+- Mở khoá: mã phiếu ở trang Cơ hội và màn Lịch hẹn (lọc `?phieu=`), nút Mở phiếu ở hộp chặn L7, "Tạo lịch Test" ở L5+.
+- Bài kiểm: Vitest `testLogic`, `testFilters`, `testHistory`; Playwright `e2e/phieu.spec.ts` (9 bài, máy tính và điện thoại).
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

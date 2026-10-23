@@ -22,6 +22,7 @@ export function StageBar({
   onLockedClick,
   label = 'Giai đoạn',
   disabled = false,
+  showCode = true,
 }: {
   steps: StageStep[];
   /** Mã bước hiện tại. */
@@ -34,6 +35,8 @@ export function StageBar({
   label?: string | undefined;
   /** Bản ghi chưa lưu (đang Tạo): cả thanh mờ, chưa đổi giai đoạn được. */
   disabled?: boolean | undefined;
+  /** Hiện mã bước (L1, L2…) trước nhãn; tắt khi mã chỉ là tên kỹ thuật (trạng thái phiếu). */
+  showCode?: boolean | undefined;
 }) {
   const index = steps.findIndex((s) => s.code === current);
   // Thanh dài (L1–L8) cuộn ngang: đưa bước hiện tại vào tầm nhìn khi mở và khi đổi giai đoạn.
@@ -81,7 +84,7 @@ export function StageBar({
                 )}
               >
                 {locked && <Icon name="forbidden" size={16} />}
-                <span className="tabular font-semibold">{step.code}</span>
+                {showCode && <span className="tabular font-semibold">{step.code}</span>}
                 <span>{step.label}</span>
                 {step.fullLabel && <span className="sr-only">{step.fullLabel}</span>}
               </button>

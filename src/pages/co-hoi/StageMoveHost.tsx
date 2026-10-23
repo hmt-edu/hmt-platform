@@ -16,6 +16,7 @@ export function StageMoveHost({
   onClose,
   onDone,
   onFillMissing,
+  onOpenTest,
 }: {
   id: string;
   target: string;
@@ -24,6 +25,8 @@ export function StageMoveHost({
   onDone: (stageName: string) => void;
   /** Dạng thiếu thông tin học sinh: mở trang cơ hội để điền. */
   onFillMissing: (id: string) => void;
+  /** Dạng chặn vì còn phiếu dang dở: mở trang phiếu. */
+  onOpenTest: (testId: string) => void;
 }) {
   const supabase = useDb();
   const toast = useToast();
@@ -76,6 +79,7 @@ export function StageMoveHost({
       catalogs={catalogs}
       lastCompleted={record.tests.find((t) => t.status_code === 'COMPLETED') ?? null}
       onFillMissing={() => onFillMissing(record.id)}
+      onOpenTest={onOpenTest}
       onSubmit={submit}
     />
   );

@@ -37,6 +37,8 @@ type Props = {
   lastCompleted: OppTest | null;
   /** Đóng hộp, mở chế độ Sửa tại ô còn thiếu (dạng thiếu thông tin học sinh). */
   onFillMissing: () => void;
+  /** Mở trang phiếu kiểm tra đang dở (dạng chặn vì còn phiếu dang dở, R-CRM-12). */
+  onOpenTest: (testId: string) => void;
   onSubmit: (data: StageSubmit) => Promise<void>;
 };
 
@@ -56,6 +58,7 @@ function StageForm({
   catalogs,
   lastCompleted,
   onFillMissing,
+  onOpenTest,
   onSubmit,
 }: Props) {
   const [substage, setSubstage] = useState('');
@@ -152,15 +155,17 @@ function StageForm({
                 : plan.codes.map((c) => <li key={c}>{c}</li>)}
             </ul>
             <p className="mt-1">Hoàn thành phiếu, hoặc Huỷ phiếu, rồi chuyển lại.</p>
-            {plan.codes[0] && (
+            {plan.tests[0] && (
               <Button
                 className="mt-2"
                 size="sm"
                 icon="arrowRight"
-                disabled
-                title="Mở phiếu có khi làm màn Phiếu kiểm tra"
+                onClick={() => {
+                  onOpenChange(false);
+                  onOpenTest(plan.tests[0]?.id ?? '');
+                }}
               >
-                Mở phiếu {plan.codes[0]}
+                Mở phiếu {plan.tests[0].code}
               </Button>
             )}
           </Alert>

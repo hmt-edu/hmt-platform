@@ -11,6 +11,7 @@ import {
   createOpportunityAppointment,
   rescheduleAppointment,
   useOpportunityUpcoming,
+  useTestUpcoming,
   type UpcomingAppointment,
 } from './appointmentApi';
 import { AppointmentDialog } from './AppointmentDialog';
@@ -27,6 +28,7 @@ export function useOpportunityAppointments({
   canEdit,
   canCancel,
   refresh,
+  upcomingOfTest,
 }: {
   opportunityId: string;
   branchId: string;
@@ -36,11 +38,15 @@ export function useOpportunityAppointments({
   canEdit: boolean;
   canCancel: boolean;
   refresh: () => Promise<void>;
+  /** Trang phiếu kiểm tra: khối "Hoạt động sắp tới" là lịch nhắc của phiếu này; Tạo vẫn gắn với cơ hội của phiếu. */
+  upcomingOfTest?: string | undefined;
 }): { upcoming: ReactNode; dialogs: ReactNode; openCreate: () => void } {
   const supabase = useDb();
   const toast = useToast();
   const undo = useUndoAppointment(refresh);
-  const query = useOpportunityUpcoming(opportunityId);
+  const ofOpportunity = useOpportunityUpcoming(upcomingOfTest === undefined ? opportunityId : null);
+  const ofTest = useTestUpcoming(upcomingOfTest ?? null);
+  const query = upcomingOfTest === undefined ? ofOpportunity : ofTest;
   const [createOpen, setCreateOpen] = useState(false);
   const [moving, setMoving] = useState<Row | null>(null);
   const [canceling, setCanceling] = useState<UpcomingAppointment | null>(null);

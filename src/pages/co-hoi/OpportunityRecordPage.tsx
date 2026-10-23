@@ -1,7 +1,7 @@
 // TS-08 Trang Cơ hội (xem, Sửa): khuôn K3 nối cơ sở dữ liệu. Đọc bằng get_opportunity (một lần gọi), sửa bằng update_opportunity
 // (chỉ thông tin học sinh, nhu cầu, người hỗ trợ; phụ huynh và nguồn sửa ở nơi khác, R-CRM-27), đổi giai đoạn bằng
 // change_opportunity_stage qua hộp TS-09 (chỉ đi tới, không Hoàn tác, R-CRM-02). Lịch hẹn ở cột phải (TS-13, R-CRM-04).
-// Nút Tạo lịch Test (P3e), Tạo báo giá, Tạo đơn hàng (P5), Đính kèm (giai đoạn 4), Gộp trùng (P3f) chưa dùng được nên mờ hoặc ẩn.
+// Nút Tạo báo giá, Tạo đơn hàng (P5), Đính kèm (giai đoạn 4), Gộp trùng (P3f) chưa dùng được nên mờ hoặc ẩn.
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
@@ -14,7 +14,7 @@ import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Button } from '../../ui/Button';
-import { Code, Table, Tag, type TagTone } from '../../ui/Data';
+import { Table, Tag, type TagTone } from '../../ui/Data';
 import { StateView, Spinner } from '../../ui/Feedback';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
@@ -23,6 +23,7 @@ import { OptionalSelect } from '../../ui/OptionalSelect';
 import { Tabs } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
+import { CreateTestDialog } from '../phieu/CreateTestDialog';
 import { appointmentTag, codeAndName, formatPhone } from '../lead/leadFormat';
 import { dateToIso, isoToDate } from '../lead/leadRecord';
 import { useLeadCatalogs } from '../lead/useCatalogs';
@@ -102,6 +103,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const canEdit = access.can('OPPORTUNITY', 'SUA') && !merged;
   const canAssign = access.can('OPPORTUNITY', 'GIAO_VIEC') && !merged;
   const canAppt = access.can('APPOINTMENT', 'TAO') && !merged;
+  const canCreateTest = access.can('STUDENT_TEST', 'TAO') && !merged;
 
   const initial = useMemo<OppDraft>(() => toOppDraft(record), [record]);
   const [mode, setMode] = useState<DetailMode>('view');
@@ -111,6 +113,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const [tab, setTab] = useState('source');
   const [assignOpen, setAssignOpen] = useState(false);
   const [moveTo, setMoveTo] = useState<string | null>(null);
+  const [testOpen, setTestOpen] = useState(false);
 
   const editing = mode !== 'view';
   const dirty = editing && JSON.stringify(draft) !== JSON.stringify(initial);
@@ -271,7 +274,14 @@ function OpportunityView({ record }: { record: OppRecord }) {
           {
             key: 'code',
             header: 'Mã phiếu',
-            cell: (t) => <Code>{t.code}</Code>,
+            cell: (t) => (
+              <Link
+                to={`/crm/phieu-kiem-tra/${t.id}`}
+                className="font-medium text-link hover:underline"
+              >
+                {t.code}
+              </Link>
+            ),
           },
           {
             key: 'status',
@@ -435,7 +445,15 @@ function OpportunityView({ record }: { record: OppRecord }) {
             label: 'Kiểm tra',
             icon: 'results',
             count: record.tests_total,
-            onOpen: () => setTab('tests'),
+            onOpen: (target) => {
+              // Một phiếu thì mở thẳng phiếu; nhiều phiếu thì mở danh sách đã lọc theo cơ hội (K3, smart button).
+              const only = record.tests[0];
+              if (target === 'record' && only) void navigate(`/crm/phieu-kiem-tra/${only.id}`);
+              else
+                void navigate(
+                  `/crm/phieu-kiem-tra?co-hoi=${record.id}&ma=${encodeURIComponent(record.code)}`,
+                );
+            },
           },
           {
             key: 'bao-gia',
@@ -486,12 +504,15 @@ function OpportunityView({ record }: { record: OppRecord }) {
                 {!merged && (
                   <Button
                     icon="results"
-                    disabled
+                    disabled={!canCreateTest || stageIndex(record.stage_code) < stageIndex('L5')}
                     title={
-                      stageIndex(record.stage_code) >= stageIndex('L5')
-                        ? 'Có khi làm màn Phiếu kiểm tra'
-                        : 'Chỉ tạo phiếu khi cơ hội ở L5 trở đi (R-CRM-05)'
+                      stageIndex(record.stage_code) < stageIndex('L5')
+                        ? 'Chỉ tạo phiếu khi cơ hội ở L5 trở đi (R-CRM-05)'
+                        : !canCreateTest
+                          ? 'Bạn không có quyền tạo phiếu kiểm tra'
+                          : undefined
                     }
+                    onClick={() => setTestOpen(true)}
                   >
                     Tạo lịch Test
                   </Button>
@@ -711,6 +732,23 @@ function OpportunityView({ record }: { record: OppRecord }) {
         }}
       />
       {appointments.dialogs}
+      <CreateTestDialog
+        open={testOpen}
+        onOpenChange={setTestOpen}
+        opportunity={{
+          id: record.id,
+          code: record.code,
+          student_name: record.student_name,
+          parent_name: record.parent_name,
+          branch_id: record.branch_id,
+        }}
+        catalogs={catalogs}
+        onCreated={async (created) => {
+          await refreshRecord();
+          toast({ title: `Đã tạo phiếu ${created.code}.` });
+          void navigate(`/crm/phieu-kiem-tra/${created.id}`);
+        }}
+      />
       {moveTo && plan && (
         <StageDialog
           open
@@ -729,6 +767,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             setErrors(validateOppDraft(initial, moveTo));
             setMode('edit');
           }}
+          onOpenTest={(testId) => void navigate(`/crm/phieu-kiem-tra/${testId}`)}
           onSubmit={submitStage}
         />
       )}

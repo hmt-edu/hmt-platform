@@ -87,18 +87,19 @@ test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dù
   await expect(page.getByRole('button', { name: 'Lead gốc: 1' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Tạo báo giá' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Tạo đơn hàng' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Tạo lịch Test' })).toBeDisabled();
+  // Cơ hội ở L5 và người dùng có quyền tạo phiếu: nút dùng được (P3e-2).
+  await expect(page.getByRole('button', { name: 'Tạo lịch Test' })).toBeEnabled();
   await expect(page.getByRole('button', { name: /^Đính kèm \(\d+\)$/ })).toHaveCount(0);
   // Nhóm con L5 do hệ thống gắn: ô khoá.
   await expect(page.getByLabel('Sub-stage')).toHaveAttribute('readonly', '');
-  // Tab phiếu: mã phiếu là chữ, chưa bấm được (P3e).
-  await page.getByRole('button', { name: 'Kiểm tra: 1' }).click();
+  // Tab phiếu: mã phiếu là liên kết sang màn Phiếu kiểm tra (P3e-2).
+  // Một phiếu duy nhất: nút "Kiểm tra" mở thẳng phiếu (P3e-2); tab bên dưới vẫn liệt kê phiếu.
+  await page.getByRole('tab', { name: /Kiểm tra đầu vào/ }).click();
   await expect(page.getByRole('tab', { name: /Kiểm tra đầu vào \(1\)/ })).toHaveAttribute(
     'aria-selected',
     'true',
   );
-  await expect(page.getByText(/^PKT\d+$/).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: /^PKT\d+$/ })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /^PKT\d+$/ })).toBeVisible();
   await expectAccessible(page);
 });
 
@@ -146,7 +147,7 @@ test('R-CRM-03: thiếu tên học sinh thì chặn L5, nêu ô thiếu, "Đi t�
   await expect(page.getByText(/bắt buộc có tên học sinh/)).toBeVisible();
 });
 
-test('R-CRM-12: còn phiếu dang dở thì chặn L7, nêu mã phiếu, nút mở phiếu mờ', async ({
+test('R-CRM-12: còn phiếu dang dở thì chặn L7, nêu mã phiếu, nút mở phiếu dùng được', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -154,8 +155,7 @@ test('R-CRM-12: còn phiếu dang dở thì chặn L7, nêu mã phiếu, nút m�
   await stageBar(page).getByRole('button', { name: /^L7/ }).click();
   const dialog = dialogOf(page, /Chuyển sang L7/);
   await expect(dialog.getByText(/Cơ hội còn phiếu kiểm tra đang dở/)).toBeVisible();
-  await expect(dialog.getByText(/^PKT\d+ · /)).toBeVisible();
-  await expect(dialog.getByRole('button', { name: /^Mở phiếu PKT/ })).toBeDisabled();
+  await expect(dialog.getByRole('button', { name: /^Mở phiếu PKT/ })).toBeEnabled();
   await expect(dialog.getByRole('button', { name: 'Chuyển giai đoạn' })).toBeDisabled();
 });
 

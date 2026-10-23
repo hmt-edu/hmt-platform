@@ -5,12 +5,12 @@ import { errorOf } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { useAuth } from '../../lib/auth/authContext';
-import { cn } from '../../ui/cn';
 import { FormDialog } from '../../ui/Dialogs';
 import { Field, INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { DateInput } from '../../ui/Inputs';
 import { Select } from '../../ui/Overlays';
 import { useAssignableStaff } from '../assign/useAssignableStaff';
+import { Chips } from './Chips';
 import { QUICK_HOURS, combineVn, parseTime, pickActivity, quickDays } from './appointmentTime';
 
 type Option = { value: string; label: string };
@@ -59,42 +59,6 @@ type Props = {
 /** Mỗi lần mở là một biểu mẫu mới. */
 export function AppointmentDialog(props: Props) {
   return props.open ? <AppointmentForm {...props} /> : null;
-}
-
-function Chips({
-  label,
-  items,
-  selected,
-  onPick,
-}: {
-  label: string;
-  items: { key: string; label: string }[];
-  selected: string | null;
-  onPick: (key: string) => void;
-}) {
-  return (
-    <div role="group" aria-label={label} className="flex flex-col gap-1">
-      <span className="text-caption font-semibold text-fg-label">{label}</span>
-      <div className="flex flex-wrap gap-1.5">
-        {items.map((item) => (
-          <button
-            key={item.key}
-            type="button"
-            aria-pressed={selected === item.key}
-            onClick={() => onPick(item.key)}
-            className={cn(
-              'focus-ring tap h-control-sm rounded-full border px-3 text-caption font-medium',
-              selected === item.key
-                ? 'border-brand-300 bg-brand-100 text-brand-800'
-                : 'border-border-strong bg-surface hover:bg-hover',
-            )}
-          >
-            {item.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
 }
 
 function AppointmentForm({

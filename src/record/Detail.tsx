@@ -154,6 +154,8 @@ export function RecordDetail({
   onRefresh,
   readOnly = false,
   stage,
+  stageNote,
+  stageShowCode = true,
   businessActions,
   subStage,
   smart,
@@ -189,6 +191,10 @@ export function RecordDetail({
         onLockedClick?: ((step: StageStep, reason: string) => void) | undefined;
       }
     | undefined;
+  /** Dòng chú dưới thanh giai đoạn ("Stage chỉ đọc, đổi bằng nút bên dưới"). */
+  stageNote?: string | undefined;
+  /** Hiện mã bước trên thanh Stage; tắt khi mã là tên kỹ thuật (phiếu kiểm tra). */
+  stageShowCode?: boolean | undefined;
   businessActions?: ReactNode | undefined;
   subStage?: ReactNode | undefined;
   smart?: SmartItem[] | undefined;
@@ -272,12 +278,16 @@ export function RecordDetail({
             <div className="rounded-box border border-border bg-surface p-2">
               <StageBar
                 steps={stage.steps}
+                showCode={stageShowCode}
                 current={stage.current}
                 forwardOnly={stage.forwardOnly}
                 onSelect={stage.onSelect}
                 onLockedClick={stage.onLockedClick}
                 disabled={creating || readOnly}
               />
+              {stageNote && (
+                <p className="px-3.5 pt-1.5 pb-1 text-caption text-fg-muted">{stageNote}</p>
+              )}
             </div>
           )}
           {(businessActions || subStage) && (

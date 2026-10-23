@@ -71,7 +71,7 @@ export function AppointmentButtons({
   ) : null;
 }
 
-/** "Lead LD000232" có liên kết sang bản ghi (lead); cơ hội, phiếu chưa có màn nên chỉ hiện mã. */
+/** "Lead LD000232", "Cơ hội CO000121", "Phiếu PKT000105": mã có liên kết sang bản ghi. */
 export function RecordLink({ row }: { row: AppointmentRow }) {
   const kind = recordKind(row);
   if (!row.record_code) return <span className="text-fg-muted">—</span>;
@@ -85,6 +85,13 @@ export function RecordLink({ row }: { row: AppointmentRow }) {
       ) : kind === 'OPPORTUNITY' && row.opportunity_id ? (
         <Link
           to={`/crm/co-hoi/${row.opportunity_id}`}
+          className="font-medium text-link hover:underline"
+        >
+          {row.record_code}
+        </Link>
+      ) : kind === 'TEST' && row.student_test_id ? (
+        <Link
+          to={`/crm/phieu-kiem-tra/${row.student_test_id}`}
           className="font-medium text-link hover:underline"
         >
           {row.record_code}
