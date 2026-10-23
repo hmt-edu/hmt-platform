@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 19/10/2026, 09:00. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 23/10/2026. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
 ## Quy trình (đọc `docs/quy-trinh-phoi-hop.md`)
 
@@ -69,9 +69,9 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
 
-## Đang ở đâu (17/10/2026 tối)
+## Đang ở đâu (23/10/2026)
 
-**Đã gộp vào `main`** (mỗi PR có link comment "OK" của `caotruong276` trong commit gộp):
+**Đã gộp vào `main`** (mỗi PR có link comment "OK" của `caotruong276` trong commit gộp; PR chỉ tài liệu không có CI):
 
 | Nhóm | PR |
 |---|---|
@@ -80,22 +80,29 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 | Luật và danh mục: luật 16/10, danh mục L5P, L6, danh mục 33; sửa lệch spec 06; danh mục phẳng và hai cấp | #27 đến #31 |
 | Ma trận quyền: phiên bản, tách phân hệ (Cấu hình bán hàng, Cấu hình đào tạo, Ngày nghỉ lễ, Lịch hẹn) | #32, #33 |
 | P3 Tuyển sinh: tài liệu (P3a), dữ liệu nền lead và lịch hẹn, ma trận quyền phiên bản 3 (P3b1) | #34, #35 |
-| Nguồn canvas Design (P4, P5a, P5b) và nhật ký bàn giao | #37 |
-| Tách gói tải theo cổng và màn; nền tảng phối hợp ba bên (nhật ký, khởi động, quy trình mới) | #36, #38 |
+| Nguồn canvas Design (P4, P5a, P5b) và nhật ký bàn giao; tách gói tải; nền tảng phối hợp ba bên; luật 17/10 | #36 đến #40 |
+| Đăng nhập (5a, 5b), Trang chủ theo vai trò, cập nhật tiến độ | #41 đến #44 |
+| P3b Tuyển sinh dữ liệu: Cơ hội, ma trận quyền phiên bản 4, Phiếu kiểm tra đầu vào, Gộp trùng, Nhập lô lead; luật và tiến độ 18/10 | #45 đến #52 |
+| P3c Lead, Lịch hẹn: dữ liệu và giao diện màn Lead (danh sách, Kanban, trang Lead, Tạo lead), DB và giao diện màn Lịch hẹn; lưu canvas v64; luật 19/10 (bảy luật Bán hàng, Thu chi, quản lý trực tiếp) | #53 đến #58, #60, #63, #64 |
+| Sửa nhóm đăng nhập theo gói hiện hành; nền động đăng nhập (5c) | #59, #62 |
+| Quản lý trực tiếp (R-HT-06, migration 036); luật bổ sung 19/10 (người duyệt chốt lúc trình, Admin không duyệt thay phiếu thu) | #61, #65 |
+| P3d Cơ hội: DB (migration 038) và giao diện (danh sách, Kanban, trang bản ghi, chuyển giai đoạn, tạo từ lead) | #66, #67 |
 
 #16 đã đóng (không gộp; dữ liệu ở #17, giao diện làm lại ở #22 đến #26).
 
-**Đang mở:** không có PR nào.
+**Đang mở (chờ OK của anh):** #68 (nợ nhỏ: sửa gốc bài kiểm chập chờn, Hoàn tác), #69 (lưu canvas Design v22, khuôn K4g, K4e4), và PR tài liệu 23/10 (luật TD14, bản đồ màn hình, TIEN-DO). Cả #68 lẫn #69 đã xanh hoặc không cần CI; chỉ còn chờ comment OK.
 
-**Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 026) và toàn bộ giao diện mới.
+**Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 038) và toàn bộ giao diện mới.
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
 Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
-## Thứ tự tiếp theo (anh chốt 17/10)
+## Thứ tự tiếp theo (anh chốt 23/10)
 
-1. PR 5 Đăng nhập (5a, 5b, 5c; đã OK đề xuất 18/10).
-2. PR 5a Trang chủ theo vai trò (K09b, gồm "Việc tuyển sinh hôm nay" TS-12).
-3. P3b2b Phiếu kiểm tra, P3b3 Gộp trùng và nhập file (làm trước các màn); rồi các màn P3c đến P3f.
+1. **P3e Phiếu kiểm tra:** PR 1 DB (migration 039: `get_student_test`, đếm nhóm, Xuất, danh sách giáo viên chấm và phòng) rồi PR 2 giao diện (TS-16 danh sách + Kanban + Lịch, TS-17 trang phiếu, TS-15 tạo và đổi lịch; mở khoá mã phiếu ở trang Cơ hội và hộp chặn L7, L8). Anh duyệt kế hoạch 23/10 (QĐ-T6: gộp ba kiểu xem một PR). Chưa bắt đầu viết code.
+2. **P3f:** Gộp trùng (TS-10) và Nhập file (TS-04).
+3. **PR "Lịch hẹn bổ sung":** Xuất, Group By, chọn hàng loạt kèm Giao việc, Lịch "Theo người" (anh chốt QĐ-Đ6); bỏ "Theo phòng" và "Nhập".
+4. **QT-01, QT-02, QT-03 Người dùng** (kèm ô "Quản lý trực tiếp"): khuôn hộp mật khẩu tạm K4g, K4e4 đã có trong canvas v22 (PR #69).
+5. **P5a Bán hàng + Thu chi:** đặc tả đã viết (Chat), đứng sau các mục trên; tới lượt thì em gửi kế hoạch P5a-DB1 cho anh duyệt trước khi viết migration. Ghi danh và Lớp thuộc P5b (anh chốt QĐ-P5a-1).
 
 Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Ghi danh (xem `docs/nhat-ky/design.md`).
 
@@ -108,7 +115,9 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 ## Đang chờ anh Trường
 
+- Comment OK cho #68, #69 và PR tài liệu 23/10.
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
+- Chưa có quyết định nào khác đang chờ (23/10). Việc sắp tới cần anh duyệt: kế hoạch P3f (khi tới lượt), kế hoạch P5a-DB1 (khi tới lượt).
 
 ## Việc phải nhớ khi viết hàm (luật đã chốt)
 
