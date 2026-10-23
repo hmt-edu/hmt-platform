@@ -13,6 +13,7 @@ const OUT_DIR = process.env.SO_SANH_GHI_VAO_REPO
   ? join(process.cwd(), 'docs', 'so-sanh')
   : join(tmpdir(), 'hmt-so-sanh');
 const DESKTOP = { width: 1440, height: 1000 };
+const PHONE = { width: 390, height: 844 };
 
 test.skip(
   !process.env.SO_SANH || !PASSWORD || !DB_URL,
@@ -24,8 +25,10 @@ async function save(browser: Browser, page: Page, name: string, designName: stri
   await page.waitForTimeout(600);
   const shot = await page.screenshot({ type: 'png' });
   const designPath = join(DESIGN_DIR, `${designName}.png`);
-  const design = existsSync(designPath) ? readFileSync(designPath).toString('base64') : null;
-  const composer = await browser.newPage({ viewport: { width: 1800, height: 800 } });
+  const phone = name.endsWith('_mb');
+  const design =
+    !phone && existsSync(designPath) ? readFileSync(designPath).toString('base64') : null;
+  const composer = await browser.newPage({ viewport: { width: phone ? 460 : 1800, height: 800 } });
   const figure = (title: string, data: string) =>
     `<figure style="margin:0;flex:1"><figcaption style="font:600 14px system-ui;padding:6px 0">${title}</figcaption>` +
     `<img src="data:image/png;base64,${data}" style="width:100%;border:1px solid #bbb;display:block"></figure>`;
@@ -81,6 +84,47 @@ test('Phiếu kiểm tra: danh sách, Kanban, Lịch, bản ghi, hộp tạo (m�
     await page.getByRole('button', { name: 'Tạo lịch Test' }).click();
     await expect(page.getByRole('dialog', { name: 'Tạo phiếu kiểm tra' })).toBeVisible();
     await save(browser, page, 'TS15_pc', 'TS15');
+  } finally {
+    await clearMark(setup.mark);
+  }
+});
+
+test('Phiếu kiểm tra: danh sách, Kanban, Lịch, bản ghi, hộp tạo (điện thoại, chỉ bản dựng)', async ({
+  page,
+  browser,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  const seeded = await seed(setup);
+  try {
+    await page.setViewportSize(PHONE);
+    await loginStaff(page, setup.account);
+    await expect(page).toHaveURL(/\/crm$/);
+    await page.goto('/crm/phieu-kiem-tra');
+    await page.getByPlaceholder(/Tìm tên, SĐT, mã/).fill(setup.mark);
+    await expect(page.getByText(seeded.test.edit.code).first()).toBeVisible();
+    await save(browser, page, 'TS16_mb', 'TS16');
+    await page.getByRole('button', { name: 'Kanban', exact: true }).click();
+    await expect(
+      page.getByRole('heading', { name: 'Đang test', exact: true }).first(),
+    ).toBeVisible();
+    await save(browser, page, 'TS16b_mb', 'TS16b');
+    await page.getByRole('button', { name: 'Calendar', exact: true }).click();
+    await page.getByRole('button', { name: 'Tháng', exact: true }).click();
+    await page
+      .getByRole('button', { name: new RegExp(seeded.student.edit) })
+      .first()
+      .click();
+    await expect(page.getByRole('link', { name: /^Mở phiếu/ })).toBeVisible();
+    await save(browser, page, 'TS16c_mb', 'TS16c');
+
+    await page.goto(`/crm/phieu-kiem-tra/${seeded.test.review.id}`);
+    await expect(page.getByRole('heading', { level: 1, name: 'Phiếu kiểm tra' })).toBeVisible();
+    await save(browser, page, 'TS17_mb', 'TS17');
+
+    await page.goto(`/crm/co-hoi/${seeded.opportunity.fresh.id}`);
+    await page.getByRole('button', { name: 'Tạo lịch Test' }).click();
+    await expect(page.getByRole('dialog', { name: 'Tạo phiếu kiểm tra' })).toBeVisible();
+    await save(browser, page, 'TS15_mb', 'TS15');
   } finally {
     await clearMark(setup.mark);
   }

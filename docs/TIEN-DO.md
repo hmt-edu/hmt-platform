@@ -52,7 +52,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | Nợ nhỏ P3c, P3d | Sửa gốc lỗi bài kiểm chập chờn: hộp Tạo lịch hẹn chốt loại hoạt động mặc định lúc mở, danh mục tải sau thì ô trống mãi (cả người dùng thật gặp khi mạng chậm), nay lấy mặc định theo danh mục đang có; bài tái hiện bằng cách làm chậm danh mục; Playwright chờ kết quả tối đa 10 giây; Hoàn tác sau Hoàn thành, Huỷ ở Lead, Cơ hội, Lịch hẹn | Đã gộp (PR nợ nhỏ) |
 | P3e-1 | DB màn Phiếu kiểm tra (migration `039`): `get_student_test`, `list_student_tests` và `student_test_board` thêm lọc nhiều lựa chọn (tôi tạo, tôi phụ trách, tôi chấm; quá hạn, hôm nay, sắp tới; môn, hình thức, cấp độ), `student_test_group_counts`, `export_student_tests`, `list_test_graders`, `list_test_rooms`; bài kiểm 031, EXPLAIN trên seed lớn | Đã gộp (PR P3e-1) |
 | P3e-2 | Giao diện Phiếu kiểm tra (`/crm/phieu-kiem-tra`): danh sách + Kanban (đếm theo cột) + Lịch (TS-16), trang phiếu (TS-17: thanh trạng thái chỉ đọc, Nhập kết quả, Hoàn thành, Lùi bước, Huỷ, Mở lại, Đổi lịch, Sửa), tạo phiếu từ cơ hội (TS-15); mở khoá mã phiếu, nút "Mở phiếu" ở trang Cơ hội, hộp chặn L7, màn Lịch hẹn lọc theo phiếu | Đã gộp (PR P3e-2) |
-| P3f | Gộp trùng (TS-10) + Nhập file (TS-04) | Chưa |
+| P3f-1 | DB hộp Gộp trùng (migration `040`): `merge_candidates` (gợi ý bản trùng, chỉ trong phạm vi xem của người gọi), `merge_preview` thêm so sánh hai bên và danh sách lịch hẹn, ghi chú sẽ chuyển, tham số `merge_preview_max_items`; bài kiểm 032 (50 bài), EXPLAIN trên seed lớn | Đã gộp (PR P3f-1) |
+| P3f-2 | Giao diện Gộp trùng (TS-10) + Nhập file (TS-04) | Chưa (làm tiếp) |
 | 7 | P2 Cấu hình | Chưa |
 | 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
 
@@ -94,7 +95,7 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 
 **Đã gộp 23/10:** #68 (nợ nhỏ: sửa gốc bài kiểm chập chờn, Hoàn tác), #70 (luật TD14, QĐ-Đ7, bản đồ màn hình, TIEN-DO).
 
-**Đang mở:** #69 (lưu canvas Design v22, khuôn K4g, K4e4): chờ Design đẩy bản 23 lên cùng nhánh rồi mới gộp. Chờ OK của anh cho PR dọn nhỏ (#73: GD-02 thêm Tạo phiếu tái tục thủ công, xoá hai khung cũ).
+**Đang mở:** #69 (lưu canvas Design, khuôn K4g, K4e4): bản 23 đã đẩy (commit 7eedb2d) nên không còn chờ bản 23; chờ bản cuối của Design (bản 25 trở đi, sau khi Design bỏ thanh Filters/Group By/Favorites, nút Làm mới, nút Cột và ô tìm kiếm trên K12, QĐ-Đ12, QĐ-Đ17) và anh nói "lưu" mới gộp. #73 (dọn khung cũ, GD-02 thêm Tạo phiếu tái tục thủ công) và #75 (P3f-1 DB) đã gộp.
 
 **Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 038) và toàn bộ giao diện mới.
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
@@ -103,7 +104,7 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 ## Thứ tự tiếp theo (anh chốt 23/10)
 
 1. **P3e Phiếu kiểm tra:** PR 1 DB (migration 039: `get_student_test`, đếm nhóm, Xuất, danh sách giáo viên chấm và phòng) rồi PR 2 giao diện (TS-16 danh sách + Kanban + Lịch, TS-17 trang phiếu, TS-15 tạo và đổi lịch; mở khoá mã phiếu ở trang Cơ hội và hộp chặn L7, L8). Anh duyệt kế hoạch 23/10 (QĐ-T6: gộp ba kiểu xem một PR). **Cả hai PR đã gộp** (P3e-1 DB, P3e-2 giao diện).
-2. **P3f:** Gộp trùng (TS-10) và Nhập file (TS-04).
+2. **P3f:** Gộp trùng (TS-10) và Nhập file (TS-04). Anh duyệt kế hoạch 23/10: **PR 1 DB (migration 040) đã gộp**; PR 2 giao diện làm tiếp (CSV trước; đọc UTF-8 có BOM, dấu phân cách "," hoặc ";"). Chỉ gộp Lead và Cơ hội (QĐ-P3f-1).
 3. **PR "Lịch hẹn bổ sung":** Xuất, Group By, chọn hàng loạt kèm Giao việc, Lịch "Theo người" (anh chốt QĐ-Đ6); bỏ "Theo phòng" và "Nhập".
 4. **QT-01, QT-02, QT-03 Người dùng** (kèm ô "Quản lý trực tiếp"): khuôn hộp mật khẩu tạm K4g, K4e4 đã có trong canvas v22 (PR #69).
 5. **P5a Bán hàng + Thu chi:** đặc tả đã viết (Chat), đứng sau các mục trên; tới lượt thì em gửi kế hoạch P5a-DB1 cho anh duyệt trước khi viết migration. Ghi danh và Lớp thuộc P5b (anh chốt QĐ-P5a-1).
@@ -119,9 +120,9 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 ## Đang chờ anh Trường
 
-- Comment OK cho #73 (và #69 khi Design đã đẩy bản 23).
+- Comment OK cho PR tài liệu #74 (QĐ-Đ10 đến Đ20); #69 chờ bản cuối của Design và anh nói "lưu".
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
-- Chưa có quyết định nào khác đang chờ (23/10). Việc sắp tới cần anh duyệt: kế hoạch P3f (khi tới lượt), kế hoạch P5a-DB1 (khi tới lượt).
+- Chưa có quyết định nào khác đang chờ (23/10). Việc sắp tới cần anh duyệt: kế hoạch P5a-DB1 (khi tới lượt).
 
 ## Việc phải nhớ khi viết hàm (luật đã chốt)
 
@@ -150,7 +151,7 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 - **Quản lý trực tiếp (PR DB `feat/hts-quan-ly-truc-tiep`):** cột, `set_manager`, `approval_route`, `can_approve_as_manager` đã có. **Trường "Quản lý trực tiếp" trên màn Người dùng (QT-01) chưa làm được vì màn QT-01 chưa dựng**; thêm trường khi dựng QT-01 (gọi `app.set_manager`).
 - **Quyết định cho Bán hàng (P5), anh chốt 19/10:** Q-P5 người duyệt chốt lúc trình, đổi quản lý sau không đổi (đã vào R-HT-06); Q-P8 Admin không duyệt thay bước quản lý của phiếu thu, quản lý vắng thì Admin "Chuyển người duyệt" sang người khác đủ điều kiện, có nhật ký (đã vào R-TIEN-01); Q-P6 Trưởng cơ sở trình đơn thì mở hộp BH-07, một lần xác nhận, đơn sang Đã duyệt trong cùng giao dịch, lịch sử ghi "trình" và "tự duyệt", vượt trần vẫn phải tick; phiếu thu của Trưởng cơ sở đi thẳng "Chờ kế toán". **Việc còn lại:** nút "Chuyển người duyệt" chưa có trong bản vẽ (nhờ Design vẽ khi dựng TC-17 và hộp duyệt đơn); hàm `can_approve_as_manager` (migration 036) đã khớp: phiếu thu Admin không duyệt thay.
-- **Điểm mở Q-P7 (KD6, anh để mở 19/10):** giữ hành vi nhận trùng phụ huynh theo họ tên + năm sinh học sinh; hai học sinh trùng tên cùng năm sinh của một phụ huynh chưa có cách phân biệt, bàn lại khi gặp.
+- **Điểm mở Q-P7 (KD6, anh để mở 19/10; 23/10 anh chọn giữ nguyên, QĐ-P3f-2) [CHỐT chờ]:** giữ hành vi nhận trùng phụ huynh theo họ tên + năm sinh học sinh; hai học sinh trùng tên cùng năm sinh của một phụ huynh (ví dụ sinh đôi) chưa có cách phân biệt, nên coi là một hồ sơ và hai cơ hội của hai em gộp được. Chưa thêm cảnh báo mềm; bàn lại khi gặp thật.
 
 - **Nền động trang đăng nhập (PR 5c):** robot, đường nét, ký hiệu toán chuyển động theo bản vẽ DN01; bật "giảm chuyển động" thì đứng yên. Ảnh và video: `docs/so-sanh/DN-dong-*`.
 - Giao diện QT-01, QT-02 (tạo người dùng, đặt lại mật khẩu, hai bước, thu hồi phiên, lý do khoá từ danh mục) và QT-08: chờ thiết kế; phần cơ sở dữ liệu đã làm một phần (xem lịch sử PR).

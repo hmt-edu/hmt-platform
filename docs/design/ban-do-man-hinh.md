@@ -25,8 +25,8 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | K09 | Tổng quan / báo cáo | Bộ lọc khoảng ngày + cơ sở, thẻ số, biểu đồ, bảng chi tiết, xuất |
 | K10 | Cấu hình | Danh mục (thêm, đổi tên, thứ tự, ngừng), tham số (kiểu, đơn vị, khoảng), cấu hình có hiệu lực (phiên bản, ngày hiệu lực, lịch sử) |
 | K11 | Trang đơn | Đăng nhập, lỗi, khoá: logo, một khối nội dung, không có menu |
-| K12 | Tác vụ di động từng bước | Danh sách em, thao tác một tay, thanh tiến độ, lưu tự động, bước kế tiếp; dùng cho điểm danh, chấm, nộp bài |
-| K14 | Bảng chấm nhanh (laptop) | Hàng = học sinh, cột = trạng thái/tiêu chí; nhập bằng phím số, Tab, phím tắt 1–4 cho điểm danh; ô trống khác điểm 0; ngăn bên xem chi tiết một em; lưu tự động |
+| K12 | Tác vụ di động từng bước | Danh sách em, thao tác một tay, thanh tiến độ, bấm Lưu (không tự lưu; "Lưu và em tiếp theo" lưu từng em, QĐ-Đ18), bước kế tiếp; dùng cho điểm danh, chấm, nộp bài |
+| K14 | Bảng chấm nhanh (laptop) | Hàng = học sinh, cột = trạng thái/tiêu chí; nhập bằng phím số, Tab, phím tắt 1–4 cho điểm danh; ô trống khác điểm 0; ngăn bên xem chi tiết một em; bấm Lưu để lưu cả bảng, rời màn khi chưa lưu thì hiện hộp thoại nhắc của ứng dụng (QĐ-Đ18) |
 | K13 | Bản in A4/A5 | Đầu trang logo + thông tin cơ sở, bảng dòng, tổng tiền, chữ ký |
 
 ## Đợt 5.2: Chung + Quản trị (giai đoạn 0)
@@ -311,7 +311,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| GV-01 | Khung cổng giáo viên (điện thoại: thanh dưới · laptop: menu trái thu gọn) | Trang · K02, K01 | B | Cả hai | GV, TG | Hôm nay, Lịch dạy, Lớp, Việc cần làm, Tài khoản | Chuyển tab | GV-02, GV-03, GV-10, GV-12 | R-GV-08, R-GV-09, R-GV-13 |
+| GV-01 | Khung cổng giáo viên (điện thoại: thanh dưới · laptop: menu trái thu gọn) | Trang · K02, K01 | B | Cả hai | GV, TG | Hôm nay, Lịch dạy, Lớp, Cần làm (QĐ-Đ19), Tài khoản | Chuyển tab | GV-02, GV-03, GV-10, GV-12 | R-GV-08, R-GV-09, R-GV-13 |
 | GV-02 | Hôm nay (buổi dạy, việc sắp trễ hạn) | Tổng quan · K09 | A | Cả hai | GV, TG | Buổi hôm nay theo giờ, buổi chưa hoàn tất kèm hạn còn lại | Mở buổi | GV-04 | R-GV-05 |
 | GV-03 | Lịch dạy (tuần, tháng) | Lịch · K05 | B | Cả hai | GV, TG | Chỉ buổi của mình; loại buổi, phòng, lớp. Điện thoại xem theo ngày, laptop xem cả tuần | Mở buổi | GV-04 | R-GV-08 |
 | GV-04 | Buổi dạy (tổng quan các bước cần làm) | Bản ghi · K12 | A | Cả hai | GV, TG | Bước: điểm danh → nội dung buổi → chấm từng em → BTVN; tiến độ, hạn hoàn tất, Đúng/Trễ hạn. Laptop: hai cột (bước bên trái, nội dung bên phải) | Mở từng bước; Hoàn tất | GV-05, GV-06, GV-07, GV-08, GV-09 | R-GV-04, R-GV-05, R-GIO-06 |

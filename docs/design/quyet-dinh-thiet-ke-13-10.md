@@ -71,3 +71,18 @@ Dừng bắt đầu PR giao diện mới; PR đang mở làm cho xong và chờ 
 - **Khái niệm đã chốt cho báo cáo:** "Doanh thu thu được" = tiền đã thu và kế toán duyệt, tính theo **ngày kế toán duyệt**. Học sinh mới = tính khi ghi danh sinh, học sinh chưa từng học. Tỷ lệ chuyển đổi tính **luỹ kế** theo giai đoạn hiện tại của cơ hội (cơ hội chỉ đi tới), kỳ lọc theo ngày tạo cơ hội; "đã đạt Lk" nghĩa là đang ở giai đoạn từ Lk trở lên (công thức cần anh xác nhận lại, xem ghi chú dưới).
 - **Chưa chốt (hỏi lại khi vẽ báo cáo):** công thức luỹ kế (anh viết (L1..L4)/(L1..L8), em đề xuất (L4..L8)/(L1..L8)); ASP bán mới chia cho số học sinh mới hay số đơn bán mới; dashboard theo vai (Tuyển sinh, Trưởng cơ sở, CSKH) làm trong app hay Looker (em đề xuất trong app vì cần giới hạn dữ liệu theo cơ sở, nhân sự).
 - Bản dashboard KPI dựng thử (Tuyển sinh, Trưởng cơ sở có lọc nhân sự, CSKH) đã lưu riêng để dùng làm nền cho wireframe Báo cáo.
+
+## 9. Quyết định thiết kế 23/10 (anh Trường chốt)
+- **QĐ-Đ10:** BUOI-14, lý do sửa điểm danh là **ô ghi tự do, bắt buộc** (R-GIO-07); chưa làm danh mục lý do.
+- **QĐ-Đ11:** LOP-09 mở cho CS, BM, AD. Cột "Đại/Hình" chỉ hiện với lớp thuộc nhóm, nghĩa là học sinh có học cả lớp còn lại của nhóm hay không (R-GD-14, R-LOP-14); lớp không thuộc nhóm thì ẩn cột.
+- **QĐ-Đ12:** K12 là **biểu mẫu**, bỏ thanh Filters / Group By / Favorites.
+- **QĐ-Đ13:** ảnh so sánh bản điện thoại **không bắt buộc** trước khi gộp PR giao diện; bổ sung ở PR kế tiếp.
+- **QĐ-Đ14:** tách canvas. Canvas "HMT Platform" giữ làm nguồn khuôn P0. Canvas "HMT Đào tạo & Giáo viên" chứa trạng thái LOP-08, BUOI-03 và cổng Giáo viên. Mỗi canvas một thư mục trong `design/nguon-canvas/`. Khi Design lưu canvas thứ hai, mục lục ghi mã màn nào ở canvas nào được sửa ở PR tài liệu sau đó.
+- **QĐ-Đ15:** GV-05 giữ "Còn lại: Có mặt", không tự lưu, vẫn bấm Lưu. QĐ-Đ8 chỉ áp cho điểm danh vận hành.
+- **QĐ-Đ16:** Design vẽ **bộ khuôn điện thoại cổng Giáo viên** trước; anh duyệt rồi mới dựng GV-01 đến GV-18.
+- **QĐ-Đ17:** K12 (BUOI-03) bỏ nút "Làm mới", nút "Cột" và ô tìm kiếm; chỉ còn nút Lưu, vì K12 là biểu mẫu một buổi chứ không phải danh sách (cùng QĐ-Đ12).
+- **QĐ-Đ18:** mọi màn giáo viên ở giai đoạn 1 đều **bấm Lưu, không tự lưu**. Điện thoại: "Lưu và em tiếp theo" lưu từng em. Laptop: nút Lưu lưu cả bảng; rời màn khi chưa lưu thì hiện hộp thoại nhắc của ứng dụng (không dùng `confirm` của trình duyệt). Bản đồ màn hình: dòng khuôn K12, K14 đổi "lưu tự động" thành "bấm Lưu".
+- **QĐ-Đ19:** tab "Việc cần làm" của cổng Giáo viên đổi thành **"Cần làm"** (GV-01). Tiêu đề trang GV-12 giữ "Việc cần làm / quá hạn".
+- **QĐ-Đ20:** khuôn cổng Giáo viên dùng **ví dụ giả** cho rubric; nội dung rubric thật nhập khi có màn CH-07.
+- **QĐ-P3f-1:** P3f chỉ gộp Lead và Cơ hội. Gộp Phụ huynh, Học sinh (KH-07) và điều kiện "học sinh học hai lớp trùng giờ" (R-CRM-25 phần [CHỜ]) để phân hệ Khách hàng, Ghi danh.
+- **QĐ-P3f-2:** KD6 (hai học sinh trùng tên và năm sinh của một phụ huynh, ví dụ sinh đôi): giữ nguyên hành vi hiện tại, chưa thêm cảnh báo mềm, bàn lại khi gặp thật. Ghi ở "Việc để sau" của TIEN-DO, vẫn [CHỐT chờ].
