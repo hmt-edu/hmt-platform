@@ -101,6 +101,12 @@
 - Bài kiểm: Vitest `oppStage.test.ts`, `oppRecord.test.ts`; Playwright `e2e/co-hoi.spec.ts` (máy tính và điện thoại, 10 bài: danh sách, Kanban, bản ghi, đủ năm dạng hộp, Sửa, lịch hẹn, tạo từ lead); ảnh so sánh `e2e/so-sanh-co-hoi.spec.ts`.
 - Bài học: bước giai đoạn `aria-disabled` không bấm được bằng `click()` thường của Playwright (chờ "enabled" mãi), dùng `force`; truy vấn của hộp cảnh báo phải `gcTime: 0` để không dùng bản nhớ của lần mở trước.
 
+## PR nợ nhỏ P3c, P3d (20/10)
+- **Gốc lỗi bài kiểm chập chờn (anh yêu cầu sửa gốc):** `AppointmentDialog` chốt loại hoạt động mặc định bằng `useState(activityOptions[0])` lúc mở hộp. Danh mục tải bất đồng bộ, nên mở hộp trước khi danh mục về thì ô Loại hoạt động rỗng mãi và nút Tạo không bao giờ sáng. Bài kiểm bấm nhanh sau khi vào trang nên trượt ngẫu nhiên (chủ yếu khi máy dồn nhiều trình duyệt); người dùng thật gặp khi mạng chậm. Sửa: mặc định lấy theo danh mục đang có (`pickActivity`, có Vitest); bài Playwright làm chậm danh mục 3 giây để tái hiện (không sửa thì trượt, sửa thì qua).
+- Playwright: chờ kết quả tối đa 10 giây (trước 5) vì đăng nhập, tải dữ liệu chậm khi chạy song song; các bước bấm chọn nhanh có chờ trạng thái chọn (`pickChip`, `pickOption` trong `e2e/helpers.ts`). Chạy dồn bốn bộ test cùng tài khoản năm lần liên tiếp: 69 bài xanh cả năm lần (trước đó gần như mỗi lần trượt 1 đến 3 bài).
+- Seed lớn đã đủ 50.000 lead, 20.000 cơ hội (số đếm 25.000 lead, 10.000 cơ hội trong các số đo trước là phần Trưởng cơ sở CS1 thấy, vì lọc theo cơ sở); không cần tăng thêm.
+- Hoàn tác sau Hoàn thành, Huỷ: `useUndoAppointment` dùng chung (Lead, Cơ hội, Lịch hẹn).
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

@@ -14,6 +14,7 @@ import {
   rescheduleAppointment,
 } from '../../features/appointments/appointmentApi';
 import { AppointmentDialog } from '../../features/appointments/AppointmentDialog';
+import { useUndoAppointment } from '../../features/appointments/useUndoAppointment';
 import { RecordPicker, type PickedRecord } from '../../features/appointments/RecordPicker';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { KanbanBoard } from '../../list/Kanban';
@@ -111,6 +112,7 @@ export function AppointmentListPage() {
   const access = useAccess();
   const toast = useToast();
   const refreshData = useRefreshAppointments();
+  const undoAppointment = useUndoAppointment(refreshData);
   const catalogs = useLeadCatalogs();
 
   const pageSize = useIntSetting('list_page_size_default');
@@ -216,13 +218,18 @@ export function AppointmentListPage() {
   const branchIdOf = (code: string) =>
     access.teachingBranches.find((b) => b.code === code)?.id ?? '';
 
-  async function run(row: AppointmentRow, action: () => Promise<void>, success: string) {
+  async function run(
+    row: AppointmentRow,
+    action: () => Promise<void>,
+    success: string,
+    undoable = false,
+  ) {
     if (busyId !== null) return;
     setBusyId(row.id);
     try {
       await action();
       await refreshData();
-      toast({ title: success });
+      toast({ title: success, ...(undoable ? { action: undoAppointment(row.id) } : {}) });
     } catch (e) {
       toast({ tone: 'danger', title: errorOf(e).message });
     } finally {
@@ -235,7 +242,7 @@ export function AppointmentListPage() {
     canCancel,
     busyId,
     onComplete: (row) =>
-      void run(row, () => completeAppointment(supabase, row.id), 'Đã hoàn thành lịch hẹn.'),
+      void run(row, () => completeAppointment(supabase, row.id), 'Đã hoàn thành lịch hẹn.', true),
     onReschedule: setMoving,
     onCancel: (row) => {
       setCancelError(null);
@@ -552,7 +559,7 @@ export function AppointmentListPage() {
             .then(refreshData)
             .then(() => {
               setCanceling(null);
-              toast({ title: 'Đã huỷ lịch hẹn.' });
+              toast({ title: 'Đã huỷ lịch hẹn.', action: undoAppointment(canceling.id) });
             })
             .catch((e: unknown) => setCancelError(errorOf(e).message))
             .finally(() => setCancelBusy(false));

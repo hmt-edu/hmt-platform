@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { combineVn, parseTime, quickDays, vnToday } from './appointmentTime';
+import { combineVn, parseTime, pickActivity, quickDays, vnToday } from './appointmentTime';
 
 const labels = (now: string) =>
   quickDays(new Date(now)).map((d) => `${d.label}|${d.date.getDate()}/${d.date.getMonth() + 1}`);
@@ -49,5 +49,20 @@ describe('giờ và ghép ngày giờ theo giờ Việt Nam', () => {
   it('thiếu ngày hoặc giờ thì chưa có thời điểm', () => {
     expect(combineVn(null, '09:00')).toBeNull();
     expect(combineVn(new Date(2026, 9, 15), '')).toBeNull();
+  });
+});
+
+describe('pickActivity', () => {
+  const options = [{ value: 'GOI_DIEN' }, { value: 'ZALO' }];
+  it('chưa chọn thì lấy mục đầu của danh sách hiện có', () => {
+    expect(pickActivity('', options)).toBe('GOI_DIEN');
+  });
+  it('danh mục tải sau: lúc đầu rỗng, có danh sách rồi thì có mặc định (lỗi cũ: kẹt ở rỗng)', () => {
+    expect(pickActivity('', [])).toBe('');
+    expect(pickActivity('', options)).toBe('GOI_DIEN');
+  });
+  it('giữ mục đã chọn nếu còn trong danh sách, không thì về mục đầu', () => {
+    expect(pickActivity('ZALO', options)).toBe('ZALO');
+    expect(pickActivity('KHONG_CO', options)).toBe('GOI_DIEN');
   });
 });

@@ -17,6 +17,7 @@ import {
   type UpcomingAppointment,
 } from '../../features/appointments/appointmentApi';
 import { AppointmentDialog } from '../../features/appointments/AppointmentDialog';
+import { useUndoAppointment } from '../../features/appointments/useUndoAppointment';
 import { UpcomingActivities } from '../../features/appointments/UpcomingActivities';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { HmtError, rpc, errorOf, useDb } from '../../lib/db';
@@ -132,6 +133,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const canAppt = access.can('APPOINTMENT', 'TAO') && !merged;
   const canCreateOpp = access.can('OPPORTUNITY', 'TAO') && !merged;
   const refreshRecord = useRefreshLeadRecord(record?.id ?? '');
+  const undoAppointment = useUndoAppointment(refreshRecord);
 
   const myBranch = access.teachingBranches.find((b) => b.code === claims?.branchCode);
   const initial = useMemo<LeadDraft>(
@@ -296,7 +298,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
     try {
       await completeAppointment(supabase, row.id);
       await refreshRecord();
-      toast({ title: 'Đã hoàn thành lịch hẹn.' });
+      toast({ title: 'Đã hoàn thành lịch hẹn.', action: undoAppointment(row.id) });
     } catch (e) {
       toast({ tone: 'danger', title: errorOf(e).message });
     } finally {
@@ -1000,7 +1002,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
             .then(refreshRecord)
             .then(() => {
               setCanceling(null);
-              toast({ title: 'Đã huỷ lịch hẹn.' });
+              toast({ title: 'Đã huỷ lịch hẹn.', action: undoAppointment(canceling.id) });
             })
             .catch((e: unknown) => setCancelError(errorOf(e).message))
             .finally(() => setCancelBusy(false));

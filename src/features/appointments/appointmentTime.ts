@@ -72,3 +72,9 @@ export function combineVn(date: Date | null, time: string): Date | null {
   const start = vnDayStartOf(toIsoDate(date));
   return start ? new Date(start.getTime() + minutes * MS_PER_MINUTE) : null;
 }
+
+/** Loại hoạt động đang áp dụng: mục người dùng chọn, chưa chọn thì mục đầu của danh sách hiện có (rỗng nếu chưa có danh sách). */
+export function pickActivity(chosen: string, options: { value: string }[]): string {
+  if (chosen !== '' && options.some((o) => o.value === chosen)) return chosen;
+  return options[0]?.value ?? '';
+}

@@ -62,6 +62,8 @@ export async function seed(setup: Setup): Promise<Seeded> {
     const done = await make('GAP_TRUC_TIEP', 'Gặp xong', '-2 minutes');
     await make('EMAIL', 'Email quá hạn', '-10 days');
     await make('GOI_DIEN', 'Hẹn để dời', '30 minutes');
+    await make('GOI_DIEN', 'Hẹn hoàn tác trong danh sách', '40 minutes');
+    await make('GOI_DIEN', 'Hẹn hoàn tác ở trang lead', '50 minutes');
     await db.query('select app.complete_appointment($1::uuid)', [done]);
     await db.query('reset role');
     await db.query('commit');

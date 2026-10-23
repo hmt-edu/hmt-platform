@@ -11,7 +11,7 @@ import { Field, INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { DateInput } from '../../ui/Inputs';
 import { Select } from '../../ui/Overlays';
 import { useAssignableStaff } from '../assign/useAssignableStaff';
-import { QUICK_HOURS, combineVn, parseTime, quickDays } from './appointmentTime';
+import { QUICK_HOURS, combineVn, parseTime, pickActivity, quickDays } from './appointmentTime';
 
 type Option = { value: string; label: string };
 
@@ -113,7 +113,10 @@ function AppointmentForm({
   const branchId = reschedule?.branchId ?? target?.branchId ?? null;
   const staff = useAssignableStaff('APPOINTMENT', branchId, canAssign && branchId !== null);
 
-  const [activity, setActivity] = useState(activityOptions[0]?.value ?? '');
+  // Loại hoạt động: người dùng chưa chọn thì lấy mục đầu của danh mục ĐANG có. Danh mục có thể tải sau khi hộp đã mở, nên không
+  // chốt mặc định lúc mở (lỗi cũ: mở hộp trước khi danh mục tải xong thì ô trống mãi, nút Tạo không bao giờ sáng).
+  const [chosenActivity, setActivity] = useState('');
+  const activity = pickActivity(chosenActivity, activityOptions);
   const [date, setDate] = useState<Date | null>(null);
   const [time, setTime] = useState('');
   const [ownerId, setOwnerId] = useState(reschedule?.ownerId ?? claims?.userId ?? '');

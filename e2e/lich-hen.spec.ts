@@ -175,3 +175,67 @@ test('Từ trang Lead: nút "Lịch hẹn" mở danh sách chỉ của lead đó
   await page.getByRole('button', { name: /^Bỏ điều kiện: Lead: LD\d+/ }).click();
   await expect(page).toHaveURL(/\/crm\/lich-hen$/);
 });
+
+test('Tạo lịch hẹn khi danh mục tải chậm: mở hộp sớm vẫn có loại hoạt động mặc định, nút Tạo sáng (lỗi chập chờn cũ)', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  // Làm chậm danh mục 3 giây: hộp Tạo mở khi danh mục chưa về. Lỗi cũ: loại hoạt động kẹt rỗng, nút Tạo không bao giờ sáng.
+  await page.route(/catalog_item/, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await route.continue();
+  });
+  await openList(page, setup);
+  await page.getByRole('button', { name: 'Tạo', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tạo lịch hẹn' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('combobox', { name: /Gắn với/ }).click();
+  await page.getByPlaceholder('Gõ để tìm (không cần dấu)').fill(seeded.parent);
+  await page.getByRole('option', { name: new RegExp(seeded.parent) }).click();
+  await pickChip(dialog, 'Ngày mai');
+  await pickChip(dialog, '10:00');
+  await dialog.getByLabel(/Ghi chú/).fill(`Hẹn danh mục chậm ${setup.mark}`);
+  // Danh mục về rồi thì ô Loại hoạt động có giá trị mặc định và nút Tạo sáng.
+  await expect(dialog.getByRole('button', { name: 'Tạo lịch hẹn' })).toBeEnabled({
+    timeout: 10000,
+  });
+  await dialog.getByRole('button', { name: 'Tạo lịch hẹn' }).click();
+  await expect(toastText(page, 'Đã tạo lịch hẹn.')).toBeVisible();
+});
+
+test('Hoàn tác sau Hoàn thành ở danh sách: lịch về Chưa làm', async ({ page }, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openList(page, setup);
+  const title = `Hẹn hoàn tác trong danh sách ${setup.mark}`;
+  await row(page, title).getByRole('button', { name: 'Hoàn thành' }).click();
+  await expect(toastText(page, 'Đã hoàn thành lịch hẹn.')).toBeVisible();
+  await expect(row(page, title).getByRole('button', { name: 'Mở lại' })).toBeVisible();
+  await page.getByRole('button', { name: 'Hoàn tác', exact: true }).click();
+  await expect(toastText(page, /Đã hoàn tác/)).toBeVisible();
+  await expect(row(page, title).getByRole('button', { name: 'Hoàn thành' })).toBeVisible();
+});
+
+test('Hoàn tác sau Huỷ ở trang Lead: lịch trở lại Hoạt động sắp tới', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openList(page, setup);
+  await row(page, `Hẹn hoàn tác ở trang lead ${setup.mark}`)
+    .getByRole('link', { name: /^LD\d+$/ })
+    .click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Lead' })).toBeVisible();
+  const upcoming = page.getByRole('region', { name: 'Hoạt động sắp tới' });
+  const item = upcoming
+    .getByRole('listitem')
+    .filter({ hasText: `Hẹn hoàn tác ở trang lead ${setup.mark}` });
+  await item.getByRole('button', { name: 'Huỷ' }).click();
+  const dialog = page.getByRole('alertdialog', { name: 'Huỷ lịch hẹn' });
+  await pickOption(page, dialog.getByRole('combobox', { name: 'Lý do' }), /^Khác$/);
+  await dialog.getByLabel('Ghi chú').fill('Khách đổi ý');
+  await dialog.getByRole('button', { name: 'Huỷ lịch hẹn' }).click();
+  await expect(toastText(page, 'Đã huỷ lịch hẹn.')).toBeVisible();
+  await expect(item).toHaveCount(0);
+  await page.getByRole('button', { name: 'Hoàn tác', exact: true }).click();
+  await expect(toastText(page, /Đã hoàn tác/)).toBeVisible();
+  await expect(item).toBeVisible();
+});

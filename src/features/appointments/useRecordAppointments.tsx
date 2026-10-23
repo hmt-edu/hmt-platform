@@ -15,6 +15,7 @@ import {
 } from './appointmentApi';
 import { AppointmentDialog } from './AppointmentDialog';
 import { UpcomingActivities } from './UpcomingActivities';
+import { useUndoAppointment } from './useUndoAppointment';
 
 type Row = UpcomingAppointment & { branchId: string };
 
@@ -38,6 +39,7 @@ export function useOpportunityAppointments({
 }): { upcoming: ReactNode; dialogs: ReactNode; openCreate: () => void } {
   const supabase = useDb();
   const toast = useToast();
+  const undo = useUndoAppointment(refresh);
   const query = useOpportunityUpcoming(opportunityId);
   const [createOpen, setCreateOpen] = useState(false);
   const [moving, setMoving] = useState<Row | null>(null);
@@ -54,7 +56,7 @@ export function useOpportunityAppointments({
     try {
       await completeAppointment(supabase, row.id);
       await refresh();
-      toast({ title: 'Đã hoàn thành lịch hẹn.' });
+      toast({ title: 'Đã hoàn thành lịch hẹn.', action: undo(row.id) });
     } catch (e) {
       toast({ tone: 'danger', title: errorOf(e).message });
     } finally {
@@ -147,7 +149,7 @@ export function useOpportunityAppointments({
             .then(refresh)
             .then(() => {
               setCanceling(null);
-              toast({ title: 'Đã huỷ lịch hẹn.' });
+              toast({ title: 'Đã huỷ lịch hẹn.', action: undo(canceling.id) });
             })
             .catch((e: unknown) => setCancelError(errorOf(e).message))
             .finally(() => setCancelBusy(false));
