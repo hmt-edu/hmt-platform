@@ -105,6 +105,34 @@ jobs:
           restore-keys: |
             playwright-${{ runner.os }}-
 
+      # Kho gói Ubuntu của Azure có lúc chậm: một gói đứng 80 đến 130 giây, cài thư viện hệ thống (khoảng 119 MB, 181 gói) hết
+      # 6 phút rồi bị cắt (log 23/10, 2 lần trên #77). Hai biện pháp (anh duyệt 24/10):
+      #   1. apt chờ tối đa 20 giây mỗi kết nối và thử lại 3 lần: gói đứng thì tải lại ngay, không đợi hết giờ của cả bước.
+      #   2. Gói đã tải được giữ trong thư mục cache `~/.apt-cache` (khoá theo phiên bản Playwright): lượt sau không tải lại từ kho chậm.
+      - name: Cache gói apt của trình duyệt
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.apt-cache
+            !~/.apt-cache/archives/lock
+            !~/.apt-cache/archives/partial
+          key: apt-playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+          restore-keys: |
+            apt-playwright-${{ runner.os }}-
+
+      - name: Cấu hình apt (chờ ngắn, thử lại, giữ gói đã tải)
+        run: |
+          mkdir -p "$HOME/.apt-cache/archives/partial"
+          # apt chạy bằng quyền gốc và tải bằng người dùng _apt: thư mục phải ghi được để không tải "không cách ly".
+          chmod -R a+rwX "$HOME/.apt-cache"
+          {
+            echo 'Acquire::http::Timeout "20";'
+            echo 'Acquire::https::Timeout "20";'
+            echo 'Acquire::Retries "3";'
+            echo "Dir::Cache::archives \"$HOME/.apt-cache/archives\";"
+            echo 'APT::Keep-Downloaded-Packages "true";'
+          } | sudo tee /etc/apt/apt.conf.d/99ci-mang-cham > /dev/null
+
       # Hai bước cài dưới đây từng treo hơn 22 phút (apt hoặc tải trình duyệt, không ra dòng log nào) cho tới khi hết giờ của cả
       # job. Bình thường mất dưới 1 phút (lần đầu không có cache khoảng 5 phút). Mỗi lần thử bị cắt sau 6 phút; thử lại đúng một
       # lần và chỉ ở bước cài (không thử lại bộ kiểm thử, lỗi thật không bị che). Trước lần thử lại dọn tiến trình apt còn kẹt.
@@ -135,6 +163,10 @@ jobs:
           done
           echo "::error::Cài thư viện hệ thống cho trình duyệt hỏng sau 2 lần thử."
           exit 1
+
+      - name: Cho phép đọc gói apt đã tải (để lưu cache)
+        if: always()
+        run: sudo chmod -R a+rX "$HOME/.apt-cache" || true
 
       - name: Playwright (máy tính + iPhone)
         # Bình thường 10 đến 12 phút.
