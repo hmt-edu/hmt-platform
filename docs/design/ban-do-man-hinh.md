@@ -178,7 +178,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| GV-15 | Chấm kiểm tra đầu vào | Biểu mẫu · K12 | B | Cả hai | GV | Phiếu test được giao chấm: nhập kết quả, nhận xét, đề xuất lớp/trình độ, tải bài làm. GĐ1 dùng trong cổng giáo viên bản tối giản (chỉ mục chấm test) | Lưu; Trả về sale | TS-17 | R-CRM-05, R-CRM-10, R-CRM-11 |
+| GV-15 | Chấm kiểm tra đầu vào | Biểu mẫu · K12 | B | Cả hai | GV | Phiếu test được giao chấm: nhập kết quả, nhận xét, đề xuất lớp/trình độ, tải bài làm (GĐ1 chưa có, R-CRM-10). GĐ1 dùng trong cổng giáo viên bản tối giản (chỉ mục chấm test) | Lưu (nháp); Trả về sale (nộp kết quả, phiếu Hoàn thành, không cần lý do; QĐ-Đ25) | TS-17 | R-CRM-05, R-CRM-10, R-CRM-11 |
 
 ## Đợt 5.4: Ghi danh, Lớp, Buổi, Chăm sóc khách hàng, Tái tục (giai đoạn 2)
 
@@ -312,20 +312,20 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
 | GV-01 | Khung cổng giáo viên (điện thoại: thanh dưới · laptop: menu trái thu gọn) | Trang · K02, K01 | B | Cả hai | GV, TG | Hôm nay, Lịch dạy, Lớp, Cần làm (QĐ-Đ19), Tài khoản | Chuyển tab | GV-02, GV-03, GV-10, GV-12 | R-GV-08, R-GV-09, R-GV-13 |
-| GV-02 | Hôm nay (buổi dạy, việc sắp trễ hạn) | Tổng quan · K09 | A | Cả hai | GV, TG | Buổi hôm nay theo giờ, buổi chưa hoàn tất kèm hạn còn lại | Mở buổi | GV-04 | R-GV-05 |
+| GV-02 | Hôm nay (buổi dạy, việc sắp trễ hạn) | Tổng quan · K09 | A | Cả hai | GV, TG | Buổi hôm nay theo giờ; buổi chưa hoàn tất kèm hạn còn lại, **hiện cả buổi đã quá hạn** | Mở buổi | GV-04 | R-GV-05 |
 | GV-03 | Lịch dạy (tuần, tháng) | Lịch · K05 | B | Cả hai | GV, TG | Chỉ buổi của mình; loại buổi, phòng, lớp. Điện thoại xem theo ngày, laptop xem cả tuần | Mở buổi | GV-04 | R-GV-08 |
-| GV-04 | Buổi dạy (tổng quan các bước cần làm) | Bản ghi · K12 | A | Cả hai | GV, TG | Bước: điểm danh → nội dung buổi → chấm từng em → BTVN; tiến độ, hạn hoàn tất, Đúng/Trễ hạn. Laptop: hai cột (bước bên trái, nội dung bên phải) | Mở từng bước; Hoàn tất | GV-05, GV-06, GV-07, GV-08, GV-09 | R-GV-04, R-GV-05, R-GIO-06 |
+| GV-04 | Buổi dạy (tổng quan các bước cần làm) | Bản ghi · K12 | A | Cả hai | GV, TG | Bước: điểm danh → nội dung buổi → chấm từng em → BTVN; tiến độ, hạn hoàn tất; dấu Đúng hạn/Trễ hạn **tự đóng một lần** khi đủ bốn bước (QĐ-Đ21), khi đã đủ chỉ hiện dấu đã đóng lúc nào. Laptop: hai cột (bước bên trái, nội dung bên phải) | Mở từng bước; Kiểm còn thiếu | GV-05, GV-06, GV-07, GV-08, GV-09 | R-GV-04, R-GV-05, R-GIO-06 |
 | GV-05 | Điểm danh (4 trạng thái) | Biểu mẫu · K12, K14 | A | Cả hai | GV, TG | Có mặt, Đi muộn, Vắng có phép, Vắng không phép; trống = chưa; "Còn lại: Có mặt"; thấy ghi chú vận hành | Lưu | GV-04 | R-DD-01, R-DD-02, R-GV-08, R-GV-13 |
-| GV-06 | Nội dung buổi + giao BTVN | Biểu mẫu · K12 | B | Cả hai | GV, TG | Các dòng nội dung (mỗi dòng là mục chấm vận dụng), BTVN giao mới | Thêm dòng; Lưu | GV-04 | R-GV-07, R-GV-08 |
+| GV-06 | Nội dung buổi + giao BTVN | Biểu mẫu · K12 | B | Cả hai | GV, TG | Các dòng nội dung (mỗi dòng là mục chấm vận dụng; ít nhất một dòng, QĐ-Đ23), BTVN giao mới, ô "Buổi này không giao BTVN" (QĐ-Đ22) | Thêm dòng; Không giao BTVN; Lưu | GV-04 | R-GV-07, R-GV-08, R-GV-11 |
 | GV-07 | Chấm nhận xét từng em | Biểu mẫu · K12, K14 | A | Cả hai | GV, TG | Thái độ 3, Kiến thức 3, Vận dụng theo nội dung; thang 1–5 có mô tả mức; trống ≠ 0; lời nhắn phụ huynh. Điện thoại: từng em. Laptop: bảng chấm nhanh (hàng = em, cột = tiêu chí, nhập bằng bàn phím), ngăn bên cho mô tả mức và lời nhắn | Lưu; Em tiếp theo | GV-04 | R-GV-01, R-GV-02, R-GV-03, R-GV-04, R-GV-13 |
-| GV-08 | Chấm BTVN của buổi trước (5 trạng thái) | Biểu mẫu · K12, K14 | A | Cả hai | GV, TG | Đã chấm, Làm chưa xong, Không làm, Nộp sau, Không áp dụng; cập nhật bài Nộp sau mà không mở buổi cũ | Lưu | GV-04 | R-GV-10, R-GV-11, R-GIO-06 |
-| GV-09 | Hoàn tất buổi (kiểm còn thiếu gì) | Hộp thoại · K08 | B | Cả hai | GV, TG | Liệt kê em chưa điểm danh, chưa chấm, thiếu BTVN; đóng dấu Đúng hạn/Trễ hạn | Hoàn tất | GV-02 | R-GV-04, R-GV-05, R-GIO-06 |
+| GV-08 | Chấm BTVN của buổi trước (5 trạng thái) | Biểu mẫu · K12, K14 | A | Cả hai | GV, TG | Đã chấm, Làm chưa xong, Không làm, Nộp sau, Không áp dụng; cập nhật bài Nộp sau mà không mở buổi cũ; **trạng thái "buổi trước không giao BTVN"** (bước này bỏ qua, không chặn Done) | Lưu | GV-04 | R-GV-10, R-GV-11, R-GIO-06 |
+| GV-09 | Kiểm còn thiếu (QĐ-Đ21) | Hộp thoại · K08 | B | Cả hai | GV, TG | Kiểm còn thiếu gì: liệt kê em chưa điểm danh, chưa chấm, thiếu BTVN; hiện dấu Đúng hạn/Trễ hạn đã đóng (không có nút đóng dấu) | Mở bước còn thiếu | GV-02 | R-GV-04, R-GV-05, R-GIO-06 |
 | GV-10 | Lớp của tôi (danh sách) | Danh sách · K03 | B | Cả hai | GV, TG | Lớp được phân công, sĩ số, buổi tiếp theo | Mở lớp | GV-11 | R-GV-08, R-GV-09 |
 | GV-11 | Lớp (chi tiết cho giáo viên) | Bản ghi · K06 | B | Cả hai | GV, TG | Học sinh, lịch, lịch sử buổi, tiến độ khung, BTVN | Mở học sinh; Yêu cầu bổ trợ; Tạo ticket | GV-13, BUOI-09, GV-14 | R-GV-08 |
 | GV-12 | Việc cần làm / quá hạn | Danh sách · K03 | B | Cả hai | GV, TG | Buổi chưa hoàn tất, bài Nộp sau chờ cập nhật, phiếu test chờ chấm | Mở | GV-04, GV-08, GV-15 | R-GV-05, R-GV-11 |
 | GV-13 | Học sinh (hồ sơ rút gọn cho giáo viên) | Bản ghi · K06 | C | Cả hai | GV, TG | Điểm danh, điểm tiêu chí, BTVN theo thời gian trong lớp của mình | Xem | — | R-GV-08 |
 | GV-14 | Tạo ticket từ cổng giáo viên + ticket lớp tôi | Biểu mẫu · K07 | B | Cả hai | GV, TG | Chỉ tạo, không duyệt; chỉ thấy ticket trong lớp mình | Tạo; Xem | — | R-CS-10 |
-| GV-16 | Giờ dạy của tôi (căn cứ lương) | Báo cáo · K09 | B | Cả hai | GV, TG | Theo tháng: số buổi, giờ theo loại buổi (gồm bổ trợ), số buổi trễ hạn, tổng giờ trễ | Xem chi tiết | — | R-BUOI-05, R-GV-06 |
+| GV-16 | Giờ dạy của tôi (căn cứ lương) | Báo cáo · K09 | B | Cả hai | GV, TG | Theo tháng: số buổi, giờ theo loại buổi (gồm bổ trợ), số buổi trễ hạn, tổng giờ trễ. Điện thoại: khuôn mới "báo cáo tháng" do Design vẽ (QĐ-Đ24) | Xem chi tiết | — | R-BUOI-05, R-GV-06 |
 
 ### Báo cáo
 

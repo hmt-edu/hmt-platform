@@ -72,7 +72,7 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
 
-## Đang ở đâu (23/10/2026)
+## Đang ở đâu (24/10/2026)
 
 **Đã gộp vào `main`** (mỗi PR có link comment "OK" của `caotruong276` trong commit gộp; PR chỉ tài liệu không có CI):
 
@@ -95,7 +95,9 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 
 **Đã gộp 23/10:** #68 (nợ nhỏ: sửa gốc bài kiểm chập chờn, Hoàn tác), #70 (luật TD14, QĐ-Đ7, bản đồ màn hình, TIEN-DO).
 
-**Đang mở:** #69 (lưu canvas Design, khuôn K4g, K4e4): bản 23 đã đẩy (commit 7eedb2d) nên không còn chờ bản 23; chờ bản cuối của Design (bản 25 trở đi, sau khi Design bỏ thanh Filters/Group By/Favorites, nút Làm mới, nút Cột và ô tìm kiếm trên K12, QĐ-Đ12, QĐ-Đ17) và anh nói "lưu" mới gộp. #73 (dọn khung cũ, GD-02 thêm Tạo phiếu tái tục thủ công) và #75 (P3f-1 DB) đã gộp.
+**Đã gộp 23 đến 24/10 (tiếp):** #71 (P3e-1 DB), #72 (P3e-2 giao diện), #73 (dọn khung cũ, GD-02), #74 (QĐ-Đ10 đến Đ20), #75 (P3f-1 DB), #76 (CI: cắt sớm và thử lại bước cài trình duyệt).
+
+**Đang mở:** #69 (lưu canvas Design, khuôn K4g, K4e4): chờ Design lưu bản cuối (bản 25 trở đi, sau khi Design sửa K12 thành biểu mẫu: bỏ Filters/Group By/Favorites, nút Làm mới, nút Cột, ô tìm kiếm; QĐ-Đ12, QĐ-Đ17) và anh nói "lưu". #77 (P3f-2 giao diện Gộp trùng, Nhập file; chờ CI xanh và OK). #78 (CI: apt chờ ngắn, cache gói đã tải; chờ số đo hai lượt và OK). PR tài liệu này (luật giáo viên, QĐ-Đ21 đến Đ32, bản đồ): chờ OK. Cả #77 và PR này đều sửa TIEN-DO: PR nào gộp sau phải rebase.
 
 **Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 038) và toàn bộ giao diện mới.
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
@@ -120,11 +122,14 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 ## Đang chờ anh Trường
 
-- Comment OK cho PR tài liệu #74 (QĐ-Đ10 đến Đ20); #69 chờ bản cuối của Design và anh nói "lưu".
+- Comment OK cho #77, #78 và PR tài liệu #79 (sau commit cuối của từng PR); #69 chờ bản cuối của Design và anh nói "lưu".
+- **Chỗ vênh khi chép luật 24/10 (anh xác nhận 24/10, đã xử lý):** R-GIO-05 trùng số với "Tự chốt buổi" nên luật giáo viên không thấy danh sách điểm danh trước khi Đã chốt là **R-GIO-08**; QĐ-Đ27 = duyệt khuôn K09 (báo cáo tháng) và GV-15 "đã nộp, chỉ xem"; không có Đ31 riêng (nằm trong Đ29); R-GV-14 chỉ thêm "tháng tính theo ngày buổi diễn ra"; D-12 ghi ở quyết định thiết kế.
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
 - Chưa có quyết định nào khác đang chờ (23/10). Việc sắp tới cần anh duyệt: kế hoạch P5a-DB1 (khi tới lượt).
 
 ## Việc phải nhớ khi viết hàm (luật đã chốt)
+
+- **Phần Giáo viên (luật 24/10, đã vào spec 04):** (1) R-GV-05: hàm tự đóng dấu Đúng hạn hoặc Trễ hạn **một lần**, đúng lúc lưu mục cuối đủ các bước R-GIO-06; sửa điểm sau không đổi dấu; báo cáo trễ tính cho người lưu mục cuối (R-GV-09). (2) R-GV-11: **trường mới của buổi** "Buổi này không giao BTVN" (cần migration và bài kiểm); vắng buổi giao bài thì đặt sẵn Không áp dụng. (3) R-GV-04: đổi sang Vắng giữ điểm nhưng không tính. (4) R-GV-07: không xoá dòng nội dung đã có điểm; nội dung buổi ít nhất một dòng (QĐ-Đ23). (5) R-GIO-08: giáo viên không thấy danh sách điểm danh trước khi Đã chốt. (6) R-GV-13: hồ sơ học sinh cho giáo viên không có SĐT, học phí, phụ huynh. (7) R-GV-14: tháng tính theo ngày buổi diễn ra. (8) R-CS-10: giáo viên tạo mọi nhóm ticket cho lớp mình. Gửi anh kế hoạch DB giáo viên trước khi viết migration.
 
 - Cơ hội: đã khoá nhóm con L5A, L5B, L5P, L5C đến L5Q, L6A, L8A đến L8C (P3b2a). Giai đoạn phiếu tái tục: khoá L7A, L7B, L8A khi viết hàm tái tục. Đổi giai đoạn cơ hội đã kiểm R-CRM-02, 03, 13, 14, 16 (P3b2a); phiếu: R-CRM-05, 06, 12, 13, 15, 21 (P3b2b, đã làm).
 - **Hoãn (ghi 18/10):** R-CRM-16 phần chặn tạo đơn khi chưa L8, R-CRM-17 (tự L8C), R-CRM-18 (cảnh báo lệch): chờ đơn hàng, phiếu thu. R-CRM-12, 13, 15 đã làm ở P3b2b (hai hàm nối đã thay bằng truy vấn bảng phiếu).

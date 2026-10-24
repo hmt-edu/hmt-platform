@@ -196,7 +196,7 @@ Chấm BTVN của buổi trước (R-GV-11): mỗi em mỗi bài có đúng mộ
 - **Không áp dụng**
 
 Hạn và quyền:
-- **Hạn hoàn tất buổi:** 8 giờ sau khi buổi kết thúc. Khi xong em cuối cùng, hệ thống đóng dấu Đúng hạn hoặc Trễ hạn, kèm số giờ trễ (R-GV-05).
+- **Hạn hoàn tất buổi:** 8 giờ sau khi buổi kết thúc. Hệ thống **tự đóng dấu một lần**, Đúng hạn hoặc Trễ hạn kèm số giờ trễ, vào lúc giáo viên lưu xong mục cuối cùng và đủ các bước của R-GIO-06 (điểm danh, nội dung buổi và BTVN, chấm nhận xét, chấm BTVN buổi trước; bỏ bước cuối nếu buổi trước không giao BTVN). Giáo viên không bấm đóng dấu; sửa điểm sau đó không đổi dấu (R-GV-05, QĐ-Đ21).
 - **Giáo viên không được:** tạo dòng điểm danh, đổi tình trạng buổi, sửa sổ giờ. Giáo viên chỉ thấy buổi của mình. Trợ giảng có quyền như giáo viên trong lớp được phân công (R-GV-08, 09).
 - **Giáo viên tạo được ticket** cho lớp mình, nhưng không duyệt.
 - **Chấm kiểm tra đầu vào** có từ giai đoạn 1, trong cổng giáo viên bản tối giản (anh chốt 11/10).

@@ -88,7 +88,7 @@ Giá trị sai kiểu, ngoài khoảng bị chặn kể cả khi sửa thẳng b
 | `max_sessions_ahead` cho học trước tối đa | 2 buổi | 0–10 | có |
 | `session_autoclose_before_minutes` tự chốt buổi trước giờ học | 30 phút | 0–240 | có |
 | `session_autoclose_scan_hours` khoảng quét tự chốt | 2 giờ | 1–24 | có |
-| `teacher_session_complete_hours` hạn GV hoàn tất buổi (điểm danh + nhận xét đủ lớp) | 8 giờ sau khi buổi kết thúc | 1–72 | có |
+| `teacher_session_complete_hours` hạn GV hoàn tất buổi (hệ thống tự đóng dấu Đúng hạn hoặc Trễ hạn khi đủ các bước của R-GIO-06, R-GV-05) | 8 giờ sau khi buổi kết thúc | 1–72 | có |
 | `algebra_geometry_split_grade` khối bắt đầu tách Đại/Hình | 7 | 2–12 | **không** |
 | `package_default_validity_months` thời hạn gói mặc định | 6 tháng | 1–24 | có |
 | `upsale_hours_left_threshold` tái tục khi còn ≤ giờ (BR-UPSALE-HOUR) | 10 giờ | 0–100 | có |

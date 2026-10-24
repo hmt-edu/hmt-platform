@@ -84,5 +84,17 @@ Dừng bắt đầu PR giao diện mới; PR đang mở làm cho xong và chờ 
 - **QĐ-Đ18:** mọi màn giáo viên ở giai đoạn 1 đều **bấm Lưu, không tự lưu**. Điện thoại: "Lưu và em tiếp theo" lưu từng em. Laptop: nút Lưu lưu cả bảng; rời màn khi chưa lưu thì hiện hộp thoại nhắc của ứng dụng (không dùng `confirm` của trình duyệt). Bản đồ màn hình: dòng khuôn K12, K14 đổi "lưu tự động" thành "bấm Lưu".
 - **QĐ-Đ19:** tab "Việc cần làm" của cổng Giáo viên đổi thành **"Cần làm"** (GV-01). Tiêu đề trang GV-12 giữ "Việc cần làm / quá hạn".
 - **QĐ-Đ20:** khuôn cổng Giáo viên dùng **ví dụ giả** cho rubric; nội dung rubric thật nhập khi có màn CH-07.
+- **QĐ-Đ21:** dấu Đúng hạn / Trễ hạn đóng **tự động, một lần**, vào lúc giáo viên lưu mục cuối cùng làm cả bốn bước đủ (điểm danh, nội dung buổi và BTVN, chấm nhận xét, chấm BTVN buổi trước; bỏ bước cuối nếu buổi trước không giao BTVN), cùng điều kiện tự Done của R-GIO-06. Nút "Hoàn tất buổi" ở GV-04 đổi thành "Kiểm còn thiếu" (mở GV-09 liệt kê chỗ thiếu); khi đã đủ chỉ hiện dấu đã đóng lúc nào. Không có nút giáo viên bấm để đóng dấu. Luật: R-GV-05 (đã vào spec 24/10).
+- **QĐ-Đ22:** GV-06 giữ ô "Buổi này không giao BTVN". Buổi đánh dấu "không giao" thì buổi sau không phải chấm BTVN buổi trước và không chặn Done (R-GIO-06). Là trường dữ liệu mới của buổi. Luật: R-GV-11 (đã vào spec 24/10).
+- **QĐ-Đ23:** nội dung buổi (GV-06) phải có **ít nhất một dòng**.
+- **QĐ-Đ24:** GV-16 (Giờ dạy của tôi): trên điện thoại dùng khuôn **mới** "báo cáo tháng" (chọn tháng, thẻ số, danh sách thẻ theo loại buổi) do Design vẽ và anh duyệt; laptop dùng K09.
+- **QĐ-Đ25:** nút "Trả về sale" ở GV-15 = giáo viên **nộp kết quả đã chấm cho sale**, phiếu chuyển Hoàn thành, không cần lý do. Nút "Lưu" chỉ lưu nháp. Giai đoạn 1 chưa có "tải bài làm" (R-CRM-10).
+- **QĐ-Đ26:** **kịch bản trước, vẽ sau**: Chat viết kịch bản cho phân hệ, anh duyệt, rồi Design vẽ và tự thử theo kịch bản.
+- **QĐ-Đ27 (24/10):** duyệt khuôn K09 (báo cáo tháng) và GV-15 "đã nộp, chỉ xem".
+- **QĐ-Đ28:** không giao Design vẽ phân hệ chưa có kịch bản được duyệt.
+- **QĐ-Đ29:** anh duyệt kịch bản cổng Giáo viên (D-01 đến D-14). Luật đã vào `docs/spec/04` ngày 24/10: R-GV-04, 05, 07, 09, 11, 13, 14, R-GIO-08, R-CS-10.
+- **QĐ-Đ30:** sửa CI bước cài thư viện hệ thống của trình duyệt (kho gói Ubuntu của Azure có lúc chậm, làm job treo): apt chờ 20 giây và thử lại 3 lần, lưu cache gói đã tải theo phiên bản Playwright (trong 10 GB gói Free); ảnh Docker chính thức của Playwright chỉ đo, chưa đổi. PR riêng (#76 đã gộp; #78).
+- **QĐ-Đ32 (D-01):** giáo viên **không thấy danh sách điểm danh tạm** trước khi buổi Đã chốt; vẫn nhập được nội dung buổi. Luật: R-GIO-08.
+- **D-12:** giai đoạn 1 **chưa gửi nhắc hạn ra ngoài** (không thư, tin nhắn); nhắc chỉ hiện trong cổng.
 - **QĐ-P3f-1:** P3f chỉ gộp Lead và Cơ hội. Gộp Phụ huynh, Học sinh (KH-07) và điều kiện "học sinh học hai lớp trùng giờ" (R-CRM-25 phần [CHỜ]) để phân hệ Khách hàng, Ghi danh.
 - **QĐ-P3f-2:** KD6 (hai học sinh trùng tên và năm sinh của một phụ huynh, ví dụ sinh đôi): giữ nguyên hành vi hiện tại, chưa thêm cảnh báo mềm, bàn lại khi gặp thật. Ghi ở "Việc để sau" của TIEN-DO, vẫn [CHỐT chờ].
