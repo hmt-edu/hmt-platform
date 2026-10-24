@@ -162,6 +162,7 @@ export function RecordDetail({
   smartZero,
   children,
   aside,
+  asideLabel = 'Ghi chú và hoạt động',
 }: {
   /** Tên loại bản ghi ở thanh trên ("Cơ hội"). */
   kind: string;
@@ -201,6 +202,8 @@ export function RecordDetail({
   smartZero?: SmartZeroBehavior | undefined;
   children: ReactNode;
   aside: ReactNode;
+  /** Tên vùng bên phải cho trình đọc màn hình (mặc định: ghi chú và hoạt động). */
+  asideLabel?: string | undefined;
 }) {
   const creating = mode === 'create';
   const editing = mode !== 'view';
@@ -310,7 +313,7 @@ export function RecordDetail({
             {children}
           </article>
         </div>
-        <aside aria-label="Ghi chú và hoạt động" className="w-full shrink-0 xl:w-[380px]">
+        <aside aria-label={asideLabel} className="w-full shrink-0 xl:w-[380px]">
           {aside}
         </aside>
       </div>

@@ -18,6 +18,8 @@ export type SeedUser = {
 /** Danh sách tài khoản giả: key = phần trước @ (học sinh: mã HS). */
 export const SEED_USERS: SeedUser[] = [
   { key: 'admin.cs1', name: 'Quản trị (giả)', branch: 'CS1', roles: ['ADMIN'] },
+  // Admin thứ hai cho bài Playwright màn Người dùng (tránh tranh thiết bị hai bước của admin.cs1 với bài đăng nhập).
+  { key: 'quantri.cs5', name: 'Quản trị CS5 (giả)', branch: 'CS5', roles: ['ADMIN'] },
   { key: 'truongcs.cs1', name: 'Trưởng CS1 (giả)', branch: 'CS1', roles: ['BRANCH_MANAGER'] },
   { key: 'truongcs.cs5', name: 'Trưởng CS5 (giả)', branch: 'CS5', roles: ['BRANCH_MANAGER'] },
   { key: 'sale.cs1', name: 'Sale CS1 (giả)', branch: 'CS1', roles: ['SALES'] },

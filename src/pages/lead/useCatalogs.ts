@@ -34,6 +34,7 @@ const CATALOGS = [
   'WARD',
   'ACTIVITY_TYPE',
   'APPOINTMENT_CANCEL_REASON',
+  'ACCOUNT_LOCK_REASON',
 ];
 const FOREVER = Infinity;
 

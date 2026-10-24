@@ -41,6 +41,11 @@ const OpportunityRecordPage = lazyScreen(
   () => import('../pages/co-hoi/OpportunityRecordPage'),
   'OpportunityRecordPage',
 );
+const UserListPage = lazyScreen(() => import('../pages/nguoi-dung/UserListPage'), 'UserListPage');
+const UserRecordPage = lazyScreen(
+  () => import('../pages/nguoi-dung/UserRecordPage'),
+  'UserRecordPage',
+);
 const TestListPage = lazyScreen(() => import('../pages/phieu/TestListPage'), 'TestListPage');
 const TestRecordPage = lazyScreen(() => import('../pages/phieu/TestRecordPage'), 'TestRecordPage');
 const AppointmentListPage = lazyScreen(
@@ -162,6 +167,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="phieu-kiem-tra">
                 <TestRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/nguoi-dung',
+            element: (
+              <GatedCrmEntry slug="quan-tri/nguoi-dung">
+                <UserListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/nguoi-dung/:id',
+            element: (
+              <GatedCrmEntry slug="quan-tri/nguoi-dung">
+                <UserRecordPage />
               </GatedCrmEntry>
             ),
           },

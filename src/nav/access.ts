@@ -11,6 +11,10 @@ export type AccessView = MenuAccess & {
   seesAllBranches: boolean;
   /** Cơ sở dạy học cho ô chọn cơ sở của dữ liệu nghiệp vụ: không có Hội sở CS3 (R-HT-02). */
   teachingBranches: BranchRow[];
+  /** Mọi cơ sở đang hoạt động, kể cả Hội sở (người dùng có thể thuộc văn phòng; màn Người dùng của Admin). */
+  allBranches: BranchRow[];
+  /** Mọi vai trò (màn Người dùng của Admin). */
+  allRoles: { code: string; name: string }[];
   /** Các vai trò làm việc ở cổng CRM (theo bảng vai trò), để Admin xem thử Trang chủ. */
   crmRoles: { code: string; name: string }[];
   /** Tên các vai trò của người dùng, để hiện ở góc tài khoản. */
@@ -47,6 +51,8 @@ export function buildAccess(
       ),
     seesAllBranches,
     teachingBranches,
+    allBranches: data.branches,
+    allRoles: data.roles.map((r) => ({ code: r.code, name: r.name })),
     crmRoles: data.roles
       .filter((r) => r.portals.includes('crm'))
       .map((r) => ({ code: r.code, name: r.name })),

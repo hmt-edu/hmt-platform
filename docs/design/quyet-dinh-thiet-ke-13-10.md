@@ -105,7 +105,6 @@ Dừng bắt đầu PR giao diện mới; PR đang mở làm cho xong và chờ 
 - **QĐ-Đ44 (24/10):** Quản trị người dùng (QT-01, QT-02, QT-03): PR 1 DB (migration 042: `list_users`, `get_user`, `export_users`; bài pgTAP đúng và bị chặn; EXPLAIN trên dữ liệu giả lớn), rồi PR 2 giao diện. PR 2 làm QT-01 và các phần QT-02, QT-03 không cần hộp mật khẩu tạm K4g (máy tính), K4e4 (điện thoại); **dừng đúng hai chỗ Đặt lại mật khẩu và Tạo người dùng**, ghi vào mô tả PR (mã màn QT-02, QT-03; khuôn K4g, K4e4; chờ #69); không tự chế khuôn.
 - **QĐ-Đ45 (24/10):** Xuất danh sách người dùng chỉ Admin; cột gồm mã NV/GV/TG, tên, email đăng nhập, vai trò, cơ sở, trạng thái; không mật khẩu, không dữ liệu hai bước; ghi nhật ký xuất.
 - **QĐ-Đ46 (24/10):** bật mục menu "Người dùng" khi QT-01 xong.
-- **QĐ-Đ47, Đ48:** chưa nhận được nội dung nên chưa ghi.
 - **QĐ-Đ49 (24/10):** "Đặt lại hai bước" và "Thu hồi phiên" của QT-02 làm bằng **hàm DB** `app.admin_reset_mfa`, `app.admin_revoke_sessions` trong PR 1 (đổi so với B16: không qua Edge Function). Điều kiện: (1) hàm ghi thẳng bảng Auth nên phải chạy thử được trên hmt-staging; staging từ chối quyền ghi thì dừng, báo anh, quay về Edge Function; (2) luồng đăng nhập phải buộc người vừa được đặt lại hai bước thiết lập lại ở lần đăng nhập sau (Admin, Kế toán).
 - **QĐ-Đ50 (24/10):** hai thao tác trên chặn thao tác lên **chính mình** (`HMT_THAO_TAC_CHINH_MINH`).
 - **QĐ-P3f-1:** P3f chỉ gộp Lead và Cơ hội. Gộp Phụ huynh, Học sinh (KH-07) và điều kiện "học sinh học hai lớp trùng giờ" (R-CRM-25 phần [CHỜ]) để phân hệ Khách hàng, Ghi danh.

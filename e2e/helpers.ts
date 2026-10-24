@@ -1,4 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
+import { generateSync } from 'otplib';
+import pg from 'pg';
 import { expect, type Locator, type Page } from '@playwright/test';
 
 // Tài khoản giả do scripts/seed-users.ts tạo. Cần SEED_PASSWORD (CI tự sinh; local đặt trong môi trường).
@@ -33,32 +35,71 @@ export async function loginStaff(page: Page, account: string, password = PASSWOR
 // Bài kiểm CHÍNH luồng đăng nhập (auth, dang-nhap-thiet-ke, so-sanh-dang-nhap) vẫn gọi `loginStaff` để đi qua màn đăng nhập.
 const savedSessions = new Map<string, Record<string, string>>();
 
-export async function enterAs(page: Page, account: string) {
-  const key = `${page.context().browser()?.browserType().name() ?? 'browser'}:${account}`;
+const sessionKey = (page: Page, account: string) =>
+  `${page.context().browser()?.browserType().name() ?? 'browser'}:${account}`;
+
+/** Nạp phiên đã lưu của tài khoản vào thẻ này và mở /crm; true nếu phiên còn dùng được. */
+async function restoreSession(page: Page, account: string): Promise<boolean> {
+  const key = sessionKey(page, account);
   const saved = savedSessions.get(key);
-  if (saved) {
-    await page.addInitScript((entries: Record<string, string>) => {
-      // Nạp một lần mỗi thẻ: lần tải sau (hoặc sau khi đăng xuất) không ghi đè phiên hiện tại.
-      if (sessionStorage.getItem('hmt-e2e-session')) return;
-      sessionStorage.setItem('hmt-e2e-session', '1');
-      for (const [name, value] of Object.entries(entries)) localStorage.setItem(name, value);
-    }, saved);
-    await page.goto('/crm');
-    try {
-      await expect(page).toHaveURL(/\/crm$/, { timeout: 10000 });
-      return;
-    } catch {
-      savedSessions.delete(key);
-    }
+  if (!saved) return false;
+  await page.addInitScript((entries: Record<string, string>) => {
+    // Nạp một lần mỗi thẻ: lần tải sau (hoặc sau khi đăng xuất) không ghi đè phiên hiện tại.
+    if (sessionStorage.getItem('hmt-e2e-session')) return;
+    sessionStorage.setItem('hmt-e2e-session', '1');
+    for (const [name, value] of Object.entries(entries)) localStorage.setItem(name, value);
+  }, saved);
+  await page.goto('/crm');
+  try {
+    await expect(page).toHaveURL(/\/crm$/, { timeout: 10000 });
+    return true;
+  } catch {
+    savedSessions.delete(key);
+    return false;
   }
-  await loginStaff(page, account);
-  await expect(page).toHaveURL(/\/crm$/);
+}
+
+async function saveSession(page: Page, account: string) {
   savedSessions.set(
-    key,
+    sessionKey(page, account),
     await page.evaluate(() =>
       Object.fromEntries(Object.entries(localStorage).filter(([name]) => name.startsWith('sb-'))),
     ),
   );
+}
+
+export async function enterAs(page: Page, account: string) {
+  if (await restoreSession(page, account)) return;
+  await loginStaff(page, account);
+  await expect(page).toHaveURL(/\/crm$/);
+  await saveSession(page, account);
+}
+
+/**
+ * Vào CRM bằng tài khoản Admin (bắt buộc xác thực hai bước): lần đầu xoá thiết bị cũ, đăng nhập, thiết lập một thiết bị mới bằng mã TOTP
+ * rồi lưu phiên đã đạt mức hai bước để các bài sau dùng lại. Mỗi Admin giả chỉ nên dùng ở một file bài (tránh tranh thiết bị).
+ */
+export async function enterAsAdmin(page: Page, account: string) {
+  if (await restoreSession(page, account)) return;
+  const db = new pg.Client({ connectionString: process.env.DB_URL ?? '' });
+  await db.connect();
+  try {
+    await db.query(
+      'delete from auth.mfa_factors where user_id = (select id from auth.users where email = $1)',
+      [`${account}@${DOMAIN}`],
+    );
+  } finally {
+    await db.end();
+  }
+  await loginStaff(page, account);
+  await expect(page).toHaveURL(/\/thiet-lap-hai-buoc$/);
+  const secret = (await page.locator('code').first().textContent())?.replace(/\s+/g, '') ?? '';
+  expect(secret.length).toBeGreaterThan(10);
+  await page.getByRole('button', { name: 'Tiếp', exact: true }).click();
+  await page.getByLabel('Mã xác thực').fill(generateSync({ secret }));
+  await page.getByRole('button', { name: 'Hoàn tất' }).click();
+  await expect(page).toHaveURL(/\/crm$/);
+  await saveSession(page, account);
 }
 
 export async function loginStudent(page: Page, code: string, password = PASSWORD) {

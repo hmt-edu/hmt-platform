@@ -184,8 +184,8 @@ kiểm quyền `app.assert_account_admin()`:
 Admin đầu tiên của bản chạy thật: anh Trường tạo bằng workflow `bootstrap-admin` ở `hmt-deploy` (xem `deploy/README.md`).
 
 ## Tài khoản giả (thử nghiệm, local, CI)
-`npm run db:seed-users` (`scripts/seed-users.ts`): 13 tài khoản `@thu.hoamatoan.invalid` ở CS1 và CS5, mỗi vai trò ít nhất
-một, thêm `kiem.cs5` (BM + SALES), `khoa.cs5` (bị khoá), học sinh `HS900001` (phải đổi mật khẩu). Mật khẩu chung lấy từ
+`npm run db:seed-users` (`scripts/seed-users.ts`): 14 tài khoản `@thu.hoamatoan.invalid` ở CS1 và CS5, mỗi vai trò ít nhất
+một (hai Admin: `admin.cs1`, `quantri.cs5`), thêm `kiem.cs5` (BM + SALES), `khoa.cs5` (bị khoá), học sinh `HS900001` (phải đổi mật khẩu). Mật khẩu chung lấy từ
 biến `SEED_PASSWORD`, không ghi trong repo. Script từ chối chạy nếu DB không có dữ liệu giả (chặn chạy nhầm trên bản chạy thật).
 
 ## Cần chốt ở giai đoạn 3

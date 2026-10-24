@@ -141,6 +141,12 @@
 - Luồng đăng nhập sau khi đặt lại hai bước: người thuộc vai trò bắt buộc hai bước (Admin, Kế toán) vào được CRM chỉ khi đã xác thực hai bước (mọi RLS đóng ở mức aal1) và giao diện đưa về `/thiet-lap-hai-buoc`; bài `auth.spec.ts` (xoá thiết bị rồi đăng nhập) kiểm đúng việc này.
 - `scripts/staging-probe-auth.sql` + bước trong `deploy-staging.yml`: thử quyền ghi bảng Auth trên hmt-staging (giao dịch hoàn tác).
 
+## PR Quản trị người dùng-2 giao diện (24/10)
+- `src/pages/nguoi-dung/*`: QT-01 (`UserListPage`, khuôn K03: tìm, lọc vai trò, cơ sở, loại, trạng thái; Xuất; Khoá, Mở khoá ở dòng), QT-02 (`UserRecordPage`, khuôn K06: thông tin, lịch sử đăng nhập; menu Hành động), hộp thoại (`UserDialogs`: Sửa vai trò, Đổi cơ sở, Quản lý trực tiếp, Khoá có lý do từ danh mục, xác nhận Mở khoá, Thu hồi phiên, Đặt lại hai bước). Route `quan-tri/nguoi-dung` và `/:id` (bật mục menu, Đ46). `AccessView` thêm `allBranches`, `allRoles`; `RecordDetail` thêm `asideLabel`.
+- Đổi vai trò, cơ sở, khoá, mở khoá gọi Edge Function `admin-users`; đổi quản lý, thu hồi phiên, đặt lại hai bước gọi thẳng hàm DB. Edge Function không chạy ở môi trường kiểm thử, nên bài Playwright chỉ kiểm biểu mẫu của ba hộp đó; thử thật trên bản xem trước (nối hmt-staging).
+- Chưa làm (chờ K4g, K4e4 ở #69): Đặt lại mật khẩu, Tạo người dùng.
+- Bài kiểm: Vitest `userFilters`, `userLogic`; Playwright `nguoi-dung.spec.ts` (8 bài, máy tính; Admin giả mới `quantri.cs5` thiết lập hai bước ngay trong bài; helper `enterAsAdmin`). Axe bắt lỗi tương phản khi dòng người dùng bị khoá làm mờ: bỏ làm mờ, đã có nhãn "Đã khoá".
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).
