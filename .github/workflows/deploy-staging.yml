@@ -97,6 +97,20 @@ jobs:
           STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
         run: psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f supabase/seed.sql
 
+      # Thử quyền ghi bảng Auth của hàm admin_reset_mfa (Đ49): giao dịch hoàn tác, không để lại dữ liệu. Không đạt thì chỉ cảnh báo
+      # (hàm chưa được giao diện dùng) để báo anh quyết quay lại Edge Function; không chặn lượt triển khai.
+      - name: Thử quyền ghi bảng Auth trên hmt-staging
+        continue-on-error: true
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          if out="$(psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f scripts/staging-probe-auth.sql 2>&1)"; then
+            echo "::notice::Thử quyền ghi bảng Auth trên hmt-staging: ĐẠT. $out"
+          else
+            echo "::warning::Thử quyền ghi bảng Auth trên hmt-staging: KHÔNG ĐẠT. Báo anh Trường để quay lại Edge Function. $out"
+            exit 1
+          fi
+
       # Edge Function (đăng nhập, quản trị tài khoản, chặn thư). Cần SUPABASE_ACCESS_TOKEN của tài khoản
       # hmt-vanhanh (không còn quyền gì ở hmt-prod). Chưa có thì bỏ qua kèm cảnh báo.
       - name: Triển khai Edge Function lên hmt-staging

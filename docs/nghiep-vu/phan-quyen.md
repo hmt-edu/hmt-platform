@@ -174,6 +174,12 @@ kiểm quyền `app.assert_account_admin()`:
 | Đổi cơ sở | `app.admin_set_branch` | Đăng xuất mọi phiên |
 | Khoá / mở khoá | `app.admin_set_locked` | Bắt buộc lý do; không tự khoá mình; không khoá ADMIN cuối cùng; đăng xuất mọi phiên; Supabase Auth cấm đăng nhập |
 | Đặt lại mật khẩu | `app.admin_mark_password_reset` | Bắt đổi lần đầu |
+| Thu hồi phiên (24/10, Đ49) | `app.admin_revoke_sessions` | **Gọi thẳng hàm DB bằng token Admin, không qua Edge Function.** Token cũ chết, xoá phiên Auth; không dùng cho chính mình (`HMT_THAO_TAC_CHINH_MINH`, Đ50); không có tài khoản học sinh |
+| Đặt lại hai bước (24/10, Đ49) | `app.admin_reset_mfa` | **Gọi thẳng hàm DB bằng token Admin.** Xoá thiết bị hai bước ở `auth.mfa_factors`, thu hồi phiên; ghi `mfa_reset_at`, `mfa_reset_by` (nhật ký thao tác ghi ai, lúc nào). Người thuộc vai trò bắt buộc hai bước (Admin, Kế toán) phải thiết lập lại ở lần đăng nhập sau: chưa xong thì mọi RLS đóng (cần mức xác thực hai bước) và giao diện đưa về `/thiet-lap-hai-buoc` (bài `auth.spec.ts`). Người khác không bị buộc. Không dùng cho chính mình |
+
+Đọc, xuất (QT-01, QT-02; 24/10): `app.list_users` (lọc vai trò, cơ sở, trạng thái, loại NV/GV/TG, tìm tên/email/mã; phân trang ở máy chủ; không có học sinh), `app.get_user` (thông tin, vai trò, quản lý trực tiếp, số thiết bị hai bước, lịch sử đăng nhập gần đây, số dòng theo tham số `user_login_history_rows`), `app.export_users` (**chỉ Admin**, Đ45: mã NV/GV/TG, tên, email đăng nhập, vai trò, cơ sở, trạng thái; không mật khẩu, không dữ liệu hai bước; ghi nhật ký xuất, tối đa `export_max_rows`). Mọi hàm kiểm quyền Quản trị (Xem, Xuất) đã xác thực hai bước.
+
+**Thử quyền ghi bảng Auth trên hmt-staging:** `scripts/staging-probe-auth.sql` chạy trong giao dịch hoàn tác ở bước "Thử quyền ghi bảng Auth" của `deploy-staging.yml` (sau khi áp migration); không đạt thì cảnh báo (không chặn lượt triển khai) để quay lại Edge Function.
 
 Admin đầu tiên của bản chạy thật: anh Trường tạo bằng workflow `bootstrap-admin` ở `hmt-deploy` (xem `deploy/README.md`).
 

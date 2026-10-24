@@ -136,6 +136,11 @@
 - Lỗi nhỏ: khi đang nhóm, trạng thái "đang tải" lấy từ truy vấn đếm nhóm (truy vấn danh sách bị tắt nên luôn "đang chờ").
 - Bài kiểm: Vitest `appointmentFilters` (nhóm), `appointmentPeople`, `leadGroups`; Playwright `lich-hen-bo-sung.spec.ts` (quyền, Xuất, Group By, Giao việc, Theo người), `phieu.spec.ts` thêm bài Group By.
 
+## PR Quản trị người dùng-1 DB (24/10)
+- Migration `20261024000042`: `list_users`, `get_user`, `export_users` (chỉ Admin), `admin_revoke_sessions`, `admin_reset_mfa` (hàm DB, ghi thẳng `auth.mfa_factors`, `auth.sessions`; chặn thao tác lên chính mình), `assert_admin_target` (nội bộ), cột `mfa_reset_at`, `mfa_reset_by`, tham số `user_login_history_rows`. Bài kiểm 034 (78 bài).
+- Luồng đăng nhập sau khi đặt lại hai bước: người thuộc vai trò bắt buộc hai bước (Admin, Kế toán) vào được CRM chỉ khi đã xác thực hai bước (mọi RLS đóng ở mức aal1) và giao diện đưa về `/thiet-lap-hai-buoc`; bài `auth.spec.ts` (xoá thiết bị rồi đăng nhập) kiểm đúng việc này.
+- `scripts/staging-probe-auth.sql` + bước trong `deploy-staging.yml`: thử quyền ghi bảng Auth trên hmt-staging (giao dịch hoàn tác).
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).
