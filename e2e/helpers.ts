@@ -27,6 +27,40 @@ export async function loginStaff(page: Page, account: string, password = PASSWOR
   await fillLogin(page, 'Email', `${account}@${DOMAIN}`, password);
 }
 
+// Phiên đăng nhập dùng lại: Supabase local giới hạn 30 lần đăng nhập mỗi 5 phút mỗi địa chỉ, mà mỗi bài tính năng đều đăng nhập.
+// `enterAs` đăng nhập THẬT một lần cho mỗi tài khoản (mỗi tiến trình chạy bài, mỗi loại trình duyệt), các bài sau nạp lại phiên đã
+// lưu (chỉ khoá `sb-…` của Supabase trong localStorage). Phiên hỏng (ví dụ bài khác đã đăng xuất mọi nơi) thì tự đăng nhập lại.
+// Bài kiểm CHÍNH luồng đăng nhập (auth, dang-nhap-thiet-ke, so-sanh-dang-nhap) vẫn gọi `loginStaff` để đi qua màn đăng nhập.
+const savedSessions = new Map<string, Record<string, string>>();
+
+export async function enterAs(page: Page, account: string) {
+  const key = `${page.context().browser()?.browserType().name() ?? 'browser'}:${account}`;
+  const saved = savedSessions.get(key);
+  if (saved) {
+    await page.addInitScript((entries: Record<string, string>) => {
+      // Nạp một lần mỗi thẻ: lần tải sau (hoặc sau khi đăng xuất) không ghi đè phiên hiện tại.
+      if (sessionStorage.getItem('hmt-e2e-session')) return;
+      sessionStorage.setItem('hmt-e2e-session', '1');
+      for (const [name, value] of Object.entries(entries)) localStorage.setItem(name, value);
+    }, saved);
+    await page.goto('/crm');
+    try {
+      await expect(page).toHaveURL(/\/crm$/, { timeout: 10000 });
+      return;
+    } catch {
+      savedSessions.delete(key);
+    }
+  }
+  await loginStaff(page, account);
+  await expect(page).toHaveURL(/\/crm$/);
+  savedSessions.set(
+    key,
+    await page.evaluate(() =>
+      Object.fromEntries(Object.entries(localStorage).filter(([name]) => name.startsWith('sb-'))),
+    ),
+  );
+}
+
 export async function loginStudent(page: Page, code: string, password = PASSWORD) {
   await page.goto('/dang-nhap/hoc-sinh');
   await fillLogin(page, 'Mã học sinh', code, password);

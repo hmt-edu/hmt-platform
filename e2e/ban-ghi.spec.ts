@@ -1,11 +1,11 @@
 // PR 4b: khuôn Chi tiết (K3) trên /dev/chi-tiet và thư viện hộp thoại trên /dev/hop-thoai (dữ liệu giả).
 import { expect, test } from '@playwright/test';
-import { PASSWORD, expectAccessible, isPhone, loginStaff } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
 
 test.skip(!PASSWORD, 'Cần SEED_PASSWORD (tài khoản giả).');
 
 test.beforeEach(async ({ page }) => {
-  await loginStaff(page, 'sale.cs5');
+  await enterAs(page, 'sale.cs5');
   await expect(page).toHaveURL(/\/crm$/);
 });
 

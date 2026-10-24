@@ -1,7 +1,7 @@
 // P3c-2: trang Lead (TS-02), Tạo lead (TS-03, TS-14), lịch hẹn (TS-13). Dữ liệu giả dựng bằng create_lead, tìm bằng dấu riêng.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, expectAccessible, isPhone, loginStaff } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lead giả).');
@@ -98,7 +98,7 @@ test.afterAll(async ({}, testInfo) => {
 });
 
 async function openRecord(page: Page, account: string, id: string) {
-  await loginStaff(page, account);
+  await enterAs(page, account);
   await expect(page).toHaveURL(/\/crm$/);
   await page.goto(`/crm/lead/${id}`);
   await expect(page.getByRole('heading', { level: 1, name: 'Lead' })).toBeVisible();
@@ -106,7 +106,7 @@ async function openRecord(page: Page, account: string, id: string) {
 
 const toastText = (page: Page, text: string | RegExp) => page.getByText(text).first();
 
-test('Trang Lead: thông tin, thanh giai đoạn, nút liên kết, ghi chú và hoạt động; không có Gộp trùng, Đính kèm', async ({
+test('Trang Lead: thông tin, thanh giai đoạn, nút liên kết, ghi chú và hoạt động; có Gộp trùng (quyền Duyệt), không có Đính kèm', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -132,7 +132,7 @@ test('Trang Lead: thông tin, thanh giai đoạn, nút liên kết, ghi chú và
   await expect(page.getByText(/^Hoạt động sắp tới \(0\)/)).toBeVisible();
   await page.getByRole('button', { name: 'Hành động' }).click();
   await expect(page.getByRole('menuitem', { name: 'Giao người phụ trách' })).toBeVisible();
-  await expect(page.getByRole('menuitem', { name: 'Gộp trùng' })).toHaveCount(0);
+  await expect(page.getByRole('menuitem', { name: 'Gộp trùng' })).toBeVisible();
   await page.keyboard.press('Escape');
   await expectAccessible(page);
 });
@@ -184,7 +184,7 @@ test('Tạo lead: ô bắt buộc báo tại ô; tạo xong về trang Lead; SĐ
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
-  await loginStaff(page, setup.low);
+  await enterAs(page, setup.low);
   await expect(page).toHaveURL(/\/crm$/);
   await page.goto('/crm/lead');
   await page.getByRole('button', { name: 'Tạo', exact: true }).click();

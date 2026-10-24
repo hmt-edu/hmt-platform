@@ -1,7 +1,7 @@
 // Trang chủ CRM theo vai trò (CHUNG-14, TS-12): khối lịch hẹn hôm nay, ranh giới ngày theo giờ Việt Nam.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, expectAccessible, loginStaff } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lịch hẹn giả).');
@@ -94,7 +94,7 @@ test.afterAll(async ({}, testInfo) => {
 });
 
 async function openHome(page: Page, account: string) {
-  await loginStaff(page, account);
+  await enterAs(page, account);
   await expect(page).toHaveURL(/\/crm$/);
   await expect(page.getByRole('heading', { level: 1, name: 'Việc của tôi hôm nay' })).toBeVisible();
 }

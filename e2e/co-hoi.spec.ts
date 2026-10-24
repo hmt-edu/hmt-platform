@@ -1,7 +1,7 @@
 // P3d-2: màn Cơ hội (TS-07 danh sách, Kanban; TS-08 bản ghi; TS-09 chuyển giai đoạn; TS-06 tạo từ lead) và ô "Gắn với" cơ hội ở Lịch hẹn.
 // Dữ liệu giả dựng bằng hàm nghiệp vụ (xem co-hoi-seed.ts), tìm bằng dấu riêng của từng dự án.
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, expectAccessible, isPhone, loginStaff, pickChip, pickOption } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, pickChip, pickOption } from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded } from './co-hoi-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng cơ hội giả).');
@@ -19,7 +19,7 @@ test.afterAll(async ({}, testInfo) => {
 });
 
 async function login(page: Page, account: string) {
-  await loginStaff(page, account);
+  await enterAs(page, account);
   await expect(page).toHaveURL(/\/crm$/);
 }
 

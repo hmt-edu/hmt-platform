@@ -1,13 +1,13 @@
 // PR 2: hệ thiết kế qua trang mẫu thành phần (/dev/khuon, chỉ có ở bản không phải chạy thật) và khung CRM mới.
 import { expect, test } from '@playwright/test';
-import { PASSWORD, expectAccessible, isPhone, loginStaff, openCrmMenu } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, openCrmMenu } from './helpers';
 
 test.skip(!PASSWORD, 'Cần SEED_PASSWORD (tài khoản giả).');
 
 test('trang mẫu thành phần: đạt kiểm truy cập, đổi Stage, hộp thoại giữ focus và đóng bằng Esc', async ({
   page,
 }) => {
-  await loginStaff(page, 'sale.cs5');
+  await enterAs(page, 'sale.cs5');
   await expect(page).toHaveURL(/\/crm$/);
   await page.goto('/dev/khuon');
   await expect(page.getByRole('heading', { level: 1, name: 'Trang mẫu thành phần' })).toBeVisible();
@@ -42,7 +42,7 @@ test('trang mẫu thành phần: đạt kiểm truy cập, đổi Stage, hộp t
 test('khung CRM: menu tối theo quyền, đường dẫn trên thanh trên, chuông chưa dùng được', async ({
   page,
 }) => {
-  await loginStaff(page, 'sale.cs5');
+  await enterAs(page, 'sale.cs5');
   await expect(page).toHaveURL(/\/crm$/);
   // Thanh trên: đường dẫn, dòng "vai trò · cơ sở" dưới tên (kiểm trước khi mở ngăn kéo menu trên điện thoại).
   const crumbs = page.getByRole('navigation', { name: 'Đường dẫn' });

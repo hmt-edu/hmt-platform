@@ -53,7 +53,7 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P3e-1 | DB màn Phiếu kiểm tra (migration `039`): `get_student_test`, `list_student_tests` và `student_test_board` thêm lọc nhiều lựa chọn (tôi tạo, tôi phụ trách, tôi chấm; quá hạn, hôm nay, sắp tới; môn, hình thức, cấp độ), `student_test_group_counts`, `export_student_tests`, `list_test_graders`, `list_test_rooms`; bài kiểm 031, EXPLAIN trên seed lớn | Đã gộp (PR P3e-1) |
 | P3e-2 | Giao diện Phiếu kiểm tra (`/crm/phieu-kiem-tra`): danh sách + Kanban (đếm theo cột) + Lịch (TS-16), trang phiếu (TS-17: thanh trạng thái chỉ đọc, Nhập kết quả, Hoàn thành, Lùi bước, Huỷ, Mở lại, Đổi lịch, Sửa), tạo phiếu từ cơ hội (TS-15); mở khoá mã phiếu, nút "Mở phiếu" ở trang Cơ hội, hộp chặn L7, màn Lịch hẹn lọc theo phiếu | Đã gộp (PR P3e-2) |
 | P3f-1 | DB hộp Gộp trùng (migration `040`): `merge_candidates` (gợi ý bản trùng, chỉ trong phạm vi xem của người gọi), `merge_preview` thêm so sánh hai bên và danh sách lịch hẹn, ghi chú sẽ chuyển, tham số `merge_preview_max_items`; bài kiểm 032 (50 bài), EXPLAIN trên seed lớn | Đã gộp (PR P3f-1) |
-| P3f-2 | Giao diện Gộp trùng (TS-10) + Nhập file (TS-04) | Chưa (làm tiếp) |
+| P3f-2 | Giao diện: hộp Gộp trùng lead, cơ hội (TS-10; Hành động → Gộp trùng ở trang Lead và Cơ hội, quyền Duyệt) và hộp Nhập lead từ file CSV (TS-04; nút Nhập ở màn Lead cho ai có quyền Tạo; 3 bước, xem trước bằng `import_leads`) | Đã gộp (PR P3f-2) |
 | 7 | P2 Cấu hình | Chưa |
 | 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
 
@@ -106,7 +106,7 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 ## Thứ tự tiếp theo (anh chốt 23/10)
 
 1. **P3e Phiếu kiểm tra:** PR 1 DB (migration 039: `get_student_test`, đếm nhóm, Xuất, danh sách giáo viên chấm và phòng) rồi PR 2 giao diện (TS-16 danh sách + Kanban + Lịch, TS-17 trang phiếu, TS-15 tạo và đổi lịch; mở khoá mã phiếu ở trang Cơ hội và hộp chặn L7, L8). Anh duyệt kế hoạch 23/10 (QĐ-T6: gộp ba kiểu xem một PR). **Cả hai PR đã gộp** (P3e-1 DB, P3e-2 giao diện).
-2. **P3f:** Gộp trùng (TS-10) và Nhập file (TS-04). Anh duyệt kế hoạch 23/10: **PR 1 DB (migration 040) đã gộp**; PR 2 giao diện làm tiếp (CSV trước; đọc UTF-8 có BOM, dấu phân cách "," hoặc ";"). Chỉ gộp Lead và Cơ hội (QĐ-P3f-1).
+2. **P3f:** Gộp trùng (TS-10) và Nhập file (TS-04). Anh duyệt kế hoạch 23/10: **Cả hai PR đã gộp** (PR 1 DB migration 040, PR 2 giao diện) (CSV trước; đọc UTF-8 có BOM, dấu phân cách "," hoặc ";"). Chỉ gộp Lead và Cơ hội (QĐ-P3f-1).
 3. **PR "Lịch hẹn bổ sung":** Xuất, Group By, chọn hàng loạt kèm Giao việc, Lịch "Theo người" (anh chốt QĐ-Đ6); bỏ "Theo phòng" và "Nhập".
 4. **QT-01, QT-02, QT-03 Người dùng** (kèm ô "Quản lý trực tiếp"): khuôn hộp mật khẩu tạm K4g, K4e4 đã có trong canvas v22 (PR #69).
 5. **P5a Bán hàng + Thu chi:** đặc tả đã viết (Chat), đứng sau các mục trên; tới lượt thì em gửi kế hoạch P5a-DB1 cho anh duyệt trước khi viết migration. Ghi danh và Lớp thuộc P5b (anh chốt QĐ-P5a-1).

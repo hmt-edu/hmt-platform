@@ -5,6 +5,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
+import { MergeDialog } from '../../features/merge/MergeDialog';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
@@ -102,6 +103,8 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const merged = record.record_status === 'DA_GOP';
   const canEdit = access.can('OPPORTUNITY', 'SUA') && !merged;
   const canAssign = access.can('OPPORTUNITY', 'GIAO_VIEC') && !merged;
+  // Gộp trùng dùng quyền Duyệt trên phân hệ Cơ hội (R-CRM-22); bản đã gộp chỉ đọc.
+  const canMerge = access.can('OPPORTUNITY', 'DUYET') && !merged;
   const canAppt = access.can('APPOINTMENT', 'TAO') && !merged;
   const canCreateTest = access.can('STUDENT_TEST', 'TAO') && !merged;
 
@@ -112,6 +115,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState('source');
   const [assignOpen, setAssignOpen] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
   const [moveTo, setMoveTo] = useState<string | null>(null);
   const [testOpen, setTestOpen] = useState(false);
 
@@ -346,15 +350,28 @@ function OpportunityView({ record }: { record: OppRecord }) {
           ) : undefined
         }
         menu={
-          canAssign
+          canAssign || canMerge
             ? {
                 label: 'Hành động',
                 items: [
-                  {
-                    kind: 'action',
-                    label: 'Giao người phụ trách',
-                    onSelect: () => setAssignOpen(true),
-                  },
+                  ...(canAssign
+                    ? [
+                        {
+                          kind: 'action' as const,
+                          label: 'Giao người phụ trách',
+                          onSelect: () => setAssignOpen(true),
+                        },
+                      ]
+                    : []),
+                  ...(canMerge
+                    ? [
+                        {
+                          kind: 'action' as const,
+                          label: 'Gộp trùng',
+                          onSelect: () => setMergeOpen(true),
+                        },
+                      ]
+                    : []),
                 ],
               }
             : undefined
@@ -718,6 +735,24 @@ function OpportunityView({ record }: { record: OppRecord }) {
         </div>
       </RecordDetail>
 
+      {canMerge && (
+        <MergeDialog
+          open={mergeOpen}
+          onOpenChange={setMergeOpen}
+          entity="OPPORTUNITY"
+          current={{
+            id: record.id,
+            code: record.code,
+            label: oppTitle(record),
+            phone: formatPhone(record.parent_phone),
+          }}
+          onMerged={(keepId, keepCode) => {
+            toast({ title: `Đã gộp vào ${keepCode}.` });
+            if (keepId === record.id) void refreshRecord();
+            else void navigate(`/crm/co-hoi/${keepId}`, { replace: true });
+          }}
+        />
+      )}
       <AssignDialog
         open={assignOpen}
         onOpenChange={setAssignOpen}

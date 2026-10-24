@@ -119,6 +119,13 @@
 ## PR P3f-1 DB Gộp trùng gợi ý, xem trước (23/10)
 - Migration `20261023000040`: `merge_candidates` (gợi ý bản trùng, chỉ trong phạm vi xem của người gọi), `merge_preview` thêm `sides`, `items`; tham số `merge_preview_max_items`. Bài kiểm 032 (50 bài: đúng và bị chặn theo từng vai trò, cơ sở khác không lộ, HMT_GOP_KHAC_CO_SO bằng quyền Xem tạm trong giao dịch). Bài học: trigger chuẩn hoá `created_at` nên bài kiểm không dựa vào thứ tự ghi chú tạo cùng giao dịch.
 
+## PR P3f-2 Giao diện Gộp trùng và Nhập file (23/10)
+- `src/features/merge/*`: hộp TS-10 (`FormDialog`): gợi ý bản trùng (`merge_candidates`) hoặc tìm tay ở máy chủ, chọn bản giữ lại, `merge_preview` (so sánh hai bên, danh sách lịch hẹn, ghi chú chuyển, điều kiện chặn, cảnh báo), xác nhận "không hoàn tác", gọi `merge_leads` hoặc `merge_opportunities`. Mở từ Hành động → Gộp trùng ở trang Lead và Cơ hội (quyền Duyệt).
+- `src/pages/lead/ImportLeadsDialog.tsx` (`StepDialog` 3 bước), `importCsv.ts` (đọc CSV: BOM, dấu "," hoặc ";", ngoặc kép), `importMapping.ts` (đoán và ghép cột, đổi tên nguồn, kênh sang mã). Nút Nhập ở màn Lead cho ai có quyền Lead · Tạo.
+- Bài kiểm: Vitest `importCsv`, `importMapping`, `mergeLogic`; Playwright `gop-trung.spec.ts` (3 bài) và `nhap-lead.spec.ts` (4 bài), cả máy tính và điện thoại; sửa hai bài cũ (`lead.spec`, `lead-ban-ghi.spec`) vì Nhập, Gộp trùng nay có.
+- Đăng nhập dùng lại trong Playwright: `enterAs` (e2e/helpers.ts) đăng nhập thật một lần cho mỗi tài khoản (mỗi tiến trình chạy bài, mỗi loại trình duyệt), các bài sau nạp lại phiên đã lưu (khoá `sb-…` trong localStorage), phiên hỏng thì tự đăng nhập lại. Mười một file bài tính năng đổi sang `enterAs`; bài kiểm chính luồng đăng nhập (auth, dang-nhap-thiet-ke, so-sanh-*) vẫn đi qua màn đăng nhập. Lý do: Supabase local giới hạn 30 lần đăng nhập mỗi 5 phút mỗi địa chỉ; lỗi hiện là đứng ở trang đăng nhập, không phải lỗi mã. Cả bộ chạy ở máy từ 6,4 phút xuống 4,2 phút.
+- Ảnh TS10c dựng bằng Admin giả (có thiết lập hai bước cho admin.cs1; chạy xong chạy lại `npm run db:seed-users`) và một lead cùng SĐT ở CS1 dựng bằng tài khoản Tuyển sinh CS1.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

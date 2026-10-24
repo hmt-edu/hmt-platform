@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, expectAccessible, isPhone, loginStaff } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lead giả).');
@@ -103,7 +103,7 @@ test.afterAll(async ({}, testInfo) => {
 });
 
 async function openLeads(page: Page, account: string, mark: string) {
-  await loginStaff(page, account);
+  await enterAs(page, account);
   await expect(page).toHaveURL(/\/crm$/);
   await page.goto('/crm/lead');
   await expect(page.getByRole('heading', { level: 1, name: 'Lead' })).toBeVisible();
@@ -125,7 +125,7 @@ async function pickFilters(page: Page, labels: string[]) {
   else await page.keyboard.press('Escape');
 }
 
-test('Sale thấy danh sách của cơ sở mình, có nút Tạo; không có Nhập, Xuất; tên phụ huynh mở trang Lead', async ({
+test('Sale thấy danh sách của cơ sở mình, có nút Tạo, Nhập; không có Xuất; tên phụ huynh mở trang Lead', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -136,7 +136,7 @@ test('Sale thấy danh sách của cơ sở mình, có nút Tạo; không có Nh
   // Đã gộp: ẩn mặc định.
   await expect(list(page).getByText(seeded.names.merged)).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Nhập', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Nhập', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Xuất', exact: true })).toHaveCount(0);
   await expectAccessible(page);
   await page.getByRole('link', { name: seeded.names.over }).click();

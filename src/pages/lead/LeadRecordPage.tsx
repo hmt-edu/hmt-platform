@@ -1,12 +1,13 @@
 // TS-02 Trang Lead (xem, Sửa) và TS-03 Tạo lead nhanh: khuôn K3 nối cơ sở dữ liệu. Thông tin đọc bằng get_lead (một lần gọi),
 // lưu bằng create_lead, update_lead; đổi giai đoạn bằng change_lead_stage (tự do hai chiều, có Hoàn tác, R-CRM-09);
-// lịch hẹn ở cột phải (TS-13, R-CRM-04, R-CRM-38). Nút Tạo cơ hội mở hộp TS-06 (P3d); Gộp trùng (P3f), Đính kèm (giai đoạn 4),
+// lịch hẹn ở cột phải (TS-13, R-CRM-04, R-CRM-38). Nút Tạo cơ hội mở hộp TS-06 (P3d); Hành động → Gộp trùng mở hộp TS-10 (P3f); Đính kèm (giai đoạn 4),
 // phân trang "n / tổng" chưa có nên chưa hiện.
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
+import { MergeDialog } from '../../features/merge/MergeDialog';
 import {
   cancelAppointment,
   completeAppointment,
@@ -40,7 +41,7 @@ import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useAuth } from '../../lib/auth/authContext';
-import { appointmentTag, codeAndName, formatPhone } from './leadFormat';
+import { appointmentTag, codeAndName, formatPhone, leadTitle } from './leadFormat';
 import {
   BLANK_DRAFT,
   LEAD_FIELD_LABELS,
@@ -130,6 +131,8 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const canEdit = access.can('LEAD', 'SUA') && !merged;
   const canAssign = access.can('LEAD', 'GIAO_VIEC') && !merged;
   const canCreate = access.can('LEAD', 'TAO');
+  // Gộp trùng dùng quyền Duyệt trên phân hệ Lead (R-CRM-22); bản đã gộp chỉ đọc.
+  const canMerge = access.can('LEAD', 'DUYET') && !merged;
   const canAppt = access.can('APPOINTMENT', 'TAO') && !merged;
   const canCreateOpp = access.can('OPPORTUNITY', 'TAO') && !merged;
   const refreshRecord = useRefreshLeadRecord(record?.id ?? '');
@@ -151,6 +154,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const [duplicates, setDuplicates] = useState<Duplicate[] | null>(null);
   const [confirmPhone, setConfirmPhone] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
   const [apptOpen, setApptOpen] = useState(false);
   const [oppOpen, setOppOpen] = useState(false);
   const [moving, setMoving] = useState<AppointmentRow | null>(null);
@@ -430,15 +434,28 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           </>
         }
         menu={
-          canAssign
+          (canAssign || canMerge) && record
             ? {
                 label: 'Hành động',
                 items: [
-                  {
-                    kind: 'action',
-                    label: 'Giao người phụ trách',
-                    onSelect: () => setAssignOpen(true),
-                  },
+                  ...(canAssign
+                    ? [
+                        {
+                          kind: 'action' as const,
+                          label: 'Giao người phụ trách',
+                          onSelect: () => setAssignOpen(true),
+                        },
+                      ]
+                    : []),
+                  ...(canMerge
+                    ? [
+                        {
+                          kind: 'action' as const,
+                          label: 'Gộp trùng',
+                          onSelect: () => setMergeOpen(true),
+                        },
+                      ]
+                    : []),
                 ],
               }
             : undefined
@@ -912,6 +929,24 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         </div>
       </RecordDetail>
 
+      {record && canMerge && (
+        <MergeDialog
+          open={mergeOpen}
+          onOpenChange={setMergeOpen}
+          entity="LEAD"
+          current={{
+            id: record.id,
+            code: record.code,
+            label: leadTitle(record),
+            phone: formatPhone(record.parent_phone),
+          }}
+          onMerged={(keepId, keepCode) => {
+            toast({ title: `Đã gộp vào ${keepCode}.` });
+            if (keepId === record.id) void refreshRecord();
+            else void navigate(`/crm/lead/${keepId}`, { replace: true });
+          }}
+        />
+      )}
       {record && (
         <AssignDialog
           open={assignOpen}

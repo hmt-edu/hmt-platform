@@ -1,7 +1,7 @@
 // P3e-2: màn Phiếu kiểm tra (TS-16 danh sách, Kanban, Lịch; TS-17 bản ghi; TS-15 tạo từ cơ hội), mở khoá từ trang Cơ hội và Lịch hẹn.
 // Dữ liệu giả dựng bằng hàm nghiệp vụ (xem phieu-seed.ts), tìm bằng dấu riêng của từng dự án.
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { PASSWORD, expectAccessible, isPhone, loginStaff, pickChip, pickOption } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, pickChip, pickOption } from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded } from './phieu-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phiếu giả).');
@@ -19,7 +19,7 @@ test.afterAll(async ({}, testInfo) => {
 });
 
 async function login(page: Page, account: string) {
-  await loginStaff(page, account);
+  await enterAs(page, account);
   await expect(page).toHaveURL(/\/crm$/);
 }
 

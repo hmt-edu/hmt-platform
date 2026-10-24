@@ -1,11 +1,11 @@
 // PR 3: khuôn danh sách (K1), Kanban (K2), Calendar (K5) trên trang mẫu /dev/danh-sach (dữ liệu giả).
 import { expect, test } from '@playwright/test';
-import { PASSWORD, expectAccessible, isPhone, loginStaff } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
 
 test.skip(!PASSWORD, 'Cần SEED_PASSWORD (tài khoản giả).');
 
 test.beforeEach(async ({ page }) => {
-  await loginStaff(page, 'sale.cs5');
+  await enterAs(page, 'sale.cs5');
   await expect(page).toHaveURL(/\/crm$/);
   await page.goto('/dev/danh-sach');
   await expect(page.getByRole('heading', { level: 1, name: 'Cơ hội' })).toBeVisible();

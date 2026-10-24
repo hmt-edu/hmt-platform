@@ -1,6 +1,6 @@
 // TS-01 Lead (danh sách) và TS-01b (Kanban): khuôn K1 và K2 nối với các hàm Lead trong cơ sở dữ liệu.
 // Lọc, sắp xếp, phân trang, Group By, số đếm Kanban đều tính ở máy chủ; trình duyệt chỉ giữ trang đang xem.
-// Nút Tạo và dấu "+" ở cột C1 hiện cho ai có quyền Lead · Tạo (mở màn Tạo, P3c-2); nút Nhập chưa có (ẩn tới P3f).
+// Nút Tạo, Nhập và dấu "+" ở cột C1 hiện cho ai có quyền Lead · Tạo (Tạo mở màn Tạo, P3c-2; Nhập mở hộp TS-04, P3f; CSKH nhập được).
 import { useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
@@ -17,6 +17,8 @@ import { Button } from '../../ui/Button';
 import { BulkActionBar, Code, Tag, type SortState } from '../../ui/Data';
 import { Avatar, Spinner } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
+import { ImportLeadsDialog } from './ImportLeadsDialog';
+import { importSummary } from './importMapping';
 import { downloadText, toCsv } from './csv';
 import { buildLeadGroupTree } from './leadGroups';
 import { EMPTY_LEAD_STATE, buildLeadConfig } from './leadConfig';
@@ -94,6 +96,7 @@ export function LeadListPage() {
   // Trang và số thẻ Kanban đã tải thêm gắn với bộ lọc: đổi bộ lọc hay sắp xếp thì về trang đầu (không cần effect).
   const [paging, setPaging] = useState({ key: '', page: 0, more: 0 });
   const [assignOpen, setAssignOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [tick, setTick] = useState(0);
   const moving = useRef(false);
@@ -303,6 +306,15 @@ export function LeadListPage() {
                 },
               ]
             : []),
+          ...(canCreate
+            ? [
+                {
+                  label: 'Nhập',
+                  icon: 'upload' as const,
+                  onClick: () => setImportOpen(true),
+                },
+              ]
+            : []),
           ...(canExport
             ? [
                 {
@@ -400,6 +412,14 @@ export function LeadListPage() {
             />
           )
         }
+      />
+      <ImportLeadsDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImported={(result) => {
+          void refreshData();
+          toast({ title: importSummary(result) });
+        }}
       />
       <AssignDialog
         open={assignOpen}

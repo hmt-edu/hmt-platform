@@ -1,7 +1,7 @@
 // P3c-3b: màn Lịch hẹn (TS-11): danh sách, Kanban, Lịch; Hoàn thành, Dời, Huỷ, Mở lại; Tạo gắn với lead; dải "quá hạn bị ẩn".
 // Dữ liệu giả dựng bằng create_lead, create_appointment; tìm bằng dấu riêng của từng dự án.
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, expectAccessible, isPhone, loginStaff, pickChip, pickOption } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, pickChip, pickOption } from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded, type Setup } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lịch hẹn giả).');
@@ -19,7 +19,7 @@ test.afterAll(async ({}, testInfo) => {
 });
 
 async function openList(page: Page, setup: Setup) {
-  await loginStaff(page, setup.account);
+  await enterAs(page, setup.account);
   await expect(page).toHaveURL(/\/crm$/);
   await page.goto('/crm/lich-hen');
   await expect(page.getByRole('heading', { level: 1, name: 'Lịch hẹn' })).toBeVisible();

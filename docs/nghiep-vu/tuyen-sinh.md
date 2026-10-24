@@ -232,3 +232,6 @@ Kiểm thử: `supabase/tests/database/027_lead_giai_doan_khoi_dau.test.sql` (9 
 
 Hàm nội bộ: `app.merge_side`, `app.merge_items` (không cấp cho giao diện). Tham số mới `merge_preview_max_items` (INT, mục, 5 đến 100, mặc định 20). Không bảng mới, không chỉ mục mới (dùng `lead_phone_idx`, `opportunity_parent_idx`, `appointment_lead_idx`, `note_entity_idx`). Luật gộp (`merge_leads`, `merge_opportunities`) giữ nguyên. Gộp Phụ huynh, Học sinh và điều kiện lớp trùng giờ ở phân hệ Khách hàng, Ghi danh (QĐ-P3f-1); KD6 (học sinh trùng tên, năm sinh dưới một phụ huynh) giữ nguyên hành vi (QĐ-P3f-2). Mã lỗi dùng lại mã đã có. Kiểm thử: `supabase/tests/database/032_gop_trung_goi_y.test.sql`.
 
+### P3f-2: giao diện Gộp trùng và Nhập file (không đổi DB)
+Hộp TS-10 gọi `merge_candidates`, `merge_preview`, `merge_leads`, `merge_opportunities`; hộp TS-04 gọi `import_leads` (xem trước `p_commit = false`, nhập `p_commit = true`). Luật và quyền do hàm kiểm; giao diện chỉ hiện kết quả và lỗi. CSV đọc ở trình duyệt (UTF-8 có hoặc không BOM; dấu "," hoặc ";"); nguồn, kênh trong file là tên hoặc mã, đổi sang mã theo danh mục, không khớp thì gửi nguyên chữ để hàm báo lỗi. Giá trị mặc định (nguồn, kênh, chiến dịch; cơ sở, người phụ trách khi có quyền Giao việc) chọn ở bước ghép cột.
+
