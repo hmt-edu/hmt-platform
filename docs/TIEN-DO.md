@@ -54,6 +54,8 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P3e-2 | Giao diện Phiếu kiểm tra (`/crm/phieu-kiem-tra`): danh sách + Kanban (đếm theo cột) + Lịch (TS-16), trang phiếu (TS-17: thanh trạng thái chỉ đọc, Nhập kết quả, Hoàn thành, Lùi bước, Huỷ, Mở lại, Đổi lịch, Sửa), tạo phiếu từ cơ hội (TS-15); mở khoá mã phiếu, nút "Mở phiếu" ở trang Cơ hội, hộp chặn L7, màn Lịch hẹn lọc theo phiếu | Đã gộp (PR P3e-2) |
 | P3f-1 | DB hộp Gộp trùng (migration `040`): `merge_candidates` (gợi ý bản trùng, chỉ trong phạm vi xem của người gọi), `merge_preview` thêm so sánh hai bên và danh sách lịch hẹn, ghi chú sẽ chuyển, tham số `merge_preview_max_items`; bài kiểm 032 (50 bài), EXPLAIN trên seed lớn | Đã gộp (PR P3f-1) |
 | P3f-2 | Giao diện: hộp Gộp trùng lead, cơ hội (TS-10; Hành động → Gộp trùng ở trang Lead và Cơ hội, quyền Duyệt) và hộp Nhập lead từ file CSV (TS-04; nút Nhập ở màn Lead cho ai có quyền Tạo; 3 bước, xem trước bằng `import_leads`) | Đã gộp (PR P3f-2) |
+| Lịch hẹn bổ sung-1 | DB (migration `041`): `export_appointments` (Xuất, ghi nhật ký xuất), `appointment_group_counts` (Group By 1 đến 2 cấp: trạng thái, loại hoạt động, người phụ trách, cơ sở, loại hồ sơ gắn), `assign_appointments` (giao hàng loạt: chỉ lịch Chưa làm, không giao tay lịch nhắc tự sinh của phiếu, trả số giao được và lý do từng nhóm bị bỏ), `list_appointments` thêm bộ lọc `kind`; `reschedule_appointment` chặn đổi người phụ trách lịch nhắc tự sinh (Đ37); bài kiểm 033 (77 bài), EXPLAIN trên seed lớn | Đã gộp (PR Lịch hẹn bổ sung-1) |
+| Lịch hẹn bổ sung-2 | Giao diện: nút Xuất, Group By, chọn hàng loạt kèm Giao việc, Lịch "Theo người" ở chế độ Ngày (QĐ-Đ6, Đ34); bỏ "Theo phòng" và "Nhập" | Chưa (làm sau PR 1) |
 | 7 | P2 Cấu hình | Chưa |
 | 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
 
@@ -95,9 +97,9 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 
 **Đã gộp 23/10:** #68 (nợ nhỏ: sửa gốc bài kiểm chập chờn, Hoàn tác), #70 (luật TD14, QĐ-Đ7, bản đồ màn hình, TIEN-DO).
 
-**Đã gộp 23 đến 24/10 (tiếp):** #71 (P3e-1 DB), #72 (P3e-2 giao diện), #73 (dọn khung cũ, GD-02), #74 (QĐ-Đ10 đến Đ20), #75 (P3f-1 DB), #76 (CI: cắt sớm và thử lại bước cài trình duyệt).
+**Đã gộp 23 đến 24/10 (tiếp):** #71 (P3e-1 DB), #72 (P3e-2 giao diện), #73 (dọn khung cũ, GD-02), #74 (QĐ-Đ10 đến Đ20), #75 (P3f-1 DB), #76 và #78 (CI: cắt sớm, thử lại, cache gói apt của bước cài trình duyệt), #77 (P3f-2 giao diện Gộp trùng, Nhập file), #79 (luật giáo viên vào spec 04, QĐ-Đ21 đến Đ32).
 
-**Đang mở:** #69 (lưu canvas Design, khuôn K4g, K4e4): chờ Design lưu bản cuối (bản 25 trở đi, sau khi Design sửa K12 thành biểu mẫu: bỏ Filters/Group By/Favorites, nút Làm mới, nút Cột, ô tìm kiếm; QĐ-Đ12, QĐ-Đ17) và anh nói "lưu". #77 (P3f-2 giao diện Gộp trùng, Nhập file; chờ CI xanh và OK). #78 (CI: apt chờ ngắn, cache gói đã tải; chờ số đo hai lượt và OK). PR tài liệu này (luật giáo viên, QĐ-Đ21 đến Đ32, bản đồ): chờ OK. Cả #77 và PR này đều sửa TIEN-DO: PR nào gộp sau phải rebase.
+**Đang mở:** #69 (lưu canvas Design, khuôn K4g, K4e4): chờ Design lưu bản cuối (bản 25 trở đi, sau khi Design sửa K12 thành biểu mẫu: bỏ Filters/Group By/Favorites, nút Làm mới, nút Cột, ô tìm kiếm; QĐ-Đ12, QĐ-Đ17) và anh nói "lưu". PR DB Lịch hẹn bổ sung (migration 041): chờ CI và OK.
 
 **Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 038) và toàn bộ giao diện mới.
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
@@ -107,7 +109,7 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 1. **P3e Phiếu kiểm tra:** PR 1 DB (migration 039: `get_student_test`, đếm nhóm, Xuất, danh sách giáo viên chấm và phòng) rồi PR 2 giao diện (TS-16 danh sách + Kanban + Lịch, TS-17 trang phiếu, TS-15 tạo và đổi lịch; mở khoá mã phiếu ở trang Cơ hội và hộp chặn L7, L8). Anh duyệt kế hoạch 23/10 (QĐ-T6: gộp ba kiểu xem một PR). **Cả hai PR đã gộp** (P3e-1 DB, P3e-2 giao diện).
 2. **P3f:** Gộp trùng (TS-10) và Nhập file (TS-04). Anh duyệt kế hoạch 23/10: **Cả hai PR đã gộp** (PR 1 DB migration 040, PR 2 giao diện) (CSV trước; đọc UTF-8 có BOM, dấu phân cách "," hoặc ";"). Chỉ gộp Lead và Cơ hội (QĐ-P3f-1).
-3. **PR "Lịch hẹn bổ sung":** Xuất, Group By, chọn hàng loạt kèm Giao việc, Lịch "Theo người" (anh chốt QĐ-Đ6); bỏ "Theo phòng" và "Nhập".
+3. **PR "Lịch hẹn bổ sung":** Xuất, Group By, chọn hàng loạt kèm Giao việc, Lịch "Theo người" (anh chốt QĐ-Đ6, Đ33 đến Đ38); bỏ "Theo phòng" và "Nhập". **PR 1 DB (migration 041) đã mở; PR 2 giao diện sau khi PR 1 gộp.**
 4. **QT-01, QT-02, QT-03 Người dùng** (kèm ô "Quản lý trực tiếp"): khuôn hộp mật khẩu tạm K4g, K4e4 đã có trong canvas v22 (PR #69).
 5. **P5a Bán hàng + Thu chi:** đặc tả đã viết (Chat), đứng sau các mục trên; tới lượt thì em gửi kế hoạch P5a-DB1 cho anh duyệt trước khi viết migration. Ghi danh và Lớp thuộc P5b (anh chốt QĐ-P5a-1).
 
@@ -122,7 +124,8 @@ Claude Design: P4 xong; P5a (v6) đóng băng chờ anh; P5b mới xong cụm Gh
 
 ## Đang chờ anh Trường
 
-- Comment OK cho #77, #78 và PR tài liệu #79 (sau commit cuối của từng PR); #69 chờ bản cuối của Design và anh nói "lưu".
+- Comment OK cho PR DB Lịch hẹn bổ sung (sau commit cuối); #69 chờ bản cuối của Design và anh nói "lưu".
+- **Đã chốt 24/10 cho PR DB Lịch hẹn bổ sung:** Đ37 (chặn đổi người phụ trách lịch nhắc tự sinh của phiếu cả ở Dời lịch, trong DB, đã làm trong cùng PR; R-CRM-38 đã vào spec) và Đ38 (lịch "Theo người" theo phạm vi xem của ma trận quyền hiện có, không thu hẹp quyền Sale, CSKH; sửa Đ34). Bài kiểm hiện trạng phạm vi xem của Tuyển sinh giữ nguyên.
 - **Chỗ vênh khi chép luật 24/10 (anh xác nhận 24/10, đã xử lý):** R-GIO-05 trùng số với "Tự chốt buổi" nên luật giáo viên không thấy danh sách điểm danh trước khi Đã chốt là **R-GIO-08**; QĐ-Đ27 = duyệt khuôn K09 (báo cáo tháng) và GV-15 "đã nộp, chỉ xem"; không có Đ31 riêng (nằm trong Đ29); R-GV-14 chỉ thêm "tháng tính theo ngày buổi diễn ra"; D-12 ghi ở quyết định thiết kế.
 - Cài hạn xử lý ticket chăm sóc tháng (R-CRM-30) trong màn Cấu hình khi có.
 - Chưa có quyết định nào khác đang chờ (23/10). Việc sắp tới cần anh duyệt: kế hoạch P5a-DB1 (khi tới lượt).

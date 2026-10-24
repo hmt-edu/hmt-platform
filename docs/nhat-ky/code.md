@@ -126,6 +126,10 @@
 - Đăng nhập dùng lại trong Playwright: `enterAs` (e2e/helpers.ts) đăng nhập thật một lần cho mỗi tài khoản (mỗi tiến trình chạy bài, mỗi loại trình duyệt), các bài sau nạp lại phiên đã lưu (khoá `sb-…` trong localStorage), phiên hỏng thì tự đăng nhập lại. Mười một file bài tính năng đổi sang `enterAs`; bài kiểm chính luồng đăng nhập (auth, dang-nhap-thiet-ke, so-sanh-*) vẫn đi qua màn đăng nhập. Lý do: Supabase local giới hạn 30 lần đăng nhập mỗi 5 phút mỗi địa chỉ; lỗi hiện là đứng ở trang đăng nhập, không phải lỗi mã. Cả bộ chạy ở máy từ 6,4 phút xuống 4,2 phút.
 - Ảnh TS10c dựng bằng Admin giả (có thiết lập hai bước cho admin.cs1; chạy xong chạy lại `npm run db:seed-users`) và một lead cùng SĐT ở CS1 dựng bằng tài khoản Tuyển sinh CS1.
 
+## PR Lịch hẹn bổ sung-1 DB (24/10)
+- Migration `20261024000041`: `export_appointments` (ghi nhật ký xuất), `appointment_group_counts`, `assign_appointments` (giao hàng loạt, trả lý do từng nhóm bị bỏ), `list_appointments` thêm bộ lọc `kind`. Bài kiểm 033 (77 bài: đúng và bị chặn theo từng vai trò, lô chọn lẫn, lịch nhắc tự sinh, cơ sở khác). `assign_appointments` là hàm riêng (không mở rộng `assign_owner`) vì cần kết quả từng nhóm.
+- Anh chốt Đ37 trong cùng PR: `reschedule_appointment` (thay thân) chặn đổi người phụ trách lịch nhắc tự sinh (`HMT_LICH_NHAC_THEO_PHIEU`), dời giờ và ghi chú vẫn được; 10 bài kiểm thêm (77 bài). Đ38: phạm vi xem của Tuyển sinh, CSKH giữ nguyên (không đổi ma trận quyền).
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).
