@@ -16,6 +16,7 @@ import {
 import { AppointmentDialog } from '../../features/appointments/AppointmentDialog';
 import { useUndoAppointment } from '../../features/appointments/useUndoAppointment';
 import { RecordPicker, type PickedRecord } from '../../features/appointments/RecordPicker';
+import { AssignDialog } from '../../features/assign/AssignDialog';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { KanbanBoard } from '../../list/Kanban';
 import { CalendarView, type CalendarKind, type CalendarMode } from '../../list/Calendar';
@@ -33,19 +34,35 @@ import { formatDateTime } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { vnDayBounds } from '../../lib/vnDay';
 import { useAccess } from '../../nav/AccessContext';
-import { Code, Tag, type SortState } from '../../ui/Data';
-import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
+import { BulkActionBar, Code, Tag, type SortState } from '../../ui/Data';
+import { BlockingDialog, ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { Alert, Avatar, Spinner } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
+import { downloadText, toCsv } from '../lead/csv';
+import { buildLeadGroupTree } from '../lead/leadGroups';
+import { useLeafRows } from '../lead/useLeadData';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { EMPTY_APPOINTMENT_STATE, buildAppointmentConfig } from './appointmentConfig';
 import { AppointmentButtons, RecordLink, type RowActions } from './AppointmentParts';
+import { peopleWithAppointments } from './appointmentPeople';
 import { STATUS_TONE } from './appointmentTone';
-import { buildAppointmentFilters, hiddenOverdueBefore } from './appointmentFilters';
-import { STATUS_LABEL, type AppointmentRow } from './appointmentTypes';
+import {
+  APPOINTMENT_GROUP_FIELD_OF,
+  appointmentGroupFilter,
+  buildAppointmentFilters,
+  hiddenOverdueBefore,
+} from './appointmentFilters';
+import {
+  STATUS_LABEL,
+  type AppointmentRow,
+  type AssignAppointmentsResult,
+} from './appointmentTypes';
 import {
   KANBAN_STATUSES,
+  assignAppointments,
+  exportAppointments,
   useAppointmentColumns,
+  useAppointmentGroupCounts,
   useAppointmentPage,
   useCalendarAppointments,
   useOverdueBefore,
@@ -71,6 +88,23 @@ const MS_PER_MINUTE = 60_000; // allow-number: số mili giây trong một phút
 const CALENDAR_START_HOUR = 7; // allow-number: giờ đầu của lưới Lịch
 const CALENDAR_END_HOUR = 21; // allow-number: giờ cuối của lưới Lịch
 const CALENDAR_MAX_PAGES = 5; // allow-number: số trang tối đa tải cho một cửa sổ Lịch (hơn thì báo thu hẹp bộ lọc)
+
+// Cột của file xuất (tên cột tiếng Việt; dữ liệu là tên danh mục do hàm xuất trả về).
+const EXPORT_COLUMNS = [
+  { key: 'kind', label: 'Loại hồ sơ' },
+  { key: 'record_code', label: 'Mã hồ sơ' },
+  { key: 'record_label', label: 'Hồ sơ' },
+  { key: 'activity', label: 'Loại hoạt động' },
+  { key: 'title', label: 'Nội dung' },
+  { key: 'scheduled_at', label: 'Giờ hẹn' },
+  { key: 'status', label: 'Trạng thái' },
+  { key: 'owner', label: 'Người phụ trách' },
+  { key: 'branch', label: 'Cơ sở' },
+  { key: 'auto_reminder', label: 'Lịch nhắc tự sinh' },
+  { key: 'cancel_reason', label: 'Lý do huỷ' },
+  { key: 'cancel_note', label: 'Ghi chú huỷ' },
+  { key: 'created_at', label: 'Ngày tạo' },
+];
 
 const ACTIVITY_TONE: Record<string, CalendarKind['tone']> = {
   GOI_DIEN: 'info',
@@ -143,6 +177,16 @@ export function AppointmentListPage() {
   const [calMode, setCalMode] = useState<CalendarMode>('week');
   const [anchor, setAnchor] = useState(() => startOfDay(new Date()));
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [tick, setTick] = useState(0);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // Mã và cơ sở của các dòng đã chọn (hộp Giao nêu mã dù đổi trang hay nhóm); cập nhật khi chọn.
+  const [selectedInfo, setSelectedInfo] = useState<Map<string, { code: string; branch: string }>>(
+    new Map(),
+  );
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [assignResult, setAssignResult] = useState<AssignAppointmentsResult | null>(null);
+  const [exporting, setExporting] = useState(false);
+  const [resourceMode, setResourceMode] = useState<'all' | 'people'>('all');
   const [creating, setCreating] = useState(false);
   const [picked, setPicked] = useState<PickedRecord | null>(null);
   const [moving, setMoving] = useState<AppointmentRow | null>(null);
@@ -157,6 +201,7 @@ export function AppointmentListPage() {
   const canCancel = access.can('APPOINTMENT', 'HUY');
   const canCreate = access.can('APPOINTMENT', 'TAO');
   const canAssign = access.can('APPOINTMENT', 'GIAO_VIEC');
+  const canExport = access.can('APPOINTMENT', 'XUAT');
   const staff = useAssignableStaff('APPOINTMENT', null, canAssign);
 
   const debounced = useDebounced(state.search);
@@ -181,7 +226,13 @@ export function AppointmentListPage() {
     [searchState, window, parentLead, parentOpp, parentTest],
   );
   const sortValue = sortParam(sort);
-  const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
+  const filtersKey = JSON.stringify(filters);
+  // Group By ở máy chủ (Đ35): khi chọn trường nhóm, danh sách thành cây nhóm có số đếm; không chọn thì giữ nhóm theo thời gian.
+  const groupFields = state.group.flatMap((k) =>
+    APPOINTMENT_GROUP_FIELD_OF[k] ? [APPOINTMENT_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const pagingKey = `${filtersKey}|${sortValue}`;
   const current = paging.key === pagingKey ? paging : { key: pagingKey, page: 0, more: 0 };
   const page = current.page;
   const moreCards = current.more;
@@ -192,7 +243,31 @@ export function AppointmentListPage() {
     sortValue,
     page * (pageSize ?? 0),
     pageSize,
-    view === 'list',
+    view === 'list' && !grouped,
+  );
+  const counts = useAppointmentGroupCounts(filters, groupFields, view === 'list');
+  const leaves = useLeafRows<AppointmentRow>(
+    filters,
+    sortValue,
+    pageSize,
+    `${filtersKey}|${sortValue}|${tick}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_appointments',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<AppointmentRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            appointmentGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
   );
   const cardLimit =
     cardsPerColumn === null
@@ -211,10 +286,27 @@ export function AppointmentListPage() {
     (state.quick.mine ?? []).includes('owner'),
   );
 
-  const rows = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  const pageRows = list.data?.rows ?? [];
+  const rows: AppointmentRow[] = useMemo(
+    () =>
+      grouping
+        ? grouping.tree
+            .flatMap((g) => (g.children.length > 0 ? g.children : [g]))
+            .flatMap((g) => g.rows)
+        : pageRows,
+    // pageRows suy ra từ list.data.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouping, list.data],
+  );
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
   const activeQuery =
-    view === 'kanban' ? board.find((q) => q.isError) : view === 'calendar' ? calendar : list;
+    view === 'kanban'
+      ? board.find((q) => q.isError)
+      : view === 'calendar'
+        ? calendar
+        : grouped
+          ? counts
+          : list;
   const errorText = activeQuery?.isError ? errorOf(activeQuery.error).message : null;
   const activityName = (code: string) => catalogs.name('ACTIVITY_TYPE', code) ?? code;
 
@@ -271,9 +363,9 @@ export function AppointmentListPage() {
   );
 
   const { start, end } = vnDayBounds();
-  const groupTree = useMemo(() => {
+  const bucketTree = useMemo(() => {
     const byBucket = new Map<Bucket, AppointmentRow[]>();
-    for (const row of rows) {
+    for (const row of pageRows) {
       const bucket = bucketOf(row, start, end);
       byBucket.set(bucket, [...(byBucket.get(bucket) ?? []), row]);
     }
@@ -283,9 +375,9 @@ export function AppointmentListPage() {
         ? []
         : [{ key: b, label: BUCKET_LABEL[b], count: items.length, children: [], rows: items }];
     });
-    // start, end đổi theo ngày; rows đổi theo dữ liệu.
+    // start, end đổi theo ngày; pageRows đổi theo dữ liệu.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows]);
+  }, [list.data]);
 
   const columns = KANBAN_STATUSES.map((status, i) => ({
     code: status,
@@ -314,8 +406,60 @@ export function AppointmentListPage() {
       kind: r.activity_code,
       status: CAL_STATUS[r.status],
       subtitle: r.record_code ?? undefined,
+      resource: r.owner_name ?? undefined,
     };
   });
+  // "Theo người" (Đ34, Đ38): chỉ người có lịch hẹn trong ngày đang xem, xếp theo tên, trong phạm vi lịch mà người xem được xem
+  // theo ma trận quyền (không thu hẹp quyền xem của Tuyển sinh, CSKH).
+  const people = peopleWithAppointments(calendarRows);
+
+  const refresh = () => {
+    setTick((t) => t + 1);
+    void refreshData();
+  };
+
+  const select = (next: Set<string>) => {
+    setSelected(next);
+    setSelectedInfo((prev) => {
+      const info = new Map<string, { code: string; branch: string }>();
+      for (const id of next) {
+        const row = rows.find((r) => r.id === id);
+        const old = prev.get(id);
+        if (row) info.set(id, { code: row.record_code ?? row.title, branch: row.branch_code });
+        else if (old) info.set(id, old);
+      }
+      return info;
+    });
+  };
+  const selectedCodes = [...selectedInfo.values()].map((i) => i.code);
+  const selectedBranches = [...selectedInfo.values()].map((i) => i.branch);
+
+  async function exportFile() {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const result = await exportAppointments(supabase, filters);
+      const exportRows = result.rows.map((r) => ({
+        ...r,
+        scheduled_at: formatDateTime(r.scheduled_at),
+        created_at: formatDateTime(r.created_at),
+        auto_reminder: r.auto_reminder ? 'Có' : '',
+      }));
+      downloadText(`lich-hen-${vnDayBounds().dateKey}.csv`, toCsv(exportRows, EXPORT_COLUMNS));
+      toast(
+        result.truncated
+          ? {
+              tone: 'warning',
+              title: `Đã xuất ${result.exported} trên ${result.total} dòng (quá giới hạn mỗi lần xuất). Thêm bộ lọc để xuất phần còn lại.`,
+            }
+          : { title: `Đã xuất ${result.exported} dòng.` },
+      );
+    } catch (e) {
+      toast({ tone: 'danger', title: errorOf(e).message });
+    } finally {
+      setExporting(false);
+    }
+  }
 
   function showOverdue() {
     setState({ ...state, datePreset: '', quick: { ...state.quick, overdue: ['overdue'] } });
@@ -337,12 +481,14 @@ export function AppointmentListPage() {
             ? boardPending
             : view === 'calendar'
               ? calendar.isPending
-              : list.isPending || list.isPlaceholderData
+              : grouped
+                ? counts.isPending || counts.isPlaceholderData
+                : list.isPending || list.isPlaceholderData
         }
         error={errorText}
         onRetry={() => void activeQuery?.refetch()}
-        actions={
-          canCreate
+        actions={[
+          ...(canCreate
             ? [
                 {
                   label: 'Tạo',
@@ -354,11 +500,21 @@ export function AppointmentListPage() {
                   },
                 },
               ]
-            : []
-        }
-        onRefresh={() => void refreshData()}
+            : []),
+          ...(canExport
+            ? [
+                {
+                  label: 'Xuất',
+                  icon: 'download' as const,
+                  onClick: () => void exportFile(),
+                  loading: exporting,
+                },
+              ]
+            : []),
+        ]}
+        onRefresh={refresh}
         pager={
-          view === 'list'
+          view === 'list' && !grouped
             ? {
                 from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
                 to: page * (pageSize ?? 0) + rows.length,
@@ -374,6 +530,16 @@ export function AppointmentListPage() {
         }
         sort={sort}
         onSortChange={(next) => setSort(next?.key === 'time' ? next : null)}
+        {...(canAssign && view === 'list' ? { selected, onSelectedChange: select } : {})}
+        bulk={
+          canAssign && view === 'list' ? (
+            <BulkActionBar count={selected.size} onClear={() => select(new Set())}>
+              <Button icon="user" onClick={() => setAssignOpen(true)}>
+                Assign
+              </Button>
+            </BulkActionBar>
+          ) : undefined
+        }
         emptyMessage={{
           title: 'Chưa có lịch hẹn',
           hint: 'Không có lịch hẹn nào trong bộ lọc này. Đổi bộ lọc hoặc bấm Tạo để thêm lịch hẹn.',
@@ -396,8 +562,12 @@ export function AppointmentListPage() {
               }
             : undefined
         }
-        groupTree={groupTree}
-        groupsOpenByDefault
+        groupTree={grouped ? grouping?.tree : bucketTree}
+        onGroupToggle={(key, open) => {
+          const spec = grouping?.specs.get(key);
+          if (spec) leaves.toggle(key, spec.filters, open);
+        }}
+        groupsOpenByDefault={!grouped}
         kanban={
           boardPending ? (
             <Spinner label="Đang tải Kanban…" />
@@ -431,6 +601,11 @@ export function AppointmentListPage() {
         }
         calendar={
           <div className="flex flex-col gap-3">
+            {calMode === 'day' && resourceMode === 'people' && people.length === 0 && (
+              <Alert tone="info">
+                Không có lịch hẹn nào trong ngày này nên chưa có cột người nào.
+              </Alert>
+            )}
             {calendar.data?.truncated && (
               <Alert tone="warning">
                 Khoảng này có {calendar.data.total} lịch hẹn, đang hiện {calendarRows.length}. Thêm
@@ -446,6 +621,9 @@ export function AppointmentListPage() {
               onAnchorChange={setAnchor}
               startHour={CALENDAR_START_HOUR}
               endHour={CALENDAR_END_HOUR}
+              resources={{ people, rooms: [] }}
+              resourceMode={resourceMode}
+              onResourceModeChange={(m) => setResourceMode(m === 'rooms' ? 'all' : m)}
               now={new Date()}
               renderDetail={(event, close) => {
                 const row = calendarRows.find((r) => r.id === event.id);
@@ -597,6 +775,41 @@ export function AppointmentListPage() {
             .catch((e: unknown) => setReopenError(errorOf(e).message))
             .finally(() => setReopenBusy(false));
         }}
+      />
+      <AssignDialog
+        open={assignOpen}
+        onOpenChange={setAssignOpen}
+        entityType="APPOINTMENT"
+        noun="lịch hẹn"
+        codes={selectedCodes}
+        branchCodes={selectedBranches}
+        onAssign={async (ownerId, ownerName) => {
+          const result = await assignAppointments(supabase, [...selected], ownerId);
+          select(new Set());
+          refresh();
+          if (result.skipped === 0) {
+            toast({ title: `Đã giao ${result.assigned} lịch hẹn cho ${ownerName}.` });
+          } else {
+            // Lô chọn lẫn (Đ33): nêu rõ số giao được, số bị bỏ và lý do từng nhóm; không im lặng bỏ dòng.
+            setAssignResult({ ...result, reasons: result.reasons });
+            toast({
+              tone: result.assigned > 0 ? 'info' : 'warning',
+              title: `Đã giao ${result.assigned} lịch hẹn cho ${ownerName}, bỏ qua ${result.skipped}.`,
+            });
+          }
+        }}
+      />
+      <BlockingDialog
+        open={assignResult !== null}
+        onOpenChange={(open) => {
+          if (!open) setAssignResult(null);
+        }}
+        title={`Đã giao ${assignResult?.assigned ?? 0} trên ${assignResult?.requested ?? 0} lịch hẹn`}
+        message={`Bỏ qua ${assignResult?.skipped ?? 0} lịch hẹn vì các lý do dưới đây. Những lịch này giữ nguyên người phụ trách.`}
+        items={(assignResult?.reasons ?? []).map((r) => ({
+          left: r.message,
+          right: `${r.count} lịch hẹn`,
+        }))}
       />
     </>
   );

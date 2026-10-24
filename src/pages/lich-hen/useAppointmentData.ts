@@ -2,9 +2,16 @@
 // Lọc, sắp xếp, phân trang, tìm kiếm làm ở cơ sở dữ liệu (CLAUDE.md, Hiệu năng); mỗi màn vài lần gọi, không gọi theo từng dòng.
 import { keepPreviousData, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { rpc, useDb } from '../../lib/db';
+import type { GroupCounts } from '../lead/leadTypes';
 import type { AppointmentFilters } from './appointmentFilters';
-import type { AppointmentPage, AppointmentStatus } from './appointmentTypes';
+import type {
+  AppointmentExport,
+  AppointmentPage,
+  AppointmentStatus,
+  AssignAppointmentsResult,
+} from './appointmentTypes';
 
 export function useAppointmentPage(
   filters: AppointmentFilters,
@@ -114,6 +121,7 @@ export function useRefreshAppointments() {
         'appointment-list',
         'appointment-board',
         'appointment-calendar',
+        'appointment-groups',
         'appointment-overdue',
         'lead-upcoming',
         'lead-record',
@@ -122,4 +130,43 @@ export function useRefreshAppointments() {
       ].map((key) => client.invalidateQueries({ queryKey: [key] })),
     );
   }, [client]);
+}
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+export function useAppointmentGroupCounts(
+  filters: AppointmentFilters,
+  fields: string[],
+  enabled: boolean,
+) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['appointment-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'appointment_group_counts', {
+        p_filters: filters,
+        p_fields: fields,
+      }),
+  });
+}
+
+/** Xuất danh sách theo bộ lọc đang xem (hàm kiểm quyền Xuất, ghi nhật ký xuất, cắt ở mức tối đa). */
+export function exportAppointments(
+  supabase: SupabaseClient,
+  filters: AppointmentFilters,
+): Promise<AppointmentExport> {
+  return rpc<AppointmentExport>(supabase, 'export_appointments', { p_filters: filters });
+}
+
+/** Giao nhiều lịch hẹn cho một người; hàm giao phần hợp lệ và trả lý do từng nhóm bị bỏ. */
+export function assignAppointments(
+  supabase: SupabaseClient,
+  ids: string[],
+  ownerId: string,
+): Promise<AssignAppointmentsResult> {
+  return rpc<AssignAppointmentsResult>(supabase, 'assign_appointments', {
+    p_ids: ids,
+    p_owner_id: ownerId,
+  });
 }

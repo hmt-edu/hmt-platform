@@ -24,6 +24,8 @@ export function buildLeadGroupTree<Row>(
   fields: string[],
   leaves: Record<string, Leaf<Row>>,
   onMore: (key: string, spec: LeafSpec) => void,
+  /** Bộ lọc của một nhóm theo trường và khoá; mỗi màn có trường nhóm riêng (mặc định: trường của lead, cơ hội). */
+  filterOf: (field: string, key: string) => LeadFilters = groupFilter,
 ): GroupTreeResult<Row> {
   const specs = new Map<string, LeafSpec>();
   const [f1, f2] = fields.map((f) => GROUP_FIELD_OF[f] ?? f);
@@ -54,7 +56,7 @@ export function buildLeadGroupTree<Row>(
 
   if (!f2) {
     const tree = counts.groups.map((g) =>
-      leaf(`g:${f1}=${g.k1}`, labelOf(f1, g.k1, g.l1), g.count, groupFilter(f1 ?? '', g.k1)),
+      leaf(`g:${f1}=${g.k1}`, labelOf(f1, g.k1, g.l1), g.count, filterOf(f1 ?? '', g.k1)),
     );
     return { tree, specs };
   }
@@ -70,8 +72,8 @@ export function buildLeadGroupTree<Row>(
     parent.count += g.count;
     parent.children.push(
       leaf(`${parentKey}/${f2}=${g.k2 ?? ''}`, labelOf(f2, g.k2, g.l2), g.count, {
-        ...groupFilter(f1 ?? '', g.k1),
-        ...groupFilter(f2, g.k2 ?? ''),
+        ...filterOf(f1 ?? '', g.k1),
+        ...filterOf(f2, g.k2 ?? ''),
       }),
     );
   }

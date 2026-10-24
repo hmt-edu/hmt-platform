@@ -94,3 +94,23 @@ export function hiddenOverdueBefore(state: ListState, today: Date = new Date()):
   const preset = datePresetRange(state.datePreset, today);
   return preset ? preset.from : null;
 }
+
+/** Trường nhóm của giao diện → tên trường của appointment_group_counts (Đ35). */
+export const APPOINTMENT_GROUP_FIELD_OF: Record<string, string> = {
+  status: 'status',
+  activity: 'activity',
+  owner: 'owner',
+  branch: 'branch',
+  kind: 'kind',
+};
+
+/** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm "Chưa có", không lọc thêm). */
+export function appointmentGroupFilter(field: string, key: string): AppointmentFilters {
+  if (key === '') return {};
+  if (field === 'status') return { status: [key] };
+  if (field === 'activity') return { activity: [key] };
+  if (field === 'owner') return { owner_id: key };
+  if (field === 'branch') return { branch_id: key };
+  if (field === 'kind') return { kind: [key] };
+  return {};
+}

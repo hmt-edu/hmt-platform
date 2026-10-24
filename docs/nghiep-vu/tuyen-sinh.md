@@ -248,3 +248,6 @@ Hộp TS-10 gọi `merge_candidates`, `merge_preview`, `merge_leads`, `merge_opp
 
 Hàm nội bộ `app.appointment_group_label`. Không bảng mới, không chỉ mục mới (bộ lọc dùng `appointment_branch_time_idx`, `appointment_owner_idx`, `appointment_status_time_idx`, các chỉ mục khoá ngoại). `app.assign_owner` giữ nguyên (lead, cơ hội), vì trả một số nguyên còn lô lịch hẹn cần trả lý do từng nhóm. Lịch "Theo người" (Đ34) không cần hàm mới. Kiểm thử: `supabase/tests/database/033_lich_hen_bo_sung.test.sql`.
 
+### Lịch hẹn bổ sung-2: giao diện (không đổi DB)
+Nút Xuất gọi `export_appointments` theo bộ lọc đang xem (CSV, cắt ở `export_max_rows`, báo khi bị cắt); Group By gọi `appointment_group_counts` rồi tải dòng từng nhóm bằng `list_appointments` kèm bộ lọc của nhóm; chọn hàng loạt chỉ hiện với người có quyền Giao việc, kết quả của `assign_appointments` hiện trong hộp nêu số giao được, số bị bỏ và lý do từng nhóm (lịch Hoàn thành, Huỷ; lịch nhắc tự sinh của phiếu; lịch đã do người đó phụ trách; lịch ngoài cơ sở). Lịch "Theo người" (Đ34, Đ38): trong chế độ Ngày, mỗi người có lịch hẹn trong ngày là một cột, xếp theo tên, trong phạm vi lịch mà người xem được xem theo ma trận quyền hiện có (Tuyển sinh, CSKH vẫn xem mọi lịch của cơ sở mình; không thu hẹp quyền); không có "Theo phòng".
+

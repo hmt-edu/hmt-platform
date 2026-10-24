@@ -37,6 +37,8 @@ const WEEKDAY = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 const HOUR_PX = 48; // allow-number: chiều cao một giờ trên lưới (bằng .hmt-calv-col của gói)
 const PERCENT = 100; // allow-number: đổi tỉ lệ cột sang phần trăm
 const MIN_EVENT_PX = 36; // allow-number: chiều cao tối thiểu của một sự kiện để đủ hai dòng chữ (thiết kế K5)
+const TIME_COLUMN_PX = 64; // allow-number: bề rộng cột giờ bên trái lưới (bằng thiết kế K5)
+const RESOURCE_COLUMN_PX = 160; // allow-number: bề rộng tối thiểu của một cột người hoặc phòng, hơn thì cuộn ngang
 const MAX_MONTH_CHIPS = 2; // allow-number: tối đa 2 sự kiện mỗi ô tháng, dư gộp "+n" (thiết kế K5)
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -96,6 +98,7 @@ export function CalendarView({
       ? onAnchorChange(new Date(anchor.getFullYear(), anchor.getMonth() + n, 1))
       : onAnchorChange(addDays(anchor, n * step));
 
+  const resourceColumns = mode === 'day' && resourceMode !== 'all' && resources !== undefined;
   const columns =
     mode === 'day' && resourceMode !== 'all' && resources
       ? (resourceMode === 'people' ? resources.people : resources.rooms).map((r) => ({
@@ -161,7 +164,8 @@ export function CalendarView({
               options={[
                 { value: 'all', label: 'Tất cả' },
                 { value: 'people', label: 'Theo người' },
-                { value: 'rooms', label: 'Theo phòng' },
+                // Màn không có phòng (Lịch hẹn) không truyền danh sách phòng thì không hiện "Theo phòng".
+                ...(resources.rooms.length > 0 ? [{ value: 'rooms', label: 'Theo phòng' }] : []),
               ]}
             />
           )}
@@ -236,7 +240,17 @@ export function CalendarView({
         <div className="overflow-x-auto">
           <div
             className="grid min-w-[640px]"
-            style={{ gridTemplateColumns: `64px repeat(${columns.length}, minmax(0, 1fr))` }}
+            style={
+              resourceColumns
+                ? {
+                    // Nhiều người: mỗi cột người rộng tối thiểu, bảng cuộn ngang (Đ34).
+                    minWidth: RESOURCE_COLUMN_PX * columns.length + TIME_COLUMN_PX,
+                    gridTemplateColumns: `${TIME_COLUMN_PX}px repeat(${columns.length}, minmax(${RESOURCE_COLUMN_PX}px, 1fr))`,
+                  }
+                : {
+                    gridTemplateColumns: `${TIME_COLUMN_PX}px repeat(${columns.length}, minmax(0, 1fr))`,
+                  }
+            }
           >
             <div className="h-12 border-b border-border" />
             {columns.map((c) => {

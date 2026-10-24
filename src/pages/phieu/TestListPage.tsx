@@ -31,7 +31,7 @@ import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeafRows } from '../lead/useLeadData';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { EMPTY_TEST_STATE, TEST_TONE, buildTestConfig } from './testConfig';
-import { TEST_GROUP_FIELD_OF, buildTestFilters } from './testFilters';
+import { TEST_GROUP_FIELD_OF, buildTestFilters, testGroupFilter } from './testFilters';
 import { formatScore } from './testLogic';
 import { STATUS_LABEL, type TestBoardCard, type TestRow } from './testTypes';
 import {
@@ -209,8 +209,12 @@ export function TestListPage() {
   const grouping = useMemo(
     () =>
       grouped && counts.data
-        ? buildLeadGroupTree<TestRow>(counts.data, groupFields, leaves.leaves, (key, spec) =>
-            leaves.more(key, spec.filters),
+        ? buildLeadGroupTree<TestRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            testGroupFilter,
           )
         : null,
     // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.

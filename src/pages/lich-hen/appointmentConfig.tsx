@@ -129,7 +129,20 @@ export function buildAppointmentConfig(
         : []),
       { key: 'time', label: 'Thời gian', type: 'date' },
     ],
-    groupFields: [],
+    // Group By ở máy chủ (Đ35): trạng thái, loại hoạt động, người phụ trách, cơ sở (khi xem nhiều cơ sở), loại hồ sơ gắn.
+    groupFields: [
+      { key: 'status', label: 'Trạng thái', value: (r) => r.status },
+      { key: 'activity', label: 'Loại hoạt động', value: (r) => r.activity_code },
+      { key: 'owner', label: 'Người phụ trách', value: (r) => r.owner_id },
+      ...(access.seesAllBranches
+        ? [{ key: 'branch', label: 'Cơ sở', value: (r: AppointmentRow) => r.branch_code }]
+        : []),
+      {
+        key: 'kind',
+        label: 'Loại hồ sơ',
+        value: (r) => (r.lead_id ? 'LEAD' : r.opportunity_id ? 'OPPORTUNITY' : 'STUDENT_TEST'),
+      },
+    ],
     dateFields: [{ key: 'time', label: 'Thời gian' }],
     views: ['list', 'kanban', 'calendar'],
   };

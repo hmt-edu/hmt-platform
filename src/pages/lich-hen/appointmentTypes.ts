@@ -39,3 +39,35 @@ export function recordKind(row: AppointmentRow): 'LEAD' | 'OPPORTUNITY' | 'TEST'
 }
 
 export const RECORD_KIND_LABEL = { LEAD: 'Lead', OPPORTUNITY: 'Cơ hội', TEST: 'Phiếu' } as const;
+
+/** Một dòng xuất file (khớp export_appointments; tên danh mục, không phải mã). */
+export type AppointmentExportRow = {
+  kind: string;
+  record_code: string | null;
+  record_label: string | null;
+  activity: string | null;
+  title: string;
+  scheduled_at: string;
+  status: string;
+  owner: string | null;
+  branch: string;
+  auto_reminder: boolean;
+  cancel_reason: string | null;
+  cancel_note: string | null;
+  created_at: string;
+};
+export type AppointmentExport = {
+  total: number;
+  exported: number;
+  truncated: boolean;
+  rows: AppointmentExportRow[];
+};
+
+/** Kết quả giao hàng loạt (khớp assign_appointments): giao phần hợp lệ, nêu lý do từng nhóm bị bỏ. */
+export type AssignSkipReason = { code: string; message: string; count: number; ids: string[] };
+export type AssignAppointmentsResult = {
+  requested: number;
+  assigned: number;
+  skipped: number;
+  reasons: AssignSkipReason[];
+};

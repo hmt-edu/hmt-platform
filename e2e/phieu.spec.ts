@@ -74,6 +74,33 @@ test('Danh sách: không có Tạo, có Group By, tìm theo dấu; tên học si
   await expect(page).toHaveURL(new RegExp(`/crm/phieu-kiem-tra/${seeded.test.edit.id}$`));
 });
 
+test('Group By trạng thái: mở nhóm chỉ ra đúng phiếu của nhóm (lỗi cũ: nhóm nào cũng ra mọi phiếu)', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await login(page, setup.account);
+  await page.goto('/crm/phieu-kiem-tra');
+  await pickOption(
+    page,
+    page.getByRole('combobox', { name: 'Khoảng thời gian' }),
+    /^Tất cả thời gian$/,
+  );
+  await page.getByPlaceholder(/Tìm tên, SĐT, mã/).fill(setup.mark);
+  await page.getByRole('button', { name: 'Group By', exact: true }).click();
+  await page.getByRole('button', { name: /^Trạng thái/ }).click();
+  if (isPhone(page)) await page.getByRole('button', { name: 'Áp dụng' }).click();
+  else await page.keyboard.press('Escape');
+  const list = isPhone(page)
+    ? page.getByRole('list', { name: 'Kiểm tra đầu vào' })
+    : page.getByRole('table', { name: 'Kiểm tra đầu vào' });
+  const review = page.getByRole('button', { name: /^Chờ giáo viên chấm \(\d+\)$/ });
+  await expect(review).toBeVisible();
+  await review.click();
+  await expect(list.getByText(seeded.test.review.code).first()).toBeVisible();
+  // Phiếu Nháp không lẫn vào nhóm Chờ giáo viên chấm.
+  await expect(list.getByText(seeded.test.edit.code)).toHaveCount(0);
+});
+
 test('Kanban: năm cột trạng thái; Bắt đầu test ở thẻ đưa phiếu sang Đang test', async ({
   page,
 }, testInfo) => {

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { EMPTY_APPOINTMENT_STATE } from './appointmentConfig';
-import { buildAppointmentFilters, hiddenOverdueBefore } from './appointmentFilters';
+import {
+  APPOINTMENT_GROUP_FIELD_OF,
+  appointmentGroupFilter,
+  buildAppointmentFilters,
+  hiddenOverdueBefore,
+} from './appointmentFilters';
 
 const NOW = new Date('2026-10-14T05:00:00Z'); // 12:00 giờ Việt Nam, thứ Tư
 const state = (patch: Partial<typeof EMPTY_APPOINTMENT_STATE>) => ({
@@ -80,5 +85,24 @@ describe('hiddenOverdueBefore', () => {
     expect(
       hiddenOverdueBefore(state({ datePreset: 'week', quick: { overdue: ['overdue'] } }), NOW),
     ).toBeNull();
+  });
+});
+
+describe('Group By của màn Lịch hẹn (Đ35)', () => {
+  it('chỉ nhóm theo năm trường: trạng thái, loại hoạt động, người phụ trách, cơ sở, loại hồ sơ', () => {
+    expect(Object.keys(APPOINTMENT_GROUP_FIELD_OF).sort()).toEqual(
+      ['activity', 'branch', 'kind', 'owner', 'status'].sort(),
+    );
+  });
+  it('bộ lọc của một nhóm mở đúng dòng của nhóm đó', () => {
+    expect(appointmentGroupFilter('status', 'CHUA_LAM')).toEqual({ status: ['CHUA_LAM'] });
+    expect(appointmentGroupFilter('activity', 'GOI_DIEN')).toEqual({ activity: ['GOI_DIEN'] });
+    expect(appointmentGroupFilter('owner', 'u1')).toEqual({ owner_id: 'u1' });
+    expect(appointmentGroupFilter('branch', 'b1')).toEqual({ branch_id: 'b1' });
+    expect(appointmentGroupFilter('kind', 'STUDENT_TEST')).toEqual({ kind: ['STUDENT_TEST'] });
+  });
+  it('nhóm "Chưa có" (khoá trống) và trường lạ không lọc thêm', () => {
+    expect(appointmentGroupFilter('owner', '')).toEqual({});
+    expect(appointmentGroupFilter('khong_co', 'x')).toEqual({});
   });
 });

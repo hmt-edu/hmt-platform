@@ -130,6 +130,12 @@
 - Migration `20261024000041`: `export_appointments` (ghi nhật ký xuất), `appointment_group_counts`, `assign_appointments` (giao hàng loạt, trả lý do từng nhóm bị bỏ), `list_appointments` thêm bộ lọc `kind`. Bài kiểm 033 (77 bài: đúng và bị chặn theo từng vai trò, lô chọn lẫn, lịch nhắc tự sinh, cơ sở khác). `assign_appointments` là hàm riêng (không mở rộng `assign_owner`) vì cần kết quả từng nhóm.
 - Anh chốt Đ37 trong cùng PR: `reschedule_appointment` (thay thân) chặn đổi người phụ trách lịch nhắc tự sinh (`HMT_LICH_NHAC_THEO_PHIEU`), dời giờ và ghi chú vẫn được; 10 bài kiểm thêm (77 bài). Đ38: phạm vi xem của Tuyển sinh, CSKH giữ nguyên (không đổi ma trận quyền).
 
+## PR Lịch hẹn bổ sung-2 giao diện (24/10)
+- Màn Lịch hẹn: nút Xuất (`export_appointments`, CSV, quyền Xuất), Group By ở máy chủ (`appointment_group_counts`; mở nhóm tải dòng bằng `list_appointments` với bộ lọc của nhóm), chọn hàng loạt kèm Assign (`assign_appointments`; hộp kết quả nêu số giao được và lý do từng nhóm bị bỏ), Lịch "Theo người" (người có lịch trong ngày, xếp theo tên, cột rộng tối thiểu và cuộn ngang; không còn "Theo phòng" khi màn không có phòng).
+- Lỗi tìm ra khi làm: `buildLeadGroupTree` luôn dùng bộ lọc nhóm của lead (stage, source, owner), nên Group By của màn **Phiếu kiểm tra** (từ #72) mở nhóm ra mọi phiếu; nay nhận hàm bộ lọc riêng của từng màn, có bài Vitest và bài Playwright tái hiện.
+- Lỗi nhỏ: khi đang nhóm, trạng thái "đang tải" lấy từ truy vấn đếm nhóm (truy vấn danh sách bị tắt nên luôn "đang chờ").
+- Bài kiểm: Vitest `appointmentFilters` (nhóm), `appointmentPeople`, `leadGroups`; Playwright `lich-hen-bo-sung.spec.ts` (quyền, Xuất, Group By, Giao việc, Theo người), `phieu.spec.ts` thêm bài Group By.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).
