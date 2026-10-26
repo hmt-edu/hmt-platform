@@ -155,6 +155,12 @@ test('Dời lịch hẹn: chọn ngày giờ mới, lưu', async ({ page }, test
   await pickChip(dialog, '17:00');
   await dialog.getByRole('button', { name: 'Dời lịch' }).click();
   await expect(toastText(page, 'Đã dời lịch hẹn.')).toBeVisible();
+  // "Ngày mai" của Chủ nhật là thứ Hai tuần sau, ngoài mốc Tuần này mặc định (lỗi chập chờn theo ngày: bài trượt đêm thứ Bảy, Chủ nhật).
+  await pickOption(
+    page,
+    page.getByRole('combobox', { name: 'Khoảng thời gian' }),
+    /^Tất cả thời gian$/,
+  );
   await expect(row(page, `Hẹn để dời ${setup.mark}`).getByText(/17:00/)).toBeVisible();
 });
 

@@ -144,7 +144,7 @@ select is((select array[stage_code, source_type_code, source_code, coalesce(chan
              from app.lead where parent_phone = '0900000501'),
           array['C1', 'MARKETING', 'FACEBOOK_ADS', 'FACEBOOK_ADS_LEAD_FORM', 'true', pg_temp.uid('sales1')::text, 'Học Toán 9'],
           'Lead nhập: giai đoạn C1, nguồn, kênh, chiến dịch mặc định, người phụ trách là người nhập, nhu cầu từ cột ghi chú');
-select is((select array[student_name, student_birth_year::text] from app.lead where parent_phone = '0900000501'), array['Em Một', '2012'], 'Tên, năm sinh học sinh được ghi');
+select is((select array[ps.full_name, ps.birth_year::text] from app.prospect_student ps join app.lead l on l.id = ps.lead_id where l.parent_phone = '0900000501' and ps.position = 1), array['Em Một', '2012'], 'Tên, năm sinh học sinh được ghi');
 select is((select array[source_code, coalesce(channel_code, 'trống')] from app.lead where parent_phone = '0900000504'), array['WEBSITE', 'trống'], 'Nguồn ở dòng ghi đè nguồn mặc định');
 select is((select code from app.lead where parent_phone = '0900000501'), (select p -> 'rows' -> 0 ->> 'code' from runr), 'Mã lead đã nhập đúng mã báo ở kết quả');
 select is((select count(*)::int from app.lead_import_log), 1, 'Nhập thật ghi một dòng nhật ký nhập');

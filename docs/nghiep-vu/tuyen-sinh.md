@@ -251,3 +251,21 @@ Hàm nội bộ `app.appointment_group_label`. Không bảng mới, không chỉ
 ### Lịch hẹn bổ sung-2: giao diện (không đổi DB)
 Nút Xuất gọi `export_appointments` theo bộ lọc đang xem (CSV, cắt ở `export_max_rows`, báo khi bị cắt); Group By gọi `appointment_group_counts` rồi tải dòng từng nhóm bằng `list_appointments` kèm bộ lọc của nhóm; chọn hàng loạt chỉ hiện với người có quyền Giao việc, kết quả của `assign_appointments` hiện trong hộp nêu số giao được, số bị bỏ và lý do từng nhóm (lịch Hoàn thành, Huỷ; lịch nhắc tự sinh của phiếu; lịch đã do người đó phụ trách; lịch ngoài cơ sở). Lịch "Theo người" (Đ34, Đ38): trong chế độ Ngày, mỗi người có lịch hẹn trong ngày là một cột, xếp theo tên, trong phạm vi lịch mà người xem được xem theo ma trận quyền hiện có (Tuyển sinh, CSKH vẫn xem mọi lịch của cơ sở mình; không thu hẹp quyền); không có "Theo phòng".
 
+
+## Danh sách em của lead và cơ hội, DB-1 (migration `20261025000043`, QĐ-Đ75, Đ81, Đ86, Đ88)
+Kiểm thử: `supabase/tests/database/035_danh_sach_em_nen.test.sql` (69 bài) và 34 file cũ (1.861 bài). Giữ đúng hành vi cũ: mỗi hồ sơ vẫn một em (dòng 1). Luật mới (thêm, sửa, bỏ em, kiểm trùng, tối đa số em, gộp hợp danh sách, ít nhất một em đủ tên và năm sinh) làm ở PR DB-2.
+
+| Đối tượng | Làm gì | Quyền |
+|---|---|---|
+| Bảng `app.prospect_student` | Một dòng một em, của lead HOẶC của cơ hội; `branch_id` chép từ hồ sơ cha (đổi theo khi cha đổi cơ sở); gắn hồ sơ học sinh (`student_id`) thì tên, năm sinh, trường, học lực, mục tiêu đọc thẳng từ hồ sơ, dòng không giữ bản sao | Đọc theo Lead · Xem / Cơ hội · Xem ở đúng cơ sở; ghi chỉ qua hàm |
+| `app.prospect_student_v` | Dạng đã giải (đọc từ hồ sơ học sinh khi đã gắn) | Chỉ hàm nghiệp vụ |
+| `app.lead_first(id)`, `app.opp_first(id)` | Em đầu của lead, cơ hội | Hàm nội bộ |
+| `app.set_first_prospect(...)` | Ghi em đầu từ dữ liệu kiểu cũ (`student_name`, `student_birth_year`…): `create_lead`, `update_lead`, `create_opportunity`, `update_opportunity` gọi; R-CRM-26, 27 (em đã gắn hồ sơ thì sửa hồ sơ), R-CRM-03 (từ L5 không xoá tên, năm sinh) | Hàm nội bộ |
+| Các hàm đọc cũ (`list_leads`, `list_opportunities`, hai bảng Kanban, hai hàm xuất, lịch hẹn, gợi ý và xem trước gộp…) | Vẫn trả `student_name`, `student_birth_year`… của em đầu; `get_lead`, `get_opportunity` thêm mảng `students` | Như cũ |
+| `create_student_test` | Phiếu dùng em đầu; gắn hồ sơ học sinh vào dòng em; `student_test.prospect_student_id` | Như cũ |
+| Tham số `prospect_max_students` | Số em tối đa (1 đến 20, mặc định 5; Đ88); kiểm ở DB-2 | Cài đặt |
+
+Chuyển dữ liệu: mỗi lead, cơ hội có thông tin học sinh thành dòng 1; migration tự kiểm số dòng trước và sau, lệch thì huỷ. Các cột chữ cũ trên lead và cơ hội (và `opportunity.student_id`) đã bỏ; `lead.search_text` chuyển từ cột sinh sang trigger (như cơ hội), cả hai tính cả tên các em.
+
+### Hiệu năng
+Đo trên `seed-lon` (50.000 lead, 20.000 cơ hội, 65.000 dòng em của lead, 26.000 của cơ hội), Admin: `list_leads` tìm theo tên em (11.426 kết quả) 82 ms, một trang 28 ms; `list_opportunities` một trang 3 ms; sắp xếp theo tên em đầu (quét 20.000 cơ hội) 289 ms; `get_opportunity` 10 ms. Danh sách em của một cơ hội: Index Scan `prospect_student_opp_pos_uidx`, 0,02 ms. Chỉ mục mới và lý do ghi trong migration.

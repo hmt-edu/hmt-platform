@@ -182,7 +182,7 @@ select is((app.merge_preview('OPPORTUNITY', pg_temp.oid('CO000008'), pg_temp.oid
 select ok((app.merge_preview('OPPORTUNITY', pg_temp.oid('CO000008'), pg_temp.oid('CO000009')) -> 'warnings' -> 0 ->> 'message') ~ 'CO000009.*L4.*CO000008.*L1', 'Cảnh báo nêu mã và giai đoạn hai bên');
 select is((app.merge_preview('OPPORTUNITY', pg_temp.oid('CO000009'), pg_temp.oid('CO000008')) -> 'warnings')::text, '[]', 'Giữ bản ở giai đoạn cao hơn thì không cảnh báo');
 select is(pg_temp.err($$select app.merge_opportunities(pg_temp.oid('CO000008'), pg_temp.oid('CO000009'), true)$$), null, 'Gộp cơ hội: được (CO000008 giữ lại, chưa có học sinh)');
-select is((select array[stage_code, student_name, student_birth_year::text, school] from app.opportunity where code = 'CO000008'),
+select is((select array[o.stage_code, ps.full_name, ps.birth_year::text, ps.school] from app.prospect_student ps join app.opportunity o on o.id = ps.opportunity_id where o.code = 'CO000008' and ps.position = 1),
           array['L1', 'Em Lấy', '2012', 'THCS Lấy'], 'R-CRM-37(a): bản giữ lại chưa có học sinh thì lấy của bên kia; giai đoạn giữ nguyên L1 (R-CRM-02)');
 select pg_temp.sudo($$insert into app.note (entity_type, entity_id, body) values ('OPPORTUNITY', (select id from app.opportunity where code = 'CO000002'), 'Ghi chú cơ hội 2')$$);
 select app.change_opportunity_stage(pg_temp.oid('CO000001'), 'L5');
@@ -212,7 +212,7 @@ select pg_temp.sudo($$create temp table st as
          app.find_or_create_student((select id from app.parent where phone = '0900000401'), 'Em Một Ba', 2012, '2012-05-05', 'THCS B', 'Khá', 'Mục tiêu B', (select id from app.branch where code = 'CS1')) as mrg,
          app.find_or_create_student((select id from app.parent where phone = '0900000402'), 'Em Khác Cha', 2011, null, null, null, null, (select id from app.branch where code = 'CS1')) as other$$);
 select pg_temp.sudo($$grant select on st to authenticated$$);
-select pg_temp.sudo($$update app.opportunity set student_id = (select mrg from st) where code = 'CO000006'$$);
+select pg_temp.sudo($$insert into app.prospect_student (opportunity_id, branch_id, position) select o.id, o.branch_id, 1 from app.opportunity o where o.code = 'CO000006' and not exists (select 1 from app.prospect_student p where p.opportunity_id = o.id); update app.prospect_student set student_id = (select mrg from st), full_name = null, birth_date = null, birth_year = null, school = null, self_rating = null, goal = null where opportunity_id = (select id from app.opportunity where code = 'CO000006')$$);
 select pg_temp.sudo($$update app.student_test set student_id = (select mrg from st) where opportunity_id = (select id from app.opportunity where code = 'CO000001')$$);
 select is(pg_temp.err($$select app.merge_students((select keep from st), (select other from st), true)$$), 'HMT_GOP_KHAC_PHU_HUYNH', 'R-CRM-37(b): khác phụ huynh thì gộp phụ huynh trước');
 select is((app.merge_preview('STUDENT', (select keep from st), (select other from st)) -> 'blockers' -> 0 ->> 'code'), 'HMT_GOP_KHAC_PHU_HUYNH', 'Xem trước nêu điều kiện chặn');
@@ -220,7 +220,7 @@ select is((app.merge_preview('STUDENT', (select keep from st), (select mrg from 
 select is(pg_temp.err($$select app.merge_students((select keep from st), (select mrg from st))$$), 'HMT_CAN_XAC_NHAN', 'Gộp học sinh cần xác nhận');
 select is(pg_temp.err($$select app.merge_students((select keep from st), (select mrg from st), true)$$), null, 'Gộp học sinh cùng phụ huynh: được');
 select is((select record_status from app.student where id = (select mrg from st)), 'DA_GOP', 'Học sinh bị gộp thành Đã gộp');
-select is((select student_id from app.opportunity where code = 'CO000006'), (select keep from st), 'Cơ hội chuyển sang học sinh giữ lại');
+select is((select ps.student_id from app.prospect_student ps join app.opportunity o on o.id = ps.opportunity_id where o.code = 'CO000006' and ps.position = 1), (select keep from st), 'Cơ hội chuyển sang học sinh giữ lại');
 select is((select count(*)::int from app.student_test where student_id = (select keep from st)), 1, 'Phiếu chuyển sang học sinh giữ lại');
 select is((select array[birth_date::text, school, self_rating, goal] from app.student where id = (select keep from st)), array['2012-05-05', 'THCS A', 'Khá', 'Mục tiêu B'],
           'Ô còn trống của học sinh giữ lại lấy của bản kia; ô đã có giữ nguyên');

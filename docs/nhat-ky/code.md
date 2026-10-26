@@ -147,6 +147,8 @@
 - Chưa làm (chờ K4g, K4e4 ở #69): Đặt lại mật khẩu, Tạo người dùng.
 - Bài kiểm: Vitest `userFilters`, `userLogic`; Playwright `nguoi-dung.spec.ts` (8 bài, máy tính; Admin giả mới `quantri.cs5` thiết lập hai bước ngay trong bài; helper `enterAsAdmin`). Axe bắt lỗi tương phản khi dòng người dùng bị khoá làm mờ: bỏ làm mờ, đã có nhãn "Đã khoá".
 
+- Danh sách em-1 (DB, migration `043`): bảng `prospect_student`, chuyển cột chữ cũ, 24 hàm đọc/ghi chuyển sang bảng mới; seed-lon cập nhật (tắt kiểm R-CRM-03 lúc nạp); `scripts/staging-check-prospect.sql` chạy sau khi triển khai staging. Bài kiểm 035.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

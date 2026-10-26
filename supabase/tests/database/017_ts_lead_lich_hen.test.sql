@@ -183,7 +183,7 @@ select pg_temp.sudo($$grant all on t to public$$);
 insert into t select id from app.lead where parent_phone = '0900000001' order by created_at limit 1;
 
 select is(pg_temp.err($$select app.update_lead((select lead_id from t), '{"need": "Ôn thi vào 10", "school": "THCS Thử"}')$$), null, 'Sửa lead: được');
-select is((select array[need, school] from app.lead where id = (select lead_id from t)), array['Ôn thi vào 10', 'THCS Thử'], 'Sửa lead: ô đã đổi');
+select is((select array[l.need, ps.school] from app.lead l join app.prospect_student ps on ps.lead_id = l.id where l.id = (select lead_id from t) and ps.position = 1), array['Ôn thi vào 10', 'THCS Thử'], 'Sửa lead: ô đã đổi');
 select is((select code from app.lead where id = (select lead_id from t)), 'LD000003', 'Sửa lead không đổi mã');
 select is(pg_temp.err($$select app.update_lead((select lead_id from t), '{"parent_phone": "0900000009"}')$$), 'HMT_SDT_TRUNG', 'Đổi sang SĐT đã có hồ sơ: cần xác nhận');
 select is(pg_temp.err($$select app.update_lead((select lead_id from t), '{"parent_phone": "0900000009"}', true)$$), null, 'Đã xác nhận: đổi được');
@@ -299,9 +299,9 @@ select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err($$select app.complete_appointment((select id from ap where n = 2))$$), null, 'CSKH cùng cơ sở hoàn thành lịch hẹn được');
 
 -- ================= Danh sách phân trang =================
-select pg_temp.sudo($$insert into app.lead (code, parent_name, parent_phone, student_name, branch_id, owner_id, source_type_code, source_code,
+select pg_temp.sudo($$insert into app.lead (code, parent_name, parent_phone, branch_id, owner_id, source_type_code, source_code,
     stage_code, created_at)
-  select 'LDT' || g, 'Phụ huynh số ' || g, '0999' || lpad(g::text, 6, '0'), 'Em số ' || g,
+  select 'LDT' || g, 'Phụ huynh số ' || g, '0999' || lpad(g::text, 6, '0'),
          (select id from app.branch where code = 'CS1'), (select id from app.user_account where login_name like 'sales1@%'),
          'MARKETING', 'WEBSITE', case when g % 4 = 0 then 'C2' else 'C1' end, now() - (g || ' minutes')::interval
     from generate_series(1, 120) g$$);

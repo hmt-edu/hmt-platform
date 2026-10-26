@@ -97,7 +97,7 @@ select is((select array[stage_code, record_status] from app.opportunity where co
 select is((select array[stage_code, substage_code] from app.lead where id = pg_temp.lid('0900000101')), array['C4', 'C4D'],
           'R-CRM-09: tạo cơ hội xong lead tự về C4D "Tạo cơ hội thành công"');
 select is((select owner_id from app.opportunity where code = 'CO000001'), pg_temp.uid('sales1'), 'Người phụ trách chép từ lead');
-select is((select array[student_name, student_birth_year::text] from app.opportunity where code = 'CO000001'),
+select is((select array[ps.full_name, ps.birth_year::text] from app.prospect_student ps join app.opportunity o on o.id = ps.opportunity_id where o.code = 'CO000001' and ps.position = 1),
           array['Em Một', '2012'], 'Tên, năm sinh học sinh chép từ lead');
 select is((select count(*)::int from app.parent where phone = '0900000101'), 1, 'R-CRM-27: lead chưa có phụ huynh thì sinh hồ sơ phụ huynh khi tạo cơ hội');
 select is((select p.branch_id from app.opportunity o join app.parent p on p.id = o.parent_id where o.code = 'CO000001'),
@@ -160,8 +160,8 @@ select is(app.normalize_person_name('  Nguyễn   VĂN  An '), 'nguyen van an', 
 -- ================= Sửa cơ hội: câu trả lời 2 (sửa học sinh ở cơ hội = sửa hồ sơ học sinh) =================
 select is(pg_temp.err($$select app.update_opportunity(pg_temp.oid('CO000001'), '{"student_name": "Em Một Sửa", "school": "THCS Mới"}')$$), null,
           'Sửa thông tin học sinh ở cơ hội (chưa có hồ sơ học sinh): được');
-select is((select student_name from app.opportunity where code = 'CO000001'), 'Em Một Sửa', 'Cơ hội lưu tên học sinh mới');
-select pg_temp.sudo($$update app.opportunity set student_id = (select a from st) where code = 'CO000001'$$);
+select is((select ps.full_name from app.prospect_student ps join app.opportunity o on o.id = ps.opportunity_id where o.code = 'CO000001' and ps.position = 1), 'Em Một Sửa', 'Cơ hội lưu tên học sinh mới');
+select pg_temp.sudo($$update app.prospect_student set student_id = (select a from st), full_name = null, birth_date = null, birth_year = null, school = null, self_rating = null, goal = null where opportunity_id = (select id from app.opportunity where code = 'CO000001')$$);
 select is(pg_temp.err($$select app.update_opportunity(pg_temp.oid('CO000001'), '{"student_name": "Tên Chung Một Nguồn", "student_birth_year": 2010}')$$), null,
           'Cơ hội đã có hồ sơ học sinh: sửa được');
 select is((select array[full_name, birth_year::text] from app.student where id = (select a from st)), array['Tên Chung Một Nguồn', '2010'],

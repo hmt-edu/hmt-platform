@@ -111,6 +111,19 @@ jobs:
             exit 1
           fi
 
+      # Kiểm sau khi chuyển danh sách em (migration 043): chỉ đọc. Lệch thì báo lỗi để anh biết ngay; không chặn bước sau.
+      - name: Kiểm danh sách em trên hmt-staging
+        continue-on-error: true
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          if out="$(psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f scripts/staging-check-prospect.sql 2>&1)"; then
+            echo "::notice::Kiểm danh sách em trên hmt-staging: ĐẠT. $out"
+          else
+            echo "::warning::Kiểm danh sách em trên hmt-staging: LỆCH. Báo anh Trường. $out"
+            exit 1
+          fi
+
       # Edge Function (đăng nhập, quản trị tài khoản, chặn thư). Cần SUPABASE_ACCESS_TOKEN của tài khoản
       # hmt-vanhanh (không còn quyền gì ở hmt-prod). Chưa có thì bỏ qua kèm cảnh báo.
       - name: Triển khai Edge Function lên hmt-staging

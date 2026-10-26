@@ -139,10 +139,10 @@ select is(pg_temp.err($$select app.create_student_test(pg_temp.oid('CO000003'), 
           'R-CRM-05: cơ hội ở L5, đủ thông tin: tạo phiếu được');
 select is((select code from app.student_test where opportunity_id = pg_temp.oid('CO000003')), 'PKT000001', 'Mã phiếu cấp lúc Lưu: PKT000001');
 select is((select status_code from app.student_test where code = 'PKT000001'), 'DRAFT', 'Phiếu mới ở Nháp');
-select ok((select student_id is not null from app.opportunity where code = 'CO000003'), 'R-CRM-27: tạo phiếu sinh hồ sơ học sinh và gắn vào cơ hội');
-select is((select s.full_name || '/' || s.birth_year from app.student s join app.opportunity o on o.student_id = s.id where o.code = 'CO000003'), 'Em Ba/2011',
+select ok((select ps.student_id is not null from app.prospect_student ps join app.opportunity o on o.id = ps.opportunity_id where o.code = 'CO000003' and ps.position = 1), 'R-CRM-27: tạo phiếu sinh hồ sơ học sinh và gắn vào cơ hội');
+select is((select s.full_name || '/' || s.birth_year from app.student s join app.prospect_student ps on ps.student_id = s.id join app.opportunity o on o.id = ps.opportunity_id where o.code = 'CO000003'), 'Em Ba/2011',
           'Hồ sơ học sinh lấy tên, năm sinh từ cơ hội');
-select is((select s.branch_id from app.student s join app.opportunity o on o.student_id = s.id where o.code = 'CO000003'), (select id from app.branch where code = 'CS1'),
+select is((select s.branch_id from app.student s join app.prospect_student ps on ps.student_id = s.id join app.opportunity o on o.id = ps.opportunity_id where o.code = 'CO000003'), (select id from app.branch where code = 'CS1'),
           'Cơ sở tiếp nhận của học sinh = cơ sở của cơ hội');
 select is((select array[t.branch_id::text, t.test_branch_id::text, t.created_branch_id::text, t.owner_id::text] from app.student_test t where t.code = 'PKT000001'),
           array[(select id::text from app.branch where code = 'CS1'), (select id::text from app.branch where code = 'CS1'),
@@ -395,7 +395,7 @@ select is((app.list_student_tests(jsonb_build_object('late_before', now() + inte
           (select count(*)::int from app.student_test where status_code = 'DRAFT'), 'Lọc phiếu Nháp quá giờ (nhãn "Quá giờ")');
 select is((app.list_student_tests(jsonb_build_object('q', 'em hai')) ->> 'total')::int, 0, 'Tìm không dấu theo tên học sinh (CO000002 chưa có phiếu)');
 select is((app.list_student_tests(jsonb_build_object('q', 'em ba')) ->> 'total')::int, (select count(*)::int from app.student_test t where t.opportunity_id = pg_temp.oid('CO000003')), 'Tìm không dấu theo tên học sinh: có kết quả');
-select pg_temp.sudo($$update app.student set full_name = 'Em Ba Đổi Tên' where code = (select s.code from app.student s join app.opportunity o on o.student_id = s.id where o.code = 'CO000003')$$);
+select pg_temp.sudo($$update app.student set full_name = 'Em Ba Đổi Tên' where code = (select s.code from app.student s join app.prospect_student ps on ps.student_id = s.id join app.opportunity o on o.id = ps.opportunity_id where o.code = 'CO000003')$$);
 select is((app.list_student_tests(jsonb_build_object('q', 'doi ten')) ->> 'total')::int, (select count(*)::int from app.student_test t where t.opportunity_id = pg_temp.oid('CO000003')), 'Học sinh đổi tên thì ô tìm kiếm của phiếu đổi theo');
 select is(jsonb_array_length(app.student_test_board()), 5, 'Kanban: đủ bốn cột + cột Đã huỷ, một lần gọi');
 select is((select sum((c ->> 'total')::int)::int from jsonb_array_elements(app.student_test_board()) c), (select count(*)::int from app.student_test), 'Kanban: tổng các cột bằng tổng phiếu');
