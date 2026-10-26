@@ -231,6 +231,12 @@ test('Kanban: số thẻ và thanh màu của cột, chuyển giai đoạn bằn
     })
     .click();
   await page.getByRole('menuitem', { name: 'Chuyển sang C2 Chưa liên hệ được' }).click();
+  // R-CRM-41: sang C2 phải chọn nhóm con (hộp như cơ hội).
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('button', { name: 'Chuyển giai đoạn' })).toBeDisabled();
+  await dialog.getByRole('combobox', { name: 'Sub-stage' }).click();
+  await page.getByRole('option', { name: /^C2A/ }).click();
+  await dialog.getByRole('button', { name: 'Chuyển giai đoạn' }).click();
   await expect(page.getByText(/^Đã chuyển LD\d+ sang C2\./).first()).toBeVisible();
   const c2 = page.getByRole('region', { name: /^C2 Chưa liên hệ được/ });
   await expect(c2.getByText(seeded.names.soon)).toBeVisible();
@@ -266,6 +272,11 @@ test('Kéo thả thẻ sang cột khác (máy tính)', async ({ page }, testInfo
   await card.dispatchEvent('dragstart', { dataTransfer: transfer });
   await target.dispatchEvent('dragover', { dataTransfer: transfer });
   await target.dispatchEvent('drop', { dataTransfer: transfer });
+  // R-CRM-41: kéo sang C3 thì hỏi nhóm con trước.
+  const dialog = page.getByRole('dialog');
+  await dialog.getByRole('combobox', { name: 'Sub-stage' }).click();
+  await page.getByRole('option', { name: /^C3A/ }).click();
+  await dialog.getByRole('button', { name: 'Chuyển giai đoạn' }).click();
   await expect(
     page.getByRole('region', { name: /^C3 Không có nhu cầu/ }).getByText(seeded.names.none),
   ).toBeVisible();

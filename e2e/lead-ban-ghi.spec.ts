@@ -160,24 +160,43 @@ test('Sửa rồi Lưu; thiếu thông tin thì báo tại ô; Huỷ không lưu
   ).toBeVisible();
 });
 
-test('Đổi giai đoạn tự do có Hoàn tác; đổi nhóm con', async ({ page }, testInfo) => {
+// Hộp chọn nhóm con khi đổi giai đoạn (R-CRM-41): chọn nhóm con rồi bấm "Chuyển giai đoạn".
+async function pickSubstage(page: Page, code: string) {
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('button', { name: 'Chuyển giai đoạn' })).toBeDisabled();
+  await dialog.getByRole('combobox', { name: 'Sub-stage' }).click();
+  await page.getByRole('option', { name: new RegExp(`^${code}`) }).click();
+  await dialog.getByRole('button', { name: 'Chuyển giai đoạn' }).click();
+}
+
+test('Đổi giai đoạn tự do có Hoàn tác, bắt chọn nhóm con; đổi nhóm con', async ({
+  page,
+}, testInfo) => {
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.low, seeded.mainId);
   const stage = page.getByRole('navigation', { name: 'Giai đoạn' });
   await stage.getByRole('button', { name: /^C3/ }).click();
+  // R-CRM-41: sang C3 phải chọn nhóm con; chưa chọn thì nút chưa bấm được; lead chưa đổi.
+  await expect(page.getByRole('dialog').getByText('Chuyển sang C3 Không có nhu cầu')).toBeVisible();
+  await pickSubstage(page, 'C3A');
   await expect(toastText(page, 'Đã chuyển sang C3 Không có nhu cầu.')).toBeVisible();
   await expect(stage.getByRole('button', { name: /^C3/ })).toHaveAttribute('aria-current', 'step');
   await page.getByRole('button', { name: 'Hoàn tác' }).click();
   await expect(stage.getByRole('button', { name: /^C1/ })).toHaveAttribute('aria-current', 'step');
   // Lùi về giai đoạn trước cũng được (đổi tự do hai chiều).
   await stage.getByRole('button', { name: /^C4/ }).click();
+  await pickSubstage(page, 'C4A');
   await expect(stage.getByRole('button', { name: /^C4/ })).toHaveAttribute('aria-current', 'step');
   await stage.getByRole('button', { name: /^C2/ }).click();
+  await pickSubstage(page, 'C2B');
   await expect(stage.getByRole('button', { name: /^C2/ })).toHaveAttribute('aria-current', 'step');
   await page.getByRole('combobox', { name: 'Sub-stage' }).click();
   await page.getByRole('option', { name: /^C2A/ }).click();
   await expect(toastText(page, 'Đã đổi nhóm con.')).toBeVisible();
   await expect(page.getByText('C2A', { exact: false }).first()).toBeVisible();
+  // Về C1 (không có nhóm con) đổi luôn, không hỏi.
+  await stage.getByRole('button', { name: /^C1/ }).click();
+  await expect(stage.getByRole('button', { name: /^C1/ })).toHaveAttribute('aria-current', 'step');
 });
 
 test('Tạo lead: ô bắt buộc báo tại ô; tạo xong về trang Lead; SĐT trùng hiện hộp cảnh báo', async ({

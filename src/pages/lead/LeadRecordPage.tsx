@@ -56,10 +56,11 @@ import {
   type LeadRecord,
 } from './leadRecord';
 import { changeLeadStage } from './useLeadData';
+import { LeadStageDialog } from './LeadStageDialog';
+import { SYSTEM_SUBSTAGE, canRestore, selectableSubstages } from './leadStage';
 import { useLeadCatalogs } from './useCatalogs';
 
 /** Giai đoạn con do hệ thống gắn (R-CRM-09): ô khoá, không đặt lại bằng tay nên rời khỏi thì không có Hoàn tác. */
-const SYSTEM_SUBSTAGE = 'C4D';
 const CREATE_OPP_BLOCKED_REASON =
   'Lead cần ở nhóm con C4C "Đủ điều kiện tạo cơ hội" mới tạo được cơ hội. Đổi giai đoạn của lead trước.';
 /** Lead tạo cơ hội được khi ở C4C, hoặc C4D (đã có cơ hội, tạo thêm có xác nhận lần hai, R-CRM-01). */
@@ -161,6 +162,8 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const [mergeOpen, setMergeOpen] = useState(false);
   const [apptOpen, setApptOpen] = useState(false);
   const [oppOpen, setOppOpen] = useState(false);
+  // Giai đoạn đang chờ chọn nhóm con (R-CRM-41): mở hộp chọn Sub-stage.
+  const [stagePick, setStagePick] = useState<string | null>(null);
   const [moving, setMoving] = useState<AppointmentRow | null>(null);
   const [canceling, setCanceling] = useState<UpcomingAppointment | null>(null);
   const [cancelBusy, setCancelBusy] = useState(false);
@@ -245,7 +248,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   }
 
   // ---- Đổi giai đoạn, nhóm con (R-CRM-09) ----
-  async function moveStage(stage: string, substage: string | null) {
+  async function moveStage(stage: string, substage: string | null, throwOnError = false) {
     if (!record) return;
     const previous = { stage: record.stage_code, substage: record.substage_code };
     try {
@@ -253,7 +256,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
       await refreshRecord();
       toast({
         title: `Đã chuyển sang ${codeAndName(stage, catalogs.name('LEAD_STAGE', stage))}.`,
-        ...(previous.substage !== SYSTEM_SUBSTAGE
+        ...(canRestore(catalogs, previous.stage, previous.substage)
           ? {
               action: {
                 label: 'Hoàn tác',
@@ -273,8 +276,15 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           : {}),
       });
     } catch (e) {
+      if (throwOnError) throw e;
       toast({ tone: 'danger', title: errorOf(e).message });
     }
+  }
+
+  // Chọn giai đoạn: có nhóm con chọn tay thì hỏi nhóm con trước (R-CRM-41), không thì đổi luôn.
+  function requestStage(stage: string) {
+    if (selectableSubstages(catalogs, stage).length > 0) setStagePick(stage);
+    else void moveStage(stage, null);
   }
 
   async function changeSubstage(next: string) {
@@ -349,11 +359,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
     code: o.value,
     label: o.label,
   }));
-  const substageOptions = record
-    ? catalogs
-        .childrenOf('LEAD_SUBSTAGE', 'LEAD_STAGE', record.stage_code)
-        .filter((o) => o.value !== SYSTEM_SUBSTAGE)
-    : [];
+  const substageOptions = record ? selectableSubstages(catalogs, record.stage_code) : [];
   const lockedSubstage = record?.substage_code === SYSTEM_SUBSTAGE;
 
   const title = creating ? '' : [view.parent_name, view.student_name].filter(Boolean).join(' · ');
@@ -472,7 +478,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                 // Lead mới chưa lưu: luôn bắt đầu ở giai đoạn đầu C1 (R-CRM-39), nêu mờ; người dùng không chọn lúc tạo.
                 current: record?.stage_code ?? stageSteps[0]?.code ?? '',
                 forwardOnly: false,
-                onSelect: (step) => void moveStage(step.code, null),
+                onSelect: (step) => requestStage(step.code),
               }
             : undefined
         }
@@ -1055,6 +1061,17 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         }}
       />
 
+      {record && stagePick !== null && (
+        <LeadStageDialog
+          open
+          onOpenChange={(open) => !open && setStagePick(null)}
+          subtitle={`${record.code} · ${view.parent_name} · đang ở ${codeAndName(record.stage_code, catalogs.name('LEAD_STAGE', record.stage_code))}`}
+          stageLabel={codeAndName(stagePick, catalogs.name('LEAD_STAGE', stagePick))}
+          stageCode={stagePick}
+          options={selectableSubstages(catalogs, stagePick)}
+          onSubmit={(substage) => moveStage(stagePick, substage, true)}
+        />
+      )}
       {record && (
         <CreateOpportunityDialog
           open={oppOpen}

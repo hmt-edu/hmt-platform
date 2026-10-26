@@ -26,6 +26,8 @@ import { GROUP_FIELD_OF, buildLeadFilters, nextSort, sortParam } from './leadFil
 import { appointmentTag, formatPhone, leadTitle } from './leadFormat';
 import type { BoardCard, BoardColumn, LeadRow } from './leadTypes';
 import { useLeadCatalogs } from './useCatalogs';
+import { LeadStageDialog } from './LeadStageDialog';
+import { canRestore, selectableSubstages } from './leadStage';
 import {
   assignLeads,
   changeLeadStage,
@@ -41,7 +43,6 @@ const NOTE =
   'Lead kéo thả tự do hai chiều giữa C1–C4, mọi lần đổi đều ghi lịch sử. C4D do hệ thống tự gắn khi tạo cơ hội thành công.';
 
 /** Giai đoạn con do hệ thống gắn (R-CRM-09): đã rời khỏi thì không đặt lại bằng tay, nên không có Hoàn tác. */
-const SYSTEM_SUBSTAGE = 'C4D';
 
 const BAR_SEGMENTS = [
   { key: 'upcoming', label: 'Sắp tới', tone: 'success' },
@@ -100,6 +101,13 @@ export function LeadListPage() {
   const [exporting, setExporting] = useState(false);
   const [tick, setTick] = useState(0);
   const moving = useRef(false);
+  // Thẻ đang chờ chọn nhóm con của giai đoạn đích (R-CRM-41).
+  const [stageMove, setStageMove] = useState<{
+    card: BoardCard;
+    from: string;
+    to: string;
+    fromName: string;
+  } | null>(null);
 
   const debouncedSearch = useDebounced(state.search);
   const filters = useMemo(
@@ -213,15 +221,30 @@ export function LeadListPage() {
     }
   }
 
-  async function moveCard(card: BoardCard, from: string, to: string, fromName: string) {
+  // Chuyển thẻ (kéo thả hoặc menu ⋮): giai đoạn có nhóm con chọn tay thì hỏi nhóm con trước (R-CRM-41), không thì đổi luôn.
+  function requestMove(card: BoardCard, from: string, to: string, fromName: string) {
+    if (moving.current) return;
+    if (from === to) return;
+    if (selectableSubstages(catalogs, to).length > 0) setStageMove({ card, from, to, fromName });
+    else void moveCard(card, from, to, fromName, null);
+  }
+
+  async function moveCard(
+    card: BoardCard,
+    from: string,
+    to: string,
+    fromName: string,
+    substage: string | null,
+    throwOnError = false,
+  ) {
     if (moving.current) return;
     moving.current = true;
     const previousSubstage = card.substage_code;
     try {
-      // Kéo sang giai đoạn khác thì nhóm con cũ không còn hợp (R-CRM-09); C4D không bao giờ do người đặt.
-      await changeLeadStage(supabase, card.id, to, null);
+      // Nhóm con do người dùng chọn (R-CRM-41); C4D không bao giờ do người đặt (R-CRM-09).
+      await changeLeadStage(supabase, card.id, to, substage);
       refresh();
-      const canUndo = previousSubstage !== SYSTEM_SUBSTAGE;
+      const canUndo = canRestore(catalogs, from, previousSubstage);
       toast({
         title: `Đã chuyển ${card.code} sang ${to}.`,
         ...(canUndo
@@ -246,6 +269,7 @@ export function LeadListPage() {
           : {}),
       });
     } catch (e) {
+      if (throwOnError) throw e;
       toast({ tone: 'danger', title: errorOf(e).message });
     } finally {
       moving.current = false;
@@ -396,7 +420,7 @@ export function LeadListPage() {
               barActive={state.quick.appt ?? []}
               onBarSelect={toggleAppointment}
               onMove={(card, from, to) =>
-                void moveCard(card, from, to, columns.find((c) => c.code === from)?.label ?? from)
+                requestMove(card, from, to, columns.find((c) => c.code === from)?.label ?? from)
               }
               onBlocked={(reason) => toast({ tone: 'warning', title: reason })}
               onLoadMore={() => setPaging({ ...current, more: moreCards + 1 })}
@@ -413,6 +437,26 @@ export function LeadListPage() {
           )
         }
       />
+      {stageMove && (
+        <LeadStageDialog
+          open
+          onOpenChange={(open) => !open && setStageMove(null)}
+          subtitle={`${stageMove.card.code} · đang ở ${stageMove.fromName}`}
+          stageLabel={columns.find((c) => c.code === stageMove.to)?.label ?? stageMove.to}
+          stageCode={stageMove.to}
+          options={selectableSubstages(catalogs, stageMove.to)}
+          onSubmit={(substage) =>
+            moveCard(
+              stageMove.card,
+              stageMove.from,
+              stageMove.to,
+              stageMove.fromName,
+              substage,
+              true,
+            )
+          }
+        />
+      )}
       <ImportLeadsDialog
         open={importOpen}
         onOpenChange={setImportOpen}

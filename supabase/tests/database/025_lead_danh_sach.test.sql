@@ -213,12 +213,12 @@ select is(pg_temp.n('{"q": "Cơ Sở Năm"}'), 1::bigint, 'Cùng vai trò đó v
 
 -- ================= change_lead_stage: C4 không tự gắn C4D (R-CRM-09) =================
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
-select app.change_lead_stage((select id from ld where k = 'L5'), 'C4');
-select is((select substage_code from app.lead where id = (select id from ld where k = 'L5')), null, 'R-CRM-09: kéo sang C4 không tự gắn C4D');
+select app.change_lead_stage((select id from ld where k = 'L5'), 'C4', 'C4A');
+select is((select substage_code from app.lead where id = (select id from ld where k = 'L5')), 'C4A', 'R-CRM-09: kéo sang C4 không tự gắn C4D (nhóm con do người dùng chọn)');
 select is(pg_temp.err($$select app.change_lead_stage((select id from ld where k = 'L5'), 'C4', 'C4D')$$), 'HMT_C4D_HE_THONG', 'R-CRM-09: người dùng không gắn C4D được');
 select app.change_lead_stage((select id from ld where k = 'L5'), 'C4', 'C4B');
 select app.change_lead_stage((select id from ld where k = 'L5'), 'C2', 'C2A');
-select app.change_lead_stage((select id from ld where k = 'L5'), 'C4');
+select app.change_lead_stage((select id from ld where k = 'L5'), 'C4', 'C4A');
 select isnt((select substage_code from app.lead where id = (select id from ld where k = 'L5')), 'C4D', 'R-CRM-09: lead rời rồi về C4 không lấy lại C4D');
 
 select * from finish();

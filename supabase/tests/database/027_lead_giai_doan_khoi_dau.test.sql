@@ -76,11 +76,11 @@ select is(pg_temp.stage('c4'), array['C1', null], 'R-CRM-39: lead mới luôn �
 select is(pg_temp.stage('c4d'), array['C1', null], 'R-CRM-39: không nhận C4D (do hệ thống gắn) từ người gọi, vẫn ở C1');
 select is(pg_temp.stage('rac'), array['C1', null], 'R-CRM-39: giai đoạn không có trong danh mục cũng bị bỏ qua, lead vẫn ở C1');
 -- Sau khi tạo, giai đoạn đổi theo R-CRM-09.
-select app.change_lead_stage((select id from ld where k = 'tron'), 'C3');
-select is(pg_temp.stage('tron'), array['C3', null], 'Sau khi tạo, giai đoạn lead đổi được (R-CRM-09)');
+select app.change_lead_stage((select id from ld where k = 'tron'), 'C3', 'C3A');
+select is(pg_temp.stage('tron'), array['C3', 'C3A'], 'Sau khi tạo, giai đoạn lead đổi được (R-CRM-09)');
 -- Sửa lead không đổi được giai đoạn qua update_lead.
 select app.update_lead((select id from ld where k = 'tron'), '{"stage_code": "C1", "need": "x"}');
-select is(pg_temp.stage('tron'), array['C3', null], 'update_lead không đổi giai đoạn (có hàm riêng)');
+select is(pg_temp.stage('tron'), array['C3', 'C3A'], 'update_lead không đổi giai đoạn (có hàm riêng)');
 -- Mọi vai trò có quyền tạo đều bắt đầu ở C1.
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is((select (app.create_lead(pg_temp.lead_data('0900000905', '{"parent_name": "Chị Khởi Đầu Năm", "stage_code": "C2"}')) ->> 'id')::uuid is not null), true, 'CSKH tạo lead');

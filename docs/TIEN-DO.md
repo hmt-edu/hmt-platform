@@ -99,6 +99,7 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 | Sửa nhóm đăng nhập theo gói hiện hành; nền động đăng nhập (5c) | #59, #62 |
 | Quản lý trực tiếp (R-HT-06, migration 036); luật bổ sung 19/10 (người duyệt chốt lúc trình, Admin không duyệt thay phiếu thu) | #61, #65 |
 | P3d Cơ hội: DB (migration 038) và giao diện (danh sách, Kanban, trang bản ghi, chuyển giai đoạn, tạo từ lead) | #66, #67 |
+| Lead đổi giai đoạn bắt chọn nhóm con (R-CRM-41, QĐ-Đ183): migration 049, hộp chọn Sub-stage ở trang Lead và Kanban (DB và giao diện cùng PR để CI không đỏ) | PR này |
 | Lead chỉ tạo cơ hội ở nhóm con C4C (migration 048, luật R-CRM-40 ở #90; nút Tạo cơ hội mờ kèm lý do) | PR này |
 
 #16 đã đóng (không gộp; dữ liệu ở #17, giao diện làm lại ở #22 đến #26).
