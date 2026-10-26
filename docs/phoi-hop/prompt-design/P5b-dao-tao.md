@@ -21,6 +21,6 @@ Canvas: **"P5b Đào tạo"**. Giai đoạn 2 (máy tính, vài màn dùng cả 
 - **LOP-02:** thanh trạng thái duyệt (Nháp, Đã trình, Đã xác nhận, Đã duyệt, Từ chối, Đóng, Huỷ); duyệt bắt buộc có thời khoá biểu và **tự sinh buổi** (xem trước số buổi). Hiện nhóm lớp và lớp còn lại của nhóm (liên kết).
 - **BUOI-02:** thanh Nháp → Đã chốt → Done và nhánh huỷ; danh sách em; em không vào danh sách kèm lý do; điểm danh **hai cột** (vận hành, giáo viên chính thức); giờ trừ vào quỹ ghi danh của lớp đó. BUOI-03 và BUOI-11: điểm danh vận hành, lý do liên hệ, dùng khuôn K12 cho điện thoại.
 - **BUOI-04 Huỷ buổi:** hai nhánh: trung tâm huỷ (không tính phí, tự thêm buổi cuối, dời bài) và học sinh huỷ lớp riêng (người huỷ chọn có hoặc không tính phí, bắt buộc lý do).
-- **BUOI-07 đến BUOI-10:** học bù (không trừ giờ), củng cố (tính tiền như buổi thường, bắt buộc ghi nhận phụ huynh đồng ý), bổ trợ (không trừ giờ, tính giờ dạy giáo viên); danh sách yêu cầu: chỉ Trưởng cơ sở duyệt, CSKH xem.
+- **BUOI-07 đến BUOI-10:** học bù (không trừ giờ), củng cố (tính tiền như buổi thường, không bắt buộc ghi nhận phụ huynh đồng ý, có ô Ghi chú không bắt buộc (R-BUOI-10 bản 26/10, Đ167)), bổ trợ (không trừ giờ, tính giờ dạy giáo viên); danh sách yêu cầu: chỉ Trưởng cơ sở duyệt, CSKH xem.
 
 Nối với: nhóm A, B, D, E, F, G, I. Thứ tự: Lớp (LOP) → Buổi (BUOI) → Ghi danh (GD) → Tái tục (TT); giao diện Ghi danh nên vẽ sớm để khớp với đơn ở P5a.
