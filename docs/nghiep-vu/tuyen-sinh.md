@@ -252,6 +252,27 @@ Hàm nội bộ `app.appointment_group_label`. Không bảng mới, không chỉ
 Nút Xuất gọi `export_appointments` theo bộ lọc đang xem (CSV, cắt ở `export_max_rows`, báo khi bị cắt); Group By gọi `appointment_group_counts` rồi tải dòng từng nhóm bằng `list_appointments` kèm bộ lọc của nhóm; chọn hàng loạt chỉ hiện với người có quyền Giao việc, kết quả của `assign_appointments` hiện trong hộp nêu số giao được, số bị bỏ và lý do từng nhóm (lịch Hoàn thành, Huỷ; lịch nhắc tự sinh của phiếu; lịch đã do người đó phụ trách; lịch ngoài cơ sở). Lịch "Theo người" (Đ34, Đ38): trong chế độ Ngày, mỗi người có lịch hẹn trong ngày là một cột, xếp theo tên, trong phạm vi lịch mà người xem được xem theo ma trận quyền hiện có (Tuyển sinh, CSKH vẫn xem mọi lịch của cơ sở mình; không thu hẹp quyền); không có "Theo phòng".
 
 
+## P5a-DB0: cấu hình bán hàng (migration `20261025000044`, QĐ-Đ100 đến Đ107, Đ117 đến Đ120)
+Kiểm thử: `supabase/tests/database/036_p5a_cau_hinh.test.sql` (122 bài); sửa 3 file cũ (006, 013, 018) theo số liệu mới. Luật: R-TIEN-07, 10, 14, 15, 29, 30, 36. Cấu hình chỉ Admin ghi (Cấu hình bán hàng · Tạo / Sửa, toàn hệ thống); mọi vai bán hàng đọc (Cấu hình bán hàng · Xem); giáo viên, học sinh đọc 0 dòng.
+
+| Đối tượng | Làm gì |
+|---|---|
+| `app.sales_package` | Gói bán (CH-01): mã `Loại-Môn-Khối` hoặc `Loại-Môn-KhốiđầuKhốicuối` (DV, TL: `Loại-TÊN`), không chứa hình thức, không số giờ, không loại lớp (R-TIEN-36); mã, loại, môn, khối không đổi; Ngừng bằng `is_active` |
+| `app.package_price` | Bảng giá (CH-03): giá theo gói, hình thức (OFF, ONL), `effective_from`; giá `null` = ngừng bán hình thức từ ngày đó; chỉ thêm, không sửa, không xoá; DV, TL không có giá online |
+| `app.package_price_at(gói, hình thức, ngày)` | Giá hiệu lực tại một ngày (null nếu chưa có hoặc đã ngừng bán) |
+| `app.discount_policy` | Chiết khấu (CH-04): PERCENT hoặc GIFT_HOURS, `max_value`, `fixed_value` (bật: áp đúng mức; tắt: nhân viên điền từ 0 đến mức; tặng giờ luôn loại điền), `requires_approval` (dùng chung ô tích với vượt trần, Đ102), hiệu lực, loại gói, cơ sở |
+| `app.gift_policy` | Quà tặng (R-TIEN-30): gói quà phải là DV hoặc TL, số lượng tối đa, cần duyệt, hiệu lực |
+| `app.payment_term`, `app.payment_term_installment` | Điều khoản thanh toán (CH-09): mẫu chia đợt theo `(code, version)`; đợt 1 có thể là số tiền cố định (cọc), các đợt sau chia % của phần còn lại, tổng 100%; số ngày đến hạn tính từ ngày duyệt đơn; không sửa, chỉ tạo bản mới |
+| `app.payment_term_amounts(điều khoản, tổng đơn)` | Chia tiền từng đợt: cọc A < tổng; phần còn lại chia % (làm tròn xuống), đợt cuối nhận phần dư |
+| `app.package_unit(loại gói)` | Đơn vị: DV tháng, TL bộ, còn lại giờ (Đ101); dòng báo giá, đơn (DB1) chụp lại `quantity` và đơn vị |
+| `app.save_sales_package`, `add_package_price`, `save_discount_policy`, `save_gift_policy`, `create_payment_term`, `set_config_active` | Hàm ghi của Admin (kiểm quyền bên trong, mã lỗi tiếng Việt) |
+| Danh mục | `PACKAGE_UNIT` (Giờ, Tháng, Bộ); `ORDER_CANCEL_REASON` sáu lý do (Đ104); `applies_to` của lý do từ chối (Đ103) |
+| Tham số | `debt_due_soon_days` (1 đến 30, mặc định 3, không ghi đè theo cơ sở; Đ107) |
+| Ma trận quyền | Phiên bản mới (Đ105): Sale, CSKH bỏ Xuất báo giá; Kế toán thêm Xem và Xuất báo giá (toàn hệ thống). Xuất đơn, phiếu thu giữ nguyên (Trưởng cơ sở cơ sở mình, Kế toán, Admin) |
+
+### Hiệu năng
+Đo trên `seed-lon` (355 gói, 2.120 dòng giá): tra giá hiệu lực một gói Index Scan Backward trên chỉ mục duy nhất `(gói, hình thức, ngày)` 0,09 ms; danh sách gói đang bán theo loại 0,65 ms; chính sách đang hiệu lực 0,06 ms; chia tiền một điều khoản 1,4 ms.
+
 ## Danh sách em của lead và cơ hội, DB-1 (migration `20261025000043`, QĐ-Đ75, Đ81, Đ86, Đ88)
 Kiểm thử: `supabase/tests/database/035_danh_sach_em_nen.test.sql` (69 bài) và 34 file cũ (1.861 bài). Giữ đúng hành vi cũ: mỗi hồ sơ vẫn một em (dòng 1). Luật mới (thêm, sửa, bỏ em, kiểm trùng, tối đa số em, gộp hợp danh sách, ít nhất một em đủ tên và năm sinh) làm ở PR DB-2.
 

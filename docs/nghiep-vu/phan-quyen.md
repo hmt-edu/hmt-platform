@@ -250,3 +250,9 @@ tự kiểm quyền người gọi.
   khấu, phí hoàn…), phòng mọi cơ sở, ghi chú phòng và cơ sở của cơ sở mình. Trước GĐ4: học sinh, phụ huynh chỉ đọc danh
   mục cần cho cổng Học tập; không đọc ma trận quyền, Cài đặt nội bộ, ghi chú; giáo viên không đọc ghi chú cơ sở trừ khi
   được cấp. Làm bằng policy theo ma trận (như L1), có bài kiểm thử từng vai trò.
+
+## Ma trận phiên bản 5: Xuất báo giá (P5a-DB0, Đ105, migration `20261025000044`)
+- Sale, CSKH bỏ Xuất báo giá (2 ô); vẫn Xem (in báo giá của mình, R-TIEN-08).
+- Kế toán thêm Xem và Xuất báo giá, toàn hệ thống (2 ô; Xuất đi kèm Xem, chỉ đọc).
+- Xuất đơn và phiếu thu đã đúng: chỉ Trưởng cơ sở (cơ sở mình), Kế toán, Admin.
+- Bản đồ màn hình ghi BH-01 cho Sale, CSKH có Xuất: vênh, sửa theo Đ105.

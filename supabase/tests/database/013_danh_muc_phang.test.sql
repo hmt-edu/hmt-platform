@@ -63,9 +63,10 @@ select is((select array_agg(c order by c) from (
 select is((select count(*)::int from app.catalog_item where requires_note and name <> 'Khác' and catalog_code <> 'TEST_CANCEL_REASON'), 0,
           'Chỉ mục "Khác" bắt buộc ghi chú (ngoại lệ: "lý do khác" của huỷ test, R-CRM-06)');
 
--- Lý do từ chối: "Áp dụng cho" để trống = mọi nơi.
-select is((select count(*)::int from app.catalog_item where catalog_code = 'REJECT_REASON' and applies_to <> '{}'), 0,
-          'Lý do từ chối nạp sẵn áp dụng mọi nơi (cột "Áp dụng cho" để trống)');
+-- Lý do từ chối: "Áp dụng cho" để trống = mọi nơi. Từ P5a-DB0 (Đ103) ba mục gán riêng: Sai số tiền, Sai chứng từ (phiếu thu),
+-- Không đúng chính sách (báo giá, đơn); hai mục còn lại dùng chung.
+select is((select count(*)::int from app.catalog_item where catalog_code = 'REJECT_REASON' and applies_to <> '{}'), 3,
+          'Lý do từ chối: ba mục gán riêng theo Đ103, còn lại áp dụng mọi nơi (cột "Áp dụng cho" để trống)');
 
 -- Không còn danh mục nào của spec 06 #8–#26, #28, #31, #32 thiếu (trừ #12, 19, 20, 27, 30).
 select is((select count(*)::int from app.catalog where code in (

@@ -52,15 +52,16 @@ select is((select count(*)::int from app.permission where role_code = 'BRANCH_MA
 select is((select count(*)::int from app.permission where role_code = 'ADMIN' and is_active and action_code = 'DUYET'
            and module_code in ('LEAD', 'OPPORTUNITY', 'PARENT', 'STUDENT')), 4, 'ADMIN vẫn có Duyệt (gộp trùng) cả bốn phân hệ');
 
--- Hàm lưu: ghi chú tuỳ chọn, lời gọi hai tham số vẫn chạy.
+-- Hàm lưu: ghi chú tuỳ chọn, lời gọi hai tham số vẫn chạy. Số phiên bản tính theo phiên bản hiện hành (các migration sau thêm phiên bản).
+create temp table ver0 as select app.permission_current_version() as v;
 select is(app.save_permission_matrix(app.permission_current_version(),
-          jsonb_build_array(jsonb_build_object('role', 'TEACHER', 'module', 'HOLIDAY', 'action', 'XEM', 'scope', 'CO_SO'))), 5,
-          'Lưu hai tham số (không ghi chú) vẫn chạy: phiên bản 5 (sau phiên bản 4)');
-select is((select note from app.permission_version where version_no = 5), null, 'Không ghi chú thì để trống');
+          jsonb_build_array(jsonb_build_object('role', 'TEACHER', 'module', 'HOLIDAY', 'action', 'XEM', 'scope', 'CO_SO'))), (select v + 1 from ver0),
+          'Lưu hai tham số (không ghi chú) vẫn chạy: phiên bản kế tiếp');
+select is((select note from app.permission_version where version_no = (select v + 1 from ver0)), null, 'Không ghi chú thì để trống');
 select is(app.save_permission_matrix(app.permission_current_version(),
-          jsonb_build_array(jsonb_build_object('role', 'TEACHER', 'module', 'HOLIDAY', 'action', 'XEM', 'scope', null)), '  Thu hồi thử  '), 6,
-          'Lưu có ghi chú: phiên bản 6');
-select is((select note from app.permission_version where version_no = 6), 'Thu hồi thử', 'Ghi chú được cắt khoảng trắng đầu cuối');
+          jsonb_build_array(jsonb_build_object('role', 'TEACHER', 'module', 'HOLIDAY', 'action', 'XEM', 'scope', null)), '  Thu hồi thử  '), (select v + 2 from ver0),
+          'Lưu có ghi chú: phiên bản kế tiếp nữa');
+select is((select note from app.permission_version where version_no = (select v + 2 from ver0)), 'Thu hồi thử', 'Ghi chú được cắt khoảng trắng đầu cuối');
 
 select * from finish();
 rollback;

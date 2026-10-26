@@ -202,6 +202,24 @@ alter table app.student enable trigger student_audit;
 alter table app.student_test enable trigger student_test_fill_standard;
 alter table app.student_test enable trigger student_test_audit;
 
+-- Cấu hình bán hàng giả lớn (EXPLAIN của P5a-DB0): 4 loại gói x môn x khối (khoảng 440 gói) và 6 dòng giá mỗi gói
+-- (hai hình thức, ba ngày hiệu lực).
+insert into app.sales_package (code, name, package_type_code, subject_code, grade_from_code)
+select t.code || '-' || s.code || '-' || g.code, 'Gói giả ' || t.code || ' ' || s.code || ' ' || g.code, t.code, s.code, g.code
+  from (values ('LC'), ('VIP'), ('VNN'), ('KR')) t(code)
+  cross join (select code from app.catalog_item where catalog_code = 'SUBJECT' and code not in ('DAI', 'HINH')) s
+  cross join (select code from app.catalog_item where catalog_code = 'GRADE') g
+on conflict (code) do nothing;
+insert into app.package_price (package_id, delivery_mode_code, unit_price, effective_from)
+select p.id, m.mode, 100000 + (row_number() over (order by p.code, m.mode, d.d)) % 400 * 1000, d.d
+  from app.sales_package p
+  cross join (values ('OFF'), ('ONL')) m(mode)
+  cross join (values (date '2025-09-01'), (date '2026-03-01'), (date '2026-09-01')) d(d)
+ where p.code like 'LC-%' or p.code like 'VIP-%' or p.code like 'VNN-%' or p.code like 'KR-%'
+on conflict (package_id, delivery_mode_code, effective_from) do nothing;
+analyze app.sales_package;
+analyze app.package_price;
+
 -- Ô tìm kiếm của lead, cơ hội (trigger cập nhật theo dòng em đã tắt lúc nạp).
 update app.lead l set search_text = app.lead_search_text(l) where l.code like 'LDL%';
 update app.opportunity o set search_text = app.opportunity_search_text(o) where o.code like 'COL%';
