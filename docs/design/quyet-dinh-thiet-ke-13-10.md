@@ -213,3 +213,8 @@ Ghi chú (26/10): Đ190 và Đ191 là lời OK trong chat, không có luật ri�
 
 - **QĐ-Đ192 (26/10, anh OK):** TT-02 thêm Email phụ huynh, hai ô tự do Mục tiêu/nhu cầu tiếp theo và Lộ trình tiếp theo (sửa có nhật ký), tab "Tình hình học tập" mờ đến giai đoạn Giáo viên. Đã vào docs/spec/04 (R-GD-13), 26/10.
 - **QĐ-Đ195 (26/10, anh OK):** không ghi Đ190, Đ191 thành quyết định riêng; xem ghi chú ở trên.
+- **QĐ-Đ201 (26/10, anh OK):** dòng đơn lấy từ báo giá sao nguyên giá đã đóng băng lúc Gửi, kể cả khi báo giá quá hạn; chỉ báo giá Đã gửi chuyển đơn; đơn thẳng từ cơ hội tính theo giá ngày tạo đơn. Đã vào docs/spec/04 (R-TIEN-14), 26/10.
+- **QĐ-Đ202 (26/10, anh OK):** người lập huỷ đơn Nháp; đơn Đã trình, Đã duyệt do người duyệt đã chốt lúc trình huỷ (Admin thay khi vắng); chỉ huỷ khi chưa có phiếu thu; lý do từ danh mục. Đã vào docs/spec/04 (R-TIEN-38), 26/10.
+- **QĐ-Đ203 (26/10, anh OK):** em đủ họ tên và năm sinh kiểm khi trình và khi duyệt; lớp còn chỗ kiểm khi lưu, trình, duyệt; không giữ chỗ trước. Đã vào docs/spec/04 (R-TIEN-35, R-GD-08), 26/10.
+- **QĐ-Đ204 (26/10, anh OK):** ma trận quyền v6: Sale và CSKH có quyền Huỷ đơn hàng; cancel_order chỉ cho họ huỷ đơn Nháp do chính mình lập. Đơn Đã trình, Đã duyệt chỉ người duyệt đã chốt lúc trình hoặc Admin thay khi vắng huỷ (Đ202).
+- **QĐ-Đ205 (26/10, anh OK):** submit_order bị chặn, báo lỗi có mã và câu tiếng Việt, khi quản lý trực tiếp đã chốt không có quyền Duyệt đơn; lúc duyệt vẫn cần cả hai điều kiện: có quyền Duyệt và đúng người đã chốt (hoặc Admin thay).
