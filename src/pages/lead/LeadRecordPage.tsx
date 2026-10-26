@@ -60,6 +60,10 @@ import { useLeadCatalogs } from './useCatalogs';
 
 /** Giai đoạn con do hệ thống gắn (R-CRM-09): ô khoá, không đặt lại bằng tay nên rời khỏi thì không có Hoàn tác. */
 const SYSTEM_SUBSTAGE = 'C4D';
+const CREATE_OPP_BLOCKED_REASON =
+  'Lead cần ở nhóm con C4C "Đủ điều kiện tạo cơ hội" mới tạo được cơ hội. Đổi giai đoạn của lead trước.';
+/** Lead tạo cơ hội được khi ở C4C, hoặc C4D (đã có cơ hội, tạo thêm có xác nhận lần hai, R-CRM-01). */
+const canOpenOpp = (substage: string | null) => substage === 'C4C' || substage === SYSTEM_SUBSTAGE;
 
 type Duplicate = {
   kind: 'LEAD' | 'PARENT';
@@ -474,7 +478,14 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         }
         businessActions={
           record && canCreateOpp ? (
-            <Button onClick={() => setOppOpen(true)}>Tạo cơ hội</Button>
+            // Luật mới 26/10: chỉ tạo cơ hội khi lead ở C4C (hoặc C4D, tạo thêm có xác nhận). Nút mờ chỉ là gợi ý; chặn thật ở hàm.
+            canOpenOpp(record.substage_code) ? (
+              <Button onClick={() => setOppOpen(true)}>Tạo cơ hội</Button>
+            ) : (
+              <Button disabled title={CREATE_OPP_BLOCKED_REASON}>
+                Tạo cơ hội
+              </Button>
+            )
           ) : undefined
         }
         subStage={

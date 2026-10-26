@@ -55,6 +55,8 @@ export async function seed(setup: Setup): Promise<Seeded> {
       return r.rows[0] ?? { id: '', code: '' };
     };
     const opp = async (leadId: string): Promise<Rec> => {
+      // Lead chỉ tạo được cơ hội khi ở C4C (luật 26/10).
+      await db.query(`select app.change_lead_stage($1::uuid, 'C4', 'C4C')`, [leadId]);
       const r = await db.query<Rec>(
         `select r ->> 'id' as id, r ->> 'code' as code from (select app.create_opportunity($1::uuid) as r) x`,
         [leadId],

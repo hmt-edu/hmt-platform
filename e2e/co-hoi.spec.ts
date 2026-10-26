@@ -252,6 +252,38 @@ test('Lịch hẹn của cơ hội: tạo từ trang Cơ hội, nút "Lịch h�
   await expect(toastText(page, 'Đã tạo lịch hẹn.')).toBeVisible();
 });
 
+test('Luật 26/10: nút "Tạo cơ hội" ở trang Lead mờ (kèm lý do) khi lead chưa ở C4C, sáng khi ở C4C', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  const setStage = async (stage: string, substage: string) => {
+    const db = new pg.Client({ connectionString: DB_URL });
+    await db.connect();
+    try {
+      await db.query('update app.lead set stage_code = $2, substage_code = $3 where id = $1', [
+        seeded.lonelyLeadId,
+        stage,
+        substage,
+      ]);
+    } finally {
+      await db.end();
+    }
+  };
+  await setStage('C2', 'C2A');
+  await login(page, setup.account);
+  await page.goto(`/crm/lead/${seeded.lonelyLeadId}`);
+  await expect(page.getByRole('heading', { level: 1, name: 'Lead' })).toBeVisible();
+  const create = page.getByRole('button', { name: 'Tạo cơ hội' });
+  await expect(create).toBeDisabled();
+  await expect(create).toHaveAttribute('title', /C4C.*Đủ điều kiện tạo cơ hội/);
+  await setStage('C4', 'C4B');
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Tạo cơ hội' })).toBeDisabled();
+  await setStage('C4', 'C4C');
+  await page.reload();
+  await expect(page.getByRole('button', { name: 'Tạo cơ hội' })).toBeEnabled();
+});
+
 test('Tạo cơ hội từ lead: hộp xác nhận; tạo xong mở cơ hội L1; tạo lần hai có cảnh báo và mở cơ hội cũ', async ({
   page,
 }, testInfo) => {

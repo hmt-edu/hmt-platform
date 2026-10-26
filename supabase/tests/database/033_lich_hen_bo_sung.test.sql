@@ -87,6 +87,7 @@ select app.create_lead(pg_temp.lead_data('0900000702', '{"student_name": "Em Hai
 select app.create_appointment(pg_temp.lid('LD000001'), 'GOI_DIEN', now() + interval '2 days', 'A1 lead một');
 select app.create_appointment(pg_temp.lid('LD000001'), 'GOI_DIEN', now() + interval '3 days', 'A2 lead một');
 select app.create_appointment(pg_temp.lid('LD000002'), 'GOI_DIEN', now() + interval '4 days', 'A3 lead hai');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000002'));
 select app.create_appointment(null, 'GOI_DIEN', now() + interval '5 days', 'A4 cơ hội', null, null, pg_temp.oid('CO000001'));
 select app.create_appointment(pg_temp.lid('LD000001'), 'GOI_DIEN', now() + interval '6 days', 'A5 sẽ hoàn thành');

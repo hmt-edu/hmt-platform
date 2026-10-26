@@ -84,6 +84,8 @@ export async function seed(setup: Setup): Promise<Seeded> {
            'channel_code', 'FACEBOOK_ADS_LEAD_FORM'))) ->> 'id' as id`,
         [`Chị ${setup.mark} ${key} ${run}`, phone(i), student[key]],
       );
+      // Lead chỉ tạo được cơ hội khi ở C4C (luật 26/10).
+      await db.query(`select app.change_lead_stage($1::uuid, 'C4', 'C4C')`, [lead.rows[0]?.id]);
       const o = await db.query<{ id: string; code: string }>(
         `select r ->> 'id' as id, r ->> 'code' as code from (select app.create_opportunity($1::uuid) as r) x`,
         [lead.rows[0]?.id],

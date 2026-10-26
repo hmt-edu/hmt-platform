@@ -67,6 +67,7 @@ select app.create_lead(pg_temp.lead_data('0900006001', '{"parent_name": "Chị G
 select app.create_lead(pg_temp.lead_data('0900006002', '{"parent_name": "Chị Ghi Chú Hai", "student_name": "Em Hai", "student_birth_year": 2013}'));
 select app.add_note('LEAD', pg_temp.lid('0900006001'), 'Gọi lần 1: phụ huynh hẹn gọi lại');
 select app.add_note('LEAD', pg_temp.lid('0900006002'), 'Ghi chú của lead khác');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900006001'));
 select app.create_opportunity(pg_temp.lid('0900006002'));
 select app.add_note('OPPORTUNITY', pg_temp.oid('0900006001'), 'Đã tư vấn lịch học');

@@ -107,8 +107,11 @@ select is(jsonb_array_length(app.get_lead(pg_temp.lid('0900003001')) -> 'student
 select ok(not (app.get_lead(pg_temp.lid('0900003001')) ? 'search_text'), 'get_lead không lộ search_text');
 
 -- ================= Cơ hội: em đầu của lead chép sang (Đ81) =================
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900003001'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900003002'), '{"student_name": "Em Hai Sửa"}');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900003003'), '{"student_birth_date": "2011-03-04"}');
 select is((select array[ps.full_name, ps.birth_year::text, ps.school] from app.prospect_student ps where ps.opportunity_id = pg_temp.oid('0900003001')),
           array['Em Một', '2012', 'THCS Một'], 'Tạo cơ hội: em đầu của lead chép sang dòng 1 của cơ hội');
@@ -191,7 +194,9 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select app.create_lead(pg_temp.lead_data('0900003010', '{"parent_name": "Chị Gộp", "student_name": null}'));
 select pg_temp.sudo($$update app.lead set parent_id = null where parent_phone = '0900003010'$$);
 select pg_temp.sudo($$insert into lead_ids select id, parent_phone from app.lead where parent_phone = '0900003010'$$);
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900003010'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900003010'), '{"student_name": "Em Gộp", "student_birth_year": 2010}', true);
 select pg_temp.sudo($$create temp table mg as select
   (select o.id from app.opportunity o join app.parent p on p.id = o.parent_id where p.phone = '0900003010' order by o.code limit 1) as k,

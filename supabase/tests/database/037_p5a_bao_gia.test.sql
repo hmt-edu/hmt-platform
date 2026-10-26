@@ -109,6 +109,7 @@ select app.create_lead(pg_temp.lead_data('0900004010', '{"parent_name": "Chị G
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select app.create_lead(pg_temp.lead_data('0900004099', '{"parent_name": "Chị Báo Giá CS5", "student_name": "Em Chín", "student_birth_year": 2012}'));
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900004001'));
 select app.create_opportunity(pg_temp.lid('0900004002'));
 select app.create_opportunity((select id from app.lead where parent_phone = '0900004010' order by code limit 1));
@@ -311,7 +312,7 @@ select is(jsonb_array_length(app.list_quotations('{}', 'created_desc', 1, 0) -> 
 select ok((app.list_quotations('{}', 'created_desc', 1, 0) ->> 'total')::int > 1, 'Phân trang: total là tổng, không phải số dòng của trang');
 select ok(jsonb_array_length(app.list_quotations('{}', 'created_desc', 100000, 0) -> 'rows') <= 100, 'Phân trang: tối đa 100 dòng mỗi trang');
 select is((app.list_quotations('{}', 'total_desc', 1, 0) -> 'rows' -> 0 ->> 'total_amount')::bigint, (select max(total_amount) from app.quotation where branch_id = (select branch_id from app.user_account where id = pg_temp.uid('sales1'))), 'Sắp xếp theo tổng tiền giảm dần');
-select is(jsonb_typeof(app.list_quotations('{}') -> 'rows' -> 0 -> 'overdue_days'), 'null', 'Danh sách có cột overdue_days (null khi chưa quá hạn)') ;
+select is((select bool_and(r ? 'overdue_days') from jsonb_array_elements(app.list_quotations('{}') -> 'rows') r), true, 'Danh sách có cột overdue_days ở mọi dòng (null khi chưa quá hạn)');
 
 -- ================= Xuất (Đ105) =================
 select is(pg_temp.err($$select app.export_quotations('{}')$$), 'HMT_KHONG_CO_QUYEN', 'Đ105: Sale không xuất được báo giá');

@@ -89,8 +89,9 @@ select is((select array_agg(code order by code) from app.catalog_item
 select is((select is_locked from app.catalog_item where catalog_code = 'OPP_SUBSTAGE' and code = 'L7B'), false, 'L7B chưa khoá');
 
 -- ================= Tạo cơ hội: R-CRM-01, 09, 26, 27, 28 =================
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000101'))$$), null,
-          'R-CRM-01: tạo cơ hội từ lead (lead đang ở C1, KHÔNG chặn theo C4C): được');
+          'R-CRM-01: tạo cơ hội từ lead đang ở C4C: được');
 select is((select code from app.opportunity where lead_id = pg_temp.lid('0900000101')), 'CO000001', 'Mã cơ hội cấp lúc Lưu: CO000001');
 select is((select array[stage_code, record_status] from app.opportunity where code = 'CO000001'), array['L1', 'DANG_DUNG'],
           'Cơ hội mới ở L1 (anh chốt 18/10), đang dùng');
@@ -107,10 +108,13 @@ select is((select parent_id from app.lead where id = pg_temp.lid('0900000101')),
 select ok((select search_text like '%0900000101%' and search_text like '%co000001%' from app.opportunity where code = 'CO000001'),
           'Ô tìm kiếm có mã cơ hội và SĐT phụ huynh');
 
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000101'))$$), 'HMT_LEAD_DA_CO_CO_HOI',
           'R-CRM-01: lead đã có cơ hội thì cảnh báo, cần xác nhận lần hai');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select ok((select pg_temp.msg($$select app.create_opportunity(pg_temp.lid('0900000101'))$$)) like '%CO000001%',
           'R-CRM-01: câu cảnh báo nêu mã cơ hội cũ');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000101'), '{}'::jsonb, true)$$), null, 'Xác nhận lần hai: tạo thêm được');
 select is((select count(*)::int from app.opportunity where lead_id = pg_temp.lid('0900000101')), 2, 'Lead có hai cơ hội');
 select is((select count(*)::int from app.parent where phone = '0900000101'), 1, 'Cơ hội thứ hai dùng lại phụ huynh, không sinh thêm');
@@ -118,13 +122,16 @@ select is((select count(*)::int from app.parent where phone = '0900000101'), 1, 
 -- Phụ huynh khớp SĐT nhưng khác tên: dùng hồ sơ cũ, không ghi đè tên.
 select pg_temp.sudo($$insert into app.parent (code, full_name, phone, branch_id)
   select 'PH900004', 'Mẹ Có Sẵn', '0900000104', id from app.branch where code = 'CS1'$$);
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000104'))$$), null, 'Phụ huynh khớp SĐT khác tên: tạo cơ hội được');
 select is((select p.code || '/' || p.full_name from app.opportunity o join app.parent p on p.id = o.parent_id
             where o.lead_id = pg_temp.lid('0900000104')), 'PH900004/Mẹ Có Sẵn', 'Dùng hồ sơ phụ huynh cũ, KHÔNG ghi đè tên');
 select is((select count(*)::int from app.parent where phone = '0900000104'), 1, 'Không sinh thêm phụ huynh cùng SĐT');
 
 -- Chặn: quyền, cơ sở, lead đã gộp, ghi thẳng.
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity('00000000-0000-0000-0000-000000000000')$$), 'HMT_KHONG_TIM_THAY', 'Chặn: lead không có');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000103'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Tuyển sinh CS1 tạo cơ hội cho lead CS5');
 select is(pg_temp.err($$insert into app.opportunity (code) values ('X')$$), '42501', 'Không ghi thẳng bảng cơ hội');
 select is(pg_temp.err($$select app.find_or_create_parent('0900000999', 'X', null, null, null, (select id from app.branch where code = 'CS1'))$$),
@@ -132,10 +139,12 @@ select is(pg_temp.err($$select app.find_or_create_parent('0900000999', 'X', null
 select is(pg_temp.err($$select app.find_or_create_student(gen_random_uuid(), 'X', 2012, null, null, null, null, null)$$),
           '42501', 'Giao diện không gọi hàm nội bộ tìm hoặc tạo học sinh');
 select pg_temp.claims(pg_temp.uid('teacher5'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000103'))$$), 'HMT_KHONG_CO_QUYEN', 'Giáo viên không tạo cơ hội');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select pg_temp.sudo($$update app.lead set record_status = 'DA_GOP', merged_into_id = (select id from app.lead where parent_phone = '0900000101')
                        where parent_phone = '0900000105'$$);
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000105'))$$), 'HMT_BAN_GHI_DA_GOP', 'Chặn: lead đã gộp không tạo cơ hội');
 select pg_temp.sudo($$update app.lead set record_status = 'DANG_DUNG', merged_into_id = null where parent_phone = '0900000105'$$);
 
@@ -175,6 +184,7 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 
 -- ================= Đổi giai đoạn: R-CRM-02, 03, 13, 14, 15, 16, 17 =================
 -- Cơ hội CO000003 (lead 0900000104) có học sinh; CO000002 (lead 0900000101) cũng có. Cơ hội của lead 0900000102 không có học sinh.
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000102'), '{"stage_code": "L5", "substage_code": "L5B", "skip_reason_code": "KHAC"}')$$), null,
           'Lead không có học sinh: vẫn tạo cơ hội (R-CRM-03 chỉ bắt từ L5); truyền giai đoạn lúc tạo cũng không được dùng');
 select is((select array[stage_code, coalesce(substage_code, 'trống'), coalesce(skip_reason_code, 'trống')] from app.opportunity where code = 'CO000004'),
@@ -298,6 +308,7 @@ select is(app.assign_owner('LEAD', array[pg_temp.lid('0900000101')], pg_temp.uid
 
 -- ================= Danh sách, Kanban, RLS =================
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000103'))$$);
 select is((select count(*)::int from app.opportunity), 1, 'RLS: Tuyển sinh CS5 chỉ đọc cơ hội cơ sở mình');
 select is((app.list_opportunities() ->> 'total')::int, 1, 'Danh sách: Tuyển sinh CS5 thấy 1 cơ hội');
@@ -334,6 +345,7 @@ select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((app.list_opportunities() ->> 'total')::int, (select count(*)::int from app.opportunity where record_status = 'DANG_DUNG'), 'Trưởng cơ sở CS1 thấy cơ hội cơ sở mình');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000001'), 'L4')$$), null, 'Trưởng cơ sở CS1 đổi giai đoạn cơ hội cơ sở mình: được');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select is(pg_temp.err($$select app.create_opportunity(pg_temp.lid('0900000105'))$$), null, 'CSKH CS1 tạo cơ hội: được');
 
 -- Ghi chú, lịch sử gắn cơ hội: quyền xem theo cơ sở của cơ hội.

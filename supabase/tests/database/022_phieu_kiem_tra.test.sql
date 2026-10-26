@@ -93,14 +93,21 @@ select pg_temp.sudo($$create function pg_temp.audit_has(p_id uuid, p_like text) 
 select pg_temp.sudo($$grant execute on function pg_temp.audit_has(uuid, text) to public$$);
 
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900000301'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900000302'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900000303'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900000304'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900000305'));
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900000399'));
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900000306'));
 select app.change_opportunity_stage(pg_temp.oid('CO000007'), 'L5');
 -- CO000001 ở L1, CO000002 ở L4 (chưa đủ L5); CO000003, 4, 5 ở L5.

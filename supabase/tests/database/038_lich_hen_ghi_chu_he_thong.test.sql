@@ -70,6 +70,7 @@ grant execute on function pg_temp.notes(text, uuid, text) to public;
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select app.create_lead(pg_temp.lead_data('0900005001', '{"parent_name": "Chị Ghi Chú A", "student_name": "Em Một", "student_birth_year": 2012}'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900005001'));
 select app.change_opportunity_stage(pg_temp.oid('0900005001'), 'L5');
 select app.create_student_test(pg_temp.oid('0900005001'),

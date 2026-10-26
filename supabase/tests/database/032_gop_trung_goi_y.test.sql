@@ -86,10 +86,14 @@ select app.create_appointment(pg_temp.lid('LD000002'), 'GOI_DIEN', now() + inter
 select pg_temp.sudo($$insert into app.note (entity_type, entity_id, body, created_at) values
   ('LEAD', (select id from app.lead where code = 'LD000002'), 'Ghi chú một của lead 2', now() - interval '2 hours'),
   ('LEAD', (select id from app.lead where code = 'LD000002'), 'Ghi chú hai của lead 2', now() - interval '1 hour')$$);
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000001'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000002'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000003'));
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000005'));
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 -- Cơ hội: CO000001 (Em Một), CO000002 (Em Một), CO000003 (Em Khác), CO000004 (Em Một, CS5).

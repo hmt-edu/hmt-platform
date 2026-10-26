@@ -79,10 +79,14 @@ select pg_temp.sudo($$create function pg_temp.test_data(p_extra jsonb default '{
      ''mode_code'', ''OFFLINE'', ''level_code'', ''CO_BAN'', ''exam_name'', ''Toán cơ bản'', ''scheduled_at'', now() + interval ''3 days'') || p_extra'$$);
 select pg_temp.sudo($$grant execute on function pg_temp.test_data(jsonb) to public$$);
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900002001'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900002002'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900002003'));
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900002099'));
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select app.change_opportunity_stage(pg_temp.oid('0900002001'), 'L5');

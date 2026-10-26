@@ -97,15 +97,22 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select app.create_appointment(pg_temp.lid('LD000001'), 'GOI_DIEN', now() + interval '3 days', 'Hẹn lead 1');
 select app.create_appointment(pg_temp.lid('LD000002'), 'GOI_DIEN', now() + interval '1 day', 'Hẹn lead 2');
 select pg_temp.sudo($$insert into app.note (entity_type, entity_id, body) values ('LEAD', (select id from app.lead where code = 'LD000002'), 'Ghi chú của lead 2'), ('LEAD', (select id from app.lead where code = 'LD000002'), 'Ghi chú thứ hai')$$);
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000001'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000002'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000003'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000004'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000005'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000006'));
 -- CO000001, 2 (Em Một, 0401), CO000003 (Em Khác, 0401), CO000004 (Em Hai, 0402), CO000005 (không học sinh, 0403), CO000006 (Em Ba, 0403).
 select app.create_appointment(null, 'GOI_DIEN', now() + interval '2 days', 'Hẹn cơ hội 2', null, null, pg_temp.oid('CO000002'));
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000007'));
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 
@@ -174,7 +181,9 @@ select is(pg_temp.err($$select app.merge_opportunities(pg_temp.oid('CO000006'), 
 select is((select record_status from app.opportunity where code = 'CO000005'), 'DA_GOP', 'CO000005 thành Đã gộp');
 select app.create_lead(pg_temp.lead_data('0900000404', '{"student_name": null, "student_birth_year": null}'));
 select app.create_lead(pg_temp.lead_data('0900000404', '{"student_name": "Em Lấy", "student_birth_year": 2012, "school": "THCS Lấy"}'), true);
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000009'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('LD000010'));
 select app.change_opportunity_stage(pg_temp.oid('CO000009'), 'L4');
 select is((app.merge_preview('OPPORTUNITY', pg_temp.oid('CO000008'), pg_temp.oid('CO000009')) -> 'warnings' -> 0 ->> 'code'), 'HMT_GOP_GIAI_DOAN_CAO_HON',

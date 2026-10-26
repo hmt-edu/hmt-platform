@@ -84,6 +84,8 @@ export async function seed(setup: Setup): Promise<Seeded> {
       return r.rows[0]?.id ?? '';
     };
     const opp = async (leadId: string): Promise<{ id: string; code: string }> => {
+      // Lead chỉ tạo được cơ hội khi ở C4C (luật 26/10).
+      await db.query(`select app.change_lead_stage($1::uuid, 'C4', 'C4C')`, [leadId]);
       const r = await db.query<{ id: string; code: string }>(
         `select r ->> 'id' as id, r ->> 'code' as code from (select app.create_opportunity($1::uuid) as r) x`,
         [leadId],
@@ -95,6 +97,8 @@ export async function seed(setup: Setup): Promise<Seeded> {
     const gated = await opp(await lead(parent.gated, 2, 'Em Dở'));
     const skip = await opp(await lead(parent.skip, 3, 'Em Bỏ'));
     const lonelyLeadId = await lead(parent.lonely, 4, 'Em Một Mình');
+    // Bài "Tạo cơ hội từ lead" đi từ lead ở C4C (luật 26/10).
+    await db.query(`select app.change_lead_stage($1::uuid, 'C4', 'C4C')`, [lonelyLeadId]);
     for (const o of [gated, skip]) {
       await db.query(`select app.change_opportunity_stage($1::uuid, 'L5')`, [o.id]);
     }

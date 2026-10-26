@@ -79,11 +79,16 @@ select pg_temp.sudo($$create function pg_temp.test_data() returns jsonb language
 select pg_temp.sudo($$grant execute on function pg_temp.test_data() to public$$);
 -- Bốn cơ hội của CS1 (sales1) và một của CS5 (sales5).
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900001001'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900001002'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900001003'));
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900001004'));
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity(pg_temp.lid('0900001099'));
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 -- A: lịch hẹn quá hạn; B (lên L5, có phiếu test): lịch hẹn hôm nay; C: lịch hẹn sắp tới; D: chưa có lịch hẹn.
