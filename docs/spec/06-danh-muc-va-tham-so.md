@@ -25,7 +25,7 @@ Không danh mục nào được xoá hay đổi mã.
 | 6 | Trình độ | 1 | Khoá | S, A, B, C |
 | 7 | Hình thức học | 1 | Khoá | Offline, Online |
 | 8 | Loại gói | 1 | Khoá | LC Lớp chung, VIP VIP 1:1 và 1:2, VNN VIP nhóm nhỏ, KR Kèm riêng, DV Dịch vụ, TL Tài liệu |
-| 9 | Nguồn lead | 3 (loại → nguồn → kênh) | Mở | Xem 1.1 |
+| 9 | Nguồn lead | 3 (Source type → Source → Medium) | Mở | Xem 1.1 |
 | 10 | Giai đoạn lead | 2 | Khoá mục cha; C4D khoá | Xem 1.2 |
 | 11 | Giai đoạn cơ hội | 2 | Khoá mục cha; L5C–L5O và L5Q nối với lý do huỷ test (L5P không nối) | Xem 1.3 |
 | 12 | Giai đoạn phiếu tái tục | 2 | Khoá mục cha | Xem 1.4 |
@@ -52,16 +52,18 @@ Không danh mục nào được xoá hay đổi mã.
 | 29 | Tỉnh, phường | 2 | Mở | Nạp từ file seed (126 phường, xã của Hà Nội; **chốt 12/10**: lấy theo số đã nạp trong repo) |
 | 30 | Tên hiển thị các bước trạng thái (lớp, buổi, ghi danh, đơn, phiếu thu, ticket…) | 1 | Khoá | Danh sách tên ở `docs/design/luat-cho-thiet-ke.md`; nạp dần theo từng giai đoạn có trạng thái đó |
 
-### 1.1 Nguồn lead (loại → nguồn → kênh)
-| Loại | Nguồn | Kênh |
+### 1.1 Nguồn lead (Source type → Source → Medium)
+| Source type | Source | Medium |
 |---|---|---|
 | Marketing | Facebook Ads | Chat · Comment · Inbox · Lead Form |
-| Marketing | Google Ads, Website, Hotline, Walk-in, Zalo | (không có kênh con) |
+| Marketing | Google Ads, Website, Hotline, Walk-in, Zalo | (không có Medium) |
+| Marketing | Referral | By Customer · By HMT |
+| Marketing | Upsale | Cross-Sale (bán thêm, không phải tái tục) |
 | Telemarketing | Cold Call | Buy · Crawl · Flyer |
 | Event | Event | Indoor · Outdoor |
-| Referral | Referral | By Customer · By HMT |
-| Upsale | Upsale | Renew Lost · New Opp · Cross-Sale |
-| Ban Giám Đốc | Ban Giám Đốc | (không có kênh con) |
+| Ban Giám Đốc | Ban Giám Đốc | (không có Medium) |
+
+Nhãn ba ô là Source type, Source, Medium (Medium là tên mới của Sub-source/kênh). Chọn Source có Medium thì bắt buộc chọn Medium. Bỏ Medium Renew Lost và New Opp. Chỉ còn 4 Source type: Marketing, Telemarketing, Event, Ban Giám Đốc (26/10).
 
 ### 1.2 Giai đoạn lead
 | Mã | Tên | Nhóm con |
@@ -98,7 +100,7 @@ Không có C3K.
 | L5 | Không tái tục | Kết thúc, bắt buộc chọn lý do (danh mục 28) |
 | L6 | Đồng ý tái tục | |
 | L7 | Dự thu | L7A Đã gửi báo giá · L7B Đã có đơn, chờ đóng tiền |
-| L8 | Hoàn thành tái tục | L8A Đã đóng đủ, đã cộng quỹ giờ |
+| L8 | Hoàn thành tái tục | L8A Đã đóng đủ, đã cấp quỹ giờ mới |
 
 ## 2. Tham số Cài đặt
 

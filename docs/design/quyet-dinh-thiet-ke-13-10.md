@@ -52,7 +52,7 @@ Tổng quan · Tuyển sinh · Khách hàng · Bán hàng & thu chi · Đào t�
 - Anh đồng ý đề xuất của Claude cho 4 câu còn mở: bộ lọc thông minh, sao ưu tiên và nút Theo dõi, màu topbar (nền trắng như wireframe), và phạm vi các câu còn lại trong tab "Khuôn và thiết kế cần vẽ" của artifact danh sách màn hình.
 
 ## 5. Thuật ngữ
-Giữ tiếng Anh cho khung Odoo: Sidebar, Topbar, Header, Toolbar, Stage, Sub-stage, Smart button, Filters, Group By, Favorites, Source, Sub-source, **Calendar** (anh chốt 13/10, thay cho "Lịch"). Từ nghiệp vụ HMT dùng tiếng Việt. Nút hành động dùng tiếng Việt. Cột phải ghi tên **"Ghi chú & hoạt động"** (không dùng Lognote & Activity).
+Giữ tiếng Anh cho khung Odoo: Sidebar, Topbar, Header, Toolbar, Stage, Sub-stage, Smart button, Filters, Group By, Favorites, Source, Sub-source, **Calendar** (anh chốt 13/10, thay cho "Lịch"). Từ nghiệp vụ HMT dùng tiếng Việt. Nút hành động dùng tiếng Việt. Cột phải ghi tên **"Ghi chú & hoạt động"** (không dùng Lognote & Activity). (26/10) Sub-source đổi tên thành Medium, thêm tầng Source type: Source type, Source, Medium (Đ184).
 Nhãn vùng như GIAI ĐOẠN, NÚT NGHIỆP VỤ, THÔNG TIN trên wireframe chỉ để anh đọc, không đưa lên hệ thống.
 Wireframe còn một số chỗ ghi "Lịch" (menu, tiêu đề màn): cần đổi thành "Calendar" khi làm đẹp.
 
@@ -189,6 +189,14 @@ Dừng bắt đầu PR giao diện mới; PR đang mở làm cho xong và chờ 
 - **QĐ-Đ167 (26/10):** buổi củng cố chỉ cần quản lý cơ sở duyệt; bỏ yêu cầu phụ huynh đồng ý (R-BUOI-10 bản 26/10).
 - **QĐ-Đ168 (26/10):** R-LOP-01 chỉ giữ một dòng "Đường đi", bản 26/10.
 - **QĐ-Đ121 (26/10):** anh đã đọc và OK Đ94 đến Đ115.
+- **QĐ-Đ182 (26/10):** R-CRM-40 (lead tạo cơ hội khi ở nhóm con C4C; C4D tạo thêm qua R-CRM-01) đã vào docs/spec/04, [CHỐT]. Cài đặt ở PR #97 (migration 048).
+- **QĐ-Đ183 (26/10):** lead đổi giai đoạn sang giai đoạn có nhóm con chọn tay (C2, C3, C4) thì bắt buộc chọn nhóm con, cùng hộp như cơ hội, áp cả Kanban; lỗi DB `HMT_THIEU_NHOM_CON`. Đã vào docs/spec/04 (R-CRM-41), 26/10.
+- **QĐ-Đ184 (26/10):** bảng Source type / Source / Medium (Marketing gồm Facebook Ads, Google Ads, Website, Hotline, Walk-in, Zalo, Referral [By Customer, By HMT], Upsale [Cross-Sale]; Telemarketing: Cold Call; Event: Event; Ban Giám Đốc: Ban Giám Đốc); bỏ Medium Renew Lost, New Opp; Medium bắt buộc khi Source có Medium con. Đã vào docs/spec/06 mục 1.1.
+- **QĐ-Đ185 (26/10):** R-CRM-41 (lead đổi giai đoạn có nhóm con chọn tay thì bắt buộc chọn nhóm con) đã vào docs/spec/04.
+- **QĐ-Đ186 (26/10):** R-CRM-01 viết lại (ba lựa chọn khi lead đã có cơ hội; cơ hội tạo trực tiếp không cần lead; lead chỉ tạo cơ hội ở C4C) đã vào docs/spec/04.
+- **QĐ-Đ187 (26/10):** tái tục lên đơn. (a) Nút Tạo báo giá, Tạo đơn trên phiếu tái tục (TT-02) khi phiếu ở L6 hoặc L7; CSKH phụ trách phiếu tạo; báo giá và đơn gắn đúng một gốc, cơ hội hoặc phiếu tái tục; học sinh và lớp lấy từ phiếu; mã BG, DH cấp theo cơ sở của lớp; duyệt đơn theo R-HT-06. (b) R-CRM-16 không áp dụng cho đơn tái tục; thay bằng điều kiện phiếu ở L6 hoặc L7, chặn trong hàm; tạo báo giá thì phiếu sang L7A, tạo đơn sang L7B, đơn đóng đủ thì L8A. (c) Ghi danh mới dùng chung on_receipt_approved_enrolment khi đủ cọc, gắn đúng lớp của phiếu, không vào hàng chờ xếp lớp, giữ hình thức học. Đã vào docs/spec/04 (R-CRM-16, R-TIEN-02, R-GD-13), ngày 26/10.
+- **QĐ-Đ188 (26/10):** chữ luật tái tục lên đơn (TAI-TUC-DON) đã vào docs/spec/04.
+- **QĐ-Đ189 (26/10):** dòng "Source, Sub-source" của quyết định 13/10 giữ nguyên chữ gốc, thêm ghi chú: Sub-source đổi tên thành Medium, thêm tầng Source type (Đ184).
 - **QĐ-Đ169 (26/10):** báo giá Nháp tính giá theo bảng giá hiệu lực lúc Lưu; bấm Gửi thì đóng băng đơn giá, chiết khấu, số giờ (R-TIEN-14). Sau Gửi, đổi bảng giá không ảnh hưởng.
 - **QĐ-Đ170 (26/10):** Gửi báo giá bị chặn khi còn em thiếu họ tên hoặc năm sinh; báo đúng dòng, đúng ô thiếu, mã lỗi `HMT_EM_THIEU_THONG_TIN` kèm câu tiếng Việt.
 - **QĐ-Đ171 (26/10):** báo giá có trạng thái Huỷ (R-CRM-19), không xoá cứng.
