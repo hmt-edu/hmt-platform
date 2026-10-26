@@ -176,6 +176,9 @@ Dừng bắt đầu PR giao diện mới; PR đang mở làm cho xong và chờ 
 - **QĐ-Đ133 (26/10):** ngày giờ test không ở tương lai thì khoá nút "Tạo phiếu" và hiện dòng đỏ "Giờ test phải ở tương lai." (đúng chữ code đang dùng).
 - **QĐ-Đ134 (26/10):** nhãn "Khối" áp cho cả `TS15_chon_em` và `TS15_hai_phieu`.
 - **QĐ-Đ135 (26/10):** anh OK sáu màn canvas bản 37 (TS-08, TS-02, TS-06, TS-15, BH-02, BH-05 phần danh sách em); không có nghĩa là lưu canvas vào repo.
+- **QĐ-Đ143 (26/10, anh OK):** khung BH05_tao_trang giữ nguyên, kể cả hai chỗ "Lệch". Đây là hạn chế của bản vẽ: ô chọn em đã hiện ở ba khung BH-05 khác nên không vẽ thêm dòng giả. Không đổi khung nào.
+- **QĐ-Đ144 (26/10, anh OK):** chốt TS08_nhieu_phieu. Xoá hẳn khung TS08b_K3 và vùng "CŨ – CHỜ XOÁ" khỏi canvas. Kiểm tiêu đề khung có khớp TS08_em1 không, chỉ sửa nếu lệch.
+- **QĐ-Đ145 (26/10, anh OK):** sửa nhãn nhóm "Cơ hội" và "Phiếu kiểm tra" cho đúng số khung thật.
 - **QĐ-Đ157 (26/10):** phiếu tái tục tính theo (học sinh, lớp) trên TT-01, TT-02, TT-04, GD-07, GD-02; ngưỡng giờ còn ≤ 10 hoặc ≤ 30 ngày; có nhóm con L1B; L8A "Đã đóng đủ, đã cấp quỹ giờ mới".
 - **QĐ-Đ158 (26/10):** BH-07 mỗi dòng ghi "dùng HS…" hoặc "sẽ tạo hồ sơ mới".
 - **QĐ-Đ159 (26/10):** bộ số liệu mẫu chuẩn cho lớp `CS1-2627-DAI-K09-CB-A-001`, các ghi danh và mã HS.
@@ -200,9 +203,13 @@ Dừng bắt đầu PR giao diện mới; PR đang mở làm cho xong và chờ 
 - **QĐ-Đ169 (26/10):** báo giá Nháp tính giá theo bảng giá hiệu lực lúc Lưu; bấm Gửi thì đóng băng đơn giá, chiết khấu, số giờ (R-TIEN-14). Sau Gửi, đổi bảng giá không ảnh hưởng.
 - **QĐ-Đ170 (26/10):** Gửi báo giá bị chặn khi còn em thiếu họ tên hoặc năm sinh; báo đúng dòng, đúng ô thiếu, mã lỗi `HMT_EM_THIEU_THONG_TIN` kèm câu tiếng Việt.
 - **QĐ-Đ171 (26/10):** báo giá có trạng thái Huỷ (R-CRM-19), không xoá cứng.
-- **QĐ-Đ172 (26/10):** tiền chiết khấu làm tròn xuống đồng (bigint). Luật MỚI: chưa vào docs/spec cho tới khi anh nói "OK ĐƯA VÀO LUẬT <mã>".
+- **QĐ-Đ172 (26/10):** tiền chiết khấu làm tròn xuống đồng (bigint). Đã vào docs/spec/04 (R-TIEN-37), 26/10.
 - **QĐ-Đ173 (26/10, bản chốt, anh OK):** công tắc của báo giá và đơn là phân hệ `BAN_HANG` bật theo cơ sở (danh mục MODULE đã có; bảng `app.feature_flag` và hàm `app.require_feature` đã có từ migration 006, không dựng mới). Kiểm trong các hàm ghi của báo giá (lưu, gửi, từ chối, huỷ), lỗi `HMT_TINH_NANG_TAT`; giao diện kiểm cùng công tắc. Hàm đọc không chặn theo công tắc (Đ181).
 - **QĐ-Đ174 (26/10):** một dòng báo giá/đơn dùng tối đa MỘT chính sách tặng giờ. Giờ tặng tính vào trần chiết khấu (R-TIEN-29, R-TIEN-36).
 - **QĐ-Đ175 (26/10, anh OK):** bấm Gửi thì `send_quotation` TÍNH LẠI mọi dòng bằng `price_line` theo giá và chính sách hiệu lực của NGÀY GỬI, dùng đầu vào đã lưu (gói, hình thức, số lượng, chính sách), rồi mới đóng băng. Gói ngừng bán, hình thức không còn giá, chính sách hết hiệu lực hoặc không áp dụng thì chặn Gửi, báo đúng dòng bằng mã lỗi của `price_line`. Tổng sau tính lại khác lúc Lưu thì trả cảnh báo `HMT_TONG_TIEN_DOI` (kèm tổng cũ, tổng mới) để giao diện hiện.
-- **QĐ-Đ176 (26/10, anh OK):** thành tiền dòng làm tròn đến đồng (nửa đồng lên); tiền chiết khấu làm tròn xuống đồng (Đ172); thành tiền sau chiết khấu = thành tiền − tiền chiết khấu. Quyết định thiết kế, CHƯA vào docs/spec cho tới khi anh nói "OK ĐƯA VÀO LUẬT <mã>".
+- **QĐ-Đ176 (26/10, anh OK):** thành tiền dòng làm tròn đến đồng (nửa đồng lên); tiền chiết khấu làm tròn xuống đồng (Đ172); thành tiền sau chiết khấu = thành tiền − tiền chiết khấu. Đã vào docs/spec/04 (R-TIEN-37), 26/10.
 - **QĐ-Đ181 (26/10, anh OK):** KHÔNG chặn các hàm đọc của báo giá (danh sách, bản ghi, xuất) khi phân hệ `BAN_HANG` tắt ở cơ sở; chỉ các hàm ghi bị chặn (Đ173). Giao diện ẩn mục báo giá khi phân hệ tắt.
+Ghi chú (26/10): Đ190 và Đ191 là lời OK trong chat, không có luật riêng và không có chữ gốc để ghi lại. Nội dung TT-02 nằm ở QĐ-Đ192 và R-GD-13 (docs/spec/04).
+
+- **QĐ-Đ192 (26/10, anh OK):** TT-02 thêm Email phụ huynh, hai ô tự do Mục tiêu/nhu cầu tiếp theo và Lộ trình tiếp theo (sửa có nhật ký), tab "Tình hình học tập" mờ đến giai đoạn Giáo viên. Đã vào docs/spec/04 (R-GD-13), 26/10.
+- **QĐ-Đ195 (26/10, anh OK):** không ghi Đ190, Đ191 thành quyết định riêng; xem ghi chú ở trên.
