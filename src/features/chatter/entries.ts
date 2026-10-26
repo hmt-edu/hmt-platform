@@ -7,6 +7,8 @@ export type NoteRow = {
   author_name: string;
   body: string;
   mention_names: string[];
+  /** Ghi chú của lead gốc hiện ở cơ hội: "Lead LD000012"; ghi chú của chính bản ghi thì null. */
+  source_label?: string | null;
 };
 export type HistoryRow = {
   id: number;
@@ -74,6 +76,7 @@ export function buildEntries(
       author: n.author_name,
       body: n.body,
       mentions: n.mention_names,
+      ...(n.source_label ? { source: n.source_label } : {}),
     })),
     ...history.flatMap<ChatterEntry>((h) => {
       if (h.action === 'I') {

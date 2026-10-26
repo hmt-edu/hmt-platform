@@ -306,3 +306,29 @@ test('R-CRM-34: cơ hội L6 do hệ thống gắn L6A, ô Sub-stage hiện L6A 
   await expect(toastText(page, 'Đã đổi nhóm con.')).toBeVisible();
   await expect(page.getByRole('combobox', { name: 'Sub-stage' })).toContainText(/L6B/);
 });
+
+test('Cơ hội hiện ghi chú của lead gốc kèm nhãn "Từ Lead LD…"; ghi chú của cơ hội không có nhãn', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query(
+      `insert into app.note (entity_type, entity_id, body)
+       select 'LEAD', o.lead_id, $2::text from app.opportunity o where o.id = $1`,
+      [seeded.opportunity.nostudent.id, `Gọi lần một ${setup.mark}`],
+    );
+  } finally {
+    await db.end();
+  }
+  await openRecord(page, setup.account, seeded.opportunity.nostudent.id);
+  const chatter = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  await expect(chatter.getByText(`Gọi lần một ${setup.mark}`)).toBeVisible();
+  await expect(chatter.getByText(/Từ Lead LD\d+/)).toBeVisible();
+  // Viết ghi chú ở cơ hội: hiện ở cơ hội, không có nhãn "Từ Lead".
+  await chatter.getByPlaceholder(/Viết ghi chú/).fill(`Tư vấn ${setup.mark}`);
+  await chatter.getByRole('button', { name: 'Gửi ghi chú' }).click();
+  await expect(chatter.getByText(`Tư vấn ${setup.mark}`)).toBeVisible();
+  await expect(chatter.getByText(/Từ Lead LD\d+/)).toHaveCount(1);
+});

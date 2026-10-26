@@ -74,3 +74,35 @@ describe('lịch sử thay đổi của bản ghi', () => {
     expect(entries[2]).toMatchObject({ kind: 'system', text: 'Tạo tài khoản.' });
   });
 });
+
+describe('ghi chú của lead gốc hiện ở cơ hội (lỗi 26/10)', () => {
+  it('ghi chú có nhãn nguồn mang theo nhãn; ghi chú của chính bản ghi không có', () => {
+    const entries = buildEntries(
+      [
+        {
+          id: 'n1',
+          at: '2026-10-26T01:00:00Z',
+          author_name: 'A',
+          body: 'Gọi lần 1',
+          mention_names: [],
+          source_label: 'Lead LD000012',
+        },
+        {
+          id: 'n2',
+          at: '2026-10-26T02:00:00Z',
+          author_name: 'B',
+          body: 'Tư vấn',
+          mention_names: [],
+          source_label: null,
+        },
+      ],
+      [],
+      { labels: {} },
+      'Tạo cơ hội.',
+    );
+    const own = entries.find((e) => e.id === 'n2');
+    const fromLead = entries.find((e) => e.id === 'n1');
+    expect(own && 'source' in own).toBe(false);
+    expect(fromLead && fromLead.kind === 'note' ? fromLead.source : null).toBe('Lead LD000012');
+  });
+});

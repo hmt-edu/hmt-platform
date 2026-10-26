@@ -291,6 +291,10 @@ Chuyển dữ liệu: mỗi lead, cơ hội có thông tin học sinh thành dò
 ### Hiệu năng
 Đo trên `seed-lon` (50.000 lead, 20.000 cơ hội, 65.000 dòng em của lead, 26.000 của cơ hội), Admin: `list_leads` tìm theo tên em (11.426 kết quả) 82 ms, một trang 28 ms; `list_opportunities` một trang 3 ms; sắp xếp theo tên em đầu (quét 20.000 cơ hội) 289 ms; `get_opportunity` 10 ms. Danh sách em của một cơ hội: Index Scan `prospect_student_opp_pos_uidx`, 0,02 ms. Chỉ mục mới và lý do ghi trong migration.
 
+## Cơ hội hiện ghi chú của lead gốc (migration `20261026000047`, lỗi 26/10)
+Kiểm thử: `supabase/tests/database/039_co_hoi_doc_ghi_chu_lead.test.sql` (12 bài); Vitest `entries`; Playwright `co-hoi.spec.ts`.
+
+`app.record_notes(loại, id)` thêm cột `source_label`. Với cơ hội, hàm trả ghi chú của chính cơ hội cộng ghi chú của lead gốc (`opportunity.lead_id`), nhãn "Lead <mã lead>"; chỉ hiện ghi chú lead nếu người xem cũng thấy được lead (Lead · Xem ở cơ sở của lead). Ghi chú chỉ nằm một bản ở lead, không sao chép; ghi chú viết thêm ở lead sau khi tạo cơ hội cũng hiện ở cơ hội; ghi chú viết ở cơ hội không hiện ở lead; ghi chú đã huỷ không hiện. Dòng thời gian hiện nhãn "Từ Lead LD…" cạnh chữ "Ghi chú". Lịch sử đổi trường của lead và lịch hẹn của lead không hiện ở cơ hội.
 ## Lịch hẹn: Hoàn thành, Mở lại, Huỷ ghi dòng vào dòng thời gian (migration `20261026000046`, R-CRM-04)
 Kiểm thử: `supabase/tests/database/038_lich_hen_ghi_chu_he_thong.test.sql` (25 bài); Playwright `lich-hen-dong-bo.spec.ts`. Trước đây chỉ Dời (R-CRM-38 c) ghi dòng lên hồ sơ gắn; Hoàn thành, Mở lại, Huỷ không ghi gì nên trang Cơ hội (hoặc Lead, Phiếu) không thấy việc đã làm.
 

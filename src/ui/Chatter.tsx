@@ -12,7 +12,16 @@ import { Icon } from './icons';
 
 export type ChatterChange = { label: string; from: string; to: string };
 export type ChatterEntry =
-  | { kind: 'note'; id: string; at: string; author: string; body: string; mentions: string[] }
+  | {
+      kind: 'note';
+      id: string;
+      at: string;
+      author: string;
+      body: string;
+      mentions: string[];
+      /** Ghi chú đến từ bản ghi khác (lead gốc của cơ hội): "Lead LD000012". */
+      source?: string | undefined;
+    }
   | { kind: 'change'; id: string; at: string; author: string; changes: ChatterChange[] }
   | { kind: 'system'; id: string; at: string; author: string; text: string };
 
@@ -257,6 +266,14 @@ function Entry({ entry }: { entry: ChatterEntry }) {
           {' · '}
           <span className="tabular">{formatTime(entry.at)}</span>
           {entry.kind === 'note' && ' · Ghi chú'}
+          {entry.kind === 'note' && entry.source && (
+            <>
+              {' · '}
+              <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-caption font-semibold text-fg-muted">
+                Từ {entry.source}
+              </span>
+            </>
+          )}
         </p>
         {entry.kind === 'note' && (
           <p className="rounded-control border border-brand-200 bg-brand-50 px-2.5 py-1.5 break-words whitespace-pre-wrap">
