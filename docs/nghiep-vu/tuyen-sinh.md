@@ -291,6 +291,19 @@ Chuyển dữ liệu: mỗi lead, cơ hội có thông tin học sinh thành dò
 ### Hiệu năng
 Đo trên `seed-lon` (50.000 lead, 20.000 cơ hội, 65.000 dòng em của lead, 26.000 của cơ hội), Admin: `list_leads` tìm theo tên em (11.426 kết quả) 82 ms, một trang 28 ms; `list_opportunities` một trang 3 ms; sắp xếp theo tên em đầu (quét 20.000 cơ hội) 289 ms; `get_opportunity` 10 ms. Danh sách em của một cơ hội: Index Scan `prospect_student_opp_pos_uidx`, 0,02 ms. Chỉ mục mới và lý do ghi trong migration.
 
+## Lịch hẹn: Hoàn thành, Mở lại, Huỷ ghi dòng vào dòng thời gian (migration `20261026000046`, R-CRM-04)
+Kiểm thử: `supabase/tests/database/038_lich_hen_ghi_chu_he_thong.test.sql` (25 bài); Playwright `lich-hen-dong-bo.spec.ts`. Trước đây chỉ Dời (R-CRM-38 c) ghi dòng lên hồ sơ gắn; Hoàn thành, Mở lại, Huỷ không ghi gì nên trang Cơ hội (hoặc Lead, Phiếu) không thấy việc đã làm.
+
+| Hàm | Dòng ghi lên hồ sơ gắn (lead, cơ hội hoặc phiếu kiểm tra) |
+|---|---|
+| `app.complete_appointment(id)` | `Hoàn thành lịch hẹn "<tiêu đề>" (hẹn lúc dd/mm/yyyy hh:mm).` |
+| `app.reopen_appointment(id)` | `Mở lại lịch hẹn "<tiêu đề>" (hẹn lúc …), trước đó đã hoàn thành` hoặc `đã huỷ` |
+| `app.cancel_appointment(id, lý do, ghi chú)` | `Huỷ lịch hẹn "<tiêu đề>" (hẹn lúc …). Lý do: <tên lý do>. Ghi chú: <ghi chú>` |
+| `app.add_appointment_note(lịch hẹn, chữ)` | Hàm nội bộ ghi dòng hệ thống lên hồ sơ gắn |
+
+Không đổi giai đoạn, không tạo việc, không gửi thông báo (R-CRM-04 giữ nguyên). Lần thao tác bị từ chối không ghi dòng nào.
+
+Giao diện: một hàm làm mới chung `useRefreshAppointmentData` (`appointmentApi.ts`) làm mới mọi dữ liệu liên quan lịch hẹn (màn Lịch hẹn, lead, cơ hội, phiếu, dòng thời gian). Màn Lịch hẹn và các trang bản ghi đều gọi hàm này sau khi ghi, nên hai chiều luôn đồng bộ (trước đây màn Lịch hẹn chỉ làm mới lead; trang Cơ hội không làm mới màn Lịch hẹn).
 ## P5a-DB1a: báo giá (migration `20261026000045`, QĐ-Đ83, Đ93, Đ101, Đ102, Đ105, Đ106, Đ169 đến Đ174)
 Kiểm thử: `supabase/tests/database/037_p5a_bao_gia.test.sql` (161 bài); sửa bài 006 (25 danh mục hệ thống). Luật: R-CRM-19, 20, 22; R-TIEN-02, 05, 10, 13, 14, 15, 29, 30, 35, 36. Hàm trong schema `app` (đặc tả viết `crm.`). Công tắc BAN_HANG (Đ173) kiểm trong lưu, gửi, từ chối, huỷ qua `app.require_feature`; hàm đọc không chặn (Đ181); giao diện ẩn mục báo giá khi tắt.
 

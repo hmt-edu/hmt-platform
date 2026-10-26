@@ -151,6 +151,7 @@
 
 - Danh sách em-1 (DB, migration `043`): bảng `prospect_student`, chuyển cột chữ cũ, 24 hàm đọc/ghi chuyển sang bảng mới; seed-lon cập nhật (tắt kiểm R-CRM-03 lúc nạp); `scripts/staging-check-prospect.sql` chạy sau khi triển khai staging. Bài kiểm 035.
 
+- Lịch hẹn đồng bộ (migration `046`): ba hàm ghi dòng lịch sử; hàm làm mới chung `useRefreshAppointmentData`; Playwright `lich-hen-dong-bo`. Migration `046` sau `045` (#91): nếu #91 gộp sau thì đổi số `045` cho đúng thứ tự trước khi gộp.
 - P5a-DB1a (migration `045`): báo giá. seed-lon thêm 15.000 báo giá, 30.000 dòng. Bài kiểm 037; sửa bài 006 (25 danh mục hệ thống). Đ173 (công tắc BAN_HANG qua `require_feature`), Đ175 (Gửi tính lại, cảnh báo tổng đổi), Đ176 (làm tròn); bài 037 còn 161.
 
 ## Đang chờ ai

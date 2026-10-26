@@ -1,6 +1,6 @@
 // Lịch hẹn trên trang bản ghi (TS-08 Cơ hội): khối "Hoạt động sắp tới" và các hộp Tạo, Dời, Huỷ (R-CRM-04, R-CRM-38).
 // Một chỗ gom trạng thái và hộp thoại để trang bản ghi chỉ nhận khối hiển thị và nút mở hộp Tạo.
-import { useState, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import { errorOf, useDb } from '../../lib/db';
 import { ReasonDialog } from '../../ui/Dialogs';
 import { useToast } from '../../ui/toastContext';
@@ -11,6 +11,7 @@ import {
   createOpportunityAppointment,
   rescheduleAppointment,
   useOpportunityUpcoming,
+  useRefreshAppointmentData,
   useTestUpcoming,
   type UpcomingAppointment,
 } from './appointmentApi';
@@ -43,7 +44,12 @@ export function useOpportunityAppointments({
 }): { upcoming: ReactNode; dialogs: ReactNode; openCreate: () => void } {
   const supabase = useDb();
   const toast = useToast();
-  const undo = useUndoAppointment(refresh);
+  // Ghi lịch hẹn ở trang bản ghi cũng làm mới màn Lịch hẹn và các bản ghi khác (lead, cơ hội, phiếu), không chỉ trang này.
+  const refreshRelated = useRefreshAppointmentData();
+  const refreshAll = useCallback(async () => {
+    await Promise.all([refresh(), refreshRelated()]);
+  }, [refresh, refreshRelated]);
+  const undo = useUndoAppointment(refreshAll);
   const ofOpportunity = useOpportunityUpcoming(upcomingOfTest === undefined ? opportunityId : null);
   const ofTest = useTestUpcoming(upcomingOfTest ?? null);
   const query = upcomingOfTest === undefined ? ofOpportunity : ofTest;
@@ -61,7 +67,7 @@ export function useOpportunityAppointments({
     setBusyId(row.id);
     try {
       await completeAppointment(supabase, row.id);
-      await refresh();
+      await refreshAll();
       toast({ title: 'Đã hoàn thành lịch hẹn.', action: undo(row.id) });
     } catch (e) {
       toast({ tone: 'danger', title: errorOf(e).message });
@@ -103,7 +109,7 @@ export function useOpportunityAppointments({
             title: noteText === '' ? activityName(args.activityCode) : noteText,
             ownerId: args.ownerId,
           });
-          await refresh();
+          await refreshAll();
           toast({ title: 'Đã tạo lịch hẹn.' });
         }}
         onReschedule={() => Promise.resolve()}
@@ -128,7 +134,7 @@ export function useOpportunityAppointments({
           onCreate={() => Promise.resolve()}
           onReschedule={async (args) => {
             await rescheduleAppointment(supabase, args);
-            await refresh();
+            await refreshAll();
             toast({ title: 'Đã dời lịch hẹn.' });
           }}
         />
@@ -152,7 +158,7 @@ export function useOpportunityAppointments({
           setCancelBusy(true);
           setCancelError(null);
           void cancelAppointment(supabase, canceling.id, result.option, result.note)
-            .then(refresh)
+            .then(refreshAll)
             .then(() => {
               setCanceling(null);
               toast({ title: 'Đã huỷ lịch hẹn.', action: undo(canceling.id) });

@@ -1,8 +1,8 @@
 // Gọi dữ liệu màn Lịch hẹn: danh sách phân trang, ba cột Kanban, các lịch trong cửa sổ của kiểu xem Lịch, số lịch quá hạn.
 // Lọc, sắp xếp, phân trang, tìm kiếm làm ở cơ sở dữ liệu (CLAUDE.md, Hiệu năng); mỗi màn vài lần gọi, không gọi theo từng dòng.
-import { keepPreviousData, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { keepPreviousData, useQueries, useQuery } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { useRefreshAppointmentData } from '../../features/appointments/appointmentApi';
 import { rpc, useDb } from '../../lib/db';
 import type { GroupCounts } from '../lead/leadTypes';
 import type { AppointmentFilters } from './appointmentFilters';
@@ -112,24 +112,9 @@ export function useOverdueBefore(before: Date | null, mine: boolean) {
   });
 }
 
-/** Tải lại các khối lịch hẹn sau một thao tác ghi (cả bản ghi lead đang mở ở nơi khác). */
+/** Tải lại mọi dữ liệu liên quan lịch hẹn sau một thao tác ghi (cả bản ghi lead, cơ hội, phiếu đang mở ở nơi khác). */
 export function useRefreshAppointments() {
-  const client = useQueryClient();
-  return useCallback(async () => {
-    await Promise.all(
-      [
-        'appointment-list',
-        'appointment-board',
-        'appointment-calendar',
-        'appointment-groups',
-        'appointment-overdue',
-        'lead-upcoming',
-        'lead-record',
-        'lead-list',
-        'lead-board',
-      ].map((key) => client.invalidateQueries({ queryKey: [key] })),
-    );
-  }, [client]);
+  return useRefreshAppointmentData();
 }
 
 /** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */

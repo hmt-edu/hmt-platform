@@ -149,6 +149,45 @@ export async function reopenAppointment(supabase: SupabaseClient, id: string): P
   await rpc<null>(supabase, 'reopen_appointment', { p_id: id });
 }
 
+/**
+ * Mọi dữ liệu đã tải mà một thao tác ghi lịch hẹn (tạo, dời, hoàn thành, mở lại, huỷ) có thể làm cũ: màn Lịch hẹn (danh sách, bảng,
+ * lịch, nhóm, quá hạn), khối "Hoạt động sắp tới", bản ghi, danh sách, bảng của lead, cơ hội, phiếu kiểm tra, và dòng thời gian
+ * (ghi chú hệ thống). Làm mới theo tiền tố khoá nên mọi mã bản ghi cùng được làm mới; một chỗ duy nhất để màn nào ghi cũng đồng bộ
+ * các màn khác (trước đây màn Lịch hẹn chỉ làm mới lead, trang Cơ hội không làm mới Lịch hẹn).
+ */
+export const APPOINTMENT_RELATED_KEYS = [
+  'appointment-list',
+  'appointment-board',
+  'appointment-calendar',
+  'appointment-groups',
+  'appointment-overdue',
+  'lead-upcoming',
+  'lead-record',
+  'lead-list',
+  'lead-board',
+  'opp-upcoming',
+  'opp-record',
+  'opp-list',
+  'opp-board',
+  'opp-groups',
+  'test-upcoming',
+  'test-record',
+  'test-list',
+  'test-board',
+  'test-calendar',
+  'test-groups',
+  'chatter',
+] as const;
+
+export function useRefreshAppointmentData() {
+  const client = useQueryClient();
+  return useCallback(async () => {
+    await Promise.all(
+      APPOINTMENT_RELATED_KEYS.map((key) => client.invalidateQueries({ queryKey: [key] })),
+    );
+  }, [client]);
+}
+
 /** Tải lại khối lịch hẹn, ghi chú và hoạt động, số đếm của lead sau một thao tác ghi. */
 export function useRefreshLeadRecord(leadId: string) {
   const client = useQueryClient();
