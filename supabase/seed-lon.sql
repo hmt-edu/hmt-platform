@@ -224,6 +224,41 @@ analyze app.package_price;
 update app.lead l set search_text = app.lead_search_text(l) where l.code like 'LDL%';
 update app.opportunity o set search_text = app.opportunity_search_text(o) where o.code like 'COL%';
 
+-- Báo giá giả lớn (EXPLAIN của P5a-DB1a): 15.000 báo giá (mỗi cơ hội COL000001..015000 một báo giá), 1 đến 3 dòng mỗi báo giá, 4 trạng thái.
+alter table app.quotation disable trigger quotation_fill_standard;
+alter table app.quotation disable trigger quotation_audit;
+alter table app.quotation_line disable trigger quotation_line_fill_standard;
+alter table app.quotation_line disable trigger quotation_line_audit;
+insert into app.quotation (code, branch_id, opportunity_id, parent_id, status_code, priced_on, valid_until, sent_at, total_amount,
+                           created_at, updated_at)
+select 'BGL' || lpad(g::text, 6, '0'), o.branch_id, o.id, o.parent_id,
+       case when g % 10 < 4 then 'NHAP' when g % 10 < 8 then 'DA_GUI' when g % 10 < 9 then 'TU_CHOI' else 'HUY' end,
+       current_date - (g % 120), case when g % 10 between 4 and 7 then current_date + (g % 30) - 15 end,
+       case when g % 10 between 4 and 8 then now() - ((g % 120) || ' days')::interval end, 0,
+       now() - ((g % 120) || ' days')::interval, now()
+  from generate_series(1, 15000) g
+  join app.opportunity o on o.code = 'COL' || lpad(g::text, 6, '0');
+insert into app.quotation_line (quotation_id, branch_id, line_no, prospect_student_id, package_id, package_code, package_name,
+                                package_type_code, delivery_mode_code, unit_code, quantity, unit_price, gross_amount, line_total)
+select q.id, q.branch_id, k.k, ps.id, p.id, p.code, p.name, p.package_type_code, 'OFF', 'GIO', 12 + (g % 5) * 12,
+       100000 + (g % 200) * 1000, (12 + (g % 5) * 12) * (100000 + (g % 200) * 1000), (12 + (g % 5) * 12) * (100000 + (g % 200) * 1000)
+  from generate_series(1, 15000) g
+  join app.quotation q on q.code = 'BGL' || lpad(g::text, 6, '0')
+  join app.prospect_student ps on ps.opportunity_id = q.opportunity_id and ps.position = 1
+  cross join lateral generate_series(1, 1 + g % 3) k(k)
+  join (select id, code, name, package_type_code, row_number() over (order by code) as rn
+          from app.sales_package where package_type_code = 'LC') p on p.rn = 1 + (g * k.k) % (select count(*) from app.sales_package where package_type_code = 'LC');
+update app.quotation q set total_amount = t.total
+  from (select quotation_id, sum(line_total) as total from app.quotation_line group by quotation_id) t
+ where t.quotation_id = q.id and q.code like 'BGL%';
+update app.quotation q set search_text = app.quotation_search_text(q) where q.code like 'BGL%';
+alter table app.quotation enable trigger quotation_fill_standard;
+alter table app.quotation enable trigger quotation_audit;
+alter table app.quotation_line enable trigger quotation_line_fill_standard;
+alter table app.quotation_line enable trigger quotation_line_audit;
+analyze app.quotation;
+analyze app.quotation_line;
+
 -- Đặt đếm mã để mã thật (LD…) không đụng mã giả (LDL…): mã giả có tiền tố khác nên không cần; chỉ cập nhật thống kê.
 analyze app.parent;
 analyze app.lead;

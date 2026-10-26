@@ -151,6 +151,8 @@
 
 - Danh sách em-1 (DB, migration `043`): bảng `prospect_student`, chuyển cột chữ cũ, 24 hàm đọc/ghi chuyển sang bảng mới; seed-lon cập nhật (tắt kiểm R-CRM-03 lúc nạp); `scripts/staging-check-prospect.sql` chạy sau khi triển khai staging. Bài kiểm 035.
 
+- P5a-DB1a (migration `045`): báo giá. seed-lon thêm 15.000 báo giá, 30.000 dòng. Bài kiểm 037; sửa bài 006 (25 danh mục hệ thống). Đ173 (công tắc BAN_HANG qua `require_feature`), Đ175 (Gửi tính lại, cảnh báo tổng đổi), Đ176 (làm tròn); bài 037 còn 161.
+
 ## Đang chờ ai
 - **Anh Trường:** ngưỡng dung lượng gói tải (đo: trang đầu CRM 235 KB nén, CI chỉ báo số); hạn xử lý ticket chăm sóc tháng (khi có màn Cấu hình).
 - **Claude Chat:** viết đè `docs/nhat-ky/chat.md` (luật 04d–04g đã vào spec).

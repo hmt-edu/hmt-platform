@@ -189,3 +189,12 @@ Dừng bắt đầu PR giao diện mới; PR đang mở làm cho xong và chờ 
 - **QĐ-Đ167 (26/10):** buổi củng cố chỉ cần quản lý cơ sở duyệt; bỏ yêu cầu phụ huynh đồng ý (R-BUOI-10 bản 26/10).
 - **QĐ-Đ168 (26/10):** R-LOP-01 chỉ giữ một dòng "Đường đi", bản 26/10.
 - **QĐ-Đ121 (26/10):** anh đã đọc và OK Đ94 đến Đ115.
+- **QĐ-Đ169 (26/10):** báo giá Nháp tính giá theo bảng giá hiệu lực lúc Lưu; bấm Gửi thì đóng băng đơn giá, chiết khấu, số giờ (R-TIEN-14). Sau Gửi, đổi bảng giá không ảnh hưởng.
+- **QĐ-Đ170 (26/10):** Gửi báo giá bị chặn khi còn em thiếu họ tên hoặc năm sinh; báo đúng dòng, đúng ô thiếu, mã lỗi `HMT_EM_THIEU_THONG_TIN` kèm câu tiếng Việt.
+- **QĐ-Đ171 (26/10):** báo giá có trạng thái Huỷ (R-CRM-19), không xoá cứng.
+- **QĐ-Đ172 (26/10):** tiền chiết khấu làm tròn xuống đồng (bigint). Luật MỚI: chưa vào docs/spec cho tới khi anh nói "OK ĐƯA VÀO LUẬT <mã>".
+- **QĐ-Đ173 (26/10, bản chốt, anh OK):** công tắc của báo giá và đơn là phân hệ `BAN_HANG` bật theo cơ sở (danh mục MODULE đã có; bảng `app.feature_flag` và hàm `app.require_feature` đã có từ migration 006, không dựng mới). Kiểm trong các hàm ghi của báo giá (lưu, gửi, từ chối, huỷ), lỗi `HMT_TINH_NANG_TAT`; giao diện kiểm cùng công tắc. Hàm đọc không chặn theo công tắc (Đ181).
+- **QĐ-Đ174 (26/10):** một dòng báo giá/đơn dùng tối đa MỘT chính sách tặng giờ. Giờ tặng tính vào trần chiết khấu (R-TIEN-29, R-TIEN-36).
+- **QĐ-Đ175 (26/10, anh OK):** bấm Gửi thì `send_quotation` TÍNH LẠI mọi dòng bằng `price_line` theo giá và chính sách hiệu lực của NGÀY GỬI, dùng đầu vào đã lưu (gói, hình thức, số lượng, chính sách), rồi mới đóng băng. Gói ngừng bán, hình thức không còn giá, chính sách hết hiệu lực hoặc không áp dụng thì chặn Gửi, báo đúng dòng bằng mã lỗi của `price_line`. Tổng sau tính lại khác lúc Lưu thì trả cảnh báo `HMT_TONG_TIEN_DOI` (kèm tổng cũ, tổng mới) để giao diện hiện.
+- **QĐ-Đ176 (26/10, anh OK):** thành tiền dòng làm tròn đến đồng (nửa đồng lên); tiền chiết khấu làm tròn xuống đồng (Đ172); thành tiền sau chiết khấu = thành tiền − tiền chiết khấu. Quyết định thiết kế, CHƯA vào docs/spec cho tới khi anh nói "OK ĐƯA VÀO LUẬT <mã>".
+- **QĐ-Đ181 (26/10, anh OK):** KHÔNG chặn các hàm đọc của báo giá (danh sách, bản ghi, xuất) khi phân hệ `BAN_HANG` tắt ở cơ sở; chỉ các hàm ghi bị chặn (Đ173). Giao diện ẩn mục báo giá khi phân hệ tắt.

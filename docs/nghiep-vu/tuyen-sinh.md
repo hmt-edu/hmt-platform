@@ -290,3 +290,21 @@ Chuyển dữ liệu: mỗi lead, cơ hội có thông tin học sinh thành dò
 
 ### Hiệu năng
 Đo trên `seed-lon` (50.000 lead, 20.000 cơ hội, 65.000 dòng em của lead, 26.000 của cơ hội), Admin: `list_leads` tìm theo tên em (11.426 kết quả) 82 ms, một trang 28 ms; `list_opportunities` một trang 3 ms; sắp xếp theo tên em đầu (quét 20.000 cơ hội) 289 ms; `get_opportunity` 10 ms. Danh sách em của một cơ hội: Index Scan `prospect_student_opp_pos_uidx`, 0,02 ms. Chỉ mục mới và lý do ghi trong migration.
+
+## P5a-DB1a: báo giá (migration `20261026000045`, QĐ-Đ83, Đ93, Đ101, Đ102, Đ105, Đ106, Đ169 đến Đ174)
+Kiểm thử: `supabase/tests/database/037_p5a_bao_gia.test.sql` (161 bài); sửa bài 006 (25 danh mục hệ thống). Luật: R-CRM-19, 20, 22; R-TIEN-02, 05, 10, 13, 14, 15, 29, 30, 35, 36. Hàm trong schema `app` (đặc tả viết `crm.`). Công tắc BAN_HANG (Đ173) kiểm trong lưu, gửi, từ chối, huỷ qua `app.require_feature`; hàm đọc không chặn (Đ181); giao diện ẩn mục báo giá khi tắt.
+
+| Đối tượng | Làm gì | Quyền |
+|---|---|---|
+| `app.quotation`, `quotation_line`, `quotation_line_discount` | Báo giá Nháp, Đã gửi, Từ chối, Huỷ (Đã chuyển đơn tính từ dòng, không lưu); mã `BG-CS1-AAMM-STT` cấp lúc Lưu; dòng chụp lại gói, đơn giá, số lượng, đơn vị, chiết khấu từng chính sách | Đọc theo Báo giá · Xem ở đúng cơ sở; ghi chỉ qua hàm |
+| `app.price_line`, `price_apply_discounts` | Nơi duy nhất tính tiền báo giá và đơn: thành tiền = số lượng × đơn giá; chiết khấu % cộng dồn; giờ tặng quy ra % tính vào trần; tiền chiết khấu làm tròn xuống đồng (Đ172); một dòng tối đa một chính sách tặng giờ (Đ174); quà tặng giá 0, ngoài trần; cờ cần người duyệt tích chung (Đ102) | Hàm nội bộ |
+| `app.save_quotation(id, cơ hội, dòng)` | Tạo hoặc sửa Nháp, tính lại theo bảng giá hiệu lực lúc lưu (Đ169); trả cảnh báo vượt trần, không chặn (D3) | Báo giá · Tạo / Sửa |
+| `app.send_quotation(id)` | Nháp → Đã gửi: tính lại mọi dòng theo giá và chính sách ngày Gửi rồi đóng băng (Đ175), trả `{id, total_amount, previous_total, warnings}` (cảnh báo `HMT_TONG_TIEN_DOI` khi tổng đổi); cần dòng; mọi em đủ họ tên, năm sinh (Đ170); hạn = ngày gửi + `quotation_validity_days` | Báo giá · Sửa |
+| `app.reject_quotation`, `app.cancel_quotation` | Từ chối (lý do áp dụng cho báo giá, "Khác" bắt ghi chú); Huỷ (Đ171). Chặn khi đã có đơn đang sống (DB1b) | Báo giá · Sửa |
+| `app.get_quotation`, `list_quotations`, `export_quotations` | Bản ghi kèm dòng, chiết khấu, em; danh sách phân trang ở máy chủ, tìm theo mã, phụ huynh, SĐT, tên em (D17); xuất theo Đ105 (Trưởng cơ sở, Kế toán, Admin) | Báo giá · Xem / Xuất |
+| `app.opportunity_sales_documents` | Mã báo giá còn hiệu lực của cơ hội (trừ Từ chối và Huỷ, Đ106); DB1b thêm mã đơn | Hàm nội bộ |
+
+Luật mới ghi ở PR, chưa vào docs/spec: Đ172 (làm tròn xuống đồng), Đ176 (làm tròn thành tiền).
+
+### Hiệu năng
+Đo trên `seed-lon` (15.000 báo giá, 30.000 dòng), Admin: `list_quotations` một trang 36 ms, trạng thái Đã gửi 17 ms, tìm tên em 14 ms, lọc theo cơ hội 2,5 ms; `get_quotation` 4 ms; `export_quotations` 5.000 dòng 215 ms. Danh sách mặc định dùng chỉ mục `quotation_branch_created_idx` (Index Only Scan, 0,29 ms).
