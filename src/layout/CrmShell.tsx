@@ -10,6 +10,7 @@ import { Icon } from '../ui/icons';
 import { Drawer, Select } from '../ui/Overlays';
 import { AccountMenu } from './AccountMenu';
 import { CrumbTailContext } from './CrumbTail';
+import { CrumbsContext, fromOf, mergeTrail, type Crumb } from './crumbTrail';
 import { useProduct } from './useProduct';
 
 const COLLAPSE_KEY = 'hmt:menu-thu-gon';
@@ -113,14 +114,18 @@ function BranchPicker({ className }: { className?: string }) {
   );
 }
 
-type Crumb = { label: string; to?: string };
-
 /**
  * Đường dẫn "Nhóm > Mục" của trang đang mở, lấy từ menu (cùng nguồn với thanh bên). Trang con của một mục (bản ghi, màn Tạo)
  * thêm chữ cuối `tail` do trang đặt (tên bản ghi); mục là liên kết để quay về danh sách.
  */
 function useBreadcrumb(menu: MenuGroup[], tail: string | null): Crumb[] {
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const { pathname } = location;
+  const state: unknown = location.state;
+  return mergeTrail(fromOf(state), menuBreadcrumb(menu, tail, pathname), pathname);
+}
+
+function menuBreadcrumb(menu: MenuGroup[], tail: string | null, pathname: string): Crumb[] {
   for (const group of menu) {
     const entry = group.entries.find((e) => crmPath(e.slug) === pathname);
     if (entry) {
@@ -157,6 +162,11 @@ export function CrmShell() {
   const menu = useMemo(() => visibleMenu(CRM_MENU, access), [access]);
   const [tail, setTail] = useState<string | null>(null);
   const crumbs = useBreadcrumb(menu, tail);
+  const { pathname, search } = useLocation();
+  const crumbsValue = useMemo(
+    () => ({ crumbs, here: `${pathname}${search}` }),
+    [crumbs, pathname, search],
+  );
   const branchName = access.branchName(claims?.branchCode ?? null);
   const roleLine = [access.roleNames.join(', '), branchName].filter(Boolean).join(' · ');
 
@@ -180,116 +190,125 @@ export function CrmShell() {
 
   return (
     <CrumbTailContext.Provider value={setTail}>
-      <div className="flex min-h-dvh bg-canvas">
-        <aside
-          className={cn(
-            'sticky top-0 hidden h-dvh shrink-0 flex-col bg-sidebar text-sidebar-fg lg:flex',
-            collapsed ? 'w-sidebar-narrow' : 'w-sidebar',
-          )}
-        >
-          {/* Đầu thanh bên trắng, cao bằng thanh trên (.hmt-sb-head). */}
-          <div
+      <CrumbsContext.Provider value={crumbsValue}>
+        <div className="flex min-h-dvh bg-canvas">
+          <aside
             className={cn(
-              'flex h-topbar shrink-0 items-center border-b border-border bg-surface',
-              collapsed ? 'justify-center' : 'gap-2 pr-2 pl-3.5',
+              'sticky top-0 hidden h-dvh shrink-0 flex-col bg-sidebar text-sidebar-fg lg:flex',
+              collapsed ? 'w-sidebar-narrow' : 'w-sidebar',
             )}
           >
-            {!collapsed && (
-              <p className="min-w-0 flex-1 truncate font-display text-h3 font-bold text-fg">CRM</p>
-            )}
-            <IconButton
-              icon="collapse"
-              label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
-              onClick={toggleCollapsed}
-            />
-          </div>
-          <nav
-            aria-label="Menu CRM"
-            className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-2.5 pb-3.5"
-          >
-            {collapsed ? (
-              <ul className="flex flex-col items-center gap-0.5">
-                {menu.map((group) => (
-                  <li key={group.id}>
-                    <button
-                      type="button"
-                      aria-label={`${group.label} (mở rộng menu)`}
-                      title={group.label}
-                      onClick={toggleCollapsed}
-                      className="focus-ring flex size-10 items-center justify-center rounded-control text-sidebar-fg hover:bg-sidebar-hover hover:text-neutral-0"
-                    >
-                      <Icon name={group.icon} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              menuList()
-            )}
-          </nav>
-        </aside>
-
-        <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-10 flex h-topbar shrink-0 items-center gap-3 border-b border-border bg-surface px-3 lg:gap-4 lg:px-5">
-            <IconButton
-              icon="menu"
-              label="Mở menu"
-              className="lg:hidden"
-              onClick={() => setDrawerOpen(true)}
-            />
-            <nav aria-label="Đường dẫn" className="min-w-0 flex-1">
-              <ol className="flex min-w-0 items-center gap-1.5 text-body text-fg-muted">
-                {crumbs.map((crumb, index) => {
-                  const last = index === crumbs.length - 1;
-                  return (
-                    <li
-                      key={crumb.label}
-                      className={cn('flex items-center gap-1.5', last ? 'min-w-0' : 'shrink-0')}
-                    >
-                      {index > 0 && <Icon name="chevronRight" size={16} className="shrink-0" />}
-                      {crumb.to && !last ? (
-                        <Link
-                          to={crumb.to}
-                          className="focus-ring truncate text-link hover:underline"
-                        >
-                          {crumb.label}
-                        </Link>
-                      ) : (
-                        <span
-                          aria-current={last ? 'page' : undefined}
-                          className={cn('truncate', last && 'font-semibold text-fg')}
-                        >
-                          {crumb.label}
-                        </span>
-                      )}
+            {/* Đầu thanh bên trắng, cao bằng thanh trên (.hmt-sb-head). */}
+            <div
+              className={cn(
+                'flex h-topbar shrink-0 items-center border-b border-border bg-surface',
+                collapsed ? 'justify-center' : 'gap-2 pr-2 pl-3.5',
+              )}
+            >
+              {!collapsed && (
+                <p className="min-w-0 flex-1 truncate font-display text-h3 font-bold text-fg">
+                  CRM
+                </p>
+              )}
+              <IconButton
+                icon="collapse"
+                label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+                onClick={toggleCollapsed}
+              />
+            </div>
+            <nav
+              aria-label="Menu CRM"
+              className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-2.5 pb-3.5"
+            >
+              {collapsed ? (
+                <ul className="flex flex-col items-center gap-0.5">
+                  {menu.map((group) => (
+                    <li key={group.id}>
+                      <button
+                        type="button"
+                        aria-label={`${group.label} (mở rộng menu)`}
+                        title={group.label}
+                        onClick={toggleCollapsed}
+                        className="focus-ring flex size-10 items-center justify-center rounded-control text-sidebar-fg hover:bg-sidebar-hover hover:text-neutral-0"
+                      >
+                        <Icon name={group.icon} />
+                      </button>
                     </li>
-                  );
-                })}
-              </ol>
+                  ))}
+                </ul>
+              ) : (
+                menuList()
+              )}
             </nav>
-            <div className="ml-auto hidden shrink-0 lg:block">
-              <BranchPicker className="w-56" />
-            </div>
-            {/* Chuông: vỏ thanh trên. Danh sách thông báo làm ở phân hệ P14 (làm sau cùng). */}
-            <IconButton icon="bell" label="Thông báo (sắp có)" disabled />
-            <AccountMenu portal="crm" roleLine={roleLine} />
-          </header>
-          <main className="min-w-0 flex-1">
-            <div className="p-4 lg:p-5">
-              <Outlet />
-            </div>
-          </main>
-        </div>
+          </aside>
 
-        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="CRM">
-          <div className="bg-sidebar px-2.5 py-2.5 text-sidebar-fg">
-            <div className="pb-2.5 [&_button]:w-full">
-              <BranchPicker className="w-full" />
-            </div>
-            <nav aria-label="Menu CRM">{menuList(() => setDrawerOpen(false))}</nav>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <header className="sticky top-0 z-10 flex h-topbar shrink-0 items-center gap-3 border-b border-border bg-surface px-3 lg:gap-4 lg:px-5">
+              <IconButton
+                icon="menu"
+                label="Mở menu"
+                className="lg:hidden"
+                onClick={() => setDrawerOpen(true)}
+              />
+              <nav aria-label="Đường dẫn" className="min-w-0 flex-1">
+                <ol className="flex min-w-0 items-center gap-1.5 text-body text-fg-muted">
+                  {crumbs.map((crumb, index) => {
+                    const last = index === crumbs.length - 1;
+                    return (
+                      <li
+                        key={crumb.label}
+                        className={cn(
+                          'flex items-center gap-1.5',
+                          last ? 'min-w-0' : 'shrink-0',
+                          // Điện thoại hẹp: chỉ hiện hai mục cuối (mục cha và trang hiện tại), đủ để quay lại.
+                          index < crumbs.length - 2 && 'hidden md:flex',
+                        )}
+                      >
+                        {index > 0 && <Icon name="chevronRight" size={16} className="shrink-0" />}
+                        {crumb.to && !last ? (
+                          <Link
+                            to={crumb.to}
+                            className="focus-ring truncate text-link hover:underline"
+                          >
+                            {crumb.label}
+                          </Link>
+                        ) : (
+                          <span
+                            aria-current={last ? 'page' : undefined}
+                            className={cn('truncate', last && 'font-semibold text-fg')}
+                          >
+                            {crumb.label}
+                          </span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ol>
+              </nav>
+              <div className="ml-auto hidden shrink-0 lg:block">
+                <BranchPicker className="w-56" />
+              </div>
+              {/* Chuông: vỏ thanh trên. Danh sách thông báo làm ở phân hệ P14 (làm sau cùng). */}
+              <IconButton icon="bell" label="Thông báo (sắp có)" disabled />
+              <AccountMenu portal="crm" roleLine={roleLine} />
+            </header>
+            <main className="min-w-0 flex-1">
+              <div className="p-4 lg:p-5">
+                <Outlet />
+              </div>
+            </main>
           </div>
-        </Drawer>
-      </div>
+
+          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="CRM">
+            <div className="bg-sidebar px-2.5 py-2.5 text-sidebar-fg">
+              <div className="pb-2.5 [&_button]:w-full">
+                <BranchPicker className="w-full" />
+              </div>
+              <nav aria-label="Menu CRM">{menuList(() => setDrawerOpen(false))}</nav>
+            </div>
+          </Drawer>
+        </div>
+      </CrumbsContext.Provider>
     </CrumbTailContext.Provider>
   );
 }

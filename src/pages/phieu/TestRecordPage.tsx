@@ -2,8 +2,9 @@
 // đổi trạng thái bằng các nút (Bắt đầu test, Nộp bài, Nhập kết quả, Hoàn thành, Đổi lịch, Lùi bước, Huỷ, Mở lại), mỗi nút một hàm DB
 // (R-CRM-05, 06, 10, 11, 15, 21). Kết quả nhập thay giáo viên thì lịch sử ghi "nhập thay" (R-CRM-11). "Gợi ý lớp" chờ màn Lớp học.
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
+import { useFromState, useNavigateFrom } from '../../layout/crumbTrail';
 import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { useCrumbTail } from '../../layout/CrumbTail';
@@ -98,7 +99,8 @@ export function TestRecordPage() {
 
 function TestView({ record }: { record: TestRecord }) {
   const supabase = useDb();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
+  const fromState = useFromState();
   const toast = useToast();
   const access = useAccess();
   const catalogs = useLeadCatalogs();
@@ -336,9 +338,7 @@ function TestView({ record }: { record: TestRecord }) {
             icon: 'calendar',
             count: record.appointments_total,
             onOpen: () =>
-              void navigate(
-                `/crm/lich-hen?phieu=${record.id}&ma=${encodeURIComponent(record.code)}`,
-              ),
+              openFrom(`/crm/lich-hen?phieu=${record.id}&ma=${encodeURIComponent(record.code)}`),
           },
           {
             key: 'bao-gia',
@@ -369,14 +369,14 @@ function TestView({ record }: { record: TestRecord }) {
             label: 'Cơ hội gốc',
             icon: 'sales',
             count: 1,
-            onOpen: () => void navigate(`/crm/co-hoi/${record.opportunity_id}`),
+            onOpen: () => openFrom(`/crm/co-hoi/${record.opportunity_id}`),
           },
           {
             key: 'lead-goc',
             label: 'Lead gốc',
             icon: 'recruit',
             count: 1,
-            onOpen: () => void navigate(`/crm/lead/${record.lead_id}`),
+            onOpen: () => openFrom(`/crm/lead/${record.lead_id}`),
           },
         ]}
         aside={
@@ -609,6 +609,7 @@ function TestView({ record }: { record: TestRecord }) {
             Cơ hội{' '}
             <Link
               to={`/crm/co-hoi/${record.opportunity_id}`}
+              state={fromState}
               className="font-medium text-link hover:underline"
             >
               {record.opportunity_code}

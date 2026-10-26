@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { MergeDialog } from '../../features/merge/MergeDialog';
 import {
@@ -125,6 +126,7 @@ export function LeadRecordPage({ creating = false }: { creating?: boolean }) {
 function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const supabase = useDb();
   const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const toast = useToast();
   const access = useAccess();
   const { claims } = useAuth();
@@ -336,7 +338,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         });
         const only = page.rows[0];
         if (only) {
-          void navigate(`/crm/co-hoi/${only.id}`);
+          openFrom(`/crm/co-hoi/${only.id}`);
           return;
         }
       } catch (e) {
@@ -344,7 +346,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         return;
       }
     }
-    void navigate(`/crm/co-hoi?lead=${rec.id}&ma=${encodeURIComponent(rec.code)}`);
+    openFrom(`/crm/co-hoi?lead=${rec.id}&ma=${encodeURIComponent(rec.code)}`);
   }
 
   const activityName = (code: string) => catalogs.name('ACTIVITY_TYPE', code) ?? code;
@@ -554,7 +556,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                   icon: 'calendar',
                   count: record.appointments_total,
                   onOpen: () =>
-                    void navigate(
+                    openFrom(
                       `/crm/lich-hen?lead=${record.id}&ma=${encodeURIComponent(record.code)}`,
                     ),
                 },
@@ -1083,9 +1085,9 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
             await queryClient.invalidateQueries({ queryKey: ['opp-list'] });
             await queryClient.invalidateQueries({ queryKey: ['opp-board'] });
             toast({ title: `Đã tạo cơ hội ${created.code}.` });
-            void navigate(`/crm/co-hoi/${created.id}`);
+            openFrom(`/crm/co-hoi/${created.id}`);
           }}
-          onOpenExisting={(id) => void navigate(`/crm/co-hoi/${id}`)}
+          onOpenExisting={(id) => openFrom(`/crm/co-hoi/${id}`)}
         />
       )}
 

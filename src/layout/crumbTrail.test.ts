@@ -1,0 +1,74 @@
+import { describe, expect, it } from 'vitest';
+import { fromOf, mergeTrail, trailOf, type Crumb } from './crumbTrail';
+
+const oppPage: Crumb[] = [
+  { label: 'Tuyển sinh' },
+  { label: 'Cơ hội', to: '/crm/co-hoi' },
+  { label: 'Cao Minh Khôi · Cao Xuân Trường' },
+];
+const own: Crumb[] = [
+  { label: 'Tuyển sinh' },
+  { label: 'Phiếu kiểm tra', to: '/crm/phieu-kiem-tra' },
+  { label: 'PKT000001 · Cao Minh Khôi' },
+];
+
+describe('trailOf', () => {
+  it('mục cuối (tên bản ghi) trỏ về chính trang gốc để bấm quay lại', () => {
+    expect(trailOf({ crumbs: oppPage, here: '/crm/co-hoi/abc' })).toEqual([
+      { label: 'Tuyển sinh' },
+      { label: 'Cơ hội', to: '/crm/co-hoi' },
+      { label: 'Cao Minh Khôi · Cao Xuân Trường', to: '/crm/co-hoi/abc' },
+    ]);
+  });
+});
+
+describe('mergeTrail', () => {
+  it('không có trang gốc thì giữ đường dẫn theo menu', () => {
+    expect(mergeTrail(null, own, '/crm/phieu-kiem-tra/x')).toEqual(own);
+  });
+  it('nối tiếp trang gốc: Tuyển sinh / Cơ hội / tên cơ hội / Phiếu kiểm tra / mã phiếu (lỗi 26/10)', () => {
+    const from = trailOf({ crumbs: oppPage, here: '/crm/co-hoi/abc' });
+    expect(mergeTrail(from, own, '/crm/phieu-kiem-tra/x').map((c) => c.label)).toEqual([
+      'Tuyển sinh',
+      'Cơ hội',
+      'Cao Minh Khôi · Cao Xuân Trường',
+      'Phiếu kiểm tra',
+      'PKT000001 · Cao Minh Khôi',
+    ]);
+  });
+  it('quay lại trang đã đi qua thì cắt đường dẫn tới đó, không nối dài', () => {
+    const toTest = mergeTrail(
+      trailOf({ crumbs: oppPage, here: '/crm/co-hoi/abc' }),
+      own,
+      '/crm/phieu-kiem-tra/x',
+    );
+    const back = mergeTrail(
+      trailOf({ crumbs: toTest, here: '/crm/phieu-kiem-tra/x' }),
+      oppPage,
+      '/crm/co-hoi/abc',
+    );
+    expect(back.map((c) => c.label)).toEqual([
+      'Tuyển sinh',
+      'Cơ hội',
+      'Cao Minh Khôi · Cao Xuân Trường',
+    ]);
+    expect(back[2]?.to).toBeUndefined();
+  });
+  it('trang đích là danh sách (chỉ nhóm và mục) cũng nối tiếp', () => {
+    const list: Crumb[] = [{ label: 'Tuyển sinh' }, { label: 'Lịch hẹn' }];
+    expect(
+      mergeTrail(trailOf({ crumbs: oppPage, here: '/crm/co-hoi/abc' }), list, '/crm/lich-hen').map(
+        (c) => c.label,
+      ),
+    ).toEqual(['Tuyển sinh', 'Cơ hội', 'Cao Minh Khôi · Cao Xuân Trường', 'Lịch hẹn']);
+  });
+});
+
+describe('fromOf', () => {
+  it('đọc đường dẫn gốc hợp lệ, bỏ qua dữ liệu lạ', () => {
+    expect(fromOf({ from: [{ label: 'A', to: '/a' }] })).toEqual([{ label: 'A', to: '/a' }]);
+    expect(fromOf(null)).toBeNull();
+    expect(fromOf({ from: 'x' })).toBeNull();
+    expect(fromOf({ from: [{ nhan: 1 }] })).toBeNull();
+  });
+});

@@ -5,6 +5,7 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
+import { useFromState, useNavigateFrom } from '../../layout/crumbTrail';
 import { MergeDialog } from '../../features/merge/MergeDialog';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
@@ -101,6 +102,8 @@ export function OpportunityRecordPage() {
 function OpportunityView({ record }: { record: OppRecord }) {
   const supabase = useDb();
   const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
+  const fromState = useFromState();
   const toast = useToast();
   const access = useAccess();
   const catalogs = useLeadCatalogs();
@@ -291,6 +294,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             cell: (t) => (
               <Link
                 to={`/crm/phieu-kiem-tra/${t.id}`}
+                state={fromState}
                 className="font-medium text-link hover:underline"
               >
                 {t.code}
@@ -463,9 +467,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             icon: 'calendar',
             count: record.appointments_total,
             onOpen: () =>
-              void navigate(
-                `/crm/lich-hen?co-hoi=${record.id}&ma=${encodeURIComponent(record.code)}`,
-              ),
+              openFrom(`/crm/lich-hen?co-hoi=${record.id}&ma=${encodeURIComponent(record.code)}`),
           },
           {
             key: 'kiem-tra',
@@ -475,9 +477,9 @@ function OpportunityView({ record }: { record: OppRecord }) {
             onOpen: (target) => {
               // Một phiếu thì mở thẳng phiếu; nhiều phiếu thì mở danh sách đã lọc theo cơ hội (K3, smart button).
               const only = record.tests[0];
-              if (target === 'record' && only) void navigate(`/crm/phieu-kiem-tra/${only.id}`);
+              if (target === 'record' && only) openFrom(`/crm/phieu-kiem-tra/${only.id}`);
               else
-                void navigate(
+                openFrom(
                   `/crm/phieu-kiem-tra?co-hoi=${record.id}&ma=${encodeURIComponent(record.code)}`,
                 );
             },
@@ -511,7 +513,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             label: 'Lead gốc',
             icon: 'recruit',
             count: 1,
-            onOpen: () => void navigate(`/crm/lead/${record.lead_id}`),
+            onOpen: () => openFrom(`/crm/lead/${record.lead_id}`),
           },
         ]}
         aside={
@@ -791,7 +793,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
         onCreated={async (created) => {
           await refreshRecord();
           toast({ title: `Đã tạo phiếu ${created.code}.` });
-          void navigate(`/crm/phieu-kiem-tra/${created.id}`);
+          openFrom(`/crm/phieu-kiem-tra/${created.id}`);
         }}
       />
       {moveTo && plan && (
@@ -812,7 +814,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             setErrors(validateOppDraft(initial, moveTo));
             setMode('edit');
           }}
-          onOpenTest={(testId) => void navigate(`/crm/phieu-kiem-tra/${testId}`)}
+          onOpenTest={(testId) => openFrom(`/crm/phieu-kiem-tra/${testId}`)}
           onSubmit={submitStage}
         />
       )}
