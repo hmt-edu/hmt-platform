@@ -93,6 +93,18 @@ export function substageRule(stage: string, current: string | null, codes: strin
   return { allowed: codes, lockedReason: null };
 }
 
+/**
+ * Các nhóm con hiện trong ô chọn Sub-stage: nhóm con chọn tay được cộng với nhóm con HIỆN TẠI nếu hệ thống gắn mà người dùng không
+ * chọn lại được (L6A, R-CRM-34), để ô hiện đúng giá trị thay vì trống; thứ tự theo danh mục. Nhóm con hiện tại chọn lại là không đổi gì.
+ */
+export function substageDisplayCodes(
+  allCodes: string[],
+  allowed: string[],
+  current: string | null,
+): string[] {
+  return allCodes.filter((c) => allowed.includes(c) || c === current);
+}
+
 /** Nhóm con chọn được khi CHUYỂN SANG một giai đoạn (L8 chọn cả L8C, R-CRM-16; L5 do hệ thống gắn nên không chọn). */
 export function substageChoicesForMove(target: string, codes: string[]): string[] {
   if (target === L5) return [];

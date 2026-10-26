@@ -1,6 +1,7 @@
 // P3d-2: màn Cơ hội (TS-07 danh sách, Kanban; TS-08 bản ghi; TS-09 chuyển giai đoạn; TS-06 tạo từ lead) và ô "Gắn với" cơ hội ở Lịch hẹn.
 // Dữ liệu giả dựng bằng hàm nghiệp vụ (xem co-hoi-seed.ts), tìm bằng dấu riêng của từng dự án.
 import { expect, test, type Page } from '@playwright/test';
+import pg from 'pg';
 import { PASSWORD, enterAs, expectAccessible, isPhone, pickChip, pickOption } from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded } from './co-hoi-seed';
 
@@ -281,4 +282,27 @@ test('Tạo cơ hội từ lead: hộp xác nhận; tạo xong mở cơ hội L1
   await expect(again.getByRole('button', { name: 'Vẫn tạo thêm' })).toBeDisabled();
   await again.getByRole('button', { name: 'Mở cơ hội cũ' }).click();
   await expect(page).toHaveURL(/\/crm\/co-hoi\/[0-9a-f-]+$/);
+});
+
+test('R-CRM-34: cơ hội L6 do hệ thống gắn L6A, ô Sub-stage hiện L6A (không trống) và chọn tiếp được L6B', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  // Mô phỏng phiếu Hoàn thành: hệ thống đưa cơ hội lên L6, nhóm con L6A (R-CRM-13).
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query(
+      "update app.opportunity set stage_code = 'L6', substage_code = 'L6A' where id = $1",
+      [seeded.opportunity.gated.id],
+    );
+  } finally {
+    await db.end();
+  }
+  await openRecord(page, setup.account, seeded.opportunity.gated.id);
+  const substage = page.getByRole('combobox', { name: 'Sub-stage' });
+  await expect(substage).toContainText(/L6A/);
+  await pickOption(page, substage, /L6B/);
+  await expect(toastText(page, 'Đã đổi nhóm con.')).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Sub-stage' })).toContainText(/L6B/);
 });

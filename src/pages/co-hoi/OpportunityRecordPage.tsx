@@ -38,7 +38,13 @@ import {
   type OppDraft,
   type OppDraftErrors,
 } from './oppRecord';
-import { lockedStageReason, planStageChange, stageIndex, substageRule } from './oppStage';
+import {
+  lockedStageReason,
+  planStageChange,
+  stageIndex,
+  substageDisplayCodes,
+  substageRule,
+} from './oppStage';
 import type { OppRecord, OppTest } from './oppTypes';
 import { StageDialog, type StageSubmit } from './StageDialog';
 import {
@@ -233,7 +239,11 @@ function OpportunityView({ record }: { record: OppRecord }) {
     .childrenOf('OPP_SUBSTAGE', 'OPP_STAGE', record.stage_code)
     .map((o) => o.value);
   const rule = substageRule(record.stage_code, record.substage_code, substageCodes);
-  const substageOptions = rule.allowed.map((code) => ({
+  const substageOptions = substageDisplayCodes(
+    substageCodes,
+    rule.allowed,
+    record.substage_code,
+  ).map((code) => ({
     value: code,
     label: codeAndName(code, catalogs.name('OPP_SUBSTAGE', code)),
   }));

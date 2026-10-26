@@ -4,6 +4,7 @@ import {
   planStageChange,
   stageIndex,
   substageChoicesForMove,
+  substageDisplayCodes,
   substageRule,
   type StageContext,
 } from './oppStage';
@@ -89,6 +90,17 @@ describe('nhóm con', () => {
     expect(substageRule('L5', 'L5A', l5).allowed).toEqual([]);
     expect(substageRule('L5', 'L5A', l5).lockedReason).not.toBeNull();
     expect(substageChoicesForMove('L5', l5)).toEqual([]);
+  });
+  it('R-CRM-34: ô Sub-stage ở L6 vẫn hiện L6A (hệ thống gắn) dù không chọn lại được', () => {
+    const allowed = substageRule('L6', 'L6A', l6).allowed;
+    expect(substageDisplayCodes(l6, allowed, 'L6A')).toEqual(['L6A', 'L6B', 'L6C']);
+    // Đã chọn L6B tay: L6A không còn trong ô.
+    expect(substageDisplayCodes(l6, substageRule('L6', 'L6B', l6).allowed, 'L6B')).toEqual([
+      'L6B',
+      'L6C',
+    ]);
+    // Chưa có nhóm con: chỉ các nhóm chọn được.
+    expect(substageDisplayCodes(l6, allowed, null)).toEqual(['L6B', 'L6C']);
   });
   it('R-CRM-34: ở L6 không chọn lại L6A', () => {
     expect(substageRule('L6', 'L6A', l6).allowed).toEqual(['L6B', 'L6C']);
