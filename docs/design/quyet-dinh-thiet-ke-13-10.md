@@ -121,3 +121,71 @@ Dừng bắt đầu PR giao diện mới; PR đang mở làm cho xong và chờ 
 - **QĐ-Đ62 (24/10):** tài liệu chấm bài tự luận bằng AI lưu ở `docs/nghien-cuu/cham-tu-luan-ai.md` làm tài liệu tham khảo (không phải luật, không phải đặc tả).
 - **QĐ-Đ63 (24/10):** AI chấm bài thuộc giai đoạn 4b/4c (sau 4a). Chưa vẽ GV-17, GV-18, HT; chưa thêm bảng hay cột AI vào cơ sở dữ liệu. Khi tới lượt: viết kịch bản LMS trước, anh duyệt, rồi mới vẽ và code.
 - **QĐ-Đ64 (24/10):** trước khi thử bài thật của học sinh với AI: ảnh bỏ hẳn tên và mã học sinh; dữ liệu thật chỉ đi qua gói trả phí hoặc khi phụ huynh đã đồng ý; chưa có thì thử bằng bài mẫu do giáo viên làm.
+- **QĐ-Đ75 (24/10):** lead và cơ hội có **danh sách em**. Các em test hoặc đóng tiền cùng lúc thì một cơ hội; mỗi em một thời điểm thì mỗi em một cơ hội.
+- **QĐ-Đ76 (24/10):** cơ hội có nhiều phiếu kiểm tra thì phiếu đầu tiên Hoàn thành là đủ để cơ hội lên L6 (R-CRM-13); các phiếu sau không đổi giai đoạn.
+- **QĐ-Đ77 (24/10):** từ L5 trở lên cần ít nhất một em đủ tên và năm sinh. Khối nhập khi tạo phiếu kiểm tra và trên dòng báo giá, dòng đơn, không nằm ở danh sách em. Số em tối đa là tham số cấu hình `prospect_max_students` (mặc định 5).
+- **QĐ-Đ78 (24/10):** phần học sinh trên dòng báo giá và dòng đơn trong P5a-DB1 chờ luật mới về danh sách em; chưa viết.
+- **QĐ-Đ79 (24/10):** ô Nhu cầu dùng chung cả nhà, không theo từng em.
+- **QĐ-Đ80 (24/10):** cơ hội có nhiều em thì giao diện hiển thị bằng thẻ chọn.
+- **QĐ-Đ81 (24/10):** lead cũng có danh sách em. Nhập nhanh và nhập file vẫn một em. Tạo cơ hội từ lead cho chọn em đưa vào. Gộp thì hợp danh sách; em trùng tên chuẩn hoá và năm sinh gộp thành một dòng.
+- **QĐ-Đ83 (24/10):** báo giá và đơn không tạo em mới. Dòng chọn em trong danh sách của cơ hội; không có nút "Thêm em" trên dòng, chỉ gợi ý "Chưa thấy em? Thêm em ở cơ hội". Thêm em chỉ có ở Lead và Cơ hội.
+- **QĐ-Đ84 (24/10):** báo giá và đơn từ phiếu tái tục chỉ gồm em của ghi danh; em khác thì tạo cơ hội mới.
+- **QĐ-Đ85 (24/10):** tạo phiếu kiểm tra không tạo em mới và không có "Thêm em"; chỉ chọn em trong danh sách của cơ hội.
+- **QĐ-Đ86 (24/10):** dòng danh sách đã gắn hồ sơ học sinh đọc thẳng từ hồ sơ (không giữ bản sao). Em đã có ghi danh thì tên, năm sinh chỉ sửa ở KH-06. Sửa thành trùng em khác của cùng phụ huynh thì chặn, nêu mã hồ sơ trùng.
+- **QĐ-Đ87 (24/10):** trường, học lực, mục tiêu, tên, ngày sinh, năm sinh theo từng em; Nhu cầu chung cả nhà.
+- **QĐ-Đ88 (24/10):** số em tối đa áp cho cả lead và cơ hội; tham số `prospect_max_students`, khoảng 1 đến 20, mặc định 5.
+- **QĐ-Đ89 (24/10):** gộp mà vượt số em tối đa thì chặn. Gộp cơ hội bỏ chặn "khác học sinh" của R-CRM-37(a), thay bằng hợp danh sách. Hai dòng trùng tên chuẩn hoá và năm sinh mà gắn hai hồ sơ học sinh khác nhau thì chặn, gộp học sinh trước.
+- **QĐ-Đ90 (24/10):** hộp "Thêm em" chỉ mở từ Lead và Cơ hội. Phiếu kiểm tra, báo giá, đơn không có nút hay hộp thêm em, chỉ chọn trong danh sách (Đ83, Đ85).
+- **QĐ-Đ91 (24/10):** trùng tên chuẩn hoá và năm sinh cùng phụ huynh thì chặn, nêu mã hồ sơ trùng. KD6 (sinh đôi trùng tên) vẫn [CHỜ] theo QĐ-P3f-2, không đổi.
+- **QĐ-Đ92 (24/10):** tạo cơ hội từ lead: mặc định tick hết em, cho phép 0 em. Danh sách hiện em đầu và "+N em"; xuất file nối các em bằng dấu chấm phẩy.
+- **QĐ-Đ93 (24/10):** báo giá Nháp được lập cho em chưa đủ tên và năm sinh; đơn bắt buộc đủ. Đường tái tục: chỉ chừa cột `student_id`, luồng làm sau.
+- **QĐ-Đ98 (24/10):** ở Cơ hội, hộp "Thêm em" có hai chế độ: em mới (chỉ ghi nhận, không tạo hồ sơ học sinh) và chọn con có sẵn của phụ huynh (gắn `student_id`). Ở Lead chỉ có chế độ em mới.
+- **QĐ-Đ100 (24/10):** P5a tách PR DB0 (cấu hình: gói, bảng giá, chiết khấu, quà tặng, điều khoản thanh toán), gộp trước P5a-DB1.
+- **QĐ-Đ101 (24/10):** gói DV, TL dùng cột `quantity`, đơn vị theo loại gói (DV theo tháng, TL theo bộ, còn lại theo giờ); dòng báo giá, dòng đơn chụp lại cả đơn vị.
+- **QĐ-Đ102 (24/10):** một ô tích chung cho "vượt trần" và "chính sách cần duyệt"; người tích là người duyệt đã chốt lúc trình (Trưởng cơ sở tự duyệt thì chính họ tích; Admin duyệt thay thì Admin tích, ghi "duyệt thay").
+- **QĐ-Đ103 (24/10):** lý do từ chối: mục dùng chung để `applies_to` trống; "Sai số tiền", "Sai chứng từ" chỉ gán phiếu thu; "Không đúng chính sách" chỉ gán báo giá và đơn.
+- **QĐ-Đ104 (24/10):** "Lý do huỷ đơn" khai trong migration, sáu lý do: Khách đổi ý, không đăng ký nữa · Chọn nhầm gói hoặc lớp · Nhập sai thông tin · Thay bằng đơn khác · Không liên lạc được · Khác (bắt buộc ghi chú). Chữ trong spec 06 chờ "OK ĐƯA VÀO LUẬT" riêng.
+- **QĐ-Đ105 (24/10):** Xuất báo giá, đơn, phiếu thu chỉ Trưởng cơ sở (cơ sở mình), Kế toán, Admin. Sale và CSKH bỏ Xuất, vẫn in báo giá của mình. Sửa ma trận bằng phiên bản mới (cấu hình có hiệu lực), làm trong PR cấu hình trước P5a-DB1; ghi chỗ vênh với ma trận cũ vào PR.
+- **QĐ-Đ106 (24/10):** giấy tờ chặn gộp cơ hội tính mọi bản ghi còn hiệu lực, trừ đơn Huỷ và báo giá Từ chối; chỉ chặn khi bản bị gộp đã có giấy tờ (R-CRM-22).
+- **QĐ-Đ107 (24/10):** tham số `debt_due_soon_days` khoảng 1 đến 30, không ghi đè theo cơ sở; anh duyệt khi tới P5a-DB2.
+- **QĐ-Đ108 (24/10):** hộp "Thêm em" chỉ bắt buộc họ tên; năm sinh không bắt buộc (nhập thì 4 chữ số). Năm sinh bắt buộc từ L5, khi tạo phiếu kiểm tra và khi duyệt đơn.
+- **QĐ-Đ94 (24/10):** màn tạo phiếu kiểm tra (TS-15) không có "Thêm em"; chỉ chọn em trong danh sách của cơ hội.
+- **QĐ-Đ95 (24/10):** báo giá và đơn không có nút "Thêm em"; gợi ý "Chưa thấy em? Thêm em ở cơ hội".
+- **QĐ-Đ97 (24/10):** danh sách em làm theo kế hoạch đã duyệt (Chat soạn, anh Trường duyệt) rồi mới viết mã.
+- **QĐ-Đ109 (24/10):** em đã ghi danh (đã học) thì khoá cả ngày sinh cùng tên và năm sinh ở cơ hội; sửa ở KH-06.
+- **QĐ-Đ111 (24/10):** thêm ba khuôn dùng chung vào khuôn P0: K06b (thẻ chọn đối tượng), K08b (danh sách tick chọn nhiều dòng), K08c (hộp "Thêm em").
+- **QĐ-Đ113 (24/10):** dựng sáu màn theo kịch bản đã duyệt: TS-08, TS-02, TS-06, TS-15, BH-02, BH-05. TT-02 (tái tục) chưa vẽ.
+- **QĐ-Đ114 (24/10):** K06b bỏ dấu * ở chỗ không bắt buộc.
+- **QĐ-Đ115 (24/10):** duyệt bản canvas "HMT Platform" bản 34 (khuôn K06b, K08b, K08c).
+- Đ96, Đ110, Đ112: đã được anh OK, chưa ghi lại được chữ.
+- **QĐ-Đ82 (24/10):** tám mã luật về danh sách em được duyệt đưa vào spec 04: R-CRM-23, R-CRM-03, R-CRM-05, R-CRM-13, R-CRM-27, R-CRM-37, R-TIEN-35, R-TIEN-02 (chữ trong PR sửa luật riêng, không migration).
+- **QĐ-Đ116 (26/10):** P5a-DB0 (cấu hình bán hàng) lập kế hoạch cho anh duyệt trước khi viết migration.
+- **QĐ-Đ117 (26/10):** kế hoạch DB0 được duyệt với các quyết định: (a) gói không có số giờ, không có loại lớp (R-TIEN-36); (b) kèm sáu hàm ghi của Admin; (c) điều khoản thanh toán cho đợt 1 (cọc) là số tiền cố định, các đợt sau chia % của phần còn lại (tổng 100%); (d) chiết khấu có `fixed_value`: bật = áp đúng `max_value`, tắt = nhân viên điền từ 0 đến `max_value`, tặng giờ luôn là loại điền; (e) `applies_to` dùng BAO_GIA, DON, PHIEU_THU (các loại sau LOP, TICKET, YEU_CAU_BUOI mở rộng sau); (f) Kế toán thêm Xem báo giá toàn hệ thống (chỉ đọc) để Xuất được; (g) `effective_from` được ở quá khứ, báo giá mới luôn tính giá theo ngày tạo.
+- **QĐ-Đ156 (26/10):** phiếu tái tục tính theo (học sinh, lớp). Giờ còn = tổng giờ còn của mọi ghi danh còn hiệu lực của em ở lớp đó. Sinh khi giờ còn ≤ 10 hoặc ngày hết giờ dự kiến ≤ 30 ngày; tối đa một phiếu đang mở. Sau L5 Không tái tục không tự sinh lại. Tái tục thành công (L8) sinh ghi danh mới cùng lớp. Bảo lưu: dừng sinh; dừng học: đóng phiếu; chuyển lớp: phiếu chuyển theo lớp mới.
+- Đ99: chưa ghi lại được chữ.
+- **QĐ-Đ118 (26/10):** tham số `debt_due_soon_days`, mặc định 3 ngày (khoảng 1 đến 30).
+- **QĐ-Đ119 (26/10):** P5a-DB0 là một PR, migration 044, gộp sau #88.
+- **QĐ-Đ120 (26/10):** số Đ nào không còn chữ thì ghi "chưa ghi lại được chữ" (không ghi "bỏ trống").
+- **QĐ-Đ122 (26/10):** gộp các file nhãn nhóm `Man_*` và `Nhom_*` trên canvas để lấy chỗ đăng; chỉ gộp nhãn tiêu đề, không xoá hay đổi nội dung màn; vị trí và kích thước khung màn không đổi.
+- **QĐ-Đ123 (26/10):** được xoá khung cũ `TS08_K3` vì khung mới thay hẳn; `TS08b_K3` chưa xoá cho tới khi anh quyết.
+- **QĐ-Đ124 (26/10):** nút ở TS-06 giữ chữ "Vẫn tạo mới".
+- **QĐ-Đ125 (26/10):** đang sửa dở một ô mà chuyển thẻ em hoặc bấm "Thêm em" thì hiện "Lưu hoặc Huỷ thay đổi trước khi…"; chỉ khi ô có thay đổi chưa lưu. Code làm theo.
+- **QĐ-Đ126 (26/10):** TS-08 dùng đúng hộp tạo phiếu của TS-15; bỏ hộp "Tạo lịch Test" riêng ở TS-08.
+- **QĐ-Đ127 (26/10):** nhãn gộp bên trái canvas giữ như hiện tại.
+- **QĐ-Đ132 (26/10):** nhãn ô chọn khối trong hộp TS-15 là "Khối"; lựa chọn giữ Lớp 2 đến Lớp 12 (dữ liệu danh mục). Code ở PR giao diện đổi nhãn "Lớp" thành "Khối".
+- **QĐ-Đ133 (26/10):** ngày giờ test không ở tương lai thì khoá nút "Tạo phiếu" và hiện dòng đỏ "Giờ test phải ở tương lai." (đúng chữ code đang dùng).
+- **QĐ-Đ134 (26/10):** nhãn "Khối" áp cho cả `TS15_chon_em` và `TS15_hai_phieu`.
+- **QĐ-Đ135 (26/10):** anh OK sáu màn canvas bản 37 (TS-08, TS-02, TS-06, TS-15, BH-02, BH-05 phần danh sách em); không có nghĩa là lưu canvas vào repo.
+- **QĐ-Đ157 (26/10):** phiếu tái tục tính theo (học sinh, lớp) trên TT-01, TT-02, TT-04, GD-07, GD-02; ngưỡng giờ còn ≤ 10 hoặc ≤ 30 ngày; có nhóm con L1B; L8A "Đã đóng đủ, đã cấp quỹ giờ mới".
+- **QĐ-Đ158 (26/10):** BH-07 mỗi dòng ghi "dùng HS…" hoặc "sẽ tạo hồ sơ mới".
+- **QĐ-Đ159 (26/10):** bộ số liệu mẫu chuẩn cho lớp `CS1-2627-DAI-K09-CB-A-001`, các ghi danh và mã HS.
+- **QĐ-Đ160 (26/10):** nhãn "Cấp" đổi thành "Khối" ở LOP-01, LOP-02, LOP-03; LOP-01 chỉ hiện lớp cơ sở mình cho Trưởng cơ sở, CSKH, Sale; Admin xem toàn hệ thống.
+- **QĐ-Đ161 (26/10):** thêm khung cảnh báo trùng giáo viên (không chặn) vào LOP-03.
+- **QĐ-Đ162 (26/10):** luật Lớp theo thay đổi 26/10 (R-LOP-01, R-LOP-02, R-LOP-03, R-LOP-10, R-LOP-11).
+- **QĐ-Đ163 (26/10):** tình trạng vận hành của lớp tính tự động, chỉ có giá trị từ lớp Đã duyệt trở đi (R-LOP-05).
+- **QĐ-Đ164 (26/10):** vẽ CH-03, CH-04 (kèm tab "Chính sách quà tặng"), CH-09; quà tặng chưa có mã màn trong bản đồ.
+- **QĐ-Đ165 (26/10):** KH-06: ngày sinh không bắt buộc, năm sinh bắt buộc; chữ báo trùng "họ tên hoặc năm sinh".
+- **QĐ-Đ166 (26/10):** Design cập nhật mục lục, số khung, ghi chú cuối canvas.
+- **QĐ-Đ167 (26/10):** buổi củng cố chỉ cần quản lý cơ sở duyệt; bỏ yêu cầu phụ huynh đồng ý (R-BUOI-10 bản 26/10).
+- **QĐ-Đ168 (26/10):** R-LOP-01 chỉ giữ một dòng "Đường đi", bản 26/10.
+- **QĐ-Đ121 (26/10):** anh đã đọc và OK Đ94 đến Đ115.
