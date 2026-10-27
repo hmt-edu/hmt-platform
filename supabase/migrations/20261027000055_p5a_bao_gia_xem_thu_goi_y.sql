@@ -170,7 +170,9 @@ $$;
 -- nhóm "Hay dùng" (Đ228), nhóm "Gợi ý theo cơ hội" (môn và khối của các phiếu kiểm tra chưa huỷ của cơ hội).
 -- Ai gọi: người lập hoặc sửa báo giá ở cơ sở của cơ hội (Sale không cần quyền Cấu hình bán hàng). Đầu vào: cơ hội, loại gói (lọc, tuỳ chọn),
 -- chữ tìm (mã, tên, tuỳ chọn). Kết quả: {types: [{code, name}], popular: [mã gói], suggested: [mã gói], total, packages: [{id, code, name,
--- package_type_code, subject_code, grade_from_code, grade_to_code, unit_code, prices: {OFF, ONL}}]} (tối đa list_page_size_max gói, sắp theo mã).
+-- package_type_code, subject_code, grade_from_code, grade_to_code, unit_code, prices: {OFF, ONL}}]}: tối đa list_page_size_max gói đầu theo mã, CỘNG các gói
+-- "Hay dùng" và "Gợi ý theo cơ hội" dù nằm ngoài trang đầu (luôn có chi tiết để hiện nhóm). Khối so theo sort_order của danh mục GRADE (như trigger của
+-- sales_package). Hạn chế bản đầu: gợi ý theo cơ hội lấy từ phiếu kiểm tra chưa huỷ; cơ hội chưa có phiếu thì nhóm gợi ý trống.
 -- Chỉ trả cột màn dùng. Gói chưa có giá nào hôm nay không hiện.
 -- ---------------------------------------------------------------------------
 create or replace function app.list_sellable_packages(p_opportunity_id uuid, p_type text default null, p_q text default null)
@@ -200,7 +202,7 @@ begin
        and (v_q is null or app.fold_text(p.code || ' ' || p.name) like '%' || v_q || '%')
   ),
   sellable as (select * from priced where prices <> '{}'::jsonb),
-  page as (select * from sellable order by code limit v_limit),
+  base as (select * from sellable order by code limit v_limit),
   popular as (
     select p.code
       from (select l.package_id, count(*) as n
@@ -214,11 +216,19 @@ begin
   suggested as (
     select p.code
       from sellable p
+      left join app.catalog_item gf on gf.catalog_code = 'GRADE' and gf.code = p.grade_from_code
+      left join app.catalog_item gt on gt.catalog_code = 'GRADE' and gt.code = coalesce(p.grade_to_code, p.grade_from_code)
      where exists (select from app.student_test t
+                     join app.catalog_item g on g.catalog_code = 'GRADE' and g.code = t.grade_code
                     where t.opportunity_id = v_opp.id and t.status_code <> 'CANCELLED'
                       and t.subject_code = p.subject_code
-                      and t.grade_code >= p.grade_from_code and t.grade_code <= coalesce(p.grade_to_code, p.grade_from_code))
+                      and g.sort_order between gf.sort_order and gt.sort_order)
      order by p.code
+  ),
+  page as (
+    select * from base
+    union
+    select p.* from sellable p where p.code in (select code from popular union select code from suggested)
   )
   select jsonb_build_object(
            'types', coalesce((select jsonb_agg(jsonb_build_object('code', c.code, 'name', c.name) order by c.sort_order)
