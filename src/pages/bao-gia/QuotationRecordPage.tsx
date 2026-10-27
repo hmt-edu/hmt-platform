@@ -8,7 +8,7 @@ import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, useIntSetting } from '../../lib/db';
 import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
-import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
+import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
@@ -157,7 +157,14 @@ function QuotationView({ record }: { record: QuotationRecord }) {
         empty={<p className="px-4 py-6 text-center text-fg-muted">Chưa có gói học.</p>}
       />
       <div className="flex flex-wrap items-center justify-between gap-2 text-caption text-fg-muted">
-        {capPercent !== null ? <p>Tổng chiết khấu mỗi dòng không quá {capPercent}%.</p> : <span />}
+        {capPercent !== null ? (
+          <p>
+            Chiết khấu (gồm giờ tặng) vượt {capPercent}% thì cần Trưởng cơ sở duyệt (R-TIEN-29); vẫn
+            lưu được
+          </p>
+        ) : (
+          <span />
+        )}
         <p className="text-body text-fg">
           Tổng thành tiền <b className="tabular">{formatMoney(record.total_amount)}</b>
         </p>
@@ -243,77 +250,88 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             Báo giá đã huỷ{record.cancel_note ? `: ${record.cancel_note}` : '.'}
           </p>
         )}
-        <DetailSection title="Thông tin báo giá">
-          <DetailField
-            label="Mã báo giá"
-            hint="cấp khi Lưu, không sửa"
-            mode="view"
-            value={
-              <>
-                {record.code}
-                {record.legacy_ref && (
-                  <span className="ml-2 text-caption text-fg-muted">mã cũ {record.legacy_ref}</span>
-                )}
-              </>
-            }
-          />
-          <DetailField
-            label="Phụ huynh"
-            mode="view"
-            value={`${record.parent_name} · ${record.parent_code} · ${formatPhone(record.parent_phone)}`}
-          />
-          <DetailField
-            label="Cơ hội"
-            mode="view"
-            value={
-              <Link
-                to={`/crm/co-hoi/${record.opportunity_id}`}
-                className="font-medium text-link hover:underline"
-              >
-                {record.opportunity_code}
-              </Link>
-            }
-          />
-          <DetailField
-            label="Cơ sở"
-            mode="view"
-            value={branchName ? `${record.branch_code} ${branchName}` : record.branch_code}
-          />
-          <DetailField
-            label="Tình trạng"
-            mode="view"
-            value={
-              <Tag tone={STATUS_TONE[record.display_status_code] ?? 'neutral'} dot>
-                {statusName(record.display_status_code)}
-              </Tag>
-            }
-          />
-          <DetailField label="Ngày lập" mode="view" value={formatDate(record.created_at)} />
-          <DetailField
-            label="Hạn hiệu lực"
-            mode="view"
-            value={
-              record.valid_until ? (
-                <span className="flex flex-wrap items-center gap-2">
-                  {formatDate(record.valid_until)}
-                  {record.overdue_days !== null && record.overdue_days > 0 && (
-                    <Tag tone="danger">{`Đã quá hạn ${record.overdue_days} ngày`}</Tag>
-                  )}
-                </span>
-              ) : (
-                ''
-              )
-            }
-          />
-          <DetailField label="Người lập" mode="view" value={record.created_by_name ?? ''} />
-          {record.sent_at && (
-            <DetailField
-              label="Đã gửi lúc"
-              mode="view"
-              value={`${formatDateTime(record.sent_at)}${record.sent_by_name ? ` · ${record.sent_by_name}` : ''}`}
-            />
-          )}
-        </DetailSection>
+        <section className="flex min-w-0 flex-col">
+          <h3 className="mb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase">
+            Thông tin báo giá
+          </h3>
+          <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+            <dl className="flex min-w-0 flex-col">
+              <DetailField
+                label="Mã báo giá"
+                hint="cấp khi Lưu, không sửa"
+                mode="view"
+                value={
+                  <>
+                    {record.code}
+                    {record.legacy_ref && (
+                      <span className="ml-2 text-caption text-fg-muted">
+                        mã cũ {record.legacy_ref}
+                      </span>
+                    )}
+                  </>
+                }
+              />
+              <DetailField
+                label="Phụ huynh"
+                mode="view"
+                value={`${record.parent_name} · ${record.parent_code} · ${formatPhone(record.parent_phone)}`}
+              />
+              <DetailField
+                label="Cơ hội"
+                mode="view"
+                value={
+                  <Link
+                    to={`/crm/co-hoi/${record.opportunity_id}`}
+                    className="font-medium text-link hover:underline"
+                  >
+                    {record.opportunity_code}
+                  </Link>
+                }
+              />
+              <DetailField
+                label="Cơ sở"
+                mode="view"
+                value={branchName ? `${record.branch_code} ${branchName}` : record.branch_code}
+              />
+            </dl>
+            <dl className="flex min-w-0 flex-col">
+              <DetailField
+                label="Tình trạng"
+                mode="view"
+                value={
+                  <Tag tone={STATUS_TONE[record.display_status_code] ?? 'neutral'} dot>
+                    {statusName(record.display_status_code)}
+                  </Tag>
+                }
+              />
+              <DetailField label="Ngày lập" mode="view" value={formatDate(record.created_at)} />
+              <DetailField
+                label="Hạn hiệu lực"
+                mode="view"
+                value={
+                  record.valid_until ? (
+                    <span className="flex flex-wrap items-center gap-2">
+                      {formatDate(record.valid_until)}
+                      {record.overdue_days !== null && record.overdue_days > 0 && (
+                        <Tag tone="danger">{`Đã quá hạn ${record.overdue_days} ngày`}</Tag>
+                      )}
+                    </span>
+                  ) : (
+                    ''
+                  )
+                }
+              />
+              <DetailField label="Người lập" mode="view" value={record.created_by_name ?? ''} />
+              {record.sent_at && (
+                <DetailField
+                  label="Đã gửi lúc"
+                  mode="view"
+                  value={`${formatDateTime(record.sent_at)}${record.sent_by_name ? ` · ${record.sent_by_name}` : ''}`}
+                />
+              )}
+            </dl>
+          </div>
+        </section>
         <section className="flex min-w-0 flex-col">
           <h3 className="mb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase">
             Gói học
