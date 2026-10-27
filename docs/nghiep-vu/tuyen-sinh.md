@@ -327,7 +327,7 @@ Làm tròn: Đ172, Đ176 đã vào docs/spec/04 (R-TIEN-37).
 Đo trên `seed-lon` (15.000 báo giá, 30.000 dòng), Admin: `list_quotations` một trang 36 ms, trạng thái Đã gửi 17 ms, tìm tên em 14 ms, lọc theo cơ hội 2,5 ms; `get_quotation` 4 ms; `export_quotations` 5.000 dòng 215 ms. Danh sách mặc định dùng chỉ mục `quotation_branch_created_idx` (Index Only Scan, 0,29 ms).
 
 ## P5a-DB1b-1: đơn hàng, bảng và hàm ghi (migration `20261027000051`, QĐ-Đ201 đến Đ205, Đ187)
-Kiểm thử: `supabase/tests/database/043_p5a_don_hang.test.sql` (148 bài); sửa bài 006 (26 danh mục hệ thống). Luật: R-TIEN-01, 02, 03, 06, 07, 14, 35, 37, 38; R-GD-06, R-GD-08; R-CRM-16, 27; R-HT-01, 06. Hàm đọc, xuất đơn để DB1b-2.
+Kiểm thử: `supabase/tests/database/043_p5a_don_hang.test.sql` (148 bài), `043b_p5a_don_hang_doc_lap.test.sql` (172 bài, do agent kiểm độc lập viết, Đ209); sửa bài 006 (26 danh mục hệ thống). Luật: R-TIEN-01, 02, 03, 06, 07, 14, 35, 37, 38; R-GD-06, R-GD-08; R-CRM-16, 27; R-HT-01, 06. Hàm đọc, xuất đơn để DB1b-2.
 
 | Hàm / bảng | Làm gì | Quyền |
 |---|---|---|

@@ -37,7 +37,7 @@ create table app.sales_order (
   status_catalog text not null default 'ORDER_STATUS' check (status_catalog = 'ORDER_STATUS'),
   status_code text not null default 'NHAP' check (status_code in ('NHAP', 'DA_TRINH', 'DA_DUYET', 'HUY')),
   payment_term_id uuid references app.payment_term (id),
-  -- Ngày (giờ Việt Nam) tính giá: đơn thẳng từ cơ hội tính theo ngày tạo hoặc lưu gần nhất (R-TIEN-14); đơn từ báo giá lấy ngày của báo giá.
+  -- Ngày (giờ Việt Nam) tính giá: đơn thẳng từ cơ hội là NGÀY TẠO ĐƠN, lưu lại không đổi (R-TIEN-14); đơn từ báo giá lấy ngày của báo giá.
   priced_on date not null,
   total_amount bigint not null default 0 check (total_amount >= 0),
   -- Chốt lúc trình (R-HT-06): quản lý trực tiếp của người lập hoặc chính Trưởng cơ sở (tự duyệt).
@@ -260,12 +260,34 @@ begin
   return coalesce(new, old);
 end;
 $$;
-create trigger sales_order_line_lock before update or delete on app.sales_order_line
+create trigger sales_order_line_lock before insert or update or delete on app.sales_order_line
   for each row execute function app.tg_sales_order_child_lock();
-create trigger sales_order_line_discount_lock before update or delete on app.sales_order_line_discount
+create trigger sales_order_line_discount_lock before insert or update or delete on app.sales_order_line_discount
   for each row execute function app.tg_sales_order_child_lock();
-create trigger sales_order_installment_lock before update or delete on app.sales_order_installment
+create trigger sales_order_installment_lock before insert or update or delete on app.sales_order_installment
   for each row execute function app.tg_sales_order_child_lock();
+
+-- Đơn đã trình hoặc đã khoá không đổi tổng tiền, điều khoản, ngày tính giá, cơ sở, gốc, báo giá (R-TIEN-03). Chỉ trạng thái, người duyệt,
+-- hạn huỷ và các cột ghi việc trình, duyệt, huỷ được đổi. (Đơn Nháp sửa tự do qua hàm.)
+create or replace function app.tg_sales_order_lock()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if old.status_code <> 'NHAP' and not app.is_migration() and (
+       new.total_amount is distinct from old.total_amount or new.payment_term_id is distinct from old.payment_term_id
+       or new.priced_on is distinct from old.priced_on or new.branch_id is distinct from old.branch_id
+       or new.opportunity_id is distinct from old.opportunity_id or new.renewal_ticket_id is distinct from old.renewal_ticket_id
+       or new.parent_id is distinct from old.parent_id or new.quotation_id is distinct from old.quotation_id
+       or new.needs_acknowledgement is distinct from old.needs_acknowledgement) then
+    perform app.raise_error('HMT_DON_DA_KHOA', 'Đơn đã trình hoặc đã khoá: tổng tiền, điều khoản và thông tin gốc không sửa được.');
+  end if;
+  return new;
+end;
+$$;
+create trigger sales_order_lock before update on app.sales_order
+  for each row execute function app.tg_sales_order_lock();
 
 -- Sự kiện chỉ thêm: không ai sửa, xoá (kể cả hàm nghiệp vụ).
 create or replace function app.tg_sales_order_event_append_only()
@@ -740,7 +762,7 @@ $$;
 -- Lưu đơn Nháp: điều khoản thanh toán, lớp, ngày vào lớp, và (đơn thẳng từ cơ hội) cả dòng, giờ.
 -- Ai gọi: Đơn hàng · Sửa ở cơ sở của đơn. Đầu vào: p_lines và p_payment_term_id (null = giữ nguyên).
 --   Đơn từ báo giá: p_lines là mảng {line_no, class_id, enrol_start_date}; giá, giờ, chiết khấu giữ nguyên đã đóng băng (R-TIEN-14).
---   Đơn thẳng từ cơ hội: p_lines là danh sách dòng đầy đủ (khuôn như lúc tạo), tính lại theo giá hôm nay.
+--   Đơn thẳng từ cơ hội: p_lines là danh sách dòng đầy đủ (khuôn như lúc tạo), tính lại theo giá và chính sách của NGÀY TẠO ĐƠN (R-TIEN-14).
 -- Luật: chỉ đơn Nháp; R-GD-06 (chọn lớp thì cần ngày vào lớp); R-GD-08 (kiểm lớp khi lưu); R-TIEN-07 (lịch đóng tiền tính lại mỗi lần lưu).
 -- ---------------------------------------------------------------------------
 create or replace function app.save_order(p_id uuid, p_lines jsonb default null, p_payment_term_id uuid default null)
@@ -751,7 +773,6 @@ set search_path = ''
 as $$
 declare
   v_o app.sales_order;
-  v_on date := (now() at time zone 'Asia/Ho_Chi_Minh')::date;
   e jsonb;
   l app.sales_order_line;
   v_class uuid;
@@ -782,8 +803,8 @@ begin
       if jsonb_array_length(p_lines) = 0 then
         perform app.raise_error('HMT_DON_KHONG_DONG', 'Đơn cần ít nhất một dòng.');
       end if;
-      perform app.order_write_priced_lines(p_id, v_o.opportunity_id, v_o.branch_id, p_lines, v_on);
-      update app.sales_order set priced_on = v_on where id = p_id;
+      -- Luật R-TIEN-14: đơn thẳng tính theo giá và chính sách hiệu lực NGÀY TẠO ĐƠN, lưu lại vẫn dùng ngày đó (priced_on không đổi).
+      perform app.order_write_priced_lines(p_id, v_o.opportunity_id, v_o.branch_id, p_lines, v_o.priced_on);
     else
       -- Đơn từ báo giá: chỉ đổi lớp và ngày vào lớp theo số dòng.
       for e in select * from jsonb_array_elements(p_lines) loop
@@ -991,7 +1012,8 @@ begin
   update app.sales_order set status_code = 'DA_DUYET', approved_at = now(), approved_by = auth.uid(),
          approved_on_behalf = v_on_behalf, acknowledged = coalesce(p_acknowledged, false) where id = p_id;
   perform app.order_add_event(p_id, 'DUYET', 'DA_TRINH', 'DA_DUYET', null, null,
-                              case when v_on_behalf then 'Admin duyệt thay' end, v_on_behalf);
+                              case when v_on_behalf then 'Admin duyệt thay'
+                                   when v_o.approval_route = 'TU_DUYET' then 'Tự duyệt' end, v_on_behalf);
   return jsonb_build_object('id', p_id, 'code', v_o.code, 'on_behalf', v_on_behalf);
 end;
 $$;
