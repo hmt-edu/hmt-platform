@@ -359,4 +359,18 @@ Kiểm thử: `supabase/tests/database/044_p5a_don_hang_doc.test.sql` (87 bài).
 
 ### Hiệu năng
 Đo trên `seed-lon` (8.000 đơn), Trưởng cơ sở CS1: `list_orders` một trang 9 ms (lần đầu 32 ms), lọc Đã duyệt 9 ms, tìm theo mã 4 ms, tìm theo chữ 8 ms, theo cơ hội 4 ms, chờ tôi duyệt 12 ms, trang thứ 20 là 19 ms; `get_order` 4 ms (lần đầu 13 ms); `export_orders` 4.000 dòng 608 ms.
+## P5a-DB1c-2: báo giá, xem thử, gói bán, chính sách chiết khấu, ghi chú (migration `20261027000055`, Đ226, Đ228)
+Kiểm thử: `supabase/tests/database/046_p5a_bao_gia_xem_thu_goi_y.test.sql` (80 bài). Hàm chỉ đọc (không ghi tiền, không ghi nhật ký); công tắc BAN_HANG kiểm như `save_quotation` (Đ173). Mục d (mã đơn từng dòng trong `get_quotation`) làm sau khi đơn hàng (#107) gộp.
+
+| Hàm | Làm gì | Quyền |
+|---|---|---|
+| `app.preview_quotation_lines(cơ hội, dòng)` | Xem thử báo giá khi sửa dòng: cùng khuôn đầu vào `save_quotation`, gọi CÙNG `app.price_line` với đường lưu, cùng ngày tính giá; trả từng dòng (đơn giá, giảm, thành tiền, cờ vượt trần), tổng, cảnh báo `HMT_VUOT_TRAN`; không ghi gì | Báo giá · Tạo hoặc Sửa ở cơ sở của cơ hội |
+| `app.list_sellable_packages(cơ hội, loại, chữ tìm)` | Gói đang bán hôm nay kèm giá theo hình thức (giá trống = không bán), loại gói để lọc, nhóm "Hay dùng" (N gói chọn nhiều nhất trên báo giá của chính mình trong M ngày, Đ228), nhóm "Gợi ý theo cơ hội" (môn, khối của phiếu kiểm tra chưa huỷ của cơ hội); tối đa `list_page_size_max` gói | như trên (Sale không cần quyền Cấu hình bán hàng) |
+| `app.list_applicable_discount_policies(cơ hội)` | Chính sách chiết khấu hiệu lực hôm nay, đúng cơ sở: mã, tên, loại (%, giờ tặng), mức tối đa, áp đúng mức, cần duyệt, loại gói áp dụng | như trên |
+| Ghi chú báo giá | `QUOTATION` đăng ký trong `note_target`; `can_see_note_target` thêm loại này (quyền Báo giá · Xem ở cơ sở của báo giá); dùng `add_note`, `record_notes`, `record_history` chung | Báo giá · Xem |
+
+Tham số mới: `quotation_popular_packages_count` (mặc định 5), `quotation_popular_window_days` (mặc định 90). "Gợi ý theo cơ hội" lấy môn, khối từ phiếu kiểm tra của cơ hội vì cơ hội chưa có cột môn, khối riêng (chờ Chat xác nhận cách lấy).
+
+### Hiệu năng
+Đo trên `seed-lon` (355 gói, 30.000 dòng báo giá), Sale CS5: `preview_quotation_lines` 3 dòng 11 ms (lần sau 3 ms); `list_sellable_packages` 100 gói 65 ms lần đầu, 23 ms lần sau; lọc loại 9 ms; tìm chữ 7 ms; `list_applicable_discount_policies` 3 ms; `record_notes` báo giá 7 ms.
 
