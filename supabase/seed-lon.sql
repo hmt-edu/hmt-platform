@@ -259,6 +259,83 @@ alter table app.quotation_line enable trigger quotation_line_audit;
 analyze app.quotation;
 analyze app.quotation_line;
 
+-- Đơn hàng giả lớn (EXPLAIN của P5a-DB1b-1): 8.000 đơn (mỗi cơ hội COL000001..008000 một đơn; 5.000 đơn đầu chuyển từ báo giá BGL cùng số),
+-- 1 đến 3 dòng, 4 trạng thái, lịch đóng tiền cho đơn Đã duyệt, 1 đến 2 sự kiện mỗi đơn. Tắt trigger khoá, trạng thái, tìm kiếm lúc nạp.
+alter table app.sales_order disable trigger sales_order_fill_standard;
+alter table app.sales_order disable trigger sales_order_audit;
+alter table app.sales_order disable trigger sales_order_search_text;
+alter table app.sales_order disable trigger sales_order_status_flow;
+alter table app.sales_order_line disable trigger sales_order_line_fill_standard;
+alter table app.sales_order_line disable trigger sales_order_line_audit;
+alter table app.sales_order_line disable trigger sales_order_line_lock;
+alter table app.sales_order_installment disable trigger sales_order_installment_fill_standard;
+alter table app.sales_order_installment disable trigger sales_order_installment_audit;
+alter table app.sales_order_installment disable trigger sales_order_installment_lock;
+alter table app.sales_order_event disable trigger sales_order_event_fill_standard;
+alter table app.sales_order_event disable trigger sales_order_event_audit;
+alter table app.sales_order_event disable trigger sales_order_event_append_only;
+insert into app.sales_order (code, branch_id, opportunity_id, parent_id, quotation_id, status_code, priced_on, payment_term_id,
+                             total_amount, created_at, updated_at)
+select 'DHL' || lpad(g::text, 6, '0'), o.branch_id, o.id, o.parent_id,
+       case when g <= 5000 then (select q.id from app.quotation q where q.code = 'BGL' || lpad(g::text, 6, '0')) end,
+       case when g % 10 < 3 then 'NHAP' when g % 10 < 5 then 'DA_TRINH' when g % 10 < 9 then 'DA_DUYET' else 'HUY' end,
+       current_date - (g % 120), (select id from app.payment_term where code = 'CHIA_3_DOT' and version = 1), 0,
+       now() - ((g % 120) || ' days')::interval, now()
+  from generate_series(1, 8000) g
+  join app.opportunity o on o.code = 'COL' || lpad(g::text, 6, '0');
+-- Dòng đơn: đơn từ báo giá sao dòng báo giá (cờ đang sống trừ đơn Huỷ); đơn thẳng tạo dòng giả.
+insert into app.sales_order_line (order_id, branch_id, line_no, quotation_line_id, prospect_student_id, package_id, package_code, package_name,
+                                  package_type_code, delivery_mode_code, unit_code, quantity, unit_price, gross_amount, line_total, is_live)
+select so.id, so.branch_id, ql.line_no, ql.id, ql.prospect_student_id, ql.package_id, ql.package_code, ql.package_name, ql.package_type_code,
+       ql.delivery_mode_code, ql.unit_code, ql.quantity, ql.unit_price, ql.gross_amount, ql.line_total, so.status_code <> 'HUY'
+  from app.sales_order so
+  join app.quotation q on q.id = so.quotation_id
+  join app.quotation_line ql on ql.quotation_id = q.id
+ where so.code like 'DHL%';
+insert into app.sales_order_line (order_id, branch_id, line_no, prospect_student_id, package_id, package_code, package_name,
+                                  package_type_code, delivery_mode_code, unit_code, quantity, unit_price, gross_amount, line_total, is_live)
+select so.id, so.branch_id, k.k, ps.id, p.id, p.code, p.name, p.package_type_code, 'OFF', 'GIO', 12 + (g.g % 5) * 12,
+       100000 + (g.g % 200) * 1000, (12 + (g.g % 5) * 12) * (100000 + (g.g % 200) * 1000), (12 + (g.g % 5) * 12) * (100000 + (g.g % 200) * 1000),
+       so.status_code <> 'HUY'
+  from generate_series(5001, 8000) g(g)
+  join app.sales_order so on so.code = 'DHL' || lpad(g.g::text, 6, '0')
+  join app.prospect_student ps on ps.opportunity_id = so.opportunity_id and ps.position = 1
+  cross join lateral generate_series(1, 1 + g.g % 3) k(k)
+  join (select id, code, name, package_type_code, row_number() over (order by code) as rn
+          from app.sales_package where package_type_code = 'LC') p on p.rn = 1 + (g.g * k.k) % (select count(*) from app.sales_package where package_type_code = 'LC');
+update app.sales_order so set total_amount = t.total
+  from (select order_id, sum(line_total) as total from app.sales_order_line group by order_id) t
+ where t.order_id = so.id and so.code like 'DHL%';
+insert into app.sales_order_installment (order_id, branch_id, seq, due_days, amount, due_date)
+select so.id, so.branch_id, i.seq, i.due_days, so.total_amount / 3, case when so.status_code = 'DA_DUYET' then current_date + i.due_days end
+  from app.sales_order so
+  cross join (values (1, 0), (2, 30), (3, 60)) i(seq, due_days)
+ where so.code like 'DHL%' and so.total_amount > 0;
+insert into app.sales_order_event (order_id, branch_id, event_code, from_status, to_status, created_at)
+select so.id, so.branch_id, 'TAO', null, 'NHAP', so.created_at from app.sales_order so where so.code like 'DHL%'
+union all
+select so.id, so.branch_id, case so.status_code when 'DA_TRINH' then 'TRINH' when 'DA_DUYET' then 'DUYET' else 'HUY' end,
+       'NHAP', so.status_code, so.created_at + interval '1 day' from app.sales_order so
+ where so.code like 'DHL%' and so.status_code <> 'NHAP';
+update app.sales_order so set search_text = app.sales_order_search_text(so) where so.code like 'DHL%';
+alter table app.sales_order enable trigger sales_order_fill_standard;
+alter table app.sales_order enable trigger sales_order_audit;
+alter table app.sales_order enable trigger sales_order_search_text;
+alter table app.sales_order enable trigger sales_order_status_flow;
+alter table app.sales_order_line enable trigger sales_order_line_fill_standard;
+alter table app.sales_order_line enable trigger sales_order_line_audit;
+alter table app.sales_order_line enable trigger sales_order_line_lock;
+alter table app.sales_order_installment enable trigger sales_order_installment_fill_standard;
+alter table app.sales_order_installment enable trigger sales_order_installment_audit;
+alter table app.sales_order_installment enable trigger sales_order_installment_lock;
+alter table app.sales_order_event enable trigger sales_order_event_fill_standard;
+alter table app.sales_order_event enable trigger sales_order_event_audit;
+alter table app.sales_order_event enable trigger sales_order_event_append_only;
+analyze app.sales_order;
+analyze app.sales_order_line;
+analyze app.sales_order_installment;
+analyze app.sales_order_event;
+
 -- Đặt đếm mã để mã thật (LD…) không đụng mã giả (LDL…): mã giả có tiền tố khác nên không cần; chỉ cập nhật thống kê.
 analyze app.parent;
 analyze app.lead;
