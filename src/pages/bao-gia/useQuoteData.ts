@@ -55,3 +55,41 @@ export function useQuotation(id: string | undefined) {
     queryFn: () => rpc<QuotationRecord>(supabase, 'get_quotation', { p_id: id }),
   });
 }
+
+/** Kết quả Gửi báo giá: tổng sau khi tính lại theo giá ngày Gửi (Đ175) và cảnh báo nếu tổng đổi. */
+export type SendQuotationResult = {
+  id: string;
+  total_amount: number;
+  previous_total: number;
+  warnings: { code: string; message: string }[];
+};
+
+/** Gửi báo giá Nháp: máy chủ tính lại giá theo ngày Gửi, đặt hạn hiệu lực (Đ175). */
+export function sendQuotation(supabase: SupabaseClient, id: string): Promise<SendQuotationResult> {
+  return rpc<SendQuotationResult>(supabase, 'send_quotation', { p_id: id });
+}
+
+/** Từ chối báo giá Đã gửi: lý do từ danh mục "Lý do từ chối"; "Khác" bắt ghi chú (máy chủ kiểm). */
+export function rejectQuotation(
+  supabase: SupabaseClient,
+  id: string,
+  reasonCode: string,
+  note: string | null,
+): Promise<void> {
+  return rpc<void>(supabase, 'reject_quotation', {
+    p_id: id,
+    p_reason_code: reasonCode,
+    p_note: note,
+  });
+}
+
+/** Tải lại một báo giá và các danh sách báo giá sau khi đổi tình trạng. */
+export function useRefreshQuotation(id: string) {
+  const queryClient = useQueryClient();
+  return useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['quotation', id] }),
+      queryClient.invalidateQueries({ queryKey: ['quotation-list'] }),
+    ]);
+  }, [queryClient, id]);
+}
