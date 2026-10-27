@@ -171,6 +171,7 @@ select ok(pg_temp.msg($$select app.preview_quotation_lines(pg_temp.oid('09000110
 select pg_temp.sudo($$update app.sales_package set is_active = false where code = 'TL-MATOAN'$$);
 select is(pg_temp.err($$select app.preview_quotation_lines(pg_temp.oid('0900011001'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900011001', 1), 'TL-MATOAN', 'OFF', 1)))$$), 'HMT_GOI_DA_NGUNG', 'Xem thử: gói đã ngừng thì chặn');
 select pg_temp.sudo($$update app.sales_package set is_active = true where code = 'TL-MATOAN'$$);
+select is(pg_temp.err($$select app.preview_quotation_lines(pg_temp.oid('0900011001'), jsonb_build_array(pg_temp.line(null, 'LC-TOAN-K09', 'OFF', 5)))$$), 'HMT_DONG_THIEU', 'Xem thử: dòng chưa chọn em thì chặn như khi lưu (không tính giá)');
 select is(pg_temp.err($$select app.preview_quotation_lines(pg_temp.oid('0900011001'), '{"a": 1}'::jsonb)$$), 'HMT_DONG_THIEU', 'Xem thử: đầu vào không phải mảng thì chặn');
 select is(pg_temp.err($$select app.preview_quotation_lines('00000000-0000-0000-0000-000000000000', '[]'::jsonb)$$), 'HMT_KHONG_TIM_THAY', 'Xem thử: cơ hội không có');
 -- Quyền, công tắc, cơ hội đã gộp.
@@ -239,8 +240,11 @@ select pg_temp.sudo($$insert into app.sales_package (code, name, package_type_co
 select pg_temp.sudo($$insert into app.package_price (package_id, delivery_mode_code, unit_price, effective_from)
   select id, 'OFF', 100000, date '2026-01-01' from app.sales_package where code like 'TL-LIM%'$$);
 select pg_temp.sudo($$update app.setting_def set value = '20' where key = 'list_page_size_max'$$);
-select is(jsonb_array_length(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages'), 20, 'Gói bán: giới hạn theo list_page_size_max (20)');
+select is(jsonb_array_length(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages'), 21, 'Gói bán: 20 gói đầu theo list_page_size_max, cộng 1 gói gợi ý nằm ngoài trang');
 select ok((app.list_sellable_packages(pg_temp.oid('0900011001')) ->> 'total')::int > 20, 'Gói bán: vẫn báo tổng số gói thật');
+select is((select count(*)::int from jsonb_array_elements(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages') x where x ->> 'code' = 'VNN-TOAN-K09'), 1, 'Gói bán: gói gợi ý nằm ngoài trang đầu vẫn có chi tiết');
+select is((select count(*)::int from jsonb_array_elements(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages') x where x ->> 'code' in (select jsonb_array_elements_text(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'suggested'))), 2, 'Gói bán: mọi gói gợi ý đều có chi tiết trong packages');
+select is((select count(*)::int from jsonb_array_elements(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages') x where x ->> 'code' in (select jsonb_array_elements_text(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'popular'))), 2, 'Gói bán: mọi gói Hay dùng đều có chi tiết trong packages');
 select pg_temp.sudo($$update app.setting_def set value = '50' where key = 'list_page_size_max'$$);
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select is(pg_temp.err($$select app.list_sellable_packages(pg_temp.oid('0900011001'))$$), 'HMT_KHONG_CO_QUYEN', 'Gói bán: Sale CS5 không dùng cho cơ hội CS1');
