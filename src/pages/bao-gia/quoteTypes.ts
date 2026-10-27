@@ -46,3 +46,75 @@ export type QuotationExportResult = {
   truncated: boolean;
   rows: QuotationExportRow[];
 };
+
+export type QuotationLineDiscount = {
+  id: string;
+  policy_id: string;
+  policy_code: string;
+  policy_name: string;
+  kind: 'PERCENT' | 'GIFT_HOURS';
+  applied_value: number;
+  requires_approval: boolean;
+};
+
+export type QuotationLine = {
+  id: string;
+  line_no: number;
+  line_kind: 'ENROL' | 'GIFT';
+  prospect_student_id: string | null;
+  package_id: string;
+  package_code: string;
+  package_name: string;
+  package_type_code: string;
+  delivery_mode_code: string;
+  unit_code: 'GIO' | 'THANG' | 'BO';
+  quantity: number;
+  gifted_quantity: number;
+  unit_price: number;
+  gross_amount: number;
+  discount_percent: number;
+  gift_percent: number;
+  discount_amount: number;
+  line_total: number;
+  over_cap: boolean;
+  needs_acknowledgement: boolean;
+  student_name: string | null;
+  student_birth_year: number | null;
+  student_code: string | null;
+  student_complete: boolean;
+  gift_policy_name: string | null;
+  discounts: QuotationLineDiscount[];
+};
+
+/** Bản ghi báo giá do get_quotation trả (BH-02). */
+export type QuotationRecord = {
+  id: string;
+  code: string;
+  legacy_ref: string | null;
+  branch_id: string;
+  branch_code: string;
+  opportunity_id: string;
+  opportunity_code: string;
+  parent_id: string;
+  parent_code: string;
+  parent_name: string;
+  parent_phone: string;
+  status_code: 'NHAP' | 'DA_GUI' | 'TU_CHOI' | 'HUY';
+  display_status_code: string;
+  display_status: string | null;
+  priced_on: string;
+  valid_until: string | null;
+  overdue_days: number | null;
+  sent_at: string | null;
+  sent_by_name: string | null;
+  reject_reason: string | null;
+  reject_note: string | null;
+  rejected_at: string | null;
+  cancel_note: string | null;
+  cancelled_at: string | null;
+  total_amount: number;
+  created_at: string;
+  created_by_name: string | null;
+  has_incomplete_students: boolean;
+  lines: QuotationLine[];
+};
