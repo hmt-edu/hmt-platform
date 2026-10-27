@@ -27,6 +27,7 @@ const line = (over: Partial<QuotationLine>): QuotationLine => ({
   student_birth_year: null,
   student_code: null,
   student_complete: true,
+  gift_policy_id: null,
   gift_policy_name: null,
   order_id: null,
   order_code: null,
