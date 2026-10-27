@@ -154,3 +154,38 @@ test('BH-02: ghi chú gắn vào báo giá; báo giá không có thì báo khôn
   await page.goto('/crm/bao-gia/00000000-0000-0000-0000-000000000000');
   await expect(page.getByRole('heading', { name: 'Không tìm thấy báo giá' })).toBeVisible();
 });
+
+test('BH-02: Sale bấm Gửi báo giá Nháp thì thành Đã gửi, hết nút Gửi', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+  await expect(page.getByRole('button', { name: 'Từ chối', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Gửi', exact: true }).click();
+  await expect(page.getByText('Đã gửi báo giá.').first()).toBeVisible();
+  await expect(page.getByText(/^Đã gửi cho phụ huynh ngày/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Gửi', exact: true })).toHaveCount(0);
+  // Báo giá Đã gửi (chưa lên đơn) có nút Từ chối.
+  await expect(page.getByRole('button', { name: 'Từ chối', exact: true })).toBeVisible();
+});
+
+test('BH-02: Từ chối báo giá qua hộp BH-04, bắt chọn lý do; xong hiện lý do', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.sent);
+  await page.getByRole('button', { name: 'Từ chối', exact: true }).click();
+  const dialog = page.getByRole('alertdialog');
+  await expect(dialog.getByRole('heading', { name: 'Từ chối báo giá' })).toBeVisible();
+  // Chưa chọn lý do thì chưa xác nhận được.
+  await expect(dialog.getByRole('button', { name: 'Xác nhận' })).toBeDisabled();
+  await expectAccessible(page);
+  await dialog.getByRole('combobox').click();
+  // Lý do chỉ áp dụng cho phiếu thu (Sai số tiền) không hiện ở báo giá.
+  await expect(page.getByRole('option', { name: 'Sai số tiền' })).toHaveCount(0);
+  await page.getByRole('option', { name: 'Không đúng chính sách' }).click();
+  await dialog.getByRole('button', { name: 'Xác nhận' }).click();
+  await expect(page.getByText('Đã từ chối báo giá.').first()).toBeVisible();
+  await expect(page.locator('b', { hasText: 'Lý do từ chối' })).toBeVisible();
+  await expect(page.getByRole('alertdialog')).toHaveCount(0);
+});
