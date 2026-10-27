@@ -83,6 +83,10 @@ export type QuotationLine = {
   student_code: string | null;
   student_complete: boolean;
   gift_policy_name: string | null;
+  /** Đơn đang sống sinh từ dòng này (Đ106: tối đa một); chưa lên đơn hoặc đơn đã huỷ thì rỗng. */
+  order_id: string | null;
+  order_code: string | null;
+  order_status_code: string | null;
   discounts: QuotationLineDiscount[];
 };
 
@@ -116,5 +120,7 @@ export type QuotationRecord = {
   created_at: string;
   created_by_name: string | null;
   has_incomplete_students: boolean;
+  /** Số đơn đang sống sinh từ báo giá này (migration 056). */
+  live_order_count: number;
   lines: QuotationLine[];
 };

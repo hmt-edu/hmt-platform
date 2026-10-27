@@ -30,6 +30,13 @@ const STATUS_TONE: Record<string, TagTone> = {
   HUY: 'neutral',
 };
 
+const ORDER_TONE: Record<string, TagTone> = {
+  NHAP: 'neutral',
+  DA_TRINH: 'info',
+  DA_DUYET: 'success',
+  HUY: 'neutral',
+};
+
 /** Tên cột (get_quotation → nhật ký) hiện cho người dùng trong lịch sử thay đổi. */
 const QUOTE_FIELD_LABELS: Record<string, string> = {
   status_code: 'Tình trạng',
@@ -187,6 +194,22 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             key: 'total',
             header: 'Thành tiền',
             cell: (l) => <span className="tabular">{formatNumber(l.line_total)}</span>,
+          },
+          // Đ242: mã và trạng thái đơn đang sống của dòng, cho mọi người có quyền Xem báo giá. Nút mở đơn chờ màn Đơn hàng (BH-05).
+          {
+            key: 'order',
+            header: 'Đơn',
+            cell: (l) =>
+              l.order_code ? (
+                <span className="flex flex-wrap items-center gap-1.5">
+                  <span className="font-medium">{l.order_code}</span>
+                  <Tag tone={ORDER_TONE[l.order_status_code ?? ''] ?? 'neutral'}>
+                    {catalogs.name('ORDER_STATUS', l.order_status_code) ?? l.order_status_code}
+                  </Tag>
+                </span>
+              ) : (
+                '—'
+              ),
           },
         ]}
         empty={<p className="px-4 py-6 text-center text-fg-muted">Chưa có gói học.</p>}

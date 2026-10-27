@@ -6,6 +6,7 @@
 - P5a-DB1b-2 (migration `052`): `get_order`, `list_orders`, `export_orders`. Bài kiểm 044. Nhánh tách từ #107; mở PR sau khi #107 gộp.
 - P5a-DB1c-4 (migration `056`): `get_quotation` trả mã đơn đang sống từng dòng và `live_order_count`. Bài kiểm 048. Chỉ gộp sau #110 (migration 055, tránh xếp sai thứ tự migration).
 - P5a-DB1c-5 (migration `057`, Đ243): `status` của `list_quotations`, `export_quotations` lọc theo tình trạng hiển thị (`DA_CHUYEN_DON`, nối bằng HOẶC). Bài kiểm 049.
+- P5a-UI-4: BH-01 lọc "Đã chuyển đơn" theo tình trạng hiển thị (Đ243: gửi trong `status`, nối bằng HOẶC); BH-02 cột "Đơn" (Đ242).
 - P5a-DB1b-1 (migration `051`): đơn hàng (bảng, hàm ghi). Bài kiểm 043; seed-lon thêm 8.000 đơn; sửa bài 006 (26 danh mục hệ thống). Lớp chờ P5b (`check_order_line_class`), phiếu thu chờ DB2 (`order_has_receipt`).
 - P5a-DB1c-2 (migration `055`): `preview_quotation_lines`, `list_sellable_packages`, `list_applicable_discount_policies`, ghi chú báo giá (`note_target` QUOTATION). Bài kiểm 046.
 - Ma trận quyền phiên bản 6 (migration `050`, Đ204): Sale, CSKH có Huỷ đơn hàng; hành vi huỷ đơn kiểm ở bài của hàm huỷ đơn (DB1b-1).

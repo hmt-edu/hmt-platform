@@ -9,8 +9,8 @@ export type QuoteFilters = Record<string, unknown>;
 
 const DAY_MS = 86_400_000; // allow-number: số mili giây trong một ngày (mốc "đến ngày" tính hết ngày)
 
-/** Trạng thái lưu trong cơ sở dữ liệu của lọc nhanh "Tình trạng". Đã chuyển đơn không lưu (tính từ dòng, R-TIEN-02). */
-const STATUS_CODES = ['NHAP', 'DA_GUI', 'TU_CHOI', 'HUY'];
+/** Tình trạng hiển thị của lọc "Tình trạng" (Đ243): máy chủ nhận cả Đã chuyển đơn (tính từ dòng, không lưu) và nối các giá trị bằng HOẶC. */
+const STATUS_CODES = ['NHAP', 'DA_GUI', 'DA_CHUYEN_DON', 'TU_CHOI', 'HUY'];
 
 function valuesOf(cond: Condition): string[] {
   return (Array.isArray(cond.value) ? cond.value : [cond.value])

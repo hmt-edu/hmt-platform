@@ -26,10 +26,28 @@ describe('bộ lọc danh sách Báo giá', () => {
     });
     expect(f).toEqual({ status: ['NHAP', 'DA_GUI'], mine: true, expired: true });
   });
-  it('trạng thái lạ (Đã chuyển đơn không lưu) bị bỏ, không gửi lên máy chủ', () => {
-    expect(buildQuoteFilters({ ...EMPTY, quick: { status: ['DA_CHUYEN_DON', 'HUY'] } })).toEqual({
+  it('trạng thái lạ bị bỏ, không gửi lên máy chủ', () => {
+    expect(buildQuoteFilters({ ...EMPTY, quick: { status: ['KHONG_CO', 'HUY'] } })).toEqual({
       status: ['HUY'],
     });
+  });
+  it('Đã chuyển đơn là một tình trạng hiển thị, gửi trong danh sách status (Đ243)', () => {
+    expect(buildQuoteFilters({ ...EMPTY, quick: { status: ['DA_CHUYEN_DON'] } })).toEqual({
+      status: ['DA_CHUYEN_DON'],
+    });
+  });
+  it('Đã chuyển đơn kèm Nháp và Đã gửi: gửi cả ba, máy chủ nối bằng HOẶC', () => {
+    expect(
+      buildQuoteFilters({ ...EMPTY, quick: { status: ['DA_CHUYEN_DON', 'DA_GUI', 'NHAP'] } }),
+    ).toEqual({ status: ['DA_CHUYEN_DON', 'DA_GUI', 'NHAP'] });
+  });
+  it('Đã chuyển đơn chọn trong điều kiện lọc nâng cao cũng gửi trong status', () => {
+    expect(
+      buildQuoteFilters({
+        ...EMPTY,
+        conditions: [{ id: '1', field: 'status', op: 'in', value: ['DA_CHUYEN_DON'] }],
+      }),
+    ).toEqual({ status: ['DA_CHUYEN_DON'] });
   });
   it('điều kiện lọc nâng cao: tình trạng gộp với lọc nhanh, cơ sở, ngày tạo', () => {
     const f = buildQuoteFilters({
