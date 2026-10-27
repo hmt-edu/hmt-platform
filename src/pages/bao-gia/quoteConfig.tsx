@@ -1,7 +1,7 @@
 // Cấu hình màn Báo giá (BH-01) cho khuôn danh sách K03: cột, lọc nhanh, trường lọc nâng cao. Cột và chữ theo canvas v118 (BH01).
 // Mọi lọc, sắp xếp, phân trang làm ở máy chủ nên cấu hình không có hàm `test` chạy ở trình duyệt. Không có nút Tạo: báo giá chỉ sinh
 // từ cơ hội hoặc phiếu tái tục (R-TIEN-02).
-import { formatDate, formatMoney } from '../../lib/format';
+import { formatDate, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Code, Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig, ListState } from '../../list/types';
@@ -71,7 +71,7 @@ export function buildQuoteConfig(
         label: 'Tổng tiền (đ)',
         numeric: true,
         sortable: true,
-        render: (r) => formatMoney(r.total_amount).replace(' đ', ''),
+        render: (r) => formatNumber(r.total_amount),
       },
       {
         key: 'valid',
