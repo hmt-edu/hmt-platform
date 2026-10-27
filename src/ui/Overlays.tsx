@@ -173,7 +173,14 @@ export function Drawer({
 
 export type MenuItem =
   | { kind: 'link'; label: string; to: string; icon?: IconName }
-  | { kind: 'action'; label: string; onSelect: () => void; icon?: IconName };
+  | {
+      kind: 'action';
+      label: string;
+      onSelect: () => void;
+      icon?: IconName;
+      /** Mục chưa dùng được: hiện mờ kèm lý do ("Có khi làm BH-03"), không chọn được. */
+      unavailable?: string;
+    };
 
 // .hmt-opt: dòng 13px, lề 8px, bo 4px, hover nền cam nhạt.
 const MENU_ITEM =
@@ -204,9 +211,20 @@ export function DropdownMenu({
                 </Link>
               </RadixMenu.Item>
             ) : (
-              <RadixMenu.Item key={item.label} onSelect={item.onSelect} className={MENU_ITEM}>
+              <RadixMenu.Item
+                key={item.label}
+                onSelect={item.onSelect}
+                disabled={item.unavailable !== undefined}
+                className={cn(
+                  MENU_ITEM,
+                  item.unavailable !== undefined && 'cursor-default text-fg-muted',
+                )}
+              >
                 {item.icon && <Icon name={item.icon} size={16} />}
                 {item.label}
+                {item.unavailable !== undefined && (
+                  <span className="ml-auto text-caption">{item.unavailable}</span>
+                )}
               </RadixMenu.Item>
             ),
           )}

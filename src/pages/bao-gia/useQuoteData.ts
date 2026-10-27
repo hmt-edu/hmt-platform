@@ -93,3 +93,12 @@ export function useRefreshQuotation(id: string) {
     ]);
   }, [queryClient, id]);
 }
+
+/** Huỷ báo giá Nháp, Đã gửi hoặc Từ chối; ghi chú không bắt buộc. Có đơn đang xử lý thì máy chủ chặn (R-CRM-19, Đ171). */
+export function cancelQuotation(
+  supabase: SupabaseClient,
+  id: string,
+  note: string | null,
+): Promise<void> {
+  return rpc<void>(supabase, 'cancel_quotation', { p_id: id, p_note: note });
+}
