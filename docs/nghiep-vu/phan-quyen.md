@@ -256,3 +256,7 @@ tự kiểm quyền người gọi.
 - Kế toán thêm Xem và Xuất báo giá, toàn hệ thống (2 ô; Xuất đi kèm Xem, chỉ đọc).
 - Xuất đơn và phiếu thu đã đúng: chỉ Trưởng cơ sở (cơ sở mình), Kế toán, Admin.
 - Bản đồ màn hình ghi BH-01 cho Sale, CSKH có Xuất: vênh, sửa theo Đ105.
+
+## Ma trận phiên bản 6: Huỷ đơn hàng của Sale, CSKH (QĐ-Đ204, migration `20261027000050`)
+- Sale, CSKH có Huỷ đơn hàng (`SALES_ORDER`), phạm vi cơ sở (2 ô, từ Không sang Có). Duyệt và Xuất không đổi.
+- Hàm huỷ đơn (P5a-DB1b) chỉ cho Sale, CSKH huỷ đơn Nháp do chính mình lập; đơn Đã trình, Đã duyệt do người duyệt đã chốt lúc trình huỷ, Admin thay khi vắng (Đ202).

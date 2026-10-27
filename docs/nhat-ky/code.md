@@ -3,6 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
+- Ma trận quyền phiên bản 6 (migration `050`, Đ204): Sale, CSKH có Huỷ đơn hàng; hành vi huỷ đơn kiểm ở bài của hàm huỷ đơn (DB1b-1).
 - Lead đổi giai đoạn bắt chọn nhóm con (migration 049, hộp chọn Sub-stage dùng chung trang Lead và Kanban, Hoàn tác chỉ khi khôi phục hợp lệ). Đặt sau 048 (#97) khi gộp.
 - Lead chỉ tạo cơ hội khi ở C4C (migration 048; C4D vẫn tạo thêm với xác nhận R-CRM-01). Luật R-CRM-40 ở #90.
 - Vừa gộp #41 đến #58 (#58: DB trang Lead, migration 035). PR P3c-2b (giao diện trang Lead, #57) chờ anh thử trên bản xem trước rồi OK. Việc kế: PR sửa nhóm đăng nhập; P3c-3 (TS-11 Lịch hẹn, kèm Mở lại lịch hẹn); P5 thay thân `opportunity_sales_documents`.
