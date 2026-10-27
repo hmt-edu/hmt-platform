@@ -40,7 +40,7 @@
     },
     "BH02_bh11.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-11 · Cảnh báo cơ hội đã có đơn nháp (hộp thoại trên BH-02)",
       "w": 1440,
@@ -49,7 +49,7 @@
     },
     "BH02_chan_dong.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Chặn: dòng đang ở đơn khác (nói rõ dòng số mấy, đơn nào)",
       "w": 1440,
@@ -58,7 +58,7 @@
     },
     "BH02_chan_l8.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Chặn: cơ hội chưa L8, chưa tạo được đơn",
       "w": 1440,
@@ -67,16 +67,34 @@
     },
     "BH02_chon.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Thêm dòng: chọn gói",
       "w": 1440,
       "x": 3040,
       "y": 52024
     },
+    "BH02_ck.dc.html": {
+      "expand": "fill",
+      "h": 1600,
+      "is_interactive": true,
+      "title": "BH-02 · Báo giá · Chọn chính sách chiết khấu (cộng dồn, tối đa một chính sách tặng giờ)",
+      "w": 1440,
+      "x": 24320,
+      "y": 52024
+    },
+    "BH02_dang_luu.dc.html": {
+      "expand": "fill",
+      "h": 1600,
+      "is_interactive": true,
+      "title": "BH-02 · Báo giá · Đang lưu (nút Lưu khoá, các ô khoá)",
+      "w": 1440,
+      "x": 28880,
+      "y": 52024
+    },
     "BH02_don.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Đã chuyển đơn (một đơn)",
       "w": 1440,
@@ -85,7 +103,7 @@
     },
     "BH02_dong.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Đã chọn gói (chiết khấu vượt trần)",
       "w": 1440,
@@ -94,7 +112,7 @@
     },
     "BH02_gui.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Đã gửi",
       "w": 1440,
@@ -102,16 +120,25 @@
       "y": 52024
     },
     "BH02_gui_thieu_ns.dc.html": {
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Nháp có em thiếu năm sinh: vẫn lưu và gửi được",
       "w": 1440,
       "x": 4560,
-      "y": 128870
+      "y": 128740
+    },
+    "BH02_loi_mang.dc.html": {
+      "expand": "fill",
+      "h": 1600,
+      "is_interactive": true,
+      "title": "BH-02 · Báo giá · Sửa nháp, lỗi mạng khi tính giá (có Thử lại)",
+      "w": 1440,
+      "x": 27360,
+      "y": 52024
     },
     "BH02_mot_phan.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Đã gửi, mới có một dòng vào đơn (còn nút Chuyển thành đơn)",
       "w": 1440,
@@ -120,7 +147,7 @@
     },
     "BH02_nhap.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Nháp",
       "w": 1440,
@@ -129,7 +156,7 @@
     },
     "BH02_nhieu_don.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Đã chuyển đơn, nhiều đơn (mỗi dòng ghi đơn đang giữ nó)",
       "w": 1440,
@@ -147,7 +174,7 @@
     },
     "BH02_sua.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Sửa nháp (có lỗi)",
       "w": 1440,
@@ -165,16 +192,25 @@
     },
     "BH02_tao.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Tạo mới (form trắng, chưa có mã)",
       "w": 1440,
       "x": 1520,
       "y": 52024
     },
+    "BH02_tinh.dc.html": {
+      "expand": "fill",
+      "h": 1600,
+      "is_interactive": true,
+      "title": "BH-02 · Báo giá · Sửa nháp, một dòng đang tính giá (hệ thống chưa trả)",
+      "w": 1440,
+      "x": 25840,
+      "y": 52024
+    },
     "BH02_tu_choi.dc.html": {
       "expand": "fill",
-      "h": 1000,
+      "h": 1600,
       "is_interactive": true,
       "title": "BH-02 · Báo giá · Từ chối",
       "w": 1440,
@@ -376,6 +412,14 @@
       "title": "BH-05 · Đơn hàng · Đường vào: bấm Tạo đơn hàng trên Cơ hội",
       "w": 1440,
       "x": 27360,
+      "y": 54604
+    },
+    "BH05_vao_tai_tuc.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "BH-05 · Đơn hàng · Đường vào: bấm Tạo đơn trên Phiếu tái tục (học sinh, lớp lấy từ phiếu)",
+      "w": 1440,
+      "x": 28880,
       "y": 54604
     },
     "BH06.dc.html": {
@@ -909,6 +953,15 @@
       "x": 1520,
       "y": 115324
     },
+    "BUOI15_diem_danh.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "BUOI-15 · Điểm danh · hộp thoại điểm danh từng buổi",
+      "w": 1440,
+      "x": 7600,
+      "y": 115324
+    },
     "BUOI15_khong_quyen.dc.html": {
       "expand": "fill",
       "h": 1000,
@@ -943,6 +996,60 @@
       "w": 1440,
       "x": 0,
       "y": 121024
+    },
+    "CH03_chinh.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "CH-03 · Bảng giá có ngày hiệu lực · Danh sách bản và giá",
+      "w": 1440,
+      "x": 0,
+      "y": 130370
+    },
+    "CH03_loi.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "CH-03 · Bảng giá có ngày hiệu lực · Lỗi nhập liệu",
+      "w": 1440,
+      "x": 1520,
+      "y": 130370
+    },
+    "CH04_chinh.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "CH-04 · Chính sách chiết khấu · Hai tab Chiết khấu, Quà tặng",
+      "w": 1440,
+      "x": 3040,
+      "y": 130370
+    },
+    "CH04_loi.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "CH-04 · Chính sách chiết khấu · Lỗi nhập liệu",
+      "w": 1440,
+      "x": 4560,
+      "y": 130370
+    },
+    "CH09_chinh.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "CH-09 · Điều khoản thanh toán · Danh sách và các đợt",
+      "w": 1440,
+      "x": 6080,
+      "y": 130370
+    },
+    "CH09_loi.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "CH-09 · Điều khoản thanh toán · Lỗi chia đợt",
+      "w": 1440,
+      "x": 7600,
+      "y": 130370
     },
     "CHUNG_trang_thai.dc.html": {
       "expand": "fill",
@@ -1527,6 +1634,14 @@
       "w": 1440,
       "x": 1520,
       "y": 122744
+    },
+    "K06c.dc.html": {
+      "h": 2450,
+      "is_interactive": true,
+      "title": "K06c · Lưới dòng chỉnh sửa trực tiếp (khuôn mới đề xuất, chờ duyệt)",
+      "w": 1440,
+      "x": 15200,
+      "y": 8484
     },
     "K07b.dc.html": {
       "expand": "fill",
@@ -2329,6 +2444,12 @@
       "x": 0,
       "y": 88684
     },
+    "LOP01_admin.dc.html": {
+      "h": 1000,
+      "w": 1440,
+      "x": 30400,
+      "y": 0
+    },
     "LOP01_kanban.dc.html": {
       "expand": "fill",
       "h": 1000,
@@ -2518,6 +2639,15 @@
       "x": 0,
       "y": 89974
     },
+    "LOP03_trung_gv.dc.html": {
+      "expand": "fill",
+      "h": 1000,
+      "is_interactive": true,
+      "title": "LOP-03 · Tạo / sửa lớp · Cảnh báo trùng giáo viên (không chặn)",
+      "w": 1440,
+      "x": 10640,
+      "y": 89974
+    },
     "LOP03_trung_phong.dc.html": {
       "expand": "fill",
       "h": 1000,
@@ -2651,16 +2781,14 @@
       "y": 24954
     },
     "Man_BH.dc.html": {
-      "h": 9130,
-      "is_interactive": false,
+      "h": 8000,
       "title": "Nhãn màn · BH (gộp 8 nhãn)",
       "w": 1440,
       "x": -1520,
       "y": 50594
     },
     "Man_BUOI.dc.html": {
-      "h": 15340,
-      "is_interactive": false,
+      "h": 8000,
       "title": "Nhãn màn · BUOI (gộp 13 nhãn)",
       "w": 1440,
       "x": -1520,
@@ -2668,23 +2796,20 @@
     },
     "Man_GD.dc.html": {
       "h": 7840,
-      "is_interactive": false,
       "title": "Nhãn màn · GD (gộp 7 nhãn)",
       "w": 1440,
       "x": -1520,
       "y": 78744
     },
     "Man_LOP.dc.html": {
-      "h": 10010,
-      "is_interactive": false,
+      "h": 8000,
       "title": "Nhãn màn · LOP (gộp 8 nhãn)",
       "w": 1440,
       "x": -1520,
       "y": 88544
     },
     "Man_TC.dc.html": {
-      "h": 14290,
-      "is_interactive": false,
+      "h": 8000,
       "title": "Nhãn màn · TC (gộp 12 nhãn)",
       "w": 1440,
       "x": -1520,
@@ -2700,7 +2825,6 @@
     },
     "Man_TT.dc.html": {
       "h": 2690,
-      "is_interactive": false,
       "title": "Nhãn màn · TT (gộp 3 nhãn)",
       "w": 1440,
       "x": -1520,
@@ -2721,6 +2845,14 @@
       "w": 1440,
       "x": 1520,
       "y": 0
+    },
+    "Nhom_CH.dc.html": {
+      "expand": "fill",
+      "h": 140,
+      "title": "Nhóm con · Cấu hình bán hàng (CH)",
+      "w": 1440,
+      "x": 0,
+      "y": 130170
     },
     "Nhom_GhiChu.dc.html": {
       "expand": "fill",
@@ -2885,7 +3017,6 @@
     "P0_v5.dc.html": {
       "expand": "fill",
       "h": 1000,
-      "is_interactive": false,
       "title": "P0 v5 · Đổi gì so với v4 (gom từ P3 và P4)",
       "w": 1440,
       "x": 1520,
@@ -3458,6 +3589,22 @@
       "x": 1520,
       "y": 26754
     },
+    "TS01b_nhom_con.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TS-01b · Lead · kanban · Kéo thẻ sang C3: bắt buộc chọn nhóm con",
+      "w": 1440,
+      "x": 3040,
+      "y": 26754
+    },
+    "TS02_chua_c4c.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TS-02 · Lead · Chưa ở C4C: nút Tạo cơ hội mờ, có lý do",
+      "w": 1440,
+      "x": 15200,
+      "y": 127430
+    },
     "TS02_em1.dc.html": {
       "h": 1000,
       "is_interactive": true,
@@ -3474,6 +3621,14 @@
       "x": 1520,
       "y": 127430
     },
+    "TS02_nhom_con.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TS-02 · Lead · Chuyển giai đoạn C3: bắt buộc chọn nhóm con",
+      "w": 1440,
+      "x": 13680,
+      "y": 127430
+    },
     "TS02_tao.dc.html": {
       "h": 1000,
       "is_interactive": true,
@@ -3488,6 +3643,14 @@
       "title": "TS-02 · Lead · Bấm + Thêm em: hộp K08c chỉ có chế độ em mới, không có công tắc",
       "w": 1440,
       "x": 3040,
+      "y": 127430
+    },
+    "TS02_xac_nhan.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TS-02 · Lead · C4D: bấm Tạo cơ hội hiện hộp xác nhận tạo thêm",
+      "w": 1440,
+      "x": 16720,
       "y": 127430
     },
     "TS03.dc.html": {
@@ -3532,6 +3695,22 @@
       "x": 7600,
       "y": 127430
     },
+    "TS06_them_em.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TS-06 · Thêm em vào cơ hội cũ · Chọn em (mặc định chọn hết; em trùng họ tên và năm sinh gộp một dòng)",
+      "w": 1440,
+      "x": 10640,
+      "y": 127430
+    },
+    "TS06_vuot.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TS-06 · Thêm em vào cơ hội cũ · Vượt tối đa 5 em (nút Thêm bị khoá, báo số em)",
+      "w": 1440,
+      "x": 12160,
+      "y": 127430
+    },
     "TS07_K1.dc.html": {
       "expand": "fill",
       "h": 1000,
@@ -3548,6 +3727,22 @@
       "title": "TS-07 · K2 Tổng quan dạng Kanban (Cơ hội)",
       "w": 1440,
       "x": 3040,
+      "y": 29794
+    },
+    "TS07_tao.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TS-07 · Cơ hội · Tạo cơ hội (Source type, Source, Medium; danh sách em; kiểm trùng SĐT)",
+      "w": 1440,
+      "x": 0,
+      "y": 29794
+    },
+    "TS07_tao_trung.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TS-07 · Cơ hội · Tạo cơ hội · SĐT trùng: hộp cảnh báo (TS-14)",
+      "w": 1440,
+      "x": 4560,
       "y": 29794
     },
     "TS08_da_hoc.dc.html": {
@@ -3919,6 +4114,14 @@
       "x": 4560,
       "y": 117964
     },
+    "TT02_l6.dc.html": {
+      "h": 1000,
+      "is_interactive": true,
+      "title": "TT-02 · Phiếu tái tục · L6 Đồng ý tái tục (Tạo báo giá, Tạo đơn)",
+      "w": 1440,
+      "x": 10640,
+      "y": 117964
+    },
     "TT02_l7.dc.html": {
       "expand": "fill",
       "h": 1000,
@@ -3955,24 +4158,6 @@
       "x": 6080,
       "y": 119404
     },
-    "TimKiem.dc.html": {
-      "expand": "fill",
-      "h": 1000,
-      "is_interactive": true,
-      "title": "CHUNG-11/12 · Tìm kiếm + thông báo",
-      "w": 1440,
-      "x": 1520,
-      "y": 121024
-    },
-    "BUOI15_diem_danh.dc.html": {
-      "x": 7600,
-      "y": 115324,
-      "w": 1440,
-      "h": 1000,
-      "title": "BUOI-15 · Điểm danh · hộp thoại điểm danh từng buổi",
-      "expand": "fill",
-      "is_interactive": true
-    },
     "TT04.dc.html": {
       "expand": "fill",
       "h": 1000,
@@ -3980,24 +4165,6 @@
       "title": "TT-04 · Đối chiếu tái tục theo tháng · danh sách",
       "w": 1440,
       "x": 0,
-      "y": 119404
-    },
-    "TT04_trong.dc.html": {
-      "expand": "fill",
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TT-04 · Đối chiếu tái tục theo tháng · trống",
-      "w": 1440,
-      "x": 1520,
-      "y": 119404
-    },
-    "TT04_tai.dc.html": {
-      "expand": "fill",
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TT-04 · Đối chiếu tái tục theo tháng · đang tải",
-      "w": 1440,
-      "x": 3040,
       "y": 119404
     },
     "TT04_khong_quyen.dc.html": {
@@ -4009,156 +4176,32 @@
       "x": 4560,
       "y": 119404
     },
-    "LOP03_trung_gv.dc.html": {
+    "TT04_tai.dc.html": {
       "expand": "fill",
       "h": 1000,
       "is_interactive": true,
-      "title": "LOP-03 · Tạo / sửa lớp · Cảnh báo trùng giáo viên (không chặn)",
+      "title": "TT-04 · Đối chiếu tái tục theo tháng · đang tải",
       "w": 1440,
-      "x": 10640,
-      "y": 89974
+      "x": 3040,
+      "y": 119404
     },
-    "Nhom_CH.dc.html": {
-      "expand": "fill",
-      "h": 140,
-      "title": "Nhóm con · Cấu hình bán hàng (CH)",
-      "w": 1440,
-      "x": 0,
-      "y": 130170
-    },
-    "CH03_chinh.dc.html": {
+    "TT04_trong.dc.html": {
       "expand": "fill",
       "h": 1000,
       "is_interactive": true,
-      "title": "CH-03 · Bảng giá có ngày hiệu lực · Danh sách bản và giá",
-      "w": 1440,
-      "x": 0,
-      "y": 130370
-    },
-    "CH03_loi.dc.html": {
-      "expand": "fill",
-      "h": 1000,
-      "is_interactive": true,
-      "title": "CH-03 · Bảng giá có ngày hiệu lực · Lỗi nhập liệu",
+      "title": "TT-04 · Đối chiếu tái tục theo tháng · trống",
       "w": 1440,
       "x": 1520,
-      "y": 130370
+      "y": 119404
     },
-    "CH04_chinh.dc.html": {
+    "TimKiem.dc.html": {
       "expand": "fill",
       "h": 1000,
       "is_interactive": true,
-      "title": "CH-04 · Chính sách chiết khấu · Hai tab Chiết khấu, Quà tặng",
+      "title": "CHUNG-11/12 · Tìm kiếm + thông báo",
       "w": 1440,
-      "x": 3040,
-      "y": 130370
-    },
-    "CH04_loi.dc.html": {
-      "expand": "fill",
-      "h": 1000,
-      "is_interactive": true,
-      "title": "CH-04 · Chính sách chiết khấu · Lỗi nhập liệu",
-      "w": 1440,
-      "x": 4560,
-      "y": 130370
-    },
-    "CH09_chinh.dc.html": {
-      "expand": "fill",
-      "h": 1000,
-      "is_interactive": true,
-      "title": "CH-09 · Điều khoản thanh toán · Danh sách và các đợt",
-      "w": 1440,
-      "x": 6080,
-      "y": 130370
-    },
-    "CH09_loi.dc.html": {
-      "expand": "fill",
-      "h": 1000,
-      "is_interactive": true,
-      "title": "CH-09 · Điều khoản thanh toán · Lỗi chia đợt",
-      "w": 1440,
-      "x": 7600,
-      "y": 130370
-    },
-    "TS06_them_em.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TS-06 · Thêm em vào cơ hội cũ · Chọn em (mặc định chọn hết; em trùng họ tên và năm sinh gộp một dòng)",
-      "w": 1440,
-      "x": 10640,
-      "y": 127430
-    },
-    "TS06_vuot.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TS-06 · Thêm em vào cơ hội cũ · Vượt tối đa 5 em (nút Thêm bị khoá, báo số em)",
-      "w": 1440,
-      "x": 12160,
-      "y": 127430
-    },
-    "TS02_nhom_con.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TS-02 · Lead · Chuyển giai đoạn C3: bắt buộc chọn nhóm con",
-      "w": 1440,
-      "x": 13680,
-      "y": 127430
-    },
-    "TS02_chua_c4c.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TS-02 · Lead · Chưa ở C4C: nút Tạo cơ hội mờ, có lý do",
-      "w": 1440,
-      "x": 15200,
-      "y": 127430
-    },
-    "TS02_xac_nhan.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TS-02 · Lead · C4D: bấm Tạo cơ hội hiện hộp xác nhận tạo thêm",
-      "w": 1440,
-      "x": 16720,
-      "y": 127430
-    },
-    "TS01b_nhom_con.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TS-01b · Lead · kanban · Kéo thẻ sang C3: bắt buộc chọn nhóm con",
-      "w": 1440,
-      "x": 3040,
-      "y": 26754
-    },
-    "TS07_tao.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TS-07 · Cơ hội · Tạo cơ hội (Source type, Source, Medium; danh sách em; kiểm trùng SĐT)",
-      "w": 1440,
-      "x": 0,
-      "y": 29794
-    },
-    "TS07_tao_trung.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TS-07 · Cơ hội · Tạo cơ hội · SĐT trùng: hộp cảnh báo (TS-14)",
-      "w": 1440,
-      "x": 4560,
-      "y": 29794
-    },
-    "TT02_l6.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "TT-02 · Phiếu tái tục · L6 Đồng ý tái tục (Tạo báo giá, Tạo đơn)",
-      "w": 1440,
-      "x": 10640,
-      "y": 117964
-    },
-    "BH05_vao_tai_tuc.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "title": "BH-05 · Đơn hàng · Đường vào: bấm Tạo đơn trên Phiếu tái tục (học sinh, lớp lấy từ phiếu)",
-      "w": 1440,
-      "x": 28880,
-      "y": 54604
+      "x": 1520,
+      "y": 121024
     }
   },
   "createdOnFiles": {
@@ -4177,7 +4220,34 @@
   "launch": {
     "view": "canvas"
   },
+  "noteOrder": [
+    "P0_s",
+    "P1_s",
+    "P2_s",
+    "P4_s",
+    "dn06_hoan",
+    "p0_19_10",
+    "p13s",
+    "p14s",
+    "p5a_n2",
+    "p5a_s1",
+    "p5a_t13",
+    "p5b_n7",
+    "p5b_s1",
+    "p5c_n1",
+    "ts0708",
+    "ts11",
+    "K15_ghi_chu"
+  ],
   "notes": {
+    "K15_ghi_chu": {
+      "fill": "orange",
+      "maxH": 120,
+      "text": "K15 Ngăn dưới nằm ở canvas Giáo viên (KG_K15).",
+      "w": 900,
+      "x": 16720,
+      "y": 8484
+    },
     "P0_s": {
       "fill": "orange",
       "maxH": 150,
@@ -4214,7 +4284,7 @@
       "bold": true,
       "fill": "red",
       "maxH": 300,
-      "size": "l",
+      "size": 40,
       "text": "HOÃN · DN06 Đặt mật khẩu mới (link từ email). Giữ artboard để tham khảo, không đưa vào gói bàn giao. Quên mật khẩu hiện chỉ hướng dẫn liên hệ quản trị viên (DN05).",
       "w": 520,
       "x": 8560,
@@ -4249,7 +4319,7 @@
     "p5a_n2": {
       "fill": "orange",
       "maxH": 420,
-      "size": "m",
+      "size": 24,
       "text": "MỨC C, KHÔNG VẼ (chỉ ghi dựng từ khuôn nào): BH-04 Từ chối báo giá = hộp K08 có lý do (giống hộp Từ chối ở P3). BH-10 Huỷ đơn = hộp K08 có lý do, đơn có tiền thì chỉ dẫn đi ticket CS-05. BH-11 Cơ hội đã có đơn nháp = hộp K08 xác nhận hai nút. TC-06 Huỷ phiếu thu = hộp K08 có lý do. TC-12 Bản in phiếu chi = K13 (khuôn mới đề xuất, đã duyệt). TC-14 Số dư khách hàng = danh sách K03. TC-16 Dùng số dư = hộp K08 xác nhận.",
       "w": 900,
       "x": 1520,
@@ -4265,15 +4335,16 @@
     },
     "p5a_t13": {
       "kind": "title1",
-      "maxW": 12080,
+      "maxW": 8000,
       "text": "GHI CHÚ CUỐI CANVAS: chỗ lệch, câu hỏi, màn dừng",
+      "w": 240,
       "x": 0,
       "y": 122634
     },
     "p5b_n7": {
       "fill": "orange",
       "maxH": 520,
-      "size": "m",
+      "size": 24,
       "text": "CÂU HỎI CÒN LẠI (LOP-01 đến LOP-03). 1) Mã cũ của lớp (CLS-2609-0014) là em tự đặt để minh hoạ; cần định dạng thật trong Sheet. 2) Chặn môn theo khối khi tạo lớp: chờ anh quyết, em chỉ vẽ nhắc nhẹ (không chặn). 3) Kanban: Từ chối và Huỷ là hai cột riêng; chuyển bước bằng nút trên bản ghi, kéo thẻ chỉ mở hộp xác nhận (LOP-05). 4) Hộp thoại LOP-05, 06 đã nằm trong LOP-02 để bấm thử; khung riêng từng hộp làm ở cụm sau. ĐÃ CHỐT 26/10 (đã sửa): Vận hành chỉ hiện từ Đã duyệt, trước đó hiện “—”; Đã trình và Đã xác nhận chỉ sửa được Time Table (sửa khi Đã xác nhận thì lớp quay về Đã trình); cảnh báo trùng giáo viên không chặn (R-LOP-08); nhãn “Khối”.",
       "w": 900,
       "x": 1520,
@@ -4290,7 +4361,7 @@
     "p5c_n1": {
       "fill": "orange",
       "maxH": 760,
-      "size": "m",
+      "size": 24,
       "text": "MÀN DỪNG (chờ khuôn mới). LOP-08 Lịch tuần cơ sở: K05 hiện chỉ có lịch một lớp, chưa có chế độ theo phòng, theo giáo viên, viền màu theo nhóm lớp, đánh dấu trùng. BUOI-03 Điểm danh trong ngày: K12 (điểm danh trên điện thoại) chưa có. CHỖ LỆCH. 1) Bản đồ không có nút “Xoá khung”; em thêm nút Xoá ở mỗi dòng khung giờ, chờ anh chốt. 2) Nút “Huỷ” của LOP-06 vẽ một lần, đóng lớp thành công không vẽ riêng. 3) BUOI-09, BUOI-10 bản đồ ghi “cả hai” (máy tính và điện thoại): em mới vẽ máy tính. 4) Nhóm lớp (R-LOP-14) hiện ở LOP-01, LOP-02, LOP-03, LOP-05 (đã kiểm). 5) Luật R-LOP-02, R-LOP-10, R-LOP-11 cần sửa theo việc bỏ LOP-07, LOP-10 (26/10) và theo Time Table sửa được ở Đã trình, Đã xác nhận. 6) Đưa về Nháp có thêm ở Đã trình, Đã xác nhận (người trình và quản lý cơ sở đều bấm được); R-LOP-01 cần sửa theo.",
       "w": 900,
       "x": 1520,
@@ -4794,7 +4865,13 @@
     "CH04_chinh.dc.html",
     "CH04_loi.dc.html",
     "CH09_chinh.dc.html",
-    "CH09_loi.dc.html"
+    "CH09_loi.dc.html",
+    "BH02_ck.dc.html",
+    "BH02_tinh.dc.html",
+    "BH02_loi_mang.dc.html",
+    "BH02_dang_luu.dc.html",
+    "K06c.dc.html",
+    "LOP01_admin.dc.html"
   ],
   "pages": [],
   "title": "HMT Platform · v68"

@@ -253,3 +253,8 @@ Ghi chú (26/10): Đ190 và Đ191 là lời OK trong chat, không có luật ri�
 - **QĐ-Đ241 (27/10, anh OK):** "Đã chuyển đơn" ở BH-01 và cột "Đơn" ở BH-02 làm sau khi #117 gộp, từ main, không chồng PR.
 - **QĐ-Đ242 (27/10, anh OK):** cột "Đơn" ở BH-02 hiện mã đơn và trạng thái đơn của dòng cho ai có quyền Xem báo giá; nút mở đơn chỉ hiện khi có quyền Xem đơn hàng.
 - **QĐ-Đ243 (27/10, anh OK):** bộ lọc tình trạng của danh sách và xuất báo giá lọc theo tình trạng hiển thị: "Đã chuyển đơn" là một lựa chọn như các tình trạng khác, các lựa chọn nối bằng HOẶC; "Đã gửi" chỉ gồm báo giá chưa chuyển hết sang đơn.
+- **QĐ-Đ244 (27/10, anh OK):** Design đăng canvas HMT Platform v124: K06c và 18 khung BH02 có thêm "Huỷ báo giá" (menu Hành động), dòng quà tặng gắn một em, sửa nút Lưu của khung mẫu BH02.
+- **QĐ-Đ245 (27/10, anh OK):** khung GV11_dt trên canvas Cổng giáo viên thêm nút "Mở học sinh" ở mỗi dòng học sinh (theo bản đồ GV-11), ghi rõ lịch sử buổi chỉ gồm buổi của giáo viên đó (R-GV-08). Chỉ sửa khung này.
+- **QĐ-Đ247 (27/10, anh OK):** kế hoạch dựng sửa Nháp BH-02 theo K06c gồm các PR: A hàm đọc chính sách quà tặng (chỉ đọc), B Huỷ báo giá, C lưới sửa Nháp, D1 dòng quà tặng, D2 màn Tạo báo giá từ cơ hội. Hộp Huỷ dùng khuôn "điền trường" có sẵn; không chứa được thì dừng và báo. Nút "Tạo báo giá" chỉ nằm ở bản ghi cơ hội.
+- **QĐ-Đ248 (27/10, anh OK):** BH-02 trên điện thoại giữ bản chỉ đọc, ẩn nút Sửa và Tạo, đến khi Design vẽ lưới điện thoại.
+- **QĐ-Đ249 (27/10, anh OK):** mục "In" trong menu Hành động của BH-02 để mờ, ghi "Có khi làm BH-03".
