@@ -318,7 +318,7 @@ Kiểm thử: `supabase/tests/database/037_p5a_bao_gia.test.sql` (161 bài); s�
 | `app.save_quotation(id, cơ hội, dòng)` | Tạo hoặc sửa Nháp, tính lại theo bảng giá hiệu lực lúc lưu (Đ169); trả cảnh báo vượt trần, không chặn (D3) | Báo giá · Tạo / Sửa |
 | `app.send_quotation(id)` | Nháp → Đã gửi: tính lại mọi dòng theo giá và chính sách ngày Gửi rồi đóng băng (Đ175), trả `{id, total_amount, previous_total, warnings}` (cảnh báo `HMT_TONG_TIEN_DOI` khi tổng đổi); cần dòng; mọi em đủ họ tên, năm sinh (Đ170); hạn = ngày gửi + `quotation_validity_days` | Báo giá · Sửa |
 | `app.reject_quotation`, `app.cancel_quotation` | Từ chối (lý do áp dụng cho báo giá, "Khác" bắt ghi chú); Huỷ (Đ171). Chặn khi đã có đơn đang sống (DB1b) | Báo giá · Sửa |
-| `app.get_quotation`, `list_quotations` (từ migration 053 trả thêm `student_names`: mảng tên các em theo thứ tự dòng, cho cột Học sinh của BH-01), `export_quotations` | Bản ghi kèm dòng, chiết khấu, em; danh sách phân trang ở máy chủ, tìm theo mã, phụ huynh, SĐT, tên em (D17); xuất theo Đ105 (Trưởng cơ sở, Kế toán, Admin) | Báo giá · Xem / Xuất |
+| `app.get_quotation`, `list_quotations` (từ migration 053 trả thêm `student_names`: mảng tên các em theo thứ tự dòng, cho cột Học sinh của BH-01), `export_quotations` (từ migration 054 có bộ lọc `converted`: true chỉ báo giá Đã gửi đã lên đơn còn sống, false loại các báo giá đó) | Bản ghi kèm dòng, chiết khấu, em; danh sách phân trang ở máy chủ, tìm theo mã, phụ huynh, SĐT, tên em (D17); xuất theo Đ105 (Trưởng cơ sở, Kế toán, Admin) | Báo giá · Xem / Xuất |
 | `app.opportunity_sales_documents` | Mã báo giá còn hiệu lực của cơ hội (trừ Từ chối và Huỷ, Đ106); DB1b thêm mã đơn | Hàm nội bộ |
 
 Làm tròn: Đ172, Đ176 đã vào docs/spec/04 (R-TIEN-37).
@@ -347,6 +347,18 @@ Mã lỗi có mã `HMT_…` kèm câu tiếng Việt: `HMT_CHUA_O_L8`, `HMT_BAO_
 
 ### Hiệu năng
 Đo trên `seed-lon` thêm 8.000 đơn: danh sách trang 1 theo cơ sở 4,6 ms (chỉ mục `sales_order_branch_created_idx`), lọc Đã duyệt 1,8 ms, tìm theo mã 1,7 ms, đơn của một cơ hội 4,1 ms, dòng của một đơn 2,5 ms. Tìm theo chữ quét tuần tự 12 ms ở 8.000 đơn (bảng nhỏ); khi ép dùng chỉ mục trigram thì 1 ms.
+
+## P5a-DB1b-2: đơn hàng, hàm đọc và xuất (migration `20261027000052`, Đ105, Đ181)
+Kiểm thử: `supabase/tests/database/044_p5a_don_hang_doc.test.sql` (87 bài). PR chỉ thêm hàm mới. Hàm đọc không chặn theo công tắc BAN_HANG (Đ181).
+
+| Hàm | Làm gì | Quyền |
+|---|---|---|
+| `app.get_order(id)` | Bản ghi đơn (BH-05): cột đơn, tên trạng thái, mã và tên liên quan (cơ hội, báo giá, phụ huynh, điều khoản), người lập, người trình, người duyệt đã chốt, lý do huỷ, dòng kèm chiết khấu và em, lịch đóng tiền, lịch sử theo thứ tự ghi | Đơn hàng · Xem |
+| `app.list_orders(bộ lọc, sắp xếp, giới hạn, vị trí)` | Danh sách phân trang ở máy chủ (50 mặc định, tối đa 100): lọc q (mã, phụ huynh, SĐT, tên em), trạng thái, cơ sở, cơ hội, báo giá, phụ huynh, của tôi, chờ tôi duyệt, ngày tạo; sắp xếp mới, cũ, tổng tiền | Đơn hàng · Xem |
+| `app.export_orders(bộ lọc)` | Xuất theo cùng bộ lọc, tối đa `export_max_rows`, ghi nhật ký xuất trước khi trả (Đ105: Trưởng cơ sở trong cơ sở, Kế toán, Admin) | Đơn hàng · Xuất |
+
+### Hiệu năng
+Đo trên `seed-lon` (8.000 đơn), Trưởng cơ sở CS1: `list_orders` một trang 9 ms (lần đầu 32 ms), lọc Đã duyệt 9 ms, tìm theo mã 4 ms, tìm theo chữ 8 ms, theo cơ hội 4 ms, chờ tôi duyệt 12 ms, trang thứ 20 là 19 ms; `get_order` 4 ms (lần đầu 13 ms); `export_orders` 4.000 dòng 608 ms.
 ## P5a-DB1c-2: báo giá, xem thử, gói bán, chính sách chiết khấu, ghi chú (migration `20261027000055`, Đ226, Đ228)
 Kiểm thử: `supabase/tests/database/046_p5a_bao_gia_xem_thu_goi_y.test.sql` (80 bài). Hàm chỉ đọc (không ghi tiền, không ghi nhật ký); công tắc BAN_HANG kiểm như `save_quotation` (Đ173). Mục d (mã đơn từng dòng trong `get_quotation`) làm sau khi đơn hàng (#107) gộp.
 
