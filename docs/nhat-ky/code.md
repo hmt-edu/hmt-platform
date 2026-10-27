@@ -3,6 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
+- P5a-DB1c-2 (migration `055`): `preview_quotation_lines`, `list_sellable_packages`, `list_applicable_discount_policies`, ghi chú báo giá (`note_target` QUOTATION). Bài kiểm 046.
 - Ma trận quyền phiên bản 6 (migration `050`, Đ204): Sale, CSKH có Huỷ đơn hàng; hành vi huỷ đơn kiểm ở bài của hàm huỷ đơn (DB1b-1).
 - Lead đổi giai đoạn bắt chọn nhóm con (migration 049, hộp chọn Sub-stage dùng chung trang Lead và Kanban, Hoàn tác chỉ khi khôi phục hợp lệ). Đặt sau 048 (#97) khi gộp.
 - Lead chỉ tạo cơ hội khi ở C4C (migration 048; C4D vẫn tạo thêm với xác nhận R-CRM-01). Luật R-CRM-40 ở #90.
