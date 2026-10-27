@@ -119,8 +119,9 @@ export function buildQuoteConfig(
           {
             value: 'DA_GUI',
             label: statusName('DA_GUI'),
-            hint: 'gồm cả báo giá đã chuyển đơn (tình trạng này tính từ dòng, không lưu)',
+            hint: 'gồm cả báo giá đã chuyển đơn',
           },
+          { value: 'DA_CHUYEN_DON', label: statusName('DA_CHUYEN_DON') },
           { value: 'TU_CHOI', label: statusName('TU_CHOI') },
           { value: 'HUY', label: statusName('HUY') },
         ],
@@ -145,6 +146,7 @@ export function buildQuoteConfig(
         options: [
           { value: 'NHAP', label: statusName('NHAP') },
           { value: 'DA_GUI', label: statusName('DA_GUI') },
+          { value: 'DA_CHUYEN_DON', label: statusName('DA_CHUYEN_DON') },
           { value: 'TU_CHOI', label: statusName('TU_CHOI') },
           { value: 'HUY', label: statusName('HUY') },
         ],

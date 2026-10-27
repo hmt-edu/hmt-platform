@@ -16,9 +16,11 @@ export const setupOf = (project: string): Setup =>
 
 export type Seeded = {
   /** Tên phụ huynh của từng báo giá dựng sẵn. */
-  parent: Record<'draft' | 'sent' | 'overdue' | 'rejected', string>;
+  parent: Record<'draft' | 'sent' | 'overdue' | 'rejected' | 'converted', string>;
   /** Mã báo giá. */
-  code: Record<'draft' | 'sent' | 'overdue' | 'rejected', string>;
+  code: Record<'draft' | 'sent' | 'overdue' | 'rejected' | 'converted', string>;
+  /** Mã đơn nháp sinh từ báo giá "Đã chuyển đơn". */
+  orderCode: string;
   students: { draft: [string, string] };
 };
 
@@ -39,6 +41,21 @@ async function clear(db: pg.Client, mark: string): Promise<void> {
   const leads = `(select id from app.lead where parent_name like $1)`;
   const opps = `(select id from app.opportunity where lead_id in ${leads})`;
   const quotes = `(select id from app.quotation where opportunity_id in ${opps})`;
+  const orders = `(select order_id from app.sales_order_line where quotation_line_id in (select id from app.quotation_line where quotation_id in ${quotes}))`;
+  await db.query(
+    `delete from app.sales_order_line_discount where line_id in (select id from app.sales_order_line where order_id in ${orders})`,
+    like,
+  );
+  await db.query(`delete from app.sales_order_installment where order_id in ${orders}`, like);
+  await db.query(`delete from app.sales_order_event where order_id in ${orders}`, like);
+  const orderIds = (
+    await db.query<{ id: string }>(
+      `select distinct order_id as id from app.sales_order_line where quotation_line_id in (select id from app.quotation_line where quotation_id in ${quotes})`,
+      like,
+    )
+  ).rows.map((r) => r.id);
+  await db.query(`delete from app.sales_order_line where order_id = any($1::uuid[])`, [orderIds]);
+  await db.query(`delete from app.sales_order where id = any($1::uuid[])`, [orderIds]);
   await db.query(
     `delete from app.quotation_line_discount where line_id in (select id from app.quotation_line where quotation_id in ${quotes})`,
     like,
@@ -71,6 +88,7 @@ export async function seed(setup: Setup): Promise<Seeded> {
       sent: `Chị ${setup.mark} dagui ${run}`,
       overdue: `Chị ${setup.mark} quahan ${run}`,
       rejected: `Chị ${setup.mark} tuchoi ${run}`,
+      converted: `Chị ${setup.mark} lendon ${run}`,
     };
     const students = { draft: ['Em Nháp Một', 'Em Nháp Hai'] as [string, string] };
     await db.query('begin');
@@ -154,6 +172,20 @@ export async function seed(setup: Setup): Promise<Seeded> {
       `select app.reject_quotation($1::uuid, 'KHONG_DUNG_CHINH_SACH', 'Giá chưa đúng')`,
       [rejectedQ.id],
     );
+    // Đã chuyển đơn: cơ hội đã thanh toán thật (L8, R-CRM-16) rồi tạo đơn từ báo giá Đã gửi (mọi dòng lên đơn).
+    const converted = await opp(parent.converted, 4, 'Em Lên Đơn');
+    const convertedQ = await quote(converted.id, [line(converted.ps, 4)]);
+    await db.query(`select app.send_quotation($1::uuid)`, [convertedQ.id]);
+    await db.query('reset role');
+    await db.query(
+      `update app.opportunity set stage_code = 'L8', substage_code = 'L8A' where id = $1::uuid`,
+      [converted.id],
+    );
+    await db.query('set local role authenticated');
+    const order = await db.query<{ code: string }>(
+      `select r ->> 'code' as code from (select app.create_order_from_quotation($1::uuid) as r) x`,
+      [convertedQ.id],
+    );
     await db.query('reset role');
     // Báo giá "Quá hạn": lùi hạn hiệu lực về 3 ngày trước (hạn chỉ để hiển thị, R-TIEN-05).
     await db.query(`update app.quotation set valid_until = current_date - 3 where id = $1::uuid`, [
@@ -167,7 +199,9 @@ export async function seed(setup: Setup): Promise<Seeded> {
         sent: sentQ.code,
         overdue: overdueQ.code,
         rejected: rejectedQ.code,
+        converted: convertedQ.code,
       },
+      orderCode: order.rows[0]?.code ?? '',
       students,
     };
   } catch (error) {

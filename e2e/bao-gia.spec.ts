@@ -26,7 +26,7 @@ async function openQuotes(page: Page, account: string, mark: string) {
   await expect(page.getByRole('heading', { level: 1, name: 'Báo giá' })).toBeVisible();
   await page.getByRole('searchbox').fill(mark);
   // Tìm kiếm chờ một nhịp rồi mới gọi máy chủ: đợi tới khi chỉ còn bốn báo giá của dự án.
-  await expect(page.getByText('1–4 / 4')).toBeVisible();
+  await expect(page.getByText('1–5 / 5')).toBeVisible();
 }
 
 function list(page: Page) {
@@ -70,10 +70,26 @@ test('Tìm theo mã và lọc nhanh Tình trạng', async ({ page }, testInfo) =
   await expect(page.getByText('1–1 / 1')).toBeVisible();
   await expect(list(page).getByText(seeded.parent.rejected)).toBeVisible();
   await page.getByRole('searchbox').fill(setup.mark);
-  await expect(page.getByText('1–4 / 4')).toBeVisible();
+  await expect(page.getByText('1–5 / 5')).toBeVisible();
   await pickFilters(page, ['Nháp']);
   await expect(page.getByText('1–1 / 1')).toBeVisible();
   await expect(list(page).getByText(seeded.code.draft)).toBeVisible();
+});
+
+test('Lọc nhanh Đã chuyển đơn: chỉ báo giá đã lên đơn; Đã gửi gồm cả báo giá đã lên đơn', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openQuotes(page, setup.sale, setup.mark);
+  await pickFilters(page, ['Đã chuyển đơn']);
+  await expect(page.getByText('1–1 / 1')).toBeVisible();
+  await expect(list(page).getByText(seeded.code.converted)).toBeVisible();
+  await expect(list(page).getByText(seeded.code.sent)).toHaveCount(0);
+  // Đã gửi gồm báo giá đã chuyển đơn (tình trạng này tính từ dòng): ba báo giá Đã gửi, quá hạn, đã chuyển đơn.
+  await pickFilters(page, ['Đã chuyển đơn']); // bỏ chọn
+  await pickFilters(page, ['Đã gửi']);
+  await expect(page.getByText('1–3 / 3')).toBeVisible();
+  await expect(list(page).getByText(seeded.code.converted)).toBeVisible();
 });
 
 test('Trưởng cơ sở có nút Xuất; file CSV có BOM và báo giá trong phạm vi', async ({
@@ -125,6 +141,22 @@ test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút
   await expect(page.getByText('Chưa thấy em? Thêm em ở cơ hội.')).toHaveCount(0);
   // Phần sửa Nháp chưa dựng (chờ khuôn của Design): không có nút Sửa.
   await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toHaveCount(0);
+  await expectAccessible(page);
+});
+
+test('BH-02: cột Đơn nêu mã và trạng thái đơn; báo giá chưa lên đơn hiện dấu gạch', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.converted);
+  const grid = page.getByRole(isPhone(page) ? 'list' : 'table', { name: 'Gói học' });
+  await expect(grid.getByText(seeded.orderCode)).toBeVisible();
+  await expect(grid.getByText('Nháp', { exact: true })).toBeVisible();
+  // Báo giá đã lên đơn: không còn nút Từ chối (đã có đơn đang sống).
+  await expect(page.getByRole('button', { name: 'Từ chối', exact: true })).toHaveCount(0);
+  await page.goto('/crm/bao-gia');
+  await openRecord(page, setup.sale, setup.mark, seeded.code.sent);
+  await expect(page.getByText(seeded.orderCode)).toHaveCount(0);
   await expectAccessible(page);
 });
 

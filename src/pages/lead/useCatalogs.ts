@@ -39,6 +39,7 @@ const CATALOGS = [
   'QUOTATION_STATUS',
   'STUDY_MODE',
   'REJECT_REASON',
+  'ORDER_STATUS',
 ];
 const FOREVER = Infinity;
 
