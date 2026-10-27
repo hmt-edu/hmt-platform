@@ -449,6 +449,23 @@ select pg_temp.mk('x3', '0900009002', jsonb_build_array(pg_temp.line(pg_temp.ps(
 select pg_temp.claims(pg_temp.uid('admin'), 'aal1');
 select is(pg_temp.err($$select app.cancel_order(pg_temp.o('x3'), 'KHACH_DOI_Y')$$), 'HMT_KHONG_CO_QUYEN', 'Admin chưa xác thực hai bước không huỷ được');
 
+-- ================= Đ215: không kiểm người lập khi lưu, trình; người duyệt chốt theo người lập; ghi người trình =================
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.mk('z1', '0900009002', jsonb_build_array(pg_temp.line(pg_temp.ps('0900009002', 1), 'LC-TOAN-K09', 'OFF', 10)));
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select is(pg_temp.err($$select app.save_order(pg_temp.o('z1'), null, pg_temp.term('CHIA_3_DOT'))$$), null,
+          'Đ215: đồng nghiệp cùng cơ sở có quyền Sửa lưu được đơn Nháp của người khác');
+select is(pg_temp.err($$select app.submit_order(pg_temp.o('z1'))$$), null, 'Đ215: đồng nghiệp cùng cơ sở trình được đơn Nháp của người khác');
+select is((select assigned_approver_id from app.sales_order where id = pg_temp.o('z1')), pg_temp.uid('bm1'),
+          'Đ215: người duyệt vẫn chốt theo NGƯỜI LẬP (quản lý của sales1 là bm1)');
+select is((select submitted_by from app.sales_order where id = pg_temp.o('z1')), pg_temp.uid('cskh1'), 'Đ215: ghi người trình (submitted_by)');
+select is((select created_by from app.sales_order where id = pg_temp.o('z1')), pg_temp.uid('sales1'), 'Đ215: người lập vẫn là người tạo đơn');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.mk('z2', '0900009002', jsonb_build_array(pg_temp.line(pg_temp.ps('0900009002', 1), 'LC-TOAN-K09', 'OFF', 10)));
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.save_order(pg_temp.o('z2'), null, pg_temp.term('CHIA_3_DOT'))$$), 'HMT_KHONG_CO_QUYEN', 'Đ215: khác cơ sở thì vẫn không sửa được (quyền theo cơ sở)');
+select is(pg_temp.err($$select app.submit_order(pg_temp.o('z2'))$$), 'HMT_KHONG_CO_QUYEN', 'Đ215: khác cơ sở thì vẫn không trình được');
+
 -- ================= Lịch sử, trạng thái, RLS, nhật ký =================
 select throws_ok($$select pg_temp.sudo('update app.sales_order_event set note = ''sửa''')$$, null, null, 'Lịch sử đơn chỉ thêm: không sửa được');
 select throws_ok($$select pg_temp.sudo('delete from app.sales_order_event')$$, null, null, 'Lịch sử đơn chỉ thêm: không xoá được');

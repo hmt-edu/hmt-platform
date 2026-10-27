@@ -267,8 +267,9 @@ create trigger sales_order_line_discount_lock before insert or update or delete 
 create trigger sales_order_installment_lock before insert or update or delete on app.sales_order_installment
   for each row execute function app.tg_sales_order_child_lock();
 
--- Đơn đã trình hoặc đã khoá không đổi tổng tiền, điều khoản, ngày tính giá, cơ sở, gốc, báo giá (R-TIEN-03). Chỉ trạng thái, người duyệt,
--- hạn huỷ và các cột ghi việc trình, duyệt, huỷ được đổi. (Đơn Nháp sửa tự do qua hàm.)
+-- Đơn đã trình hoặc đã duyệt không đổi tổng tiền, điều khoản, ngày tính giá, cơ sở, gốc (cơ hội, phiếu tái tục), phụ huynh, báo giá, cờ cần tích
+-- đồng ý (R-TIEN-03). Được đổi: trạng thái, đường duyệt và người duyệt đã chốt, các cột trình, duyệt, đồng ý, lý do và ghi chú huỷ, mã cũ,
+-- ô tìm kiếm. (Đơn Nháp sửa tự do qua hàm.)
 create or replace function app.tg_sales_order_lock()
 returns trigger
 language plpgsql
@@ -649,6 +650,7 @@ declare
   l app.quotation_line;
   v_new_line uuid;
   v_picked integer := 0;
+  v_constraint text;
 begin
   select * into v_q from app.quotation where id = p_quotation_id for update;
   if v_q.id is null then
@@ -709,7 +711,12 @@ begin
   return jsonb_build_object('id', v_id, 'code', v_code, 'total_amount', (select total_amount from app.sales_order where id = v_id));
 exception
   when unique_violation then
-    perform app.raise_error('HMT_DONG_DA_CO_DON', 'Có dòng của báo giá đã nằm trong một đơn đang xử lý.');
+    -- Chỉ lỗi trùng đúng chỉ mục "một dòng báo giá không nằm trong hai đơn sống" mới đổi thành lỗi có mã; lỗi trùng khác ném lại.
+    get stacked diagnostics v_constraint = constraint_name;
+    if v_constraint = 'sales_order_line_quotation_live_uidx' then
+      perform app.raise_error('HMT_DONG_DA_CO_DON', 'Có dòng của báo giá đã nằm trong một đơn đang xử lý.');
+    end if;
+    raise;
 end;
 $$;
 
@@ -760,7 +767,7 @@ $$;
 
 -- ---------------------------------------------------------------------------
 -- Lưu đơn Nháp: điều khoản thanh toán, lớp, ngày vào lớp, và (đơn thẳng từ cơ hội) cả dòng, giờ.
--- Ai gọi: Đơn hàng · Sửa ở cơ sở của đơn. Đầu vào: p_lines và p_payment_term_id (null = giữ nguyên).
+-- Ai gọi: Đơn hàng · Sửa ở cơ sở của đơn; KHÔNG kiểm người gọi có phải người lập (Đ215): đồng nghiệp có quyền Sửa cùng cơ sở lưu được đơn Nháp của nhau. Đầu vào: p_lines và p_payment_term_id (null = giữ nguyên).
 --   Đơn từ báo giá: p_lines là mảng {line_no, class_id, enrol_start_date}; giá, giờ, chiết khấu giữ nguyên đã đóng băng (R-TIEN-14).
 --   Đơn thẳng từ cơ hội: p_lines là danh sách dòng đầy đủ (khuôn như lúc tạo), tính lại theo giá và chính sách của NGÀY TẠO ĐƠN (R-TIEN-14).
 -- Luật: chỉ đơn Nháp; R-GD-06 (chọn lớp thì cần ngày vào lớp); R-GD-08 (kiểm lớp khi lưu); R-TIEN-07 (lịch đóng tiền tính lại mỗi lần lưu).
@@ -855,8 +862,9 @@ end;
 $$;
 
 -- ---------------------------------------------------------------------------
--- Trình đơn: Nháp → Đã trình (R-TIEN-06, R-HT-06, Đ203, Đ205).
--- Ai gọi: Đơn hàng · Sửa ở cơ sở của đơn. Kết quả: {id, approver_id, route}.
+-- Trình đơn: Nháp → Đã trình (R-TIEN-06, R-HT-06, Đ203, Đ205, Đ215).
+-- Ai gọi: Đơn hàng · Sửa ở cơ sở của đơn; KHÔNG kiểm người gọi có phải người lập (Đ215). Người duyệt vẫn chốt theo NGƯỜI LẬP; lịch sử ghi người trình
+-- (submitted_by). Kết quả: {id, approver_id, route}.
 -- Luật: cần ít nhất một dòng; mọi em đủ họ tên, năm sinh (R-TIEN-35); điều khoản thanh toán đã chọn và lịch đóng tiền hợp lệ (R-TIEN-07);
 -- lớp trên dòng kiểm lại, chọn lớp thì có ngày vào lớp (R-GD-06, R-GD-08); chốt người duyệt lúc trình (R-HT-06): quản lý trực tiếp của
 -- NGƯỜI LẬP, hoặc chính Trưởng cơ sở lập (tự duyệt); không có quản lý thì không trình được (HMT_KHONG_CO_QUAN_LY);
