@@ -208,20 +208,23 @@ export function ListScreen<Row>({
           }}
         />
       </PanelHost>
-      <PanelHost
-        sheet={sheet}
-        open={open === 'group'}
-        onOpenChange={(o) => (o ? openPanel('group') : close())}
-        title="Group By"
-        footer={sheetFooter}
-        trigger={
-          <Button icon="groupBy" className={sheet ? triggerClass : undefined}>
-            Group By
-          </Button>
-        }
-      >
-        <GroupPanel config={config} state={working} onChange={change} />
-      </PanelHost>
+      {/* Màn chưa có trường nhóm (máy chủ chưa hỗ trợ Group By) thì ẩn nút, không hiện nút rỗng. */}
+      {config.groupFields.length > 0 && (
+        <PanelHost
+          sheet={sheet}
+          open={open === 'group'}
+          onOpenChange={(o) => (o ? openPanel('group') : close())}
+          title="Group By"
+          footer={sheetFooter}
+          trigger={
+            <Button icon="groupBy" className={sheet ? triggerClass : undefined}>
+              Group By
+            </Button>
+          }
+        >
+          <GroupPanel config={config} state={working} onChange={change} />
+        </PanelHost>
+      )}
       <PanelHost
         sheet={sheet}
         open={open === 'fav' || open === 'save'}
