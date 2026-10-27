@@ -225,3 +225,45 @@ test('BH-02: Từ chối báo giá qua hộp BH-04, bắt chọn lý do; xong hi
   await expect(page.locator('b', { hasText: 'Lý do từ chối' })).toBeVisible();
   await expect(page.getByRole('alertdialog')).toHaveCount(0);
 });
+
+test('BH-02: menu Hành động có In (mờ, chưa làm) và Huỷ báo giá; có đơn đang xử lý thì hộp báo lỗi và không đóng', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.converted);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  const printItem = page.getByRole('menuitem', { name: /^In/ });
+  await expect(printItem).toHaveAttribute('aria-disabled', 'true');
+  await expect(printItem).toContainText('Có khi làm BH-03');
+  await page.getByRole('menuitem', { name: 'Huỷ báo giá' }).click();
+  const dialog = page.getByRole('alertdialog');
+  await expect(dialog.getByRole('heading', { name: 'Huỷ báo giá' })).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Đóng' })).toBeVisible();
+  await expectAccessible(page);
+  await dialog.getByRole('button', { name: 'Xác nhận huỷ' }).click();
+  await expect(
+    dialog.getByText('Báo giá đã có đơn đang xử lý, không huỷ được. Huỷ đơn trước.'),
+  ).toBeVisible();
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'Đóng' }).click();
+  await expect(dialog).toHaveCount(0);
+});
+
+test('BH-02: Huỷ báo giá Từ chối có ghi chú; sau huỷ chỉ còn xem, hết mục Huỷ', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.rejected);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'Huỷ báo giá' }).click();
+  const dialog = page.getByRole('alertdialog');
+  await dialog.getByLabel('Ghi chú').fill('Phụ huynh không quay lại');
+  await dialog.getByRole('button', { name: 'Xác nhận huỷ' }).click();
+  await expect(page.getByText('Đã huỷ báo giá.').first()).toBeVisible();
+  await expect(page.getByText(/Báo giá đã huỷ: Phụ huynh không quay lại/)).toBeVisible();
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await expect(page.getByRole('menuitem', { name: 'Huỷ báo giá' })).toHaveCount(0);
+  await expect(page.getByRole('menuitem', { name: /^In/ })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: 'Gửi', exact: true })).toHaveCount(0);
+});
