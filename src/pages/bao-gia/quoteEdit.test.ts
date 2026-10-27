@@ -4,6 +4,7 @@ import {
   buildSaveLines,
   modesOfPrices,
   parseQuantity,
+  pruneIssues,
   rowsFromRecord,
   rowsSignature,
   validateRows,
@@ -138,5 +139,22 @@ describe('quoteEdit', () => {
   it('hình thức của gói: OFF trước ONL, chỉ hình thức có giá', () => {
     expect(modesOfPrices({ ONL: 120000, OFF: 220000 })).toEqual(['OFF', 'ONL']);
     expect(modesOfPrices({ ONL: 300000 })).toEqual(['ONL']);
+  });
+
+  it('lỗi thiếu số lượng tự mất khi nhập số hợp lệ, dòng khác giữ lỗi', () => {
+    const a = { ...blankRow(), packageId: 'p1', packageCode: 'A', packageName: 'Gói A' };
+    const b = { ...blankRow(), packageId: 'p2', packageCode: 'B', packageName: 'Gói B' };
+    const issues = validateRows([a, b]);
+    expect(issues).toHaveLength(2);
+    const fixed = pruneIssues(issues, [{ ...a, quantity: '5' }, b]);
+    expect(fixed.map((i) => i.rowKey)).toEqual([b.key]);
+    expect(
+      pruneIssues(fixed, [
+        { ...a, quantity: '5' },
+        { ...b, quantity: '1,5' },
+      ]),
+    ).toEqual([]);
+    // Xoá lại ô thì không tự báo lỗi mới trước khi bấm Lưu.
+    expect(pruneIssues([], [a, b])).toEqual([]);
   });
 });

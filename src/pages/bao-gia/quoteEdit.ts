@@ -149,3 +149,9 @@ export function modesOfPrices(prices: Record<string, number>): string[] {
     a === 'OFF' ? -1 : b === 'OFF' ? 1 : a.localeCompare(b),
   );
 }
+
+/** Sau khi sửa dòng: bỏ lỗi của những dòng nay đã hợp lệ (lỗi tự mất khi nhập đúng), giữ lỗi của dòng còn sai. */
+export function pruneIssues(issues: RowIssue[], rows: EditRow[]): RowIssue[] {
+  const still = new Set(validateRows(rows).map((i) => i.rowKey));
+  return issues.filter((i) => still.has(i.rowKey));
+}

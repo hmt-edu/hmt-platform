@@ -168,8 +168,10 @@ test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khu
   await expect(page.getByText('Chưa lưu được.')).toBeVisible();
   await expect(page.getByText(/^Dòng 1 \(LC-TOAN-K09 · .*\) thiếu số lượng\.$/)).toBeVisible();
   await expect(page.getByText('Bắt buộc nhập số lượng.')).toBeVisible();
-  // Nhập lại, đổi 10 giờ thành 20 giờ, Lưu.
+  // Nhập số hợp lệ thì lỗi tự mất (cả dòng báo và khối "Chưa lưu được"); đổi 10 giờ thành 20 giờ, Lưu.
   await page.getByLabel('Số lượng dòng 1').fill('20');
+  await expect(page.getByText('Bắt buộc nhập số lượng.')).toHaveCount(0);
+  await expect(page.getByText('Chưa lưu được.')).toHaveCount(0);
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu báo giá.').first()).toBeVisible();
   const view = page.getByRole('table', { name: 'Gói học' });

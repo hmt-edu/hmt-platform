@@ -24,6 +24,7 @@ import { useLeadCatalogs } from '../lead/useCatalogs';
 import { QuoteLineGrid } from './QuoteLineGrid';
 import {
   buildSaveLines,
+  pruneIssues,
   rowsFromRecord,
   rowsSignature,
   validateRows,
@@ -525,7 +526,10 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                 {students.isError && <Alert tone="danger">{errorOf(students.error).message}</Alert>}
                 <QuoteLineGrid
                   rows={rows}
-                  onChange={setRows}
+                  onChange={(next) => {
+                    setRows(next);
+                    setIssues((prev) => pruneIssues(prev, next));
+                  }}
                   students={students.data ?? []}
                   opportunityId={record.opportunity_id}
                   opportunityHref={`/crm/co-hoi/${record.opportunity_id}`}
