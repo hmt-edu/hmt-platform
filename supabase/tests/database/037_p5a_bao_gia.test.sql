@@ -313,6 +313,10 @@ select ok((app.list_quotations('{}', 'created_desc', 1, 0) ->> 'total')::int > 1
 select ok(jsonb_array_length(app.list_quotations('{}', 'created_desc', 100000, 0) -> 'rows') <= 100, 'Phân trang: tối đa 100 dòng mỗi trang');
 select is((app.list_quotations('{}', 'total_desc', 1, 0) -> 'rows' -> 0 ->> 'total_amount')::bigint, (select max(total_amount) from app.quotation where branch_id = (select branch_id from app.user_account where id = pg_temp.uid('sales1'))), 'Sắp xếp theo tổng tiền giảm dần');
 select is((select bool_and(r ? 'overdue_days') from jsonb_array_elements(app.list_quotations('{}') -> 'rows') r), true, 'Danh sách có cột overdue_days ở mọi dòng (null khi chưa quá hạn)');
+-- P5a-DB1c: cột "Học sinh" của BH-01 hiện đủ tên các em, theo thứ tự dòng, không trùng.
+select is(app.list_quotations(jsonb_build_object('q', (select code from qs where key = 'i1'))) -> 'rows' -> 0 -> 'student_names', '["Em Một", "Em Ba"]'::jsonb, 'BH-01: student_names đủ tên các em theo thứ tự dòng');
+select is(app.list_quotations(jsonb_build_object('q', (select code from qs where key = 'a1'))) -> 'rows' -> 0 -> 'student_names', '["Em Một"]'::jsonb, 'BH-01: một em thì mảng một tên');
+select is(app.list_quotations(jsonb_build_object('q', (select code from qs where key = 'e1'))) -> 'rows' -> 0 -> 'student_names', '[]'::jsonb, 'BH-01: báo giá chưa có dòng thì mảng rỗng');
 
 -- ================= Xuất (Đ105) =================
 select is(pg_temp.err($$select app.export_quotations('{}')$$), 'HMT_KHONG_CO_QUYEN', 'Đ105: Sale không xuất được báo giá');
