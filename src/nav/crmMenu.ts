@@ -98,7 +98,7 @@ export const CRM_MENU: MenuGroup[] = [
     icon: 'sales',
     feature: 'BAN_HANG',
     entries: [
-      { code: 'BH-01', label: 'Báo giá', slug: 'bao-gia', requires: can('QUOTATION'), stage: GD1 },
+      { code: 'BH-01', label: 'Báo giá', slug: 'bao-gia', requires: can('QUOTATION'), stage: '' },
       {
         code: 'BH-06',
         label: 'Đơn hàng',

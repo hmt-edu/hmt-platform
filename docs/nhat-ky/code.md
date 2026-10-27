@@ -3,6 +3,9 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang.)
 
 ## Đang làm
+- P5a-DB1b-2 (migration `052`): `get_order`, `list_orders`, `export_orders`. Bài kiểm 044. Nhánh tách từ #107; mở PR sau khi #107 gộp.
+- P5a-DB1b-1 (migration `051`): đơn hàng (bảng, hàm ghi). Bài kiểm 043; seed-lon thêm 8.000 đơn; sửa bài 006 (26 danh mục hệ thống). Lớp chờ P5b (`check_order_line_class`), phiếu thu chờ DB2 (`order_has_receipt`).
+- P5a-DB1c-2 (migration `055`): `preview_quotation_lines`, `list_sellable_packages`, `list_applicable_discount_policies`, ghi chú báo giá (`note_target` QUOTATION). Bài kiểm 046.
 - Ma trận quyền phiên bản 6 (migration `050`, Đ204): Sale, CSKH có Huỷ đơn hàng; hành vi huỷ đơn kiểm ở bài của hàm huỷ đơn (DB1b-1).
 - Lead đổi giai đoạn bắt chọn nhóm con (migration 049, hộp chọn Sub-stage dùng chung trang Lead và Kanban, Hoàn tác chỉ khi khôi phục hợp lệ). Đặt sau 048 (#97) khi gộp.
 - Lead chỉ tạo cơ hội khi ở C4C (migration 048; C4D vẫn tạo thêm với xác nhận R-CRM-01). Luật R-CRM-40 ở #90.
