@@ -37,6 +37,10 @@ const OpportunityListPage = lazyScreen(
   () => import('../pages/co-hoi/OpportunityListPage'),
   'OpportunityListPage',
 );
+const QuotationListPage = lazyScreen(
+  () => import('../pages/bao-gia/QuotationListPage'),
+  'QuotationListPage',
+);
 const OpportunityRecordPage = lazyScreen(
   () => import('../pages/co-hoi/OpportunityRecordPage'),
   'OpportunityRecordPage',
@@ -151,6 +155,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="co-hoi">
                 <OpportunityRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'bao-gia',
+            element: (
+              <GatedCrmEntry slug="bao-gia">
+                <QuotationListPage />
               </GatedCrmEntry>
             ),
           },
