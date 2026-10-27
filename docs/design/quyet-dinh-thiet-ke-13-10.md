@@ -243,3 +243,13 @@ Ghi chú (26/10): Đ190 và Đ191 là lời OK trong chat, không có luật ri�
 - **QĐ-Đ231 (27/10, anh OK):** Design đăng canvas HMT Platform v120: khuôn K06c và 14 khung BH-02 đổi sang lưới chỉnh sửa theo Đ226–Đ228.
 - **QĐ-Đ232 (27/10, anh duyệt):** duyệt BH-02 (14 khung P5 đổi bố cục theo Đ226–Đ228) và duyệt khuôn K06c "Lưới dòng chỉnh sửa trực tiếp". Code được dựng phần sửa Nháp của BH-02 theo K06c: hộp "Chọn em", hộp "Chọn gói", hộp "Chọn chính sách", dòng Số lượng theo đơn vị gói, giờ tặng qua chính sách tặng giờ, % có ô nhập khi chính sách không "áp đúng mức", Tổng cộng báo giá từ `preview_quotation_lines`. Dòng chưa chọn em chưa tính giá ("Chọn em để xem giá"). Dòng quà tặng (R-TIEN-30) chưa vẽ: chờ Design, không tự dựng. Giữ Đ212 và mỗi PR một OK sau commit cuối.
 - **QĐ-Đ233 (27/10, anh OK):** Design đăng GV-08 điện thoại và khuôn K15 Ngăn dưới (đã duyệt ở Đ230).
+- **QĐ-Đ234 (27/10, anh OK):** Design đăng khung KG_K15 (khuôn P0 K15 Ngăn dưới, anh duyệt Đ230) lên canvas Cổng giáo viên.
+- **QĐ-Đ235 (27/10, anh OK):** trên canvas HMT Platform, ghi chú "K15 Ngăn dưới nằm ở canvas Giáo viên (KG_K15)" đặt cạnh khung K06c; không thêm file (canvas đang ở 512 file).
+- **QĐ-Đ236 (27/10, anh OK):** Design sửa Ghi chú cuối mục 2, 7, 11, 12: bỏ "chờ gộp #90" vì luật #90 đã gộp 26/10; mục 11 ghi Email phụ huynh, ô Mục tiêu/nhu cầu tiếp theo, Lộ trình tiếp theo đã vào luật R-GD-13. Đăng cùng một lượt với KG_K15.
+- **QĐ-Đ237 (27/10, anh OK):** khung GV11_dt chỉ báo hiện trạng so với bản đồ GV-11 (Bản ghi K06, hạng B); chưa sửa.
+- **QĐ-Đ238 (27/10, anh OK):** tab "Tình hình học tập" ở TT-02 vẽ lại mờ, không có số mẫu, theo R-GD-13: hiện nhưng mờ, chưa dùng, chỉ bật ở giai đoạn Giáo viên.
+- **QĐ-Đ239 (27/10, anh OK):** BH-02 có mục "Huỷ báo giá" trong menu Hành động (R-CRM-19, Đ171). Hàm cancel_quotation đã có: huỷ được báo giá Nháp, Đã gửi, Từ chối; ghi chú không bắt buộc; cần quyền Báo giá · Sửa và công tắc Bán hàng bật; báo giá có đơn đang sống thì chặn. Design vẽ trước, Code dựng sau.
+- **QĐ-Đ240 (27/10, anh OK):** các PR xếp chồng nhau gộp bằng merge commit (không squash), để khỏi OK lại dây chuyền. PR độc lập vẫn gộp squash.
+- **QĐ-Đ241 (27/10, anh OK):** "Đã chuyển đơn" ở BH-01 và cột "Đơn" ở BH-02 làm sau khi #117 gộp, từ main, không chồng PR.
+- **QĐ-Đ242 (27/10, anh OK):** cột "Đơn" ở BH-02 hiện mã đơn và trạng thái đơn của dòng cho ai có quyền Xem báo giá; nút mở đơn chỉ hiện khi có quyền Xem đơn hàng.
+- **QĐ-Đ243 (27/10, anh OK):** bộ lọc tình trạng của danh sách và xuất báo giá lọc theo tình trạng hiển thị: "Đã chuyển đơn" là một lựa chọn như các tình trạng khác, các lựa chọn nối bằng HOẶC; "Đã gửi" chỉ gồm báo giá chưa chuyển hết sang đơn.
