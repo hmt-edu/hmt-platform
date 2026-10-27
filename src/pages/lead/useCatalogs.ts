@@ -10,6 +10,7 @@ type CatalogItem = {
   is_active: boolean;
   parent_id: string | null;
   requires_note: boolean;
+  applies_to: string[] | null;
 };
 type Campaign = { id: string; name: string; is_active: boolean };
 
@@ -36,6 +37,8 @@ const CATALOGS = [
   'APPOINTMENT_CANCEL_REASON',
   'ACCOUNT_LOCK_REASON',
   'QUOTATION_STATUS',
+  'STUDY_MODE',
+  'REJECT_REASON',
 ];
 const FOREVER = Infinity;
 
@@ -44,6 +47,8 @@ export type LeadCatalogs = {
   name: (catalog: string, code: string | null | undefined) => string | undefined;
   /** Các mục đang dùng của danh mục, đúng thứ tự sắp xếp. */
   options: (catalog: string) => { value: string; label: string }[];
+  /** Như `options`, nhưng chỉ mục áp dụng cho một đối tượng (cột applies_to; để trống là áp dụng mọi nơi), ví dụ lý do từ chối của báo giá. */
+  optionsFor: (catalog: string, appliesTo: string) => { value: string; label: string }[];
   /** Các mục đang dùng của danh mục con thuộc một mục cha (nguồn của loại nguồn, kênh của nguồn, phường của tỉnh). */
   childrenOf: (
     catalog: string,
@@ -73,7 +78,7 @@ export function useLeadCatalogs(): LeadCatalogs {
       const { data, error } = await supabase
         .schema('app')
         .from('catalog_item')
-        .select('id, catalog_code, code, name, is_active, parent_id, requires_note')
+        .select('id, catalog_code, code, name, is_active, parent_id, requires_note, applies_to')
         .in('catalog_code', CATALOGS)
         .order('sort_order');
       if (error) throw new Error(error.message);
@@ -104,6 +109,15 @@ export function useLeadCatalogs(): LeadCatalogs {
       name: (catalog, code) => (code ? byKey.get(`${catalog}|${code}`)?.name : undefined),
       options: (catalog) =>
         all.filter((i) => i.catalog_code === catalog && i.is_active).map(toOption),
+      optionsFor: (catalog, appliesTo) =>
+        all
+          .filter(
+            (i) =>
+              i.catalog_code === catalog &&
+              i.is_active &&
+              (!i.applies_to || i.applies_to.length === 0 || i.applies_to.includes(appliesTo)),
+          )
+          .map(toOption),
       childrenOf: (catalog, parentCatalog, parentCode) => {
         const parent = parentCode ? byKey.get(`${parentCatalog}|${parentCode}`) : undefined;
         if (!parent) return [];
