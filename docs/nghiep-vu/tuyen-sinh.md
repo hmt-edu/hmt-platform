@@ -318,7 +318,7 @@ Kiểm thử: `supabase/tests/database/037_p5a_bao_gia.test.sql` (161 bài); s�
 | `app.save_quotation(id, cơ hội, dòng)` | Tạo hoặc sửa Nháp, tính lại theo bảng giá hiệu lực lúc lưu (Đ169); trả cảnh báo vượt trần, không chặn (D3) | Báo giá · Tạo / Sửa |
 | `app.send_quotation(id)` | Nháp → Đã gửi: tính lại mọi dòng theo giá và chính sách ngày Gửi rồi đóng băng (Đ175), trả `{id, total_amount, previous_total, warnings}` (cảnh báo `HMT_TONG_TIEN_DOI` khi tổng đổi); cần dòng; mọi em đủ họ tên, năm sinh (Đ170); hạn = ngày gửi + `quotation_validity_days` | Báo giá · Sửa |
 | `app.reject_quotation`, `app.cancel_quotation` | Từ chối (lý do áp dụng cho báo giá, "Khác" bắt ghi chú); Huỷ (Đ171). Chặn khi đã có đơn đang sống (DB1b) | Báo giá · Sửa |
-| `app.get_quotation`, `list_quotations`, `export_quotations` | Bản ghi kèm dòng, chiết khấu, em; danh sách phân trang ở máy chủ, tìm theo mã, phụ huynh, SĐT, tên em (D17); xuất theo Đ105 (Trưởng cơ sở, Kế toán, Admin) | Báo giá · Xem / Xuất |
+| `app.get_quotation`, `list_quotations` (từ migration 053 trả thêm `student_names`: mảng tên các em theo thứ tự dòng, cho cột Học sinh của BH-01), `export_quotations` | Bản ghi kèm dòng, chiết khấu, em; danh sách phân trang ở máy chủ, tìm theo mã, phụ huynh, SĐT, tên em (D17); xuất theo Đ105 (Trưởng cơ sở, Kế toán, Admin) | Báo giá · Xem / Xuất |
 | `app.opportunity_sales_documents` | Mã báo giá còn hiệu lực của cơ hội (trừ Từ chối và Huỷ, Đ106); DB1b thêm mã đơn | Hàm nội bộ |
 
 Luật mới ghi ở PR, chưa vào docs/spec: Đ172 (làm tròn xuống đồng), Đ176 (làm tròn thành tiền).
