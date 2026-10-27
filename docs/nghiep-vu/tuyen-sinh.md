@@ -321,7 +321,29 @@ Kiểm thử: `supabase/tests/database/037_p5a_bao_gia.test.sql` (161 bài); s�
 | `app.get_quotation`, `list_quotations`, `export_quotations` | Bản ghi kèm dòng, chiết khấu, em; danh sách phân trang ở máy chủ, tìm theo mã, phụ huynh, SĐT, tên em (D17); xuất theo Đ105 (Trưởng cơ sở, Kế toán, Admin) | Báo giá · Xem / Xuất |
 | `app.opportunity_sales_documents` | Mã báo giá còn hiệu lực của cơ hội (trừ Từ chối và Huỷ, Đ106); DB1b thêm mã đơn | Hàm nội bộ |
 
-Luật mới ghi ở PR, chưa vào docs/spec: Đ172 (làm tròn xuống đồng), Đ176 (làm tròn thành tiền).
+Làm tròn: Đ172, Đ176 đã vào docs/spec/04 (R-TIEN-37).
 
 ### Hiệu năng
 Đo trên `seed-lon` (15.000 báo giá, 30.000 dòng), Admin: `list_quotations` một trang 36 ms, trạng thái Đã gửi 17 ms, tìm tên em 14 ms, lọc theo cơ hội 2,5 ms; `get_quotation` 4 ms; `export_quotations` 5.000 dòng 215 ms. Danh sách mặc định dùng chỉ mục `quotation_branch_created_idx` (Index Only Scan, 0,29 ms).
+
+## P5a-DB1b-1: đơn hàng, bảng và hàm ghi (migration `20261027000051`, QĐ-Đ201 đến Đ205, Đ187)
+Kiểm thử: `supabase/tests/database/043_p5a_don_hang.test.sql` (148 bài); sửa bài 006 (26 danh mục hệ thống). Luật: R-TIEN-01, 02, 03, 06, 07, 14, 35, 37, 38; R-GD-06, R-GD-08; R-CRM-16, 27; R-HT-01, 06. Hàm đọc, xuất đơn để DB1b-2.
+
+| Hàm / bảng | Làm gì | Quyền |
+|---|---|---|
+| `app.sales_order`, `sales_order_line`, `sales_order_line_discount`, `sales_order_installment`, `sales_order_event` | Đơn (Nháp, Đã trình, Đã duyệt, Huỷ), dòng chụp lại giá, chiết khấu, lịch đóng tiền từng đợt, lịch sử (tạo, trình, duyệt, từ chối, huỷ). Đúng một gốc: cơ hội hoặc phiếu tái tục (`renewal_ticket_id` chưa có khoá ngoại, chờ P5b). Cờ `is_live` trên dòng đơn + chỉ mục duy nhất từng phần: một dòng báo giá không nằm trong hai đơn sống | RLS theo Đơn hàng · Xem |
+| `app.create_order_from_quotation(báo giá, số dòng)` | Chỉ báo giá Đã gửi; cơ hội phải L8 (R-CRM-16); dòng sao nguyên giá đã đóng băng lúc Gửi, kể cả quá hạn (R-TIEN-14) | Đơn hàng · Tạo |
+| `app.create_order_from_opportunity(cơ hội, dòng)` | Đơn thẳng, cơ hội phải L8; tính theo giá ngày tạo đơn bằng `price_line` | Đơn hàng · Tạo |
+| `app.save_order(id, dòng, điều khoản)` | Sửa Nháp: điều khoản, lớp, ngày vào lớp (đơn từ báo giá); dòng và giờ (đơn thẳng); lịch đóng tiền tính lại | Đơn hàng · Sửa |
+| `app.submit_order(id)` | Em đủ họ tên, năm sinh (R-TIEN-35); điều khoản; chốt người duyệt theo NGƯỜI LẬP (R-HT-06); chặn khi người duyệt không có quyền Duyệt (Đ205) | Đơn hàng · Sửa |
+| `app.approve_order(id, đồng ý)` | Cần có quyền Duyệt VÀ đúng người đã chốt hoặc Admin thay (aal2); tích đồng ý khi vượt trần (Đ102); tìm hoặc tạo hồ sơ học sinh (R-CRM-27); hai em trùng tên và năm sinh thì chặn (KD6); chốt hạn đóng từng đợt; khoá đơn (R-TIEN-03) | Đơn hàng · Duyệt |
+| `app.reject_order(id, lý do, ghi chú)` | Đã trình → Nháp, lý do dành cho đơn, "Khác" bắt ghi chú; lịch sử giữ lần từ chối (R-TIEN-06) | Đơn hàng · Duyệt |
+| `app.cancel_order(id, lý do, ghi chú)` | R-TIEN-38, Đ202, Đ204: đơn Nháp chỉ người lập huỷ; đơn Đã trình, Đã duyệt do người duyệt đã chốt (Admin thay); chỉ khi chưa có phiếu thu; trả dòng về báo giá | Đơn hàng · Huỷ |
+| `app.check_order_line_class` | Kiểm lớp (R-GD-08): bảng lớp thuộc P5b chưa có nên lớp có giá trị thì báo `HMT_LOP_CHUA_CO_BANG`; P5b thay thân hàm | Hàm nội bộ |
+| `app.order_has_receipt` | Đơn đã có phiếu thu chưa: trả false cho tới DB2 | Hàm nội bộ |
+| `app.quotation_has_live_order`, `quotation_converted`, `opportunity_sales_documents` | Thay hàm trống của DB1a: báo giá có đơn sống, "Đã chuyển đơn" khi mọi dòng nằm trong đơn sống; giấy tờ của cơ hội thêm mã đơn chưa huỷ (Đ106) | Hàm nội bộ |
+
+Mã lỗi có mã `HMT_…` kèm câu tiếng Việt: `HMT_CHUA_O_L8`, `HMT_BAO_GIA_CHUA_GUI`, `HMT_DONG_DA_CO_DON`, `HMT_KHONG_CO_DONG_DE_CHUYEN`, `HMT_THIEU_DIEU_KHOAN`, `HMT_EM_THIEU_THONG_TIN`, `HMT_KHONG_CO_QUAN_LY`, `HMT_NGUOI_DUYET_THIEU_QUYEN`, `HMT_KHONG_PHAI_NGUOI_DUYET`, `HMT_CAN_TICH_DONG_Y`, `HMT_EM_TRUNG_TEN_NAM_SINH`, `HMT_KHONG_DUOC_HUY_DON`, `HMT_DON_DA_CO_PHIEU_THU`, `HMT_DON_DA_KHOA`, `HMT_LOP_CHUA_CO_BANG`.
+
+### Hiệu năng
+Đo trên `seed-lon` thêm 8.000 đơn: danh sách trang 1 theo cơ sở 4,6 ms (chỉ mục `sales_order_branch_created_idx`), lọc Đã duyệt 1,8 ms, tìm theo mã 1,7 ms, đơn của một cơ hội 4,1 ms, dòng của một đơn 2,5 ms. Tìm theo chữ quét tuần tự 12 ms ở 8.000 đơn (bảng nhỏ); khi ép dùng chỉ mục trigram thì 1 ms.
