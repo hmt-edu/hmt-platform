@@ -35,8 +35,9 @@ function list(page: Page) {
     : page.getByRole('table', { name: 'Báo giá' });
 }
 
-async function pickFilters(page: Page, labels: string[]) {
+async function pickFilters(page: Page, labels: string[], uncheck: string[] = []) {
   await page.getByRole('button', { name: 'Filters', exact: true }).click();
+  for (const label of uncheck) await page.getByLabel(label, { exact: true }).uncheck();
   for (const label of labels) await page.getByLabel(label, { exact: true }).check();
   if (isPhone(page)) await page.getByRole('button', { name: 'Áp dụng' }).click();
   else await page.keyboard.press('Escape');
@@ -76,7 +77,7 @@ test('Tìm theo mã và lọc nhanh Tình trạng', async ({ page }, testInfo) =
   await expect(list(page).getByText(seeded.code.draft)).toBeVisible();
 });
 
-test('Lọc nhanh Đã chuyển đơn: chỉ báo giá đã lên đơn; Đã gửi gồm cả báo giá đã lên đơn', async ({
+test('Lọc nhanh Đã chuyển đơn: chỉ báo giá đã lên đơn; Đã gửi không lẫn báo giá đã lên đơn; chọn cả hai thì HOẶC', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -85,9 +86,12 @@ test('Lọc nhanh Đã chuyển đơn: chỉ báo giá đã lên đơn; Đã g�
   await expect(page.getByText('1–1 / 1')).toBeVisible();
   await expect(list(page).getByText(seeded.code.converted)).toBeVisible();
   await expect(list(page).getByText(seeded.code.sent)).toHaveCount(0);
-  // Đã gửi gồm báo giá đã chuyển đơn (tình trạng này tính từ dòng): ba báo giá Đã gửi, quá hạn, đã chuyển đơn.
-  await pickFilters(page, ['Đã chuyển đơn']); // bỏ chọn
-  await pickFilters(page, ['Đã gửi']);
+  // Đã gửi chỉ gồm báo giá chưa chuyển hết (Đ243): Đã gửi và Quá hạn, không có báo giá đã chuyển đơn.
+  await pickFilters(page, ['Đã gửi'], ['Đã chuyển đơn']);
+  await expect(page.getByText('1–2 / 2')).toBeVisible();
+  await expect(list(page).getByText(seeded.code.converted)).toHaveCount(0);
+  // Chọn thêm Đã chuyển đơn: nối bằng HOẶC, đủ ba báo giá.
+  await pickFilters(page, ['Đã chuyển đơn']);
   await expect(page.getByText('1–3 / 3')).toBeVisible();
   await expect(list(page).getByText(seeded.code.converted)).toBeVisible();
 });

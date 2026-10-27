@@ -119,7 +119,7 @@ export function buildQuoteConfig(
           {
             value: 'DA_GUI',
             label: statusName('DA_GUI'),
-            hint: 'gồm cả báo giá đã chuyển đơn',
+            hint: 'chưa chuyển hết sang đơn',
           },
           { value: 'DA_CHUYEN_DON', label: statusName('DA_CHUYEN_DON') },
           { value: 'TU_CHOI', label: statusName('TU_CHOI') },

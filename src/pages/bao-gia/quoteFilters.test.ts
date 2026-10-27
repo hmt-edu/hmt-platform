@@ -31,23 +31,23 @@ describe('bộ lọc danh sách Báo giá', () => {
       status: ['HUY'],
     });
   });
-  it('Đã chuyển đơn một mình gửi converted, không gửi tình trạng', () => {
+  it('Đã chuyển đơn là một tình trạng hiển thị, gửi trong danh sách status (Đ243)', () => {
     expect(buildQuoteFilters({ ...EMPTY, quick: { status: ['DA_CHUYEN_DON'] } })).toEqual({
-      converted: true,
+      status: ['DA_CHUYEN_DON'],
     });
   });
-  it('Đã chuyển đơn kèm Đã gửi: Đã gửi đã bao gồm, không gửi converted', () => {
-    expect(buildQuoteFilters({ ...EMPTY, quick: { status: ['DA_CHUYEN_DON', 'DA_GUI'] } })).toEqual(
-      { status: ['DA_GUI'] },
-    );
+  it('Đã chuyển đơn kèm Nháp và Đã gửi: gửi cả ba, máy chủ nối bằng HOẶC', () => {
+    expect(
+      buildQuoteFilters({ ...EMPTY, quick: { status: ['DA_CHUYEN_DON', 'DA_GUI', 'NHAP'] } }),
+    ).toEqual({ status: ['DA_CHUYEN_DON', 'DA_GUI', 'NHAP'] });
   });
-  it('Đã chuyển đơn chọn trong điều kiện lọc nâng cao cũng gửi converted', () => {
+  it('Đã chuyển đơn chọn trong điều kiện lọc nâng cao cũng gửi trong status', () => {
     expect(
       buildQuoteFilters({
         ...EMPTY,
         conditions: [{ id: '1', field: 'status', op: 'in', value: ['DA_CHUYEN_DON'] }],
       }),
-    ).toEqual({ converted: true });
+    ).toEqual({ status: ['DA_CHUYEN_DON'] });
   });
   it('điều kiện lọc nâng cao: tình trạng gộp với lọc nhanh, cơ sở, ngày tạo', () => {
     const f = buildQuoteFilters({

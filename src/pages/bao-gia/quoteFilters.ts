@@ -9,9 +9,8 @@ export type QuoteFilters = Record<string, unknown>;
 
 const DAY_MS = 86_400_000; // allow-number: số mili giây trong một ngày (mốc "đến ngày" tính hết ngày)
 
-/** Trạng thái lưu trong cơ sở dữ liệu của lọc nhanh "Tình trạng". Đã chuyển đơn không lưu (tính từ dòng, R-TIEN-02): gửi bằng khoá `converted`. */
-const STATUS_CODES = ['NHAP', 'DA_GUI', 'TU_CHOI', 'HUY'];
-const CONVERTED = 'DA_CHUYEN_DON';
+/** Tình trạng hiển thị của lọc "Tình trạng" (Đ243): máy chủ nhận cả Đã chuyển đơn (tính từ dòng, không lưu) và nối các giá trị bằng HOẶC. */
+const STATUS_CODES = ['NHAP', 'DA_GUI', 'DA_CHUYEN_DON', 'TU_CHOI', 'HUY'];
 
 function valuesOf(cond: Condition): string[] {
   return (Array.isArray(cond.value) ? cond.value : [cond.value])
@@ -27,7 +26,6 @@ export function buildQuoteFilters(state: ListState, today: Date = new Date()): Q
   const status = new Set<string>(
     (state.quick.status ?? []).filter((v) => STATUS_CODES.includes(v)),
   );
-  let converted = (state.quick.status ?? []).includes(CONVERTED);
   if ((state.quick.mine ?? []).includes('mine')) filters.mine = true;
   if ((state.quick.valid ?? []).includes('expired')) filters.expired = true;
 
@@ -36,7 +34,6 @@ export function buildQuoteFilters(state: ListState, today: Date = new Date()): Q
     if (values.length === 0) continue;
     if (cond.field === 'status') {
       for (const v of values) if (STATUS_CODES.includes(v)) status.add(v);
-      if (values.includes(CONVERTED)) converted = true;
     } else if (cond.field === 'branch' && cond.op === 'eq') {
       filters.branch_id = values[0];
     } else if (cond.field === 'created' && cond.op === 'from') {
@@ -48,9 +45,6 @@ export function buildQuoteFilters(state: ListState, today: Date = new Date()): Q
     }
   }
   if (status.size > 0) filters.status = [...status];
-  // Đã chuyển đơn là một phần của Đã gửi: chọn cả hai thì Đã gửi đã bao gồm. Máy chủ ghép các khoá bằng VÀ, nên chỉ gửi `converted` khi
-  // không chọn tình trạng nào khác; chọn kèm Nháp, Từ chối, Huỷ (không có Đã gửi) thì chỉ lọc theo các tình trạng đó (hạn chế ghi trong PR).
-  if (converted && status.size === 0) filters.converted = true;
 
   const range = datePresetRange(state.datePreset, today);
   if (range && state.dateField === 'created') {
