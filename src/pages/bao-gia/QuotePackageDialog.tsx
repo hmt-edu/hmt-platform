@@ -45,7 +45,15 @@ function PackageItem({
   );
 }
 
-function Group({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+function Group({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <section className="flex flex-col gap-1">
       <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">{title}</h3>
@@ -95,10 +103,7 @@ export function QuotePackageDialog({
       {data && (
         <div className="flex flex-col gap-3">
           {popular.length > 0 && (
-            <Group
-              title="Hay dùng"
-              hint="Các gói bạn đưa vào báo giá của mình nhiều nhất gần đây."
-            >
+            <Group title="Hay dùng" hint="Các gói bạn đưa vào báo giá của mình nhiều nhất gần đây.">
               {popular.map((p) => (
                 <PackageItem key={p.id} pkg={p} modeName={modeName} onPick={onPick} />
               ))}

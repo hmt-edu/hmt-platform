@@ -101,6 +101,8 @@ export function cancelQuotation(
   note: string | null,
 ): Promise<void> {
   return rpc<void>(supabase, 'cancel_quotation', { p_id: id, p_note: note });
+}
+
 /** Em của cơ hội (danh sách em của cơ hội, để chọn trên dòng báo giá). */
 export type OppStudent = {
   id: string;

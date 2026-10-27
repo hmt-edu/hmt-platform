@@ -143,9 +143,68 @@ test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút
   await expect(page.getByText('Tổng thành tiền')).toBeVisible();
   await expect(page.locator('b', { hasText: '3.300.000 đ' })).toBeVisible();
   await expect(page.getByText('Chưa thấy em? Thêm em ở cơ hội.')).toHaveCount(0);
-  // Phần sửa Nháp chưa dựng (chờ khuôn của Design): không có nút Sửa.
-  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toHaveCount(0);
+  // Đ248: điện thoại giữ bản chỉ đọc, ẩn nút Sửa; máy tính có nút Sửa.
+  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toHaveCount(
+    isPhone(page) ? 0 : 1,
+  );
   await expectAccessible(page);
+});
+
+test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khung, sửa số lượng rồi Lưu', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Sửa.');
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  const grid = page.getByRole('list', { name: 'Gói học (đang sửa)' });
+  await expect(grid.getByRole('listitem', { name: 'Dòng 1' })).toBeVisible();
+  await expect(grid.getByRole('listitem', { name: 'Dòng 2' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Thêm em ở cơ hội.' })).toBeVisible();
+  await expectAccessible(page);
+  // Xoá số lượng dòng 1: báo lỗi theo khung, chưa lưu.
+  await page.getByLabel('Số lượng dòng 1').fill('');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Chưa lưu được.')).toBeVisible();
+  await expect(page.getByText(/^Dòng 1 \(LC-TOAN-K09 · .*\) thiếu số lượng\.$/)).toBeVisible();
+  await expect(page.getByText('Bắt buộc nhập số lượng.')).toBeVisible();
+  // Nhập lại, đổi 10 giờ thành 20 giờ, Lưu.
+  await page.getByLabel('Số lượng dòng 1').fill('20');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đã lưu báo giá.').first()).toBeVisible();
+  const view = page.getByRole('table', { name: 'Gói học' });
+  await expect(view.getByText('20 giờ')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
+});
+
+test('BH-02 sửa Nháp: hộp Chọn gói, thêm dòng mới (chọn em, gói, số lượng), Huỷ bỏ thay đổi', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Sửa.');
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  await page.getByRole('button', { name: 'Thêm dòng' }).click();
+  await expect(page.getByRole('listitem', { name: 'Dòng 3' })).toBeVisible();
+  await page.getByRole('combobox', { name: 'Học sinh dòng 3' }).click();
+  await page.getByRole('option', { name: /Em Nháp Một/ }).click();
+  await page.getByRole('button', { name: 'Gói dòng 3' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Chọn gói' });
+  await expect(dialog.getByText('TẤT CẢ GÓI', { exact: false })).toBeVisible();
+  await expect(dialog.getByText(/Giá lấy từ bảng giá đang hiệu lực/)).toBeVisible();
+  await dialog
+    .getByRole('button', { name: /LC-TOAN-K09/ })
+    .first()
+    .click();
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Gói dòng 3' })).toContainText('LC-TOAN-K09');
+  await page.getByLabel('Số lượng dòng 3').fill('3');
+  // Bỏ thay đổi: về bản đã lưu (hai dòng).
+  await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
+  const view = page.getByRole('table', { name: 'Gói học' });
+  await expect(view.getByText('Em Nháp Hai')).toBeVisible();
+  await expect(view.getByText('3 giờ')).toHaveCount(0);
 });
 
 test('BH-02: cột Đơn nêu mã và trạng thái đơn; báo giá chưa lên đơn hiện dấu gạch', async ({

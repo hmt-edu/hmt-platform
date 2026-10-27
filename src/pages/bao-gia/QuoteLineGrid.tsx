@@ -70,25 +70,22 @@ export function QuoteLineGrid({
           Thêm em ở cơ hội.
         </Link>
       </p>
-      <div role="table" aria-label="Gói học (đang sửa)" className="flex flex-col gap-2">
-        <div role="row" className={cn(GRID, 'px-2 text-caption font-semibold text-fg-muted')}>
-          <span role="columnheader">Học sinh</span>
-          <span role="columnheader">Gói</span>
-          <span role="columnheader">Hình thức</span>
-          <span role="columnheader">Số lượng</span>
-          <span role="columnheader">Giờ tặng</span>
-          <span role="columnheader" className="sr-only">
-            Xoá dòng
-          </span>
-        </div>
+      <div aria-hidden="true" className={cn(GRID, 'px-2 text-caption font-semibold text-fg-muted')}>
+        <span>Học sinh</span>
+        <span>Gói</span>
+        <span>Hình thức</span>
+        <span>Số lượng</span>
+        <span>Giờ tặng</span>
+        <span />
+      </div>
+      <ul aria-label="Gói học (đang sửa)" className="flex flex-col gap-2">
         {rows.map((row, index) => {
           const issue = issueOf(row.key);
           const gift = row.kind === 'GIFT';
           const giftHours = row.discounts.length === 0 ? '—' : '';
           return (
-            <div
+            <li
               key={row.key}
-              role="row"
               aria-label={`Dòng ${String(index + 1)}`}
               className={cn(
                 'flex flex-col gap-2 rounded-control border bg-surface p-2',
@@ -96,7 +93,7 @@ export function QuoteLineGrid({
               )}
             >
               <div className={GRID}>
-                <div role="cell">
+                <div>
                   <Select
                     label={`Học sinh dòng ${String(index + 1)}`}
                     value={row.studentId}
@@ -108,7 +105,7 @@ export function QuoteLineGrid({
                     className="w-full"
                   />
                 </div>
-                <div role="cell">
+                <div>
                   {gift ? (
                     <span className="flex flex-col">
                       <span className="text-caption text-fg-muted">Quà tặng</span>
@@ -134,7 +131,7 @@ export function QuoteLineGrid({
                     </button>
                   )}
                 </div>
-                <div role="cell">
+                <div>
                   {gift ? (
                     <span>—</span>
                   ) : (
@@ -157,7 +154,7 @@ export function QuoteLineGrid({
                     </>
                   )}
                 </div>
-                <div role="cell" className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5">
                   <input
                     type="text"
                     inputMode="decimal"
@@ -172,10 +169,8 @@ export function QuoteLineGrid({
                     {row.unitCode === '' ? '' : UNIT_LABEL[row.unitCode]}
                   </span>
                 </div>
-                <div role="cell" className="pt-2 text-fg-muted tabular">
-                  {giftHours}
-                </div>
-                <div role="cell">
+                <div className="pt-2 text-fg-muted tabular">{giftHours}</div>
+                <div>
                   <IconButton
                     icon="close"
                     label={`Xoá dòng ${String(index + 1)}`}
@@ -226,10 +221,10 @@ export function QuoteLineGrid({
                   {issue.message}
                 </p>
               )}
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
       <div className="flex flex-wrap gap-2">
         <Button icon="plus" disabled={disabled} onClick={() => onChange([...rows, blankRow()])}>
           Thêm dòng

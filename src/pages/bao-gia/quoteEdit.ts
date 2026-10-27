@@ -50,7 +50,10 @@ export function blankRow(): EditRow {
 }
 
 function quantityToText(q: number): string {
-  return String(q).replace(/\.0+$/, '').replace(/(\.\d*?)0+$/, '$1').replace('.', ',');
+  return String(q)
+    .replace(/\.0+$/, '')
+    .replace(/(\.\d*?)0+$/, '$1')
+    .replace('.', ',');
 }
 
 /** Dòng sửa từ bản ghi đã lưu. */
@@ -127,10 +130,22 @@ export function buildSaveLines(rows: EditRow[]): Record<string, unknown>[] {
 
 /** Có đổi gì so với lúc bắt đầu sửa chưa (để hỏi khi rời trang, bật nút Lưu). Bỏ qua khoá nội bộ và số tính sẵn. */
 export function rowsSignature(rows: EditRow[]): string {
-  return JSON.stringify(rows.map(({ key: _key, calc: _calc, modes: _modes, ...rest }) => rest));
+  return JSON.stringify(
+    rows.map((r) => [
+      r.kind,
+      r.studentId,
+      r.packageId,
+      r.mode,
+      r.quantity.trim(),
+      r.giftPolicyId,
+      r.discounts.map((d) => [d.policyId, d.value]),
+    ]),
+  );
 }
 
 /** Hình thức chọn được của một gói: các hình thức có giá, OFF trước ONL. */
 export function modesOfPrices(prices: Record<string, number>): string[] {
-  return Object.keys(prices).sort((a, b) => (a === 'OFF' ? -1 : b === 'OFF' ? 1 : a.localeCompare(b)));
+  return Object.keys(prices).sort((a, b) =>
+    a === 'OFF' ? -1 : b === 'OFF' ? 1 : a.localeCompare(b),
+  );
 }
