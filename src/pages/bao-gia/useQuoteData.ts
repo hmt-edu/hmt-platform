@@ -5,7 +5,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
 import type { QuoteFilters } from './quoteFilters';
-import type { QuotationExportResult, QuotationPage } from './quoteTypes';
+import type { QuotationExportResult, QuotationPage, QuotationRecord } from './quoteTypes';
 
 export function useQuotationPage(
   filters: QuoteFilters,
@@ -43,4 +43,15 @@ export function useRefreshQuotations() {
     () => queryClient.invalidateQueries({ queryKey: ['quotation-list'] }),
     [queryClient],
   );
+}
+
+/** Một báo giá (BH-02). Quyền và phạm vi cơ sở kiểm trong get_quotation. */
+export function useQuotation(id: string | undefined) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['quotation', id],
+    enabled: id !== undefined,
+    retry: false,
+    queryFn: () => rpc<QuotationRecord>(supabase, 'get_quotation', { p_id: id }),
+  });
 }

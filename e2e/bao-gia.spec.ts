@@ -99,3 +99,58 @@ test('Công tắc Bán hàng: CS1 chưa bật thì không có mục Báo giá v�
   await page.goto('/crm/bao-gia');
   await expect(page.getByText(/chưa bật/i).first()).toBeVisible();
 });
+
+async function openRecord(page: Page, account: string, mark: string, code: string) {
+  await openQuotes(page, account, mark);
+  await page.getByRole('searchbox').fill(code);
+  await expect(page.getByText('1–1 / 1')).toBeVisible();
+  await list(page).getByRole('link', { name: code }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Báo giá' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: code })).toBeVisible();
+}
+
+test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút Sửa', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+  const grid = page.getByRole(isPhone(page) ? 'list' : 'table', { name: 'Gói học' });
+  await expect(grid.getByText('Em Nháp Một')).toBeVisible();
+  await expect(grid.getByText('Em Nháp Hai')).toBeVisible();
+  await expect(grid.getByText('Offline').first()).toBeVisible();
+  await expect(grid.getByText('10 giờ')).toBeVisible();
+  await expect(grid.getByText('5 giờ')).toBeVisible();
+  await expect(page.getByText('Tổng thành tiền')).toBeVisible();
+  await expect(page.locator('b', { hasText: '3.300.000 đ' })).toBeVisible();
+  await expect(page.getByText('Chưa thấy em? Thêm em ở cơ hội.')).toHaveCount(0);
+  // Phần sửa Nháp chưa dựng (chờ khuôn của Design): không có nút Sửa.
+  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toHaveCount(0);
+  await expectAccessible(page);
+});
+
+test('BH-02 chỉ đọc: Từ chối nêu lý do, Quá hạn nêu nhãn, Đã gửi nêu ngày gửi', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.rejected);
+  await expect(page.locator('b', { hasText: 'Lý do từ chối' })).toBeVisible();
+  await expect(page.getByText(/Giá chưa đúng/).first()).toBeVisible();
+  await page.goto('/crm/bao-gia');
+  await openRecord(page, setup.sale, setup.mark, seeded.code.overdue);
+  await expect(page.getByText('Đã quá hạn 3 ngày')).toBeVisible();
+  await expect(page.getByText(/^Đã gửi cho phụ huynh ngày/)).toBeVisible();
+});
+
+test('BH-02: ghi chú gắn vào báo giá; báo giá không có thì báo không tìm thấy', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.sent);
+  const note = `Phụ huynh hẹn trả lời ${setup.mark}`;
+  await page.getByPlaceholder(/Viết ghi chú/).fill(note);
+  await page.getByRole('button', { name: 'Gửi ghi chú' }).click();
+  await expect(page.getByText(note)).toBeVisible();
+  // Mở trực tiếp một báo giá không tồn tại: báo không tìm thấy.
+  await page.goto('/crm/bao-gia/00000000-0000-0000-0000-000000000000');
+  await expect(page.getByRole('heading', { name: 'Không tìm thấy báo giá' })).toBeVisible();
+});

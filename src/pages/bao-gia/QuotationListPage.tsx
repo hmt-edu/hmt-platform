@@ -2,6 +2,7 @@
 // Không có nút Tạo (báo giá sinh từ cơ hội, R-TIEN-02); có nút Xuất cho vai có quyền Xuất (Trưởng cơ sở, Kế toán, Admin, Đ105).
 // Giao diện không tính tiền: tổng tiền, quá hạn đều do hàm cơ sở dữ liệu trả.
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
@@ -35,6 +36,7 @@ const EXPORT_COLUMNS = [
 
 export function QuotationListPage() {
   const supabase = useDb();
+  const navigate = useNavigate();
   const access = useAccess();
   const toast = useToast();
   const refreshData = useRefreshQuotations();
@@ -129,6 +131,7 @@ export function QuotationListPage() {
       }}
       sort={sort}
       onSortChange={(next) => setSort(nextQuoteSort(next))}
+      onRowClick={(r) => void navigate(`/crm/bao-gia/${r.id}`)}
       emptyMessage={{
         title: 'Chưa có báo giá nào',
         hint: 'Báo giá sinh từ cơ hội: mở cơ hội rồi bấm Tạo báo giá. Danh sách này không có nút Tạo (R-TIEN-02).',
