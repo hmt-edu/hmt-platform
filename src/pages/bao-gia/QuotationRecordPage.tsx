@@ -13,14 +13,22 @@ import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
-import { ReasonDialog } from '../../ui/Dialogs';
+import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
+import { TextAreaField } from '../../ui/Field';
+import type { MenuItem } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { discountText, quantityText, statusSteps } from './quoteRecord';
 import type { QuotationLine, QuotationRecord } from './quoteTypes';
-import { rejectQuotation, sendQuotation, useQuotation, useRefreshQuotation } from './useQuoteData';
+import {
+  cancelQuotation,
+  rejectQuotation,
+  sendQuotation,
+  useQuotation,
+  useRefreshQuotation,
+} from './useQuoteData';
 
 const STATUS_TONE: Record<string, TagTone> = {
   NHAP: 'neutral',
@@ -96,6 +104,10 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectBusy, setRejectBusy] = useState(false);
   const [rejectError, setRejectError] = useState<string | null>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelBusy, setCancelBusy] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+  const [cancelNote, setCancelNote] = useState('');
   useCrumbTail(record.code);
 
   // Nút theo tình trạng; quyền Sửa và công tắc Bán hàng kiểm ở đây, máy chủ kiểm lại (Đ173).
@@ -103,6 +115,25 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const canSend = canChange && record.status_code === 'NHAP';
   const canReject =
     canChange && record.status_code === 'DA_GUI' && record.display_status_code !== 'DA_CHUYEN_DON';
+
+  // Huỷ báo giá (Đ239): chỉ Nháp, Đã gửi, Từ chối; không có quyền Sửa hoặc tắt Bán hàng thì ẩn mục, các mục khác giữ.
+  const canCancel = canChange && ['NHAP', 'DA_GUI', 'TU_CHOI'].includes(record.status_code);
+  const menuItems: MenuItem[] = [
+    { kind: 'action', label: 'In', onSelect: () => undefined, unavailable: 'Có khi làm BH-03' },
+    ...(canCancel
+      ? [
+          {
+            kind: 'action' as const,
+            label: 'Huỷ báo giá',
+            onSelect: () => {
+              setCancelError(null);
+              setCancelNote('');
+              setCancelOpen(true);
+            },
+          },
+        ]
+      : []),
+  ];
 
   async function send() {
     if (busy) return;
@@ -245,6 +276,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
         readOnly
         stageShowCode={false}
         stage={{ steps, current, forwardOnly: true, onSelect: () => undefined }}
+        menu={{ label: 'Hành động', items: menuItems }}
         stageNote="Stage chỉ đọc, đổi bằng nút bên dưới."
         businessActions={
           <>
@@ -454,6 +486,47 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             })
             .catch((e: unknown) => setRejectError(errorOf(e).message))
             .finally(() => setRejectBusy(false));
+        }}
+      />
+      <ConfirmDialog
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        title="Huỷ báo giá"
+        description={
+          <div className="flex flex-col gap-3">
+            <p>
+              Báo giá {record.code} sẽ chuyển sang Huỷ và chỉ còn xem. Bản ghi không bị xoá và không
+              huỷ lại được.
+            </p>
+            <TextAreaField
+              label="Ghi chú"
+              value={cancelNote}
+              onChange={(e) => setCancelNote(e.target.value)}
+            />
+          </div>
+        }
+        confirmLabel="Xác nhận huỷ"
+        confirmIcon="cancelled"
+        cancelLabel="Đóng"
+        tone="danger"
+        busy={cancelBusy}
+        error={cancelError}
+        onConfirm={() => {
+          setCancelBusy(true);
+          setCancelError(null);
+          void cancelQuotation(
+            supabase,
+            record.id,
+            cancelNote.trim() === '' ? null : cancelNote.trim(),
+          )
+            .then(refresh)
+            .then(() => {
+              setCancelOpen(false);
+              toast({ title: 'Đã huỷ báo giá.' });
+            })
+            // Có đơn đang xử lý: báo lỗi trong hộp, không đóng.
+            .catch((e: unknown) => setCancelError(errorOf(e).message))
+            .finally(() => setCancelBusy(false));
         }}
       />
     </>
