@@ -347,3 +347,16 @@ Mã lỗi có mã `HMT_…` kèm câu tiếng Việt: `HMT_CHUA_O_L8`, `HMT_BAO_
 
 ### Hiệu năng
 Đo trên `seed-lon` thêm 8.000 đơn: danh sách trang 1 theo cơ sở 4,6 ms (chỉ mục `sales_order_branch_created_idx`), lọc Đã duyệt 1,8 ms, tìm theo mã 1,7 ms, đơn của một cơ hội 4,1 ms, dòng của một đơn 2,5 ms. Tìm theo chữ quét tuần tự 12 ms ở 8.000 đơn (bảng nhỏ); khi ép dùng chỉ mục trigram thì 1 ms.
+
+## P5a-DB1b-2: đơn hàng, hàm đọc và xuất (migration `20261027000052`, Đ105, Đ181)
+Kiểm thử: `supabase/tests/database/044_p5a_don_hang_doc.test.sql` (87 bài). PR chỉ thêm hàm mới. Hàm đọc không chặn theo công tắc BAN_HANG (Đ181).
+
+| Hàm | Làm gì | Quyền |
+|---|---|---|
+| `app.get_order(id)` | Bản ghi đơn (BH-05): cột đơn, tên trạng thái, mã và tên liên quan (cơ hội, báo giá, phụ huynh, điều khoản), người lập, người trình, người duyệt đã chốt, lý do huỷ, dòng kèm chiết khấu và em, lịch đóng tiền, lịch sử theo thứ tự ghi | Đơn hàng · Xem |
+| `app.list_orders(bộ lọc, sắp xếp, giới hạn, vị trí)` | Danh sách phân trang ở máy chủ (50 mặc định, tối đa 100): lọc q (mã, phụ huynh, SĐT, tên em), trạng thái, cơ sở, cơ hội, báo giá, phụ huynh, của tôi, chờ tôi duyệt, ngày tạo; sắp xếp mới, cũ, tổng tiền | Đơn hàng · Xem |
+| `app.export_orders(bộ lọc)` | Xuất theo cùng bộ lọc, tối đa `export_max_rows`, ghi nhật ký xuất trước khi trả (Đ105: Trưởng cơ sở trong cơ sở, Kế toán, Admin) | Đơn hàng · Xuất |
+
+### Hiệu năng
+Đo trên `seed-lon` (8.000 đơn), Trưởng cơ sở CS1: `list_orders` một trang 9 ms (lần đầu 32 ms), lọc Đã duyệt 9 ms, tìm theo mã 4 ms, tìm theo chữ 8 ms, theo cơ hội 4 ms, chờ tôi duyệt 12 ms, trang thứ 20 là 19 ms; `get_order` 4 ms (lần đầu 13 ms); `export_orders` 4.000 dòng 608 ms.
+
