@@ -299,12 +299,18 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   await expect(view.getByText(/5% \+ tặng 4 giờ/)).toBeVisible();
 });
 
-test('BH-02 sửa Nháp: dòng chưa chọn em chưa tính giá', async ({ page }, testInfo) => {
+test('BH-02 sửa Nháp: dòng mới mặc định em đầu của cơ hội (R-TIEN-35), đổi được; chọn gói và số lượng thì tính giá', async ({
+  page,
+}, testInfo) => {
   test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Sửa.');
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
   await page.getByRole('button', { name: 'Thêm dòng' }).click();
+  const row3 = page.getByRole('listitem', { name: 'Dòng 3' });
+  await expect(page.getByRole('combobox', { name: 'Học sinh dòng 3' })).toContainText(
+    'Em Nháp Một',
+  );
   await page.getByRole('button', { name: 'Gói dòng 3' }).click();
   await page
     .getByRole('dialog', { name: 'Chọn gói' })
@@ -312,12 +318,13 @@ test('BH-02 sửa Nháp: dòng chưa chọn em chưa tính giá', async ({ page 
     .first()
     .click();
   await page.getByLabel('Số lượng dòng 3').fill('4');
-  const row3 = page.getByRole('listitem', { name: 'Dòng 3' });
-  await expect(row3.getByText('Chọn em để xem giá')).toBeVisible();
-  // Chọn em xong mới tính.
+  await expect(row3.getByText('880.000')).toBeVisible();
+  // Đổi sang em khác vẫn được.
   await page.getByRole('combobox', { name: 'Học sinh dòng 3' }).click();
   await page.getByRole('option', { name: /Em Nháp Hai/ }).click();
-  await expect(row3.getByText('880.000')).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Học sinh dòng 3' })).toContainText(
+    'Em Nháp Hai',
+  );
   await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
 });
 
@@ -341,10 +348,11 @@ test('BH-02 sửa Nháp: thêm quà tặng qua chính sách quà tặng; vượt
   await expect(gift.getByText('TL-MATOAN')).toBeVisible();
   // Dòng quà không có giờ tặng: ô Giờ tặng để trống (không có ô nhập, không ghi 0).
   await expect(page.getByLabel('Giờ tặng dòng 3')).toHaveCount(0);
+  // R-TIEN-35: dòng quà cũng mặc định em đầu.
+  await expect(page.getByRole('combobox', { name: 'Học sinh dòng 3' })).toContainText(
+    'Em Nháp Một',
+  );
   await page.getByLabel('Số lượng dòng 3').fill('1');
-  await expect(gift.getByText('Chọn em để thêm quà')).toBeVisible();
-  await page.getByRole('combobox', { name: 'Học sinh dòng 3' }).click();
-  await page.getByRole('option', { name: /Em Nháp Một/ }).click();
   await expect(gift.getByText('0 đ').first()).toBeVisible();
   // Quà không đổi Tổng cộng báo giá.
   await expect(total).toContainText('5.280.000 đ');
@@ -445,4 +453,70 @@ test('BH-02: Huỷ báo giá Từ chối có ghi chú; sau huỷ chỉ còn xem,
   await expect(page.getByRole('menuitem', { name: /^In/ })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'Gửi', exact: true })).toHaveCount(0);
+});
+
+async function openOpportunityOfQuote(page: Page, setup: ReturnType<typeof setupOf>, code: string) {
+  await openRecord(page, setup.sale, setup.mark, code);
+  await page
+    .getByRole('link', { name: /^CO\d+/ })
+    .first()
+    .click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Cơ hội' })).toBeVisible();
+}
+
+test('Tạo báo giá: nút nằm ở bản ghi cơ hội (máy tính), ẩn trên điện thoại; danh sách báo giá không có nút Tạo', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openOpportunityOfQuote(page, setup, seeded.code.sent);
+  const create = page.getByRole('button', { name: 'Tạo báo giá', exact: true });
+  if (isPhone(page)) {
+    await expect(create).toHaveCount(0);
+    return;
+  }
+  await expect(create).toBeEnabled();
+  await create.click();
+  await expect(page).toHaveURL(/\/crm\/bao-gia\/tao\?co-hoi=/);
+  // Form trắng: chưa có bản ghi, chưa cấp mã, dòng đầu mặc định em đầu.
+  await expect(page.getByRole('heading', { level: 2, name: 'Tạo báo giá' })).toBeVisible();
+  await expect(page.getByText('Chưa lưu', { exact: true })).toBeVisible();
+  await expect(page.getByText('cấp khi Lưu, không sửa')).toBeVisible();
+  await expect(page.getByText('tính từ ngày Gửi')).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Học sinh dòng 1' })).toContainText('Em Đã Gửi');
+  await expect(page.getByText('Chưa có hoạt động: bản ghi chỉ có khi bấm Lưu.')).toBeVisible();
+  await expectAccessible(page);
+  // Huỷ: bỏ hết, về cơ hội, không có bản ghi mới.
+  await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Cơ hội' })).toBeVisible();
+  await page.goto('/crm/bao-gia');
+  await page.getByRole('searchbox').fill(setup.mark);
+  await expect(page.getByText('1–5 / 5')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toHaveCount(0);
+});
+
+test('Tạo báo giá: nhập dòng, Lưu mới cấp mã và tạo báo giá Nháp', async ({ page }, testInfo) => {
+  test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Tạo.');
+  const setup = setupOf(testInfo.project.name);
+  await openOpportunityOfQuote(page, setup, seeded.code.sent);
+  await page.getByRole('button', { name: 'Tạo báo giá', exact: true }).click();
+  await page.getByRole('button', { name: 'Gói dòng 1' }).click();
+  await page
+    .getByRole('dialog', { name: 'Chọn gói' })
+    .getByRole('button', { name: /LC-TOAN-K09/ })
+    .first()
+    .click();
+  // Chưa nhập số lượng: Lưu báo lỗi theo khung, chưa tạo bản ghi.
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Bắt buộc nhập số lượng.')).toBeVisible();
+  await expect(page).toHaveURL(/\/crm\/bao-gia\/tao\?co-hoi=/);
+  await page.getByLabel('Số lượng dòng 1').fill('3');
+  await expect(page.locator('p', { hasText: 'Tổng cộng báo giá' })).toContainText('660.000 đ');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  // Lưu xong: bản ghi Nháp có mã báo giá, mở ở trang bản ghi.
+  await expect(page.getByText(/^Đã tạo báo giá BG-/).first()).toBeVisible();
+  await expect(page).toHaveURL(/\/crm\/bao-gia\/[0-9a-f-]{36}$/);
+  await expect(page.getByRole('heading', { level: 2, name: /^BG-/ })).toBeVisible();
+  const view = page.getByRole('table', { name: 'Gói học' });
+  await expect(view.getByText('3 giờ')).toBeVisible();
+  await expect(view.getByText('Em Đã Gửi')).toBeVisible();
 });

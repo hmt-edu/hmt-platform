@@ -12,7 +12,7 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Spinner, StateView } from '../../ui/Feedback';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
 import type { MenuItem } from '../../ui/Overlays';
@@ -21,11 +21,9 @@ import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useToast } from '../../ui/toastContext';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
-import { QuoteLineGrid } from './QuoteLineGrid';
-import { useQuotePreview } from './useQuotePreview';
+import { QuoteLineEditor } from './QuoteLineEditor';
 import {
   buildSaveLines,
-  pruneIssues,
   rowsFromRecord,
   rowsSignature,
   validateRows,
@@ -39,9 +37,6 @@ import {
   rejectQuotation,
   saveQuotation,
   sendQuotation,
-  useDiscountPolicies,
-  useGiftPolicies,
-  useOpportunityStudents,
   useQuotation,
   useRefreshQuotation,
 } from './useQuoteData';
@@ -132,10 +127,6 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [saving, setSaving] = useState(false);
   const [issues, setIssues] = useState<RowIssue[]>([]);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const students = useOpportunityStudents(record.opportunity_id, editing);
-  const policies = useDiscountPolicies(record.opportunity_id, editing);
-  const giftPolicies = useGiftPolicies(record.opportunity_id, editing);
-  const preview = useQuotePreview(record.opportunity_id, rows, editing);
   useCrumbTail(record.code);
 
   // Nút theo tình trạng; quyền Sửa và công tắc Bán hàng kiểm ở đây, máy chủ kiểm lại (Đ173).
@@ -517,53 +508,15 @@ function QuotationView({ record }: { record: QuotationRecord }) {
               Gói học
             </h3>
             {editing ? (
-              <div className="flex flex-col gap-2">
-                {(issues.length > 0 || saveError !== null) && (
-                  <Alert tone="danger" title="Chưa lưu được.">
-                    {saveError ?? (
-                      <ul>
-                        {issues.map((i) => (
-                          <li key={i.rowKey}>{i.summary}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </Alert>
-                )}
-                {students.isError && <Alert tone="danger">{errorOf(students.error).message}</Alert>}
-                <QuoteLineGrid
-                  rows={rows}
-                  onChange={(next) => {
-                    setRows(next);
-                    setIssues((prev) => pruneIssues(prev, next));
-                  }}
-                  students={students.data ?? []}
-                  opportunityId={record.opportunity_id}
-                  opportunityHref={`/crm/co-hoi/${record.opportunity_id}`}
-                  issues={issues}
-                  disabled={saving || students.isPending}
-                  policies={policies.data ?? []}
-                  giftPolicies={giftPolicies.data ?? []}
-                  calcs={preview.calcs}
-                  cap={capPercent}
-                />
-                {preview.networkError !== null && (
-                  <Alert tone="danger" title="Không tính được giá.">
-                    <span className="flex flex-wrap items-center gap-2">
-                      {preview.networkError}
-                      <Button size="sm" onClick={preview.retry}>
-                        Thử lại
-                      </Button>
-                    </span>
-                  </Alert>
-                )}
-                <p className="flex flex-wrap items-baseline justify-end gap-2 text-body">
-                  <span>Tổng cộng báo giá</span>
-                  <span className="text-caption text-fg-muted">(hệ thống tính)</span>
-                  <b className="tabular" aria-busy={preview.computing ? true : undefined}>
-                    {preview.computing || preview.total === null ? '—' : formatMoney(preview.total)}
-                  </b>
-                </p>
-              </div>
+              <QuoteLineEditor
+                opportunityId={record.opportunity_id}
+                rows={rows}
+                onRowsChange={setRows}
+                issues={issues}
+                onIssuesChange={setIssues}
+                saveError={saveError}
+                saving={saving}
+              />
             ) : (
               lines
             )}
