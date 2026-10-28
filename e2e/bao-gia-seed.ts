@@ -133,13 +133,18 @@ export async function seed(setup: Setup): Promise<Seeded> {
     const packageId = (
       await db.query<{ id: string }>(`select id from app.sales_package where code = 'LC-TOAN-K09'`)
     ).rows[0]?.id;
-    const line = (ps: string, hours: number) => ({
+    const policyId = (
+      await db.query<{ id: string }>(
+        `select id from app.discount_policy where code = 'GIAM_6_THANG'`,
+      )
+    ).rows[0]?.id;
+    const line = (ps: string, hours: number, withDiscount = false) => ({
       kind: 'ENROL',
       prospect_student_id: ps,
       package_id: packageId,
       delivery_mode_code: 'OFF',
       quantity: hours,
-      discounts: [],
+      discounts: withDiscount ? [{ policy_id: policyId, value: null }] : [],
     });
     const quote = async (oppId: string, lines: object[]): Promise<{ id: string; code: string }> => {
       const r = await db.query<{ id: string; code: string }>(
@@ -163,7 +168,7 @@ export async function seed(setup: Setup): Promise<Seeded> {
     const sentQ = await quote(sent.id, [line(sent.ps, 12)]);
     await db.query(`select app.send_quotation($1::uuid)`, [sentQ.id]);
     const overdue = await opp(parent.overdue, 2, 'Em Quá Hạn');
-    const overdueQ = await quote(overdue.id, [line(overdue.ps, 6)]);
+    const overdueQ = await quote(overdue.id, [line(overdue.ps, 6, true)]);
     await db.query(`select app.send_quotation($1::uuid)`, [overdueQ.id]);
     const rejected = await opp(parent.rejected, 3, 'Em Từ Chối');
     const rejectedQ = await quote(rejected.id, [line(rejected.ps, 8)]);

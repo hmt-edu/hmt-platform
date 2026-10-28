@@ -177,6 +177,9 @@ async function expectPrint(page: Page, code: string, want: { stamp: string | nul
     else await expect(sheet.getByText(stamp, { exact: true })).toHaveCount(0);
   }
   await expect(sheet.locator('.k13-blank')).toHaveCount(want.due ? 0 : 1);
+  // Hai dòng tổng do máy chủ trả (migration 062): niêm yết trừ chiết khấu bằng thành tiền, trình duyệt không cộng.
+  await expect(sheet.getByText('Tổng niêm yết')).toBeVisible();
+  await expect(sheet.getByText('Tổng chiết khấu')).toBeVisible();
   await expect(sheet.getByText('Bằng chữ')).toBeVisible();
   await expect(sheet.getByText(/đồng$/)).toBeVisible();
   // Khuôn: không in điện thoại cơ sở và khẩu hiệu.
@@ -223,6 +226,10 @@ test('BH-03: Nháp để trống hạn và có nhãn BẢN NHÁP; Từ chối c�
   await page.getByRole('menuitem', { name: 'In', exact: true }).click();
   await expectPrint(page, seeded.code.overdue, { stamp: null, due: true });
   await expect(paper(page).getByText(/Đã quá hạn \d+ ngày/)).toBeVisible();
+  // Báo giá này có chính sách chiết khấu: tổng chiết khấu hiện số tiền giảm, có dấu trừ.
+  await expect(paper(page).locator('.k13-tr', { hasText: 'Tổng chiết khấu' })).toContainText(
+    /− [\d.]+/,
+  );
   await shot(page, testInfo, 'bh03-qua-han');
   await openRecord(page, setup.sale, setup.mark, seeded.code.rejected);
   await page.getByRole('button', { name: 'Hành động' }).click();

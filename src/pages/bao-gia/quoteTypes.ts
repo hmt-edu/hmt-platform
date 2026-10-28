@@ -118,6 +118,9 @@ export type QuotationRecord = {
   cancel_note: string | null;
   cancelled_at: string | null;
   total_amount: number;
+  /** Tổng niêm yết và tổng chiết khấu do máy chủ cộng từ các dòng đã đóng băng (migration 062); quà tặng không tính. */
+  gross_total: number;
+  discount_total: number;
   created_at: string;
   created_by_name: string | null;
   has_incomplete_students: boolean;

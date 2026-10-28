@@ -163,10 +163,22 @@ function QuotationPrint({ record }: { record: QuotationRecord }) {
             </>
           }
           totals={
-            <div className="k13-tr k13-pay">
-              <span>Thành tiền</span>
-              <b>{formatMoney(record.total_amount)}</b>
-            </div>
+            <>
+              <div className="k13-tr">
+                <span>Tổng niêm yết</span>
+                <b>{formatNumber(record.gross_total)}</b>
+              </div>
+              <div className="k13-tr">
+                <span>Tổng chiết khấu</span>
+                <b>
+                  {record.discount_total > 0 ? `− ${formatNumber(record.discount_total)}` : '0'}
+                </b>
+              </div>
+              <div className="k13-tr k13-pay">
+                <span>Thành tiền</span>
+                <b>{formatMoney(record.total_amount)}</b>
+              </div>
+            </>
           }
           signatures={
             <>
