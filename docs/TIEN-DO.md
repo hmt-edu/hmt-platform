@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 23/10/2026. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 28/10/2026. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
 ## Quy trình (đọc `docs/quy-trinh-phoi-hop.md`)
 
@@ -85,11 +85,11 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P5a-UI-11 | BH-03 In báo giá (K13, A4 dọc), route `/crm/bao-gia/:id/in`: khuôn dùng chung `src/print/PrintSheet` (dải cam, logo chung HMT, tên và địa chỉ cơ sở từ DB, không điện thoại cơ sở, không khẩu hiệu), bảng dòng theo K06c, quà tặng giá 0, hai dòng Tổng niêm yết và Tổng chiết khấu (`get_quotation` migration 062, trình duyệt không cộng), số tiền bằng chữ (`amountInWords`, chỉ đọc lại tổng máy chủ trả, R-TIEN-13), mã cũ cạnh số. In được ở mọi tình trạng (Đ263); nhãn BẢN NHÁP, ĐÃ TỪ CHỐI, ĐÃ HUỶ, Nháp để trống hạn, "Đã quá hạn N ngày" khi quá hạn (Đ273). "In" và "Tải PDF" cùng mở hộp in của trình duyệt (`window.print`), ghi chú "Chọn “Lưu thành PDF” để tải"; nút "In" ẩn trên điện thoại. Mục "In" ở menu Hành động BH-02 đã bật (Đ249). Không dựng cột ghi chú bên phải và dãy nút đổi trạng thái của khung (chỉ để xem mẫu). | Đã gộp |
 | P5a-UI-O2a (BH-05, xem đơn) | Bản ghi đơn `/crm/don-hang/:id` (khuôn K06, `get_order`): thanh tình trạng Nháp, Đã trình, Đã duyệt (Huỷ là nhánh khác), Nháp bị từ chối kèm khối "Đơn bị từ chối" lấy lý do từ lịch sử (R-TIEN-06), khung "Người duyệt" và cảnh báo chưa có quản lý trực tiếp hoặc người duyệt chưa có quyền Duyệt (Đ205), tab Dòng đơn (lưới K06c chỉ đọc, Tổng niêm yết, Tổng chiết khấu, Thành tiền từ máy chủ; Đã thu, Còn phải thu "—", Đ269), Thanh toán (lịch đóng tiền), Ghi danh (làm ở phân hệ sau), Lịch sử xử lý, Ghi chú và hoạt động (`SALES_ORDER`). Mở từ BH-06 (mã đơn) và từ cột Đơn, smart button Đơn hàng của BH-02. Trình, Huỷ đơn: UI-O2b; Duyệt, Từ chối: UI-O2c; sửa Nháp: UI-O3. | Đã gộp |
 | BH-05 (bản ghi đơn) | Đ257 hết hiệu lực theo Đ272: dùng khung BH05_* hiện có trên canvas `8ab9`, làm theo luật khi canvas vênh (Đ270: canvas `8ab9` là bản duy nhất anh duyệt; bản phân tích đã được Chat duyệt 28/10). Bỏ Hình thức thanh toán, Cơ sở thu tiền khỏi khung (Đ258). Chuyển thành đơn: form trắng, dòng chưa vào đơn, bỏ bớt bằng ✕ (Đ259). R-TIEN-39 đã vào luật (BH-11 hết chờ luật, còn chờ UI-O4); bỏ gợi ý "dùng báo giá còn hiệu lực" (Đ275). | Xem đơn (UI-O2a) đã gộp; còn lại UI-O2b (Trình, Huỷ), UI-O2c (Duyệt, Từ chối), UI-O3 (sửa Nháp), UI-O4 (Chuyển thành đơn, BH-11) |
-| Ma trận quyền phiên bản 6 (Đ204, migration `050`): Sale, CSKH có Huỷ đơn hàng (cơ sở mình); đúng hai ô đổi; bài kiểm 042 | Đang chờ OK (PR ma trận v6) |
+| Ma trận quyền phiên bản 6 (Đ204, migration `050`): Sale, CSKH có Huỷ đơn hàng (cơ sở mình); đúng hai ô đổi; bài kiểm 042 | Đã gộp (#105) |
 | Danh sách em-1 (DB) | Bảng `prospect_student` (một dòng một em của lead hoặc cơ hội; đọc thẳng từ hồ sơ học sinh khi đã gắn, Đ86), tham số `prospect_max_students` (Đ88), chuyển dữ liệu chữ cũ sang dòng 1 và bỏ cột cũ, chuyển 24 hàm sang bảng mới giữ đúng hành vi cũ (migration `043`); bài kiểm 035 (69 bài), EXPLAIN trên `seed-lon`; bước kiểm trên hmt-staging ở deploy-staging. Luật mới để PR Danh sách em-2 (DB) | Đã gộp (PR Danh sách em-1) |
-| Đường dẫn theo trang gốc | Sửa lỗi 26/10: mở trang con từ smart button, bảng hay liên kết của trang bản ghi (Lead, Cơ hội, Phiếu) thì đường dẫn thanh trên nối tiếp trang gốc ("Tuyển sinh / Cơ hội / <tên cơ hội> / Phiếu kiểm tra / mã phiếu"), sống qua tải lại; bấm tên trang đã đi qua thì cắt đường dẫn, không nối dài; vào bằng thanh bên thì theo menu như cũ. Điện thoại hẹp chỉ hiện hai mục cuối. Vitest `crumbTrail`, Playwright `co-hoi` | Đang chờ OK (PR Đường dẫn theo trang gốc) |
-| Cơ hội hiện ghi chú lead | Sửa lỗi 26/10: trang Cơ hội hiện ghi chú của lead gốc kèm nhãn "Từ Lead LD…" (đọc xuyên, không sao chép; chỉ khi người xem thấy được lead); `record_notes` thêm cột `source_label` (migration `047`); bài kiểm 039 (12 bài), Vitest, Playwright | Đang chờ OK (PR Cơ hội hiện ghi chú lead) |
-| Lịch hẹn: đồng bộ | Sửa lỗi 26/10: Hoàn thành, Mở lại ở màn Lịch hẹn không làm mới trang Cơ hội (và ngược lại) bằng một hàm làm mới chung; Hoàn thành, Mở lại, Huỷ ghi dòng vào dòng thời gian của lead, cơ hội, phiếu (migration `046`, R-CRM-04); bài kiểm 038 (25 bài) và Playwright `lich-hen-dong-bo` | Đang chờ OK (PR Lịch hẹn đồng bộ) |
+| Đường dẫn theo trang gốc | Sửa lỗi 26/10: mở trang con từ smart button, bảng hay liên kết của trang bản ghi (Lead, Cơ hội, Phiếu) thì đường dẫn thanh trên nối tiếp trang gốc ("Tuyển sinh / Cơ hội / <tên cơ hội> / Phiếu kiểm tra / mã phiếu"), sống qua tải lại; bấm tên trang đã đi qua thì cắt đường dẫn, không nối dài; vào bằng thanh bên thì theo menu như cũ. Điện thoại hẹp chỉ hiện hai mục cuối. Vitest `crumbTrail`, Playwright `co-hoi` | Đã gộp (#95) |
+| Cơ hội hiện ghi chú lead | Sửa lỗi 26/10: trang Cơ hội hiện ghi chú của lead gốc kèm nhãn "Từ Lead LD…" (đọc xuyên, không sao chép; chỉ khi người xem thấy được lead); `record_notes` thêm cột `source_label` (migration `047`); bài kiểm 039 (12 bài), Vitest, Playwright | Đã gộp (#96) |
+| Lịch hẹn: đồng bộ | Sửa lỗi 26/10: Hoàn thành, Mở lại ở màn Lịch hẹn không làm mới trang Cơ hội (và ngược lại) bằng một hàm làm mới chung; Hoàn thành, Mở lại, Huỷ ghi dòng vào dòng thời gian của lead, cơ hội, phiếu (migration `046`, R-CRM-04); bài kiểm 038 (25 bài) và Playwright `lich-hen-dong-bo` | Đã gộp (#93) |
 | 7 | P2 Cấu hình | Chưa |
 | 8 | P2 Ma trận quyền (giải thích "tách 3 phân hệ" và lập bảng đối chiếu hành động, phạm vi trước khi làm) | Chưa |
 
@@ -108,7 +108,7 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
 
-## Đang ở đâu (24/10/2026)
+## Đang ở đâu (28/10/2026)
 
 **Đã gộp vào `main`** (mỗi PR có link comment "OK" của `caotruong276` trong commit gộp; PR chỉ tài liệu không có CI):
 
@@ -126,8 +126,14 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 | Sửa nhóm đăng nhập theo gói hiện hành; nền động đăng nhập (5c) | #59, #62 |
 | Quản lý trực tiếp (R-HT-06, migration 036); luật bổ sung 19/10 (người duyệt chốt lúc trình, Admin không duyệt thay phiếu thu) | #61, #65 |
 | P3d Cơ hội: DB (migration 038) và giao diện (danh sách, Kanban, trang bản ghi, chuyển giai đoạn, tạo từ lead) | #66, #67 |
-| Lead đổi giai đoạn bắt chọn nhóm con (R-CRM-41, QĐ-Đ183): migration 049, hộp chọn Sub-stage ở trang Lead và Kanban (DB và giao diện cùng PR để CI không đỏ) | PR này |
-| Lead chỉ tạo cơ hội ở nhóm con C4C (migration 048, luật R-CRM-40 ở #90; nút Tạo cơ hội mờ kèm lý do) | PR này |
+| Tuyển sinh tiếp: Phiếu kiểm tra (DB, giao diện), Gộp trùng và Nhập lead (DB, giao diện), Lịch hẹn bổ sung (DB, giao diện), Quản trị người dùng (DB, giao diện); dọn khung cũ; CI cắt sớm; luật giáo viên, nghiên cứu chấm bằng AI | #68, #70 đến #85 |
+| Bán hàng, nền: danh sách em, cấu hình bán hàng và ma trận quyền v5, báo giá (bảng, tính tiền), luật và quyết định bán hàng (R-TIEN-37, Đ169 đến Đ259) | #87 đến #91, #99, #101, #104, #106, #112, #113, #120, #121, #126, #128, #132 đến #134 |
+| Sửa lỗi 26/10 và canvas lưu nguồn: nhóm con lead, đường dẫn thanh trên, ghi chú lead ở cơ hội, lịch hẹn đồng bộ, Sub-stage L6; canvas v117, v118, v124 | #92 đến #98, #100, #102, #103, #122 |
+| Bán hàng, DB: ma trận quyền v6, đơn hàng (ghi, đọc, xuất), báo giá (tên em, xem thử, gói bán, chính sách, lọc Đã chuyển đơn, quà tặng, tổng chiết khấu) | #105, #107, #108, #110, #114, #115, #117, #119, #123, #125 |
+| Bán hàng, giao diện: BH-01 danh sách báo giá; BH-02 xem, Gửi, Từ chối, Huỷ, sửa Nháp (lưới K06c, chính sách, quà tặng), Tạo báo giá từ cơ hội | #109, #111, #116, #118, #124, #127, #129 đến #131 |
+| 28/10: BH-06 danh sách đơn (#135, #142 tên các em); DB-O1a, O1b, O1c (#136, #137, #141: quyền hàm đọc phụ, tạo đơn kèm điều khoản, tổng niêm yết, người duyệt dự kiến, ghi chú đơn); BH-03 bản in báo giá (#140, #143); BH-05 xem đơn (#144); luật R-TIEN-39, CLAUDE.md, đổi tài khoản GitHub (#138, #139, #145) | #135 đến #145 |
+| Lead đổi giai đoạn bắt chọn nhóm con (R-CRM-41, QĐ-Đ183): migration 049, hộp chọn Sub-stage ở trang Lead và Kanban (DB và giao diện cùng PR để CI không đỏ) | #98 |
+| Lead chỉ tạo cơ hội ở nhóm con C4C (migration 048, luật R-CRM-40 ở #90; nút Tạo cơ hội mờ kèm lý do) | #97 |
 
 #16 đã đóng (không gộp; dữ liệu ở #17, giao diện làm lại ở #22 đến #26).
 
@@ -149,7 +155,7 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 4. **QT-01, QT-02, QT-03 Người dùng** (kèm ô "Quản lý trực tiếp"): anh duyệt kế hoạch 24/10 (Đ44 đến Đ50): **PR 1 DB (migration 042) đã gộp; PR 2 giao diện (QT-01, QT-02) đã làm**; còn **Đặt lại mật khẩu (QT-02) và Tạo người dùng (QT-03)**, chờ khuôn hộp mật khẩu tạm K4g, K4e4 ở #69.
 5. **P5a Bán hàng + Thu chi:** đặc tả đã viết (Chat), đứng sau các mục trên; tới lượt thì em gửi kế hoạch P5a-DB1 cho anh duyệt trước khi viết migration. Ghi danh và Lớp thuộc P5b (anh chốt QĐ-P5a-1).
 
-Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/10.** Giao diện bán hàng: BH-01 và BH-02 (xem, Gửi, Từ chối, Huỷ, sửa Nháp, Tạo báo giá từ cơ hội) đã gộp; BH-06 và DB-O1a, O1b đã gộp; BH-03 đã dựng (chờ OK); tiếp theo theo Đ256: DB-O1c, rồi BH-05 theo các PR nhỏ (UI-O2, UI-O3, UI-O4; Đ257 hết hiệu lực theo Đ272); BH-11 hết chờ luật (R-TIEN-39), dựng ở UI-O4. Giao diện đào tạo dựng sau phần dữ liệu đào tạo (xem `docs/nhat-ky/design.md`).
+Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/10.** Giao diện bán hàng: BH-01, BH-02 (xem, Gửi, Từ chối, Huỷ, sửa Nháp, Tạo báo giá từ cơ hội), BH-06, BH-03 (bản in) và BH-05 xem đơn (UI-O2a) đã gộp; DB-O1a, O1b, O1c đã gộp; UI-O2b (Trình, Huỷ đơn) chờ OK; tiếp theo UI-O2c (Duyệt, Từ chối), UI-O3 (sửa Nháp), UI-O4 (Chuyển thành đơn, BH-11 theo R-TIEN-39; Đ257 hết hiệu lực theo Đ272). Giao diện đào tạo dựng sau phần dữ liệu đào tạo (xem `docs/nhat-ky/design.md`).
 
 ## Đã chốt 18/10 (tối)
 
@@ -260,7 +266,7 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
 - **File anh Trường đưa vào** nằm ở `_inbox/` (không commit), dùng xong xoá.
 - **Mỗi PR** cập nhật luôn file này (viết như sau khi PR đã gộp).
 
-- **Duyệt PR**: chỉ gộp khi CI xanh **và** có comment "OK" từ `truongcx-95` **sau commit cuối**. Trước khi nhắc anh
+- **Duyệt PR**: chỉ gộp khi CI xanh **và** có comment "OK" từ `caotruong276` **sau commit cuối**. Trước khi nhắc anh
   duyệt, kiểm comment trên PR trước (anh hay OK sẵn). Gộp squash, ghi link comment OK vào thân commit gộp.
 - **Khoá chạy thật**: không bao giờ đọc, xin, tìm. Mọi việc với hmt-prod, Cloudflare thật, `hmt-deploy` do anh làm trên
   trình duyệt; Claude hướng dẫn từng việc một, viết cho người mới, nhắc "không chụp màn hình lúc khoá hiện".

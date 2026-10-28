@@ -117,7 +117,7 @@ Mục tiêu: anh chỉ cần chuyển **link**, không dán chat; và luôn bi�
   4. **Anh làm gì với Claude Design:** dán đoạn nào, đính kèm file nào, có cần sửa gì trên canvas không. Ghi "không có việc" nếu không có.
   5. **Nhắc ghi nhật ký** nếu đây là cuối phiên.
   - **Khi còn việc anh quyết (mục 2), Chat chờ anh trả lời rồi mới soạn tin cho Claude Code và Claude Design** (mục 3 và 4 chỉ soạn sau khi anh đã quyết xong), để không soạn tin theo một quyết định chưa chốt.
-- Việc anh luôn tự làm: quyết định, thử trên staging, bình luận "OK" trên PR từ `truongcx-95`.
+- Việc anh luôn tự làm: quyết định, thử trên staging, bình luận "OK" trên PR từ `caotruong276`.
 
 ## 13. Bàn giao khi sắp hết giới hạn (bản 2, 17/10/2026)
 Nguyên tắc: **xong cụm nào lưu cụm đó** (nhật ký + nguồn), để lúc đổi tài khoản gần như không mất gì. Khi trang Usage của tài khoản khoảng 80%, anh ngừng giao việc mới, chờ cụm đang dở xong, rồi gửi tin dưới đây. Anh chỉ cần copy, dán.
@@ -146,7 +146,7 @@ Em mở PR "bàn giao <ngày>" vào main (chỉ tài liệu và thiết kế), g
 - docs/nhat-ky/chat.md: nội dung dưới đây.
 <dán nội dung Chat gửi>
 Nếu nhánh Design bị xung đột (vì commit cũ đã squash vào main), đừng ép: tạo nhánh mới từ main, lấy các file đã đổi ở nhánh Design bỏ vào.
-Gộp bằng squash. Em gửi anh link PR. Anh sẽ comment OK bằng truongcx-95, rồi em gộp.
+Gộp bằng squash. Em gửi anh link PR. Anh sẽ comment OK bằng caotruong276, rồi em gộp.
 ```
 Bên nào không có gì để đưa thì anh xoá dòng của bên đó.
 
@@ -167,9 +167,9 @@ Bên nào không có gì để đưa thì anh xoá dòng của bên đó.
 **Quy tắc đẩy nhánh của Design**
 - Mỗi lần bàn giao một nhánh mới `design/luu-nguon-<ngày-giờ>`, tạo từ `main` mới nhất. Không dùng lại nhánh đã gộp.
 - Chỉ ghi vào `design/` và `docs/nhat-ky/design.md`; không chạm `docs/spec/`, `supabase/`, `src/`.
-- Gộp vào `main` do Claude Code làm (squash), sau comment "OK" từ `truongcx-95`.
+- Gộp vào `main` do Claude Code làm (squash), sau comment "OK" từ `caotruong276`.
 
 **Anh nhớ ba điều**
 - Ngừng giao việc cho Design hoặc Chat: dùng Tin 1 hoặc Tin 2. Không nhớ tên nhánh hay đường dẫn.
 - Việc với Code luôn là Tin 3.
-- Việc anh làm ở GitHub chỉ là comment OK vào PR bằng `truongcx-95`.
+- Việc anh làm ở GitHub chỉ là comment OK vào PR bằng `caotruong276`.
