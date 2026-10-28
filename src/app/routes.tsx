@@ -50,6 +50,10 @@ const QuotationRecordPage = lazyScreen(
   () => import('../pages/bao-gia/QuotationRecordPage'),
   'QuotationRecordPage',
 );
+const QuotationPrintPage = lazyScreen(
+  () => import('../pages/bao-gia/QuotationPrintPage'),
+  'QuotationPrintPage',
+);
 const OpportunityRecordPage = lazyScreen(
   () => import('../pages/co-hoi/OpportunityRecordPage'),
   'OpportunityRecordPage',
@@ -188,6 +192,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="bao-gia">
                 <QuotationCreatePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'bao-gia/:id/in',
+            element: (
+              <GatedCrmEntry slug="bao-gia">
+                <QuotationPrintPage />
               </GatedCrmEntry>
             ),
           },

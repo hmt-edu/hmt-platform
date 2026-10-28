@@ -1,11 +1,12 @@
 // BH-01 Báo giá (danh sách), P5a-UI-1: cột theo canvas, lọc, tìm, Xuất theo quyền, mục menu theo công tắc Bán hàng.
 // Dữ liệu giả dựng bằng hàm nghiệp vụ (xem bao-gia-seed.ts), tìm bằng dấu riêng của từng dự án.
-import { readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded } from './bao-gia-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng báo giá giả).');
+mkdirSync('docs/anh-chup/bh03', { recursive: true });
 test.describe.configure({ mode: 'serial' });
 
 let seeded: Seeded;
@@ -148,6 +149,110 @@ test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút
     isPhone(page) ? 0 : 1,
   );
   await expectAccessible(page);
+});
+
+function paper(page: Page) {
+  return page.locator('.k13-paper');
+}
+
+async function shot(page: Page, testInfo: { project: { name: string } }, name: string) {
+  if (testInfo.project.name === 'dien-thoai') return;
+  // Chụp ở chế độ in: đúng tờ A4 như hộp in của trình duyệt sẽ thấy.
+  await page.emulateMedia({ media: 'print' });
+  await page.screenshot({
+    path: `docs/anh-chup/bh03/${name}.png`,
+    clip: { x: 0, y: 0, width: 794, height: 1123 },
+  });
+  await page.emulateMedia({ media: 'screen' });
+}
+
+/** Bản in đã mở: tiêu đề, số, nhãn (nếu có), cơ sở; hạn hiệu lực có ngày hay để trống. */
+async function expectPrint(page: Page, code: string, want: { stamp: string | null; due: boolean }) {
+  const sheet = paper(page);
+  await expect(sheet.getByRole('heading', { level: 1, name: 'BẢNG HỌC PHÍ' })).toBeVisible();
+  await expect(sheet.getByText(code, { exact: true })).toBeVisible();
+  await expect(sheet.getByRole('heading', { level: 2 })).toContainText('Hoà Ma Toán · ');
+  for (const stamp of ['BẢN NHÁP', 'ĐÃ TỪ CHỐI', 'ĐÃ HUỶ']) {
+    if (stamp === want.stamp) await expect(sheet.getByText(stamp, { exact: true })).toBeVisible();
+    else await expect(sheet.getByText(stamp, { exact: true })).toHaveCount(0);
+  }
+  await expect(sheet.locator('.k13-blank')).toHaveCount(want.due ? 0 : 1);
+  await expect(sheet.getByText('Bằng chữ')).toBeVisible();
+  await expect(sheet.getByText(/đồng$/)).toBeVisible();
+  // Khuôn: không in điện thoại cơ sở và khẩu hiệu.
+  await expect(sheet.getByText(/Hotline|Điện thoại cơ sở|Tel/i)).toHaveCount(0);
+}
+
+test('BH-03: In từ menu Hành động; bản in Đã gửi có đủ khối, nút In ẩn trên điện thoại, In và Tải PDF cùng mở hộp in', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.sent);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'In', exact: true }).click();
+  await expect(page).toHaveURL(/\/crm\/bao-gia\/[0-9a-f-]+\/in$/);
+  await expectPrint(page, seeded.code.sent, { stamp: null, due: true });
+  await expect(paper(page).getByText('Kính gửi phụ huynh', { exact: false })).toBeVisible();
+  await expect(paper(page).getByText('Phụ huynh xác nhận')).toBeVisible();
+  await expect(paper(page).getByText(/^In ngày \d{2}\/\d{2}\/\d{4}$/)).toBeVisible();
+  await expect(page.getByText('Chọn “Lưu thành PDF” để tải')).toBeVisible();
+  await page.evaluate('window.printed = 0; window.print = () => { window.printed += 1; };');
+  await page.getByRole('button', { name: 'Tải PDF' }).click();
+  const inButton = page.getByRole('button', { name: 'In', exact: true });
+  if (isPhone(page)) {
+    await expect(inButton).toHaveCount(0);
+  } else {
+    await inButton.click();
+    expect(await page.evaluate('window.printed')).toBe(2);
+  }
+  await expectAccessible(page);
+  await shot(page, testInfo, 'bh03-da-gui');
+});
+
+test('BH-03: Nháp để trống hạn và có nhãn BẢN NHÁP; Từ chối có nhãn ĐÃ TỪ CHỐI; quá hạn nêu số ngày', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'In', exact: true }).click();
+  await expectPrint(page, seeded.code.draft, { stamp: 'BẢN NHÁP', due: false });
+  await shot(page, testInfo, 'bh03-nhap');
+  await openRecord(page, setup.sale, setup.mark, seeded.code.overdue);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'In', exact: true }).click();
+  await expectPrint(page, seeded.code.overdue, { stamp: null, due: true });
+  await expect(paper(page).getByText(/Đã quá hạn \d+ ngày/)).toBeVisible();
+  await shot(page, testInfo, 'bh03-qua-han');
+  await openRecord(page, setup.sale, setup.mark, seeded.code.rejected);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'In', exact: true }).click();
+  await expectPrint(page, seeded.code.rejected, { stamp: 'ĐÃ TỪ CHỐI', due: true });
+  await shot(page, testInfo, 'bh03-tu-choi');
+});
+
+test('BH-03: in thật trên A4 (chỉ trình duyệt máy tính): chỉ còn tờ giấy, một trang A4', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === 'dien-thoai', 'page.pdf chỉ có ở Chromium.');
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.sent);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'In', exact: true }).click();
+  await expectPrint(page, seeded.code.sent, { stamp: null, due: true });
+  await page.emulateMedia({ media: 'print' });
+  // Menu, thanh công cụ và tên người dùng ẩn khi in.
+  await expect(page.getByRole('button', { name: 'Tải PDF' })).toBeHidden();
+  await expect(page.getByRole('navigation').first()).toBeHidden();
+  const pdf = await page.pdf({ preferCSSPageSize: true });
+  const text = pdf.toString('latin1');
+  expect(text.match(/\/Type\s*\/Page\b/g)?.length).toBe(1);
+  // MediaBox A4 = 595 x 842 điểm (làm tròn).
+  const box = /\/MediaBox\s*\[\s*0\s+0\s+([\d.]+)\s+([\d.]+)\s*\]/.exec(text);
+  expect(Math.round(Number(box?.[1]))).toBe(595);
+  expect(Math.round(Number(box?.[2]))).toBe(842);
+  writeFileSync('docs/anh-chup/bh03/bh03-a4.pdf', pdf);
+  await page.screenshot({ path: 'docs/anh-chup/bh03/bh03-che-do-in.png' });
 });
 
 test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khung, sửa số lượng rồi Lưu', async ({
@@ -413,15 +518,13 @@ test('BH-02: Từ chối báo giá qua hộp BH-04, bắt chọn lý do; xong hi
   await expect(page.getByRole('alertdialog')).toHaveCount(0);
 });
 
-test('BH-02: menu Hành động có In (mờ, chưa làm) và Huỷ báo giá; có đơn đang xử lý thì hộp báo lỗi và không đóng', async ({
+test('BH-02: menu Hành động có In (mở bản in BH-03) và Huỷ báo giá; có đơn đang xử lý thì hộp báo lỗi và không đóng', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.sale, setup.mark, seeded.code.converted);
   await page.getByRole('button', { name: 'Hành động' }).click();
-  const printItem = page.getByRole('menuitem', { name: /^In/ });
-  await expect(printItem).toHaveAttribute('aria-disabled', 'true');
-  await expect(printItem).toContainText('Có khi làm BH-03');
+  await expect(page.getByRole('menuitem', { name: 'In', exact: true })).toBeEnabled();
   await page.getByRole('menuitem', { name: 'Huỷ báo giá' }).click();
   const dialog = page.getByRole('alertdialog');
   await expect(dialog.getByRole('heading', { name: 'Huỷ báo giá' })).toBeVisible();
@@ -450,9 +553,14 @@ test('BH-02: Huỷ báo giá Từ chối có ghi chú; sau huỷ chỉ còn xem,
   await expect(page.getByText(/Báo giá đã huỷ: Phụ huynh không quay lại/)).toBeVisible();
   await page.getByRole('button', { name: 'Hành động' }).click();
   await expect(page.getByRole('menuitem', { name: 'Huỷ báo giá' })).toHaveCount(0);
-  await expect(page.getByRole('menuitem', { name: /^In/ })).toBeVisible();
+  await expect(page.getByRole('menuitem', { name: 'In', exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(page.getByRole('button', { name: 'Gửi', exact: true })).toHaveCount(0);
+  // BH-03: báo giá đã huỷ vẫn in được, có nhãn ĐÃ HUỶ (Đ263, Đ273).
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'In', exact: true }).click();
+  await expectPrint(page, seeded.code.rejected, { stamp: 'ĐÃ HUỶ', due: true });
+  await shot(page, testInfo, 'bh03-huy');
 });
 
 async function openOpportunityOfQuote(page: Page, setup: ReturnType<typeof setupOf>, code: string) {

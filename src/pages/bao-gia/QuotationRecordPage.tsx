@@ -138,7 +138,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   // Huỷ báo giá (Đ239): chỉ Nháp, Đã gửi, Từ chối; không có quyền Sửa hoặc tắt Bán hàng thì ẩn mục, các mục khác giữ.
   const canCancel = canChange && ['NHAP', 'DA_GUI', 'TU_CHOI'].includes(record.status_code);
   const menuItems: MenuItem[] = [
-    { kind: 'action', label: 'In', onSelect: () => undefined, unavailable: 'Có khi làm BH-03' },
+    { kind: 'action', label: 'In', onSelect: () => openFrom(`/crm/bao-gia/${record.id}/in`) },
     ...(canCancel
       ? [
           {

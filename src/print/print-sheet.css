@@ -1,0 +1,319 @@
+/* Khuôn K13 theo canvas BH03_in (bản 28/10): giấy trắng, chữ tối, dải cam. Màu giấy cố định, không theo giao diện, vì bản in luôn nền trắng. */
+.k13-paper {
+  --k13-ink: #1f1b16;
+  --k13-muted: #6b645c;
+  --k13-line: #e3dcd1;
+  --k13-accent: #e8590c;
+  position: relative;
+  box-sizing: border-box;
+  width: 794px;
+  min-height: 1123px;
+  margin: 0 auto;
+  padding-bottom: 72px;
+  background: #fff;
+  color: var(--k13-ink);
+  font-size: 12.5px;
+  line-height: 1.45;
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.18),
+    0 6px 20px rgb(0 0 0 / 0.08);
+}
+.k13-paper h1,
+.k13-paper h2 {
+  margin: 0;
+  font-family: var(--font-heading);
+}
+.k13-band {
+  height: 10px;
+  background: var(--k13-accent);
+}
+.k13-in {
+  padding: 34px 48px 0;
+}
+.k13-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.k13-img {
+  display: block;
+  width: auto;
+  height: 76px;
+}
+.k13-org {
+  text-align: right;
+  color: var(--k13-muted);
+  font-size: 11.5px;
+  line-height: 1.55;
+}
+.k13-org h2 {
+  margin-bottom: 2px;
+  color: var(--k13-ink);
+  font-size: 14px;
+}
+.k13-ttl {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 26px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--k13-line);
+}
+.k13-t {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.k13-sub {
+  margin-top: 4px;
+  color: #6b645c;
+  font-size: 12px;
+}
+.k13-no {
+  text-align: right;
+  line-height: 1.5;
+}
+.k13-no span {
+  margin-right: 6px;
+  color: var(--k13-muted);
+  font-size: 11px;
+}
+.k13-no b {
+  color: #c2410c;
+  font-size: 14px;
+}
+.k13-no i {
+  display: block;
+  color: var(--k13-muted);
+  font-size: 10.5px;
+  font-style: normal;
+}
+.k13-stamp {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 1px 8px;
+  border: 2px solid #b42318;
+  border-radius: 4px;
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+.k13-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 20px 0;
+}
+.k13-box {
+  padding: 12px 16px;
+  border-left: 3px solid var(--k13-accent);
+  background: #faf6f0;
+}
+.k13-cap {
+  margin-bottom: 4px;
+  color: var(--k13-muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+}
+.k13-name {
+  margin-bottom: 4px;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 700;
+}
+.k13-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 3px;
+}
+.k13-row > span {
+  display: inline-block;
+  width: 92px;
+  flex: none;
+  font-size: 12px;
+  color: var(--k13-muted);
+}
+.k13-row em {
+  font-style: normal;
+}
+.k13-late {
+  margin-left: 8px;
+  color: #b42318;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+.k13-blank {
+  display: inline-block;
+  min-width: 96px;
+  height: 14px;
+  border-bottom: 1px dotted #a39a8c;
+}
+.k13-tb {
+  width: 100%;
+  margin-top: 6px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.k13-tb th {
+  padding: 8px 5px;
+  border-bottom: 2px solid var(--k13-ink);
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: left;
+  vertical-align: bottom;
+}
+.k13-tb td {
+  padding: 10px 5px;
+  border-bottom: 1px solid #ebe5dc;
+  font-size: 12px;
+  vertical-align: top;
+  word-break: break-word;
+}
+.k13-tb .r {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.k13-sm {
+  display: block;
+  margin-top: 2px;
+  color: var(--k13-muted);
+  font-size: 11px;
+}
+.k13-gift td {
+  background: #fcf7f0;
+}
+.k13-gt {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 0 5px;
+  border-radius: 4px;
+  background: #fdf0e8;
+  color: #c2410c;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+.k13-help2 {
+  margin-top: 6px;
+  color: var(--k13-muted);
+  font-size: 11px;
+}
+.k13-bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 20px;
+}
+.k13-words {
+  flex: 1;
+  padding-top: 4px;
+  color: #4a443d;
+  font-style: italic;
+}
+.k13-words span {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--k13-muted);
+  font-size: 10.5px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.k13-total {
+  width: 290px;
+}
+.k13-tr {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  color: #4a443d;
+}
+.k13-tr b {
+  color: var(--k13-ink);
+  font-variant-numeric: tabular-nums;
+}
+.k13-pay {
+  align-items: center;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-top: 2px solid var(--k13-accent);
+  background: #fdf0e8;
+  color: var(--k13-ink);
+  font-weight: 600;
+}
+.k13-pay b {
+  color: #c2410c;
+  font-size: 19px;
+}
+.k13-sign {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 48px;
+  padding: 0 24px;
+  text-align: center;
+  break-inside: avoid;
+}
+.k13-sign b,
+.k13-sign u {
+  display: block;
+  font-weight: 600;
+  text-decoration: none;
+}
+.k13-sign i {
+  display: block;
+  margin-bottom: 44px;
+  color: var(--k13-muted);
+  font-size: 11px;
+}
+.k13-foot {
+  position: absolute;
+  right: 48px;
+  bottom: 22px;
+  left: 48px;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px solid var(--k13-line);
+  color: #6b645c;
+  font-size: 10.5px;
+}
+
+/* In thật: khổ A4, bỏ mọi thứ ngoài tờ giấy (thanh menu, thanh công cụ). */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  .k13-paper,
+  .k13-paper * {
+    visibility: visible;
+  }
+  .k13-paper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0;
+    box-shadow: none;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .k13-tb tr {
+    break-inside: avoid;
+  }
+}
