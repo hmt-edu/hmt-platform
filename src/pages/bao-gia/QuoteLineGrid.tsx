@@ -3,18 +3,26 @@
 // Giao diện KHÔNG tính tiền, giờ hay chiết khấu: số trên màn là số máy chủ đã trả.
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { formatNumber } from '../../lib/format';
+import { formatMoney, formatNumber } from '../../lib/format';
 import { Button, IconButton } from '../../ui/Button';
 import { Select } from '../../ui/Overlays';
 import { INPUT_CLASS } from '../../ui/Field';
 import { cn } from '../../ui/cn';
 import { useLeadCatalogs } from '../lead/useCatalogs';
-import { blankRow, modesOfPrices, type EditRow, type RowIssue } from './quoteEdit';
+import {
+  blankRow,
+  giftRow,
+  insertPackageRow,
+  modesOfPrices,
+  type EditRow,
+  type RowIssue,
+} from './quoteEdit';
 import { QuotePackageDialog } from './QuotePackageDialog';
+import { QuoteGiftDialog } from './QuoteGiftDialog';
 import { QuotePolicyDialog } from './QuotePolicyDialog';
 import { percentText, type RowCalc } from './quotePreview';
 import { UNIT_LABEL } from './quoteRecord';
-import type { DiscountPolicy, OppStudent, SellablePackage } from './useQuoteData';
+import type { DiscountPolicy, GiftPolicy, OppStudent, SellablePackage } from './useQuoteData';
 
 const GRID =
   'grid grid-cols-[minmax(130px,1.1fr)_minmax(150px,1.3fr)_minmax(96px,0.8fr)_minmax(120px,0.9fr)_88px_36px] items-start gap-2';
@@ -29,9 +37,11 @@ function priceText(
   calc: RowCalc | undefined,
   row: EditRow,
   key: 'unitPrice' | 'discountAmount' | 'lineTotal',
+  money = false,
 ): string {
-  if (calc?.status === 'ok') return formatNumber(calc[key]);
-  if (calc === undefined && row.calc) return formatNumber(row.calc[key]);
+  const text = (n: number) => (money ? formatMoney(n) : formatNumber(n));
+  if (calc?.status === 'ok') return text(calc[key]);
+  if (calc === undefined && row.calc) return text(row.calc[key]);
   return '—';
 }
 
@@ -44,6 +54,7 @@ export function QuoteLineGrid({
   issues,
   disabled,
   policies,
+  giftPolicies,
   calcs,
   cap,
 }: {
@@ -55,6 +66,7 @@ export function QuoteLineGrid({
   issues: RowIssue[];
   disabled: boolean;
   policies: DiscountPolicy[];
+  giftPolicies: GiftPolicy[];
   calcs: Record<string, RowCalc>;
   /** Trần chiết khấu (R-TIEN-29), đọc từ tham số cài đặt. */
   cap: number | null;
@@ -62,6 +74,8 @@ export function QuoteLineGrid({
   const catalogs = useLeadCatalogs();
   const [pickFor, setPickFor] = useState<string | null>(null);
   const [policyFor, setPolicyFor] = useState<string | null>(null);
+  const [giftOpen, setGiftOpen] = useState(false);
+  const giftById = new Map(giftPolicies.map((g) => [g.id, g]));
   const policyById = new Map(policies.map((p) => [p.id, p]));
   const modeName = (code: string) => catalogs.name('STUDY_MODE', code) ?? code;
   const update = (key: string, patch: Partial<EditRow>) =>
@@ -253,9 +267,17 @@ export function QuoteLineGrid({
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <span className="text-caption font-semibold text-fg-muted">
-                    Chiết khấu · chính sách
+                    {gift ? 'Chính sách quà tặng' : 'Chiết khấu · chính sách'}
                   </span>
                   <div className="flex flex-wrap items-center gap-1.5">
+                    {gift && (
+                      <span className="rounded-tag bg-surface-subtle px-2 py-0.5 text-caption">
+                        {row.giftPolicyName}
+                        {giftById.get(row.giftPolicyId) &&
+                          ` · tối đa ${percentText(giftById.get(row.giftPolicyId)?.max_quantity ?? 0)} ${row.unitCode === '' ? '' : UNIT_LABEL[row.unitCode]}`}
+                        {giftById.get(row.giftPolicyId)?.requires_approval && ' · cần duyệt'}
+                      </span>
+                    )}
                     {row.discounts.map((d) => {
                       const policy = policyById.get(d.policyId);
                       return (
@@ -301,14 +323,16 @@ export function QuoteLineGrid({
                         </span>
                       );
                     })}
-                    <Button
-                      size="sm"
-                      icon="plus"
-                      disabled={disabled}
-                      onClick={() => setPolicyFor(row.key)}
-                    >
-                      Chính sách
-                    </Button>
+                    {!gift && (
+                      <Button
+                        size="sm"
+                        icon="plus"
+                        disabled={disabled}
+                        onClick={() => setPolicyFor(row.key)}
+                      >
+                        Chính sách
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <dl className="relative grid grid-cols-3 gap-3 rounded-control bg-canvas px-3 py-1.5 text-body tabular">
@@ -321,7 +345,7 @@ export function QuoteLineGrid({
                   {calc?.status === 'needs-student' ? (
                     <div className="relative col-span-3 self-center text-fg">
                       <dt className="sr-only">Giá</dt>
-                      <dd>Chọn em để xem giá</dd>
+                      <dd>{gift ? 'Chọn em để thêm quà' : 'Chọn em để xem giá'}</dd>
                     </div>
                   ) : calc?.status === 'pending' ? (
                     <div className="relative col-span-3 self-center text-fg">
@@ -332,15 +356,15 @@ export function QuoteLineGrid({
                     <>
                       <div>
                         <dt className="text-caption text-fg-muted">Đơn giá</dt>
-                        <dd>{priceText(calc, row, 'unitPrice')}</dd>
+                        <dd>{priceText(calc, row, 'unitPrice', gift)}</dd>
                       </div>
                       <div>
                         <dt className="text-caption text-fg-muted">Giảm</dt>
-                        <dd>{priceText(calc, row, 'discountAmount')}</dd>
+                        <dd>{priceText(calc, row, 'discountAmount', gift)}</dd>
                       </div>
                       <div>
                         <dt className="text-caption text-fg-muted">Thành tiền</dt>
-                        <dd className="font-semibold">{priceText(calc, row, 'lineTotal')}</dd>
+                        <dd className="font-semibold">{priceText(calc, row, 'lineTotal', gift)}</dd>
                       </div>
                     </>
                   )}
@@ -362,6 +386,11 @@ export function QuoteLineGrid({
                   {calcError}
                 </p>
               )}
+              {gift && (
+                <p className="text-caption text-fg-muted">
+                  {`Quà tặng: không tính vào trần chiết khấu${cap === null ? '' : ` ${String(cap)}%`}, không có chiết khấu (R-TIEN-30).`}
+                </p>
+              )}
               {issue && (
                 <p role="alert" className="text-caption text-on-danger-subtle">
                   {issue.message}
@@ -372,14 +401,31 @@ export function QuoteLineGrid({
         })}
       </ul>
       <div className="flex flex-wrap gap-2">
-        <Button icon="plus" disabled={disabled} onClick={() => onChange([...rows, blankRow()])}>
+        <Button
+          icon="plus"
+          disabled={disabled}
+          onClick={() => onChange(insertPackageRow(rows, blankRow()))}
+        >
           Thêm dòng
+        </Button>
+        <Button icon="plus" disabled={disabled} onClick={() => setGiftOpen(true)}>
+          Thêm quà tặng
         </Button>
       </div>
       <p className="text-caption text-fg-muted">
         Số lượng do nhân viên điền; đơn giá, giảm, thành tiền do hệ thống tính. Giờ tặng chỉ có qua
         chính sách tặng giờ. Quà tặng chỉ thêm qua chính sách quà tặng.
       </p>
+      <QuoteGiftDialog
+        open={giftOpen}
+        onOpenChange={setGiftOpen}
+        policies={giftPolicies}
+        cap={cap}
+        onPick={(policy) => {
+          onChange([...rows, giftRow(policy)]);
+          setGiftOpen(false);
+        }}
+      />
       <QuotePolicyDialog
         open={policyFor !== null}
         onOpenChange={(open) => !open && setPolicyFor(null)}

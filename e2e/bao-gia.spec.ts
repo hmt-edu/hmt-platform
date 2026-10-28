@@ -321,6 +321,53 @@ test('BH-02 sửa Nháp: dòng chưa chọn em chưa tính giá', async ({ page 
   await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
 });
 
+test('BH-02 sửa Nháp: thêm quà tặng qua chính sách quà tặng; vượt mức báo lỗi; quà không đổi Tổng cộng', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Sửa.');
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  const total = page.locator('p', { hasText: 'Tổng cộng báo giá' });
+  await expect(total).toContainText('5.280.000 đ');
+  await page.getByRole('button', { name: 'Thêm quà tặng' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Chọn chính sách quà tặng' });
+  await expect(dialog.getByText(/không tính vào trần chiết khấu/)).toBeVisible();
+  await expectAccessible(page);
+  await dialog.getByRole('button', { name: /Tặng bộ tài liệu Toán/ }).click();
+  // Dòng quà đánh số tiếp theo dòng gói; chưa chọn em thì ghi "Chọn em để thêm quà".
+  const gift = page.getByRole('listitem', { name: 'Dòng 3' });
+  await expect(gift.getByText('Quà tặng', { exact: true })).toBeVisible();
+  await expect(gift.getByText('TL-MATOAN')).toBeVisible();
+  await page.getByLabel('Số lượng dòng 3').fill('1');
+  await expect(gift.getByText('Chọn em để thêm quà')).toBeVisible();
+  await page.getByRole('combobox', { name: 'Học sinh dòng 3' }).click();
+  await page.getByRole('option', { name: /Em Nháp Một/ }).click();
+  await expect(gift.getByText('0 đ').first()).toBeVisible();
+  // Quà không đổi Tổng cộng báo giá.
+  await expect(total).toContainText('5.280.000 đ');
+  // Vượt mức tối đa của chính sách: câu lỗi của máy chủ ngay dưới dòng.
+  await page.getByLabel('Số lượng dòng 3').fill('5');
+  await expect(gift.getByText('Dòng 3: số lượng quà không quá 1.')).toBeVisible();
+  await page.getByLabel('Số lượng dòng 3').fill('1');
+  await expect(gift.getByText(/không quá 1\./)).toHaveCount(0);
+  // Thêm dòng gói mới sau khi đã có quà: dòng gói đứng trước dòng quà.
+  await page.getByRole('button', { name: 'Thêm dòng' }).click();
+  await expect(page.getByRole('listitem', { name: 'Dòng 3' }).getByText('Chọn gói…')).toBeVisible();
+  await expect(
+    page.getByRole('listitem', { name: 'Dòng 4' }).getByText('Quà tặng', { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole('listitem', { name: 'Dòng 3' })
+    .getByRole('button', { name: 'Xoá dòng 3' })
+    .click();
+  // Lưu rồi xem lại: dòng quà hiện ở bản xem.
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đã lưu báo giá.').first()).toBeVisible();
+  const view = page.getByRole('table', { name: 'Gói học' });
+  await expect(view.getByText('Tặng bộ tài liệu Toán')).toBeVisible();
+});
+
 test('BH-02: Sale bấm Gửi báo giá Nháp thì thành Đã gửi, hết nút Gửi', async ({
   page,
 }, testInfo) => {

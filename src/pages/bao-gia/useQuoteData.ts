@@ -195,3 +195,31 @@ export function useDiscountPolicies(opportunityId: string, enabled: boolean) {
       }),
   });
 }
+
+/** Chính sách quà tặng áp dụng được hôm nay cho cơ hội (hộp Chọn chính sách quà tặng, R-TIEN-30). */
+export type GiftPolicy = {
+  id: string;
+  code: string;
+  name: string;
+  max_quantity: number;
+  requires_approval: boolean;
+  gift_package: {
+    id: string;
+    code: string;
+    name: string;
+    package_type_code: string;
+    unit_code: 'GIO' | 'THANG' | 'BO';
+  };
+};
+
+export function useGiftPolicies(opportunityId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['quotation-gift-policies', opportunityId],
+    enabled,
+    queryFn: () =>
+      rpc<GiftPolicy[]>(supabase, 'list_applicable_gift_policies', {
+        p_opportunity_id: opportunityId,
+      }),
+  });
+}

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   blankRow,
   buildSaveLines,
+  giftRow,
+  insertPackageRow,
   modesOfPrices,
   parseQuantity,
   pruneIssues,
@@ -192,5 +194,53 @@ describe('quoteEdit', () => {
       { policy_id: 'a', value: null },
       { policy_id: 'b', value: 7.5 },
     ]);
+  });
+
+  const POLICY = {
+    id: 'g1',
+    name: 'Tặng sổ tay công thức',
+    gift_package: {
+      id: 'tl1',
+      code: 'TL-SOTAY-K09',
+      name: 'Sổ tay công thức Toán 9',
+      package_type_code: 'TL',
+      unit_code: 'BO' as const,
+    },
+  };
+
+  it('dòng quà tặng mới: gắn chính sách, gói quà, chưa chọn em, số lượng để trống', () => {
+    const row = giftRow(POLICY);
+    expect(row).toMatchObject({
+      kind: 'GIFT',
+      giftPolicyId: 'g1',
+      packageCode: 'TL-SOTAY-K09',
+      unitCode: 'BO',
+      studentId: '',
+      quantity: '',
+    });
+  });
+
+  it('dựng dòng lưu của quà: kind GIFT, em, chính sách quà, số lượng; không có gói, hình thức, chiết khấu', () => {
+    const row = { ...giftRow(POLICY), studentId: 's1', quantity: '1' };
+    expect(buildSaveLines([row])[0]).toEqual({
+      kind: 'GIFT',
+      prospect_student_id: 's1',
+      gift_policy_id: 'g1',
+      quantity: 1,
+    });
+  });
+
+  it('quà thiếu số lượng báo lỗi theo khung, nêu mã và tên gói quà', () => {
+    const issues = validateRows([giftRow(POLICY)]);
+    expect(issues[0]?.message).toBe('Bắt buộc nhập số lượng.');
+    expect(issues[0]?.summary).toContain('TL-SOTAY-K09');
+  });
+
+  it('dòng gói mới đặt trước các dòng quà (quà đánh số tiếp theo dòng gói)', () => {
+    const a = blankRow();
+    const g = giftRow(POLICY);
+    const fresh = blankRow();
+    expect(insertPackageRow([a, g], fresh).map((r) => r.key)).toEqual([a.key, fresh.key, g.key]);
+    expect(insertPackageRow([a], fresh).map((r) => r.key)).toEqual([a.key, fresh.key]);
   });
 });
