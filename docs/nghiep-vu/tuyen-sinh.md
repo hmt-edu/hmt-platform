@@ -355,7 +355,7 @@ Kiểm thử: `supabase/tests/database/044_p5a_don_hang_doc.test.sql` (87 bài).
 
 | Hàm | Làm gì | Quyền |
 |---|---|---|
-| `app.get_order(id)` | Bản ghi đơn (BH-05): cột đơn, tên trạng thái, mã và tên liên quan (cơ hội, báo giá, phụ huynh, điều khoản), người lập, người trình, người duyệt đã chốt, lý do huỷ, dòng kèm chiết khấu và em, lịch đóng tiền, lịch sử theo thứ tự ghi | Đơn hàng · Xem |
+| `app.get_order(id)` (từ migration 062 trả thêm `gross_total`, `discount_total`; với đơn Nháp trả thêm `expected_route`, `expected_approver_id`, `expected_approver_name`, `expected_approver_can_approve`) | Bản ghi đơn (BH-05): cột đơn, tên trạng thái, mã và tên liên quan (cơ hội, báo giá, phụ huynh, điều khoản), người lập, người trình, người duyệt đã chốt, lý do huỷ, dòng kèm chiết khấu và em, lịch đóng tiền, lịch sử theo thứ tự ghi | Đơn hàng · Xem |
 | `app.list_orders(bộ lọc, sắp xếp, giới hạn, vị trí)` (từ migration 060 mỗi dòng trả thêm `student_names`, mảng tên các em theo thứ tự dòng, chỉ gom cho trang đang hiện) | Danh sách phân trang ở máy chủ (50 mặc định, tối đa 100): lọc q (mã, phụ huynh, SĐT, tên em), trạng thái, cơ sở, cơ hội, báo giá, phụ huynh, của tôi, chờ tôi duyệt, ngày tạo; sắp xếp mới, cũ, tổng tiền | Đơn hàng · Xem |
 | `app.export_orders(bộ lọc)` | Xuất theo cùng bộ lọc, tối đa `export_max_rows`, ghi nhật ký xuất trước khi trả (Đ105: Trưởng cơ sở trong cơ sở, Kế toán, Admin) | Đơn hàng · Xuất |
 
@@ -379,3 +379,14 @@ Tham số mới: `quotation_popular_packages_count` (mặc định 5), `quotatio
 ### Hiệu năng
 Đo trên `seed-lon` (355 gói, 30.000 dòng báo giá), Sale CS5: `preview_quotation_lines` 3 dòng 11 ms (lần sau 3 ms); `list_sellable_packages` 100 gói 65 ms lần đầu, 23 ms lần sau; lọc loại 9 ms; tìm chữ 7 ms; `list_applicable_discount_policies` 3 ms; `record_notes` báo giá 7 ms.
 
+## P5a-DB-O1c: tổng niêm yết, tổng chiết khấu, người duyệt dự kiến, ghi chú đơn (migration `20261028000062`, Đ270, Đ271; R-TIEN-13, R-TIEN-30, R-HT-06)
+Kiểm thử: `supabase/tests/database/054_p5a_don_hang_tong_nguoi_duyet_ghi_chu.test.sql` (77 bài). Chỉ đọc; không bảng, chỉ mục mới; không đổi ma trận quyền.
+
+| Hàm | Làm gì | Quyền |
+|---|---|---|
+| `app.get_quotation(id)` | Thêm `gross_total` (tổng niêm yết) và `discount_total` (tổng chiết khấu), bigint, DB cộng từ các dòng đã đóng băng (dòng ENROL; quà tặng không tính, R-TIEN-30). Tổng niêm yết trừ tổng chiết khấu bằng tổng thành tiền | Báo giá · Xem (không đổi) |
+| `app.get_order(id)` | Thêm `gross_total`, `discount_total` như trên. Chỉ khi đơn Nháp: `expected_route` (QUAN_LY, TU_DUYET, THIEU), `expected_approver_id`, `expected_approver_name`, `expected_approver_can_approve` (Đ205), tính bằng `app.approval_route(created_by)` đúng như `submit_order` chốt người duyệt. Người lập chưa có quản lý trực tiếp: THIEU, người duyệt rỗng, KHÔNG báo lỗi. Đơn đã trình trở đi: các khoá này rỗng | Đơn hàng · Xem (không đổi) |
+| `app.can_see_note_target` | Thêm loại `SALES_ORDER` (đăng ký ở `note_target`): Đơn hàng · Xem ở cơ sở của đơn, giống hệt nhánh báo giá của migration 055; không chặn theo công tắc Bán hàng (Đ181). Dùng cho `add_note`, `record_notes`, `record_history` | Đơn hàng · Xem |
+
+### Hiệu năng
+Đo trên `seed-lon` (8.000 đơn, 15.000 báo giá), Trưởng cơ sở CS5: `get_order` 22 ms lần đầu, 4 ms lần sau; `get_quotation` 10 ms lần đầu, 5 ms lần sau; hai phép cộng tổng đi qua chỉ mục `(order_id, line_no)` và `(quotation_id, line_no)`; quyền xem ghi chú đơn 3 ms.

@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang. Bản dài trước 28/10 nằm trong lịch sử git của file này: `git log -- docs/nhat-ky/code.md`.)
 
 ## Đang làm
-- BH-03 In báo giá (K13, #140): chờ OK; DB-O1c (#141, migration 062): chờ OK. Sau đó PR bản in thêm hai dòng tổng, UI-O2, UI-O3, UI-O4.
+- DB-O1c (#141, migration 062): chờ OK; BH-03 đã gộp. Sau đó PR bản in thêm hai dòng tổng, UI-O2, UI-O3, UI-O4.
 - Chưa dựng BH-05 (chờ DB-O1c rồi UI-O2, UI-O3, UI-O4), BH-11 (luật R-TIEN-39 đã vào, dựng ở UI-O4).
 
 ## Đã gộp gần đây (Bán hàng, P5a)
