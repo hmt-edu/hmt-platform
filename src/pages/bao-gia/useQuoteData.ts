@@ -111,18 +111,15 @@ export type OppStudent = {
   birth_year: number | null;
 };
 
-/** Danh sách em của cơ hội: lấy từ get_opportunity (đã có trường `students`), chỉ khi đang sửa. */
+/** Danh sách em của cơ hội: lấy từ get_opportunity (đã có trường `students`), dùng chung bộ nhớ đệm với trang cơ hội để không gọi hai lần. */
 export function useOpportunityStudents(opportunityId: string, enabled: boolean) {
   const supabase = useDb();
   return useQuery({
-    queryKey: ['quotation-opp-students', opportunityId],
+    queryKey: ['opp-record', opportunityId],
     enabled,
-    queryFn: async () => {
-      const opp = await rpc<{ students: OppStudent[] }>(supabase, 'get_opportunity', {
-        p_id: opportunityId,
-      });
-      return opp.students;
-    },
+    queryFn: () =>
+      rpc<{ students: OppStudent[] }>(supabase, 'get_opportunity', { p_id: opportunityId }),
+    select: (opp) => opp.students,
   });
 }
 
