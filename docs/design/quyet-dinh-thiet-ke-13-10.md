@@ -278,3 +278,7 @@ Ghi chú (26/10): Đ190 và Đ191 là lời OK trong chat, không có luật ri�
 - **QĐ-Đ272 (28/10, anh OK):** bỏ yêu cầu Design vẽ lại BH-05, BH-06, BH02_bh11. Đ257 hết hiệu lực, theo Đ272. Canvas HMT Platform phiên bản `1793154455-8ab9` là chuẩn.
 - **QĐ-Đ273 (28/10, anh OK):** giữ nhãn trạng thái "BẢN NHÁP", "ĐÃ TỪ CHỐI", "ĐÃ HUỶ" trên bản in báo giá Nháp, Từ chối, Huỷ.
 - **QĐ-Đ274 (28/10, anh OK):** BH-03 dùng một khung BH03_in với hàng nút đổi 5 trạng thái: Đã gửi, Đã gửi quá hạn, Nháp, Từ chối, Huỷ; không xoá file nào ở canvas. Chưa dựng BH-03 cho tới khi Chat báo canvas mới đã đăng.
+- **QĐ-Đ270 (28/10, anh quyết):** bản khung BH-05 mà anh Trường đã duyệt là bản đang đăng trên canvas HMT Platform (phiên bản `1793154455-8ab9`); không có bản BH-05 nào khác. Bản Design vẽ lại ở máy theo yêu cầu của Chat không đăng.
+- **QĐ-Đ271 (28/10, anh OK):** khi bản canvas anh Trường đã chốt với Design khác gói thiết kế và bản đồ màn hình, bản canvas anh chốt thắng; luật (`docs/spec`) và quyết định thiết kế vẫn ở trên.
+- **QĐ-Đ275 (28/10, anh OK):** bỏ gợi ý "dùng báo giá còn hiệu lực" ở bước ② của khung BH05_vao_co_hoi: luật không có, R-TIEN-05 nói hạn báo giá chỉ là nhãn, không chặn. Khi dựng BH-05 đường vào từ cơ hội, bỏ gợi ý này và ghi chỗ lệch với canvas vào mô tả PR.
+- **QĐ-Đ276 (28/10, anh OK):** sửa CLAUDE.md: thêm hai dòng theo Đ271 và Đ268 (PR riêng).

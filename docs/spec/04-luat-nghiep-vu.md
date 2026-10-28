@@ -101,6 +101,7 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-TIEN-36 | **(19/10)** **Giờ mua và giờ tặng trên dòng do nhân viên điền** (gói không cố định số giờ). Thành tiền = giờ mua × đơn giá; máy chủ tính lại (R-TIEN-13). Giờ tặng tính vào trần chiết khấu 20% (R-TIEN-29). Mức tối đa của chính sách đã chọn vẫn được kiểm. | [CHỐT] |
 | R-TIEN-37 | **(26/10)** Thành tiền dòng báo giá và đơn làm tròn đến đồng (nửa đồng làm tròn lên). Tiền chiết khấu làm tròn xuống đồng. Thành tiền sau chiết khấu = thành tiền − tiền chiết khấu. | [CHỐT] |
 | R-TIEN-38 | **(26/10)** Huỷ đơn: người lập huỷ được khi đơn Nháp; khi đơn Đã trình hoặc Đã duyệt thì người duyệt đã chốt lúc trình huỷ được (Admin huỷ thay khi vắng, như R-HT-06). Chỉ huỷ được khi đơn chưa có phiếu thu. Bắt buộc chọn lý do huỷ từ danh mục lý do huỷ đơn (lý do "Khác" bắt buộc ghi chú). Đơn huỷ trả các dòng về báo giá (R-TIEN-02). | [CHỐT] |
+| R-TIEN-39 | (28/10) Tạo đơn hàng thẳng từ cơ hội (không qua báo giá) mà cơ hội đã có đơn Nháp thì cảnh báo kèm mã đơn Nháp cũ; người dùng chọn Mở đơn cũ, hoặc Vẫn tạo (xác nhận lần hai). Không áp cho đơn tạo từ báo giá (R-TIEN-02 đã chặn một dòng nằm trong hai đơn sống). Đơn Nháp không dùng nữa thì Huỷ (R-CRM-19). | [CHỐT] |
 
 ## 3. Ghi danh, xếp lớp, quỹ giờ
 
