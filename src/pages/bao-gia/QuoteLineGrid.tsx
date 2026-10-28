@@ -229,7 +229,7 @@ export function QuoteLineGrid({
                   </span>
                 </div>
                 <div className="flex min-h-control items-center gap-1 tabular">
-                  {giftDiscount === undefined ? (
+                  {gift ? null : giftDiscount === undefined ? (
                     <span className="text-fg-muted">0</span>
                   ) : giftPolicy?.fixed_value ? (
                     <span>{percentText(giftPolicy.max_value)}</span>

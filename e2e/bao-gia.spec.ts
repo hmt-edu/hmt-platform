@@ -339,6 +339,8 @@ test('BH-02 sửa Nháp: thêm quà tặng qua chính sách quà tặng; vượt
   const gift = page.getByRole('listitem', { name: 'Dòng 3' });
   await expect(gift.getByText('Quà tặng', { exact: true })).toBeVisible();
   await expect(gift.getByText('TL-MATOAN')).toBeVisible();
+  // Dòng quà không có giờ tặng: ô Giờ tặng để trống (không có ô nhập, không ghi 0).
+  await expect(page.getByLabel('Giờ tặng dòng 3')).toHaveCount(0);
   await page.getByLabel('Số lượng dòng 3').fill('1');
   await expect(gift.getByText('Chọn em để thêm quà')).toBeVisible();
   await page.getByRole('combobox', { name: 'Học sinh dòng 3' }).click();
