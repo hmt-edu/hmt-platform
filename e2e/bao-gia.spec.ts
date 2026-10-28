@@ -282,6 +282,16 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   await page.getByLabel('Giờ tặng dòng 1').fill('4');
   await expect(row1.getByText('Vượt trần: cần Trưởng cơ sở duyệt. Vẫn lưu được.')).toBeVisible();
   await expect(row1.getByText(/25% \/ trần/)).toBeVisible();
+  // Chữ đơn vị của ô Số lượng không đè lên ô Giờ tặng; hai ô cùng hàng, cùng cao.
+  const qty = await page.getByLabel('Số lượng dòng 1').boundingBox();
+  const gift = await page.getByLabel('Giờ tặng dòng 1').boundingBox();
+  const unit = await row1.getByText('giờ', { exact: true }).first().boundingBox();
+  expect(qty && gift && unit).toBeTruthy();
+  if (qty && gift && unit) {
+    expect(unit.x + unit.width).toBeLessThanOrEqual(gift.x);
+    expect(Math.abs(qty.y - gift.y)).toBeLessThanOrEqual(1);
+    expect(Math.abs(qty.height - gift.height)).toBeLessThanOrEqual(1);
+  }
   // Lưu rồi xem lại: chiết khấu và giờ tặng hiện ở bản xem.
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu báo giá.').first()).toBeVisible();

@@ -17,7 +17,7 @@ import { UNIT_LABEL } from './quoteRecord';
 import type { DiscountPolicy, OppStudent, SellablePackage } from './useQuoteData';
 
 const GRID =
-  'grid grid-cols-[minmax(130px,1.1fr)_minmax(150px,1.3fr)_minmax(96px,0.8fr)_minmax(96px,0.8fr)_64px_36px] items-start gap-2';
+  'grid grid-cols-[minmax(130px,1.1fr)_minmax(150px,1.3fr)_minmax(96px,0.8fr)_minmax(120px,0.9fr)_88px_36px] items-start gap-2';
 
 function studentLabel(s: OppStudent): string {
   const name = s.full_name ?? `Em thứ ${String(s.position)}`;
@@ -197,44 +197,48 @@ export function QuoteLineGrid({
                     </>
                   )}
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    aria-label={`Số lượng dòng ${String(index + 1)}`}
-                    aria-invalid={issue ? true : undefined}
-                    value={row.quantity}
-                    disabled={disabled}
-                    onChange={(e) => update(row.key, { quantity: e.target.value, calc: null })}
-                    className={cn(INPUT_CLASS, 'w-16 shrink-0 tabular')}
-                  />
+                <div className="flex min-h-control items-center gap-1.5">
+                  <div className="w-16 shrink-0">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      aria-label={`Số lượng dòng ${String(index + 1)}`}
+                      aria-invalid={issue ? true : undefined}
+                      value={row.quantity}
+                      disabled={disabled}
+                      onChange={(e) => update(row.key, { quantity: e.target.value, calc: null })}
+                      className={cn(INPUT_CLASS, 'tabular')}
+                    />
+                  </div>
                   <span className="text-caption text-fg-muted">
                     {row.unitCode === '' ? '' : UNIT_LABEL[row.unitCode]}
                   </span>
                 </div>
-                <div className="flex items-center gap-1 pt-1 tabular">
+                <div className="flex min-h-control items-center gap-1 tabular">
                   {giftDiscount === undefined ? (
-                    <span className="pt-1 text-fg-muted">0</span>
+                    <span className="text-fg-muted">0</span>
                   ) : giftPolicy?.fixed_value ? (
-                    <span className="pt-1">{percentText(giftPolicy.max_value)}</span>
+                    <span>{percentText(giftPolicy.max_value)}</span>
                   ) : (
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      aria-label={`Giờ tặng dòng ${String(index + 1)}`}
-                      value={giftDiscount.value}
-                      disabled={disabled}
-                      onChange={(e) =>
-                        update(row.key, {
-                          discounts: row.discounts.map((d) =>
-                            d.policyId === giftDiscount.policyId
-                              ? { ...d, value: e.target.value }
-                              : d,
-                          ),
-                        })
-                      }
-                      className={cn(INPUT_CLASS, 'w-14 tabular')}
-                    />
+                    <div className="w-16 shrink-0">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        aria-label={`Giờ tặng dòng ${String(index + 1)}`}
+                        value={giftDiscount.value}
+                        disabled={disabled}
+                        onChange={(e) =>
+                          update(row.key, {
+                            discounts: row.discounts.map((d) =>
+                              d.policyId === giftDiscount.policyId
+                                ? { ...d, value: e.target.value }
+                                : d,
+                            ),
+                          })
+                        }
+                        className={cn(INPUT_CLASS, 'tabular')}
+                      />
+                    </div>
                   )}
                 </div>
                 <div>
