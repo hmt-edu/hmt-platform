@@ -102,3 +102,71 @@ export function cancelQuotation(
 ): Promise<void> {
   return rpc<void>(supabase, 'cancel_quotation', { p_id: id, p_note: note });
 }
+
+/** Em của cơ hội (danh sách em của cơ hội, để chọn trên dòng báo giá). */
+export type OppStudent = {
+  id: string;
+  position: number;
+  full_name: string | null;
+  birth_year: number | null;
+};
+
+/** Danh sách em của cơ hội: lấy từ get_opportunity (đã có trường `students`), chỉ khi đang sửa. */
+export function useOpportunityStudents(opportunityId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['quotation-opp-students', opportunityId],
+    enabled,
+    queryFn: async () => {
+      const opp = await rpc<{ students: OppStudent[] }>(supabase, 'get_opportunity', {
+        p_id: opportunityId,
+      });
+      return opp.students;
+    },
+  });
+}
+
+/** Gói bán cho hộp chọn gói (Hay dùng, Gợi ý theo cơ hội, Tất cả gói; lọc loại gói). */
+export type SellablePackage = {
+  id: string;
+  code: string;
+  name: string;
+  package_type_code: string;
+  unit_code: 'GIO' | 'THANG' | 'BO';
+  prices: Record<string, number>;
+};
+export type SellablePackages = {
+  types: { code: string; name: string }[];
+  popular: string[];
+  suggested: string[];
+  total: number;
+  packages: SellablePackage[];
+};
+
+export function useSellablePackages(opportunityId: string, type: string | null, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['quotation-sellable', opportunityId, type],
+    enabled,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<SellablePackages>(supabase, 'list_sellable_packages', {
+        p_opportunity_id: opportunityId,
+        p_type: type,
+      }),
+  });
+}
+
+/** Lưu báo giá Nháp (thay toàn bộ dòng). Máy chủ tính lại giá và kiểm luật; lỗi nêu đúng dòng. */
+export function saveQuotation(
+  supabase: SupabaseClient,
+  id: string,
+  opportunityId: string,
+  lines: Record<string, unknown>[],
+): Promise<{ id: string; code: string; total_amount: number }> {
+  return rpc(supabase, 'save_quotation', {
+    p_id: id,
+    p_opportunity_id: opportunityId,
+    p_lines: lines,
+  });
+}

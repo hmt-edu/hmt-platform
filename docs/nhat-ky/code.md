@@ -8,6 +8,7 @@
 - P5a-DB1c-5 (migration `057`, Đ243): `status` của `list_quotations`, `export_quotations` lọc theo tình trạng hiển thị (`DA_CHUYEN_DON`, nối bằng HOẶC). Bài kiểm 049.
 - P5a-DB1d (migration `058`): `list_applicable_gift_policies` cho hộp Chọn chính sách quà tặng; `price_line` đổi một câu lỗi (bỏ số 0 thừa). Bài kiểm 050.
 - P5a-DB1e (migration `059`): `price_line` trả thêm `total_discount_percent`. Bài kiểm 051.
+- P5a-UI-6 (C1): lưới sửa Nháp BH-02 (`QuoteLineGrid`, `QuotePackageDialog`, `quoteEdit.ts`). Danh sách em lấy từ `get_opportunity`; lưu bằng `save_quotation`.
 - P5a-UI-4: BH-01 lọc "Đã chuyển đơn" theo tình trạng hiển thị (Đ243: gửi trong `status`, nối bằng HOẶC); BH-02 cột "Đơn" (Đ242).
 - P5a-UI-5: BH-02 Huỷ báo giá (menu Hành động, hộp xác nhận bằng khuôn ① danger kèm ô Ghi chú); mục In mờ. `MenuItem` thêm tuỳ chọn `unavailable`.
 - P5a-DB1b-1 (migration `051`): đơn hàng (bảng, hàm ghi). Bài kiểm 043; seed-lon thêm 8.000 đơn; sửa bài 006 (26 danh mục hệ thống). Lớp chờ P5b (`check_order_line_class`), phiếu thu chờ DB2 (`order_has_receipt`).

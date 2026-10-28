@@ -82,6 +82,7 @@ export type QuotationLine = {
   student_birth_year: number | null;
   student_code: string | null;
   student_complete: boolean;
+  gift_policy_id: string | null;
   gift_policy_name: string | null;
   /** Đơn đang sống sinh từ dòng này (Đ106: tối đa một); chưa lên đơn hoặc đơn đã huỷ thì rỗng. */
   order_id: string | null;

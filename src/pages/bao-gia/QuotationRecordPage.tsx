@@ -12,20 +12,33 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
-import { Spinner, StateView } from '../../ui/Feedback';
+import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
 import type { MenuItem } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
+import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useToast } from '../../ui/toastContext';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import { QuoteLineGrid } from './QuoteLineGrid';
+import {
+  buildSaveLines,
+  pruneIssues,
+  rowsFromRecord,
+  rowsSignature,
+  validateRows,
+  type EditRow,
+  type RowIssue,
+} from './quoteEdit';
 import { discountText, quantityText, statusSteps } from './quoteRecord';
 import type { QuotationLine, QuotationRecord } from './quoteTypes';
 import {
   cancelQuotation,
   rejectQuotation,
+  saveQuotation,
   sendQuotation,
+  useOpportunityStudents,
   useQuotation,
   useRefreshQuotation,
 } from './useQuoteData';
@@ -108,6 +121,15 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
   const [cancelNote, setCancelNote] = useState('');
+  // Sửa Nháp (K06c): lưới dòng sửa tại chỗ. Điện thoại giữ bản chỉ đọc, ẩn nút Sửa (Đ248) cho tới khi Design vẽ lưới điện thoại.
+  const phone = useMedia(NARROW_TABLE);
+  const [editing, setEditing] = useState(false);
+  const [rows, setRows] = useState<EditRow[]>([]);
+  const [baseline, setBaseline] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [issues, setIssues] = useState<RowIssue[]>([]);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const students = useOpportunityStudents(record.opportunity_id, editing);
   useCrumbTail(record.code);
 
   // Nút theo tình trạng; quyền Sửa và công tắc Bán hàng kiểm ở đây, máy chủ kiểm lại (Đ173).
@@ -134,6 +156,43 @@ function QuotationView({ record }: { record: QuotationRecord }) {
         ]
       : []),
   ];
+
+  const canEditDraft = canChange && record.status_code === 'NHAP' && !phone;
+  const dirty = editing && rowsSignature(rows) !== baseline;
+
+  function startEdit() {
+    const initial = rowsFromRecord(record);
+    setRows(initial);
+    setBaseline(rowsSignature(initial));
+    setIssues([]);
+    setSaveError(null);
+    setEditing(true);
+  }
+
+  function stopEdit() {
+    setEditing(false);
+    setIssues([]);
+    setSaveError(null);
+  }
+
+  async function save() {
+    if (saving) return;
+    const found = validateRows(rows);
+    setIssues(found);
+    setSaveError(null);
+    if (found.length > 0) return;
+    setSaving(true);
+    try {
+      await saveQuotation(supabase, record.id, record.opportunity_id, buildSaveLines(rows));
+      await refresh();
+      stopEdit();
+      toast({ title: 'Đã lưu báo giá.' });
+    } catch (e) {
+      setSaveError(errorOf(e).message);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function send() {
     if (busy) return;
@@ -269,23 +328,25 @@ function QuotationView({ record }: { record: QuotationRecord }) {
       <RecordDetail
         kind="Báo giá"
         title={record.code}
-        mode="view"
-        onEdit={() => undefined}
-        onSave={() => undefined}
-        onCancel={() => undefined}
-        readOnly
+        mode={editing ? 'edit' : 'view'}
+        dirty={dirty}
+        saving={saving}
+        onEdit={startEdit}
+        onSave={() => void save()}
+        onCancel={stopEdit}
+        readOnly={!canEditDraft}
         stageShowCode={false}
         stage={{ steps, current, forwardOnly: true, onSelect: () => undefined }}
         menu={{ label: 'Hành động', items: menuItems }}
         stageNote="Stage chỉ đọc, đổi bằng nút bên dưới."
         businessActions={
           <>
-            {canSend && (
+            {!editing && canSend && (
               <Button variant="primary" loading={busy} onClick={() => void send()}>
                 Gửi
               </Button>
             )}
-            {canReject && (
+            {!editing && canReject && (
               <Button
                 disabled={busy}
                 onClick={() => {
@@ -449,7 +510,36 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             <h3 className="mb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase">
               Gói học
             </h3>
-            {lines}
+            {editing ? (
+              <div className="flex flex-col gap-2">
+                {(issues.length > 0 || saveError !== null) && (
+                  <Alert tone="danger" title="Chưa lưu được.">
+                    {saveError ?? (
+                      <ul>
+                        {issues.map((i) => (
+                          <li key={i.rowKey}>{i.summary}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </Alert>
+                )}
+                {students.isError && <Alert tone="danger">{errorOf(students.error).message}</Alert>}
+                <QuoteLineGrid
+                  rows={rows}
+                  onChange={(next) => {
+                    setRows(next);
+                    setIssues((prev) => pruneIssues(prev, next));
+                  }}
+                  students={students.data ?? []}
+                  opportunityId={record.opportunity_id}
+                  opportunityHref={`/crm/co-hoi/${record.opportunity_id}`}
+                  issues={issues}
+                  disabled={saving || students.isPending}
+                />
+              </div>
+            ) : (
+              lines
+            )}
           </section>
           <p>
             <Button variant="text" onClick={() => void navigate('/crm/bao-gia')}>
