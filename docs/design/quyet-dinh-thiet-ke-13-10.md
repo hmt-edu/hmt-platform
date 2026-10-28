@@ -259,3 +259,4 @@ Ghi chú (26/10): Đ190 và Đ191 là lời OK trong chat, không có luật ri�
 - **QĐ-Đ248 (27/10, anh OK):** BH-02 trên điện thoại giữ bản chỉ đọc, ẩn nút Sửa và Tạo, đến khi Design vẽ lưới điện thoại.
 - **QĐ-Đ249 (27/10, anh OK):** mục "In" trong menu Hành động của BH-02 để mờ, ghi "Có khi làm BH-03".
 - **QĐ-Đ253 (27/10, anh OK):** khung GV11_dt và GV11_pc trên canvas Cổng giáo viên đều có nút "Mở học sinh" ở mỗi dòng học sinh (dẫn tới GV-13) và câu "Lịch sử buổi chỉ gồm buổi của giáo viên này" (R-GV-08). Bản đồ GV-11 dùng cho cả hai thiết bị nên sửa cả hai khung; Đ245 chỉ nêu GV11_dt, Đ253 mở rộng sang GV11_pc.
+- **QĐ-Đ254 (27/10, anh OK):** ở hộp Chọn gói của BH-02, nhóm "Gợi ý theo cơ hội" bỏ đuôi "· Toán lớp 9" của khung mẫu K06c vì hàm DB chỉ trả mã gói gợi ý, không trả nhãn môn và khối. Thêm nhãn sau khi có việc DB khác nếu cần.
