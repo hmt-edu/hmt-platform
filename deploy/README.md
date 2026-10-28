@@ -1,6 +1,6 @@
 # hmt-deploy
 
-Repo riêng tư của anh Trường (tài khoản GitHub `caotruong276`), chỉ dùng trên trình duyệt. Repo này giữ khoá của **bản chạy thật** và làm 3 việc:
+Repo riêng tư của anh Trường (tài khoản GitHub `truongcx-95`), chỉ dùng trên trình duyệt. Repo này giữ khoá của **bản chạy thật** và làm 3 việc:
 
 | Workflow              | Khi nào chạy           | Làm gì                                                                                                              |
 | --------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -8,7 +8,7 @@ Repo riêng tư của anh Trường (tài khoản GitHub `caotruong276`), chỉ 
 | **Backup production** | 02:05 mỗi đêm (giờ VN) | Xuất DB chạy thật, mã hoá, đẩy lên Google Drive; giữ project không bị tạm dừng                                      |
 | **Usage report**      | 08:30 sáng thứ Hai     | Tạo một issue "Báo cáo sử dụng tuần …" (GitHub tự gửi email cho anh)                                                |
 
-Code nằm ở repo `hmt-vanhanh/hmt-platform`; repo này chỉ đọc code đó bằng `PLATFORM_READ_TOKEN`.
+Code nằm ở repo `truongcx-95/hmt-platform`; repo này chỉ đọc code đó bằng `PLATFORM_READ_TOKEN`.
 
 ## Bốn luật bảo mật
 
@@ -16,7 +16,7 @@ Code nằm ở repo `hmt-vanhanh/hmt-platform`; repo này chỉ đọc code đó
 1. **Khoá chạy thật không bao giờ nằm trên máy Mac.** Không chạy `supabase login` hay `wrangler login` bằng tài khoản thật. Chuỗi kết nối DB `hmt-prod` và token Cloudflare chạy thật chỉ dán thẳng vào GitHub Secrets của repo này trên web.
 2. **Lấy token rclone xong thì xoá file cấu hình rclone** (xem mục Google Drive bên dưới): `rm ~/.config/rclone/rclone.conf`.
 3. **Claude Code không đọc, không xin, không tìm khoá chạy thật.** Không dán khoá vào khung chat.
-4. **Repo này nằm ở tài khoản `caotruong276`, tài khoản này không bao giờ đăng nhập trên máy Mac Claude Code làm việc** (không `gh`, không git, không lưu trong Keychain).
+4. **Repo này nằm ở tài khoản `truongcx-95`, tài khoản này không bao giờ đăng nhập trên máy Mac Claude Code làm việc** (không `gh`, không git, không lưu trong Keychain).
 
 ## Cài đặt một lần: Secrets và Variables
 
@@ -26,7 +26,7 @@ Vào repo `hmt-deploy` > **Settings** > **Secrets and variables** > **Actions**.
 
 | Tên                                        | Lấy ở đâu                                                                                                                                                                                                                                                                                                                                                              |
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PLATFORM_READ_TOKEN`                      | Đã đặt. Token fine-grained của `hmt-vanhanh`, chỉ đọc repo `hmt-platform` (Contents: Read, Actions: Read). Làm mới hằng năm, xem cuối file                                                                                                                                                                                                                             |
+| `PLATFORM_READ_TOKEN`                      | Đã đặt. Token fine-grained của `truongcx-95`, chỉ đọc repo `hmt-platform` (Contents: Read, Actions: Read). Làm mới hằng năm, xem cuối file                                                                                                                                                                                                                             |
 | `PROD_DB_URL`                              | Supabase > project `hmt-prod` > nút **Connect** > **Session pooler** > chép URI, thay `[YOUR-PASSWORD]` bằng mật khẩu DB. Mật khẩu có ký tự đặc biệt (`@ : / ? #`…) thì đổi mật khẩu chỉ gồm chữ và số cho dễ. Dùng Session pooler vì máy GitHub không nối được kiểu Direct                                                                                            |
 | `CLOUDFLARE_API_TOKEN`                     | Cloudflare (tài khoản chạy thật) > ảnh đại diện > **My Profile** > **API Tokens** > **Create Token** > **Create Custom Token**: quyền _Account / Cloudflare Pages / Edit_, Account Resources chọn đúng tài khoản này. Tài khoản chạy thật đăng ký bằng `truongcx.work@gmail.com`. Chỉ copy ô token (chuỗi liền, không dấu cách), **không** copy ô lệnh `curl` bên dưới |
 | `CLOUDFLARE_ACCOUNT_ID`                    | Cloudflare > **Workers & Pages** > cột phải, dòng **Account ID**                                                                                                                                                                                                                                                                                                       |
@@ -146,8 +146,8 @@ Khôi phục thật khi có sự cố là việc khác: nạp vào một project
 
 Báo cáo tuần sẽ cảnh báo khi token còn dưới 30 ngày.
 
-1. Trên trình duyệt, đăng nhập GitHub `hmt-vanhanh` > ảnh đại diện > **Settings** > **Developer settings** > **Personal access tokens** > **Fine-grained tokens**.
-2. Mở token đang dùng > **Regenerate token** (hoặc tạo mới): Expiration 1 năm; Repository access: **Only select repositories** > `hmt-vanhanh/hmt-platform`; Permissions: **Contents: Read-only**, **Actions: Read-only** (Metadata tự thêm).
+1. Trên trình duyệt, đăng nhập GitHub `truongcx-95` > ảnh đại diện > **Settings** > **Developer settings** > **Personal access tokens** > **Fine-grained tokens**.
+2. Mở token đang dùng > **Regenerate token** (hoặc tạo mới): Expiration 1 năm; Repository access: **Only select repositories** > `truongcx-95/hmt-platform`; Permissions: **Contents: Read-only**, **Actions: Read-only** (Metadata tự thêm).
 3. Chép token, vào `hmt-deploy` > **Settings** > **Secrets and variables** > **Actions** > `PLATFORM_READ_TOKEN` > **Update** > dán > lưu. Đóng tab, không lưu token ở đâu khác.
 4. Chạy thử **Usage report** (Run workflow): mục PLATFORM_READ_TOKEN phải hiện ngày hết hạn mới.
 

@@ -1,7 +1,7 @@
 # Sổ tay vận hành
 
 Các việc vận hành hệ thống mà anh Trường (Admin) tự làm. Việc với bản chạy thật làm trên trình duyệt, bằng tài khoản
-`truongcx.work` (Supabase, Cloudflare) và `caotruong276` (GitHub `hmt-deploy`).
+`truongcx.work` (Supabase, Cloudflare) và `truongcx-95` (GitHub, chủ `hmt-platform` và `hmt-deploy`).
 
 | Việc | Xem ở |
 |---|---|
