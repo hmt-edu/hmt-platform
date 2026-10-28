@@ -43,6 +43,10 @@ test('Sale CS5: danh sách đủ cột, Đã thu và Còn phải thu để "—"
   await expect(rows.getByText(seeded.orders.nhap)).toBeVisible();
   await expect(rows.getByText(seeded.orders.dtrinh)).toBeVisible();
   await expect(rows.getByText(seeded.orders.dduyet)).toBeVisible();
+  // Cột Học sinh nêu tên các em theo dòng (student_names, migration 060), không còn chữ "· N dòng".
+  await expect(rows.getByText('Em Đã Gửi')).toBeVisible();
+  await expect(rows.getByText('Em Quá Hạn')).toBeVisible();
+  await expect(rows.getByText(/· \d+ dòng/)).toHaveCount(0);
   await expect(rows.getByText('Nháp').first()).toBeVisible();
   await expect(rows.getByText('Đã trình').first()).toBeVisible();
   await expect(rows.getByText('Đã duyệt · khoá').first()).toBeVisible();

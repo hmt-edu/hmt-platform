@@ -14,6 +14,8 @@ export type OrderRow = {
   quotation_code: string | null;
   /** Em của dòng đầu tiên. */
   student_name: string | null;
+  /** Tên các em theo thứ tự dòng, không trùng (list_orders từ migration 060). */
+  student_names: string[];
   line_count: number;
   total_amount: number;
   needs_acknowledgement: boolean;

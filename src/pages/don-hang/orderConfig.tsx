@@ -60,13 +60,8 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
         key: 'students',
         label: 'Học sinh',
         render: (r) =>
-          r.student_name ? (
-            <>
-              {r.student_name}
-              {r.line_count > 1 && (
-                <span className="text-fg-muted">{` · ${String(r.line_count)} dòng`}</span>
-              )}
-            </>
+          r.student_names.length > 0 ? (
+            r.student_names.join(', ')
           ) : (
             <span className="text-fg-muted">Chưa có học sinh</span>
           ),
