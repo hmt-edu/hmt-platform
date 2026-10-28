@@ -261,3 +261,20 @@ Ghi chú (26/10): Đ190 và Đ191 là lời OK trong chat, không có luật ri�
 - **QĐ-Đ253 (27/10, anh OK):** khung GV11_dt và GV11_pc trên canvas Cổng giáo viên đều có nút "Mở học sinh" ở mỗi dòng học sinh (dẫn tới GV-13) và câu "Lịch sử buổi chỉ gồm buổi của giáo viên này" (R-GV-08). Bản đồ GV-11 dùng cho cả hai thiết bị nên sửa cả hai khung; Đ245 chỉ nêu GV11_dt, Đ253 mở rộng sang GV11_pc.
 - **QĐ-Đ254 (27/10, anh OK):** ở hộp Chọn gói của BH-02, nhóm "Gợi ý theo cơ hội" bỏ đuôi "· Toán lớp 9" của khung mẫu K06c vì hàm DB chỉ trả mã gói gợi ý, không trả nhãn môn và khối. Thêm nhãn sau khi có việc DB khác nếu cần.
 - **QĐ-Đ255 (28/10, anh OK):** ở màn sửa và màn tạo báo giá (BH-02), chấp nhận tạm ngoại lệ "mỗi dòng lỗi thêm một lần gọi xem thử giá", vì `preview_quotation_lines` dừng ở lỗi đầu tiên. Nợ kỹ thuật: sửa `preview_quotation_lines` trả lỗi của tất cả các dòng trong một lần gọi, rồi bỏ ngoại lệ.
+- **QĐ-Đ256 (28/10, anh OK):** thứ tự làm Bán hàng: BH-06 (danh sách đơn) và DB-O1 trước. Trong lúc chờ Design vẽ lại BH-05, làm BH-03 (In báo giá). Sau đó BH-05 theo các PR nhỏ.
+- **QĐ-Đ257 (28/10, anh OK):** Design vẽ lại khung BH-05 theo K06c: bảng dòng không còn cột Mã lớp, Ngày vào lớp; chiết khấu theo chính sách; giờ mua, giờ tặng nhân viên điền. Gồm cả đơn tạo thẳng từ cơ hội. Dựng màn BH-05 chờ khung mới. Lý do: luật thắng canvas (Đ214, Đ226 đến Đ228, R-TIEN-36).
+- **QĐ-Đ258 (28/10, anh OK):** bỏ "Hình thức thanh toán" và "Cơ sở thu tiền" khỏi khung đơn; hai trường này thuộc phiếu thu (TC-03), luật không đặt trên đơn, DB không có.
+- **QĐ-Đ259 (28/10, anh OK):** "Chuyển thành đơn" từ báo giá mở form trắng, mặc định mọi dòng báo giá chưa vào đơn, bỏ bớt bằng ✕ (khớp canvas BH05_vao, BH05_tao và ý "chọn dòng" trong bản đồ). Chữ ở dòng BH-02 trong `docs/design/ban-do-man-hinh.md` sửa cho khớp.
+- **QĐ-Đ260 (28/10, anh OK):** gộp "tạo đơn" và "lưu điều khoản thanh toán" thành một giao dịch (trong DB-O1), để khớp R-CRM-19. Không chấp nhận hai giao dịch có thể để lại đơn Nháp rác.
+- **QĐ-Đ261 (28/10, chờ luật):** BH-11 (cơ hội đã có đơn nháp) thiếu luật; Chat soạn luật mới, chờ anh nói "OK ĐƯA VÀO LUẬT <mã>". Chưa dựng BH-11 và chưa viết luật vào `docs/spec` cho tới khi có chữ luật.
+- **QĐ-Đ262 (28/10, anh OK):** BH-06 vẫn hiện cột "Đã thu", "Còn phải thu"; ô để "—" (không hiện "0"); bỏ bộ lọc "đã thu đủ/chưa" và nút "Thu tiền" cho tới khi có phiếu thu.
+- **QĐ-Đ263 (28/10, anh OK, anh đổi so với đề xuất):** báo giá ở mọi trạng thái (Nháp, Đã gửi, Từ chối, Huỷ) đều In được. Báo giá Nháp in ra thì ô hạn hiệu lực để trống (R-TIEN-05).
+- **QĐ-Đ264 (28/10, anh OK):** bản in v1 dùng logo chung HMT (`assets/`), tên và địa chỉ cơ sở; bỏ điện thoại và khẩu hiệu khỏi khung; thêm sau khi có màn quản lý cơ sở.
+- **QĐ-Đ265 (28/10, anh OK):** nút "In" và "Tải PDF" cùng mở hộp in của trình duyệt (chọn "Lưu thành PDF"); không thêm thư viện; bỏ ý "ảnh gửi qua tin nhắn".
+- **QĐ-Đ266 (28/10, anh OK):** "In" dùng quyền xem báo giá, không tạo quyền mới; hàm đọc nên không bị chặn khi tắt Bán hàng (Đ181); ẩn trên điện thoại (Đ248).
+- **QĐ-Đ267 (28/10, anh OK):** Design ghi K13 vào P0 v5 và vẽ lại BH03 theo K06c. Code chưa dựng BH-03 cho tới khi Chat báo khung mới đã đăng.
+- **QĐ-Đ268 (28/10, anh OK):** giữ nguyên chữ tiếng Anh "Filters", "Group By", "Favorites", "Save to Favorites" của khuôn K03 (không Việt hoá). Đây là ngoại lệ có chủ đích của khuôn dùng chung, so với quy tắc "chữ trên giao diện bằng tiếng Việt" ở CLAUDE.md.
+- **QĐ-Đ269 (28/10, anh OK):** trên bản ghi đơn (BH-05), "Đã thu" và "Còn phải thu" hiện "—" cho tới khi có phiếu thu (như BH-06, Đ262).
+- **QĐ-Đ272 (28/10, anh OK):** bỏ yêu cầu Design vẽ lại BH-05, BH-06, BH02_bh11. Đ257 hết hiệu lực, theo Đ272. Canvas HMT Platform phiên bản `1793154455-8ab9` là chuẩn.
+- **QĐ-Đ273 (28/10, anh OK):** giữ nhãn trạng thái "BẢN NHÁP", "ĐÃ TỪ CHỐI", "ĐÃ HUỶ" trên bản in báo giá Nháp, Từ chối, Huỷ.
+- **QĐ-Đ274 (28/10, anh OK):** BH-03 dùng một khung BH03_in với hàng nút đổi 5 trạng thái: Đã gửi, Đã gửi quá hạn, Nháp, Từ chối, Huỷ; không xoá file nào ở canvas. Chưa dựng BH-03 cho tới khi Chat báo canvas mới đã đăng.
