@@ -11,6 +11,7 @@
 - P5a-UI-6 (C1): lưới sửa Nháp BH-02 (`QuoteLineGrid`, `QuotePackageDialog`, `quoteEdit.ts`). Danh sách em lấy từ `get_opportunity`; lưu bằng `save_quotation`.
 - P5a-UI-7 (C2): chính sách chiết khấu, giờ tặng, xem thử giá (`useQuotePreview`, `quotePreview.ts`, `QuotePolicyDialog`), Tổng cộng. Mỗi lần đổi dòng gọi một lần xem thử (thêm một lần cho mỗi dòng lỗi).
 - P5a-UI-8 (D1): dòng quà tặng (`QuoteGiftDialog`, `giftRow`, `insertPackageRow`); sửa `useQuotePreview` để lý do chờ trên dòng chưa chọn em luôn cập nhật.
+- P5a-UI-9 (D2): `QuotationCreatePage` (route `bao-gia/tao`), `QuoteLineEditor` dùng chung cho sửa Nháp và tạo mới; nút Tạo báo giá ở `OpportunityRecordPage`. Dòng mới mặc định em đầu (R-TIEN-35, vênh với khung BH02_tao hiện "Chọn em…"; luật thắng).
 - P5a-UI-4: BH-01 lọc "Đã chuyển đơn" theo tình trạng hiển thị (Đ243: gửi trong `status`, nối bằng HOẶC); BH-02 cột "Đơn" (Đ242).
 - P5a-UI-5: BH-02 Huỷ báo giá (menu Hành động, hộp xác nhận bằng khuôn ① danger kèm ô Ghi chú); mục In mờ. `MenuItem` thêm tuỳ chọn `unavailable`.
 - P5a-DB1b-1 (migration `051`): đơn hàng (bảng, hàm ghi). Bài kiểm 043; seed-lon thêm 8.000 đơn; sửa bài 006 (26 danh mục hệ thống). Lớp chờ P5b (`check_order_line_class`), phiếu thu chờ DB2 (`order_has_receipt`).

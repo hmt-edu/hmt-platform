@@ -157,10 +157,10 @@ export function useSellablePackages(opportunityId: string, type: string | null, 
   });
 }
 
-/** Lưu báo giá Nháp (thay toàn bộ dòng). Máy chủ tính lại giá và kiểm luật; lỗi nêu đúng dòng. */
+/** Lưu báo giá Nháp (thay toàn bộ dòng; id rỗng là tạo mới từ cơ hội, cấp mã). Máy chủ tính lại giá và kiểm luật; lỗi nêu đúng dòng. */
 export function saveQuotation(
   supabase: SupabaseClient,
-  id: string,
+  id: string | null,
   opportunityId: string,
   lines: Record<string, unknown>[],
 ): Promise<{ id: string; code: string; total_amount: number }> {

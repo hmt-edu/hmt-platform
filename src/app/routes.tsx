@@ -41,6 +41,10 @@ const QuotationListPage = lazyScreen(
   () => import('../pages/bao-gia/QuotationListPage'),
   'QuotationListPage',
 );
+const QuotationCreatePage = lazyScreen(
+  () => import('../pages/bao-gia/QuotationCreatePage'),
+  'QuotationCreatePage',
+);
 const QuotationRecordPage = lazyScreen(
   () => import('../pages/bao-gia/QuotationRecordPage'),
   'QuotationRecordPage',
@@ -167,6 +171,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="bao-gia">
                 <QuotationListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'bao-gia/tao',
+            element: (
+              <GatedCrmEntry slug="bao-gia">
+                <QuotationCreatePage />
               </GatedCrmEntry>
             ),
           },

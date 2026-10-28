@@ -14,6 +14,7 @@ import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, rpc, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
+import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
@@ -110,6 +111,15 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const refreshRecord = useRefreshOppRecord(record.id);
 
   const merged = record.record_status === 'DA_GOP';
+  const phone = useMedia(NARROW_TABLE);
+  // Tạo báo giá (R-CRM-19): cần quyền lập báo giá, phân hệ Bán hàng bật, cơ hội chưa gộp; máy chủ kiểm lại khi Lưu.
+  const quoteReason: { ok: true } | { ok: false; reason: string } = merged
+    ? { ok: false, reason: 'Cơ hội đã gộp vào bản khác, không tạo báo giá.' }
+    : !access.can('QUOTATION', 'TAO')
+      ? { ok: false, reason: 'Bạn không có quyền lập báo giá.' }
+      : !access.featureOn('BAN_HANG')
+        ? { ok: false, reason: 'Phân hệ Bán hàng chưa bật ở cơ sở này.' }
+        : { ok: true };
   const canEdit = access.can('OPPORTUNITY', 'SUA') && !merged;
   const canAssign = access.can('OPPORTUNITY', 'GIAO_VIEC') && !merged;
   // Gộp trùng dùng quyền Duyệt trên phân hệ Cơ hội (R-CRM-22); bản đã gộp chỉ đọc.
@@ -407,9 +417,16 @@ function OpportunityView({ record }: { record: OppRecord }) {
         }
         businessActions={
           <>
-            <Button disabled title="Có ở phần Bán hàng (giai đoạn sau)">
-              Tạo báo giá
-            </Button>
+            {/* R-CRM-19, R-TIEN-02: Tạo báo giá chỉ nằm ở bản ghi cơ hội, bấm chỉ mở form trắng. Điện thoại giữ bản chỉ đọc (Đ248): ẩn nút. */}
+            {!phone && (
+              <Button
+                disabled={!quoteReason.ok}
+                title={quoteReason.ok ? undefined : quoteReason.reason}
+                onClick={() => openFrom(`/crm/bao-gia/tao?co-hoi=${record.id}`)}
+              >
+                Tạo báo giá
+              </Button>
+            )}
             <Button
               disabled
               title={

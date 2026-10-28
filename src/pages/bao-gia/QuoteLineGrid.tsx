@@ -76,6 +76,8 @@ export function QuoteLineGrid({
   const [policyFor, setPolicyFor] = useState<string | null>(null);
   const [giftOpen, setGiftOpen] = useState(false);
   const giftById = new Map(giftPolicies.map((g) => [g.id, g]));
+  // R-TIEN-35: dòng mới mặc định em đầu của cơ hội (đổi được); cơ hội chưa có em thì để trống.
+  const firstStudentId = students[0]?.id ?? '';
   const policyById = new Map(policies.map((p) => [p.id, p]));
   const modeName = (code: string) => catalogs.name('STUDY_MODE', code) ?? code;
   const update = (key: string, patch: Partial<EditRow>) =>
@@ -404,7 +406,9 @@ export function QuoteLineGrid({
         <Button
           icon="plus"
           disabled={disabled}
-          onClick={() => onChange(insertPackageRow(rows, blankRow()))}
+          onClick={() =>
+            onChange(insertPackageRow(rows, { ...blankRow(), studentId: firstStudentId }))
+          }
         >
           Thêm dòng
         </Button>
@@ -422,7 +426,7 @@ export function QuoteLineGrid({
         policies={giftPolicies}
         cap={cap}
         onPick={(policy) => {
-          onChange([...rows, giftRow(policy)]);
+          onChange([...rows, { ...giftRow(policy), studentId: firstStudentId }]);
           setGiftOpen(false);
         }}
       />
