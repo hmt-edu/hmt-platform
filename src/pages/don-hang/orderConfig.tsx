@@ -2,9 +2,10 @@
 // Lọc, sắp xếp, phân trang làm ở máy chủ nên cấu hình không có hàm `test` chạy ở trình duyệt. Không có nút Tạo: đơn chỉ sinh từ báo giá,
 // cơ hội hoặc phiếu tái tục (R-CRM-19, R-TIEN-02). Đ262: cột Đã thu, Còn phải thu để "—" và không có bộ lọc đã thu đủ, nút Thu tiền cho tới khi
 // có phiếu thu.
+import { Link } from 'react-router';
 import { formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
-import { Code, Tag, type TagTone } from '../../ui/Data';
+import { Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig, ListState } from '../../list/types';
 import { Stacked } from '../lead/LeadCells';
 import { formatPhone } from '../lead/leadFormat';
@@ -49,7 +50,11 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
         label: 'Mã',
         locked: true,
         primary: true,
-        render: (r) => <Code>{r.code}</Code>,
+        render: (r) => (
+          <Link to={`/crm/don-hang/${r.id}`} className="font-medium text-link hover:underline">
+            {r.code}
+          </Link>
+        ),
       },
       {
         key: 'parent',

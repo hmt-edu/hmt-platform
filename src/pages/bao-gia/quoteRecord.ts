@@ -16,7 +16,12 @@ export const UNIT_LABEL: Record<QuotationLine['unit_code'], string> = {
 };
 
 /** Chữ chiết khấu của một dòng: "10%" kèm tên chính sách; giờ tặng ghi riêng; không có chiết khấu thì rỗng. */
-export function discountText(line: QuotationLine): string {
+export function discountText(
+  line: Pick<
+    QuotationLine,
+    'line_kind' | 'gift_policy_name' | 'discount_percent' | 'gifted_quantity'
+  >,
+): string {
   if (line.line_kind === 'GIFT') return line.gift_policy_name ?? 'Quà tặng';
   const parts: string[] = [];
   if (line.discount_percent > 0) parts.push(`${String(line.discount_percent).replace('.', ',')}%`);

@@ -40,6 +40,7 @@ const CATALOGS = [
   'STUDY_MODE',
   'REJECT_REASON',
   'ORDER_STATUS',
+  'ORDER_CANCEL_REASON',
   'PACKAGE_TYPE',
 ];
 const FOREVER = Infinity;

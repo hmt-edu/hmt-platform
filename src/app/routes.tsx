@@ -42,6 +42,10 @@ const QuotationListPage = lazyScreen(
   'QuotationListPage',
 );
 const OrderListPage = lazyScreen(() => import('../pages/don-hang/OrderListPage'), 'OrderListPage');
+const OrderRecordPage = lazyScreen(
+  () => import('../pages/don-hang/OrderRecordPage'),
+  'OrderRecordPage',
+);
 const QuotationCreatePage = lazyScreen(
   () => import('../pages/bao-gia/QuotationCreatePage'),
   'QuotationCreatePage',
@@ -184,6 +188,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="don-hang">
                 <OrderListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'don-hang/:id',
+            element: (
+              <GatedCrmEntry slug="don-hang">
+                <OrderRecordPage />
               </GatedCrmEntry>
             ),
           },

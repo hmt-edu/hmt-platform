@@ -41,18 +41,21 @@ async function clear(db: pg.Client, mark: string): Promise<void> {
   const leads = `(select id from app.lead where parent_name like $1)`;
   const opps = `(select id from app.opportunity where lead_id in ${leads})`;
   const quotes = `(select id from app.quotation where opportunity_id in ${opps})`;
-  const orders = `(select order_id from app.sales_order_line where quotation_line_id in (select id from app.quotation_line where quotation_id in ${quotes}))`;
+  // Đơn sinh từ báo giá, và đơn tạo thẳng từ cơ hội (không có dòng báo giá).
+  const orders = `(select order_id from app.sales_order_line where quotation_line_id in (select id from app.quotation_line where quotation_id in ${quotes})
+    union select id from app.sales_order where opportunity_id in ${opps})`;
   await db.query(
     `delete from app.sales_order_line_discount where line_id in (select id from app.sales_order_line where order_id in ${orders})`,
+    like,
+  );
+  await db.query(
+    `delete from app.note where entity_type = 'SALES_ORDER' and entity_id in ${orders}`,
     like,
   );
   await db.query(`delete from app.sales_order_installment where order_id in ${orders}`, like);
   await db.query(`delete from app.sales_order_event where order_id in ${orders}`, like);
   const orderIds = (
-    await db.query<{ id: string }>(
-      `select distinct order_id as id from app.sales_order_line where quotation_line_id in (select id from app.quotation_line where quotation_id in ${quotes})`,
-      like,
-    )
+    await db.query<{ id: string }>(`select id from ${orders} as x(id)`, like)
   ).rows.map((r) => r.id);
   await db.query(`delete from app.sales_order_line where order_id = any($1::uuid[])`, [orderIds]);
   await db.query(`delete from app.sales_order where id = any($1::uuid[])`, [orderIds]);

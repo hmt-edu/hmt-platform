@@ -3,7 +3,7 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang. Bản dài trước 28/10 nằm trong lịch sử git của file này: `git log -- docs/nhat-ky/code.md`.)
 
 ## Đang làm
-- DB-O1c và BH-03 đã gộp. Đang chờ OK: PR bản in thêm hai dòng tổng. Sau đó UI-O2, UI-O3, UI-O4.
+- DB-O1c và BH-03 đã gộp. UI-O2a (xem đơn BH-05) đã gộp. Kế tiếp UI-O2b (Trình, Huỷ), UI-O2c (Duyệt, Từ chối), UI-O3 (sửa Nháp), UI-O4.
 - Chưa dựng BH-05 (chờ DB-O1c rồi UI-O2, UI-O3, UI-O4), BH-11 (luật R-TIEN-39 đã vào, dựng ở UI-O4).
 
 ## Đã gộp gần đây (Bán hàng, P5a)
@@ -13,7 +13,7 @@
 
 ## Đã chốt
 - Đ255: nợ kỹ thuật `preview_quotation_lines` trả lỗi tất cả dòng trong một lần.
-- Đ256 đến Đ276 (28/10): thứ tự làm; khung BH-05 là bản canvas `8ab9` (Đ270, Đ272); canvas anh chốt thắng gói thiết kế và bản đồ (Đ271); bỏ Hình thức thanh toán, Cơ sở thu tiền khỏi đơn (Đ258); Chuyển thành đơn là form trắng bỏ bớt bằng ✕ (Đ259); gộp tạo đơn và điều khoản một giao dịch (Đ260); BH-06 Đã thu, Còn phải thu "—" (Đ262, Đ269); in báo giá mọi trạng thái, nhãn BẢN NHÁP, ĐÃ TỪ CHỐI, ĐÃ HUỶ, hộp in của trình duyệt (Đ263 đến Đ267, Đ273, Đ274); giữ chữ tiếng Anh của khuôn K03 (Đ268); bỏ gợi ý "dùng báo giá còn hiệu lực" (Đ275).
+- Đ256 đến Đ276 (28/10): thứ tự làm; khung BH-05 là bản canvas `1793163092-bfd4` (Đ270, Đ272); canvas anh chốt thắng gói thiết kế và bản đồ (Đ271); bỏ Hình thức thanh toán, Cơ sở thu tiền khỏi đơn (Đ258); Chuyển thành đơn là form trắng bỏ bớt bằng ✕ (Đ259); gộp tạo đơn và điều khoản một giao dịch (Đ260); BH-06 Đã thu, Còn phải thu "—" (Đ262, Đ269); in báo giá mọi trạng thái, nhãn BẢN NHÁP, ĐÃ TỪ CHỐI, ĐÃ HUỶ, hộp in của trình duyệt (Đ263 đến Đ267, Đ273, Đ274); giữ chữ tiếng Anh của khuôn K03 (Đ268); bỏ gợi ý "dùng báo giá còn hiệu lực" (Đ275).
 - Luật mới R-TIEN-39 (28/10): đơn thẳng từ cơ hội mà cơ hội đã có đơn Nháp thì cảnh báo, Mở đơn cũ hoặc Vẫn tạo.
 - Điện thoại giữ bản chỉ đọc cho BH-02, BH-05 (Đ248). Kiểm nhẹ trên máy thay CI cho tới khi Actions có phút (Đ208, Đ212).
 
@@ -27,5 +27,5 @@
 - 1/11 (khi Actions có phút): chạy CI thật trên `main` (Đ208 mục e); rồi một PR workflow cho Đ210 (#1, #3, #4, #6), đo phút sau 7 ngày, so với 1.924 phút của tháng 10.
 
 ## File hoặc link mới
-- Canvas HMT Platform nguồn mới nhất: `design/nguon-canvas/hmt-platform-v117/` (bản `e6d0`; canvas chuẩn hiện là `8ab9`, các khung BH05, BH06, BH07 giống bản đã lưu).
-- Ảnh chụp: `docs/anh-chup/bh01/`, `bh02/`, `bh06/`, `bh03/` (năm tình trạng, PDF A4 do trình duyệt xuất).
+- Canvas HMT Platform nguồn mới nhất: `design/nguon-canvas/hmt-platform-v117/` (bản `e6d0`; canvas chuẩn hiện là `1793163092-bfd4` (Đ272), các khung BH05, BH06, BH07 giống bản đã lưu).
+- Ảnh chụp: `docs/anh-chup/bh01/`, `bh02/`, `bh06/`, `bh05/`, `bh03/` (năm tình trạng, PDF A4 do trình duyệt xuất).

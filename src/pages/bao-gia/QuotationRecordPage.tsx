@@ -210,6 +210,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
     }
   }
 
+  const liveOrderIds = [...new Set(record.lines.flatMap((l) => (l.order_id ? [l.order_id] : [])))];
   const statusName = (code: string) => catalogs.name('QUOTATION_STATUS', code) ?? code;
   const modeName = (code: string) => catalogs.name('STUDY_MODE', code) ?? code;
   const branchName =
@@ -282,14 +283,19 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             header: 'Thành tiền',
             cell: (l) => <span className="tabular">{formatNumber(l.line_total)}</span>,
           },
-          // Đ242: mã và trạng thái đơn đang sống của dòng, cho mọi người có quyền Xem báo giá. Nút mở đơn chờ màn Đơn hàng (BH-05).
+          // Đ242: mã và trạng thái đơn đang sống của dòng, cho mọi người có quyền Xem báo giá. Mã đơn bấm vào mở bản ghi đơn (BH-05).
           {
             key: 'order',
             header: 'Đơn',
             cell: (l) =>
               l.order_code ? (
                 <span className="flex flex-wrap items-center gap-1.5">
-                  <span className="font-medium">{l.order_code}</span>
+                  <Link
+                    to={`/crm/don-hang/${l.order_id ?? ''}`}
+                    className="font-medium text-link hover:underline"
+                  >
+                    {l.order_code}
+                  </Link>
                   <Tag tone={ORDER_TONE[l.order_status_code ?? ''] ?? 'neutral'}>
                     {catalogs.name('ORDER_STATUS', l.order_status_code) ?? l.order_status_code}
                   </Tag>
@@ -376,9 +382,17 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             key: 'don-hang',
             label: 'Đơn hàng',
             icon: 'file',
-            count: 0,
-            unavailable: 'Có khi làm màn Đơn hàng',
-            onOpen: () => undefined,
+            count: record.live_order_count,
+            // Một đơn đang sống thì mở thẳng; nhiều đơn thì mở từng đơn ở cột Đơn của dòng.
+            ...(liveOrderIds.length === 1
+              ? { onOpen: () => openFrom(`/crm/don-hang/${liveOrderIds[0] ?? ''}`) }
+              : {
+                  unavailable:
+                    liveOrderIds.length === 0
+                      ? 'Báo giá chưa lên đơn'
+                      : 'Có nhiều đơn: mở từ cột Đơn của từng dòng',
+                  onOpen: () => undefined,
+                }),
           },
         ]}
         aside={
