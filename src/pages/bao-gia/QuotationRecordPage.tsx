@@ -40,6 +40,7 @@ import {
   saveQuotation,
   sendQuotation,
   useDiscountPolicies,
+  useGiftPolicies,
   useOpportunityStudents,
   useQuotation,
   useRefreshQuotation,
@@ -133,6 +134,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [saveError, setSaveError] = useState<string | null>(null);
   const students = useOpportunityStudents(record.opportunity_id, editing);
   const policies = useDiscountPolicies(record.opportunity_id, editing);
+  const giftPolicies = useGiftPolicies(record.opportunity_id, editing);
   const preview = useQuotePreview(record.opportunity_id, rows, editing);
   useCrumbTail(record.code);
 
@@ -540,6 +542,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                   issues={issues}
                   disabled={saving || students.isPending}
                   policies={policies.data ?? []}
+                  giftPolicies={giftPolicies.data ?? []}
                   calcs={preview.calcs}
                   cap={capPercent}
                 />

@@ -22,8 +22,8 @@ export type RowCalc =
 
 /** Dòng gói đã đủ gói, hình thức, số lượng (chưa kể em). */
 export function isComplete(row: EditRow): boolean {
+  if (row.kind === 'GIFT') return row.giftPolicyId !== '' && parseQuantity(row.quantity) !== null;
   return (
-    row.kind === 'ENROL' &&
     row.packageId !== '' &&
     row.mode !== '' &&
     parseQuantity(row.quantity) !== null &&
@@ -33,11 +33,11 @@ export function isComplete(row: EditRow): boolean {
 
 /** Trạng thái ban đầu của dòng chưa gửi đi xem thử. */
 export function waitingStatus(row: EditRow): RowCalc {
-  if (row.kind !== 'ENROL' || !isComplete(row)) return { status: 'incomplete' };
+  if (!isComplete(row)) return { status: 'incomplete' };
   return row.studentId === '' ? { status: 'needs-student' } : { status: 'pending' };
 }
 
-/** Dòng gửi xem thử: chỉ dòng đã đủ em, gói, hình thức, số lượng (dòng quà chưa gửi ở bản này). */
+/** Dòng gửi xem thử: chỉ dòng đã đủ em, gói, hình thức, số lượng (cả dòng quà). */
 export function previewCandidates(
   rows: EditRow[],
 ): { rowKey: string; line: Record<string, unknown> }[] {

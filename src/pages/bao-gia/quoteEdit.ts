@@ -61,6 +61,40 @@ function quantityToText(q: number): string {
     .replace('.', ',');
 }
 
+/** Dòng quà tặng mới từ một chính sách quà tặng (R-TIEN-30): gắn một em (chọn trên dòng), số lượng nhân viên điền. */
+export function giftRow(policy: {
+  id: string;
+  name: string;
+  gift_package: {
+    id: string;
+    code: string;
+    name: string;
+    package_type_code: string;
+    unit_code: QuotationLine['unit_code'];
+  };
+}): EditRow {
+  return {
+    ...blankRow(),
+    kind: 'GIFT',
+    packageId: policy.gift_package.id,
+    packageCode: policy.gift_package.code,
+    packageName: policy.gift_package.name,
+    packageType: policy.gift_package.package_type_code,
+    unitCode: policy.gift_package.unit_code,
+    mode: 'OFF',
+    giftPolicyId: policy.id,
+    giftPolicyName: policy.name,
+  };
+}
+
+/** Thêm dòng gói mới: đặt trước các dòng quà (dòng quà đánh số tiếp theo dòng gói). */
+export function insertPackageRow(rows: EditRow[], row: EditRow): EditRow[] {
+  const firstGift = rows.findIndex((r) => r.kind === 'GIFT');
+  return firstGift === -1
+    ? [...rows, row]
+    : [...rows.slice(0, firstGift), row, ...rows.slice(firstGift)];
+}
+
 /** Dòng sửa từ bản ghi đã lưu. */
 export function rowsFromRecord(record: Pick<QuotationRecord, 'lines'>): EditRow[] {
   return record.lines.map((l) => ({
@@ -100,7 +134,8 @@ export type RowIssue = { rowKey: string; lineNo: number; message: string; summar
 export function validateRows(rows: EditRow[]): RowIssue[] {
   const issues: RowIssue[] = [];
   rows.forEach((row, i) => {
-    if (row.kind === 'ENROL' && row.packageId !== '' && parseQuantity(row.quantity) === null) {
+    const named = row.kind === 'GIFT' ? row.giftPolicyId !== '' : row.packageId !== '';
+    if (named && parseQuantity(row.quantity) === null) {
       const label = `${row.packageCode} · ${row.packageName}`;
       issues.push({
         rowKey: row.key,

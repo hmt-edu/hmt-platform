@@ -49,7 +49,11 @@ export function useQuotePreview(
 
   // Chữ ký của việc cần tính: đổi dòng mới tính lại; số tính sẵn và khoá nội bộ không tính.
   const candidates = previewCandidates(rows);
-  const signature = JSON.stringify(candidates.map((c) => [c.rowKey, c.line]));
+  // Gồm cả trạng thái chờ của dòng chưa gửi được (chưa chọn em, chưa đủ ô) để lý do trên dòng luôn đúng.
+  const signature = JSON.stringify([
+    candidates.map((c) => [c.rowKey, c.line]),
+    rows.map((r) => [r.key, waitingStatus(r).status]),
+  ]);
   const rowsRef = useRef(rows);
   useEffect(() => {
     rowsRef.current = rows;

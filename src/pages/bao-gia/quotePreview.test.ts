@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { blankRow, type EditRow } from './quoteEdit';
+import { blankRow, giftRow, type EditRow } from './quoteEdit';
 import {
   errorLineNo,
   isComplete,
@@ -48,5 +48,26 @@ describe('quotePreview', () => {
   it('số thập phân kiểu Việt', () => {
     expect(percentText(23.3)).toBe('23,3');
     expect(percentText(10)).toBe('10');
+  });
+
+  it('dòng quà đủ chính sách và số lượng thì xem thử được; chưa chọn em thì chờ chọn em', () => {
+    const gift = giftRow({
+      id: 'g1',
+      name: 'Quà',
+      gift_package: {
+        id: 'tl1',
+        code: 'TL',
+        name: 'Gói quà',
+        package_type_code: 'TL',
+        unit_code: 'BO',
+      },
+    });
+    expect(isComplete(gift)).toBe(false);
+    const ready = { ...gift, quantity: '1' };
+    expect(isComplete(ready)).toBe(true);
+    expect(waitingStatus(ready)).toEqual({ status: 'needs-student' });
+    expect(previewCandidates([{ ...ready, studentId: 's1' }]).map((c) => c.line.kind)).toEqual([
+      'GIFT',
+    ]);
   });
 });
