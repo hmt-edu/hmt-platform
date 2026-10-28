@@ -104,7 +104,7 @@ export const CRM_MENU: MenuGroup[] = [
         label: 'Đơn hàng',
         slug: 'don-hang',
         requires: can('SALES_ORDER'),
-        stage: GD1,
+        stage: '',
       },
       {
         code: 'TC-01',

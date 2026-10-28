@@ -1,0 +1,45 @@
+// Gọi dữ liệu màn Đơn hàng (BH-06): danh sách phân trang ở máy chủ và Xuất. Giao diện KHÔNG tính tiền; chỉ hiện kết quả của hàm cơ sở dữ liệu.
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { useCallback } from 'react';
+import { rpc, useDb } from '../../lib/db';
+import type { OrderFilters } from './orderFilters';
+import type { OrderExportResult, OrderPage } from './orderTypes';
+
+export function useOrderPage(
+  filters: OrderFilters,
+  sort: string | undefined,
+  offset: number,
+  limit: number | null,
+) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['order-list', filters, sort ?? null, offset, limit],
+    enabled: limit !== null,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<OrderPage>(supabase, 'list_orders', {
+        p_filters: filters,
+        p_sort: sort ?? 'created_desc',
+        p_limit: limit,
+        p_offset: offset,
+      }),
+  });
+}
+
+/** Xuất theo cùng bộ lọc (chỉ Trưởng cơ sở, Kế toán, Admin; máy chủ kiểm quyền và ghi nhật ký xuất, Đ105). */
+export async function exportOrders(
+  supabase: SupabaseClient,
+  filters: OrderFilters,
+): Promise<OrderExportResult> {
+  return rpc<OrderExportResult>(supabase, 'export_orders', { p_filters: filters });
+}
+
+/** Làm mới mọi danh sách đơn đang giữ trong bộ nhớ đệm. */
+export function useRefreshOrders() {
+  const queryClient = useQueryClient();
+  return useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ['order-list'] }),
+    [queryClient],
+  );
+}
