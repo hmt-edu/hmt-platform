@@ -252,6 +252,75 @@ test('BH-02: ghi chú gắn vào báo giá; báo giá không có thì báo khôn
   await expect(page.getByRole('heading', { name: 'Không tìm thấy báo giá' })).toBeVisible();
 });
 
+test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, Tổng cộng do máy chủ tính; giờ tặng vượt trần', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Sửa.');
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  const row1 = page.getByRole('listitem', { name: 'Dòng 1' });
+  // Tổng cộng báo giá do xem thử trả (không chiết khấu): 20 giờ + 5 giờ, mỗi giờ 220.000.
+  await expect(page.getByText('5.500.000 đ')).toBeVisible();
+  // Hộp Chọn chính sách chiết khấu: chọn "áp đúng mức" 5%.
+  await row1.getByRole('button', { name: 'Chính sách' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Chọn chính sách chiết khấu' });
+  await expect(dialog.getByText(/tối đa một chính sách tặng giờ/)).toBeVisible();
+  await expectAccessible(page);
+  await dialog.getByLabel(/Giảm khi đóng 6 tháng/).check();
+  await dialog.getByRole('button', { name: 'Áp dụng' }).click();
+  await expect(row1.getByText(/5% \(áp đúng mức\)/)).toBeVisible();
+  await expect(row1.getByText('Tổng chiết khấu')).toBeVisible();
+  await expect(row1.getByText(/5% \/ trần/)).toBeVisible();
+  await expect(page.getByText('5.280.000 đ')).toBeVisible();
+  // Chính sách tặng giờ: tối đa một; chưa nhập giờ thì máy chủ báo lỗi ở dòng.
+  await row1.getByRole('button', { name: 'Chính sách' }).click();
+  await dialog.getByLabel(/Tặng giờ học/).check();
+  await dialog.getByRole('button', { name: 'Áp dụng' }).click();
+  await expect(row1.getByText(/phải lớn hơn 0/)).toBeVisible();
+  // Nhập 4 giờ tặng trên 20 giờ mua: 5% + 20% = 25%, vượt trần, vẫn lưu được.
+  await page.getByLabel('Giờ tặng dòng 1').fill('4');
+  await expect(row1.getByText('Vượt trần: cần Trưởng cơ sở duyệt. Vẫn lưu được.')).toBeVisible();
+  await expect(row1.getByText(/25% \/ trần/)).toBeVisible();
+  // Chữ đơn vị của ô Số lượng không đè lên ô Giờ tặng; hai ô cùng hàng, cùng cao.
+  const qty = await page.getByLabel('Số lượng dòng 1').boundingBox();
+  const gift = await page.getByLabel('Giờ tặng dòng 1').boundingBox();
+  const unit = await row1.getByText('giờ', { exact: true }).first().boundingBox();
+  expect(qty && gift && unit).toBeTruthy();
+  if (qty && gift && unit) {
+    expect(unit.x + unit.width).toBeLessThanOrEqual(gift.x);
+    expect(Math.abs(qty.y - gift.y)).toBeLessThanOrEqual(1);
+    expect(Math.abs(qty.height - gift.height)).toBeLessThanOrEqual(1);
+  }
+  // Lưu rồi xem lại: chiết khấu và giờ tặng hiện ở bản xem.
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đã lưu báo giá.').first()).toBeVisible();
+  const view = page.getByRole('table', { name: 'Gói học' });
+  await expect(view.getByText(/5% \+ tặng 4 giờ/)).toBeVisible();
+});
+
+test('BH-02 sửa Nháp: dòng chưa chọn em chưa tính giá', async ({ page }, testInfo) => {
+  test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Sửa.');
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  await page.getByRole('button', { name: 'Thêm dòng' }).click();
+  await page.getByRole('button', { name: 'Gói dòng 3' }).click();
+  await page
+    .getByRole('dialog', { name: 'Chọn gói' })
+    .getByRole('button', { name: /LC-TOAN-K09/ })
+    .first()
+    .click();
+  await page.getByLabel('Số lượng dòng 3').fill('4');
+  const row3 = page.getByRole('listitem', { name: 'Dòng 3' });
+  await expect(row3.getByText('Chọn em để xem giá')).toBeVisible();
+  // Chọn em xong mới tính.
+  await page.getByRole('combobox', { name: 'Học sinh dòng 3' }).click();
+  await page.getByRole('option', { name: /Em Nháp Hai/ }).click();
+  await expect(row3.getByText('880.000')).toBeVisible();
+  await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
+});
+
 test('BH-02: Sale bấm Gửi báo giá Nháp thì thành Đã gửi, hết nút Gửi', async ({
   page,
 }, testInfo) => {

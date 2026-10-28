@@ -76,7 +76,9 @@ describe('quoteEdit', () => {
       quantity: '10',
       unitCode: 'GIO',
     });
-    expect(row?.discounts).toEqual([{ policyId: 'pol1', name: 'Giảm khi đóng 6 tháng', value: 5 }]);
+    expect(row?.discounts).toEqual([
+      { policyId: 'pol1', name: 'Giảm khi đóng 6 tháng', value: '5' },
+    ]);
     expect(row?.calc?.lineTotal).toBe(2090000);
   });
 
@@ -156,5 +158,39 @@ describe('quoteEdit', () => {
     ).toEqual([]);
     // Xoá lại ô thì không tự báo lỗi mới trước khi bấm Lưu.
     expect(pruneIssues([], [a, b])).toEqual([]);
+  });
+
+  it('mức chiết khấu hoặc giờ tặng gõ sai thì báo ở dòng, mức hợp lệ hoặc để trống thì không', () => {
+    const base = {
+      ...blankRow(),
+      packageId: 'p1',
+      quantity: '10',
+      packageCode: 'A',
+      packageName: 'Gói A',
+    };
+    const disc = (value: string) => [{ policyId: 'pol', name: 'Giảm', value }];
+    expect(validateRows([{ ...base, discounts: disc('abc') }])[0]?.message).toBe(
+      'Mức chiết khấu hoặc giờ tặng không hợp lệ.',
+    );
+    expect(validateRows([{ ...base, discounts: disc('') }])).toEqual([]);
+    expect(validateRows([{ ...base, discounts: disc('7,5') }])).toEqual([]);
+  });
+
+  it('dựng dòng lưu: mức để trống gửi null (máy chủ lấy mức tối đa), mức gõ gửi số', () => {
+    const row = {
+      ...blankRow(),
+      packageId: 'p1',
+      mode: 'OFF',
+      quantity: '10',
+      studentId: 's1',
+      discounts: [
+        { policyId: 'a', name: 'A', value: '' },
+        { policyId: 'b', name: 'B', value: '7,5' },
+      ],
+    };
+    expect(buildSaveLines([row])[0]?.discounts).toEqual([
+      { policy_id: 'a', value: null },
+      { policy_id: 'b', value: 7.5 },
+    ]);
   });
 });

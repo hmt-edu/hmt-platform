@@ -22,6 +22,7 @@ import { useToast } from '../../ui/toastContext';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { QuoteLineGrid } from './QuoteLineGrid';
+import { useQuotePreview } from './useQuotePreview';
 import {
   buildSaveLines,
   pruneIssues,
@@ -38,6 +39,7 @@ import {
   rejectQuotation,
   saveQuotation,
   sendQuotation,
+  useDiscountPolicies,
   useOpportunityStudents,
   useQuotation,
   useRefreshQuotation,
@@ -130,6 +132,8 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [issues, setIssues] = useState<RowIssue[]>([]);
   const [saveError, setSaveError] = useState<string | null>(null);
   const students = useOpportunityStudents(record.opportunity_id, editing);
+  const policies = useDiscountPolicies(record.opportunity_id, editing);
+  const preview = useQuotePreview(record.opportunity_id, rows, editing);
   useCrumbTail(record.code);
 
   // Nút theo tình trạng; quyền Sửa và công tắc Bán hàng kiểm ở đây, máy chủ kiểm lại (Đ173).
@@ -535,7 +539,27 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                   opportunityHref={`/crm/co-hoi/${record.opportunity_id}`}
                   issues={issues}
                   disabled={saving || students.isPending}
+                  policies={policies.data ?? []}
+                  calcs={preview.calcs}
+                  cap={capPercent}
                 />
+                {preview.networkError !== null && (
+                  <Alert tone="danger" title="Không tính được giá.">
+                    <span className="flex flex-wrap items-center gap-2">
+                      {preview.networkError}
+                      <Button size="sm" onClick={preview.retry}>
+                        Thử lại
+                      </Button>
+                    </span>
+                  </Alert>
+                )}
+                <p className="flex flex-wrap items-baseline justify-end gap-2 text-body">
+                  <span>Tổng cộng báo giá</span>
+                  <span className="text-caption text-fg-muted">(hệ thống tính)</span>
+                  <b className="tabular" aria-busy={preview.computing ? true : undefined}>
+                    {preview.computing || preview.total === null ? '—' : formatMoney(preview.total)}
+                  </b>
+                </p>
               </div>
             ) : (
               lines

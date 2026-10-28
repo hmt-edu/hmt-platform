@@ -3,6 +3,8 @@
 import type { QuotationLine, QuotationLineDiscount, QuotationRecord } from './quoteTypes';
 
 /** Một dòng đang sửa. `quantity` giữ chữ người gõ ("10", "1,5") cho tới khi lưu. */
+export type EditDiscount = { policyId: string; name: string; value: string };
+
 export type EditRow = {
   key: string;
   kind: 'ENROL' | 'GIFT';
@@ -11,13 +13,15 @@ export type EditRow = {
   packageId: string;
   packageCode: string;
   packageName: string;
+  /** Loại gói (LC, VIP, …) để lọc chính sách theo loại gói. */
+  packageType: string;
   unitCode: QuotationLine['unit_code'] | '';
   /** Hình thức gói bán (từ bảng giá); rỗng là chưa biết (dòng cũ, chưa nạp gói): cho chọn mọi hình thức, máy chủ kiểm lúc lưu. */
   modes: string[];
   mode: string;
   quantity: string;
-  /** Chính sách chiết khấu giữ nguyên khi chưa sửa (PR sau mới cho sửa). */
-  discounts: { policyId: string; name: string; value: number }[];
+  /** Chính sách chiết khấu của dòng. `value` là chữ người gõ: mức % (để trống = mức tối đa) hoặc số giờ tặng; chính sách "áp đúng mức" không nhập. */
+  discounts: EditDiscount[];
   giftPolicyId: string;
   giftPolicyName: string;
   /** Số tính sẵn của bản đã lưu; null khi dòng đã đổi (không hiện số cũ). */
@@ -38,6 +42,7 @@ export function blankRow(): EditRow {
     packageId: '',
     packageCode: '',
     packageName: '',
+    packageType: '',
     unitCode: '',
     modes: [],
     mode: '',
@@ -65,6 +70,7 @@ export function rowsFromRecord(record: Pick<QuotationRecord, 'lines'>): EditRow[
     packageId: l.package_id,
     packageCode: l.package_code,
     packageName: l.package_name,
+    packageType: l.package_type_code,
     unitCode: l.unit_code,
     modes: [],
     mode: l.delivery_mode_code,
@@ -72,7 +78,7 @@ export function rowsFromRecord(record: Pick<QuotationRecord, 'lines'>): EditRow[
     discounts: l.discounts.map((d: QuotationLineDiscount) => ({
       policyId: d.policy_id,
       name: d.policy_name,
-      value: d.applied_value,
+      value: String(d.applied_value).replace(/\.0+$/, '').replace('.', ','),
     })),
     giftPolicyId: l.gift_policy_id ?? '',
     giftPolicyName: l.gift_policy_name ?? '',
@@ -104,6 +110,17 @@ export function validateRows(rows: EditRow[]): RowIssue[] {
       });
     }
   });
+  // Mức chiết khấu hoặc giờ tặng gõ sai (chữ, quá hai chữ số thập phân): báo ngay ở dòng, không gửi lên máy chủ.
+  rows.forEach((row, i) => {
+    if (row.discounts.some((d) => d.value.trim() !== '' && parseQuantity(d.value) === null)) {
+      issues.push({
+        rowKey: row.key,
+        lineNo: i + 1,
+        message: 'Mức chiết khấu hoặc giờ tặng không hợp lệ.',
+        summary: `Dòng ${String(i + 1)} có mức chiết khấu hoặc giờ tặng không hợp lệ.`,
+      });
+    }
+  });
   return issues;
 }
 
@@ -123,7 +140,10 @@ export function buildSaveLines(rows: EditRow[]): Record<string, unknown>[] {
           package_id: row.packageId === '' ? null : row.packageId,
           delivery_mode_code: row.mode === '' ? null : row.mode,
           quantity: parseQuantity(row.quantity),
-          discounts: row.discounts.map((d) => ({ policy_id: d.policyId, value: d.value })),
+          discounts: row.discounts.map((d) => ({
+            policy_id: d.policyId,
+            value: parseQuantity(d.value),
+          })),
         },
   );
 }
