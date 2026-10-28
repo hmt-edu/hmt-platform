@@ -170,3 +170,28 @@ export function saveQuotation(
     p_lines: lines,
   });
 }
+
+/** Chính sách chiết khấu áp dụng được hôm nay cho cơ hội (hộp Chọn chính sách chiết khấu). */
+export type DiscountPolicy = {
+  id: string;
+  code: string;
+  name: string;
+  kind: 'PERCENT' | 'GIFT_HOURS';
+  max_value: number;
+  /** "Áp đúng mức": nhân viên không nhập, lấy đúng mức tối đa. */
+  fixed_value: boolean;
+  requires_approval: boolean;
+  package_type_codes: string[];
+};
+
+export function useDiscountPolicies(opportunityId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['quotation-discount-policies', opportunityId],
+    enabled,
+    queryFn: () =>
+      rpc<DiscountPolicy[]>(supabase, 'list_applicable_discount_policies', {
+        p_opportunity_id: opportunityId,
+      }),
+  });
+}

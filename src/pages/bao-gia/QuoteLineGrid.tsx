@@ -11,8 +11,10 @@ import { cn } from '../../ui/cn';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { blankRow, modesOfPrices, type EditRow, type RowIssue } from './quoteEdit';
 import { QuotePackageDialog } from './QuotePackageDialog';
+import { QuotePolicyDialog } from './QuotePolicyDialog';
+import { percentText, type RowCalc } from './quotePreview';
 import { UNIT_LABEL } from './quoteRecord';
-import type { OppStudent, SellablePackage } from './useQuoteData';
+import type { DiscountPolicy, OppStudent, SellablePackage } from './useQuoteData';
 
 const GRID =
   'grid grid-cols-[minmax(130px,1.1fr)_minmax(150px,1.3fr)_minmax(96px,0.8fr)_minmax(96px,0.8fr)_64px_36px] items-start gap-2';
@@ -20,6 +22,17 @@ const GRID =
 function studentLabel(s: OppStudent): string {
   const name = s.full_name ?? `Em thứ ${String(s.position)}`;
   return s.birth_year ? `${name} · ${String(s.birth_year)}` : name;
+}
+
+/** Số hiện ở ô Đơn giá, Giảm, Thành tiền: số máy chủ vừa trả; chưa có lần tính nào thì số đã lưu của dòng chưa đổi; còn lại "—". */
+function priceText(
+  calc: RowCalc | undefined,
+  row: EditRow,
+  key: 'unitPrice' | 'discountAmount' | 'lineTotal',
+): string {
+  if (calc?.status === 'ok') return formatNumber(calc[key]);
+  if (calc === undefined && row.calc) return formatNumber(row.calc[key]);
+  return '—';
 }
 
 export function QuoteLineGrid({
@@ -30,6 +43,9 @@ export function QuoteLineGrid({
   opportunityHref,
   issues,
   disabled,
+  policies,
+  calcs,
+  cap,
 }: {
   rows: EditRow[];
   onChange: (rows: EditRow[]) => void;
@@ -38,13 +54,32 @@ export function QuoteLineGrid({
   opportunityHref: string;
   issues: RowIssue[];
   disabled: boolean;
+  policies: DiscountPolicy[];
+  calcs: Record<string, RowCalc>;
+  /** Trần chiết khấu (R-TIEN-29), đọc từ tham số cài đặt. */
+  cap: number | null;
 }) {
   const catalogs = useLeadCatalogs();
   const [pickFor, setPickFor] = useState<string | null>(null);
+  const [policyFor, setPolicyFor] = useState<string | null>(null);
+  const policyById = new Map(policies.map((p) => [p.id, p]));
   const modeName = (code: string) => catalogs.name('STUDY_MODE', code) ?? code;
   const update = (key: string, patch: Partial<EditRow>) =>
     onChange(rows.map((r) => (r.key === key ? { ...r, ...patch } : r)));
   const issueOf = (key: string) => issues.find((i) => i.rowKey === key);
+  // Chính sách hiện cho dòng: đúng loại gói đang chọn (rỗng là mọi loại); chưa chọn gói thì hiện hết, máy chủ kiểm lúc tính.
+  const policiesFor = (row: EditRow | undefined) =>
+    policies.filter(
+      (p) =>
+        row === undefined ||
+        row.packageType === '' ||
+        p.package_type_codes.length === 0 ||
+        p.package_type_codes.includes(row.packageType),
+    );
+  const totalTextOf = (row: EditRow | undefined) => {
+    const c = row ? calcs[row.key] : undefined;
+    return c?.status === 'ok' ? `${percentText(c.totalPercent)}%` : '—';
+  };
 
   function pickPackage(row: EditRow, pkg: SellablePackage) {
     const modes = modesOfPrices(pkg.prices);
@@ -54,6 +89,7 @@ export function QuoteLineGrid({
       packageId: pkg.id,
       packageCode: pkg.code,
       packageName: pkg.name,
+      packageType: pkg.package_type_code,
       unitCode: pkg.unit_code,
       modes,
       mode,
@@ -82,15 +118,22 @@ export function QuoteLineGrid({
         {rows.map((row, index) => {
           const issue = issueOf(row.key);
           const gift = row.kind === 'GIFT';
-          const giftHours = row.discounts.length === 0 ? '—' : '';
+          const calc: RowCalc | undefined = calcs[row.key];
+          const giftDiscount = row.discounts.find(
+            (d) => policyById.get(d.policyId)?.kind === 'GIFT_HOURS',
+          );
+          const giftPolicy = giftDiscount ? policyById.get(giftDiscount.policyId) : undefined;
+          const calcError = calc?.status === 'error' ? calc.message : null;
+          const overCap = calc?.status === 'ok' && calc.overCap;
           return (
             <li
               key={row.key}
               aria-label={`Dòng ${String(index + 1)}`}
               className={cn(
                 'flex flex-col gap-2 rounded-control border bg-surface p-2',
-                issue ? 'border-danger' : 'border-border',
+                issue || calcError ? 'border-danger' : overCap ? 'border-warning' : 'border-border',
               )}
+              aria-busy={calc?.status === 'pending' ? true : undefined}
             >
               <div className={GRID}>
                 <div>
@@ -169,7 +212,31 @@ export function QuoteLineGrid({
                     {row.unitCode === '' ? '' : UNIT_LABEL[row.unitCode]}
                   </span>
                 </div>
-                <div className="pt-2 text-fg-muted tabular">{giftHours}</div>
+                <div className="flex items-center gap-1 pt-1 tabular">
+                  {giftDiscount === undefined ? (
+                    <span className="pt-1 text-fg-muted">0</span>
+                  ) : giftPolicy?.fixed_value ? (
+                    <span className="pt-1">{percentText(giftPolicy.max_value)}</span>
+                  ) : (
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      aria-label={`Giờ tặng dòng ${String(index + 1)}`}
+                      value={giftDiscount.value}
+                      disabled={disabled}
+                      onChange={(e) =>
+                        update(row.key, {
+                          discounts: row.discounts.map((d) =>
+                            d.policyId === giftDiscount.policyId
+                              ? { ...d, value: e.target.value }
+                              : d,
+                          ),
+                        })
+                      }
+                      className={cn(INPUT_CLASS, 'w-14 tabular')}
+                    />
+                  )}
+                </div>
                 <div>
                   <IconButton
                     icon="close"
@@ -184,38 +251,113 @@ export function QuoteLineGrid({
                   <span className="text-caption font-semibold text-fg-muted">
                     Chiết khấu · chính sách
                   </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {row.discounts.length === 0 ? (
-                      <span className="text-caption text-fg-muted">—</span>
-                    ) : (
-                      row.discounts.map((d) => (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {row.discounts.map((d) => {
+                      const policy = policyById.get(d.policyId);
+                      return (
                         <span
                           key={d.policyId}
-                          className="rounded-tag bg-surface-subtle px-2 py-0.5 text-caption"
+                          className="flex items-center gap-1.5 rounded-tag bg-surface-subtle px-2 py-0.5 text-caption"
                         >
                           {d.name}
+                          {policy?.kind === 'PERCENT' && !policy.fixed_value && (
+                            <>
+                              <span aria-hidden="true">·</span>
+                              <input
+                                type="text"
+                                inputMode="decimal"
+                                aria-label={`Mức ${d.name} dòng ${String(index + 1)} (%)`}
+                                value={d.value}
+                                disabled={disabled}
+                                onChange={(e) =>
+                                  update(row.key, {
+                                    discounts: row.discounts.map((x) =>
+                                      x.policyId === d.policyId
+                                        ? { ...x, value: e.target.value }
+                                        : x,
+                                    ),
+                                  })
+                                }
+                                className="h-7 w-14 rounded-control border border-border-strong bg-surface px-1.5 text-right tabular"
+                              />
+                              <span>{`% · tối đa ${percentText(policy.max_value)}%`}</span>
+                            </>
+                          )}
+                          {policy?.kind === 'PERCENT' && policy.fixed_value && (
+                            <span>{`· ${percentText(policy.max_value)}% (áp đúng mức)`}</span>
+                          )}
+                          {policy?.kind === 'GIFT_HOURS' && (
+                            <span>
+                              {policy.fixed_value
+                                ? `· tặng ${percentText(policy.max_value)} giờ (áp đúng mức)`
+                                : `· tặng tối đa ${percentText(policy.max_value)} giờ`}
+                            </span>
+                          )}
+                          {policy?.requires_approval && <span>· cần duyệt</span>}
                         </span>
-                      ))
-                    )}
+                      );
+                    })}
+                    <Button
+                      size="sm"
+                      icon="plus"
+                      disabled={disabled}
+                      onClick={() => setPolicyFor(row.key)}
+                    >
+                      Chính sách
+                    </Button>
                   </div>
                 </div>
-                <dl className="grid grid-cols-3 gap-3 rounded-control bg-canvas px-3 py-1.5 text-body tabular">
-                  <div>
-                    <dt className="text-caption text-fg-muted">Đơn giá</dt>
-                    <dd>{row.calc ? formatNumber(row.calc.unitPrice) : '—'}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-caption text-fg-muted">Giảm</dt>
-                    <dd>{row.calc ? formatNumber(row.calc.discountAmount) : '—'}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-caption text-fg-muted">Thành tiền</dt>
-                    <dd className="font-semibold">
-                      {row.calc ? formatNumber(row.calc.lineTotal) : '—'}
-                    </dd>
-                  </div>
+                <dl className="relative grid grid-cols-3 gap-3 rounded-control bg-canvas px-3 py-1.5 text-body tabular">
+                  {calc?.status === 'pending' && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 animate-pulse rounded-control bg-neutral-300/40"
+                    />
+                  )}
+                  {calc?.status === 'needs-student' ? (
+                    <div className="relative col-span-3 self-center text-fg">
+                      <dt className="sr-only">Giá</dt>
+                      <dd>Chọn em để xem giá</dd>
+                    </div>
+                  ) : calc?.status === 'pending' ? (
+                    <div className="relative col-span-3 self-center text-fg">
+                      <dt className="sr-only">Giá</dt>
+                      <dd>Đang tính giá…</dd>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <dt className="text-caption text-fg-muted">Đơn giá</dt>
+                        <dd>{priceText(calc, row, 'unitPrice')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-caption text-fg-muted">Giảm</dt>
+                        <dd>{priceText(calc, row, 'discountAmount')}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-caption text-fg-muted">Thành tiền</dt>
+                        <dd className="font-semibold">{priceText(calc, row, 'lineTotal')}</dd>
+                      </div>
+                    </>
+                  )}
                 </dl>
               </div>
+              {calc?.status === 'ok' && calc.totalPercent > 0 && (
+                <p className="text-caption text-fg-muted">
+                  Tổng chiết khấu <b className="text-fg">{percentText(calc.totalPercent)}%</b>
+                  {cap !== null ? ` / trần ${String(cap)}%` : ''}
+                </p>
+              )}
+              {overCap && (
+                <p className="text-caption text-on-warning-subtle">
+                  Vượt trần: cần Trưởng cơ sở duyệt. Vẫn lưu được.
+                </p>
+              )}
+              {calcError && (
+                <p role="alert" className="text-caption text-on-danger-subtle">
+                  {calcError}
+                </p>
+              )}
               {issue && (
                 <p role="alert" className="text-caption text-on-danger-subtle">
                   {issue.message}
@@ -234,6 +376,27 @@ export function QuoteLineGrid({
         Số lượng do nhân viên điền; đơn giá, giảm, thành tiền do hệ thống tính. Giờ tặng chỉ có qua
         chính sách tặng giờ. Quà tặng chỉ thêm qua chính sách quà tặng.
       </p>
+      <QuotePolicyDialog
+        open={policyFor !== null}
+        onOpenChange={(open) => !open && setPolicyFor(null)}
+        policies={policyFor === null ? [] : policiesFor(rows.find((r) => r.key === policyFor))}
+        selected={rows.find((r) => r.key === policyFor)?.discounts.map((d) => d.policyId) ?? []}
+        totalText={totalTextOf(rows.find((r) => r.key === policyFor))}
+        onApply={(ids) => {
+          const row = rows.find((r) => r.key === policyFor);
+          if (!row) return;
+          update(row.key, {
+            discounts: ids.map(
+              (id) =>
+                row.discounts.find((d) => d.policyId === id) ?? {
+                  policyId: id,
+                  name: policyById.get(id)?.name ?? '',
+                  value: '',
+                },
+            ),
+          });
+        }}
+      />
       <QuotePackageDialog
         open={pickFor !== null}
         onOpenChange={(open) => !open && setPickFor(null)}
