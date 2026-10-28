@@ -354,7 +354,7 @@ Kiểm thử: `supabase/tests/database/044_p5a_don_hang_doc.test.sql` (87 bài).
 | Hàm | Làm gì | Quyền |
 |---|---|---|
 | `app.get_order(id)` | Bản ghi đơn (BH-05): cột đơn, tên trạng thái, mã và tên liên quan (cơ hội, báo giá, phụ huynh, điều khoản), người lập, người trình, người duyệt đã chốt, lý do huỷ, dòng kèm chiết khấu và em, lịch đóng tiền, lịch sử theo thứ tự ghi | Đơn hàng · Xem |
-| `app.list_orders(bộ lọc, sắp xếp, giới hạn, vị trí)` | Danh sách phân trang ở máy chủ (50 mặc định, tối đa 100): lọc q (mã, phụ huynh, SĐT, tên em), trạng thái, cơ sở, cơ hội, báo giá, phụ huynh, của tôi, chờ tôi duyệt, ngày tạo; sắp xếp mới, cũ, tổng tiền | Đơn hàng · Xem |
+| `app.list_orders(bộ lọc, sắp xếp, giới hạn, vị trí)` (từ migration 060 mỗi dòng trả thêm `student_names`, mảng tên các em theo thứ tự dòng, chỉ gom cho trang đang hiện) | Danh sách phân trang ở máy chủ (50 mặc định, tối đa 100): lọc q (mã, phụ huynh, SĐT, tên em), trạng thái, cơ sở, cơ hội, báo giá, phụ huynh, của tôi, chờ tôi duyệt, ngày tạo; sắp xếp mới, cũ, tổng tiền | Đơn hàng · Xem |
 | `app.export_orders(bộ lọc)` | Xuất theo cùng bộ lọc, tối đa `export_max_rows`, ghi nhật ký xuất trước khi trả (Đ105: Trưởng cơ sở trong cơ sở, Kế toán, Admin) | Đơn hàng · Xuất |
 
 ### Hiệu năng
@@ -369,6 +369,7 @@ Kiểm thử: `supabase/tests/database/046_p5a_bao_gia_xem_thu_goi_y.test.sql` (
 | `app.list_applicable_discount_policies(cơ hội)` | Chính sách chiết khấu hiệu lực hôm nay, đúng cơ sở: mã, tên, loại (%, giờ tặng), mức tối đa, áp đúng mức, cần duyệt, loại gói áp dụng | như trên |
 | `app.list_applicable_gift_policies(cơ hội)` (migration 058) | Chính sách quà tặng hiệu lực hôm nay đúng cơ sở, gói quà còn bán: mã, tên, mức số lượng tối đa, cờ cần duyệt, gói quà (mã, tên, đơn vị); cho hộp "Chọn chính sách quà tặng" của BH-02 (K06c, R-TIEN-30). Câu lỗi quà vượt mức in số lượng bỏ số 0 thừa ("không quá 2.") | Như hàm trên |
 | `app.price_line` (migration 059) | Trả thêm `total_discount_percent` = % chiết khấu + giờ tặng quy ra % (số so với trần R-TIEN-29), đi vào xem thử và dòng lưu không đổi; BH-02 hiện "Tổng chiết khấu" từ số này, giao diện không tự cộng | Hàm trong, không gọi trực tiếp |
+| Quyền của các hàm đọc phụ (migration 060, Đ256) | `assert_quotation_helper_access` cho phép Báo giá Tạo/Sửa HOẶC Đơn hàng Tạo/Sửa ở cơ sở của cơ hội (vẫn kiểm công tắc Bán hàng, Đ173, và cơ hội đã gộp) cho `preview_quotation_lines`, `list_sellable_packages`, `list_applicable_discount_policies`, `list_applicable_gift_policies`; đơn tạo thẳng từ cơ hội dùng được. Hàm đọc thuần của bản ghi, danh sách không bị chặn khi tắt Bán hàng (Đ181) | Báo giá hoặc Đơn hàng · Tạo, Sửa |
 | Ghi chú báo giá | `QUOTATION` đăng ký trong `note_target`; `can_see_note_target` thêm loại này (quyền Báo giá · Xem ở cơ sở của báo giá); dùng `add_note`, `record_notes`, `record_history` chung | Báo giá · Xem |
 
 Tham số mới: `quotation_popular_packages_count` (mặc định 5), `quotation_popular_window_days` (mặc định 90). "Gợi ý theo cơ hội" lấy môn, khối từ phiếu kiểm tra của cơ hội vì cơ hội chưa có cột môn, khối riêng (chờ Chat xác nhận cách lấy).
