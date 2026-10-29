@@ -112,7 +112,10 @@ test.describe('K3 Chi tiết', () => {
       const dialog = page.getByRole('dialog').or(page.getByRole('alertdialog'));
       await expect(dialog.getByText(`Chưa chuyển sang ${code} được`).first()).toBeVisible();
       await expect(dialog.getByText('Thiếu tên học sinh').first()).toBeVisible();
-      await page.keyboard.press('Escape');
+      // Đóng bằng nút (Playwright chờ nút bấm được). Esc có bài riêng ở "Thư viện hộp thoại". Nghi ngờ, CHƯA xác nhận (28/10): bấm Esc trong khoảng
+      // 10 ms đầu sau khi hộp gắn vào trang thì hộp không đóng, có thể do Radix chưa ghi nhận lớp hộp; hai lần thử chờ điều kiện (tiêu điểm vào hộp,
+      // thân trang chặn chuột) vẫn trượt nên không coi là đã hiểu nguyên nhân.
+      await dialog.getByRole('button', { name: 'Đã hiểu' }).click();
       await expect(dialog).toHaveCount(0);
     }
   });
