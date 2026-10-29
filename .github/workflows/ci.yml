@@ -49,23 +49,20 @@ jobs:
       - id: filter
         env:
           GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [ "${{ github.event_name }}" != "pull_request" ]; then
-            echo "full=true" >> "$GITHUB_OUTPUT"; echo "ui=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::Chạy tay: chạy đủ."
-            exit 0
-          fi
-          # Lỗi lấy danh sách file thì để trống: bộ lọc coi như chưa biết và chạy đủ.
-          files="$(gh api --paginate "repos/$REPO/pulls/$PR_NUMBER/files" --jq '.[].filename' 2>/dev/null || true)"
-          printf '%s\n' "$files" | node scripts/ci-filter.ts | tee -a "$GITHUB_OUTPUT"
+        # Mọi lỗi (không lấy được danh sách file, bộ lọc lỗi) thì in full=true, ui=true: chạy đủ. Có kiểm thử ở scripts/ci-changes.test.ts.
+        run: bash scripts/ci-changes.sh
 
   db-e2e:
     name: DB (pgTAP) + Playwright
     # Chờ kiểm tra nhanh xanh rồi mới chạy (đỡ tốn phút khi lint/test đã trượt); bỏ khi PR chỉ đổi deploy/, docs/, design/, *.md.
     needs: [checks, changes]
-    if: needs.changes.outputs.full == 'true'
+    # Chạy khi bộ lọc báo cần chạy đủ HOẶC bộ lọc/job `changes` hỏng (mặc định an toàn: chạy đủ). always() để job `changes` hỏng không làm bỏ qua.
+    if: >-
+      always() && needs.checks.result == 'success' &&
+      (needs.changes.result != 'success' || needs.changes.outputs.full == 'true')
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions:
@@ -224,11 +221,13 @@ jobs:
     name: Bản xem trước (Cloudflare Pages)
     needs: [checks, db-e2e, changes]
     # Chỉ PR từ chính repo (PR từ fork không có secrets) và chỉ khi PR đổi giao diện.
+    # Bộ lọc/job `changes` hỏng thì vẫn chạy đủ (an toàn); always() để không bị bỏ qua dây chuyền.
     if: >-
+      always() && needs.checks.result == 'success' && needs.db-e2e.result == 'success' &&
       github.event_name == 'pull_request' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
-      needs.changes.outputs.full == 'true' &&
-      needs.changes.outputs.ui == 'true'
+      (needs.changes.result != 'success' ||
+      (needs.changes.outputs.full == 'true' && needs.changes.outputs.ui == 'true'))
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

@@ -34,8 +34,9 @@ describe('bộ lọc CI (Đ281, Q-C3)', () => {
     expect(needsFullCi(['package.json'])).toBe(true);
   });
 
-  it('không có danh sách file (lỗi lấy file): chạy đủ', () => {
+  it('không có danh sách file (lỗi lấy file): chạy đủ, kể cả bản xem trước', () => {
     expect(needsFullCi([])).toBe(true);
+    expect(touchesUi([])).toBe(true);
   });
 
   it('isSkippable không nhận nhầm tên giống (docsx/, deployment/)', () => {
@@ -50,6 +51,6 @@ describe('bộ lọc CI (Đ281, Q-C3)', () => {
     expect(run('deploy/README.md\n')).toBe('full=false\nui=false');
     expect(run('deploy/README.md\nsrc/a.tsx\n')).toBe('full=true\nui=true');
     expect(run('.github/workflows/ci.yml\n')).toBe('full=true\nui=true');
-    expect(run('')).toBe('full=true\nui=false');
+    expect(run('')).toBe('full=true\nui=true');
   });
 });

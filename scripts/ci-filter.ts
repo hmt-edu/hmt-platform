@@ -1,7 +1,7 @@
 // Quyết định phần CI nào cần chạy cho một PR, từ danh sách file PR đổi (Đ210 #3, Đ281, Q-C3). Dùng ở job `changes` của ci.yml:
 //   gh api ... --jq '.[].filename' | node scripts/ci-filter.ts   → in `full=true|false` và `ui=true|false`.
 // Viết theo kiểu "danh sách được bỏ": CHỈ KHI mọi file đổi nằm trong deploy/, docs/, design/ hoặc là *.md thì bỏ DB (pgTAP) + Playwright
-// và bản xem trước; file lạ, thư mục mới, .github/, scripts/ mặc định chạy đủ. Không có danh sách file (lỗi lấy file) thì chạy đủ.
+// và bản xem trước; file lạ, thư mục mới, .github/, scripts/ mặc định chạy đủ. Không có danh sách file (lỗi lấy file) thì chạy đủ cả hai (full=true, ui=true).
 // Kiểm nhanh (lint, typecheck, test, hardcode, format:check) luôn chạy, không qua bộ lọc này.
 import { readFileSync } from 'node:fs';
 
@@ -16,8 +16,9 @@ export function needsFullCi(files: string[]): boolean {
   return files.some((f) => !isSkippable(f));
 }
 
-/** Đổi thứ làm nên bản dựng giao diện: cần bản xem trước (Cloudflare Pages). */
+/** Đổi thứ làm nên bản dựng giao diện: cần bản xem trước (Cloudflare Pages). Không có danh sách file thì coi như có (chạy đủ, Đ281). */
 export function touchesUi(files: string[]): boolean {
+  if (files.length === 0) return true;
   return files.some((f) =>
     /^(src\/|index\.html$|vite\.config\.ts$|tsconfig[^/]*\.json$|package(-lock)?\.json$|\.nvmrc$|design\/hmt-p0-p2\/|\.github\/workflows\/ci\.yml$)/.test(
       f,
