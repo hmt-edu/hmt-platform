@@ -36,6 +36,8 @@ export async function clearMark(mark: string): Promise<void> {
 
 async function clear(db: pg.Client, mark: string): Promise<void> {
   await db.query('begin');
+  // Các bộ dữ liệu bán hàng cùng cấp mã (bộ đếm khoá dòng): chạy tuần tự để hai dự án chạy song song không khoá chéo (deadlock).
+  await db.query('select pg_advisory_xact_lock(7101)');
   await db.query("set local session_replication_role = 'replica'");
   const like = [`%${mark}%`];
   const leads = `(select id from app.lead where parent_name like $1)`;
@@ -95,6 +97,8 @@ export async function seed(setup: Setup): Promise<Seeded> {
     };
     const students = { draft: ['Em Nháp Một', 'Em Nháp Hai'] as [string, string] };
     await db.query('begin');
+    // Các bộ dữ liệu bán hàng cùng cấp mã (bộ đếm khoá dòng): chạy tuần tự để hai dự án chạy song song không khoá chéo (deadlock).
+    await db.query('select pg_advisory_xact_lock(7101)');
     await db.query(
       `select set_config('request.jwt.claims', (app.custom_access_token_hook(jsonb_build_object(
          'user_id', u.id, 'claims', jsonb_build_object('sub', u.id, 'role', 'authenticated', 'aal', 'aal1'))) -> 'claims')::text, true)

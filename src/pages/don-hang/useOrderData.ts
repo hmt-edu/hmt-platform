@@ -66,3 +66,25 @@ export function useRefreshOrder(id: string) {
     ]);
   }, [queryClient, id]);
 }
+
+/** Kết quả Trình duyệt: người duyệt đã chốt và đường duyệt (R-HT-06). */
+export type SubmitOrderResult = { id: string; approver_id: string; route: 'QUAN_LY' | 'TU_DUYET' };
+
+/** Trình duyệt đơn Nháp. Máy chủ kiểm quyền Sửa, công tắc Bán hàng (Đ173), em đủ họ tên và năm sinh (R-TIEN-35), điều khoản, người duyệt. */
+export function submitOrder(supabase: SupabaseClient, id: string): Promise<SubmitOrderResult> {
+  return rpc<SubmitOrderResult>(supabase, 'submit_order', { p_id: id });
+}
+
+/** Huỷ đơn (R-TIEN-38): lý do từ danh mục "Lý do huỷ đơn", "Khác" bắt buộc ghi chú; máy chủ kiểm ai được huỷ và chưa có phiếu thu. */
+export function cancelOrder(
+  supabase: SupabaseClient,
+  id: string,
+  reasonCode: string,
+  note: string | null,
+): Promise<void> {
+  return rpc<void>(supabase, 'cancel_order', {
+    p_id: id,
+    p_reason_code: reasonCode,
+    p_note: note,
+  });
+}

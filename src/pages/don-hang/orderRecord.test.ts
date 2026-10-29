@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { approverWarning, expectedApproverText, lastRejection, orderSteps } from './orderRecord';
+import {
+  approverWarning,
+  canCancelOrder,
+  canSubmitOrder,
+  errorLineNumbers,
+  expectedApproverText,
+  lastRejection,
+  orderSteps,
+} from './orderRecord';
 import type { OrderEvent } from './orderTypes';
 
 const ev = (seq: number, code: OrderEvent['event_code']): OrderEvent => ({
@@ -71,5 +79,45 @@ describe('bản ghi đơn (BH-05)', () => {
         expected_approver_name: null,
       }),
     ).toBeNull();
+  });
+
+  it('nút Trình: chỉ đơn Nháp, có quyền Sửa, Bán hàng bật, không phải điện thoại', () => {
+    const ok = { edit: true, featureOn: true, phone: false };
+    expect(canSubmitOrder({ status_code: 'NHAP' }, ok)).toBe(true);
+    expect(canSubmitOrder({ status_code: 'DA_TRINH' }, ok)).toBe(false);
+    expect(canSubmitOrder({ status_code: 'NHAP' }, { ...ok, edit: false })).toBe(false);
+    expect(canSubmitOrder({ status_code: 'NHAP' }, { ...ok, featureOn: false })).toBe(false);
+    expect(canSubmitOrder({ status_code: 'NHAP' }, { ...ok, phone: true })).toBe(false);
+  });
+
+  it('R-TIEN-38: Nháp chỉ người lập huỷ; Đã trình, Đã duyệt do người duyệt đã chốt hoặc người duyệt thay', () => {
+    const me = {
+      userId: 'u1',
+      canCancel: true,
+      featureOn: true,
+      approvesInstead: false,
+      phone: false,
+    };
+    const rec = (status_code: 'NHAP' | 'DA_TRINH' | 'DA_DUYET' | 'HUY') => ({
+      status_code,
+      created_by: 'u1',
+      assigned_approver_id: 'u2',
+    });
+    expect(canCancelOrder(rec('NHAP'), me)).toBe(true);
+    expect(canCancelOrder(rec('NHAP'), { ...me, userId: 'u3' })).toBe(false);
+    expect(canCancelOrder(rec('DA_TRINH'), me)).toBe(false);
+    expect(canCancelOrder(rec('DA_TRINH'), { ...me, userId: 'u2' })).toBe(true);
+    expect(canCancelOrder(rec('DA_DUYET'), { ...me, approvesInstead: true })).toBe(true);
+    expect(canCancelOrder(rec('HUY'), { ...me, approvesInstead: true })).toBe(false);
+    expect(canCancelOrder(rec('NHAP'), { ...me, canCancel: false })).toBe(false);
+    expect(canCancelOrder(rec('NHAP'), { ...me, featureOn: false })).toBe(false);
+    expect(canCancelOrder(rec('NHAP'), { ...me, phone: true })).toBe(false);
+  });
+
+  it('chỉ đúng dòng trong câu lỗi của máy chủ', () => {
+    expect(
+      errorLineNumbers('Dòng 2: thiếu năm sinh của em; Dòng 5: thiếu họ tên của em. Bổ sung.'),
+    ).toEqual([2, 5]);
+    expect(errorLineNumbers('Chọn điều khoản thanh toán trước khi trình đơn.')).toEqual([]);
   });
 });

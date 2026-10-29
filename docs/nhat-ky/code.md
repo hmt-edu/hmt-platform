@@ -3,8 +3,8 @@
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang. Bản dài trước 28/10 nằm trong lịch sử git của file này: `git log -- docs/nhat-ky/code.md`.)
 
 ## Đang làm
-- PR tài liệu Đ279 (OK gộp PR vẫn là `caotruong276`): chờ OK. Remote trên máy Mac đã đổi sang `truongcx-95/hmt-platform` (`hmt-vanhanh` đẩy được).
-- UI-O2b (Trình, Huỷ đơn) đã dựng và kiểm trên máy, nhánh `wip/p5a-ui-o2b-trinh-huy`; mở PR sau PR tài liệu này. Kế tiếp UI-O2c (Duyệt, Từ chối), UI-O3 (sửa Nháp), UI-O4 (BH-11 theo R-TIEN-39).
+- UI-O2b (BH-05 Trình, Huỷ đơn, #147): chờ CI xanh và OK của `caotruong276` sau commit cuối. Sau đó PR "Cắt phút CI" (Đ281, nhánh `ci/cat-phut-ci`, đã chạy `check:all` xanh trên máy), rồi DB-O2c (Đ283), UI-O2c (Duyệt, Từ chối), UI-O3, UI-O4.
+- Đ279 đã gộp (#146): OK gộp PR từ `caotruong276`; remote Mac đã đổi sang `truongcx-95/hmt-platform`.
 
 ## Đã gộp gần đây (Bán hàng, P5a)
 - DB: đơn hàng (051, 052), báo giá tên em (053), lọc Đã chuyển đơn (054, 057), xem thử, gói bán, chính sách (055), mã đơn từng dòng (056), chính sách quà tặng (058), `total_discount_percent` (059), quyền chung hàm đọc phụ và `student_names` (060), tạo đơn kèm điều khoản một giao dịch và `preview_order_students` (061).

@@ -31,6 +31,8 @@ export async function seedOrders(setup: Setup): Promise<SeededOrders> {
   await db.connect();
   try {
     await db.query('begin');
+    // Các bộ dữ liệu bán hàng cùng cấp mã (bộ đếm khoá dòng): chạy tuần tự để hai dự án chạy song song không khoá chéo (deadlock).
+    await db.query('select pg_advisory_xact_lock(7101)');
     // Báo giá Đã gửi và Quá hạn chuyển thành đơn: cơ hội phải ở L8 (R-CRM-16).
     for (const code of [base.code.sent, base.code.overdue]) {
       await db.query(
@@ -79,7 +81,18 @@ export async function seedOrders(setup: Setup): Promise<SeededOrders> {
 
 export type SeededRecords = SeededOrders & {
   /** Mã đơn: bị từ chối (Nháp có lịch sử từ chối, hai dòng), huỷ, đã trình, đã duyệt. */
-  records: { rejected: string; cancelled: string };
+  records: {
+    rejected: string;
+    cancelled: string;
+    /** Nháp có em thiếu năm sinh, chưa có điều khoản (Trình bị chặn: chan_em). */
+    thieuEm: string;
+    /** Nháp của CSKH có quản lý trực tiếp và đã chọn điều khoản: Trình được. */
+    trinhDuoc: string;
+    /** Nháp của Sale để thử hộp Huỷ đơn. */
+    huy: string;
+  };
+  /** Tài khoản CSKH có quản lý trực tiếp (Trưởng cơ sở) để thử Trình thành công. */
+  cskh: string;
 };
 
 /**
@@ -92,6 +105,8 @@ export async function seedOrderRecords(setup: Setup): Promise<SeededRecords> {
   await db.connect();
   try {
     await db.query('begin');
+    // Các bộ dữ liệu bán hàng cùng cấp mã (bộ đếm khoá dòng): chạy tuần tự để hai dự án chạy song song không khoá chéo (deadlock).
+    await db.query('select pg_advisory_xact_lock(7101)');
     const ids = await db.query<{ code: string; opp: string; ps: string[] }>(
       `select q.code, q.opportunity_id as opp,
               array(select ps.id::text from app.prospect_student ps where ps.opportunity_id = q.opportunity_id order by ps.position) as ps
@@ -142,6 +157,73 @@ export async function seedOrderRecords(setup: Setup): Promise<SeededRecords> {
     await db.query(`select app.cancel_order($1::uuid, 'KHACH_DOI_Y', 'Phụ huynh đổi ý')`, [
       cancelled.id,
     ]);
+    // Ba đơn nháp thêm: em thiếu năm sinh; của CSKH (có quản lý, có điều khoản) để Trình được; của Sale để thử Huỷ.
+    const newOpp = async (
+      name: string,
+      i: number,
+      student: string,
+      birthYear: number | null,
+    ): Promise<{ opp: string; ps: string }> => {
+      const phone = `0${String(setup.phone + 20 + i)
+        .padStart(9, '0')
+        .slice(-9)}`;
+      const lead = await db.query<{ id: string }>(
+        `select (app.create_lead(jsonb_build_object('parent_name', $1::text, 'parent_phone', $2::text,
+           'student_name', $3::text, 'student_birth_year', $4::int,
+           'source_type_code', 'MARKETING', 'source_code', 'FACEBOOK_ADS',
+           'channel_code', 'FACEBOOK_ADS_LEAD_FORM'))) ->> 'id' as id`,
+        [name, phone, student, birthYear],
+      );
+      const leadId = lead.rows[0]?.id ?? '';
+      await db.query(`select app.change_lead_stage($1::uuid, 'C4', 'C4C')`, [leadId]);
+      const o = await db.query<{ id: string }>(
+        `select r ->> 'id' as id from (select app.create_opportunity($1::uuid) as r) x`,
+        [leadId],
+      );
+      const opp = o.rows[0]?.id ?? '';
+      const ps = await db.query<{ id: string }>(
+        `select id from app.prospect_student where opportunity_id = $1::uuid and position = 1`,
+        [opp],
+      );
+      await db.query('reset role');
+      await db.query(
+        `update app.opportunity set stage_code = 'L8', substage_code = 'L8A' where id = $1::uuid`,
+        [opp],
+      );
+      await db.query('set local role authenticated');
+      return { opp, ps: ps.rows[0]?.id ?? '' };
+    };
+    const a = await newOpp(`Chị ${setup.mark} thieuem`, 0, 'Em Thiếu Năm Sinh', 2012);
+    const b = await newOpp(`Chị ${setup.mark} trinhduoc`, 1, 'Em Được Trình', 2012);
+    const c = await newOpp(`Chị ${setup.mark} huydon`, 2, 'Em Thử Huỷ', 2012);
+    const thieuEm = await make(a.opp, [line(a.ps, 6)]);
+    const huy = await make(c.opp, [line(c.ps, 6)]);
+    // Em thiếu năm sinh: cơ hội L8 buộc có năm sinh, nên xoá năm sinh sau khi lập đơn (dữ liệu giả, bỏ qua ràng buộc).
+    await db.query('reset role');
+    await db.query("set local session_replication_role = 'replica'");
+    await db.query(`update app.prospect_student set birth_year = null where id = $1::uuid`, [a.ps]);
+    await db.query("set local session_replication_role = 'origin'");
+    await db.query('set local role authenticated');
+    // Đơn của CSKH: đặt quản lý trực tiếp là Trưởng cơ sở, rồi lập đơn và chọn điều khoản (R-TIEN-07).
+    await db.query('reset role');
+    await db.query("select set_config('hmt.manager', 'on', true)");
+    await db.query(
+      `update app.user_account set manager_id = (select id from app.user_account where login_name = $2)
+        where login_name = $1`,
+      [`cskh.cs5@${DOMAIN}`, `${setup.manager}@${DOMAIN}`],
+    );
+    await db.query(
+      `select set_config('request.jwt.claims', (app.custom_access_token_hook(jsonb_build_object(
+         'user_id', u.id, 'claims', jsonb_build_object('sub', u.id, 'role', 'authenticated', 'aal', 'aal1'))) -> 'claims')::text, true)
+         from app.user_account u where u.login_name = $1`,
+      [`cskh.cs5@${DOMAIN}`],
+    );
+    await db.query('set local role authenticated');
+    const trinhDuoc = await make(b.opp, [line(b.ps, 6)]);
+    await db.query(
+      `select app.save_order($1::uuid, null, (select id from app.payment_term where code = 'CHIA_3_DOT' and version = 1))`,
+      [trinhDuoc.id],
+    );
     await db.query('reset role');
     // Lịch sử bị từ chối dựng trực tiếp (đơn vẫn Nháp, R-TIEN-06): trình rồi bị từ chối kèm lý do.
     await db.query("set local session_replication_role = 'replica'");
@@ -169,7 +251,17 @@ export async function seedOrderRecords(setup: Setup): Promise<SeededRecords> {
       [base.orders.dduyet, `${setup.manager}@${DOMAIN}`],
     );
     await db.query('commit');
-    return { ...base, records: { rejected: rejected.code, cancelled: cancelled.code } };
+    return {
+      ...base,
+      records: {
+        rejected: rejected.code,
+        cancelled: cancelled.code,
+        thieuEm: thieuEm.code,
+        trinhDuoc: trinhDuoc.code,
+        huy: huy.code,
+      },
+      cskh: 'cskh.cs5',
+    };
   } catch (error) {
     await db.query('rollback');
     throw error;

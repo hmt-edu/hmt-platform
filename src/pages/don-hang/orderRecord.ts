@@ -49,3 +49,37 @@ export function approverWarning(
     return `${record.expected_approver_name ?? 'Người duyệt'} chưa có quyền Duyệt đơn hàng ở cơ sở này nên chưa trình được. Nhờ Admin đặt lại Quản lý trực tiếp hoặc cấp quyền.`;
   return null;
 }
+
+/** Nút Trình: đơn Nháp, người xem có quyền Đơn hàng · Sửa và Bán hàng đang bật (Đ173); điện thoại chỉ đọc (Đ248). Máy chủ kiểm lại. */
+export function canSubmitOrder(
+  record: Pick<OrderRecord, 'status_code'>,
+  can: { edit: boolean; featureOn: boolean; phone: boolean },
+): boolean {
+  return record.status_code === 'NHAP' && can.edit && can.featureOn && !can.phone;
+}
+
+/**
+ * Mục Huỷ đơn (R-TIEN-38): người có quyền Đơn hàng · Huỷ và Bán hàng đang bật; đơn Nháp chỉ NGƯỜI LẬP huỷ; đơn Đã trình, Đã duyệt do người
+ * duyệt đã chốt lúc trình huỷ, hoặc người duyệt thay (quyền Quản trị, như Admin). Đơn Huỷ rồi thì không. Điện thoại chỉ đọc (Đ248).
+ * "Chỉ khi chưa có phiếu thu" do máy chủ kiểm (order_has_receipt): khi bấm mà bị chặn thì hộp hiện câu máy chủ.
+ */
+export function canCancelOrder(
+  record: Pick<OrderRecord, 'status_code' | 'created_by' | 'assigned_approver_id'>,
+  me: {
+    userId: string;
+    canCancel: boolean;
+    featureOn: boolean;
+    approvesInstead: boolean;
+    phone: boolean;
+  },
+): boolean {
+  if (!me.canCancel || !me.featureOn || me.phone || record.status_code === 'HUY') return false;
+  if (record.status_code === 'NHAP') return record.created_by === me.userId;
+  return record.assigned_approver_id === me.userId || me.approvesInstead;
+}
+
+/** Số dòng đơn được nêu trong câu lỗi của máy chủ ("Dòng 3: …; Dòng 5: …"), để chỉ đúng dòng. */
+export function errorLineNumbers(message: string): number[] {
+  const found = [...message.matchAll(/Dòng (\d+)/g)].map((m) => Number(m[1]));
+  return [...new Set(found)];
+}

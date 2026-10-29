@@ -133,6 +133,9 @@ export type OrderRecord = {
   gross_total: number;
   discount_total: number;
   approval_route: 'QUAN_LY' | 'TU_DUYET' | null;
+  /** Người lập và người duyệt đã chốt lúc trình (id), để hiện đúng nút Huỷ theo R-TIEN-38. */
+  created_by: string | null;
+  assigned_approver_id: string | null;
   needs_acknowledgement: boolean;
   submitted_at: string | null;
   submitted_by_name: string | null;
