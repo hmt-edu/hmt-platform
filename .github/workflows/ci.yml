@@ -24,10 +24,48 @@ jobs:
     with:
       format-check: true
 
+  # Chọn phần CI cần chạy (Đ210 #3, Đ281, Q-C3). Kiểm nhanh (checks) luôn chạy. DB (pgTAP) + Playwright và bản xem trước chỉ bị BỎ khi mọi file
+  # PR đổi nằm trong deploy/, docs/, design/ hoặc là *.md (danh sách được bỏ; file lạ, thư mục mới, .github/, scripts/ chạy đủ). Chạy tay hoặc
+  # không lấy được danh sách file: chạy đủ. Logic ở scripts/ci-filter.ts (có bài kiểm Vitest).
+  changes:
+    name: Chọn phần CI cần chạy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      full: ${{ steps.filter.outputs.full }}
+      ui: ${{ steps.filter.outputs.ui }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      - id: filter
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "full=true" >> "$GITHUB_OUTPUT"; echo "ui=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Chạy tay: chạy đủ."
+            exit 0
+          fi
+          # Lỗi lấy danh sách file thì để trống: bộ lọc coi như chưa biết và chạy đủ.
+          files="$(gh api --paginate "repos/$REPO/pulls/$PR_NUMBER/files" --jq '.[].filename' 2>/dev/null || true)"
+          printf '%s\n' "$files" | node scripts/ci-filter.ts | tee -a "$GITHUB_OUTPUT"
+
   db-e2e:
     name: DB (pgTAP) + Playwright
-    # Chờ kiểm tra nhanh xanh rồi mới chạy (đỡ tốn phút khi lint/test đã trượt).
-    needs: checks
+    # Chờ kiểm tra nhanh xanh rồi mới chạy (đỡ tốn phút khi lint/test đã trượt); bỏ khi PR chỉ đổi deploy/, docs/, design/, *.md.
+    needs: [checks, changes]
+    if: needs.changes.outputs.full == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions:
@@ -184,11 +222,13 @@ jobs:
 
   preview:
     name: Bản xem trước (Cloudflare Pages)
-    needs: [checks, db-e2e]
-    # Chỉ PR từ chính repo (PR từ fork không có secrets).
+    needs: [checks, db-e2e, changes]
+    # Chỉ PR từ chính repo (PR từ fork không có secrets) và chỉ khi PR đổi giao diện.
     if: >-
       github.event_name == 'pull_request' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      needs.changes.outputs.full == 'true' &&
+      needs.changes.outputs.ui == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

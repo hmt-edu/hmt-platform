@@ -1,4 +1,5 @@
-# Gộp vào main: kiểm tra nhanh, áp migration lên hmt-staging, triển khai bản thử nghiệm, gắn tag.
+# Gộp vào main: áp migration lên hmt-staging, triển khai bản thử nghiệm, gắn tag. KHÔNG chạy lại kiểm tra nhanh (lint, typecheck, test):
+# PR đã qua CI xanh ở commit cuối trước khi gộp (Đ210 #1, Đ281); bài kiểm cô lập hmt-prod vẫn chạy ở đây.
 # Repo variable STAGING_READY = 'true' bật workflow này (xem README).
 name: Deploy staging
 
@@ -8,6 +9,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'design/**'
+      - 'deploy/**' # bản chép cho hmt-deploy, không chạy ở repo này (Đ281)
       - '**/*.md'
   workflow_dispatch:
 
@@ -27,15 +29,8 @@ jobs:
     steps:
       - run: echo "::warning::Bỏ qua triển khai thử nghiệm vì repo variable STAGING_READY chưa đặt là 'true' (xem README)."
 
-  checks:
-    if: vars.STAGING_READY == 'true'
-    permissions:
-      contents: read
-    uses: ./.github/workflows/_checks.yml
-
   deploy-staging:
     name: deploy-staging
-    needs: checks
     if: vars.STAGING_READY == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15

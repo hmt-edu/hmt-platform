@@ -1,9 +1,8 @@
 // BH-05 Đơn hàng (bản ghi), P5a-UI-O2a (xem): đủ các tình trạng Nháp, Đã trình, Đã duyệt, Nháp bị từ chối (khối "Đơn bị từ chối"), Huỷ;
 // khung "chưa có quản lý trực tiếp"; tab Dòng đơn, Thanh toán, Ghi danh; Đã thu, Còn phải thu "—" (Đ269); mở từ BH-06 và từ báo giá.
-// Dữ liệu giả dựng bằng don-hang-seed.ts (seedOrderRecords). Ảnh chụp máy tính vào docs/anh-chup/bh05/.
-import { mkdirSync } from 'node:fs';
+// Dữ liệu giả dựng bằng don-hang-seed.ts (seedOrderRecords). Ảnh chụp máy tính: mặc định ra thư mục tạm; SO_SANH_GHI_VAO_REPO=1 thì ghi vào docs/anh-chup/bh05/.
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, shotPath } from './helpers';
 import {
   DB_URL,
   clearMark,
@@ -14,7 +13,6 @@ import {
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
 test.describe.configure({ mode: 'serial' });
-mkdirSync('docs/anh-chup/bh05', { recursive: true });
 
 let seeded: SeededRecords;
 
@@ -44,7 +42,7 @@ async function openOrder(page: Page, account: string, mark: string, code: string
 
 async function shot(page: Page, name: string) {
   if (isPhone(page)) return;
-  await page.screenshot({ path: `docs/anh-chup/bh05/${name}.png`, fullPage: true });
+  await page.screenshot({ path: shotPath('bh05', `${name}.png`), fullPage: true });
 }
 
 test('Mở đơn từ BH-06; Nháp: thông tin chung, người duyệt chưa có (chưa có quản lý trực tiếp), nút Trình mờ', async ({

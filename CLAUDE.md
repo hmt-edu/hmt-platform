@@ -84,6 +84,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 
 ## Quy trình git và đưa lên chạy thật
 - Nhánh riêng (`feat/…`, `fix/…`) → PR → CI xanh → gộp `main` → môi trường thử nghiệm tự cập nhật → anh Trường thử. Commit nhỏ, thông điệp rõ.
+- **Đẩy một lần (Đ281):** chỉ mở PR hoặc đẩy commit khi `npm run check:all` trên máy đã xanh; sửa theo góp ý thì gom lại, đẩy một lần; không đẩy commit chỉ để thử CI. PR chỉ tài liệu không cần `check:all`.
 - Mỗi PR gộp xong thì `docs/TIEN-DO.md` phải đúng với hiện trạng: cập nhật file này ngay trong PR (viết như sau khi PR đã gộp); việc phát sinh sau khi gộp thì ghi vào PR kế tiếp.
 - Chủ repo `hmt-platform` và `hmt-deploy`: tài khoản GitHub **`truongcx-95`** của anh Trường (đăng ký bằng email anh Trường đưa sau), bật xác thực hai bước, **chỉ dùng trên trình duyệt**, không bao giờ đăng nhập trên máy Mac này (`gh`, git, Keychain). Claude Code dùng tài khoản GitHub `hmt-vanhanh` trên máy Mac, là collaborator quyền Write ở `hmt-platform` (không có quyền ở `hmt-deploy`). `hmt-deploy` ở `truongcx-95`. Tài khoản `caotruong276` của anh Trường là collaborator của `hmt-platform` (giữ), chỉ dùng trên trình duyệt, không đăng nhập trên máy Mac này. Commit trong `hmt-platform` ghi tên tác giả bằng email noreply của `hmt-vanhanh`, không dùng email của anh Trường. (Chốt 28/10/2026, Đ278, sửa bởi Đ279.)
 - Cloudflare: tài khoản **thử nghiệm** đăng ký bằng `lead.vanhanh.hmt+staging@gmail.com` (token nằm trong Secrets của `hmt-platform`); tài khoản **chạy thật** đăng ký bằng `truongcx.work@gmail.com`, chỉ dùng trên trình duyệt, token nằm trong Secrets của `hmt-deploy`.
@@ -106,6 +107,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 - `npm run db:test`: pgTAP (RLS, hàm nghiệp vụ).
 - `npm run db:seed-users`: tạo tài khoản giả mỗi vai trò (cần `API_URL`, `SECRET_KEY`, `DB_URL`, `SEED_PASSWORD`, xem `README.md`).
 - `npm run lint`, `npm run typecheck`, `npm run test`, `npm run check:hardcode`, `npm run format:check`: bộ kiểm tra nhanh như CI.
+- `npm run check:all`: cả bộ kiểm như CI trên máy (nhanh ở trên, `db:reset`, `db:test`, `e2e`); chạy trước khi đẩy.
 - `npm run e2e`: Playwright máy tính + iPhone (lần đầu: `npx playwright install chromium webkit`).
 - `npx supabase migration new <ten>`: tạo file migration mới.
 

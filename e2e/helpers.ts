@@ -1,3 +1,6 @@
+import { mkdirSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
 import { generateSync } from 'otplib';
 import pg from 'pg';
@@ -171,4 +174,16 @@ export async function pickOption(page: Page, combobox: Locator, option: string |
     if ((await combobox.getAttribute('aria-expanded')) !== 'true') await combobox.click();
     await page.getByRole('option', { name: option }).click({ timeout: 2000 });
   }).toPass({ timeout: 10000 });
+}
+
+/**
+ * Đường dẫn ảnh chụp của bài e2e. Mặc định ghi ra thư mục tạm (bước kiểm thử không ghi đè ảnh trong repo); chỉ khi đặt
+ * SO_SANH_GHI_VAO_REPO=1 mới ghi vào docs/anh-chup/<nhóm>/ (như kịch bản so sánh, so-sanh*.spec.ts). Tạo thư mục khi cần.
+ */
+export function shotPath(group: string, file: string): string {
+  const dir = process.env.SO_SANH_GHI_VAO_REPO
+    ? join('docs', 'anh-chup', group)
+    : join(tmpdir(), 'hmt-anh-chup', group);
+  mkdirSync(dir, { recursive: true });
+  return join(dir, file);
 }

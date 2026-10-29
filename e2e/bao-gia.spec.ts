@@ -1,12 +1,11 @@
 // BH-01 Báo giá (danh sách), P5a-UI-1: cột theo canvas, lọc, tìm, Xuất theo quyền, mục menu theo công tắc Bán hàng.
 // Dữ liệu giả dựng bằng hàm nghiệp vụ (xem bao-gia-seed.ts), tìm bằng dấu riêng của từng dự án.
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, shotPath } from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded } from './bao-gia-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng báo giá giả).');
-mkdirSync('docs/anh-chup/bh03', { recursive: true });
 test.describe.configure({ mode: 'serial' });
 
 let seeded: Seeded;
@@ -160,7 +159,7 @@ async function shot(page: Page, testInfo: { project: { name: string } }, name: s
   // Chụp ở chế độ in: đúng tờ A4 như hộp in của trình duyệt sẽ thấy.
   await page.emulateMedia({ media: 'print' });
   await page.screenshot({
-    path: `docs/anh-chup/bh03/${name}.png`,
+    path: shotPath('bh03', `${name}.png`),
     clip: { x: 0, y: 0, width: 794, height: 1123 },
   });
   await page.emulateMedia({ media: 'screen' });
@@ -258,8 +257,8 @@ test('BH-03: in thật trên A4 (chỉ trình duyệt máy tính): chỉ còn t�
   const box = /\/MediaBox\s*\[\s*0\s+0\s+([\d.]+)\s+([\d.]+)\s*\]/.exec(text);
   expect(Math.round(Number(box?.[1]))).toBe(595);
   expect(Math.round(Number(box?.[2]))).toBe(842);
-  writeFileSync('docs/anh-chup/bh03/bh03-a4.pdf', pdf);
-  await page.screenshot({ path: 'docs/anh-chup/bh03/bh03-che-do-in.png' });
+  writeFileSync(shotPath('bh03', 'bh03-a4.pdf'), pdf);
+  await page.screenshot({ path: shotPath('bh03', 'bh03-che-do-in.png') });
 });
 
 test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khung, sửa số lượng rồi Lưu', async ({
