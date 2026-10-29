@@ -25,7 +25,7 @@ import { UNIT_LABEL } from './quoteRecord';
 import type { DiscountPolicy, GiftPolicy, OppStudent, SellablePackage } from './useQuoteData';
 
 const GRID =
-  'grid grid-cols-[minmax(130px,1.1fr)_minmax(150px,1.3fr)_minmax(96px,0.8fr)_minmax(120px,0.9fr)_88px_36px] items-start gap-2';
+  'grid grid-cols-[minmax(130px,1.1fr)_minmax(150px,1.3fr)_minmax(96px,0.8fr)_minmax(120px,0.9fr)_88px_36px] items-center gap-2';
 
 function studentLabel(s: OppStudent): string {
   const name = s.full_name ?? `Em thứ ${String(s.position)}`;
@@ -177,15 +177,19 @@ export function QuoteLineGrid({
                       disabled={disabled}
                       onClick={() => setPickFor(row.key)}
                       aria-label={`Gói dòng ${String(index + 1)}`}
-                      className="focus-ring flex min-h-control w-full flex-col items-start justify-center rounded-control border border-border-strong bg-surface px-2.5 py-1 text-left hover:bg-hover disabled:opacity-60"
+                      title={
+                        row.packageId === '' ? undefined : `${row.packageCode} · ${row.packageName}`
+                      }
+                      className="focus-ring flex h-control w-full items-center rounded-control border border-border-strong bg-surface px-2.5 text-left hover:bg-hover disabled:opacity-60"
                     >
+                      {/* Một dòng như các ô bên cạnh (cùng chiều cao), tên gói dài thì cắt bớt; đầy đủ ở chú thích khi rê chuột. */}
                       {row.packageId === '' ? (
                         <span className="text-fg-muted">Chọn gói…</span>
                       ) : (
-                        <>
+                        <span className="min-w-0 truncate">
                           <span className="font-medium">{row.packageCode}</span>
-                          <span className="text-caption text-fg-muted">{row.packageName}</span>
-                        </>
+                          <span className="text-caption text-fg-muted">{` · ${row.packageName}`}</span>
+                        </span>
                       )}
                     </button>
                   )}
@@ -266,9 +270,9 @@ export function QuoteLineGrid({
                   />
                 </div>
               </div>
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span className="text-caption font-semibold text-fg-muted">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
+                  <span className="text-caption font-semibold whitespace-nowrap text-fg-muted">
                     {gift ? 'Chính sách quà tặng' : 'Chiết khấu · chính sách'}
                   </span>
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -337,7 +341,7 @@ export function QuoteLineGrid({
                     )}
                   </div>
                 </div>
-                <dl className="relative grid grid-cols-3 gap-3 rounded-control bg-canvas px-3 py-1.5 text-body tabular">
+                <dl className="relative grid w-full shrink-0 grid-cols-3 gap-3 rounded-control bg-canvas px-3 py-1.5 text-body tabular sm:w-[22rem]">
                   {calc?.status === 'pending' && (
                     <span
                       aria-hidden="true"
@@ -356,15 +360,15 @@ export function QuoteLineGrid({
                     </div>
                   ) : (
                     <>
-                      <div>
+                      <div className="text-right">
                         <dt className="text-caption text-fg-muted">Đơn giá</dt>
                         <dd>{priceText(calc, row, 'unitPrice', gift)}</dd>
                       </div>
-                      <div>
+                      <div className="text-right">
                         <dt className="text-caption text-fg-muted">Giảm</dt>
                         <dd>{priceText(calc, row, 'discountAmount', gift)}</dd>
                       </div>
-                      <div>
+                      <div className="text-right">
                         <dt className="text-caption text-fg-muted">Thành tiền</dt>
                         <dd className="font-semibold">{priceText(calc, row, 'lineTotal', gift)}</dd>
                       </div>
