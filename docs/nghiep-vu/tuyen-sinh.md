@@ -390,3 +390,19 @@ Kiểm thử: `supabase/tests/database/054_p5a_don_hang_tong_nguoi_duyet_ghi_chu
 
 ### Hiệu năng
 Đo trên `seed-lon` (8.000 đơn, 15.000 báo giá), Trưởng cơ sở CS5: `get_order` 22 ms lần đầu, 4 ms lần sau; `get_quotation` 10 ms lần đầu, 5 ms lần sau; hai phép cộng tổng đi qua chỉ mục `(order_id, line_no)` và `(quotation_id, line_no)`; quyền xem ghi chú đơn 3 ms.
+
+## P5a-DB-O2c: tự duyệt khi Trưởng cơ sở trình, bốn cờ quyền của đơn (migration `20261029000063`, Đ283; Q-P6, Đ102, R-HT-06)
+Kiểm thử: `supabase/tests/database/055_p5a_don_hang_tu_duyet_co_quyen.test.sql` (67 bài) và 043b (sửa theo luật mới). Đụng đường ghi tiền (duyệt đơn) nên có kiểm độc lập (Đ209, Đ216).
+
+| Hàm | Làm gì | Quyền |
+|---|---|---|
+| `app.order_approve_core(đơn, đã tích, duyệt thay, ghi chú)` (nội bộ, không mở cho rpc) | Lõi của duyệt đơn tách từ `approve_order`: đọc LẠI đơn theo id; Đ102 (cần tích mà chưa tích thì `HMT_CAN_TICH_DONG_Y`); R-TIEN-35 (em đủ họ tên, năm sinh); R-GD-08 (lớp); R-CRM-27 và KD6 (tìm hoặc tạo hồ sơ học sinh, trùng thì chặn); chốt hạn đóng tiền; chuyển Đã duyệt; sự kiện `DUYET` kèm ghi chú | Chỉ gọi từ `approve_order`, `submit_order` sau khi các hàm đó đã kiểm quyền |
+| `app.approve_order(đơn, đã tích)` | Giữ chữ ký, quyền, các kiểm (trạng thái Đã trình, đúng người duyệt đã chốt, Bán hàng bật); thân gọi lõi | Đơn hàng · Duyệt ở cơ sở |
+| `app.submit_order(đơn, đã tích = false)` (bỏ chữ ký một tham số, lời gọi một tham số vẫn chạy nhờ mặc định) | Trình như cũ. **Đường TU_DUYET mà người gọi chính là người lập (Trưởng cơ sở):** trong cùng giao dịch Đã trình (sự kiện `TRINH`) rồi Đã duyệt (sự kiện `DUYET`, ghi chú "Tự duyệt"), đúng mọi điều kiện của `approve_order` (kể cả Đ102 với `p_acknowledged`); lỗi thì lùi cả giao dịch, đơn vẫn Nháp. Người khác trình đơn Nháp của Trưởng cơ sở thì chỉ thành Đã trình. Đường QUAN_LY giữ nguyên, `p_acknowledged` bị bỏ qua. Kết quả `{id, approver_id, route, status, auto_approved}` | Đơn hàng · Sửa ở cơ sở của đơn |
+| `app.get_order(id)` | Thêm `can_submit`, `can_cancel`, `can_approve`, `can_reject`: tính bằng đúng các hàm không báo lỗi mà hàm ghi dùng (`can_see_branch`, `feature_enabled`, `can_approve_as_manager`, `order_has_receipt`); chỉ xét quyền và trạng thái, không xét dữ liệu (thiếu điều khoản, em thiếu năm sinh, chưa có quản lý... do hàm ghi báo lúc bấm) | Đơn hàng · Xem (không đổi) |
+
+Bài 055 so mọi cờ với việc hàm ghi chạy được hay bị chặn (11 vai x 6 đơn x 4 cờ, kể cả Admin chưa xác thực hai bước, tắt Bán hàng, đơn cơ sở khác). `order_has_receipt` vẫn là bản tạm (luôn trả không) tới DB2 (Đ284).
+
+### Hiệu năng
+Đo trên `seed-lon` (8.000 đơn), Trưởng cơ sở CS5: `get_order` 26 ms lần đầu, 5 ms lần sau (đơn Nháp, có cờ); đơn Đã trình 5 ms. Không bảng, chỉ mục mới.
+

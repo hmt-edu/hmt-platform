@@ -273,13 +273,14 @@ select pg_temp.mk('b1', '0900019005', jsonb_build_array(pg_temp.line(pg_temp.ps(
 select is(pg_temp.nst('0900019005'), 0, 'R-CRM-27: tạo đơn không sinh hồ sơ học sinh');
 select app.save_order(pg_temp.o('b1'), null, pg_temp.term('CHIA_3_DOT'));
 select app.submit_order(pg_temp.o('b1'));
-select is(pg_temp.nst('0900019005'), 0, 'R-CRM-27: trình đơn không sinh hồ sơ học sinh');
+-- Q-P6 (Đ283, migration 063): Trưởng cơ sở lập và chính họ trình thì tự duyệt ngay trong cùng giao dịch, nên hồ sơ học sinh sinh lúc trình.
+select is(pg_temp.nst('0900019005'), 1, 'R-CRM-27, Q-P6: Trưởng cơ sở trình là tự duyệt: sinh đúng một hồ sơ học sinh');
 select is((select approval_route from app.sales_order where id = pg_temp.o('b1')), 'TU_DUYET', 'R-HT-06: Trưởng cơ sở lập thì tự duyệt');
+select is((select status_code from app.sales_order where id = pg_temp.o('b1')), 'DA_DUYET', 'Q-P6: đơn của Trưởng cơ sở thành Đã duyệt ngay khi chính họ trình');
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
-select is(pg_temp.err($$select app.approve_order(pg_temp.o('b1'))$$), 'HMT_KHONG_PHAI_NGUOI_DUYET', 'R-HT-06: Trưởng cơ sở khác không duyệt đơn tự duyệt của người khác');
+select is(pg_temp.err($$select app.approve_order(pg_temp.o('b1'))$$), 'HMT_SAI_TRANG_THAI', 'Q-P6: đơn đã tự duyệt thì không duyệt lại (kể cả Trưởng cơ sở khác)');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(pg_temp.err($$select app.approve_order(pg_temp.o('b1'))$$), null, 'R-HT-06: Trưởng cơ sở tự duyệt đơn của mình');
-select is(pg_temp.nst('0900019005'), 1, 'R-CRM-27: duyệt đơn sinh đúng một hồ sơ học sinh');
+select is(pg_temp.err($$select app.approve_order(pg_temp.o('b1'))$$), 'HMT_SAI_TRANG_THAI', 'Q-P6: người tự duyệt cũng không duyệt lại lần hai');
 select is((select array[s.full_name, s.birth_year::text] from app.sales_order_line l join app.student s on s.id = l.student_id where l.order_id = pg_temp.o('b1')),
           array['Em Bảy', '2011'], 'R-CRM-27: hồ sơ học sinh lấy đúng tên và năm sinh của em');
 select ok((select event_note ilike '%tự duyệt%' from (select note as event_note from app.sales_order_event where order_id = pg_temp.o('b1') and event_code = 'DUYET') z),
