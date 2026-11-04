@@ -55,8 +55,8 @@ select is((select p.code from app.catalog_item i join app.catalog_item p on p.id
            where i.catalog_code = 'OPP_SUBSTAGE' and i.code = 'L5Q'), 'L5', 'L5Q thuộc L5');
 select is((select count(*)::int from app.catalog_item where catalog_code = 'TEST_CANCEL_REASON'), 13, 'Danh mục 13 có 13 lý do huỷ test');
 select is((select l.code from app.catalog_item i join app.catalog_item l on l.id = i.linked_item_id
-           where i.catalog_code = 'TEST_CANCEL_REASON' and i.name = 'Trung tâm không xếp được lịch test'), 'L5Q',
-          'R-CRM-06: "Trung tâm không xếp được lịch test" nối L5Q');
+           where i.catalog_code = 'TEST_CANCEL_REASON' and i.name = 'Trung tâm không xếp được lịch test'), 'L5M',
+          'R-CRM-06 (sửa 04/11, T3b): "Trung tâm không xếp được lịch test" nối L5M (L5Q Ngừng)');
 select is((select linked_item_id from app.catalog_item where catalog_code = 'TEST_CANCEL_REASON' and name = 'Tạo phiếu sai'), null,
           'R-CRM-06: "Tạo phiếu sai" không nối nhóm con nào');
 select is((select requires_note from app.catalog_item where catalog_code = 'TEST_CANCEL_REASON' and code = 'L5M'), true,

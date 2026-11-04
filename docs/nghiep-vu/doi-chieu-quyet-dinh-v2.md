@@ -81,7 +81,7 @@ Tổng hợp **màn chưa có thiết kế** (không dựng được): Aftersale
 
 1. Tên và mã các nhóm con mới L4E đến L4H, L7M đến L7S (file `02.Stage` trong `_inbox/` chỉ có L4A đến L4D, L7A đến L7L). Anh gửi bảng đầy đủ.
 2. L8A đến L8C và L5A, L5B, L5Q: hệ thống đặt hay nhân viên chọn tay? (Quyết định ghi hệ thống đặt L8A đến L8C; spec đang cho chọn tay.)
-3. Danh mục v1 có L5Q và L6G; spec chỉ có L6A đến L6F. Giữ hay bỏ?
+3. Danh mục v1 có L5Q và L6G; spec chỉ có L6A đến L6F. Giữ hay bỏ? **Anh chốt 04/11: theo Config mới (T3b): L5P, L5Q Ngừng; L6 đánh lại A đến G.**
 4. SĐT thứ hai có dùng để khớp phụ huynh không?
 5. CS3 dạy học thường: ô chọn cơ sở khi xem dữ liệu có hiện CS3 không?
 6. Vai trò MARKETING và OPERATIONS (có trong file cấu hình, chưa có trong DB v1): có tạo không?

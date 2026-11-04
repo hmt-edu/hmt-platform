@@ -13,9 +13,10 @@ export const SYSTEM_STAGE = 'L6';
 const TEST_GATED = ['L7', 'L8'];
 /** L8: chọn nhóm con và xác nhận không hoàn tác (R-CRM-16). */
 const L8 = 'L8';
-/** Nhóm con L5 do hệ thống gắn (R-CRM-15), L6A do hệ thống gắn (R-CRM-34), L8C do hệ thống nâng khi thu đủ (R-CRM-17). */
+/** Nhóm con L5 do hệ thống gắn (R-CRM-15), L6A, L6B do hệ thống gắn (R-CRM-13, 34), L8C do hệ thống nâng khi thu đủ (R-CRM-17). */
 export const L5 = 'L5';
-export const L6A = 'L6A';
+/** L6A (đã làm bài, chờ chấm) và L6B (phiếu Hoàn thành) do hệ thống gắn; người dùng chọn tay L6C trở đi. */
+export const L6_SYSTEM = ['L6A', 'L6B'];
 export const L8C = 'L8C';
 
 export type StageContext = {
@@ -75,7 +76,7 @@ export type SubstageRule = {
 
 /**
  * Nhóm con người dùng chọn tay trong một giai đoạn (R-CRM-15, 17, 34, 35): L5 do hệ thống gắn theo phiếu; ở L6 không chọn
- * lại L6A; ở L8 đã L8C thì khoá, còn lại đổi qua lại L8A, L8B.
+ * lại L6A, L6B; ở L8 đã L8C thì khoá, còn lại đổi qua lại L8A, L8B.
  */
 export function substageRule(stage: string, current: string | null, codes: string[]): SubstageRule {
   if (stage === L5) {
@@ -89,13 +90,13 @@ export function substageRule(stage: string, current: string | null, codes: strin
   }
   if (stage === 'L8') return { allowed: codes.filter((c) => c !== L8C), lockedReason: null };
   if (stage === SYSTEM_STAGE)
-    return { allowed: codes.filter((c) => c !== L6A), lockedReason: null };
+    return { allowed: codes.filter((c) => !L6_SYSTEM.includes(c)), lockedReason: null };
   return { allowed: codes, lockedReason: null };
 }
 
 /**
  * Các nhóm con hiện trong ô chọn Sub-stage: nhóm con chọn tay được cộng với nhóm con HIỆN TẠI nếu hệ thống gắn mà người dùng không
- * chọn lại được (L6A, R-CRM-34), để ô hiện đúng giá trị thay vì trống; thứ tự theo danh mục. Nhóm con hiện tại chọn lại là không đổi gì.
+ * chọn lại được (L6A, L6B, R-CRM-34), để ô hiện đúng giá trị thay vì trống; thứ tự theo danh mục. Nhóm con hiện tại chọn lại là không đổi gì.
  */
 export function substageDisplayCodes(
   allCodes: string[],

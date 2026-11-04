@@ -81,11 +81,11 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is((select value from app.setting_def where key = 'kanban_cards_per_column'), '20', 'Tham số số thẻ mỗi cột Kanban mặc định 20');
 select is((select array_agg(code order by code) from app.catalog_item
             where catalog_code = 'OPP_SUBSTAGE' and is_locked and code like 'L5%'),
-          array['L5A', 'L5B', 'L5C', 'L5D', 'L5E', 'L5F', 'L5G', 'L5H', 'L5I', 'L5K', 'L5M', 'L5N', 'L5O', 'L5P', 'L5Q'],
-          'Khoá toàn bộ nhóm con L5 (hệ thống gắn, R-CRM-15)');
+          array['L5A', 'L5B', 'L5C', 'L5D', 'L5E', 'L5F', 'L5G', 'L5H', 'L5I', 'L5K', 'L5M', 'L5N', 'L5O'],
+          'Khoá nhóm con L5 còn hiệu lực (hệ thống gắn, R-CRM-15); L5P, L5Q đã Ngừng và mở khoá (T3b)');
 select is((select array_agg(code order by code) from app.catalog_item
             where catalog_code = 'OPP_SUBSTAGE' and is_locked and (code like 'L6%' or code like 'L8%')),
-          array['L6A', 'L8A', 'L8B', 'L8C'], 'Khoá L6A (R-CRM-13) và L8A, L8B, L8C (R-CRM-16, 17)');
+          array['L6A', 'L6B', 'L8A', 'L8B', 'L8C'], 'Khoá L6A, L6B (R-CRM-13) và L8A, L8B, L8C (R-CRM-16, 17)');
 select is((select is_locked from app.catalog_item where catalog_code = 'OPP_SUBSTAGE' and code = 'L7B'), false, 'L7B chưa khoá');
 
 -- ================= Tạo cơ hội: R-CRM-01, 09, 26, 27, 28 =================
@@ -214,12 +214,14 @@ select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO00000
 select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
 select pg_temp.sudo($$update app.opportunity set stage_code = 'L6', substage_code = 'L6A' where code = 'CO000002'$$);
 select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
-select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6', 'L6B')$$), null,
-          'R-CRM-34: ở L6 người dùng tự chọn L6B…L6F sau L6A (L6A → L6B)');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6', 'L6C')$$), null,
+          'R-CRM-34: ở L6 người dùng tự chọn L6C…L6G sau L6A (L6A → L6C)');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6', 'L6A')$$), 'HMT_L6A_HE_THONG',
           'R-CRM-35 ngoại lệ (3) (R-CRM-34): người dùng không chọn lại L6A');
-select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6', 'L6C')$$), null, 'R-CRM-35: đổi nhóm con cùng giai đoạn được, L6B → L6C');
-select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6', 'L6C')$$), 'HMT_KHONG_THAY_DOI', 'Cùng nhóm con: không đổi');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6', 'L6B')$$), 'HMT_L6A_HE_THONG',
+          'R-CRM-13 (04/11): người dùng không chọn tay L6B (hệ thống gắn khi phiếu Hoàn thành)');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6', 'L6D')$$), null, 'R-CRM-35: đổi nhóm con cùng giai đoạn được, L6C → L6D');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6', 'L6D')$$), 'HMT_KHONG_THAY_DOI', 'Cùng nhóm con: không đổi');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L6')$$), 'HMT_THIEU_THONG_TIN', 'Cùng giai đoạn mà không chọn nhóm con mới: bị chặn');
 
 -- R-CRM-14 (chưa có phiếu: coi là không có phiếu) và R-CRM-12 (mô phỏng điểm nối với phiếu).

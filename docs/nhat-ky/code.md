@@ -39,3 +39,7 @@
 - Migration 066: L4E đến L4H, L7M đến L7S (thêm), danh mục 33 thành BQ1 đến BQ5 (bốn mã cũ Ngừng). Bài kiểm 058; sửa bài 006, 011, 012, 013, 020, 022 theo mã BQ.
 - Đã đối chiếu Config mới với DB: lệch L5B (tên), L5P, L5Q, L6A đến L6G. Chưa đổi, báo anh Trường.
 - Bài e2e đăng nhập chập chờn ghi vào TIEN-DO "Việc để sau" (xử lý sau 10/11).
+
+## 04/11/2026: T3b nhóm con L5, L6 theo Config mới
+- Migration 067: L6 đánh lại A đến G, L5B đổi tên, L5P và L5Q Ngừng, lý do huỷ \"Trung tâm không xếp được lịch test\" nối L5M. Hàm đổi: `opportunity_l5_substage`, `submit_student_test` (lên L6A), `complete_student_test` (L6B), `change_opportunity_stage` (chặn tay L6A, L6B).
+- Giao diện `oppStage.ts`; bài kiểm 011, 017, 020, 022, 006, 058, Vitest, e2e co-hoi.

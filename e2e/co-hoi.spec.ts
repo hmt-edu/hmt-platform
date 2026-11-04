@@ -319,7 +319,7 @@ test('Tạo cơ hội từ lead: hộp xác nhận; tạo xong mở cơ hội L1
   await expect(page).toHaveURL(/\/crm\/co-hoi\/[0-9a-f-]+$/);
 });
 
-test('R-CRM-34: cơ hội L6 do hệ thống gắn L6A, ô Sub-stage hiện L6A (không trống) và chọn tiếp được L6B', async ({
+test('R-CRM-34: cơ hội L6 do hệ thống gắn L6A, ô Sub-stage hiện L6A (không trống) và chọn tiếp được L6C', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -337,9 +337,9 @@ test('R-CRM-34: cơ hội L6 do hệ thống gắn L6A, ô Sub-stage hiện L6A 
   await openRecord(page, setup.account, seeded.opportunity.gated.id);
   const substage = page.getByRole('combobox', { name: 'Sub-stage' });
   await expect(substage).toContainText(/L6A/);
-  await pickOption(page, substage, /L6B/);
+  await pickOption(page, substage, /L6C/);
   await expect(toastText(page, 'Đã đổi nhóm con.')).toBeVisible();
-  await expect(page.getByRole('combobox', { name: 'Sub-stage' })).toContainText(/L6B/);
+  await expect(page.getByRole('combobox', { name: 'Sub-stage' })).toContainText(/L6C/);
 });
 
 test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì nối tiếp "Cơ hội / <tên cơ hội> / Phiếu kiểm tra / mã phiếu", sống qua tải lại, bấm tên cơ hội quay về', async ({

@@ -230,7 +230,7 @@ select is(pg_temp.err($$select app.start_student_test(pg_temp.tid('PKT000001'))$
 select is(pg_temp.err($$select app.start_student_test(pg_temp.tid('PKT000001'))$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'Chặn: bắt đầu test hai lần');
 select is(pg_temp.err($$select app.reschedule_student_test(pg_temp.tid('PKT000001'), now() + interval '7 days')$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'Chỉ phiếu Nháp mới đổi lịch');
 select is(pg_temp.err($$select app.submit_student_test(pg_temp.tid('PKT000001'))$$), null, 'Nộp bài: Đang test → Chờ giáo viên chấm');
-select is((select substage_code from app.opportunity where code = 'CO000003'), 'L5P', 'R-CRM-15: còn phiếu Chờ giáo viên chấm → L5P (ưu tiên hơn L5B của phiếu Nháp)');
+select is((select array[stage_code, substage_code] from app.opportunity where code = 'CO000003'), array['L6', 'L6A'], 'R-CRM-13 (04/11): đã làm bài, chờ chấm → cơ hội lên L6A');
 select is(pg_temp.err($$select app.complete_student_test(pg_temp.tid('PKT000001'))$$), 'HMT_THIEU_KET_QUA', 'Hoàn thành thiếu điểm, nhận xét: bị chặn');
 select ok((select pg_temp.msg($$select app.complete_student_test(pg_temp.tid('PKT000001'))$$)) like '%điểm%nhận xét%', 'Câu lỗi nêu rõ thiếu ô nào');
 select is(pg_temp.err($$select app.enter_test_result(pg_temp.tid('PKT000001'), 7.25, 'x')$$), 'HMT_DIEM_SAI', 'R-CRM-10: điểm tối đa một chữ số thập phân');
@@ -241,13 +241,14 @@ select is(pg_temp.err($$select app.enter_test_result(pg_temp.tid('PKT000001'), 7
 select is((select array[result_on_behalf::text, result_entered_by::text, score::text] from app.student_test where code = 'PKT000001'),
           array['true', pg_temp.uid('sales1')::text, '7.5'], 'R-CRM-11: ghi "nhập thay" và người nhập');
 select is(pg_temp.err($$select app.complete_student_test(pg_temp.tid('PKT000001'))$$), null, 'Hoàn thành phiếu khi đủ giáo viên chấm, điểm, nhận xét');
-select is((select array[stage_code, substage_code] from app.opportunity where code = 'CO000003'), array['L6', 'L6A'], 'R-CRM-13: phiếu Hoàn thành thì cơ hội tự lên L6A');
+select is((select array[stage_code, substage_code] from app.opportunity where code = 'CO000003'), array['L6', 'L6B'], 'R-CRM-13: phiếu Hoàn thành thì cơ hội chuyển L6B');
 select ok((select completed_at is not null from app.student_test where code = 'PKT000001'), 'Ghi giờ hoàn thành');
 select is(pg_temp.err($$select app.complete_student_test(pg_temp.tid('PKT000001'))$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'Chặn: hoàn thành hai lần');
 select is(pg_temp.err($$select app.enter_test_result(pg_temp.tid('PKT000001'), 8, 'Sửa sau Hoàn thành', 'A', 'CB')$$), null, 'Sau Hoàn thành vẫn sửa được kết quả');
 select ok(pg_temp.audit_has(pg_temp.tid('PKT000001'), '%score%'), 'R-CRM-21: sửa sau Hoàn thành có lịch sử (nhật ký)');
-select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000003'), 'L6', 'L6B')$$), null, 'R-CRM-34: ở L6 người dùng tự chọn L6B…L6F sau L6A');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000003'), 'L6', 'L6C')$$), null, 'R-CRM-34: ở L6 người dùng tự chọn L6C…L6G sau L6B');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000003'), 'L6', 'L6A')$$), 'HMT_L6A_HE_THONG', 'R-CRM-35: người dùng không chọn lại L6A (hệ thống gắn)');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000003'), 'L6', 'L6B')$$), 'HMT_L6A_HE_THONG', 'R-CRM-13: người dùng không chọn tay L6B (hệ thống gắn)');
 
 -- R-CRM-12: phiếu PKT000002 còn Nháp thì cơ hội chưa sang L7, L8.
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000003'), 'L7')$$), 'HMT_PHIEU_DANG_DO', 'R-CRM-12: còn phiếu dang dở thì không sang L7');
@@ -272,7 +273,7 @@ select is(pg_temp.err($$select app.start_student_test(pg_temp.tid('PKT000003'))$
 select is(pg_temp.err($$select app.submit_student_test(pg_temp.tid('PKT000003'))$$), null, 'PKT000003: nộp bài');
 select is(pg_temp.err($$select app.enter_test_result(pg_temp.tid('PKT000003'), 6, 'Khá', 'B', 'NC', pg_temp.uid('teacher5'))$$), null, 'PKT000003: nhập kết quả, chọn giáo viên chấm');
 select is(pg_temp.err($$select app.complete_student_test(pg_temp.tid('PKT000003'))$$), null, 'PKT000003: hoàn thành');
-select is((select array[stage_code, substage_code] from app.opportunity where code = 'CO000004'), array['L6', 'L6A'], 'CO000004 lên L6A');
+select is((select array[stage_code, substage_code] from app.opportunity where code = 'CO000004'), array['L6', 'L6B'], 'CO000004 lên L6B');
 select is(pg_temp.err($$select app.step_back_student_test(pg_temp.tid('PKT000003'), 'Chấm lại')$$), null, 'PKT000003: đưa về Nháp');
 select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tid('PKT000003'), 'L5D')$$), null, 'PKT000003: huỷ');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7')$$), 'HMT_THIEU_LY_DO',
@@ -290,9 +291,7 @@ select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tid('PKT000004'),
 select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tid('PKT000004'), 'L5M')$$), 'HMT_THIEU_GHI_CHU', 'R-CRM-06: lý do khác bắt ghi chú');
 select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tid('PKT000004'), 'KHONG_CO')$$), 'HMT_DANH_MUC_KHONG_CO', 'R-CRM-06: lý do ngoài danh mục 13 bị chặn');
 select is(pg_temp.err($$select app.start_student_test(pg_temp.tid('PKT000004'))$$), null, 'PKT000004: bắt đầu test');
-select is(pg_temp.err($$select app.submit_student_test(pg_temp.tid('PKT000004'))$$), null, 'PKT000004: nộp bài');
-select is((select substage_code from app.opportunity where code = 'CO000005'), 'L5P', 'CO000005: chờ giáo viên chấm → L5P');
-select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tid('PKT000004'), 'L5E')$$), null, 'R-CRM-06: huỷ được cả khi học sinh đã làm bài (Chờ giáo viên chấm)');
+select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tid('PKT000004'), 'L5E')$$), null, 'R-CRM-06: huỷ được cả khi phiếu đang test');
 select is((select substage_code from app.opportunity where code = 'CO000005'), 'L5E', 'R-CRM-15 (3): mọi phiếu đều Huỷ → nhóm con nối với lý do huỷ (L5E)');
 select is(pg_temp.err($$select app.create_student_test(pg_temp.oid('CO000005'), pg_temp.test_data())$$), null, 'CO000005: tạo phiếu thứ hai PKT000005');
 select is((select substage_code from app.opportunity where code = 'CO000005'), 'L5B', 'Có phiếu Nháp trở lại → L5B');
@@ -321,6 +320,14 @@ select is(pg_temp.err($$select app.start_student_test(pg_temp.tid('PKT000006'))$
 select is(pg_temp.err($$select app.step_back_student_test(pg_temp.tid('PKT000006'))$$), null, 'Lùi Đang test → Nháp không cần lý do');
 select is((select status_code from app.student_test where code = 'PKT000006'), 'DRAFT', 'Phiếu về Nháp');
 select is(pg_temp.err($$select app.submit_student_test(pg_temp.tid('PKT000006'))$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'Chưa bắt đầu thì chưa nộp');
+-- Luật R-CRM-13 (04/11): nộp bài (Chờ giáo viên chấm) đưa cơ hội đang ở L5 lên L6A; L5P đã bỏ.
+select is((select stage_code from app.opportunity where code = 'CO000005'), 'L5', 'CO000005 còn ở L5 trước khi nộp bài');
+select is(pg_temp.err($$select app.start_student_test(pg_temp.tid('PKT000006'))$$), null, 'PKT000006: bắt đầu test lại');
+select is(pg_temp.err($$select app.submit_student_test(pg_temp.tid('PKT000006'))$$), null, 'PKT000006: nộp bài');
+select is((select array[stage_code, substage_code] from app.opportunity where code = 'CO000005'), array['L6', 'L6A'], 'R-CRM-13: nộp bài thì cơ hội CO000005 lên L6A');
+select is((select is_active from app.catalog_item where catalog_code = 'TEST_CANCEL_REASON' and code = 'L5Q'), true, 'Lý do huỷ "Trung tâm không xếp được lịch test" vẫn hiệu lực');
+select is(pg_temp.err($$select app.step_back_student_test(pg_temp.tid('PKT000006'))$$), null, 'PKT000006: lùi về Đang test');
+select is((select array[stage_code, substage_code] from app.opportunity where code = 'CO000005'), array['L6', 'L6A'], 'R-CRM-02: lùi phiếu không kéo cơ hội lùi giai đoạn');
 
 
 -- ================= Lịch nhắc tự đóng khi phiếu sang Đang test (anh chốt 18/10) =================

@@ -16,8 +16,8 @@ select ok(not exists (select from app.catalog_item c join app.catalog_item p on 
 select is((select count(distinct sort_order)::int from app.catalog_item where catalog_code = 'OPP_SUBSTAGE'),
           (select count(*)::int from app.catalog_item where catalog_code = 'OPP_SUBSTAGE'),
           'Thứ tự nhóm con không trùng sau khi thêm 11 nhóm con');
-select is((select count(*)::int from app.catalog_item where catalog_code = 'OPP_SUBSTAGE'), 61,
-          'Giai đoạn con cơ hội: 61 (50 + 4 + 7)');
+select is((select count(*)::int from app.catalog_item where catalog_code = 'OPP_SUBSTAGE'), 62,
+          'Giai đoạn con cơ hội: 62 (50 + 4 + 7 + L6G của T3b)');
 
 select is((select array_agg(code order by sort_order) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and is_active),
           array['BQ1', 'BQ2', 'BQ3', 'BQ4', 'BQ5'], 'R-CRM-14: danh mục 33 còn hiệu lực là BQ1–BQ5');

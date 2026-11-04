@@ -105,7 +105,7 @@ RLS đọc theo phạm vi của ô Xem: toàn hệ thống, đúng cơ sở củ
 | `app.update_student_test` | Người phụ trách, cơ sở test, phòng, giáo viên chấm, tên đề | Sửa (Giao việc nếu đổi người phụ trách) | R-CRM-21 |
 | `app.start_student_test`, `submit_student_test` | Nháp → Đang test → Chờ giáo viên chấm | Sửa | R-CRM-10 |
 | `app.enter_test_result` | Điểm, nhận xét, trình độ, phân loại; người phụ trách nhập thay thì ghi "nhập thay" | Sửa | R-CRM-10, 11 |
-| `app.complete_student_test` | Cần giáo viên chấm, điểm, nhận xét; cơ hội ở L5 trở xuống tự lên L6A | Sửa | R-CRM-13 |
+| `app.complete_student_test` | Cần giáo viên chấm, điểm, nhận xét; cơ hội ở L5 trở xuống tự lên L6B; đang L6A (do nộp bài) chuyển L6B | Sửa | R-CRM-13 |
 | `app.step_back_student_test` | Lùi một bước; Hoàn thành về Nháp bắt lý do; cơ hội không lùi | Sửa | R-CRM-21, 02 |
 | `app.cancel_student_test` | Bắt lý do danh mục 13; Hoàn thành phải về Nháp trước; huỷ lịch nhắc tự sinh | Huỷ | R-CRM-06 |
 | `app.reopen_student_test` | Phiếu huỷ về Nháp, bắt lý do; bật lại lịch nhắc | Sửa | R-CRM-10 |
@@ -418,4 +418,15 @@ Bài 055 so mọi cờ với việc hàm ghi chạy được hay bị chặn (11
 
 - **Nhóm con mới** (chỉ dữ liệu, không hàm mới): L4E đến L4H dưới L4; L7M đến L7S dưới L7 (tên theo Config mới 04/11). Xếp liền sau L4D và L7L. Người dùng chọn tay như các nhóm con L4, L7 khác.
 - **Danh mục 33 "Lý do bỏ qua test"** (dùng ở `app.change_opportunity_stage`, R-CRM-14, R-V2-03): giá trị còn hiệu lực là `BQ1` đến `BQ5`; `BQ5` "Lý do khác" bắt buộc ghi chú. Bốn mã cũ (`HOC_SINH_CU`, `PH_KHONG_MUON`, `CO_KET_QUA_NOI_KHAC`, `KHAC`) chuyển Ngừng, không xoá, vì cơ hội đã ghi có thể đang dùng.
-- **Chưa đổi, chờ anh Trường quyết** (lệch Config mới): `L5B` (tên), `L5P`, `L5Q` (Config mới không có); `L6A` đến `L6F` (Config mới lệch một bậc, thêm `L6G` học yếu). Xem `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md`.
+
+## T3b (04/11/2026): nhóm con L5, L6 theo Config mới (migration 067)
+
+Anh Trường chốt theo Config mới (bản cuối). Dữ liệu hiện chỉ là dữ liệu giả nên không chuyển mã cũ sang mã mới trong migration.
+
+- **Danh mục:** L6 đánh lại A đến G (L6A chưa có kết quả test, L6B có kết quả cần phân loại, L6C xuất sắc … L6G yếu; mã L6A đến L6F đổi nghĩa một lần). L5B đổi tên theo Config (nghĩa giữ: đã xếp lịch test). L5P, L5Q chuyển Ngừng. Lý do huỷ test "Trung tâm không xếp được lịch test" giữ, nối sang L5M.
+- **Hàm đổi (migration 067):**
+  - `app.opportunity_l5_substage`: bỏ nhánh L5P.
+  - `app.submit_student_test` (Nộp bài): cơ hội từ L5 trở xuống tự lên L6, nhóm con L6A (R-CRM-13).
+  - `app.complete_student_test` (Hoàn thành): cơ hội từ L5 trở xuống lên L6B; đang L6A chuyển L6B; nhóm con L6 khác (đã chọn tay) giữ nguyên.
+  - `app.change_opportunity_stage`: người dùng không tay đổi về L6A, L6B (mã lỗi `HMT_L6A_HE_THONG`, câu lỗi nêu cả hai); chọn tay L6C đến L6G.
+- **Giao diện:** `oppStage.ts` ô Sub-stage ở L6 không cho chọn L6A, L6B.

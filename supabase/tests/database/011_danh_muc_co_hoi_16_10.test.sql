@@ -26,23 +26,24 @@ select is((select p.code from app.catalog_item i join app.catalog_item p on p.id
 select is((select array_agg(code order by sort_order) from app.catalog_item
            where catalog_code = 'OPP_SUBSTAGE' and code in ('L5A', 'L5B', 'L5P', 'L5C')),
           array['L5A', 'L5B', 'L5P', 'L5C'], 'R-CRM-15: L5P xếp ngay sau L5B');
-select is(pg_temp.name_of('L5B'), 'Đã xếp lịch test', 'Spec 06 mục 1.3: L5B là "Đã xếp lịch test"');
+select is(pg_temp.name_of('L5B'), 'Đồng ý tham gia test, đã xếp lớp thành công', 'T3b (04/11): L5B theo tên Config mới');
+select is((select is_active from app.catalog_item where catalog_code = 'OPP_SUBSTAGE' and code = 'L5P'), false, 'T3b (04/11): L5P chuyển Ngừng, không xoá');
 select ok(not exists (select from app.catalog_item where catalog_code = 'TEST_CANCEL_REASON' and code = 'L5P'),
           'R-CRM-15: L5P không nối danh mục lý do huỷ test');
 
--- R-CRM-13: L6 chỉ còn A–F.
+-- R-CRM-13 (sửa 04/11, T3b): L6 đánh lại A–G theo Config mới.
 select is((select array_agg(code order by code) from app.catalog_item
            where catalog_code = 'OPP_SUBSTAGE' and code like 'L6%'),
-          array['L6A', 'L6B', 'L6C', 'L6D', 'L6E', 'L6F'], 'R-CRM-13: L6 có A–F, không còn L6G');
-select is(pg_temp.name_of('L6A'), 'Có kết quả, cần phân loại', 'L6A có kết quả, cần phân loại');
-select is(pg_temp.name_of('L6B'), 'Học xuất sắc', 'L6B học xuất sắc');
-select is(pg_temp.name_of('L6C'), 'Học tốt', 'L6C học tốt');
-select is(pg_temp.name_of('L6D'), 'Học khá', 'L6D học khá');
-select is(pg_temp.name_of('L6E'), 'Học trung bình', 'L6E học trung bình');
-select is(pg_temp.name_of('L6F'), 'Học yếu', 'L6F học yếu');
-select ok(not exists (select from app.catalog_item i join app.catalog_item o on o.id = i.parent_id or o.id = i.linked_item_id
-                      where o.catalog_code = 'OPP_SUBSTAGE' and o.code = 'L6G'),
-          'Không còn bản ghi trỏ tới L6G');
+          array['L6A', 'L6B', 'L6C', 'L6D', 'L6E', 'L6F', 'L6G'], 'R-CRM-13: L6 có A–G');
+select is(pg_temp.name_of('L6A'), 'Đã tham gia test, chưa có kết quả test', 'L6A chưa có kết quả test');
+select is(pg_temp.name_of('L6B'), 'Đã tham gia test, có kết quả test, cần phân loại', 'L6B có kết quả, cần phân loại');
+select is(pg_temp.name_of('L6C'), 'Đã tham gia test, học xuất sắc', 'L6C học xuất sắc');
+select is(pg_temp.name_of('L6D'), 'Đã tham gia test, học tốt', 'L6D học tốt');
+select is(pg_temp.name_of('L6E'), 'Đã tham gia test, học khá', 'L6E học khá');
+select is(pg_temp.name_of('L6F'), 'Đã tham gia test, học trung bình', 'L6F học trung bình');
+select is(pg_temp.name_of('L6G'), 'Đã tham gia test, học yếu', 'L6G học yếu');
+select is((select p.code from app.catalog_item i join app.catalog_item p on p.id = i.parent_id
+           where i.catalog_code = 'OPP_SUBSTAGE' and i.code = 'L6G'), 'L6', 'L6G thuộc giai đoạn L6');
 
 -- Thứ tự nhóm con liền mạch, không trùng.
 select is((select count(distinct sort_order)::int from app.catalog_item where catalog_code = 'OPP_SUBSTAGE'),

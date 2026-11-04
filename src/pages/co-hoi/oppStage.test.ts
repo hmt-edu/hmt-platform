@@ -83,8 +83,8 @@ describe('planStageChange', () => {
 });
 
 describe('nhóm con', () => {
-  const l5 = ['L5A', 'L5B', 'L5P'];
-  const l6 = ['L6A', 'L6B', 'L6C'];
+  const l5 = ['L5A', 'L5B', 'L5C'];
+  const l6 = ['L6A', 'L6B', 'L6C', 'L6D'];
   const l8 = ['L8A', 'L8B', 'L8C'];
   it('R-CRM-15: nhóm con L5 do hệ thống gắn, người dùng không chọn', () => {
     expect(substageRule('L5', 'L5A', l5).allowed).toEqual([]);
@@ -93,17 +93,18 @@ describe('nhóm con', () => {
   });
   it('R-CRM-34: ô Sub-stage ở L6 vẫn hiện L6A (hệ thống gắn) dù không chọn lại được', () => {
     const allowed = substageRule('L6', 'L6A', l6).allowed;
-    expect(substageDisplayCodes(l6, allowed, 'L6A')).toEqual(['L6A', 'L6B', 'L6C']);
-    // Đã chọn L6B tay: L6A không còn trong ô.
+    expect(substageDisplayCodes(l6, allowed, 'L6A')).toEqual(['L6A', 'L6C', 'L6D']);
+    // Đã ở L6B (hệ thống gắn khi phiếu Hoàn thành): ô hiện L6B, không hiện lại L6A.
     expect(substageDisplayCodes(l6, substageRule('L6', 'L6B', l6).allowed, 'L6B')).toEqual([
       'L6B',
       'L6C',
+      'L6D',
     ]);
     // Chưa có nhóm con: chỉ các nhóm chọn được.
-    expect(substageDisplayCodes(l6, allowed, null)).toEqual(['L6B', 'L6C']);
+    expect(substageDisplayCodes(l6, allowed, null)).toEqual(['L6C', 'L6D']);
   });
-  it('R-CRM-34: ở L6 không chọn lại L6A', () => {
-    expect(substageRule('L6', 'L6A', l6).allowed).toEqual(['L6B', 'L6C']);
+  it('R-CRM-13, 34: ở L6 không chọn tay L6A, L6B', () => {
+    expect(substageRule('L6', 'L6A', l6).allowed).toEqual(['L6C', 'L6D']);
   });
   it('R-CRM-35: ở L8 đổi qua lại L8A, L8B; L8C khoá (R-CRM-17)', () => {
     expect(substageRule('L8', 'L8A', l8).allowed).toEqual(['L8A', 'L8B']);
