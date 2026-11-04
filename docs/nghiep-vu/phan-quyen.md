@@ -260,3 +260,12 @@ tự kiểm quyền người gọi.
 ## Ma trận phiên bản 6: Huỷ đơn hàng của Sale, CSKH (QĐ-Đ204, migration `20261027000050`)
 - Sale, CSKH có Huỷ đơn hàng (`SALES_ORDER`), phạm vi cơ sở (2 ô, từ Không sang Có). Duyệt và Xuất không đổi.
 - Hàm huỷ đơn (P5a-DB1b) chỉ cho Sale, CSKH huỷ đơn Nháp do chính mình lập; đơn Đã trình, Đã duyệt do người duyệt đã chốt lúc trình huỷ, Admin thay khi vắng (Đ202).
+
+## T1 (04/11/2026, migration 064; Đ286, spec 04 mục 14)
+- **Ba vai trò mới** MARKETER, MARKETING_MANAGER, MARKETING: phạm vi tất cả cơ sở; quyền sao từ SALES (ô phạm vi cơ sở đổi thành tất cả cơ sở), ma trận phiên bản 7. Anh chỉnh quyền sau trong màn Phân quyền. Không có vai trò OPERATIONS.
+- **Hồ sơ phụ huynh** (`parent_read`): ai có quyền xem phụ huynh (phạm vi nào cũng được) xem được mọi hồ sơ phụ huynh, không giới hạn theo cơ sở (R-V2-05). Học sinh giữ theo ma trận.
+- **CS3** là cơ sở dạy học thường (`app.branch.is_office = false`): có phòng, lớp, học sinh; hiện ở ô chọn cơ sở, tên cơ sở trang đăng nhập và công tắc tính năng. Cơ sở đang có phòng học vẫn không đổi lại thành văn phòng.
+- **`app.suggest_username(họ tên)`** (nội bộ, không mở cho API): tên + chữ cái đầu họ và tên đệm, không dấu; trùng thì thêm số (Nguyễn Văn An thành `annv`, `annv1`, `annv2`). Dùng khi tạo tài khoản và nạp Người dùng. Chưa nối vào màn đăng nhập (đăng nhập hiện theo email).
+- **Xuất file** không đổi: vẫn do ma trận quyết định (R-V2-06); mặc định chỉ Admin có Xuất Phụ huynh, Học sinh, Lead, Cơ hội; anh cấp thêm trong màn Phân quyền.
+- Chưa làm: danh sách cơ sở theo từng người (CS1, CS5…). Quyền theo cơ sở hiện lấy từ một cơ sở chính của tài khoản và phạm vi của vai trò (Toàn hệ thống hoặc Cơ sở); thêm danh sách cơ sở phải sửa nhiều chính sách RLS, làm thành PR riêng sau khi anh duyệt cách làm.
+

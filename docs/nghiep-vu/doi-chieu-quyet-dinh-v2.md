@@ -1,6 +1,6 @@
 # Đối chiếu quyết định nghiệp vụ 04/11 (từ v2) với spec và DB v1, kế hoạch theo mốc
 
-Viết 04/11/2026, **chờ anh Trường OK trước khi viết migration hay code** (Đ286). Luật đã vào `docs/spec/04` mục 14 và `docs/spec/06` mục 3. "DB v1" là các migration tới `063` trên `main`. Chỗ ghi **[CHỜ]** cần anh trả lời (mục 3).
+Viết 04/11/2026. **Anh đã OK kế hoạch và trả lời 13 câu hỏi (04/11 chiều):** câu trả lời đã ghi vào `docs/spec/04` mục 14 và `06` mục 3 (dòng ghi "CHỐT 04/11" hoặc "hoãn"). Bảng dưới giữ nguyên bản đối chiếu ban đầu. Luật đã vào `docs/spec/04` mục 14 và `docs/spec/06` mục 3. "DB v1" là các migration tới `063` trên `main`. Chỗ ghi **[CHỜ]** cần anh trả lời (mục 3).
 
 ## 1. Bảng khác biệt
 

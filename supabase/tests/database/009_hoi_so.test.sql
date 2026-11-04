@@ -23,18 +23,17 @@ end $$;
 grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Hội sở ----------
-select is((select name from app.branch where code = 'CS3'), 'Hội sở', 'CS3 là Hội sở');
-select ok((select is_office from app.branch where code = 'CS3'), 'Hội sở là văn phòng');
+select is((select name from app.branch where code = 'CS3'), 'Hội sở', 'CS3 vẫn tên Hội sở');
+-- Từ 04/11/2026 (Đ286, R-V2-10): CS3 là cơ sở dạy học thường, có phòng, lớp, học sinh.
+select ok(not (select is_office from app.branch where code = 'CS3'), 'CS3 là cơ sở dạy học thường (không còn là văn phòng)');
 select is(pg_temp.err($$insert into app.room (branch_id, code, name) select id, 'P1', 'Phòng' from app.branch where code = 'CS3'$$),
-          'HMT_CO_SO_VAN_PHONG', 'Không tạo phòng học ở Hội sở');
--- (Phòng vốn không đổi được cơ sở: luật HMT_MA_KHONG_DOI_DUOC chặn trước.)
-select ok(pg_temp.err($$update app.room set branch_id = (select id from app.branch where code = 'CS3')
-                         where id = (select id from app.room limit 1)$$) in ('HMT_CO_SO_VAN_PHONG', 'HMT_MA_KHONG_DOI_DUOC'),
-          'Không chuyển phòng học sang Hội sở');
+          null, 'CS3 tạo được phòng học');
 select is(pg_temp.err($$insert into app.room (branch_id, code, name) select id, 'PHS1', 'Phòng' from app.branch where code = 'CS1'$$),
           null, 'Cơ sở dạy học vẫn tạo phòng được');
 select is(pg_temp.err($$update app.branch set is_office = true where code = 'CS1'$$),
           'HMT_CO_SO_VAN_PHONG', 'Không đổi cơ sở đang có phòng học thành văn phòng');
+select is(pg_temp.err($$update app.branch set is_office = true where code = 'CS3'$$),
+          'HMT_CO_SO_VAN_PHONG', 'Không đổi CS3 đã có phòng học thành văn phòng');
 
 -- Nhân viên gắn vào Hội sở được; Kế toán ở Hội sở vẫn phạm vi toàn hệ thống.
 create temp table u (key text primary key, id uuid not null default gen_random_uuid());

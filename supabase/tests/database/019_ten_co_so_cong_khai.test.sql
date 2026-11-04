@@ -16,10 +16,10 @@ grant execute on all functions in schema pg_temp to public;
 
 -- Người chưa đăng nhập gọi được.
 set local role anon;
-select is((select array_agg(code order by code) from public.login_branch_names()), array['CS1', 'CS2', 'CS4', 'CS5'],
-          'Chưa đăng nhập: thấy bốn cơ sở dạy học, không có Hội sở (CS3)');
+select is((select array_agg(code order by code) from public.login_branch_names()), array['CS1', 'CS2', 'CS3', 'CS4', 'CS5'],
+          'Chưa đăng nhập: thấy năm cơ sở dạy học, có CS3 (cơ sở dạy học thường từ 04/11/2026)');
 select is((select array_agg(name order by code) from public.login_branch_names()),
-          array['Nguyễn Chí Thanh', 'Đỗ Quang', 'Hà Đông', 'Mỹ Đình'], 'Chỉ trả tên cơ sở');
+          array['Nguyễn Chí Thanh', 'Đỗ Quang', 'Hội sở', 'Hà Đông', 'Mỹ Đình'], 'Chỉ trả tên cơ sở');
 select is((select array_agg(a.attname order by a.attnum) from pg_proc p
            cross join lateral unnest(p.proargnames) with ordinality as a(attname, attnum)
            where p.proname = 'login_branch_names' and p.pronamespace = 'public'::regnamespace and p.proargmodes is not null
@@ -31,12 +31,12 @@ reset role;
 -- Cơ sở ngừng hoạt động không hiện.
 update app.branch set is_active = false where code = 'CS4';
 set local role anon;
-select is((select count(*)::int from public.login_branch_names()), 3, 'Cơ sở đã Ngừng không hiện ở trang đăng nhập');
+select is((select count(*)::int from public.login_branch_names()), 4, 'Cơ sở đã Ngừng không hiện ở trang đăng nhập');
 reset role;
 
 -- Người đã đăng nhập cũng gọi được (trang đăng nhập có thể mở lại khi đã có phiên).
 set local role authenticated;
-select is((select count(*)::int from public.login_branch_names()), 3, 'Đã đăng nhập: cũng gọi được');
+select is((select count(*)::int from public.login_branch_names()), 4, 'Đã đăng nhập: cũng gọi được');
 
 select * from finish();
 rollback;

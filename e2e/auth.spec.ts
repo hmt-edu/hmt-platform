@@ -258,7 +258,7 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
   if (!phone) {
     const menu = await openCrmMenu(page);
     await expect(menu.getByRole('button', { name: 'Quản trị', exact: true })).toBeVisible();
-    // Ô chọn cơ sở của dữ liệu nghiệp vụ không có Hội sở CS3 (R-HT-02).
+    // Ô chọn cơ sở của dữ liệu nghiệp vụ có CS3 từ 04/11/2026 (Đ286, R-V2-10; thay R-HT-02).
     // Chờ trang chủ dựng xong (quyền đã tải) rồi mới mở danh sách: bấm sớm quá thì Radix chưa nhận.
     await expect(
       page.getByRole('heading', { level: 1, name: 'Việc của tôi hôm nay' }),
@@ -270,6 +270,7 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
       'CS2 Đỗ Quang',
       'CS4 Hà Đông',
       'CS5 Mỹ Đình',
+      'CS3 Hội sở',
     ]);
     await page.keyboard.press('Escape');
   }

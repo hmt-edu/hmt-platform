@@ -24,7 +24,7 @@ insert into app.user_role (user_id, role_code)
 select u.id, v.role from u join (values ('sales1', 'SALES'), ('cskh1', 'CSKH'), ('ke', 'ACCOUNTANT')) as v (key, role) on v.key = u.key;
 
 -- ================= Phiên bản và ô đổi =================
-select is((select max(version_no) from app.permission_version), 6, 'Ma trận hiện hành là phiên bản 6');
+select is((select max(version_no) from app.permission_version), 7, 'Ma trận hiện hành là phiên bản 7 (phiên bản 6 của Đ204 vẫn có; T1 thêm vai trò Marketing)');
 select is((select changed_count from app.permission_version where version_no = 6), 2, 'Phiên bản 6 đổi đúng 2 ô');
 select ok((select note from app.permission_version where version_no = 6) like 'Đ204:%', 'Phiên bản 6 có ghi chú Đ204');
 select is((select count(*)::int from app.permission_change c join app.permission_version v on v.id = c.version_id where v.version_no = 6
@@ -32,7 +32,7 @@ select is((select count(*)::int from app.permission_change c join app.permission
 
 -- ================= Quyền hiện hành =================
 select is((select string_agg(role_code, ',' order by role_code) from app.permission where is_active and module_code = 'SALES_ORDER' and action_code = 'HUY'),
-          'ADMIN,BRANCH_MANAGER,CSKH,SALES', 'Huỷ đơn hàng: Admin, Trưởng cơ sở, CSKH, Sale (Kế toán không)');
+          'ADMIN,BRANCH_MANAGER,CSKH,MARKETER,MARKETING,MARKETING_MANAGER,SALES', 'Huỷ đơn hàng: Admin, Trưởng cơ sở, CSKH, Sale và ba vai trò Marketing (quyền như Sale); Kế toán không');
 select is((select scope_code from app.permission where is_active and module_code = 'SALES_ORDER' and action_code = 'HUY' and role_code = 'SALES'), 'CO_SO', 'Sale huỷ đơn: phạm vi cơ sở');
 select is((select scope_code from app.permission where is_active and module_code = 'SALES_ORDER' and action_code = 'HUY' and role_code = 'CSKH'), 'CO_SO', 'CSKH huỷ đơn: phạm vi cơ sở');
 -- Duyệt, Xuất và các quyền khác của đơn giữ như phiên bản 5.
@@ -41,7 +41,7 @@ select is((select string_agg(role_code, ',' order by role_code) from app.permiss
 select is((select string_agg(role_code, ',' order by role_code) from app.permission where is_active and module_code = 'SALES_ORDER' and action_code = 'XUAT'),
           'ACCOUNTANT,ADMIN,BRANCH_MANAGER', 'Xuất đơn hàng không đổi (Đ105): Kế toán, Admin, Trưởng cơ sở');
 select is((select string_agg(role_code, ',' order by role_code) from app.permission where is_active and module_code = 'SALES_ORDER' and action_code = 'TAO'),
-          'ADMIN,BRANCH_MANAGER,CSKH,SALES', 'Tạo đơn hàng không đổi');
+          'ADMIN,BRANCH_MANAGER,CSKH,MARKETER,MARKETING,MARKETING_MANAGER,SALES', 'Tạo đơn hàng: như phiên bản 5, thêm ba vai trò Marketing (quyền như Sale)');
 -- Mỗi vai trò thử qua hàm quyền (phạm vi cơ sở).
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');

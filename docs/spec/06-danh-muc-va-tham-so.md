@@ -145,9 +145,9 @@ Thêm vào các mục trên khi viết migration; chỗ [CHỜ] chưa làm.
 
 | Loại | Mục | Chi tiết | Trạng thái |
 |---|---|---|---|
-| Danh mục | Nhóm con cơ hội | L4 có L4A đến L4H (L4E đến L4H người dùng chọn); L7 có L7A đến L7S (L7M đến L7S người dùng chọn). Tên theo bảng `02.Stage` | [CHỜ] tên và mã nhóm con mới |
+| Danh mục | Nhóm con cơ hội | L4 có L4A đến L4H (L4E đến L4H người dùng chọn); L7 có L7A đến L7S (L7M đến L7S người dùng chọn). Tên theo bảng `02.Stage` của file Config mới anh đặt vào `_inbox/` | [CHỜ] làm ở PR T3 khi đối chiếu Config mới (cả L5Q, L6G) |
 | Danh mục | Lý do bỏ qua test (33) | BQ1 đến BQ5; BQ5 bắt buộc ghi chú | [CHỐT] |
-| Danh mục | Vai trò | Thêm MARKETER, MARKETING_MANAGER (quyền như SALES, phạm vi tất cả cơ sở); MARKETING giữ nguyên | [CHỐT] |
+| Danh mục | Vai trò | Thêm MARKETER, MARKETING_MANAGER, MARKETING (quyền như SALES, phạm vi tất cả cơ sở; anh chỉnh sau); không tạo OPERATIONS | [CHỐT]; đã làm ở migration 064 |
 | Danh mục | Loại buổi | Danh mục có sẵn thêm Kiểm tra (trừ quỹ chính); mỗi loại gắn một form nhận xét | [CHỜ] danh sách loại cuối |
 | Danh mục | Tiêu chí nhận xét buổi | 9 tiêu chí, thang 1 đến 5, 3 nhóm; nạp thành dữ liệu | [CHỐT]; [CHỜ] đối chiếu R-GV-01 |
 | Danh mục | Nhóm ticket Aftersale | Đề nghị, Khiếu nại, Ticket giáo viên; hai cấp nhóm, nhóm con; mức độ Khẩn, Cao, Thường, Thấp | [CHỐT] loại; [CHỜ] danh mục ticket giáo viên |

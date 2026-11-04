@@ -312,7 +312,7 @@ Lộ trình: ticket **đề nghị** làm ở giai đoạn 2 (cùng chuyển l�
 | Mã | Luật | |
 |---|---|---|
 | R-HT-01 | Admin làm được mọi màn, mọi việc **không dính tiền** ở mọi cơ sở, kể cả làm thay khi người phụ trách vắng: duyệt yêu cầu buổi, đơn hàng, lớp, ticket; lịch sử ghi "Admin duyệt thay". **Việc tiền** (duyệt phiếu thu, đảo khoản, phiếu chi) Admin **không duyệt trực tiếp** (giữ chốt 10/10): kế toán vắng thì Admin gán tạm vai trò Kế toán cho người làm thay, có nhật ký, **có thời hạn**. (Chốt lại chiều 12/10; bản 12/10 đầu ghi Admin duyệt cả phiếu thu, đảo khoản.) | [CHỐT] |
-| R-HT-02 | Ô chọn cơ sở khi xem dữ liệu nghiệp vụ không có CS3 Hội sở; riêng màn người dùng có CS3 (nhân viên Hội sở thuộc CS3). Công tắc tính năng không có cột CS3. | [CHỐT] |
+| R-HT-02 | **(04/11: xem R-V2-10; CS3 nay hiện trong ô chọn cơ sở)** Ô chọn cơ sở khi xem dữ liệu nghiệp vụ không có CS3 Hội sở; riêng màn người dùng có CS3 (nhân viên Hội sở thuộc CS3). Công tắc tính năng không có cột CS3. | [CHỐT] |
 | R-HT-03 | Đăng nhập sai `login_lock_after_failures` (10) lần thì tạm khoá `login_lock_minutes` (15) phút; đăng nhập học sinh cũng dùng Turnstile. Thời gian tự đăng xuất là tham số theo nhóm người dùng. | [CHỐT] |
 | R-HT-04 | Danh mục lý do luôn có "Khác"; chọn "Khác" thì bắt buộc ghi chú. Danh mục "Lý do từ chối" có trường "Áp dụng cho" (báo giá, đơn, phiếu thu, lớp, ticket, yêu cầu buổi). Có danh mục riêng "Lý do đảo khoản", "Lý do khoá tài khoản", "Lý do không tái tục", "Lý do điều chỉnh giờ". Danh sách đầy đủ: `docs/spec/06-danh-muc-va-tham-so.md` mục 1. | [CHỐT] |
 | R-HT-05 | CRM ưu tiên máy tính; các màn duyệt (hàng chờ duyệt, duyệt đơn, duyệt yêu cầu buổi, duyệt ticket) và điểm danh vận hành có bố cục điện thoại. | [CHỐT] |
@@ -340,9 +340,9 @@ Anh Trường chốt 04/11/2026: dừng v2, làm tiếp v1 cho Cơ sở 5 chạy
 | Mã | Luật | |
 |---|---|---|
 | R-V2-01 | Cơ hội có nhóm con: L4 có 8 nhóm con L4A đến L4H; L7 có 18 nhóm con L7A đến L7S. Nhóm con L4E đến L4H và L7M đến L7S do người dùng tự chọn, **không tự đóng cơ hội**. Thay danh mục `06` mục 1.3 (L4A đến L4D; L7A đến L7L). **[CHỜ]** tên và mã chi tiết các nhóm con mới: file cấu hình `HMT_CRM_01_Config_sach.xlsx` anh đưa vào `_inbox/` vẫn ghi L4A đến L4D, L7A đến L7L; anh gửi bảng `02.Stage` đầy đủ. Đối chiếu danh mục v1 (L5Q, L6A đến L6G) báo anh trước khi sửa danh mục. | [CHỐT] phạm vi; [CHỜ] tên |
-| R-V2-02 | Nhóm con do **hệ thống đặt**: C4D, L5C đến L5O, L5P (đã làm bài, chờ giáo viên chấm), L6A, L8A đến L8C. Các nhóm con khác chọn tay. Vênh R-CRM-16, R-CRM-35 (L8A, L8B, L8C người dùng chọn tay) và R-CRM-15 (L5Q, L5A, L5B do hệ thống). | [CHỜ] cách hệ thống đặt L8A đến L8C và L5A, L5B, L5Q |
+| R-V2-02 | Nhóm con do **hệ thống đặt**: C4D, L5C đến L5O, L5P (đã làm bài, chờ giáo viên chấm), L6A, L8A đến L8C. Các nhóm con khác chọn tay. Vênh R-CRM-16, R-CRM-35 (L8A, L8B, L8C người dùng chọn tay) và R-CRM-15 (L5Q, L5A, L5B do hệ thống). | [CHỐT 04/11] L8A, L8B, L8C do **hệ thống đặt**; L5A, L5B giữ như v1 (R-CRM-15). Cách hệ thống đặt L8A đến L8C (theo đơn, phiếu thu): làm ở PR Bán hàng. L5Q, L6G chưa xoá; đối chiếu với file Config mới rồi báo anh chỗ lệch trước khi sửa |
 | R-V2-03 | **Bỏ qua test:** chuyển tay sang L7 hoặc L8 bắt buộc chọn lý do **BQ1 đến BQ5** (BQ5 bắt buộc ghi chú). Được làm từ bất kỳ giai đoạn nào trước L7, khi cơ hội chưa có phiếu test hợp lệ. Thay danh mục 33 "Lý do bỏ qua test" (4 lý do) ở R-CRM-14. | [CHỐT] |
-| R-V2-04 | **Số điện thoại** đúng 10 số, bắt đầu bằng 0 (v1 đã chặn bằng `HMT_SDT_SAI`, giữ). Mới: phụ huynh và học sinh có thêm **số thứ hai**. Khớp phụ huynh (R-CRM-27) vẫn theo số chính. | [CHỐT]; [CHỜ] có khớp cả số thứ hai không |
+| R-V2-04 | **Số điện thoại** đúng 10 số, bắt đầu bằng 0 (v1 đã chặn bằng `HMT_SDT_SAI`, giữ). Mới: phụ huynh và học sinh có thêm **số thứ hai**. **Số thứ hai dùng để khớp phụ huynh** (R-CRM-27): khớp theo số chính hoặc số thứ hai. | [CHỐT 04/11] |
 | R-V2-05 | **Trùng SĐT khi tạo Lead, Cơ hội: chỉ cảnh báo**, có "Mở bản ghi trùng" và "Vẫn tạo". Mọi cơ sở xem được hồ sơ phụ huynh (R-CRM-26). | [CHỐT] |
 | R-V2-06 | **Xuất dữ liệu:** chỉ Admin và người được cấp trong ma trận quyền. Thay R-CRM-29 ("chỉ Admin"). | [CHỐT] |
 | R-V2-07 | **Ghi chú và hoạt động** có hai luồng: **Ghi chú** (người dùng viết, sửa và ẩn ghi chú của mình, không xoá cứng) và **Hệ thống** (đổi giai đoạn, đổi trường, lịch sử phiếu test, hoạt động). Chip lọc Tất cả, Ghi chú, Hệ thống. | [CHỐT] |
@@ -351,27 +351,27 @@ Anh Trường chốt 04/11/2026: dừng v2, làm tiếp v1 cho Cơ sở 5 chạy
 | Mã | Luật | |
 |---|---|---|
 | R-V2-08 | **Tên đăng nhập** sinh bằng hàm DB: tên + chữ cái đầu họ và tên đệm, không dấu, chữ thường (Nguyễn Văn An thành `annv`); trùng thì thêm số (`annv1`, `annv2`); không đổi được. | [CHỐT] |
-| R-V2-09 | Vai trò mới **MARKETER** và **MARKETING_MANAGER**: quyền như SALES (tuyển sinh), phạm vi tất cả cơ sở. Vai trò MARKETING cũ giữ nguyên. Nhân viên vận hành là ADMIN. Giáo viên, trợ giảng: phạm vi tất cả cơ sở. Phạm vi cơ sở mỗi người là "Tất cả" hoặc danh sách mã cơ sở (ví dụ CS1, CS5). Mỗi người có ô Quản lý trực tiếp (R-HT-06). | [CHỐT] |
-| R-V2-10 | **CS3 là cơ sở dạy học thường** (có lớp, phòng, học sinh); khối từ 1 đến 12. Thay chỗ ghi CS3 là Hội sở không có lớp (R-HT-02, spec 02). | [CHỐT]; [CHỜ] ô chọn cơ sở có hiện CS3 không (R-HT-02) |
+| R-V2-09 | Vai trò mới **MARKETER** và **MARKETING_MANAGER**: quyền như SALES (tuyển sinh), phạm vi tất cả cơ sở. Vai trò MARKETING cũ giữ nguyên. Nhân viên vận hành là ADMIN. Giáo viên, trợ giảng: phạm vi tất cả cơ sở. Phạm vi cơ sở mỗi người là "Tất cả" hoặc danh sách mã cơ sở (ví dụ CS1, CS5). Mỗi người có ô Quản lý trực tiếp (R-HT-06). **MARKETING** (v1 chưa có) tạo mới cùng hai vai trò kia, quyền giống MARKETER, anh chỉnh sau; **không tạo OPERATIONS**. Đã làm ở migration 064; danh sách cơ sở theo từng người (CS1, CS5…) làm riêng (xem doi-chieu-quyet-dinh-v2.md). | [CHỐT 04/11] |
+| R-V2-10 | **CS3 là cơ sở dạy học thường** (có lớp, phòng, học sinh); khối từ 1 đến 12. CS3 **hiện trong ô chọn cơ sở và có cột trong công tắc tính năng** (thay R-HT-02 và chỗ ghi CS3 là Hội sở không có lớp ở spec 02). Đã làm ở migration 064. | [CHỐT 04/11] |
 
 ### 14.3 Bán hàng, thu chi
 Giao diện Báo giá, Đơn hàng, Phiếu thu: anh sẽ điều chỉnh, **chưa sửa khi anh chưa gửi yêu cầu** (Đ287). Phần dưới là luật; DB làm trước được.
 
 | Mã | Luật | |
 |---|---|---|
-| R-V2-11 | **Trần chiết khấu 20% chỉ cảnh báo, không chặn** ở mọi bước (đã có bước quản lý và kế toán duyệt). Thay R-TIEN-29 ("vượt trần phải quản lý cơ sở duyệt") và ô tích đồng ý khi duyệt (Đ102). | [CHỐT]; [CHỜ] có bỏ ô tích đồng ý khi duyệt đơn vượt trần không |
+| R-V2-11 | **Trần chiết khấu 20% chỉ cảnh báo, không chặn** ở mọi bước (đã có bước quản lý và kế toán duyệt). Thay R-TIEN-29 ("vượt trần phải quản lý cơ sở duyệt") và ô tích đồng ý khi duyệt (Đ102). | [CHỐT]; **hoãn** (04/11): anh trả lời cùng yêu cầu chỉnh Báo giá, Đơn hàng, Phiếu thu, trước 08/11. Chưa làm phần trần chiết khấu |
 | R-V2-12 | **Duyệt đơn:** quản lý trực tiếp của người lập; người lập không có quản lý trực tiếp thì **Trưởng cơ sở** duyệt (thay "không trình được" ở R-HT-06). | [CHỐT] |
-| R-V2-13 | **Trạng thái đơn:** Nháp, Đã gửi, Đã trình, Đã duyệt; Huỷ. Từ chối thì đơn về Nháp, lý do ghi vào ghi chú. "Hết hạn" chỉ là nhãn, sau 14 ngày kể từ lúc Gửi. | [CHỐT] trình tự; [CHỜ] "Đã gửi" của đơn nghĩa là gì (v1 đơn chưa có) |
+| R-V2-13 | **Trạng thái đơn:** Nháp, Đã gửi, Đã trình, Đã duyệt; Huỷ. Từ chối thì đơn về Nháp, lý do ghi vào ghi chú. "Hết hạn" chỉ là nhãn, sau 14 ngày kể từ lúc Gửi. | [CHỐT] trình tự; **hoãn** (04/11): nghĩa của "Đã gửi" của đơn anh trả lời cùng yêu cầu chỉnh trước 08/11; chưa thêm trạng thái |
 | R-V2-14 | **Trạng thái phiếu thu:** Nháp, Đã gửi, Chờ kế toán, Đã duyệt; Huỷ. Hai bước duyệt như R-TIEN-01 (đổi tên "Đã trình" thành "Đã gửi"). | [CHỐT] |
-| R-V2-15 | Phiếu thu chỉ tạo từ đơn, **trừ "Thu nợ đầu kỳ"**: CSKH tạo, kế toán duyệt, không cần đơn, số tiền không vượt nợ còn lại; duyệt xong ghi khoản tiền vào và giảm nợ đầu kỳ. Bổ sung ngoại lệ của R-TIEN-02. | [CHỐT]; [CHỜ] có qua bước quản lý trực tiếp không |
+| R-V2-15 | Phiếu thu chỉ tạo từ đơn, **trừ "Thu nợ đầu kỳ"**: CSKH tạo, kế toán duyệt, không cần đơn, số tiền không vượt nợ còn lại; duyệt xong ghi khoản tiền vào và giảm nợ đầu kỳ. Bổ sung ngoại lệ của R-TIEN-02. **Không qua quản lý trực tiếp:** CSKH tạo, kế toán duyệt. | [CHỐT 04/11] |
 | R-V2-16 | Số giờ gói 6 tháng của 12 sản phẩm và giá online của hai sản phẩm (TOAN-V12-TH1, TOAN-BN-TH1): anh báo sau. Mã gói bán giữ mã trong file, đổi sau mốc. | [CHỜ] |
 
 ### 14.4 Đào tạo, Cổng giáo viên
 | Mã | Luật | |
 |---|---|---|
 | R-V2-17 | Cổng giáo viên dùng tốt trên laptop và điện thoại (laptop dùng nhiều hơn). Buổi học: Draft, Confirm, Done; Cancel. Hạn hoàn tất buổi 8 giờ (tham số `teacher_session_complete_hours`). | [CHỐT] |
-| R-V2-18 | **Loại buổi là danh mục** (Học kiến thức mới, Ôn tập, Kiểm tra giữa kỳ, Kiểm tra cuối kỳ…); mỗi loại gắn một form nhận xét; ai xếp lịch buổi thì chọn loại. Bổ sung R-BUOI-01 (bốn loại Chính, Củng cố, Học bù, Học bổ trợ). | [CHỐT]; [CHỜ] danh sách loại cuối cùng và đối chiếu với `19.Session Type` (ST-KIEMTRA trừ quỹ chính) |
-| R-V2-19 | **Buổi thường:** nhận xét 9 tiêu chí, thang 1 đến 5; bộ tiêu chí nạp sẵn thành dữ liệu, chưa làm màn cấu hình. | [CHỐT]; [CHỜ] đối chiếu R-GV-01 |
+| R-V2-18 | **Loại buổi là danh mục** (Học kiến thức mới, Ôn tập, Kiểm tra giữa kỳ, Kiểm tra cuối kỳ…); mỗi loại gắn một form nhận xét; ai xếp lịch buổi thì chọn loại. Bổ sung R-BUOI-01 (bốn loại Chính, Củng cố, Học bù, Học bổ trợ). | [CHỐT]; danh sách loại buổi chốt cùng Design khi vẽ Cổng giáo viên (chưa chặn); đối chiếu `19.Session Type` (ST-KIEMTRA trừ quỹ chính) |
+| R-V2-19 | **Buổi thường:** nhận xét 9 tiêu chí, thang 1 đến 5; bộ tiêu chí nạp sẵn thành dữ liệu, chưa làm màn cấu hình. | [CHỐT 04/11] bộ 9 tiêu chí lấy từ `v2-danh-gia-hoc-sinh.md`; **đổi R-GV-01, R-GV-04 theo đó** (làm ở PR Đào tạo) |
 | R-V2-20 | **Kiểm tra là một buổi học bình thường:** vẫn lịch, điểm danh, trừ giờ, trạng thái như buổi thường; không có "đợt kiểm tra" riêng. Chỉ khác form chấm: thêm phạm vi kiến thức (chữ), điểm tối đa (mặc định 10), cách nhập **Điểm tổng** (một ô, không tự chia nhóm) hoặc **Theo 3 nhóm** (Ghi nhớ, Hiểu, Vận dụng: đặt điểm tối đa từng nhóm khi xếp lịch, giáo viên nhập 3 ô, tổng tự cộng, nhóm không có thì tối đa 0). Làm bài hay vắng lấy từ điểm danh; vắng không tự nhận 0. Mỗi em: Chưa chấm, Đã chấm, hoặc Vắng; buổi chấm xong khi không còn em có mặt ở Chưa chấm. Kiểm tra bù đi theo luật học bù (buổi bù chọn loại Kiểm tra, ghi chú "thi bù"). Nhận xét chung, Định hướng cải thiện không bắt buộc; giao bài về nhà tuỳ giáo viên. | [CHỐT] |
 | R-V2-21 | **Sửa sau Done:** khi buổi còn Confirm, giáo viên sửa nhận xét tự do. Sau Done giáo viên không sửa; muốn sửa thì tạo ticket giáo viên gửi Vận hành. Sửa điểm sau Done chỉ quản lý đào tạo làm, bắt buộc lý do, ghi nhật ký. | [CHỐT] |
 | R-V2-22 | Nhận xét và điểm vào danh sách **"Nhận xét chờ gửi"**; CSKH gửi phụ huynh qua Zalo (R-CS-13). | [CHỐT] |
@@ -379,12 +379,12 @@ Giao diện Báo giá, Đơn hàng, Phiếu thu: anh sẽ điều chỉnh, **ch�
 ### 14.5 Aftersale
 | Mã | Luật | |
 |---|---|---|
-| R-V2-23 | Một **lõi ticket** theo Helpdesk của Odoo, **3 loại**: Đề nghị (khách hàng), Khiếu nại (khách hàng), Ticket giáo viên (ô Tính chất: Cần hỗ trợ hoặc Phản ánh). Phân loại hai cấp: nhóm, nhóm con. Khách bày tỏ không hài lòng là Khiếu nại; khách muốn làm một việc là Đề nghị; được đổi loại khi tiếp nhận (ghi nhật ký). Khiếu nại sinh ticket đề nghị con, hai ticket liên kết. Thay R-CS-01 (hai loại) và các luồng trạng thái riêng R-CS-05, R-CS-06. | [CHỐT]; [CHỜ] luồng trạng thái chung (tài liệu `v2-aftersale.md` đề xuất 7 bước) và mã ticket loại GV |
+| R-V2-23 | Một **lõi ticket** theo Helpdesk của Odoo, **3 loại**: Đề nghị (khách hàng), Khiếu nại (khách hàng), Ticket giáo viên (ô Tính chất: Cần hỗ trợ hoặc Phản ánh). Phân loại hai cấp: nhóm, nhóm con. Khách bày tỏ không hài lòng là Khiếu nại; khách muốn làm một việc là Đề nghị; được đổi loại khi tiếp nhận (ghi nhật ký). Khiếu nại sinh ticket đề nghị con, hai ticket liên kết. Thay R-CS-01 (hai loại) và các luồng trạng thái riêng R-CS-05, R-CS-06. | [CHỐT 04/11] luồng trạng thái chung và bảng SLA lấy theo `v2-aftersale.md` (7 bước); mã ticket loại GV theo tài liệu đó |
 | R-V2-24 | Đề nghị có nghiệp vụ thật (bảo lưu, chuyển lớp, dừng học, học bù, hoàn phí, chuyển phí…) **chạy thật trong hệ thống:** ticket có nút tạo bản ghi nghiệp vụ, **việc duyệt nằm ở bản ghi nghiệp vụ** (thay R-CS-07 duyệt ở ticket), ticket chỉ đóng khi nghiệp vụ xong. Nghiệp vụ chưa làm kịp thì ghi "làm tay", đóng bằng tay kèm ghi chú. Luật tiền hoàn phí, chuyển phí, số dư giữ R-TIEN-28, 31, 32, 33. | [CHỐT] |
-| R-V2-25 | **Tái tục là một dạng Đề nghị**, không có danh sách riêng; đơn tái tục, chuyển phí tạo từ nút "Tạo đơn hàng" trên ticket, không qua cơ hội. Vênh R-GD-13 (phiếu tái tục TT tự sinh, L1 đến L8) và R-CRM-16. | [CHỜ] số phận phiếu tái tục TT và đơn tái tục v1 |
+| R-V2-25 | **Tái tục là một dạng Đề nghị**, không có danh sách riêng; đơn tái tục, chuyển phí tạo từ nút "Tạo đơn hàng" trên ticket, không qua cơ hội. **Thay phiếu tái tục TT bằng ticket Đề nghị "Tái tục"; bỏ R-GD-13 và màn TT-01 đến TT-03** (anh chốt 04/11). | [CHỐT 04/11] |
 | R-V2-26 | **Mức độ:** Khẩn, Cao, Thường, Thấp, hiện bằng chữ. Hạn phản hồi đầu và hạn xử lý theo loại, mức độ, nhóm con; mọi con số là tham số. Còn dưới 25% thời gian thì hiện vàng "Sắp quá hạn"; quá hạn hiện đỏ. | [CHỐT] |
 | R-V2-27 | Không xoá ticket, chỉ Huỷ kèm lý do. Ticket **không tự đóng**: người phụ trách đóng sau khi xác nhận với người gửi. Ticket đã xử lý quá 3 ngày chưa đóng hiện trong bộ lọc "Chờ đóng". Không dùng cờ Hạn chế. Giáo viên tự tạo ticket từ cổng giáo viên (R-CS-10). | [CHỐT] |
-| R-V2-28 | Bộ danh mục ticket giáo viên và thứ tự ưu tiên các nghiệp vụ Aftersale. | [CHỜ] anh chưa chốt |
+| R-V2-28 | Bộ danh mục ticket giáo viên và thứ tự ưu tiên các nghiệp vụ Aftersale. | [CHỐT 04/11] dùng đề xuất trong `v2-aftersale.md`, **trình anh duyệt trước khi làm A1** |
 
 ### 14.6 Nạp dữ liệu Cơ sở 5 từ Google Sheet
 | Mã | Luật | |
