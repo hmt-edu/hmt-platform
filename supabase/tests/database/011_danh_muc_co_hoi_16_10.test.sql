@@ -50,9 +50,9 @@ select is((select count(distinct sort_order)::int from app.catalog_item where ca
 
 -- Danh mục 33.
 select is((select kind from app.catalog where code = 'TEST_SKIP_REASON'), 'MO', 'Danh mục 33 là danh mục mở');
-select is((select array_agg(name order by sort_order) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON'),
+select is((select array_agg(name order by sort_order) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and not is_active),
           array['Học sinh cũ đã biết trình độ', 'Phụ huynh không muốn test', 'Đã có kết quả test nơi khác', 'Khác'],
-          'R-CRM-14: danh mục 33 có bốn giá trị đã chốt, "Khác" ở cuối');
+          'R-CRM-14: bốn giá trị cũ của danh mục 33 còn lại ở trạng thái Ngừng (T3 thay bằng BQ1–BQ5)');
 
 -- Vẫn không xoá cứng được mục danh mục (ngoại lệ chỉ nằm trong migration này).
 select is(pg_temp.err($$delete from app.catalog_item where catalog_code = 'OPP_SUBSTAGE' and code = 'L6F'$$),

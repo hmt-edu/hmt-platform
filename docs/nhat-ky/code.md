@@ -34,3 +34,8 @@
 ## File hoặc link mới
 - Canvas chuẩn: `design/hmt-canvas-6f57/` (`1793759210-6f57`, giống hệt `8ab9`, Đ285) và `design/hmt-canvas-8a0d/` (Đào tạo, Giáo viên: GV-01..16, BUOI-03, LOP-08, bộ khuôn KG; GV07b, GV08b là bản nháp). `design/nguon-canvas/` giữ làm lịch sử.
 - Ảnh chụp: `docs/anh-chup/bh01/`, `bh02/`, `bh06/`, `bh05/`, `bh03/` (năm tình trạng, PDF A4 do trình duyệt xuất).
+
+## 04/11/2026: T3 nhóm con mới và danh mục 33
+- Migration 066: L4E đến L4H, L7M đến L7S (thêm), danh mục 33 thành BQ1 đến BQ5 (bốn mã cũ Ngừng). Bài kiểm 058; sửa bài 006, 011, 012, 013, 020, 022 theo mã BQ.
+- Đã đối chiếu Config mới với DB: lệch L5B (tên), L5P, L5Q, L6A đến L6G. Chưa đổi, báo anh Trường.
+- Bài e2e đăng nhập chập chờn ghi vào TIEN-DO "Việc để sau" (xử lý sau 10/11).

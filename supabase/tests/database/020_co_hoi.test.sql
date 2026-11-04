@@ -224,12 +224,12 @@ select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO00000
 
 -- R-CRM-14 (chưa có phiếu: coi là không có phiếu) và R-CRM-12 (mô phỏng điểm nối với phiếu).
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7')$$), 'HMT_THIEU_LY_DO', 'R-CRM-14: không có phiếu hoàn thành thì sang L7 bắt lý do bỏ qua test');
-select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'KHAC')$$), 'HMT_THIEU_GHI_CHU', 'R-CRM-14: "Khác" bắt ghi chú');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'BQ5')$$), 'HMT_THIEU_GHI_CHU', 'R-CRM-14: "Khác" bắt ghi chú');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'KHONG_CO_MA')$$), 'HMT_DANH_MUC_KHONG_CO', 'R-CRM-14: lý do ngoài danh mục 33 bị chặn');
 select pg_temp.sudo($$create or replace function app.opportunity_test_state(p_opportunity_id uuid)
   returns table (in_progress integer, completed integer, cancelled integer, in_progress_codes text[]) language sql stable
   set search_path = '' as 'select 1, 0, 0, array[''PKT000007'']::text[]'$$);
-select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'PH_KHONG_MUON')$$), 'HMT_PHIEU_DANG_DO',
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'BQ1')$$), 'HMT_PHIEU_DANG_DO',
           'R-CRM-12: còn phiếu dang dở thì không sang L7 (kể cả đã chọn lý do bỏ qua)');
 select ok((select pg_temp.msg($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L8', 'L8A', null, null, true)$$)) like '%PKT000007%',
           'R-CRM-12: câu lỗi nêu mã phiếu dang dở');
@@ -242,8 +242,8 @@ select is((select skip_reason_code from app.opportunity where code = 'CO000002')
 select pg_temp.sudo($$create or replace function app.opportunity_test_state(p_opportunity_id uuid)
   returns table (in_progress integer, completed integer, cancelled integer, in_progress_codes text[]) language sql stable
   set search_path = '' as 'select 0, 0, 0, array[]::text[]'$$);
-select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'PH_KHONG_MUON')$$), null, 'Bỏ qua test có lý do: sang L7 được');
-select is((select array[stage_code, skip_reason_code] from app.opportunity where code = 'CO000004'), array['L7', 'PH_KHONG_MUON'], 'Ghi lý do bỏ qua test');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'BQ1')$$), null, 'Bỏ qua test có lý do: sang L7 được');
+select is((select array[stage_code, skip_reason_code] from app.opportunity where code = 'CO000004'), array['L7', 'BQ1'], 'Ghi lý do bỏ qua test');
 select is((select substage_code from app.opportunity where code = 'CO000004'), null, 'Nhóm con L7 không bắt buộc');
 
 -- Đổi nhóm con L7 qua lại có lịch sử.
@@ -263,7 +263,7 @@ select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO00000
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7')$$), 'HMT_CO_HOI_KHONG_LUI', 'R-CRM-02: không lùi từ L8');
 -- Cơ hội khác: L8A ⇄ L8B đổi được cả hai chiều.
 select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
-select pg_temp.sudo($$update app.opportunity set stage_code = 'L8', substage_code = 'L8A', skip_reason_code = 'HOC_SINH_CU' where code = 'CO000003'$$);
+select pg_temp.sudo($$update app.opportunity set stage_code = 'L8', substage_code = 'L8A', skip_reason_code = 'BQ2' where code = 'CO000003'$$);
 select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000003'), 'L8', 'L8B')$$), null, 'R-CRM-35: L8A → L8B được');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000003'), 'L8', 'L8A')$$), null, 'R-CRM-35: L8B → L8A (lùi) được');

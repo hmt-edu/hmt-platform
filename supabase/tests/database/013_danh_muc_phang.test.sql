@@ -60,8 +60,8 @@ select is((select array_agg(c order by c) from (
           array['ACCOUNT_LOCK_REASON', 'ATTENDANCE_CONTACT_REASON', 'HOURS_ADJUST_REASON', 'REJECT_REASON',
                 'RENEWAL_LOST_REASON', 'REVERSAL_REASON', 'SESSION_CANCEL_REASON', 'TEST_SKIP_REASON'],
           'R-HT-04: mọi danh mục lý do có "Khác" bắt buộc ghi chú');
-select is((select count(*)::int from app.catalog_item where requires_note and name <> 'Khác' and catalog_code <> 'TEST_CANCEL_REASON'), 0,
-          'Chỉ mục "Khác" bắt buộc ghi chú (ngoại lệ: "lý do khác" của huỷ test, R-CRM-06)');
+select is((select count(*)::int from app.catalog_item where requires_note and name <> 'Khác' and catalog_code not in ('TEST_CANCEL_REASON', 'TEST_SKIP_REASON')), 0,
+          'Chỉ mục "Khác" bắt buộc ghi chú (ngoại lệ: "lý do khác" của huỷ test R-CRM-06 và của bỏ qua test BQ5 R-CRM-14)');
 
 -- Lý do từ chối: "Áp dụng cho" để trống = mọi nơi. Từ P5a-DB0 (Đ103) ba mục gán riêng: Sai số tiền, Sai chứng từ (phiếu thu),
 -- Không đúng chính sách (báo giá, đơn); hai mục còn lại dùng chung.

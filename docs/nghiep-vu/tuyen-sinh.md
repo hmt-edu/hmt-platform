@@ -413,3 +413,9 @@ Bài 055 so mọi cờ với việc hàm ghi chạy được hay bị chặn (11
 - **Kiểm trùng khi tạo lead:** `app.find_duplicate_contacts` khớp cả số thứ hai; vẫn chỉ cảnh báo.
 - **Cột mới:** phụ huynh `relative_name` (người thân); học sinh `gender` (NAM, NU), `school_type`, `grade` (1 đến 12, chỉ mục `student_grade_idx`). Học sinh không có SĐT riêng (anh chốt 04/11).
 - Hàm tạo cơ hội từ lead chưa truyền số thứ hai của lead (làm cùng nạp cơ hội ở T4).
+
+## T3 (04/11/2026): nhóm con mới, danh mục 33 (migration 066)
+
+- **Nhóm con mới** (chỉ dữ liệu, không hàm mới): L4E đến L4H dưới L4; L7M đến L7S dưới L7 (tên theo Config mới 04/11). Xếp liền sau L4D và L7L. Người dùng chọn tay như các nhóm con L4, L7 khác.
+- **Danh mục 33 "Lý do bỏ qua test"** (dùng ở `app.change_opportunity_stage`, R-CRM-14, R-V2-03): giá trị còn hiệu lực là `BQ1` đến `BQ5`; `BQ5` "Lý do khác" bắt buộc ghi chú. Bốn mã cũ (`HOC_SINH_CU`, `PH_KHONG_MUON`, `CO_KET_QUA_NOI_KHAC`, `KHAC`) chuyển Ngừng, không xoá, vì cơ hội đã ghi có thể đang dùng.
+- **Chưa đổi, chờ anh Trường quyết** (lệch Config mới): `L5B` (tên), `L5P`, `L5Q` (Config mới không có); `L6A` đến `L6F` (Config mới lệch một bậc, thêm `L6G` học yếu). Xem `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md`.

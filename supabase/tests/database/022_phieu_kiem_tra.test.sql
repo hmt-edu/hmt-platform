@@ -279,8 +279,8 @@ select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO00000
           'R-CRM-14 (d): phiếu hoàn thành đã bị huỷ, mọi phiếu đều Huỷ → sang L7 phải chọn lý do bỏ qua test');
 select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L8', 'L8A', null, null, true)$$), 'HMT_THIEU_LY_DO',
           'R-CRM-14 (d): sang L8 cũng phải chọn lý do bỏ qua test');
-select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'PH_KHONG_MUON')$$), null, 'Chọn lý do bỏ qua test thì sang L7 được');
-select is((select skip_reason_code from app.opportunity where code = 'CO000004'), 'PH_KHONG_MUON', 'Ghi lý do bỏ qua test');
+select is(pg_temp.err($$select app.change_opportunity_stage(pg_temp.oid('CO000004'), 'L7', null, 'BQ1')$$), null, 'Chọn lý do bỏ qua test thì sang L7 được');
+select is((select skip_reason_code from app.opportunity where code = 'CO000004'), 'BQ1', 'Ghi lý do bỏ qua test');
 
 -- ================= Huỷ (R-CRM-06) và nhóm con L5 (R-CRM-15) =================
 select is(pg_temp.err($$select app.cancel_student_test(pg_temp.tid('PKT000003'), 'L5D')$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'Chặn: huỷ phiếu đã huỷ');

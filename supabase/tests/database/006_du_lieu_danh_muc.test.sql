@@ -51,7 +51,7 @@ select is((select name from app.catalog_item where catalog_code = 'OPP_SUBSTAGE'
           'L3H mới = Không nghe máy nhiều lần');
 select is((select legacy_ref from app.catalog_item where catalog_code = 'OPP_SUBSTAGE' and code = 'L3H'), 'L3I', 'L3H mới có mã cũ L3I');
 select ok(not exists (select from app.catalog_item where catalog_code = 'OPP_SUBSTAGE' and code = 'L3I'), 'Không còn L3I');
-select is((select count(*)::int from app.catalog_item where catalog_code = 'OPP_SUBSTAGE'), 50, 'Giai đoạn con cơ hội: 50 (49 + L5Q, luật 16/10 tối)');
+select is((select count(*)::int from app.catalog_item where catalog_code = 'OPP_SUBSTAGE'), 61, 'Giai đoạn con cơ hội: 61 (49 + L5Q + L4E–H + L7M–S, Config 04/11)');
 
 -- Lý do huỷ test nối với L5x.
 select is((select count(*)::int from app.catalog_item r join app.catalog_item l on l.id = r.linked_item_id

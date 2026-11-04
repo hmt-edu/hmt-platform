@@ -172,8 +172,8 @@ test('R-CRM-14, 16: bỏ qua test bắt lý do; L8 bắt nhóm con và xác nh�
   const skip = dialogOf(page, /Chuyển sang L7/);
   await expect(skip.getByText(/chưa có phiếu kiểm tra/)).toBeVisible();
   await expect(skip.getByRole('button', { name: 'Chuyển giai đoạn' })).toBeDisabled();
-  // Lý do "Khác" bắt ghi chú.
-  await pickOption(page, skip.getByRole('combobox', { name: 'Lý do bỏ qua test' }), /^Khác$/);
+  // Lý do "Lý do khác" (BQ5) bắt ghi chú.
+  await pickOption(page, skip.getByRole('combobox', { name: 'Lý do bỏ qua test' }), /^Lý do khác$/);
   await expect(skip.getByRole('button', { name: 'Chuyển giai đoạn' })).toBeDisabled();
   await skip.getByLabel('Ghi chú').fill('Đã test ở trung tâm khác');
   await skip.getByRole('button', { name: 'Chuyển giai đoạn' }).click();
@@ -187,7 +187,7 @@ test('R-CRM-14, 16: bỏ qua test bắt lý do; L8 bắt nhóm con và xác nh�
   const l8 = dialogOf(page, /Chuyển sang L8/);
   await expect(l8.getByText(/^Chuyển L8 không hoàn tác được\./)).toBeVisible();
   await expect(l8.getByRole('button', { name: 'Chuyển L8' })).toBeDisabled();
-  await pickOption(page, l8.getByRole('combobox', { name: 'Lý do bỏ qua test' }), /^Khác$/);
+  await pickOption(page, l8.getByRole('combobox', { name: 'Lý do bỏ qua test' }), /^Lý do khác$/);
   await l8.getByLabel(/^Ghi chú/).fill('Đã test ở trung tâm khác');
   await pickOption(page, l8.getByRole('combobox', { name: 'Sub-stage' }), /L8A/);
   await expect(l8.getByRole('button', { name: 'Chuyển L8' })).toBeDisabled();
