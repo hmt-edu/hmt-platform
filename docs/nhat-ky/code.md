@@ -43,3 +43,8 @@
 ## 04/11/2026: T3b nhóm con L5, L6 theo Config mới
 - Migration 067: L6 đánh lại A đến G, L5B đổi tên, L5P và L5Q Ngừng, lý do huỷ \"Trung tâm không xếp được lịch test\" nối L5M. Hàm đổi: `opportunity_l5_substage`, `submit_student_test` (lên L6A), `complete_student_test` (L6B), `change_opportunity_stage` (chặn tay L6A, L6B).
 - Giao diện `oppStage.ts`; bài kiểm 011, 017, 020, 022, 006, 058, Vitest, e2e co-hoi.
+
+## 04/11/2026: T4a nạp Phụ huynh và Học sinh
+- Migration 068: `app.import_records` (xem trước/nạp, chỉ Admin), `import_one_parent`, `import_one_student`, `app.import_log`, tham số `import_max_rows`. Bài kiểm 059. Tài liệu `docs/nghiep-vu/nap-du-lieu.md`.
+- Kết quả và nhật ký nạp chỉ có số dòng và chữ cái đầu của tên, không có họ tên, SĐT, mã cũ (có bài kiểm).
+- Việc đã kiểm SQL xoá cơ hội giả của #157 trên DB local có dữ liệu giả (đơn, báo giá, phiếu kiểm tra, lịch hẹn); lead về C4C.
