@@ -137,3 +137,25 @@ Không có C3K.
 | Đăng nhập | Tự đăng xuất học sinh | 7 ngày | 5 phút–14 ngày (lưu bằng phút: 5–20.160; màn Cài đặt hiện theo ngày) | Không |
 
 **Chốt 12/10:** khoảng cho phép lấy theo cơ sở dữ liệu đã có (bảng trên đã sửa cho khớp); ba tham số "(mới)" dùng khoảng ghi ở đây. Cột "Ghi đè theo cơ sở" theo bảng này, cơ sở dữ liệu sửa theo ở bước 4. "Tự chốt danh sách: chu kỳ quét" là tham số `session_autoclose_before_minutes`: tên hiển thị và mô tả trong cơ sở dữ liệu đang ghi "trước giờ học", sửa cho đúng nghĩa ở bước 4.
+
+
+## 3. Danh mục và tham số theo quyết định 04/11/2026 (Đ286; luật ở `04` mục 14)
+
+Thêm vào các mục trên khi viết migration; chỗ [CHỜ] chưa làm.
+
+| Loại | Mục | Chi tiết | Trạng thái |
+|---|---|---|---|
+| Danh mục | Nhóm con cơ hội | L4 có L4A đến L4H (L4E đến L4H người dùng chọn); L7 có L7A đến L7S (L7M đến L7S người dùng chọn). Tên theo bảng `02.Stage` | [CHỜ] tên và mã nhóm con mới |
+| Danh mục | Lý do bỏ qua test (33) | BQ1 đến BQ5; BQ5 bắt buộc ghi chú | [CHỐT] |
+| Danh mục | Vai trò | Thêm MARKETER, MARKETING_MANAGER (quyền như SALES, phạm vi tất cả cơ sở); MARKETING giữ nguyên | [CHỐT] |
+| Danh mục | Loại buổi | Danh mục có sẵn thêm Kiểm tra (trừ quỹ chính); mỗi loại gắn một form nhận xét | [CHỜ] danh sách loại cuối |
+| Danh mục | Tiêu chí nhận xét buổi | 9 tiêu chí, thang 1 đến 5, 3 nhóm; nạp thành dữ liệu | [CHỐT]; [CHỜ] đối chiếu R-GV-01 |
+| Danh mục | Nhóm ticket Aftersale | Đề nghị, Khiếu nại, Ticket giáo viên; hai cấp nhóm, nhóm con; mức độ Khẩn, Cao, Thường, Thấp | [CHỐT] loại; [CHỜ] danh mục ticket giáo viên |
+| Tham số | Điểm tối đa mặc định của buổi kiểm tra | 10 | [CHỐT] (tên tham số đề xuất khi viết migration) |
+| Tham số | Hạn hoàn tất buổi | 8 giờ, `teacher_session_complete_hours` (đã có) | [CHỐT] |
+| Tham số | Mức "Sắp quá hạn" của ticket | còn dưới 25% thời gian | [CHỐT] |
+| Tham số | Số ngày ticket đã xử lý chưa đóng vào bộ lọc "Chờ đóng" | 3 ngày | [CHỐT] |
+| Tham số | Hạn phản hồi đầu, hạn xử lý ticket | theo loại, mức độ, nhóm con; mọi con số là tham số | [CHỐT]; [CHỜ] bảng số |
+| Tham số | Số ngày "Hết hạn" (nhãn) của đơn, báo giá | 14 ngày từ lúc Gửi (`quotation_validity_days` đã có cho báo giá) | [CHỐT] |
+| Tham số | Ngày chốt giờ học | 17/11/2026 | [CHỐT] |
+| Dữ liệu | Số giờ gói 6 tháng của 12 sản phẩm; giá online TOAN-V12-TH1, TOAN-BN-TH1 | anh báo sau | [CHỜ] |

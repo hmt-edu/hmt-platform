@@ -1,4 +1,4 @@
-# Nhật ký Claude Chat (cập nhật 28/10/2026, 16:10)
+# Nhật ký Claude Chat (cập nhật 28/10/2026, 16:10; ghi chú 04/11 ở cuối)
 
 ## Đang làm
 - Chat mới tiếp quản 28/10 ~16:00 (tài khoản `truongcx.biz`). Nhật ký trước dừng 17/10; hiện trạng từ 18/10 đến 28/10 xem TIEN-DO và QĐ-Đ256 đến Đ279.
@@ -16,3 +16,6 @@
 
 ## File và link mới
 - Canvas chuẩn HMT Platform: phiên bản `1793154455-8ab9` (Đ270, Đ272).
+
+## 04/11/2026
+- v2 dừng, v1 làm tiếp cho CS5 (Đ285). Canvas chuẩn là `6f57` (thay `8ab9` ở dòng "Canvas chuẩn" phía trên); gói Đào tạo, Giáo viên `8a0d`. Quyết định nghiệp vụ từ v2 đã vào `docs/spec/04` mục 14 và `06` mục 3; bảng khác biệt và 13 câu hỏi chờ anh: `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md` (Đ286 đến Đ290).

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>K4g · Hộp thoại mật khẩu tạm</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/hmt/handoff/hmt-tokens.css">
+<link rel="stylesheet" href="ds/hmt/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap&amp;subset=vietnamese">
+<style>
+body{margin:0;font-family:var(--font-ui);background:var(--bg-page);color:var(--text-primary)}
+a{color:var(--text-link)}a:hover{color:var(--brand-800)}
+</style>
+</helmet>
+<div data-ix="root" style="position:relative;width:1440px;height:1000px;overflow:hidden"><style>.ix-toast{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);background:var(--neutral-900);color:var(--neutral-0);padding:10px 16px;border-radius:var(--radius-md);font-size:13px;z-index:300;opacity:0;pointer-events:none;transition:opacity .15s;max-width:760px;text-align:center}
+.ix-toast.on{opacity:1}
+.ix-pop{position:absolute;left:0;min-width:100%;top:calc(100% + 4px);z-index:90;background:var(--bg-surface);border:1px solid var(--divider);border-radius:var(--radius-md);box-shadow:var(--shadow-md);max-height:240px;overflow:auto;padding:4px;display:flex;flex-direction:column}
+.ix-pop .hmt-opt{display:block;width:100%;text-align:left}
+.ix-pop-r{left:auto;right:-8px;top:40px;min-width:200px}
+.ix-err{color:var(--danger-text);font-size:12px}
+.hmt-app-fixed .hmt-content{overflow:auto;min-height:0}
+.bgblur{position:absolute;inset:0;filter:blur(1.5px)}
+.hmt-sw{position:relative;display:inline-block;width:36px;height:20px;flex:0 0 auto}
+.hmt-sw input{appearance:none;margin:0;width:36px;height:20px;border-radius:var(--radius-full);background:var(--input-border);cursor:pointer;transition:background .15s}
+.hmt-sw input:checked{background:var(--action-primary-bg)}
+.hmt-sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:var(--radius-full);background:var(--bg-surface);pointer-events:none;transition:transform .15s}
+.hmt-sw:has(input:checked)::after{transform:translateX(16px)}
+.hmt-sc{border:var(--border-1) solid var(--divider);border-radius:var(--radius-lg);background:var(--bg-surface);overflow:hidden}
+.hmt-grid-h{background:var(--bg-subtle);font-size:12px;font-weight:600;color:var(--text-label)}
+.hmt-rowl{display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-4);min-height:44px;border-top:var(--border-1) solid var(--divider)}
+.hmt-rowl.sel{background:var(--brand-50)}
+button.hmt-rowl:not(.sel){background:transparent}
+.hmt-dim{opacity:.45;pointer-events:none}
+.hmt-bar{height:10px;border-radius:var(--radius-full);background:var(--bg-subtle);overflow:hidden;flex:1}
+.hmt-bar i{display:block;height:100%;background:var(--brand-500);border-radius:var(--radius-full)}
+</style><div style="padding:24px;display:flex;flex-direction:column;gap:var(--space-5);background:var(--bg-page);height:100%;box-sizing:border-box;overflow-y:auto"><div><h1 style="font-family:var(--font-heading);font-size:20px;line-height:28px;font-weight:600;margin:0">K4g · Hộp thoại “Mật khẩu tạm”</h1><span class="hmt-help" style="font-size:13px">Hiện đúng một lần sau khi Admin tạo tài khoản hoặc đặt lại mật khẩu. Có nút Sao chép, dòng nhắc “đóng hộp là không xem lại được”. Nút Đóng khoá cho tới khi bấm Sao chép hoặc tick “Tôi đã ghi lại mật khẩu này”. Bấm ra ngoài hộp hoặc phím Esc không đóng được. Biến thể của K08 (hộp thoại thao tác); điện thoại dùng tấm trượt K4e4.</span></div><div class="wfn">Dùng ở: <b>QT-03</b> sau khi bấm Tạo (tạo người dùng), <b>QT-02</b> sau khi bấm Đặt lại mật khẩu; <b>QT-01</b> chỉ mở QT-03 nên không có hộp riêng. Chỉ đổi dòng đầu (“Đã tạo tài khoản cho …” hoặc “Đã đặt lại mật khẩu cho …”). Không có mật khẩu nào hiện lại ở lần mở sau. Luật: S03-01, S03-02, S03-20; CHUNG-07.</div><div class="hmt-col" style="gap:var(--space-2)"><div style="font-size:13px;font-weight:600">① Vừa tạo tài khoản, chưa sao chép <span style="font-weight:400;color:var(--text-secondary)">· nút Đóng khoá</span></div><div style="background:var(--bg-subtle);border-radius:var(--radius-lg);padding:var(--space-6);display:flex;justify-content:center;align-items:flex-start"><div class="hmt-dialog" data-pw data-copied="0" role="dialog" aria-label="Mật khẩu tạm" style="width:560px;flex:0 0 560px"><div class="hmt-dialog-h">Mật khẩu tạm</div><div class="hmt-dialog-b"><div style="font-size:14px">Đã tạo tài khoản cho <b>Nguyễn Thị Lan</b> · NV000012 · Tuyển sinh · CS1. Đây là mật khẩu tạm của tài khoản.</div><div style="display:flex;align-items:center;gap:var(--space-3);border:var(--border-1) solid var(--divider);border-radius:var(--radius-md);background:var(--bg-subtle);padding:var(--space-3) var(--space-4)"><code data-pwtxt style="flex:1;min-width:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:22px;letter-spacing:.06em;font-weight:600;user-select:all;overflow-wrap:anywhere">Hm7q-Rt4v-Kx2n</code><button class="hmt-btn" type="button" data-copy style="flex:0 0 auto"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg><span data-copylab>Sao chép</span></button></div><div class="hmt-alert hmt-alert-warning" role="alert"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg><span><b>Mật khẩu chỉ hiện một lần.</b> Đóng hộp là không xem lại được.</span></div><span class="hmt-help">Người dùng phải đổi mật khẩu này ở lần đăng nhập đầu tiên (CHUNG-07).</span><label class="hmt-check"><input type="checkbox" data-ack> Tôi đã ghi lại mật khẩu này</label></div><div class="hmt-dialog-f"><button class="hmt-btn hmt-btn-primary" type="button" data-close disabled>Đóng</button></div></div></div></div><div class="hmt-col" style="gap:var(--space-2)"><div style="font-size:13px;font-weight:600">② Đã đặt lại mật khẩu, đã sao chép <span style="font-weight:400;color:var(--text-secondary)">· nút Đóng mở</span></div><div style="background:var(--bg-subtle);border-radius:var(--radius-lg);padding:var(--space-6);display:flex;justify-content:center;align-items:flex-start"><div class="hmt-dialog" data-pw data-copied="1" role="dialog" aria-label="Mật khẩu tạm" style="width:560px;flex:0 0 560px"><div class="hmt-dialog-h">Mật khẩu tạm</div><div class="hmt-dialog-b"><div style="font-size:14px">Đã đặt lại mật khẩu cho <b>Nguyễn Thị Lan</b> · NV000012. Đây là mật khẩu tạm mới của tài khoản.</div><div style="display:flex;align-items:center;gap:var(--space-3);border:var(--border-1) solid var(--divider);border-radius:var(--radius-md);background:var(--bg-subtle);padding:var(--space-3) var(--space-4)"><code data-pwtxt style="flex:1;min-width:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:22px;letter-spacing:.06em;font-weight:600;user-select:all;overflow-wrap:anywhere">Hm7q-Rt4v-Kx2n</code><button class="hmt-btn" type="button" data-copy style="flex:0 0 auto"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /> <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg><span data-copylab>Đã sao chép</span></button></div><div class="hmt-alert hmt-alert-warning" role="alert"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /> <path d="M12 9v4" /> <path d="M12 17h.01" /></svg><span><b>Mật khẩu chỉ hiện một lần.</b> Đóng hộp là không xem lại được.</span></div><span class="hmt-help">Người dùng phải đổi mật khẩu này ở lần đăng nhập đầu tiên (CHUNG-07).</span><label class="hmt-check"><input type="checkbox" data-ack checked> Tôi đã ghi lại mật khẩu này</label></div><div class="hmt-dialog-f"><button class="hmt-btn hmt-btn-primary" type="button" data-close>Đóng</button></div></div></div></div></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return { yes: true }; }
+  componentDidMount() {
+    const R = document.querySelector('[data-ix=root]'); if (!R) return;
+    let t = null;
+    const toast = m => { let e = R.querySelector('.ix-toast'); if (!e) { e = document.createElement('div'); e.className = 'ix-toast'; R.appendChild(e); } e.textContent = m; e.classList.add('on'); clearTimeout(t); t = setTimeout(() => e.classList.remove('on'), 2600); };
+    // Đóng chỉ mở khi đã bấm Sao chép hoặc đã tick "Tôi đã ghi lại mật khẩu này"
+    const sync = d => { const ck = d.querySelector('[data-ack]'), go = d.querySelector('[data-close]'); const ok = d.getAttribute('data-copied') === '1' || (ck && ck.checked); if (go) { go.disabled = !ok; go.setAttribute('aria-disabled', ok ? 'false' : 'true'); } const x = d.querySelector('[data-x]'); if (x) { x.disabled = !ok; } };
+    R.querySelectorAll('[data-pw]').forEach(sync);
+    R.addEventListener('change', ev => { const d = ev.target.closest('[data-pw]'); if (d) sync(d); });
+    R.addEventListener('click', ev => {
+      const d = ev.target.closest('[data-pw]'); if (!d) return;
+      const c = ev.target.closest('[data-copy]');
+      if (c) { const txt = (d.querySelector('[data-pwtxt]') || {}).textContent || ''; try { if (navigator.clipboard) navigator.clipboard.writeText(txt).catch(() => {}); } catch (e) {} d.setAttribute('data-copied', '1'); const l = d.querySelector('[data-copylab]'); if (l) l.textContent = 'Đã sao chép'; sync(d); toast('Đã sao chép mật khẩu tạm.'); return; }
+      const g = ev.target.closest('[data-close],[data-x]'); if (g && !g.disabled) { toast('Đã đóng hộp. Mật khẩu không xem lại được.'); }
+    });
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>BH-07 · Duyệt đơn (điện thoại)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/hmt/handoff/hmt-tokens.css">
+<link rel="stylesheet" href="ds/hmt/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap&amp;subset=vietnamese">
+<style>
+body{margin:0;font-family:var(--font-ui);background:var(--bg-page);color:var(--text-primary)}
+a{color:var(--text-link)}a:hover{color:var(--brand-800)}
+</style>
+</helmet>
+<div data-ix="root" style="position:relative;width:390px;height:844px;overflow:hidden"><style>.ix-toast{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);background:var(--neutral-900);color:var(--neutral-0);padding:10px 16px;border-radius:var(--radius-md);font-size:13px;z-index:300;opacity:0;pointer-events:none;transition:opacity .15s;max-width:760px;text-align:center}
+.ix-toast.on{opacity:1}
+.ix-pop{position:absolute;left:0;min-width:100%;top:calc(100% + 4px);z-index:90;background:var(--bg-surface);border:1px solid var(--divider);border-radius:var(--radius-md);box-shadow:var(--shadow-md);max-height:240px;overflow:auto;padding:4px;display:flex;flex-direction:column}
+.ix-pop .hmt-opt{display:block;width:100%;text-align:left}
+.ix-pop-r{left:auto;right:-8px;top:40px;min-width:200px}
+.ix-err{color:var(--danger-text);font-size:12px}
+.hmt-app-fixed .hmt-content{overflow:auto;min-height:0}
+.bgblur{position:absolute;inset:0;filter:blur(1.5px)}
+.hmt-sw{position:relative;display:inline-block;width:36px;height:20px;flex:0 0 auto}
+.hmt-sw input{appearance:none;margin:0;width:36px;height:20px;border-radius:var(--radius-full);background:var(--input-border);cursor:pointer;transition:background .15s}
+.hmt-sw input:checked{background:var(--action-primary-bg)}
+.hmt-sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:var(--radius-full);background:var(--bg-surface);pointer-events:none;transition:transform .15s}
+.hmt-sw:has(input:checked)::after{transform:translateX(16px)}
+.hmt-sc{border:var(--border-1) solid var(--divider);border-radius:var(--radius-lg);background:var(--bg-surface);overflow:hidden}
+.hmt-grid-h{background:var(--bg-subtle);font-size:12px;font-weight:600;color:var(--text-label)}
+.hmt-rowl{display:flex;align-items:center;gap:var(--space-3);padding:0 var(--space-4);min-height:44px;border-top:var(--border-1) solid var(--divider)}
+.hmt-rowl.sel{background:var(--brand-50)}
+button.hmt-rowl:not(.sel){background:transparent}
+.hmt-dim{opacity:.45;pointer-events:none}
+.hmt-bar{height:10px;border-radius:var(--radius-full);background:var(--bg-subtle);overflow:hidden;flex:1}
+.hmt-bar i{display:block;height:100%;background:var(--brand-500);border-radius:var(--radius-full)}
+</style><div style="padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--bg-page);height:100%"><div style="display:flex;align-items:center;gap:8px"><span class="hmt-iconbtn"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg></span><b style="font-family:var(--font-heading);font-size:17px">Đơn hàng chờ duyệt</b></div><div class="hmt-box hmt-box-pad" style="display:flex;flex-direction:column;gap:2px;align-items:stretch;text-align:left"><b>Đỗ Thu Trang · DH-CS1-2610-0013</b><span class="hmt-help">13.176.000 đ · chờ duyệt</span></div><div class="hmt-box hmt-box-pad" style="display:flex;flex-direction:column;gap:2px;align-items:stretch;text-align:left"><b>Phạm Thu Hương · DH-CS1-2610-0012</b><span class="hmt-help">13.608.000 đ · chờ duyệt</span></div><div class="hmt-box hmt-box-pad" style="display:flex;flex-direction:column;gap:2px;align-items:stretch;text-align:left"><b>Trần Thị Hà · DH-CS1-2610-0011</b><span class="hmt-help">9.504.000 đ · đã duyệt</span></div></div><div style="position:absolute;inset:0;background:var(--overlay);z-index:50;display:flex;align-items:flex-end"><div style="width:100%;background:var(--bg-surface);border-radius:20px 20px 0 0;box-shadow:var(--shadow-md);display:flex;flex-direction:column;max-height:92%"><div data-pane="main" data-dlg="m" style="display:flex;flex-direction:column;min-height:0"><div style="display:flex;justify-content:center;padding:8px 0 2px"><i style="width:40px;height:4px;border-radius:2px;background:var(--input-border)"></i></div><div style="display:flex;align-items:center;padding:4px 16px 8px;gap:8px"><b style="flex:1;font-family:var(--font-heading);font-size:17px;line-height:24px">Duyệt đơn hàng</b><button class="hmt-iconbtn" type="button" aria-label="Đóng"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg></button></div><div style="padding:4px 16px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:10px"><div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:6px 0;border-bottom:1px solid var(--bg-subtle)"><span style="color:var(--text-secondary)">Mã đơn</span><span style="text-align:right">DH-CS1-2610-0013</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:6px 0;border-bottom:1px solid var(--bg-subtle)"><span style="color:var(--text-secondary)">Người lập</span><span style="text-align:right">Trần Thu Hà</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:6px 0;border-bottom:1px solid var(--bg-subtle)"><span style="color:var(--text-secondary)">Phụ huynh</span><span style="text-align:right">Đỗ Thu Trang (PH000051)</span></div><div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:6px 0;border-bottom:1px solid var(--bg-subtle)"><span style="color:var(--text-secondary)">Tổng thành tiền</span><span style="text-align:right"><b>13.176.000 đ</b></span></div><div class="hmt-alert hmt-alert-warning" role="alert"><div class="hmt-alert-body"><b>Chiết khấu vượt trần 20%.</b> Dòng 3 (Đỗ Khánh Chi): giảm 15% cộng giờ tặng 2/24 (8,3%) = 23,3%. Cần quản lý cơ sở duyệt (R-TIEN-29).</div></div><div class="hmt-box hmt-box-pad" style="display:flex;flex-direction:column;gap:3px;align-items:stretch;text-align:left;"><div style="display:flex;justify-content:space-between;gap:8px"><b>Đỗ Minh Khang</b></div><span class="hmt-help">dùng HS000142</span><span style="font-size:13px">LC-TOAN-K08 · Offline</span><span style="font-size:13px">CS1-2627-DAI-K08-CB-A-001 · vào 03/11/2026</span><div style="display:flex;justify-content:space-between;font-size:13px"><span>Giờ 24 + 0 · giảm 10,0%</span><b>4.752.000 đ</b></div></div><div class="hmt-box hmt-box-pad" style="display:flex;flex-direction:column;gap:3px;align-items:stretch;text-align:left;"><div style="display:flex;justify-content:space-between;gap:8px"><b>Đỗ Minh Khang</b></div><span class="hmt-help">dùng HS000142</span><span style="font-size:13px">LC-TOAN-K08 · Offline</span><span style="font-size:13px">CS1-2627-HINH-K08-CB-A-001 · vào 06/11/2026</span><div style="display:flex;justify-content:space-between;font-size:13px"><span>Giờ 24 + 0 · giảm 10,0%</span><b>4.752.000 đ</b></div></div><div class="hmt-box hmt-box-pad" style="display:flex;flex-direction:column;gap:3px;align-items:stretch;text-align:left;border-color:var(--danger-text)"><div style="display:flex;justify-content:space-between;gap:8px"><b>Đỗ Khánh Chi</b><span class="hmt-tag" style="background:var(--danger-bg);color:var(--danger-text)">Vượt trần</span></div><span class="hmt-help">sẽ tạo hồ sơ mới</span><span style="font-size:13px">LC-ANH-K05 · Offline</span><span style="font-size:13px">CS1-2627-ANH-K05-CB-B-002 · vào 07/11/2026</span><div style="display:flex;justify-content:space-between;font-size:13px"><span>Giờ 24 + 2 · giảm 23,3%</span><b>3.672.000 đ</b></div></div><label style="display:flex;gap:10px;align-items:flex-start;font-size:14px"><input type="checkbox" class="ck-cap" style="margin-top:3px;width:18px;height:18px"><span><b>Đồng ý chiết khấu vượt trần</b><br><span class="hmt-help">Dòng 3 (Đỗ Khánh Chi): 23,3% so với trần 20%. Phải tích mới Duyệt được (D12).</span></span></label><span class="ix-err ck-err">Chưa tích “Đồng ý chiết khấu vượt trần”.</span><span class="hmt-help">Duyệt thì đơn tự khoá: không sửa dòng, giá, lớp, ngày vào nữa.</span></div><div style="display:flex;gap:8px;padding:12px 16px 20px;border-top:1px solid var(--divider)"><button class="hmt-btn hmt-btn-danger" type="button" data-pane-to="reject" style="flex:1;height:44px"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg>Từ chối</button><button class="hmt-btn hmt-btn-primary" type="button" data-ck-btn disabled data-dto="Đã duyệt đơn. Đơn tự khoá." style="flex:1;height:44px">Duyệt</button></div></div><div data-pane="reject" data-dlg="r" style="display:none;flex-direction:column;min-height:0"><div style="display:flex;justify-content:center;padding:8px 0 2px"><i style="width:40px;height:4px;border-radius:2px;background:var(--input-border)"></i></div><div style="display:flex;align-items:center;padding:4px 16px 8px;gap:8px"><b style="flex:1;font-family:var(--font-heading);font-size:17px;line-height:24px">Từ chối đơn hàng</b><button class="hmt-iconbtn" type="button" aria-label="Đóng"><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18" /> <path d="m6 6 12 12" /></svg></button></div><div style="padding:4px 16px 12px;overflow-y:auto;display:flex;flex-direction:column;gap:12px"><div style="font-size:14px">Đơn hàng <b>DH-CS1-2610-0013</b> · Đỗ Thu Trang · 13.176.000 đ</div><div style="font-size:13px;color:var(--text-secondary)">Đơn về Nháp, người lập sửa rồi trình lại. Lịch sử giữ lần từ chối và lý do.</div><label class="hmt-field"><span class="hmt-label">Lý do <span class="hmt-req">*</span></span><select class="hmt-input hmt-select rs-sel" style="width:100%"><option value="">Chọn lý do…</option><option>Thiếu thông tin</option><option>Không đúng chính sách</option><option>Khác</option></select></label><label class="hmt-field" style="margin-top:var(--space-3)"><span class="hmt-label">Ghi chú <span class="hmt-req rs-req" style="display:none">*</span></span><textarea class="hmt-textarea rs-note" rows="3" placeholder="Ghi chú thêm (không bắt buộc)"></textarea><span class="hmt-help">Bắt buộc khi chọn “Khác”</span></label><span class="ix-err rs-err" style="display:none">Chọn “Khác” thì phải ghi chú.</span></div><div style="display:flex;gap:8px;padding:12px 16px 20px;border-top:1px solid var(--divider)"><button class="hmt-btn" type="button" data-pane-to="main" style="flex:1;height:44px">Giữ lại</button><button class="hmt-btn hmt-btn-danger" type="button" data-rs-ok disabled data-dto="Đã từ chối đơn. Đơn về Nháp, lý do ghi vào lịch sử." style="flex:1.4;height:44px">Xác nhận từ chối</button></div></div></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>class Component extends DCLogic { renderVals() { return {}; } componentDidMount() {
+const ROOT = document.querySelector('[data-ix=root]'); if (!ROOT) return;
+const q = (s, r) => (r || ROOT).querySelector(s);
+const qa = (s, r) => Array.from((r || ROOT).querySelectorAll(s));
+function toast(m) { let t = q('.ix-toast'); if (!t) { t = document.createElement('div'); t.className = 'ix-toast'; ROOT.appendChild(t); } t.textContent = m; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 2600); }
+// Duyệt chỉ mở khi đã tích đồng ý vượt trần (D12)
+function syncCk(){ const c=q('.ck-cap'), b=q('[data-ck-btn]'), e=q('.ck-err'); if(!c||!b) return; b.disabled=!c.checked; if(e) e.style.display=c.checked?'none':''; }
+ROOT.addEventListener('change', ev => { if (ev.target.closest('.ck-cap')) syncCk(); }, true);
+ROOT.addEventListener('click', ev => {
+  const t = ev.target; const pt = t.closest('[data-pane-to]');
+  if (pt) { const to = pt.getAttribute('data-pane-to'); qa('[data-pane]').forEach(p => { p.style.display = p.getAttribute('data-pane') === to ? 'flex' : 'none'; }); return; }
+  const dd = t.closest('[data-dto]'); if (dd && !dd.disabled) { toast(dd.getAttribute('data-dto')); return; }
+}, true);
+syncCk();
+
+// Hộp lý do (R-HT-04): phải chọn lý do; chọn "Khác" thì bắt buộc ghi chú. Nút xác nhận mở khi đủ.
+(function(){
+  function sync(box){
+    const sel = box.querySelector('.rs-sel'); const note = box.querySelector('.rs-note'); const btn = box.querySelector('[data-rs-ok]');
+    if (!sel || !btn) return; const other = sel.value === 'Khác'; const miss = other && !(note && note.value.trim());
+    const rq = box.querySelector('.rs-req'); if (rq) rq.style.display = other ? '' : 'none';
+    const er = box.querySelector('.rs-err'); if (er) er.style.display = miss ? '' : 'none';
+    const ok = !!sel.value && !miss; btn.disabled = !ok; btn.setAttribute('aria-disabled', ok ? 'false' : 'true');
+  }
+  ROOT.addEventListener('change', ev => { const b = ev.target.closest('[data-dlg]'); if (b) sync(b); }, true);
+  ROOT.addEventListener('input', ev => { const b = ev.target.closest('[data-dlg]'); if (b) sync(b); }, true);
+  ROOT.addEventListener('click', ev => { const t = ev.target; const o = t.closest('[data-open],[data-pane-to]'); if (o) setTimeout(() => qa('[data-dlg]').forEach(sync), 0); }, true);
+  qa('[data-dlg]').forEach(sync);
+})();
+
+} }
+</script>
+</body>
+</html>

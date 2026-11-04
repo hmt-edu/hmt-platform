@@ -1,10 +1,13 @@
-# Nhật ký Claude Code (cập nhật 28/10/2026)
+# Nhật ký Claude Code (cập nhật 04/11/2026)
 
 (Claude Code viết đè file này cuối mỗi phiên; tối đa một trang. Bản dài trước 28/10 nằm trong lịch sử git của file này: `git log -- docs/nhat-ky/code.md`.)
 
-## Đang làm
-- UI-O2b (BH-05 Trình, Huỷ đơn, #147): chờ CI xanh và OK của `caotruong276` sau commit cuối. Sau đó PR "Cắt phút CI" (Đ281, nhánh `ci/cat-phut-ci`, đã chạy `check:all` xanh trên máy), rồi DB-O2c (Đ283), UI-O2c (Duyệt, Từ chối), UI-O3, UI-O4.
-- Đ279 đã gộp (#146): OK gộp PR từ `caotruong276`; remote Mac đã đổi sang `truongcx-95/hmt-platform`.
+## Đang làm (04/11)
+- **v1 làm tiếp cho Cơ sở 5 chạy thật; v2 dừng hẳn** (Đ285). v1 từng đóng băng tại #152 (02/11), nay mở lại.
+- PR tài liệu `docs/canvas-6f57-quyet-dinh-v2`: lưu canvas `6f57` và `8a0d` vào `design/`, canvas chuẩn là `6f57` (thay `8ab9`), quyết định nghiệp vụ từ v2 vào `docs/spec/04` mục 14 và `06` mục 3, bảng khác biệt và kế hoạch ở `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md`. **Chờ anh OK kế hoạch trước khi viết migration** (Đ286).
+- Mốc: 10/11 Tuyển sinh và màn Nhập CS5; ~12/11 Bán hàng, Thu chi; ~17/11 Đào tạo, Cổng giáo viên, Aftersale (Đ289).
+- UI-O2c (Duyệt, Từ chối đơn): nhánh `feat/p5a-ui-o2c-duyet-tu-choi` giữ trên máy, chưa đẩy. Chưa sửa giao diện Báo giá, Đơn hàng, Phiếu thu khi anh chưa gửi yêu cầu (Đ287).
+- `_inbox/`: đã xoá mọi thứ của v2 (wireframe, zip). Còn tài liệu nghiệp vụ `v2-*.md`, hai gói canvas, file mẫu nạp dữ liệu giả (không commit).
 
 ## Đã gộp gần đây (Bán hàng, P5a)
 - DB: đơn hàng (051, 052), báo giá tên em (053), lọc Đã chuyển đơn (054, 057), xem thử, gói bán, chính sách (055), mã đơn từng dòng (056), chính sách quà tặng (058), `total_discount_percent` (059), quyền chung hàm đọc phụ và `student_names` (060), tạo đơn kèm điều khoản một giao dịch và `preview_order_students` (061).
@@ -29,5 +32,5 @@
 - Sau 7 ngày kể từ khi PR Cắt phút CI gộp: đo lại phút Actions, so với tháng 10 (~2.000 phút, 201 lượt CI).
 
 ## File hoặc link mới
-- Canvas HMT Platform nguồn mới nhất: `design/nguon-canvas/hmt-platform-v117/` (bản `e6d0`; canvas chuẩn hiện là `1793154455-8ab9` (Đ272), các khung BH05, BH06, BH07 giống bản đã lưu).
+- Canvas chuẩn: `design/hmt-canvas-6f57/` (`1793759210-6f57`, giống hệt `8ab9`, Đ285) và `design/hmt-canvas-8a0d/` (Đào tạo, Giáo viên: GV-01..16, BUOI-03, LOP-08, bộ khuôn KG; GV07b, GV08b là bản nháp). `design/nguon-canvas/` giữ làm lịch sử.
 - Ảnh chụp: `docs/anh-chup/bh01/`, `bh02/`, `bh06/`, `bh05/`, `bh03/` (năm tình trạng, PDF A4 do trình duyệt xuất).

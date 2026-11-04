@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>BH-03 · Bản in báo giá (khuôn K13, A4)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/hmt/handoff/hmt-tokens.css">
+<link rel="stylesheet" href="ds/hmt/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap&amp;subset=vietnamese">
+<style>
+body{margin:0;font-family:var(--font-ui);background:var(--bg-page);color:var(--text-primary)}
+a{color:var(--text-link)}a:hover{color:var(--brand-800)}
+.t td,.t th{white-space:normal;vertical-align:top;height:auto;padding:5px 8px;font-size:12px;line-height:1.4}.t th{height:26px;white-space:nowrap}
+.t.l td:not(:last-child),.t.l th{white-space:nowrap}.t.l td{padding:3px 8px}
+h2.s{font-family:var(--font-heading);font-size:15px;margin:16px 0 6px}
+</style>
+<style>
+.k13-bar{display:flex;align-items:center;gap:12px;height:56px;padding:0 20px;background:var(--bg-surface);border-bottom:1px solid var(--divider)}
+.k13-bar h1{font-family:var(--font-heading);font-size:18px;margin:0}
+.k13-wrap{display:flex;gap:24px;justify-content:center;align-items:flex-start;padding:20px 24px;background:var(--bg-subtle);height:924px;box-sizing:border-box;overflow:hidden}
+.k13-paper{background:#fff;color:#1f1b16;box-shadow:0 1px 3px rgba(0,0,0,.18),0 6px 20px rgba(0,0,0,.08);box-sizing:border-box;flex:0 0 auto;font-size:12.5px;line-height:1.45;position:relative}
+.k13-paper h2{font-family:var(--font-heading);margin:0}
+.k13-h{display:flex;align-items:center;gap:14px;border-bottom:2px solid #e8590c;padding-bottom:12px}
+.k13-logo{width:56px;height:56px;border-radius:10px;background:#e8590c;color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-weight:700;font-size:20px;flex:0 0 auto}
+.k13-t{font-family:var(--font-heading);font-size:24px;font-weight:700;letter-spacing:.5px;text-align:right;flex:1}
+.k13-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px;margin:14px 0}
+.k13-meta span{color:#6b645c;font-size:11px;display:block}
+.k13-paper table{width:100%;border-collapse:collapse;margin-top:6px}
+.k13-paper th{background:#f6f1ea;text-align:left;font-size:11px;padding:6px 8px;border-top:1px solid #d9d2c8;border-bottom:1px solid #d9d2c8;white-space:nowrap}
+.k13-paper td{padding:7px 8px;border-bottom:1px solid #ebe5dc;vertical-align:top}
+.k13-paper .r{text-align:right;font-variant-numeric:tabular-nums}
+.k13-sum{display:flex;justify-content:flex-end;gap:24px;margin-top:10px;font-size:14px}
+.k13-words{margin-top:4px;text-align:right;font-style:italic;color:#4a443d}
+.k13-sign{display:flex;justify-content:space-around;margin-top:30px;text-align:center}
+.k13-sign b{display:block}.k13-sign i{display:block;color:#6b645c;font-size:11px;margin-bottom:44px}
+.k13-foot{position:absolute;left:0;right:0;bottom:12px;text-align:center;color:#8b847b;font-size:10.5px}
+.k13-side{width:280px;flex:0 0 280px;background:var(--bg-surface);border:1px solid var(--divider);border-radius:10px;padding:14px 16px;font-size:12.5px}
+.k13-side h3{font-family:var(--font-heading);font-size:14px;margin:0 0 8px}
+.k13-img{height:52px;width:auto;flex:0 0 auto;display:block}.k13-org{flex:1;min-width:0}.k13-t{white-space:nowrap}.k13-code{font-size:12px;font-weight:500;letter-spacing:0;font-family:var(--font-ui);margin-top:2px}
+.k13-meta{grid-template-columns:1fr 1fr;gap:16px;margin:18px 0 16px}.k13-box{border:1px solid #e3dcd1;border-radius:8px;padding:12px 14px;background:#fcfaf7}.k13-cap{font-size:10.5px;letter-spacing:.8px;color:#8b847b;margin-bottom:4px;font-weight:600}.k13-row{display:flex;gap:10px;margin-top:3px}.k13-row span{display:inline-block;width:92px;margin:0;font-size:12px}
+.k13-tb{table-layout:fixed}.k13-tb td{font-size:12px;word-break:break-word;padding:7px 6px}.k13-tb th{padding:6px}.k13-tb .r{white-space:nowrap}
+.k13-total{margin-top:14px;padding-top:10px;border-top:2px solid #e8590c}.k13-total .k13-sum{margin-top:0}
+.k13-sign{margin-top:44px}
+.k13-band{height:10px;background:#e8590c}.k13-in{padding:34px 48px 0}
+.k13-h{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.k13-img{height:76px;width:auto;display:block}.k13-org{text-align:right;color:#6b645c;font-size:11.5px;line-height:1.55}.k13-org h2{font-size:14px;color:#1f1b16;margin-bottom:2px}
+.k13-ttl{display:flex;align-items:flex-end;justify-content:space-between;margin-top:26px;padding-bottom:14px;border-bottom:1px solid #e3dcd1}
+.k13-ttl .k13-t{font-size:30px;font-weight:700;letter-spacing:1px;color:#1f1b16;text-align:left;flex:none;line-height:1.1;white-space:nowrap}
+.k13-sub{color:#8b847b;font-size:12px;margin-top:4px}
+.k13-no{text-align:right;line-height:1.5}.k13-no span{color:#8b847b;font-size:11px;margin-right:6px}.k13-no b{font-size:14px;color:#e8590c}.k13-no i{display:block;color:#8b847b;font-size:10.5px;font-style:normal}
+.k13-meta{margin:20px 0 20px}.k13-box{border:0;border-left:3px solid #e8590c;border-radius:0;background:#faf6f0;padding:12px 16px}
+.k13-name{font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-heading)}
+.k13-tb th{background:transparent;border-top:0;border-bottom:2px solid #1f1b16;font-size:11px;padding:8px 6px;color:#1f1b16}.k13-tb td{padding:10px 6px;border-bottom:1px solid #ebe5dc}
+.k13-bottom{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-top:20px}
+.k13-words{flex:1;font-style:italic;color:#4a443d;text-align:left;margin:0;padding-top:4px}.k13-words span{display:block;font-style:normal;color:#8b847b;font-size:10.5px;letter-spacing:.8px;font-weight:600;margin-bottom:2px;text-transform:uppercase}
+.k13-total{width:290px;border:0;padding:0;margin:0}.k13-tr{display:flex;justify-content:space-between;padding:5px 0;color:#4a443d}.k13-tr b{font-variant-numeric:tabular-nums;color:#1f1b16}
+.k13-pay{margin-top:6px;padding:10px 12px;background:#fdf0e8;border-top:2px solid #e8590c;color:#1f1b16;font-weight:600;align-items:center}.k13-pay b{font-size:19px;color:#c2410c}
+.k13-sign{margin-top:48px;padding:0 24px}.k13-sign u{text-decoration:none;display:block;font-weight:600}
+.k13-foot{display:flex;justify-content:space-between;left:48px;right:48px;border-top:1px solid #e3dcd1;padding-top:8px;bottom:22px}
+.k13-tst{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);background:#1f1b16;color:#fff;padding:9px 16px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60}
+.k13-tst.on{opacity:1}
+</style><style>
+.k13-sm{display:block;color:#6b645c;font-size:11px;margin-top:2px}
+.k13-gift td{background:#fcf7f0}.k13-gt{display:inline-block;background:#fdf0e8;color:#c2410c;border-radius:4px;padding:0 5px;font-size:10.5px;font-weight:600;margin-right:4px}
+.k13-help2{color:#8b847b;font-size:11px;margin-top:6px}
+.k13-stamp{display:inline-block;border:2px solid #b42318;color:#b42318;border-radius:4px;padding:1px 8px;font-weight:700;font-size:12px;letter-spacing:.8px;margin-bottom:6px}
+.k13-row em,.k13-foot em{font-style:normal}.k13-late{margin-left:8px;color:#b42318;font-weight:600;font-size:11.5px}
+.k13-blank{display:inline-block;min-width:96px;border-bottom:1px dotted #a39a8c;height:14px}
+.k13-chips{display:flex;flex-wrap:wrap;gap:6px}.k13-chip{font:inherit;font-size:12px;padding:3px 10px;border:1px solid var(--divider);border-radius:999px;background:var(--bg-surface);cursor:pointer;color:var(--text-primary)}.k13-chip[aria-pressed=true]{background:#fdf0e8;border-color:#e8590c;color:#c2410c;font-weight:600}
+.k13-stamp[hidden],.k13-no i[hidden],.k13-late[hidden]{display:none}
+.k13-tb td,.k13-tb th{padding-left:5px;padding-right:5px}
+</style></helmet>
+<div data-ix="root" data-state="sent" style="width:1440px;height:1000px;position:relative;background:var(--bg-page);overflow:hidden"><div class="k13-bar"><a href="#" data-do="Quay lại báo giá (màn BH-02).">‹ Báo giá <span data-f="so0">BG-CS1-2610-0007</span></a><h1>Bản in báo giá</h1><span class="hmt-tag hmt-tag-info">Khuôn K13</span><span style="flex:1"></span><span class="hmt-help" style="margin:0 4px 0 0">Chọn “Lưu thành PDF” để tải</span><button class="hmt-btn" type="button" data-do="Mở hộp in của trình duyệt. Chọn “Lưu thành PDF” để tải file."><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /> <path d="M14 2v4a2 2 0 0 0 2 2h4" /></svg>Tải PDF</button><button class="hmt-btn hmt-btn-primary" type="button" data-do="Mở hộp in của trình duyệt."><svg class="hmt-ic " viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /> <path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6" /> <rect x="6" y="14" width="12" height="8" rx="1" /></svg>In</button></div><div class="k13-wrap"><div class="k13-paper" style="width:794px;height:1123px;zoom:.8;padding:0"><div class="k13-band"></div><div class="k13-in"><div class="k13-h"><img class="k13-img" src="assets/hmt-logo.svg" alt="Hoà Ma Toán"><div class="k13-org"><h2>Hoà Ma Toán · CS1 Nguyễn Chí Thanh</h2><div>Số 12 Nguyễn Chí Thanh, Đống Đa, Hà Nội</div></div></div><div class="k13-ttl"><div><div class="k13-t">BẢNG HỌC PHÍ</div><div class="k13-sub">Dành cho phụ huynh và học sinh</div></div><div class="k13-no"><div><div class="k13-stamp" data-f="stamp" hidden>BẢN NHÁP</div></div><span>Số</span><b data-f="so">BG-CS1-2610-0007</b><i data-f="cu">mã cũ UPS-2610-0031</i></div></div><div class="k13-meta"><div class="k13-box"><div class="k13-cap">KÍNH GỬI PHỤ HUYNH</div><div class="k13-name">Phạm Thu Hương</div><div class="k13-row"><span>Mã phụ huynh</span>PH000047</div><div class="k13-row"><span>Điện thoại</span>0912 *** 345</div></div><div class="k13-box"><div class="k13-cap">THÔNG TIN HỌC PHÍ</div><div class="k13-row"><span>Ngày lập</span><em data-f="lap">10/10/2026</em></div><div class="k13-row"><span>Hạn hiệu lực</span><em data-f="han">24/10/2026</em><em class="k13-late" data-f="qh" hidden>Đã quá hạn 1 ngày</em></div><div class="k13-row"><span>Người lập</span>Trần Thu Hà</div></div></div><table class="k13-tb"><thead><tr><th style="width:4%">#</th><th style="width:14%">Học sinh</th><th style="width:21%">Gói</th><th style="width:8%">Hình thức</th><th class="r" style="width:8%">Giờ mua</th><th class="r" style="width:6%">Giờ tặng</th><th class="r" style="width:10%">Đơn giá</th><th style="width:16%">Chiết khấu · chính sách</th><th class="r" style="width:13%">Thành tiền</th></tr></thead><tbody><tr><td>1</td><td>Phạm Đức Anh</td><td>Toán 8 · Lớp chung</td><td>Offline</td><td class="r">24</td><td class="r">0</td><td class="r">220.000</td><td>Giảm anh chị em · 10%<span class="k13-sm">− 528.000</span></td><td class="r"><b>4.752.000</b></td></tr><tr><td>2</td><td>Phạm Khánh Vy</td><td>Toán 7 · Lớp chung</td><td>Offline</td><td class="r">24</td><td class="r">0</td><td class="r">220.000</td><td>Giảm anh chị em · 10%<span class="k13-sm">− 528.000</span></td><td class="r"><b>4.752.000</b></td></tr><tr><td>3</td><td>Phạm Khánh Vy</td><td>Tiếng Anh 5 · lớp chung</td><td>Offline</td><td class="r">24</td><td class="r">0</td><td class="r">180.000</td><td>Ưu đãi đóng sớm · 5%<span class="k13-sm">− 216.000</span></td><td class="r"><b>4.104.000</b></td></tr><tr class="k13-gift"><td>4</td><td>Phạm Khánh Vy</td><td><span class="k13-gt">Quà tặng</span> Sổ tay công thức Toán 9</td><td>—</td><td class="r">1 cuốn</td><td class="r">—</td><td class="r">0</td><td>Tặng sổ tay công thức</td><td class="r"><b>0</b></td></tr></tbody></table><div class="k13-help2">Quà tặng không có giá, không tính vào tổng (R-TIEN-30).</div><div class="k13-bottom"><div class="k13-words"><span>Bằng chữ</span>Mười ba triệu sáu trăm lẻ tám nghìn đồng</div><div class="k13-total"><div class="k13-tr"><span>Tổng niêm yết</span><b>14.880.000</b></div><div class="k13-tr"><span>Tổng chiết khấu</span><b>− 1.272.000</b></div><div class="k13-tr k13-pay"><span>Thành tiền</span><b>13.608.000 đ</b></div></div></div><div class="k13-sign"><div><b>Phụ huynh xác nhận</b><i>(ký, ghi rõ họ tên)</i></div><div><b>Người lập</b><i>(ký, ghi rõ họ tên)</i><u>Trần Thu Hà</u></div></div></div><div class="k13-foot"><span>Hoà Ma Toán · CS1 Nguyễn Chí Thanh</span><span>Trang 1/1 · In ngày <em data-f="in">20/10/2026</em></span></div></div><div class="k13-side"><h3>Khuôn K13 · bản in</h3><p style="margin:0 0 8px;color:#6b645c">Khuôn đã ghi vào P0 v5 (hàng K13). Dùng chung cho báo giá (A4), biên nhận (A5), phiếu chi (TC-12, chưa vẽ).</p><dl style="margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px"><dt class="hmt-help">Khổ giấy</dt><dd style="margin:0">A4 dọc</dd><dt class="hmt-help">Màn nguồn</dt><dd style="margin:0">BH-02 Báo giá</dd><dt class="hmt-help">Quyền</dt><dd style="margin:0">như quyền xem báo giá</dd><dt class="hmt-help">Điện thoại</dt><dd style="margin:0">nút In ẩn</dd></dl><p style="margin:12px 0 0;color:#6b645c">In được ở mọi trạng thái báo giá. Hạn hiệu lực tính từ ngày bấm Gửi, báo giá Nháp để trống hạn (R-TIEN-05). Đầu trang dùng logo chung HMT, tên và địa chỉ cơ sở. Bảng dòng theo K06c: học sinh, gói, hình thức, giờ mua, giờ tặng, đơn giá, chính sách chiết khấu (nhiều chính sách), thành tiền; dòng quà tặng giá 0.</p><h3 style="margin:14px 0 6px">Xem trạng thái (chỉ để xem khung)</h3><div class="k13-chips"><button type="button" class="k13-chip" data-st="sent" aria-pressed="true">Đã gửi</button><button type="button" class="k13-chip" data-st="late" aria-pressed="false">Đã gửi · quá hạn</button><button type="button" class="k13-chip" data-st="draft" aria-pressed="false">Nháp</button><button type="button" class="k13-chip" data-st="rej" aria-pressed="false">Từ chối</button><button type="button" class="k13-chip" data-st="can" aria-pressed="false">Huỷ</button></div><p style="margin:10px 0 0;color:#6b645c"><b>Đã chốt (Đ273):</b> báo giá Nháp, Từ chối, Huỷ in kèm nhãn BẢN NHÁP, ĐÃ TỪ CHỐI, ĐÃ HUỶ. Nhãn “Đã quá hạn N ngày” cạnh hạn chỉ hiện khi quá hạn.</p></div></div><div class="k13-tst" role="status"></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return { yes: true }; }
+
+    componentDidMount() { const ROOT = document.querySelector('[data-ix=root]'); if (!ROOT) return;
+      function toast(m) { const t = ROOT.querySelector('.k13-tst'); t.textContent = m; t.classList.add('on'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('on'), 2600); }
+      const q = s => ROOT.querySelector('[data-f="' + s + '"]');
+      const S = {
+        sent:  { so: 'BG-CS1-2610-0007', cu: 1, stamp: '', lap: '10/10/2026', han: '24/10/2026', qh: 0, inn: '20/10/2026' },
+        late:  { so: 'BG-CS1-2610-0007', cu: 1, stamp: '', lap: '10/10/2026', han: '24/10/2026', qh: 1, inn: '25/10/2026' },
+        draft: { so: 'BG-CS1-2610-0009', cu: 0, stamp: 'BẢN NHÁP', lap: '12/10/2026', han: '', qh: 0, inn: '20/10/2026' },
+        rej:   { so: 'BG-CS1-2610-0007', cu: 1, stamp: 'ĐÃ TỪ CHỐI', lap: '10/10/2026', han: '24/10/2026', qh: 0, inn: '20/10/2026' },
+        can:   { so: 'BG-CS1-2610-0007', cu: 1, stamp: 'ĐÃ HUỶ', lap: '10/10/2026', han: '24/10/2026', qh: 0, inn: '20/10/2026' }
+      };
+      function setState(k) { const s = S[k]; if (!s) return; ROOT.setAttribute('data-state', k);
+        q('so').textContent = s.so; q('so0').textContent = s.so; q('cu').hidden = !s.cu;
+        const st = q('stamp'); st.hidden = !s.stamp; st.textContent = s.stamp;
+        q('lap').textContent = s.lap; const h = q('han'); h.textContent = s.han; h.classList.toggle('k13-blank', !s.han);
+        q('qh').hidden = !s.qh; q('in').textContent = s.inn;
+        ROOT.querySelectorAll('.k13-chip').forEach(c => c.setAttribute('aria-pressed', c.getAttribute('data-st') === k ? 'true' : 'false')); }
+      ROOT.addEventListener('click', ev => { const c = ev.target.closest('.k13-chip'); if (c) { setState(c.getAttribute('data-st')); return; } const d = ev.target.closest('[data-do]'); if (d) { ev.preventDefault(); toast(d.getAttribute('data-do')); } });
+    }
+}
+</script>
+</body>
+</html>
