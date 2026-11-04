@@ -406,3 +406,10 @@ Bài 055 so mọi cờ với việc hàm ghi chạy được hay bị chặn (11
 ### Hiệu năng
 Đo trên `seed-lon` (8.000 đơn), Trưởng cơ sở CS5: `get_order` 26 ms lần đầu, 5 ms lần sau (đơn Nháp, có cờ); đơn Đã trình 5 ms. Không bảng, chỉ mục mới.
 
+
+## T2 (04/11/2026, migration 065; Đ286, spec 04 R-V2-04, R-V2-31)
+- **SĐT thứ hai:** `app.parent.phone_2` và `app.lead.parent_phone_2` (đúng 10 số bắt đầu 0, như số chính). Chỉ mục `parent_phone_2_idx`, `lead_phone_2_idx` (khớp, kiểm trùng); ô tìm kiếm phụ huynh (`search_text`) tìm được cả số thứ hai.
+- **Khớp phụ huynh theo cả hai số:** `app.find_or_create_parent(..., p_phone_2 default null)`: số chính hoặc số thứ hai trùng số chính hoặc số thứ hai của hồ sơ nào thì dùng hồ sơ đó (còn dùng trước, rồi cũ nhất; không ghi đè tên); hồ sơ chưa có số thứ hai thì được điền số thứ hai mới. Không khớp thì tạo mới. Sai độ dài báo `HMT_SDT_SAI`.
+- **Kiểm trùng khi tạo lead:** `app.find_duplicate_contacts` khớp cả số thứ hai; vẫn chỉ cảnh báo.
+- **Cột mới:** phụ huynh `relative_name` (người thân); học sinh `gender` (NAM, NU), `school_type`, `grade` (1 đến 12, chỉ mục `student_grade_idx`). Học sinh không có SĐT riêng (anh chốt 04/11).
+- Hàm tạo cơ hội từ lead chưa truyền số thứ hai của lead (làm cùng nạp cơ hội ở T4).
