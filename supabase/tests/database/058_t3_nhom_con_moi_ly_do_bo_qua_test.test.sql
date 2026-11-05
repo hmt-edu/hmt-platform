@@ -21,8 +21,8 @@ select is((select count(*)::int from app.catalog_item where catalog_code = 'OPP_
 
 select is((select array_agg(code order by sort_order) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and is_active),
           array['BQ1', 'BQ2', 'BQ3', 'BQ4', 'BQ5'], 'R-CRM-14: danh mục 33 còn hiệu lực là BQ1–BQ5');
-select is((select array_agg(code order by code) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and not is_active),
-          array['CO_KET_QUA_NOI_KHAC', 'HOC_SINH_CU', 'KHAC', 'PH_KHONG_MUON'], 'Bốn lý do cũ chuyển sang Ngừng, không xoá');
+select is((select array_agg(code order by code) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and not is_active and code <> 'NAP_CU'),
+          array['CO_KET_QUA_NOI_KHAC', 'HOC_SINH_CU', 'KHAC', 'PH_KHONG_MUON'], 'Bốn lý do cũ chuyển sang Ngừng, không xoá (không tính NAP_CU của T4c)');
 select is((select array_agg(code order by code) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and requires_note and is_active),
           array['BQ5'], 'Chỉ BQ5 "Lý do khác" bắt buộc ghi chú');
 select is((select name from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and code = 'BQ4'),

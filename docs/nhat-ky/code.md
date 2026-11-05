@@ -55,3 +55,7 @@
 
 ## 05/11/2026: nhập canvas Bán hàng, Thu chi (v146 và bổ sung v2)
 - `design/hmt-canvas-9933/` (485 khung, `canvas.json` khớp 485 file) thay `hmt-canvas-6f57`; `design/hmt-canvas-8262/` (6 khung). Chỉ tài liệu, không sửa file canvas (Đ293).
+
+## 05/11/2026: T4c nạp Cơ hội, ngoại lệ R-CRM-03 cho lượt nạp
+- Migration 072: `import_one_opportunity`, `import_records` thêm loại `CO_HOI` và báo cáo `summary`; cột `legacy_created_at` (lead, cơ hội), `student_info_missing` (cơ hội), `opportunity_import` (phụ huynh); lý do `NAP_CU` (Ngừng).
+- **Anh chốt 05/11 (ngoại lệ chỉ cho lượt nạp):** cơ hội L5 trở lên thiếu tên và/hoặc năm sinh em vẫn nạp, đánh dấu "thiếu thông tin em (dữ liệu cũ)", bổ sung trước khi sang bước tiếp theo hoặc ghi danh; không suy năm sinh từ khối; R-CRM-03 giữ nguyên cho cơ hội tạo mới. Kiểm file `HMT5_CHUAN_BI_IMPORT.xlsx` (239 dòng Cơ hội, 150 từ L5 trở lên): 146 thiếu năm sinh, 124 thiếu cả tên em.

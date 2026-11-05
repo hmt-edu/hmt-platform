@@ -51,7 +51,7 @@ select is((select count(distinct sort_order)::int from app.catalog_item where ca
 
 -- Danh mục 33.
 select is((select kind from app.catalog where code = 'TEST_SKIP_REASON'), 'MO', 'Danh mục 33 là danh mục mở');
-select is((select array_agg(name order by sort_order) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and not is_active),
+select is((select array_agg(name order by sort_order) from app.catalog_item where catalog_code = 'TEST_SKIP_REASON' and not is_active and code <> 'NAP_CU'),
           array['Học sinh cũ đã biết trình độ', 'Phụ huynh không muốn test', 'Đã có kết quả test nơi khác', 'Khác'],
           'R-CRM-14: bốn giá trị cũ của danh mục 33 còn lại ở trạng thái Ngừng (T3 thay bằng BQ1–BQ5)');
 
