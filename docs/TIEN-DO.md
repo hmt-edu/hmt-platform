@@ -152,6 +152,14 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
 Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
+**Thứ tự việc anh làm trên bản chạy thật trước khi nạp người dùng thật (anh chốt 05/11; hmt-prod hiện chưa có migration 069, vì còn dừng ở tag cũ):**
+1. **Đưa bản mới lên chạy thật qua `hmt-deploy`** > Deploy production, chọn tag đã qua staging và có migration mới nhất (hiện đến 071; phải gồm 069 nạp Người dùng, 070 nhóm tự đăng xuất, 071 phòng học tạm). Việc này cũng đưa giao diện mới và Edge Function (kể cả `import-users`) lên. Kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy` nếu chưa chép. Sau đó kiểm: `select max(version) from supabase_migrations.schema_migrations;` đúng số migration mới nhất của tag đã chọn.
+2. **Đặt miền email quy ước:** `select app.set_setting('import_user_email_domain', 'nv.hmt.invalid');` rồi đọc lại `select app.get_setting('import_user_email_domain');` phải ra `nv.hmt.invalid`. Chạy trước bước 1 sẽ báo "Chưa khai báo tham số" (anh đã gặp). Staging anh đã đặt xong 05/11.
+3. **Kiểm trước khi nạp:** (a) `select code, idle_group from app.role order by sort_order;` đúng: ADMIN, BRANCH_MANAGER, SALES, CSKH, ACCOUNTANT, MARKETER, MARKETING_MANAGER, MARKETING là `staff`; TEACHER, TA là `teacher`; STUDENT, PARENT là `student`; (b) `select code, name from app.room order by code;` có 5 phòng mỗi cơ sở CS1 đến CS5 (CSx_T1_01 đến CSx_T3_01), không có P101, P102, ONL1; (c) bản chạy thật không có dữ liệu giả: `select exists (select from app.holiday where name like '%(thử nghiệm)');` phải ra `false` (lệnh tạo tài khoản giả chỉ chạy khi thấy `true`, nên không bao giờ chạy trên bản chạy thật).
+4. **Cần kiểm thêm trước khi nạp (em chưa xác nhận được, anh hoặc em kiểm khi bước 1 xong):** secret của Edge Function trên hmt-prod (khoá `sb_secret_`, khoá bí mật Turnstile) đã đặt trong `hmt-deploy`; công tắc tính năng theo cơ sở (`app.feature_flag`) cho các phân hệ đang dùng ở CS5; tài khoản Admin chạy thật còn đăng nhập được sau cập nhật.
+5. **Nạp người dùng thật** (Edge Function `import-users`, xem trước rồi nạp, mật khẩu tạm tải một lần), rồi các lần nạp sau theo `docs/nghiep-vu/nap-du-lieu.md`.
+
+
 ## Thứ tự tiếp theo (anh chốt 23/10)
 
 1. **P3e Phiếu kiểm tra:** PR 1 DB (migration 039: `get_student_test`, đếm nhóm, Xuất, danh sách giáo viên chấm và phòng) rồi PR 2 giao diện (TS-16 danh sách + Kanban + Lịch, TS-17 trang phiếu, TS-15 tạo và đổi lịch; mở khoá mã phiếu ở trang Cơ hội và hộp chặn L7, L8). Anh duyệt kế hoạch 23/10 (QĐ-T6: gộp ba kiểu xem một PR). **Cả hai PR đã gộp** (P3e-1 DB, P3e-2 giao diện).
@@ -207,7 +215,7 @@ Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/1
 ## Việc sau 28/11 (anh Trường chốt 05/11/2026)
 
 - **PDF hướng dẫn người dùng theo quy trình, có ảnh chụp màn hình.** Code viết kịch bản Playwright chụp ảnh trên staging bằng dữ liệu giả; nội dung do Chat soạn theo từng vai trò.
-- **Năm màn quản trị và cấu hình, dựng sau mốc 17/11 và xong trước 28/11 (anh chốt 05/11, danh sách cuối), theo thứ tự, mỗi màn một PR riêng, làm song song:** (1) Người dùng, thêm nút Tạo (mật khẩu tạm hiện một lần theo khuôn K4g); (2) Danh mục (QT-06, QT-07); (3) Bảng giá (CH-03); (4) Gói bán (CH-01); (5) Cơ sở và phòng học (QT-08, cần thêm hàm thêm, sửa phòng ở DB).
+- **Năm màn quản trị và cấu hình, dựng sau mốc 17/11 và xong trước 28/11 (anh chốt 05/11, danh sách cuối), theo thứ tự, mỗi màn một PR riêng, làm song song:** (1) Người dùng, thêm nút Tạo (mật khẩu tạm hiện một lần theo khuôn K4g) **, chức năng Sửa email và đăng nhập bằng tên đăng nhập** (anh chốt 05/11: tên đăng nhập là tên viết tắt có đánh số, `annv`, `annv1`, theo R-V2-08; Edge Function `login` đổi tên đăng nhập thành email, cột `username` không trùng lấy từ cột mã cũ đã nạp, tên cấm trùng mã HS, tên không có trả lời như sai mật khẩu; làm sau 10/11 trong đợt dựng màn Người dùng; ước 6 đến 8 giờ) **và chức năng Sửa email** (anh yêu cầu 05/11: người nạp bằng email quy ước sau này đổi sang email thật; cần Edge Function `admin-users` thêm thao tác đổi email ở Supabase Auth, và bỏ luật "không đổi `login_name`" riêng cho thao tác này của Admin, kiểm trùng email, ghi nhật ký, phiên cũ bị thu hồi; luật này chưa có trong `docs/spec/`: hỏi anh qua Chat ghi luật trước khi làm); (2) Danh mục (QT-06, QT-07); (3) Bảng giá (CH-03); (4) Gói bán (CH-01); (5) Cơ sở và phòng học (QT-08, cần thêm hàm thêm, sửa phòng ở DB).
   - Gói bán và Cơ sở và phòng học chưa có khung: Code tự dựng theo khuôn K10 (cấu hình), anh không nhờ Design vẽ trước; anh báo Design sau.
   - **Để SQL:** Điều khoản thanh toán, Chính sách chiết khấu; nếu đến 27/11 còn thời gian thì làm tiếp. Vai trò, Ma trận quyền, Tham số, Công tắc, nhật ký và các màn Cấu hình, Quản trị còn lại giữ SQL hoặc làm theo phân hệ của nó (bảng đối chiếu 20 mục ở báo cáo 05/11: chỉ Người dùng có màn, 19 mục là trang "Sắp có").
   - Anh OK ngay khi Code báo CI xanh. Nếu xong màn thứ ba mà còn dư nhiều ngày, Code báo anh để anh xem có kéo Điều khoản thanh toán hoặc Chính sách chiết khấu vào không.
@@ -215,7 +223,7 @@ Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/1
 
     | Màn | Giờ code |
     |---|---|
-    | Người dùng, nút Tạo | 3 đến 4 |
+    | Người dùng, nút Tạo và Sửa email | 5 đến 6 (thêm 2 giờ cho Sửa email: Edge Function, kiểm trùng, bài kiểm thử) |
     | Danh mục | 6 đến 8 |
     | Bảng giá | 5 đến 7 |
     | Ba màn đầu | 14 đến 19 giờ, khoảng 2 đến 3 ngày làm việc |
@@ -314,3 +322,5 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
 - **Chẩn đoán trên thử nghiệm** (không có khoá staging trên máy): tạo nhánh tạm thêm job `workflow_dispatch` vào `ci.yml`
   đọc secret, chạy `gh workflow run ci.yml --ref <nhánh>`, đọc log job, huỷ lượt chạy, xoá nhánh. Không in khoá.
 - **File không đưa vào git**: `PROMPT-GD0-BUOC1.md`.
+
+- **Nút "Đặt lại mật khẩu" ở màn Người dùng (QT-02)** làm trước 10/11, một PR nhỏ riêng (anh chốt 05/11): người nạp bằng email quy ước không dùng được "Quên mật khẩu" qua email nên Admin đặt lại; dùng thao tác `reset_password` của Edge Function `admin-users`, mật khẩu tạm hiện một lần theo khuôn K4g. Miền email quy ước chốt `nv.hmt.invalid` (anh đặt bằng `app.set_setting` trên staging và prod trước khi nạp prod). Bước chuyển file nhân sự sang mẫu nạp (chạy ngoài repo, không lưu file nhân sự): tạo cột tên đăng nhập (viết tắt, trùng thì đánh số), email sai dạng để trống và báo số dòng cùng 4 chữ số đầu mã NV; bước nạp vẫn báo LOI với email sai dạng.
