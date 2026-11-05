@@ -48,3 +48,7 @@
 - Migration 068: `app.import_records` (xem trước/nạp, chỉ Admin), `import_one_parent`, `import_one_student`, `app.import_log`, tham số `import_max_rows`. Bài kiểm 059. Tài liệu `docs/nghiep-vu/nap-du-lieu.md`.
 - Kết quả và nhật ký nạp chỉ có số dòng và chữ cái đầu của tên, không có họ tên, SĐT, mã cũ (có bài kiểm).
 - Việc đã kiểm SQL xoá cơ hội giả của #157 trên DB local có dữ liệu giả (đơn, báo giá, phiếu kiểm tra, lịch hẹn); lead về C4C.
+
+## 04/11/2026: T4b nạp Người dùng
+- Migration 069: `import_users_resolve`, `import_user_create`, `import_user_set_manager`, `import_user_lock`, `import_users_finish`, bảng `import_user_branch_pending`, tham số `import_user_email_domain`, `import_temp_password_length`. Edge Function `import-users`; `_shared/temp-password.ts`. Bài kiểm 060 và Vitest. Đã thử Edge Function trên Supabase local (xem trước, nạp, nạp lại).
+- Quyết định anh trả lời 04/11 (#160): email quy ước theo tham số, nhiều cơ sở lấy cơ sở đầu kèm cảnh báo, mật khẩu tạm trả một lần.

@@ -436,6 +436,10 @@ verify_jwt = false
 [functions.admin-users]
 verify_jwt = true
 
+# T4b: nạp Người dùng theo lô, đòi token của Admin (cùng khuôn admin-users).
+[functions.import-users]
+verify_jwt = true
+
 # T5: chẩn đoán header IP, chỉ trả lời trên thử nghiệm (HMT_ALLOW_STAGING_PREVIEWS=true); nơi khác trả 404.
 [functions.ip-check]
 verify_jwt = false
