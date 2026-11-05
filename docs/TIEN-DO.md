@@ -204,6 +204,27 @@ Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/1
 - Tham số mới cần khai báo bằng migration: `class_slot_repeat_weeks_max` (4 tuần, khoảng 1 đến 8, R-LOP-13).
 - Cách tính phạm vi quyền hiện coi mọi phạm vi khác "toàn hệ thống" là "cùng cơ sở": xử lý khi có phạm vi "được phân công" (`docs/nghiep-vu/tuyen-sinh.md`).
 
+## Việc sau 28/11 (anh Trường chốt 05/11/2026)
+
+- **PDF hướng dẫn người dùng theo quy trình, có ảnh chụp màn hình.** Code viết kịch bản Playwright chụp ảnh trên staging bằng dữ liệu giả; nội dung do Chat soạn theo từng vai trò.
+- **Năm màn quản trị và cấu hình, dựng sau mốc 17/11 và xong trước 28/11 (anh chốt 05/11, danh sách cuối), theo thứ tự, mỗi màn một PR riêng, làm song song:** (1) Người dùng, thêm nút Tạo (mật khẩu tạm hiện một lần theo khuôn K4g); (2) Danh mục (QT-06, QT-07); (3) Bảng giá (CH-03); (4) Gói bán (CH-01); (5) Cơ sở và phòng học (QT-08, cần thêm hàm thêm, sửa phòng ở DB).
+  - Gói bán và Cơ sở và phòng học chưa có khung: Code tự dựng theo khuôn K10 (cấu hình), anh không nhờ Design vẽ trước; anh báo Design sau.
+  - **Để SQL:** Điều khoản thanh toán, Chính sách chiết khấu; nếu đến 27/11 còn thời gian thì làm tiếp. Vai trò, Ma trận quyền, Tham số, Công tắc, nhật ký và các màn Cấu hình, Quản trị còn lại giữ SQL hoặc làm theo phân hệ của nó (bảng đối chiếu 20 mục ở báo cáo 05/11: chỉ Người dùng có màn, 19 mục là trang "Sắp có").
+  - Anh OK ngay khi Code báo CI xanh. Nếu xong màn thứ ba mà còn dư nhiều ngày, Code báo anh để anh xem có kéo Điều khoản thanh toán hoặc Chính sách chiết khấu vào không.
+  - **Ước lượng (Code, 05/11, thô, chưa kiểm kỹ hàm đọc của Danh mục và Bảng giá):**
+
+    | Màn | Giờ code |
+    |---|---|
+    | Người dùng, nút Tạo | 3 đến 4 |
+    | Danh mục | 6 đến 8 |
+    | Bảng giá | 5 đến 7 |
+    | Ba màn đầu | 14 đến 19 giờ, khoảng 2 đến 3 ngày làm việc |
+    | Gói bán, Cơ sở và phòng học | chưa ước lượng lại; trước đó mỗi màn 2 đến 3 ngày |
+
+    Giờ code đã gồm pgTAP cho phần DB mới, Playwright và tài liệu. Mỗi PR còn khoảng 45 đến 60 phút máy chạy (bộ kiểm trên máy khoảng 10 phút cộng chạy lại bài chập chờn, CI khoảng 17 đến 20 phút, gộp và cập nhật staging khoảng 5 phút) chưa tính chờ OK. Code viết PR kế tiếp trong lúc CI chạy; PR có migration gộp theo thứ tự số. Nếu anh OK nhanh: ba màn đầu khoảng 3 đến 4 ngày làm việc; nếu mỗi PR chờ OK nửa ngày: khoảng 5 đến 6 ngày. Code báo thêm nếu thấy con số lệch.
+- **Trang hướng dẫn đổi cấu hình bằng SQL cho người tiếp quản.** Viết một trang (kèm đoạn SQL mẫu để sao chép) cho hai màn để SQL (Điều khoản thanh toán, Chính sách chiết khấu) và các mục Quản trị khác theo bảng đối chiếu (Vai trò, Ma trận quyền, Tham số, Công tắc, nhật ký). Nêu hàm DB tương ứng, ai được chạy, cách chạy qua PR, cách kiểm lại. Không viết khoá hay dữ liệu thật vào trang.
+- **Dữ liệu gói bán khi nạp (anh chốt 05/11):** 12 sản phẩm nạp dạng đang bán, giá online của 2 sản phẩm để trống, mã gói giữ như file; gói bán không có cột số giờ (giờ do nhân viên điền trên dòng báo giá). Khi làm Bán hàng: hộp chọn gói hiện ô trống cho giá chưa có thì đổi thành chữ "Chưa cấu hình".
+
 ## Việc để sau
 
 - **Bài e2e đăng nhập chập chờn (04/11, anh Trường: xử lý sau mốc 10/11, không chặn T3, T4):** chạy cả bộ `check:all` lúc máy bận thì 1 đến 6 bài đăng nhập (SĐT, `enterAs`, tên khác nhau mỗi lượt) trượt ở bước chờ về `/crm`, chạy riêng từng bài đều đạt (T2: `auth.spec` dòng 27 đạt 10/10). Chưa xác định gốc; nghi cùng nguyên nhân dịch vụ đăng nhập local ở mục dưới. Cần: đọc nhật ký auth lúc trượt, thử tăng độ chờ có điều kiện, không nới mù.
