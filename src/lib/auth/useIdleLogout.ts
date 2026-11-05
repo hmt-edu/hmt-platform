@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { IDLE_SETTING_KEY, idleGroup } from './claims';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import { IDLE_SETTING_KEY, idleGroup, type IdleGroup, type RoleGroups } from './claims';
 import { readIntSetting } from './api';
 import { useAuth } from './authContext';
 import { markSessionEnded } from './sessionEnd';
@@ -24,6 +25,23 @@ function writeLastActivity(): void {
   } catch {
     // Trình duyệt chặn lưu trữ: chỉ kiểm trong phiên hiện tại.
   }
+}
+
+/** Đọc nhóm các vai trò của người dùng từ bảng vai trò, rồi đọc số phút của nhóm chặt nhất. */
+async function readIdleLimit(
+  supabase: SupabaseClient,
+  roleCodes: string[],
+): Promise<number | null> {
+  const { data } = await supabase
+    .schema('app')
+    .from('role')
+    .select('code, idle_group')
+    .in('code', roleCodes);
+  const groups: RoleGroups = {};
+  for (const r of (data ?? []) as { code: string; idle_group: IdleGroup }[]) {
+    groups[r.code] = r.idle_group;
+  }
+  return readIntSetting(supabase, IDLE_SETTING_KEY[idleGroup(roleCodes, groups)]);
 }
 
 /**
@@ -57,7 +75,7 @@ export function useIdleLogout(): void {
         void signOut();
       }
     };
-    void readIntSetting(supabase, IDLE_SETTING_KEY[idleGroup(roles.split(','))]).then((value) => {
+    void readIdleLimit(supabase, roles.split(',')).then((value) => {
       if (cancelled) return;
       limitMinutes = value;
       check();

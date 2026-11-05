@@ -12,7 +12,9 @@ describe('hộp thoại hết phiên (DN09, R-HT-03): số thời gian theo nhó
   ];
   for (const g of groups) {
     it(`nhóm ${g.roles[0]}: tham số ${g.key} → "${g.text}"`, () => {
-      expect(IDLE_SETTING_KEY[idleGroup(g.roles)]).toBe(g.key);
+      expect(IDLE_SETTING_KEY[idleGroup(g.roles, { SALES: 'staff', TEACHER: 'teacher' })]).toBe(
+        g.key,
+      );
       markSessionEnded('idle', g.minutes);
       const end = takeSessionEnded();
       expect(end).toEqual({ reason: 'idle', minutes: g.minutes });

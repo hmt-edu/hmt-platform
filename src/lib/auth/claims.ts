@@ -75,13 +75,17 @@ export function homePortal(claims: HmtClaims): Portal | null {
 }
 
 export type IdleGroup = 'staff' | 'teacher' | 'student';
-const STAFF_ROLES = ['ADMIN', 'BRANCH_MANAGER', 'SALES', 'CSKH', 'ACCOUNTANT'];
-const TEACHER_ROLES = ['TEACHER', 'TA'];
+/** Nhóm của từng vai trò, đọc từ cột idle_group của bảng vai trò (không viết cứng danh sách vai trò). */
+export type RoleGroups = Record<string, IdleGroup | undefined>;
 
-/** Nhóm tự đăng xuất; người nhiều vai trò lấy nhóm chặt nhất (nhân viên > giáo viên > học sinh). */
-export function idleGroup(roles: string[]): IdleGroup {
-  if (roles.some((r) => STAFF_ROLES.includes(r))) return 'staff';
-  if (roles.some((r) => TEACHER_ROLES.includes(r))) return 'teacher';
+/**
+ * Nhóm tự đăng xuất; người nhiều vai trò lấy nhóm chặt nhất (nhân viên > giáo viên > học sinh).
+ * Vai trò không có trong bảng tính như học sinh (mặc định của cột).
+ */
+export function idleGroup(roles: string[], groups: RoleGroups): IdleGroup {
+  const of = (r: string) => groups[r] ?? 'student';
+  if (roles.some((r) => of(r) === 'staff')) return 'staff';
+  if (roles.some((r) => of(r) === 'teacher')) return 'teacher';
   return 'student';
 }
 

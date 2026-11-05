@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { homePortal, idleGroup, pendingStep, portalAccess, readClaims } from './claims';
+import {
+  homePortal,
+  idleGroup,
+  pendingStep,
+  portalAccess,
+  readClaims,
+  type RoleGroups,
+} from './claims';
 
 function token(payload: Record<string, unknown>): string {
   const encode = (o: unknown) =>
@@ -64,9 +71,22 @@ describe('bước còn phải làm', () => {
 });
 
 describe('nhóm tự đăng xuất', () => {
+  const groups: RoleGroups = {
+    SALES: 'staff',
+    MARKETER: 'staff',
+    TEACHER: 'teacher',
+    TA: 'teacher',
+    STUDENT: 'student',
+  };
   it('nhân viên chặt nhất, rồi giáo viên, rồi học sinh', () => {
-    expect(idleGroup(['TEACHER', 'SALES'])).toBe('staff');
-    expect(idleGroup(['TA'])).toBe('teacher');
-    expect(idleGroup(['STUDENT'])).toBe('student');
+    expect(idleGroup(['TEACHER', 'SALES'], groups)).toBe('staff');
+    expect(idleGroup(['TA'], groups)).toBe('teacher');
+    expect(idleGroup(['STUDENT'], groups)).toBe('student');
+  });
+  it('vai trò Marketing do cột nhóm quyết định, không bị tính như học sinh (lỗi 05/11)', () => {
+    expect(idleGroup(['MARKETER'], groups)).toBe('staff');
+  });
+  it('vai trò không có trong bảng tính như học sinh', () => {
+    expect(idleGroup(['MOI'], groups)).toBe('student');
   });
 });
