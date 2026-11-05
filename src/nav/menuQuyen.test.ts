@@ -44,6 +44,11 @@ describe('menu Cấu hình theo phân hệ quyền (PR 6e)', () => {
     expect(menuFor(['ADMIN'])).toContain('QT-15');
   });
 
+  it('Nhập dữ liệu (QT-18) chỉ Quản trị', () => {
+    expect(menuFor(['ADMIN'])).toContain('QT-18');
+    expect(menuFor(['CONFIG_SALES', 'HOLIDAY'])).not.toContain('QT-18');
+  });
+
   it('Lịch hẹn theo phân hệ Lịch hẹn, không còn đi theo Cơ hội', () => {
     expect(menuFor(['APPOINTMENT'])).toContain('TS-11');
     expect(menuFor(['OPPORTUNITY'])).not.toContain('TS-11');

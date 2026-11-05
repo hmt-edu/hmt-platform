@@ -350,6 +350,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
 | QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | Danh sách · K03 | C | Máy tính | CS, AD | Cấp tài khoản theo mã PH khi mở cổng phụ huynh | Cấp; Khoá; Đặt lại mật khẩu | KH-02 | — |
+| QT-18 | Nhập dữ liệu cũ (chọn loại, tải file CSV, xem trước từng dòng, nạp, tải dòng lỗi) | Trang + hộp nhiều bước · K4b ⑤ | B | Máy tính | AD | **(anh chốt 05/11: Design chưa vẽ, dựng tối giản theo khuôn có sẵn)** Loại nạp: Người dùng, Phụ huynh, Học sinh (Cơ hội sau T4c); xem trước đếm Hợp lệ, Trùng, Lỗi; mật khẩu tạm Người dùng hiện một lần | Nạp thật, Tải dòng lỗi | QT-01 | docs/nghiep-vu/nap-du-lieu.md |
 
 ### Cổng giáo viên
 

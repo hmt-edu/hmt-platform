@@ -427,6 +427,13 @@ export const CRM_MENU: MenuGroup[] = [
         stage: B4,
       },
       {
+        code: 'QT-18',
+        label: 'Nhập dữ liệu',
+        slug: 'quan-tri/nhap-du-lieu',
+        requires: can('ADMIN'),
+        stage: B4,
+      },
+      {
         code: 'QT-12',
         label: 'Nhật ký đăng nhập, xuất file',
         slug: 'quan-tri/nhat-ky-dang-nhap',

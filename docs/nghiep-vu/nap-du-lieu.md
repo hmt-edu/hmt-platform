@@ -50,3 +50,11 @@ Cột: `username`, `ho_ten`, `ma_nv`, `vai_tro`, `co_so_truy_cap`, `trang_thai`,
 **Không in dữ liệu cá nhân:** kết quả trả về trình duyệt, thông báo lỗi, cảnh báo và nhật ký nạp không có họ tên, email, tên đăng nhập; chỉ số dòng và chữ cái đầu của tên. Cột `resolved` (có email, tên đăng nhập) chỉ dùng trong Edge Function và bị bỏ trước khi trả về.
 
 Kiểm thử: `supabase/tests/database/060_t4b_nap_nguoi_dung.test.sql` (quyền, từng luật kiểm dòng, miền email là tham số, tạo tài khoản, quản lý, khoá, nhật ký, quét không lộ dữ liệu cá nhân), Vitest `supabase/functions/_shared/temp-password.test.ts` (mật khẩu tạm). Đã chạy thử Edge Function trên Supabase local: xem trước, nạp (3 tài khoản, 1 lỗi), nạp lại (0 nạp, 3 bỏ qua, không trả mật khẩu).
+
+## Màn Nhập (QT-18, T5)
+Đường dẫn `/crm/quan-tri/nhap-du-lieu`, chỉ Admin. Dựng tối giản theo khuôn hộp nhiều bước K4b ⑤ (Design chưa vẽ, anh chốt 05/11 không chờ). Code: `src/pages/nhap-du-lieu/`.
+- Loại nạp hiện có: Người dùng (gọi Edge Function `import-users`), Phụ huynh, Học sinh (gọi `app.import_records`). Cơ hội, Phiếu test thêm khi làm T4c, T4d.
+- File: **CSV UTF-8** (mỗi tab của file mẫu một file), dòng đầu là tên cột như trong file mẫu; dấu "," hoặc ";". Thiếu cột bắt buộc thì chặn ngay ở bước tải file, nêu tên cột; cột lạ bị bỏ qua và liệt kê. Quá `import_max_rows` dòng thì chặn cả file.
+- Bước 1 Tải file; bước 2 Xem trước (cùng hàm với nạp thật, `commit = false`): ô đếm Hợp lệ, Trùng, Lỗi bấm để lọc; bảng 50 dòng mỗi trang, mỗi dòng chỉ có số dòng, chữ cái đầu tên, kết quả, câu giải thích (không họ tên, SĐT, email).
+- Nạp thật rồi hộp kết quả: số dòng nạp, trùng, lỗi; nút **Tải dòng lỗi và trùng** (file gốc kèm cột `ket_qua`, `ly_do`, Admin sửa rồi nạp lại; dòng đã nạp báo trùng, bỏ qua). Người dùng: nút **Tải file mật khẩu tạm** (hiện một lần, chưa tải thì chưa đóng được hộp).
+- Kiểm thử: Vitest `importFile.test.ts`; Playwright `e2e/nhap-du-lieu.spec.ts` (nạp Phụ huynh thật; Người dùng chỉ kiểm bước tải file vì Edge Function không chạy ở môi trường kiểm thử).
