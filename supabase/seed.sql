@@ -2,17 +2,7 @@
 -- CHỈ dữ liệu giả: không bao giờ đưa tên, số điện thoại thật của học sinh, phụ huynh vào đây.
 -- Chạy lại nhiều lần không nhân đôi dữ liệu (on conflict do nothing / where not exists).
 
--- Phòng học giả: mỗi cơ sở dạy học 3 phòng (Hội sở là văn phòng, không có phòng).
-insert into app.room (branch_id, code, name, capacity, sort_order)
-select b.id, r.code, r.name, r.capacity, r.sort_order
-  from app.branch b
- cross join (values
-   ('P101', 'Phòng 101 (giả)', 12, 1),
-   ('P102', 'Phòng 102 (giả)', 8, 2),
-   ('ONL1', 'Phòng online 1 (giả)', 20, 3)
- ) as r (code, name, capacity, sort_order)
- where not b.is_office
-on conflict (branch_id, code) do nothing;
+-- Phòng học: 5 phòng tạm mỗi cơ sở dạy học (CSx-T1-01 ...) do migration 071 tạo, không cần seed ở đây.
 
 -- Ngày nghỉ giả để thử: một ngày chung, một ngày riêng CS5.
 insert into app.holiday (holiday_date, name, branch_id)
@@ -32,11 +22,11 @@ insert into app.setting_branch (setting_key, branch_id, value)
 select 'quotation_validity_days', id, '7' from app.branch where code = 'CS5'
 on conflict (setting_key, branch_id) do nothing;
 
--- Ghi chú giả gắn vào phòng P101 của CS1.
+-- Ghi chú giả gắn vào phòng CS1-T1-01 của CS1.
 insert into app.note (entity_type, entity_id, body)
 select 'ROOM', r.id, 'Ghi chú thử nghiệm: máy chiếu phòng này cần kiểm tra.'
   from app.room r join app.branch b on b.id = r.branch_id
- where b.code = 'CS1' and r.code = 'P101'
+ where b.code = 'CS1' and r.code = 'CS1_T1_01'
    and not exists (select from app.note n where n.entity_type = 'ROOM' and n.entity_id = r.id);
 
 -- ---------------------------------------------------------------------------

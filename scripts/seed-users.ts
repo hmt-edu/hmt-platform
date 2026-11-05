@@ -84,7 +84,7 @@ async function main() {
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
   const marker = await db.query<{ staging: boolean }>(
-    "select exists (select from app.room where name like '%(giả)') as staging",
+    "select exists (select from app.holiday where name like '%(thử nghiệm)') as staging",
   );
   if (!marker.rows[0]?.staging) {
     await db.end();
