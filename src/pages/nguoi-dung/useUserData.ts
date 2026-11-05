@@ -85,6 +85,16 @@ export async function unlockUser(supabase: SupabaseClient, userId: string): Prom
   await callFunction(supabase, 'admin-users', { action: 'unlock', userId });
 }
 
+/** Đặt lại mật khẩu: máy chủ sinh mật khẩu tạm, trả MỘT lần (hiện ở hộp mật khẩu tạm, không lưu ở đâu); người đó phải đổi ở lần đăng nhập đầu. */
+export async function resetUserPassword(supabase: SupabaseClient, userId: string): Promise<string> {
+  const result = await callFunction<{ ok: boolean; password?: string }>(supabase, 'admin-users', {
+    action: 'reset_password',
+    userId,
+  });
+  if (!result.password) throw new Error('Máy chủ không trả mật khẩu tạm.');
+  return result.password;
+}
+
 /** Đổi quản lý trực tiếp (R-HT-06): người quản lý trống là bỏ quản lý. */
 export async function setUserManager(
   supabase: SupabaseClient,

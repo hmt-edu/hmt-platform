@@ -88,7 +88,7 @@ test('Người không phải Admin mở màn Người dùng: báo không có quy
   ).toBeVisible();
 });
 
-test('Bản ghi: thông tin, lịch sử đăng nhập, menu Hành động (không có Đặt lại mật khẩu)', async ({
+test('Bản ghi: thông tin, lịch sử đăng nhập, menu Hành động (có Đặt lại mật khẩu)', async ({
   page,
 }) => {
   await openTarget(page);
@@ -107,8 +107,7 @@ test('Bản ghi: thông tin, lịch sử đăng nhập, menu Hành động (khô
   ]) {
     await expect(menuItem(page, name)).toBeVisible();
   }
-  // Đặt lại mật khẩu cần hộp mật khẩu tạm K4g (chờ #69): chưa có mục này.
-  await expect(menuItem(page, 'Đặt lại mật khẩu')).toHaveCount(0);
+  await expect(menuItem(page, 'Đặt lại mật khẩu')).toBeVisible();
 });
 
 test('Hộp Sửa vai trò, Đổi cơ sở, Khoá: kiểm biểu mẫu (không gửi; Edge Function không chạy ở đây)', async ({
@@ -217,12 +216,44 @@ test('Đặt lại hai bước: xoá thiết bị của người đó, vai trò 
   await expect(page.getByText(/0 thiết bị/)).toBeVisible();
 });
 
-test('Bản ghi của chính Admin: không có Thu hồi phiên, Đặt lại hai bước (Đ50)', async ({
+test('Bản ghi của chính Admin: không có Thu hồi phiên, Đặt lại mật khẩu, Đặt lại hai bước (Đ50)', async ({
   page,
 }) => {
   await openTarget(page, 'Quản trị CS5 (giả)');
   await openMenu(page);
   await expect(menuItem(page, 'Sửa vai trò')).toBeVisible();
   await expect(menuItem(page, 'Thu hồi phiên')).toHaveCount(0);
+  await expect(menuItem(page, 'Đặt lại mật khẩu')).toHaveCount(0);
   await expect(menuItem(page, 'Đặt lại hai bước')).toHaveCount(0);
+});
+
+// Edge Function admin-users không chạy ở môi trường kiểm thử: trả lời giả để kiểm hộp xác nhận và hộp mật khẩu tạm (K4g, hiện một lần).
+test('Đặt lại mật khẩu: hộp xác nhận, rồi hộp mật khẩu tạm hiện một lần, chưa chép thì báo trước khi đóng', async ({
+  page,
+}) => {
+  const temp = 'Tam1234567abcd';
+  let calls = 0;
+  await page.route('**/functions/v1/admin-users', async (route) => {
+    calls += 1;
+    expect(route.request().postDataJSON()).toMatchObject({ action: 'reset_password' });
+    await route.fulfill({ json: { ok: true, password: temp } });
+  });
+  await openTarget(page);
+  await openMenu(page);
+  await menuItem(page, 'Đặt lại mật khẩu').click();
+  const confirm = page.getByRole('alertdialog', { name: 'Đặt lại mật khẩu' });
+  await expect(confirm.getByText(TARGET_NAME)).toBeVisible();
+  await expect(confirm.getByText(/chỉ hiện một lần/)).toBeVisible();
+  await confirm.getByRole('button', { name: 'Đặt lại mật khẩu' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Mật khẩu tạm' });
+  await expect(dialog.getByLabel('Mật khẩu tạm')).toHaveText(temp);
+  await expectAccessible(page);
+  // Chưa chép: Xong lần đầu chỉ báo, lần hai mới đóng.
+  await dialog.getByRole('button', { name: 'Xong' }).click();
+  await expect(dialog.getByText(/Chưa chép mật khẩu/)).toBeVisible();
+  await dialog.getByRole('button', { name: 'Xong' }).click();
+  await expect(dialog).toHaveCount(0);
+  expect(calls).toBe(1);
+  // Mở lại màn: mật khẩu không còn ở đâu.
+  await expect(page.getByText(temp)).toHaveCount(0);
 });

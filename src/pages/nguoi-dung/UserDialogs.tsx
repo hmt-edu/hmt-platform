@@ -1,11 +1,14 @@
 // Hộp thoại thao tác của màn Người dùng (QT-02): Sửa vai trò, Đổi cơ sở, Quản lý trực tiếp, Khoá, Mở khoá, Thu hồi phiên, Đặt lại hai
 // bước. Dựng bằng khuôn K4 có sẵn (FormDialog, ReasonDialog, ConfirmDialog); luật và quyền do hàm DB, Edge Function kiểm, hộp chỉ hiện
-// lỗi của chúng. Đặt lại mật khẩu và Tạo người dùng cần hộp mật khẩu tạm K4g, K4e4 (chờ #69): chưa có ở đây.
+// lỗi của chúng. Đặt lại mật khẩu dùng hộp mật khẩu tạm K4g (TempPasswordDialog, 05/11); Tạo người dùng cần thêm form QT-03 (chờ khung): chưa có ở đây.
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { errorOf, rpc, useDb } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
+import { Button } from '../../ui/Button';
 import { ConfirmDialog, FormDialog, ReasonDialog } from '../../ui/Dialogs';
+import { Alert } from '../../ui/Feedback';
+import { Dialog } from '../../ui/Overlays';
 import { Checkbox, Field } from '../../ui/Field';
 import { Combobox, type ComboOption } from '../../ui/Inputs';
 import { Select } from '../../ui/Overlays';
@@ -323,5 +326,86 @@ export function ActionConfirmDialog({
       error={action.error}
       onConfirm={() => void action.run(onConfirm)}
     />
+  );
+}
+
+/**
+ * Hộp mật khẩu tạm (khuôn K4g, hiện MỘT lần): sau khi đặt lại mật khẩu (hoặc tạo người dùng). Mật khẩu chỉ nằm trong bộ nhớ của hộp này,
+ * không lưu ở đâu; đóng hộp là mất. Chưa chép thì nút Xong báo lại một lần trước khi đóng.
+ */
+export function TempPasswordDialog({
+  password,
+  name,
+  onClose,
+}: {
+  /** Có mật khẩu thì hộp mở; null thì đóng. */
+  password: string | null;
+  name: string;
+  onClose: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const [warned, setWarned] = useState(false);
+  const [copyFailed, setCopyFailed] = useState(false);
+  const close = () => {
+    setCopied(false);
+    setWarned(false);
+    setCopyFailed(false);
+    onClose();
+  };
+  async function copy() {
+    if (password === null) return;
+    try {
+      await navigator.clipboard.writeText(password);
+      setCopied(true);
+      setCopyFailed(false);
+    } catch {
+      setCopyFailed(true);
+    }
+  }
+  return (
+    <Dialog
+      open={password !== null}
+      dismissible={false}
+      title="Mật khẩu tạm"
+      description={`Của ${name}. Chỉ hiện một lần, không lưu ở đâu.`}
+      footer={
+        <>
+          <Button onClick={() => void copy()}>{copied ? 'Đã chép' : 'Chép mật khẩu'}</Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              if (!copied && !warned) {
+                setWarned(true);
+                return;
+              }
+              close();
+            }}
+          >
+            Xong
+          </Button>
+        </>
+      }
+    >
+      <div className="flex flex-col gap-3">
+        <p
+          aria-label="Mật khẩu tạm"
+          className="select-all rounded-control border border-border bg-surface-subtle px-3 py-3 text-center font-mono text-h3 tracking-wider"
+        >
+          {password}
+        </p>
+        <p className="text-body text-fg-muted">
+          Giao mật khẩu này cho người dùng. Họ phải đổi mật khẩu ở lần đăng nhập đầu. Mật khẩu cũ đã
+          hết hiệu lực.
+        </p>
+        {copyFailed && (
+          <Alert tone="warning">Không chép được vào bộ nhớ tạm. Bôi đen và chép tay.</Alert>
+        )}
+        {warned && !copied && (
+          <Alert tone="warning">
+            Chưa chép mật khẩu. Đóng hộp này là không xem lại được; bấm Xong lần nữa nếu đã ghi lại.
+          </Alert>
+        )}
+      </div>
+    </Dialog>
   );
 }

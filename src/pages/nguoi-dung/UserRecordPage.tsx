@@ -21,12 +21,14 @@ import {
   LockDialog,
   ManagerDialog,
   RolesDialog,
+  TempPasswordDialog,
 } from './UserDialogs';
 import { roleNames, staffKind } from './userLogic';
 import { LOGIN_RESULT_LABEL, type UserRecord } from './userTypes';
 import {
   lockUser,
   resetUserMfa,
+  resetUserPassword,
   revokeUserSessions,
   setUserBranch,
   setUserManager,
@@ -36,7 +38,8 @@ import {
   useUserRecord,
 } from './useUserData';
 
-type Dialog = 'roles' | 'branch' | 'manager' | 'lock' | 'unlock' | 'revoke' | 'mfa' | null;
+type Dialog =
+  'roles' | 'branch' | 'manager' | 'lock' | 'unlock' | 'revoke' | 'mfa' | 'password' | null;
 
 export function UserRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -81,6 +84,7 @@ function UserView({ record }: { record: UserRecord }) {
   const { claims } = useAuth();
   const refresh = useRefreshUsers();
   const [dialog, setDialog] = useState<Dialog>(null);
+  const [tempPassword, setTempPassword] = useState<string | null>(null);
   useCrumbTail(record.display_name);
 
   const canEdit = access.can('ADMIN', 'SUA');
@@ -109,6 +113,11 @@ function UserView({ record }: { record: UserRecord }) {
                 kind: 'action' as const,
                 label: 'Thu hồi phiên',
                 onSelect: () => setDialog('revoke'),
+              },
+              {
+                kind: 'action' as const,
+                label: 'Đặt lại mật khẩu',
+                onSelect: () => setDialog('password'),
               },
               {
                 kind: 'action' as const,
@@ -251,6 +260,25 @@ function UserView({ record }: { record: UserRecord }) {
         danger
         onConfirm={() => revokeUserSessions(supabase, record.id)}
         onDone={done('Đã thu hồi phiên.')}
+      />
+      <ActionConfirmDialog
+        {...common}
+        open={dialog === 'password'}
+        onOpenChange={close}
+        title="Đặt lại mật khẩu"
+        description="Tạo mật khẩu tạm mới cho người này; mật khẩu cũ hết hiệu lực và họ bị đăng xuất khỏi mọi thiết bị."
+        note="Mật khẩu tạm chỉ hiện một lần ở hộp kế tiếp. Người này phải đổi mật khẩu ở lần đăng nhập đầu."
+        confirmLabel="Đặt lại mật khẩu"
+        danger
+        onConfirm={async () => {
+          setTempPassword(await resetUserPassword(supabase, record.id));
+        }}
+        onDone={() => void refresh()}
+      />
+      <TempPasswordDialog
+        password={tempPassword}
+        name={record.display_name}
+        onClose={() => setTempPassword(null)}
       />
       <ActionConfirmDialog
         {...common}

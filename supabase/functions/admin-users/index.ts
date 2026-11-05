@@ -4,6 +4,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.117.3';
 import { corsHeaders, fail, HTTP, json, publishableKey, secretKey } from '../_shared/http.ts';
 import { checkPassword, toAuthEmail } from '../_shared/login-rules.ts';
+import { generateTempPassword } from '../_shared/temp-password.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 // Cấm đăng nhập ở Supabase Auth khi khoá: thời hạn rất dài (khoá đến khi Admin mở).
@@ -98,13 +99,27 @@ Deno.serve(async (req) => {
       return json(req, HTTP.OK, { ok: true });
     }
     case 'reset_password': {
-      const password = String(body.password ?? '');
+      // Không gửi sẵn mật khẩu thì máy chủ sinh mật khẩu tạm ngẫu nhiên (cùng độ dài, chính sách như lúc nạp người dùng) và trả MỘT lần
+      // cho Admin; không lưu, không ghi nhật ký. Có gửi `password` thì kiểm theo chính sách như trước.
+      let password = String(body.password ?? '');
+      let generated = false;
+      if (password === '') {
+        const [{ data: lengthSetting }, { data: minLength }] = await Promise.all([
+          asCaller.rpc('get_setting_int', { p_key: 'import_temp_password_length' }),
+          asCaller.rpc('get_setting_int', { p_key: 'password_min_length' }),
+        ]);
+        password = generateTempPassword(Math.max(Number(lengthSetting), Number(minLength)), (buffer) => crypto.getRandomValues(buffer));
+        generated = true;
+      }
       const problem = await passwordProblem(password);
       if (problem) return fail(req, HTTP.BAD_REQUEST, 'HMT_MAT_KHAU_YEU', problem);
       const { error: authError } = await admin.auth.admin.updateUserById(userId, { password });
       if (authError) return fail(req, HTTP.BAD_REQUEST, 'HMT_LOI', authError.message);
       const { error } = await asCaller.rpc('admin_mark_password_reset', { p_user_id: userId });
-      return error ? rpcFail(error) : json(req, HTTP.OK, { ok: true });
+      if (error) return rpcFail(error);
+      const response = json(req, HTTP.OK, generated ? { ok: true, password } : { ok: true });
+      response.headers.set('Cache-Control', 'no-store');
+      return response;
     }
     default:
       return fail(req, HTTP.BAD_REQUEST, 'HMT_YEU_CAU_SAI', 'Không có thao tác này.');
