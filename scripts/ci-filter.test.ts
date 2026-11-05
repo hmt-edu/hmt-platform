@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
-import { isSkippable, needsFullCi, touchesUi } from './ci-filter';
+import { isDbOnly, isSkippable, needsE2e, needsFullCi, touchesUi } from './ci-filter';
 
 describe('bộ lọc CI (Đ281, Q-C3)', () => {
   it('chỉ deploy/: bỏ DB + Playwright và bản xem trước', () => {
@@ -39,6 +39,28 @@ describe('bộ lọc CI (Đ281, Q-C3)', () => {
     expect(touchesUi([])).toBe(true);
   });
 
+  it('Playwright (needsE2e): chỉ migration, test pgTAP, tài liệu thì bỏ; src, e2e, Edge Function, seed, cấu hình, file lạ thì chạy', () => {
+    expect(
+      needsE2e(['supabase/migrations/x.sql', 'supabase/tests/database/a.test.sql', 'docs/a.md']),
+    ).toBe(false);
+    expect(needsE2e(['docs/a.md', 'deploy/README.md'])).toBe(false);
+    expect(needsE2e(['supabase/migrations/x.sql', 'src/a.ts'])).toBe(true);
+    expect(needsE2e(['e2e/a.spec.ts'])).toBe(true);
+    expect(needsE2e(['supabase/functions/login/index.ts'])).toBe(true);
+    expect(needsE2e(['supabase/seed.sql'])).toBe(true);
+    expect(needsE2e(['playwright.config.ts'])).toBe(true);
+    expect(needsE2e(['supabase/config.toml'])).toBe(true);
+    expect(needsE2e(['thu-muc-la/a.txt'])).toBe(true);
+    expect(needsE2e([])).toBe(true);
+  });
+
+  it('isDbOnly chỉ nhận migrations và tests của supabase', () => {
+    expect(isDbOnly('supabase/migrations/a.sql')).toBe(true);
+    expect(isDbOnly('supabase/tests/database/a.sql')).toBe(true);
+    expect(isDbOnly('supabase/functions/a.ts')).toBe(false);
+    expect(isDbOnly('supabase/seed.sql')).toBe(false);
+  });
+
   it('isSkippable không nhận nhầm tên giống (docsx/, deployment/)', () => {
     expect(isSkippable('docsx/a.ts')).toBe(false);
     expect(isSkippable('deployment/a.ts')).toBe(false);
@@ -48,9 +70,9 @@ describe('bộ lọc CI (Đ281, Q-C3)', () => {
   it('chạy như lệnh (đọc stdin): kết quả full và ui', () => {
     const run = (input: string) =>
       execFileSync('node', ['scripts/ci-filter.ts'], { input, encoding: 'utf8' }).trim();
-    expect(run('deploy/README.md\n')).toBe('full=false\nui=false');
-    expect(run('deploy/README.md\nsrc/a.tsx\n')).toBe('full=true\nui=true');
-    expect(run('.github/workflows/ci.yml\n')).toBe('full=true\nui=true');
-    expect(run('')).toBe('full=true\nui=true');
+    expect(run('deploy/README.md\n')).toBe('full=false\nui=false\ne2e=false');
+    expect(run('deploy/README.md\nsrc/a.tsx\n')).toBe('full=true\nui=true\ne2e=true');
+    expect(run('.github/workflows/ci.yml\n')).toBe('full=true\nui=true\ne2e=true');
+    expect(run('')).toBe('full=true\nui=true\ne2e=true');
   });
 });

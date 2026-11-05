@@ -3,6 +3,8 @@ name: CI
 
 on:
   pull_request:
+    # `labeled`: thêm nhãn `full-ci` thì chạy lại, buộc chạy đủ cả Playwright (Đ285 b: giảm phút Actions).
+    types: [opened, synchronize, reopened, labeled]
     paths-ignore:
       - 'docs/**'
       - 'design/**'
@@ -37,6 +39,7 @@ jobs:
     outputs:
       full: ${{ steps.filter.outputs.full }}
       ui: ${{ steps.filter.outputs.ui }}
+      e2e: ${{ steps.filter.outputs.e2e }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -67,6 +70,10 @@ jobs:
     timeout-minutes: 25
     permissions:
       contents: read
+    # Playwright chỉ chạy khi PR đổi giao diện hoặc luồng (src/, e2e/, supabase/functions/, seed, cấu hình...); PR chỉ đổi migration, test pgTAP
+    # thì chạy pgTAP, bỏ Playwright (scripts/ci-filter.ts, needsE2e). Nhãn `full-ci` hoặc bộ lọc hỏng: chạy đủ.
+    env:
+      RUN_E2E: ${{ needs.changes.result != 'success' || needs.changes.outputs.e2e == 'true' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -94,6 +101,7 @@ jobs:
         run: npx supabase test db
 
       - name: Lấy địa chỉ, khoá công khai của Supabase local
+        if: env.RUN_E2E == 'true'
         # Khoá local là giá trị mặc định công khai của Supabase CLI; vẫn che trong log.
         run: |
           status_env="$(npx supabase status -o env)"
@@ -124,13 +132,16 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Tạo tài khoản giả cho kiểm thử đăng nhập
+        if: env.RUN_E2E == 'true'
         run: npm run db:seed-users
 
       - name: Phiên bản Playwright
+        if: env.RUN_E2E == 'true'
         id: pw
         run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/playwright-core'].version")" >> "$GITHUB_OUTPUT"
 
       - name: Cache trình duyệt Playwright
+        if: env.RUN_E2E == 'true'
         id: pw-cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -145,6 +156,7 @@ jobs:
       #   1. apt chờ tối đa 20 giây mỗi kết nối và thử lại 3 lần: gói đứng thì tải lại ngay, không đợi hết giờ của cả bước.
       #   2. Gói đã tải được giữ trong thư mục cache `~/.apt-cache` (khoá theo phiên bản Playwright): lượt sau không tải lại từ kho chậm.
       - name: Cache gói apt của trình duyệt
+        if: env.RUN_E2E == 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
@@ -156,6 +168,7 @@ jobs:
             apt-playwright-${{ runner.os }}-
 
       - name: Cấu hình apt (chờ ngắn, thử lại, giữ gói đã tải)
+        if: env.RUN_E2E == 'true'
         run: |
           mkdir -p "$HOME/.apt-cache/archives/partial"
           # apt chạy bằng quyền gốc và tải bằng người dùng _apt: thư mục phải ghi được để không tải "không cách ly".
@@ -172,7 +185,7 @@ jobs:
       # job. Bình thường mất dưới 1 phút (lần đầu không có cache khoảng 5 phút). Mỗi lần thử bị cắt sau 6 phút; thử lại đúng một
       # lần và chỉ ở bước cài (không thử lại bộ kiểm thử, lỗi thật không bị che). Trước lần thử lại dọn tiến trình apt còn kẹt.
       - name: Cài trình duyệt Playwright
-        if: steps.pw-cache.outputs.cache-hit != 'true'
+        if: env.RUN_E2E == 'true' && steps.pw-cache.outputs.cache-hit != 'true'
         timeout-minutes: 14
         run: |
           for attempt in 1 2; do
@@ -186,7 +199,7 @@ jobs:
           exit 1
 
       - name: Cài thư viện hệ thống cho trình duyệt (khi dùng cache)
-        if: steps.pw-cache.outputs.cache-hit == 'true'
+        if: env.RUN_E2E == 'true' && steps.pw-cache.outputs.cache-hit == 'true'
         timeout-minutes: 14
         run: |
           for attempt in 1 2; do
@@ -200,16 +213,17 @@ jobs:
           exit 1
 
       - name: Cho phép đọc gói apt đã tải (để lưu cache)
-        if: always()
+        if: always() && env.RUN_E2E == 'true'
         run: sudo chmod -R a+rX "$HOME/.apt-cache" || true
 
       - name: Playwright (máy tính + iPhone)
+        if: env.RUN_E2E == 'true'
         # Bình thường 10 đến 12 phút.
         timeout-minutes: 20
         run: npm run e2e
 
       - name: Lưu báo cáo Playwright khi trượt
-        if: failure()
+        if: failure() && env.RUN_E2E == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-report

@@ -4,7 +4,7 @@
 # scripts/ci-changes.test.ts (gh giả).
 set -uo pipefail
 
-FALLBACK=$'full=true\nui=true'
+FALLBACK=$'full=true\nui=true\ne2e=true'
 
 emit() {
   printf '%s\n' "$1"
@@ -29,11 +29,22 @@ if ! out="$(printf '%s\n' "$files" | node "$(dirname "$0")/ci-filter.ts" 2>/dev/
   exit 0
 fi
 
-# Chỉ nhận đúng bốn kết quả hợp lệ; lạ thì chạy đủ.
-case "$out" in
-  $'full=true\nui=true' | $'full=true\nui=false' | $'full=false\nui=true' | $'full=false\nui=false') emit "$out" ;;
-  *)
-    echo "::warning::Kết quả bộ lọc lạ: chạy đủ." >&2
-    emit "$FALLBACK"
-    ;;
-esac
+# Chỉ nhận đúng dạng ba dòng full, ui, e2e (true hoặc false); lạ thì chạy đủ.
+valid=true
+for key in full ui e2e; do
+  printf '%s\n' "$out" | grep -Eq "^${key}=(true|false)$" || valid=false
+done
+[ "$(printf '%s\n' "$out" | wc -l | tr -d ' ')" = 3 ] || valid=false
+if [ "$valid" != true ]; then
+  echo "::warning::Kết quả bộ lọc lạ: chạy đủ." >&2
+  emit "$FALLBACK"
+  exit 0
+fi
+
+# Nhãn `full-ci` trên PR: buộc chạy đủ (cả Playwright, bản xem trước). Không đọc được nhãn thì giữ kết quả bộ lọc.
+if labels="$(gh api "repos/${REPO:?}/issues/${PR_NUMBER:?}/labels" --jq '.[].name' 2>/dev/null)" && printf '%s\n' "$labels" | grep -qx 'full-ci'; then
+  echo "::notice::PR có nhãn full-ci: chạy đủ." >&2
+  emit "$FALLBACK"
+  exit 0
+fi
+emit "$out"

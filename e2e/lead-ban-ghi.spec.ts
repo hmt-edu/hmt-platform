@@ -1,7 +1,7 @@
 // P3c-2: trang Lead (TS-02), Tạo lead (TS-03, TS-14), lịch hẹn (TS-13). Dữ liệu giả dựng bằng create_lead, tìm bằng dấu riêng.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone, pickOption } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lead giả).');
@@ -244,8 +244,7 @@ test('Tạo lead: ô bắt buộc báo tại ô; tạo xong về trang Lead; SĐ
   const fill = async (name: string) => {
     await page.getByLabel('Họ tên', { exact: true }).fill(name);
     await page.getByLabel('Số điện thoại', { exact: true }).fill(phone);
-    await page.getByRole('combobox', { name: 'Source', exact: true }).click();
-    await page.getByRole('option', { name: 'Website', exact: true }).click();
+    await pickOption(page, page.getByRole('combobox', { name: 'Source', exact: true }), 'Website');
   };
   const first = `Chị ${setup.mark} tạo ${Date.now().toString(36).slice(-4).toUpperCase()}`;
   await fill(first);

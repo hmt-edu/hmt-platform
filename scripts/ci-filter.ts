@@ -16,6 +16,21 @@ export function needsFullCi(files: string[]): boolean {
   return files.some((f) => !isSkippable(f));
 }
 
+/** File chỉ ảnh hưởng cơ sở dữ liệu (migration, bài kiểm pgTAP): không cần chạy Playwright trên CI (đã chạy ở `npm run check:all` trên máy). */
+export function isDbOnly(file: string): boolean {
+  return /^supabase\/(migrations|tests)\//.test(file);
+}
+
+/**
+ * Cần chạy Playwright: cần chạy đủ (có file ngoài phần được bỏ) VÀ có ít nhất một file không chỉ là DB (src/, e2e/, supabase/functions/, seed,
+ * cấu hình, file lạ...). PR chỉ đổi migration, test pgTAP (và phần được bỏ) thì chạy pgTAP, bỏ Playwright. Không có danh sách file: chạy.
+ */
+export function needsE2e(files: string[]): boolean {
+  if (files.length === 0) return true;
+  if (!needsFullCi(files)) return false;
+  return files.some((f) => !isSkippable(f) && !isDbOnly(f));
+}
+
 /** Đổi thứ làm nên bản dựng giao diện: cần bản xem trước (Cloudflare Pages). Không có danh sách file thì coi như có (chạy đủ, Đ281). */
 export function touchesUi(files: string[]): boolean {
   if (files.length === 0) return true;
@@ -34,6 +49,7 @@ function main() {
     .filter(Boolean);
   console.log(`full=${String(needsFullCi(files))}`);
   console.log(`ui=${String(touchesUi(files))}`);
+  console.log(`e2e=${String(needsE2e(files))}`);
 }
 
 if (import.meta.url === `file://${process.argv[1] ?? ''}`) main();

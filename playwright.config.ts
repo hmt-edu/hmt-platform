@@ -12,7 +12,9 @@ export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
+  // Thử lại bài trượt: CI 2 lần; máy local mặc định 0, `npm run check:all` đặt E2E_RETRIES=2 như CI (GoTrue trên Docker máy tính
+  // thỉnh thoảng báo 'failed SASL auth ... i/o timeout' khi dồn nhiều trình duyệt; lỗi thật vẫn trượt cả ba lần).
+  retries: process.env.CI ? 2 : Number(process.env.E2E_RETRIES ?? 0),
   // Chờ kết quả hiện lên tối đa 10 giây (mặc định 5): máy dồn nhiều trình duyệt chạy song song thì đăng nhập, tải dữ liệu chậm hơn
   // vài giây; lỗi thật vẫn báo, chỉ không báo nhầm vì chậm.
   expect: { timeout: EXPECT_TIMEOUT_MS },
