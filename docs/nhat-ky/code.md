@@ -52,3 +52,6 @@
 ## 04/11/2026: T4b nạp Người dùng
 - Migration 069: `import_users_resolve`, `import_user_create`, `import_user_set_manager`, `import_user_lock`, `import_users_finish`, bảng `import_user_branch_pending`, tham số `import_user_email_domain`, `import_temp_password_length`. Edge Function `import-users`; `_shared/temp-password.ts`. Bài kiểm 060 và Vitest. Đã thử Edge Function trên Supabase local (xem trước, nạp, nạp lại).
 - Quyết định anh trả lời 04/11 (#160): email quy ước theo tham số, nhiều cơ sở lấy cơ sở đầu kèm cảnh báo, mật khẩu tạm trả một lần.
+
+## 05/11/2026: nhập canvas Bán hàng, Thu chi (v146 và bổ sung v2)
+- `design/hmt-canvas-9933/` (485 khung, `canvas.json` khớp 485 file) thay `hmt-canvas-6f57`; `design/hmt-canvas-8262/` (6 khung). Chỉ tài liệu, không sửa file canvas (Đ293).
