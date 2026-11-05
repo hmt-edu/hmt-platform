@@ -215,7 +215,7 @@ jobs:
         with:
           version: ${{ env.SUPABASE_CLI_VERSION }}
 
-      # Chỉ dùng PROD_SUPABASE_ACCESS_TOKEN: token của tài khoản Supabase truongcx.work, giới hạn project hmt-prod.
+      # Chỉ dùng PROD_SUPABASE_ACCESS_TOKEN: token của tài khoản Supabase [tài khoản chạy thật], giới hạn project hmt-prod.
       - name: supabase functions deploy
         working-directory: bundle
         env:

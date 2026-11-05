@@ -1,7 +1,9 @@
 # Sổ tay vận hành
 
+> Địa chỉ email thật của các tài khoản vận hành anh giữ riêng, không ghi trong repo (repo có thể công khai). Các nhãn `[email vận hành]`, `[email chạy thật]`, `[tài khoản chạy thật]`, `[tài khoản Claude N]` trong tài liệu chỉ là tên gọi.
+
 Các việc vận hành hệ thống mà anh Trường (Admin) tự làm. Việc với bản chạy thật làm trên trình duyệt, bằng tài khoản
-`truongcx.work` (Supabase, Cloudflare) và `truongcx-95` (GitHub, chủ `hmt-platform` và `hmt-deploy`).
+`[tài khoản chạy thật]` (Supabase, Cloudflare) và `truongcx-95` (GitHub, chủ `hmt-platform` và `hmt-deploy`).
 
 | Việc | Xem ở |
 |---|---|
@@ -19,7 +21,7 @@ phòng), nên mất một máy vẫn đăng nhập được bằng máy kia, r�
 | Kế toán hoặc Admin khác, mất **cả hai** thiết bị | Một Admin vào **Người dùng (QT-02)** > **Đặt lại hai bước**. Người đó đăng nhập lại và đăng ký thiết bị mới. (Màn này làm ở bước 4.) |
 | **Admin duy nhất** mất cả hai thiết bị | Chạy workflow **Bootstrap admin** trong `hmt-deploy` ở chế độ khôi phục. (Chế độ này làm ở bước 4; hiện workflow chỉ tạo Admin đầu tiên.) |
 
-**Trong lúc chưa có hai chức năng trên (trước khi xong bước 4):** anh đăng nhập Supabase bằng `truongcx.work` > project
+**Trong lúc chưa có hai chức năng trên (trước khi xong bước 4):** anh đăng nhập Supabase bằng `[tài khoản chạy thật]` > project
 `hmt-prod` > **Authentication** > **Users** > chọn tài khoản > xoá thiết bị hai bước (MFA factor). Người đó đăng nhập lại
 sẽ được yêu cầu đăng ký thiết bị mới. Không sửa gì khác trong cơ sở dữ liệu chạy thật.
 

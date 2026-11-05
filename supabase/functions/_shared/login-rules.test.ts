@@ -16,12 +16,12 @@ describe('đăng nhập bằng mã học sinh', () => {
     expect(toAuthEmail(' hs000123 ')).toBe('hs000123@hocsinh.hoamatoan.edu.vn');
   });
   it('email nhân viên giữ nguyên, viết thường', () => {
-    expect(toAuthEmail('Sale.CS5@Gmail.com')).toBe('sale.cs5@gmail.com');
+    expect(toAuthEmail('Sale.CS5@Example.com')).toBe('sale.cs5@example.com');
     expect(normalizeLogin('HS000123')).toBe('HS000123');
   });
   it('nhận ra địa chỉ nội bộ của học sinh để không gửi thư', () => {
     expect(isInternalStudentEmail('HS000123@HOCSINH.hoamatoan.edu.vn')).toBe(true);
-    expect(isInternalStudentEmail('phuhuynh@gmail.com')).toBe(false);
+    expect(isInternalStudentEmail('phuhuynh@example.com')).toBe(false);
     expect(isInternalStudentEmail('x@hocsinh.hoamatoan.edu.vn.evil.com')).toBe(false);
   });
 });

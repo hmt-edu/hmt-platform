@@ -6,8 +6,8 @@ Cập nhật 17/10/2026. File này nằm trong repo (`docs/quy-trinh-phoi-hop.md
 | | Vai | Việc chính | Đọc từ đâu |
 |---|---|---|---|
 | Anh Trường | Chủ sản phẩm | Quyết nghiệp vụ; thử trên staging; bình luận "OK" trên PR; cập nhật bản chạy thật qua `hmt-deploy` | |
-| Claude Chat (tài khoản truongcx.work, Project "HMT - CRM HOÀ MA TOÁN") | Phân tích nghiệp vụ, kiến trúc, kiểm soát | Cùng anh chốt luật; viết đặc tả; soạn prompt cho Design và Code; soát kết quả trước khi anh OK | Repo (kết nối GitHub, chỉ đọc), Project, canvas của Design qua link, `docs/nhat-ky/` |
-| Claude Design (hiện cùng tài khoản truongcx.work) | Thiết kế giao diện | Vẽ, sửa màn theo bản đồ màn hình và luật; giữ hệ thống thiết kế "HMT Platform" | Repo (kết nối GitHub, chỉ đọc), canvas của mình, file anh đính kèm, `docs/nhat-ky/` |
+| Claude Chat (tài khoản [tài khoản chạy thật], Project "HMT - CRM HOÀ MA TOÁN") | Phân tích nghiệp vụ, kiến trúc, kiểm soát | Cùng anh chốt luật; viết đặc tả; soạn prompt cho Design và Code; soát kết quả trước khi anh OK | Repo (kết nối GitHub, chỉ đọc), Project, canvas của Design qua link, `docs/nhat-ky/` |
+| Claude Design (hiện cùng tài khoản [tài khoản chạy thật]) | Thiết kế giao diện | Vẽ, sửa màn theo bản đồ màn hình và luật; giữ hệ thống thiết kế "HMT Platform" | Repo (kết nối GitHub, chỉ đọc), canvas của mình, file anh đính kèm, `docs/nhat-ky/` |
 | Claude Code (VS Code, đổi qua lại 3 tài khoản Pro) | Lập trình | Code, kiểm thử, mở PR, báo chỗ luật vênh với code | Repo: `CLAUDE.md`, `docs/`, `design/`, `docs/nhat-ky/` |
 
 ## 2. Ba kho lưu
@@ -96,11 +96,11 @@ Em tiếp quản dự án HMT Platform từ một phiên Claude Code khác. Chư
 ## 10. Kết nối GitHub cho Claude Chat và Claude Design
 - **Chỉ kết nối repo `hmt-platform`, quyền chỉ đọc** ("Only select repositories"). **Không bao giờ kết nối `hmt-deploy`** (nơi chạy bản thật).
 - Dùng tài khoản GitHub **`hmt-vanhanh`** (collaborator quyền Write ở `hmt-platform`) để kết nối, không dùng `truongcx-95` (chủ hai repo `hmt-platform`, `hmt-deploy`). `truongcx-95` chỉ dùng trên trình duyệt; không đăng nhập trên máy Mac (Đ278).
-- Làm cho cả ba tài khoản Claude: `truongcx.work`, `truongcx.biz`, `lead.vanhanh.hmt`, để khi một tài khoản hết giới hạn thì chuyển sang ngay.
+- Làm cho cả ba tài khoản Claude: `[tài khoản Claude 1]`, `[tài khoản Claude 2]`, `[tài khoản Claude 3]`, để khi một tài khoản hết giới hạn thì chuyển sang ngay.
 - Không dán khoá, mật khẩu, dữ liệu thật vào chat hay file ở repo.
 
 ## 11. Đổi tài khoản Claude khi hết giới hạn
-Ba tài khoản Claude Pro (`truongcx.work`, `truongcx.biz`, `lead.vanhanh.hmt`) dùng luân phiên. Trước khi đổi, anh gửi bên đang dùng đúng tin ở mục 13.
+Ba tài khoản Claude Pro (`[tài khoản Claude 1]`, `[tài khoản Claude 2]`, `[tài khoản Claude 3]`) dùng luân phiên. Trước khi đổi, anh gửi bên đang dùng đúng tin ở mục 13.
 - **Claude Code:** xem mục 5.
 - **Claude Chat:** đăng nhập tài khoản khác, mở chat mới, dán `docs/phoi-hop/khoi-dong-chat.md`. Project và bộ nhớ là riêng từng tài khoản, nên mọi thứ cần nhớ nằm trong repo.
 - **Claude Design:** tình trạng thật nằm ở canvas và `design/`. Chia sẻ canvas quyền sửa cho tài khoản kia (anh thử một lần trước khi cần), mở chat mới, dán `docs/phoi-hop/khoi-dong-design.md`. Nếu không chia sẻ được thì dựng lại canvas từ nguồn đã đẩy lên `design/` (script dựng, `project/`, `canvas.json`, `ds/hmt`).

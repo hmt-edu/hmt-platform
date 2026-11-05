@@ -19,7 +19,7 @@ Dự án làm lại từ đầu bộ CRM, LMS và app giáo viên. Bản cũ ch�
 - React thuần (Vite, TypeScript) + Tailwind, ứng dụng tĩnh đặt trên Cloudflare Pages (miễn phí, cho dùng thương mại). Không có máy chủ riêng.
 - Supabase gói Free: Postgres, Auth, Edge Functions, pg_cron, vùng Singapore. Hai project: `hmt-staging`, `hmt-prod`.
 - File bài tập (giai đoạn 4): Cloudflare R2 miễn phí 10 GB. Email: Brevo hoặc Resend gói miễn phí.
-- Sao lưu tự làm mỗi đêm (gói Free không có): GitHub Actions xuất DB, mã hoá, đẩy lên Google Drive của `lead.vanhanh.hmt@gmail.com`; khôi phục thử mỗi tháng.
+- Sao lưu tự làm mỗi đêm (gói Free không có): GitHub Actions xuất DB, mã hoá, đẩy lên Google Drive của `[email vận hành]`; khôi phục thử mỗi tháng.
 - Báo cáo sử dụng hằng tuần (dung lượng DB, tải ra, tốc độ). Nâng Supabase Pro ($25/tháng) khi DB vượt 400 MB, tải ra vượt 4 GB/tháng, hoặc chậm giờ cao điểm.
 - Phân quyền chặn bằng Row Level Security ngay trong cơ sở dữ liệu.
 - Nghiệp vụ tiền, giờ, cấp mã, chuyển trạng thái chạy trong hàm Postgres, mỗi thao tác là một giao dịch trọn vẹn.

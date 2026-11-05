@@ -352,7 +352,7 @@ Trọng tài chỉ có khoảng 20 + 60 lượt/ngày → **mức 1 (chấp nh�
 
 ## 10. Rủi ro và lưu ý
 
-- **Tài khoản Google đầu tiên (lead.vanhanh.hmt@gmail.com) bị khoá gói miễn phí Gemini** ("project has been denied access"), không rõ lý do. Trên diễn đàn Google, nhiều người bị cùng lỗi từ tháng 9–10/2026 và chưa được giải quyết. Tài khoản đang dùng là một gmail cá nhân khác → hệ chấm phụ thuộc vào gmail này.
+- **Tài khoản Google đầu tiên ([email vận hành]) bị khoá gói miễn phí Gemini** ("project has been denied access"), không rõ lý do. Trên diễn đàn Google, nhiều người bị cùng lỗi từ tháng 9–10/2026 và chưa được giải quyết. Tài khoản đang dùng là một gmail cá nhân khác → hệ chấm phụ thuộc vào gmail này.
 - Gói miễn phí có thể bị cắt hoặc đổi hạn mức bất kỳ lúc nào (Google từng cắt 2.5 Flash từ 250 xuống 20 lượt/ngày). Dự phòng: 3.8 Flash trả phí (khoảng 20–40 USD/tháng) hoặc tín dụng AI Pro.
 - **Dữ liệu học sinh:** điều khoản Gemini API gói miễn phí cho phép Google dùng dữ liệu để cải thiện sản phẩm (có người đọc), cấm ứng dụng hướng tới người dưới 18 tuổi, và dặn không gửi thông tin cá nhân. Anh đã quyết định đi tiếp. Nên giảm rủi ro: ảnh gửi đi **không có tên/mã HS** (cắt phần đầu phiếu, dùng mã bài ngẫu nhiên), ghi rõ trong điều khoản ghi danh. Gói trả phí thì Google không dùng dữ liệu để huấn luyện.
 - **Khoá API đã từng dán vào chat → phải xoá và tạo khoá mới.** Khoá thật chỉ cất trong Supabase secrets.

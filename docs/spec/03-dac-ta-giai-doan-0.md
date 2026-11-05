@@ -120,7 +120,7 @@ Thêm **công tắc tính năng theo cơ sở**: mỗi phân hệ bật riêng c
 |---|---|
 | Kiểm thử phân quyền | Mỗi vai trò thử đọc, ghi dữ liệu trong và ngoài phạm vi; chạy mỗi lần đẩy code |
 | Kiểm thử giao diện | Máy tự bấm thử đăng nhập, menu, màn quản trị trên cỡ màn hình máy tính và điện thoại |
-| Sao lưu | Gói Free không có sao lưu. Mỗi đêm workflow trong `hmt-deploy` xuất toàn bộ DB chạy thật, mã hoá, đẩy lên Google Drive của `lead.vanhanh.hmt@gmail.com`; giữ 30 bản hằng ngày + 12 bản hằng tháng |
+| Sao lưu | Gói Free không có sao lưu. Mỗi đêm workflow trong `hmt-deploy` xuất toàn bộ DB chạy thật, mã hoá, đẩy lên Google Drive của `[email vận hành]`; giữ 30 bản hằng ngày + 12 bản hằng tháng |
 | Khôi phục | Mỗi tháng một lần, anh Trường tự khôi phục thử vào một DB Docker tạm trên máy anh, kiểm xong xoá ngay; Claude Code không chạy bước này. Ghi các bước vào sổ tay |
 | Cảnh báo | Sao lưu thất bại, lỗi hệ thống, đăng nhập sai nhiều lần → email admin |
 | Báo cáo sử dụng | Hằng tuần gửi anh Trường: dung lượng DB, lượng tải ra, thời gian phản hồi so với giới hạn gói Free. Ngưỡng nâng Supabase Pro: DB > 400 MB, tải ra > 4 GB/tháng, hoặc chậm giờ cao điểm |

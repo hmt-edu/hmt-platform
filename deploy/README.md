@@ -12,7 +12,7 @@ Code nằm ở repo `truongcx-95/hmt-platform`; repo này chỉ đọc code đó
 
 ## Bốn luật bảo mật
 
-0. **Supabase chạy thật (`hmt-prod`)** nằm ở organization **HMT Prod** của tài khoản Supabase `truongcx.work@gmail.com` (email + xác thực hai bước). Chuỗi kết nối DB, khoá của `hmt-prod` lấy từ tài khoản này, chỉ trên trình duyệt.
+0. **Supabase chạy thật (`hmt-prod`)** nằm ở organization **HMT Prod** của tài khoản Supabase `[email chạy thật]` (email + xác thực hai bước). Chuỗi kết nối DB, khoá của `hmt-prod` lấy từ tài khoản này, chỉ trên trình duyệt.
 1. **Khoá chạy thật không bao giờ nằm trên máy Mac.** Không chạy `supabase login` hay `wrangler login` bằng tài khoản thật. Chuỗi kết nối DB `hmt-prod` và token Cloudflare chạy thật chỉ dán thẳng vào GitHub Secrets của repo này trên web.
 2. **Lấy token rclone xong thì xoá file cấu hình rclone** (xem mục Google Drive bên dưới): `rm ~/.config/rclone/rclone.conf`.
 3. **Claude Code không đọc, không xin, không tìm khoá chạy thật.** Không dán khoá vào khung chat.
@@ -24,15 +24,15 @@ Vào repo `hmt-deploy` > **Settings** > **Secrets and variables** > **Actions**.
 
 ### Secrets (tab Secrets > New repository secret)
 
-| Tên                                        | Lấy ở đâu                                                                                                                                                                                                                                                                                                                                                              |
-| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PLATFORM_READ_TOKEN`                      | Đã đặt. Token fine-grained của `truongcx-95`, chỉ đọc repo `hmt-platform` (Contents: Read, Actions: Read). Làm mới hằng năm, xem cuối file                                                                                                                                                                                                                             |
-| `PROD_DB_URL`                              | Supabase > project `hmt-prod` > nút **Connect** > **Session pooler** > chép URI, thay `[YOUR-PASSWORD]` bằng mật khẩu DB. Mật khẩu có ký tự đặc biệt (`@ : / ? #`…) thì đổi mật khẩu chỉ gồm chữ và số cho dễ. Dùng Session pooler vì máy GitHub không nối được kiểu Direct                                                                                            |
-| `CLOUDFLARE_API_TOKEN`                     | Cloudflare (tài khoản chạy thật) > ảnh đại diện > **My Profile** > **API Tokens** > **Create Token** > **Create Custom Token**: quyền _Account / Cloudflare Pages / Edit_, Account Resources chọn đúng tài khoản này. Tài khoản chạy thật đăng ký bằng `truongcx.work@gmail.com`. Chỉ copy ô token (chuỗi liền, không dấu cách), **không** copy ô lệnh `curl` bên dưới |
-| `CLOUDFLARE_ACCOUNT_ID`                    | Cloudflare > **Workers & Pages** > cột phải, dòng **Account ID**                                                                                                                                                                                                                                                                                                       |
-| `GDRIVE_CLIENT_ID`, `GDRIVE_CLIENT_SECRET` | Google Cloud Console, xem mục Google Drive                                                                                                                                                                                                                                                                                                                             |
-| `PROD_SUPABASE_ACCESS_TOKEN`               | Supabase **tài khoản `truongcx.work`** > Account > **Access Tokens** > Generate new token: chọn **chỉ project `hmt-prod`**, quyền **Edge Functions: Read-write**. Để triển khai Edge Function (đăng nhập). Dán thẳng vào đây, không lưu trên máy Mac                                                                                                                   |
-| `GDRIVE_TOKEN`                             | Dòng `token = {...}` lấy bằng rclone, xem mục Google Drive                                                                                                                                                                                                                                                                                                             |
+| Tên                                        | Lấy ở đâu                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PLATFORM_READ_TOKEN`                      | Đã đặt. Token fine-grained của `truongcx-95`, chỉ đọc repo `hmt-platform` (Contents: Read, Actions: Read). Làm mới hằng năm, xem cuối file                                                                                                                                                                                                                       |
+| `PROD_DB_URL`                              | Supabase > project `hmt-prod` > nút **Connect** > **Session pooler** > chép URI, thay `[YOUR-PASSWORD]` bằng mật khẩu DB. Mật khẩu có ký tự đặc biệt (`@ : / ? #`…) thì đổi mật khẩu chỉ gồm chữ và số cho dễ. Dùng Session pooler vì máy GitHub không nối được kiểu Direct                                                                                      |
+| `CLOUDFLARE_API_TOKEN`                     | Cloudflare (tài khoản chạy thật) > ảnh đại diện > **My Profile** > **API Tokens** > **Create Token** > **Create Custom Token**: quyền _Account / Cloudflare Pages / Edit_, Account Resources chọn đúng tài khoản này. Tài khoản chạy thật đăng ký bằng `[email chạy thật]`. Chỉ copy ô token (chuỗi liền, không dấu cách), **không** copy ô lệnh `curl` bên dưới |
+| `CLOUDFLARE_ACCOUNT_ID`                    | Cloudflare > **Workers & Pages** > cột phải, dòng **Account ID**                                                                                                                                                                                                                                                                                                 |
+| `GDRIVE_CLIENT_ID`, `GDRIVE_CLIENT_SECRET` | Google Cloud Console, xem mục Google Drive                                                                                                                                                                                                                                                                                                                       |
+| `PROD_SUPABASE_ACCESS_TOKEN`               | Supabase **tài khoản `[tài khoản chạy thật]`** > Account > **Access Tokens** > Generate new token: chọn **chỉ project `hmt-prod`**, quyền **Edge Functions: Read-write**. Để triển khai Edge Function (đăng nhập). Dán thẳng vào đây, không lưu trên máy Mac                                                                                                     |
+| `GDRIVE_TOKEN`                             | Dòng `token = {...}` lấy bằng rclone, xem mục Google Drive                                                                                                                                                                                                                                                                                                       |
 
 ### Variables (tab Variables > New repository variable)
 
@@ -61,14 +61,14 @@ làm theo `docs/van-hanh/chong-do-mat-khau.md` trong repo `hmt-platform` (phần
 
 ## Tài khoản Admin đầu tiên (làm một lần)
 
-1. Supabase (tài khoản `truongcx.work`) > `hmt-prod` > **Authentication** > **Users** > **Add user** > **Create new user**: gõ email, mật khẩu (trình quản lý mật khẩu tạo), tick **Auto Confirm User**.
+1. Supabase (tài khoản `[tài khoản chạy thật]`) > `hmt-prod` > **Authentication** > **Users** > **Add user** > **Create new user**: gõ email, mật khẩu (trình quản lý mật khẩu tạo), tick **Auto Confirm User**.
 2. Repo này > **Actions** > **Bootstrap admin** > **Run workflow**: nhập đúng email đó, tên hiển thị, cơ sở. Workflow chỉ gán vai trò ADMIN, và **từ chối nếu `hmt-prod` đã có ADMIN**.
 3. Mở bản chạy thật, đăng nhập bằng email đó, cài xác thực hai bước theo hướng dẫn trên màn hình. Các tài khoản khác tạo trên màn quản trị (bước 4).
 
 ## Sao lưu
 
 - Mỗi đêm 02:05: xuất 3 file `roles.sql`, `schema.sql`, `data.sql` → nén → mã hoá bằng `age` → file `hmt-prod-YYYYMMDD-HHMM.tar.gz.age` (giờ VN). Bản chưa mã hoá bị xoá ngay trên máy GitHub.
-- Nơi lưu: Google Drive của `lead.vanhanh.hmt@gmail.com` > **My Drive** > `HMT-backup/daily/`. Ngày 1 hằng tháng thêm một bản vào `HMT-backup/monthly/`.
+- Nơi lưu: Google Drive của `[email vận hành]` > **My Drive** > `HMT-backup/daily/`. Ngày 1 hằng tháng thêm một bản vào `HMT-backup/monthly/`.
 - Giữ **30 bản hằng ngày** và **12 bản hằng tháng**; bản cũ hơn tự xoá.
 - Sao lưu lỗi: GitHub gửi email báo workflow thất bại cho anh.
 - **Khoá bí mật age không bao giờ nằm trên Drive hay GitHub.** Chỉ có ở trình quản lý mật khẩu + một bản in cất kỹ. Mất khoá này thì không mở được bản sao lưu nào.
@@ -84,11 +84,11 @@ Lệnh in ra 3 dòng (không ghi file). Chép dòng `AGE-SECRET-KEY-1…` vào t
 
 ### Google Drive (làm một lần)
 
-1. Đăng nhập `lead.vanhanh.hmt@gmail.com` vào https://console.cloud.google.com > tạo project `hmt-backup`.
+1. Đăng nhập `[email vận hành]` vào https://console.cloud.google.com > tạo project `hmt-backup`.
 2. **APIs & Services** > **Library** > bật **Google Drive API**.
 3. **OAuth consent screen**: loại External, điền tên app, email. Thêm scope `.../auth/drive.file`. **Bấm Publish app (In production)**: để ở chế độ Testing thì token hết hạn sau 7 ngày.
 4. **Credentials** > **Create credentials** > **OAuth client ID** > loại **Desktop app**. Chép Client ID và Client secret vào hai Secret `GDRIVE_CLIENT_ID`, `GDRIVE_CLIENT_SECRET`.
-5. Trên máy anh: `brew install rclone`, rồi `rclone config` và trả lời: `n` (remote mới) → tên `gdrive` → loại `drive` → dán client_id → dán client_secret → scope chọn **drive.file** → các câu khác Enter → _Use web browser_: `y` → đăng nhập `lead.vanhanh.hmt@gmail.com` trên trình duyệt → _Shared Drive_: `n` → `y` để lưu → `q`.
+5. Trên máy anh: `brew install rclone`, rồi `rclone config` và trả lời: `n` (remote mới) → tên `gdrive` → loại `drive` → dán client_id → dán client_secret → scope chọn **drive.file** → các câu khác Enter → _Use web browser_: `y` → đăng nhập `[email vận hành]` trên trình duyệt → _Shared Drive_: `n` → `y` để lưu → `q`.
 6. Chạy `rclone config show gdrive`, chép phần sau `token = ` (một dòng JSON `{"access_token":…}`) vào Secret `GDRIVE_TOKEN`.
 7. **Xoá file cấu hình ngay**:
    ```sh
@@ -155,7 +155,7 @@ Báo cáo tuần sẽ cảnh báo khi token còn dưới 30 ngày.
 
 Báo cáo tuần nhắc khi token còn dưới 30 ngày. Supabase không cho sửa hạn token cũ: tạo token mới rồi xoá token cũ.
 
-- **`PROD_SUPABASE_ACCESS_TOKEN`**: đăng nhập Supabase `truongcx.work` > **Account** > **Access Tokens** > tạo token mới như bảng Secrets ở trên > dán vào secret `PROD_SUPABASE_ACCESS_TOKEN` của repo này > sửa variable `PROD_SUPABASE_TOKEN_EXPIRES` thành ngày hết hạn mới > xoá token cũ trên Supabase.
+- **`PROD_SUPABASE_ACCESS_TOKEN`**: đăng nhập Supabase `[tài khoản chạy thật]` > **Account** > **Access Tokens** > tạo token mới như bảng Secrets ở trên > dán vào secret `PROD_SUPABASE_ACCESS_TOKEN` của repo này > sửa variable `PROD_SUPABASE_TOKEN_EXPIRES` thành ngày hết hạn mới > xoá token cũ trên Supabase.
 - **`SUPABASE_ACCESS_TOKEN` (hmt-platform)**: đăng nhập Supabase `hmt-vanhanh` > tạo token mới > dán vào secret `SUPABASE_ACCESS_TOKEN` của `hmt-platform` > sửa variable `STAGING_SUPABASE_TOKEN_EXPIRES` **của repo này** > xoá token cũ.
 - Chạy thử **Usage report**: mục Token Supabase phải hiện ngày mới.
 
