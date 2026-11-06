@@ -9,7 +9,7 @@ import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useAuth } from '../../lib/auth/authContext';
-import { HmtError, errorOf, useDb } from '../../lib/db';
+import { HmtError, errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
@@ -35,6 +35,8 @@ import {
 } from './orderRecord';
 import type { OrderEvent, OrderInstallment, OrderLine, OrderRecord } from './orderTypes';
 import { cancelOrder, submitOrder, useOrder, useRefreshOrder } from './useOrderData';
+import { ApproveOrderDialog, RejectOrderDialog } from './OrderApproveDialogs';
+import { capPercentText, overCapLines } from './orderApprove';
 import { CreateReceiptDialog } from '../phieu-thu/CreateReceiptDialog';
 import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
 
@@ -112,6 +114,9 @@ function OrderView({ record }: { record: OrderRecord }) {
   const [submitError, setSubmitError] = useState<{ message: string; retry: boolean } | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [receiptOpen, setReceiptOpen] = useState(false);
+  const [approveOpen, setApproveOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const cap = useIntSetting('discount_total_cap_percent');
   const paymentQuery = useOrderPayment(record.status_code === 'DA_DUYET' ? record.id : undefined);
   const receiptsQuery = useReceiptPage({ order_id: record.id }, 'created_desc', 0, 1);
   const receiptCount = receiptsQuery.data?.total ?? 0;
@@ -385,6 +390,16 @@ function OrderView({ record }: { record: OrderRecord }) {
                 {approverText && <span className="text-caption text-fg-label">{approverText}</span>}
               </span>
             )}
+            {record.status_code === 'DA_TRINH' && (record.can_approve || record.can_reject) && (
+              <span className="flex flex-wrap items-center gap-2">
+                {record.can_approve && (
+                  <Button variant="primary" onClick={() => setApproveOpen(true)}>
+                    Duyệt
+                  </Button>
+                )}
+                {record.can_reject && <Button onClick={() => setRejectOpen(true)}>Từ chối</Button>}
+              </span>
+            )}
             {record.status_code === 'DA_DUYET' && canCreateReceipt && (
               <Button variant="primary" onClick={() => setReceiptOpen(true)}>
                 Tạo phiếu thu
@@ -457,6 +472,14 @@ function OrderView({ record }: { record: OrderRecord }) {
         }
       >
         <div className="flex flex-col gap-6">
+          {record.status_code === 'DA_TRINH' && overCapLines(record.lines).length > 0 && (
+            <Notice tone="warning" title={`Chiết khấu vượt trần ${capPercentText(cap)}`}>
+              {overCapLines(record.lines)
+                .map((l) => `Dòng ${l.line_no}: ${l.total_percent_text}%`)
+                .join('; ')}
+              . Chỉ cảnh báo, không chặn: người duyệt xem xét rồi Duyệt hoặc Từ chối.
+            </Notice>
+          )}
           {record.status_code === 'DA_TRINH' && (
             <Notice>
               Đơn đã trình, chờ {record.approver_name ?? 'người duyệt'} duyệt. Trong lúc chờ không
@@ -617,6 +640,28 @@ function OrderView({ record }: { record: OrderRecord }) {
           {history}
         </div>
       </RecordDetail>
+      <ApproveOrderDialog
+        record={record}
+        open={approveOpen}
+        onOpenChange={setApproveOpen}
+        onReject={() => {
+          setApproveOpen(false);
+          setRejectOpen(true);
+        }}
+        onDone={(message) => {
+          void refresh();
+          toast({ title: message });
+        }}
+      />
+      <RejectOrderDialog
+        record={record}
+        open={rejectOpen}
+        onOpenChange={setRejectOpen}
+        onDone={(message) => {
+          void refresh();
+          toast({ title: message });
+        }}
+      />
       <CreateReceiptDialog
         open={receiptOpen}
         onOpenChange={setReceiptOpen}

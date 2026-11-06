@@ -269,9 +269,9 @@ select app.save_order(pg_temp.o('f1'), null, pg_temp.term('CHIA_3_DOT'));
 select is((select needs_acknowledgement from app.sales_order where id = pg_temp.o('f1')), true, 'Đ102: đơn có chính sách cần duyệt đặt cờ cần tích đồng ý');
 select app.submit_order(pg_temp.o('f1'));
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(pg_temp.err($$select app.approve_order(pg_temp.o('f1'))$$), 'HMT_CAN_TICH_DONG_Y', 'Đ102: chưa tích đồng ý thì không duyệt được');
-select is(pg_temp.err($$select app.approve_order(pg_temp.o('f1'), true)$$), null, 'Đ102: tích đồng ý thì duyệt được');
-select is((select acknowledged from app.sales_order where id = pg_temp.o('f1')), true, 'Ghi người duyệt đã tích đồng ý');
+-- R-V2-11 (anh chốt 06/11, A4): không còn ô tích đồng ý; vượt trần hoặc chính sách cần duyệt chỉ cảnh báo, duyệt được ngay.
+select is(pg_temp.err($$select app.approve_order(pg_temp.o('f1'))$$), null, 'R-V2-11: đơn có cờ cảnh báo duyệt được, không cần tích đồng ý');
+select is((select acknowledged from app.sales_order where id = pg_temp.o('f1')), true, 'Ghi đơn có cờ cảnh báo lúc duyệt');
 -- Duyệt thường: đơn a1.
 select is(pg_temp.err($$select app.approve_order(pg_temp.o('a1'))$$), null, 'Người duyệt đã chốt (có quyền Duyệt): duyệt được');
 select is(pg_temp.st('a1'), 'DA_DUYET', 'Sau duyệt: Đã duyệt');

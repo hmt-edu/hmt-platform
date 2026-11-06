@@ -360,7 +360,7 @@ Giao diện Báo giá, Đơn hàng, Phiếu thu: anh sẽ điều chỉnh, **ch�
 
 | Mã | Luật | |
 |---|---|---|
-| R-V2-11 | **Trần chiết khấu 20% chỉ cảnh báo, không chặn** ở mọi bước (đã có bước quản lý và kế toán duyệt). Thay R-TIEN-29 ("vượt trần phải quản lý cơ sở duyệt") và ô tích đồng ý khi duyệt (Đ102). | [CHỐT]; **hoãn** (04/11): anh trả lời cùng yêu cầu chỉnh Báo giá, Đơn hàng, Phiếu thu, trước 08/11. Chưa làm phần trần chiết khấu |
+| R-V2-11 | **Trần chiết khấu 20% chỉ cảnh báo, không chặn** ở mọi bước (đã có bước quản lý và kế toán duyệt). Thay R-TIEN-29 ("vượt trần phải quản lý cơ sở duyệt") và ô tích đồng ý khi duyệt (Đ102). | [CHỐT]; **hoãn** (04/11): anh trả lời cùng yêu cầu chỉnh Báo giá, Đơn hàng, Phiếu thu, trước 08/11. Chưa làm phần trần chiết khấu | **Đã làm cho Đơn hàng (migration 077, 06/11):** bỏ ô tích đồng ý ở Trình và Duyệt; hộp Duyệt (BH-07) cảnh báo dòng vượt trần; nhật ký sự kiện Duyệt ghi người duyệt và tổng % dòng vượt; trần đọc từ tham số `discount_total_cap_percent` (đã có, không tạo trùng `tran_chiet_khau_tong`). Báo giá, Phiếu thu còn chờ.
 | R-V2-12 | **Duyệt đơn:** quản lý trực tiếp của người lập; người lập không có quản lý trực tiếp thì **Trưởng cơ sở** duyệt (thay "không trình được" ở R-HT-06). | [CHỐT] |
 | R-V2-13 | **Trạng thái đơn:** Nháp, Đã gửi, Đã trình, Đã duyệt; Huỷ. Từ chối thì đơn về Nháp, lý do ghi vào ghi chú. "Hết hạn" chỉ là nhãn, sau 14 ngày kể từ lúc Gửi. | [CHỐT] trình tự; **hoãn** (04/11): nghĩa của "Đã gửi" của đơn anh trả lời cùng yêu cầu chỉnh trước 08/11; chưa thêm trạng thái |
 | R-V2-14 | **Trạng thái phiếu thu:** Nháp, Đã gửi, Chờ kế toán, Đã duyệt; Huỷ. Hai bước duyệt như R-TIEN-01 (đổi tên "Đã trình" thành "Đã gửi"). | [CHỐT] |

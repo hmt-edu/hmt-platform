@@ -88,3 +88,21 @@ export function cancelOrder(
     p_note: note,
   });
 }
+
+/** Duyệt đơn Đã trình (BH-07). Không còn ô tích đồng ý vượt trần (R-V2-11): vượt trần chỉ cảnh báo, nhật ký ghi người duyệt và tổng %. */
+export function approveOrder(
+  supabase: SupabaseClient,
+  id: string,
+): Promise<{ on_behalf: boolean }> {
+  return rpc<{ on_behalf: boolean }>(supabase, 'approve_order', { p_id: id });
+}
+
+/** Từ chối đơn Đã trình: lý do từ danh mục "Lý do từ chối" áp dụng cho đơn, "Khác" bắt buộc ghi chú; đơn về Nháp. */
+export function rejectOrder(
+  supabase: SupabaseClient,
+  id: string,
+  reasonCode: string,
+  note: string | null,
+): Promise<void> {
+  return rpc<void>(supabase, 'reject_order', { p_id: id, p_reason_code: reasonCode, p_note: note });
+}

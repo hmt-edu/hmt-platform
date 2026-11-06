@@ -438,3 +438,9 @@ Anh Trường chốt theo Config mới (bản cuối). Dữ liệu hiện chỉ 
 - `app.package_ids_for_filter(bộ lọc)` (Admin): chọn tất cả gói đang bán theo bộ lọc, kèm loại gói.
 - `app.add_package_prices(ngày hiệu lực, dòng)` (Admin): thêm nhiều dòng giá một giao dịch qua `add_package_price`; sai một dòng thì hoàn tác cả lần. Dòng giá chỉ thêm, không sửa (R-TIEN-14).
 - Gói bán (CH-01): không cần hàm mới; dùng `save_sales_package` và `set_config_active` (Ngừng bán, Dùng lại).
+
+## Duyệt, Từ chối đơn hàng và vượt trần chỉ cảnh báo (migration 077, anh chốt 06/11: A1, A4)
+
+- Giao diện BH-07: nút **Duyệt**, **Từ chối** ở đơn Đã trình theo `get_order.can_approve`, `can_reject` (người duyệt đã chốt lúc trình, Admin duyệt thay khi vắng). Hộp Duyệt: tóm tắt, từng dòng (hồ sơ học sinh "dùng HS… / sẽ tạo hồ sơ mới"), cảnh báo vượt trần, bấm Duyệt hoặc Từ chối. Từ chối chọn lý do từ danh mục "Lý do từ chối" áp dụng cho đơn; "Khác" bắt ghi chú; đơn về Nháp.
+- `app.order_approve_core` (dùng chung cho `approve_order` và tự duyệt khi Trưởng cơ sở trình): bỏ yêu cầu tích đồng ý (`HMT_CAN_TICH_DONG_Y`); `p_acknowledged` giữ cho tương thích, không còn tác dụng. Sự kiện DUYET ghi "Duyệt đơn vượt trần N%: dòng X Y%". Trần = tham số `discount_total_cap_percent`.
+- Còn chờ: sửa đơn Nháp (UI-O3), tạo đơn từ cơ hội (UI-O4, BH-11), chip chiết khấu, BH03_in, ưu đãi linh hoạt (chờ anh chốt A2), nạp Số dư.

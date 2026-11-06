@@ -304,17 +304,17 @@ select is(pg_temp.col('b1', 'approval_route'), 'TU_DUYET', 'R-HT-06: đường d
 select is((select count(*)::int from app.sales_order_line l where l.order_id = pg_temp.o('b1') and l.student_id is not null), 1, 'R-CRM-27: hồ sơ học sinh được tạo hoặc khớp khi tự duyệt (như approve_order)');
 select is((select count(*)::int from app.sales_order_installment i where i.order_id = pg_temp.o('b1') and i.due_date is not null), 3, 'R-TIEN-07: hạn đóng của ba đợt được chốt khi tự duyệt');
 select is(pg_temp.err($$select app.cancel_order(pg_temp.o('b1'), 'KHACH_DOI_Y')$$), null, 'Đơn tự duyệt vẫn huỷ được như đơn đã duyệt (R-TIEN-38)');
--- Đ102: vượt trần hoặc chính sách cần duyệt mà chưa tích thì chặn, đơn vẫn Nháp, không sự kiện nào.
-select is(pg_temp.err($$select app.submit_order(pg_temp.o('b2'))$$), 'HMT_CAN_TICH_DONG_Y', 'Đ102: chính sách cần duyệt mà chưa tích thì Trưởng cơ sở trình bị chặn HMT_CAN_TICH_DONG_Y');
-select is(pg_temp.stat('b2'), 'NHAP', 'Đ102: bị chặn thì đơn vẫn Nháp');
-select is(pg_temp.evs('b2'), 'TAO', 'Đ102: bị chặn thì không có sự kiện Trình, Duyệt nào');
-select is(app.submit_order(pg_temp.o('b2'), true) ->> 'status', 'DA_DUYET', 'Đ102: tích đồng ý thì tự duyệt');
-select is(pg_temp.col('b2', 'acknowledged'), 'true', 'Đ102: ghi nhận người duyệt đã tích');
-select is(pg_temp.evs('b2'), 'TAO,TRINH,DUYET', 'Đ102: lịch sử đủ sau khi tích');
--- Điều chỉnh 2: cờ cần tích của đơn đang cũ (sai); lúc trình tính lại rồi lõi duyệt đọc lại đơn nên vẫn chặn.
-select is(pg_temp.err($$select app.submit_order(pg_temp.o('b3'))$$), 'HMT_CAN_TICH_DONG_Y', 'Chỉ vượt trần sau khi tính lại tổng: Trưởng cơ sở trình chưa tích vẫn bị chặn HMT_CAN_TICH_DONG_Y');
-select is(pg_temp.stat('b3'), 'NHAP', 'Chỉ vượt trần sau khi tính lại: đơn vẫn Nháp');
-select is(pg_temp.evs('b3'), 'TAO', 'Chỉ vượt trần sau khi tính lại: không sự kiện nào');
+-- R-V2-11 (anh chốt 06/11, A4): không còn ô tích đồng ý; chính sách cần duyệt, vượt trần chỉ cảnh báo, tự duyệt được ngay.
+select is(app.submit_order(pg_temp.o('b2')) ->> 'status', 'DA_DUYET', 'R-V2-11: chính sách cần duyệt không chặn, Trưởng cơ sở tự duyệt');
+select is(pg_temp.col('b2', 'acknowledged'), 'true', 'R-V2-11: ghi đơn có cờ cảnh báo lúc duyệt');
+select is(pg_temp.evs('b2'), 'TAO,TRINH,DUYET', 'R-V2-11: lịch sử đủ Trình, Duyệt');
+-- Vượt trần sau khi tính lại tổng: duyệt được, nhật ký ghi người duyệt và tổng % của dòng vượt.
+select pg_temp.sudo($$set local session_replication_role = 'replica'$$);
+select pg_temp.sudo($$update app.sales_order_line set over_cap = true, discount_percent = 15, gift_percent = 8.3 where order_id = pg_temp.o('b3')$$);
+select pg_temp.sudo($$set local session_replication_role = 'origin'$$);
+select is(app.submit_order(pg_temp.o('b3')) ->> 'status', 'DA_DUYET', 'R-V2-11: vượt trần chỉ cảnh báo, tự duyệt được');
+select ok((select e.note from app.sales_order_event e where e.order_id = pg_temp.o('b3') and e.event_code = 'DUYET') like '%Duyệt đơn vượt trần%',
+          'R-V2-11: nhật ký duyệt ghi đơn vượt trần và tổng % dòng vượt');
 -- R-TIEN-35 và KD6 áp như approve_order; lỗi thì lùi cả giao dịch.
 select is(pg_temp.err($$select app.submit_order(pg_temp.o('b4'))$$), 'HMT_EM_THIEU_THONG_TIN', 'R-TIEN-35: em thiếu năm sinh thì tự duyệt bị chặn');
 select is(pg_temp.stat('b4'), 'NHAP', 'R-TIEN-35: đơn vẫn Nháp');
@@ -331,8 +331,7 @@ select is(pg_temp.col('e1', 'approval_route'), 'QUAN_LY', 'Đường QUAN_LY gi�
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(app.submit_order(pg_temp.o('c1')) ->> 'status', 'DA_TRINH', 'CSKH trình vẫn chỉ thành Đã trình');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(pg_temp.err($$select app.approve_order(pg_temp.o('e1'))$$), 'HMT_CAN_TICH_DONG_Y', 'approve_order giữ nguyên: đơn cần tích mà chưa tích thì chặn');
-select is(app.approve_order(pg_temp.o('e1'), true) ->> 'on_behalf', 'false', 'approve_order giữ nguyên: tích đồng ý thì duyệt được');
+select is(app.approve_order(pg_temp.o('e1')) ->> 'on_behalf', 'false', 'R-V2-11: approve_order không cần tích đồng ý, duyệt được');
 select is(pg_temp.evs('e1'), 'TAO,TRINH,DUYET', 'approve_order giữ nguyên lịch sử Trình, Duyệt');
 -- Người khác trình đơn Nháp của Trưởng cơ sở thì chỉ thành Đã trình; Trưởng cơ sở duyệt sau.
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');

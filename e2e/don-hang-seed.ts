@@ -28,6 +28,14 @@ export const RECEIPT_SETUPS = {
 export const receiptSetupOf = (project: string): Setup =>
   RECEIPT_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 
+// Bộ riêng cho bài duyệt, từ chối đơn (BH-07).
+export const APPROVE_SETUPS = {
+  'may-tinh': { mark: 'E2EBDMT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1200 },
+  'dien-thoai': { mark: 'E2EBDDT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1250 },
+} as const;
+export const approveSetupOf = (project: string): Setup =>
+  APPROVE_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
+
 export const orderSetupOf = (project: string): Setup =>
   ORDER_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 

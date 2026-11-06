@@ -154,6 +154,11 @@ export type OrderRecord = {
   expected_approver_id: string | null;
   expected_approver_name: string | null;
   expected_approver_can_approve: boolean | null;
+  /** Việc người gọi làm được ở tình trạng hiện tại (get_order từ migration 063): giao diện chỉ hiện nút đúng, máy chủ kiểm lại. */
+  can_submit: boolean;
+  can_cancel: boolean;
+  can_approve: boolean;
+  can_reject: boolean;
   lines: OrderLine[];
   installments: OrderInstallment[];
   events: OrderEvent[];
