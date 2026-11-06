@@ -2,9 +2,11 @@ import { execFileSync } from 'node:child_process';
 import { chmodSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // Bước "Chọn phần CI cần chạy" của ci.yml (Đ281): mọi lỗi thì chạy đủ (full=true, ui=true, e2e=true). Dùng `gh` giả, không gọi mạng.
+// Mỗi bài chạy bash thật; khi cả bộ test chạy song song trên máy bận, 5 giây mặc định không đủ (trượt chập chờn 06/11): nới riêng cho file này.
+vi.setConfig({ testTimeout: 30_000 });
 const dirs: string[] = [];
 afterEach(() => {
   while (dirs.length > 0) rmSync(dirs.pop() ?? '', { recursive: true, force: true });

@@ -26,6 +26,7 @@ export type UserRecord = {
   id: string;
   display_name: string;
   login_name: string;
+  username: string | null;
   staff_code: string | null;
   branch: { id: string; code: string; name: string };
   roles: (UserRoleRef & { require_mfa: boolean })[];

@@ -143,6 +143,13 @@ test('Hoàn thành ở trang Cơ hội thì màn Lịch hẹn đã tải trướ
   await page.goBack();
   await page.goBack();
   await expect(page.getByRole('heading', { level: 1, name: 'Lịch hẹn' })).toBeVisible();
+  // Quay lại thì bộ lọc về mặc định: chọn lại khoảng thời gian và gõ lại dấu bài, nếu không lịch B có thể rơi ra ngoài trang đầu (lỗi chập chờn theo ngày).
+  await pickOption(
+    page,
+    page.getByRole('combobox', { name: 'Khoảng thời gian' }),
+    /^Tất cả thời gian$/,
+  );
+  await page.getByPlaceholder(/Tìm tên, SĐT, mã/).fill(setup.mark);
   await expect(
     rowOf(page, `Hẹn B ${setup.mark}`).getByRole('button', { name: 'Hoàn thành' }),
   ).toHaveCount(0);

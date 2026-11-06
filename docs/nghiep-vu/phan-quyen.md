@@ -169,7 +169,7 @@ kiểm quyền `app.assert_account_admin()`:
 
 | Việc | Hàm DB | Ghi chú |
 |---|---|---|
-| Tạo tài khoản | `app.admin_create_account` | Cấp mã NV/GV/TG mới hoặc giữ mã cũ; học sinh bắt buộc mã HS; bắt đổi mật khẩu lần đầu |
+| Tạo tài khoản (có tên đăng nhập, kiểm dạng, trùng; Edge Function sinh mật khẩu tạm trả một lần) | `app.admin_create_account` | Cấp mã NV/GV/TG mới hoặc giữ mã cũ; học sinh bắt buộc mã HS; bắt đổi mật khẩu lần đầu |
 | Đổi vai trò | `app.admin_set_roles` | Ít nhất một vai trò; bỏ bớt vai trò thì đăng xuất mọi phiên; không bỏ ADMIN cuối cùng |
 | Đổi cơ sở | `app.admin_set_branch` | Đăng xuất mọi phiên |
 | Khoá / mở khoá | `app.admin_set_locked` | Bắt buộc lý do; không tự khoá mình; không khoá ADMIN cuối cùng; đăng xuất mọi phiên; Supabase Auth cấm đăng nhập |
@@ -269,3 +269,12 @@ tự kiểm quyền người gọi.
 - **Xuất file** không đổi: vẫn do ma trận quyết định (R-V2-06); mặc định chỉ Admin có Xuất Phụ huynh, Học sinh, Lead, Cơ hội; anh cấp thêm trong màn Phân quyền.
 - Chưa làm: danh sách cơ sở theo từng người (CS1, CS5…). Quyền theo cơ sở hiện lấy từ một cơ sở chính của tài khoản và phạm vi của vai trò (Toàn hệ thống hoặc Cơ sở); thêm danh sách cơ sở phải sửa nhiều chính sách RLS, làm thành PR riêng sau khi anh duyệt cách làm.
 
+
+## Tên đăng nhập và Sửa email (migration 074, anh chốt 06/11: Q-M1, Q-M4)
+
+- Cột `app.user_account.username`: viết thường không dấu, duy nhất không phân biệt hoa thường, **không đổi sau khi đã có**; tài khoản đã nạp lấy từ `legacy_ref`. Đăng nhập vẫn bằng email; đăng nhập bằng tên đăng nhập làm sau, chạy song song.
+- `app.check_account_fields(tên đăng nhập, email)` (Admin): báo trùng ngay ở ô khi tạo người dùng, sửa email; không ghi gì.
+- `app.admin_set_username(user, tên)` (Admin): đặt MỘT lần cho tài khoản chưa có (ví dụ Admin tạo bằng Bootstrap admin). Edge Function `admin-users`, thao tác `set_username`.
+- `app.admin_change_email_check` rồi `app.admin_change_email_apply` (Admin): Sửa email của **người khác** (không tự đổi), tài khoản nhân sự (không áp dụng cho học sinh), email mới đúng dạng và không trùng; đổi xong thu hồi mọi phiên, nhật ký ghi email cũ và mới; tên đăng nhập giữ nguyên. Edge Function `admin-users`, thao tác `set_email`: kiểm, đổi ở Supabase Auth, áp dụng ở DB, nếu DB trượt thì trả email cũ cho Auth. Luật chính thức (mã R-HT-12) ghi vào spec ở PR tài liệu.
+- `app.get_account_form_defaults()` (Admin): tên miền email quy ước từ tham số `import_user_email_domain` (không viết cứng ở giao diện).
+- Tạo người dùng (QT-03): Edge Function `create` không nhận mật khẩu thì sinh mật khẩu tạm (cùng độ dài, chính sách như nạp), trả một lần cho hộp K4g, không lưu, không ghi nhật ký.

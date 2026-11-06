@@ -28,3 +28,49 @@ export function staffKind(code: string | null): string {
   if (code.startsWith('TG')) return 'Trợ giảng';
   return 'Nhân viên';
 }
+
+/** Dạng tên đăng nhập hợp lệ (khớp ràng buộc DB): chữ thường không dấu, số, dấu chấm, gạch; bắt đầu bằng chữ; 2 đến 40 ký tự. */
+export const USERNAME_PATTERN = /^[a-z][a-z0-9._-]{1,39}$/;
+
+/** Gợi ý tên đăng nhập từ tên hiển thị, cùng cách với hàm DB app.suggest_username: tên (từ cuối) + chữ cái đầu họ và tên đệm, không dấu ("Nguyễn Văn An" thành "annv"). */
+export function suggestUsername(displayName: string): string {
+  const words = displayName
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w !== '');
+  if (words.length === 0) return '';
+  const given = words[words.length - 1] ?? '';
+  const initials = words
+    .slice(0, -1)
+    .map((w) => w.charAt(0))
+    .join('');
+  return `${given}${initials}`.slice(0, 40);
+}
+
+/** Email quy ước từ tên đăng nhập và tên miền trong Cài đặt: `<tên đăng nhập>@<tên miền>`. */
+export function conventionalEmail(username: string, domain: string): string {
+  return username === '' || domain === '' ? '' : `${username}@${domain}`;
+}
+
+/** Lỗi dạng của tên đăng nhập (null là hợp lệ); trùng thì hỏi DB. */
+export function usernameFormatError(username: string): string | null {
+  return USERNAME_PATTERN.test(username)
+    ? null
+    : 'Chữ thường không dấu, số, dấu chấm hoặc gạch; bắt đầu bằng chữ; từ 2 đến 40 ký tự.';
+}
+
+/** Email đúng dạng đơn giản (kiểm đầy đủ ở máy chủ). */
+export function emailFormatError(email: string): string | null {
+  return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) ? null : 'Email không đúng dạng.';
+}
+
+/** Loại nhân sự gửi cho hàm cấp mã: NV, GV, TG. */
+export const STAFF_KINDS = [
+  { value: 'NV', label: 'Nhân viên' },
+  { value: 'GV', label: 'Giáo viên' },
+  { value: 'TG', label: 'Trợ giảng' },
+];

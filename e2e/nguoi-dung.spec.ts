@@ -1,4 +1,4 @@
-// QT-01, QT-02 (Quản trị người dùng): danh sách, Xuất, bản ghi, Quản lý trực tiếp, Thu hồi phiên, Đặt lại hai bước. Máy tính (bản đồ
+// QT-01, QT-02, QT-03 (Quản trị người dùng): danh sách, Xuất, bản ghi, Quản lý trực tiếp, Thu hồi phiên, Đặt lại hai bước. Máy tính (bản đồ
 // màn hình: QT chỉ có bản máy tính). Admin giả riêng (quantri.cs5, hai bước thiết lập ngay trong bài); tài khoản bị thao tác: tg.cs5.
 // Edge Function admin-users (đổi vai trò, cơ sở, khoá, mở khoá) không chạy ở môi trường kiểm thử: các hộp của chúng chỉ kiểm biểu mẫu.
 import { readFileSync } from 'node:fs';
@@ -49,11 +49,9 @@ async function openMenu(page: Page) {
 }
 const toastText = (page: Page, text: string | RegExp) => page.getByText(text).first();
 
-test('Danh sách: tìm, lọc đã khoá, không có nút Tạo (chờ khuôn K4g), Xuất tải CSV', async ({
-  page,
-}) => {
+test('Danh sách: có nút Tạo người dùng, tìm, lọc đã khoá, Xuất tải CSV', async ({ page }) => {
   await openList(page);
-  await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Tạo người dùng', exact: true })).toBeVisible();
   await page.getByPlaceholder(/Tìm tên, email, mã/).fill(TARGET);
   await expect(page.getByRole('link', { name: TARGET_NAME })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Học sinh (giả)' })).toHaveCount(0);
@@ -256,4 +254,78 @@ test('Đặt lại mật khẩu: hộp xác nhận, rồi hộp mật khẩu t�
   expect(calls).toBe(1);
   // Mở lại màn: mật khẩu không còn ở đâu.
   await expect(page.getByText(temp)).toHaveCount(0);
+});
+
+// QT-03 Tạo người dùng (ngăn kéo) và Sửa email. Edge Function admin-users trả lời giả; việc báo trùng ở ô gọi hàm DB thật (check_account_fields).
+test('Tạo người dùng: gợi ý tên đăng nhập (tên + chữ cái đầu họ, đệm) và email, báo trùng ngay ở ô, tạo xong hiện mật khẩu tạm một lần', async ({
+  page,
+}) => {
+  await sql(`update app.user_account set username = 'tg.cs5.e2e' where login_name = $1`, [
+    `${TARGET}@${DOMAIN}`,
+  ]);
+  const temp = 'Tam7654321wxyz';
+  let body: Record<string, unknown> | null = null;
+  await page.route('**/functions/v1/admin-users', async (route) => {
+    body = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({
+      json: { userId: '00000000-0000-0000-0000-000000000000', password: temp },
+    });
+  });
+  await enterAsAdmin(page, ADMIN);
+  await page.goto('/crm/quan-tri/nguoi-dung');
+  await page.getByRole('button', { name: 'Tạo người dùng' }).click();
+  const drawer = page.getByRole('dialog', { name: 'Tạo người dùng' });
+  await expect(drawer.getByRole('button', { name: 'Tạo tài khoản' })).toBeDisabled();
+  await drawer.getByLabel('Tên hiển thị').fill('Giáo viên Thử');
+  // Gợi ý: tên + chữ cái đầu họ và tên đệm, bỏ dấu; email theo tên miền quy ước trong Cài đặt.
+  await expect(drawer.getByLabel('Tên đăng nhập')).toHaveValue('thugv');
+  await expect(drawer.getByLabel('Email')).toHaveValue(/^thugv@.+/);
+  // Tên đăng nhập đã có người dùng: báo ngay ở ô, chưa cho tạo.
+  await drawer.getByLabel('Tên đăng nhập').fill('tg.cs5.e2e');
+  await expect(drawer.getByText('Tên đăng nhập này đã có người dùng.')).toBeVisible();
+  await drawer.getByLabel('Tên đăng nhập').fill('thugv');
+  await expect(drawer.getByText('Tên đăng nhập này đã có người dùng.')).toHaveCount(0);
+  await drawer.getByRole('checkbox', { name: 'Giáo viên', exact: true }).check();
+  await expectAccessible(page);
+  await drawer.getByRole('button', { name: 'Tạo tài khoản' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Mật khẩu tạm' });
+  await expect(dialog.getByLabel('Mật khẩu tạm')).toHaveText(temp);
+  expect(body).toMatchObject({
+    action: 'create',
+    username: 'thugv',
+    roles: ['TEACHER'],
+    displayName: 'Giáo viên Thử',
+  });
+});
+
+test('Sửa email: hộp có email hiện tại, báo trùng email ngay ở ô, lưu gọi máy chủ', async ({
+  page,
+}) => {
+  let body: Record<string, unknown> | null = null;
+  await page.route('**/functions/v1/admin-users', async (route) => {
+    body = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({ json: { ok: true } });
+  });
+  await openTarget(page);
+  await openMenu(page);
+  await menuItem(page, 'Sửa email').click();
+  const dialog = page.getByRole('dialog', { name: /Sửa email của/ });
+  await expect(dialog.getByLabel('Email hiện tại')).toHaveValue(`${TARGET}@${DOMAIN}`);
+  await expect(dialog.getByRole('button', { name: 'Lưu email' })).toBeDisabled();
+  // Email đã dùng cho tài khoản khác (quản trị giả).
+  await dialog.getByLabel('Email mới').fill(`${ADMIN}@${DOMAIN}`);
+  await expect(dialog.getByText('Email này đã dùng cho tài khoản khác.')).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Lưu email' })).toBeDisabled();
+  await dialog.getByLabel('Email mới').fill('tg.moi@thu.example');
+  await expect(dialog.getByText('Email này đã dùng cho tài khoản khác.')).toHaveCount(0);
+  await dialog.getByRole('button', { name: 'Lưu email' }).click();
+  await expect(dialog).toHaveCount(0);
+  expect(body).toMatchObject({ action: 'set_email', email: 'tg.moi@thu.example' });
+});
+
+test('Sửa email: không có mục này cho chính mình', async ({ page }) => {
+  await openTarget(page, 'Quản trị CS5 (giả)');
+  await openMenu(page);
+  await expect(menuItem(page, 'Sửa email')).toHaveCount(0);
+  await expect(menuItem(page, 'Sửa vai trò')).toBeVisible();
 });

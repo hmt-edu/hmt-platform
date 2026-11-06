@@ -1,5 +1,5 @@
 // Edge Function quản trị tài khoản (chỉ ADMIN đã xác thực hai bước): tạo tài khoản, đổi vai trò,
-// đổi cơ sở, khoá/mở khoá, đặt lại mật khẩu. Khoá secret chỉ nằm trong secrets của Supabase.
+// đổi cơ sở, khoá/mở khoá, đặt lại mật khẩu, đặt tên đăng nhập, sửa email. Khoá secret chỉ nằm trong secrets của Supabase.
 // Kiểm quyền: gọi hàm DB bằng chính token của người gọi (app.assert_account_admin).
 import { createClient } from 'npm:@supabase/supabase-js@2.117.3';
 import { corsHeaders, fail, HTTP, json, publishableKey, secretKey } from '../_shared/http.ts';
@@ -42,6 +42,14 @@ Deno.serve(async (req) => {
     ]);
     return checkPassword(password, { minLength: Number(minLength), requireLetterDigit: Boolean(requireLetterDigit) });
   };
+  // Mật khẩu tạm ngẫu nhiên (cùng độ dài, chính sách như lúc nạp người dùng); trả MỘT lần cho Admin, không lưu, không ghi nhật ký.
+  const makeTempPassword = async () => {
+    const [{ data: lengthSetting }, { data: minLength }] = await Promise.all([
+      asCaller.rpc('get_setting_int', { p_key: 'import_temp_password_length' }),
+      asCaller.rpc('get_setting_int', { p_key: 'password_min_length' }),
+    ]);
+    return generateTempPassword(Math.max(Number(lengthSetting), Number(minLength)), (buffer) => crypto.getRandomValues(buffer));
+  };
   const rpcFail = (error: { message: string; hint?: string }) =>
     fail(req, HTTP.BAD_REQUEST, error.hint?.startsWith('HMT_') ? error.hint : 'HMT_LOI', error.message);
 
@@ -50,7 +58,10 @@ Deno.serve(async (req) => {
       const isStudent = body.kind === 'student';
       const studentCode = typeof body.studentCode === 'string' ? body.studentCode.trim().toUpperCase() : null;
       const loginEmail = isStudent ? toAuthEmail(studentCode ?? '') : String(body.email ?? '').trim().toLowerCase();
-      const password = String(body.password ?? '');
+      // Không gửi sẵn mật khẩu thì máy chủ sinh mật khẩu tạm và trả một lần (form Tạo người dùng QT-03).
+      let password = String(body.password ?? '');
+      const generated = password === '';
+      if (generated) password = await makeTempPassword();
       if (!loginEmail || (isStudent && !studentCode)) return fail(req, HTTP.BAD_REQUEST, 'HMT_THIEU_THONG_TIN', 'Thiếu email hoặc mã học sinh.');
       const problem = await passwordProblem(password);
       if (problem) return fail(req, HTTP.BAD_REQUEST, 'HMT_MAT_KHAU_YEU', problem);
@@ -73,13 +84,36 @@ Deno.serve(async (req) => {
         p_staff_code: typeof body.staffCode === 'string' ? body.staffCode : null,
         p_staff_kind: typeof body.staffKind === 'string' ? body.staffKind : null,
         p_student_code: studentCode,
+        p_username: typeof body.username === 'string' && body.username.trim() !== '' ? body.username : null,
       });
       if (error) {
         // Khai báo HMT lỗi thì gỡ tài khoản Auth vừa tạo (chưa có dữ liệu gì gắn vào).
         await admin.auth.admin.deleteUser(created.user.id);
         return rpcFail(error);
       }
-      return json(req, HTTP.OK, { userId: created.user.id });
+      const response = json(req, HTTP.OK, generated ? { userId: created.user.id, password } : { userId: created.user.id });
+      response.headers.set('Cache-Control', 'no-store');
+      return response;
+    }
+    case 'set_username': {
+      // Đặt tên đăng nhập MỘT lần cho tài khoản chưa có (ví dụ Admin tạo bằng Bootstrap admin). Đã có thì DB chặn.
+      const { error } = await asCaller.rpc('admin_set_username', { p_user_id: userId, p_username: String(body.username ?? '') });
+      return error ? rpcFail(error) : json(req, HTTP.OK, { ok: true });
+    }
+    case 'set_email': {
+      // Sửa email (R-HT-12): DB kiểm luật (chỉ Admin, người khác, không trùng) -> đổi ở Supabase Auth -> DB áp dụng, thu hồi phiên, ghi nhật ký.
+      // Áp dụng ở DB trượt thì trả email cũ cho Auth để hai bên không lệch.
+      const newEmail = String(body.email ?? '').trim().toLowerCase();
+      const { data: oldEmail, error: checkError } = await asCaller.rpc('admin_change_email_check', { p_user_id: userId, p_new_email: newEmail });
+      if (checkError) return rpcFail(checkError);
+      const { error: authError } = await admin.auth.admin.updateUserById(userId, { email: newEmail, email_confirm: true });
+      if (authError) return fail(req, HTTP.BAD_REQUEST, 'HMT_LOI', authError.message);
+      const { error } = await asCaller.rpc('admin_change_email_apply', { p_user_id: userId, p_new_email: newEmail });
+      if (error) {
+        await admin.auth.admin.updateUserById(userId, { email: String(oldEmail), email_confirm: true });
+        return rpcFail(error);
+      }
+      return json(req, HTTP.OK, { ok: true });
     }
     case 'set_roles': {
       const { error } = await asCaller.rpc('admin_set_roles', { p_user_id: userId, p_roles: body.roles });
@@ -104,11 +138,7 @@ Deno.serve(async (req) => {
       let password = String(body.password ?? '');
       let generated = false;
       if (password === '') {
-        const [{ data: lengthSetting }, { data: minLength }] = await Promise.all([
-          asCaller.rpc('get_setting_int', { p_key: 'import_temp_password_length' }),
-          asCaller.rpc('get_setting_int', { p_key: 'password_min_length' }),
-        ]);
-        password = generateTempPassword(Math.max(Number(lengthSetting), Number(minLength)), (buffer) => crypto.getRandomValues(buffer));
+        password = await makeTempPassword();
         generated = true;
       }
       const problem = await passwordProblem(password);

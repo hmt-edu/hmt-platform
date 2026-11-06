@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { lockReasonText, roleNames, rolesError, sameRoles, staffKind } from './userLogic';
+import {
+  conventionalEmail,
+  emailFormatError,
+  lockReasonText,
+  roleNames,
+  rolesError,
+  sameRoles,
+  staffKind,
+  suggestUsername,
+  usernameFormatError,
+} from './userLogic';
 
 describe('userLogic', () => {
   it('lý do khoá: tên mục, kèm ghi chú khi có', () => {
@@ -26,5 +36,23 @@ describe('userLogic', () => {
     expect(staffKind('GV000001')).toBe('Giáo viên');
     expect(staffKind('TG000001')).toBe('Trợ giảng');
     expect(staffKind(null)).toBe('');
+  });
+  it('gợi ý tên đăng nhập: tên + chữ cái đầu họ và tên đệm, bỏ dấu', () => {
+    expect(suggestUsername('Nguyễn Văn An')).toBe('annv');
+    expect(suggestUsername('Đặng Thị Hương')).toBe('huongdt');
+    expect(suggestUsername('An')).toBe('an');
+    expect(suggestUsername('  ')).toBe('');
+  });
+  it('tên đăng nhập sai dạng bị báo', () => {
+    expect(usernameFormatError('giaovien.b')).toBeNull();
+    expect(usernameFormatError('Giao Vien')).not.toBeNull();
+    expect(usernameFormatError('1abc')).not.toBeNull();
+    expect(usernameFormatError('a')).not.toBeNull();
+  });
+  it('email quy ước và kiểm dạng email', () => {
+    expect(conventionalEmail('giaovien.b', 'nv.hmt.invalid')).toBe('giaovien.b@nv.hmt.invalid');
+    expect(conventionalEmail('', 'nv.hmt.invalid')).toBe('');
+    expect(emailFormatError('a@b.vn')).toBeNull();
+    expect(emailFormatError('a@b')).not.toBeNull();
   });
 });

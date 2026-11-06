@@ -1,6 +1,6 @@
 // QT-01 Người dùng (danh sách, khuôn K03): tài khoản nhân viên, giáo viên, trợ giảng. Chỉ Admin đã xác thực hai bước. Lọc, tìm, sắp
-// xếp, phân trang ở máy chủ. Xuất (chỉ Admin, Đ45) tải CSV. Khoá, Mở khoá ngay ở dòng. Tạo người dùng (QT-03) cần hộp mật khẩu tạm
-// K4g, K4e4 (chờ #69): chưa có nút Tạo.
+// xếp, phân trang ở máy chủ. Xuất (chỉ Admin, Đ45) tải CSV. Khoá, Mở khoá ngay ở dòng. Nút Tạo mở ngăn kéo QT-03; tạo xong hiện
+// mật khẩu tạm một lần (K4g).
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from '../../ui/Button';
@@ -13,7 +13,8 @@ import { useAccess } from '../../nav/AccessContext';
 import type { SortState } from '../../ui/Data';
 import { useToast } from '../../ui/toastContext';
 import { downloadText, toCsv } from '../lead/csv';
-import { ActionConfirmDialog, LockDialog } from './UserDialogs';
+import { ActionConfirmDialog, LockDialog, TempPasswordDialog } from './UserDialogs';
+import { CreateUserDrawer } from './UserCreate';
 import { EMPTY_USER_STATE, buildUserConfig, userPath } from './userConfig';
 import { buildUserFilters, userSortParam } from './userFilters';
 import type { UserRow } from './userTypes';
@@ -42,6 +43,8 @@ export function UserListPage() {
   const [exporting, setExporting] = useState(false);
   const [locking, setLocking] = useState<UserRow | null>(null);
   const [unlocking, setUnlocking] = useState<UserRow | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [created, setCreated] = useState<{ password: string; name: string } | null>(null);
 
   const canEdit = access.can('ADMIN', 'SUA');
   const canExport = access.can('ADMIN', 'XUAT');
@@ -118,8 +121,11 @@ export function UserListPage() {
         loading={list.isPending || list.isPlaceholderData}
         error={errorText}
         onRetry={() => void list.refetch()}
-        actions={
-          canExport
+        actions={[
+          ...(canEdit
+            ? [{ label: 'Tạo người dùng', icon: 'plus' as const, onClick: () => setCreating(true) }]
+            : []),
+          ...(canExport
             ? [
                 {
                   label: 'Xuất',
@@ -128,8 +134,8 @@ export function UserListPage() {
                   loading: exporting,
                 },
               ]
-            : []
-        }
+            : []),
+        ]}
         onRefresh={() => void refreshData()}
         pager={{
           from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
@@ -147,6 +153,22 @@ export function UserListPage() {
           title: 'Chưa có người dùng',
           hint: 'Không có tài khoản nào trong bộ lọc này. Đổi bộ lọc để xem tiếp.',
         }}
+      />
+      <CreateUserDrawer
+        open={creating}
+        onOpenChange={setCreating}
+        roles={access.allRoles.filter((r) => r.code !== 'STUDENT')}
+        branches={access.allBranches.map((b) => ({ code: b.code, label: `${b.code} ${b.name}` }))}
+        defaultBranch={access.allBranches[0]?.code ?? ''}
+        onCreated={(password, name) => {
+          void refreshData();
+          setCreated({ password, name });
+        }}
+      />
+      <TempPasswordDialog
+        password={created?.password ?? null}
+        name={created?.name ?? ''}
+        onClose={() => setCreated(null)}
       />
       <LockDialog
         open={locking !== null}

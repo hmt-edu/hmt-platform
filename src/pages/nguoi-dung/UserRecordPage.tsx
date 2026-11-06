@@ -1,7 +1,7 @@
 // QT-02 Người dùng (bản ghi, khuôn K06): thông tin tài khoản, vai trò, cơ sở, quản lý trực tiếp, trạng thái, thiết bị hai bước, lịch sử
 // đăng nhập. Chỉ Admin đã xác thực hai bước. Thao tác trong menu Hành động: Sửa vai trò, Đổi cơ sở, Quản lý trực tiếp, Khoá, Mở khoá,
 // Thu hồi phiên, Đặt lại hai bước (hai việc cuối không dùng cho chính mình, Đ50). Đặt lại mật khẩu cần hộp mật khẩu tạm K4g, K4e4
-// (chờ #69): chưa có mục này.
+// (chờ #69): chưa có mục này. Sửa email (không dùng cho chính mình): hộp QT03_sua_email.
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
@@ -23,6 +23,7 @@ import {
   RolesDialog,
   TempPasswordDialog,
 } from './UserDialogs';
+import { EmailDialog } from './UserCreate';
 import { roleNames, staffKind } from './userLogic';
 import { LOGIN_RESULT_LABEL, type UserRecord } from './userTypes';
 import {
@@ -39,7 +40,16 @@ import {
 } from './useUserData';
 
 type Dialog =
-  'roles' | 'branch' | 'manager' | 'lock' | 'unlock' | 'revoke' | 'mfa' | 'password' | null;
+  | 'roles'
+  | 'branch'
+  | 'manager'
+  | 'email'
+  | 'lock'
+  | 'unlock'
+  | 'revoke'
+  | 'mfa'
+  | 'password'
+  | null;
 
 export function UserRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -111,6 +121,11 @@ function UserView({ record }: { record: UserRecord }) {
           : [
               {
                 kind: 'action' as const,
+                label: 'Sửa email',
+                onSelect: () => setDialog('email'),
+              },
+              {
+                kind: 'action' as const,
                 label: 'Thu hồi phiên',
                 onSelect: () => setDialog('revoke'),
               },
@@ -147,6 +162,7 @@ function UserView({ record }: { record: UserRecord }) {
           <DetailSection title="Tài khoản">
             <DetailField mode="view" label="Mã NV/GV/TG" value={record.staff_code ?? ''} />
             <DetailField mode="view" label="Loại" value={staffKind(record.staff_code)} />
+            <DetailField mode="view" label="Tên đăng nhập" value={record.username ?? ''} />
             <DetailField mode="view" label="Email đăng nhập" value={record.login_name} />
             <DetailField
               mode="view"
@@ -274,6 +290,14 @@ function UserView({ record }: { record: UserRecord }) {
           setTempPassword(await resetUserPassword(supabase, record.id));
         }}
         onDone={() => void refresh()}
+      />
+      <EmailDialog
+        open={dialog === 'email'}
+        onOpenChange={close}
+        userId={record.id}
+        label={record.username ?? record.display_name}
+        currentEmail={record.login_name}
+        onDone={done('Đã lưu email mới.')}
       />
       <TempPasswordDialog
         password={tempPassword}

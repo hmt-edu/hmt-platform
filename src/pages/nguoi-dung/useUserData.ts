@@ -114,3 +114,69 @@ export async function resetUserMfa(
 ): Promise<{ removed: number }> {
   return rpc<{ removed: number }>(supabase, 'admin_reset_mfa', { p_user_id: userId });
 }
+
+// ---- Tạo người dùng (QT-03), Sửa email ----
+
+export type CreateUserInput = {
+  displayName: string;
+  username: string;
+  email: string;
+  branchCode: string;
+  staffKind: string;
+  roles: string[];
+};
+
+/** Tạo tài khoản nhân sự: Edge Function tạo ở Supabase Auth rồi hàm DB; máy chủ sinh mật khẩu tạm, trả MỘT lần cho hộp K4g. */
+export async function createUser(
+  supabase: SupabaseClient,
+  input: CreateUserInput,
+): Promise<string> {
+  const result = await callFunction<{ userId: string; password?: string }>(
+    supabase,
+    'admin-users',
+    {
+      action: 'create',
+      displayName: input.displayName,
+      username: input.username,
+      email: input.email,
+      branchCode: input.branchCode,
+      staffKind: input.staffKind,
+      roles: input.roles,
+    },
+  );
+  if (!result.password) throw new Error('Máy chủ không trả mật khẩu tạm.');
+  return result.password;
+}
+
+export type FieldCheck = { username: string | null; email: string | null };
+
+/** Kiểm trùng tên đăng nhập, email ngay ở ô (không ghi gì). */
+export function checkAccountFields(
+  supabase: SupabaseClient,
+  username: string,
+  email: string,
+): Promise<FieldCheck> {
+  return rpc<FieldCheck>(supabase, 'check_account_fields', {
+    p_username: username,
+    p_email: email,
+  });
+}
+
+export function useAccountFormDefaults(enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['account-form-defaults'],
+    enabled,
+    staleTime: Infinity,
+    queryFn: () => rpc<{ email_domain: string }>(supabase, 'get_account_form_defaults', {}),
+  });
+}
+
+/** Sửa email của người khác (Admin): máy chủ đổi ở Supabase Auth và DB, thu hồi mọi phiên của người đó, ghi nhật ký. */
+export async function setUserEmail(
+  supabase: SupabaseClient,
+  userId: string,
+  email: string,
+): Promise<void> {
+  await callFunction(supabase, 'admin-users', { action: 'set_email', userId, email });
+}
