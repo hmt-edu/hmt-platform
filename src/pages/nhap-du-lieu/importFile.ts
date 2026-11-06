@@ -16,6 +16,13 @@ export type ImportLine = {
   warnings?: string[];
 };
 
+/** Báo cáo nạp Cơ hội: số cơ hội theo giai đoạn, số dòng thiếu thông tin em, số dòng gắn vào phụ huynh có sẵn. */
+export type ImportSummary = {
+  by_stage: Record<string, number>;
+  missing_student_info: number;
+  attached_parent: number;
+};
+
 export type ImportResult = {
   mode: 'XEM_TRUOC' | 'NHAP';
   kind: string;
@@ -24,6 +31,8 @@ export type ImportResult = {
   duplicates: number;
   errors: number;
   rows: ImportLine[];
+  /** Chỉ Cơ hội: báo cáo số lượng (không có họ tên, SĐT). */
+  summary?: ImportSummary;
   /** Chỉ Người dùng, chỉ lần nạp thật: mật khẩu tạm trả MỘT lần. */
   passwords?: { username: string; password: string }[];
 };

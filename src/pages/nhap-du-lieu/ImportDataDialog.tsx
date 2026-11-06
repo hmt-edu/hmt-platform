@@ -19,6 +19,7 @@ import {
   type ImportLine,
   type ImportResult,
   type ImportRowStatus,
+  type ImportSummary,
 } from './importFile';
 import type { ImportKindConfig } from './importKinds';
 import { runImport } from './useImportData';
@@ -223,6 +224,7 @@ function ImportForm({
                   setPage(1);
                 }}
               />
+              {result.summary && <SummaryBlock summary={result.summary} />}
               <ResultTable config={config} rows={pageRows} />
               <Pagination
                 page={page}
@@ -353,6 +355,7 @@ function ResultDialog({
           <b className="tabular">{result.duplicates}</b> dòng trùng bỏ qua,{' '}
           <b className="tabular">{result.errors}</b> dòng lỗi (tổng {result.total} dòng).
         </p>
+        {result.summary && <SummaryBlock summary={result.summary} />}
         {passwords.length > 0 && (
           <Alert tone="warning">
             Mật khẩu tạm của {passwords.length} tài khoản chỉ hiện <b>một lần</b>, không lưu ở đâu.
@@ -390,5 +393,36 @@ function ResultDialog({
         )}
       </div>
     </Dialog>
+  );
+}
+
+/** Báo cáo nạp Cơ hội (chỉ số lượng): theo giai đoạn, số dòng thiếu thông tin em, số dòng gắn vào phụ huynh có sẵn. */
+function SummaryBlock({ summary }: { summary: ImportSummary }) {
+  const stages = Object.entries(summary.by_stage).sort(([a], [b]) => a.localeCompare(b));
+  return (
+    <div
+      className="rounded-control border border-border bg-surface-subtle p-3 text-body"
+      aria-label="Báo cáo cơ hội"
+    >
+      <p className="font-semibold">Báo cáo cơ hội hợp lệ</p>
+      <p>
+        Theo giai đoạn:{' '}
+        {stages.length === 0 ? (
+          'chưa có'
+        ) : (
+          <span className="tabular">
+            {stages.map(([stage, n]) => `${stage}: ${n}`).join(' · ')}
+          </span>
+        )}
+      </p>
+      <p>
+        <b className="tabular">{summary.missing_student_info}</b> dòng thiếu thông tin em (dữ liệu
+        cũ), cần bổ sung tên và năm sinh em trước khi tiến tới ghi danh.
+      </p>
+      <p>
+        <b className="tabular">{summary.attached_parent}</b> dòng gắn vào phụ huynh có sẵn (trùng số
+        điện thoại).
+      </p>
+    </div>
   );
 }

@@ -7,7 +7,7 @@ import {
   passwordsCsv,
   type ImportResult,
 } from './importFile';
-import { kindConfig } from './importKinds';
+import { IMPORT_KINDS, kindConfig } from './importKinds';
 
 const parent = kindConfig('PHU_HUYNH');
 
@@ -92,5 +92,42 @@ describe('màn Nhập: đọc file CSV theo loại', () => {
   it('file mật khẩu tạm có hai cột, một dòng mỗi tài khoản', () => {
     const csv = passwordsCsv([{ username: 'annv', password: 'Abc123xyz' }]).replace('﻿', '');
     expect(csv.trim().split('\r\n')).toEqual(['ten_dang_nhap,mat_khau_tam', 'annv,Abc123xyz']);
+  });
+
+  it('Cơ hội: cột nam_sinh tuỳ chọn, thiếu cột bắt buộc thì báo, cột lạ (nguon_tab) bỏ qua', () => {
+    const co = kindConfig('CO_HOI');
+    const full = parseCsv(
+      'ma_cu,ngay_tao,ho_ten_ph,sdt_ph,nguon_goc,nguon,co_so,nguoi_phu_trach,giai_doan,nam_sinh,nguon_tab\n0900000001,2026-09-15,Zeta,0900000001,Marketing,Hotline,CS5,sale.cs5,L5,2013,T9\n',
+    );
+    const built = buildRows(full, co);
+    expect(built.missing).toEqual([]);
+    expect(built.ignored).toEqual(['nguon_tab']);
+    expect(built.rows[0]).toMatchObject({
+      row: 2,
+      giai_doan: 'L5',
+      nam_sinh: '2013',
+      ngay_tao: '2026-09-15',
+    });
+    const noYear = parseCsv(
+      'ma_cu,ngay_tao,ho_ten_ph,sdt_ph,nguon_goc,nguon,co_so,nguoi_phu_trach,giai_doan\n1,2026-09-15,Z,0900000001,Marketing,Hotline,CS5,x,L5\n',
+    );
+    expect(buildRows(noYear, co).missing).toEqual([]);
+    const lacking = parseCsv('ma_cu,ngay_tao,ho_ten_ph,sdt_ph\n1,2026-09-15,Z,0900000001\n');
+    expect(buildRows(lacking, co).missing).toEqual([
+      'nguon_goc',
+      'nguon',
+      'co_so',
+      'nguoi_phu_trach',
+      'giai_doan',
+    ]);
+  });
+
+  it('thứ tự loại nạp: Người dùng, Cơ hội, Phụ huynh, Học sinh', () => {
+    expect(IMPORT_KINDS.map((k) => k.kind)).toEqual([
+      'NGUOI_DUNG',
+      'CO_HOI',
+      'PHU_HUYNH',
+      'HOC_SINH',
+    ]);
   });
 });

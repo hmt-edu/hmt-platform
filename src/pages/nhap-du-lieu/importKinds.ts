@@ -1,7 +1,7 @@
 // Các loại nạp dữ liệu cũ của màn Nhập (QT-18, chỉ Admin). Cột theo file mẫu HMT5_FILE_MAU_NAP_DU_LIEU_GIA.xlsx (từng tab xuất ra CSV UTF-8)
 // và docs/nghiep-vu/nap-du-lieu.md. Mọi luật kiểm dòng nằm ở hàm trong cơ sở dữ liệu / Edge Function; giao diện chỉ kiểm tên cột.
 
-export type ImportKind = 'NGUOI_DUNG' | 'PHU_HUYNH' | 'HOC_SINH';
+export type ImportKind = 'NGUOI_DUNG' | 'CO_HOI' | 'PHU_HUYNH' | 'HOC_SINH';
 
 export type ImportKindConfig = {
   kind: ImportKind;
@@ -36,6 +36,48 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
     required: ['username', 'ho_ten', 'vai_tro', 'co_so_truy_cap'],
     viaFunction: true,
     subject: 'Người dùng',
+  },
+  {
+    kind: 'CO_HOI',
+    title: 'Cơ hội',
+    description:
+      'Cơ hội kèm phụ huynh và lead gốc, đúng giai đoạn trong file. Nạp Người dùng trước (người phụ trách). Cơ hội từ L5 thiếu tên hoặc năm sinh em vẫn nạp, đánh dấu thiếu thông tin em.',
+    columns: [
+      'ma_cu',
+      'ngay_tao',
+      'ho_ten_ph',
+      'sdt_ph',
+      'sdt_2',
+      'danh_sach_em',
+      'nam_sinh',
+      'khoi',
+      'truong',
+      'dia_chi',
+      'nhu_cau',
+      'nguon_goc',
+      'nguon',
+      'medium',
+      'co_so',
+      'nguoi_phu_trach',
+      'nguoi_phu_trach_goc',
+      'tinh_trang_cu',
+      'giai_doan',
+      'nhom_con',
+      'ghi_chu',
+    ],
+    required: [
+      'ma_cu',
+      'ngay_tao',
+      'ho_ten_ph',
+      'sdt_ph',
+      'nguon_goc',
+      'nguon',
+      'co_so',
+      'nguoi_phu_trach',
+      'giai_doan',
+    ],
+    viaFunction: false,
+    subject: 'Phụ huynh',
   },
   {
     kind: 'PHU_HUYNH',
