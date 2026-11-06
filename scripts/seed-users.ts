@@ -2,6 +2,8 @@
 // Mỗi vai trò ít nhất một tài khoản, nhân viên ở CS1 và CS5. Chạy lại nhiều lần không nhân đôi.
 // Biến môi trường: API_URL, SECRET_KEY (khoá secret của project), DB_URL, SEED_PASSWORD.
 // Mật khẩu giả không nằm trong repo: đọc từ SEED_PASSWORD (local: .env.local; staging: GitHub secret).
+// SEED_ASSIGN_MANAGERS=1 (chỉ bước triển khai staging đặt): gán sẵn Quản lý trực tiếp (R-HT-06) cho Sale, CSKH giả = Trưởng cơ sở cùng cơ sở, CHỈ khi
+// đang để trống (không ghi đè quản lý đã gán tay ở màn Người dùng). Local, CI không đặt biến này vì bài Playwright cần Sale chưa có quản lý.
 import pg from 'pg';
 
 export const SEED_DOMAIN = 'thu.hoamatoan.invalid';
@@ -38,6 +40,14 @@ export const SEED_USERS: SeedUser[] = [
   { key: 'khoa.cs5', name: 'Đã nghỉ việc (giả)', branch: 'CS5', roles: ['SALES'], locked: true },
   { key: 'HS900001', name: 'Học sinh (giả)', branch: 'CS5', roles: ['STUDENT'], student: true },
 ];
+
+/** Quản lý trực tiếp mặc định của Sale, CSKH giả (người → quản lý), theo cơ sở. Dùng khi SEED_ASSIGN_MANAGERS=1. */
+export const SEED_MANAGERS: Record<string, string> = {
+  'sale.cs1': 'truongcs.cs1',
+  'cskh.cs1': 'truongcs.cs1',
+  'sale.cs5': 'truongcs.cs5',
+  'cskh.cs5': 'truongcs.cs5',
+};
 
 export function seedEmail(user: SeedUser): string {
   return user.student
@@ -146,6 +156,20 @@ async function main() {
       method: 'PUT',
       body: JSON.stringify({ ban_duration: user.locked ? '876000h' : 'none' }),
     });
+  }
+  if (process.env.SEED_ASSIGN_MANAGERS === '1') {
+    // Cờ cục bộ của hàm set_manager cho phép đổi quản lý ngoài màn Người dùng; chỉ gán khi đang trống.
+    await db.query('begin');
+    await db.query("select set_config('hmt.manager', 'on', true)");
+    for (const [user, manager] of Object.entries(SEED_MANAGERS)) {
+      await db.query(
+        `update app.user_account set manager_id = (select id from app.user_account where login_name = $2)
+          where login_name = $1 and manager_id is null`,
+        [`${user}@${SEED_DOMAIN}`, `${manager}@${SEED_DOMAIN}`],
+      );
+    }
+    await db.query('commit');
+    console.log('Đã gán sẵn quản lý trực tiếp cho Sale, CSKH giả (chỉ chỗ đang trống).');
   }
   await db.end();
   console.log(`Đã tạo/cập nhật ${SEED_USERS.length} tài khoản giả.`);
