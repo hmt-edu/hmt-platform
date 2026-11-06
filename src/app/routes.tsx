@@ -41,6 +41,18 @@ const QuotationListPage = lazyScreen(
   () => import('../pages/bao-gia/QuotationListPage'),
   'QuotationListPage',
 );
+const ReceiptRecordPage = lazyScreen(
+  () => import('../pages/phieu-thu/ReceiptRecordPage'),
+  'ReceiptRecordPage',
+);
+const ReceiptPrintPage = lazyScreen(
+  () => import('../pages/phieu-thu/ReceiptPrintPage'),
+  'ReceiptPrintPage',
+);
+const ReceiptListPage = lazyScreen(
+  () => import('../pages/phieu-thu/ReceiptListPage'),
+  'ReceiptListPage',
+);
 const OrderListPage = lazyScreen(() => import('../pages/don-hang/OrderListPage'), 'OrderListPage');
 const OrderRecordPage = lazyScreen(
   () => import('../pages/don-hang/OrderRecordPage'),
@@ -189,6 +201,38 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="bao-gia">
                 <QuotationListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-thu',
+            element: (
+              <GatedCrmEntry slug="phieu-thu">
+                <ReceiptListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-thu/:id/in',
+            element: (
+              <GatedCrmEntry slug="phieu-thu">
+                <ReceiptPrintPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-thu/:id',
+            element: (
+              <GatedCrmEntry slug="phieu-thu">
+                <ReceiptRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cho-ke-toan-duyet',
+            element: (
+              <GatedCrmEntry slug="cho-ke-toan-duyet">
+                <ReceiptListPage waitingAccounting />
               </GatedCrmEntry>
             ),
           },

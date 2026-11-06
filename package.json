@@ -25,7 +25,8 @@
     "db:test": "supabase test db",
     "db:seed-users": "node scripts/seed-users.ts",
     "db:seed-lon": "docker exec -i supabase_db_hmt-platform psql -U postgres -q < supabase/seed-lon.sql",
-    "size": "node scripts/bundle-size.ts"
+    "size": "node scripts/bundle-size.ts",
+    "db:seed-lon-phieu-thu": "docker exec -i supabase_db_hmt-platform psql -U postgres -q < supabase/seed-lon-phieu-thu.sql"
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "5.3.0",

@@ -86,7 +86,7 @@ test('Mở đơn từ BH-06; Nháp: thông tin chung, người duyệt chưa có
   await shot(page, 'bh05-nhap-chua-ql');
 });
 
-test('Đã trình: chờ người duyệt đã chốt; Đã duyệt · khoá: nút Tạo phiếu thu mờ; Phiếu thu, Ghi danh mờ', async ({
+test('Đã trình: chờ người duyệt đã chốt; Đã duyệt · khoá: nút Tạo phiếu thu (máy tính); Ghi danh mờ', async ({
   page,
 }, testInfo) => {
   const setup = recordSetupOf(testInfo.project.name);
@@ -99,7 +99,12 @@ test('Đã trình: chờ người duyệt đã chốt; Đã duyệt · khoá: n�
   await shot(page, 'bh05-da-trinh');
   await openOrder(page, setup.sale, setup.mark, seeded.orders.dduyet);
   await expect(page.getByText('Đã duyệt · khoá').first()).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Tạo phiếu thu' })).toBeDisabled();
+  // B2: Sale có quyền Tạo phiếu thu và CS5 bật Bán hàng nên nút bật trên máy tính; điện thoại chỉ đọc (Đ248) nên ẩn.
+  if (isPhone(page)) {
+    await expect(page.getByRole('button', { name: 'Tạo phiếu thu' })).toHaveCount(0);
+  } else {
+    await expect(page.getByRole('button', { name: 'Tạo phiếu thu' })).toBeEnabled();
+  }
   // Đơn Đã duyệt: Sale lập không phải người duyệt đã chốt nên không có mục Huỷ đơn (R-TIEN-38).
   await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
   await expect(page.getByText(/Đơn đã duyệt và khoá/)).toBeVisible();
@@ -120,7 +125,7 @@ test('Nháp bị từ chối: khối "Đơn bị từ chối" nêu người, ng�
   await expect(page.getByText(/Toán/).first()).toBeVisible();
   await shot(page, 'bh05-tu-choi');
   await page.getByRole('tab', { name: 'Thanh toán' }).click();
-  await expect(page.getByText('Chưa có phiếu thu. Phiếu thu làm ở phân hệ sau.')).toBeVisible();
+  await expect(page.getByText('Chưa có phiếu thu.')).toBeVisible();
   await page.getByRole('tab', { name: 'Ghi danh' }).click();
   await expect(
     page.getByText(/Làm ở phân hệ sau\. Ghi danh sinh khi tiền đã vào đủ cọc/),

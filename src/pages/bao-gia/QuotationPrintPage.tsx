@@ -1,45 +1,21 @@
 // BH-03 Bản in báo giá (khuôn K13, A4 dọc): nối get_quotation, in ở mọi tình trạng (Đ263). Quyền = quyền xem báo giá (hàm đọc, không chặn khi
 // tắt Bán hàng, Đ181). Nút "In" và "Tải PDF" cùng mở hộp in của trình duyệt (window.print). Giao diện KHÔNG tính tiền; chữ "bằng chữ" chỉ đọc
 // lại tổng máy chủ trả (R-TIEN-13). Cột ghi chú và dãy nút đổi trạng thái trong khung canvas chỉ để xem mẫu, không dựng.
-import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { amountInWords } from '../../lib/amountInWords';
 import { HmtError, errorOf } from '../../lib/db';
-import { useAuth } from '../../lib/auth/authContext';
 import { formatDate, formatMoney, formatNumber } from '../../lib/format';
 import { PrintSheet } from '../../print/PrintSheet';
 import { Button } from '../../ui/Button';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
+import { useBranchInfo } from '../common/useBranchInfo';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { hoursText, maskPhone, overdueText, printStamp } from './quotePrint';
 import { discountText, quantityText } from './quoteRecord';
 import type { QuotationRecord } from './quoteTypes';
 import { useQuotation } from './useQuoteData';
-
-type BranchInfo = { name: string; address: string | null };
-
-/** Tên và địa chỉ cơ sở của báo giá: một lần gọi, đổi rất hiếm. */
-function useBranchInfo(branchId: string | undefined) {
-  const { supabase } = useAuth();
-  return useQuery({
-    queryKey: ['branch-info', branchId],
-    enabled: Boolean(supabase) && branchId !== undefined,
-    staleTime: 5 * 60_000, // allow-number: tên và địa chỉ cơ sở đổi rất hiếm, giữ năm phút trong bộ nhớ
-    queryFn: async (): Promise<BranchInfo | null> => {
-      if (!supabase || !branchId) return null;
-      const result = await supabase
-        .schema('app')
-        .from('branch')
-        .select('name, address')
-        .eq('id', branchId)
-        .maybeSingle();
-      if (result.error) throw new Error(result.error.message);
-      return result.data;
-    },
-  });
-}
 
 export function QuotationPrintPage() {
   const { id } = useParams<{ id: string }>();

@@ -20,6 +20,14 @@ export const RECORD_SETUPS = {
 export const recordSetupOf = (project: string): Setup =>
   RECORD_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 
+// Bộ riêng cho bài phiếu thu (TC-02), để các file bài chạy song song không đè nhau.
+export const RECEIPT_SETUPS = {
+  'may-tinh': { mark: 'E2ETCMT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1100 },
+  'dien-thoai': { mark: 'E2ETCDT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1150 },
+} as const;
+export const receiptSetupOf = (project: string): Setup =>
+  RECEIPT_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
+
 export const orderSetupOf = (project: string): Setup =>
   ORDER_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 

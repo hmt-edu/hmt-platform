@@ -24,7 +24,7 @@ insert into app.user_role (user_id, role_code)
 select u.id, v.role from u join (values ('sales1', 'SALES'), ('cskh1', 'CSKH'), ('ke', 'ACCOUNTANT')) as v (key, role) on v.key = u.key;
 
 -- ================= Phiên bản và ô đổi =================
-select is((select max(version_no) from app.permission_version), 7, 'Ma trận hiện hành là phiên bản 7 (phiên bản 6 của Đ204 vẫn có; T1 thêm vai trò Marketing)');
+select is((select max(version_no) from app.permission_version), 8, 'Ma trận hiện hành là phiên bản 8 (phiên bản 6 của Đ204 vẫn có; T1 thêm vai trò Marketing; B2 thêm quyền Duyệt phiếu thu cho Trưởng cơ sở)');
 select is((select changed_count from app.permission_version where version_no = 6), 2, 'Phiên bản 6 đổi đúng 2 ô');
 select ok((select note from app.permission_version where version_no = 6) like 'Đ204:%', 'Phiên bản 6 có ghi chú Đ204');
 select is((select count(*)::int from app.permission_change c join app.permission_version v on v.id = c.version_id where v.version_no = 6

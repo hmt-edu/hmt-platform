@@ -238,7 +238,7 @@ select is(app.login_precheck('ma@test.hoamatoan.invalid'), 'KHOA_TAM',
 -- ================= Tách quyền tiền (R-TIEN-01) =================
 set local role authenticated;
 select pg_temp.claims((select id from u where key = 'bm5'), 'aal1');
-select ok(not app.has_permission('RECEIPT', 'DUYET'), 'Trưởng cơ sở: KHÔNG duyệt phiếu thu (chỉ Kế toán)');
+select ok(app.has_permission('RECEIPT', 'DUYET'), 'Trưởng cơ sở: duyệt phiếu thu bước quản lý (B2, R-TIEN-01); bước kế toán vẫn chỉ Kế toán');
 select ok(not app.has_permission('ACCOUNTING', 'DUYET'), 'Trưởng cơ sở: KHÔNG duyệt khoản tiền vào, hoàn tiền, phiếu chi');
 select ok(app.has_permission('SALES_ORDER', 'DUYET'), 'Trưởng cơ sở: vẫn duyệt đơn hàng (R-TIEN-01)');
 select ok(app.has_permission('ACCOUNTING', 'XEM'), 'Trưởng cơ sở: xem phân hệ Kế toán được');
@@ -251,7 +251,7 @@ reset role;
 select set_config('request.jwt.claims', '', true);
 select is((select array_agg(distinct role_code order by role_code) from app.permission
             where module_code in ('RECEIPT', 'ACCOUNTING') and action_code = 'DUYET' and is_active),
-          '{ACCOUNTANT}'::text[], 'Duyệt phiếu thu, kế toán: chỉ Kế toán (ADMIN cũng không)');
+          '{ACCOUNTANT,BRANCH_MANAGER}'::text[], 'Duyệt phiếu thu: Kế toán (bước kế toán) và Trưởng cơ sở (bước quản lý, B2); ADMIN không');
 select is((select count(*)::int from app.permission where module_code = 'UPSALE' and action_code = 'DUYET' and is_active), 0,
           'Phiếu tái tục: không vai trò nào có quyền Duyệt');
 

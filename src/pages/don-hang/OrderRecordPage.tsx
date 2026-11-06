@@ -35,6 +35,8 @@ import {
 } from './orderRecord';
 import type { OrderEvent, OrderInstallment, OrderLine, OrderRecord } from './orderTypes';
 import { cancelOrder, submitOrder, useOrder, useRefreshOrder } from './useOrderData';
+import { CreateReceiptDialog } from '../phieu-thu/CreateReceiptDialog';
+import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
 
 const STATUS_TONE: Record<string, TagTone> = {
   NHAP: 'neutral',
@@ -109,6 +111,12 @@ function OrderView({ record }: { record: OrderRecord }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<{ message: string; retry: boolean } | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [receiptOpen, setReceiptOpen] = useState(false);
+  const paymentQuery = useOrderPayment(record.status_code === 'DA_DUYET' ? record.id : undefined);
+  const receiptsQuery = useReceiptPage({ order_id: record.id }, 'created_desc', 0, 1);
+  const receiptCount = receiptsQuery.data?.total ?? 0;
+  const onlyReceiptId = receiptCount === 1 ? (receiptsQuery.data?.rows[0]?.id ?? null) : null;
+  const canCreateReceipt = access.can('RECEIPT', 'TAO') && access.featureOn('BAN_HANG') && !phone;
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
   useCrumbTail(record.code);
@@ -249,8 +257,18 @@ function OrderView({ record }: { record: OrderRecord }) {
         />
         <TotalRow label="Thành tiền" value={formatMoney(record.total_amount)} strong />
         {/* Đ269: chưa có phiếu thu nên Đã thu, Còn phải thu hiện "—", không hiện 0. */}
-        <TotalRow label="Đã thu" value="—" muted />
-        <TotalRow label="Còn phải thu" value="—" muted />
+        <TotalRow
+          label="Đã thu"
+          value={receiptCount > 0 && paymentQuery.data ? formatMoney(paymentQuery.data.paid) : '—'}
+          muted={receiptCount === 0}
+        />
+        <TotalRow
+          label="Còn phải thu"
+          value={
+            receiptCount > 0 && paymentQuery.data ? formatMoney(paymentQuery.data.remaining) : '—'
+          }
+          muted={receiptCount === 0}
+        />
       </dl>
     </div>
   );
@@ -306,7 +324,11 @@ function OrderView({ record }: { record: OrderRecord }) {
         <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
           Phiếu thu
         </h3>
-        <p className="text-fg-muted">Chưa có phiếu thu. Phiếu thu làm ở phân hệ sau.</p>
+        <p className="text-fg-muted">
+          {receiptCount === 0
+            ? 'Chưa có phiếu thu.'
+            : `Có ${receiptCount} phiếu thu. Bấm nút Phiếu thu ở đầu trang để xem.`}
+        </p>
       </section>
     </div>
   );
@@ -363,8 +385,8 @@ function OrderView({ record }: { record: OrderRecord }) {
                 {approverText && <span className="text-caption text-fg-label">{approverText}</span>}
               </span>
             )}
-            {record.status_code === 'DA_DUYET' && (
-              <Button variant="primary" disabled title="Phiếu thu làm ở phân hệ sau">
+            {record.status_code === 'DA_DUYET' && canCreateReceipt && (
+              <Button variant="primary" onClick={() => setReceiptOpen(true)}>
                 Tạo phiếu thu
               </Button>
             )}
@@ -401,9 +423,9 @@ function OrderView({ record }: { record: OrderRecord }) {
             key: 'phieu-thu',
             label: 'Phiếu thu',
             icon: 'payment',
-            count: 0,
-            unavailable: 'Làm ở phân hệ sau',
-            onOpen: () => undefined,
+            count: receiptCount,
+            onOpen: () =>
+              openFrom(onlyReceiptId ? `/crm/phieu-thu/${onlyReceiptId}` : '/crm/phieu-thu'),
           },
           {
             key: 'ghi-danh',
@@ -595,6 +617,13 @@ function OrderView({ record }: { record: OrderRecord }) {
           {history}
         </div>
       </RecordDetail>
+      <CreateReceiptDialog
+        open={receiptOpen}
+        onOpenChange={setReceiptOpen}
+        orderId={record.id}
+        orderCode={record.code}
+        receivable={paymentQuery.data?.receivable ?? null}
+      />
       <ReasonDialog
         open={cancelOpen}
         onOpenChange={setCancelOpen}

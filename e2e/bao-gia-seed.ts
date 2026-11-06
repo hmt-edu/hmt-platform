@@ -54,6 +54,15 @@ async function clear(db: pg.Client, mark: string): Promise<void> {
     `delete from app.note where entity_type = 'SALES_ORDER' and entity_id in ${orders}`,
     like,
   );
+  // Phiếu thu của các đơn này (khoản tiền vào, phân bổ, lịch sử, phiếu), nếu bài phiếu thu đã tạo.
+  const receipts = `(select id from app.receipt where order_id in ${orders})`;
+  await db.query(
+    `delete from app.money_in_allocation where money_in_id in (select id from app.money_in where receipt_id in ${receipts})`,
+    like,
+  );
+  await db.query(`delete from app.money_in where receipt_id in ${receipts}`, like);
+  await db.query(`delete from app.receipt_event where receipt_id in ${receipts}`, like);
+  await db.query(`delete from app.receipt where order_id in ${orders}`, like);
   await db.query(`delete from app.sales_order_installment where order_id in ${orders}`, like);
   await db.query(`delete from app.sales_order_event where order_id in ${orders}`, like);
   const orderIds = (

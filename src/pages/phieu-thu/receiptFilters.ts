@@ -1,0 +1,69 @@
+// Đổi trạng thái màn danh sách Phiếu thu (ListState) thành bộ lọc gửi list_receipts. Hàm thuần, có kiểm thử. Cùng nhóm lọc nhanh là HOẶC, khác nhóm là VÀ.
+import { datePresetRange } from '../../lib/dateRange';
+import { vnDayStartOf } from '../../lib/vnDay';
+import type { Condition, ListState } from '../../list/types';
+import type { SortState } from '../../ui/Data';
+
+export type ReceiptFilters = Record<string, unknown>;
+
+const DAY_MS = 86_400_000; // allow-number: số mili giây trong một ngày (mốc "đến ngày" tính hết ngày)
+const STATUS_CODES = ['NHAP', 'DA_GUI', 'CHO_KE_TOAN', 'DA_DUYET', 'HUY'];
+
+function valuesOf(cond: Condition): string[] {
+  return (Array.isArray(cond.value) ? cond.value : [cond.value])
+    .map((v) => v.trim())
+    .filter(Boolean);
+}
+
+/** `fixed` là bộ lọc cố định của màn (TC-04 Chờ kế toán duyệt luôn lọc waiting_accounting). */
+export function buildReceiptFilters(
+  state: ListState,
+  fixed: ReceiptFilters = {},
+  today: Date = new Date(),
+): ReceiptFilters {
+  const filters: ReceiptFilters = { ...fixed };
+  const q = state.search.trim();
+  if (q !== '') filters.q = q;
+  const status = new Set<string>(
+    (state.quick.status ?? []).filter((v) => STATUS_CODES.includes(v)),
+  );
+  const mine = state.quick.mine ?? [];
+  if (mine.includes('mine')) filters.mine = true;
+  if (mine.includes('waiting_manager')) filters.waiting_manager = true;
+  for (const cond of state.conditions) {
+    const values = valuesOf(cond);
+    if (values.length === 0) continue;
+    if (cond.field === 'status') {
+      for (const v of values) if (STATUS_CODES.includes(v)) status.add(v);
+    } else if (cond.field === 'branch' && cond.op === 'eq') {
+      filters.branch_id = values[0];
+    } else if (cond.field === 'created' && cond.op === 'from') {
+      const start = vnDayStartOf(values[0] ?? '');
+      if (start) filters.created_from = start.toISOString();
+    } else if (cond.field === 'created' && cond.op === 'to') {
+      const start = vnDayStartOf(values[0] ?? '');
+      if (start) filters.created_to = new Date(start.getTime() + DAY_MS).toISOString();
+    }
+  }
+  if (status.size > 0) filters.status = [...status];
+  const range = datePresetRange(state.datePreset, today);
+  if (range && state.dateField === 'created') {
+    filters.created_from = range.from.toISOString();
+    filters.created_to = new Date(range.to.getTime() + 1).toISOString();
+  }
+  return filters;
+}
+
+/** Sắp xếp: các kiểu máy chủ hỗ trợ (mới nhất, cũ nhất, số tiền giảm dần); khác thì mặc định. */
+export function receiptSortParam(sort: SortState): string | undefined {
+  if (!sort) return undefined;
+  if (sort.key === 'created') return sort.direction === 'asc' ? 'created_asc' : 'created_desc';
+  if (sort.key === 'amount' && sort.direction === 'desc') return 'amount_desc';
+  return undefined;
+}
+
+/** Cột chỉ hỗ trợ một chiều thì lần bấm thứ hai bỏ sắp xếp. */
+export function nextReceiptSort(sort: SortState): SortState {
+  if (sort && receiptSortParam(sort) === undefined) return null;
+  return sort;
+}
