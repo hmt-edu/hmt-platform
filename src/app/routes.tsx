@@ -66,6 +66,11 @@ const ImportDataPage = lazyScreen(
   () => import('../pages/nhap-du-lieu/ImportDataPage'),
   'ImportDataPage',
 );
+const PackageListPage = lazyScreen(
+  () => import('../pages/goi-ban/PackageListPage'),
+  'PackageListPage',
+);
+const PriceListPage = lazyScreen(() => import('../pages/bang-gia/PriceListPage'), 'PriceListPage');
 const UserListPage = lazyScreen(() => import('../pages/nguoi-dung/UserListPage'), 'UserListPage');
 const UserRecordPage = lazyScreen(
   () => import('../pages/nguoi-dung/UserRecordPage'),
@@ -248,6 +253,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/nhap-du-lieu">
                 <ImportDataPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/goi-ban',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/goi-ban">
+                <PackageListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/bang-gia',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/bang-gia">
+                <PriceListPage />
               </GatedCrmEntry>
             ),
           },

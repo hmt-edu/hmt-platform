@@ -430,3 +430,11 @@ Anh Trường chốt theo Config mới (bản cuối). Dữ liệu hiện chỉ 
   - `app.complete_student_test` (Hoàn thành): cơ hội từ L5 trở xuống lên L6B; đang L6A chuyển L6B; nhóm con L6 khác (đã chọn tay) giữ nguyên.
   - `app.change_opportunity_stage`: người dùng không tay đổi về L6A, L6B (mã lỗi `HMT_L6A_HE_THONG`, câu lỗi nêu cả hai); chọn tay L6C đến L6G.
 - **Giao diện:** `oppStage.ts` ô Sub-stage ở L6 không cho chọn L6A, L6B.
+
+## Bảng giá theo gói, thêm nhiều giá một lần (migration 075, anh chốt 06/11)
+
+- Màn Bảng giá (CH-03) làm **theo gói**: giá lưu từng gói (R-TIEN-10, spec 02), không có "bản bảng giá" và dòng theo nhóm như khung CH03 (khung vẽ theo nhóm Loại gói · Môn · Khối). Nhóm Loại gói, Môn, Khối chỉ là nhóm hiển thị. Nếu về sau muốn giá theo nhóm thì là thay đổi lớn, cần phân tích riêng.
+- `app.list_package_prices(ngày, bộ lọc, limit, offset)`: gói kèm giá hiệu lực offline, online tại ngày; trạng thái `CO_GIA`, `CHUA_CO_GIA` (chưa có dòng giá, chờ cập nhật), `KHONG_BAN` (dòng giá để trống, hoặc dịch vụ, tài liệu không có online, R-TIEN-15); xếp theo loại gói, môn, khối; phân trang ở máy chủ. Quyền Cấu hình bán hàng · Xem.
+- `app.package_ids_for_filter(bộ lọc)` (Admin): chọn tất cả gói đang bán theo bộ lọc, kèm loại gói.
+- `app.add_package_prices(ngày hiệu lực, dòng)` (Admin): thêm nhiều dòng giá một giao dịch qua `add_package_price`; sai một dòng thì hoàn tác cả lần. Dòng giá chỉ thêm, không sửa (R-TIEN-14).
+- Gói bán (CH-01): không cần hàm mới; dùng `save_sales_package` và `set_config_active` (Ngừng bán, Dùng lại).
