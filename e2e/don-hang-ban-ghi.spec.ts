@@ -130,8 +130,10 @@ test('Nháp bị từ chối: khối "Đơn bị từ chối" nêu người, ng�
   await expect(
     page.getByText(/Làm ở phân hệ sau\. Ghi danh sinh khi tiền đã vào đủ cọc/),
   ).toBeVisible();
-  await expect(page.getByText('Lịch sử xử lý')).toBeVisible();
-  await expect(page.getByText('Từ chối').first()).toBeVisible();
+  // Không còn khối "Lịch sử xử lý" cuối trang (Q-48): sự kiện nằm ở dòng thời gian bên phải.
+  await expect(page.getByText('Lịch sử xử lý')).toHaveCount(0);
+  const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  await expect(timeline.getByText('Từ chối', { exact: true })).toBeVisible();
 });
 
 test('Huỷ: nêu lý do huỷ, chỉ còn xem', async ({ page }, testInfo) => {

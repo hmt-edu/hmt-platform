@@ -11,6 +11,7 @@ import { Dialog } from '../../ui/Overlays';
 import { ReasonDialog } from '../../ui/Dialogs';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { capPercentText, overCapLines } from './orderApprove';
+import { editedNoteText } from './orderEventEntries';
 import { editedFromQuotationNote } from './orderRecord';
 import type { OrderRecord } from './orderTypes';
 import { approveOrder, rejectOrder } from './useOrderData';
@@ -90,7 +91,7 @@ export function ApproveOrderDialog({ record, open, onOpenChange, onDone, onRejec
         </dl>
         {editedNote && (
           <Alert tone="warning" title="Đơn đã sửa so với báo giá.">
-            {editedNote.replace(/^Đơn đã sửa so với báo giá /, '')}
+            {editedNoteText(editedNote)}
             <span className="block">Chỉ để xem xét, không chặn duyệt (Q-31).</span>
           </Alert>
         )}

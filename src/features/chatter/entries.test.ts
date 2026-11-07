@@ -105,4 +105,22 @@ describe('ghi chú của lead gốc hiện ở cơ hội (lỗi 26/10)', () => {
     expect(own && 'source' in own).toBe(false);
     expect(fromLead && fromLead.kind === 'note' ? fromLead.source : null).toBe('Lead LD000012');
   });
+
+  it('có sự kiện riêng: bỏ dòng "Tạo" của nhật ký thay đổi, trộn sự kiện theo giờ (Q-48)', () => {
+    const history = [
+      { id: 1, at: '2026-11-07T01:00:00Z', actor_name: 'A', action: 'I', changes: null },
+    ];
+    const event = {
+      kind: 'event' as const,
+      id: 'e1',
+      at: '2026-11-07T01:00:01Z',
+      author: 'A',
+      title: 'Tạo đơn hàng',
+      lines: [],
+    };
+    const entries = buildEntries([], history, { labels: {} }, null, [event]);
+    expect(entries).toEqual([event]);
+    const withCreated = buildEntries([], history, { labels: {} }, 'Tạo đơn hàng.', [event]);
+    expect(withCreated.map((e) => e.kind)).toEqual(['event', 'system']);
+  });
 });

@@ -21,17 +21,13 @@ import { Select, Tabs, type MenuItem } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
+import type { FieldFormat } from '../../features/chatter/entries';
+import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { useOrder } from '../don-hang/useOrderData';
+import { receiptEventEntries } from './receiptEventEntries';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
-import {
-  EVENT_TEXT,
-  draftOf,
-  inputOf,
-  reasonText,
-  receiptSteps,
-  type ReceiptDraft,
-} from './receiptRecord';
+import { draftOf, inputOf, reasonText, receiptSteps, type ReceiptDraft } from './receiptRecord';
 import type { ReceiptRecord } from './receiptTypes';
 import {
   approveReceiptAccounting,
@@ -87,6 +83,8 @@ export function ReceiptRecordPage() {
   }
   return <ReceiptView key={query.data.id} record={query.data} />;
 }
+
+const RECEIPT_CHANGE_FORMAT = { labels: {} } satisfies FieldFormat;
 
 function ReceiptView({ record }: { record: ReceiptRecord }) {
   const openFrom = useNavigateFrom();
@@ -469,8 +467,17 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             onOpen: () => undefined,
           },
         ]}
-        asideLabel="Lịch sử xử lý"
-        aside={<Timeline record={record} />}
+        aside={
+          <RecordChatter
+            entityType="RECEIPT"
+            entityId={record.id}
+            createdText="Tạo phiếu thu."
+            // Mọi thay đổi của phiếu đã có mục riêng từ sự kiện (Q-52): nhật ký thay đổi không hiện trường nào để khỏi lặp.
+            format={RECEIPT_CHANGE_FORMAT}
+            events={receiptEventEntries(record.events)}
+            canWrite
+          />
+        }
       >
         <div className="flex flex-col gap-4">
           <Banner record={record} />
@@ -682,20 +689,6 @@ function Banner({ record }: { record: ReceiptRecord }) {
       >{`${last.by_name ?? ''}, ${formatDate(last.at)}: “${last.note ?? ''}”. Sửa rồi bấm Trình lại; phiếu đi lại từ bước quản lý.`}</Notice>
     );
   return null;
-}
-
-function Timeline({ record }: { record: ReceiptRecord }) {
-  return (
-    <ul className="flex flex-col gap-2 p-3 text-body">
-      {[...record.events].reverse().map((e, i) => (
-        <li key={`${e.at}-${i}`} className="flex flex-col">
-          <b>{EVENT_TEXT[e.event_code] ?? e.event_code}</b>
-          <span className="text-caption text-fg-muted">{`${formatDateTime(e.at)} · ${e.by_name ?? 'Hệ thống'}`}</span>
-          {e.note && <span>{e.note}</span>}
-        </li>
-      ))}
-    </ul>
-  );
 }
 
 function Notice({

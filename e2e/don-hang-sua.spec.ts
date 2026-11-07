@@ -2,7 +2,8 @@
 // sửa số giờ, điều khoản, bỏ dòng; đơn chuyển từ báo giá cũng sửa được và nhật ký ghi "Đơn đã sửa so với báo giá"; dòng thời gian hiện tên điều khoản,
 // không hiện mã nội bộ. Máy tính (điện thoại chỉ đọc, Đ248). Dữ liệu giả dựng bằng don-hang-seed.ts.
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import pg from 'pg';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
 import {
   DB_URL,
   clearMark,
@@ -83,10 +84,13 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
   await expect(page.getByRole('tab', { name: /Dòng đơn/ })).toContainText('1');
-  // Lịch sử xử lý ghi giá trị cũ và mới; dòng thời gian hiện tên điều khoản, không hiện mã nội bộ.
-  await expect(page.getByText(/Sửa đơn: .*dòng 1 .*số giờ .* → 9/).first()).toBeVisible();
-  await expect(page.getByText('Điều khoản thanh toán').first()).toBeVisible();
-  await expect(page.getByText(/Chia ba đợt/).first()).toBeVisible();
+  // Dòng thời gian bên phải (Q-51): một mục "Sửa đơn" cho lần lưu, mỗi thay đổi một dòng (giá trị cũ → mới, tên điều khoản, không mã nội bộ),
+  // tổng tiền ở dòng cuối (cũ → mới khi sự kiện liền trước đã có ảnh chụp; đơn dựng sẵn trong seed thì chỉ số mới).
+  const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  await expect(timeline.getByText('Sửa đơn', { exact: true })).toBeVisible();
+  await expect(timeline.getByText(/dòng 1 .*số giờ .* → 9/)).toBeVisible();
+  await expect(timeline.getByText(/điều khoản thanh toán .* → .*Chia ba đợt/)).toBeVisible();
+  await expect(timeline.getByText(/Tổng tiền: .* đ/).first()).toBeVisible();
   await expect(
     page.getByText(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/),
   ).toHaveCount(0);
@@ -107,7 +111,39 @@ test('Đơn chuyển từ báo giá Nháp sửa được; bỏ dòng; nhật ký
   await page.getByLabel('Số giờ dòng 1').fill('11');
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
-  await expect(page.getByText(/Đơn đã sửa so với báo giá .*: dòng 1/).first()).toBeVisible();
+  const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  await expect(timeline.getByText(/Sửa đơn \(đã sửa so với báo giá .*\)/)).toBeVisible();
+  await expect(timeline.getByText(/dòng 1 .*số giờ .* → 11/)).toBeVisible();
+});
+
+test('Q-46: người duyệt mở hộp Duyệt thấy "Đơn đã sửa so với báo giá" kèm giá trị cũ, mới (chỉ để xem xét, không chặn)', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Điện thoại chỉ đọc (Đ248).');
+  test.setTimeout(90_000);
+  const setup = editSetupOf(testInfo.project.name);
+  // Đơn từ báo giá đã sửa ở bài trước (chạy tuần tự) được trình bằng cơ sở dữ liệu: tài khoản giả dùng chung không có quản lý trực tiếp,
+  // người duyệt đã chốt là Trưởng cơ sở.
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query('begin');
+    await db.query("set local session_replication_role = 'replica'");
+    await db.query(
+      `update app.sales_order set status_code = 'DA_TRINH', approval_route = 'QUAN_LY', submitted_at = now(),
+              assigned_approver_id = (select id from app.user_account where login_name = $2) where code = $1`,
+      [seeded.orders.nhap, `${setup.manager}@${DOMAIN}`],
+    );
+    await db.query('commit');
+  } finally {
+    await db.end();
+  }
+  await openOrder(page, setup.manager, seeded.orders.nhap);
+  await page.getByRole('button', { name: 'Duyệt', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Duyệt đơn hàng' });
+  await expect(dialog.getByText('Đơn đã sửa so với báo giá.')).toBeVisible();
+  await expect(dialog.getByText(/dòng 1 .*số giờ .* → 11/)).toBeVisible();
+  await expect(dialog.getByText(/không chặn duyệt/)).toBeVisible();
 });
 
 test('Đơn đã trình không có nút Sửa đơn', async ({ page }, testInfo) => {

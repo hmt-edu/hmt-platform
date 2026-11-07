@@ -1,9 +1,9 @@
 // Nối Chatter (CHUNG-22) với cơ sở dữ liệu: ghi chú (app.record_notes), lịch sử (app.record_history),
 // gửi ghi chú có nhắc tên (app.add_note_mentioning), gợi ý đồng nghiệp (app.mention_candidates).
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { FORBIDDEN_CODE, HmtError, rpc, useDb } from '../../lib/db';
-import { Chatter, type Person } from '../../ui/Chatter';
+import { Chatter, type ChatterEntry, type Person } from '../../ui/Chatter';
 import {
   buildEntries,
   type CandidateRow,
@@ -17,6 +17,7 @@ export function RecordChatter({
   entityId,
   format,
   createdText,
+  events,
   actions,
   upcoming,
   headerRight,
@@ -25,8 +26,10 @@ export function RecordChatter({
   entityType: string;
   entityId: string;
   format: FieldFormat;
-  /** Câu cho dòng "đã tạo": "Tạo tài khoản." */
+  /** Câu cho dòng "đã tạo": "Tạo tài khoản." Không dùng khi màn có `events` (mục Tạo lấy từ sự kiện). */
   createdText: string;
+  /** Sự kiện nghiệp vụ của bản ghi (đã đổi sang mục dòng thời gian). Có thì trộn vào dòng thời gian và bỏ dòng "Tạo" của nhật ký thay đổi. */
+  events?: ChatterEntry[] | undefined;
   /** Hàng nút nghiệp vụ trên ô ghi chú (Lên lịch hẹn). */
   actions?: ReactNode | undefined;
   /** Khối "Hoạt động sắp tới" do màn truyền vào. */
@@ -47,15 +50,28 @@ export function RecordChatter({
         rpc<NoteRow[]>(supabase, 'record_notes', args),
         rpc<HistoryRow[]>(supabase, 'record_history', args),
       ]);
-      return buildEntries(notes, history, format, createdText);
+      return { notes, history };
     },
     retry: false,
   });
+  const entries = useMemo(
+    () =>
+      query.data
+        ? buildEntries(
+            query.data.notes,
+            query.data.history,
+            format,
+            events ? null : createdText,
+            events ?? [],
+          )
+        : [],
+    [query.data, format, events, createdText],
+  );
 
   const forbidden = query.error instanceof HmtError && query.error.code === FORBIDDEN_CODE;
   return (
     <Chatter
-      entries={query.data ?? []}
+      entries={entries}
       status={
         query.isPending ? 'loading' : forbidden ? 'forbidden' : query.isError ? 'error' : 'ready'
       }

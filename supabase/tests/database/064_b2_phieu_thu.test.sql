@@ -293,5 +293,17 @@ select is((select count(*)::int from jsonb_array_elements(app.receipt_receiver_o
 select pg_temp.claims(pg_temp.uid('teacher1'), 'aal1');
 select is(pg_temp.err($$select app.receipt_receiver_options(null, 5)$$), 'HMT_KHONG_CO_QUYEN', 'Giáo viên không chọn người nhận tiền');
 
+-- ================= Ghi chú và hoạt động của phiếu thu (Q-52, migration 080) =================
+-- Quyền xem giống hệt đơn hàng: Phiếu thu · Xem ở cơ sở của phiếu; Kế toán (toàn hệ thống) và Admin thấy mọi cơ sở.
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.record_history('RECEIPT', pg_temp.r('p1'))$$), null, 'Q-52: Sale cùng cơ sở xem được lịch sử thay đổi của phiếu thu');
+select is(pg_temp.err($$select app.add_note('RECEIPT', pg_temp.r('p1'), 'Đã nhận tiền mặt')$$), null, 'Q-52: Sale cùng cơ sở viết được ghi chú trên phiếu thu');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.record_history('RECEIPT', pg_temp.r('p1'))$$), 'HMT_KHONG_CO_QUYEN', 'Q-52 chặn: Sale cơ sở khác không xem được lịch sử phiếu thu');
+select is((select count(*)::int from app.note where entity_type = 'RECEIPT' and entity_id = pg_temp.r('p1')), 0, 'Q-52 chặn: Sale cơ sở khác không đọc được ghi chú phiếu thu');
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select is(pg_temp.err($$select app.record_history('RECEIPT', pg_temp.r('p1'))$$), null, 'Q-52: Kế toán (toàn hệ thống) xem được ghi chú và lịch sử phiếu thu');
+select is((select count(*)::int from app.note where entity_type = 'RECEIPT' and entity_id = pg_temp.r('p1')), 1, 'Q-52: Kế toán đọc được ghi chú Sale đã viết');
+
 select * from finish();
 rollback;

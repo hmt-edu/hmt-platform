@@ -5,12 +5,13 @@
 // Bán hàng đang bật (Đ173), máy chủ kiểm lại. Điện thoại chỉ đọc (Đ248): ẩn Trình, Huỷ.
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
+import type { FieldFormat } from '../../features/chatter/entries';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useAuth } from '../../lib/auth/authContext';
 import { HmtError, errorOf, useDb, useIntSetting } from '../../lib/db';
-import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib/format';
+import { formatDate, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
@@ -34,17 +35,17 @@ import {
   lastRejection,
   orderSteps,
 } from './orderRecord';
-import type { OrderEvent, OrderInstallment, OrderLine, OrderRecord } from './orderTypes';
+import type { OrderInstallment, OrderLine, OrderRecord } from './orderTypes';
 import {
   cancelOrder,
   editOrder,
   submitOrder,
   useOrder,
   useOrderEditOptions,
-  usePaymentTermNames,
   useRefreshOrder,
 } from './useOrderData';
 import { OrderEditLines } from './OrderEditLines';
+import { orderEventEntries, reasonLine } from './orderEventEntries';
 import {
   allRemoved,
   buildEdits,
@@ -59,6 +60,8 @@ import { capPercentText, overCapLines } from './orderApprove';
 import { CreateReceiptDialog } from '../phieu-thu/CreateReceiptDialog';
 import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
 
+const ORDER_CHANGE_FORMAT = { labels: {} } satisfies FieldFormat;
+
 const STATUS_TONE: Record<string, TagTone> = {
   NHAP: 'neutral',
   DA_TRINH: 'info',
@@ -67,23 +70,6 @@ const STATUS_TONE: Record<string, TagTone> = {
 };
 
 /** Tên cột (get_order → nhật ký) hiện cho người dùng trong lịch sử thay đổi. */
-const ORDER_FIELD_LABELS: Record<string, string> = {
-  status_code: 'Tình trạng',
-  total_amount: 'Tổng tiền',
-  payment_term_id: 'Điều khoản thanh toán',
-  cancel_reason_code: 'Lý do huỷ',
-  cancel_note: 'Ghi chú huỷ',
-};
-
-const EVENT_TEXT: Record<OrderEvent['event_code'], string> = {
-  TAO: 'Tạo đơn',
-  TRINH: 'Trình duyệt',
-  SUA: 'Sửa đơn',
-  DUYET: 'Duyệt',
-  TU_CHOI: 'Từ chối',
-  HUY: 'Huỷ đơn',
-};
-
 export function OrderRecordPage() {
   const { id } = useParams<{ id: string }>();
   const query = useOrder(id);
@@ -141,7 +127,6 @@ function OrderView({ record }: { record: OrderRecord }) {
   const [editError, setEditError] = useState<string | null>(null);
   const [draft, setDraft] = useState<OrderDraft | null>(null);
   const [confirmUnedited, setConfirmUnedited] = useState(false);
-  const termNames = usePaymentTermNames();
   const editOptions = useOrderEditOptions(editing);
   const cap = useIntSetting('discount_total_cap_percent');
   const paymentQuery = useOrderPayment(record.status_code === 'DA_DUYET' ? record.id : undefined);
@@ -160,6 +145,8 @@ function OrderView({ record }: { record: OrderRecord }) {
   const rejection = lastRejection(record);
   const approverText = expectedApproverText(record);
   const warning = approverWarning(record);
+  // Dòng thời gian bên phải (Q-48, Q-51): sự kiện của đơn, mỗi lần lưu một mục.
+  const eventEntries = orderEventEntries(record.events, catalogs.name);
   const steps: StageStep[] = orderSteps(record).map((code) => ({ code, label: statusName(code) }));
 
   // Quyền đọc từ ma trận quyền (không viết cứng vai trò); công tắc Bán hàng kiểm ở đây, máy chủ kiểm lại (Đ173).
@@ -454,27 +441,6 @@ function OrderView({ record }: { record: OrderRecord }) {
     </div>
   );
 
-  const history = (
-    <section className="flex flex-col gap-1.5">
-      <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
-        Lịch sử xử lý
-      </h3>
-      <ul className="flex flex-col gap-1 text-body">
-        {[...record.events]
-          .sort((a, b) => a.seq - b.seq)
-          .map((e) => (
-            <li key={e.seq} className="flex flex-wrap gap-x-2">
-              <b>{EVENT_TEXT[e.event_code]}</b>
-              <span className="text-fg-muted">
-                {`${formatDateTime(e.created_at)} · ${e.actor_name ?? 'Hệ thống'}${e.on_behalf ? ' (thay người duyệt)' : ''}`}
-              </span>
-              {eventReason(e, catalogs.name) && <span>{eventReason(e, catalogs.name)}</span>}
-            </li>
-          ))}
-      </ul>
-    </section>
-  );
-
   return (
     <>
       <RecordDetail
@@ -524,7 +490,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                 )}
                 {rejection && !edited && canSubmit && (
                   <span className="text-caption text-fg-label">
-                    Lý do từ chối chưa sửa: {eventReason(rejection, catalogs.name)}
+                    Lý do từ chối chưa sửa: {reasonLine(rejection, catalogs.name)}
                   </span>
                 )}
                 {approverText && <span className="text-caption text-fg-label">{approverText}</span>}
@@ -596,20 +562,10 @@ function OrderView({ record }: { record: OrderRecord }) {
             entityType="SALES_ORDER"
             entityId={record.id}
             createdText="Tạo đơn hàng."
-            format={{
-              labels: ORDER_FIELD_LABELS,
-              value: (column, value) => {
-                if (column === 'total_amount' && typeof value === 'number')
-                  return formatMoney(value);
-                if (column === 'status_code' && typeof value === 'string') return statusName(value);
-                if (column === 'cancel_reason_code' && typeof value === 'string')
-                  return catalogs.name('ORDER_CANCEL_REASON', value) ?? value;
-                // Điều khoản thanh toán hiện TÊN, không hiện mã nội bộ (id) (anh góp ý 06/11).
-                if (column === 'payment_term_id' && typeof value === 'string')
-                  return termNames.data?.get(value) ?? 'điều khoản khác';
-                return null;
-              },
-            }}
+            // Mọi thay đổi quan trọng của đơn (tình trạng, tổng tiền, điều khoản, lý do huỷ) đã có mục riêng từ sự kiện (Q-51): nhật ký thay đổi
+            // không hiện trường nào nữa để khỏi lặp.
+            format={ORDER_CHANGE_FORMAT}
+            events={eventEntries}
             canWrite
           />
         }
@@ -631,7 +587,7 @@ function OrderView({ record }: { record: OrderRecord }) {
           )}
           {rejection && (
             <Notice tone="danger" title="Đơn bị từ chối">
-              {`${rejection.actor_name ?? ''}, ${formatDate(rejection.created_at)}: “${eventReason(rejection, catalogs.name)}”. Sửa rồi bấm Trình lại.`}
+              {`${rejection.actor_name ?? ''}, ${formatDate(rejection.created_at)}: “${reasonLine(rejection, catalogs.name)}”. Sửa rồi bấm Trình lại.`}
               {canEdit && !editing && (
                 <button
                   type="button"
@@ -802,7 +758,6 @@ function OrderView({ record }: { record: OrderRecord }) {
               },
             ]}
           />
-          {history}
         </div>
       </RecordDetail>
       <ConfirmDialog
@@ -928,11 +883,3 @@ function Notice({
 }
 
 /** Lý do của một sự kiện: tên lý do trong danh mục kèm ghi chú. */
-function eventReason(
-  e: OrderEvent,
-  name: (catalog: string, code: string | null | undefined) => string | undefined,
-): string {
-  const catalog = e.event_code === 'HUY' ? 'ORDER_CANCEL_REASON' : 'REJECT_REASON';
-  const reason = e.reason_code ? (name(catalog, e.reason_code) ?? e.reason_code) : '';
-  return [reason, e.note].filter(Boolean).join(': ');
-}

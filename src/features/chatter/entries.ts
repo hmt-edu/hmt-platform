@@ -66,7 +66,8 @@ export function buildEntries(
   notes: NoteRow[],
   history: HistoryRow[],
   format: FieldFormat,
-  createdText: string,
+  createdText: string | null,
+  extra: ChatterEntry[] = [],
 ): ChatterEntry[] {
   const entries: ChatterEntry[] = [
     ...notes.map<ChatterEntry>((n) => ({
@@ -80,6 +81,8 @@ export function buildEntries(
     })),
     ...history.flatMap<ChatterEntry>((h) => {
       if (h.action === 'I') {
+        // Màn có sự kiện riêng (Đơn hàng, Phiếu thu) đã có mục "Tạo" từ sự kiện: bỏ dòng "Tạo …" của nhật ký thay đổi để không lặp.
+        if (createdText === null) return [];
         return [
           { kind: 'system', id: String(h.id), at: h.at, author: h.actor_name, text: createdText },
         ];
@@ -89,6 +92,7 @@ export function buildEntries(
         ? []
         : [{ kind: 'change', id: String(h.id), at: h.at, author: h.actor_name, changes }];
     }),
+    ...extra,
   ];
   return entries.sort((a, b) => b.at.localeCompare(a.at));
 }

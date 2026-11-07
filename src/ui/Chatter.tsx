@@ -23,7 +23,18 @@ export type ChatterEntry =
       source?: string | undefined;
     }
   | { kind: 'change'; id: string; at: string; author: string; changes: ChatterChange[] }
-  | { kind: 'system'; id: string; at: string; author: string; text: string };
+  | { kind: 'system'; id: string; at: string; author: string; text: string }
+  /** Sự kiện nghiệp vụ của bản ghi (Tạo, Sửa, Trình, Duyệt…): mỗi lần lưu một mục, tiêu đề, các dòng, dòng cảnh báo vàng và dòng tổng tiền (Q-51). */
+  | {
+      kind: 'event';
+      id: string;
+      at: string;
+      author: string;
+      title: string;
+      lines: string[];
+      warning?: string | undefined;
+      total?: string | undefined;
+    };
 
 export type Person = { id: string; name: string; hint?: string | undefined };
 export type ChatterFilter = 'all' | 'notes' | 'system';
@@ -253,7 +264,10 @@ function Entry({ entry }: { entry: ChatterEntry }) {
     <li className="flex gap-2.5 px-4 py-2">
       {system ? (
         <span className="flex size-[30px] shrink-0 items-center justify-center rounded-full bg-surface-subtle text-fg-label">
-          <Icon name={entry.kind === 'change' ? 'history' : 'system'} size={16} />
+          <Icon
+            name={entry.kind === 'change' || entry.kind === 'event' ? 'history' : 'system'}
+            size={16}
+          />
         </span>
       ) : (
         <Avatar name={entry.author} large />
@@ -281,6 +295,26 @@ function Entry({ entry }: { entry: ChatterEntry }) {
           </p>
         )}
         {entry.kind === 'system' && <p>{entry.text}</p>}
+        {entry.kind === 'event' && (
+          <div className="flex flex-col gap-0.5">
+            <p className="font-semibold">{entry.title}</p>
+            {entry.warning && (
+              <p className="rounded-control bg-warning-subtle px-2 py-1 text-caption text-on-warning-subtle">
+                {entry.warning}
+              </p>
+            )}
+            {entry.lines.length > 0 && (
+              <ul className="flex flex-col gap-0.5 text-caption">
+                {entry.lines.map((line, i) => (
+                  <li key={i} className="break-words">
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {entry.total && <p className="text-caption font-semibold tabular">{entry.total}</p>}
+          </div>
+        )}
         {entry.kind === 'change' && (
           <ul className="flex flex-col gap-0.5">
             {entry.changes.map((change) => (

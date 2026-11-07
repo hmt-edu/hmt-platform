@@ -89,6 +89,11 @@ create function pg_temp.resub(p_key text) returns boolean language sql stable se
   $f$ select app.order_resubmitted_unedited((select id from pg_temp.os where key = p_key)) $f$;
 grant execute on function pg_temp.resub(text), pg_temp.evs(text), pg_temp.note(text, text), pg_temp.lq(text, integer, text), pg_temp.nlines(text), pg_temp.tot(text) to public;
 
+create function pg_temp.evtot(p_key text, p_code text, p_nth integer) returns text language sql stable security definer set search_path = '' as
+  $f$ select total_amount::text from app.sales_order_event where order_id = (select id from pg_temp.os where key = p_key) and event_code = p_code
+       order by seq offset (p_nth - 1) limit 1 $f$;
+grant execute on function pg_temp.evtot(text, text, integer) to public;
+
 -- ================= Dữ liệu =================
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
@@ -121,7 +126,7 @@ select is(pg_temp.lq('e1', 1, 'quantity'), '20.00', 'Số giờ dòng 1 đã đ�
 select is(pg_temp.lq('e1', 1, 'discount_percent'), '5.00', 'Chính sách giữ nguyên khi không gửi chiết khấu');
 select is(pg_temp.lq('e1', 1, 'gross_amount'), '4400000', 'Thành tiền tính lại ở máy chủ: 20 giờ × 220.000');
 select is(pg_temp.evs('e1'), 'TAO,SUA', 'Sửa có đổi thì ghi sự kiện SUA');
-select ok(pg_temp.note('e1', 'SUA') like 'Sửa đơn: dòng 1 (LC-TOAN-K09): số giờ 10 → 20%', 'Nhật ký ghi giá trị cũ và mới (đơn thẳng: "Sửa đơn")');
+select ok(pg_temp.note('e1', 'SUA') like E'Sửa đơn\ndòng 1 (LC-TOAN-K09): số giờ 10 → 20%', 'Nhật ký ghi giá trị cũ và mới (đơn thẳng: "Sửa đơn")');
 select is(app.edit_order(pg_temp.o('e1'), '[{"line_no": 1, "quantity": 20}]') ->> 'changed', 'false', 'Gửi lại đúng giá trị cũ: không có thay đổi');
 select is(pg_temp.evs('e1'), 'TAO,SUA', 'Không đổi gì thì không ghi sự kiện thêm');
 select is(app.edit_order(pg_temp.o('e1'), '[{"line_no": 1, "discounts": []}]') ->> 'changed', 'true', 'Bỏ chính sách chiết khấu của dòng');
@@ -141,7 +146,7 @@ select is(app.edit_order(pg_temp.o('e2'), '[{"line_no": 1, "quantity": 8, "deliv
 select is(pg_temp.lq('e2', 1, 'quantity'), '8.00', 'Số giờ đã đổi theo báo giá chuyển đơn');
 select is(pg_temp.lq('e2', 1, 'unit_price'), '220000', 'Đơn giá tính theo ngày tính giá của đơn (ngày báo giá), không đổi');
 select isnt(pg_temp.lq('e2', 1, 'quotation_line_id'), null, 'Liên kết dòng báo giá được giữ');
-select ok(pg_temp.note('e2', 'SUA') like 'Đơn đã sửa so với báo giá %: dòng 1 (LC-TOAN-K09): số giờ 6 → 8%', 'Q-31: nhật ký ghi "Đơn đã sửa so với báo giá <mã>" kèm cũ, mới');
+select ok(pg_temp.note('e2', 'SUA') like E'Đơn đã sửa so với báo giá %\ndòng 1 (LC-TOAN-K09): số giờ 6 → 8%', 'Q-31: nhật ký ghi "Đơn đã sửa so với báo giá <mã>" kèm cũ, mới');
 select ok(pg_temp.note('e2', 'SUA') like '%' || (select code from qs where key = 'q1') || '%', 'Nhật ký nêu đúng mã báo giá');
 select is(app.edit_order(pg_temp.o('e2'), '[{"line_no": 1, "discounts": []}]') ->> 'changed', 'true', 'Đơn từ báo giá: bỏ chiết khấu được');
 
@@ -173,6 +178,15 @@ select is(pg_temp.resub('e1'), false, 'Đã sửa sau lần từ chối: không 
 select app.submit_order(pg_temp.o('e1'));
 select is(pg_temp.note('e1', 'TRINH'), null, 'Trình lại sau khi đã sửa: không có ghi chú "chưa sửa"');
 select is(pg_temp.resub('e2'), false, 'Đơn chưa từng bị từ chối: không phải trình lại chưa sửa');
+
+-- ================= Ảnh chụp tổng tiền của sự kiện (Q-48, Q-51, migration 080) =================
+select ok(pg_temp.evtot('e1', 'TAO', 1)::bigint > 0, 'Q-51: sự kiện Tạo ghi ảnh chụp tổng tiền của đơn');
+select isnt(pg_temp.evtot('e1', 'SUA', 1), pg_temp.evtot('e1', 'TAO', 1), 'Q-51: lần sửa đổi số giờ ghi tổng tiền MỚI khác tổng lúc Tạo (giao diện hiện cũ → mới)');
+select is((select e ->> 'total_amount' from jsonb_array_elements(app.get_order(pg_temp.o('e1')) -> 'events') e where e ->> 'event_code' = 'TAO'),
+          pg_temp.evtot('e1', 'TAO', 1), 'Q-51: get_order trả tổng tiền của từng sự kiện');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_order(pg_temp.o('e1'));
+select is(pg_temp.evtot('e1', 'DUYET', 1), pg_temp.tot('e1'), 'Q-51: sự kiện Duyệt ghi tổng tiền của đơn lúc duyệt');
 
 select * from finish();
 rollback;

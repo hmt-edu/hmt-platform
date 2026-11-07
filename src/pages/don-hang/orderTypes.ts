@@ -108,6 +108,8 @@ export type OrderEvent = {
   on_behalf: boolean;
   created_at: string;
   actor_name: string | null;
+  /** Ảnh chụp tổng tiền của đơn lúc ghi sự kiện (migration 080); sự kiện cũ thì null. */
+  total_amount?: number | null | undefined;
 };
 
 /** Đường duyệt dự kiến của đơn Nháp (get_order từ migration 062): THIEU = người lập chưa có quản lý trực tiếp. */

@@ -74,13 +74,18 @@ test('Sale tạo phiếu thu nháp từ đơn Đã duyệt, sửa ghi chú, trì
   await expect(page.getByText('1.000.000 đ').first()).toBeVisible();
   await expectAccessible(page);
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
-  await page.getByLabel('Ghi chú', { exact: true }).fill('Thu đợt đầu');
+  await page.getByRole('textbox', { name: 'Ghi chú', exact: true }).fill('Thu đợt đầu');
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu phiếu thu.').first()).toBeVisible();
   await expect(page.getByText('Thu đợt đầu')).toBeVisible();
   await page.getByRole('button', { name: 'Trình quản lý' }).click();
   await expect(page.getByText(/Đã trình, chờ quản lý duyệt/)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Trình quản lý' })).toHaveCount(0);
+  // Cột phải chuẩn "Ghi chú & hoạt động" (Q-52): sự kiện của phiếu là các mục dòng thời gian, không còn nhãn "Lịch sử xử lý".
+  const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  await expect(timeline.getByText('Tạo phiếu thu', { exact: true })).toBeVisible();
+  await expect(timeline.getByText('Trình quản lý duyệt', { exact: true })).toBeVisible();
+  await expect(page.getByText('Lịch sử xử lý')).toHaveCount(0);
   // Bản in biên nhận (TC-07): nhãn CHỜ DUYỆT, số tiền, số điện thoại chỉ che ở bản in.
   await page.getByRole('button', { name: 'In biên nhận' }).click();
   await expect(page).toHaveURL(/\/crm\/phieu-thu\/[0-9a-f-]{36}\/in$/);
