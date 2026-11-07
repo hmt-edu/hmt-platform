@@ -305,7 +305,8 @@ export function RecordDetail({
           {(businessActions || subStage) && (
             <div
               className={cn(
-                'flex flex-wrap items-center gap-2 rounded-box border border-border bg-surface p-3',
+                // empty:hidden: không có nút nghiệp vụ nào thì không dựng thanh trắng giữa Stage và nút liên quan (khung BH02_sua, BH02_don, BH05_* không vẽ thanh này).
+                'flex flex-wrap items-center gap-2 rounded-box border border-border bg-surface p-3 empty:hidden',
                 creating && 'opacity-50',
               )}
               {...(creating ? { inert: true } : {})}

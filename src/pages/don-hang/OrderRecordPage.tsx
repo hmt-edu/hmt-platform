@@ -16,6 +16,7 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
+import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { Select, Tabs, type MenuItem } from '../../ui/Overlays';
@@ -306,7 +307,7 @@ function OrderView({ record }: { record: OrderRecord }) {
     }
   }
 
-  const lineColumns = [
+  const lineColumns: LineColumn<OrderLine>[] = [
     {
       key: 'student',
       header: 'Học sinh',
@@ -332,7 +333,13 @@ function OrderView({ record }: { record: OrderRecord }) {
           <span className="text-fg-muted">Chưa có học sinh</span>
         ),
     },
-    { key: 'product', header: 'Sản phẩm', cell: (l: OrderLine) => l.package_name },
+    {
+      key: 'product',
+      header: 'Sản phẩm',
+      truncate: 'max-w-64',
+      title: (l: OrderLine) => l.package_name,
+      cell: (l: OrderLine) => l.package_name,
+    },
     {
       key: 'mode',
       header: 'Hình thức',
@@ -343,11 +350,13 @@ function OrderView({ record }: { record: OrderRecord }) {
     { key: 'start', header: 'Ngày vào lớp', cell: () => <span className="text-fg-muted">—</span> },
     {
       key: 'quantity',
+      align: 'right',
       header: 'Số lượng',
       cell: (l: OrderLine) => <span className="tabular">{quantityText(l)}</span>,
     },
     {
       key: 'price',
+      align: 'right',
       header: 'Đơn giá',
       cell: (l: OrderLine) => <span className="tabular">{formatNumber(l.unit_price)}</span>,
     },
@@ -364,6 +373,7 @@ function OrderView({ record }: { record: OrderRecord }) {
     },
     {
       key: 'discount',
+      align: 'right',
       header: '%',
       cell: (l: OrderLine) => {
         const text = l.line_kind === 'GIFT' ? '' : discountText(l);
@@ -372,11 +382,13 @@ function OrderView({ record }: { record: OrderRecord }) {
     },
     {
       key: 'reduction',
+      align: 'right',
       header: 'Giảm',
       cell: (l: OrderLine) => <span className="tabular">{formatNumber(l.discount_amount)}</span>,
     },
     {
       key: 'total',
+      align: 'right',
       header: 'Thành tiền',
       cell: (l: OrderLine) => <span className="tabular">{formatNumber(l.line_total)}</span>,
     },
@@ -420,12 +432,11 @@ function OrderView({ record }: { record: OrderRecord }) {
         </>
       )}
       {!(editing && draft) && (
-        <Table<OrderLine>
+        <LineTable<OrderLine>
           caption="Dòng đơn"
           scrollFocusable
           rows={record.lines}
           rowKey={(l) => l.id}
-          rowLabel={(l) => `Dòng ${l.line_no}`}
           columns={lineColumns}
           empty={<p className="px-4 py-6 text-center text-fg-muted">Đơn chưa có dòng nào.</p>}
         />

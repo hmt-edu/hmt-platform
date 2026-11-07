@@ -11,7 +11,8 @@ import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
-import { Table, Tag, type TagTone } from '../../ui/Data';
+import { Tag, type TagTone } from '../../ui/Data';
+import { LineTable } from '../../ui/LineTable';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
@@ -223,11 +224,11 @@ function QuotationView({ record }: { record: QuotationRecord }) {
 
   const lines = (
     <div className="flex flex-col gap-2">
-      <Table<QuotationLine>
+      <LineTable<QuotationLine>
+        scrollFocusable
         caption="Gói học"
         rows={record.lines}
         rowKey={(l) => l.id}
-        rowLabel={(l) => `Dòng ${l.line_no}`}
         columns={[
           {
             key: 'student',
@@ -249,7 +250,13 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                 <span className="text-fg-muted">Chưa có học sinh</span>
               ),
           },
-          { key: 'product', header: 'Sản phẩm', cell: (l) => l.package_name },
+          {
+            key: 'product',
+            header: 'Sản phẩm',
+            truncate: 'max-w-64',
+            title: (l) => l.package_name,
+            cell: (l) => l.package_name,
+          },
           {
             key: 'mode',
             header: 'Hình thức',
@@ -257,11 +264,13 @@ function QuotationView({ record }: { record: QuotationRecord }) {
           },
           {
             key: 'quantity',
+            align: 'right',
             header: 'Số lượng',
             cell: (l) => <span className="tabular">{quantityText(l)}</span>,
           },
           {
             key: 'price',
+            align: 'right',
             header: 'Đơn giá',
             cell: (l) => <span className="tabular">{formatNumber(l.unit_price)}</span>,
           },
@@ -275,11 +284,13 @@ function QuotationView({ record }: { record: QuotationRecord }) {
           },
           {
             key: 'reduction',
+            align: 'right',
             header: 'Giảm',
             cell: (l) => <span className="tabular">{formatNumber(l.discount_amount)}</span>,
           },
           {
             key: 'total',
+            align: 'right',
             header: 'Thành tiền',
             cell: (l) => <span className="tabular">{formatNumber(l.line_total)}</span>,
           },

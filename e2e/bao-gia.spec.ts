@@ -134,7 +134,7 @@ test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
-  const grid = page.getByRole(isPhone(page) ? 'list' : 'table', { name: 'Gói học' });
+  const grid = page.getByRole('table', { name: 'Gói học' });
   await expect(grid.getByText('Em Nháp Một')).toBeVisible();
   await expect(grid.getByText('Em Nháp Hai')).toBeVisible();
   await expect(grid.getByText('Offline').first()).toBeVisible();
@@ -325,7 +325,7 @@ test('BH-02: cột Đơn nêu mã và trạng thái đơn; báo giá chưa lên 
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.sale, setup.mark, seeded.code.converted);
-  const grid = page.getByRole(isPhone(page) ? 'list' : 'table', { name: 'Gói học' });
+  const grid = page.getByRole('table', { name: 'Gói học' });
   await expect(grid.getByText(seeded.orderCode)).toBeVisible();
   await expect(grid.getByText('Nháp', { exact: true })).toBeVisible();
   // Báo giá đã lên đơn: không còn nút Từ chối (đã có đơn đang sống).

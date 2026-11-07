@@ -214,3 +214,39 @@ test('Đơn đã trình không có nút Sửa đơn', async ({ page }, testInfo)
   await openOrder(page, setup.sale, seeded.orders.dtrinh);
   await expect(page.getByRole('button', { name: 'Sửa đơn' })).toHaveCount(0);
 });
+
+// Q-72, Q-73: lưới dòng là bảng MỘT HÀNG MỘT DÒNG, chữ không xuống hàng, cột không vừa thì cuộn ngang trong khung; trang không tràn ngang.
+// Gốc lỗi cũ: chữ sr-only của cột "Bỏ dòng" thoát khỏi vùng cuộn, ở 1280 cả trang tràn 90px.
+for (const width of [1440, 1280]) {
+  test(`Lưới dòng đơn ${width}px: không tràn trang, chữ không xuống hàng, cuộn ngang trong khung (xem và sửa)`, async ({
+    page,
+  }, testInfo) => {
+    test.skip(isPhone(page), 'Điện thoại chỉ đọc (Đ248).');
+    test.setTimeout(90_000);
+    const setup = editSetupOf(testInfo.project.name);
+    await page.setViewportSize({ width, height: 900 });
+    await openOrder(page, setup.sale, seeded.records.rejected);
+    const pageOverflow = () =>
+      page.evaluate<number>(
+        'document.documentElement.scrollWidth - document.documentElement.clientWidth',
+      );
+    // Xem: bảng "Dòng đơn" nằm trong vùng cuộn, mỗi dòng một hàng (cao dưới 70px), tên em và sản phẩm không xuống hàng.
+    expect(await pageOverflow()).toBeLessThanOrEqual(0);
+    const view = page.getByRole('table', { name: 'Dòng đơn' });
+    for (const row of await view
+      .getByRole('row')
+      .all()
+      .then((r) => r.slice(1))) {
+      expect((await row.boundingBox())?.height ?? 999).toBeLessThan(70);
+    }
+    await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
+    const grid = page.getByRole('table', { name: 'Dòng đơn đang sửa' });
+    await expect(grid).toBeVisible();
+    expect(await pageOverflow()).toBeLessThanOrEqual(0);
+    // Cột cuối (Thành tiền) có thể nằm ngoài khung nhưng cuộn tới được; khung cuộn không rộng hơn thẻ chứa nó.
+    await grid
+      .getByRole('columnheader', { name: 'Thành tiền', exact: true })
+      .scrollIntoViewIfNeeded();
+    expect(await pageOverflow()).toBeLessThanOrEqual(0);
+  });
+}

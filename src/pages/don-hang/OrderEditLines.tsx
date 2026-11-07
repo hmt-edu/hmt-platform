@@ -162,7 +162,8 @@ export function OrderEditLines({
           Chưa tính lại, bấm Lưu để cập nhật.
         </p>
       )}
-      <div className="overflow-x-auto rounded-control border border-border">
+      {/* relative: chữ sr-only (cột Bỏ dòng) không thoát khỏi vùng cuộn làm cả trang tràn ngang ở 1280 (Q-72). */}
+      <div className="relative overflow-x-auto rounded-control border border-border">
         <table aria-label="Dòng đơn đang sửa" className="w-full min-w-[1180px] text-body">
           <thead className="bg-surface-subtle text-left text-caption text-fg-muted">
             <tr>
