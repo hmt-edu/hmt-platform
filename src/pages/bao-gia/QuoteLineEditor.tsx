@@ -17,6 +17,7 @@ export function QuoteLineEditor({
   onIssuesChange,
   saveError,
   saving,
+  layout,
 }: {
   opportunityId: string;
   rows: EditRow[];
@@ -25,6 +26,8 @@ export function QuoteLineEditor({
   onIssuesChange: (issues: RowIssue[]) => void;
   saveError: string | null;
   saving: boolean;
+  /** Q-74: 'tao' = Tạo báo giá (11 cột), 'sua' = Sửa báo giá (13 cột). */
+  layout: 'tao' | 'sua';
 }) {
   const capPercent = useIntSetting('discount_total_cap_percent');
   const students = useOpportunityStudents(opportunityId, true);
@@ -61,6 +64,7 @@ export function QuoteLineEditor({
         giftPolicies={giftPolicies.data ?? []}
         calcs={preview.calcs}
         cap={capPercent}
+        layout={layout}
       />
       {preview.networkError !== null && (
         <Alert tone="danger" title="Không tính được giá.">

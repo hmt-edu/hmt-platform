@@ -261,6 +261,58 @@ test('BH-03: in thật trên A4 (chỉ trình duyệt máy tính): chỉ còn t�
   await page.screenshot({ path: shotPath('bh03', 'bh03-che-do-in.png') });
 });
 
+// Q-72: Báo giá xem (bảng một hàng, cuộn ngang) không làm trang tràn ngang ở 1440 và 1280, mỗi dòng một hàng.
+for (const width of [1440, 1280]) {
+  test(`Báo giá xem ${width}px: trang không tràn ngang, mỗi dòng một hàng`, async ({
+    page,
+  }, testInfo) => {
+    test.skip(isPhone(page), 'Cỡ máy tính.');
+    const setup = setupOf(testInfo.project.name);
+    await page.setViewportSize({ width, height: 900 });
+    await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
+    const view = page.getByRole('table', { name: 'Gói học' });
+    await expect(view).toBeVisible();
+    const overflow = await page.evaluate<number>(
+      'document.documentElement.scrollWidth - document.documentElement.clientWidth',
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+    for (const row of await view
+      .getByRole('row')
+      .all()
+      .then((r) => r.slice(1))) {
+      expect((await row.boundingBox())?.height ?? 999).toBeLessThan(70);
+    }
+  });
+}
+
+// Q-72, Q-73, Q-74: lưới Gói học là bảng MỘT HÀNG MỘT DÒNG đúng cột của khung (Tạo: BH02_tao 11 cột; Sửa: BH02_sua 13 cột, cột cuối là nút xoá),
+// chữ không xuống hàng, cả thẻ trắng và trang không tràn ngang (cột không vừa thì cuộn trong khung bảng).
+async function expectLineGrid(page: Page, headers: string[]) {
+  const grid = page.getByRole('table', { name: 'Gói học (đang sửa)' });
+  await expect(grid.getByRole('columnheader')).toHaveCount(headers.length + 1);
+  for (const name of headers)
+    await expect(grid.getByRole('columnheader', { name, exact: true })).toBeVisible();
+  // Mở ra phải thấy từ cột # (không cuộn sẵn), kèm dòng hướng dẫn kéo ngang của khung BH02_sua.
+  await expect(grid.getByRole('columnheader', { name: '#', exact: true })).toBeInViewport();
+  await expect(page.getByText('Kéo thanh ngang để xem các cột bên phải.')).toBeVisible();
+  // Trần chiết khấu (tham số cài đặt, mặc định 20%) hiện dưới bảng ở cả Tạo và Sửa, như khung BH02_sua.
+  await expect(
+    page.getByText(
+      /^Trần chiết khấu mỗi dòng \d+%\. Vượt trần cần Trưởng cơ sở duyệt, vẫn lưu được \(R-TIEN-29\)\.$/,
+    ),
+  ).toBeVisible();
+  const overflow = await page.evaluate<number>(
+    'document.documentElement.scrollWidth - document.documentElement.clientWidth',
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+  for (const row of await grid
+    .getByRole('row')
+    .all()
+    .then((r) => r.slice(1))) {
+    expect((await row.boundingBox())?.height ?? 999).toBeLessThan(80);
+  }
+}
+
 test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khung, sửa số lượng rồi Lưu', async ({
   page,
 }, testInfo) => {
@@ -268,9 +320,23 @@ test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khu
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
-  const grid = page.getByRole('list', { name: 'Gói học (đang sửa)' });
-  await expect(grid.getByRole('listitem', { name: 'Dòng 1' })).toBeVisible();
-  await expect(grid.getByRole('listitem', { name: 'Dòng 2' })).toBeVisible();
+  const grid = page.getByRole('table', { name: 'Gói học (đang sửa)' });
+  await expect(grid.getByRole('rowgroup', { name: 'Dòng 1' })).toBeVisible();
+  await expect(grid.getByRole('rowgroup', { name: 'Dòng 2' })).toBeVisible();
+  await expectLineGrid(page, [
+    '#',
+    'Học sinh',
+    'Gói',
+    'Hình thức',
+    'Số lượng',
+    'Đơn vị',
+    'Giờ tặng',
+    'Đơn giá',
+    'Loại chiết khấu',
+    '%',
+    'Giảm',
+    'Thành tiền',
+  ]);
   await expect(page.getByRole('link', { name: 'Thêm em ở cơ hội.' })).toBeVisible();
   await expectAccessible(page);
   // Xoá số lượng dòng 1: báo lỗi theo khung, chưa lưu.
@@ -298,7 +364,7 @@ test('BH-02 sửa Nháp: hộp Chọn gói, thêm dòng mới (chọn em, gói, 
   await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
   await page.getByRole('button', { name: 'Thêm dòng' }).click();
-  await expect(page.getByRole('listitem', { name: 'Dòng 3' })).toBeVisible();
+  await expect(page.getByRole('rowgroup', { name: 'Dòng 3' })).toBeVisible();
   await page.getByRole('combobox', { name: 'Học sinh dòng 3' }).click();
   await page.getByRole('option', { name: /Em Nháp Một/ }).click();
   await page.getByRole('button', { name: 'Gói dòng 3' }).click();
@@ -370,7 +436,7 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
-  const row1 = page.getByRole('listitem', { name: 'Dòng 1' });
+  const row1 = page.getByRole('rowgroup', { name: 'Dòng 1' });
   // Tổng cộng báo giá do xem thử trả (không chiết khấu): 20 giờ + 5 giờ, mỗi giờ 220.000.
   await expect(page.getByText('5.500.000 đ')).toBeVisible();
   // Hộp Chọn chính sách chiết khấu: chọn "áp đúng mức" 5%.
@@ -381,8 +447,8 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   await dialog.getByLabel(/Giảm khi đóng 6 tháng/).check();
   await dialog.getByRole('button', { name: 'Áp dụng' }).click();
   await expect(row1.getByText(/5% \(áp đúng mức\)/)).toBeVisible();
-  await expect(row1.getByText('Tổng chiết khấu')).toBeVisible();
-  await expect(row1.getByText(/5% \/ trần/)).toBeVisible();
+  // Cột % của bảng Sửa (BH02_sua) là Tổng chiết khấu máy chủ trả.
+  await expect(row1.getByText('5%', { exact: true })).toBeVisible();
   await expect(page.getByText('5.280.000 đ')).toBeVisible();
   // Chính sách tặng giờ: tối đa một; chưa nhập giờ thì máy chủ báo lỗi ở dòng.
   await row1.getByRole('button', { name: 'Chính sách' }).click();
@@ -392,7 +458,7 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   // Nhập 4 giờ tặng trên 20 giờ mua: 5% + 20% = 25%, vượt trần, vẫn lưu được.
   await page.getByLabel('Giờ tặng dòng 1').fill('4');
   await expect(row1.getByText('Vượt trần: cần Trưởng cơ sở duyệt. Vẫn lưu được.')).toBeVisible();
-  await expect(row1.getByText(/25% \/ trần/)).toBeVisible();
+  await expect(row1.getByText('25%', { exact: true })).toBeVisible();
   // Chữ đơn vị của ô Số lượng không đè lên ô Giờ tặng; hai ô cùng hàng, cùng cao.
   const qty = await page.getByLabel('Số lượng dòng 1').boundingBox();
   const gift = await page.getByLabel('Giờ tặng dòng 1').boundingBox();
@@ -418,7 +484,7 @@ test('BH-02 sửa Nháp: dòng mới mặc định em đầu của cơ hội (R-
   await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
   await page.getByRole('button', { name: 'Thêm dòng' }).click();
-  const row3 = page.getByRole('listitem', { name: 'Dòng 3' });
+  const row3 = page.getByRole('rowgroup', { name: 'Dòng 3' });
   await expect(page.getByRole('combobox', { name: 'Học sinh dòng 3' })).toContainText(
     'Em Nháp Một',
   );
@@ -454,7 +520,7 @@ test('BH-02 sửa Nháp: thêm quà tặng qua chính sách quà tặng; vượt
   await expectAccessible(page);
   await dialog.getByRole('button', { name: /Tặng bộ tài liệu Toán/ }).click();
   // Dòng quà đánh số tiếp theo dòng gói; chưa chọn em thì ghi "Chọn em để thêm quà".
-  const gift = page.getByRole('listitem', { name: 'Dòng 3' });
+  const gift = page.getByRole('rowgroup', { name: 'Dòng 3' });
   await expect(gift.getByText('Quà tặng', { exact: true })).toBeVisible();
   await expect(gift.getByText('TL-MATOAN')).toBeVisible();
   // Dòng quà không có giờ tặng: ô Giờ tặng để trống (không có ô nhập, không ghi 0).
@@ -474,12 +540,12 @@ test('BH-02 sửa Nháp: thêm quà tặng qua chính sách quà tặng; vượt
   await expect(gift.getByText(/không quá 1\./)).toHaveCount(0);
   // Thêm dòng gói mới sau khi đã có quà: dòng gói đứng trước dòng quà.
   await page.getByRole('button', { name: 'Thêm dòng' }).click();
-  await expect(page.getByRole('listitem', { name: 'Dòng 3' }).getByText('Chọn gói…')).toBeVisible();
+  await expect(page.getByRole('rowgroup', { name: 'Dòng 3' }).getByText('Chọn gói…')).toBeVisible();
   await expect(
-    page.getByRole('listitem', { name: 'Dòng 4' }).getByText('Quà tặng', { exact: true }),
+    page.getByRole('rowgroup', { name: 'Dòng 4' }).getByText('Quà tặng', { exact: true }),
   ).toBeVisible();
   await page
-    .getByRole('listitem', { name: 'Dòng 3' })
+    .getByRole('rowgroup', { name: 'Dòng 3' })
     .getByRole('button', { name: 'Xoá dòng 3' })
     .click();
   // Lưu rồi xem lại: dòng quà hiện ở bản xem.
@@ -613,6 +679,18 @@ test('Tạo báo giá: nhập dòng, Lưu mới cấp mã và tạo báo giá Nh
   const setup = setupOf(testInfo.project.name);
   await openOpportunityOfQuote(page, setup, seeded.code.sent);
   await page.getByRole('button', { name: 'Tạo báo giá', exact: true }).click();
+  await expectLineGrid(page, [
+    '#',
+    'Học sinh',
+    'Gói',
+    'Hình thức',
+    'Số lượng',
+    'Đơn vị',
+    'Giờ tặng',
+    'Đơn giá',
+    'Chiết khấu',
+    'Thành tiền',
+  ]);
   await page.getByRole('button', { name: 'Gói dòng 1' }).click();
   await page
     .getByRole('dialog', { name: 'Chọn gói' })

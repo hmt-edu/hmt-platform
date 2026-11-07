@@ -1,4 +1,4 @@
-import { Fragment, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { cn } from './cn';
 
 /**
@@ -25,6 +25,11 @@ export type LineColumn<Row> = {
   cell: (row: Row, index: number) => ReactNode;
 };
 
+const ACCENT = {
+  danger: 'shadow-[inset_3px_0_0_var(--color-danger)]',
+  warning: 'shadow-[inset_3px_0_0_var(--color-warning-solid)]',
+} as const;
+
 const ALIGN = { left: 'text-left', right: 'text-right', center: 'text-center' } as const;
 
 export function LineTable<Row>({
@@ -33,6 +38,9 @@ export function LineTable<Row>({
   rows,
   rowKey,
   rowClassName,
+  rowLabel,
+  rowBusy,
+  rowAccent,
   below,
   scrollFocusable = false,
   empty,
@@ -42,6 +50,12 @@ export function LineTable<Row>({
   rows: Row[];
   rowKey: (row: Row) => string;
   rowClassName?: ((row: Row) => string | undefined) | undefined;
+  /** Tên nhóm hàng (dòng và hàng phụ của nó), ví dụ "Dòng 1": đọc được và tìm được theo tên. */
+  rowLabel?: ((row: Row, index: number) => string) | undefined;
+  /** Dòng đang tính giá: báo bận cho trình đọc màn hình. */
+  rowBusy?: ((row: Row) => boolean) | undefined;
+  /** Viền màu bên trái dòng (khung BH02_sua: dòng lỗi viền đỏ, dòng vượt trần viền vàng). */
+  rowAccent?: ((row: Row) => 'danger' | 'warning' | undefined) | undefined;
   /** Hàng phụ dưới dòng; trả null thì không có hàng phụ. */
   below?: ((row: Row, index: number) => ReactNode) | undefined;
   /** Vùng cuộn nhận bàn phím (bảng chỉ đọc, không ô nào bấm được). */
@@ -74,45 +88,50 @@ export function LineTable<Row>({
             ))}
           </tr>
         </thead>
-        <tbody>
-          {rows.map((row, index) => {
-            const extra = below?.(row, index);
-            return (
-              <Fragment key={rowKey(row)}>
-                <tr className={cn('border-t border-border', rowClassName?.(row))}>
-                  {columns.map((c) => (
-                    <td
-                      key={c.key}
-                      className={cn(
-                        'px-2.5 py-2 align-middle whitespace-nowrap first:pl-4 last:pr-4',
-                        ALIGN[c.align ?? 'left'],
-                        c.width,
-                      )}
-                    >
-                      {c.truncate ? (
-                        <span
-                          className={cn('block truncate', c.truncate)}
-                          {...(c.title ? { title: c.title(row) } : {})}
-                        >
-                          {c.cell(row, index)}
-                        </span>
-                      ) : (
-                        c.cell(row, index)
-                      )}
-                    </td>
-                  ))}
+        {rows.map((row, index) => {
+          const extra = below?.(row, index);
+          return (
+            <tbody
+              key={rowKey(row)}
+              className={cn('border-t border-border', rowClassName?.(row))}
+              {...(rowLabel ? { 'aria-label': rowLabel(row, index) } : {})}
+              {...(rowBusy?.(row) ? { 'aria-busy': true } : {})}
+            >
+              <tr>
+                {columns.map((c) => (
+                  <td
+                    key={c.key}
+                    className={cn(
+                      'px-2.5 py-2 align-middle whitespace-nowrap first:pl-4 last:pr-4',
+                      ALIGN[c.align ?? 'left'],
+                      c.width,
+                      c === columns[0] && rowAccent?.(row) === 'danger' && ACCENT.danger,
+                      c === columns[0] && rowAccent?.(row) === 'warning' && ACCENT.warning,
+                    )}
+                  >
+                    {c.truncate ? (
+                      <span
+                        className={cn('block truncate', c.truncate)}
+                        {...(c.title ? { title: c.title(row) } : {})}
+                      >
+                        {c.cell(row, index)}
+                      </span>
+                    ) : (
+                      c.cell(row, index)
+                    )}
+                  </td>
+                ))}
+              </tr>
+              {extra ? (
+                <tr>
+                  <td colSpan={columns.length} className="px-4 pt-0 pb-2 text-caption">
+                    {extra}
+                  </td>
                 </tr>
-                {extra ? (
-                  <tr>
-                    <td colSpan={columns.length} className="px-4 pt-0 pb-2 text-caption">
-                      {extra}
-                    </td>
-                  </tr>
-                ) : null}
-              </Fragment>
-            );
-          })}
-        </tbody>
+              ) : null}
+            </tbody>
+          );
+        })}
       </table>
     </div>
   );

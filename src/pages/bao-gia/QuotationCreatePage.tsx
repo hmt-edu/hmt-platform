@@ -236,6 +236,7 @@ function CreateForm({
             onIssuesChange={setIssues}
             saveError={saveError}
             saving={saving}
+            layout="tao"
           />
         </section>
         <p>

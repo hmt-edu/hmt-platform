@@ -541,6 +541,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                 onIssuesChange={setIssues}
                 saveError={saveError}
                 saving={saving}
+                layout="sua"
               />
             ) : (
               lines

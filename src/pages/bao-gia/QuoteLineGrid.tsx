@@ -8,6 +8,7 @@ import { Button, IconButton } from '../../ui/Button';
 import { Select } from '../../ui/Overlays';
 import { INPUT_CLASS } from '../../ui/Field';
 import { cn } from '../../ui/cn';
+import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
   blankRow,
@@ -23,9 +24,6 @@ import { QuotePolicyDialog } from './QuotePolicyDialog';
 import { percentText, type RowCalc } from './quotePreview';
 import { UNIT_LABEL } from './quoteRecord';
 import type { DiscountPolicy, GiftPolicy, OppStudent, SellablePackage } from './useQuoteData';
-
-const GRID =
-  'grid grid-cols-[minmax(130px,1.1fr)_minmax(150px,1.3fr)_minmax(96px,0.8fr)_minmax(120px,0.9fr)_88px_36px] items-center gap-2';
 
 function studentLabel(s: OppStudent): string {
   const name = s.full_name ?? `Em thứ ${String(s.position)}`;
@@ -57,6 +55,7 @@ export function QuoteLineGrid({
   giftPolicies,
   calcs,
   cap,
+  layout,
 }: {
   rows: EditRow[];
   onChange: (rows: EditRow[]) => void;
@@ -70,6 +69,8 @@ export function QuoteLineGrid({
   calcs: Record<string, RowCalc>;
   /** Trần chiết khấu (R-TIEN-29), đọc từ tham số cài đặt. */
   cap: number | null;
+  /** Q-74: 'tao' = Tạo báo giá 11 cột (BH02_tao); 'sua' = Sửa báo giá 13 cột (BH02_sua). */
+  layout: 'tao' | 'sua';
 }) {
   const catalogs = useLeadCatalogs();
   const [pickFor, setPickFor] = useState<string | null>(null);
@@ -114,6 +115,307 @@ export function QuoteLineGrid({
     setPickFor(null);
   }
 
+  /** Tổng % chiết khấu máy chủ vừa trả (gồm giờ tặng quy ra %); chưa có hoặc 0 thì null. */
+  const totalPercentText = (row: EditRow): string | null => {
+    const c = calcs[row.key];
+    return c?.status === 'ok' && c.totalPercent > 0 ? `${percentText(c.totalPercent)}%` : null;
+  };
+  /** Chip chính sách chiết khấu (hoặc chính sách quà) của dòng và nút "Chính sách"; một hàng, không xuống dòng. */
+  const discountChips = (row: EditRow, index: number) => (
+    <>
+      {row.kind === 'GIFT' && (
+        <span className="rounded-tag bg-surface-subtle px-2 py-0.5 text-caption">
+          {row.giftPolicyName}
+          {giftById.get(row.giftPolicyId) &&
+            ` · tối đa ${percentText(giftById.get(row.giftPolicyId)?.max_quantity ?? 0)} ${row.unitCode === '' ? '' : UNIT_LABEL[row.unitCode]}`}
+          {giftById.get(row.giftPolicyId)?.requires_approval && ' · cần duyệt'}
+        </span>
+      )}
+      {row.discounts.map((d) => {
+        const policy = policyById.get(d.policyId);
+        return (
+          <span
+            key={d.policyId}
+            className="flex items-center gap-1.5 rounded-tag bg-surface-subtle px-2 py-0.5 text-caption"
+          >
+            {d.name}
+            {policy?.kind === 'PERCENT' && !policy.fixed_value && (
+              <>
+                <span aria-hidden="true">·</span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  aria-label={`Mức ${d.name} dòng ${String(index + 1)} (%)`}
+                  value={d.value}
+                  disabled={disabled}
+                  onChange={(e) =>
+                    update(row.key, {
+                      discounts: row.discounts.map((x) =>
+                        x.policyId === d.policyId ? { ...x, value: e.target.value } : x,
+                      ),
+                    })
+                  }
+                  className="h-7 w-14 rounded-control border border-border-strong bg-surface px-1.5 text-right tabular"
+                />
+                <span>{`% · tối đa ${percentText(policy.max_value)}%`}</span>
+              </>
+            )}
+            {policy?.kind === 'PERCENT' && policy.fixed_value && (
+              <span>{`· ${percentText(policy.max_value)}% (áp đúng mức)`}</span>
+            )}
+            {policy?.kind === 'GIFT_HOURS' && (
+              <span>
+                {policy.fixed_value
+                  ? `· tặng ${percentText(policy.max_value)} giờ (áp đúng mức)`
+                  : `· tặng tối đa ${percentText(policy.max_value)} giờ`}
+              </span>
+            )}
+            {policy?.requires_approval && <span>· cần duyệt</span>}
+          </span>
+        );
+      })}
+      {row.kind !== 'GIFT' && (
+        <Button size="sm" icon="plus" disabled={disabled} onClick={() => setPolicyFor(row.key)}>
+          Chính sách
+        </Button>
+      )}
+    </>
+  );
+  const cap_ = cap;
+  const columns: LineColumn<EditRow>[] = [
+    {
+      key: 'no',
+      header: '#',
+      align: 'center',
+      width: 'w-8',
+      cell: (_row, index) => <span className="text-fg-muted">{index + 1}</span>,
+    },
+    {
+      key: 'student',
+      header: 'Học sinh',
+      width: 'w-[150px]',
+      cell: (row, index) => (
+        <div className="w-full">
+          <Select
+            label={`Học sinh dòng ${String(index + 1)}`}
+            value={row.studentId}
+            onChange={(v) => update(row.key, { studentId: v })}
+            placeholder="Chọn em…"
+            options={students.map((s) => ({ value: s.id, label: studentLabel(s) }))}
+            disabled={disabled}
+            requiredEmpty={row.studentId === ''}
+            className="w-full"
+          />
+        </div>
+      ),
+    },
+    {
+      key: 'package',
+      header: 'Gói',
+      width: 'w-[190px]',
+      cell: (row, index) =>
+        row.kind === 'GIFT' ? (
+          <span className="flex w-full items-baseline gap-2">
+            <span className="text-caption text-fg-muted">Quà tặng</span>
+            <span className="font-medium">{row.packageCode}</span>
+            <span className="min-w-0 truncate">{row.packageName}</span>
+          </span>
+        ) : (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => setPickFor(row.key)}
+            aria-label={`Gói dòng ${String(index + 1)}`}
+            title={row.packageId === '' ? undefined : `${row.packageCode} · ${row.packageName}`}
+            className="focus-ring flex h-control w-full items-center rounded-control border border-border-strong bg-surface px-2.5 text-left hover:bg-hover disabled:opacity-60"
+          >
+            {/* Một dòng như các ô bên cạnh, tên gói dài thì cắt bớt; đầy đủ ở chú thích khi rê chuột. */}
+            {row.packageId === '' ? (
+              <span className="text-fg-muted">Chọn gói…</span>
+            ) : (
+              <span className="min-w-0 truncate">
+                <span className="font-medium">{row.packageCode}</span>
+                <span className="text-caption text-fg-muted">{` · ${row.packageName}`}</span>
+              </span>
+            )}
+          </button>
+        ),
+    },
+    {
+      key: 'mode',
+      header: 'Hình thức',
+      width: 'w-24',
+      cell: (row, index) =>
+        row.kind === 'GIFT' ? (
+          <span>—</span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <div className="w-full">
+              <Select
+                label={`Hình thức dòng ${String(index + 1)}`}
+                value={row.mode}
+                onChange={(v) => update(row.key, { mode: v, calc: null })}
+                placeholder="—"
+                options={(row.modes.length > 0 ? row.modes : ['OFF', 'ONL']).map((m) => ({
+                  value: m,
+                  label: modeName(m),
+                }))}
+                disabled={disabled || row.packageId === '' || row.modes.length === 1}
+                className="w-full"
+              />
+            </div>
+            {row.modes.length === 1 && (
+              <span className="text-caption text-fg-muted">{`chỉ ${modeName(row.modes[0] ?? '')}`}</span>
+            )}
+          </span>
+        ),
+    },
+    {
+      key: 'quantity',
+      header: 'Số lượng',
+      align: 'right',
+      width: 'w-[84px]',
+      cell: (row, index) => (
+        <input
+          type="text"
+          inputMode="decimal"
+          aria-label={`Số lượng dòng ${String(index + 1)}`}
+          aria-invalid={issueOf(row.key) ? true : undefined}
+          value={row.quantity}
+          disabled={disabled}
+          onChange={(e) => update(row.key, { quantity: e.target.value, calc: null })}
+          className={cn(INPUT_CLASS, 'tabular w-full text-right')}
+        />
+      ),
+    },
+    {
+      key: 'unit',
+      header: 'Đơn vị',
+      width: 'w-14',
+      cell: (row) => (
+        <span className="text-fg-muted">{row.unitCode === '' ? '' : UNIT_LABEL[row.unitCode]}</span>
+      ),
+    },
+    {
+      key: 'gift-hours',
+      header: 'Giờ tặng',
+      align: 'right',
+      width: 'w-[74px]',
+      cell: (row, index) => {
+        if (row.kind === 'GIFT') return null;
+        const giftDiscount = row.discounts.find(
+          (d) => policyById.get(d.policyId)?.kind === 'GIFT_HOURS',
+        );
+        const giftPolicy = giftDiscount ? policyById.get(giftDiscount.policyId) : undefined;
+        if (giftDiscount === undefined) return <span className="tabular text-fg-muted">0</span>;
+        if (giftPolicy?.fixed_value)
+          return <span className="tabular">{percentText(giftPolicy.max_value)}</span>;
+        return (
+          <input
+            type="text"
+            inputMode="decimal"
+            aria-label={`Giờ tặng dòng ${String(index + 1)}`}
+            value={giftDiscount.value}
+            disabled={disabled}
+            onChange={(e) =>
+              update(row.key, {
+                discounts: row.discounts.map((d) =>
+                  d.policyId === giftDiscount.policyId ? { ...d, value: e.target.value } : d,
+                ),
+              })
+            }
+            className={cn(INPUT_CLASS, 'tabular w-full text-right')}
+          />
+        );
+      },
+    },
+    {
+      key: 'unit-price',
+      header: 'Đơn giá',
+      align: 'right',
+      width: 'w-[84px]',
+      cell: (row) => {
+        const calc: RowCalc | undefined = calcs[row.key];
+        if (calc?.status === 'pending') return <span className="text-fg">Đang tính…</span>;
+        return (
+          <span className="tabular">{priceText(calc, row, 'unitPrice', row.kind === 'GIFT')}</span>
+        );
+      },
+    },
+    // Q-74: Tạo báo giá 11 cột (BH02_tao: Chiết khấu gộp một cột, có Tổng %); Sửa báo giá 13 cột (BH02_sua: Loại chiết khấu, %, Giảm).
+    layout === 'tao'
+      ? {
+          key: 'discount',
+          header: 'Chiết khấu',
+          cell: (row, index) => (
+            <span className="flex items-center gap-1.5">
+              {discountChips(row, index)}
+              {totalPercentText(row) !== null && (
+                <span className="tabular text-caption text-fg-muted">{`= ${totalPercentText(row) ?? ''}`}</span>
+              )}
+            </span>
+          ),
+        }
+      : {
+          key: 'discount',
+          header: 'Loại chiết khấu',
+          cell: (row, index) => (
+            <span className="flex items-center gap-1.5">{discountChips(row, index)}</span>
+          ),
+        },
+    ...(layout === 'sua'
+      ? ([
+          {
+            key: 'percent',
+            header: '%',
+            align: 'right',
+            width: 'w-[76px]',
+            cell: (row: EditRow) => <span className="tabular">{totalPercentText(row) ?? '—'}</span>,
+          },
+          {
+            key: 'reduction',
+            header: 'Giảm',
+            align: 'right',
+            width: 'w-[92px]',
+            cell: (row: EditRow) => (
+              <span className="tabular">
+                {calcs[row.key]?.status === 'pending'
+                  ? '…'
+                  : priceText(calcs[row.key], row, 'discountAmount', row.kind === 'GIFT')}
+              </span>
+            ),
+          },
+        ] satisfies LineColumn<EditRow>[])
+      : []),
+    {
+      key: 'total',
+      header: 'Thành tiền',
+      align: 'right',
+      width: 'w-[104px]',
+      cell: (row) => (
+        <span className="tabular font-semibold">
+          {calcs[row.key]?.status === 'pending'
+            ? '…'
+            : priceText(calcs[row.key], row, 'lineTotal', row.kind === 'GIFT')}
+        </span>
+      ),
+    },
+    {
+      key: 'remove',
+      header: null,
+      width: 'w-[70px]',
+      headerSrOnly: 'Xoá dòng',
+      cell: (row, index) => (
+        <IconButton
+          icon="close"
+          label={`Xoá dòng ${String(index + 1)}`}
+          disabled={disabled}
+          onClick={() => onChange(rows.filter((r) => r.key !== row.key))}
+        />
+      ),
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-2">
       <p className="text-caption text-fg-muted">
@@ -122,290 +424,73 @@ export function QuoteLineGrid({
           Thêm em ở cơ hội.
         </Link>
       </p>
-      <div aria-hidden="true" className={cn(GRID, 'px-2 text-caption font-semibold text-fg-muted')}>
-        <span>Học sinh</span>
-        <span>Gói</span>
-        <span>Hình thức</span>
-        <span>Số lượng</span>
-        <span>Giờ tặng</span>
-        <span />
-      </div>
-      <ul aria-label="Gói học (đang sửa)" className="flex flex-col gap-2">
-        {rows.map((row, index) => {
+      <LineTable<EditRow>
+        caption="Gói học (đang sửa)"
+        // Vùng cuộn nhận bàn phím: lúc danh sách em còn tải, mọi ô trong bảng bị khoá nên không có phần tử nào focus được (axe scrollable-region-focusable).
+        scrollFocusable
+        columns={columns}
+        rows={rows}
+        rowKey={(row) => row.key}
+        rowLabel={(_row, index) => `Dòng ${String(index + 1)}`}
+        rowBusy={(row) => calcs[row.key]?.status === 'pending'}
+        rowAccent={(row) => {
+          const calc: RowCalc | undefined = calcs[row.key];
+          if (issueOf(row.key) || calc?.status === 'error') return 'danger';
+          if (calc?.status === 'ok' && calc.overCap) return 'warning';
+          return undefined;
+        }}
+        rowClassName={(row) => {
+          const calc: RowCalc | undefined = calcs[row.key];
+          if (issueOf(row.key) || calc?.status === 'error') return 'bg-danger-subtle';
+          if (calc?.status === 'ok' && calc.overCap) return 'bg-warning-subtle';
+          return undefined;
+        }}
+        below={(row) => {
+          const calc: RowCalc | undefined = calcs[row.key];
           const issue = issueOf(row.key);
           const gift = row.kind === 'GIFT';
-          const calc: RowCalc | undefined = calcs[row.key];
-          const giftDiscount = row.discounts.find(
-            (d) => policyById.get(d.policyId)?.kind === 'GIFT_HOURS',
-          );
-          const giftPolicy = giftDiscount ? policyById.get(giftDiscount.policyId) : undefined;
-          const calcError = calc?.status === 'error' ? calc.message : null;
           const overCap = calc?.status === 'ok' && calc.overCap;
+          const calcError = calc?.status === 'error' ? calc.message : null;
+          const needsStudent = calc?.status === 'needs-student';
+          if (!overCap && !calcError && !gift && !issue && !needsStudent) return null;
           return (
-            <li
-              key={row.key}
-              aria-label={`Dòng ${String(index + 1)}`}
-              className={cn(
-                'flex flex-col gap-2 rounded-control border bg-surface p-2',
-                issue || calcError ? 'border-danger' : overCap ? 'border-warning' : 'border-border',
-              )}
-              aria-busy={calc?.status === 'pending' ? true : undefined}
-            >
-              <div className={GRID}>
-                <div>
-                  <Select
-                    label={`Học sinh dòng ${String(index + 1)}`}
-                    value={row.studentId}
-                    onChange={(v) => update(row.key, { studentId: v })}
-                    placeholder="Chọn em…"
-                    options={students.map((s) => ({ value: s.id, label: studentLabel(s) }))}
-                    disabled={disabled}
-                    requiredEmpty={row.studentId === ''}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  {gift ? (
-                    <span className="flex flex-col">
-                      <span className="text-caption text-fg-muted">Quà tặng</span>
-                      <span className="font-medium">{row.packageCode}</span>
-                      <span>{row.packageName}</span>
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={disabled}
-                      onClick={() => setPickFor(row.key)}
-                      aria-label={`Gói dòng ${String(index + 1)}`}
-                      title={
-                        row.packageId === '' ? undefined : `${row.packageCode} · ${row.packageName}`
-                      }
-                      className="focus-ring flex h-control w-full items-center rounded-control border border-border-strong bg-surface px-2.5 text-left hover:bg-hover disabled:opacity-60"
-                    >
-                      {/* Một dòng như các ô bên cạnh (cùng chiều cao), tên gói dài thì cắt bớt; đầy đủ ở chú thích khi rê chuột. */}
-                      {row.packageId === '' ? (
-                        <span className="text-fg-muted">Chọn gói…</span>
-                      ) : (
-                        <span className="min-w-0 truncate">
-                          <span className="font-medium">{row.packageCode}</span>
-                          <span className="text-caption text-fg-muted">{` · ${row.packageName}`}</span>
-                        </span>
-                      )}
-                    </button>
-                  )}
-                </div>
-                <div>
-                  {gift ? (
-                    <span>—</span>
-                  ) : (
-                    <>
-                      <Select
-                        label={`Hình thức dòng ${String(index + 1)}`}
-                        value={row.mode}
-                        onChange={(v) => update(row.key, { mode: v, calc: null })}
-                        placeholder="—"
-                        options={(row.modes.length > 0 ? row.modes : ['OFF', 'ONL']).map((m) => ({
-                          value: m,
-                          label: modeName(m),
-                        }))}
-                        disabled={disabled || row.packageId === '' || row.modes.length === 1}
-                        className="w-full"
-                      />
-                      {row.modes.length === 1 && (
-                        <span className="text-caption text-fg-muted">{`chỉ ${modeName(row.modes[0] ?? '')}`}</span>
-                      )}
-                    </>
-                  )}
-                </div>
-                <div className="flex min-h-control items-center gap-1.5">
-                  <div className="w-16 shrink-0">
-                    <input
-                      type="text"
-                      inputMode="decimal"
-                      aria-label={`Số lượng dòng ${String(index + 1)}`}
-                      aria-invalid={issue ? true : undefined}
-                      value={row.quantity}
-                      disabled={disabled}
-                      onChange={(e) => update(row.key, { quantity: e.target.value, calc: null })}
-                      className={cn(INPUT_CLASS, 'tabular')}
-                    />
-                  </div>
-                  <span className="text-caption text-fg-muted">
-                    {row.unitCode === '' ? '' : UNIT_LABEL[row.unitCode]}
-                  </span>
-                </div>
-                <div className="flex min-h-control items-center gap-1 tabular">
-                  {gift ? null : giftDiscount === undefined ? (
-                    <span className="text-fg-muted">0</span>
-                  ) : giftPolicy?.fixed_value ? (
-                    <span>{percentText(giftPolicy.max_value)}</span>
-                  ) : (
-                    <div className="w-16 shrink-0">
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        aria-label={`Giờ tặng dòng ${String(index + 1)}`}
-                        value={giftDiscount.value}
-                        disabled={disabled}
-                        onChange={(e) =>
-                          update(row.key, {
-                            discounts: row.discounts.map((d) =>
-                              d.policyId === giftDiscount.policyId
-                                ? { ...d, value: e.target.value }
-                                : d,
-                            ),
-                          })
-                        }
-                        className={cn(INPUT_CLASS, 'tabular')}
-                      />
-                    </div>
-                  )}
-                </div>
-                <div>
-                  <IconButton
-                    icon="close"
-                    label={`Xoá dòng ${String(index + 1)}`}
-                    disabled={disabled}
-                    onClick={() => onChange(rows.filter((r) => r.key !== row.key))}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="text-caption font-semibold whitespace-nowrap text-fg-muted">
-                    {gift ? 'Chính sách quà tặng' : 'Chiết khấu · chính sách'}
-                  </span>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {gift && (
-                      <span className="rounded-tag bg-surface-subtle px-2 py-0.5 text-caption">
-                        {row.giftPolicyName}
-                        {giftById.get(row.giftPolicyId) &&
-                          ` · tối đa ${percentText(giftById.get(row.giftPolicyId)?.max_quantity ?? 0)} ${row.unitCode === '' ? '' : UNIT_LABEL[row.unitCode]}`}
-                        {giftById.get(row.giftPolicyId)?.requires_approval && ' · cần duyệt'}
-                      </span>
-                    )}
-                    {row.discounts.map((d) => {
-                      const policy = policyById.get(d.policyId);
-                      return (
-                        <span
-                          key={d.policyId}
-                          className="flex items-center gap-1.5 rounded-tag bg-surface-subtle px-2 py-0.5 text-caption"
-                        >
-                          {d.name}
-                          {policy?.kind === 'PERCENT' && !policy.fixed_value && (
-                            <>
-                              <span aria-hidden="true">·</span>
-                              <input
-                                type="text"
-                                inputMode="decimal"
-                                aria-label={`Mức ${d.name} dòng ${String(index + 1)} (%)`}
-                                value={d.value}
-                                disabled={disabled}
-                                onChange={(e) =>
-                                  update(row.key, {
-                                    discounts: row.discounts.map((x) =>
-                                      x.policyId === d.policyId
-                                        ? { ...x, value: e.target.value }
-                                        : x,
-                                    ),
-                                  })
-                                }
-                                className="h-7 w-14 rounded-control border border-border-strong bg-surface px-1.5 text-right tabular"
-                              />
-                              <span>{`% · tối đa ${percentText(policy.max_value)}%`}</span>
-                            </>
-                          )}
-                          {policy?.kind === 'PERCENT' && policy.fixed_value && (
-                            <span>{`· ${percentText(policy.max_value)}% (áp đúng mức)`}</span>
-                          )}
-                          {policy?.kind === 'GIFT_HOURS' && (
-                            <span>
-                              {policy.fixed_value
-                                ? `· tặng ${percentText(policy.max_value)} giờ (áp đúng mức)`
-                                : `· tặng tối đa ${percentText(policy.max_value)} giờ`}
-                            </span>
-                          )}
-                          {policy?.requires_approval && <span>· cần duyệt</span>}
-                        </span>
-                      );
-                    })}
-                    {!gift && (
-                      <Button
-                        size="sm"
-                        icon="plus"
-                        disabled={disabled}
-                        onClick={() => setPolicyFor(row.key)}
-                      >
-                        Chính sách
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                <dl className="relative grid w-full shrink-0 grid-cols-3 gap-3 rounded-control bg-canvas px-3 py-1.5 text-body tabular sm:w-[22rem]">
-                  {calc?.status === 'pending' && (
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-0 animate-pulse rounded-control bg-neutral-300/40"
-                    />
-                  )}
-                  {calc?.status === 'needs-student' ? (
-                    <div className="relative col-span-3 self-center text-fg">
-                      <dt className="sr-only">Giá</dt>
-                      <dd>{gift ? 'Chọn em để thêm quà' : 'Chọn em để xem giá'}</dd>
-                    </div>
-                  ) : calc?.status === 'pending' ? (
-                    <div className="relative col-span-3 self-center text-fg">
-                      <dt className="sr-only">Giá</dt>
-                      <dd>Đang tính giá…</dd>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="text-right">
-                        <dt className="text-caption text-fg-muted">Đơn giá</dt>
-                        <dd>{priceText(calc, row, 'unitPrice', gift)}</dd>
-                      </div>
-                      <div className="text-right">
-                        <dt className="text-caption text-fg-muted">Giảm</dt>
-                        <dd>{priceText(calc, row, 'discountAmount', gift)}</dd>
-                      </div>
-                      <div className="text-right">
-                        <dt className="text-caption text-fg-muted">Thành tiền</dt>
-                        <dd className="font-semibold">{priceText(calc, row, 'lineTotal', gift)}</dd>
-                      </div>
-                    </>
-                  )}
-                </dl>
-              </div>
-              {calc?.status === 'ok' && calc.totalPercent > 0 && (
-                <p className="text-caption text-fg-muted">
-                  Tổng chiết khấu <b className="text-fg">{percentText(calc.totalPercent)}%</b>
-                  {cap !== null ? ` / trần ${String(cap)}%` : ''}
+            <div className="flex flex-col gap-0.5">
+              {needsStudent && (
+                <p className="text-fg-muted">
+                  {gift ? 'Chọn em để thêm quà' : 'Chọn em để xem giá'}
                 </p>
               )}
               {overCap && (
-                <p className="text-caption text-on-warning-subtle">
+                <p className="text-on-warning-subtle">
                   Vượt trần: cần Trưởng cơ sở duyệt. Vẫn lưu được.
                 </p>
               )}
               {calcError && (
-                <p role="alert" className="text-caption text-on-danger-subtle">
+                <p role="alert" className="text-on-danger-subtle">
                   {calcError}
                 </p>
               )}
               {gift && (
-                <p className="text-caption text-fg-muted">
-                  {`Quà tặng: không tính vào trần chiết khấu${cap === null ? '' : ` ${String(cap)}%`}, không có chiết khấu (R-TIEN-30).`}
+                <p className="text-fg-muted">
+                  {`Quà tặng: không tính vào trần chiết khấu${cap_ === null ? '' : ` ${String(cap_)}%`}, không có chiết khấu (R-TIEN-30).`}
                 </p>
               )}
               {issue && (
-                <p role="alert" className="text-caption text-on-danger-subtle">
+                <p role="alert" className="text-on-danger-subtle">
                   {issue.message}
                 </p>
               )}
-            </li>
+            </div>
           );
-        })}
-      </ul>
+        }}
+      />
+      <p className="text-caption text-fg-muted">Kéo thanh ngang để xem các cột bên phải.</p>
+      {/* Khung BH02_sua: trần đọc từ tham số cài đặt (discount_total_cap_percent), không viết cứng. */}
+      {cap !== null && (
+        <p className="text-caption text-fg-muted">
+          {`Trần chiết khấu mỗi dòng ${String(cap)}%. Vượt trần cần Trưởng cơ sở duyệt, vẫn lưu được (R-TIEN-29).`}
+        </p>
+      )}
       <div className="flex flex-wrap gap-2">
         <Button
           icon="plus"
