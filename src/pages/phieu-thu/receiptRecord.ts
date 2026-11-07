@@ -1,5 +1,5 @@
 // Phần thuần của trang Phiếu thu (TC-02): chữ lý do, dữ liệu nháp để sửa, kiểm ô trước khi gửi. Luật tiền, quyền, trạng thái do hàm DB kiểm.
-import type { ReceiptInput, ReceiptRecord, ReceiptStatus } from './receiptTypes';
+import type { ReceiptEvent, ReceiptInput, ReceiptRecord, ReceiptStatus } from './receiptTypes';
 
 /** Bước của thanh tình trạng (chỉ đọc): Nháp, Đã gửi, Chờ kế toán, Đã duyệt; Huỷ thì thêm bước Huỷ. */
 export function receiptSteps(status: ReceiptStatus): ReceiptStatus[] {
@@ -71,4 +71,34 @@ export function receiptStamp(status: ReceiptStatus): string | null {
   if (status === 'DA_GUI' || status === 'CHO_KE_TOAN') return 'CHỜ DUYỆT';
   if (status === 'HUY') return 'ĐÃ HUỶ';
   return null;
+}
+
+/** Lần từ chối gần nhất của phiếu đang Nháp (sự kiện TU_CHOI), kèm vị trí trong lịch sử; phiếu không phải Nháp hoặc chưa từng bị từ chối thì null. */
+export function lastRejection(
+  record: Pick<ReceiptRecord, 'status_code' | 'events'>,
+): { event: ReceiptEvent; index: number } | null {
+  if (record.status_code !== 'NHAP') return null;
+  for (let i = record.events.length - 1; i >= 0; i--) {
+    const e = record.events[i];
+    if (e && e.event_code === 'TU_CHOI') return { event: e, index: i };
+  }
+  return null;
+}
+
+/** Phiếu bị từ chối rồi đã có lần sửa (sự kiện SUA) sau lần từ chối cuối (R-TIEN-06, Q-58). Chưa từng bị từ chối thì sai. */
+export function editedSinceRejection(
+  record: Pick<ReceiptRecord, 'status_code' | 'events'>,
+): boolean {
+  const rejection = lastRejection(record);
+  return (
+    rejection !== null &&
+    record.events.some((e, i) => i > rejection.index && e.event_code === 'SUA')
+  );
+}
+
+/** Lần từ chối cuối do Kế toán (phiếu đang Chờ kế toán lúc bị từ chối): hộp xác nhận nhắc "Trình lại sẽ đi từ bước quản lý duyệt". */
+export function rejectedByAccountant(
+  record: Pick<ReceiptRecord, 'status_code' | 'events'>,
+): boolean {
+  return lastRejection(record)?.event.from_status === 'CHO_KE_TOAN';
 }

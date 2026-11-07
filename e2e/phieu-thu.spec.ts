@@ -110,6 +110,51 @@ test('Trưởng cơ sở duyệt phiếu: chuyển Kế toán, không còn nút 
   await expect(page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' })).toHaveCount(0);
 });
 
+test('Phiếu bị kế toán từ chối (Q-49, Q-58): Trình lại hỏi xác nhận có dòng "đi từ bước quản lý"; Sửa thì Lưu, Huỷ ở tiêu đề và nút trình khoá', async ({
+  page,
+}, testInfo) => {
+  const setup = receiptSetupOf(testInfo.project.name);
+  // Dựng "kế toán từ chối" bằng cơ sở dữ liệu: phiếu về Nháp, sự kiện Từ chối từ bước Chờ kế toán (chưa có sự kiện Sửa sau đó).
+  const id = receiptUrl.split('/').pop() ?? '';
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query('begin');
+    await db.query("set local session_replication_role = 'replica'");
+    await db.query(
+      `update app.receipt set status_code = 'NHAP', approval_route = null, assigned_approver_id = null, submitted_at = null, submitted_by = null
+        where id = $1::uuid`,
+      [id],
+    );
+    await db.query(
+      `insert into app.receipt_event (receipt_id, branch_id, event_code, from_status, to_status, note)
+       select id, branch_id, 'TU_CHOI', 'CHO_KE_TOAN', 'NHAP', 'Sai chứng từ' from app.receipt where id = $1::uuid`,
+      [id],
+    );
+    await db.query('commit');
+  } finally {
+    await db.end();
+  }
+  await enterAs(page, setup.sale);
+  await page.goto(receiptUrl);
+  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Trình lại' }).click();
+  const dialog = page.getByRole('alertdialog', { name: /^Trình lại phiếu thu PT-/ });
+  await expect(dialog.getByText('Phiếu thu chưa sửa từ lần bị từ chối. Vẫn trình?')).toBeVisible();
+  await expect(dialog.getByText(/\(Kế toán\), lý do Sai chứng từ/)).toBeVisible();
+  await expect(dialog.getByText(/Trình lại sẽ đi từ bước quản lý duyệt\./)).toBeVisible();
+  await dialog.getByRole('button', { name: 'Quay lại sửa' }).click();
+  await expect(dialog).toHaveCount(0);
+  // Đang sửa: Lưu (nút chính), Huỷ, Hành động ở tiêu đề; nút Trình lại khoá kèm lời nhắc.
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Huỷ', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Hành động' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Trình lại' })).toBeDisabled();
+  await expect(page.getByText('Lưu hoặc Huỷ rồi mới trình quản lý.')).toBeVisible();
+  await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
+});
+
 test('Người lập huỷ phiếu chưa duyệt: chọn lý do, phiếu về Huỷ và chỉ còn xem', async ({
   page,
 }, testInfo) => {

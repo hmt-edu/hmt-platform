@@ -45,7 +45,7 @@ test('Điện thoại chỉ đọc: không có nút Sửa đơn', async ({ page 
   await expect(page.getByRole('button', { name: 'Sửa đơn' })).toHaveCount(0);
 });
 
-test('Đơn bị từ chối: "Sửa đơn" là nút chính, Trình duyệt phụ kèm nhắc lý do; trình khi chưa sửa thì hỏi lại', async ({
+test('Đơn bị từ chối (Q-49, Q-58): Sửa đơn ở thanh tiêu đề, nút chuyển giai đoạn là Trình lại; trình khi chưa sửa thì hỏi lại, không chặn', async ({
   page,
 }, testInfo) => {
   test.skip(isPhone(page), 'Điện thoại chỉ đọc (Đ248).');
@@ -54,10 +54,13 @@ test('Đơn bị từ chối: "Sửa đơn" là nút chính, Trình duyệt ph�
   await openOrder(page, setup.sale, seeded.records.rejected);
   await expect(page.getByRole('status').filter({ hasText: 'Đơn bị từ chối' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Sửa đơn' }).first()).toBeVisible();
-  await expect(page.getByText(/Lý do từ chối chưa sửa/)).toBeVisible();
-  await page.getByRole('button', { name: 'Trình duyệt' }).click();
-  const dialog = page.getByRole('alertdialog', { name: 'Trình lại đơn chưa sửa' });
+  await expect(page.getByRole('button', { name: 'Hành động' })).toBeVisible();
+  await expect(page.getByText(/Nhánh khác: Từ chối/)).toBeVisible();
+  await page.getByRole('button', { name: 'Trình lại' }).click();
+  const dialog = page.getByRole('alertdialog', { name: /^Trình lại đơn DH-/ });
   await expect(dialog.getByText('Đơn chưa sửa từ lần bị từ chối. Vẫn trình?')).toBeVisible();
+  await expect(dialog.getByText(/Lần từ chối: .*Không chặn: bấm Vẫn trình/)).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Vẫn trình' })).toBeVisible();
   await dialog.getByRole('button', { name: 'Quay lại sửa' }).click();
   await expect(dialog).toHaveCount(0);
   await expectAccessible(page);
@@ -71,11 +74,36 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
   const setup = editSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, seeded.records.rejected);
   await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
+  // Q-49: đang sửa thì thanh tiêu đề có Lưu (nút chính), Huỷ, Hành động; nút trình khoá kèm "Lưu hoặc Huỷ rồi mới trình duyệt".
+  await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Huỷ', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Hành động' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Trình lại' })).toBeDisabled();
+  await expect(page.getByText('Lưu hoặc Huỷ rồi mới trình duyệt.')).toBeVisible();
+  // Q-50: bảng giữ đủ cột như khi xem (kể cả Mã lớp, Ngày vào lớp để trống chờ Đào tạo); chưa đổi gì thì chưa có dòng "Chưa tính lại".
+  const grid = page.getByRole('table', { name: 'Dòng đơn đang sửa' });
+  for (const name of [
+    'Học sinh',
+    'Sản phẩm',
+    'Hình thức',
+    'Mã lớp',
+    'Ngày vào lớp',
+    'Số lượng',
+    'Đơn giá',
+    'Loại chiết khấu',
+    '%',
+    'Giảm',
+    'Thành tiền',
+  ])
+    await expect(grid.getByRole('columnheader', { name, exact: true })).toBeVisible();
+  await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toHaveCount(0);
   const hours = page.getByLabel('Số giờ dòng 1');
   await expect(hours).toBeVisible();
   await hours.fill('0');
   await expect(page.getByText('Nhập số lượng lớn hơn 0.')).toBeVisible();
   await hours.fill('9');
+  // Q-50, Q-56: đổi số giờ thì dòng "Chưa tính lại" hiện ngay trên bảng; giao diện không tính tiền.
+  await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toBeVisible();
   await page.getByLabel('Kiểu thanh toán').click();
   await page.getByRole('option', { name: /Chia ba đợt/ }).click();
   // Đơn có hai dòng: bỏ dòng 2 được; còn một dòng thì nút Bỏ dòng mờ (đơn cần ít nhất một dòng).
@@ -95,8 +123,8 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
     page.getByText(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/),
   ).toHaveCount(0);
   // Đã sửa sau lần từ chối: không còn dòng nhắc "chưa sửa".
-  await expect(page.getByText(/Lý do từ chối chưa sửa/)).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Trình duyệt' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Trình lại' })).toBeEnabled();
+  await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toHaveCount(0);
 });
 
 test('Đơn chuyển từ báo giá Nháp sửa được; bỏ dòng; nhật ký ghi "Đơn đã sửa so với báo giá"', async ({

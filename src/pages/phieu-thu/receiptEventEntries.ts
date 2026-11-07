@@ -11,6 +11,9 @@ export function receiptEventEntries(events: ReceiptEvent[]): ChatterEntry[] {
     at: e.at,
     author: e.by_name ?? 'Hệ thống',
     title: EVENT_TEXT[e.event_code] ?? e.event_code,
-    lines: e.note ? [e.note] : [],
+    // Gửi lại mà chưa sửa từ lần bị từ chối: dòng cảnh báo vàng (Q-58), như Trình lại của đơn.
+    ...(e.event_code === 'GUI' && e.note
+      ? { warning: e.note, lines: [] }
+      : { lines: e.note ? [e.note] : [] }),
   }));
 }

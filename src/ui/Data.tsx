@@ -206,6 +206,7 @@ const CHECKBOX = 'size-4 accent-[var(--action-primary-bg)]';
  */
 export function Table<Row>({
   caption,
+  scrollFocusable = false,
   columns,
   rows,
   rowKey,
@@ -225,6 +226,8 @@ export function Table<Row>({
 }: {
   /** Tên bảng cho trình đọc màn hình. */
   caption: string;
+  /** Bảng rộng cuộn ngang mà không có ô nào bấm được (Dòng đơn): cho vùng cuộn nhận bàn phím để người dùng bàn phím cuộn được. */
+  scrollFocusable?: boolean | undefined;
   columns: Column<Row>[];
   rows: Row[];
   rowKey: (row: Row) => string;
@@ -389,7 +392,10 @@ export function Table<Row>({
   }
 
   return (
-    <div className="overflow-x-auto rounded-box border border-border bg-surface">
+    <div
+      className="overflow-x-auto rounded-box border border-border bg-surface"
+      {...(scrollFocusable ? { tabIndex: 0, role: 'region', 'aria-label': caption } : {})}
+    >
       <table className="w-full border-collapse text-body" aria-busy={loading || undefined}>
         <caption id={headingId} className="sr-only">
           {caption}

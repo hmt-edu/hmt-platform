@@ -34,4 +34,22 @@ describe('mục dòng thời gian của phiếu thu (Q-52)', () => {
       lines: ['Sai số tiền: nhập thừa số 0'],
     });
   });
+
+  it('Gửi lại chưa sửa từ lần bị từ chối: dòng cảnh báo vàng (Q-58)', () => {
+    const entries = receiptEventEntries([
+      {
+        event_code: 'GUI',
+        from_status: 'NHAP',
+        to_status: 'DA_GUI',
+        note: 'Gửi lại, chưa sửa từ lần bị từ chối',
+        at: '2026-11-07T03:00:00Z',
+        by_name: 'Giả sales1',
+      },
+    ]);
+    expect(entries[0]).toMatchObject({
+      title: 'Trình quản lý duyệt',
+      warning: 'Gửi lại, chưa sửa từ lần bị từ chối',
+      lines: [],
+    });
+  });
 });

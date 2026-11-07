@@ -13,7 +13,7 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table } from '../../ui/Data';
-import { ReasonDialog } from '../../ui/Dialogs';
+import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { TextField } from '../../ui/Field';
 import { Combobox, DateInput, MoneyInput, type ComboOption } from '../../ui/Inputs';
@@ -27,7 +27,16 @@ import { useOrder } from '../don-hang/useOrderData';
 import { receiptEventEntries } from './receiptEventEntries';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
-import { draftOf, inputOf, reasonText, receiptSteps, type ReceiptDraft } from './receiptRecord';
+import {
+  draftOf,
+  editedSinceRejection,
+  inputOf,
+  lastRejection,
+  reasonText,
+  receiptSteps,
+  rejectedByAccountant,
+  type ReceiptDraft,
+} from './receiptRecord';
 import type { ReceiptRecord } from './receiptTypes';
 import {
   approveReceiptAccounting,
@@ -100,7 +109,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const [dialog, setDialog] = useState<'reject' | 'cancel' | null>(null);
+  const [dialog, setDialog] = useState<'reject' | 'cancel' | 'resubmit' | null>(null);
   const [dialogError, setDialogError] = useState<string | null>(null);
   useCrumbTail(record.code);
 
@@ -139,6 +148,22 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
       },
       'Đã lưu phiếu thu.',
     );
+
+  // Q-58 (R-TIEN-06): phiếu vừa bị từ chối mà chưa sửa gì thì hỏi lại trước khi trình (không chặn); đã sửa hoặc chưa từng bị từ chối thì trình thẳng.
+  const rejection = lastRejection(record);
+  const edited = editedSinceRejection(record);
+  const submitNow = () =>
+    run(
+      'gui',
+      async () => {
+        await submitReceipt(supabase, record.id);
+      },
+      'Đã trình quản lý duyệt.',
+    );
+  function requestSubmit() {
+    if (rejection && !edited) setDialog('resubmit');
+    else void submitNow();
+  }
 
   const menu: MenuItem[] = can('huy')
     ? [
@@ -352,6 +377,8 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
         dirty={editing}
         saving={busy === 'save'}
         readOnly={!canEdit}
+        showEdit={canEdit}
+        menuWhileEditing
         onEdit={() => {
           setDraft(draftOf(record));
           setEditing(true);
@@ -374,21 +401,18 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
           <span className="flex flex-wrap items-center gap-2">
             {can('gui') && (
               <Button
-                variant="primary"
+                variant={editing ? 'secondary' : 'primary'}
                 loading={busy === 'gui'}
                 disabled={editing}
-                onClick={() =>
-                  void run(
-                    'gui',
-                    async () => {
-                      await submitReceipt(supabase, record.id);
-                    },
-                    'Đã trình quản lý duyệt.',
-                  )
-                }
+                onClick={requestSubmit}
               >
-                Trình quản lý
+                {rejection ? 'Trình lại' : 'Trình quản lý'}
               </Button>
+            )}
+            {can('gui') && editing && (
+              <span className="text-caption text-fg-label">
+                Lưu hoặc Huỷ rồi mới trình quản lý.
+              </span>
             )}
             {can('duyet_quan_ly') && (
               <Button
@@ -575,6 +599,25 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             })
             .catch((e: unknown) => setDialogError(errorOf(e).message))
             .finally(() => setBusy(null));
+        }}
+      />
+      <ConfirmDialog
+        open={dialog === 'resubmit'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title={`Trình lại phiếu thu ${record.code}`}
+        description="Phiếu thu chưa sửa từ lần bị từ chối. Vẫn trình?"
+        note={
+          (rejection
+            ? `Lần từ chối: ${formatDate(rejection.event.at)}, ${rejection.event.by_name ?? 'Hệ thống'}${rejectedByAccountant(record) ? ' (Kế toán)' : ''}${rejection.event.note ? `, lý do ${rejection.event.note}` : ''}. `
+            : '') +
+          'Không chặn: bấm Vẫn trình thì phiếu thu đi lại như bình thường, lịch sử ghi “Gửi lại, chưa sửa từ lần bị từ chối”.' +
+          (rejectedByAccountant(record) ? ' Trình lại sẽ đi từ bước quản lý duyệt.' : '')
+        }
+        confirmLabel="Vẫn trình"
+        cancelLabel="Quay lại sửa"
+        onConfirm={() => {
+          setDialog(null);
+          void submitNow();
         }}
       />
       <ReasonDialog

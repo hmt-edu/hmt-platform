@@ -285,6 +285,9 @@ function OrderView({ record }: { record: OrderRecord }) {
       header: 'Hình thức',
       cell: (l: OrderLine) => (l.line_kind === 'GIFT' ? '—' : modeName(l.delivery_mode_code)),
     },
+    // Mã lớp, Ngày vào lớp để trống chờ phân hệ Đào tạo (canvas BH05_nhap_xem, Q-50).
+    { key: 'class', header: 'Mã lớp', cell: () => <span className="text-fg-muted">—</span> },
+    { key: 'start', header: 'Ngày vào lớp', cell: () => <span className="text-fg-muted">—</span> },
     {
       key: 'quantity',
       header: 'Số lượng',
@@ -296,10 +299,21 @@ function OrderView({ record }: { record: OrderRecord }) {
       cell: (l: OrderLine) => <span className="tabular">{formatNumber(l.unit_price)}</span>,
     },
     {
-      key: 'discount',
-      header: 'Chiết khấu',
+      key: 'discount-type',
+      header: 'Loại chiết khấu',
       cell: (l: OrderLine) => {
-        const text = discountText(l);
+        const names =
+          l.line_kind === 'GIFT'
+            ? [l.gift_policy_name ?? 'Quà tặng']
+            : l.discounts.map((d) => d.policy_name);
+        return names.length === 0 ? '—' : names.join(', ');
+      },
+    },
+    {
+      key: 'discount',
+      header: '%',
+      cell: (l: OrderLine) => {
+        const text = l.line_kind === 'GIFT' ? '' : discountText(l);
         return text === '' ? '—' : text;
       },
     },
@@ -340,6 +354,7 @@ function OrderView({ record }: { record: OrderRecord }) {
             modes={modeOptions}
             branchId={record.branch_id}
             today={todayKey}
+            stale={dirty}
           />
           <p className="text-caption text-fg-muted">
             Thêm dòng hoặc thêm em làm ở bước Tạo đơn từ cơ hội. Thành tiền, tổng, trần chiết khấu
@@ -350,6 +365,7 @@ function OrderView({ record }: { record: OrderRecord }) {
       {!(editing && draft) && (
         <Table<OrderLine>
           caption="Dòng đơn"
+          scrollFocusable
           rows={record.lines}
           rowKey={(l) => l.id}
           rowLabel={(l) => `Dòng ${l.line_no}`}
@@ -357,7 +373,9 @@ function OrderView({ record }: { record: OrderRecord }) {
           empty={<p className="px-4 py-6 text-center text-fg-muted">Đơn chưa có dòng nào.</p>}
         />
       )}
-      <dl className="ml-auto flex w-full max-w-sm flex-col gap-1 text-body">
+      <dl
+        className={`ml-auto flex w-full max-w-sm flex-col gap-1 text-body ${editing && dirty ? 'opacity-50' : ''}`}
+      >
         <TotalRow label="Tổng niêm yết" value={formatMoney(record.gross_total)} />
         <TotalRow
           label="Tổng chiết khấu"
@@ -449,7 +467,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         mode={editing ? 'edit' : 'view'}
         dirty={editing && dirty}
         saving={saving}
-        onEdit={() => undefined}
+        onEdit={startEdit}
         onSave={() => void saveEdit()}
         onCancel={() => {
           setEditing(false);
@@ -457,6 +475,9 @@ function OrderView({ record }: { record: OrderRecord }) {
           setEditError(null);
         }}
         readOnly
+        showEdit={canEdit}
+        editLabel="Sửa đơn"
+        menuWhileEditing
         stageShowCode={false}
         stage={{
           steps,
@@ -468,32 +489,33 @@ function OrderView({ record }: { record: OrderRecord }) {
         menu={menuItems.length > 0 ? { label: 'Hành động', items: menuItems } : undefined}
         businessActions={
           <>
-            {record.status_code === 'NHAP' && !editing && (
+            {record.status_code === 'NHAP' && (
               <span className="flex flex-wrap items-center gap-2">
-                {/* Q-29: đơn bị từ chối mà chưa sửa: "Sửa đơn" là nút chính, "Trình duyệt" phụ kèm dòng nhắc; còn lại "Trình duyệt" là nút chính. */}
-                {canEdit && (
-                  <Button
-                    variant={rejection && !edited ? 'primary' : 'secondary'}
-                    onClick={startEdit}
-                  >
-                    Sửa đơn
-                  </Button>
-                )}
+                {/* Q-49 (canvas BH05_nhap_xem, BH05_nhap_sua): Sửa đơn, Lưu, Huỷ, Hành động ở thanh tiêu đề; hàng này chỉ có nút chuyển giai đoạn.
+                    Đang sửa: nút khoá, ghi "Lưu hoặc Huỷ rồi mới trình duyệt". Đơn đã bị từ chối: nút đổi chữ thành "Trình lại". */}
                 {canSubmit && (
                   <Button
-                    variant={rejection && !edited ? 'secondary' : 'primary'}
+                    variant={editing ? 'secondary' : 'primary'}
                     loading={submitting}
+                    disabled={editing}
                     onClick={requestSubmit}
                   >
-                    Trình duyệt
+                    {rejection ? 'Trình lại' : 'Trình duyệt'}
                   </Button>
                 )}
-                {rejection && !edited && canSubmit && (
+                {editing && canSubmit && (
                   <span className="text-caption text-fg-label">
-                    Lý do từ chối chưa sửa: {reasonLine(rejection, catalogs.name)}
+                    Lưu hoặc Huỷ rồi mới trình duyệt.
                   </span>
                 )}
-                {approverText && <span className="text-caption text-fg-label">{approverText}</span>}
+                {!editing && rejection && canSubmit && (
+                  <span className="text-caption text-fg-label">
+                    Nhánh khác: Từ chối · bị từ chối thì về Nháp, sửa rồi trình lại
+                  </span>
+                )}
+                {!editing && approverText && (
+                  <span className="text-caption text-fg-label">{approverText}</span>
+                )}
               </span>
             )}
             {record.status_code === 'DA_TRINH' && (record.can_approve || record.can_reject) && (
@@ -763,9 +785,14 @@ function OrderView({ record }: { record: OrderRecord }) {
       <ConfirmDialog
         open={confirmUnedited}
         onOpenChange={setConfirmUnedited}
-        title="Trình lại đơn chưa sửa"
+        title={`Trình lại đơn ${record.code}`}
         description="Đơn chưa sửa từ lần bị từ chối. Vẫn trình?"
-        note="Nhật ký ghi rõ lần trình lại này không sửa gì."
+        note={
+          (rejection
+            ? `Lần từ chối: ${formatDate(rejection.created_at)}, ${rejection.actor_name ?? 'Hệ thống'}, “${reasonLine(rejection, catalogs.name)}”. `
+            : '') +
+          'Không chặn: bấm Vẫn trình thì đơn đi lại như bình thường, lịch sử ghi “Trình lại, chưa sửa từ lần bị từ chối”.'
+        }
         confirmLabel="Vẫn trình"
         cancelLabel="Quay lại sửa"
         onConfirm={() => {

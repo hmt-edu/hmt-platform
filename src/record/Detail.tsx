@@ -153,6 +153,9 @@ export function RecordDetail({
   pager,
   onRefresh,
   readOnly = false,
+  editLabel = 'Sửa',
+  showEdit,
+  menuWhileEditing = false,
   stage,
   stageNote,
   stageShowCode = true,
@@ -183,6 +186,12 @@ export function RecordDetail({
   onRefresh?: (() => void) | undefined;
   /** Chỉ đọc (bản "Đã gộp", hoặc người xem không có quyền Sửa): ẩn Sửa và các nút cạnh Sửa, khoá thanh giai đoạn. */
   readOnly?: boolean | undefined;
+  /** Chữ nút Sửa ở thanh tiêu đề (Đơn hàng: "Sửa đơn"). */
+  editLabel?: string | undefined;
+  /** Hiện nút Sửa; mặc định theo `!readOnly`. Đơn hàng, Phiếu thu khoá thanh giai đoạn (readOnly) nhưng vẫn hiện nút Sửa khi có quyền. */
+  showEdit?: boolean | undefined;
+  /** Menu Hành động vẫn hiện khi đang sửa (Đơn hàng, Phiếu thu: canvas BH05_nhap_sua, TC02_nhap_sua). Màn khác ẩn như cũ. */
+  menuWhileEditing?: boolean | undefined;
   stage?:
     | {
         steps: StageStep[];
@@ -223,9 +232,9 @@ export function RecordDetail({
           </>
         ) : (
           <>
-            {!readOnly && (
+            {(showEdit ?? !readOnly) && (
               <Button variant="primary" icon="edit" onClick={onEdit}>
-                Sửa
+                {editLabel}
               </Button>
             )}
             {headerActions}
@@ -237,7 +246,7 @@ export function RecordDetail({
               Đính kèm ({attachments.count})
             </Button>
           )}
-          {menu && !editing && (
+          {menu && (menuWhileEditing || !editing) && (
             <DropdownMenu
               trigger={
                 <Button variant="text" icon="chevronDown">

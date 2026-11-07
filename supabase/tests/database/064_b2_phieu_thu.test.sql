@@ -174,6 +174,16 @@ select is((select count(*)::int from app.receipt_event where receipt_id = pg_tem
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select app.submit_receipt(pg_temp.r('p1'));
 select is(pg_temp.rst('p1'), 'DA_GUI', 'TD14: gửi lại đi lại từ bước quản lý (không nhảy thẳng tới kế toán)');
+select is((select note from app.receipt_event where receipt_id = pg_temp.r('p1') and event_code = 'GUI' order by seq desc limit 1), 'Gửi lại, chưa sửa từ lần bị từ chối',
+          'Q-58: gửi lại chưa sửa từ lần bị từ chối thì sự kiện Gửi ghi rõ, không chặn');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.reject_receipt(pg_temp.r('p1'), 'Cần sửa ghi chú');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select app.save_receipt(pg_temp.r('p1'), '{"amount": 1000000, "payment_method_code": "CHUYEN_KHOAN", "txn_ref": "GD001"}');
+select app.submit_receipt(pg_temp.r('p1'));
+select is((select note from app.receipt_event where receipt_id = pg_temp.r('p1') and event_code = 'GUI' order by seq desc limit 1), null,
+          'Q-58: đã sửa sau lần từ chối thì sự kiện Gửi không có ghi chú "chưa sửa"');
+select is(pg_temp.rst('p1'), 'DA_GUI', 'Q-58: gửi lại sau khi sửa vẫn đi từ bước quản lý');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select app.approve_receipt_manager(pg_temp.r('p1'));
 
