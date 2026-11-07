@@ -52,7 +52,8 @@ test('Mở đơn từ BH-06; Nháp: thông tin chung, người duyệt chưa có
   await openOrder(page, setup.sale, setup.mark, seeded.orders.nhap);
   await expect(page.getByRole('heading', { level: 1, name: 'Đơn hàng' })).toBeVisible();
   await expect(
-    page.getByText('Người duyệt: chưa có · người lập chưa có quản lý trực tiếp'),
+    // Người xem là người lập: khung BH05_chua_ql_sua ghi "bạn chưa có quản lý trực tiếp".
+    page.getByText('Người duyệt: chưa có · bạn chưa có quản lý trực tiếp'),
   ).toBeVisible();
   await expect(page.getByText(/Chưa có quản lý trực tiếp để duyệt/)).toBeVisible();
   // UI-O2b: nút Trình bật cho người có quyền Sửa trên máy tính; điện thoại chỉ đọc (Đ248) nên ẩn.

@@ -44,10 +44,14 @@ export function expectedApproverText(
     OrderRecord,
     'status_code' | 'expected_route' | 'expected_approver_name' | 'created_by_name'
   >,
+  /** Người xem chính là người lập: khung BH05_chua_ql_sua ghi "bạn chưa có quản lý trực tiếp". */
+  viewerIsCreator = false,
 ): string | null {
   if (record.status_code !== 'NHAP' || record.expected_route === null) return null;
   if (record.expected_route === 'THIEU')
-    return 'Người duyệt: chưa có · người lập chưa có quản lý trực tiếp';
+    return viewerIsCreator
+      ? 'Người duyệt: chưa có · bạn chưa có quản lý trực tiếp'
+      : 'Người duyệt: chưa có · người lập chưa có quản lý trực tiếp';
   const name = record.expected_approver_name ?? '';
   return record.expected_route === 'TU_DUYET'
     ? `Người duyệt: ${name} · Trưởng cơ sở tự duyệt`
@@ -58,13 +62,27 @@ export function expectedApproverText(
 export function approverWarning(
   record: Pick<
     OrderRecord,
-    'status_code' | 'expected_route' | 'expected_approver_can_approve' | 'expected_approver_name'
+    | 'status_code'
+    | 'expected_route'
+    | 'expected_approver_can_approve'
+    | 'expected_approver_name'
+    | 'expected_block'
   >,
 ): string | null {
   if (record.status_code !== 'NHAP') return null;
-  if (record.expected_route === 'THIEU')
+  // Q-63: ba lý do chặn có câu riêng, cùng chữ với lỗi máy chủ; khi máy chủ chưa trả expected_block thì suy từ các trường cũ.
+  const block =
+    record.expected_block ??
+    (record.expected_route === 'THIEU'
+      ? 'KHONG_CO_QUAN_LY'
+      : record.expected_approver_can_approve === false
+        ? 'NGUOI_DUYET_THIEU_QUYEN'
+        : null);
+  if (block === 'KHONG_CO_QUAN_LY')
     return 'Chưa có quản lý trực tiếp để duyệt. Nhờ Admin đặt Quản lý trực tiếp cho người lập rồi trình lại.';
-  if (record.expected_approver_can_approve === false)
+  if (block === 'NGUOI_DUYET_BI_KHOA')
+    return 'Quản lý trực tiếp của người lập đang bị khoá nên chưa trình được. Nhờ Admin mở khoá hoặc đặt lại Quản lý trực tiếp.';
+  if (block === 'NGUOI_DUYET_THIEU_QUYEN')
     return `${record.expected_approver_name ?? 'Người duyệt'} chưa có quyền Duyệt đơn hàng ở cơ sở này nên chưa trình được. Nhờ Admin đặt lại Quản lý trực tiếp hoặc cấp quyền.`;
   return null;
 }

@@ -6,8 +6,16 @@ import { discountText } from '../bao-gia/quoteRecord';
 import { Button } from '../../ui/Button';
 import { INPUT_CLASS } from '../../ui/Field';
 import { Select } from '../../ui/Overlays';
-import { lineError, type LineDraft, type OrderDraft } from './orderEdit';
-import type { OrderLine } from './orderTypes';
+import {
+  addedError,
+  lineError,
+  type AddedLine,
+  type DraftDiscount,
+  type LineDraft,
+  type OrderDraft,
+} from './orderEdit';
+import type { OppStudent } from '../bao-gia/useQuoteData';
+import type { OrderLine, OrderLineDiscount } from './orderTypes';
 import type { PolicyOption } from './useOrderData';
 
 type Props = {
@@ -20,15 +28,113 @@ type Props = {
   today: string;
   /** Đã đổi gì đó mà chưa Lưu: các số tiền là của lần lưu trước, hiện mờ kèm dòng "Chưa tính lại" (Q-50). */
   stale: boolean;
+  /** Học sinh (em) của cơ hội để chọn cho dòng mới; thêm em làm ở cơ hội. */
+  students: OppStudent[];
+  /** Mở hộp chọn gói để thêm một dòng (Q-67, canvas BH05_nhap_sua). */
+  onAdd: () => void;
+  onChangeAdded: (key: string, patch: Partial<AddedLine>) => void;
+  onRemoveAdded: (key: string) => void;
 };
 
-/** Chính sách áp được cho gói và cơ sở của dòng ở thời điểm hiện tại (máy chủ kiểm lại khi lưu). */
-function applicable(p: PolicyOption, line: OrderLine, branchId: string, today: string): boolean {
+/** Chính sách áp được cho loại gói, cơ sở ở thời điểm hiện tại (máy chủ kiểm lại khi lưu). */
+function applicableTo(
+  p: PolicyOption,
+  packageTypeCode: string,
+  branchId: string,
+  today: string,
+): boolean {
   return (
     p.valid_from <= today &&
     (p.valid_to === null || p.valid_to >= today) &&
-    (p.package_type_codes.length === 0 || p.package_type_codes.includes(line.package_type_code)) &&
+    (p.package_type_codes.length === 0 || p.package_type_codes.includes(packageTypeCode)) &&
     (p.branch_ids.length === 0 || p.branch_ids.includes(branchId))
+  );
+}
+
+/** Chính sách áp được cho gói và cơ sở của dòng. */
+function applicable(p: PolicyOption, line: OrderLine, branchId: string, today: string): boolean {
+  return applicableTo(p, line.package_type_code, branchId, today);
+}
+
+/**
+ * Ô chiết khấu của một dòng (chip chọn nhiều, ✕ để bỏ, "+ Thêm"): dùng cho dòng cũ và dòng mới thêm (Q-69). Giao diện chỉ chọn chính sách và
+ * nhập giá trị; % cộng dồn, trần 20% (chỉ cảnh báo), thành tiền do máy chủ tính khi Lưu. `label` đặt tên cho trình đọc màn hình ("dòng 1", "dòng mới 1").
+ */
+function DiscountEditor({
+  label,
+  discounts,
+  onChange,
+  policies,
+  addable,
+  oldOf,
+}: {
+  label: string;
+  discounts: DraftDiscount[];
+  onChange: (next: DraftDiscount[]) => void;
+  policies: PolicyOption[];
+  addable: PolicyOption[];
+  oldOf?: ((policyId: string) => OrderLineDiscount | undefined) | undefined;
+}) {
+  return (
+    <span className="flex flex-col gap-1.5">
+      <span className="flex flex-wrap gap-1.5">
+        {discounts.map((x) => {
+          const p = policies.find((q) => q.id === x.policy_id);
+          const old = oldOf?.(x.policy_id);
+          const name = p?.name ?? old?.policy_name ?? 'Chính sách';
+          const unit = (p?.kind ?? old?.kind) === 'GIFT_HOURS' ? 'giờ' : '%';
+          return (
+            <span
+              key={x.policy_id}
+              className="inline-flex items-center gap-1 rounded-tag bg-surface-subtle px-2 py-0.5 text-caption"
+            >
+              {name}
+              {p && !p.fixed_value && (
+                <input
+                  aria-label={`Giá trị ${name} ${label}`}
+                  inputMode="decimal"
+                  autoComplete="off"
+                  className="tabular w-12 rounded-control border border-border px-1 text-right"
+                  value={x.value === null ? '' : String(x.value)}
+                  onChange={(e) => {
+                    const text = e.target.value.replace(',', '.').trim();
+                    const value = text === '' || Number.isNaN(Number(text)) ? null : Number(text);
+                    onChange(
+                      discounts.map((y) => (y.policy_id === x.policy_id ? { ...y, value } : y)),
+                    );
+                  }}
+                />
+              )}
+              {p && !p.fixed_value ? unit : ''}
+              <button
+                type="button"
+                aria-label={`Bỏ ${name} khỏi ${label}`}
+                className="focus-ring rounded-tag px-1 text-fg-muted hover:bg-hover"
+                onClick={() => onChange(discounts.filter((y) => y.policy_id !== x.policy_id))}
+              >
+                ✕
+              </button>
+            </span>
+          );
+        })}
+      </span>
+      {addable.length > 0 && (
+        <Select
+          label={`Thêm chính sách chiết khấu ${label}`}
+          value=""
+          placeholder="+ Thêm"
+          onChange={(id) => {
+            const p = addable.find((q) => q.id === id);
+            if (!p) return;
+            onChange([
+              ...discounts,
+              { policy_id: p.id, value: p.fixed_value ? null : p.max_value },
+            ]);
+          }}
+          options={addable.map((p) => ({ value: p.id, label: p.name }))}
+        />
+      )}
+    </span>
   );
 }
 
@@ -41,6 +147,10 @@ export function OrderEditLines({
   branchId,
   today,
   stale,
+  students,
+  onAdd,
+  onChangeAdded,
+  onRemoveAdded,
 }: Props) {
   const live = lines.filter((l) => !draft.lines[l.line_no]?.removed);
   const dim = stale ? 'opacity-50' : '';
@@ -91,7 +201,15 @@ export function OrderEditLines({
                       : 'border-t border-border align-top'
                   }
                 >
-                  <td className="px-3 py-2">{l.student_name ?? 'Chưa có học sinh'}</td>
+                  <td className="px-3 py-2">
+                    {l.student_name ?? 'Chưa có học sinh'}
+                    {/* BH05_chan_em_sua: em thiếu họ tên hoặc năm sinh vẫn báo ngay khi sửa (R-TIEN-35). */}
+                    {l.student_name && !l.student_complete && (
+                      <span className="block text-caption text-on-warning-subtle">
+                        {l.student_birth_year ? 'thiếu họ tên' : 'thiếu năm sinh'}
+                      </span>
+                    )}
+                  </td>
                   <td className="px-2 py-2">
                     <span className="font-medium">{l.package_name}</span>
                     {gift && (
@@ -149,78 +267,14 @@ export function OrderEditLines({
                     {gift || d.removed ? (
                       '—'
                     ) : (
-                      <span className="flex flex-col gap-1.5">
-                        <span className="flex flex-wrap gap-1.5">
-                          {d.discounts.map((x) => {
-                            const p = policies.find((q) => q.id === x.policy_id);
-                            const old = l.discounts.find((q) => q.policy_id === x.policy_id);
-                            const name = p?.name ?? old?.policy_name ?? 'Chính sách';
-                            const unit = (p?.kind ?? old?.kind) === 'GIFT_HOURS' ? 'giờ' : '%';
-                            return (
-                              <span
-                                key={x.policy_id}
-                                className="inline-flex items-center gap-1 rounded-tag bg-surface-subtle px-2 py-0.5 text-caption"
-                              >
-                                {name}
-                                {p && !p.fixed_value && (
-                                  <input
-                                    aria-label={`Giá trị ${name} dòng ${l.line_no}`}
-                                    inputMode="decimal"
-                                    autoComplete="off"
-                                    className="tabular w-12 rounded-control border border-border px-1 text-right"
-                                    value={x.value === null ? '' : String(x.value)}
-                                    onChange={(e) => {
-                                      const text = e.target.value.replace(',', '.').trim();
-                                      const value =
-                                        text === '' || Number.isNaN(Number(text))
-                                          ? null
-                                          : Number(text);
-                                      onChange(l.line_no, {
-                                        discounts: d.discounts.map((y) =>
-                                          y.policy_id === x.policy_id ? { ...y, value } : y,
-                                        ),
-                                      });
-                                    }}
-                                  />
-                                )}
-                                {p && !p.fixed_value ? unit : ''}
-                                <button
-                                  type="button"
-                                  aria-label={`Bỏ ${name} khỏi dòng ${l.line_no}`}
-                                  className="focus-ring rounded-tag px-1 text-fg-muted hover:bg-hover"
-                                  onClick={() =>
-                                    onChange(l.line_no, {
-                                      discounts: d.discounts.filter(
-                                        (y) => y.policy_id !== x.policy_id,
-                                      ),
-                                    })
-                                  }
-                                >
-                                  ✕
-                                </button>
-                              </span>
-                            );
-                          })}
-                        </span>
-                        {addable.length > 0 && (
-                          <Select
-                            label={`Thêm chính sách chiết khấu dòng ${l.line_no}`}
-                            value=""
-                            placeholder="+ Thêm"
-                            onChange={(id) => {
-                              const p = addable.find((q) => q.id === id);
-                              if (!p) return;
-                              onChange(l.line_no, {
-                                discounts: [
-                                  ...d.discounts,
-                                  { policy_id: p.id, value: p.fixed_value ? null : p.max_value },
-                                ],
-                              });
-                            }}
-                            options={addable.map((p) => ({ value: p.id, label: p.name }))}
-                          />
-                        )}
-                      </span>
+                      <DiscountEditor
+                        label={`dòng ${l.line_no}`}
+                        discounts={d.discounts}
+                        onChange={(next) => onChange(l.line_no, { discounts: next })}
+                        policies={policies}
+                        addable={addable}
+                        oldOf={(id) => l.discounts.find((q) => q.policy_id === id)}
+                      />
                     )}
                   </td>
                   <td className={`tabular px-2 py-2 text-right ${dim}`}>
@@ -250,8 +304,88 @@ export function OrderEditLines({
                 </tr>
               );
             })}
+            {draft.added.map((a, i) => {
+              const error = addedError(a);
+              return (
+                <tr key={a.key} className="border-t border-border align-top">
+                  <td className="px-3 py-2">
+                    <Select
+                      label={`Học sinh dòng mới ${i + 1}`}
+                      value={a.studentId}
+                      placeholder="Chọn học sinh"
+                      onChange={(v) => onChangeAdded(a.key, { studentId: v })}
+                      options={students.map((st) => ({
+                        value: st.id,
+                        label: `${st.full_name ?? 'Em chưa có tên'}${st.birth_year ? ` · ${st.birth_year}` : ''}`,
+                      }))}
+                    />
+                  </td>
+                  <td className="px-2 py-2">
+                    <span className="font-medium">{a.packageName}</span>
+                    <span className="block text-caption text-fg-muted">
+                      {`${a.packageCode} · dòng mới, tính giá khi Lưu`}
+                    </span>
+                  </td>
+                  <td className="px-2 py-2">
+                    <Select
+                      label={`Hình thức dòng mới ${i + 1}`}
+                      value={a.mode}
+                      onChange={(v) => onChangeAdded(a.key, { mode: v })}
+                      options={modes.filter((m) => a.modes.includes(m.value))}
+                    />
+                  </td>
+                  <td className="px-2 py-2 text-fg-muted">—</td>
+                  <td className="px-2 py-2 text-fg-muted">—</td>
+                  <td className="px-2 py-2">
+                    <span className="flex flex-col gap-1">
+                      <input
+                        aria-label={`Số lượng dòng mới ${i + 1}`}
+                        inputMode="decimal"
+                        autoComplete="off"
+                        className={`${INPUT_CLASS} tabular w-24 text-right`}
+                        value={a.quantity === null ? '' : String(a.quantity)}
+                        onChange={(e) => {
+                          const text = e.target.value.replace(',', '.').trim();
+                          onChangeAdded(a.key, {
+                            quantity:
+                              text === '' || Number.isNaN(Number(text)) ? null : Number(text),
+                          });
+                        }}
+                      />
+                      {error && <span className="text-caption text-on-danger-subtle">{error}</span>}
+                    </span>
+                  </td>
+                  <td className="px-2 py-2 text-right text-fg-muted opacity-50">—</td>
+                  <td className="px-2 py-2">
+                    <DiscountEditor
+                      label={`dòng mới ${i + 1}`}
+                      discounts={a.discounts}
+                      onChange={(next) => onChangeAdded(a.key, { discounts: next })}
+                      policies={policies}
+                      addable={policies.filter(
+                        (p) =>
+                          !a.discounts.some((x) => x.policy_id === p.id) &&
+                          applicableTo(p, a.packageTypeCode, branchId, today),
+                      )}
+                    />
+                  </td>
+                  <td className="px-2 py-2 text-right text-fg-muted opacity-50">—</td>
+                  <td className="px-2 py-2 text-right text-fg-muted opacity-50">—</td>
+                  <td className="px-2 py-2 text-right text-fg-muted opacity-50">—</td>
+                  <td className="px-2 py-2">
+                    <Button onClick={() => onRemoveAdded(a.key)}>Bỏ dòng</Button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <Button icon="plus" onClick={onAdd}>
+          Thêm dòng
+        </Button>
+        <span className="text-caption text-fg-muted">Chưa thấy em? Thêm em ở cơ hội.</span>
       </div>
     </div>
   );

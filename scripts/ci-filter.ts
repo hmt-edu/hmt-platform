@@ -42,11 +42,11 @@ export function isMoney(file: string): boolean {
 }
 
 /**
- * File "lõi truy cập" (Q-36, Q-39): đăng nhập, phiên, ma trận quyền và menu theo quyền (src/lib/auth/, src/nav/). Sai ở đây là hỏng mọi màn nên
- * cũng chạy Playwright. Bản in nằm trong thư mục của từng màn (Báo giá, Phiếu thu) nên đã thuộc isMoney; không có thư mục src/print/.
+ * File "lõi" (Q-36, Q-39, Q-66): đăng nhập, phiên, ma trận quyền và menu theo quyền (src/lib/auth/, src/nav/), khung hồ sơ dùng chung (src/record/). Sai ở đây là hỏng mọi màn nên
+ * cũng chạy Playwright. Bản in nằm trong thư mục của từng màn (Báo giá, Phiếu thu) nên đã thuộc isMoney; không có thư mục src/print/. src/ui/ KHÔNG tính (Q-66).
  */
 export function isCore(file: string): boolean {
-  return /^src\/(lib\/auth|nav)\//.test(file);
+  return /^src\/(lib\/auth|nav|record)\//.test(file);
 }
 
 /**

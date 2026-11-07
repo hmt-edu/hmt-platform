@@ -127,6 +127,40 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
   await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toHaveCount(0);
 });
 
+test('Thêm dòng khi sửa (Q-67): chọn gói, em, số lượng; Lưu thì máy chủ tính giá và nhật ký ghi "thêm dòng N (mã gói)"', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Điện thoại chỉ đọc (Đ248).');
+  test.setTimeout(90_000);
+  const setup = editSetupOf(testInfo.project.name);
+  await openOrder(page, setup.sale, seeded.records.rejected);
+  await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
+  await page.getByRole('button', { name: 'Thêm dòng' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Chọn gói' });
+  await dialog
+    .getByRole('button', { name: /LC-TOAN-K09/ })
+    .first()
+    .click();
+  await expect(dialog).toHaveCount(0);
+  // Dòng mới chưa có giá: chọn em và số lượng, Lưu bị khoá tới khi hợp lệ (lỗi tại chỗ).
+  await expect(page.getByText('Chọn học sinh.')).toBeVisible();
+  await page.getByRole('combobox', { name: 'Học sinh dòng mới 1' }).click();
+  await page.getByRole('option').first().click();
+  await expect(page.getByText('Nhập số lượng lớn hơn 0.')).toBeVisible();
+  await page.getByLabel('Số lượng dòng mới 1').fill('3');
+  // Q-69: chọn chiết khấu ngay lúc thêm (loại, %), một lần Lưu là xong; máy chủ tính.
+  await page.getByRole('combobox', { name: 'Thêm chính sách chiết khấu dòng mới 1' }).click();
+  await page.getByRole('option', { name: 'Giảm thương lượng' }).click();
+  await page.getByLabel('Giá trị Giảm thương lượng dòng mới 1').fill('5');
+  await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toBeVisible();
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
+  const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  await expect(
+    timeline.getByText(/thêm dòng \d+ \(LC-TOAN-K09\): số giờ 3, chiết khấu 5%/),
+  ).toBeVisible();
+});
+
 test('Đơn chuyển từ báo giá Nháp sửa được; bỏ dòng; nhật ký ghi "Đơn đã sửa so với báo giá"', async ({
   page,
 }, testInfo) => {

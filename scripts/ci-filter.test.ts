@@ -100,6 +100,11 @@ describe('bộ lọc CI (Đ281, Q-C3)', () => {
   it('isCore: lõi truy cập (đăng nhập, phiên, menu theo quyền) cũng chạy Playwright', () => {
     expect(isCore('src/lib/auth/claims.ts')).toBe(true);
     expect(isCore('src/nav/access.ts')).toBe(true);
+    // Q-66: khung hồ sơ dùng chung cũng chạy; src/ui/ thì không.
+    expect(isCore('src/record/Detail.tsx')).toBe(true);
+    expect(needsE2e(['src/record/Detail.tsx'])).toBe(true);
+    expect(isCore('src/ui/Chatter.tsx')).toBe(false);
+    expect(needsE2e(['src/ui/Chatter.tsx'])).toBe(false);
     expect(isCore('src/lib/db.ts')).toBe(false);
     expect(needsE2e(['src/nav/crmMenu.ts'])).toBe(true);
     expect(needsE2e(['src/lib/auth/AuthProvider.tsx'])).toBe(true);

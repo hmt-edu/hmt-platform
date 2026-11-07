@@ -12,7 +12,23 @@ export type LineDraft = {
   removed: boolean;
 };
 
-export type OrderDraft = { termId: string; lines: Record<number, LineDraft> };
+/** Dòng mới thêm khi sửa (Q-67, Q-69): chưa có số dòng, chưa có giá; máy chủ tính giá và chiết khấu khi Lưu (R-TIEN-13), một lần Lưu là xong. */
+export type AddedLine = {
+  key: string;
+  studentId: string;
+  packageId: string;
+  packageCode: string;
+  packageName: string;
+  /** Loại gói: để chọn chính sách chiết khấu áp được. */
+  packageTypeCode: string;
+  discounts: DraftDiscount[];
+  mode: string;
+  /** Các hình thức gói có giá (để chọn). */
+  modes: string[];
+  quantity: number | null;
+};
+
+export type OrderDraft = { termId: string; lines: Record<number, LineDraft>; added: AddedLine[] };
 
 /** Nháp ban đầu lấy từ bản ghi: số giờ, hình thức, chính sách hiện có (chính sách cố định không giữ giá trị). */
 export function draftOf(
@@ -32,8 +48,20 @@ export function draftOf(
       removed: false,
     };
   }
-  return { termId, lines };
+  return { termId, lines, added: [] };
 }
+
+/** Phần tử thêm dòng gửi cho app.edit_order (migration 082): {add: {...}}. */
+export type AddEdit = {
+  add: {
+    kind: 'ENROL';
+    prospect_student_id: string;
+    package_id: string;
+    delivery_mode_code: string;
+    quantity: number;
+    discounts: DraftDiscount[];
+  };
+};
 
 export type LineEdit = {
   line_no: number;
@@ -55,8 +83,8 @@ export function buildEdits(
   lines: OrderLine[],
   draft: OrderDraft,
   fixedPolicyIds: ReadonlySet<string>,
-): LineEdit[] {
-  const edits: LineEdit[] = [];
+): (LineEdit | AddEdit)[] {
+  const edits: (LineEdit | AddEdit)[] = [];
   for (const l of lines) {
     const d = draft.lines[l.line_no];
     if (!d) continue;
@@ -70,6 +98,20 @@ export function buildEdits(
     if (d.mode !== l.delivery_mode_code) edit.delivery_mode_code = d.mode;
     if (!sameDiscounts(d.discounts, l.discounts, fixedPolicyIds)) edit.discounts = d.discounts;
     if (Object.keys(edit).length > 1) edits.push(edit);
+  }
+  // Dòng mới thêm: sau các dòng cũ; chưa chọn em hoặc số lượng thì chưa gửi (nút Lưu bị khoá bởi addedError).
+  for (const a of draft.added) {
+    if (a.quantity === null || a.studentId === '') continue;
+    edits.push({
+      add: {
+        kind: 'ENROL',
+        prospect_student_id: a.studentId,
+        package_id: a.packageId,
+        delivery_mode_code: a.mode,
+        quantity: a.quantity,
+        discounts: a.discounts,
+      },
+    });
   }
   return edits;
 }
@@ -90,7 +132,15 @@ export function lineError(draft: LineDraft): string | null {
   return draft.quantity === null || draft.quantity <= 0 ? 'Nhập số lượng lớn hơn 0.' : null;
 }
 
+/** Lỗi nhập của dòng mới thêm (null là hợp lệ): phải chọn em và số lượng lớn hơn 0. */
+export function addedError(a: AddedLine): string | null {
+  if (a.studentId === '') return 'Chọn học sinh.';
+  return a.quantity === null || a.quantity <= 0 ? 'Nhập số lượng lớn hơn 0.' : null;
+}
+
 export function allRemoved(draft: OrderDraft): boolean {
+  // Còn dòng mới thêm thì đơn vẫn còn dòng.
+  if (draft.added.length > 0) return false;
   const all = Object.values(draft.lines);
   return all.length > 0 && all.every((l) => l.removed);
 }

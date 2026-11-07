@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { allRemoved, buildEdits, draftOf, hasChanges, lineError } from './orderEdit';
+import {
+  addedError,
+  allRemoved,
+  buildEdits,
+  draftOf,
+  hasChanges,
+  lineError,
+  type AddedLine,
+} from './orderEdit';
 import type { OrderLine } from './orderTypes';
 
 const line = (over: Partial<OrderLine>): OrderLine =>
@@ -58,5 +66,77 @@ describe('orderEdit', () => {
     expect(allRemoved(draft)).toBe(false);
     for (const k of [1, 2]) draft.lines[k] = { ...draft.lines[k]!, removed: true };
     expect(allRemoved(draft)).toBe(true);
+  });
+
+  describe('thêm dòng khi sửa (Q-67)', () => {
+    const added = (over: Partial<AddedLine> = {}): AddedLine => ({
+      key: 'new-1',
+      studentId: 's1',
+      packageId: 'pk1',
+      packageCode: 'LC-TOAN-K09',
+      packageName: 'Toán 9',
+      packageTypeCode: 'LC',
+      discounts: [],
+      mode: 'OFF',
+      modes: ['OFF', 'ONL'],
+      quantity: 4,
+      ...over,
+    });
+    it('dòng mới hợp lệ gửi thành phần tử add sau các dòng cũ; chưa có em hoặc số lượng thì chưa gửi', () => {
+      const draft = draftOf({ lines }, 't1', fixed);
+      expect(draft.added).toEqual([]);
+      expect(buildEdits(lines, draft, fixed)).toEqual([]);
+      draft.added = [
+        added(),
+        added({ key: 'new-2', studentId: '' }),
+        added({ key: 'new-3', quantity: null }),
+      ];
+      expect(buildEdits(lines, draft, fixed)).toEqual([
+        {
+          add: {
+            kind: 'ENROL',
+            prospect_student_id: 's1',
+            package_id: 'pk1',
+            delivery_mode_code: 'OFF',
+            quantity: 4,
+            discounts: [],
+          },
+        },
+      ]);
+      expect(hasChanges(lines, draft, 't1', fixed)).toBe(true);
+    });
+    it('Q-69: chiết khấu chọn lúc thêm dòng được gửi cùng phần tử add (máy chủ tính khi Lưu)', () => {
+      const draft = draftOf({ lines }, 't1', fixed);
+      draft.added = [
+        added({
+          discounts: [
+            { policy_id: 'p6', value: null },
+            { policy_id: 'p10', value: 8 },
+          ],
+        }),
+      ];
+      const [edit] = buildEdits(lines, draft, fixed);
+      expect(edit).toMatchObject({
+        add: {
+          discounts: [
+            { policy_id: 'p6', value: null },
+            { policy_id: 'p10', value: 8 },
+          ],
+        },
+      });
+    });
+    it('lỗi nhập: phải chọn em và số lượng lớn hơn 0', () => {
+      expect(addedError(added())).toBeNull();
+      expect(addedError(added({ studentId: '' }))).toBe('Chọn học sinh.');
+      expect(addedError(added({ quantity: 0 }))).toBe('Nhập số lượng lớn hơn 0.');
+      expect(addedError(added({ quantity: null }))).toBe('Nhập số lượng lớn hơn 0.');
+    });
+    it('bỏ hết dòng cũ nhưng còn dòng mới thêm thì đơn vẫn còn dòng', () => {
+      const draft = draftOf({ lines }, 't1', fixed);
+      for (const k of [1, 2]) draft.lines[k] = { ...draft.lines[k]!, removed: true };
+      expect(allRemoved(draft)).toBe(true);
+      draft.added = [added()];
+      expect(allRemoved(draft)).toBe(false);
+    });
   });
 });

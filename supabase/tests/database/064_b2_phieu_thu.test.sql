@@ -13,6 +13,13 @@ exception when others then
   get stacked diagnostics v_hint = pg_exception_hint, v_state = returned_sqlstate;
   return case when v_hint like 'HMT\_%' then v_hint else v_state end;
 end $$;
+create function pg_temp.msg(p_sql text) returns text language plpgsql as $$
+begin
+  execute p_sql;
+  return null;
+exception when others then
+  return sqlerrm;
+end $$;
 create function pg_temp.claims(p_user uuid, p_aal text) returns void language plpgsql security definer as $$
 declare v_result jsonb;
 begin
@@ -314,6 +321,26 @@ select is((select count(*)::int from app.note where entity_type = 'RECEIPT' and 
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select is(pg_temp.err($$select app.record_history('RECEIPT', pg_temp.r('p1'))$$), null, 'Q-52: Kế toán (toàn hệ thống) xem được ghi chú và lịch sử phiếu thu');
 select is((select count(*)::int from app.note where entity_type = 'RECEIPT' and entity_id = pg_temp.r('p1')), 1, 'Q-52: Kế toán đọc được ghi chú Sale đã viết');
+
+-- ================= Q-63: người duyệt bị khoá khác với người duyệt thiếu quyền (migration 082) =================
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.mkr('p9', 'd1', '{"amount": 100000, "payment_method_code": "TIEN_MAT"}');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+select app.admin_set_locked(pg_temp.uid('bm1'), true, 'thử Q-63');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.submit_receipt(pg_temp.r('p9'))$$), 'HMT_NGUOI_DUYET_BI_KHOA', 'Q-63 chặn: gửi phiếu thu khi quản lý bị khoá báo mã riêng');
+select is(pg_temp.msg($$select app.submit_receipt(pg_temp.r('p9'))$$), 'Quản lý trực tiếp của người lập đang bị khoá nên chưa trình được. Nhờ Admin mở khoá hoặc đặt lại Quản lý trực tiếp.',
+          'Q-63: câu báo lỗi khi quản lý bị khoá');
+select is(pg_temp.rst('p9'), 'NHAP', 'Q-63: bị chặn thì phiếu vẫn Nháp');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+select app.admin_set_locked(pg_temp.uid('bm1'), false, null);
+select pg_temp.sudo($$select set_config('hmt.manager', 'on', true)$$);
+select pg_temp.sudo($$update app.user_account set manager_id = (select id from pg_temp.u where key = 'sales5') where id = (select id from pg_temp.u where key = 'sales1')$$);
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.submit_receipt(pg_temp.r('p9'))$$), 'HMT_NGUOI_DUYET_THIEU_QUYEN', 'Q-63: quản lý không bị khoá nhưng thiếu quyền Duyệt phiếu thu giữ mã và câu cũ');
+select pg_temp.sudo($$select set_config('hmt.manager', 'on', true)$$);
+select pg_temp.sudo($$update app.user_account set manager_id = (select id from pg_temp.u where key = 'bm1') where id = (select id from pg_temp.u where key = 'sales1')$$);
+select is(pg_temp.err($$select app.submit_receipt(pg_temp.r('p9'))$$), null, 'Q-63: đặt lại quản lý hợp lệ thì gửi được');
 
 select * from finish();
 rollback;

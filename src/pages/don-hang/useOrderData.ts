@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
 import type { OrderFilters } from './orderFilters';
+import type { AddEdit } from './orderEdit';
 import type { OrderExportResult, OrderPage, OrderRecord } from './orderTypes';
 
 export function useOrderPage(
@@ -108,13 +109,15 @@ export function rejectOrder(
 }
 
 /** Một phần tử sửa dòng gửi app.edit_order (xem orderEdit.ts). */
-export type OrderLineEdit = {
-  line_no: number;
-  quantity?: number;
-  delivery_mode_code?: string;
-  discounts?: { policy_id: string; value: number | null }[];
-  remove?: boolean;
-};
+export type OrderLineEdit =
+  | {
+      line_no: number;
+      quantity?: number;
+      delivery_mode_code?: string;
+      discounts?: { policy_id: string; value: number | null }[];
+      remove?: boolean;
+    }
+  | AddEdit;
 
 /**
  * Sửa đơn Nháp tại chỗ (anh chốt 06/11, B1): số giờ, hình thức, chính sách chiết khấu, bỏ dòng, điều khoản; kể cả đơn chuyển từ báo giá (nhật ký ghi

@@ -45,15 +45,19 @@ import {
   useRefreshOrder,
 } from './useOrderData';
 import { OrderEditLines } from './OrderEditLines';
+import { QuotePackageDialog } from '../bao-gia/QuotePackageDialog';
+import { useOpportunityStudents } from '../bao-gia/useQuoteData';
 import { orderEventEntries, reasonLine } from './orderEventEntries';
 import {
+  type AddedLine,
+  type LineDraft,
+  type OrderDraft,
+  addedError,
   allRemoved,
   buildEdits,
   draftOf,
   hasChanges,
   lineError,
-  type LineDraft,
-  type OrderDraft,
 } from './orderEdit';
 import { ApproveOrderDialog, RejectOrderDialog } from './OrderApproveDialogs';
 import { capPercentText, overCapLines } from './orderApprove';
@@ -123,6 +127,7 @@ function OrderView({ record }: { record: OrderRecord }) {
   const [approveOpen, setApproveOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [pickOpen, setPickOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [draft, setDraft] = useState<OrderDraft | null>(null);
@@ -143,7 +148,7 @@ function OrderView({ record }: { record: OrderRecord }) {
   const branchName =
     access.teachingBranches.find((b) => b.code === record.branch_code)?.name ?? undefined;
   const rejection = lastRejection(record);
-  const approverText = expectedApproverText(record);
+  const approverText = expectedApproverText(record, (claims?.userId ?? '') === record.created_by);
   const warning = approverWarning(record);
   // Dòng thời gian bên phải (Q-48, Q-51): sự kiện của đơn, mỗi lần lưu một mục.
   const eventEntries = orderEventEntries(record.events, catalogs.name);
@@ -180,6 +185,11 @@ function OrderView({ record }: { record: OrderRecord }) {
 
   // Đơn Nháp sửa được khi người xem có quyền Sửa (can_submit cùng điều kiện quyền, trạng thái, công tắc), máy tính; điện thoại chỉ đọc (Đ248).
   const canEdit = record.status_code === 'NHAP' && record.can_submit && !phone;
+  // Em của cơ hội để chọn cho dòng mới thêm khi sửa (Q-67); đơn không sinh từ cơ hội thì không thêm dòng được.
+  const students = useOpportunityStudents(
+    record.opportunity_id ?? '',
+    editing && record.opportunity_id !== null,
+  );
   const fixedPolicyIds = new Set(
     (editOptions.data?.policies ?? []).filter((p) => p.fixed_value).map((p) => p.id),
   );
@@ -200,9 +210,52 @@ function OrderView({ record }: { record: OrderRecord }) {
         ? { ...prev, lines: { ...prev.lines, [lineNo]: { ...prev.lines[lineNo]!, ...patch } } }
         : prev,
     );
+  const patchAdded = (key: string, patch: Partial<AddedLine>) =>
+    setDraft((prev) =>
+      prev
+        ? { ...prev, added: prev.added.map((a) => (a.key === key ? { ...a, ...patch } : a)) }
+        : prev,
+    );
+  const removeAdded = (key: string) =>
+    setDraft((prev) => (prev ? { ...prev, added: prev.added.filter((a) => a.key !== key) } : prev));
+  function addPackage(pkg: {
+    id: string;
+    code: string;
+    name: string;
+    package_type_code: string;
+    prices: Record<string, number>;
+  }) {
+    const modes = Object.keys(pkg.prices);
+    const only = students.data?.length === 1 ? (students.data[0]?.id ?? '') : '';
+    setDraft((prev) =>
+      prev
+        ? {
+            ...prev,
+            added: [
+              ...prev.added,
+              {
+                key: `new-${Date.now()}-${prev.added.length}`,
+                studentId: only,
+                packageId: pkg.id,
+                packageCode: pkg.code,
+                packageName: pkg.name,
+                packageTypeCode: pkg.package_type_code,
+                discounts: [],
+                mode: modes[0] ?? '',
+                modes,
+                quantity: null,
+              },
+            ],
+          }
+        : prev,
+    );
+    setPickOpen(false);
+  }
   const draftInvalid =
     draft !== null &&
-    (Object.values(draft.lines).some((l) => lineError(l) !== null) || allRemoved(draft));
+    (Object.values(draft.lines).some((l) => lineError(l) !== null) ||
+      draft.added.some((a) => addedError(a) !== null) ||
+      allRemoved(draft));
   const dirty = draft !== null && hasChanges(record.lines, draft, initialTermId, fixedPolicyIds);
 
   async function saveEdit() {
@@ -342,8 +395,8 @@ function OrderView({ record }: { record: OrderRecord }) {
           {record.quotation_code && (
             <Notice tone="warning">
               Đơn chuyển từ báo giá {record.quotation_code}: sửa số giờ, hình thức, chiết khấu, bỏ
-              dòng được. Lưu thì nhật ký ghi “Đơn đã sửa so với báo giá” kèm giá trị cũ, mới. Giá
-              niêm yết giữ theo ngày của báo giá.
+              dòng, thêm dòng được. Lưu thì nhật ký ghi “Đơn đã sửa so với báo giá” kèm giá trị cũ,
+              mới. Giá niêm yết giữ theo ngày của báo giá.
             </Notice>
           )}
           <OrderEditLines
@@ -355,10 +408,14 @@ function OrderView({ record }: { record: OrderRecord }) {
             branchId={record.branch_id}
             today={todayKey}
             stale={dirty}
+            students={students.data ?? []}
+            onAdd={() => setPickOpen(true)}
+            onChangeAdded={patchAdded}
+            onRemoveAdded={removeAdded}
           />
           <p className="text-caption text-fg-muted">
-            Thêm dòng hoặc thêm em làm ở bước Tạo đơn từ cơ hội. Thành tiền, tổng, trần chiết khấu
-            do máy chủ tính lại khi bấm Lưu.
+            Dòng mới thêm cũng chọn chiết khấu ngay. Thành tiền, tổng, trần chiết khấu do máy chủ
+            tính lại khi bấm Lưu.
           </p>
         </>
       )}
@@ -513,9 +570,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                     Nhánh khác: Từ chối · bị từ chối thì về Nháp, sửa rồi trình lại
                   </span>
                 )}
-                {!editing && approverText && (
-                  <span className="text-caption text-fg-label">{approverText}</span>
-                )}
+                {approverText && <span className="text-caption text-fg-label">{approverText}</span>}
               </span>
             )}
             {record.status_code === 'DA_TRINH' && (record.can_approve || record.can_reject) && (
@@ -800,6 +855,14 @@ function OrderView({ record }: { record: OrderRecord }) {
           void submit();
         }}
       />
+      {record.opportunity_id && (
+        <QuotePackageDialog
+          open={pickOpen}
+          onOpenChange={setPickOpen}
+          opportunityId={record.opportunity_id}
+          onPick={addPackage}
+        />
+      )}
       <ApproveOrderDialog
         record={record}
         open={approveOpen}

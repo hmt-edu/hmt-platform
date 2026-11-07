@@ -57,9 +57,36 @@ describe('bản ghi đơn (BH-05)', () => {
     expect(expectedApproverText({ ...base, expected_route: 'THIEU' })).toContain(
       'chưa có quản lý trực tiếp',
     );
+    // Người xem là người lập: "bạn chưa có quản lý trực tiếp" (khung BH05_chua_ql_sua).
+    expect(expectedApproverText({ ...base, expected_route: 'THIEU' }, true)).toBe(
+      'Người duyệt: chưa có · bạn chưa có quản lý trực tiếp',
+    );
     expect(
       expectedApproverText({ ...base, status_code: 'DA_TRINH', expected_route: null }),
     ).toBeNull();
+  });
+
+  it('Q-63: expected_block chọn đúng câu; bị khoá khác với thiếu quyền; máy chủ cũ (không có cờ) vẫn suy từ trường cũ', () => {
+    const base = {
+      status_code: 'NHAP' as const,
+      expected_route: 'QUAN_LY' as const,
+      expected_approver_name: 'Lê Văn Phong',
+      expected_approver_can_approve: false,
+    };
+    expect(approverWarning({ ...base, expected_block: 'NGUOI_DUYET_BI_KHOA' })).toBe(
+      'Quản lý trực tiếp của người lập đang bị khoá nên chưa trình được. Nhờ Admin mở khoá hoặc đặt lại Quản lý trực tiếp.',
+    );
+    expect(approverWarning({ ...base, expected_block: 'NGUOI_DUYET_THIEU_QUYEN' })).toContain(
+      'chưa có quyền Duyệt đơn hàng',
+    );
+    expect(approverWarning({ ...base, expected_block: 'KHONG_CO_QUAN_LY' })).toContain(
+      'Chưa có quản lý trực tiếp',
+    );
+    expect(
+      approverWarning({ ...base, expected_block: null, expected_approver_can_approve: true }),
+    ).toBeNull();
+    // Không có expected_block: suy từ trường cũ như trước.
+    expect(approverWarning(base)).toContain('chưa có quyền Duyệt đơn hàng');
   });
 
   it('cảnh báo: thiếu quản lý, hoặc người duyệt chưa có quyền Duyệt (Đ205)', () => {

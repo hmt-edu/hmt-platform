@@ -113,6 +113,7 @@ export type OrderEvent = {
 };
 
 /** Đường duyệt dự kiến của đơn Nháp (get_order từ migration 062): THIEU = người lập chưa có quản lý trực tiếp. */
+export type ExpectedBlock = 'KHONG_CO_QUAN_LY' | 'NGUOI_DUYET_BI_KHOA' | 'NGUOI_DUYET_THIEU_QUYEN';
 export type ExpectedRoute = 'QUAN_LY' | 'TU_DUYET' | 'THIEU';
 
 /** Bản ghi đơn do get_order trả (BH-05). Mọi con số do máy chủ tính; giao diện không cộng, không trừ. */
@@ -159,6 +160,8 @@ export type OrderRecord = {
   expected_approver_id: string | null;
   expected_approver_name: string | null;
   expected_approver_can_approve: boolean | null;
+  /** Một lý do chặn phía người duyệt của đơn Nháp (migration 082, Q-63, Q-62): dải thông báo cạnh nút trình dùng lại. null: không chặn. */
+  expected_block?: ExpectedBlock | null | undefined;
   /** Việc người gọi làm được ở tình trạng hiện tại (get_order từ migration 063): giao diện chỉ hiện nút đúng, máy chủ kiểm lại. */
   can_submit: boolean;
   can_cancel: boolean;
