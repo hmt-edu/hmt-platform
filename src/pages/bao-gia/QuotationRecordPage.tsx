@@ -12,7 +12,7 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Tag, type TagTone } from '../../ui/Data';
-import { LineTable } from '../../ui/LineTable';
+import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
@@ -31,7 +31,8 @@ import {
   type EditRow,
   type RowIssue,
 } from './quoteEdit';
-import { discountText, quantityText, statusSteps } from './quoteRecord';
+import { percentText } from './quotePreview';
+import { UNIT_LABEL, quantityNumber, statusSteps } from './quoteRecord';
 import type { QuotationLine, QuotationRecord } from './quoteTypes';
 import {
   cancelQuotation,
@@ -222,6 +223,134 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   }));
   const current = record.status_code === 'DA_GUI' ? record.display_status_code : record.status_code;
 
+  const allColumns: LineColumn<QuotationLine>[] = [
+    {
+      key: 'no',
+      header: '#',
+      align: 'center',
+      width: 'w-8',
+      cell: (l) => <span className="text-fg-muted">{l.line_no}</span>,
+    },
+    {
+      key: 'student',
+      header: 'Học sinh',
+      cell: (l) =>
+        l.student_name ? (
+          <span className="flex flex-col">
+            <span>
+              {l.student_name}
+              {l.student_birth_year ? ` · ${l.student_birth_year}` : ''}
+            </span>
+            {!l.student_complete && (
+              <span className="text-caption text-on-warning-subtle">
+                {l.student_birth_year ? 'thiếu họ tên' : 'thiếu năm sinh'}
+              </span>
+            )}
+          </span>
+        ) : (
+          <span className="text-fg-muted">Chưa có học sinh</span>
+        ),
+    },
+    {
+      key: 'product',
+      header: 'Gói',
+      truncate: 'max-w-64',
+      title: (l) => l.package_name,
+      cell: (l) => l.package_name,
+    },
+    {
+      key: 'mode',
+      header: 'Hình thức',
+      cell: (l) => (l.line_kind === 'GIFT' ? '—' : modeName(l.delivery_mode_code)),
+    },
+    // Q-76: đúng khung BH02_gui, 12 cột (số lượng và đơn vị tách hai cột; giờ tặng, loại chiết khấu, % tách riêng).
+    {
+      key: 'quantity',
+      header: 'Số lượng',
+      align: 'right',
+      cell: (l) => <span className="tabular">{quantityNumber(l)}</span>,
+    },
+    { key: 'unit', header: 'Đơn vị', cell: (l) => UNIT_LABEL[l.unit_code] },
+    {
+      key: 'gift-hours',
+      header: 'Giờ tặng',
+      align: 'right',
+      cell: (l) =>
+        l.line_kind === 'GIFT' ? (
+          '—'
+        ) : (
+          <span className="tabular">{percentText(l.gifted_quantity)}</span>
+        ),
+    },
+    {
+      key: 'price',
+      header: 'Đơn giá',
+      align: 'right',
+      cell: (l) => <span className="tabular">{formatNumber(l.unit_price)}</span>,
+    },
+    {
+      key: 'discount-type',
+      header: 'Loại chiết khấu',
+      cell: (l) => {
+        const names =
+          l.line_kind === 'GIFT'
+            ? [l.gift_policy_name ?? 'Quà tặng']
+            : l.discounts.map((d) => d.policy_name);
+        return names.length === 0 ? '—' : names.join(', ');
+      },
+    },
+    {
+      key: 'percent',
+      header: '%',
+      align: 'right',
+      // Tổng chiết khấu của dòng = % chiết khấu + giờ tặng quy ra % (cùng số hàm tính giá trả, so với trần 20%).
+      cell: (l) => {
+        const total = Math.round((l.discount_percent + l.gift_percent) * 100) / 100; // allow-number: làm tròn hiển thị hai số lẻ (độ chính xác phần trăm của máy chủ)
+        return l.line_kind === 'GIFT' || total === 0 ? (
+          '—'
+        ) : (
+          <span className="tabular">{`${percentText(total)}%`}</span>
+        );
+      },
+    },
+    {
+      key: 'reduction',
+      header: 'Giảm',
+      align: 'right',
+      cell: (l) => <span className="tabular">{formatNumber(l.discount_amount)}</span>,
+    },
+    {
+      key: 'total',
+      header: 'Thành tiền',
+      align: 'right',
+      cell: (l) => <span className="tabular">{formatNumber(l.line_total)}</span>,
+    },
+    // Đ242 (BH02_don): mã và trạng thái đơn đang sống của dòng, cho mọi người có quyền Xem báo giá. Mã đơn bấm vào mở bản ghi đơn (BH-05).
+    {
+      key: 'order',
+      header: 'Đơn',
+      cell: (l) =>
+        l.order_code ? (
+          <span className="flex flex-wrap items-center gap-1.5">
+            <Link
+              to={`/crm/don-hang/${l.order_id ?? ''}`}
+              className="font-medium text-link hover:underline"
+            >
+              {l.order_code}
+            </Link>
+            <Tag tone={ORDER_TONE[l.order_status_code ?? ''] ?? 'neutral'}>
+              {catalogs.name('ORDER_STATUS', l.order_status_code) ?? l.order_status_code}
+            </Tag>
+          </span>
+        ) : (
+          '—'
+        ),
+    },
+  ];
+  const lineColumns = allColumns.filter(
+    (c) => c.key !== 'order' || record.lines.some((l) => l.order_code),
+  );
+
   const lines = (
     <div className="flex flex-col gap-2">
       <LineTable<QuotationLine>
@@ -229,93 +358,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
         caption="Gói học"
         rows={record.lines}
         rowKey={(l) => l.id}
-        columns={[
-          {
-            key: 'student',
-            header: 'Học sinh',
-            cell: (l) =>
-              l.student_name ? (
-                <span className="flex flex-col">
-                  <span>
-                    {l.student_name}
-                    {l.student_birth_year ? ` · ${l.student_birth_year}` : ''}
-                  </span>
-                  {!l.student_complete && (
-                    <span className="text-caption text-on-warning-subtle">
-                      {l.student_birth_year ? 'thiếu họ tên' : 'thiếu năm sinh'}
-                    </span>
-                  )}
-                </span>
-              ) : (
-                <span className="text-fg-muted">Chưa có học sinh</span>
-              ),
-          },
-          {
-            key: 'product',
-            header: 'Sản phẩm',
-            truncate: 'max-w-64',
-            title: (l) => l.package_name,
-            cell: (l) => l.package_name,
-          },
-          {
-            key: 'mode',
-            header: 'Hình thức',
-            cell: (l) => (l.line_kind === 'GIFT' ? '—' : modeName(l.delivery_mode_code)),
-          },
-          {
-            key: 'quantity',
-            align: 'right',
-            header: 'Số lượng',
-            cell: (l) => <span className="tabular">{quantityText(l)}</span>,
-          },
-          {
-            key: 'price',
-            align: 'right',
-            header: 'Đơn giá',
-            cell: (l) => <span className="tabular">{formatNumber(l.unit_price)}</span>,
-          },
-          {
-            key: 'discount',
-            header: 'Chiết khấu',
-            cell: (l) => {
-              const text = discountText(l);
-              return text === '' ? '—' : text;
-            },
-          },
-          {
-            key: 'reduction',
-            align: 'right',
-            header: 'Giảm',
-            cell: (l) => <span className="tabular">{formatNumber(l.discount_amount)}</span>,
-          },
-          {
-            key: 'total',
-            align: 'right',
-            header: 'Thành tiền',
-            cell: (l) => <span className="tabular">{formatNumber(l.line_total)}</span>,
-          },
-          // Đ242: mã và trạng thái đơn đang sống của dòng, cho mọi người có quyền Xem báo giá. Mã đơn bấm vào mở bản ghi đơn (BH-05).
-          {
-            key: 'order',
-            header: 'Đơn',
-            cell: (l) =>
-              l.order_code ? (
-                <span className="flex flex-wrap items-center gap-1.5">
-                  <Link
-                    to={`/crm/don-hang/${l.order_id ?? ''}`}
-                    className="font-medium text-link hover:underline"
-                  >
-                    {l.order_code}
-                  </Link>
-                  <Tag tone={ORDER_TONE[l.order_status_code ?? ''] ?? 'neutral'}>
-                    {catalogs.name('ORDER_STATUS', l.order_status_code) ?? l.order_status_code}
-                  </Tag>
-                </span>
-              ) : (
-                '—'
-              ),
-          },
-        ]}
+        columns={lineColumns}
         empty={<p className="px-4 py-6 text-center text-fg-muted">Chưa có gói học.</p>}
       />
       <div className="flex flex-wrap items-center justify-between gap-2 text-caption text-fg-muted">

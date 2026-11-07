@@ -55,12 +55,16 @@ test('Mở đơn từ BH-06; Nháp: thông tin chung, người duyệt chưa có
     // Người xem là người lập: khung BH05_chua_ql_sua ghi "bạn chưa có quản lý trực tiếp".
     page.getByText('Người duyệt: chưa có · bạn chưa có quản lý trực tiếp'),
   ).toBeVisible();
-  await expect(page.getByText(/Chưa có quản lý trực tiếp để duyệt/)).toBeVisible();
-  // UI-O2b: nút Trình bật cho người có quyền Sửa trên máy tính; điện thoại chỉ đọc (Đ248) nên ẩn.
+  // Q-77: MỘT dòng cạnh nút Trình, không còn khối vàng "Cần xử lý trước khi trình"; chưa có quản lý thì nút mờ.
+  await expect(page.getByText('Cần xử lý trước khi trình')).toHaveCount(0);
+  await expect(page.getByText(/Chưa có quản lý trực tiếp để duyệt/)).toHaveCount(0);
   if (isPhone(page)) {
     await expect(page.getByRole('button', { name: 'Trình duyệt' })).toHaveCount(0);
   } else {
-    await expect(page.getByRole('button', { name: 'Trình duyệt' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Trình duyệt' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
   }
   await expect(page.getByText('Stage chỉ đọc, đổi bằng nút bên dưới.')).toBeVisible();
   // Khối thông tin: nhãn "Người duyệt" (không dùng "Quản lý cơ sở", "Trưởng cơ sở"), không có Hình thức thanh toán, Cơ sở thu tiền.
@@ -112,15 +116,17 @@ test('Đã trình: chờ người duyệt đã chốt; Đã duyệt · khoá: n�
   await shot(page, 'bh05-da-duyet');
 });
 
-test('Nháp bị từ chối: khối "Đơn bị từ chối" nêu người, ngày, lý do và ghi chú lấy từ lịch sử; hai dòng đơn; tab Thanh toán và Ghi danh', async ({
+test('Nháp bị từ chối: lý do và ghi chú nằm ở dòng thời gian (không còn khối đỏ); hai dòng đơn; tab Thanh toán và Ghi danh', async ({
   page,
 }, testInfo) => {
   const setup = recordSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, setup.mark, seeded.records.rejected);
-  const notice = page.getByRole('status').filter({ hasText: 'Đơn bị từ chối' });
-  await expect(notice).toBeVisible();
-  await expect(notice).toContainText('Không đúng chính sách');
-  await expect(notice).toContainText('Chiết khấu dòng 2 chưa có văn bản phê duyệt');
+  // Q-77: bỏ khối đỏ "Đơn bị từ chối"; lý do từ chối nằm ở dòng thời gian bên phải.
+  await expect(page.getByRole('status').filter({ hasText: 'Đơn bị từ chối' })).toHaveCount(0);
+  await expect(page.getByRole('complementary').getByText('Từ chối').first()).toBeVisible();
+  await expect(
+    page.getByRole('complementary').getByText(/Chiết khấu dòng 2 chưa có văn bản phê duyệt/),
+  ).toBeVisible();
   await expect(page.getByText('Nháp · bị từ chối').first()).toBeVisible();
   await expect(page.getByRole('tab', { name: /Dòng đơn/ })).toContainText('2');
   await expect(page.getByText(/Toán/).first()).toBeVisible();
@@ -177,18 +183,21 @@ test('Trình: đơn thiếu năm sinh bị chặn và chỉ đúng em (R-TIEN-35
   const setup = recordSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, setup.mark, seeded.records.thieuEm);
   await expect(page.getByText(/Mỗi em cần họ tên và năm sinh trước khi trình/)).toBeVisible();
-  await page.getByRole('button', { name: 'Trình duyệt' }).click();
+  await page.getByRole('button', { name: 'Trình duyệt' }).click({ force: true }); // aria-disabled (Q-77): vẫn bấm được để máy chủ nêu lý do
   const notice = page.getByRole('status').filter({ hasText: 'Chưa trình được' });
   await expect(notice).toContainText('Dòng 1: thiếu năm sinh của em');
   // Chỉ đúng dòng: ô học sinh của dòng 1 nêu "cần sửa"; đơn vẫn Nháp.
   await expect(page.getByText('Dòng 1: cần sửa, xem thông báo phía trên')).toBeVisible();
   await expect(page.getByText('Nháp').first()).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Trình duyệt' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Trình duyệt' })).not.toHaveAttribute(
+    'disabled',
+    /.*/,
+  );
   await expectAccessible(page);
   await shot(page, 'bh05-trinh-thieu-em');
   // Đơn chưa chọn điều khoản: máy chủ chặn, câu tiếng Việt hiện thẳng.
   await openOrder(page, setup.sale, setup.mark, seeded.orders.nhap);
-  await page.getByRole('button', { name: 'Trình duyệt' }).click();
+  await page.getByRole('button', { name: 'Trình duyệt' }).click({ force: true }); // aria-disabled (Q-77): vẫn bấm được để máy chủ nêu lý do
   await expect(
     page.getByRole('status').filter({ hasText: 'Chọn điều khoản thanh toán trước khi trình đơn.' }),
   ).toBeVisible();

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  approverLine,
   approverWarning,
+  submitBlockOf,
   canCancelOrder,
   canSubmitOrder,
   editedFromQuotationNote,
@@ -179,5 +181,44 @@ describe('bản ghi đơn (BH-05)', () => {
         ],
       }),
     ).toBe('Đơn đã sửa so với báo giá BG-1: dòng 1 số giờ 8 → 9');
+  });
+});
+
+describe('Q-77: một dòng cạnh nút Trình, ba ca bị chặn', () => {
+  const base = {
+    status_code: 'NHAP' as const,
+    expected_route: 'QUAN_LY' as const,
+    expected_approver_name: 'Lê Văn Phong',
+    expected_approver_can_approve: true,
+    created_by_name: 'Trần Thu Hà',
+    expected_block: null,
+  };
+  it('(a) quản lý bị khoá: dòng là câu "Nhờ Admin…", nút bị chặn', () => {
+    const r = { ...base, expected_block: 'NGUOI_DUYET_BI_KHOA' as const };
+    expect(submitBlockOf(r)).toBe('NGUOI_DUYET_BI_KHOA');
+    expect(approverLine(r)).toContain('đang bị khoá nên chưa trình được. Nhờ Admin');
+  });
+  it('(b) quản lý thiếu quyền duyệt: dòng nêu tên và câu thiếu quyền', () => {
+    const r = { ...base, expected_block: 'NGUOI_DUYET_THIEU_QUYEN' as const };
+    expect(submitBlockOf(r)).toBe('NGUOI_DUYET_THIEU_QUYEN');
+    expect(approverLine(r)).toContain('Lê Văn Phong chưa có quyền Duyệt đơn hàng');
+  });
+  it('(c) chưa có quản lý trực tiếp: đúng dòng khung BH05_chua_ql_sua, nút bị chặn', () => {
+    const r = {
+      ...base,
+      expected_route: 'THIEU' as const,
+      expected_block: 'KHONG_CO_QUAN_LY' as const,
+    };
+    expect(submitBlockOf(r)).toBe('KHONG_CO_QUAN_LY');
+    expect(approverLine(r, true)).toBe('Người duyệt: chưa có · bạn chưa có quản lý trực tiếp');
+  });
+  it('không bị chặn: dòng người duyệt như cũ; không phải đơn Nháp thì không có dòng và không chặn', () => {
+    expect(submitBlockOf(base)).toBeNull();
+    expect(approverLine(base)).toBe(
+      'Người duyệt: Lê Văn Phong · quản lý trực tiếp của Trần Thu Hà',
+    );
+    const sent = { ...base, status_code: 'DA_TRINH' as const };
+    expect(submitBlockOf(sent)).toBeNull();
+    expect(approverLine(sent)).toBeNull();
   });
 });

@@ -30,7 +30,12 @@ export function discountText(
   return parts.join(' + ');
 }
 
-/** Số lượng viết gọn: bỏ phần thập phân .00. */
+/** Số lượng viết gọn, không kèm đơn vị: bỏ phần thập phân .00. */
+export function quantityNumber(line: Pick<QuotationLine, 'quantity'>): string {
+  return String(line.quantity).replace(/\.0+$/, '').replace('.', ',');
+}
+
+/** Số lượng viết gọn kèm đơn vị ("10 giờ"). */
 export function quantityText(line: Pick<QuotationLine, 'quantity' | 'unit_code'>): string {
-  return `${String(line.quantity).replace(/\.0+$/, '').replace('.', ',')} ${UNIT_LABEL[line.unit_code]}`;
+  return `${quantityNumber(line)} ${UNIT_LABEL[line.unit_code]}`;
 }

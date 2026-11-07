@@ -138,8 +138,28 @@ test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút
   await expect(grid.getByText('Em Nháp Một')).toBeVisible();
   await expect(grid.getByText('Em Nháp Hai')).toBeVisible();
   await expect(grid.getByText('Offline').first()).toBeVisible();
-  await expect(grid.getByText('10 giờ')).toBeVisible();
-  await expect(grid.getByText('5 giờ')).toBeVisible();
+  // Q-76 (BH02_gui): số lượng và đơn vị là hai cột.
+  await expect(
+    grid.getByRole('row', { name: /Em Nháp Một/ }).getByRole('cell', { name: '10', exact: true }),
+  ).toBeVisible();
+  await expect(
+    grid.getByRole('row', { name: /Em Nháp Hai/ }).getByRole('cell', { name: '5', exact: true }),
+  ).toBeVisible();
+  await expect(grid.getByRole('cell', { name: 'giờ', exact: true }).first()).toBeVisible();
+  await expect(grid.getByRole('columnheader')).toHaveText([
+    '#',
+    'Học sinh',
+    'Gói',
+    'Hình thức',
+    'Số lượng',
+    'Đơn vị',
+    'Giờ tặng',
+    'Đơn giá',
+    'Loại chiết khấu',
+    '%',
+    'Giảm',
+    'Thành tiền',
+  ]);
   await expect(page.getByText('Tổng thành tiền')).toBeVisible();
   await expect(page.locator('b', { hasText: '3.300.000 đ' })).toBeVisible();
   await expect(page.getByText('Chưa thấy em? Thêm em ở cơ hội.')).toHaveCount(0);
@@ -285,6 +305,27 @@ for (const width of [1440, 1280]) {
   });
 }
 
+// Q-82: bảng dòng (LineTable) luôn có thanh cuộn ngang kiểu cổ điển (không để macOS ẩn) và vệt mờ mép phải khi còn cột bị che, mất khi đã cuộn tới cuối.
+// Playwright chạy Chromium với --hide-scrollbars nên không đo bề dày thanh cuộn thật: kiểm lớp line-scroll và luật ::-webkit-scrollbar cao 12px đã nạp.
+async function expectScrollAffordance(page: Page, tableName: string) {
+  const scroller = page.getByRole('table', { name: tableName }).locator('xpath=..');
+  await expect(scroller).toHaveClass(/line-scroll/);
+  const hasRule: boolean = await page.evaluate(
+    "[...document.styleSheets].some((sheet) => [...sheet.cssRules].some((rule) => rule.cssText.includes('::-webkit-scrollbar') && rule.cssText.includes('height: 12px')))",
+  );
+  expect(hasRule).toBe(true);
+  const scrollTo = (end: boolean) =>
+    page.evaluate(
+      `(() => { const s = document.querySelector('table[aria-label="${tableName}"]').parentElement; s.scrollLeft = ${end ? 's.scrollWidth' : '0'}; })()`,
+    );
+  const fade = page.getByTestId('line-table-fade');
+  await expect(fade).toBeVisible();
+  await scrollTo(true);
+  await expect(fade).toHaveCount(0);
+  await scrollTo(false);
+  await expect(fade).toBeVisible();
+}
+
 // Q-72, Q-73, Q-74: lưới Gói học là bảng MỘT HÀNG MỘT DÒNG đúng cột của khung (Tạo: BH02_tao 11 cột; Sửa: BH02_sua 13 cột, cột cuối là nút xoá),
 // chữ không xuống hàng, cả thẻ trắng và trang không tràn ngang (cột không vừa thì cuộn trong khung bảng).
 async function expectLineGrid(page: Page, headers: string[]) {
@@ -337,6 +378,7 @@ test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khu
     'Giảm',
     'Thành tiền',
   ]);
+  await expectScrollAffordance(page, 'Gói học (đang sửa)');
   await expect(page.getByRole('link', { name: 'Thêm em ở cơ hội.' })).toBeVisible();
   await expectAccessible(page);
   // Xoá số lượng dòng 1: báo lỗi theo khung, chưa lưu.
@@ -352,7 +394,7 @@ test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khu
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu báo giá.').first()).toBeVisible();
   const view = page.getByRole('table', { name: 'Gói học' });
-  await expect(view.getByText('20 giờ')).toBeVisible();
+  await expect(view.getByRole('cell', { name: '20', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
 });
 
@@ -383,7 +425,7 @@ test('BH-02 sửa Nháp: hộp Chọn gói, thêm dòng mới (chọn em, gói, 
   await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
   const view = page.getByRole('table', { name: 'Gói học' });
   await expect(view.getByText('Em Nháp Hai')).toBeVisible();
-  await expect(view.getByText('3 giờ')).toHaveCount(0);
+  await expect(view.getByRole('cell', { name: '3', exact: true })).toHaveCount(0);
 });
 
 test('BH-02: cột Đơn nêu mã và trạng thái đơn; báo giá chưa lên đơn hiện dấu gạch', async ({
@@ -473,7 +515,11 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu báo giá.').first()).toBeVisible();
   const view = page.getByRole('table', { name: 'Gói học' });
-  await expect(view.getByText(/5% \+ tặng 4 giờ/)).toBeVisible();
+  // Q-76 (BH02_gui): sau khi lưu, dòng xem tách cột: Giờ tặng 4, Loại chiết khấu nêu tên hai chính sách, % là tổng 25% (5% + 4/20 giờ quy ra 20%).
+  const saved = view.getByRole('row', { name: /Em Nháp Một/ });
+  await expect(saved.getByRole('cell', { name: '4', exact: true })).toBeVisible();
+  await expect(saved.getByRole('cell', { name: '25%', exact: true })).toBeVisible();
+  await expect(saved.getByRole('cell', { name: /Giảm khi đóng 6 tháng/ })).toBeVisible();
 });
 
 test('BH-02 sửa Nháp: dòng mới mặc định em đầu của cơ hội (R-TIEN-35), đổi được; chọn gói và số lượng thì tính giá', async ({
@@ -709,6 +755,6 @@ test('Tạo báo giá: nhập dòng, Lưu mới cấp mã và tạo báo giá Nh
   await expect(page).toHaveURL(/\/crm\/bao-gia\/[0-9a-f-]{36}$/);
   await expect(page.getByRole('heading', { level: 2, name: /^BG-/ })).toBeVisible();
   const view = page.getByRole('table', { name: 'Gói học' });
-  await expect(view.getByText('3 giờ')).toBeVisible();
+  await expect(view.getByRole('cell', { name: '3', exact: true })).toBeVisible();
   await expect(view.getByText('Em Đã Gửi')).toBeVisible();
 });

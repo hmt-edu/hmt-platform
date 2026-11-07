@@ -52,11 +52,14 @@ test('Đơn bị từ chối (Q-49, Q-58): Sửa đơn ở thanh tiêu đề, n�
   test.setTimeout(90_000);
   const setup = editSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, seeded.records.rejected);
-  await expect(page.getByRole('status').filter({ hasText: 'Đơn bị từ chối' })).toBeVisible();
+  // Q-77: không còn khối đỏ "Đơn bị từ chối"; trạng thái ở thẻ Nháp · bị từ chối.
+  await expect(page.getByRole('status').filter({ hasText: 'Đơn bị từ chối' })).toHaveCount(0);
+  await expect(page.getByText('Nháp · bị từ chối').first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Sửa đơn' }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Hành động' })).toBeVisible();
   await expect(page.getByText(/Nhánh khác: Từ chối/)).toBeVisible();
-  await page.getByRole('button', { name: 'Trình lại' }).click();
+  // Đơn của Sale chưa có quản lý nên nút mờ (aria-disabled, Q-77) nhưng vẫn bấm được: Playwright coi aria-disabled là chưa bật nên ép bấm.
+  await page.getByRole('button', { name: 'Trình lại' }).click({ force: true });
   const dialog = page.getByRole('alertdialog', { name: /^Trình lại đơn DH-/ });
   await expect(dialog.getByText('Đơn chưa sửa từ lần bị từ chối. Vẫn trình?')).toBeVisible();
   await expect(dialog.getByText(/Lần từ chối: .*Không chặn: bấm Vẫn trình/)).toBeVisible();
@@ -123,7 +126,11 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
     page.getByText(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/),
   ).toHaveCount(0);
   // Đã sửa sau lần từ chối: không còn dòng nhắc "chưa sửa".
-  await expect(page.getByRole('button', { name: 'Trình lại' })).toBeEnabled();
+  // Q-77: đơn của Sale chưa có quản lý nên nút mờ (aria-disabled) nhưng không bị khoá thật (không có thuộc tính disabled).
+  await expect(page.getByRole('button', { name: 'Trình lại' })).not.toHaveAttribute(
+    'disabled',
+    /.*/,
+  );
   await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toHaveCount(0);
 });
 

@@ -287,3 +287,23 @@
     opacity: 0.2;
   }
 }
+
+/* Q-82: thanh cuộn ngang của bảng dòng (LineTable) luôn hiện, không để macOS ẩn khi không cuộn. Chromium, Safari: ::-webkit-scrollbar buộc thanh
+   kiểu cổ điển; Firefox: scrollbar-color. Không đặt scrollbar-width/scrollbar-color cho Chromium vì chúng ghi đè ::-webkit-scrollbar. */
+@utility line-scroll {
+  &::-webkit-scrollbar {
+    height: 12px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--bg-subtle);
+    border-top: 1px solid var(--divider);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--input-border);
+    border-radius: 6px;
+    border: 2px solid var(--bg-subtle);
+  }
+  @supports (-moz-appearance: none) {
+    scrollbar-color: var(--input-border) var(--bg-subtle);
+  }
+}

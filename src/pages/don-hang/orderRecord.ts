@@ -58,26 +58,31 @@ export function expectedApproverText(
     : `Người duyệt: ${name} · quản lý trực tiếp của ${record.created_by_name ?? ''}`;
 }
 
-/** Cảnh báo trước khi trình (Đ205, R-HT-06); rỗng khi không có gì cần báo. Câu cùng chữ với lỗi máy chủ. */
-export function approverWarning(
-  record: Pick<
-    OrderRecord,
-    | 'status_code'
-    | 'expected_route'
-    | 'expected_approver_can_approve'
-    | 'expected_approver_name'
-    | 'expected_block'
-  >,
-): string | null {
+type ApproverFields = Pick<
+  OrderRecord,
+  | 'status_code'
+  | 'expected_route'
+  | 'expected_approver_can_approve'
+  | 'expected_approver_name'
+  | 'expected_block'
+>;
+
+/** Lý do chặn trình (Q-63): đơn Nháp mà đường duyệt dự kiến không đi được. Máy chủ cũ chưa trả expected_block thì suy từ các trường cũ. */
+export function submitBlockOf(record: ApproverFields): OrderRecord['expected_block'] {
   if (record.status_code !== 'NHAP') return null;
-  // Q-63: ba lý do chặn có câu riêng, cùng chữ với lỗi máy chủ; khi máy chủ chưa trả expected_block thì suy từ các trường cũ.
-  const block =
+  return (
     record.expected_block ??
     (record.expected_route === 'THIEU'
       ? 'KHONG_CO_QUAN_LY'
       : record.expected_approver_can_approve === false
         ? 'NGUOI_DUYET_THIEU_QUYEN'
-        : null);
+        : null)
+  );
+}
+
+/** Cảnh báo trước khi trình (Đ205, R-HT-06); rỗng khi không có gì cần báo. Câu cùng chữ với lỗi máy chủ. */
+export function approverWarning(record: ApproverFields): string | null {
+  const block = submitBlockOf(record);
   if (block === 'KHONG_CO_QUAN_LY')
     return 'Chưa có quản lý trực tiếp để duyệt. Nhờ Admin đặt Quản lý trực tiếp cho người lập rồi trình lại.';
   if (block === 'NGUOI_DUYET_BI_KHOA')
@@ -85,6 +90,21 @@ export function approverWarning(
   if (block === 'NGUOI_DUYET_THIEU_QUYEN')
     return `${record.expected_approver_name ?? 'Người duyệt'} chưa có quyền Duyệt đơn hàng ở cơ sở này nên chưa trình được. Nhờ Admin đặt lại Quản lý trực tiếp hoặc cấp quyền.`;
   return null;
+}
+
+/**
+ * MỘT dòng cạnh nút Trình (Q-77): thay hai khối đỏ, vàng cũ. Ba ca bị chặn: (a) quản lý trực tiếp bị khoá, kèm câu "Nhờ Admin…";
+ * (b) quản lý trực tiếp thiếu quyền duyệt; (c) chưa có quản lý trực tiếp (khung BH05_chua_ql_sua: "Người duyệt: chưa có · bạn chưa có quản lý
+ * trực tiếp"). Không bị chặn thì dòng "Người duyệt: …" như trước.
+ */
+export function approverLine(
+  record: ApproverFields & Pick<OrderRecord, 'created_by_name'>,
+  viewerIsCreator = false,
+): string | null {
+  const block = submitBlockOf(record);
+  if (block === 'NGUOI_DUYET_BI_KHOA' || block === 'NGUOI_DUYET_THIEU_QUYEN')
+    return approverWarning(record);
+  return expectedApproverText(record, viewerIsCreator);
 }
 
 /** Nút Trình: đơn Nháp, người xem có quyền Đơn hàng · Sửa và Bán hàng đang bật (Đ173); điện thoại chỉ đọc (Đ248). Máy chủ kiểm lại. */

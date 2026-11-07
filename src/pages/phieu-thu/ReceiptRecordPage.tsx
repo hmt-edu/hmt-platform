@@ -695,7 +695,6 @@ function ReceiverPicker({
 }
 
 function Banner({ record }: { record: ReceiptRecord }) {
-  const last = [...record.events].reverse().find((e) => e.event_code === 'TU_CHOI');
   if (record.status_code === 'DA_GUI')
     return (
       <Notice>
@@ -723,13 +722,6 @@ function Banner({ record }: { record: ReceiptRecord }) {
         Phiếu đã huỷ{record.cancel_reason ? `: ${record.cancel_reason}` : ''}
         {record.cancel_note ? ` · ${record.cancel_note}` : ''}. Chỉ còn xem.
       </Notice>
-    );
-  if (last)
-    return (
-      <Notice
-        tone="danger"
-        title="Phiếu bị từ chối"
-      >{`${last.by_name ?? ''}, ${formatDate(last.at)}: “${last.note ?? ''}”. Sửa rồi bấm Trình lại; phiếu đi lại từ bước quản lý.`}</Notice>
     );
   return null;
 }

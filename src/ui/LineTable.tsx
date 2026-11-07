@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { cn } from './cn';
 
 /**
@@ -62,77 +62,104 @@ export function LineTable<Row>({
   scrollFocusable?: boolean | undefined;
   empty?: ReactNode | undefined;
 }) {
+  // Q-82: vệt mờ ở mép phải khi còn cột bị che; mất khi đã cuộn tới cuối (hoặc bảng vừa khung).
+  const scroller = useRef<HTMLDivElement>(null);
+  const [hasMore, setHasMore] = useState(false);
+  const measure = useCallback(() => {
+    const el = scroller.current;
+    if (el) setHasMore(el.scrollWidth - el.scrollLeft - el.clientWidth > 1);
+  }, []);
+  useEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
+    return () => observer.disconnect();
+  }, [measure, rows.length]);
   if (rows.length === 0 && empty !== undefined) {
     return <div className="rounded-box border border-border bg-surface">{empty}</div>;
   }
   return (
-    <div
-      className="relative overflow-x-auto rounded-box border border-border bg-surface"
-      {...(scrollFocusable ? { tabIndex: 0, role: 'region', 'aria-label': caption } : {})}
-    >
-      <table aria-label={caption} className="w-max min-w-full border-collapse text-body">
-        <thead className="bg-surface-subtle text-caption font-semibold text-fg-label">
-          <tr className="h-table-head">
-            {columns.map((c) => (
-              <th
-                key={c.key}
-                scope="col"
-                className={cn(
-                  'px-2.5 whitespace-nowrap first:pl-4 last:pr-4',
-                  ALIGN[c.align ?? 'left'],
-                  c.width,
-                )}
+    <div className="relative rounded-box border border-border bg-surface">
+      <div
+        ref={scroller}
+        onScroll={measure}
+        className="line-scroll relative overflow-x-auto rounded-box"
+        {...(scrollFocusable ? { tabIndex: 0, role: 'region', 'aria-label': caption } : {})}
+      >
+        <table aria-label={caption} className="w-max min-w-full border-collapse text-body">
+          <thead className="bg-surface-subtle text-caption font-semibold text-fg-label">
+            <tr className="h-table-head">
+              {columns.map((c) => (
+                <th
+                  key={c.key}
+                  scope="col"
+                  className={cn(
+                    'px-2.5 whitespace-nowrap first:pl-4 last:pr-4',
+                    ALIGN[c.align ?? 'left'],
+                    c.width,
+                  )}
+                >
+                  {c.headerSrOnly ? <span className="sr-only">{c.headerSrOnly}</span> : c.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          {rows.map((row, index) => {
+            const extra = below?.(row, index);
+            return (
+              <tbody
+                key={rowKey(row)}
+                className={cn('border-t border-border', rowClassName?.(row))}
+                {...(rowLabel ? { 'aria-label': rowLabel(row, index) } : {})}
+                {...(rowBusy?.(row) ? { 'aria-busy': true } : {})}
               >
-                {c.headerSrOnly ? <span className="sr-only">{c.headerSrOnly}</span> : c.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        {rows.map((row, index) => {
-          const extra = below?.(row, index);
-          return (
-            <tbody
-              key={rowKey(row)}
-              className={cn('border-t border-border', rowClassName?.(row))}
-              {...(rowLabel ? { 'aria-label': rowLabel(row, index) } : {})}
-              {...(rowBusy?.(row) ? { 'aria-busy': true } : {})}
-            >
-              <tr>
-                {columns.map((c) => (
-                  <td
-                    key={c.key}
-                    className={cn(
-                      'px-2.5 py-2 align-middle whitespace-nowrap first:pl-4 last:pr-4',
-                      ALIGN[c.align ?? 'left'],
-                      c.width,
-                      c === columns[0] && rowAccent?.(row) === 'danger' && ACCENT.danger,
-                      c === columns[0] && rowAccent?.(row) === 'warning' && ACCENT.warning,
-                    )}
-                  >
-                    {c.truncate ? (
-                      <span
-                        className={cn('block truncate', c.truncate)}
-                        {...(c.title ? { title: c.title(row) } : {})}
-                      >
-                        {c.cell(row, index)}
-                      </span>
-                    ) : (
-                      c.cell(row, index)
-                    )}
-                  </td>
-                ))}
-              </tr>
-              {extra ? (
                 <tr>
-                  <td colSpan={columns.length} className="px-4 pt-0 pb-2 text-caption">
-                    {extra}
-                  </td>
+                  {columns.map((c) => (
+                    <td
+                      key={c.key}
+                      className={cn(
+                        'px-2.5 py-2 align-middle whitespace-nowrap first:pl-4 last:pr-4',
+                        ALIGN[c.align ?? 'left'],
+                        c.width,
+                        c === columns[0] && rowAccent?.(row) === 'danger' && ACCENT.danger,
+                        c === columns[0] && rowAccent?.(row) === 'warning' && ACCENT.warning,
+                      )}
+                    >
+                      {c.truncate ? (
+                        <span
+                          className={cn('block truncate', c.truncate)}
+                          {...(c.title ? { title: c.title(row) } : {})}
+                        >
+                          {c.cell(row, index)}
+                        </span>
+                      ) : (
+                        c.cell(row, index)
+                      )}
+                    </td>
+                  ))}
                 </tr>
-              ) : null}
-            </tbody>
-          );
-        })}
-      </table>
+                {extra ? (
+                  <tr>
+                    <td colSpan={columns.length} className="px-4 pt-0 pb-2 text-caption">
+                      {extra}
+                    </td>
+                  </tr>
+                ) : null}
+              </tbody>
+            );
+          })}
+        </table>
+      </div>
+      {hasMore && (
+        <span
+          aria-hidden="true"
+          data-testid="line-table-fade"
+          className="pointer-events-none absolute top-0 right-0 bottom-3 w-10 rounded-r-box bg-linear-to-l from-surface to-transparent"
+        />
+      )}
     </div>
   );
 }

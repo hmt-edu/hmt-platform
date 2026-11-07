@@ -145,6 +145,9 @@ test('Phiếu bị kế toán từ chối (Q-49, Q-58): Trình lại hỏi xác 
   await expect(dialog.getByText(/Trình lại sẽ đi từ bước quản lý duyệt\./)).toBeVisible();
   await dialog.getByRole('button', { name: 'Quay lại sửa' }).click();
   await expect(dialog).toHaveCount(0);
+  // Q-77: không còn khối đỏ "Phiếu bị từ chối"; lý do từ chối nằm ở dòng thời gian bên phải.
+  await expect(page.getByRole('status').filter({ hasText: 'Phiếu bị từ chối' })).toHaveCount(0);
+  await expect(page.getByRole('complementary').getByText(/Sai chứng từ/)).toBeVisible();
   // Đang sửa: Lưu (nút chính), Huỷ, Hành động ở tiêu đề; nút Trình lại khoá kèm lời nhắc.
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeVisible();

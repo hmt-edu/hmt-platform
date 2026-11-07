@@ -27,12 +27,12 @@ import { discountText, quantityText } from '../bao-gia/quoteRecord';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
-  approverWarning,
+  approverLine,
+  submitBlockOf,
   canCancelOrder,
   canSubmitOrder,
   editedSinceRejection,
   errorLineNumbers,
-  expectedApproverText,
   lastRejection,
   orderSteps,
 } from './orderRecord';
@@ -149,8 +149,9 @@ function OrderView({ record }: { record: OrderRecord }) {
   const branchName =
     access.teachingBranches.find((b) => b.code === record.branch_code)?.name ?? undefined;
   const rejection = lastRejection(record);
-  const approverText = expectedApproverText(record, (claims?.userId ?? '') === record.created_by);
-  const warning = approverWarning(record);
+  // Q-77: MỘT dòng cạnh nút Trình thay cho hai khối cũ; bị chặn thì nút mờ.
+  const approverText = approverLine(record, (claims?.userId ?? '') === record.created_by);
+  const submitBlocked = submitBlockOf(record) !== null;
   // Dòng thời gian bên phải (Q-48, Q-51): sự kiện của đơn, mỗi lần lưu một mục.
   const eventEntries = orderEventEntries(record.events, catalogs.name);
   const steps: StageStep[] = orderSteps(record).map((code) => ({ code, label: statusName(code) }));
@@ -566,6 +567,9 @@ function OrderView({ record }: { record: OrderRecord }) {
                     variant={editing ? 'secondary' : 'primary'}
                     loading={submitting}
                     disabled={editing}
+                    // Q-77: bị chặn thì nút mờ (aria-disabled) nhưng vẫn bấm được để máy chủ nêu lý do bằng câu tiếng Việt; dòng bên cạnh đã nói trước.
+                    aria-disabled={submitBlocked || undefined}
+                    className={submitBlocked ? 'opacity-55' : undefined}
                     onClick={requestSubmit}
                   >
                     {rejection ? 'Trình lại' : 'Trình duyệt'}
@@ -673,20 +677,6 @@ function OrderView({ record }: { record: OrderRecord }) {
               sửa được dòng.
             </Notice>
           )}
-          {rejection && (
-            <Notice tone="danger" title="Đơn bị từ chối">
-              {`${rejection.actor_name ?? ''}, ${formatDate(rejection.created_at)}: “${reasonLine(rejection, catalogs.name)}”. Sửa rồi bấm Trình lại.`}
-              {canEdit && !editing && (
-                <button
-                  type="button"
-                  className="focus-ring ml-2 rounded-tag font-semibold underline"
-                  onClick={startEdit}
-                >
-                  Sửa đơn
-                </button>
-              )}
-            </Notice>
-          )}
           {record.status_code === 'HUY' && (
             <Notice>
               Đơn đã huỷ
@@ -707,11 +697,6 @@ function OrderView({ record }: { record: OrderRecord }) {
                   Thử lại
                 </Button>
               )}
-            </Notice>
-          )}
-          {warning && (
-            <Notice tone="warning" title="Cần xử lý trước khi trình">
-              {warning}
             </Notice>
           )}
           {record.status_code === 'NHAP' && record.has_incomplete_students && (
