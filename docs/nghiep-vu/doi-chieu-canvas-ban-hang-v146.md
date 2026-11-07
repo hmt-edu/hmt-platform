@@ -1,6 +1,6 @@
 # Đối chiếu canvas Bán hàng, Thu chi (v146 và bổ sung v2), 05/11/2026
 
-Nguồn: `design/hmt-canvas-9933/` (HMT Platform v146, `1793854902-9933`) và `design/hmt-canvas-8262/` (bổ sung v2, `1793860849-8262`); ghi chú anh Trường: `THAY_DOI_BAO_GIA_DON_PHIEU_THU.md` (chép dưới đây), `design/hmt-canvas-8262/GHI_CHU_CHO_CODE.md`.
+Nguồn: `design/hmt-canvas-9933/` (HMT Platform v146, `1793854902-9933`) và `design/ban-hang-thu-chi-bo-sung/` (bổ sung v6, `1794026008-252a`, thay bản v2 `1793860849-8262` đã xoá); ghi chú anh Trường: `THAY_DOI_BAO_GIA_DON_PHIEU_THU.md` (chép dưới đây), `design/ban-hang-thu-chi-bo-sung/GHI_CHU_CHO_CODE.md`.
 Quy tắc: khung có ở cả hai canvas thì canvas bổ sung thắng; canvas vênh luật thì **làm theo luật**.
 
 ## Bản chuẩn

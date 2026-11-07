@@ -2,10 +2,10 @@
 
 - **Số bản canvas:** `1793854902-9933` (v146, giao 05/11/2026)
 - **Thay:** `design/hmt-canvas-6f57` (bản 04/11). v146 = v68 (`1793844909-31f7`, anh Trường đã sửa và OK) cộng đúng hai thay đổi: (1) bỏ hai ô "Hình thức thanh toán", "Cơ sở thu tiền" khỏi 24 khung Đơn hàng (Đ258); (2) dòng TC-02 trong `Muc_luc_man` trỏ sang canvas bổ sung.
-- **Đi kèm:** `design/hmt-canvas-8262/` (HMT Bán hàng & Thu chi · bổ sung v2). Khung có ở cả hai canvas thì canvas bổ sung thắng.
+- **Đi kèm:** `design/ban-hang-thu-chi-bo-sung/` (HMT Bán hàng & Thu chi · bổ sung v6, thay bản v2 `8262`). Khung có ở cả hai canvas thì canvas bổ sung thắng.
 - **Nội dung gói:** 485 file khung `*.dc.html` + `canvas.json` + logo + 3 file token/CSS của hệ thiết kế. Không có ảnh PNG. Đã đối chiếu: `canvas.json` liệt kê đủ 485 khung và khớp 485 file (05/11/2026).
 - **Đối chiếu:** `canvas.json` sha256 `f9d877c2b5d041c4800e37cf197f455d1771ce18ce3d99a015d57ce65b3e5ce4`, trùng byte với bản 6f57 (vị trí, kích thước khung không đổi; chỉ nội dung 67 khung đổi).
-- **Đọc cùng:** `docs/nghiep-vu/doi-chieu-canvas-ban-hang-v146.md` (thay đổi, chỗ vênh luật) và `design/hmt-canvas-8262/GHI_CHU_CHO_CODE.md`.
+- **Đọc cùng:** `docs/nghiep-vu/doi-chieu-canvas-ban-hang-v146.md` (thay đổi, chỗ vênh luật) và `design/ban-hang-thu-chi-bo-sung/GHI_CHU_CHO_CODE.md`.
 - **Chỗ canvas vênh luật: làm theo luật, không theo canvas.**
 
 ## Cách đọc
