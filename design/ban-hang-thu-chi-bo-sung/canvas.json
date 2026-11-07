@@ -1,0 +1,252 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-05T04:40:00Z"
+ },
+ "title": "HMT Bán hàng & Thu chi · bổ sung",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Muc_luc_bs.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1100,
+   "title": "Mục lục · canvas bổ sung",
+   "expand": "fill"
+  },
+  "Man_TC02_no_dau_ky.dc.html": {
+   "x": 0,
+   "y": 640,
+   "w": 1440,
+   "h": 100,
+   "title": "Màn · TC-02 Thu nợ đầu kỳ",
+   "expand": "fill"
+  },
+  "TC02_no_dau_ky_tao.dc.html": {
+   "expand": "fill",
+   "h": 1450,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Thu nợ đầu kỳ · Tạo (Nháp)",
+   "w": 1440,
+   "x": 0,
+   "y": 860
+  },
+  "TC02_no_dau_ky_cho_kt.dc.html": {
+   "expand": "fill",
+   "h": 1450,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Thu nợ đầu kỳ · Chờ kế toán duyệt",
+   "w": 1440,
+   "x": 1600,
+   "y": 860
+  },
+  "TC02_no_dau_ky_da_duyet.dc.html": {
+   "expand": "fill",
+   "h": 1450,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Thu nợ đầu kỳ · Đã duyệt",
+   "w": 1440,
+   "x": 3200,
+   "y": 860
+  },
+  "TC02_no_dau_ky_loi_vuot_no.dc.html": {
+   "expand": "fill",
+   "h": 1450,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Thu nợ đầu kỳ · Lỗi vượt nợ",
+   "w": 1440,
+   "x": 4800,
+   "y": 860
+  },
+  "Man_BH05_sua_don.dc.html": {
+   "x": 0,
+   "y": 2430,
+   "w": 1440,
+   "h": 100,
+   "title": "Màn · BH-05 Đơn hàng · nút, dòng thời gian khi sửa (9 khung)",
+   "expand": "fill"
+  },
+  "BH05_nhap_xem.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Nháp · Xem",
+   "w": 1440,
+   "x": 0,
+   "y": 2650
+  },
+  "BH05_nhap_sua.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Nháp · Đang sửa, số tiền chưa tính lại",
+   "w": 1440,
+   "x": 1600,
+   "y": 2650
+  },
+  "BH05_nhap_loi_xem.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Nháp · Trình bị chặn",
+   "w": 1440,
+   "x": 3200,
+   "y": 2650
+  },
+  "BH05_tu_choi_xem.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Bị từ chối · Xem",
+   "w": 1440,
+   "x": 4800,
+   "y": 2650
+  },
+  "BH05_tu_choi_xac_nhan.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Bị từ chối · Hộp xác nhận trình lại chưa sửa",
+   "w": 1440,
+   "x": 6400,
+   "y": 2650
+  },
+  "BH05_trinh_lai_chua_sua.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Đã trình lại, chưa sửa",
+   "w": 1440,
+   "x": 8000,
+   "y": 2650
+  },
+  "BH05_chan_em_sua.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Nháp · Đang sửa · Chặn em",
+   "w": 1440,
+   "x": 0,
+   "y": 3890
+  },
+  "BH05_chua_ql_sua.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Nháp · Đang sửa · Chưa có quản lý",
+   "w": 1440,
+   "x": 1600,
+   "y": 3890
+  },
+  "BH05_vao_tai_tuc_sua.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-05 · Đơn hàng · Nháp · Đang sửa · Từ tái tục",
+   "w": 1440,
+   "x": 3200,
+   "y": 3890
+  },
+  "Man_TC02_sua_phieu.dc.html": {
+   "x": 0,
+   "y": 5130,
+   "w": 1440,
+   "h": 100,
+   "title": "Màn · TC-02 Phiếu thu · nút, dòng thời gian khi sửa (6 khung)",
+   "expand": "fill"
+  },
+  "TC02_nhap_xem.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Nháp · Xem",
+   "w": 1440,
+   "x": 0,
+   "y": 5350
+  },
+  "TC02_nhap_sua.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Nháp · Đang sửa",
+   "w": 1440,
+   "x": 1600,
+   "y": 5350
+  },
+  "TC02_nhap_loi_xem.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Nháp · Trình bị chặn",
+   "w": 1440,
+   "x": 3200,
+   "y": 5350
+  },
+  "TC02_tu_choi_xem.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Bị từ chối · Xem",
+   "w": 1440,
+   "x": 4800,
+   "y": 5350
+  },
+  "TC02_tu_choi_xac_nhan.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Bị từ chối · Hộp xác nhận trình lại chưa sửa",
+   "w": 1440,
+   "x": 6400,
+   "y": 5350
+  },
+  "TC02_trinh_lai_chua_sua.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "TC-02 · Phiếu thu · Đã trình lại, chưa sửa",
+   "w": 1440,
+   "x": 8000,
+   "y": 5350
+  }
+ },
+ "order": [
+  "Muc_luc_bs.dc.html",
+  "Man_TC02_no_dau_ky.dc.html",
+  "TC02_no_dau_ky_tao.dc.html",
+  "TC02_no_dau_ky_cho_kt.dc.html",
+  "TC02_no_dau_ky_da_duyet.dc.html",
+  "TC02_no_dau_ky_loi_vuot_no.dc.html",
+  "Man_BH05_sua_don.dc.html",
+  "BH05_nhap_xem.dc.html",
+  "BH05_nhap_sua.dc.html",
+  "BH05_nhap_loi_xem.dc.html",
+  "BH05_tu_choi_xem.dc.html",
+  "BH05_tu_choi_xac_nhan.dc.html",
+  "BH05_trinh_lai_chua_sua.dc.html",
+  "BH05_chan_em_sua.dc.html",
+  "BH05_chua_ql_sua.dc.html",
+  "BH05_vao_tai_tuc_sua.dc.html",
+  "Man_TC02_sua_phieu.dc.html",
+  "TC02_nhap_xem.dc.html",
+  "TC02_nhap_sua.dc.html",
+  "TC02_nhap_loi_xem.dc.html",
+  "TC02_tu_choi_xem.dc.html",
+  "TC02_tu_choi_xac_nhan.dc.html",
+  "TC02_trinh_lai_chua_sua.dc.html"
+ ],
+ "notes": {},
+ "designSystems": [
+  {
+   "artifact": "https://claude.ai/artifact/3Yco5qmVbyDiyfZm9HcJqN",
+   "copiedAt": "2026-10-16T04:46:00Z",
+   "namespace": "hmt",
+   "title": "HMT Platform",
+   "version": "1792124962-8639"
+  }
+ ]
+}
