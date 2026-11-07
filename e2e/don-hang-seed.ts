@@ -36,6 +36,14 @@ export const APPROVE_SETUPS = {
 export const approveSetupOf = (project: string): Setup =>
   APPROVE_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 
+// Bộ riêng cho bài sửa đơn Nháp (UI-O3).
+export const EDIT_SETUPS = {
+  'may-tinh': { mark: 'E2EBSMT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1300 },
+  'dien-thoai': { mark: 'E2EBSDT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1350 },
+} as const;
+export const editSetupOf = (project: string): Setup =>
+  EDIT_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
+
 export const orderSetupOf = (project: string): Setup =>
   ORDER_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 

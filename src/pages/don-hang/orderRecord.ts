@@ -15,8 +15,27 @@ export function lastRejection(
   record: Pick<OrderRecord, 'status_code' | 'events'>,
 ): OrderEvent | null {
   if (record.status_code !== 'NHAP') return null;
-  const last = [...record.events].sort((a, b) => b.seq - a.seq).find((e) => e.event_code !== 'TAO');
+  // Sự kiện SUA (sửa đơn) không làm mất trạng thái "bị từ chối": phải trình lại mới hết.
+  const last = [...record.events]
+    .sort((a, b) => b.seq - a.seq)
+    .find((e) => e.event_code !== 'TAO' && e.event_code !== 'SUA');
   return last?.event_code === 'TU_CHOI' ? last : null;
+}
+
+/** Đơn bị từ chối rồi đã có lần sửa sau đó (sự kiện SUA sau lần từ chối cuối). Đơn không bị từ chối thì sai. */
+export function editedSinceRejection(record: Pick<OrderRecord, 'status_code' | 'events'>): boolean {
+  const rejection = lastRejection(record);
+  return (
+    rejection !== null && record.events.some((e) => e.event_code === 'SUA' && e.seq > rejection.seq)
+  );
+}
+
+/** Dòng nhật ký "Đơn đã sửa so với báo giá <mã>: …" gần nhất (Q-31), để hộp Duyệt hiện cho người duyệt; không có thì null. */
+export function editedFromQuotationNote(record: Pick<OrderRecord, 'events'>): string | null {
+  const last = [...record.events]
+    .sort((a, b) => b.seq - a.seq)
+    .find((e) => e.event_code === 'SUA' && (e.note ?? '').startsWith('Đơn đã sửa so với báo giá'));
+  return last?.note ?? null;
 }
 
 /** Dòng "Người duyệt" cạnh nút Trình của đơn Nháp, theo đường duyệt dự kiến (R-HT-06). */

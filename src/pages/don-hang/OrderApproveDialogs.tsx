@@ -11,6 +11,7 @@ import { Dialog } from '../../ui/Overlays';
 import { ReasonDialog } from '../../ui/Dialogs';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { capPercentText, overCapLines } from './orderApprove';
+import { editedFromQuotationNote } from './orderRecord';
 import type { OrderRecord } from './orderTypes';
 import { approveOrder, rejectOrder } from './useOrderData';
 
@@ -31,6 +32,7 @@ export function ApproveOrderDialog({ record, open, onOpenChange, onDone, onRejec
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const over = overCapLines(record.lines);
+  const editedNote = editedFromQuotationNote(record);
   const modeName = (code: string) => catalogs.name('STUDY_MODE', code) ?? code;
 
   async function approve() {
@@ -86,6 +88,12 @@ export function ApproveOrderDialog({ record, open, onOpenChange, onDone, onRejec
           <dt className="text-fg-muted">Tổng thành tiền</dt>
           <dd className="tabular font-semibold">{formatMoney(record.total_amount)}</dd>
         </dl>
+        {editedNote && (
+          <Alert tone="warning" title="Đơn đã sửa so với báo giá.">
+            {editedNote.replace(/^Đơn đã sửa so với báo giá /, '')}
+            <span className="block">Chỉ để xem xét, không chặn duyệt (Q-31).</span>
+          </Alert>
+        )}
         {over.length > 0 && (
           <Alert tone="warning" title={`Chiết khấu vượt trần ${capPercentText(cap)}.`}>
             {over.map((l) => (

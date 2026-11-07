@@ -3,6 +3,8 @@ import {
   approverWarning,
   canCancelOrder,
   canSubmitOrder,
+  editedFromQuotationNote,
+  editedSinceRejection,
   errorLineNumbers,
   expectedApproverText,
   lastRejection,
@@ -119,5 +121,36 @@ describe('bản ghi đơn (BH-05)', () => {
       errorLineNumbers('Dòng 2: thiếu năm sinh của em; Dòng 5: thiếu họ tên của em. Bổ sung.'),
     ).toEqual([2, 5]);
     expect(errorLineNumbers('Chọn điều khoản thanh toán trước khi trình đơn.')).toEqual([]);
+  });
+
+  it('sự kiện SUA không làm mất trạng thái bị từ chối; sửa sau từ chối thì "đã sửa"', () => {
+    const base = { status_code: 'NHAP' as const };
+    const rejected = { ...base, events: [ev(1, 'TAO'), ev(2, 'TRINH'), ev(3, 'TU_CHOI')] };
+    expect(lastRejection(rejected)?.seq).toBe(3);
+    expect(editedSinceRejection(rejected)).toBe(false);
+    const edited = { ...base, events: [...rejected.events, ev(4, 'SUA')] };
+    expect(lastRejection(edited)?.seq).toBe(3);
+    expect(editedSinceRejection(edited)).toBe(true);
+    // Sửa TRƯỚC lần từ chối cuối không tính; chưa từng bị từ chối thì không có.
+    const before = {
+      ...base,
+      events: [ev(1, 'TAO'), ev(2, 'SUA'), ev(3, 'TRINH'), ev(4, 'TU_CHOI')],
+    };
+    expect(editedSinceRejection(before)).toBe(false);
+    expect(editedSinceRejection({ ...base, events: [ev(1, 'TAO'), ev(2, 'SUA')] })).toBe(false);
+  });
+
+  it('dòng nhật ký "Đơn đã sửa so với báo giá" gần nhất (Q-31)', () => {
+    const e = (seq: number, note: string | null): OrderEvent => ({ ...ev(seq, 'SUA'), note });
+    expect(editedFromQuotationNote({ events: [ev(1, 'TAO')] })).toBeNull();
+    expect(editedFromQuotationNote({ events: [e(2, 'Sửa đơn: dòng 1')] })).toBeNull();
+    expect(
+      editedFromQuotationNote({
+        events: [
+          e(2, 'Đơn đã sửa so với báo giá BG-1: dòng 1 số giờ 6 → 8'),
+          e(3, 'Đơn đã sửa so với báo giá BG-1: dòng 1 số giờ 8 → 9'),
+        ],
+      }),
+    ).toBe('Đơn đã sửa so với báo giá BG-1: dòng 1 số giờ 8 → 9');
   });
 });

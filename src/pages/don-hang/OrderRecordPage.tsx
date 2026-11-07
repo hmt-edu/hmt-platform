@@ -16,8 +16,8 @@ import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
-import { ReasonDialog } from '../../ui/Dialogs';
-import { Tabs, type MenuItem } from '../../ui/Overlays';
+import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
+import { Select, Tabs, type MenuItem } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
@@ -28,13 +28,32 @@ import {
   approverWarning,
   canCancelOrder,
   canSubmitOrder,
+  editedSinceRejection,
   errorLineNumbers,
   expectedApproverText,
   lastRejection,
   orderSteps,
 } from './orderRecord';
 import type { OrderEvent, OrderInstallment, OrderLine, OrderRecord } from './orderTypes';
-import { cancelOrder, submitOrder, useOrder, useRefreshOrder } from './useOrderData';
+import {
+  cancelOrder,
+  editOrder,
+  submitOrder,
+  useOrder,
+  useOrderEditOptions,
+  usePaymentTermNames,
+  useRefreshOrder,
+} from './useOrderData';
+import { OrderEditLines } from './OrderEditLines';
+import {
+  allRemoved,
+  buildEdits,
+  draftOf,
+  hasChanges,
+  lineError,
+  type LineDraft,
+  type OrderDraft,
+} from './orderEdit';
 import { ApproveOrderDialog, RejectOrderDialog } from './OrderApproveDialogs';
 import { capPercentText, overCapLines } from './orderApprove';
 import { CreateReceiptDialog } from '../phieu-thu/CreateReceiptDialog';
@@ -59,6 +78,7 @@ const ORDER_FIELD_LABELS: Record<string, string> = {
 const EVENT_TEXT: Record<OrderEvent['event_code'], string> = {
   TAO: 'Tạo đơn',
   TRINH: 'Trình duyệt',
+  SUA: 'Sửa đơn',
   DUYET: 'Duyệt',
   TU_CHOI: 'Từ chối',
   HUY: 'Huỷ đơn',
@@ -116,6 +136,13 @@ function OrderView({ record }: { record: OrderRecord }) {
   const [receiptOpen, setReceiptOpen] = useState(false);
   const [approveOpen, setApproveOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
+  const [draft, setDraft] = useState<OrderDraft | null>(null);
+  const [confirmUnedited, setConfirmUnedited] = useState(false);
+  const termNames = usePaymentTermNames();
+  const editOptions = useOrderEditOptions(editing);
   const cap = useIntSetting('discount_total_cap_percent');
   const paymentQuery = useOrderPayment(record.status_code === 'DA_DUYET' ? record.id : undefined);
   const receiptsQuery = useReceiptPage({ order_id: record.id }, 'created_desc', 0, 1);
@@ -163,6 +190,63 @@ function OrderView({ record }: { record: OrderRecord }) {
       ]
     : [];
   const errorLines = submitError ? errorLineNumbers(submitError.message) : [];
+
+  // Đơn Nháp sửa được khi người xem có quyền Sửa (can_submit cùng điều kiện quyền, trạng thái, công tắc), máy tính; điện thoại chỉ đọc (Đ248).
+  const canEdit = record.status_code === 'NHAP' && record.can_submit && !phone;
+  const fixedPolicyIds = new Set(
+    (editOptions.data?.policies ?? []).filter((p) => p.fixed_value).map((p) => p.id),
+  );
+  const initialTermId =
+    (editOptions.data?.terms ?? []).find((t) => t.name === record.payment_term_name)?.id ?? '';
+  const todayKey = new Date().toISOString().slice(0, 10); // allow-number: yyyy-mm-dd
+  const edited = editedSinceRejection(record);
+
+  function startEdit() {
+    setEditError(null);
+    setDraft(draftOf(record, initialTermId, fixedPolicyIds));
+    setEditing(true);
+    setTab('lines');
+  }
+  const patchLine = (lineNo: number, patch: Partial<LineDraft>) =>
+    setDraft((prev) =>
+      prev
+        ? { ...prev, lines: { ...prev.lines, [lineNo]: { ...prev.lines[lineNo]!, ...patch } } }
+        : prev,
+    );
+  const draftInvalid =
+    draft !== null &&
+    (Object.values(draft.lines).some((l) => lineError(l) !== null) || allRemoved(draft));
+  const dirty = draft !== null && hasChanges(record.lines, draft, initialTermId, fixedPolicyIds);
+
+  async function saveEdit() {
+    if (!draft || saving || draftInvalid) return;
+    setSaving(true);
+    setEditError(null);
+    try {
+      const edits = buildEdits(record.lines, draft, fixedPolicyIds);
+      const termChanged = draft.termId !== initialTermId && draft.termId !== '';
+      if (edits.length === 0 && !termChanged) {
+        setEditing(false);
+        return;
+      }
+      await editOrder(supabase, record.id, edits, termChanged ? draft.termId : null);
+      await refresh();
+      setEditing(false);
+      setDraft(null);
+      toast({ title: 'Đã lưu đơn.' });
+    } catch (e) {
+      // Lỗi nghiệp vụ (HMT_*) hiện thẳng câu tiếng Việt của máy chủ, giữ nguyên bản đang sửa.
+      setEditError(errorOf(e).message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // Q-29: đơn vừa bị từ chối mà chưa sửa gì thì hỏi lại trước khi trình; đã sửa hoặc chưa từng bị từ chối thì trình thẳng.
+  function requestSubmit() {
+    if (rejection && !edited) setConfirmUnedited(true);
+    else void submit();
+  }
 
   async function submit() {
     if (submitting) return;
@@ -244,16 +328,48 @@ function OrderView({ record }: { record: OrderRecord }) {
     },
   ];
 
+  const modeOptions = catalogs.options('STUDY_MODE');
   const lines = (
     <div className="flex flex-col gap-3">
-      <Table<OrderLine>
-        caption="Dòng đơn"
-        rows={record.lines}
-        rowKey={(l) => l.id}
-        rowLabel={(l) => `Dòng ${l.line_no}`}
-        columns={lineColumns}
-        empty={<p className="px-4 py-6 text-center text-fg-muted">Đơn chưa có dòng nào.</p>}
-      />
+      {editing && draft && (
+        <>
+          {editError && (
+            <Notice tone="danger" title="Chưa lưu được">
+              {editError}
+            </Notice>
+          )}
+          {record.quotation_code && (
+            <Notice tone="warning">
+              Đơn chuyển từ báo giá {record.quotation_code}: sửa số giờ, hình thức, chiết khấu, bỏ
+              dòng được. Lưu thì nhật ký ghi “Đơn đã sửa so với báo giá” kèm giá trị cũ, mới. Giá
+              niêm yết giữ theo ngày của báo giá.
+            </Notice>
+          )}
+          <OrderEditLines
+            lines={record.lines}
+            draft={draft}
+            onChange={patchLine}
+            policies={editOptions.data?.policies ?? []}
+            modes={modeOptions}
+            branchId={record.branch_id}
+            today={todayKey}
+          />
+          <p className="text-caption text-fg-muted">
+            Thêm dòng hoặc thêm em làm ở bước Tạo đơn từ cơ hội. Thành tiền, tổng, trần chiết khấu
+            do máy chủ tính lại khi bấm Lưu.
+          </p>
+        </>
+      )}
+      {!(editing && draft) && (
+        <Table<OrderLine>
+          caption="Dòng đơn"
+          rows={record.lines}
+          rowKey={(l) => l.id}
+          rowLabel={(l) => `Dòng ${l.line_no}`}
+          columns={lineColumns}
+          empty={<p className="px-4 py-6 text-center text-fg-muted">Đơn chưa có dòng nào.</p>}
+        />
+      )}
       <dl className="ml-auto flex w-full max-w-sm flex-col gap-1 text-body">
         <TotalRow label="Tổng niêm yết" value={formatMoney(record.gross_total)} />
         <TotalRow
@@ -364,10 +480,16 @@ function OrderView({ record }: { record: OrderRecord }) {
       <RecordDetail
         kind="Đơn hàng"
         title={record.code}
-        mode="view"
+        mode={editing ? 'edit' : 'view'}
+        dirty={editing && dirty}
+        saving={saving}
         onEdit={() => undefined}
-        onSave={() => undefined}
-        onCancel={() => undefined}
+        onSave={() => void saveEdit()}
+        onCancel={() => {
+          setEditing(false);
+          setDraft(null);
+          setEditError(null);
+        }}
         readOnly
         stageShowCode={false}
         stage={{
@@ -380,12 +502,30 @@ function OrderView({ record }: { record: OrderRecord }) {
         menu={menuItems.length > 0 ? { label: 'Hành động', items: menuItems } : undefined}
         businessActions={
           <>
-            {record.status_code === 'NHAP' && (
+            {record.status_code === 'NHAP' && !editing && (
               <span className="flex flex-wrap items-center gap-2">
+                {/* Q-29: đơn bị từ chối mà chưa sửa: "Sửa đơn" là nút chính, "Trình duyệt" phụ kèm dòng nhắc; còn lại "Trình duyệt" là nút chính. */}
+                {canEdit && (
+                  <Button
+                    variant={rejection && !edited ? 'primary' : 'secondary'}
+                    onClick={startEdit}
+                  >
+                    Sửa đơn
+                  </Button>
+                )}
                 {canSubmit && (
-                  <Button variant="primary" loading={submitting} onClick={() => void submit()}>
+                  <Button
+                    variant={rejection && !edited ? 'secondary' : 'primary'}
+                    loading={submitting}
+                    onClick={requestSubmit}
+                  >
                     Trình duyệt
                   </Button>
+                )}
+                {rejection && !edited && canSubmit && (
+                  <span className="text-caption text-fg-label">
+                    Lý do từ chối chưa sửa: {eventReason(rejection, catalogs.name)}
+                  </span>
                 )}
                 {approverText && <span className="text-caption text-fg-label">{approverText}</span>}
               </span>
@@ -464,6 +604,9 @@ function OrderView({ record }: { record: OrderRecord }) {
                 if (column === 'status_code' && typeof value === 'string') return statusName(value);
                 if (column === 'cancel_reason_code' && typeof value === 'string')
                   return catalogs.name('ORDER_CANCEL_REASON', value) ?? value;
+                // Điều khoản thanh toán hiện TÊN, không hiện mã nội bộ (id) (anh góp ý 06/11).
+                if (column === 'payment_term_id' && typeof value === 'string')
+                  return termNames.data?.get(value) ?? 'điều khoản khác';
                 return null;
               },
             }}
@@ -489,6 +632,15 @@ function OrderView({ record }: { record: OrderRecord }) {
           {rejection && (
             <Notice tone="danger" title="Đơn bị từ chối">
               {`${rejection.actor_name ?? ''}, ${formatDate(rejection.created_at)}: “${eventReason(rejection, catalogs.name)}”. Sửa rồi bấm Trình lại.`}
+              {canEdit && !editing && (
+                <button
+                  type="button"
+                  className="focus-ring ml-2 rounded-tag font-semibold underline"
+                  onClick={startEdit}
+                >
+                  Sửa đơn
+                </button>
+              )}
             </Notice>
           )}
           {record.status_code === 'HUY' && (
@@ -612,8 +764,21 @@ function OrderView({ record }: { record: OrderRecord }) {
                 <DetailField
                   label="Điều khoản thanh toán"
                   hint="danh mục cấu hình; lịch đợt ở tab Thanh toán"
-                  mode="view"
+                  mode={editing ? 'edit' : 'view'}
                   value={record.payment_term_name ?? 'Thanh toán một lần'}
+                  editor={
+                    <Select
+                      label="Kiểu thanh toán"
+                      value={draft?.termId ?? ''}
+                      placeholder="Chọn điều khoản"
+                      onChange={(v) => setDraft((prev) => (prev ? { ...prev, termId: v } : prev))}
+                      options={(editOptions.data?.terms ?? []).map((t) => ({
+                        value: t.id,
+                        label: t.name,
+                      }))}
+                      className="w-full"
+                    />
+                  }
                 />
               </dl>
             </div>
@@ -640,6 +805,19 @@ function OrderView({ record }: { record: OrderRecord }) {
           {history}
         </div>
       </RecordDetail>
+      <ConfirmDialog
+        open={confirmUnedited}
+        onOpenChange={setConfirmUnedited}
+        title="Trình lại đơn chưa sửa"
+        description="Đơn chưa sửa từ lần bị từ chối. Vẫn trình?"
+        note="Nhật ký ghi rõ lần trình lại này không sửa gì."
+        confirmLabel="Vẫn trình"
+        cancelLabel="Quay lại sửa"
+        onConfirm={() => {
+          setConfirmUnedited(false);
+          void submit();
+        }}
+      />
       <ApproveOrderDialog
         record={record}
         open={approveOpen}

@@ -66,8 +66,11 @@ export type OrderLine = {
   id: string;
   line_no: number;
   line_kind: 'ENROL' | 'GIFT';
+  quotation_line_id: string | null;
+  package_id: string;
   package_code: string;
   package_name: string;
+  package_type_code: string;
   delivery_mode_code: string;
   unit_code: 'GIO' | 'THANG' | 'BO';
   quantity: number;
@@ -97,7 +100,7 @@ export type OrderInstallment = {
 
 export type OrderEvent = {
   seq: number;
-  event_code: 'TAO' | 'TRINH' | 'DUYET' | 'TU_CHOI' | 'HUY';
+  event_code: 'TAO' | 'TRINH' | 'DUYET' | 'TU_CHOI' | 'HUY' | 'SUA';
   from_status: string | null;
   to_status: string | null;
   reason_code: string | null;

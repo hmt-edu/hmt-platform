@@ -106,3 +106,91 @@ export function rejectOrder(
 ): Promise<void> {
   return rpc<void>(supabase, 'reject_order', { p_id: id, p_reason_code: reasonCode, p_note: note });
 }
+
+/** Một phần tử sửa dòng gửi app.edit_order (xem orderEdit.ts). */
+export type OrderLineEdit = {
+  line_no: number;
+  quantity?: number;
+  delivery_mode_code?: string;
+  discounts?: { policy_id: string; value: number | null }[];
+  remove?: boolean;
+};
+
+/**
+ * Sửa đơn Nháp tại chỗ (anh chốt 06/11, B1): số giờ, hình thức, chính sách chiết khấu, bỏ dòng, điều khoản; kể cả đơn chuyển từ báo giá (nhật ký ghi
+ * "Đơn đã sửa so với báo giá", Q-31). Máy chủ tính lại thành tiền, kiểm quyền, công tắc Bán hàng, trạng thái Nháp.
+ */
+export function editOrder(
+  supabase: SupabaseClient,
+  id: string,
+  edits: OrderLineEdit[],
+  paymentTermId: string | null,
+): Promise<{ id: string; total_amount: number; changed: boolean }> {
+  return rpc<{ id: string; total_amount: number; changed: boolean }>(supabase, 'edit_order', {
+    p_id: id,
+    p_edits: edits.length > 0 ? edits : null,
+    p_payment_term_id: paymentTermId,
+  });
+}
+
+export type PolicyOption = {
+  id: string;
+  code: string;
+  name: string;
+  kind: 'PERCENT' | 'GIFT_HOURS';
+  max_value: number;
+  fixed_value: boolean;
+  valid_from: string;
+  valid_to: string | null;
+  package_type_codes: string[];
+  branch_ids: string[];
+};
+export type TermOption = { id: string; name: string };
+
+/** Chính sách chiết khấu đang dùng và điều khoản thanh toán đang dùng, cho chế độ sửa đơn (ít dòng, đọc một lần khi mở sửa). */
+export function useOrderEditOptions(enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['order-edit-options'],
+    enabled,
+    staleTime: 60_000, // allow-number: chính sách, điều khoản đổi hiếm, giữ một phút
+    queryFn: async (): Promise<{ policies: PolicyOption[]; terms: TermOption[] }> => {
+      const [policies, terms] = await Promise.all([
+        supabase
+          .schema('app')
+          .from('discount_policy')
+          .select(
+            'id, code, name, kind, max_value, fixed_value, valid_from, valid_to, package_type_codes, branch_ids',
+          )
+          .eq('is_active', true)
+          .order('name'),
+        supabase
+          .schema('app')
+          .from('payment_term')
+          .select('id, name')
+          .eq('is_active', true)
+          .order('name'),
+      ]);
+      if (policies.error) throw new Error(policies.error.message);
+      if (terms.error) throw new Error(terms.error.message);
+      const policyRows: PolicyOption[] = policies.data ?? [];
+      const termRows: TermOption[] = terms.data ?? [];
+      return { policies: policyRows, terms: termRows };
+    },
+  });
+}
+
+/** Tên điều khoản theo mã (id), kể cả điều khoản đã ngừng: để dòng thời gian đơn hiện tên thay vì mã nội bộ. */
+export function usePaymentTermNames() {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['payment-term-names'],
+    staleTime: 5 * 60_000, // allow-number: tên điều khoản đổi hiếm
+    queryFn: async (): Promise<Map<string, string>> => {
+      const { data, error } = await supabase.schema('app').from('payment_term').select('id, name');
+      if (error) throw new Error(error.message);
+      const rows: TermOption[] = data ?? [];
+      return new Map(rows.map((t) => [t.id, t.name]));
+    },
+  });
+}
