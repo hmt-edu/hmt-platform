@@ -39,8 +39,17 @@ describe('scripts/ci-changes.sh (bước chọn phần CI)', () => {
     );
   });
 
-  it('PR đổi src/: chạy đủ, cần bản xem trước', () => {
-    expect(run(`printf 'deploy/README.md\\nsrc/a.tsx\\n'`)).toBe('full=true\nui=true\ne2e=true');
+  it('PR đổi src/ không đụng tiền: chạy DB, cần bản xem trước (khi có nhãn), bỏ Playwright (Q-21)', () => {
+    expect(run(`printf 'deploy/README.md\\nsrc/a.tsx\\n'`)).toBe('full=true\nui=true\ne2e=false');
+  });
+
+  it('PR đổi màn đơn hàng hoặc phiếu thu (đụng tiền): chạy cả Playwright (Q-21)', () => {
+    expect(run(`printf 'src/pages/don-hang/OrderRecordPage.tsx\\n'`)).toBe(
+      'full=true\nui=true\ne2e=true',
+    );
+    expect(run(`printf 'src/pages/phieu-thu/ReceiptListPage.tsx\\n'`)).toBe(
+      'full=true\nui=true\ne2e=true',
+    );
   });
 
   it('gh lỗi (không lấy được danh sách file): chạy đủ, cả bản xem trước', () => {
@@ -51,20 +60,18 @@ describe('scripts/ci-changes.sh (bước chọn phần CI)', () => {
     expect(run('exit 0')).toBe('full=true\nui=true\ne2e=true');
   });
 
-  it('PR chỉ đổi migration và test pgTAP: chạy DB, bỏ Playwright', () => {
+  it('PR có migration: chạy DB và Playwright (Q-21)', () => {
     expect(
       run(
         `printf 'supabase/migrations/20261105000071_x.sql\\nsupabase/tests/database/062_x.test.sql\\ndocs/a.md\\n'`,
       ),
-    ).toBe('full=true\nui=false\ne2e=false');
+    ).toBe('full=true\nui=false\ne2e=true');
   });
 
-  it('PR đổi migration cùng seed hoặc Edge Function: chạy cả Playwright', () => {
-    expect(run(`printf 'supabase/migrations/x.sql\\nsupabase/seed.sql\\n'`)).toBe(
-      'full=true\nui=false\ne2e=true',
-    );
+  it('PR chỉ đổi Edge Function hoặc seed (không migration, không đụng tiền): chạy DB, bỏ Playwright (Q-21)', () => {
+    expect(run(`printf 'supabase/seed.sql\\n'`)).toBe('full=true\nui=false\ne2e=false');
     expect(run(`printf 'supabase/functions/login/index.ts\\n'`)).toBe(
-      'full=true\nui=false\ne2e=true',
+      'full=true\nui=false\ne2e=false',
     );
   });
 
@@ -73,9 +80,14 @@ describe('scripts/ci-changes.sh (bước chọn phần CI)', () => {
     expect(run(gh)).toBe('full=true\nui=true\ne2e=true');
   });
 
+  it('nhãn full-ci ép chạy Playwright cả khi PR chỉ đổi giao diện không đụng tiền', () => {
+    const gh = `case "$*" in *labels*) echo full-ci;; *) printf 'src/pages/lead/a.tsx\\n';; esac`;
+    expect(run(gh)).toBe('full=true\nui=true\ne2e=true');
+  });
+
   it('nhãn khác không ép chạy đủ', () => {
-    const gh = `case "$*" in *labels*) echo bug;; *) printf 'supabase/migrations/x.sql\\n';; esac`;
-    expect(run(gh)).toBe('full=true\nui=false\ne2e=false');
+    const gh = `case "$*" in *labels*) echo bug;; *) printf 'src/pages/lead/a.tsx\\n';; esac`;
+    expect(run(gh)).toBe('full=true\nui=true\ne2e=false');
   });
 
   it('chạy tay (không phải pull_request): chạy đủ', () => {

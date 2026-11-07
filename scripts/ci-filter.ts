@@ -1,7 +1,7 @@
 // Quyết định phần CI nào cần chạy cho một PR, từ danh sách file PR đổi (Đ210 #3, Đ281, Q-C3). Dùng ở job `changes` của ci.yml:
 //   gh api ... --jq '.[].filename' | node scripts/ci-filter.ts   → in `full=true|false` và `ui=true|false`.
 // Viết theo kiểu "danh sách được bỏ": CHỈ KHI mọi file đổi nằm trong deploy/, docs/, design/ hoặc là *.md thì bỏ DB (pgTAP) + Playwright
-// và bản xem trước; file lạ, thư mục mới, .github/, scripts/ mặc định chạy đủ. Không có danh sách file (lỗi lấy file) thì chạy đủ cả hai (full=true, ui=true).
+// và bản xem trước (job DB còn lại chạy pgTAP); file lạ, thư mục mới, .github/, scripts/ mặc định chạy job DB. Playwright chỉ khi có migration hoặc đụng tiền (needsE2e). Không có danh sách file (lỗi lấy file) thì chạy đủ cả hai (full=true, ui=true).
 // Kiểm nhanh (lint, typecheck, test, hardcode, format:check) luôn chạy, không qua bộ lọc này.
 import { readFileSync } from 'node:fs';
 
@@ -16,19 +16,34 @@ export function needsFullCi(files: string[]): boolean {
   return files.some((f) => !isSkippable(f));
 }
 
-/** File chỉ ảnh hưởng cơ sở dữ liệu (migration, bài kiểm pgTAP): không cần chạy Playwright trên CI (đã chạy ở `npm run check:all` trên máy). */
-export function isDbOnly(file: string): boolean {
-  return /^supabase\/(migrations|tests)\//.test(file);
+/** File migration: luôn cần Playwright (DB đổi thì luồng trên giao diện phải chạy lại). */
+export function isMigration(file: string): boolean {
+  return /^supabase\/migrations\//.test(file);
 }
 
 /**
- * Cần chạy Playwright: cần chạy đủ (có file ngoài phần được bỏ) VÀ có ít nhất một file không chỉ là DB (src/, e2e/, supabase/functions/, seed,
- * cấu hình, file lạ...). PR chỉ đổi migration, test pgTAP (và phần được bỏ) thì chạy pgTAP, bỏ Playwright. Không có danh sách file: chạy.
+ * File "đụng tiền" (đơn hàng, phiếu thu, số dư), xác định theo ĐƯỜNG DẪN (không theo nhãn): màn và bài Playwright của ba phần này, dữ liệu giả dùng chung của
+ * bài đơn hàng (bao-gia-seed), hàm định dạng và đọc tiền dùng chung (format, amountInWords), bài pgTAP của ba phần. Thêm phần mới (ví dụ số dư) thì thêm tên thư mục ở đây.
+ */
+export function isMoney(file: string): boolean {
+  return (
+    /^src\/pages\/(don-hang|phieu-thu|so-du)\//.test(file) ||
+    /^e2e\/(don-hang|phieu-thu|so-du)[^/]*$/.test(file) ||
+    /^e2e\/bao-gia-seed\.ts$/.test(file) ||
+    /^src\/lib\/(format|amountInWords)(\.test)?\.ts$/.test(file) ||
+    /^supabase\/tests\/database\/[^/]*(don_hang|phieu_thu|so_du)[^/]*$/.test(file)
+  );
+}
+
+/**
+ * Cần chạy Playwright trên PR (Q-21, anh chốt 06/11): CHỈ khi PR có migration hoặc đụng tiền (isMoney). Nhãn `full-ci` ép chạy (scripts/ci-changes.sh);
+ * không lấy được danh sách file thì chạy. PR khác: Code dán kết quả `npm run check:all` trên máy (commit, số bài qua) vào bình luận PR; nhánh main sau khi gộp
+ * KHÔNG chạy đủ mỗi lần gộp: main chạy đủ theo lịch đêm khi có commit mới (ci.yml, job gate) và chạy tay trước đợt cập nhật bản thật (Q-37). Đổi cho từng loại file: xem bảng trong mô tả PR Q-21.
  */
 export function needsE2e(files: string[]): boolean {
   if (files.length === 0) return true;
   if (!needsFullCi(files)) return false;
-  return files.some((f) => !isSkippable(f) && !isDbOnly(f));
+  return files.some((f) => isMigration(f) || isMoney(f));
 }
 
 /** Đổi thứ làm nên bản dựng giao diện: cần bản xem trước (Cloudflare Pages). Không có danh sách file thì coi như có (chạy đủ, Đ281). */

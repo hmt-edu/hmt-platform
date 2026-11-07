@@ -209,9 +209,11 @@ export async function seed(setup: Setup): Promise<Seeded> {
     );
     await db.query('reset role');
     // Báo giá "Quá hạn": lùi hạn hiệu lực về 3 ngày trước (hạn chỉ để hiển thị, R-TIEN-05).
-    await db.query(`update app.quotation set valid_until = current_date - 3 where id = $1::uuid`, [
-      overdueQ.id,
-    ]);
+    // Máy chủ tính "hôm nay" theo giờ Việt Nam nên dữ liệu giả cũng lấy ngày Việt Nam (current_date là UTC, lệch từ 0h đến 7h sáng).
+    await db.query(
+      `update app.quotation set valid_until = (now() at time zone 'Asia/Ho_Chi_Minh')::date - 3 where id = $1::uuid`,
+      [overdueQ.id],
+    );
     await db.query('commit');
     return {
       parent,

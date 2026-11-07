@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
-import { isDbOnly, isSkippable, needsE2e, needsFullCi, touchesUi } from './ci-filter';
+import { isMigration, isMoney, isSkippable, needsE2e, needsFullCi, touchesUi } from './ci-filter';
 
 describe('bộ lọc CI (Đ281, Q-C3)', () => {
   it('chỉ deploy/: bỏ DB + Playwright và bản xem trước', () => {
@@ -39,26 +39,41 @@ describe('bộ lọc CI (Đ281, Q-C3)', () => {
     expect(touchesUi([])).toBe(true);
   });
 
-  it('Playwright (needsE2e): chỉ migration, test pgTAP, tài liệu thì bỏ; src, e2e, Edge Function, seed, cấu hình, file lạ thì chạy', () => {
-    expect(
-      needsE2e(['supabase/migrations/x.sql', 'supabase/tests/database/a.test.sql', 'docs/a.md']),
-    ).toBe(false);
+  it('Playwright (needsE2e, Q-21): chỉ khi có migration hoặc đụng tiền; PR khác thì bỏ (check:all trên máy)', () => {
+    // Có migration: chạy.
+    expect(needsE2e(['supabase/migrations/x.sql', 'supabase/tests/database/a.test.sql'])).toBe(
+      true,
+    );
+    // Đụng tiền: đơn hàng, phiếu thu, số dư (theo đường dẫn).
+    expect(needsE2e(['src/pages/don-hang/OrderRecordPage.tsx'])).toBe(true);
+    expect(needsE2e(['src/pages/phieu-thu/ReceiptRecordPage.tsx'])).toBe(true);
+    expect(needsE2e(['src/pages/so-du/Ledger.tsx'])).toBe(true);
+    expect(needsE2e(['e2e/don-hang-duyet.spec.ts'])).toBe(true);
+    expect(needsE2e(['e2e/phieu-thu.spec.ts'])).toBe(true);
+    expect(needsE2e(['src/lib/format.ts'])).toBe(true);
+    // PR khác: bỏ Playwright (giao diện không đụng tiền, Edge Function, seed, cấu hình, công cụ).
+    expect(needsE2e(['src/pages/lead/LeadListPage.tsx'])).toBe(false);
+    expect(needsE2e(['src/pages/nguoi-dung/UserDialogs.tsx', 'e2e/nguoi-dung.spec.ts'])).toBe(
+      false,
+    );
+    expect(needsE2e(['supabase/functions/login/index.ts'])).toBe(false);
+    expect(needsE2e(['supabase/seed.sql', 'playwright.config.ts', 'scripts/seed-users.ts'])).toBe(
+      false,
+    );
+    expect(needsE2e(['.github/workflows/ci.yml'])).toBe(false);
+    // Tài liệu, thiết kế: bỏ như trước. Không có danh sách file: chạy.
     expect(needsE2e(['docs/a.md', 'deploy/README.md'])).toBe(false);
-    expect(needsE2e(['supabase/migrations/x.sql', 'src/a.ts'])).toBe(true);
-    expect(needsE2e(['e2e/a.spec.ts'])).toBe(true);
-    expect(needsE2e(['supabase/functions/login/index.ts'])).toBe(true);
-    expect(needsE2e(['supabase/seed.sql'])).toBe(true);
-    expect(needsE2e(['playwright.config.ts'])).toBe(true);
-    expect(needsE2e(['supabase/config.toml'])).toBe(true);
-    expect(needsE2e(['thu-muc-la/a.txt'])).toBe(true);
     expect(needsE2e([])).toBe(true);
   });
 
-  it('isDbOnly chỉ nhận migrations và tests của supabase', () => {
-    expect(isDbOnly('supabase/migrations/a.sql')).toBe(true);
-    expect(isDbOnly('supabase/tests/database/a.sql')).toBe(true);
-    expect(isDbOnly('supabase/functions/a.ts')).toBe(false);
-    expect(isDbOnly('supabase/seed.sql')).toBe(false);
+  it('isMigration và isMoney theo đường dẫn', () => {
+    expect(isMigration('supabase/migrations/a.sql')).toBe(true);
+    expect(isMigration('supabase/tests/database/a.sql')).toBe(false);
+    expect(isMoney('supabase/tests/database/064_b2_phieu_thu.test.sql')).toBe(true);
+    expect(isMoney('supabase/tests/database/043_p5a_don_hang.test.sql')).toBe(true);
+    expect(isMoney('supabase/tests/database/060_t4b_nap_nguoi_dung.test.sql')).toBe(false);
+    expect(isMoney('src/pages/bao-gia/QuotationRecordPage.tsx')).toBe(false);
+    expect(isMoney('e2e/bao-gia-seed.ts')).toBe(true);
   });
 
   it('isSkippable không nhận nhầm tên giống (docsx/, deployment/)', () => {
@@ -71,8 +86,9 @@ describe('bộ lọc CI (Đ281, Q-C3)', () => {
     const run = (input: string) =>
       execFileSync('node', ['scripts/ci-filter.ts'], { input, encoding: 'utf8' }).trim();
     expect(run('deploy/README.md\n')).toBe('full=false\nui=false\ne2e=false');
-    expect(run('deploy/README.md\nsrc/a.tsx\n')).toBe('full=true\nui=true\ne2e=true');
-    expect(run('.github/workflows/ci.yml\n')).toBe('full=true\nui=true\ne2e=true');
+    expect(run('deploy/README.md\nsrc/a.tsx\n')).toBe('full=true\nui=true\ne2e=false');
+    expect(run('src/pages/don-hang/a.tsx\n')).toBe('full=true\nui=true\ne2e=true');
+    expect(run('.github/workflows/ci.yml\n')).toBe('full=true\nui=true\ne2e=false');
     expect(run('')).toBe('full=true\nui=true\ne2e=true');
   });
 });

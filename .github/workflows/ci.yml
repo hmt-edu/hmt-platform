@@ -1,4 +1,6 @@
-# Kiểm thử mỗi PR: kiểm tra nhanh, DB (pgTAP) + Playwright, bản xem trước trên Cloudflare Pages.
+# Kiểm thử mỗi PR: kiểm tra nhanh, DB (pgTAP), Playwright (chỉ khi có migration, đụng tiền hoặc nhãn full-ci), bản xem trước trên Cloudflare Pages (chỉ khi có nhãn preview).
+# Nhánh main KHÔNG chạy đủ mỗi lần gộp: main chạy đủ (kiểm nhanh, pgTAP, Playwright) theo lịch đêm khi có commit mới kể từ lần chạy đủ gần nhất, và chạy tay
+# (workflow_dispatch) trước đợt cập nhật bản thật. Lịch đêm và chạy tay không chạy bản xem trước. Đỏ thì mở issue để anh thấy; Code sửa trước mọi việc khác (Q-21, Q-37).
 name: CI
 
 on:
@@ -9,6 +11,11 @@ on:
       - 'docs/**'
       - 'design/**'
       - '**/*.md'
+  # Lịch đêm (Q-37, anh chốt 07/11): 00:30 giờ Việt Nam. Chạy đủ trên main chỉ khi main có commit mới kể từ lần chạy đủ gần nhất (job `gate`), không thì bỏ qua.
+  # Q-38 (anh chốt 07/11): từ khi gộp đến hết 12/11 chạy MỖI đêm. SAU 12/11 PHẢI ĐỔI MỘT DÒNG dưới đây còn 3 đêm mỗi tuần (thứ Hai, Tư, Sáu theo giờ Việt Nam):
+  #   cron: '30 17 * * 0,2,4'   (17:30 UTC Chủ nhật, Ba, Năm = 00:30 thứ Hai, Tư, Sáu). Vẫn chỉ chạy khi có commit mới. Đừng quên: tiết kiệm phút Actions gói Free.
+  schedule:
+    - cron: '30 17 * * *'
   workflow_dispatch:
 
 # Mỗi PR chỉ giữ lượt chạy mới nhất (tiết kiệm phút Actions).
@@ -19,7 +26,40 @@ concurrency:
 permissions: {}
 
 jobs:
+  # Chỉ cho lịch đêm: main có commit mới kể từ lần chạy đủ gần nhất (lịch đêm hoặc chạy tay đã xong) thì chạy, không thì bỏ qua (tốn khoảng 1 phút).
+  gate:
+    name: Main có commit mới từ lần chạy đủ gần nhất?
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      run: ${{ steps.g.outputs.run }}
+    steps:
+      - id: g
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Lần chạy đủ gần nhất trên main (lịch đêm hoặc chạy tay) đã xong, thành công hoặc đỏ; so với commit hiện tại. Không lấy được thì chạy (an toàn).
+          if last="$(gh api "repos/${REPO}/actions/workflows/ci.yml/runs?branch=main&status=completed&per_page=30" \
+              --jq '[.workflow_runs[] | select((.event == "schedule" or .event == "workflow_dispatch") and (.conclusion == "success" or .conclusion == "failure")) | .head_sha] | first // empty' 2>/dev/null)"; then
+            if [ -n "$last" ] && [ "$last" = "$GITHUB_SHA" ]; then
+              echo "::notice::Main chưa có commit mới từ lần chạy đủ gần nhất ($last): bỏ qua."
+              echo "run=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+
+  # Gắn nhãn khác `full-ci` (ví dụ `preview`) chỉ chạy lại phần cần thiết, không chạy lại cả CI (tiết kiệm phút Actions, Q-21).
   checks:
+    needs: gate
+    if: >-
+      !cancelled() && (github.event.action != 'labeled' || github.event.label.name == 'full-ci') &&
+      (github.event_name != 'schedule' || needs.gate.outputs.run == 'true')
     permissions:
       contents: read
     uses: ./.github/workflows/_checks.yml
@@ -31,6 +71,10 @@ jobs:
   # không lấy được danh sách file: chạy đủ. Logic ở scripts/ci-filter.ts (có bài kiểm Vitest).
   changes:
     name: Chọn phần CI cần chạy
+    needs: gate
+    if: >-
+      !cancelled() && (github.event.action != 'labeled' || github.event.label.name == 'full-ci') &&
+      (github.event_name != 'schedule' || needs.gate.outputs.run == 'true')
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     permissions:
@@ -61,17 +105,21 @@ jobs:
   db-e2e:
     name: DB (pgTAP) + Playwright
     # Chờ kiểm tra nhanh xanh rồi mới chạy (đỡ tốn phút khi lint/test đã trượt); bỏ khi PR chỉ đổi deploy/, docs/, design/, *.md.
-    needs: [checks, changes]
+    needs: [gate, checks, changes]
     # Chạy khi bộ lọc báo cần chạy đủ HOẶC bộ lọc/job `changes` hỏng (mặc định an toàn: chạy đủ). always() để job `changes` hỏng không làm bỏ qua.
+    # Gắn nhãn khác `full-ci` thì bỏ qua (đã chạy ở lần đẩy commit).
     if: >-
       always() && needs.checks.result == 'success' &&
+      (github.event.action != 'labeled' || github.event.label.name == 'full-ci') &&
+      (github.event_name != 'schedule' || needs.gate.outputs.run == 'true') &&
       (needs.changes.result != 'success' || needs.changes.outputs.full == 'true')
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions:
       contents: read
-    # Playwright chỉ chạy khi PR đổi giao diện hoặc luồng (src/, e2e/, supabase/functions/, seed, cấu hình...); PR chỉ đổi migration, test pgTAP
-    # thì chạy pgTAP, bỏ Playwright (scripts/ci-filter.ts, needsE2e). Nhãn `full-ci` hoặc bộ lọc hỏng: chạy đủ.
+    # Playwright trên PR (Q-21, anh chốt 06/11) chỉ chạy khi PR có migration hoặc đụng tiền (đơn hàng, phiếu thu, số dư; theo đường dẫn, xem
+    # scripts/ci-filter.ts: isMoney, needsE2e). PR khác chạy pgTAP, bỏ Playwright (Code dán kết quả `npm run check:all` trên máy vào bình luận PR).
+    # Nhãn `full-ci` hoặc bộ lọc hỏng: chạy đủ. Nhánh main KHÔNG chạy đủ mỗi lần gộp: main chạy đủ theo lịch đêm khi có commit mới (job `gate`) và chạy tay trước đợt cập nhật bản thật.
     env:
       RUN_E2E: ${{ needs.changes.result != 'success' || needs.changes.outputs.e2e == 'true' }}
     steps:
@@ -234,10 +282,13 @@ jobs:
   preview:
     name: Bản xem trước (Cloudflare Pages)
     needs: [checks, db-e2e, changes]
-    # Chỉ PR từ chính repo (PR từ fork không có secrets) và chỉ khi PR đổi giao diện.
-    # Bộ lọc/job `changes` hỏng thì vẫn chạy đủ (an toàn); always() để không bị bỏ qua dây chuyền.
+    # Chỉ khi PR gắn nhãn `preview` (Q-21, anh chốt 06/11), chỉ PR từ chính repo (PR từ fork không có secrets) và chỉ khi PR đổi giao diện.
+    # Gắn nhãn `preview` thì chỉ job này chạy (kiểm nhanh, DB, Playwright bị bỏ: kết quả skipped được chấp nhận); đẩy commit mới thì chờ kiểm nhanh
+    # và DB xanh như trước. Bộ lọc/job `changes` hỏng hoặc bị bỏ thì vẫn chạy (an toàn); always() để không bị bỏ qua dây chuyền.
     if: >-
-      always() && needs.checks.result == 'success' && needs.db-e2e.result == 'success' &&
+      always() && contains(github.event.pull_request.labels.*.name, 'preview') &&
+      (needs.checks.result == 'success' || needs.checks.result == 'skipped') &&
+      (needs.db-e2e.result == 'success' || needs.db-e2e.result == 'skipped') &&
       github.event_name == 'pull_request' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       (needs.changes.result != 'success' ||
@@ -391,3 +442,25 @@ jobs:
             gh api --method POST "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" -f body="$body" > /dev/null
           fi
           echo "Bản xem trước: $ALIAS_URL" >> "$GITHUB_STEP_SUMMARY"
+
+  # Lịch đêm hoặc chạy tay trên main mà đỏ: mở issue để anh thấy ngay (Q-37). Code sửa trước mọi việc khác.
+  bao-do:
+    name: Báo main đỏ
+    needs: [checks, db-e2e]
+    if: >-
+      always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+      (needs.checks.result == 'failure' || needs.db-e2e.result == 'failure')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA: ${{ github.sha }}
+        run: |
+          gh issue create --repo "$REPO" --title "CI đêm trên main đỏ (commit ${SHA:0:7})" \
+            --body "Lần chạy đủ trên main đỏ. Xem: ${RUN_URL}. Code sửa trước mọi việc khác (Q-21, Q-37)."
