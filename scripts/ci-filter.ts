@@ -22,28 +22,42 @@ export function isMigration(file: string): boolean {
 }
 
 /**
- * File "đụng tiền" (đơn hàng, phiếu thu, số dư), xác định theo ĐƯỜNG DẪN (không theo nhãn): màn và bài Playwright của ba phần này, dữ liệu giả dùng chung của
- * bài đơn hàng (bao-gia-seed), hàm định dạng và đọc tiền dùng chung (format, amountInWords), bài pgTAP của ba phần. Thêm phần mới (ví dụ số dư) thì thêm tên thư mục ở đây.
+ * File "đụng tiền" (đơn hàng, phiếu thu, số dư, báo giá, gói bán, bảng giá và các phần sắp có: công nợ, thu nợ đầu kỳ, voucher, hoàn phí), xác định theo
+ * ĐƯỜNG DẪN (không theo nhãn): màn và bài Playwright của các phần này (kể cả dữ liệu giả dùng chung bao-gia-seed), hàm định dạng và đọc tiền dùng chung
+ * (format, amountInWords), bài pgTAP của các phần. Thêm phần mới thì thêm tên thư mục ở đây (Q-36, Q-39).
  */
 export function isMoney(file: string): boolean {
   return (
-    /^src\/pages\/(don-hang|phieu-thu|so-du)\//.test(file) ||
-    /^e2e\/(don-hang|phieu-thu|so-du)[^/]*$/.test(file) ||
-    /^e2e\/bao-gia-seed\.ts$/.test(file) ||
+    /^src\/pages\/(don-hang|phieu-thu|so-du|bao-gia|goi-ban|bang-gia|cong-no|thu-no-dau-ky|voucher|hoan-phi)\//.test(
+      file,
+    ) ||
+    /^e2e\/(don-hang|phieu-thu|so-du|bao-gia|goi-ban|bang-gia|cong-no|thu-no-dau-ky|voucher|hoan-phi)[^/]*$/.test(
+      file,
+    ) ||
     /^src\/lib\/(format|amountInWords)(\.test)?\.ts$/.test(file) ||
-    /^supabase\/tests\/database\/[^/]*(don_hang|phieu_thu|so_du)[^/]*$/.test(file)
+    /^supabase\/tests\/database\/[^/]*(don_hang|phieu_thu|so_du|bao_gia|goi_ban|bang_gia|cong_no|thu_no_dau_ky|voucher|hoan_phi)[^/]*$/.test(
+      file,
+    )
   );
 }
 
 /**
- * Cần chạy Playwright trên PR (Q-21, anh chốt 06/11): CHỈ khi PR có migration hoặc đụng tiền (isMoney). Nhãn `full-ci` ép chạy (scripts/ci-changes.sh);
+ * File "lõi truy cập" (Q-36, Q-39): đăng nhập, phiên, ma trận quyền và menu theo quyền (src/lib/auth/, src/nav/). Sai ở đây là hỏng mọi màn nên
+ * cũng chạy Playwright. Bản in nằm trong thư mục của từng màn (Báo giá, Phiếu thu) nên đã thuộc isMoney; không có thư mục src/print/.
+ */
+export function isCore(file: string): boolean {
+  return /^src\/(lib\/auth|nav)\//.test(file);
+}
+
+/**
+ * Cần chạy Playwright trên PR (Q-21, anh chốt 06/11; mở rộng Q-36, Q-39): CHỈ khi PR có migration, đụng tiền (isMoney) hoặc lõi truy cập (isCore). Nhãn `full-ci` ép chạy (scripts/ci-changes.sh);
  * không lấy được danh sách file thì chạy. PR khác: Code dán kết quả `npm run check:all` trên máy (commit, số bài qua) vào bình luận PR; nhánh main sau khi gộp
  * KHÔNG chạy đủ mỗi lần gộp: main chạy đủ theo lịch đêm khi có commit mới (ci.yml, job gate) và chạy tay trước đợt cập nhật bản thật (Q-37). Đổi cho từng loại file: xem bảng trong mô tả PR Q-21.
  */
 export function needsE2e(files: string[]): boolean {
   if (files.length === 0) return true;
   if (!needsFullCi(files)) return false;
-  return files.some((f) => isMigration(f) || isMoney(f));
+  return files.some((f) => isMigration(f) || isMoney(f) || isCore(f));
 }
 
 /** Đổi thứ làm nên bản dựng giao diện: cần bản xem trước (Cloudflare Pages). Không có danh sách file thì coi như có (chạy đủ, Đ281). */

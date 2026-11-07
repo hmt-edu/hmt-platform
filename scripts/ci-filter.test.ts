@@ -1,6 +1,14 @@
 import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
-import { isMigration, isMoney, isSkippable, needsE2e, needsFullCi, touchesUi } from './ci-filter';
+import {
+  isCore,
+  isMigration,
+  isMoney,
+  isSkippable,
+  needsE2e,
+  needsFullCi,
+  touchesUi,
+} from './ci-filter';
 
 describe('bộ lọc CI (Đ281, Q-C3)', () => {
   it('chỉ deploy/: bỏ DB + Playwright và bản xem trước', () => {
@@ -72,8 +80,30 @@ describe('bộ lọc CI (Đ281, Q-C3)', () => {
     expect(isMoney('supabase/tests/database/064_b2_phieu_thu.test.sql')).toBe(true);
     expect(isMoney('supabase/tests/database/043_p5a_don_hang.test.sql')).toBe(true);
     expect(isMoney('supabase/tests/database/060_t4b_nap_nguoi_dung.test.sql')).toBe(false);
-    expect(isMoney('src/pages/bao-gia/QuotationRecordPage.tsx')).toBe(false);
+    // Q-36, Q-39: báo giá, gói bán, bảng giá và các phần sắp có cũng là đụng tiền.
+    expect(isMoney('src/pages/bao-gia/QuotationRecordPage.tsx')).toBe(true);
+    expect(isMoney('src/pages/goi-ban/PackageListPage.tsx')).toBe(true);
+    expect(isMoney('src/pages/bang-gia/PriceBoardPage.tsx')).toBe(true);
+    expect(isMoney('e2e/bao-gia.spec.ts')).toBe(true);
+    expect(isMoney('e2e/goi-ban.spec.ts')).toBe(true);
+    expect(isMoney('e2e/bang-gia.spec.ts')).toBe(true);
+    expect(isMoney('supabase/tests/database/037_p5a_bao_gia.test.sql')).toBe(true);
+    expect(isMoney('supabase/tests/database/066_bang_gia_theo_goi.test.sql')).toBe(true);
+    for (const dir of ['cong-no', 'thu-no-dau-ky', 'voucher', 'hoan-phi'])
+      expect(isMoney(`src/pages/${dir}/Trang.tsx`)).toBe(true);
+    // Phần không đụng tiền vẫn không tính.
+    expect(isMoney('src/pages/lead/LeadListPage.tsx')).toBe(false);
+    expect(isMoney('e2e/nguoi-dung.spec.ts')).toBe(false);
     expect(isMoney('e2e/bao-gia-seed.ts')).toBe(true);
+  });
+
+  it('isCore: lõi truy cập (đăng nhập, phiên, menu theo quyền) cũng chạy Playwright', () => {
+    expect(isCore('src/lib/auth/claims.ts')).toBe(true);
+    expect(isCore('src/nav/access.ts')).toBe(true);
+    expect(isCore('src/lib/db.ts')).toBe(false);
+    expect(needsE2e(['src/nav/crmMenu.ts'])).toBe(true);
+    expect(needsE2e(['src/lib/auth/AuthProvider.tsx'])).toBe(true);
+    expect(needsE2e(['src/pages/bao-gia/QuotationRecordPage.tsx'])).toBe(true);
   });
 
   it('isSkippable không nhận nhầm tên giống (docsx/, deployment/)', () => {

@@ -117,8 +117,8 @@ jobs:
     timeout-minutes: 25
     permissions:
       contents: read
-    # Playwright trên PR (Q-21, anh chốt 06/11) chỉ chạy khi PR có migration hoặc đụng tiền (đơn hàng, phiếu thu, số dư; theo đường dẫn, xem
-    # scripts/ci-filter.ts: isMoney, needsE2e). PR khác chạy pgTAP, bỏ Playwright (Code dán kết quả `npm run check:all` trên máy vào bình luận PR).
+    # Playwright trên PR (Q-21, anh chốt 06/11) chỉ chạy khi PR có migration, đụng tiền (đơn hàng, phiếu thu, số dư, báo giá, gói bán, bảng giá…) hoặc lõi truy cập (src/lib/auth, src/nav; Q-39); theo đường dẫn, xem
+    # scripts/ci-filter.ts: isMoney, isCore, needsE2e). PR khác chạy pgTAP, bỏ Playwright (Code dán kết quả `npm run check:all` trên máy vào bình luận PR).
     # Nhãn `full-ci` hoặc bộ lọc hỏng: chạy đủ. Nhánh main KHÔNG chạy đủ mỗi lần gộp: main chạy đủ theo lịch đêm khi có commit mới (job `gate`) và chạy tay trước đợt cập nhật bản thật.
     env:
       RUN_E2E: ${{ needs.changes.result != 'success' || needs.changes.outputs.e2e == 'true' }}
