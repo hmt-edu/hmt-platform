@@ -27,7 +27,7 @@ select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC', 'DN', 'KN', '
 select is(pg_temp.codes('HOMEWORK_STATUS'), array['DA_CHAM', 'LAM_CHUA_XONG', 'KHONG_LAM', 'NOP_SAU', 'KHONG_AP_DUNG'],
           'Trạng thái BTVN đúng R-GV-11');
 select is(pg_temp.codes('MODULE'), array['BAN_HANG', 'VAN_HANH_LOP', 'CONG_GIAO_VIEN', 'HOC_TAP', 'BAO_CAO'], 'Phân hệ cho công tắc');
-select is((select count(*)::int from app.catalog where kind = 'HE_THONG'), 27, '27 danh mục hệ thống (B2: thêm Trạng thái phiếu thu; P5a-DB1b-1: thêm Trạng thái đơn hàng; P5a-DB1a: thêm Trạng thái báo giá; P5a-DB0: thêm Đơn vị tính của gói; PR 6c: thêm Giai đoạn phiếu tái tục, Nhóm đề nghị; PR 6b: thêm Loại gói, Mức độ khiếu nại; PR 6a: thêm Môn, Khối, Trình độ, Giai đoạn lead, Giai đoạn cơ hội; trước đó bước 3: PERM_MODULE, PERM_ACTION, PERM_SCOPE; bước 4b: NOTIFICATION_KIND)');
+select is((select count(*)::int from app.catalog where kind = 'HE_THONG'), 29, '29 danh mục hệ thống (migration 084, Q-122: thêm Giai đoạn con lead, Giai đoạn con cơ hội, chỉ đổi tên; B2: thêm Trạng thái phiếu thu; P5a-DB1b-1: thêm Trạng thái đơn hàng; P5a-DB1a: thêm Trạng thái báo giá; P5a-DB0: thêm Đơn vị tính của gói; PR 6c: thêm Giai đoạn phiếu tái tục, Nhóm đề nghị; PR 6b: thêm Loại gói, Mức độ khiếu nại; PR 6a: thêm Môn, Khối, Trình độ, Giai đoạn lead, Giai đoạn cơ hội; trước đó bước 3: PERM_MODULE, PERM_ACTION, PERM_SCOPE; bước 4b: NOTIFICATION_KIND)');
 select is((select kind from app.catalog where code = 'HOMEWORK_STATUS'), 'HE_THONG', 'Trạng thái BTVN là danh mục hệ thống (không thêm bớt)');
 
 -- Danh mục mở theo spec 02.

@@ -36,16 +36,17 @@ select is(pg_temp.err($$select app.catalog_add_item('OPP_STAGE', 'L9', 'Giai đo
           'HMT_DANH_MUC_HE_THONG', 'Khoá mục cha: không thêm giai đoạn cơ hội');
 select is(pg_temp.err($$select app.catalog_set_item_active(app.catalog_item_id('OPP_STAGE', 'L3'), false)$$),
           'HMT_DANH_MUC_HE_THONG', 'Khoá mục cha: không Ngừng giai đoạn cơ hội');
+-- Q-122, R-V2-42 (08/11, thay luật cũ "mục con thêm, Ngừng được"): nhóm con của hai giai đoạn khoá chỉ đổi tên trên màn hình; thêm, Ngừng bằng migration.
 select is(pg_temp.err($$select app.catalog_add_item('LEAD_SUBSTAGE', 'C2Z', 'Nhóm con mới', null,
                                                     app.catalog_item_id('LEAD_STAGE', 'C2'))$$),
-          null, 'Mục con vẫn thêm được dưới mục cha khoá');
-select is(pg_temp.err($$select app.catalog_set_item_active(app.catalog_item_id('LEAD_SUBSTAGE', 'C2Z'), false)$$),
-          null, 'Mục con vẫn Ngừng được');
+          'HMT_DANH_MUC_HE_THONG', 'Q-122: không thêm được nhóm con giai đoạn lead ở màn hình');
+select is(pg_temp.err($$select app.catalog_set_item_active(app.catalog_item_id('LEAD_SUBSTAGE', 'C2A'), false)$$),
+          'HMT_DANH_MUC_HE_THONG', 'Q-122: không Ngừng được nhóm con giai đoạn lead ở màn hình');
 
 -- C4D do hệ thống tự gắn (R-CRM-09): khoá, không Ngừng được, đổi tên được.
 select is((select is_locked from app.catalog_item where catalog_code = 'LEAD_SUBSTAGE' and code = 'C4D'), true, 'C4D bị khoá');
 select is(pg_temp.err($$select app.catalog_set_item_active(app.catalog_item_id('LEAD_SUBSTAGE', 'C4D'), false)$$),
-          'HMT_MUC_BI_KHOA', 'C4D không Ngừng được');
+          'HMT_DANH_MUC_HE_THONG', 'C4D không Ngừng được (danh mục Hệ thống chặn từ migration 084, trước đó mục bị khoá chặn)');
 select is(pg_temp.err($$select app.catalog_rename_item(app.catalog_item_id('LEAD_SUBSTAGE', 'C4D'), 'Tạo cơ hội thành công')$$),
           null, 'C4D đổi được tên hiển thị');
 

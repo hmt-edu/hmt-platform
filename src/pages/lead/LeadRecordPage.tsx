@@ -190,8 +190,14 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const staffOptions = (staff.data ?? []).map((s) => ({ value: s.id, label: s.display_name }));
   const upcoming = useLeadUpcoming(record?.id ?? null);
 
-  const channelOptions = catalogs.childrenOf('SOURCE_CHANNEL', 'SOURCE', draft.source_code);
-  const sourceOptions = catalogs.options('SOURCE');
+  // R-V2-43: bản ghi cũ vẫn hiện nguồn và kênh đã lưu dù đã Ngừng (hoặc nguồn cha đã Ngừng); ô chọn mới không hiện mục Ngừng.
+  const channelOptions = catalogs.childrenOf(
+    'SOURCE_CHANNEL',
+    'SOURCE',
+    draft.source_code,
+    record?.channel_code,
+  );
+  const sourceOptions = catalogs.options('SOURCE', record?.source_code);
   const wardOptions = catalogs.childrenOf('WARD', 'PROVINCE', draft.province_code);
 
   // ---- Lưu ----

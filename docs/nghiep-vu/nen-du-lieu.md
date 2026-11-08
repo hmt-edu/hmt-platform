@@ -54,10 +54,14 @@ không phải loại buổi. Học thử là tư cách học sinh trong buổi (
 
 | Hàm | Làm gì | Ai gọi |
 |---|---|---|
-| `app.catalog_add_item(danh mục, mã, tên, [thứ tự], [cha], [nối])` | Thêm mục vào danh mục mở | Admin (bước 3) |
+| `app.catalog_add_item(danh mục, mã, tên, [thứ tự], [cha], [nối])` | Thêm mục vào danh mục mở. Từ migration 084: câu lỗi tiếng Việt `HMT_TEN_TRONG`, `HMT_MA_SAI_DANG`, `HMT_MA_TRUNG`; thứ tự trống thì đặt cuối nhóm cùng cha | Admin (bước 3) |
 | `app.catalog_rename_item(id, tên)` | Đổi tên hiển thị | Admin |
 | `app.catalog_reorder_item(id, thứ tự)` | Đổi thứ tự | Admin |
-| `app.catalog_set_item_active(id, đang dùng?)` | Ngừng / dùng lại (danh mục mở) | Admin |
+| `app.catalog_move_item(id, 'LEN' hoặc 'XUONG')` | Đổi chỗ với mục kề trong cùng danh mục và cùng cha (nút ▲▼ ở QT-07); không áp cho danh mục hệ thống (khoá) và danh mục chỉ xem (migration 084) | Admin |
+| `app.list_catalog_summary([từ khoá])` | Danh sách danh mục gốc kèm các tầng con và số mục (cột trái QT-06, QT-07); chỉ đọc (migration 084) | Admin (Quản trị · Xem) |
+| `app.get_catalog_tree(mã danh mục gốc)` | Cây mục của một danh mục gốc, gồm các tầng con (bảng phải QT-07); chỉ đọc (migration 084) | Admin (Quản trị · Xem) |
+| `app.catalog_set_item_active(id, đang dùng?)` | Ngừng / dùng lại (danh mục mở). Ngừng mục cha không đổi trạng thái mục con; ô chọn ở giao diện tự ẩn mục con của mục cha đã Ngừng (R-V2-43) | Admin |
+| Cột `app.catalog.is_read_only` (migration 084) | Danh mục chỉ xem: Tỉnh/Thành phố, Phường/Xã (Q-110); trigger chặn sửa ngoài migration, lỗi `HMT_DANH_MUC_CHI_XEM`. Nhóm con của Giai đoạn lead, Giai đoạn cơ hội chuyển sang danh mục Hệ thống (Q-122): trên màn chỉ đổi tên, thêm hoặc Ngừng bằng migration | Migration |
 | `app.catalog_item_id(danh mục, mã)` | Lấy id mục theo mã, lỗi nếu không có | Hàm nghiệp vụ |
 | `app.assert_catalog_code_active(danh mục, mã)` | Lỗi nếu mã không có hoặc đã Ngừng | Hàm nghiệp vụ |
 | `app.is_holiday(ngày, cơ sở)` | Có phải ngày nghỉ của cơ sở | Hàm xếp lịch (GĐ2) |

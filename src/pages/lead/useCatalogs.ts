@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useDb } from '../../lib/db';
 
-type CatalogItem = {
+export type CatalogItem = {
   id: string;
   catalog_code: string;
   code: string;
@@ -48,11 +48,61 @@ const CATALOGS = [
 ];
 const FOREVER = Infinity;
 
+const toOption = (i: CatalogItem) => ({ value: i.code, label: i.name });
+
+/**
+ * Các mục dùng được của một danh mục, đúng thứ tự. `keep`: mã đang lưu trên bản ghi cũ; mục này vẫn hiện (kể cả đã Ngừng) để bản ghi cũ
+ * không mất giá trị khi mở sửa (R-V2-43), mục Ngừng khác thì không hiện ở ô chọn mới.
+ */
+export function activeOptions(all: CatalogItem[], catalog: string, keep?: string | null) {
+  return all
+    .filter((i) => i.catalog_code === catalog && (i.is_active || i.code === keep))
+    .map(toOption);
+}
+
+/**
+ * Danh sách cho BỘ LỌC (Q-127, R-V2-43): liệt kê cả mục đã Ngừng, kèm nhãn "(ngừng)", để lọc được dữ liệu cũ. Ô chọn khi tạo hoặc sửa
+ * dùng `activeOptions`, không có mục Ngừng.
+ */
+export function filterOptions(all: CatalogItem[], catalog: string) {
+  return all
+    .filter((i) => i.catalog_code === catalog)
+    .map((i) => ({ value: i.code, label: i.is_active ? i.name : `${i.name} (ngừng)` }));
+}
+
+/**
+ * Các mục con dùng được của một mục cha. R-V2-43 (Q-116): mục cha đã Ngừng thì mục con tự ẩn khỏi ô chọn (trạng thái từng mục con giữ nguyên,
+ * Dùng lại mục cha thì mục con đang dùng hiện lại). `keep`: mã con đang lưu trên bản ghi cũ vẫn hiện để không mất giá trị.
+ */
+export function childOptions(
+  all: CatalogItem[],
+  catalog: string,
+  parentCatalog: string,
+  parentCode: string | null | undefined,
+  keep?: string | null,
+) {
+  const parent = parentCode
+    ? all.find((i) => i.catalog_code === parentCatalog && i.code === parentCode)
+    : undefined;
+  if (!parent) return [];
+  const parentUsable = parent.is_active;
+  return all
+    .filter(
+      (i) =>
+        i.catalog_code === catalog &&
+        i.parent_id === parent.id &&
+        ((i.is_active && parentUsable) || i.code === keep),
+    )
+    .map(toOption);
+}
+
 export type LeadCatalogs = {
   /** Tên theo mã, kể cả mục đã Ngừng (dòng cũ vẫn hiện tên). */
   name: (catalog: string, code: string | null | undefined) => string | undefined;
   /** Các mục đang dùng của danh mục, đúng thứ tự sắp xếp. */
-  options: (catalog: string) => { value: string; label: string }[];
+  options: (catalog: string, keep?: string | null) => { value: string; label: string }[];
+  /** Như `options` nhưng liệt kê cả mục đã Ngừng kèm nhãn "(ngừng)": chỉ cho bộ lọc danh sách (Q-127). */
+  filterOptions: (catalog: string) => { value: string; label: string }[];
   /** Như `options`, nhưng chỉ mục áp dụng cho một đối tượng (cột applies_to; để trống là áp dụng mọi nơi), ví dụ lý do từ chối của báo giá. */
   optionsFor: (catalog: string, appliesTo: string) => { value: string; label: string }[];
   /** Các mục đang dùng của danh mục con thuộc một mục cha (nguồn của loại nguồn, kênh của nguồn, phường của tỉnh). */
@@ -60,6 +110,8 @@ export type LeadCatalogs = {
     catalog: string,
     parentCatalog: string,
     parentCode: string | null | undefined,
+    /** Mã đang lưu trên bản ghi cũ: vẫn hiện dù đã Ngừng hoặc mục cha đã Ngừng (R-V2-43). */
+    keep?: string | null,
   ) => { value: string; label: string }[];
   /** Mã của mục cha (loại nguồn của một nguồn). */
   parentCode: (
@@ -110,11 +162,10 @@ export function useLeadCatalogs(): LeadCatalogs {
     const byKey = new Map(all.map((i) => [`${i.catalog_code}|${i.code}`, i]));
     const byId = new Map(all.map((i) => [i.id, i]));
     const campaignById = new Map((campaigns.data ?? []).map((c) => [c.id, c.name]));
-    const toOption = (i: CatalogItem) => ({ value: i.code, label: i.name });
     return {
       name: (catalog, code) => (code ? byKey.get(`${catalog}|${code}`)?.name : undefined),
-      options: (catalog) =>
-        all.filter((i) => i.catalog_code === catalog && i.is_active).map(toOption),
+      options: (catalog, keep) => activeOptions(all, catalog, keep),
+      filterOptions: (catalog) => filterOptions(all, catalog),
       optionsFor: (catalog, appliesTo) =>
         all
           .filter(
@@ -124,13 +175,8 @@ export function useLeadCatalogs(): LeadCatalogs {
               (!i.applies_to || i.applies_to.length === 0 || i.applies_to.includes(appliesTo)),
           )
           .map(toOption),
-      childrenOf: (catalog, parentCatalog, parentCode) => {
-        const parent = parentCode ? byKey.get(`${parentCatalog}|${parentCode}`) : undefined;
-        if (!parent) return [];
-        return all
-          .filter((i) => i.catalog_code === catalog && i.is_active && i.parent_id === parent.id)
-          .map(toOption);
-      },
+      childrenOf: (catalog, parentCatalog, parentCode, keep) =>
+        childOptions(all, catalog, parentCatalog, parentCode, keep),
       parentCode: (catalog, code, parentCatalog) => {
         const item = code ? byKey.get(`${catalog}|${code}`) : undefined;
         const parent = item?.parent_id ? byId.get(item.parent_id) : undefined;

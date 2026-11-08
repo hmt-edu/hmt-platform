@@ -56,25 +56,27 @@ select is(pg_temp.err($$select app.catalog_set_item_active(app.catalog_item_id('
 select is((select is_active from app.catalog_item where catalog_code = 'ACTIVITY_TYPE' and code = 'SMS'),
           false, 'Mục đã Ngừng vẫn còn trong bảng (không xoá)');
 select is(pg_temp.err($$select app.catalog_add_item('ACTIVITY_TYPE', 'GOI_DIEN', 'Trùng mã')$$),
-          '23505', 'Danh mục mở: không thêm được mã trùng');
+          'HMT_MA_TRUNG', 'Danh mục mở: không thêm được mã trùng (migration 084: mã lỗi tiếng Việt)');
 select is(pg_temp.err($$select app.catalog_add_item('ACTIVITY_TYPE', 'gọi điện', 'Sai mã')$$),
-          '23514', 'Danh mục mở: mã phải viết hoa, không dấu');
+          'HMT_MA_SAI_DANG', 'Danh mục mở: mã phải viết hoa, không dấu (migration 084: mã lỗi tiếng Việt)');
 select is(pg_temp.err($$select app.assert_catalog_code_active('ACTIVITY_TYPE', 'SMS')$$),
           'HMT_DANH_MUC_KHONG_CO', 'Mục đã Ngừng không dùng được cho dữ liệu mới');
 
 -- ---------- Mục bị khoá ----------
-update app.catalog_item set is_locked = true where catalog_code = 'OPP_SUBSTAGE' and code = 'L5A';
-select is(pg_temp.err($$update app.catalog_item set is_active = false where catalog_code = 'OPP_SUBSTAGE' and code = 'L5A'$$),
+-- Migration 084 (Q-122): nhóm con giai đoạn là danh mục Hệ thống nên đã chặn Ngừng từ trước; luật "mục bị khoá" kiểm ở danh mục mở.
+update app.catalog_item set is_locked = true where catalog_code = 'ACTIVITY_TYPE' and code = 'EMAIL';
+select is(pg_temp.err($$update app.catalog_item set is_active = false where catalog_code = 'ACTIVITY_TYPE' and code = 'EMAIL'$$),
           'HMT_MUC_BI_KHOA', 'Mục bị khoá (luật code bám vào) không Ngừng được');
 
 -- ---------- Nhiều tầng: mục cha đúng danh mục cha ----------
-select is(pg_temp.err($$select app.catalog_add_item('OPP_SUBSTAGE', 'L9A', 'Thiếu mục cha')$$),
+-- Danh mục 2 tầng mở: Kênh thuộc Nguồn (migration 084: nhóm con giai đoạn chuyển sang Hệ thống, thêm bằng migration).
+select is(pg_temp.err($$select app.catalog_add_item('SOURCE_CHANNEL', 'KENH9A', 'Thiếu mục cha')$$),
           'HMT_MUC_CHA_SAI', 'Danh mục 2 tầng: mục con phải có mục cha');
-select is(pg_temp.err($$select app.catalog_add_item('OPP_SUBSTAGE', 'L9A', 'Cha sai danh mục', null,
+select is(pg_temp.err($$select app.catalog_add_item('SOURCE_CHANNEL', 'KENH9A', 'Cha sai danh mục', null,
                                                     app.catalog_item_id('LEAD_STAGE', 'C1'))$$),
           'HMT_MUC_CHA_SAI', 'Danh mục 2 tầng: mục cha phải thuộc đúng danh mục cha');
-select is(pg_temp.err($$select app.catalog_add_item('OPP_SUBSTAGE', 'L1A', 'Con của L1', null,
-                                                    app.catalog_item_id('OPP_STAGE', 'L1'))$$),
+select is(pg_temp.err($$select app.catalog_add_item('SOURCE_CHANNEL', 'KENH1A', 'Con của nguồn', null,
+                                                    app.catalog_item_id('SOURCE', 'FACEBOOK_ADS'))$$),
           null, 'Danh mục 2 tầng: thêm mục con đúng cha được');
 select is(pg_temp.err($$select app.catalog_add_item('FRAMEWORK_LEVEL', 'XYZ', 'Cấp độ có cha', null,
                                                     app.catalog_item_id('GRADE', 'K02'))$$),

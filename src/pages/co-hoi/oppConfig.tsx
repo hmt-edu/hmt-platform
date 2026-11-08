@@ -152,7 +152,8 @@ export function buildOppConfig(
         key: 'channel',
         label: 'Sub-source',
         type: 'multi',
-        options: catalogs.options('SOURCE_CHANNEL'),
+        // Q-127: bộ lọc liệt kê cả kênh đã Ngừng, kèm nhãn (ngừng), để lọc dữ liệu cũ.
+        options: catalogs.filterOptions('SOURCE_CHANNEL'),
       },
       {
         key: 'campaign',
