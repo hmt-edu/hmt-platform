@@ -8,6 +8,16 @@ cd "$(dirname "$0")/.."
 
 step() { printf '\n=== %s ===\n' "$1"; }
 
+# Cổng xem trước của Playwright (4173) phải trống. Tiến trình `vite preview` sót từ lần chạy bị dừng giữa chừng vẫn phục vụ bản build CŨ, mà
+# Playwright dùng lại tiến trình đang giữ cổng (reuseExistingServer) nên bài kiểm chạy trên mã cũ (gốc lỗi 08/11: bài tab của #198 báo sai).
+# Thấy tiến trình thì dừng ngay và báo; không tự tắt để người chạy thấy.
+if lsof -nP -iTCP:4173 -sTCP:LISTEN > /dev/null 2>&1; then
+  echo "DỪNG: cổng 4173 đang có tiến trình (thường là vite preview sót từ lần check:all bị dừng):"
+  lsof -nP -iTCP:4173 -sTCP:LISTEN
+  echo "Tắt tiến trình đó (ví dụ: pkill -f 'vite preview --port 4173') rồi chạy lại check:all."
+  exit 1
+fi
+
 step "Kiểm nhanh: lint, typecheck, test, hardcode, format"
 npm run lint
 npm run typecheck

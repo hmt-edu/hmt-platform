@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { expectAccessible } from './helpers';
+import { expectAccessible, isPhone } from './helpers';
 
 const ENV_LABELS = ['Local', 'Xem trước', 'Thử nghiệm', 'Chạy thật', 'Không rõ'];
 
@@ -91,8 +91,11 @@ test('cột giới thiệu của trang đăng nhập có nền cam (lỗi đã g
   page,
 }) => {
   await page.goto('/dang-nhap');
+  // Chờ trang vẽ xong trước khi xét có cột giới thiệu hay không: isVisible() không chờ nên trang chậm bị bỏ qua nhầm (08/11).
+  await expect(page.getByRole('heading', { level: 1, name: 'Đăng nhập' })).toBeVisible();
   const panel = page.getByRole('complementary', { name: 'Giới thiệu hệ thống' });
-  test.skip(!(await panel.isVisible()), 'Điện thoại không có cột giới thiệu.');
+  test.skip(isPhone(page), 'Điện thoại không có cột giới thiệu.');
+  await expect(panel).toBeVisible();
   await expect(panel).not.toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
   await expect(panel).not.toHaveCSS('background-color', 'rgb(255, 255, 255)');
 });

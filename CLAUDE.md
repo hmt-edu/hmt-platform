@@ -107,7 +107,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 - `npm run db:test`: pgTAP (RLS, hàm nghiệp vụ).
 - `npm run db:seed-users`: tạo tài khoản giả mỗi vai trò (cần `API_URL`, `SECRET_KEY`, `DB_URL`, `SEED_PASSWORD`, xem `README.md`).
 - `npm run lint`, `npm run typecheck`, `npm run test`, `npm run check:hardcode`, `npm run format:check`: bộ kiểm tra nhanh như CI.
-- `npm run check:all`: cả bộ kiểm như CI trên máy (nhanh ở trên, `db:reset`, `db:test`, `e2e`); chạy trước khi đẩy.
+- `npm run check:all`: cả bộ kiểm như CI trên máy (nhanh ở trên, `db:reset`, `db:test`, `e2e`); chạy trước khi đẩy. Dừng `check:all` giữa chừng thì tắt `vite preview` còn sót ở cổng 4173 (`pkill -f 'vite preview --port 4173'`); `check:all` tự dừng và báo nếu thấy cổng này đang bị giữ.
 - `npm run e2e`: Playwright máy tính + iPhone (lần đầu: `npx playwright install chromium webkit`).
 - `npx supabase migration new <ten>`: tạo file migration mới.
 
