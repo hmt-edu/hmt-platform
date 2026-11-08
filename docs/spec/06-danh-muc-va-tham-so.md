@@ -115,6 +115,7 @@ Không có C3K.
 | Bán hàng | Hạn hiệu lực báo giá | 14 ngày | 1–90 | Không |
 | Bán hàng | Tiền cọc tối thiểu để ghi danh | 1.000.000 đ | 0–100.000.000 | Không |
 | Bán hàng | Trần chiết khấu tổng (gồm giờ tặng) | 20% | 0–100% | Không |
+| Bán hàng | Ưu đãi linh hoạt tối đa mỗi dòng | 5% | 0–20% | Không |
 | Bán hàng | Phí xử lý hoàn phí | 10% | 0–100% | Không |
 | Ghi danh | Thời hạn gói (chỉ dự báo) | 6 tháng | 1–24 | Không |
 | Ghi danh | Bảo lưu tối đa mỗi lần | 6 tháng | 1–24 | Không |

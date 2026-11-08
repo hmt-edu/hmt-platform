@@ -22,6 +22,51 @@ const ev = (
 const name = (catalog: string, code: string | null | undefined) =>
   catalog === 'REJECT_REASON' && code === 'THIEU_THONG_TIN' ? 'Thiếu thông tin' : undefined;
 
+/** Mục sự kiện đầu tiên (thu hẹp kiểu để đọc title, lines). */
+function firstEvent(entries: ReturnType<typeof orderEventEntries>) {
+  const first = entries[0];
+  if (first?.kind !== 'event') throw new Error('Mục đầu không phải sự kiện');
+  return first;
+}
+
+describe('Q-145: nhật ký Tạo, Sửa ghi dòng Ưu đãi linh hoạt', () => {
+  it('Tạo có ưu đãi linh hoạt: các dòng hiện dưới tiêu đề "Tạo đơn hàng", đơn từ báo giá kèm mã báo giá', () => {
+    const entry = firstEvent(
+      orderEventEntries(
+        [
+          ev(1, 'TAO', {
+            note: 'Ưu đãi linh hoạt 3% ở dòng 2\nƯu đãi linh hoạt 2% ở dòng 3 (nhập ở báo giá BG-CS1-2610-0007)',
+          }),
+        ],
+        name,
+      ),
+    );
+    expect(entry.title).toBe('Tạo đơn hàng');
+    expect(entry.lines).toEqual([
+      'Ưu đãi linh hoạt 3% ở dòng 2',
+      'Ưu đãi linh hoạt 2% ở dòng 3 (nhập ở báo giá BG-CS1-2610-0007)',
+    ]);
+  });
+  it('Tạo không có ưu đãi (note trống): không có dòng nào', () => {
+    const entry = firstEvent(orderEventEntries([ev(1, 'TAO')], name));
+    expect(entry.lines).toEqual([]);
+  });
+  it('Sửa: dòng ưu đãi linh hoạt nằm cùng các dòng thay đổi', () => {
+    const entry = firstEvent(
+      orderEventEntries(
+        [
+          ev(1, 'SUA', {
+            note: 'Sửa đơn\ndòng 1 (LC-TOAN-K09): số giờ 6 → 8\nƯu đãi linh hoạt 4% ở dòng 2',
+          }),
+        ],
+        name,
+      ),
+    );
+    expect(entry.title).toBe('Sửa đơn');
+    expect(entry.lines).toContain('Ưu đãi linh hoạt 4% ở dòng 2');
+  });
+});
+
 describe('mục dòng thời gian của đơn (Q-48, Q-51)', () => {
   it('Tạo và Duyệt hiện tổng tiền; Trình không có tổng', () => {
     const entries = orderEventEntries(

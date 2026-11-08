@@ -255,7 +255,7 @@ select is(pg_temp.err($$select app.list_sellable_packages('00000000-0000-0000-00
 
 -- ================= list_applicable_discount_policies =================
 select is((select array_agg(x ->> 'code' order by x ->> 'code') from jsonb_array_elements(app.list_applicable_discount_policies(pg_temp.oid('0900011001'))) x),
-          array['GIAM_6_THANG', 'GIAM_THUONG_LUONG', 'TANG_GIO'], 'Chính sách: ba chính sách hiệu lực hôm nay');
+          array['GIAM_6_THANG', 'GIAM_THUONG_LUONG', 'TANG_GIO', 'UU_DAI_LINH_HOAT'], 'Chính sách: bốn chính sách hiệu lực hôm nay (migration 085 thêm Ưu đãi linh hoạt)');
 select is((select x ->> 'kind' from jsonb_array_elements(app.list_applicable_discount_policies(pg_temp.oid('0900011001'))) x where x ->> 'code' = 'TANG_GIO'), 'GIFT_HOURS', 'Chính sách: loại giờ tặng');
 select is((select (x ->> 'max_value')::numeric from jsonb_array_elements(app.list_applicable_discount_policies(pg_temp.oid('0900011001'))) x where x ->> 'code' = 'GIAM_THUONG_LUONG'), 10::numeric, 'Chính sách: mức tối đa');
 select is((select (x ->> 'requires_approval')::boolean from jsonb_array_elements(app.list_applicable_discount_policies(pg_temp.oid('0900011001'))) x where x ->> 'code' = 'GIAM_THUONG_LUONG'), true, 'Chính sách: cần duyệt');

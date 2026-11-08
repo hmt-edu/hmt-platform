@@ -65,11 +65,19 @@ async function openOrder(page: Page, account: string, code: string) {
   await expect(page.getByRole('heading', { level: 2, name: code })).toBeVisible();
 }
 
+// Q-138: hộp "Tạo phiếu thu" gợi ý số tiền từ phần "còn thu được" của tab Thanh toán (tải bất đồng bộ). Chờ dữ liệu đó về trước khi bấm
+// "Tạo phiếu thu", để bài không chập chờn khi dữ liệu về chậm (anh muốn người dùng tự điền số tiền nên không đổi mã màn).
+async function openOrderForReceipt(page: Page, account: string, code: string) {
+  const loaded = page.waitForResponse((r) => r.url().includes('order_payment_summary') && r.ok());
+  await openOrder(page, account, code);
+  await loaded;
+}
+
 test('Sale tạo phiếu thu nháp từ đơn Đã duyệt, sửa ghi chú, trình quản lý', async ({
   page,
 }, testInfo) => {
   const setup = receiptSetupOf(testInfo.project.name);
-  await openOrder(page, setup.sale, seeded.orders.dduyet);
+  await openOrderForReceipt(page, setup.sale, seeded.orders.dduyet);
   await page.getByRole('button', { name: 'Tạo phiếu thu' }).click();
   const dialog = page.getByRole('dialog', { name: 'Tạo phiếu thu' });
   await expect(dialog.getByRole('button', { name: 'Tạo phiếu nháp' })).toBeDisabled();
@@ -194,7 +202,7 @@ const SECOND_AMOUNT = '200000';
 test('Phiếu thứ hai: Sale tạo và trình quản lý', async ({ page }, testInfo) => {
   test.setTimeout(90_000);
   const setup = receiptSetupOf(testInfo.project.name);
-  await openOrder(page, setup.sale, seeded.orders.dduyet);
+  await openOrderForReceipt(page, setup.sale, seeded.orders.dduyet);
   await page.getByRole('button', { name: 'Tạo phiếu thu' }).click();
   const dialog = page.getByRole('dialog', { name: 'Tạo phiếu thu' });
   await pickOption(page, dialog.getByRole('combobox', { name: 'Hình thức' }), 'Tiền mặt');
@@ -265,7 +273,7 @@ test('R-V2-12: Sale chưa có quản lý gửi phiếu thu, phiếu chờ Trư�
   test.setTimeout(90_000);
   const setup = receiptSetupOf(testInfo.project.name);
   await setManager(setup.sale, null);
-  await openOrder(page, setup.sale, seeded.orders.dduyet);
+  await openOrderForReceipt(page, setup.sale, seeded.orders.dduyet);
   await page.getByRole('button', { name: 'Tạo phiếu thu' }).click();
   const dialog = page.getByRole('dialog', { name: 'Tạo phiếu thu' });
   await pickOption(page, dialog.getByRole('combobox', { name: 'Hình thức' }), 'Tiền mặt');

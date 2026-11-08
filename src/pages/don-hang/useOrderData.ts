@@ -3,6 +3,7 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
+import { withoutFlexible } from '../bao-gia/discountPolicyFilter';
 import type { OrderFilters } from './orderFilters';
 import type { AddEdit } from './orderEdit';
 import type { OrderExportResult, OrderPage, OrderRecord } from './orderTypes';
@@ -147,6 +148,8 @@ export type PolicyOption = {
   valid_to: string | null;
   package_type_codes: string[];
   branch_ids: string[];
+  /** Chính sách hệ thống "Ưu đãi linh hoạt" (R-V2-45). */
+  is_flexible?: boolean | undefined;
 };
 export type TermOption = { id: string; name: string };
 
@@ -163,7 +166,7 @@ export function useOrderEditOptions(enabled: boolean) {
           .schema('app')
           .from('discount_policy')
           .select(
-            'id, code, name, kind, max_value, fixed_value, valid_from, valid_to, package_type_codes, branch_ids',
+            'id, code, name, kind, max_value, fixed_value, valid_from, valid_to, package_type_codes, branch_ids, is_flexible',
           )
           .eq('is_active', true)
           .order('name'),
@@ -176,7 +179,8 @@ export function useOrderEditOptions(enabled: boolean) {
       ]);
       if (policies.error) throw new Error(policies.error.message);
       if (terms.error) throw new Error(terms.error.message);
-      const policyRows: PolicyOption[] = policies.data ?? [];
+      // Ưu đãi linh hoạt tạm ẩn khỏi ô chọn chờ khung chip của Design (Q-141): xem bao-gia/discountPolicyFilter.ts.
+      const policyRows: PolicyOption[] = withoutFlexible(policies.data ?? []);
       const termRows: TermOption[] = terms.data ?? [];
       return { policies: policyRows, terms: termRows };
     },

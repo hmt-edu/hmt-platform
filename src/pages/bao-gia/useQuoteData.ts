@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
+import { withoutFlexible } from './discountPolicyFilter';
 import type { QuoteFilters } from './quoteFilters';
 import type { QuotationExportResult, QuotationPage, QuotationRecord } from './quoteTypes';
 
@@ -179,6 +180,8 @@ export type DiscountPolicy = {
   fixed_value: boolean;
   requires_approval: boolean;
   package_type_codes: string[];
+  /** Chính sách hệ thống "Ưu đãi linh hoạt" (R-V2-45); max_value là hạn mức từ Cài đặt. */
+  is_flexible?: boolean | undefined;
 };
 
 export function useDiscountPolicies(opportunityId: string, enabled: boolean) {
@@ -186,10 +189,12 @@ export function useDiscountPolicies(opportunityId: string, enabled: boolean) {
   return useQuery({
     queryKey: ['quotation-discount-policies', opportunityId],
     enabled,
-    queryFn: () =>
-      rpc<DiscountPolicy[]>(supabase, 'list_applicable_discount_policies', {
-        p_opportunity_id: opportunityId,
-      }),
+    queryFn: async () =>
+      withoutFlexible(
+        await rpc<DiscountPolicy[]>(supabase, 'list_applicable_discount_policies', {
+          p_opportunity_id: opportunityId,
+        }),
+      ),
   });
 }
 

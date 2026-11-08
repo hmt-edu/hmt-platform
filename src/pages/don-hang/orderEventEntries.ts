@@ -83,7 +83,8 @@ export function orderEventEntries(
     const total = totalLine(e, sorted[i - 1]);
     switch (e.event_code) {
       case 'TAO':
-        return { ...base, title: 'Tạo đơn hàng', lines: [], total };
+        // Q-145: đơn có ưu đãi linh hoạt thì máy chủ ghi các dòng "Ưu đãi linh hoạt X% ở dòng N" vào lời của sự kiện Tạo.
+        return { ...base, title: 'Tạo đơn hàng', lines: noteLines(e.note), total };
       case 'SUA': {
         const { title, lines } = editParts(e.note);
         return { ...base, title, lines, total };
