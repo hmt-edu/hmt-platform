@@ -29,6 +29,9 @@ export const SEED_USERS: SeedUser[] = [
   { key: 'cskh.cs1', name: 'CSKH CS1 (giả)', branch: 'CS1', roles: ['CSKH'] },
   { key: 'cskh.cs5', name: 'CSKH CS5 (giả)', branch: 'CS5', roles: ['CSKH'] },
   { key: 'ketoan', name: 'Kế toán (giả)', branch: 'CS1', roles: ['ACCOUNTANT'] },
+  // Hai tài khoản riêng cho bài Kế toán duyệt phiếu thu (hai bước thiết lập ngay trong bài; không dùng chung với file bài khác để khỏi tranh thiết bị).
+  { key: 'ketoan.cs5', name: 'Kế toán CS5 (giả)', branch: 'CS5', roles: ['ACCOUNTANT'] },
+  { key: 'quantri.cs1', name: 'Quản trị CS1 (giả)', branch: 'CS1', roles: ['ADMIN'] },
   { key: 'gv.cs5', name: 'Giáo viên CS5 (giả)', branch: 'CS5', roles: ['TEACHER'] },
   { key: 'tg.cs5', name: 'Trợ giảng CS5 (giả)', branch: 'CS5', roles: ['TA'] },
   {

@@ -2,7 +2,15 @@
 // Dữ liệu giả dựng bằng don-hang-seed.ts (seedOrders).
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, DOMAIN, enterAs, expectAccessible, isPhone, pickOption } from './helpers';
+import {
+  PASSWORD,
+  DOMAIN,
+  enterAs,
+  enterAsAdmin,
+  expectAccessible,
+  isPhone,
+  pickOption,
+} from './helpers';
 import { DB_URL, clearMark, receiptSetupOf, seedOrders, type SeededOrders } from './don-hang-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
@@ -10,6 +18,7 @@ test.describe.configure({ mode: 'serial' });
 
 let seeded: SeededOrders;
 let receiptUrl = '';
+let receipt2Url = '';
 
 // eslint-disable-next-line no-empty-pattern
 test.beforeAll(async ({}, testInfo) => {
@@ -174,4 +183,75 @@ test('Người lập huỷ phiếu chưa duyệt: chọn lý do, phiếu về Hu
   await expect(page.getByText(/Phiếu đã huỷ: Sai số tiền/)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
   void isPhone;
+});
+
+// Q-100, TC-05: Kế toán duyệt phiếu thu. Phiếu thứ hai (số tiền nhỏ, phiếu đầu đã huỷ ở bài trên) đi hết đường: Sale trình, Trưởng cơ sở duyệt, rồi
+// Kế toán duyệt thì hệ thống sinh khoản tiền vào (R-TIEN-01); Admin KHÔNG có nút Duyệt (R-HT-01). Kế toán và Admin giả riêng của file này.
+const ACCOUNTANT = 'ketoan.cs5';
+const ADMIN = 'quantri.cs1';
+const SECOND_AMOUNT = '200000';
+
+test('Phiếu thứ hai: Sale tạo và trình quản lý', async ({ page }, testInfo) => {
+  test.setTimeout(90_000);
+  const setup = receiptSetupOf(testInfo.project.name);
+  await openOrder(page, setup.sale, seeded.orders.dduyet);
+  await page.getByRole('button', { name: 'Tạo phiếu thu' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tạo phiếu thu' });
+  await pickOption(page, dialog.getByRole('combobox', { name: 'Hình thức' }), 'Tiền mặt');
+  await dialog.getByLabel('Số tiền').fill(SECOND_AMOUNT);
+  await dialog.getByRole('button', { name: 'Tạo phiếu nháp' }).click();
+  await expect(page).toHaveURL(/\/crm\/phieu-thu\/[0-9a-f-]{36}$/);
+  receipt2Url = new URL(page.url()).pathname;
+  await page.getByRole('button', { name: 'Trình quản lý' }).click();
+  await expect(page.getByText(/Đã trình, chờ quản lý duyệt/)).toBeVisible();
+});
+
+// Thẻ mới cho Trưởng cơ sở: cùng một thẻ thì phiên Sale còn trong bộ nhớ, đổi tài khoản không đè được.
+test('Phiếu thứ hai: Trưởng cơ sở duyệt chuyển Kế toán', async ({ page }, testInfo) => {
+  const setup = receiptSetupOf(testInfo.project.name);
+  await enterAs(page, setup.manager);
+  await page.goto(receipt2Url);
+  await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
+});
+
+test('Admin không có nút Duyệt phiếu thu (R-HT-01), thấy phiếu nhưng chỉ xem', async ({ page }) => {
+  await enterAsAdmin(page, ADMIN);
+  await page.goto(receipt2Url);
+  await expect(page.getByRole('heading', { level: 2, name: /^PT-/ })).toBeVisible();
+  await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' })).toHaveCount(0);
+});
+
+test('Kế toán duyệt phiếu: phiếu Đã duyệt và khoá, sinh đúng một khoản tiền vào cùng số tiền', async ({
+  page,
+}) => {
+  test.setTimeout(90_000);
+  await enterAsAdmin(page, ACCOUNTANT);
+  await page.goto(receipt2Url);
+  await expect(page.getByRole('heading', { level: 2, name: /^PT-/ })).toBeVisible();
+  const receiptId = receipt2Url.split('/').pop() ?? '';
+  const moneyIn = async () => {
+    const db = new pg.Client({ connectionString: DB_URL });
+    await db.connect();
+    try {
+      const r = await db.query<{ n: string; total: string }>(
+        'select count(*)::text as n, coalesce(sum(amount), 0)::text as total from app.money_in where receipt_id = $1::uuid',
+        [receiptId],
+      );
+      return r.rows[0];
+    } finally {
+      await db.end();
+    }
+  };
+  // Trước khi duyệt chưa có khoản tiền vào.
+  expect((await moneyIn())?.n).toBe('0');
+  await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await expect(page.getByText('Đã duyệt phiếu thu, tiền đã ghi nhận.').first()).toBeVisible();
+  await expect(page.getByText(/Phiếu đã duyệt và khoá\. Tiền đã ghi nhận \(.+\)\./)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
+  const after = await moneyIn();
+  expect(after?.n).toBe('1');
+  expect(after?.total).toBe(SECOND_AMOUNT);
 });

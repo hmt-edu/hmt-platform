@@ -12,10 +12,9 @@ on:
       - 'design/**'
       - '**/*.md'
   # Lịch đêm (Q-37, anh chốt 07/11): 00:30 giờ Việt Nam. Chạy đủ trên main chỉ khi main có commit mới kể từ lần chạy đủ gần nhất (job `gate`), không thì bỏ qua.
-  # Q-38 (anh chốt 07/11): từ khi gộp đến hết 12/11 chạy MỖI đêm. SAU 12/11 PHẢI ĐỔI MỘT DÒNG dưới đây còn 3 đêm mỗi tuần (thứ Hai, Tư, Sáu theo giờ Việt Nam):
-  #   cron: '30 17 * * 0,2,4'   (17:30 UTC Chủ nhật, Ba, Năm = 00:30 thứ Hai, Tư, Sáu). Vẫn chỉ chạy khi có commit mới. Đừng quên: tiết kiệm phút Actions gói Free.
+  # Q-108 (anh OK 08/11, thay Q-38): 3 đêm mỗi tuần, thứ Hai, Tư, Sáu theo giờ Việt Nam (17:30 UTC Chủ nhật, Ba, Năm). Vẫn chỉ chạy khi có commit mới. Tiết kiệm phút Actions gói Free.
   schedule:
-    - cron: '30 17 * * *'
+    - cron: '30 17 * * 0,2,4'
   workflow_dispatch:
 
 # Mỗi PR chỉ giữ lượt chạy mới nhất (tiết kiệm phút Actions).
