@@ -1,6 +1,6 @@
 # Lịch 06/11 đến 28/11, "cổng CRM xong" và diễn tập nạp một lần (06/11/2026)
 
-Anh đổi kế hoạch dữ liệu 06/11: **dừng nạp dữ liệu khách hàng thật** (Cơ hội, Phụ huynh, Học sinh, ghi danh, số dư, nợ đầu kỳ) cho tới khi cổng CRM xong, sau đó **nạp một lần** vào ngày anh chốt. Mốc 10/11 "nạp dữ liệu, nhân viên dùng tuyển sinh" bỏ. Giữ nguyên màn Nhập, hàm nạp, bộ chuyển Cơ hội, quy tắc năm sinh, ngoại lệ R-CRM-03 và nối theo SĐT. **Ngoại lệ:** vẫn nạp tài khoản nhân sự sớm (110 người theo bộ chuyển hiện tại) để nhân viên đăng nhập thử, lộ lỗi đăng nhập, xác thực hai bước, phân quyền trên bản thật.
+Anh đổi kế hoạch dữ liệu 06/11: **dừng nạp dữ liệu khách hàng thật** (Cơ hội, Phụ huynh, Học sinh, ghi danh, số dư, nợ đầu kỳ) cho tới khi cổng CRM xong, sau đó **nạp một lần** vào ngày anh chốt. Mốc 10/11 "nạp dữ liệu, nhân viên dùng tuyển sinh" bỏ. Giữ nguyên màn Nhập, hàm nạp, bộ chuyển Cơ hội, quy tắc năm sinh, ngoại lệ R-CRM-03 và nối theo SĐT. **Ngoại lệ:** vẫn nạp tài khoản nhân sự sớm (108 người theo bộ chuyển hiện tại) để nhân viên đăng nhập thử, lộ lỗi đăng nhập, xác thực hai bước, phân quyền trên bản thật.
 Bản chạy thật **không cập nhật 07/11**: cập nhật một lần cùng B2 khoảng 12/11 (kiểm hạ tầng, đăng nhập Admin, nạp nhân sự, chưa nạp khách hàng). Tag bản chạy thật sinh sau khi B2 xong.
 
 ## 1. Kế hoạch từng ngày (giờ-ước, thang đã dùng từ đầu; công suất đo khoảng 25 đến 30 giờ-ước mỗi ngày)
@@ -13,7 +13,7 @@ Bản chạy thật **không cập nhật 07/11**: cập nhật một lần cùn
 | 09/11 | B2 e2e, sửa lỗi, mở PR B2; màn Người dùng nút **Tạo** và **Sửa email** (khung đợt 1 trước 09/11) | 24 |
 | 10/11 | Nhóm A (bỏ hai ô thanh toán khỏi Đơn hàng), vượt trần chỉ cảnh báo, chip chiết khấu; màn Danh mục | 24 |
 | 11/11 | Màn Bảng giá, Gói bán (khung đợt 2 trước 11/11); BH03_in (che SĐT chỉ ở bản in) | 22 |
-| 12/11 | **Cập nhật bản chạy thật (anh làm qua `hmt-deploy`, kèm B2, nạp 110 tài khoản nhân sự)**; ưu đãi linh hoạt (mặc định 5%); nạp Số dư sổ chỉ đọc; màn Cơ sở và phòng học | 26 |
+| 12/11 | **Cập nhật bản chạy thật (anh làm qua `hmt-deploy`, kèm B2, nạp 108 tài khoản nhân sự)**; ưu đãi linh hoạt (mặc định 5%); nạp Số dư sổ chỉ đọc; màn Cơ sở và phòng học | 26 |
 | 13 đến 14/11 | Đăng nhập bằng tên đăng nhập; giờ lưới lịch 7 đến 21, thời lượng lịch hẹn, phiếu test thành tham số; chỉnh màn Nhập theo khung Design, nút **Tải file mẫu**; Thu nợ đầu kỳ và "Dùng số dư" | 34 |
 | 15 đến 21/11 | Đào tạo: lớp, thời khoá biểu, ghi danh, buổi học, điểm danh (phần tối thiểu), nối ghi danh với phiếu thu | 190 |
 | 22 đến 23/11 | **Chuẩn bị nạp một lần (anh chốt Q-N1):** bộ chuyển Phụ huynh, Học sinh, Ghi danh, Số dư; bảng ghép 7 người phụ trách Cơ hội với tài khoản nhân sự; diễn tập đầy đủ trên staging bằng dữ liệu giả lớn (hai lần, có hoàn tác); nạp thử 3 dòng mỗi loại trên bản chạy thật | 46 |
@@ -34,7 +34,7 @@ Cổng xong khi **tất cả** các mục sau đạt (em báo từng mục khi x
 3. **Thu chi**: phiếu thu B2 chạy thật trên bản chạy thật với Trưởng cơ sở CS5 đã có người, hai bước duyệt đã thử; Thu nợ đầu kỳ; "Dùng số dư"; sổ số dư.
 4. **Đào tạo**: lớp, ghi danh, buổi, điểm danh (phần tối thiểu); **ghi danh chặn cơ hội còn dấu thiếu thông tin em**; bộ lọc "Chờ ghi danh" dùng được.
 5. **Cấu hình nhập tay xong trên bản chạy thật**: Gói bán, Bảng giá, Chiết khấu, Điều khoản thanh toán, Cơ sở và phòng học, Danh mục, Công tắc tính năng (danh sách "anh phải nhập" ở mục 4 dưới đây).
-6. **Tài khoản nhân sự đã nạp** (110 người), nhân viên đã đăng nhập thử: đăng nhập, xác thực hai bước, phân quyền, đặt lại mật khẩu chạy đúng; lỗi lộ ra đã sửa.
+6. **Tài khoản nhân sự đã nạp** (108 người), nhân viên đã đăng nhập thử: đăng nhập, xác thực hai bước, phân quyền, đặt lại mật khẩu chạy đúng; lỗi lộ ra đã sửa.
 7. **Bộ chuyển và nối**: bộ chuyển Cơ hội (xong), Phụ huynh, Học sinh, Ghi danh, Số dư (viết khi anh chốt ngày); **bảng ghép 7 người phụ trách Cơ hội** với tài khoản nhân sự; chức năng nối Phụ huynh, Học sinh theo SĐT đã làm.
 8. **Diễn tập đầy đủ xong** trên staging bằng dữ liệu giả lớn, đạt tiêu chí mục 3.
 9. **Sao lưu đêm** của bản chạy thật chạy được và đã khôi phục thử (anh làm).

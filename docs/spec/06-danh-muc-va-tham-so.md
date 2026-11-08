@@ -10,7 +10,7 @@ Dùng cho QT-07 (danh mục) và QT-09 (Cài đặt). Giá trị ở đây là d
 
 **Loại khoá:**
 - **Khoá:** mã dùng trong luật hoặc trong mã đối tượng, nên chỉ được đổi tên hiển thị. Không thêm, không ngừng.
-- **Khoá mục cha:** mục cấp 1 khoá; mục con thêm, đổi tên, ngừng được.
+- **Khoá mục cha:** mục cấp 1 khoá; mục con (cấp 2) thêm, đổi tên, ngừng được. **Ngoại lệ (R-V2-42, Q-122, 08/11), chỉ hai danh mục: dòng 10 Giai đoạn lead và dòng 11 Giai đoạn cơ hội: nhóm con chỉ đổi tên trên màn hình; thêm hoặc ngừng nhóm con chỉ làm bằng migration.** Dòng 12 (Giai đoạn phiếu tái tục) và dòng 19 (Nhóm, nhóm con đề nghị) không đổi.
 - **Mở:** thêm, đổi tên, đổi thứ tự, ngừng được.
 
 Không danh mục nào được xoá hay đổi mã.
@@ -18,7 +18,7 @@ Không danh mục nào được xoá hay đổi mã.
 | # | Danh mục | Cấp | Khoá | Giá trị nạp sẵn |
 |---|---|---|---|---|
 | 1 | Cơ sở | 1 | Khoá | CS1 Nguyễn Chí Thanh, CS2 Đỗ Quang, CS3 Hội sở, CS4 Hà Đông, CS5 Mỹ Đình. **(chốt 12/10)** Không thêm, không ngừng trên giao diện (mở cơ sở mới qua migration); sửa được tên hiển thị, địa chỉ, hotline |
-| 2 | Phòng học | 1, theo cơ sở | Mở | Theo từng cơ sở (CS3 không có) |
+| 2 | Phòng học | 1, theo cơ sở | Mở | Theo từng cơ sở (CS3 là cơ sở dạy học thường, có phòng: R-V2-10, sửa 08/11) |
 | 3 | Môn | 1 | Khoá | TOAN, DAI, HINH, LY, HOA, VAN, ANH, KHTN, TRUNG, SAT |
 | 4 | Khối | 1 | Khoá | K02–K12 |
 | 5 | Phân loại lớp | 1 | Khoá | CB Cơ bản, NC Nâng cao, LR Lớp riêng |
@@ -26,8 +26,8 @@ Không danh mục nào được xoá hay đổi mã.
 | 7 | Hình thức học | 1 | Khoá | Offline, Online |
 | 8 | Loại gói | 1 | Khoá | LC Lớp chung, VIP VIP 1:1 và 1:2, VNN VIP nhóm nhỏ, KR Kèm riêng, DV Dịch vụ, TL Tài liệu |
 | 9 | Nguồn lead | 3 (Source type → Source → Medium) | Mở | Xem 1.1 |
-| 10 | Giai đoạn lead | 2 | Khoá mục cha; C4D khoá | Xem 1.2 |
-| 11 | Giai đoạn cơ hội | 2 | Khoá mục cha; L5C–L5O và L5Q nối với lý do huỷ test (L5P không nối) | Xem 1.3 |
+| 10 | Giai đoạn lead | 2 | Khoá mục cha; nhóm con chỉ đổi tên, thêm hoặc ngừng bằng migration (R-V2-42, 08/11); C4D khoá | Xem 1.2 |
+| 11 | Giai đoạn cơ hội | 2 | Khoá mục cha; **nhóm con chỉ đổi tên, thêm hoặc ngừng bằng migration (R-V2-42, Q-122, 08/11)**; L5C–L5O và L5Q nối với lý do huỷ test (L5P không nối) | Xem 1.3 |
 | 12 | Giai đoạn phiếu tái tục | 2 | Khoá mục cha | Xem 1.4 |
 | 13 | Lý do huỷ test | 1 | Mở, mỗi lý do nối một nhóm con L5, trừ "Tạo phiếu sai" | Như các nhóm con L5C–L5O ở 1.3; **(16/10 tối)** thêm "Trung tâm không xếp được lịch test" (nối L5Q) và "Tạo phiếu sai" (không nối). "Lên lịch sai" không phải lý do huỷ, dùng Đổi lịch trên phiếu |
 | 14 | Hình thức test | 1 | Mở | Offline, Online |
@@ -49,7 +49,7 @@ Không danh mục nào được xoá hay đổi mã.
 | 32 | Lý do khoá tài khoản | 1 | Mở | Nghỉ việc, Dừng học, Tạm nghỉ, Nghi lộ mật khẩu, Khác |
 | 33 | Lý do bỏ qua test **(16/10)** | 1 | Mở, luôn có một mục "Lý do khác" (bắt buộc ghi chú) | **(04/11, T3)** BQ1 PH từ chối làm bài test · BQ2 Học sinh đã có kết quả đánh giá trước đó · BQ3 Đã đủ thông tin trình độ qua trao đổi · BQ4 Ghi danh nhanh theo chương trình khuyến mãi · BQ5 Lý do khác. Bốn giá trị cũ (16/10) chuyển Ngừng |
 | 34 | Lý do huỷ lịch hẹn **(16/10 tối)** | 1 | Mở, luôn có "Khác" (bắt buộc ghi chú) | PH báo bận, Không liên lạc được, Tạo nhầm, Khác |
-| 29 | Tỉnh, phường | 2 | Mở | Nạp từ file seed (126 phường, xã của Hà Nội; **chốt 12/10**: lấy theo số đã nạp trong repo) |
+| 29 | Tỉnh, phường | 2 | **Chỉ xem** (Q-110, 08/11: nạp từ file chuẩn, màn Danh mục không thêm, đổi tên, ngừng; migration vẫn sửa được) | Nạp từ file seed (126 phường, xã của Hà Nội; **chốt 12/10**: lấy theo số đã nạp trong repo) |
 | 30 | Tên hiển thị các bước trạng thái (lớp, buổi, ghi danh, đơn, phiếu thu, ticket…) | 1 | Khoá | Danh sách tên ở `docs/design/luat-cho-thiet-ke.md`; nạp dần theo từng giai đoạn có trạng thái đó |
 
 ### 1.1 Nguồn lead (Source type → Source → Medium)
@@ -64,6 +64,8 @@ Không danh mục nào được xoá hay đổi mã.
 | Ban Giám Đốc | Ban Giám Đốc | (không có Medium) |
 
 Nhãn ba ô là Source type, Source, Medium (Medium là tên mới của Sub-source/kênh). Chọn Source có Medium thì bắt buộc chọn Medium. Bỏ Medium Renew Lost và New Opp. Chỉ còn 4 Source type: Marketing, Telemarketing, Event, Ban Giám Đốc (26/10).
+
+**Ghi chú bảng nhập (08/11, Q-128, Q-137):** theo bảng trên bộ nguồn lead gồm **4 loại · 11 nguồn · 12 kênh** (nguồn: Facebook Ads, Google Ads, Website, Hotline, Walk-in, Zalo, Referral, Upsale dưới Marketing; Cold Call; Event; Ban Giám Đốc; kênh: Facebook Ads 4, Referral 2, Upsale 1, Cold Call 3, Event 2). Dữ liệu đã nạp từ 12/10 còn **6 loại · 11 nguồn · 14 kênh** (Referral, Upsale là loại riêng; còn kênh Renew Lost, New Opp). Anh chốt sửa bằng migration dữ liệu ở PR riêng (Q-137): chuyển Referral và Upsale thành nguồn dưới Marketing, đổi loại của lead và cơ hội cũ sang Marketing theo nguồn (nguồn và kênh giữ nguyên), Ngừng 2 kênh Renew Lost, New Opp và 2 loại cũ (không xoá); giữ nguyên mọi luật (`HMT_NGUON_SAI`).
 
 ### 1.2 Giai đoạn lead
 | Mã | Tên | Nhóm con |
