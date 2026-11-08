@@ -370,9 +370,10 @@ export function Tabs({
 }) {
   return (
     <RadixTabs.Root value={value} onValueChange={onChange} className="flex flex-col gap-3">
+      {/* overflow-y-hidden: overflow-x-auto làm trục dọc thành auto, mà tab có -mb-px nên tràn 1px dọc và hiện thanh cuộn dọc nhỏ khi máy bật "luôn hiện thanh cuộn" (Q-89). */}
       <RadixTabs.List
         aria-label={label}
-        className="flex gap-0.5 overflow-x-auto border-b border-border"
+        className="flex gap-0.5 overflow-x-auto overflow-y-hidden border-b border-border"
       >
         {items.map((item) => (
           <RadixTabs.Trigger

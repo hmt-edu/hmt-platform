@@ -128,6 +128,11 @@ test('Nháp bị từ chối: lý do và ghi chú nằm ở dòng thời gian (k
     page.getByRole('complementary').getByText(/Chiết khấu dòng 2 chưa có văn bản phê duyệt/),
   ).toBeVisible();
   await expect(page.getByText('Nháp · bị từ chối').first()).toBeVisible();
+  // Q-89: hàng tab không có thanh cuộn dọc (overflow-y hidden), chỉ cuộn ngang khi tab không vừa.
+  const tabOverflowY: string = await page.evaluate(
+    "getComputedStyle(document.querySelector('[role=tablist]')).overflowY",
+  );
+  expect(tabOverflowY).toBe('hidden');
   await expect(page.getByRole('tab', { name: /Dòng đơn/ })).toContainText('2');
   await expect(page.getByText(/Toán/).first()).toBeVisible();
   await shot(page, 'bh05-tu-choi');
