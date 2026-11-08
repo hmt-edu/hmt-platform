@@ -11,6 +11,7 @@ import {
   expectedApproverText,
   lastRejection,
   orderSteps,
+  waitingApproverName,
 } from './orderRecord';
 import type { OrderEvent } from './orderTypes';
 
@@ -57,11 +58,17 @@ describe('bản ghi đơn (BH-05)', () => {
     );
     expect(expectedApproverText({ ...base, expected_route: 'TU_DUYET' })).toContain('tự duyệt');
     expect(expectedApproverText({ ...base, expected_route: 'THIEU' })).toContain(
-      'chưa có quản lý trực tiếp',
+      'chưa có quản lý trực tiếp và cơ sở chưa có Trưởng cơ sở',
     );
-    // Người xem là người lập: "bạn chưa có quản lý trực tiếp" (khung BH05_chua_ql_sua).
     expect(expectedApproverText({ ...base, expected_route: 'THIEU' }, true)).toBe(
-      'Người duyệt: chưa có · bạn chưa có quản lý trực tiếp',
+      'Người duyệt: chưa có · bạn chưa có quản lý trực tiếp và cơ sở chưa có Trưởng cơ sở',
+    );
+    // R-V2-12 (Q-114): chưa có quản lý trực tiếp thì Trưởng cơ sở duyệt; người xem là người lập thì nói "bạn".
+    expect(expectedApproverText({ ...base, expected_route: 'TRUONG_CS' })).toBe(
+      'Người duyệt: Trưởng cơ sở · người lập chưa có quản lý trực tiếp',
+    );
+    expect(expectedApproverText({ ...base, expected_route: 'TRUONG_CS' }, true)).toBe(
+      'Người duyệt: Trưởng cơ sở · bạn chưa có quản lý trực tiếp',
     );
     expect(
       expectedApproverText({ ...base, status_code: 'DA_TRINH', expected_route: null }),
@@ -82,7 +89,7 @@ describe('bản ghi đơn (BH-05)', () => {
       'chưa có quyền Duyệt đơn hàng',
     );
     expect(approverWarning({ ...base, expected_block: 'KHONG_CO_QUAN_LY' })).toContain(
-      'Chưa có quản lý trực tiếp',
+      'chưa có Trưởng cơ sở nào đang hoạt động',
     );
     expect(
       approverWarning({ ...base, expected_block: null, expected_approver_can_approve: true }),
@@ -95,7 +102,7 @@ describe('bản ghi đơn (BH-05)', () => {
     const base = { status_code: 'NHAP' as const, expected_approver_name: 'Lê Văn Phong' };
     expect(
       approverWarning({ ...base, expected_route: 'THIEU', expected_approver_can_approve: null }),
-    ).toContain('Chưa có quản lý trực tiếp');
+    ).toContain('chưa có Trưởng cơ sở nào đang hoạt động');
     expect(
       approverWarning({ ...base, expected_route: 'QUAN_LY', expected_approver_can_approve: false }),
     ).toContain('chưa có quyền Duyệt đơn hàng');
@@ -203,14 +210,21 @@ describe('Q-77: một dòng cạnh nút Trình, ba ca bị chặn', () => {
     expect(submitBlockOf(r)).toBe('NGUOI_DUYET_THIEU_QUYEN');
     expect(approverLine(r)).toContain('Lê Văn Phong chưa có quyền Duyệt đơn hàng');
   });
-  it('(c) chưa có quản lý trực tiếp: đúng dòng khung BH05_chua_ql_sua, nút bị chặn', () => {
+  it('(c) chưa có quản lý và cơ sở chưa có Trưởng cơ sở (R-V2-12): dòng nêu rõ, nút bị chặn', () => {
     const r = {
       ...base,
       expected_route: 'THIEU' as const,
       expected_block: 'KHONG_CO_QUAN_LY' as const,
     };
     expect(submitBlockOf(r)).toBe('KHONG_CO_QUAN_LY');
-    expect(approverLine(r, true)).toBe('Người duyệt: chưa có · bạn chưa có quản lý trực tiếp');
+    expect(approverLine(r, true)).toBe(
+      'Người duyệt: chưa có · bạn chưa có quản lý trực tiếp và cơ sở chưa có Trưởng cơ sở',
+    );
+  });
+  it('(d) R-V2-12: chưa có quản lý nhưng cơ sở có Trưởng cơ sở thì KHÔNG bị chặn, dòng nói Trưởng cơ sở duyệt', () => {
+    const r = { ...base, expected_route: 'TRUONG_CS' as const, expected_approver_name: null };
+    expect(submitBlockOf(r)).toBeNull();
+    expect(approverLine(r, true)).toBe('Người duyệt: Trưởng cơ sở · bạn chưa có quản lý trực tiếp');
   });
   it('không bị chặn: dòng người duyệt như cũ; không phải đơn Nháp thì không có dòng và không chặn', () => {
     expect(submitBlockOf(base)).toBeNull();
@@ -220,5 +234,19 @@ describe('Q-77: một dòng cạnh nút Trình, ba ca bị chặn', () => {
     const sent = { ...base, status_code: 'DA_TRINH' as const };
     expect(submitBlockOf(sent)).toBeNull();
     expect(approverLine(sent)).toBeNull();
+  });
+});
+
+describe('R-V2-12: đơn Đã trình chờ Trưởng cơ sở (Q-117)', () => {
+  it('route TRUONG_CS không chốt một người nên gọi chung "Trưởng cơ sở"', () => {
+    expect(waitingApproverName({ approval_route: 'TRUONG_CS', approver_name: null })).toBe(
+      'Trưởng cơ sở',
+    );
+  });
+  it('route khác giữ tên người duyệt đã chốt', () => {
+    expect(waitingApproverName({ approval_route: 'QUAN_LY', approver_name: 'Lê Văn Phong' })).toBe(
+      'Lê Văn Phong',
+    );
+    expect(waitingApproverName({ approval_route: null, approver_name: null })).toBeNull();
   });
 });

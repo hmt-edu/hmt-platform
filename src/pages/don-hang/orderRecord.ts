@@ -38,6 +38,13 @@ export function editedFromQuotationNote(record: Pick<OrderRecord, 'events'>): st
   return last?.note ?? null;
 }
 
+/** Người đang chờ duyệt của đơn Đã trình: route TRUONG_CS không chốt một người nên gọi chung "Trưởng cơ sở" (R-V2-12, Q-117). */
+export function waitingApproverName(
+  record: Pick<OrderRecord, 'approval_route' | 'approver_name'>,
+): string | null {
+  return record.approval_route === 'TRUONG_CS' ? 'Trưởng cơ sở' : record.approver_name;
+}
+
 /** Dòng "Người duyệt" cạnh nút Trình của đơn Nháp, theo đường duyệt dự kiến (R-HT-06). */
 export function expectedApproverText(
   record: Pick<
@@ -50,8 +57,13 @@ export function expectedApproverText(
   if (record.status_code !== 'NHAP' || record.expected_route === null) return null;
   if (record.expected_route === 'THIEU')
     return viewerIsCreator
-      ? 'Người duyệt: chưa có · bạn chưa có quản lý trực tiếp'
-      : 'Người duyệt: chưa có · người lập chưa có quản lý trực tiếp';
+      ? 'Người duyệt: chưa có · bạn chưa có quản lý trực tiếp và cơ sở chưa có Trưởng cơ sở'
+      : 'Người duyệt: chưa có · người lập chưa có quản lý trực tiếp và cơ sở chưa có Trưởng cơ sở';
+  // R-V2-12 (Q-114): chưa có quản lý trực tiếp thì Trưởng cơ sở duyệt, vẫn trình được.
+  if (record.expected_route === 'TRUONG_CS')
+    return viewerIsCreator
+      ? 'Người duyệt: Trưởng cơ sở · bạn chưa có quản lý trực tiếp'
+      : 'Người duyệt: Trưởng cơ sở · người lập chưa có quản lý trực tiếp';
   const name = record.expected_approver_name ?? '';
   return record.expected_route === 'TU_DUYET'
     ? `Người duyệt: ${name} · Trưởng cơ sở tự duyệt`
@@ -84,7 +96,7 @@ export function submitBlockOf(record: ApproverFields): OrderRecord['expected_blo
 export function approverWarning(record: ApproverFields): string | null {
   const block = submitBlockOf(record);
   if (block === 'KHONG_CO_QUAN_LY')
-    return 'Chưa có quản lý trực tiếp để duyệt. Nhờ Admin đặt Quản lý trực tiếp cho người lập rồi trình lại.';
+    return 'Người lập chưa có Quản lý trực tiếp và cơ sở này chưa có Trưởng cơ sở nào đang hoạt động để duyệt. Nhờ Admin đặt Quản lý trực tiếp hoặc Trưởng cơ sở rồi trình lại.';
   if (block === 'NGUOI_DUYET_BI_KHOA')
     return 'Quản lý trực tiếp của người lập đang bị khoá nên chưa trình được. Nhờ Admin mở khoá hoặc đặt lại Quản lý trực tiếp.';
   if (block === 'NGUOI_DUYET_THIEU_QUYEN')

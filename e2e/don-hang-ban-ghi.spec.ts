@@ -45,23 +45,23 @@ async function shot(page: Page, name: string) {
   await page.screenshot({ path: shotPath('bh05', `${name}.png`), fullPage: true });
 }
 
-test('Mở đơn từ BH-06; Nháp: thông tin chung, người duyệt chưa có (chưa có quản lý trực tiếp), nút Trình mờ', async ({
+test('Mở đơn từ BH-06; Nháp: thông tin chung, chưa có quản lý trực tiếp thì Trưởng cơ sở duyệt (R-V2-12), nút Trình không bị mờ', async ({
   page,
 }, testInfo) => {
   const setup = recordSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, setup.mark, seeded.orders.nhap);
   await expect(page.getByRole('heading', { level: 1, name: 'Đơn hàng' })).toBeVisible();
   await expect(
-    // Người xem là người lập: khung BH05_chua_ql_sua ghi "bạn chưa có quản lý trực tiếp".
-    page.getByText('Người duyệt: chưa có · bạn chưa có quản lý trực tiếp'),
+    // R-V2-12 (Q-114): người lập chưa có quản lý trực tiếp, cơ sở có Trưởng cơ sở nên vẫn trình được, Trưởng cơ sở duyệt.
+    page.getByText('Người duyệt: Trưởng cơ sở · bạn chưa có quản lý trực tiếp'),
   ).toBeVisible();
-  // Q-77: MỘT dòng cạnh nút Trình, không còn khối vàng "Cần xử lý trước khi trình"; chưa có quản lý thì nút mờ.
+  // Q-77: MỘT dòng cạnh nút Trình, không còn khối vàng "Cần xử lý trước khi trình". R-V2-12: không còn ca chặn nên nút không mờ.
   await expect(page.getByText('Cần xử lý trước khi trình')).toHaveCount(0);
   await expect(page.getByText(/Chưa có quản lý trực tiếp để duyệt/)).toHaveCount(0);
   if (isPhone(page)) {
     await expect(page.getByRole('button', { name: 'Trình duyệt' })).toHaveCount(0);
   } else {
-    await expect(page.getByRole('button', { name: 'Trình duyệt' })).toHaveAttribute(
+    await expect(page.getByRole('button', { name: 'Trình duyệt' })).not.toHaveAttribute(
       'aria-disabled',
       'true',
     );
@@ -223,6 +223,33 @@ test('Trình thành công: CSKH có quản lý trực tiếp trình đơn, thàn
   await shot(page, 'bh05-sau-trinh');
   // Người lập (CSKH) không huỷ được đơn Đã trình (R-TIEN-38): không có mục Huỷ đơn.
   await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
+});
+
+// R-V2-12 (Q-114, Q-117): Sale chưa có quản lý trực tiếp vẫn trình được; đơn đi tới Trưởng cơ sở, người duyệt không chốt một người.
+test('R-V2-12: Sale chưa có quản lý trình đơn, đơn chờ Trưởng cơ sở', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Điện thoại chỉ đọc: không có nút Trình (Đ248).');
+  test.setTimeout(90_000);
+  const setup = recordSetupOf(testInfo.project.name);
+  await openOrder(page, setup.sale, setup.mark, seeded.records.truongCs);
+  await expect(
+    page.getByText('Người duyệt: Trưởng cơ sở · bạn chưa có quản lý trực tiếp'),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Trình duyệt' }).click();
+  await expect(page.getByText('Đã trình đơn.').first()).toBeVisible();
+  await expect(page.getByText('Đơn đã trình, chờ Trưởng cơ sở duyệt.')).toBeVisible();
+});
+
+// Thẻ mới cho Trưởng cơ sở: cùng một thẻ thì phiên Sale còn trong bộ nhớ, đổi tài khoản không đè được.
+test('R-V2-12: Trưởng cơ sở cùng cơ sở thấy đơn chờ Trưởng cơ sở và có nút Duyệt', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Điện thoại chỉ đọc (Đ248).');
+  const setup = recordSetupOf(testInfo.project.name);
+  await openOrder(page, setup.manager, setup.mark, seeded.records.truongCs);
+  await expect(page.getByText('Đơn đã trình, chờ Trưởng cơ sở duyệt.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Duyệt', exact: true })).toBeVisible();
 });
 
 test('Người duyệt đã chốt (Trưởng cơ sở) có mục Huỷ đơn trên đơn Đã trình (R-TIEN-38)', async ({

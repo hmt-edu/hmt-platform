@@ -277,7 +277,9 @@ select is((pg_temp.gof('b6') ->> 'can_submit')::boolean, true, 'Sale cùng cơ s
 -- Cờ đúng, lỗi cấu hình khi Trình (điều chỉnh 4): cờ chỉ xét quyền và trạng thái.
 select pg_temp.claims(pg_temp.uid('sales1b'), 'aal1');
 select is((pg_temp.gof('d1') ->> 'can_submit')::boolean, true, 'Cờ đúng, lỗi cấu hình khi Trình: Sale chưa có quản lý trực tiếp vẫn có can_submit');
+select pg_temp.sudo($$update app.user_role set is_active = false where role_code = 'BRANCH_MANAGER'$$); -- R-V2-12: cơ sở chưa có Trưởng cơ sở nào thì mới chặn
 select is(pg_temp.err($$select app.submit_order(pg_temp.o('d1'))$$), 'HMT_KHONG_CO_QUAN_LY', 'Cờ đúng, lỗi cấu hình khi Trình: bấm Trình báo HMT_KHONG_CO_QUAN_LY');
+select pg_temp.sudo($$update app.user_role set is_active = true where role_code = 'BRANCH_MANAGER'$$);
 select pg_temp.claims(pg_temp.uid('sales1c'), 'aal1');
 select is((pg_temp.gof('d2') ->> 'can_submit')::boolean, true, 'Cờ đúng, lỗi cấu hình khi Trình: quản lý chưa có quyền Duyệt vẫn có can_submit');
 select is(pg_temp.err($$select app.submit_order(pg_temp.o('d2'))$$), 'HMT_NGUOI_DUYET_THIEU_QUYEN', 'Cờ đúng, lỗi cấu hình khi Trình: bấm Trình báo HMT_NGUOI_DUYET_THIEU_QUYEN');

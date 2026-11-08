@@ -28,6 +28,7 @@ import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
   approverLine,
+  waitingApproverName,
   submitBlockOf,
   canCancelOrder,
   canSubmitOrder,
@@ -673,8 +674,8 @@ function OrderView({ record }: { record: OrderRecord }) {
           )}
           {record.status_code === 'DA_TRINH' && (
             <Notice>
-              Đơn đã trình, chờ {record.approver_name ?? 'người duyệt'} duyệt. Trong lúc chờ không
-              sửa được dòng.
+              Đơn đã trình, chờ {waitingApproverName(record) ?? 'người duyệt'} duyệt. Trong lúc chờ
+              không sửa được dòng.
             </Notice>
           )}
           {record.status_code === 'HUY' && (
@@ -782,7 +783,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                   value={
                     record.approved_at
                       ? `${record.approved_by_name ?? ''} · ${formatDate(record.approved_at)}${record.approved_on_behalf ? ' (duyệt thay)' : ''}`
-                      : (record.approver_name ?? '')
+                      : (waitingApproverName(record) ?? '')
                   }
                 />
                 <DetailField

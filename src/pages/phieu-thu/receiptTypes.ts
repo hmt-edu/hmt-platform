@@ -70,7 +70,7 @@ export type ReceiptRecord = {
   created_by: string | null;
   created_by_name: string | null;
   approver_name: string | null;
-  approval_route: 'QUAN_LY' | 'TU_DUYET' | null;
+  approval_route: 'QUAN_LY' | 'TU_DUYET' | 'TRUONG_CS' | null;
   submitted_at: string | null;
   manager_approved_at: string | null;
   accountant_approved_at: string | null;

@@ -112,9 +112,9 @@ export type OrderEvent = {
   total_amount?: number | null | undefined;
 };
 
-/** Đường duyệt dự kiến của đơn Nháp (get_order từ migration 062): THIEU = người lập chưa có quản lý trực tiếp. */
+/** Đường duyệt dự kiến của đơn Nháp (get_order): TRUONG_CS = chưa có quản lý trực tiếp, Trưởng cơ sở duyệt (R-V2-12, migration 083); THIEU = chưa có quản lý và cơ sở cũng chưa có Trưởng cơ sở. */
 export type ExpectedBlock = 'KHONG_CO_QUAN_LY' | 'NGUOI_DUYET_BI_KHOA' | 'NGUOI_DUYET_THIEU_QUYEN';
-export type ExpectedRoute = 'QUAN_LY' | 'TU_DUYET' | 'THIEU';
+export type ExpectedRoute = 'QUAN_LY' | 'TU_DUYET' | 'TRUONG_CS' | 'THIEU';
 
 /** Bản ghi đơn do get_order trả (BH-05). Mọi con số do máy chủ tính; giao diện không cộng, không trừ. */
 export type OrderRecord = {
@@ -138,7 +138,7 @@ export type OrderRecord = {
   total_amount: number;
   gross_total: number;
   discount_total: number;
-  approval_route: 'QUAN_LY' | 'TU_DUYET' | null;
+  approval_route: 'QUAN_LY' | 'TU_DUYET' | 'TRUONG_CS' | null;
   /** Người lập và người duyệt đã chốt lúc trình (id), để hiện đúng nút Huỷ theo R-TIEN-38. */
   created_by: string | null;
   assigned_approver_id: string | null;

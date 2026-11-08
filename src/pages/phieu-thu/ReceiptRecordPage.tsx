@@ -698,8 +698,8 @@ function Banner({ record }: { record: ReceiptRecord }) {
   if (record.status_code === 'DA_GUI')
     return (
       <Notice>
-        Đã trình, chờ quản lý duyệt. Trong lúc chờ không sửa được; còn Huỷ được khi phiếu chưa
-        duyệt.
+        Đã trình, chờ {record.approval_route === 'TRUONG_CS' ? 'Trưởng cơ sở' : 'quản lý'} duyệt.
+        Trong lúc chờ không sửa được; còn Huỷ được khi phiếu chưa duyệt.
       </Notice>
     );
   if (record.status_code === 'CHO_KE_TOAN')

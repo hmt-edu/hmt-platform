@@ -255,3 +255,34 @@ test('Kế toán duyệt phiếu: phiếu Đã duyệt và khoá, sinh đúng m�
   expect(after?.n).toBe('1');
   expect(after?.total).toBe(SECOND_AMOUNT);
 });
+
+// R-V2-12 (Q-114, Q-117): Sale chưa có quản lý trực tiếp vẫn gửi được phiếu thu; phiếu đi tới Trưởng cơ sở rồi Kế toán.
+let receipt3Url = '';
+
+test('R-V2-12: Sale chưa có quản lý gửi phiếu thu, phiếu chờ Trưởng cơ sở', async ({
+  page,
+}, testInfo) => {
+  test.setTimeout(90_000);
+  const setup = receiptSetupOf(testInfo.project.name);
+  await setManager(setup.sale, null);
+  await openOrder(page, setup.sale, seeded.orders.dduyet);
+  await page.getByRole('button', { name: 'Tạo phiếu thu' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Tạo phiếu thu' });
+  await pickOption(page, dialog.getByRole('combobox', { name: 'Hình thức' }), 'Tiền mặt');
+  await dialog.getByLabel('Số tiền').fill('100000');
+  await dialog.getByRole('button', { name: 'Tạo phiếu nháp' }).click();
+  await expect(page).toHaveURL(/\/crm\/phieu-thu\/[0-9a-f-]{36}$/);
+  receipt3Url = new URL(page.url()).pathname;
+  await page.getByRole('button', { name: 'Trình quản lý' }).click();
+  await expect(page.getByText(/Đã trình, chờ Trưởng cơ sở duyệt/)).toBeVisible();
+});
+
+test('R-V2-12: Trưởng cơ sở duyệt phiếu chờ Trưởng cơ sở, chuyển Kế toán', async ({
+  page,
+}, testInfo) => {
+  const setup = receiptSetupOf(testInfo.project.name);
+  await enterAs(page, setup.manager);
+  await page.goto(receipt3Url);
+  await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
+});

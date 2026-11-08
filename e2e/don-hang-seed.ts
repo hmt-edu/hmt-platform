@@ -114,6 +114,8 @@ export type SeededRecords = SeededOrders & {
     trinhDuoc: string;
     /** Nháp của Sale để thử hộp Huỷ đơn. */
     huy: string;
+    /** Nháp của Sale chưa có quản lý trực tiếp, đã chọn điều khoản: Trình được và đi tới Trưởng cơ sở (R-V2-12). */
+    truongCs: string;
   };
   /** Tài khoản CSKH có quản lý trực tiếp (Trưởng cơ sở) để thử Trình thành công. */
   cskh: string;
@@ -222,6 +224,13 @@ export async function seedOrderRecords(setup: Setup): Promise<SeededRecords> {
     const c = await newOpp(`Chị ${setup.mark} huydon`, 2, 'Em Thử Huỷ', 2012);
     const thieuEm = await make(a.opp, [line(a.ps, 6)]);
     const huy = await make(c.opp, [line(c.ps, 6)]);
+    // Đơn của Sale (chưa có quản lý trực tiếp) đã chọn điều khoản: Trình được, đi tới Trưởng cơ sở (R-V2-12).
+    const t = await newOpp(`Chị ${setup.mark} truongcs`, 3, 'Em Trưởng Cơ Sở', 2012);
+    const truongCs = await make(t.opp, [line(t.ps, 6)]);
+    await db.query(
+      `select app.save_order($1::uuid, null, (select id from app.payment_term where code = 'CHIA_3_DOT' and version = 1))`,
+      [truongCs.id],
+    );
     // Em thiếu năm sinh: cơ hội L8 buộc có năm sinh, nên xoá năm sinh sau khi lập đơn (dữ liệu giả, bỏ qua ràng buộc).
     await db.query('reset role');
     await db.query("set local session_replication_role = 'replica'");
@@ -283,6 +292,7 @@ export async function seedOrderRecords(setup: Setup): Promise<SeededRecords> {
         thieuEm: thieuEm.code,
         trinhDuoc: trinhDuoc.code,
         huy: huy.code,
+        truongCs: truongCs.code,
       },
       cskh: 'cskh.cs5',
     };

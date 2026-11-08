@@ -313,7 +313,9 @@ select is((select approved_on_behalf from app.sales_order where id = pg_temp.o('
 select is((select note from app.sales_order_event where order_id = pg_temp.o('c5') and event_code = 'DUYET'), 'Admin duyệt thay', 'R-HT-01: lịch sử ghi "Admin duyệt thay"');
 select is(pg_temp.err($$select pg_temp.mk('ad1', '0900019002', jsonb_build_array(pg_temp.line(pg_temp.ps('0900019002', 1), 'LC-TOAN-K09', 'OFF', 10)))$$), null, 'Admin tạo được đơn (đối chứng cho bài kế)');
 select app.save_order(pg_temp.o('ad1'), null, pg_temp.term('CHIA_3_DOT'));
+select pg_temp.sudo($$update app.user_role set is_active = false where role_code = 'BRANCH_MANAGER'$$); -- R-V2-12: cơ sở chưa có Trưởng cơ sở nào thì mới chặn
 select is(pg_temp.err($$select app.submit_order(pg_temp.o('ad1'))$$), 'HMT_KHONG_CO_QUAN_LY', 'R-HT-06: Admin lập (không phải Trưởng cơ sở, không có quản lý) thì không trình được');
+select pg_temp.sudo($$update app.user_role set is_active = true where role_code = 'BRANCH_MANAGER'$$);
 
 -- ================= R-TIEN-37 / R-TIEN-14: tiền các dòng nhất quán =================
 select is((select count(*)::int from app.sales_order_line l where l.line_kind = 'ENROL' and l.line_total <> l.gross_amount - l.discount_amount), 0, 'R-TIEN-37: thành tiền sau chiết khấu = thành tiền − tiền chiết khấu, mọi dòng');

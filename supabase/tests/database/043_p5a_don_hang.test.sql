@@ -238,7 +238,9 @@ select ok(pg_temp.msg($$select app.submit_order(pg_temp.o('b2'))$$) like '%Dòng
 select pg_temp.claims(pg_temp.uid('sales1b'), 'aal1');
 select pg_temp.mk('c1', '0900009006', jsonb_build_array(pg_temp.line(pg_temp.ps('0900009006', 1), 'LC-TOAN-K09', 'OFF', 10)));
 select app.save_order(pg_temp.o('c1'), null, pg_temp.term('CHIA_3_DOT'));
+select pg_temp.sudo($$update app.user_role set is_active = false where role_code = 'BRANCH_MANAGER'$$); -- R-V2-12: cơ sở chưa có Trưởng cơ sở nào thì mới chặn
 select is(pg_temp.err($$select app.submit_order(pg_temp.o('c1'))$$), 'HMT_KHONG_CO_QUAN_LY', 'R-HT-06: không có quản lý trực tiếp (không phải Trưởng cơ sở) thì không trình được');
+select pg_temp.sudo($$update app.user_role set is_active = true where role_code = 'BRANCH_MANAGER'$$);
 -- Đ205: quản lý đã chốt không có quyền Duyệt đơn.
 select pg_temp.claims(pg_temp.uid('sales1c'), 'aal1');
 select pg_temp.mk('d1', '0900009004', jsonb_build_array(pg_temp.line(pg_temp.ps('0900009004', 1), 'LC-TOAN-K09', 'OFF', 10)));

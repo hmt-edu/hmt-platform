@@ -235,10 +235,12 @@ select is(pg_temp.go('n1') ->> 'expected_approver_name', 'Giả bm1', 'Đơn Nh�
 select is((pg_temp.go('n1') ->> 'expected_approver_can_approve')::boolean, true, 'Đơn Nháp: người duyệt dự kiến có quyền Duyệt đơn ở cơ sở (Đ205)');
 select is(pg_temp.go('n8') ->> 'expected_route', 'TU_DUYET', 'R-HT-06: Trưởng cơ sở lập đơn thì đường duyệt TU_DUYET');
 select is((pg_temp.go('n8') ->> 'expected_approver_id')::uuid, pg_temp.uid('bm1'), 'R-HT-06: Trưởng cơ sở tự duyệt: người duyệt dự kiến là chính họ');
+select pg_temp.sudo($$update app.user_role set is_active = false where role_code = 'BRANCH_MANAGER'$$); -- R-V2-12: cơ sở chưa có Trưởng cơ sở nào thì mới chặn
 select is(pg_temp.err($$select pg_temp.go('n7')$$), null, 'Người lập chưa có quản lý trực tiếp: get_order KHÔNG báo lỗi');
 select is(pg_temp.go('n7') ->> 'expected_route', 'THIEU', 'Người lập chưa có quản lý trực tiếp: đường duyệt THIEU');
 select is(pg_temp.go('n7') -> 'expected_approver_id', 'null'::jsonb, 'Người lập chưa có quản lý trực tiếp: người duyệt dự kiến rỗng');
 select is(pg_temp.go('n7') -> 'expected_approver_can_approve', 'null'::jsonb, 'Người lập chưa có quản lý trực tiếp: không có kết luận về quyền duyệt');
+select pg_temp.sudo($$update app.user_role set is_active = true where role_code = 'BRANCH_MANAGER'$$);
 select is(pg_temp.go('n9') ->> 'expected_route', 'QUAN_LY', 'Sale có quản lý chưa có quyền Duyệt đơn: vẫn QUAN_LY');
 select is((pg_temp.go('n9') ->> 'expected_approver_can_approve')::boolean, false, 'Đ205: quản lý dự kiến chưa có quyền Duyệt đơn thì báo can_approve = false');
 select is(pg_temp.go('n2') -> 'expected_route', 'null'::jsonb, 'Đơn Đã trình: không trả đường duyệt dự kiến');
@@ -264,7 +266,9 @@ select is(pg_temp.assigned('n8'), (select approver from prev where k = 'n8'), 'R
 select is(pg_temp.route_of('n8'), (select route from prev where k = 'n8'), 'R-HT-06: đường duyệt dự kiến khớp submit_order (TU_DUYET)');
 select pg_temp.claims(pg_temp.uid('sales1b'), 'aal1');
 select app.save_order(pg_temp.o('n7'), null, pg_temp.term('CHIA_3_DOT'));
+select pg_temp.sudo($$update app.user_role set is_active = false where role_code = 'BRANCH_MANAGER'$$); -- R-V2-12: cơ sở chưa có Trưởng cơ sở nào thì mới chặn
 select is(pg_temp.err($$select app.submit_order(pg_temp.o('n7'))$$), 'HMT_KHONG_CO_QUAN_LY', 'Đơn THIEU: submit_order chặn đúng điều kiện mà get_order báo trước');
+select pg_temp.sudo($$update app.user_role set is_active = true where role_code = 'BRANCH_MANAGER'$$);
 -- Người bấm Trình khác người lập: người duyệt vẫn theo người LẬP. Admin (đơn Nháp của Sale) xem trước rồi Admin trình.
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select pg_temp.mk('n10', '0900009003', jsonb_build_array(pg_temp.line(pg_temp.ps('0900009003', 1), 'LC-TOAN-K09', 'OFF', 2)));
@@ -274,7 +278,9 @@ select is(pg_temp.go('n10') ->> 'expected_route', 'QUAN_LY', 'Người xem khác
 -- Quyền xem và phạm vi của get_order không đổi.
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select is(pg_temp.err($$select pg_temp.go('n1')$$), 'HMT_KHONG_CO_QUYEN', 'get_order: Sale CS5 vẫn không xem đơn CS1');
+select pg_temp.sudo($$update app.user_role set is_active = false where role_code = 'BRANCH_MANAGER'$$); -- R-V2-12: cơ sở chưa có Trưởng cơ sở nào thì mới chặn
 select is(pg_temp.go('n5') ->> 'expected_route', 'THIEU', 'Đơn CS5 của Sale chưa có quản lý: THIEU, không lỗi');
+select pg_temp.sudo($$update app.user_role set is_active = true where role_code = 'BRANCH_MANAGER'$$);
 select pg_temp.claims(pg_temp.uid('hs'), 'aal1');
 select is(pg_temp.err($$select pg_temp.gq('qa')$$), 'HMT_KHONG_CO_QUYEN', 'get_quotation: học sinh vẫn bị chặn');
 select is(pg_temp.err($$select pg_temp.go('n1')$$), 'HMT_KHONG_CO_QUYEN', 'get_order: học sinh vẫn bị chặn');
