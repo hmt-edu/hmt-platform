@@ -318,11 +318,14 @@ Lộ trình: ticket **đề nghị** làm ở giai đoạn 2 (cùng chuyển l�
 | R-HT-04 | Danh mục lý do luôn có "Khác"; chọn "Khác" thì bắt buộc ghi chú. Danh mục "Lý do từ chối" có trường "Áp dụng cho" (báo giá, đơn, phiếu thu, lớp, ticket, yêu cầu buổi). Có danh mục riêng "Lý do đảo khoản", "Lý do khoá tài khoản", "Lý do không tái tục", "Lý do điều chỉnh giờ". Danh sách đầy đủ: `docs/spec/06-danh-muc-va-tham-so.md` mục 1. | [CHỐT] |
 | R-HT-05 | CRM ưu tiên máy tính; các màn duyệt (hàng chờ duyệt, duyệt đơn, duyệt yêu cầu buổi, duyệt ticket) và điểm danh vận hành có bố cục điện thoại. | [CHỐT] |
 | R-HT-06 | **(04/11: xem R-V2-12)** **(08/11: xem R-V2-41)** **(19/10)** **Quản lý trực tiếp và duyệt đơn:** hồ sơ nhân viên có trường "Quản lý trực tiếp" (Admin sửa). **Đơn hàng đã trình chỉ do quản lý trực tiếp của người lập duyệt**; Admin duyệt thay khi vắng (R-HT-01). Người lập là Trưởng cơ sở thì tự duyệt, lịch sử ghi "tự duyệt". Người lập không có quản lý trực tiếp (và không phải Trưởng cơ sở) thì không trình được. **Người duyệt được chốt lúc trình (chụp lại); quản lý đổi sau đó không đổi người duyệt của đơn hoặc phiếu đã trình.** Áp dụng cho đơn và cho bước quản lý của phiếu thu. Admin duyệt thay đơn khi vắng (R-HT-01); riêng phiếu thu xem R-TIEN-01. Phạm vi luật này: chỉ duyệt đơn hàng (và bước quản lý của phiếu thu, R-TIEN-01); duyệt yêu cầu buổi, ticket, lớp để sau. | [CHỐT] |
+| R-HT-07 | **(09/11) Múi giờ:** mọi mốc ngày (Hôm nay, Tuần này, Tháng này và tương tự) và giờ hiển thị tính theo giờ Việt Nam (UTC+7), không theo múi giờ của máy người dùng. Nguyên nhân chốt: CI đỏ do lệch ngày lúc 00:00–07:00 giờ Việt Nam (máy CI ở UTC còn ở ngày hôm trước; lịch hẹn vừa tạo cho "Hôm nay" biến mất khỏi danh sách lọc "Tuần này"). Đã làm: ngày lịch của các mốc nhanh (`datePresetRange`) theo giờ Việt Nam. Còn lại, chờ làm sau: nửa đêm 00:00 của mốc vẫn theo múi giờ máy (xem mục 13). | [CHỐT] |
 | R-CRM-24 | **(16/10 tối)** **Vai trò ADMIN luôn giữ đủ quyền phân hệ Quản trị** (7 hành động, toàn hệ thống); lần lưu ma trận nào bỏ hoặc thu hẹp quyền này thì báo lỗi `HMT_ADMIN_GIU_QUYEN_QUAN_TRI` và hoàn tác cả lần lưu. Đã làm ở PR 6e (#33). | [CHỐT] |
 
 ## 13. Còn mở
 
 Luật mới phát sinh thì thêm vào đúng mục, đánh dấu [CẦN CHỐT] cho tới khi anh Trường quyết. Các mục đang chờ anh quyết nằm ngay dưới.
+
+**Việc làm sau, chưa làm (anh OK 09/11, Q-171):** theo R-HT-07, ranh giới 00:00 của các mốc ngày (`datePresetRange` và nơi dùng nó) hiện vẫn là nửa đêm theo múi giờ máy, mới đúng ngày lịch Việt Nam; máy ở múi giờ khác có thể lệch trong 7 giờ đầu ngày. Cần đổi sang 00:00 giờ Việt Nam (dùng `vnDayBounds`) và đổi cách hiển thị ngày (`formatDmy`...) cho khớp; làm thành PR riêng, có kiểm thử ở nhiều múi giờ.
 
 **Chờ anh quyết, chưa đưa vào luật (17/10):**
 - R-GD-07 (thời hạn gói): một ghi danh một lớp nên mỗi lớp có ngày hết hạn riêng; chưa đổi chữ.

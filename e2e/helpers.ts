@@ -27,6 +27,22 @@ export async function fillLogin(
     .click();
 }
 
+/**
+ * Đăng nhập rồi chờ tới trang đích; về lại /dang-nhap (dịch vụ đăng nhập local vừa dựng lại chưa sẵn sàng ở lần đầu) thì đăng nhập lại,
+ * tối đa trong 40 giây, như người dùng thật bấm lại. Dùng cho bài mà đích sau đăng nhập khác /crm (vd. thiết lập hai bước).
+ */
+export async function loginStaffUntil(
+  page: Page,
+  account: string,
+  target: RegExp,
+  password = PASSWORD,
+) {
+  await expect(async () => {
+    await loginStaff(page, account, password);
+    await expect(page).toHaveURL(target, { timeout: 8000 });
+  }).toPass({ timeout: 40_000 });
+}
+
 export async function loginStaff(page: Page, account: string, password = PASSWORD) {
   await page.goto('/dang-nhap');
   await fillLogin(page, 'Email', `${account}@${DOMAIN}`, password);
@@ -73,8 +89,7 @@ async function saveSession(page: Page, account: string) {
 
 export async function enterAs(page: Page, account: string) {
   if (await restoreSession(page, account)) return;
-  await loginStaff(page, account);
-  await expect(page).toHaveURL(/\/crm$/);
+  await loginStaffUntil(page, account, /\/crm$/);
   await saveSession(page, account);
 }
 
@@ -172,7 +187,10 @@ export async function pickChip(scope: Locator, name: string) {
 export async function pickOption(page: Page, combobox: Locator, option: string | RegExp) {
   await expect(async () => {
     if ((await combobox.getAttribute('aria-expanded')) !== 'true') await combobox.click();
-    await page.getByRole('option', { name: option }).click({ timeout: 2000 });
+    // Cuộn tới mục trước khi bấm: trên điện thoại danh sách dài, mục nằm ngoài khung nhìn thì lần bấm trượt (lead-ban-ghi.spec.ts:202 chập chờn).
+    const item = page.getByRole('option', { name: option });
+    await item.scrollIntoViewIfNeeded({ timeout: 2000 });
+    await item.click({ timeout: 2000 });
   }).toPass({ timeout: 10000 });
 }
 

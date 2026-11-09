@@ -182,13 +182,23 @@ describe('Group By', () => {
 
 describe('khoảng ngày', () => {
   it('tuần bắt đầu từ thứ Hai, tháng trước đúng đầu và cuối', () => {
-    const sunday = new Date(2026, 9, 11, 15);
+    const sunday = new Date('2026-10-11T08:00:00Z'); // 15:00 chủ nhật 11/10 giờ Việt Nam
     const week = datePresetRange('week', sunday);
     expect(week?.from.getDate()).toBe(5);
     expect(week?.to.getDate()).toBe(11);
     const last = datePresetRange('last-month', sunday);
     expect([last?.from.getMonth(), last?.from.getDate(), last?.to.getDate()]).toEqual([8, 1, 30]);
     expect(datePresetRange('', sunday)).toBeNull();
+  });
+
+  // Lỗi lịch hẹn Q-168: 17:22 UTC chủ nhật 08/11 đã là 00:22 thứ Hai 09/11 giờ Việt Nam. Tuần phải là 09–15/11,
+  // không phải 02–08/11 theo ngày UTC, nếu không lịch vừa tạo cho "Hôm nay" biến mất khỏi danh sách.
+  it('"Hôm nay" và "Tuần này" theo ngày Việt Nam, không theo múi giờ máy', () => {
+    const lateSundayUtc = new Date('2026-11-08T17:22:00Z');
+    const week = datePresetRange('week', lateSundayUtc);
+    expect([week?.from.getMonth(), week?.from.getDate(), week?.to.getDate()]).toEqual([10, 9, 15]);
+    const today = datePresetRange('today', lateSundayUtc);
+    expect([today?.from.getMonth(), today?.from.getDate()]).toEqual([10, 9]);
   });
 });
 

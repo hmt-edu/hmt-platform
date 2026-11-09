@@ -7,6 +7,7 @@ import {
   expectAccessible,
   isPhone,
   loginStaff,
+  loginStaffUntil,
   loginStudent,
   openCrmMenu,
   signOut,
@@ -243,8 +244,8 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
   const account = phone ? 'ketoan' : 'admin.cs1';
   await clearTotp(`${account}@${DOMAIN}`);
 
-  await loginStaff(page, account);
-  await expect(page).toHaveURL(/\/thiet-lap-hai-buoc$/);
+  // Đăng nhập lần đầu đôi khi về lại /dang-nhap (dịch vụ đăng nhập local vừa dựng lại): thử lại tới khi vào trang thiết lập (Q-164).
+  await loginStaffUntil(page, account, /\/thiet-lap-hai-buoc$/);
   await expect(
     page.getByRole('heading', { level: 1, name: 'Bật xác thực hai bước' }),
   ).toBeVisible();

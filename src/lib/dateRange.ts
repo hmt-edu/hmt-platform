@@ -1,8 +1,15 @@
 // Mốc nhanh của khoảng ngày (Hôm nay, Tuần này, Tháng này, Tháng trước). Tuần bắt đầu từ thứ Hai.
+import { vnDayBounds } from './vnDay';
 
-/** Khoảng ngày của một mốc nhanh. Tuần bắt đầu từ thứ Hai. `to` tính hết ngày. */
+/**
+ * Khoảng ngày của một mốc nhanh. Tuần bắt đầu từ thứ Hai. `to` tính hết ngày.
+ * "Hôm nay" là ngày lịch Việt Nam (Asia/Ho_Chi_Minh), không theo múi giờ của trình duyệt: máy ở múi giờ khác
+ * (hoặc máy chạy kiểm thử ở UTC) lúc 00:00–07:00 giờ Việt Nam vẫn ra đúng ngày, đúng tuần như hộp Tạo lịch hẹn.
+ */
 export function datePresetRange(preset: string, today: Date): { from: Date; to: Date } | null {
-  const day = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const [y, m, d] = vnDayBounds(today).dateKey.split('-').map(Number);
+  // dateKey luôn có đủ ba phần; giá trị dự phòng chỉ để thoả kiểu.
+  const day = new Date(y ?? 0, (m ?? 1) - 1, d ?? 1);
   const DAY = 86_400_000; // allow-number: số mili giây trong một ngày
   const WEEK = 7; // allow-number: số ngày trong tuần
   const endOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime() - 1;
