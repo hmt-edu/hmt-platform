@@ -1,7 +1,7 @@
 // Bảng dòng đơn ở chế độ SỬA (UI-O3, canvas BH05_nhap): mỗi dòng sửa số giờ, hình thức, chính sách chiết khấu (chip, ✕ để bỏ, "+ Thêm"), bỏ dòng.
 // Học sinh, gói giữ nguyên; thêm dòng, thêm em để bước tạo đơn từ cơ hội (dùng chung ô chọn gói, học sinh). Giao diện KHÔNG tính tiền: Thành tiền
 // hiện số máy chủ đã tính lần lưu trước, tính lại khi bấm Lưu (R-TIEN-13).
-import { formatNumber } from '../../lib/format';
+import { formatDate, formatNumber } from '../../lib/format';
 import { discountText } from '../bao-gia/quoteRecord';
 import { Button } from '../../ui/Button';
 import { INPUT_CLASS } from '../../ui/Field';
@@ -16,6 +16,7 @@ import {
   type OrderDraft,
 } from './orderEdit';
 import type { OppStudent } from '../bao-gia/useQuoteData';
+import type { OrderLineClass } from '../ghi-danh/enrollTypes';
 import type { OrderLine, OrderLineDiscount } from './orderTypes';
 import type { PolicyOption } from './useOrderData';
 
@@ -35,6 +36,10 @@ type Props = {
   onAdd: () => void;
   onChangeAdded: (key: string, patch: Partial<AddedLine>) => void;
   onRemoveAdded: (key: string) => void;
+  /** Mã lớp, ngày vào lớp đang chọn của từng dòng (BH-08), theo số dòng. */
+  lineClasses: Record<number, OrderLineClass>;
+  /** Mở hộp Chọn lớp và ngày vào lớp (BH-08) cho một dòng. */
+  onPickClass: (line: OrderLine) => void;
 };
 
 /** Chính sách áp được cho loại gói, cơ sở ở thời điểm hiện tại (máy chủ kiểm lại khi lưu). */
@@ -163,6 +168,8 @@ export function OrderEditLines({
   onAdd,
   onChangeAdded,
   onRemoveAdded,
+  lineClasses,
+  onPickClass,
 }: Props) {
   const live = lines.filter((l) => !draft.lines[l.line_no]?.removed);
   const dim = stale ? 'opacity-50' : '';
@@ -249,8 +256,25 @@ export function OrderEditLines({
                       />
                     )}
                   </td>
-                  <td className="px-2 py-2 text-fg-muted">—</td>
-                  <td className="px-2 py-2 text-fg-muted">—</td>
+                  <td className="px-2 py-2">
+                    {lineClasses[l.line_no]?.class_code ?? <span className="text-fg-muted">—</span>}
+                    {!gift && !d.removed && (
+                      <button
+                        type="button"
+                        className="focus-ring block text-caption text-link hover:underline"
+                        onClick={() => onPickClass(l)}
+                      >
+                        {lineClasses[l.line_no] ? 'Đổi lớp' : 'Chọn lớp'}
+                      </button>
+                    )}
+                  </td>
+                  <td className="px-2 py-2">
+                    {lineClasses[l.line_no] ? (
+                      formatDate(lineClasses[l.line_no]?.enrol_start_date)
+                    ) : (
+                      <span className="text-fg-muted">—</span>
+                    )}
+                  </td>
                   <td className="px-2 py-2">
                     {gift || d.removed ? (
                       <span className="tabular">{formatNumber(l.quantity)}</span>

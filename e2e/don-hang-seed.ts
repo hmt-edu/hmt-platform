@@ -44,6 +44,14 @@ export const EDIT_SETUPS = {
 export const editSetupOf = (project: string): Setup =>
   EDIT_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 
+// Bộ riêng cho bài chọn lớp cho dòng đơn (BH-08), để các file bài không đè nhau.
+export const CLASS_SETUPS = {
+  'may-tinh': { mark: 'E2EBLMT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1400 },
+  'dien-thoai': { mark: 'E2EBLDT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1450 },
+} as const;
+export const classSetupOf = (project: string): Setup =>
+  CLASS_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
+
 export const orderSetupOf = (project: string): Setup =>
   ORDER_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 

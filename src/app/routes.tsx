@@ -37,6 +37,22 @@ const ChoosePortalPage = lazyScreen(
   () => import('../pages/common/ChoosePortalPage'),
   'ChoosePortalPage',
 );
+const EnrollmentListPage = lazyScreen(
+  () => import('../pages/ghi-danh/EnrollmentListPage'),
+  'EnrollmentListPage',
+);
+const EnrollmentQueuePage = lazyScreen(
+  () => import('../pages/ghi-danh/EnrollmentQueuePage'),
+  'EnrollmentQueuePage',
+);
+const EnrollmentRecordPage = lazyScreen(
+  () => import('../pages/ghi-danh/EnrollmentRecordPage'),
+  'EnrollmentRecordPage',
+);
+const EnrollmentLedgerPage = lazyScreen(
+  () => import('../pages/ghi-danh/EnrollmentLedgerPage'),
+  'EnrollmentLedgerPage',
+);
 const TeacherAttendancePage = lazyScreen(
   () => import('../pages/gv/TeacherAttendancePage'),
   'TeacherAttendancePage',
@@ -250,6 +266,38 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="cho-ke-toan-duyet">
                 <ReceiptListPage waitingAccounting />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'ghi-danh',
+            element: (
+              <GatedCrmEntry slug="ghi-danh">
+                <EnrollmentListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'ghi-danh/:id',
+            element: (
+              <GatedCrmEntry slug="ghi-danh">
+                <EnrollmentRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'ghi-danh/:id/so-gio',
+            element: (
+              <GatedCrmEntry slug="ghi-danh">
+                <EnrollmentLedgerPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cho-xep-lop',
+            element: (
+              <GatedCrmEntry slug="cho-xep-lop">
+                <EnrollmentQueuePage />
               </GatedCrmEntry>
             ),
           },

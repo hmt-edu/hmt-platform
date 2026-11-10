@@ -73,6 +73,8 @@ import {
   totalPercentText,
 } from './orderApprove';
 import { CreateReceiptDialog } from '../phieu-thu/CreateReceiptDialog';
+import { ChooseClassDialog, type ChooseClassTarget } from '../ghi-danh/ChooseClassDialog';
+import { useOrderLineClasses } from '../ghi-danh/useEnrollmentData';
 import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
 
 const ORDER_CHANGE_FORMAT = { labels: {} } satisfies FieldFormat;
@@ -130,6 +132,10 @@ function OrderView({ record }: { record: OrderRecord }) {
   const { claims } = useAuth();
   const toast = useToast();
   const refresh = useRefreshOrder(record.id);
+  // BH-08: mã lớp và ngày vào lớp của từng dòng; hộp Chọn lớp mở từ bảng Sửa.
+  const lineClassQuery = useOrderLineClasses(record.id);
+  const lineClasses = Object.fromEntries((lineClassQuery.data ?? []).map((c) => [c.line_no, c]));
+  const [classTarget, setClassTarget] = useState<ChooseClassTarget | null>(null);
   const phone = useMedia(NARROW_TABLE);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<{ message: string; retry: boolean } | null>(null);
@@ -367,9 +373,23 @@ function OrderView({ record }: { record: OrderRecord }) {
       header: 'Hình thức',
       cell: (l: OrderLine) => (l.line_kind === 'GIFT' ? '—' : modeName(l.delivery_mode_code)),
     },
-    // Mã lớp, Ngày vào lớp để trống chờ phân hệ Đào tạo (canvas BH05_nhap_xem, Q-50).
-    { key: 'class', header: 'Mã lớp', cell: () => <span className="text-fg-muted">—</span> },
-    { key: 'start', header: 'Ngày vào lớp', cell: () => <span className="text-fg-muted">—</span> },
+    // Mã lớp, Ngày vào lớp (BH-08): do hộp Chọn lớp ghi vào dòng đơn Nháp; chưa chọn thì "—" (ghi danh sẽ Chờ xếp lớp).
+    {
+      key: 'class',
+      header: 'Mã lớp',
+      cell: (l: OrderLine) =>
+        lineClasses[l.line_no]?.class_code ?? <span className="text-fg-muted">—</span>,
+    },
+    {
+      key: 'start',
+      header: 'Ngày vào lớp',
+      cell: (l: OrderLine) =>
+        lineClasses[l.line_no] ? (
+          formatDate(lineClasses[l.line_no]?.enrol_start_date)
+        ) : (
+          <span className="text-fg-muted">—</span>
+        ),
+    },
     {
       key: 'quantity',
       align: 'right',
@@ -469,6 +489,23 @@ function OrderView({ record }: { record: OrderRecord }) {
             onAdd={() => setPickOpen(true)}
             onChangeAdded={patchAdded}
             onRemoveAdded={removeAdded}
+            lineClasses={lineClasses}
+            onPickClass={(l) =>
+              setClassTarget({
+                orderId: record.id,
+                lineNo: l.line_no,
+                packageId: l.package_id,
+                packageName: l.package_name,
+                studentName: l.student_name ?? null,
+                branchId: record.branch_id,
+                current: lineClasses[l.line_no]
+                  ? {
+                      classId: lineClasses[l.line_no]?.class_id ?? '',
+                      date: lineClasses[l.line_no]?.enrol_start_date ?? '',
+                    }
+                  : null,
+              })
+            }
           />
           {capNote}
         </>
@@ -876,6 +913,14 @@ function OrderView({ record }: { record: OrderRecord }) {
           />
         </div>
       </RecordDetail>
+      <ChooseClassDialog
+        target={classTarget}
+        onClose={() => setClassTarget(null)}
+        onSaved={() => {
+          void lineClassQuery.refetch();
+          void refresh();
+        }}
+      />
       <ConfirmDialog
         open={confirmUnedited}
         onOpenChange={setConfirmUnedited}

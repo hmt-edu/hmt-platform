@@ -86,6 +86,24 @@ Chưa có: bài tập về nhà, màn cấu hình đánh giá (CH-07, sau 17/11)
 
 `app.import_training_records(loại, hàng, nạp thật, tên file)` (Admin, cùng hợp đồng với `app.import_records`): loại LOP, GHI_DANH, BUOI_HOC, DIEM_DANH. Xem trước hoàn tác; nạp thật ghi nhật ký. Báo cáo có `summary.errors_by_type` (mã lỗi → số dòng) và `summary.classes_without_teacher`. Lớp nạp chỉ sinh buổi từ `opening_balance_date` (Q-199). Mỗi ghi danh một dòng Số dư đầu kỳ mang ngày chốt (`hour_ledger.entry_date`, Q-177). Buổi, điểm danh cũ vào `legacy_session_record`, `legacy_attendance_record` (chỉ đọc); `app.legacy_hours_reconciliation(mã lớp cũ, chỉ dòng lệch)` so giờ đã học ghi trong file với điểm danh cũ. Luật R-V2-30, R-V2-32, R-V2-33, Q-186..188, Q-199, Q-200.
 
+## Cụm Ghi danh: hàm đọc và chọn lớp (migration 113, 114; GD-01, GD-02, GD-03, GD-04, GD-06, BH-08)
+
+Luật: R-GD-05 (hàng chờ CHỈ ghi danh Chờ xếp lớp), R-GD-04 (sổ giờ chỉ thêm), R-GD-06, R-GD-08, R-GD-14, R-GD-15 (xếp lớp, ngày vào lớp, lớp luân phiên không báo trùng), R-GD-18 (chuyển phí kèm mã ticket), R-GV-13 (giáo viên không đọc ghi danh, sổ giờ). Giao diện không tính giờ; số do hàm trả.
+
+| Hàm | Ai | Việc |
+| --- | --- | --- |
+| `enrollment_list(bộ lọc, sắp xếp, số dòng, bỏ qua)` | Ghi danh · Xem (toàn hệ thống, cơ sở) | GD-01. Lọc q, status[], branch_id, class_id, student_id, parent_id; sắp code_desc, code_asc, student_asc, student_desc, remaining_asc, remaining_desc; kết quả {total, rows} kèm giờ cấp, đã học, còn lại. |
+| `enrollment_queue(bộ lọc, số dòng, bỏ qua)` | Ghi danh · Sửa | GD-06. Chỉ ghi danh Chờ xếp lớp, cũ nhất trước. |
+| `enrollment_record(id)` | Ghi danh · Xem | GD-02. Thông tin, quỹ giờ, dòng xếp lớp kèm giờ đã học tại lớp. Ngày hết giờ dự kiến và hạn gói chưa tính (null). |
+| `enrollment_ledger(id, số dòng, bỏ qua)` | Ghi danh · Xem | GD-04. Mọi dòng sổ giờ, mới nhất trước, kèm số dư sau mỗi dòng; chuyển phí nêu mã ticket. |
+| `enrollment_matching_classes(gói, cơ sở, học sinh)` | Ghi danh · Sửa hoặc Đơn hàng · Sửa | BH-08, GD-03. Lớp đã duyệt, còn chỗ, đúng môn, khối của gói; kèm lịch, giáo viên, buổi sắp tới, số buổi trùng với lớp em đang học. |
+| `enrollment_assign_options(ghi danh)` | Ghi danh · Sửa | GD-03. Ghi danh cùng học sinh đang chờ, lớp phù hợp, nhóm lớp (mỗi ghi danh một lớp trong nhóm, không trùng buổi). |
+| `assign_enrollments_to_classes([{enrollment_id, class_id, start_date}])` | Ghi danh · Sửa | GD-03. Xếp nhiều ghi danh một giao dịch, gọi lại `assign_enrollment_class`; một dòng lỗi thì không xếp dòng nào. |
+| `set_order_line_class(đơn, số dòng, lớp, ngày)` | Đơn hàng · Sửa | BH-08. Gắn lớp, ngày vào lớp cho dòng đơn Nháp; lớp null = chưa chọn lớp. Ghi nhật ký đơn. |
+| `order_line_classes(đơn)` | Đơn hàng · Xem | Mã lớp, ngày vào lớp của từng dòng đơn. |
+
+Chưa làm ở cụm này: Điều chỉnh giờ (GD-05), Tạo ticket (CS-04), ghi chú và hoạt động của ghi danh, hồ sơ học sinh; cột Phiếu thu, Khoản tiền của sổ giờ (sổ giờ chưa lưu liên kết tới phiếu thu).
+
 ## GV: dữ liệu đọc cho cổng Giáo viên, nội dung buổi (migration 107)
 
 Luật: R-GV-08, R-GV-13, R-GIO-06, R-GIO-08, R-V2-35, R-V2-37, Q-208. Điều kiện nội dung buổi theo Q-231 (chờ anh "OK ĐƯA VÀO LUẬT", chưa vào spec 04).

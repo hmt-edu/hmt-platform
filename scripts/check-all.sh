@@ -63,6 +63,6 @@ echo "Dịch vụ đăng nhập sẵn sàng."
 
 # Thử lại bài trượt 2 lần như CI (playwright.config.ts): loại báo nhầm do GoTrue trên Docker chập chờn; lỗi thật vẫn trượt.
 export E2E_RETRIES=2
-npm run e2e
+npm run e2e -- --workers="${E2E_WORKERS:-2}"
 
 printf '\nXanh: có thể mở PR hoặc đẩy commit. Ảnh chụp của bài e2e ra thư mục tạm (chỉ ghi vào docs/anh-chup/ khi đặt SO_SANH_GHI_VAO_REPO=1).\n'

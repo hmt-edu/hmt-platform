@@ -1,0 +1,244 @@
+// GD-02 Ghi danh (bản ghi, khuôn K06, chỉ đọc): thông tin ghi danh, quỹ giờ (cấp, tặng, đã học, còn lại), dòng xếp lớp và lịch sử chuyển lớp, nút Xếp lớp (khi Chờ xếp lớp)
+// và Sổ giờ. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Chưa làm ở cụm này: Điều chỉnh giờ (GD-05), Tạo ticket (CS-04, sau 17/11), "Tạo phiếu thu tái tục thủ
+// công" (TT-03 đã bỏ). Ngày hết giờ dự kiến, hạn gói (chỉ dự báo) chưa tính: hiện "—". Giao diện không tính giờ: số do hàm DB trả.
+import { Link, useParams } from 'react-router';
+import { useState } from 'react';
+import { useNavigateFrom } from '../../layout/crumbTrail';
+import { useCrumbTail } from '../../layout/CrumbTail';
+import { errorOf } from '../../lib/db';
+import { formatDate, formatNumber } from '../../lib/format';
+import { useAccess } from '../../nav/AccessContext';
+import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
+import { Button } from '../../ui/Button';
+import { Tag } from '../../ui/Data';
+import { Spinner, StateView } from '../../ui/Feedback';
+import type { StageStep } from '../../ui/Stage';
+import { AssignClassDialog } from './AssignClassDialog';
+import { statusTone } from './enrollConfig';
+import { useEnrollmentRecord } from './useEnrollmentData';
+
+const END_REASON: Record<string, string> = {
+  CHUYEN_LOP: 'Đã chuyển lớp',
+  DUNG: 'Dừng',
+  KET_THUC: 'Kết thúc',
+  NHAP_NHAM: 'Nhập nhầm',
+};
+
+// Bốn giai đoạn chính; bảo lưu, chuyển lớp, dừng, hoàn phí hiện bằng thẻ tình trạng (R-GD-05, R-GD-16).
+const STEPS: StageStep[] = [
+  { code: 'CHO_XEP_LOP', label: 'Chờ xếp lớp' },
+  { code: 'DA_XEP_LOP', label: 'Đã xếp lớp' },
+  { code: 'DANG_HOC', label: 'Đang học' },
+  { code: 'HOAN_THANH', label: 'Hoàn thành' },
+];
+
+export function EnrollmentRecordPage() {
+  const { id } = useParams();
+  const query = useEnrollmentRecord(id);
+  const access = useAccess();
+  const openFrom = useNavigateFrom();
+  const [assigning, setAssigning] = useState(false);
+  useCrumbTail(query.data ? query.data.enrollment.code : null);
+
+  if (query.isPending) return <Spinner />;
+  if (query.isError) {
+    const err = errorOf(query.error);
+    return (
+      <StateView
+        kind={err.code === 'HMT_KHONG_CO_QUYEN' ? 'forbidden' : 'not-found'}
+        title={
+          err.code === 'HMT_KHONG_CO_QUYEN'
+            ? 'Bạn không có quyền xem ghi danh này'
+            : 'Không tìm thấy ghi danh'
+        }
+      >
+        {err.message}
+      </StateView>
+    );
+  }
+  const { enrollment: e, hours, classes, tickets } = query.data;
+  const view = 'view' as const;
+  const inStages = STEPS.some((s) => s.code === e.status_code);
+  const canAssign = e.status_code === 'CHO_XEP_LOP' && access.can('ENROLLMENT', 'SUA');
+  return (
+    <>
+      <RecordDetail
+        kind="Ghi danh"
+        title={e.code}
+        mode={view}
+        readOnly
+        showEdit={false}
+        onEdit={() => undefined}
+        onSave={() => undefined}
+        onCancel={() => undefined}
+        stageShowCode={false}
+        stage={{
+          steps: STEPS,
+          current: inStages ? e.status_code : '',
+          forwardOnly: true,
+          onSelect: () => undefined,
+        }}
+        stageNote="Tình trạng chỉ đọc, đổi bằng nút bên dưới."
+        aside={
+          <p className="p-3 text-body text-fg-muted">
+            Ghi chú và hoạt động của ghi danh làm sau 17/11. Mọi cộng, trừ giờ xem ở Sổ giờ.
+          </p>
+        }
+        businessActions={
+          <span className="flex flex-wrap items-center gap-2">
+            {canAssign && (
+              <Button variant="primary" onClick={() => setAssigning(true)}>
+                Xếp lớp
+              </Button>
+            )}
+            <Button onClick={() => openFrom(`/crm/ghi-danh/${e.id}/so-gio`)}>Sổ giờ</Button>
+            {!inStages && <Tag tone={statusTone(e.status_code)}>{e.status_name}</Tag>}
+          </span>
+        }
+        smart={[
+          {
+            key: 'hoc-sinh',
+            label: 'Học sinh',
+            icon: 'user',
+            count: 1,
+            unavailable: 'Hồ sơ học sinh làm sau 17/11',
+            onOpen: () => undefined,
+          },
+          {
+            key: 'don-hang',
+            label: 'Đơn hàng',
+            icon: 'file',
+            count: e.order_id ? 1 : 0,
+            ...(e.order_id
+              ? { onOpen: () => openFrom(`/crm/don-hang/${e.order_id ?? ''}`) }
+              : {
+                  unavailable: 'Ghi danh nạp từ hệ thống cũ, không có đơn',
+                  onOpen: () => undefined,
+                }),
+          },
+          {
+            key: 'ticket',
+            label: 'Ticket',
+            icon: 'service',
+            count: tickets,
+            unavailable: 'Ticket làm sau 17/11',
+            onOpen: () => undefined,
+          },
+        ]}
+      >
+        <div className="grid gap-6 md:grid-cols-2">
+          <DetailSection title="Thông tin ghi danh">
+            <DetailField
+              label="Ghi danh"
+              mode={view}
+              value={e.legacy_ref ? `${e.code} · mã cũ ${e.legacy_ref}` : e.code}
+            />
+            <DetailField
+              label="Học sinh"
+              mode={view}
+              value={`${e.student_name} · ${e.student_code}`}
+            />
+            <DetailField
+              label="Phụ huynh"
+              mode={view}
+              value={`${e.parent_name} · ${e.parent_code}`}
+            />
+            <DetailField label="Gói" mode={view} value={e.package_code ?? ''} />
+            <DetailField label="Hình thức học" mode={view} value={e.delivery_mode_name ?? ''} />
+            <DetailField
+              label="Đơn hàng"
+              mode={view}
+              value={
+                e.order_id && e.order_code ? (
+                  <Link to={`/crm/don-hang/${e.order_id}`} className="text-link hover:underline">
+                    {e.order_code}
+                  </Link>
+                ) : (
+                  ''
+                )
+              }
+            />
+            <DetailField label="Tình trạng" mode={view} value={e.status_name} />
+            <DetailField label="Cơ sở" mode={view} value={`${e.branch_code} ${e.branch_name}`} />
+            <DetailField label="Ngày ghi danh" mode={view} value={formatDate(e.enrolled_on)} />
+            <DetailField
+              label="Start Date"
+              mode={view}
+              value={e.start_date ? formatDate(e.start_date) : ''}
+            />
+            <DetailField
+              label="End Date (dự kiến, chỉ dự báo)"
+              mode={view}
+              value={e.expected_end_date ? formatDate(e.expected_end_date) : ''}
+            />
+            <DetailField
+              label="Hạn gói (chỉ dự báo)"
+              mode={view}
+              value={e.package_deadline ? formatDate(e.package_deadline) : ''}
+            />
+          </DetailSection>
+          <DetailSection title="Quỹ giờ">
+            <DetailField label="Giờ cấp" mode={view} value={formatNumber(hours.granted)} />
+            <DetailField label="Giờ tặng" mode={view} value={formatNumber(hours.gifted)} />
+            <DetailField label="Đã học" mode={view} value={formatNumber(hours.used)} />
+            <DetailField
+              label="Còn lại"
+              mode={view}
+              value={<b>{formatNumber(hours.remaining)} giờ</b>}
+            />
+          </DetailSection>
+        </div>
+
+        <section className="mt-6 flex flex-col gap-2" aria-labelledby="gd02-classes">
+          <h3
+            id="gd02-classes"
+            className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
+          >
+            Lớp đang học và lịch sử chuyển lớp (dòng xếp lớp)
+          </h3>
+          {classes.length === 0 ? (
+            <p className="text-body text-fg-muted">
+              Chưa có lớp. Ghi danh Chờ xếp lớp: bấm Xếp lớp để xếp.
+            </p>
+          ) : (
+            <div className="overflow-x-auto rounded-control border border-border">
+              <table aria-label="Dòng xếp lớp" className="w-full text-body">
+                <thead className="bg-surface-subtle text-left text-caption text-fg-muted">
+                  <tr>
+                    <th className="px-3 py-2">Lớp</th>
+                    <th className="px-3 py-2">Ngày vào</th>
+                    <th className="px-3 py-2">Ngày rời</th>
+                    <th className="px-3 py-2 text-right">Giờ đã học tại lớp</th>
+                    <th className="px-3 py-2">Tình trạng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {classes.map((c) => (
+                    <tr key={`${c.class_id}-${c.start_date}`} className="border-t border-border">
+                      <td className="px-3 py-2">{c.class_code}</td>
+                      <td className="px-3 py-2">{formatDate(c.start_date)}</td>
+                      <td className="px-3 py-2">{c.end_date ? formatDate(c.end_date) : '—'}</td>
+                      <td className="px-3 py-2 text-right tabular">
+                        {formatNumber(c.studied_hours)}
+                      </td>
+                      <td className="px-3 py-2">
+                        {c.end_reason ? (END_REASON[c.end_reason] ?? c.end_reason) : 'Đang học'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <p className="text-caption text-fg-muted">
+            Ngày hết giờ dự kiến cộng lịch của lớp đang học, chỉ để dự báo, không chặn gì.
+          </p>
+        </section>
+      </RecordDetail>
+      <AssignClassDialog
+        enrollmentId={assigning ? e.id : null}
+        onClose={() => setAssigning(false)}
+      />
+    </>
+  );
+}
