@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 04/11/2026. Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 10/11/2026 (mục «Trạng thái 10/11/2026» bên dưới là bản mới nhất; các mục ghi ngày cũ hơn là lịch sử, có thể đã lỗi thời). Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
 **Từ 04/11/2026 (Đ285 đến Đ290): v2 (`hmt-v2`) dừng hẳn; v1 (repo này) làm tiếp cho Cơ sở 5 chạy thật.** Thiết kế bám v1; từ v2 chỉ lấy nghiệp vụ (mục 14 của `docs/spec/04`, thắng các mục khác khi khác nhau). Canvas chuẩn là `design/hmt-canvas-6f57/` (thay `8ab9`, nội dung giống hệt) và `design/hmt-canvas-9189/` (Đào tạo, Giáo viên, bản hiện hành là nội dung thư mục này; `design/hmt-canvas-fcd1/` v41 `1793782759-fcd1` giữ để đối chiếu, không còn là bản hiện hành; bảng khác biệt: `docs/nghiep-vu/doi-chieu-canvas-dao-tao-v41.md`). Mốc: 10/11 Tuyển sinh + màn Nhập CS5; ~12/11 Bán hàng, Thu chi; ~17/11 Đào tạo, Cổng giáo viên, Aftersale (ngày chốt giờ học 17/11). Bảng khác biệt và kế hoạch theo mốc: `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md` (chờ anh OK trước khi viết migration). Chưa sửa giao diện Báo giá, Đơn hàng, Phiếu thu khi anh chưa gửi yêu cầu.
 
@@ -111,6 +111,28 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm phiếu tái tục: khoá các giai đoạn con **L7A, L7B, L8A** của `UPSALE_SUBSTAGE` (không Ngừng được), cùng cách khoá L5A, L5B, L5P của cơ hội, khi viết hàm dùng chúng.
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
+
+## Trạng thái 10/11/2026 (theo `main` và các PR đang mở lúc viết)
+
+Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke-hoach-17-11.md`, `docs/quy-tac-cung-cho-code.md`. Mục tiêu 17/11: cơ sở 5, LÕI 28 màn.
+
+**Đã gộp vào `main` từ 28/10 (mỗi PR có link OK của `caotruong276` trong commit gộp; PR chỉ tài liệu hoặc thiết kế không có CI):**
+
+| Nhóm | PR |
+|---|---|
+| Nạp dữ liệu: màn Nhập (QT-18), loại Cơ hội, nạp Người dùng và chốt chặn username, bảng chọn 8 loại (lát 1), nạp Cơ hội (migration 072), D1e nạp dữ liệu đào tạo (migration 105) | #167, #173, #175, #183, #221, #223 |
+| Quản trị người dùng và danh mục: Tạo người dùng, Sửa email, Đặt lại mật khẩu, Danh mục (QT-06, QT-07), nhóm tự đăng xuất (migration 070), phòng CS5 (071) | #163, #166, #172, #178, #201 |
+| Bán hàng: Gói bán và Bảng giá theo gói, Sửa, Duyệt, Từ chối đơn, dòng thời gian, LineTable và Báo giá Tạo, Sửa, Ưu đãi linh hoạt, chip, người duyệt khi chưa có quản lý trực tiếp, BH-11 phần máy chủ (cơ hội đã có đơn Nháp) | #179, #181, #187, #188, #190, #193, #195 đến #198, #200, #204, #205, #215 |
+| Thu chi: Phiếu thu (migration 076, TC-01 đến TC-04, TC-07), nối duyệt phiếu thu với ghi danh (migration 106) | #180, #199, #224 |
+| Đào tạo, DB: Lớp, Ghi danh, Sổ giờ, Buổi, Điểm danh (D1, migration 100 đến 102), Nhận xét và Kiểm tra (D2, migration 103), pg_cron tự chốt và tự Done (104) | #209, #219, #220 |
+| Nền và công cụ: ngày hôm nay giờ Việt Nam (R-HT-07), nguồn lead (Q-137), cổng xem trước Playwright theo biến (Q-222), khoá nặng `scripts/heavy-lock.sh`, CI giảm phút | #185, #192, #203, #207, #210, #213, #222, #227 |
+| Tài liệu và thiết kế: canvas Bán hàng & Thu chi (abea), Đào tạo & Giáo viên (9189), Quản trị (dc47); hướng dẫn chạy thật, quay lại bằng bản sao lưu, đổi chủ repo | #164, #168, #169, #170, #176, #177, #189, #202, #208, #211, #212, #216 đến #218, #225 đến #226, #229, #231 |
+
+**Đang mở:** #228 (Code 2: dữ liệu đọc cho cổng Giáo viên, migration 107; đang xung đột với `main`), #232 (GV-01, GV-02; gộp sau #228), #230 (QT-18 lát 2: nạp Lớp và Ghi danh; không phụ thuộc #228, chờ Chat kiểm), #233 (Code 2: tài liệu nạp 17/11, độc lập).
+
+**Chưa làm cho 17/11 (xem kế hoạch):** GV-04 đến GV-08, cụm Ghi danh, Lớp, Buổi, Khách hàng, Thu tiền. Migration: 108 bỏ, không dùng lại; Code 1 dùng 111, 113, 114, 115; Code 2 dùng 109, 110, 112, 116, 117, 118.
+
+**Chưa xác nhận được trong lúc viết:** trạng thái bản chạy thật (`hmt-prod`) hiện ở tag và migration nào (Claude Code không đọc chạy thật; anh Trường biết). Lần thử deploy production dự kiến tối 12/11, deploy thật 16/11, nạp dữ liệu 17/11.
 
 ## Đang ở đâu (28/10/2026)
 
