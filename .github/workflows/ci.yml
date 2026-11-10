@@ -113,7 +113,8 @@ jobs:
       (github.event_name != 'schedule' || needs.gate.outputs.run == 'true') &&
       (needs.changes.result != 'success' || needs.changes.outputs.full == 'true')
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # Phải lớn hơn thời gian tối đa của bước Playwright (35 phút) cộng cài đặt, dựng DB: nếu không bước bị cắt bởi giới hạn của cả job.
+    timeout-minutes: 45
     permissions:
       contents: read
     # Playwright trên PR (Q-21, anh chốt 06/11) chỉ chạy khi PR có migration, đụng tiền (đơn hàng, phiếu thu, số dư, báo giá, gói bán, bảng giá…) hoặc lõi (src/lib/auth, src/nav, src/record; Q-39, Q-66); theo đường dẫn, xem
@@ -265,8 +266,8 @@ jobs:
 
       - name: Playwright (máy tính + iPhone)
         if: env.RUN_E2E == 'true'
-        # Bình thường 10 đến 12 phút.
-        timeout-minutes: 20
+        # Bình thường 10 đến 12 phút; bộ bài ~410 bài và máy chủ CI chậm thì có lần quá 20 phút (11/11/2026), nâng lên 35.
+        timeout-minutes: 35
         run: npm run e2e
 
       - name: Lưu báo cáo Playwright khi trượt
