@@ -77,3 +77,7 @@ Luật: R-V2-18 (Q-176), R-V2-19, R-V2-20, R-V2-38, R-V2-39; R-GV-01, R-GV-04 đ
 Điều kiện Done (`session_pending_reason`, tham số `session_done_requires_review`, Q-198: Tắt thì chỉ cần điểm danh xong): buổi thường không còn ô Chưa đánh giá; buổi Kiểm tra không còn em có mặt ở Chưa chấm. Không còn điều kiện BTVN (R-V2-35).
 Bộ tiêu chí: Toán, Đại số, Hình học dùng bộ Toán; mọi môn còn lại dùng bộ môn phụ (Q-189); mô tả 5 mức và 24 mẫu câu là dữ liệu (Q-190). `review_criteria_for_subject(môn)` trả tiêu chí của môn; `session_review_sheet(buổi)` trả dữ liệu màn chấm trong một lần gọi.
 Chưa có: bài tập về nhà, màn cấu hình đánh giá (CH-07, sau 17/11), ticket sửa nhận xét sau Done.
+
+## Lịch tự chạy (migration 104, PR pg_cron)
+
+`app.sync_session_cron()` (Admin) đăng ký hai lịch pg_cron từ Cài đặt: `hmt-auto-close-sessions` gọi `app.auto_close_sessions()` mỗi `session_autoclose_before_minutes` phút (30), `hmt-auto-complete-sessions` gọi `app.auto_complete_sessions()` mỗi `session_autocomplete_minutes` phút (15). Đổi tham số xong thì gọi lại hàm này. Luật R-GIO-05, R-GIO-06, Q-180.
