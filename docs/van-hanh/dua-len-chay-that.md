@@ -14,6 +14,8 @@ Viết 10/11/2026. Đã đọc `deploy/.github/workflows/deploy-production.yml`,
 
 ## Các bước trước ngày deploy
 
+0. **Kiểm production bằng SQL chỉ đọc:** dán `docs/van-hanh/sql-kiem-hmt-prod-chi-doc.sql` vào Supabase `hmt-prod` > SQL Editor > Run; gửi Chat ảnh kết quả (số migration cuối, số dòng các bảng chính, số phiếu làm 043 dừng). File chỉ có SELECT.
+
 1. Chat và anh OK ngày giờ deploy. Không deploy khi đang có người dùng thật thao tác.
 2. Trên bản thử nghiệm: `https://hmt-staging.pages.dev` đã thử xong các luồng cần cho bản này.
 3. Lấy tag: `hmt-platform` > Actions > lượt **Deploy staging** xanh mới nhất > dòng `Tag: staging-YYYYMMDD-HHMM-xxxxxxx`. Tag phải là commit trên `main` và đã có lượt Deploy staging thành công (workflow tự kiểm, sai thì dừng).
@@ -43,3 +45,35 @@ Viết 10/11/2026. Đã đọc `deploy/.github/workflows/deploy-production.yml`,
 | Mã hoá, tải sao lưu | `AGE_RECIPIENT` và các khoá Google Drive | Secrets `hmt-deploy`; khoá giải mã `age` chỉ anh giữ |
 
 Claude Code không có quyền nào ở bảng này.
+
+## Danh sách migration sẽ áp (bản 10/11)
+
+Từ tag `staging-20261010-1642-75637cf` (migration cuối 014) đến `main` ngày 10/11 (migration cuối 086): **70 file mới** (015 đến 086, không có 073 và 078), không file nào sửa hoặc xoá; thêm 087 khi PR #210 gộp. Lệnh: `git diff --name-status staging-20261010-1642-75637cf origin/main -- supabase/migrations`. Danh sách đầy đủ kèm mức rủi ro: `~/Desktop/sang-10-11/migration-tu-tag-staging-den-main.txt`. Mức rủi ro lấy từ tìm chữ khoá (suy ra), chưa đọc từng file.
+
+Cần để ý: 016 và 024 tạo extension `unaccent`, `pg_trgm`; **043 xoá cột** của lead và cơ hội sau khi chuyển dữ liệu em sang bảng mới (có chốt dừng nếu còn phiếu kiểm tra chưa gắn em); 065 xoá cột tìm kiếm của phụ huynh rồi dựng lại; nhiều file đổi dữ liệu danh mục. Không thấy đổi kiểu cột, xoá bảng hay đổi tên cột.
+
+## Khi `db push` dừng giữa chừng
+
+Mỗi file migration chạy trong một giao dịch của Supabase CLI (suy ra, chưa kiểm trên chạy thật): file lỗi thì không để lại gì, các file đã xong trước nó vẫn nằm lại trong DB.
+
+1. **Dừng, không bấm chạy lại ngay.** Bước giao diện không chạy khi bước migration đỏ, nên trang thật vẫn là giao diện cũ nhưng DB đã mới một phần.
+2. Chụp màn hình bước "Áp migration lên hmt-prod" (tên file lỗi và câu lỗi), gửi Chat.
+3. Xem DB đang ở đâu: Supabase `hmt-prod` > SQL Editor > `select max(version) from supabase_migrations.schema_migrations;` (chỉ đọc).
+4. **Không sửa tay DB, không sửa file migration đã gộp.** Cách sửa đúng: Claude Code sửa bằng migration mới trên `main`, qua PR, lên staging; rồi anh chạy lại Deploy production với tag mới (workflow áp tiếp từ chỗ dừng).
+5. Trong lúc chờ sửa: người dùng vẫn dùng giao diện cũ; kiểm xem màn chính còn mở được. Nếu hỏng, báo Chat để quyết định khôi phục (mục dưới).
+
+## Xác nhận deploy xong
+
+1. Cả bốn bước (và Edge Function nếu có token) xanh; phần tóm tắt lượt chạy ghi giờ migration, giờ triển khai, địa chỉ.
+2. Chạy `select max(version) from supabase_migrations.schema_migrations;` phải bằng số migration cuối của bản đã chọn (086, hoặc 087 nếu #210 đã gộp), và `select count(*) from supabase_migrations.schema_migrations;` khớp tổng số file của tag.
+3. Mở `https://hmt-prod.pages.dev` (cửa sổ ẩn danh): trang đăng nhập hiện, đăng nhập bằng Admin.
+4. Mở lần lượt Lead, Cơ hội, Đơn hàng, Danh mục: danh sách mở được, không báo lỗi đỏ.
+5. Tối đó xem lượt Backup production lúc 02:05 xanh (chứng tỏ DB mới vẫn xuất được).
+6. Việc xác nhận bằng số thật (bao nhiêu lead, cơ hội) phải do anh xem; Claude Code không có quyền đọc chạy thật.
+
+## Quay lại bằng bản sao lưu
+
+**Đã đọc `deploy/README.md` và hai workflow: hiện chưa có workflow khôi phục lên `hmt-prod`.** "Khôi phục thử" trong README chỉ nạp bản sao lưu vào DB tạm trên máy anh để kiểm. Khôi phục lên chạy thật cần `PROD_DB_URL`, mà khoá này chỉ nằm trong Secrets của `hmt-deploy` và không bao giờ nằm trên máy Mac.
+
+- Quay lại giao diện cũ: chạy Deploy production với tag cũ. Lưu ý migration đã áp **không tự lùi** (không có migration lùi), nên giao diện cũ chạy trên DB mới; chỉ an toàn nếu bản mới không xoá thứ giao diện cũ cần (043 xoá cột, nên **giao diện cũ sẽ hỏng** nếu 043 đã áp).
+- Quay lại DB: cần một quy trình khôi phục lên chạy thật chưa có. Đề xuất cho Chat quyết trước ngày 12/11: (a) Claude Code viết workflow `Restore production` ở `hmt-deploy` (anh duyệt, anh bấm chạy), hoặc (b) khôi phục tay trên trình duyệt qua Supabase SQL Editor (khó với dữ liệu lớn). Cho tới khi có, trước khi deploy chỉ chắc chắn có bản sao lưu để **tra cứu**, chưa chắc có đường quay lại nhanh.
