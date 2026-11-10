@@ -27,9 +27,11 @@ export function NoPortalPage({ portal }: { portal?: Portal }) {
         kind="forbidden"
         headingLevel={2}
         title={
-          portal
-            ? `Bạn không có quyền vào cổng ${PORTAL_NAMES[portal]}`
-            : 'Tài khoản chưa được cấp cổng nào'
+          portal === 'gv'
+            ? 'Tài khoản chưa liên kết hồ sơ giáo viên' // GV-01 (khung GV01_quyen)
+            : portal
+              ? `Bạn không có quyền vào cổng ${PORTAL_NAMES[portal]}`
+              : 'Tài khoản chưa được cấp cổng nào'
         }
         actions={
           home !== '/khong-co-quyen' && (
@@ -39,7 +41,9 @@ export function NoPortalPage({ portal }: { portal?: Portal }) {
           )
         }
       >
-        Cần dùng thì liên hệ quản trị viên để được cấp quyền.
+        {portal === 'gv'
+          ? 'Cổng giáo viên chỉ mở cho giáo viên và trợ giảng được phân công (R-GV-08, R-GV-13). Hãy liên hệ quản trị viên.'
+          : 'Cần dùng thì liên hệ quản trị viên để được cấp quyền.'}
       </StateView>
     </AuthLayout>
   );

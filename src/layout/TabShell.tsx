@@ -109,7 +109,7 @@ const TEACHER_TABS: ShellTab[] = [
   { to: '/gv', label: 'Hôm nay', icon: 'home', end: true },
   { to: '/gv/lich-day', label: 'Lịch dạy', icon: 'calendar' },
   { to: '/gv/lop', label: 'Lớp', icon: 'classes' },
-  { to: '/gv/viec-can-lam', label: 'Việc cần làm', icon: 'todo' },
+  { to: '/gv/viec-can-lam', label: 'Cần làm', icon: 'todo' },
   { to: '/gv/tai-khoan', label: 'Tài khoản', icon: 'user' },
 ];
 

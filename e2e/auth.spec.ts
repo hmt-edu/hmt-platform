@@ -38,7 +38,7 @@ test('CHUNG-16: sale mở cổng Giáo viên thì báo rõ không có quyền', 
   await expect(page).toHaveURL(/\/crm$/);
   await page.goto('/gv');
   await expect(
-    page.getByRole('heading', { name: 'Bạn không có quyền vào cổng Giáo viên' }),
+    page.getByRole('heading', { name: 'Tài khoản chưa liên kết hồ sơ giáo viên' }),
   ).toBeVisible();
   await expectAccessible(page);
 });
@@ -104,7 +104,7 @@ test('GV-01: giáo viên chỉ có cổng Giáo viên; điện thoại có thanh
     'Hôm nay',
     'Lịch dạy',
     'Lớp',
-    'Việc cần làm',
+    'Cần làm',
     'Tài khoản',
   ]);
   await nav.getByRole('link', { name: 'Lịch dạy' }).click();

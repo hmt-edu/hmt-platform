@@ -29,6 +29,10 @@ const ChoosePortalPage = lazyScreen(
   () => import('../pages/common/ChoosePortalPage'),
   'ChoosePortalPage',
 );
+const TeacherTodayPage = lazyScreen(
+  () => import('../pages/gv/TeacherTodayPage'),
+  'TeacherTodayPage',
+);
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
@@ -360,10 +364,10 @@ export const routes: RouteObject[] = [
           </RequirePortal>
         ),
         children: [
-          { index: true, element: <PortalTabPage title="Hôm nay" stage={GD3} /> },
+          { index: true, element: <TeacherTodayPage /> },
           { path: 'lich-day', element: <PortalTabPage title="Lịch dạy" stage={GD3} /> },
           { path: 'lop', element: <PortalTabPage title="Lớp" stage={GD3} /> },
-          { path: 'viec-can-lam', element: <PortalTabPage title="Việc cần làm" stage={GD3} /> },
+          { path: 'viec-can-lam', element: <PortalTabPage title="Cần làm" stage={GD3} /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },
         ],
