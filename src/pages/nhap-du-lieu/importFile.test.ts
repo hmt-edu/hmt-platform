@@ -122,12 +122,14 @@ describe('màn Nhập: đọc file CSV theo loại', () => {
     ]);
   });
 
-  it('thứ tự loại nạp: Người dùng, Cơ hội, Phụ huynh, Học sinh', () => {
+  it('thứ tự loại nạp: Người dùng, Cơ hội, Phụ huynh, Học sinh, Lớp, Ghi danh', () => {
     expect(IMPORT_KINDS.map((k) => k.kind)).toEqual([
       'NGUOI_DUNG',
       'CO_HOI',
       'PHU_HUYNH',
       'HOC_SINH',
+      'LOP',
+      'GHI_DANH',
     ]);
   });
 });

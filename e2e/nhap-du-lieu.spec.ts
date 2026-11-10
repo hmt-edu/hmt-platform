@@ -3,6 +3,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
+import { DB_URL } from './bao-gia-seed';
 import { DOMAIN, PASSWORD, enterAsAdmin, expectAccessible } from './helpers';
 
 test.skip(!PASSWORD, 'Cần SEED_PASSWORD.');
@@ -31,8 +32,10 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   // Q-209: bảng đủ 8 loại theo thứ tự nạp; loại chưa có hàm nạp là "Sắp có", nút Nhập khoá; loại sẵn sàng có Tải file mẫu.
   const kinds = page.getByRole('table', { name: 'Loại dữ liệu nạp' });
   await expect(kinds.getByRole('row')).toHaveCount(9);
-  await expect(page.getByRole('button', { name: 'Nhập lớp' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Nhập ghi danh' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Nhập lớp' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Nhập ghi danh' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Nhập số dư' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Nhập phiếu test' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Tải file mẫu phụ huynh' })).toBeEnabled();
   await expectAccessible(page);
   await page.getByRole('button', { name: 'Nhập phụ huynh' }).click();
@@ -200,4 +203,78 @@ test('Nhập Cơ hội: báo cáo theo giai đoạn, dòng thiếu thông tin em
   await expect(
     again.getByRole('button', { pressed: false }).filter({ hasText: 'dòng trùng' }),
   ).toContainText('2');
+});
+
+// Nạp Lớp, Ghi danh cần phân hệ Vận hành lớp bật ở cơ sở (HMT_TINH_NANG_TAT nếu tắt). Cơ sở dữ liệu giả của CI chưa bật cho CS5: bài tự bật.
+async function enableClassOps(): Promise<void> {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query(
+      `insert into app.feature_flag (module_code, branch_id, enabled)
+       select 'VAN_HANH_LOP', id, true from app.branch where code = 'CS5'
+       on conflict (module_code, branch_id) do update set enabled = true`,
+    );
+  } finally {
+    await db.end();
+  }
+}
+
+// QT-18 lát 2: loại đào tạo (D1e). Chỉ xem trước (không nạp, không ghi gì); dữ liệu giả.
+// Dòng 1 là dòng đầu tab 03_LOP của file mẫu chính thức (docs/van-hanh/mau/HMT5_FILE_MAU_NAP_DU_LIEU_GIA.xlsx), giữ nguyên giá trị;
+// dòng 2 cố ý sai lịch học để có một lỗi.
+const classCsv = [
+  'ma_lop_cu,loai_lop,phan_loai,trinh_do,nam_hoc,mon,khoi,lich_hoc,so_buoi,ma_gv,ngay_khai_giang,si_so_toi_da,tinh_trang,co_so',
+  '4M1,Lớp chung,CB,A,2627,Toán,4,Thứ 7 (14h30-17h00),20,2001,2026-07-18,12,Đang chạy,CS5',
+  `LOPTEST${stamp}B,Lớp chung,CB,A,2627,Toán,4,Sai dạng,20,2001,2026-07-18,12,Đang chạy,CS5`,
+].join('\n');
+
+test('Nhập Lớp: xem trước có cột Cảnh báo, báo cáo lớp chưa có giáo viên và lỗi theo loại', async ({
+  page,
+}) => {
+  await enableClassOps();
+  await enterAsAdmin(page, 'quantri.cs5');
+  await page.goto('/crm/quan-tri/nhap-du-lieu');
+  await page.getByRole('button', { name: 'Nhập lớp' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Nhập lớp từ file' });
+  await dialog.getByLabel('Chọn file CSV').setInputFiles({
+    name: 'lop.csv',
+    mimeType: 'text/csv',
+    buffer: Buffer.from(classCsv, 'utf8'),
+  });
+  await dialog.getByRole('button', { name: 'Tiếp' }).click();
+  const tiles = dialog.getByRole('button', { pressed: false });
+  await expect(tiles.filter({ hasText: 'dòng hợp lệ' })).toContainText('1');
+  await expect(tiles.filter({ hasText: 'dòng lỗi' })).toContainText('1');
+  const table = dialog.getByRole('table', { name: 'Kết quả từng dòng' });
+  await expect(table.getByRole('columnheader', { name: 'Cảnh báo' })).toBeVisible();
+  await expect(table.getByText('Chưa ghép được giáo viên')).toBeVisible();
+  const report = dialog.getByLabel('Báo cáo nạp');
+  await expect(report.getByText('HMT_NAP_LICH_SAI')).toBeVisible();
+  await expect(report.getByText('Lớp chưa có giáo viên (1)')).toBeVisible();
+  // Loại Lớp vẫn nạp từng phần: còn dòng hợp lệ thì nút Nạp bấm được.
+  await expect(dialog.getByRole('button', { name: 'Nạp' })).toBeEnabled();
+});
+
+test('Nhập Ghi danh: một dòng lỗi thì khoá nút Nạp (không nạp cả loại)', async ({ page }) => {
+  await enableClassOps();
+  await enterAsAdmin(page, 'quantri.cs5');
+  await page.goto('/crm/quan-tri/nhap-du-lieu');
+  await page.getByRole('button', { name: 'Nhập ghi danh' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Nhập ghi danh từ file' });
+  const csvText = [
+    'hoc_sinh_ma_cu,ma_lop_cu,tinh_trang_moi,ngay_vao_lop,thoi_luong_buoi,gio_du_kien,gio_da_hoc,gio_con_lai',
+    `HSKHONGCO${stamp},LOPKHONGCO${stamp},Đang học,2026-11-17,2.5,50,20,30`,
+  ].join('\n');
+  await dialog.getByLabel('Chọn file CSV').setInputFiles({
+    name: 'ghi-danh.csv',
+    mimeType: 'text/csv',
+    buffer: Buffer.from(csvText, 'utf8'),
+  });
+  await dialog.getByRole('button', { name: 'Tiếp' }).click();
+  await expect(dialog.getByText('Loại này không nạp từng phần')).toBeVisible();
+  await expect(
+    dialog.getByLabel('Báo cáo nạp').getByText('HMT_NAP_HOC_SINH_CHUA_CO'),
+  ).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Nạp' })).toBeDisabled();
 });

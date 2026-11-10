@@ -1,7 +1,7 @@
 // Các loại nạp dữ liệu cũ của màn Nhập (QT-18, chỉ Admin). Cột theo file mẫu HMT5_FILE_MAU_NAP_DU_LIEU_GIA.xlsx (từng tab xuất ra CSV UTF-8)
 // và docs/nghiep-vu/nap-du-lieu.md. Mọi luật kiểm dòng nằm ở hàm trong cơ sở dữ liệu / Edge Function; giao diện chỉ kiểm tên cột.
 
-export type ImportKind = 'NGUOI_DUNG' | 'CO_HOI' | 'PHU_HUYNH' | 'HOC_SINH';
+export type ImportKind = 'NGUOI_DUNG' | 'CO_HOI' | 'PHU_HUYNH' | 'HOC_SINH' | 'LOP' | 'GHI_DANH';
 
 export type ImportKindConfig = {
   kind: ImportKind;
@@ -15,6 +15,10 @@ export type ImportKindConfig = {
   viaFunction: boolean;
   /** Tên cột người trong kết quả (chỉ để đặt tên bảng). */
   subject: string;
+  /** Loại đào tạo (D1e): gọi hàm import_training_records; kết quả có Cảnh báo và báo cáo lỗi theo loại. */
+  training?: boolean;
+  /** Một dòng lỗi thì không cho nạp cả loại (xem trước còn lỗi thì khoá nút Nạp). */
+  blockOnError?: boolean;
 };
 
 export const IMPORT_KINDS: ImportKindConfig[] = [
@@ -110,6 +114,74 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
     viaFunction: false,
     subject: 'Học sinh',
   },
+  {
+    kind: 'LOP',
+    title: 'Lớp',
+    description:
+      'Lớp học theo mã lớp cũ. Chỉ sinh buổi từ ngày chốt số dư; so_buoi là số buổi CÒN LẠI. Lớp chưa ghép được giáo viên vẫn nạp, có cảnh báo.',
+    columns: [
+      'ma_lop_cu',
+      'loai_lop',
+      'phan_loai',
+      'trinh_do',
+      'nam_hoc',
+      'mon',
+      'khoi',
+      'lich_hoc',
+      'so_buoi',
+      'ma_gv',
+      'ngay_khai_giang',
+      'si_so_toi_da',
+      'tinh_trang',
+      'co_so',
+    ],
+    required: [
+      'ma_lop_cu',
+      'loai_lop',
+      'nam_hoc',
+      'mon',
+      'khoi',
+      'lich_hoc',
+      'so_buoi',
+      'tinh_trang',
+      'co_so',
+    ],
+    viaFunction: false,
+    subject: 'Lớp',
+    training: true,
+  },
+  {
+    kind: 'GHI_DANH',
+    title: 'Ghi danh',
+    description:
+      'Ghi danh học sinh vào lớp kèm giờ còn lại (sinh một dòng Số dư đầu kỳ). Nạp Lớp và Học sinh trước. Một dòng lỗi thì không nạp cả loại.',
+    columns: [
+      'hoc_sinh_ma_cu',
+      'ma_lop_cu',
+      'tinh_trang_moi',
+      'ngay_vao_lop',
+      'thoi_luong_buoi',
+      'gio_du_kien',
+      'gio_da_hoc',
+      'gio_con_lai',
+      'gio_da_hoc_cu',
+      'nguon_tab',
+      'nguon_dong',
+    ],
+    required: [
+      'hoc_sinh_ma_cu',
+      'ma_lop_cu',
+      'tinh_trang_moi',
+      'thoi_luong_buoi',
+      'gio_du_kien',
+      'gio_da_hoc',
+      'gio_con_lai',
+    ],
+    viaFunction: false,
+    subject: 'Ghi danh',
+    training: true,
+    blockOnError: true,
+  },
 ];
 
 export function kindConfig(kind: ImportKind): ImportKindConfig {
@@ -142,7 +214,7 @@ export const IMPORT_KIND_ROWS: ImportKindRow[] = [
     title: 'Lớp',
     description: 'Lớp học và mã lớp cũ.',
     needs: 'Người dùng (giáo viên)',
-    kind: null,
+    kind: 'LOP',
   },
   {
     title: 'Phụ huynh',
@@ -160,7 +232,7 @@ export const IMPORT_KIND_ROWS: ImportKindRow[] = [
     title: 'Ghi danh',
     description: 'Ghi danh của học sinh vào lớp. Một dòng lỗi thì không nạp cả loại.',
     needs: 'Lớp, Học sinh',
-    kind: null,
+    kind: 'GHI_DANH',
   },
   {
     title: 'Số dư',
@@ -205,6 +277,25 @@ const SAMPLE_VALUES: Record<string, string> = {
   nam_sinh: '2012',
   khoi: '6',
   giai_doan: 'L1',
+  ma_lop_cu: '4M1',
+  loai_lop: 'Lớp chung',
+  phan_loai: 'CB',
+  trinh_do: 'A',
+  nam_hoc: '2627',
+  mon: 'Toán',
+  lich_hoc: 'Thứ 5 (19h00-21h00); Thứ 7 (18h30-20h30)',
+  so_buoi: '20',
+  ma_gv: '2001',
+  ngay_khai_giang: '2026-09-01',
+  si_so_toi_da: '15',
+  tinh_trang: 'Đang chạy',
+  hoc_sinh_ma_cu: 'HS0001',
+  tinh_trang_moi: 'Đang học',
+  ngay_vao_lop: '2026-11-17',
+  thoi_luong_buoi: '2.5',
+  gio_du_kien: '50',
+  gio_da_hoc: '20',
+  gio_con_lai: '30',
 };
 
 /** Nội dung CSV của file mẫu: dòng tên cột (đúng cột hàm nạp nhận) và một dòng ví dụ giả. */

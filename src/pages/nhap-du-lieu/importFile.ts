@@ -14,6 +14,8 @@ export type ImportLine = {
   code: string | null;
   message: string | null;
   warnings?: string[];
+  /** Mã lỗi nghiệp vụ (loại đào tạo), ví dụ HMT_NAP_THIEU_COT. */
+  error_code?: string | null;
 };
 
 /** Báo cáo nạp Cơ hội: số cơ hội theo giai đoạn, số dòng thiếu thông tin em, số dòng gắn vào phụ huynh có sẵn. */
@@ -21,6 +23,12 @@ export type ImportSummary = {
   by_stage: Record<string, number>;
   missing_student_info: number;
   attached_parent: number;
+};
+
+/** Báo cáo nạp loại đào tạo (D1e): mã lỗi → các số dòng lỗi; mã lớp cũ chưa có giáo viên. */
+export type TrainingSummary = {
+  errors_by_type: Record<string, number[]>;
+  classes_without_teacher: string[];
 };
 
 export type ImportResult = {
@@ -32,7 +40,7 @@ export type ImportResult = {
   errors: number;
   rows: ImportLine[];
   /** Chỉ Cơ hội: báo cáo số lượng (không có họ tên, SĐT). */
-  summary?: ImportSummary;
+  summary?: ImportSummary | TrainingSummary;
   /** Chỉ Người dùng, chỉ lần nạp thật: mật khẩu tạm trả MỘT lần. */
   passwords?: { username: string; password: string }[];
 };

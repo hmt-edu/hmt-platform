@@ -20,6 +20,7 @@ import {
   type ImportResult,
   type ImportRowStatus,
   type ImportSummary,
+  type TrainingSummary,
 } from './importFile';
 import { sampleCsvText, type ImportKindConfig } from './importKinds';
 import { runImport } from './useImportData';
@@ -116,7 +117,10 @@ function ImportForm({
   const canNext =
     step === 0
       ? file !== null && built !== null && built.missing.length === 0 && !overLimit
-      : result !== undefined && result.imported > 0 && !preview.isFetching;
+      : result !== undefined &&
+        result.imported > 0 &&
+        !preview.isFetching &&
+        !(config.blockOnError && result.errors > 0);
   const shownRows = (result?.rows ?? []).filter((r) => shown === 'ALL' || r.status === shown);
   const pageRows = shownRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
@@ -234,6 +238,12 @@ function ImportForm({
                   setPage(1);
                 }}
               />
+              {config.blockOnError && result.errors > 0 && (
+                <Alert tone="danger">
+                  Còn <b>{result.errors}</b> dòng lỗi. Loại này không nạp từng phần: sửa file cho
+                  hết lỗi rồi chọn lại, thì mới nạp được.
+                </Alert>
+              )}
               {result.summary && <SummaryBlock summary={result.summary} />}
               <ResultTable config={config} rows={pageRows} />
               <Pagination
@@ -305,6 +315,7 @@ function ResultTable({ config, rows }: { config: ImportKindConfig; rows: ImportL
             <th className="px-3 py-2 text-right font-semibold">Dòng</th>
             <th className="px-3 py-2 font-semibold">{config.subject}</th>
             <th className="px-3 py-2 font-semibold">Kết quả</th>
+            {config.training && <th className="px-3 py-2 font-semibold">Cảnh báo</th>}
           </tr>
         </thead>
         <tbody>
@@ -312,17 +323,33 @@ function ResultTable({ config, rows }: { config: ImportKindConfig; rows: ImportL
             <tr key={r.row} className="border-t border-border align-top">
               <td className="px-3 py-1.5 text-right text-fg-muted tabular">{r.row}</td>
               <td className="px-3 py-1.5">
-                {r.initial ? `${r.initial}.` : <span className="text-fg-muted">(trống)</span>}
+                {config.training ? (
+                  (r.code ?? <span className="text-fg-muted">{r.label}</span>)
+                ) : r.initial ? (
+                  `${r.initial}.`
+                ) : (
+                  <span className="text-fg-muted">(trống)</span>
+                )}
               </td>
               <td className="px-3 py-1.5">
                 <Tag tone={STATUS_TONE[r.status]}>{STATUS_TEXT[r.status]}</Tag>
                 {r.message && <div className="text-caption text-fg-muted">{r.message}</div>}
-                {(r.warnings ?? []).map((w) => (
-                  <div key={w} className="text-caption text-on-warning-subtle">
-                    {w}
-                  </div>
-                ))}
+                {!config.training &&
+                  (r.warnings ?? []).map((w) => (
+                    <div key={w} className="text-caption text-on-warning-subtle">
+                      {w}
+                    </div>
+                  ))}
               </td>
+              {config.training && (
+                <td className="px-3 py-1.5">
+                  {(r.warnings ?? []).map((w) => (
+                    <div key={w} className="text-caption text-on-warning-subtle">
+                      {w}
+                    </div>
+                  ))}
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
@@ -407,7 +434,8 @@ function ResultDialog({
 }
 
 /** Báo cáo nạp Cơ hội (chỉ số lượng): theo giai đoạn, số dòng thiếu thông tin em, số dòng gắn vào phụ huynh có sẵn. */
-function SummaryBlock({ summary }: { summary: ImportSummary }) {
+function SummaryBlock({ summary }: { summary: ImportSummary | TrainingSummary }) {
+  if ('errors_by_type' in summary) return <TrainingSummaryBlock summary={summary} />;
   const stages = Object.entries(summary.by_stage).sort(([a], [b]) => a.localeCompare(b));
   return (
     <div
@@ -433,6 +461,44 @@ function SummaryBlock({ summary }: { summary: ImportSummary }) {
         <b className="tabular">{summary.attached_parent}</b> dòng gắn vào phụ huynh có sẵn (trùng số
         điện thoại).
       </p>
+    </div>
+  );
+}
+
+/** Báo cáo nạp loại đào tạo: lỗi theo từng loại kèm số dòng; lớp chưa có giáo viên (cần gán sau). */
+function TrainingSummaryBlock({ summary }: { summary: TrainingSummary }) {
+  const types = Object.entries(summary.errors_by_type);
+  const noTeacher = summary.classes_without_teacher;
+  if (types.length === 0 && noTeacher.length === 0) return null;
+  return (
+    <div
+      className="rounded-control border border-border bg-surface-subtle p-3 text-body"
+      aria-label="Báo cáo nạp"
+    >
+      {types.length > 0 && (
+        <div>
+          <p className="font-semibold">Lỗi theo loại</p>
+          {types.map(([code, lines]) => (
+            <p key={code}>
+              <span className="text-fg-muted">{code}</span>: dòng{' '}
+              <span className="tabular">
+                {lines.slice(0, 20).join(', ')}
+                {lines.length > 20 && ` … (${lines.length} dòng)`}
+              </span>
+            </p>
+          ))}
+        </div>
+      )}
+      {noTeacher.length > 0 && (
+        <div className={types.length > 0 ? 'mt-2' : undefined}>
+          <p className="font-semibold">Lớp chưa có giáo viên ({noTeacher.length})</p>
+          <p className="tabular">
+            {noTeacher.slice(0, 30).join(', ')}
+            {noTeacher.length > 30 && ' …'}
+          </p>
+          <p className="text-caption text-fg-muted">Lớp vẫn được nạp; cần gán giáo viên sau.</p>
+        </div>
+      )}
     </div>
   );
 }

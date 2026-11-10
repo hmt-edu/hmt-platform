@@ -14,10 +14,14 @@ export function runImport(
   if (config.viaFunction) {
     return callFunction<ImportResult>(supabase, 'import-users', { rows, commit, fileName });
   }
-  return rpc<ImportResult>(supabase, 'import_records', {
-    p_kind: config.kind,
-    p_rows: rows,
-    p_commit: commit,
-    p_file_name: fileName,
-  });
+  return rpc<ImportResult>(
+    supabase,
+    config.training ? 'import_training_records' : 'import_records',
+    {
+      p_kind: config.kind,
+      p_rows: rows,
+      p_commit: commit,
+      p_file_name: fileName,
+    },
+  );
 }

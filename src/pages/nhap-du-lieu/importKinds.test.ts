@@ -17,11 +17,21 @@ describe('Bảng chọn loại QT-18 (Q-209)', () => {
 
   it('loại chưa có hàm nạp là "Sắp có" (kind null), loại có hàm trỏ đúng cấu hình', () => {
     const soon = IMPORT_KIND_ROWS.filter((r) => r.kind === null).map((r) => r.title);
-    expect(soon).toEqual(['Lớp', 'Ghi danh', 'Số dư', 'Phiếu test']);
+    expect(soon).toEqual(['Số dư', 'Phiếu test']);
     for (const row of IMPORT_KIND_ROWS) {
       if (row.kind) expect(kindConfig(row.kind).title).toBe(row.title);
     }
     expect(IMPORT_KIND_ROWS.filter((r) => r.kind !== null)).toHaveLength(IMPORT_KINDS.length);
+  });
+});
+
+describe('Loại đào tạo (D1e)', () => {
+  it('Lớp và Ghi danh gọi hàm nạp đào tạo; chỉ Ghi danh chặn cả loại khi còn lỗi', () => {
+    expect(kindConfig('LOP').training).toBe(true);
+    expect(kindConfig('GHI_DANH').training).toBe(true);
+    expect(kindConfig('LOP').blockOnError).toBeFalsy();
+    expect(kindConfig('GHI_DANH').blockOnError).toBe(true);
+    expect(kindConfig('PHU_HUYNH').training).toBeFalsy();
   });
 });
 
