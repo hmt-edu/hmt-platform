@@ -157,6 +157,8 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 
 > Đã làm (DB): migration 102 (chốt danh sách, tự chốt/tự Done viết sẵn hàm, huỷ buổi, sửa sau Done, dời, dạy thay). Chưa làm: yêu cầu học bù, củng cố, bổ trợ, học thử; lịch pg_cron.
 
+> Đã làm (DB): migration 105 (D1e): hàm `app.import_training_records` nạp Lớp, Ghi danh (kèm số dư giờ đầu kỳ ngày chốt), Buổi học và Điểm danh cũ (chỉ đối soát); báo cáo đối soát giờ `app.legacy_hours_reconciliation`. Hướng dẫn: `docs/van-hanh/nap-du-lieu-17-11.md`.
+
 ### 5.1 Loại buổi và tình trạng buổi
 | Mã | Luật | |
 |---|---|---|
@@ -431,7 +433,7 @@ Giao diện Báo giá, Đơn hàng, Phiếu thu: anh sẽ điều chỉnh, **ch�
 | R-V2-30 | **Màn Nhập (chỉ Admin):** nhóm CRM (lớp, phụ huynh, học sinh, cơ hội, phiếu test) nhập dòng hợp lệ, xuất dòng lỗi để sửa rồi nhập lại; ghi danh và số dư (giờ, tiền): một dòng lỗi là chặn cả loại; nhập lại thì bỏ qua dòng trùng mã cũ, không ghi đè. Lớp giữ **mã lớp cũ**; mọi bảng nhận dữ liệu có `legacy_ref`. | [CHỐT] |
 | R-V2-31 | Phiếu test cũ đã xong: trạng thái "Hoàn thành (dữ liệu cũ)", giữ điểm cũ, không bắt trình độ hay xếp loại. Thêm cột cho phụ huynh (SĐT thứ hai, người thân, địa chỉ) và học sinh (trường, khối, giới tính). | [CHỐT] |
 | R-V2-32 | **Học phí chỉ nạp số dư đầu kỳ** (giờ còn lại, công nợ phải thu, tiền thu thừa), không nạp lịch sử từng lần đóng. Tiền trong file Học phí tính bằng nghìn đồng, **nhân 1000**. Tiền thu thừa = phần "Còn phải TT" âm cộng "Học phí còn dư". Công nợ đầu kỳ tạm lưu là số âm trong sổ số dư khách hàng, thu bằng phiếu "Thu nợ đầu kỳ" (R-V2-15). | [CHỐT] |
-| R-V2-33 | Điểm danh cũ chỉ để đối soát; mỗi em có một dòng "Số dư đầu kỳ" trong sổ giờ. Luật giờ trong Sheet cũ: x, P, KP, M tính giờ; N không tính. **(10/11, Q-177)** Số dư đầu kỳ là **một dòng sổ giờ "Số dư đầu kỳ" cho mỗi GHI DANH**, ngày 17/11/2026. | [CHỐT; anh OK ĐƯA VÀO LUẬT 10/11, Q-177] |
+| R-V2-33 | Điểm danh cũ chỉ để đối soát; mỗi em có một dòng "Số dư đầu kỳ" trong sổ giờ. Luật giờ trong Sheet cũ: x, P, KP, M tính giờ; N không tính. **(10/11, Q-177)** Số dư đầu kỳ là **một dòng sổ giờ "Số dư đầu kỳ" cho mỗi GHI DANH**, ngày 17/11/2026. | [CHỐT; anh OK ĐƯA VÀO LUẬT 10/11, Q-177] **(10/11, Q-199)** Lớp nạp đầu kỳ chỉ sinh buổi từ ngày chốt trở đi; cột `so_buoi` là số buổi còn lại tính từ ngày chốt; không sinh buổi trước ngày chốt, nên không tự Done hay trừ giờ lần hai. [CHỐT; anh OK ĐƯA VÀO LUẬT 10/11, Q-199] **(10/11, Q-200)** Ngày chốt là tham số `opening_balance_date` (mặc định 2026-11-17), chỉ Admin sửa, có ghi lịch sử. [CHỐT; anh OK ĐƯA VÀO LUẬT 10/11, Q-200] |
 | R-V2-34 | Loại nạp **Người dùng** có cột `email` và `quan_ly` (nạp thành quản lý trực tiếp). Email thật chỉ nằm trong file trên máy anh, không vào repo. File Nhân sự (có giấy tờ cá nhân) không bao giờ nạp. Môi trường thử chỉ dùng dữ liệu giả; dữ liệu thật chỉ nạp ở bản chạy thật, do anh làm. | [CHỐT] |
 
 Bốn luật riêng HMT giữ nguyên: Sổ giờ học; trần chiết khấu (nay chỉ cảnh báo, R-V2-11); quản lý trực tiếp duyệt đơn; mã LD, CO, HS.

@@ -158,6 +158,7 @@ Thêm vào các mục trên khi viết migration; chỗ [CHỜ] chưa làm.
 | Tham số | Hạn hoàn tất buổi | 8 giờ, `teacher_session_complete_hours` (đã có) | [CHỐT] |
 | Tham số | Done buổi cần nhận xét hoặc điểm | Bật (`session_done_requires_review`, Bật/Tắt) | [CHỐT; anh OK ĐƯA VÀO LUẬT 10/11, Q-198] |
 | Tham số | Chu kỳ tự Done buổi | 15 phút (khoảng 5 đến 60), `session_autocomplete_minutes`; lịch pg_cron đăng ký bằng `app.sync_session_cron()` | [CHỐT; anh OK ĐƯA VÀO LUẬT 10/11, Q-180] |
+| Tham số | Ngày chốt số dư đầu kỳ | 2026-11-17, `opening_balance_date` (chữ yyyy-mm-dd, chỉ Admin sửa, ghi lịch sử) | [CHỐT; anh OK ĐƯA VÀO LUẬT 10/11, Q-200] |
 | Tham số | Mức "Sắp quá hạn" của ticket | còn dưới 25% thời gian | [CHỐT] |
 | Tham số | Số ngày ticket đã xử lý chưa đóng vào bộ lọc "Chờ đóng" | 3 ngày | [CHỐT] |
 | Tham số | Hạn phản hồi đầu, hạn xử lý ticket | theo loại, mức độ, nhóm con; mọi con số là tham số | [CHỐT]; [CHỜ] bảng số |
