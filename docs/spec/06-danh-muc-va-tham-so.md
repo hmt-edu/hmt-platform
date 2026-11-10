@@ -156,6 +156,7 @@ Thêm vào các mục trên khi viết migration; chỗ [CHỜ] chưa làm.
 | Danh mục | Nhóm ticket Aftersale | Đề nghị, Khiếu nại, Ticket giáo viên; hai cấp nhóm, nhóm con; mức độ Khẩn, Cao, Thường, Thấp | [CHỐT] loại; [CHỜ] danh mục ticket giáo viên |
 | Tham số | Điểm tối đa mặc định của buổi kiểm tra | 10 | [CHỐT] (tên tham số đề xuất khi viết migration) |
 | Tham số | Hạn hoàn tất buổi | 8 giờ, `teacher_session_complete_hours` (đã có) | [CHỐT] |
+| Tham số | Done buổi cần nhận xét hoặc điểm | Bật (`session_done_requires_review`, Bật/Tắt) | [CHỐT; anh OK ĐƯA VÀO LUẬT 10/11, Q-198] |
 | Tham số | Mức "Sắp quá hạn" của ticket | còn dưới 25% thời gian | [CHỐT] |
 | Tham số | Số ngày ticket đã xử lý chưa đóng vào bộ lọc "Chờ đóng" | 3 ngày | [CHỐT] |
 | Tham số | Hạn phản hồi đầu, hạn xử lý ticket | theo loại, mức độ, nhóm con; mọi con số là tham số | [CHỐT]; [CHỜ] bảng số |

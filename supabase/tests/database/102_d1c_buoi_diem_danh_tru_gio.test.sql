@@ -37,6 +37,8 @@ select u.id, v.role from u join (values ('admin', 'ADMIN'), ('bm1', 'BRANCH_MANA
 update app.user_role set is_active = false where role_code = 'ADMIN' and is_active and user_id not in (select id from u);
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'VAN_HANH_LOP', id, true from app.branch where code in ('CS1', 'CS5')
   on conflict (module_code, branch_id) do update set enabled = true$$);
+-- Q-198: đặt rõ nhánh Bật (không dựa vào mặc định): Done cần nhận xét, điểm.
+select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'session_done_requires_review'$$);
 create function pg_temp.uid(p_key text) returns uuid language sql stable as $$ select id from u where key = p_key $$;
 create function pg_temp.cs(p_code text) returns uuid language sql stable security definer as $$ select id from app.branch where code = p_code $$;
 -- Thứ Hai 4 tuần trước (buổi quá khứ để Done được) và thứ Hai 2 tuần sau (buổi tương lai).
@@ -81,6 +83,21 @@ begin
   if p_hours <> 0 then
     perform app.add_opening_hours(v_id, p_hours, 'DOT-D1C');
   end if;
+end $$;
+-- D2 (migration 103): Done cần nhận xét 9 tiêu chí. Hàm giả này chụp tiêu chí và chấm mức 3 cho mọi em có mặt, để các bài D1c thử Done và trừ giờ.
+create function pg_temp.fillreview(p_session uuid) returns void language plpgsql security definer as $$
+begin
+  insert into app.session_review_criterion (session_id, branch_id, criterion_id, group_code, name, sort_order)
+  select s.id, s.branch_id, rc.id, rc.group_code, rc.name, rc.sort_order
+    from app.class_session s join app.class c on c.id = s.class_id
+    join lateral app.review_criteria_for_subject(c.subject_code) rc on true
+   where s.id = p_session
+  on conflict do nothing;
+  insert into app.session_review_score (session_id, branch_id, session_criterion_id, attendance_id, state, score)
+  select sa.session_id, sa.branch_id, rc.id, sa.id, 'DA_DANH_GIA', 3
+    from app.session_attendance sa join app.session_review_criterion rc on rc.session_id = sa.session_id
+   where sa.session_id = p_session and sa.is_active and sa.teacher_status_code in ('CO_MAT', 'DI_MUON')
+  on conflict do nothing;
 end $$;
 grant execute on all functions in schema pg_temp to public;
 
@@ -154,6 +171,7 @@ select is((select ops_status_code from app.session_attendance where session_id =
 select is((select teacher_status_code from app.session_attendance where session_id = pg_temp.s('p', 1) and student_id = pg_temp.st(1)), 'VANG_KHONG_PHEP', 'Ô giáo viên quyết định trạng thái chính thức (R-DD-02)');
 
 -- ================= Done và trừ giờ (R-GIO-01, 04, R-GD-05, R-GD-18, R-GD-12) =================
+select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 1))$$);
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 1))$$);
 select is((select status_code from app.class_session where id = pg_temp.s('p', 1)), 'DONE', 'Buổi Done khi đủ điều kiện (R-GIO-06)');
 select is(app.enrollment_hours_balance(pg_temp.e('a')), 2.50::numeric, 'Đúng: có tên trong danh sách thì trừ 1,5 giờ dù vắng không phép (R-GIO-01)');
@@ -171,8 +189,10 @@ select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select app.set_attendance_teacher(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'CO_MAT')));
 select app.set_attendance_teacher(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'DI_MUON'),
   jsonb_build_object('student_id', pg_temp.st(4), 'status_code', 'CO_MAT')));
+select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 2))$$);
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 2))$$);
 select is(app.enrollment_hours_balance(pg_temp.e('a')), 1.00::numeric, 'Done buổi 2: còn 1,0 giờ');
+select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 3))$$);
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 3) || '''::uuid)')$$), 'HMT_QUY_GIO_AM', 'Chặn: Done làm quỹ giờ âm (R-GD-18)');
 select is((select status_code from app.class_session where id = pg_temp.s('p', 3)), 'DA_CHOT', 'Buổi vẫn Đã chốt khi Done bị chặn');
 -- Cho học trước (R-GD-12): quản lý bật, quỹ được âm trong hạn mức max_sessions_ahead.
@@ -191,6 +211,7 @@ select ok(app.session_pending_reason(pg_temp.s('p', 4)) like 'Giáo viên chưa 
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select app.set_attendance_teacher(pg_temp.s('p', 4), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'CO_MAT'),
   jsonb_build_object('student_id', pg_temp.st(4), 'status_code', 'VANG_CO_PHEP')));
+select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 4))$$);
 select pg_temp.sudo($$select app.auto_complete_sessions()$$);
 select is((select status_code from app.class_session where id = pg_temp.s('p', 4)), 'DONE', 'Tự Done: đủ điều kiện thì Done (R-GIO-06)');
 select is(app.session_pending_reason(pg_temp.s('f', 1)), 'Buổi chưa chốt danh sách.', 'Lý do chưa Done: buổi Nháp chưa chốt');

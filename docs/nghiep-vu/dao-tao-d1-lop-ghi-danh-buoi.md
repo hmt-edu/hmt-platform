@@ -56,3 +56,24 @@ Luật: `docs/spec/04` mục 3 (R-GD), 4 (R-LOP), 5 (R-BUOI, R-GIO), 6 (R-DD), 7
 - Mã lớp gồm cơ sở, năm, môn, khối, phân loại, trình độ nên các trường đó **không sửa sau khi tạo** (nhầm thì Huỷ rồi tạo lớp mới). Đây là suy ra từ nguyên tắc "mã không đổi", chờ anh xác nhận.
 - Khung chương trình (R-LOP-07) mới lưu mã khung và bài bắt đầu dạng chữ, chưa có bảng khung.
 - Chưa có: bảo lưu, dừng, hoàn phí, chuyển phí (ticket A1); yêu cầu học bù, củng cố, bổ trợ, học thử; điều kiện nhận xét và BTVN khi Done (D2); đăng ký lịch pg_cron.
+
+## D2: nhận xét buổi, buổi Kiểm tra (migration 103, xếp chồng sau #209)
+
+Luật: R-V2-18 (Q-176), R-V2-19, R-V2-20, R-V2-38, R-V2-39; R-GV-01, R-GV-04 đã sửa theo R-V2-19.
+
+| Hàm | Ai | Việc |
+| --- | --- | --- |
+| `open_session_review(buổi)` | Điểm danh · Sửa (giáo viên được phân công, vận hành) | Chụp 9 tiêu chí của môn cho buổi thường |
+| `set_review_criteria(buổi, [{criterion_id, enabled}])` | như trên | Công tắc tiêu chí: tắt = cả lớp Không áp dụng |
+| `set_review_scores(buổi, [{student_id, criterion_id, state, score}])` | như trên | Chấm em có mặt: Đã đánh giá 1 đến 5, Chưa đủ căn cứ |
+| `set_review_all_class(buổi, tiêu chí, mức)` | như trên | Nút "Cả lớp"; mức mặc định `review_all_class_level` |
+| `set_student_review_note(buổi, em, nhận xét, định hướng)` | như trên | Không bắt buộc; giáo viên sửa tới khi Done |
+| `set_review_exported(buổi, em, đã xuất)` | Điểm danh · Xem | Cờ Đã xuất (R-V2-38), đặt được cả sau Done |
+| `set_exam_config(buổi, phạm vi, tối đa, cách nhập, tối đa 3 nhóm)` | Buổi học · Sửa (không phải giáo viên) | Cấu hình buổi Kiểm tra |
+| `set_exam_scores(buổi, [{student_id, total hoặc memory/understand/apply}])` | giáo viên được phân công | Nhập điểm kiểm tra |
+| `correct_exam_score_after_done(...)` | Điểm danh · Duyệt | Sửa điểm sau Done, bắt buộc lý do |
+| `review_average(dòng điểm danh)`, `parent_message_hint(buổi, em)` | đọc | Trung bình chưa làm tròn; mức 1 đến 4 và 3 câu mẫu |
+
+Điều kiện Done (`session_pending_reason`, tham số `session_done_requires_review`, Q-198: Tắt thì chỉ cần điểm danh xong): buổi thường không còn ô Chưa đánh giá; buổi Kiểm tra không còn em có mặt ở Chưa chấm. Không còn điều kiện BTVN (R-V2-35).
+Bộ tiêu chí: Toán, Đại số, Hình học dùng bộ Toán; mọi môn còn lại dùng bộ môn phụ (Q-189); mô tả 5 mức và 24 mẫu câu là dữ liệu (Q-190). `review_criteria_for_subject(môn)` trả tiêu chí của môn; `session_review_sheet(buổi)` trả dữ liệu màn chấm trong một lần gọi.
+Chưa có: bài tập về nhà, màn cấu hình đánh giá (CH-07, sau 17/11), ticket sửa nhận xét sau Done.

@@ -20,7 +20,7 @@ select is(pg_temp.codes('STUDENT_STATUS'), array['TIEM_NANG', 'DANG_HOC', 'BAO_L
 select is(pg_temp.codes('ENROLLMENT_STATUS'),
           array['CHO_XEP_LOP', 'DANG_HOC', 'DA_XEP_LOP', 'BAO_LUU', 'HOAN_THANH', 'CHUYEN_LOP', 'DUNG', 'HOAN_PHI'], 'Tình trạng ghi danh đúng spec 02');
 select is(pg_temp.codes('ATTENDANCE_STATUS'), array['CO_MAT', 'DI_MUON', 'VANG_CO_PHEP', 'VANG_KHONG_PHEP'], 'Điểm danh đúng spec 02');
-select is(pg_temp.codes('SESSION_TYPE'), array['CHINH', 'CUNG_CO', 'HOC_BU', 'BO_TRO'], 'Loại buổi: chính, củng cố, học bù, bổ trợ');
+select is(pg_temp.codes('SESSION_TYPE'), array['CHINH', 'CUNG_CO', 'HOC_BU', 'BO_TRO', 'KIEM_TRA'], 'Loại buổi: chính, củng cố, học bù, bổ trợ, kiểm tra (R-V2-18, Q-176)');
 select is(pg_temp.codes('CLASS_TYPE'), array['CB', 'NC', 'LR'], 'Phân loại lớp CB, NC, LR');
 select is(pg_temp.codes('STUDY_MODE'), array['OFF', 'ONL'], 'Hình thức OFF, ONL');
 select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC', 'DN', 'KN', 'KTV'], 'Loại chứng từ BG, DH, PT, PC, KTV (khoản tiền vào, B2) và ticket DN, KN (R-CS-01)');
