@@ -20,7 +20,7 @@ Nạp đúng thứ tự, vì tab sau cần tab trước đã có:
 2. **Lớp** (tab 03_LOP).
 3. Phụ huynh (01_PHUHUYNH) rồi Học sinh (02_HOCSINH).
 4. **Ghi danh** (tab 04_GHIDANH): tạo ghi danh, xếp lớp và dòng "Số dư đầu kỳ" cho giờ còn lại.
-5. Số dư học phí bằng tiền (tab 09_SODU) do phần Bán hàng, Thu chi nạp, không nằm trong hướng dẫn này.
+5. Tab 09_SODU (số dư học phí bằng tiền) **không nạp ngày 17/11** (Q-227, mục 8).
 6. **Buổi học** (07_BUOIHOC) và **Điểm danh** (08_DIEMDANH): chỉ để đối soát, không tạo buổi, không trừ giờ.
 
 Mỗi tab: bấm **Xem trước** trước. Xem trước không ghi gì; chỉ khi báo cáo không còn lỗi (hoặc lỗi đã hiểu rõ) mới bấm **Nạp**.
@@ -44,6 +44,10 @@ Mỗi tab: bấm **Xem trước** trước. Xem trước không ghi gì; chỉ k
 
 Hệ thống chỉ sinh buổi từ 17/11/2026 trở đi. Buổi trước ngày đó không được sinh, nên không bị trừ giờ lần hai.
 
+**Đặt các cột `nam_hoc`, `ma_gv`, `ma_ql_lop` dạng văn bản** trong Excel (nếu để dạng số, `2627` giữ được nhưng `0043` mất số 0 đầu).
+
+**Lớp riêng (mã LR…)** để ngoài file nạp thử và nạp tay sau, vì hàm hiện nạp như lớp thường (Q-239). Ngày khai giảng sai dạng (ví dụ `CN - 12/7`) và tình trạng lớp để trống là **lỗi**, chặn dòng đó (Q-238): sửa lại trong file rồi nạp lại.
+
 ### Tab 04_GHIDANH (Ghi danh)
 
 | Cột | Điền gì | Bắt buộc |
@@ -56,9 +60,11 @@ Hệ thống chỉ sinh buổi từ 17/11/2026 trở đi. Buổi trước ngày 
 
 Mỗi dòng ghi danh sinh **một** dòng "Số dư đầu kỳ" bằng gio_con_lai, mang ngày 17/11/2026.
 
+**Không nạp số âm ở `gio_con_lai`** (số từ 0 trở lên; anh Trường xác nhận không có em nào âm giờ, Q-253). Cột `ngay_chot` trong tab này chỉ để tham khảo: hàm lấy ngày chốt từ tham số `opening_balance_date`, để trống cũng không sao. Cột `tinh_trang_moi` nên luôn điền; nếu để trống, hàm đặt tình trạng **Chờ xếp lớp** (không báo lỗi), nên kiểm lại báo cáo xem trước.
+
 ### Tab 07_BUOIHOC và 08_DIEMDANH
 
-Giữ nguyên cột như file mẫu. Buổi nghỉ lễ ghi tình trạng "Huỷ không tính phí": hệ thống ghi nhận là buổi huỷ, không điểm danh, giờ trừ 0, không tạo buổi bù. Cột `tinh_gio` của tab 08 ghi "Có" hoặc "Không" (x, P, KP, M tính giờ; N không tính).
+Giữ nguyên cột như file mẫu. Các cột số (`so_x`, `so_P`, `so_KP`, `so_N`, `so_M`) phải từ 0 trở lên: số âm báo lỗi hệ thống mã 23514, hãy sửa lại thành số không âm (Q-253). Tab 07 để trống `tinh_trang` vẫn nạp được; tab 08 ký hiệu lạ vẫn nạp được, vì hai tab này chỉ để đối soát. Buổi nghỉ lễ ghi tình trạng "Huỷ không tính phí": hệ thống ghi nhận là buổi huỷ, không điểm danh, giờ trừ 0, không tạo buổi bù. Cột `tinh_gio` của tab 08 ghi "Có" hoặc "Không" (x, P, KP, M tính giờ; N không tính).
 
 ## 4. Đọc báo cáo sau khi bấm Xem trước hoặc Nạp
 
@@ -87,7 +93,19 @@ Ngày này là tham số **Ngày chốt số dư đầu kỳ** (`opening_balance
 
 ## 7. Chế độ Done buổi học giai đoạn đầu
 
-Giai đoạn đầu, khi giáo viên chưa chấm nhận xét trên cổng giáo viên, đặt tham số **Done buổi cần nhận xét hoặc điểm** (`session_done_requires_review`) ở trạng thái **Tắt** trên staging và bản chạy thật. Khi Tắt, buổi vẫn Done khi giáo viên đã điểm danh xong, giờ vẫn trừ.
+Giai đoạn đầu, khi giáo viên chưa chấm nhận xét trên cổng giáo viên, đặt tham số **Done buổi cần nhận xét hoặc điểm** (`session_done_requires_review`) ở trạng thái **Tắt** trên staging và bản chạy thật. Khi Tắt, buổi vẫn Done khi giáo viên đã điểm danh xong, giờ vẫn trừ. (Từ khi PR Nội dung buổi vào main, buổi thường cần thêm ít nhất một dòng nội dung buổi, cả khi Bật lẫn Tắt; buổi Kiểm tra không đòi dòng nội dung. Q-231, Q-252.)
 
 - **Đặt Tắt:** Admin vào Cài đặt, mục Vận hành lớp, tìm "Done buổi cần nhận xét hoặc điểm", chọn Tắt, lưu. Đây là bước làm tay, không phải migration.
 - **Bật lại** khi tính năng chấm nhận xét của giáo viên sẵn sàng: cũng vào chỗ đó, chọn Bật, lưu. Từ lúc Bật, buổi thường chỉ Done khi không còn ô nhận xét "Chưa đánh giá", buổi Kiểm tra khi mọi em có mặt đã được chấm. Buổi đã Done trước đó không bị ảnh hưởng.
+
+## 8. Số dư tiền không nạp ngày 17/11 (Q-227)
+
+Ngày 17/11 **chỉ nạp GIỜ** (từ `gio_con_lai` ở tab 04_GHIDANH). Tab 09_SODU (tiền thu thừa, công nợ phải thu đầu kỳ) **không nạp** ngày 17/11: các khoản này ghi tay (R-V2-24) và sẽ nạp tự động sau 17/11. Đây là quyết định vận hành, không đưa vào spec 04.
+
+## 9. Bật phân hệ Vận hành lớp cho từng cơ sở (làm trước khi nạp)
+
+Hàm nạp Lớp, Ghi danh, Buổi, Điểm danh kiểm công tắc tính năng `VAN_HANH_LOP` của cơ sở trong file. Cơ sở chưa bật thì dòng bị từ chối với mã `HMT_TINH_NANG_TAT` («Phân hệ Vận hành lớp … chưa bật ở cơ sở CS5»). Trên staging và bản chạy thật phải bật công tắc **từng cơ sở** có trong file trước khi nạp.
+
+- **Cách bật (Q-262):** công tắc `VAN_HANH_LOP` bật bằng **migration** (qua PR duyệt như mọi thay đổi cấu trúc), không bấm tay trên giao diện và không sửa tay cơ sở dữ liệu chạy thật. **CS5 bật trước.** Cơ sở khác chỉ bật khi anh Trường xác nhận cơ sở đó có trong file nạp. Công tắc là một dòng trong bảng `app.feature_flag` (phân hệ × cơ sở); migration chỉ bật, chạy lại không lỗi.
+- **Áp cho cả staging lẫn bản chạy thật:** cờ bật ngay khi migration được áp lên môi trường đó (staging khi gộp vào `main`; bản chạy thật khi anh Trường chạy workflow bản chạy thật). Vì vậy bật xong trên bản chạy thật là người dùng CS5 thấy phân hệ Vận hành lớp; chỉ nên gộp migration đó khi sẵn sàng.
+- Màn công tắc theo bản đồ màn hình là **QT-10 «Công tắc tính năng theo cơ sở»**; màn này làm **sau 17/11**.
