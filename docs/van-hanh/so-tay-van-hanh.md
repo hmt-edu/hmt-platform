@@ -8,6 +8,7 @@ Các việc vận hành hệ thống mà anh Trường (Admin) tự làm. Việc
 | Việc | Xem ở |
 |---|---|
 | Đưa một bản lên chạy thật, sao lưu, khôi phục thử, làm mới token | `deploy/README.md` (cũng là README của `hmt-deploy`) |
+| Đưa bản mới lên chạy thật từng bước, sao lưu trước khi deploy (Q-196) | `docs/van-hanh/dua-len-chay-that.md` |
 | Bật Turnstile, giới hạn đăng nhập theo IP, khoá của Edge Function | `docs/van-hanh/chong-do-mat-khau.md` |
 | Kế toán vắng: gán tạm vai trò Kế toán | `docs/nghiep-vu/phan-quyen.md` mục "Kế toán vắng" |
 
