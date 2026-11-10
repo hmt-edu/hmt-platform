@@ -94,6 +94,16 @@ select is((select (app.import_users_resolve('[{"username":"zed.dom","ho_ten":"Mi
           'zed.dom@thu-nghiem.example', 'Tên miền email quy ước là tham số Cài đặt, không viết cứng');
 update app.setting_def set value = 'tam.invalid' where key = 'import_user_email_domain';
 
+-- ================= Chốt chặn trùng tên đăng nhập với cột username (anh chốt 06/11, Q-24) =================
+-- Tài khoản Admin đầu tiên tạo bằng Bootstrap rồi đặt tên đăng nhập bằng set_username (không có legacy_ref): nạp file có dòng cùng tên thì bỏ qua, không tạo thứ hai.
+update app.user_account set username = 'truong.thu' where id = pg_temp.uid('admin');
+select is((select app.import_users_resolve('[{"username":"Truong.Thu","ho_ten":"Dòng trùng username","vai_tro":"ADMIN","co_so_truy_cap":"CS1"}]') -> 'rows' -> 0 ->> 'status'),
+          'TRUNG', 'Q-24: tên đăng nhập đã có ở cột username (không phân biệt hoa thường) thì bỏ qua, báo trùng');
+select is((select (app.import_users_resolve('[{"username":"truong.thu","ho_ten":"Dòng trùng username","vai_tro":"ADMIN","co_so_truy_cap":"CS1"}]') ->> 'imported')::int),
+          0, 'Q-24: dòng trùng không được nạp (không tạo tài khoản thứ hai)');
+select is((select app.import_users_resolve('[{"username":"zed.moi","ho_ten":"Sale mới","vai_tro":"SALES","co_so_truy_cap":"CS5","quan_ly":"truong.thu"}]') -> 'rows' -> 0 ->> 'status'),
+          'HOP_LE', 'Q-24: quản lý trực tiếp tra được theo cột username');
+
 -- ================= Quyền riêng tư: kết quả (trừ cột resolved dành cho Edge Function) không chứa họ tên, email, tên đăng nhập =================
 select is((select count(*)::int from res1, jsonb_array_elements(r -> 'rows') e
             where (e - 'resolved')::text ~ '(Quách|Lương|Nghiêm|Dòng tên|Vai Trò|Cơ Sở|Trạng Thái|zed\.|daco|@|thu\.example)'), 0,

@@ -67,3 +67,9 @@ Loại nạp `CO_HOI` của `app.import_records`. Mỗi dòng tạo **ba thứ t
 - **Báo cáo sau nạp (chỉ số lượng):** kết quả có khoá `summary`: `by_stage` (số cơ hội theo giai đoạn), `missing_student_info` (số dòng đánh dấu thiếu thông tin em), `attached_parent` (số dòng gắn vào phụ huynh có sẵn).
 - **Cách nối Phụ huynh, Học sinh nạp sau (anh chốt 05/11; làm ở lượt nạp Phụ huynh, Học sinh):** (1) **Phụ huynh nối theo số điện thoại**: dòng Phụ huynh gặp phụ huynh `opportunity_import = true` cùng SĐT (chính hoặc thứ hai) thì bổ sung ô trống và mã cũ vào hồ sơ đó, không tạo trùng, không ghi đè. (2) **Em nối theo tên và năm sinh nếu có**: dòng Học sinh khớp phụ huynh theo SĐT, rồi tìm em cùng tên (chuẩn hoá) và cùng năm sinh trong các cơ hội của phụ huynh đó; **nếu em của cơ hội thiếu năm sinh thì nối theo tên** trong các cơ hội của phụ huynh đó. (3) **Khớp mơ hồ** (nhiều em có thể khớp) thì **không tự nối**, liệt kê để anh chọn (kết quả báo số dòng mơ hồ, không in họ tên). Em nối xong thì gắn `student_id` vào dòng em của cơ hội.
 - Kiểm thử: `supabase/tests/database/063_t4c_nap_co_hoi.test.sql`.
+
+## Chốt chặn tên đăng nhập khi nạp Người dùng (migration 078, anh chốt 06/11: Q-24)
+
+- Bước kiểm `import_users_resolve` coi dòng là **TRUNG** (bỏ qua, báo) khi tên đăng nhập đã có ở cột `username` (không phân biệt hoa thường) hoặc ở `legacy_ref` của một tài khoản nhân sự. Nhờ vậy Admin đầu tiên tạo bằng Bootstrap rồi đặt tên đăng nhập bằng `set_username` không bị nạp thêm tài khoản thứ hai. Ràng buộc duy nhất của `username` (migration 074) vẫn là chốt cuối.
+- Quản lý trực tiếp (`quan_ly`) tra theo cả `username` lẫn `legacy_ref`.
+- File nạp 108 người: bộ chuyển loại mọi người trạng thái Đã nghỉ (Q-04, Q-26; người Nghỉ phép vẫn nạp) và dòng ADMIN của anh Trường, tên đăng nhập `truongcx` (Q-24, Admin đầu tiên tạo bằng Bootstrap trên bản chạy thật).
