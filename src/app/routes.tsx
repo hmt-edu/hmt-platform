@@ -7,6 +7,14 @@ import { lazyScreen } from './lazyScreen';
 // Tách gói tải theo cổng và theo màn: vào cổng nào chỉ tải khung của cổng đó, mở màn nào chỉ tải màn đó.
 const CrmShell = lazyScreen(() => import('../layout/CrmShell'), 'CrmShell');
 const TeacherShell = lazyScreen(() => import('../layout/TabShell'), 'TeacherShell');
+const SessionStepsPage = lazyScreen(
+  () => import('../pages/gv/SessionStepsPage'),
+  'SessionStepsPage',
+);
+const SessionContentPage = lazyScreen(
+  () => import('../pages/gv/SessionContentPage'),
+  'SessionContentPage',
+);
 const StudentShell = lazyScreen(() => import('../layout/TabShell'), 'StudentShell');
 const LoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'LoginPage');
 const StudentLoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'StudentLoginPage');
@@ -368,6 +376,8 @@ export const routes: RouteObject[] = [
           { path: 'lich-day', element: <PortalTabPage title="Lịch dạy" stage={GD3} /> },
           { path: 'lop', element: <PortalTabPage title="Lớp" stage={GD3} /> },
           { path: 'viec-can-lam', element: <PortalTabPage title="Cần làm" stage={GD3} /> },
+          { path: 'buoi/:sessionId', element: <SessionStepsPage /> },
+          { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },
         ],
