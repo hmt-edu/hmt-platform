@@ -173,7 +173,8 @@ select is(pg_temp.enr('d2') ->> 'created', '0', 'R-TIEN-20: thu 500.000 < cọc 
 select is(pg_temp.nenr('d2'), 0, 'Chưa đủ cọc: không có ghi danh nào');
 -- ================= R-GD-01 + R-TIEN-21: đủ cọc thì mỗi dòng đơn một ghi danh, giờ theo tỉ lệ tiền =================
 select pg_temp.pay('d2', 600000);
-select is(pg_temp.enr('d2') ->> 'created', '2', 'R-TIEN-20, R-GD-01: thu đủ cọc thì tạo ghi danh cho cả hai dòng đơn (mỗi dòng một ghi danh)');
+-- Từ migration 106, duyệt phiếu thu đã tự tạo ghi danh (xem 107); gọi tay hàm nội bộ sau đó phải không tạo thêm.
+select is(pg_temp.enr('d2') ->> 'created', '0', 'R-TIEN-20, R-GD-01: duyệt phiếu thu đủ cọc đã tự tạo ghi danh, gọi lại hàm nội bộ không tạo thêm (mỗi dòng một ghi danh)');
 select is(pg_temp.nenr('d2'), 2, 'Hai ghi danh cho hai dòng đơn');
 select is((select status_code from app.enrollment where order_line_id = (select id from app.sales_order_line where order_id = pg_temp.o('d2') and line_no = 1)), 'CHO_XEP_LOP',
           'R-GD-05: dòng không chọn lớp thì ghi danh Chờ xếp lớp');
@@ -194,7 +195,8 @@ select is(pg_temp.hours('d2', 'CAP_TANG'), 2::numeric, 'R-TIEN-24: thu đủ đ�
 
 -- ================= R-GD-08: dòng có lớp thì xếp luôn, lớp đầy lúc tạo ghi danh thì vào hàng chờ =================
 select pg_temp.pay('d1', 1000000);
-select is(pg_temp.enr('d1') ->> 'created', '1', 'Đơn d1 đủ cọc: một ghi danh');
+select is(pg_temp.enr('d1') ->> 'created', '0', 'Đơn d1 đủ cọc: duyệt phiếu đã tạo một ghi danh, gọi lại không tạo thêm');
+select is(pg_temp.nenr('d1'), 1, 'Đơn d1 đủ cọc: đúng một ghi danh');
 select is((select status_code from app.enrollment where order_id = pg_temp.o('d1')), 'DA_XEP_LOP', 'R-GD-05: dòng có lớp thì ghi danh Đã xếp lớp ngay');
 select is((select count(*)::int from app.enrollment_class ec join app.enrollment e on e.id = ec.enrollment_id where e.order_id = pg_temp.o('d1') and ec.class_id = pg_temp.c('a') and ec.end_date is null),
           1, 'Có dòng xếp lớp đang mở vào lớp a');
@@ -209,7 +211,7 @@ select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select app.assign_enrollment_class((select id from app.enrollment where code = 'GDF103'), pg_temp.c('q'), pg_temp.mon());
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select pg_temp.pay('d3', 1000000);
-select is(pg_temp.enr('d3') ->> 'queued', '1', 'R-GD-08: lớp đã đầy lúc tạo ghi danh thì ghi danh vào hàng chờ, không chặn thu tiền');
+select is(pg_temp.enr('d3') ->> 'queued', '0', 'R-GD-08: gọi lại sau khi duyệt phiếu không tạo thêm; ghi danh đã vào hàng chờ lúc duyệt (kiểm ngay bên dưới), không chặn thu tiền');
 select is((select status_code from app.enrollment where order_id = pg_temp.o('d3')), 'CHO_XEP_LOP', 'Ghi danh Chờ xếp lớp khi lớp không còn chỗ');
 select is(pg_temp.hours('d3', 'CAP_MUA'), 4.55::numeric, 'Vẫn cấp giờ theo tiền dù chưa có lớp');
 
