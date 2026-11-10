@@ -11,7 +11,7 @@ Cập nhật 17/10/2026. File này nằm trong repo (`docs/quy-trinh-phoi-hop.md
 | Claude Code (VS Code, đổi qua lại 3 tài khoản Pro) | Lập trình | Code, kiểm thử, mở PR, báo chỗ luật vênh với code | Repo: `CLAUDE.md`, `docs/`, `design/`, `docs/nhat-ky/` |
 
 ## 2. Ba kho lưu
-1. **Repo `truongcx-95/hmt-platform`: nguồn sự thật.** Quyết định nào chưa nằm trong `docs/` thì coi như chưa có.
+1. **Repo `hmt-vanhanh/hmt-platform`: nguồn sự thật.** Quyết định nào chưa nằm trong `docs/` thì coi như chưa có.
 2. **Project trên Claude Chat:** bản sao tài liệu chính, để mở chat mới không phải dán lại.
 3. **Đoạn chat và hệ thống thiết kế bên Claude Design:** thành phần, khuôn, màn đã vẽ.
 
@@ -95,7 +95,7 @@ Em tiếp quản dự án HMT Platform từ một phiên Claude Code khác. Chư
 
 ## 10. Kết nối GitHub cho Claude Chat và Claude Design
 - **Chỉ kết nối repo `hmt-platform`, quyền chỉ đọc** ("Only select repositories"). **Không bao giờ kết nối `hmt-deploy`** (nơi chạy bản thật).
-- Dùng tài khoản GitHub **`hmt-vanhanh`** (collaborator quyền Write ở `hmt-platform`) để kết nối, không dùng `truongcx-95` (chủ hai repo `hmt-platform`, `hmt-deploy`). `truongcx-95` chỉ dùng trên trình duyệt; không đăng nhập trên máy Mac (Đ278).
+- Dùng tài khoản GitHub **`hmt-vanhanh`** (chủ repo `hmt-platform` từ 09/11/2026, Q-165) để kết nối, không dùng `truongcx-95` (chủ repo `hmt-deploy`). `truongcx-95` chỉ dùng trên trình duyệt; không đăng nhập trên máy Mac (Đ278).
 - Làm cho cả ba tài khoản Claude: `[tài khoản Claude 1]`, `[tài khoản Claude 2]`, `[tài khoản Claude 3]`, để khi một tài khoản hết giới hạn thì chuyển sang ngay.
 - Không dán khoá, mật khẩu, dữ liệu thật vào chat hay file ở repo.
 
@@ -153,11 +153,11 @@ Bên nào không có gì để đưa thì anh xoá dòng của bên đó.
 **Tin 4: mở chat mới ở tài khoản mới**
 - Design:
 ```
-Đọc docs/phoi-hop/khoi-dong-design.md và docs/nhat-ky/design.md trong repo truongcx-95/hmt-platform, rồi làm theo. Mở canvas gốc đã Share (link trong nhật ký) và hệ thiết kế gốc, báo anh có sửa được không. Sửa được thì làm tiếp trên bản gốc. Chỉ khi không sửa được mới dựng lại từ nguồn trong design/nguon-canvas/. Báo anh bạn đã đọc xong và cụm kế tiếp là gì.
+Đọc docs/phoi-hop/khoi-dong-design.md và docs/nhat-ky/design.md trong repo hmt-vanhanh/hmt-platform, rồi làm theo. Mở canvas gốc đã Share (link trong nhật ký) và hệ thiết kế gốc, báo anh có sửa được không. Sửa được thì làm tiếp trên bản gốc. Chỉ khi không sửa được mới dựng lại từ nguồn trong design/nguon-canvas/. Báo anh bạn đã đọc xong và cụm kế tiếp là gì.
 ```
 - Chat:
 ```
-Đọc docs/phoi-hop/khoi-dong-chat.md và docs/nhat-ky/chat.md trong repo truongcx-95/hmt-platform, rồi làm theo. Báo anh trạng thái hiện tại và việc anh cần làm tiếp.
+Đọc docs/phoi-hop/khoi-dong-chat.md và docs/nhat-ky/chat.md trong repo hmt-vanhanh/hmt-platform, rồi làm theo. Báo anh trạng thái hiện tại và việc anh cần làm tiếp.
 ```
 - Chat mới không đọc được repo thì anh dán thẳng nội dung file `khoi-dong-…` và `chat.md` vào chat. Chat ở tài khoản mới không thấy Project cũ, nên mọi luật phải nằm trong repo (`docs/spec/`).
 

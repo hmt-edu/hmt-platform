@@ -8,7 +8,7 @@ Repo riêng tư của anh Trường (tài khoản GitHub `truongcx-95`), chỉ d
 | **Backup production** | 02:05 mỗi đêm (giờ VN) | Xuất DB chạy thật, mã hoá, đẩy lên Google Drive; giữ project không bị tạm dừng                                      |
 | **Usage report**      | 08:30 sáng thứ Hai     | Tạo một issue "Báo cáo sử dụng tuần …" (GitHub tự gửi email cho anh)                                                |
 
-Code nằm ở repo `truongcx-95/hmt-platform`; repo này chỉ đọc code đó bằng `PLATFORM_READ_TOKEN`.
+Code nằm ở repo `hmt-vanhanh/hmt-platform`; repo này chỉ đọc code đó bằng `PLATFORM_READ_TOKEN`.
 
 ## Bốn luật bảo mật
 
@@ -147,7 +147,7 @@ Khôi phục thật khi có sự cố là việc khác: nạp vào một project
 Báo cáo tuần sẽ cảnh báo khi token còn dưới 30 ngày.
 
 1. Trên trình duyệt, đăng nhập GitHub `truongcx-95` > ảnh đại diện > **Settings** > **Developer settings** > **Personal access tokens** > **Fine-grained tokens**.
-2. Mở token đang dùng > **Regenerate token** (hoặc tạo mới): Expiration 1 năm; Repository access: **Only select repositories** > `truongcx-95/hmt-platform`; Permissions: **Contents: Read-only**, **Actions: Read-only** (Metadata tự thêm).
+2. Mở token đang dùng > **Regenerate token** (hoặc tạo mới): Expiration 1 năm; Repository access: **Only select repositories** > `hmt-vanhanh/hmt-platform`; Permissions: **Contents: Read-only**, **Actions: Read-only** (Metadata tự thêm).
 3. Chép token, vào `hmt-deploy` > **Settings** > **Secrets and variables** > **Actions** > `PLATFORM_READ_TOKEN` > **Update** > dán > lưu. Đóng tab, không lưu token ở đâu khác.
 4. Chạy thử **Usage report** (Run workflow): mục PLATFORM_READ_TOKEN phải hiện ngày hết hạn mới.
 

@@ -1,4 +1,4 @@
-# Đưa một bản đã qua thử nghiệm của truongcx-95/hmt-platform lên chạy thật.
+# Đưa một bản đã qua thử nghiệm của hmt-vanhanh/hmt-platform lên chạy thật.
 # Chỉ anh Trường bấm chạy (Actions > Deploy production > Run workflow).
 name: Deploy production
 
@@ -18,7 +18,7 @@ concurrency:
 permissions: {}
 
 env:
-  PLATFORM_REPO: truongcx-95/hmt-platform
+  PLATFORM_REPO: hmt-vanhanh/hmt-platform
   SUPABASE_CLI_VERSION: 2.120.0
   WRANGLER_VERSION: 4.149.0
   PAGES_PROJECT: hmt-prod

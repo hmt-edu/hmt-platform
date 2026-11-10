@@ -23,7 +23,7 @@ env:
   CONN_WARN_PCT: 80
   # PLATFORM_READ_TOKEN, token Supabase: cảnh báo khi còn ít hơn số ngày này là hết hạn.
   TOKEN_WARN_DAYS: 30
-  PLATFORM_REPO: truongcx-95/hmt-platform
+  PLATFORM_REPO: hmt-vanhanh/hmt-platform
 
 jobs:
   report:

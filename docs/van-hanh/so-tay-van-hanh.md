@@ -3,7 +3,7 @@
 > Địa chỉ email thật của các tài khoản vận hành anh giữ riêng, không ghi trong repo (repo có thể công khai). Các nhãn `[email vận hành]`, `[email chạy thật]`, `[tài khoản chạy thật]`, `[tài khoản Claude N]` trong tài liệu chỉ là tên gọi.
 
 Các việc vận hành hệ thống mà anh Trường (Admin) tự làm. Việc với bản chạy thật làm trên trình duyệt, bằng tài khoản
-`[tài khoản chạy thật]` (Supabase, Cloudflare) và `truongcx-95` (GitHub, chủ `hmt-platform` và `hmt-deploy`).
+`[tài khoản chạy thật]` (Supabase, Cloudflare) và `truongcx-95` (GitHub, chủ `hmt-deploy`), `hmt-vanhanh` (GitHub, chủ `hmt-platform` từ 09/11/2026).
 
 | Việc | Xem ở |
 |---|---|
