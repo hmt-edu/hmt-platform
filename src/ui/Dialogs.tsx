@@ -937,7 +937,20 @@ export function DuplicateDialog({
  * CHUNG-26 · Cảnh báo rời trang khi còn thay đổi chưa lưu (bản ghi đang Sửa). Đóng tab, tải lại trang thì
  * trình duyệt tự hỏi (không thay được hộp thoại đó).
  */
-export function UnsavedGuard({ when }: { when: boolean }) {
+export function UnsavedGuard({
+  when,
+  title = 'Rời trang khi chưa lưu?',
+  description = 'Các thay đổi bạn vừa nhập chưa được lưu. Rời trang thì các thay đổi này sẽ mất.',
+  stayLabel = 'Ở lại',
+  leaveLabel = 'Rời trang',
+}: {
+  when: boolean;
+  /** Chữ riêng của từng màn (ví dụ GV-05 theo khung); mặc định là chữ khuôn CHUNG-26. */
+  title?: string;
+  description?: string;
+  stayLabel?: string;
+  leaveLabel?: string;
+}) {
   const blocker = useBlocker(when);
 
   useEffect(() => {
@@ -951,22 +964,20 @@ export function UnsavedGuard({ when }: { when: boolean }) {
     <AlertShell
       open={blocker.state === 'blocked'}
       onOpenChange={(open) => !open && blocker.reset?.()}
-      title="Rời trang khi chưa lưu?"
+      title={title}
       footer={
         <>
           <AlertDialog.Cancel asChild>
-            <Button variant="primary">Ở lại</Button>
+            <Button variant="primary">{stayLabel}</Button>
           </AlertDialog.Cancel>
           <Button variant="danger" icon="logout" onClick={() => blocker.proceed?.()}>
-            Rời trang
+            {leaveLabel}
           </Button>
         </>
       }
     >
       <Describe>
-        <p className="text-fg-muted">
-          Các thay đổi bạn vừa nhập chưa được lưu. Rời trang thì các thay đổi này sẽ mất.
-        </p>
+        <p className="text-fg-muted">{description}</p>
       </Describe>
     </AlertShell>
   );

@@ -37,6 +37,10 @@ const ChoosePortalPage = lazyScreen(
   () => import('../pages/common/ChoosePortalPage'),
   'ChoosePortalPage',
 );
+const TeacherAttendancePage = lazyScreen(
+  () => import('../pages/gv/TeacherAttendancePage'),
+  'TeacherAttendancePage',
+);
 const TeacherTodayPage = lazyScreen(
   () => import('../pages/gv/TeacherTodayPage'),
   'TeacherTodayPage',
@@ -378,6 +382,7 @@ export const routes: RouteObject[] = [
           { path: 'viec-can-lam', element: <PortalTabPage title="Cần làm" stage={GD3} /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },
           { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
+          { path: 'buoi/:id/diem-danh', element: <TeacherAttendancePage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },
         ],
