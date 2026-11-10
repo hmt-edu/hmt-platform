@@ -125,14 +125,14 @@ export const CRM_MENU: MenuGroup[] = [
         label: 'Khoản tiền vào',
         slug: 'khoan-tien-vao',
         requires: can('ACCOUNTING'),
-        stage: GD1,
+        stage: '',
       },
       {
         code: 'TC-13',
         label: 'Công nợ',
         slug: 'cong-no',
         requires: can('SALES_ORDER'),
-        stage: GD1,
+        stage: '',
       },
       {
         code: 'TC-10',

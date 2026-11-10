@@ -102,6 +102,14 @@ const ReceiptPrintPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptPrintPage'),
   'ReceiptPrintPage',
 );
+const MoneyInListPage = lazyScreen(
+  () => import('../pages/thu-tien/TreasuryListPages'),
+  'MoneyInListPage',
+);
+const ReceivableListPage = lazyScreen(
+  () => import('../pages/thu-tien/TreasuryListPages'),
+  'ReceivableListPage',
+);
 const ReceiptListPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptListPage'),
   'ReceiptListPage',
@@ -302,6 +310,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="phieu-thu">
                 <ReceiptRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'khoan-tien-vao',
+            element: (
+              <GatedCrmEntry slug="khoan-tien-vao">
+                <MoneyInListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cong-no',
+            element: (
+              <GatedCrmEntry slug="cong-no">
+                <ReceivableListPage />
               </GatedCrmEntry>
             ),
           },

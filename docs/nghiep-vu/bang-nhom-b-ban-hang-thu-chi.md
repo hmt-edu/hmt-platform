@@ -123,3 +123,14 @@ Câu hỏi nghiệp vụ Đào tạo, Cổng giáo viên, Aftersale gửi anh qu
 ## Câu hỏi còn lại cần anh trả lời
 1. Bốn câu về voucher ở mục 5 (khi anh sẵn sàng; voucher đã hoãn sau 12/11).
 2. Phiếu thu B2: người lập phiếu thu là ai (đề xuất: nhân viên Sale hoặc CSKH đã lập đơn) và bước quản lý duyệt phiếu thu theo quản lý trực tiếp như đơn hàng (R-V2-12)? Em đang theo R-V2-14: người lập gửi, quản lý duyệt, kế toán duyệt, trừ Thu nợ đầu kỳ (không qua quản lý).
+
+## Cụm Thu tiền: TC-08 Khoản tiền vào, TC-13 Công nợ (migration 122)
+
+Chỉ đọc. Luật: R-TIEN-01, R-TIEN-07, R-TIEN-26. Đảo khoản (TC-09), Xuất file chưa làm.
+
+| Hàm                                                  | Ai                                                          | Việc                                                                                                                                                                                                                  |
+| ---------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `list_money_in(bộ lọc, sắp xếp, limit, offset)`      | Đối soát kế toán · Xem (Kế toán, Admin: mọi cơ sở; Trưởng cơ sở: cơ sở mình) | Sổ khoản tiền vào: tìm mã khoản, phiếu, đơn, phụ huynh, SĐT; lọc cơ sở, loại (thu, đảo), khoảng ngày ghi sổ; kết quả có tổng số tiền theo bộ lọc |
+| `list_receivables(bộ lọc, sắp xếp, limit, offset)`   | Đơn hàng · Xem (Kế toán, Admin: mọi cơ sở; Trưởng cơ sở, Sale, CSKH: cơ sở mình) | Mỗi dòng là một đợt còn nợ của đơn Đã duyệt; tình trạng Quá hạn, Sắp đến hạn, Chưa đến hạn; lọc cơ sở, sale lập đơn, hạn đóng; kết quả có tổng còn nợ |
+
+Cách tính «đã đóng» của đợt (quy tắc hiển thị, chưa vào luật): tiền đã vào ròng của đơn (khoản đảo đã trừ) lấp lần lượt từ đợt 1; đợt đóng đủ thì không hiện. Tham số `debt_due_soon_days` (mặc định 3 ngày) quyết định Sắp đến hạn. Không chặn học (R-TIEN-07).
