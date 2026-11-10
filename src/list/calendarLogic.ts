@@ -1,5 +1,7 @@
 // Logic thuần của Calendar (K5): các ngày của tuần và tháng (tuần bắt đầu thứ Hai), vị trí sự kiện trong ngày,
 // xếp các sự kiện trùng giờ cạnh nhau.
+import { vnDayBounds } from '../lib/vnDay';
+
 export type CalendarEvent = {
   id: string;
   title: string;
@@ -19,6 +21,11 @@ const WEEK = 7; // allow-number: số ngày trong tuần
 const MS_PER_HOUR = 3_600_000; // allow-number: số mili giây trong một giờ
 const MONTH_ROWS = 6; // allow-number: lưới tháng luôn 6 tuần để không nhảy chiều cao
 
+/** Ngày hôm nay theo giờ Việt Nam (R-HT-07, Q-172), dạng 00:00 của ngày đó trên lịch của máy, để khớp ô ngày của lưới. */
+export function vnToday(now: Date = new Date()): Date {
+  const [y, m, d] = vnDayBounds(now).dateKey.split('-').map(Number);
+  return new Date(y ?? 0, (m ?? 1) - 1, d ?? 1);
+}
 export const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 export const addDays = (d: Date, n: number) =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);

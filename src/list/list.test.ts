@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { layoutDay, monthGrid, sameDay, weekDays, type CalendarEvent } from './calendarLogic';
+import {
+  layoutDay,
+  monthGrid,
+  sameDay,
+  vnToday,
+  weekDays,
+  type CalendarEvent,
+} from './calendarLogic';
 import { forwardOnlyRule, freeMoveRule } from './kanbanLogic';
 import {
   applyFilters,
@@ -249,5 +256,16 @@ describe('Calendar', () => {
     expect(a?.height).toBe(48);
     expect([a?.lanes, b?.lanes, a?.lane, b?.lane]).toEqual([2, 2, 0, 1]);
     expect([c?.lanes, c?.lane]).toEqual([1, 0]);
+  });
+});
+
+describe('Ngày hôm nay theo giờ Việt Nam, không theo múi giờ máy (R-HT-07, Q-172)', () => {
+  it('lúc 01:00 sáng 10/11 giờ Việt Nam (18:00 UTC 09/11) "hôm nay" là 10/11', () => {
+    const t = vnToday(new Date('2026-11-09T18:00:00Z'));
+    expect([t.getFullYear(), t.getMonth(), t.getDate()]).toEqual([2026, 10, 10]);
+  });
+  it('lúc 23:30 giờ Việt Nam (16:30 UTC) vẫn là ngày đó, chưa sang ngày sau', () => {
+    const t = vnToday(new Date('2026-11-10T16:30:00Z'));
+    expect([t.getFullYear(), t.getMonth(), t.getDate()]).toEqual([2026, 10, 10]);
   });
 });

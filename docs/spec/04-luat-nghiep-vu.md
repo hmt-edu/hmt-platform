@@ -333,6 +333,8 @@ Luật mới phát sinh thì thêm vào đúng mục, đánh dấu [CẦN CHỐT
 
 **Việc làm sau, chưa làm (anh OK 09/11, Q-171):** theo R-HT-07, ranh giới 00:00 của các mốc ngày (`datePresetRange` và nơi dùng nó) hiện vẫn là nửa đêm theo múi giờ máy, mới đúng ngày lịch Việt Nam; máy ở múi giờ khác có thể lệch trong 7 giờ đầu ngày. Cần đổi sang 00:00 giờ Việt Nam (dùng `vnDayBounds`) và đổi cách hiển thị ngày (`formatDmy`...) cho khớp; làm thành PR riêng, có kiểm thử ở nhiều múi giờ.
 
+**Đã làm (10/11, Q-172, theo R-HT-07):** "hôm nay" ở trang bản ghi Đơn hàng (`todayKey`) và ở Calendar (ô "Hôm nay", ô tô sáng ngày hiện tại) lấy theo ngày Việt Nam, không theo UTC hay múi giờ máy. Chưa làm: lưới Calendar và các sự kiện vẫn nhóm theo ngày lịch của máy (chung phần Q-171).
+
 **Chờ anh quyết, chưa đưa vào luật (17/10):**
 - R-GD-07 (thời hạn gói): một ghi danh một lớp nên mỗi lớp có ngày hết hạn riêng; chưa đổi chữ.
 - R-GD-09, R-GD-16 và spec 02 mục 5: bảo lưu, dừng học vẫn ở cấp ghi danh; một ticket đề nghị cho chọn nhiều ghi danh.

@@ -11,6 +11,7 @@ import {
   monthGrid,
   sameDay,
   startOfDay,
+  vnToday,
   weekDays,
   type CalendarEvent,
 } from './calendarLogic';
@@ -62,7 +63,7 @@ export function CalendarView({
   onModeChange,
   anchor,
   onAnchorChange,
-  today = new Date(),
+  today = vnToday(),
   startHour,
   endHour,
   resources,

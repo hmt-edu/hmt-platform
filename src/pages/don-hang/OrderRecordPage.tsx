@@ -12,6 +12,7 @@ import { useCrumbTail } from '../../layout/CrumbTail';
 import { useAuth } from '../../lib/auth/authContext';
 import { HmtError, errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatDate, formatMoney, formatNumber } from '../../lib/format';
+import { vnDayBounds } from '../../lib/vnDay';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
@@ -206,7 +207,7 @@ function OrderView({ record }: { record: OrderRecord }) {
   );
   const initialTermId =
     (editOptions.data?.terms ?? []).find((t) => t.name === record.payment_term_name)?.id ?? '';
-  const todayKey = new Date().toISOString().slice(0, 10); // allow-number: yyyy-mm-dd
+  const todayKey = vnDayBounds().dateKey; // Ngày hôm nay theo giờ Việt Nam (R-HT-07), không theo UTC hay múi giờ máy
   const edited = editedSinceRejection(record);
 
   function startEdit() {
