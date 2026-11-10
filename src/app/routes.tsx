@@ -121,6 +121,13 @@ const UserRecordPage = lazyScreen(
   () => import('../pages/nguoi-dung/UserRecordPage'),
   'UserRecordPage',
 );
+const ClassListPage = lazyScreen(() => import('../pages/lop/ClassListPage'), 'ClassListPage');
+const ClassFormPage = lazyScreen(() => import('../pages/lop/ClassFormPage'), 'ClassFormPage');
+const ClassRecordPage = lazyScreen(() => import('../pages/lop/ClassRecordPage'), 'ClassRecordPage');
+const WeekCalendarPage = lazyScreen(
+  () => import('../pages/lop/WeekCalendarPage'),
+  'WeekCalendarPage',
+);
 const TestListPage = lazyScreen(() => import('../pages/phieu/TestListPage'), 'TestListPage');
 const TestRecordPage = lazyScreen(() => import('../pages/phieu/TestRecordPage'), 'TestRecordPage');
 const AppointmentListPage = lazyScreen(
@@ -410,6 +417,46 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="lich-hen">
                 <AppointmentListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'lop',
+            element: (
+              <GatedCrmEntry slug="lop">
+                <ClassListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'lich-tuan',
+            element: (
+              <GatedCrmEntry slug="lich-tuan">
+                <WeekCalendarPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'lop/tao',
+            element: (
+              <GatedCrmEntry slug="lop" need={['CLASS', 'TAO']}>
+                <ClassFormPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'lop/:id/sua',
+            element: (
+              <GatedCrmEntry slug="lop" need={['CLASS', 'SUA']}>
+                <ClassFormPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'lop/:id',
+            element: (
+              <GatedCrmEntry slug="lop">
+                <ClassRecordPage />
               </GatedCrmEntry>
             ),
           },

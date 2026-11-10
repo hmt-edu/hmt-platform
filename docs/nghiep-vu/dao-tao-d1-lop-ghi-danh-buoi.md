@@ -118,3 +118,16 @@ Luật: R-GV-08, R-GV-13, R-GIO-06, R-GIO-08, R-V2-35, R-V2-37, Q-208. Điều k
 Bảng: `session_content` (BTVN giao mới, một dòng mỗi buổi) và `session_content_line` (các dòng nội dung; dòng bị bỏ đặt `is_active = false`).
 
 Điều kiện Done (`session_pending_reason`): buổi thường cần ít nhất một dòng nội dung ở cả hai nhánh Bật và Tắt của `session_done_requires_review`; buổi Kiểm tra không đòi dòng nội dung, chỉ giữ điều kiện cấu hình điểm của D2.
+
+## Cụm Lớp: hàm đọc cho LOP-01, LOP-02, LOP-03, LOP-08 (migration 116)
+
+Luật: R-LOP-01, R-LOP-05, R-LOP-08, R-LOP-14, R-LOP-15. Chỉ đọc; ghi vẫn qua `create_class`, `save_class_info`, `save_class_timetable`, `transition_class` (migration 100). Phạm vi theo quyền Lớp học · Xem (toàn hệ thống, cơ sở mình, lớp được phân công).
+
+| Hàm                                                  | Việc                                                                                                                                  |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `list_classes(bộ lọc, sắp xếp, limit, offset)`       | LOP-01: lọc tình trạng duyệt, vận hành, cơ sở, môn, khối, phân loại; tìm theo mã lớp hoặc mã cũ; sĩ số, chỗ còn lại, lịch học, giáo viên |
+| `get_class_record(lớp)`                              | LOP-02: thông tin, khung giờ, học sinh đang xếp (không số điện thoại), đếm buổi, 100 buổi, cảnh báo trùng, 20 sự kiện gần nhất         |
+| `week_sessions(cơ sở, từ ngày, đến ngày)`            | LOP-08: buổi trong tối đa 14 ngày, cờ trùng phòng, trùng giáo viên ở cấp buổi thật (chỉ cảnh báo)                                      |
+| `list_class_form_options(cơ sở)`                     | LOP-03: giáo viên, trợ giảng, CSKH, phòng, nhóm lớp của cơ sở                                                                         |
+
+Giao diện: danh sách và Kanban theo bước duyệt (LOP-01), hồ sơ với Trình, Xác nhận, Duyệt, Từ chối, Đưa về Nháp, Đóng, Huỷ (LOP-02, LOP-05, LOP-06), biểu mẫu tạo/sửa có Time Table (LOP-03), lịch tuần (LOP-08). Chưa làm: Hình thức học và Tổ chức lớp (cần cột mới, sau 17/11), Xuất CSV, nút Yêu cầu bổ trợ, bản điện thoại dạng thẻ.

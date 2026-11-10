@@ -187,14 +187,14 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('ENROLLMENT'),
         stage: GD2,
       },
-      { code: 'LOP-01', label: 'Lớp', slug: 'lop', sub: 'Lớp', requires: can('CLASS'), stage: GD2 },
+      { code: 'LOP-01', label: 'Lớp', slug: 'lop', sub: 'Lớp', requires: can('CLASS'), stage: '' },
       {
         code: 'LOP-08',
         label: 'Lịch tuần cơ sở',
         slug: 'lich-tuan',
         sub: 'Lớp',
         requires: can('CLASS'),
-        stage: GD2,
+        stage: '',
       },
       {
         code: 'BUOI-01',
