@@ -108,7 +108,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 - `npm run db:seed-users`: tạo tài khoản giả mỗi vai trò (cần `API_URL`, `SECRET_KEY`, `DB_URL`, `SEED_PASSWORD`, xem `README.md`).
 - `npm run lint`, `npm run typecheck`, `npm run test`, `npm run check:hardcode`, `npm run format:check`: bộ kiểm tra nhanh như CI.
 - `npm run check:all`: cả bộ kiểm như CI trên máy (nhanh ở trên, `db:reset`, `db:test`, `e2e`); chạy trước khi đẩy. Dừng `check:all` giữa chừng thì tắt `vite preview` còn sót ở cổng 4173 (`pkill -f 'vite preview --port 4173'`); `check:all` tự dừng và báo nếu thấy cổng này đang bị giữ.
-- `npm run e2e`: Playwright máy tính + iPhone (lần đầu: `npx playwright install chromium webkit`).
+- `npm run e2e`: Playwright máy tính + iPhone (lần đầu: `npx playwright install chromium webkit`). Cổng xem trước mặc định 4173; hai thư mục làm việc chạy song song thì đặt `E2E_PREVIEW_PORT` khác nhau (ví dụ 4173 và 4273), và mỗi thư mục có Supabase local riêng (`project_id` và cổng khác nhau trong `supabase/config.toml` cục bộ, không commit).
 - `npx supabase migration new <ten>`: tạo file migration mới.
 
 ## Khi thiếu khuôn giao diện

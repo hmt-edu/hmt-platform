@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PREVIEW_PORT = 4173;
+// Cổng xem trước: mặc định 4173; đặt E2E_PREVIEW_PORT để hai thư mục làm việc (hai Code) chạy e2e song song mà không tranh cổng (Q-222).
+const DEFAULT_PREVIEW_PORT = 4173;
+const PREVIEW_PORT = Number(process.env.E2E_PREVIEW_PORT || DEFAULT_PREVIEW_PORT);
 const EXPECT_TIMEOUT_MS = 10_000;
 const baseURL = `http://localhost:${PREVIEW_PORT}`;
 
