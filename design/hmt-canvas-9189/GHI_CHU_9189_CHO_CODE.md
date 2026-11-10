@@ -1,6 +1,8 @@
 # GHI CHÚ CHO CODE: canvas Đào tạo & Giáo viên (design/hmt-canvas-9189)
 
-Gói này xuất từ bản đang đăng **version id 1794293583-d882** (Version 44), đăng 10/11/2026 sau khi anh Trường nói "OK ĐĂNG" (Q-226). Bản lùi: 1794278144-9189 (bản trước, vẫn là bản mà tên thư mục 9189 nhắc tới). 362 khung, canvas.json, ds/, assets/. Kiểm bằng file, chưa xem trên trình duyệt thật.
+Gói này xuất từ bản đang đăng **Version 45, version id 1794295687-73e6** (đăng 10/11/2026 sau "OK ĐĂNG" Q-232). Bản lùi: Version 44 `1794293583-d882` (trước đó 1794278144-9189). 371 khung, canvas.json, ds/, assets/. Kiểm bằng file, chưa xem trên trình duyệt thật.
+
+**Từ Version 45 trở đi, đọc mục «Cập nhật Q-232, Q-233» ở cuối file này trước.** Các mục A đến D bên dưới viết cho Version 44; v45 chỉ thêm 9 khung mới và sửa 6 khung (không đổi gì khác).
 
 So với 1794278144-9189, bản này đổi 20 khung và 2 tiêu đề trong canvas.json (chi tiết ở mục B).
 
@@ -247,3 +249,11 @@ Mọi khung GV-07 bản chính (`GV07_*`, `GV07K_*`, `GV07X_*`) giống hệt fc
 
 ## 5. Đề xuất
 Khác biệt vừa phải, tập trung ở GV-02, 04, 05, 06, 08 (chữ và vài nút/hộp thoại) cộng 23 khung nháp GV07b/GV08b chưa làm. Đề xuất **xuất gói 9189 vào repo** (cả canvas, để Code 2 làm đúng bản hiện hành), kèm dặn: bỏ qua 23 khung "NHÁP, CHƯA LÀM". Chưa so GV-03, GV-09 đến GV-16 và canvas.json ngoài tiêu đề.
+
+## Cập nhật Q-232, Q-233: Version 45 `1794295687-73e6` (10/11/2026)
+- 9 khung mới (GV05_vang_xac_nhan_dt/pc, GV06_xung_dot_dt/pc, GV04_chua_chot_pc, GV05_chua_chot_pc, GV07_vang_da_nhap_dt/pc, GV07_vang_pc) đã vào canvas.
+- «Done» → «Hoàn thành» ở GV07K_done_dt/pc (tiêu đề và chữ trong khung).
+- Q-233: ô «Ảnh» ở GV-14 (GV14_dt, GV14_pc, GV14_tk_giao_vien_dt, GV14_tk_giao_vien_pc) giữ chỗ, nhãn «Làm sau», nút «Chọn ảnh» mờ, chữ «Làm sau: bản 17/11 chưa tải ảnh, ticket chỉ gõ chữ.» Code không làm tải ảnh ở bản 17/11. Nội dung giữ nguyên theo R-V2-23, R-CS-10.
+- Khung đổi trong v45 so với v44: 9 khung mới ở trên (nằm cuối canvas), GV07K_done_dt/pc (chữ), GV14_dt, GV14_pc, GV14_tk_giao_vien_dt, GV14_tk_giao_vien_pc (ô Ảnh). Còn lại giữ nguyên.
+- Gói này CHƯA gồm hai việc vẽ nháp (hộp BH-11 nhiều đơn, GV-14 ô Tính chất tự chọn). Hai việc đó sẽ có gói riêng sau khi anh nói "OK ĐĂNG".
+- R-V2-36 (GV-05, đổi Có mặt sang Vắng): hộp xác nhận ở `GV05_vang_xac_nhan_dt/pc`. R-V2-36 chưa có trong `docs/spec/04` của repo, khung vẽ theo lời anh Trường qua Chat.
