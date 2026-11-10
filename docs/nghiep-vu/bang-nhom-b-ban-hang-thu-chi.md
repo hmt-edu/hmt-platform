@@ -1,6 +1,6 @@
 # Bảng nhóm B: sửa gì, ở đâu (gói canvas Báo giá, Đơn hàng, Phiếu thu v146 và bổ sung v2)
 
-Gửi anh duyệt trước khi làm migration (05/11/2026). Nguồn: `design/hmt-canvas-9933`, `design/ban-hang-thu-chi-bo-sung/GHI_CHU_CHO_CODE.md`, `docs/nghiep-vu/doi-chieu-canvas-ban-hang-v146.md`. Quy tắc: canvas vênh luật thì **làm theo luật**; quy tắc voucher và ưu đãi linh hoạt chưa vào luật nên chỗ khác luật em hỏi anh qua Chat (cuối tài liệu).
+Gửi anh duyệt trước khi làm migration (05/11/2026). Nguồn: `design/hmt-canvas-9933`, `design/hmt-canvas-abea/GHI_CHU_CHO_CODE.md`, `docs/nghiep-vu/doi-chieu-canvas-ban-hang-v146.md`. Quy tắc: canvas vênh luật thì **làm theo luật**; quy tắc voucher và ưu đãi linh hoạt chưa vào luật nên chỗ khác luật em hỏi anh qua Chat (cuối tài liệu).
 Giờ = thang ước lượng em dùng từ đầu (đã gồm pgTAP, Playwright, tài liệu). Cột "(e)" đã gồm giờ làm bản in hoặc màn nếu có.
 
 ## Thứ tự anh chốt (05/11) và tách mốc
@@ -115,7 +115,7 @@ Câu hỏi nghiệp vụ Đào tạo, Cổng giáo viên, Aftersale gửi anh qu
 
 ## 8. Thu nợ đầu kỳ
 - **(a) Hiện tại:** R-V2-15 (chốt 04/11): phiếu thu loại "Thu nợ đầu kỳ": CSKH tạo, **kế toán duyệt, không qua quản lý**, không cần đơn, số tiền không vượt nợ còn lại **của em đó**; duyệt xong ghi khoản tiền vào và giảm nợ đầu kỳ. Phiếu gắn phụ huynh, luôn chọn em.
-- **(b) Canvas (`design/ban-hang-thu-chi-bo-sung`):** `TC02_no_dau_ky_tao` (Nháp), `_cho_kt`, `_da_duyet`, `_loi_vuot_no`; nợ từng em, ô Em bắt buộc; luồng Nháp, Chờ kế toán, Đã duyệt. Vênh luật: ô "Mã giao dịch" bắt buộc kể cả tiền mặt; danh sách hình thức gõ sẵn (Chuyển khoản, Tiền mặt, Quẹt thẻ): **làm theo luật phiếu thu và danh mục cấu hình**, không theo khung.
+- **(b) Canvas (`design/hmt-canvas-abea`):** `TC02_no_dau_ky_tao` (Nháp), `_cho_kt`, `_da_duyet`, `_loi_vuot_no`; nợ từng em, ô Em bắt buộc; luồng Nháp, Chờ kế toán, Đã duyệt. Vênh luật: ô "Mã giao dịch" bắt buộc kể cả tiền mặt; danh sách hình thức gõ sẵn (Chuyển khoản, Tiền mặt, Quẹt thẻ): **làm theo luật phiếu thu và danh mục cấu hình**, không theo khung.
 - **(c) Khác ở đâu:** phiếu loại mới không có đơn; kiểm số tiền theo nợ còn lại của em; ghi sổ số dư (mục 6).
 - **(d) Migration:** có.
 - **(e) Giờ:** 10 đến 14, **sau** mục 7 và mục 6.

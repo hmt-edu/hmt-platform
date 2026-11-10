@@ -1,7 +1,7 @@
 # Khung canvas còn thiếu cho các màn trong kế hoạch (05/11/2026)
 
 Mục đích: anh giao Design vẽ song song. Quy ước mới (anh chốt 05/11): màn nào thiếu khung thì Code báo ngay, **không tự dựng rồi mới báo**. Riêng T5 (màn Nhập) Code vẫn dựng theo khuôn có sẵn để kịp 10/11, chỉnh lại khi có khung.
-Nguồn kiểm: canvas `design/hmt-canvas-9933` (HMT Platform v146, 485 khung), `design/ban-hang-thu-chi-bo-sung` (bổ sung v6, thay bản v2 `hmt-canvas-8262` đã xoá), gói `design/hmt-p0-p2` (khuôn P0, P2 CauHinh, MaTranQuyen). Trường "theo hàm DB" lấy từ hàm trong `supabase/migrations/`.
+Nguồn kiểm: canvas `design/hmt-canvas-9933` (HMT Platform v146, 485 khung), `design/hmt-canvas-abea` (bổ sung, lúc kiểm là v6, nay v11; thay bản v2 `hmt-canvas-8262` đã xoá), gói `design/hmt-p0-p2` (khuôn P0, P2 CauHinh, MaTranQuyen). Trường "theo hàm DB" lấy từ hàm trong `supabase/migrations/`.
 Mốc "cần trước" tính theo kế hoạch dựng sau 17/11, xong trước 28/11, thứ tự: Người dùng, Danh mục, Bảng giá, Gói bán, Cơ sở và phòng; mỗi khung cần có **trước ngày bắt đầu dựng màn đó khoảng 2 ngày**.
 
 ## Tóm tắt
