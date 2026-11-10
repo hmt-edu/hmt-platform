@@ -26,6 +26,7 @@ import { QuoteLineEditor } from './QuoteLineEditor';
 import {
   buildSaveLines,
   rowsFromRecord,
+  flexibleLimitIssues,
   rowsSignature,
   validateRows,
   type EditRow,
@@ -39,6 +40,7 @@ import {
   rejectQuotation,
   saveQuotation,
   sendQuotation,
+  useDiscountPolicies,
   useQuotation,
   useRefreshQuotation,
 } from './useQuoteData';
@@ -125,6 +127,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const phone = useMedia(NARROW_TABLE);
   const [editing, setEditing] = useState(false);
   const [rows, setRows] = useState<EditRow[]>([]);
+  const discountPolicies = useDiscountPolicies(record.opportunity_id, editing);
   const [baseline, setBaseline] = useState('');
   const [saving, setSaving] = useState(false);
   const [issues, setIssues] = useState<RowIssue[]>([]);
@@ -388,6 +391,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
         mode={editing ? 'edit' : 'view'}
         dirty={dirty}
         saving={saving}
+        saveDisabled={editing && flexibleLimitIssues(rows, discountPolicies.data ?? []).length > 0}
         onEdit={startEdit}
         onSave={() => void save()}
         onCancel={stopEdit}

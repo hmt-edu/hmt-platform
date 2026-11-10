@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   addedError,
+  flexibleLimitError,
+  withFlexibleMax,
   allRemoved,
   buildEdits,
   draftOf,
@@ -138,5 +140,45 @@ describe('orderEdit', () => {
       draft.added = [added()];
       expect(allRemoved(draft)).toBe(false);
     });
+  });
+});
+
+describe('flexibleLimitError (Ưu đãi linh hoạt vượt hạn mức, Q-151)', () => {
+  const policies = [
+    { id: 'flex', is_flexible: true, max_value: 5 },
+    { id: 'fix', max_value: 10 },
+  ];
+  it('trong hạn mức, ô trống, chính sách thường: không lỗi', () => {
+    expect(flexibleLimitError([{ policy_id: 'flex', value: 5 }], policies)).toBeNull();
+    expect(flexibleLimitError([{ policy_id: 'flex', value: null }], policies)).toBeNull();
+    expect(flexibleLimitError([{ policy_id: 'fix', value: 50 }], policies)).toBeNull();
+  });
+  it('vượt hạn mức: câu lỗi nêu hạn mức thật', () => {
+    expect(flexibleLimitError([{ policy_id: 'flex', value: 5.5 }], policies)).toBe(
+      'Ưu đãi linh hoạt tối đa 5%',
+    );
+  });
+});
+
+describe('withFlexibleMax (đọc hạn mức từ Cài đặt)', () => {
+  const list = [
+    { id: 'flex', is_flexible: true, max_value: 20 },
+    { id: 'fix', max_value: 10 },
+  ];
+  it('đọc được: chỉ chính sách linh hoạt đổi max_value, kể cả số thập phân', () => {
+    expect(withFlexibleMax(list, 2.5)).toEqual([
+      { id: 'flex', is_flexible: true, max_value: 2.5 },
+      { id: 'fix', max_value: 10 },
+    ]);
+  });
+  it('Cài đặt lỗi (null): giữ nguyên max_value của chính sách', () => {
+    expect(withFlexibleMax(list, null)).toEqual(list);
+  });
+  it('hạn mức thập phân 2,5: gõ 2,5 qua, gõ 2,6 bị chặn', () => {
+    const p = withFlexibleMax(list, 2.5);
+    expect(flexibleLimitError([{ policy_id: 'flex', value: 2.5 }], p)).toBeNull();
+    expect(flexibleLimitError([{ policy_id: 'flex', value: 2.6 }], p)).toBe(
+      'Ưu đãi linh hoạt tối đa 2,5%',
+    );
   });
 });

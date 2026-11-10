@@ -1,0 +1,3 @@
+Gói Design: "HMT Quản trị và Nạp dữ liệu · bổ sung v2", Version 8, id 1794124725-dc47 (zip HMT_Quan_tri_Nap_du_lieu_bo_sung_v8_1794124725-dc47.zip, nhận 08/11/2026). Chép nguyên từ thư mục project/ của zip, KHÔNG sửa nội dung.
+THAY: design/hmt-canvas-3066/ (bản Version 6, 1794108604-3066, đã xoá; thay trước đó design/hmt-canvas-ca9b). Gói mới thêm khung QT-07 (11 khung, Nguồn lead 3 tầng) và tham số "Ưu đãi linh hoạt tối đa mỗi dòng" ở QT-09. Đọc 00_DOC_TRUOC.md và GHI_CHU_CHO_CODE.md trong thư mục này.
+Quy tắc: khung có ở cả canvas chính (design/hmt-canvas-9933) và canvas này thì canvas này thắng; chỗ vênh luật thì làm theo luật.

@@ -50,6 +50,17 @@ export async function readIntSetting(
   return error || data === null ? null : Number(data);
 }
 
+/** Đọc tham số Cài đặt dạng số có phần thập phân (vd hạn mức Ưu đãi linh hoạt, giá trị chung). */
+export async function readNumberSetting(
+  supabase: SupabaseClient,
+  key: string,
+): Promise<number | null> {
+  const { data, error } = (await supabase
+    .schema('app')
+    .rpc('get_setting_numeric', { p_key: key })) as { data: unknown; error: unknown };
+  return error || data === null ? null : Number(data);
+}
+
 export async function readBoolSetting(
   supabase: SupabaseClient,
   key: string,

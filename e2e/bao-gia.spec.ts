@@ -339,7 +339,7 @@ async function expectLineGrid(page: Page, headers: string[]) {
   // Trần chiết khấu (tham số cài đặt, mặc định 20%) hiện dưới bảng ở cả Tạo và Sửa, như khung BH02_sua.
   await expect(
     page.getByText(
-      /^Trần chiết khấu mỗi dòng \d+%\. Vượt trần cần Trưởng cơ sở duyệt, vẫn lưu được \(R-TIEN-29\)\.$/,
+      /^Trần chiết khấu mỗi dòng \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
     ),
   ).toBeVisible();
   const overflow = await page.evaluate<number>(
@@ -499,7 +499,12 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   await expect(row1.getByText(/phải lớn hơn 0/)).toBeVisible();
   // Nhập 4 giờ tặng trên 20 giờ mua: 5% + 20% = 25%, vượt trần, vẫn lưu được.
   await page.getByLabel('Giờ tặng dòng 1').fill('4');
-  await expect(row1.getByText('Vượt trần: cần Trưởng cơ sở duyệt. Vẫn lưu được.')).toBeVisible();
+  // Khung BH02_chip_vuot_tran: câu trần hiện trong hộp cảnh báo vàng (role status), vẫn Lưu được (R-V2-11).
+  const capBox = page.getByRole('status').filter({
+    hasText: /^Trần chiết khấu mỗi dòng \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
+  });
+  await expect(capBox).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeEnabled();
   await expect(row1.getByText('25%', { exact: true })).toBeVisible();
   // Chữ đơn vị của ô Số lượng không đè lên ô Giờ tặng; hai ô cùng hàng, cùng cao.
   const qty = await page.getByLabel('Số lượng dòng 1').boundingBox();
@@ -735,6 +740,7 @@ test('Tạo báo giá: nhập dòng, Lưu mới cấp mã và tạo báo giá Nh
     'Giờ tặng',
     'Đơn giá',
     'Chiết khấu',
+    'Tổng %',
     'Thành tiền',
   ]);
   await page.getByRole('button', { name: 'Gói dòng 1' }).click();
@@ -749,6 +755,24 @@ test('Tạo báo giá: nhập dòng, Lưu mới cấp mã và tạo báo giá Nh
   await expect(page).toHaveURL(/\/crm\/bao-gia\/tao\?co-hoi=/);
   await page.getByLabel('Số lượng dòng 1').fill('3');
   await expect(page.locator('p', { hasText: 'Tổng cộng báo giá' })).toContainText('660.000 đ');
+  // Chip Ưu đãi linh hoạt (R-V2-45, Q-151): thêm bằng "Thêm", gõ % ngay trong chip; vượt hạn mức 5% thì chữ đỏ dưới chip và Lưu mờ.
+  await page.getByRole('button', { name: 'Thêm chiết khấu dòng 1' }).click();
+  await page
+    .getByRole('dialog', { name: 'Chọn chính sách chiết khấu' })
+    .getByLabel(/Ưu đãi linh hoạt/)
+    .check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Áp dụng' }).click();
+  const chipInput = page.getByLabel('Mức Ưu đãi linh hoạt dòng 1 (%)');
+  await chipInput.fill('9');
+  await expect(page.getByText('Ưu đãi linh hoạt tối đa 5%')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeDisabled();
+  // Dấu phẩy thập phân: 5,5 vượt hạn mức 5%; 1,5 hợp lệ.
+  await chipInput.fill('5,5');
+  await expect(page.getByText('Ưu đãi linh hoạt tối đa 5%')).toBeVisible();
+  await chipInput.fill('3');
+  await expect(page.getByText('Ưu đãi linh hoạt tối đa 5%')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeEnabled();
+  await expect(page.getByRole('cell', { name: '3%', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   // Lưu xong: bản ghi Nháp có mã báo giá, mở ở trang bản ghi.
   await expect(page.getByText(/^Đã tạo báo giá BG-/).first()).toBeVisible();

@@ -17,13 +17,14 @@ import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
 import { LineTable, type LineColumn } from '../../ui/LineTable';
-import { Spinner, StateView } from '../../ui/Feedback';
+import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { Select, Tabs, type MenuItem } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
-import { discountText, quantityText } from '../bao-gia/quoteRecord';
+import { quantityText } from '../bao-gia/quoteRecord';
+import { percentText } from '../bao-gia/quotePreview';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
@@ -55,6 +56,7 @@ import {
   type LineDraft,
   type OrderDraft,
   addedError,
+  flexibleLimitError,
   allRemoved,
   buildEdits,
   draftOf,
@@ -62,7 +64,13 @@ import {
   lineError,
 } from './orderEdit';
 import { ApproveOrderDialog, RejectOrderDialog } from './OrderApproveDialogs';
-import { capPercentText, overCapLines } from './orderApprove';
+import {
+  capPercentText,
+  orderCapText,
+  overCapLines,
+  roundOne,
+  totalPercentText,
+} from './orderApprove';
 import { CreateReceiptDialog } from '../phieu-thu/CreateReceiptDialog';
 import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
 
@@ -254,10 +262,21 @@ function OrderView({ record }: { record: OrderRecord }) {
     );
     setPickOpen(false);
   }
+  // Vượt hạn mức Ưu đãi linh hoạt: nút Lưu mờ (Q-151), chữ đỏ ở chip của dòng.
+  const limitBlocked =
+    draft !== null &&
+    (Object.values(draft.lines).some(
+      (l) =>
+        !l.removed && flexibleLimitError(l.discounts, editOptions.data?.policies ?? []) !== null,
+    ) ||
+      draft.added.some(
+        (a) => flexibleLimitError(a.discounts, editOptions.data?.policies ?? []) !== null,
+      ));
   const draftInvalid =
     draft !== null &&
     (Object.values(draft.lines).some((l) => lineError(l) !== null) ||
       draft.added.some((a) => addedError(a) !== null) ||
+      limitBlocked ||
       allRemoved(draft));
   const dirty = draft !== null && hasChanges(record.lines, draft, initialTermId, fixedPolicyIds);
 
@@ -364,21 +383,37 @@ function OrderView({ record }: { record: OrderRecord }) {
     },
     {
       key: 'discount-type',
-      header: 'Loại chiết khấu',
+      header: 'Chiết khấu',
+      // Chip một hàng (canvas BH05 xem): tên chính sách kèm mức đã áp; quà tặng ghi tên chính sách quà.
       cell: (l: OrderLine) => {
-        const names =
+        const chips =
           l.line_kind === 'GIFT'
             ? [l.gift_policy_name ?? 'Quà tặng']
-            : l.discounts.map((d) => d.policy_name);
-        return names.length === 0 ? '—' : names.join(', ');
+            : l.discounts.map((d) =>
+                d.kind === 'GIFT_HOURS'
+                  ? // Khung BH05_nhap_xem: chip giờ tặng ghi số giờ và % quy ra (máy chủ trả gift_percent): "Tên (2 giờ) 8,3%".
+                    `${d.policy_name} (${percentText(d.applied_value)} giờ) ${percentText(roundOne(l.gift_percent))}%`
+                  : `${d.policy_name} ${percentText(d.applied_value)}%`,
+              );
+        return chips.length === 0 ? (
+          '—'
+        ) : (
+          <span className="flex items-center gap-1.5 whitespace-nowrap">
+            {chips.map((c) => (
+              <span key={c} className="rounded-tag bg-surface-subtle px-2 py-0.5 text-caption">
+                {c}
+              </span>
+            ))}
+          </span>
+        );
       },
     },
     {
       key: 'discount',
       align: 'right',
-      header: '%',
+      header: 'Tổng %',
       cell: (l: OrderLine) => {
-        const text = l.line_kind === 'GIFT' ? '' : discountText(l);
+        const text = totalPercentText(l);
         return text === '' ? '—' : text;
       },
     },
@@ -397,6 +432,13 @@ function OrderView({ record }: { record: OrderRecord }) {
   ];
 
   const modeOptions = catalogs.options('STUDY_MODE');
+  // Khung BH05_chip_vuot_tran, BH05_nhap_xem (Q-163): câu trần luôn hiện dưới bảng dòng ở cả Xem và Sửa; hộp vàng chỉ khi bản ĐÃ LƯU vượt trần
+  // (Tổng % chỉ cập nhật khi Lưu, Q-157). N đọc từ tham số discount_total_cap_percent.
+  const capNote = record.lines.some((l) => l.over_cap) ? (
+    <Alert tone="warning">{orderCapText(cap)}</Alert>
+  ) : (
+    <p className="text-caption text-fg-muted">{orderCapText(cap)}</p>
+  );
   const lines = (
     <div className="flex flex-col gap-3">
       {editing && draft && (
@@ -427,10 +469,7 @@ function OrderView({ record }: { record: OrderRecord }) {
             onChangeAdded={patchAdded}
             onRemoveAdded={removeAdded}
           />
-          <p className="text-caption text-fg-muted">
-            Dòng mới thêm cũng chọn chiết khấu ngay. Thành tiền, tổng, trần chiết khấu do máy chủ
-            tính lại khi bấm Lưu.
-          </p>
+          {capNote}
         </>
       )}
       {!(editing && draft) && (
@@ -443,6 +482,7 @@ function OrderView({ record }: { record: OrderRecord }) {
           empty={<p className="px-4 py-6 text-center text-fg-muted">Đơn chưa có dòng nào.</p>}
         />
       )}
+      {!(editing && draft) && capNote}
       <dl
         className={`ml-auto flex w-full max-w-sm flex-col gap-1 text-body ${editing && dirty ? 'opacity-50' : ''}`}
       >
@@ -537,6 +577,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         mode={editing ? 'edit' : 'view'}
         dirty={editing && dirty}
         saving={saving}
+        saveDisabled={limitBlocked}
         onEdit={startEdit}
         onSave={() => void saveEdit()}
         onCancel={() => {

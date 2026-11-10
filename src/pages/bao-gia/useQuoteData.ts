@@ -4,7 +4,6 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
-import { withoutFlexible } from './discountPolicyFilter';
 import type { QuoteFilters } from './quoteFilters';
 import type { QuotationExportResult, QuotationPage, QuotationRecord } from './quoteTypes';
 
@@ -189,12 +188,10 @@ export function useDiscountPolicies(opportunityId: string, enabled: boolean) {
   return useQuery({
     queryKey: ['quotation-discount-policies', opportunityId],
     enabled,
-    queryFn: async () =>
-      withoutFlexible(
-        await rpc<DiscountPolicy[]>(supabase, 'list_applicable_discount_policies', {
-          p_opportunity_id: opportunityId,
-        }),
-      ),
+    queryFn: () =>
+      rpc<DiscountPolicy[]>(supabase, 'list_applicable_discount_policies', {
+        p_opportunity_id: opportunityId,
+      }),
   });
 }
 

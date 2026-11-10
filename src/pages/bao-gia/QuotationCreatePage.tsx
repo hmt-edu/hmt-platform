@@ -24,12 +24,18 @@ import {
   blankRow,
   buildSaveLines,
   rowsSignature,
+  flexibleLimitIssues,
   validateRows,
   type EditRow,
   type RowIssue,
 } from './quoteEdit';
 import { QuoteLineEditor } from './QuoteLineEditor';
-import { saveQuotation, useOpportunityStudents, useRefreshQuotations } from './useQuoteData';
+import {
+  saveQuotation,
+  useDiscountPolicies,
+  useOpportunityStudents,
+  useRefreshQuotations,
+} from './useQuoteData';
 
 export function QuotationCreatePage() {
   const [params] = useSearchParams();
@@ -111,6 +117,7 @@ function CreateForm({
   const catalogs = useLeadCatalogs();
   const refreshList = useRefreshQuotations();
   const students = useOpportunityStudents(opportunityId, true);
+  const discountPolicies = useDiscountPolicies(opportunityId, true);
   useCrumbTail('Tạo báo giá');
   const [rows, setRows] = useState<EditRow[]>(() => [blankRow()]);
   const [issues, setIssues] = useState<RowIssue[]>([]);
@@ -168,6 +175,7 @@ function CreateForm({
       mode="create"
       dirty={dirty && !saved}
       saving={saving}
+      saveDisabled={flexibleLimitIssues(rows, discountPolicies.data ?? []).length > 0}
       onEdit={() => undefined}
       onSave={() => void save()}
       // Huỷ: bỏ hết, chưa có bản ghi (R-CRM-19); về bản ghi cơ hội.

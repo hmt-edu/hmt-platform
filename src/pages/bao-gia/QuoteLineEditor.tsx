@@ -4,7 +4,7 @@ import { errorOf, useIntSetting } from '../../lib/db';
 import { formatMoney } from '../../lib/format';
 import { Button } from '../../ui/Button';
 import { Alert } from '../../ui/Feedback';
-import { pruneIssues, type EditRow, type RowIssue } from './quoteEdit';
+import { flexibleLimitIssues, pruneIssues, type EditRow, type RowIssue } from './quoteEdit';
 import { QuoteLineGrid } from './QuoteLineGrid';
 import { useDiscountPolicies, useGiftPolicies, useOpportunityStudents } from './useQuoteData';
 import { useQuotePreview } from './useQuotePreview';
@@ -33,7 +33,9 @@ export function QuoteLineEditor({
   const students = useOpportunityStudents(opportunityId, true);
   const policies = useDiscountPolicies(opportunityId, true);
   const giftPolicies = useGiftPolicies(opportunityId, true);
-  const preview = useQuotePreview(opportunityId, rows, true);
+  const limitIssues = flexibleLimitIssues(rows, policies.data ?? []);
+  // Còn dòng vượt hạn mức Ưu đãi linh hoạt: không gửi xem thử giá (máy chủ chỉ trả lỗi trùng câu đỏ ở dòng), tổng hiện "—".
+  const preview = useQuotePreview(opportunityId, rows, limitIssues.length === 0);
   return (
     <div className="flex flex-col gap-2">
       {(issues.length > 0 || saveError !== null) && (
@@ -59,6 +61,7 @@ export function QuoteLineEditor({
         opportunityId={opportunityId}
         opportunityHref={`/crm/co-hoi/${opportunityId}`}
         issues={issues}
+        limitIssues={limitIssues}
         disabled={saving || students.isPending}
         policies={policies.data ?? []}
         giftPolicies={giftPolicies.data ?? []}
@@ -80,7 +83,9 @@ export function QuoteLineEditor({
         <span>Tổng cộng báo giá</span>
         <span className="text-caption text-fg-muted">(hệ thống tính)</span>
         <b className="tabular" aria-busy={preview.computing ? true : undefined}>
-          {preview.computing || preview.total === null ? '—' : formatMoney(preview.total)}
+          {preview.computing || preview.total === null || limitIssues.length > 0
+            ? '—'
+            : formatMoney(preview.total)}
         </b>
       </p>
     </div>

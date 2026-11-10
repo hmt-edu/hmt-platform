@@ -27,3 +27,25 @@ export function overCapLines(lines: OrderLine[]): OverCapLine[] {
 export function capPercentText(cap: number | null): string {
   return cap === null ? 'đã cấu hình' : `${cap}%`;
 }
+
+/** Câu dưới bảng Đơn đang sửa (khung BH05_chip_*, R-V2-11): giờ tặng quy ra % tính vào trần; N đọc từ tham số. */
+export function orderCapText(cap: number | null): string {
+  return `Chiết khấu cộng dồn; giờ tặng quy ra % tính vào trần ${capPercentText(cap)}. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.`;
+}
+
+/** Làm tròn một chữ số thập phân để hiện (8,33 thành 8,3 như khung BH05_nhap_xem); không dùng để tính tiền. */
+export function roundOne(value: number): number {
+  return Math.round(value * 10) / 10; // allow-number: làm tròn hiện một chữ số thập phân
+}
+
+/**
+ * Cột "Tổng %" của Đơn Xem (khung BH05_nhap_xem): chiết khấu % cộng giờ tặng quy ra %, đúng số cộng dồn tính vào trần (R-V2-11).
+ * Hai số do máy chủ trả (discount_percent, gift_percent); rỗng khi không có chiết khấu hay là dòng quà tặng.
+ */
+export function totalPercentText(
+  line: Pick<OrderLine, 'line_kind' | 'discount_percent' | 'gift_percent'>,
+): string {
+  if (line.line_kind === 'GIFT') return '';
+  const total = line.discount_percent + line.gift_percent;
+  return total > 0 ? `${percentText(roundOne(total))}%` : '';
+}

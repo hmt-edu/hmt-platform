@@ -144,6 +144,7 @@ export function RecordDetail({
   mode,
   dirty = false,
   saving = false,
+  saveDisabled = false,
   onEdit,
   onSave,
   onCancel,
@@ -175,6 +176,8 @@ export function RecordDetail({
   /** Có thay đổi chưa lưu: rời trang thì hỏi (CHUNG-26). */
   dirty?: boolean | undefined;
   saving?: boolean | undefined;
+  /** Nút Lưu mờ khi dữ liệu đang sửa chưa hợp lệ (ví dụ vượt hạn mức Ưu đãi linh hoạt, Q-151). */
+  saveDisabled?: boolean | undefined;
   onEdit: () => void;
   onSave: () => void;
   onCancel: () => void;
@@ -223,7 +226,13 @@ export function RecordDetail({
         <h1 className="mr-1 font-display text-h2">{kind}</h1>
         {editing ? (
           <>
-            <Button variant="primary" icon="checkMark" loading={saving} onClick={onSave}>
+            <Button
+              variant="primary"
+              icon="checkMark"
+              loading={saving}
+              disabled={saveDisabled}
+              onClick={onSave}
+            >
               Lưu
             </Button>
             <Button onClick={onCancel} disabled={saving}>

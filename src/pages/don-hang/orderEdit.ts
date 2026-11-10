@@ -138,6 +138,36 @@ export function addedError(a: AddedLine): string | null {
   return a.quantity === null || a.quantity <= 0 ? 'Nhập số lượng lớn hơn 0.' : null;
 }
 
+/**
+ * Vượt hạn mức Ưu đãi linh hoạt (R-V2-45, Q-151): trả câu lỗi đỏ của chip, null nếu hợp lệ. Máy chủ kiểm lại khi Lưu
+ * (HMT_UU_DAI_VUOT_MUC). `policies` có max_value của chính sách linh hoạt là hạn mức đọc từ Cài đặt.
+ */
+export function flexibleLimitError(
+  discounts: DraftDiscount[],
+  policies: { id: string; is_flexible?: boolean | undefined; max_value: number }[],
+): string | null {
+  for (const d of discounts) {
+    const p = policies.find((q) => q.id === d.policy_id);
+    if (p?.is_flexible === true && d.value !== null && d.value > p.max_value) {
+      return `Ưu đãi linh hoạt tối đa ${String(p.max_value).replace('.', ',')}%`;
+    }
+  }
+  return null;
+}
+
+/**
+ * Hạn mức Ưu đãi linh hoạt đọc từ Cài đặt thay cho max_value của chính sách (R-V2-45). Đọc Cài đặt lỗi (null) thì giữ
+ * max_value của chính sách: màn vẫn dùng được, máy chủ vẫn chặn vượt hạn mức khi Lưu (HMT_UU_DAI_VUOT_MUC).
+ */
+export function withFlexibleMax<T extends { is_flexible?: boolean | undefined; max_value: number }>(
+  policies: T[],
+  flexMax: number | null,
+): T[] {
+  return policies.map((p) =>
+    p.is_flexible === true && flexMax !== null ? { ...p, max_value: flexMax } : p,
+  );
+}
+
 export function allRemoved(draft: OrderDraft): boolean {
   // Còn dòng mới thêm thì đơn vẫn còn dòng.
   if (draft.added.length > 0) return false;

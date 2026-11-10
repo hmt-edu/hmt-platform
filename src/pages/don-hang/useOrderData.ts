@@ -3,7 +3,8 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
-import { withoutFlexible } from '../bao-gia/discountPolicyFilter';
+import { readNumberSetting } from '../../lib/auth/api';
+import { withFlexibleMax } from './orderEdit';
 import type { OrderFilters } from './orderFilters';
 import type { AddEdit } from './orderEdit';
 import type { OrderExportResult, OrderPage, OrderRecord } from './orderTypes';
@@ -161,7 +162,7 @@ export function useOrderEditOptions(enabled: boolean) {
     enabled,
     staleTime: 60_000, // allow-number: chính sách, điều khoản đổi hiếm, giữ một phút
     queryFn: async (): Promise<{ policies: PolicyOption[]; terms: TermOption[] }> => {
-      const [policies, terms] = await Promise.all([
+      const [policies, terms, flexMax] = await Promise.all([
         supabase
           .schema('app')
           .from('discount_policy')
@@ -176,11 +177,13 @@ export function useOrderEditOptions(enabled: boolean) {
           .select('id, name')
           .eq('is_active', true)
           .order('name'),
+        // Hạn mức Ưu đãi linh hoạt mỗi dòng (R-V2-45): đọc từ Cài đặt, không viết cứng.
+        readNumberSetting(supabase, 'flexible_discount_max_percent'),
       ]);
       if (policies.error) throw new Error(policies.error.message);
       if (terms.error) throw new Error(terms.error.message);
-      // Ưu đãi linh hoạt tạm ẩn khỏi ô chọn chờ khung chip của Design (Q-141): xem bao-gia/discountPolicyFilter.ts.
-      const policyRows: PolicyOption[] = withoutFlexible(policies.data ?? []);
+      // Chính sách linh hoạt: hạn mức lấy từ Cài đặt (cột max_value của chính sách không phải nguồn hạn mức).
+      const policyRows: PolicyOption[] = withFlexibleMax(policies.data ?? [], flexMax);
       const termRows: TermOption[] = terms.data ?? [];
       return { policies: policyRows, terms: termRows };
     },

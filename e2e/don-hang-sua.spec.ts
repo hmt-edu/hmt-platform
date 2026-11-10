@@ -76,6 +76,11 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
   test.setTimeout(90_000);
   const setup = editSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, seeded.records.rejected);
+  // Q-163 (khung BH05_nhap_xem): Đơn Xem cũng có câu trần dưới bảng (đơn chưa vượt trần: chữ thường, không hộp vàng).
+  const capText =
+    /^Chiết khấu cộng dồn; giờ tặng quy ra % tính vào trần \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/;
+  await expect(page.getByText(capText)).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: capText })).toHaveCount(0);
   await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
   // Q-49: đang sửa thì thanh tiêu đề có Lưu (nút chính), Huỷ, Hành động; nút trình khoá kèm "Lưu hoặc Huỷ rồi mới trình duyệt".
   await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeVisible();
@@ -93,13 +98,23 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
     'Ngày vào lớp',
     'Số lượng',
     'Đơn giá',
-    'Loại chiết khấu',
-    '%',
+    'Chiết khấu',
+    'Tổng %',
     'Giảm',
     'Thành tiền',
   ])
     await expect(grid.getByRole('columnheader', { name, exact: true })).toBeVisible();
   await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toHaveCount(0);
+  // Khung BH05_chip_*: câu trần luôn hiện dưới bảng khi sửa (hộp vàng chỉ khi bản đã lưu vượt trần).
+  await expect(
+    page.getByText(
+      /^Chiết khấu cộng dồn; giờ tặng quy ra % tính vào trần \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
+    ),
+  ).toBeVisible();
+  // Quy tắc lưới một dòng một hàng: tên học sinh, sản phẩm, tiêu đề cột không xuống dòng (bảng cuộn ngang).
+  for (const row of await grid.getByRole('row').all()) {
+    expect((await row.boundingBox())?.height ?? 999).toBeLessThan(110);
+  }
   const hours = page.getByLabel('Số giờ dòng 1');
   await expect(hours).toBeVisible();
   await hours.fill('0');
@@ -160,6 +175,15 @@ test('Thêm dòng khi sửa (Q-67): chọn gói, em, số lượng; Lưu thì m�
   await page.getByRole('option', { name: 'Giảm thương lượng' }).click();
   await page.getByLabel('Giá trị Giảm thương lượng dòng mới 1').fill('5');
   await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toBeVisible();
+  // Chip Ưu đãi linh hoạt (R-V2-45, Q-151): vượt hạn mức 5% thì chữ đỏ dưới chip và Lưu mờ; bỏ chip (✕) thì Lưu mở lại.
+  await page.getByRole('combobox', { name: 'Thêm chính sách chiết khấu dòng mới 1' }).click();
+  await page.getByRole('option', { name: 'Ưu đãi linh hoạt' }).click();
+  await page.getByLabel('Giá trị Ưu đãi linh hoạt dòng mới 1').fill('9');
+  await expect(page.getByText('Ưu đãi linh hoạt tối đa 5%')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Bỏ Ưu đãi linh hoạt khỏi dòng mới 1' }).click();
+  await expect(page.getByText('Ưu đãi linh hoạt tối đa 5%')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
   const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });

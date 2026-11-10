@@ -1,6 +1,6 @@
 # Đối chiếu canvas "HMT Quản trị và Nạp dữ liệu · bổ sung v2" (06/11/2026)
 
-**(08/11) Gói hiện hành là `design/hmt-canvas-3066/` (bản `1794108604-3066`, 57 khung, thay `ca9b`; mọi khung của `ca9b` đều có trong gói mới; thêm QT-09 và các khung QT-07, QT-08 mới; xem `GHI_CHU_CHO_CODE.md` trong thư mục đó).** Bản ghi cũ về gói `ca9b` (bản `1793951729-ca9b`): 32 khung, 7 nhãn màn, mục lục, `canvas.json` (40 mục, khớp 40 file), `00_DOC_TRUOC.md`, `GHI_CHU_CHO_CODE.md`. Quy tắc: khung có ở cả hai canvas thì bản bổ sung thắng; **canvas vênh luật thì làm theo luật**, ghi vào PR. Dữ liệu và số trong khung chỉ là ví dụ.
+**(08/11, cập nhật) Gói hiện hành là `design/hmt-canvas-dc47/` (Version 8, bản `1794124725-dc47`, 50 khung QT-18, QT-02, QT-03, QT-07, CH-01, CH-03, QT-08, QT-09; thay `3066` đã xoá, trước đó `ca9b`).** Bản ghi trước: `design/hmt-canvas-3066/` (bản `1794108604-3066`, 57 khung, thay `ca9b`; mọi khung của `ca9b` đều có trong gói mới; thêm QT-09 và các khung QT-07, QT-08 mới; xem `GHI_CHU_CHO_CODE.md` trong thư mục đó).** Bản ghi cũ về gói `ca9b` (bản `1793951729-ca9b`): 32 khung, 7 nhãn màn, mục lục, `canvas.json` (40 mục, khớp 40 file), `00_DOC_TRUOC.md`, `GHI_CHU_CHO_CODE.md`. Quy tắc: khung có ở cả hai canvas thì bản bổ sung thắng; **canvas vênh luật thì làm theo luật**, ghi vào PR. Dữ liệu và số trong khung chỉ là ví dụ.
 
 ## 1. Khung đã đủ để dựng
 

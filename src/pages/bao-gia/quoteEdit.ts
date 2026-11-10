@@ -159,6 +159,33 @@ export function validateRows(rows: EditRow[]): RowIssue[] {
   return issues;
 }
 
+/**
+ * Vượt hạn mức Ưu đãi linh hoạt (R-V2-45, Q-151): dòng nào gõ % lớn hơn hạn mức (max_value máy chủ trả từ Cài đặt) thì
+ * không cho lưu; chữ đỏ ngay dưới chip của dòng. Máy chủ vẫn kiểm lại (HMT_UU_DAI_VUOT_MUC). Không đủ dữ liệu thì bỏ qua.
+ */
+export function flexibleLimitIssues(
+  rows: EditRow[],
+  policies: { id: string; is_flexible?: boolean | undefined; max_value: number }[],
+): RowIssue[] {
+  const flexible = new Map(policies.filter((p) => p.is_flexible === true).map((p) => [p.id, p]));
+  const issues: RowIssue[] = [];
+  rows.forEach((row, i) => {
+    for (const d of row.discounts) {
+      const policy = flexible.get(d.policyId);
+      const value = parseQuantity(d.value);
+      if (policy === undefined || value === null || value <= policy.max_value) continue;
+      const max = String(policy.max_value).replace('.', ',');
+      issues.push({
+        rowKey: row.key,
+        lineNo: i + 1,
+        message: `Ưu đãi linh hoạt tối đa ${max}%`,
+        summary: `Dòng ${String(i + 1)}: Ưu đãi linh hoạt tối đa ${max}%`,
+      });
+    }
+  });
+  return issues;
+}
+
 /** Mảng dòng cho app.save_quotation (cùng khuôn với xem thử): {kind, prospect_student_id, package_id, delivery_mode_code, quantity, discounts}. */
 export function buildSaveLines(rows: EditRow[]): Record<string, unknown>[] {
   return rows.map((row) =>

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { formatMoney, formatNumber } from '../../lib/format';
 import { Button, IconButton } from '../../ui/Button';
+import { Alert } from '../../ui/Feedback';
 import { Select } from '../../ui/Overlays';
 import { INPUT_CLASS } from '../../ui/Field';
 import { cn } from '../../ui/cn';
@@ -21,7 +22,7 @@ import {
 import { QuotePackageDialog } from './QuotePackageDialog';
 import { QuoteGiftDialog } from './QuoteGiftDialog';
 import { QuotePolicyDialog } from './QuotePolicyDialog';
-import { percentText, type RowCalc } from './quotePreview';
+import { percentText, quoteCapText, type RowCalc } from './quotePreview';
 import { UNIT_LABEL } from './quoteRecord';
 import type { DiscountPolicy, GiftPolicy, OppStudent, SellablePackage } from './useQuoteData';
 
@@ -50,6 +51,7 @@ export function QuoteLineGrid({
   opportunityId,
   opportunityHref,
   issues,
+  limitIssues,
   disabled,
   policies,
   giftPolicies,
@@ -63,6 +65,8 @@ export function QuoteLineGrid({
   opportunityId: string;
   opportunityHref: string;
   issues: RowIssue[];
+  /** Vượt hạn mức Ưu đãi linh hoạt: chữ đỏ dưới chip của dòng, nút Lưu mờ (Q-151). */
+  limitIssues: RowIssue[];
   disabled: boolean;
   policies: DiscountPolicy[];
   giftPolicies: GiftPolicy[];
@@ -117,6 +121,8 @@ export function QuoteLineGrid({
 
   /** Tổng % chiết khấu máy chủ vừa trả (gồm giờ tặng quy ra %); chưa có hoặc 0 thì null. */
   const totalPercentText = (row: EditRow): string | null => {
+    // Vượt hạn mức Ưu đãi linh hoạt: chưa có số hợp lệ, hiện "—" như khung BH02_chip_vuot_han_muc.
+    if (limitIssues.some((i) => i.rowKey === row.key)) return null;
     const c = calcs[row.key];
     return c?.status === 'ok' && c.totalPercent > 0 ? `${percentText(c.totalPercent)}%` : null;
   };
@@ -141,7 +147,7 @@ export function QuoteLineGrid({
             {d.name}
             {policy?.kind === 'PERCENT' && !policy.fixed_value && (
               <>
-                <span aria-hidden="true">·</span>
+                {policy.is_flexible !== true && <span aria-hidden="true">·</span>}
                 <input
                   type="text"
                   inputMode="decimal"
@@ -157,7 +163,12 @@ export function QuoteLineGrid({
                   }
                   className="h-7 w-14 rounded-control border border-border-strong bg-surface px-1.5 text-right tabular"
                 />
-                <span>{`% · tối đa ${percentText(policy.max_value)}%`}</span>
+                {/* Ưu đãi linh hoạt: chip chỉ ghi "tên + số %" (Design); hạn mức hiện ở câu lỗi khi vượt. */}
+                <span>
+                  {policy.is_flexible === true
+                    ? '%'
+                    : `% · tối đa ${percentText(policy.max_value)}%`}
+                </span>
               </>
             )}
             {policy?.kind === 'PERCENT' && policy.fixed_value && (
@@ -171,16 +182,49 @@ export function QuoteLineGrid({
               </span>
             )}
             {policy?.requires_approval && <span>· cần duyệt</span>}
+            <button
+              type="button"
+              aria-label={`Bỏ ${d.name} khỏi dòng ${String(index + 1)}`}
+              disabled={disabled}
+              onClick={() =>
+                update(row.key, {
+                  discounts: row.discounts.filter((x) => x.policyId !== d.policyId),
+                })
+              }
+              className="focus-ring rounded-tag px-1 text-fg-muted hover:bg-hover disabled:opacity-60"
+            >
+              ✕
+            </button>
           </span>
         );
       })}
       {row.kind !== 'GIFT' && (
-        <Button size="sm" icon="plus" disabled={disabled} onClick={() => setPolicyFor(row.key)}>
-          Chính sách
+        <Button
+          size="sm"
+          icon="plus"
+          disabled={disabled}
+          aria-label={layout === 'tao' ? `Thêm chiết khấu dòng ${String(index + 1)}` : undefined}
+          onClick={() => setPolicyFor(row.key)}
+        >
+          {layout === 'tao' ? 'Thêm' : 'Chính sách'}
         </Button>
       )}
     </>
   );
+  /** Ô Chiết khấu: chip một hàng; vượt hạn mức Ưu đãi linh hoạt thì câu đỏ ngay dưới chip (khung BH02_chip_vuot_han_muc). */
+  const discountCell = (row: EditRow, index: number) => {
+    const limit = limitIssues.find((i) => i.rowKey === row.key);
+    return (
+      <span className="flex flex-col gap-1">
+        <span className="flex items-center gap-1.5">{discountChips(row, index)}</span>
+        {limit && (
+          <span role="alert" className="text-caption whitespace-nowrap text-on-danger-subtle">
+            {limit.message}
+          </span>
+        )}
+      </span>
+    );
+  };
   const cap_ = cap;
   const columns: LineColumn<EditRow>[] = [
     {
@@ -347,22 +391,24 @@ export function QuoteLineGrid({
       ? {
           key: 'discount',
           header: 'Chiết khấu',
-          cell: (row, index) => (
-            <span className="flex items-center gap-1.5">
-              {discountChips(row, index)}
-              {totalPercentText(row) !== null && (
-                <span className="tabular text-caption text-fg-muted">{`= ${totalPercentText(row) ?? ''}`}</span>
-              )}
-            </span>
-          ),
+          cell: (row, index) => discountCell(row, index),
         }
       : {
           key: 'discount',
           header: 'Loại chiết khấu',
-          cell: (row, index) => (
-            <span className="flex items-center gap-1.5">{discountChips(row, index)}</span>
-          ),
+          cell: (row, index) => discountCell(row, index),
         },
+    ...(layout === 'tao'
+      ? ([
+          {
+            key: 'percent',
+            header: 'Tổng %',
+            align: 'right',
+            width: 'w-[76px]',
+            cell: (row: EditRow) => <span className="tabular">{totalPercentText(row) ?? '—'}</span>,
+          },
+        ] satisfies LineColumn<EditRow>[])
+      : []),
     ...(layout === 'sua'
       ? ([
           {
@@ -396,7 +442,9 @@ export function QuoteLineGrid({
         <span className="tabular font-semibold">
           {calcs[row.key]?.status === 'pending'
             ? '…'
-            : priceText(calcs[row.key], row, 'lineTotal', row.kind === 'GIFT')}
+            : limitIssues.some((i) => i.rowKey === row.key)
+              ? '—'
+              : priceText(calcs[row.key], row, 'lineTotal', row.kind === 'GIFT')}
         </span>
       ),
     },
@@ -449,20 +497,14 @@ export function QuoteLineGrid({
           const calc: RowCalc | undefined = calcs[row.key];
           const issue = issueOf(row.key);
           const gift = row.kind === 'GIFT';
-          const overCap = calc?.status === 'ok' && calc.overCap;
           const calcError = calc?.status === 'error' ? calc.message : null;
           const needsStudent = calc?.status === 'needs-student';
-          if (!overCap && !calcError && !gift && !issue && !needsStudent) return null;
+          if (!calcError && !gift && !issue && !needsStudent) return null;
           return (
             <div className="flex flex-col gap-0.5">
               {needsStudent && (
                 <p className="text-fg-muted">
                   {gift ? 'Chọn em để thêm quà' : 'Chọn em để xem giá'}
-                </p>
-              )}
-              {overCap && (
-                <p className="text-on-warning-subtle">
-                  Vượt trần: cần Trưởng cơ sở duyệt. Vẫn lưu được.
                 </p>
               )}
               {calcError && (
@@ -486,11 +528,16 @@ export function QuoteLineGrid({
       />
       <p className="text-caption text-fg-muted">Kéo thanh ngang để xem các cột bên phải.</p>
       {/* Khung BH02_sua: trần đọc từ tham số cài đặt (discount_total_cap_percent), không viết cứng. */}
-      {cap !== null && (
-        <p className="text-caption text-fg-muted">
-          {`Trần chiết khấu mỗi dòng ${String(cap)}%. Vượt trần cần Trưởng cơ sở duyệt, vẫn lưu được (R-TIEN-29).`}
-        </p>
-      )}
+      {/* Khung BH02_chip_vuot_tran: có dòng vượt trần thì câu hiện trong hộp cảnh báo vàng; vẫn Lưu và Gửi được (R-V2-11). */}
+      {cap !== null &&
+        (rows.some((r) => {
+          const c: RowCalc | undefined = calcs[r.key];
+          return c?.status === 'ok' && c.overCap;
+        }) ? (
+          <Alert tone="warning">{quoteCapText(cap)}</Alert>
+        ) : (
+          <p className="text-caption text-fg-muted">{quoteCapText(cap)}</p>
+        ))}
       <div className="flex flex-wrap gap-2">
         <Button
           icon="plus"

@@ -8,6 +8,7 @@ import { INPUT_CLASS } from '../../ui/Field';
 import { Select } from '../../ui/Overlays';
 import {
   addedError,
+  flexibleLimitError,
   lineError,
   type AddedLine,
   type DraftDiscount,
@@ -75,9 +76,11 @@ function DiscountEditor({
   addable: PolicyOption[];
   oldOf?: ((policyId: string) => OrderLineDiscount | undefined) | undefined;
 }) {
+  // Vượt hạn mức Ưu đãi linh hoạt: chữ đỏ dưới chip, nút Lưu mờ (Q-151); máy chủ kiểm lại khi Lưu.
+  const limitError = flexibleLimitError(discounts, policies);
   return (
     <span className="flex flex-col gap-1.5">
-      <span className="flex flex-wrap gap-1.5">
+      <span className="flex flex-nowrap items-center gap-1.5 whitespace-nowrap">
         {discounts.map((x) => {
           const p = policies.find((q) => q.id === x.policy_id);
           const old = oldOf?.(x.policy_id);
@@ -117,22 +120,31 @@ function DiscountEditor({
             </span>
           );
         })}
+        {addable.length > 0 && (
+          <Select
+            label={`Thêm chính sách chiết khấu ${label}`}
+            value=""
+            placeholder="+ Thêm"
+            onChange={(id) => {
+              const p = addable.find((q) => q.id === id);
+              if (!p) return;
+              onChange([
+                ...discounts,
+                // Ưu đãi linh hoạt: nhân viên tự gõ %, không đặt sẵn hạn mức (R-V2-45).
+                {
+                  policy_id: p.id,
+                  value: p.fixed_value || p.is_flexible === true ? null : p.max_value,
+                },
+              ]);
+            }}
+            options={addable.map((p) => ({ value: p.id, label: p.name }))}
+          />
+        )}
       </span>
-      {addable.length > 0 && (
-        <Select
-          label={`Thêm chính sách chiết khấu ${label}`}
-          value=""
-          placeholder="+ Thêm"
-          onChange={(id) => {
-            const p = addable.find((q) => q.id === id);
-            if (!p) return;
-            onChange([
-              ...discounts,
-              { policy_id: p.id, value: p.fixed_value ? null : p.max_value },
-            ]);
-          }}
-          options={addable.map((p) => ({ value: p.id, label: p.name }))}
-        />
+      {limitError !== null && (
+        <span role="alert" className="text-caption text-on-danger-subtle">
+          {limitError}
+        </span>
       )}
     </span>
   );
@@ -164,7 +176,10 @@ export function OrderEditLines({
       )}
       {/* relative: chữ sr-only (cột Bỏ dòng) không thoát khỏi vùng cuộn làm cả trang tràn ngang ở 1280 (Q-72). */}
       <div className="relative overflow-x-auto rounded-control border border-border">
-        <table aria-label="Dòng đơn đang sửa" className="w-full min-w-[1180px] text-body">
+        <table
+          aria-label="Dòng đơn đang sửa"
+          className="w-full min-w-[1180px] text-body whitespace-nowrap"
+        >
           <thead className="bg-surface-subtle text-left text-caption text-fg-muted">
             <tr>
               <th className="px-3 py-2">Học sinh</th>
@@ -174,8 +189,8 @@ export function OrderEditLines({
               <th className="px-2 py-2">Ngày vào lớp</th>
               <th className="px-2 py-2">Số lượng</th>
               <th className="px-2 py-2 text-right">Đơn giá</th>
-              <th className="px-2 py-2">Loại chiết khấu</th>
-              <th className="px-2 py-2 text-right">%</th>
+              <th className="px-2 py-2">Chiết khấu</th>
+              <th className="px-2 py-2 text-right">Tổng %</th>
               <th className="px-2 py-2 text-right">Giảm</th>
               <th className="px-2 py-2 text-right">Thành tiền</th>
               <th className="px-2 py-2">

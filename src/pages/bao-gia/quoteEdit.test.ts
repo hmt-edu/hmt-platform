@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   blankRow,
   buildSaveLines,
+  flexibleLimitIssues,
   giftRow,
   insertPackageRow,
   modesOfPrices,
@@ -242,5 +243,48 @@ describe('quoteEdit', () => {
     const fresh = blankRow();
     expect(insertPackageRow([a, g], fresh).map((r) => r.key)).toEqual([a.key, fresh.key, g.key]);
     expect(insertPackageRow([a], fresh).map((r) => r.key)).toEqual([a.key, fresh.key]);
+  });
+});
+
+describe('flexibleLimitIssues (Ưu đãi linh hoạt vượt hạn mức, Q-151)', () => {
+  const policies = [
+    { id: 'flex', is_flexible: true, max_value: 5 },
+    { id: 'fix', max_value: 10 },
+  ];
+  const rowWith = (discounts: { policyId: string; value: string }[]): EditRow => ({
+    ...blankRow(),
+    discounts: discounts.map((d) => ({ ...d, name: 'x' })),
+  });
+  it('trong hạn mức hoặc đúng hạn mức: hợp lệ', () => {
+    expect(flexibleLimitIssues([rowWith([{ policyId: 'flex', value: '3' }])], policies)).toEqual(
+      [],
+    );
+    expect(flexibleLimitIssues([rowWith([{ policyId: 'flex', value: '5' }])], policies)).toEqual(
+      [],
+    );
+  });
+  it('vượt hạn mức: câu lỗi nêu hạn mức thật, đúng dòng', () => {
+    const rows = [rowWith([]), rowWith([{ policyId: 'flex', value: '5,5' }])];
+    const found = flexibleLimitIssues(rows, policies);
+    expect(found).toHaveLength(1);
+    expect(found[0]?.rowKey).toBe(rows[1]?.key);
+    expect(found[0]?.message).toBe('Ưu đãi linh hoạt tối đa 5%');
+  });
+  it('chính sách thường vượt max_value không bị chặn ở đây; ô trống hoặc chữ sai bỏ qua', () => {
+    expect(flexibleLimitIssues([rowWith([{ policyId: 'fix', value: '50' }])], policies)).toEqual(
+      [],
+    );
+    expect(flexibleLimitIssues([rowWith([{ policyId: 'flex', value: '' }])], policies)).toEqual([]);
+    expect(flexibleLimitIssues([rowWith([{ policyId: 'flex', value: 'abc' }])], policies)).toEqual(
+      [],
+    );
+  });
+  it('gõ dấu phẩy: 5,5 vượt hạn mức 5; 1,5 hợp lệ và gửi máy chủ đúng 1.5', () => {
+    expect(
+      flexibleLimitIssues([rowWith([{ policyId: 'flex', value: '5,5' }])], policies),
+    ).toHaveLength(1);
+    const ok = rowWith([{ policyId: 'flex', value: '1,5' }]);
+    expect(flexibleLimitIssues([ok], policies)).toEqual([]);
+    expect(buildSaveLines([ok])[0]?.discounts).toEqual([{ policy_id: 'flex', value: 1.5 }]);
   });
 });
