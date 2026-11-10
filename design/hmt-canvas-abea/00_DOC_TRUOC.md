@@ -23,4 +23,4 @@ Canvas này **bổ sung** cho canvas chính **HMT Platform** (v146, `1793854902-
 ## Liên kết
 - Canvas chính: HMT Platform, https://claude.ai/artifact/KvsUknP8PTirpsVh8utRTR
 - Mục lục canvas chính (`Muc_luc_man`) có một dòng trỏ sang canvas này.
-- **Từ 10/11/2026 (đợt 7, bản nháp Q-182)**: hộp "Người duyệt" cho Phiếu thu Đã trình (8 khung + cột Người duyệt ở danh sách `TC01`), chép 7 khung Phiếu thu từ canvas chính sang; Xem GHI_CHU_CHO_CODE.md mục 10 và mục 11 (Luật chung: thanh cuộn ngang, chip BH02).
+- **Từ 10/11/2026 (đợt 7, Q-182)**: hộp "Người duyệt" cho Phiếu thu Đã trình (8 khung + cột Người duyệt ở danh sách `TC01`), chép 7 khung Phiếu thu từ canvas chính sang; Xem GHI_CHU_CHO_CODE.md mục 10 và mục 11 (Luật chung: thanh cuộn ngang, chip BH02).

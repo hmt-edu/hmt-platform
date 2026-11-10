@@ -157,7 +157,7 @@ Không đổi: hộp thoại "Duyệt đơn hàng" (bh07) và `BH05_co_don_nhap`
 - Câu "Học sinh và lớp lấy từ phiếu tái tục TT…" (dưới tiêu đề Gói học) và các ô, liên kết nhắc phiếu tái tục TT… **chờ PR Tái tục**: DB chưa có bảng phiếu tái tục. **Code bỏ qua câu này ở PR hiện tại** (không làm, không báo thiếu).
 
 
-## 10. Phiếu thu đang "Đã trình": hộp "Người duyệt" (Q-182, Q-191 đến Q-193, anh OK 10/11/2026) — BẢN NHÁP, chưa đăng
+## 10. Phiếu thu đang "Đã trình": hộp "Người duyệt" (Q-182, Q-191 đến Q-193, anh OK 10/11/2026), đã đăng 10/11/2026
 - Phiếu thu ở trạng thái Đã trình hiện ô **Người duyệt** ở phần đầu phiếu, như Đơn hàng: tên quản lý trực tiếp của người lập phiếu, người đang chờ duyệt. Admin thấy thêm nút **Chuyển người duyệt**, Admin không duyệt thay (R-TIEN-01, R-HT-01): khung `TC02_quan_ly_ad`, `TC17_admin`.
 - **Tên hiển thị:** khung vẫn ghi chữ "Đã trình" (Q-191, không đổi hàng loạt). **Code hiển thị "Đã gửi" theo R-V2-14.**
 - **Trưởng cơ sở lập phiếu thì tự duyệt bước quản lý:** ô Người duyệt ghi "tự duyệt" và lịch sử ghi "tự duyệt". **Không có khung vẽ riêng**; Code làm theo luật R-TIEN-01, không chờ khung.

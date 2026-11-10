@@ -1,8 +1,8 @@
-# GHI CHÚ CHO CODE: canvas Đào tạo & Giáo viên, phiên bản 1794278144-9189
+# GHI CHÚ CHO CODE: canvas Đào tạo & Giáo viên (design/hmt-canvas-9189)
 
-Gói này xuất từ bản đang đăng (version 1794278144-9189): 362 khung, canvas.json, ds/, assets/. Không khung nào bị sửa; chỉ thêm file ghi chú này. Kiểm bằng file, chưa xem trên trình duyệt.
+Gói này xuất từ bản đang đăng **version id 1794293583-d882** (Version 44), đăng 10/11/2026 sau khi anh Trường nói "OK ĐĂNG" (Q-226). Bản lùi: 1794278144-9189 (bản trước, vẫn là bản mà tên thư mục 9189 nhắc tới). 362 khung, canvas.json, ds/, assets/. Kiểm bằng file, chưa xem trên trình duyệt thật.
 
-Thứ tự đọc: (1) mục "NHÁP, CHƯA LÀM", (2) "Vênh luật, Code làm theo luật", (3) "So với fcd1", (4) "Chưa so". Khi khung vẽ vênh luật: làm theo luật (docs/spec/), ghi chỗ vênh vào PR, không tự chọn.
+So với 1794278144-9189, bản này đổi 20 khung và 2 tiêu đề trong canvas.json (chi tiết ở mục B).
 
 ## A. NHÁP, CHƯA LÀM: Code KHÔNG làm 23 khung này
 
@@ -32,21 +32,31 @@ Thứ tự đọc: (1) mục "NHÁP, CHƯA LÀM", (2) "Vênh luật, Code làm t
 - `GV08b_tai_dt`
 - `GV08b_tu_xep_dt`
 
-## B. Vênh luật, Code làm theo luật
+## B. Đã sửa cho khớp luật trong bản 1794293583-d882 (Code làm theo luật, khung nay khớp)
 
-1. **GV-02 không hiện buổi quá hạn** (R-V2-37: buổi quá hạn nằm ở GV-12). Khung GV02_dt, GV02_pc, GV02_trong và ghi chú Man_GV02 đang vẽ nhóm «VIỆC SẮP TRỄ HẠN / QUÁ HẠN» kèm buổi quá hạn 47 giờ: làm theo luật, GV-02 chỉ hiện việc sắp trễ hạn.
-2. **BTVN ở GV-04, GV-06, GV-08 là tuỳ giáo viên** (R-V2-35): để trống = không giao. KHÔNG có ô tích «không giao BTVN». Không bắt buộc nhập BTVN để bước 2 tính Xong.
-   - Khung `GV06_trong` vẽ theo luật cũ (có dấu *, «Nhập BTVN giao mới hoặc tích Buổi này không giao BTVN», «Phải nhập BTVN... (R-GIO-06)»): bỏ, làm theo R-V2-35.
-   - Ghi chú của `Man_GV04`, `Man_GV06`, `Man_GV08` cũng viết theo luật cũ (ô «Buổi này không giao BTVN», «Mỗi buổi phải nhập BTVN giao mới hoặc tích không giao», chữ «BTVN đã nhập» / «Không giao BTVN»): làm theo R-V2-35.
-   - Các khung GV04_*, GV06_*, GV08_* còn chữ hay nút theo luật cũ cũng làm theo R-V2-35. Khung GV04_khong_btvn*, GV04_khong_btvn_xong* và GV08_vang_giao_*, GV08_trong nói về «không giao BTVN»: đối chiếu R-V2-35 trước khi làm, vênh thì theo luật.
+Hai luật (đối chiếu spec 04, Chat xác nhận):
+- **R-V2-37:** GV-02 chỉ hiện buổi trong ngày và việc sắp trễ hạn của các buổi đó. Buổi quá hạn không hiện ở GV-02, xem ở GV-12.
+- **R-V2-35:** BTVN là tuỳ giáo viên. Để trống = không giao. Không có ô tích «không giao BTVN». Bước 2 (nội dung buổi) chỉ cần có ít nhất một dòng nội dung, không còn điều kiện BTVN. Dòng tóm tắt bước 2 do hệ thống tự ghi: «BTVN đã nhập» khi có BTVN, «Không giao BTVN» khi để trống (không phải ô tích).
+
+20 khung đã sửa:
+- GV-02: GV02_dt, GV02_pc (bỏ thẻ buổi quá hạn, nhóm «VIỆC SẮP TRỄ HẠN»), GV02_trong, GV02_trong_bs_pc, ghi chú Man_GV02, Man_GV02_bs_dt.
+- GV-06: GV06_trong, GV06_trong_bs_pc (bỏ dấu *, bỏ ô tích, nhãn «Không bắt buộc»), ghi chú Man_GV06, Man_GV06_bs_dt.
+- GV-04: ghi chú Man_GV04, Man_GV04_bs_dt.
+- GV-08: ghi chú Man_GV08, Man_GV08_bs_dt; GV08_trong, GV08_trong_bs_pc («Done» thành «Hoàn thành»).
+- GV-09: GV09_thieu_btvn_dt, GV09_thieu_btvn_pc (bước 2 ghi «Không giao BTVN»; hộp «Còn thiếu» không có dòng BTVN), ghi chú Man_GV09, Man_GV09_bs_dt.
+- canvas.json: tiêu đề 2 khung GV09_thieu_btvn thành «…BTVN để trống thì bước 2 vẫn Xong (điện thoại/laptop)».
+
+Chưa sửa, Code lưu ý khi làm: tiêu đề GV07K_done_dt, GV07K_done_pc còn chữ «Done» (làm màn thì dùng chữ «Hoàn thành»).
 
 ## C. Chưa so
 
-Chưa so với fcd1: GV-03, GV-09, GV-10, GV-11, GV-12, GV-13, GV-14, GV-15, GV-16, và canvas.json ngoài tiêu đề. Các màn này làm theo luật và `docs/design/ban-do-man-hinh.md`; khung chỉ để tham khảo giao diện.
+Chưa so với fcd1: GV-03, GV-09 (chỉ rà riêng phần BTVN theo R-V2-35, đã sửa), GV-10, GV-11, GV-12, GV-13, GV-14, GV-15, GV-16, và canvas.json ngoài tiêu đề. Các màn này làm theo luật và `docs/design/ban-do-man-hinh.md`; khung chỉ để tham khảo giao diện.
 
 ## D. So với fcd1
 
 (Dán nguyên văn danh sách từ file DS_khac_biet_GV_9189_vs_fcd1.md.)
+
+LƯU Ý: danh sách này lập cho bản 1794278144-9189, trước đợt sửa Q-226. Nếu mâu thuẫn với mục B thì theo mục B (ví dụ thẻ buổi quá hạn ở GV-02 và ô tích «không giao BTVN» ở GV-06 mà danh sách ghi là đổi/thêm, nay đã bỏ).
 
 ---
 
