@@ -128,6 +128,22 @@ const WeekCalendarPage = lazyScreen(
   () => import('../pages/lop/WeekCalendarPage'),
   'WeekCalendarPage',
 );
+const ParentListPage = lazyScreen(
+  () => import('../pages/khach-hang/CustomerListPages'),
+  'ParentListPage',
+);
+const StudentListPage = lazyScreen(
+  () => import('../pages/khach-hang/CustomerListPages'),
+  'StudentListPage',
+);
+const ParentRecordPage = lazyScreen(
+  () => import('../pages/khach-hang/ParentRecordPage'),
+  'ParentRecordPage',
+);
+const StudentRecordPage = lazyScreen(
+  () => import('../pages/khach-hang/StudentRecordPage'),
+  'StudentRecordPage',
+);
 const TestListPage = lazyScreen(() => import('../pages/phieu/TestListPage'), 'TestListPage');
 const TestRecordPage = lazyScreen(() => import('../pages/phieu/TestRecordPage'), 'TestRecordPage');
 const AppointmentListPage = lazyScreen(
@@ -457,6 +473,38 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="lop">
                 <ClassRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phu-huynh',
+            element: (
+              <GatedCrmEntry slug="phu-huynh">
+                <ParentListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phu-huynh/:id',
+            element: (
+              <GatedCrmEntry slug="phu-huynh">
+                <ParentRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'hoc-sinh',
+            element: (
+              <GatedCrmEntry slug="hoc-sinh">
+                <StudentListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'hoc-sinh/:id',
+            element: (
+              <GatedCrmEntry slug="hoc-sinh">
+                <StudentRecordPage />
               </GatedCrmEntry>
             ),
           },

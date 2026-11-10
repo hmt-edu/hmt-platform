@@ -88,8 +88,8 @@ export const CRM_MENU: MenuGroup[] = [
     label: 'Khách hàng',
     icon: 'customers',
     entries: [
-      { code: 'KH-01', label: 'Phụ huynh', slug: 'phu-huynh', requires: can('PARENT'), stage: GD1 },
-      { code: 'KH-04', label: 'Học sinh', slug: 'hoc-sinh', requires: can('STUDENT'), stage: GD1 },
+      { code: 'KH-01', label: 'Phụ huynh', slug: 'phu-huynh', requires: can('PARENT'), stage: '' },
+      { code: 'KH-04', label: 'Học sinh', slug: 'hoc-sinh', requires: can('STUDENT'), stage: '' },
     ],
   },
   {

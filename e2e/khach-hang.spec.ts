@@ -1,0 +1,97 @@
+// Cụm Khách hàng: KH-01 danh sách phụ huynh, KH-02 bản ghi, KH-04 danh sách học sinh, KH-05 hồ sơ 360°.
+// Dữ liệu giả dựng bằng SQL trực tiếp (không dữ liệu thật), dọn sau bài. Tài khoản Trưởng cơ sở CS5 giả.
+import { expect, test } from '@playwright/test';
+import pg from 'pg';
+import { PASSWORD, enterAs, expectAccessible } from './helpers';
+
+const DB_URL = process.env.DB_URL ?? '';
+test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL.');
+test.describe.configure({ mode: 'serial' });
+
+const suffix = (project: string) => (project === 'dien-thoai' ? 'DT' : 'MT');
+// Số điện thoại giả riêng từng dự án để tìm đúng phụ huynh của mình.
+const phone = (project: string) => (project === 'dien-thoai' ? '0900000902' : '0900000901');
+
+async function withDb<T>(run: (db: pg.Client) => Promise<T>): Promise<T> {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    return await run(db);
+  } finally {
+    await db.end();
+  }
+}
+
+async function clear(db: pg.Client, code: string) {
+  await db.query('begin');
+  await db.query("set local session_replication_role = 'replica'");
+  await db.query(
+    'delete from app.student where parent_id in (select id from app.parent where code = $1)',
+    [code],
+  );
+  await db.query('delete from app.parent where code = $1', [code]);
+  await db.query('commit');
+}
+
+// eslint-disable-next-line no-empty-pattern
+test.beforeAll(async ({}, testInfo) => {
+  const sfx = suffix(testInfo.project.name);
+  const code = `PHE2EKH${sfx}`;
+  await withDb(async (db) => {
+    await clear(db, code);
+    const branch = await db.query<{ id: string }>("select id from app.branch where code = 'CS5'");
+    const parent = await db.query<{ id: string }>(
+      `insert into app.parent (code, full_name, phone, branch_id) values ($1, $2, $3, $4) returning id`,
+      [code, `Phụ huynh E2EKH ${sfx}`, phone(testInfo.project.name), branch.rows[0]!.id],
+    );
+    for (const n of [1, 2]) {
+      await db.query(
+        `insert into app.student (code, parent_id, full_name, birth_year, branch_id, grade) values ($1, $2, $3, 2014, $4, 6)`,
+        [`HSE2EKH${sfx}${n}`, parent.rows[0]!.id, `Em E2EKH ${sfx} ${n}`, branch.rows[0]!.id],
+      );
+    }
+  });
+});
+
+// eslint-disable-next-line no-empty-pattern
+test.afterAll(async ({}, testInfo) => {
+  await withDb((db) => clear(db, `PHE2EKH${suffix(testInfo.project.name)}`));
+});
+
+test('KH-01 → KH-02: tìm phụ huynh theo SĐT, mở bản ghi, thấy hai con', async ({
+  page,
+}, testInfo) => {
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto('/crm/phu-huynh');
+  await expect(page.getByRole('heading', { level: 1, name: 'Phụ huynh' })).toBeVisible();
+  await page.getByPlaceholder('Tìm tên, số điện thoại, mã…').fill(phone(testInfo.project.name));
+  await page
+    .getByRole('link', { name: `Phụ huynh E2EKH ${suffix(testInfo.project.name)}` })
+    .first()
+    .click();
+  await expect(page.getByText('Chưa có con đang học').first()).toBeVisible();
+  await expectAccessible(page);
+  await page.getByRole('tab', { name: 'Các con' }).click();
+  await expect(page.getByText(`Em E2EKH ${suffix(testInfo.project.name)} 1`)).toBeVisible();
+  await expect(page.getByText(`Em E2EKH ${suffix(testInfo.project.name)} 2`)).toBeVisible();
+});
+
+test('KH-04 → KH-05: tìm học sinh, hồ sơ 360° là Tiềm năng, chưa có ghi danh', async ({
+  page,
+}, testInfo) => {
+  const sfx = suffix(testInfo.project.name);
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto('/crm/hoc-sinh');
+  await expect(page.getByRole('heading', { level: 1, name: 'Học sinh' })).toBeVisible();
+  await page.getByPlaceholder('Tìm tên, mã, mã cũ…').fill(`Em E2EKH ${sfx} 1`);
+  await page
+    .getByRole('link', { name: `Em E2EKH ${sfx} 1` })
+    .first()
+    .click();
+  await expect(page.getByText('Tiềm năng').first()).toBeVisible();
+  await page.getByRole('tab', { name: 'Học tập' }).click();
+  await expect(page.getByText('Chưa có ghi danh.')).toBeVisible();
+  await page.getByRole('tab', { name: 'Điểm danh' }).click();
+  await expect(page.getByText('Chưa có điểm danh.')).toBeVisible();
+  await expectAccessible(page);
+});
