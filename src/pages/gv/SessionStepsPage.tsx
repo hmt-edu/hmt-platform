@@ -16,10 +16,12 @@ import {
 } from './sessionSteps';
 import { useSessionOverview } from './useSessionContent';
 
-/** Đường dẫn mở từng bước. Điểm danh do Code 1 thêm đường dẫn; nhận xét và BTVN buổi trước chưa có màn (Sắp có). */
+/** Đường dẫn mở từng bước. Điểm danh do Code 1 thêm đường dẫn; nhận xét chưa có màn (Sắp có). */
 function stepPath(sessionId: string, key: SessionStep['key']): string | null {
   if (key === 'attendance') return `/gv/buoi/${sessionId}/diem-danh`;
   if (key === 'content') return `/gv/buoi/${sessionId}/noi-dung`;
+  if (key === 'grading') return `/gv/buoi/${sessionId}/cham-nhan-xet`;
+  if (key === 'homework') return `/gv/buoi/${sessionId}/cham-btvn`;
   return null;
 }
 
@@ -29,7 +31,6 @@ const TONE: Record<StepState, string> = {
   TODO: 'border-border text-fg-muted',
   WAIT: 'border-border text-fg-muted',
   SKIP: 'border-border text-fg-muted',
-  SOON: 'border-border text-fg-muted',
 };
 
 /**

@@ -26,6 +26,9 @@ const base: SessionOverview = {
   grading_done: 1,
   grading_missing: ['A', 'B'],
   prev_homework_state: 'CAN_CHAM',
+  homework_present: 3,
+  homework_done: 1,
+  homework_missing: ['A', 'B'],
   deadline_at: '2026-10-24T20:30:00Z',
   pending_reason: null,
 };
@@ -49,10 +52,10 @@ describe('Các bước của buổi dạy (GV-04)', () => {
       content_lines: 3,
       homework_text: 'Bài 6',
     });
-    expect(steps.map((s) => s.state)).toEqual(['DONE', 'DONE', 'DOING', 'SOON']);
+    expect(steps.map((s) => s.state)).toEqual(['DONE', 'DONE', 'DOING', 'DOING']);
     expect(steps[2]?.detail).toBe('1/3 em có mặt đã chấm đủ');
-    // Bước BTVN buổi trước "Sắp có" (GV-08 chưa xong) không tính vào y (Q-264).
-    expect(progressOf(steps)).toEqual({ done: 2, total: 3 });
+    expect(steps[3]?.detail).toBe('1/3 em có mặt đã có trạng thái');
+    expect(progressOf(steps)).toEqual({ done: 2, total: 4 });
   });
 
   it('buổi đầu của lớp hoặc buổi trước không giao BTVN: bước 4 bỏ qua và không tính vào tiến độ', () => {
@@ -61,6 +64,13 @@ describe('Các bước của buổi dạy (GV-04)', () => {
       expect(steps[3]?.state).toBe('SKIP');
       expect(progressOf(steps).total).toBe(3);
     }
+  });
+
+  it('chấm BTVN buổi trước xong khi mọi em có mặt đã có trạng thái; chưa điểm danh thì chờ', () => {
+    expect(buildSteps({ ...base, homework_done: 3 })[3]?.state).toBe('DONE');
+    expect(buildSteps({ ...base, homework_done: 0 })[3]?.state).toBe('TODO');
+    expect(buildSteps({ ...base, attendance_marked: 0 })[3]?.state).toBe('WAIT');
+    expect(buildSteps({ ...base, homework_present: 0, homework_done: 0 })[3]?.state).toBe('DONE');
   });
 
   it('buổi Kiểm tra: nội dung xong khi chỉ có BTVN, tên bước chấm là chấm điểm', () => {

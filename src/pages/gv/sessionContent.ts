@@ -35,6 +35,10 @@ export type SessionOverview = {
   grading_missing: string[];
   /** GV-04: bước chấm BTVN buổi trước. DAU_LOP và KHONG_GIAO: bỏ qua; CAN_CHAM: buổi trước có giao BTVN. */
   prev_homework_state: 'DAU_LOP' | 'KHONG_GIAO' | 'CAN_CHAM';
+  /** GV-08: số em có mặt cần có trạng thái BTVN, số em đã có (hoặc vắng buổi giao bài), tên tối đa 10 em còn thiếu. */
+  homework_present: number;
+  homework_done: number;
+  homework_missing: string[];
   attendance_total: number;
   attendance_marked: number;
   deadline_at: string;

@@ -145,3 +145,29 @@ Không đổi luật ghi; chỉ thêm hàm đọc (security definer, kiểm quy�
 | `teacher_attendance_sheet(buổi)` (thay bản 111) | giáo viên, trợ giảng được phân công | thêm `contact_reason_name` (lý do liên hệ của vận hành, chỉ xem; không ghi chú tự do, không số điện thoại, phụ huynh) |
 
 Chưa có: lý do huỷ buổi (cụm Buổi B, BUOI-04), "Báo nghỉ trước", dòng thời gian của buổi, ghi lý do hàng loạt, lọc theo giáo viên ở BUOI-01.
+
+## GV-08 · Chấm BTVN buổi trước (migration 121)
+
+Luật: R-GV-10, R-GV-11, R-GV-12, R-GV-08, R-GV-13, R-GIO-06, R-V2-35. Điều kiện chặn Done theo Q-272 (chờ anh "OK ĐƯA VÀO LUẬT", chưa vào spec 04).
+
+| Hàm                                                                     | Ai                                          | Việc                                                                                                                                                                  |
+| ----------------------------------------------------------------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `homework_grading_sheet(buổi)`                                          | Điểm danh · Xem, buổi của mình              | Dữ liệu màn GV-08 một lần gọi: trạng thái (`DAU_LOP`, `KHONG_GIAO`, `CAN_CHAM`), BTVN buổi trước, em có mặt kèm kết quả, em vắng buổi này, bài Nộp sau chờ cập nhật |
+| `save_homework_grading(buổi, [{student_id, status_code, score, note, expected_version}])` | Điểm danh · Sửa, buổi Đã chốt               | Chấm em có mặt; điểm 1–5 chỉ cho Đã chấm, Làm chưa xong; lệch phiên bản dòng báo `HMT_XUNG_DOT`, cả lô không ghi                                                      |
+| `update_late_homework(buổi giao bài, em, trạng thái, điểm, ghi chú, phiên bản)` | Điểm danh · Sửa của buổi giao bài, kể cả khi buổi đã Done | Cập nhật bài đang Nộp sau (hoặc em vắng buổi chấm chưa có dòng) mà không mở lại buổi cũ                                                                      |
+| `homework_progress(buổi)`, `previous_session(buổi)`                     | nội bộ                                      | Tiến độ bước chấm BTVN cho `session_overview` và `session_pending_reason`                                                                                            |
+
+Bảng `homework_result` (một dòng mỗi em mỗi bài BTVN, có `version`). Em vắng buổi giao bài: không có dòng, màn đặt sẵn Không áp dụng và tính là đã có trạng thái. **Bài Nộp sau suy từ điểm danh:** em có mặt ở buổi giao bài, vắng buổi kế tiếp và chưa có dòng nào thì màn GV-08 liệt kê trong «Bài Nộp sau chờ cập nhật» mà không ghi dòng sẵn. Ví dụ: BTVN giao ở buổi 4, em Dũng có mặt buổi 4, vắng có phép buổi 5; ở buổi 5 em Dũng nằm ở mục «Em vắng buổi này», và từ buổi 6 trở đi nằm trong Bài Nộp sau cho tới khi giáo viên cập nhật.
+
+Điều kiện Done: tham số `session_done_requires_review` Bật và buổi trước có giao BTVN thì mọi em có mặt phải có trạng thái BTVN; Tắt thì bước này không chặn.
+
+## GV-07 · Chấm nhận xét từng em (migration 121, bố cục «Theo em»)
+
+Luật: R-V2-19, R-GV-02, R-GV-03, R-GV-04, R-GV-08, R-GV-13. Các hàm ghi (`open_session_review`, `set_review_criteria`, `set_review_scores`, `set_student_review_note`) có từ migration 103; migration 121 thêm hai hàm cho màn.
+
+| Hàm                                                        | Ai                                        | Việc                                                                                                                                              |
+| ---------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `review_grading_sheet(buổi)`                               | Điểm danh · Xem, buổi của mình            | Một lần gọi cho cả màn: buổi, tiêu chí đã mở (kèm bật/tắt, gợi ý, mô tả 5 mức), mọi em kèm điểm từng tiêu chí, nhận xét, định hướng, điểm trung bình do DB tính |
+| `save_review_grading(buổi, công tắc tiêu chí, điểm, nhận xét)` | Điểm danh · Sửa, buổi Đã chốt             | Một giao dịch: mở nhận xét nếu chưa mở, rồi tắt/bật tiêu chí, ghi điểm, ghi nhận xét. Hoặc lưu hết hoặc không lưu gì                                |
+
+Chưa làm (ghi trong báo cáo): «Theo tiêu chí» (chấm theo cột), «Cả lớp», xuất nhận xét (GV07X), màn nhập điểm Kiểm tra (GV-07K), chống ghi đè nhận xét (sau 17/11).

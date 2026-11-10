@@ -3,7 +3,7 @@
 // buổi đầu của lớp hoặc buổi trước không giao BTVN), R-GIO-08 (chưa chốt danh sách thì chưa điểm danh, chưa chấm).
 import type { SessionOverview } from './sessionContent';
 
-export type StepState = 'DONE' | 'DOING' | 'TODO' | 'WAIT' | 'SKIP' | 'SOON';
+export type StepState = 'DONE' | 'DOING' | 'TODO' | 'WAIT' | 'SKIP';
 
 export type SessionStep = {
   key: 'attendance' | 'content' | 'grading' | 'homework';
@@ -18,7 +18,6 @@ export const STATE_LABEL: Record<StepState, string> = {
   TODO: 'Chưa làm',
   WAIT: 'Chờ',
   SKIP: 'Bỏ qua',
-  SOON: 'Sắp có',
 };
 
 export function buildSteps(o: SessionOverview): SessionStep[] {
@@ -91,14 +90,28 @@ export function buildSteps(o: SessionOverview): SessionStep[] {
               state: 'WAIT',
               detail: 'Chờ điểm danh',
             }
-          : // Q-264: buổi trước có giao BTVN mà chức năng chấm BTVN (GV-08) chưa xong thì hiện "Sắp có", không tính vào tiến độ, không chặn Done.
-            // Khi GV-08 xong: đổi lại thành Chờ/Chưa làm/Xong theo dữ liệu chấm.
-            {
-              key: 'homework',
-              title: 'Chấm BTVN buổi trước',
-              state: 'SOON',
-              detail: 'Buổi trước có giao BTVN. Chức năng chấm sắp có',
-            };
+          : // Bước chấm BTVN buổi trước (GV-08): mỗi em có mặt cần một trong 5 trạng thái; em vắng buổi giao bài được đặt sẵn Không áp dụng.
+            attendance.state === 'TODO' || attendance.state === 'WAIT'
+            ? {
+                key: 'homework',
+                title: 'Chấm BTVN buổi trước',
+                state: 'WAIT',
+                detail: 'Chờ điểm danh',
+              }
+            : {
+                key: 'homework',
+                title: 'Chấm BTVN buổi trước',
+                state:
+                  o.homework_done === o.homework_present
+                    ? 'DONE'
+                    : o.homework_done > 0
+                      ? 'DOING'
+                      : 'TODO',
+                detail:
+                  o.homework_present === 0
+                    ? 'Không có em có mặt cần chấm'
+                    : `${o.homework_done}/${o.homework_present} em có mặt đã có trạng thái`,
+              };
 
   return [attendance, content, grading, homework];
 }
@@ -113,9 +126,9 @@ function contentDetail(o: SessionOverview, isExam: boolean): string {
   return `${lines} · ${o.homework_text ? 'BTVN đã nhập' : 'Không giao BTVN'}`;
 }
 
-/** Tiến độ "x/y bước": bước Bỏ qua và bước Sắp có (chưa có chức năng) không tính vào y. */
+/** Tiến độ "x/y bước": bước Bỏ qua không tính vào y. */
 export function progressOf(steps: SessionStep[]): { done: number; total: number } {
-  const counted = steps.filter((step) => step.state !== 'SKIP' && step.state !== 'SOON');
+  const counted = steps.filter((step) => step.state !== 'SKIP');
   return { done: counted.filter((step) => step.state === 'DONE').length, total: counted.length };
 }
 
