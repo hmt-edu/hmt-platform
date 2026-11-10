@@ -1,5 +1,8 @@
 # Ghi chú cho Code: chỗ canvas vênh luật
 
+**Gói này xuất từ bản đang đăng Version 13, version id `1794297023-3b61`** (đăng 10/11/2026 sau "OK ĐĂNG" Q-241). Bản lùi: Version 12 `1794294001-8bd4`. 62 khung, canvas.json, ds/, assets/. Kiểm bằng file, chưa xem trên trình duyệt thật.
+**Đổi từ v12 sang v13:** BH-11 vẽ lại ở 3 khung `BH05_co_don_nhap` (1 đơn), `BH05_co_don_nhap_3` (3 đơn), `BH05_co_don_nhap_8` (8 đơn), và `Muc_luc_bs`; chi tiết ở mục 10 của danh sách «BH-11» bên dưới (Q-235, Q-241): nút chính «Tạo đơn mới» là lần xác nhận thứ hai theo Q-202 (bấm là tạo ngay, không thêm hộp), «Mở đơn» mở đơn của dòng đó, câu «Không chặn: bấm Tạo đơn mới thì mở đơn hàng mới như bình thường.»
+
 Canvas HMT Platform v146 (`1793854902-9933`) là bản chuẩn, anh Trường đã duyệt. Những chỗ dưới đây trên canvas **vênh luật** hoặc **chưa vẽ theo quyết định mới**. **Code làm theo luật**, không làm theo canvas.
 
 ## 1. Vượt trần chiết khấu: chỉ cảnh báo, không chặn, không cần Trưởng cơ sở duyệt (R-V2-11, chốt 04/11/2026)
@@ -68,7 +71,7 @@ Chỉ áp dụng họ BH05 và TC02. **Không đụng Báo giá (BH02)** và cá
 | `BH05_tao_moi` | thay BH05_tao (khuôn bản ghi chung, mục 11) |
 | `BH05_tao_trang_moi` | thay BH05_tao_trang (mục 11) |
 | `BH02_tao_moi` | thay BH02_tao (mục 11; Q-94 thay Q-53 cho riêng khung Tạo báo giá) |
-| `BH05_co_don_nhap` | mới (hộp BH-11, mục 10) |
+| `BH05_co_don_nhap` | mới (hộp BH-11, mục 10); 10/11 sửa thành bảng nhiều đơn, thêm `BH05_co_don_nhap_3`, `BH05_co_don_nhap_8` |
 
 Luật vẽ:
 1. **Xem**: thanh tiêu đề có **Sửa đơn** (Phiếu thu: **Sửa**) và **Hành động**. Hàng dưới thanh giai đoạn chỉ có nút chuyển giai đoạn (Trình duyệt, Trình quản lý, Trình lại).
@@ -92,7 +95,7 @@ Luật vẽ:
    - Chữ cũ "Người duyệt: chưa có · bạn chưa có quản lý trực tiếp" **bỏ** ở các khung `*_nhap_xem_chua_ql`.
 
    Khung `BH05_chua_ql_sua` (đang sửa): **chỉ giữ trường hợp có Trưởng cơ sở** (Q-133, anh OK 08/11/2026). Dòng cạnh nút khoá: "Người duyệt: Trưởng cơ sở · bạn chưa có quản lý trực tiếp" và "Đơn vẫn ở Nháp, các dòng không mất." **Bỏ hộp "Chưa trình được"** ở khung này (trường hợp cơ sở chưa có Trưởng cơ sở xem `BH05_nhap_xem_chua_ql_khong_tcs`). Khối đỏ "Chưa trình được" của lỗi thiếu ngày vào lớp hoặc thiếu mã giao dịch (`BH05_nhap_loi_xem`, `TC02_nhap_loi_xem`) là lỗi khác, không đổi.
-10. **BH-11 · cơ hội đã có đơn nháp (Q-92)**: nâng từ Mức C lên **Mức B**, khung `BH05_co_don_nhap` (hộp K08 trên màn Cơ hội). BH-11 đã vào luật R-TIEN-39 (Q-181). Nút 'Vẫn tạo' là lần xác nhận thứ hai (Q-202): bấm là tạo, không thêm hộp nào. Hộp không chặn: Mở đơn cũ hoặc Vẫn tạo. Code làm phần máy chủ trước (Q-201). Nền là cơ hội ở **L8A** (R-CRM-16: chỉ cơ hội ở L8 mới tạo được đơn từ cơ hội, nên cơ hội chưa tới L8 không có đơn nháp). Mã đơn, tổng tiền, ngày trong hộp là số minh hoạ, không chép vào test.
+10. **BH-11 · cơ hội đã có đơn nháp (Q-92)**: nâng từ Mức C lên **Mức B**, khung `BH05_co_don_nhap` (hộp K08 trên màn Cơ hội). BH-11 đã vào luật R-TIEN-39 (Q-181). **(Sửa 10/11, Q-235, Q-241)** Hộp liệt kê TẤT CẢ đơn nháp của cơ hội, mỗi đơn một dòng (Mã đơn, Ngày tạo, Tổng tiền), đơn mới nhất trên cùng, mỗi dòng có nút «Mở đơn» mở thẳng đơn đó. Nút chính ở chân hộp là «Tạo đơn mới»: là lần xác nhận thứ hai (Q-202), bấm là tạo ngay, không thêm hộp nào. Hộp không chặn. Hộp cao tối đa 5 dòng, hơn 5 đơn thì cuộn dọc trong hộp (đầu, chân hộp và hàng tiêu đề cột đứng yên); hộp hẹp thì bảng cuộn ngang, ô không xuống dòng. Ba khung: `BH05_co_don_nhap` (1 đơn), `BH05_co_don_nhap_3` (3 đơn), `BH05_co_don_nhap_8` (8 đơn). Hộp cho đơn tạo từ báo giá không áp dụng. Code làm phần máy chủ trước (Q-201). Nền là cơ hội ở **L8A** (R-CRM-16: chỉ cơ hội ở L8 mới tạo được đơn từ cơ hội, nên cơ hội chưa tới L8 không có đơn nháp). Mã đơn, tổng tiền, ngày trong hộp là số minh hoạ, không chép vào test.
 11. **Khung Tạo theo khuôn bản ghi chung (Q-94)**: mọi khung Tạo giữ khuôn K06 (Giai đoạn + Ghi chú & hoạt động). Khung `BH05_tao_moi`, `BH05_tao_trang_moi`, `BH02_tao_moi`:
     - Giai đoạn hiện đủ các bước, **không bước nào được chọn** (chưa có bản ghi): "Chưa lưu: bấm Lưu để tạo ở giai đoạn Nháp". Nút chuyển giai đoạn mờ, ghi "Lưu rồi mới trình duyệt" (báo giá: "Lưu rồi mới gửi").
     - Cột phải "Ghi chú & hoạt động" **hiện mờ**, kèm dòng "Lưu để bắt đầu ghi chú" (chưa có bản ghi, R-CRM-19).

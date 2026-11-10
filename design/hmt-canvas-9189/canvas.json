@@ -1986,7 +1986,7 @@
    "y": 66944,
    "w": 390,
    "h": 844,
-   "title": "GV-14 · Tạo Ticket giáo viên, có Tính chất chỉ đọc (điện thoại)",
+   "title": "GV-14 · Tạo Ticket giáo viên, Tính chất chỉ đọc, tự gắn theo nhóm con (điện thoại)",
    "is_interactive": true
   },
   "GV14_tk_giao_vien_pc.dc.html": {
@@ -1994,7 +1994,7 @@
    "y": 66944,
    "w": 1440,
    "h": 900,
-   "title": "GV-14 · Tạo Ticket giáo viên, có Tính chất chỉ đọc (laptop)",
+   "title": "GV-14 · Tạo Ticket giáo viên, Tính chất chỉ đọc, tự gắn theo nhóm con (laptop)",
    "is_interactive": true
   },
   "BUOI07_bs_loai_buoi_thuong.dc.html": {
@@ -2940,6 +2940,22 @@
    "h": 900,
    "title": "GV-07 · Chấm nhận xét · em vắng, không chấm (laptop)",
    "is_interactive": true
+  },
+  "GV14_tk_phan_anh_dt.dc.html": {
+   "x": 0,
+   "y": 116321,
+   "w": 390,
+   "h": 844,
+   "title": "GV-14 · Tạo Ticket giáo viên, ví dụ nhóm con thuộc Phản ánh, Tính chất chỉ đọc (điện thoại)",
+   "is_interactive": true
+  },
+  "GV14_tk_phan_anh_pc.dc.html": {
+   "x": 490,
+   "y": 116321,
+   "w": 1440,
+   "h": 900,
+   "title": "GV-14 · Tạo Ticket giáo viên, ví dụ nhóm con thuộc Phản ánh, Tính chất chỉ đọc (laptop)",
+   "is_interactive": true
   }
  },
  "order": [
@@ -3313,7 +3329,9 @@
   "GV05_chua_chot_pc.dc.html",
   "GV07_vang_da_nhap_dt.dc.html",
   "GV07_vang_da_nhap_pc.dc.html",
-  "GV07_vang_pc.dc.html"
+  "GV07_vang_pc.dc.html",
+  "GV14_tk_phan_anh_dt.dc.html",
+  "GV14_tk_phan_anh_pc.dc.html"
  ],
  "notes": {
   "v19_01": {

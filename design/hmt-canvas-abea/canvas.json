@@ -298,7 +298,7 @@
    "expand": "fill",
    "h": 1000,
    "is_interactive": true,
-   "title": "BH-11 · Đơn hàng · Cơ hội đã có đơn nháp (hộp cảnh báo)",
+   "title": "BH-11 · Đơn hàng · Cơ hội đã có 1 đơn nháp (hộp cảnh báo)",
    "w": 1440,
    "x": 4800,
    "y": 8050
@@ -543,6 +543,24 @@
    "w": 1440,
    "x": 9240,
    "y": 14660
+  },
+  "BH05_co_don_nhap_3.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-11 · Đơn hàng · Cơ hội đã có 3 đơn nháp (hộp cảnh báo)",
+   "w": 1440,
+   "x": 0,
+   "y": 15860
+  },
+  "BH05_co_don_nhap_8.dc.html": {
+   "expand": "fill",
+   "h": 1000,
+   "is_interactive": true,
+   "title": "BH-11 · Đơn hàng · Cơ hội đã có 8 đơn nháp, cuộn dọc trong hộp (hộp cảnh báo)",
+   "w": 1440,
+   "x": 1540,
+   "y": 15860
   }
  },
  "order": [
@@ -605,7 +623,9 @@
   "TC02_quan_ly_ad.dc.html",
   "TC17_admin.dc.html",
   "TC17_duyet.dc.html",
-  "TC17_tu_choi.dc.html"
+  "TC17_tu_choi.dc.html",
+  "BH05_co_don_nhap_3.dc.html",
+  "BH05_co_don_nhap_8.dc.html"
  ],
  "notes": {},
  "designSystems": [

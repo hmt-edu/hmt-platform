@@ -1,8 +1,8 @@
 # GHI CHÚ CHO CODE: canvas Đào tạo & Giáo viên (design/hmt-canvas-9189)
 
-Gói này xuất từ bản đang đăng **Version 45, version id 1794295687-73e6** (đăng 10/11/2026 sau "OK ĐĂNG" Q-232). Bản lùi: Version 44 `1794293583-d882` (trước đó 1794278144-9189). 371 khung, canvas.json, ds/, assets/. Kiểm bằng file, chưa xem trên trình duyệt thật.
+Gói này xuất từ bản đang đăng **Version 48, version id 1794298939-2a56** (đăng 10/11/2026 sau "OK ĐĂNG" Q-246). Bản lùi: Version 47 `1794297332-bf12` (trước đó v46 `1794297020-dadf`, v45 `1794295687-73e6`, v44 `1794293583-d882`). 373 khung, canvas.json, ds/, assets/. Kiểm bằng file, chưa xem trên trình duyệt thật.
 
-**Từ Version 45 trở đi, đọc mục «Cập nhật Q-232, Q-233» ở cuối file này trước.** Các mục A đến D bên dưới viết cho Version 44; v45 chỉ thêm 9 khung mới và sửa 6 khung (không đổi gì khác).
+**Từ Version 45 trở đi, đọc hai mục cuối file này trước: «Cập nhật Q-232, Q-233» (v45) rồi «Cập nhật Q-241 đến Q-245» (v46 đến v48).** Các mục A đến D bên dưới viết cho Version 44; v45 chỉ thêm 9 khung mới và sửa 6 khung (không đổi gì khác).
 
 So với 1794278144-9189, bản này đổi 20 khung và 2 tiêu đề trong canvas.json (chi tiết ở mục B).
 
@@ -255,5 +255,32 @@ Khác biệt vừa phải, tập trung ở GV-02, 04, 05, 06, 08 (chữ và vài
 - «Done» → «Hoàn thành» ở GV07K_done_dt/pc (tiêu đề và chữ trong khung).
 - Q-233: ô «Ảnh» ở GV-14 (GV14_dt, GV14_pc, GV14_tk_giao_vien_dt, GV14_tk_giao_vien_pc) giữ chỗ, nhãn «Làm sau», nút «Chọn ảnh» mờ, chữ «Làm sau: bản 17/11 chưa tải ảnh, ticket chỉ gõ chữ.» Code không làm tải ảnh ở bản 17/11. Nội dung giữ nguyên theo R-V2-23, R-CS-10.
 - Khung đổi trong v45 so với v44: 9 khung mới ở trên (nằm cuối canvas), GV07K_done_dt/pc (chữ), GV14_dt, GV14_pc, GV14_tk_giao_vien_dt, GV14_tk_giao_vien_pc (ô Ảnh). Còn lại giữ nguyên.
-- Gói này CHƯA gồm hai việc vẽ nháp (hộp BH-11 nhiều đơn, GV-14 ô Tính chất tự chọn). Hai việc đó sẽ có gói riêng sau khi anh nói "OK ĐĂNG".
+- (Ghi chú v45, đã lỗi thời) Hộp BH-11 nằm ở canvas Bán hàng & Thu chi bổ sung (xem gói abea). Ô Tính chất tự chọn của GV-14 (v46) đã bị bỏ ở v48, xem mục cuối.
 - R-V2-36 (GV-05, đổi Có mặt sang Vắng): hộp xác nhận ở `GV05_vang_xac_nhan_dt/pc`. R-V2-36 chưa có trong `docs/spec/04` của repo, khung vẽ theo lời anh Trường qua Chat.
+
+## Cập nhật Q-241 đến Q-245: Version 48 `1794298939-2a56` (10/11/2026)
+Lịch sử sau v45: v46 `1794297020-dadf` (GV-14 Tính chất tự chọn, ĐÃ BỊ BỎ ở v48), v47 `1794297332-bf12` (GV12_pc, GV13_dt, GV13_pc), v48 `1794298939-2a56`. Gói này là v48; khung đổi từ v45 sang v48 gồm 20 khung (liệt kê dưới đây).
+
+**GV-14 (6 khung: GV14_dt, GV14_pc, GV14_tk_giao_vien_dt/pc, GV14_tk_phan_anh_dt/pc; hai khung phan_anh mới từ v46)**
+- Tính chất CHỈ ĐỌC, tự gắn theo nhóm con, giáo viên không chọn. Không có ô chọn, không có hai nút. Chữ «Cần hỗ trợ», «Phản ánh» theo R-V2-23 và v2-aftersale.md. Ghi chú «Tự gắn theo nhóm con, giáo viên không chọn.»
+- Nhóm «Khác»: Tính chất hiện «Chưa xếp» (chỉ đọc, thẻ trung tính), ghi chú «CSKH xếp nhóm con khi tiếp nhận thì tính chất mới gắn.»
+- GV14_tk_phan_anh_dt/pc: ví dụ nhóm con «Hành vi trong lớp» (nhóm Học sinh) thuộc Phản ánh; tính chất hiện «Phản ánh». Ô Học sinh chỉ bắt buộc với Học kém và Nghỉ nhiều.
+- Nhóm con ví dụ: Cơ sở vật chất (Thiết bị lớp học, Phòng học) thuộc Cần hỗ trợ; Hành vi trong lớp, Phản ánh phân công thuộc Phản ánh. Ví dụ giả; danh mục chính thức duyệt sau (R-V2-28), khác danh mục trong tài liệu.
+- Câu cuối khung: «Cơ sở xử lý. Giáo viên chỉ tạo và theo dõi (R-CS-10).» Ô Ảnh «Làm sau» (Q-233) giữ nguyên.
+- CSKH đổi nhóm con khi tiếp nhận thì tính chất đổi theo: việc của CRM, chưa vẽ.
+- **Sau 17/11: GV-14 thêm chỗ giáo viên trả lời trong ticket.**
+
+**GV-06 (11 khung: GV06_btvn_de_trong_dt, GV06_dt, GV06_pc, GV06_sau_cham_dt, GV06_sau_cham_pc, GV06_trong, GV06_trong_bs_pc, GV06_xung_dot_dt, GV06_xung_dot_pc, Man_GV06, Man_GV06_bs_dt)** (Q-244, Q-245; R-GV-01 04/11, R-V2-19)
+- Nội dung buổi là danh sách dòng, cần ít nhất một dòng; trước khi Done thêm, sửa, xoá dòng tự do. KHÔNG còn mục chấm vận dụng theo dòng, KHÔNG còn «Thiếu 1 mục», KHÔNG còn «Dòng đã có điểm vận dụng thì không xoá được».
+- Dòng chữ «Mỗi dòng là một mục chấm vận dụng ở bước 3 (R-GV-07)» thành «Cần ít nhất một dòng nội dung.» (ở ô trống GV06_trong, GV06_trong_bs_pc bỏ câu lặp).
+- GV06_sau_cham_dt/pc: GIỮ TÊN KHUNG (Code có thể đang tham chiếu). Nay là «sửa nội dung sau khi đã chấm xong, buổi chưa Done»: nút xoá mở khoá cả 3 dòng, bỏ khung «Đã thêm 1 dòng», ghi chú «Trước khi Done vẫn thêm, sửa, xoá dòng nội dung được. Điểm 9 tiêu chí của các em không đổi.»
+- Man_GV06, Man_GV06_bs_dt: ghi chú đổi theo.
+- GV05_dt, GV05_vang_xac_nhan_dt, GV05_xung_dot_dt còn «Đã chấm nhận xét ở bước 3»: ý khác (đổi sang Vắng thì điểm không tính), không đổi.
+
+**GV-12, GV-13 (v47):** GV12_pc chân trang ghi «6 việc, 1 việc đã quá hạn» (trước ghi 5 việc); GV13_dt, GV13_pc dẫn R-GV-13 thay R-GV-08 (GV13_quyen, GV13_quyen_bs_pc giữ).
+
+**Còn mở / lệch đã báo anh Trường**
+- Danh sách «Ticket lớp tôi» giữ trạng thái «Đã giao», «Đã xử lý» và mã GV theo R-V2-23 (anh chốt giữ).
+- Tên 7 bước trạng thái trong v2-aftersale.md không kiểm được (sơ đồ không có trong phần chữ).
+- Hai khung phan_anh và khung «Khác» chưa mở xem ảnh ở trạng thái Khác; Man_GV06, Man_GV06_bs_dt chưa mở ảnh (chỉ đổi một dòng chữ).
+- R-V2-xx chưa có trong `docs/spec/04` của repo; khung vẽ theo lời anh Trường qua Chat.
