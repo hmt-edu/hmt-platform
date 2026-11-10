@@ -11,6 +11,7 @@ Dùng bảng đối chiếu ở cuối file khi chuyển dữ liệu thật từ
 
 ## Nguồn (old_sources.csv) → 3 tầng loại / nguồn / kênh
 - 6 loại: Marketing, Telemarketing, Event, Referral, Upsale, Ban Giám Đốc.
+  **(08/11, Q-137)** Hệ thống mới chỉ còn **4 loại** (Marketing, Telemarketing, Event, Ban Giám Đốc): file cũ ghi loại Referral hoặc Upsale thì bộ chuyển ghép thành loại **Marketing**, nguồn Referral hoặc Upsale (nguồn và kênh giữ nguyên). Kênh Renew Lost, New Opp đã Ngừng (dữ liệu cũ vẫn giữ giá trị).
 - 11 nguồn; Hotline, Walk-in, Zalo giữ dưới Marketing; "Ban Giám Đốc" là nguồn thật (khách do BGĐ giới thiệu).
 - 14 kênh; tên kênh bỏ phần lặp tên nguồn (`Facebook Ads: Chat` → `Chat`, mã `FACEBOOK_ADS_CHAT`).
 - Tên tiếng Anh giữ nguyên.

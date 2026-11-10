@@ -167,7 +167,7 @@ test('Lead: danh sách, Kanban, hộp Giao (TS-01, TS-01b, TS-05)', async ({ pag
       WEBSITE: 'MARKETING',
       HOTLINE: 'MARKETING',
       EVENT: 'EVENT',
-      REFERRAL: 'REFERRAL',
+      REFERRAL: 'MARKETING', // Q-137: Referral là nguồn dưới Marketing
       COLD_CALL: 'TELEMARKETING',
     };
     for (const [parent, student, phone, source, channel] of leads) {

@@ -80,7 +80,8 @@ update app.lead set next_appointment_at = now() + interval '10 days' where id = 
 update app.lead set stage_code = 'C2', substage_code = 'C2A', channel_code = 'FACEBOOK_ADS_CHAT', campaign_id = pg_temp.camp(), supporter_id = pg_temp.uid('cskh1')
  where id = (select id from ld where k = 'L2');
 update app.lead set stage_code = 'C3' where id = (select id from ld where k = 'L3');
-update app.lead set source_type_code = 'REFERRAL', source_code = 'REFERRAL', channel_code = 'REFERRAL_BY_CUSTOMER' where id = (select id from ld where k = 'L4');
+-- Q-137: Referral là nguồn dưới Marketing (spec 06 mục 1.1), không còn loại riêng.
+update app.lead set source_type_code = 'MARKETING', source_code = 'REFERRAL', channel_code = 'REFERRAL_BY_CUSTOMER' where id = (select id from ld where k = 'L4');
 create function pg_temp.n(p_filters jsonb) returns bigint language sql stable as $$ select (app.list_leads(p_filters) ->> 'total')::bigint $$;
 grant execute on function pg_temp.n(jsonb) to public;
 create function pg_temp.base() returns jsonb language sql stable as $$ select jsonb_build_object('q', 'Phụ Huynh') $$;
@@ -99,7 +100,8 @@ select is(pg_temp.n(pg_temp.base() || jsonb_build_object('next_from', pg_temp.to
 select is(pg_temp.n(pg_temp.base() || '{"channel": ["FACEBOOK_ADS_CHAT"]}'), 1::bigint, 'Lọc theo kênh');
 select is(pg_temp.n(pg_temp.base() || jsonb_build_object('campaign_id', pg_temp.camp())), 1::bigint, 'Lọc theo chiến dịch');
 select is(pg_temp.n(pg_temp.base() || '{"stage": ["C2", "C3"]}'), 2::bigint, 'Cùng nhóm lọc: HOẶC');
-select is(pg_temp.n(pg_temp.base() || '{"stage": ["C2", "C3"], "source_type": ["REFERRAL"]}'), 0::bigint, 'Khác nhóm lọc: VÀ');
+select is(pg_temp.n(pg_temp.base() || '{"stage": ["C2", "C3"], "source_type": ["TELEMARKETING"]}'), 0::bigint, 'Khác nhóm lọc: VÀ');
+select is(pg_temp.n(pg_temp.base() || '{"source": ["REFERRAL"], "channel": ["REFERRAL_BY_CUSTOMER"]}'), 1::bigint, 'Q-137: lead nguồn Referral lọc được theo nguồn và kênh');
 select is(pg_temp.n(pg_temp.base() || '{"supporter_mine": true}'), 0::bigint, 'Tôi hỗ trợ: Trưởng cơ sở không hỗ trợ lead nào');
 select is(pg_temp.n(pg_temp.base() || jsonb_build_object('owner_id', pg_temp.uid('sales1'))), 6::bigint, 'Lọc theo người phụ trách');
 select is(app.list_leads(pg_temp.base() || '{"owner_id": "00000000-0000-0000-0000-000000000000"}') -> 'rows', '[]'::jsonb, 'Người phụ trách không có lead: rỗng');
