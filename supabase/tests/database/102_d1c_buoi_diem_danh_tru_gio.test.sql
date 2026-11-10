@@ -84,7 +84,7 @@ begin
     perform app.add_opening_hours(v_id, p_hours, 'DOT-D1C');
   end if;
 end $$;
--- D2 (migration 103): Done cần nhận xét 9 tiêu chí. Hàm giả này chụp tiêu chí và chấm mức 3 cho mọi em có mặt, để các bài D1c thử Done và trừ giờ.
+-- D2 (migration 103): Done cần nhận xét 9 tiêu chí. Hàm giả này chụp tiêu chí, chấm mức 3 cho mọi em có mặt và thêm một dòng nội dung buổi (Q-231), để các bài D1c thử Done và trừ giờ.
 create function pg_temp.fillreview(p_session uuid) returns void language plpgsql security definer as $$
 begin
   insert into app.session_review_criterion (session_id, branch_id, criterion_id, group_code, name, sort_order)
@@ -97,6 +97,10 @@ begin
   select sa.session_id, sa.branch_id, rc.id, sa.id, 'DA_DANH_GIA', 3
     from app.session_attendance sa join app.session_review_criterion rc on rc.session_id = sa.session_id
    where sa.session_id = p_session and sa.is_active and sa.teacher_status_code in ('CO_MAT', 'DI_MUON')
+  on conflict do nothing;
+  -- GV (migration 107, Q-231): buổi thường cần ít nhất một dòng nội dung buổi mới Done được.
+  insert into app.session_content_line (session_id, branch_id, sort_order, line_text)
+  select s.id, s.branch_id, 1, 'Nội dung buổi giả' from app.class_session s where s.id = p_session
   on conflict do nothing;
 end $$;
 grant execute on all functions in schema pg_temp to public;

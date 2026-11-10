@@ -115,6 +115,9 @@ select app.set_attendance_teacher(pg_temp.s('p', 2), jsonb_build_array(jsonb_bui
 select app.set_attendance_teacher(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'CO_MAT'),
   jsonb_build_object('student_id', pg_temp.st(2), 'status_code', 'CO_MAT'), jsonb_build_object('student_id', pg_temp.st(3), 'status_code', 'VANG_CO_PHEP')));
 
+-- Q-231 (migration 107): buổi thường (buổi 1) có một dòng nội dung buổi để Done được; buổi Kiểm tra không cần.
+select pg_temp.sudo($$insert into app.session_content_line (session_id, branch_id, sort_order, line_text) select id, branch_id, 1, 'Nội dung buổi giả' from app.class_session where id = pg_temp.s('p', 1)$$);
+
 -- ================= Dữ liệu nạp sẵn (R-V2-19, R-V2-39) =================
 select is((select count(*)::int from app.review_criteria_for_subject('TOAN')), 9, 'Toán có đúng 9 tiêu chí: 3 Thái độ chung + 3 Tiếp thu + 3 Vận dụng (R-V2-19)');
 select is((select count(*)::int from app.review_criteria_for_subject('DAI')), 9, 'Đại số dùng bộ Toán (Q-186)');

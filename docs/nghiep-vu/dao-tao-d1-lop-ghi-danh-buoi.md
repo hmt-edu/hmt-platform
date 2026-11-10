@@ -85,3 +85,18 @@ Chưa có: bài tập về nhà, màn cấu hình đánh giá (CH-07, sau 17/11)
 ## D1e: nạp dữ liệu đào tạo (migration 105)
 
 `app.import_training_records(loại, hàng, nạp thật, tên file)` (Admin, cùng hợp đồng với `app.import_records`): loại LOP, GHI_DANH, BUOI_HOC, DIEM_DANH. Xem trước hoàn tác; nạp thật ghi nhật ký. Báo cáo có `summary.errors_by_type` (mã lỗi → số dòng) và `summary.classes_without_teacher`. Lớp nạp chỉ sinh buổi từ `opening_balance_date` (Q-199). Mỗi ghi danh một dòng Số dư đầu kỳ mang ngày chốt (`hour_ledger.entry_date`, Q-177). Buổi, điểm danh cũ vào `legacy_session_record`, `legacy_attendance_record` (chỉ đọc); `app.legacy_hours_reconciliation(mã lớp cũ, chỉ dòng lệch)` so giờ đã học ghi trong file với điểm danh cũ. Luật R-V2-30, R-V2-32, R-V2-33, Q-186..188, Q-199, Q-200.
+
+## GV: dữ liệu đọc cho cổng Giáo viên, nội dung buổi (migration 107)
+
+Luật: R-GV-08, R-GV-13, R-GIO-06, R-GIO-08, R-V2-35, R-V2-37, Q-208. Điều kiện nội dung buổi theo Q-231 (chờ anh "OK ĐƯA VÀO LUẬT", chưa vào spec 04).
+
+| Hàm                                               | Ai                                 | Việc                                                                                                                              |
+| ------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `teacher_my_sessions(chế độ, từ, đến, limit, offset)` | Người là giáo viên hoặc trợ giảng | `NGAY`: buổi trong khoảng ngày (GV-02, GV-03, không buổi huỷ). `CAN_LAM`: buổi đã kết thúc chưa Done, kể cả quá hạn (GV-12). Tối đa 100 dòng |
+| `teacher_session_students(buổi)`                  | Điểm danh · Xem, buổi của mình     | Danh sách em chỉ khi buổi Đã chốt hoặc Done (R-GIO-08); chỉ tên, mã, trạng thái điểm danh (R-GV-13)                                |
+| `session_overview(buổi)`                          | như trên                           | Tiến độ cho GV-04: điểm danh, nội dung, BTVN, hạn hoàn tất, lý do chưa Done                                                        |
+| `save_session_content(buổi, các dòng, BTVN)`      | Điểm danh · Sửa, buổi của mình     | Lưu cả bộ nội dung một lần; cần ít nhất một dòng; BTVN trống = không giao (R-V2-35); buổi Done thì chặn                            |
+
+Bảng: `session_content` (BTVN giao mới, một dòng mỗi buổi) và `session_content_line` (các dòng nội dung; dòng bị bỏ đặt `is_active = false`).
+
+Điều kiện Done (`session_pending_reason`): buổi thường cần ít nhất một dòng nội dung ở cả hai nhánh Bật và Tắt của `session_done_requires_review`; buổi Kiểm tra không đòi dòng nội dung, chỉ giữ điều kiện cấu hình điểm của D2.
