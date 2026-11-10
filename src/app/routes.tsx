@@ -61,6 +61,19 @@ const TeacherTodayPage = lazyScreen(
   () => import('../pages/gv/TeacherTodayPage'),
   'TeacherTodayPage',
 );
+const SessionListPage = lazyScreen(
+  () => import('../pages/buoi/SessionListPage'),
+  'SessionListPage',
+);
+const SessionRecordPage = lazyScreen(
+  () => import('../pages/buoi/SessionRecordPage'),
+  'SessionRecordPage',
+);
+const SessionOpsPage = lazyScreen(() => import('../pages/buoi/SessionOpsPage'), 'SessionOpsPage');
+const AbsentTodayPage = lazyScreen(
+  () => import('../pages/buoi/AbsentTodayPage'),
+  'AbsentTodayPage',
+);
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
@@ -321,6 +334,38 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="cho-xep-lop">
                 <EnrollmentQueuePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'buoi-hoc',
+            element: (
+              <GatedCrmEntry slug="buoi-hoc">
+                <SessionListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'buoi-hoc/:id',
+            element: (
+              <GatedCrmEntry slug="buoi-hoc">
+                <SessionRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'diem-danh',
+            element: (
+              <GatedCrmEntry slug="diem-danh">
+                <AbsentTodayPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'diem-danh/buoi/:id',
+            element: (
+              <GatedCrmEntry slug="diem-danh">
+                <SessionOpsPage />
               </GatedCrmEntry>
             ),
           },

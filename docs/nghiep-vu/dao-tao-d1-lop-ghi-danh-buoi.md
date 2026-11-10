@@ -131,3 +131,17 @@ Luật: R-LOP-01, R-LOP-05, R-LOP-08, R-LOP-14, R-LOP-15. Chỉ đọc; ghi vẫ
 | `list_class_form_options(cơ sở)`                     | LOP-03: giáo viên, trợ giảng, CSKH, phòng, nhóm lớp của cơ sở                                                                         |
 
 Giao diện: danh sách và Kanban theo bước duyệt (LOP-01), hồ sơ với Trình, Xác nhận, Duyệt, Từ chối, Đưa về Nháp, Đóng, Huỷ (LOP-02, LOP-05, LOP-06), biểu mẫu tạo/sửa có Time Table (LOP-03), lịch tuần (LOP-08). Chưa làm: Hình thức học và Tổ chức lớp (cần cột mới, sau 17/11), Xuất CSV, nút Yêu cầu bổ trợ, bản điện thoại dạng thẻ.
+
+## Cụm Buổi A: các hàm đọc cho BUOI-01, 02, 03, 11 (migration 120)
+
+Không đổi luật ghi; chỉ thêm hàm đọc (security definer, kiểm quyền bên trong, phân trang ở máy chủ). Ghi dùng lại hàm D1c: `close_session`, `set_attendance_ops`.
+
+| Hàm | Ai gọi | Việc |
+|---|---|---|
+| `session_list(bộ lọc, sắp xếp, số dòng, bỏ qua)` | Buổi học · Xem (toàn hệ thống hoặc cơ sở) | BUOI-01: lọc ngày, lớp, giáo viên, cơ sở, tình trạng, mã lớp; cột Ghi chú = lý do chưa Done của buổi Đã chốt |
+| `session_record(buổi)` | như trên (không phải giáo viên "được phân công") | BUOI-02: thông tin buổi, danh sách hai cột điểm danh (thẻ Lệch), em không vào danh sách kèm lý do, nhận xét, hạn giáo viên hoàn tất (R-GV-05) |
+| `session_ops_sheet(buổi)` | Điểm danh · Sửa (vận hành) | BUOI-03: bảng điểm danh vận hành, danh mục trạng thái và lý do liên hệ |
+| `absent_today_list(bộ lọc, số dòng, bỏ qua)` | Điểm danh · Sửa (vận hành) | BUOI-11: em vắng hoặc chưa đến của buổi Đã chốt hôm nay. Quy tắc hiển thị TẠM (Chat 10/11, chưa vào luật): ô giáo viên quyết định; giáo viên đã chọn Có mặt thì không hiện dù vận hành ghi gì; ô vận hành chỉ dùng khi ô giáo viên trống; Chưa đến = buổi đã bắt đầu mà cả hai ô trống |
+| `teacher_attendance_sheet(buổi)` (thay bản 111) | giáo viên, trợ giảng được phân công | thêm `contact_reason_name` (lý do liên hệ của vận hành, chỉ xem; không ghi chú tự do, không số điện thoại, phụ huynh) |
+
+Chưa có: lý do huỷ buổi (cụm Buổi B, BUOI-04), "Báo nghỉ trước", dòng thời gian của buổi, ghi lý do hàng loạt, lọc theo giáo viên ở BUOI-01.

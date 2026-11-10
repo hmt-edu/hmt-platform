@@ -10,6 +10,8 @@ export type AttendanceStudent = {
   is_trial: boolean;
   teacher_status_code: string | null;
   teacher_marked_at: string | null;
+  /** Lý do liên hệ do vận hành ghi (Không nghe máy, Đã nhắc vào lớp…): giáo viên chỉ xem (R-DD-03). */
+  contact_reason_name: string | null;
   has_review: boolean;
 };
 

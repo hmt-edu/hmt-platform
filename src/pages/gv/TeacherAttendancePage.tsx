@@ -254,6 +254,10 @@ export function TeacherAttendancePage() {
                   </p>
                 )}
               </div>
+              <p className="text-caption text-fg-muted lg:w-44 lg:shrink-0">
+                <span className="lg:sr-only">Ghi chú vận hành (chỉ xem): </span>
+                {s.contact_reason_name ?? <span aria-hidden="true">—</span>}
+              </p>
               <StatusButtons
                 name={s.full_name}
                 statuses={data.statuses}

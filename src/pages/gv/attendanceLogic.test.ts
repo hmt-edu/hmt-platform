@@ -18,6 +18,7 @@ const mk = (id: string, status: string | null, review = false): AttendanceStuden
   student_code: id,
   full_name: `Em ${id}`,
   is_trial: false,
+  contact_reason_name: null,
   teacher_status_code: status,
   teacher_marked_at: status ? `2026-11-10T08:00:0${id}Z` : null,
   has_review: review,
