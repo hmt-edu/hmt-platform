@@ -101,7 +101,7 @@ select pg_temp.sudo($$update app.opportunity set stage_code = 'L8', substage_cod
 create function pg_temp.mkorder(p_key text, p_phone text, p_lines jsonb, p_term text) returns void language plpgsql as $$
 declare v jsonb;
 begin
-  v := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines);
+  v := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines, null, true);
   insert into os values (p_key, (v ->> 'id')::uuid);
   perform app.save_order((v ->> 'id')::uuid, null, pg_temp.term(p_term));
 end $$;

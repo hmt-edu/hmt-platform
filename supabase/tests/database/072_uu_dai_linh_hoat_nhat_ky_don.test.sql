@@ -90,7 +90,7 @@ select pg_temp.sudo($$grant execute on function pg_temp.rst(text), pg_temp.rev(t
 create function pg_temp.mkorder(p_key text, p_phone text, p_lines jsonb, p_term text) returns void language plpgsql as $$
 declare v jsonb;
 begin
-  v := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines);
+  v := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines, null, true);
   insert into os values (p_key, (v ->> 'id')::uuid);
   perform app.save_order((v ->> 'id')::uuid, null, pg_temp.term(p_term));
 end $$;
@@ -134,12 +134,12 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 
 -- ================= (1) Đơn tạo trực tiếp từ cơ hội: ưu đãi nhập ngay ở đơn =================
 insert into os select 'd1', (r ->> 'id')::uuid from (select app.create_order_from_opportunity(pg_temp.oid('0900009201'),
-  jsonb_build_array(pg_temp.fline(pg_temp.ps('0900009201', 1), 10, null), pg_temp.fline(pg_temp.ps('0900009201', 1), 5, '3'))) as r) x;
+  jsonb_build_array(pg_temp.fline(pg_temp.ps('0900009201', 1), 10, null), pg_temp.fline(pg_temp.ps('0900009201', 1), 5, '3')), null, true) as r) x;
 select is(pg_temp.enote('d1', 'TAO'), 'Ưu đãi linh hoạt 3% ở dòng 2', 'Q-145: đơn tạo trực tiếp: TAO ghi "Ưu đãi linh hoạt 3% ở dòng 2" (X% và số dòng thật)');
 select ok(pg_temp.enote('d1', 'TAO') not like '%báo giá%', 'Q-145: đơn tạo trực tiếp không có chữ "nhập ở báo giá"');
 select ok(pg_temp.enote('d1', 'TAO') not like '%Giả sales1%', 'Q-145: dòng không ghi tên người (sự kiện đã hiện người thực hiện)');
 insert into os select 'd0', (r ->> 'id')::uuid from (select app.create_order_from_opportunity(pg_temp.oid('0900009202'),
-  jsonb_build_array(pg_temp.fline(pg_temp.ps('0900009202', 1), 8, null))) as r) x;
+  jsonb_build_array(pg_temp.fline(pg_temp.ps('0900009202', 1), 8, null)), null, true) as r) x;
 select is(pg_temp.enote('d0', 'TAO'), null, 'Q-145: đơn không có ưu đãi linh hoạt: TAO không thêm dòng nào (note trống)');
 
 -- ================= (2) Đơn tạo từ báo giá: % nhập ở báo giá, kèm mã báo giá =================

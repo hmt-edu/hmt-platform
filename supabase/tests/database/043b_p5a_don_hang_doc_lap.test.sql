@@ -66,7 +66,7 @@ create function pg_temp.disc(p_policy text, p_value numeric default null) return
 create function pg_temp.mk(p_key text, p_phone text, p_lines jsonb) returns jsonb language plpgsql as $$
 declare r jsonb;
 begin
-  r := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines);
+  r := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines, null, true);
   insert into pg_temp.os values (p_key, (r ->> 'id')::uuid, r ->> 'code');
   return r;
 end $$;

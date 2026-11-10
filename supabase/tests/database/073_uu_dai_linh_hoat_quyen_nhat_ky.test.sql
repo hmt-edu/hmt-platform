@@ -88,7 +88,7 @@ select pg_temp.sudo($$grant execute on function pg_temp.rst(text), pg_temp.rev(t
 create function pg_temp.mkorder(p_key text, p_phone text, p_lines jsonb, p_term text) returns void language plpgsql as $$
 declare v jsonb;
 begin
-  v := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines);
+  v := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines, null, true);
   insert into os values (p_key, (v ->> 'id')::uuid);
   perform app.save_order((v ->> 'id')::uuid, null, pg_temp.term(p_term));
 end $$;
@@ -152,7 +152,7 @@ select is(pg_temp.dactor('a1'), pg_temp.uid('sales1'), 'audit_log của quotatio
 -- ================= (b) order_flexible_note không còn gọi trực tiếp được =================
 -- Ba hàm tạo, sửa đơn vẫn ghi dòng ưu đãi vào dòng thời gian (chạy bằng quyền chủ hàm).
 insert into os select 'e1', (r ->> 'id')::uuid from (select app.create_order_from_opportunity(pg_temp.oid('0900009202'),
-  jsonb_build_array(pg_temp.fline(pg_temp.ps('0900009202', 1), 5, '2'))) as r) x;
+  jsonb_build_array(pg_temp.fline(pg_temp.ps('0900009202', 1), 5, '2')), null, true) as r) x;
 select is(pg_temp.enote('e1', 'TAO'), 'Ưu đãi linh hoạt 2% ở dòng 1', 'Q-154b: create_order_from_opportunity vẫn ghi dòng ưu đãi sau khi thu quyền');
 select app.save_order(pg_temp.o('e1'), null, pg_temp.term('CHIA_3_DOT'));
 select app.edit_order(pg_temp.o('e1'), jsonb_build_array(jsonb_build_object('line_no', 1, 'discounts', pg_temp.fline(pg_temp.ps('0900009202', 1), 5, '4') -> 'discounts')));

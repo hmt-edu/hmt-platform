@@ -85,7 +85,7 @@ grant execute on function pg_temp.o(text), pg_temp.q(text) to public;
 create function pg_temp.mk(p_key text, p_phone text, p_lines jsonb) returns jsonb language plpgsql as $$
 declare r jsonb;
 begin
-  r := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines);
+  r := app.create_order_from_opportunity(pg_temp.oid(p_phone), p_lines, null, true);
   insert into os values (p_key, (r ->> 'id')::uuid, r ->> 'code');
   return r;
 end $$;
@@ -274,14 +274,14 @@ select is((select (discount_percent, line_total, gifted_quantity, quantity) from
           (select (discount_percent, line_total, gifted_quantity, quantity) from app.quotation_line where quotation_id = pg_temp.q('q7') limit 1)::text, 'Chiết khấu, thành tiền, giờ tặng, số lượng của dòng đơn khớp dòng báo giá');
 -- Đơn thẳng từ cơ hội: tính theo giá NGÀY TẠO ĐƠN (999.000), kèm điều khoản.
 insert into os select 'n13', (r ->> 'id')::uuid, r ->> 'code' from (select app.create_order_from_opportunity(pg_temp.oid('0900009003'),
-  jsonb_build_array(pg_temp.line(pg_temp.ps('0900009003', 1), 'LC-TOAN-K09', 'OFF', 5)), pg_temp.term('CHIA_3_DOT')) as r) x;
+  jsonb_build_array(pg_temp.line(pg_temp.ps('0900009003', 1), 'LC-TOAN-K09', 'OFF', 5)), pg_temp.term('CHIA_3_DOT'), true) as r) x;
 select is((select unit_price from app.sales_order_line where order_id = pg_temp.o('n13') limit 1), 999000::bigint, 'Đ213: đơn thẳng tính theo giá ngày tạo đơn');
 select is((select count(*)::int from app.sales_order_installment where order_id = pg_temp.o('n13')), 3, 'Đơn thẳng tạo kèm điều khoản: sinh đủ ba đợt');
-select is(pg_temp.err($$select app.create_order_from_opportunity(pg_temp.oid('0900009003'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900009003', 1), 'LC-TOAN-K09', 'OFF', 5)), '00000000-0000-0000-0000-000000000000')$$), 'HMT_KHONG_TIM_THAY', 'Đơn thẳng: điều khoản sai thì cả giao dịch lùi');
+select is(pg_temp.err($$select app.create_order_from_opportunity(pg_temp.oid('0900009003'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900009003', 1), 'LC-TOAN-K09', 'OFF', 5)), '00000000-0000-0000-0000-000000000000', true)$$), 'HMT_KHONG_TIM_THAY', 'Đơn thẳng: điều khoản sai thì cả giao dịch lùi');
 select is((select count(*)::int from app.sales_order where opportunity_id = pg_temp.oid('0900009003')), 3, 'Đơn thẳng: điều khoản sai không để lại đơn Nháp rác (cơ hội này có đúng ba đơn: n3, n11, n13)');
 -- Lời gọi cũ (hai tham số) vẫn chạy, không điều khoản.
 insert into os select 'n14', (r ->> 'id')::uuid, r ->> 'code' from (select app.create_order_from_opportunity(pg_temp.oid('0900009003'),
-  jsonb_build_array(pg_temp.line(pg_temp.ps('0900009003', 1), 'LC-TOAN-K09', 'OFF', 1))) as r) x;
+  jsonb_build_array(pg_temp.line(pg_temp.ps('0900009003', 1), 'LC-TOAN-K09', 'OFF', 1)), null, true) as r) x;
 select is((select payment_term_id from app.sales_order where id = pg_temp.o('n14')), null, 'Lời gọi hai tham số vẫn chạy: không điều khoản, chưa có lịch đợt');
 -- save_order dùng chung app.order_apply_term: hành vi không đổi.
 select is(pg_temp.err($$select app.save_order(pg_temp.o('n14'), null, '00000000-0000-0000-0000-000000000000')$$), 'HMT_KHONG_TIM_THAY', 'save_order: điều khoản không có vẫn báo lỗi như trước');

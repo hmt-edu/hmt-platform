@@ -170,7 +170,7 @@ export async function seedOrderRecords(setup: Setup): Promise<SeededRecords> {
       lines: object[],
     ): Promise<{ id: string; code: string }> => {
       const r = await db.query<{ id: string; code: string }>(
-        `select r ->> 'id' as id, r ->> 'code' as code from (select app.create_order_from_opportunity($1::uuid, $2::jsonb) as r) x`,
+        `select r ->> 'id' as id, r ->> 'code' as code from (select app.create_order_from_opportunity($1::uuid, $2::jsonb, null, true) as r) x`,
         [opp, JSON.stringify(lines)],
       );
       return { id: r.rows[0]?.id ?? '', code: r.rows[0]?.code ?? '' };
