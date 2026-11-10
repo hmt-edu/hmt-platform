@@ -205,8 +205,8 @@ select pg_temp.mk('a3', '0900009001', jsonb_build_array(pg_temp.line(pg_temp.ps(
 select is(pg_temp.err($$select app.save_order(pg_temp.o('a3'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900009001', 1), 'LC-TOAN-K09', 'OFF', 10) || jsonb_build_object('class_id', gen_random_uuid())))$$),
           'HMT_THIEU_NGAY_VAO_LOP', 'R-GD-06: chọn lớp mà không có ngày vào lớp thì chặn');
 select is(pg_temp.err($$select app.save_order(pg_temp.o('a3'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900009001', 1), 'LC-TOAN-K09', 'OFF', 10)
-          || jsonb_build_object('class_id', gen_random_uuid(), 'enrol_start_date', current_date + 3)))$$), 'HMT_LOP_CHUA_CO_BANG',
-          'R-GD-08: kiểm lớp khi lưu (bảng lớp chưa có thì báo rõ, chờ P5b)');
+          || jsonb_build_object('class_id', gen_random_uuid(), 'enrol_start_date', current_date + 3)))$$), 'HMT_LOP_KHONG_TIM_THAY',
+          'R-GD-08: kiểm lớp khi lưu (lớp không có thì báo không tìm thấy, từ migration 101)');
 select is(pg_temp.err($$select app.save_order(pg_temp.o('a3'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900009001', 1), 'LC-TOAN-K09', 'OFF', 20)))$$), null, 'Đơn thẳng: lưu lại dòng mới (giờ đổi)');
 select is((select total_amount from app.sales_order where id = pg_temp.o('a3')), 4400000::bigint, 'Đơn thẳng lưu lại tính lại tổng (20 giờ)');
 select is(pg_temp.err($$select app.save_order(pg_temp.o('a3'), '[]'::jsonb)$$), 'HMT_DON_KHONG_DONG', 'Đơn thẳng lưu mà xoá hết dòng thì chặn');

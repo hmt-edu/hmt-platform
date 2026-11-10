@@ -352,7 +352,7 @@ select is(pg_temp.err($$select pg_temp.sudo('update app.sales_order_line set cla
 select isnt(pg_temp.err($$select app.save_order(pg_temp.o('d1'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900019001', 1), 'LC-TOAN-K09', 'OFF', 10)
           || jsonb_build_object('class_id', gen_random_uuid(), 'enrol_start_date', current_date + 3)))$$), null, 'R-GD-08: lớp không tồn tại/không hợp lệ không lưu được');
 select pg_temp.sudo($$update app.sales_order_line set class_id = gen_random_uuid(), enrol_start_date = current_date + 3 where order_id = pg_temp.o('d2')$$);
-select is(pg_temp.err($$select app.submit_order(pg_temp.o('d2'))$$), 'HMT_LOP_CHUA_CO_BANG', 'R-GD-08: lớp trên dòng được kiểm lại khi trình (kiểm thật chờ P5b; hiện chỉ biết hàm kiểm lớp có được gọi)');
+select is(pg_temp.err($$select app.submit_order(pg_temp.o('d2'))$$), 'HMT_LOP_KHONG_TIM_THAY', 'R-GD-08: lớp trên dòng được kiểm lại khi trình (kiểm thật từ migration 101: lớp không có thì báo không tìm thấy)');
 select is(pg_temp.st('d2'), 'NHAP', 'R-GD-08: lớp không hợp lệ thì đơn không qua Đã trình');
 
 -- ================= Báo giá -> đơn (R-TIEN-02, R-TIEN-14, R-CRM-16) =================

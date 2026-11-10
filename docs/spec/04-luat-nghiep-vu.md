@@ -108,6 +108,8 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 
 ## 3. Ghi danh, xếp lớp, quỹ giờ
 
+> Đã làm (DB): migration 101 (ghi danh, dòng xếp lớp, sổ giờ, cấp giờ theo tiền, xếp lớp, điều chỉnh giờ), migration 102 (trừ giờ khi Done). Chưa làm: bảo lưu, dừng, hoàn phí, chuyển phí, tái tục (ticket A1). Xem `docs/nghiep-vu/dao-tao-d1-lop-ghi-danh-buoi.md`.
+
 | Mã | Luật | |
 |---|---|---|
 | R-GD-01 | **(17/10)** Mỗi dòng đơn sinh **một ghi danh, một quỹ giờ**, và **mỗi dòng đơn chỉ chọn một lớp**. Loại hình cũ "LC+HR" vẫn tách thành hai ghi danh. | [CHỐT] |
@@ -131,6 +133,8 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 
 ## 4. Lớp học
 
+> Đã làm (DB): migration 100 (lớp, thời khoá biểu, nhóm lớp, duyệt, sinh buổi). Chưa làm: bảng khung chương trình (R-LOP-07), kiểm môn theo khối (R-LOP-14, [CHỜ]).
+
 | Mã | Luật | |
 |---|---|---|
 | R-LOP-01 | Lớp đi qua các bước duyệt: Nháp → Đã trình → Đã xác nhận → Đã duyệt → Đã đóng; nhánh Từ chối (quay về Nháp được) và Huỷ. Đường đi: Nháp→[Đã trình, Huỷ]; Đã trình→[Đã xác nhận, Từ chối, Nháp, Huỷ]; Đã xác nhận→[Đã duyệt, Từ chối, Nháp, Huỷ]; Đã duyệt→[Đã đóng, Huỷ]; Từ chối→[Nháp, Huỷ]. **(26/10)** Đã trình và Đã xác nhận có thêm đường về Nháp (Đưa về Nháp); người trình và quản lý cơ sở đều bấm được. Đã duyệt huỷ được khi chưa có buổi Hoàn thành (R-LOP-04). | [CHỐT] |
@@ -150,6 +154,8 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-LOP-15 | **(17/10)** **Mã lớp cũ.** Theo luật chung về mã cũ ở spec 02 (cột `legacy_ref`, tìm kiếm được, hiện nhỏ dưới mã mới), màn chi tiết lớp (LOP-02) hiện rõ ô **"Mã cũ (Sheet)"** cạnh mã lớp; ô tìm của danh sách lớp (LOP-01) gõ mã cũ ra đúng lớp. Người dùng thường không sửa; **đợt chuyển dữ liệu từ Google Sheet điền**, Admin sửa được khi điền sai (ghi nhật ký). Mã mới vẫn là mã chính. Khác với "tên chung của nhóm" (R-LOP-14). | [CHỐT] |
 
 ## 5. Buổi học, danh sách, trừ giờ
+
+> Đã làm (DB): migration 102 (chốt danh sách, tự chốt/tự Done viết sẵn hàm, huỷ buổi, sửa sau Done, dời, dạy thay). Chưa làm: yêu cầu học bù, củng cố, bổ trợ, học thử; lịch pg_cron.
 
 ### 5.1 Loại buổi và tình trạng buổi
 | Mã | Luật | |
