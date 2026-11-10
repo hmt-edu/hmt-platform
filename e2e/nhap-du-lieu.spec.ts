@@ -28,6 +28,12 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   await enterAsAdmin(page, 'quantri.cs5');
   await page.goto('/crm/quan-tri/nhap-du-lieu');
   await expect(page.getByRole('heading', { level: 1, name: 'Nhập dữ liệu' })).toBeVisible();
+  // Q-209: bảng đủ 8 loại theo thứ tự nạp; loại chưa có hàm nạp là "Sắp có", nút Nhập khoá; loại sẵn sàng có Tải file mẫu.
+  const kinds = page.getByRole('table', { name: 'Loại dữ liệu nạp' });
+  await expect(kinds.getByRole('row')).toHaveCount(9);
+  await expect(page.getByRole('button', { name: 'Nhập lớp' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Nhập ghi danh' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Tải file mẫu phụ huynh' })).toBeEnabled();
   await expectAccessible(page);
   await page.getByRole('button', { name: 'Nhập phụ huynh' }).click();
   const dialog = page.getByRole('dialog', { name: 'Nhập phụ huynh từ file' });

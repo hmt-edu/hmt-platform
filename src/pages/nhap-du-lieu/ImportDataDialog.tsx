@@ -21,7 +21,7 @@ import {
   type ImportRowStatus,
   type ImportSummary,
 } from './importFile';
-import type { ImportKindConfig } from './importKinds';
+import { sampleCsvText, type ImportKindConfig } from './importKinds';
 import { runImport } from './useImportData';
 
 const STEPS = ['Tải file', 'Xem trước'];
@@ -189,6 +189,16 @@ function ImportForm({
             file: {config.required.join(', ')}.
             {maxRows !== null && ` Tối đa ${maxRows} dòng mỗi lần.`}
           </p>
+          <div>
+            <Button
+              icon="download"
+              onClick={() =>
+                downloadText(`mau-${config.kind.toLowerCase()}.csv`, sampleCsvText(config))
+              }
+            >
+              Tải file mẫu
+            </Button>
+          </div>
           {fileError && <Alert tone="danger">{fileError}</Alert>}
           {built && built.missing.length > 0 && (
             <Alert tone="danger">
