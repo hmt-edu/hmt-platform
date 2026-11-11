@@ -86,6 +86,7 @@ const ReviewGradingPage = lazyScreen(
   () => import('../pages/gv/ReviewGradingPage'),
   'ReviewGradingPage',
 );
+const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 'ExamGradingPage');
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
@@ -616,6 +617,7 @@ export const routes: RouteObject[] = [
           { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
           { path: 'buoi/:sessionId/cham-btvn', element: <HomeworkGradingPage /> },
           { path: 'buoi/:sessionId/cham-nhan-xet', element: <ReviewGradingPage /> },
+          { path: 'buoi/:sessionId/cham-kiem-tra', element: <ExamGradingPage /> },
           { path: 'buoi/:id/diem-danh', element: <TeacherAttendancePage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },

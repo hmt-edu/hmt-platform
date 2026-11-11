@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, Navigate, useParams } from 'react-router';
 import { Button, ButtonLink } from '../../ui/Button';
 import { UnsavedGuard } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
@@ -37,7 +37,7 @@ import { useOpenReview, useParentHint, useReviewSheet, useSaveReview } from './u
 /**
  * GV-07 · Chấm nhận xét từng em (bố cục «Theo em»). Mỗi ô có 4 trạng thái: Đã đánh giá (1–5), Không áp dụng (cả buổi, công tắc tiêu chí),
  * Chưa đủ căn cứ (từng em), Chưa đánh giá (mặc định, khác điểm 0). Em vắng không chấm. Không tự lưu: bấm Lưu (R-V2-19, R-GV-02, R-GV-04).
- * Chưa làm trong đợt này: «Theo tiêu chí» (chấm theo cột), «Cả lớp», xuất nhận xét, chống ghi đè nhận xét (sau 17/11).
+ * Buổi Kiểm tra chấm bằng điểm ở GV-07K. Chưa làm: «Theo tiêu chí» (chấm theo cột), «Cả lớp», xuất nhận xét, chống ghi đè nhận xét (sau 17/11).
  */
 export function ReviewGradingPage() {
   const { sessionId } = useParams();
@@ -75,6 +75,10 @@ export function ReviewGradingPage() {
       </StateView>
     );
   }
+  // Buổi Kiểm tra chấm bằng điểm ở màn GV-07K.
+  if (query.data.session.type_code === 'KIEM_TRA') {
+    return <Navigate to={`/gv/buoi/${query.data.session.session_id}/cham-kiem-tra`} replace />;
+  }
   return <ReviewForm key={query.data.session.session_id} sheet={query.data} />;
 }
 
@@ -88,7 +92,6 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
   const [showHint, setShowHint] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const editable = isReviewEditable(sheet.session.status_code, sheet.session.type_code);
-  const isExam = sheet.session.type_code === 'KIEM_TRA';
   const dirty = isReviewDirty(sheet, draft);
   const progress = classProgress(draft, sheet.students, sheet.criteria);
   const student = sheet.students[Math.min(selected, sheet.students.length - 1)];
@@ -146,13 +149,7 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
         </div>
       </header>
 
-      {isExam && (
-        <Alert tone="info" title="Buổi Kiểm tra chấm bằng điểm.">
-          Màn nhập điểm kiểm tra (GV-07K) chưa có trong đợt này. Buổi thường mới chấm 9 tiêu chí ở
-          đây.
-        </Alert>
-      )}
-      {!editable && !isExam && (
+      {!editable && (
         <Alert tone="info">
           Buổi này đã Done hoặc chưa chốt danh sách nên chỉ xem. Cần sửa thì tạo ticket cho vận
           hành.
@@ -167,7 +164,7 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
         </Alert>
       )}
 
-      {sheet.criteria.length === 0 && !isExam ? (
+      {sheet.criteria.length === 0 ? (
         <StateView kind="empty" title="Chưa mở nhận xét của buổi">
           Mở nhận xét để dùng 9 tiêu chí của môn này (3 tiêu chí thái độ chung mọi môn, 3 tiêu chí
           tiếp thu, 3 tiêu chí vận dụng).
@@ -180,68 +177,63 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
           )}
         </StateView>
       ) : (
-        !isExam && (
-          <>
-            <section
-              aria-labelledby="gv07-progress"
-              className="rounded-lg border border-border p-3"
-            >
-              <h2 id="gv07-progress" className="text-h4">
-                Tiến độ nhận xét
-              </h2>
-              <p className="text-caption text-fg-muted">
-                Đủ {progress.done}/{progress.total} em có mặt
-              </p>
-            </section>
+        <>
+          <section aria-labelledby="gv07-progress" className="rounded-lg border border-border p-3">
+            <h2 id="gv07-progress" className="text-h4">
+              Tiến độ nhận xét
+            </h2>
+            <p className="text-caption text-fg-muted">
+              Đủ {progress.done}/{progress.total} em có mặt
+            </p>
+          </section>
 
-            <section aria-labelledby="gv07-students" className="flex flex-col gap-2">
-              <h2 id="gv07-students" className="text-h4">
-                Học sinh · {sheet.students.length}
-              </h2>
-              <ul className="flex flex-wrap gap-1.5">
-                {sheet.students.map((s, index) => (
-                  <li key={s.student_id}>
-                    <Button
-                      size="sm"
-                      variant={index === selected ? 'primary' : 'secondary'}
-                      aria-pressed={index === selected}
-                      onClick={() => setSelected(index)}
-                    >
-                      {s.full_name} · {studentTag(draft, s, sheet.criteria)}
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </section>
+          <section aria-labelledby="gv07-students" className="flex flex-col gap-2">
+            <h2 id="gv07-students" className="text-h4">
+              Học sinh · {sheet.students.length}
+            </h2>
+            <ul className="flex flex-wrap gap-1.5">
+              {sheet.students.map((s, index) => (
+                <li key={s.student_id}>
+                  <Button
+                    size="sm"
+                    variant={index === selected ? 'primary' : 'secondary'}
+                    aria-pressed={index === selected}
+                    onClick={() => setSelected(index)}
+                  >
+                    {s.full_name} · {studentTag(draft, s, sheet.criteria)}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-            {student && (
-              <StudentCard
-                key={student.student_id}
-                sheet={sheet}
-                student={student}
-                index={selected}
-                draft={draft}
-                setDraft={setDraft}
-                editable={editable}
-                onNext={() =>
-                  setSelected((current) => Math.min(current + 1, sheet.students.length - 1))
-                }
-                onPrev={() => setSelected((current) => Math.max(current - 1, 0))}
-                showHint={showHint}
-                toggleHint={() => setShowHint((v) => !v)}
-                hintQuery={hint}
-                dirty={dirty}
-              />
-            )}
-
-            <CriteriaSwitches
-              criteria={sheet.criteria}
+          {student && (
+            <StudentCard
+              key={student.student_id}
+              sheet={sheet}
+              student={student}
+              index={selected}
               draft={draft}
               setDraft={setDraft}
               editable={editable}
+              onNext={() =>
+                setSelected((current) => Math.min(current + 1, sheet.students.length - 1))
+              }
+              onPrev={() => setSelected((current) => Math.max(current - 1, 0))}
+              showHint={showHint}
+              toggleHint={() => setShowHint((v) => !v)}
+              hintQuery={hint}
+              dirty={dirty}
             />
-          </>
-        )
+          )}
+
+          <CriteriaSwitches
+            criteria={sheet.criteria}
+            draft={draft}
+            setDraft={setDraft}
+            editable={editable}
+          />
+        </>
       )}
     </div>
   );

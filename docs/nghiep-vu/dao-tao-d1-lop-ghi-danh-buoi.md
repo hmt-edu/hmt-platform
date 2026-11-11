@@ -185,3 +185,14 @@ Thêm cột `cancel_reason_code`, `cancel_note` cho buổi (lưu lý do huỷ; b
 | `remind_teacher_session(buổi)` | Buổi học · Sửa (vận hành) | BUOI-12 "Nhắc GV": ghi một thông báo (loại `NHAC_HOAN_TAT_BUOI`) cho giáo viên của buổi Đã chốt. Cổng giáo viên chưa có chỗ đọc thông báo (làm sau) |
 
 Ghi dùng lại hàm D1c: `cancel_session`, `move_session`. Chưa có: ghi chú, dòng thời gian của buổi; "Nhãn bài dời theo" ở xem trước huỷ (buổi chưa có nhãn bài riêng); đổi giáo viên (BUOI-13), thêm học thử (BUOI-06), sửa sau Done (BUOI-14).
+
+## GV-07K · Chấm kiểm tra (migration 124)
+
+Luật: R-V2-20, R-GV-04, R-GV-08, R-GV-13. Các hàm ghi điểm (`set_exam_scores`) và nhận xét (`set_student_review_note`) có từ migration 103; cấu hình buổi Kiểm tra do vận hành đặt (`set_exam_config`).
+
+| Hàm                                              | Ai                                   | Việc                                                                                                                                                  |
+| ------------------------------------------------ | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `exam_grading_sheet(buổi)`                       | Điểm danh · Xem, buổi của mình       | Một lần gọi cho cả màn: buổi, cấu hình (phạm vi, điểm tối đa, cách nhập, tối đa 3 nhóm; null nếu chưa đặt), mọi em kèm điểm danh, điểm, nhận xét       |
+| `save_exam_grading(buổi, điểm, nhận xét)`        | Điểm danh · Sửa, buổi Đã chốt       | Một giao dịch: ghi điểm (tổng hoặc 3 nhóm, tổng tự cộng) và nhận xét; em vắng không nhập điểm; ngoài giới hạn hoặc buổi Done thì chặn, không ghi gì |
+
+Chưa làm: sửa điểm sau Done (qua ticket, chỉ quản lý đào tạo), «Theo tiêu chí», «Cả lớp», xuất nhận xét (sau 17/11).
