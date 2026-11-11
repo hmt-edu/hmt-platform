@@ -1,8 +1,8 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 10/11/2026 (mục «Trạng thái 10/11/2026» bên dưới là bản mới nhất; các mục ghi ngày cũ hơn là lịch sử, có thể đã lỗi thời). Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 12/11/2026 (mục «Trạng thái 12/11/2026» bên dưới là bản mới nhất, ghi PR đã gộp tới #251; các mục ghi ngày cũ hơn là lịch sử, có thể đã lỗi thời). Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
-**Từ 04/11/2026 (Đ285 đến Đ290): v2 (`hmt-v2`) dừng hẳn; v1 (repo này) làm tiếp cho Cơ sở 5 chạy thật.** Thiết kế bám v1; từ v2 chỉ lấy nghiệp vụ (mục 14 của `docs/spec/04`, thắng các mục khác khi khác nhau). Canvas chuẩn là `design/hmt-canvas-6f57/` (thay `8ab9`, nội dung giống hệt) và `design/hmt-canvas-9189/` (Đào tạo, Giáo viên, bản hiện hành là nội dung thư mục này; `design/hmt-canvas-fcd1/` v41 `1793782759-fcd1` giữ để đối chiếu, không còn là bản hiện hành; bảng khác biệt: `docs/nghiep-vu/doi-chieu-canvas-dao-tao-v41.md`). Mốc: 10/11 Tuyển sinh + màn Nhập CS5; ~12/11 Bán hàng, Thu chi; ~17/11 Đào tạo, Cổng giáo viên, Aftersale (ngày chốt giờ học 17/11). Bảng khác biệt và kế hoạch theo mốc: `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md` (chờ anh OK trước khi viết migration). Chưa sửa giao diện Báo giá, Đơn hàng, Phiếu thu khi anh chưa gửi yêu cầu.
+**Từ 04/11/2026 (Đ285 đến Đ290): v2 (`hmt-v2`) dừng hẳn; v1 (repo này) làm tiếp cho Cơ sở 5 chạy thật.** Thiết kế bám v1; từ v2 chỉ lấy nghiệp vụ (mục 14 của `docs/spec/04`, thắng các mục khác khi khác nhau). Canvas chuẩn là `design/hmt-canvas-9933/` (v146, thay `6f57`, Đ293; `6f57` thay `8ab9`) và `design/hmt-canvas-9189/` (Đào tạo, Giáo viên, bản hiện hành là nội dung thư mục này; `design/hmt-canvas-fcd1/` v41 `1793782759-fcd1` giữ để đối chiếu, không còn là bản hiện hành; bảng khác biệt: `docs/nghiep-vu/doi-chieu-canvas-dao-tao-v41.md`). Mốc: 10/11 Tuyển sinh + màn Nhập CS5; ~12/11 Bán hàng, Thu chi; ~17/11 Đào tạo, Cổng giáo viên, Aftersale (ngày chốt giờ học 17/11). Bảng khác biệt và kế hoạch theo mốc: `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md` (chờ anh OK trước khi viết migration). Chưa sửa giao diện Báo giá, Đơn hàng, Phiếu thu khi anh chưa gửi yêu cầu.
 
 ## Quy trình (đọc `docs/quy-trinh-phoi-hop.md`)
 
@@ -87,7 +87,7 @@ Gói thiết kế hiện hành: `design/hmt-p0-p2/` (PR 0), **bản v2 từ 14/1
 | P5a-UI-11 | BH-03 In báo giá (K13, A4 dọc), route `/crm/bao-gia/:id/in`: khuôn dùng chung `src/print/PrintSheet` (dải cam, logo chung HMT, tên và địa chỉ cơ sở từ DB, không điện thoại cơ sở, không khẩu hiệu), bảng dòng theo K06c, quà tặng giá 0, hai dòng Tổng niêm yết và Tổng chiết khấu (`get_quotation` migration 062, trình duyệt không cộng), số tiền bằng chữ (`amountInWords`, chỉ đọc lại tổng máy chủ trả, R-TIEN-13), mã cũ cạnh số. In được ở mọi tình trạng (Đ263); nhãn BẢN NHÁP, ĐÃ TỪ CHỐI, ĐÃ HUỶ, Nháp để trống hạn, "Đã quá hạn N ngày" khi quá hạn (Đ273). "In" và "Tải PDF" cùng mở hộp in của trình duyệt (`window.print`), ghi chú "Chọn “Lưu thành PDF” để tải"; nút "In" ẩn trên điện thoại. Mục "In" ở menu Hành động BH-02 đã bật (Đ249). Không dựng cột ghi chú bên phải và dãy nút đổi trạng thái của khung (chỉ để xem mẫu). | Đã gộp |
 | P5a-UI-O2a (BH-05, xem đơn) | Bản ghi đơn `/crm/don-hang/:id` (khuôn K06, `get_order`): thanh tình trạng Nháp, Đã trình, Đã duyệt (Huỷ là nhánh khác), Nháp bị từ chối kèm khối "Đơn bị từ chối" lấy lý do từ lịch sử (R-TIEN-06), khung "Người duyệt" và cảnh báo chưa có quản lý trực tiếp hoặc người duyệt chưa có quyền Duyệt (Đ205), tab Dòng đơn (lưới K06c chỉ đọc, Tổng niêm yết, Tổng chiết khấu, Thành tiền từ máy chủ; Đã thu, Còn phải thu "—", Đ269), Thanh toán (lịch đóng tiền), Ghi danh (làm ở phân hệ sau), Lịch sử xử lý, Ghi chú và hoạt động (`SALES_ORDER`). Mở từ BH-06 (mã đơn) và từ cột Đơn, smart button Đơn hàng của BH-02. Trình, Huỷ đơn: UI-O2b; Duyệt, Từ chối: UI-O2c; sửa Nháp: UI-O3. | Đã gộp |
 | P5a-UI-O2b (BH-05, Trình và Huỷ đơn) | Nút **Trình duyệt** ở đơn Nháp (quyền Đơn hàng · Sửa, Bán hàng bật; điện thoại ẩn, Đ248): lỗi máy chủ hiện thẳng câu tiếng Việt, em thiếu họ tên hoặc năm sinh chặn và chỉ đúng dòng (R-TIEN-35), lỗi mạng có nút Thử lại. Mục **Huỷ đơn** (R-TIEN-38): đơn Nháp chỉ người lập, đơn Đã trình, Đã duyệt do người duyệt đã chốt hoặc người duyệt thay; hộp K08 có lý do từ danh mục, "Khác" bắt ghi chú. `order_has_receipt` vẫn là bản tạm (luôn trả không có phiếu thu) tới khi có bảng phiếu thu (DB2). | Đã gộp (#147). Tiếp theo: DB-O2c (Đ283) gộp trước UI-O2c |
-| P5a-DB-O2c | `submit_order(đơn, đã tích)`: Trưởng cơ sở lập và chính họ trình thì tự duyệt trong cùng giao dịch (Q-P6): Trình rồi Tự duyệt, lõi duyệt tách `order_approve_core` dùng chung với `approve_order`; `get_order` trả `can_submit`, `can_cancel`, `can_approve`, `can_reject` (migration `063`, Đ283). pgTAP 055 (67 bài), 043b sửa theo luật mới. Có kiểm độc lập. | Chờ OK |
+| P5a-DB-O2c | `submit_order(đơn, đã tích)`: Trưởng cơ sở lập và chính họ trình thì tự duyệt trong cùng giao dịch (Q-P6): Trình rồi Tự duyệt, lõi duyệt tách `order_approve_core` dùng chung với `approve_order`; `get_order` trả `can_submit`, `can_cancel`, `can_approve`, `can_reject` (migration `063`, Đ283). pgTAP 055 (67 bài), 043b sửa theo luật mới. Có kiểm độc lập. | Đã gộp (#150) |
 | BH-05 (bản ghi đơn) | Đ257 hết hiệu lực theo Đ272: dùng khung BH05_* hiện có trên canvas `9933` (v146, thay `6f57`, Đ293), làm theo luật khi canvas vênh (Đ270: bản này là bản duy nhất anh duyệt; bản phân tích đã được Chat duyệt 28/10). Bỏ Hình thức thanh toán, Cơ sở thu tiền khỏi khung (Đ258). Chuyển thành đơn: form trắng, dòng chưa vào đơn, bỏ bớt bằng ✕ (Đ259). R-TIEN-39 đã vào luật (BH-11 hết chờ luật, còn chờ UI-O4); bỏ gợi ý "dùng báo giá còn hiệu lực" (Đ275). | Xem đơn (UI-O2a) và Trình, Huỷ đơn (UI-O2b) đã gộp; còn lại UI-O2c (Duyệt, Từ chối), UI-O3 (sửa Nháp), UI-O4 (Chuyển thành đơn, BH-11) |
 | Ma trận quyền phiên bản 6 (Đ204, migration `050`): Sale, CSKH có Huỷ đơn hàng (cơ sở mình); đúng hai ô đổi; bài kiểm 042 | Đã gộp (#105) |
 | Danh sách em-1 (DB) | Bảng `prospect_student` (một dòng một em của lead hoặc cơ hội; đọc thẳng từ hồ sơ học sinh khi đã gắn, Đ86), tham số `prospect_max_students` (Đ88), chuyển dữ liệu chữ cũ sang dòng 1 và bỏ cột cũ, chuyển 24 hàm sang bảng mới giữ đúng hành vi cũ (migration `043`); bài kiểm 035 (69 bài), EXPLAIN trên `seed-lon`; bước kiểm trên hmt-staging ở deploy-staging. Luật mới để PR Danh sách em-2 (DB) | Đã gộp (PR Danh sách em-1) |
@@ -112,11 +112,11 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
 
-## Trạng thái 10/11/2026 (theo `main` và các PR đang mở lúc viết)
+## Trạng thái 12/11/2026 (theo `main`; PR đã gộp tới #251; #234 là PR tài liệu TIEN-DO 10/11)
 
 Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke-hoach-17-11.md`, `docs/quy-tac-cung-cho-code.md`. Mục tiêu 17/11: cơ sở 5, LÕI 28 màn.
 
-**Đã gộp vào `main` từ 28/10 (mỗi PR có link OK của `caotruong276` trong commit gộp; PR chỉ tài liệu hoặc thiết kế không có CI):**
+**Đã gộp vào `main` từ 28/10 đến 11/11 (mỗi PR có link OK của `caotruong276` trong commit gộp; PR chỉ tài liệu hoặc thiết kế không có CI):**
 
 | Nhóm | PR |
 |---|---|
@@ -128,11 +128,32 @@ Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke
 | Nền và công cụ: ngày hôm nay giờ Việt Nam (R-HT-07), nguồn lead (Q-137), cổng xem trước Playwright theo biến (Q-222), khoá nặng `scripts/heavy-lock.sh`, CI giảm phút | #185, #192, #203, #207, #210, #213, #222, #227 |
 | Tài liệu và thiết kế: canvas Bán hàng & Thu chi (abea), Đào tạo & Giáo viên (9189), Quản trị (dc47); hướng dẫn chạy thật, quay lại bằng bản sao lưu, đổi chủ repo | #164, #168, #169, #170, #176, #177, #189, #202, #208, #211, #212, #216 đến #218, #225 đến #226, #229, #231 |
 
-**Đang mở:** #228 (Code 2: dữ liệu đọc cho cổng Giáo viên, migration 107; đang xung đột với `main`), #232 (GV-01, GV-02; gộp sau #228), #230 (QT-18 lát 2: nạp Lớp và Ghi danh; không phụ thuộc #228, chờ Chat kiểm), #233 (Code 2: tài liệu nạp 17/11, độc lập).
+**Đã gộp 10/11 đến 11/11 (theo `git log` của `main`):**
 
-**Chưa làm cho 17/11 (xem kế hoạch):** GV-04 đến GV-08, cụm Ghi danh, Lớp, Buổi, Khách hàng, Thu tiền. Migration: 108 bỏ, không dùng lại; Code 1 dùng 111, 113, 114, 115; Code 2 dùng 109, 110, 112, 116, 117, 118.
+| Nhóm | PR |
+|---|---|
+| Cổng Giáo viên, dữ liệu đọc và nội dung buổi (migration 107) | #228 |
+| QT-18 lát 2: nạp Lớp và Ghi danh, cột Cảnh báo | #230 |
+| Tài liệu nạp 17/11: file mẫu, MO_TA_COT, bật VAN_HANH_LOP, R-GV-07 | #233 |
+| Tài liệu: quy tắc cứng cho Code, kế hoạch 17/11, TIEN-DO theo trạng thái 10/11 | #234 |
+| GV-01, GV-02 (tab Cần làm, trang Hôm nay) | #232 |
+| GV-04 Buổi dạy, GV-06 Nội dung buổi và BTVN (migration 109, 110); GV-05 Điểm danh | #236, #235 |
+| Cụm Ghi danh: GD-01, 02, 03, 04, 06, BH-08 (migration 113, 114); e2e xếp lớp theo nhóm lớp (GD-03) | #238, #249 |
+| Cụm Lớp: LOP-01, 02, 03, 05, 06, 08 (migration 116) | #237 |
+| Cụm Khách hàng: KH-01, 02, 04, 05 (migration 117) | #239 |
+| Cụm Buổi A: BUOI-01, 02, 03, 11 và ghi chú vận hành GV-05 (migration 120); Cụm Buổi B: BUOI-04, 05, 12, lý do huỷ buổi, Nhắc GV (migration 123) | #240, #242 |
+| GV-07 Chấm nhận xét và GV-08 Chấm BTVN buổi trước (migration 121); GV-07K Chấm kiểm tra (migration 124) | #241, #246 |
+| Cụm Thu tiền: TC-08 Khoản tiền vào, TC-13 Công nợ (migration 122) | #243 |
+| Công cụ và CI: nâng giới hạn bước Playwright 20 lên 35 phút; cổng kiểm trước khi gộp `scripts/kiem-truoc-khi-gop.sh`; `.vanphong/du-an.yaml` (chỉ cấu hình) | #248, #250, #251 |
+| Tài liệu: dải số migration, GD-06, quy tắc hiển thị tạm, quy trình theo ca | #247 |
 
-**Chưa xác nhận được trong lúc viết:** trạng thái bản chạy thật (`hmt-prod`) hiện ở tag và migration nào (Claude Code không đọc chạy thật; anh Trường biết). Lần thử deploy production dự kiến tối 12/11, deploy thật 16/11, nạp dữ liệu 17/11.
+(#244 và #245 không phải PR trên GitHub; #244 là kênh issue của quy trình theo ca.)
+
+**Đang mở:** không kiểm được bằng git; cần anh xác nhận (lúc viết không có PR mở nào được ghi ở đây).
+
+**Chưa làm cho 17/11 (xem kế hoạch):** các PR trên đã gộp cho GV-01, 02, 04 đến 08, 07K, cụm Ghi danh, Lớp, Buổi, Khách hàng, Thu tiền; phần còn lại của từng cụm so với `docs/ke-hoach/ke-hoach-17-11.md` — cần anh xác nhận, chưa suy ra được từ git. Migration: 108 bỏ, không dùng lại; Code 1 dùng 111, 113, 114, 115; Code 2 dùng 109, 110, 112, 116, 117, 118 (kế hoạch, giữ nguyên).
+
+**Cần anh xác nhận (không kiểm được bằng git/PR; giữ nguyên chữ cũ ở dưới):** trạng thái bản chạy thật (`hmt-prod`) hiện ở tag và migration nào (Claude Code không đọc chạy thật; anh Trường biết). Lần thử deploy production dự kiến tối 12/11, deploy thật 16/11, nạp dữ liệu 17/11.
 
 ## Đang ở đâu (28/10/2026)
 
@@ -175,7 +196,7 @@ Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag �
 Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 **Thứ tự việc anh làm trên bản chạy thật trước khi nạp người dùng thật (anh chốt 05/11; hmt-prod hiện chưa có migration 069, vì còn dừng ở tag cũ):**
-1. **Đưa bản mới lên chạy thật qua `hmt-deploy`** > Deploy production, chọn tag đã qua staging và có migration mới nhất (hiện đến 071; phải gồm 069 nạp Người dùng, 070 nhóm tự đăng xuất, 071 phòng học tạm). Việc này cũng đưa giao diện mới và Edge Function (kể cả `import-users`) lên. Kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy` nếu chưa chép. Sau đó kiểm: `select max(version) from supabase_migrations.schema_migrations;` đúng số migration mới nhất của tag đã chọn.
+1. **Đưa bản mới lên chạy thật qua `hmt-deploy`** > Deploy production, chọn tag đã qua staging và có migration mới nhất (hiện đến 071 [cần anh xác nhận: đây là trạng thái DB chạy thật, không suy ra từ git; migration mới nhất trên `main` hiện là 124]; phải gồm 069 nạp Người dùng, 070 nhóm tự đăng xuất, 071 phòng học tạm). Việc này cũng đưa giao diện mới và Edge Function (kể cả `import-users`) lên. Kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy` nếu chưa chép. Sau đó kiểm: `select max(version) from supabase_migrations.schema_migrations;` đúng số migration mới nhất của tag đã chọn.
 2. **Đặt miền email quy ước:** `select app.set_setting('import_user_email_domain', 'nv.hmt.invalid');` rồi đọc lại `select app.get_setting('import_user_email_domain');` phải ra `nv.hmt.invalid`. Chạy trước bước 1 sẽ báo "Chưa khai báo tham số" (anh đã gặp). Staging anh đã đặt xong 05/11.
 3. **Kiểm trước khi nạp:** (a) `select code, idle_group from app.role order by sort_order;` đúng: ADMIN, BRANCH_MANAGER, SALES, CSKH, ACCOUNTANT, MARKETER, MARKETING_MANAGER, MARKETING là `staff`; TEACHER, TA là `teacher`; STUDENT, PARENT là `student`; (b) `select code, name from app.room order by code;` có 5 phòng mỗi cơ sở CS1 đến CS5 (CSx_T1_01 đến CSx_T3_01), không có P101, P102, ONL1; (c) bản chạy thật không có dữ liệu giả: `select exists (select from app.holiday where name like '%(thử nghiệm)');` phải ra `false` (lệnh tạo tài khoản giả chỉ chạy khi thấy `true`, nên không bao giờ chạy trên bản chạy thật).
 4. **Cần kiểm thêm trước khi nạp (em chưa xác nhận được, anh hoặc em kiểm khi bước 1 xong):** secret của Edge Function trên hmt-prod (khoá `sb_secret_`, khoá bí mật Turnstile) đã đặt trong `hmt-deploy`; công tắc tính năng theo cơ sở (`app.feature_flag`) cho các phân hệ đang dùng ở CS5; tài khoản Admin chạy thật còn đăng nhập được sau cập nhật.
@@ -190,7 +211,7 @@ Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 4. **QT-01, QT-02, QT-03 Người dùng** (kèm ô "Quản lý trực tiếp"): anh duyệt kế hoạch 24/10 (Đ44 đến Đ50): **PR 1 DB (migration 042) đã gộp; PR 2 giao diện (QT-01, QT-02) đã làm**; còn **Đặt lại mật khẩu (QT-02) và Tạo người dùng (QT-03)**, chờ khuôn hộp mật khẩu tạm K4g, K4e4 ở #69.
 5. **P5a Bán hàng + Thu chi:** đặc tả đã viết (Chat), đứng sau các mục trên; tới lượt thì em gửi kế hoạch P5a-DB1 cho anh duyệt trước khi viết migration. Ghi danh và Lớp thuộc P5b (anh chốt QĐ-P5a-1).
 
-Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/10.** Giao diện bán hàng: BH-01, BH-02 (xem, Gửi, Từ chối, Huỷ, sửa Nháp, Tạo báo giá từ cơ hội), BH-06, BH-03 (bản in) và BH-05 xem đơn (UI-O2a) đã gộp; DB-O1a, O1b, O1c đã gộp; UI-O2b (Trình, Huỷ đơn) chờ OK; tiếp theo UI-O2c (Duyệt, Từ chối), UI-O3 (sửa Nháp), UI-O4 (Chuyển thành đơn, BH-11 theo R-TIEN-39; Đ257 hết hiệu lực theo Đ272). Giao diện đào tạo dựng sau phần dữ liệu đào tạo (xem `docs/nhat-ky/design.md`).
+Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/10.** Giao diện bán hàng: BH-01, BH-02 (xem, Gửi, Từ chối, Huỷ, sửa Nháp, Tạo báo giá từ cơ hội), BH-06, BH-03 (bản in) và BH-05 xem đơn (UI-O2a) đã gộp; DB-O1a, O1b, O1c đã gộp; UI-O2b (Trình, Huỷ đơn) đã gộp (#147); tiếp theo UI-O2c (Duyệt, Từ chối), UI-O3 (sửa Nháp), UI-O4 (Chuyển thành đơn, BH-11 theo R-TIEN-39; Đ257 hết hiệu lực theo Đ272). Giao diện đào tạo dựng sau phần dữ liệu đào tạo (xem `docs/nhat-ky/design.md`).
 
 ## Đã chốt 18/10 (tối)
 
@@ -210,7 +231,7 @@ Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/1
 ## Việc phải nhớ khi viết hàm (luật đã chốt)
 
 - **DB2 phiếu thu (Đ284, Q-B3):** `order_has_receipt` (hiện bản tạm luôn trả không) trả true khi đơn có phiếu thu chưa Huỷ (Nháp, chờ quản lý, chờ kế toán, Đã duyệt; phiếu bị từ chối đã về Nháp nên cũng tính). pgTAP: có phiếu thu Nháp thì Huỷ đơn bị chặn `HMT_DON_DA_CO_PHIEU_THU`; phiếu thu đã Huỷ thì Huỷ đơn được.
-- **DB-O2c (Đ283, Q-B2; đã làm, chờ OK; UI-O2c còn phải truyền `p_acknowledged` và hiện ô tích ở bước Trình của Trưởng cơ sở, thêm `status`, `auto_approved` vào `SubmitOrderResult`), gộp trước UI-O2c:** `submit_order` thêm `p_acknowledged` (Trưởng cơ sở tự duyệt: Trình và Tự duyệt trong một giao dịch, lõi `approve_order` tách hàm nội bộ dùng chung); `get_order` trả `can_submit`, `can_cancel`, `can_approve`, `can_reject` tính bằng đúng hàm quyền của hàm ghi, kèm pgTAP từng vai trò, từng trạng thái; EXPLAIN `get_order`.
+- **DB-O2c (Đ283, Q-B2; đã gộp #150; UI-O2c còn phải truyền `p_acknowledged` và hiện ô tích ở bước Trình của Trưởng cơ sở, thêm `status`, `auto_approved` vào `SubmitOrderResult`), gộp trước UI-O2c:** `submit_order` thêm `p_acknowledged` (Trưởng cơ sở tự duyệt: Trình và Tự duyệt trong một giao dịch, lõi `approve_order` tách hàm nội bộ dùng chung); `get_order` trả `can_submit`, `can_cancel`, `can_approve`, `can_reject` tính bằng đúng hàm quyền của hàm ghi, kèm pgTAP từng vai trò, từng trạng thái; EXPLAIN `get_order`.
 - **Phần Giáo viên (luật 24/10, đã vào spec 04):** (1) R-GV-05: hàm tự đóng dấu Đúng hạn hoặc Trễ hạn **một lần**, đúng lúc lưu mục cuối đủ các bước R-GIO-06; sửa điểm sau không đổi dấu; báo cáo trễ tính cho người lưu mục cuối (R-GV-09). (2) R-GV-11: **trường mới của buổi** "Buổi này không giao BTVN" (cần migration và bài kiểm); vắng buổi giao bài thì đặt sẵn Không áp dụng. (3) R-GV-04: đổi sang Vắng giữ điểm nhưng không tính. (4) R-GV-07: không xoá dòng nội dung đã có điểm; nội dung buổi ít nhất một dòng (QĐ-Đ23). (5) R-GIO-08: giáo viên không thấy danh sách điểm danh trước khi Đã chốt. (6) R-GV-13: hồ sơ học sinh cho giáo viên không có SĐT, học phí, phụ huynh. (7) R-GV-14: tháng tính theo ngày buổi diễn ra. (8) R-CS-10: giáo viên tạo mọi nhóm ticket cho lớp mình. Gửi anh kế hoạch DB giáo viên trước khi viết migration.
 
 - Cơ hội: đã khoá nhóm con L5A, L5B, L5P, L5C đến L5Q, L6A, L8A đến L8C (P3b2a). Giai đoạn phiếu tái tục: khoá L7A, L7B, L8A khi viết hàm tái tục. Đổi giai đoạn cơ hội đã kiểm R-CRM-02, 03, 13, 14, 16 (P3b2a); phiếu: R-CRM-05, 06, 12, 13, 15, 21 (P3b2b, đã làm).
