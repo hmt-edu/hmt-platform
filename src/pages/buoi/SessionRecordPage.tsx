@@ -1,6 +1,6 @@
 // BUOI-02 Buổi học (bản ghi, khuôn K06, chỉ đọc): thanh Nháp → Đã chốt → Hoàn thành, thông tin buổi, danh sách và điểm danh hai cột (trung tâm, giáo viên chính thức),
 // em không vào danh sách kèm lý do, nhận xét của giáo viên, lý do chưa Done. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage.
-// Nút làm ở cụm này: Chốt danh sách (buổi Nháp), Điểm danh vận hành (buổi Đã chốt, sang BUOI-03). Huỷ, Dời, Đổi giáo viên, Thêm học thử: cụm Buổi B (BUOI-04..06).
+// Nút: Chốt danh sách (buổi Nháp), Điểm danh vận hành (buổi Đã chốt, sang BUOI-03), Dời (BUOI-05), Huỷ (BUOI-04). Đổi giáo viên, Thêm học thử: BUOI-13, BUOI-06 (cụm sau).
 // Chưa làm (làm sau 17/11): ghi chú và dòng thời gian, "Báo nghỉ trước", "Đưa về Nháp", "Xác nhận hoàn thành" (Done do hệ thống, mark_session_done là hàm nội bộ).
 // Lệch khung có chủ đích: nhãn lớp "môn + mã lớp" (như cụm Lớp), không có "Nhãn bài" riêng ngoài bài bắt đầu của lớp.
 import { useState } from 'react';
@@ -14,6 +14,8 @@ import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog } from '../../ui/Dialogs';
+import { CancelSessionDialog } from './CancelSessionDialog';
+import { MoveSessionDialog } from './MoveSessionDialog';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
@@ -37,6 +39,8 @@ export function SessionRecordPage() {
   const toast = useToast();
   const close = useCloseSession();
   const [confirming, setConfirming] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+  const [moving, setMoving] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   useCrumbTail(
     query.data
@@ -70,6 +74,10 @@ export function SessionRecordPage() {
   const inStages = STEPS.some((st) => st.code === s.status_code);
   const canClose = s.status_code === 'NHAP' && access.can('SESSION', 'SUA');
   const canOps = s.status_code === 'DA_CHOT' && access.can('ATTENDANCE', 'SUA');
+  // Dời, huỷ được tới khi buổi Done (R-BUOI-09); giáo viên không có quyền Sửa buổi nên không thấy.
+  const canEditSession =
+    ['NHAP', 'DA_CHOT'].includes(s.status_code) && access.can('SESSION', 'SUA');
+  const cancelled = s.status_code === 'HUY_CO_PHI' || s.status_code === 'HUY_KHONG_PHI';
   const title = `${classLabel(s.subject_name, s.class_code)} · ${sessionNoLabel(s.session_no)} · ${formatDate(s.session_date)}`;
 
   async function doClose() {
@@ -120,6 +128,8 @@ export function SessionRecordPage() {
                 Điểm danh vận hành
               </Button>
             )}
+            {canEditSession && <Button onClick={() => setMoving(true)}>Dời</Button>}
+            {canEditSession && <Button onClick={() => setCancelling(true)}>Huỷ</Button>}
             {!inStages && <Tag tone={sessionTone(s.status_code)}>{s.status_name}</Tag>}
           </span>
         }
@@ -172,6 +182,15 @@ export function SessionRecordPage() {
           </DetailSection>
         </div>
 
+        {cancelled && (
+          <div className="mt-6">
+            <Alert tone="info">
+              <b>{s.status_name}.</b> Lý do: {s.cancel_reason_name ?? 'không ghi'}
+              {s.cancel_note ? ` · ${s.cancel_note}` : ''}. Các dòng điểm danh đã bị vô hiệu
+              (R-BUOI-09).
+            </Alert>
+          </div>
+        )}
         {pending_reason && (
           <div className="mt-6">
             <Alert tone="warning">
@@ -280,6 +299,13 @@ export function SessionRecordPage() {
           )}
         </section>
       </RecordDetail>
+      <CancelSessionDialog
+        sessionId={s.id}
+        isPrivateClass={s.class_type_code === 'LR'}
+        open={cancelling}
+        onClose={() => setCancelling(false)}
+      />
+      <MoveSessionDialog session={s} open={moving} onClose={() => setMoving(false)} />
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}

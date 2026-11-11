@@ -98,3 +98,45 @@ export const EXCLUDED_LABEL: Record<string, string> = {
   KET_THUC: 'Đã kết thúc ghi danh',
   HET_GIO: 'Hết giờ',
 };
+
+const MINUTES_PER_HOUR = 60; // allow-number: số phút trong một giờ
+
+/** Hạn hoàn tất của giáo viên (BUOI-12): "Quá hạn 8 giờ" hoặc "Còn 2 giờ"; dưới một giờ thì nói phút. Số phút âm = đã quá hạn. */
+export function deadlineLabel(minutesLeft: number): string {
+  const abs = Math.abs(minutesLeft);
+  const text = abs < MINUTES_PER_HOUR ? `${abs} phút` : `${Math.floor(abs / MINUTES_PER_HOUR)} giờ`;
+  return minutesLeft < 0 ? `Quá hạn ${text}` : `Còn ${text}`;
+}
+
+/** Lý do huỷ theo bên huỷ: mã TT_ của trung tâm, HS_ của học sinh (quy ước danh mục SESSION_CANCEL_REASON, cùng quy ước với app.cancel_session). */
+export function cancelReasonOptions<T extends { value: string }>(all: T[], who: 'TT' | 'HS'): T[] {
+  const prefix = who === 'TT' ? 'TT_' : 'HS_';
+  return all.filter((o) => o.value.startsWith(prefix));
+}
+
+/** Đối số dời buổi; null khi thiếu hoặc giờ kết thúc không sau giờ bắt đầu (máy chủ vẫn kiểm lại). */
+export function moveArgsOf(
+  date: string,
+  start: string,
+  end: string,
+  roomId: string | null,
+): { date: string; start: string; end: string; roomId: string | null } | null {
+  if (date === '' || start === '' || end === '' || end <= start) return null;
+  return { date, start, end, roomId };
+}
+
+/** BUOI-12: tìm theo mã lớp; lọc nhanh Quá hạn / Còn hạn (chọn cả hai = không lọc); cơ sở. */
+export function buildPendingFilters(state: ListState): SessionFilters {
+  const filters: SessionFilters = {};
+  const q = state.search.trim();
+  if (q !== '') filters.q = q;
+  const kinds = new Set<string>(state.quick.kind ?? []);
+  for (const cond of state.conditions) {
+    const values = valuesOf(cond);
+    if (values.length === 0) continue;
+    if (cond.field === 'branch' && cond.op === 'eq') filters.branch_id = values[0];
+    else if (cond.field === 'kind') for (const v of values) kinds.add(v);
+  }
+  if (kinds.size === 1) filters.kind = [...kinds][0];
+  return filters;
+}

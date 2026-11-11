@@ -70,6 +70,10 @@ const SessionRecordPage = lazyScreen(
   'SessionRecordPage',
 );
 const SessionOpsPage = lazyScreen(() => import('../pages/buoi/SessionOpsPage'), 'SessionOpsPage');
+const SessionPendingPage = lazyScreen(
+  () => import('../pages/buoi/SessionPendingPage'),
+  'SessionPendingPage',
+);
 const AbsentTodayPage = lazyScreen(
   () => import('../pages/buoi/AbsentTodayPage'),
   'AbsentTodayPage',
@@ -382,6 +386,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="buoi-hoc">
                 <SessionRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'buoi-chua-done',
+            element: (
+              <GatedCrmEntry slug="buoi-chua-done">
+                <SessionPendingPage />
               </GatedCrmEntry>
             ),
           },

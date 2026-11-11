@@ -6,11 +6,12 @@ import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
 import type { LeadCatalogs } from '../lead/useCatalogs';
-import { classLabel, sessionNoLabel } from './sessionLogic';
-import type { AbsentRow, SessionRow } from './sessionTypes';
+import { classLabel, deadlineLabel, sessionNoLabel } from './sessionLogic';
+import type { AbsentRow, PendingRow, SessionRow } from './sessionTypes';
 
 export const SESSION_SCREEN_CODE = 'BUOI-01';
 export const ABSENT_SCREEN_CODE = 'BUOI-11';
+export const PENDING_SCREEN_CODE = 'BUOI-12';
 
 const MUTED = <span className="text-fg-muted">—</span>;
 
@@ -169,6 +170,80 @@ export function buildAbsentConfig(
     quickGroups: [{ key: 'kind', label: 'Tình trạng', options: KIND_OPTIONS }],
     filterFields: [
       { key: 'kind', label: 'Tình trạng', type: 'multi', options: KIND_OPTIONS },
+      ...branchField(access),
+    ],
+    groupFields: [],
+    dateFields: [],
+    views: ['list'],
+  };
+}
+
+const PENDING_KINDS = [
+  { value: 'QUA_HAN', label: 'Quá hạn' },
+  { value: 'CON_HAN', label: 'Còn hạn' },
+];
+
+/** BUOI-12: buổi Đã chốt đã kết thúc mà giáo viên chưa hoàn tất; "Nhắc GV" tạm mờ (cổng giáo viên chưa có hộp thông báo, Chat 11/11), "Mở buổi" sang BUOI-02. */
+export function buildPendingConfig(access: AccessView, canRemind: boolean): ListConfig<PendingRow> {
+  return {
+    screenCode: PENDING_SCREEN_CODE,
+    title: 'Buổi chưa hoàn tất',
+    searchPlaceholder: 'Tìm mã lớp…',
+    columns: [
+      {
+        key: 'class',
+        label: 'Lớp',
+        locked: true,
+        primary: true,
+        render: (r) => classLabel(r.subject_name, r.class_code),
+      },
+      { key: 'no', label: 'Buổi', render: (r) => sessionNoLabel(r.session_no) },
+      {
+        key: 'time',
+        label: 'Giờ học',
+        render: (r) => `${formatDate(r.session_date)} · ${r.start_time}`,
+      },
+      { key: 'teacher', label: 'Giáo viên', render: (r) => r.teacher_name ?? MUTED },
+      {
+        key: 'deadline',
+        label: 'Hạn hoàn tất',
+        render: (r) => (
+          <Tag tone={r.minutes_left < 0 ? 'danger' : 'warning'} dot>
+            {deadlineLabel(r.minutes_left)}
+          </Tag>
+        ),
+      },
+      { key: 'reason', label: 'Lý do chưa hoàn tất', render: (r) => r.reason ?? MUTED },
+      {
+        key: 'action',
+        label: 'Xử lý',
+        render: (r) => (
+          <span className="flex flex-wrap gap-3">
+            {canRemind && (
+              <span className="flex flex-col">
+                <button
+                  type="button"
+                  disabled
+                  aria-describedby="nhac-gv-ghi-chu"
+                  className="focus-ring cursor-not-allowed text-left text-fg-muted opacity-60"
+                >
+                  Nhắc GV
+                </button>
+                <span id="nhac-gv-ghi-chu" className="text-caption text-fg-muted">
+                  Giáo viên chưa có hộp thông báo, làm sau 17/11
+                </span>
+              </span>
+            )}
+            <Link to={`/crm/buoi-hoc/${r.id}`} className="focus-ring text-link hover:underline">
+              Mở buổi
+            </Link>
+          </span>
+        ),
+      },
+    ],
+    quickGroups: [{ key: 'kind', label: 'Hạn', options: PENDING_KINDS }],
+    filterFields: [
+      { key: 'kind', label: 'Hạn', type: 'multi', options: PENDING_KINDS },
       ...branchField(access),
     ],
     groupFields: [],

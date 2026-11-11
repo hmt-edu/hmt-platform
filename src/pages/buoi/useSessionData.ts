@@ -2,7 +2,16 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
-import type { AbsentPage, OpsSheet, SessionPage, SessionRecord } from './sessionTypes';
+import type {
+  AbsentPage,
+  CancelPreview,
+  MoveCheck,
+  MoveOptions,
+  OpsSheet,
+  PendingPage,
+  SessionPage,
+  SessionRecord,
+} from './sessionTypes';
 
 export type SessionFilters = Record<string, unknown>;
 
@@ -68,9 +77,13 @@ export function useRefreshSessions() {
   const client = useQueryClient();
   return useCallback(async () => {
     await Promise.all(
-      ['session-list', 'session-record', 'session-absent', 'session-ops-sheet'].map((key) =>
-        client.invalidateQueries({ queryKey: [key] }),
-      ),
+      [
+        'session-list',
+        'session-record',
+        'session-absent',
+        'session-ops-sheet',
+        'session-pending',
+      ].map((key) => client.invalidateQueries({ queryKey: [key] })),
     );
   }, [client]);
 }
@@ -100,6 +113,105 @@ export function useCloseSession() {
   return useMutation({
     mutationFn: (sessionId: string) =>
       rpc<unknown>(supabase, 'close_session', { p_session_id: sessionId }),
+    onSuccess: () => refresh(),
+  });
+}
+
+export function usePendingPage(filters: SessionFilters, offset: number, limit: number | null) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-pending', filters, offset, limit],
+    enabled: limit !== null,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<PendingPage>(supabase, 'session_pending_list', {
+        p_filters: filters,
+        p_limit: limit,
+        p_offset: offset,
+      }),
+  });
+}
+
+/** "Nhắc GV": ghi thông báo cho giáo viên của buổi (app.remind_teacher_session). */
+export function useRemindTeacher() {
+  const supabase = useDb();
+  return useMutation({
+    mutationFn: (sessionId: string) =>
+      rpc<boolean>(supabase, 'remind_teacher_session', { p_session_id: sessionId }),
+  });
+}
+
+export function useCancelPreview(sessionId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-cancel-preview', sessionId],
+    enabled,
+    retry: false,
+    queryFn: () =>
+      rpc<CancelPreview>(supabase, 'session_cancel_preview', { p_session_id: sessionId }),
+  });
+}
+
+export type CancelArgs = { kind: string | null; reason: string; note: string | null };
+/** Huỷ buổi (app.cancel_session, R-BUOI-06, R-BUOI-07, R-BUOI-09). Luật do máy chủ quyết. */
+export function useCancelSession(sessionId: string) {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (a: CancelArgs) =>
+      rpc<{ status: string; added_session_id: string | null }>(supabase, 'cancel_session', {
+        p_session_id: sessionId,
+        p_kind: a.kind,
+        p_reason_code: a.reason,
+        p_note: a.note,
+      }),
+    onSuccess: () => refresh(),
+  });
+}
+
+export function useMoveOptions(sessionId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-move-options', sessionId],
+    enabled,
+    retry: false,
+    queryFn: () => rpc<MoveOptions>(supabase, 'session_move_options', { p_session_id: sessionId }),
+  });
+}
+
+export type MoveArgs = { date: string; start: string; end: string; roomId: string | null };
+
+/** Kiểm trùng phòng, giáo viên trước khi lưu (chỉ cảnh báo, R-LOP-08). */
+export function useMoveCheck(sessionId: string, a: MoveArgs | null) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-move-check', sessionId, a],
+    enabled: a !== null,
+    retry: false,
+    queryFn: () =>
+      rpc<MoveCheck>(supabase, 'session_move_check', {
+        p_session_id: sessionId,
+        p_date: a?.date,
+        p_start: a?.start,
+        p_end: a?.end,
+        p_room_id: a?.roomId,
+      }),
+  });
+}
+
+/** Dời một buổi (app.move_session, R-LOP-08: trùng chỉ cảnh báo). */
+export function useMoveSession(sessionId: string) {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (a: MoveArgs) =>
+      rpc<{ warnings: string[] }>(supabase, 'move_session', {
+        p_session_id: sessionId,
+        p_date: a.date,
+        p_start: a.start,
+        p_end: a.end,
+        p_room_id: a.roomId,
+      }),
     onSuccess: () => refresh(),
   });
 }

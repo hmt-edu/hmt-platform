@@ -4,7 +4,10 @@ import {
   EMPTY_SESSION_STATE,
   buildAbsentFilters,
   buildSessionFilters,
+  cancelReasonOptions,
   classLabel,
+  deadlineLabel,
+  moveArgsOf,
   sessionNoLabel,
   sessionSortParam,
   ymd,
@@ -73,5 +76,29 @@ describe('nhãn', () => {
     expect(sessionNoLabel(5)).toBe('Buổi 5');
     expect(sessionNoLabel(null)).toBe('—');
     expect(ymd(new Date(2026, 0, 5))).toBe('2026-01-05');
+  });
+});
+
+describe('BUOI-12, BUOI-04, BUOI-05', () => {
+  it('nhãn hạn hoàn tất', () => {
+    expect(deadlineLabel(-480)).toBe('Quá hạn 8 giờ');
+    expect(deadlineLabel(120)).toBe('Còn 2 giờ');
+    expect(deadlineLabel(-30)).toBe('Quá hạn 30 phút');
+    expect(deadlineLabel(59)).toBe('Còn 59 phút');
+  });
+  it('lý do huỷ chia theo bên huỷ', () => {
+    const all = [{ value: 'TT_THOI_TIET' }, { value: 'HS_OM' }, { value: 'HS_KHAC' }];
+    expect(cancelReasonOptions(all, 'TT')).toEqual([{ value: 'TT_THOI_TIET' }]);
+    expect(cancelReasonOptions(all, 'HS').map((o) => o.value)).toEqual(['HS_OM', 'HS_KHAC']);
+  });
+  it('đối số dời buổi cần giờ kết thúc sau giờ bắt đầu', () => {
+    expect(moveArgsOf('2026-10-20', '18:00', '19:30', null)).toEqual({
+      date: '2026-10-20',
+      start: '18:00',
+      end: '19:30',
+      roomId: null,
+    });
+    expect(moveArgsOf('2026-10-20', '19:30', '18:00', null)).toBeNull();
+    expect(moveArgsOf('', '18:00', '19:30', null)).toBeNull();
   });
 });

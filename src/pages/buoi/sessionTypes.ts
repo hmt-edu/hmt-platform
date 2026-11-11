@@ -45,6 +45,7 @@ export type SessionRecord = {
     end_time: string;
     class_id: string;
     class_code: string;
+    class_type_code: string;
     subject_name: string;
     branch_code: string;
     branch_name: string;
@@ -52,6 +53,9 @@ export type SessionRecord = {
     assistant_name: string | null;
     room_name: string | null;
     start_lesson: string | null;
+    cancel_reason_code: string | null;
+    cancel_reason_name: string | null;
+    cancel_note: string | null;
   };
   pending_reason: string | null;
   complete_deadline: string | null;
@@ -109,3 +113,24 @@ export type AbsentRow = {
   ops_note: string | null;
 };
 export type AbsentPage = { total: number; rows: AbsentRow[] };
+
+export type CancelPreview = { added_session_no: number | null; added_date: string | null };
+export type MoveOptions = {
+  current_room_id: string | null;
+  rooms: { id: string; code: string; name: string }[];
+};
+export type MoveCheck = { room_clash: string[]; teacher_clash: string[] };
+export type PendingRow = {
+  id: string;
+  class_code: string;
+  subject_name: string;
+  session_no: number | null;
+  session_date: string;
+  start_time: string;
+  teacher_name: string | null;
+  deadline: string;
+  /** Âm = đã quá hạn. */
+  minutes_left: number;
+  reason: string | null;
+};
+export type PendingPage = { total: number; rows: PendingRow[] };

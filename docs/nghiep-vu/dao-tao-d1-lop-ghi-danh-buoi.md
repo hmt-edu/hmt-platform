@@ -171,3 +171,17 @@ Luật: R-V2-19, R-GV-02, R-GV-03, R-GV-04, R-GV-08, R-GV-13. Các hàm ghi (`op
 | `save_review_grading(buổi, công tắc tiêu chí, điểm, nhận xét)` | Điểm danh · Sửa, buổi Đã chốt             | Một giao dịch: mở nhận xét nếu chưa mở, rồi tắt/bật tiêu chí, ghi điểm, ghi nhận xét. Hoặc lưu hết hoặc không lưu gì                                |
 
 Chưa làm (ghi trong báo cáo): «Theo tiêu chí» (chấm theo cột), «Cả lớp», xuất nhận xét (GV07X), màn nhập điểm Kiểm tra (GV-07K), chống ghi đè nhận xét (sau 17/11).
+
+## Cụm Buổi B: huỷ, dời, theo dõi buổi chưa hoàn tất (migration 123)
+
+Thêm cột `cancel_reason_code`, `cancel_note` cho buổi (lưu lý do huỷ; buổi huỷ trước migration 123 để trống). `app.cancel_session` thay bản 102, luật huỷ giữ nguyên, chỉ thêm lưu lý do. `session_list`, `session_record` (migration 120) thay bản mới hiện lý do huỷ.
+
+| Hàm | Ai gọi | Việc |
+|---|---|---|
+| `session_cancel_preview(buổi)` | Buổi học · Sửa (vận hành) | BUOI-04 xem trước: số buổi và ngày buổi sẽ thêm vào cuối lịch khi trung tâm huỷ (R-BUOI-06). Chỉ đọc |
+| `session_move_options(buổi)` | như trên | BUOI-05: phòng đang dùng của cơ sở để chọn |
+| `session_move_check(buổi, ngày, giờ, giờ, phòng)` | như trên | BUOI-05 kiểm trùng phòng, giáo viên TRƯỚC khi lưu; chỉ cảnh báo (R-LOP-08). Chỉ đọc |
+| `session_pending_list(bộ lọc, số dòng, bỏ qua)` | Buổi học · Xem (toàn hệ thống hoặc cơ sở) | BUOI-12: buổi Đã chốt đã kết thúc mà giáo viên chưa hoàn tất; hạn = giờ kết thúc + `teacher_session_complete_hours` (R-GV-05); lý do chưa Done (R-GIO-06) |
+| `remind_teacher_session(buổi)` | Buổi học · Sửa (vận hành) | BUOI-12 "Nhắc GV": ghi một thông báo (loại `NHAC_HOAN_TAT_BUOI`) cho giáo viên của buổi Đã chốt. Cổng giáo viên chưa có chỗ đọc thông báo (làm sau) |
+
+Ghi dùng lại hàm D1c: `cancel_session`, `move_session`. Chưa có: ghi chú, dòng thời gian của buổi; "Nhãn bài dời theo" ở xem trước huỷ (buổi chưa có nhãn bài riêng); đổi giáo viên (BUOI-13), thêm học thử (BUOI-06), sửa sau Done (BUOI-14).
