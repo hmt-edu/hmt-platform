@@ -34,8 +34,9 @@ pgTAP, Playwright, `check:all`, `db:reset`, `npm ci`, `supabase start`, `supabas
 
 - Tiền tố `20261111…`.
 - Số migration phải lớn hơn mọi file trên `main` và trong các PR đang mở. Kiểm bằng `git ls-tree origin/main` và `gh pr list`.
-- Số 108 bỏ, không dùng lại.
-- Dải số: Code 1 dùng 111, 113, 114, 115. Code 2 dùng 109, 110, 112, 116, 117, 118.
+- Các số 108, 112, 115, 118, 119 bỏ, không dùng lại.
+- Dải số (Chat chốt 10 đến 11/11): Code 1 dùng 120, 123 (đã dùng 111, 113, 114). Code 2 dùng 121, 122, 124 (đã dùng 109, 110, 116, 117).
+- Thứ tự gộp migration theo số: 109, 110, 111, 113, 114, 116, 117, 120, 121, 122, 123, 124.
 - Không dùng số ngoài dải của mình. Cần thêm số thì báo Chat.
 
 ## 6. Tự lấy việc và báo cáo
@@ -44,3 +45,16 @@ pgTAP, Playwright, `check:all`, `db:reset`, `npm ci`, `supabase start`, `supabas
 - Chỉ dừng khi cần anh Trường quyết: đổi luật, đổi số migration, đụng dữ liệu thật, đụng production.
 - Câu hỏi nhỏ: tự chọn phương án ít thay đổi nhất, ghi lý do vào báo cáo. Chat sửa nếu lệch.
 - Báo cáo ngắn. Mỗi lần xong một PR ghi: mã commit, kết quả CI, file kiểm, danh sách màn "chưa có khung / lệch luật". Kết thúc bằng dòng `ĐANG CHẠY: ...`.
+
+## 8. Quy tắc hiển thị tạm (chưa vào luật)
+
+Do Chat chốt, chỉ là cách hiển thị, chưa ghi vào `docs/spec/04`; đổi khi anh Trường chốt luật.
+
+- BUOI-11 (vắng, chưa đến): ô giáo viên là ô quyết định. Giáo viên đã chọn Có mặt thì không hiện vắng dù vận hành ghi gì; ô vận hành chỉ dùng khi ô giáo viên trống. Chưa đến = buổi Đã chốt hôm nay đã bắt đầu mà cả hai ô trống.
+- GV-05: giáo viên chỉ thấy tên lý do liên hệ do vận hành ghi ("Ghi chú vận hành (chỉ xem)"), không thấy ghi chú tự do, số điện thoại, phụ huynh.
+- Nhãn lớp ở các màn buổi học và lớp: "môn + mã lớp".
+- BUOI-12: nút "Nhắc GV" tạm mờ vì cổng giáo viên chưa có hộp thông báo (làm sau 17/11); hàm ghi thông báo vẫn có ở cơ sở dữ liệu.
+- BH-08 Chọn lớp lưu ngay khi bấm Chọn, không hoàn tác khi Huỷ Sửa đơn (ghi vào danh sách sau 17/11).
+- KH-04 tình trạng học sinh: có ghi danh Chờ xếp lớp, Đã xếp lớp hoặc Đang học thì là Đang học; không thuộc nhóm đó mà có Bảo lưu thì là Bảo lưu; có ghi danh khác thì là Dừng học; chưa có ghi danh thì là Tiềm năng. «Có con đang học» của phụ huynh dùng nhóm đầu (Đang học).
+- TC-13 «Đã đóng» từng đợt: tiền vào ròng của đơn (đã trừ khoản đảo) lấp lần lượt từ đợt 1.
+- GV-08 «Nộp sau» suy từ điểm danh: có mặt buổi giao bài, vắng buổi kế tiếp, chưa có dòng kết quả.

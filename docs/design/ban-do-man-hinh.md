@@ -226,7 +226,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | GD-03 | Xếp lớp cho ghi danh (theo nhóm hoặc theo lớp) | Hộp thoại · K08 | A | Máy tính | CS, BM, AD | xếp theo **nhóm lớp** (ghi danh Đại vào lớp DAI, ghi danh Hình vào lớp HINH) hoặc theo từng lớp; mỗi ghi danh một lớp; kiểm đúng môn, loại lớp, cơ sở, trùng giờ; chọn ngày vào | Xếp | — | S02-XL-3, S02-XL-4, S02-XL-8, S02-XL-9, R-GD-06, R-GD-08, R-GD-14, R-GD-15, R-LOP-14 |
 | GD-04 | Sổ giờ của ghi danh | Danh sách · K03 | B | Máy tính | CS, BM, KT, AD | Mọi dòng cộng/trừ giờ, nguồn (buổi, phiếu thu, điều chỉnh); chỉ thêm, không sửa | Xuất | — | R-GD-04, R-GIO-01, R-GIO-04 |
 | GD-05 | Điều chỉnh giờ (dòng ngược dấu, bắt buộc lý do) | Hộp thoại · K08 | B | Máy tính | BM, AD | Thêm dòng điều chỉnh, không sửa dòng cũ | Xác nhận | — | R-GD-04 |
-| GD-06 | Hàng chờ xếp lớp | Danh sách · K03 | B | Máy tính | CS, BM, AD | Ghi danh chưa có lớp, Toán 7+ mới xếp một lớp, đang học trước chưa đóng tiền | Xếp lớp | GD-03 | R-GD-06, S02-XL-3, R-GD-12 |
+| GD-06 | Hàng chờ xếp lớp | Danh sách · K03 | B | Máy tính | CS, BM, AD | Hàng chờ chỉ gồm ghi danh ở tình trạng Chờ xếp lớp (R-GD-05); lý do chờ luôn là chưa có lớp | Xếp lớp | GD-03 | R-GD-06, S02-XL-3, R-GD-12 |
 | GD-07 | Sắp hết giờ / dự báo hết giờ | Danh sách · K03 | B | Máy tính | CS, SA, BM, AD | Ghi danh còn ít giờ hoặc sắp hết hạn dự kiến; quá hạn gói vẫn học. **(26/10, Đ157)** Mỗi dòng là một học sinh trong một lớp (tính theo học sinh, lớp); giờ còn là tổng các ghi danh còn hiệu lực | Tạo phiếu tái tục; Mở | TT-02 | R-GD-07, R-GD-13 |
 
 ### Tái tục

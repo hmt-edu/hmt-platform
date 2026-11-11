@@ -34,7 +34,7 @@ LÕI gồm 28 màn, bắt buộc xong. Một học sinh mới đi trọn đườ
 2. Một PR gồm GV-04, GV-06, migration 109 và 110. Mở trước sáng 11/11. Migration 110 đứng sau 109.
 3. Cụm Lớp (một PR), mở PR trước tối 12/11.
 4. Cụm Khách hàng (một PR), mở PR trước tối 13/11.
-5. GV-08 (migration 112) và GV-07 (một PR), mở PR trước trưa 15/11.
+5. GV-08 (migration 121) và GV-07 (một PR), mở PR trước trưa 15/11.
 6. Cụm Thu tiền (một PR), mở PR trước tối 15/11.
 7. Sửa lỗi từ buổi diễn tập; cột lưu dấu Đúng hạn/Trễ hạn.
 8. Đưa vào báo cáo: danh sách tham số và cờ cần đặt sẵn cho CS5 khi lên production, cách đặt bằng migration.
