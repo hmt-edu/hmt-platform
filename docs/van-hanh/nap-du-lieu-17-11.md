@@ -93,10 +93,11 @@ Ngày này là tham số **Ngày chốt số dư đầu kỳ** (`opening_balance
 
 ## 7. Chế độ Done buổi học giai đoạn đầu
 
-Giai đoạn đầu, khi giáo viên chưa chấm nhận xét trên cổng giáo viên, đặt tham số **Done buổi cần nhận xét hoặc điểm** (`session_done_requires_review`) ở trạng thái **Tắt** trên staging và bản chạy thật. Khi Tắt, buổi vẫn Done khi giáo viên đã điểm danh xong, giờ vẫn trừ. (Từ khi PR Nội dung buổi vào main, buổi thường cần thêm ít nhất một dòng nội dung buổi, cả khi Bật lẫn Tắt; buổi Kiểm tra không đòi dòng nội dung. Q-231, Q-252.)
+Giai đoạn đầu, khi giáo viên chưa chấm nhận xét trên cổng giáo viên, tham số **Done buổi cần nhận xét hoặc điểm** (`session_done_requires_review`) ở trạng thái **Tắt** trên staging và bản chạy thật. Khi Tắt, buổi vẫn Done khi giáo viên đã điểm danh xong, giờ vẫn trừ. (Từ khi PR Nội dung buổi vào main, buổi thường cần thêm ít nhất một dòng nội dung buổi, cả khi Bật lẫn Tắt; buổi Kiểm tra không đòi dòng nội dung. Q-231, Q-252.)
 
-- **Đặt Tắt:** Admin vào Cài đặt, mục Vận hành lớp, tìm "Done buổi cần nhận xét hoặc điểm", chọn Tắt, lưu. Đây là bước làm tay, không phải migration.
-- **Bật lại** khi tính năng chấm nhận xét của giáo viên sẵn sàng: cũng vào chỗ đó, chọn Bật, lưu. Từ lúc Bật, buổi thường chỉ Done khi không còn ô nhận xét "Chưa đánh giá", buổi Kiểm tra khi mọi em có mặt đã được chấm. Buổi đã Done trước đó không bị ảnh hưởng.
+- **Đã đặt Tắt bằng migration, không phải bước làm tay (Q-198):** migration `20261111000110_bat_van_hanh_lop_cs5.sql` (số 110) chạy lệnh `update app.setting_def set value = 'false' where key = 'session_done_requires_review'`. Đây là giá trị chung của mọi cơ sở, không ghi đè theo cơ sở, và có hiệu lực trên mỗi môi trường ngay khi migration được áp (staging khi gộp vào `main`; bản chạy thật khi anh chạy workflow bản chạy thật). Anh không cần vào đâu để đặt.
+- **Kiểm:** chạy khối (d) trong `docs/van-hanh/sql-kiem-hmt-prod-chi-doc.sql` (chỉ đọc) rồi xem dòng `session_done_requires_review`: phải là `false` và cột `lech` là «khớp». Bảng cờ và tham số cần có cho CS5: `docs/van-hanh/cau-hinh-cs5.md`.
+- **Bật lại** khi tính năng chấm nhận xét của giáo viên sẵn sàng (sau 17/11): cần **migration mới** đặt lại thành `true`. Màn Cài đặt (QT-09, «Tham số nghiệp vụ») chưa có (hiện chỉ là mục giữ chỗ trong menu, làm sau 17/11), nên chưa thể bật hay tắt bằng giao diện. Từ lúc Bật, buổi thường chỉ Done khi không còn ô nhận xét "Chưa đánh giá", buổi Kiểm tra khi mọi em có mặt đã được chấm. Buổi đã Done trước đó không bị ảnh hưởng. Khi Bật còn thêm điều kiện chấm BTVN buổi trước, nếu buổi trước có giao BTVN (Q-272).
 
 ## 8. Số dư tiền không nạp ngày 17/11 (Q-227)
 
