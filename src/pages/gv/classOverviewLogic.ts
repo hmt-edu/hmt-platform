@@ -37,7 +37,7 @@ export type ClassOverview = {
     type_code: string;
     type_name: string | null;
     deadline_at: string;
-    timeliness: 'DUNG_HAN' | 'TRE_HAN' | null;
+    timeliness: 'TRE_HAN' | null;
     homework_text: string | null;
   }[];
 };
@@ -64,9 +64,9 @@ export function scoreText(avg: number | null): string {
     : `TB ${new Intl.NumberFormat('vi-VN', { minimumFractionDigits: ONE_DECIMAL, maximumFractionDigits: ONE_DECIMAL }).format(avg)}`;
 }
 
-/** Nhãn hạn của buổi: Đúng hạn / Trễ hạn, không nhãn thì null. Luôn kèm chữ, không chỉ màu. */
+/** Nhãn hạn của buổi: chỉ «Trễ hạn» (buổi chưa Done mà quá hạn); buổi Done không nhãn vì hệ thống chưa lưu thời điểm Done (quyết định Chat 13/11). Luôn kèm chữ. */
 export function timelinessLabel(t: Session['timeliness']): string | null {
-  return t === 'DUNG_HAN' ? 'Đúng hạn' : t === 'TRE_HAN' ? 'Trễ hạn' : null;
+  return t === 'TRE_HAN' ? 'Trễ hạn' : null;
 }
 
 /** "Thứ Hai 18:00–19:30" */

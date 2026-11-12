@@ -125,7 +125,7 @@ select pg_temp.sudo($$insert into app.session_review_score (session_id, branch_i
    where sa.session_id = pg_temp.s('p', 1) and sa.student_id = pg_temp.st(3) limit 1$$);
 -- BTVN giao ở buổi 2; buổi 1 không giao (R-V2-35).
 select pg_temp.sudo($$insert into app.session_content (session_id, branch_id, homework_text) values (pg_temp.s('p', 2), pg_temp.cs('CS1'), 'Làm bài 1 đến 5 trang 10')$$);
--- Lớp thứ hai ở tương lai; ép buổi 1 sang Done (chỉ để thử nhãn: lần cập nhật cuối nằm trước hạn).
+-- Lớp thứ hai ở tương lai; ép buổi 1 sang Done (chỉ để thử: buổi Done không có nhãn dù lần cập nhật cuối nằm trước hạn).
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select pg_temp.mkclass('f', 'CB', pg_temp.fut(), 2);
 select pg_temp.sudo($$update app.class_session set status_code = 'DONE' where id = pg_temp.s('f', 1)$$);
@@ -157,7 +157,10 @@ grant execute on function pg_temp.ss(text, integer, text) to public;
 select is(pg_temp.ss('p', 2, 'homework_text'), '"Làm bài 1 đến 5 trang 10"'::jsonb, 'Tab BTVN: buổi 2 giao BTVN');
 select is(pg_temp.ss('p', 1, 'homework_text'), 'null'::jsonb, 'Buổi không giao BTVN: null (R-V2-35)');
 select is(pg_temp.ss('p', 1, 'timeliness'), '"TRE_HAN"'::jsonb, 'Buổi đã kết thúc từ lâu mà chưa Done: Trễ hạn (R-GV-05)');
-select is(pg_temp.ss('f', 1, 'timeliness'), '"DUNG_HAN"'::jsonb, 'Buổi Done có lần cập nhật cuối trước hạn: Đúng hạn');
+select is(pg_temp.ss('f', 1, 'timeliness'), 'null'::jsonb, 'Buổi Done có lần cập nhật cuối trước hạn: KHÔNG nhãn (không dùng updated_at, quyết định Chat)');
+select pg_temp.sudo($$update app.class_session set status_code = 'DONE' where id = pg_temp.s('p', 3)$$);
+select is(pg_temp.ss('p', 3, 'timeliness'), 'null'::jsonb, 'Buổi Done đã quá hạn từ lâu: vẫn KHÔNG nhãn (không đoán từ updated_at)');
+select is(pg_temp.ss('p', 2, 'timeliness'), '"TRE_HAN"'::jsonb, 'Buổi chưa Done đã quá hạn: Trễ hạn');
 select ok((pg_temp.ss('p', 1, 'deadline_at')) is not null, 'Mỗi buổi có hạn hoàn tất');
 
 -- ================= Không lộ thông tin phụ huynh, học phí (R-GV-13) =================
