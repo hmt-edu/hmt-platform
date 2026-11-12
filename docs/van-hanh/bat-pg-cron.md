@@ -17,3 +17,12 @@ Migration 104 không dừng cập nhật: chỉ báo thông báo và bỏ qua vi
 ## Đổi chu kỳ
 
 Đổi tham số **Chu kỳ tự Done buổi** (`session_autocomplete_minutes`) hoặc **Tự chốt buổi trước giờ học** (`session_autoclose_before_minutes`) trong Cài đặt, rồi Admin gọi lại `select app.sync_session_cron();`.
+
+## Kiểm lại trên staging bằng workflow (không cần mở SQL Editor)
+
+Workflow **Kiểm staging** (`.github/workflows/kiem-staging.yml`) chạy bằng tay: vào tab Actions của repo, chọn «Kiểm staging», bấm Run workflow (hoặc `gh workflow run kiem-staging.yml`). Nó KHÔNG chạy theo push hay PR và chỉ dùng secret `STAGING_DB_URL` (staging, không phải hmt-prod).
+
+- **Kiểm chỉ đọc** (`scripts/staging/kiem-chi-doc.sql`): in migration cuối đã áp, các lịch `cron.job` (phải thấy `hmt-auto-close-sessions` và `hmt-auto-complete-sessions`, cột active là `t`) và 10 lần chạy gần nhất trong `cron.job_run_details` (tên job, trạng thái, giờ). Chưa bật pg_cron thì báo «Chưa có pg_cron» thay vì lỗi.
+- **Thử trừ giờ** (`scripts/staging/thu-tru-gio.sql`): dựng dữ liệu giả trong MỘT giao dịch, chạy `app.auto_complete_sessions()`, in giờ trước và sau của bốn học sinh (Có mặt, Vắng có phép, Vắng không phép, Đi muộn) cùng một buổi học bù, rồi **hoàn tác** (cuối log có bảng «không còn dữ liệu thử» phải toàn số 0). Lệch luật thì lượt chạy báo đỏ.
+- Log Actions của repo công khai: workflow chỉ in số, mã, tên job, trạng thái và dữ liệu giả; không in chuỗi kết nối.
+
