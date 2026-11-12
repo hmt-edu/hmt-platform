@@ -10,8 +10,8 @@
 --   students: em đang xếp lớp (tên, mã); attendance_present / attendance_marked = số buổi có mặt hoặc đi muộn / số buổi đã được điểm danh (trạng thái của giáo viên, R-DD-02);
 --             avg_score = trung bình mọi điểm Đã đánh giá ở buổi em có mặt (tiêu chí đang bật), null nếu chưa có điểm, KHÔNG làm tròn (R-GV-03).
 --   sessions: tối đa 100 buổi mới nhất (không tính buổi đã bị thay): ngày, giờ, trạng thái, loại, hạn hoàn tất, nhãn đúng hạn/trễ hạn, BTVN giao ở buổi (null = không giao, R-V2-35).
--- Nhãn timeliness (tạm, chờ anh chốt định nghĩa chính xác): buổi Done mà lần cập nhật cuối ≤ hạn → 'DUNG_HAN', > hạn → 'TRE_HAN'; buổi chưa Done, đã kết thúc và quá hạn → 'TRE_HAN';
---   còn lại null. Hệ thống chưa lưu thời điểm chuyển Done nên dùng lần cập nhật cuối của buổi.
+-- Nhãn timeliness (quyết định Chat 13/11, dieu-phoi-kit#260): buổi DONE → null (không nhãn: hệ thống chưa lưu thời điểm chuyển Done, ghi cột đó để SAU 17/11);
+--   buổi chưa Done (Nháp, Đã chốt) mà hạn hoàn tất đã qua → 'TRE_HAN'; còn lại null. Không dùng updated_at.
 create or replace function app.teacher_class_overview(p_class_id uuid)
 returns jsonb
 language plpgsql
@@ -66,10 +66,8 @@ begin
                 'status_code', y.status_code, 'type_code', y.type_code,
                 'type_name', (select ci.name from app.catalog_item ci where ci.catalog_code = 'SESSION_TYPE' and ci.code = y.type_code),
                 'deadline_at', y.deadline_at,
-                'timeliness', case
-                    when y.status_code = 'DONE' then case when y.updated_at <= y.deadline_at then 'DUNG_HAN' else 'TRE_HAN' end
-                    when y.status_code in ('NHAP', 'DA_CHOT') and y.deadline_at < now() then 'TRE_HAN'
-                    else null end,
+                -- Buổi DONE: null (không dùng updated_at). Chỉ buổi chưa Done mà quá hạn mới có nhãn.
+                'timeliness', case when y.status_code in ('NHAP', 'DA_CHOT') and y.deadline_at < now() then 'TRE_HAN' else null end,
                 'homework_text', (select sc2.homework_text from app.session_content sc2 where sc2.session_id = y.id))
                 order by y.session_date desc, y.start_time desc)
                 from (select s.*, app.session_ends_at(s.id) + make_interval(hours => v_hours) as deadline_at

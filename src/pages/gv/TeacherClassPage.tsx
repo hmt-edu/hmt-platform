@@ -1,4 +1,4 @@
-// GV-11 Chi tiết lớp (cổng giáo viên, chỉ đọc): tab Học sinh (chuyên cần, TB tiêu chí), Lịch, Buổi (Đúng hạn/Trễ hạn), BTVN.
+// GV-11 Chi tiết lớp (cổng giáo viên, chỉ đọc): tab Học sinh (chuyên cần, TB tiêu chí), Lịch, Buổi (nhãn Trễ hạn), BTVN.
 // Máy chủ quyết lớp nào xem được (app.teacher_class_overview, R-GV-08) và tính mọi con số; trang chỉ đặt chữ. Nút «Yêu cầu bổ trợ», «Tạo ticket» CHƯA làm (sau 17/11): ẩn.
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';

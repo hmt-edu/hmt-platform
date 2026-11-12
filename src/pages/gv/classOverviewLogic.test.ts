@@ -34,8 +34,7 @@ describe('GV-11: chữ hiển thị', () => {
     expect(scoreText(3.75)).toBe('TB 3,8');
     expect(scoreText(null)).toBe('Chưa có điểm');
   });
-  it('nhãn hạn luôn có chữ; không có thì null', () => {
-    expect(timelinessLabel('DUNG_HAN')).toBe('Đúng hạn');
+  it('nhãn hạn: chỉ Trễ hạn có chữ; buổi Done/còn hạn không nhãn', () => {
     expect(timelinessLabel('TRE_HAN')).toBe('Trễ hạn');
     expect(timelinessLabel(null)).toBeNull();
   });
