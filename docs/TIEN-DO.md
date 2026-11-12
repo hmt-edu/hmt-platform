@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 12/11/2026 (mục «Trạng thái 12/11/2026» bên dưới là bản mới nhất, ghi PR đã gộp tới #251; các mục ghi ngày cũ hơn là lịch sử, có thể đã lỗi thời). Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 13/11/2026 (mục «Trạng thái 13/11/2026» bên dưới là bản mới nhất, ghi PR đã gộp từ 00:00 ngày 13/11 theo giờ Việt Nam, #260 đến #267; mục «Trạng thái 12/11/2026» ghi PR tới #251; các mục ghi ngày cũ hơn là lịch sử, có thể đã lỗi thời). Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
 
 **Từ 04/11/2026 (Đ285 đến Đ290): v2 (`hmt-v2`) dừng hẳn; v1 (repo này) làm tiếp cho Cơ sở 5 chạy thật.** Thiết kế bám v1; từ v2 chỉ lấy nghiệp vụ (mục 14 của `docs/spec/04`, thắng các mục khác khi khác nhau). Canvas chuẩn là `design/hmt-canvas-9933/` (v146, thay `6f57`, Đ293; `6f57` thay `8ab9`) và `design/hmt-canvas-9189/` (Đào tạo, Giáo viên, bản hiện hành là nội dung thư mục này; `design/hmt-canvas-fcd1/` v41 `1793782759-fcd1` giữ để đối chiếu, không còn là bản hiện hành; bảng khác biệt: `docs/nghiep-vu/doi-chieu-canvas-dao-tao-v41.md`). Mốc: 10/11 Tuyển sinh + màn Nhập CS5; ~12/11 Bán hàng, Thu chi; ~17/11 Đào tạo, Cổng giáo viên, Aftersale (ngày chốt giờ học 17/11). Bảng khác biệt và kế hoạch theo mốc: `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md` (chờ anh OK trước khi viết migration). Chưa sửa giao diện Báo giá, Đơn hàng, Phiếu thu khi anh chưa gửi yêu cầu.
 
@@ -111,6 +111,27 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm phiếu tái tục: khoá các giai đoạn con **L7A, L7B, L8A** của `UPSALE_SUBSTAGE` (không Ngừng được), cùng cách khoá L5A, L5B, L5P của cơ hội, khi viết hàm dùng chúng.
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
+
+## Trạng thái 13/11/2026 (PR đã gộp từ 00:00 giờ Việt Nam tới 04:32, #260 đến #267)
+
+Từ 13/11 quy trình làm việc theo `docs/hmt/quy-trinh-lam-viec.md` của repo `dieu-phoi-kit` (phiếu là issue có nhãn `phieu`, báo cáo ở issue #260 của repo đó): Chat gộp PR; PR rủi ro cao chỉ gộp khi tester báo ĐẠT đúng commit cuối (Q-42). Mỗi PR dưới đây có đúng một dòng. «Chưa làm» lấy từ mô tả PR và báo cáo tester; chưa dòng nào có bằng chứng trên staging hay dữ liệu thật.
+
+| PR | Màn / luật | Làm được | Chưa làm |
+|---|---|---|---|
+| #260 | R-CRM-17 (migration 126, rủi ro cao) | Duyệt phiếu thu: cơ hội L8A/L8B tự lên L8C khi mọi đơn đã duyệt thu đủ (xét từng đơn, chỉ tính phiếu đã duyệt), cùng giao dịch; đã L8C không lùi; pgTAP 7 ca; tester ĐẠT (nhật ký có dòng L8B sang L8C) | Kịch bản 17 bước bấm tay, hiển thị dòng lịch sử trên giao diện thật, staging; chưa thử riêng hoàn tiền sau khi đã L8C |
+| #261 | Quay lại khi deploy production lỗi (phiếu T3, chỉ tài liệu) | `docs/van-hanh/quay-lai-khi-deploy-loi.md`: chụp gì trước deploy, bảng triệu chứng, quay giao diện bằng Rollback của Cloudflare Pages, quay DB bằng bản sao lưu | Chưa diễn tập trên production; chưa có workflow Restore production; `nap-du-lieu-17-11.md` chưa có mục xử lý nạp hỏng giữa chừng |
+| #262 | CLAUDE.md, luật gộp PR (Q-42, chỉ tài liệu) | Chat điều phối toàn quyền soát và gộp; rủi ro cao cần tester ĐẠT đúng sha; thay luật gộp 10/10/2026 và Đ279 | Không đổi luật deploy chạy thật |
+| #263 | GV-03 Lịch dạy, R-GV-08 | Màn thật cho `/gv/lich-day`: tuần 7 cột (máy tính), dải 7 ngày và danh sách theo giờ (điện thoại), chỉ buổi của mình, bấm buổi tới GV-04; không migration | Chế độ tháng (phiếu chỉ yêu cầu tuần); chưa thử dữ liệu thật |
+| #264 | GV-09 Hoàn tất buổi, R-GV-04, R-GV-05, R-GV-08 | Nút Hoàn tất ở GV-04 mở hộp (tấm trượt trên điện thoại) liệt kê em chưa điểm danh, chưa chấm, thiếu BTVN, nút Đi tới, Hoàn tất khoá khi còn thiếu; không đổi tình trạng buổi; không migration; tester ĐẠT | **Dấu Đúng hạn/Trễ hạn hệ thống để sau 17/11** (Chat quyết 13/11, mục dưới): hiện chỉ so giờ hiện tại với hạn máy chủ khi chưa Done; buổi đã Done không đóng dấu; chưa kiểm trạng thái buổi trong DB sau Hoàn tất, staging |
+| #265 | GV-10 Lớp của tôi, R-GV-08, R-GV-09, R-GV-13 | Màn thật cho `/gv/lop`: lớp được phân công (giáo viên, trợ giảng), sĩ số, lịch học, buổi tiếp theo; không hiện phụ huynh, học phí; không migration; tester ĐẠT | Trang đích `/gv/lop/:id` (GV-11, phiếu P4) chưa gộp nên bấm lớp ra trang không tìm thấy; kiểm sĩ số trên dữ liệu có học sinh xếp lớp |
+| #266 | GV-12 Việc cần làm, R-GV-05, R-GV-11 | Màn thật cho `/gv/viec-can-lam`: buổi chưa hoàn tất kèm hạn còn lại hoặc quá hạn, bài BTVN Nộp sau chờ cập nhật theo lớp, Mở tới GV-04 và GV-08; không migration; tester ĐẠT | Mục «phiếu test chờ chấm» ẩn, để sau 17/11; bài Nộp sau lấy bằng một lần gọi mỗi lớp (90 ngày), gọn hơn cần hàm DB mới (phiếu riêng, rủi ro cao); staging |
+| #267 | Cờ và tham số CS5 cho 17/11 (chỉ tài liệu và SQL) | `docs/van-hanh/cau-hinh-cs5.md` và khối (d) chỉ đọc trong `docs/van-hanh/sql-kiem-hmt-prod-chi-doc.sql`: 7 giá trị bắt buộc (cờ VAN_HANH_LOP, BAN_HANG; opening_balance_date; session_done_requires_review; teacher_session_complete_hours; chu kỳ tự chốt, tự Done) khớp trên DB cục bộ; tester ĐẠT | Chưa chạy trên hmt-prod hay staging; pg_cron trên production chưa kiểm; `import_user_email_domain` chưa có giá trị chốt cho production (chờ anh, Q-44) |
+
+**Tiến độ cổng Giáo viên (LÕI 17/11) sau 13/11:** thêm GV-03, GV-09, GV-10 và GV-12 vào `main` (ngoài GV-01, 02, 04 đến 08, 07K đã có). GV-11 (Chi tiết lớp) đang làm ở phiếu P4: PR còn mở, chưa gộp. Về nghiệp vụ bán hàng, thu tiền: R-CRM-17 đã có (#260).
+
+**Để sau 17/11 (Chat đã quyết):** cột lưu dấu Đúng hạn/Trễ hạn do hệ thống ghi lúc Done (cần cột và sửa hàm Done; không dùng cột cập nhật cuối vì sai khi sửa sau Done); phiếu test chờ chấm ở GV-12; chế độ tháng của GV-03.
+
+**Đang mở:** PR phiếu P4 (GV-11, rủi ro cao, thêm hàm đọc `app.teacher_class_overview`).
 
 ## Trạng thái 12/11/2026 (theo `main`; PR đã gộp tới #251; #234 là PR tài liệu TIEN-DO 10/11)
 
