@@ -189,6 +189,10 @@ const TeacherClassesPage = lazyScreen(
   () => import('../pages/gv/TeacherClassesPage'),
   'TeacherClassesPage',
 );
+const TeacherClassPage = lazyScreen(
+  () => import('../pages/gv/TeacherClassPage'),
+  'TeacherClassPage',
+);
 const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
   'TeacherSchedulePage',
@@ -620,6 +624,7 @@ export const routes: RouteObject[] = [
           { index: true, element: <TeacherTodayPage /> },
           { path: 'lich-day', element: <TeacherSchedulePage /> },
           { path: 'lop', element: <TeacherClassesPage /> },
+          { path: 'lop/:classId', element: <TeacherClassPage /> },
           { path: 'viec-can-lam', element: <PortalTabPage title="Cần làm" stage={GD3} /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },
           { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
