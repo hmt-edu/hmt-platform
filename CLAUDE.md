@@ -95,7 +95,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 - Sao lưu bản chạy thật mỗi đêm cũng chạy từ `hmt-deploy`: xuất DB, mã hoá, đẩy lên Google Drive của `[email vận hành]`.
 - **Khoá chạy thật không bao giờ nằm trên máy Mac**: không `supabase login`, không `wrangler login` bằng tài khoản thật; chuỗi kết nối DB prod và token Cloudflare prod chỉ dán thẳng vào GitHub Secrets của `hmt-deploy` trên web. Lấy token rclone xong thì xoá `~/.config/rclone/rclone.conf`.
 - Claude Code không đọc, không xin, không tìm khoá chạy thật trên máy.
-- Claude Code chỉ gộp PR khi CI xanh **và** có comment "OK" trên PR **từ tài khoản `caotruong276` đăng sau commit cuối** (không tính comment của `hmt-vanhanh`, không tính OK trong chat). Ghi link comment OK vào commit gộp. (Chốt 10/10/2026; Đ279 giữ `caotruong276` là tài khoản OK gộp PR.)
+- **Gộp PR (từ 13/11/2026, Q-42, thay luật 10/10/2026 và Đ279):** chỉ Chat điều phối soát và gộp PR, toàn quyền, theo `docs/hmt/quy-trinh-lam-viec.md` của repo điều phối: base `main`, mergeable clean, CI xanh, đã đọc diff; PR rủi ro cao (migration, quyền, tiền) phải có comment `TESTER ĐẠT <sha>` đúng commit cuối. Gộp xong Chat comment `OK-CHAT <sha>`. Code và tester không tự gộp. Bản chạy thật vẫn chỉ anh Trường deploy.
 - Mục nào trong yêu cầu ghi "anh duyệt trước" / "để anh duyệt" thì **dừng, gửi anh, chờ duyệt rồi mới làm/nạp**; không làm trước rồi báo sau.
 - Khôi phục thử bản sao lưu: anh Trường tự chạy vào DB Docker tạm trên máy anh, xong xoá; Claude Code không chạy.
 
