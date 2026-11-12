@@ -34,3 +34,39 @@ select case
                     and o.student_birth_year is null and o.school is null and o.self_rating is null and o.goal is null',
                 false, true, '')))[1]::text || ' phiếu sẽ làm 043 dừng lỗi (phải là 0)'
        end as ket_qua_043;
+
+-- ===== (d) Cờ tính năng và tham số của cơ sở CS5 (phiếu dieu-phoi-kit#278) =====
+-- CHỈ ĐỌC: một câu SELECT, không insert/update/delete/set. So từng dòng với bảng trong docs/van-hanh/cau-hinh-cs5.md.
+-- Cần production đã qua migration 005 (bảng tham số) và 006 (cờ tính năng); chưa qua thì báo «relation ... does not exist»: làm xong cập nhật rồi chạy lại.
+-- Cột can_17_11 chỉ điền cho các dòng bảng tài liệu quy định giá trị bắt buộc; dòng trống = mặc định từ migration, không cần đặt.
+-- Cột lech = «LỆCH» khi giá trị hiện có khác can_17_11 (dòng cờ: cần BẬT). Tham số lấy giá trị theo đúng cách hàm app.get_setting lấy:
+-- dòng ghi đè của CS5 (nếu còn hiệu lực) rồi mới tới giá trị chung.
+with cs5 as (select id from app.branch where code = 'CS5'),
+     can (loai, ten, gia_tri) as (values
+       ('co', 'VAN_HANH_LOP', 'BẬT'),
+       ('co', 'BAN_HANG', 'BẬT'),
+       ('tham_so', 'opening_balance_date', '2026-11-17'),
+       ('tham_so', 'session_done_requires_review', 'false'),
+       ('tham_so', 'teacher_session_complete_hours', '8'),
+       ('tham_so', 'session_autocomplete_minutes', '15'),
+       ('tham_so', 'session_autoclose_before_minutes', '30')),
+     hien as (
+       select 'co' as loai, m.code as ten,
+              case when f.enabled then 'BẬT' when f.enabled is false then 'TẮT' else 'TẮT (chưa có dòng)' end as gia_tri,
+              'phân hệ ' || m.code as ghi_chu, 0 as thu_tu
+         from app.catalog_item m
+         left join app.feature_flag f on f.module_code = m.code and f.branch_id = (select id from cs5)
+        where m.catalog_code = 'MODULE' and m.is_active
+       union all
+       select 'tham_so', d.key,
+              coalesce(sb.value, d.value),
+              case when sb.value is not null then 'ghi đè theo CS5' else 'giá trị chung' end
+                || coalesce(' · ' || d.module, ''), 1
+         from app.setting_def d
+         left join app.setting_branch sb on sb.setting_key = d.key and sb.branch_id = (select id from cs5) and sb.is_active)
+select h.loai, h.ten, h.gia_tri as gia_tri_cs5, c.gia_tri as can_17_11,
+       case when c.gia_tri is null then '' when c.gia_tri = h.gia_tri then 'khớp' else 'LỆCH' end as lech,
+       h.ghi_chu
+  from hien h
+  left join can c on c.loai = h.loai and c.ten = h.ten
+ order by h.thu_tu, h.ten;
