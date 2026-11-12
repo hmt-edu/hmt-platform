@@ -185,6 +185,7 @@ const AppointmentListPage = lazyScreen(
   'AppointmentListPage',
 );
 const LeadRecordPage = lazyScreen(() => import('../pages/lead/LeadRecordPage'), 'LeadRecordPage');
+const TeacherTodoPage = lazyScreen(() => import('../pages/gv/TeacherTodoPage'), 'TeacherTodoPage');
 const TeacherClassesPage = lazyScreen(
   () => import('../pages/gv/TeacherClassesPage'),
   'TeacherClassesPage',
@@ -208,7 +209,6 @@ const PatternPage = lazyScreen(() => import('../pages/dev/PatternPage'), 'Patter
 // Trang mẫu thành phần: chỉ có ở bản thử nghiệm, xem trước và local; bản chạy thật không có route này.
 const SHOW_PATTERNS = parseAppEnv(import.meta.env.VITE_APP_ENV) !== 'production';
 
-const GD3 = 'giai đoạn 3';
 const GD4 = 'giai đoạn 4';
 
 export const routes: RouteObject[] = [
@@ -625,7 +625,7 @@ export const routes: RouteObject[] = [
           { path: 'lich-day', element: <TeacherSchedulePage /> },
           { path: 'lop', element: <TeacherClassesPage /> },
           { path: 'lop/:classId', element: <TeacherClassPage /> },
-          { path: 'viec-can-lam', element: <PortalTabPage title="Cần làm" stage={GD3} /> },
+          { path: 'viec-can-lam', element: <TeacherTodoPage /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },
           { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
           { path: 'buoi/:sessionId/cham-btvn', element: <HomeworkGradingPage /> },
