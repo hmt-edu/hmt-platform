@@ -2,7 +2,7 @@
   "du_an": {
     "ten": "HMT Platform",
     "muc_tieu": "Cơ sở 5 chạy thật từ 17/11/2026: một học sinh mới đi trọn đường trên màn hình, không dùng SQL (phiếu thu duyệt, chọn lớp, ghi danh, xếp lớp, lớp, buổi, điểm danh); giáo viên điểm danh, ghi nội dung buổi, chấm nhận xét và BTVN.",
-    "cap_nhat": "2026-11-12T17:15:00+07:00",
+    "cap_nhat": "2026-11-12T17:35:00+07:00",
     "den": "vang",
     "moc": [
       {
@@ -111,15 +111,20 @@
           "ma": "NEN-04",
           "ten": "Ma trận quyền có phiên bản (phiên bản 4)",
           "giai_doan": "da_gop",
-          "pr": [],
-          "ghi_chu": "Theo TIEN-DO; số PR xem docs/TIEN-DO.md."
+          "pr": [
+            32,
+            46
+          ],
+          "ghi_chu": "PR #32 (phiên bản mỗi lần Lưu) và #46 (phiên bản 4: Phụ huynh, Học sinh); các phiên bản sau (5, 6) ở #89, #105."
         },
         {
           "ma": "NEN-05",
           "ten": "Trang chủ theo vai trò",
           "giai_doan": "da_gop",
-          "pr": [],
-          "ghi_chu": "Theo TIEN-DO (PR «Trang chủ theo vai trò»)."
+          "pr": [
+            44
+          ],
+          "ghi_chu": "PR #44 «Trang chủ CRM theo vai trò (CHUNG-14, TS-12)»."
         },
         {
           "ma": "NEN-06",
@@ -153,35 +158,54 @@
           "ma": "TS-01",
           "ten": "Lead: danh sách, Kanban, trang Lead, tạo lead, kiểm trùng số điện thoại",
           "giai_doan": "da_gop",
-          "pr": [],
+          "pr": [
+            54,
+            56,
+            57,
+            58
+          ],
           "ghi_chu": "Theo TIEN-DO (P3c)."
         },
         {
           "ma": "TS-07",
           "ten": "Cơ hội: danh sách, Kanban, trang Cơ hội",
           "giai_doan": "da_gop",
-          "pr": [],
+          "pr": [
+            66,
+            67
+          ],
           "ghi_chu": "Theo TIEN-DO (P3d)."
         },
         {
           "ma": "TS-11",
           "ten": "Lịch hẹn: danh sách, Kanban, lịch, xuất, giao hàng loạt",
           "giai_doan": "da_gop",
-          "pr": [],
+          "pr": [
+            63,
+            64,
+            80,
+            81
+          ],
           "ghi_chu": "Theo TIEN-DO (P3c-3b và Lịch hẹn bổ sung)."
         },
         {
           "ma": "TS-16",
           "ten": "Phiếu kiểm tra: danh sách, Kanban, lịch, trang phiếu",
           "giai_doan": "da_gop",
-          "pr": [],
+          "pr": [
+            71,
+            72
+          ],
           "ghi_chu": "Theo TIEN-DO (P3e)."
         },
         {
           "ma": "TS-10",
           "ten": "Gộp trùng lead, cơ hội và nhập lead từ file CSV",
           "giai_doan": "da_gop",
-          "pr": [],
+          "pr": [
+            75,
+            77
+          ],
           "ghi_chu": "Theo TIEN-DO (P3f)."
         }
       ]
@@ -259,7 +283,11 @@
           "ma": "TC-PT",
           "ten": "Phiếu thu TC-01 đến TC-04, TC-07 và nối duyệt phiếu thu với ghi danh",
           "giai_doan": "da_gop",
-          "pr": [],
+          "pr": [
+            180,
+            199,
+            224
+          ],
           "ghi_chu": "Migration 076 và 106; số PR xem docs/TIEN-DO.md."
         },
         {
@@ -530,7 +558,7 @@
           "pr": [
             232
           ],
-          "ghi_chu": "Khung cổng có 5 tab (Hôm nay, Lịch dạy, Lớp, Cần làm, Tài khoản); chỉ Hôm nay và Tài khoản có trang, ba tab còn lại là trang giữ chỗ (rà 12/11). Ngoài 28 màn LÕI."
+          "ghi_chu": "Khung cổng có 5 tab (Hôm nay, Lịch dạy, Lớp, Cần làm, Tài khoản); chỉ Hôm nay và Tài khoản có trang. Ba tab còn lại là trang giữ chỗ, tính ở cổng «Để sau 17/11» (GV-02B, GV-03, GV-LOP). Ngoài 28 màn LÕI."
         },
         {
           "ma": "GV-02",
@@ -539,28 +567,7 @@
           "pr": [
             232
           ],
-          "ghi_chu": "Trang Hôm nay làm xong (#232, hàm teacher_my_sessions). Tab «Cần làm» là trang giữ chỗ: xem GV-02B. Ngoài 28 màn LÕI."
-        },
-        {
-          "ma": "GV-02B",
-          "ten": "GV-02B Tab «Cần làm» của cổng giáo viên",
-          "giai_doan": "chua_lam",
-          "pr": [],
-          "ghi_chu": "/gv/viec-can-lam là trang giữ chỗ (PortalTabPage, «giai đoạn 3»). Việc sắp trễ hạn hiện tạm ở trang Hôm nay. Ngoài 28 màn LÕI; thêm 12/11 vì TIEN-DO ghi tab này đã gộp (#232) nhưng mã chưa có."
-        },
-        {
-          "ma": "GV-03",
-          "ten": "GV-03 Tab «Lịch dạy»",
-          "giai_doan": "chua_lam",
-          "pr": [],
-          "ghi_chu": "/gv/lich-day là trang giữ chỗ (PortalTabPage). Ngoài 28 màn LÕI."
-        },
-        {
-          "ma": "GV-LOP",
-          "ten": "Tab «Lớp» của cổng giáo viên",
-          "giai_doan": "chua_lam",
-          "pr": [],
-          "ghi_chu": "/gv/lop là trang giữ chỗ (PortalTabPage). Ngoài 28 màn LÕI."
+          "ghi_chu": "Trang Hôm nay làm xong (#232). Tab «Cần làm» là trang giữ chỗ: xem GV-02B (sau 17/11). Ngoài 28 màn LÕI."
         },
         {
           "ma": "GV-04",
@@ -596,7 +603,7 @@
           "pr": [
             241
           ],
-          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11. Có bài e2e riêng (gv-cham-btvn.spec: «GV-07: mở nhận xét, chấm ô 4 trạng thái…»)."
         },
         {
           "ma": "GV-08",
@@ -627,7 +634,12 @@
           "ma": "QT-01",
           "ten": "QT-01, QT-02 Người dùng: danh sách, bản ghi, khoá, đặt lại, tạo, sửa email",
           "giai_doan": "da_gop",
-          "pr": [],
+          "pr": [
+            82,
+            83,
+            172,
+            178
+          ],
           "ghi_chu": "Số PR xem docs/TIEN-DO.md."
         },
         {
@@ -770,6 +782,27 @@
           "giai_doan": "chua_lam",
           "pr": [],
           "ghi_chu": "Anh Trường chốt để sau 17/11 (12/11)."
+        },
+        {
+          "ma": "GV-02B",
+          "ten": "GV-02B Tab «Cần làm» của cổng giáo viên",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Tab giữ chỗ (PortalTabPage): /gv/viec-can-lam. Mục tiêu 17/11 chỉ cần Hôm nay và các bước buổi (điểm danh, nội dung, chấm), nên tab này làm sau 17/11 (Chat chốt 12/11)."
+        },
+        {
+          "ma": "GV-03",
+          "ten": "GV-03 Tab «Lịch dạy»",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Tab giữ chỗ (PortalTabPage): /gv/lich-day. Mục tiêu 17/11 chỉ cần Hôm nay và các bước buổi (điểm danh, nội dung, chấm), nên tab này làm sau 17/11 (Chat chốt 12/11)."
+        },
+        {
+          "ma": "GV-LOP",
+          "ten": "Tab «Lớp» của cổng giáo viên",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Tab giữ chỗ (PortalTabPage): /gv/lop. Mục tiêu 17/11 chỉ cần Hôm nay và các bước buổi (điểm danh, nội dung, chấm), nên tab này làm sau 17/11 (Chat chốt 12/11)."
         }
       ]
     }
