@@ -1,0 +1,752 @@
+{
+  "du_an": {
+    "ten": "HMT Platform",
+    "muc_tieu": "Cơ sở 5 chạy thật từ 17/11/2026: một học sinh mới đi trọn đường trên màn hình, không dùng SQL (phiếu thu duyệt, chọn lớp, ghi danh, xếp lớp, lớp, buổi, điểm danh); giáo viên điểm danh, ghi nội dung buổi, chấm nhận xét và BTVN.",
+    "cap_nhat": "2026-11-12T16:30:00+07:00",
+    "den": "vang",
+    "moc": [
+      {
+        "ten": "Chat đếm tiến độ LÕI (dưới 60% thì báo anh chọn)",
+        "ngay": "2026-11-13",
+        "trang_thai": "sap_toi",
+        "ghi_chu": "12:00."
+      },
+      {
+        "ten": "Deploy staging, diễn tập nạp dữ liệu, anh thử tay",
+        "ngay": "2026-11-14",
+        "trang_thai": "sap_toi",
+        "ghi_chu": ""
+      },
+      {
+        "ten": "Đóng băng, hết nhận màn mới",
+        "ngay": "2026-11-16",
+        "trang_thai": "sap_toi",
+        "ghi_chu": "12:00."
+      },
+      {
+        "ten": "Anh sao lưu và deploy production",
+        "ngay": "2026-11-16",
+        "trang_thai": "sap_toi",
+        "ghi_chu": "Tối 16/11."
+      },
+      {
+        "ten": "Nạp dữ liệu cơ sở 5, chạy thật",
+        "ngay": "2026-11-17",
+        "trang_thai": "sap_toi",
+        "ghi_chu": ""
+      }
+    ],
+    "rui_ro": [
+      {
+        "mo_ta": "Công tắc BAN_HANG của cơ sở 5 chưa có migration bật cho production (chỉ seed.sql bật), nên hàm ghi báo giá, đơn, phiếu thu có thể bị từ chối trên bản chạy thật.",
+        "muc": "cao",
+        "chu": "Chat, Code 2"
+      },
+      {
+        "mo_ta": "Trạng thái migration của hmt-prod chưa được xác nhận (lần cuối: bản staging 10/10), trong khi main đã tới migration 124.",
+        "muc": "cao",
+        "chu": "Anh Trường"
+      },
+      {
+        "mo_ta": "Secret Edge Function và chống dò mật khẩu trên production chưa xác nhận; thiếu secret thì đăng nhập có thể bị từ chối.",
+        "muc": "cao",
+        "chu": "Anh Trường"
+      },
+      {
+        "mo_ta": "Chưa có bằng chứng anh kiểm tay đường đi trọn trên staging và chưa diễn tập nạp dữ liệu đủ vòng.",
+        "muc": "vua",
+        "chu": "Anh Trường, Chat"
+      },
+      {
+        "mo_ta": "Chưa có cách quay lại khi deploy lỗi (migration không có bản lùi); trước 17/11 phải chốt phương án.",
+        "muc": "vua",
+        "chu": "Chat"
+      }
+    ]
+  },
+  "cong": [
+    {
+      "ma": "NEN",
+      "ten": "Nền, đăng nhập, danh mục và phân quyền",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "NEN-01",
+          "ten": "Hệ thiết kế, khung ứng dụng, danh sách, Kanban, lịch, trang chi tiết, hộp thoại (khuôn chung)",
+          "giai_doan": "da_gop",
+          "pr": [
+            19,
+            21,
+            22,
+            23,
+            24
+          ],
+          "ghi_chu": "Gói P0 đến PR 4b. Chưa xác nhận đã lên production."
+        },
+        {
+          "ma": "NEN-02",
+          "ten": "Đăng nhập (P1): form, hai bước, khoá, phiên, cổng, nền động",
+          "giai_doan": "da_gop",
+          "pr": [
+            41,
+            43
+          ],
+          "ghi_chu": "Còn việc ở production: secret Edge Function và chống dò mật khẩu chưa xác nhận (xem rủi ro)."
+        },
+        {
+          "ma": "NEN-03",
+          "ten": "Danh mục và tham số (34 danh mục theo spec 06)",
+          "giai_doan": "da_gop",
+          "pr": [
+            28,
+            29,
+            30,
+            31,
+            32,
+            33
+          ],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "NEN-04",
+          "ten": "Ma trận quyền có phiên bản (phiên bản 4)",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Theo TIEN-DO; số PR xem docs/TIEN-DO.md."
+        },
+        {
+          "ma": "NEN-05",
+          "ten": "Trang chủ theo vai trò",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Theo TIEN-DO (PR «Trang chủ theo vai trò»)."
+        },
+        {
+          "ma": "NEN-06",
+          "ten": "Tách gói tải theo cổng và màn",
+          "giai_doan": "da_gop",
+          "pr": [
+            36
+          ],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "NEN-07",
+          "ten": "Công cụ và CI: khoá việc nặng, cổng kiểm trước khi gộp, giảm phút CI",
+          "giai_doan": "da_gop",
+          "pr": [
+            227,
+            248,
+            250,
+            251
+          ],
+          "ghi_chu": ""
+        }
+      ]
+    },
+    {
+      "ma": "TUYEN-SINH",
+      "ten": "Tuyển sinh: lead, cơ hội, lịch hẹn, phiếu kiểm tra",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "TS-01",
+          "ten": "Lead: danh sách, Kanban, trang Lead, tạo lead, kiểm trùng số điện thoại",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Theo TIEN-DO (P3c)."
+        },
+        {
+          "ma": "TS-07",
+          "ten": "Cơ hội: danh sách, Kanban, trang Cơ hội",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Theo TIEN-DO (P3d)."
+        },
+        {
+          "ma": "TS-11",
+          "ten": "Lịch hẹn: danh sách, Kanban, lịch, xuất, giao hàng loạt",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Theo TIEN-DO (P3c-3b và Lịch hẹn bổ sung)."
+        },
+        {
+          "ma": "TS-16",
+          "ten": "Phiếu kiểm tra: danh sách, Kanban, lịch, trang phiếu",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Theo TIEN-DO (P3e)."
+        },
+        {
+          "ma": "TS-10",
+          "ten": "Gộp trùng lead, cơ hội và nhập lead từ file CSV",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Theo TIEN-DO (P3f)."
+        }
+      ]
+    },
+    {
+      "ma": "BAN-HANG",
+      "ten": "Bán hàng: gói, báo giá, đơn hàng",
+      "den": "vang",
+      "tinh_nang": [
+        {
+          "ma": "BH-CH",
+          "ten": "Gói bán, bảng giá theo gói, chiết khấu, quà tặng, điều khoản thanh toán",
+          "giai_doan": "da_gop",
+          "pr": [
+            179,
+            181
+          ],
+          "ghi_chu": "Cấu hình bán hàng (P5a-DB0)."
+        },
+        {
+          "ma": "BH-01",
+          "ten": "BH-01 Báo giá (danh sách)",
+          "giai_doan": "da_gop",
+          "pr": [
+            109
+          ],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "BH-02",
+          "ten": "BH-02 Báo giá (bản ghi, sửa Nháp, ưu đãi linh hoạt)",
+          "giai_doan": "da_gop",
+          "pr": [
+            111,
+            117,
+            125
+          ],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "BH-DH",
+          "ten": "Đơn hàng: tạo, sửa, trình, duyệt, từ chối, dòng thời gian",
+          "giai_doan": "da_gop",
+          "pr": [
+            114
+          ],
+          "ghi_chu": "Bỏ hai ô thanh toán khỏi Đơn hàng (canvas v146)."
+        },
+        {
+          "ma": "BH-11",
+          "ten": "BH-11 Cơ hội đã có đơn Nháp (phần máy chủ)",
+          "giai_doan": "da_gop",
+          "pr": [
+            215
+          ],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "BH-03",
+          "ten": "BH-03 In báo giá",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Nút In đang mờ («Có khi làm BH-03»)."
+        }
+      ]
+    },
+    {
+      "ma": "THU-CHI",
+      "ten": "Thu chi",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "TC-PT",
+          "ten": "Phiếu thu TC-01 đến TC-04, TC-07 và nối duyệt phiếu thu với ghi danh",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Migration 076 và 106; số PR xem docs/TIEN-DO.md."
+        },
+        {
+          "ma": "TC-08",
+          "ten": "TC-08 Khoản tiền vào (sổ chỉ đọc)",
+          "giai_doan": "da_gop",
+          "pr": [
+            243
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "TC-13",
+          "ten": "TC-13 Công nợ theo đợt",
+          "giai_doan": "da_gop",
+          "pr": [
+            243
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11. «Đã đóng» từng đợt là quy tắc hiển thị tạm, sau 17/11 lưu tiền theo đợt trong DB."
+        }
+      ]
+    },
+    {
+      "ma": "GHI-DANH",
+      "ten": "Ghi danh",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "BH-08",
+          "ten": "BH-08 Ghi danh từ đơn",
+          "giai_doan": "da_gop",
+          "pr": [
+            238
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "GD-01",
+          "ten": "GD-01 Danh sách ghi danh",
+          "giai_doan": "da_gop",
+          "pr": [
+            238
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "GD-02",
+          "ten": "GD-02 Bản ghi ghi danh",
+          "giai_doan": "da_gop",
+          "pr": [
+            238
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "GD-03",
+          "ten": "GD-03 Xếp lớp (kể cả theo nhóm lớp)",
+          "giai_doan": "da_gop",
+          "pr": [
+            238,
+            249
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "GD-04",
+          "ten": "GD-04 Ghi danh: thao tác",
+          "giai_doan": "da_gop",
+          "pr": [
+            238
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "GD-06",
+          "ten": "GD-06 Ghi danh: màn bổ sung",
+          "giai_doan": "da_gop",
+          "pr": [
+            238
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        }
+      ]
+    },
+    {
+      "ma": "LOP",
+      "ten": "Lớp học",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "LOP-01",
+          "ten": "LOP-01 Lớp học",
+          "giai_doan": "da_gop",
+          "pr": [
+            237
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "LOP-02",
+          "ten": "LOP-02 Lớp học",
+          "giai_doan": "da_gop",
+          "pr": [
+            237
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "LOP-03",
+          "ten": "LOP-03 Lớp học",
+          "giai_doan": "da_gop",
+          "pr": [
+            237
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "LOP-05",
+          "ten": "LOP-05 Lớp học",
+          "giai_doan": "da_gop",
+          "pr": [
+            237
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "LOP-06",
+          "ten": "LOP-06 Lớp học",
+          "giai_doan": "da_gop",
+          "pr": [
+            237
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "LOP-08",
+          "ten": "LOP-08 Lớp học",
+          "giai_doan": "da_gop",
+          "pr": [
+            237
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        }
+      ]
+    },
+    {
+      "ma": "BUOI",
+      "ten": "Buổi học",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "BUOI-01",
+          "ten": "BUOI-01 Buổi học",
+          "giai_doan": "da_gop",
+          "pr": [
+            240
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "BUOI-02",
+          "ten": "BUOI-02 Buổi học",
+          "giai_doan": "da_gop",
+          "pr": [
+            240
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "BUOI-03",
+          "ten": "BUOI-03 Buổi học",
+          "giai_doan": "da_gop",
+          "pr": [
+            240
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "BUOI-11",
+          "ten": "BUOI-11 Buổi học",
+          "giai_doan": "da_gop",
+          "pr": [
+            240
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "BUOI-04",
+          "ten": "BUOI-04 Buổi học",
+          "giai_doan": "da_gop",
+          "pr": [
+            242
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "BUOI-05",
+          "ten": "BUOI-05 Buổi học",
+          "giai_doan": "da_gop",
+          "pr": [
+            242
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "BUOI-12",
+          "ten": "BUOI-12 Buổi học",
+          "giai_doan": "da_gop",
+          "pr": [
+            242
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        }
+      ]
+    },
+    {
+      "ma": "KHACH-HANG",
+      "ten": "Khách hàng",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "KH-01",
+          "ten": "KH-01 Khách hàng",
+          "giai_doan": "da_gop",
+          "pr": [
+            239
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "KH-02",
+          "ten": "KH-02 Khách hàng",
+          "giai_doan": "da_gop",
+          "pr": [
+            239
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "KH-04",
+          "ten": "KH-04 Khách hàng",
+          "giai_doan": "da_gop",
+          "pr": [
+            239
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "KH-05",
+          "ten": "KH-05 Khách hàng",
+          "giai_doan": "da_gop",
+          "pr": [
+            239
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        }
+      ]
+    },
+    {
+      "ma": "GIAO-VIEN",
+      "ten": "Cổng giáo viên",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "GV-01",
+          "ten": "GV-01 Trang chủ giáo viên",
+          "giai_doan": "da_gop",
+          "pr": [
+            232
+          ],
+          "ghi_chu": "Ngoài 28 màn LÕI."
+        },
+        {
+          "ma": "GV-02",
+          "ten": "GV-02 Hôm nay, tab Cần làm",
+          "giai_doan": "da_gop",
+          "pr": [
+            232
+          ],
+          "ghi_chu": "Ngoài 28 màn LÕI."
+        },
+        {
+          "ma": "GV-04",
+          "ten": "GV-04 Buổi dạy",
+          "giai_doan": "da_gop",
+          "pr": [
+            236
+          ],
+          "ghi_chu": "Ngoài 28 màn LÕI."
+        },
+        {
+          "ma": "GV-05",
+          "ten": "GV-05 Điểm danh",
+          "giai_doan": "da_gop",
+          "pr": [
+            235
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "GV-06",
+          "ten": "GV-06 Nội dung buổi và BTVN",
+          "giai_doan": "da_gop",
+          "pr": [
+            236
+          ],
+          "ghi_chu": "Ngoài 28 màn LÕI."
+        },
+        {
+          "ma": "GV-07",
+          "ten": "GV-07 Chấm nhận xét",
+          "giai_doan": "da_gop",
+          "pr": [
+            241
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "GV-08",
+          "ten": "GV-08 Chấm BTVN buổi trước",
+          "giai_doan": "da_gop",
+          "pr": [
+            241
+          ],
+          "ghi_chu": "Thuộc LÕI 28 màn của 17/11."
+        },
+        {
+          "ma": "GV-07K",
+          "ten": "GV-07K Chấm kiểm tra",
+          "giai_doan": "da_gop",
+          "pr": [
+            246
+          ],
+          "ghi_chu": "Ngoài 28 màn LÕI."
+        }
+      ]
+    },
+    {
+      "ma": "QUAN-TRI",
+      "ten": "Quản trị và nạp dữ liệu",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "QT-01",
+          "ten": "QT-01, QT-02 Người dùng: danh sách, bản ghi, khoá, đặt lại, tạo, sửa email",
+          "giai_doan": "da_gop",
+          "pr": [],
+          "ghi_chu": "Số PR xem docs/TIEN-DO.md."
+        },
+        {
+          "ma": "QT-07",
+          "ten": "QT-06, QT-07 Danh mục: màn danh mục và sửa các mục",
+          "giai_doan": "da_gop",
+          "pr": [
+            201
+          ],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "QT-18",
+          "ten": "QT-18 Nhập dữ liệu: lát 1 và lát 2 (Lớp, Ghi danh)",
+          "giai_doan": "da_gop",
+          "pr": [
+            230
+          ],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "D1E",
+          "ten": "Nạp dữ liệu đào tạo: lớp, ghi danh, số dư đầu kỳ, buổi, điểm danh đối soát",
+          "giai_doan": "da_gop",
+          "pr": [
+            221
+          ],
+          "ghi_chu": "Migration 105."
+        }
+      ]
+    },
+    {
+      "ma": "VAN-HANH",
+      "ten": "Vận hành 14/11 đến 17/11 (việc còn lại để chạy thật)",
+      "den": "vang",
+      "tinh_nang": [
+        {
+          "ma": "VH-01",
+          "ten": "Bật công tắc BAN_HANG cho cơ sở 5 trên production bằng migration",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Hiện chỉ seed.sql (local và staging) bật; chưa thấy migration. Chat và Code 2 xử lý."
+        },
+        {
+          "ma": "VH-02",
+          "ten": "Xác nhận trạng thái migration của hmt-prod",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Việc của anh Trường (Claude Code không đọc chạy thật)."
+        },
+        {
+          "ma": "VH-03",
+          "ten": "Anh kiểm tay trên staging (14/11)",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Chưa có bằng chứng anh đã thử."
+        },
+        {
+          "ma": "VH-04",
+          "ten": "Diễn tập nạp dữ liệu trên staging",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "VH-05",
+          "ten": "Sao lưu và deploy production (16/11 tối)",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Việc của anh Trường."
+        },
+        {
+          "ma": "VH-06",
+          "ten": "Nạp dữ liệu cơ sở 5, chạy thật (17/11)",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Việc của anh Trường."
+        }
+      ]
+    },
+    {
+      "ma": "SAU-17-11",
+      "ten": "Để sau 17/11",
+      "den": "xanh",
+      "tinh_nang": [
+        {
+          "ma": "S-01",
+          "ten": "Ticket (CS)",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "S-02",
+          "ten": "Quản trị QT-04, QT-05, QT-08, QT-09, QT-10",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "S-03",
+          "ten": "Giáo viên GV-09 đến GV-12, GV-14, GV-16",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "S-04",
+          "ten": "Báo cáo",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "S-05",
+          "ten": "Cổng học tập và cổng phụ huynh",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "S-06",
+          "ten": "Hoàn tiền, bảo lưu, chuyển lớp",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "S-07",
+          "ten": "Đối soát",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": ""
+        },
+        {
+          "ma": "S-08",
+          "ten": "Cột Đúng hạn/Trễ hạn và báo cáo tham số, cờ cơ sở 5",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "Anh Trường chốt để sau 17/11 (12/11)."
+        }
+      ]
+    }
+  ]
+}
