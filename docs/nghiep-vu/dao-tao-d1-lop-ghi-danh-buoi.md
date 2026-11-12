@@ -82,6 +82,8 @@ Chưa có: bài tập về nhà, màn cấu hình đánh giá (CH-07, sau 17/11)
 
 `app.sync_session_cron()` (Admin) đăng ký hai lịch pg_cron từ Cài đặt: `hmt-auto-close-sessions` gọi `app.auto_close_sessions()` mỗi `session_autoclose_before_minutes` phút (30), `hmt-auto-complete-sessions` gọi `app.auto_complete_sessions()` mỗi `session_autocomplete_minutes` phút (15). Đổi tham số xong thì gọi lại hàm này. Luật R-GIO-05, R-GIO-06, Q-180.
 
+**Tự Done không nuốt lỗi (P7, migration 128).** `app.auto_complete_sessions()` vẫn bắt lỗi từng buổi (một buổi lỗi không chặn buổi khác) nhưng ghi vào bảng `app.session_auto_done_error`: MỘT dòng mỗi buổi gồm mã lỗi (`HMT_*` hoặc sqlstate), câu lỗi, số lần thử (`attempts`, tăng mỗi lượt chạy mà buổi vẫn lỗi), lần đầu, lần cuối. Lần chạy sau vẫn thử lại buổi đó; Done được thì `resolved_at` có giá trị và số lần thử dừng. Chỉ Quản trị đọc được bảng (RLS); không đổi luật trừ giờ. Xem lỗi chưa hết: `select * from app.session_auto_done_error where resolved_at is null order by last_error_at desc`.
+
 ## D1e: nạp dữ liệu đào tạo (migration 105)
 
 `app.import_training_records(loại, hàng, nạp thật, tên file)` (Admin, cùng hợp đồng với `app.import_records`): loại LOP, GHI_DANH, BUOI_HOC, DIEM_DANH. Xem trước hoàn tác; nạp thật ghi nhật ký. Báo cáo có `summary.errors_by_type` (mã lỗi → số dòng) và `summary.classes_without_teacher`. Lớp nạp chỉ sinh buổi từ `opening_balance_date` (Q-199). Mỗi ghi danh một dòng Số dư đầu kỳ mang ngày chốt (`hour_ledger.entry_date`, Q-177). Buổi, điểm danh cũ vào `legacy_session_record`, `legacy_attendance_record` (chỉ đọc); `app.legacy_hours_reconciliation(mã lớp cũ, chỉ dòng lệch)` so giờ đã học ghi trong file với điểm danh cũ. Luật R-V2-30, R-V2-32, R-V2-33, Q-186..188, Q-199, Q-200.
