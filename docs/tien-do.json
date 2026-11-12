@@ -2,7 +2,7 @@
   "du_an": {
     "ten": "HMT Platform",
     "muc_tieu": "Cơ sở 5 chạy thật từ 17/11/2026: một học sinh mới đi trọn đường trên màn hình, không dùng SQL (phiếu thu duyệt, chọn lớp, ghi danh, xếp lớp, lớp, buổi, điểm danh); giáo viên điểm danh, ghi nội dung buổi, chấm nhận xét và BTVN.",
-    "cap_nhat": "2026-11-12T16:30:00+07:00",
+    "cap_nhat": "2026-11-12T17:15:00+07:00",
     "den": "vang",
     "moc": [
       {
@@ -242,9 +242,11 @@
         {
           "ma": "BH-03",
           "ten": "BH-03 In báo giá",
-          "giai_doan": "chua_lam",
-          "pr": [],
-          "ghi_chu": "Nút In đang mờ («Có khi làm BH-03»)."
+          "giai_doan": "da_gop",
+          "pr": [
+            140
+          ],
+          "ghi_chu": "Bản in A4 khuôn K13 đã gộp (#140): nút «In» ở bản ghi báo giá, trang /crm/bao-gia/:id/in, có bài e2e (bao-gia.spec). Ghi chú cũ «nút In đang mờ» không còn đúng (rà 12/11)."
         }
       ]
     },
@@ -528,16 +530,37 @@
           "pr": [
             232
           ],
-          "ghi_chu": "Ngoài 28 màn LÕI."
+          "ghi_chu": "Khung cổng có 5 tab (Hôm nay, Lịch dạy, Lớp, Cần làm, Tài khoản); chỉ Hôm nay và Tài khoản có trang, ba tab còn lại là trang giữ chỗ (rà 12/11). Ngoài 28 màn LÕI."
         },
         {
           "ma": "GV-02",
-          "ten": "GV-02 Hôm nay, tab Cần làm",
+          "ten": "GV-02 Hôm nay (buổi dạy trong ngày, việc sắp trễ hạn)",
           "giai_doan": "da_gop",
           "pr": [
             232
           ],
-          "ghi_chu": "Ngoài 28 màn LÕI."
+          "ghi_chu": "Trang Hôm nay làm xong (#232, hàm teacher_my_sessions). Tab «Cần làm» là trang giữ chỗ: xem GV-02B. Ngoài 28 màn LÕI."
+        },
+        {
+          "ma": "GV-02B",
+          "ten": "GV-02B Tab «Cần làm» của cổng giáo viên",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "/gv/viec-can-lam là trang giữ chỗ (PortalTabPage, «giai đoạn 3»). Việc sắp trễ hạn hiện tạm ở trang Hôm nay. Ngoài 28 màn LÕI; thêm 12/11 vì TIEN-DO ghi tab này đã gộp (#232) nhưng mã chưa có."
+        },
+        {
+          "ma": "GV-03",
+          "ten": "GV-03 Tab «Lịch dạy»",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "/gv/lich-day là trang giữ chỗ (PortalTabPage). Ngoài 28 màn LÕI."
+        },
+        {
+          "ma": "GV-LOP",
+          "ten": "Tab «Lớp» của cổng giáo viên",
+          "giai_doan": "chua_lam",
+          "pr": [],
+          "ghi_chu": "/gv/lop là trang giữ chỗ (PortalTabPage). Ngoài 28 màn LÕI."
         },
         {
           "ma": "GV-04",
@@ -643,10 +666,12 @@
       "tinh_nang": [
         {
           "ma": "VH-01",
-          "ten": "Bật công tắc BAN_HANG cho cơ sở 5 trên production bằng migration",
-          "giai_doan": "chua_lam",
-          "pr": [],
-          "ghi_chu": "Hiện chỉ seed.sql (local và staging) bật; chưa thấy migration. Chat và Code 2 xử lý."
+          "ten": "Migration bật công tắc BAN_HANG cho cơ sở 5 (lên production khi anh deploy)",
+          "giai_doan": "da_gop",
+          "pr": [
+            254
+          ],
+          "ghi_chu": "Migration 125 đã gộp (#254): tự lên staging; lên production khi anh chạy deploy (VH-05). Trước đó chỉ seed.sql bật cờ."
         },
         {
           "ma": "VH-02",
