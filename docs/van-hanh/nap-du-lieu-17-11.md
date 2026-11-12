@@ -110,3 +110,47 @@ Hàm nạp Lớp, Ghi danh, Buổi, Điểm danh kiểm công tắc tính năng 
 - **Cách bật (Q-262):** công tắc `VAN_HANH_LOP` bật bằng **migration** (qua PR duyệt như mọi thay đổi cấu trúc), không bấm tay trên giao diện và không sửa tay cơ sở dữ liệu chạy thật. **CS5 bật trước.** Cơ sở khác chỉ bật khi anh Trường xác nhận cơ sở đó có trong file nạp. Công tắc là một dòng trong bảng `app.feature_flag` (phân hệ × cơ sở); migration chỉ bật, chạy lại không lỗi.
 - **Áp cho cả staging lẫn bản chạy thật:** cờ bật ngay khi migration được áp lên môi trường đó (staging khi gộp vào `main`; bản chạy thật khi anh Trường chạy workflow bản chạy thật). Vì vậy bật xong trên bản chạy thật là người dùng CS5 thấy phân hệ Vận hành lớp; chỉ nên gộp migration đó khi sẵn sàng.
 - Màn công tắc theo bản đồ màn hình là **QT-10 «Công tắc tính năng theo cơ sở»**; màn này làm **sau 17/11**.
+
+## 10. Nạp hỏng giữa chừng: DB còn lại gì và làm gì
+
+Viết 13/11/2026 theo thử thật trên cơ sở dữ liệu cục bộ với dữ liệu giả (phiếu dieu-phoi-kit#275), kèm đọc mã. Mỗi bảng dưới đây ghi rõ điều nào đã **thử thật** và điều nào **chỉ đọc mã**. Quay lại bản sao lưu khi deploy lỗi: `docs/van-hanh/quay-lai-khi-deploy-loi.md`.
+
+**Quy tắc ngắn:** bấm **Xem trước** trước, chỉ bấm **Nạp** khi báo cáo xem trước có 0 lỗi. Nạp cùng một file nhiều lần không sinh trùng, nên nạp lại là cách làm lại an toàn.
+
+### 10.1. Phụ huynh, Học sinh, Cơ hội, Lớp, Ghi danh, Buổi học, Điểm danh (hàm trong cơ sở dữ liệu)
+
+Bảy loại này dùng cùng một cách chạy: **một lần bấm Nạp là một lần gọi, một giao dịch**; trong đó mỗi dòng được thử riêng, dòng lỗi bị bỏ qua và dòng đúng được giữ.
+
+| Triệu chứng | Cơ sở dữ liệu còn lại gì | Làm gì | Ai |
+| --- | --- | --- | --- |
+| Nạp xong nhưng báo cáo ghi «lỗi N dòng» (N lớn hơn 0) | **Giữ một phần:** các dòng đúng ĐÃ được ghi, các dòng lỗi KHÔNG ghi gì. Nhật ký nạp (`import_log`) có một dòng cho cả lần nạp, ghi số dòng, số nạp được, số trùng, số lỗi | Sửa các dòng lỗi trong file (xem mục 5), giữ nguyên dòng đúng, **nạp lại cả file**. Dòng đã nạp báo «trùng» và bị bỏ qua | Admin |
+| Nạp lại file cũ chưa sửa, hoặc nạp lại cùng file hai lần | **Không nạp trùng, không ghi đè.** Dòng đã nạp báo «trùng»; dòng lỗi vẫn báo lỗi. Với Lớp, số buổi đã sinh không tăng thêm | Không phải dọn gì. Nạp lại chỉ ghi các dòng còn thiếu | Admin |
+| Bị cắt ngang khi đang nạp (mất mạng, đóng tab, hết giờ chờ, máy chủ lỗi) và chưa thấy báo cáo | **Không còn gì của lần nạp đó:** cả lần nạp quay lại, không có nửa file, không có dòng nhật ký | Nạp lại cả file. Không cần xoá hay dọn gì | Admin |
+| Không chắc lần nạp trước đã xong chưa (đang chờ mà mất kết nối) | Hoặc đã ghi các dòng đúng (lần nạp xong), hoặc chưa ghi gì (lần nạp bị cắt): không có kết quả nửa vời ở lần gọi bị cắt | Bấm **Xem trước** lại đúng file đó: số dòng báo «trùng» là số dòng đã nạp. Nếu mọi dòng đúng đều «trùng» thì lần trước đã xong | Admin |
+| Nạp xong rồi mới thấy file sai (nhầm file, nhầm ngày chốt, dữ liệu sai) | Dữ liệu đã ghi. **Không có chức năng hoàn tác một lần nạp**, nạp lại không ghi đè dòng đã có | Không sửa tay trên cơ sở dữ liệu chạy thật. Báo Chat ngay; xử lý bằng bản sao lưu theo `quay-lai-khi-deploy-loi.md` (xem mục đó về việc quay DB) | Anh Trường quyết, Chat điều phối |
+
+**Đã thử thật (cơ sở dữ liệu cục bộ, dữ liệu giả, một phiên Admin hai bước):**
+- Nạp Lớp, file 6 dòng, 3 dòng lỗi (thiếu cột, lịch sai dạng, lớp chung thiếu phân loại): nạp được 3, trùng 0, lỗi 3. Sau đó có **đúng 3 lớp** và 34 buổi trong cơ sở dữ liệu; nhật ký nạp có 1 dòng (6 dòng, 3 nạp, 0 trùng, 3 lỗi).
+- Nạp lại đúng file đó: nạp được 0, trùng 3, lỗi 3. Vẫn **3 lớp, 34 buổi** (không sinh thêm).
+- Sửa dòng 4 (thêm `so_buoi`) rồi nạp lại cả file: nạp được 1, trùng 3, lỗi 2. Có 4 lớp.
+- Phụ huynh, file 1000 dòng hợp lệ (xem trước cho 1000 hợp lệ, mất khoảng 1,5 giây), cắt giữa chừng bằng giới hạn thời gian (300 mili giây): máy chủ báo huỷ truy vấn; sau đó **0 phụ huynh** và **0 dòng nhật ký**. Đây là mô phỏng việc bị cắt giữa chừng; **chưa** thử ngắt kết nối trình duyệt thật.
+- Nạp lại trùng của Phụ huynh, Học sinh, Cơ hội, Ghi danh còn được kiểm bằng các bài pgTAP có sẵn (`059`, `063`, `106`).
+
+**Chỉ đọc mã, chưa thử thật:** Học sinh, Cơ hội, Ghi danh, Buổi học, Điểm danh chưa được tôi thử riêng từng loại; trong mã chúng chạy cùng khung với Lớp và Phụ huynh (hai hàm `app.import_records` và `app.import_training_records` cùng cách xử lý dòng lỗi, dòng trùng và xem trước).
+
+### 10.2. Nạp Người dùng (khác hẳn các loại trên)
+
+Nạp Người dùng chạy qua một hàm riêng (Edge Function `import-users`), **không phải một giao dịch**: mỗi dòng tạo một tài khoản đăng nhập rồi một dòng người dùng, lần lượt từng dòng. **Chỉ đọc mã, chưa thử thật** (cần chạy hàm Edge và phiên Admin hai bước).
+
+| Triệu chứng | Cơ sở dữ liệu còn lại gì | Làm gì | Ai |
+| --- | --- | --- | --- |
+| Nạp xong nhưng có dòng lỗi | Dòng đúng đã tạo xong; dòng lỗi không tạo; nếu lỗi xảy ra sau khi tạo tài khoản đăng nhập thì mã tự xoá tài khoản vừa tạo | Sửa dòng lỗi, nạp lại cả file; người đã tạo báo «trùng» theo tên đăng nhập, không tạo thứ hai | Admin |
+| **Bị cắt ngang giữa chừng** | **Giữ một phần:** những người đã tạo XONG vẫn còn. Mật khẩu tạm chỉ được trả MỘT LẦN ở cuối lần nạp (về trình duyệt Admin, không lưu ở đâu), nên **người đã tạo trước khi bị cắt không còn mật khẩu tạm nào để giao** | Bấm **Xem trước** lại để biết ai đã tạo (báo «trùng»). Với những người đã tạo: dùng **«Đặt lại mật khẩu»** ở hồ sơ người dùng để lấy mật khẩu tạm mới. Rồi nạp lại file để tạo phần còn thiếu | Admin |
+
+Vì vậy với file Người dùng: nên nạp nhiều lần file nhỏ thay vì một file lớn, và tải ngay tệp mật khẩu tạm khi báo cáo hiện ra. Việc này chưa có cơ chế bảo vệ trong mã (mật khẩu tạm mất nếu mất kết nối trước khi nhận phản hồi): nếu cần, đây là việc để Chat mở phiếu sửa.
+
+### 10.3. Chưa trả lời được
+
+- Chưa thử thật khi ngắt kết nối trình duyệt hoặc tắt máy chủ giữa lần nạp; chỉ mô phỏng hết giờ ở cơ sở dữ liệu cục bộ.
+- Chưa thử trên staging hay cơ sở dữ liệu chạy thật: giới hạn thời gian chờ ở đó có thể khác (xem trước 1000 dòng mất vài giây trên máy cục bộ).
+- Chưa thử nạp Người dùng thật (Edge Function).
