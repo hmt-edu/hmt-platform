@@ -16,6 +16,9 @@ export type MySession = {
   has_content: boolean;
   deadline_at: string;
   pending_reason: string | null;
+  /** Hàm máy chủ (migration 109) trả thêm; có thể vắng ở bản cũ. */
+  room_name?: string | null;
+  session_type_name?: string | null;
 };
 
 export type MySessionsResult = { total: number; rows: MySession[] };
