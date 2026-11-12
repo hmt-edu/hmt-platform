@@ -149,11 +149,11 @@ Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke
 
 (#244 và #245 không phải PR trên GitHub; #244 là kênh issue của quy trình theo ca.)
 
-**Đang mở:** không kiểm được bằng git; cần anh xác nhận (lúc viết không có PR mở nào được ghi ở đây).
+**Đang mở:** không có PR mở (kiểm 12/11).
 
-**Chưa làm cho 17/11 (xem kế hoạch):** các PR trên đã gộp cho GV-01, 02, 04 đến 08, 07K, cụm Ghi danh, Lớp, Buổi, Khách hàng, Thu tiền; phần còn lại của từng cụm so với `docs/ke-hoach/ke-hoach-17-11.md` — cần anh xác nhận, chưa suy ra được từ git. Migration: 108 bỏ, không dùng lại; Code 1 dùng 111, 113, 114, 115; Code 2 dùng 109, 110, 112, 116, 117, 118 (kế hoạch, giữ nguyên).
+**Chưa làm cho 17/11 (xem kế hoạch):** 28 màn LÕI đã gộp (GV-01, 02, 04 đến 08, 07K, cụm Ghi danh, Lớp, Buổi, Khách hàng, Thu tiền); phần anh kiểm tay trên staging chưa có bằng chứng. Mốc còn lại: 13/11 đếm tiến độ, 14/11 diễn tập staging, 16/11 đóng băng và deploy production, 17/11 nạp dữ liệu. Cột Đúng hạn/Trễ hạn và báo cáo tham số, cờ CS5: để sau 17/11 theo quyết định của anh Trường 12/11. Migration: 108 bỏ, không dùng lại; Code 1 dùng 111, 113, 114, 115; Code 2 dùng 109, 110, 112, 116, 117, 118 (kế hoạch, giữ nguyên).
 
-**Cần anh xác nhận (không kiểm được bằng git/PR; giữ nguyên chữ cũ ở dưới):** trạng thái bản chạy thật (`hmt-prod`) hiện ở tag và migration nào (Claude Code không đọc chạy thật; anh Trường biết). Lần thử deploy production dự kiến tối 12/11, deploy thật 16/11, nạp dữ liệu 17/11.
+**hmt-prod: migration chưa xác nhận.** Lần xác nhận cuối: tag `staging-20261010-1642-75637cf`, có thể tụt xa so với `main` (migration 124). Claude Code không đọc chạy thật (anh Trường biết trạng thái thật). Lần thử deploy production dự kiến tối 12/11, deploy thật 16/11, nạp dữ liệu 17/11.
 
 ## Đang ở đâu (28/10/2026)
 
@@ -191,12 +191,12 @@ Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke
 
 **Đang mở:** #69 (lưu canvas Design, khuôn K4g, K4e4): chờ Design lưu bản cuối (bản 25 trở đi, sau khi Design sửa K12 thành biểu mẫu: bỏ Filters/Group By/Favorites, nút Làm mới, nút Cột, ô tìm kiếm; QĐ-Đ12, QĐ-Đ17) và anh nói "lưu". PR giao diện Quản trị người dùng (QT-01, QT-02): chờ CI và OK.
 
-**Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) còn ở tag `staging-20261010-1642-75637cf`, tụt nhiều migration (013 đến 038) và toàn bộ giao diện mới.
+**Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) lần xác nhận cuối còn ở tag `staging-20261010-1642-75637cf` (lúc đó tụt nhiều migration, 013 đến 038, và toàn bộ giao diện mới); migration hiện tại chưa xác nhận, có thể tụt xa so với `main` (migration 124).
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
 Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
 **Thứ tự việc anh làm trên bản chạy thật trước khi nạp người dùng thật (anh chốt 05/11; hmt-prod hiện chưa có migration 069, vì còn dừng ở tag cũ):**
-1. **Đưa bản mới lên chạy thật qua `hmt-deploy`** > Deploy production, chọn tag đã qua staging và có migration mới nhất (hiện đến 071 [cần anh xác nhận: đây là trạng thái DB chạy thật, không suy ra từ git; migration mới nhất trên `main` hiện là 124]; phải gồm 069 nạp Người dùng, 070 nhóm tự đăng xuất, 071 phòng học tạm). Việc này cũng đưa giao diện mới và Edge Function (kể cả `import-users`) lên. Kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy` nếu chưa chép. Sau đó kiểm: `select max(version) from supabase_migrations.schema_migrations;` đúng số migration mới nhất của tag đã chọn.
+1. **Đưa bản mới lên chạy thật qua `hmt-deploy`** > Deploy production, chọn tag đã qua staging và có migration mới nhất (071 là mục tiêu của bước 1, không phải trạng thái đang chạy; migration mới nhất trên `main` hiện là 124; hmt-prod: migration chưa xác nhận; phải gồm 069 nạp Người dùng, 070 nhóm tự đăng xuất, 071 phòng học tạm). Việc này cũng đưa giao diện mới và Edge Function (kể cả `import-users`) lên. Kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy` nếu chưa chép. Sau đó kiểm: `select max(version) from supabase_migrations.schema_migrations;` đúng số migration mới nhất của tag đã chọn.
 2. **Đặt miền email quy ước:** `select app.set_setting('import_user_email_domain', 'nv.hmt.invalid');` rồi đọc lại `select app.get_setting('import_user_email_domain');` phải ra `nv.hmt.invalid`. Chạy trước bước 1 sẽ báo "Chưa khai báo tham số" (anh đã gặp). Staging anh đã đặt xong 05/11.
 3. **Kiểm trước khi nạp:** (a) `select code, idle_group from app.role order by sort_order;` đúng: ADMIN, BRANCH_MANAGER, SALES, CSKH, ACCOUNTANT, MARKETER, MARKETING_MANAGER, MARKETING là `staff`; TEACHER, TA là `teacher`; STUDENT, PARENT là `student`; (b) `select code, name from app.room order by code;` có 5 phòng mỗi cơ sở CS1 đến CS5 (CSx_T1_01 đến CSx_T3_01), không có P101, P102, ONL1; (c) bản chạy thật không có dữ liệu giả: `select exists (select from app.holiday where name like '%(thử nghiệm)');` phải ra `false` (lệnh tạo tài khoản giả chỉ chạy khi thấy `true`, nên không bao giờ chạy trên bản chạy thật).
 4. **Cần kiểm thêm trước khi nạp (em chưa xác nhận được, anh hoặc em kiểm khi bước 1 xong):** secret của Edge Function trên hmt-prod (khoá `sb_secret_`, khoá bí mật Turnstile) đã đặt trong `hmt-deploy`; công tắc tính năng theo cơ sở (`app.feature_flag`) cho các phân hệ đang dùng ở CS5; tài khoản Admin chạy thật còn đăng nhập được sau cập nhật.
