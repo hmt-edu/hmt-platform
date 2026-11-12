@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { Button, ButtonLink } from '../../ui/Button';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -15,6 +16,7 @@ import {
   type StepState,
 } from './sessionSteps';
 import { useSessionOverview } from './useSessionContent';
+import { CompleteDialog } from './CompleteDialog';
 
 /** Đường dẫn mở từng bước. Điểm danh do Code 1 thêm đường dẫn; nhận xét chưa có màn (Sắp có). */
 function stepPath(sessionId: string, key: SessionStep['key']): string | null {
@@ -78,6 +80,7 @@ function Steps({ overview }: { overview: SessionOverview }) {
   const listed = overview.status_code === 'DA_CHOT' || overview.status_code === 'DONE';
   const isDone = overview.status_code === 'DONE';
   const missing = overview.grading_missing;
+  const [completing, setCompleting] = useState(false);
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4">
@@ -170,6 +173,13 @@ function Steps({ overview }: { overview: SessionOverview }) {
           );
         })}
       </ol>
+
+      {listed && (
+        <Button variant={isDone ? 'secondary' : 'primary'} onClick={() => setCompleting(true)}>
+          Hoàn tất
+        </Button>
+      )}
+      <CompleteDialog overview={overview} open={completing} onOpenChange={setCompleting} />
 
       {!isDone && listed && (done < total || overview.pending_reason) && (
         <Alert tone="warning" title="Kiểm còn thiếu">
