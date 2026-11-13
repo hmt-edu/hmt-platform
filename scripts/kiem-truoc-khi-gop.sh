@@ -9,7 +9,7 @@
 # Không gộp giúp: chỉ kiểm. Dùng trước MỖI lần gộp.
 set -uo pipefail
 
-REPO="${HMT_REPO:-hmt-vanhanh/hmt-platform}"
+REPO="${HMT_REPO:-hmt-edu/hmt-platform}"
 OWNER_OK="${HMT_OK_USER:-caotruong276}"
 PR="${1:-}"
 if ! [[ "$PR" =~ ^[0-9]+$ ]]; then

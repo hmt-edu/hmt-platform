@@ -1,6 +1,6 @@
 # Lời nhắn khởi động cho Claude Chat (chat mới, tài khoản mới)
 
-Dán đoạn dưới vào tin đầu tiên của chat mới (Claude Chat có kết nối GitHub chỉ đọc tới repo `hmt-vanhanh/hmt-platform`). Chưa có kết nối thì xem `docs/quy-trinh-phoi-hop.md` mục 10.
+Dán đoạn dưới vào tin đầu tiên của chat mới (Claude Chat có kết nối GitHub chỉ đọc tới repo `hmt-edu/hmt-platform`). Chưa có kết nối thì xem `docs/quy-trinh-phoi-hop.md` mục 10.
 
 ---
 

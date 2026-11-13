@@ -76,7 +76,8 @@ nhánh feat/… → PR → CI xanh → gộp main → thử nghiệm tự cập 
 | -------------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ci.yml`             | Mỗi PR         | lint, typecheck, test, check:hardcode, format; Supabase local + pgTAP + Playwright; bản xem trước trên Pages `hmt-staging` (link ghi vào PR)   |
 | `deploy-staging.yml` | Gộp vào `main` | Kiểm tra nhanh, `supabase db push` lên `hmt-staging`, đưa giao diện lên `https://hmt-staging.pages.dev`, gắn tag `staging-YYYYMMDD-HHMM-<sha>` |
-| `keepalive.yml`      | 08:17 mỗi ngày | Gọi `app.heartbeat()` để `hmt-staging` không bị tạm dừng                                                                                       |
+
+Staging Supabase gói Free bị tạm dừng khi 7 ngày không hoạt động thì anh Trường bấm Resume trên Supabase; KHÔNG dùng GitHub Actions để gọi dịch vụ ngoài theo lịch (lý do: tài khoản hmt-vanhanh bị GitHub khoá 13/11/2026).
 
 Thay đổi chỉ ở tài liệu (`docs/**`, `*.md`) không chạy CI và không lên thử nghiệm.
 
