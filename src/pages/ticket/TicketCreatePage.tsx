@@ -1,7 +1,7 @@
 // CSN-03 Tạo mới ticket (đề nghị, khiếu nại): biểu mẫu tiếp nhận. Ticket giáo viên do giáo viên tạo từ cổng Giáo viên, không ở đây.
 // Mã cấp tự động khi lưu (AS-01); hạn phản hồi, hạn xử lý tính ở máy chủ lúc tạo (AS-07).
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
@@ -62,6 +62,8 @@ export function TicketCreatePage() {
   const [errors, setErrors] = useState<ReturnType<typeof validateTicketDraft>>({});
   const [saving, setSaving] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
+  // Id ticket vừa tạo: có thì bỏ cờ "chưa lưu" rồi mới chuyển trang (không hỏi Rời trang).
+  const [createdId, setCreatedId] = useState<string | null>(null);
   const [parentQuery, setParentQuery] = useState('');
   const [studentQuery, setStudentQuery] = useState('');
   const parentQ = useDebounced(parentQuery).trim();
@@ -69,6 +71,9 @@ export function TicketCreatePage() {
   const parents = usePeople('list_parents', parentQ, true);
   const students = usePeople('list_students', studentQ, true);
   useCrumbTail('Tạo mới');
+  useEffect(() => {
+    if (createdId !== null) void navigate(`/crm/ticket/${createdId}`);
+  }, [createdId, navigate]);
 
   const all = categories.data ?? [];
   const category = all.find((c) => c.code === draft.categoryCode) ?? null;
@@ -88,7 +93,7 @@ export function TicketCreatePage() {
     setFailure(null);
     try {
       const created = await createTicket(supabase, buildCreatePayload(draft));
-      void navigate(`/crm/ticket/${created.id}`);
+      setCreatedId(created.id);
     } catch (cause) {
       setFailure(errorOf(cause).message);
     } finally {
@@ -101,7 +106,7 @@ export function TicketCreatePage() {
       kind="Ticket"
       title=""
       mode="create"
-      dirty={JSON.stringify(draft) !== JSON.stringify(EMPTY_TICKET_DRAFT)}
+      dirty={createdId === null && JSON.stringify(draft) !== JSON.stringify(EMPTY_TICKET_DRAFT)}
       saving={saving}
       onEdit={() => undefined}
       onSave={() => void save()}
