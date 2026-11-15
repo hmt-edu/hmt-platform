@@ -1,19 +1,24 @@
 // CS-01 Ticket (danh sách, khuôn K03, canvas CSN-01): nối với list_tickets. Lọc, phân trang làm ở máy chủ; chỉ giữ trang đang xem.
 // Phân hệ Aftersale tắt ở cơ sở thì hiện câu trung tính (công tắc kiểm cả ở giao diện và trong hàm DB, AS-13).
 import { useMemo, useState } from 'react';
+import { KanbanBoard } from '../../list/Kanban';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
+import { Spinner } from '../../ui/Feedback';
+import { useToast } from '../../ui/toastContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import { TicketCard } from './TicketCard';
 import { buildTicketConfig } from './ticketConfig';
 import { EMPTY_TICKET_STATE, buildTicketFilters } from './ticketFilters';
 import type { TicketRow } from './ticketTypes';
-import { useRefreshTickets, useTicketPage } from './useTicketData';
+import { useRefreshTickets, useTicketBoard, useTicketPage } from './useTicketData';
 
 export function TicketListPage() {
   const access = useAccess();
+  const toast = useToast();
   const refreshData = useRefreshTickets();
   const catalogs = useLeadCatalogs();
   const config = useMemo(() => buildTicketConfig(catalogs, access), [catalogs, access]);
@@ -36,6 +41,7 @@ export function TicketListPage() {
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
   const list = useTicketPage(filters, page * (pageSize ?? 0), pageSize);
+  const board = useTicketBoard(filters, pageSize, view === 'kanban');
   const rows: TicketRow[] = list.data?.rows ?? [];
   const total = list.data?.total ?? 0;
 
@@ -46,6 +52,30 @@ export function TicketListPage() {
       onStateChange={setState}
       view={view}
       onViewChange={setView}
+      kanban={
+        board.isPending ? (
+          <Spinner label="Đang tải Kanban…" />
+        ) : (
+          <KanbanBoard
+            columns={(board.data ?? []).map((c) => ({
+              code: c.status_code,
+              label: c.name,
+              cards: c.rows,
+              total: c.total,
+            }))}
+            cardKey={(c) => c.id}
+            cardLabel={(c) => c.code}
+            rule={() => ({
+              ok: false,
+              reason: 'Đổi trạng thái ticket bằng nút Hành động trong hồ sơ ticket.',
+            })}
+            onMove={() => undefined}
+            onBlocked={(reason) => toast({ tone: 'warning', title: reason })}
+            note="Đổi trạng thái ticket bằng nút Hành động trong hồ sơ ticket (Giao, Đang xử lý, Đã xử lý, Đóng, Huỷ)."
+            renderCard={(c) => <TicketCard row={c} />}
+          />
+        )
+      }
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.title}`}

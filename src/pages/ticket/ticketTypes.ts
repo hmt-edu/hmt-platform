@@ -19,3 +19,11 @@ export type TicketRow = {
 export type TicketPage = { total: number; rows: TicketRow[] };
 
 export type TicketFilters = Record<string, unknown>;
+
+/** Một cột Kanban từ app.ticket_board (một lần gọi cho cả bảy cột). */
+export type TicketBoardColumn = {
+  status_code: string;
+  name: string;
+  total: number;
+  rows: TicketRow[];
+};

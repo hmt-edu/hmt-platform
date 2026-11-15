@@ -141,6 +141,6 @@ export function buildTicketConfig(
     ],
     groupFields: [],
     dateFields: [],
-    views: ['list'],
+    views: ['list', 'kanban'],
   };
 }

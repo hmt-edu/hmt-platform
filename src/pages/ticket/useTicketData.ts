@@ -2,7 +2,7 @@
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
-import type { TicketFilters, TicketPage } from './ticketTypes';
+import type { TicketBoardColumn, TicketFilters, TicketPage } from './ticketTypes';
 
 export function useTicketPage(filters: TicketFilters, offset: number, limit: number | null) {
   const supabase = useDb();
@@ -22,7 +22,27 @@ export function useTicketPage(filters: TicketFilters, offset: number, limit: num
 export function useRefreshTickets() {
   const queryClient = useQueryClient();
   return useCallback(
-    () => queryClient.invalidateQueries({ queryKey: ['ticket-list'] }),
+    () =>
+      Promise.all(
+        ['ticket-list', 'ticket-board'].map((key) =>
+          queryClient.invalidateQueries({ queryKey: [key] }),
+        ),
+      ),
     [queryClient],
   );
+}
+
+/** Kanban CSN-02: một lần gọi app.ticket_board cho cả bảy cột trạng thái; chỉ gọi khi đang xem Kanban. */
+export function useTicketBoard(filters: TicketFilters, perColumn: number | null, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['ticket-board', filters, perColumn],
+    enabled: enabled && perColumn !== null,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<TicketBoardColumn[]>(supabase, 'ticket_board', {
+        p_filters: filters,
+        p_per_column: perColumn,
+      }),
+  });
 }
