@@ -220,6 +220,7 @@ select is(app.teacher_my_hours(date '2000-01-15') ->> 'month', '2000-01-01', 'GV
 select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
 select is((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'summary' ->> 'sessions')::int, 0, 'GV-16: chỉ thấy buổi của chính mình (R-GV-08): giáo viên khác không có giờ của gv1');
 select is(has_function_privilege('anon', 'app.teacher_my_hours(date)', 'execute'), false, 'GV-16: người chưa đăng nhập không gọi được hàm');
+select pg_temp.claims(pg_temp.uid('gv1'), 'aal1'); -- trả lại vai trò đang dùng cho các bước sau
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 3))$$);
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 3) || '''::uuid)')$$), 'HMT_QUY_GIO_AM', 'Chặn: Done làm quỹ giờ âm (R-GD-18)');
 select is((select status_code from app.class_session where id = pg_temp.s('p', 3)), 'DA_CHOT', 'Buổi vẫn Đã chốt khi Done bị chặn');
