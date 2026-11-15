@@ -83,6 +83,9 @@ select pg_temp.sudo($$create function pg_temp.rst(p_key text) returns text langu
 select pg_temp.sudo($$create function pg_temp.rev(p_key text) returns text language sql stable security definer as
   'select string_agg(event_code, '','' order by seq) from app.receipt_event where receipt_id = pg_temp.r(p_key)'$$);
 select pg_temp.sudo($$create function pg_temp.paid(p_key text) returns bigint language sql stable security definer as 'select app.order_paid_amount(pg_temp.o(p_key))'$$);
+-- Sửa lệch luật (a): số dòng «Hệ thống chuyển L8C» trong Ghi chú và hoạt động của cơ hội.
+create function pg_temp.l8cnotes(p_phone text) returns integer language sql stable security definer as $$
+  select count(*)::int from app.note n where n.entity_type = 'OPPORTUNITY' and n.entity_id = pg_temp.oid(p_phone) and n.body like 'Hệ thống chuyển L8C%' $$;
 create function pg_temp.sub(p_phone text) returns text language sql stable security definer as $$
   select substage_code from app.opportunity where id = pg_temp.oid(p_phone) $$;
 -- Trả phần còn lại của đơn (hoặc p_less nhỏ hơn) qua chuỗi duyệt đầy đủ.
@@ -152,12 +155,14 @@ select is(pg_temp.sub('0900126004'), 'L8A', 'R-CRM-17 (d): phiếu thu mới qua
 -- ================= (c) hai đơn, một đủ một thiếu: giữ nguyên =================
 select pg_temp.pay('c1', pg_temp.total('c1'));
 select is(pg_temp.sub('0900126003'), 'L8A', 'R-CRM-17 (c): hai đơn, một đủ một chưa thu: giữ L8A (xét từng đơn, không cộng gộp)');
+select is(pg_temp.l8cnotes('0900126003'), 0, 'Sửa lệch luật (a): chưa lên L8C (còn đơn thiếu tiền) thì không có dòng ghi chú hệ thống');
 select pg_temp.pay('c2', pg_temp.total('c2'));
 select is(pg_temp.sub('0900126003'), 'L8C', 'R-CRM-17: đơn còn lại thu đủ thì cả hai đơn đủ, cơ hội lên L8C');
 
 -- ================= (a) một đơn thu đủ: lên L8C (từ L8B) =================
 select pg_temp.pay('a', pg_temp.total('a'));
 select is(pg_temp.sub('0900126001'), 'L8C', 'R-CRM-17 (a): đơn duy nhất thu đủ thì cơ hội L8B lên L8C');
+select is(pg_temp.l8cnotes('0900126001'), 1, 'Sửa lệch luật (a): cơ hội lên L8C do hệ thống thì có đúng một dòng ghi chú «Hệ thống chuyển L8C»');
 select is((select stage_code from app.opportunity where id = pg_temp.oid('0900126001')), 'L8', 'Vẫn ở giai đoạn L8');
 
 -- ================= Chỉ đi tới: đã L8C không lùi khi có đơn mới chưa thu =================
