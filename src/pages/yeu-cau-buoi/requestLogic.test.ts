@@ -5,6 +5,7 @@ import {
   statusTone,
   targetText,
   validateDraft,
+  validateMakeup,
   validateSupport,
   whenText,
 } from './requestLogic';
@@ -97,5 +98,24 @@ describe('yêu cầu buổi (BUOI-08, BUOI-10)', () => {
         teacherId: 't',
       }),
     ).toEqual({});
+  });
+  it('validateMakeup: lý do bắt buộc, giáo viên không bắt buộc', () => {
+    expect(validateMakeup({ studentIds: [], date: '', start: '', end: '', reason: ' ' })).toEqual({
+      students: 'Chọn ít nhất một em học bù.',
+      date: 'Chọn ngày buổi học bù.',
+      start: 'Nhập giờ bắt đầu.',
+      end: 'Nhập giờ kết thúc.',
+      reason: 'Nhập lý do học bù.',
+    });
+    expect(
+      validateMakeup({
+        studentIds: ['a'],
+        date: '2026-11-17',
+        start: '18:00',
+        end: '19:00',
+        reason: 'Ốm',
+      }),
+    ).toEqual({});
+    expect(kindName('HOC_BU')).toBe('Học bù');
   });
 });

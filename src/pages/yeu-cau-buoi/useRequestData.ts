@@ -127,3 +127,38 @@ export function useSaveSupport() {
     onSuccess: () => refresh(),
   });
 }
+
+export type MakeupArgs = {
+  classId: string;
+  studentIds: string[];
+  date: string;
+  start: string;
+  end: string;
+  teacherId: string | null;
+  roomId: string | null;
+  reason: string;
+};
+
+/** Lưu yêu cầu học bù ở Nháp rồi (tuỳ chọn) gửi duyệt (app.save_makeup_request, R-BUOI-03); trả mã yêu cầu. */
+export function useSaveMakeup() {
+  const supabase = useDb();
+  const refresh = useRefreshRequests();
+  return useMutation({
+    mutationFn: async (a: MakeupArgs & { submit: boolean }) => {
+      const saved = await rpc<{ id: string; code: string }>(supabase, 'save_makeup_request', {
+        p_id: null,
+        p_class_id: a.classId,
+        p_student_ids: a.studentIds,
+        p_date: a.date,
+        p_start: a.start,
+        p_end: a.end,
+        p_teacher_id: a.teacherId,
+        p_room_id: a.roomId,
+        p_reason: a.reason,
+      });
+      if (a.submit) await rpc<null>(supabase, 'submit_session_request', { p_id: saved.id });
+      return saved;
+    },
+    onSuccess: () => refresh(),
+  });
+}

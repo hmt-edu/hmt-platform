@@ -85,7 +85,7 @@ begin
 end $$;
 grant execute on all functions in schema pg_temp to public;
 
-create function pg_temp.req(p_key text) returns uuid language sql stable security definer as $$ select id from app.session_request where note = p_key $$;
+create function pg_temp.req(p_key text) returns uuid language sql stable security definer as $$ select id from app.session_request where coalesce(reason, note) = p_key $$;
 grant execute on function pg_temp.req(text) to public;
 -- Từ đây chạy với vai trò đăng nhập thật (RLS và quyền gọi hàm có hiệu lực).
 
@@ -112,16 +112,16 @@ select is(pg_temp.err($$select app.save_makeup_request(null, pg_temp.c('f'), '{}
 select is(pg_temp.err($$select app.save_makeup_request(null, pg_temp.c('f'), array[pg_temp.st(4)], pg_temp.fut() + 3, '18:00', '19:30', null, null, 'x')$$), 'HMT_EM_KHONG_TRONG_LOP', 'Chặn: em không học trong lớp');
 select is(pg_temp.err($$select app.save_makeup_request(null, pg_temp.c('f'), array[pg_temp.st(1)], pg_temp.fut() + 3, '19:30', '18:00', null, null, 'x')$$), 'HMT_BUOI_GIO_SAI', 'Chặn: giờ sai');
 select is(pg_temp.err($$select app.save_makeup_request(null, pg_temp.c('f'), array[pg_temp.st(1)], pg_temp.fut() + 3, '18:00', '19:30', pg_temp.uid('sales1'), null, 'x')$$), 'HMT_GIAO_VIEN_KHONG_HOP_LE', 'Chặn: người vai Sale không làm giáo viên');
-select lives_ok($$select app.save_makeup_request(pg_temp.req('a'), pg_temp.c('f'), array[pg_temp.st(1)], pg_temp.fut() + 3, '18:00', '19:30', null, null, 'Ốm nghỉ buổi 2')$$, 'Sửa: bỏ bớt một em');
-select is((select count(*)::int from app.session_request_student where request_id = pg_temp.req('a') and is_active), 1, 'Còn một em đang chọn');
-select lives_ok($$select app.submit_session_request(pg_temp.req('a'))$$, 'Gửi duyệt');
+select lives_ok($$select app.save_makeup_request(pg_temp.req('Ốm nghỉ buổi 2'), pg_temp.c('f'), array[pg_temp.st(1)], pg_temp.fut() + 3, '18:00', '19:30', null, null, 'Ốm nghỉ buổi 2')$$, 'Sửa: bỏ bớt một em');
+select is((select count(*)::int from app.session_request_student where request_id = pg_temp.req('Ốm nghỉ buổi 2') and is_active), 1, 'Còn một em đang chọn');
+select lives_ok($$select app.submit_session_request(pg_temp.req('Ốm nghỉ buổi 2'))$$, 'Gửi duyệt');
 
 -- ================= Duyệt: SINH BUỔI MỚI loại Học bù, danh sách chỉ em được chọn =================
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
-select is(pg_temp.err($$select app.approve_session_request(pg_temp.req('a'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: CSKH không duyệt');
+select is(pg_temp.err($$select app.approve_session_request(pg_temp.req('Ốm nghỉ buổi 2'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: CSKH không duyệt');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((select count(*)::int from app.class_session where class_id = pg_temp.c('f') and type_code = 'HOC_BU'), 0, 'Trước duyệt chưa có buổi học bù');
-select ok((app.approve_session_request(pg_temp.req('a')) ->> 'session_id') is not null, 'Duyệt: sinh buổi mới');
+select ok((app.approve_session_request(pg_temp.req('Ốm nghỉ buổi 2')) ->> 'session_id') is not null, 'Duyệt: sinh buổi mới');
 select is((select count(*)::int from app.class_session where class_id = pg_temp.c('f') and type_code = 'HOC_BU'), 1, 'Có đúng một buổi Học bù mới (không chọn buổi có sẵn)');
 select is((select teacher_id from app.class_session where id = (select created_session_id from app.session_request where reason = 'Ốm nghỉ buổi 2')), pg_temp.uid('gv1'), 'Không chọn giáo viên: lấy giáo viên khung giờ của lớp');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');

@@ -123,6 +123,10 @@ const SessionRequestListPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
   'SessionRequestListPage',
 );
+const SessionRequestMakeupPage = lazyScreen(
+  () => import('../pages/yeu-cau-buoi/SessionRequestMakeupPage'),
+  'SessionRequestMakeupPage',
+);
 const SessionRequestSupportPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestSupportPage'),
   'SessionRequestSupportPage',
@@ -423,6 +427,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="yeu-cau-buoi">
                 <SessionRequestListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'yeu-cau-buoi/tao-hoc-bu',
+            element: (
+              <GatedCrmEntry slug="yeu-cau-buoi">
+                <SessionRequestMakeupPage />
               </GatedCrmEntry>
             ),
           },
