@@ -1,6 +1,6 @@
 // BUOI-02 Buổi học (bản ghi, khuôn K06, chỉ đọc): thanh Nháp → Đã chốt → Hoàn thành, thông tin buổi, danh sách và điểm danh hai cột (trung tâm, giáo viên chính thức),
 // em không vào danh sách kèm lý do, nhận xét của giáo viên, lý do chưa Done. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage.
-// Nút: Chốt danh sách (buổi Nháp), Điểm danh vận hành (buổi Đã chốt, sang BUOI-03), Dời (BUOI-05), Huỷ (BUOI-04). Đổi giáo viên, Thêm học thử: BUOI-13, BUOI-06 (cụm sau).
+// Nút: Chốt danh sách (buổi Nháp), Điểm danh vận hành (buổi Đã chốt, sang BUOI-03), Dời (BUOI-05), Huỷ (BUOI-04). Đổi giáo viên (BUOI-13, dạy thay). Thêm học thử: BUOI-06 (cụm sau).
 // Chưa làm (làm sau 17/11): ghi chú và dòng thời gian, "Báo nghỉ trước", "Đưa về Nháp", "Xác nhận hoàn thành" (Done do hệ thống, mark_session_done là hàm nội bộ).
 // Lệch khung có chủ đích: nhãn lớp "môn + mã lớp" (như cụm Lớp), không có "Nhãn bài" riêng ngoài bài bắt đầu của lớp.
 import { useState } from 'react';
@@ -15,6 +15,7 @@ import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog } from '../../ui/Dialogs';
 import { CancelSessionDialog } from './CancelSessionDialog';
+import { ChangeStaffDialog } from './ChangeStaffDialog';
 import { MoveSessionDialog } from './MoveSessionDialog';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
@@ -41,6 +42,7 @@ export function SessionRecordPage() {
   const [confirming, setConfirming] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [moving, setMoving] = useState(false);
+  const [changingStaff, setChangingStaff] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   useCrumbTail(
     query.data
@@ -129,6 +131,9 @@ export function SessionRecordPage() {
               </Button>
             )}
             {canEditSession && <Button onClick={() => setMoving(true)}>Dời</Button>}
+            {canEditSession && (
+              <Button onClick={() => setChangingStaff(true)}>Đổi giáo viên</Button>
+            )}
             {canEditSession && <Button onClick={() => setCancelling(true)}>Huỷ</Button>}
             {!inStages && <Tag tone={sessionTone(s.status_code)}>{s.status_name}</Tag>}
           </span>
@@ -306,6 +311,14 @@ export function SessionRecordPage() {
         onClose={() => setCancelling(false)}
       />
       <MoveSessionDialog session={s} open={moving} onClose={() => setMoving(false)} />
+      <ChangeStaffDialog
+        sessionId={s.id}
+        branchId={s.branch_id}
+        teacherId={s.teacher_id}
+        assistantId={s.assistant_id}
+        open={changingStaff}
+        onClose={() => setChangingStaff(false)}
+      />
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}
