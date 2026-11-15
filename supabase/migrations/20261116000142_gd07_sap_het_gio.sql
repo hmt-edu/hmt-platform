@@ -58,7 +58,7 @@ begin
       from base b group by b.student_id, b.class_id
   ), calc as (
     select g.*,
-           coalesce((select sum(extract(epoch from (s.end_time - s.start_time)) / 3600.0 / s.repeat_weeks)
+           coalesce((select sum(extract(epoch from (s.end_time - s.start_time)) / 3600.0 / s.repeat_weeks) -- allow-number: 3600 giây một giờ
                        from app.class_slot s where s.class_id = g.class_id and s.is_active), 0) as weekly_hours,
            (g.last_start + make_interval(months => app.get_setting_int('package_default_validity_months', g.branch_id)::integer))::date as validity_date
       from grp g
