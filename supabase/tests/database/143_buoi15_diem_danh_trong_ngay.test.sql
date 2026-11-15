@@ -141,8 +141,8 @@ select is((app.session_day_attendance(jsonb_build_object('date', date '2000-01-0
 -- ================= Quyền =================
 select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
 select is(pg_temp.err($$select app.session_day_attendance('{}'::jsonb)$$), 'HMT_TINH_NANG_TAT', 'Cơ sở khác chưa bật cờ: bị chặn');
-select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
-select is(pg_temp.err($$select app.session_day_attendance('{}'::jsonb)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: người không có quyền xem buổi học');
+select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
+select is(pg_temp.err($$select app.session_day_attendance('{}'::jsonb)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên (xem theo phân công) không dùng danh sách này');
 select is(has_function_privilege('anon', 'app.session_day_attendance(jsonb, integer, integer)', 'execute'), false, 'Người chưa đăng nhập không gọi được hàm');
 
 select * from finish();
