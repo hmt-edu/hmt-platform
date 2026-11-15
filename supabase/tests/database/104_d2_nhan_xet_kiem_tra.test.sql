@@ -248,6 +248,8 @@ select is(pg_temp.err($$select app.set_exam_scores(pg_temp.s('p', 3), jsonb_buil
 select is(pg_temp.err($$select app.set_exam_scores(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'memory', 3, 'understand', 4)))$$), 'HMT_DIEM_KHONG_HOP_LE', 'Chặn: thiếu điểm một nhóm có đề');
 select app.set_exam_scores(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'memory', 3, 'understand', 3, 'apply', 2)));
 select is((select total_score from app.exam_score es join app.session_attendance sa on sa.id = es.attendance_id where sa.session_id = pg_temp.s('p', 3) and sa.student_id = pg_temp.st(1)), 8.00::numeric, 'Điểm tổng tự cộng từ ba nhóm: 3 + 3 + 2 (R-V2-20)');
+-- Từ migration 130 (F4) buổi đã có điểm chấm thì không đổi cấu hình; ca này kiểm riêng luật nhóm không có đề nên xoá điểm giả đã chấm trước khi đặt lại.
+select pg_temp.sudo($$delete from app.exam_score where session_id = pg_temp.s('p', 3)$$);
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select app.set_exam_config(pg_temp.s('p', 3), 'Giữa kỳ', 10, 'NHOM', 5, 5, 0);
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');

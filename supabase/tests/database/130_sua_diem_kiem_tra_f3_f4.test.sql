@@ -112,31 +112,24 @@ select app.set_attendance_teacher(pg_temp.s('p', n), jsonb_build_array(jsonb_bui
   from generate_series(1, 3) n;
 
 
--- Hàm bọc để gọi hàm nội bộ từ vai trò đăng nhập.
-create function pg_temp.resolve(p_mode text, p_entry jsonb) returns numeric[] language sql security definer as $$
-  select app.exam_resolve_scores(jsonb_populate_record(null::app.session_exam,
-    jsonb_build_object('max_score', 10, 'entry_mode', p_mode, 'max_memory', case when p_mode = 'NHOM' then 3 else 0 end,
-                       'max_understand', case when p_mode = 'NHOM' then 4 else 0 end, 'max_apply', case when p_mode = 'NHOM' then 3 else 0 end)), p_entry) $$;
-grant execute on function pg_temp.resolve(text, jsonb) to public;
-
--- ================= F3: điểm nhóm âm =================
-select is(pg_temp.resolve('NHOM', '{"memory": 2, "understand": 3, "apply": 3}'::jsonb), array[8, 2, 3, 3]::numeric[],
-  'F3 đúng: ba nhóm hợp lệ thì trả tổng và từng nhóm');
-select is(pg_temp.err($$select pg_temp.resolve('NHOM', '{"memory": -1, "understand": 4, "apply": 3}'::jsonb)$$), 'HMT_DIEM_AM',
-  'F3 chặn: điểm một nhóm âm (tổng vẫn dương) báo HMT_DIEM_AM, không lọt lỗi ràng buộc của bảng');
-select is(pg_temp.err($$select pg_temp.resolve('NHOM', '{"memory": 1, "understand": -0.5, "apply": 3}'::jsonb)$$), 'HMT_DIEM_AM',
-  'F3 chặn: nhóm Hiểu âm cũng báo HMT_DIEM_AM');
-select is(pg_temp.err($$select pg_temp.resolve('NHOM', '{"memory": 4, "understand": 4, "apply": 3}'::jsonb)$$), 'HMT_DIEM_VUOT_TOI_DA',
-  'F3 giữ luật cũ: một nhóm vượt tối đa vẫn báo HMT_DIEM_VUOT_TOI_DA');
-select is(pg_temp.err($$select pg_temp.resolve('TONG', '{"total": -1}'::jsonb)$$), 'HMT_DIEM_VUOT_TOI_DA',
-  'F3 giữ luật cũ: điểm tổng âm vẫn bị chặn');
--- Qua hàm giáo viên nhập điểm (buổi 2 là kiểm tra theo 3 nhóm, em 1 có mặt).
+-- ================= F3: điểm nhóm âm (qua app.set_exam_scores, đường duy nhất gọi app.exam_resolve_scores) =================
+-- Buổi 2 là kiểm tra theo 3 nhóm (3, 4, 3), em 1 có mặt; buổi 3 theo điểm tổng.
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select app.set_exam_config(pg_temp.s('p', 2), 'Bất đẳng thức', 10, 'NHOM', 3, 4, 3);
+select app.set_exam_config(pg_temp.s('p', 3), 'Phương trình bậc nhất', 10, 'TONG', 0, 0, 0);
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(pg_temp.err($$select app.set_exam_scores(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'memory', -1, 'understand', 4, 'apply', 3)))$$),
-  'HMT_DIEM_AM', 'F3 chặn: giáo viên nhập nhóm âm qua set_exam_scores bị báo HMT_DIEM_AM');
-select is((select count(*)::int from app.exam_score where session_id = pg_temp.s('p', 2)), 0, 'F3: nhập lỗi thì không ghi dòng điểm nào');
+  'HMT_DIEM_AM', 'F3 chặn: nhóm Ghi nhớ âm (tổng vẫn dương) báo HMT_DIEM_AM, không lọt lỗi ràng buộc của bảng');
+select is(pg_temp.err($$select app.set_exam_scores(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'memory', 1, 'understand', -0.5, 'apply', 3)))$$),
+  'HMT_DIEM_AM', 'F3 chặn: nhóm Hiểu âm cũng báo HMT_DIEM_AM');
+select is(pg_temp.err($$select app.set_exam_scores(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'memory', 4, 'understand', 4, 'apply', 3)))$$),
+  'HMT_DIEM_VUOT_TOI_DA', 'F3 giữ luật cũ: một nhóm vượt tối đa vẫn báo HMT_DIEM_VUOT_TOI_DA');
+select is(pg_temp.err($$select app.set_exam_scores(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'total', -1)))$$),
+  'HMT_DIEM_VUOT_TOI_DA', 'F3 giữ luật cũ: điểm tổng âm vẫn bị chặn');
+select is((select count(*)::int from app.exam_score where session_id in (pg_temp.s('p', 2), pg_temp.s('p', 3))), 0, 'F3: nhập lỗi thì không ghi dòng điểm nào');
+select is(app.set_exam_scores(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'memory', 2, 'understand', 3, 'apply', 3))), 1,
+  'F3 đúng: ba nhóm hợp lệ thì lưu được');
+select is((select total_score from app.exam_score where session_id = pg_temp.s('p', 2)), 8.00::numeric, 'F3 đúng: tổng tự cộng từ ba nhóm');
 
 -- ================= F4: đổi cấu hình khi đã có điểm =================
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
