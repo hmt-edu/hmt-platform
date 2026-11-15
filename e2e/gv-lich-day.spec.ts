@@ -47,3 +47,28 @@ test('GV-03: đổi tuần: tuần sau không có buổi hôm nay, quay lại Tu
   await page.getByRole('button', { name: 'Tuần này' }).click();
   await expect(page.locator(link(seed.chot))).toBeVisible();
 });
+
+test('GV-03: lịch tháng: bấm Tháng thấy buổi hôm nay; đổi tháng; bấm số ngày sang tuần của ngày đó', async ({
+  page,
+}) => {
+  await loginStaff(page, 'gv.cs5');
+  await expect(page).toHaveURL(/\/gv$/);
+  await page.goto('/gv/lich-day');
+  await page.getByRole('button', { name: 'Tháng', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Tháng', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  // Buổi của mình có trong tháng này, buổi của giáo viên khác thì không (R-GV-08).
+  await expect(page.locator(link(seed.chot))).toBeVisible();
+  await expect(page.locator(link(seed.khac))).toHaveCount(0);
+  // Tháng sau không có buổi hôm nay; quay lại Tháng này thấy lại.
+  await page.getByRole('button', { name: 'Tháng sau' }).click();
+  await expect(page.locator(link(seed.chot))).toHaveCount(0);
+  await page.getByRole('button', { name: 'Tháng này' }).click();
+  await expect(page.locator(link(seed.chot))).toBeVisible();
+  await expectAccessible(page);
+  // Bấm buổi dẫn tới các bước của buổi (GV-04).
+  await page.locator(link(seed.chot)).click();
+  await expect(page).toHaveURL(new RegExp(`/gv/buoi/${seed.chot}$`));
+});
