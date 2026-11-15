@@ -50,3 +50,9 @@ export function keyToDate(key: string): Date | null {
   const [y, m, d] = key.split('-').map(Number);
   return y && m && d ? new Date(y, m - 1, d) : null;
 }
+
+/** Đọc số giờ gõ vào (chấp nhận dấu phẩy thập phân); trả null nếu không phải số hoặc bằng 0. */
+export function parseHours(text: string): number | null {
+  const n = Number(text.trim().replace(',', '.'));
+  return Number.isFinite(n) && n !== 0 ? n : null;
+}
