@@ -16,7 +16,8 @@ test.beforeEach(({}, testInfo) => {
 
 const SALE = 'sale.cs5';
 const MANAGER = 'truongcs.cs5';
-const ACCOUNTANT = 'ketoan.cs5';
+// Tài khoản kế toán riêng của bài này (ketoan.cs5 thuộc phieu-thu.spec): hai file không tranh thiết bị hai bước.
+const ACCOUNTANT = 'ketoan2.cs5';
 const TAG = `T4${Date.now().toString(36).slice(-5).toUpperCase()}`;
 const PARENT = `Chị ${TAG}`;
 const STUDENT = `Em ${TAG}`;
