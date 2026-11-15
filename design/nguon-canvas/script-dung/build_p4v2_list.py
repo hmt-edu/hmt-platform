@@ -5,31 +5,31 @@ sys.path.insert(0, 'scripts')
 from kh_common import *
 
 PH = [  # mã, tên, sđt, cơ sở tiếp nhận, đang học tại, số con, tình trạng, mã cũ
- ('PH000045', 'Trần Thị Hà', '0912 345 456', 'CS1', 'CS1, CS2', 2, 'Có con đang học', 'KH-1187'),
- ('PH000046', 'Trần Quốc Hưng', '0987 123 456', 'CS2', 'CS2', 1, 'Có con đang học', 'KH-1190'),
- ('PH000047', 'Phạm Thu Hương', '0912 888 345', 'CS1', 'CS1', 2, 'Có con đang học', 'KH-1204'),
- ('PH000048', 'Lê Minh Tuấn', '0935 222 678', 'CS4', '—', 1, 'Chưa có con đang học', 'KH-1211'),
- ('PH000049', 'Vũ Thị Mai', '0968 555 901', 'CS5', 'CS5', 1, 'Có con đang học', 'KH-1230'),
- ('PH000050', 'Đỗ Ngọc Bích', '0977 314 002', 'CS2', 'CS2, CS4', 3, 'Có con đang học', 'KH-1244'),
- ('PH000051', 'Hoàng Văn Đức', '0902 700 118', 'CS1', 'CS1', 1, 'Có con đang học', 'KH-1251'),
- ('PH000052', 'Bùi Thanh Thuỷ', '0944 610 233', 'CS4', 'CS4', 2, 'Có con đang học', 'KH-1262'),
- ('PH000053', 'Ngô Hồng Nhung', '0918 402 556', 'CS5', '—', 1, 'Chưa có con đang học', 'KH-1275'),
- ('PH000054', 'Đinh Quang Vinh', '0986 090 314', 'CS2', 'CS2', 1, 'Có con đang học', 'KH-1288'),
+ ('PH000045', 'Trần Thị Hà', '0900 000 118', 'CS1', 'CS1, CS2', 2, 'Có con đang học', 'KH-1187'),
+ ('PH000046', 'Trần Quốc Hưng', '0900 000 175', 'CS2', 'CS2', 1, 'Có con đang học', 'KH-1190'),
+ ('PH000047', 'Phạm Thu Hương', '0900 000 123', 'CS1', 'CS1', 2, 'Có con đang học', 'KH-1204'),
+ ('PH000048', 'Lê Minh Tuấn', '0900 000 135', 'CS4', '—', 1, 'Chưa có con đang học', 'KH-1211'),
+ ('PH000049', 'Vũ Thị Mai', '0900 000 156', 'CS5', 'CS5', 1, 'Có con đang học', 'KH-1230'),
+ ('PH000050', 'Đỗ Ngọc Bích', '0900 000 164', 'CS2', 'CS2, CS4', 3, 'Có con đang học', 'KH-1244'),
+ ('PH000051', 'Hoàng Văn Đức', '0900 000 101', 'CS1', 'CS1', 1, 'Có con đang học', 'KH-1251'),
+ ('PH000052', 'Bùi Thanh Thuỷ', '0900 000 145', 'CS4', 'CS4', 2, 'Có con đang học', 'KH-1262'),
+ ('PH000053', 'Ngô Hồng Nhung', '0900 000 130', 'CS5', '—', 1, 'Chưa có con đang học', 'KH-1275'),
+ ('PH000054', 'Đinh Quang Vinh', '0900 000 172', 'CS2', 'CS2', 1, 'Có con đang học', 'KH-1288'),
 ]
-PH_MERGED = ('PH000063', 'Phạm T. Hương', '0912 888 345', 'CS1', '—', 0, 'Chưa có con đang học', 'KH-1402', 'PH000047')
+PH_MERGED = ('PH000063', 'Phạm T. Hương', '0900 000 123', 'CS1', '—', 0, 'Chưa có con đang học', 'KH-1402', 'PH000047')
 HS = [  # mã, tên, khối, tình trạng, cơ sở tiếp nhận, đang học tại, sđt phụ huynh, lớp (để lọc), mã cũ
- ('HS000123', 'Nguyễn Minh Khôi', 'Lớp 9', 'Đang học', 'CS1', 'CS1, CS2', '0912 345 456', 'Toán 9 nâng cao', 'HSC-2231'),
- ('HS000201', 'Nguyễn Gia Hân', 'Lớp 6', 'Tiềm năng', 'CS1', '—', '0912 345 456', '', 'HSC-2232'),
- ('HS000125', 'Trần Gia Hân', 'Lớp 10', 'Đang học', 'CS2', 'CS2', '0987 123 456', 'Toán 10 tăng tốc', 'HSC-2240'),
- ('HS000126', 'Phạm Đức Anh', 'Lớp 8', 'Bảo lưu', 'CS1', '—', '0912 888 345', 'Toán 8 cơ bản', 'HSC-2251'),
- ('HS000127', 'Phạm Khánh Vy', 'Lớp 5', 'Đang học', 'CS1', 'CS1', '0912 888 345', 'Toán 5 nền tảng', 'HSC-2252'),
- ('HS000128', 'Lê Quang Huy', 'Lớp 11', 'Dừng học', 'CS4', '—', '0935 222 678', '', 'HSC-2260'),
- ('HS000129', 'Vũ Hải Đăng', 'Lớp 9', 'Đang học', 'CS5', 'CS5', '0968 555 901', 'Toán 9 nâng cao', 'HSC-2271'),
- ('HS000130', 'Đỗ Phương Thảo', 'Lớp 7', 'Tiềm năng', 'CS2', '—', '0977 314 002', '', 'HSC-2280'),
- ('HS000131', 'Hoàng Gia Bảo', 'Lớp 8', 'Đang học', 'CS1', 'CS1', '0902 700 118', 'Toán 8 cơ bản', 'HSC-2294'),
- ('HS000132', 'Bùi Tuệ Minh', 'Lớp 10', 'Đang học', 'CS4', 'CS4', '0944 610 233', 'Toán 10 tăng tốc', 'HSC-2303'),
+ ('HS000123', 'Nguyễn Minh Khôi', 'Lớp 9', 'Đang học', 'CS1', 'CS1, CS2', '0900 000 118', 'Toán 9 nâng cao', 'HSC-2231'),
+ ('HS000201', 'Nguyễn Gia Hân', 'Lớp 6', 'Tiềm năng', 'CS1', '—', '0900 000 118', '', 'HSC-2232'),
+ ('HS000125', 'Trần Gia Hân', 'Lớp 10', 'Đang học', 'CS2', 'CS2', '0900 000 175', 'Toán 10 tăng tốc', 'HSC-2240'),
+ ('HS000126', 'Phạm Đức Anh', 'Lớp 8', 'Bảo lưu', 'CS1', '—', '0900 000 123', 'Toán 8 cơ bản', 'HSC-2251'),
+ ('HS000127', 'Phạm Khánh Vy', 'Lớp 5', 'Đang học', 'CS1', 'CS1', '0900 000 123', 'Toán 5 nền tảng', 'HSC-2252'),
+ ('HS000128', 'Lê Quang Huy', 'Lớp 11', 'Dừng học', 'CS4', '—', '0900 000 135', '', 'HSC-2260'),
+ ('HS000129', 'Vũ Hải Đăng', 'Lớp 9', 'Đang học', 'CS5', 'CS5', '0900 000 156', 'Toán 9 nâng cao', 'HSC-2271'),
+ ('HS000130', 'Đỗ Phương Thảo', 'Lớp 7', 'Tiềm năng', 'CS2', '—', '0900 000 164', '', 'HSC-2280'),
+ ('HS000131', 'Hoàng Gia Bảo', 'Lớp 8', 'Đang học', 'CS1', 'CS1', '0900 000 101', 'Toán 8 cơ bản', 'HSC-2294'),
+ ('HS000132', 'Bùi Tuệ Minh', 'Lớp 10', 'Đang học', 'CS4', 'CS4', '0900 000 145', 'Toán 10 tăng tốc', 'HSC-2303'),
 ]
-HS_MERGED = ('HS000138', 'Phạm Đức Anh', 'Lớp 8', 'Tiềm năng', 'CS1', '—', '0912 888 345', '', 'HSC-2399', 'HS000126')
+HS_MERGED = ('HS000138', 'Phạm Đức Anh', 'Lớp 8', 'Tiềm năng', 'CS1', '—', '0900 000 123', '', 'HSC-2399', 'HS000126')
 TT_CLS = {'Đang học': 'hmt-tag hmt-tag-success', 'Tiềm năng': 'hmt-tag hmt-tag-info', 'Bảo lưu': 'hmt-tag hmt-tag-warning', 'Dừng học': 'hmt-tag'}
 MERGED_TAG = '<span class="hmt-tag" style="background:var(--bg-subtle);border:1px solid var(--divider)">Đã gộp</span>'
 
