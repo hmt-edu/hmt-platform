@@ -56,7 +56,12 @@ export function TeacherSchedulePage() {
   };
   const header = (
     <div className="flex flex-col gap-2">
-      <h1 className="text-h2">Lịch dạy</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-h2">Lịch dạy</h1>
+        <Link className="text-link underline" to="/gv/gio-day">
+          Giờ dạy của tôi
+        </Link>
+      </div>
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="secondary" onClick={() => go(addDays(monday, -DAYS_IN_WEEK))}>
           Tuần trước
