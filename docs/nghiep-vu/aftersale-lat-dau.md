@@ -23,3 +23,7 @@ RLS đọc: phạm vi toàn hệ thống thấy hết; cơ sở thấy ticket c�
 
 ## Chưa làm (ghi vào PR)
 Giao diện CSN01 (danh sách), CSN02 (Kanban), CSN03 (biểu mẫu); phiếu nghiệp vụ (nhóm A đi sau, nhóm tiền chưa); Sale chỉ thấy ticket mình (ma trận hiện cho Sale phạm vi cơ sở, AS-09 muốn chỉ ticket mình tạo, mình phụ trách); giáo viên thấy ticket gắn lớp mình; khung màn cấu hình Admin; tự nâng ticket quá hạn lên quản lý. Kiểm thử: `supabase/tests/database/156_aftersale_lat_dau.test.sql` (67 bài).
+
+## Lát 3a (migration 158): chi tiết và ghi chú
+- `app.get_ticket(id)`: chi tiết ticket và dòng thời gian trong một lần gọi; RLS lọc theo phạm vi (AS-09); không thấy thì `HMT_KHONG_TIM_THAY`.
+- `app.add_ticket_note(id, nội dung)`: thêm ghi chú (loại sự kiện `GHI_CHU`); cần Ticket · Sửa ở cơ sở của ticket; chặn ghi chú rỗng và ticket đã đóng/huỷ (AS-02).
