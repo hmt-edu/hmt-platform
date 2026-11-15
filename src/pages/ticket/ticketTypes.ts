@@ -30,6 +30,7 @@ export type TicketBoardColumn = {
 
 /** Chi tiết ticket từ app.get_ticket (migration 158): ticket_row cộng các trường chi tiết. */
 export type TicketDetail = TicketRow & {
+  branch_id: string;
   description: string;
   channel_code: string;
   category_code: string;

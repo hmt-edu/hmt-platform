@@ -26,7 +26,7 @@ begin
   end if;
   return jsonb_build_object(
     'ticket', app.ticket_row(t) || jsonb_build_object(
-      'description', t.description, 'channel_code', t.channel_code, 'category_code', t.category_code, 'team_code', t.team_code,
+      'branch_id', t.branch_id, 'description', t.description, 'channel_code', t.channel_code, 'category_code', t.category_code, 'team_code', t.team_code,
       'student_name', (select s.full_name from app.student s where s.id = t.student_id),
       'class_id', t.class_id, 'related_ticket_id', t.related_ticket_id,
       'resolution', t.resolution, 'cancel_reason', t.cancel_reason, 'satisfaction', t.satisfaction,

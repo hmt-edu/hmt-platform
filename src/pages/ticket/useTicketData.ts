@@ -76,3 +76,30 @@ export function changeTicketStatus(
     p_resolution: args.resolution ?? null,
   });
 }
+
+/** Nhân viên nhận giao ticket của một cơ sở (app.list_ticket_assignees); chỉ gọi khi mở hộp thoại Giao. */
+export function useTicketAssignees(branchId: string | null, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['ticket-assignees', branchId],
+    enabled,
+    queryFn: () =>
+      rpc<{ id: string; display_name: string; role_names: string[] }[]>(
+        supabase,
+        'list_ticket_assignees',
+        { p_branch_id: branchId },
+      ),
+  });
+}
+
+/** Giao ticket cho đội và người phụ trách (app.assign_ticket); ticket Mới sang Đã giao. */
+export function assignTicket(
+  supabase: SupabaseClient,
+  args: { id: string; team: string; assignee: string },
+) {
+  return rpc<null>(supabase, 'assign_ticket', {
+    p_id: args.id,
+    p_team: args.team,
+    p_assignee: args.assignee,
+  });
+}

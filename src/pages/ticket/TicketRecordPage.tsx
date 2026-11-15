@@ -13,12 +13,20 @@ import { Chatter } from '../../ui/Chatter';
 import { Tag } from '../../ui/Data';
 import { FormDialog } from '../../ui/Dialogs';
 import { Spinner, StateView } from '../../ui/Feedback';
+import { Button } from '../../ui/Button';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
+import { OptionalSelect } from '../../ui/OptionalSelect';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { ticketTimeline } from './ticketTimeline';
-import { addTicketNote, changeTicketStatus, useTicketRecord } from './useTicketData';
+import {
+  addTicketNote,
+  assignTicket,
+  changeTicketStatus,
+  useTicketAssignees,
+  useTicketRecord,
+} from './useTicketData';
 
 const TYPE_NAME = { DN: 'Đề nghị', KN: 'Khiếu nại', GV: 'Ticket giáo viên' } as const;
 
@@ -36,8 +44,12 @@ export function TicketRecordPage() {
   const [satisfaction, setSatisfaction] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [team, setTeam] = useState('');
+  const [assignee, setAssignee] = useState('');
 
   const ticket = record.data?.ticket;
+  const assignees = useTicketAssignees(ticket?.branch_id ?? null, assignOpen);
   useCrumbTail(ticket?.code ?? '');
   const statusName = (code: string | null) => catalogs.name('TICKET_STATUS', code) ?? code ?? '';
   const steps: StageStep[] = useMemo(
@@ -110,8 +122,35 @@ export function TicketRecordPage() {
     }
   };
 
+  const openAssign = () => {
+    setTeam(ticket.team_code ?? '');
+    setAssignee('');
+    setError(null);
+    setAssignOpen(true);
+  };
+
+  const submitAssign = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await assignTicket(supabase, { id: ticket.id, team, assignee });
+      setAssignOpen(false);
+      toast({ tone: 'success', title: 'Đã giao ticket.' });
+      await refresh();
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const onStage = (step: StageStep) => {
     if (step.code === ticket.status_code) return;
+    // Mới → Đã giao đi qua hộp thoại Giao (chọn đội và người phụ trách).
+    if (step.code === 'DA_GIAO' && ticket.status_code === 'MOI') {
+      openAssign();
+      return;
+    }
     setTarget(step.code);
   };
 
@@ -127,6 +166,13 @@ export function TicketRecordPage() {
         onSave={() => undefined}
         onCancel={() => undefined}
         onRefresh={() => void refresh()}
+        headerActions={
+          canEdit && !closed ? (
+            <Button icon="user" onClick={openAssign}>
+              Giao ticket
+            </Button>
+          ) : undefined
+        }
         stage={{
           steps,
           current: ticket.status_code,
@@ -198,6 +244,32 @@ export function TicketRecordPage() {
           </DetailSection>
         </div>
       </RecordDetail>
+      <FormDialog
+        open={assignOpen}
+        onOpenChange={setAssignOpen}
+        title="Giao ticket"
+        subtitle={ticket.code}
+        confirmLabel="Giao"
+        canSubmit={team !== '' && assignee !== ''}
+        busy={busy}
+        error={error}
+        onSubmit={() => void submitAssign()}
+      >
+        <OptionalSelect
+          label="Đội"
+          value={team}
+          onChange={setTeam}
+          options={catalogs.options('TICKET_TEAM', ticket.team_code)}
+          placeholder="Chưa chọn"
+        />
+        <OptionalSelect
+          label="Người phụ trách"
+          value={assignee}
+          onChange={setAssignee}
+          options={(assignees.data ?? []).map((p) => ({ value: p.id, label: p.display_name }))}
+          placeholder={assignees.isPending ? 'Đang tải…' : 'Chưa giao'}
+        />
+      </FormDialog>
       <FormDialog
         open={target !== null}
         onOpenChange={(open) => !open && close()}

@@ -27,3 +27,5 @@ Giao diện CSN01 (danh sách), CSN02 (Kanban), CSN03 (biểu mẫu); phiếu ng
 ## Lát 3a (migration 158): chi tiết và ghi chú
 - `app.get_ticket(id)`: chi tiết ticket và dòng thời gian trong một lần gọi; RLS lọc theo phạm vi (AS-09); không thấy thì `HMT_KHONG_TIM_THAY`.
 - `app.add_ticket_note(id, nội dung)`: thêm ghi chú (loại sự kiện `GHI_CHU`); cần Ticket · Sửa ở cơ sở của ticket; chặn ghi chú rỗng và ticket đã đóng/huỷ (AS-02).
+- `app.list_ticket_assignees(cơ sở)` (migration 159): nhân viên CRM nhận giao ticket; cần Ticket · Sửa ở cơ sở đó (AS-09). Không đụng `app.list_assignable_staff` của Lead.
+- `app.get_ticket` có thêm `branch_id` (cho hộp thoại Giao).

@@ -55,6 +55,7 @@ insert into t1 select app.create_ticket(pg_temp.mk('KN', 'KN_02_02'));
 select is((select app.get_ticket((select (j ->> 'id')::uuid from t1)) -> 'ticket' ->> 'code'), (select j ->> 'code' from t1), 'Chi tiết: trả đúng ticket');
 select is((select jsonb_array_length(app.get_ticket((select (j ->> 'id')::uuid from t1)) -> 'events')), 1, 'Chi tiết: dòng thời gian có sự kiện Tạo');
 select is((select app.get_ticket((select (j ->> 'id')::uuid from t1)) -> 'ticket' ->> 'description'), 'Mô tả giả', 'Chi tiết: có mô tả');
+select is((select app.get_ticket((select (j ->> 'id')::uuid from t1)) -> 'ticket' ->> 'branch_id'), (select id::text from app.branch where code = 'CS5'), 'Chi tiết: có mã cơ sở của ticket (cho hộp thoại Giao)');
 select is(pg_temp.err($$select app.get_ticket(gen_random_uuid())$$), 'HMT_KHONG_TIM_THAY', 'Chặn: mã ticket không có');
 
 -- ================= Ghi chú =================
@@ -74,6 +75,14 @@ select is(pg_temp.err($$select app.get_ticket((select (j ->> 'id')::uuid from t1
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select app.change_ticket_status((select (j ->> 'id')::uuid from t1), 'DA_HUY', 'Phụ huynh rút');
 select is(pg_temp.err($$select app.add_ticket_note((select (j ->> 'id')::uuid from t1), 'Sau khi huỷ')$$), 'HMT_TICKET_TRANG_THAI_SAI', 'Chặn: ticket đã huỷ không thêm ghi chú (AS-02)');
+
+-- ================= Người nhận giao (migration 159) =================
+select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
+select is((select count(*)::int from app.list_ticket_assignees((select id from app.branch where code = 'CS5')) where id = pg_temp.uid('cskh5')), 1, 'Danh sách người nhận giao: có nhân viên CRM của cơ sở');
+select is((select count(*)::int from app.list_ticket_assignees((select id from app.branch where code = 'CS5')) where id = pg_temp.uid('cskh1')), 0, 'Danh sách người nhận giao: không lẫn nhân viên cơ sở khác');
+select is(pg_temp.err($$select * from app.list_ticket_assignees((select id from app.branch where code = 'CS1'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: CSKH cơ sở này không xem người nhận giao của cơ sở khác');
+select pg_temp.claims(pg_temp.uid('gv5'), 'aal1');
+select is(pg_temp.err($$select * from app.list_ticket_assignees((select id from app.branch where code = 'CS5'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên (không có quyền Sửa ticket) không xem danh sách giao');
 
 select * from finish();
 rollback;
