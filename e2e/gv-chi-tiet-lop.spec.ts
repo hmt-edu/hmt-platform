@@ -113,3 +113,44 @@ test('GV-11: từ danh sách GV-10 bấm lớp tới chi tiết', async ({ page 
   await page.locator(`a[href="/gv/lop/${myClass}"]`).click();
   await expect(page.getByRole('tab', { name: /^Học sinh/ })).toBeVisible();
 });
+
+// GV-13 Học sinh (hồ sơ rút gọn): mở từ địa chỉ, vì dữ liệu giả của bài này chỉ có dòng điểm danh (chưa xếp lớp) nên tab Học sinh của GV-11 trống.
+async function studentIdByName(name: string): Promise<string> {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    const r = await db.query<{ id: string }>('select id from app.student where full_name = $1', [
+      name,
+    ]);
+    return r.rows[0]?.id ?? '';
+  } finally {
+    await db.end();
+  }
+}
+
+test('GV-13: hồ sơ rút gọn của em trong lớp mình: tên, tóm tắt, theo buổi; không lộ phụ huynh', async ({
+  page,
+}) => {
+  const studentId = await studentIdByName(seed.names[0]);
+  expect(studentId).not.toBe('');
+  await loginStaff(page, 'gv.cs5');
+  await expect(page).toHaveURL(/\/gv$/);
+  await page.goto(`/gv/lop/${myClass}/hoc-sinh/${studentId}`);
+  await expect(page.getByRole('heading', { level: 1, name: seed.names[0] })).toBeVisible();
+  await expect(page.getByText(/Hồ sơ rút gọn: chỉ điểm danh, điểm tiêu chí, BTVN/)).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Theo buổi' })).toBeVisible();
+  await expect(page.getByText('Chuyên cần')).toBeVisible();
+  // Buổi của lớp hiện trong bảng (máy tính) hoặc thẻ (điện thoại); không có tên phụ huynh, số điện thoại (R-GV-13).
+  await expect(page.getByText(/Buổi 901/).first()).toBeVisible();
+  await expect(page.getByText(/Phụ huynh E2E GV/)).toHaveCount(0);
+  await expectAccessible(page);
+});
+
+test('GV-13: em không thuộc lớp này: báo không có quyền, không lộ dữ liệu', async ({ page }) => {
+  const studentId = await studentIdByName(seed.names[0]);
+  await loginStaff(page, 'gv.cs5');
+  await expect(page).toHaveURL(/\/gv$/);
+  await page.goto(`/gv/lop/${otherClass}/hoc-sinh/${studentId}`);
+  await expect(page.getByText(/không có quyền xem học sinh này/)).toBeVisible();
+  await expect(page.getByText(seed.names[0])).toHaveCount(0);
+});
