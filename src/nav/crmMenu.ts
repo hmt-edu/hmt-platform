@@ -205,6 +205,14 @@ export const CRM_MENU: MenuGroup[] = [
         stage: GD2,
       },
       {
+        code: 'BUOI-15',
+        label: 'Điểm danh trong ngày',
+        slug: 'diem-danh-trong-ngay',
+        sub: 'Buổi học',
+        requires: can('SESSION'),
+        stage: '',
+      },
+      {
         code: 'BUOI-11',
         label: 'Điểm danh vận hành',
         slug: 'diem-danh',
