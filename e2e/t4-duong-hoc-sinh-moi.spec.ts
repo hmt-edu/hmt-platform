@@ -295,7 +295,8 @@ test('16. CSKH chốt danh sách buổi (BUOI-02): em mới có trong danh sách
   await enterAs(page, 'cskh.cs5');
   await page.goto(`/crm/buoi-hoc/${state.sessionId}`);
   await page.getByRole('button', { name: 'Chốt danh sách' }).click();
-  await dialogOf(page, 'Chốt danh sách buổi này?')
+  await page
+    .getByRole('alertdialog', { name: 'Chốt danh sách buổi này?' })
     .getByRole('button', { name: 'Chốt danh sách' })
     .click();
   await expect(page.getByText('Đã chốt danh sách').first()).toBeVisible();
