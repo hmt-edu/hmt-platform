@@ -313,6 +313,17 @@ test('17. Giáo viên điểm danh Có mặt và Lưu (GV-05)', async ({ page })
   await expect(page.getByText('Đã lưu điểm danh', { exact: true })).toBeVisible();
 });
 
+test('17b. Giáo viên nhập nội dung buổi, BTVN để trống (GV-06, điều kiện Done R-GIO-06)', async ({
+  page,
+}) => {
+  await loginStaff(page, 'gv.cs5');
+  await expect(page).toHaveURL(/\/gv$/);
+  await page.goto(`/gv/buoi/${state.sessionId}/noi-dung`);
+  await page.getByLabel('Dòng nội dung 1').fill('Phương trình bậc nhất (đường T4)');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đã lưu nội dung buổi').first()).toBeVisible();
+});
+
 test('18. TẮT: hệ thống tự Done buổi (hàm mark_session_done, pg_cron gọi); trừ giờ khỏi quỹ (R-GIO-01)', async () => {
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
