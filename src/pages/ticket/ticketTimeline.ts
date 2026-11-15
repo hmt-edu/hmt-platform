@@ -28,7 +28,9 @@ export function ticketTimeline(
             ? `Đổi trạng thái: ${statusName(e.from_status)} → ${statusName(e.to_status)}.`
             : e.event_type === 'DOI_NHOM_CON'
               ? 'Đổi nhóm con.'
-              : 'Đổi mức độ.';
+              : e.event_type === 'SUA_KHIEU_NAI'
+                ? 'Cập nhật phần riêng của khiếu nại.'
+                : 'Đổi mức độ.';
     return {
       kind: 'system',
       id: e.id,

@@ -95,6 +95,12 @@ test('Chi tiết: thêm ghi chú; Đã xử lý cần kết quả; huỷ cần l
   await page.getByRole('combobox', { name: 'Ghi chú' }).first().fill('Đã gọi lại phụ huynh.');
   await page.getByRole('button', { name: 'Gửi ghi chú' }).click();
   await expect(page.getByText('Đã gọi lại phụ huynh.')).toBeVisible();
+  // Khiếu nại có phần riêng: sửa và lưu, giá trị hiện ở chi tiết và dòng thời gian ghi lại.
+  await page.getByRole('button', { name: 'Sửa phần riêng' }).click();
+  await page.getByLabel('Mong muốn của khách').fill('Đổi giáo viên giảng lại.');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đổi giáo viên giảng lại.')).toBeVisible();
+  await expect(page.getByText('Cập nhật phần riêng của khiếu nại.')).toBeVisible();
   // Huỷ không ghi lý do: nút Chuyển mờ cho tới khi có lý do.
   await page.getByRole('button', { name: /Đã huỷ/ }).click();
   await expect(page.getByRole('button', { name: 'Chuyển', exact: true })).toBeDisabled();

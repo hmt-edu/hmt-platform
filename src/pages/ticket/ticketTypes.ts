@@ -43,11 +43,19 @@ export type TicketDetail = TicketRow & {
   first_response_at: string | null;
   resolved_at: string | null;
   closed_at: string | null;
+  nature_code: 'HO_TRO' | 'PHAN_ANH' | null;
+  accused_user_id: string | null;
+  accused_name: string | null;
+  complaint_date: string | null;
+  customer_wish: string | null;
+  root_cause: string | null;
+  compensation_note: string | null;
 };
 
 export type TicketEvent = {
   id: string;
-  event_type: 'TAO' | 'GIAO' | 'DOI_TRANG_THAI' | 'DOI_NHOM_CON' | 'DOI_MUC_DO' | 'GHI_CHU';
+  event_type:
+    'TAO' | 'GIAO' | 'DOI_TRANG_THAI' | 'DOI_NHOM_CON' | 'DOI_MUC_DO' | 'GHI_CHU' | 'SUA_KHIEU_NAI';
   from_status: string | null;
   to_status: string | null;
   note: string | null;
@@ -55,4 +63,4 @@ export type TicketEvent = {
   created_by_name: string | null;
 };
 
-export type TicketRecord = { ticket: TicketDetail; events: TicketEvent[] };
+export type TicketRecord = { ticket: TicketDetail; children: TicketRow[]; events: TicketEvent[] };

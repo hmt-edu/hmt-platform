@@ -138,3 +138,12 @@ export function useTicketCategories() {
 export function createTicket(supabase: SupabaseClient, data: Record<string, unknown>) {
   return rpc<{ id: string; code: string }>(supabase, 'create_ticket', { p_data: data });
 }
+
+/** Sửa phần riêng khiếu nại (app.update_ticket_complaint): khoá nào có mới đổi; ô trống là xoá. */
+export function updateTicketComplaint(
+  supabase: SupabaseClient,
+  id: string,
+  data: Record<string, string | null>,
+) {
+  return rpc<null>(supabase, 'update_ticket_complaint', { p_id: id, p_data: data });
+}

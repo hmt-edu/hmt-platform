@@ -3,10 +3,10 @@
 // Giao ticket (chọn đội, người phụ trách) và tạo mới làm ở lát sau: danh sách người giao cần mở rộng hàm máy chủ.
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, FORBIDDEN_CODE, useDb } from '../../lib/db';
-import { formatDateTime } from '../../lib/format';
+import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Chatter } from '../../ui/Chatter';
@@ -25,6 +25,7 @@ import {
   assignTicket,
   changeTicketStatus,
   useTicketAssignees,
+  updateTicketComplaint,
   useTicketRecord,
 } from './useTicketData';
 
@@ -44,12 +45,20 @@ export function TicketRecordPage() {
   const [satisfaction, setSatisfaction] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [complaintOpen, setComplaintOpen] = useState(false);
+  const [complaint, setComplaint] = useState({
+    accused: '',
+    date: '',
+    wish: '',
+    cause: '',
+    compensation: '',
+  });
   const [assignOpen, setAssignOpen] = useState(false);
   const [team, setTeam] = useState('');
   const [assignee, setAssignee] = useState('');
 
   const ticket = record.data?.ticket;
-  const assignees = useTicketAssignees(ticket?.branch_id ?? null, assignOpen);
+  const assignees = useTicketAssignees(ticket?.branch_id ?? null, assignOpen || complaintOpen);
   useCrumbTail(ticket?.code ?? '');
   const statusName = (code: string | null) => catalogs.name('TICKET_STATUS', code) ?? code ?? '';
   const steps: StageStep[] = useMemo(
@@ -114,6 +123,39 @@ export function TicketRecordPage() {
       });
       close();
       toast({ tone: 'success', title: 'Đã đổi trạng thái ticket.' });
+      await refresh();
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openComplaint = () => {
+    setComplaint({
+      accused: ticket.accused_user_id ?? '',
+      date: ticket.complaint_date ?? '',
+      wish: ticket.customer_wish ?? '',
+      cause: ticket.root_cause ?? '',
+      compensation: ticket.compensation_note ?? '',
+    });
+    setError(null);
+    setComplaintOpen(true);
+  };
+
+  const submitComplaint = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await updateTicketComplaint(supabase, ticket.id, {
+        accused_user_id: complaint.accused === '' ? null : complaint.accused,
+        complaint_date: complaint.date === '' ? null : complaint.date,
+        customer_wish: complaint.wish,
+        root_cause: complaint.cause,
+        compensation_note: complaint.compensation,
+      });
+      setComplaintOpen(false);
+      toast({ tone: 'success', title: 'Đã lưu phần riêng của khiếu nại.' });
       await refresh();
     } catch (cause) {
       setError(errorOf(cause).message);
@@ -203,6 +245,13 @@ export function TicketRecordPage() {
             <DetailField label="Người gửi" mode="view" value={ticket.sender_name ?? ''} />
             <DetailField label="Học sinh" mode="view" value={ticket.student_name ?? ''} />
             <DetailField label="Nhóm" mode="view" value={ticket.category_name ?? ''} />
+            {ticket.nature_code && (
+              <DetailField
+                label="Tính chất"
+                mode="view"
+                value={ticket.nature_code === 'HO_TRO' ? 'Cần hỗ trợ' : 'Phản ánh'}
+              />
+            )}
             <DetailField label="Mô tả" mode="view" value={ticket.description} />
           </DetailSection>
           <DetailSection title="Xử lý">
@@ -243,7 +292,105 @@ export function TicketRecordPage() {
             )}
           </DetailSection>
         </div>
+        {ticket.ticket_type === 'KN' && (
+          <div className="mt-6">
+            <DetailSection title="Riêng khiếu nại">
+              <DetailField
+                label="Người bị khiếu nại"
+                mode="view"
+                value={ticket.accused_name ?? ''}
+              />
+              <DetailField
+                label="Ngày xảy ra"
+                mode="view"
+                value={ticket.complaint_date ? formatDate(ticket.complaint_date) : ''}
+              />
+              <DetailField
+                label="Mong muốn của khách"
+                mode="view"
+                value={ticket.customer_wish ?? ''}
+              />
+              <DetailField label="Nguyên nhân gốc" mode="view" value={ticket.root_cause ?? ''} />
+              <DetailField label="Bồi hoàn" mode="view" value={ticket.compensation_note ?? ''} />
+              <DetailField
+                label="Mức hài lòng 1–5"
+                hint="bắt buộc khi đóng"
+                mode="view"
+                value={ticket.satisfaction ?? ''}
+              />
+            </DetailSection>
+            {canEdit && !closed && (
+              <Button className="mt-2" onClick={openComplaint}>
+                Sửa phần riêng
+              </Button>
+            )}
+          </div>
+        )}
+        {(record.data?.children.length ?? 0) > 0 && (
+          <div className="mt-6">
+            <DetailSection title={`Ticket liên quan (${record.data?.children.length ?? 0})`}>
+              <ul className="flex flex-col gap-1">
+                {record.data?.children.map((c) => (
+                  <li key={c.id}>
+                    <Link className="text-link underline" to={`/crm/ticket/${c.id}`}>
+                      {c.code}
+                    </Link>{' '}
+                    {c.category_name} · {statusName(c.status_code)} ·{' '}
+                    {c.assignee_name ?? 'Chưa giao'}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-caption text-fg-muted">
+                Đóng khiếu nại không tự đóng ticket con, và ngược lại.
+              </p>
+            </DetailSection>
+          </div>
+        )}
       </RecordDetail>
+      <FormDialog
+        open={complaintOpen}
+        onOpenChange={setComplaintOpen}
+        title="Riêng khiếu nại"
+        subtitle={ticket.code}
+        confirmLabel="Lưu"
+        canSubmit
+        busy={busy}
+        error={error}
+        onSubmit={() => void submitComplaint()}
+      >
+        <OptionalSelect
+          label="Người bị khiếu nại"
+          value={complaint.accused}
+          onChange={(v) => setComplaint((c) => ({ ...c, accused: v }))}
+          options={(assignees.data ?? []).map((p) => ({ value: p.id, label: p.display_name }))}
+          placeholder={assignees.isPending ? 'Đang tải…' : 'Chưa chọn'}
+        />
+        <label className="flex flex-col gap-1">
+          <span className="text-caption font-semibold text-fg-label">Ngày xảy ra</span>
+          <input
+            type="date"
+            value={complaint.date}
+            onChange={(e) => setComplaint((c) => ({ ...c, date: e.target.value }))}
+            className={INPUT_CLASS}
+          />
+        </label>
+        <TextAreaField
+          label="Mong muốn của khách"
+          value={complaint.wish}
+          onChange={(e) => setComplaint((c) => ({ ...c, wish: e.target.value }))}
+        />
+        <TextAreaField
+          label="Nguyên nhân gốc"
+          value={complaint.cause}
+          onChange={(e) => setComplaint((c) => ({ ...c, cause: e.target.value }))}
+        />
+        <TextAreaField
+          label="Bồi hoàn"
+          help="Ghi bằng chữ; không nhập số tiền, ticket không tự sinh phiếu chi."
+          value={complaint.compensation}
+          onChange={(e) => setComplaint((c) => ({ ...c, compensation: e.target.value }))}
+        />
+      </FormDialog>
       <FormDialog
         open={assignOpen}
         onOpenChange={setAssignOpen}
