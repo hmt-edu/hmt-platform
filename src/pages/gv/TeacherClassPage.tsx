@@ -83,7 +83,14 @@ export function TeacherClassPage() {
                       key={s.student_id}
                       className="rounded-control border border-border bg-surface p-3"
                     >
-                      <p className="font-semibold">{s.full_name}</p>
+                      <p className="font-semibold">
+                        <Link
+                          to={`/gv/lop/${o.class.id}/hoc-sinh/${s.student_id}`}
+                          className="text-link hover:underline"
+                        >
+                          {s.full_name}
+                        </Link>
+                      </p>
                       <p className="text-caption text-fg-muted">
                         {attendanceText(s)} · {scoreText(s.avg_score)}
                       </p>
