@@ -7,7 +7,8 @@
 --
 -- Nhãn bài các buổi sau dời tự nhiên: số buổi đánh lại theo thứ tự ngày (app.renumber_class_sessions), nên chèn một buổi thì các buổi sau tăng một.
 
--- Danh mục: phân hệ cờ, loại chứng từ, một lý do từ chối riêng cho yêu cầu buổi.
+-- Danh mục: phân hệ cờ, loại chứng từ, một lý do từ chối riêng cho yêu cầu buổi. MODULE và DOC_TYPE là danh mục hệ thống: thêm mục chỉ qua migration (cờ hmt.migration).
+select set_config('hmt.migration', 'on', false);
 insert into app.catalog_item (catalog_code, code, name, sort_order)
 select 'MODULE', 'YEU_CAU_BUOI', 'Yêu cầu buổi (củng cố, học bù, học bổ trợ)', coalesce(max(sort_order), 0) + 1
   from app.catalog_item where catalog_code = 'MODULE'
