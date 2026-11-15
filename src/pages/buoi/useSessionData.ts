@@ -169,6 +169,29 @@ export function useCancelSession(sessionId: string) {
   });
 }
 
+export type CorrectArgs = {
+  studentId: string;
+  status: string;
+  reason: string;
+  note: string | null;
+};
+/** Sửa điểm danh sau Done (app.correct_attendance_after_done, BUOI-14, R-GIO-07): chỉ Điểm danh · Duyệt, bắt buộc lý do. */
+export function useCorrectAttendance(sessionId: string) {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (a: CorrectArgs) =>
+      rpc<null>(supabase, 'correct_attendance_after_done', {
+        p_session_id: sessionId,
+        p_student_id: a.studentId,
+        p_status_code: a.status,
+        p_reason_code: a.reason,
+        p_note: a.note,
+      }),
+    onSuccess: () => refresh(),
+  });
+}
+
 export function useMoveOptions(sessionId: string, enabled: boolean) {
   const supabase = useDb();
   return useQuery({

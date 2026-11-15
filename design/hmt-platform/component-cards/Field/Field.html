@@ -64,7 +64,7 @@ function Demo() {
         React.createElement(Field, { label: "H\u1ECD t\u00EAn h\u1ECDc sinh", required: true, error: show("name") },
             React.createElement(TextInput, { "data-k": "name", value: v.name, onChange: upd("name"), onBlur: blur("name"), autoComplete: "off" })),
         React.createElement(Field, { label: "S\u0110T ph\u1EE5 huynh", required: true, helper: "D\u00F9ng \u0111\u1EC3 g\u1EEDi th\u00F4ng b\u00E1o h\u1ECDc ph\u00ED, l\u1ECBch h\u1ECDc", error: show("phone") },
-            React.createElement(TextInput, { "data-k": "phone", type: "tel", inputMode: "tel", value: v.phone, onChange: upd("phone"), onBlur: blur("phone"), placeholder: "0912 345 678" })),
+            React.createElement(TextInput, { "data-k": "phone", type: "tel", inputMode: "tel", value: v.phone, onChange: upd("phone"), onBlur: blur("phone"), placeholder: "0900 000 120" })),
         React.createElement(Field, { label: "C\u01A1 s\u1EDF", required: true, error: show("campus") },
             React.createElement(Select, { "data-k": "campus", value: v.campus, onChange: upd("campus"), onBlur: blur("campus"), placeholder: "Ch\u1ECDn c\u01A1 s\u1EDF", options: [["CS1", "Nguyễn Chí Thanh"], ["CS2", "Đỗ Quang"], ["CS4", "Hà Đông"], ["CS5", "Mỹ Đình"]].map(([c, n]) => ({ value: c, label: `${c} ${n}` })) })),
         React.createElement(Field, { label: "Ghi ch\u00FA", optional: true, error: show("note") },

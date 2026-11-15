@@ -278,6 +278,20 @@ select is(pg_temp.err($$select app.move_session(pg_temp.s('f', 1), pg_temp.fut()
 select lives_ok($$select app.move_session(pg_temp.s('f', 1), pg_temp.fut() + 1, '17:00', '18:30')$$, 'Đúng: dời một buổi chưa Done');
 select is((select is_manual from app.class_session where id = pg_temp.s('f', 1)), true, 'Buổi dời tay đánh dấu chỉnh lẻ (sinh lại lịch giữ nguyên, R-LOP-10)');
 select lives_ok($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'))$$, 'Đúng: đổi giáo viên một buổi (dạy thay, R-LOP-11)');
+-- F5, F6: người được đặt phải đúng vai trò và đúng cơ sở của buổi, trợ giảng phải tồn tại.
+select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('sales1'))$$), 'HMT_GIAO_VIEN_KHONG_HOP_LE', 'F5 chặn: người vai Sale không được đặt làm giáo viên');
+select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('bm5'))$$), 'HMT_GIAO_VIEN_KHONG_HOP_LE', 'F5 chặn: người của cơ sở khác (và không phải giáo viên) không được đặt làm giáo viên');
+select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), pg_temp.uid('gv1'))$$), 'HMT_TRO_GIANG_KHONG_HOP_LE', 'F5 chặn: giáo viên không phải trợ giảng thì không đặt làm trợ giảng');
+select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), gen_random_uuid())$$), 'HMT_NHAN_SU_KHONG_CO', 'F6 chặn: trợ giảng không tồn tại báo HMT_NHAN_SU_KHONG_CO, không còn lỗi khoá ngoại 23503');
+select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), gen_random_uuid())$$), 'HMT_NHAN_SU_KHONG_CO', 'Giữ luật cũ: giáo viên không tồn tại vẫn báo HMT_NHAN_SU_KHONG_CO');
+-- F5 chỉ kiểm người MỚI: giữ nguyên người cũ (dù không đủ vai trò) thì qua; đổi sang người sai vẫn bị chặn.
+select pg_temp.sudo($$update app.class_session set teacher_id = pg_temp.uid('sales1') where id = pg_temp.s('f', 2)$$);
+select lives_ok($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('sales1'))$$, 'F5: giữ nguyên giáo viên hiện tại (dù không đủ vai trò) thì cho qua');
+select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('bm5'))$$), 'HMT_GIAO_VIEN_KHONG_HOP_LE', 'F5: đổi sang người sai vẫn bị chặn');
+select pg_temp.sudo($$update app.class_session set assistant_id = pg_temp.uid('sales1') where id = pg_temp.s('f', 2)$$);
+select lives_ok($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), pg_temp.uid('sales1'))$$, 'F5: giữ nguyên trợ giảng hiện tại (dù không đủ vai trò), đổi riêng giáo viên sang người hợp lệ thì cho qua');
+select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), pg_temp.uid('bm5'))$$), 'HMT_TRO_GIANG_KHONG_HOP_LE', 'F5: đổi sang trợ giảng sai vẫn bị chặn');
+select lives_ok($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), null)$$, 'Đúng: giáo viên hợp lệ, không trợ giảng vẫn lưu được');
 select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
 select is((select count(*)::int from app.class_session where id = pg_temp.s('f', 2)), 1, 'Người dạy thay thấy buổi được giao');
 
