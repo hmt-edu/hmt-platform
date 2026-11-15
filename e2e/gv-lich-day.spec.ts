@@ -68,11 +68,16 @@ test('GV-03: lịch tháng: bấm Tháng thấy ô hôm nay có buổi; đổi t
   if (!isNarrow) {
     await expect(page.getByRole('gridcell', { name: /, [1-9]\d* buổi$/ }).first()).toBeVisible();
   }
-  // Tháng sau không có buổi hôm nay (mỗi lần chạy chỉ dựng buổi hôm nay).
+  // Đổi tháng: nhãn tháng đổi, Tháng này quay lại đúng tháng cũ (lớp dựng sẵn còn sinh buổi các tuần sau nên tháng sau không nhất thiết trống).
+  const label = page.getByText(/^Tháng \d{2}\/\d{4}$/);
+  const before = await label.textContent();
   await page.getByRole('button', { name: 'Tháng sau' }).click();
-  await expect(page.getByText('Tháng này bạn không có buổi dạy')).toBeVisible();
+  await expect(label).not.toHaveText(before ?? '');
+  await page.getByRole('button', { name: 'Tháng trước' }).click();
+  await expect(label).toHaveText(before ?? '');
+  await page.getByRole('button', { name: 'Tháng sau' }).click();
   await page.getByRole('button', { name: 'Tháng này' }).click();
-  await expect(page.getByText('Tháng này bạn không có buổi dạy')).toHaveCount(0);
+  await expect(label).toHaveText(before ?? '');
   if (isNarrow) return;
   // Bấm số ngày hôm nay sang tuần của ngày đó: thấy buổi của mình, không thấy buổi của người khác (R-GV-08).
   await dayButton.click();
