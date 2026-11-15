@@ -90,6 +90,10 @@ const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
+const TicketRecordPage = lazyScreen(
+  () => import('../pages/ticket/TicketRecordPage'),
+  'TicketRecordPage',
+);
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -364,6 +368,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="ticket">
                 <TicketListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'ticket/:id',
+            element: (
+              <GatedCrmEntry slug="ticket">
+                <TicketRecordPage />
               </GatedCrmEntry>
             ),
           },

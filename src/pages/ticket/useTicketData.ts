@@ -1,8 +1,9 @@
 // Gọi dữ liệu màn Ticket: danh sách phân trang ở máy chủ (app.list_tickets), một lần gọi mỗi trang.
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
-import type { TicketBoardColumn, TicketFilters, TicketPage } from './ticketTypes';
+import type { TicketBoardColumn, TicketFilters, TicketPage, TicketRecord } from './ticketTypes';
 
 export function useTicketPage(filters: TicketFilters, offset: number, limit: number | null) {
   const supabase = useDb();
@@ -44,5 +45,34 @@ export function useTicketBoard(filters: TicketFilters, perColumn: number | null,
         p_filters: filters,
         p_per_column: perColumn,
       }),
+  });
+}
+
+/** CSN-03: chi tiết một ticket và dòng thời gian, một lần gọi app.get_ticket. */
+export function useTicketRecord(id: string | undefined) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['ticket-record', id],
+    enabled: id !== undefined,
+    queryFn: () => rpc<TicketRecord>(supabase, 'get_ticket', { p_id: id }),
+  });
+}
+
+/** Thêm ghi chú vào dòng thời gian (app.add_ticket_note). */
+export function addTicketNote(supabase: SupabaseClient, id: string, note: string) {
+  return rpc<null>(supabase, 'add_ticket_note', { p_id: id, p_note: note });
+}
+
+/** Đổi trạng thái theo luồng chung (app.change_ticket_status); luật chặn trả lỗi HMT_* tiếng Việt. */
+export function changeTicketStatus(
+  supabase: SupabaseClient,
+  args: { id: string; to: string; note?: string; satisfaction?: number; resolution?: string },
+) {
+  return rpc<null>(supabase, 'change_ticket_status', {
+    p_id: args.id,
+    p_to: args.to,
+    p_note: args.note ?? null,
+    p_satisfaction: args.satisfaction ?? null,
+    p_resolution: args.resolution ?? null,
   });
 }

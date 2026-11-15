@@ -1,6 +1,7 @@
 // CS-01 Ticket (danh sách, khuôn K03, canvas CSN-01): nối với list_tickets. Lọc, phân trang làm ở máy chủ; chỉ giữ trang đang xem.
 // Phân hệ Aftersale tắt ở cơ sở thì hiện câu trung tính (công tắc kiểm cả ở giao diện và trong hàm DB, AS-13).
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { KanbanBoard } from '../../list/Kanban';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
@@ -19,6 +20,7 @@ import { useRefreshTickets, useTicketBoard, useTicketPage } from './useTicketDat
 export function TicketListPage() {
   const access = useAccess();
   const toast = useToast();
+  const navigate = useNavigate();
   const refreshData = useRefreshTickets();
   const catalogs = useLeadCatalogs();
   const config = useMemo(() => buildTicketConfig(catalogs, access), [catalogs, access]);
@@ -67,16 +69,17 @@ export function TicketListPage() {
             cardLabel={(c) => c.code}
             rule={() => ({
               ok: false,
-              reason: 'Đổi trạng thái ticket bằng nút Hành động trong hồ sơ ticket.',
+              reason: 'Đổi trạng thái ticket bằng thanh trạng thái trong hồ sơ ticket.',
             })}
             onMove={() => undefined}
             onBlocked={(reason) => toast({ tone: 'warning', title: reason })}
-            note="Đổi trạng thái ticket bằng nút Hành động trong hồ sơ ticket (Giao, Đang xử lý, Đã xử lý, Đóng, Huỷ)."
+            note="Đổi trạng thái ticket bằng thanh trạng thái trong hồ sơ ticket (Đang xử lý, Đã xử lý, Đóng, Huỷ)."
             renderCard={(c) => <TicketCard row={c} />}
           />
         )
       }
       rows={rows}
+      onRowClick={(r) => void navigate(`/crm/ticket/${r.id}`)}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.title}`}
       loading={list.isPending || list.isPlaceholderData}
