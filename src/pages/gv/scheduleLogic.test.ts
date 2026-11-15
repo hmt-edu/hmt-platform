@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
+  addMonths,
   dayChip,
   defaultDay,
   groupByDay,
+  inMonth,
   mondayOf,
+  monthLabel,
+  monthStartOf,
+  monthWeeks,
   timeAndRoom,
   typeLabel,
   typeTone,
@@ -97,5 +102,33 @@ describe('GV-03: khung tuần', () => {
     const days = weekDays('2026-10-12');
     expect(defaultDay(days, '2026-10-14')).toBe('2026-10-14');
     expect(defaultDay(days, '2026-11-20')).toBe('2026-10-12');
+  });
+});
+
+describe('lịch tháng (GV-03)', () => {
+  it('monthStartOf: mùng 1 của tháng chứa ngày', () => {
+    expect(monthStartOf('2026-11-15')).toBe('2026-11-01');
+  });
+  it('addMonths: sang tháng sau, lùi tháng, qua năm', () => {
+    expect(addMonths('2026-11-01', 1)).toBe('2026-12-01');
+    expect(addMonths('2026-12-01', 1)).toBe('2027-01-01');
+    expect(addMonths('2026-01-01', -1)).toBe('2025-12-01');
+    expect(addMonths('2026-03-01', -3)).toBe('2025-12-01');
+  });
+  it('monthLabel: Tháng mm/yyyy', () => {
+    expect(monthLabel('2026-11-01')).toBe('Tháng 11/2026');
+  });
+  it('monthWeeks: các tuần từ Thứ Hai phủ kín tháng, mỗi tuần bảy ngày', () => {
+    // Tháng 11/2026: mùng 1 là Chủ Nhật (nên tuần đầu bắt đầu Thứ Hai 26/10), ngày 30 là Thứ Hai.
+    const weeks = monthWeeks('2026-11-01');
+    expect(weeks[0]?.[0]).toBe('2026-10-26');
+    expect(weeks.every((w) => w.length === 7)).toBe(true);
+    expect(weeks.at(-1)?.[0]).toBe('2026-11-30');
+    expect(weeks.flat()).toContain('2026-11-01');
+    expect(weeks.flat()).toContain('2026-11-30');
+  });
+  it('inMonth: ngày thừa của tuần đầu thuộc tháng khác', () => {
+    expect(inMonth('2026-10-26', '2026-11-01')).toBe(false);
+    expect(inMonth('2026-11-15', '2026-11-01')).toBe(true);
   });
 });
