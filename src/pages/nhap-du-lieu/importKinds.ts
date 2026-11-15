@@ -2,7 +2,7 @@
 // và docs/nghiep-vu/nap-du-lieu.md. Mọi luật kiểm dòng nằm ở hàm trong cơ sở dữ liệu / Edge Function; giao diện chỉ kiểm tên cột.
 
 export type ImportKind =
-  'NGUOI_DUNG' | 'CO_HOI' | 'PHU_HUYNH' | 'HOC_SINH' | 'LOP' | 'GHI_DANH' | 'PHIEU_TEST';
+  'NGUOI_DUNG' | 'CO_HOI' | 'PHU_HUYNH' | 'HOC_SINH' | 'LOP' | 'GHI_DANH' | 'PHIEU_TEST' | 'SO_DU';
 
 export type ImportKindConfig = {
   kind: ImportKind;
@@ -207,6 +207,18 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
     subject: 'Phiếu test',
     training: true,
   },
+  {
+    kind: 'SO_DU',
+    title: 'Số dư',
+    description:
+      'Số dư tiền đầu kỳ theo học sinh: công nợ phải thu (ghi số âm trong sổ) và tiền thu thừa, tính bằng đồng. Giờ còn lại nạp ở Ghi danh. Một dòng lỗi thì không nạp cả loại.',
+    columns: ['hoc_sinh_ma_cu', 'cong_no_phai_thu_dong', 'tien_thu_thua_dong', 'ngay_chot'],
+    required: ['hoc_sinh_ma_cu', 'cong_no_phai_thu_dong', 'tien_thu_thua_dong'],
+    viaFunction: false,
+    subject: 'Số dư',
+    training: true,
+    blockOnError: true,
+  },
 ];
 
 export function kindConfig(kind: ImportKind): ImportKindConfig {
@@ -264,7 +276,7 @@ export const IMPORT_KIND_ROWS: ImportKindRow[] = [
     description:
       'Số dư tiền đầu kỳ (công nợ, tiền thu thừa). Giờ nạp ở Ghi danh. Một dòng lỗi thì không nạp cả loại.',
     needs: 'Phụ huynh, Học sinh',
-    kind: null,
+    kind: 'SO_DU',
   },
   {
     title: 'Cơ hội',
