@@ -27,18 +27,18 @@ function ProductSwitch({ value, onChange }) { return React.createElement("div", 
     React.createElement(HMT.SegmentedControl, { name: "product", layout: "row", label: "M\u1EADt \u0111\u1ED9 theo s\u1EA3n ph\u1EA9m", value: value, onChange: onChange, options: [{ value: "crm", label: "CRM" }, { value: "teacher", label: "Giáo viên" }, { value: "lms", label: "Học tập" }] })); }
 /* Dữ liệu mẫu dùng chung cho các màn đợt 5.2 — dữ liệu giả */
 const STAFF = [
-    { code: "NV0001", name: "Đặng Quốc Huy", email: "huy.dq@hoamatoan.edu.vn", phone: "0901 234 561", roles: ["AD"], campus: "CS3", status: "active", last: "11/10/2026 08:12", twofa: true },
-    { code: "NV0007", name: "Phạm Ngọc Ánh", email: "anh.pn@hoamatoan.edu.vn", phone: "0912 345 672", roles: ["KT"], campus: "CS3", status: "active", last: "11/10/2026 07:58", twofa: true },
-    { code: "NV0009", name: "Ngô Thị Lan", email: "lan.nt@hoamatoan.edu.vn", phone: "0934 112 093", roles: ["CS"], campus: "CS2", status: "locked", last: "30/09/2026 17:40", note: "Nghỉ việc từ 01/10/2026" },
-    { code: "NV0012", name: "Trần Thu Hà", email: "ha.tt@hoamatoan.edu.vn", phone: "0987 654 321", roles: ["SA"], campus: "CS1", status: "active", last: "11/10/2026 09:03" },
-    { code: "NV0021", name: "Nguyễn Hoàng Long", email: "long.nh@hoamatoan.edu.vn", phone: "0976 220 418", roles: ["BM"], campus: "CS1", status: "active", last: "11/10/2026 08:41" },
-    { code: "NV0026", name: "Vũ Thị Thanh Tâm", email: "tam.vtt@hoamatoan.edu.vn", phone: "0965 330 512", roles: ["CS"], campus: "CS1", status: "active", last: "11/10/2026 08:20" },
-    { code: "NV0030", name: "Hoàng Minh Đức", email: "duc.hm@hoamatoan.edu.vn", phone: "0943 871 206", roles: ["BM"], campus: "CS5", status: "active", last: "10/10/2026 21:15" },
-    { code: "NV0034", name: "Phạm Thu Trang", email: "trang.pt@hoamatoan.edu.vn", phone: "0918 406 733", roles: ["CS", "GV"], gvCode: "GV2011", campus: "CS5", status: "active", last: "11/10/2026 07:45" },
-    { code: "NV0041", name: "Bùi Anh Tuấn", email: "tuan.ba@hoamatoan.edu.vn", phone: "0904 519 870", roles: ["SA"], campus: "CS4", status: "temp", last: "11/10/2026 09:31", note: "Sai mật khẩu 10 lần lúc 09:31 · tự mở lúc 09:46" },
-    { code: "GV2007", name: "Lê Văn Khánh", email: "khanh.lv@hoamatoan.edu.vn", phone: "0983 172 640", roles: ["GV"], campus: "CS1", status: "active", last: "10/10/2026 19:02" },
-    { code: "GV2015", name: "Trịnh Mai Phương", email: "phuong.tm@hoamatoan.edu.vn", phone: "0936 504 128", roles: ["GV"], campus: "CS4", status: "active", last: "09/10/2026 20:47" },
-    { code: "TG8002", name: "Đỗ Thị Hạnh", email: "hanh.dt@hoamatoan.edu.vn", phone: "0971 803 255", roles: ["TG"], campus: "CS2", status: "active", last: "11/10/2026 06:55" },
+    { code: "NV0001", name: "Đặng Quốc Huy", email: "nhanvien07@example.test", phone: "0900 000 100", roles: ["AD"], campus: "CS3", status: "active", last: "11/10/2026 08:12", twofa: true },
+    { code: "NV0007", name: "Phạm Ngọc Ánh", email: "nhanvien01@example.test", phone: "0900 000 119", roles: ["KT"], campus: "CS3", status: "active", last: "11/10/2026 07:58", twofa: true },
+    { code: "NV0009", name: "Ngô Thị Lan", email: "nhanvien09@example.test", phone: "0900 000 134", roles: ["CS"], campus: "CS2", status: "locked", last: "30/09/2026 17:40", note: "Nghỉ việc từ 01/10/2026" },
+    { code: "NV0012", name: "Trần Thu Hà", email: "nhanvien05@example.test", phone: "0900 000 177", roles: ["SA"], campus: "CS1", status: "active", last: "11/10/2026 09:03" },
+    { code: "NV0021", name: "Nguyễn Hoàng Long", email: "nhanvien10@example.test", phone: "0900 000 161", roles: ["BM"], campus: "CS1", status: "active", last: "11/10/2026 08:41" },
+    { code: "NV0026", name: "Vũ Thị Thanh Tâm", email: "nhanvien14@example.test", phone: "0900 000 153", roles: ["CS"], campus: "CS1", status: "active", last: "11/10/2026 08:20" },
+    { code: "NV0030", name: "Hoàng Minh Đức", email: "nhanvien03@example.test", phone: "0900 000 144", roles: ["BM"], campus: "CS5", status: "active", last: "10/10/2026 21:15" },
+    { code: "NV0034", name: "Phạm Thu Trang", email: "nhanvien17@example.test", phone: "0900 000 131", roles: ["CS", "GV"], gvCode: "GV2011", campus: "CS5", status: "active", last: "11/10/2026 07:45" },
+    { code: "NV0041", name: "Bùi Anh Tuấn", email: "nhanvien18@example.test", phone: "0900 000 107", roles: ["SA"], campus: "CS4", status: "temp", last: "11/10/2026 09:31", note: "Sai mật khẩu 10 lần lúc 09:31 · tự mở lúc 09:46" },
+    { code: "GV2007", name: "Lê Văn Khánh", email: "nhanvien08@example.test", phone: "0900 000 168", roles: ["GV"], campus: "CS1", status: "active", last: "10/10/2026 19:02" },
+    { code: "GV2015", name: "Trịnh Mai Phương", email: "nhanvien12@example.test", phone: "0900 000 139", roles: ["GV"], campus: "CS4", status: "active", last: "09/10/2026 20:47" },
+    { code: "TG8002", name: "Đỗ Thị Hạnh", email: "nhanvien06@example.test", phone: "0900 000 157", roles: ["TG"], campus: "CS2", status: "active", last: "11/10/2026 06:55" },
 ];
 const ACC_STATUS = { active: ["success", "Đang dùng", "check"], locked: ["danger", "Khoá", "lock"], temp: ["warning", "Tạm khoá", "timer"], never: ["neutral", "Chưa cấp", "minus"], first: ["info", "Chờ đổi mật khẩu", "info"] };
 const CAMPUS_NAME = { CS1: "Nguyễn Chí Thanh", CS2: "Đỗ Quang", CS3: "Hội sở", CS4: "Hà Đông", CS5: "Mỹ Đình" };
@@ -184,7 +184,7 @@ function DevChips({ dev, setDev, extra }) { const { Chip } = HMT; return React.c
         extra)); }
 /* ===== Đợt 5.6 · Học tập + Phụ huynh — dữ liệu giả =====
    Học sinh chính: Khúc Bảo Nam (HS000420) · 9A2 Đại (Thứ 2, 5 · 19:15–20:45 · P102 · thầy Lê Văn Khánh) + 9A2 Hình (khai giảng Thứ Bảy 17/10/2026).
-   Phụ huynh: Anh Khúc Văn Thành (PH000233) · 0975 418 263 · hai con: Nam (lớp 9), Khúc Bảo Ngọc (HS000515, lớp 3, 3A1 Toán).
+   Phụ huynh: Anh Khúc Văn Thành (PH000233) · 0900 000 159 · hai con: Nam (lớp 9), Khúc Bảo Ngọc (HS000515, lớp 3, 3A1 Toán).
    Mốc "hiện tại" phía học sinh/phụ huynh: Thứ Ba 13/10/2026 20:00 (sau Buổi 4, trước hạn BTVN Buổi 4). GV-18: Thứ Hai 12/10/2026 17:00 (trước Buổi 4). */
 function hwPage(name, lines, seed = 0) {
     const W = 600, H = 800, L = 34;
@@ -195,7 +195,7 @@ function hwPage(name, lines, seed = 0) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#e8e4dc"/><g transform="rotate(${tilt} 300 400)"><rect x="12" y="10" width="${W - 24}" height="${H - 20}" fill="#fdfcf7"/>${rows}<line x1="70" x2="70" y1="10" y2="${H - 10}" stroke="#e3a1a1" stroke-width="1.5"/><text x="${W - 40}" y="56" text-anchor="end" font-size="18" fill="#3a4f8f" font-family="Segoe Print, Comic Sans MS, cursive">${esc(name)}</text><g fill="#24408f" font-family="Segoe Print, Comic Sans MS, cursive">${txt}</g></g></svg>`;
     return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
-const NAM = { name: "Khúc Bảo Nam", short: "Nam", code: "HS000420", grade: 9, gd: "GD000098", ph: "Anh Khúc Văn Thành", phc: "PH000233", phone: "0975 418 263" };
+const NAM = { name: "Khúc Bảo Nam", short: "Nam", code: "HS000420", grade: 9, gd: "GD000098", ph: "Anh Khúc Văn Thành", phc: "PH000233", phone: "0900 000 159" };
 const NGOC = { name: "Khúc Bảo Ngọc", short: "Ngọc", code: "HS000515", grade: 3, gd: "GD000058" };
 const LINH = { name: "Võ Thuỳ Dương", short: "Dương", code: "HS000298", grade: 11 };
 /* BTVN Buổi 3 (đã chấm online ở GV-18, 12/10) — Nam nộp 10/10 21:05 (2 ảnh), nộp lại 11/10 20:40 (3 ảnh) */
@@ -318,12 +318,12 @@ function Demo() {
     const STATES = [["list", "Danh sách"], ["kanban", "Kanban"], ["group", "Nhóm theo nguồn"], ["empty", "Chưa có lead"], ["noresult", "Không có kết quả"], ["loading", "Đang tải"], ["error", "Lỗi"], ["noaccess", "Không có quyền"]];
     const STG = { C1: "C1 Data mới", C2: "C2 Chưa liên hệ được", C3: "C3 Không có nhu cầu", C4: "C4 Khách hàng tiềm năng" };
     const L = [
-        ["LD000231", "Chị Nguyễn Thị Thu Trang", "0912 408 337", "Nguyễn Khánh An · Lớp 6", "C1", "", "Marketing · Facebook Ads · Inbox", "Trần Thu Hà", "Chưa có lịch", "none", "12/10 08:14"],
-        ["LD000229", "Anh Đỗ Văn Toàn", "0938 117 402", "Đỗ Minh Châu · Lớp 9", "C2", "C2A Không nghe máy", "Marketing · Hotline", "Trần Thu Hà", "Quá hạn · 10/10 09:00", "overdue", "09/10 16:20"],
-        ["LD000227", "Chị Lê Thu Hằng", "0977 625 310", "Lê Gia Huy · Lớp 9", "C4", "C4D Tạo cơ hội thành công · hệ thống gắn", "Referral · By Customer", "Trần Thu Hà", "Hôm nay · 14:00", "today", "08/10 10:02"],
-        ["LD000224", "Anh Phan Quốc Bảo", "0965 201 884", "Phan Bảo Ngân · Lớp 7", "C4", "C4C Đủ điều kiện tạo cơ hội", "Marketing · Website", "Bùi Văn Nam", "Sắp tới · 15/10 17:30", "soon", "06/10 19:45"],
-        ["LD000219", "Chị Hoàng Thanh Mai", "0983 512 760", "Hoàng Nhật Minh · Lớp 4", "C3", "C3H Không nghe máy nhiều lần", "Telemarketing · Cold Call · Flyer", "Bùi Văn Nam", "Chưa có lịch", "none", "02/10 11:10"],
-        ["LD000216", "Anh Trịnh Quang Vũ", "0904 337 129", "Trịnh Hà Linh · Lớp 8", "C2", "C2B Không liên lạc được", "Marketing · Walk-in", "Trần Thu Hà", "Hôm nay · 16:30", "today", "01/10 15:30"],
+        ["LD000231", "Chị Nguyễn Thị Thu Trang", "0900 000 122", "Nguyễn Khánh An · Lớp 6", "C1", "", "Marketing · Facebook Ads · Inbox", "Trần Thu Hà", "Chưa có lịch", "none", "12/10 08:14"],
+        ["LD000229", "Anh Đỗ Văn Toàn", "0900 000 142", "Đỗ Minh Châu · Lớp 9", "C2", "C2A Không nghe máy", "Marketing · Hotline", "Trần Thu Hà", "Quá hạn · 10/10 09:00", "overdue", "09/10 16:20"],
+        ["LD000227", "Chị Lê Thu Hằng", "0900 000 165", "Lê Gia Huy · Lớp 9", "C4", "C4D Tạo cơ hội thành công · hệ thống gắn", "Referral · By Customer", "Trần Thu Hà", "Hôm nay · 14:00", "today", "08/10 10:02"],
+        ["LD000224", "Anh Phan Quốc Bảo", "0900 000 152", "Phan Bảo Ngân · Lớp 7", "C4", "C4C Đủ điều kiện tạo cơ hội", "Marketing · Website", "Bùi Văn Nam", "Sắp tới · 15/10 17:30", "soon", "06/10 19:45"],
+        ["LD000219", "Chị Hoàng Thanh Mai", "0900 000 169", "Hoàng Nhật Minh · Lớp 4", "C3", "C3H Không nghe máy nhiều lần", "Telemarketing · Cold Call · Flyer", "Bùi Văn Nam", "Chưa có lịch", "none", "02/10 11:10"],
+        ["LD000216", "Anh Trịnh Quang Vũ", "0900 000 106", "Trịnh Hà Linh · Lớp 8", "C2", "C2B Không liên lạc được", "Marketing · Walk-in", "Trần Thu Hà", "Hôm nay · 16:30", "today", "01/10 15:30"],
     ].map(([code, parent, phone, kid, stage, sub, src, sale, next, tk, at]) => ({ id: code, code, parent, phone, kid, stage, sub, src, sale, next, tk, at }));
     const [st, setSt] = useState("list");
     const [sel, setSel] = useState([]);
