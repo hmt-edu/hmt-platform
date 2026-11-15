@@ -2,7 +2,7 @@
 // Dữ liệu giả: bật phân hệ AFTERSALE cho CS5 và dựng một phụ huynh giả có dấu riêng mỗi dự án; ticket tạo bằng giao diện.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, expectAccessible, pickOption } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, pickOption } from './helpers';
 import { DB_URL, setupOf } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phụ huynh giả).');
@@ -81,9 +81,18 @@ test('Chi tiết: thêm ghi chú; Đã xử lý cần kết quả; huỷ cần l
   await enterAs(page, setupOf(testInfo.project.name).account);
   await page.goto('/crm/ticket');
   await page.getByPlaceholder(/Tìm/).fill(title);
-  await page.getByText(title).first().click();
+  // Máy tính là bảng (bấm ô tiêu đề), điện thoại là danh sách thẻ.
+  await (
+    isPhone(page)
+      ? page
+          .getByRole('list', { name: 'Ticket' })
+          .getByRole('listitem')
+          .filter({ hasText: title })
+          .first()
+      : page.getByRole('cell', { name: title, exact: true })
+  ).click();
   await expect(page).toHaveURL(/\/crm\/ticket\/[0-9a-f-]{36}$/);
-  await page.getByLabel('Ghi chú').first().fill('Đã gọi lại phụ huynh.');
+  await page.getByRole('combobox', { name: 'Ghi chú' }).first().fill('Đã gọi lại phụ huynh.');
   await page.getByRole('button', { name: 'Gửi ghi chú' }).click();
   await expect(page.getByText('Đã gọi lại phụ huynh.')).toBeVisible();
   // Huỷ không ghi lý do: nút Chuyển mờ cho tới khi có lý do.
