@@ -192,6 +192,22 @@ export function useCorrectAttendance(sessionId: string) {
   });
 }
 
+export type StaffArgs = { teacherId: string | null; assistantId: string | null };
+/** Đổi giáo viên, trợ giảng một buổi chưa Done (app.change_session_staff, BUOI-13, R-LOP-10, R-LOP-11): trùng giờ chỉ cảnh báo. */
+export function useChangeSessionStaff(sessionId: string) {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (a: StaffArgs) =>
+      rpc<{ warnings: string[] }>(supabase, 'change_session_staff', {
+        p_session_id: sessionId,
+        p_teacher_id: a.teacherId,
+        p_assistant_id: a.assistantId,
+      }),
+    onSuccess: () => refresh(),
+  });
+}
+
 export function useMoveOptions(sessionId: string, enabled: boolean) {
   const supabase = useDb();
   return useQuery({
