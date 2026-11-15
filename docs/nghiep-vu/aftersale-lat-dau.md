@@ -29,3 +29,8 @@ Giao diện CSN01 (danh sách), CSN02 (Kanban), CSN03 (biểu mẫu); phiếu ng
 - `app.add_ticket_note(id, nội dung)`: thêm ghi chú (loại sự kiện `GHI_CHU`); cần Ticket · Sửa ở cơ sở của ticket; chặn ghi chú rỗng và ticket đã đóng/huỷ (AS-02).
 - `app.list_ticket_assignees(cơ sở)` (migration 159): nhân viên CRM nhận giao ticket; cần Ticket · Sửa ở cơ sở đó (AS-09). Không đụng `app.list_assignable_staff` của Lead.
 - `app.get_ticket` có thêm `branch_id` (cho hộp thoại Giao).
+
+## Lát 3c (migration 160): riêng khiếu nại, ticket con, tính chất
+- Bốn cột mới của `app.ticket`: `complaint_date`, `customer_wish`, `root_cause`, `compensation_note`. **Bồi hoàn chỉ là ghi chú bằng chữ**, không số tiền, không phiếu chi (chưa có luật riêng; phương án an toàn, Chat xác nhận hoặc đổi sau).
+- `app.update_ticket_complaint(id, jsonb)`: sửa phần riêng khiếu nại và người bị khiếu nại (cùng cơ sở); chỉ loại Khiếu nại; khoá khi đã đóng/huỷ; ghi nhật ký `SUA_KHIEU_NAI`.
+- `app.get_ticket` có thêm: phần riêng khiếu nại, `nature_code` (ticket giáo viên), `children` (ticket có `related_ticket_id` là ticket này).
