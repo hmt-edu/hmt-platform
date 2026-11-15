@@ -8,6 +8,7 @@ import {
   startHint,
   upcomingLabel,
   weekdayLabel,
+  parseHours,
 } from './enrollLogic';
 import type { MatchingClass } from './enrollTypes';
 
@@ -61,5 +62,18 @@ describe('Hộp chọn lớp: chữ và gợi ý', () => {
     expect(dateKey(new Date(2026, 10, 3))).toBe('2026-11-03');
     expect(keyToDate('2026-11-03')?.getDate()).toBe(3);
     expect(keyToDate('')).toBeNull();
+  });
+});
+
+describe('parseHours (GD-05: số giờ điều chỉnh)', () => {
+  it('đọc số dương, số âm, dấu phẩy thập phân', () => {
+    expect(parseHours('2')).toBe(2);
+    expect(parseHours('-1,5')).toBe(-1.5);
+    expect(parseHours(' +0.5 ')).toBe(0.5);
+  });
+  it('không nhận 0, chữ hay ô trống (bị chặn)', () => {
+    expect(parseHours('0')).toBeNull();
+    expect(parseHours('')).toBeNull();
+    expect(parseHours('hai')).toBeNull();
   });
 });
