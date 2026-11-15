@@ -5,7 +5,7 @@ Luật: `docs/spec/de-xuat-luat-aftersale.md` (AS-01 đến AS-13, đã chốt 1
 ## Bảng
 | Bảng | Việc |
 |---|---|
-| `app.ticket_category` | Nhóm, nhóm con (94 dòng nạp sẵn theo `v2-aftersale.md`: Đề nghị 6 nhóm 21 nhóm con, Khiếu nại 8 nhóm 24 nhóm con, Ticket giáo viên 9 nhóm 27 nhóm con). Có mức độ mặc định, loại phiếu nghiệp vụ `[NV]`, hạn xử lý riêng, tính chất (Cần hỗ trợ, Phản ánh), bắt buộc học sinh, lớp. Không xoá, chỉ Ngừng. |
+| `app.ticket_category` | Nhóm, nhóm con (94 dòng nạp sẵn theo `v2-aftersale.md`: Đề nghị 6 nhóm 21 nhóm con, Khiếu nại 8 nhóm 25 nhóm con, Ticket giáo viên 9 nhóm 25 nhóm con). Có mức độ mặc định, loại phiếu nghiệp vụ `[NV]`, hạn xử lý riêng, tính chất (Cần hỗ trợ, Phản ánh), bắt buộc học sinh, lớp. Không xoá, chỉ Ngừng. |
 | `app.ticket_sla_rule` | Hạn phản hồi đầu và xử lý xong (giờ) theo loại × mức độ (12 dòng). Admin sửa, có nhật ký. |
 | `app.ticket` | Ticket. Mã `DN/KN/GV-<CS>-<YYMM>-<STT>` (cấp như chứng từ, liên tục). Hạn chụp lúc tạo. |
 | `app.ticket_event` | Nhật ký chỉ thêm dòng: tạo, giao, đổi trạng thái. |
