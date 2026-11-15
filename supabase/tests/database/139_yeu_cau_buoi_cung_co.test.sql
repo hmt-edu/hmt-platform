@@ -85,12 +85,13 @@ begin
 end $$;
 grant execute on all functions in schema pg_temp to public;
 
+create function pg_temp.req(p_key text) returns uuid language sql stable security definer as $$ select id from app.session_request where note = p_key $$;
+grant execute on function pg_temp.req(text) to public;
 -- Từ đây chạy với vai trò đăng nhập thật (RLS và quyền gọi hàm có hiệu lực).
 
 -- Lớp tương lai đã duyệt (mkclass: thứ Hai, 3 buổi từ thứ Hai 2 tuần sau), giáo viên gv1.
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select pg_temp.mkclass('f', 'CB', pg_temp.fut(), 3);
-create function pg_temp.req(p_key text) returns uuid language sql stable security definer as $$ select id from app.session_request where note = p_key $$;
 
 -- ================= Cờ phân hệ YEU_CAU_BUOI mặc định tắt =================
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
