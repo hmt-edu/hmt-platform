@@ -198,8 +198,8 @@ select app.set_attendance_teacher(pg_temp.s('p', 2), jsonb_build_array(jsonb_bui
 select app.set_attendance_teacher(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'DI_MUON'),
   jsonb_build_object('student_id', pg_temp.st(4), 'status_code', 'CO_MAT')));
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 2))$$);
--- Buổi 2 đặt kết thúc hôm qua 23:00 và hạn hoàn tất 72 giờ: Done bây giờ là Đúng hạn (giờ trễ 0).
-select pg_temp.sudo($$update app.class_session set session_date = ((now() at time zone 'Asia/Ho_Chi_Minh')::date - 1), start_time = '22:00', end_time = '23:00' where id = pg_temp.s('p', 2)$$);
+-- Buổi 2 đặt 21:30–23:00 hôm qua (vẫn 1,5 giờ như cũ) và hạn hoàn tất 72 giờ: Done bây giờ là Đúng hạn (giờ trễ 0).
+select pg_temp.sudo($$update app.class_session set session_date = ((now() at time zone 'Asia/Ho_Chi_Minh')::date - 1), start_time = '21:30', end_time = '23:00' where id = pg_temp.s('p', 2)$$);
 select pg_temp.sudo($$update app.setting_def set value = '72' where key = 'teacher_session_complete_hours'$$);
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 2))$$);
 select is(app.enrollment_hours_balance(pg_temp.e('a')), 1.00::numeric, 'Done buổi 2: còn 1,0 giờ');
