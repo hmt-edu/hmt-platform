@@ -202,6 +202,10 @@ const TeacherStudentPage = lazyScreen(
   () => import('../pages/gv/TeacherStudentPage'),
   'TeacherStudentPage',
 );
+const ExpiringListPage = lazyScreen(
+  () => import('../pages/sap-het-gio/ExpiringListPage'),
+  'ExpiringListPage',
+);
 const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
   'TeacherSchedulePage',
@@ -383,6 +387,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="ghi-danh">
                 <EnrollmentLedgerPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'sap-het-gio',
+            element: (
+              <GatedCrmEntry slug="sap-het-gio">
+                <ExpiringListPage />
               </GatedCrmEntry>
             ),
           },
