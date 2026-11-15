@@ -1,0 +1,163 @@
+// BUOI-08 Tạo yêu cầu buổi củng cố, BUOI-10 danh sách và duyệt (lát đầu, R-BUOI-04, R-BUOI-10). Máy tính. Dữ liệu giả: bật cờ YEU_CAU_BUOI ở CS5 (mặc định tắt),
+// dựng một lớp Đại số khối 9 CS5 đã duyệt bằng hàm nghiệp vụ (giáo viên gv.cs5). CSKH tạo và gửi; Trưởng cơ sở duyệt hoặc từ chối.
+import { expect, test } from '@playwright/test';
+import pg from 'pg';
+import { DB_URL } from './bao-gia-seed';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, pickOption } from './helpers';
+
+test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lớp giả).');
+test.describe.configure({ mode: 'serial' });
+// eslint-disable-next-line no-empty-pattern
+test.beforeEach(({}, testInfo) => {
+  test.skip(testInfo.project.name === 'dien-thoai', 'Màn Đào tạo chỉ có bản máy tính.');
+});
+
+let classCode = '';
+const inDays = (n: number) =>
+  new Date(Date.now() + n * 86_400_000).toLocaleDateString('en-CA', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+  });
+
+async function withDb<T>(fn: (db: pg.Client) => Promise<T>): Promise<T> {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    return await fn(db);
+  } finally {
+    await db.end();
+  }
+}
+
+// eslint-disable-next-line no-empty-pattern
+test.beforeAll(async () => {
+  classCode = await withDb(async (db) => {
+    await db.query('begin');
+    await db.query(
+      `insert into app.feature_flag (module_code, branch_id, enabled)
+       select m, id, true from app.branch, (values ('VAN_HANH_LOP'), ('YEU_CAU_BUOI')) f (m) where code = 'CS5'
+       on conflict (module_code, branch_id) do update set enabled = true`,
+    );
+    const ids = await db.query<{ admin: string; gv: string }>(
+      `select (select id from auth.users where email = $1) as admin, (select id from auth.users where email = $2) as gv`,
+      [`quantri.cs5@${DOMAIN}`, `gv.cs5@${DOMAIN}`],
+    );
+    const { admin, gv } = ids.rows[0] ?? { admin: '', gv: '' };
+    await db.query(
+      `select set_config('request.jwt.claims', (app.custom_access_token_hook(jsonb_build_object('user_id', $1::uuid,
+         'claims', jsonb_build_object('sub', $1::uuid, 'role', 'authenticated', 'aal', 'aal2'))) -> 'claims')::text, true)`,
+      [admin],
+    );
+    await db.query('set local role authenticated');
+    const created = await db.query<{ id: string; code: string }>(
+      `select r ->> 'id' as id, r ->> 'code' as code from (select app.create_class(jsonb_build_object('branch_id', (select id from app.branch where code = 'CS5'),
+         'year_code', '2627', 'subject_code', 'DAI', 'grade_code', 'K09', 'class_type_code', 'CB', 'level_code', 'A', 'max_students', 0,
+         'start_date', (date_trunc('week', current_date) + interval '14 days')::date, 'total_sessions', 4,
+         'slots', jsonb_build_array(jsonb_build_object('weekday', 1, 'start_time', '18:00', 'end_time', '19:30', 'repeat_weeks', 1,
+           'first_date', (date_trunc('week', current_date) + interval '14 days')::date, 'teacher_id', $1::uuid)))) as r) x`,
+      [gv],
+    );
+    const cls = created.rows[0];
+    if (!cls) throw new Error('Không tạo được lớp giả.');
+    for (const step of ['DA_TRINH', 'DA_XAC_NHAN', 'DA_DUYET'])
+      await db.query('select app.transition_class($1::uuid, $2)', [cls.id, step]);
+    await db.query('commit');
+    return cls.code;
+  });
+});
+// eslint-disable-next-line no-empty-pattern
+test.afterAll(async () => {
+  // Trả cờ về mặc định tắt cho các bài khác (không có dòng cờ = tắt).
+  await withDb((db) =>
+    db.query(
+      `update app.feature_flag set enabled = false where module_code = 'YEU_CAU_BUOI'
+         and branch_id = (select id from app.branch where code = 'CS5')`,
+    ),
+  );
+});
+
+async function createRequest(page: import('@playwright/test').Page, day: number) {
+  await page.goto('/crm/yeu-cau-buoi/tao-cung-co');
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Tạo yêu cầu buổi củng cố' }),
+  ).toBeVisible();
+  await page.getByLabel('Tìm lớp').fill(classCode);
+  await pickOption(
+    page,
+    page.getByRole('combobox', { name: 'Lớp', exact: true }),
+    new RegExp(classCode),
+  );
+  await page.getByLabel('Ngày buổi củng cố').fill(inDays(day));
+  await page.getByLabel('Giờ bắt đầu').fill('20:00');
+  await page.getByLabel('Giờ kết thúc').fill('21:30');
+}
+
+test('BUOI-08: form trắng báo lỗi tại ô; CSKH gửi duyệt thì về danh sách, yêu cầu Chờ duyệt (không có nút Duyệt)', async ({
+  page,
+}) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto('/crm/yeu-cau-buoi/tao-cung-co');
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page.getByText('Chọn lớp.')).toBeVisible();
+  await expect(page.getByText('Chọn ngày buổi củng cố.')).toBeVisible();
+  await expectAccessible(page);
+  await createRequest(page, 10);
+  // Giờ kết thúc không sau giờ bắt đầu thì báo tại ô.
+  await page.getByLabel('Giờ kết thúc').fill('19:00');
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page.getByText('Giờ kết thúc phải sau giờ bắt đầu.')).toBeVisible();
+  await page.getByLabel('Giờ kết thúc').fill('21:30');
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page).toHaveURL(/\/crm\/yeu-cau-buoi$/);
+  const row = page.getByRole('row').filter({ hasText: 'Cả lớp' }).first();
+  await expect(row).toContainText('Chờ duyệt');
+  await expect(row).toContainText(/YB-CS5-\d{4}-\d{4}/);
+  await expect(page.getByRole('button', { name: 'Duyệt', exact: true })).toHaveCount(0);
+});
+
+test('BUOI-10: Trưởng cơ sở Duyệt thì buổi củng cố được chèn vào lịch và mở được', async ({
+  page,
+}) => {
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto('/crm/yeu-cau-buoi');
+  await expect(page.getByRole('heading', { level: 1, name: 'Yêu cầu buổi' })).toBeVisible();
+  await page.getByRole('button', { name: 'Duyệt', exact: true }).first().click();
+  await expect(page.getByText(/^Đã duyệt YB-CS5-/).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Tất cả' }).click();
+  await expect(page.getByRole('row').filter({ hasText: 'Đã duyệt' }).first()).toBeVisible();
+  await page.getByRole('link', { name: 'Mở buổi' }).first().click();
+  await expect(page).toHaveURL(/\/crm\/buoi-hoc\/[0-9a-f-]{36}$/);
+  await expect(page.getByText('Buổi củng cố').first()).toBeVisible();
+});
+
+test('BUOI-10: Từ chối chọn lý do từ danh mục; yêu cầu thành Từ chối', async ({ page }) => {
+  await enterAs(page, 'cskh.cs5');
+  await createRequest(page, 11);
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page).toHaveURL(/\/crm\/yeu-cau-buoi$/);
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto('/crm/yeu-cau-buoi');
+  await page.getByRole('button', { name: 'Từ chối', exact: true }).first().click();
+  const dialog = page.getByRole('dialog', { name: 'Từ chối yêu cầu buổi' });
+  await expect(dialog.getByRole('button', { name: 'Từ chối' })).toBeDisabled();
+  await pickOption(page, dialog.getByRole('combobox', { name: 'Lý do' }), 'Không xếp được lịch');
+  await dialog.getByLabel('Ghi chú').fill('Phòng kín lịch tối đó');
+  await dialog.getByRole('button', { name: 'Từ chối' }).click();
+  await expect(page.getByText(/^Đã từ chối YB-CS5-/).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Tất cả' }).click();
+  await expect(page.getByRole('row').filter({ hasText: 'Từ chối' }).first()).toContainText(
+    'Phòng kín lịch tối đó',
+  );
+});
+
+test('Cờ tắt: mục Yêu cầu buổi ẩn khỏi menu và mở thẳng báo chưa bật', async ({ page }) => {
+  await withDb((db) =>
+    db.query(
+      `update app.feature_flag set enabled = false where module_code = 'YEU_CAU_BUOI'
+         and branch_id = (select id from app.branch where code = 'CS5')`,
+    ),
+  );
+  await enterAs(page, 'cskh.cs5');
+  await page.goto('/crm/yeu-cau-buoi');
+  await expect(page.getByText(/chưa bật/i).first()).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Yêu cầu buổi' })).toHaveCount(0);
+});

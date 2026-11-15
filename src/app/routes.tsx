@@ -119,6 +119,14 @@ const ReceiptListPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptListPage'),
   'ReceiptListPage',
 );
+const SessionRequestListPage = lazyScreen(
+  () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
+  'SessionRequestListPage',
+);
+const SessionRequestCreatePage = lazyScreen(
+  () => import('../pages/yeu-cau-buoi/SessionRequestCreatePage'),
+  'SessionRequestCreatePage',
+);
 const OrderCreatePage = lazyScreen(
   () => import('../pages/don-hang/OrderCreatePage'),
   'OrderCreatePage',
@@ -403,6 +411,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="buoi-hoc">
                 <SessionRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'yeu-cau-buoi',
+            element: (
+              <GatedCrmEntry slug="yeu-cau-buoi">
+                <SessionRequestListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'yeu-cau-buoi/tao-cung-co',
+            element: (
+              <GatedCrmEntry slug="yeu-cau-buoi">
+                <SessionRequestCreatePage />
               </GatedCrmEntry>
             ),
           },
