@@ -71,3 +71,40 @@ export function defaultDay(days: string[], todayKey: string): string {
 }
 
 export { formatDayHeading };
+
+const MONTHS_IN_YEAR = 12; // allow-number: một năm có mười hai tháng (hiển thị lịch tháng, không phải số nghiệp vụ)
+
+/** Ngày mùng 1 của tháng chứa ngày đã cho (yyyy-mm-dd). */
+export function monthStartOf(dateKey: string): string {
+  return `${dateKey.slice(0, 8)}01`; // allow-number: cắt chuỗi yyyy-mm-dd
+}
+
+/** Mùng 1 của tháng cách tháng đã cho n tháng (n âm là lùi). */
+export function addMonths(monthKey: string, n: number): string {
+  const year = Number(monthKey.slice(0, 4)); // allow-number: cắt chuỗi yyyy-mm-dd
+  const month = Number(monthKey.slice(5, 7)) - 1; // allow-number: cắt chuỗi yyyy-mm-dd
+  const total = year * MONTHS_IN_YEAR + month + n;
+  const y = Math.floor(total / MONTHS_IN_YEAR);
+  const m = (total % MONTHS_IN_YEAR) + 1;
+  return `${String(y).padStart(4, '0')}-${String(m).padStart(2, '0')}-01`; // allow-number: định dạng yyyy-mm-dd
+}
+
+/** "Tháng 11/2026" */
+export function monthLabel(monthKey: string): string {
+  return `Tháng ${monthKey.slice(5, 7)}/${monthKey.slice(0, 4)}`; // allow-number: cắt chuỗi yyyy-mm-dd
+}
+
+/** Các tuần (mỗi tuần bảy ngày, từ Thứ Hai) phủ kín tháng chứa ngày đã cho; ngày thuộc tháng khác vẫn có mặt để đủ hàng. */
+export function monthWeeks(monthKey: string): string[][] {
+  const first = monthStartOf(monthKey);
+  const last = addDays(addMonths(first, 1), -1);
+  const weeks: string[][] = [];
+  for (let monday = mondayOf(first); monday <= last; monday = addDays(monday, DAYS_IN_WEEK))
+    weeks.push(weekDays(monday));
+  return weeks;
+}
+
+/** Ngày có thuộc tháng đang xem không (để làm mờ ngày thừa của tuần đầu, cuối). */
+export function inMonth(dateKey: string, monthKey: string): boolean {
+  return dateKey.slice(0, 7) === monthKey.slice(0, 7); // allow-number: so yyyy-mm
+}

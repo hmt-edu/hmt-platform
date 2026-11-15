@@ -177,5 +177,26 @@ select is(pg_temp.err($$select app.teacher_class_overview(gen_random_uuid())$$),
 reset role;
 select is(has_function_privilege('anon', 'app.teacher_class_overview(uuid)', 'execute'), false, 'Người chưa đăng nhập không gọi được hàm');
 
+-- ================= GV-13 (migration 137): app.teacher_student_profile, hồ sơ học sinh rút gọn (R-GV-13) =================
+select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
+select is(app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1)) -> 'student' ->> 'full_name', 'Em giả GV11 1', 'GV-13: giáo viên được phân công mở được hồ sơ rút gọn của em trong lớp mình');
+select is((app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1)) -> 'summary' ->> 'present')::int, 3, 'GV-13: em 1 có mặt 3 buổi');
+select is((app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1)) -> 'summary' ->> 'marked')::int, 3, 'GV-13: em 1 đã điểm danh 3 buổi');
+select is((app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1)) -> 'summary' ->> 'avg_score')::numeric, 4.0, 'GV-13: điểm tiêu chí trung bình em 1 = 4, không làm tròn (R-GV-03)');
+select is(jsonb_array_length(app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1)) -> 'sessions'), 3, 'GV-13: ba buổi của em, mới nhất trước');
+select is((app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1)) -> 'sessions' -> 0 ->> 'session_no')::int, 3, 'GV-13: buổi mới nhất đứng đầu');
+select is(app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(3)) -> 'summary' -> 'avg_score', 'null'::jsonb, 'GV-13: em vắng: điểm đã nhập không tính (R-GV-04), TB là null');
+select is(app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(3)) -> 'sessions' -> 0 -> 'criteria', '[]'::jsonb, 'GV-13: em vắng buổi nào thì buổi đó không có điểm tiêu chí');
+select is((select count(*)::int from jsonb_object_keys(app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1)) -> 'student')), 3, 'GV-13: hồ sơ em chỉ có id, mã, tên (R-GV-13)');
+select ok(not (app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1))::text like '%0900101002%'), 'GV-13: không có số điện thoại phụ huynh trong kết quả');
+select is(pg_temp.err($$select app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(5))$$), 'HMT_KHONG_CO_QUYEN', 'GV-13 chặn: em không thuộc lớp của giáo viên');
+select is(pg_temp.err($$select app.teacher_student_profile(gen_random_uuid(), pg_temp.st(1))$$), 'HMT_KHONG_CO_QUYEN', 'GV-13 chặn: lớp không tồn tại cùng một lỗi');
+select is(pg_temp.err($$select app.teacher_student_profile(pg_temp.c('p'), gen_random_uuid())$$), 'HMT_KHONG_CO_QUYEN', 'GV-13 chặn: học sinh không tồn tại cùng một lỗi');
+select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
+select is(pg_temp.err($$select app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1))$$), 'HMT_KHONG_CO_QUYEN', 'GV-13 chặn: giáo viên khác không được phân công (R-GV-08)');
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select is(pg_temp.err($$select app.teacher_student_profile(pg_temp.c('p'), pg_temp.st(1))$$), 'HMT_KHONG_CO_QUYEN', 'GV-13 chặn: vận hành không phân công dùng hàm này (cổng giáo viên)');
+select is(has_function_privilege('anon', 'app.teacher_student_profile(uuid, uuid)', 'execute'), false, 'GV-13: người chưa đăng nhập không gọi được hàm');
+
 select * from finish();
 rollback;
