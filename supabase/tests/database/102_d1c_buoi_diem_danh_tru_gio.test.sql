@@ -178,6 +178,10 @@ select is((select teacher_status_code from app.session_attendance where session_
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 1))$$);
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 1))$$);
 select is((select status_code from app.class_session where id = pg_temp.s('p', 1)), 'DONE', 'Buổi Done khi đủ điều kiện (R-GIO-06)');
+-- Dấu Đúng hạn/Trễ hạn (R-GV-05): buổi 1 diễn ra 4 tuần trước nên Done bây giờ là Trễ hạn, ghi số giờ trễ, đóng dấu một lần.
+select is((select completion_late from app.class_session where id = pg_temp.s('p', 1)), true, 'Dấu: buổi cũ Done muộn là Trễ hạn');
+select ok((select completion_late_hours from app.class_session where id = pg_temp.s('p', 1)) > 0, 'Dấu: ghi số giờ trễ lớn hơn 0');
+select ok((select completion_stamped_at from app.class_session where id = pg_temp.s('p', 1)) is not null, 'Dấu: có thời điểm đóng dấu');
 select is(app.enrollment_hours_balance(pg_temp.e('a')), 2.50::numeric, 'Đúng: có tên trong danh sách thì trừ 1,5 giờ dù vắng không phép (R-GIO-01)');
 select is(app.enrollment_hours_balance(pg_temp.e('a2')), 4.00::numeric, 'Ghi danh thứ hai không bị trừ: trừ đúng một lần, vào ghi danh sớm nhất (R-GIO-04)');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
@@ -194,8 +198,15 @@ select app.set_attendance_teacher(pg_temp.s('p', 2), jsonb_build_array(jsonb_bui
 select app.set_attendance_teacher(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'DI_MUON'),
   jsonb_build_object('student_id', pg_temp.st(4), 'status_code', 'CO_MAT')));
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 2))$$);
+-- Buổi 2 đặt kết thúc hôm qua 23:00 và hạn hoàn tất 72 giờ: Done bây giờ là Đúng hạn (giờ trễ 0).
+select pg_temp.sudo($$update app.class_session set session_date = ((now() at time zone 'Asia/Ho_Chi_Minh')::date - 1), start_time = '22:00', end_time = '23:00' where id = pg_temp.s('p', 2)$$);
+select pg_temp.sudo($$update app.setting_def set value = '72' where key = 'teacher_session_complete_hours'$$);
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 2))$$);
 select is(app.enrollment_hours_balance(pg_temp.e('a')), 1.00::numeric, 'Done buổi 2: còn 1,0 giờ');
+select is((select completion_late from app.class_session where id = pg_temp.s('p', 2)), false, 'Dấu: Done trong hạn là Đúng hạn');
+select is((select completion_late_hours from app.class_session where id = pg_temp.s('p', 2)), 0.00::numeric, 'Dấu: Đúng hạn thì giờ trễ 0');
+select is(app.session_overview(pg_temp.s('p', 2)) -> 'completion' ->> 'late', 'false', 'GV-04: session_overview trả dấu Đúng hạn của buổi Done');
+select is(app.session_overview(pg_temp.s('p', 1)) -> 'completion' ->> 'late', 'true', 'GV-04: session_overview trả dấu Trễ hạn của buổi Done muộn');
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 3))$$);
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 3) || '''::uuid)')$$), 'HMT_QUY_GIO_AM', 'Chặn: Done làm quỹ giờ âm (R-GD-18)');
 select is((select status_code from app.class_session where id = pg_temp.s('p', 3)), 'DA_CHOT', 'Buổi vẫn Đã chốt khi Done bị chặn');
