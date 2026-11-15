@@ -3,8 +3,9 @@ import { Link, useParams } from 'react-router';
 import { Button, ButtonLink } from '../../ui/Button';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { errorOf, FORBIDDEN_CODE } from '../../lib/db';
-import { formatDate, formatDateTime } from '../../lib/format';
+import { formatDate, formatDateTime, formatNumber } from '../../lib/format';
 import { cn } from '../../ui/cn';
+import { Tag } from '../../ui/Data';
 import type { SessionOverview } from './sessionContent';
 import {
   buildSteps,
@@ -37,7 +38,7 @@ const TONE: Record<StepState, string> = {
 
 /**
  * GV-04 · Buổi dạy: các bước của một buổi (điểm danh, nội dung và BTVN, chấm nhận xét, chấm BTVN buổi trước), tiến độ, hạn hoàn tất.
- * Luật R-GIO-06, R-GV-04, R-GV-05, R-V2-35. Dấu Đúng hạn/Trễ hạn tự đóng chưa có (cần cột và hàm ở DB): màn chỉ hiện hạn.
+ * Luật R-GIO-06, R-GV-04, R-GV-05, R-V2-35. Dấu Đúng hạn/Trễ hạn do hệ thống đóng lúc Done (migration 135): buổi Done hiện dấu; buổi chưa Done chỉ hiện hạn.
  */
 export function SessionStepsPage() {
   const { sessionId } = useParams();
@@ -125,7 +126,20 @@ function Steps({ overview }: { overview: SessionOverview }) {
           </span>
         </div>
         {isDone ? (
-          <p className="text-caption text-fg-muted">Buổi đã Done.</p>
+          <p className="text-caption text-fg-muted">
+            Buổi đã Done.
+            {overview.completion != null && (
+              <>
+                {' '}
+                <Tag tone={overview.completion.late ? 'danger' : 'success'}>
+                  {overview.completion.late
+                    ? `Trễ hạn ${formatNumber(overview.completion.late_hours)} giờ`
+                    : 'Đúng hạn'}
+                </Tag>{' '}
+                (hệ thống ghi lúc Done, không đổi khi sửa sau).
+              </>
+            )}
+          </p>
         ) : (
           <p className="text-caption text-fg-muted">
             Hạn hoàn tất {formatDateTime(overview.deadline_at)} ·{' '}
