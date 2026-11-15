@@ -31,7 +31,6 @@ async function withDb<T>(fn: (db: pg.Client) => Promise<T>): Promise<T> {
 test.beforeAll(async () => {
   classCode = await withDb(async (db) => {
     await db.query('begin');
-    const branch = "(select id from app.branch where code = 'CS5')";
     // Lớp Đại số khối 9 CS5 đã duyệt dựng bằng hàm nghiệp vụ (giáo viên gv.cs5), có khung 1,5 giờ mỗi tuần.
     const ids = await db.query<{ admin: string; gv: string }>(
       `select (select id from auth.users where email = $1) as admin, (select id from auth.users where email = $2) as gv`,
