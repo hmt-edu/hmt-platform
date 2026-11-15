@@ -28,7 +28,6 @@ async function withDb<T>(fn: (db: pg.Client) => Promise<T>): Promise<T> {
   }
 }
 
-// eslint-disable-next-line no-empty-pattern
 test.beforeAll(async () => {
   classCode = await withDb(async (db) => {
     await db.query('begin');
@@ -64,7 +63,6 @@ test.beforeAll(async () => {
     return cls.code;
   });
 });
-// eslint-disable-next-line no-empty-pattern
 test.afterAll(async () => {
   // Trả cờ về mặc định tắt cho các bài khác (không có dòng cờ = tắt).
   await withDb((db) =>
@@ -129,11 +127,16 @@ test('BUOI-10: Trưởng cơ sở Duyệt thì buổi củng cố được chèn
   await expect(page.getByText('Buổi củng cố').first()).toBeVisible();
 });
 
-test('BUOI-10: Từ chối chọn lý do từ danh mục; yêu cầu thành Từ chối', async ({ page }) => {
+test('BUOI-08: CSKH tạo và gửi thêm một yêu cầu để thử Từ chối', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await createRequest(page, 11);
   await page.getByRole('button', { name: 'Gửi duyệt' }).click();
   await expect(page).toHaveURL(/\/crm\/yeu-cau-buoi$/);
+  await expect(page.getByRole('row').filter({ hasText: 'Chờ duyệt' }).first()).toBeVisible();
+});
+
+// Thẻ mới cho Trưởng cơ sở: cùng một thẻ thì phiên CSKH còn trong bộ nhớ, đổi tài khoản không đổi được.
+test('BUOI-10: Từ chối chọn lý do từ danh mục; yêu cầu thành Từ chối', async ({ page }) => {
   await enterAs(page, 'truongcs.cs5');
   await page.goto('/crm/yeu-cau-buoi');
   await page.getByRole('button', { name: 'Từ chối', exact: true }).first().click();
