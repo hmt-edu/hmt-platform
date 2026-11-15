@@ -37,3 +37,8 @@
 - Đợt 1 (Người dùng: Đặt lại mật khẩu đã xong; Tạo và Sửa email cần anh duyệt migration `username` và luật Sửa email) trước 09/11.
 - Đợt 2 (Bảng giá, Gói bán) trước 11/11; Danh mục và Cơ sở, phòng trong cùng tuần.
 - Chỉnh màn Nhập theo khung QT-18 và nút Tải file mẫu: 13 đến 14/11 như lịch.
+
+## QT-10 Công tắc tính năng theo cơ sở: đã làm (không migration)
+
+Trang `/crm/quan-tri/cong-tac` (chỉ Admin, chỉ máy tính): bảng phân hệ (danh mục `MODULE`) × năm cơ sở CS1 đến CS5 (R-V2-10, R-HT-02). Mỗi ô Bật hoặc Tắt; đổi qua hộp xác nhận (Tắt dùng nút viền đỏ), ghi bằng `app.set_feature` (DB kiểm Admin; công tắc không xoá, chỉ bật tắt; không có dòng là Tắt).
+**Chỗ thiếu khuôn:** không có khung canvas riêng cho QT-10 (BAN-DO-VIEC ghi «Thiếu khung canvas»). Dựng từ khuôn K10 và bảng của QT-09, chữ lấy từ `docs/design/ban-do-man-hinh.md` dòng QT-10. Nếu Design vẽ khung sau thì chỉnh cho khớp.
