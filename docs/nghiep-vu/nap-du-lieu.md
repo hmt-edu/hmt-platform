@@ -95,3 +95,6 @@ Loại `PHIEU_TEST` của `app.import_training_records`. Nhóm CRM: dòng lỗi 
 
 ## File mẫu bẩn
 `docs/van-hanh/mau/HMT5_FILE_MAU_NAP_DU_LIEU_GIA_BAN.xlsx`: cùng cấu trúc file mẫu, thêm dòng lỗi cố ý (SĐT thiếu số 0, ngày lẫn định dạng, trùng SĐT, cơ sở viết khác, giờ không khớp, giờ âm...). Tab `KET_QUA_DU_KIEN` ghi kết quả hàm phải báo cho từng dòng. Chỉ dữ liệu giả (SĐT 0900 000 xxx). Dùng cho diễn tập T5.
+
+## Cơ hội: cột `nguon_goc` (migration 155, Chat chốt 15/11)
+Cột `nguon_goc` của script là chữ tự do ("Page T9", "BGĐ"), không phải tên loại nguồn trong danh mục. Hàm Cơ hội: nếu khớp tên (hoặc mã) loại nguồn thì dùng; "BGĐ" hoặc "Ban Giám Đốc" thành loại Ban Giám Đốc; mọi giá trị khác, kể cả trống, thành loại **Marketing kèm cảnh báo** "Loại nguồn suy mặc định" (không phải lỗi). Chữ gốc ghi vào ghi chú của cơ hội ("Nguồn gốc (chữ gốc): ..."), không thêm cột. Báo cáo Xem trước và Nạp có `summary.source_type_defaulted` (số dòng suy loại nguồn). Cột `nguon` (nguồn) vẫn phải thuộc loại; sai thì LỖI `HMT_NGUON_SAI`. Kiểm thử: `155_nap_co_hoi_nguon_goc.test.sql`. Anh Trường có thể phản đối quyết định này.
