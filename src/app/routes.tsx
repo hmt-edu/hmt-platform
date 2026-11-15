@@ -94,6 +94,10 @@ const TicketRecordPage = lazyScreen(
   () => import('../pages/ticket/TicketRecordPage'),
   'TicketRecordPage',
 );
+const TicketCreatePage = lazyScreen(
+  () => import('../pages/ticket/TicketCreatePage'),
+  'TicketCreatePage',
+);
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -368,6 +372,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="ticket">
                 <TicketListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'ticket/moi',
+            element: (
+              <GatedCrmEntry slug="ticket">
+                <TicketCreatePage />
               </GatedCrmEntry>
             ),
           },

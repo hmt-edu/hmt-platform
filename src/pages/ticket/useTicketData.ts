@@ -2,7 +2,7 @@
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
-import { rpc, useDb } from '../../lib/db';
+import { errorOf, rpc, useDb } from '../../lib/db';
 import type { TicketBoardColumn, TicketFilters, TicketPage, TicketRecord } from './ticketTypes';
 
 export function useTicketPage(filters: TicketFilters, offset: number, limit: number | null) {
@@ -102,4 +102,39 @@ export function assignTicket(
     p_team: args.team,
     p_assignee: args.assignee,
   });
+}
+
+export type TicketCategory = {
+  code: string;
+  name: string;
+  kind: 'GROUP' | 'SUBGROUP';
+  parent_code: string | null;
+  ticket_type: 'DN' | 'KN' | 'GV';
+  default_priority: string | null;
+  requires_student: boolean;
+};
+
+/** Nhóm và nhóm con ticket cho ô chọn hai cấp khi tạo (khoảng trăm dòng, đổi hiếm nên giữ suốt phiên). */
+export function useTicketCategories() {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['ticket-categories'],
+    staleTime: Infinity,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .schema('app')
+        .from('ticket_category')
+        .select('code, name, kind, parent_code, ticket_type, default_priority, requires_student')
+        .eq('is_active', true)
+        .order('sort_order')
+        .returns<TicketCategory[]>();
+      if (error) throw errorOf(error);
+      return data;
+    },
+  });
+}
+
+/** Tạo ticket (app.create_ticket); trả mã và id. */
+export function createTicket(supabase: SupabaseClient, data: Record<string, unknown>) {
+  return rpc<{ id: string; code: string }>(supabase, 'create_ticket', { p_data: data });
 }

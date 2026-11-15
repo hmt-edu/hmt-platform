@@ -78,6 +78,18 @@ export function TicketListPage() {
           />
         )
       }
+      actions={
+        access.can('TICKET', 'TAO')
+          ? [
+              {
+                label: 'Tạo',
+                icon: 'plus' as const,
+                primary: true,
+                onClick: () => void navigate('/crm/ticket/moi'),
+              },
+            ]
+          : []
+      }
       rows={rows}
       onRowClick={(r) => void navigate(`/crm/ticket/${r.id}`)}
       rowKey={(r) => r.id}
