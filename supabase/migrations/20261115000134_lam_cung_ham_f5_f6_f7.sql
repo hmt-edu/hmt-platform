@@ -1,5 +1,5 @@
 -- Làm cứng hàm (F5, F6, F7; Tester 15/11, Chat giao Code A): chỉ thêm kiểm đầu vào, không đổi hành vi cũ. Quyền gọi giữ nguyên (create or replace).
---  F5: app.change_session_staff chặn người không phải giáo viên (hoặc trợ giảng) của cơ sở buổi (HMT_GIAO_VIEN_KHONG_HOP_LE, HMT_TRO_GIANG_KHONG_HOP_LE).
+--  F5: app.change_session_staff chặn người MỚI không phải giáo viên (hoặc trợ giảng) của cơ sở buổi (HMT_GIAO_VIEN_KHONG_HOP_LE, HMT_TRO_GIANG_KHONG_HOP_LE); người giữ nguyên thì cho qua.
 --  F6: trợ giảng không tồn tại hoặc bị khoá báo HMT_NHAN_SU_KHONG_CO (trước đây lỗi khoá ngoại 23503 thô).
 --  F7: app.adjust_enrollment_hours chặn |giờ| > 9999 hoặc làm tròn 2 số lẻ ra 0 bằng HMT_GIO_DIEU_CHINH_SAI (trước đây lỗi 22003, 23514 thô).
 --  Thân hàm giữ nguyên bản migration 102 (change_session_staff) và 101 (adjust_enrollment_hours).
@@ -21,18 +21,20 @@ begin
   if p_teacher_id is not null and not exists (select from app.user_account where id = p_teacher_id and not is_locked) then
     perform app.raise_error('HMT_NHAN_SU_KHONG_CO', 'Giáo viên không tồn tại hoặc đã bị khoá.');
   end if;
-  if p_assistant_id is not null and not exists (select from app.user_account where id = p_assistant_id and not is_locked) then
+  if p_assistant_id is not null and p_assistant_id is distinct from s.assistant_id
+     and not exists (select from app.user_account where id = p_assistant_id and not is_locked) then
     perform app.raise_error('HMT_NHAN_SU_KHONG_CO', 'Trợ giảng không tồn tại hoặc đã bị khoá.');
   end if;
   -- Luật F5: giáo viên phải có vai trò Giáo viên và thuộc cơ sở của buổi; trợ giảng phải có vai trò Trợ giảng và thuộc cơ sở của buổi
-  -- (cùng điều kiện với danh sách chọn của app.list_class_form_options).
-  if p_teacher_id is not null and not exists (
+  -- (cùng điều kiện với danh sách chọn của app.list_class_form_options). Chỉ kiểm người MỚI: giữ nguyên giáo viên hoặc trợ giảng hiện tại của buổi thì cho qua
+  -- (Tester 15/11: buổi dựng sẵn hoặc nạp từ dữ liệu cũ có thể đang có người không đủ vai trò, đổi riêng người kia không được bị chặn oan).
+  if p_teacher_id is not null and p_teacher_id is distinct from s.teacher_id and not exists (
        select from app.user_account u
         where u.id = p_teacher_id and u.branch_id = s.branch_id
           and exists (select from app.user_role r where r.user_id = u.id and r.is_active and r.role_code = 'TEACHER')) then
     perform app.raise_error('HMT_GIAO_VIEN_KHONG_HOP_LE', 'Người được chọn không phải giáo viên của cơ sở này.');
   end if;
-  if p_assistant_id is not null and not exists (
+  if p_assistant_id is not null and p_assistant_id is distinct from s.assistant_id and not exists (
        select from app.user_account u
         where u.id = p_assistant_id and u.branch_id = s.branch_id
           and exists (select from app.user_role r where r.user_id = u.id and r.is_active and r.role_code = 'TA')) then

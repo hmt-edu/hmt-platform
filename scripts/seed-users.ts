@@ -33,6 +33,8 @@ export const SEED_USERS: SeedUser[] = [
   { key: 'ketoan.cs5', name: 'Kế toán CS5 (giả)', branch: 'CS5', roles: ['ACCOUNTANT'] },
   { key: 'quantri.cs1', name: 'Quản trị CS1 (giả)', branch: 'CS1', roles: ['ADMIN'] },
   { key: 'gv.cs5', name: 'Giáo viên CS5 (giả)', branch: 'CS5', roles: ['TEACHER'] },
+  // Giáo viên thứ hai: giáo viên của buổi "người khác" ở bài Playwright (buổi phải có giáo viên đủ vai trò, F5).
+  { key: 'gv2.cs5', name: 'Giáo viên thứ hai CS5 (giả)', branch: 'CS5', roles: ['TEACHER'] },
   { key: 'tg.cs5', name: 'Trợ giảng CS5 (giả)', branch: 'CS5', roles: ['TA'] },
   {
     key: 'kiem.cs5',
