@@ -101,7 +101,7 @@ s=base
 s=s.replace('Cơ hội CO000121 · Chị Lê Thu Hằng · Toán lớp 9 · đang ở L4 Khách hàng tiềm năng','Cơ hội CO000137 · Chị Phan Thu Hà · Toán lớp 7 · đang ở L4 Khách hàng tiềm năng')
 s=s.replace("'Đã chuyển CO000121 sang L5 Đồng ý tham gia test. Lịch sử đã ghi.'","'Đã chuyển CO000137 sang L5 Đồng ý tham gia test. Lịch sử đã ghi, không có Hoàn tác.'")
 s=s.replace('Chị Lê Thu Hằng · Lê Gia Huy · Toán lớp 9','Chị Phan Thu Hà · Toán lớp 7')
-h_end=s.find('<script type="text/x-dc"'); s=s[:h_end].replace('Chị Lê Thu Hằng','Chị Phan Thu Hà').replace('0912 000 121','0983 000 137')+s[h_end:]
+h_end=s.find('<script type="text/x-dc"'); s=s[:h_end].replace('Chị Lê Thu Hằng','Chị Phan Thu Hà').replace('0900 000 116','0900 000 167')+s[h_end:]
 s=s[:h_end if False else 0]+s
 h_end=s.find('<script type="text/x-dc"'); s=s[:h_end].replace('Chị Hằng','Chị Hà').replace('Gửi báo giá lớp Toán 9','Gửi báo giá lớp Toán 7')+s[h_end:]
 s=STATIC(s,4,'L4B Tiềm năng, cần tư vấn thêm',0)

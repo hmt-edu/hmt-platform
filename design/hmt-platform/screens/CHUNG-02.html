@@ -31,7 +31,7 @@ function Demo() {
     const [backup, setBackup] = useState(false);
     const [err, setErr] = useState(false);
     return (React.createElement(ScreenFrame, { code: "CHUNG-02", name: "X\u00E1c th\u1EF1c hai b\u01B0\u1EDBc", level: "B", tpl: "K11 \u00B7 c\u1EA3 hai", height: 640, note: "Ch\u1EC9 AD, KT (b\u1EAFt bu\u1ED9c). Sai m\u00E3: b\u00E1o l\u1ED7i chung, gi\u1EEF \u1EDF m\u00E0n n\u00E0y; sai nhi\u1EC1u l\u1EA7n t\u00EDnh v\u00E0o t\u1EA1m kho\u00E1 nh\u01B0 \u0111\u0103ng nh\u1EADp." },
-        React.createElement(AuthLayout, { logoSrc: LOGO, logoWhiteSrc: LOGO_W, title: "Nh\u1EADp m\u00E3 x\u00E1c th\u1EF1c", subtitle: "M\u1EDF \u1EE9ng d\u1EE5ng x\u00E1c th\u1EF1c tr\u00EAn \u0111i\u1EC7n tho\u1EA1i v\u00E0 nh\u1EADp m\u00E3 6 s\u1ED1 cho t\u00E0i kho\u1EA3n anh.pn@hoamatoan.edu.vn." },
+        React.createElement(AuthLayout, { logoSrc: LOGO, logoWhiteSrc: LOGO_W, title: "Nh\u1EADp m\u00E3 x\u00E1c th\u1EF1c", subtitle: "M\u1EDF \u1EE9ng d\u1EE5ng x\u00E1c th\u1EF1c tr\u00EAn \u0111i\u1EC7n tho\u1EA1i v\u00E0 nh\u1EADp m\u00E3 6 s\u1ED1 cho t\u00E0i kho\u1EA3n nhanvien01@example.test." },
             err ? React.createElement(Alert, { tone: "danger", title: "M\u00E3 ch\u01B0a \u0111\u00FAng ho\u1EB7c \u0111\u00E3 h\u1EBFt h\u1EA1n" }, "M\u00E3 \u0111\u1ED5i sau m\u1ED7i 30 gi\u00E2y. Nh\u1EADp m\u00E3 m\u1EDBi nh\u1EA5t.") : null,
             !backup ? React.createElement(Fragment, null,
                 React.createElement(OtpInput, { value: code, onChange: (v) => { setCode(v); setErr(false); }, invalid: err, autoFocus: true }),

@@ -4,7 +4,7 @@ import sys; sys.path.insert(0, 'scripts')
 from p5a_common import *
 
 PH_NAME = 'Phạm Thu Hương'; PH_CODE = 'PH000047'
-QT = dict(code='BG-CS1-2610-0007', old='UPS-2610-0031', co='CO000142', phone='0912 888 345', sale='Trần Thu Hà', cs='CS1 Nguyễn Chí Thanh')
+QT = dict(code='BG-CS1-2610-0007', old='UPS-2610-0031', co='CO000142', phone='0900 000 123', sale='Trần Thu Hà', cs='CS1 Nguyễn Chí Thanh')
 QLINES = [  # gói, tên, hình thức, giờ, đơn giá, ck%, giờ tặng
  ('LC-TOAN-K08', 'Toán 8 · Đại số', 'Offline', 24, 220000, 10, 0),
  ('LC-TOAN-K08', 'Toán 8 · Hình học', 'Offline', 24, 220000, 10, 0),
