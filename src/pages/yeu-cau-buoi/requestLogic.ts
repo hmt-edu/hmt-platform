@@ -1,16 +1,20 @@
 // Yêu cầu buổi (BUOI-08 tạo, BUOI-10 danh sách và duyệt): kiểu dữ liệu và hàm thuần. Máy chủ quyết quyền, trạng thái, tính mọi con số (app.list_session_requests,
 // app.save_session_request...); trang chỉ đặt chữ và kiểm lỗi nhập cơ bản. Lát đầu: chỉ loại Củng cố (R-BUOI-04).
+export type RequestKind = 'CUNG_CO' | 'BO_TRO';
 export type RequestStatus = 'NHAP' | 'CHO_DUYET' | 'DA_DUYET' | 'TU_CHOI' | 'HUY';
 
 export type RequestRow = {
   id: string;
   code: string;
-  kind: 'CUNG_CO';
+  kind: RequestKind;
   status_code: RequestStatus;
   class_id: string;
   class_code: string;
   subject_name: string | null;
   student_count: number;
+  /** Tên các em được chọn (yêu cầu bổ trợ); rỗng với củng cố (cả lớp). */
+  student_names: string[];
+  teacher_name: string | null;
   session_date: string;
   start_time: string;
   end_time: string;
@@ -53,10 +57,16 @@ export function statusTone(code: RequestStatus): TagTone {
   }
 }
 
-/** "Cả lớp Đại số 9 · cơ bản A (4 em)" cho cột Học sinh của buổi củng cố (cả lớp, R-BUOI-04). */
+/** "Củng cố" hoặc "Bổ trợ". */
+export function kindName(kind: RequestKind): string {
+  return kind === 'BO_TRO' ? 'Bổ trợ' : 'Củng cố';
+}
+
+/** Cột Học sinh: củng cố là cả lớp ("Cả lớp Đại số 9 (4 em)", R-BUOI-04); bổ trợ liệt kê tên các em được chọn (R-BUOI-05). */
 export function targetText(
-  r: Pick<RequestRow, 'subject_name' | 'class_code' | 'student_count'>,
+  r: Pick<RequestRow, 'kind' | 'subject_name' | 'class_code' | 'student_count' | 'student_names'>,
 ): string {
+  if (r.kind === 'BO_TRO') return r.student_names.join(', ');
   return `Cả lớp ${r.subject_name ?? r.class_code} (${r.student_count} em)`;
 }
 
@@ -81,5 +91,27 @@ export function validateDraft(d: {
   if (d.start === '') e.start = 'Nhập giờ bắt đầu.';
   if (d.end === '') e.end = 'Nhập giờ kết thúc.';
   else if (d.start !== '' && d.end <= d.start) e.end = 'Giờ kết thúc phải sau giờ bắt đầu.';
+  return e;
+}
+
+export type SupportError = Partial<
+  Record<'students' | 'date' | 'start' | 'end' | 'teacher', string>
+>;
+
+/** Kiểm nhập cơ bản của form học bổ trợ (máy chủ kiểm lại): ít nhất một em, ngày, giờ, giáo viên, giờ kết thúc sau giờ bắt đầu. */
+export function validateSupport(d: {
+  studentIds: string[];
+  date: string;
+  start: string;
+  end: string;
+  teacherId: string;
+}): SupportError {
+  const e: SupportError = {};
+  if (d.studentIds.length === 0) e.students = 'Chọn ít nhất một em cần bổ trợ.';
+  if (d.date === '') e.date = 'Chọn ngày buổi bổ trợ.';
+  if (d.start === '') e.start = 'Nhập giờ bắt đầu.';
+  if (d.end === '') e.end = 'Nhập giờ kết thúc.';
+  else if (d.start !== '' && d.end <= d.start) e.end = 'Giờ kết thúc phải sau giờ bắt đầu.';
+  if (d.teacherId === '') e.teacher = 'Chọn giáo viên.';
   return e;
 }

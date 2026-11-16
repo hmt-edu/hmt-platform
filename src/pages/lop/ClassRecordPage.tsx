@@ -78,6 +78,18 @@ function ClassView({ record }: { record: ClassRecord }) {
           },
         ]
       : []),
+    // BUOI-09: yêu cầu học bổ trợ tạo từ lớp đã duyệt (R-BUOI-05); có quyền tạo yêu cầu buổi và phân hệ YEU_CAU_BUOI bật.
+    ...(record.status_code === 'DA_DUYET' &&
+    access.can('SESSION', 'TAO') &&
+    access.featureOn('YEU_CAU_BUOI')
+      ? [
+          {
+            kind: 'action' as const,
+            label: 'Yêu cầu bổ trợ',
+            onSelect: () => void navigate(`/crm/yeu-cau-buoi/tao-bo-tro?lop=${record.id}`),
+          },
+        ]
+      : []),
     ...transitionsFrom(record.status_code)
       .filter((t) => allowed(t.action))
       .map((t) => ({
