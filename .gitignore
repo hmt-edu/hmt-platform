@@ -34,3 +34,13 @@ _inbox/
 .claude/
 du-lieu-that/
 *.local.*
+
+# Công khai repo (Dọn công khai 2): bản sao lưu, khoá cấu hình, file dữ liệu có thể chứa dữ liệu thật. Ngoại lệ: dữ liệu mẫu giả đã theo dõi.
+.supabase/
+rclone.conf
+*.dump
+*.sql.gz
+*.xlsx
+*.csv
+!docs/seed/*.csv
+!docs/van-hanh/mau/*.xlsx

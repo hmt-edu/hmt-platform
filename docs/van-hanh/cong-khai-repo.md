@@ -7,7 +7,7 @@ Dọn trước khi công khai (cách A): không viết lại lịch sử git; ch
 - Khoá, mật khẩu, token, chuỗi kết nối DB, `service_role`, khoá secret Supabase (`sb_secret_…`), file `.env*` (chỉ `.env.example` được có, không giá trị thật).
 - Dữ liệu thật: tên, số điện thoại, email của học sinh, phụ huynh, nhân viên. Dữ liệu thử, kiểm thử, ví dụ trong tài liệu đều là dữ liệu giả (số `0900 000 xxx`, email `@example.test`, tên giả).
 - Tên tài khoản cá nhân và họ tên người trong tài liệu: dùng nhãn vai trò (TÀI KHOẢN DEPLOY, TÀI KHOẢN GỘP, TÀI KHOẢN CHỦ DỰ ÁN, CHỦ DỰ ÁN). Luật làm việc (ví dụ «tài khoản deploy không bao giờ đăng nhập trên máy làm việc») vẫn ghi đủ.
-- File cấu hình riêng của máy (`.claude/`, `du-lieu-that/`, `*.local.*`, `_inbox/`) đã nằm trong `.gitignore`; không `git add -f` chúng.
+- File cấu hình riêng của máy (`.claude/`, `du-lieu-that/`, `*.local.*`, `_inbox/`) và bản sao lưu, khoá cấu hình, file dữ liệu (`.supabase/`, `rclone.conf`, `*.dump`, `*.sql.gz`, `*.xlsx`, `*.csv`) đã nằm trong `.gitignore`; không `git add -f` chúng. Ngoại lệ: dữ liệu mẫu giả đã theo dõi ở `docs/seed/*.csv` và `docs/van-hanh/mau/*.xlsx`.
 
 ## 2. Secret chỉ ở GitHub Secrets
 
@@ -44,3 +44,8 @@ Dọn trước khi công khai (cách A): không viết lại lịch sử git; ch
 - `deploy-staging.yml`: chỉ chạy khi đẩy vào `main` và chạy tay; quyền mặc định rỗng, riêng job đẩy tag có `contents: write`; secret chỉ qua `env` của bước; có `::add-mask::`. Không có bước in secret.
 - `_checks.yml`: workflow tái dùng, `contents: read`.
 - Việc cần siết thêm (ngoài PR này): bật các cài đặt ở mục 3 và 4 trên GitHub (không làm được bằng mã).
+
+## 7. Thư mục `deploy/` và tệp cấu hình điều phối (quyết lúc Dọn công khai 2)
+
+- `deploy/` là bản chép của repo triển khai riêng. Vẫn còn tham chiếu: bộ lọc CI (`scripts/ci-filter.ts`, `scripts/ci-changes.*`) và bài kiểm của chúng, `paths-ignore` của `deploy-staging.yml`, `format:check` đọc thư mục này, và nhiều tài liệu dẫn tới `deploy/README.md`. Vì có tham chiếu nên **giữ nguyên, chỉ làm sạch tên** (đã làm ở Dọn công khai 1). Nội dung chỉ có tên secret và cách làm, không có giá trị bí mật. Nếu sau này muốn gỡ hẳn thì phải sửa bộ lọc CI, bài kiểm và các liên kết tài liệu cùng lúc.
+- `.vanphong/du-an.yaml` là tệp cấu hình mà hệ thống điều phối nạp từ repo (luật gộp, tên job CI bắt buộc). Danh sách tác giả được phép gộp trong tệp này đối chiếu với tên tác giả commit; tên tác giả đã hiện sẵn trong lịch sử git công khai, và đổi sang nhãn sẽ làm cổng gộp từ chối. Nên **giữ nguyên**; chỉ đổi khi hệ thống điều phối hỗ trợ đọc danh sách từ biến.
