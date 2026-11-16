@@ -9,6 +9,7 @@ Cập nhật theo quy ước «docs/nghiep-vu liệt kê các hàm nghiệp vụ
 | `YEU_CAU_BUOI`         | Yêu cầu buổi củng cố, học bổ trợ, học bù (BUOI-07..10)      | 139       |
 | `SAP_HET_GIO`          | Danh sách dự báo Sắp hết giờ (GD-07)                         | 142       |
 | `DIEM_DANH_TRONG_NGAY` | Danh sách theo dõi điểm danh các buổi trong ngày (BUOI-15)   | 143       |
+| `HOC_THU`              | Thêm học thử vào buổi Đã chốt (BUOI-06)                       | 145       |
 | `AFTERSALE` (đã có)    | Cổng giáo viên tạo và xem ticket (GV-14) qua hàm migration 144 | 156       |
 
 ## Hàm giao diện được gọi (kiểm quyền và cờ bên trong)
@@ -27,6 +28,7 @@ Cập nhật theo quy ước «docs/nghiep-vu liệt kê các hàm nghiệp vụ
 | `build_session_roster(buổi)` (mở rộng ở 140, 141)                                      | Hệ thống khi Chốt danh sách                    | R-GIO-02..04; buổi bổ trợ, học bù chỉ gồm em được chọn |
 | `list_expiring_enrollments(bộ lọc, giới hạn, vị trí)` (142)                            | Ghi danh · Xem (cơ sở), cờ `SAP_HET_GIO`       | R-GD-07 (hạn gói chỉ dự báo), ngưỡng `upsale_*` |
 | `session_day_attendance(bộ lọc, giới hạn, vị trí)` (143)                               | Buổi học · Xem (cơ sở), cờ `DIEM_DANH_TRONG_NGAY` | R-DD-01..03, R-GIO-02..04, R-GIO-08           |
+| `add_trial_student(buổi, dòng em của cơ hội)` (145)                                    | Buổi học · Sửa (cơ sở), cờ `HOC_THU`            | R-GD-11, R-GD-17, R-CRM-03, R-CRM-27           |
 | `teacher_ticket_options()`, `teacher_create_ticket(dữ liệu)`, `teacher_class_tickets(giới hạn, vị trí)` (144) | Giáo viên, trợ giảng, cờ `AFTERSALE` | R-CS-10, AS-05, AS-09, AS-13                    |
 
 ## Bảng thêm
