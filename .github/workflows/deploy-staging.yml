@@ -248,7 +248,21 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx wrangler pages deploy dist --project-name=hmt-staging --branch=main
+        run: |
+          # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
+          CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
+          CLOUDFLARE_ACCOUNT_ID="$(printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | tr -d '[:space:]')"; export CLOUDFLARE_ACCOUNT_ID
+          [ -z "$CLOUDFLARE_API_TOKEN" ] || echo "::add-mask::$CLOUDFLARE_API_TOKEN"
+          [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && ! printf '%s' "$CLOUDFLARE_API_TOKEN" | grep -qE '^[A-Za-z0-9_-]{30,80}$'; then
+            echo "::error::Secret CLOUDFLARE_API_TOKEN sai dạng (chỉ được là chuỗi token, không kèm lệnh curl hay chữ khác). Dán lại đúng token."
+            exit 1
+          fi
+          if [ -n "$CLOUDFLARE_ACCOUNT_ID" ] && ! printf '%s' "$CLOUDFLARE_ACCOUNT_ID" | grep -qE '^[0-9a-f]{32}$'; then
+            echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
+            exit 1
+          fi
+          npx wrangler pages deploy dist --project-name=hmt-staging --branch=main
 
       - name: Gắn tag staging
         env:
