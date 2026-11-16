@@ -250,6 +250,13 @@ export const CRM_MENU: MenuGroup[] = [
     entries: [
       { code: 'CS-01', label: 'Ticket', slug: 'ticket', requires: can('TICKET'), stage: '' },
       {
+        code: 'CS-05',
+        label: 'Phiếu nghiệp vụ',
+        slug: 'phieu-nghiep-vu',
+        requires: can('TICKET'),
+        stage: '',
+      },
+      {
         code: 'CS-16',
         label: 'Nhận xét chờ gửi',
         slug: 'nhan-xet-cho-gui',
