@@ -103,6 +103,7 @@ const TicketCategoriesPage = lazyScreen(
   () => import('../pages/ticket/TicketCategoriesPage'),
   'TicketCategoriesPage',
 );
+const BranchRoomPage = lazyScreen(() => import('../pages/co-so/BranchRoomPage'), 'BranchRoomPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -691,6 +692,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/ma-tran-quyen">
                 <PermissionMatrixPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/co-so',
+            element: (
+              <GatedCrmEntry slug="quan-tri/co-so">
+                <BranchRoomPage />
               </GatedCrmEntry>
             ),
           },
