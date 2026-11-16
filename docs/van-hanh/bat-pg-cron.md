@@ -2,7 +2,7 @@
 
 pg_cron là phần mở rộng của Supabase để hệ thống tự chạy việc theo giờ. Gói Free có sẵn, không tốn thêm tiền. Cần bật một lần cho mỗi môi trường (staging, bản chạy thật) **trước khi** cập nhật lên bản có migration 104.
 
-## Bước làm (staging do hmt-vanhanh, bản chạy thật do anh Trường, trên trình duyệt)
+## Bước làm (staging do TÀI KHOẢN CHỦ DỰ ÁN, bản chạy thật do anh Trường, trên trình duyệt)
 
 1. Mở Supabase của môi trường, vào **Database → Extensions**.
 2. Tìm `pg_cron`, bật công tắc (Enable). Giữ schema mặc định.
