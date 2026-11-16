@@ -1,8 +1,8 @@
--- TC-02 Thu nợ đầu kỳ, phần DB (Code C, 16/11/2026). Luật R-V2-15: phiếu thu KHÔNG cần đơn: CSKH tạo, KẾ TOÁN duyệt (không qua quản lý trực tiếp), số tiền không vượt nợ đầu kỳ còn lại của học sinh;
+-- TC-02 Thu nợ đầu kỳ, phần DB (Code C, 16/11/2026). Luật R-V2-15: phiếu thu KHÔNG cần đơn: CSKH tạo, KẾ TOÁN duyệt (không qua quản lý trực tiếp), số tiền không vượt nợ đầu kỳ còn lại của PHỤ HUYNH (Chat 15:28 (b): khoá theo phụ huynh vì sổ số dư theo phụ huynh; học sinh chỉ là ghi chú tham chiếu);
 -- duyệt xong ghi khoản tiền vào (KTV) và giảm nợ đầu kỳ. R-V2-32: nợ đầu kỳ nằm ở sổ số dư khách hàng (customer_balance_entry, DAU_KY_CONG_NO, số âm). R-HT-01: Admin không duyệt tiền. R-TIEN-26: hoàn tác khoản thu nợ đầu kỳ cộng lại nợ.
 -- CỜ TẮT MẶC ĐỊNH: tham số opening_debt_receipt_enabled (ghi đè theo cơ sở). Ngày 17/11 chỉ nạp giờ (Q-227); chỉ bật khi Chat/anh chốt nạp công nợ.
 -- AN TOÀN: KHÔNG sửa các hàm phiếu thu hiện có (create_receipt, submit_receipt, approve_receipt_accounting). Phiếu nợ đầu kỳ dùng hàm riêng; ràng buộc receipt_kind_check và money_in_kind_check
--- (đúng MỘT trong order_id hoặc opening_debt_student_id) khiến các hàm cũ KHÔNG thể tạo khoản tiền rỗng đơn. cancel_receipt và reject_receipt không đụng tới đơn nên dùng chung được.
+-- (đúng MỘT trong: có order_id, hoặc is_opening_debt) khiến các hàm cũ KHÔNG thể tạo khoản tiền rỗng đơn. cancel_receipt và reject_receipt không đụng tới đơn nên dùng chung được.
 -- Chỉ sửa hai hàm của chính TC-09/TC-08: reverse_money_in (xử lý khoản không có đơn: cộng lại nợ, không tính giờ) và list_money_in (nối trái đơn).
 
 select set_config('hmt.migration', 'on', false);
@@ -22,19 +22,25 @@ alter table app.customer_balance_entry add constraint customer_balance_entry_che
 
 -- 2. Phiếu thu và khoản tiền vào: cho rỗng đơn, kèm học sinh có nợ đầu kỳ; đúng một trong hai.
 alter table app.receipt alter column order_id drop not null;
-alter table app.receipt add column opening_debt_student_id uuid references app.student (id);
+alter table app.receipt add column is_opening_debt boolean not null default false;
+alter table app.receipt add column opening_debt_student_id uuid references app.student (id); -- ghi chú tham chiếu tuỳ chọn, không dùng để tính nợ
 alter table app.receipt add constraint receipt_kind_check
-  check ((order_id is not null and opening_debt_student_id is null) or (order_id is null and opening_debt_student_id is not null));
+  check ((order_id is not null and not is_opening_debt) or (order_id is null and is_opening_debt));
+alter table app.receipt add constraint receipt_opening_student_check
+  check (opening_debt_student_id is null or is_opening_debt);
 alter table app.money_in alter column order_id drop not null;
-alter table app.money_in add column opening_debt_student_id uuid references app.student (id);
+alter table app.money_in add column is_opening_debt boolean not null default false;
+alter table app.money_in add column opening_debt_student_id uuid references app.student (id); -- ghi chú tham chiếu tuỳ chọn
 alter table app.money_in add constraint money_in_kind_check
-  check ((order_id is not null and opening_debt_student_id is null) or (order_id is null and opening_debt_student_id is not null));
--- Chỉ mục (lý do): tính nợ còn lại và phiếu đang chờ của một học sinh; chỉ các dòng nợ đầu kỳ nên dùng chỉ mục cục bộ.
-create index receipt_opening_student_idx on app.receipt (opening_debt_student_id) where opening_debt_student_id is not null;
-create index money_in_opening_student_idx on app.money_in (opening_debt_student_id) where opening_debt_student_id is not null;
+  check ((order_id is not null and not is_opening_debt) or (order_id is null and is_opening_debt));
+alter table app.money_in add constraint money_in_opening_student_check
+  check (opening_debt_student_id is null or is_opening_debt);
+-- Chỉ mục (lý do): tính nợ còn lại và phiếu đang chờ của một phụ huynh; chỉ các dòng nợ đầu kỳ nên dùng chỉ mục cục bộ. Sổ số dư theo phụ huynh dùng chỉ mục khoá ngoại sẵn có.
+create index receipt_opening_parent_idx on app.receipt (parent_id) where is_opening_debt;
+create index money_in_opening_parent_idx on app.money_in (parent_id) where is_opening_debt;
 
--- 3. app.opening_debt_remaining(học sinh, trừ phiếu): nợ đầu kỳ còn lại (đồng, không âm) = nợ trong sổ số dư trừ các phiếu ĐANG CHỜ (Nháp, Đã gửi, Chờ kế toán) để không thu vượt.
-create or replace function app.opening_debt_remaining(p_student_id uuid, p_except uuid default null)
+-- 3. app.opening_debt_remaining(phụ huynh, trừ phiếu): nợ đầu kỳ còn lại (đồng, không âm) = nợ trong sổ số dư của phụ huynh trừ các phiếu ĐANG CHỜ (Nháp, Đã gửi, Chờ kế toán) để không thu vượt.
+create or replace function app.opening_debt_remaining(p_parent_id uuid, p_except uuid default null)
 returns bigint
 language sql
 stable
@@ -43,23 +49,24 @@ set search_path = ''
 as $$
   select greatest(
            -coalesce((select sum(amount) from app.customer_balance_entry
-                       where student_id = p_student_id and entry_type in ('DAU_KY_CONG_NO', 'THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY')), 0)
+                       where parent_id = p_parent_id and entry_type in ('DAU_KY_CONG_NO', 'THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY')), 0)
            - coalesce((select sum(amount) from app.receipt
-                        where opening_debt_student_id = p_student_id and status_code in ('NHAP', 'DA_GUI', 'CHO_KE_TOAN')
+                        where parent_id = p_parent_id and is_opening_debt and status_code in ('NHAP', 'DA_GUI', 'CHO_KE_TOAN')
                           and (p_except is null or id <> p_except)), 0),
            0)::bigint;
 $$;
 
--- 4. app.create_opening_debt_receipt(học sinh, dữ liệu): CSKH tạo phiếu Thu nợ đầu kỳ (Nháp), không cần đơn. Ai gọi: Phiếu thu · Tạo ở cơ sở của học sinh; cần Bán hàng bật và cờ.
--- p_data: amount, payment_method_code, txn_ref, paid_on, collect_branch_id, receiver_id, note. Kết quả {id, code, remaining_after}.
-create or replace function app.create_opening_debt_receipt(p_student_id uuid, p_data jsonb)
+-- 4. app.create_opening_debt_receipt(phụ huynh, dữ liệu): CSKH tạo phiếu Thu nợ đầu kỳ (Nháp), không cần đơn. Ai gọi: Phiếu thu · Tạo ở cơ sở của phụ huynh; cần Bán hàng bật và cờ.
+-- p_data: amount, payment_method_code, txn_ref, paid_on, collect_branch_id, receiver_id, note, student_id (tuỳ chọn, ghi chú tham chiếu: phải là con của phụ huynh). Kết quả {id, code, remaining_after}.
+create or replace function app.create_opening_debt_receipt(p_parent_id uuid, p_data jsonb)
 returns jsonb
 language plpgsql
 security definer
 set search_path = ''
 as $$
 declare
-  st app.student;
+  pa app.parent;
+  v_student uuid := nullif(p_data ->> 'student_id', '')::uuid;
   v_amount bigint;
   v_method text := nullif(btrim(coalesce(p_data ->> 'payment_method_code', '')), '');
   v_paid_on date;
@@ -70,13 +77,13 @@ declare
   v_code text;
   v_branch_code text;
 begin
-  select * into st from app.student where id = p_student_id;
-  if st.id is null then
-    perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy học sinh.');
+  select * into pa from app.parent where id = p_parent_id;
+  if pa.id is null then
+    perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy phụ huynh.');
   end if;
-  perform app.assert_can('RECEIPT', 'TAO', st.branch_id);
-  perform app.require_feature('BAN_HANG', st.branch_id);
-  if not app.get_setting_bool('opening_debt_receipt_enabled', st.branch_id) then
+  perform app.assert_can('RECEIPT', 'TAO', pa.branch_id);
+  perform app.require_feature('BAN_HANG', pa.branch_id);
+  if not app.get_setting_bool('opening_debt_receipt_enabled', pa.branch_id) then
     perform app.raise_error('HMT_TINH_NANG_TAT', 'Thu nợ đầu kỳ chưa được bật cho cơ sở này.');
   end if;
   -- Luật R-V2-15: số tiền là số nguyên đồng, lớn hơn 0, không vượt nợ đầu kỳ còn lại.
@@ -88,10 +95,14 @@ begin
   if v_amount is null or v_amount <= 0 then
     perform app.raise_error('HMT_SO_TIEN_SAI', 'Số tiền phiếu thu phải lớn hơn 0.');
   end if;
-  v_remaining := app.opening_debt_remaining(st.id);
+  -- Học sinh (nếu có) chỉ là ghi chú tham chiếu: phải là con của phụ huynh này.
+  if v_student is not null and not exists (select from app.student where id = v_student and parent_id = pa.id) then
+    perform app.raise_error('HMT_HOC_SINH_SAI', 'Học sinh không thuộc phụ huynh này.');
+  end if;
+  v_remaining := app.opening_debt_remaining(pa.id);
   if v_amount > v_remaining then
     perform app.raise_error('HMT_SO_TIEN_VUOT',
-      format('Số tiền vượt nợ đầu kỳ còn lại của học sinh (còn %s đ).', to_char(v_remaining, 'FM999G999G999G999')));
+      format('Số tiền vượt nợ đầu kỳ còn lại của phụ huynh (còn %s đ).', to_char(v_remaining, 'FM999G999G999G999')));
   end if;
   if v_method is null then
     perform app.raise_error('HMT_THIEU_HINH_THUC', 'Chọn hình thức thanh toán.');
@@ -109,11 +120,11 @@ begin
   if not exists (select from app.user_account where id = v_receiver and student_code is null) then
     perform app.raise_error('HMT_NGUOI_NHAN_SAI', 'Người nhận tiền phải là nhân sự.');
   end if;
-  select code into v_branch_code from app.branch where id = st.branch_id;
+  select code into v_branch_code from app.branch where id = pa.branch_id;
   v_code := app.issue_document_number('PT', v_branch_code);
-  insert into app.receipt (code, order_id, opening_debt_student_id, parent_id, branch_id, collect_branch_id, receiver_id, amount,
+  insert into app.receipt (code, order_id, is_opening_debt, opening_debt_student_id, parent_id, branch_id, collect_branch_id, receiver_id, amount,
                            payment_method_code, txn_ref, paid_on, note)
-  values (v_code, null, st.id, st.parent_id, st.branch_id, v_collect, v_receiver, v_amount, v_method,
+  values (v_code, null, true, v_student, pa.id, pa.branch_id, v_collect, v_receiver, v_amount, v_method,
           nullif(btrim(coalesce(p_data ->> 'txn_ref', '')), ''), v_paid_on, nullif(btrim(coalesce(p_data ->> 'note', '')), ''))
   returning id into v_id;
   perform app.receipt_add_event(v_id, 'TAO', null, 'NHAP', 'Thu nợ đầu kỳ');
@@ -132,7 +143,7 @@ declare
   r app.receipt;
 begin
   select * into r from app.receipt where id = p_id for update;
-  if r.id is null or r.opening_debt_student_id is null then
+  if r.id is null or not r.is_opening_debt then
     perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy phiếu thu nợ đầu kỳ.');
   end if;
   perform app.assert_can('RECEIPT', 'TAO', r.branch_id);
@@ -144,8 +155,8 @@ begin
     perform app.raise_error('HMT_SAI_TRANG_THAI', 'Chỉ gửi được phiếu thu Nháp.');
   end if;
   -- Luật R-V2-15: kiểm lại không vượt nợ còn lại (nợ có thể đã đổi từ lúc tạo).
-  if r.amount > app.opening_debt_remaining(r.opening_debt_student_id, r.id) then
-    perform app.raise_error('HMT_SO_TIEN_VUOT', 'Số tiền vượt nợ đầu kỳ còn lại của học sinh.');
+  if r.amount > app.opening_debt_remaining(r.parent_id, r.id) then
+    perform app.raise_error('HMT_SO_TIEN_VUOT', 'Số tiền vượt nợ đầu kỳ còn lại của phụ huynh.');
   end if;
   -- approval_route để trống: không có bước quản lý (R-V2-15), không có người duyệt chốt.
   update app.receipt set status_code = 'CHO_KE_TOAN', submitted_at = now(), submitted_by = auth.uid() where id = p_id;
@@ -168,7 +179,7 @@ declare
   v_branch_code text;
 begin
   select * into r from app.receipt where id = p_id for update;
-  if r.id is null or r.opening_debt_student_id is null then
+  if r.id is null or not r.is_opening_debt then
     perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy phiếu thu nợ đầu kỳ.');
   end if;
   perform app.assert_can('ACCOUNTING', 'DUYET', r.branch_id);
@@ -180,20 +191,20 @@ begin
     perform app.raise_error('HMT_SAI_TRANG_THAI', 'Chỉ duyệt được phiếu thu Chờ kế toán.');
   end if;
   -- Luật R-V2-15: không vượt nợ còn lại tại lúc duyệt.
-  if r.amount > app.opening_debt_remaining(r.opening_debt_student_id, r.id) then
-    perform app.raise_error('HMT_SO_TIEN_VUOT', 'Số tiền vượt nợ đầu kỳ còn lại của học sinh.');
+  if r.amount > app.opening_debt_remaining(r.parent_id, r.id) then
+    perform app.raise_error('HMT_SO_TIEN_VUOT', 'Số tiền vượt nợ đầu kỳ còn lại của phụ huynh.');
   end if;
   select code into v_branch_code from app.branch where id = r.branch_id;
   v_code := app.issue_document_number('KTV', v_branch_code);
-  insert into app.money_in (code, receipt_id, order_id, opening_debt_student_id, parent_id, branch_id, amount)
-  values (v_code, r.id, null, r.opening_debt_student_id, r.parent_id, r.branch_id, r.amount)
+  insert into app.money_in (code, receipt_id, order_id, is_opening_debt, opening_debt_student_id, parent_id, branch_id, amount)
+  values (v_code, r.id, null, true, r.opening_debt_student_id, r.parent_id, r.branch_id, r.amount)
   returning id into v_money;
   insert into app.customer_balance_entry (parent_id, student_id, branch_id, entry_type, amount, entry_date, source_ref)
   values (r.parent_id, r.opening_debt_student_id, r.branch_id, 'THU_NO_DAU_KY', r.amount, current_date, v_code);
   update app.receipt set status_code = 'DA_DUYET', accountant_approved_at = now(), accountant_approved_by = auth.uid() where id = p_id;
   perform app.receipt_add_event(p_id, 'DUYET_KT', 'CHO_KE_TOAN', 'DA_DUYET', 'Thu nợ đầu kỳ');
   return jsonb_build_object('id', p_id, 'money_in_id', v_money, 'money_in_code', v_code,
-                            'remaining', app.opening_debt_remaining(r.opening_debt_student_id));
+                            'remaining', app.opening_debt_remaining(r.parent_id));
 end;
 $$;
 
@@ -215,7 +226,7 @@ declare
   v_code text;
   v_branch_code text;
   v_neg integer;
-  v_opening uuid;
+  v_opening boolean;
 begin
   select * into m from app.money_in where id = p_money_in_id for update;
   if m.id is null then
@@ -245,23 +256,23 @@ begin
     perform app.raise_error('HMT_THIEU_GHI_CHU', 'Chọn lý do "Khác" thì phải ghi chú.');
   end if;
   -- Khoá đơn để không lẫn với duyệt phiếu thu đang chạy.
-  v_opening := m.opening_debt_student_id;
+  v_opening := m.is_opening_debt;
   if m.order_id is not null then
     perform 1 from app.sales_order where id = m.order_id for update;
   end if;
   select code into v_branch_code from app.branch where id = m.branch_id;
   v_code := app.issue_document_number('KTV', v_branch_code);
-  insert into app.money_in (code, receipt_id, order_id, opening_debt_student_id, parent_id, branch_id, amount, reversal_of, reason_code, reason_note)
-  values (v_code, null, m.order_id, m.opening_debt_student_id, m.parent_id, m.branch_id, -m.amount, m.id, p_reason_code, nullif(btrim(coalesce(p_note, '')), ''))
+  insert into app.money_in (code, receipt_id, order_id, is_opening_debt, opening_debt_student_id, parent_id, branch_id, amount, reversal_of, reason_code, reason_note)
+  values (v_code, null, m.order_id, m.is_opening_debt, m.opening_debt_student_id, m.parent_id, m.branch_id, -m.amount, m.id, p_reason_code, nullif(btrim(coalesce(p_note, '')), ''))
   returning id into v_new;
   -- Phần chia về dòng đơn: đảo đúng từng phần của khoản gốc (tổng allocation âm = -amount).
   insert into app.money_in_allocation (money_in_id, order_line_id, branch_id, amount)
   select v_new, a.order_line_id, a.branch_id, -a.amount from app.money_in_allocation a where a.money_in_id = m.id;
   -- Luật R-TIEN-26: giờ đã cấp tính lại theo tiền còn lại (sổ giờ thêm dòng âm).
-  if v_opening is not null then
+  if v_opening then
     -- Luật R-V2-15, R-TIEN-26: hoàn tác khoản thu nợ đầu kỳ thì nợ đầu kỳ của học sinh được cộng lại (khoản âm trong sổ số dư), không có giờ để tính lại.
     insert into app.customer_balance_entry (parent_id, student_id, branch_id, entry_type, amount, entry_date, source_ref)
-    values (m.parent_id, v_opening, m.branch_id, 'DAO_THU_NO_DAU_KY', -m.amount, current_date, v_code);
+    values (m.parent_id, m.opening_debt_student_id, m.branch_id, 'DAO_THU_NO_DAU_KY', -m.amount, current_date, v_code);
   else
     perform app.sync_enrollment_hours(m.order_id);
   end if;
