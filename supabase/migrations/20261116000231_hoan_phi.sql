@@ -1,4 +1,4 @@
--- Migration 218 (Code D, 16/11/2026): bản ghi nghiệp vụ Hoàn phí và Phiếu chi (R-TIEN-28, R-TIEN-31, R-TIEN-34, R-CS-02, R-CS-07, R-V2-24).
+-- Migration 231 (Code D, 16/11/2026): bản ghi nghiệp vụ Hoàn phí và Phiếu chi (R-TIEN-28, R-TIEN-31, R-TIEN-34, R-CS-02, R-CS-07, R-V2-24).
 -- Tính tiền dùng app.compute_refund (migration 212). Việc duyệt nằm ở bản ghi này (R-V2-24): quản lý cơ sở rồi kế toán (R-CS-07);
 -- kế toán duyệt xong thì hệ thống ghi sổ giờ ngược dấu, đổi tình trạng ghi danh (hoàn toàn bộ) và LẬP phiếu chi PC (R-TIEN-34).
 -- Công tắc HOAN_PHI theo cơ sở, MẶC ĐỊNH TẮT. Chưa làm: giữ thành số dư khách hàng khi dừng học (R-GD-16, R-TIEN-33), chuyển phí.
