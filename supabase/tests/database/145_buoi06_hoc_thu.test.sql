@@ -117,7 +117,7 @@ select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enab
 
 -- Buổi Nháp chưa thêm được; chốt rồi mới thêm.
 select is(pg_temp.err($$select app.add_trial_student(pg_temp.s('f', 1), (select ps from op where key = 'o'))$$), 'HMT_BUOI_KHONG_THEM_HOC_THU', 'Chặn: buổi Nháp chưa có danh sách');
-select is(app.close_session(pg_temp.s('f', 1)), 3, 'Chốt danh sách ba em');
+select is(app.close_session(pg_temp.s('f', 1)), 2, 'Chốt danh sách: hai em còn giờ (em hết giờ bị loại, R-GIO-03)');
 select is(pg_temp.err($$select app.add_trial_student(pg_temp.s('f', 1), (select ps from op where key = 'o'))$$), 'HMT_CO_HOI_CHUA_DEN_L5', 'Chặn: cơ hội chưa tới L5 (R-CRM-03)');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select app.change_opportunity_stage((select id from op where key = 'o'), 'L5');
@@ -132,9 +132,9 @@ select isnt((select student_id from app.prospect_student where id = (select ps f
 select is(pg_temp.err($$select app.add_trial_student(pg_temp.s('f', 1), (select ps from op where key = 'o'))$$), 'HMT_EM_DA_CO_TRONG_BUOI', 'Chặn: em đã có trong buổi');
 
 -- Hạn mức R-GD-17: mặc định hai buổi mỗi cơ hội.
-select is(app.close_session(pg_temp.s('f', 2)), 3, 'Chốt buổi 2');
+select is(app.close_session(pg_temp.s('f', 2)), 2, 'Chốt buổi 2');
 select ok((app.add_trial_student(pg_temp.s('f', 2), (select ps from op where key = 'o')) ->> 'student_id') is not null, 'Buổi 2: học thử thứ hai được');
-select is(app.close_session(pg_temp.s('f', 3)), 3, 'Chốt buổi 3');
+select is(app.close_session(pg_temp.s('f', 3)), 2, 'Chốt buổi 3');
 select is(pg_temp.err($$select app.add_trial_student(pg_temp.s('f', 3), (select ps from op where key = 'o'))$$), 'HMT_HOC_THU_VUOT_HAN_MUC', 'Chặn: vượt trial_sessions_max_per_opportunity (R-GD-17)');
 
 -- ================= Done không trừ giờ học thử; quyền =================

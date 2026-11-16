@@ -49,6 +49,10 @@ begin
     perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy buổi học.');
   end if;
   perform app.assert_can('SESSION', 'SUA', s.branch_id);
+  -- Luật (BUOI-06: CSKH, Sale, Admin; Trưởng cơ sở): chỉ phạm vi cơ sở hoặc toàn hệ thống; giáo viên theo phân công không thêm học thử.
+  if app.permission_scope('SESSION', 'SUA') not in ('CO_SO', 'TOAN_HE_THONG') then
+    perform app.raise_error('HMT_KHONG_CO_QUYEN', 'Bạn không có quyền thêm học thử vào buổi.');
+  end if;
   perform app.require_feature('HOC_THU', s.branch_id);
   -- Luật: chỉ buổi Đã chốt (Nháp chưa có danh sách, Done và buổi huỷ đã khoá).
   if s.status_code <> 'DA_CHOT' then
