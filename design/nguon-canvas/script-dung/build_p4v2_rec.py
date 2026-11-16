@@ -191,7 +191,7 @@ SEL = {'Khối': ['Lớp %d' % i for i in range(2, 13)]}
 HS_FIELDS = [('Mã cũ (Sheet)', 'input', 'STU-2609-0123', 0, 1), ('Họ tên', 'input', 'Nguyễn Minh Khôi', 1, 0), ('Ngày sinh', 'input', '15/03/2011', 1, 0), ('Năm sinh', 'input', '2011', 0, 1), ('Khối', 'select', 'Lớp 9', 0, 0),
              ('Trường học', 'input', 'THCS Lê Lợi', 0, 0), ('Mục tiêu', 'input', 'Đỗ vào lớp 10 trường chuyên', 0, 0), ('Phụ huynh', 'input', '', 0, 1), ('Tình trạng', 'input', '', 0, 1),
              ('Cơ sở tiếp nhận', 'input', '', 0, 1), ('Đang học tại', 'input', '', 0, 1)]
-PH_FIELDS = [('Họ tên', 'input', 'Trần Thị Hà', 1, 0), ('Số điện thoại', 'input', '0912 345 456', 1, 0), ('Phường/Xã', 'input', 'Thanh Xuân Trung', 0, 0), ('Tỉnh/Thành phố', 'input', 'Hà Nội', 0, 0),
+PH_FIELDS = [('Họ tên', 'input', 'Trần Thị Hà', 1, 0), ('Số điện thoại', 'input', '0900 000 118', 1, 0), ('Phường/Xã', 'input', 'Thanh Xuân Trung', 0, 0), ('Tỉnh/Thành phố', 'input', 'Hà Nội', 0, 0),
              ('Địa chỉ', 'input', 'Số 12, ngõ 45, đường Nguyễn Trãi', 0, 0), ('Nhu cầu', 'input', 'Ôn thi vào lớp 10, học buổi tối', 0, 0), ('Cơ sở tiếp nhận', 'input', '', 0, 1), ('Đang học tại', 'input', '', 0, 1)]
 HS_ERR = {'Họ tên': 'Bắt buộc nhập họ tên', 'Ngày sinh': 'Bắt buộc nhập ngày sinh'}
 PH_ERR = {'Họ tên': 'Bắt buộc nhập họ tên', 'Số điện thoại': 'Bắt buộc nhập số điện thoại'}

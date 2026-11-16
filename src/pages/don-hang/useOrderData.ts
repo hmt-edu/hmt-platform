@@ -204,3 +204,43 @@ export function usePaymentTermNames() {
     },
   });
 }
+
+export type CreatedOrder = { id: string; code: string; total_amount: number };
+
+/** Tạo đơn Nháp thẳng từ cơ hội L8 (UI-O4, R-CRM-16, R-CRM-19, R-TIEN-39): giá tính ở máy chủ (R-TIEN-13); cơ hội đã có đơn Nháp thì máy chủ từ chối HMT_CO_DON_NHAP cho tới khi gửi lại với confirmExistingDraft. */
+export function createOrderFromOpportunity(
+  supabase: SupabaseClient,
+  opportunityId: string,
+  lines: Record<string, unknown>[],
+  confirmExistingDraft: boolean,
+): Promise<CreatedOrder> {
+  return rpc<CreatedOrder>(supabase, 'create_order_from_opportunity', {
+    p_opportunity_id: opportunityId,
+    p_lines: lines,
+    p_payment_term_id: null,
+    p_confirm_existing_draft: confirmExistingDraft,
+  });
+}
+
+/** Chuyển báo giá Đã gửi thành đơn Nháp (UI-O4, R-TIEN-14, Đ259): chỉ các dòng giữ lại; giá chép y báo giá. */
+export function createOrderFromQuotation(
+  supabase: SupabaseClient,
+  quotationId: string,
+  lineNos: number[],
+): Promise<CreatedOrder> {
+  return rpc<CreatedOrder>(supabase, 'create_order_from_quotation', {
+    p_quotation_id: quotationId,
+    p_line_nos: lineNos,
+    p_payment_term_id: null,
+  });
+}
+
+/** Đơn Nháp mới nhất của cơ hội (hộp BH-11 "Mở đơn cũ"), hoặc null. */
+export function getOpportunityDraftOrder(
+  supabase: SupabaseClient,
+  opportunityId: string,
+): Promise<{ id: string; code: string } | null> {
+  return rpc<{ id: string; code: string } | null>(supabase, 'get_opportunity_draft_order', {
+    p_opportunity_id: opportunityId,
+  });
+}

@@ -169,6 +169,45 @@ export function useCancelSession(sessionId: string) {
   });
 }
 
+export type CorrectArgs = {
+  studentId: string;
+  status: string;
+  reason: string;
+  note: string | null;
+};
+/** Sửa điểm danh sau Done (app.correct_attendance_after_done, BUOI-14, R-GIO-07): chỉ Điểm danh · Duyệt, bắt buộc lý do. */
+export function useCorrectAttendance(sessionId: string) {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (a: CorrectArgs) =>
+      rpc<null>(supabase, 'correct_attendance_after_done', {
+        p_session_id: sessionId,
+        p_student_id: a.studentId,
+        p_status_code: a.status,
+        p_reason_code: a.reason,
+        p_note: a.note,
+      }),
+    onSuccess: () => refresh(),
+  });
+}
+
+export type StaffArgs = { teacherId: string | null; assistantId: string | null };
+/** Đổi giáo viên, trợ giảng một buổi chưa Done (app.change_session_staff, BUOI-13, R-LOP-10, R-LOP-11): trùng giờ chỉ cảnh báo. */
+export function useChangeSessionStaff(sessionId: string) {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (a: StaffArgs) =>
+      rpc<{ warnings: string[] }>(supabase, 'change_session_staff', {
+        p_session_id: sessionId,
+        p_teacher_id: a.teacherId,
+        p_assistant_id: a.assistantId,
+      }),
+    onSuccess: () => refresh(),
+  });
+}
+
 export function useMoveOptions(sessionId: string, enabled: boolean) {
   const supabase = useDb();
   return useQuery({

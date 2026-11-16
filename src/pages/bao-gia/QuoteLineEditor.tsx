@@ -18,6 +18,7 @@ export function QuoteLineEditor({
   saveError,
   saving,
   layout,
+  totalLabel = 'Tổng cộng báo giá',
 }: {
   opportunityId: string;
   rows: EditRow[];
@@ -28,6 +29,8 @@ export function QuoteLineEditor({
   saving: boolean;
   /** Q-74: 'tao' = Tạo báo giá (11 cột), 'sua' = Sửa báo giá (13 cột). */
   layout: 'tao' | 'sua';
+  /** Nhãn dòng tổng cuối lưới ('Tổng cộng đơn hàng' khi dùng cho Tạo đơn hàng). */
+  totalLabel?: string;
 }) {
   const capPercent = useIntSetting('discount_total_cap_percent');
   const students = useOpportunityStudents(opportunityId, true);
@@ -80,7 +83,7 @@ export function QuoteLineEditor({
         </Alert>
       )}
       <p className="flex flex-wrap items-baseline justify-end gap-2 text-body">
-        <span>Tổng cộng báo giá</span>
+        <span>{totalLabel}</span>
         <span className="text-caption text-fg-muted">(hệ thống tính)</span>
         <b className="tabular" aria-busy={preview.computing ? true : undefined}>
           {preview.computing || preview.total === null || limitIssues.length > 0
