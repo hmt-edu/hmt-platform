@@ -236,6 +236,52 @@ test('BUOI-09: Trưởng cơ sở duyệt thì buổi Bổ trợ được chèn,
   await expect(page.getByText('Giáo viên CS5').first()).toBeVisible();
 });
 
+test('BUOI-07: từ bản ghi lớp mở Yêu cầu học bù; lý do bắt buộc; CSKH gửi duyệt, Trưởng cơ sở duyệt thì sinh buổi Học bù mới', async ({
+  page,
+}) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto(`/crm/lop/${classId}`);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'Yêu cầu học bù' }).click();
+  await expect(page).toHaveURL(new RegExp(`/crm/yeu-cau-buoi/tao-hoc-bu\\?lop=${classId}$`));
+  await expect(page.getByRole('heading', { level: 1, name: 'Tạo yêu cầu học bù' })).toBeVisible();
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page.getByText('Nhập lý do học bù.')).toBeVisible();
+  await expect(page.getByText('Chọn ít nhất một em học bù.')).toBeVisible();
+  await expectAccessible(page);
+  await page.getByRole('checkbox', { name: new RegExp(STUDENT_A) }).check();
+  await page.getByLabel('Ngày', { exact: true }).fill(inDays(13));
+  await page.getByLabel('Giờ bắt đầu').fill('20:00');
+  await page.getByLabel('Giờ kết thúc').fill('21:00');
+  await page.getByLabel('Lý do học bù').fill('Nghỉ ốm buổi trước');
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page).toHaveURL(/\/crm\/yeu-cau-buoi$/);
+  await expect(page.getByRole('row').filter({ hasText: 'Học bù' }).first()).toContainText(
+    STUDENT_A,
+  );
+});
+
+test('BUOI-07: Trưởng cơ sở duyệt yêu cầu học bù thì buổi Học bù mới mở được', async ({ page }) => {
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto('/crm/yeu-cau-buoi');
+  await page
+    .getByRole('row')
+    .filter({ hasText: 'Học bù' })
+    .getByRole('button', { name: 'Duyệt', exact: true })
+    .first()
+    .click();
+  await expect(page.getByText(/^Đã duyệt YB-CS5-/).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Tất cả' }).click();
+  await page
+    .getByRole('row')
+    .filter({ hasText: 'Học bù' })
+    .getByRole('link', { name: 'Mở buổi' })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/crm\/buoi-hoc\/[0-9a-f-]{36}$/);
+  await expect(page.getByText('Học bù').first()).toBeVisible();
+});
+
 test('Cờ tắt: mục Yêu cầu buổi ẩn khỏi menu và mở thẳng báo chưa bật', async ({ page }) => {
   await withDb((db) =>
     db.query(
