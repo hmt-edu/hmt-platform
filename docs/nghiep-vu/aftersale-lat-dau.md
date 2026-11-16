@@ -41,3 +41,6 @@ Giao diện CSN01 (danh sách), CSN02 (Kanban), CSN03 (biểu mẫu); phiếu ng
 
 ## Lát 5 (migration 162): lưu cấu hình SLA
 - `app.save_ticket_sla(bảng hạn, hạn riêng)`: lưu một lần bảng loại × mức độ và hạn riêng nhóm con (CSN-09). Cần Quản trị · Sửa (Admin). Số giờ nguyên dương, hạn xử lý ≥ hạn phản hồi; cả lô một giao dịch. Ticket đã tạo giữ hạn đã chụp (AS-07); mọi sửa ghi nhật ký qua trigger audit.
+
+## Lát 6 (migration 163): thêm, sửa, ngừng nhóm và nhóm con
+- `app.save_ticket_category(jsonb)`: tạo (mã chưa có) hoặc sửa (mã đã có) nhóm, nhóm con. Cần Quản trị · Sửa (Admin). Mã, cấp, loại, nhóm cha **không đổi** sau khi tạo; không xoá, chỉ Ngừng; ngừng nhóm cha thì ngừng luôn nhóm con (bật lại không tự bật lại nhóm con). Tính chất chỉ ở ticket giáo viên (AS-05); mức độ, phiếu nghiệp vụ chỉ ở nhóm con; đội mặc định là mục đang dùng của danh mục TICKET_TEAM (AS-08).
