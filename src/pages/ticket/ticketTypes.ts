@@ -44,6 +44,8 @@ export type TicketDetail = TicketRow & {
   resolved_at: string | null;
   closed_at: string | null;
   nature_code: 'HO_TRO' | 'PHAN_ANH' | null;
+  /** Loại phiếu nghiệp vụ của nhóm con (CAP_NHAT_HO_SO…); null nếu nhóm con không có nghiệp vụ (migration 261). */
+  business_type: string | null;
   accused_user_id: string | null;
   accused_name: string | null;
   complaint_date: string | null;
@@ -63,4 +65,16 @@ export type TicketEvent = {
   created_by_name: string | null;
 };
 
-export type TicketRecord = { ticket: TicketDetail; children: TicketRow[]; events: TicketEvent[] };
+export type TicketTaskBrief = {
+  id: string;
+  code: string;
+  task_type: string;
+  status_code: string;
+  created_at: string;
+};
+export type TicketRecord = {
+  ticket: TicketDetail;
+  children: TicketRow[];
+  tasks: TicketTaskBrief[];
+  events: TicketEvent[];
+};
