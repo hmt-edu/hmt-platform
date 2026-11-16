@@ -79,3 +79,13 @@ test('Sửa một ô, lưu thành phiên bản mới; trả về như cũ bằng
   await page.getByRole('button', { name: 'Lưu thay đổi' }).click();
   await expect(page.getByText(/Đã lưu phiên bản \d+/).first()).toBeVisible();
 });
+
+test('Mở từ QT-04 với ?vai-tro=: chọn sẵn đúng vai trò', async ({ page }) => {
+  await enterAsAdmin(page, 'quantri.cs5');
+  await page.goto('/crm/quan-tri/ma-tran-quyen?vai-tro=TEACHER');
+  await expect(page.getByRole('heading', { level: 1, name: 'Ma trận quyền' })).toBeVisible();
+  await expect(
+    page.getByRole('navigation', { name: 'Vai trò' }).getByRole('button', { name: /TEACHER/ }),
+  ).toHaveAttribute('aria-current', 'true');
+  await expect(page.getByRole('heading', { level: 2, name: 'Giáo viên' })).toBeVisible();
+});

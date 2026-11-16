@@ -15,6 +15,7 @@ import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog } from '../../ui/Dialogs';
 import { CancelSessionDialog } from './CancelSessionDialog';
+import { AddTrialDialog } from './AddTrialDialog';
 import { ChangeStaffDialog } from './ChangeStaffDialog';
 import { CorrectAttendanceDialog } from './CorrectAttendanceDialog';
 import { MoveSessionDialog } from './MoveSessionDialog';
@@ -44,6 +45,7 @@ export function SessionRecordPage() {
   const [cancelling, setCancelling] = useState(false);
   const [moving, setMoving] = useState(false);
   const [changingStaff, setChangingStaff] = useState(false);
+  const [addingTrial, setAddingTrial] = useState(false);
   const [correcting, setCorrecting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   useCrumbTail(
@@ -81,6 +83,9 @@ export function SessionRecordPage() {
   // Dời, huỷ được tới khi buổi Done (R-BUOI-09); giáo viên không có quyền Sửa buổi nên không thấy.
   const canEditSession =
     ['NHAP', 'DA_CHOT'].includes(s.status_code) && access.can('SESSION', 'SUA');
+  // Thêm học thử (BUOI-06): buổi Đã chốt, quyền Sửa buổi, cờ HOC_THU bật (tắt mặc định).
+  const canTrial =
+    s.status_code === 'DA_CHOT' && access.can('SESSION', 'SUA') && access.featureOn('HOC_THU');
   // Sửa điểm danh sau Done: chỉ Điểm danh · Duyệt (Trưởng cơ sở, Admin), bắt buộc lý do (BUOI-14, R-GIO-07).
   const canCorrect =
     s.status_code === 'DONE' && access.can('ATTENDANCE', 'DUYET') && students.length > 0;
@@ -135,6 +140,7 @@ export function SessionRecordPage() {
                 Điểm danh vận hành
               </Button>
             )}
+            {canTrial && <Button onClick={() => setAddingTrial(true)}>Thêm học thử</Button>}
             {canEditSession && <Button onClick={() => setMoving(true)}>Dời</Button>}
             {canEditSession && (
               <Button onClick={() => setChangingStaff(true)}>Đổi giáo viên</Button>
@@ -317,6 +323,7 @@ export function SessionRecordPage() {
         onClose={() => setCancelling(false)}
       />
       <MoveSessionDialog session={s} open={moving} onClose={() => setMoving(false)} />
+      <AddTrialDialog sessionId={s.id} open={addingTrial} onClose={() => setAddingTrial(false)} />
       <ChangeStaffDialog
         sessionId={s.id}
         branchId={s.branch_id}
