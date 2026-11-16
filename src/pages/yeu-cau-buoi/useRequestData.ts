@@ -92,3 +92,38 @@ export function useCancelRequest() {
     onSuccess: () => refresh(),
   });
 }
+
+export type SupportArgs = {
+  classId: string;
+  studentIds: string[];
+  date: string;
+  start: string;
+  end: string;
+  teacherId: string;
+  roomId: string | null;
+  note: string | null;
+};
+
+/** Lưu yêu cầu học bổ trợ ở Nháp rồi (tuỳ chọn) gửi duyệt (app.save_support_request, R-BUOI-05); trả mã yêu cầu. */
+export function useSaveSupport() {
+  const supabase = useDb();
+  const refresh = useRefreshRequests();
+  return useMutation({
+    mutationFn: async (a: SupportArgs & { submit: boolean }) => {
+      const saved = await rpc<{ id: string; code: string }>(supabase, 'save_support_request', {
+        p_id: null,
+        p_class_id: a.classId,
+        p_student_ids: a.studentIds,
+        p_date: a.date,
+        p_start: a.start,
+        p_end: a.end,
+        p_teacher_id: a.teacherId,
+        p_room_id: a.roomId,
+        p_note: a.note,
+      });
+      if (a.submit) await rpc<null>(supabase, 'submit_session_request', { p_id: saved.id });
+      return saved;
+    },
+    onSuccess: () => refresh(),
+  });
+}
