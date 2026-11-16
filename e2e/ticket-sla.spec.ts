@@ -24,13 +24,13 @@ test('Admin sửa hạn xử lý Khiếu nại Thường rồi lưu; tải lại
   await field.fill(next);
   await expect(page.getByText('1 thay đổi chưa lưu')).toBeVisible();
   await save.click();
-  await expect(page.getByText('Đã lưu cấu hình SLA.')).toBeVisible();
+  await expect(page.getByText('Đã lưu cấu hình SLA.', { exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByRole('textbox', { name: FIELD })).toHaveValue(next);
   // Trả về như cũ.
   await page.getByRole('textbox', { name: FIELD }).fill(original);
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
-  await expect(page.getByText('Đã lưu cấu hình SLA.')).toBeVisible();
+  await expect(page.getByText('Đã lưu cấu hình SLA.', { exact: true })).toBeVisible();
 });
 
 test('CSKH vào trang SLA thì không được lưu', async ({ page }) => {
