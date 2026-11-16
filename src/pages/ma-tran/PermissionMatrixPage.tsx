@@ -2,6 +2,7 @@
 // Bấm Sửa, đổi ô (ô đã sửa có viền cam), Lưu thay đổi: tạo phiên bản mới, có hiệu lực ngay, có nhật ký (save_permission_matrix; DB kiểm phiên bản hiện hành,
 // phân hệ Quản trị chỉ ADMIN). Chỉ Admin. Lịch sử: các phiên bản gần đây kèm ô đã đổi.
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
@@ -49,7 +50,9 @@ export function PermissionMatrixPage() {
   const versions = usePermissionVersions();
   const editFlag = useMatrixEditEnabled();
   const changes = usePermissionChanges((versions.data ?? []).slice(0, 5).map((v) => v.version_no));
-  const [picked, setPicked] = useState<string | null>(null);
+  // QT-04 «Mở ma trận» truyền ?vai-tro=<mã>: chọn sẵn vai trò đó (mã không có thì lấy vai trò đầu).
+  const [searchParams] = useSearchParams();
+  const [picked, setPicked] = useState<string | null>(searchParams.get('vai-tro'));
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<Draft>(new Map());
   const [note, setNote] = useState('');
