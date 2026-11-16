@@ -37,7 +37,7 @@ Làm trên trình duyệt, tài khoản Cloudflare chạy thật. Các bước n
 1. Cloudflare > **Workers & Pages** > `hmt-prod` > **Deployments**.
 2. Tìm bản **Production** đã chụp ở mục 1 bước 3 (giờ và mã commit khớp).
 3. Bấm dấu ba chấm bên phải dòng đó > **Rollback to this deployment** > xác nhận.
-4. Mở `https://hmt-prod.pages.dev` bằng cửa sổ ẩn danh, đăng nhập bằng Admin, mở Lead, Cơ hội, Đơn hàng: danh sách mở được, không báo lỗi đỏ.
+4. Mở `https://<tên-miền-chạy-thật>.pages.dev` bằng cửa sổ ẩn danh, đăng nhập bằng Admin, mở Lead, Cơ hội, Đơn hàng: danh sách mở được, không báo lỗi đỏ.
 
 **Lưu ý quan trọng:** giao diện cũ chạy trên DB **mới**. Chỉ an toàn khi các migration mới chỉ **thêm** (bảng, cột, hàm). Migration **xoá cột hoặc xoá bảng** làm giao diện cũ hỏng (ví dụ migration 043 xoá cột của lead và cơ hội). Trước deploy, nhờ Chat liệt kê migration nào trong bản mới có xoá hay đổi tên; nếu có, coi mục 3 **không dùng được** cho bản đó.
 

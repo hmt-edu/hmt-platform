@@ -16,9 +16,9 @@
 
 ## Đã chốt
 - Đ277: bản in báo giá giữ số điện thoại phụ huynh che giữa ("0912 *** 345").
-- Đ278 (a đã sửa bởi Đ279): `truongcx-95` bật xác thực hai bước, chỉ dùng trên trình duyệt; `hmt-vanhanh` là collaborator quyền Write.
-- Đ279: `truongcx-95` là chủ hai repo (đã chuyển xong); tài khoản OK gộp PR vẫn là `caotruong276` (collaborator của `hmt-platform`); Đ278a sửa lại: không thay hẳn.
-- Q-165 (09/11): `hmt-platform` đã chuyển sang chủ `hmt-vanhanh`; `hmt-deploy` vẫn ở `truongcx-95`. Hai dòng Đ278, Đ279 ở trên là lịch sử. Đã kiểm sau chuyển: remote, 7 secret, biến, workflow, lịch đêm.
+- Đ278 (a đã sửa bởi Đ279): TÀI KHOẢN DEPLOY bật xác thực hai bước, chỉ dùng trên trình duyệt; TÀI KHOẢN CHỦ DỰ ÁN là collaborator quyền Write.
+- Đ279: TÀI KHOẢN DEPLOY là chủ hai repo (đã chuyển xong); tài khoản OK gộp PR vẫn là TÀI KHOẢN GỘP (collaborator của `hmt-platform`); Đ278a sửa lại: không thay hẳn.
+- Q-165 (09/11): `hmt-platform` đã chuyển sang chủ TÀI KHOẢN CHỦ DỰ ÁN; `hmt-deploy` vẫn ở TÀI KHOẢN DEPLOY. Hai dòng Đ278, Đ279 ở trên là lịch sử. Đã kiểm sau chuyển: remote, 7 secret, biến, workflow, lịch đêm.
 - Đ255: nợ kỹ thuật `preview_quotation_lines` trả lỗi tất cả dòng trong một lần.
 - Đ256 đến Đ276 (28/10): thứ tự làm; khung BH-05 là bản canvas `1793154455-8ab9` (Đ270, Đ272); canvas anh chốt thắng gói thiết kế và bản đồ (Đ271); bỏ Hình thức thanh toán, Cơ sở thu tiền khỏi đơn (Đ258); Chuyển thành đơn là form trắng bỏ bớt bằng ✕ (Đ259); gộp tạo đơn và điều khoản một giao dịch (Đ260); BH-06 Đã thu, Còn phải thu "—" (Đ262, Đ269); in báo giá mọi trạng thái, nhãn BẢN NHÁP, ĐÃ TỪ CHỐI, ĐÃ HUỶ, hộp in của trình duyệt (Đ263 đến Đ267, Đ273, Đ274); giữ chữ tiếng Anh của khuôn K03 (Đ268); bỏ gợi ý "dùng báo giá còn hiệu lực" (Đ275).
 - Luật mới R-TIEN-39 (28/10): đơn thẳng từ cơ hội mà cơ hội đã có đơn Nháp thì cảnh báo, Mở đơn cũ hoặc Vẫn tạo.

@@ -1,0 +1,24 @@
+# Cập nhật phụ thuộc có kiểm soát: mỗi tuần một lượt, gom nhỏ để không tràn PR (phút Actions có hạn).
+# Các action trong .github/workflows ghim bằng mã băm commit: Dependabot đề xuất bản mới kèm mã băm mới.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      actions:
+        patterns: ['*']
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    # Chỉ bản vá và bản nhỏ; bản lớn do người quyết định.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+    groups:
+      npm-patch-minor:
+        update-types: ['patch', 'minor']

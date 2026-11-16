@@ -40,7 +40,7 @@ Mọi thứ dùng gói miễn phí, kể cả chạy thật (chốt 09/10/2026).
 
 Thứ tự mỗi thay đổi: nhánh riêng → PR → kiểm thử tự động (trượt thì không gộp) → gộp `main` → thử nghiệm tự cập nhật, anh thử → anh bấm chạy ở `hmt-deploy` → chạy thật.
 
-**Bước duyệt miễn phí:** GitHub Free không có bảo vệ nhánh, bước duyệt cho repo riêng tư. Thay bằng repo `hmt-deploy` đặt ở một tài khoản GitHub riêng chỉ anh Trường dùng (không đăng nhập trên máy Claude Code làm việc); khoá của bản chạy thật chỉ nằm ở đó. Claude Code (dùng tài khoản `hmt-vanhanh`) không thấy repo này nên không đụng được bản chạy thật.
+**Bước duyệt miễn phí:** GitHub Free không có bảo vệ nhánh, bước duyệt cho repo riêng tư. Thay bằng repo `hmt-deploy` đặt ở một tài khoản GitHub riêng chỉ anh Trường dùng (không đăng nhập trên máy Claude Code làm việc); khoá của bản chạy thật chỉ nằm ở đó. Claude Code (dùng TÀI KHOẢN CHỦ DỰ ÁN) không thấy repo này nên không đụng được bản chạy thật.
 
 Thay đổi cấu trúc cơ sở dữ liệu nằm trong file migration có đánh số trong repo, chạy giống hệt ở hai môi trường; không ai sửa tay cơ sở dữ liệu chạy thật. Khoá, mật khẩu kỹ thuật nằm trong cài đặt GitHub, Cloudflare, Supabase, không nằm trong repo. Hai repo đều riêng tư.
 
