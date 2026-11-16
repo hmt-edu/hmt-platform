@@ -34,6 +34,10 @@ jobs:
     if: vars.STAGING_READY == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    # Repo công khai: secret thử nghiệm nằm trong GitHub Environment `staging` (chỉ nhánh main được dùng), không ở secret chung của repo.
+    # `vars.STAGING_READY` và các biến `vars.*` khác vẫn ở biến chung của repo (job-level `if` không đọc được biến của Environment).
+    # Cách tạo Environment và chuyển secret: docs/van-hanh/cong-khai-repo.md, mục 8.
+    environment: staging
     permissions:
       contents: write # chỉ để đẩy tag staging-…
     steps:
