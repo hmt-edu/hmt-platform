@@ -19,4 +19,4 @@ Kế toán duyệt: kiểm lại số liệu (lệch thì chặn `HMT_DUNG_HOC_S
 
 **Chỗ tự chọn (chờ Chat):** giờ mua còn lại = nhỏ nhất của (giờ mua đã cấp − giờ đã học, giờ còn lại), không âm (coi giờ tặng dùng sau cùng nên không làm thiệt khách); tiền giữ = giờ mua còn lại × (thành tiền dòng ÷ giờ mua), không trừ phí.
 
-Chưa làm: «Dùng số dư» cho đơn mới (ghi như khoản tiền vào của đơn, đụng lõi tiền); kiểm chéo với yêu cầu Hoàn phí đang mở (bảng ở migration 216); giao diện.
+Chưa làm: «Dùng số dư» cho đơn mới (ghi như khoản tiền vào của đơn, đụng lõi tiền); kiểm chéo với yêu cầu Hoàn phí đang mở (bảng ở migration 218); giao diện.

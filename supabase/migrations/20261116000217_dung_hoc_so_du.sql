@@ -1,5 +1,5 @@
 -- Migration 217 (Code D, 16/11/2026): Dừng học giữ thành SỐ DƯ khách hàng (R-GD-16, R-TIEN-33, R-CS-02, R-CS-07, R-V2-24).
--- R-GD-16: dừng học chọn một trong hai: (a) hoàn tiền (R-TIEN-28): làm bằng yêu cầu Hoàn phí loại TOAN_BO (migration 216);
+-- R-GD-16: dừng học chọn một trong hai: (a) hoàn tiền (R-TIEN-28): làm bằng yêu cầu Hoàn phí loại TOAN_BO (migration 218);
 -- (b) giữ thành số dư khách hàng (giờ còn lại × giá sau chiết khấu, không trừ phí): bản ghi này. Giờ tặng còn lại bị huỷ. Không có «giữ nguyên giờ».
 -- Việc duyệt nằm ở bản ghi (R-V2-24): quản lý cơ sở rồi kế toán (R-CS-07). Công tắc DUNG_HOC theo cơ sở, MẶC ĐỊNH TẮT.
 -- Chưa làm: «Dùng số dư» cho đơn mới (ghi như khoản tiền vào của đơn, đụng lõi tiền: PR riêng sau khi Chat chốt cách ghi).
@@ -221,7 +221,7 @@ begin
     perform app.raise_error('HMT_DUNG_HOC_GHI_DANH_SAI', 'Ghi danh này không còn hiệu lực để dừng học.');
   end if;
   perform app.assert_catalog_code_active('STOP_REASON', p_reason_code);
-  -- Chưa kiểm chéo với yêu cầu Hoàn phí đang mở (bảng nằm ở migration 216); ghi danh sang Dừng/Hoàn phí khi duyệt nên yêu cầu thứ hai bị chặn ở bước duyệt.
+  -- Chưa kiểm chéo với yêu cầu Hoàn phí đang mở (bảng nằm ở migration 218); ghi danh sang Dừng/Hoàn phí khi duyệt nên yêu cầu thứ hai bị chặn ở bước duyệt.
   if exists (select from app.enrollment_stop where enrollment_id = e.id and status_code in ('NHAP', 'CHO_QL', 'CHO_KE_TOAN')) then
     perform app.raise_error('HMT_DUNG_HOC_DANG_MO', 'Ghi danh này đã có một yêu cầu dừng học chưa xong.');
   end if;
