@@ -2,10 +2,13 @@
 import { useMemo, useState } from 'react';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
-import { errorOf, useIntSetting } from '../../lib/db';
+import { errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatNumber } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
+import { useLeadCatalogs } from '../lead/useCatalogs';
+import { ReasonDialog } from '../../ui/Dialogs';
+import { useToast } from '../../ui/toastContext';
 import type { SortState } from '../../ui/Data';
 import { emptyTreasuryState, buildMoneyInConfig, buildReceivableConfig } from './treasuryConfig';
 import {
@@ -16,12 +19,24 @@ import {
   receivableSortParam,
 } from './treasuryFilters';
 import type { MoneyInRow, ReceivableRow } from './treasuryTypes';
-import { useMoneyInPage, useReceivablePage, useRefreshTreasury } from './useTreasuryData';
+import {
+  reverseMoneyIn,
+  useMoneyInPage,
+  useReceivablePage,
+  useRefreshTreasury,
+} from './useTreasuryData';
 
 export function MoneyInListPage() {
   const access = useAccess();
   const refresh = useRefreshTreasury();
-  const config = useMemo(() => buildMoneyInConfig(access), [access]);
+  const supabase = useDb();
+  const toast = useToast();
+  const catalogs = useLeadCatalogs();
+  // TC-09: khoản đang chọn hoàn tác; hộp thoại lý do (K08).
+  const [target, setTarget] = useState<MoneyInRow | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [reverseError, setReverseError] = useState<string | null>(null);
+  const config = useMemo(() => buildMoneyInConfig(access, setTarget), [access]);
   const pageSize = useIntSetting('list_page_size_default');
   const [state, setState] = useState<ListState>(() => emptyTreasuryState('created'));
   const [view, setView] = useState<ViewMode>('list');
@@ -67,7 +82,48 @@ export function MoneyInListPage() {
         onSortChange={setSort}
         emptyMessage={{
           title: 'Chưa có khoản tiền vào nào',
-          hint: 'Khoản tiền vào tự sinh khi Kế toán duyệt phiếu thu, không ai tạo tay. Sổ này chỉ đọc (R-TIEN-01).',
+          hint: 'Khoản tiền vào tự sinh khi Kế toán duyệt phiếu thu, không ai tạo tay. Sổ không sửa, không xoá; chỉ Kế toán hoàn tác từng khoản, có lý do (R-TIEN-01, R-TIEN-26).',
+        }}
+      />
+      <ReasonDialog
+        open={target !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setTarget(null);
+            setReverseError(null);
+          }
+        }}
+        title="Hoàn tác khoản tiền"
+        description={
+          target
+            ? `${target.code} · ${formatNumber(target.amount)} đ. Thêm một khoản âm trỏ về khoản này; giờ đã cấp tính lại theo tiền còn lại.`
+            : undefined
+        }
+        options={catalogs.options('REVERSAL_REASON').map((o) => ({
+          ...o,
+          needsNote: catalogs.requiresNote('REVERSAL_REASON', o.value),
+        }))}
+        confirmLabel="Hoàn tác"
+        cancelLabel="Giữ nguyên"
+        busy={busy}
+        error={reverseError}
+        onConfirm={(result) => {
+          if (!target) return;
+          setBusy(true);
+          setReverseError(null);
+          void reverseMoneyIn(
+            supabase,
+            target.id,
+            result.option,
+            result.note === '' ? null : result.note,
+          )
+            .then(refresh)
+            .then(() => {
+              setTarget(null);
+              toast({ title: 'Đã hoàn tác khoản tiền.' });
+            })
+            .catch((e: unknown) => setReverseError(errorOf(e).message))
+            .finally(() => setBusy(false));
         }}
       />
       {list.data && (

@@ -103,6 +103,24 @@ describe('menu CRM theo quyền', () => {
     expect(slugs(visibleMenu(CRM_MENU, approver))).toContain('viec-cho-duyet');
   });
 
+  it('mục có công tắc riêng (Yêu cầu buổi): tắt thì ẩn mục và mở thẳng báo chưa bật; bật thì thấy', () => {
+    const trainer = (features: AccessData['features']) =>
+      buildAccess(
+        data({
+          permissions: [perm('SESSION', 'XEM')],
+          features: [{ module_code: 'VAN_HANH_LOP', branch_id: 'b5', enabled: true }, ...features],
+        }),
+        { roles: ['SALE'], branchCode: 'CS5' },
+        ALL_BRANCHES,
+      );
+    const off = trainer([]);
+    expect(slugs(visibleMenu(CRM_MENU, off))).not.toContain('yeu-cau-buoi');
+    expect(checkRoute(CRM_MENU, 'yeu-cau-buoi', off).status).toBe('feature-off');
+    const on = trainer([{ module_code: 'YEU_CAU_BUOI', branch_id: 'b5', enabled: true }]);
+    expect(slugs(visibleMenu(CRM_MENU, on))).toContain('yeu-cau-buoi');
+    expect(checkRoute(CRM_MENU, 'yeu-cau-buoi', on).status).toBe('ok');
+  });
+
   it('phân hệ chưa bật ở cơ sở thì ẩn cả nhóm dù có quyền', () => {
     expect(visibleMenu(CRM_MENU, sale('CS1')).map((g) => g.id)).not.toContain('tuyen-sinh');
   });
