@@ -34,7 +34,7 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   await expect(kinds.getByRole('row')).toHaveCount(9);
   await expect(page.getByRole('button', { name: 'Nhập lớp' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Nhập ghi danh' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: 'Nhập số dư' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Nhập số dư' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Nhập phiếu test' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Tải file mẫu phụ huynh' })).toBeEnabled();
   await expectAccessible(page);
