@@ -109,7 +109,7 @@ select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enab
 select ok(jsonb_array_length(app.teacher_ticket_options() -> 'categories') > 0, 'Form: có nhóm con loại giáo viên');
 select ok(not exists (select from jsonb_array_elements(app.teacher_ticket_options() -> 'categories') c where c ->> 'code' not like 'GV\_%'), 'Form: chỉ nhóm con của Ticket giáo viên');
 select is((select count(*)::int from jsonb_array_elements(app.teacher_ticket_options() -> 'classes') k where k ->> 'id' = pg_temp.c('f')::text), 1, 'Form: có lớp tôi được phân công');
-select is((select jsonb_array_length(k -> 'students') from jsonb_array_elements(app.teacher_ticket_options() -> 'classes') k where k ->> 'id' = pg_temp.c('f')::text), 2, 'Form: hai học sinh đang học trong lớp');
+select is((select jsonb_array_length(k -> 'students') from jsonb_array_elements(app.teacher_ticket_options() -> 'classes') k where k ->> 'id' = pg_temp.c('f')::text), 3, 'Form: ba học sinh đang học trong lớp');
 
 -- ================= Tạo ticket =================
 select is(pg_temp.err($$select app.teacher_create_ticket(jsonb_build_object('category_code', 'GV_01_05', 'class_id', pg_temp.c('f'), 'student_id', pg_temp.st(4), 'title', 'Em nghỉ nhiều', 'description', 'Em nghỉ ba buổi liền'))$$),
