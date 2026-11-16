@@ -18,11 +18,11 @@ select b.code as co_so,
  order by b.code;
 
 -- ===== (c) Tham số ảnh hưởng việc nạp =====
--- import_max_rows: số dòng tối đa mỗi lần nạp (1 đến 5000). opening_balance_date: ngày chốt số dư đầu kỳ.
+-- import_max_rows: số dòng tối đa mỗi lần nạp (1 đến 5000; khuyến nghị 300, vì hạn 8 giây của máy chủ, xem nap-du-lieu.md). opening_balance_date: ngày chốt số dư đầu kỳ.
 -- session_done_requires_review: giai đoạn đầu phải là false (Q-198).
 select d.key as tham_so, d.value as gia_tri_chung, d.min_value, d.max_value,
        case d.key
-         when 'import_max_rows' then d.value::numeric between d.min_value and d.max_value
+         when 'import_max_rows' then d.value::numeric between d.min_value and 300 -- allow-number: ngưỡng khuyến nghị 300 dòng mỗi lần nạp
          when 'session_done_requires_review' then d.value = 'false'
          else d.value is not null
        end as dat
