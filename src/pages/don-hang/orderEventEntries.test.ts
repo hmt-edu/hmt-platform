@@ -29,6 +29,19 @@ function firstEvent(entries: ReturnType<typeof orderEventEntries>) {
   return first;
 }
 
+describe('BH-09: sự kiện CHO_HOC_TRUOC có mục dòng thời gian (lỗi cũ: nhánh thiếu làm trang đơn lỗi)', () => {
+  it('bật cho học trước: tiêu đề riêng, lời nhật ký của máy chủ hiện thành dòng', () => {
+    const entries = orderEventEntries(
+      [ev(1, 'CHO_HOC_TRUOC', { note: 'Bật cho học trước, đóng tiền sau. thử' })],
+      name,
+    );
+    expect(entries).toHaveLength(1);
+    const entry = firstEvent(entries);
+    expect(entry.title).toBe('Cho học trước, đóng tiền sau');
+    expect(entry.lines).toEqual(['Bật cho học trước, đóng tiền sau. thử']);
+  });
+});
+
 describe('Q-145: nhật ký Tạo, Sửa ghi dòng Ưu đãi linh hoạt', () => {
   it('Tạo có ưu đãi linh hoạt: các dòng hiện dưới tiêu đề "Tạo đơn hàng", đơn từ báo giá kèm mã báo giá', () => {
     const entry = firstEvent(

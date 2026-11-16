@@ -100,7 +100,8 @@ export type OrderInstallment = {
 
 export type OrderEvent = {
   seq: number;
-  event_code: 'TAO' | 'TRINH' | 'DUYET' | 'TU_CHOI' | 'HUY' | 'SUA' | 'CANH_BAO_XEP_LOP';
+  event_code:
+    'TAO' | 'TRINH' | 'DUYET' | 'TU_CHOI' | 'HUY' | 'SUA' | 'CANH_BAO_XEP_LOP' | 'CHO_HOC_TRUOC';
   from_status: string | null;
   to_status: string | null;
   reason_code: string | null;
