@@ -122,7 +122,7 @@ describe('màn Nhập: đọc file CSV theo loại', () => {
     ]);
   });
 
-  it('thứ tự loại nạp: Người dùng, Cơ hội, Phụ huynh, Học sinh, Lớp, Ghi danh', () => {
+  it('thứ tự loại nạp: Người dùng, Cơ hội, Phụ huynh, Học sinh, Lớp, Ghi danh, Phiếu test', () => {
     expect(IMPORT_KINDS.map((k) => k.kind)).toEqual([
       'NGUOI_DUNG',
       'CO_HOI',
@@ -130,6 +130,7 @@ describe('màn Nhập: đọc file CSV theo loại', () => {
       'HOC_SINH',
       'LOP',
       'GHI_DANH',
+      'PHIEU_TEST',
     ]);
   });
 });
