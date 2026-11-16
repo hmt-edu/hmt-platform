@@ -90,6 +90,19 @@ const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
+const TicketRecordPage = lazyScreen(
+  () => import('../pages/ticket/TicketRecordPage'),
+  'TicketRecordPage',
+);
+const TicketCreatePage = lazyScreen(
+  () => import('../pages/ticket/TicketCreatePage'),
+  'TicketCreatePage',
+);
+const TicketSlaPage = lazyScreen(() => import('../pages/ticket/TicketSlaPage'), 'TicketSlaPage');
+const TicketCategoriesPage = lazyScreen(
+  () => import('../pages/ticket/TicketCategoriesPage'),
+  'TicketCategoriesPage',
+);
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -166,6 +179,10 @@ const ImportDataPage = lazyScreen(
   'ImportDataPage',
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
+const PermissionMatrixPage = lazyScreen(
+  () => import('../pages/ma-tran/PermissionMatrixPage'),
+  'PermissionMatrixPage',
+);
 const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
 const DiscountPolicyPage = lazyScreen(
   () => import('../pages/chiet-khau/DiscountPolicyPage'),
@@ -244,6 +261,14 @@ const DayAttendancePage = lazyScreen(
 const ExpiringListPage = lazyScreen(
   () => import('../pages/sap-het-gio/ExpiringListPage'),
   'ExpiringListPage',
+);
+const TeacherTicketsPage = lazyScreen(
+  () => import('../pages/gv/TeacherTicketsPage'),
+  'TeacherTicketsPage',
+);
+const TeacherTicketCreatePage = lazyScreen(
+  () => import('../pages/gv/TeacherTicketCreatePage'),
+  'TeacherTicketCreatePage',
 );
 const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
@@ -410,6 +435,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="ticket">
                 <TicketListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'ticket/moi',
+            element: (
+              <GatedCrmEntry slug="ticket">
+                <TicketCreatePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'ticket/:id',
+            element: (
+              <GatedCrmEntry slug="ticket">
+                <TicketRecordPage />
               </GatedCrmEntry>
             ),
           },
@@ -606,6 +647,22 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'cau-hinh/nhom-ticket',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/nhom-ticket">
+                <TicketCategoriesPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/sla-ticket',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/sla-ticket">
+                <TicketSlaPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'cau-hinh/goi-ban',
             element: (
               <GatedCrmEntry slug="cau-hinh/goi-ban">
@@ -626,6 +683,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/danh-muc">
                 <CatalogPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/ma-tran-quyen',
+            element: (
+              <GatedCrmEntry slug="quan-tri/ma-tran-quyen">
+                <PermissionMatrixPage />
               </GatedCrmEntry>
             ),
           },
@@ -783,6 +848,8 @@ export const routes: RouteObject[] = [
           { path: 'lop/:classId', element: <TeacherClassPage /> },
           { path: 'lop/:classId/hoc-sinh/:studentId', element: <TeacherStudentPage /> },
           { path: 'viec-can-lam', element: <TeacherTodoPage /> },
+          { path: 'ticket', element: <TeacherTicketsPage /> },
+          { path: 'ticket/tao', element: <TeacherTicketCreatePage /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },
           { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
           { path: 'buoi/:sessionId/cham-btvn', element: <HomeworkGradingPage /> },

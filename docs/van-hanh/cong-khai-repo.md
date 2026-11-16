@@ -49,3 +49,35 @@ Dọn trước khi công khai (cách A): không viết lại lịch sử git; ch
 
 - `deploy/` là bản chép của repo triển khai riêng. Vẫn còn tham chiếu: bộ lọc CI (`scripts/ci-filter.ts`, `scripts/ci-changes.*`) và bài kiểm của chúng, `paths-ignore` của `deploy-staging.yml`, `format:check` đọc thư mục này, và nhiều tài liệu dẫn tới `deploy/README.md`. Vì có tham chiếu nên **giữ nguyên, chỉ làm sạch tên** (đã làm ở Dọn công khai 1). Nội dung chỉ có tên secret và cách làm, không có giá trị bí mật. Nếu sau này muốn gỡ hẳn thì phải sửa bộ lọc CI, bài kiểm và các liên kết tài liệu cùng lúc.
 - `.vanphong/du-an.yaml` là tệp cấu hình mà hệ thống điều phối nạp từ repo (luật gộp, tên job CI bắt buộc). Danh sách tác giả được phép gộp trong tệp này đối chiếu với tên tác giả commit; tên tác giả đã hiện sẵn trong lịch sử git công khai, và đổi sang nhãn sẽ làm cổng gộp từ chối. Nên **giữ nguyên**; chỉ đổi khi hệ thống điều phối hỗ trợ đọc danh sách từ biến.
+
+## 8. Environment `staging` và `preview` cho secret (anh làm trên trình duyệt, một lần)
+
+Mục đích: secret chung của repo mà PR cùng repo nào cũng đọc được (kể cả khi PR sửa workflow). Secret trong **Environment** chỉ job khai `environment:` đó mới đọc được, và Environment giới hạn nhánh, có thể bắt người duyệt. Hai PR đã đổi workflow: `ci.yml` (job `preview` dùng Environment `preview`, PR #49) và `deploy-staging.yml` (job `deploy-staging` dùng Environment `staging`, PR này). **Làm các bước dưới SAU khi PR này gộp.** Chưa làm thì không sao: khi Environment chưa có secret, workflow vẫn đọc secret chung của repo như cũ (GitHub tự tạo Environment trống lần đầu job chạy); secret chung chỉ nên xoá ở bước 8.3, sau cùng.
+
+### 8.1. Tạo Environment `staging`
+1. Repo > **Settings > Environments > New environment**, tên đúng là `staging` (chữ thường).
+2. **Deployment branches and tags** > chọn **Selected branches and tags** > thêm quy tắc `main`. (Chỉ nhánh `main` dùng được secret của staging.)
+3. Không bắt Required reviewers cho `staging` (deploy chạy tự động khi gộp vào `main`). Nếu anh muốn duyệt tay từng lượt deploy, bật **Required reviewers** và chọn tài khoản của anh; khi đó mỗi lần gộp phải bấm Approve.
+4. Mục **Environment secrets** > **Add secret**, thêm đúng bảy secret sau (tên đúng từng chữ; giá trị lấy từ secret chung hiện có, dán lại một lần):
+   - `STAGING_DB_URL`
+   - `STAGING_SUPABASE_SECRET_KEY`
+   - `STAGING_TURNSTILE_SECRET`
+   - `STAGING_SEED_PASSWORD`
+   - `SUPABASE_ACCESS_TOKEN`
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+   (Chat ghi «5 secret STAGING_* + SUPABASE_ACCESS_TOKEN»; trong workflow thật có bốn `STAGING_*`, cộng `SUPABASE_ACCESS_TOKEN`, cộng hai khoá Cloudflare vì bước đưa bản thử nghiệm lên Cloudflare Pages cũng cần.)
+5. **Không** thêm biến `STAGING_READY` vào Environment: giữ nó ở **Settings > Secrets and variables > Actions > Variables** (biến chung). Các biến `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_TURNSTILE_SITE_KEY`, `PROD_PROJECT_REF`, `PROD_CLOUDFLARE_ACCOUNT_ID` cũng giữ ở biến chung (không bí mật).
+
+### 8.2. Tạo Environment `preview` (cho bản xem trước của PR)
+1. **New environment**, tên `preview`.
+2. **Required reviewers**: bật, chọn tài khoản của anh (mỗi lần bản xem trước chạy phải bấm Approve). **Deployment branches**: không giới hạn (PR chạy từ nhánh bất kỳ trong repo), nhưng nhờ Required reviewers nên không tự chạy.
+3. **Environment secrets**: thêm `CLOUDFLARE_API_TOKEN` và `CLOUDFLARE_ACCOUNT_ID` (cùng giá trị như ở `staging`).
+
+### 8.3. Xoá secret chung (làm CUỐI CÙNG, sau khi chạy thử xong)
+1. Gộp PR này, để một lượt «Deploy staging» chạy xanh (Actions). Mở PR có nhãn `preview`, bấm Approve, xem bản xem trước chạy xanh.
+2. Chỉ khi cả hai xanh: **Settings > Secrets and variables > Actions > Repository secrets** > xoá bảy secret tương ứng ở trên. Nếu còn ở đây thì mọi PR cùng repo vẫn đọc được: mục đích của Environment mất.
+3. Lỗi thường gặp: lượt deploy báo thiếu cấu hình (đã thêm vào Environment chưa, đúng tên chưa); lượt bị chặn «Waiting for review» (Environment đang bắt duyệt); nhánh không phải `main` bị từ chối (đúng ý).
+
+### 8.4. Quay lại nếu hỏng
+Đổi lại bằng PR bỏ dòng `environment: staging` (hoặc `preview`) trong workflow và thêm lại secret ở mức repo. Secret không bị mất khi xoá Environment nếu anh đã giữ giá trị ở nơi an toàn của anh; đừng xoá secret chung trước khi 8.3 bước 1 xanh.

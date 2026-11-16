@@ -34,6 +34,10 @@ jobs:
     if: vars.STAGING_READY == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    # Repo công khai: secret thử nghiệm nằm trong GitHub Environment `staging` (chỉ nhánh main được dùng), không ở secret chung của repo.
+    # `vars.STAGING_READY` và các biến `vars.*` khác vẫn ở biến chung của repo (job-level `if` không đọc được biến của Environment).
+    # Cách tạo Environment và chuyển secret: docs/van-hanh/cong-khai-repo.md, mục 8.
+    environment: staging
     permissions:
       contents: write # chỉ để đẩy tag staging-…
     steps:
@@ -83,7 +87,10 @@ jobs:
       - name: Áp migration lên hmt-staging
         env:
           STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
-        run: npx supabase db push --db-url "$STAGING_DB_URL" --yes
+        # --include-all: áp cả migration có số THẤP hơn bản đã áp (PR gộp song song nên số không luôn tăng theo thời điểm gộp). Thiếu cờ này, db push dừng với
+        # lỗi «file migration chèn trước bản đã áp» và staging kẹt. Rủi ro: một migration chèn trước chạy khi migration sau nó đã áp; PR có migration vẫn nên
+        # dùng số lớn hơn mọi số trên main (Tester kiểm), cờ này chỉ là lưới an toàn. Bản chạy thật (hmt-deploy) cần cùng cờ, xem deploy/.
+        run: npx supabase db push --db-url "$STAGING_DB_URL" --include-all --yes
 
       # Dữ liệu giả CHỈ cho thử nghiệm (seed.sql chạy lại được, không nhân đôi).
       # Bản chạy thật (hmt-deploy) không bao giờ chạy bước này.
