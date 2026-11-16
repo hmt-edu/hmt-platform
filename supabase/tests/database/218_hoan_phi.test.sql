@@ -1,4 +1,4 @@
--- Migration 216 (Code D): hoàn phí và phiếu chi. Luật: R-TIEN-28, R-TIEN-31, R-TIEN-34, R-CS-07, R-V2-24. Dữ liệu giả.
+-- Migration 218 (Code D): hoàn phí và phiếu chi. Luật: R-TIEN-28, R-TIEN-31, R-TIEN-34, R-CS-07, R-V2-24. Dữ liệu giả.
 -- Dựng đơn thật (cơ hội → đơn → phiếu thu → kế toán duyệt) như 064; hai hàm cấp giờ là nội bộ nên gọi bằng quyền chủ.
 -- Đảo khoản (R-TIEN-26) chưa có ở main nên chưa kiểm phần giờ giảm theo tiền đảo.
 begin;
