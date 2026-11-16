@@ -104,6 +104,8 @@ const TicketCategoriesPage = lazyScreen(
   'TicketCategoriesPage',
 );
 const BranchRoomPage = lazyScreen(() => import('../pages/co-so/BranchRoomPage'), 'BranchRoomPage');
+const TaskListPage = lazyScreen(() => import('../pages/phieu/TaskListPage'), 'TaskListPage');
+const TaskRecordPage = lazyScreen(() => import('../pages/phieu/TaskRecordPage'), 'TaskRecordPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -437,6 +439,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="ticket">
                 <TicketListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-nghiep-vu',
+            element: (
+              <GatedCrmEntry slug="phieu-nghiep-vu">
+                <TaskListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-nghiep-vu/:id',
+            element: (
+              <GatedCrmEntry slug="phieu-nghiep-vu">
+                <TaskRecordPage />
               </GatedCrmEntry>
             ),
           },
