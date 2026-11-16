@@ -207,6 +207,20 @@ select is((select completion_late from app.class_session where id = pg_temp.s('p
 select is((select completion_late_hours from app.class_session where id = pg_temp.s('p', 2)), 0.00::numeric, 'Dấu: Đúng hạn thì giờ trễ 0');
 select is(app.session_overview(pg_temp.s('p', 2)) -> 'completion' ->> 'late', 'false', 'GV-04: session_overview trả dấu Đúng hạn của buổi Done');
 select is(app.session_overview(pg_temp.s('p', 1)) -> 'completion' ->> 'late', 'true', 'GV-04: session_overview trả dấu Trễ hạn của buổi Done muộn');
+-- GV-16 (migration 138): app.teacher_my_hours, giờ dạy tính lương theo tháng (R-GV-14). Buổi 1 (Done, Trễ hạn) và buổi 2 (Done, Đúng hạn, 1,5 giờ) của giáo viên gv1.
+select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
+select is((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'rows' -> 0 ->> 'session_id'), pg_temp.s('p', 2)::text, 'GV-16: buổi Done gần nhất của tháng đứng đầu bảng');
+select is((select (r ->> 'hours')::numeric from jsonb_array_elements(app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'rows') r where r ->> 'session_id' = pg_temp.s('p', 2)::text), 1.50::numeric, 'GV-16: giờ dạy theo thời lượng buổi (1,5 giờ)');
+select is((select r ->> 'late' from jsonb_array_elements(app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'rows') r where r ->> 'session_id' = pg_temp.s('p', 2)::text), 'false', 'GV-16: buổi Đúng hạn không tính buổi trễ');
+select ok((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 1))) -> 'summary' ->> 'late_sessions')::int >= 1, 'GV-16: buổi Done muộn tính vào Buổi trễ hạn');
+select ok((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 1))) -> 'summary' ->> 'late_hours')::numeric > 0, 'GV-16: giờ trễ lớn hơn 0');
+select ok((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 1))) -> 'summary' ->> 'hours')::numeric >= 1.5, 'GV-16: tổng giờ gồm buổi Done của tháng');
+select is((app.teacher_my_hours(date '2000-01-15') -> 'summary' ->> 'sessions')::int, 0, 'GV-16: tháng không có buổi Done thì 0 buổi, 0 giờ');
+select is(app.teacher_my_hours(date '2000-01-15') ->> 'month', '2000-01-01', 'GV-16: tháng đưa về mùng 1');
+select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
+select is((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'summary' ->> 'sessions')::int, 0, 'GV-16: chỉ thấy buổi của chính mình (R-GV-08): giáo viên khác không có giờ của gv1');
+select is(has_function_privilege('anon', 'app.teacher_my_hours(date)', 'execute'), false, 'GV-16: người chưa đăng nhập không gọi được hàm');
+select pg_temp.claims(pg_temp.uid('gv1'), 'aal1'); -- trả lại vai trò đang dùng cho các bước sau
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 3))$$);
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 3) || '''::uuid)')$$), 'HMT_QUY_GIO_AM', 'Chặn: Done làm quỹ giờ âm (R-GD-18)');
 select is((select status_code from app.class_session where id = pg_temp.s('p', 3)), 'DA_CHOT', 'Buổi vẫn Đã chốt khi Done bị chặn');

@@ -73,3 +73,28 @@ Loại nạp `CO_HOI` của `app.import_records`. Mỗi dòng tạo **ba thứ t
 - Bước kiểm `import_users_resolve` coi dòng là **TRUNG** (bỏ qua, báo) khi tên đăng nhập đã có ở cột `username` (không phân biệt hoa thường) hoặc ở `legacy_ref` của một tài khoản nhân sự. Nhờ vậy Admin đầu tiên tạo bằng Bootstrap rồi đặt tên đăng nhập bằng `set_username` không bị nạp thêm tài khoản thứ hai. Ràng buộc duy nhất của `username` (migration 074) vẫn là chốt cuối.
 - Quản lý trực tiếp (`quan_ly`) tra theo cả `username` lẫn `legacy_ref`.
 - File nạp 108 người: bộ chuyển loại mọi người trạng thái Đã nghỉ (Q-04, Q-26; người Nghỉ phép vẫn nạp) và dòng ADMIN của anh Trường, tên đăng nhập `truongcx` (Q-24, Admin đầu tiên tạo bằng Bootstrap trên bản chạy thật).
+
+## Ghi danh: vá và chặn cả loại (Code B, 15/11/2026, migration 150)
+Hàm nạp chung của các loại đào tạo là `app.import_training_records(loại, hàng, nạp thật, tên file)` (loại `LOP`, `GHI_DANH`, `BUOI_HOC`, `DIEM_DANH`). Kiểm thử: `supabase/tests/database/150_nap_ghi_danh_va.test.sql` và `106_...`.
+- **Chặn cả loại ngay trong hàm (R-V2-30):** nạp thật `GHI_DANH` còn một dòng lỗi thì không ghi dòng nào; kết quả `mode = CHAN_CA_LOAI`, `imported = 0`; nhật ký nạp ghi lần này với 0 dòng nạp. Trước đây chỉ nút Nạp ở giao diện bị khoá.
+- `tinh_trang_moi` trống: **Chờ xếp lớp** kèm cảnh báo. "Đã xếp lớp" (có trong danh mục, mã `DA_XEP_LOP`) được **đổi sang trạng thái cuối** vì ghi danh nạp thẳng trạng thái đang học: **Đang học** nếu có `ngay_vao_lop`, không thì **Chờ xếp lớp**, kèm cảnh báo (Chat chốt H1, 15/11).
+- `gio_con_lai` âm: lỗi `HMT_NAP_GIO_AM` (Q-253).
+- `gio_con_lai` bằng 0: vẫn sinh dòng "Số dư đầu kỳ" 0 giờ (Q-177). Ràng buộc sổ giờ nới chỉ cho loại `DAU_KY`; mọi loại dòng khác vẫn cấm 0 giờ.
+- Cột script không dùng: `sdt_ph`, `ho_ten_hs`, `mon`, `loai_lop`, `hinh_thuc` (Offline/Online, chưa có chỗ lưu), `tinh_trang_cu`, `ngay_chot`, `lich_hoc`.
+
+## Phiếu test (tab `06_PHIEUTEST`, migration 151)
+Loại `PHIEU_TEST` của `app.import_training_records`. Nhóm CRM: dòng lỗi không chặn dòng đúng; trùng `ma_cu` thì TRUNG (lưu ở `legacy_ref` của phiếu). Kiểm thử: `151_nap_phieu_test.test.sql`.
+- Cột nhận: `ma_cu`, `sdt_ph`, `sdt_2`, `ngay_test` (yyyy-mm-dd), `gio_test` (hh:mm, giờ Việt Nam), `ho_ten_hs`, `khoi`, `mon` (trống là Toán), `diem` (dấu phẩy được), `trang_thai_phieu`, `ly_do_huy`, `ghi_chu`. Cột khác bỏ qua.
+- Phiếu gắn vào **cơ hội có mã cũ = SĐT** (số chính, không thấy thì `sdt_2`) và vào **em trong danh sách em của cơ hội** (tên chuẩn hoá khớp `ho_ten_hs`, cột `prospect_student_id` bắt buộc). Không thấy cơ hội: LỖI `HMT_NAP_CO_HOI_CHUA_CO`; không thấy em: `HMT_NAP_EM_CHUA_CO`; chưa có hồ sơ học sinh cùng phụ huynh và tên: `HMT_NAP_HOC_SINH_CHUA_CO`. **Không tự tạo cơ hội từ phiếu** (Chat chốt 15/11, H7): dòng lỗi báo số dòng, các dòng khác vẫn nạp.
+- Trạng thái (R-V2-31): Hoàn thành **có điểm** → danh mục mới `COMPLETED_LEGACY` "Hoàn thành (dữ liệu cũ)" (trạng thái Ngừng nên Kanban không thêm cột và người dùng không chọn được; phiếu này không hiện ở Kanban, vẫn hiện ở danh sách và hồ sơ), giữ điểm, không đặt trình độ hay xếp loại; Hoàn thành không điểm → Chờ giáo viên chấm; Huỷ cần `ly_do_huy` có trong danh mục lý do huỷ test (`HMT_NAP_LY_DO_HUY_SAI`); Nháp; trống → Nháp kèm cảnh báo. Điểm ngoài 0 đến 10 và giờ sai dạng bị chặn.
+- Hình thức test `OFFLINE` và cấp độ đề `CO_BAN` chỉ là giá trị giữ chỗ vì hai cột bắt buộc, script không có hai thông tin này (chờ anh duyệt hoặc thêm mục "Không rõ", ghi ở VIEC-ANH).
+- Ghi thẳng bảng: cố ý bỏ qua luật "giờ test ở tương lai" và không tính lại nhóm con L5.
+
+## Báo cáo đối soát sau nạp (migration 153)
+`app.import_reconciliation_report(mã cơ sở)` (Admin; để trống là mọi cơ sở) trả `parents`, `students`, `enrollments_active`, `classes`, `hours_left`, `opportunities_by_stage` (L1 đến L8), `opportunities_total`. Chỉ đếm hồ sơ nạp từ dữ liệu cũ (có `legacy_ref`); không có tên hay số điện thoại. Dùng để so với tab `DOI_SOAT` của script. Tổng công nợ và tiền thu thừa thêm ở PR Số dư tiền. Kiểm thử: `153_bao_cao_doi_soat_sau_nap.test.sql`.
+
+## File mẫu bẩn
+`docs/van-hanh/mau/HMT5_FILE_MAU_NAP_DU_LIEU_GIA_BAN.xlsx`: cùng cấu trúc file mẫu, thêm dòng lỗi cố ý (SĐT thiếu số 0, ngày lẫn định dạng, trùng SĐT, cơ sở viết khác, giờ không khớp, giờ âm...). Tab `KET_QUA_DU_KIEN` ghi kết quả hàm phải báo cho từng dòng. Chỉ dữ liệu giả (SĐT 0900 000 xxx). Dùng cho diễn tập T5.
+
+## Cơ hội: cột `nguon_goc` (migration 155, Chat chốt 15/11)
+Cột `nguon_goc` của script là chữ tự do ("Page T9", "BGĐ"), không phải tên loại nguồn trong danh mục. Hàm Cơ hội: nếu khớp tên (hoặc mã) loại nguồn thì dùng; "BGĐ" hoặc "Ban Giám Đốc" thành loại Ban Giám Đốc; mọi giá trị khác, kể cả trống, thành loại **Marketing kèm cảnh báo** "Loại nguồn suy mặc định" (không phải lỗi). Chữ gốc ghi vào ghi chú của cơ hội ("Nguồn gốc (chữ gốc): ..."), không thêm cột. Báo cáo Xem trước và Nạp có `summary.source_type_defaulted` (số dòng suy loại nguồn). Cột `nguon` (nguồn) vẫn phải thuộc loại; sai thì LỖI `HMT_NGUON_SAI`. Kiểm thử: `155_nap_co_hoi_nguon_goc.test.sql`. Anh Trường có thể phản đối quyết định này.
