@@ -26,7 +26,7 @@ import {
   type TaskDraft,
 } from '../phieu/taskForm';
 import { createTicketTask, useTaskFields } from '../phieu/useTaskCreate';
-import { TASK_STATUS_LABEL, TASK_TYPE_LABEL } from '../phieu/phieuTypes';
+import { TASK_STATUS_LABEL, TASK_TYPE_LABEL } from '../phieu/taskLabels';
 import { groupsOf, subgroupsOf } from './ticketCreate';
 import { ticketTimeline } from './ticketTimeline';
 import {
