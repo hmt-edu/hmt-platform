@@ -3,7 +3,7 @@
 // Giao ticket (chọn đội, người phụ trách) và tạo mới làm ở lát sau: danh sách người giao cần mở rộng hàm máy chủ.
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, FORBIDDEN_CODE, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
@@ -19,6 +19,14 @@ import { OptionalSelect } from '../../ui/OptionalSelect';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import {
+  EMPTY_TASK_DRAFT,
+  buildTaskPayload,
+  validateTaskDraft,
+  type TaskDraft,
+} from '../phieu/taskForm';
+import { createTicketTask, useTaskFields } from '../phieu/useTaskCreate';
+import { TASK_STATUS_LABEL, TASK_TYPE_LABEL } from '../phieu/taskLabels';
 import { groupsOf, subgroupsOf } from './ticketCreate';
 import { ticketTimeline } from './ticketTimeline';
 import {
@@ -59,11 +67,16 @@ export function TicketRecordPage() {
   const categories = useTicketCategories();
   const [reclassOpen, setReclassOpen] = useState(false);
   const [reclass, setReclass] = useState({ type: '', group: '', category: '', priority: '' });
+  const navigate = useNavigate();
+  const [taskOpen, setTaskOpen] = useState(false);
+  const [taskDraft, setTaskDraft] = useState<TaskDraft>(EMPTY_TASK_DRAFT);
+  const [taskShow, setTaskShow] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [team, setTeam] = useState('');
   const [assignee, setAssignee] = useState('');
 
   const ticket = record.data?.ticket;
+  const taskFields = useTaskFields(taskOpen);
   const assignees = useTicketAssignees(ticket?.branch_id ?? null, assignOpen || complaintOpen);
   useCrumbTail(ticket?.code ?? '');
   const statusName = (code: string | null) => catalogs.name('TICKET_STATUS', code) ?? code ?? '';
@@ -208,6 +221,36 @@ export function TicketRecordPage() {
     }
   };
 
+  const openTask = () => {
+    setTaskDraft(EMPTY_TASK_DRAFT);
+    setTaskShow(false);
+    setError(null);
+    setTaskOpen(true);
+  };
+
+  const submitTask = async () => {
+    setTaskShow(true);
+    const found = validateTaskDraft(taskDraft, taskFields.data ?? [], ticket.student_name !== null);
+    if (Object.keys(found).length > 0) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const created = await createTicketTask(supabase, {
+        ticketId: ticket.id,
+        type: ticket.business_type ?? '',
+        reason: taskDraft.reason.trim(),
+        payload: buildTaskPayload(taskDraft, taskFields.data ?? []),
+      });
+      setTaskOpen(false);
+      toast({ tone: 'success', title: 'Đã tạo phiếu ở bước Nháp.' });
+      void navigate(`/crm/phieu-nghiep-vu/${created.id}`);
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const openAssign = () => {
     setTeam(ticket.team_code ?? '');
     setAssignee('');
@@ -259,6 +302,10 @@ export function TicketRecordPage() {
                 Giao ticket
               </Button>
               {ticket.ticket_type !== 'GV' && <Button onClick={openReclass}>Phân loại lại</Button>}
+              {ticket.business_type === 'CAP_NHAT_HO_SO' &&
+                !(record.data?.tasks ?? []).some((k) =>
+                  ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(k.status_code),
+                ) && <Button onClick={openTask}>Tạo phiếu</Button>}
             </>
           ) : undefined
         }
@@ -373,6 +420,23 @@ export function TicketRecordPage() {
             )}
           </div>
         )}
+        {(record.data?.tasks.length ?? 0) > 0 && (
+          <div className="mt-6">
+            <DetailSection title={`Phiếu nghiệp vụ (${record.data?.tasks.length ?? 0})`}>
+              <ul className="flex flex-col gap-1">
+                {record.data?.tasks.map((k) => (
+                  <li key={k.id}>
+                    <Link className="text-link underline" to={`/crm/phieu-nghiep-vu/${k.id}`}>
+                      {k.code}
+                    </Link>{' '}
+                    {TASK_TYPE_LABEL[k.task_type] ?? k.task_type} ·{' '}
+                    {TASK_STATUS_LABEL[k.status_code] ?? k.status_code}
+                  </li>
+                ))}
+              </ul>
+            </DetailSection>
+          </div>
+        )}
         {(record.data?.children.length ?? 0) > 0 && (
           <div className="mt-6">
             <DetailSection title={`Ticket liên quan (${record.data?.children.length ?? 0})`}>
@@ -394,6 +458,80 @@ export function TicketRecordPage() {
           </div>
         )}
       </RecordDetail>
+      <FormDialog
+        open={taskOpen}
+        onOpenChange={setTaskOpen}
+        title="Tạo phiếu Cập nhật hồ sơ"
+        subtitle={ticket.code}
+        confirmLabel="Tạo phiếu"
+        canSubmit={
+          !taskShow ||
+          Object.keys(
+            validateTaskDraft(taskDraft, taskFields.data ?? [], ticket.student_name !== null),
+          ).length === 0
+        }
+        busy={busy}
+        error={error}
+        onSubmit={() => void submitTask()}
+      >
+        <OptionalSelect
+          label="Hồ sơ cần sửa"
+          value={taskDraft.entity}
+          onChange={(v) =>
+            setTaskDraft((d) => ({ ...d, entity: v === 'PARENT' ? 'PARENT' : 'STUDENT' }))
+          }
+          options={[
+            { value: 'STUDENT', label: 'Học sinh' },
+            { value: 'PARENT', label: 'Phụ huynh' },
+          ]}
+          placeholder="Chọn hồ sơ"
+        />
+        {(taskFields.data ?? [])
+          .filter((f) => f.entity === taskDraft.entity)
+          .map((f) => (
+            <label key={f.field_code} className="flex flex-col gap-1">
+              <span className="text-caption font-semibold text-fg-label">
+                {f.label} (giá trị mới)
+              </span>
+              <input
+                aria-label={f.label}
+                value={taskDraft.values[f.field_code] ?? ''}
+                onChange={(e) =>
+                  setTaskDraft((d) => ({
+                    ...d,
+                    values: { ...d.values, [f.field_code]: e.target.value },
+                  }))
+                }
+                className={INPUT_CLASS}
+              />
+            </label>
+          ))}
+        {taskShow &&
+          validateTaskDraft(taskDraft, taskFields.data ?? [], ticket.student_name !== null)
+            .values && (
+            <p className="text-caption text-on-danger-subtle">
+              {
+                validateTaskDraft(taskDraft, taskFields.data ?? [], ticket.student_name !== null)
+                  .values
+              }
+            </p>
+          )}
+        <TextAreaField
+          label="Lý do"
+          required
+          value={taskDraft.reason}
+          error={
+            taskShow
+              ? validateTaskDraft(taskDraft, taskFields.data ?? [], ticket.student_name !== null)
+                  .reason
+              : null
+          }
+          onChange={(e) => setTaskDraft((d) => ({ ...d, reason: e.target.value }))}
+        />
+        <p className="text-caption text-fg-muted">
+          Ô để trống là giữ nguyên. Phiếu tạo ở bước Nháp; trình duyệt ở màn Phiếu nghiệp vụ.
+        </p>
+      </FormDialog>
       <FormDialog
         open={reclassOpen}
         onOpenChange={setReclassOpen}
