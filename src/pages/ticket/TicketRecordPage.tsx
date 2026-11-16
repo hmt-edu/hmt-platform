@@ -19,11 +19,14 @@ import { OptionalSelect } from '../../ui/OptionalSelect';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import { groupsOf, subgroupsOf } from './ticketCreate';
 import { ticketTimeline } from './ticketTimeline';
 import {
   addTicketNote,
   assignTicket,
   changeTicketStatus,
+  reclassifyTicket,
+  useTicketCategories,
   useTicketAssignees,
   updateTicketComplaint,
   useTicketRecord,
@@ -53,6 +56,9 @@ export function TicketRecordPage() {
     cause: '',
     compensation: '',
   });
+  const categories = useTicketCategories();
+  const [reclassOpen, setReclassOpen] = useState(false);
+  const [reclass, setReclass] = useState({ type: '', group: '', category: '', priority: '' });
   const [assignOpen, setAssignOpen] = useState(false);
   const [team, setTeam] = useState('');
   const [assignee, setAssignee] = useState('');
@@ -164,6 +170,44 @@ export function TicketRecordPage() {
     }
   };
 
+  const openReclass = () => {
+    const all = categories.data ?? [];
+    const current = all.find((c) => c.code === ticket.category_code);
+    setReclass({
+      type: ticket.ticket_type,
+      group: current?.parent_code ?? '',
+      category: ticket.category_code,
+      priority: ticket.priority_code,
+    });
+    setError(null);
+    setReclassOpen(true);
+  };
+
+  const submitReclass = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const typeChanged = reclass.type !== ticket.ticket_type;
+      await reclassifyTicket(supabase, {
+        id: ticket.id,
+        ...(typeChanged && { type: reclass.type }),
+        ...((typeChanged || reclass.category !== ticket.category_code) && {
+          category: reclass.category,
+        }),
+        // Đổi loại đặt lại mức độ theo nhóm con mới; chỉ đổi riêng khi người dùng chọn khác và không đổi loại.
+        ...(!typeChanged &&
+          reclass.priority !== ticket.priority_code && { priority: reclass.priority }),
+      });
+      setReclassOpen(false);
+      toast({ tone: 'success', title: 'Đã cập nhật phân loại ticket.' });
+      await refresh();
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const openAssign = () => {
     setTeam(ticket.team_code ?? '');
     setAssignee('');
@@ -210,9 +254,12 @@ export function TicketRecordPage() {
         onRefresh={() => void refresh()}
         headerActions={
           canEdit && !closed ? (
-            <Button icon="user" onClick={openAssign}>
-              Giao ticket
-            </Button>
+            <>
+              <Button icon="user" onClick={openAssign}>
+                Giao ticket
+              </Button>
+              {ticket.ticket_type !== 'GV' && <Button onClick={openReclass}>Phân loại lại</Button>}
+            </>
           ) : undefined
         }
         stage={{
@@ -347,6 +394,65 @@ export function TicketRecordPage() {
           </div>
         )}
       </RecordDetail>
+      <FormDialog
+        open={reclassOpen}
+        onOpenChange={setReclassOpen}
+        title="Phân loại lại ticket"
+        subtitle={ticket.code}
+        confirmLabel="Lưu"
+        canSubmit={reclass.category !== ''}
+        busy={busy}
+        error={error}
+        onSubmit={() => void submitReclass()}
+      >
+        <OptionalSelect
+          label="Loại"
+          value={reclass.type}
+          onChange={(v) => setReclass((r) => ({ ...r, type: v, group: '', category: '' }))}
+          options={
+            ['DN', 'KN'].includes(ticket.ticket_type) &&
+            ['MOI', 'DA_GIAO'].includes(ticket.status_code)
+              ? [
+                  { value: 'DN', label: 'Đề nghị' },
+                  { value: 'KN', label: 'Khiếu nại' },
+                ]
+              : [{ value: ticket.ticket_type, label: TYPE_NAME[ticket.ticket_type] }]
+          }
+          placeholder="Chọn loại"
+        />
+        <OptionalSelect
+          label="Nhóm"
+          value={reclass.group}
+          onChange={(v) => setReclass((r) => ({ ...r, group: v, category: '' }))}
+          options={groupsOf(categories.data ?? [], reclass.type).map((c) => ({
+            value: c.code,
+            label: c.name,
+          }))}
+          placeholder="Chọn nhóm"
+        />
+        <OptionalSelect
+          label="Nhóm con"
+          value={reclass.category}
+          onChange={(v) => setReclass((r) => ({ ...r, category: v }))}
+          options={subgroupsOf(categories.data ?? [], reclass.group).map((c) => ({
+            value: c.code,
+            label: c.name,
+          }))}
+          placeholder="Chọn nhóm con"
+          disabled={reclass.group === ''}
+        />
+        <OptionalSelect
+          label="Mức độ"
+          value={reclass.priority}
+          onChange={(v) => setReclass((r) => ({ ...r, priority: v }))}
+          options={catalogs.options('TICKET_PRIORITY', ticket.priority_code)}
+          placeholder="Chọn mức độ"
+        />
+        <p className="text-caption text-fg-muted">
+          Đổi mức độ hoặc nhóm con thì hạn tính lại từ lúc tạo. Đổi loại đặt lại mức độ theo nhóm
+          con mới.
+        </p>
+      </FormDialog>
       <FormDialog
         open={complaintOpen}
         onOpenChange={setComplaintOpen}

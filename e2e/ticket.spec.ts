@@ -101,6 +101,13 @@ test('Chi tiết: thêm ghi chú; Đã xử lý cần kết quả; huỷ cần l
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đổi giáo viên giảng lại.')).toBeVisible();
   await expect(page.getByText('Cập nhật phần riêng của khiếu nại.')).toBeVisible();
+  // Phân loại lại: đổi mức độ thì hạn tính lại và dòng thời gian ghi «Đổi mức độ».
+  await page.getByRole('button', { name: 'Phân loại lại' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Phân loại lại ticket' });
+  await dialog.getByLabel('Mức độ').click();
+  await page.getByRole('option', { name: 'Thấp' }).click();
+  await dialog.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đổi mức độ.')).toBeVisible();
   // Huỷ không ghi lý do: nút Chuyển mờ cho tới khi có lý do.
   await page.getByRole('button', { name: /Đã huỷ/ }).click();
   await expect(page.getByRole('button', { name: 'Chuyển', exact: true })).toBeDisabled();
