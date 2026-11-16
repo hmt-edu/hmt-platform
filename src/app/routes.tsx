@@ -179,6 +179,10 @@ const ImportDataPage = lazyScreen(
   'ImportDataPage',
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
+const PermissionMatrixPage = lazyScreen(
+  () => import('../pages/ma-tran/PermissionMatrixPage'),
+  'PermissionMatrixPage',
+);
 const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
 const DiscountPolicyPage = lazyScreen(
   () => import('../pages/chiet-khau/DiscountPolicyPage'),
@@ -679,6 +683,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/danh-muc">
                 <CatalogPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/ma-tran-quyen',
+            element: (
+              <GatedCrmEntry slug="quan-tri/ma-tran-quyen">
+                <PermissionMatrixPage />
               </GatedCrmEntry>
             ),
           },
