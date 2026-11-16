@@ -3,7 +3,7 @@
 Luật: `docs/spec/04` mục 14, R-V2-29 đến R-V2-34 (anh Trường chốt 04/11/2026, Đ285). File mẫu dữ liệu giả `HMT5_FILE_MAU_NAP_DU_LIEU_GIA.xlsx` nằm trong `_inbox/` (không commit). Thứ tự nạp: Người dùng, Lớp, **Phụ huynh, Học sinh**, Ghi danh, Số dư, Cơ hội, Phiếu test. T4a (migration 068) làm Phụ huynh và Học sinh; T4b (migration 069, Edge Function `import-users`) làm Người dùng; các loại còn lại làm ở các bước sau.
 
 ## Quy tắc chung (mọi loại)
-- Giao diện đọc file, gửi tối đa `import_max_rows` hàng (Cài đặt, mặc định 1000, 1 đến 5000) dạng JSON; quá thì chặn cả lô.
+- Giao diện đọc file, gửi tối đa `import_max_rows` hàng (Cài đặt, mặc định 300 từ migration 216, 1 đến 5000) dạng JSON; quá thì chặn cả lô.
 - **Xem trước rồi nạp:** cùng một hàm, `p_commit = false` chạy hết rồi hoàn tác nên kết quả luôn khớp nạp thật.
 - Mỗi dòng có trạng thái: `HOP_LE` (nạp), `TRUNG` (đã có, bỏ qua, nêu mã hồ sơ có sẵn), `LOI` (kèm câu tiếng Việt). Dòng lỗi và trùng không chặn dòng hợp lệ (nhóm CRM). Nạp lại thì dòng đã nạp thành `TRUNG`: **không ghi đè, không gộp**.
 - Mã cũ (`ma_cu`) lưu vào `legacy_ref`, có chỉ mục. Mã mới cấp theo chuẩn mã (`PH`, `HS`).
@@ -106,3 +106,18 @@ Bảng mới `app.customer_balance_entry`: sổ của **phụ huynh**, chỉ th�
 - **Q-227:** ngày 17/11 chỉ nạp giờ; loại này có sẵn trên màn Nhập nhưng chỉ nạp khi anh Trường bảo. Phiếu "Thu nợ đầu kỳ" (R-V2-15) chưa làm: thuộc cụm Thu chi.
 
 Báo cáo đối soát (migration 218) thêm hai khoá `debt_total_vnd` (tổng công nợ, số dương) và `credit_total_vnd` (tổng tiền thu thừa), đơn vị đồng. Kiểm thử: `152_nap_so_du.test.sql`.
+
+## Giới hạn thời gian và số đo trên dữ liệu giả cỡ lớn (PR-3, migration 216)
+Đo 16/11/2026 trên DB local (máy đang tải nặng, nên số có thể cao hơn máy bình thường), toàn dữ liệu giả, hoàn tác sau khi đo:
+| Việc (1000 dòng) | Thời gian |
+|---|---|
+| Xem trước Phụ huynh | 3,5 đến 10 giây |
+| Nạp thật Phụ huynh | 5 đến 8 giây |
+| Nạp lại cùng file (toàn TRUNG) | 1,7 đến 8 giây |
+| Xem trước Học sinh | 5 giây (22 giây khi thống kê bảng phụ huynh chưa cập nhật) |
+| Nạp thật Học sinh | 10 đến 20 giây |
+| Báo cáo đối soát sau nạp | dưới 0,2 giây |
+- **Vấn đề:** vai trò `authenticated` của Supabase có `statement_timeout = 8s`; hạn này bấm giờ cho câu lệnh gọi hàm từ bên ngoài, nên một lô 1000 dòng có thể bị cắt giữa chừng bằng lỗi chung. **Đặt `statement_timeout` riêng cho hàm (`alter function … set`) KHÔNG nới được hạn này** (Tester tái hiện; bản đầu của PR này, migration 164, đã sai và đã bỏ).
+- **Xử lý (migration 216):** tham số `import_max_rows` mặc định hạ từ 1000 xuống **300 dòng mỗi lần nạp** (khoảng 6 giây ở mức chậm nhất đã đo). File lớn chia nhiều file; nạp lại không ghi đè (dòng đã nạp thành TRUNG). Chỉnh ở Cài đặt (1 đến 5000) nếu staging đo nhanh hơn. Lô 5000 dòng Học sinh chạy quá 10 phút trong một giao dịch dài (thống kê cũ): không dùng lô lớn.
+- **Khuyến nghị khi nạp thật:** mỗi lần nạp tối đa 300 dòng; nạp Phụ huynh xong chờ vài phút (hoặc để hệ thống cập nhật thống kê) rồi mới nạp Học sinh. Loại có luật «một dòng lỗi chặn cả loại» (Lớp, Ghi danh, Số dư) cũng bị giới hạn 300 dòng mỗi lần: chia file theo cơ sở.
+- **Chưa làm:** nạp nặng bằng Edge Function (không bị hạn 8 giây của vai trò) hoặc cắt lô tự động ở giao diện; cần Chat/anh quyết. Chưa đo trên staging: nhờ Tester chạy khối đo trên staging.

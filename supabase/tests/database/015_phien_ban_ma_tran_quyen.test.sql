@@ -2,6 +2,8 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
+-- Migration 182 (QT-05): lưu ma trận qua API chỉ khi tham số permission_matrix_edit_enabled bật; các bài này thử luật lưu nên bật trong giao dịch của bài (hoàn tác khi kết thúc).
+update app.setting_def set value = 'true' where key = 'permission_matrix_edit_enabled';
 
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;

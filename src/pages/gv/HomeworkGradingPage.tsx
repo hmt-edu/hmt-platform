@@ -117,19 +117,21 @@ function GradingForm({
     setDrafts((current) => ({ ...current, [row.student_id]: next }));
   }
 
-  function submit(batch = items) {
+  // Dùng mutateAsync: khi màn dựng lại giữa lúc lưu (khoá màn đổi theo phiên bản), lời gọi mutate mất các hàm onSuccess, onError nên thông báo
+  // «Đã lưu» biến mất và bản nháp cũ vẫn hiện; lời hứa của mutateAsync vẫn chạy tiếp (toast ở nhà cung cấp phía trên, không mất).
+  async function submit(batch = items) {
     setTried(true);
     if (batch === null) return;
     if (batch.length === 0) return;
     setSaveError(null);
-    save.mutate(batch, {
-      onSuccess: () => {
-        setTried(false);
-        setDrafts({});
-        toast({ tone: 'success', title: 'Đã lưu chấm BTVN' });
-      },
-      onError: (error) => setSaveError(errorOf(error)),
-    });
+    try {
+      await save.mutateAsync(batch);
+      setTried(false);
+      setDrafts({});
+      toast({ tone: 'success', title: 'Đã lưu chấm BTVN' });
+    } catch (error) {
+      setSaveError(errorOf(error));
+    }
   }
 
   // «Giữ của tôi»: tải bản mới của máy chủ (phiên bản mới), giữ nguyên bản nháp đang có để giáo viên bấm Lưu lại.
@@ -180,7 +182,7 @@ function GradingForm({
               variant="primary"
               loading={save.isPending}
               disabled={!editable || !dirty}
-              onClick={() => submit()}
+              onClick={() => void submit()}
             >
               Lưu
             </Button>
@@ -241,7 +243,7 @@ function GradingForm({
                   </Button>
                 </span>
               ) : (
-                <Button size="sm" onClick={() => submit()}>
+                <Button size="sm" onClick={() => void submit()}>
                   Thử lại
                 </Button>
               )}
