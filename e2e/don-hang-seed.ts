@@ -52,6 +52,14 @@ export const CLASS_SETUPS = {
 export const classSetupOf = (project: string): Setup =>
   CLASS_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 
+// Bộ riêng cho bài «Cho học trước, đóng tiền sau» (BH-09).
+export const PAY_LATER_SETUPS = {
+  'may-tinh': { mark: 'E2EPLMT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1500 },
+  'dien-thoai': { mark: 'E2EPLDT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1550 },
+} as const;
+export const payLaterSetupOf = (project: string): Setup =>
+  PAY_LATER_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
+
 export const orderSetupOf = (project: string): Setup =>
   ORDER_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 
