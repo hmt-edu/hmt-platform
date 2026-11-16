@@ -1,6 +1,6 @@
 # Kiểm thử mỗi PR: kiểm tra nhanh, DB (pgTAP), Playwright (chỉ khi có migration, đụng tiền hoặc nhãn full-ci), bản xem trước trên Cloudflare Pages (chỉ khi có nhãn preview).
 # Nhánh main KHÔNG chạy đủ mỗi lần gộp: main chạy đủ (kiểm nhanh, pgTAP, Playwright) khi chạy tay (workflow_dispatch) trước đợt cập nhật bản thật.
-# Chạy tay không chạy bản xem trước. Đỏ thì mở issue để anh thấy; Code sửa trước mọi việc khác (Q-21, Q-37). Không có lịch tự chạy (tài khoản hmt-vanhanh bị GitHub khoá 13/11/2026).
+# Chạy tay không chạy bản xem trước. Đỏ thì mở issue để anh thấy; Code sửa trước mọi việc khác (Q-21, Q-37). Không có lịch tự chạy (TÀI KHOẢN CHỦ DỰ ÁN bị GitHub khoá 13/11/2026).
 name: CI
 
 on:

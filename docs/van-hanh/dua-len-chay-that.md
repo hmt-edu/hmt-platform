@@ -37,8 +37,8 @@ Viết 10/11/2026. Đã đọc `deploy/.github/workflows/deploy-production.yml`,
 
 | Việc | Cần | Nằm ở |
 |---|---|---|
-| Chạy Deploy production, Backup production | Quyền chạy workflow ở `hmt-deploy` (`truongcx-95`) | GitHub, trình duyệt |
-| Đọc `hmt-platform` | `PLATFORM_READ_TOKEN` (do `hmt-vanhanh` tạo, hết hạn 07/11/2027) | Secrets `hmt-deploy` |
+| Chạy Deploy production, Backup production | Quyền chạy workflow ở `hmt-deploy` (TÀI KHOẢN DEPLOY) | GitHub, trình duyệt |
+| Đọc `hmt-platform` | `PLATFORM_READ_TOKEN` (do TÀI KHOẢN CHỦ DỰ ÁN tạo, hết hạn 07/11/2027) | Secrets `hmt-deploy` |
 | Áp migration, sao lưu | `PROD_DB_URL` | Secrets `hmt-deploy` |
 | Triển khai Edge Function | `PROD_SUPABASE_ACCESS_TOKEN` (nếu thiếu, bước này bỏ qua kèm cảnh báo) | Secrets `hmt-deploy` |
 | Triển khai giao diện | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Secrets `hmt-deploy` |
