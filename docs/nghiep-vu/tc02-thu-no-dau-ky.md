@@ -17,5 +17,15 @@ Cho `receipt.order_id` và `money_in.order_id` **rỗng**, kèm cột `is_openin
 | `list_money_in` (sửa) | như cũ | Nối trái đơn; khoản nợ đầu kỳ có `order_code` rỗng. |
 
 Giao diện TC-08: cột «Đơn hàng» hiện nhãn «Nợ đầu kỳ» khi không có đơn.
-**Hàm cũ còn giả định có đơn** (sửa ở PR riêng, migration 252): `save_receipt`, `submit_receipt`, `list_receipts`, `get_receipt`, `approve_receipt_accounting`; kiểm kê đầy đủ ở bình luận PR #67. Ràng buộc `money_in_kind_check` chặn sai tiền trong lúc chưa sửa.
+## Kiểm kê chỗ giả định `order_id` không rỗng và cách sửa (migration 252)
+Theo thư Chat 15:28 (a): kiểm kê MỌI hàm, view đang giả định phiếu thu hoặc khoản tiền vào luôn có đơn (bản mới nhất mỗi hàm). **5 chỗ** phải xử lý, mỗi chỗ đúng một nhánh, thân giữ nguyên bản cũ:
+| Hàm (bản mới nhất) | Vấn đề nếu không sửa | Cách sửa ở 252 |
+| --- | --- | --- |
+| `save_receipt` (076) | chuẩn hoá theo đơn rỗng | phiếu nợ đầu kỳ chuyển sang `save_opening_debt_receipt` (hàm mới, cùng luật tạo) |
+| `submit_receipt` (083) | đưa nhầm vào luồng quản lý | chuyển sang `submit_opening_debt_receipt`, trả `status = CHO_KE_TOAN` |
+| `approve_receipt_accounting` (131) | ràng buộc chặn nhưng báo lỗi thô | chuyển sang `approve_opening_debt_receipt` |
+| `list_receipts` (083) | nối trong đơn: phiếu biến mất khỏi danh sách | nối TRÁI, thêm cờ `is_opening_debt` |
+| `get_receipt` (083) | màn bản ghi vỡ với đơn rỗng | `order = null`, `payment = {opening_debt_remaining}`, thêm `is_opening_debt`, `opening_student` |
+Không ảnh hưởng (đã đọc thân hàm): `cancel_receipt`, `reject_receipt`, `approve_receipt_manager`, `receipt_search_text` (coalesce), `order_paid_amount`, `order_receivable`, `sync_enrollment_hours`, `enrollment_target_hours`, `create_enrollments_for_order`, `compute_refund`, báo cáo 211 (tổng `money_in` theo ngày: khoản nợ đầu kỳ tính là tiền thu), view 214 (theo allocation), `get_parent` (117). Giao diện: kiểu `ReceiptRecord`, `ReceiptRow` và các link «Đơn hàng» ở màn Phiếu thu còn giả định có đơn (làm ở PR giao diện); TC-08 đã sửa.
+Vì các hàm cũ chuyển sang nhánh nợ đầu kỳ, giao diện dùng chung `save_receipt`, `submit_receipt`, `approve_receipt_accounting` cho cả hai loại phiếu.
 **Chưa làm (PR giao diện sau):** 19 khung `TC02_no_dau_ky_*` ở phiếu thu (tạo, chờ kế toán, đã duyệt, lỗi vượt nợ…), nút «Thu nợ đầu kỳ» ở phụ huynh.
