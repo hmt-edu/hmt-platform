@@ -180,4 +180,12 @@ describe('mục dòng thời gian của đơn (Q-48, Q-51)', () => {
       'BG-1: dòng 1 số giờ 6 → 8',
     );
   });
+
+  it('Q1: sự kiện cảnh báo xếp lớp hiện tiêu đề «Chưa xếp được lớp» và lời cảnh báo vàng', () => {
+    const entry = firstEvent(
+      orderEventEntries([ev(1, 'CANH_BAO_XEP_LOP', { note: 'Dòng 1: chưa xếp được lớp.' })], name),
+    );
+    expect(entry.title).toBe('Chưa xếp được lớp');
+    expect(entry.warning).toBe('Dòng 1: chưa xếp được lớp.');
+  });
 });
