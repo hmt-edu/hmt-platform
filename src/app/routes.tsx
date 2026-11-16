@@ -119,6 +119,14 @@ const ReceiptListPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptListPage'),
   'ReceiptListPage',
 );
+const SessionRequestListPage = lazyScreen(
+  () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
+  'SessionRequestListPage',
+);
+const SessionRequestCreatePage = lazyScreen(
+  () => import('../pages/yeu-cau-buoi/SessionRequestCreatePage'),
+  'SessionRequestCreatePage',
+);
 const OrderCreatePage = lazyScreen(
   () => import('../pages/don-hang/OrderCreatePage'),
   'OrderCreatePage',
@@ -149,6 +157,7 @@ const ImportDataPage = lazyScreen(
   'ImportDataPage',
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
+const SettingsPage = lazyScreen(() => import('../pages/tham-so/SettingsPage'), 'SettingsPage');
 const PackageListPage = lazyScreen(
   () => import('../pages/goi-ban/PackageListPage'),
   'PackageListPage',
@@ -197,6 +206,10 @@ const TeacherClassesPage = lazyScreen(
 const TeacherClassPage = lazyScreen(
   () => import('../pages/gv/TeacherClassPage'),
   'TeacherClassPage',
+);
+const TeacherHoursPage = lazyScreen(
+  () => import('../pages/gv/TeacherHoursPage'),
+  'TeacherHoursPage',
 );
 const TeacherStudentPage = lazyScreen(
   () => import('../pages/gv/TeacherStudentPage'),
@@ -423,6 +436,22 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'yeu-cau-buoi',
+            element: (
+              <GatedCrmEntry slug="yeu-cau-buoi">
+                <SessionRequestListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'yeu-cau-buoi/tao-cung-co',
+            element: (
+              <GatedCrmEntry slug="yeu-cau-buoi">
+                <SessionRequestCreatePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'buoi-chua-done',
             element: (
               <GatedCrmEntry slug="buoi-chua-done">
@@ -543,6 +572,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'quan-tri/tham-so',
+            element: (
+              <GatedCrmEntry slug="quan-tri/tham-so">
+                <SettingsPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'quan-tri/nguoi-dung',
             element: (
               <GatedCrmEntry slug="quan-tri/nguoi-dung">
@@ -651,6 +688,7 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: <TeacherTodayPage /> },
           { path: 'lich-day', element: <TeacherSchedulePage /> },
+          { path: 'gio-day', element: <TeacherHoursPage /> },
           { path: 'lop', element: <TeacherClassesPage /> },
           { path: 'lop/:classId', element: <TeacherClassPage /> },
           { path: 'lop/:classId/hoc-sinh/:studentId', element: <TeacherStudentPage /> },
