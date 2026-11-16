@@ -23,7 +23,7 @@ select is(pg_temp.codes('ATTENDANCE_STATUS'), array['CO_MAT', 'DI_MUON', 'VANG_C
 select is(pg_temp.codes('SESSION_TYPE'), array['CHINH', 'CUNG_CO', 'HOC_BU', 'BO_TRO', 'KIEM_TRA'], 'Loại buổi: chính, củng cố, học bù, bổ trợ, kiểm tra (R-V2-18, Q-176)');
 select is(pg_temp.codes('CLASS_TYPE'), array['CB', 'NC', 'LR'], 'Phân loại lớp CB, NC, LR');
 select is(pg_temp.codes('STUDY_MODE'), array['OFF', 'ONL'], 'Hình thức OFF, ONL');
-select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC', 'DN', 'KN', 'KTV'], 'Loại chứng từ BG, DH, PT, PC, KTV (khoản tiền vào, B2) và ticket DN, KN (R-CS-01)');
+select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC', 'DN', 'KN', 'KTV', 'YB'], 'Loại chứng từ BG, DH, PT, PC, KTV (khoản tiền vào, B2), ticket DN, KN (R-CS-01) và yêu cầu buổi YB (migration 139)');
 select is(pg_temp.codes('HOMEWORK_STATUS'), array['DA_CHAM', 'LAM_CHUA_XONG', 'KHONG_LAM', 'NOP_SAU', 'KHONG_AP_DUNG'],
           'Trạng thái BTVN đúng R-GV-11');
 -- Chứa năm phân hệ gốc; các migration sau (139 YEU_CAU_BUOI, 210 CHUYEN_LOP...) thêm phân hệ nên không so bằng nhau để khỏi xung đột giữa các PR.
