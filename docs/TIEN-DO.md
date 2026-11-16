@@ -137,7 +137,7 @@ Từ 13/11 quy trình làm việc theo `docs/hmt/quy-trinh-lam-viec.md` của re
 
 Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke-hoach-17-11.md`, `docs/quy-tac-cung-cho-code.md`. Mục tiêu 17/11: cơ sở 5, LÕI 28 màn.
 
-**Đã gộp vào `main` từ 28/10 đến 11/11 (mỗi PR có link OK của `caotruong276` trong commit gộp; PR chỉ tài liệu hoặc thiết kế không có CI):**
+**Đã gộp vào `main` từ 28/10 đến 11/11 (mỗi PR có link OK của TÀI KHOẢN GỘP trong commit gộp; PR chỉ tài liệu hoặc thiết kế không có CI):**
 
 | Nhóm | PR |
 |---|---|
@@ -178,7 +178,7 @@ Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke
 
 ## Đang ở đâu (28/10/2026)
 
-**Đã gộp vào `main`** (mỗi PR có link comment "OK" của `caotruong276` trong commit gộp; PR chỉ tài liệu không có CI):
+**Đã gộp vào `main`** (mỗi PR có link comment "OK" của TÀI KHOẢN GỘP trong commit gộp; PR chỉ tài liệu không có CI):
 
 | Nhóm | PR |
 |---|---|
@@ -212,7 +212,7 @@ Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke
 
 **Đang mở:** #69 (lưu canvas Design, khuôn K4g, K4e4): chờ Design lưu bản cuối (bản 25 trở đi, sau khi Design sửa K12 thành biểu mẫu: bỏ Filters/Group By/Favorites, nút Làm mới, nút Cột, ô tìm kiếm; QĐ-Đ12, QĐ-Đ17) và anh nói "lưu". PR giao diện Quản trị người dùng (QT-01, QT-02): chờ CI và OK.
 
-**Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) lần xác nhận cuối còn ở tag `staging-20261010-1642-75637cf` (lúc đó tụt nhiều migration, 013 đến 038, và toàn bộ giao diện mới); migration hiện tại chưa xác nhận, có thể tụt xa so với `main` (migration 124).
+**Bản chạy thật** (`<tên-miền-chạy-thật>.pages.dev`, `app.hoamatoan.edu.vn`) lần xác nhận cuối còn ở tag `staging-20261010-1642-75637cf` (lúc đó tụt nhiều migration, 013 đến 038, và toàn bộ giao diện mới); migration hiện tại chưa xác nhận, có thể tụt xa so với `main` (migration 124).
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
 Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
@@ -328,7 +328,7 @@ Claude Design: P4 xong. **Thiết kế P5 (canvas v118): đã duyệt ngày 27/1
 
 Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và `docs/van-hanh/chong-do-mat-khau.md`.
 
-- **Tách môi trường Supabase**: `hmt-staging` ở org HMT (tài khoản `hmt-vanhanh`); `hmt-prod` ở org HMT Prod (tài khoản
+- **Tách môi trường Supabase**: `hmt-staging` ở org HMT (TÀI KHOẢN CHỦ DỰ ÁN); `hmt-prod` ở org HMT Prod (tài khoản
   `[tài khoản chạy thật]`, MFA). Không khoá nào trong hmt-platform chạm được hmt-prod; CI kiểm chủ động hai chiều mỗi lần Deploy
   staging (`scripts/check-isolation.sh`).
 - **Đăng nhập qua Edge Function `login`**: Function tự kiểm Turnstile (Supabase Auth bỏ qua Turnstile khi gọi bằng khoá
@@ -369,14 +369,14 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
 - **File anh Trường đưa vào** nằm ở `_inbox/` (không commit), dùng xong xoá.
 - **Mỗi PR** cập nhật luôn file này (viết như sau khi PR đã gộp).
 
-- **Duyệt PR**: chỉ gộp khi CI xanh **và** có comment "OK" từ `caotruong276` **sau commit cuối**. Trước khi nhắc anh
+- **Duyệt PR**: chỉ gộp khi CI xanh **và** có comment "OK" từ TÀI KHOẢN GỘP **sau commit cuối**. Trước khi nhắc anh
   duyệt, kiểm comment trên PR trước (anh hay OK sẵn). Gộp squash, ghi link comment OK vào thân commit gộp.
 - **Khoá chạy thật**: không bao giờ đọc, xin, tìm. Mọi việc với hmt-prod, Cloudflare thật, `hmt-deploy` do anh làm trên
   trình duyệt; Claude hướng dẫn từng việc một, viết cho người mới, nhắc "không chụp màn hình lúc khoá hiện".
 - **Chép file sang hmt-deploy**: `LANG=en_US.UTF-8 pbcopy < deploy/…`, anh dán vào
-  `https://github.com/truongcx-95/hmt-deploy/edit/main/<đường dẫn>` (file mới: `/new/main?filename=<đường dẫn>`).
+  `https://github.com/TÀI KHOẢN DEPLOY/hmt-deploy/edit/main/<đường dẫn>` (file mới: `/new/main?filename=<đường dẫn>`).
 - **Mật khẩu chung tài khoản giả** nằm ở secret `STAGING_SEED_PASSWORD` và ứng dụng Mật khẩu của anh (mục
-  `hmt-staging.pages.dev`). Không in ra chat; nếu cần tạo mới thì sinh thẳng vào bộ nhớ copy (`pbcopy`).
+  `<tên-miền-thử-nghiệm>.pages.dev`). Không in ra chat; nếu cần tạo mới thì sinh thẳng vào bộ nhớ copy (`pbcopy`).
 - **Hạn token**: `SUPABASE_ACCESS_TOKEN` (hmt-platform, chỉ hmt-staging) và `PROD_SUPABASE_ACCESS_TOKEN` (hmt-deploy, chỉ
   Edge Functions của hmt-prod) đều hết hạn 09/10/2027; báo cáo tuần nhắc trước 30 ngày. Token Supabase tối đa 1 năm, chọn
   lùi một ngày nếu báo lỗi.
