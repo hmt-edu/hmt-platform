@@ -28,3 +28,7 @@ Hàm nội bộ: `class_transfer_for_update(id, trạng thái cho phép)` (khôn
 - Phiếu tái tục đang mở chuyển theo lớp mới (R-GD-13): bảng tái tục chưa có trên `main`.
 - Gắn khoá ngoại tới ticket CS (PR #18 chưa gộp); hiện chỉ lưu `ticket_ref` dạng chữ.
 - Giao diện.
+
+## Cập nhật (migration 234)
+
+`apply_class_transfer(...)`: hàm nội bộ cho phiếu nghiệp vụ Aftersale, tạo bản ghi ở trạng thái Đã chuyển và thực hiện ngay (không duyệt lần hai). Xem `ap-dung-phieu-cho-code-b.md`. Khoá ngoại tới ticket vẫn chưa có (chỉ lưu mã `ticket_ref`); phiếu nghiệp vụ của Code B (`ticket_task`) là nơi duyệt khi đi qua ticket.

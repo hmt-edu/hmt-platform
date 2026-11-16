@@ -18,3 +18,7 @@ Công tắc `BAO_LUU` theo cơ sở, **mặc định TẮT**. Bản ghi `app.enr
 - Kết thúc (học lại sớm hoặc hết hạn) trả ghi danh về tình trạng trước bảo lưu (Đã xếp lớp hoặc Đang học).
 
 Chưa làm: dừng sinh phiếu tái tục khi bảo lưu (R-GD-13: chưa có bảng phiếu tái tục), khoá ngoại tới ticket (#18), giao diện.
+
+## Cập nhật (migration 234)
+
+`apply_enrollment_hold(...)`: hàm nội bộ cho phiếu nghiệp vụ Aftersale, tạo bản ghi bảo lưu (mới hoặc gia hạn) ở trạng thái Đang bảo lưu, bắt đầu ngay (không duyệt lần hai). Xem `ap-dung-phieu-cho-code-b.md`.
