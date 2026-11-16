@@ -3,7 +3,7 @@
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
 import { DB_URL } from './bao-gia-seed';
-import { DOMAIN, PASSWORD, enterAs, expectAccessible } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, pickOption } from './helpers';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lớp, cơ hội giả).');
 test.describe.configure({ mode: 'serial' });
@@ -107,13 +107,17 @@ test('BUOI-06: CSKH thêm em của cơ hội L5 vào buổi Đã chốt làm h�
   const dialog = page.getByRole('dialog', { name: 'Thêm học thử' });
   await expect(dialog).toBeVisible();
   await expectAccessible(page);
-  await dialog.getByLabel('Cơ hội').fill(PARENT);
-  await dialog
+  await dialog.getByRole('combobox', { name: /Cơ hội/ }).click();
+  await page.getByPlaceholder('Gõ để tìm (không cần dấu)').fill(PARENT);
+  await page
     .getByRole('option', { name: new RegExp(PARENT) })
     .first()
     .click();
-  await dialog.getByRole('combobox', { name: 'Học sinh của cơ hội' }).click();
-  await page.getByRole('option', { name: new RegExp(STUDENT) }).click();
+  await pickOption(
+    page,
+    dialog.getByRole('combobox', { name: 'Học sinh của cơ hội' }),
+    new RegExp(STUDENT),
+  );
   await dialog.getByRole('button', { name: 'Thêm vào buổi' }).click();
   await expect(page.getByText(/Đã thêm học sinh học thử vào buổi/).first()).toBeVisible();
   const row = page.getByText(STUDENT).first();
