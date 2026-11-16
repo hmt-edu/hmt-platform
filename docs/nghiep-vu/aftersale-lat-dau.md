@@ -38,3 +38,6 @@ Giao diện CSN01 (danh sách), CSN02 (Kanban), CSN03 (biểu mẫu); phiếu ng
 ## Lát 4 (migration 161): đổi loại, nhóm con, mức độ
 - `app.change_ticket_category(id, nhóm con)`, `app.change_ticket_priority(id, mức độ)`, `app.change_ticket_type(id, loại, nhóm con)`; chung lõi `app.reclassify_ticket` (nội bộ, không cấp cho người dùng).
 - Hạn tính lại từ lúc tạo theo loại, mức độ, nhóm con mới (AS-07) và **giữ phần dời hạn do Chờ thông tin**. Mã ticket không đổi (AS-01). Đổi loại chỉ giữa Đề nghị và Khiếu nại, chỉ khi Mới hoặc Đã giao (AS-05). Đã đóng, đã huỷ chỉ xem (AS-02). Nhật ký ghi `DOI_NHOM_CON` (kèm chữ «Đổi loại: …» khi đổi loại) hoặc `DOI_MUC_DO`.
+
+## Lát 5 (migration 162): lưu cấu hình SLA
+- `app.save_ticket_sla(bảng hạn, hạn riêng)`: lưu một lần bảng loại × mức độ và hạn riêng nhóm con (CSN-09). Cần Quản trị · Sửa (Admin). Số giờ nguyên dương, hạn xử lý ≥ hạn phản hồi; cả lô một giao dịch. Ticket đã tạo giữ hạn đã chụp (AS-07); mọi sửa ghi nhật ký qua trigger audit.
