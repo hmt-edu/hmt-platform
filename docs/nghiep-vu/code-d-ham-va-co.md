@@ -22,3 +22,7 @@ Code D, 16/11/2026. Mỗi cụm có tài liệu riêng (cột «Chi tiết»). M
 3. **Dừng sinh phiếu tái tục khi bảo lưu (R-GD-13)** và đóng phiếu khi dừng, chuyển phiếu theo lớp mới: chờ bảng phiếu tái tục.
 4. **Lịch pg_cron** cho `end_expired_enrollment_holds` (bảo lưu hết hạn): chưa đăng ký, chờ anh duyệt.
 5. **Giao diện** cho mọi cụm: chờ khuôn.
+
+## Bổ sung (migration 234): hàm áp dụng cho phiếu nghiệp vụ Aftersale
+
+`apply_enrollment_hold(...)` và `apply_class_transfer(...)`: tạo bản ghi bảo lưu hoặc chuyển lớp ở trạng thái **đã duyệt** và thực hiện ngay trong một giao dịch, dùng đúng luật của bản tạo thường (R-GD-09, R-GD-10, cờ `BAO_LUU`, `CHUYEN_LOP`). **Nội bộ** (không cấp cho giao diện), **chưa nối** vào `execute_ticket_task` của Code B: chờ Chat và Code B chốt mục «Chỗ cần chốt» số 1 (phiếu đã duyệt đủ cấp thì không duyệt lần hai ở bản ghi). Hoàn phí và dừng học làm tương tự ở bước sau khi có chốt, vì còn kế toán duyệt và phiếu chi.
