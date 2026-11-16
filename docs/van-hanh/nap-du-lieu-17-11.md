@@ -103,6 +103,10 @@ Giai đoạn đầu, khi giáo viên chưa chấm nhận xét trên cổng giáo
 
 Ngày 17/11 **chỉ nạp GIỜ** (từ `gio_con_lai` ở tab 04_GHIDANH). Tab 09_SODU (tiền thu thừa, công nợ phải thu đầu kỳ) **không nạp** ngày 17/11: các khoản này ghi tay (R-V2-24) và sẽ nạp tự động sau 17/11. Đây là quyết định vận hành, không đưa vào spec 04.
 
+## 8b. Kiểm trước khi nạp (lệnh chỉ đọc)
+
+Trước khi bấm **Nạp thật**, chạy `docs/van-hanh/sql-kiem-truoc-nap.sql` trong SQL Editor của project cần nạp (chỉ có câu SELECT; không in họ tên, số điện thoại). Sáu khối: (a) bản cập nhật cuối, (b) cờ `VAN_HANH_LOP` từng cơ sở, (c) tham số `import_max_rows`, `opening_balance_date`, `session_done_requires_review`, (d) danh mục tối thiểu, (e) đã nạp bao nhiêu hồ sơ từ dữ liệu cũ, (f) Admin đã xác thực hai bước. Cột `dat` là `false` ở khối nào thì sửa khối đó trước khi nạp; gửi Chat ảnh chụp kết quả.
+
 ## 9. Bật phân hệ Vận hành lớp cho từng cơ sở (làm trước khi nạp)
 
 Hàm nạp Lớp, Ghi danh, Buổi, Điểm danh kiểm công tắc tính năng `VAN_HANH_LOP` của cơ sở trong file. Cơ sở chưa bật thì dòng bị từ chối với mã `HMT_TINH_NANG_TAT` («Phân hệ Vận hành lớp … chưa bật ở cơ sở CS5»). Trên staging và bản chạy thật phải bật công tắc **từng cơ sở** có trong file trước khi nạp.

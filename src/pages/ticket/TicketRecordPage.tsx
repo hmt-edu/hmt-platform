@@ -1,0 +1,569 @@
+// CSN-03 Chi tiết ticket (đề nghị, khiếu nại, giáo viên): thông tin chỉ đọc, thanh trạng thái 7 bước, ghi chú và dòng thời gian.
+// Đổi trạng thái gọi app.change_ticket_status (luật AS-02 ở hàm DB; giao diện chỉ hỏi thêm ghi chú, kết quả, mức hài lòng).
+// Giao ticket (chọn đội, người phụ trách) và tạo mới làm ở lát sau: danh sách người giao cần mở rộng hàm máy chủ.
+import { useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router';
+import { useCrumbTail } from '../../layout/CrumbTail';
+import { errorOf, FORBIDDEN_CODE, useDb } from '../../lib/db';
+import { formatDate, formatDateTime } from '../../lib/format';
+import { useAccess } from '../../nav/AccessContext';
+import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
+import { Chatter } from '../../ui/Chatter';
+import { Tag } from '../../ui/Data';
+import { FormDialog } from '../../ui/Dialogs';
+import { Spinner, StateView } from '../../ui/Feedback';
+import { Button } from '../../ui/Button';
+import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
+import { OptionalSelect } from '../../ui/OptionalSelect';
+import type { StageStep } from '../../ui/Stage';
+import { useToast } from '../../ui/toastContext';
+import { useLeadCatalogs } from '../lead/useCatalogs';
+import { groupsOf, subgroupsOf } from './ticketCreate';
+import { ticketTimeline } from './ticketTimeline';
+import {
+  addTicketNote,
+  assignTicket,
+  changeTicketStatus,
+  reclassifyTicket,
+  useTicketCategories,
+  useTicketAssignees,
+  updateTicketComplaint,
+  useTicketRecord,
+} from './useTicketData';
+
+const TYPE_NAME = { DN: 'Đề nghị', KN: 'Khiếu nại', GV: 'Ticket giáo viên' } as const;
+
+export function TicketRecordPage() {
+  const { id } = useParams();
+  const supabase = useDb();
+  const access = useAccess();
+  const toast = useToast();
+  const queryClient = useQueryClient();
+  const catalogs = useLeadCatalogs();
+  const record = useTicketRecord(id);
+  const [target, setTarget] = useState<string | null>(null);
+  const [note, setNote] = useState('');
+  const [resolution, setResolution] = useState('');
+  const [satisfaction, setSatisfaction] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [complaintOpen, setComplaintOpen] = useState(false);
+  const [complaint, setComplaint] = useState({
+    accused: '',
+    date: '',
+    wish: '',
+    cause: '',
+    compensation: '',
+  });
+  const categories = useTicketCategories();
+  const [reclassOpen, setReclassOpen] = useState(false);
+  const [reclass, setReclass] = useState({ type: '', group: '', category: '', priority: '' });
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [team, setTeam] = useState('');
+  const [assignee, setAssignee] = useState('');
+
+  const ticket = record.data?.ticket;
+  const assignees = useTicketAssignees(ticket?.branch_id ?? null, assignOpen || complaintOpen);
+  useCrumbTail(ticket?.code ?? '');
+  const statusName = (code: string | null) => catalogs.name('TICKET_STATUS', code) ?? code ?? '';
+  const steps: StageStep[] = useMemo(
+    () => catalogs.options('TICKET_STATUS').map((o) => ({ code: o.value, label: o.label })),
+    [catalogs],
+  );
+  const entries = useMemo(
+    () => ticketTimeline(record.data?.events ?? [], statusName),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [record.data, catalogs],
+  );
+
+  if (record.isPending) return <Spinner label="Đang tải ticket…" />;
+  if (record.isError || !ticket) {
+    const forbidden = record.error ? errorOf(record.error).code === FORBIDDEN_CODE : false;
+    const missing = record.error ? errorOf(record.error).code === 'HMT_KHONG_TIM_THAY' : false;
+    return (
+      <StateView
+        kind={forbidden ? 'forbidden' : missing ? 'not-found' : 'error'}
+        title={
+          forbidden
+            ? 'Bạn không có quyền xem ticket này'
+            : missing
+              ? 'Không tìm thấy ticket'
+              : 'Chưa tải được ticket'
+        }
+      />
+    );
+  }
+
+  const canEdit = access.can('TICKET', 'SUA');
+  const closed = ticket.status_code === 'DA_DONG' || ticket.status_code === 'DA_HUY';
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ['ticket-record', id] });
+  const needResolution = target === 'DA_XU_LY' && !ticket.resolution;
+  const needSatisfaction = target === 'DA_DONG' && ticket.ticket_type === 'KN';
+  const needNote = target === 'DA_HUY';
+  const satisfactionValue = Number(satisfaction);
+  const canSubmit =
+    (!needResolution || resolution.trim() !== '') &&
+    (!needNote || note.trim() !== '') &&
+    (!needSatisfaction || (satisfactionValue >= 1 && satisfactionValue <= 5));
+
+  const close = () => {
+    setTarget(null);
+    setNote('');
+    setResolution('');
+    setSatisfaction('');
+    setError(null);
+  };
+
+  const submit = async () => {
+    if (target === null) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await changeTicketStatus(supabase, {
+        id: ticket.id,
+        to: target,
+        ...(note.trim() !== '' && { note: note.trim() }),
+        ...(resolution.trim() !== '' && { resolution: resolution.trim() }),
+        ...(needSatisfaction && { satisfaction: satisfactionValue }),
+      });
+      close();
+      toast({ tone: 'success', title: 'Đã đổi trạng thái ticket.' });
+      await refresh();
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openComplaint = () => {
+    setComplaint({
+      accused: ticket.accused_user_id ?? '',
+      date: ticket.complaint_date ?? '',
+      wish: ticket.customer_wish ?? '',
+      cause: ticket.root_cause ?? '',
+      compensation: ticket.compensation_note ?? '',
+    });
+    setError(null);
+    setComplaintOpen(true);
+  };
+
+  const submitComplaint = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await updateTicketComplaint(supabase, ticket.id, {
+        accused_user_id: complaint.accused === '' ? null : complaint.accused,
+        complaint_date: complaint.date === '' ? null : complaint.date,
+        customer_wish: complaint.wish,
+        root_cause: complaint.cause,
+        compensation_note: complaint.compensation,
+      });
+      setComplaintOpen(false);
+      toast({ tone: 'success', title: 'Đã lưu phần riêng của khiếu nại.' });
+      await refresh();
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openReclass = () => {
+    const all = categories.data ?? [];
+    const current = all.find((c) => c.code === ticket.category_code);
+    setReclass({
+      type: ticket.ticket_type,
+      group: current?.parent_code ?? '',
+      category: ticket.category_code,
+      priority: ticket.priority_code,
+    });
+    setError(null);
+    setReclassOpen(true);
+  };
+
+  const submitReclass = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const typeChanged = reclass.type !== ticket.ticket_type;
+      await reclassifyTicket(supabase, {
+        id: ticket.id,
+        ...(typeChanged && { type: reclass.type }),
+        ...((typeChanged || reclass.category !== ticket.category_code) && {
+          category: reclass.category,
+        }),
+        // Đổi loại đặt lại mức độ theo nhóm con mới; chỉ đổi riêng khi người dùng chọn khác và không đổi loại.
+        ...(!typeChanged &&
+          reclass.priority !== ticket.priority_code && { priority: reclass.priority }),
+      });
+      setReclassOpen(false);
+      toast({ tone: 'success', title: 'Đã cập nhật phân loại ticket.' });
+      await refresh();
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openAssign = () => {
+    setTeam(ticket.team_code ?? '');
+    setAssignee('');
+    setError(null);
+    setAssignOpen(true);
+  };
+
+  const submitAssign = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await assignTicket(supabase, { id: ticket.id, team, assignee });
+      setAssignOpen(false);
+      toast({ tone: 'success', title: 'Đã giao ticket.' });
+      await refresh();
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onStage = (step: StageStep) => {
+    if (step.code === ticket.status_code) return;
+    // Mới → Đã giao đi qua hộp thoại Giao (chọn đội và người phụ trách).
+    if (step.code === 'DA_GIAO' && ticket.status_code === 'MOI') {
+      openAssign();
+      return;
+    }
+    setTarget(step.code);
+  };
+
+  return (
+    <>
+      <RecordDetail
+        kind="Ticket"
+        title={ticket.title}
+        mode="view"
+        readOnly={!canEdit || closed}
+        showEdit={false}
+        onEdit={() => undefined}
+        onSave={() => undefined}
+        onCancel={() => undefined}
+        onRefresh={() => void refresh()}
+        headerActions={
+          canEdit && !closed ? (
+            <>
+              <Button icon="user" onClick={openAssign}>
+                Giao ticket
+              </Button>
+              {ticket.ticket_type !== 'GV' && <Button onClick={openReclass}>Phân loại lại</Button>}
+            </>
+          ) : undefined
+        }
+        stage={{
+          steps,
+          current: ticket.status_code,
+          forwardOnly: false,
+          onSelect: onStage,
+        }}
+        stageShowCode={false}
+        aside={
+          <Chatter
+            entries={entries}
+            status="ready"
+            canWrite={
+              canEdit && ticket.status_code !== 'DA_HUY' && ticket.status_code !== 'DA_DONG'
+            }
+            onSend={async (body) => {
+              await addTicketNote(supabase, ticket.id, body);
+              await refresh();
+            }}
+            searchPeople={() => Promise.resolve([])}
+          />
+        }
+      >
+        <div className="grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
+          <DetailSection title="Thông tin ticket">
+            <DetailField label="Mã" mode="view" value={ticket.code} />
+            <DetailField label="Loại" mode="view" value={TYPE_NAME[ticket.ticket_type]} />
+            <DetailField label="Tiêu đề" mode="view" value={ticket.title} />
+            <DetailField label="Người gửi" mode="view" value={ticket.sender_name ?? ''} />
+            <DetailField label="Học sinh" mode="view" value={ticket.student_name ?? ''} />
+            <DetailField label="Nhóm" mode="view" value={ticket.category_name ?? ''} />
+            {ticket.nature_code && (
+              <DetailField
+                label="Tính chất"
+                mode="view"
+                value={ticket.nature_code === 'HO_TRO' ? 'Cần hỗ trợ' : 'Phản ánh'}
+              />
+            )}
+            <DetailField label="Mô tả" mode="view" value={ticket.description} />
+          </DetailSection>
+          <DetailSection title="Xử lý">
+            <DetailField
+              label="Đội"
+              mode="view"
+              value={catalogs.name('TICKET_TEAM', ticket.team_code) ?? ''}
+            />
+            <DetailField label="Người phụ trách" mode="view" value={ticket.assignee_name ?? ''} />
+            <DetailField
+              label="Mức độ"
+              mode="view"
+              value={catalogs.name('TICKET_PRIORITY', ticket.priority_code) ?? ''}
+            />
+            <DetailField
+              label="Hạn phản hồi"
+              mode="view"
+              value={
+                ticket.first_response_at
+                  ? `Đã phản hồi ${formatDateTime(ticket.first_response_at)}`
+                  : formatDateTime(ticket.response_due_at)
+              }
+            />
+            <DetailField
+              label="Hạn xử lý"
+              mode="view"
+              value={
+                <>
+                  {formatDateTime(ticket.resolve_due_at)}{' '}
+                  {ticket.sla_state === 'QUA_HAN' && <Tag>Quá hạn</Tag>}
+                  {ticket.sla_state === 'SAP_QUA_HAN' && <Tag>Sắp quá hạn</Tag>}
+                </>
+              }
+            />
+            <DetailField label="Kết quả" mode="view" value={ticket.resolution ?? ''} />
+            {ticket.cancel_reason && (
+              <DetailField label="Lý do huỷ" mode="view" value={ticket.cancel_reason} />
+            )}
+          </DetailSection>
+        </div>
+        {ticket.ticket_type === 'KN' && (
+          <div className="mt-6">
+            <DetailSection title="Riêng khiếu nại">
+              <DetailField
+                label="Người bị khiếu nại"
+                mode="view"
+                value={ticket.accused_name ?? ''}
+              />
+              <DetailField
+                label="Ngày xảy ra"
+                mode="view"
+                value={ticket.complaint_date ? formatDate(ticket.complaint_date) : ''}
+              />
+              <DetailField
+                label="Mong muốn của khách"
+                mode="view"
+                value={ticket.customer_wish ?? ''}
+              />
+              <DetailField label="Nguyên nhân gốc" mode="view" value={ticket.root_cause ?? ''} />
+              <DetailField label="Bồi hoàn" mode="view" value={ticket.compensation_note ?? ''} />
+              <DetailField
+                label="Mức hài lòng 1–5"
+                hint="bắt buộc khi đóng"
+                mode="view"
+                value={ticket.satisfaction ?? ''}
+              />
+            </DetailSection>
+            {canEdit && !closed && (
+              <Button className="mt-2" onClick={openComplaint}>
+                Sửa phần riêng
+              </Button>
+            )}
+          </div>
+        )}
+        {(record.data?.children.length ?? 0) > 0 && (
+          <div className="mt-6">
+            <DetailSection title={`Ticket liên quan (${record.data?.children.length ?? 0})`}>
+              <ul className="flex flex-col gap-1">
+                {record.data?.children.map((c) => (
+                  <li key={c.id}>
+                    <Link className="text-link underline" to={`/crm/ticket/${c.id}`}>
+                      {c.code}
+                    </Link>{' '}
+                    {c.category_name} · {statusName(c.status_code)} ·{' '}
+                    {c.assignee_name ?? 'Chưa giao'}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-caption text-fg-muted">
+                Đóng khiếu nại không tự đóng ticket con, và ngược lại.
+              </p>
+            </DetailSection>
+          </div>
+        )}
+      </RecordDetail>
+      <FormDialog
+        open={reclassOpen}
+        onOpenChange={setReclassOpen}
+        title="Phân loại lại ticket"
+        subtitle={ticket.code}
+        confirmLabel="Lưu"
+        canSubmit={reclass.category !== ''}
+        busy={busy}
+        error={error}
+        onSubmit={() => void submitReclass()}
+      >
+        <OptionalSelect
+          label="Loại"
+          value={reclass.type}
+          onChange={(v) => setReclass((r) => ({ ...r, type: v, group: '', category: '' }))}
+          options={
+            ['DN', 'KN'].includes(ticket.ticket_type) &&
+            ['MOI', 'DA_GIAO'].includes(ticket.status_code)
+              ? [
+                  { value: 'DN', label: 'Đề nghị' },
+                  { value: 'KN', label: 'Khiếu nại' },
+                ]
+              : [{ value: ticket.ticket_type, label: TYPE_NAME[ticket.ticket_type] }]
+          }
+          placeholder="Chọn loại"
+        />
+        <OptionalSelect
+          label="Nhóm"
+          value={reclass.group}
+          onChange={(v) => setReclass((r) => ({ ...r, group: v, category: '' }))}
+          options={groupsOf(categories.data ?? [], reclass.type).map((c) => ({
+            value: c.code,
+            label: c.name,
+          }))}
+          placeholder="Chọn nhóm"
+        />
+        <OptionalSelect
+          label="Nhóm con"
+          value={reclass.category}
+          onChange={(v) => setReclass((r) => ({ ...r, category: v }))}
+          options={subgroupsOf(categories.data ?? [], reclass.group).map((c) => ({
+            value: c.code,
+            label: c.name,
+          }))}
+          placeholder="Chọn nhóm con"
+          disabled={reclass.group === ''}
+        />
+        <OptionalSelect
+          label="Mức độ"
+          value={reclass.priority}
+          onChange={(v) => setReclass((r) => ({ ...r, priority: v }))}
+          options={catalogs.options('TICKET_PRIORITY', ticket.priority_code)}
+          placeholder="Chọn mức độ"
+        />
+        <p className="text-caption text-fg-muted">
+          Đổi mức độ hoặc nhóm con thì hạn tính lại từ lúc tạo. Đổi loại đặt lại mức độ theo nhóm
+          con mới.
+        </p>
+      </FormDialog>
+      <FormDialog
+        open={complaintOpen}
+        onOpenChange={setComplaintOpen}
+        title="Riêng khiếu nại"
+        subtitle={ticket.code}
+        confirmLabel="Lưu"
+        canSubmit
+        busy={busy}
+        error={error}
+        onSubmit={() => void submitComplaint()}
+      >
+        <OptionalSelect
+          label="Người bị khiếu nại"
+          value={complaint.accused}
+          onChange={(v) => setComplaint((c) => ({ ...c, accused: v }))}
+          options={(assignees.data ?? []).map((p) => ({ value: p.id, label: p.display_name }))}
+          placeholder={assignees.isPending ? 'Đang tải…' : 'Chưa chọn'}
+        />
+        <label className="flex flex-col gap-1">
+          <span className="text-caption font-semibold text-fg-label">Ngày xảy ra</span>
+          <input
+            type="date"
+            value={complaint.date}
+            onChange={(e) => setComplaint((c) => ({ ...c, date: e.target.value }))}
+            className={INPUT_CLASS}
+          />
+        </label>
+        <TextAreaField
+          label="Mong muốn của khách"
+          value={complaint.wish}
+          onChange={(e) => setComplaint((c) => ({ ...c, wish: e.target.value }))}
+        />
+        <TextAreaField
+          label="Nguyên nhân gốc"
+          value={complaint.cause}
+          onChange={(e) => setComplaint((c) => ({ ...c, cause: e.target.value }))}
+        />
+        <TextAreaField
+          label="Bồi hoàn"
+          help="Ghi bằng chữ; không nhập số tiền, ticket không tự sinh phiếu chi."
+          value={complaint.compensation}
+          onChange={(e) => setComplaint((c) => ({ ...c, compensation: e.target.value }))}
+        />
+      </FormDialog>
+      <FormDialog
+        open={assignOpen}
+        onOpenChange={setAssignOpen}
+        title="Giao ticket"
+        subtitle={ticket.code}
+        confirmLabel="Giao"
+        canSubmit={team !== '' && assignee !== ''}
+        busy={busy}
+        error={error}
+        onSubmit={() => void submitAssign()}
+      >
+        <OptionalSelect
+          label="Đội"
+          value={team}
+          onChange={setTeam}
+          options={catalogs.options('TICKET_TEAM', ticket.team_code)}
+          placeholder="Chưa chọn"
+        />
+        <OptionalSelect
+          label="Người phụ trách"
+          value={assignee}
+          onChange={setAssignee}
+          options={(assignees.data ?? []).map((p) => ({ value: p.id, label: p.display_name }))}
+          placeholder={assignees.isPending ? 'Đang tải…' : 'Chưa giao'}
+        />
+      </FormDialog>
+      <FormDialog
+        open={target !== null}
+        onOpenChange={(open) => !open && close()}
+        title={`Chuyển sang «${statusName(target)}»`}
+        subtitle={ticket.code}
+        confirmLabel="Chuyển"
+        canSubmit={canSubmit}
+        busy={busy}
+        error={error}
+        onSubmit={() => void submit()}
+      >
+        {needResolution && (
+          <TextAreaField
+            label="Kết quả"
+            required
+            value={resolution}
+            onChange={(e) => setResolution(e.target.value)}
+          />
+        )}
+        {needSatisfaction && (
+          <label className="flex flex-col gap-1">
+            <span className="text-caption font-semibold text-fg-label">
+              Mức hài lòng của phụ huynh (1 đến 5) *
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={5}
+              value={satisfaction}
+              onChange={(e) => setSatisfaction(e.target.value)}
+              className={INPUT_CLASS}
+            />
+          </label>
+        )}
+        <TextAreaField
+          label={needNote ? 'Lý do huỷ' : 'Ghi chú'}
+          required={needNote}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+      </FormDialog>
+    </>
+  );
+}
