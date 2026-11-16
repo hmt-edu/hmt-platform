@@ -161,6 +161,7 @@ const ImportDataPage = lazyScreen(
   'ImportDataPage',
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
+const SettingsPage = lazyScreen(() => import('../pages/tham-so/SettingsPage'), 'SettingsPage');
 const PackageListPage = lazyScreen(
   () => import('../pages/goi-ban/PackageListPage'),
   'PackageListPage',
@@ -209,6 +210,10 @@ const TeacherClassesPage = lazyScreen(
 const TeacherClassPage = lazyScreen(
   () => import('../pages/gv/TeacherClassPage'),
   'TeacherClassPage',
+);
+const TeacherHoursPage = lazyScreen(
+  () => import('../pages/gv/TeacherHoursPage'),
+  'TeacherHoursPage',
 );
 const TeacherStudentPage = lazyScreen(
   () => import('../pages/gv/TeacherStudentPage'),
@@ -567,6 +572,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'quan-tri/tham-so',
+            element: (
+              <GatedCrmEntry slug="quan-tri/tham-so">
+                <SettingsPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'quan-tri/nguoi-dung',
             element: (
               <GatedCrmEntry slug="quan-tri/nguoi-dung">
@@ -675,6 +688,7 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: <TeacherTodayPage /> },
           { path: 'lich-day', element: <TeacherSchedulePage /> },
+          { path: 'gio-day', element: <TeacherHoursPage /> },
           { path: 'lop', element: <TeacherClassesPage /> },
           { path: 'lop/:classId', element: <TeacherClassPage /> },
           { path: 'lop/:classId/hoc-sinh/:studentId', element: <TeacherStudentPage /> },
