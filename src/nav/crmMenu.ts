@@ -21,6 +21,8 @@ export type MenuEntry = {
   sub?: string | undefined;
   /** Giai đoạn màn này được dựng; chưa tới thì mở ra trang "Sắp có". */
   stage: string;
+  /** Công tắc tính năng (danh mục MODULE) riêng của mục này, ngoài công tắc của cả nhóm; tắt thì ẩn mục và mở thẳng đường dẫn báo chưa bật. */
+  feature?: string | undefined;
 };
 
 export type MenuGroup = {
@@ -186,6 +188,7 @@ export const CRM_MENU: MenuGroup[] = [
         sub: 'Ghi danh',
         requires: can('ENROLLMENT'),
         stage: '',
+        feature: 'SAP_HET_GIO',
       },
       { code: 'LOP-01', label: 'Lớp', slug: 'lop', sub: 'Lớp', requires: can('CLASS'), stage: '' },
       {
@@ -218,7 +221,8 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'yeu-cau-buoi',
         sub: 'Buổi học',
         requires: can('SESSION'),
-        stage: GD2,
+        stage: '',
+        feature: 'YEU_CAU_BUOI',
       },
       {
         code: 'BUOI-12',
@@ -465,7 +469,12 @@ export function entryAllowed(entry: MenuEntry, access: MenuAccess): boolean {
 export function visibleMenu(menu: MenuGroup[], access: MenuAccess): MenuGroup[] {
   return menu
     .filter((group) => !group.feature || access.featureOn(group.feature))
-    .map((group) => ({ ...group, entries: group.entries.filter((e) => entryAllowed(e, access)) }))
+    .map((group) => ({
+      ...group,
+      entries: group.entries.filter(
+        (e) => entryAllowed(e, access) && (!e.feature || access.featureOn(e.feature)),
+      ),
+    }))
     .filter((group) => group.entries.length > 0);
 }
 
@@ -482,6 +491,7 @@ export function checkRoute(menu: MenuGroup[], slug: string, access: MenuAccess):
     if (!entry) continue;
     if (!entryAllowed(entry, access)) return { status: 'forbidden' };
     if (group.feature && !access.featureOn(group.feature)) return { status: 'feature-off' };
+    if (entry.feature && !access.featureOn(entry.feature)) return { status: 'feature-off' };
     return { status: 'ok', group, entry };
   }
   return { status: 'not-found' };
