@@ -60,7 +60,7 @@ Hệ thống chỉ sinh buổi từ 17/11/2026 trở đi. Buổi trước ngày 
 
 Mỗi dòng ghi danh sinh **một** dòng "Số dư đầu kỳ" bằng gio_con_lai, mang ngày 17/11/2026.
 
-**Không nạp số âm ở `gio_con_lai`** (số từ 0 trở lên; anh Trường xác nhận không có em nào âm giờ, Q-253). Cột `ngay_chot` trong tab này chỉ để tham khảo: hàm lấy ngày chốt từ tham số `opening_balance_date`, để trống cũng không sao. Cột `tinh_trang_moi` nên luôn điền; nếu để trống, hàm đặt tình trạng **Chờ xếp lớp** (không báo lỗi), nên kiểm lại báo cáo xem trước.
+**Không nạp số âm ở `gio_con_lai`** (số từ 0 trở lên; anh Trường xác nhận không có em nào âm giờ, Q-253): số âm báo lỗi `HMT_NAP_GIO_AM`. Giờ còn lại bằng 0 vẫn sinh dòng "Số dư đầu kỳ" 0 giờ. **Ghi danh còn một dòng lỗi thì Nạp bị chặn cả loại** (không ghi dòng nào, kể cả dòng đúng): sửa hết lỗi trong báo cáo Xem trước rồi mới nạp. Cột `ngay_chot` trong tab này chỉ để tham khảo: hàm lấy ngày chốt từ tham số `opening_balance_date`, để trống cũng không sao. Cột `tinh_trang_moi` nên luôn điền; nếu để trống, hàm đặt tình trạng **Chờ xếp lớp** (không báo lỗi, có cảnh báo), nên kiểm lại báo cáo xem trước. Giá trị "Đã xếp lớp" (script sinh ra) thành **Đang học** nếu có `ngay_vao_lop`, không thì **Chờ xếp lớp**.
 
 ### Tab 07_BUOIHOC và 08_DIEMDANH
 
