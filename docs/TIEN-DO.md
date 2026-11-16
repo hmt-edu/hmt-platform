@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 13/11/2026 (mục «Trạng thái 13/11/2026» bên dưới là bản mới nhất, ghi PR đã gộp từ 00:00 ngày 13/11 theo giờ Việt Nam, #260 đến #267; mục «Trạng thái 12/11/2026» ghi PR tới #251; các mục ghi ngày cũ hơn là lịch sử, có thể đã lỗi thời). Người làm tiếp đọc file này trước, rồi `docs/quy-trinh-phoi-hop.md`, `docs/nhat-ky/` (ba file) và `CLAUDE.md`.
+Cập nhật: 16/11/2026 (mục «Trạng thái 16/11/2026» bên dưới là bản mới nhất: repo chuyển sang `hmt-edu/hmt-platform`, số PR đánh lại từ #1, ghi các PR đã gộp từ 15/11 tới 16/11 chiều, #1 đến #66; các mục ghi ngày cũ hơn (số PR cũ #2xx) là lịch sử).
 
 **Từ 04/11/2026 (Đ285 đến Đ290): v2 (`hmt-v2`) dừng hẳn; v1 (repo này) làm tiếp cho Cơ sở 5 chạy thật.** Thiết kế bám v1; từ v2 chỉ lấy nghiệp vụ (mục 14 của `docs/spec/04`, thắng các mục khác khi khác nhau). Canvas chuẩn là `design/hmt-canvas-9933/` (v146, thay `6f57`, Đ293; `6f57` thay `8ab9`) và `design/hmt-canvas-9189/` (Đào tạo, Giáo viên, bản hiện hành là nội dung thư mục này; `design/hmt-canvas-fcd1/` v41 `1793782759-fcd1` giữ để đối chiếu, không còn là bản hiện hành; bảng khác biệt: `docs/nghiep-vu/doi-chieu-canvas-dao-tao-v41.md`). Mốc: 10/11 Tuyển sinh + màn Nhập CS5; ~12/11 Bán hàng, Thu chi; ~17/11 Đào tạo, Cổng giáo viên, Aftersale (ngày chốt giờ học 17/11). Bảng khác biệt và kế hoạch theo mốc: `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md` (chờ anh OK trước khi viết migration). Chưa sửa giao diện Báo giá, Đơn hàng, Phiếu thu khi anh chưa gửi yêu cầu.
 
@@ -111,6 +111,23 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm phiếu tái tục: khoá các giai đoạn con **L7A, L7B, L8A** của `UPSALE_SUBSTAGE` (không Ngừng được), cùng cách khoá L5A, L5B, L5P của cơ hội, khi viết hàm dùng chúng.
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
+
+## Trạng thái 16/11/2026 (repo mới `hmt-edu/hmt-platform`, PR đánh số lại từ #1; đã gộp tới #66, 17:50)
+
+Từ 15/11 chạy **chế độ tự chủ** (Tester gộp bằng `gh pr merge --squash --match-head-commit`, cổng gộp tự động đọc `DANH-SACH-DAT`), 4 Code song song, repo **đã công khai** ngày 16/11 (đã dọn tên tài khoản, họ tên, tên miền; `docs/van-hanh/cong-khai-repo.md`). Mọi tính năng chạm luồng ổn định (bán hàng, thu tiền, ghi danh, điểm danh) đi qua cờ phân hệ **mặc định tắt**; Chat bật theo cơ sở khi Tester đạt (Cấu hình > Công tắc tính năng, QT-10).
+
+| Mảng | Đã gộp (số PR) |
+|---|---|
+| Cổng giáo viên và buổi học (Code A) | GV-11 (#1), P7 tự Done ghi lỗi (#2), BUOI-14 sửa điểm danh sau Done (#4), BUOI-13 đổi giáo viên một buổi (#5), GD-05 điều chỉnh giờ (#6), F5 F6 F7 làm cứng hàm (#8), GV-03 lịch tháng (#14), dấu Đúng/Trễ hạn (#15), GV-13 hồ sơ rút gọn (#17), GV-16 giờ dạy của tôi (#19), BUOI-08/10 yêu cầu buổi củng cố (#20), BUOI-09 học bổ trợ (#21), BUOI-07 học bù (#23), GD-07 sắp hết giờ (#30), BUOI-15 điểm danh trong ngày (#31), GV-14 ticket từ cổng giáo viên (#53), BUOI-06 thêm học thử (#62) và Playwright (#65), chấm BTVN thông báo lưu (#55), tài liệu hàm (#59) |
+| Bán hàng, tiền (Code C) | UI-O4 tạo đơn từ cơ hội (#9), TC-09 hoàn tác khoản tiền vào (#29), CH-09 điều khoản thanh toán (#40), CH-04 chính sách chiết khấu (#42), BH-09 cho học trước đóng tiền sau (#64) |
+| Aftersale (Code B) | luật AS-01..13 (#16), ticket CS lát đầu (#18), chi tiết, giao, tạo mới, SLA, nhóm (#28), phiếu nghiệp vụ A1 (#66) |
+| Chuyển lớp, hoàn phí, bảo lưu, dừng học, báo cáo (Code D) | chuyển lớp, chuyển cơ sở (#32), BC-01 tổng quan (#33), tính hoàn phí (#36), view báo cáo (#39, #61), bảo lưu (#41), hoàn phí bản ghi và phiếu chi (#54), dừng học giữ số dư (#56) |
+| Quản trị, cấu hình | QT-09 tham số (#34), QT-10 công tắc (#35), QT-14 ngày nghỉ lễ (#37), QT-05 ma trận quyền (#43, #58), QT-04 vai trò (#52), QT-08 cơ sở và phòng (#60, #63) |
+| Nạp dữ liệu (Code B) | PR-1 (#10), PR-2 số dư (#44), PR-3 kiểm trước nạp (#45), seed lớn (#12) |
+| Kiểm thử và hạ tầng | T4 đường học sinh mới (#13), sửa bài nháy (#7, #22, #24, #27), thay số điện thoại giả (#11), dọn trước khi công khai (#46, #47, #48), siết workflow, Environment staging và preview (#49, #51), `--include-all` ở deploy staging (#57) |
+
+Còn chờ (cần quyết hoặc cần khung thiết kế): BC-08, BC-09 (giáo viên trễ hạn, giờ dạy theo tháng và chốt tháng), CH-05..07 (khung chương trình, rubric), CHUNG-15 (hàng chờ duyệt) chưa vẽ; BUOI-06 làm theo phương án an toàn (cơ hội từ L5, chờ Chat xác nhận); GD-07 chưa có cột phiếu tái tục (R-V2-25 bỏ tự sinh).
+
 
 ## Trạng thái 13/11/2026 (PR đã gộp từ 00:00 giờ Việt Nam tới 04:32, #260 đến #267)
 
