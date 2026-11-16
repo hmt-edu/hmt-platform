@@ -89,6 +89,7 @@ const ReviewGradingPage = lazyScreen(
 const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 'ExamGradingPage');
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
+const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -122,6 +123,10 @@ const ReceiptListPage = lazyScreen(
 const SessionRequestListPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
   'SessionRequestListPage',
+);
+const SessionRequestMakeupPage = lazyScreen(
+  () => import('../pages/yeu-cau-buoi/SessionRequestMakeupPage'),
+  'SessionRequestMakeupPage',
 );
 const SessionRequestSupportPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestSupportPage'),
@@ -165,6 +170,7 @@ const PermissionMatrixPage = lazyScreen(
   () => import('../pages/ma-tran/PermissionMatrixPage'),
   'PermissionMatrixPage',
 );
+const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
 const DiscountPolicyPage = lazyScreen(
   () => import('../pages/chiet-khau/DiscountPolicyPage'),
   'DiscountPolicyPage',
@@ -234,6 +240,10 @@ const TeacherHoursPage = lazyScreen(
 const TeacherStudentPage = lazyScreen(
   () => import('../pages/gv/TeacherStudentPage'),
   'TeacherStudentPage',
+);
+const DayAttendancePage = lazyScreen(
+  () => import('../pages/diem-danh-ngay/DayAttendancePage'),
+  'DayAttendancePage',
 );
 const ExpiringListPage = lazyScreen(
   () => import('../pages/sap-het-gio/ExpiringListPage'),
@@ -400,6 +410,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'ticket',
+            element: (
+              <GatedCrmEntry slug="ticket">
+                <TicketListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'ghi-danh',
             element: (
               <GatedCrmEntry slug="ghi-danh">
@@ -420,6 +438,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="ghi-danh">
                 <EnrollmentLedgerPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'diem-danh-trong-ngay',
+            element: (
+              <GatedCrmEntry slug="diem-danh-trong-ngay">
+                <DayAttendancePage />
               </GatedCrmEntry>
             ),
           },
@@ -460,6 +486,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="yeu-cau-buoi">
                 <SessionRequestListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'yeu-cau-buoi/tao-hoc-bu',
+            element: (
+              <GatedCrmEntry slug="yeu-cau-buoi">
+                <SessionRequestMakeupPage />
               </GatedCrmEntry>
             ),
           },
@@ -604,6 +638,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/ma-tran-quyen">
                 <PermissionMatrixPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/ngay-nghi',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/ngay-nghi">
+                <HolidayPage />
               </GatedCrmEntry>
             ),
           },
