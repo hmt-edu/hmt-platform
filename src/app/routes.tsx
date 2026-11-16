@@ -89,6 +89,7 @@ const ReviewGradingPage = lazyScreen(
 const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 'ExamGradingPage');
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
+const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -122,6 +123,10 @@ const ReceiptListPage = lazyScreen(
 const SessionRequestListPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
   'SessionRequestListPage',
+);
+const SessionRequestMakeupPage = lazyScreen(
+  () => import('../pages/yeu-cau-buoi/SessionRequestMakeupPage'),
+  'SessionRequestMakeupPage',
 );
 const SessionRequestSupportPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestSupportPage'),
@@ -162,6 +167,7 @@ const ImportDataPage = lazyScreen(
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
 const RoleListPage = lazyScreen(() => import('../pages/vai-tro/RoleListPage'), 'RoleListPage');
+const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
 const DiscountPolicyPage = lazyScreen(
   () => import('../pages/chiet-khau/DiscountPolicyPage'),
   'DiscountPolicyPage',
@@ -232,9 +238,21 @@ const TeacherStudentPage = lazyScreen(
   () => import('../pages/gv/TeacherStudentPage'),
   'TeacherStudentPage',
 );
+const DayAttendancePage = lazyScreen(
+  () => import('../pages/diem-danh-ngay/DayAttendancePage'),
+  'DayAttendancePage',
+);
 const ExpiringListPage = lazyScreen(
   () => import('../pages/sap-het-gio/ExpiringListPage'),
   'ExpiringListPage',
+);
+const TeacherTicketsPage = lazyScreen(
+  () => import('../pages/gv/TeacherTicketsPage'),
+  'TeacherTicketsPage',
+);
+const TeacherTicketCreatePage = lazyScreen(
+  () => import('../pages/gv/TeacherTicketCreatePage'),
+  'TeacherTicketCreatePage',
 );
 const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
@@ -397,6 +415,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'ticket',
+            element: (
+              <GatedCrmEntry slug="ticket">
+                <TicketListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'ghi-danh',
             element: (
               <GatedCrmEntry slug="ghi-danh">
@@ -417,6 +443,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="ghi-danh">
                 <EnrollmentLedgerPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'diem-danh-trong-ngay',
+            element: (
+              <GatedCrmEntry slug="diem-danh-trong-ngay">
+                <DayAttendancePage />
               </GatedCrmEntry>
             ),
           },
@@ -457,6 +491,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="yeu-cau-buoi">
                 <SessionRequestListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'yeu-cau-buoi/tao-hoc-bu',
+            element: (
+              <GatedCrmEntry slug="yeu-cau-buoi">
+                <SessionRequestMakeupPage />
               </GatedCrmEntry>
             ),
           },
@@ -593,6 +635,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/danh-muc">
                 <CatalogPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/ngay-nghi',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/ngay-nghi">
+                <HolidayPage />
               </GatedCrmEntry>
             ),
           },
@@ -750,6 +800,8 @@ export const routes: RouteObject[] = [
           { path: 'lop/:classId', element: <TeacherClassPage /> },
           { path: 'lop/:classId/hoc-sinh/:studentId', element: <TeacherStudentPage /> },
           { path: 'viec-can-lam', element: <TeacherTodoPage /> },
+          { path: 'ticket', element: <TeacherTicketsPage /> },
+          { path: 'ticket/tao', element: <TeacherTicketCreatePage /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },
           { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
           { path: 'buoi/:sessionId/cham-btvn', element: <HomeworkGradingPage /> },
