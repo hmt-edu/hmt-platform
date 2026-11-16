@@ -1,0 +1,9 @@
+# BH-09 Cho học trước, đóng tiền sau (migration 250)
+
+Luật R-GD-12: quản lý cơ sở bật trên đơn ĐÃ DUYỆT, CHƯA THU TIỀN → ghi danh tạo sớm, quỹ giờ được âm tối đa `max_sessions_ahead` buổi (mặc định 2); vượt hạn mức thì em bị loại khỏi danh sách các buổi sau (R-GIO-03, đã có từ migration 102 qua `enrollment.pay_later_enabled`). Khi thu tiền, các buổi đã học vẫn tính là đã học và trừ vào giờ được cấp.
+**Cờ tắt mặc định:** tham số `pay_later_toggle_enabled` (BOOL, ghi đè theo cơ sở, nhóm Bán hàng). Tắt: `set_order_pay_later` báo `HMT_TINH_NANG_TAT`. Chat bật khi Tester đạt.
+**DB:** bảng `order_pay_later` (một dòng mỗi đơn, RLS đọc theo quyền xem đơn của cơ sở, chỉ ghi qua hàm); hàm `set_order_pay_later(đơn, bật, ghi chú)`: quyền Đơn hàng · Duyệt (Trưởng cơ sở, Admin làm thay), cần phân hệ Bán hàng bật; bật cần đơn Đã duyệt và chưa có khoản tiền vào (`HMT_DON_DA_THU`); tắt cần mọi ghi danh còn quỹ giờ không âm (`HMT_QUY_GIO_AM`); ghi dòng lịch sử `CHO_HOC_TRUOC`. `create_enrollments_for_order` (thân giữ nguyên bản migration 213) cho đơn đã bật tạo ghi danh không cần đủ cọc và đặt `pay_later_enabled`.
+**Số migration 250:** dải C (180–209) đã hết; 213 (#38) cũng thay ràng buộc `event_code` và hàm tạo ghi danh nên 250 phải chạy sau 213 (số 184 sẽ chạy trước 213 và bị đè).
+**Giao diện:** nút «Cho học trước» (hoặc «Tắt cho học trước») ở bản ghi Đơn hàng Đã duyệt, chỉ khi người dùng có Đơn hàng · Duyệt và đơn chưa thu tiền; hộp xác nhận theo khung BH09_bat (hiện hạn mức buổi). Dòng thời gian hiện sự kiện «Cho học trước, đóng tiền sau».
+**Lỗi đã gặp và sửa:** `orderEventEntries` thiếu nhánh `CHO_HOC_TRUOC` làm trang đơn sập sau khi bật; có bài Vitest và bài pgTAP tái hiện.
+**Chưa làm:** hạn mức buổi chưa hiện số buổi đã dùng trên đơn; cảnh báo vận hành và sale khi em bị loại khỏi danh sách (R-GD-12) thuộc luồng điểm danh, làn Đào tạo.

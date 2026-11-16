@@ -57,6 +57,56 @@ test('Nhóm ticket: Admin thêm nhóm và nhóm con; thiếu tên thì báo tạ
   await expect(section.getByText(`Nhóm con ${tag}`)).toBeVisible();
 });
 
+test('QT-08 Cơ sở và phòng: Admin sửa địa chỉ cơ sở, thêm phòng, bị chặn khi trùng mã, ngừng rồi dùng lại', async ({
+  page,
+}, testInfo) => {
+  const tag = `E2E${testInfo.project.name === 'dien-thoai' ? 'DT' : 'MT'}${Date.now().toString().slice(-6)}`;
+  await enterAsAdmin(page, 'quantri.cs1');
+  await page.goto('/crm/quan-tri/co-so');
+  await expect(page.getByRole('heading', { level: 1, name: 'Cơ sở và phòng học' })).toBeVisible();
+  // Chọn CS1 (danh sách bên trái), sửa địa chỉ.
+  await page.getByRole('button', { name: /^CS1 / }).click();
+  await page.getByRole('button', { name: 'Sửa cơ sở' }).click();
+  const branch = page.getByRole('dialog', { name: 'Sửa cơ sở CS1' });
+  await branch.getByLabel('Địa chỉ').fill(`Địa chỉ thử ${tag}`);
+  await branch.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText(`Địa chỉ thử ${tag}`)).toBeVisible();
+  // Thêm phòng: thiếu thì báo tại ô.
+  await page.getByRole('button', { name: 'Thêm phòng', exact: true }).click();
+  const room = page.getByRole('dialog', { name: /^Thêm phòng/ });
+  await room.getByRole('button', { name: 'Thêm phòng', exact: true }).click();
+  await expect(room.getByText('Nhập tên phòng.')).toBeVisible();
+  await expect(room.getByText('Nhập sức chứa, là số lớn hơn 0.')).toBeVisible();
+  await room.getByLabel('Mã phòng').fill(tag);
+  await room.getByLabel('Tên phòng').fill(`Phòng thử ${tag}`);
+  await room.getByLabel('Sức chứa').fill('18');
+  await room.getByRole('button', { name: 'Thêm phòng', exact: true }).click();
+  const row = page.getByRole('row', { name: new RegExp(tag) });
+  await expect(row).toBeVisible();
+  // Thêm lại cùng mã: báo trùng ngay ở ô.
+  await page.getByRole('button', { name: 'Thêm phòng', exact: true }).click();
+  const again = page.getByRole('dialog', { name: /^Thêm phòng/ });
+  await again.getByLabel('Mã phòng').fill(tag);
+  await again.getByLabel('Tên phòng').fill('Tên khác');
+  await again.getByLabel('Sức chứa').fill('10');
+  await again.getByRole('button', { name: 'Thêm phòng', exact: true }).click();
+  await expect(again.getByText(`Mã ${tag} đã có trong cơ sở.`)).toBeVisible();
+  await again.getByRole('button', { name: 'Huỷ' }).click();
+  // Ngừng (có hộp xác nhận), rồi Dùng lại.
+  await row.getByRole('button', { name: 'Ngừng' }).click();
+  await page.getByRole('button', { name: 'Ngừng phòng' }).click();
+  await expect(
+    page.getByRole('row', { name: new RegExp(tag) }).getByText('Ngừng', { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole('row', { name: new RegExp(tag) })
+    .getByRole('button', { name: 'Dùng lại' })
+    .click();
+  await expect(
+    page.getByRole('row', { name: new RegExp(tag) }).getByText('Đang dùng'),
+  ).toBeVisible();
+});
+
 test('CSKH vào trang SLA thì không được lưu', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/cau-hinh/sla-ticket');

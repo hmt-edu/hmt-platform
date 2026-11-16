@@ -208,6 +208,23 @@ export function useChangeSessionStaff(sessionId: string) {
   });
 }
 
+export function useAddTrialStudent(sessionId: string) {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (prospectStudentId: string) =>
+      rpc<{ attendance_id: string; student_id: string; warnings: string[] }>(
+        supabase,
+        'add_trial_student',
+        {
+          p_session_id: sessionId,
+          p_prospect_student_id: prospectStudentId,
+        },
+      ),
+    onSuccess: () => refresh(),
+  });
+}
+
 export function useMoveOptions(sessionId: string, enabled: boolean) {
   const supabase = useDb();
   return useQuery({
