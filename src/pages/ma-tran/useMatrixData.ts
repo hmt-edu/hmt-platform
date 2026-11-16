@@ -112,6 +112,24 @@ export function saveMatrix(
   });
 }
 
+/** Cờ sửa ma trận (tham số permission_matrix_edit_enabled, mặc định tắt): tắt thì màn chỉ xem, DB cũng chặn lưu. */
+export function useMatrixEditEnabled() {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['perm-edit-flag'],
+    queryFn: async () => {
+      const { rows } = await fetchRows<{ value: string }>(
+        supabase
+          .schema('app')
+          .from('setting_def')
+          .select('value')
+          .eq('key', 'permission_matrix_edit_enabled'),
+      );
+      return rows[0]?.value === 'true';
+    },
+  });
+}
+
 export function useRefreshMatrix() {
   const client = useQueryClient();
   return useCallback(async () => {

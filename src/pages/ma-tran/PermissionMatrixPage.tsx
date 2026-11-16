@@ -31,6 +31,7 @@ import {
   usePermissionChanges,
   usePermissionRows,
   usePermissionVersions,
+  useMatrixEditEnabled,
   useRefreshMatrix,
   useRoles,
 } from './useMatrixData';
@@ -46,6 +47,7 @@ export function PermissionMatrixPage() {
   const scopes = usePermScopes();
   const rows = usePermissionRows();
   const versions = usePermissionVersions();
+  const editFlag = useMatrixEditEnabled();
   const changes = usePermissionChanges((versions.data ?? []).slice(0, 5).map((v) => v.version_no));
   const [picked, setPicked] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -53,7 +55,9 @@ export function PermissionMatrixPage() {
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const canEdit = access.can('ADMIN', 'SUA');
+  // Sửa cần quyền Quản trị · Sửa VÀ cờ sửa ma trận đang bật (mặc định tắt; DB cũng chặn).
+  const flagOn = editFlag.data === true;
+  const canEdit = access.can('ADMIN', 'SUA') && flagOn;
   const base = useMemo(() => baseMap(rows.data ?? []), [rows.data]);
   const role = (roles.data ?? []).find((r) => r.code === picked) ?? roles.data?.[0] ?? null;
   const current = versions.data?.[0] ?? null;
@@ -115,6 +119,12 @@ export function PermissionMatrixPage() {
         <Spinner label="Đang tải ma trận quyền…" />
       ) : (
         <>
+          {editFlag.data === false && access.can('ADMIN', 'SUA') && (
+            <Alert tone="warning">
+              Sửa ma trận quyền đang tắt. Bật tham số «Cho phép sửa ma trận quyền» ở Cài đặt tham số
+              (nhóm Đăng nhập, bảo mật) khi cần đổi quyền. Màn này đang chỉ xem.
+            </Alert>
+          )}
           <p className="text-body text-fg-muted">
             Phạm vi dữ liệu: {scopes.data.map((s) => `${s.name}`).join(' · ')}. Ô đã sửa có viền
             cam; ô mờ không sửa được (phân hệ Quản trị chỉ cấp cho Admin).
