@@ -98,3 +98,18 @@ Loại `PHIEU_TEST` của `app.import_training_records`. Nhóm CRM: dòng lỗi 
 
 ## Cơ hội: cột `nguon_goc` (migration 155, Chat chốt 15/11)
 Cột `nguon_goc` của script là chữ tự do ("Page T9", "BGĐ"), không phải tên loại nguồn trong danh mục. Hàm Cơ hội: nếu khớp tên (hoặc mã) loại nguồn thì dùng; "BGĐ" hoặc "Ban Giám Đốc" thành loại Ban Giám Đốc; mọi giá trị khác, kể cả trống, thành loại **Marketing kèm cảnh báo** "Loại nguồn suy mặc định" (không phải lỗi). Chữ gốc ghi vào ghi chú của cơ hội ("Nguồn gốc (chữ gốc): ..."), không thêm cột. Báo cáo Xem trước và Nạp có `summary.source_type_defaulted` (số dòng suy loại nguồn). Cột `nguon` (nguồn) vẫn phải thuộc loại; sai thì LỖI `HMT_NGUON_SAI`. Kiểm thử: `155_nap_co_hoi_nguon_goc.test.sql`. Anh Trường có thể phản đối quyết định này.
+
+## Giới hạn thời gian và số đo trên dữ liệu giả cỡ lớn (PR-3, migration 164)
+Đo 16/11/2026 trên DB local (máy đang tải nặng, nên số có thể cao hơn máy bình thường), toàn dữ liệu giả, hoàn tác sau khi đo:
+| Việc (1000 dòng) | Thời gian |
+|---|---|
+| Xem trước Phụ huynh | 3,5 đến 10 giây |
+| Nạp thật Phụ huynh | 5 đến 8 giây |
+| Nạp lại cùng file (toàn TRUNG) | 1,7 đến 8 giây |
+| Xem trước Học sinh | 5 giây (22 giây khi thống kê bảng phụ huynh chưa cập nhật) |
+| Nạp thật Học sinh | 10 đến 20 giây |
+| Báo cáo đối soát sau nạp | dưới 0,2 giây |
+- **Vấn đề tìm ra:** vai trò `authenticated` của Supabase có `statement_timeout = 8s`; lô 1000 dòng (mặc định `import_max_rows`) có thể vượt 8 giây và bị cắt giữa chừng bằng lỗi chung. Lô 5000 dòng Học sinh chạy quá 10 phút trong một giao dịch dài (thống kê cũ, quét tuần tự): **không dùng lô lớn hơn tham số cho phép**.
+- **Xử lý (migration 164):** ba hàm nạp (`import_records`, `import_training_records`, `import_leads`) có `statement_timeout` riêng 120 giây; không nới giới hạn của vai trò. Kiểm thử: `164_nap_gioi_han_thoi_gian.test.sql`.
+- **Khuyến nghị khi nạp thật:** chia file theo tab và theo cơ sở, mỗi lô tối đa 1000 dòng; nạp Phụ huynh xong chờ vài phút (hoặc để hệ thống cập nhật thống kê) rồi mới nạp Học sinh.
+- Chưa đo trên staging và bản chạy thật: nhờ Tester chạy lại khối đo (`xem trước 1000 dòng`) trên staging để có số của máy chủ thật.
