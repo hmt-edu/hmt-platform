@@ -1,4 +1,4 @@
--- Aftersale lát 4 (migration 161): đổi loại, nhóm con, mức độ; tính lại hạn từ lúc tạo, nhật ký, các luật chặn. Dữ liệu giả.
+-- Aftersale lát 4 (migration 222): đổi loại, nhóm con, mức độ; tính lại hạn từ lúc tạo, nhật ký, các luật chặn. Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();

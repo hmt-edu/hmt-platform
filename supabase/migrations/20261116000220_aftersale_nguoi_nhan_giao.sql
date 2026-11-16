@@ -1,4 +1,4 @@
--- Code B (16/11/2026), Aftersale lát 3b, migration 159: danh sách người nhận giao ticket (hộp thoại Giao của CSN-03).
+-- Code B (16/11/2026), Aftersale lát 3b, migration 220: danh sách người nhận giao ticket (hộp thoại Giao của CSN-03).
 -- Luật: AS-09 (quyền Ticket · Sửa mới giao được, như app.assign_ticket). Không đụng app.list_assignable_staff (dùng chung cho Lead, Cơ hội).
 select set_config('hmt.migration', 'on', false);
 

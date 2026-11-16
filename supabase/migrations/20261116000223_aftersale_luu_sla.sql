@@ -1,4 +1,4 @@
--- Code B (16/11/2026), Aftersale lát 5, migration 162: lưu cấu hình SLA (canvas 9189: CSN09_sla, CSN09_chua_luu).
+-- Code B (16/11/2026), Aftersale lát 5, migration 223: lưu cấu hình SLA (canvas 9189: CSN09_sla, CSN09_chua_luu).
 -- Luật: docs/spec/de-xuat-luat-aftersale.md AS-07 (hạn phản hồi đầu và hạn xử lý xong theo loại × mức độ; hạn riêng nhóm con đè lên), AS-13 (công tắc).
 -- Ticket đã tạo giữ nguyên hạn đã chụp lúc tạo (không tính lại); chỉ ticket tạo sau khi lưu theo số mới. Mọi sửa ghi nhật ký (trigger audit của apply_standard).
 select set_config('hmt.migration', 'on', false);

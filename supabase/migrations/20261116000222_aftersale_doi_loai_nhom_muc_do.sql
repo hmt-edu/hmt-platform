@@ -1,4 +1,4 @@
--- Code B (16/11/2026), Aftersale lát 4, migration 161: đổi loại, đổi nhóm con, đổi mức độ ticket (canvas 9189: CSN04_doi_loai, CSN04_doi_nhom_con, CSN03 «Đổi mức độ thì hạn tính lại từ lúc tạo»).
+-- Code B (16/11/2026), Aftersale lát 4, migration 222: đổi loại, đổi nhóm con, đổi mức độ ticket (canvas 9189: CSN04_doi_loai, CSN04_doi_nhom_con, CSN03 «Đổi mức độ thì hạn tính lại từ lúc tạo»).
 -- Luật: docs/spec/de-xuat-luat-aftersale.md AS-02 (nhật ký), AS-05 (loại), AS-07 (hạn chụp, tính lại từ lúc tạo), AS-08 (mức độ mặc định theo nhóm con), AS-13 (công tắc).
 -- Làm gì: ba hàm đổi, chung một hàm trong lõi app.reclassify_ticket (kiểm luật, tính lại hạn, ghi nhật ký). Mã ticket KHÔNG đổi (AS-01).
 select set_config('hmt.migration', 'on', false);

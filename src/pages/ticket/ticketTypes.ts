@@ -28,7 +28,7 @@ export type TicketBoardColumn = {
   rows: TicketRow[];
 };
 
-/** Chi tiết ticket từ app.get_ticket (migration 158): ticket_row cộng các trường chi tiết. */
+/** Chi tiết ticket từ app.get_ticket (migration 219): ticket_row cộng các trường chi tiết. */
 export type TicketDetail = TicketRow & {
   branch_id: string;
   description: string;

@@ -1,4 +1,4 @@
--- Aftersale lát 5 (migration 162): save_ticket_sla: lưu bảng hạn, hạn riêng nhóm con, luật chặn, quyền Admin. Dữ liệu giả.
+-- Aftersale lát 5 (migration 223): save_ticket_sla: lưu bảng hạn, hạn riêng nhóm con, luật chặn, quyền Admin. Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();

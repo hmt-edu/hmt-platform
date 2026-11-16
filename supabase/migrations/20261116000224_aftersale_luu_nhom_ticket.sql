@@ -1,4 +1,4 @@
--- Code B (16/11/2026), Aftersale lát 6, migration 163: thêm, sửa, ngừng nhóm và nhóm con ticket (canvas 9189: CSN08_ds, CSN08_form_nhom_con).
+-- Code B (16/11/2026), Aftersale lát 6, migration 224: thêm, sửa, ngừng nhóm và nhóm con ticket (canvas 9189: CSN08_ds, CSN08_form_nhom_con).
 -- Luật: docs/spec/de-xuat-luat-aftersale.md AS-05 (tính chất ticket giáo viên), AS-07 (hạn riêng), AS-08 (mức độ, đội mặc định), AS-10 (phiếu nghiệp vụ đi kèm).
 -- Danh mục cấu hình: mã (code) không đổi, KHÔNG xoá, chỉ Ngừng (CLAUDE.md «Cấu hình»); mọi sửa ghi nhật ký qua trigger audit.
 select set_config('hmt.migration', 'on', false);

@@ -1,4 +1,4 @@
--- Aftersale lát 3a (migration 158): get_ticket (chi tiết, dòng thời gian, RLS) và add_ticket_note (ghi chú). Dữ liệu giả.
+-- Aftersale lát 3a (migration 219): get_ticket (chi tiết, dòng thời gian, RLS) và add_ticket_note (ghi chú). Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -76,7 +76,7 @@ select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select app.change_ticket_status((select (j ->> 'id')::uuid from t1), 'DA_HUY', 'Phụ huynh rút');
 select is(pg_temp.err($$select app.add_ticket_note((select (j ->> 'id')::uuid from t1), 'Sau khi huỷ')$$), 'HMT_TICKET_TRANG_THAI_SAI', 'Chặn: ticket đã huỷ không thêm ghi chú (AS-02)');
 
--- ================= Người nhận giao (migration 159) =================
+-- ================= Người nhận giao (migration 220) =================
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select is((select count(*)::int from app.list_ticket_assignees((select id from app.branch where code = 'CS5')) where id = pg_temp.uid('cskh5')), 1, 'Danh sách người nhận giao: có nhân viên CRM của cơ sở');
 select is((select count(*)::int from app.list_ticket_assignees((select id from app.branch where code = 'CS5')) where id = pg_temp.uid('cskh1')), 0, 'Danh sách người nhận giao: không lẫn nhân viên cơ sở khác');

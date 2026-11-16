@@ -1,4 +1,4 @@
--- Aftersale lát 3c (migration 160): phần riêng khiếu nại (update_ticket_complaint), ticket con và tính chất trong get_ticket. Dữ liệu giả.
+-- Aftersale lát 3c (migration 221): phần riêng khiếu nại (update_ticket_complaint), ticket con và tính chất trong get_ticket. Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();

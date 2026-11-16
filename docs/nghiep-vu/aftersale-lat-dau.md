@@ -24,23 +24,23 @@ RLS đọc: phạm vi toàn hệ thống thấy hết; cơ sở thấy ticket c�
 ## Chưa làm (ghi vào PR)
 Giao diện CSN01 (danh sách), CSN02 (Kanban), CSN03 (biểu mẫu); phiếu nghiệp vụ (nhóm A đi sau, nhóm tiền chưa); Sale chỉ thấy ticket mình (ma trận hiện cho Sale phạm vi cơ sở, AS-09 muốn chỉ ticket mình tạo, mình phụ trách); giáo viên thấy ticket gắn lớp mình; khung màn cấu hình Admin; tự nâng ticket quá hạn lên quản lý. Kiểm thử: `supabase/tests/database/156_aftersale_lat_dau.test.sql` (67 bài).
 
-## Lát 3a (migration 158): chi tiết và ghi chú
+## Lát 3a (migration 219): chi tiết và ghi chú
 - `app.get_ticket(id)`: chi tiết ticket và dòng thời gian trong một lần gọi; RLS lọc theo phạm vi (AS-09); không thấy thì `HMT_KHONG_TIM_THAY`.
 - `app.add_ticket_note(id, nội dung)`: thêm ghi chú (loại sự kiện `GHI_CHU`); cần Ticket · Sửa ở cơ sở của ticket; chặn ghi chú rỗng và ticket đã đóng/huỷ (AS-02).
-- `app.list_ticket_assignees(cơ sở)` (migration 159): nhân viên CRM nhận giao ticket; cần Ticket · Sửa ở cơ sở đó (AS-09). Không đụng `app.list_assignable_staff` của Lead.
+- `app.list_ticket_assignees(cơ sở)` (migration 220): nhân viên CRM nhận giao ticket; cần Ticket · Sửa ở cơ sở đó (AS-09). Không đụng `app.list_assignable_staff` của Lead.
 - `app.get_ticket` có thêm `branch_id` (cho hộp thoại Giao).
 
-## Lát 3c (migration 160): riêng khiếu nại, ticket con, tính chất
+## Lát 3c (migration 221): riêng khiếu nại, ticket con, tính chất
 - Bốn cột mới của `app.ticket`: `complaint_date`, `customer_wish`, `root_cause`, `compensation_note`. **Bồi hoàn chỉ là ghi chú bằng chữ**, không số tiền, không phiếu chi (chưa có luật riêng; phương án an toàn, Chat xác nhận hoặc đổi sau).
 - `app.update_ticket_complaint(id, jsonb)`: sửa phần riêng khiếu nại và người bị khiếu nại (cùng cơ sở); chỉ loại Khiếu nại; khoá khi đã đóng/huỷ; ghi nhật ký `SUA_KHIEU_NAI`.
 - `app.get_ticket` có thêm: phần riêng khiếu nại, `nature_code` (ticket giáo viên), `children` (ticket có `related_ticket_id` là ticket này).
 
-## Lát 4 (migration 161): đổi loại, nhóm con, mức độ
+## Lát 4 (migration 222): đổi loại, nhóm con, mức độ
 - `app.change_ticket_category(id, nhóm con)`, `app.change_ticket_priority(id, mức độ)`, `app.change_ticket_type(id, loại, nhóm con)`; chung lõi `app.reclassify_ticket` (nội bộ, không cấp cho người dùng).
 - Hạn tính lại từ lúc tạo theo loại, mức độ, nhóm con mới (AS-07) và **giữ phần dời hạn do Chờ thông tin**. Mã ticket không đổi (AS-01). Đổi loại chỉ giữa Đề nghị và Khiếu nại, chỉ khi Mới hoặc Đã giao (AS-05). Đã đóng, đã huỷ chỉ xem (AS-02). Nhật ký ghi `DOI_NHOM_CON` (kèm chữ «Đổi loại: …» khi đổi loại) hoặc `DOI_MUC_DO`.
 
-## Lát 5 (migration 162): lưu cấu hình SLA
+## Lát 5 (migration 223): lưu cấu hình SLA
 - `app.save_ticket_sla(bảng hạn, hạn riêng)`: lưu một lần bảng loại × mức độ và hạn riêng nhóm con (CSN-09). Cần Quản trị · Sửa (Admin). Số giờ nguyên dương, hạn xử lý ≥ hạn phản hồi; cả lô một giao dịch. Ticket đã tạo giữ hạn đã chụp (AS-07); mọi sửa ghi nhật ký qua trigger audit.
 
-## Lát 6 (migration 163): thêm, sửa, ngừng nhóm và nhóm con
+## Lát 6 (migration 224): thêm, sửa, ngừng nhóm và nhóm con
 - `app.save_ticket_category(jsonb)`: tạo (mã chưa có) hoặc sửa (mã đã có) nhóm, nhóm con. Cần Quản trị · Sửa (Admin). Mã, cấp, loại, nhóm cha **không đổi** sau khi tạo; không xoá, chỉ Ngừng; ngừng nhóm cha thì ngừng luôn nhóm con (bật lại không tự bật lại nhóm con). Tính chất chỉ ở ticket giáo viên (AS-05); mức độ, phiếu nghiệp vụ chỉ ở nhóm con; đội mặc định là mục đang dùng của danh mục TICKET_TEAM (AS-08).

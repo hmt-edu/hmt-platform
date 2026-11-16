@@ -148,7 +148,7 @@ export function updateTicketComplaint(
   return rpc<null>(supabase, 'update_ticket_complaint', { p_id: id, p_data: data });
 }
 
-/** Phân loại lại ticket: đổi loại (kèm nhóm con), đổi nhóm con, đổi mức độ (migration 161). Hạn tính lại ở máy chủ. */
+/** Phân loại lại ticket: đổi loại (kèm nhóm con), đổi nhóm con, đổi mức độ (migration 222). Hạn tính lại ở máy chủ. */
 export async function reclassifyTicket(
   supabase: SupabaseClient,
   args: {

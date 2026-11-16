@@ -1,4 +1,4 @@
--- Aftersale lát 6 (migration 163): save_ticket_category: thêm, sửa, ngừng nhóm và nhóm con; quyền Admin; luật bất biến. Dữ liệu giả.
+-- Aftersale lát 6 (migration 224): save_ticket_category: thêm, sửa, ngừng nhóm và nhóm con; quyền Admin; luật bất biến. Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();

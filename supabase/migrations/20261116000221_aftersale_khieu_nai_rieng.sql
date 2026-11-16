@@ -1,4 +1,4 @@
--- Code B (16/11/2026), Aftersale lát 3c, migration 160: phần «Riêng khiếu nại» và danh sách ticket con của CSN-03 (canvas 9189: CSN03_khieu_nai_co_con, CSN03_gv).
+-- Code B (16/11/2026), Aftersale lát 3c, migration 221: phần «Riêng khiếu nại» và danh sách ticket con của CSN-03 (canvas 9189: CSN03_khieu_nai_co_con, CSN03_gv).
 -- Luật: docs/spec/de-xuat-luat-aftersale.md (AS-04 khiếu nại, AS-05 ticket giáo viên, AS-09 quyền). Chưa có luật riêng cho bốn ô mới: chọn phương án an toàn,
 -- chỉ lưu CHỮ, KHÔNG sinh tiền (ô «Bồi hoàn» là ghi chú bằng chữ, không có số tiền); Chat xác nhận hoặc đổi sau.
 select set_config('hmt.migration', 'on', false);

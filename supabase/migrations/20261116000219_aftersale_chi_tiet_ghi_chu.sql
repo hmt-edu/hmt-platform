@@ -1,4 +1,4 @@
--- Code B (16/11/2026), Aftersale lát 3a, migration 158: đọc chi tiết ticket kèm dòng thời gian; thêm ghi chú vào ticket (CSN-03).
+-- Code B (16/11/2026), Aftersale lát 3a, migration 219: đọc chi tiết ticket kèm dòng thời gian; thêm ghi chú vào ticket (CSN-03).
 -- Luật: docs/spec/de-xuat-luat-aftersale.md (AS-02 nhật ký, AS-09 quyền), R-V2-23.
 -- Làm gì: thêm loại sự kiện GHI_CHU cho nhật ký ticket; app.get_ticket; app.add_ticket_note.
 select set_config('hmt.migration', 'on', false);
