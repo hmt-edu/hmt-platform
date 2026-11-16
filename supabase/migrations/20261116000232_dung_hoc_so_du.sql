@@ -1,5 +1,5 @@
--- Migration 217 (Code D, 16/11/2026): Dừng học giữ thành SỐ DƯ khách hàng (R-GD-16, R-TIEN-33, R-CS-02, R-CS-07, R-V2-24).
--- R-GD-16: dừng học chọn một trong hai: (a) hoàn tiền (R-TIEN-28): làm bằng yêu cầu Hoàn phí loại TOAN_BO (migration 218);
+-- Migration 232 (Code D, 16/11/2026): Dừng học giữ thành SỐ DƯ khách hàng (R-GD-16, R-TIEN-33, R-CS-02, R-CS-07, R-V2-24).
+-- R-GD-16: dừng học chọn một trong hai: (a) hoàn tiền (R-TIEN-28): làm bằng yêu cầu Hoàn phí loại TOAN_BO (migration 231);
 -- (b) giữ thành số dư khách hàng (giờ còn lại × giá sau chiết khấu, không trừ phí): bản ghi này. Giờ tặng còn lại bị huỷ. Không có «giữ nguyên giờ».
 -- Việc duyệt nằm ở bản ghi (R-V2-24): quản lý cơ sở rồi kế toán (R-CS-07). Công tắc DUNG_HOC theo cơ sở, MẶC ĐỊNH TẮT.
 -- Chưa làm: «Dùng số dư» cho đơn mới (ghi như khoản tiền vào của đơn, đụng lõi tiền: PR riêng sau khi Chat chốt cách ghi).
@@ -30,42 +30,23 @@ on conflict (catalog_code, code) do nothing;
 select set_config('hmt.migration', '', false);
 
 -- ---------------------------------------------------------------------------
--- 2. Sổ số dư khách hàng (R-TIEN-33): của phụ huynh, chỉ thêm dòng, không sửa, không xoá
+-- 2. Sổ số dư khách hàng (R-TIEN-33): dùng bảng app.customer_balance_entry của migration 217 (nạp số dư đầu kỳ, Code B);
+-- mở rộng thêm loại dòng và cột cho dừng học, KHÔNG tạo bảng mới. Sổ chỉ thêm dòng (trigger 217 đã chặn sửa).
 -- ---------------------------------------------------------------------------
-create table app.customer_balance_entry (
-  id uuid primary key default gen_random_uuid(),
-  seq bigint generated always as identity,
-  parent_id uuid not null references app.parent (id),
-  branch_id uuid not null references app.branch (id),
-  -- TU_DUNG_HOC: sinh từ dừng học (+); DUNG_CHO_DON: đã dùng cho đơn (−, làm sau); DIEU_CHINH: sửa sai bằng dòng ngược dấu.
-  entry_type text not null check (entry_type in ('TU_DUNG_HOC', 'DUNG_CHO_DON', 'DIEU_CHINH')),
-  amount bigint not null check (amount <> 0),
-  enrollment_id uuid references app.enrollment (id),
-  source_ref text,
-  note text,
-  created_at timestamptz not null default now(),
-  created_by uuid,
-  updated_at timestamptz not null default now(),
-  updated_by uuid
-);
-comment on table app.customer_balance_entry is 'Sổ số dư khách hàng (R-TIEN-33): số dư luôn tính từ sổ; chỉ thêm dòng; không hết hạn.';
--- Chỉ mục (lý do): số dư và sổ của một phụ huynh theo thứ tự ghi; cơ sở cho RLS; ghi danh (khoá ngoại).
-create index customer_balance_parent_idx on app.customer_balance_entry (parent_id, seq);
-create index customer_balance_branch_idx on app.customer_balance_entry (branch_id);
+alter table app.customer_balance_entry add column if not exists enrollment_id uuid references app.enrollment (id);
+alter table app.customer_balance_entry add column if not exists note text;
+-- Mở rộng loại dòng: TU_DUNG_HOC (+): sinh từ dừng học; DUNG_CHO_DON (−): dùng cho đơn (làm sau); DIEU_CHINH: sửa sai bằng dòng ngược dấu.
+alter table app.customer_balance_entry drop constraint if exists customer_balance_entry_entry_type_check;
+alter table app.customer_balance_entry drop constraint if exists customer_balance_entry_check;
+alter table app.customer_balance_entry add constraint customer_balance_entry_entry_type_check
+  check (entry_type in ('DAU_KY_THU_THUA', 'DAU_KY_CONG_NO', 'TU_DUNG_HOC', 'DUNG_CHO_DON', 'DIEU_CHINH'));
+alter table app.customer_balance_entry add constraint customer_balance_entry_sign_check
+  check ((entry_type in ('DAU_KY_THU_THUA', 'TU_DUNG_HOC') and amount > 0)
+         or (entry_type in ('DAU_KY_CONG_NO', 'DUNG_CHO_DON') and amount < 0)
+         or entry_type = 'DIEU_CHINH');
+-- Chỉ mục (lý do): ghi danh (khoá ngoại, tra dòng sinh từ dừng học).
 create index customer_balance_enrollment_idx on app.customer_balance_entry (enrollment_id) where enrollment_id is not null;
-select app.apply_standard('app.customer_balance_entry');
-create or replace function app.tg_customer_balance_append_only()
-returns trigger
-language plpgsql
-set search_path = ''
-as $$
-begin
-  perform app.raise_error('HMT_SO_DU_CHI_THEM', 'Sổ số dư khách hàng chỉ thêm dòng, không sửa. Điều chỉnh bằng dòng ngược dấu.');
-  return null;
-end;
-$$;
-create trigger customer_balance_no_update before update on app.customer_balance_entry
-  for each row execute function app.tg_customer_balance_append_only();
+-- Đọc bảng: giữ chính sách chỉ-Admin của 217; màn khách hàng và kế toán đọc số dư qua app.customer_balance (hàm bên dưới).
 
 -- ---------------------------------------------------------------------------
 -- 3. Bản ghi Dừng học
@@ -109,14 +90,10 @@ create unique index enrollment_stop_open_uidx on app.enrollment_stop (enrollment
   where status_code in ('NHAP', 'CHO_QL', 'CHO_KE_TOAN');
 select app.apply_standard('app.enrollment_stop');
 
-alter table app.customer_balance_entry enable row level security;
 alter table app.enrollment_stop enable row level security;
-revoke all on app.customer_balance_entry, app.enrollment_stop from public, anon, authenticated;
-grant select on app.customer_balance_entry, app.enrollment_stop to authenticated;
+revoke all on app.enrollment_stop from public, anon, authenticated;
+grant select on app.enrollment_stop to authenticated;
 -- Đọc: quyền Xem phiếu thu/phiếu chi (RECEIPT) theo phạm vi (số tiền nhạy cảm).
-create policy customer_balance_read on app.customer_balance_entry for select to authenticated
-  using ((select app.permission_scope('RECEIPT', 'XEM')) = 'TOAN_HE_THONG'
-         or ((select app.permission_scope('RECEIPT', 'XEM')) = 'CO_SO' and branch_id = (select app.current_branch_id())));
 create policy enrollment_stop_read on app.enrollment_stop for select to authenticated
   using ((select app.permission_scope('RECEIPT', 'XEM')) = 'TOAN_HE_THONG'
          or ((select app.permission_scope('RECEIPT', 'XEM')) = 'CO_SO' and branch_id = (select app.current_branch_id())));
@@ -221,7 +198,7 @@ begin
     perform app.raise_error('HMT_DUNG_HOC_GHI_DANH_SAI', 'Ghi danh này không còn hiệu lực để dừng học.');
   end if;
   perform app.assert_catalog_code_active('STOP_REASON', p_reason_code);
-  -- Chưa kiểm chéo với yêu cầu Hoàn phí đang mở (bảng nằm ở migration 218); ghi danh sang Dừng/Hoàn phí khi duyệt nên yêu cầu thứ hai bị chặn ở bước duyệt.
+  -- Chưa kiểm chéo với yêu cầu Hoàn phí đang mở (bảng nằm ở migration 231); ghi danh sang Dừng/Hoàn phí khi duyệt nên yêu cầu thứ hai bị chặn ở bước duyệt.
   if exists (select from app.enrollment_stop where enrollment_id = e.id and status_code in ('NHAP', 'CHO_QL', 'CHO_KE_TOAN')) then
     perform app.raise_error('HMT_DUNG_HOC_DANG_MO', 'Ghi danh này đã có một yêu cầu dừng học chưa xong.');
   end if;
@@ -305,8 +282,8 @@ begin
    where enrollment_id = e.id and end_date is null;
   update app.enrollment set status_code = 'DUNG' where id = e.id;
   if s.balance_amount > 0 then
-    insert into app.customer_balance_entry (parent_id, branch_id, entry_type, amount, enrollment_id, source_ref, note)
-    values (s.parent_id, s.branch_id, 'TU_DUNG_HOC', s.balance_amount, e.id, 'STOP-' || s.id::text, 'Dừng học, giữ thành số dư');
+    insert into app.customer_balance_entry (parent_id, student_id, branch_id, entry_type, amount, entry_date, enrollment_id, source_ref, note)
+    values (s.parent_id, s.student_id, s.branch_id, 'TU_DUNG_HOC', s.balance_amount, (now() at time zone 'Asia/Ho_Chi_Minh')::date, e.id, 'STOP-' || s.id::text, 'Dừng học, giữ thành số dư');
   end if;
   update app.enrollment_stop set status_code = 'DA_DUYET', accountant_by = (select auth.uid()), accountant_at = now() where id = s.id;
 end;

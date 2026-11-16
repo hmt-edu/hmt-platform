@@ -1,4 +1,4 @@
--- Migration 217 (Code D): dừng học giữ số dư khách hàng. Luật: R-GD-16, R-TIEN-33, R-CS-07, R-V2-24. Dữ liệu giả.
+-- Migration 232 (Code D): dừng học giữ số dư khách hàng. Luật: R-GD-16, R-TIEN-33, R-CS-07, R-V2-24. Dữ liệu giả.
 -- Dựng đơn thật (cơ hội → đơn → phiếu thu → kế toán duyệt) như 064; hai hàm cấp giờ là nội bộ nên gọi bằng quyền chủ.
 -- Đảo khoản (R-TIEN-26) chưa có ở main nên chưa kiểm phần giờ giảm theo tiền đảo.
 begin;
@@ -236,7 +236,9 @@ select is(pg_temp.hrs(pg_temp.d1e()), 0::numeric, 'Sổ giờ ngược dấu: gi
 select is(pg_temp.est(pg_temp.d1e()), 'DUNG', 'Ghi danh sang Dừng');
 select is((select count(*)::int from app.enrollment_class where enrollment_id = pg_temp.d1e() and end_date is null), 0, 'Đóng dòng xếp lớp đang mở');
 select is(app.customer_balance(pg_temp.par(pg_temp.d1e())), round(7 * pg_temp.lt()::numeric / 10)::bigint, 'R-TIEN-33: số dư khách hàng = tiền giữ (7 giờ × giá sau chiết khấu)');
-select is((select entry_type from app.customer_balance_entry where enrollment_id = pg_temp.d1e()), 'TU_DUNG_HOC', 'Dòng sổ số dư loại «từ dừng học»');
+select pg_temp.sudo($$create function pg_temp.ety(p_enr uuid) returns text language sql stable security definer as 'select entry_type from app.customer_balance_entry where enrollment_id = p_enr'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.ety(uuid) to public$$);
+select is(pg_temp.ety(pg_temp.d1e()), 'TU_DUNG_HOC', 'Dòng sổ số dư loại «từ dừng học»');
 select is(pg_temp.err($$select app.approve_stop_accountant(pg_temp.s('b'))$$), 'HMT_DUNG_HOC_KHONG_DUOC_SUA', 'Chặn: duyệt hai lần (không cộng số dư hai lần)');
 select is(pg_temp.err($$update app.customer_balance_entry set amount = 1$$), '42501', 'Chặn: không sửa sổ số dư từ giao diện');
 select is(pg_temp.err($q$select pg_temp.sudo($$update app.customer_balance_entry set amount = 1$$)$q$), 'HMT_SO_DU_CHI_THEM', 'Chặn: sổ số dư chỉ thêm dòng, chủ bảng cũng không sửa được (R-TIEN-33)');
@@ -245,10 +247,10 @@ select is(pg_temp.err($q$select pg_temp.sudo($$update app.customer_balance_entry
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(pg_temp.err($$select app.create_enrollment_stop(pg_temp.d1e(), 'KHAC')$$), 'HMT_DUNG_HOC_GHI_DANH_SAI', 'Chặn: ghi danh đã Dừng không dừng nữa');
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
-select is((select count(*)::int from app.enrollment_stop) + (select count(*)::int from app.customer_balance_entry), 0, 'RLS: người cơ sở khác không thấy yêu cầu dừng học và số dư CS1');
+select is((select count(*)::int from app.enrollment_stop), 0, 'RLS: người cơ sở khác không thấy yêu cầu dừng học CS1');
 select is(pg_temp.err($$select app.customer_balance(pg_temp.par(pg_temp.d1e()))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: cơ sở khác không xem số dư khách hàng CS1');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
-select ok((select count(*) from app.customer_balance_entry) >= 1, 'Kế toán thấy sổ số dư');
+select ok(app.customer_balance(pg_temp.par(pg_temp.d1e())) > 0, 'Kế toán xem được số dư qua hàm customer_balance');
 select is(pg_temp.err($$insert into app.customer_balance_entry (parent_id, branch_id, entry_type, amount) values (gen_random_uuid(), gen_random_uuid(), 'DIEU_CHINH', 1)$$), '42501', 'Chặn: không ghi thẳng vào sổ số dư');
 
 select * from finish();
