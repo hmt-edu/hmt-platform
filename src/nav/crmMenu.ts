@@ -187,7 +187,8 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'sap-het-gio',
         sub: 'Ghi danh',
         requires: can('ENROLLMENT'),
-        stage: GD2,
+        stage: '',
+        feature: 'SAP_HET_GIO',
       },
       { code: 'LOP-01', label: 'Lớp', slug: 'lop', sub: 'Lớp', requires: can('CLASS'), stage: '' },
       {
