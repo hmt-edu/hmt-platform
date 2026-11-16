@@ -120,7 +120,7 @@ jobs:
           fi
 
       # Edge Function (đăng nhập, quản trị tài khoản, chặn thư). Cần SUPABASE_ACCESS_TOKEN của tài khoản
-      # hmt-vanhanh (không còn quyền gì ở hmt-prod). Chưa có thì bỏ qua kèm cảnh báo.
+      # TÀI KHOẢN CHỦ DỰ ÁN (không còn quyền gì ở hmt-prod). Chưa có thì bỏ qua kèm cảnh báo.
       - name: Triển khai Edge Function lên hmt-staging
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

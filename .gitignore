@@ -28,3 +28,9 @@ supabase/.branches/
 
 # Hộp thư đến: file anh Trường đưa vào (không bao giờ commit; dùng xong thì xoá)
 _inbox/
+
+# Cấu hình và dữ liệu riêng của máy làm việc: KHÔNG đưa vào repo công khai
+.claude/settings.local.json
+.claude/
+du-lieu-that/
+*.local.*

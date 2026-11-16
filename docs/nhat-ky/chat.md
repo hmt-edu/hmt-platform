@@ -5,8 +5,8 @@
 - Bán hàng: UI-O2a (BH-05 xem đơn, #144) đã gộp. Code đang làm UI-O2b (Trình, Huỷ đơn); sau đó UI-O2c (Duyệt, Từ chối), UI-O3 (sửa Nháp), UI-O4 (Chuyển thành đơn, BH-11 theo R-TIEN-39).
 
 ## Đã chốt (28/10)
-- Repo chuyển sang `truongcx-95/hmt-platform` (Đ278). OK gộp PR vẫn từ `caotruong276`, đăng sau commit cuối (Đ279).
-- Kết nối GitHub của Chat: phiên đầu kết nối nhầm bằng `truongcx-95` và thấy cả `hmt-deploy` (sai mục 10). Đã bỏ `hmt-deploy` khỏi kết nối (Q-K2). Chuyển kết nối sang `hmt-vanhanh` theo mục 10 (Q-K3).
+- Repo chuyển sang `TÀI KHOẢN DEPLOY/hmt-platform` (Đ278). OK gộp PR vẫn từ TÀI KHOẢN GỘP, đăng sau commit cuối (Đ279).
+- Kết nối GitHub của Chat: phiên đầu kết nối nhầm bằng TÀI KHOẢN DEPLOY và thấy cả `hmt-deploy` (sai mục 10). Đã bỏ `hmt-deploy` khỏi kết nối (Q-K2). Chuyển kết nối sang TÀI KHOẢN CHỦ DỰ ÁN theo mục 10 (Q-K3).
 - TIEN-DO và nhật ký Chat cập nhật trong PR tài liệu Đ279 (Q-K4).
 
 ## Đang chờ ai

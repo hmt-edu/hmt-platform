@@ -95,7 +95,7 @@ Em tiếp quản dự án HMT Platform từ một phiên Claude Code khác. Chư
 
 ## 10. Kết nối GitHub cho Claude Chat và Claude Design
 - **Chỉ kết nối repo `hmt-platform`, quyền chỉ đọc** ("Only select repositories"). **Không bao giờ kết nối `hmt-deploy`** (nơi chạy bản thật).
-- Dùng tài khoản GitHub **`hmt-vanhanh`** (chủ repo `hmt-platform` từ 09/11/2026, Q-165) để kết nối, không dùng `truongcx-95` (chủ repo `hmt-deploy`). `truongcx-95` chỉ dùng trên trình duyệt; không đăng nhập trên máy Mac (Đ278).
+- Dùng **TÀI KHOẢN CHỦ DỰ ÁN** (chủ repo `hmt-platform` từ 09/11/2026, Q-165) để kết nối, không dùng TÀI KHOẢN DEPLOY (chủ repo `hmt-deploy`). TÀI KHOẢN DEPLOY chỉ dùng trên trình duyệt; không đăng nhập trên máy Mac (Đ278).
 - Làm cho cả ba tài khoản Claude: `[tài khoản Claude 1]`, `[tài khoản Claude 2]`, `[tài khoản Claude 3]`, để khi một tài khoản hết giới hạn thì chuyển sang ngay.
 - Không dán khoá, mật khẩu, dữ liệu thật vào chat hay file ở repo.
 
@@ -117,7 +117,7 @@ Mục tiêu: anh chỉ cần chuyển **link**, không dán chat; và luôn bi�
   4. **Anh làm gì với Claude Design:** dán đoạn nào, đính kèm file nào, có cần sửa gì trên canvas không. Ghi "không có việc" nếu không có.
   5. **Nhắc ghi nhật ký** nếu đây là cuối phiên.
   - **Khi còn việc anh quyết (mục 2), Chat chờ anh trả lời rồi mới soạn tin cho Claude Code và Claude Design** (mục 3 và 4 chỉ soạn sau khi anh đã quyết xong), để không soạn tin theo một quyết định chưa chốt.
-- Việc anh luôn tự làm: quyết định, thử trên staging, bình luận "OK" trên PR từ `caotruong276`.
+- Việc anh luôn tự làm: quyết định, thử trên staging, bình luận "OK" trên PR từ TÀI KHOẢN GỘP.
 
 ## 13. Bàn giao khi sắp hết giới hạn (bản 2, 17/10/2026)
 Nguyên tắc: **xong cụm nào lưu cụm đó** (nhật ký + nguồn), để lúc đổi tài khoản gần như không mất gì. Khi trang Usage của tài khoản khoảng 80%, anh ngừng giao việc mới, chờ cụm đang dở xong, rồi gửi tin dưới đây. Anh chỉ cần copy, dán.
@@ -146,7 +146,7 @@ Em mở PR "bàn giao <ngày>" vào main (chỉ tài liệu và thiết kế), g
 - docs/nhat-ky/chat.md: nội dung dưới đây.
 <dán nội dung Chat gửi>
 Nếu nhánh Design bị xung đột (vì commit cũ đã squash vào main), đừng ép: tạo nhánh mới từ main, lấy các file đã đổi ở nhánh Design bỏ vào.
-Gộp bằng squash. Em gửi anh link PR. Anh sẽ comment OK bằng caotruong276, rồi em gộp.
+Gộp bằng squash. Em gửi anh link PR. Anh sẽ comment OK bằng TÀI KHOẢN GỘP, rồi em gộp.
 ```
 Bên nào không có gì để đưa thì anh xoá dòng của bên đó.
 
@@ -167,12 +167,12 @@ Bên nào không có gì để đưa thì anh xoá dòng của bên đó.
 **Quy tắc đẩy nhánh của Design**
 - Mỗi lần bàn giao một nhánh mới `design/luu-nguon-<ngày-giờ>`, tạo từ `main` mới nhất. Không dùng lại nhánh đã gộp.
 - Chỉ ghi vào `design/` và `docs/nhat-ky/design.md`; không chạm `docs/spec/`, `supabase/`, `src/`.
-- Gộp vào `main` do Claude Code làm (squash), sau comment "OK" từ `caotruong276`.
+- Gộp vào `main` do Claude Code làm (squash), sau comment "OK" từ TÀI KHOẢN GỘP.
 
 **Anh nhớ ba điều**
 - Ngừng giao việc cho Design hoặc Chat: dùng Tin 1 hoặc Tin 2. Không nhớ tên nhánh hay đường dẫn.
 - Việc với Code luôn là Tin 3.
-- Việc anh làm ở GitHub chỉ là comment OK vào PR bằng `caotruong276`.
+- Việc anh làm ở GitHub chỉ là comment OK vào PR bằng TÀI KHOẢN GỘP.
 
 ## 14. Kiểm trên máy trước khi đẩy, "đẩy một lần" (28/10/2026, Đ281)
 - Mỗi lượt CI trên GitHub tốn khoảng 18 phút Actions (hạn mức Free có hạn, Đ210). Vì vậy Claude Code **chạy bộ kiểm đầy đủ trên máy trước khi mở PR hoặc đẩy commit**: `npm run check:all`.
