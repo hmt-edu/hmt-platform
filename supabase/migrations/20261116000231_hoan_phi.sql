@@ -267,6 +267,7 @@ end;
 $$;
 
 -- app.pay_payment_voucher: ghi nhận đã chi tiền (Chờ chi → Đã chi); yêu cầu hoàn phí sang Đã chi. Ai: Đối soát kế toán · Duyệt.
+-- CHỦ Ý không kiểm công tắc HOAN_PHI: phiếu chi đã lập (kế toán đã duyệt) vẫn phải chi được dù sau đó tắt công tắc, để không treo tiền của phụ huynh.
 create or replace function app.pay_payment_voucher(p_voucher_id uuid, p_note text default null)
 returns void
 language plpgsql

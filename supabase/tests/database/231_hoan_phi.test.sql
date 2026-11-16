@@ -41,15 +41,15 @@ grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Người dùng giả ----------
 create temp table u (key text primary key, id uuid not null default gen_random_uuid());
-insert into u (key) values ('admin'), ('bm1'), ('bm1b'), ('sales1'), ('sales5'), ('ke');
+insert into u (key) values ('admin'), ('bm1'), ('bm1b'), ('sales1'), ('sales5'), ('ke'), ('bm5');
 grant select on u to authenticated;
 insert into auth.users (id, aud, role, email) select id, 'authenticated', 'authenticated', key || '@d216.hoamatoan.invalid' from u;
 insert into app.user_account (id, display_name, login_name, branch_id, must_change_password)
 select u.id, 'Giả ' || u.key, u.key || '@d216.hoamatoan.invalid', (select id from app.branch where code = v.cs), false
-  from u join (values ('admin', 'CS1'), ('bm1', 'CS1'), ('bm1b', 'CS1'), ('sales1', 'CS1'), ('sales5', 'CS5'), ('ke', 'CS1')) as v (key, cs) on v.key = u.key;
+  from u join (values ('admin', 'CS1'), ('bm1', 'CS1'), ('bm1b', 'CS1'), ('sales1', 'CS1'), ('sales5', 'CS5'), ('ke', 'CS1'), ('bm5', 'CS5')) as v (key, cs) on v.key = u.key;
 insert into app.user_role (user_id, role_code)
 select u.id, v.role from u join (values ('admin', 'ADMIN'), ('bm1', 'BRANCH_MANAGER'), ('bm1b', 'BRANCH_MANAGER'), ('sales1', 'SALES'),
-  ('sales5', 'SALES'), ('ke', 'ACCOUNTANT')) as v (key, role) on v.key = u.key;
+  ('sales5', 'SALES'), ('ke', 'ACCOUNTANT'), ('bm5', 'BRANCH_MANAGER')) as v (key, role) on v.key = u.key;
 update app.user_role set is_active = false where role_code = 'ADMIN' and is_active and user_id not in (select id from u);
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select m, id, true from app.branch, (values ('BAN_HANG'), ('VAN_HANH_LOP')) v (m) where code = 'CS1'
   on conflict (module_code, branch_id) do update set enabled = true$$);
@@ -223,6 +223,67 @@ select is(pg_temp.err($$select app.approve_refund_accountant(pg_temp.f('a'))$$),
 select lives_ok($$select app.pay_payment_voucher(pg_temp.f('pv'), 'Chuyển khoản')$$, 'Đúng: ghi nhận đã chi');
 select is((select status_code from app.refund_request where id = pg_temp.f('a')), 'DA_CHI', 'Yêu cầu sang Đã chi');
 select is(pg_temp.err($$select app.pay_payment_voucher(pg_temp.f('pv'))$$), 'HMT_PHIEU_CHI_DA_CHI', 'Chặn: chi hai lần');
+
+-- ================= Từ chối (bắt buộc lý do, hai bước) và huỷ =================
+-- Ghi danh d1 lúc này còn Đã xếp lớp (còn 5 giờ), mỗi lần chỉ một yêu cầu mở nên làm lần lượt.
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select lives_ok($$insert into rf select 'r1', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 1, 'KHAC')$$, 'Tạo yêu cầu để từ chối ở bước quản lý');
+select app.submit_refund_request(pg_temp.f('r1'));
+select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
+select is(pg_temp.err($$select app.reject_refund_request(pg_temp.f('r1'), '   ')$$), 'HMT_HOAN_PHI_THIEU_LY_DO', 'Chặn: từ chối không ghi lý do (bước quản lý)');
+select lives_ok($$select app.reject_refund_request(pg_temp.f('r1'), 'Chưa đủ căn cứ')$$, 'Đúng: quản lý từ chối kèm lý do');
+select is((select status_code || '/' || reject_reason from app.refund_request where id = pg_temp.f('r1')), 'TU_CHOI/Chưa đủ căn cứ', 'Yêu cầu sang Từ chối, lưu lý do');
+select is(pg_temp.err($$select app.reject_refund_request(pg_temp.f('r1'), 'x')$$), 'HMT_HOAN_PHI_KHONG_DUOC_SUA', 'Chặn: từ chối yêu cầu đã từ chối');
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select is(pg_temp.err($$select app.reject_refund_request(pg_temp.f('r1'), 'x')$$), 'HMT_HOAN_PHI_KHONG_DUOC_SUA', 'Chặn: Kế toán không từ chối được yêu cầu đã đóng');
+-- Từ chối ở bước kế toán.
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select lives_ok($$insert into rf select 'r2', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 1, 'KHAC')$$, 'Tạo yêu cầu để từ chối ở bước kế toán');
+select app.submit_refund_request(pg_temp.f('r2'));
+select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
+select app.approve_refund_manager(pg_temp.f('r2'));
+select is(pg_temp.err($$select app.reject_refund_request(pg_temp.f('r2'), 'Trưởng cơ sở không có quyền kế toán')$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: ở bước kế toán, Trưởng cơ sở không từ chối được (cần quyền Đối soát kế toán)');
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select is(pg_temp.err($$select app.reject_refund_request(pg_temp.f('r2'), '')$$), 'HMT_HOAN_PHI_THIEU_LY_DO', 'Chặn: từ chối không ghi lý do (bước kế toán)');
+select lives_ok($$select app.reject_refund_request(pg_temp.f('r2'), 'Số tiền chưa khớp')$$, 'Đúng: kế toán từ chối kèm lý do');
+select is((select status_code from app.refund_request where id = pg_temp.f('r2')), 'TU_CHOI', 'Bước kế toán: yêu cầu sang Từ chối');
+-- Huỷ từ Nháp, Chờ quản lý, Chờ kế toán; chặn khi đã duyệt hoặc đã chi.
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select lives_ok($$insert into rf select 'h1', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 1, 'KHAC')$$, 'Tạo yêu cầu để huỷ ở Nháp');
+select lives_ok($$select app.cancel_refund_request(pg_temp.f('h1'))$$, 'Đúng: huỷ yêu cầu Nháp');
+select is((select status_code from app.refund_request where id = pg_temp.f('h1')), 'HUY', 'Nháp → Huỷ');
+select lives_ok($$insert into rf select 'h2', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 1, 'KHAC')$$, 'Tạo yêu cầu để huỷ ở Chờ quản lý');
+select app.submit_refund_request(pg_temp.f('h2'));
+select lives_ok($$select app.cancel_refund_request(pg_temp.f('h2'))$$, 'Đúng: huỷ yêu cầu Chờ quản lý');
+select lives_ok($$insert into rf select 'h3', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 1, 'KHAC')$$, 'Tạo yêu cầu để huỷ ở Chờ kế toán');
+select app.submit_refund_request(pg_temp.f('h3'));
+select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
+select app.approve_refund_manager(pg_temp.f('h3'));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select lives_ok($$select app.cancel_refund_request(pg_temp.f('h3'))$$, 'Đúng: huỷ yêu cầu Chờ kế toán');
+select is((select count(*)::int from app.refund_request where id in (pg_temp.f('h1'), pg_temp.f('h2'), pg_temp.f('h3')) and status_code = 'HUY'), 3, 'Cả ba yêu cầu đã huỷ');
+select is(pg_temp.err($$select app.cancel_refund_request(pg_temp.f('h3'))$$), 'HMT_HOAN_PHI_KHONG_DUOC_SUA', 'Chặn: huỷ yêu cầu đã huỷ');
+select is(pg_temp.err($$select app.cancel_refund_request(pg_temp.f('a'))$$), 'HMT_HOAN_PHI_KHONG_DUOC_SUA', 'Chặn: huỷ yêu cầu đã duyệt và đã chi (yêu cầu a)');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.cancel_refund_request(pg_temp.f('r1'))$$), 'HMT_HOAN_PHI_KHONG_DUOC_SUA', 'Trạng thái chặn trước quyền với yêu cầu đã đóng');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select lives_ok($$insert into rf select 'h4', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 1, 'KHAC')$$, 'Tạo yêu cầu cho ca thiếu quyền huỷ');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.cancel_refund_request(pg_temp.f('h4'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Tuyển sinh không có quyền Sửa ghi danh nên không huỷ được');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.cancel_refund_request(pg_temp.f('h4'));
+-- RLS và thao tác ở cơ sở khác.
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select lives_ok($$insert into rf select 'h5', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 1, 'KHAC')$$, 'Tạo yêu cầu mở cho ca người cơ sở khác');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.cancel_refund_request(pg_temp.f('h5'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: người cơ sở khác không huỷ được yêu cầu của CS1');
+select is((select count(*)::int from app.refund_request), 0, 'RLS: người cơ sở khác không thấy yêu cầu hoàn phí CS1');
+select is((select count(*)::int from app.payment_voucher), 0, 'RLS: người cơ sở khác không thấy phiếu chi CS1');
+select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
+select is((select count(*)::int from app.refund_request), 0, 'RLS: Trưởng cơ sở CS5 không thấy yêu cầu hoàn phí CS1');
+select is(pg_temp.err($$select app.submit_refund_request(pg_temp.f('h5'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Trưởng cơ sở CS5 không trình được yêu cầu của CS1');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.cancel_refund_request(pg_temp.f('h5'));
 
 -- ================= Hoàn toàn bộ =================
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
