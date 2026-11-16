@@ -17,7 +17,7 @@ describe('Bảng chọn loại QT-18 (Q-209)', () => {
 
   it('loại chưa có hàm nạp là "Sắp có" (kind null), loại có hàm trỏ đúng cấu hình', () => {
     const soon = IMPORT_KIND_ROWS.filter((r) => r.kind === null).map((r) => r.title);
-    expect(soon).toEqual(['Số dư', 'Phiếu test']);
+    expect(soon).toEqual(['Số dư']);
     for (const row of IMPORT_KIND_ROWS) {
       if (row.kind) expect(kindConfig(row.kind).title).toBe(row.title);
     }
@@ -31,6 +31,8 @@ describe('Loại đào tạo (D1e)', () => {
     expect(kindConfig('GHI_DANH').training).toBe(true);
     expect(kindConfig('LOP').blockOnError).toBeFalsy();
     expect(kindConfig('GHI_DANH').blockOnError).toBe(true);
+    expect(kindConfig('PHIEU_TEST').training).toBe(true);
+    expect(kindConfig('PHIEU_TEST').blockOnError).toBeFalsy();
     expect(kindConfig('PHU_HUYNH').training).toBeFalsy();
   });
 });

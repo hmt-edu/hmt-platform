@@ -23,10 +23,10 @@ select is(pg_temp.codes('ATTENDANCE_STATUS'), array['CO_MAT', 'DI_MUON', 'VANG_C
 select is(pg_temp.codes('SESSION_TYPE'), array['CHINH', 'CUNG_CO', 'HOC_BU', 'BO_TRO', 'KIEM_TRA'], 'Loại buổi: chính, củng cố, học bù, bổ trợ, kiểm tra (R-V2-18, Q-176)');
 select is(pg_temp.codes('CLASS_TYPE'), array['CB', 'NC', 'LR'], 'Phân loại lớp CB, NC, LR');
 select is(pg_temp.codes('STUDY_MODE'), array['OFF', 'ONL'], 'Hình thức OFF, ONL');
-select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC', 'DN', 'KN', 'KTV'], 'Loại chứng từ BG, DH, PT, PC, KTV (khoản tiền vào, B2) và ticket DN, KN (R-CS-01)');
+select is(pg_temp.codes('DOC_TYPE'), array['BG', 'DH', 'PT', 'PC', 'DN', 'KN', 'KTV', 'YB'], 'Loại chứng từ BG, DH, PT, PC, KTV (khoản tiền vào, B2), ticket DN, KN (R-CS-01) và yêu cầu buổi YB (migration 139)');
 select is(pg_temp.codes('HOMEWORK_STATUS'), array['DA_CHAM', 'LAM_CHUA_XONG', 'KHONG_LAM', 'NOP_SAU', 'KHONG_AP_DUNG'],
           'Trạng thái BTVN đúng R-GV-11');
-select is(pg_temp.codes('MODULE'), array['BAN_HANG', 'VAN_HANH_LOP', 'CONG_GIAO_VIEN', 'HOC_TAP', 'BAO_CAO'], 'Phân hệ cho công tắc');
+select is(pg_temp.codes('MODULE'), array['BAN_HANG', 'VAN_HANH_LOP', 'CONG_GIAO_VIEN', 'HOC_TAP', 'BAO_CAO', 'YEU_CAU_BUOI'], 'Phân hệ cho công tắc (thêm YEU_CAU_BUOI, migration 139)');
 select is((select count(*)::int from app.catalog where kind = 'HE_THONG'), 31, '31 danh mục hệ thống (migration 100, D1a: thêm Tình trạng duyệt của lớp, Tình trạng buổi học; migration 084, Q-122: thêm Giai đoạn con lead, Giai đoạn con cơ hội, chỉ đổi tên; B2: thêm Trạng thái phiếu thu; P5a-DB1b-1: thêm Trạng thái đơn hàng; P5a-DB1a: thêm Trạng thái báo giá; P5a-DB0: thêm Đơn vị tính của gói; PR 6c: thêm Giai đoạn phiếu tái tục, Nhóm đề nghị; PR 6b: thêm Loại gói, Mức độ khiếu nại; PR 6a: thêm Môn, Khối, Trình độ, Giai đoạn lead, Giai đoạn cơ hội; trước đó bước 3: PERM_MODULE, PERM_ACTION, PERM_SCOPE; bước 4b: NOTIFICATION_KIND)');
 select is((select kind from app.catalog where code = 'HOMEWORK_STATUS'), 'HE_THONG', 'Trạng thái BTVN là danh mục hệ thống (không thêm bớt)');
 
