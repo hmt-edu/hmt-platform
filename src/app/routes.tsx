@@ -99,6 +99,10 @@ const TicketCreatePage = lazyScreen(
   'TicketCreatePage',
 );
 const TicketSlaPage = lazyScreen(() => import('../pages/ticket/TicketSlaPage'), 'TicketSlaPage');
+const TicketCategoriesPage = lazyScreen(
+  () => import('../pages/ticket/TicketCategoriesPage'),
+  'TicketCategoriesPage',
+);
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -566,6 +570,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/nhap-du-lieu">
                 <ImportDataPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/nhom-ticket',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/nhom-ticket">
+                <TicketCategoriesPage />
               </GatedCrmEntry>
             ),
           },

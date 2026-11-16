@@ -33,6 +33,30 @@ test('Admin sửa hạn xử lý Khiếu nại Thường rồi lưu; tải lại
   await expect(page.getByText('Đã lưu cấu hình SLA.', { exact: true })).toBeVisible();
 });
 
+test('Nhóm ticket: Admin thêm nhóm và nhóm con; thiếu tên thì báo tại ô', async ({
+  page,
+}, testInfo) => {
+  const tag = `E2E${testInfo.project.name === 'dien-thoai' ? 'DT' : 'MT'}${Date.now().toString().slice(-6)}`;
+  await enterAsAdmin(page, 'quantri.cs1');
+  await page.goto('/crm/cau-hinh/nhom-ticket');
+  await expect(page.getByRole('heading', { level: 1, name: 'Cấu hình ticket' })).toBeVisible();
+  await page.getByRole('button', { name: 'Thêm nhóm', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Thêm nhóm' });
+  await dialog.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(dialog.getByText('Nhập tên.')).toBeVisible();
+  await dialog.getByLabel('Mã').fill(tag);
+  await dialog.getByLabel('Tên').fill(`Nhóm thử ${tag}`);
+  await dialog.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByRole('heading', { name: `Nhóm thử ${tag}` })).toBeVisible();
+  const section = page.getByRole('region', { name: `Nhóm thử ${tag}` });
+  await section.getByRole('button', { name: 'Thêm nhóm con' }).click();
+  const sub = page.getByRole('dialog', { name: 'Thêm nhóm con' });
+  await sub.getByLabel('Mã').fill(`${tag}_A`);
+  await sub.getByLabel('Tên').fill(`Nhóm con ${tag}`);
+  await sub.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(section.getByText(`Nhóm con ${tag}`)).toBeVisible();
+});
+
 test('CSKH vào trang SLA thì không được lưu', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/cau-hinh/sla-ticket');

@@ -346,6 +346,13 @@ export const CRM_MENU: MenuGroup[] = [
         stage: GD2,
       },
       {
+        code: 'CSN-08',
+        label: 'Nhóm ticket',
+        slug: 'cau-hinh/nhom-ticket',
+        requires: can('ADMIN'),
+        stage: GD2,
+      },
+      {
         code: 'CSN-09',
         label: 'SLA ticket',
         slug: 'cau-hinh/sla-ticket',
