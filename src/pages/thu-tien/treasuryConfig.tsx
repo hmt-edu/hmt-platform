@@ -78,11 +78,15 @@ export function buildMoneyInConfig(
       {
         key: 'order',
         label: 'Đơn hàng',
-        render: (r) => (
-          <Link to={`/crm/don-hang/${r.order_id}`} className="text-link hover:underline">
-            {r.order_code}
-          </Link>
-        ),
+        // Khoản thu nợ đầu kỳ (TC-02) không có đơn: ghi nhãn thay cho link.
+        render: (r) =>
+          r.order_id ? (
+            <Link to={`/crm/don-hang/${r.order_id}`} className="text-link hover:underline">
+              {r.order_code}
+            </Link>
+          ) : (
+            <Tag tone="neutral">Nợ đầu kỳ</Tag>
+          ),
       },
       { key: 'parent', label: 'Phụ huynh', render: (r) => r.parent_name },
       {

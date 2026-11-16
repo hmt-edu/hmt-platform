@@ -50,6 +50,13 @@ describe('TC-09 nút Hoàn tác khoản tiền', () => {
     expect(cell(config, 'reverse', row).querySelector('button')).toBeNull();
     expect(cell(config, 'note', row).textContent).toBe('Đã hoàn tác');
   });
+  it('TC-02: khoản thu nợ đầu kỳ không có đơn thì cột Đơn hàng hiện nhãn Nợ đầu kỳ, không có link', () => {
+    const config = buildMoneyInConfig(accessOf(true), vi.fn());
+    const row = { ...base, order_id: null, order_code: null };
+    const box = cell(config, 'order', row);
+    expect(box.textContent).toBe('Nợ đầu kỳ');
+    expect(box.querySelector('a')).toBeNull();
+  });
   it('Khoản đảo (âm) không có nút, không có link phiếu thu, ghi mã khoản gốc', () => {
     const config = buildMoneyInConfig(accessOf(true), vi.fn());
     const row = {

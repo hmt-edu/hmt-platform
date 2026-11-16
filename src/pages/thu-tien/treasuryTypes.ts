@@ -4,8 +4,9 @@ export type MoneyInRow = {
   code: string;
   receipt_id: string | null;
   receipt_code: string | null;
-  order_id: string;
-  order_code: string;
+  /** Khoản thu nợ đầu kỳ (TC-02, R-V2-15) không có đơn: null. */
+  order_id: string | null;
+  order_code: string | null;
   parent_id: string;
   parent_name: string;
   amount: number;
