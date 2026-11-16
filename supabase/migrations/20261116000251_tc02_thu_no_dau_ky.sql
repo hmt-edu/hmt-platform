@@ -12,13 +12,17 @@ values
   ('opening_debt_receipt_enabled', 'Cho phép phiếu «Thu nợ đầu kỳ»', 'BOOL', null, null, null, 'false', true, 'BAN_HANG', 'R-V2-15',
    'Tắt: không tạo, gửi, duyệt được phiếu thu nợ đầu kỳ ở cơ sở. Bật: CSKH tạo phiếu không cần đơn, Kế toán duyệt, số tiền không vượt nợ đầu kỳ còn lại của học sinh.');
 
--- 1. Sổ số dư khách hàng: thêm hai loại dòng (thu nợ đầu kỳ dương, hoàn tác thu nợ đầu kỳ âm).
-alter table app.customer_balance_entry drop constraint customer_balance_entry_check;
-alter table app.customer_balance_entry drop constraint customer_balance_entry_entry_type_check;
+-- 1. Sổ số dư khách hàng: thêm hai loại dòng (thu nợ đầu kỳ dương, hoàn tác thu nợ đầu kỳ âm) vào bộ loại hiện hành của migration 232 (dừng học: TU_DUNG_HOC, DUNG_CHO_DON, DIEU_CHINH).
+-- Số dư khách hàng (app.customer_balance, 232) là tổng mọi dòng của phụ huynh: nợ đầu kỳ (âm) cộng khoản đã thu nợ (dương) nên tự bù trừ đúng.
+alter table app.customer_balance_entry drop constraint if exists customer_balance_entry_entry_type_check;
+alter table app.customer_balance_entry drop constraint if exists customer_balance_entry_check;
+alter table app.customer_balance_entry drop constraint if exists customer_balance_entry_sign_check;
 alter table app.customer_balance_entry add constraint customer_balance_entry_entry_type_check
-  check (entry_type in ('DAU_KY_THU_THUA', 'DAU_KY_CONG_NO', 'THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY'));
-alter table app.customer_balance_entry add constraint customer_balance_entry_check
-  check ((entry_type in ('DAU_KY_THU_THUA', 'THU_NO_DAU_KY') and amount > 0) or (entry_type in ('DAU_KY_CONG_NO', 'DAO_THU_NO_DAU_KY') and amount < 0));
+  check (entry_type in ('DAU_KY_THU_THUA', 'DAU_KY_CONG_NO', 'TU_DUNG_HOC', 'DUNG_CHO_DON', 'DIEU_CHINH', 'THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY'));
+alter table app.customer_balance_entry add constraint customer_balance_entry_sign_check
+  check ((entry_type in ('DAU_KY_THU_THUA', 'TU_DUNG_HOC', 'THU_NO_DAU_KY') and amount > 0)
+         or (entry_type in ('DAU_KY_CONG_NO', 'DUNG_CHO_DON', 'DAO_THU_NO_DAU_KY') and amount < 0)
+         or entry_type = 'DIEU_CHINH');
 
 -- 2. Phiếu thu và khoản tiền vào: cho rỗng đơn, kèm học sinh có nợ đầu kỳ; đúng một trong hai.
 alter table app.receipt alter column order_id drop not null;
