@@ -72,7 +72,7 @@ Loại nạp `CO_HOI` của `app.import_records`. Mỗi dòng tạo **ba thứ t
 
 - Bước kiểm `import_users_resolve` coi dòng là **TRUNG** (bỏ qua, báo) khi tên đăng nhập đã có ở cột `username` (không phân biệt hoa thường) hoặc ở `legacy_ref` của một tài khoản nhân sự. Nhờ vậy Admin đầu tiên tạo bằng Bootstrap rồi đặt tên đăng nhập bằng `set_username` không bị nạp thêm tài khoản thứ hai. Ràng buộc duy nhất của `username` (migration 074) vẫn là chốt cuối.
 - Quản lý trực tiếp (`quan_ly`) tra theo cả `username` lẫn `legacy_ref`.
-- File nạp 108 người: bộ chuyển loại mọi người trạng thái Đã nghỉ (Q-04, Q-26; người Nghỉ phép vẫn nạp) và dòng ADMIN của anh Trường, tên đăng nhập `truongcx` (Q-24, Admin đầu tiên tạo bằng Bootstrap trên bản chạy thật).
+- File nạp 108 người: bộ chuyển loại mọi người trạng thái Đã nghỉ (Q-04, Q-26; người Nghỉ phép vẫn nạp) và dòng ADMIN của anh Trường, tên đăng nhập `<tên đăng nhập Admin>` (Q-24, Admin đầu tiên tạo bằng Bootstrap trên bản chạy thật).
 
 ## Ghi danh: vá và chặn cả loại (Code B, 15/11/2026, migration 150)
 Hàm nạp chung của các loại đào tạo là `app.import_training_records(loại, hàng, nạp thật, tên file)` (loại `LOP`, `GHI_DANH`, `BUOI_HOC`, `DIEM_DANH`). Kiểm thử: `supabase/tests/database/150_nap_ghi_danh_va.test.sql` và `106_...`.

@@ -13,6 +13,9 @@ test.beforeEach(({}, testInfo) => {
 });
 
 let classCode = '';
+let classId = '';
+const TAG = `YC${Date.now().toString(36).slice(-5).toUpperCase()}`;
+const STUDENT_A = `Em ${TAG} A`;
 const inDays = (n: number) =>
   new Date(Date.now() + n * 86_400_000).toLocaleDateString('en-CA', {
     timeZone: 'Asia/Ho_Chi_Minh',
@@ -29,7 +32,7 @@ async function withDb<T>(fn: (db: pg.Client) => Promise<T>): Promise<T> {
 }
 
 test.beforeAll(async () => {
-  classCode = await withDb(async (db) => {
+  const made = await withDb(async (db) => {
     await db.query('begin');
     await db.query(
       `insert into app.feature_flag (module_code, branch_id, enabled)
@@ -59,9 +62,39 @@ test.beforeAll(async () => {
     if (!cls) throw new Error('Không tạo được lớp giả.');
     for (const step of ['DA_TRINH', 'DA_XAC_NHAN', 'DA_DUYET'])
       await db.query('select app.transition_class($1::uuid, $2)', [cls.id, step]);
+    await db.query('reset role');
+    // Hai em đang học trong lớp (ghi danh Đang học, quỹ 24 giờ) để chọn em yếu ở yêu cầu bổ trợ. Dữ liệu giả.
+    const branch = "(select id from app.branch where code = 'CS5')";
+    await db.query(
+      `insert into app.parent (code, full_name, phone, branch_id) values ($1, $2, $3, ${branch})`,
+      [`PH${TAG}`, `Phụ huynh ${TAG}`, `09${String(Date.now()).slice(-8)}`],
+    );
+    for (const [i, name] of [STUDENT_A, `Em ${TAG} B`].entries()) {
+      const st = await db.query<{ id: string }>(
+        `insert into app.student (code, parent_id, full_name, birth_year, branch_id)
+         values ($1, (select id from app.parent where code = $2), $3, 2011, ${branch}) returning id`,
+        [`HS${TAG}${i + 1}`, `PH${TAG}`, name],
+      );
+      const e = await db.query<{ id: string }>(
+        `insert into app.enrollment (code, student_id, parent_id, branch_id, package_id, subject_code, delivery_mode_code, status_code, purchased_hours)
+         values ($1, $2, (select id from app.parent where code = $3), ${branch}, (select id from app.sales_package where code = 'LC-TOAN-K09'), 'DAI', 'OFF', 'DANG_HOC', 24)
+         returning id`,
+        [`GD${TAG}${i + 1}`, st.rows[0]?.id, `PH${TAG}`],
+      );
+      await db.query(
+        `insert into app.enrollment_class (enrollment_id, class_id, branch_id, start_date) values ($1, $2, ${branch}, current_date)`,
+        [e.rows[0]?.id, cls.id],
+      );
+      await db.query(
+        `insert into app.hour_ledger (enrollment_id, branch_id, entry_type, hours) values ($1, ${branch}, 'CAP_MUA', 24)`,
+        [e.rows[0]?.id],
+      );
+    }
     await db.query('commit');
-    return cls.code;
+    return { id: cls.id, code: cls.code };
   });
+  classCode = made.code;
+  classId = made.id;
 });
 test.afterAll(async () => {
   // Trả cờ về mặc định tắt cho các bài khác (không có dòng cờ = tắt).
@@ -150,6 +183,57 @@ test('BUOI-10: Từ chối chọn lý do từ danh mục; yêu cầu thành Từ
   await expect(page.getByRole('row').filter({ hasText: 'Từ chối' }).first()).toContainText(
     'Phòng kín lịch tối đó',
   );
+});
+
+test('BUOI-09: từ bản ghi lớp mở Yêu cầu bổ trợ; form báo lỗi; CSKH chọn em, giáo viên rồi gửi duyệt', async ({
+  page,
+}) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto(`/crm/lop/${classId}`);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'Yêu cầu bổ trợ' }).click();
+  await expect(page).toHaveURL(new RegExp(`/crm/yeu-cau-buoi/tao-bo-tro\\?lop=${classId}$`));
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Tạo yêu cầu học bổ trợ' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page.getByText('Chọn ít nhất một em cần bổ trợ.')).toBeVisible();
+  await expect(page.getByText('Chọn giáo viên.')).toBeVisible();
+  await expectAccessible(page);
+  await page.getByRole('checkbox', { name: new RegExp(STUDENT_A) }).check();
+  await page.getByLabel('Ngày', { exact: true }).fill(inDays(12));
+  await page.getByLabel('Giờ bắt đầu').fill('20:00');
+  await page.getByLabel('Giờ kết thúc').fill('21:00');
+  await pickOption(page, page.getByRole('combobox', { name: 'Giáo viên' }), /Giáo viên CS5/);
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page).toHaveURL(/\/crm\/yeu-cau-buoi$/);
+  const row = page.getByRole('row').filter({ hasText: 'Bổ trợ' }).first();
+  await expect(row).toContainText(STUDENT_A);
+  await expect(row).toContainText('Chờ duyệt');
+});
+
+test('BUOI-09: Trưởng cơ sở duyệt thì buổi Bổ trợ được chèn, giáo viên là người được chọn', async ({
+  page,
+}) => {
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto('/crm/yeu-cau-buoi');
+  await page
+    .getByRole('row')
+    .filter({ hasText: 'Bổ trợ' })
+    .getByRole('button', { name: 'Duyệt', exact: true })
+    .first()
+    .click();
+  await expect(page.getByText(/^Đã duyệt YB-CS5-/).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Tất cả' }).click();
+  await page
+    .getByRole('row')
+    .filter({ hasText: 'Bổ trợ' })
+    .getByRole('link', { name: 'Mở buổi' })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/crm\/buoi-hoc\/[0-9a-f-]{36}$/);
+  await expect(page.getByText('Học bổ trợ').first()).toBeVisible();
+  await expect(page.getByText('Giáo viên CS5').first()).toBeVisible();
 });
 
 test('Cờ tắt: mục Yêu cầu buổi ẩn khỏi menu và mở thẳng báo chưa bật', async ({ page }) => {
