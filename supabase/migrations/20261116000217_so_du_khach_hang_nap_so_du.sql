@@ -2,7 +2,7 @@
 -- Luật: R-TIEN-33 (sổ số dư của phụ huynh, chỉ thêm dòng, không sửa, không xoá), R-V2-32 (chỉ nạp số dư đầu kỳ: công nợ phải thu là SỐ ÂM trong sổ,
 -- tiền thu thừa là số dương; tiền trong file đã tính bằng đồng), R-V2-30 (một dòng lỗi chặn cả loại, trùng mã cũ thì bỏ qua), Q-227 (ngày 17/11 chỉ nạp giờ:
 -- loại này chỉ chạy khi anh Trường cho, không có nút nào tự bật nó). Quyết định mặc định H4 (code-b.md, chờ anh): sổ theo phụ huynh, giữ học sinh ở từng dòng.
--- Làm gì: bảng app.customer_balance_entry; hàm app.import_one_balance(hàng); hàm nạp chung nhận loại SO_DU (một dòng lỗi chặn cả loại); báo cáo đối soát thêm số tiền ở migration 154.
+-- Làm gì: bảng app.customer_balance_entry; hàm app.import_one_balance(hàng); hàm nạp chung nhận loại SO_DU (một dòng lỗi chặn cả loại); báo cáo đối soát thêm số tiền ở migration 218.
 -- Phiếu "Thu nợ đầu kỳ" (R-V2-15) KHÔNG nằm ở đây: làm ở cụm Thu chi (B2).
 select set_config('hmt.migration', 'on', false);
 

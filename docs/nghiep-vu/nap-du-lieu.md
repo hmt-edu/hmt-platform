@@ -99,10 +99,10 @@ Loại `PHIEU_TEST` của `app.import_training_records`. Nhóm CRM: dòng lỗi 
 ## Cơ hội: cột `nguon_goc` (migration 155, Chat chốt 15/11)
 Cột `nguon_goc` của script là chữ tự do ("Page T9", "BGĐ"), không phải tên loại nguồn trong danh mục. Hàm Cơ hội: nếu khớp tên (hoặc mã) loại nguồn thì dùng; "BGĐ" hoặc "Ban Giám Đốc" thành loại Ban Giám Đốc; mọi giá trị khác, kể cả trống, thành loại **Marketing kèm cảnh báo** "Loại nguồn suy mặc định" (không phải lỗi). Chữ gốc ghi vào ghi chú của cơ hội ("Nguồn gốc (chữ gốc): ..."), không thêm cột. Báo cáo Xem trước và Nạp có `summary.source_type_defaulted` (số dòng suy loại nguồn). Cột `nguon` (nguồn) vẫn phải thuộc loại; sai thì LỖI `HMT_NGUON_SAI`. Kiểm thử: `155_nap_co_hoi_nguon_goc.test.sql`. Anh Trường có thể phản đối quyết định này.
 
-## Số dư tiền và Sổ số dư khách hàng (tab `09_SODU`, migration 152, PR Draft)
+## Số dư tiền và Sổ số dư khách hàng (tab `09_SODU`, migration 217, PR Draft)
 Bảng mới `app.customer_balance_entry`: sổ của **phụ huynh**, chỉ thêm dòng (R-TIEN-33), giữ `student_id` ở từng dòng (H4, chờ anh). Số **dương** là tiền thu thừa (`DAU_KY_THU_THUA`), số **âm** là công nợ phải thu đầu kỳ (`DAU_KY_CONG_NO`) (R-V2-32); tiền bằng đồng (file đã nhân 1000). RLS: hiện chỉ Admin đọc; màn khách hàng đọc qua hàm ở cụm Thu chi.
 - Loại `SO_DU`: cột nhận `hoc_sinh_ma_cu`, `cong_no_phai_thu_dong`, `tien_thu_thua_dong`, `ngay_chot` (trống: tham số `opening_balance_date`). Cột khác bỏ qua (giờ nạp ở Ghi danh; `hoc_phi_con_du_dong` đã nằm trong `tien_thu_thua_dong`).
 - Một dòng lỗi chặn cả loại. Học sinh chưa nạp: `HMT_NAP_HOC_SINH_CHUA_CO`; tiền âm hoặc có phần lẻ: `HMT_NAP_TIEN_SAI`. Trùng mã học sinh cũ đã có dòng sổ: TRUNG. Cả hai số bằng 0: không ghi dòng (cảnh báo). Cả hai lớn hơn 0: ghi cả hai kèm cảnh báo.
 - **Q-227:** ngày 17/11 chỉ nạp giờ; loại này có sẵn trên màn Nhập nhưng chỉ nạp khi anh Trường bảo. Phiếu "Thu nợ đầu kỳ" (R-V2-15) chưa làm: thuộc cụm Thu chi.
 
-Báo cáo đối soát (migration 154) thêm hai khoá `debt_total_vnd` (tổng công nợ, số dương) và `credit_total_vnd` (tổng tiền thu thừa), đơn vị đồng. Kiểm thử: `152_nap_so_du.test.sql`.
+Báo cáo đối soát (migration 218) thêm hai khoá `debt_total_vnd` (tổng công nợ, số dương) và `credit_total_vnd` (tổng tiền thu thừa), đơn vị đồng. Kiểm thử: `152_nap_so_du.test.sql`.
