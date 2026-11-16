@@ -53,7 +53,7 @@ Khung tạo canvas mới: tạo từ loại Design (https://claude.ai/artifact/Q
 Cách dựng lại canvas từ repo: tạo canvas mới từ loại Design; chép `design/nguon-canvas/hmt-platform-gop/project/` vào `project/`; xuất bản **`project/canvas.json`** trước (chỉ file này là chỉ mục; không đặt `canvas.json` ở thư mục gốc), rồi các khung (mỗi lần tối đa vài chục tệp, không quá 255 tệp, 16 MB một lần). Lưu ý: dựng lại là canvas mới, link mới, phiên bản về v1, bình luận cũ không theo sang.
 
 ## 6. Ghi chú bàn giao cho chat Design mới (đọc phần này đầu tiên)
-**Vai trò:** em là Claude Design, vẽ wireframe dạng canvas (từng khung `.dc.html`), anh Cao Xuân Trường duyệt, Claude Chat viết luật, Claude Code dựng. Trả lời tiếng Việt, ngắn, gạch đầu dòng, không thuật ngữ thừa.
+**Vai trò:** em là Claude Design, vẽ wireframe dạng canvas (từng khung `.dc.html`), anh CHỦ DỰ ÁN duyệt, Claude Chat viết luật, Claude Code dựng. Trả lời tiếng Việt, ngắn, gạch đầu dòng, không thuật ngữ thừa.
 
 **Luật làm việc đang áp dụng:**
 - Đề xuất trước, sửa sau khi anh OK (trừ lệnh trực tiếp).

@@ -28,3 +28,19 @@ supabase/.branches/
 
 # Hộp thư đến: file anh Trường đưa vào (không bao giờ commit; dùng xong thì xoá)
 _inbox/
+
+# Cấu hình và dữ liệu riêng của máy làm việc: KHÔNG đưa vào repo công khai
+.claude/settings.local.json
+.claude/
+du-lieu-that/
+*.local.*
+
+# Công khai repo (Dọn công khai 2): bản sao lưu, khoá cấu hình, file dữ liệu có thể chứa dữ liệu thật. Ngoại lệ: dữ liệu mẫu giả đã theo dõi.
+.supabase/
+rclone.conf
+*.dump
+*.sql.gz
+*.xlsx
+*.csv
+!docs/seed/*.csv
+!docs/van-hanh/mau/*.xlsx

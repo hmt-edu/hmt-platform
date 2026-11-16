@@ -3,14 +3,15 @@
 # In từng mục PASS hoặc FAIL kèm lý do, cuối cùng một dòng "KẾT QUẢ: PASS" hoặc "KẾT QUẢ: FAIL". Thoát 0 khi PASS, 1 khi FAIL.
 # Chỉ dùng gh api (REST), không cần token trong file (gh đã đăng nhập sẵn trên máy). Kiểm:
 #  (1) mã commit cuối của PR;  (2) CI xanh trên ĐÚNG commit đó (check-runs, không tính job bị bỏ qua);
-#  (3) có bình luận OK hợp lệ đăng SAU commit cuối: «OK» của caotruong276, hoặc «OK-CHAT-ĐÊM <mã commit>» khớp commit cuối;
+#  (3) có bình luận OK hợp lệ đăng SAU commit cuối: «OK» của TÀI KHOẢN GỘP (tên đặt ở biến môi trường HMT_OK_USER, không ghi trong mã), hoặc «OK-CHAT-ĐÊM <mã commit>» khớp commit cuối;
 #  (4) số migration của PR lớn hơn mọi số trên main, và không PR nào đang mở có số migration nhỏ hơn (phải gộp trước);
 #  (5) nhánh không dirty (mergeable_state = clean).
 # Không gộp giúp: chỉ kiểm. Dùng trước MỖI lần gộp.
 set -uo pipefail
 
 REPO="${HMT_REPO:-hmt-edu/hmt-platform}"
-OWNER_OK="${HMT_OK_USER:-caotruong276}"
+# Tên tài khoản gộp KHÔNG ghi trong repo (công khai): đặt biến môi trường HMT_OK_USER trên máy chạy cổng. Không đặt thì chỉ chấp nhận «OK-CHAT-ĐÊM <mã>».
+OWNER_OK="${HMT_OK_USER:-}"
 PR="${1:-}"
 if ! [[ "$PR" =~ ^[0-9]+$ ]]; then
   echo "Cách dùng: $0 <số PR>" >&2

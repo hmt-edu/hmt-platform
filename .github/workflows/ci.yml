@@ -1,6 +1,6 @@
 # Kiểm thử mỗi PR: kiểm tra nhanh, DB (pgTAP), Playwright (chỉ khi có migration, đụng tiền hoặc nhãn full-ci), bản xem trước trên Cloudflare Pages (chỉ khi có nhãn preview).
 # Nhánh main KHÔNG chạy đủ mỗi lần gộp: main chạy đủ (kiểm nhanh, pgTAP, Playwright) khi chạy tay (workflow_dispatch) trước đợt cập nhật bản thật.
-# Chạy tay không chạy bản xem trước. Đỏ thì mở issue để anh thấy; Code sửa trước mọi việc khác (Q-21, Q-37). Không có lịch tự chạy (tài khoản hmt-vanhanh bị GitHub khoá 13/11/2026).
+# Chạy tay không chạy bản xem trước. Đỏ thì mở issue để anh thấy; Code sửa trước mọi việc khác (Q-21, Q-37). Không có lịch tự chạy (TÀI KHOẢN CHỦ DỰ ÁN bị GitHub khoá 13/11/2026).
 name: CI
 
 on:
@@ -258,6 +258,10 @@ jobs:
       (needs.changes.outputs.full == 'true' && needs.changes.outputs.ui == 'true'))
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    # Repo công khai (16/11/2026): secret Cloudflare phải nằm trong GitHub Environment `preview` có «Required reviewers» và chỉ nhánh được phép,
+    # KHÔNG để ở secret chung của repo. Nhờ vậy PR sửa workflow hoặc gắn nhãn `preview` không tự đọc được token; người duyệt bấm Approve mới chạy.
+    # (Cài đặt Environment làm trên web: Settings > Environments > preview; xem SECURITY.md.)
+    environment: preview
     permissions:
       contents: read
       pull-requests: write
@@ -341,7 +345,8 @@ jobs:
             if printf '%s' "$out" | grep -qiE 'already exists|8000002'; then
               echo "Project hmt-staging đã có."
             else
-              printf '%s\n' "$out"
+              # Repo công khai: log ai cũng đọc. Chỉ in vài dòng đã lọc, không in nguyên đầu ra của wrangler.
+              printf '%s\n' "$out" | tail -n 5 | cut -c1-200
               exit 1
             fi
           fi
@@ -373,10 +378,10 @@ jobs:
             branch="pr-$PR_NUMBER"
           fi
           out="$(npx wrangler pages deploy dist --project-name=hmt-staging --branch="$branch" 2>&1)" || {
-            printf '%s\n' "$out"
+            echo "::error::wrangler pages deploy lỗi. Vài dòng cuối đã lọc:"
+            printf '%s\n' "$out" | tail -n 5 | cut -c1-200
             exit 1
           }
-          printf '%s\n' "$out"
           alias_url="https://$branch.hmt-staging.pages.dev"
           deploy_url="$(printf '%s\n' "$out" | grep -oE 'https://[a-z0-9.-]+\.pages\.dev' | head -n 1)"
           echo "alias_url=$alias_url" >> "$GITHUB_OUTPUT"

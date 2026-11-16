@@ -1,6 +1,6 @@
 // BUOI-10 Yêu cầu buổi (danh sách và duyệt, khuôn K03 giản lược): mỗi dòng một yêu cầu; Trưởng cơ sở (Admin duyệt thay) Duyệt hoặc Từ chối ở dòng Chờ duyệt;
 // người tạo Huỷ yêu cầu Nháp hoặc Chờ duyệt. Máy chủ quyết quyền và trạng thái (app.list_session_requests, can_approve); phân trang ở máy chủ (50 dòng).
-// Lát đầu: loại Củng cố (BUOI-08). Chưa có khung chỉ riêng cho bản lọc giản lược này: dựng theo K03, ghi vào PR. Điện thoại: thẻ từng yêu cầu (R-HT-05).
+// Loại Củng cố (BUOI-08) và Bổ trợ (BUOI-09; tạo từ bản ghi lớp). Chưa có khung chỉ riêng cho bản lọc giản lược này: dựng theo K03, ghi vào PR. Điện thoại: thẻ từng yêu cầu (R-HT-05).
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { errorOf } from '../../lib/db';
@@ -14,7 +14,14 @@ import { OptionalSelect } from '../../ui/OptionalSelect';
 import { useToast } from '../../ui/toastContext';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useLeadCatalogs } from '../lead/useCatalogs';
-import { statusName, statusTone, targetText, whenText, type RequestRow } from './requestLogic';
+import {
+  kindName,
+  statusName,
+  statusTone,
+  targetText,
+  whenText,
+  type RequestRow,
+} from './requestLogic';
 import {
   useApproveRequest,
   useCancelRequest,
@@ -143,7 +150,9 @@ export function SessionRequestListPage() {
           {query.data.rows.map((r) => (
             <li key={r.id} className="rounded-control border border-border bg-surface p-3">
               <p className="font-semibold">{r.code}</p>
-              <p className="text-body">{targetText(r)}</p>
+              <p className="text-body">
+                {kindName(r.kind)} · {targetText(r)}
+              </p>
               <p className="text-caption text-fg-muted">{whenText(r)}</p>
               <p className="py-1">
                 <Tag tone={statusTone(r.status_code)}>{statusName(r.status_code)}</Tag>
@@ -170,7 +179,7 @@ export function SessionRequestListPage() {
               {query.data.rows.map((r) => (
                 <tr key={r.id} className="border-t border-border">
                   <td className="px-3 py-2">{r.code}</td>
-                  <td className="px-3 py-2">Củng cố</td>
+                  <td className="px-3 py-2">{kindName(r.kind)}</td>
                   <td className="px-3 py-2">{targetText(r)}</td>
                   <td className="px-3 py-2">{whenText(r)}</td>
                   <td className="px-3 py-2">{r.created_by_name ?? '—'}</td>
