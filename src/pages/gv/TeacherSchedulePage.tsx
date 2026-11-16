@@ -71,7 +71,12 @@ export function TeacherSchedulePage() {
   };
   const header = (
     <div className="flex flex-col gap-2">
-      <h1 className="text-h2">Lịch dạy</h1>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-h2">Lịch dạy</h1>
+        <Link className="text-link underline" to="/gv/gio-day">
+          Giờ dạy của tôi
+        </Link>
+      </div>
       <div className="flex flex-wrap items-center gap-2">
         <div role="group" aria-label="Kiểu xem" className="flex gap-1">
           <Button
