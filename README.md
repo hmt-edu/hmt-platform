@@ -77,7 +77,7 @@ nhánh feat/… → PR → CI xanh → gộp main → thử nghiệm tự cập 
 | `ci.yml`             | Mỗi PR         | lint, typecheck, test, check:hardcode, format; Supabase local + pgTAP + Playwright; bản xem trước trên Pages `hmt-staging` (link ghi vào PR)   |
 | `deploy-staging.yml` | Gộp vào `main` | Kiểm tra nhanh, `supabase db push` lên `hmt-staging`, đưa giao diện lên `https://hmt-staging.pages.dev`, gắn tag `staging-YYYYMMDD-HHMM-<sha>` |
 
-Staging Supabase gói Free bị tạm dừng khi 7 ngày không hoạt động thì anh Trường bấm Resume trên Supabase; KHÔNG dùng GitHub Actions để gọi dịch vụ ngoài theo lịch (lý do: tài khoản hmt-vanhanh bị GitHub khoá 13/11/2026).
+Staging Supabase gói Free bị tạm dừng khi 7 ngày không hoạt động thì anh Trường bấm Resume trên Supabase; KHÔNG dùng GitHub Actions để gọi dịch vụ ngoài theo lịch (lý do: TÀI KHOẢN CHỦ DỰ ÁN bị GitHub khoá 13/11/2026).
 
 Thay đổi chỉ ở tài liệu (`docs/**`, `*.md`) không chạy CI và không lên thử nghiệm.
 
@@ -85,20 +85,20 @@ Thay đổi chỉ ở tài liệu (`docs/**`, `*.md`) không chạy CI và khôn
 
 Settings > Secrets and variables > Actions. Tất cả là của **môi trường thử nghiệm**; khoá chạy thật chỉ nằm ở `hmt-deploy`.
 
-| Loại     | Tên                             | Giá trị                                                                                                                                                                                                        |
-| -------- | ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Secret   | `STAGING_DB_URL`                | Supabase `hmt-staging` > Connect > **Session pooler** URI (đã điền mật khẩu)                                                                                                                                   |
-| Secret   | `CLOUDFLARE_API_TOKEN`          | Token của tài khoản Cloudflare **thử nghiệm**, quyền Account / Cloudflare Pages / Edit                                                                                                                         |
-| Secret   | `CLOUDFLARE_ACCOUNT_ID`         | Account ID của tài khoản Cloudflare thử nghiệm                                                                                                                                                                 |
-| Variable | `VITE_SUPABASE_URL`             | Project URL của `hmt-staging`                                                                                                                                                                                  |
-| Variable | `VITE_SUPABASE_PUBLISHABLE_KEY` | Publishable key của `hmt-staging`                                                                                                                                                                              |
-| Variable | `STAGING_READY`                 | Đặt `true` khi đã điền đủ các mục trên                                                                                                                                                                         |
-| Secret   | `SUPABASE_ACCESS_TOKEN`         | Token Supabase của tài khoản `hmt-vanhanh` (không còn quyền gì ở `hmt-prod`), để triển khai Edge Function. Ghi ngày hết hạn vào variable `STAGING_SUPABASE_TOKEN_EXPIRES` của `hmt-deploy` (báo cáo tuần nhắc) |
-| Secret   | `STAGING_SUPABASE_SECRET_KEY`   | Supabase `hmt-staging` > Project Settings > API Keys > **Secret key** (`sb_secret_…`), để tạo tài khoản giả                                                                                                    |
-| Secret   | `STAGING_SEED_PASSWORD`         | Mật khẩu chung của các tài khoản giả trên thử nghiệm (≥ 8 ký tự, có chữ và số)                                                                                                                                 |
-| Secret   | `STAGING_TURNSTILE_SECRET`      | Cloudflare (tài khoản thử nghiệm) > Turnstile > widget `hmt-staging` > **Secret key**; CI đặt vào Edge Function `login` (`HMT_TURNSTILE_SECRET`)                                                               |
-| Variable | `VITE_TURNSTILE_SITE_KEY`       | Site key Cloudflare Turnstile cho thử nghiệm (công khai)                                                                                                                                                       |
-| Variable | `PROD_PROJECT_REF`              | Mã project `hmt-prod` (công khai), để CI kiểm khoá ở đây **không** chạm được bản chạy thật                                                                                                                     |
+| Loại     | Tên                             | Giá trị                                                                                                                                                                                                    |
+| -------- | ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Secret   | `STAGING_DB_URL`                | Supabase `hmt-staging` > Connect > **Session pooler** URI (đã điền mật khẩu)                                                                                                                               |
+| Secret   | `CLOUDFLARE_API_TOKEN`          | Token của tài khoản Cloudflare **thử nghiệm**, quyền Account / Cloudflare Pages / Edit                                                                                                                     |
+| Secret   | `CLOUDFLARE_ACCOUNT_ID`         | Account ID của tài khoản Cloudflare thử nghiệm                                                                                                                                                             |
+| Variable | `VITE_SUPABASE_URL`             | Project URL của `hmt-staging`                                                                                                                                                                              |
+| Variable | `VITE_SUPABASE_PUBLISHABLE_KEY` | Publishable key của `hmt-staging`                                                                                                                                                                          |
+| Variable | `STAGING_READY`                 | Đặt `true` khi đã điền đủ các mục trên                                                                                                                                                                     |
+| Secret   | `SUPABASE_ACCESS_TOKEN`         | Token Supabase của TÀI KHOẢN CHỦ DỰ ÁN (không còn quyền gì ở `hmt-prod`), để triển khai Edge Function. Ghi ngày hết hạn vào variable `STAGING_SUPABASE_TOKEN_EXPIRES` của `hmt-deploy` (báo cáo tuần nhắc) |
+| Secret   | `STAGING_SUPABASE_SECRET_KEY`   | Supabase `hmt-staging` > Project Settings > API Keys > **Secret key** (`sb_secret_…`), để tạo tài khoản giả                                                                                                |
+| Secret   | `STAGING_SEED_PASSWORD`         | Mật khẩu chung của các tài khoản giả trên thử nghiệm (≥ 8 ký tự, có chữ và số)                                                                                                                             |
+| Secret   | `STAGING_TURNSTILE_SECRET`      | Cloudflare (tài khoản thử nghiệm) > Turnstile > widget `hmt-staging` > **Secret key**; CI đặt vào Edge Function `login` (`HMT_TURNSTILE_SECRET`)                                                           |
+| Variable | `VITE_TURNSTILE_SITE_KEY`       | Site key Cloudflare Turnstile cho thử nghiệm (công khai)                                                                                                                                                   |
+| Variable | `PROD_PROJECT_REF`              | Mã project `hmt-prod` (công khai), để CI kiểm khoá ở đây **không** chạm được bản chạy thật                                                                                                                 |
 
 `STAGING_READY` khác `true` (hoặc chưa đặt): gộp `main` chỉ hiện cảnh báo, không triển khai, không báo lỗi. Đặt `true` rồi mà thiếu secret thì workflow báo lỗi rõ ràng. Thiếu secret Cloudflare hoặc variable thì bản xem trước của PR tự bỏ qua (CI vẫn xanh).
 

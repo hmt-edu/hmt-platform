@@ -1,0 +1,10 @@
+# Người phải duyệt khi PR đổi các vùng nhạy cảm (bật «Require review from Code Owners» trong luật bảo vệ nhánh main).
+# Đổi `@hmt-edu/maintainers` thành nhóm hoặc tài khoản thật của chủ dự án: tạo nhóm `maintainers` trong organization hmt-edu hoặc sửa dòng này.
+# Nếu tên không có thật, GitHub báo lỗi ở tab Code owners và bỏ qua luật.
+
+/.github/**              @hmt-edu/maintainers
+/deploy/**               @hmt-edu/maintainers
+/scripts/**              @hmt-edu/maintainers
+/supabase/migrations/**  @hmt-edu/maintainers
+/supabase/functions/**   @hmt-edu/maintainers
+/CLAUDE.md               @hmt-edu/maintainers
