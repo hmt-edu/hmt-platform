@@ -165,6 +165,10 @@ const ImportDataPage = lazyScreen(
   'ImportDataPage',
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
+const FeatureFlagsPage = lazyScreen(
+  () => import('../pages/cong-tac/FeatureFlagsPage'),
+  'FeatureFlagsPage',
+);
 const SettingsPage = lazyScreen(() => import('../pages/tham-so/SettingsPage'), 'SettingsPage');
 const PackageListPage = lazyScreen(
   () => import('../pages/goi-ban/PackageListPage'),
@@ -222,6 +226,10 @@ const TeacherHoursPage = lazyScreen(
 const TeacherStudentPage = lazyScreen(
   () => import('../pages/gv/TeacherStudentPage'),
   'TeacherStudentPage',
+);
+const ExpiringListPage = lazyScreen(
+  () => import('../pages/sap-het-gio/ExpiringListPage'),
+  'ExpiringListPage',
 );
 const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
@@ -408,6 +416,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'sap-het-gio',
+            element: (
+              <GatedCrmEntry slug="sap-het-gio">
+                <ExpiringListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'cho-xep-lop',
             element: (
               <GatedCrmEntry slug="cho-xep-lop">
@@ -580,6 +596,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/danh-muc">
                 <CatalogPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/cong-tac',
+            element: (
+              <GatedCrmEntry slug="quan-tri/cong-tac">
+                <FeatureFlagsPage />
               </GatedCrmEntry>
             ),
           },
