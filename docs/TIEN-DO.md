@@ -212,7 +212,7 @@ Kế hoạch, quy tắc hai Code và hàng đợi tới 17/11: `docs/ke-hoach/ke
 
 **Đang mở:** #69 (lưu canvas Design, khuôn K4g, K4e4): chờ Design lưu bản cuối (bản 25 trở đi, sau khi Design sửa K12 thành biểu mẫu: bỏ Filters/Group By/Favorites, nút Làm mới, nút Cột, ô tìm kiếm; QĐ-Đ12, QĐ-Đ17) và anh nói "lưu". PR giao diện Quản trị người dùng (QT-01, QT-02): chờ CI và OK.
 
-**Bản chạy thật** (`hmt-prod.pages.dev`, `app.hoamatoan.edu.vn`) lần xác nhận cuối còn ở tag `staging-20261010-1642-75637cf` (lúc đó tụt nhiều migration, 013 đến 038, và toàn bộ giao diện mới); migration hiện tại chưa xác nhận, có thể tụt xa so với `main` (migration 124).
+**Bản chạy thật** (`<tên-miền-chạy-thật>.pages.dev`, `app.hoamatoan.edu.vn`) lần xác nhận cuối còn ở tag `staging-20261010-1642-75637cf` (lúc đó tụt nhiều migration, 013 đến 038, và toàn bộ giao diện mới); migration hiện tại chưa xác nhận, có thể tụt xa so với `main` (migration 124).
 Anh cập nhật khi sẵn sàng: `hmt-deploy` > Deploy production (chọn tag đã qua staging), kèm chép `deploy/.github/workflows/bootstrap-admin.yml` mới sang `hmt-deploy`.
 Môi trường thử nghiệm tự cập nhật sau mỗi lần gộp.
 
@@ -376,7 +376,7 @@ Chi tiết ở `docs/nghiep-vu/phan-quyen.md` (ma trận, soát bảo mật) và
 - **Chép file sang hmt-deploy**: `LANG=en_US.UTF-8 pbcopy < deploy/…`, anh dán vào
   `https://github.com/TÀI KHOẢN DEPLOY/hmt-deploy/edit/main/<đường dẫn>` (file mới: `/new/main?filename=<đường dẫn>`).
 - **Mật khẩu chung tài khoản giả** nằm ở secret `STAGING_SEED_PASSWORD` và ứng dụng Mật khẩu của anh (mục
-  `hmt-staging.pages.dev`). Không in ra chat; nếu cần tạo mới thì sinh thẳng vào bộ nhớ copy (`pbcopy`).
+  `<tên-miền-thử-nghiệm>.pages.dev`). Không in ra chat; nếu cần tạo mới thì sinh thẳng vào bộ nhớ copy (`pbcopy`).
 - **Hạn token**: `SUPABASE_ACCESS_TOKEN` (hmt-platform, chỉ hmt-staging) và `PROD_SUPABASE_ACCESS_TOKEN` (hmt-deploy, chỉ
   Edge Functions của hmt-prod) đều hết hạn 09/10/2027; báo cáo tuần nhắc trước 30 ngày. Token Supabase tối đa 1 năm, chọn
   lùi một ngày nếu báo lỗi.
