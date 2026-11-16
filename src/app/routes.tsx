@@ -244,6 +244,14 @@ const ExpiringListPage = lazyScreen(
   () => import('../pages/sap-het-gio/ExpiringListPage'),
   'ExpiringListPage',
 );
+const TeacherTicketsPage = lazyScreen(
+  () => import('../pages/gv/TeacherTicketsPage'),
+  'TeacherTicketsPage',
+);
+const TeacherTicketCreatePage = lazyScreen(
+  () => import('../pages/gv/TeacherTicketCreatePage'),
+  'TeacherTicketCreatePage',
+);
 const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
   'TeacherSchedulePage',
@@ -774,6 +782,8 @@ export const routes: RouteObject[] = [
           { path: 'lop/:classId', element: <TeacherClassPage /> },
           { path: 'lop/:classId/hoc-sinh/:studentId', element: <TeacherStudentPage /> },
           { path: 'viec-can-lam', element: <TeacherTodoPage /> },
+          { path: 'ticket', element: <TeacherTicketsPage /> },
+          { path: 'ticket/tao', element: <TeacherTicketCreatePage /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },
           { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
           { path: 'buoi/:sessionId/cham-btvn', element: <HomeworkGradingPage /> },
