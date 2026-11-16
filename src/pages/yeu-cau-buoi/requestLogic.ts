@@ -1,6 +1,6 @@
 // Yêu cầu buổi (BUOI-08 tạo, BUOI-10 danh sách và duyệt): kiểu dữ liệu và hàm thuần. Máy chủ quyết quyền, trạng thái, tính mọi con số (app.list_session_requests,
 // app.save_session_request...); trang chỉ đặt chữ và kiểm lỗi nhập cơ bản. Lát đầu: chỉ loại Củng cố (R-BUOI-04).
-export type RequestKind = 'CUNG_CO' | 'BO_TRO';
+export type RequestKind = 'CUNG_CO' | 'BO_TRO' | 'HOC_BU';
 export type RequestStatus = 'NHAP' | 'CHO_DUYET' | 'DA_DUYET' | 'TU_CHOI' | 'HUY';
 
 export type RequestRow = {
@@ -15,6 +15,8 @@ export type RequestRow = {
   /** Tên các em được chọn (yêu cầu bổ trợ); rỗng với củng cố (cả lớp). */
   student_names: string[];
   teacher_name: string | null;
+  /** Lý do học bù (R-BUOI-03); null với loại khác. */
+  reason: string | null;
   session_date: string;
   start_time: string;
   end_time: string;
@@ -57,16 +59,17 @@ export function statusTone(code: RequestStatus): TagTone {
   }
 }
 
-/** "Củng cố" hoặc "Bổ trợ". */
+/** "Củng cố", "Bổ trợ" hoặc "Học bù". */
 export function kindName(kind: RequestKind): string {
-  return kind === 'BO_TRO' ? 'Bổ trợ' : 'Củng cố';
+  if (kind === 'BO_TRO') return 'Bổ trợ';
+  return kind === 'HOC_BU' ? 'Học bù' : 'Củng cố';
 }
 
 /** Cột Học sinh: củng cố là cả lớp ("Cả lớp Đại số 9 (4 em)", R-BUOI-04); bổ trợ liệt kê tên các em được chọn (R-BUOI-05). */
 export function targetText(
   r: Pick<RequestRow, 'kind' | 'subject_name' | 'class_code' | 'student_count' | 'student_names'>,
 ): string {
-  if (r.kind === 'BO_TRO') return r.student_names.join(', ');
+  if (r.kind !== 'CUNG_CO') return r.student_names.join(', ');
   return `Cả lớp ${r.subject_name ?? r.class_code} (${r.student_count} em)`;
 }
 
@@ -113,5 +116,23 @@ export function validateSupport(d: {
   if (d.end === '') e.end = 'Nhập giờ kết thúc.';
   else if (d.start !== '' && d.end <= d.start) e.end = 'Giờ kết thúc phải sau giờ bắt đầu.';
   if (d.teacherId === '') e.teacher = 'Chọn giáo viên.';
+  return e;
+}
+
+export type MakeupError = SupportError & { reason?: string };
+
+/** Kiểm nhập form học bù (máy chủ kiểm lại): như bổ trợ nhưng giáo viên không bắt buộc và LÝ DO bắt buộc (R-BUOI-03). */
+export function validateMakeup(d: {
+  studentIds: string[];
+  date: string;
+  start: string;
+  end: string;
+  reason: string;
+}): MakeupError {
+  const e: MakeupError = validateSupport({ ...d, teacherId: 'x' });
+  delete e.teacher;
+  if (e.date) e.date = 'Chọn ngày buổi học bù.';
+  if (d.studentIds.length === 0) e.students = 'Chọn ít nhất một em học bù.';
+  if (d.reason.trim() === '') e.reason = 'Nhập lý do học bù.';
   return e;
 }

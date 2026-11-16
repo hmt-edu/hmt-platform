@@ -137,6 +137,10 @@ const SessionRequestListPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
   'SessionRequestListPage',
 );
+const SessionRequestMakeupPage = lazyScreen(
+  () => import('../pages/yeu-cau-buoi/SessionRequestMakeupPage'),
+  'SessionRequestMakeupPage',
+);
 const SessionRequestSupportPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestSupportPage'),
   'SessionRequestSupportPage',
@@ -244,6 +248,10 @@ const TeacherHoursPage = lazyScreen(
 const TeacherStudentPage = lazyScreen(
   () => import('../pages/gv/TeacherStudentPage'),
   'TeacherStudentPage',
+);
+const DayAttendancePage = lazyScreen(
+  () => import('../pages/diem-danh-ngay/DayAttendancePage'),
+  'DayAttendancePage',
 );
 const ExpiringListPage = lazyScreen(
   () => import('../pages/sap-het-gio/ExpiringListPage'),
@@ -458,6 +466,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'diem-danh-trong-ngay',
+            element: (
+              <GatedCrmEntry slug="diem-danh-trong-ngay">
+                <DayAttendancePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'sap-het-gio',
             element: (
               <GatedCrmEntry slug="sap-het-gio">
@@ -494,6 +510,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="yeu-cau-buoi">
                 <SessionRequestListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'yeu-cau-buoi/tao-hoc-bu',
+            element: (
+              <GatedCrmEntry slug="yeu-cau-buoi">
+                <SessionRequestMakeupPage />
               </GatedCrmEntry>
             ),
           },
