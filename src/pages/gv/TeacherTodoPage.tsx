@@ -17,6 +17,8 @@ import {
   sessionLine,
   sortByDeadline,
 } from './todoLogic';
+import { GvForbidden } from './GvForbidden';
+import { isForbidden } from './forbidden';
 
 const MAX_ROWS = 100; // allow-number: trần phân trang của máy chủ (app.teacher_my_sessions)
 
@@ -68,6 +70,8 @@ export function TeacherTodoPage() {
         </h2>
         {open.isPending ? (
           <Spinner />
+        ) : open.isError && isForbidden(open.error) ? (
+          <GvForbidden />
         ) : open.isError ? (
           <Alert tone="danger">
             {errorOf(open.error).message}{' '}
