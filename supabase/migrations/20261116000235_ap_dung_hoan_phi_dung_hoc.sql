@@ -162,7 +162,7 @@ begin
           (v ->> 'unit_price_base')::bigint, round((v ->> 'unit_price_net')::numeric, 2), -- allow-number: làm tròn 2 chữ số thập phân của đơn giá
           (v ->> 'base_amount')::bigint,
           (v ->> 'fee_percent')::numeric, (v ->> 'fee_amount')::bigint, (v ->> 'refund_amount')::bigint,
-          'CHO_KE_TOAN', (select auth.uid()), now())
+          'CHO_KE_TOAN', null, now())
   returning id into v_id;
   return app.finish_refund_request(v_id);
 end;
@@ -199,7 +199,7 @@ begin
                                    status_code, manager_by, manager_at)
   values (e.id, e.student_id, e.parent_id, e.branch_id, p_reason_code, nullif(btrim(p_note), ''), nullif(btrim(p_ticket_ref), ''),
           (v ->> 'hours_left')::numeric, (v ->> 'hours_paid_left')::numeric, (v ->> 'hours_cancelled')::numeric,
-          (v ->> 'unit_price_net')::numeric, (v ->> 'balance_amount')::bigint, 'CHO_KE_TOAN', (select auth.uid()), now())
+          (v ->> 'unit_price_net')::numeric, (v ->> 'balance_amount')::bigint, 'CHO_KE_TOAN', null, now())
   returning id into v_id;
   perform app.finish_enrollment_stop(v_id);
   return v_id;
