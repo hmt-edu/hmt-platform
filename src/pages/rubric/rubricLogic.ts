@@ -82,3 +82,25 @@ export function emptyCells(changes: { description: string }[]): boolean {
 export function subjectSetOf(subjectCode: string, map: Record<string, string>): 'TOAN' | 'MON_PHU' {
   return map[subjectCode] === 'TOAN' ? 'TOAN' : 'MON_PHU';
 }
+
+// ---- Câu mẫu lời nhắn phụ huynh (R-V2-39): 2 loại buổi × mức 1–4 × 3 câu ----
+export type Phrase = { kind: string; level: number; seq: number; phrase: string };
+export const PHRASE_KINDS: { code: string; label: string }[] = [
+  { code: 'THUONG', label: 'Buổi thường' },
+  { code: 'KIEM_TRA', label: 'Buổi kiểm tra' },
+];
+export const PHRASE_LEVELS = [1, 2, 3, 4] as const;
+export const phraseKey = (p: { kind: string; level: number; seq: number }) =>
+  `${p.kind}:${p.level}:${p.seq}`;
+
+/** Các câu đã đổi so với bản đang lưu (chữ cắt khoảng trắng). */
+export function changedPhrases(rows: Phrase[], draft: Record<string, string>): Phrase[] {
+  const out: Phrase[] = [];
+  for (const r of rows) {
+    const k = phraseKey(r);
+    if (!(k in draft)) continue;
+    const next = (draft[k] ?? '').trim();
+    if (next !== r.phrase) out.push({ ...r, phrase: next });
+  }
+  return out;
+}

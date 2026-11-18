@@ -1,6 +1,7 @@
 // CH-07 Rubric nhận xét (Cấu hình · K10, máy tính, chỉ Admin). Khung: design/hmt-canvas-1aab CH07_* (bảng mô tả mức 1 đến 5 theo môn và phiên bản).
 // Luật: R-GV-01, R-V2-19, S03-10; mô tả sửa tự do nhưng chỉ áp cho buổi mở nhận xét sau (buổi giữ bản chụp); tiêu chí đã dùng chỉ Ngừng.
-// Chưa làm: tab «Câu mẫu lời nhắn phụ huynh» (canvas vênh R-V2-39, chờ Chat quyết), Ngừng/Dùng lại tiêu chí (khung không có nút).
+// Tab «Câu mẫu lời nhắn phụ huynh» làm theo LUẬT R-V2-39 (24 câu = loại buổi × mức 1–4 × 3 câu); canvas CH07_cau_mau vẽ theo tiêu chí × mức 1–5
+// nên VÊNH LUẬT (Chat chốt 18/11: luật thắng, báo Design). Chưa làm: Ngừng/Dùng lại tiêu chí (khung không có nút).
 // Chữ mô tả mức trong DB là chữ mẫu, chờ sheet Rubric chính thức; máy chủ quyết quyền (get_rubric chỉ Admin), trang hiện lỗi của DB.
 import { useState } from 'react';
 import { errorOf, FORBIDDEN_CODE, useDb } from '../../lib/db';
@@ -13,11 +14,15 @@ import { useToast } from '../../ui/toastContext';
 import {
   GROUPS,
   LEVELS,
+  PHRASE_KINDS,
+  PHRASE_LEVELS,
   changedCells,
+  changedPhrases,
   criteriaOfGroup,
   draftKey,
   emptyCells,
   groupNote,
+  phraseKey,
   valueOf,
   versionLabel,
   type Draft,
@@ -25,7 +30,9 @@ import {
 } from './rubricLogic';
 import {
   createRubricVersion,
+  savePhrases,
   saveLevelDescs,
+  usePhrases,
   useRefreshRubric,
   useRubric,
   useRubricSubjects,
@@ -37,6 +44,7 @@ export function RubricPage() {
   const subjects = useRubricSubjects();
   const [subject, setSubject] = useState(DEFAULT_SUBJECT);
   const [versionId, setVersionId] = useState<string | null>(null);
+  const [tab, setTab] = useState<'mo-ta' | 'cau-mau'>('mo-ta');
   const set = subjects.data?.find((s) => s.code === subject)?.set ?? 'TOAN';
   const rubric = useRubric(set, versionId);
 
@@ -74,47 +82,202 @@ export function RubricPage() {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-4">
       {header}
-      <div className="flex flex-wrap items-end gap-3">
-        <Field label="Môn">
+      <div role="group" aria-label="Nội dung rubric" className="flex gap-1">
+        <Button
+          variant={tab === 'mo-ta' ? 'primary' : 'secondary'}
+          aria-pressed={tab === 'mo-ta'}
+          onClick={() => setTab('mo-ta')}
+        >
+          Mô tả mức
+        </Button>
+        <Button
+          variant={tab === 'cau-mau' ? 'primary' : 'secondary'}
+          aria-pressed={tab === 'cau-mau'}
+          onClick={() => setTab('cau-mau')}
+        >
+          Câu mẫu lời nhắn phụ huynh
+        </Button>
+      </div>
+      {tab === 'cau-mau' ? (
+        <PhrasesPanel />
+      ) : (
+        <>
+          <div className="flex flex-wrap items-end gap-3">
+            <Field label="Môn">
+              {(field) => (
+                <Select
+                  id={field.id}
+                  label="Môn"
+                  value={subject}
+                  onChange={(v) => {
+                    setSubject(v);
+                    setVersionId(null);
+                  }}
+                  options={(
+                    subjects.data ?? [{ code: DEFAULT_SUBJECT, name: 'Toán', set: 'TOAN' }]
+                  ).map((s) => ({ value: s.code, label: s.name }))}
+                />
+              )}
+            </Field>
+            {rubric.data && (
+              <Field label="Phiên bản">
+                {(field) => (
+                  <Select
+                    id={field.id}
+                    label="Phiên bản"
+                    value={rubric.data.version.id}
+                    onChange={(v) => setVersionId(v)}
+                    options={rubric.data.versions.map((v) => ({
+                      value: v.id,
+                      label: versionLabel(v),
+                    }))}
+                  />
+                )}
+              </Field>
+            )}
+          </div>
+          {!rubric.data ? (
+            <Spinner label="Đang tải rubric…" />
+          ) : (
+            <RubricTable
+              key={`${rubric.data.version.id}`}
+              rubric={rubric.data}
+              set={set === 'TOAN' ? 'TOAN' : 'MON_PHU'}
+              onVersionCreated={() => setVersionId(null)}
+            />
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function PhrasesPanel() {
+  const supabase = useDb();
+  const toast = useToast();
+  const refresh = useRefreshRubric();
+  const phrases = usePhrases();
+  const [kind, setKind] = useState(PHRASE_KINDS[0]!.code);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  if (phrases.isError)
+    return (
+      <StateView
+        kind="error"
+        title="Không tải được câu mẫu"
+        actions={<Button onClick={() => void phrases.refetch()}>Thử lại</Button>}
+      >
+        {errorOf(phrases.error).message}
+      </StateView>
+    );
+  if (!phrases.data) return <Spinner label="Đang tải câu mẫu…" />;
+  const rows = phrases.data;
+  const changes = changedPhrases(rows, draft);
+  const save = () => {
+    setBusy(true);
+    setError(null);
+    void savePhrases(supabase, changes)
+      .then(async () => {
+        await refresh();
+        setEditing(false);
+        setDraft({});
+        toast({ title: 'Đã lưu câu mẫu.' });
+      })
+      .catch((e: unknown) => setError(errorOf(e).message))
+      .finally(() => setBusy(false));
+  };
+  return (
+    <div className="flex flex-col gap-3">
+      <UnsavedGuard when={editing && changes.length > 0} />
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <Field label="Loại buổi">
           {(field) => (
             <Select
               id={field.id}
-              label="Môn"
-              value={subject}
-              onChange={(v) => {
-                setSubject(v);
-                setVersionId(null);
-              }}
-              options={(
-                subjects.data ?? [{ code: DEFAULT_SUBJECT, name: 'Toán', set: 'TOAN' }]
-              ).map((s) => ({ value: s.code, label: s.name }))}
+              label="Loại buổi"
+              value={kind}
+              disabled={editing}
+              onChange={setKind}
+              options={PHRASE_KINDS.map((k) => ({ value: k.code, label: k.label }))}
             />
           )}
         </Field>
-        {rubric.data && (
-          <Field label="Phiên bản">
-            {(field) => (
-              <Select
-                id={field.id}
-                label="Phiên bản"
-                value={rubric.data.version.id}
-                onChange={(v) => setVersionId(v)}
-                options={rubric.data.versions.map((v) => ({ value: v.id, label: versionLabel(v) }))}
-              />
-            )}
-          </Field>
-        )}
+        <div className="flex items-center gap-2">
+          {editing ? (
+            <>
+              <Button
+                onClick={() => {
+                  setEditing(false);
+                  setDraft({});
+                  setError(null);
+                }}
+                disabled={busy}
+              >
+                Huỷ
+              </Button>
+              <Button variant="primary" loading={busy} onClick={save}>
+                Lưu
+              </Button>
+            </>
+          ) : (
+            <Button onClick={() => setEditing(true)}>Sửa</Button>
+          )}
+        </div>
       </div>
-      {!rubric.data ? (
-        <Spinner label="Đang tải rubric…" />
-      ) : (
-        <RubricTable
-          key={`${rubric.data.version.id}`}
-          rubric={rubric.data}
-          set={set === 'TOAN' ? 'TOAN' : 'MON_PHU'}
-          onVersionCreated={() => setVersionId(null)}
-        />
-      )}
+      <p className="text-caption text-fg-muted">
+        Hệ thống tự soạn lời nhắn phụ huynh từ điểm: mỗi loại buổi có 3 câu cho mỗi mức 1 đến 4. Chỉ
+        sửa chữ, không thêm bớt câu.
+      </p>
+      {error && <Alert tone="danger">{error}</Alert>}
+      <div className="overflow-x-auto rounded-box border border-border bg-surface">
+        <table className="w-full min-w-[720px] table-fixed border-collapse text-body">
+          <caption className="sr-only">Câu mẫu lời nhắn phụ huynh</caption>
+          <thead>
+            <tr className="bg-surface-subtle text-left text-caption text-fg-label">
+              <th scope="col" className="w-24 p-2">
+                Mức
+              </th>
+              {[1, 2, 3].map((n) => (
+                <th key={n} scope="col" className="p-2">
+                  Câu {n}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {PHRASE_LEVELS.map((level) => (
+              <tr key={level} className="border-t border-border align-top">
+                <th scope="row" className="p-2 text-left font-semibold">
+                  Mức {level}
+                </th>
+                {[1, 2, 3].map((seq) => {
+                  const row = rows.find(
+                    (r) => r.kind === kind && r.level === level && r.seq === seq,
+                  );
+                  if (!row) return <td key={seq} className="p-2" />;
+                  const key = phraseKey(row);
+                  return (
+                    <td key={seq} className="p-2">
+                      {editing ? (
+                        <textarea
+                          aria-label={`Mức ${level}, câu ${seq}`}
+                          className="min-h-20 w-full rounded-control border border-border bg-surface p-1 text-caption"
+                          value={draft[key] ?? row.phrase}
+                          onChange={(e) => setDraft((d) => ({ ...d, [key]: e.target.value }))}
+                        />
+                      ) : (
+                        <span className="text-caption">{row.phrase}</span>
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
