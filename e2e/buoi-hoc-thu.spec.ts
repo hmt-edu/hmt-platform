@@ -125,6 +125,15 @@ test('BUOI-06: CSKH thêm em của cơ hội L5 vào buổi Đã chốt làm h�
   await expect(page.getByText('Học thử', { exact: true }).first()).toBeVisible();
 });
 
+test('BUOI-06: Sale chỉ xem được buổi, không có nút Thêm học thử dù cờ bật (thiếu quyền Buổi học · Sửa)', async ({
+  page,
+}) => {
+  await enterAs(page, 'sale.cs5');
+  await page.goto(`/crm/buoi-hoc/${sessionId}`);
+  await expect(page.getByRole('heading', { name: 'Danh sách và điểm danh' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Thêm học thử' })).toHaveCount(0);
+});
+
 test('BUOI-06: cờ tắt thì không thấy nút Thêm học thử', async ({ page }) => {
   await withDb((db) =>
     db.query(
