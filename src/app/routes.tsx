@@ -89,6 +89,10 @@ const ReviewGradingPage = lazyScreen(
 const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 'ExamGradingPage');
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
+const UpsaleListPage = lazyScreen(
+  () => import('../pages/tai-tuc/UpsaleListPage'),
+  'UpsaleListPage',
+);
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const TicketRecordPage = lazyScreen(
   () => import('../pages/ticket/TicketRecordPage'),
@@ -432,6 +436,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="cho-ke-toan-duyet">
                 <ReceiptListPage waitingAccounting />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'tai-tuc',
+            element: (
+              <GatedCrmEntry slug="tai-tuc">
+                <UpsaleListPage />
               </GatedCrmEntry>
             ),
           },
