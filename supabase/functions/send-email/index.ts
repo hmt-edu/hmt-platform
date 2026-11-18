@@ -3,7 +3,7 @@
 // Thư còn lại gửi qua Resend (gói miễn phí) khi đã cấu hình RESEND_API_KEY và EMAIL_FROM.
 import { Webhook } from 'npm:standardwebhooks@1.1.1';
 import { HTTP } from '../_shared/http.ts';
-import { isInternalStudentEmail } from '../_shared/login-rules.ts';
+import { isEmailActionRejected, isInternalStudentEmail } from '../_shared/login-rules.ts';
 
 const SUBJECTS: Record<string, string> = {
   recovery: 'HMT: đặt lại mật khẩu',
@@ -29,6 +29,11 @@ Deno.serve(async (req) => {
     data = new Webhook(secret).verify(payload, Object.fromEntries(req.headers)) as typeof data;
   } catch {
     return hookError(HTTP.UNAUTHORIZED, 'Chữ ký hook không hợp lệ.');
+  }
+
+  // Luật R-HT-12 (Soát E6): không gửi thư xác nhận đổi email; chỉ Admin sửa email bằng API quản trị. Báo lỗi để Auth không hoàn tất việc đổi.
+  if (isEmailActionRejected(data.email_data.email_action_type ?? '')) {
+    return hookError(HTTP.FORBIDDEN, 'Chỉ quản trị viên được đổi email đăng nhập (R-HT-12).');
   }
 
   const to = data.user.email;
