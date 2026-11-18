@@ -9,6 +9,7 @@ import type {
   UpsaleFilters,
   UpsalePage,
   UpsalePreview,
+  UpsaleRecord,
 } from './upsaleTypes';
 
 export function useUpsalePage(filters: UpsaleFilters, offset: number, limit: number | null) {
@@ -87,4 +88,55 @@ export function useUpsaleAssignees(ticketId: string, enabled: boolean) {
 
 export function assignUpsale(supabase: SupabaseClient, id: string, ownerId: string): Promise<void> {
   return rpc<void>(supabase, 'assign_upsale_ticket', { p_id: id, p_owner_id: ownerId });
+}
+
+/** TT-02: bản ghi một phiếu, một lần gọi app.get_upsale_ticket. */
+export function useUpsaleRecord(id: string | undefined) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['upsale-record', id],
+    enabled: id !== undefined,
+    queryFn: () => rpc<UpsaleRecord>(supabase, 'get_upsale_ticket', { p_id: id }),
+  });
+}
+
+export function useRefreshUpsaleRecord(id: string) {
+  const queryClient = useQueryClient();
+  return useCallback(
+    () =>
+      Promise.all(
+        ['upsale-record', 'upsale-list', 'upsale-board'].map((key) =>
+          queryClient.invalidateQueries({ queryKey: key === 'upsale-record' ? [key, id] : [key] }),
+        ),
+      ),
+    [queryClient, id],
+  );
+}
+
+export function changeUpsaleStage(
+  supabase: SupabaseClient,
+  id: string,
+  to: string,
+  reasonCode: string | null,
+  note: string | null,
+): Promise<void> {
+  return rpc<void>(supabase, 'change_upsale_stage', {
+    p_id: id,
+    p_to: to,
+    p_reason_code: reasonCode,
+    p_note: note,
+  });
+}
+
+export function saveUpsaleNotes(
+  supabase: SupabaseClient,
+  id: string,
+  goal: string,
+  roadmap: string,
+): Promise<{ changed: boolean }> {
+  return rpc<{ changed: boolean }>(supabase, 'update_upsale_notes', {
+    p_id: id,
+    p_next_goal: goal,
+    p_next_roadmap: roadmap,
+  });
 }

@@ -31,3 +31,13 @@ Nhãn «Tái tục MM/YYYY» tính từ ngày hết giờ dự kiến, không c�
 - `app.sync_upsale_cron()`: đăng ký lịch 02:00 giờ Việt Nam. **Không tự chạy trong migration; chờ anh duyệt đăng ký.**
 - Tham số mới: `upsale_auto_generate_enabled` (tắt), `absence_risk_window_days` (30).
 - Sửa theo nhắc của Chat 12:25, 12:35: `create_upsale_ticket` kiểm học sinh cùng cơ sở với lớp (`HMT_HOC_SINH_KHAC_CO_SO`); `preview_upsale_enrollment` kiểm quyền trước, mã ở cơ sở ngoài phạm vi báo như mã không có.
+
+## TT-D1 (migration 416): bản ghi TT-02
+
+`app.get_upsale_ticket(phiếu)` trả một lần: phiếu, phụ huynh, học sinh, lớp và giáo viên lớp, ghi danh liên quan kèm giờ còn, giờ đã mua và đã học, số buổi vắng trong `absence_risk_window_days` ngày, sự kiện, và `actions` (giao, doi_giai_doan, sua_ghi_chu theo quyền người gọi). Màn `/crm/tai-tuc/:id` (K06): thanh giai đoạn chỉ đọc, nút «Chuyển giai đoạn» (L5 bắt buộc lý do), «Giao», hai ô tự do + Lưu, tab Giờ học, Báo giá và đơn (chưa có), Tình hình học tập (chưa dùng).
+
+**Chưa làm, cần Chat/anh quyết (ghi ở PR):**
+1. **Email, Zalo phụ huynh**: spec nói lấy từ hồ sơ phụ huynh nhưng bảng `app.parent` chưa có cột email, Zalo: màn hiện «—». Cần quyết thêm cột ở hồ sơ phụ huynh (việc của Khách hàng).
+2. **Deadline, Stage Deadline, Next Activity, Assign Date, Nhân sự hỗ trợ, Lần liên hệ gần nhất** (khối «Xem thêm (6 trường)» của canvas): chưa có luật và cột; không làm.
+3. **Ghi chú tự do (Chatter) và lịch hẹn của phiếu**: cần đăng ký loại ghi chú `UPSALE` ở `note_target` và sửa `can_see_note_target` (hàm dùng chung nhiều PR); dòng thời gian hiện chỉ có sự kiện nghiệp vụ. Nút «Thêm lịch hẹn» chưa có.
+4. **TT-D2 (đề xuất, chưa làm, dính tiền):** «Tạo báo giá», «Tạo đơn» từ phiếu ở L6, L7A, L7B, L8A. Bảng `app.quotation` đã có `renewal_ticket_id`, nhưng `sales_order` và hàm tính dòng (`order_write_priced_lines`) đang lấy học sinh từ cơ hội (`prospect_student`); đơn từ phiếu cần dòng gắn `student_id`, lớp và hình thức học giữ như ghi danh cũ (R-GD-13), cùng móc đơn đóng đủ thì phiếu sang L8A. Xin Chat duyệt thiết kế trước khi viết.
