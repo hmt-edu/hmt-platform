@@ -64,7 +64,7 @@ select is((app.get_ticket((select (j ->> 'id')::uuid from qt1)) -> 'ticket' ->> 
 -- Ticket con (Đề nghị sinh từ Khiếu nại) mang mã ticket gốc.
 create temp table qc (j jsonb);
 grant all on qc to public;
-insert into qc select app.create_ticket(pg_temp.mk('DN', 'DN_04_01', jsonb_build_object('related_ticket_id', (select (j ->> 'id')::uuid from qt2))));
+insert into qc select app.create_ticket(pg_temp.mk('DN', 'DN_04_01', jsonb_build_object('related_ticket_id', (select (j ->> 'id')::uuid from qt2), 'student_id', (select id from app.student where code = 'HSAS501'))));
 select is((app.get_ticket((select (j ->> 'id')::uuid from qc)) -> 'ticket' ->> 'related_ticket_code'), (select j ->> 'code' from qt2), 'Chi tiết: ticket con có related_ticket_code đúng mã ticket gốc');
 select is((app.get_ticket((select (j ->> 'id')::uuid from qt1)) -> 'ticket' ->> 'student_name'), 'Học sinh giả ticket', 'Các khoá cũ giữ nguyên (student_name vẫn có)');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
