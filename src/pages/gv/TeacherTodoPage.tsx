@@ -1,10 +1,12 @@
 // GV-12 Việc cần làm (cổng giáo viên): buổi chưa hoàn tất kèm hạn, và bài BTVN «Nộp sau» chờ cập nhật. Bấm Mở tới GV-04 (buổi) hoặc GV-08 (BTVN).
-// Mục «phiếu test chờ chấm» để sau 17/11 (ẩn). Luật R-GV-05, R-GV-11. Chỉ đọc: màn không đổi tình trạng buổi hay bài.
+// Mục «phiếu test chờ chấm» (R-CRM-11): phiếu kiểm tra đầu vào giao cho giáo viên chấm, bấm Mở tới GV-15. Luật R-GV-05, R-GV-11. Chỉ đọc: màn không đổi tình trạng buổi hay bài.
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { errorOf, rpc, useDb } from '../../lib/db';
 import { vnDayBounds } from '../../lib/vnDay';
 import { Button, ButtonLink } from '../../ui/Button';
 import { Alert, Spinner } from '../../ui/Feedback';
+import { formatDateTime } from '../../lib/format';
+import type { PendingTestsResult } from './testGrading';
 import { cn } from '../../ui/cn';
 import type { GradingSheet } from './homework';
 import { addDays, formatDayHeading, hhmm, type MySessionsResult } from './todayLogic';
@@ -41,6 +43,12 @@ export function TeacherTodoPage() {
         p_to: todayKey,
         p_limit: MAX_ROWS,
       }),
+    refetchOnWindowFocus: true,
+  });
+  const tests = useQuery({
+    queryKey: ['gv-todo-tests'],
+    queryFn: () =>
+      rpc<PendingTestsResult>(supabase, 'teacher_my_pending_tests', { p_limit: MAX_ROWS }),
     refetchOnWindowFocus: true,
   });
   const classes = recent.data ? latestSessionPerClass(recent.data.rows, todayKey) : [];
@@ -138,6 +146,50 @@ export function TeacherTodoPage() {
             })}
             failed={sheets.filter((q) => q.isError).length}
           />
+        )}
+      </section>
+
+      <section aria-labelledby="gv12-tests" className="flex flex-col gap-2">
+        <h2 id="gv12-tests" className="text-caption font-semibold text-fg-label">
+          PHIẾU TEST CHỜ CHẤM{tests.data ? ` · ${tests.data.total}` : ''}
+        </h2>
+        {tests.isPending ? (
+          <Spinner />
+        ) : tests.isError ? (
+          <Alert tone="danger">
+            {errorOf(tests.error).message}{' '}
+            <Button size="sm" onClick={() => void tests.refetch()}>
+              Thử lại
+            </Button>
+          </Alert>
+        ) : tests.data.rows.length === 0 ? (
+          <p
+            className="rounded-control border border-border p-3 text-body"
+            data-testid="gv12-tests-empty"
+          >
+            <span className="font-semibold">Không có phiếu test chờ chấm.</span>
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2" aria-label="Phiếu test chờ chấm">
+            {tests.data.rows.map((p) => (
+              <li
+                key={p.test_id}
+                className="flex items-center gap-3 rounded-control border border-border bg-surface p-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold">{p.student_name ?? 'Học sinh'}</p>
+                  <p className="text-caption text-fg-muted">
+                    {p.exam_name ?? p.subject_name ?? 'Kiểm tra đầu vào'} · làm bài{' '}
+                    {formatDateTime(p.scheduled_at)}
+                  </p>
+                  <p className="text-caption font-medium">Chờ chấm</p>
+                </div>
+                <ButtonLink to={`/gv/phieu-test/${p.test_id}`} size="sm">
+                  Mở
+                </ButtonLink>
+              </li>
+            ))}
+          </ul>
         )}
       </section>
     </div>
