@@ -189,6 +189,10 @@ const PermissionMatrixPage = lazyScreen(
   'PermissionMatrixPage',
 );
 const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
+const CurriculumFramePage = lazyScreen(
+  () => import('../pages/khung-chuong-trinh/CurriculumFramePage'),
+  'CurriculumFramePage',
+);
 const DiscountPolicyPage = lazyScreen(
   () => import('../pages/chiet-khau/DiscountPolicyPage'),
   'DiscountPolicyPage',
@@ -720,6 +724,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/co-so">
                 <BranchRoomPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/khung-chuong-trinh',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/khung-chuong-trinh">
+                <CurriculumFramePage />
               </GatedCrmEntry>
             ),
           },
