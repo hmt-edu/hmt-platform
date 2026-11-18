@@ -24,7 +24,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 
 ## Chi phí
 - **Ưu tiên gói miễn phí, kể cả khi chạy thật.** Không thêm dịch vụ, gói trả phí hay thứ gì phát sinh tiền khi chưa hỏi anh Trường.
-- Thiết kế để nằm trong giới hạn gói Free: Supabase (DB 500 MB, tải ra 5 GB/tháng, 2 project), Cloudflare Pages, GitHub Free (phút Actions có hạn: CI gọn, có cache).
+- Thiết kế để nằm trong giới hạn gói Free: Supabase (DB 500 MB, tải ra 5 GB/tháng, 2 project), Cloudflare Pages, GitHub Free (repo công khai: CI GitHub miễn phí, không giới hạn phút; vẫn giữ CI gọn, có cache).
 - Ghi gọn nhật ký thao tác (chỉ trường đổi), không lưu file trong Supabase Storage (file để Cloudflare R2, giai đoạn 4).
 
 ## Kiến trúc
@@ -84,7 +84,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 
 ## Quy trình git và đưa lên chạy thật
 - Nhánh riêng (`feat/…`, `fix/…`) → PR → CI xanh → gộp `main` → môi trường thử nghiệm tự cập nhật → anh Trường thử. Commit nhỏ, thông điệp rõ.
-- **Đẩy một lần (Đ281):** chỉ mở PR hoặc đẩy commit khi `npm run check:all` trên máy đã xanh; sửa theo góp ý thì gom lại, đẩy một lần; không đẩy commit chỉ để thử CI. PR chỉ tài liệu không cần `check:all`.
+- **Đẩy một lần (Đ281, sửa 18/11/2026 theo anh Trường chốt 15:13):** trước khi mở PR hoặc đẩy commit chỉ chạy bộ nhanh trên máy: `npm run lint && npm run typecheck && npm run test && npm run check:hardcode && npm run format:check`. **pgTAP và Playwright do CI GitHub chạy** (repo công khai, miễn phí); không bật `db:start`, `db:reset`, `e2e` chỉ để thử CI. PR có migration hoặc RLS được chạy `db:test` trên máy cho file của mình, LẦN LƯỢT theo khoá `HOP-THU/LUOT-DB.txt` (ghi tên lane, xong xoá dòng và `npm run db:stop`; mỗi lúc một lane giữ DB). Lý do: Docker chỉ có 7,5 GB RAM, không chịu nổi nhiều lane chạy DB cùng lúc. Sửa theo góp ý thì gom lại, đẩy một lần; không đẩy commit chỉ để thử CI. Mô tả PR ghi «pgTAP/e2e: chờ CI». PR chỉ tài liệu không cần kiểm gì thêm.
 - `docs/TIEN-DO.md` phải đúng với hiện trạng nhưng **PR có code KHÔNG sửa file này** (tránh xung đột và bắt anh OK lại; anh chốt 05/11). Mỗi tối gom một PR tài liệu riêng cập nhật `docs/TIEN-DO.md` cho mọi PR đã gộp trong ngày (viết như sau khi PR đã gộp; PR này chỉ sửa tài liệu). Việc phát sinh sau khi gộp ghi vào PR tài liệu kế tiếp.
 - Chủ repo `hmt-platform`: **TÀI KHOẢN CHỦ DỰ ÁN** (từ 09/11/2026, Q-165; trước đó là TÀI KHOẢN DEPLOY). Claude Code dùng tài khoản này trên máy Mac. Chủ repo `hmt-deploy`: **TÀI KHOẢN DEPLOY** của anh Trường (đăng ký bằng email anh Trường đưa sau), bật xác thực hai bước, **chỉ dùng trên trình duyệt**, không bao giờ đăng nhập trên máy Mac này (`gh`, git, Keychain); TÀI KHOẢN CHỦ DỰ ÁN không có quyền ở `hmt-deploy`. TÀI KHOẢN GỘP của anh Trường là collaborator của `hmt-platform` (giữ), chỉ dùng trên trình duyệt, không đăng nhập trên máy Mac này; TÀI KHOẢN DEPLOY cũng là collaborator của `hmt-platform` (quyền Write). Commit trong `hmt-platform` ghi tên tác giả bằng email noreply của TÀI KHOẢN CHỦ DỰ ÁN, không dùng email của anh Trường. (Chốt 28/10/2026, Đ278, sửa bởi Đ279; chủ `hmt-platform` đổi ngày 09/11/2026, Q-165.)
 - Cloudflare: tài khoản **thử nghiệm** đăng ký bằng `[email vận hành]+staging` (token nằm trong Secrets của `hmt-platform`); tài khoản **chạy thật** đăng ký bằng `[email chạy thật]`, chỉ dùng trên trình duyệt, token nằm trong Secrets của `hmt-deploy`.
@@ -107,7 +107,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 - `npm run db:test`: pgTAP (RLS, hàm nghiệp vụ).
 - `npm run db:seed-users`: tạo tài khoản giả mỗi vai trò (cần `API_URL`, `SECRET_KEY`, `DB_URL`, `SEED_PASSWORD`, xem `README.md`).
 - `npm run lint`, `npm run typecheck`, `npm run test`, `npm run check:hardcode`, `npm run format:check`: bộ kiểm tra nhanh như CI.
-- `npm run check:all`: cả bộ kiểm như CI trên máy (nhanh ở trên, `db:reset`, `db:test`, `e2e`); chạy trước khi đẩy. Dừng `check:all` giữa chừng thì tắt `vite preview` còn sót ở cổng 4173 (`pkill -f 'vite preview --port 4173'`); `check:all` tự dừng và báo nếu thấy cổng này đang bị giữ.
+- `npm run check:all`: cả bộ kiểm như CI trên máy (nhanh ở trên, `db:reset`, `db:test`, `e2e`); **chỉ Tester hoặc ca đêm chạy khi cần**, không chạy trước mỗi lần đẩy (xem mục Đẩy một lần). Dừng `check:all` giữa chừng thì tắt `vite preview` còn sót ở cổng 4173 (`pkill -f 'vite preview --port 4173'`); `check:all` tự dừng và báo nếu thấy cổng này đang bị giữ.
 - `npm run e2e`: Playwright máy tính + iPhone (lần đầu: `npx playwright install chromium webkit`). Cổng xem trước mặc định 4173; hai thư mục làm việc chạy song song thì đặt `E2E_PREVIEW_PORT` khác nhau (ví dụ 4173 và 4273), và mỗi thư mục có Supabase local riêng (`project_id` và cổng khác nhau trong `supabase/config.toml` cục bộ, không commit).
 - `npx supabase migration new <ten>`: tạo file migration mới.
 
