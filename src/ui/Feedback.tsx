@@ -109,15 +109,16 @@ export function Avatar({ name, large = false }: { name: string; large?: boolean 
     .map((w) => w[0]?.toUpperCase() ?? '')
     .join('');
   return (
+    // Chữ viết tắt vẽ bằng CSS (before:content), KHÔNG là chữ trong DOM: axe 4.14 (luật label-content-name-mismatch) tính cả chữ aria-hidden là «chữ nhìn thấy»
+    // của nút chứa ảnh đại diện mà tên đọc lại không có chữ này. Vẽ bằng CSS thì ảnh đại diện không còn chữ để so.
     <span
       aria-hidden="true"
+      data-initials={initials || '?'}
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-800',
+        'flex shrink-0 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-800 before:content-[attr(data-initials)]',
         large ? 'size-[30px]' : 'size-6',
       )}
-    >
-      {initials || '?'}
-    </span>
+    />
   );
 }
 

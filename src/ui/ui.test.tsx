@@ -76,7 +76,9 @@ describe('Feedback', () => {
 
   it('ảnh đại diện lấy chữ đầu của hai từ cuối, bỏ phần trong ngoặc', () => {
     const { container } = render(<Avatar name="Phạm Ngọc Ánh (giả)" />);
-    expect(container.textContent).toBe('NÁ');
+    // Chữ viết tắt nằm ở thuộc tính (vẽ bằng CSS), không là chữ trong DOM (luật axe label-content-name-mismatch).
+    expect(container.firstElementChild?.getAttribute('data-initials')).toBe('NÁ');
+    expect(container.textContent).toBe('');
   });
 
   it('số đếm bằng 0 thì không hiện', () => {
