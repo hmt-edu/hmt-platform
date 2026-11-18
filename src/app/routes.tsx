@@ -89,6 +89,10 @@ const ReviewGradingPage = lazyScreen(
 const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 'ExamGradingPage');
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
+const UpsaleRecordPage = lazyScreen(
+  () => import('../pages/tai-tuc/UpsaleRecordPage'),
+  'UpsaleRecordPage',
+);
 const UpsaleListPage = lazyScreen(
   () => import('../pages/tai-tuc/UpsaleListPage'),
   'UpsaleListPage',
@@ -513,6 +517,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="tai-tuc">
                 <UpsaleListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'tai-tuc/:id',
+            element: (
+              <GatedCrmEntry slug="tai-tuc">
+                <UpsaleRecordPage />
               </GatedCrmEntry>
             ),
           },
