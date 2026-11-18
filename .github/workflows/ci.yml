@@ -1,4 +1,4 @@
-# Kiểm thử mỗi PR: kiểm tra nhanh, DB (pgTAP), Playwright (chỉ khi có migration, đụng tiền hoặc nhãn full-ci), bản xem trước trên Cloudflare Pages (chỉ khi có nhãn preview).
+# Kiểm thử mỗi PR: kiểm tra nhanh, DB (pgTAP) và Playwright (hai job riêng; Playwright chỉ khi có migration, đụng tiền hoặc nhãn full-ci), bản xem trước trên Cloudflare Pages (chỉ khi có nhãn preview).
 # Nhánh main KHÔNG chạy đủ mỗi lần gộp: main chạy đủ (kiểm nhanh, pgTAP, Playwright) khi chạy tay (workflow_dispatch) trước đợt cập nhật bản thật.
 # Chạy tay không chạy bản xem trước. Đỏ thì mở issue để anh thấy; Code sửa trước mọi việc khác (Q-21, Q-37). Không có lịch tự chạy (TÀI KHOẢN CHỦ DỰ ÁN bị GitHub khoá 13/11/2026).
 name: CI
@@ -65,26 +65,19 @@ jobs:
         # Mọi lỗi (không lấy được danh sách file, bộ lọc lỗi) thì in full=true, ui=true: chạy đủ. Có kiểm thử ở scripts/ci-changes.test.ts.
         run: bash scripts/ci-changes.sh
 
-  db-e2e:
-    name: DB (pgTAP) + Playwright
-    # Chờ kiểm tra nhanh xanh rồi mới chạy (đỡ tốn phút khi lint/test đã trượt); bỏ khi PR chỉ đổi deploy/, docs/, design/, *.md.
+  # Tách job (D13, 18/11/2026): pgTAP chạy riêng để lỗi cài trình duyệt hoặc e2e không che kết quả DB; chạy lại riêng từng job.
+  db:
+    name: DB (pgTAP)
+    # Chờ kiểm tra nhanh xanh rồi mới chạy; bỏ khi PR chỉ đổi deploy/, docs/, design/, *.md. Bộ lọc/job `changes` hỏng thì chạy đủ (mặc định an toàn).
     needs: [checks, changes]
-    # Chạy khi bộ lọc báo cần chạy đủ HOẶC bộ lọc/job `changes` hỏng (mặc định an toàn: chạy đủ). always() để job `changes` hỏng không làm bỏ qua.
-    # Gắn nhãn khác `full-ci` thì bỏ qua (đã chạy ở lần đẩy commit).
     if: >-
       always() && needs.checks.result == 'success' &&
       (github.event.action != 'labeled' || github.event.label.name == 'full-ci') &&
       (needs.changes.result != 'success' || needs.changes.outputs.full == 'true')
     runs-on: ubuntu-24.04
-    # Phải lớn hơn thời gian tối đa của bước Playwright (35 phút) cộng cài đặt, dựng DB: nếu không bước bị cắt bởi giới hạn của cả job.
-    timeout-minutes: 45
+    timeout-minutes: 25
     permissions:
       contents: read
-    # Playwright trên PR (Q-21, anh chốt 06/11) chỉ chạy khi PR có migration, đụng tiền (đơn hàng, phiếu thu, số dư, báo giá, gói bán, bảng giá…) hoặc lõi (src/lib/auth, src/nav, src/record; Q-39, Q-66); theo đường dẫn, xem
-    # scripts/ci-filter.ts: isMoney, isCore, needsE2e). PR khác chạy pgTAP, bỏ Playwright (Code dán kết quả `npm run check:all` trên máy vào bình luận PR).
-    # Nhãn `full-ci` hoặc bộ lọc hỏng: chạy đủ. Nhánh main KHÔNG chạy đủ mỗi lần gộp: main chạy đủ khi chạy tay trước đợt cập nhật bản thật.
-    env:
-      RUN_E2E: ${{ needs.changes.result != 'success' || needs.changes.outputs.e2e == 'true' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -111,8 +104,44 @@ jobs:
       - name: Kiểm thử DB (pgTAP)
         run: npx supabase test db
 
+  # Playwright riêng (D13). Cùng điều kiện với DB (pgTAP), thêm: chỉ khi PR có migration, đụng tiền hoặc lõi (bộ lọc e2e, scripts/ci-filter.ts), có nhãn `full-ci`
+  # hoặc bộ lọc hỏng. Tự dựng Supabase local và DB riêng (không dùng chung DB với job pgTAP).
+  e2e:
+    name: Playwright (máy tính + iPhone)
+    needs: [checks, changes]
+    if: >-
+      always() && needs.checks.result == 'success' &&
+      (github.event.action != 'labeled' || github.event.label.name == 'full-ci') &&
+      (needs.changes.result != 'success' || (needs.changes.outputs.full == 'true' && needs.changes.outputs.e2e == 'true'))
+    runs-on: ubuntu-24.04
+    # Phải lớn hơn thời gian tối đa của bước Playwright (35 phút) cộng cài đặt, dựng DB.
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+        timeout-minutes: 5
+
+      - name: Khởi động Supabase local (chỉ dịch vụ cần)
+        # Bình thường khoảng 1,5 đến 2 phút.
+        timeout-minutes: 8
+        run: >-
+          npx supabase start
+          -x studio,imgproxy,mailpit,logflare,vector,realtime,storage-api,supavisor,postgres-meta
+
+      - name: Dựng lại DB từ migration + seed
+        run: npx supabase db reset
+
       - name: Lấy địa chỉ, khoá công khai của Supabase local
-        if: env.RUN_E2E == 'true'
         # Khoá local là giá trị mặc định công khai của Supabase CLI; vẫn che trong log.
         run: |
           status_env="$(npx supabase status -o env)"
@@ -143,16 +172,13 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Tạo tài khoản giả cho kiểm thử đăng nhập
-        if: env.RUN_E2E == 'true'
         run: npm run db:seed-users
 
       - name: Phiên bản Playwright
-        if: env.RUN_E2E == 'true'
         id: pw
         run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/playwright-core'].version")" >> "$GITHUB_OUTPUT"
 
       - name: Cache trình duyệt Playwright
-        if: env.RUN_E2E == 'true'
         id: pw-cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -167,7 +193,6 @@ jobs:
       #   1. apt chờ tối đa 20 giây mỗi kết nối và thử lại 3 lần: gói đứng thì tải lại ngay, không đợi hết giờ của cả bước.
       #   2. Gói đã tải được giữ trong thư mục cache `~/.apt-cache` (khoá theo phiên bản Playwright): lượt sau không tải lại từ kho chậm.
       - name: Cache gói apt của trình duyệt
-        if: env.RUN_E2E == 'true'
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
@@ -179,7 +204,6 @@ jobs:
             apt-playwright-${{ runner.os }}-
 
       - name: Cấu hình apt (chờ ngắn, thử lại, giữ gói đã tải)
-        if: env.RUN_E2E == 'true'
         run: |
           mkdir -p "$HOME/.apt-cache/archives/partial"
           # apt chạy bằng quyền gốc và tải bằng người dùng _apt: thư mục phải ghi được để không tải "không cách ly".
@@ -196,7 +220,7 @@ jobs:
       # job. Bình thường mất dưới 1 phút (lần đầu không có cache khoảng 5 phút). Mỗi lần thử bị cắt sau 6 phút; thử lại đúng một
       # lần và chỉ ở bước cài (không thử lại bộ kiểm thử, lỗi thật không bị che). Trước lần thử lại dọn tiến trình apt còn kẹt.
       - name: Cài trình duyệt Playwright
-        if: env.RUN_E2E == 'true' && steps.pw-cache.outputs.cache-hit != 'true'
+        if: steps.pw-cache.outputs.cache-hit != 'true'
         timeout-minutes: 14
         run: |
           for attempt in 1 2; do
@@ -210,7 +234,7 @@ jobs:
           exit 1
 
       - name: Cài thư viện hệ thống cho trình duyệt (khi dùng cache)
-        if: env.RUN_E2E == 'true' && steps.pw-cache.outputs.cache-hit == 'true'
+        if: steps.pw-cache.outputs.cache-hit == 'true'
         timeout-minutes: 14
         run: |
           for attempt in 1 2; do
@@ -224,17 +248,16 @@ jobs:
           exit 1
 
       - name: Cho phép đọc gói apt đã tải (để lưu cache)
-        if: always() && env.RUN_E2E == 'true'
+        if: always()
         run: sudo chmod -R a+rX "$HOME/.apt-cache" || true
 
       - name: Playwright (máy tính + iPhone)
-        if: env.RUN_E2E == 'true'
         # Bình thường 10 đến 12 phút; bộ bài ~410 bài và máy chủ CI chậm thì có lần quá 20 phút (11/11/2026), nâng lên 35.
         timeout-minutes: 35
         run: npm run e2e
 
       - name: Lưu báo cáo Playwright khi trượt
-        if: failure() && env.RUN_E2E == 'true'
+        if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-report
@@ -244,14 +267,15 @@ jobs:
 
   preview:
     name: Bản xem trước (Cloudflare Pages)
-    needs: [checks, db-e2e, changes]
+    needs: [checks, db, e2e, changes]
     # Chỉ khi PR gắn nhãn `preview` (Q-21, anh chốt 06/11), chỉ PR từ chính repo (PR từ fork không có secrets) và chỉ khi PR đổi giao diện.
     # Gắn nhãn `preview` thì chỉ job này chạy (kiểm nhanh, DB, Playwright bị bỏ: kết quả skipped được chấp nhận); đẩy commit mới thì chờ kiểm nhanh
     # và DB xanh như trước. Bộ lọc/job `changes` hỏng hoặc bị bỏ thì vẫn chạy (an toàn); always() để không bị bỏ qua dây chuyền.
     if: >-
       always() && contains(github.event.pull_request.labels.*.name, 'preview') &&
       (needs.checks.result == 'success' || needs.checks.result == 'skipped') &&
-      (needs.db-e2e.result == 'success' || needs.db-e2e.result == 'skipped') &&
+      (needs.db.result == 'success' || needs.db.result == 'skipped') &&
+      (needs.e2e.result == 'success' || needs.e2e.result == 'skipped') &&
       github.event_name == 'pull_request' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       (needs.changes.result != 'success' ||
@@ -414,10 +438,10 @@ jobs:
   # Chạy tay trên main mà đỏ: mở issue để anh thấy ngay (Q-37). Code sửa trước mọi việc khác.
   bao-do:
     name: Báo main đỏ
-    needs: [checks, db-e2e]
+    needs: [checks, db, e2e]
     if: >-
       always() && github.event_name == 'workflow_dispatch' &&
-      (needs.checks.result == 'failure' || needs.db-e2e.result == 'failure')
+      (needs.checks.result == 'failure' || needs.db.result == 'failure' || needs.e2e.result == 'failure')
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     permissions:

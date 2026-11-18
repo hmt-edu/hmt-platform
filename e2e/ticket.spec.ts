@@ -108,10 +108,10 @@ test('Chi tiết: thêm ghi chú; Đã xử lý cần kết quả; huỷ cần l
   await page.getByRole('option', { name: 'Thấp' }).click();
   await dialog.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đổi mức độ.')).toBeVisible();
-  // Huỷ không ghi lý do: nút Chuyển mờ cho tới khi có lý do.
+  // Huỷ không ghi lý do: nút Huỷ ticket mờ cho tới khi có lý do (canvas CSN-04).
   await page.getByRole('button', { name: /Đã huỷ/ }).click();
-  await expect(page.getByRole('button', { name: 'Chuyển', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Huỷ ticket', exact: true })).toBeDisabled();
   await page.getByLabel('Lý do huỷ').fill('Phụ huynh rút khiếu nại.');
-  await page.getByRole('button', { name: 'Chuyển', exact: true }).click();
+  await page.getByRole('button', { name: 'Huỷ ticket', exact: true }).click();
   await expect(page.getByText('Đổi trạng thái: Mới → Đã huỷ.')).toBeVisible();
 });

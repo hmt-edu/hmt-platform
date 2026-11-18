@@ -1,0 +1,477 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-18T04:00:00Z"
+ },
+ "title": "HMT Platform · 6 màn còn thiếu khung",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "Mục lục · 6 màn còn thiếu khung"
+  },
+  "CAU_HOI_TREO.dc.html": {
+   "x": 1520,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "Câu hỏi treo (còn chờ anh)"
+  },
+  "DA_TRA_LOI.dc.html": {
+   "x": 3040,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "Câu hỏi đã được Chat trả lời"
+  },
+  "MAN_DUNG.dc.html": {
+   "x": 4560,
+   "y": 0,
+   "w": 1440,
+   "h": 1000,
+   "title": "Màn dừng và chỗ thiếu"
+  },
+  "CHUNG15_pc.dc.html": {
+   "x": 0,
+   "y": 1380,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Hàng việc chờ tôi duyệt · Trưởng cơ sở (máy tính)"
+  },
+  "CHUNG15_kt_pc.dc.html": {
+   "x": 1520,
+   "y": 1380,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Kế toán, nhiều cơ sở (máy tính)"
+  },
+  "CHUNG15_ad_pc.dc.html": {
+   "x": 3040,
+   "y": 1380,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Admin, mọi cơ sở, không duyệt tiền (máy tính)"
+  },
+  "CHUNG15_loc_pc.dc.html": {
+   "x": 0,
+   "y": 2500,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Lọc theo loại việc, khung thả xuống (máy tính)"
+  },
+  "CHUNG15_da_loc_pc.dc.html": {
+   "x": 1520,
+   "y": 2500,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Đã lọc: Đơn hàng, Phiếu thu (máy tính)"
+  },
+  "CHUNG15_trong_pc.dc.html": {
+   "x": 3040,
+   "y": 2500,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Trống: không có việc chờ duyệt (máy tính)"
+  },
+  "CHUNG15_trong_loc_pc.dc.html": {
+   "x": 0,
+   "y": 3620,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Trống: bộ lọc không khớp việc nào (máy tính)"
+  },
+  "CHUNG15_tai_pc.dc.html": {
+   "x": 1520,
+   "y": 3620,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Đang tải (máy tính)"
+  },
+  "CHUNG15_loi_pc.dc.html": {
+   "x": 3040,
+   "y": 3620,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Lỗi tải danh sách (máy tính)"
+  },
+  "CHUNG15_quyen_pc.dc.html": {
+   "x": 0,
+   "y": 4740,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-15 · Không có quyền (máy tính)"
+  },
+  "CHUNG15_dt.dc.html": {
+   "x": 0,
+   "y": 5860,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-15 · Hàng việc chờ tôi duyệt (điện thoại)"
+  },
+  "CHUNG15_loc_dt.dc.html": {
+   "x": 470,
+   "y": 5860,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-15 · Lọc theo loại việc, bảng chọn dưới (điện thoại)"
+  },
+  "CHUNG15_trong_dt.dc.html": {
+   "x": 940,
+   "y": 5860,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-15 · Trống (điện thoại)"
+  },
+  "CHUNG15_tai_dt.dc.html": {
+   "x": 1410,
+   "y": 5860,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-15 · Đang tải (điện thoại)"
+  },
+  "BC08_pc.dc.html": {
+   "x": 0,
+   "y": 7084,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-08 · Giáo viên trễ hạn hằng tháng · Admin (máy tính)"
+  },
+  "BC08_khong_xuat_pc.dc.html": {
+   "x": 1520,
+   "y": 7084,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-08 · Trưởng cơ sở, cơ sở khoá, không có quyền Xuất (máy tính)"
+  },
+  "BC08_trong_pc.dc.html": {
+   "x": 3040,
+   "y": 7084,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-08 · Trống: không có buổi trễ hạn trong tháng (máy tính)"
+  },
+  "BC08_tai_pc.dc.html": {
+   "x": 0,
+   "y": 8204,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-08 · Đang tải (máy tính)"
+  },
+  "BC08_quyen_pc.dc.html": {
+   "x": 1520,
+   "y": 8204,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-08 · Không có quyền (máy tính)"
+  },
+  "BC09_pc.dc.html": {
+   "x": 0,
+   "y": 9584,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-09 · Giờ dạy giáo viên · tháng chưa chốt · Kế toán (máy tính)"
+  },
+  "BC09_da_chot_pc.dc.html": {
+   "x": 1520,
+   "y": 9584,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-09 · Tháng đã chốt, khoá sửa (máy tính)"
+  },
+  "BC09_chot_pc.dc.html": {
+   "x": 3040,
+   "y": 9584,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-09 · Hộp thoại Chốt tháng (máy tính)"
+  },
+  "BC09_chot_loc_pc.dc.html": {
+   "x": 0,
+   "y": 10704,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-09 · Đang lọc một cơ sở, hộp thoại Chốt vẫn ghi Tất cả cơ sở (máy tính)"
+  },
+  "BC09_bm_pc.dc.html": {
+   "x": 1520,
+   "y": 10704,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-09 · Trưởng cơ sở: cơ sở khoá, không có nút Chốt tháng (máy tính)"
+  },
+  "BC09_trong_pc.dc.html": {
+   "x": 3040,
+   "y": 10704,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-09 · Trống: tháng chưa có buổi hoàn tất (máy tính)"
+  },
+  "BC09_tai_pc.dc.html": {
+   "x": 0,
+   "y": 11824,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-09 · Đang tải (máy tính)"
+  },
+  "BC09_quyen_pc.dc.html": {
+   "x": 1520,
+   "y": 11824,
+   "w": 1440,
+   "h": 1000,
+   "title": "BC-09 · Không có quyền (máy tính)"
+  },
+  "CH05_pc.dc.html": {
+   "x": 0,
+   "y": 13204,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-05 · Khung chương trình, danh sách phiên bản · Admin (máy tính)"
+  },
+  "CH05_bm_pc.dc.html": {
+   "x": 1520,
+   "y": 13204,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-05 · Trưởng cơ sở chỉ xem: không có Tạo bản mới, Ngừng (máy tính)"
+  },
+  "CH05_tao_pc.dc.html": {
+   "x": 3040,
+   "y": 13204,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-05 · Hộp thoại Tạo bản mới (máy tính)"
+  },
+  "CH05_ngung_pc.dc.html": {
+   "x": 0,
+   "y": 14324,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-05 · Hộp thoại xác nhận Ngừng (máy tính)"
+  },
+  "CH05_trong_pc.dc.html": {
+   "x": 1520,
+   "y": 14324,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-05 · Trống: chưa có khung chương trình (máy tính)"
+  },
+  "CH05_tai_pc.dc.html": {
+   "x": 3040,
+   "y": 14324,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-05 · Đang tải (máy tính)"
+  },
+  "CH05_quyen_pc.dc.html": {
+   "x": 0,
+   "y": 15444,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-05 · Không có quyền (máy tính)"
+  },
+  "CH06_pc.dc.html": {
+   "x": 0,
+   "y": 16824,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-06 · Danh sách bài học · chưa có lớp dùng, sửa được · Admin (máy tính)"
+  },
+  "CH06_sua_pc.dc.html": {
+   "x": 1520,
+   "y": 16824,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-06 · Sửa một bài tại dòng (máy tính)"
+  },
+  "CH06_them_pc.dc.html": {
+   "x": 3040,
+   "y": 16824,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-06 · Hộp thoại Thêm bài (máy tính)"
+  },
+  "CH06_bm_pc.dc.html": {
+   "x": 0,
+   "y": 17944,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-06 · Trưởng cơ sở chỉ xem (máy tính)"
+  },
+  "CH06_trong_pc.dc.html": {
+   "x": 1520,
+   "y": 17944,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-06 · Trống: khung chưa có bài (máy tính)"
+  },
+  "CH06_tai_pc.dc.html": {
+   "x": 3040,
+   "y": 17944,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-06 · Đang tải (máy tính)"
+  },
+  "CH06_quyen_pc.dc.html": {
+   "x": 0,
+   "y": 19064,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-06 · Không có quyền (máy tính)"
+  },
+  "CH07_pc.dc.html": {
+   "x": 0,
+   "y": 20444,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-07 · Rubric nhận xét · bộ Toán, mô tả mức (máy tính)"
+  },
+  "CH07_cau_mau_pc.dc.html": {
+   "x": 1520,
+   "y": 20444,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-07 · Rubric Toán · câu mẫu lời nhắn phụ huynh theo mức (máy tính)"
+  },
+  "CH07_phu_pc.dc.html": {
+   "x": 3040,
+   "y": 20444,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-07 · Rubric bộ môn phụ, mẫu Vật lý (máy tính)"
+  },
+  "CH07_sua_pc.dc.html": {
+   "x": 0,
+   "y": 21564,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-07 · Đang sửa mô tả mức (máy tính)"
+  },
+  "CH07_tao_pb_pc.dc.html": {
+   "x": 1520,
+   "y": 21564,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-07 · Hộp thoại Tạo phiên bản (máy tính)"
+  },
+  "CH07_tai_pc.dc.html": {
+   "x": 3040,
+   "y": 21564,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-07 · Đang tải (máy tính)"
+  },
+  "CH07_quyen_pc.dc.html": {
+   "x": 0,
+   "y": 22684,
+   "w": 1440,
+   "h": 1000,
+   "title": "CH-07 · Không có quyền (chỉ Admin) (máy tính)"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "CAU_HOI_TREO.dc.html",
+  "DA_TRA_LOI.dc.html",
+  "MAN_DUNG.dc.html",
+  "CHUNG15_pc.dc.html",
+  "CHUNG15_kt_pc.dc.html",
+  "CHUNG15_ad_pc.dc.html",
+  "CHUNG15_loc_pc.dc.html",
+  "CHUNG15_da_loc_pc.dc.html",
+  "CHUNG15_trong_pc.dc.html",
+  "CHUNG15_trong_loc_pc.dc.html",
+  "CHUNG15_tai_pc.dc.html",
+  "CHUNG15_loi_pc.dc.html",
+  "CHUNG15_quyen_pc.dc.html",
+  "CHUNG15_dt.dc.html",
+  "CHUNG15_loc_dt.dc.html",
+  "CHUNG15_trong_dt.dc.html",
+  "CHUNG15_tai_dt.dc.html",
+  "BC08_pc.dc.html",
+  "BC08_khong_xuat_pc.dc.html",
+  "BC08_trong_pc.dc.html",
+  "BC08_tai_pc.dc.html",
+  "BC08_quyen_pc.dc.html",
+  "BC09_pc.dc.html",
+  "BC09_da_chot_pc.dc.html",
+  "BC09_chot_pc.dc.html",
+  "BC09_chot_loc_pc.dc.html",
+  "BC09_bm_pc.dc.html",
+  "BC09_trong_pc.dc.html",
+  "BC09_tai_pc.dc.html",
+  "BC09_quyen_pc.dc.html",
+  "CH05_pc.dc.html",
+  "CH05_bm_pc.dc.html",
+  "CH05_tao_pc.dc.html",
+  "CH05_ngung_pc.dc.html",
+  "CH05_trong_pc.dc.html",
+  "CH05_tai_pc.dc.html",
+  "CH05_quyen_pc.dc.html",
+  "CH06_pc.dc.html",
+  "CH06_sua_pc.dc.html",
+  "CH06_them_pc.dc.html",
+  "CH06_bm_pc.dc.html",
+  "CH06_trong_pc.dc.html",
+  "CH06_tai_pc.dc.html",
+  "CH06_quyen_pc.dc.html",
+  "CH07_pc.dc.html",
+  "CH07_cau_mau_pc.dc.html",
+  "CH07_phu_pc.dc.html",
+  "CH07_sua_pc.dc.html",
+  "CH07_tao_pb_pc.dc.html",
+  "CH07_tai_pc.dc.html",
+  "CH07_quyen_pc.dc.html"
+ ],
+ "notes": {
+  "t_CHUNG15": {
+   "x": 0,
+   "y": 1140,
+   "text": "CHUNG-15 · Hàng việc chờ tôi duyệt (gộp đơn, thu chi, lớp, buổi, ticket)",
+   "kind": "title1",
+   "maxW": 4480
+  },
+  "t_BC08": {
+   "x": 0,
+   "y": 6844,
+   "text": "BC-08 · Giáo viên trễ hạn hằng tháng",
+   "kind": "title1",
+   "maxW": 4480
+  },
+  "t_BC09": {
+   "x": 0,
+   "y": 9344,
+   "text": "BC-09 · Giờ dạy giáo viên (căn cứ tính lương)",
+   "kind": "title1",
+   "maxW": 4480
+  },
+  "t_CH05": {
+   "x": 0,
+   "y": 12964,
+   "text": "CH-05 · Khung chương trình: danh sách phiên bản",
+   "kind": "title1",
+   "maxW": 4480
+  },
+  "t_CH06": {
+   "x": 0,
+   "y": 16584,
+   "text": "CH-06 · Khung chương trình: danh sách bài học",
+   "kind": "title1",
+   "maxW": 4480
+  },
+  "t_CH07": {
+   "x": 0,
+   "y": 20204,
+   "text": "CH-07 · Rubric nhận xét theo môn",
+   "kind": "title1",
+   "maxW": 4480
+  }
+ },
+ "designSystems": []
+}
