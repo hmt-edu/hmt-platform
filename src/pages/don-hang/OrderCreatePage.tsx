@@ -128,6 +128,14 @@ function Shell({
       stageShowCode={false}
       stage={{ steps, current: '', forwardOnly: true, onSelect: () => undefined }}
       stageNote="Chưa lưu: đơn chưa có giai đoạn. Bấm Lưu để tạo ở giai đoạn Nháp."
+      businessActions={
+        <span className="flex flex-wrap items-center gap-2">
+          <Button variant="primary" disabled>
+            Trình duyệt
+          </Button>
+          <span className="text-caption text-fg-label">Lưu rồi mới trình duyệt.</span>
+        </span>
+      }
       smart={[
         { key: 'phu-huynh', label: 'Phụ huynh', icon: 'user', count: 0, onOpen: () => undefined },
         {
