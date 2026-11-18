@@ -2,6 +2,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 import { errorOf, rpc, useDb } from '../../lib/db';
+import type { TaskOptions } from './businessTaskForm';
 import type { TaskFieldDef } from './taskForm';
 
 /** Trường hồ sơ sửa được bằng phiếu Cập nhật hồ sơ (cấu hình app.ticket_task_field), cho biểu mẫu tạo phiếu. */
@@ -36,5 +37,15 @@ export function createTicketTask(
     p_type: args.type,
     p_reason: args.reason,
     p_payload: args.payload,
+  });
+}
+
+/** Tuỳ chọn cho biểu mẫu Bảo lưu, Chuyển lớp (app.get_task_form_options): ghi danh của học sinh, lý do, lớp mới. */
+export function useTaskOptions(ticketId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['task-options', ticketId],
+    enabled,
+    queryFn: () => rpc<TaskOptions>(supabase, 'get_task_form_options', { p_ticket_id: ticketId }),
   });
 }
