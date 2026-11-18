@@ -269,7 +269,7 @@ export function QuoteLineGrid({
             type="button"
             disabled={disabled}
             onClick={() => setPickFor(row.key)}
-            aria-label={`Gói dòng ${String(index + 1)}`}
+            aria-label={`${row.packageId === '' ? 'Chọn gói…' : `${row.packageCode} · ${row.packageName}`} (Gói dòng ${String(index + 1)})`}
             title={row.packageId === '' ? undefined : `${row.packageCode} · ${row.packageName}`}
             className="focus-ring flex h-control w-full items-center rounded-control border border-border-strong bg-surface px-2.5 text-left hover:bg-hover disabled:opacity-60"
           >
