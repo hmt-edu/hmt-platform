@@ -298,3 +298,4 @@ Danh sách cho phép thay cho chặn riêng ADMIN: ô Kế toán · Duyệt ch�
 ### R2b (migration 467): `get_setting` và Học sinh
 
 `app.get_setting` (và `_int`, `_numeric`, `_bool` gọi lại nó) báo `HMT_KHONG_CO_QUYEN` khi phiên là người KHÔNG phải nhân viên (có vai trò, `is_staff()` sai) đọc khoá khác `student_idle_logout_minutes`, `list_page_size`, `list_page_size_default`, `list_page_size_max`. Nhân viên và nơi gọi không có phiên (hook đăng nhập, pg_cron, migration) đọc như cũ. `feature_enabled` giữ nguyên.
+

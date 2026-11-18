@@ -92,11 +92,9 @@ jobs:
         timeout-minutes: 5
 
       - name: Khởi động Supabase local (chỉ dịch vụ cần)
-        # Bình thường khoảng 1,5 đến 2 phút.
-        timeout-minutes: 8
-        run: >-
-          npx supabase start
-          -x studio,imgproxy,mailpit,logflare,vector,realtime,storage-api,supavisor,postgres-meta
+        # Bình thường khoảng 1,5 đến 2 phút. Thử lại có chờ tăng dần khi kho ảnh báo «Rate exceeded» (scripts/supabase-start-retry.sh, D28).
+        timeout-minutes: 15
+        run: bash scripts/supabase-start-retry.sh
 
       - name: Dựng lại DB từ migration + seed
         run: npx supabase db reset
@@ -132,11 +130,9 @@ jobs:
         timeout-minutes: 5
 
       - name: Khởi động Supabase local (chỉ dịch vụ cần)
-        # Bình thường khoảng 1,5 đến 2 phút.
-        timeout-minutes: 8
-        run: >-
-          npx supabase start
-          -x studio,imgproxy,mailpit,logflare,vector,realtime,storage-api,supavisor,postgres-meta
+        # Bình thường khoảng 1,5 đến 2 phút. Thử lại có chờ tăng dần khi kho ảnh báo «Rate exceeded» (scripts/supabase-start-retry.sh, D28).
+        timeout-minutes: 15
+        run: bash scripts/supabase-start-retry.sh
 
       - name: Dựng lại DB từ migration + seed
         run: npx supabase db reset
@@ -202,10 +198,17 @@ jobs:
         run: |
           args=""
           if [ "$ONLY_DESKTOP" = "true" ]; then args="--project=may-tinh"; fi
+          # Kéo ảnh có thử lại (kho có lúc giới hạn lượt kéo), rồi chạy.
+          img="mcr.microsoft.com/playwright:v${PW_VERSION}-noble"
+          for i in 1 2 3; do
+            docker pull "$img" && break
+            echo "::warning::Lần $i kéo ảnh Playwright hỏng, chờ $((i * 20)) giây."
+            sleep $((i * 20))
+          done
           docker run --rm --network host --ipc=host \
             -v "$PWD:/work" -w /work \
             -e CI=true -e E2E_REUSE_SERVER=1 -e DB_URL -e SEED_PASSWORD -e API_URL -e SECRET_KEY \
-            "mcr.microsoft.com/playwright:v${PW_VERSION}-noble" \
+            "$img" \
             npx playwright test $args
 
       - name: Lưu báo cáo Playwright khi trượt
