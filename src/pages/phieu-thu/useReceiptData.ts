@@ -147,3 +147,22 @@ export function useReceiverOptions(search: string, enabled: boolean) {
       }),
   });
 }
+
+/** Người duyệt dự kiến của phiếu thu Nháp (migration 420): đường duyệt, tên, lý do chặn trình. Chỉ gọi khi phiếu Nháp, không phải nợ đầu kỳ. */
+export type ReceiptExpectedApprover = {
+  expected_route?: 'QUAN_LY' | 'TU_DUYET' | 'TRUONG_CS' | 'THIEU' | null;
+  expected_approver_name?: string | null;
+  expected_approver_can_approve?: boolean | null;
+  expected_block?: 'KHONG_CO_QUAN_LY' | 'NGUOI_DUYET_BI_KHOA' | 'NGUOI_DUYET_THIEU_QUYEN' | null;
+  created_by_name?: string | null;
+};
+
+export function useReceiptExpectedApprover(id: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['receipt-expected-approver', id],
+    enabled,
+    queryFn: () =>
+      rpc<ReceiptExpectedApprover>(supabase, 'receipt_expected_approver', { p_id: id }),
+  });
+}

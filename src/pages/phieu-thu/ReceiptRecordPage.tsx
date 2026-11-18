@@ -24,6 +24,7 @@ import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import type { FieldFormat } from '../../features/chatter/entries';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { useOrder } from '../don-hang/useOrderData';
+import { approverLine, submitBlockOf } from '../don-hang/orderRecord';
 import { receiptEventEntries } from './receiptEventEntries';
 import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
@@ -46,6 +47,7 @@ import {
   saveReceipt,
   submitReceipt,
   useReceipt,
+  useReceiptExpectedApprover,
   useReceiverOptions,
   useRefreshReceipt,
 } from './useReceiptData';
@@ -114,6 +116,24 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   useCrumbTail(record.code);
 
   const can = (a: ReceiptRecord['actions'][number]) => record.actions.includes(a) && !phone;
+  // Dòng chặn trình (canvas TC02_nhap_xem_ql_khoa, _ql_thieu_quyen, _chua_ql; GHI_CHU mục 9): người duyệt dự kiến theo đúng hàm mà lúc Trình dùng.
+  const expected = useReceiptExpectedApprover(
+    record.id,
+    record.status_code === 'NHAP' && !record.is_opening_debt && record.actions.includes('gui'),
+  );
+  const approverFields = {
+    status_code: 'NHAP' as const,
+    expected_route: expected.data?.expected_route ?? null,
+    expected_approver_can_approve: expected.data?.expected_approver_can_approve ?? null,
+    expected_approver_name: expected.data?.expected_approver_name ?? null,
+    expected_block: expected.data?.expected_block ?? null,
+    created_by_name: expected.data?.created_by_name ?? record.created_by_name,
+  };
+  const submitBlocked = expected.data !== undefined && submitBlockOf(approverFields) !== null;
+  const approverText =
+    expected.data === undefined || Object.keys(expected.data).length === 0
+      ? null
+      : approverLine(approverFields, (claims?.userId ?? '') === record.created_by, 'phiếu thu');
   const canEdit = can('sua');
   const statusName = (code: string) => catalogs.name('RECEIPT_STATUS', code) ?? code;
   const steps: StageStep[] = receiptSteps(record.status_code).map((code) => ({
@@ -405,11 +425,14 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
               <Button
                 variant={editing ? 'secondary' : 'primary'}
                 loading={busy === 'gui'}
-                disabled={editing}
+                disabled={editing || submitBlocked}
                 onClick={requestSubmit}
               >
                 {rejection ? 'Trình lại' : 'Trình quản lý'}
               </Button>
+            )}
+            {can('gui') && !editing && approverText && (
+              <span className="text-caption text-fg-label">{approverText}</span>
             )}
             {can('gui') && editing && (
               <span className="text-caption text-fg-label">

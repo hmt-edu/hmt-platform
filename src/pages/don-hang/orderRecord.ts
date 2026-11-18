@@ -93,14 +93,14 @@ export function submitBlockOf(record: ApproverFields): OrderRecord['expected_blo
 }
 
 /** Cảnh báo trước khi trình (Đ205, R-HT-06); rỗng khi không có gì cần báo. Câu cùng chữ với lỗi máy chủ. */
-export function approverWarning(record: ApproverFields): string | null {
+export function approverWarning(record: ApproverFields, noun = 'đơn hàng'): string | null {
   const block = submitBlockOf(record);
   if (block === 'KHONG_CO_QUAN_LY')
     return 'Người lập chưa có Quản lý trực tiếp và cơ sở này chưa có Trưởng cơ sở nào đang hoạt động để duyệt. Nhờ Admin đặt Quản lý trực tiếp hoặc Trưởng cơ sở rồi trình lại.';
   if (block === 'NGUOI_DUYET_BI_KHOA')
     return 'Quản lý trực tiếp của người lập đang bị khoá nên chưa trình được. Nhờ Admin mở khoá hoặc đặt lại Quản lý trực tiếp.';
   if (block === 'NGUOI_DUYET_THIEU_QUYEN')
-    return `${record.expected_approver_name ?? 'Người duyệt'} chưa có quyền Duyệt đơn hàng ở cơ sở này nên chưa trình được. Nhờ Admin đặt lại Quản lý trực tiếp hoặc cấp quyền.`;
+    return `${record.expected_approver_name ?? 'Người duyệt'} chưa có quyền Duyệt ${noun} ở cơ sở này nên chưa trình được. Nhờ Admin đặt lại Quản lý trực tiếp hoặc cấp quyền.`;
   return null;
 }
 
@@ -112,10 +112,11 @@ export function approverWarning(record: ApproverFields): string | null {
 export function approverLine(
   record: ApproverFields & Pick<OrderRecord, 'created_by_name'>,
   viewerIsCreator = false,
+  noun = 'đơn hàng',
 ): string | null {
   const block = submitBlockOf(record);
   if (block === 'NGUOI_DUYET_BI_KHOA' || block === 'NGUOI_DUYET_THIEU_QUYEN')
-    return approverWarning(record);
+    return approverWarning(record, noun);
   return expectedApproverText(record, viewerIsCreator);
 }
 
