@@ -52,15 +52,30 @@ test('BH-08: Sửa đơn Nháp, chọn lớp cho một dòng thì hiện mã l�
   await dialog.getByRole('radio', { name: new RegExp(grid.classCode) }).check();
   await expect(dialog.getByRole('button', { name: 'Chọn', exact: true })).toBeEnabled();
   await dialog.getByRole('button', { name: 'Chọn', exact: true }).click();
-  await expect(page.getByText('Đã chọn lớp cho dòng đơn.', { exact: true })).toBeVisible();
+  // Khung BH-08: bấm Chọn chỉ ghi vào bản đang sửa (chưa lưu); lớp hiện ở dòng và nút Lưu bật.
   await expect(lines.getByText(grid.classCode).first()).toBeVisible();
   await expect(lines.getByRole('button', { name: 'Đổi lớp' }).first()).toBeVisible();
-  // Chọn "Chưa chọn lớp" thì bỏ lớp (ghi danh sẽ Chờ xếp lớp).
+  const save = page.getByRole('button', { name: 'Lưu', exact: true });
+  await expect(save).toBeEnabled();
+  // Huỷ Sửa đơn thì bỏ lựa chọn: vào Sửa lại, dòng chưa có lớp.
+  await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
+  await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
+  await expect(lines.getByText(grid.classCode)).toHaveCount(0);
+  // Chọn lại rồi Lưu thì lớp được lưu vào dòng đơn.
+  await lines.getByRole('button', { name: 'Chọn lớp' }).first().click();
+  const second = page.getByRole('dialog', { name: 'Chọn lớp và ngày vào lớp' });
+  await second.getByRole('radio', { name: new RegExp(grid.classCode) }).check();
+  await second.getByRole('button', { name: 'Chọn', exact: true }).click();
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
+  await expect(lines.getByText(grid.classCode).first()).toBeVisible();
+  // Chọn "Chưa chọn lớp" rồi Lưu thì bỏ lớp (ghi danh sẽ Chờ xếp lớp).
   await lines.getByRole('button', { name: 'Đổi lớp' }).first().click();
   const again = page.getByRole('dialog', { name: 'Chọn lớp và ngày vào lớp' });
   await again.getByRole('radio', { name: /^Chưa chọn lớp/ }).check();
   await again.getByRole('button', { name: 'Chọn', exact: true }).click();
-  // Thông báo hiện cả ở khung toast và vùng đọc màn hình: chữ khớp 2 phần tử (strict mode); lấy phần tử đầu.
-  await expect(page.getByText(/Dòng đơn chưa chọn lớp/).first()).toBeVisible();
   await expect(lines.getByText(grid.classCode)).toHaveCount(0);
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
 });

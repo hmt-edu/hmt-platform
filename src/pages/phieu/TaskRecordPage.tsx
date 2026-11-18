@@ -3,16 +3,17 @@
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
-import { errorOf, FORBIDDEN_CODE, useDb } from '../../lib/db';
-import { TRANSFER_KINDS } from './businessTaskForm';
+import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
+import { TRANSFER_KINDS } from './businessTaskForm';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
-import { Spinner, StateView } from '../../ui/Feedback';
+import { Spinner } from '../../ui/Feedback';
+import { QueryErrorView } from '../../ui/QueryErrorView';
 import { TextAreaField } from '../../ui/Field';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
@@ -53,27 +54,10 @@ export function TaskRecordPage() {
   const entries = useMemo(() => taskTimeline(record.data?.events ?? []), [record.data]);
 
   if (record.isPending) return <Spinner label="Đang tải phiếu…" />;
-  if (record.isError || !task || !record.data) {
-    const code = record.error ? errorOf(record.error).code : '';
+  if (record.isError || !task || !record.data)
     return (
-      <StateView
-        kind={
-          code === FORBIDDEN_CODE
-            ? 'forbidden'
-            : code === 'HMT_KHONG_TIM_THAY'
-              ? 'not-found'
-              : 'error'
-        }
-        title={
-          code === FORBIDDEN_CODE
-            ? 'Bạn không có quyền xem phiếu này'
-            : code === 'HMT_KHONG_TIM_THAY'
-              ? 'Không tìm thấy phiếu'
-              : 'Chưa tải được phiếu'
-        }
-      />
+      <QueryErrorView error={record.error} subject="phiếu" onRetry={() => void record.refetch()} />
     );
-  }
   const ticket = record.data.ticket;
   const canEdit = access.can('TICKET', 'SUA');
   const open = ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(task.status_code);

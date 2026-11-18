@@ -197,6 +197,12 @@ select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enab
 
 -- ================= Hoàn phí: Admin tạo thì không tự duyệt bước quản lý =================
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+select pg_temp.sudo($$insert into app.ticket (code, ticket_type, branch_id, title, description, channel_code, category_code, priority_code, parent_id, student_id, response_due_at, resolve_due_at)
+  select 'DN-T8', 'DN', e.branch_id, 'Đề nghị', 'Ticket giả cho bài kiểm', 'DIEN_THOAI', 'DN_02_01', 'THUONG', e.parent_id, e.student_id, now() + interval '1 day', now() + interval '3 days'
+    from app.enrollment e where e.id = pg_temp.d1e()$$);
+select pg_temp.sudo($$insert into app.ticket (code, ticket_type, branch_id, title, description, channel_code, category_code, priority_code, parent_id, student_id, response_due_at, resolve_due_at)
+  select 'DN-T8S', 'DN', e.branch_id, 'Đề nghị', 'Ticket giả cho bài kiểm', 'DIEN_THOAI', 'DN_01_06', 'THUONG', e.parent_id, e.student_id, now() + interval '1 day', now() + interval '3 days'
+    from app.enrollment e where e.id = pg_temp.d3e()$$);
 select lives_ok($$insert into rf select 'ra', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 3, 'KHONG_HOP', 'Admin tạo', 'DN-T8')$$, 'Chuẩn bị: Admin tạo yêu cầu hoàn phí');
 select lives_ok($$select app.submit_refund_request(pg_temp.f('ra'))$$, 'Chuẩn bị: Admin trình');
 select is(pg_temp.err($$select app.approve_refund_manager(pg_temp.f('ra'))$$), 'HMT_HOAN_PHI_TU_DUYET', 'T8 chặn: Admin tạo không tự duyệt bước quản lý hoàn phí');
@@ -206,7 +212,7 @@ select lives_ok($$select app.approve_refund_manager(pg_temp.f('ra'))$$, 'Đúng:
 
 -- ================= Dừng học: tương tự =================
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select lives_ok($$insert into st select 'sa', app.create_enrollment_stop(pg_temp.d3e(), 'KHONG_HOP', 'Admin tạo', 'DN-T8')$$, 'Chuẩn bị: Admin tạo yêu cầu dừng học');
+select lives_ok($$insert into st select 'sa', app.create_enrollment_stop(pg_temp.d3e(), 'KHONG_HOP', 'Admin tạo', 'DN-T8S')$$, 'Chuẩn bị: Admin tạo yêu cầu dừng học');
 select lives_ok($$select app.submit_enrollment_stop(pg_temp.s('sa'))$$, 'Chuẩn bị: Admin trình');
 select is(pg_temp.err($$select app.approve_stop_manager(pg_temp.s('sa'))$$), 'HMT_DUNG_HOC_TU_DUYET', 'T8 chặn: Admin tạo không tự duyệt bước quản lý dừng học');
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');

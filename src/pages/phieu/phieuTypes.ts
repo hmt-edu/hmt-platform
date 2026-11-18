@@ -12,6 +12,8 @@ export type TaskRow = {
   student_name: string | null;
   branch_code: string;
   created_at: string;
+  /** Hạn xử lý của ticket gốc (migration 355). */
+  due_at?: string | null;
 };
 export type TaskPage = { total: number; rows: TaskRow[] };
 export type TaskFilters = Record<string, unknown>;
