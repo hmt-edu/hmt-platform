@@ -12,6 +12,8 @@ import { useToast } from '../../ui/toastContext';
 import { useClassFormOptions, useClassRecord } from '../lop/useClassData';
 import { validateMakeup, type MakeupError } from './requestLogic';
 import { useSaveMakeup } from './useRequestData';
+import { ExamBlock } from './ExamBlock';
+import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './examFields';
 
 export function SessionRequestMakeupPage() {
   const [params] = useSearchParams();
@@ -75,6 +77,9 @@ function Form({
   const [reason, setReason] = useState('');
   const [errors, setErrors] = useState<MakeupError>({});
   const [error, setError] = useState<string | null>(null);
+  const [examOn, setExamOn] = useState(false);
+  const [exam, setExam] = useState<ExamInput>(EMPTY_EXAM);
+  const [examErrors, setExamErrors] = useState<ExamError>({});
   const toggle = (id: string) =>
     setPicked((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
 
@@ -82,9 +87,12 @@ function Form({
     const found = validateMakeup({ studentIds: picked, date, start, end, reason });
     setErrors(found);
     setError(null);
-    if (Object.keys(found).length > 0) return;
+    const examFound = examOn ? validateExam(exam) : {};
+    setExamErrors(examFound);
+    if (Object.keys(found).length > 0 || Object.keys(examFound).length > 0) return;
     try {
       const saved = await save.mutateAsync({
+        exam: examOn ? exam : null,
         classId,
         studentIds: picked,
         date,
@@ -185,6 +193,14 @@ function Form({
         value={reason}
         error={errors.reason}
         onChange={(e) => setReason(e.target.value)}
+      />
+      <ExamBlock
+        kind="HOC_BU"
+        enabled={examOn}
+        onEnabled={setExamOn}
+        value={exam}
+        onChange={setExam}
+        errors={examErrors}
       />
       <div className="flex flex-wrap gap-2">
         <Button variant="primary" loading={save.isPending} onClick={() => void submit(true)}>

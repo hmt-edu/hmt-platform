@@ -110,7 +110,7 @@ function ReceiptPrint({ record }: { record: ReceiptRecord }) {
                 </div>
                 <div className="k13-row">
                   <span>Đơn hàng</span>
-                  {record.order.code}
+                  {record.order?.code ?? 'Không có đơn (thu nợ đầu kỳ)'}
                 </div>
                 <div className="k13-row">
                   <span>Điện thoại</span>

@@ -9,7 +9,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.117.3';
 import { verifyCaptcha } from '../_shared/captcha.ts';
 import { corsHeaders, fail, HTTP, json, secretKey } from '../_shared/http.ts';
-import { type AuthAttempt, clientIp, decideLogin, LOGIN_MESSAGES, type LoginRecord, toAuthEmail } from '../_shared/login-rules.ts';
+import { type AuthAttempt, clientIp, decideLogin, isWarmPing, LOGIN_MESSAGES, type LoginRecord, toAuthEmail } from '../_shared/login-rules.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 
@@ -23,6 +23,8 @@ const OUTCOME_STATUS = {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders(req) });
+  // Hâm nóng (A9): không đọc thân, không captcha, không DB; trả 204 ngay để giữ Function không ngủ.
+  if (isWarmPing(req.method, req.url)) return new Response(null, { status: HTTP.NO_CONTENT });
   if (req.method !== 'POST') return fail(req, HTTP.METHOD_NOT_ALLOWED, 'HMT_SAI_PHUONG_THUC', 'Chỉ nhận POST.');
 
   let body: { login?: unknown; password?: unknown; captchaToken?: unknown };

@@ -95,12 +95,17 @@ export function useDb(): SupabaseClient {
 /** Tham số số nguyên trong Cài đặt (vd list_page_size). Chưa tải xong thì trả null. */
 export function useIntSetting(key: string): number | null {
   const supabase = useDb();
-  const query = useQuery({
+  const query = useQuery(intSettingQuery(supabase, key));
+  return query.data ?? null;
+}
+
+/** Cấu hình truy vấn tham số số nguyên: dùng chung cho useIntSetting và tải sẵn (cùng khoá nên màn không gọi lại). */
+export function intSettingQuery(supabase: SupabaseClient, key: string) {
+  return {
     queryKey: ['setting-int', key],
     queryFn: () => readIntSetting(supabase, key),
     staleTime: Infinity,
-  });
-  return query.data ?? null;
+  } as const;
 }
 
 type QueryResult = { data: unknown; error: DbError | null; count?: number | null };

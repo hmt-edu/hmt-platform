@@ -108,3 +108,16 @@ export function decideLogin(precheck: string, auth: AuthAttempt | null): { outco
   if (auth.status === AUTH_FORBIDDEN || auth.errorCode === 'user_banned') return { outcome: 'SAI', record: 'TAI_KHOAN_KHOA' };
   return { outcome: 'LOI', record: 'LOI' };
 }
+
+/**
+ * Yêu cầu «hâm nóng» (A9, Chat duyệt 18/11): GET ?ping=1 chỉ để giữ Function không ngủ nên lần đăng nhập thật không gặp khởi động lạnh.
+ * Đường này KHÔNG đọc thân yêu cầu, KHÔNG gọi Turnstile, KHÔNG chạm DB, KHÔNG ghi nhật ký, không nhận dữ liệu nào.
+ */
+export function isWarmPing(method: string, url: string): boolean {
+  if (method !== 'GET') return false;
+  try {
+    return new URL(url).searchParams.get('ping') === '1';
+  } catch {
+    return false;
+  }
+}

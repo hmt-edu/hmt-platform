@@ -8,7 +8,10 @@ import type {
   UpsaleBoardColumn,
   UpsaleFilters,
   UpsalePage,
+  UpsaleOrderOptions,
+  UpsaleOrderRow,
   UpsalePreview,
+  UpsaleRecord,
 } from './upsaleTypes';
 
 export function useUpsalePage(filters: UpsaleFilters, offset: number, limit: number | null) {
@@ -87,4 +90,91 @@ export function useUpsaleAssignees(ticketId: string, enabled: boolean) {
 
 export function assignUpsale(supabase: SupabaseClient, id: string, ownerId: string): Promise<void> {
   return rpc<void>(supabase, 'assign_upsale_ticket', { p_id: id, p_owner_id: ownerId });
+}
+
+/** TT-02: bản ghi một phiếu, một lần gọi app.get_upsale_ticket. */
+export function useUpsaleRecord(id: string | undefined) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['upsale-record', id],
+    enabled: id !== undefined,
+    queryFn: () => rpc<UpsaleRecord>(supabase, 'get_upsale_ticket', { p_id: id }),
+  });
+}
+
+export function useRefreshUpsaleRecord(id: string) {
+  const queryClient = useQueryClient();
+  return useCallback(
+    () =>
+      Promise.all(
+        ['upsale-record', 'upsale-list', 'upsale-board', 'upsale-orders'].map((key) =>
+          queryClient.invalidateQueries({ queryKey: key === 'upsale-record' ? [key, id] : [key] }),
+        ),
+      ),
+    [queryClient, id],
+  );
+}
+
+export function changeUpsaleStage(
+  supabase: SupabaseClient,
+  id: string,
+  to: string,
+  reasonCode: string | null,
+  note: string | null,
+): Promise<void> {
+  return rpc<void>(supabase, 'change_upsale_stage', {
+    p_id: id,
+    p_to: to,
+    p_reason_code: reasonCode,
+    p_note: note,
+  });
+}
+
+export function saveUpsaleNotes(
+  supabase: SupabaseClient,
+  id: string,
+  goal: string,
+  roadmap: string,
+): Promise<{ changed: boolean }> {
+  return rpc<{ changed: boolean }>(supabase, 'update_upsale_notes', {
+    p_id: id,
+    p_next_goal: goal,
+    p_next_roadmap: roadmap,
+  });
+}
+
+export function useUpsaleOrderOptions(ticketId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['upsale-order-options', ticketId],
+    enabled,
+    queryFn: () =>
+      rpc<UpsaleOrderOptions>(supabase, 'list_upsale_order_options', { p_ticket_id: ticketId }),
+  });
+}
+
+/** Tab «Báo giá và đơn»: đơn của phiếu. */
+export function useUpsaleOrders(ticketId: string) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['upsale-orders', ticketId],
+    queryFn: () => rpc<UpsaleOrderRow[]>(supabase, 'list_upsale_orders', { p_ticket_id: ticketId }),
+  });
+}
+
+export function createUpsaleOrder(
+  supabase: SupabaseClient,
+  ticketId: string,
+  line: { package_id: string; quantity: number },
+  termId: string | null,
+  startDate: string | null,
+): Promise<{ id: string; code: string }> {
+  return rpc<{ id: string; code: string }>(supabase, 'create_order_from_upsale_ticket', {
+    p_ticket_id: ticketId,
+    p_lines: [
+      { kind: 'ENROL', package_id: line.package_id, quantity: line.quantity, discounts: [] },
+    ],
+    p_payment_term_id: termId,
+    p_enrol_start_date: startDate,
+  });
 }
