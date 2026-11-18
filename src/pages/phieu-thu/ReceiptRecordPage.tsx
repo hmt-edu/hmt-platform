@@ -14,7 +14,6 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table } from '../../ui/Data';
-import { useAuth } from '../../lib/auth/authContext';
 import { ReassignApproverDialog } from '../../features/approver-reassign/ReassignApproverDialog';
 import { useReassignState } from '../../features/approver-reassign/useReassign';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
@@ -110,7 +109,6 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   const catalogs = useLeadCatalogs();
   const phone = useMedia(NARROW_TABLE);
   const refresh = useRefreshReceipt(record.id, record.order?.id);
-  const { claims } = useAuth();
   // R-V2-44: Admin thấy «Chuyển người duyệt» khi phiếu chờ quản lý (route QUAN_LY) và máy chủ báo người đã chốt không duyệt được.
   const reassign = useReassignState(
     'PHIEU_THU',
