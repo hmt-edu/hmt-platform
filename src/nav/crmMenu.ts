@@ -268,7 +268,7 @@ export const CRM_MENU: MenuGroup[] = [
         label: 'Phiếu tái tục',
         slug: 'tai-tuc',
         requires: can('UPSALE'),
-        stage: GD2,
+        stage: '',
       },
     ],
   },
