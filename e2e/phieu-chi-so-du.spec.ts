@@ -95,7 +95,8 @@ test('TC-10, TC-11: danh sách phiếu chi không có nút Tạo; bản ghi hi�
     .getByRole('link', { name: `PC-${m}` })
     .first()
     .click();
-  await expect(page.getByText('Bảng tính hoàn').first()).toBeVisible();
+  // Tiêu đề bảng tính chỉ là chú thích ẩn của bảng (cỡ điện thoại hiện dạng thẻ): kiểm theo nội dung dòng tính.
+  await expect(page.getByText('Phí xử lý').first()).toBeVisible();
   await expect(page.getByText('Số tiền hoàn').first()).toBeVisible();
   await expect(page.getByText('534.600').first()).toBeVisible();
   // R-HT-01, R-TIEN-34: chỉ Kế toán ghi nhận đã chi.
