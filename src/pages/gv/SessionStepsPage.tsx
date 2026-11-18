@@ -109,7 +109,8 @@ function Steps({ overview }: { overview: SessionOverview }) {
       {!listed && (
         <Alert tone="info" title="Buổi chưa chốt danh sách.">
           Chưa có dòng điểm danh nên chưa điểm danh, chưa chấm được. Giáo viên không tạo dòng điểm
-          danh. Danh sách sẽ được hệ thống chốt trước giờ học.
+          danh. Danh sách sẽ được hệ thống chốt trước giờ học. Dấu thời hạn chỉ tính khi buổi đã
+          chốt danh sách và đủ bốn bước.
         </Alert>
       )}
 
