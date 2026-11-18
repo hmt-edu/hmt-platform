@@ -1,0 +1,83 @@
+// Danh sách ticket (CS-01, canvas CSN01): cột Nhóm · Nhóm con, Học sinh, Tạo lúc; chuyển sang Kanban thấy thẻ ticket. Dữ liệu giả dựng bằng hàm nghiệp vụ với quyền Admin (bật AFTERSALE cho CS5, phụ huynh, học sinh, ticket).
+import { expect, test } from '@playwright/test';
+import pg from 'pg';
+import { DOMAIN, PASSWORD, enterAs, isPhone } from './helpers';
+import { DB_URL } from './lich-hen-seed';
+
+test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng ticket giả).');
+test.describe.configure({ mode: 'serial' });
+
+let ticketTitle = '';
+
+// eslint-disable-next-line no-empty-pattern
+test.beforeAll(async ({}, testInfo) => {
+  const tag = `${testInfo.project.name === 'dien-thoai' ? 'DT' : 'MT'}${Date.now().toString().slice(-6)}`;
+  ticketTitle = `Ticket E2E DS ${tag}`;
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query('begin');
+    await db.query(
+      `insert into app.feature_flag (module_code, branch_id, enabled) select 'AFTERSALE', id, true from app.branch where code = 'CS5'
+       on conflict (module_code, branch_id) do update set enabled = true`,
+    );
+    const branch = "(select id from app.branch where code = 'CS5')";
+    await db.query(
+      `insert into app.parent (code, full_name, phone, branch_id) values ($1, $2, $3, ${branch})`,
+      [
+        `PHE2EDS${tag}`,
+        `Phụ huynh E2E DS ${tag}`,
+        `09${tag.slice(-6)}${testInfo.project.name === 'dien-thoai' ? '8' : '7'}1`,
+      ],
+    );
+    await db.query(
+      `insert into app.student (code, parent_id, full_name, birth_year, branch_id)
+       values ($1, (select id from app.parent where code = $2), $3, 2013, ${branch})`,
+      [`HSE2EDS${tag}`, `PHE2EDS${tag}`, `Học sinh E2E DS ${tag}`],
+    );
+    const admin =
+      (
+        await db.query<{ id: string }>('select id from auth.users where email = $1', [
+          `quantri.cs5@${DOMAIN}`,
+        ])
+      ).rows[0]?.id ?? '';
+    await db.query(
+      `select set_config('request.jwt.claims', (app.custom_access_token_hook(jsonb_build_object('user_id', $1::uuid,
+         'claims', jsonb_build_object('sub', $1::uuid, 'role', 'authenticated', 'aal', 'aal2'))) -> 'claims')::text, true)`,
+      [admin],
+    );
+    await db.query('set local role authenticated');
+    await db.query(
+      `select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS5'),
+         'title', $1::text, 'description', 'Mô tả giả', 'channel_code', 'GOI_DIEN', 'category_code', 'DN_04_01',
+         'parent_id', (select id from app.parent where code = $2), 'student_id', (select id from app.student where code = $3)))`,
+      [ticketTitle, `PHE2EDS${tag}`, `HSE2EDS${tag}`],
+    );
+    await db.query('commit');
+  } finally {
+    await db.end();
+  }
+});
+
+test('Danh sách ticket có cột Nhóm · Nhóm con, Học sinh; Kanban hiện thẻ', async ({ page }) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto('/crm/ticket');
+  await page.getByPlaceholder(/Tìm/).fill(ticketTitle);
+  if (isPhone(page)) {
+    const card = page
+      .getByRole('list', { name: 'Ticket' })
+      .getByRole('listitem')
+      .filter({ hasText: ticketTitle })
+      .first();
+    await expect(card).toBeVisible();
+  } else {
+    await expect(page.getByRole('columnheader', { name: 'Nhóm · Nhóm con' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Học sinh' })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Tạo lúc' })).toBeVisible();
+    const row = page.getByRole('row').filter({ hasText: ticketTitle });
+    await expect(row).toContainText('Học sinh E2E DS');
+    await expect(row).toContainText('Cập nhật');
+  }
+  await page.getByRole('button', { name: 'Kanban' }).click();
+  await expect(page.getByText(ticketTitle).first()).toBeVisible();
+});

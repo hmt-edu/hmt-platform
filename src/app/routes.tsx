@@ -93,6 +93,10 @@ const ApprovalsPage = lazyScreen(
   () => import('../pages/viec-cho-duyet/ApprovalsPage'),
   'ApprovalsPage',
 );
+const UpsaleListPage = lazyScreen(
+  () => import('../pages/tai-tuc/UpsaleListPage'),
+  'UpsaleListPage',
+);
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const TicketRecordPage = lazyScreen(
   () => import('../pages/ticket/TicketRecordPage'),
@@ -207,12 +211,21 @@ const ImportDataPage = lazyScreen(
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
 const RoleListPage = lazyScreen(() => import('../pages/vai-tro/RoleListPage'), 'RoleListPage');
+const TeachingHoursPage = lazyScreen(
+  () => import('../pages/bao-cao-gio-day/TeachingHoursPage'),
+  'TeachingHoursPage',
+);
 const OverviewPage = lazyScreen(() => import('../pages/bao-cao/OverviewPage'), 'OverviewPage');
 const PermissionMatrixPage = lazyScreen(
   () => import('../pages/ma-tran/PermissionMatrixPage'),
   'PermissionMatrixPage',
 );
+const RubricPage = lazyScreen(() => import('../pages/rubric/RubricPage'), 'RubricPage');
 const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
+const CurriculumFramePage = lazyScreen(
+  () => import('../pages/khung-chuong-trinh/CurriculumFramePage'),
+  'CurriculumFramePage',
+);
 const DiscountPolicyPage = lazyScreen(
   () => import('../pages/chiet-khau/DiscountPolicyPage'),
   'DiscountPolicyPage',
@@ -508,6 +521,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'tai-tuc',
+            element: (
+              <GatedCrmEntry slug="tai-tuc">
+                <UpsaleListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'ticket',
             element: (
               <GatedCrmEntry slug="ticket">
@@ -796,6 +817,22 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'cau-hinh/rubric',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/rubric">
+                <RubricPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/khung-chuong-trinh',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/khung-chuong-trinh">
+                <CurriculumFramePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'cau-hinh/ngay-nghi',
             element: (
               <GatedCrmEntry slug="cau-hinh/ngay-nghi">
@@ -832,6 +869,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/tham-so">
                 <SettingsPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'bao-cao/gio-day',
+            element: (
+              <GatedCrmEntry slug="bao-cao/gio-day">
+                <TeachingHoursPage />
               </GatedCrmEntry>
             ),
           },
