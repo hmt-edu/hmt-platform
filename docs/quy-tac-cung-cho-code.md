@@ -19,7 +19,7 @@ Cập nhật 10/11/2026. Đọc file này đầu mỗi phiên, cùng `docs/quy-t
 
 ## 3. Pull request
 
-- Mỗi PR là một cụm màn (4 đến 7 màn). Viết hết cụm liền mạch, chạy `check:all` một lần ở cuối cụm; giữa chừng chỉ chạy kiểm tra nhanh trên phần mình sửa.
+- Mỗi PR là một cụm màn (4 đến 7 màn). Viết hết cụm liền mạch, chạy bộ kiểm nhanh một lần ở cuối cụm (từ 18/11/2026 không chạy `check:all` trước khi đẩy; pgTAP và Playwright do CI chạy); giữa chừng chỉ chạy kiểm tra nhanh trên phần mình sửa.
 - Mỗi PR một lần đẩy, một lần mở, không gắn nhãn.
 - File kiểm của PR đặt trong `gui-chat/` và chép sang `~/Desktop/sang-10-11/gui-chat/CHO-CHAT-10-11/`.
 - PR chỉ có tài liệu: không chạy CI nhưng phải `prettier --check .` xanh.
