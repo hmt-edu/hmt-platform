@@ -191,6 +191,9 @@ grant execute on function pg_temp.f(text) to public;
 -- ================= Dựng một phiếu chi (chờ chi) =================
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'HOAN_PHI', id, true from app.branch where code = 'CS1' on conflict (module_code, branch_id) do update set enabled = true$$);
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select pg_temp.sudo($$insert into app.ticket (code, ticket_type, branch_id, title, description, channel_code, category_code, priority_code, parent_id, student_id, response_due_at, resolve_due_at)
+  select 'DN-TC10', 'DN', e.branch_id, 'Đề nghị', 'Ticket giả cho bài kiểm', 'DIEN_THOAI', 'DN_02_01', 'THUONG', e.parent_id, e.student_id, now() + interval '1 day', now() + interval '3 days'
+    from app.enrollment e where e.id = pg_temp.d1e()$$);
 select lives_ok($$insert into rf select 'a', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 3, 'KHONG_HOP', 'Hoàn một phần', 'DN-TC10')$$, 'Chuẩn bị: tạo yêu cầu hoàn');
 select app.submit_refund_request(pg_temp.f('a'));
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
