@@ -183,6 +183,7 @@ const ImportDataPage = lazyScreen(
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
 const RoleListPage = lazyScreen(() => import('../pages/vai-tro/RoleListPage'), 'RoleListPage');
+const AuditLogPage = lazyScreen(() => import('../pages/nhat-ky/AuditLogPage'), 'AuditLogPage');
 const PermissionMatrixPage = lazyScreen(
   () => import('../pages/ma-tran/PermissionMatrixPage'),
   'PermissionMatrixPage',
@@ -759,6 +760,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/tham-so">
                 <SettingsPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/nhat-ky',
+            element: (
+              <GatedCrmEntry slug="quan-tri/nhat-ky">
+                <AuditLogPage />
               </GatedCrmEntry>
             ),
           },
