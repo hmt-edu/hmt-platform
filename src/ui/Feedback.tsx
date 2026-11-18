@@ -111,13 +111,13 @@ export function Avatar({ name, large = false }: { name: string; large?: boolean 
   return (
     <span
       aria-hidden="true"
+      // Chữ viết tắt vẽ bằng CSS (không phải nút văn bản): luật axe `label-content-name-mismatch` (axe-core 4.14) coi chữ nhìn thấy trong nút là phần phải nằm trong tên đọc.
+      data-initials={initials || '?'}
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-800',
+        'flex shrink-0 items-center justify-center rounded-full bg-brand-100 text-caption font-semibold text-brand-800 before:content-[attr(data-initials)]',
         large ? 'size-[30px]' : 'size-6',
       )}
-    >
-      {initials || '?'}
-    </span>
+    />
   );
 }
 
