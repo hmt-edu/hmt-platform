@@ -77,6 +77,8 @@ select app.change_opportunity_stage(pg_temp.oid('CO000001'), 'L5');
 select app.change_opportunity_stage(pg_temp.oid('CO000002'), 'L5');
 select app.create_student_test(pg_temp.oid('CO000001'), pg_temp.test_data(jsonb_build_object('grader_id', pg_temp.uid('teacher1'), 'room_id', pg_temp.room('TK101'))));
 select app.create_student_test(pg_temp.oid('CO000002'), pg_temp.test_data(jsonb_build_object('grader_id', pg_temp.uid('teacher2'), 'room_id', pg_temp.room('TK101'))));
+-- Phiếu thứ ba của teacher1 giữ ở Nháp (chưa tới lượt chấm): không hiện ở danh sách chờ chấm và không mở được ở GV-15.
+select app.create_student_test(pg_temp.oid('CO000001'), pg_temp.test_data(jsonb_build_object('grader_id', pg_temp.uid('teacher1'), 'room_id', pg_temp.room('TK101'))));
 
 -- Luật R-CRM-11: phiếu còn Nháp thì chưa hiện ở mục chờ chấm.
 select pg_temp.claims(pg_temp.uid('teacher1'), 'aal1');
@@ -111,6 +113,8 @@ select is((select array_agg(k order by k) from jsonb_object_keys(app.teacher_tes
           'R-GV-13: phiếu cho giáo viên không có phụ huynh, điện thoại');
 select ok(jsonb_array_length(app.teacher_test_sheet(pg_temp.tid('PKT000001')) -> 'levels') > 0, 'Có danh sách trình độ từ danh mục');
 select is(pg_temp.err($$select app.teacher_test_sheet(pg_temp.tid('PKT000002'))$$), 'HMT_KHONG_CO_QUYEN', 'R-GV-08: phiếu của giáo viên khác bị chặn');
+select is(pg_temp.err($$select app.teacher_test_sheet(pg_temp.tid('PKT000003'))$$), 'HMT_KHONG_CO_QUYEN', 'R-CRM-11: phiếu còn Nháp (chưa tới lượt chấm) bị chặn ở GV-15');
+select is((app.teacher_my_pending_tests() ->> 'total')::int, 1, 'Phiếu Nháp không tính vào danh sách chờ chấm');
 select is(pg_temp.err($$select app.teacher_test_sheet(gen_random_uuid())$$), 'HMT_KHONG_CO_QUYEN', 'Phiếu không tồn tại: cùng một lỗi, không lộ');
 select is(pg_temp.err($$select app.enter_test_result(pg_temp.tid('PKT000001'), 7.5, 'Khá', 'A', 'CB')$$), null, 'GV-15: Lưu nháp kết quả bằng hàm có sẵn');
 select is(app.teacher_test_sheet(pg_temp.tid('PKT000001')) -> 'test' ->> 'score', '7.5', 'Điểm đã lưu hiện lại');
