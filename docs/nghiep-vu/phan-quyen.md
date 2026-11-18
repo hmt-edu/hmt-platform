@@ -282,4 +282,8 @@ tự kiểm quyền người gọi.
 
 ## Chốt chặn Admin không duyệt tiền (migration 455, sửa Q1 của Soát)
 
-Trigger `permission_admin_no_money_approval` trên bảng quyền chặn mọi đường ghi ô ADMIN × Kế toán · Duyệt đang bật (hàm lưu ma trận, `set_permission`, SQL): lỗi `HMT_ADMIN_KHONG_DUYET_TIEN` (R-HT-01). Admin tạm gán vai trò Kế toán cho người cụ thể vẫn là việc cố ý, không nằm trong ma trận ADMIN.
+Trigger `permission_admin_no_money_approval` trên bảng quyền chặn mọi đường ghi ô ADMIN × Kế toán · Duyệt đang bật (hàm lưu ma trận, `set_permission`, SQL): lỗi `HMT_CHI_KE_TOAN_DUYET_TIEN` (R-HT-01). Admin tạm gán vai trò Kế toán cho người cụ thể vẫn là việc cố ý, không nằm trong ma trận ADMIN.
+
+### Q1b (cập nhật migration 455)
+
+Danh sách cho phép thay cho chặn riêng ADMIN: ô Kế toán · Duyệt chỉ vai trò Kế toán được có (`HMT_CHI_KE_TOAN_DUYET_TIEN`). Thêm chốt cùng người không duyệt cả hai bước của phiếu thu, hoàn phí, dừng học (`HMT_CUNG_NGUOI_DUYET_HAI_BUOC`, R-TIEN-01).
