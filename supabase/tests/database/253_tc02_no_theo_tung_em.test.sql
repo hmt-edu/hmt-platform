@@ -25,14 +25,14 @@ create function pg_temp.sudo(p_sql text) returns void language plpgsql security 
 grant execute on all functions in schema pg_temp to public;
 
 create temp table u (key text primary key, id uuid not null default gen_random_uuid());
-insert into u (key) values ('admin'), ('cskh'), ('ke');
+insert into u (key) values ('admin'), ('cskh'), ('ke'), ('cskh5');
 grant select on u to authenticated;
 insert into auth.users (id, aud, role, email) select id, 'authenticated', 'authenticated', key || '@p253.hoamatoan.invalid' from u;
 insert into app.user_account (id, display_name, login_name, branch_id, must_change_password)
 select u.id, 'Giả ' || u.key, u.key || '@p253.hoamatoan.invalid', (select id from app.branch where code = v.cs), false
-  from u join (values ('admin', 'CS1'), ('cskh', 'CS1'), ('ke', 'CS1')) as v (key, cs) on v.key = u.key;
+  from u join (values ('admin', 'CS1'), ('cskh', 'CS1'), ('ke', 'CS1'), ('cskh5', 'CS5')) as v (key, cs) on v.key = u.key;
 insert into app.user_role (user_id, role_code)
-select u.id, v.role from u join (values ('admin', 'ADMIN'), ('cskh', 'CSKH'), ('ke', 'ACCOUNTANT')) as v (key, role) on v.key = u.key;
+select u.id, v.role from u join (values ('admin', 'ADMIN'), ('cskh', 'CSKH'), ('ke', 'ACCOUNTANT'), ('cskh5', 'CSKH')) as v (key, role) on v.key = u.key;
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'BAN_HANG', id, true from app.branch where code = 'CS1'
   on conflict (module_code, branch_id) do update set enabled = true$$);
 
@@ -111,6 +111,13 @@ select is(app.approve_receipt_accounting((select (v ->> 'id')::uuid from ra)) ->
 
 -- ---- Hàm trợ giúp không cho người đã đăng nhập gọi trực tiếp (không đọc nợ em ở cơ sở khác) ----
 select is(pg_temp.err($$select app.opening_student_debt_remaining(pg_temp.sid('HS253A'))$$), '42501', 'Người đã đăng nhập không gọi trực tiếp opening_student_debt_remaining (chặn đọc nợ em bất kỳ)');
+
+-- ---- Vai ngoài cơ sở bị chặn (RLS, quyền): CSKH của CS5 không đọc nợ từng em, không tạo phiếu nợ đầu kỳ cho phụ huynh CS1; tiền thu thừa và nợ không lộ ----
+select pg_temp.claims((select id from u where key = 'cskh5'), 'aal1');
+select is(pg_temp.err($$select app.opening_debt_by_student(pg_temp.pid('PH253A'))$$), 'HMT_KHONG_CO_QUYEN', 'CSKH cơ sở khác không đọc nợ từng em của phụ huynh cơ sở này');
+select is(pg_temp.err($$select app.create_opening_debt_receipt(pg_temp.pid('PH253A'), pg_temp.dst(1000, 'HS253A'))$$), 'HMT_KHONG_CO_QUYEN', 'CSKH cơ sở khác không tạo phiếu thu nợ đầu kỳ cho phụ huynh cơ sở này');
+select is((select count(*)::int from app.receipt where is_opening_debt), 0, 'RLS: CSKH cơ sở khác không thấy phiếu nợ đầu kỳ của cơ sở này');
+select is(pg_temp.err($$select app.opening_student_debt_remaining(pg_temp.sid('HS253A'))$$), '42501', 'CSKH cơ sở khác không gọi trực tiếp hàm trợ giúp nợ em');
 
 select * from finish();
 rollback;
