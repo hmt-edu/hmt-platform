@@ -1,8 +1,10 @@
 // Dữ liệu khung đọc từ cơ sở dữ liệu: ma trận quyền, vai trò, cơ sở, công tắc tính năng.
 // Chỉ để giao diện ẩn/hiện cho gọn; quyền thật do RLS và hàm trong cơ sở dữ liệu chặn.
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useAuth } from '../lib/auth/authContext';
+import { intSettingQuery } from '../lib/db';
 
 export type PermissionRow = {
   role_code: string;
@@ -60,9 +62,19 @@ export async function loadAccessData(
   return { permissions, roles, branches, features };
 }
 
+// Tham số mà màn đầu của cổng dùng ngay (cỡ trang danh sách): tải CÙNG LÚC với dữ liệu quyền, không đợi màn mở rồi mới gọi (đo 18/11: gọi nối tiếp mất thêm ~0,3 s).
+const PREFETCH_INT_SETTINGS = ['list_page_size_default'];
+
 export function useAccessData() {
   const { supabase, claims } = useAuth();
+  const client = useQueryClient();
   const roleKey = claims?.roles.join(',') ?? '';
+  const userId = claims?.userId;
+  useEffect(() => {
+    if (!supabase || !userId) return;
+    for (const key of PREFETCH_INT_SETTINGS)
+      void client.prefetchQuery(intSettingQuery(supabase, key));
+  }, [client, supabase, userId]);
   return useQuery({
     queryKey: ['access-data', claims?.userId, roleKey],
     enabled: Boolean(supabase && claims),

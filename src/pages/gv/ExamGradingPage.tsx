@@ -23,6 +23,9 @@ import {
   type ExamSheet,
   type ExamStudent,
 } from './exam';
+import { buildExamCard } from './exportCard';
+import { ExportPanel } from './ExportPanel';
+import { useExportedStudents } from './useExported';
 import { useExamSheet, useSaveExam } from './useExam';
 
 /**
@@ -85,6 +88,8 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
   const dirty = anyDirty(sheet, drafts);
   const progress = gradedProgress(sheet);
   const unmarked = sheet.students.some((s) => s.attendance_code === null);
+  const exported = useExportedStudents(sessionId);
+  const exportedSet = new Set(exported.data ?? []);
 
   const draftOf = (s: ExamStudent): ExamDraft => drafts[s.student_id] ?? initialDraft(s);
   const setDraft = (s: ExamStudent, next: ExamDraft) =>
@@ -192,6 +197,23 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
         Đã chấm {progress.done}/{progress.total} em có mặt. Ô trống là chưa chấm, khác điểm 0. Em
         vắng lấy từ điểm danh, không tự nhận 0. Không tự lưu: bấm Lưu (cả lớp).
       </p>
+
+      {exam && (
+        <ExportPanel
+          sessionId={sessionId}
+          classCode={sheet.session.class_code}
+          sessionDate={sheet.session.session_date}
+          currentStudentId={null}
+          showOne={false}
+          dirty={dirty}
+          items={sheet.students.map((s) => ({
+            studentId: s.student_id,
+            name: s.full_name,
+            card: buildExamCard(sheet, s),
+            exported: exportedSet.has(s.student_id),
+          }))}
+        />
+      )}
 
       {exam && (
         <ul className="flex flex-col gap-2" aria-label="Học sinh">
