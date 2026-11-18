@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   changedCells,
+  changedPhrases,
+  phraseKey,
   draftKey,
   emptyCells,
   groupNote,
@@ -58,5 +60,19 @@ describe('CH-07 rubric', () => {
   it('môn không có trong bảng dùng bộ môn phụ', () => {
     expect(subjectSetOf('TOAN', { TOAN: 'TOAN' })).toBe('TOAN');
     expect(subjectSetOf('VAT_LY', { TOAN: 'TOAN' })).toBe('MON_PHU');
+  });
+});
+
+describe('CH-07 câu mẫu', () => {
+  const rows = [
+    { kind: 'THUONG', level: 1, seq: 1, phrase: 'a' },
+    { kind: 'THUONG', level: 1, seq: 2, phrase: 'b' },
+  ];
+  it('chỉ câu đã đổi, cắt khoảng trắng, giữ ô trống để máy chủ chặn', () => {
+    const draft = { [phraseKey(rows[0]!)]: '  mới ', [phraseKey(rows[1]!)]: 'b' };
+    expect(changedPhrases(rows, draft)).toEqual([
+      { kind: 'THUONG', level: 1, seq: 1, phrase: 'mới' },
+    ]);
+    expect(changedPhrases(rows, { [phraseKey(rows[1]!)]: ' ' })[0]?.phrase).toBe('');
   });
 });

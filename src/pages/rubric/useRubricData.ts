@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { fetchRows, rpc, useDb } from '../../lib/db';
-import type { Rubric } from './rubricLogic';
+import type { Phrase, Rubric } from './rubricLogic';
 
 export function useRubric(subjectSet: string, versionId: string | null) {
   const supabase = useDb();
@@ -76,5 +76,20 @@ export function useRefreshRubric() {
   const client = useQueryClient();
   return useCallback(async () => {
     await client.invalidateQueries({ queryKey: ['rubric'] });
+    await client.invalidateQueries({ queryKey: ['rubric-phrases'] });
   }, [client]);
+}
+
+/** 24 câu mẫu (một lần gọi). */
+export function usePhrases() {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['rubric-phrases'],
+    queryFn: () => rpc<Phrase[]>(supabase, 'get_parent_phrases'),
+  });
+}
+
+/** Lưu nhiều câu trong MỘT giao dịch (update_parent_phrases). */
+export function savePhrases(supabase: SupabaseClient, items: Phrase[]): Promise<number> {
+  return rpc<number>(supabase, 'update_parent_phrases', { p_items: items });
 }
