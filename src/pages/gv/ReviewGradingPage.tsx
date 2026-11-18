@@ -313,7 +313,7 @@ function StudentCard({
       {!present ? (
         <Alert tone="info">
           {student.attendance_code === null
-            ? 'Em chưa được điểm danh. Điểm danh em này trước khi chấm.'
+            ? 'Em chưa được điểm danh. Điểm danh em này trước khi chấm. Chưa biết em có mặt hay vắng nên chưa chấm được.'
             : 'Em vắng: không chấm nhận xét (R-GV-04).'}
         </Alert>
       ) : (

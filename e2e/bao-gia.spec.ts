@@ -714,7 +714,7 @@ test('Tạo báo giá: nút nằm ở bản ghi cơ hội (máy tính), ẩn tr�
   await expect(page.getByText('cấp khi Lưu, không sửa')).toBeVisible();
   await expect(page.getByText('tính từ ngày Gửi')).toBeVisible();
   await expect(page.getByRole('combobox', { name: 'Học sinh dòng 1' })).toContainText('Em Đã Gửi');
-  await expect(page.getByText('Chưa có hoạt động: bản ghi chỉ có khi bấm Lưu.')).toBeVisible();
+  await expect(page.getByText('Lưu để bắt đầu ghi chú: bản ghi chỉ có khi bấm Lưu.')).toBeVisible();
   await expectAccessible(page);
   // Huỷ: bỏ hết, về cơ hội, không có bản ghi mới.
   await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
