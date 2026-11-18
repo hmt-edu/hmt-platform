@@ -34,6 +34,8 @@ export const SEED_USERS: SeedUser[] = [
   // Kế toán thứ hai CS5 riêng cho bài đường học sinh mới (T4): hai file bài không dùng chung một tài khoản hai bước (tránh tranh thiết bị).
   { key: 'ketoan2.cs5', name: 'Kế toán thứ hai CS5 (giả)', branch: 'CS5', roles: ['ACCOUNTANT'] },
   { key: 'quantri.cs1', name: 'Quản trị CS1 (giả)', branch: 'CS1', roles: ['ADMIN'] },
+  // Admin thứ ba CS5 riêng cho bài Playwright Khung chương trình (CH-05, CH-06): mỗi file bài một Admin, tránh tranh thiết bị hai bước.
+  { key: 'quantri2.cs5', name: 'Quản trị 2 CS5 (giả)', branch: 'CS5', roles: ['ADMIN'] },
   { key: 'gv.cs5', name: 'Giáo viên CS5 (giả)', branch: 'CS5', roles: ['TEACHER'] },
   // Giáo viên thứ hai: giáo viên của buổi "người khác" ở bài Playwright (buổi phải có giáo viên đủ vai trò, F5).
   { key: 'gv2.cs5', name: 'Giáo viên thứ hai CS5 (giả)', branch: 'CS5', roles: ['TEACHER'] },
