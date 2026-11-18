@@ -187,7 +187,7 @@ begin
   if c.subject_set not in ('MOI_MON', v.subject_set) then
     perform app.raise_error('HMT_RUBRIC_TIEU_CHI_SAI', 'Tiêu chí không thuộc bộ của phiên bản này.');
   end if;
-  if p_level is null or p_level not between 1 and 5 then
+  if p_level is null or p_level not between 1 and 5 then -- allow-number: thang mức 1 đến 5 của rubric (R-V2-19), cùng ràng buộc cột level
     perform app.raise_error('HMT_THAM_SO_SAI', 'Mức phải từ 1 đến 5.');
   end if;
   if v_text is null then
