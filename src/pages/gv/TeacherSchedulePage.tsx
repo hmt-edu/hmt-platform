@@ -253,7 +253,6 @@ export function TeacherSchedulePage() {
                   key={d}
                   type="button"
                   aria-pressed={d === selected}
-                  aria-label={`${formatDayHeading(d)}, ${n} buổi`}
                   onClick={() => setPicked(d)}
                   className={cn(
                     'flex min-h-11 flex-col items-center rounded-control border px-1 py-1 text-caption',
@@ -264,6 +263,8 @@ export function TeacherSchedulePage() {
                 >
                   <span>{chip.weekday}</span>
                   <span className="font-semibold">{chip.day}</span>
+                  {/* Tên đọc lấy từ chữ trong nút rồi thêm ngày đầy đủ, số buổi (luật axe label-content-name-mismatch). */}
+                  <span className="sr-only">{`${formatDayHeading(d)}, ${n} buổi`}</span>
                   <span
                     aria-hidden="true"
                     className={cn('size-1.5 rounded-full', n > 0 ? 'bg-current' : 'bg-transparent')}

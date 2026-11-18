@@ -1,0 +1,147 @@
+// Cấu hình danh sách phiếu tái tục cho khuôn K03: TT-01 (canvas 9933 TT01). Cột: Phiếu, Học sinh, Lớp, Ghi danh (n), Giờ còn, Hết giờ dự kiến, Campaign,
+// Giai đoạn, Sub-stage, Phụ trách, Xử lý. Lọc nhanh: Giai đoạn, Phụ trách, Rủi ro. Lọc, sắp xếp, phân trang làm ở máy chủ.
+import { formatDate } from '../../lib/format';
+import type { AccessView } from '../../nav/access';
+import { Tag, type TagTone } from '../../ui/Data';
+import { Button } from '../../ui/Button';
+import type { ListConfig } from '../../list/types';
+import type { LeadCatalogs } from '../lead/useCatalogs';
+import type { UpsaleRow } from './upsaleTypes';
+
+export const UPSALE_SCREEN_CODE = 'TT-01';
+
+const MUTED = <span className="text-fg-muted">—</span>;
+
+const STAGE_TONE: Record<string, TagTone> = {
+  L1: 'info',
+  L2: 'info',
+  L3: 'warning',
+  L4: 'warning',
+  L5: 'neutral',
+  L6: 'success',
+  L7: 'success',
+  L8: 'success',
+};
+export const upsaleStageTone = (code: string): TagTone => STAGE_TONE[code] ?? 'neutral';
+
+export function buildUpsaleConfig(
+  catalogs: LeadCatalogs,
+  access: AccessView,
+  onAssign: (row: UpsaleRow) => void,
+): ListConfig<UpsaleRow> {
+  const stageOptions = catalogs.filterOptions('UPSALE_STAGE');
+  const canAssign = access.can('UPSALE', 'GIAO_VIEC');
+  return {
+    screenCode: UPSALE_SCREEN_CODE,
+    title: 'Tái tục',
+    searchPlaceholder: 'Tìm mã phiếu, tên học sinh hoặc mã lớp…',
+    columns: [
+      {
+        key: 'code',
+        label: 'Phiếu',
+        locked: true,
+        primary: true,
+        render: (r) => <span className="font-medium">{r.code}</span>,
+      },
+      {
+        key: 'student',
+        label: 'Học sinh',
+        render: (r) => (
+          <span>
+            {r.student_name}
+            {r.risk_flag ? <Tag tone="danger">Rủi ro vắng</Tag> : null}
+          </span>
+        ),
+      },
+      { key: 'class', label: 'Lớp', render: (r) => r.class_code },
+      { key: 'enrollments', label: 'Ghi danh (n)', render: (r) => r.enrollment_count },
+      {
+        key: 'hours',
+        label: 'Giờ còn',
+        render: (r) => (r.hours_left === null ? MUTED : r.hours_left),
+      },
+      {
+        key: 'end',
+        label: 'Hết giờ dự kiến',
+        render: (r) => (r.expected_end_date ? formatDate(r.expected_end_date) : MUTED),
+      },
+      { key: 'campaign', label: 'Campaign', render: (r) => r.campaign_label ?? MUTED },
+      {
+        key: 'stage',
+        label: 'Giai đoạn',
+        render: (r) => (
+          <Tag tone={upsaleStageTone(r.stage_code)} dot>
+            {r.stage_code} {catalogs.name('UPSALE_STAGE', r.stage_code) ?? ''}
+          </Tag>
+        ),
+      },
+      {
+        key: 'substage',
+        label: 'Sub-stage',
+        render: (r) =>
+          r.substage_code ? (
+            <span>
+              {r.substage_code} {catalogs.name('UPSALE_SUBSTAGE', r.substage_code) ?? ''}
+            </span>
+          ) : (
+            MUTED
+          ),
+      },
+      { key: 'owner', label: 'Phụ trách', render: (r) => r.owner_name ?? 'chưa giao' },
+      {
+        key: 'actions',
+        label: 'Xử lý',
+        render: (r) =>
+          canAssign && r.stage_code !== 'L5' && r.stage_code !== 'L8' ? (
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAssign(r);
+              }}
+            >
+              Giao
+            </Button>
+          ) : (
+            MUTED
+          ),
+      },
+    ],
+    quickGroups: [
+      { key: 'stage', label: 'Giai đoạn', options: stageOptions },
+      {
+        key: 'owner',
+        label: 'Phụ trách',
+        options: [
+          { value: 'mine', label: 'Của tôi' },
+          { value: 'unassigned', label: 'Chưa giao' },
+        ],
+      },
+      { key: 'risk', label: 'Rủi ro', options: [{ value: 'risk', label: 'Rủi ro vắng nhiều' }] },
+    ],
+    filterFields: [
+      {
+        key: 'month',
+        label: 'Campaign (tháng hết giờ, YYYY-MM)',
+        type: 'text',
+        ops: ['eq'],
+      },
+      ...(access.seesAllBranches
+        ? [
+            {
+              key: 'branch',
+              label: 'Cơ sở',
+              type: 'select' as const,
+              ops: ['eq' as const],
+              options: access.teachingBranches.map((b) => ({
+                value: b.id,
+                label: `${b.code} ${b.name}`,
+              })),
+            },
+          ]
+        : []),
+    ],
+    groupFields: [],
+    dateFields: [],
+    views: ['list', 'kanban'],
+  };
+}

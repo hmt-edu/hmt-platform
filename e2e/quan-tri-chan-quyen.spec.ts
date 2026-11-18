@@ -15,6 +15,8 @@ const ADMIN_PAGES = [
   'quan-tri/danh-muc',
   'quan-tri/nguoi-dung',
   'quan-tri/nhap-du-lieu',
+  'quan-tri/nhat-ky',
+  'quan-tri/nhat-ky-dang-nhap',
 ];
 
 for (const account of ACCOUNTS) {

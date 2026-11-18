@@ -173,7 +173,7 @@ test('Từ trang Lead: nút "Lịch hẹn" mở danh sách chỉ của lead đó
     .getByRole('link', { name: /^LD\d+$/ })
     .click();
   await expect(page.getByRole('heading', { level: 1, name: 'Lead' })).toBeVisible();
-  await page.getByRole('button', { name: /^Lịch hẹn: \d+$/ }).click();
+  await page.getByRole('button', { name: /^Lịch hẹn \d+$/ }).click();
   await expect(page).toHaveURL(/\/crm\/lich-hen\?lead=/);
   await expect(page.getByText(/^Lead: LD\d+/).first()).toBeVisible();
   // Lịch quá hạn của lead cũng hiện (không giới hạn thời gian).
