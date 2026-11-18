@@ -187,6 +187,7 @@ const LoginLogPage = lazyScreen(
   () => import('../pages/nhat-ky-dang-nhap/LoginLogPage'),
   'LoginLogPage',
 );
+const OverviewPage = lazyScreen(() => import('../pages/bao-cao/OverviewPage'), 'OverviewPage');
 const PermissionMatrixPage = lazyScreen(
   () => import('../pages/ma-tran/PermissionMatrixPage'),
   'PermissionMatrixPage',
@@ -771,6 +772,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/nhat-ky-dang-nhap">
                 <LoginLogPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'bao-cao/tong-quan',
+            element: (
+              <GatedCrmEntry slug="bao-cao/tong-quan">
+                <OverviewPage />
               </GatedCrmEntry>
             ),
           },
