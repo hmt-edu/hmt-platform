@@ -5,14 +5,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
-import { errorOf, FORBIDDEN_CODE, useDb } from '../../lib/db';
+import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Chatter } from '../../ui/Chatter';
 import { Tag } from '../../ui/Data';
 import { FormDialog } from '../../ui/Dialogs';
-import { Spinner, StateView } from '../../ui/Feedback';
+import { Spinner } from '../../ui/Feedback';
+import { QueryErrorView } from '../../ui/QueryErrorView';
 import { Button } from '../../ui/Button';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { OptionalSelect } from '../../ui/OptionalSelect';
@@ -92,22 +93,10 @@ export function TicketRecordPage() {
   );
 
   if (record.isPending) return <Spinner label="Đang tải ticket…" />;
-  if (record.isError || !ticket) {
-    const forbidden = record.error ? errorOf(record.error).code === FORBIDDEN_CODE : false;
-    const missing = record.error ? errorOf(record.error).code === 'HMT_KHONG_TIM_THAY' : false;
+  if (record.isError || !ticket)
     return (
-      <StateView
-        kind={forbidden ? 'forbidden' : missing ? 'not-found' : 'error'}
-        title={
-          forbidden
-            ? 'Bạn không có quyền xem ticket này'
-            : missing
-              ? 'Không tìm thấy ticket'
-              : 'Chưa tải được ticket'
-        }
-      />
+      <QueryErrorView error={record.error} subject="ticket" onRetry={() => void record.refetch()} />
     );
-  }
 
   const canEdit = access.can('TICKET', 'SUA');
   const closed = ticket.status_code === 'DA_DONG' || ticket.status_code === 'DA_HUY';
