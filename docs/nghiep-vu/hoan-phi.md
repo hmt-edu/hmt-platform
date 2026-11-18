@@ -17,3 +17,7 @@ Code D, 16/11/2026. Luật: R-TIEN-28, R-TIEN-31. Chỉ là lõi **tính**; bả
 
 - Phí của hoàn một phần tính trên `giờ hoàn × giá sau chiết khấu` (R-TIEN-31 không nói rõ số nền).
 - «Giờ đã học» = tổng giờ trừ theo buổi Done của ghi danh (giờ tặng đã dùng nằm trong đó).
+
+## Hoàn phí, dừng học bắt buộc qua ticket (migration 459, R-V2-24A)
+
+`create_refund_request` và `create_enrollment_stop` gọi `assert_refund_ticket`: mã ticket Đề nghị đang mở, nhóm con đúng loại (`business_type` HOAN_PHI hoặc DUNG_HOC), cùng học sinh và cơ sở. Lỗi `HMT_CAN_TICKET`, `HMT_TICKET_KHONG_TON_TAI`, `HMT_TICKET_SAI_LOAI`, `HMT_TICKET_SAI_NHOM`, `HMT_TICKET_SAI_HOC_SINH`, `HMT_TICKET_SAI_CO_SO`. Kế toán tạo thẳng không ticket chỉ khi bật cờ `refund_direct_without_ticket_enabled` (mặc định tắt).
