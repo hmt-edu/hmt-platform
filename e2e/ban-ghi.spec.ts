@@ -51,7 +51,7 @@ test.describe('K3 Chi tiết', () => {
   test('smart button nhiều bản ghi mở danh sách lọc theo cha, có chip và đường dẫn', async ({
     page,
   }) => {
-    await page.getByRole('button', { name: /^Lịch hẹn: 2/ }).click();
+    await page.getByRole('button', { name: /^Lịch hẹn 2/ }).click();
     await expect(page).toHaveURL(/\/dev\/danh-sach\?cha=CO000121/);
     const crumb = page.getByRole('navigation', { name: 'Đường dẫn' }).last();
     await expect(crumb).toContainText('Cơ hội');
