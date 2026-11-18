@@ -25,3 +25,7 @@ Chưa làm: giữ thành số dư khách hàng khi dừng học (R-GD-16, R-TIEN
 | `get_payment_voucher(id)`                                            | Bản ghi phiếu chi, bảng tính hoàn chụp lúc tạo, ghi danh; `can_pay` cho nút ghi nhận đã chi           | R-TIEN-28, R-TIEN-34 |
 
 Quyền xem: RECEIPT · XEM theo phạm vi (cơ sở mình hoặc toàn hệ thống). Phiếu ngoài phạm vi báo `HMT_KHONG_TIM_THAY`.
+
+## Đọc số dư khách hàng cho TC-14 (migration 453)
+
+Hàm `list_customer_balances(bộ lọc, số dòng, bỏ qua)` (mỗi phụ huynh một dòng, số dư = tổng sổ; lọc `q`, `branch_id`, `only_positive`) và `get_customer_balance_history(phụ huynh)` (số dư và các dòng sổ, mới nhất trước). Quyền xem: RECEIPT · XEM theo phạm vi (R-TIEN-33); ngoài phạm vi báo `HMT_KHONG_TIM_THAY`. «Cấn vào đơn mới» (TC-16) làm sau cùng Code C.
