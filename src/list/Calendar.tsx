@@ -417,7 +417,6 @@ function EventButton({
         <button
           type="button"
           style={style}
-          aria-label={`${kindLabel}: ${event.title}, ${time}${status ? `, ${status}` : ''}`}
           className={cn(
             'focus-ring overflow-hidden rounded-tag border px-1.5 py-0.5 text-left text-caption hover:shadow-2',
             layout === 'grid' ? 'absolute flex flex-col gap-px' : 'flex items-center gap-1',
@@ -425,6 +424,8 @@ function EventButton({
             cancelled && 'border-dashed',
           )}
         >
+          {/* Tên đọc lấy từ chính chữ trong thẻ (luật axe label-content-name-mismatch): loại sự kiện ở đầu, trạng thái ở cuối chỉ cho trình đọc màn hình. */}
+          <span className="sr-only">{kindLabel}: </span>
           <b
             className={cn(
               'flex items-center gap-1 truncate font-semibold whitespace-nowrap',
@@ -442,6 +443,7 @@ function EventButton({
           ) : (
             <span className="tabular shrink-0">{hhmm(event.start)}</span>
           )}
+          {status && <span className="sr-only">, {status}</span>}
         </button>
       }
     >
