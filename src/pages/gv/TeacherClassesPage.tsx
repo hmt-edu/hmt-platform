@@ -67,7 +67,9 @@ export function TeacherClassesPage() {
     <div className="mx-auto flex max-w-xl flex-col gap-4">
       <div>
         <h1 className="text-h2">Lớp của tôi</h1>
-        <p className="text-body text-fg-muted">{rows.length} lớp đang dạy</p>
+        <p className="text-body text-fg-muted">
+          {rows.length} lớp được phân công. Chỉ thấy lớp của mình.
+        </p>
         <p className="text-body">
           <Link className="text-link underline" to="/gv/ticket">
             Ticket của lớp tôi
