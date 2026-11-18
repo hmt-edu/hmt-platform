@@ -262,5 +262,18 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.approver_candidate_problem(pg_temp.uid('bm1'), 'DON', pg_temp.uid('sales1'), (select id from app.branch where code = 'CS1'))$$), '42501', 'R-V2-44: người thường không gọi trực tiếp approver_candidate_problem');
 select is(pg_temp.err($$select app.approver_unavailable_reason('DON', pg_temp.uid('bm1'), (select id from app.branch where code = 'CS1'), now())$$), '42501', 'R-V2-44: người thường không gọi trực tiếp approver_unavailable_reason');
 
+-- ---- Thẻ C17: hai hàm đọc còn lại cũng bị chặn với người không phải Admin ----
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.list_approver_candidates('DON', pg_temp.o('p'))$$), 'HMT_KHONG_CO_QUYEN', 'R-V2-44: Sale không xem danh sách người nhận hợp lệ');
+select is(app.get_reassign_state('DON', pg_temp.o('p')) ->> 'can', 'false', 'R-V2-44: Sale không thấy nút Chuyển người duyệt (can = false)');
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select is(pg_temp.err($$select app.list_approver_candidates('PHIEU_THU', pg_temp.r('r1'))$$), 'HMT_KHONG_CO_QUYEN', 'R-V2-44: Kế toán không xem danh sách người nhận');
+select is(app.get_reassign_state('PHIEU_THU', pg_temp.r('r1')) ->> 'can', 'false', 'R-V2-44: Kế toán không thấy nút Chuyển người duyệt');
+-- Admin: loại chứng từ lạ và phiếu đã qua bước quản lý không hiện nút.
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+select is(app.get_reassign_state('KHAC', pg_temp.r('r1')) ->> 'can', 'false', 'R-V2-44: loại chứng từ lạ thì không hiện nút');
+select is(app.get_reassign_state('PHIEU_THU', pg_temp.r('r1')) ->> 'can', 'false', 'R-V2-44: phiếu đã qua bước quản lý không hiện nút');
+select is(pg_temp.err($$select app.list_approver_candidates('KHAC', pg_temp.r('r1'))$$), 'HMT_LOAI_CHUNG_TU_SAI', 'R-V2-44: loại chứng từ lạ bị chặn khi liệt kê người nhận');
+
 select * from finish();
 rollback;
