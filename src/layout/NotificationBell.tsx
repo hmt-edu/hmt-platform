@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { errorOf, fetchRows, rpc, useDb, useIntSetting } from '../lib/db';
-import { IconButton } from '../ui/Button';
+import { Icon } from '../ui/icons';
 import { cn } from '../ui/cn';
 import { Popover } from '../ui/Overlays';
 import { notificationPath, timeAgo, type NotificationRow } from './notificationLogic';
@@ -80,11 +80,14 @@ export function NotificationBell() {
       align="end"
       className="w-96 p-0"
       trigger={
-        <span className="relative inline-flex">
-          <IconButton
-            icon="bell"
-            label={count > 0 ? `Thông báo (${count} chưa đọc)` : 'Thông báo'}
-          />
+        // Trigger là chính nút chuông (không bọc thẻ span): Radix gắn aria-haspopup, aria-expanded lên trigger, mà span không hỗ trợ các thuộc tính này (axe aria-allowed-attr).
+        <button
+          type="button"
+          aria-label={count > 0 ? `Thông báo (${count} chưa đọc)` : 'Thông báo'}
+          title={count > 0 ? `Thông báo (${count} chưa đọc)` : 'Thông báo'}
+          className="focus-ring relative inline-flex size-control shrink-0 items-center justify-center rounded-control text-fg-label hover:bg-hover max-md:size-target"
+        >
+          <Icon name="bell" />
           {count > 0 && (
             <span
               aria-hidden="true"
@@ -93,7 +96,7 @@ export function NotificationBell() {
               {count}
             </span>
           )}
-        </span>
+        </button>
       }
     >
       <div className="flex items-center justify-between gap-2 border-b border-border p-3">
