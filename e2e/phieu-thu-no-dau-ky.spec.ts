@@ -3,7 +3,7 @@
 // ghi theo từng em. Cờ opening_debt_receipt_enabled (tắt mặc định) bật trong bài và trả lại như cũ ở cuối. Chỉ chạy bằng CI.
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, expectAccessible } from './helpers';
+import { PASSWORD, enterAs, enterAsAdmin, expectAccessible } from './helpers';
 import { DB_URL } from './don-hang-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phụ huynh có nợ đầu kỳ giả).');
@@ -13,6 +13,7 @@ const RUN = Date.now().toString(36).slice(-5).toUpperCase();
 const PARENT = `Chị E2ENDK ${RUN}`;
 const STUDENT = `Em Nợ ${RUN}`;
 let flagBefore = 'false';
+let receiptPath = '';
 
 async function withDb<T>(fn: (db: pg.Client) => Promise<T>): Promise<T> {
   const db = new pg.Client({ connectionString: DB_URL });
@@ -102,6 +103,7 @@ test('CSKH tạo phiếu Thu nợ đầu kỳ cho một em, số tiền vượt 
   await dialog.getByLabel('Số tiền').fill('1000000');
   await dialog.getByRole('button', { name: 'Tạo phiếu nháp' }).click();
   await expect(page).toHaveURL(/\/crm\/phieu-thu\/[0-9a-f-]{36}$/);
+  receiptPath = new URL(page.url()).pathname;
   await expect(page.getByText('Thu nợ đầu kỳ · không có đơn')).toBeVisible();
   await expect(page.getByText(STUDENT)).toBeVisible();
   await expectAccessible(page);
@@ -115,4 +117,29 @@ test('Phiếu Thu nợ đầu kỳ hiện ở danh sách, cột Đơn hàng khô
   await expect(row).toHaveCount(1);
   await expect(row.getByText('Thu nợ đầu kỳ')).toBeVisible();
   await expect(row.getByRole('link', { name: /^DH-/ })).toHaveCount(0);
+});
+
+// Ca chặn quyền (R-V2-15, R-HT-01, thẻ C25): CSKH gửi thẳng Kế toán nhưng không có nút Duyệt; Admin không có nút Duyệt tiền; Kế toán khác người lập duyệt được.
+test('Phiếu nợ đầu kỳ: CSKH gửi kế toán, không có nút Duyệt; Admin không duyệt tiền', async ({
+  page,
+}) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto(receiptPath);
+  await page.getByRole('button', { name: 'Gửi kế toán duyệt' }).click();
+  await expect(
+    page.getByText(/chờ Kế toán duyệt \(phiếu nợ đầu kỳ không qua quản lý\)/),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
+  await enterAsAdmin(page, 'quantri.cs1');
+  await page.goto(receiptPath);
+  await expect(page.getByText(/chờ Kế toán duyệt/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
+});
+
+test('Phiếu nợ đầu kỳ: Kế toán khác người lập duyệt được, phiếu Đã duyệt', async ({ page }) => {
+  await enterAsAdmin(page, 'ketoan.cs5');
+  await page.goto(receiptPath);
+  await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await expect(page.getByText(/Phiếu đã duyệt và khoá/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
 });

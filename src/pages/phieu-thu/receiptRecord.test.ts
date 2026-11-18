@@ -84,3 +84,15 @@ describe('trình lại phiếu thu bị từ chối (Q-58, R-TIEN-06)', () => {
     expect(lastRejection({ status_code: 'DA_GUI', events: [ev('TU_CHOI', 'DA_GUI')] })).toBeNull();
   });
 });
+
+describe('Phiếu thu nợ đầu kỳ: thanh tình trạng không có bước quản lý (R-V2-15)', () => {
+  it('ba bước Nháp, Chờ kế toán, Đã duyệt', () => {
+    expect(receiptSteps('NHAP', true)).toEqual(['NHAP', 'CHO_KE_TOAN', 'DA_DUYET']);
+  });
+  it('phiếu huỷ thay bước cuối bằng Huỷ', () => {
+    expect(receiptSteps('HUY', true)).toEqual(['NHAP', 'CHO_KE_TOAN', 'HUY']);
+  });
+  it('phiếu có đơn giữ bốn bước như cũ', () => {
+    expect(receiptSteps('NHAP')).toEqual(['NHAP', 'DA_GUI', 'CHO_KE_TOAN', 'DA_DUYET']);
+  });
+});

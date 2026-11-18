@@ -2,7 +2,10 @@
 import type { ReceiptEvent, ReceiptInput, ReceiptRecord, ReceiptStatus } from './receiptTypes';
 
 /** Bước của thanh tình trạng (chỉ đọc): Nháp, Đã gửi, Chờ kế toán, Đã duyệt; Huỷ thì thêm bước Huỷ. */
-export function receiptSteps(status: ReceiptStatus): ReceiptStatus[] {
+export function receiptSteps(status: ReceiptStatus, openingDebt = false): ReceiptStatus[] {
+  // Phiếu thu nợ đầu kỳ không qua bước quản lý (R-V2-15; canvas TC02_no_dau_ky_*): Nháp → Chờ kế toán → Đã duyệt.
+  if (openingDebt)
+    return status === 'HUY' ? ['NHAP', 'CHO_KE_TOAN', 'HUY'] : ['NHAP', 'CHO_KE_TOAN', 'DA_DUYET'];
   return status === 'HUY'
     ? ['NHAP', 'DA_GUI', 'CHO_KE_TOAN', 'HUY']
     : ['NHAP', 'DA_GUI', 'CHO_KE_TOAN', 'DA_DUYET'];
