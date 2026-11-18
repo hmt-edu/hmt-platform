@@ -32,6 +32,7 @@ export default defineConfig({
   webServer: {
     command: `npm run build && npm run preview -- --port ${PREVIEW_PORT} --strictPort`,
     url: baseURL,
-    reuseExistingServer: !process.env.CI,
+    // CI chạy Playwright trong container (D18): máy chủ xem trước đã chạy sẵn trên runner, đặt E2E_REUSE_SERVER=1 để dùng lại.
+    reuseExistingServer: !process.env.CI || !!process.env.E2E_REUSE_SERVER,
   },
 });
