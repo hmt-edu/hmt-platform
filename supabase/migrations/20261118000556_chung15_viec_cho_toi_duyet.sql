@@ -38,19 +38,19 @@ begin
      and app.can_approve_as_manager(o.created_by, 'DON', o.assigned_approver_id, o.approval_route, o.branch_id)
   union all
   -- Phiếu thu, cấp quản lý (R-V2-12); Admin không duyệt phiếu thu.
-  select 'PHIEU_THU', r.id, r.code, p.full_name, null::text, null::text, 1, 2,
+  select 'PHIEU_THU', r.id, r.code, p.full_name, null::text, null::text, 1, 2, -- allow-number: số cấp duyệt theo luật hai cấp, không phải tham số
          case r.approval_route when 'TRUONG_CS' then 'Trưởng cơ sở → Kế toán' else 'Quản lý trực tiếp → Kế toán' end, r.created_by, coalesce(r.submitted_at, r.created_at), r.branch_id
     from app.receipt r join app.parent p on p.id = r.parent_id
    where r.status_code = 'DA_GUI'
      and app.can_approve_as_manager(r.created_by, 'PHIEU_THU', r.assigned_approver_id, r.approval_route, r.branch_id)
   union all
   -- Phiếu thu, cấp Kế toán.
-  select 'PHIEU_THU', r.id, r.code, p.full_name, null::text, null::text, 2, 2, 'Kế toán', r.created_by, coalesce(r.manager_approved_at, r.submitted_at, r.created_at), r.branch_id
+  select 'PHIEU_THU', r.id, r.code, p.full_name, null::text, null::text, 2, 2, 'Kế toán', r.created_by, coalesce(r.manager_approved_at, r.submitted_at, r.created_at), r.branch_id -- allow-number: số cấp duyệt theo luật hai cấp, không phải tham số
     from app.receipt r join app.parent p on p.id = r.parent_id
    where r.status_code = 'CHO_KE_TOAN' and app.can_see_branch('ACCOUNTING', 'DUYET', r.branch_id)
   union all
   -- Lớp: Đã trình chờ Xác nhận, Đã xác nhận chờ Duyệt (R-LOP-02).
-  select 'LOP', c.id, c.code, null::text, null::text, null::text, case c.status_code when 'DA_TRINH' then 1 else 2 end, 2,
+  select 'LOP', c.id, c.code, null::text, null::text, null::text, case c.status_code when 'DA_TRINH' then 1 else 2 end, 2, -- allow-number: số cấp duyệt theo luật hai cấp, không phải tham số
          case c.status_code when 'DA_TRINH' then 'Xác nhận' else 'Duyệt' end, c.submitted_by,
          coalesce((select max(e.created_at) from app.class_event e where e.class_id = c.id and e.to_status = c.status_code), c.updated_at), c.branch_id
     from app.class c
@@ -64,7 +64,7 @@ begin
      and (q.created_by is distinct from v_me or v_admin)
   union all
   -- Hoàn phí hai cấp.
-  select 'HOAN_PHI', f.id, e.code, s.full_name, s.code, null::text, case f.status_code when 'CHO_QL' then 1 else 2 end, 2,
+  select 'HOAN_PHI', f.id, e.code, s.full_name, s.code, null::text, case f.status_code when 'CHO_QL' then 1 else 2 end, 2, -- allow-number: số cấp duyệt theo luật hai cấp, không phải tham số
          case f.status_code when 'CHO_QL' then 'Trưởng cơ sở' else 'Kế toán' end, f.created_by,
          case f.status_code when 'CHO_QL' then f.created_at else coalesce(f.manager_at, f.created_at) end, f.branch_id
     from app.refund_request f join app.enrollment e on e.id = f.enrollment_id join app.student s on s.id = f.student_id
@@ -72,7 +72,7 @@ begin
       or (f.status_code = 'CHO_KE_TOAN' and app.can_see_branch('ACCOUNTING', 'DUYET', f.branch_id))
   union all
   -- Dừng học hai cấp.
-  select 'DUNG_HOC', d.id, e.code, s.full_name, s.code, null::text, case d.status_code when 'CHO_QL' then 1 else 2 end, 2,
+  select 'DUNG_HOC', d.id, e.code, s.full_name, s.code, null::text, case d.status_code when 'CHO_QL' then 1 else 2 end, 2, -- allow-number: số cấp duyệt theo luật hai cấp, không phải tham số
          case d.status_code when 'CHO_QL' then 'Trưởng cơ sở' else 'Kế toán' end, d.created_by,
          case d.status_code when 'CHO_QL' then d.created_at else coalesce(d.manager_at, d.created_at) end, d.branch_id
     from app.enrollment_stop d join app.enrollment e on e.id = d.enrollment_id join app.student s on s.id = d.student_id
@@ -86,7 +86,7 @@ begin
   union all
   -- Chuyển lớp: duyệt ở cơ sở đi và cơ sở đến (mỗi cơ sở một lần).
   select 'CHUYEN_LOP', t.id, e.code, s.full_name, s.code, null::text, 1 + (t.approved_from_at is not null)::int + (t.approved_to_at is not null)::int,
-         case when t.from_branch_id = t.to_branch_id then 1 else 2 end, 'Trưởng cơ sở', t.created_by, coalesce(t.approved_from_at, t.approved_to_at, t.created_at), t.from_branch_id
+         case when t.from_branch_id = t.to_branch_id then 1 else 2 end, 'Trưởng cơ sở', t.created_by, coalesce(t.approved_from_at, t.approved_to_at, t.created_at), t.from_branch_id -- allow-number: số cấp duyệt theo luật hai cấp, không phải tham số
     from app.class_transfer t join app.enrollment e on e.id = t.enrollment_id join app.student s on s.id = t.student_id
    where t.status_code = 'CHO_DUYET' and (t.created_by is distinct from v_me or v_admin)
      and ((t.approved_from_at is null and app.can_see_branch('ENROLLMENT', 'DUYET', t.from_branch_id))
