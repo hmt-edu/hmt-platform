@@ -81,7 +81,7 @@ select is(pg_temp.err($$select app.list_upsale_assignees((select id from app.ups
 -- ---- RLS và quyền ----
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select is((app.list_upsale_tickets() ->> 'total')::int, 0, 'CSKH cơ sở khác không thấy phiếu cơ sở này');
-select is(pg_temp.err($$select app.preview_upsale_enrollment('GD414A')$$), 'HMT_KHONG_CO_QUYEN', 'CSKH cơ sở khác không xem trước ghi danh cơ sở này');
+select is(app.preview_upsale_enrollment('GD414A') ->> 'found', 'false', 'CSKH cơ sở khác: mã ghi danh cơ sở này báo như không có (không dò được)');
 select is(pg_temp.err($$select app.create_upsale_ticket_from_enrollment('GD414A')$$), 'HMT_KHONG_CO_QUYEN', 'CSKH cơ sở khác không tạo phiếu cơ sở này');
 select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
 select is(pg_temp.err($$select app.create_upsale_ticket_from_enrollment('GD414A')$$), 'HMT_KHONG_CO_QUYEN', 'Kế toán không tạo phiếu tái tục');
