@@ -26,3 +26,25 @@ Code D, 16/11/2026. Mỗi cụm có tài liệu riêng (cột «Chi tiết»). M
 ## Bổ sung (migration 234): hàm áp dụng cho phiếu nghiệp vụ Aftersale
 
 `apply_enrollment_hold(...)` và `apply_class_transfer(...)`: tạo bản ghi bảo lưu hoặc chuyển lớp ở trạng thái **đã duyệt** và thực hiện ngay trong một giao dịch, dùng đúng luật của bản tạo thường (R-GD-09, R-GD-10, cờ `BAO_LUU`, `CHUYEN_LOP`). **Nội bộ** (không cấp cho giao diện), **chưa nối** vào `execute_ticket_task` của Code B: chờ Chat và Code B chốt mục «Chỗ cần chốt» số 1 (phiếu đã duyệt đủ cấp thì không duyệt lần hai ở bản ghi). Hoàn phí và dừng học làm tương tự ở bước sau khi có chốt, vì còn kế toán duyệt và phiếu chi.
+
+## Bổ sung 18/11/2026 (migration 235 đến 459): hàm, bảng, cờ mới và các bản sửa của Soát
+
+Mọi PR dưới đây là PR của Code D; cột «PR» ghi số PR. Cờ mặc định TẮT.
+
+| Mig | PR | Việc | Cờ | Bảng, hàm | Chi tiết |
+| --- | --- | --- | --- | --- | --- |
+| 235 | #86 | Hàm áp dụng hoàn phí, dừng học cho phiếu Aftersale (nội bộ) | `HOAN_PHI`, `DUNG_HOC` (kiểm trong hàm) | `apply_refund_request`, `apply_enrollment_stop`; lõi `finish_refund_request`, `finish_enrollment_stop` | `ap-dung-phieu-cho-code-b.md` |
+| 450 | #89 | Sửa T1, T2: hoàn toàn bộ trừ tiền đã hoàn; giờ tặng không hoàn | không | `compute_refund` (đổi thân) | `hoan-phi.md` |
+| 451 | #91 | Sửa T3, T4: chặn huỷ đơn còn ghi danh; không cấp lại giờ ghi danh đã Dừng, Hoàn phí | không | `cancel_order`, `sync_enrollment_hours` (đổi thân) | `hoan-phi.md` |
+| 452 | #95, #101 | Đọc phiếu chi TC-10, TC-11, bản in TC-12 | quyền Phiếu thu · Xem | `list_payment_vouchers`, `get_payment_voucher` | `hoan-phi-ban-ghi.md` |
+| 453 | #101 | Đọc số dư khách hàng TC-14 | quyền Phiếu thu · Xem | `list_customer_balances`, `get_customer_balance_history` | `hoan-phi-ban-ghi.md` |
+| 454 | #110 | Cấn số dư vào đơn TC-16 | `customer_balance_apply_enabled` | `apply_customer_balance_to_order`; cột `money_in.balance_entry_id`; sửa `reverse_money_in`, `order_has_receipt` | `hoan-phi-ban-ghi.md` |
+| 455 | #113 | Sửa Q1, Q1b: chỉ Kế toán có Kế toán · Duyệt; cùng người không duyệt hai bước | không | trigger trên `permission`, `receipt`, `refund_request`, `enrollment_stop` | `phan-quyen.md` |
+| 456 | #117 | Sửa T5: dừng học trừ giờ đã hoàn một phần, giờ tặng không thành tiền | không | `compute_stop_balance` (đổi thân) | `dung-hoc-so-du.md` |
+| 457 | #123 | Sửa P1 (phần chính sách RLS): bọc `(select auth.uid())` | không | bốn chính sách: `user_account_read`, `user_role_read`, `notification_read_own`, `saved_filter_read` | `phan-quyen.md` |
+| 458 | #130 | Sửa T8: người tạo, kể cả Admin, không tự duyệt bước quản lý | không | `approve_refund_manager`, `approve_stop_manager` (đổi thân) | `hoan-phi.md` |
+| 459 | #135 | Sửa T6: hoàn phí, dừng học bắt buộc qua ticket (R-V2-24A) | `refund_direct_without_ticket_enabled` | `assert_refund_ticket`; `create_refund_request`, `create_enrollment_stop` (thêm một lệnh kiểm) | `hoan-phi.md` |
+| (không migration) | #127 | Sửa P2: cache lâu `/assets/*` | không | tệp `public/_headers` | không |
+| (không migration) | #122 | Đề xuất lịch kết thúc bảo lưu đã tới hạn (chờ anh duyệt) | chưa | không | `de-xuat/lich-ket-thuc-bao-luu.md` |
+
+**Thứ tự gộp cần chú ý:** #135 (bắt buộc ticket) làm bài pgTAP gọi `create_refund_request`, `create_enrollment_stop` của các PR gộp sau nó phải thêm ticket giả; #113 (hai người duyệt khác nhau) buộc hàm áp dụng của #86 không ghi `manager_by` (đã sửa ở #86).
