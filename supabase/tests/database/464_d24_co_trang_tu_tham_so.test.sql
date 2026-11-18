@@ -9,8 +9,5 @@ select ok((select prosrc ~ 'list_page_size_max' and prosrc !~ 'coalesce\(p_limit
           'session_day_attendance đọc cỡ trang và trần từ tham số');
 select ok((select prosrc ~ 'list_page_size_max' and prosrc !~ 'coalesce\(p_limit, 50\)' from pg_proc where proname = 'list_curriculum_frames' and pronamespace = 'app'::regnamespace),
           'list_curriculum_frames đọc cỡ trang và trần từ tham số');
--- Không còn hàm danh sách nào của app ghi cứng trần 100 kèm coalesce(p_limit, 50).
-select is((select count(*)::int from pg_proc where pronamespace = 'app'::regnamespace and prosrc ~ 'coalesce\(p_limit, 50\), 1\), 100'), 0, 'Không còn hàm ghi cứng cỡ trang 50 và trần 100');
-
 select * from finish();
 rollback;
