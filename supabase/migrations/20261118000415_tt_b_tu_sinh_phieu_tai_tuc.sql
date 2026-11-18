@@ -1,7 +1,7 @@
 -- TT-B Phiếu tái tục, tự sinh và đối soát (Code C, 18/11/2026; Chat 11:55 chốt thứ tự TT-A, TT-C, TT-B; TT-B tự viết hàm ngày hết giờ dự kiến).
 -- Luật R-GD-13 (làm lại sau R-V2-25): phiếu sinh theo (học sinh, lớp) khi chạm một trong hai ngưỡng (giờ còn <= upsale_hours_left_threshold hoặc hết giờ dự kiến còn
 -- <= upsale_days_left_threshold ngày; giờ âm hoặc 0 cũng tính); mỗi cặp tối đa một phiếu mở; L5 Không tái tục thì KHÔNG tự sinh lại; bảo lưu thì dừng sinh;
--- dừng học thì đóng phiếu đang mở (L5, lý do «Dừng học»); chuyển lớp thì phiếu mở chuyển theo lớp mới; vắng >= absence_risk_sessions buổi trong
+-- dừng học thì đóng phiếu đang mở (L5, lý do Khác kèm ghi chú «Học sinh đã dừng học»); chuyển lớp thì phiếu mở chuyển theo lớp mới; vắng >= absence_risk_sessions buổi trong
 -- absence_risk_window_days ngày ở lớp đó thì gắn cờ rủi ro. Giờ còn và ngày hết giờ dự kiến tính CÙNG CÁCH với GD-07 (migration 142): tổng sổ giờ của mọi ghi danh
 -- còn hiệu lực của em ở lớp; hết giờ dự kiến = hôm nay + giờ còn / giờ học mỗi tuần của lớp * 7 ngày.
 -- CỜ TẮT MẶC ĐỊNH: upsale_auto_generate_enabled (ghi đè theo cơ sở). Lịch pg_cron KHÔNG tự đăng ký: gọi app.sync_upsale_cron() sau khi anh duyệt.
@@ -16,8 +16,6 @@ values
    'Tắt: hệ thống không tự sinh, đối soát phiếu tái tục ở cơ sở. Bật: mỗi đêm tự sinh phiếu cho học sinh chạm ngưỡng giờ hoặc ngày, đóng phiếu khi dừng học, chuyển phiếu khi chuyển lớp.'),
   ('absence_risk_window_days', 'Số ngày xét vắng gắn cờ rủi ro', 'INT', 'ngày', 1, 180, '30', true, 'VAN_HANH_LOP', 'R-GD-13',
    'Vắng từ «Số buổi vắng gắn cờ rủi ro» buổi trở lên trong chừng này ngày gần nhất ở một lớp thì phiếu tái tục của em ở lớp đó gắn cờ rủi ro.');
-insert into app.catalog_item (catalog_code, code, name, sort_order, requires_note)
-values ('RENEWAL_LOST_REASON', 'DUNG_HOC', 'Dừng học (hệ thống đóng phiếu)', 8, false);
 
 -- 1. Sửa nhắc nhỏ (1): create_upsale_ticket kiểm cơ sở của học sinh khớp lớp (thân bản migration 410, thêm một luật).
 create or replace function app.create_upsale_ticket(p_student_id uuid, p_class_id uuid, p_note text default null)
@@ -163,7 +161,8 @@ begin
                    where e.student_id = t.student_id and e.status_code = 'DUNG')
      for update of t
   loop
-    update app.upsale_ticket set stage_code = 'L5', substage_code = null, lost_reason_code = 'DUNG_HOC', closed_at = now() where id = r.id;
+    update app.upsale_ticket set stage_code = 'L5', substage_code = null, lost_reason_code = 'KHAC',
+           lost_note = 'Học sinh đã dừng học (hệ thống đóng phiếu)', closed_at = now() where id = r.id;
     perform app.upsale_add_event(r.id, 'DOI_GIAI_DOAN', r.stage_code, 'L5', 'Hệ thống đóng phiếu: học sinh đã dừng học');
     v_closed := v_closed + 1;
   end loop;
