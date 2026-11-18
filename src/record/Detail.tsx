@@ -54,14 +54,14 @@ export function SmartButtons({
               type="button"
               disabled={disabled || target === 'none' || item.unavailable !== undefined}
               title={item.unavailable}
-              aria-label={`${item.label}: ${item.count}`}
               onClick={() => target !== 'none' && item.onOpen(target)}
               className="focus-ring flex min-h-14 w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-hover disabled:cursor-not-allowed disabled:hover:bg-transparent"
             >
               <Icon name={item.icon} className="shrink-0 text-fg-label" />
-              <span className="min-w-0">
-                <b className="tabular block text-h3 font-semibold">{item.count}</b>
+              {/* Tên đọc lấy từ chính chữ trong nút («Nhãn số», luật axe label-content-name-mismatch); chữ trong DOM là nhãn rồi số, hiển thị số trên nhãn dưới nhờ flex-col-reverse. */}
+              <span className="flex min-w-0 flex-col-reverse">
                 <span className="block truncate text-caption text-fg-muted">{item.label}</span>
+                <b className="tabular block text-h3 font-semibold">{item.count}</b>
               </span>
             </button>
           </li>
