@@ -45,6 +45,7 @@ export function publishableKey(): string {
 /** Mã trạng thái HTTP chuẩn (không phải số nghiệp vụ). */
 export const HTTP = {
   OK: 200, // allow-number: mã HTTP chuẩn
+  NO_CONTENT: 204, // allow-number: mã HTTP chuẩn
   BAD_REQUEST: 400, // allow-number: mã HTTP chuẩn
   UNAUTHORIZED: 401, // allow-number: mã HTTP chuẩn
   FORBIDDEN: 403, // allow-number: mã HTTP chuẩn

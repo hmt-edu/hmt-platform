@@ -93,10 +93,15 @@ const ApprovalsPage = lazyScreen(
   () => import('../pages/viec-cho-duyet/ApprovalsPage'),
   'ApprovalsPage',
 );
+const UpsaleRecordPage = lazyScreen(
+  () => import('../pages/tai-tuc/UpsaleRecordPage'),
+  'UpsaleRecordPage',
+);
 const UpsaleListPage = lazyScreen(
   () => import('../pages/tai-tuc/UpsaleListPage'),
   'UpsaleListPage',
 );
+const ReconcilePage = lazyScreen(() => import('../pages/tai-tuc/ReconcilePage'), 'ReconcilePage');
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const TicketRecordPage = lazyScreen(
   () => import('../pages/ticket/TicketRecordPage'),
@@ -211,6 +216,11 @@ const ImportDataPage = lazyScreen(
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
 const RoleListPage = lazyScreen(() => import('../pages/vai-tro/RoleListPage'), 'RoleListPage');
+const LoginLogPage = lazyScreen(
+  () => import('../pages/nhat-ky-dang-nhap/LoginLogPage'),
+  'LoginLogPage',
+);
+const AuditLogPage = lazyScreen(() => import('../pages/nhat-ky/AuditLogPage'), 'AuditLogPage');
 const TeachingHoursPage = lazyScreen(
   () => import('../pages/bao-cao-gio-day/TeachingHoursPage'),
   'TeachingHoursPage',
@@ -279,6 +289,7 @@ const AppointmentListPage = lazyScreen(
   'AppointmentListPage',
 );
 const LeadRecordPage = lazyScreen(() => import('../pages/lead/LeadRecordPage'), 'LeadRecordPage');
+const TestGradingPage = lazyScreen(() => import('../pages/gv/TestGradingPage'), 'TestGradingPage');
 const TeacherTodoPage = lazyScreen(() => import('../pages/gv/TeacherTodoPage'), 'TeacherTodoPage');
 const TeacherClassesPage = lazyScreen(
   () => import('../pages/gv/TeacherClassesPage'),
@@ -525,6 +536,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="tai-tuc">
                 <UpsaleListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'tai-tuc/:id',
+            element: (
+              <GatedCrmEntry slug="tai-tuc">
+                <UpsaleRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'doi-chieu-tai-tuc',
+            element: (
+              <GatedCrmEntry slug="doi-chieu-tai-tuc">
+                <ReconcilePage />
               </GatedCrmEntry>
             ),
           },
@@ -873,6 +900,22 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'quan-tri/nhat-ky-dang-nhap',
+            element: (
+              <GatedCrmEntry slug="quan-tri/nhat-ky-dang-nhap">
+                <LoginLogPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/nhat-ky',
+            element: (
+              <GatedCrmEntry slug="quan-tri/nhat-ky">
+                <AuditLogPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'bao-cao/gio-day',
             element: (
               <GatedCrmEntry slug="bao-cao/gio-day">
@@ -1010,6 +1053,7 @@ export const routes: RouteObject[] = [
           { path: 'lop/:classId', element: <TeacherClassPage /> },
           { path: 'lop/:classId/hoc-sinh/:studentId', element: <TeacherStudentPage /> },
           { path: 'viec-can-lam', element: <TeacherTodoPage /> },
+          { path: 'phieu-test/:testId', element: <TestGradingPage /> },
           { path: 'ticket', element: <TeacherTicketsPage /> },
           { path: 'ticket/tao', element: <TeacherTicketCreatePage /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },

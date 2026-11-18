@@ -20,13 +20,7 @@ import { AssignDialog } from '../../features/assign/AssignDialog';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { KanbanBoard } from '../../list/Kanban';
 import { CalendarView, type CalendarKind, type CalendarMode } from '../../list/Calendar';
-import {
-  addDays,
-  monthGrid,
-  startOfDay,
-  weekDays,
-  type CalendarEvent,
-} from '../../list/calendarLogic';
+import { calendarWindowVn, vnToday, type CalendarEvent } from '../../list/calendarLogic';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
@@ -132,9 +126,7 @@ function bucketOf(row: AppointmentRow, start: Date, end: Date): Bucket {
 }
 
 function windowOf(mode: CalendarMode, anchor: Date): { from: Date; to: Date } {
-  if (mode === 'day') return { from: startOfDay(anchor), to: addDays(anchor, 1) };
-  const days = mode === 'week' ? weekDays(anchor) : monthGrid(anchor);
-  return { from: days[0] ?? startOfDay(anchor), to: addDays(days[days.length - 1] ?? anchor, 1) };
+  return calendarWindowVn(mode, anchor);
 }
 
 function sortParam(sort: SortState): string {
@@ -175,7 +167,7 @@ export function AppointmentListPage() {
   const [sort, setSort] = useState<SortState>(null);
   const [paging, setPaging] = useState({ key: '', page: 0, more: 0 });
   const [calMode, setCalMode] = useState<CalendarMode>('week');
-  const [anchor, setAnchor] = useState(() => startOfDay(new Date()));
+  const [anchor, setAnchor] = useState(() => vnToday());
   const [busyId, setBusyId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());

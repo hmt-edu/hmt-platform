@@ -1,5 +1,5 @@
 // Mốc nhanh của khoảng ngày (Hôm nay, Tuần này, Tháng này, Tháng trước). Tuần bắt đầu từ thứ Hai.
-import { vnDayBounds } from './vnDay';
+import { startOfVnDate, vnDayBounds } from './vnDay';
 
 /**
  * Khoảng ngày của một mốc nhanh. Tuần bắt đầu từ thứ Hai. `to` tính hết ngày.
@@ -33,4 +33,36 @@ export function datePresetRange(preset: string, today: Date): { from: Date; to: 
     default:
       return null;
   }
+}
+
+/**
+ * Cùng mốc nhanh với `datePresetRange` nhưng trả về THỜI ĐIỂM thật: `from` là 00:00 giờ Việt Nam của ngày đầu, `to` là mili giây cuối cùng của ngày cuối
+ * (23:59:59.999 giờ Việt Nam). Dùng để lọc theo thời điểm (so với dữ liệu, gửi lên máy chủ). `datePresetRange` giữ cho ô chọn ngày (ngày lịch, theo múi giờ máy).
+ * R-HT-07 (Q-171): kết quả không phụ thuộc múi giờ của máy.
+ */
+export function datePresetInstants(preset: string, today: Date): { from: Date; to: Date } | null {
+  const days = datePresetRange(preset, today);
+  if (!days) return null;
+  return {
+    from: startOfVnDate(days.from.getFullYear(), days.from.getMonth() + 1, days.from.getDate()),
+    to: new Date(
+      startOfVnDate(
+        days.to.getFullYear(),
+        days.to.getMonth() + 1,
+        days.to.getDate() + 1,
+      ).getTime() - 1,
+    ),
+  };
+}
+
+/** Cùng mốc nhanh dạng ngày lịch yyyy-mm-dd (đầu, cuối khoảng) để lọc theo cột kiểu ngày (hạn thu). Không phụ thuộc múi giờ của máy. */
+export function datePresetDateKeys(
+  preset: string,
+  today: Date,
+): { from: string; to: string } | null {
+  const days = datePresetRange(preset, today);
+  if (!days) return null;
+  const pad = (n: number) => String(n).padStart(2, '0'); // allow-number: độ rộng hai chữ số của ngày, tháng
+  const key = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return { from: key(days.from), to: key(days.to) };
 }

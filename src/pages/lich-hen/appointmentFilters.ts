@@ -1,7 +1,7 @@
 // Đổi trạng thái màn danh sách (ListState) thành bộ lọc gửi app.list_appointments. Hàm thuần, có kiểm thử.
 // R-CRM-07: cùng nhóm HOẶC, khác nhóm VÀ. Khoảng thời gian: mốc nhanh của ô "Thời gian", điều kiện "từ ngày"/"đến ngày",
 // và (kiểu xem Lịch) cửa sổ đang xem; các khoảng chồng nhau thì lấy phần chung.
-import { datePresetRange } from '../../lib/dateRange';
+import { datePresetInstants } from '../../lib/dateRange';
 import { vnDayBounds, vnDayStartOf } from '../../lib/vnDay';
 import type { Condition, ListState } from '../../list/types';
 import type { AppointmentStatus } from './appointmentTypes';
@@ -80,7 +80,7 @@ export function buildAppointmentFilters(
   if (window) {
     range = narrow(range, window);
   } else {
-    const preset = datePresetRange(state.datePreset, today);
+    const preset = datePresetInstants(state.datePreset, today);
     if (preset) range = narrow(range, { from: preset.from, to: new Date(preset.to.getTime() + 1) });
   }
   if (range.from) filters.from = range.from.toISOString();
@@ -91,7 +91,7 @@ export function buildAppointmentFilters(
 /** Số lịch quá hạn bị ẩn: có mốc thời gian đang lọc thì đếm lịch Chưa làm trước đầu khoảng đó. */
 export function hiddenOverdueBefore(state: ListState, today: Date = new Date()): Date | null {
   if ((state.quick.overdue ?? []).includes('overdue')) return null;
-  const preset = datePresetRange(state.datePreset, today);
+  const preset = datePresetInstants(state.datePreset, today);
   return preset ? preset.from : null;
 }
 

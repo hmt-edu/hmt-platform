@@ -1,6 +1,6 @@
 // Đổi trạng thái màn danh sách (ListState) thành bộ lọc gửi các hàm Lead trong cơ sở dữ liệu (list_leads, lead_board,
 // lead_group_counts, export_leads dùng chung một bộ lọc). Hàm thuần, có kiểm thử. R-CRM-07: cùng nhóm HOẶC, khác nhóm VÀ.
-import { datePresetRange } from '../../lib/dateRange';
+import { datePresetInstants } from '../../lib/dateRange';
 import { vnDayStartOf } from '../../lib/vnDay';
 import type { SortState } from '../../ui/Data';
 import type { Condition, ListState } from '../../list/types';
@@ -68,7 +68,7 @@ export function buildLeadFilters(state: ListState, today: Date = new Date()): Le
     }
   }
 
-  const range = datePresetRange(state.datePreset, today);
+  const range = datePresetInstants(state.datePreset, today);
   if (range && state.dateField === 'created') {
     filters.created_from = range.from.toISOString();
     filters.created_to = new Date(range.to.getTime() + 1).toISOString();
