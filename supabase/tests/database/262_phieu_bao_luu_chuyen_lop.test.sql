@@ -144,6 +144,16 @@ select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('bl'), 'BAO_LUU'
 insert into tp select 'bl', (app.create_ticket_task(pg_temp.k('bl'), 'BAO_LUU', 'Gia đình bận', jsonb_build_object('enrollment_id', pg_temp.e('1'), 'months', 3, 'reason_code', 'BAN_THI')) ->> 'id')::uuid;
 select is((select status_code from app.ticket_task where id = pg_temp.pk('bl')), 'NHAP', 'Đúng: phiếu Bảo lưu tạo ở Nháp');
 
+-- ================= Tuỳ chọn biểu mẫu (migration 350) =================
+select is(jsonb_array_length(app.get_task_form_options(pg_temp.k('bl')) -> 'enrollments'), 1, 'Đúng: tuỳ chọn trả đúng một ghi danh của học sinh gắn ticket');
+select is(app.get_task_form_options(pg_temp.k('bl')) -> 'enrollments' -> 0 ->> 'id', pg_temp.e('1')::text, 'Đúng: ghi danh trả về là của học sinh 1');
+select ok(jsonb_array_length(app.get_task_form_options(pg_temp.k('bl')) -> 'hold_reasons') > 0, 'Đúng: có lý do bảo lưu');
+select ok(jsonb_array_length(app.get_task_form_options(pg_temp.k('bl')) -> 'transfer_reasons') > 0, 'Đúng: có lý do chuyển lớp');
+select is(pg_temp.err($$select app.get_task_form_options(gen_random_uuid())$$), 'HMT_KHONG_TIM_THAY', 'Chặn: ticket không có');
+select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
+select is(pg_temp.err($$select app.get_task_form_options(pg_temp.k('bl'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên không có quyền sửa ticket nên không lấy tuỳ chọn');
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+
 -- ================= Duyệt rồi thực hiện phiếu Bảo lưu =================
 select app.submit_ticket_task(pg_temp.pk('bl'));
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
