@@ -1,5 +1,6 @@
 # Aftersale: phiếu nghiệp vụ, lát A1 (Code B, 16/11/2026, migration 226)
 
+> Cập nhật sau lát A1: xem `aftersale-phieu-cs.md` (danh sách phiếu, khoá ticket, Bảo lưu, Chuyển lớp, Hoàn học phí, siết cấp duyệt).
 Luật: `docs/spec/de-xuat-luat-aftersale.md` AS-03, AS-10, AS-13; R-V2-24, R-CS-07. Giao diện (CSN-05, CSN-06) chưa làm: lát này chỉ có DB và hàm.
 
 ## Bảng
