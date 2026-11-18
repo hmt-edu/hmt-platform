@@ -157,11 +157,11 @@ test('Trang phiếu Chờ giáo viên chấm: thanh trạng thái chỉ đọc, 
     .getByRole('button', { name: /^Hoàn thành/ })
     .click({ force: true });
   await expect(toastText(page, /Đổi trạng thái bằng nút bên dưới/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Lịch hẹn: 1' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Báo giá: 0' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Học sinh: 1' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Cơ hội gốc: 1' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: 'Lead gốc: 1' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Lịch hẹn 1' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Báo giá 0' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Học sinh 1' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Cơ hội gốc 1' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Lead gốc 1' })).toBeEnabled();
   await expect(completeButton(page)).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Gợi ý lớp' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Nhập kết quả' }).click();
@@ -252,7 +252,7 @@ test('Từ trang phiếu: nút "Lịch hẹn" mở danh sách lịch của phi�
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
   await openTest(page, setup.account, seeded.test.edit.id);
-  await page.getByRole('button', { name: /^Lịch hẹn: \d+$/ }).click();
+  await page.getByRole('button', { name: /^Lịch hẹn \d+$/ }).click();
   await expect(page).toHaveURL(/\/crm\/lich-hen\?phieu=/);
   await expect(
     page.getByText(new RegExp(`^Phiếu: ${seeded.test.edit.code}`)).first(),
@@ -278,9 +278,9 @@ test('Trang Cơ hội: mã phiếu bấm được, nút "Kiểm tra" mở thẳn
   const block = dialogOf(page, /Chuyển sang L7/);
   await block.getByRole('button', { name: /^Mở phiếu PKT/ }).click();
   await expect(page).toHaveURL(new RegExp(`/crm/phieu-kiem-tra/${seeded.test.kanban.id}$`));
-  await page.getByRole('button', { name: 'Cơ hội gốc: 1' }).click();
+  await page.getByRole('button', { name: 'Cơ hội gốc 1' }).click();
   await expect(page).toHaveURL(new RegExp(`/crm/co-hoi/${seeded.opportunity.kanban.id}$`));
-  await page.getByRole('button', { name: 'Kiểm tra: 1' }).click();
+  await page.getByRole('button', { name: 'Kiểm tra 1' }).click();
   await expect(page).toHaveURL(new RegExp(`/crm/phieu-kiem-tra/${seeded.test.kanban.id}$`));
 });
 
@@ -311,5 +311,5 @@ test('Tạo phiếu từ cơ hội: chọn đủ ô, giờ nhắc tự điền, 
     'aria-current',
     'step',
   );
-  await expect(page.getByRole('button', { name: 'Lịch hẹn: 1' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lịch hẹn 1' })).toBeVisible();
 });
