@@ -89,6 +89,10 @@ const ReviewGradingPage = lazyScreen(
 const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 'ExamGradingPage');
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
+const UpsaleListPage = lazyScreen(
+  () => import('../pages/tai-tuc/UpsaleListPage'),
+  'UpsaleListPage',
+);
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const TicketRecordPage = lazyScreen(
   () => import('../pages/ticket/TicketRecordPage'),
@@ -135,6 +139,26 @@ const ReceivableListPage = lazyScreen(
 const ReceiptListPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptListPage'),
   'ReceiptListPage',
+);
+const VoucherListPage = lazyScreen(
+  () => import('../pages/phieu-chi/VoucherListPage'),
+  'VoucherListPage',
+);
+const VoucherRecordPage = lazyScreen(
+  () => import('../pages/phieu-chi/VoucherRecordPage'),
+  'VoucherRecordPage',
+);
+const VoucherPrintPage = lazyScreen(
+  () => import('../pages/phieu-chi/VoucherPrintPage'),
+  'VoucherPrintPage',
+);
+const BalanceListPage = lazyScreen(
+  () => import('../pages/so-du/BalanceListPage'),
+  'BalanceListPage',
+);
+const BalanceHistoryPage = lazyScreen(
+  () => import('../pages/so-du/BalanceHistoryPage'),
+  'BalanceHistoryPage',
 );
 const SessionRequestListPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
@@ -183,11 +207,21 @@ const ImportDataPage = lazyScreen(
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
 const RoleListPage = lazyScreen(() => import('../pages/vai-tro/RoleListPage'), 'RoleListPage');
+const TeachingHoursPage = lazyScreen(
+  () => import('../pages/bao-cao-gio-day/TeachingHoursPage'),
+  'TeachingHoursPage',
+);
+const OverviewPage = lazyScreen(() => import('../pages/bao-cao/OverviewPage'), 'OverviewPage');
 const PermissionMatrixPage = lazyScreen(
   () => import('../pages/ma-tran/PermissionMatrixPage'),
   'PermissionMatrixPage',
 );
+const RubricPage = lazyScreen(() => import('../pages/rubric/RubricPage'), 'RubricPage');
 const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
+const CurriculumFramePage = lazyScreen(
+  () => import('../pages/khung-chuong-trinh/CurriculumFramePage'),
+  'CurriculumFramePage',
+);
 const DiscountPolicyPage = lazyScreen(
   () => import('../pages/chiet-khau/DiscountPolicyPage'),
   'DiscountPolicyPage',
@@ -411,6 +445,46 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'phieu-chi',
+            element: (
+              <GatedCrmEntry slug="phieu-chi">
+                <VoucherListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-chi/:id/in',
+            element: (
+              <GatedCrmEntry slug="phieu-chi">
+                <VoucherPrintPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-chi/:id',
+            element: (
+              <GatedCrmEntry slug="phieu-chi">
+                <VoucherRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'so-du-khach-hang',
+            element: (
+              <GatedCrmEntry slug="so-du-khach-hang">
+                <BalanceListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'so-du-khach-hang/:parentId',
+            element: (
+              <GatedCrmEntry slug="so-du-khach-hang">
+                <BalanceHistoryPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'khoan-tien-vao',
             element: (
               <GatedCrmEntry slug="khoan-tien-vao">
@@ -431,6 +505,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="cho-ke-toan-duyet">
                 <ReceiptListPage waitingAccounting />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'tai-tuc',
+            element: (
+              <GatedCrmEntry slug="tai-tuc">
+                <UpsaleListPage />
               </GatedCrmEntry>
             ),
           },
@@ -723,6 +805,22 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'cau-hinh/rubric',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/rubric">
+                <RubricPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/khung-chuong-trinh',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/khung-chuong-trinh">
+                <CurriculumFramePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'cau-hinh/ngay-nghi',
             element: (
               <GatedCrmEntry slug="cau-hinh/ngay-nghi">
@@ -759,6 +857,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/tham-so">
                 <SettingsPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'bao-cao/gio-day',
+            element: (
+              <GatedCrmEntry slug="bao-cao/gio-day">
+                <TeachingHoursPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'bao-cao/tong-quan',
+            element: (
+              <GatedCrmEntry slug="bao-cao/tong-quan">
+                <OverviewPage />
               </GatedCrmEntry>
             ),
           },

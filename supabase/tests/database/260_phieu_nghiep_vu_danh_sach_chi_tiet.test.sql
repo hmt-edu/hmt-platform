@@ -66,20 +66,20 @@ grant all on pk2 to public;
 insert into pk2 select app.create_ticket_task((select (j ->> 'id')::uuid from pt2), 'HOAN_PHI', 'Chuyển nhà', '{}'::jsonb);
 select app.submit_ticket_task((select (j ->> 'id')::uuid from pk2));
 select app.submit_ticket_task((select (j ->> 'id')::uuid from pk1));
--- Trong một giao dịch mọi dòng cùng giờ: đặt phiếu thứ nhất cũ hơn để kiểm thứ tự mới nhất trước.
-select pg_temp.sudo($$update app.ticket_task set created_at = now() - interval '1 hour' where id = (select (j ->> 'id')::uuid from pk1)$$);
+-- Trong một giao dịch mọi dòng cùng created_at (now()), và trigger khung chung giữ created_at không đổi khi sửa: thứ tự kế là id tăng dần (hàm sắp created_at giảm, rồi id).
 
 -- ================= Danh sách =================
 select is((app.list_ticket_tasks() ->> 'total')::int, 2, 'Danh sách: CSKH thấy hai phiếu của cơ sở');
-select is((select r ->> 'code' from jsonb_array_elements(app.list_ticket_tasks('{}'::jsonb, 1, 0) -> 'rows') r), (select j ->> 'code' from pk2), 'Phân trang: một dòng, phiếu mới nhất trước');
-select is((app.list_ticket_tasks('{}'::jsonb, 1, 1) -> 'rows' -> 0 ->> 'code'), (select j ->> 'code' from pk1), 'Phân trang: trang hai là phiếu cũ hơn');
+select is((select r ->> 'code' from jsonb_array_elements(app.list_ticket_tasks('{}'::jsonb, 1, 0) -> 'rows') r), (select k.code from app.ticket_task k where k.id in ((select (j ->> 'id')::uuid from pk1), (select (j ->> 'id')::uuid from pk2)) order by k.id limit 1), 'Phân trang: một dòng, theo thứ tự sắp của danh sách');
+select is((app.list_ticket_tasks('{}'::jsonb, 1, 1) -> 'rows' -> 0 ->> 'code'), (select k.code from app.ticket_task k where k.id in ((select (j ->> 'id')::uuid from pk1), (select (j ->> 'id')::uuid from pk2)) order by k.id desc limit 1), 'Phân trang: trang hai là phiếu còn lại');
 select is((app.list_ticket_tasks('{"task_type":"HOAN_PHI"}'::jsonb) ->> 'total')::int, 1, 'Lọc theo loại phiếu');
+select ok((app.list_ticket_tasks() -> 'rows' -> 0 ->> 'due_at') is not null, 'Danh sách phiếu có hạn xử lý của ticket gốc (CSN-05, migration 355)');
 select is((app.list_ticket_tasks('{"status_code":"DA_DUYET"}'::jsonb) ->> 'total')::int, 0, 'Lọc theo trạng thái: chưa có phiếu Đã duyệt');
 select is((app.list_ticket_tasks(jsonb_build_object('q', (select j ->> 'code' from pt1))) ->> 'total')::int, 1, 'Tìm theo mã ticket gốc');
 select is((app.list_ticket_tasks(jsonb_build_object('q', (select j ->> 'code' from pk2))) ->> 'total')::int, 1, 'Tìm theo mã phiếu');
 select is((app.list_ticket_tasks('{"cho_toi":true}'::jsonb) ->> 'total')::int, 0, 'CSKH không có quyền duyệt: không có phiếu «Chờ tôi duyệt»');
 select is((app.list_ticket_tasks('{"cho_ke_toan":true}'::jsonb) ->> 'total')::int, 0, 'Chưa phiếu nào ở cấp kế toán');
-select is((app.list_ticket_tasks() -> 'rows' -> 0 ->> 'level_total')::int, 2, 'Dòng có số cấp duyệt (Hoàn học phí hai cấp)');
+select is((select (r ->> 'level_total')::int from jsonb_array_elements(app.list_ticket_tasks() -> 'rows') r where r ->> 'code' = (select j ->> 'code' from pk2)), 2, 'Dòng có số cấp duyệt (Hoàn học phí hai cấp)');
 select is((app.list_ticket_tasks() -> 'rows' -> 0 ->> 'student_name'), 'Học sinh giả ticket', 'Dòng có tên học sinh');
 
 -- ================= Chờ tôi duyệt: quản lý cơ sở =================

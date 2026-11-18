@@ -313,7 +313,7 @@ function StudentCard({
       {!present ? (
         <Alert tone="info">
           {student.attendance_code === null
-            ? 'Em chưa được điểm danh. Điểm danh em này trước khi chấm.'
+            ? 'Em chưa được điểm danh. Điểm danh em này trước khi chấm. Chưa biết em có mặt hay vắng nên chưa chấm được.'
             : 'Em vắng: không chấm nhận xét (R-GV-04).'}
         </Alert>
       ) : (
@@ -519,7 +519,7 @@ function CriteriaSwitches({
                 size="sm"
                 variant={on ? 'secondary' : 'primary'}
                 aria-pressed={!on}
-                aria-label={`${on ? 'Tắt' : 'Bật'} tiêu chí ${criterion.name}`}
+                aria-label={`${on ? 'Đang áp dụng' : 'Không áp dụng cả buổi'}: ${on ? 'Tắt' : 'Bật'} tiêu chí ${criterion.name}`}
                 disabled={!editable || (on && active <= 1)}
                 onClick={() =>
                   setDraft({
