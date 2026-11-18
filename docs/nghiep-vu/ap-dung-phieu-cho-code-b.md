@@ -44,3 +44,22 @@ end if;
 - **Người duyệt:** hai hàm ghi người gọi (`auth.uid()`) làm người duyệt trên bản ghi; người duyệt thật nằm ở các cấp của `ticket_task`.
 - **Chuyển cơ sở:** phiếu nên có cấp duyệt «quản lý cả hai cơ sở» (R-CS-07); `ticket_task_rule` hiện chỉ có một cấp cho `CHUYEN_LOP`. Nếu phiếu `CHUYEN_LOP` dùng cho `CHUYEN_CO_SO`, B thêm cấp hoặc loại phiếu riêng.
 - **Hoàn phí và Dừng học** (thêm cấp kế toán): bản ghi của D (`refund_request`, `enrollment_stop`) còn bước kế toán duyệt kèm ghi sổ giờ, phiếu chi, số dư. Hàm «áp dụng» cho hai loại này sẽ làm ở PR riêng sau khi Chat chốt, để không đụng quyền kế toán.
+
+## Hoàn phí và Dừng học (migration 235, thêm 18/11/2026)
+
+```sql
+app.apply_refund_request(
+  p_enrollment_id uuid, p_kind text,            -- 'TOAN_BO' | 'MOT_PHAN'
+  p_hours numeric,                              -- giờ hoàn (chỉ MOT_PHAN)
+  p_reason_code text,                           -- danh mục REFUND_REASON
+  p_note text default null, p_ticket_ref text default null)
+returns uuid   -- id phiếu chi (payment_voucher)
+
+app.apply_enrollment_stop(
+  p_enrollment_id uuid, p_reason_code text,
+  p_note text default null, p_ticket_ref text default null)
+returns uuid   -- id bản ghi app.enrollment_stop
+```
+
+- Nội bộ (đã thu hồi quyền gọi của giao diện). Phiếu đã qua cấp quản lý và kế toán ở `ticket_task` (R-CS-07), nên hai hàm tạo bản ghi ở trạng thái «Chờ kế toán» với người duyệt quản lý là người gọi, rồi gọi lõi kế toán (`app.finish_refund_request`, `app.finish_enrollment_stop`): kiểm lại số liệu, ghi sổ giờ ngược dấu, đổi tình trạng ghi danh, lập phiếu chi hoặc số dư. Hai hàm duyệt cũ (231, 232) gọi cùng lõi, hành vi không đổi.
+- Kiểm cờ `HOAN_PHI` của cơ sở. Lỗi có mã làm cả giao dịch lùi.

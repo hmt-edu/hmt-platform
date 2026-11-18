@@ -8,8 +8,8 @@ Code D, 16/11/2026. Luật: R-TIEN-28, R-TIEN-31. Chỉ là lõi **tính**; bả
 | ------------------------------------------------ | ------------------------------------------------------------ | -------------------- |
 | `compute_refund(ghi danh, loại, giờ hoàn)`       | Tính tiền hoàn, trả jsonb; không ghi gì                      | R-TIEN-28, R-TIEN-31 |
 
-- `TOAN_BO`: hoàn = (tiền đã đóng của dòng − giờ đã học × **giá gốc**) − phí xử lý trên số còn lại. Giờ tặng không hoàn.
-- `MOT_PHAN`: hoàn = giờ hoàn × **giá sau chiết khấu** (thành tiền dòng ÷ giờ mua) − phí xử lý trên số đó; giờ hoàn không quá giờ còn lại.
+- `TOAN_BO`: hoàn = (tiền đã đóng của dòng − giờ đã học × **giá gốc** − tiền gốc các lần hoàn đã duyệt hoặc đã chi, migration 450) − phí xử lý trên số còn lại. Giờ tặng không hoàn.
+- `MOT_PHAN`: hoàn = giờ hoàn × **giá sau chiết khấu** (thành tiền dòng ÷ giờ mua) − phí xử lý trên số đó; giờ hoàn không quá giờ còn lại trừ giờ tặng đã cấp (migration 450).
 - Phí = tham số `refund_processing_fee_percent` (ghi đè theo cơ sở được), làm tròn đồng. Nơi gọi chụp lại kết quả vào bản ghi, không tính lại sau.
 - Lỗi: `HMT_HOAN_PHI_KHONG_CO_DON` (ghi danh nạp cũ không có giá), `HMT_HOAN_PHI_LOAI_SAI`, `HMT_HOAN_PHI_GIO_SAI`, `HMT_HOAN_PHI_KHONG_CON_TIEN`.
 
@@ -17,3 +17,8 @@ Code D, 16/11/2026. Luật: R-TIEN-28, R-TIEN-31. Chỉ là lõi **tính**; bả
 
 - Phí của hoàn một phần tính trên `giờ hoàn × giá sau chiết khấu` (R-TIEN-31 không nói rõ số nền).
 - «Giờ đã học» = tổng giờ trừ theo buổi Done của ghi danh (giờ tặng đã dùng nằm trong đó).
+
+## Sửa T3, T4 của Soát (migration 451)
+
+- `cancel_order`: đơn còn ghi danh hiệu lực (kể cả «cho học trước» chưa thu tiền) không huỷ được, lỗi `HMT_DON_CO_GHI_DANH` (R-TIEN-38, R-GD-12).
+- `sync_enrollment_hours`: bỏ qua ghi danh đã `DUNG` hoặc `HOAN_PHI`, nên thu thêm hay đảo tiền không cấp lại hay điều chỉnh giờ ghi danh đã đóng (R-GD-16, R-TIEN-26).
