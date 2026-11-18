@@ -128,5 +128,7 @@ select ok((select count(*) from app.student where code like 'HSD1C0%') = 6, 'Kh�
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(pg_temp.err($$select app.get_student_record(pg_temp.st(4))$$), 'HMT_KHONG_CO_QUYEN', 'Hàm hồ sơ cũng chặn em lớp khác (hai đường không lệch)');
 select is(pg_temp.err($$select app.get_student_record(pg_temp.st(1))$$), null, 'Hàm hồ sơ cho phép em lớp mình');
+-- Bảng phụ huynh: giáo viên không có ô PARENT.XEM nên không đọc được dòng nào (không cùng lỗi phạm vi DUOC_PHAN_CONG).
+select is((select count(*)::int from app.parent), 0, 'R-GV-13: giáo viên không đọc được bảng phụ huynh');
 select * from finish();
 rollback;
