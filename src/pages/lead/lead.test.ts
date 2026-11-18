@@ -77,13 +77,14 @@ describe('bộ lọc gửi máy chủ (R-CRM-07: cùng nhóm HOẶC, khác nhóm
     });
   });
 
-  it('mốc nhanh Hôm nay của ô Ngày tạo thành khoảng created_from đến created_to', () => {
+  it('mốc nhanh Hôm nay của ô Ngày tạo thành khoảng created_from đến created_to (00:00 giờ Việt Nam, R-HT-07)', () => {
+    // 18/10/2026 10:00 giờ Việt Nam = 03:00 UTC; kết quả không phụ thuộc múi giờ của máy chạy kiểm thử.
     const filters = buildLeadFilters(
       state({ dateField: 'created', datePreset: 'today' }),
-      new Date(2026, 9, 18, 10, 0),
+      new Date('2026-10-18T03:00:00Z'),
     );
-    expect(new Date(String(filters.created_from)).getTime()).toBe(new Date(2026, 9, 18).getTime());
-    expect(new Date(String(filters.created_to)).getTime()).toBe(new Date(2026, 9, 19).getTime());
+    expect(filters.created_from).toBe('2026-10-17T17:00:00.000Z');
+    expect(filters.created_to).toBe('2026-10-18T17:00:00.000Z');
   });
 });
 

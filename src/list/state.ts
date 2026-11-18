@@ -1,6 +1,6 @@
 // Logic thuần của khuôn danh sách: trạng thái bộ lọc, chip, tóm tắt, lọc trong trình duyệt, nhóm, khoảng ngày.
 // Không phụ thuộc giao diện nên có kiểm thử; màn dữ liệu lớn dùng `ListState` để dựng truy vấn ở máy chủ.
-import { datePresetRange } from '../lib/dateRange';
+import { datePresetInstants, datePresetRange } from '../lib/dateRange';
 import {
   OPERATORS_BY_TYPE,
   type Condition,
@@ -13,7 +13,7 @@ import {
 
 export const MAX_GROUP_LEVELS = 2; // allow-number: Group By tối đa hai cấp theo thiết kế (K1_nhom)
 
-export { datePresetRange };
+export { datePresetInstants, datePresetRange };
 
 export const DATE_PRESETS = [
   { key: '', label: 'Tất cả thời gian' },
@@ -181,7 +181,7 @@ export function applyFilters<Row>(
   searchText: (row: Row) => string,
   today: Date = new Date(),
 ): Row[] {
-  const range = datePresetRange(state.datePreset, today);
+  const range = datePresetInstants(state.datePreset, today);
   const dateGet = config.dateFields.find((f) => f.key === state.dateField)?.get;
   const needle = state.search.trim().toLowerCase();
   return rows.filter((row) => {

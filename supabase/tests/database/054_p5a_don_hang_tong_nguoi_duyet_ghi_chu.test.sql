@@ -286,7 +286,10 @@ select is(pg_temp.err($$select pg_temp.gq('qa')$$), 'HMT_KHONG_CO_QUYEN', 'get_q
 select is(pg_temp.err($$select pg_temp.go('n1')$$), 'HMT_KHONG_CO_QUYEN', 'get_order: học sinh vẫn bị chặn');
 
 -- ================= (3) Ghi chú và lịch sử của đơn: giống hệt báo giá (migration 055) =================
+-- Bảng đích ghi chú chỉ nhân viên đọc (R2, migration 466): kiểm bằng quyền chủ, rồi trả lại vai trò đang thử.
+reset role;
 select is((select count(*)::int from app.note_target where entity_type = 'SALES_ORDER'), 1, 'Ghi chú đơn: đã đăng ký loại SALES_ORDER');
+set local role authenticated;
 create function pg_temp.sees(p_user text, p_type text, p_id uuid) returns boolean language plpgsql as $$
 begin
   perform pg_temp.claims(pg_temp.uid(p_user), case when p_user in ('admin', 'ke') then 'aal2' else 'aal1' end);
