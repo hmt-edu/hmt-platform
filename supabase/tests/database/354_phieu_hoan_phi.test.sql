@@ -1,4 +1,4 @@
--- Phiếu nghiệp vụ Hoàn học phí (migration 353): tạo kiểm dữ liệu, hai cấp duyệt (quản lý cơ sở, kế toán), thực hiện thẳng bằng app.apply_refund_request (không duyệt lần hai), ra phiếu chi gắn mã ticket. Dữ liệu giả (dựng nền như bài 235).
+-- Phiếu nghiệp vụ Hoàn học phí (migration 353): hai cấp duyệt (quản lý cơ sở, kế toán; Admin và một người hai cấp bị chặn), kiểm dữ liệu khi thực hiện, thực hiện thẳng bằng app.apply_refund_request (không duyệt lần hai), ra phiếu chi gắn mã ticket. Dữ liệu giả (dựng nền như bài 235).
 -- Dựng đơn thật (cơ hội → đơn → phiếu thu → kế toán duyệt) như 064; hai hàm cấp giờ là nội bộ nên gọi bằng quyền chủ.
 -- Đảo khoản (R-TIEN-26) chưa có ở main nên chưa kiểm phần giờ giảm theo tiền đảo.
 begin;
@@ -41,15 +41,15 @@ grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Người dùng giả ----------
 create temp table u (key text primary key, id uuid not null default gen_random_uuid());
-insert into u (key) values ('admin'), ('bm1'), ('bm1b'), ('sales1'), ('sales5'), ('ke'), ('bm5'), ('cskh1');
+insert into u (key) values ('admin'), ('bm1'), ('bm1b'), ('sales1'), ('sales5'), ('ke'), ('bm5'), ('cskh1'), ('ca2');
 grant select on u to authenticated;
 insert into auth.users (id, aud, role, email) select id, 'authenticated', 'authenticated', key || '@d235.hoamatoan.invalid' from u;
 insert into app.user_account (id, display_name, login_name, branch_id, must_change_password)
 select u.id, 'Giả ' || u.key, u.key || '@d235.hoamatoan.invalid', (select id from app.branch where code = v.cs), false
-  from u join (values ('admin', 'CS1'), ('bm1', 'CS1'), ('bm1b', 'CS1'), ('sales1', 'CS1'), ('sales5', 'CS5'), ('ke', 'CS1'), ('bm5', 'CS5'), ('cskh1', 'CS1')) as v (key, cs) on v.key = u.key;
+  from u join (values ('admin', 'CS1'), ('bm1', 'CS1'), ('bm1b', 'CS1'), ('sales1', 'CS1'), ('sales5', 'CS5'), ('ke', 'CS1'), ('bm5', 'CS5'), ('cskh1', 'CS1'), ('ca2', 'CS1')) as v (key, cs) on v.key = u.key;
 insert into app.user_role (user_id, role_code)
 select u.id, v.role from u join (values ('admin', 'ADMIN'), ('bm1', 'BRANCH_MANAGER'), ('bm1b', 'BRANCH_MANAGER'), ('sales1', 'SALES'),
-  ('sales5', 'SALES'), ('ke', 'ACCOUNTANT'), ('bm5', 'BRANCH_MANAGER'), ('cskh1', 'CSKH')) as v (key, role) on v.key = u.key;
+  ('sales5', 'SALES'), ('ke', 'ACCOUNTANT'), ('bm5', 'BRANCH_MANAGER'), ('cskh1', 'CSKH'), ('ca2', 'BRANCH_MANAGER'), ('ca2', 'ACCOUNTANT')) as v (key, role) on v.key = u.key;
 update app.user_role set is_active = false where role_code = 'ADMIN' and is_active and user_id not in (select id from u);
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select m, id, true from app.branch, (values ('BAN_HANG'), ('VAN_HANH_LOP')) v (m) where code = 'CS1'
   on conflict (module_code, branch_id) do update set enabled = true$$);
@@ -206,25 +206,37 @@ select pg_temp.sudo($$create function pg_temp.d1par() returns uuid language sql 
 select pg_temp.sudo($$grant execute on function pg_temp.d1stu(), pg_temp.d1par() to public$$);
 create temp table tk (j jsonb);
 create temp table tt (j jsonb);
-grant all on tk, tt to public;
+create temp table tk2 (j jsonb);
+create temp table tt2 (j jsonb);
+grant all on tk, tt, tk2, tt2 to public;
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 insert into tk select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Hoàn học phí giả', 'description', 'Mô tả giả',
   'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_01', 'parent_id', pg_temp.d1par(), 'student_id', pg_temp.d1stu()));
-select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk), 'HOAN_PHI', 'Chuyển nhà', '{}'::jsonb)$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: phiếu Hoàn học phí thiếu ghi danh');
-select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk), 'HOAN_PHI', 'Chuyển nhà', jsonb_build_object('enrollment_id', pg_temp.d1e(), 'reason_code', 'KHONG_HOP'))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: thiếu hình thức hoàn');
-select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk), 'HOAN_PHI', 'Chuyển nhà', jsonb_build_object('enrollment_id', pg_temp.d1e(), 'kind', 'MOT_PHAN', 'reason_code', 'KHONG_HOP'))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: hoàn một phần mà không có số giờ');
-select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk), 'HOAN_PHI', 'Chuyển nhà', jsonb_build_object('enrollment_id', pg_temp.d1e(), 'kind', 'MOT_PHAN', 'hours', 3))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: thiếu lý do hoàn');
 insert into tt select app.create_ticket_task((select (j ->> 'id')::uuid from tk), 'HOAN_PHI', 'Chuyển nhà',
   jsonb_build_object('enrollment_id', pg_temp.d1e(), 'kind', 'MOT_PHAN', 'hours', 3, 'reason_code', 'KHONG_HOP'));
 select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt)), 'NHAP', 'Đúng: phiếu Hoàn học phí tạo ở Nháp');
 select app.submit_ticket_task((select (j ->> 'id')::uuid from tt));
+
+-- Cấp 1 (quản lý cơ sở): Admin và kế toán không duyệt thay (R-HT-01); quản lý cơ sở duyệt được.
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Admin không duyệt cấp quản lý cơ sở của phiếu tiền (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: kế toán không duyệt thay cấp quản lý cơ sở');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select app.approve_ticket_task((select (j ->> 'id')::uuid from tt));
 select is((select status_code || '/' || current_level from app.ticket_task where id = (select (j ->> 'id')::uuid from tt)), 'CHO_DUYET/2', 'Duyệt cấp 1 (quản lý cơ sở): còn chờ kế toán');
 select is(pg_temp.hrs(pg_temp.d1e()), 8.00::numeric, 'Chưa hoàn gì khi phiếu chưa duyệt đủ cấp');
-select pg_temp.claims(pg_temp.uid('ke'), 'aal1');
+
+-- Cấp 2 (kế toán): Admin và quản lý cơ sở (đã duyệt cấp 1) không duyệt; kế toán duyệt được.
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Admin không duyệt cấp kế toán (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: quản lý cơ sở không duyệt cấp kế toán');
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select app.approve_ticket_task((select (j ->> 'id')::uuid from tt));
 select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt)), 'DA_DUYET', 'Duyệt cấp 2 (kế toán): Đã duyệt');
+
+-- Công tắc HOAN_PHI tắt thì chặn, giữ Đã duyệt; bật lại thì thực hiện.
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select pg_temp.sudo($$update app.feature_flag set enabled = false where module_code = 'HOAN_PHI' and branch_id = (select id from app.branch where code = 'CS1')$$);
 select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_TINH_NANG_TAT', 'Chặn: công tắc HOAN_PHI tắt thì không thực hiện phiếu');
@@ -233,13 +245,31 @@ select pg_temp.sudo($$update app.feature_flag set enabled = true where module_co
 select app.execute_ticket_task((select (j ->> 'id')::uuid from tt));
 select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt)), 'DA_THUC_HIEN', 'Thực hiện: phiếu Đã thực hiện');
 select is(pg_temp.hrs(pg_temp.d1e()), 5.00::numeric, 'Sổ giờ ngược dấu đúng 3 giờ hoàn (8 → 5)');
-select is((select status_code from app.refund_request where ticket_ref = (select j ->> 'code' from tk)), 'DA_DUYET', 'Yêu cầu hoàn phí ở Đã duyệt ngay, không duyệt lần hai (R-V2-24)');
+select is((select status_code from app.refund_request where enrollment_id = pg_temp.d1e()), 'DA_DUYET', 'Yêu cầu hoàn phí ở Đã duyệt ngay, không duyệt lần hai (R-V2-24)');
 select is((select ticket_ref from app.refund_request where enrollment_id = pg_temp.d1e()), (select j ->> 'code' from tk), 'Yêu cầu hoàn phí giữ mã ticket (R-CS-02)');
+select is((select manager_by from app.refund_request where enrollment_id = pg_temp.d1e()), pg_temp.uid('bm1'), 'Người duyệt quản lý ghi đúng người duyệt cấp 1 (R-TIEN-01)');
+select is((select accountant_by from app.refund_request where enrollment_id = pg_temp.d1e()), pg_temp.uid('ke'), 'Người duyệt kế toán ghi đúng người duyệt cấp 2, không phải người bấm Thực hiện');
 select ok((select (result ->> 'payment_voucher_id') is not null from app.ticket_task where id = (select (j ->> 'id')::uuid from tt)), 'Kết quả phiếu ghi id phiếu chi');
 select is((select amount from app.payment_voucher where id = (select (result ->> 'payment_voucher_id')::uuid from app.ticket_task where id = (select (j ->> 'id')::uuid from tt))),
   (pg_temp.cr(pg_temp.d1e(), 'MOT_PHAN', 3) ->> 'refund_amount')::bigint, 'Phiếu chi đúng số tiền hoàn do hàm tính');
 select is((select status_code from app.ticket where id = (select (j ->> 'id')::uuid from tk)), 'DA_XU_LY', 'Ticket tự sang Đã xử lý (AS-03)');
 select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'Chặn: thực hiện lại phiếu đã thực hiện');
+
+-- Một người không duyệt hai cấp của cùng một phiếu (người có cả hai vai); phiếu này thiếu dữ liệu để thử chặn lúc thực hiện.
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk2 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Hoàn học phí giả 2', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_01', 'parent_id', pg_temp.d1par(), 'student_id', pg_temp.d1stu()));
+insert into tt2 select app.create_ticket_task((select (j ->> 'id')::uuid from tk2), 'HOAN_PHI', 'Thiếu dữ liệu', '{}'::jsonb);
+select app.submit_ticket_task((select (j ->> 'id')::uuid from tt2));
+select pg_temp.claims(pg_temp.uid('ca2'), 'aal2');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt2));
+select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt2))$$), 'HMT_PHIEU_MOT_NGUOI_HAI_CAP', 'Chặn: một người vừa là quản lý cơ sở vừa là kế toán không duyệt cả hai cấp (R-TIEN-01)');
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt2));
+-- Phiếu thiếu dữ liệu duyệt đủ cấp nhưng thực hiện bị chặn, giữ Đã duyệt.
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt2))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: phiếu Hoàn học phí thiếu dữ liệu không thực hiện được');
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt2)), 'DA_DUYET', 'Phiếu thiếu dữ liệu giữ Đã duyệt');
 
 select * from finish();
 rollback;
