@@ -18,3 +18,6 @@ Code D, 16/11/2026. Luật: R-BC-01, R-BC-02, R-BC-04, R-BC-05. Màn BC-01 (K09)
 - **Tiền đã thu:** tổng khoản tiền vào (kể cả khoản âm do đảo) theo ngày Việt Nam.
 
 Chưa làm: tỉ lệ tái tục (R-BC-03, chưa có bảng phiếu tái tục), BC-02..07 (Looker, cần view chỉ đọc), giao diện.
+
+## Màn BC-01 (Code F, 18/11)
+`/crm/bao-cao/tong-quan` (`src/pages/bao-cao/OverviewPage.tsx`): một lần gọi `app.report_overview`; lọc khoảng ngày (mặc định tháng này) và cơ sở; bốn thẻ số. Chưa có biểu đồ (không có khung canvas) và chưa có tỉ lệ tái tục (R-BC-03). BC-02..07 làm ở Looker, không dựng trong app (R-BC-01).
