@@ -125,7 +125,7 @@ begin
    where (v_status is null or f.status_code = any (v_status))
      and (v_subject is null or f.subject_code = v_subject) and (v_grade is null or f.grade_code = v_grade)
      and (v_level is null or f.level_code = v_level) and (v_year is null or f.year_code = v_year);
-  select coalesce(jsonb_agg(r order by r.sort_key), '[]'::jsonb) into v_rows
+  select coalesce(jsonb_agg(q.r order by q.sort_key), '[]'::jsonb) into v_rows
     from (
       select f.code as sort_key,
              jsonb_build_object(
