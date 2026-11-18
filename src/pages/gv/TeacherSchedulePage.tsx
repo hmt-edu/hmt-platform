@@ -75,7 +75,7 @@ export function TeacherSchedulePage() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-h2">Lịch dạy</h1>
-        <Link className="text-link underline" to="/gv/gio-day">
+        <Link className="tap inline-flex items-center text-link underline" to="/gv/gio-day">
           Giờ dạy của tôi
         </Link>
       </div>

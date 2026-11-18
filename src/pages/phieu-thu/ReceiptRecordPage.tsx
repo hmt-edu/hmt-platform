@@ -13,6 +13,9 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table } from '../../ui/Data';
+import { useAuth } from '../../lib/auth/authContext';
+import { ReassignApproverDialog } from '../../features/approver-reassign/ReassignApproverDialog';
+import { useReassignState } from '../../features/approver-reassign/useReassign';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { TextField } from '../../ui/Field';
@@ -102,14 +105,23 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   const access = useAccess();
   const catalogs = useLeadCatalogs();
   const phone = useMedia(NARROW_TABLE);
-  const refresh = useRefreshReceipt(record.id, record.order.id);
+  const refresh = useRefreshReceipt(record.id, record.order?.id);
+  const { claims } = useAuth();
+  // R-V2-44: Admin thấy «Chuyển người duyệt» khi phiếu chờ quản lý (route QUAN_LY) và máy chủ báo người đã chốt không duyệt được.
+  const reassign = useReassignState(
+    'PHIEU_THU',
+    record.id,
+    Boolean(claims?.roles.includes('ADMIN')) &&
+      record.status_code === 'DA_GUI' &&
+      record.approval_route === 'QUAN_LY',
+  );
   const [tab, setTab] = useState('info');
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<ReceiptDraft>(() => draftOf(record));
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const [dialog, setDialog] = useState<'reject' | 'cancel' | 'resubmit' | null>(null);
+  const [dialog, setDialog] = useState<'reject' | 'cancel' | 'resubmit' | 'reassign' | null>(null);
   const [dialogError, setDialogError] = useState<string | null>(null);
   useCrumbTail(record.code);
 
@@ -121,7 +133,9 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
     label: statusName(code),
   }));
   const isDraft = record.status_code === 'NHAP';
-  const order = useOrder(isDraft || tab === 'lines' ? record.order.id : undefined);
+  const order = useOrder(
+    record.order && (isDraft || tab === 'lines') ? record.order.id : undefined,
+  );
 
   async function run(key: string, action: () => Promise<void>, message: string) {
     if (busy) return;
@@ -446,6 +460,16 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 Duyệt phiếu thu
               </Button>
             )}
+            {reassign.data?.can && !phone && (
+              <Button
+                onClick={() => {
+                  setDialogError(null);
+                  setDialog('reassign');
+                }}
+              >
+                Chuyển người duyệt
+              </Button>
+            )}
             {can('tu_choi') && (
               <Button
                 onClick={() => {
@@ -463,8 +487,11 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             key: 'don',
             label: 'Đơn hàng',
             icon: 'file',
-            count: 1,
-            onOpen: () => openFrom(`/crm/don-hang/${record.order.id}`),
+            count: record.order ? 1 : 0,
+            unavailable: 'Phiếu thu nợ đầu kỳ không có đơn',
+            onOpen: () => {
+              if (record.order) openFrom(`/crm/don-hang/${record.order.id}`);
+            },
           },
           {
             key: 'phu-huynh',
@@ -519,15 +546,19 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             <dl className="flex min-w-0 flex-col">
               <DetailField label="Phiếu thu" mode="view" value={record.code} />
               <DetailField
-                label="Đơn hàng"
+                label={record.order ? 'Đơn hàng' : 'Loại phiếu'}
                 mode="view"
                 value={
-                  <Link
-                    className="font-medium text-link hover:underline"
-                    to={`/crm/don-hang/${record.order.id}`}
-                  >
-                    {record.order.code}
-                  </Link>
+                  record.order ? (
+                    <Link
+                      className="font-medium text-link hover:underline"
+                      to={`/crm/don-hang/${record.order.id}`}
+                    >
+                      {record.order.code}
+                    </Link>
+                  ) : (
+                    'Thu nợ đầu kỳ · không có đơn'
+                  )
                 }
               />
               <DetailField
@@ -551,11 +582,26 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 mode="view"
                 value={`${record.created_by_name ?? '—'} · ${formatDateTime(record.created_at)}`}
               />
-              <DetailField
-                label="Đơn đã thu"
-                mode="view"
-                value={`${formatMoney(payment.paid)} / ${formatMoney(payment.total)} · còn ${formatMoney(payment.remaining)} · ${payment.deposit_reached ? 'đã đủ cọc' : 'chưa đủ cọc'}`}
-              />
+              {'paid' in payment ? (
+                <DetailField
+                  label="Đơn đã thu"
+                  mode="view"
+                  value={`${formatMoney(payment.paid)} / ${formatMoney(payment.total)} · còn ${formatMoney(payment.remaining)} · ${payment.deposit_reached ? 'đã đủ cọc' : 'chưa đủ cọc'}`}
+                />
+              ) : (
+                <>
+                  <DetailField
+                    label="Em"
+                    mode="view"
+                    value={record.opening_student ? record.opening_student.name : '—'}
+                  />
+                  <DetailField
+                    label="Nợ đầu kỳ còn lại của phụ huynh"
+                    mode="view"
+                    value={formatMoney(payment.opening_debt_remaining)}
+                  />
+                </>
+              )}
             </dl>
           </section>
           <Tabs
@@ -569,6 +615,20 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
           />
         </div>
       </RecordDetail>
+      {reassign.data?.can && (
+        <ReassignApproverDialog
+          open={dialog === 'reassign'}
+          onOpenChange={(o) => !o && setDialog(null)}
+          kind="PHIEU_THU"
+          id={record.id}
+          subject={`phiếu thu ${record.code}`}
+          state={reassign.data}
+          onDone={async () => {
+            await refresh();
+            toast({ title: 'Đã chuyển người duyệt.' });
+          }}
+        />
+      )}
       <ReasonDialog
         open={dialog === 'reject'}
         onOpenChange={(o) => !o && setDialog(null)}
