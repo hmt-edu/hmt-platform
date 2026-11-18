@@ -132,7 +132,7 @@ export async function openCrmMenu(page: Page) {
 }
 
 export async function signOut(page: Page) {
-  await page.getByRole('button', { name: /^Tài khoản:/ }).click();
+  await page.getByRole('button', { name: / Tài khoản$/ }).click();
   await page.getByRole('menuitem', { name: 'Đăng xuất' }).click();
 }
 
