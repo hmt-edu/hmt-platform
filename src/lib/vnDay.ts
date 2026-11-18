@@ -35,7 +35,7 @@ function offsetMs(date: Date): number {
 }
 
 /** Thời điểm UTC của 00:00 theo giờ Việt Nam của ngày (năm, tháng, ngày) cho trước. */
-function startOfVnDate(year: number, month: number, day: number): Date {
+export function startOfVnDate(year: number, month: number, day: number): Date {
   const guess = Date.UTC(year, month - 1, day);
   // Việt Nam không đổi giờ mùa hè; vẫn trừ chênh lệch tại chính thời điểm đó cho đúng nếu múi giờ đổi sau này.
   return new Date(guess - offsetMs(new Date(guess)));

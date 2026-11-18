@@ -1,6 +1,6 @@
 // Đổi trạng thái màn danh sách (ListState) thành bộ lọc gửi các hàm phiếu (list_student_tests, student_test_board,
 // student_test_group_counts, export_student_tests). Hàm thuần, có kiểm thử. R-CRM-07: cùng nhóm HOẶC, khác nhóm VÀ.
-import { datePresetRange } from '../../lib/dateRange';
+import { datePresetInstants } from '../../lib/dateRange';
 import { vnDayStartOf } from '../../lib/vnDay';
 import type { Condition, ListState } from '../../list/types';
 
@@ -87,7 +87,7 @@ export function buildTestFilters(
   if (window) {
     range = narrow(range, window);
   } else {
-    const preset = datePresetRange(state.datePreset, today);
+    const preset = datePresetInstants(state.datePreset, today);
     if (preset) range = narrow(range, { from: preset.from, to: new Date(preset.to.getTime() + 1) });
   }
   if (range.from) filters.from = range.from.toISOString();

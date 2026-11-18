@@ -1,6 +1,6 @@
 // Đổi trạng thái màn danh sách Báo giá (ListState) thành bộ lọc gửi list_quotations và export_quotations (một bộ lọc dùng chung).
 // Hàm thuần, có kiểm thử. Cùng nhóm lọc nhanh là HOẶC, khác nhóm là VÀ (R-CRM-07).
-import { datePresetRange } from '../../lib/dateRange';
+import { datePresetInstants } from '../../lib/dateRange';
 import { vnDayStartOf } from '../../lib/vnDay';
 import type { Condition, ListState } from '../../list/types';
 import type { SortState } from '../../ui/Data';
@@ -46,7 +46,7 @@ export function buildQuoteFilters(state: ListState, today: Date = new Date()): Q
   }
   if (status.size > 0) filters.status = [...status];
 
-  const range = datePresetRange(state.datePreset, today);
+  const range = datePresetInstants(state.datePreset, today);
   if (range && state.dateField === 'created') {
     filters.created_from = range.from.toISOString();
     filters.created_to = new Date(range.to.getTime() + 1).toISOString();

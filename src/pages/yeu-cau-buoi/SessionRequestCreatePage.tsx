@@ -15,6 +15,8 @@ import { useClassFormOptions } from '../lop/useClassData';
 import type { ClassPage } from '../lop/classTypes';
 import { validateDraft, type DraftError } from './requestLogic';
 import { useSaveRequest } from './useRequestData';
+import { ExamBlock } from './ExamBlock';
+import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './examFields';
 
 const CLASS_LIMIT = 100; // allow-number: trần số lớp liệt kê trong ô chọn (tối đa 100 một lần gọi, quy ước phân trang)
 
@@ -32,6 +34,9 @@ export function SessionRequestCreatePage() {
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState<DraftError>({});
   const [error, setError] = useState<string | null>(null);
+  const [examOn, setExamOn] = useState(false);
+  const [exam, setExam] = useState<ExamInput>(EMPTY_EXAM);
+  const [examErrors, setExamErrors] = useState<ExamError>({});
   // Chỉ lớp đã duyệt mới chèn thêm buổi (R-BUOI-04): lọc ở máy chủ.
   const classes = useQuery({
     queryKey: ['request-classes', search],
@@ -54,9 +59,12 @@ export function SessionRequestCreatePage() {
     const found = validateDraft({ classId, date, start, end });
     setErrors(found);
     setError(null);
-    if (Object.keys(found).length > 0) return;
+    const examFound = examOn ? validateExam(exam) : {};
+    setExamErrors(examFound);
+    if (Object.keys(found).length > 0 || Object.keys(examFound).length > 0) return;
     try {
       const saved = await save.mutateAsync({
+        exam: examOn ? exam : null,
         id: null,
         classId,
         date,
@@ -154,6 +162,14 @@ export function SessionRequestCreatePage() {
         label="Ghi chú (không bắt buộc)"
         value={note}
         onChange={(e) => setNote(e.target.value)}
+      />
+      <ExamBlock
+        kind="CUNG_CO"
+        enabled={examOn}
+        onEnabled={setExamOn}
+        value={exam}
+        onChange={setExam}
+        errors={examErrors}
       />
       <div className="flex flex-wrap gap-2">
         <Button variant="primary" loading={save.isPending} onClick={() => void submit(true)}>
