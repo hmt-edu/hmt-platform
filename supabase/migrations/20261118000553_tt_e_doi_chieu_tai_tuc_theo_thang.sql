@@ -24,6 +24,7 @@ declare
   v_scope text := app.permission_scope('UPSALE', 'XEM');
   v_first date := date_trunc('month', p_month)::date;
   v_today date := (now() at time zone 'Asia/Ho_Chi_Minh')::date;
+  v_my_branch uuid := (select app.current_branch_id());
 begin
   -- Luật quyền: phải có quyền Xem phiếu tái tục; phạm vi toàn hệ thống hoặc cơ sở của mình.
   if v_scope is null then
@@ -34,7 +35,7 @@ begin
     select c.student_id, c.class_id, c.branch_id, c.hours_left as cand_hours,
            coalesce(c.expected_end_date, case when c.hours_left <= 0 then v_today end) as cand_end -- đã hết giờ: tính hôm nay
       from app.upsale_candidates() c
-     where (v_scope = 'TOAN_HE_THONG' or c.branch_id = app.current_branch_id())
+     where (v_scope = 'TOAN_HE_THONG' or c.branch_id = v_my_branch)
        and (p_branch_id is null or c.branch_id = p_branch_id)
   ), joined as (
     select c.student_id, c.class_id, c.branch_id,
@@ -43,16 +44,22 @@ begin
            t.id as ticket_id, t.code as ticket_code, t.origin_code as ticket_origin
       from cand c
       left join app.upsale_ticket t on t.student_id = c.student_id and t.class_id = c.class_id and t.stage_code not in ('L5', 'L8')
+  ), inm as (
+    -- Lọc tháng TRƯỚC khi tính lý do và mã ghi danh (chỉ làm cho dòng trong tháng).
+    select j.* from joined j where j.expected_end_date >= v_first and j.expected_end_date < (v_first + interval '1 month')::date
   )
   select j.student_id, j.class_id, j.branch_id, j.hours_left, j.expected_end_date, j.ticket_id, j.ticket_code, j.ticket_origin,
          case when j.ticket_id is not null then null
-              when exists (select from app.upsale_ticket l where l.student_id = j.student_id and l.class_id = j.class_id and l.stage_code = 'L5') then 'CO_PHIEU_L5'
-              when not exists (select from app.class_slot s where s.class_id = j.class_id and s.is_active) then 'LOP_CHUA_CO_LICH'
+              when l5.student_id is not null then 'CO_PHIEU_L5'
+              when sl.class_id is null then 'LOP_CHUA_CO_LICH'
               else 'CHO_QUET_DEM' end,
-         (select string_agg(e.code, ', ' order by e.code) from app.enrollment e join app.enrollment_class ec on ec.enrollment_id = e.id and ec.end_date is null
-           where e.student_id = j.student_id and ec.class_id = j.class_id and e.status_code in ('DA_XEP_LOP', 'DANG_HOC'))
-    from joined j
-   where j.expected_end_date >= v_first and j.expected_end_date < (v_first + interval '1 month')::date;
+         codes.codes
+    from inm j
+    left join (select distinct l.student_id, l.class_id from app.upsale_ticket l where l.stage_code = 'L5') l5 on l5.student_id = j.student_id and l5.class_id = j.class_id
+    left join (select distinct s.class_id from app.class_slot s where s.is_active) sl on sl.class_id = j.class_id
+    left join lateral (select string_agg(e.code, ', ' order by e.code) as codes
+                         from app.enrollment e join app.enrollment_class ec on ec.enrollment_id = e.id and ec.end_date is null
+                        where e.student_id = j.student_id and ec.class_id = j.class_id and e.status_code in ('DA_XEP_LOP', 'DANG_HOC')) codes on true;
 end;
 $$;
 revoke execute on function app.upsale_reconcile_base(date, uuid) from public, anon, authenticated;
