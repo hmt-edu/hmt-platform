@@ -293,6 +293,51 @@ test('BUOI-07, BUOI-09: Sale chỉ xem lớp, không có mục Yêu cầu học 
   await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
 });
 
+test('A25: yêu cầu học bù chọn Buổi kiểm tra: lỗi tổng ba nhóm, rồi gửi; Trưởng cơ sở duyệt thì sinh buổi loại Kiểm tra', async ({
+  page,
+}) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto(`/crm/yeu-cau-buoi/tao-hoc-bu?lop=${classId}`);
+  await page.getByRole('checkbox', { name: new RegExp(STUDENT_A) }).check();
+  await page.getByLabel('Ngày', { exact: true }).fill(inDays(15));
+  await page.getByLabel('Giờ bắt đầu').fill('20:00');
+  await page.getByLabel('Giờ kết thúc').fill('21:00');
+  await page.getByLabel('Lý do học bù').fill('Thi bù giữa kỳ');
+  await page.getByRole('checkbox', { name: 'Buổi kiểm tra' }).check();
+  await expect(page.getByText(/Kiểm tra bù \(thi bù\) không trừ giờ/)).toBeVisible();
+  await page.getByLabel('Phạm vi kiến thức').fill('Phương trình bậc nhất');
+  await page.getByLabel('Điểm tối đa', { exact: true }).fill('10');
+  await pickOption(page, page.getByRole('combobox', { name: 'Cách nhập điểm' }), /3 nhóm/);
+  await page.getByLabel('Điểm tối đa · Ghi nhớ').fill('3');
+  await page.getByLabel('Điểm tối đa · Hiểu').fill('3');
+  await page.getByLabel('Điểm tối đa · Vận dụng').fill('3');
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(
+    page.getByText(/Tổng điểm tối đa của ba nhóm phải bằng điểm tối đa của buổi/),
+  ).toBeVisible();
+  await page.getByLabel('Điểm tối đa · Vận dụng').fill('4');
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await expect(page).toHaveURL(/\/crm\/yeu-cau-buoi$/);
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto('/crm/yeu-cau-buoi');
+  await page
+    .getByRole('row')
+    .filter({ hasText: 'Học bù' })
+    .getByRole('button', { name: 'Duyệt', exact: true })
+    .first()
+    .click();
+  await expect(page.getByText(/^Đã duyệt YB-CS5-/).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Tất cả' }).click();
+  await page
+    .getByRole('row')
+    .filter({ hasText: 'Học bù' })
+    .getByRole('link', { name: 'Mở buổi' })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/crm\/buoi-hoc\/[0-9a-f-]{36}$/);
+  await expect(page.getByText('Kiểm tra', { exact: true }).first()).toBeVisible();
+});
+
 test('Cờ tắt: mục Yêu cầu buổi ẩn khỏi menu và mở thẳng báo chưa bật', async ({ page }) => {
   await withDb((db) =>
     db.query(
