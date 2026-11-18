@@ -23,3 +23,11 @@ Bảng: `app.upsale_ticket`, `app.upsale_ticket_event` (chỉ thêm). RLS đọc
 | `app.list_upsale_assignees(phiếu)` | UPSALE · Giao việc | Người nhận giao của cơ sở phiếu |
 
 Nhãn «Tái tục MM/YYYY» tính từ ngày hết giờ dự kiến, không có bản ghi chiến dịch. Giao diện: `src/pages/tai-tuc/` (danh sách, Kanban, hộp Tạo, hộp Giao); bản ghi TT-02 làm ở TT-D.
+
+## TT-B (migration 415): tự sinh và đối soát
+
+- `app.upsale_candidates()` (nội bộ, KHÔNG mở cho người dùng): mỗi (học sinh, lớp) có ghi danh còn hiệu lực (Đã xếp lớp, Đang học) kèm giờ còn, `expected_end_date`, `risk_flag`. Cùng cách tính với GD-07: hết giờ dự kiến = hôm nay + giờ còn / giờ học mỗi tuần của lớp × 7 ngày. **Báo cáo TT-04 (Code F) gọi hàm này từ hàm security definer của mình** để lấy «ngày hết giờ dự kiến».
+- `app.generate_upsale_tickets()`: cron hoặc Admin (hai bước). Chỉ cơ sở bật `upsale_auto_generate_enabled` (tắt mặc định) và công tắc Bán hàng. Đối soát: dừng học đóng phiếu (L5, lý do Khác kèm ghi chú «Học sinh đã dừng học»), chuyển lớp chuyển phiếu; cập nhật giờ còn, ngày hết giờ, cờ rủi ro của phiếu mở L1..L4; sinh phiếu L1A cho cặp chạm ngưỡng giờ hoặc ngày, chưa có phiếu mở, chưa từng L5 (R-GD-13). Bảo lưu: không sinh.
+- `app.sync_upsale_cron()`: đăng ký lịch 02:00 giờ Việt Nam. **Không tự chạy trong migration; chờ anh duyệt đăng ký.**
+- Tham số mới: `upsale_auto_generate_enabled` (tắt), `absence_risk_window_days` (30).
+- Sửa theo nhắc của Chat 12:25, 12:35: `create_upsale_ticket` kiểm học sinh cùng cơ sở với lớp (`HMT_HOC_SINH_KHAC_CO_SO`); `preview_upsale_enrollment` kiểm quyền trước, mã ở cơ sở ngoài phạm vi báo như mã không có.
