@@ -72,6 +72,11 @@ export function buildTaskConfig(access: AccessView): ListConfig<TaskRow> {
         render: (r) => (r.next_role ? (LEVEL_ROLE_LABEL[r.next_role] ?? r.next_role) : MUTED),
       },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
+      {
+        key: 'due',
+        label: 'Hạn',
+        render: (r) => (r.due_at ? formatDateTime(r.due_at) : MUTED),
+      },
       { key: 'created', label: 'Ngày tạo', render: (r) => formatDateTime(r.created_at) },
     ],
     quickGroups: [
@@ -81,6 +86,7 @@ export function buildTaskConfig(access: AccessView): ListConfig<TaskRow> {
         options: [
           { value: 'cho_toi', label: 'Chờ tôi duyệt' },
           { value: 'cho_ke_toan', label: 'Chờ kế toán' },
+          { value: 'cho_thuc_hien', label: 'Đã duyệt, chờ thực hiện' },
         ],
       },
       {
