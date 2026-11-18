@@ -52,6 +52,10 @@ export type TicketDetail = TicketRow & {
   customer_wish: string | null;
   root_cause: string | null;
   compensation_note: string | null;
+  /** Mã lớp, ghi danh, ticket gốc cho khung Liên kết (migration 352). */
+  class_code?: string | null;
+  enrollment_code?: string | null;
+  related_ticket_code?: string | null;
 };
 
 export type TicketEvent = {
