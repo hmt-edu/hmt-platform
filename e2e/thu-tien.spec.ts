@@ -147,6 +147,25 @@ test('TC-08: sổ Khoản tiền vào không có nút Tạo, hiện khoản thu 
 
 // TC-09, R-TIEN-26, R-HT-01: Kế toán hoàn tác một khoản tiền (thêm khoản âm trỏ về khoản gốc, lý do bắt buộc); khoản đã hoàn tác không còn nút (chặn hoàn tác hai lần).
 // Cờ money_reversal_enabled tắt mặc định: bài bật rồi trả lại như cũ. Bài đứng sau TC-08 trong cùng bộ dữ liệu (serial).
+test('TC-13: công nợ theo đợt, quá hạn và sắp đến hạn; đợt đã đóng đủ không hiện', async ({
+  page,
+}, testInfo) => {
+  const m = mark(testInfo.project.name);
+  await enterAs(page, MANAGER);
+  await page.goto('/crm/cong-no');
+  await expect(page.getByRole('heading', { level: 1, name: 'Công nợ' })).toBeVisible();
+  await search(page, m);
+  // O1 đợt 1 (còn 300.000, quá hạn 14 ngày), O1 đợt 2 (1.200.000), O2 đợt 1 (sắp đến hạn), O2 đợt 2.
+  await expect(page.getByText('1–4 / 4')).toBeVisible();
+  await expect(page.getByText('Quá hạn 14 ngày').first()).toBeVisible();
+  await expect(page.getByText('Sắp đến hạn').first()).toBeVisible();
+  await expect(page.getByText('Tổng còn nợ (theo bộ lọc): 2.500.000 đ')).toBeVisible();
+  const where = isPhone(page) ? page.getByRole('list') : page.getByRole('table');
+  await expect(where.getByText('300.000').first()).toBeVisible();
+  await expectAccessible(page);
+});
+
+// TC-09 chạy SAU TC-13: hoàn tác thêm một khoản âm vào đơn O1 (+500.000 còn nợ) nên bài công nợ (TC-13) phải đo xong trước, không thì tổng còn nợ lệch (bài serial theo thứ tự trong file).
 test('TC-09: Kế toán hoàn tác khoản tiền, khoản đã hoàn tác không hoàn tác lại', async ({
   page,
 }, testInfo) => {
@@ -189,22 +208,4 @@ test('TC-09: Kế toán hoàn tác khoản tiền, khoản đã hoàn tác khôn
   } finally {
     await flag(before);
   }
-});
-
-test('TC-13: công nợ theo đợt, quá hạn và sắp đến hạn; đợt đã đóng đủ không hiện', async ({
-  page,
-}, testInfo) => {
-  const m = mark(testInfo.project.name);
-  await enterAs(page, MANAGER);
-  await page.goto('/crm/cong-no');
-  await expect(page.getByRole('heading', { level: 1, name: 'Công nợ' })).toBeVisible();
-  await search(page, m);
-  // O1 đợt 1 (còn 300.000, quá hạn 14 ngày), O1 đợt 2 (1.200.000), O2 đợt 1 (sắp đến hạn), O2 đợt 2.
-  await expect(page.getByText('1–4 / 4')).toBeVisible();
-  await expect(page.getByText('Quá hạn 14 ngày').first()).toBeVisible();
-  await expect(page.getByText('Sắp đến hạn').first()).toBeVisible();
-  await expect(page.getByText('Tổng còn nợ (theo bộ lọc): 2.500.000 đ')).toBeVisible();
-  const where = isPhone(page) ? page.getByRole('list') : page.getByRole('table');
-  await expect(where.getByText('300.000').first()).toBeVisible();
-  await expectAccessible(page);
 });
