@@ -87,7 +87,7 @@ test('CSKH tạo phiếu Thu nợ đầu kỳ cho một em, số tiền vượt 
   // Chọn phụ huynh: tìm theo tên, nợ từng em hiện sau khi chọn.
   const parent = dialog.getByRole('combobox', { name: 'Phụ huynh' });
   await parent.click();
-  await parent.fill(PARENT);
+  await page.getByPlaceholder('Gõ để tìm (không cần dấu)').fill(PARENT);
   await page.getByRole('option', { name: new RegExp(PARENT) }).click();
   await dialog.getByRole('combobox', { name: 'Em' }).click();
   await expect(page.getByRole('option', { name: new RegExp(`${STUDENT}.*nợ còn`) })).toBeVisible();
