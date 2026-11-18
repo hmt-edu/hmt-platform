@@ -8,8 +8,8 @@ Code D, 16/11/2026. Luật: R-TIEN-28, R-TIEN-31. Chỉ là lõi **tính**; bả
 | ------------------------------------------------ | ------------------------------------------------------------ | -------------------- |
 | `compute_refund(ghi danh, loại, giờ hoàn)`       | Tính tiền hoàn, trả jsonb; không ghi gì                      | R-TIEN-28, R-TIEN-31 |
 
-- `TOAN_BO`: hoàn = (tiền đã đóng của dòng − giờ đã học × **giá gốc**) − phí xử lý trên số còn lại. Giờ tặng không hoàn.
-- `MOT_PHAN`: hoàn = giờ hoàn × **giá sau chiết khấu** (thành tiền dòng ÷ giờ mua) − phí xử lý trên số đó; giờ hoàn không quá giờ còn lại.
+- `TOAN_BO`: hoàn = (tiền đã đóng của dòng − giờ đã học × **giá gốc** − tiền gốc các lần hoàn đã duyệt hoặc đã chi, migration 450) − phí xử lý trên số còn lại. Giờ tặng không hoàn.
+- `MOT_PHAN`: hoàn = giờ hoàn × **giá sau chiết khấu** (thành tiền dòng ÷ giờ mua) − phí xử lý trên số đó; giờ hoàn không quá giờ còn lại trừ giờ tặng đã cấp (migration 450).
 - Phí = tham số `refund_processing_fee_percent` (ghi đè theo cơ sở được), làm tròn đồng. Nơi gọi chụp lại kết quả vào bản ghi, không tính lại sau.
 - Lỗi: `HMT_HOAN_PHI_KHONG_CO_DON` (ghi danh nạp cũ không có giá), `HMT_HOAN_PHI_LOAI_SAI`, `HMT_HOAN_PHI_GIO_SAI`, `HMT_HOAN_PHI_KHONG_CON_TIEN`.
 
