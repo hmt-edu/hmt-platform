@@ -142,6 +142,8 @@ test('BUOI-08: form trắng báo lỗi tại ô; CSKH gửi duyệt thì về da
   const row = page.getByRole('row').filter({ hasText: 'Cả lớp' }).first();
   await expect(row).toContainText('Chờ duyệt');
   await expect(row).toContainText(/YB-CS5-\d{4}-\d{4}/);
+  await expect(row).toContainText('chỉ Trưởng cơ sở duyệt'); // khung BUOI10_cskh
+  await expect(row).toContainText(classCode); // cột Lớp
   await expect(page.getByRole('button', { name: 'Duyệt', exact: true })).toHaveCount(0);
 });
 
@@ -280,6 +282,15 @@ test('BUOI-07: Trưởng cơ sở duyệt yêu cầu học bù thì buổi Học
     .click();
   await expect(page).toHaveURL(/\/crm\/buoi-hoc\/[0-9a-f-]{36}$/);
   await expect(page.getByText('Học bù').first()).toBeVisible();
+});
+
+test('BUOI-07, BUOI-09: Sale chỉ xem lớp, không có mục Yêu cầu học bù, Yêu cầu bổ trợ (thiếu quyền Buổi học · Tạo)', async ({
+  page,
+}) => {
+  await enterAs(page, 'sale.cs5');
+  await page.goto(`/crm/lop/${classId}`);
+  await expect(page.getByText(classCode).first()).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
 });
 
 test('Cờ tắt: mục Yêu cầu buổi ẩn khỏi menu và mở thẳng báo chưa bật', async ({ page }) => {

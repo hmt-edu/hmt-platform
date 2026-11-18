@@ -270,13 +270,6 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('UPSALE'),
         stage: '',
       },
-      {
-        code: 'TT-04',
-        label: 'Đối chiếu tái tục',
-        slug: 'doi-chieu-tai-tuc',
-        requires: can('UPSALE'),
-        stage: '',
-      },
     ],
   },
   {
@@ -360,7 +353,7 @@ export const CRM_MENU: MenuGroup[] = [
         label: 'Rubric nhận xét',
         slug: 'cau-hinh/rubric',
         requires: can('CONFIG_TRAINING'),
-        stage: GD3,
+        stage: GD2,
       },
       {
         code: 'QT-14',

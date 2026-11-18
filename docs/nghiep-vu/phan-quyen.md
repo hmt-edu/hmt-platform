@@ -279,3 +279,18 @@ tự kiểm quyền người gọi.
 - `app.admin_change_email_check` rồi `app.admin_change_email_apply` (Admin): Sửa email của **người khác** (không tự đổi), tài khoản nhân sự (không áp dụng cho học sinh), email mới đúng dạng và không trùng; đổi xong thu hồi mọi phiên, nhật ký ghi email cũ và mới; tên đăng nhập giữ nguyên. Edge Function `admin-users`, thao tác `set_email`: kiểm, đổi ở Supabase Auth, áp dụng ở DB, nếu DB trượt thì trả email cũ cho Auth. Luật chính thức (mã R-HT-12) ghi vào spec ở PR tài liệu.
 - `app.get_account_form_defaults()` (Admin): tên miền email quy ước từ tham số `import_user_email_domain` (không viết cứng ở giao diện).
 - Tạo người dùng (QT-03): Edge Function `create` không nhận mật khẩu thì sinh mật khẩu tạm (cùng độ dài, chính sách như nạp), trả một lần cho hộp K4g, không lưu, không ghi nhật ký.
+
+## Chốt chặn Admin không duyệt tiền (migration 455, sửa Q1 của Soát)
+
+Trigger `permission_admin_no_money_approval` trên bảng quyền chặn mọi đường ghi ô ADMIN × Kế toán · Duyệt đang bật (hàm lưu ma trận, `set_permission`, SQL): lỗi `HMT_CHI_KE_TOAN_DUYET_TIEN` (R-HT-01). Admin tạm gán vai trò Kế toán cho người cụ thể vẫn là việc cố ý, không nằm trong ma trận ADMIN.
+
+### Q1b (cập nhật migration 455)
+
+Danh sách cho phép thay cho chặn riêng ADMIN: ô Kế toán · Duyệt chỉ vai trò Kế toán được có (`HMT_CHI_KE_TOAN_DUYET_TIEN`). Thêm chốt cùng người không duyệt cả hai bước của phiếu thu, hoàn phí, dừng học (`HMT_CUNG_NGUOI_DUYET_HAI_BUOC`, R-TIEN-01).
+
+## Học sinh không đọc cấu hình nội bộ (migration 466, Soát R2)
+
+- `app.is_staff()`: người gọi có vai trò mà cổng gồm `crm` hoặc `gv`. Chính sách đọc của `setting_branch`, `code_format`, `room`, `note_target` chỉ nhân viên.
+- `permission`, `role`: nhân viên đọc đủ; Học sinh chỉ đọc dòng của chính vai trò mình. `setting_def`: Học sinh chỉ đọc khoá `student_idle_logout_minutes`. `catalog`, `catalog_item`: Học sinh chỉ đọc môn, khối, cấp độ, loại buổi, trạng thái điểm danh (`app.student_visible_catalog`).
+- `app.student_portal_config()`: cấu hình tối thiểu cho cổng `/hoc` (giờ tự đăng xuất, các danh mục hiển thị) trong một lần gọi.
+- **Giữ nguyên có chủ đích:** `branch`, `academic_year`, `holiday` và `feature_flag` (giao diện nạp công tắc cho mọi cổng; thu hẹp cần sửa giao diện, làm ở đợt cổng Học tập).

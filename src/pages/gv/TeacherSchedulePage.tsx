@@ -35,6 +35,8 @@ import {
   type MySession,
   type MySessionsResult,
 } from './todayLogic';
+import { GvForbidden } from './GvForbidden';
+import { isForbidden } from './forbidden';
 
 const WEEK_LIMIT = 100; // allow-number: trần số dòng một lần gọi của máy chủ (tối đa 100); một tuần dạy không tới mức này
 const MONTH_CELL_MAX = 3; // allow-number: số buổi hiện tối đa trong một ô ngày của lịch tháng (hiển thị), còn lại ghi "+n buổi"
@@ -73,7 +75,7 @@ export function TeacherSchedulePage() {
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-h2">Lịch dạy</h1>
-        <Link className="text-link underline" to="/gv/gio-day">
+        <Link className="tap inline-flex items-center text-link underline" to="/gv/gio-day">
           Giờ dạy của tôi
         </Link>
       </div>
@@ -140,7 +142,11 @@ export function TeacherSchedulePage() {
     return (
       <div className="mx-auto flex max-w-5xl flex-col gap-3">
         {header}
-        <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        {isForbidden(query.error) ? (
+          <GvForbidden kind="schedule" />
+        ) : (
+          <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        )}
         <div>
           <Button onClick={() => void query.refetch()}>Thử lại</Button>
         </div>
@@ -253,7 +259,6 @@ export function TeacherSchedulePage() {
                   key={d}
                   type="button"
                   aria-pressed={d === selected}
-                  aria-label={`${formatDayHeading(d)}, ${n} buổi`}
                   onClick={() => setPicked(d)}
                   className={cn(
                     'flex min-h-11 flex-col items-center rounded-control border px-1 py-1 text-caption',
@@ -264,6 +269,8 @@ export function TeacherSchedulePage() {
                 >
                   <span>{chip.weekday}</span>
                   <span className="font-semibold">{chip.day}</span>
+                  {/* Tên đọc lấy từ chữ trong nút rồi thêm ngày đầy đủ, số buổi (luật axe label-content-name-mismatch). */}
+                  <span className="sr-only">{`${formatDayHeading(d)}, ${n} buổi`}</span>
                   <span
                     aria-hidden="true"
                     className={cn('size-1.5 rounded-full', n > 0 ? 'bg-current' : 'bg-transparent')}

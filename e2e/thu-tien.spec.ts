@@ -3,7 +3,7 @@
 // Luật R-TIEN-01 (khoản tiền vào tự sinh, chỉ đọc), R-TIEN-07 (lịch đợt, quá hạn, sắp đến hạn), R-TIEN-26 (khoản âm là khoản đảo).
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import { PASSWORD, enterAs, enterAsAdmin, expectAccessible, isPhone, pickOption } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
@@ -145,6 +145,8 @@ test('TC-08: sổ Khoản tiền vào không có nút Tạo, hiện khoản thu 
   await expectAccessible(page);
 });
 
+// TC-09, R-TIEN-26, R-HT-01: Kế toán hoàn tác một khoản tiền (thêm khoản âm trỏ về khoản gốc, lý do bắt buộc); khoản đã hoàn tác không còn nút (chặn hoàn tác hai lần).
+// Cờ money_reversal_enabled tắt mặc định: bài bật rồi trả lại như cũ. Bài đứng sau TC-08 trong cùng bộ dữ liệu (serial).
 test('TC-13: công nợ theo đợt, quá hạn và sắp đến hạn; đợt đã đóng đủ không hiện', async ({
   page,
 }, testInfo) => {
@@ -161,4 +163,49 @@ test('TC-13: công nợ theo đợt, quá hạn và sắp đến hạn; đợt �
   const where = isPhone(page) ? page.getByRole('list') : page.getByRole('table');
   await expect(where.getByText('300.000').first()).toBeVisible();
   await expectAccessible(page);
+});
+
+// TC-09 chạy SAU TC-13: hoàn tác thêm một khoản âm vào đơn O1 (+500.000 còn nợ) nên bài công nợ (TC-13) phải đo xong trước, không thì tổng còn nợ lệch (bài serial theo thứ tự trong file).
+test('TC-09: Kế toán hoàn tác khoản tiền, khoản đã hoàn tác không hoàn tác lại', async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name === 'dien-thoai',
+    'Hoàn tác khoản tiền chỉ ghi trên máy tính (Đ248).',
+  );
+  const m = mark(testInfo.project.name);
+  const flag = async (value: string): Promise<string> =>
+    withDb(async (db) => {
+      const before =
+        (
+          await db.query<{ value: string }>(
+            "select value from app.setting_def where key = 'money_reversal_enabled'",
+          )
+        ).rows[0]?.value ?? 'false';
+      await db.query("update app.setting_def set value = $1 where key = 'money_reversal_enabled'", [
+        value,
+      ]);
+      return before;
+    });
+  const before = await flag('true');
+  try {
+    await enterAsAdmin(page, 'ketoan.cs5');
+    await page.goto('/crm/khoan-tien-vao');
+    await search(page, `${m}-O1`);
+    const reverseButtons = page.getByRole('button', { name: 'Hoàn tác khoản tiền' });
+    await expect(reverseButtons.first()).toBeVisible();
+    const buttonsBefore = await reverseButtons.count();
+    const row = page.getByRole('row', { name: new RegExp(`KTV-${m}-2`) });
+    await expect(row).toHaveCount(1);
+    await row.getByRole('button', { name: 'Hoàn tác khoản tiền' }).click();
+    const dialog = page.getByRole('alertdialog', { name: 'Hoàn tác khoản tiền' });
+    await pickOption(page, dialog.getByRole('combobox'), 'Nhập sai số tiền');
+    await dialog.getByRole('button', { name: 'Hoàn tác', exact: true }).click();
+    await expect(page.getByText('Đã hoàn tác khoản tiền.').first()).toBeVisible();
+    // Khoản âm mới trỏ về khoản gốc; khoản gốc không còn nút Hoàn tác (không đảo hai lần).
+    await expect(page.getByText(`Hoàn tác của KTV-${m}-2`).first()).toBeVisible();
+    await expect(reverseButtons).toHaveCount(buttonsBefore - 1);
+  } finally {
+    await flag(before);
+  }
 });
