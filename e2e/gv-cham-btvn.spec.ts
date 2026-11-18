@@ -278,3 +278,30 @@ test('GV-07: mở nhận xét, chấm ô 4 trạng thái, tắt tiêu chí, lưu
   await page.getByRole('button', { name: /Em giả E2E Dũng/ }).click();
   await expect(page.getByText('Em vắng: không chấm nhận xét (R-GV-04).')).toBeVisible();
 });
+
+test('GV-07X: xuất nhận xét của một em ra ảnh PNG: tải file, hiện «Đã xuất»; còn thay đổi chưa lưu thì khoá nút', async ({
+  page,
+}) => {
+  await loginStaffUntil(page, 'gv.cs5', /\/gv$/);
+  await page.goto(`/gv/buoi/${gradingSession}/cham-nhan-xet`);
+  await expect(page.getByRole('heading', { level: 1, name: /Chấm nhận xét/ })).toBeVisible();
+  await page.getByRole('button', { name: /Em giả E2E An/ }).click();
+  const exportBtn = page.getByRole('button', { name: 'Xuất nhận xét', exact: true });
+  await expect(exportBtn).toBeEnabled();
+  // Sửa mà chưa lưu: khoá nút xuất (khung «Chưa lưu thay đổi»).
+  await page.getByLabel('Nhận xét chung').fill('Tập trung tốt, sửa chưa lưu');
+  await expect(exportBtn).toBeDisabled();
+  await expect(page.getByText(/chưa bấm Lưu\. Lưu xong mới xuất được/)).toBeVisible();
+  await page.getByLabel('Nhận xét chung').fill('Tập trung tốt');
+  await expect(exportBtn).toBeEnabled();
+  await exportBtn.click();
+  const dialog = page.getByRole('dialog', { name: 'Xuất nhận xét' });
+  await expect(dialog).toBeVisible();
+  const [download] = await Promise.all([
+    page.waitForEvent('download'),
+    dialog.getByRole('button', { name: 'Xuất', exact: true }).click(),
+  ]);
+  expect(download.suggestedFilename()).toMatch(/-Em-gia-E2E-An\.png$/);
+  await expect(page.getByText('Đã xuất nhận xét').first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /Em giả E2E An.*Đã xuất/ })).toBeVisible();
+});
