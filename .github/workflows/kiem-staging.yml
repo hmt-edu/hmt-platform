@@ -1,0 +1,61 @@
+# KIỂM hmt-staging bằng tay (phiếu dieu-phoi-kit#274): chỉ chạy khi bấm "Run workflow" (workflow_dispatch), KHÔNG chạy theo push hay PR.
+# Hai bước dùng secret STAGING_DB_URL (chỉ staging, không bao giờ hmt-prod):
+#   1. scripts/staging/kiem-chi-doc.sql: CHỈ ĐỌC. Migration cuối, lịch pg_cron, 10 lần chạy gần nhất.
+#   2. scripts/staging/thu-tru-gio.sql: thử trừ giờ trên dữ liệu GIẢ dựng ngay trong một giao dịch rồi HOÀN TÁC (không để lại gì).
+# Log Actions của repo PUBLIC là công khai: chỉ in số, mã, tên job, trạng thái, dữ liệu giả. Không `set -x`, không in chuỗi kết nối.
+# Chạy: gh workflow run kiem-staging.yml
+name: Kiểm staging
+
+on:
+  workflow_dispatch:
+
+# Không chạy cùng lúc với lượt triển khai staging (migration phải chạy trọn).
+concurrency:
+  group: staging
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  kiem-staging:
+    name: kiem-staging
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Kiểm secret (không in giá trị)
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          if [ -z "$STAGING_DB_URL" ]; then
+            echo "::error::Thiếu secret STAGING_DB_URL của repo."
+            exit 1
+          fi
+          # Che cả máy chủ và tên đăng nhập trong chuỗi kết nối, phòng thông báo lỗi của psql nhắc tới chúng.
+          host="$(printf '%s' "$STAGING_DB_URL" | sed -E 's#^[a-z]+://[^@]*@([^:/?]+).*#\1#')"
+          user="$(printf '%s' "$STAGING_DB_URL" | sed -E 's#^[a-z]+://([^:@]*).*#\1#')"
+          [ -z "$host" ] || echo "::add-mask::$host"
+          [ -z "$user" ] || echo "::add-mask::$user"
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Kiểm chỉ đọc (migration cuối, pg_cron)
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          host="$(printf '%s' "$STAGING_DB_URL" | sed -E 's#^[a-z]+://[^@]*@([^:/?]+).*#\1#')"
+          user="$(printf '%s' "$STAGING_DB_URL" | sed -E 's#^[a-z]+://([^:@]*).*#\1#')"
+          [ -z "$host" ] || echo "::add-mask::$host"
+          [ -z "$user" ] || echo "::add-mask::$user"
+          psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -f scripts/staging/kiem-chi-doc.sql
+
+      - name: Thử trừ giờ trên dữ liệu giả (giao dịch hoàn tác)
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          host="$(printf '%s' "$STAGING_DB_URL" | sed -E 's#^[a-z]+://[^@]*@([^:/?]+).*#\1#')"
+          user="$(printf '%s' "$STAGING_DB_URL" | sed -E 's#^[a-z]+://([^:@]*).*#\1#')"
+          [ -z "$host" ] || echo "::add-mask::$host"
+          [ -z "$user" ] || echo "::add-mask::$user"
+          psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -f scripts/staging/thu-tru-gio.sql
