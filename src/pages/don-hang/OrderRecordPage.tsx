@@ -19,6 +19,8 @@ import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
 import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { ReassignApproverDialog } from '../../features/approver-reassign/ReassignApproverDialog';
+import { useReassignState } from '../../features/approver-reassign/useReassign';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { Select, Tabs, type MenuItem } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
@@ -146,6 +148,15 @@ function OrderView({ record }: { record: OrderRecord }) {
   const [payLaterOpen, setPayLaterOpen] = useState(false);
   const [approveOpen, setApproveOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
+  const [reassignOpen, setReassignOpen] = useState(false);
+  // R-V2-44: Admin thấy «Chuyển người duyệt» khi đơn chờ quản lý (route QUAN_LY) và máy chủ báo người đã chốt không duyệt được.
+  const reassign = useReassignState(
+    'DON',
+    record.id,
+    Boolean(claims?.roles.includes('ADMIN')) &&
+      record.status_code === 'DA_TRINH' &&
+      record.approval_route === 'QUAN_LY',
+  );
   const [editing, setEditing] = useState(false);
   const [pickOpen, setPickOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -688,6 +699,9 @@ function OrderView({ record }: { record: OrderRecord }) {
                   </Button>
                 )}
                 {record.can_reject && <Button onClick={() => setRejectOpen(true)}>Từ chối</Button>}
+                {reassign.data?.can && !phone && (
+                  <Button onClick={() => setReassignOpen(true)}>Chuyển người duyệt</Button>
+                )}
               </span>
             )}
             {record.status_code === 'DA_DUYET' && canCreateReceipt && (
@@ -977,6 +991,20 @@ function OrderView({ record }: { record: OrderRecord }) {
           toast({ title: message });
         }}
       />
+      {reassign.data?.can && (
+        <ReassignApproverDialog
+          open={reassignOpen}
+          onOpenChange={setReassignOpen}
+          kind="DON"
+          id={record.id}
+          subject={`đơn hàng ${record.code}`}
+          state={reassign.data}
+          onDone={async () => {
+            await refresh();
+            toast({ title: 'Đã chuyển người duyệt.' });
+          }}
+        />
+      )}
       <RejectOrderDialog
         record={record}
         open={rejectOpen}

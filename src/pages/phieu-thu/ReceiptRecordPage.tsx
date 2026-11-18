@@ -13,6 +13,9 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table } from '../../ui/Data';
+import { useAuth } from '../../lib/auth/authContext';
+import { ReassignApproverDialog } from '../../features/approver-reassign/ReassignApproverDialog';
+import { useReassignState } from '../../features/approver-reassign/useReassign';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { TextField } from '../../ui/Field';
@@ -103,13 +106,22 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   const catalogs = useLeadCatalogs();
   const phone = useMedia(NARROW_TABLE);
   const refresh = useRefreshReceipt(record.id, record.order.id);
+  const { claims } = useAuth();
+  // R-V2-44: Admin thấy «Chuyển người duyệt» khi phiếu chờ quản lý (route QUAN_LY) và máy chủ báo người đã chốt không duyệt được.
+  const reassign = useReassignState(
+    'PHIEU_THU',
+    record.id,
+    Boolean(claims?.roles.includes('ADMIN')) &&
+      record.status_code === 'DA_GUI' &&
+      record.approval_route === 'QUAN_LY',
+  );
   const [tab, setTab] = useState('info');
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<ReceiptDraft>(() => draftOf(record));
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const [dialog, setDialog] = useState<'reject' | 'cancel' | 'resubmit' | null>(null);
+  const [dialog, setDialog] = useState<'reject' | 'cancel' | 'resubmit' | 'reassign' | null>(null);
   const [dialogError, setDialogError] = useState<string | null>(null);
   useCrumbTail(record.code);
 
@@ -446,6 +458,16 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 Duyệt phiếu thu
               </Button>
             )}
+            {reassign.data?.can && !phone && (
+              <Button
+                onClick={() => {
+                  setDialogError(null);
+                  setDialog('reassign');
+                }}
+              >
+                Chuyển người duyệt
+              </Button>
+            )}
             {can('tu_choi') && (
               <Button
                 onClick={() => {
@@ -569,6 +591,20 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
           />
         </div>
       </RecordDetail>
+      {reassign.data?.can && (
+        <ReassignApproverDialog
+          open={dialog === 'reassign'}
+          onOpenChange={(o) => !o && setDialog(null)}
+          kind="PHIEU_THU"
+          id={record.id}
+          subject={`phiếu thu ${record.code}`}
+          state={reassign.data}
+          onDone={async () => {
+            await refresh();
+            toast({ title: 'Đã chuyển người duyệt.' });
+          }}
+        />
+      )}
       <ReasonDialog
         open={dialog === 'reject'}
         onOpenChange={(o) => !o && setDialog(null)}
