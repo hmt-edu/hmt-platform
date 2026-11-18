@@ -1,6 +1,5 @@
 // Gọi dữ liệu cụm Thu tiền: danh sách phân trang ở máy chủ (một lần gọi mỗi trang).
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
 import type { TreasuryFilters } from './treasuryFilters';
@@ -54,24 +53,4 @@ export function useRefreshTreasury() {
     await queryClient.invalidateQueries({ queryKey: ['money-in-list'] });
     await queryClient.invalidateQueries({ queryKey: ['receivable-list'] });
   }, [queryClient]);
-}
-
-/** TC-09: Kế toán hoàn tác (đảo) một khoản tiền vào, bắt buộc lý do; "Khác" thì bắt ghi chú (máy chủ kiểm). */
-export function reverseMoneyIn(
-  supabase: SupabaseClient,
-  id: string,
-  reasonCode: string,
-  note: string | null,
-): Promise<{
-  id: string;
-  code: string;
-  reversed_code: string;
-  amount: number;
-  enrollments_negative: number;
-}> {
-  return rpc(supabase, 'reverse_money_in', {
-    p_money_in_id: id,
-    p_reason_code: reasonCode,
-    p_note: note,
-  });
 }

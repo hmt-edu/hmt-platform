@@ -1,7 +1,7 @@
 # Cách làm việc theo ca (Q-276, hiệu lực 11/11/2026)
 
 ## 1. Vai trò
-- Anh CHỦ DỰ ÁN: giao toàn bộ điều phối và quyết định cho Chat. Chỉ đọc báo cáo, sửa khi cần.
+- Anh Cao Xuân Trường: giao toàn bộ điều phối và quyết định cho Chat. Chỉ đọc báo cáo, sửa khi cần.
 - Chat (BA + điều phối): ra kế hoạch từng ca, giao việc, quyết định (Q-xx), soát PR và bình luận OK, báo cáo anh Trường 4 lần mỗi ngày.
 - Code 1, Code 2: viết mã theo hàng đợi, tự lấy việc kế tiếp, không chờ Chat khi còn việc khác.
 - Claude Design: canvas và đề xuất đổi khung theo lệnh của Chat; không đăng canvas khi chưa có «OK ĐĂNG» của anh Trường.

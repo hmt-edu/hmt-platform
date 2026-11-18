@@ -89,23 +89,6 @@ const ReviewGradingPage = lazyScreen(
 const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 'ExamGradingPage');
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
-const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
-const TicketRecordPage = lazyScreen(
-  () => import('../pages/ticket/TicketRecordPage'),
-  'TicketRecordPage',
-);
-const TicketCreatePage = lazyScreen(
-  () => import('../pages/ticket/TicketCreatePage'),
-  'TicketCreatePage',
-);
-const TicketSlaPage = lazyScreen(() => import('../pages/ticket/TicketSlaPage'), 'TicketSlaPage');
-const TicketCategoriesPage = lazyScreen(
-  () => import('../pages/ticket/TicketCategoriesPage'),
-  'TicketCategoriesPage',
-);
-const BranchRoomPage = lazyScreen(() => import('../pages/co-so/BranchRoomPage'), 'BranchRoomPage');
-const TaskListPage = lazyScreen(() => import('../pages/phieu/TaskListPage'), 'TaskListPage');
-const TaskRecordPage = lazyScreen(() => import('../pages/phieu/TaskRecordPage'), 'TaskRecordPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
 const OpportunityListPage = lazyScreen(
@@ -136,26 +119,6 @@ const ReceiptListPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptListPage'),
   'ReceiptListPage',
 );
-const SessionRequestListPage = lazyScreen(
-  () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
-  'SessionRequestListPage',
-);
-const SessionRequestMakeupPage = lazyScreen(
-  () => import('../pages/yeu-cau-buoi/SessionRequestMakeupPage'),
-  'SessionRequestMakeupPage',
-);
-const SessionRequestSupportPage = lazyScreen(
-  () => import('../pages/yeu-cau-buoi/SessionRequestSupportPage'),
-  'SessionRequestSupportPage',
-);
-const SessionRequestCreatePage = lazyScreen(
-  () => import('../pages/yeu-cau-buoi/SessionRequestCreatePage'),
-  'SessionRequestCreatePage',
-);
-const OrderCreatePage = lazyScreen(
-  () => import('../pages/don-hang/OrderCreatePage'),
-  'OrderCreatePage',
-);
 const OrderListPage = lazyScreen(() => import('../pages/don-hang/OrderListPage'), 'OrderListPage');
 const OrderRecordPage = lazyScreen(
   () => import('../pages/don-hang/OrderRecordPage'),
@@ -182,26 +145,6 @@ const ImportDataPage = lazyScreen(
   'ImportDataPage',
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
-const RoleListPage = lazyScreen(() => import('../pages/vai-tro/RoleListPage'), 'RoleListPage');
-const OverviewPage = lazyScreen(() => import('../pages/bao-cao/OverviewPage'), 'OverviewPage');
-const PermissionMatrixPage = lazyScreen(
-  () => import('../pages/ma-tran/PermissionMatrixPage'),
-  'PermissionMatrixPage',
-);
-const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
-const DiscountPolicyPage = lazyScreen(
-  () => import('../pages/chiet-khau/DiscountPolicyPage'),
-  'DiscountPolicyPage',
-);
-const PaymentTermPage = lazyScreen(
-  () => import('../pages/dieu-khoan/PaymentTermPage'),
-  'PaymentTermPage',
-);
-const FeatureFlagsPage = lazyScreen(
-  () => import('../pages/cong-tac/FeatureFlagsPage'),
-  'FeatureFlagsPage',
-);
-const SettingsPage = lazyScreen(() => import('../pages/tham-so/SettingsPage'), 'SettingsPage');
 const PackageListPage = lazyScreen(
   () => import('../pages/goi-ban/PackageListPage'),
   'PackageListPage',
@@ -246,34 +189,6 @@ const TeacherTodoPage = lazyScreen(() => import('../pages/gv/TeacherTodoPage'), 
 const TeacherClassesPage = lazyScreen(
   () => import('../pages/gv/TeacherClassesPage'),
   'TeacherClassesPage',
-);
-const TeacherClassPage = lazyScreen(
-  () => import('../pages/gv/TeacherClassPage'),
-  'TeacherClassPage',
-);
-const TeacherHoursPage = lazyScreen(
-  () => import('../pages/gv/TeacherHoursPage'),
-  'TeacherHoursPage',
-);
-const TeacherStudentPage = lazyScreen(
-  () => import('../pages/gv/TeacherStudentPage'),
-  'TeacherStudentPage',
-);
-const DayAttendancePage = lazyScreen(
-  () => import('../pages/diem-danh-ngay/DayAttendancePage'),
-  'DayAttendancePage',
-);
-const ExpiringListPage = lazyScreen(
-  () => import('../pages/sap-het-gio/ExpiringListPage'),
-  'ExpiringListPage',
-);
-const TeacherTicketsPage = lazyScreen(
-  () => import('../pages/gv/TeacherTicketsPage'),
-  'TeacherTicketsPage',
-);
-const TeacherTicketCreatePage = lazyScreen(
-  () => import('../pages/gv/TeacherTicketCreatePage'),
-  'TeacherTicketCreatePage',
 );
 const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
@@ -436,46 +351,6 @@ export const routes: RouteObject[] = [
             ),
           },
           {
-            path: 'ticket',
-            element: (
-              <GatedCrmEntry slug="ticket">
-                <TicketListPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'phieu-nghiep-vu',
-            element: (
-              <GatedCrmEntry slug="phieu-nghiep-vu">
-                <TaskListPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'phieu-nghiep-vu/:id',
-            element: (
-              <GatedCrmEntry slug="phieu-nghiep-vu">
-                <TaskRecordPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'ticket/moi',
-            element: (
-              <GatedCrmEntry slug="ticket">
-                <TicketCreatePage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'ticket/:id',
-            element: (
-              <GatedCrmEntry slug="ticket">
-                <TicketRecordPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
             path: 'ghi-danh',
             element: (
               <GatedCrmEntry slug="ghi-danh">
@@ -500,22 +375,6 @@ export const routes: RouteObject[] = [
             ),
           },
           {
-            path: 'diem-danh-trong-ngay',
-            element: (
-              <GatedCrmEntry slug="diem-danh-trong-ngay">
-                <DayAttendancePage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'sap-het-gio',
-            element: (
-              <GatedCrmEntry slug="sap-het-gio">
-                <ExpiringListPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
             path: 'cho-xep-lop',
             element: (
               <GatedCrmEntry slug="cho-xep-lop">
@@ -536,38 +395,6 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="buoi-hoc">
                 <SessionRecordPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'yeu-cau-buoi',
-            element: (
-              <GatedCrmEntry slug="yeu-cau-buoi">
-                <SessionRequestListPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'yeu-cau-buoi/tao-hoc-bu',
-            element: (
-              <GatedCrmEntry slug="yeu-cau-buoi">
-                <SessionRequestMakeupPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'yeu-cau-buoi/tao-bo-tro',
-            element: (
-              <GatedCrmEntry slug="yeu-cau-buoi">
-                <SessionRequestSupportPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'yeu-cau-buoi/tao-cung-co',
-            element: (
-              <GatedCrmEntry slug="yeu-cau-buoi">
-                <SessionRequestCreatePage />
               </GatedCrmEntry>
             ),
           },
@@ -608,14 +435,6 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="don-hang">
                 <OrderRecordPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'don-hang/tao',
-            element: (
-              <GatedCrmEntry slug="don-hang">
-                <OrderCreatePage />
               </GatedCrmEntry>
             ),
           },
@@ -668,22 +487,6 @@ export const routes: RouteObject[] = [
             ),
           },
           {
-            path: 'cau-hinh/nhom-ticket',
-            element: (
-              <GatedCrmEntry slug="cau-hinh/nhom-ticket">
-                <TicketCategoriesPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'cau-hinh/sla-ticket',
-            element: (
-              <GatedCrmEntry slug="cau-hinh/sla-ticket">
-                <TicketSlaPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
             path: 'cau-hinh/goi-ban',
             element: (
               <GatedCrmEntry slug="cau-hinh/goi-ban">
@@ -704,78 +507,6 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/danh-muc">
                 <CatalogPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'quan-tri/ma-tran-quyen',
-            element: (
-              <GatedCrmEntry slug="quan-tri/ma-tran-quyen">
-                <PermissionMatrixPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'quan-tri/co-so',
-            element: (
-              <GatedCrmEntry slug="quan-tri/co-so">
-                <BranchRoomPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'cau-hinh/ngay-nghi',
-            element: (
-              <GatedCrmEntry slug="cau-hinh/ngay-nghi">
-                <HolidayPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'cau-hinh/chiet-khau',
-            element: (
-              <GatedCrmEntry slug="cau-hinh/chiet-khau">
-                <DiscountPolicyPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'cau-hinh/dieu-khoan-thanh-toan',
-            element: (
-              <GatedCrmEntry slug="cau-hinh/dieu-khoan-thanh-toan">
-                <PaymentTermPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'quan-tri/cong-tac',
-            element: (
-              <GatedCrmEntry slug="quan-tri/cong-tac">
-                <FeatureFlagsPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'quan-tri/tham-so',
-            element: (
-              <GatedCrmEntry slug="quan-tri/tham-so">
-                <SettingsPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'bao-cao/tong-quan',
-            element: (
-              <GatedCrmEntry slug="bao-cao/tong-quan">
-                <OverviewPage />
-              </GatedCrmEntry>
-            ),
-          },
-          {
-            path: 'quan-tri/vai-tro',
-            element: (
-              <GatedCrmEntry slug="quan-tri/vai-tro">
-                <RoleListPage />
               </GatedCrmEntry>
             ),
           },
@@ -888,13 +619,8 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: <TeacherTodayPage /> },
           { path: 'lich-day', element: <TeacherSchedulePage /> },
-          { path: 'gio-day', element: <TeacherHoursPage /> },
           { path: 'lop', element: <TeacherClassesPage /> },
-          { path: 'lop/:classId', element: <TeacherClassPage /> },
-          { path: 'lop/:classId/hoc-sinh/:studentId', element: <TeacherStudentPage /> },
           { path: 'viec-can-lam', element: <TeacherTodoPage /> },
-          { path: 'ticket', element: <TeacherTicketsPage /> },
-          { path: 'ticket/tao', element: <TeacherTicketCreatePage /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },
           { path: 'buoi/:sessionId/noi-dung', element: <SessionContentPage /> },
           { path: 'buoi/:sessionId/cham-btvn', element: <HomeworkGradingPage /> },

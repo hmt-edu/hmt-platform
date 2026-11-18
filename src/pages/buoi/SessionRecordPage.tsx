@@ -1,6 +1,6 @@
 // BUOI-02 Buổi học (bản ghi, khuôn K06, chỉ đọc): thanh Nháp → Đã chốt → Hoàn thành, thông tin buổi, danh sách và điểm danh hai cột (trung tâm, giáo viên chính thức),
 // em không vào danh sách kèm lý do, nhận xét của giáo viên, lý do chưa Done. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage.
-// Nút: Chốt danh sách (buổi Nháp), Điểm danh vận hành (buổi Đã chốt, sang BUOI-03), Dời (BUOI-05), Huỷ (BUOI-04). Sửa điểm danh sau Done (BUOI-14, Điểm danh · Duyệt). Đổi giáo viên (BUOI-13, dạy thay). Đổi giáo viên, Thêm học thử: BUOI-13, BUOI-06 (cụm sau).
+// Nút: Chốt danh sách (buổi Nháp), Điểm danh vận hành (buổi Đã chốt, sang BUOI-03), Dời (BUOI-05), Huỷ (BUOI-04). Đổi giáo viên, Thêm học thử: BUOI-13, BUOI-06 (cụm sau).
 // Chưa làm (làm sau 17/11): ghi chú và dòng thời gian, "Báo nghỉ trước", "Đưa về Nháp", "Xác nhận hoàn thành" (Done do hệ thống, mark_session_done là hàm nội bộ).
 // Lệch khung có chủ đích: nhãn lớp "môn + mã lớp" (như cụm Lớp), không có "Nhãn bài" riêng ngoài bài bắt đầu của lớp.
 import { useState } from 'react';
@@ -15,9 +15,6 @@ import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog } from '../../ui/Dialogs';
 import { CancelSessionDialog } from './CancelSessionDialog';
-import { AddTrialDialog } from './AddTrialDialog';
-import { ChangeStaffDialog } from './ChangeStaffDialog';
-import { CorrectAttendanceDialog } from './CorrectAttendanceDialog';
 import { MoveSessionDialog } from './MoveSessionDialog';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
@@ -44,9 +41,6 @@ export function SessionRecordPage() {
   const [confirming, setConfirming] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [moving, setMoving] = useState(false);
-  const [changingStaff, setChangingStaff] = useState(false);
-  const [addingTrial, setAddingTrial] = useState(false);
-  const [correcting, setCorrecting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   useCrumbTail(
     query.data
@@ -83,12 +77,6 @@ export function SessionRecordPage() {
   // Dời, huỷ được tới khi buổi Done (R-BUOI-09); giáo viên không có quyền Sửa buổi nên không thấy.
   const canEditSession =
     ['NHAP', 'DA_CHOT'].includes(s.status_code) && access.can('SESSION', 'SUA');
-  // Thêm học thử (BUOI-06): buổi Đã chốt, quyền Sửa buổi, cờ HOC_THU bật (tắt mặc định).
-  const canTrial =
-    s.status_code === 'DA_CHOT' && access.can('SESSION', 'SUA') && access.featureOn('HOC_THU');
-  // Sửa điểm danh sau Done: chỉ Điểm danh · Duyệt (Trưởng cơ sở, Admin), bắt buộc lý do (BUOI-14, R-GIO-07).
-  const canCorrect =
-    s.status_code === 'DONE' && access.can('ATTENDANCE', 'DUYET') && students.length > 0;
   const cancelled = s.status_code === 'HUY_CO_PHI' || s.status_code === 'HUY_KHONG_PHI';
   const title = `${classLabel(s.subject_name, s.class_code)} · ${sessionNoLabel(s.session_no)} · ${formatDate(s.session_date)}`;
 
@@ -140,13 +128,8 @@ export function SessionRecordPage() {
                 Điểm danh vận hành
               </Button>
             )}
-            {canTrial && <Button onClick={() => setAddingTrial(true)}>Thêm học thử</Button>}
             {canEditSession && <Button onClick={() => setMoving(true)}>Dời</Button>}
-            {canEditSession && (
-              <Button onClick={() => setChangingStaff(true)}>Đổi giáo viên</Button>
-            )}
             {canEditSession && <Button onClick={() => setCancelling(true)}>Huỷ</Button>}
-            {canCorrect && <Button onClick={() => setCorrecting(true)}>Sửa điểm danh</Button>}
             {!inStages && <Tag tone={sessionTone(s.status_code)}>{s.status_name}</Tag>}
           </span>
         }
@@ -323,21 +306,6 @@ export function SessionRecordPage() {
         onClose={() => setCancelling(false)}
       />
       <MoveSessionDialog session={s} open={moving} onClose={() => setMoving(false)} />
-      <AddTrialDialog sessionId={s.id} open={addingTrial} onClose={() => setAddingTrial(false)} />
-      <ChangeStaffDialog
-        sessionId={s.id}
-        branchId={s.branch_id}
-        teacherId={s.teacher_id}
-        assistantId={s.assistant_id}
-        open={changingStaff}
-        onClose={() => setChangingStaff(false)}
-      />
-      <CorrectAttendanceDialog
-        sessionId={s.id}
-        students={students}
-        open={correcting}
-        onClose={() => setCorrecting(false)}
-      />
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}

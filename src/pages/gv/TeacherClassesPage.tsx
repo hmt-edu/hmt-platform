@@ -68,11 +68,6 @@ export function TeacherClassesPage() {
       <div>
         <h1 className="text-h2">Lớp của tôi</h1>
         <p className="text-body text-fg-muted">{rows.length} lớp đang dạy</p>
-        <p className="text-body">
-          <Link className="text-link underline" to="/gv/ticket">
-            Ticket của lớp tôi
-          </Link>
-        </p>
       </div>
       {rows.length === 0 ? (
         <StateView kind="empty" title="Bạn chưa được phân công lớp nào" headingLevel={2}>

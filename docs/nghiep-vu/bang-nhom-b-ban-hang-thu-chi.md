@@ -126,7 +126,7 @@ Câu hỏi nghiệp vụ Đào tạo, Cổng giáo viên, Aftersale gửi anh qu
 
 ## Cụm Thu tiền: TC-08 Khoản tiền vào, TC-13 Công nợ (migration 122)
 
-Chỉ đọc. Luật: R-TIEN-01, R-TIEN-07, R-TIEN-26. Đảo khoản (TC-09): xem mục «TC-09 Hoàn tác khoản tiền» ngay dưới; Xuất file chưa làm.
+Chỉ đọc. Luật: R-TIEN-01, R-TIEN-07, R-TIEN-26. Đảo khoản (TC-09), Xuất file chưa làm.
 
 | Hàm                                                  | Ai                                                          | Việc                                                                                                                                                                                                                  |
 | ---------------------------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -134,17 +134,3 @@ Chỉ đọc. Luật: R-TIEN-01, R-TIEN-07, R-TIEN-26. Đảo khoản (TC-09): x
 | `list_receivables(bộ lọc, sắp xếp, limit, offset)`   | Đơn hàng · Xem (Kế toán, Admin: mọi cơ sở; Trưởng cơ sở, Sale, CSKH: cơ sở mình) | Mỗi dòng là một đợt còn nợ của đơn Đã duyệt; tình trạng Quá hạn, Sắp đến hạn, Chưa đến hạn; lọc cơ sở, sale lập đơn, hạn đóng; kết quả có tổng còn nợ |
 
 Cách tính «đã đóng» của đợt (quy tắc hiển thị, chưa vào luật): tiền đã vào ròng của đơn (khoản đảo đã trừ) lấp lần lượt từ đợt 1; đợt đóng đủ thì không hiện. Tham số `debt_due_soon_days` (mặc định 3 ngày) quyết định Sắp đến hạn. Không chặn học (R-TIEN-07).
-
-## TC-09 Hoàn tác (đảo) khoản tiền vào (migration 180)
-
-Luật: R-TIEN-26 (giữ khoản gốc, thêm khoản âm trỏ về khoản gốc, cùng dãy mã `KTV`, chặn đảo hai lần, bắt buộc lý do, giờ đã cấp tính lại), R-HT-01 (Admin không đảo; chỉ người có Kế toán · Duyệt), R-HT-04 (lý do «Khác» bắt ghi chú), R-GD-12 (giờ âm cho phép).
-Cờ: tham số `money_reversal_enabled` (BOOL, mặc định **TẮT**, ghi đè theo cơ sở); hàm kiểm cả phân hệ BAN_HANG. Chat bật cho CS5 sau khi Tester đạt.
-Cấu trúc: `money_in.receipt_id` cho phép rỗng; khoản âm bắt buộc có `reversal_of` (unique: chặn đảo hai lần) và `reason_code` (danh mục REVERSAL_REASON), khoản dương bắt buộc có phiếu thu (ràng buộc `money_in_sign_check`). `money_in_allocation.amount` cho âm (khác 0).
-
-| Hàm | Ai | Việc |
-| --- | --- | --- |
-| `reverse_money_in(khoản, mã lý do, ghi chú)` | Kế toán · Duyệt trong cơ sở của khoản (Kế toán; Admin, Quản lý, Sale: không) | Thêm khoản âm đúng bằng khoản gốc, đảo từng phần chia về dòng đơn, gọi `sync_enrollment_hours` để sổ giờ lùi theo tiền còn lại. Lỗi: HMT_TINH_NANG_TAT, HMT_KHONG_CO_QUYEN, HMT_KHONG_DAO_KHOAN_AM, HMT_DA_DAO_KHOAN, HMT_THIEU_LY_DO, HMT_THIEU_GHI_CHU. Trả `enrollments_negative` (số ghi danh của đơn có giờ âm). |
-| `list_money_in(...)` (thay ở migration 180) | như trước | Nối trái phiếu thu (khoản đảo không có phiếu); thêm `reversal_of_code`, `is_reversed`, `reason_code`; tìm kiếm khoản đảo theo chữ tìm của phiếu khoản gốc. |
-
-Giao diện: cột «Hoàn tác» ở TC-08 (nút «Hoàn tác khoản tiền», hộp thoại lý do K08); khoản đã hoàn tác hiện nhãn «Đã hoàn tác», khoản đảo hiện «Hoàn tác của KTV-…» (khung TC09_dao, TC09_chan).
-

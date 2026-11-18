@@ -174,8 +174,7 @@ select is((select count(*)::int from (
              union all select r::text from res4 union all select r::text from res4b union all select r::text from res5) x
            where t ~ '(Khúc|Lương|Mạc|Ninh|Ông|Phan|Quách|Đoàn|Zeta|Em |0911|0988|\+84|PH-CU|M-HS|Trường Mẫu|Số 9 phố)'), 0,
           'Kết quả nạp không chứa họ tên, SĐT, mã cũ, trường, địa chỉ');
--- Chỉ quét các cột chữ (loại nạp, tên file). Trước đây quét cả dòng (l::text) nên chuỗi hex ngẫu nhiên của uuid có thể chứa "0911" và làm bài trượt chập chờn.
-select is((select count(*)::int from app.import_log l where (l.kind || ' ' || coalesce(l.file_name, '')) ~ '(Khúc|Đoàn|0911|PH-CU|M-HS)'), 0, 'Nhật ký nạp không chứa họ tên, SĐT, mã cũ');
+select is((select count(*)::int from app.import_log l where l::text ~ '(Khúc|Đoàn|0911|PH-CU|M-HS)'), 0, 'Nhật ký nạp không chứa họ tên, SĐT, mã cũ');
 select is(pg_temp.hs((select r from res1), 3, 'label'), 'Dòng 3 (L.)', 'Dòng báo bằng số dòng và chữ cái đầu của tên');
 select is(pg_temp.hs((select r from res1), 4, 'label'), 'Dòng 4 (M.)', 'Dòng lỗi cũng chỉ báo số dòng và chữ cái đầu');
 select is(pg_temp.hs((select r from res1), 5, 'label'), 'Dòng 5 (?.)', 'Dòng không có tên báo dấu hỏi');

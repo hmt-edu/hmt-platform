@@ -139,13 +139,6 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const canSend = canChange && record.status_code === 'NHAP';
   const canReject =
     canChange && record.status_code === 'DA_GUI' && record.display_status_code !== 'DA_CHUYEN_DON';
-  // Chuyển thành đơn (UI-O4, R-TIEN-14, Đ259): báo giá Đã gửi còn dòng chưa lên đơn, có quyền tạo đơn, Bán hàng bật; điện thoại ẩn (Đ248).
-  const canConvert =
-    !phone &&
-    record.status_code === 'DA_GUI' &&
-    record.lines.some((l) => l.order_id === null) &&
-    access.can('SALES_ORDER', 'TAO') &&
-    access.featureOn('BAN_HANG');
 
   // Huỷ báo giá (Đ239): chỉ Nháp, Đã gửi, Từ chối; không có quyền Sửa hoặc tắt Bán hàng thì ẩn mục, các mục khác giữ.
   const canCancel = canChange && ['NHAP', 'DA_GUI', 'TU_CHOI'].includes(record.status_code);
@@ -423,15 +416,6 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                 }}
               >
                 Từ chối
-              </Button>
-            )}
-            {!editing && canConvert && (
-              <Button
-                variant="primary"
-                disabled={busy}
-                onClick={() => openFrom(`/crm/don-hang/tao?bao-gia=${record.id}`)}
-              >
-                Chuyển thành đơn
               </Button>
             )}
           </>

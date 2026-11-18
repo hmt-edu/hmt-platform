@@ -21,8 +21,6 @@ export type MenuEntry = {
   sub?: string | undefined;
   /** Giai đoạn màn này được dựng; chưa tới thì mở ra trang "Sắp có". */
   stage: string;
-  /** Công tắc tính năng (danh mục MODULE) riêng của mục này, ngoài công tắc của cả nhóm; tắt thì ẩn mục và mở thẳng đường dẫn báo chưa bật. */
-  feature?: string | undefined;
 };
 
 export type MenuGroup = {
@@ -187,8 +185,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'sap-het-gio',
         sub: 'Ghi danh',
         requires: can('ENROLLMENT'),
-        stage: '',
-        feature: 'SAP_HET_GIO',
+        stage: GD2,
       },
       { code: 'LOP-01', label: 'Lớp', slug: 'lop', sub: 'Lớp', requires: can('CLASS'), stage: '' },
       {
@@ -208,15 +205,6 @@ export const CRM_MENU: MenuGroup[] = [
         stage: GD2,
       },
       {
-        code: 'BUOI-15',
-        label: 'Điểm danh trong ngày',
-        slug: 'diem-danh-trong-ngay',
-        sub: 'Buổi học',
-        requires: can('SESSION'),
-        stage: '',
-        feature: 'DIEM_DANH_TRONG_NGAY',
-      },
-      {
         code: 'BUOI-11',
         label: 'Điểm danh vận hành',
         slug: 'diem-danh',
@@ -230,8 +218,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'yeu-cau-buoi',
         sub: 'Buổi học',
         requires: can('SESSION'),
-        stage: '',
-        feature: 'YEU_CAU_BUOI',
+        stage: GD2,
       },
       {
         code: 'BUOI-12',
@@ -248,14 +235,7 @@ export const CRM_MENU: MenuGroup[] = [
     label: 'Chăm sóc khách hàng',
     icon: 'service',
     entries: [
-      { code: 'CS-01', label: 'Ticket', slug: 'ticket', requires: can('TICKET'), stage: '' },
-      {
-        code: 'CS-05',
-        label: 'Phiếu nghiệp vụ',
-        slug: 'phieu-nghiep-vu',
-        requires: can('TICKET'),
-        stage: '',
-      },
+      { code: 'CS-01', label: 'Ticket', slug: 'ticket', requires: can('TICKET'), stage: GD2 },
       {
         code: 'CS-16',
         label: 'Nhận xét chờ gửi',
@@ -360,20 +340,6 @@ export const CRM_MENU: MenuGroup[] = [
         label: 'Ngày nghỉ lễ',
         slug: 'cau-hinh/ngay-nghi',
         requires: can('HOLIDAY'),
-        stage: GD2,
-      },
-      {
-        code: 'CSN-08',
-        label: 'Nhóm ticket',
-        slug: 'cau-hinh/nhom-ticket',
-        requires: can('ADMIN'),
-        stage: GD2,
-      },
-      {
-        code: 'CSN-09',
-        label: 'SLA ticket',
-        slug: 'cau-hinh/sla-ticket',
-        requires: can('ADMIN'),
         stage: GD2,
       },
       {
@@ -499,12 +465,7 @@ export function entryAllowed(entry: MenuEntry, access: MenuAccess): boolean {
 export function visibleMenu(menu: MenuGroup[], access: MenuAccess): MenuGroup[] {
   return menu
     .filter((group) => !group.feature || access.featureOn(group.feature))
-    .map((group) => ({
-      ...group,
-      entries: group.entries.filter(
-        (e) => entryAllowed(e, access) && (!e.feature || access.featureOn(e.feature)),
-      ),
-    }))
+    .map((group) => ({ ...group, entries: group.entries.filter((e) => entryAllowed(e, access)) }))
     .filter((group) => group.entries.length > 0);
 }
 
@@ -521,7 +482,6 @@ export function checkRoute(menu: MenuGroup[], slug: string, access: MenuAccess):
     if (!entry) continue;
     if (!entryAllowed(entry, access)) return { status: 'forbidden' };
     if (group.feature && !access.featureOn(group.feature)) return { status: 'feature-off' };
-    if (entry.feature && !access.featureOn(entry.feature)) return { status: 'feature-off' };
     return { status: 'ok', group, entry };
   }
   return { status: 'not-found' };

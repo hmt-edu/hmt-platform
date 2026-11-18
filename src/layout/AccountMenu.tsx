@@ -3,7 +3,6 @@ import { useAuth } from '../lib/auth/authContext';
 import { PORTALS, portalAccess, type Portal } from '../lib/auth/claims';
 import { Avatar } from '../ui/Feedback';
 import { DropdownMenu, type MenuItem } from '../ui/Overlays';
-import { accountLabel } from './accountLabel';
 import { PORTAL_NAMES } from './portalNames';
 
 /** Góc tài khoản: tên, vai trò · cơ sở; mở ra Hồ sơ cá nhân, Đổi cổng, Đăng xuất. */
@@ -43,7 +42,7 @@ export function AccountMenu({
       trigger={
         <button
           type="button"
-          aria-label={accountLabel(claims.name, roleLine, compact === true)}
+          aria-label={`Tài khoản: ${claims.name}`}
           className="focus-ring touch-target flex items-center gap-2 rounded-control px-1 text-left hover:bg-hover"
         >
           <Avatar name={claims.name} large />

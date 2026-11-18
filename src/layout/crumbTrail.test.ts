@@ -4,12 +4,12 @@ import { fromOf, mergeTrail, trailOf, type Crumb } from './crumbTrail';
 const oppPage: Crumb[] = [
   { label: 'Tuyển sinh' },
   { label: 'Cơ hội', to: '/crm/co-hoi' },
-  { label: 'Em Giả A · Phụ huynh Giả B' },
+  { label: 'Cao Minh Khôi · Cao Xuân Trường' },
 ];
 const own: Crumb[] = [
   { label: 'Tuyển sinh' },
   { label: 'Phiếu kiểm tra', to: '/crm/phieu-kiem-tra' },
-  { label: 'PKT000001 · Em Giả A' },
+  { label: 'PKT000001 · Cao Minh Khôi' },
 ];
 
 describe('trailOf', () => {
@@ -17,7 +17,7 @@ describe('trailOf', () => {
     expect(trailOf({ crumbs: oppPage, here: '/crm/co-hoi/abc' })).toEqual([
       { label: 'Tuyển sinh' },
       { label: 'Cơ hội', to: '/crm/co-hoi' },
-      { label: 'Em Giả A · Phụ huynh Giả B', to: '/crm/co-hoi/abc' },
+      { label: 'Cao Minh Khôi · Cao Xuân Trường', to: '/crm/co-hoi/abc' },
     ]);
   });
 });
@@ -31,9 +31,9 @@ describe('mergeTrail', () => {
     expect(mergeTrail(from, own, '/crm/phieu-kiem-tra/x').map((c) => c.label)).toEqual([
       'Tuyển sinh',
       'Cơ hội',
-      'Em Giả A · Phụ huynh Giả B',
+      'Cao Minh Khôi · Cao Xuân Trường',
       'Phiếu kiểm tra',
-      'PKT000001 · Em Giả A',
+      'PKT000001 · Cao Minh Khôi',
     ]);
   });
   it('quay lại trang đã đi qua thì cắt đường dẫn tới đó, không nối dài', () => {
@@ -50,7 +50,7 @@ describe('mergeTrail', () => {
     expect(back.map((c) => c.label)).toEqual([
       'Tuyển sinh',
       'Cơ hội',
-      'Em Giả A · Phụ huynh Giả B',
+      'Cao Minh Khôi · Cao Xuân Trường',
     ]);
     expect(back[2]?.to).toBeUndefined();
   });
@@ -60,7 +60,7 @@ describe('mergeTrail', () => {
       mergeTrail(trailOf({ crumbs: oppPage, here: '/crm/co-hoi/abc' }), list, '/crm/lich-hen').map(
         (c) => c.label,
       ),
-    ).toEqual(['Tuyển sinh', 'Cơ hội', 'Em Giả A · Phụ huynh Giả B', 'Lịch hẹn']);
+    ).toEqual(['Tuyển sinh', 'Cơ hội', 'Cao Minh Khôi · Cao Xuân Trường', 'Lịch hẹn']);
   });
 });
 

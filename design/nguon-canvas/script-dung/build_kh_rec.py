@@ -43,7 +43,7 @@ PH_SPEC = {
  'cols': [
   {'t': 'THÔNG TIN LIÊN HỆ', 'fields': [
     {'k': 'name', 'l': 'Họ tên', 'req': 1, 'ph': 'Ví dụ: Chị Nguyễn Thị Lan Anh', 'e': 'Bắt buộc nhập họ tên'},
-    {'k': 'phone', 'l': 'Số điện thoại', 'req': 1, 'ph': 'Ví dụ: 0900 000 104', 'e': 'Bắt buộc nhập số điện thoại', 'num': 1},
+    {'k': 'phone', 'l': 'Số điện thoại', 'req': 1, 'ph': 'Ví dụ: 0903 456 789', 'e': 'Bắt buộc nhập số điện thoại', 'num': 1},
     {'k': 'ward', 'l': 'Phường/Xã', 't': 'select', 'opts': ['Phường Giảng Võ', 'Phường Ngọc Khánh', 'Phường Kim Mã', 'Phường Láng Hạ', 'Phường Thành Công']},
     {'k': 'prov', 'l': 'Tỉnh/Thành phố', 't': 'select', 'opts': ['Hà Nội', 'Hải Phòng', 'Bắc Ninh', 'Hưng Yên']},
     {'k': 'addr', 'l': 'Địa chỉ', 'ph': 'Số nhà, ngõ, phố'}]},
@@ -192,9 +192,9 @@ def build_ph(state):
     s = base('ph', role, 'Phụ huynh', cp, state)
     s = rbar_swap(s, 'Phụ huynh', None if create else '1 / 10')
     perm = {'edit': role == 'sa', 'merge': role == 'sa'}
-    vals = {'name': name, 'phone': '0900 000 104', 'ward': 'Phường Giảng Võ', 'prov': 'Hà Nội', 'addr': 'Số 12, ngõ 31 phố Núi Trúc', 'cs': 'CS1 Nguyễn Chí Thanh', 'upd': '16/10/2026 10:12', 'cre': '08/10/2026 10:02'}
+    vals = {'name': name, 'phone': '0903 456 789', 'ward': 'Phường Giảng Võ', 'prov': 'Hà Nội', 'addr': 'Số 12, ngõ 31 phố Núi Trúc', 'cs': 'CS1 Nguyễn Chí Thanh', 'upd': '16/10/2026 10:12', 'cre': '08/10/2026 10:02'}
     rows = CHILD_ROWS; nchild = 2
-    if empty_rec: vals.update({'name': name, 'phone': '0900 000 154', 'addr': 'Số 5 phố Kim Mã', 'ward': 'Phường Kim Mã', 'upd': '17/10/2026 09:40', 'cre': '17/10/2026 09:40'}); rows = []; nchild = 0
+    if empty_rec: vals.update({'name': name, 'phone': '0966 120 345', 'addr': 'Số 5 phố Kim Mã', 'ward': 'Phường Kim Mã', 'upd': '17/10/2026 09:40', 'cre': '17/10/2026 09:40'}); rows = []; nchild = 0
     if create: vals = {'cs': 'CS1 Nguyễn Chí Thanh', 'ward': 'Phường Giảng Võ', 'prov': 'Hà Nội'}
     sm = [('grad', nchild, 'Học sinh', nchild > 0), ('target', 1 if not empty_rec else 0, 'Cơ hội', not empty_rec), ('doc', 1 if not empty_rec else 0, 'Đơn', False), ('receipt', 1 if not empty_rec else 0, 'Phiếu thu', False), ('wallet', 0, 'Số dư', False), ('ticket', 0, 'Ticket', False)]
     if empty_rec: sm[0] = ('grad', 0, 'Học sinh', False)

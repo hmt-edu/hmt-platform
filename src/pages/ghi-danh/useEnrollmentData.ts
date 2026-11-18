@@ -1,5 +1,5 @@
 // Gọi dữ liệu cụm Ghi danh: danh sách, hàng chờ, bản ghi, sổ giờ (đọc, phân trang ở máy chủ), tuỳ chọn xếp lớp, xếp lớp.
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
@@ -151,21 +151,4 @@ export function useRefreshEnrollments() {
       ),
     );
   }, [queryClient]);
-}
-
-export type AdjustArgs = { hours: number; reason: string; note: string | null };
-/** Điều chỉnh giờ: thêm dòng ngược dấu vào sổ giờ (app.adjust_enrollment_hours, GD-05, R-GD-04). Trả số dư mới. Luật do máy chủ quyết (R-GD-18). */
-export function useAdjustHours(enrollmentId: string) {
-  const supabase = useDb();
-  const refresh = useRefreshEnrollments();
-  return useMutation({
-    mutationFn: (a: AdjustArgs) =>
-      rpc<number>(supabase, 'adjust_enrollment_hours', {
-        p_enrollment_id: enrollmentId,
-        p_hours: a.hours,
-        p_reason_code: a.reason,
-        p_note: a.note,
-      }),
-    onSuccess: () => refresh(),
-  });
 }

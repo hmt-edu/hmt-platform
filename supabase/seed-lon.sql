@@ -50,7 +50,7 @@ create temp table seed_source as
 select * from (values
   (1, 'MARKETING', 'FACEBOOK_ADS', 'FACEBOOK_ADS_LEAD_FORM'), (2, 'MARKETING', 'FACEBOOK_ADS', 'FACEBOOK_ADS_INBOX'),
   (3, 'MARKETING', 'WEBSITE', null), (4, 'MARKETING', 'HOTLINE', null), (5, 'MARKETING', 'ZALO', null),
-  (6, 'MARKETING', 'WALK_IN', null), (7, 'MARKETING', 'REFERRAL', 'REFERRAL_BY_CUSTOMER'), (8, 'EVENT', 'EVENT', 'EVENT_INDOOR')
+  (6, 'MARKETING', 'WALK_IN', null), (7, 'REFERRAL', 'REFERRAL', 'REFERRAL_BY_CUSTOMER'), (8, 'EVENT', 'EVENT', 'EVENT_INDOOR')
 ) as t(n, type_code, source_code, channel_code);
 create temp table seed_branch as
 select row_number() over (order by b.code) as n, b.id as branch_id,
@@ -265,7 +265,6 @@ alter table app.sales_order disable trigger sales_order_fill_standard;
 alter table app.sales_order disable trigger sales_order_audit;
 alter table app.sales_order disable trigger sales_order_search_text;
 alter table app.sales_order disable trigger sales_order_status_flow;
-alter table app.sales_order disable trigger sales_order_lock;
 alter table app.sales_order_line disable trigger sales_order_line_fill_standard;
 alter table app.sales_order_line disable trigger sales_order_line_audit;
 alter table app.sales_order_line disable trigger sales_order_line_lock;
@@ -323,7 +322,6 @@ alter table app.sales_order enable trigger sales_order_fill_standard;
 alter table app.sales_order enable trigger sales_order_audit;
 alter table app.sales_order enable trigger sales_order_search_text;
 alter table app.sales_order enable trigger sales_order_status_flow;
-alter table app.sales_order enable trigger sales_order_lock;
 alter table app.sales_order_line enable trigger sales_order_line_fill_standard;
 alter table app.sales_order_line enable trigger sales_order_line_audit;
 alter table app.sales_order_line enable trigger sales_order_line_lock;

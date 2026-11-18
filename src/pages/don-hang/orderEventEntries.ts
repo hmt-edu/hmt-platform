@@ -99,12 +99,6 @@ export function orderEventEntries(
           lines: noteLines(e.note),
           total,
         };
-      case 'CANH_BAO_XEP_LOP':
-        // Q1: dòng đơn có lớp nhưng ghi danh chưa xếp được lớp, vào hàng chờ xếp lớp; hiện cảnh báo vàng.
-        return { ...base, title: 'Chưa xếp được lớp', lines: [], warning: e.note ?? undefined };
-      case 'CHO_HOC_TRUOC':
-        // BH-09 (R-GD-12): quản lý cơ sở bật hoặc tắt «cho học trước, đóng tiền sau»; lời nhật ký do máy chủ ghi.
-        return { ...base, title: 'Cho học trước, đóng tiền sau', lines: noteLines(e.note) };
       case 'TU_CHOI':
         return { ...base, title: 'Từ chối', lines: [reasonLine(e, name)].filter(Boolean) };
       case 'HUY':

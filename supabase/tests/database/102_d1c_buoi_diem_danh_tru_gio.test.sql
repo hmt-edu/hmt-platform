@@ -178,10 +178,6 @@ select is((select teacher_status_code from app.session_attendance where session_
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 1))$$);
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 1))$$);
 select is((select status_code from app.class_session where id = pg_temp.s('p', 1)), 'DONE', 'Buổi Done khi đủ điều kiện (R-GIO-06)');
--- Dấu Đúng hạn/Trễ hạn (R-GV-05): buổi 1 diễn ra 4 tuần trước nên Done bây giờ là Trễ hạn, ghi số giờ trễ, đóng dấu một lần.
-select is((select completion_late from app.class_session where id = pg_temp.s('p', 1)), true, 'Dấu: buổi cũ Done muộn là Trễ hạn');
-select ok((select completion_late_hours from app.class_session where id = pg_temp.s('p', 1)) > 0, 'Dấu: ghi số giờ trễ lớn hơn 0');
-select ok((select completion_stamped_at from app.class_session where id = pg_temp.s('p', 1)) is not null, 'Dấu: có thời điểm đóng dấu');
 select is(app.enrollment_hours_balance(pg_temp.e('a')), 2.50::numeric, 'Đúng: có tên trong danh sách thì trừ 1,5 giờ dù vắng không phép (R-GIO-01)');
 select is(app.enrollment_hours_balance(pg_temp.e('a2')), 4.00::numeric, 'Ghi danh thứ hai không bị trừ: trừ đúng một lần, vào ghi danh sớm nhất (R-GIO-04)');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
@@ -198,29 +194,8 @@ select app.set_attendance_teacher(pg_temp.s('p', 2), jsonb_build_array(jsonb_bui
 select app.set_attendance_teacher(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'DI_MUON'),
   jsonb_build_object('student_id', pg_temp.st(4), 'status_code', 'CO_MAT')));
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 2))$$);
--- Buổi 2 đặt 21:30–23:00 hôm qua (vẫn 1,5 giờ như cũ) và hạn hoàn tất 72 giờ: Done bây giờ là Đúng hạn (giờ trễ 0).
-select pg_temp.sudo($$update app.class_session set session_date = ((now() at time zone 'Asia/Ho_Chi_Minh')::date - 1), start_time = '21:30', end_time = '23:00' where id = pg_temp.s('p', 2)$$);
-select pg_temp.sudo($$update app.setting_def set value = '72' where key = 'teacher_session_complete_hours'$$);
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 2))$$);
 select is(app.enrollment_hours_balance(pg_temp.e('a')), 1.00::numeric, 'Done buổi 2: còn 1,0 giờ');
-select is((select completion_late from app.class_session where id = pg_temp.s('p', 2)), false, 'Dấu: Done trong hạn là Đúng hạn');
-select is((select completion_late_hours from app.class_session where id = pg_temp.s('p', 2)), 0.00::numeric, 'Dấu: Đúng hạn thì giờ trễ 0');
-select is(app.session_overview(pg_temp.s('p', 2)) -> 'completion' ->> 'late', 'false', 'GV-04: session_overview trả dấu Đúng hạn của buổi Done');
-select is(app.session_overview(pg_temp.s('p', 1)) -> 'completion' ->> 'late', 'true', 'GV-04: session_overview trả dấu Trễ hạn của buổi Done muộn');
--- GV-16 (migration 138): app.teacher_my_hours, giờ dạy tính lương theo tháng (R-GV-14). Buổi 1 (Done, Trễ hạn) và buổi 2 (Done, Đúng hạn, 1,5 giờ) của giáo viên gv1.
-select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
-select is((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'rows' -> 0 ->> 'session_id'), pg_temp.s('p', 2)::text, 'GV-16: buổi Done gần nhất của tháng đứng đầu bảng');
-select is((select (r ->> 'hours')::numeric from jsonb_array_elements(app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'rows') r where r ->> 'session_id' = pg_temp.s('p', 2)::text), 1.50::numeric, 'GV-16: giờ dạy theo thời lượng buổi (1,5 giờ)');
-select is((select r ->> 'late' from jsonb_array_elements(app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'rows') r where r ->> 'session_id' = pg_temp.s('p', 2)::text), 'false', 'GV-16: buổi Đúng hạn không tính buổi trễ');
-select ok((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 1))) -> 'summary' ->> 'late_sessions')::int >= 1, 'GV-16: buổi Done muộn tính vào Buổi trễ hạn');
-select ok((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 1))) -> 'summary' ->> 'late_hours')::numeric > 0, 'GV-16: giờ trễ lớn hơn 0');
-select ok((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 1))) -> 'summary' ->> 'hours')::numeric >= 1.5, 'GV-16: tổng giờ gồm buổi Done của tháng');
-select is((app.teacher_my_hours(date '2000-01-15') -> 'summary' ->> 'sessions')::int, 0, 'GV-16: tháng không có buổi Done thì 0 buổi, 0 giờ');
-select is(app.teacher_my_hours(date '2000-01-15') ->> 'month', '2000-01-01', 'GV-16: tháng đưa về mùng 1');
-select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
-select is((app.teacher_my_hours((select session_date from app.class_session where id = pg_temp.s('p', 2))) -> 'summary' ->> 'sessions')::int, 0, 'GV-16: chỉ thấy buổi của chính mình (R-GV-08): giáo viên khác không có giờ của gv1');
-select is(has_function_privilege('anon', 'app.teacher_my_hours(date)', 'execute'), false, 'GV-16: người chưa đăng nhập không gọi được hàm');
-select pg_temp.claims(pg_temp.uid('gv1'), 'aal1'); -- trả lại vai trò đang dùng cho các bước sau
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 3))$$);
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 3) || '''::uuid)')$$), 'HMT_QUY_GIO_AM', 'Chặn: Done làm quỹ giờ âm (R-GD-18)');
 select is((select status_code from app.class_session where id = pg_temp.s('p', 3)), 'DA_CHOT', 'Buổi vẫn Đã chốt khi Done bị chặn');
@@ -292,20 +267,6 @@ select is(pg_temp.err($$select app.move_session(pg_temp.s('f', 1), pg_temp.fut()
 select lives_ok($$select app.move_session(pg_temp.s('f', 1), pg_temp.fut() + 1, '17:00', '18:30')$$, 'Đúng: dời một buổi chưa Done');
 select is((select is_manual from app.class_session where id = pg_temp.s('f', 1)), true, 'Buổi dời tay đánh dấu chỉnh lẻ (sinh lại lịch giữ nguyên, R-LOP-10)');
 select lives_ok($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'))$$, 'Đúng: đổi giáo viên một buổi (dạy thay, R-LOP-11)');
--- F5, F6: người được đặt phải đúng vai trò và đúng cơ sở của buổi, trợ giảng phải tồn tại.
-select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('sales1'))$$), 'HMT_GIAO_VIEN_KHONG_HOP_LE', 'F5 chặn: người vai Sale không được đặt làm giáo viên');
-select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('bm5'))$$), 'HMT_GIAO_VIEN_KHONG_HOP_LE', 'F5 chặn: người của cơ sở khác (và không phải giáo viên) không được đặt làm giáo viên');
-select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), pg_temp.uid('gv1'))$$), 'HMT_TRO_GIANG_KHONG_HOP_LE', 'F5 chặn: giáo viên không phải trợ giảng thì không đặt làm trợ giảng');
-select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), gen_random_uuid())$$), 'HMT_NHAN_SU_KHONG_CO', 'F6 chặn: trợ giảng không tồn tại báo HMT_NHAN_SU_KHONG_CO, không còn lỗi khoá ngoại 23503');
-select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), gen_random_uuid())$$), 'HMT_NHAN_SU_KHONG_CO', 'Giữ luật cũ: giáo viên không tồn tại vẫn báo HMT_NHAN_SU_KHONG_CO');
--- F5 chỉ kiểm người MỚI: giữ nguyên người cũ (dù không đủ vai trò) thì qua; đổi sang người sai vẫn bị chặn.
-select pg_temp.sudo($$update app.class_session set teacher_id = pg_temp.uid('sales1') where id = pg_temp.s('f', 2)$$);
-select lives_ok($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('sales1'))$$, 'F5: giữ nguyên giáo viên hiện tại (dù không đủ vai trò) thì cho qua');
-select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('bm5'))$$), 'HMT_GIAO_VIEN_KHONG_HOP_LE', 'F5: đổi sang người sai vẫn bị chặn');
-select pg_temp.sudo($$update app.class_session set assistant_id = pg_temp.uid('sales1') where id = pg_temp.s('f', 2)$$);
-select lives_ok($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), pg_temp.uid('sales1'))$$, 'F5: giữ nguyên trợ giảng hiện tại (dù không đủ vai trò), đổi riêng giáo viên sang người hợp lệ thì cho qua');
-select is(pg_temp.err($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), pg_temp.uid('bm5'))$$), 'HMT_TRO_GIANG_KHONG_HOP_LE', 'F5: đổi sang trợ giảng sai vẫn bị chặn');
-select lives_ok($$select app.change_session_staff(pg_temp.s('f', 2), pg_temp.uid('gv2'), null)$$, 'Đúng: giáo viên hợp lệ, không trợ giảng vẫn lưu được');
 select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
 select is((select count(*)::int from app.class_session where id = pg_temp.s('f', 2)), 1, 'Người dạy thay thấy buổi được giao');
 

@@ -122,10 +122,7 @@ select is((select j -> 'summary' -> 'errors_by_type' -> 'HMT_NAP_HOC_SINH_CHUA_C
 select is((select j -> 'summary' -> 'errors_by_type' -> 'HMT_NAP_LOP_CHUA_CO' from prev where j ->> 'kind' = 'GHI_DANH')::text, '[6]', 'Báo cáo: dòng 6 lớp chưa nạp');
 select is((select j -> 'summary' -> 'errors_by_type' -> 'HMT_NAP_TINH_TRANG_SAI' from prev where j ->> 'kind' = 'GHI_DANH')::text, '[7]', 'Báo cáo: dòng 7 tình trạng không thuộc danh mục');
 select is((select count(*)::int from app.enrollment where legacy_ref like 'M-HS-%'), 0, 'Xem trước ghi danh hoàn tác');
--- Migration 150 (R-V2-30): ghi danh còn một dòng lỗi thì chặn cả loại, kể cả gọi thẳng hàm với nạp thật.
-select is((select app.import_training_records('GHI_DANH', (select j from rows_gd), true, 'gd.xlsx') ->> 'mode'), 'CHAN_CA_LOAI', 'Nạp thật ghi danh còn dòng lỗi: chặn cả loại (R-V2-30)');
-select is((select count(*)::int from app.enrollment where legacy_ref like 'M-HS-%'), 0, 'Chặn cả loại: không ghi ghi danh nào, kể cả dòng đúng');
-select is((select app.import_training_records('GHI_DANH', (select jsonb_build_array(j -> 0, j -> 1) from rows_gd), true, 'gd.xlsx') ->> 'imported'), '2', 'Nạp thật: 2 ghi danh khi hai dòng đều đúng');
+select is((select app.import_training_records('GHI_DANH', (select j from rows_gd), true, 'gd.xlsx') ->> 'imported'), '2', 'Nạp thật: 2 ghi danh');
 select is(app.enrollment_hours_balance((select id from app.enrollment where legacy_ref = 'M-HS-0001|T4M1')), 22.50::numeric, 'Số dư giờ đầu kỳ = gio_con_lai = 22,5 giờ (R-V2-33)');
 select is(app.enrollment_hours_balance((select id from app.enrollment where legacy_ref = 'M-HS-0002|T4M1')), 20.00::numeric, 'Ghi danh thứ hai có số dư riêng 20 giờ: mỗi GHI DANH một dòng (Q-177)');
 select is((select count(*)::int from app.hour_ledger l join app.enrollment e on e.id = l.enrollment_id where e.legacy_ref like 'M-HS-%' and l.entry_type = 'DAU_KY'), 2, 'Mỗi ghi danh đúng một dòng Số dư đầu kỳ');

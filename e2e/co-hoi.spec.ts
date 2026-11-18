@@ -90,10 +90,7 @@ test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dù
   await expect(page.getByRole('button', { name: 'Tạo báo giá' })).toHaveCount(
     isPhone(page) ? 0 : 1,
   );
-  // Tạo đơn hàng (UI-O4, R-CRM-16): cơ hội L5 chưa tạo được nên nút mờ; điện thoại ẩn nút (Đ248), như Tạo báo giá.
-  if (isPhone(page))
-    await expect(page.getByRole('button', { name: 'Tạo đơn hàng' })).toHaveCount(0);
-  else await expect(page.getByRole('button', { name: 'Tạo đơn hàng' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Tạo đơn hàng' })).toBeDisabled();
   // Cơ hội ở L5 và người dùng có quyền tạo phiếu: nút dùng được (P3e-2).
   await expect(page.getByRole('button', { name: 'Tạo lịch Test' })).toBeEnabled();
   await expect(page.getByRole('button', { name: /^Đính kèm \(\d+\)$/ })).toHaveCount(0);

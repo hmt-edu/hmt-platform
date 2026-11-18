@@ -2,21 +2,15 @@
 export type MoneyInRow = {
   id: string;
   code: string;
-  receipt_id: string | null;
-  receipt_code: string | null;
-  /** Khoản thu nợ đầu kỳ (TC-02, R-V2-15) không có đơn: null. */
-  order_id: string | null;
-  order_code: string | null;
+  receipt_id: string;
+  receipt_code: string;
+  order_id: string;
+  order_code: string;
   parent_id: string;
   parent_name: string;
   amount: number;
   created_at: string;
   branch_code: string;
-  /** Khoản đảo (TC-09): mã khoản gốc. Khoản thu thường: null. */
-  reversal_of_code: string | null;
-  /** Khoản gốc đã bị hoàn tác (không hoàn tác lần hai). */
-  is_reversed: boolean;
-  reason_code: string | null;
 };
 export type MoneyInPage = { total: number; sum: number; rows: MoneyInRow[] };
 

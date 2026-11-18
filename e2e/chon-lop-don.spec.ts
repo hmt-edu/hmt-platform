@@ -60,7 +60,6 @@ test('BH-08: Sửa đơn Nháp, chọn lớp cho một dòng thì hiện mã l�
   const again = page.getByRole('dialog', { name: 'Chọn lớp và ngày vào lớp' });
   await again.getByRole('radio', { name: /^Chưa chọn lớp/ }).check();
   await again.getByRole('button', { name: 'Chọn', exact: true }).click();
-  // Thông báo hiện cả ở khung toast và vùng đọc màn hình: chữ khớp 2 phần tử (strict mode); lấy phần tử đầu.
-  await expect(page.getByText(/Dòng đơn chưa chọn lớp/).first()).toBeVisible();
+  await expect(page.getByText(/Dòng đơn chưa chọn lớp/)).toBeVisible();
   await expect(lines.getByText(grid.classCode)).toHaveCount(0);
 });

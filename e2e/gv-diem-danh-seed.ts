@@ -31,12 +31,7 @@ export async function seedAttendance(project: string): Promise<AttendanceSeed> {
           `${key}@${DOMAIN}`,
         ])
       ).rows[0]?.id ?? '';
-    const [gv, ta, gv2, admin] = [
-      await id('gv.cs5'),
-      await id('tg.cs5'),
-      await id('gv2.cs5'),
-      await id('quantri.cs5'),
-    ];
+    const [gv, ta, admin] = [await id('gv.cs5'), await id('tg.cs5'), await id('quantri.cs5')];
     // Tạo lớp bằng hàm nghiệp vụ, đăng nhập giả là Admin (có hai bước), lớp bắt đầu hai tuần sau để không sinh buổi hôm nay.
     await db.query(
       `select set_config('request.jwt.claims', (app.custom_access_token_hook(jsonb_build_object('user_id', $1::uuid,
@@ -66,8 +61,7 @@ export async function seedAttendance(project: string): Promise<AttendanceSeed> {
       ).rows[0]?.id ?? '';
     const chot = await session(901, 'DA_CHOT', gv, ta);
     const nhap = await session(902, 'NHAP', gv, null);
-    // Buổi của người khác: giáo viên thứ hai (đủ vai trò Giáo viên, F5), không phải gv.cs5.
-    const khac = await session(903, 'DA_CHOT', gv2, null);
+    const khac = await session(903, 'DA_CHOT', ta, null);
     const names: [string, string, string] = [
       `Em E2E ${tag} A`,
       `Em E2E ${tag} B`,

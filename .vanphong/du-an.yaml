@@ -1,7 +1,7 @@
-# Cấu hình cho hệ thống điều phối «Văn phòng AI» (kho hmt-edu/dieu-phoi-kit). Chỉ chứa cấu hình, không có bí mật.
+# Cấu hình cho hệ thống điều phối «Văn phòng AI» (kho hmt-vanhanh/dieu-phoi-kit). Chỉ chứa cấu hình, không có bí mật.
 # Luật riêng của HMT (đánh số migration, «OK ĐƯA VÀO LUẬT», canvas, v.v.) nằm trong CLAUDE.md và docs/ (liệt kê ở duong_dan_tai_lieu), KHÔNG nằm trong lõi của hệ thống điều phối.
 ten: HMT Platform
-kho_github: hmt-edu/hmt-platform
+kho_github: hmt-vanhanh/hmt-platform
 nhanh_chinh: main
 thu_muc_goc: ~/Developer/hmt-platform
 cach_tao_thu_muc_vai: 'git worktree add {thu_muc} -b {nhanh} origin/{nhanh_chinh}'

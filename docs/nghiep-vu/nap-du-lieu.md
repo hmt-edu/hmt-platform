@@ -3,7 +3,7 @@
 Luật: `docs/spec/04` mục 14, R-V2-29 đến R-V2-34 (anh Trường chốt 04/11/2026, Đ285). File mẫu dữ liệu giả `HMT5_FILE_MAU_NAP_DU_LIEU_GIA.xlsx` nằm trong `_inbox/` (không commit). Thứ tự nạp: Người dùng, Lớp, **Phụ huynh, Học sinh**, Ghi danh, Số dư, Cơ hội, Phiếu test. T4a (migration 068) làm Phụ huynh và Học sinh; T4b (migration 069, Edge Function `import-users`) làm Người dùng; các loại còn lại làm ở các bước sau.
 
 ## Quy tắc chung (mọi loại)
-- Giao diện đọc file, gửi tối đa `import_max_rows` hàng (Cài đặt, mặc định 300 từ migration 216, 1 đến 5000) dạng JSON; quá thì chặn cả lô.
+- Giao diện đọc file, gửi tối đa `import_max_rows` hàng (Cài đặt, mặc định 1000, 1 đến 5000) dạng JSON; quá thì chặn cả lô.
 - **Xem trước rồi nạp:** cùng một hàm, `p_commit = false` chạy hết rồi hoàn tác nên kết quả luôn khớp nạp thật.
 - Mỗi dòng có trạng thái: `HOP_LE` (nạp), `TRUNG` (đã có, bỏ qua, nêu mã hồ sơ có sẵn), `LOI` (kèm câu tiếng Việt). Dòng lỗi và trùng không chặn dòng hợp lệ (nhóm CRM). Nạp lại thì dòng đã nạp thành `TRUNG`: **không ghi đè, không gộp**.
 - Mã cũ (`ma_cu`) lưu vào `legacy_ref`, có chỉ mục. Mã mới cấp theo chuẩn mã (`PH`, `HS`).
@@ -72,52 +72,4 @@ Loại nạp `CO_HOI` của `app.import_records`. Mỗi dòng tạo **ba thứ t
 
 - Bước kiểm `import_users_resolve` coi dòng là **TRUNG** (bỏ qua, báo) khi tên đăng nhập đã có ở cột `username` (không phân biệt hoa thường) hoặc ở `legacy_ref` của một tài khoản nhân sự. Nhờ vậy Admin đầu tiên tạo bằng Bootstrap rồi đặt tên đăng nhập bằng `set_username` không bị nạp thêm tài khoản thứ hai. Ràng buộc duy nhất của `username` (migration 074) vẫn là chốt cuối.
 - Quản lý trực tiếp (`quan_ly`) tra theo cả `username` lẫn `legacy_ref`.
-- File nạp 108 người: bộ chuyển loại mọi người trạng thái Đã nghỉ (Q-04, Q-26; người Nghỉ phép vẫn nạp) và dòng ADMIN của anh Trường, tên đăng nhập `<tên đăng nhập Admin>` (Q-24, Admin đầu tiên tạo bằng Bootstrap trên bản chạy thật).
-
-## Ghi danh: vá và chặn cả loại (Code B, 15/11/2026, migration 150)
-Hàm nạp chung của các loại đào tạo là `app.import_training_records(loại, hàng, nạp thật, tên file)` (loại `LOP`, `GHI_DANH`, `BUOI_HOC`, `DIEM_DANH`). Kiểm thử: `supabase/tests/database/150_nap_ghi_danh_va.test.sql` và `106_...`.
-- **Chặn cả loại ngay trong hàm (R-V2-30):** nạp thật `GHI_DANH` còn một dòng lỗi thì không ghi dòng nào; kết quả `mode = CHAN_CA_LOAI`, `imported = 0`; nhật ký nạp ghi lần này với 0 dòng nạp. Trước đây chỉ nút Nạp ở giao diện bị khoá.
-- `tinh_trang_moi` trống: **Chờ xếp lớp** kèm cảnh báo. "Đã xếp lớp" (có trong danh mục, mã `DA_XEP_LOP`) được **đổi sang trạng thái cuối** vì ghi danh nạp thẳng trạng thái đang học: **Đang học** nếu có `ngay_vao_lop`, không thì **Chờ xếp lớp**, kèm cảnh báo (Chat chốt H1, 15/11).
-- `gio_con_lai` âm: lỗi `HMT_NAP_GIO_AM` (Q-253).
-- `gio_con_lai` bằng 0: vẫn sinh dòng "Số dư đầu kỳ" 0 giờ (Q-177). Ràng buộc sổ giờ nới chỉ cho loại `DAU_KY`; mọi loại dòng khác vẫn cấm 0 giờ.
-- Cột script không dùng: `sdt_ph`, `ho_ten_hs`, `mon`, `loai_lop`, `hinh_thuc` (Offline/Online, chưa có chỗ lưu), `tinh_trang_cu`, `ngay_chot`, `lich_hoc`.
-
-## Phiếu test (tab `06_PHIEUTEST`, migration 151)
-Loại `PHIEU_TEST` của `app.import_training_records`. Nhóm CRM: dòng lỗi không chặn dòng đúng; trùng `ma_cu` thì TRUNG (lưu ở `legacy_ref` của phiếu). Kiểm thử: `151_nap_phieu_test.test.sql`.
-- Cột nhận: `ma_cu`, `sdt_ph`, `sdt_2`, `ngay_test` (yyyy-mm-dd), `gio_test` (hh:mm, giờ Việt Nam), `ho_ten_hs`, `khoi`, `mon` (trống là Toán), `diem` (dấu phẩy được), `trang_thai_phieu`, `ly_do_huy`, `ghi_chu`. Cột khác bỏ qua.
-- Phiếu gắn vào **cơ hội có mã cũ = SĐT** (số chính, không thấy thì `sdt_2`) và vào **em trong danh sách em của cơ hội** (tên chuẩn hoá khớp `ho_ten_hs`, cột `prospect_student_id` bắt buộc). Không thấy cơ hội: LỖI `HMT_NAP_CO_HOI_CHUA_CO`; không thấy em: `HMT_NAP_EM_CHUA_CO`; chưa có hồ sơ học sinh cùng phụ huynh và tên: `HMT_NAP_HOC_SINH_CHUA_CO`. **Không tự tạo cơ hội từ phiếu** (Chat chốt 15/11, H7): dòng lỗi báo số dòng, các dòng khác vẫn nạp.
-- Trạng thái (R-V2-31): Hoàn thành **có điểm** → danh mục mới `COMPLETED_LEGACY` "Hoàn thành (dữ liệu cũ)" (trạng thái Ngừng nên Kanban không thêm cột và người dùng không chọn được; phiếu này không hiện ở Kanban, vẫn hiện ở danh sách và hồ sơ), giữ điểm, không đặt trình độ hay xếp loại; Hoàn thành không điểm → Chờ giáo viên chấm; Huỷ cần `ly_do_huy` có trong danh mục lý do huỷ test (`HMT_NAP_LY_DO_HUY_SAI`); Nháp; trống → Nháp kèm cảnh báo. Điểm ngoài 0 đến 10 và giờ sai dạng bị chặn.
-- Hình thức test `OFFLINE` và cấp độ đề `CO_BAN` chỉ là giá trị giữ chỗ vì hai cột bắt buộc, script không có hai thông tin này (chờ anh duyệt hoặc thêm mục "Không rõ", ghi ở VIEC-ANH).
-- Ghi thẳng bảng: cố ý bỏ qua luật "giờ test ở tương lai" và không tính lại nhóm con L5.
-
-## Báo cáo đối soát sau nạp (migration 153)
-`app.import_reconciliation_report(mã cơ sở)` (Admin; để trống là mọi cơ sở) trả `parents`, `students`, `enrollments_active`, `classes`, `hours_left`, `opportunities_by_stage` (L1 đến L8), `opportunities_total`. Chỉ đếm hồ sơ nạp từ dữ liệu cũ (có `legacy_ref`); không có tên hay số điện thoại. Dùng để so với tab `DOI_SOAT` của script. Tổng công nợ và tiền thu thừa thêm ở PR Số dư tiền. Kiểm thử: `153_bao_cao_doi_soat_sau_nap.test.sql`.
-
-## File mẫu bẩn
-`docs/van-hanh/mau/HMT5_FILE_MAU_NAP_DU_LIEU_GIA_BAN.xlsx`: cùng cấu trúc file mẫu, thêm dòng lỗi cố ý (SĐT thiếu số 0, ngày lẫn định dạng, trùng SĐT, cơ sở viết khác, giờ không khớp, giờ âm...). Tab `KET_QUA_DU_KIEN` ghi kết quả hàm phải báo cho từng dòng. Chỉ dữ liệu giả (SĐT 0900 000 xxx). Dùng cho diễn tập T5.
-
-## Cơ hội: cột `nguon_goc` (migration 155, Chat chốt 15/11)
-Cột `nguon_goc` của script là chữ tự do ("Page T9", "BGĐ"), không phải tên loại nguồn trong danh mục. Hàm Cơ hội: nếu khớp tên (hoặc mã) loại nguồn thì dùng; "BGĐ" hoặc "Ban Giám Đốc" thành loại Ban Giám Đốc; mọi giá trị khác, kể cả trống, thành loại **Marketing kèm cảnh báo** "Loại nguồn suy mặc định" (không phải lỗi). Chữ gốc ghi vào ghi chú của cơ hội ("Nguồn gốc (chữ gốc): ..."), không thêm cột. Báo cáo Xem trước và Nạp có `summary.source_type_defaulted` (số dòng suy loại nguồn). Cột `nguon` (nguồn) vẫn phải thuộc loại; sai thì LỖI `HMT_NGUON_SAI`. Kiểm thử: `155_nap_co_hoi_nguon_goc.test.sql`. Anh Trường có thể phản đối quyết định này.
-
-## Số dư tiền và Sổ số dư khách hàng (tab `09_SODU`, migration 217, PR Draft)
-Bảng mới `app.customer_balance_entry`: sổ của **phụ huynh**, chỉ thêm dòng (R-TIEN-33), giữ `student_id` ở từng dòng (H4, chờ anh). Số **dương** là tiền thu thừa (`DAU_KY_THU_THUA`), số **âm** là công nợ phải thu đầu kỳ (`DAU_KY_CONG_NO`) (R-V2-32); tiền bằng đồng (file đã nhân 1000). RLS: hiện chỉ Admin đọc; màn khách hàng đọc qua hàm ở cụm Thu chi.
-- Loại `SO_DU`: cột nhận `hoc_sinh_ma_cu`, `cong_no_phai_thu_dong`, `tien_thu_thua_dong`, `ngay_chot` (trống: tham số `opening_balance_date`). Cột khác bỏ qua (giờ nạp ở Ghi danh; `hoc_phi_con_du_dong` đã nằm trong `tien_thu_thua_dong`).
-- Một dòng lỗi chặn cả loại. Học sinh chưa nạp: `HMT_NAP_HOC_SINH_CHUA_CO`; tiền âm hoặc có phần lẻ: `HMT_NAP_TIEN_SAI`. Trùng mã học sinh cũ đã có dòng sổ: TRUNG. Cả hai số bằng 0: không ghi dòng (cảnh báo). Cả hai lớn hơn 0: ghi cả hai kèm cảnh báo.
-- **Q-227:** ngày 17/11 chỉ nạp giờ; loại này có sẵn trên màn Nhập nhưng chỉ nạp khi anh Trường bảo. Phiếu "Thu nợ đầu kỳ" (R-V2-15) chưa làm: thuộc cụm Thu chi.
-
-Báo cáo đối soát (migration 218) thêm hai khoá `debt_total_vnd` (tổng công nợ, số dương) và `credit_total_vnd` (tổng tiền thu thừa), đơn vị đồng. Kiểm thử: `152_nap_so_du.test.sql`.
-
-## Giới hạn thời gian và số đo trên dữ liệu giả cỡ lớn (PR-3, migration 216)
-Đo 16/11/2026 trên DB local (máy đang tải nặng, nên số có thể cao hơn máy bình thường), toàn dữ liệu giả, hoàn tác sau khi đo:
-| Việc (1000 dòng) | Thời gian |
-|---|---|
-| Xem trước Phụ huynh | 3,5 đến 10 giây |
-| Nạp thật Phụ huynh | 5 đến 8 giây |
-| Nạp lại cùng file (toàn TRUNG) | 1,7 đến 8 giây |
-| Xem trước Học sinh | 5 giây (22 giây khi thống kê bảng phụ huynh chưa cập nhật) |
-| Nạp thật Học sinh | 10 đến 20 giây |
-| Báo cáo đối soát sau nạp | dưới 0,2 giây |
-- **Vấn đề:** vai trò `authenticated` của Supabase có `statement_timeout = 8s`; hạn này bấm giờ cho câu lệnh gọi hàm từ bên ngoài, nên một lô 1000 dòng có thể bị cắt giữa chừng bằng lỗi chung. **Đặt `statement_timeout` riêng cho hàm (`alter function … set`) KHÔNG nới được hạn này** (Tester tái hiện; bản đầu của PR này, migration 164, đã sai và đã bỏ).
-- **Xử lý (migration 216):** tham số `import_max_rows` mặc định hạ từ 1000 xuống **300 dòng mỗi lần nạp** (khoảng 6 giây ở mức chậm nhất đã đo). File lớn chia nhiều file; nạp lại không ghi đè (dòng đã nạp thành TRUNG). Chỉnh ở Cài đặt (1 đến 5000) nếu staging đo nhanh hơn. Lô 5000 dòng Học sinh chạy quá 10 phút trong một giao dịch dài (thống kê cũ): không dùng lô lớn.
-- **Khuyến nghị khi nạp thật:** mỗi lần nạp tối đa 300 dòng; nạp Phụ huynh xong chờ vài phút (hoặc để hệ thống cập nhật thống kê) rồi mới nạp Học sinh. Loại có luật «một dòng lỗi chặn cả loại» (Lớp, Ghi danh, Số dư) cũng bị giới hạn 300 dòng mỗi lần: chia file theo cơ sở.
-- **Chưa làm:** nạp nặng bằng Edge Function (không bị hạn 8 giây của vai trò) hoặc cắt lô tự động ở giao diện; cần Chat/anh quyết. Chưa đo trên staging: nhờ Tester chạy khối đo trên staging.
+- File nạp 108 người: bộ chuyển loại mọi người trạng thái Đã nghỉ (Q-04, Q-26; người Nghỉ phép vẫn nạp) và dòng ADMIN của anh Trường, tên đăng nhập `truongcx` (Q-24, Admin đầu tiên tạo bằng Bootstrap trên bản chạy thật).

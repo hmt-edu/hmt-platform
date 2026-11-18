@@ -19,8 +19,8 @@ web, không dán vào chat, không chụp màn hình lúc khoá đang hiện.
 | ---------------------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- |
 | Tài khoản Cloudflare               | `[email vận hành]+staging`                                           | `[email chạy thật]`                                                         |
 | Tên widget Turnstile               | `hmt-staging`                                                                  | `hmt-prod`                                                                        |
-| Hostname                           | `<tên-miền-thử-nghiệm>.pages.dev`                                                        | `<tên-miền-chạy-thật>.pages.dev` (thêm tên miền riêng khi có)                                 |
-| Tài khoản Supabase                 | TÀI KHOẢN CHỦ DỰ ÁN (GitHub)                                                         | `[tài khoản chạy thật]` (email + hai bước)                                                |
+| Hostname                           | `hmt-staging.pages.dev`                                                        | `hmt-prod.pages.dev` (thêm tên miền riêng khi có)                                 |
+| Tài khoản Supabase                 | `hmt-vanhanh` (GitHub)                                                         | `[tài khoản chạy thật]` (email + hai bước)                                                |
 | Site key (công khai) dán vào       | `hmt-platform` > Variables > `VITE_TURNSTILE_SITE_KEY`                         | `hmt-deploy` > Variables > `VITE_TURNSTILE_SITE_KEY`                              |
 | Secret key cho Edge Function       | `hmt-platform` > Secrets > `STAGING_TURNSTILE_SECRET` (CI tự đặt vào Function) | Supabase `hmt-prod` > Edge Functions > Secrets > `HMT_TURNSTILE_SECRET`           |
 | Khoá secret Supabase cho Function  | `hmt-platform` > Secrets > `STAGING_SUPABASE_SECRET_KEY` (CI tự đặt)           | Supabase `hmt-prod` > Edge Functions > Secrets > `HMT_SECRET_KEY` (`sb_secret_…`) |
@@ -71,7 +71,7 @@ chặn đầu giờ thì nâng lên 30.
 
 Supabase `hmt-prod` > **Edge Functions** > **Secrets**, thêm:
 
-- `HMT_ALLOWED_ORIGINS` = `https://<tên-miền-chạy-thật>.pages.dev` (sau này thêm tên miền riêng, cách nhau dấu phẩy).
+- `HMT_ALLOWED_ORIGINS` = `https://hmt-prod.pages.dev` (sau này thêm tên miền riêng, cách nhau dấu phẩy).
 - `HMT_SECRET_KEY` = một khoá secret riêng tạo ở **Project Settings** > **API Keys** > **Secret keys** (tên `hmt_prod_edge`,
   bắt đầu bằng `sb_secret_`). Để Function chuyển IP thật của người dùng sang Supabase Auth; thiếu thì mọi lần đăng nhập bị
   tính chung một IP và giới hạn theo IP chặn nhầm cả hệ thống.

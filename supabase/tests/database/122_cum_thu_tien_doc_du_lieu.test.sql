@@ -79,12 +79,8 @@ begin
     select 'PT-' || v_o.code, o.id, o.parent_id, o.branch_id, o.branch_id, 'DA_DUYET', abs(v_o.amount), 'TIEN_MAT',
            app.fold_text('PT-' || v_o.code || ' ' || o.code || ' ' || par.full_name || ' ' || par.phone)
       from app.sales_order o join app.parent par on par.id = o.parent_id where o.code = v_o.ord returning id into v_r;
-    -- Khoản âm là khoản đảo (migration 180): không có phiếu thu, trỏ về khoản gốc KTV-TC-1, có lý do.
-    insert into app.money_in (code, receipt_id, order_id, parent_id, branch_id, amount, created_at, reversal_of, reason_code)
-    select v_o.code, case when v_o.amount > 0 then v_r end, o.id, o.parent_id, o.branch_id, v_o.amount, now() - make_interval(days => v_o.ago),
-           case when v_o.amount < 0 then (select id from app.money_in where code = 'KTV-TC-1') end,
-           case when v_o.amount < 0 then 'NHAP_SAI_SO_TIEN' end
-      from app.sales_order o where o.code = v_o.ord;
+    insert into app.money_in (code, receipt_id, order_id, parent_id, branch_id, amount, created_at)
+    select v_o.code, v_r, o.id, o.parent_id, o.branch_id, v_o.amount, now() - make_interval(days => v_o.ago) from app.sales_order o where o.code = v_o.ord;
   end loop;
   set local session_replication_role = 'origin';
 end $$;

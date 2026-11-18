@@ -43,8 +43,6 @@ export type SessionOverview = {
   attendance_marked: number;
   deadline_at: string;
   pending_reason: string | null;
-  /** Dấu Đúng hạn/Trễ hạn do hệ thống đóng lúc Done (R-GV-05); null khi chưa Done hoặc buổi Done trước khi có dấu. */
-  completion?: { late: boolean; late_hours: number; stamped_at: string } | null;
 };
 
 export const EXAM_TYPE = 'KIEM_TRA';

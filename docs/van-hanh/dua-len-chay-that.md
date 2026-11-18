@@ -17,7 +17,7 @@ Viết 10/11/2026. Đã đọc `deploy/.github/workflows/deploy-production.yml`,
 0. **Kiểm production bằng SQL chỉ đọc:** dán `docs/van-hanh/sql-kiem-hmt-prod-chi-doc.sql` vào Supabase `hmt-prod` > SQL Editor > Run; gửi Chat ảnh kết quả (số migration cuối, số dòng các bảng chính, số phiếu làm 043 dừng). File chỉ có SELECT.
 
 1. Chat và anh OK ngày giờ deploy. Không deploy khi đang có người dùng thật thao tác.
-2. Trên bản thử nghiệm: `https://<tên-miền-thử-nghiệm>.pages.dev` đã thử xong các luồng cần cho bản này.
+2. Trên bản thử nghiệm: `https://hmt-staging.pages.dev` đã thử xong các luồng cần cho bản này.
 3. Lấy tag: `hmt-platform` > Actions > lượt **Deploy staging** xanh mới nhất > dòng `Tag: staging-YYYYMMDD-HHMM-xxxxxxx`. Tag phải là commit trên `main` và đã có lượt Deploy staging thành công (workflow tự kiểm, sai thì dừng).
 4. **Sao lưu ngay trước khi deploy** (không dùng bản đêm qua):
    1. `hmt-deploy` > Actions > **Backup production** > **Run workflow**.
@@ -31,14 +31,14 @@ Viết 10/11/2026. Đã đọc `deploy/.github/workflows/deploy-production.yml`,
 1. `hmt-deploy` > Actions > **Deploy production** > **Run workflow** > ô `ref` dán tag > Run.
 2. Chờ đủ bốn bước xanh: Kiểm tra bản được chọn > Build > Áp migration lên hmt-prod > Triển khai Cloudflare Pages (xen thêm bước Edge Function). Đừng huỷ giữa chừng: workflow không huỷ lượt đang chạy vì migration phải chạy trọn.
 3. Migration đỏ: dừng, chụp màn hình bước lỗi, báo Chat. Không sửa tay DB chạy thật.
-4. Sau khi xanh: mở `https://<tên-miền-chạy-thật>.pages.dev`, đăng nhập Admin, mở một danh sách, chạy `select max(version) from supabase_migrations.schema_migrations;` so với số migration cuối của bản đã chọn.
+4. Sau khi xanh: mở `https://hmt-prod.pages.dev`, đăng nhập Admin, mở một danh sách, chạy `select max(version) from supabase_migrations.schema_migrations;` so với số migration cuối của bản đã chọn.
 
 ## Ai cần quyền gì (suy ra từ cách workflow dùng khoá)
 
 | Việc | Cần | Nằm ở |
 |---|---|---|
-| Chạy Deploy production, Backup production | Quyền chạy workflow ở `hmt-deploy` (TÀI KHOẢN DEPLOY) | GitHub, trình duyệt |
-| Đọc `hmt-platform` | `PLATFORM_READ_TOKEN` (do TÀI KHOẢN CHỦ DỰ ÁN tạo, hết hạn 07/11/2027) | Secrets `hmt-deploy` |
+| Chạy Deploy production, Backup production | Quyền chạy workflow ở `hmt-deploy` (`truongcx-95`) | GitHub, trình duyệt |
+| Đọc `hmt-platform` | `PLATFORM_READ_TOKEN` (do `hmt-vanhanh` tạo, hết hạn 07/11/2027) | Secrets `hmt-deploy` |
 | Áp migration, sao lưu | `PROD_DB_URL` | Secrets `hmt-deploy` |
 | Triển khai Edge Function | `PROD_SUPABASE_ACCESS_TOKEN` (nếu thiếu, bước này bỏ qua kèm cảnh báo) | Secrets `hmt-deploy` |
 | Triển khai giao diện | `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` | Secrets `hmt-deploy` |
@@ -66,7 +66,7 @@ Mỗi file migration chạy trong một giao dịch của Supabase CLI (suy ra, 
 
 1. Cả bốn bước (và Edge Function nếu có token) xanh; phần tóm tắt lượt chạy ghi giờ migration, giờ triển khai, địa chỉ.
 2. Chạy `select max(version) from supabase_migrations.schema_migrations;` phải bằng số migration cuối của bản đã chọn (086, hoặc 087 nếu #210 đã gộp), và `select count(*) from supabase_migrations.schema_migrations;` khớp tổng số file của tag.
-3. Mở `https://<tên-miền-chạy-thật>.pages.dev` (cửa sổ ẩn danh): trang đăng nhập hiện, đăng nhập bằng Admin.
+3. Mở `https://hmt-prod.pages.dev` (cửa sổ ẩn danh): trang đăng nhập hiện, đăng nhập bằng Admin.
 4. Mở lần lượt Lead, Cơ hội, Đơn hàng, Danh mục: danh sách mở được, không báo lỗi đỏ.
 5. Tối đó xem lượt Backup production lúc 02:05 xanh (chứng tỏ DB mới vẫn xuất được).
 6. Việc xác nhận bằng số thật (bao nhiêu lead, cơ hội) phải do anh xem; Claude Code không có quyền đọc chạy thật.

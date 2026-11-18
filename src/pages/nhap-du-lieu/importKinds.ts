@@ -1,8 +1,7 @@
 // Các loại nạp dữ liệu cũ của màn Nhập (QT-18, chỉ Admin). Cột theo file mẫu HMT5_FILE_MAU_NAP_DU_LIEU_GIA.xlsx (từng tab xuất ra CSV UTF-8)
 // và docs/nghiep-vu/nap-du-lieu.md. Mọi luật kiểm dòng nằm ở hàm trong cơ sở dữ liệu / Edge Function; giao diện chỉ kiểm tên cột.
 
-export type ImportKind =
-  'NGUOI_DUNG' | 'CO_HOI' | 'PHU_HUYNH' | 'HOC_SINH' | 'LOP' | 'GHI_DANH' | 'PHIEU_TEST' | 'SO_DU';
+export type ImportKind = 'NGUOI_DUNG' | 'CO_HOI' | 'PHU_HUYNH' | 'HOC_SINH' | 'LOP' | 'GHI_DANH';
 
 export type ImportKindConfig = {
   kind: ImportKind;
@@ -183,42 +182,6 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
     training: true,
     blockOnError: true,
   },
-  {
-    kind: 'PHIEU_TEST',
-    title: 'Phiếu test',
-    description:
-      'Phiếu kiểm tra đầu vào đã làm, gắn vào cơ hội theo số điện thoại. Phiếu xong có điểm thành "Hoàn thành (dữ liệu cũ)". Nạp Cơ hội và Học sinh trước. Dòng lỗi không chặn dòng đúng.',
-    columns: [
-      'ma_cu',
-      'sdt_ph',
-      'sdt_2',
-      'ngay_test',
-      'gio_test',
-      'ho_ten_hs',
-      'khoi',
-      'mon',
-      'diem',
-      'trang_thai_phieu',
-      'ly_do_huy',
-      'ghi_chu',
-    ],
-    required: ['ma_cu', 'sdt_ph', 'ngay_test', 'ho_ten_hs', 'khoi', 'trang_thai_phieu'],
-    viaFunction: false,
-    subject: 'Phiếu test',
-    training: true,
-  },
-  {
-    kind: 'SO_DU',
-    title: 'Số dư',
-    description:
-      'Số dư tiền đầu kỳ theo học sinh: công nợ phải thu (ghi số âm trong sổ) và tiền thu thừa, tính bằng đồng. Giờ còn lại nạp ở Ghi danh. Một dòng lỗi thì không nạp cả loại.',
-    columns: ['hoc_sinh_ma_cu', 'cong_no_phai_thu_dong', 'tien_thu_thua_dong', 'ngay_chot'],
-    required: ['hoc_sinh_ma_cu', 'cong_no_phai_thu_dong', 'tien_thu_thua_dong'],
-    viaFunction: false,
-    subject: 'Số dư',
-    training: true,
-    blockOnError: true,
-  },
 ];
 
 export function kindConfig(kind: ImportKind): ImportKindConfig {
@@ -273,10 +236,9 @@ export const IMPORT_KIND_ROWS: ImportKindRow[] = [
   },
   {
     title: 'Số dư',
-    description:
-      'Số dư tiền đầu kỳ (công nợ, tiền thu thừa). Giờ nạp ở Ghi danh. Một dòng lỗi thì không nạp cả loại.',
+    description: 'Số dư giờ, số dư tiền. Một dòng lỗi thì không nạp cả loại.',
     needs: 'Phụ huynh, Học sinh',
-    kind: 'SO_DU',
+    kind: null,
   },
   {
     title: 'Cơ hội',
@@ -287,8 +249,8 @@ export const IMPORT_KIND_ROWS: ImportKindRow[] = [
   {
     title: 'Phiếu test',
     description: 'Phiếu kiểm tra đầu vào đã làm.',
-    needs: 'Cơ hội, Học sinh',
-    kind: 'PHIEU_TEST',
+    needs: 'Cơ hội',
+    kind: null,
   },
 ];
 
@@ -328,13 +290,6 @@ const SAMPLE_VALUES: Record<string, string> = {
   si_so_toi_da: '15',
   tinh_trang: 'Đang chạy',
   hoc_sinh_ma_cu: 'HS0001',
-  ngay_test: '2026-09-14',
-  gio_test: '17:30',
-  ho_ten_hs: 'Nguyễn Văn C',
-  diem: '7.5',
-  trang_thai_phieu: 'Hoàn thành',
-  cong_no_phai_thu_dong: '0',
-  tien_thu_thua_dong: '0',
   tinh_trang_moi: 'Đang học',
   ngay_vao_lop: '2026-11-17',
   thoi_luong_buoi: '2.5',

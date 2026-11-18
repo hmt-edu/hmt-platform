@@ -49,8 +49,6 @@ import {
   useRefreshOrder,
 } from './useOrderData';
 import { OrderEditLines } from './OrderEditLines';
-import { PayLaterDialog } from './PayLaterDialog';
-import { useOrderPayLater } from './usePayLater';
 import { QuotePackageDialog } from '../bao-gia/QuotePackageDialog';
 import { useOpportunityStudents } from '../bao-gia/useQuoteData';
 import { orderEventEntries, reasonLine } from './orderEventEntries';
@@ -143,7 +141,6 @@ function OrderView({ record }: { record: OrderRecord }) {
   const [submitError, setSubmitError] = useState<{ message: string; retry: boolean } | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [receiptOpen, setReceiptOpen] = useState(false);
-  const [payLaterOpen, setPayLaterOpen] = useState(false);
   const [approveOpen, setApproveOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -159,15 +156,6 @@ function OrderView({ record }: { record: OrderRecord }) {
   const receiptCount = receiptsQuery.data?.total ?? 0;
   const onlyReceiptId = receiptCount === 1 ? (receiptsQuery.data?.rows[0]?.id ?? null) : null;
   const canCreateReceipt = access.can('RECEIPT', 'TAO') && access.featureOn('BAN_HANG') && !phone;
-  // BH-09 (R-GD-12): quản lý cơ sở (Đơn hàng · Duyệt) bật hoặc tắt «cho học trước» trên đơn đã duyệt; bật chỉ khi chưa thu tiền. Máy chủ kiểm lại, cờ tham số tắt mặc định.
-  const payLaterQuery = useOrderPayLater(record.status_code === 'DA_DUYET' ? record.id : undefined);
-  const payLaterOn = payLaterQuery.data === true;
-  const canPayLater =
-    record.status_code === 'DA_DUYET' &&
-    access.can('SALES_ORDER', 'DUYET') &&
-    access.featureOn('BAN_HANG') &&
-    !phone &&
-    (payLaterOn || (paymentQuery.data !== undefined && paymentQuery.data.paid === 0));
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
   useCrumbTail(record.code);
@@ -695,11 +683,6 @@ function OrderView({ record }: { record: OrderRecord }) {
                 Tạo phiếu thu
               </Button>
             )}
-            {canPayLater && (
-              <Button onClick={() => setPayLaterOpen(true)}>
-                {payLaterOn ? 'Tắt cho học trước' : 'Cho học trước'}
-              </Button>
-            )}
           </>
         }
         smart={[
@@ -985,14 +968,6 @@ function OrderView({ record }: { record: OrderRecord }) {
           void refresh();
           toast({ title: message });
         }}
-      />
-      <PayLaterDialog
-        open={payLaterOpen}
-        onOpenChange={setPayLaterOpen}
-        orderId={record.id}
-        orderCode={record.code}
-        enabled={payLaterOn}
-        onDone={() => void refresh()}
       />
       <CreateReceiptDialog
         open={receiptOpen}

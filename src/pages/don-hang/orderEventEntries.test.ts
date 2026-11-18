@@ -29,19 +29,6 @@ function firstEvent(entries: ReturnType<typeof orderEventEntries>) {
   return first;
 }
 
-describe('BH-09: sự kiện CHO_HOC_TRUOC có mục dòng thời gian (lỗi cũ: nhánh thiếu làm trang đơn lỗi)', () => {
-  it('bật cho học trước: tiêu đề riêng, lời nhật ký của máy chủ hiện thành dòng', () => {
-    const entries = orderEventEntries(
-      [ev(1, 'CHO_HOC_TRUOC', { note: 'Bật cho học trước, đóng tiền sau. thử' })],
-      name,
-    );
-    expect(entries).toHaveLength(1);
-    const entry = firstEvent(entries);
-    expect(entry.title).toBe('Cho học trước, đóng tiền sau');
-    expect(entry.lines).toEqual(['Bật cho học trước, đóng tiền sau. thử']);
-  });
-});
-
 describe('Q-145: nhật ký Tạo, Sửa ghi dòng Ưu đãi linh hoạt', () => {
   it('Tạo có ưu đãi linh hoạt: các dòng hiện dưới tiêu đề "Tạo đơn hàng", đơn từ báo giá kèm mã báo giá', () => {
     const entry = firstEvent(
@@ -192,13 +179,5 @@ describe('mục dòng thời gian của đơn (Q-48, Q-51)', () => {
     expect(editedNoteText('Đơn đã sửa so với báo giá BG-1: dòng 1 số giờ 6 → 8')).toBe(
       'BG-1: dòng 1 số giờ 6 → 8',
     );
-  });
-
-  it('Q1: sự kiện cảnh báo xếp lớp hiện tiêu đề «Chưa xếp được lớp» và lời cảnh báo vàng', () => {
-    const entry = firstEvent(
-      orderEventEntries([ev(1, 'CANH_BAO_XEP_LOP', { note: 'Dòng 1: chưa xếp được lớp.' })], name),
-    );
-    expect(entry.title).toBe('Chưa xếp được lớp');
-    expect(entry.warning).toBe('Dòng 1: chưa xếp được lớp.');
   });
 });

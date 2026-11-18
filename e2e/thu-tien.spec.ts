@@ -103,14 +103,10 @@ test.beforeAll(async ({}, testInfo) => {
           [`PT-${m}-${n}`, amount, orderCode],
         )
       ).rows[0]!.id;
-      // Khoản âm là khoản đảo (TC-09): không có phiếu thu, trỏ về khoản gốc số 1, có lý do.
       await db.query(
-        `insert into app.money_in (code, receipt_id, order_id, parent_id, branch_id, amount, created_at, reversal_of, reason_code)
-         select $1, case when $3::bigint > 0 then $2::uuid end, o.id, o.parent_id, o.branch_id, $3, now() - make_interval(days => $4::int),
-                case when $3::bigint < 0 then (select id from app.money_in where code = $6) end,
-                case when $3::bigint < 0 then 'NHAP_SAI_SO_TIEN' end
-           from app.sales_order o where o.code = $5`,
-        [`KTV-${m}-${n}`, receipt, amount, ago, orderCode, `KTV-${m}-1`],
+        `insert into app.money_in (code, receipt_id, order_id, parent_id, branch_id, amount, created_at)
+         select $1, $2, o.id, o.parent_id, o.branch_id, $3, now() - make_interval(days => $4::int) from app.sales_order o where o.code = $5`,
+        [`KTV-${m}-${n}`, receipt, amount, ago, orderCode],
       );
     }
     await db.query('commit');
@@ -126,7 +122,7 @@ async function search(page: Page, text: string) {
   await page.getByRole('searchbox').fill(text);
 }
 
-test('TC-08: sổ Khoản tiền vào không có nút Tạo, hiện khoản thu và khoản đảo, tìm theo mã đơn', async ({
+test('TC-08: sổ Khoản tiền vào chỉ đọc, hiện khoản thu và khoản đảo, tìm theo mã đơn', async ({
   page,
 }, testInfo) => {
   const m = mark(testInfo.project.name);
@@ -136,12 +132,10 @@ test('TC-08: sổ Khoản tiền vào không có nút Tạo, hiện khoản thu 
   await search(page, `${m}-O1`);
   await expect(page.getByText('1–3 / 3')).toBeVisible();
   await expect(page.getByText(`KTV-${m}-1`).first()).toBeVisible();
-  await expect(page.getByText(`Hoàn tác của KTV-${m}-1`).first()).toBeVisible();
+  await expect(page.getByText('Khoản đảo').first()).toBeVisible();
   await expect(page.getByText('Tổng số tiền (theo bộ lọc): 1.200.000 đ')).toBeVisible();
   // Sổ chỉ đọc: không có nút Tạo (R-TIEN-01).
   await expect(page.getByRole('button', { name: /^Tạo/ })).toHaveCount(0);
-  // TC-09, R-HT-01: Trưởng cơ sở không có nút Hoàn tác khoản tiền (chỉ Kế toán).
-  await expect(page.getByRole('button', { name: 'Hoàn tác khoản tiền' })).toHaveCount(0);
   await expectAccessible(page);
 });
 

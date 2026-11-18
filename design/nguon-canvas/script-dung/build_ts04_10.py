@@ -65,10 +65,10 @@ html10=('<div class="hmt-dialog" role="dialog" aria-label="Gộp trùng" style="
  '<div class="hmt-dialog-f"><button class="hmt-btn " type="button">Huỷ</button><button class="hmt-btn hmt-btn-primary" type="button" data-merge>Gộp</button></div></div>')
 TS10_JS = OVJS + r"""
 const D = {
- lead: { ttl: 'Gộp lead trùng', sub: 'Hai lead cùng SĐT 0900 000 116. Chọn bản giữ lại; lịch hẹn và ghi chú của bản kia chuyển sang bản giữ lại.', noun: 'lead',
-  rec: [ { code: 'LD000227', name: 'Chị Lê Thu Hằng', kv: [['SĐT', '0900 000 116'], ['Học sinh', 'Lê Gia Huy'], ['Source', 'Facebook Ads · Lead Form'], ['Sale phụ trách', 'Trần Thu Hà'], ['Cơ sở', 'CS1'], ['Ngày tạo', '08/10/2026'], ['Cơ hội', '1 (CO000121)']],
+ lead: { ttl: 'Gộp lead trùng', sub: 'Hai lead cùng SĐT 0912 000 121. Chọn bản giữ lại; lịch hẹn và ghi chú của bản kia chuyển sang bản giữ lại.', noun: 'lead',
+  rec: [ { code: 'LD000227', name: 'Chị Lê Thu Hằng', kv: [['SĐT', '0912 000 121'], ['Học sinh', 'Lê Gia Huy'], ['Source', 'Facebook Ads · Lead Form'], ['Sale phụ trách', 'Trần Thu Hà'], ['Cơ sở', 'CS1'], ['Ngày tạo', '08/10/2026'], ['Cơ hội', '1 (CO000121)']],
           appts: ['Gọi điện · Gọi lại hỏi lịch học · 11/10/2026 09:00 · Chưa làm', 'Email · Gửi báo giá lớp Toán 9 · 13/10/2026 14:00 · Chưa làm'], notes: ['Trần Thu Hà · 13/10 10:04 · “Chị Hằng muốn con học tối T3, T5; hỏi có học thử được không.”'], pkts: [], quotes: [] },
-        { code: 'LD000241', name: 'Lê Thu Hằng', kv: [['SĐT', '0900 000 116'], ['Học sinh', '—'], ['Source', 'Zalo'], ['Sale phụ trách', 'Trần Thu Hà'], ['Cơ sở', 'CS2'], ['Ngày tạo', '14/10/2026'], ['Cơ hội', '0']],
+        { code: 'LD000241', name: 'Lê Thu Hằng', kv: [['SĐT', '0912 000 121'], ['Học sinh', '—'], ['Source', 'Zalo'], ['Sale phụ trách', 'Trần Thu Hà'], ['Cơ sở', 'CS2'], ['Ngày tạo', '14/10/2026'], ['Cơ hội', '0']],
           appts: ['Gọi điện · Gọi tư vấn lớp Toán 9 · 15/10/2026 09:00 · Chưa làm'], notes: ['Nguyễn Văn Nam · 14/10 16:20 · “PH nhắn Zalo hỏi học phí lớp 9.”', 'Nguyễn Văn Nam · 14/10 16:25 · “Hẹn gọi lại sáng thứ 5.”'], pkts: [], quotes: [] } ] },
  opp: { ttl: 'Gộp cơ hội trùng', sub: 'Hai cơ hội của lead LD000227 cùng học sinh Lê Gia Huy, cùng môn Toán lớp 9. Chọn bản giữ lại; lịch hẹn và ghi chú của bản kia chuyển sang bản giữ lại.', noun: 'cơ hội',
   rec: [ { code: 'CO000121', name: 'Toán lớp 9 · Lê Gia Huy', kv: [['Giai đoạn', 'L6 Đã tham gia test · L6A'], ['Sale phụ trách', 'Trần Thu Hà'], ['Cơ sở', 'CS1'], ['Source', 'Facebook Ads · Lead Form'], ['Ngày tạo', '08/10/2026'], ['Kiểm tra', '1 (PKT000105 Hoàn thành)']],
@@ -137,7 +137,7 @@ print('ok')
 
 # ---------------- TS-10b: bản ghi ở trạng thái "Đã gộp" (LD000241) ----------------
 J10B = r"""
-const KV = { 'Họ tên': 'Lê Thu Hằng', 'Số điện thoại': '0900 000 116', 'Phường/Xã': '—', 'Tỉnh/Thành phố': 'Hà Nội', 'Địa chỉ': '—', 'Nhu cầu': 'Hỏi học phí lớp 9 (qua Zalo)', 'Tên học sinh': '—', 'Ngày sinh': '—', 'Năm sinh': '—', 'Trường học': '—', 'Học lực tự đánh giá': '—', 'Mục tiêu': '—', 'Cơ sở': 'CS1 Nguyễn Chí Thanh', 'Nhân sự phụ trách': 'Trần Thu Hà', 'Nhân sự hỗ trợ': '—', 'Source': 'Zalo', 'Sub-source': '—', 'Chiến dịch': '—' };
+const KV = { 'Họ tên': 'Lê Thu Hằng', 'Số điện thoại': '0912 000 121', 'Phường/Xã': '—', 'Tỉnh/Thành phố': 'Hà Nội', 'Địa chỉ': '—', 'Nhu cầu': 'Hỏi học phí lớp 9 (qua Zalo)', 'Tên học sinh': '—', 'Ngày sinh': '—', 'Năm sinh': '—', 'Trường học': '—', 'Học lực tự đánh giá': '—', 'Mục tiêu': '—', 'Cơ sở': 'CS1 Nguyễn Chí Thanh', 'Nhân sự phụ trách': 'Trần Thu Hà', 'Nhân sự hỗ trợ': '—', 'Source': 'Zalo', 'Sub-source': '—', 'Chiến dịch': '—' };
 function apply() {
   const walk = (n) => { if (n.nodeType === 3) { if (/Chị Lê Thu Hằng · Lê Gia Huy/.test(n.nodeValue)) n.nodeValue = n.nodeValue.replace('Chị Lê Thu Hằng · Lê Gia Huy', 'Lê Thu Hằng · LD000241'); } else n.childNodes.forEach(walk); };
   walk(ROOT);

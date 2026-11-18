@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
 import { useSearchParams } from 'react-router';
 import { AuthAlert, AuthLink, AuthNote } from './authParts';
 import { LoginForm } from './LoginForm';
-import { prefetchAfterLogin } from './prefetchAfterLogin';
 
 function withNext(path: string, next: string | null): string {
   return next ? `${path}?next=${encodeURIComponent(next)}` : path;
@@ -11,7 +9,6 @@ function withNext(path: string, next: string | null): string {
 /** DN01 · Đăng nhập nhân viên, giáo viên, trợ giảng: email + mật khẩu, có Turnstile. */
 export function LoginPage() {
   const [params] = useSearchParams();
-  useEffect(() => prefetchAfterLogin(), []);
   return (
     <LoginForm
       title="Đăng nhập"

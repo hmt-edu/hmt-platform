@@ -33,7 +33,7 @@ select is(pg_temp.names('SESSION_CANCEL_REASON'),
           array['Nghỉ lễ đột xuất', 'Giáo viên nghỉ', 'Sự cố cơ sở vật chất', 'Thời tiết', 'Ốm', 'Việc gia đình', 'Thi ở trường', 'Khác'],
           'Spec 06 #23: Lý do huỷ buổi (trung tâm rồi học sinh)');
 select is(pg_temp.names('REJECT_REASON'),
-          array['Thiếu thông tin', 'Sai số tiền', 'Sai chứng từ', 'Không đúng chính sách', 'Khác', 'Không xếp được lịch'], 'Spec 06 #24: Lý do từ chối (thêm Không xếp được lịch cho yêu cầu buổi, migration 139)');
+          array['Thiếu thông tin', 'Sai số tiền', 'Sai chứng từ', 'Không đúng chính sách', 'Khác'], 'Spec 06 #24: Lý do từ chối');
 select is(pg_temp.names('HOURS_ADJUST_REASON'),
           array['Sửa sai danh sách/điểm danh', 'Bù giờ do lỗi trung tâm', 'Tặng giờ chăm sóc (cần duyệt)', 'Chuyển dữ liệu từ hệ thống cũ', 'Khác'],
           'Spec 06 #25: Lý do điều chỉnh giờ');
@@ -64,9 +64,9 @@ select is((select count(*)::int from app.catalog_item where requires_note and na
           'Chỉ mục "Khác" bắt buộc ghi chú (ngoại lệ: "lý do khác" của huỷ test R-CRM-06 và của bỏ qua test BQ5 R-CRM-14)');
 
 -- Lý do từ chối: "Áp dụng cho" để trống = mọi nơi. Từ P5a-DB0 (Đ103) ba mục gán riêng: Sai số tiền, Sai chứng từ (phiếu thu),
--- Không đúng chính sách (báo giá, đơn); hai mục còn lại dùng chung. Migration 139 thêm mục thứ tư gán riêng: Không xếp được lịch (yêu cầu buổi).
-select is((select count(*)::int from app.catalog_item where catalog_code = 'REJECT_REASON' and applies_to <> '{}'), 4,
-          'Lý do từ chối: bốn mục gán riêng (ba theo Đ103, một cho yêu cầu buổi), còn lại áp dụng mọi nơi (cột "Áp dụng cho" để trống)');
+-- Không đúng chính sách (báo giá, đơn); hai mục còn lại dùng chung.
+select is((select count(*)::int from app.catalog_item where catalog_code = 'REJECT_REASON' and applies_to <> '{}'), 3,
+          'Lý do từ chối: ba mục gán riêng theo Đ103, còn lại áp dụng mọi nơi (cột "Áp dụng cho" để trống)');
 
 -- Không còn danh mục nào của spec 06 #8–#26, #28, #31, #32 thiếu (trừ #12, 19, 20, 27, 30).
 select is((select count(*)::int from app.catalog where code in (

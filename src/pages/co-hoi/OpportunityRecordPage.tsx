@@ -120,16 +120,6 @@ function OpportunityView({ record }: { record: OppRecord }) {
       : !access.featureOn('BAN_HANG')
         ? { ok: false, reason: 'Phân hệ Bán hàng chưa bật ở cơ sở này.' }
         : { ok: true };
-  // Tạo đơn hàng (R-CRM-16): cơ hội ở L8, chưa gộp, có quyền tạo đơn, Bán hàng bật; máy chủ kiểm lại khi Lưu.
-  const orderReason: { ok: true } | { ok: false; reason: string } = merged
-    ? { ok: false, reason: 'Cơ hội đã gộp vào bản khác, không tạo đơn hàng.' }
-    : record.stage_code !== 'L8'
-      ? { ok: false, reason: 'Chỉ tạo đơn hàng khi cơ hội ở L8 (R-CRM-16)' }
-      : !access.can('SALES_ORDER', 'TAO')
-        ? { ok: false, reason: 'Bạn không có quyền tạo đơn hàng.' }
-        : !access.featureOn('BAN_HANG')
-          ? { ok: false, reason: 'Phân hệ Bán hàng chưa bật ở cơ sở này.' }
-          : { ok: true };
   const canEdit = access.can('OPPORTUNITY', 'SUA') && !merged;
   const canAssign = access.can('OPPORTUNITY', 'GIAO_VIEC') && !merged;
   // Gộp trùng dùng quyền Duyệt trên phân hệ Cơ hội (R-CRM-22); bản đã gộp chỉ đọc.
@@ -437,16 +427,16 @@ function OpportunityView({ record }: { record: OppRecord }) {
                 Tạo báo giá
               </Button>
             )}
-            {/* R-CRM-16, R-CRM-19, R-TIEN-39: Tạo đơn hàng chỉ ở cơ hội L8, bấm chỉ mở form trắng. Điện thoại ẩn nút (Đ248). */}
-            {!phone && (
-              <Button
-                disabled={!orderReason.ok}
-                title={orderReason.ok ? undefined : orderReason.reason}
-                onClick={() => openFrom(`/crm/don-hang/tao?co-hoi=${record.id}`)}
-              >
-                Tạo đơn hàng
-              </Button>
-            )}
+            <Button
+              disabled
+              title={
+                record.stage_code === 'L8'
+                  ? 'Có ở phần Bán hàng (giai đoạn sau)'
+                  : 'Chỉ tạo đơn hàng khi cơ hội ở L8 (R-CRM-16)'
+              }
+            >
+              Tạo đơn hàng
+            </Button>
           </>
         }
         subStage={

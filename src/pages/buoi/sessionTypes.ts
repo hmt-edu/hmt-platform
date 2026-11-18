@@ -56,9 +56,6 @@ export type SessionRecord = {
     cancel_reason_code: string | null;
     cancel_reason_name: string | null;
     cancel_note: string | null;
-    branch_id: string;
-    teacher_id: string | null;
-    assistant_id: string | null;
   };
   pending_reason: string | null;
   complete_deadline: string | null;

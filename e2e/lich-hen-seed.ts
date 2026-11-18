@@ -52,10 +52,7 @@ export async function seed(setup: Setup): Promise<Seeded> {
     const id = lead.rows[0]?.id ?? '';
     const make = async (code: string, title: string, shift: string): Promise<string> => {
       const r = await db.query<{ id: string }>(
-        // Mốc 12:00 hôm nay theo giờ Việt Nam, không dùng now(): chạy gần nửa đêm (sau 23:10 hoặc ngay sau 00:00) thì các lịch lệch vài phút
-        // không nhảy sang ngày khác, nhóm "Hôm nay" vẫn đủ (bài từng trượt khi chạy sau 00:00).
-        `select app.create_appointment($1::uuid, $2,
-           ((date_trunc('day', now() at time zone 'Asia/Ho_Chi_Minh') + interval '12 hours') at time zone 'Asia/Ho_Chi_Minh') + $3::interval, $4) as id`,
+        `select app.create_appointment($1::uuid, $2, now() + $3::interval, $4) as id`,
         [id, code, shift, `${title} ${setup.mark}`],
       );
       return r.rows[0]?.id ?? '';

@@ -28,7 +28,7 @@ function ProductSwitch({ value, onChange }) { return React.createElement("div", 
 function Demo() {
     const { AuthLayout, Field, TextInput, TurnstileSlot, Button, Alert } = HMT;
     const [sent, setSent] = useState(false);
-    const [email, setEmail] = useState("nhanvien10@example.test");
+    const [email, setEmail] = useState("long.nh@hoamatoan.edu.vn");
     return (React.createElement(ScreenFrame, { code: "CHUNG-04", name: "Qu\u00EAn m\u1EADt kh\u1EA9u", level: "B", tpl: "K11 \u00B7 c\u1EA3 hai", height: 600, note: "B\u1EA5m G\u1EEDi \u0111\u1EC3 xem tr\u1EA1ng th\u00E1i sau khi g\u1EEDi. Link trong email m\u1EDF CHUNG-05 (\u0111\u1EB7t m\u1EADt kh\u1EA9u m\u1EDBi, m\u1EE9c C, d\u00F9ng PasswordInput + PasswordRules nh\u01B0 CHUNG-07)." },
         React.createElement(AuthLayout, { logoSrc: LOGO, logoWhiteSrc: LOGO_W, title: sent ? "Kiểm tra hộp thư" : "Quên mật khẩu", subtitle: sent ? undefined : "Nhập email công việc. HMT gửi link đặt lại mật khẩu, link dùng một lần." }, sent ? React.createElement(Fragment, null,
             React.createElement(Alert, { tone: "success", title: "\u0110\u00E3 g\u1EEDi y\u00EAu c\u1EA7u" },

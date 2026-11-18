@@ -221,10 +221,6 @@ test('GV-08: người khác vừa sửa thì từ chối lưu, «Giữ của tô
   await expect(
     row(page, 'Em giả E2E An').getByRole('button', { name: '5', exact: true }),
   ).toHaveAttribute('aria-pressed', 'true');
-  // Tải lại phiên bản mới làm màn dựng lại (key đổi theo phiên bản): chờ xong rồi mới bấm Lưu, nếu không bấm trúng bản cũ sắp bị thay
-  // thì thông báo thành công không hiện (bài từng nháy).
-  await page.waitForLoadState('networkidle');
-  await expect(page.getByText('Ô này vừa được người khác sửa, tải lại để xem.')).toHaveCount(0);
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu chấm BTVN').first()).toBeVisible();
   await page.reload();

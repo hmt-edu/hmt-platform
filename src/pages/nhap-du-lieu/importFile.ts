@@ -32,7 +32,7 @@ export type TrainingSummary = {
 };
 
 export type ImportResult = {
-  mode: 'XEM_TRUOC' | 'NHAP' | 'CHAN_CA_LOAI';
+  mode: 'XEM_TRUOC' | 'NHAP';
   kind: string;
   total: number;
   imported: number;

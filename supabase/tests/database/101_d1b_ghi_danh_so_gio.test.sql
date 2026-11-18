@@ -159,11 +159,6 @@ select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 0, 'B
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 1, 'KHONG_CO_LY_DO')$$), 'HMT_DANH_MUC_KHONG_CO', 'Chặn: lý do không có trong danh mục (R-GD-04)');
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 1, 'KHAC')$$), 'HMT_CAN_GHI_CHU', 'Chặn: lý do "Khác" bắt buộc ghi chú');
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), -7, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_QUY_GIO_AM', 'Chặn: bớt giờ làm quỹ âm (R-GD-18)');
--- F7: số giờ nhập tự do ngoài phạm vi báo mã HMT, không lọt lỗi thô của DB.
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 10000, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_GIO_DIEU_CHINH_SAI', 'F7 chặn: quá 9999 giờ');
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 1000000000, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_GIO_DIEU_CHINH_SAI', 'F7 chặn: số cực lớn không còn lỗi tràn số 22003');
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 0.001, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_GIO_DIEU_CHINH_SAI', 'F7 chặn: làm tròn 2 số lẻ ra 0 không còn lỗi ràng buộc 23514');
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), -0.004, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_GIO_DIEU_CHINH_SAI', 'F7 chặn: số âm làm tròn ra 0 cũng bị chặn');
 select is(app.adjust_enrollment_hours(pg_temp.e('1'), 2, 'BU_GIO_LOI_TRUNG_TAM'), 8.00::numeric, 'Đúng: thêm 2 giờ kèm lý do, số dư 8 (R-GD-04)');
 select is(app.adjust_enrollment_hours(pg_temp.e('1'), -3, 'SUA_SAI_DANH_SACH_DIEM_DANH'), 5.00::numeric, 'Đúng: dòng ngược dấu bớt 3 giờ, số dư 5 (R-GD-04)');
 select is((select count(*)::int from app.hour_ledger where enrollment_id = pg_temp.e('1')), 3, 'Sổ giờ có 3 dòng (đầu kỳ, +2, −3), không dòng nào bị sửa');

@@ -1,5 +1,5 @@
 // GD-02 Ghi danh (bản ghi, khuôn K06, chỉ đọc): thông tin ghi danh, quỹ giờ (cấp, tặng, đã học, còn lại), dòng xếp lớp và lịch sử chuyển lớp, nút Xếp lớp (khi Chờ xếp lớp)
-// và Sổ giờ. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Điều chỉnh giờ (GD-05, Ghi danh · Duyệt). Chưa làm ở cụm này: Tạo ticket (CS-04, sau 17/11), "Tạo phiếu thu tái tục thủ
+// và Sổ giờ. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Chưa làm ở cụm này: Điều chỉnh giờ (GD-05), Tạo ticket (CS-04, sau 17/11), "Tạo phiếu thu tái tục thủ
 // công" (TT-03 đã bỏ). Ngày hết giờ dự kiến, hạn gói (chỉ dự báo) chưa tính: hiện "—". Giao diện không tính giờ: số do hàm DB trả.
 import { Link, useParams } from 'react-router';
 import { useState } from 'react';
@@ -13,7 +13,6 @@ import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
-import { AdjustHoursDialog } from './AdjustHoursDialog';
 import { AssignClassDialog } from './AssignClassDialog';
 import { statusTone } from './enrollConfig';
 import { useEnrollmentRecord } from './useEnrollmentData';
@@ -39,7 +38,6 @@ export function EnrollmentRecordPage() {
   const access = useAccess();
   const openFrom = useNavigateFrom();
   const [assigning, setAssigning] = useState(false);
-  const [adjusting, setAdjusting] = useState(false);
   useCrumbTail(query.data ? query.data.enrollment.code : null);
 
   if (query.isPending) return <Spinner />;
@@ -62,8 +60,6 @@ export function EnrollmentRecordPage() {
   const view = 'view' as const;
   const inStages = STEPS.some((s) => s.code === e.status_code);
   const canAssign = e.status_code === 'CHO_XEP_LOP' && access.can('ENROLLMENT', 'SUA');
-  // Điều chỉnh giờ: chỉ Ghi danh · Duyệt (Trưởng cơ sở, Admin), GD-05, R-GD-04.
-  const canAdjust = access.can('ENROLLMENT', 'DUYET');
   return (
     <>
       <RecordDetail
@@ -96,7 +92,6 @@ export function EnrollmentRecordPage() {
               </Button>
             )}
             <Button onClick={() => openFrom(`/crm/ghi-danh/${e.id}/so-gio`)}>Sổ giờ</Button>
-            {canAdjust && <Button onClick={() => setAdjusting(true)}>Điều chỉnh giờ</Button>}
             {!inStages && <Tag tone={statusTone(e.status_code)}>{e.status_name}</Tag>}
           </span>
         }
@@ -240,12 +235,6 @@ export function EnrollmentRecordPage() {
           </p>
         </section>
       </RecordDetail>
-      <AdjustHoursDialog
-        enrollmentId={e.id}
-        remaining={hours.remaining}
-        open={adjusting}
-        onClose={() => setAdjusting(false)}
-      />
       <AssignClassDialog
         enrollmentId={assigning ? e.id : null}
         onClose={() => setAssigning(false)}

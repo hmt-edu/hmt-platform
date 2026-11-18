@@ -34,10 +34,6 @@ jobs:
     if: vars.STAGING_READY == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
-    # Repo công khai: secret thử nghiệm nằm trong GitHub Environment `staging` (chỉ nhánh main được dùng), không ở secret chung của repo.
-    # `vars.STAGING_READY` và các biến `vars.*` khác vẫn ở biến chung của repo (job-level `if` không đọc được biến của Environment).
-    # Cách tạo Environment và chuyển secret: docs/van-hanh/cong-khai-repo.md, mục 8.
-    environment: staging
     permissions:
       contents: write # chỉ để đẩy tag staging-…
     steps:
@@ -87,10 +83,7 @@ jobs:
       - name: Áp migration lên hmt-staging
         env:
           STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
-        # --include-all: áp cả migration có số THẤP hơn bản đã áp (PR gộp song song nên số không luôn tăng theo thời điểm gộp). Thiếu cờ này, db push dừng với
-        # lỗi «file migration chèn trước bản đã áp» và staging kẹt. Rủi ro: một migration chèn trước chạy khi migration sau nó đã áp; PR có migration vẫn nên
-        # dùng số lớn hơn mọi số trên main (Tester kiểm), cờ này chỉ là lưới an toàn. Bản chạy thật (hmt-deploy) cần cùng cờ, xem deploy/.
-        run: npx supabase db push --db-url "$STAGING_DB_URL" --include-all --yes
+        run: npx supabase db push --db-url "$STAGING_DB_URL" --yes
 
       # Dữ liệu giả CHỈ cho thử nghiệm (seed.sql chạy lại được, không nhân đôi).
       # Bản chạy thật (hmt-deploy) không bao giờ chạy bước này.
@@ -107,9 +100,9 @@ jobs:
           STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
         run: |
           if out="$(psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f scripts/staging-probe-auth.sql 2>&1)"; then
-            echo "::notice::Thử quyền ghi bảng Auth trên hmt-staging: ĐẠT."
+            echo "::notice::Thử quyền ghi bảng Auth trên hmt-staging: ĐẠT. $out"
           else
-            echo "::warning::Thử quyền ghi bảng Auth trên hmt-staging: KHÔNG ĐẠT. Báo anh Trường để quay lại Edge Function. $(printf '%s' "$out" | head -n 3 | cut -c1-200)"
+            echo "::warning::Thử quyền ghi bảng Auth trên hmt-staging: KHÔNG ĐẠT. Báo anh Trường để quay lại Edge Function. $out"
             exit 1
           fi
 
@@ -120,14 +113,14 @@ jobs:
           STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
         run: |
           if out="$(psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f scripts/staging-check-prospect.sql 2>&1)"; then
-            echo "::notice::Kiểm danh sách em trên hmt-staging: ĐẠT."
+            echo "::notice::Kiểm danh sách em trên hmt-staging: ĐẠT. $out"
           else
-            echo "::warning::Kiểm danh sách em trên hmt-staging: LỆCH. Báo anh Trường. $(printf '%s' "$out" | head -n 3 | cut -c1-200)"
+            echo "::warning::Kiểm danh sách em trên hmt-staging: LỆCH. Báo anh Trường. $out"
             exit 1
           fi
 
       # Edge Function (đăng nhập, quản trị tài khoản, chặn thư). Cần SUPABASE_ACCESS_TOKEN của tài khoản
-      # TÀI KHOẢN CHỦ DỰ ÁN (không còn quyền gì ở hmt-prod). Chưa có thì bỏ qua kèm cảnh báo.
+      # hmt-vanhanh (không còn quyền gì ở hmt-prod). Chưa có thì bỏ qua kèm cảnh báo.
       - name: Triển khai Edge Function lên hmt-staging
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -144,8 +137,6 @@ jobs:
           # HMT_SECRET_KEY: khoá sb_secret_ để Edge Function login chuyển IP thật của người dùng sang Supabase Auth
           # (Sb-Forwarded-For); thiếu thì mọi lần đăng nhập bị tính chung IP máy chủ. Ghi qua file tạm, không lộ trên log.
           env_file="$RUNNER_TEMP/functions.env"
-          # Xoá file chứa khoá cả khi bước lỗi giữa chừng.
-          trap 'rm -f "$env_file"' EXIT
           {
             echo "HMT_ALLOW_STAGING_PREVIEWS=true"
             echo "HMT_ALLOWED_ORIGINS=https://hmt-staging.pages.dev"
@@ -158,6 +149,7 @@ jobs:
           [ -n "$STAGING_SUPABASE_SECRET_KEY" ] || echo "::warning::Chưa có STAGING_SUPABASE_SECRET_KEY: Edge Function chưa chuyển được IP thật."
           [ -n "$STAGING_TURNSTILE_SECRET" ] || echo "::warning::Chưa có STAGING_TURNSTILE_SECRET: Edge Function login sẽ từ chối mọi lần đăng nhập."
           npx supabase secrets set --project-ref "$ref" --env-file "$env_file"
+          rm -f "$env_file"
           npx supabase functions deploy --project-ref "$ref" --use-api
 
       # Bài kiểm chủ động: khoá của hmt-platform KHÔNG được chạm hmt-prod (chốt 10/10/2026).
@@ -193,9 +185,7 @@ jobs:
             -H "apikey: $VITE_SUPABASE_PUBLISHABLE_KEY" -H 'Content-Type: application/json' \
             -d '{"login":"kiem.captcha@thu.hoamatoan.invalid","password":"KhongPhaiMatKhau1","captchaToken":"ma-gia"}')"
           if ! printf '%s' "$out" | grep -q '"HMT_CAPTCHA"'; then
-            # Không in nguyên nội dung trả về (log công khai): chỉ in mã lỗi nếu có.
-            code="$(printf '%s' "$out" | jq -r '.code // .error // "không rõ"' 2>/dev/null | cut -c1-60 || true)"
-            echo "::error::Edge Function login KHÔNG chặn mã chống máy giả (mã trả về: ${code:-không đọc được})."
+            echo "::error::Edge Function login KHÔNG chặn mã chống máy giả (trả: $out)."
             exit 1
           fi
           echo "Mã chống máy giả bị Edge Function login chặn: đúng."
@@ -245,8 +235,7 @@ jobs:
             if printf '%s' "$out" | grep -qiE 'already exists|8000002'; then
               echo "Project hmt-staging đã có."
             else
-              # Repo công khai: log ai cũng đọc. Chỉ in vài dòng đã lọc, không in nguyên đầu ra của wrangler.
-              printf '%s\n' "$out" | tail -n 5 | cut -c1-200
+              printf '%s\n' "$out"
               exit 1
             fi
           fi
@@ -255,6 +244,11 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler pages deploy dist --project-name=hmt-staging --branch=main
+
+      - name: Gắn tag staging
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           # Bỏ khoảng trắng, xuống dòng lỡ dán kèm; che giá trị đã làm sạch khỏi log; kiểm đúng dạng (không in giá trị).
           CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"; export CLOUDFLARE_API_TOKEN
@@ -269,12 +263,6 @@ jobs:
             echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
             exit 1
           fi
-          npx wrangler pages deploy dist --project-name=hmt-staging --branch=main
-
-      - name: Gắn tag staging
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
           tag="staging-$(date -u +%Y%m%d-%H%M)-$(git rev-parse --short=7 HEAD)"
           auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
           echo "::add-mask::$auth"

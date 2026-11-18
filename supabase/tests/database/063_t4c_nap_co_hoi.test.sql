@@ -77,7 +77,7 @@ insert into rows_in select jsonb_build_array(
   pg_temp.row(2),                                                                                   -- hợp lệ, L2
   pg_temp.row(3, '{"ho_ten_ph":"Zeta Quang 3","nguoi_phu_trach":"khong.co.tai.khoan"}'),             -- người phụ trách chưa có tài khoản
   pg_temp.row(4, '{"nguoi_phu_trach":"sale.cs1.t4c"}'),                                             -- người phụ trách khác cơ sở
-  pg_temp.row(5, '{"nguon_goc":"Loại lạ"}'),                                                        -- loại nguồn chữ lạ: suy Marketing kèm cảnh báo (migration 155)
+  pg_temp.row(5, '{"nguon_goc":"Loại lạ"}'),                                                        -- loại nguồn không có
   pg_temp.row(6, '{"nguon_goc":"Telemarketing","nguon":"Facebook Ads","medium":""}'),                  -- nguồn không thuộc loại Telemarketing
   pg_temp.row(7, '{"nguon_goc":"Telemarketing","nguon":"Cold Call","medium":""}'),                  -- nguồn có kênh mà thiếu kênh
   pg_temp.row(8, '{"medium":"Cold Call: Buy"}'),                                                    -- kênh không thuộc nguồn
@@ -102,7 +102,7 @@ select is(pg_temp.st((select r from res), 2), 'HOP_LE', 'Đúng: dòng hợp l�
 select is(pg_temp.st((select r from res), 3), 'LOI', 'Chặn: người phụ trách chưa có tài khoản');
 select is(pg_temp.msg((select r from res), 3), 'Người phụ trách chưa có tài khoản (nạp Người dùng trước).', 'Câu lỗi người phụ trách');
 select is(pg_temp.st((select r from res), 4), 'LOI', 'Chặn: người phụ trách khác cơ sở');
-select is(pg_temp.st((select r from res), 5), 'HOP_LE', 'Loại nguồn chữ lạ: dòng hợp lệ, suy Marketing kèm cảnh báo (migration 155, thay luật cũ báo lỗi)');
+select is(pg_temp.st((select r from res), 5), 'LOI', 'Chặn: loại nguồn không có');
 select is(pg_temp.st((select r from res), 6), 'LOI', 'Chặn: nguồn không thuộc loại');
 select is(pg_temp.st((select r from res), 7), 'LOI', 'Chặn: nguồn có kênh mà thiếu kênh');
 select is(pg_temp.st((select r from res), 8), 'LOI', 'Chặn: kênh không thuộc nguồn');
@@ -125,8 +125,8 @@ select is(pg_temp.st((select r from res), 22), 'HOP_LE', 'Đúng: người phụ
 select ok((select (r -> 'warnings') <> '[]'::jsonb from jsonb_array_elements((select r from res) -> 'rows') r where (r ->> 'row')::integer = 22),
           'Cảnh báo: người phụ trách đã nghỉ hoặc bị khoá');
 select is(pg_temp.st((select r from res), 23), 'HOP_LE', 'Đúng: cơ hội L2 chưa có em vẫn nạp');
-select is(((select r from res) ->> 'imported')::integer, 8, 'Đếm: 8 dòng hợp lệ (2, 5, 11, 12, 13, 18, 22, 23)');
-select is(((select r from res) ->> 'errors')::integer, 14, 'Đếm: 14 dòng lỗi');
+select is(((select r from res) ->> 'imported')::integer, 7, 'Đếm: 7 dòng hợp lệ (2, 11, 12, 13, 18, 22, 23)');
+select is(((select r from res) ->> 'errors')::integer, 15, 'Đếm: 15 dòng lỗi');
 
 -- ================= Không in dữ liệu cá nhân =================
 select ok(position('Zeta' in (select r::text from res)) = 0, 'Kết quả không có họ tên phụ huynh (chỉ chữ cái đầu)');
@@ -177,7 +177,7 @@ select is((select birth_year from app.prospect_student ps join app.opportunity o
 select is((select r -> 'summary' ->> 'missing_student_info' from real), '2', 'Báo cáo: 2 dòng thiếu thông tin em');
 select is((select r -> 'summary' ->> 'attached_parent' from real), '0', 'Báo cáo: số dòng gắn vào phụ huynh có sẵn');
 select is((select r -> 'summary' -> 'by_stage' ->> 'L5' from real), '3', 'Báo cáo: 3 cơ hội L5 (11, 12, 13)');
-select is((select r -> 'summary' -> 'by_stage' ->> 'L2' from real), '4', 'Báo cáo: 4 cơ hội L2 (2, 5, 22, 23)');
+select is((select r -> 'summary' -> 'by_stage' ->> 'L2' from real), '3', 'Báo cáo: 3 cơ hội L2 (2, 22, 23)');
 select ok(position('Zeta' in (select (r -> 'summary')::text from real)) = 0, 'Báo cáo chỉ có số lượng, không có họ tên');
 -- Cơ hội còn thiếu thông tin em không sang bước tiếp theo được; luật R-CRM-03 vẫn chặn cơ hội thường lên L5 khi chưa có em.
 select is(pg_temp.err($$select app.change_opportunity_stage((select id from app.opportunity where legacy_ref = '0900000011'), 'L6', 'L6C')$$),

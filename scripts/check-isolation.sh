@@ -19,7 +19,7 @@ if [ "$code" = "000" ] || [ "$code" = "404" ]; then
   fail "PROD_PROJECT_REF ($PROD_PROJECT_REF) không phải project có thật (HTTP $code): sửa lại biến."
 fi
 
-# Token Supabase của TÀI KHOẢN CHỦ DỰ ÁN: đọc được hmt-staging, KHÔNG đọc được hmt-prod.
+# Token Supabase của hmt-vanhanh: đọc được hmt-staging, KHÔNG đọc được hmt-prod.
 if [ -n "${SUPABASE_ACCESS_TOKEN:-}" ]; then
   [ -n "${STAGING_PROJECT_REF:-}" ] || fail "Thiếu STAGING_PROJECT_REF để kiểm token Supabase."
   code="$(curl -s -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \

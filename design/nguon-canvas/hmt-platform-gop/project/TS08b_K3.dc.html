@@ -57,7 +57,7 @@ a{color:var(--text-link)}a:hover{color:var(--brand-800)}
 <div class="hmt-fgrid">
 <dl class="hmt-panel-b" style="padding:0"><div class="hmt-csec-t" style="padding:var(--space-2) 0 var(--space-1)">THÔNG TIN PHỤ HUYNH</div>
 <div class="hmt-kv"><dt>Họ tên</dt><dd><sc-if value="{{ notEdit }}" hint-placeholder-val="{{ true }}">{{ v.phName }}</sc-if><sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}"><input class="hmt-input" aria-label="Họ tên phụ huynh" value="{{ f.phName }}" onChange="{{ on.phName }}"></sc-if></dd></div>
-<div class="hmt-kv"><dt>Số điện thoại</dt><dd><sc-if value="{{ notEdit }}" hint-placeholder-val="{{ true }}"><span class="hmt-num">{{ v.phone }}</span></sc-if><sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}"><input class="hmt-input" aria-label="Số điện thoại" value="{{ f.phone }}" onChange="{{ on.phone }}" placeholder="Ví dụ 0900 000 116"></sc-if></dd></div>
+<div class="hmt-kv"><dt>Số điện thoại</dt><dd><sc-if value="{{ notEdit }}" hint-placeholder-val="{{ true }}"><span class="hmt-num">{{ v.phone }}</span></sc-if><sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}"><input class="hmt-input" aria-label="Số điện thoại" value="{{ f.phone }}" onChange="{{ on.phone }}" placeholder="Ví dụ 0912 000 121"></sc-if></dd></div>
 <div class="hmt-kv"><dt>Phường/Xã</dt><dd><sc-if value="{{ notEdit }}" hint-placeholder-val="{{ true }}">{{ v.ward }}</sc-if><sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}"><select class="hmt-input hmt-select" aria-label="Phường/Xã" value="{{ f.ward }}" onChange="{{ on.ward }}"><option>Phường Giảng Võ</option><option>Phường Ngọc Khánh</option><option>Phường Kim Mã</option><option>Phường Láng Hạ</option><option>Phường Thành Công</option></select></sc-if></dd></div>
 <div class="hmt-kv"><dt>Tỉnh/Thành phố</dt><dd><sc-if value="{{ notEdit }}" hint-placeholder-val="{{ true }}">{{ v.prov }}</sc-if><sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}"><select class="hmt-input hmt-select" aria-label="Tỉnh/Thành phố" value="{{ f.prov }}" onChange="{{ on.prov }}"><option>Hà Nội</option><option>Hải Phòng</option><option>Bắc Ninh</option><option>Hưng Yên</option></select></sc-if></dd></div>
 <div class="hmt-kv"><dt>Địa chỉ</dt><dd><sc-if value="{{ notEdit }}" hint-placeholder-val="{{ true }}">{{ v.addr }}</sc-if><sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}"><input class="hmt-input" aria-label="Địa chỉ" value="{{ f.addr }}" onChange="{{ on.addr }}" placeholder="Số nhà, ngõ, đường"></sc-if></dd></div>
@@ -160,7 +160,7 @@ class Component extends DCLogic {
     super(props);
     this.state = {
       stage: 7, sub: 'L7A', subOpen: false, actOpen: false, edit: false, saveErr: false,
-      saved: { phName: 'Anh Trịnh Văn Hải', phone: '0900 000 140', ward: 'Phường Mỹ Đình 1', prov: 'Hà Nội', addr: 'Số 8, ngõ 15 Lê Đức Thọ',
+      saved: { phName: 'Anh Trịnh Văn Hải', phone: '0937 000 099', ward: 'Phường Mỹ Đình 1', prov: 'Hà Nội', addr: 'Số 8, ngõ 15 Lê Đức Thọ',
                need: 'Ôn thi vào lớp 10 môn Văn', hs: 'Trịnh Đức Anh', dob: '02/09/2011', ns: '2011', school: 'THCS Mỹ Đình',
                level: 'Trung bình khá', goal: 'Đạt 8 điểm Văn thi vào 10' },
       f: {},

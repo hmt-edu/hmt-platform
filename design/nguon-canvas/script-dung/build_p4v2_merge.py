@@ -24,13 +24,13 @@ HTML = ('<div class="hmt-dialog" role="dialog" aria-label="Gộp trùng" style="
  '<div class="hmt-dialog-f"><span class="hmt-help" data-xb style="margin-right:auto;display:flex;align-items:center;gap:6px;color:var(--text-primary)"></span><button class="hmt-btn " type="button">Huỷ</button><button class="hmt-btn hmt-btn-primary" type="button" data-merge>Gộp</button></div></div>')
 
 DATA = {
- 'ph': {'ttl': 'Gộp phụ huynh trùng', 'noun': 'phụ huynh', 'sub': 'Hai phụ huynh cùng SĐT 0900 000 118. Chọn hồ sơ giữ lại; con, đơn, phiếu thu và ghi chú của hồ sơ kia chuyển sang hồ sơ giữ lại.',
+ 'ph': {'ttl': 'Gộp phụ huynh trùng', 'noun': 'phụ huynh', 'sub': 'Hai phụ huynh cùng SĐT 0912 345 456. Chọn hồ sơ giữ lại; con, đơn, phiếu thu và ghi chú của hồ sơ kia chuyển sang hồ sơ giữ lại.',
   'rec': [
-   {'code': 'PH000045', 'name': 'Trần Thị Hà', 'cs': 'CS1', 'kv': [['SĐT', '0900 000 118'], ['Cơ sở tiếp nhận', 'CS1 Nguyễn Chí Thanh'], ['Đang học tại', 'CS1, CS2'], ['Số con', '2'], ['Ngày tạo', '28/08/2026']],
+   {'code': 'PH000045', 'name': 'Trần Thị Hà', 'cs': 'CS1', 'kv': [['SĐT', '0912 345 456'], ['Cơ sở tiếp nhận', 'CS1 Nguyễn Chí Thanh'], ['Đang học tại', 'CS1, CS2'], ['Số con', '2'], ['Ngày tạo', '28/08/2026']],
     'move': {}},
-   {'code': 'PH000072', 'name': 'Trần Thị Hà', 'cs': 'CS1', 'kv': [['SĐT', '0900 000 118'], ['Cơ sở tiếp nhận', 'CS1 Nguyễn Chí Thanh'], ['Đang học tại', '—'], ['Số con', '1'], ['Ngày tạo', '15/10/2026']],
+   {'code': 'PH000072', 'name': 'Trần Thị Hà', 'cs': 'CS1', 'kv': [['SĐT', '0912 345 456'], ['Cơ sở tiếp nhận', 'CS1 Nguyễn Chí Thanh'], ['Đang học tại', '—'], ['Số con', '1'], ['Ngày tạo', '15/10/2026']],
     'move': {'CON': ['HS000141 · Nguyễn Minh Khôi · 2011 · Lớp 9'], 'ĐƠN': ['DH-CS1-2610-0009 · Đã duyệt · 3.200.000đ'], 'PHIẾU THU': ['PT-CS1-2610-0014 · 1.000.000đ · 15/10/2026'], 'GHI CHÚ': ['Nguyễn Văn Nam · 15/10 16:20 · “PH nhắn Zalo hỏi lịch học thử.”', 'Nguyễn Văn Nam · 15/10 16:25 · “Hẹn gọi lại sáng thứ 5.”']}}],
-  'sugg': [['PH000072', 'Trần Thị Hà', '0900 000 118 · CS1', 'Cùng SĐT'], ['PH000081', 'Trần Thị Hà', '0900 000 118 · CS2', 'Cùng SĐT, khác cơ sở']],
+  'sugg': [['PH000072', 'Trần Thị Hà', '0912 345 456 · CS1', 'Cùng SĐT'], ['PH000081', 'Trần Thị Hà', '0912 345 456 · CS2', 'Cùng SĐT, khác cơ sở']],
   'conf': []},
  'hs': {'ttl': 'Gộp học sinh trùng', 'noun': 'học sinh', 'sub': 'Hai học sinh cùng tên, cùng năm sinh 2011, cùng phụ huynh. Chọn hồ sơ giữ lại; ghi danh, phiếu kiểm tra và ghi chú của hồ sơ kia chuyển sang hồ sơ giữ lại.',
   'rec': [
