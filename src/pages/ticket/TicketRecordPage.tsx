@@ -29,6 +29,7 @@ import { BusinessTaskDialog } from '../phieu/BusinessTaskDialog';
 import { createTicketTask, useTaskFields } from '../phieu/useTaskCreate';
 import { TASK_STATUS_LABEL, TASK_TYPE_LABEL } from '../phieu/taskLabels';
 import { groupsOf, subgroupsOf } from './ticketCreate';
+import { statusDialogSpec } from './statusDialog';
 import { ticketTimeline } from './ticketTimeline';
 import {
   addTicketNote,
@@ -114,7 +115,13 @@ export function TicketRecordPage() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['ticket-record', id] });
   const needResolution = target === 'DA_XU_LY' && !ticket.resolution;
   const needSatisfaction = target === 'DA_DONG' && ticket.ticket_type === 'KN';
-  const needNote = target === 'DA_HUY';
+  const dialogSpec = statusDialogSpec({
+    from: ticket.status_code,
+    to: target ?? '',
+    ticketType: ticket.ticket_type,
+    businessType: ticket.business_type,
+  });
+  const needNote = dialogSpec.noteRequired;
   const satisfactionValue = Number(satisfaction);
   const canSubmit =
     (!needResolution || resolution.trim() !== '') &&
@@ -698,9 +705,9 @@ export function TicketRecordPage() {
       <FormDialog
         open={target !== null}
         onOpenChange={(open) => !open && close()}
-        title={`Chuyển sang «${statusName(target)}»`}
+        title={dialogSpec.title ?? `Chuyển sang «${statusName(target)}»`}
         subtitle={ticket.code}
-        confirmLabel="Chuyển"
+        confirmLabel={dialogSpec.confirmLabel}
         canSubmit={canSubmit}
         busy={busy}
         error={error}
@@ -730,8 +737,9 @@ export function TicketRecordPage() {
           </label>
         )}
         <TextAreaField
-          label={needNote ? 'Lý do huỷ' : 'Ghi chú'}
+          label={dialogSpec.noteLabel}
           required={needNote}
+          help={dialogSpec.hint}
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
