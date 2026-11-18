@@ -2,6 +2,7 @@
 // Nút «Ghi nhận đã chi» chỉ hiện khi máy chủ báo can_pay (Kế toán, phiếu Chờ chi). Giao diện KHÔNG tính tiền; điện thoại chỉ đọc (Đ248).
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, useDb } from '../../lib/db';
 import { formatDateTime, formatMoney, formatNumber } from '../../lib/format';
@@ -59,6 +60,7 @@ const STEPS: StageStep[] = [
 ];
 
 function VoucherView({ record }: { record: VoucherRecord }) {
+  const openFrom = useNavigateFrom();
   const supabase = useDb();
   const toast = useToast();
   const phone = useMedia(NARROW_TABLE);
@@ -119,6 +121,11 @@ function VoucherView({ record }: { record: VoucherRecord }) {
         onEdit={() => undefined}
         onSave={() => undefined}
         onCancel={() => undefined}
+        headerActions={
+          <Button icon="printer" onClick={() => openFrom(`/crm/phieu-chi/${v.id}/in`)}>
+            In phiếu chi
+          </Button>
+        }
         stageShowCode={false}
         stage={{
           steps: STEPS,
