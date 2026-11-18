@@ -53,7 +53,16 @@ export function BranchRoomPage() {
   const canEdit = access.can('ADMIN', 'SUA');
 
   if (data.isPending) return <Spinner label="Đang tải cơ sở và phòng…" />;
-  if (data.isError) return <StateView kind="error" title="Chưa tải được cơ sở và phòng" />;
+  if (data.isError)
+    return (
+      <StateView
+        kind="error"
+        title="Chưa tải được cơ sở và phòng"
+        actions={<Button onClick={() => void data.refetch()}>Thử lại</Button>}
+      >
+        {errorOf(data.error).message}
+      </StateView>
+    );
 
   const toggle = async (room: Room, active: boolean) => {
     setBusy(true);
