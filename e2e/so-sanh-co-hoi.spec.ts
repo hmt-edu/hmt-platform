@@ -67,7 +67,7 @@ test('Cơ hội: danh sách, Kanban, bản ghi, hộp chuyển giai đoạn, tra
     await page.goto(`/crm/co-hoi/${seeded.opportunity.gated.id}`);
     await expect(page.getByRole('heading', { level: 1, name: 'Cơ hội' })).toBeVisible();
     await save(browser, page, 'TS08_K3_pc', 'TS08_K3');
-    await page.getByRole('button', { name: 'Kiểm tra: 1' }).click();
+    await page.getByRole('button', { name: 'Kiểm tra 1' }).click();
     await save(browser, page, 'TS08b_K3_pc', 'TS08b_K3');
     await page
       .getByRole('navigation', { name: 'Giai đoạn' })
