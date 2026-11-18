@@ -107,7 +107,7 @@ select is((app.save_receipt((select (v ->> 'id')::uuid from ra), pg_temp.dst(200
 -- ---- Gửi và duyệt: nợ em giảm đúng, em khác không đổi ----
 select is(app.submit_receipt((select (v ->> 'id')::uuid from ra)) ->> 'status', 'CHO_KE_TOAN', 'Gửi thẳng Kế toán');
 select pg_temp.claims((select id from u where key = 'ke'), 'aal2');
-select is(app.approve_receipt_accounting((select (v ->> 'id')::uuid from ra)) ->> 'remaining', '5000000', 'Duyệt xong: nợ còn lại của phụ huynh là 5.000.000 (phiếu không em chờ trừ riêng, nợ em A còn 1.000.000)');
+select is(app.approve_receipt_accounting((select (v ->> 'id')::uuid from ra)) ->> 'remaining', '1000000', 'Duyệt xong: nợ còn lại của phụ huynh là 1.000.000 (8.000.000 trừ 2.000.000 đã duyệt trừ 5.000.000 phiếu không em đang chờ)');
 
 select * from finish();
 rollback;
