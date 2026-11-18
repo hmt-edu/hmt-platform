@@ -78,7 +78,8 @@ import {
 } from './orderApprove';
 import { CreateReceiptDialog } from '../phieu-thu/CreateReceiptDialog';
 import { ChooseClassDialog, type ChooseClassTarget } from '../ghi-danh/ChooseClassDialog';
-import { useOrderLineClasses } from '../ghi-danh/useEnrollmentData';
+import { setOrderLineClass, useOrderLineClasses } from '../ghi-danh/useEnrollmentData';
+import { mergeLineClasses, type PendingClass } from './pendingClasses';
 import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
 
 const ORDER_CHANGE_FORMAT = { labels: {} } satisfies FieldFormat;
@@ -138,8 +139,10 @@ function OrderView({ record }: { record: OrderRecord }) {
   const refresh = useRefreshOrder(record.id);
   // BH-08: mã lớp và ngày vào lớp của từng dòng; hộp Chọn lớp mở từ bảng Sửa.
   const lineClassQuery = useOrderLineClasses(record.id);
-  const lineClasses = Object.fromEntries((lineClassQuery.data ?? []).map((c) => [c.line_no, c]));
   const [classTarget, setClassTarget] = useState<ChooseClassTarget | null>(null);
+  // Khung BH-08: lớp chọn trong lúc Sửa đơn chỉ nằm ở bản đang sửa (null = bỏ chọn lớp), lưu khi bấm Lưu đơn; huỷ Sửa thì bỏ.
+  const [pendingClasses, setPendingClasses] = useState<Record<number, PendingClass>>({});
+  const lineClasses = mergeLineClasses(lineClassQuery.data ?? [], pendingClasses);
   const phone = useMedia(NARROW_TABLE);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<{ message: string; retry: boolean } | null>(null);
@@ -308,7 +311,10 @@ function OrderView({ record }: { record: OrderRecord }) {
       draft.added.some((a) => addedError(a) !== null) ||
       limitBlocked ||
       allRemoved(draft));
-  const dirty = draft !== null && hasChanges(record.lines, draft, initialTermId, fixedPolicyIds);
+  const classesChanged = Object.keys(pendingClasses).length > 0;
+  const dirty =
+    draft !== null &&
+    (hasChanges(record.lines, draft, initialTermId, fixedPolicyIds) || classesChanged);
 
   async function saveEdit() {
     if (!draft || saving || draftInvalid) return;
@@ -317,11 +323,19 @@ function OrderView({ record }: { record: OrderRecord }) {
     try {
       const edits = buildEdits(record.lines, draft, fixedPolicyIds);
       const termChanged = draft.termId !== initialTermId && draft.termId !== '';
-      if (edits.length === 0 && !termChanged) {
+      if (edits.length === 0 && !termChanged && !classesChanged) {
         setEditing(false);
         return;
       }
-      await editOrder(supabase, record.id, edits, termChanged ? draft.termId : null);
+      if (edits.length > 0 || termChanged) {
+        await editOrder(supabase, record.id, edits, termChanged ? draft.termId : null);
+      }
+      // Lớp, ngày vào lớp của từng dòng (BH-08) lưu cùng lúc bấm Lưu đơn, sau khi dòng đơn đã lưu.
+      for (const [lineNo, pick] of Object.entries(pendingClasses)) {
+        await setOrderLineClass(supabase, record.id, Number(lineNo), pick.classId, pick.date);
+      }
+      setPendingClasses({});
+      void lineClassQuery.refetch();
       await refresh();
       setEditing(false);
       setDraft(null);
@@ -645,6 +659,7 @@ function OrderView({ record }: { record: OrderRecord }) {
           setEditing(false);
           setDraft(null);
           setEditError(null);
+          setPendingClasses({});
         }}
         readOnly
         showEdit={canEdit}
@@ -947,6 +962,16 @@ function OrderView({ record }: { record: OrderRecord }) {
       <ChooseClassDialog
         target={classTarget}
         onClose={() => setClassTarget(null)}
+        onPicked={(lineNo, pick, chosen) =>
+          setPendingClasses((cur) => ({
+            ...cur,
+            [lineNo]: {
+              classId: pick.classId,
+              date: pick.classId ? pick.date : null,
+              classCode: chosen?.code ?? null,
+            },
+          }))
+        }
         onSaved={() => {
           void lineClassQuery.refetch();
           void refresh();

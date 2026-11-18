@@ -142,6 +142,8 @@ test('BUOI-08: form trắng báo lỗi tại ô; CSKH gửi duyệt thì về da
   const row = page.getByRole('row').filter({ hasText: 'Cả lớp' }).first();
   await expect(row).toContainText('Chờ duyệt');
   await expect(row).toContainText(/YB-CS5-\d{4}-\d{4}/);
+  await expect(row).toContainText('chỉ Trưởng cơ sở duyệt'); // khung BUOI10_cskh
+  await expect(row).toContainText(classCode); // cột Lớp
   await expect(page.getByRole('button', { name: 'Duyệt', exact: true })).toHaveCount(0);
 });
 

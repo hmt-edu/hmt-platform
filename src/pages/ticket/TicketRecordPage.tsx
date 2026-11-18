@@ -344,7 +344,16 @@ export function TicketRecordPage() {
             <DetailField label="Loại" mode="view" value={TYPE_NAME[ticket.ticket_type]} />
             <DetailField label="Tiêu đề" mode="view" value={ticket.title} />
             <DetailField label="Người gửi" mode="view" value={ticket.sender_name ?? ''} />
+            <DetailField
+              label="Kênh"
+              mode="view"
+              value={catalogs.name('TICKET_CHANNEL', ticket.channel_code) ?? ticket.channel_code}
+            />
+            <DetailField label="Cơ sở" mode="view" value={ticket.branch_code} />
             <DetailField label="Học sinh" mode="view" value={ticket.student_name ?? ''} />
+            <DetailField label="Lớp" mode="view" value={ticket.class_code ?? ''} />
+            <DetailField label="Ghi danh" mode="view" value={ticket.enrollment_code ?? ''} />
+            <DetailField label="Ticket gốc" mode="view" value={ticket.related_ticket_code ?? ''} />
             <DetailField label="Nhóm" mode="view" value={ticket.category_name ?? ''} />
             {ticket.nature_code && (
               <DetailField
