@@ -257,5 +257,10 @@ select lives_ok($$select app.approve_order(pg_temp.o('p'))$$, 'Người nhận m
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.reassign_approver('DON', pg_temp.o('n'), pg_temp.uid('bm1b'), 'BI_KHOA', null)$$), 'HMT_KHONG_CO_QUYEN', 'R-V2-44: Sale không chuyển người duyệt');
 
+-- ---- Hai hàm phụ không cho người đã đăng nhập gọi trực tiếp (dò tình trạng nhân viên bất kỳ) ----
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.approver_candidate_problem(pg_temp.uid('bm1'), 'DON', pg_temp.uid('sales1'), (select id from app.branch where code = 'CS1'))$$), '42501', 'R-V2-44: người thường không gọi trực tiếp approver_candidate_problem');
+select is(pg_temp.err($$select app.approver_unavailable_reason('DON', pg_temp.uid('bm1'), (select id from app.branch where code = 'CS1'), now())$$), '42501', 'R-V2-44: người thường không gọi trực tiếp approver_unavailable_reason');
+
 select * from finish();
 rollback;

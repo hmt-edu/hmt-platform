@@ -96,7 +96,7 @@ begin
      or not app.user_can_at_branch(p_approver, v_module, 'DUYET', p_branch_id) then
     return 'MAT_QUYEN';
   end if;
-  if now() > p_since + make_interval(hours => app.get_setting_int('approver_reassign_after_hours', p_branch_id)) then
+  if now() > p_since + make_interval(hours => app.get_setting_int('approver_reassign_after_hours', p_branch_id)::integer) then
     return 'QUA_HAN';
   end if;
   return null;
@@ -128,6 +128,7 @@ declare
   v_problem text;
   v_why text;
   v_text text;
+  v_wait text;
 begin
   -- Luật R-HT-01: chỉ Admin (đã qua hai bước) chuyển người duyệt.
   if p_kind not in ('DON', 'PHIEU_THU') then
@@ -157,7 +158,8 @@ begin
     perform app.raise_error('HMT_TINH_NANG_TAT', 'Chuyển người duyệt chưa được bật cho cơ sở này.');
   end if;
   -- Luật R-V2-44 (1): chỉ khi đang chờ bước quản lý.
-  if v_status <> case when p_kind = 'PHIEU_THU' then 'DA_GUI' else 'DA_TRINH' end then
+  v_wait := case when p_kind = 'PHIEU_THU' then 'DA_GUI' else 'DA_TRINH' end;
+  if v_status <> v_wait then
     perform app.raise_error('HMT_SAI_TRANG_THAI', 'Chỉ chuyển được khi chứng từ đang chờ quản lý duyệt.');
   end if;
   -- Luật R-V2-44 (5): route TRUONG_CS (mọi Trưởng cơ sở duyệt được) và TU_DUYET không cần chuyển.
@@ -256,6 +258,7 @@ declare
   v_old uuid;
   v_since timestamptz;
   v_why text;
+  v_wait text := case when p_kind = 'PHIEU_THU' then 'DA_GUI' else 'DA_TRINH' end;
 begin
   if p_kind not in ('DON', 'PHIEU_THU') or not app.current_user_ready() or not ('ADMIN' = any (app.current_roles())) then
     return jsonb_build_object('can', false);
@@ -270,7 +273,7 @@ begin
       into v_branch, v_status, v_route, v_old, v_since from app.sales_order o where o.id = p_id;
   end if;
   if v_branch is null or v_route is distinct from 'QUAN_LY'
-     or v_status <> case when p_kind = 'PHIEU_THU' then 'DA_GUI' else 'DA_TRINH' end
+     or v_status <> v_wait
      or not app.get_setting_bool('approver_reassign_enabled', v_branch) then
     return jsonb_build_object('can', false);
   end if;
@@ -281,6 +284,6 @@ $$;
 
 select set_config('hmt.migration', '', false);
 
-revoke execute on function app.approver_candidate_problem(uuid, text, uuid, uuid), app.approver_unavailable_reason(text, uuid, uuid, timestamptz),
-  app.reassign_approver(text, uuid, uuid, text, text), app.list_approver_candidates(text, uuid), app.get_reassign_state(text, uuid) from public, anon;
+revoke execute on function app.approver_candidate_problem(uuid, text, uuid, uuid), app.approver_unavailable_reason(text, uuid, uuid, timestamptz) from public, anon, authenticated;
+revoke execute on function app.reassign_approver(text, uuid, uuid, text, text), app.list_approver_candidates(text, uuid), app.get_reassign_state(text, uuid) from public, anon;
 grant execute on function app.reassign_approver(text, uuid, uuid, text, text), app.list_approver_candidates(text, uuid), app.get_reassign_state(text, uuid) to authenticated;
