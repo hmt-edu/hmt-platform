@@ -90,6 +90,31 @@ select is(pg_temp.err($$select app.set_review_criterion_active(pg_temp.crit('TOA
 select is(pg_temp.err($$select app.set_review_criterion_active(pg_temp.crit('TOAN_HIEU'), true)$$), null, 'Dùng lại tiêu chí');
 select is(pg_temp.err($$select app.set_review_criterion_active(gen_random_uuid(), false)$$), 'HMT_KHONG_TIM_THAY', 'Chặn: tiêu chí không có');
 
+-- ---------- Lưu nhiều ô một lần (migration 504) ----------
+select is(app.update_review_level_descs(pg_temp.ver('MON_PHU', 1), jsonb_build_array(
+  jsonb_build_object('criterion_id', pg_temp.crit('TD_TAP_TRUNG'), 'level', 1, 'description', 'Một'),
+  jsonb_build_object('criterion_id', pg_temp.crit('TD_TAP_TRUNG'), 'level', 2, 'description', 'Hai'))), 2, 'Lưu hai ô trong một lần gọi');
+select is(pg_temp.err($$select app.update_review_level_descs(pg_temp.ver('MON_PHU', 1), jsonb_build_array(
+  jsonb_build_object('criterion_id', pg_temp.crit('TD_TAP_TRUNG'), 'level', 1, 'description', 'Đổi'),
+  jsonb_build_object('criterion_id', pg_temp.crit('TD_TAP_TRUNG'), 'level', 2, 'description', ' ')))$$), 'HMT_THIEU_THONG_TIN', 'Một ô trống thì cả lần lưu bị chặn');
+select is((select description from app.review_level_desc where version_id = pg_temp.ver('MON_PHU', 1) and criterion_id = pg_temp.crit('TD_TAP_TRUNG') and level = 1), 'Một', 'Lần lưu lỗi không để lại ô nào đã đổi dở');
+select is(pg_temp.err($$select app.update_review_level_descs(pg_temp.ver('MON_PHU', 1), '{}'::jsonb)$$), 'HMT_THAM_SO_SAI', 'Chặn: danh sách không phải mảng');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal2');
+select is(pg_temp.err($$select app.update_review_level_descs(pg_temp.ver('MON_PHU', 1), '[]'::jsonb)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Trưởng cơ sở không lưu mô tả');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+
+-- ---------- Câu mẫu lời nhắn phụ huynh (migration 506, R-V2-39) ----------
+select is(jsonb_array_length(app.get_parent_phrases()), 24, 'Admin đọc đủ 24 câu mẫu (2 loại buổi × 4 mức × 3 câu)');
+select is(app.update_parent_phrases(jsonb_build_array(jsonb_build_object('kind', 'THUONG', 'level', 1, 'seq', 1, 'phrase', '  Câu mới  '))), 1, 'Admin sửa một câu');
+select is((select phrase from app.parent_phrase where kind = 'THUONG' and level = 1 and seq = 1), 'Câu mới', 'Câu được cắt khoảng trắng');
+select is(pg_temp.err($$select app.update_parent_phrases(jsonb_build_array(jsonb_build_object('kind', 'THUONG', 'level', 1, 'seq', 1, 'phrase', ' ')))$$), 'HMT_THIEU_THONG_TIN', 'Chặn: câu trống');
+select is(pg_temp.err($$select app.update_parent_phrases(jsonb_build_array(jsonb_build_object('kind', 'THUONG', 'level', 5, 'seq', 1, 'phrase', 'x')))$$), 'HMT_KHONG_TIM_THAY', 'Chặn: không thêm câu ngoài 24 câu (mức 5)');
+select is((select count(*)::int from app.parent_phrase), 24, 'Vẫn đúng 24 câu');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal2');
+select is(pg_temp.err($$select app.get_parent_phrases()$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Trưởng cơ sở không xem câu mẫu');
+select is(pg_temp.err($$select app.update_parent_phrases('[]'::jsonb)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Trưởng cơ sở không sửa câu mẫu');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+
 -- ---------- Chụp vào buổi ----------
 select is((select count(*)::int from information_schema.columns where table_schema = 'app' and table_name = 'session_review_criterion' and column_name in ('rubric_version_id', 'level_descs')), 2, 'Buổi có cột chụp phiên bản và mô tả');
 select * from finish();
