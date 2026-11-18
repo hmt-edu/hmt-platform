@@ -270,6 +270,13 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('UPSALE'),
         stage: '',
       },
+      {
+        code: 'TT-04',
+        label: 'Đối chiếu tái tục',
+        slug: 'doi-chieu-tai-tuc',
+        requires: can('UPSALE'),
+        stage: '',
+      },
     ],
   },
   {

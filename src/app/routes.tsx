@@ -97,6 +97,7 @@ const UpsaleListPage = lazyScreen(
   () => import('../pages/tai-tuc/UpsaleListPage'),
   'UpsaleListPage',
 );
+const ReconcilePage = lazyScreen(() => import('../pages/tai-tuc/ReconcilePage'), 'ReconcilePage');
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const TicketRecordPage = lazyScreen(
   () => import('../pages/ticket/TicketRecordPage'),
@@ -526,6 +527,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="tai-tuc">
                 <UpsaleRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'doi-chieu-tai-tuc',
+            element: (
+              <GatedCrmEntry slug="doi-chieu-tai-tuc">
+                <ReconcilePage />
               </GatedCrmEntry>
             ),
           },
