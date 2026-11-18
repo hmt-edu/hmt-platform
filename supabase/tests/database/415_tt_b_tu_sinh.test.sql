@@ -101,7 +101,7 @@ select is((pg_temp.tk('HS411B')).id, null, 'Em B (50 giờ) chưa chạm ngưỡ
 select is((select count(*)::int from app.upsale_ticket where student_id = pg_temp.sid('HS411C')), 1, 'R-GD-13: em C đã L5 không tự sinh lại');
 select is((select count(*)::int from app.upsale_ticket where student_id = pg_temp.sid('HS411D')), 0, 'R-GD-13: em D bảo lưu dừng sinh');
 select is((pg_temp.tk('HS411E')).stage_code, 'L5', 'R-GD-13: em E dừng học thì phiếu mở được đóng ở L5');
-select is((pg_temp.tk('HS411E')).lost_reason_code, 'DUNG_HOC', 'Phiếu đóng do dừng học ghi lý do Dừng học');
+select is((pg_temp.tk('HS411E')).lost_reason_code || ':' || (pg_temp.tk('HS411E')).lost_note, 'KHAC:Học sinh đã dừng học (hệ thống đóng phiếu)', 'Phiếu đóng do dừng học ghi lý do Khác kèm ghi chú dừng học');
 select is((pg_temp.tk('HS411F', 'LOP411B')).stage_code, 'L2', 'R-GD-13: em F chuyển lớp thì phiếu mở chuyển theo lớp mới (giữ giai đoạn)');
 select is((pg_temp.tk('HS411F')).id, null, 'Phiếu em F không còn ở lớp cũ');
 select is(pg_temp.nt(), 4, 'Tổng 4 phiếu sau lần chạy đầu');
