@@ -16,6 +16,8 @@ import {
   summaryScore,
   type StudentProfile,
 } from './studentProfileLogic';
+import { GvForbidden } from './GvForbidden';
+import { isForbidden } from './forbidden';
 
 export function TeacherStudentPage() {
   const supabase = useDb();
@@ -46,7 +48,11 @@ export function TeacherStudentPage() {
     return (
       <div className="mx-auto flex max-w-3xl flex-col gap-3">
         <h1 className="text-h2">Học sinh</h1>
-        <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        {isForbidden(query.error) ? (
+          <GvForbidden kind="generic" />
+        ) : (
+          <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        )}
         <div className="flex gap-3">
           <Button onClick={() => void query.refetch()}>Thử lại</Button>
           {back}
