@@ -116,5 +116,13 @@ select is((select count(*)::int from app.enrollment e join app.enrollment_class 
             where e.student_id = (select id from app.student where code = 'HS417A') and e.status_code = 'DA_XEP_LOP'
               and ec.class_id = (select id from app.class where code = 'LOP417') and e.order_id is not null), 1, 'Ghi danh mới Đã xếp lớp đúng lớp của phiếu');
 
+-- ---- Tuỳ chọn cho hộp Tạo đơn (migration 418) ----
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(app.list_upsale_order_options(pg_temp.tid('TT917001')) ->> 'delivery_mode_code', 'OFF', 'Tuỳ chọn: hình thức học giữ như ghi danh cũ');
+select is(jsonb_array_length(app.list_upsale_order_options(pg_temp.tid('TT917001')) -> 'sessions') >= 1, true, 'Tuỳ chọn: có buổi sắp tới của lớp để chọn ngày vào lớp');
+select is(app.list_upsale_order_options(pg_temp.tid('TT917001')) -> 'packages' @> '[{"code": "LC-TOAN-K09"}]'::jsonb, true, 'Tuỳ chọn: có gói đúng môn của lớp');
+select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
+select is(pg_temp.err($$select app.list_upsale_order_options(pg_temp.tid('TT917001'))$$), 'HMT_KHONG_CO_QUYEN', 'Kế toán không xem tuỳ chọn tạo đơn');
+
 select * from finish();
 rollback;

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { RecordDetail, DetailField } from '../../record/Detail';
 import { HmtError, errorOf, useDb } from '../../lib/db';
-import { formatDate, formatDateTime, formatNumber } from '../../lib/format';
+import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
@@ -19,9 +19,15 @@ import { formatPhone } from '../lead/leadFormat';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { AssignUpsaleDialog } from './AssignUpsaleDialog';
 import { ChangeUpsaleStageDialog } from './ChangeUpsaleStageDialog';
+import { CreateUpsaleOrderDialog } from './CreateUpsaleOrderDialog';
 import { upsaleEventEntries } from './upsaleEventEntries';
-import type { UpsaleRecord } from './upsaleTypes';
-import { saveUpsaleNotes, useRefreshUpsaleRecord, useUpsaleRecord } from './useUpsaleData';
+import type { UpsaleOrderRow, UpsaleRecord } from './upsaleTypes';
+import {
+  saveUpsaleNotes,
+  useRefreshUpsaleRecord,
+  useUpsaleOrders,
+  useUpsaleRecord,
+} from './useUpsaleData';
 
 export function UpsaleRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -68,12 +74,19 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const t = record.ticket;
   const refresh = useRefreshUpsaleRecord(t.id);
   const [tab, setTab] = useState('overview');
-  const [dialog, setDialog] = useState<'stage' | 'assign' | null>(null);
+  const [dialog, setDialog] = useState<'stage' | 'assign' | 'order' | null>(null);
   const [goal, setGoal] = useState(t.next_goal ?? '');
   const [roadmap, setRoadmap] = useState(t.next_roadmap ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const orders = useUpsaleOrders(t.id);
   const can = (a: UpsaleRecord['actions'][number]) => record.actions.includes(a) && !phone;
+  // Tạo đơn: phiếu ở L6, cần cả quyền Đơn hàng · Tạo và Phiếu tái tục · Sửa (máy chủ kiểm lại từng bước).
+  const canCreateOrder =
+    t.stage_code === 'L6' &&
+    can('doi_giai_doan') &&
+    access.can('SALES_ORDER', 'TAO') &&
+    access.featureOn('BAN_HANG');
   const dirty = goal !== (t.next_goal ?? '') || roadmap !== (t.next_roadmap ?? '');
   const forbiddenAll = !access.can('UPSALE', 'XEM');
 
@@ -231,6 +244,11 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
                 Chuyển giai đoạn
               </Button>
             )}
+            {canCreateOrder && (
+              <Button variant="primary" onClick={() => setDialog('order')}>
+                Tạo đơn
+              </Button>
+            )}
             {can('giao') && <Button onClick={() => setDialog('assign')}>Giao</Button>}
           </span>
         }
@@ -255,9 +273,9 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
             key: 'don-hang',
             label: 'Đơn hàng',
             icon: 'payment',
-            count: 0,
-            unavailable: 'Làm ở PR sau (tạo đơn từ phiếu)',
-            onOpen: () => undefined,
+            count: orders.data?.length ?? 0,
+            unavailable: 'Phiếu chưa có đơn',
+            onOpen: () => setTab('quotes'),
           },
           {
             key: 'ghi-danh',
@@ -305,7 +323,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
               {
                 value: 'quotes',
                 label: 'Báo giá và đơn',
-                content: <p className="text-fg-muted">Chưa có báo giá hay đơn.</p>,
+                content: <OrdersTab orders={orders.data ?? []} />,
               },
               {
                 value: 'learning',
@@ -325,6 +343,14 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
           toast({ title: 'Đã chuyển giai đoạn.' });
         }}
       />
+      <CreateUpsaleOrderDialog
+        open={dialog === 'order'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        ticket={t}
+        onDone={async () => {
+          await refresh();
+        }}
+      />
       <AssignUpsaleDialog
         row={dialog === 'assign' ? t : null}
         onOpenChange={(o) => !o && setDialog(null)}
@@ -334,5 +360,32 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
         }}
       />
     </>
+  );
+}
+
+const ORDER_STATUS: Record<string, string> = {
+  NHAP: 'Nháp',
+  DA_TRINH: 'Đã trình',
+  DA_DUYET: 'Đã duyệt',
+  HUY: 'Huỷ',
+};
+
+/** Tab «Báo giá và đơn»: đơn sinh ra từ phiếu (báo giá từ phiếu làm ở PR sau). */
+function OrdersTab({ orders }: { orders: UpsaleOrderRow[] }) {
+  if (orders.length === 0) return <p className="text-fg-muted">Chưa có báo giá hay đơn.</p>;
+  return (
+    <ul className="flex flex-col gap-2">
+      {orders.map((o) => (
+        <li key={o.id} className="flex flex-wrap items-center gap-2">
+          <Link className="font-medium text-link hover:underline" to={`/crm/don-hang/${o.id}`}>
+            {o.code}
+          </Link>
+          <span className="text-fg-muted">
+            {ORDER_STATUS[o.status_code] ?? o.status_code} · {formatMoney(o.total_amount)} ·{' '}
+            {formatDate(o.created_at)}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }

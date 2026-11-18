@@ -8,6 +8,8 @@ import type {
   UpsaleBoardColumn,
   UpsaleFilters,
   UpsalePage,
+  UpsaleOrderOptions,
+  UpsaleOrderRow,
   UpsalePreview,
   UpsaleRecord,
 } from './upsaleTypes';
@@ -105,7 +107,7 @@ export function useRefreshUpsaleRecord(id: string) {
   return useCallback(
     () =>
       Promise.all(
-        ['upsale-record', 'upsale-list', 'upsale-board'].map((key) =>
+        ['upsale-record', 'upsale-list', 'upsale-board', 'upsale-orders'].map((key) =>
           queryClient.invalidateQueries({ queryKey: key === 'upsale-record' ? [key, id] : [key] }),
         ),
       ),
@@ -138,5 +140,41 @@ export function saveUpsaleNotes(
     p_id: id,
     p_next_goal: goal,
     p_next_roadmap: roadmap,
+  });
+}
+
+export function useUpsaleOrderOptions(ticketId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['upsale-order-options', ticketId],
+    enabled,
+    queryFn: () =>
+      rpc<UpsaleOrderOptions>(supabase, 'list_upsale_order_options', { p_ticket_id: ticketId }),
+  });
+}
+
+/** Tab «Báo giá và đơn»: đơn của phiếu. */
+export function useUpsaleOrders(ticketId: string) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['upsale-orders', ticketId],
+    queryFn: () => rpc<UpsaleOrderRow[]>(supabase, 'list_upsale_orders', { p_ticket_id: ticketId }),
+  });
+}
+
+export function createUpsaleOrder(
+  supabase: SupabaseClient,
+  ticketId: string,
+  line: { package_id: string; quantity: number },
+  termId: string | null,
+  startDate: string | null,
+): Promise<{ id: string; code: string }> {
+  return rpc<{ id: string; code: string }>(supabase, 'create_order_from_upsale_ticket', {
+    p_ticket_id: ticketId,
+    p_lines: [
+      { kind: 'ENROL', package_id: line.package_id, quantity: line.quantity, discounts: [] },
+    ],
+    p_payment_term_id: termId,
+    p_enrol_start_date: startDate,
   });
 }

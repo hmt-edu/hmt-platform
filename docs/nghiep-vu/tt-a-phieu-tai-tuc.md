@@ -49,3 +49,7 @@ Nhãn «Tái tục MM/YYYY» tính từ ngày hết giờ dự kiến, không c�
 - `app.reconcile_upsale_orders()`: đơn Đã duyệt đã thu đủ thì phiếu sang L8A; mọi đơn Huỷ thì về L6. Chạy cùng lịch đêm (`sync_upsale_cron` nay lên lịch cả hai việc; vẫn chờ anh duyệt đăng ký).
 - Ghi danh mới: hàm sẵn có `create_enrollments_for_order` đã xếp thẳng vào lớp của phiếu (pgTAP chứng minh), không vào hàng chờ xếp lớp.
 - **Chưa làm:** hộp «Tạo đơn» trên màn TT-02 (chọn gói), báo giá từ phiếu (bảng báo giá còn bắt buộc cơ hội), sửa đơn Nháp từ phiếu bằng `save_order`.
+
+## TT-D2b (migration 418): hộp «Tạo đơn» ở TT-02
+
+`app.list_upsale_order_options(phiếu)` (chỉ đọc; cần cả Đơn hàng · Tạo và Phiếu tái tục · Sửa) trả gói bán được cho lớp (đúng môn, tính theo giờ, có giá hôm nay), hình thức học giữ như ghi danh cũ, điều khoản thanh toán đang dùng, các buổi sắp tới của lớp. Màn TT-02 ở L6 có nút «Tạo đơn» (hộp: gói, số giờ, ngày vào lớp, điều khoản); tạo xong mở trang đơn Nháp; tab «Báo giá và đơn» liệt kê đơn của phiếu. Giá chỉ để xem; tiền tính ở máy chủ. Báo giá từ phiếu: chưa làm (chờ Chat chốt).
