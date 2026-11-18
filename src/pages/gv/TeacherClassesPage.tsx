@@ -2,10 +2,10 @@
 // Máy chủ quyết lớp nào hiện (app.list_classes, phạm vi lớp được phân công, R-GV-08); trang chỉ ghép buổi tiếp theo. Bấm lớp → GV-11.
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
-import { errorOf, rpc, useDb } from '../../lib/db';
+import { QueryErrorBlock } from './QueryErrorBlock';
+import { rpc, useDb } from '../../lib/db';
 import { vnDayBounds } from '../../lib/vnDay';
-import { Button } from '../../ui/Button';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Spinner, StateView } from '../../ui/Feedback';
 import {
   capacityText,
   classTitle,
@@ -54,10 +54,7 @@ export function TeacherClassesPage() {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3">
         <h1 className="text-h2">Lớp của tôi</h1>
-        <Alert tone="danger">{errorOf(classes.error).message}</Alert>
-        <div>
-          <Button onClick={() => void classes.refetch()}>Thử lại</Button>
-        </div>
+        <QueryErrorBlock error={classes.error} onRetry={() => void classes.refetch()} />
       </div>
     );
 

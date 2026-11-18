@@ -4,10 +4,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router';
-import { errorOf, rpc, useDb } from '../../lib/db';
+import { QueryErrorBlock } from './QueryErrorBlock';
+import { rpc, useDb } from '../../lib/db';
 import { vnDayBounds } from '../../lib/vnDay';
 import { Button } from '../../ui/Button';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Spinner, StateView } from '../../ui/Feedback';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import {
   hoursText,
@@ -69,10 +70,7 @@ export function TeacherHoursPage() {
     return (
       <div className="mx-auto flex max-w-4xl flex-col gap-3">
         {header}
-        <Alert tone="danger">{errorOf(query.error).message}</Alert>
-        <div>
-          <Button onClick={() => void query.refetch()}>Thử lại</Button>
-        </div>
+        <QueryErrorBlock error={query.error} onRetry={() => void query.refetch()} />
       </div>
     );
   const d = query.data;

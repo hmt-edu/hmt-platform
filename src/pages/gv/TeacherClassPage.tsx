@@ -3,10 +3,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { errorOf, rpc, useDb } from '../../lib/db';
-import { Button } from '../../ui/Button';
+import { QueryErrorBlock } from './QueryErrorBlock';
+import { rpc, useDb } from '../../lib/db';
 import { Tag } from '../../ui/Data';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Spinner, StateView } from '../../ui/Feedback';
 import { Tabs } from '../../ui/Overlays';
 import {
   attendanceText,
@@ -45,11 +45,7 @@ export function TeacherClassPage() {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3">
         <h1 className="text-h2">Lớp</h1>
-        <Alert tone="danger">{errorOf(query.error).message}</Alert>
-        <div className="flex gap-3">
-          <Button onClick={() => void query.refetch()}>Thử lại</Button>
-          {back}
-        </div>
+        <QueryErrorBlock error={query.error} onRetry={() => void query.refetch()} extra={back} />
       </div>
     );
 

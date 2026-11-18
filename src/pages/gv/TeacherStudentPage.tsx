@@ -3,8 +3,8 @@
 // thông tin phụ huynh. Máy tính: bảng theo buổi; điện thoại: mỗi buổi một thẻ. Mở từ tab Học sinh của GV-11.
 import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router';
-import { errorOf, rpc, useDb } from '../../lib/db';
-import { Button } from '../../ui/Button';
+import { QueryErrorBlock } from './QueryErrorBlock';
+import { rpc, useDb } from '../../lib/db';
 import { Tag } from '../../ui/Data';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
@@ -46,11 +46,7 @@ export function TeacherStudentPage() {
     return (
       <div className="mx-auto flex max-w-3xl flex-col gap-3">
         <h1 className="text-h2">Học sinh</h1>
-        <Alert tone="danger">{errorOf(query.error).message}</Alert>
-        <div className="flex gap-3">
-          <Button onClick={() => void query.refetch()}>Thử lại</Button>
-          {back}
-        </div>
+        <QueryErrorBlock error={query.error} onRetry={() => void query.refetch()} extra={back} />
       </div>
     );
   const p = query.data;
