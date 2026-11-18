@@ -31,7 +31,16 @@ export type ReceiptPage = { total: number; rows: ReceiptRow[] };
 export type ReceiptAction = 'sua' | 'gui' | 'duyet_quan_ly' | 'duyet_ke_toan' | 'tu_choi' | 'huy';
 
 export type ReceiptEvent = {
-  event_code: 'TAO' | 'SUA' | 'GUI' | 'DUYET_QL' | 'TU_DUYET_QL' | 'DUYET_KT' | 'TU_CHOI' | 'HUY';
+  event_code:
+    | 'TAO'
+    | 'SUA'
+    | 'GUI'
+    | 'DUYET_QL'
+    | 'TU_DUYET_QL'
+    | 'DUYET_KT'
+    | 'TU_CHOI'
+    | 'HUY'
+    | 'CHUYEN_NGUOI_DUYET';
   from_status: string | null;
   to_status: string;
   note: string | null;

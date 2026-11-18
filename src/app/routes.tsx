@@ -97,6 +97,7 @@ const UpsaleListPage = lazyScreen(
   () => import('../pages/tai-tuc/UpsaleListPage'),
   'UpsaleListPage',
 );
+const ReconcilePage = lazyScreen(() => import('../pages/tai-tuc/ReconcilePage'), 'ReconcilePage');
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const TicketRecordPage = lazyScreen(
   () => import('../pages/ticket/TicketRecordPage'),
@@ -279,6 +280,7 @@ const AppointmentListPage = lazyScreen(
   'AppointmentListPage',
 );
 const LeadRecordPage = lazyScreen(() => import('../pages/lead/LeadRecordPage'), 'LeadRecordPage');
+const TestGradingPage = lazyScreen(() => import('../pages/gv/TestGradingPage'), 'TestGradingPage');
 const TeacherTodoPage = lazyScreen(() => import('../pages/gv/TeacherTodoPage'), 'TeacherTodoPage');
 const TeacherClassesPage = lazyScreen(
   () => import('../pages/gv/TeacherClassesPage'),
@@ -525,6 +527,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="tai-tuc">
                 <UpsaleRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'doi-chieu-tai-tuc',
+            element: (
+              <GatedCrmEntry slug="doi-chieu-tai-tuc">
+                <ReconcilePage />
               </GatedCrmEntry>
             ),
           },
@@ -1010,6 +1020,7 @@ export const routes: RouteObject[] = [
           { path: 'lop/:classId', element: <TeacherClassPage /> },
           { path: 'lop/:classId/hoc-sinh/:studentId', element: <TeacherStudentPage /> },
           { path: 'viec-can-lam', element: <TeacherTodoPage /> },
+          { path: 'phieu-test/:testId', element: <TestGradingPage /> },
           { path: 'ticket', element: <TeacherTicketsPage /> },
           { path: 'ticket/tao', element: <TeacherTicketCreatePage /> },
           { path: 'buoi/:sessionId', element: <SessionStepsPage /> },

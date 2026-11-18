@@ -63,6 +63,7 @@ export const EVENT_TEXT: Record<string, string> = {
   DUYET_KT: 'Kế toán duyệt',
   TU_CHOI: 'Từ chối',
   HUY: 'Huỷ phiếu thu',
+  CHUYEN_NGUOI_DUYET: 'Chuyển người duyệt',
 };
 
 /** Nhãn đóng khung theo tình trạng: chỉ phiếu đã duyệt in sạch. */
