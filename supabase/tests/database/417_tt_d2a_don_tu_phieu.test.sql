@@ -124,5 +124,10 @@ select is(app.list_upsale_order_options(pg_temp.tid('TT917001')) -> 'packages' @
 select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
 select is(pg_temp.err($$select app.list_upsale_order_options(pg_temp.tid('TT917001'))$$), 'HMT_KHONG_CO_QUYEN', 'Kế toán không xem tuỳ chọn tạo đơn');
 
+-- ---- Nhắc nhỏ Chat 13:20 (thẻ C3): người không có quyền Tạo phiếu tái tục nhận lỗi quyền, không biết mã ghi danh có hay không ----
+select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
+select is(pg_temp.err($$select app.preview_upsale_enrollment('GD417A')$$), 'HMT_KHONG_CO_QUYEN', 'preview_upsale_enrollment: người không có quyền Tạo bị chặn, mã có thật');
+select is(pg_temp.err($$select app.preview_upsale_enrollment('KHONG-CO')$$), 'HMT_KHONG_CO_QUYEN', 'preview_upsale_enrollment: cùng một lỗi với mã không có (không dò được mã)');
+
 select * from finish();
 rollback;
