@@ -1,6 +1,7 @@
 // BH-08 Chọn lớp và ngày vào lớp cho một dòng đơn Nháp (hộp thoại mở từ bảng dòng đơn lúc Sửa). Chỉ lớp đã duyệt, còn chỗ, đúng môn, khối, cơ sở của gói (R-GD-06, R-GD-08);
 // ngày vào lớp là buổi sắp tới của lớp, lớp chưa có buổi thì ngày đúng thứ có lịch (R-GD-14). "Chưa chọn lớp": ghi danh ở Chờ xếp lớp, vận hành xếp sau.
-// Bấm Chọn là lưu ngay vào dòng đơn (hàm set_order_line_class), không cần bấm Lưu đơn; huỷ Sửa đơn không hoàn tác lớp đã chọn.
+// Khung BH-08: bấm Chọn chỉ ghi lựa chọn vào bản đang sửa của đơn (onPicked); lớp được lưu khi bấm Lưu đơn (hàm set_order_line_class do trang đơn gọi), huỷ Sửa đơn thì bỏ lựa chọn.
+// Không truyền onPicked thì giữ cách cũ: lưu ngay khi bấm Chọn.
 import { useState } from 'react';
 import { errorOf, useDb } from '../../lib/db';
 import { Button } from '../../ui/Button';
@@ -26,10 +27,13 @@ export function ChooseClassDialog({
   target,
   onClose,
   onSaved,
+  onPicked,
 }: {
   target: ChooseClassTarget | null;
   onClose: () => void;
   onSaved: () => void;
+  /** Có: bấm Chọn chỉ trả lựa chọn cho trang đơn (lưu khi bấm Lưu đơn); không gọi máy chủ. */
+  onPicked?: ((lineNo: number, pick: ClassPick, chosen: MatchingClass | null) => void) | undefined;
 }) {
   const classes = useMatchingClasses(target?.packageId ?? null, target?.branchId ?? null);
   return (
@@ -52,6 +56,7 @@ export function ChooseClassDialog({
           classes={classes.data}
           onClose={onClose}
           onSaved={onSaved}
+          onPicked={onPicked}
         />
       )}
     </Dialog>
@@ -63,11 +68,13 @@ function ChooseBody({
   classes,
   onClose,
   onSaved,
+  onPicked,
 }: {
   target: ChooseClassTarget;
   classes: MatchingClass[];
   onClose: () => void;
   onSaved: () => void;
+  onPicked?: ((lineNo: number, pick: ClassPick, chosen: MatchingClass | null) => void) | undefined;
 }) {
   const supabase = useDb();
   const toast = useToast();
@@ -81,6 +88,11 @@ function ChooseBody({
   const ready = pick.classId === null || pick.date !== '';
 
   async function submit() {
+    if (onPicked) {
+      onPicked(target.lineNo, pick, classes.find((c) => c.id === pick.classId) ?? null);
+      onClose();
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
@@ -116,7 +128,9 @@ function ChooseBody({
         laterLabel="Chưa chọn lớp (ghi danh ở Chờ xếp lớp, vận hành xếp sau)"
       />
       <p className="text-caption text-fg-muted">
-        Bấm Chọn là lưu ngay vào dòng đơn, không cần bấm Lưu đơn.
+        {onPicked
+          ? 'Bấm Chọn rồi bấm Lưu đơn để lưu lớp vào dòng đơn.'
+          : 'Bấm Chọn là lưu ngay vào dòng đơn, không cần bấm Lưu đơn.'}
       </p>
       {error && <Alert tone="danger">{error}</Alert>}
       <div className="flex justify-end gap-2">
