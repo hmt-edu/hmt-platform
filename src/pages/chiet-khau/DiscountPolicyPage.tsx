@@ -208,6 +208,7 @@ export function DiscountPolicyPage() {
       rows={rows}
       rowKey={key}
       rowLabel={(p) => key(p)}
+      empty={<p className="p-4 text-body text-fg-muted">Chưa có chính sách nào.</p>}
     />
   );
 
