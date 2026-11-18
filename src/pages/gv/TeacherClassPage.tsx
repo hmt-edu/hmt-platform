@@ -19,6 +19,8 @@ import {
 } from './classOverviewLogic';
 import { classTitle } from './classesLogic';
 import { hhmm } from './todayLogic';
+import { GvForbidden } from './GvForbidden';
+import { isForbidden } from './forbidden';
 
 export function TeacherClassPage() {
   const supabase = useDb();
@@ -45,7 +47,11 @@ export function TeacherClassPage() {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3">
         <h1 className="text-h2">Lớp</h1>
-        <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        {isForbidden(query.error) ? (
+          <GvForbidden kind="generic" />
+        ) : (
+          <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        )}
         <div className="flex gap-3">
           <Button onClick={() => void query.refetch()}>Thử lại</Button>
           {back}
@@ -135,35 +141,40 @@ export function TeacherClassPage() {
               o.sessions.length === 0 ? (
                 <p className="text-body text-fg-muted">Lớp chưa có buổi nào.</p>
               ) : (
-                <ul className="flex flex-col gap-2">
-                  {o.sessions.map((s) => {
-                    const label = timelinessLabel(s.timeliness);
-                    return (
-                      <li
-                        key={s.id}
-                        className="flex items-start justify-between gap-2 rounded-control border border-border bg-surface p-3"
-                      >
-                        <div>
-                          <p className="font-semibold">
-                            {s.session_no ? `Buổi ${s.session_no}` : 'Buổi'} ·{' '}
-                            {shortDate(s.session_date)}
-                          </p>
-                          <p className="text-caption text-fg-muted">
-                            {hhmm(s.start_time)}–{hhmm(s.end_time)} · {s.type_name ?? s.type_code}
-                          </p>
-                        </div>
-                        <div className="flex flex-col items-end gap-1">
-                          {s.status_code === 'DONE' && <Tag tone="success">Đã hoàn tất</Tag>}
-                          {label && (
-                            <Tag tone={s.timeliness === 'TRE_HAN' ? 'danger' : 'success'}>
-                              {label}
-                            </Tag>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <div className="flex flex-col gap-2">
+                  <p className="text-caption text-fg-muted">
+                    Lịch sử buổi chỉ gồm buổi của giáo viên này.
+                  </p>
+                  <ul className="flex flex-col gap-2">
+                    {o.sessions.map((s) => {
+                      const label = timelinessLabel(s.timeliness);
+                      return (
+                        <li
+                          key={s.id}
+                          className="flex items-start justify-between gap-2 rounded-control border border-border bg-surface p-3"
+                        >
+                          <div>
+                            <p className="font-semibold">
+                              {s.session_no ? `Buổi ${s.session_no}` : 'Buổi'} ·{' '}
+                              {shortDate(s.session_date)}
+                            </p>
+                            <p className="text-caption text-fg-muted">
+                              {hhmm(s.start_time)}–{hhmm(s.end_time)} · {s.type_name ?? s.type_code}
+                            </p>
+                          </div>
+                          <div className="flex flex-col items-end gap-1">
+                            {s.status_code === 'DONE' && <Tag tone="success">Đã hoàn tất</Tag>}
+                            {label && (
+                              <Tag tone={s.timeliness === 'TRE_HAN' ? 'danger' : 'success'}>
+                                {label}
+                              </Tag>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               ),
           },
           {

@@ -58,7 +58,17 @@ export function buildTicketConfig(
       { key: 'title', label: 'Tiêu đề', render: (r) => r.title },
       { key: 'type', label: 'Loại', render: (r) => TYPE_LABEL[r.ticket_type] ?? r.ticket_type },
       { key: 'sender', label: 'Người gửi', render: (r) => r.sender_name ?? MUTED },
-      { key: 'category', label: 'Nhóm con', render: (r) => r.category_name ?? MUTED },
+      {
+        key: 'category',
+        label: 'Nhóm · Nhóm con',
+        render: (r) =>
+          r.category_name
+            ? r.group_name
+              ? `${r.group_name} · ${r.category_name}`
+              : r.category_name
+            : MUTED,
+      },
+      { key: 'student', label: 'Học sinh', render: (r) => r.student_name ?? MUTED },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
       {
         key: 'priority',
@@ -99,6 +109,7 @@ export function buildTicketConfig(
           </span>
         ),
       },
+      { key: 'created', label: 'Tạo lúc', render: (r) => formatDateTime(r.created_at) },
     ],
     quickGroups: [
       {

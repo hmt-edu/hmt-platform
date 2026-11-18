@@ -7,7 +7,8 @@ import { errorOf, rpc, useDb } from '../../lib/db';
 import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
 import { UnsavedGuard } from '../../ui/Dialogs';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Alert, Spinner } from '../../ui/Feedback';
+import { QueryErrorView } from '../../ui/QueryErrorView';
 import { INPUT_CLASS } from '../../ui/Field';
 import { OptionalSelect } from '../../ui/OptionalSelect';
 import { useToast } from '../../ui/toastContext';
@@ -76,7 +77,14 @@ export function TicketSlaPage() {
   const canEdit = access.can('ADMIN', 'SUA');
 
   if (data.isPending) return <Spinner label="Đang tải cấu hình SLA…" />;
-  if (data.isError) return <StateView kind="error" title="Chưa tải được cấu hình SLA" />;
+  if (data.isError)
+    return (
+      <QueryErrorView
+        error={data.error}
+        subject="cấu hình SLA"
+        onRetry={() => void data.refetch()}
+      />
+    );
 
   // Nhóm con đang có hạn riêng (gốc hoặc vừa thêm), trừ nhóm con vừa bị bỏ trong lần sửa này vẫn hiện để hoàn tác.
   const overridden = categories.filter(
