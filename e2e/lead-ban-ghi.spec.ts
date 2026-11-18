@@ -122,8 +122,8 @@ test('Trang Lead: thông tin, thanh giai đoạn, nút liên kết, ghi chú và
   await expect(page.getByRole('heading', { name: 'Thông tin học sinh' })).toBeVisible();
   const stage = page.getByRole('navigation', { name: 'Giai đoạn' });
   await expect(stage.getByRole('button', { name: /^C1/ })).toHaveAttribute('aria-current', 'step');
-  await expect(page.getByRole('button', { name: 'Lịch hẹn: 0' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Cơ hội: 0' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lịch hẹn 0' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Cơ hội 0' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Assign', exact: true })).toBeVisible();
@@ -298,7 +298,7 @@ test('Lịch hẹn: tạo, dời (Tuyển sinh không đổi được người p
   await create('Gọi lại E2E một');
   const upcoming = page.getByRole('region', { name: 'Hoạt động sắp tới' });
   await expect(upcoming.getByText('Gọi điện · Gọi lại E2E một')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Lịch hẹn: 1' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Lịch hẹn 1' })).toBeVisible();
 
   // Dời: người phụ trách chỉ đọc khi không có quyền Giao việc; ghi chú dời vào ghi chú của hồ sơ.
   await upcoming.getByRole('button', { name: 'Dời' }).click();
