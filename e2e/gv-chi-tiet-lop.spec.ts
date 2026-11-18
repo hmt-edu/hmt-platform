@@ -100,9 +100,8 @@ test('GV-11: lớp của người khác: báo không có quyền, không lộ d�
   await loginStaff(page, 'gv.cs5');
   await expect(page).toHaveURL(/\/gv$/);
   await page.goto(`/gv/lop/${otherClass}`);
-  await expect(
-    page.getByText('Bạn không có quyền xem lớp này hoặc lớp không tồn tại.'),
-  ).toBeVisible();
+  // Khung 9189 GV11_quyen: trạng thái không có quyền riêng (GvForbidden), không còn dòng lỗi đỏ chung.
+  await expect(page.getByText('Bạn không xem được mục này')).toBeVisible();
   await expect(page.getByRole('tab', { name: /^Học sinh/ })).toHaveCount(0);
 });
 
@@ -151,6 +150,6 @@ test('GV-13: em không thuộc lớp này: báo không có quyền, không lộ 
   await loginStaff(page, 'gv.cs5');
   await expect(page).toHaveURL(/\/gv$/);
   await page.goto(`/gv/lop/${otherClass}/hoc-sinh/${studentId}`);
-  await expect(page.getByText(/không có quyền xem học sinh này/)).toBeVisible();
+  await expect(page.getByText('Bạn không xem được mục này')).toBeVisible();
   await expect(page.getByText(seed.names[0])).toHaveCount(0);
 });
