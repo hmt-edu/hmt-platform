@@ -206,9 +206,12 @@ select is((select count(*)::int from app.session_student_review where exported),
 select lives_ok($$select app.set_review_exported(pg_temp.s('p', 1), pg_temp.st(1), true)$$, 'Đúng: giáo viên đặt dấu Đã xuất, kể cả sau Done');
 select is((select exported from app.session_student_review r join app.session_attendance sa on sa.id = r.attendance_id where sa.session_id = pg_temp.s('p', 1) and sa.student_id = pg_temp.st(1)), true, 'Cờ Đã xuất lưu theo em theo buổi');
 select is((select teacher_comment from app.session_student_review r join app.session_attendance sa on sa.id = r.attendance_id where sa.session_id = pg_temp.s('p', 1) and sa.student_id = pg_temp.st(1)), 'Em chú ý nghe giảng', 'Đặt cờ không xoá nhận xét đã ghi');
+select is(app.review_exported_students(pg_temp.s('p', 1)), array[pg_temp.st(1)], 'Danh sách Đã xuất (GV-07X): có em vừa đặt cờ');
+select is(app.review_exported_students(pg_temp.s('p', 2)), '{}'::uuid[], 'Danh sách Đã xuất: buổi khác chưa có em nào');
 select lives_ok($$select app.set_review_exported(pg_temp.s('p', 1), pg_temp.st(1), false)$$, 'Cờ đặt lại được, không có lịch sử (R-V2-38)');
 select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
 select is(pg_temp.err($$select app.set_review_exported(pg_temp.s('p', 1), pg_temp.st(1), true)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên không được phân công không đặt dấu Đã xuất');
+select is(pg_temp.err($$select app.review_exported_students(pg_temp.s('p', 1))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên không được phân công không đọc danh sách Đã xuất');
 
 -- ================= RLS: ai đọc được điểm nhận xét =================
 select is((select count(*)::int from app.session_review_score), 0, 'RLS: giáo viên không được phân công không đọc điểm nhận xét');

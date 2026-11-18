@@ -32,6 +32,9 @@ import {
   type ReviewSheet,
   type ReviewStudent,
 } from './review';
+import { buildReviewCard } from './exportCard';
+import { ExportPanel } from './ExportPanel';
+import { useExportedStudents } from './useExported';
 import { useOpenReview, useParentHint, useReviewSheet, useSaveReview } from './useReview';
 
 /**
@@ -96,6 +99,8 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
   const progress = classProgress(draft, sheet.students, sheet.criteria);
   const student = sheet.students[Math.min(selected, sheet.students.length - 1)];
   const hint = useParentHint(sessionId, student?.student_id ?? null, showHint && !dirty);
+  const exported = useExportedStudents(sessionId);
+  const exportedSet = new Set(exported.data ?? []);
 
   function submit(next?: number) {
     setSaveError(null);
@@ -187,6 +192,20 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
             </p>
           </section>
 
+          <ExportPanel
+            sessionId={sessionId}
+            classCode={sheet.session.class_code}
+            sessionDate={sheet.session.session_date}
+            currentStudentId={student?.student_id ?? null}
+            dirty={dirty}
+            items={sheet.students.map((s) => ({
+              studentId: s.student_id,
+              name: s.full_name,
+              card: buildReviewCard(sheet, s),
+              exported: exportedSet.has(s.student_id),
+            }))}
+          />
+
           <section aria-labelledby="gv07-students" className="flex flex-col gap-2">
             <h2 id="gv07-students" className="text-h4">
               Học sinh · {sheet.students.length}
@@ -201,6 +220,7 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
                     onClick={() => setSelected(index)}
                   >
                     {s.full_name} · {studentTag(draft, s, sheet.criteria)}
+                    {exportedSet.has(s.student_id) ? ' · Đã xuất' : ''}
                   </Button>
                 </li>
               ))}

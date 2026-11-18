@@ -105,6 +105,9 @@ export function orderEventEntries(
       case 'CHO_HOC_TRUOC':
         // BH-09 (R-GD-12): quản lý cơ sở bật hoặc tắt «cho học trước, đóng tiền sau»; lời nhật ký do máy chủ ghi.
         return { ...base, title: 'Cho học trước, đóng tiền sau', lines: noteLines(e.note) };
+      case 'CHUYEN_NGUOI_DUYET':
+        // R-V2-44: Admin chuyển người duyệt; lời nhật ký (từ ai sang ai, lý do) do máy chủ ghi.
+        return { ...base, title: 'Chuyển người duyệt', lines: noteLines(e.note) };
       case 'TU_CHOI':
         return { ...base, title: 'Từ chối', lines: [reasonLine(e, name)].filter(Boolean) };
       case 'HUY':
