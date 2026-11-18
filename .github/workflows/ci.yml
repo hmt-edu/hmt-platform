@@ -178,83 +178,35 @@ jobs:
         id: pw
         run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/playwright-core'].version")" >> "$GITHUB_OUTPUT"
 
-      - name: Cache trình duyệt Playwright
-        id: pw-cache
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium-webkit
-          # Đổi phiên bản Playwright thì lấy bản cũ làm nền, chỉ tải phần thiếu.
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      # Kho gói Ubuntu của Azure có lúc chậm: một gói đứng 80 đến 130 giây, cài thư viện hệ thống (khoảng 119 MB, 181 gói) hết
-      # 6 phút rồi bị cắt (log 23/10, 2 lần trên #77). Hai biện pháp (anh duyệt 24/10):
-      #   1. apt chờ tối đa 20 giây mỗi kết nối và thử lại 3 lần: gói đứng thì tải lại ngay, không đợi hết giờ của cả bước.
-      #   2. Gói đã tải được giữ trong thư mục cache `~/.apt-cache` (khoá theo phiên bản Playwright): lượt sau không tải lại từ kho chậm.
-      - name: Cache gói apt của trình duyệt
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            ~/.apt-cache
-            !~/.apt-cache/archives/lock
-            !~/.apt-cache/archives/partial
-          key: apt-playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
-          restore-keys: |
-            apt-playwright-${{ runner.os }}-
-
-      - name: Cấu hình apt (chờ ngắn, thử lại, giữ gói đã tải)
+      # D18: trình duyệt và thư viện hệ thống có sẵn trong ảnh chính thức của Playwright (cùng phiên bản với package-lock), nên bỏ hẳn các bước
+      # cache trình duyệt, cấu hình apt và cài trình duyệt (từng hỏng lặp lại vì kho gói Ubuntu chậm). Supabase, bản dựng và máy chủ xem trước
+      # chạy trên runner; container dùng mạng máy chủ (--network host) để gọi 127.0.0.1.
+      - name: Dựng giao diện và chạy máy chủ xem trước
         run: |
-          mkdir -p "$HOME/.apt-cache/archives/partial"
-          # apt chạy bằng quyền gốc và tải bằng người dùng _apt: thư mục phải ghi được để không tải "không cách ly".
-          chmod -R a+rwX "$HOME/.apt-cache"
-          {
-            echo 'Acquire::http::Timeout "20";'
-            echo 'Acquire::https::Timeout "20";'
-            echo 'Acquire::Retries "3";'
-            echo "Dir::Cache::archives \"$HOME/.apt-cache/archives\";"
-            echo 'APT::Keep-Downloaded-Packages "true";'
-          } | sudo tee /etc/apt/apt.conf.d/99ci-mang-cham > /dev/null
-
-      # Hai bước cài dưới đây từng treo hơn 22 phút (apt hoặc tải trình duyệt, không ra dòng log nào) cho tới khi hết giờ của cả
-      # job. Bình thường mất dưới 1 phút (lần đầu không có cache khoảng 5 phút). Mỗi lần thử bị cắt sau 6 phút; thử lại đúng một
-      # lần và chỉ ở bước cài (không thử lại bộ kiểm thử, lỗi thật không bị che). Trước lần thử lại dọn tiến trình apt còn kẹt.
-      - name: Cài trình duyệt Playwright
-        if: steps.pw-cache.outputs.cache-hit != 'true'
-        timeout-minutes: 14
-        run: |
-          for attempt in 1 2; do
-            if timeout -k 15 360 npx playwright install --with-deps chromium webkit; then exit 0; fi
-            echo "::warning::Lần $attempt cài trình duyệt hỏng hoặc quá 6 phút."
-            sudo pkill -9 -x apt-get || true
-            sudo pkill -9 -x dpkg || true
-            sudo dpkg --configure -a || true
+          npm run build
+          nohup npm run preview -- --port 4173 --strictPort > preview.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://localhost:4173 > /dev/null; then exit 0; fi
+            sleep 1
           done
-          echo "::error::Cài trình duyệt Playwright hỏng sau 2 lần thử."
+          echo "::error::Máy chủ xem trước không lên sau 60 giây."
+          cat preview.log
           exit 1
 
-      - name: Cài thư viện hệ thống cho trình duyệt (khi dùng cache)
-        if: steps.pw-cache.outputs.cache-hit == 'true'
-        timeout-minutes: 14
-        run: |
-          for attempt in 1 2; do
-            if timeout -k 15 360 npx playwright install-deps chromium webkit; then exit 0; fi
-            echo "::warning::Lần $attempt cài thư viện hệ thống hỏng hoặc quá 6 phút."
-            sudo pkill -9 -x apt-get || true
-            sudo pkill -9 -x dpkg || true
-            sudo dpkg --configure -a || true
-          done
-          echo "::error::Cài thư viện hệ thống cho trình duyệt hỏng sau 2 lần thử."
-          exit 1
-
-      - name: Cho phép đọc gói apt đã tải (để lưu cache)
-        if: always()
-        run: sudo chmod -R a+rX "$HOME/.apt-cache" || true
-
-      - name: Playwright (máy tính + iPhone)
-        # Bình thường 10 đến 12 phút; bộ bài ~410 bài và máy chủ CI chậm thì có lần quá 20 phút (11/11/2026), nâng lên 35.
+      - name: Playwright (trong ảnh chính thức, PR chỉ chạy máy tính)
+        # PR thường: chỉ dự án «may-tinh» (Chromium). Nhãn full-ci, chạy tay (main): thêm «dien-thoai» (iPhone, WebKit).
         timeout-minutes: 35
-        run: npm run e2e
+        env:
+          PW_VERSION: ${{ steps.pw.outputs.version }}
+          ONLY_DESKTOP: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'full-ci') }}
+        run: |
+          args=""
+          if [ "$ONLY_DESKTOP" = "true" ]; then args="--project=may-tinh"; fi
+          docker run --rm --network host --ipc=host \
+            -v "$PWD:/work" -w /work \
+            -e CI=true -e E2E_REUSE_SERVER=1 -e DB_URL -e SEED_PASSWORD -e API_URL -e SECRET_KEY \
+            "mcr.microsoft.com/playwright:v${PW_VERSION}-noble" \
+            npx playwright test $args
 
       - name: Lưu báo cáo Playwright khi trượt
         if: failure()
