@@ -28,3 +28,12 @@ test('BUOI-13: chưa đổi gì thì chưa cho lưu; đổi trợ giảng, lưu,
   await expect(page.getByText('Đã đổi người dạy', { exact: true })).toBeVisible();
   await expect(page.getByText('Trợ giảng CS5 (giả)').first()).toBeVisible();
 });
+
+test('BUOI-13: Sale chỉ xem được buổi, không có nút Đổi giáo viên (thiếu quyền Buổi học · Sửa)', async ({
+  page,
+}) => {
+  await enterAs(page, 'sale.cs5');
+  await page.goto(`/crm/buoi-hoc/${seed.khac}`);
+  await expect(page.getByRole('heading', { name: 'Danh sách và điểm danh' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Đổi giáo viên' })).toHaveCount(0);
+});

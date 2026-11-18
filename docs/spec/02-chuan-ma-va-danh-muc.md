@@ -37,7 +37,7 @@
 | Nhân viên | `NV` + 4 số | `NV0012` | |
 | Lớp chung | `CS-Năm-Môn-Khối-Phânloại-Trìnhđộ-STT` | `CS5-2627-TOAN-K08-CB-A-001` | Tên cũ `8A1` là tham chiếu. **(17/10)** Lớp thuộc nhóm lớp (R-LOP-14): nhóm không có mã riêng, số thứ tự cấp riêng từng lớp |
 | Lớp riêng | `CS-Năm-Môn-Khối-LR-STT` | `CS2-2627-TOAN-K09-LR-014` | Không có trình độ |
-| Khung chương trình | `Môn-Khối-Cấpđộ-Năm` | `TOAN-K03-CB-2627` | Sửa khung thì tạo bản mới, lớp cũ giữ khung cũ |
+| Khung chương trình | `Môn-Khối-Cấpđộ-Năm` + hậu tố bản | `TOAN-K03-CB-2627` (bản đầu, không hậu tố), `TOAN-K03-CB-2627-v2` (bản kế), `-v3`… | Sửa khung thì tạo bản mới, lớp cũ giữ khung cũ. **(18/11/2026, anh Trường chốt)** Bản đầu không hậu tố; bản kế là `-v2`, rồi `-v3`. |
 | Bài học | Mã khung + `B` + số bài | `TOAN-K03-CB-2627-B05` | Tên bài lấy từ khung |
 | Gói bán **(12/10)** | `Loại-Môn-Khối` hoặc `Loại-Môn-KhốiđầuKhốicuối` | `LC-TOAN-K09`, `VIP-TOAN-K03K07`, `DV-CSGK`, `TL-MATOAN` | **Không chứa hình thức**: một gói có hai giá offline/online ở bảng giá có ngày hiệu lực; giá trống = không bán hình thức đó. (Bản 09/10 có hình thức ở cuối mã, vd `LC-TOAN-K09-OFF`: bỏ) |
 | Buổi học | Không có mã cho người đọc | hiển thị `8A1 · Buổi 12 · 15/08/2026` | Chỉ ID nội bộ |
