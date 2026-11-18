@@ -293,7 +293,7 @@ test('BUOI-07, BUOI-09: Sale chỉ xem lớp, không có mục Yêu cầu học 
   await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
 });
 
-test('A25: yêu cầu học bù chọn Buổi kiểm tra: lỗi tổng ba nhóm, rồi gửi; Trưởng cơ sở duyệt thì sinh buổi loại Kiểm tra', async ({
+test('A25: yêu cầu học bù chọn Buổi kiểm tra: lỗi tổng ba nhóm, rồi gửi duyệt', async ({
   page,
 }) => {
   await enterAs(page, 'cskh.cs5');
@@ -318,6 +318,11 @@ test('A25: yêu cầu học bù chọn Buổi kiểm tra: lỗi tổng ba nhóm,
   await page.getByLabel('Điểm tối đa · Vận dụng').fill('4');
   await page.getByRole('button', { name: 'Gửi duyệt' }).click();
   await expect(page).toHaveURL(/\/crm\/yeu-cau-buoi$/);
+});
+
+test('A25: Trưởng cơ sở duyệt yêu cầu học bù loại Kiểm tra thì buổi sinh ra là loại Kiểm tra (thi bù)', async ({
+  page,
+}) => {
   await enterAs(page, 'truongcs.cs5');
   await page.goto('/crm/yeu-cau-buoi');
   await page
