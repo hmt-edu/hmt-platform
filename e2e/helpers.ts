@@ -132,7 +132,7 @@ export async function openCrmMenu(page: Page) {
 }
 
 export async function signOut(page: Page) {
-  await page.getByRole('button', { name: /^Tài khoản:/ }).click();
+  await page.getByRole('button', { name: / Tài khoản$/ }).click();
   await page.getByRole('menuitem', { name: 'Đăng xuất' }).click();
 }
 
@@ -167,7 +167,12 @@ export async function expectAccessible(page: Page) {
               data.contrastRatio !== undefined
                 ? ` [chữ ${data.fgColor ?? '?'} trên ${data.bgColor ?? '?'}, tỉ lệ ${data.contrastRatio}]`
                 : '';
-            return `${n.target.join(' ')}${detail} ${n.html.slice(0, 160)}`;
+            // Luật khác (ví dụ label-content-name-mismatch): ghi dữ liệu và tóm tắt lỗi của axe để thấy chữ nó đọc được.
+            const extra =
+              v.id === 'label-content-name-mismatch'
+                ? ` [dữ liệu ${JSON.stringify(n.any[0]?.data ?? null)} | ${(n.failureSummary ?? '').replace(/\s+/g, ' ').slice(0, 300)}]`
+                : '';
+            return `${n.target.join(' ')}${detail}${extra} ${n.html.slice(0, 400)}`;
           })
           .join('; ')})`,
     ),
