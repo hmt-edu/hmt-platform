@@ -268,7 +268,7 @@ export const CRM_MENU: MenuGroup[] = [
         label: 'Phiếu tái tục',
         slug: 'tai-tuc',
         requires: can('UPSALE'),
-        stage: GD2,
+        stage: '',
       },
     ],
   },
@@ -353,7 +353,7 @@ export const CRM_MENU: MenuGroup[] = [
         label: 'Rubric nhận xét',
         slug: 'cau-hinh/rubric',
         requires: can('CONFIG_TRAINING'),
-        stage: GD3,
+        stage: GD2,
       },
       {
         code: 'QT-14',

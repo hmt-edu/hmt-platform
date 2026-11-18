@@ -128,8 +128,9 @@ select is((select count(*)::int from app.review_criteria_for_subject('TOAN') whe
 select is((select count(*)::int from app.review_criterion where is_active and subject_set = 'MOI_MON' and group_code = 'THAI_DO'), 3, 'Nhóm Thái độ có 3 tiêu chí chung mọi môn (R-V2-19)');
 select is((select string_agg(name, ' | ' order by sort_order) from app.review_criterion where subject_set = 'MON_PHU'),
           'Ghi nhớ kiến thức | Hiểu bản chất | Nhận biết dạng bài | Làm bài vận dụng | Tư duy lập luận | Trình bày chính xác', 'Tên 6 tiêu chí môn phụ đúng thứ tự (Q-189)');
-select is((select count(*)::int from app.review_level_desc), 75, 'Mỗi tiêu chí (15) có mô tả đủ 5 mức (Q-190)');
-select is((select d.description from app.review_level_desc d join app.review_criterion rc on rc.id = d.criterion_id where rc.code = 'TOAN_GHI_NHO' and d.level = 3), 'Nhớ kiến thức cơ bản', 'Tiêu chí Toán "Ghi nhớ công thức" dùng mô tả của "Ghi nhớ kiến thức" (Q-190)');
+-- Từ migration 503 mô tả có phiên bản (bộ Thái độ nằm ở cả hai bản): đếm cặp (tiêu chí, mức) khác nhau.
+select is((select count(distinct (criterion_id, level))::int from app.review_level_desc), 75, 'Mỗi tiêu chí (15) có mô tả đủ 5 mức (Q-190)');
+select is((select d.description from app.review_level_desc d join app.review_criterion rc on rc.id = d.criterion_id where rc.code = 'TOAN_GHI_NHO' and d.level = 3 and d.version_id = (select id from app.review_rubric_version where subject_set = 'TOAN' and version_no = 1)), 'Nhớ kiến thức cơ bản', 'Tiêu chí Toán "Ghi nhớ công thức" dùng mô tả của "Ghi nhớ kiến thức" (Q-190)');
 select is((select count(*)::int from app.review_hint), 42, 'Biểu hiện gợi ý: 7 môn phụ × 6 tiêu chí (Q-189)');
 select is((select h.hint from app.review_hint h join app.review_criterion rc on rc.id = h.criterion_id where rc.code = 'VD_LAM_BAI' and h.subject_code = 'HOA'), 'Giải bài tập, cân bằng, tính toán', 'Gợi ý theo môn hiện dưới tiêu chí (Q-189)');
 select is((select count(*)::int from app.parent_phrase), 24, 'Có 24 mẫu câu: 2 loại buổi × 4 mức × 3 câu (R-V2-39, Q-190)');
@@ -146,6 +147,9 @@ select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(app.open_session_review(pg_temp.s('p', 1)), 9, 'Đúng: mở nhận xét chụp 9 tiêu chí của môn (R-V2-19)');
 select is(jsonb_array_length(app.session_review_sheet(pg_temp.s('p', 1))), 9, 'Màn chấm lấy đủ 9 tiêu chí trong một lần gọi');
 select is(app.session_review_sheet(pg_temp.s('p', 1)) -> 0 -> 'levels' ->> 4, 'Tập trung cao, tự ghi chép ý quan trọng', 'Màn chấm có mô tả mức 5 của tiêu chí (Q-190)');
+-- CH-07 (migration 503): sửa mô tả sau khi buổi đã mở nhận xét KHÔNG đổi buổi đó (buổi giữ bản chụp lúc mở).
+select pg_temp.sudo($$update app.review_level_desc set description = 'Mô tả đã sửa sau' where level = 5 and criterion_id = (select id from app.review_criterion where code = 'TD_TAP_TRUNG')$$);
+select is(app.session_review_sheet(pg_temp.s('p', 1)) -> 0 -> 'levels' ->> 4, 'Tập trung cao, tự ghi chép ý quan trọng', 'CH-07: buổi đã mở giữ mô tả cũ sau khi rubric được sửa');
 select is(app.open_session_review(pg_temp.s('p', 1)), 9, 'Mở lại không nhân đôi tiêu chí');
 select is(pg_temp.err($$select app.open_session_review(pg_temp.s('p', 2))$$), 'HMT_SAI_LOAI_BUOI', 'Chặn: buổi kiểm tra không dùng 9 tiêu chí (R-V2-20)');
 select is(pg_temp.err($$select app.set_review_scores(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'criterion_id', (select id from app.review_criterion where code = 'TD_TAP_TRUNG'), 'state', 'DA_DANH_GIA', 'score', 6)))$$),
