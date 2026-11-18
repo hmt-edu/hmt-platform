@@ -118,5 +118,9 @@ select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is((select count(*)::int from app.note where entity_type = 'STUDENT' and body like 'Ghi chú HSD1C0%'), 2, 'Không hồi quy: CSKH vẫn thấy ghi chú học sinh cả cơ sở');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((select count(*)::int from app.note where entity_type = 'STUDENT' and body like 'Ghi chú HSD1C0%'), 2, 'Không hồi quy: Trưởng cơ sở vẫn thấy ghi chú học sinh');
+-- Không hồi quy (Soát 16:01): hàm giữ nguyên các nhánh ghi chú Báo giá, Đơn hàng, Phiếu thu của migration 080.
+select ok(pg_get_functiondef('app.can_see_note_target(text, uuid)'::regprocedure) ~ 'QUOTATION', 'Hàm ghi chú vẫn có nhánh Báo giá');
+select ok(pg_get_functiondef('app.can_see_note_target(text, uuid)'::regprocedure) ~ 'SALES_ORDER', 'Hàm ghi chú vẫn có nhánh Đơn hàng');
+select ok(pg_get_functiondef('app.can_see_note_target(text, uuid)'::regprocedure) ~ 'RECEIPT', 'Hàm ghi chú vẫn có nhánh Phiếu thu');
 select * from finish();
 rollback;
