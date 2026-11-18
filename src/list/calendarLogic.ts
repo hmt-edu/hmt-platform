@@ -27,6 +27,31 @@ export function vnToday(now: Date = new Date()): Date {
   return new Date(y ?? 0, (m ?? 1) - 1, d ?? 1);
 }
 export const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+/**
+ * Cửa sổ thời điểm cần tải cho Calendar (A26, R-HT-07): `anchor` và các ngày của tuần, tháng là NGÀY LỊCH (00:00 trên lịch của máy); cửa sổ trả về là thời điểm thật
+ * từ 00:00 giờ Việt Nam của ngày đầu đến 00:00 giờ Việt Nam sau ngày cuối, không phụ thuộc múi giờ của máy (trình duyệt ở UTC lúc 00:00–07:00 giờ Việt Nam không còn tải lệch ngày).
+ */
+const NOON_VN_UTC_HOUR = 5; // allow-number: 12:00 giờ Việt Nam = 05:00 UTC, giữa ngày nên chắc chắn thuộc ngày đó
+
+/** 00:00 giờ Việt Nam của ngày lịch (năm, tháng 1–12, ngày). */
+function vnDayStart(year: number, month: number, day: number): Date {
+  return vnDayBounds(new Date(Date.UTC(year, month - 1, day, NOON_VN_UTC_HOUR))).start;
+}
+
+export function calendarWindowVn(
+  mode: 'day' | 'week' | 'month',
+  anchor: Date,
+): { from: Date; to: Date } {
+  const days =
+    mode === 'day' ? [startOfDay(anchor)] : mode === 'week' ? weekDays(anchor) : monthGrid(anchor);
+  const first = days[0] ?? startOfDay(anchor);
+  const last = days[days.length - 1] ?? first;
+  return {
+    from: vnDayStart(first.getFullYear(), first.getMonth() + 1, first.getDate()),
+    to: vnDayStart(last.getFullYear(), last.getMonth() + 1, last.getDate() + 1),
+  };
+}
 export const addDays = (d: Date, n: number) =>
   new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
 export const sameDay = (a: Date, b: Date) =>
