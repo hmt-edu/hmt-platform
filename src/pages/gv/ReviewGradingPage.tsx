@@ -519,7 +519,7 @@ function CriteriaSwitches({
                 size="sm"
                 variant={on ? 'secondary' : 'primary'}
                 aria-pressed={!on}
-                aria-label={`${on ? 'Tắt' : 'Bật'} tiêu chí ${criterion.name}`}
+                aria-label={`${on ? 'Đang áp dụng' : 'Không áp dụng cả buổi'}: ${on ? 'Tắt' : 'Bật'} tiêu chí ${criterion.name}`}
                 disabled={!editable || (on && active <= 1)}
                 onClick={() =>
                   setDraft({

@@ -29,7 +29,7 @@ for (const [account, portal, heading] of [
     await loginStaff(page, account);
     await expect(page).toHaveURL(new RegExp(`${portal}$`));
     await expect(page.getByRole('heading', { name: heading }).first()).toBeVisible();
-    await expect(page.getByRole('button', { name: /^Tài khoản: .*\(giả\)/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /\(giả\).* Tài khoản$/ })).toBeVisible();
   });
 }
 
