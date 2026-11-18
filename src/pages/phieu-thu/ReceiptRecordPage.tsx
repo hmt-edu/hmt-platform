@@ -4,6 +4,7 @@
 // Điện thoại chỉ đọc (Đ248). Chia tiền về dòng đơn chốt khi Kế toán duyệt (R-TIEN-22, 23): trước đó chỉ chọn "dòng cấn trước".
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import { useAuth } from '../../lib/auth/authContext';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, useDb } from '../../lib/db';
@@ -102,6 +103,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   const supabase = useDb();
   const toast = useToast();
   const access = useAccess();
+  const { claims } = useAuth();
   const catalogs = useLeadCatalogs();
   const phone = useMedia(NARROW_TABLE);
   const refresh = useRefreshReceipt(record.id, record.order?.id);
