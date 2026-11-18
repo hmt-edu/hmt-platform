@@ -78,7 +78,7 @@ select is((app.list_ticket_tasks(jsonb_build_object('q', (select j ->> 'code' fr
 select is((app.list_ticket_tasks(jsonb_build_object('q', (select j ->> 'code' from pk2))) ->> 'total')::int, 1, 'Tìm theo mã phiếu');
 select is((app.list_ticket_tasks('{"cho_toi":true}'::jsonb) ->> 'total')::int, 0, 'CSKH không có quyền duyệt: không có phiếu «Chờ tôi duyệt»');
 select is((app.list_ticket_tasks('{"cho_ke_toan":true}'::jsonb) ->> 'total')::int, 0, 'Chưa phiếu nào ở cấp kế toán');
-select is((app.list_ticket_tasks() -> 'rows' -> 0 ->> 'level_total')::int, 2, 'Dòng có số cấp duyệt (Hoàn học phí hai cấp)');
+select is((select (r ->> 'level_total')::int from jsonb_array_elements(app.list_ticket_tasks() -> 'rows') r where r ->> 'code' = (select j ->> 'code' from pk2)), 2, 'Dòng có số cấp duyệt (Hoàn học phí hai cấp)');
 select is((app.list_ticket_tasks() -> 'rows' -> 0 ->> 'student_name'), 'Học sinh giả ticket', 'Dòng có tên học sinh');
 
 -- ================= Chờ tôi duyệt: quản lý cơ sở =================
