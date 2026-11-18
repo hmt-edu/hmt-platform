@@ -142,8 +142,9 @@ export function TeachingHoursPage() {
             rowLabel={(r) => r.name}
             loading={query.isPlaceholderData}
             empty={
-              <StateView kind="empty" title="Tháng này chưa có buổi hoàn tất">
-                Giờ dạy chỉ tính buổi đã Hoàn thành. Chọn tháng khác hoặc cơ sở khác.
+              <StateView kind="empty" title="Tháng này chưa có buổi dạy">
+                Tháng không có buổi nào đã hoàn tất thì không có giờ để tính. Chọn tháng khác bằng
+                bộ lọc Tháng.
               </StateView>
             }
           />
