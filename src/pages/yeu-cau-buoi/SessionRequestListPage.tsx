@@ -13,6 +13,7 @@ import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { OptionalSelect } from '../../ui/OptionalSelect';
 import { useToast } from '../../ui/toastContext';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
+import { formatDate } from '../../lib/format';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
   kindName,
@@ -101,6 +102,9 @@ export function SessionRequestListPage() {
           Huỷ
         </Button>
       )}
+      {r.status_code === 'CHO_DUYET' && !r.can_approve && (
+        <span className="text-caption text-fg-muted">chỉ Trưởng cơ sở duyệt</span>
+      )}
       {r.status_code === 'DA_DUYET' && r.created_session_id && (
         <Link className="text-link underline" to={`/crm/buoi-hoc/${r.created_session_id}`}>
           Mở buổi
@@ -140,10 +144,12 @@ export function SessionRequestListPage() {
       ) : query.isError ? (
         <Alert tone="danger">{errorOf(query.error).message}</Alert>
       ) : query.data.rows.length === 0 ? (
-        <StateView kind="empty" title="Chưa có yêu cầu buổi" headingLevel={2}>
-          {filter === 'cho'
-            ? 'Không có yêu cầu nào đang chờ duyệt.'
-            : 'Yêu cầu buổi củng cố tạo từ nút phía trên sẽ hiện ở đây.'}
+        <StateView
+          kind="empty"
+          title={filter === 'cho' ? 'Không có yêu cầu buổi nào chờ duyệt' : 'Chưa có yêu cầu buổi'}
+          headingLevel={2}
+        >
+          Yêu cầu học bù, củng cố, bổ trợ do CSKH gửi sẽ hiện ở đây.
         </StateView>
       ) : narrow ? (
         <ul className="flex flex-col gap-2">
@@ -153,7 +159,9 @@ export function SessionRequestListPage() {
               <p className="text-body">
                 {kindName(r.kind)} · {targetText(r)}
               </p>
-              <p className="text-caption text-fg-muted">{whenText(r)}</p>
+              <p className="text-caption text-fg-muted">
+                {r.class_code} · {whenText(r)} · đề nghị {formatDate(r.created_at)}
+              </p>
               <p className="py-1">
                 <Tag tone={statusTone(r.status_code)}>{statusName(r.status_code)}</Tag>
               </p>
@@ -169,7 +177,9 @@ export function SessionRequestListPage() {
                 <th className="px-3 py-2">Mã</th>
                 <th className="px-3 py-2">Loại</th>
                 <th className="px-3 py-2">Học sinh</th>
+                <th className="px-3 py-2">Lớp</th>
                 <th className="px-3 py-2">Ngày giờ</th>
+                <th className="px-3 py-2">Ngày đề nghị</th>
                 <th className="px-3 py-2">Người tạo</th>
                 <th className="px-3 py-2">Tình trạng</th>
                 <th className="px-3 py-2">Xử lý</th>
@@ -181,7 +191,9 @@ export function SessionRequestListPage() {
                   <td className="px-3 py-2">{r.code}</td>
                   <td className="px-3 py-2">{kindName(r.kind)}</td>
                   <td className="px-3 py-2">{targetText(r)}</td>
+                  <td className="px-3 py-2">{r.class_code}</td>
                   <td className="px-3 py-2">{whenText(r)}</td>
+                  <td className="px-3 py-2">{formatDate(r.created_at)}</td>
                   <td className="px-3 py-2">{r.created_by_name ?? '—'}</td>
                   <td className="px-3 py-2">
                     <Tag tone={statusTone(r.status_code)}>{statusName(r.status_code)}</Tag>
