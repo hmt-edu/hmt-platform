@@ -21,6 +21,7 @@ begin
 end $$;
 create function pg_temp.sudo(p_sql text) returns void language plpgsql security definer as $$ begin execute p_sql; end $$;
 create function pg_temp.uid(p_key text) returns uuid language plpgsql stable as $$ begin return (select id from pg_temp.u where key = p_key); end $$;
+create function pg_temp.anyt() returns uuid language sql stable security definer as $$ select id from app.upsale_ticket order by code limit 1 $$;
 grant execute on all functions in schema pg_temp to public;
 
 create temp table u (key text primary key, id uuid not null default gen_random_uuid());
@@ -81,11 +82,21 @@ select is(pg_temp.err($$select app.list_upsale_assignees((select id from app.ups
 -- ---- RLS và quyền ----
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select is((app.list_upsale_tickets() ->> 'total')::int, 0, 'CSKH cơ sở khác không thấy phiếu cơ sở này');
-select is(pg_temp.err($$select app.preview_upsale_enrollment('GD414A')$$), 'HMT_KHONG_CO_QUYEN', 'CSKH cơ sở khác không xem trước ghi danh cơ sở này');
+select is(app.preview_upsale_enrollment('GD414A') ->> 'found', 'false', 'CSKH cơ sở khác: mã ghi danh cơ sở này báo như không có (không dò được)');
 select is(pg_temp.err($$select app.create_upsale_ticket_from_enrollment('GD414A')$$), 'HMT_KHONG_CO_QUYEN', 'CSKH cơ sở khác không tạo phiếu cơ sở này');
 select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
 select is(pg_temp.err($$select app.create_upsale_ticket_from_enrollment('GD414A')$$), 'HMT_KHONG_CO_QUYEN', 'Kế toán không tạo phiếu tái tục');
 select is(pg_temp.err($$select app.upsale_target_of_enrollment('GD414A')$$), '42501', 'Người dùng không gọi trực tiếp hàm tra ghi danh');
+
+-- ---- Bản ghi TT-02 (migration 416) ----
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'student' ->> 'name', 'Nguyễn Hà My', 'Bản ghi: học sinh');
+select is(jsonb_array_length(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'enrollments'), 1, 'Bản ghi: một ghi danh liên quan');
+select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'actions', '["doi_giai_doan", "sua_ghi_chu"]'::jsonb, 'Bản ghi: CSKH đổi giai đoạn, sửa ghi chú; không có Giao việc');
+select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'hours' ->> 'window_days', '30', 'Bản ghi: cửa sổ xét vắng 30 ngày');
+select is(jsonb_array_length(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'events'), 1, 'Bản ghi: một sự kiện Tạo');
+select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
+select is(pg_temp.err($$select app.get_upsale_ticket(pg_temp.anyt())$$), 'HMT_KHONG_CO_QUYEN', 'Cơ sở khác: không xem được bản ghi phiếu');
 
 select * from finish();
 rollback;

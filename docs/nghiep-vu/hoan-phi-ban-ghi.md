@@ -17,6 +17,12 @@ Khi kế toán duyệt: kiểm lại số liệu (lệch so với lúc tạo th�
 
 Chưa làm: giữ thành số dư khách hàng khi dừng học (R-GD-16, R-TIEN-33) và Dừng học, Chuyển phí; khoá ngoại ticket (chỉ lưu mã `ticket_ref`); giao diện.
 
+## Cấn số dư khách hàng vào đơn (TC-16, migration 454)
+
+- `apply_customer_balance_to_order(đơn, số tiền)`: Kế toán · Duyệt (Admin không, R-HT-01). Đơn Đã duyệt; số tiền ≤ số dư hiện tại và ≤ phần còn thu của đơn; khoá đơn và phụ huynh. Ghi dòng sổ `DUNG_CHO_DON` (âm), sinh khoản tiền vào không phiếu thu (`money_in.balance_entry_id`), chia về dòng đơn, tạo ghi danh và cấp giờ như duyệt phiếu thu.
+- Cờ `customer_balance_apply_enabled` (mặc định TẮT, theo cơ sở). Lỗi: `HMT_TINH_NANG_TAT`, `HMT_SAI_TRANG_THAI`, `HMT_SO_TIEN_SAI`, `HMT_SO_DU_KHONG_DU`, `HMT_SO_TIEN_VUOT`.
+- `reverse_money_in` trả lại số dư (dòng `DIEU_CHINH` dương) khi đảo khoản cấn; `order_has_receipt` tính khoản cấn chưa đảo nên không huỷ đơn đã cấn.
+
 ## Đọc phiếu chi cho TC-10, TC-11 (migration 452)
 
 | Hàm                                                                  | Việc                                                                                                  | Luật                 |

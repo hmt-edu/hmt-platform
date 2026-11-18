@@ -55,11 +55,14 @@ export function buildReceiptConfig(
       {
         key: 'order',
         label: 'Đơn hàng',
-        render: (r) => (
-          <Link to={`/crm/don-hang/${r.order_id}`} className="text-link hover:underline">
-            {r.order_code}
-          </Link>
-        ),
+        render: (r) =>
+          r.order_id ? (
+            <Link to={`/crm/don-hang/${r.order_id}`} className="text-link hover:underline">
+              {r.order_code}
+            </Link>
+          ) : (
+            <span className="text-fg-muted">Thu nợ đầu kỳ</span>
+          ),
       },
       { key: 'parent', label: 'Phụ huynh', render: (r) => r.parent_name },
       {

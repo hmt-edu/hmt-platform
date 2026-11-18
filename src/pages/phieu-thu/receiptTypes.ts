@@ -6,8 +6,10 @@ export type ReceiptRow = {
   code: string;
   status_code: ReceiptStatus;
   status: string | null;
-  order_id: string;
-  order_code: string;
+  /** Null với phiếu Thu nợ đầu kỳ (không có đơn, R-V2-15). */
+  order_id: string | null;
+  order_code: string | null;
+  is_opening_debt?: boolean;
   parent_id: string;
   parent_code: string;
   parent_name: string;
@@ -29,7 +31,16 @@ export type ReceiptPage = { total: number; rows: ReceiptRow[] };
 export type ReceiptAction = 'sua' | 'gui' | 'duyet_quan_ly' | 'duyet_ke_toan' | 'tu_choi' | 'huy';
 
 export type ReceiptEvent = {
-  event_code: 'TAO' | 'SUA' | 'GUI' | 'DUYET_QL' | 'TU_DUYET_QL' | 'DUYET_KT' | 'TU_CHOI' | 'HUY';
+  event_code:
+    | 'TAO'
+    | 'SUA'
+    | 'GUI'
+    | 'DUYET_QL'
+    | 'TU_DUYET_QL'
+    | 'DUYET_KT'
+    | 'TU_CHOI'
+    | 'HUY'
+    | 'CHUYEN_NGUOI_DUYET';
   from_status: string | null;
   to_status: string;
   note: string | null;
@@ -52,7 +63,11 @@ export type ReceiptRecord = {
   code: string;
   status_code: ReceiptStatus;
   status: string | null;
-  order: { id: string; code: string; total_amount: number; status_code: string };
+  /** Null với phiếu Thu nợ đầu kỳ (không có đơn, R-V2-15). */
+  order: { id: string; code: string; total_amount: number; status_code: string } | null;
+  is_opening_debt?: boolean;
+  /** Em tham chiếu của phiếu nợ đầu kỳ (nợ tính theo từng em). */
+  opening_student?: { id: string; code: string; name: string } | null;
   parent: { id: string; code: string; name: string; phone: string } | null;
   amount: number;
   payment_method_code: string;
@@ -77,7 +92,8 @@ export type ReceiptRecord = {
   cancel_reason: string | null;
   cancel_note: string | null;
   cancelled_at: string | null;
-  payment: OrderPayment;
+  /** Phiếu có đơn: tiền của đơn; phiếu nợ đầu kỳ: nợ đầu kỳ còn lại của phụ huynh (hàm DB tính). */
+  payment: OrderPayment | { opening_debt_remaining: number };
   actions: ReceiptAction[];
   events: ReceiptEvent[];
   money_in: {
