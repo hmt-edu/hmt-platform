@@ -67,6 +67,7 @@ export function TeacherTodoPage() {
       <div>
         <h1 className="text-h2">Cần làm</h1>
         <p className="text-body text-fg-muted">{formatDayHeading(todayKey)}</p>
+        <p className="text-caption text-fg-muted">Sắp theo hạn gần nhất. Chỉ hiện việc của bạn.</p>
       </div>
 
       <section aria-labelledby="gv12-open" className="flex flex-col gap-2">

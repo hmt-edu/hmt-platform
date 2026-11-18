@@ -20,6 +20,8 @@ import {
   type MySession,
   type MySessionsResult,
 } from './todayLogic';
+import { GvForbidden } from './GvForbidden';
+import { isForbidden } from './forbidden';
 
 export function TeacherTodayPage() {
   const supabase = useDb();
@@ -60,7 +62,11 @@ export function TeacherTodayPage() {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3">
         <h1 className="text-h2">Hôm nay</h1>
-        <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        {isForbidden(query.error) ? (
+          <GvForbidden kind="today" />
+        ) : (
+          <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        )}
         <div>
           <Button onClick={() => void query.refetch()}>Thử lại</Button>
         </div>
