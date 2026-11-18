@@ -18,6 +18,8 @@ import {
   shiftMonth,
   type MyHours,
 } from './hoursLogic';
+import { GvForbidden } from './GvForbidden';
+import { isForbidden } from './forbidden';
 
 export function TeacherHoursPage() {
   const supabase = useDb();
@@ -66,7 +68,11 @@ export function TeacherHoursPage() {
     return (
       <div className="mx-auto flex max-w-4xl flex-col gap-3">
         {header}
-        <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        {isForbidden(query.error) ? (
+          <GvForbidden kind="generic" />
+        ) : (
+          <Alert tone="danger">{errorOf(query.error).message}</Alert>
+        )}
         <div>
           <Button onClick={() => void query.refetch()}>Thử lại</Button>
         </div>
