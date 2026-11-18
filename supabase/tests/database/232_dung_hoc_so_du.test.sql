@@ -189,6 +189,10 @@ grant all on st to public;
 create function pg_temp.s(p_key text) returns uuid language sql stable as $$ select id from st where key = p_key $$;
 grant execute on function pg_temp.s(text) to public;
 
+select pg_temp.sudo($$insert into app.ticket (code, ticket_type, branch_id, title, description, channel_code, category_code, priority_code, parent_id, student_id, response_due_at, resolve_due_at)
+  select 'DN-TEST', 'DN', e.branch_id, 'Đề nghị dừng học', 'Ticket giả cho bài kiểm', 'DIEN_THOAI', 'DN_01_06', 'THUONG', e.parent_id, e.student_id, now() + interval '1 day', now() + interval '3 days'
+    from app.enrollment e where e.id = pg_temp.d1e()$$);
+
 -- ================= Công tắc, quyền, đầu vào =================
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(pg_temp.err($$select app.create_enrollment_stop(pg_temp.d1e(), 'KHONG_HOP')$$), 'HMT_TINH_NANG_TAT', 'Chặn: công tắc DUNG_HOC tắt');
@@ -226,7 +230,7 @@ select is(pg_temp.err($$select app.reject_enrollment_stop(pg_temp.s('a'), ' ')$$
 -- ================= Từ chối (bắt buộc lý do, hai bước) và huỷ =================
 -- Ghi danh d1 còn học (yêu cầu a đã từ chối), mỗi lần chỉ một yêu cầu mở nên làm lần lượt.
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select lives_ok($$insert into st select 'r1', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC')$$, 'Tạo yêu cầu để từ chối ở bước quản lý');
+select lives_ok($$insert into st select 'r1', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC', null, 'DN-TEST')$$, 'Tạo yêu cầu để từ chối ở bước quản lý');
 select app.submit_enrollment_stop(pg_temp.s('r1'));
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
 select is(pg_temp.err($$select app.reject_enrollment_stop(pg_temp.s('r1'), '   ')$$), 'HMT_DUNG_HOC_THIEU_LY_DO', 'Chặn: từ chối không ghi lý do (bước quản lý)');
@@ -236,7 +240,7 @@ select is(pg_temp.est(pg_temp.d1e()), 'DA_XEP_LOP', 'Từ chối thì ghi danh k
 select is(pg_temp.err($$select app.reject_enrollment_stop(pg_temp.s('r1'), 'x')$$), 'HMT_DUNG_HOC_KHONG_DUOC_SUA', 'Chặn: từ chối yêu cầu đã từ chối');
 -- Từ chối ở bước kế toán.
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select lives_ok($$insert into st select 'r2', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC')$$, 'Tạo yêu cầu để từ chối ở bước kế toán');
+select lives_ok($$insert into st select 'r2', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC', null, 'DN-TEST')$$, 'Tạo yêu cầu để từ chối ở bước kế toán');
 select app.submit_enrollment_stop(pg_temp.s('r2'));
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
 select app.approve_stop_manager(pg_temp.s('r2'));
@@ -247,12 +251,12 @@ select lives_ok($$select app.reject_enrollment_stop(pg_temp.s('r2'), 'Số tiề
 select is((select status_code from app.enrollment_stop where id = pg_temp.s('r2')), 'TU_CHOI', 'Bước kế toán: yêu cầu sang Từ chối');
 -- Huỷ từ Nháp, Chờ quản lý, Chờ kế toán.
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select lives_ok($$insert into st select 'h1', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC')$$, 'Tạo yêu cầu để huỷ ở Nháp');
+select lives_ok($$insert into st select 'h1', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC', null, 'DN-TEST')$$, 'Tạo yêu cầu để huỷ ở Nháp');
 select lives_ok($$select app.cancel_enrollment_stop(pg_temp.s('h1'))$$, 'Đúng: huỷ yêu cầu Nháp');
-select lives_ok($$insert into st select 'h2', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC')$$, 'Tạo yêu cầu để huỷ ở Chờ quản lý');
+select lives_ok($$insert into st select 'h2', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC', null, 'DN-TEST')$$, 'Tạo yêu cầu để huỷ ở Chờ quản lý');
 select app.submit_enrollment_stop(pg_temp.s('h2'));
 select lives_ok($$select app.cancel_enrollment_stop(pg_temp.s('h2'))$$, 'Đúng: huỷ yêu cầu Chờ quản lý');
-select lives_ok($$insert into st select 'h3', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC')$$, 'Tạo yêu cầu để huỷ ở Chờ kế toán');
+select lives_ok($$insert into st select 'h3', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC', null, 'DN-TEST')$$, 'Tạo yêu cầu để huỷ ở Chờ kế toán');
 select app.submit_enrollment_stop(pg_temp.s('h3'));
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
 select app.approve_stop_manager(pg_temp.s('h3'));
@@ -261,7 +265,7 @@ select lives_ok($$select app.cancel_enrollment_stop(pg_temp.s('h3'))$$, 'Đúng:
 select is((select count(*)::int from app.enrollment_stop where id in (pg_temp.s('h1'), pg_temp.s('h2'), pg_temp.s('h3')) and status_code = 'HUY'), 3, 'Cả ba yêu cầu đã huỷ');
 select is(pg_temp.err($$select app.cancel_enrollment_stop(pg_temp.s('h3'))$$), 'HMT_DUNG_HOC_KHONG_DUOC_SUA', 'Chặn: huỷ yêu cầu đã huỷ');
 select is(pg_temp.err($$select app.cancel_enrollment_stop(pg_temp.s('r1'))$$), 'HMT_DUNG_HOC_KHONG_DUOC_SUA', 'Chặn: huỷ yêu cầu đã từ chối');
-select lives_ok($$insert into st select 'h4', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC')$$, 'Tạo yêu cầu cho ca thiếu quyền huỷ');
+select lives_ok($$insert into st select 'h4', app.create_enrollment_stop(pg_temp.d1e(), 'KHAC', null, 'DN-TEST')$$, 'Tạo yêu cầu cho ca thiếu quyền huỷ');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.cancel_enrollment_stop(pg_temp.s('h4'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Tuyển sinh không có quyền Sửa ghi danh nên không huỷ được');
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
@@ -274,7 +278,7 @@ select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select app.cancel_enrollment_stop(pg_temp.s('h4'));
 
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select lives_ok($$insert into st select 'b', app.create_enrollment_stop(pg_temp.d1e(), 'TAI_CHINH')$$, 'Tạo lại yêu cầu với số liệu mới');
+select lives_ok($$insert into st select 'b', app.create_enrollment_stop(pg_temp.d1e(), 'TAI_CHINH', null, 'DN-TEST')$$, 'Tạo lại yêu cầu với số liệu mới');
 select is((select hours_left from app.enrollment_stop where id = pg_temp.s('b')), 7::numeric, 'Giờ còn lại mới 7');
 select app.submit_enrollment_stop(pg_temp.s('b'));
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
