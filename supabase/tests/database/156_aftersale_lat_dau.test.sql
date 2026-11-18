@@ -84,8 +84,11 @@ select is(pg_temp.err($$select app.create_ticket(pg_temp.mk('GV', 'GV_01_01'))$$
 
 -- ================= Giáo viên (AS-05, AS-09) =================
 select pg_temp.claims(pg_temp.uid('gv5'), 'aal1');
+-- Từ migration 501 (R-GV-13) giáo viên chỉ đọc học sinh trong lớp mình; lấy id học sinh bằng hàm quyền chủ DB để bài kiểm luật ticket không phụ thuộc phạm vi đọc.
+select pg_temp.sudo($$create function pg_temp.hs_id() returns uuid language sql stable security definer as 'select id from app.student where code = ''HSAS501'''$$);
+select pg_temp.sudo($$grant execute on function pg_temp.hs_id() to public$$);
 select is(pg_temp.err($$select app.create_ticket(jsonb_build_object('ticket_type', 'GV', 'title', 'Giả', 'description', 'Giả', 'channel_code', 'GIAO_VIEN_BAO', 'category_code', 'GV_01_01'))$$), 'HMT_TICKET_THIEU_HOC_SINH', 'Chặn: ticket giáo viên "học kém" bắt buộc học sinh (AS-05)');
-select is(pg_temp.err($$select app.create_ticket(jsonb_build_object('ticket_type', 'GV', 'title', 'Giả', 'description', 'Giả', 'channel_code', 'GIAO_VIEN_BAO', 'category_code', 'GV_01_01', 'student_id', (select id from app.student where code = 'HSAS501')))$$), 'HMT_TICKET_THIEU_LOP', 'Chặn: ticket giáo viên "học kém" bắt buộc cả lớp (AS-05)');
+select is(pg_temp.err($$select app.create_ticket(jsonb_build_object('ticket_type', 'GV', 'title', 'Giả', 'description', 'Giả', 'channel_code', 'GIAO_VIEN_BAO', 'category_code', 'GV_01_01', 'student_id', pg_temp.hs_id()))$$), 'HMT_TICKET_THIEU_LOP', 'Chặn: ticket giáo viên "học kém" bắt buộc cả lớp (AS-05)');
 create temp table t2 (j jsonb);
 grant all on t2 to public;
 insert into t2 select app.create_ticket(jsonb_build_object('ticket_type', 'GV', 'title', 'Giả', 'description', 'Giả', 'channel_code', 'GIAO_VIEN_BAO', 'category_code', 'GV_02_01'));
