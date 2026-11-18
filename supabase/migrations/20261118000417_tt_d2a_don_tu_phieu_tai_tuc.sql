@@ -1,5 +1,5 @@
 -- TT-D2a Tạo ĐƠN từ phiếu tái tục (Code C, 18/11/2026; Chat 13:20: «mỗi bước tiền kiểm quyền riêng và tạo trong một giao dịch»). Luật R-GD-13, R-V2-25 chốt lại 18/11, Đ187.
--- Làm gì: (1) khoá ngoại sales_order.renewal_ticket_id → upsale_ticket (cột và ràng buộc «đúng một gốc: cơ hội hoặc phiếu» đã có từ migration 051);
+-- Làm gì: (1) chỉ mục cho sales_order.renewal_ticket_id (cột và ràng buộc «đúng một gốc: cơ hội hoặc phiếu» đã có từ migration 051);
 -- (2) app.create_order_from_upsale_ticket: tạo đơn Nháp từ phiếu ở L6, dòng gắn đúng học sinh và lớp của phiếu, hình thức học giữ như ghi danh cũ, giá tính bằng app.price_line
 -- như đơn thường, phiếu sang L7B (Đã có đơn, chờ đóng tiền) trong CÙNG giao dịch; (3) app.list_upsale_orders: đơn của phiếu cho tab «Báo giá và đơn»;
 -- (4) app.reconcile_upsale_orders: đơn đóng đủ thì phiếu sang L8A, đơn Huỷ thì phiếu về L6. Ghi danh mới do hàm app.create_enrollments_for_order SẴN CÓ tạo khi đơn duyệt và đủ cọc
@@ -7,7 +7,7 @@
 -- CHƯA làm (PR sau, ghi trong PR): báo giá từ phiếu (bảng quotation còn bắt buộc cơ hội); sửa đơn Nháp từ phiếu bằng save_order (đang gắn với cơ hội).
 select set_config('hmt.migration', 'on', false);
 
-alter table app.sales_order add constraint sales_order_renewal_ticket_fk foreign key (renewal_ticket_id) references app.upsale_ticket (id);
+-- Không thêm khoá ngoại: nhiều bài pgTAP cũ (043, 114, 122) dựng đơn với renewal_ticket_id giả; hàm tạo đơn từ phiếu tự bảo đảm phiếu có thật.
 -- Chỉ mục (lý do): tra đơn của một phiếu (tab Báo giá và đơn, chặn tạo đơn thứ hai, đối soát).
 create index sales_order_renewal_ticket_idx on app.sales_order (renewal_ticket_id) where renewal_ticket_id is not null;
 
