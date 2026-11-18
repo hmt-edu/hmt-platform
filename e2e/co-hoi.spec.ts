@@ -80,12 +80,12 @@ test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dù
     'aria-current',
     'step',
   );
-  await expect(page.getByRole('button', { name: 'Lịch hẹn: 0' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Kiểm tra: 1' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Báo giá: 0' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Đơn hàng: 0' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Phụ huynh: 1' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Lead gốc: 1' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Lịch hẹn 0' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Kiểm tra 1' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Báo giá 0' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Đơn hàng 0' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Phụ huynh 1' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Lead gốc 1' })).toBeEnabled();
   // Tạo báo giá (R-CRM-19): có ở bản ghi cơ hội cho người có quyền lập báo giá khi Bán hàng bật; điện thoại ẩn nút (Đ248).
   await expect(page.getByRole('button', { name: 'Tạo báo giá' })).toHaveCount(
     isPhone(page) ? 0 : 1,
@@ -231,7 +231,7 @@ test('Lịch hẹn của cơ hội: tạo từ trang Cơ hội, nút "Lịch h�
   await dialog.getByRole('button', { name: 'Tạo lịch hẹn' }).click();
   await expect(toastText(page, 'Đã tạo lịch hẹn.')).toBeVisible();
   await expect(page.getByText(`Hẹn cơ hội ${setup.mark}`).first()).toBeVisible();
-  await page.getByRole('button', { name: 'Lịch hẹn: 1' }).click();
+  await page.getByRole('button', { name: 'Lịch hẹn 1' }).click();
   await expect(page).toHaveURL(/\/crm\/lich-hen\?co-hoi=/);
   await expect(
     page.getByText(new RegExp(`^Cơ hội: ${seeded.opportunity.fresh.code}`)).first(),
@@ -309,11 +309,11 @@ test('Tạo cơ hội từ lead: hộp xác nhận; tạo xong mở cơ hội L1
     'step',
   );
   // Về Lead: nút "Cơ hội: 1" mở thẳng cơ hội; Tạo cơ hội lần hai phải xác nhận.
-  await page.getByRole('button', { name: 'Lead gốc: 1' }).click();
+  await page.getByRole('button', { name: 'Lead gốc 1' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Lead' })).toBeVisible();
-  await page.getByRole('button', { name: 'Cơ hội: 1' }).click();
+  await page.getByRole('button', { name: 'Cơ hội 1' }).click();
   await expect(page).toHaveURL(/\/crm\/co-hoi\/[0-9a-f-]+$/);
-  await page.getByRole('button', { name: 'Lead gốc: 1' }).click();
+  await page.getByRole('button', { name: 'Lead gốc 1' }).click();
   await page.getByRole('button', { name: 'Tạo cơ hội' }).click();
   const again = dialogOf(page, 'Tạo cơ hội từ lead');
   await expect(again.getByText(/Lead này đã có 1 cơ hội đang dùng/)).toBeVisible();
@@ -352,7 +352,7 @@ test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì n
   await openRecord(page, setup.account, seeded.opportunity.gated.id);
   const crumbs = page.getByRole('navigation', { name: 'Đường dẫn' });
   const oppTitle = (await crumbs.getByRole('listitem').last().innerText()).trim();
-  await page.getByRole('button', { name: 'Kiểm tra: 1' }).click();
+  await page.getByRole('button', { name: 'Kiểm tra 1' }).click();
   await expect(page).toHaveURL(/\/crm\/phieu-kiem-tra\/[0-9a-f-]+$/);
   const items = crumbs.getByRole('listitem');
   if (isPhone(page)) {
