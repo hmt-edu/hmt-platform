@@ -182,7 +182,15 @@ function CreateForm({
       onCancel={() => void navigate(`/crm/co-hoi/${opportunityId}`)}
       stageShowCode={false}
       stage={{ steps, current: '', forwardOnly: true, onSelect: () => undefined }}
-      stageNote="Stage, Smart button và ghi chú mờ đến khi bấm Lưu."
+      stageNote="Chưa lưu: báo giá chưa có giai đoạn. Bấm Lưu để tạo ở giai đoạn Nháp."
+      businessActions={
+        <span className="flex flex-wrap items-center gap-2">
+          <Button variant="primary" disabled>
+            Gửi
+          </Button>
+          <span className="text-caption text-fg-label">Lưu rồi mới gửi.</span>
+        </span>
+      }
       smart={[
         { key: 'co-hoi', label: 'Cơ hội', icon: 'recruit', count: 0, onOpen: () => undefined },
         { key: 'phu-huynh', label: 'Phụ huynh', icon: 'user', count: 0, onOpen: () => undefined },
@@ -190,7 +198,7 @@ function CreateForm({
       ]}
       aside={
         <p className="rounded-box border border-border bg-surface p-4 text-fg-muted">
-          Chưa có hoạt động: bản ghi chỉ có khi bấm Lưu.
+          Lưu để bắt đầu ghi chú: bản ghi chỉ có khi bấm Lưu.
         </p>
       }
     >

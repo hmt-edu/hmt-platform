@@ -207,11 +207,16 @@ const ImportDataPage = lazyScreen(
 );
 const CatalogPage = lazyScreen(() => import('../pages/danh-muc/CatalogPage'), 'CatalogPage');
 const RoleListPage = lazyScreen(() => import('../pages/vai-tro/RoleListPage'), 'RoleListPage');
+const TeachingHoursPage = lazyScreen(
+  () => import('../pages/bao-cao-gio-day/TeachingHoursPage'),
+  'TeachingHoursPage',
+);
 const OverviewPage = lazyScreen(() => import('../pages/bao-cao/OverviewPage'), 'OverviewPage');
 const PermissionMatrixPage = lazyScreen(
   () => import('../pages/ma-tran/PermissionMatrixPage'),
   'PermissionMatrixPage',
 );
+const RubricPage = lazyScreen(() => import('../pages/rubric/RubricPage'), 'RubricPage');
 const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
 const CurriculumFramePage = lazyScreen(
   () => import('../pages/khung-chuong-trinh/CurriculumFramePage'),
@@ -800,6 +805,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'cau-hinh/rubric',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/rubric">
+                <RubricPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'cau-hinh/khung-chuong-trinh',
             element: (
               <GatedCrmEntry slug="cau-hinh/khung-chuong-trinh">
@@ -844,6 +857,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/tham-so">
                 <SettingsPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'bao-cao/gio-day',
+            element: (
+              <GatedCrmEntry slug="bao-cao/gio-day">
+                <TeachingHoursPage />
               </GatedCrmEntry>
             ),
           },

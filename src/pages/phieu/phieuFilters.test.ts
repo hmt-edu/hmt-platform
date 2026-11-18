@@ -36,4 +36,8 @@ describe('Phiếu nghiệp vụ: bộ lọc danh sách (CSN-05)', () => {
     };
     expect(buildTaskFilters(state, TYPES, STATUS)).toEqual({ branch_id: 'b1' });
   });
+  it('«Đã duyệt, chờ thực hiện» lọc theo trạng thái Đã duyệt (CSN-05)', () => {
+    const state = { ...EMPTY_TASK_STATE, quick: { queue: ['cho_thuc_hien'] } };
+    expect(buildTaskFilters(state, TYPES, STATUS)).toEqual({ status_code: 'DA_DUYET' });
+  });
 });

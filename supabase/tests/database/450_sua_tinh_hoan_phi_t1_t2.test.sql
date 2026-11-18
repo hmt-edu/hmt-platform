@@ -197,6 +197,9 @@ select is((pg_temp.cr(pg_temp.d1e(), 'MOT_PHAN', 8) ->> 'hours_refund')::numeric
 
 -- ================= T1: hoàn một phần rồi hoàn toàn bộ =================
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select pg_temp.sudo($$insert into app.ticket (code, ticket_type, branch_id, title, description, channel_code, category_code, priority_code, parent_id, student_id, response_due_at, resolve_due_at)
+  select 'DN-T1', 'DN', e.branch_id, 'Đề nghị', 'Ticket giả cho bài kiểm', 'DIEN_THOAI', 'DN_02_01', 'THUONG', e.parent_id, e.student_id, now() + interval '1 day', now() + interval '3 days'
+    from app.enrollment e where e.id = pg_temp.d1e()$$);
 select lives_ok($$insert into rf select 'a', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 3, 'KHONG_HOP', 'Hoàn một phần', 'DN-T1')$$, 'T1 chuẩn bị: tạo yêu cầu hoàn một phần 3 giờ');
 select is((pg_temp.cr(pg_temp.d1e(), 'TOAN_BO') ->> 'base_amount')::bigint, pg_temp.lt() - 2 * pg_temp.up(), 'T1: yêu cầu mới tạo chưa duyệt thì chưa trừ vào hoàn toàn bộ');
 select pg_temp.sudo($$update app.refund_request set status_code = 'DA_DUYET' where id = pg_temp.f('a')$$);
