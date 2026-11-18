@@ -294,3 +294,7 @@ Danh sách cho phép thay cho chặn riêng ADMIN: ô Kế toán · Duyệt ch�
 - `permission`, `role`: nhân viên đọc đủ; Học sinh chỉ đọc dòng của chính vai trò mình. `setting_def`: Học sinh chỉ đọc khoá `student_idle_logout_minutes`. `catalog`, `catalog_item`: Học sinh chỉ đọc môn, khối, cấp độ, loại buổi, trạng thái điểm danh (`app.student_visible_catalog`).
 - `app.student_portal_config()`: cấu hình tối thiểu cho cổng `/hoc` (giờ tự đăng xuất, các danh mục hiển thị) trong một lần gọi.
 - **Giữ nguyên có chủ đích:** `branch`, `academic_year`, `holiday` và `feature_flag` (giao diện nạp công tắc cho mọi cổng; thu hẹp cần sửa giao diện, làm ở đợt cổng Học tập).
+
+### R2b (migration 467): `get_setting` và Học sinh
+
+`app.get_setting` (và `_int`, `_numeric`, `_bool` gọi lại nó) báo `HMT_KHONG_CO_QUYEN` khi phiên là người KHÔNG phải nhân viên (có vai trò, `is_staff()` sai) đọc khoá khác `student_idle_logout_minutes`, `list_page_size`, `list_page_size_default`, `list_page_size_max`. Nhân viên và nơi gọi không có phiên (hook đăng nhập, pg_cron, migration) đọc như cũ. `feature_enabled` giữ nguyên.
