@@ -136,6 +136,26 @@ const ReceiptListPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptListPage'),
   'ReceiptListPage',
 );
+const VoucherListPage = lazyScreen(
+  () => import('../pages/phieu-chi/VoucherListPage'),
+  'VoucherListPage',
+);
+const VoucherRecordPage = lazyScreen(
+  () => import('../pages/phieu-chi/VoucherRecordPage'),
+  'VoucherRecordPage',
+);
+const VoucherPrintPage = lazyScreen(
+  () => import('../pages/phieu-chi/VoucherPrintPage'),
+  'VoucherPrintPage',
+);
+const BalanceListPage = lazyScreen(
+  () => import('../pages/so-du/BalanceListPage'),
+  'BalanceListPage',
+);
+const BalanceHistoryPage = lazyScreen(
+  () => import('../pages/so-du/BalanceHistoryPage'),
+  'BalanceHistoryPage',
+);
 const SessionRequestListPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
   'SessionRequestListPage',
@@ -408,6 +428,46 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="phieu-thu">
                 <ReceiptRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-chi',
+            element: (
+              <GatedCrmEntry slug="phieu-chi">
+                <VoucherListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-chi/:id/in',
+            element: (
+              <GatedCrmEntry slug="phieu-chi">
+                <VoucherPrintPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-chi/:id',
+            element: (
+              <GatedCrmEntry slug="phieu-chi">
+                <VoucherRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'so-du-khach-hang',
+            element: (
+              <GatedCrmEntry slug="so-du-khach-hang">
+                <BalanceListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'so-du-khach-hang/:parentId',
+            element: (
+              <GatedCrmEntry slug="so-du-khach-hang">
+                <BalanceHistoryPage />
               </GatedCrmEntry>
             ),
           },
