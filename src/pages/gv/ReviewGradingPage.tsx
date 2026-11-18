@@ -519,7 +519,8 @@ function CriteriaSwitches({
                 size="sm"
                 variant={on ? 'secondary' : 'primary'}
                 aria-pressed={!on}
-                aria-label={`${on ? 'Tắt' : 'Bật'} tiêu chí ${criterion.name}`}
+                // Tên đọc bắt đầu bằng đúng chữ đang hiện trong nút (luật axe label-content-name-mismatch), rồi nói việc bấm sẽ làm.
+                aria-label={`${on ? 'Đang áp dụng' : 'Không áp dụng cả buổi'}. ${on ? 'Tắt' : 'Bật'} tiêu chí ${criterion.name}`}
                 disabled={!editable || (on && active <= 1)}
                 onClick={() =>
                   setDraft({

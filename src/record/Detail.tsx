@@ -59,9 +59,10 @@ export function SmartButtons({
               className="focus-ring flex min-h-14 w-full items-center gap-2.5 px-3 py-2 text-left hover:bg-hover disabled:cursor-not-allowed disabled:hover:bg-transparent"
             >
               <Icon name={item.icon} className="shrink-0 text-fg-label" />
-              <span className="min-w-0">
-                <b className="tabular block text-h3 font-semibold">{item.count}</b>
+              {/* Trong DOM nhãn đứng trước số (đúng thứ tự tên đọc «Nhãn: số», luật axe label-content-name-mismatch); trên màn số vẫn nằm trên, nhãn dưới (flex-col-reverse). */}
+              <span className="flex min-w-0 flex-col-reverse">
                 <span className="block truncate text-caption text-fg-muted">{item.label}</span>
+                <b className="tabular block text-h3 font-semibold">{item.count}</b>
               </span>
             </button>
           </li>
