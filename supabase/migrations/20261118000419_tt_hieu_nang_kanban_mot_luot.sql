@@ -13,8 +13,6 @@ set search_path = ''
 as $$
   select t.id, t.stage_code, t.expected_end_date, t.created_at
     from app.upsale_ticket t
-    join app.student s on s.id = t.student_id
-    join app.class c on c.id = t.class_id
    where (p_filters ->> 'stage_code' is null or t.stage_code = p_filters ->> 'stage_code')
      and (p_filters ->> 'branch_id' is null or t.branch_id = (p_filters ->> 'branch_id')::uuid)
      and (nullif(p_filters ->> 'owner', '') is null
@@ -22,9 +20,11 @@ as $$
           or (p_filters ->> 'owner' = 'unassigned' and t.owner_id is null))
      and (nullif(p_filters ->> 'campaign_month', '') is null or to_char(t.expected_end_date, 'YYYY-MM') = p_filters ->> 'campaign_month')
      and (coalesce((p_filters ->> 'risk')::boolean, false) = false or t.risk_flag)
+     -- Tìm chữ: chỉ khi có chữ mới tra tên học sinh, mã lớp (không nối hai bảng cho từng dòng khi không tìm).
      and (nullif(btrim(coalesce(p_filters ->> 'q', '')), '') is null
-          or t.code ilike '%' || btrim(p_filters ->> 'q') || '%' or s.full_name ilike '%' || btrim(p_filters ->> 'q') || '%'
-          or c.code ilike '%' || btrim(p_filters ->> 'q') || '%');
+          or t.code ilike '%' || btrim(p_filters ->> 'q') || '%'
+          or exists (select from app.student s where s.id = t.student_id and s.full_name ilike '%' || btrim(p_filters ->> 'q') || '%')
+          or exists (select from app.class c where c.id = t.class_id and c.code ilike '%' || btrim(p_filters ->> 'q') || '%'));
 $$;
 
 -- Danh sách: dùng luật lọc chung (hành vi giữ nguyên migration 414).
