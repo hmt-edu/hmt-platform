@@ -109,5 +109,8 @@ select is(app.submit_receipt((select (v ->> 'id')::uuid from ra)) ->> 'status', 
 select pg_temp.claims((select id from u where key = 'ke'), 'aal2');
 select is(app.approve_receipt_accounting((select (v ->> 'id')::uuid from ra)) ->> 'remaining', '1000000', 'Duyệt xong: nợ còn lại của phụ huynh là 1.000.000 (8.000.000 trừ 2.000.000 đã duyệt trừ 5.000.000 phiếu không em đang chờ)');
 
+-- ---- Hàm trợ giúp không cho người đã đăng nhập gọi trực tiếp (không đọc nợ em ở cơ sở khác) ----
+select is(pg_temp.err($$select app.opening_student_debt_remaining(pg_temp.sid('HS253A'))$$), '42501', 'Người đã đăng nhập không gọi trực tiếp opening_student_debt_remaining (chặn đọc nợ em bất kỳ)');
+
 select * from finish();
 rollback;

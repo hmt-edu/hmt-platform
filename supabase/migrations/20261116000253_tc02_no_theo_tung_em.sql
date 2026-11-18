@@ -29,6 +29,7 @@ $$;
 create or replace function app.tg_receipt_opening_student_cap()
 returns trigger
 language plpgsql
+security definer
 set search_path = ''
 as $$
 declare
@@ -94,5 +95,7 @@ begin
 end;
 $$;
 
-revoke execute on function app.opening_student_debt_remaining(uuid, uuid), app.opening_debt_by_student(uuid, uuid) from public, anon;
-grant execute on function app.opening_student_debt_remaining(uuid, uuid), app.opening_debt_by_student(uuid, uuid) to authenticated;
+-- Hàm trợ giúp opening_student_debt_remaining không tự kiểm quyền: chỉ trigger (security definer) và opening_debt_by_student (có assert_can) gọi, người đăng nhập không gọi trực tiếp (tránh đọc nợ em ở cơ sở khác).
+revoke execute on function app.opening_student_debt_remaining(uuid, uuid), app.tg_receipt_opening_student_cap() from public, anon, authenticated;
+revoke execute on function app.opening_debt_by_student(uuid, uuid) from public, anon;
+grant execute on function app.opening_debt_by_student(uuid, uuid) to authenticated;
