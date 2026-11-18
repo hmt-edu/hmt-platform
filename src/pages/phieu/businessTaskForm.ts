@@ -1,0 +1,99 @@
+// Biểu mẫu tạo phiếu Bảo lưu và Chuyển lớp từ chi tiết ticket (CSN-06a, CSN-06b): kiểm sớm và dựng dữ liệu gửi app.create_ticket_task. Luật chặn thật ở DB (migration 262, hàm áp dụng 234).
+export type TaskOptions = {
+  enrollments: {
+    id: string;
+    code: string;
+    status_code: string;
+    subject_code: string | null;
+    class_id: string | null;
+    class_code: string | null;
+    remaining_hours: number;
+  }[];
+  hold_reasons: { code: string; name: string }[];
+  transfer_reasons: { code: string; name: string }[];
+  classes: {
+    id: string;
+    code: string;
+    subject_code: string;
+    seats_left: number | null;
+    upcoming: { date: string; session_no: number }[];
+  }[];
+};
+
+/** Loại chuyển lớp chọn được ở phiếu; Chuyển cơ sở chưa làm (cần quản lý hai cơ sở duyệt, R-CS-07). */
+export const TRANSFER_KINDS = [
+  { value: 'DOI_GIO', label: 'Đổi giờ học' },
+  { value: 'DOI_TRINH_DO', label: 'Đổi trình độ' },
+  { value: 'DOI_GIAO_VIEN', label: 'Đổi giáo viên' },
+] as const;
+
+export type BusinessDraft = {
+  enrollmentId: string;
+  reasonCode: string;
+  reason: string;
+  months: string;
+  toClassId: string;
+  startDate: string;
+  kindCode: string;
+};
+export type BusinessErrors = Partial<Record<keyof BusinessDraft, string>>;
+
+export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
+  enrollmentId: '',
+  reasonCode: '',
+  reason: '',
+  months: '',
+  toClassId: '',
+  startDate: '',
+  kindCode: '',
+};
+
+export function validateBusinessDraft(
+  type: 'BAO_LUU' | 'CHUYEN_LOP',
+  draft: BusinessDraft,
+  hasStudent: boolean,
+): BusinessErrors {
+  const e: BusinessErrors = {};
+  if (!hasStudent) e.enrollmentId = 'Ticket chưa gắn học sinh nên chưa tạo phiếu này được.';
+  else if (draft.enrollmentId === '') e.enrollmentId = 'Chọn ghi danh.';
+  if (draft.reasonCode === '') e.reasonCode = 'Chọn lý do.';
+  if (draft.reason.trim() === '') e.reason = 'Nhập lý do của phiếu.';
+  if (type === 'BAO_LUU') {
+    const m = Number(draft.months);
+    if (!Number.isInteger(m) || m < 1) e.months = 'Nhập số tháng bảo lưu (từ 1).';
+  } else {
+    if (draft.kindCode === '') e.kindCode = 'Chọn loại chuyển.';
+    if (draft.toClassId === '') e.toClassId = 'Chọn lớp mới.';
+    if (draft.startDate === '') e.startDate = 'Chọn buổi bắt đầu ở lớp mới.';
+  }
+  return e;
+}
+
+/** Khoá payload đúng theo migration 262: BAO_LUU {enrollment_id, months, reason_code}; CHUYEN_LOP {enrollment_id, to_class_id, start_date, kind_code, reason_code}. */
+export function buildBusinessPayload(type: 'BAO_LUU' | 'CHUYEN_LOP', draft: BusinessDraft) {
+  if (type === 'BAO_LUU')
+    return {
+      enrollment_id: draft.enrollmentId,
+      months: Number(draft.months),
+      reason_code: draft.reasonCode,
+      note: draft.reason.trim(),
+    };
+  return {
+    enrollment_id: draft.enrollmentId,
+    to_class_id: draft.toClassId,
+    start_date: draft.startDate,
+    kind_code: draft.kindCode,
+    reason_code: draft.reasonCode,
+    note: draft.reason.trim(),
+  };
+}
+
+/** Lớp mới gợi ý: cùng môn với ghi danh, bỏ lớp hiện tại. */
+export function classChoices(options: TaskOptions, enrollmentId: string) {
+  const enr = options.enrollments.find((x) => x.id === enrollmentId);
+  if (!enr) return [];
+  return options.classes.filter(
+    (c) =>
+      c.id !== enr.class_id && (enr.subject_code === null || c.subject_code === enr.subject_code),
+  );
+}

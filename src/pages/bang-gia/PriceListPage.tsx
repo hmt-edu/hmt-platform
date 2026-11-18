@@ -223,9 +223,9 @@ export function PriceListPage() {
         />
       )}
       <p className="text-caption text-fg-muted">
-        Giá trống nghĩa là chưa bán được hình thức đó (R-TIEN-10). Chip &quot;Chưa có giá&quot;: chờ
-        cập nhật, không phải ngừng bán. Chip &quot;Không bán&quot;: gói không bán hình thức đó
-        (R-TIEN-15).
+        Giá trống nghĩa là gói không bán hình thức đó (R-TIEN-10). Chip &quot;Chưa có giá&quot;: chờ
+        cập nhật, không phải ngừng bán. Chip &quot;Không bán&quot;: gói không bán hình thức đó, ví
+        dụ dịch vụ, tài liệu không có giá online (R-TIEN-15).
       </p>
       <AddPricesDialog
         open={adding}
