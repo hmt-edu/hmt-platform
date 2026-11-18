@@ -129,5 +129,10 @@ select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
 select is(pg_temp.err($$select app.preview_upsale_enrollment('GD417A')$$), 'HMT_KHONG_CO_QUYEN', 'preview_upsale_enrollment: người không có quyền Tạo bị chặn, mã có thật');
 select is(pg_temp.err($$select app.preview_upsale_enrollment('KHONG-CO')$$), 'HMT_KHONG_CO_QUYEN', 'preview_upsale_enrollment: cùng một lỗi với mã không có (không dò được mã)');
 
+-- ---- Thẻ C17: list_upsale_orders bị chặn với người không có quyền xem phiếu tái tục (Kế toán), không lộ đơn ----
+select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
+select is(pg_temp.err($$select app.list_upsale_orders(pg_temp.tid('TT917001'))$$), 'HMT_KHONG_CO_QUYEN', 'list_upsale_orders: Kế toán không xem đơn của phiếu tái tục');
+select is(pg_temp.err($$select app.list_upsale_orders(gen_random_uuid())$$), 'HMT_KHONG_TIM_THAY', 'list_upsale_orders: phiếu không có thì báo không tìm thấy');
+
 select * from finish();
 rollback;
