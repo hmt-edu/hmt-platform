@@ -197,7 +197,7 @@ begin
   if p_level is null or p_level not in ('CB', 'NC') then
     perform app.raise_error('HMT_CAP_DO_KHONG_HOP_LE', 'Cấp độ khung chương trình chỉ là Cơ bản hoặc Nâng cao.');
   end if;
-  if p_year is null or p_year !~ '^[0-9]{4}$' or substr(p_year, 3, 2)::integer <> substr(p_year, 1, 2)::integer + 1 then
+  if p_year is null or p_year !~ '^[0-9]{4}$' or substr(p_year, 3, 2)::integer <> substr(p_year, 1, 2)::integer + 1 then -- allow-number: vị trí hai số cuối của năm học trong mã bốn số
     perform app.raise_error('HMT_NAM_HOC_KHONG_HOP_LE', 'Năm học phải có dạng hai số cuối của hai năm liền nhau, ví dụ 2627 là 2026–2027.');
   end if;
   if exists (select from app.curriculum_frame where subject_code = p_subject and grade_code = p_grade and level_code = p_level and year_code = p_year) then
@@ -288,7 +288,7 @@ begin
   end if;
   if p_lesson_id is null then
     -- Thêm vào cuối khung; số mã bài không dùng lại vì bài không bao giờ bị xoá.
-    select coalesce(max(substr(code, length(f.code) + 3)::integer), 0) + 1 into v_next from app.curriculum_lesson where frame_id = f.id;
+    select coalesce(max(substr(code, length(f.code) + 3)::integer), 0) + 1 into v_next from app.curriculum_lesson where frame_id = f.id; -- allow-number: bỏ phần «-B» sau mã khung để đọc số bài
     v_code := f.code || '-B' || lpad(v_next::text, 2, '0'); -- allow-number: độ rộng hai chữ số của số bài trong mã
     insert into app.curriculum_lesson (frame_id, position, code, title, hint)
     values (f.id, coalesce((select max(position) from app.curriculum_lesson where frame_id = f.id), 0) + 1, v_code, v_title, nullif(btrim(coalesce(p_hint, '')), ''))
