@@ -18,3 +18,5 @@ Chỉ việc ĐẾN LƯỢT vai của người gọi, theo đúng điều kiện
 Người tạo không tự duyệt (Admin duyệt thay ở các loại có luật). Không có «chiết khấu vượt trần» (R-V2-11 bỏ). Khiếu nại và phiếu tái tục không có bước duyệt. Dòng việc chỉ để mở bản ghi, không duyệt hàng loạt.
 Thời điểm đến lượt: thời điểm trình, hoặc thời điểm cấp trước duyệt (`manager_at`, `manager_approved_at`, sự kiện lớp). Phiếu nghiệp vụ lấy `submitted_at` (chưa có mốc từng cấp; có thể làm mịn sau).
 Hiệu năng: mỗi nguồn quét dòng đang chờ nhờ chỉ mục sẵn có (branch_id, status_code, ...) và `receipt_waiting_accounting_idx`; EXPLAIN 100.000 phiếu thu, 200 chờ kế toán: dùng chỉ mục, 53 ms. Không thêm chỉ mục mới.
+
+**Migration 557 (giao diện):** mỗi dòng có thêm `open_id`: id bản ghi để mở khi bấm dòng (id ghi danh cho hoàn phí, dừng học, bảo lưu, chuyển lớp; chính `ref_id` cho các loại còn lại). Màn: `/crm/viec-cho-duyet`; mã hiển thị của bốn loại trên là mã ghi danh.
