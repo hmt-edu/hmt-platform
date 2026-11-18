@@ -8,6 +8,8 @@ import { Button, ButtonLink } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { statusName, typeName, type TicketPage } from './ticketLogic';
+import { GvForbidden } from './GvForbidden';
+import { isForbidden } from './forbidden';
 
 const PAGE_SIZE = 20; // allow-number: số dòng một trang trên điện thoại (máy chủ giới hạn tối đa theo cài đặt)
 
@@ -47,6 +49,8 @@ export function TeacherTicketsPage() {
           <StateView kind="forbidden" title="Phân hệ chưa bật" headingLevel={2}>
             {errorOf(query.error).message}
           </StateView>
+        ) : isForbidden(query.error) ? (
+          <GvForbidden />
         ) : (
           <Alert tone="danger">{errorOf(query.error).message}</Alert>
         )

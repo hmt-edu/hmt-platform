@@ -73,6 +73,7 @@ select is((app.list_ticket_tasks() ->> 'total')::int, 2, 'Danh sách: CSKH thấ
 select is((select r ->> 'code' from jsonb_array_elements(app.list_ticket_tasks('{}'::jsonb, 1, 0) -> 'rows') r), (select k.code from app.ticket_task k where k.id in ((select (j ->> 'id')::uuid from pk1), (select (j ->> 'id')::uuid from pk2)) order by k.id limit 1), 'Phân trang: một dòng, theo thứ tự sắp của danh sách');
 select is((app.list_ticket_tasks('{}'::jsonb, 1, 1) -> 'rows' -> 0 ->> 'code'), (select k.code from app.ticket_task k where k.id in ((select (j ->> 'id')::uuid from pk1), (select (j ->> 'id')::uuid from pk2)) order by k.id desc limit 1), 'Phân trang: trang hai là phiếu còn lại');
 select is((app.list_ticket_tasks('{"task_type":"HOAN_PHI"}'::jsonb) ->> 'total')::int, 1, 'Lọc theo loại phiếu');
+select ok((app.list_ticket_tasks() -> 'rows' -> 0 ->> 'due_at') is not null, 'Danh sách phiếu có hạn xử lý của ticket gốc (CSN-05, migration 355)');
 select is((app.list_ticket_tasks('{"status_code":"DA_DUYET"}'::jsonb) ->> 'total')::int, 0, 'Lọc theo trạng thái: chưa có phiếu Đã duyệt');
 select is((app.list_ticket_tasks(jsonb_build_object('q', (select j ->> 'code' from pt1))) ->> 'total')::int, 1, 'Tìm theo mã ticket gốc');
 select is((app.list_ticket_tasks(jsonb_build_object('q', (select j ->> 'code' from pk2))) ->> 'total')::int, 1, 'Tìm theo mã phiếu');
