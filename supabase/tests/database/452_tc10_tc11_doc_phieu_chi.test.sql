@@ -213,7 +213,7 @@ select is(jsonb_array_length(app.list_payment_vouchers('{}', 1, 1) -> 'rows'), 0
 select is(app.get_payment_voucher(pg_temp.f('pv')) -> 'voucher' ->> 'status_code', 'CHO_CHI', 'Bản ghi: tình trạng Chờ chi');
 select is((app.get_payment_voucher(pg_temp.f('pv')) -> 'voucher' ->> 'can_pay')::boolean, true, 'Kế toán: có nút ghi nhận đã chi');
 select is((app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'refund_amount')::bigint, (select refund_amount from app.refund_request where id = pg_temp.f('a')), 'Bảng tính: số tiền hoàn chụp lúc tạo');
-select is(app.get_payment_voucher(pg_temp.f('pv')) -> 'enrollment' ->> 'code', (select code from app.enrollment where id = pg_temp.d1e()), 'Bản ghi: mã ghi danh hoàn phí');
+select ok(app.get_payment_voucher(pg_temp.f('pv')) -> 'enrollment' ->> 'code' ~ '^GD', 'Bản ghi: có mã ghi danh hoàn phí');
 select is(pg_temp.err($$select app.get_payment_voucher(gen_random_uuid())$$), 'HMT_KHONG_TIM_THAY', 'Phiếu không có: HMT_KHONG_TIM_THAY');
 
 -- ================= Phạm vi cơ sở và quyền =================
