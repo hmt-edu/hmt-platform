@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 16/11/2026 (mục «Trạng thái 16/11/2026» bên dưới là bản mới nhất: repo chuyển sang `hmt-edu/hmt-platform`, số PR đánh lại từ #1, ghi các PR đã gộp từ 15/11 tới 16/11 chiều, #1 đến #66; các mục ghi ngày cũ hơn (số PR cũ #2xx) là lịch sử).
+Cập nhật: 19/11/2026 (mục «Trạng thái 19/11/2026» bên dưới là bản mới nhất, liệt kê 114 PR (#50, #67 đến #203) theo ngày gộp; mục «Trạng thái 16/11/2026» ghi: repo chuyển sang `hmt-edu/hmt-platform`, số PR đánh lại từ #1, ghi các PR đã gộp từ 15/11 tới 16/11 chiều, #1 đến #66; các mục ghi ngày cũ hơn (số PR cũ #2xx) là lịch sử).
 
 **Từ 04/11/2026 (Đ285 đến Đ290): v2 (`hmt-v2`) dừng hẳn; v1 (repo này) làm tiếp cho Cơ sở 5 chạy thật.** Thiết kế bám v1; từ v2 chỉ lấy nghiệp vụ (mục 14 của `docs/spec/04`, thắng các mục khác khi khác nhau). Canvas chuẩn là `design/hmt-canvas-9933/` (v146, thay `6f57`, Đ293; `6f57` thay `8ab9`) và `design/hmt-canvas-9189/` (Đào tạo, Giáo viên, bản hiện hành là nội dung thư mục này; `design/hmt-canvas-fcd1/` v41 `1793782759-fcd1` giữ để đối chiếu, không còn là bản hiện hành; bảng khác biệt: `docs/nghiep-vu/doi-chieu-canvas-dao-tao-v41.md`). Mốc: 10/11 Tuyển sinh + màn Nhập CS5; ~12/11 Bán hàng, Thu chi; ~17/11 Đào tạo, Cổng giáo viên, Aftersale (ngày chốt giờ học 17/11). Bảng khác biệt và kế hoạch theo mốc: `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md` (chờ anh OK trước khi viết migration). Chưa sửa giao diện Báo giá, Đơn hàng, Phiếu thu khi anh chưa gửi yêu cầu.
 
@@ -111,6 +111,139 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm phiếu tái tục: khoá các giai đoạn con **L7A, L7B, L8A** của `UPSALE_SUBSTAGE` (không Ngừng được), cùng cách khoá L5A, L5B, L5P của cơ hội, khi viết hàm dùng chúng.
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
+
+## Trạng thái 19/11/2026 (PR đã gộp từ 16/11 18:00 tới 19/11 06:30 giờ Việt Nam; 114 PR; #50 và #67 đến #203)
+
+Từ 17/11 làm theo **mô hình kéo việc**: Chat soạn thẻ việc ở hộp thư (HOP-THU/VIEC), mỗi lane (A đào tạo và buổi, B Aftersale và nạp dữ liệu, C bán hàng và tiền, D hàm áp dụng phiếu, hoàn phí, dừng học, E cổng giáo viên, F cấu hình, quản trị, báo cáo) một dải migration riêng (300–599). Từ 18/11 CI chạy trên GitHub (miễn phí, repo công khai): trên máy chỉ chạy bộ nhanh; pgTAP và Playwright do CI chạy; job Playwright chạy trong ảnh chính thức, tách khỏi pgTAP (#142, #149). Lỗi axe 4.14 («tên đọc không chứa chữ hiển thị») làm Playwright đỏ hàng loạt tới #105, #196. Danh sách dưới đây theo ngày gộp (giờ Việt Nam), đúng tiêu đề PR; hàm và cờ của từng lane xem `docs/nghiep-vu/`.
+
+### 19/11
+
+| Giờ | PR | Việc |
+|---|---|---|
+| 06:29 | #203 | CI: chạy pgTAP trên main mỗi lần đẩy có đụng migration (D31) |
+| 06:15 | #84 | QT-12 Nhật ký đăng nhập và xuất file: hàm danh sách, mở khoá tạm (migration 551), màn hai tab, Vitest, pgTAP |
+| 05:49 | #133 | R-HT-07: mốc nhanh lọc theo 00:00 giờ Việt Nam (datePresetInstants), không theo múi giờ máy (không migration) |
+| 05:49 | #80 | QT-11 Nhật ký thao tác: hàm list_audit_log (migration 550), màn quan-tri/nhat-ky, Vitest, pgTAP |
+| 05:36 | #148 | A9: hâm nóng Function đăng nhập bằng pg_cron + pg_net (migration 301, CAO, mặc định TẮT) |
+| 05:22 | #110 | TC-16: cấn số dư khách hàng vào đơn (migration 454), khoản tiền vào không phiếu thu, hoàn tác trả số dư, pgTAP |
+| 05:09 | #171 | D24: bỏ cỡ trang ghi cứng 50 và 100 ở ba hàm danh sách (migration 464) |
+| 04:55 | #166 | R1 (Soát): chính sách đọc nhóm lead, cơ hội, lịch hẹn dùng phạm vi CO_SO thay «khác rỗng» (migration 463), pgTAP |
+| 04:42 | #108 | TT-E: màn TT-04 Đối chiếu tái tục theo tháng (migration 553) |
+| 04:42 | #165 | R1 (Soát): chính sách đọc nhóm báo giá, phiếu tái tục dùng phạm vi CO_SO thay «khác rỗng» (migration 462), pgTAP |
+| 04:29 | #103 | TC-02 PR3: giao diện Thu nợ đầu kỳ (không đơn, nợ từng em) |
+| 04:29 | #164 | R1 (Soát): chính sách đọc nhóm đơn hàng dùng phạm vi CO_SO thay «khác rỗng» (migration 461), pgTAP |
+| 04:16 | #202 | A25 PR-2: giao diện chọn Buổi kiểm tra ở ba form yêu cầu buổi (chồng trên #200) |
+| 04:15 | #163 | R1 (Soát): chính sách đọc nhóm phiếu thu, khoản tiền vào dùng phạm vi CO_SO thay «khác rỗng» (migration 460), pgTAP |
+| 04:03 | #199 | R2b (Soát): get_setting không cho Học sinh đọc tham số nội bộ (migration 467, CAO; xếp sau #195) |
+| 03:50 | #197 | A24 PR-1 (DB, migration 302, CAO): đọc danh sách em đã xuất nhận xét (GV-07X) |
+| 03:50 | #200 | A25 PR-1 (DB): yêu cầu buổi chọn loại Kiểm tra kèm cấu hình điểm; kiểm tra bù không trừ giờ (no_charge); migration 303, pgTAP 303 |
+| 03:48 | #141 | Hiệu năng đăng nhập vòng 2: tải sẵn cỡ trang danh sách cùng lúc với dữ liệu quyền (không đợi màn mở) |
+| 03:48 | #187 | D26: e2e Phiếu chi và Số dư khách hàng, máy tính và điện thoại (chỉ thêm bài kiểm) |
+| 03:47 | #82 | R-V2-44 + TC-17: Admin «Chuyển người duyệt» (migration 400) |
+| 03:37 | #176 | E18: chân trang Bảng giá ghi đúng R-TIEN-10 (giá trống = gói không bán hình thức đó) theo luật và khung CH03 |
+| 03:24 | #147 | A10: client Supabase mỏng (auth-js + postgrest-js), bỏ realtime, storage, functions khỏi gói: đăng nhập 225 → 199 KB nén; giữ khoá lưu phiên; Vitest |
+| 03:21 | #81 | Phiếu Bảo lưu, Chuyển lớp: nối hàm áp dụng (262), tuỳ chọn biểu mẫu (350) và giao diện tạo phiếu |
+| 03:20 | #79 | GV-12 phiếu test chờ chấm + GV-15 chấm kiểm tra đầu vào (migration 500) |
+| 03:05 | #104 | TT-D2: tạo đơn từ phiếu tái tục (migration 417, 418) + hộp Tạo đơn ở TT-02 |
+| 03:04 | #190 | CI: thử lại có chờ tăng dần khi supabase start và kéo ảnh Playwright gặp «Rate exceeded» (D28) |
+| 03:03 | #195 | R2 (Soát): Học sinh không đọc cấu hình nội bộ; is_staff theo cổng, student_portal_config (migration 466), pgTAP mọi vai trò |
+| 02:47 | #100 | TT-B: tự sinh và đối soát phiếu tái tục (migration 415) |
+| 02:29 | #196 | Gộp ba sửa Playwright: chuông thông báo (axe), e2e GV-11/GV-13, thu-tien TC-09/TC-13 (BC-09 đã vào main #191) |
+| 01:48 | #198 | A24 PR-2: lõi xuất nhận xét GV-07X (dựng phiếu buổi thường và kiểm tra, điều kiện xuất, tên file, ngắt dòng); Vitest |
+| 01:03 | #191 | e2e BC-09: tự bật phân hệ BAO_CAO ở CS5 (và trả lại) thay vì dựa vào bài khác; chạy riêng không còn trượt «Phân hệ chưa bật» |
+| 01:00 | #193 | docs: đề xuất A25 «loại kiểm tra» trong yêu cầu buổi và form Loại buổi ở Danh mục (chờ Chat duyệt, chưa code) |
+| 00:57 | #192 | docs: đề xuất GV-07X Xuất nhận xét (thẻ A24; chờ Chat duyệt, chưa code) |
+| 00:47 | #168 | docs: đề xuất chặn Học sinh đọc cấu hình nội bộ (Soát R2), chờ Chat duyệt |
+| 00:46 | #189 | D27: ma trận vai trò cho hàm tiền ra: tạo, duyệt hai bước, xem (CSKH, Marketing, Trợ giảng, Admin, Trưởng cơ sở, Kế toán) |
+| 00:25 | #185 | docs: khung chương trình CH-05, CH-06 (migration 300) trong docs/nghiep-vu (thẻ A21; chỉ tài liệu) |
+| 00:25 | #182 | docs: nghiệp vụ Aftersale lane B (danh sách phiếu, khoá ticket, hàm nội bộ, Bảo lưu, Chuyển lớp, Hoàn học phí, cấp duyệt) (B15) |
+| 00:25 | #181 | Thẻ C21: tài liệu R-V2-44 chuyển người duyệt, cập nhật mục lục hàm lane C (PR đang chờ gộp) |
+| 00:25 | #180 | docs: hàm và chính sách lane E, thêm migration 503, 504, 506 (rubric CH-07, câu mẫu) |
+| 00:25 | #169 | Thẻ C20: tài liệu đo hiệu năng phiếu tái tục trên 50.000 phiếu (EXPLAIN, trước và sau migration 419) |
+| 00:25 | #159 | docs: bảng mã lỗi HMT_* của lane D (D21) |
+| 00:24 | #146 | docs: CI tách hai job DB (pgTAP) và Playwright, khi nào cần job nào, cách chạy lại (D17) |
+| 00:24 | #177 | E19: Cơ sở và phòng hiện lỗi kèm Thử lại; Chiết khấu, Giờ tặng có trạng thái trống |
+| 00:24 | #184 | B17: pgTAP 357 phiếu nghiệp vụ theo vai (quản lý cơ sở khác, giáo viên, CSKH) bị chặn, phiếu giữ nguyên |
+| 00:23 | #186 | A22: link «Giờ dạy của tôi» ở GV-03 đủ vùng chạm 44px trên điện thoại |
+| 00:18 | #137 | docs: tổng hợp hàm, cờ, bản sửa mới của Code D (migration 235 đến 459) |
+
+### 18/11
+
+| Giờ | PR | Việc |
+|---|---|---|
+| 23:57 | #179 | KHẨN: bài pgTAP 461 tạo ticket Aftersale hợp lệ trước khi hoàn phí (T6), thêm ca chặn không có ticket, ticket không tồn tại |
+| 23:39 | #132 | E1+E10 (sạch, thay #125 và #109): giáo viên chỉ đọc học sinh và ghi chú học sinh trong lớp mình (migration 501, 502) |
+| 23:28 | #167 | Thẻ C18: e2e TC-09 Kế toán hoàn tác khoản tiền (cờ bật rồi trả lại), khoản đã hoàn tác không còn nút; chỉ chạy bằng CI |
+| 23:28 | #170 | B12: màn lỗi tải dữ liệu dùng chung có nút Thử lại cho bản ghi ticket, bản ghi phiếu, SLA, nhóm ticket |
+| 23:27 | #172 | A14: GV-12 Cần làm và GV-14 Ticket giáo viên hiện trạng thái không có quyền khi máy chủ từ chối |
+| 23:27 | #175 | BC-09: chữ trạng thái trống đúng khung BC09_trong_pc |
+| 23:18 | #135 | T6: hoàn phí, dừng học bắt buộc qua ticket Aftersale (migration 459, R-V2-24A), pgTAP đúng và bị chặn |
+| 23:18 | #145 | CH-07 màn Rubric nhận xét (chồng trên #144): tab Mô tả mức + migration 504 |
+| 23:18 | #153 | B10 CSN-05: cột Hạn, chip Đã duyệt chờ thực hiện ở danh sách phiếu; Chờ tôi duyệt chỉ vai Kế toán cho cấp kế toán (migration 355) |
+| 23:18 | #120 | BH-08: Chọn lớp chỉ ghi vào bản đang sửa, lưu khi bấm Lưu đơn, huỷ Sửa thì bỏ (theo khung BH08); Vitest, e2e |
+| 23:18 | #119 | CS-01 danh sách ticket theo CSN01: cột Nhóm · Nhóm con, Học sinh, Tạo lúc (migration 351, pgTAP, e2e) |
+| 23:06 | #94 | TC-02: nợ đầu kỳ theo từng em (migration 253) |
+| 23:05 | #88 | CHUNG-12 Trung tâm thông báo: chuông ở thanh trên CRM, số chưa đọc, đánh dấu đã đọc, mở bản ghi (không migration), Vitest |
+| 23:05 | #114 | BUOI-10 danh sách yêu cầu buổi theo khung BUOI10: cột Lớp, Ngày đề nghị, chữ «chỉ Trưởng cơ sở duyệt» cho người không duyệt, chữ trạng thái trống; e2e |
+| 23:04 | #160 | A13 cụm 2 / A14: trạng thái «không có quyền» riêng cho GV-02, 03, 10, 11, 13, 16 khi máy chủ từ chối (HMT_KHONG_CO_QUYEN); Vitest |
+| 23:04 | #161 | C16 cụm 2: khung Tạo báo giá, Tạo đơn theo khuôn chung (BH02_tao_moi, BH05_tao_moi): câu «Chưa lưu…», nút Gửi/Trình duyệt mờ kèm «Lưu rồi mới…», cột ghi chú «Lưu để bắt đầu ghi chú» |
+| 22:56 | #131 | B3 bản ghi ticket theo CSN03: thêm Kênh, Cơ sở, Lớp, Ghi danh, Ticket gốc (migration 352) |
+| 22:48 | #152 | A13 cụm 1 (chữ theo khung 9189): GV-04 dấu thời hạn, GV-07 em chưa điểm danh, GV-10 lớp được phân công, GV-11 lịch sử buổi, GV-12 sắp theo hạn, GV-16 giờ dạy tính cho người dạy thật |
+| 22:48 | #156 | BC-09: màn Giờ dạy giáo viên (phần đọc, chưa có Chốt tháng), Vitest, e2e |
+| 22:47 | #154 | B11: pgTAP 356 bị chặn cho hàm ticket (CSKH cơ sở khác, giáo viên, CSKH không phải Admin, khách anon) |
+| 22:47 | #158 | D19: bài pgTAP bổ sung cho ca bị chặn của hàm tiền ra (phiếu chi, số dư, hoàn phí, dừng học, hàm nội bộ) |
+| 22:37 | #144 | CH-07 Rubric nhận xét, phần DB: phiên bản theo bộ, hàm ghi cho Admin, buổi chụp mô tả mức (migration 503) |
+| 22:36 | #149 | CI: job Playwright chạy trong ảnh chính thức mcr.microsoft.com/playwright, PR chỉ chạy chromium (D18) |
+| 22:17 | #111 | BC-08: hàm báo cáo giáo viên trễ hạn hằng tháng (migration 554, chỉ đọc); pgTAP 14 bài, EXPLAIN 150.000 buổi |
+| 22:16 | #130 | T8: người tạo, kể cả Admin, không tự duyệt bước quản lý hoàn phí và dừng học (migration 458), pgTAP |
+| 22:16 | #117 | Sửa T5: dừng học trừ giờ đã hoàn một phần, giờ tặng không thành tiền (migration 456), pgTAP tái hiện |
+| 22:16 | #113 | Q1 (Soát): Admin không thể được cấp Kế toán · Duyệt qua ma trận (migration 455, CAO), pgTAP tái hiện |
+| 22:14 | #138 | CH-05, CH-06 khung chương trình: phần DB (migration 300, CAO) |
+| 22:14 | #123 | P1 (Soát): bọc auth.uid() trong bốn chính sách RLS còn sót (migration 457), pgTAP kiểm không còn chính sách trần |
+| 21:58 | #99 | TT-C: màn Tái tục TT-01 (danh sách, Kanban), hộp Tạo TT-03, hộp Giao (migration 414) |
+| 21:54 | #124 | CHUNG-15: hàm gộp «việc chờ tôi duyệt» (migration 556) |
+| 21:54 | #121 | BC-09: hàm báo cáo giờ dạy giáo viên theo tháng, tách loại buổi (migration 555, chỉ đọc; chưa có Chốt tháng) |
+| 21:53 | #101 | TC-14 Số dư khách hàng: hàm đọc (migration 453), màn danh sách và lịch sử, pgTAP (xếp sau #95) |
+| 21:48 | #91 | Sửa T3, T4 của Soát: chặn huỷ đơn còn ghi danh, không cấp lại giờ ghi danh đã Dừng/Hoàn phí (migration 451), pgTAP |
+| 21:43 | #86 | Hàm áp dụng hoàn phí và dừng học cho phiếu Aftersale (migration 235, nội bộ, chưa nối), pgTAP |
+| 21:38 | #89 | Sửa T1, T2 của compute_refund: trừ tiền đã hoàn, không hoàn giờ tặng (migration 450), pgTAP |
+| 21:13 | #105 | AccountMenu: nhãn nút bắt đầu bằng chữ hiển thị, «Tài khoản» đặt sau (axe label-content-name-mismatch) |
+| 17:05 | #142 | CI: tách job «DB (pgTAP) + Playwright» thành hai job riêng DB (pgTAP) và Playwright (D13) |
+| 16:24 | #136 | B8 kiểm thử phiếu: pgTAP công tắc AFTERSALE, e2e từ chối và huỷ phiếu (chỉ thêm bài kiểm) |
+| 16:20 | #134 | B4 CSN-04: hộp thoại đổi trạng thái ticket (Huỷ, Mở lại, Đóng làm tay, Đóng khiếu nại) theo canvas |
+| 16:04 | #107 | Đề xuất báo giá từ phiếu tái tục (chỉ tài liệu): hiện trạng DB, kế hoạch sửa 8 hàm, rủi ro |
+| 16:03 | #122 | docs: đề xuất lịch tự kết thúc bảo lưu đã tới hạn (chờ anh duyệt, chưa bật) |
+| 16:03 | #129 | docs: hàm bổ sung vùng Lớp, Buổi, Ghi danh (thẻ A8; chỉ tài liệu) |
+| 16:02 | #128 | Thẻ C12: mục lục các hàm Postgres mới của lane C (R-V2-44, thu nợ đầu kỳ, phiếu tái tục) |
+| 16:02 | #126 | docs: hàm và chính sách của lane E (cổng Giáo viên, migration 500 đến 502) |
+| 16:01 | #127 | P2 (Soát): public/_headers cho /assets/* cache một năm, immutable (tên tệp đã có mã băm) |
+| 15:49 | #116 | design: nhập gói HMT 6 màn còn thiếu (canvas 1aab, 18/11/2026); CLAUDE.md thêm mục canvas (chỉ tài liệu) |
+| 15:49 | #118 | docs/spec: chép 3 quyết định anh Trường chốt 18/11 (chỉ tài liệu) |
+| 15:49 | #115 | docs: luật kiểm tra mới 18/11: bộ nhanh trên máy, pgTAP và Playwright do CI, khoá DB lần lượt (chỉ tài liệu) |
+| 14:40 | #106 | Hiệu năng đăng nhập: tải sẵn khung CRM, trang chủ, khung giáo viên và phông chữ lúc rảnh ở trang đăng nhập; Vitest |
+| 13:32 | #92 | e2e: luồng bị chặn quyền BUOI-13 và BUOI-06 (không migration; LOP-09 bỏ theo Chat 11:35) |
+| 12:20 | #98 | docs: CHUNG-12 thông báo, màn BC-01 (chỉ tài liệu) |
+| 12:20 | #93 | TT-01..04: đề xuất chia 5 PR và câu hỏi cần chốt (chỉ tài liệu) |
+| 12:19 | #83 | R-V2-25: chốt lại 18/11, giữ phiếu tái tục theo canvas 9933 |
+| 12:19 | #96 | e2e: người không phải Admin mở thẳng QT-11, QT-12 phải bị chặn |
+| 12:18 | #90 | BC-01 Tổng quan Ban giám đốc: màn bao-cao/tong-quan trên hàm report_overview có sẵn (không migration), Vitest |
+| 12:14 | #87 | Sửa pgTAP 260: thứ tự phân trang ổn định (chỉ sửa bài kiểm) |
+| 10:31 | #68 | Đề xuất luật R-V2-44: Admin chuyển người duyệt khi người đã chốt bị khoá (chỉ tài liệu, chờ Chat chốt) |
+| 09:10 | #50 | Bump the npm-patch-minor group across 1 directory with 23 updates |
+
+### 16/11
+
+| Giờ | PR | Việc |
+|---|---|---|
+| 19:40 | #78 | AccountMenu: nhãn nút tài khoản chứa tên và dòng vai trò đang hiện (luật axe label-content-name-mismatch); Vitest |
+| 18:55 | #77 | docs: chuyển lớp, bảo lưu ghi chú hàm áp dụng (migration 234) |
+| 18:43 | #76 | docs: lời gọi hai hàm áp dụng bảo lưu và chuyển lớp cho execute_ticket_task (dành cho Code B) |
+| 18:39 | #75 | Hàm áp dụng bảo lưu và chuyển lớp cho phiếu nghiệp vụ Aftersale (migration 234, nội bộ, chưa nối), pgTAP |
+| 18:38 | #74 | Tạo phiếu nghiệp vụ từ chi tiết ticket (migration 261) |
+| 18:33 | #67 | TC-02 Thu nợ đầu kỳ, phần DB (migration 251, 252; khoá theo phụ huynh; cờ tắt mặc định) |
+| 18:33 | #70 | Playwright: người không phải Admin mở thẳng 6 màn Quản trị phải bị chặn (chỉ thêm bài kiểm) |
+| 18:32 | #71 | Aftersale phiếu nghiệp vụ: màn CS-05 danh sách, CS-06 chi tiết (migration 260) |
+| 18:32 | #69 | View báo cáo BTVN BC-07: report.homework_summary (migration 233), pgTAP |
 
 ## Trạng thái 16/11/2026 (repo mới `hmt-edu/hmt-platform`, PR đánh số lại từ #1; đã gộp tới #66, 17:50)
 
