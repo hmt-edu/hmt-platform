@@ -98,7 +98,7 @@ export function GlobalSearch() {
           aria-expanded={showPanel}
           aria-controls={listId}
           value={text}
-          placeholder="Tìm tên, số điện thoại, mã…"
+          placeholder="Tìm mọi thứ…"
           className="min-w-0 flex-1 bg-transparent text-body outline-none"
           onChange={(e) => {
             setText(e.target.value);

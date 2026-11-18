@@ -63,7 +63,7 @@ test.beforeAll(async ({}, testInfo) => {
 test('CSKH tạo phiếu Cập nhật hồ sơ từ chi tiết ticket', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/ticket');
-  await page.getByPlaceholder(/Tìm/).fill(ticketTitle);
+  await page.getByRole('main').getByPlaceholder(/Tìm/).fill(ticketTitle);
   // Máy tính là bảng (bấm ô tiêu đề), điện thoại là danh sách thẻ; không bấm nhầm chip lọc «Tìm: …».
   await (
     isPhone(page)
