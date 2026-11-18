@@ -90,6 +90,19 @@ select is(pg_temp.err($$select app.set_review_criterion_active(pg_temp.crit('TOA
 select is(pg_temp.err($$select app.set_review_criterion_active(pg_temp.crit('TOAN_HIEU'), true)$$), null, 'Dùng lại tiêu chí');
 select is(pg_temp.err($$select app.set_review_criterion_active(gen_random_uuid(), false)$$), 'HMT_KHONG_TIM_THAY', 'Chặn: tiêu chí không có');
 
+-- ---------- Lưu nhiều ô một lần (migration 504) ----------
+select is(app.update_review_level_descs(pg_temp.ver('MON_PHU', 1), jsonb_build_array(
+  jsonb_build_object('criterion_id', pg_temp.crit('TD_TAP_TRUNG'), 'level', 1, 'description', 'Một'),
+  jsonb_build_object('criterion_id', pg_temp.crit('TD_TAP_TRUNG'), 'level', 2, 'description', 'Hai'))), 2, 'Lưu hai ô trong một lần gọi');
+select is(pg_temp.err($$select app.update_review_level_descs(pg_temp.ver('MON_PHU', 1), jsonb_build_array(
+  jsonb_build_object('criterion_id', pg_temp.crit('TD_TAP_TRUNG'), 'level', 1, 'description', 'Đổi'),
+  jsonb_build_object('criterion_id', pg_temp.crit('TD_TAP_TRUNG'), 'level', 2, 'description', ' ')))$$), 'HMT_THIEU_THONG_TIN', 'Một ô trống thì cả lần lưu bị chặn');
+select is((select description from app.review_level_desc where version_id = pg_temp.ver('MON_PHU', 1) and criterion_id = pg_temp.crit('TD_TAP_TRUNG') and level = 1), 'Một', 'Lần lưu lỗi không để lại ô nào đã đổi dở');
+select is(pg_temp.err($$select app.update_review_level_descs(pg_temp.ver('MON_PHU', 1), '{}'::jsonb)$$), 'HMT_THAM_SO_SAI', 'Chặn: danh sách không phải mảng');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal2');
+select is(pg_temp.err($$select app.update_review_level_descs(pg_temp.ver('MON_PHU', 1), '[]'::jsonb)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Trưởng cơ sở không lưu mô tả');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+
 -- ---------- Chụp vào buổi ----------
 select is((select count(*)::int from information_schema.columns where table_schema = 'app' and table_name = 'session_review_criterion' and column_name in ('rubric_version_id', 'level_descs')), 2, 'Buổi có cột chụp phiên bản và mô tả');
 select * from finish();
