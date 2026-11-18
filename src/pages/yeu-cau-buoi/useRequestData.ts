@@ -1,6 +1,7 @@
 // Gọi dữ liệu yêu cầu buổi: một lần gọi cho danh sách (phân trang ở máy chủ), mỗi thao tác một hàm (R-BUOI-04). Luật do máy chủ quyết.
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import { examRpcArgs, type ExamInput } from './examFields';
 import { rpc, useDb } from '../../lib/db';
 import type { RequestPage } from './requestLogic';
 
@@ -41,7 +42,7 @@ export function useSaveRequest() {
   const supabase = useDb();
   const refresh = useRefreshRequests();
   return useMutation({
-    mutationFn: async (a: SaveArgs & { submit: boolean }) => {
+    mutationFn: async (a: SaveArgs & { submit: boolean; exam?: ExamInput | null }) => {
       const saved = await rpc<{ id: string; code: string }>(supabase, 'save_session_request', {
         p_id: a.id,
         p_class_id: a.classId,
@@ -51,6 +52,13 @@ export function useSaveRequest() {
         p_room_id: a.roomId,
         p_note: a.note,
       });
+      // A25: loại Kiểm tra kèm cấu hình điểm, đặt khi yêu cầu còn Nháp (trước khi gửi duyệt).
+      if (a.exam)
+        await rpc<null>(supabase, 'set_request_exam', {
+          p_request_id: saved.id,
+          p_enabled: true,
+          ...examRpcArgs(a.exam),
+        });
       if (a.submit) await rpc<null>(supabase, 'submit_session_request', { p_id: saved.id });
       return saved;
     },
@@ -109,7 +117,7 @@ export function useSaveSupport() {
   const supabase = useDb();
   const refresh = useRefreshRequests();
   return useMutation({
-    mutationFn: async (a: SupportArgs & { submit: boolean }) => {
+    mutationFn: async (a: SupportArgs & { submit: boolean; exam?: ExamInput | null }) => {
       const saved = await rpc<{ id: string; code: string }>(supabase, 'save_support_request', {
         p_id: null,
         p_class_id: a.classId,
@@ -121,6 +129,13 @@ export function useSaveSupport() {
         p_room_id: a.roomId,
         p_note: a.note,
       });
+      // A25: loại Kiểm tra kèm cấu hình điểm, đặt khi yêu cầu còn Nháp (trước khi gửi duyệt).
+      if (a.exam)
+        await rpc<null>(supabase, 'set_request_exam', {
+          p_request_id: saved.id,
+          p_enabled: true,
+          ...examRpcArgs(a.exam),
+        });
       if (a.submit) await rpc<null>(supabase, 'submit_session_request', { p_id: saved.id });
       return saved;
     },
@@ -144,7 +159,7 @@ export function useSaveMakeup() {
   const supabase = useDb();
   const refresh = useRefreshRequests();
   return useMutation({
-    mutationFn: async (a: MakeupArgs & { submit: boolean }) => {
+    mutationFn: async (a: MakeupArgs & { submit: boolean; exam?: ExamInput | null }) => {
       const saved = await rpc<{ id: string; code: string }>(supabase, 'save_makeup_request', {
         p_id: null,
         p_class_id: a.classId,
@@ -156,6 +171,13 @@ export function useSaveMakeup() {
         p_room_id: a.roomId,
         p_reason: a.reason,
       });
+      // A25: loại Kiểm tra kèm cấu hình điểm, đặt khi yêu cầu còn Nháp (trước khi gửi duyệt).
+      if (a.exam)
+        await rpc<null>(supabase, 'set_request_exam', {
+          p_request_id: saved.id,
+          p_enabled: true,
+          ...examRpcArgs(a.exam),
+        });
       if (a.submit) await rpc<null>(supabase, 'submit_session_request', { p_id: saved.id });
       return saved;
     },

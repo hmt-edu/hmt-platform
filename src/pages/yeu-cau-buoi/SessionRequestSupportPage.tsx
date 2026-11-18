@@ -13,6 +13,8 @@ import { useToast } from '../../ui/toastContext';
 import { useClassFormOptions, useClassRecord } from '../lop/useClassData';
 import { validateSupport, type SupportError } from './requestLogic';
 import { useSaveSupport } from './useRequestData';
+import { ExamBlock } from './ExamBlock';
+import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './examFields';
 
 export function SessionRequestSupportPage() {
   const [params] = useSearchParams();
@@ -76,6 +78,9 @@ function Form({
   const [note, setNote] = useState('');
   const [errors, setErrors] = useState<SupportError>({});
   const [error, setError] = useState<string | null>(null);
+  const [examOn, setExamOn] = useState(false);
+  const [exam, setExam] = useState<ExamInput>(EMPTY_EXAM);
+  const [examErrors, setExamErrors] = useState<ExamError>({});
   const toggle = (id: string) =>
     setPicked((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
 
@@ -83,9 +88,12 @@ function Form({
     const found = validateSupport({ studentIds: picked, date, start, end, teacherId });
     setErrors(found);
     setError(null);
-    if (Object.keys(found).length > 0) return;
+    const examFound = examOn ? validateExam(exam) : {};
+    setExamErrors(examFound);
+    if (Object.keys(found).length > 0 || Object.keys(examFound).length > 0) return;
     try {
       const saved = await save.mutateAsync({
+        exam: examOn ? exam : null,
         classId,
         studentIds: picked,
         date,
@@ -191,6 +199,14 @@ function Form({
         label="Ghi chú (không bắt buộc)"
         value={note}
         onChange={(e) => setNote(e.target.value)}
+      />
+      <ExamBlock
+        kind="BO_TRO"
+        enabled={examOn}
+        onEnabled={setExamOn}
+        value={exam}
+        onChange={setExam}
+        errors={examErrors}
       />
       <div className="flex flex-wrap gap-2">
         <Button variant="primary" loading={save.isPending} onClick={() => void submit(true)}>
