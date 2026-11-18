@@ -10,6 +10,7 @@ import { Icon } from '../ui/icons';
 import { Drawer, Select } from '../ui/Overlays';
 import { AccountMenu } from './AccountMenu';
 import { CrumbTailContext } from './CrumbTail';
+import { GlobalSearch } from './GlobalSearch';
 import { CrumbsContext, fromOf, mergeTrail, type Crumb } from './crumbTrail';
 import { useProduct } from './useProduct';
 
@@ -151,7 +152,7 @@ function menuBreadcrumb(menu: MenuGroup[], tail: string | null, pathname: string
 /**
  * Khung ứng dụng CRM (khuôn K01 của gói): thanh bên tối 236px (thu gọn 64px) dựng từ ma trận quyền,
  * thanh trên 52px gồm đường dẫn, chọn cơ sở, chuông, tài khoản. Dưới 1024px thanh bên nằm trong ngăn kéo.
- * Ô tìm kiếm toàn hệ thống và danh sách thông báo (P14) chưa có trong thiết kế nên chưa dựng.
+ * Ô tìm kiếm toàn hệ thống (CHUNG-11) ở thanh trên; danh sách thông báo (CHUNG-12) chưa dựng.
  */
 export function CrmShell() {
   useProduct('crm');
@@ -285,6 +286,7 @@ export function CrmShell() {
                   })}
                 </ol>
               </nav>
+              <GlobalSearch />
               <div className="ml-auto hidden shrink-0 lg:block">
                 <BranchPicker className="w-56" />
               </div>
