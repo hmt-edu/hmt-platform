@@ -1,7 +1,7 @@
 // CH-05 Khung chương trình, danh sách phiên bản (khuôn K10, canvas 1aab CH05_*; Admin tạo, Trưởng cơ sở và các vai trò khác chỉ xem, máy tính).
 // Luật R-LOP-07 (18/11/2026): mã Môn-Khối-Cấpđộ-Năm, bản kế thêm -v2, -v3; Tạo bản mới sao chép TOÀN BỘ bài từ bản trước; trạng thái chỉ Đang dùng, Ngừng; không xoá khung.
 // Máy chủ quyết quyền và mã (app.list_curriculum_frames, create_curriculum_frame, create_curriculum_version, set_curriculum_frame_active); trang chỉ hiện và gọi.
-// Màn danh sách bài (CH-06) làm ở PR sau; thanh chuyển «Rubric nhận xét, Ngày nghỉ» đã có ở menu trái nên không lặp lại ở đây.
+// Mã khung dẫn tới danh sách bài (CH-06); thanh chuyển «Rubric nhận xét, Ngày nghỉ» đã có ở menu trái nên không lặp lại ở đây.
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { errorOf, useDb } from '../../lib/db';
@@ -86,7 +86,18 @@ export function CurriculumFramePage() {
   }
 
   const columns: LineColumn<FrameRow>[] = [
-    { key: 'code', header: 'Mã khung', cell: (f) => <b className="tabular">{f.code}</b> },
+    {
+      key: 'code',
+      header: 'Mã khung',
+      cell: (f) => (
+        <Link
+          className="tabular font-semibold text-link underline"
+          to={`/crm/cau-hinh/khung-chuong-trinh/${f.id}`}
+        >
+          {f.code}
+        </Link>
+      ),
+    },
     { key: 'subject', header: 'Môn', cell: (f) => f.subject_name },
     { key: 'grade', header: 'Khối', cell: (f) => f.grade_name },
     { key: 'level', header: 'Cấp độ', cell: (f) => f.level_name },

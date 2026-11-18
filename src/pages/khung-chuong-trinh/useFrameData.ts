@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
 import type { FrameFilters, FramePage } from './frameLogic';
+import type { FrameDetail } from './lessonLogic';
 
 export const FRAME_PAGE_SIZE = 50; // allow-number: mặc định phân trang danh sách (quy ước hiệu năng, tối đa 100)
 
@@ -52,4 +53,41 @@ export function setFrameActive(
   active: boolean,
 ): Promise<void> {
   return rpc<void>(supabase, 'set_curriculum_frame_active', { p_id: id, p_active: active });
+}
+
+// ---- CH-06 Danh sách bài học của một khung ----
+
+export function useFrameDetail(id: string | undefined) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['curriculum-frame', id],
+    enabled: id !== undefined,
+    retry: false,
+    queryFn: () => rpc<FrameDetail>(supabase, 'get_curriculum_frame', { p_id: id }),
+  });
+}
+
+export function useRefreshFrame() {
+  const client = useQueryClient();
+  return useCallback(() => client.invalidateQueries({ queryKey: ['curriculum-frame'] }), [client]);
+}
+
+export function saveLesson(
+  supabase: SupabaseClient,
+  input: { frameId: string; lessonId: string | null; title: string; hint: string },
+): Promise<{ id: string; code: string }> {
+  return rpc<{ id: string; code: string }>(supabase, 'save_curriculum_lesson', {
+    p_frame_id: input.frameId,
+    p_lesson_id: input.lessonId,
+    p_title: input.title,
+    p_hint: input.hint === '' ? null : input.hint,
+  });
+}
+
+export function reorderLessons(
+  supabase: SupabaseClient,
+  frameId: string,
+  order: string[],
+): Promise<void> {
+  return rpc<void>(supabase, 'reorder_curriculum_lessons', { p_frame_id: frameId, p_order: order });
 }
