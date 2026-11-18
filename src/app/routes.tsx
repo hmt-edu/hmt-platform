@@ -136,6 +136,14 @@ const ReceiptListPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptListPage'),
   'ReceiptListPage',
 );
+const VoucherListPage = lazyScreen(
+  () => import('../pages/phieu-chi/VoucherListPage'),
+  'VoucherListPage',
+);
+const VoucherRecordPage = lazyScreen(
+  () => import('../pages/phieu-chi/VoucherRecordPage'),
+  'VoucherRecordPage',
+);
 const SessionRequestListPage = lazyScreen(
   () => import('../pages/yeu-cau-buoi/SessionRequestListPage'),
   'SessionRequestListPage',
@@ -407,6 +415,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="phieu-thu">
                 <ReceiptRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-chi',
+            element: (
+              <GatedCrmEntry slug="phieu-chi">
+                <VoucherListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'phieu-chi/:id',
+            element: (
+              <GatedCrmEntry slug="phieu-chi">
+                <VoucherRecordPage />
               </GatedCrmEntry>
             ),
           },
