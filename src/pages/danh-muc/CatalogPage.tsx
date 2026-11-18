@@ -26,6 +26,8 @@ import {
   type CatalogSummary,
   type CatalogTree,
   type TreeRow,
+  SESSION_TYPE_CATALOG,
+  sessionTypeFormLabel,
 } from './catalogLogic';
 import { AddItemDialog, RenameItemDialog, StopItemDialog, type AddTarget } from './CatalogDialogs';
 import {
@@ -375,6 +377,15 @@ function CatalogPanel({
               </span>
             ),
           },
+          ...(tree.root.code === SESSION_TYPE_CATALOG
+            ? [
+                {
+                  key: 'form',
+                  header: 'Form nhận xét',
+                  cell: (r: TreeRow) => sessionTypeFormLabel(r.node.code),
+                },
+              ]
+            : []),
           { key: 'status', header: 'Trạng thái', cell: status },
           {
             key: 'actions',
