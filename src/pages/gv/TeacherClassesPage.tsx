@@ -16,6 +16,8 @@ import {
   type MyClassesResult,
 } from './classesLogic';
 import { NEXT_LOOKAHEAD_DAYS, addDays, type MySessionsResult } from './todayLogic';
+import { GvForbidden } from './GvForbidden';
+import { isForbidden } from './forbidden';
 
 const LIST_LIMIT = 100; // allow-number: trần số dòng một lần gọi của máy chủ (tối đa 100)
 
@@ -54,7 +56,11 @@ export function TeacherClassesPage() {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3">
         <h1 className="text-h2">Lớp của tôi</h1>
-        <Alert tone="danger">{errorOf(classes.error).message}</Alert>
+        {isForbidden(classes.error) ? (
+          <GvForbidden kind="generic" />
+        ) : (
+          <Alert tone="danger">{errorOf(classes.error).message}</Alert>
+        )}
         <div>
           <Button onClick={() => void classes.refetch()}>Thử lại</Button>
         </div>
@@ -67,7 +73,9 @@ export function TeacherClassesPage() {
     <div className="mx-auto flex max-w-xl flex-col gap-4">
       <div>
         <h1 className="text-h2">Lớp của tôi</h1>
-        <p className="text-body text-fg-muted">{rows.length} lớp đang dạy</p>
+        <p className="text-body text-fg-muted">
+          {rows.length} lớp được phân công. Chỉ thấy lớp của mình.
+        </p>
         <p className="text-body">
           <Link className="text-link underline" to="/gv/ticket">
             Ticket của lớp tôi

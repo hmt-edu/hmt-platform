@@ -8,7 +8,8 @@ import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { FormDialog } from '../../ui/Dialogs';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Alert, Spinner } from '../../ui/Feedback';
+import { QueryErrorView } from '../../ui/QueryErrorView';
 import { Checkbox, INPUT_CLASS } from '../../ui/Field';
 import { OptionalSelect } from '../../ui/OptionalSelect';
 import { Tabs } from '../../ui/Overlays';
@@ -81,7 +82,14 @@ export function TicketCategoriesPage() {
   });
   const canEdit = access.can('ADMIN', 'SUA');
   if (data.isPending) return <Spinner label="Đang tải nhóm ticket…" />;
-  if (data.isError) return <StateView kind="error" title="Chưa tải được nhóm ticket" />;
+  if (data.isError)
+    return (
+      <QueryErrorView
+        error={data.error}
+        subject="nhóm ticket"
+        onRetry={() => void data.refetch()}
+      />
+    );
 
   const all = data.data;
   const groups = all.filter((c) => c.kind === 'GROUP' && c.ticket_type === type);

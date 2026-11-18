@@ -51,7 +51,7 @@ test('khung CRM: menu tối theo quyền, đường dẫn trên thanh trên, chu
     await expect(page.getByTestId('ten-nguoi-dung')).toBeVisible();
     await expect(page.getByText(/Tuyển sinh · CS5 Mỹ Đình/)).toBeVisible();
   }
-  await expect(page.getByRole('button', { name: 'Thông báo (sắp có)' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /^Thông báo/ })).toBeEnabled();
   await expectAccessible(page);
 
   const menu = await openCrmMenu(page);
