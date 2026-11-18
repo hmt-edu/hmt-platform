@@ -188,8 +188,6 @@ grant all on rf to public;
 create function pg_temp.f(p_key text) returns uuid language sql stable as $$ select id from rf where key = p_key $$;
 grant execute on function pg_temp.f(text) to public;
 
-select pg_temp.sudo($$create function pg_temp.est(p_enr uuid) returns text language sql stable security definer as 'select status_code from app.enrollment where id = p_enr'$$);
-select pg_temp.sudo($$create function pg_temp.hrs(p_enr uuid) returns numeric language sql stable security definer as 'select app.enrollment_hours_balance(p_enr)'$$);
 select pg_temp.sudo($$create function pg_temp.par(p_enr uuid) returns uuid language sql stable security definer as 'select parent_id from app.enrollment where id = p_enr'$$);
 select pg_temp.sudo($$create function pg_temp.ar(p_enr uuid, p_kind text, p_hours numeric, p_reason text) returns uuid language sql security definer as 'select app.apply_refund_request(p_enr, p_kind, p_hours, p_reason, null, ''PNV-TEST'')'$$);
 select pg_temp.sudo($$create function pg_temp.as_(p_enr uuid, p_reason text) returns uuid language sql security definer as 'select app.apply_enrollment_stop(p_enr, p_reason, null, ''PNV-TEST'')'$$);
