@@ -25,3 +25,11 @@ Cập nhật 18/11/2026 (thẻ C12; CLAUDE.md mục «Quy ước viết nghiệp
 | Đơn từ phiếu (417, 418)                                                | `create_order_from_upsale_ticket`, `list_upsale_orders`, `reconcile_upsale_orders`, `list_upsale_order_options`                                                                                       |
 
 Báo giá từ phiếu chưa làm: xem `bao-gia-tu-phieu-tai-tuc-de-xuat.md` (PR #107). Chi tiết luồng tái tục: `tt-a-phieu-tai-tuc.md` (có khi các PR TT vào main).
+
+## Đang chờ gộp (cập nhật 19/11)
+| PR | Hàm / việc |
+|---|---|
+| #82 | R-V2-44 (xem `chuyen-nguoi-duyet.md`) |
+| #100, #102, #104 | tự sinh và đối soát (415), bản ghi TT-02 (416), đơn từ phiếu (417, 418), Kanban một lượt (419) |
+| #155 | `receipt_expected_approver(phiếu)` (migration 420): người duyệt dự kiến và lý do chặn trình của phiếu thu Nháp (cùng cách `get_order.expected_*`); giao diện dòng chặn trình phiếu thu |
+| #103 | giao diện Thu nợ đầu kỳ (không có hàm DB mới) |
