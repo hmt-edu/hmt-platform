@@ -25,6 +25,7 @@ import {
   validateTaskDraft,
   type TaskDraft,
 } from '../phieu/taskForm';
+import { BusinessTaskDialog } from '../phieu/BusinessTaskDialog';
 import { createTicketTask, useTaskFields } from '../phieu/useTaskCreate';
 import { TASK_STATUS_LABEL, TASK_TYPE_LABEL } from '../phieu/taskLabels';
 import { groupsOf, subgroupsOf } from './ticketCreate';
@@ -76,7 +77,7 @@ export function TicketRecordPage() {
   const [assignee, setAssignee] = useState('');
 
   const ticket = record.data?.ticket;
-  const taskFields = useTaskFields(taskOpen);
+  const taskFields = useTaskFields(taskOpen && ticket?.business_type === 'CAP_NHAT_HO_SO');
   const assignees = useTicketAssignees(ticket?.branch_id ?? null, assignOpen || complaintOpen);
   useCrumbTail(ticket?.code ?? '');
   const statusName = (code: string | null) => catalogs.name('TICKET_STATUS', code) ?? code ?? '';
@@ -228,6 +229,26 @@ export function TicketRecordPage() {
     setTaskOpen(true);
   };
 
+  const createBusinessTask = async (reason: string, payload: unknown) => {
+    setBusy(true);
+    setError(null);
+    try {
+      const created = await createTicketTask(supabase, {
+        ticketId: ticket.id,
+        type: ticket.business_type ?? '',
+        reason,
+        payload,
+      });
+      setTaskOpen(false);
+      toast({ tone: 'success', title: 'Đã tạo phiếu ở bước Nháp.' });
+      void navigate(`/crm/phieu-nghiep-vu/${created.id}`);
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const submitTask = async () => {
     setTaskShow(true);
     const found = validateTaskDraft(taskDraft, taskFields.data ?? [], ticket.student_name !== null);
@@ -302,7 +323,7 @@ export function TicketRecordPage() {
                 Giao ticket
               </Button>
               {ticket.ticket_type !== 'GV' && <Button onClick={openReclass}>Phân loại lại</Button>}
-              {ticket.business_type === 'CAP_NHAT_HO_SO' &&
+              {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP'].includes(ticket.business_type ?? '') &&
                 !(record.data?.tasks ?? []).some((k) =>
                   ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(k.status_code),
                 ) && <Button onClick={openTask}>Tạo phiếu</Button>}
@@ -458,8 +479,21 @@ export function TicketRecordPage() {
           </div>
         )}
       </RecordDetail>
+      {(ticket.business_type === 'BAO_LUU' || ticket.business_type === 'CHUYEN_LOP') && (
+        <BusinessTaskDialog
+          type={ticket.business_type}
+          ticketId={ticket.id}
+          ticketCode={ticket.code}
+          hasStudent={ticket.student_name !== null}
+          open={taskOpen}
+          onOpenChange={setTaskOpen}
+          busy={busy}
+          error={error}
+          onCreate={(reason, payload) => void createBusinessTask(reason, payload)}
+        />
+      )}
       <FormDialog
-        open={taskOpen}
+        open={taskOpen && ticket.business_type === 'CAP_NHAT_HO_SO'}
         onOpenChange={setTaskOpen}
         title="Tạo phiếu Cập nhật hồ sơ"
         subtitle={ticket.code}

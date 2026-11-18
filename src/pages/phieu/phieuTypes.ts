@@ -32,7 +32,14 @@ export type TaskDetail = {
   task_type: string;
   status_code: string;
   reason: string;
-  payload: { entity?: string; changes?: Record<string, string> };
+  payload: {
+    entity?: string;
+    changes?: Record<string, string>;
+    months?: number;
+    start_date?: string;
+    kind_code?: string;
+    note?: string;
+  };
   result: {
     entity?: string;
     before?: Record<string, unknown> | null;

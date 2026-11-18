@@ -4,7 +4,8 @@ import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, FORBIDDEN_CODE, useDb } from '../../lib/db';
-import { formatDateTime } from '../../lib/format';
+import { TRANSFER_KINDS } from './businessTaskForm';
+import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
@@ -229,6 +230,36 @@ export function TaskRecordPage() {
             />
           </DetailSection>
         </div>
+        {(task.task_type === 'BAO_LUU' || task.task_type === 'CHUYEN_LOP') && (
+          <div className="mt-6">
+            <DetailSection
+              title={`Nội dung ${task.task_type === 'BAO_LUU' ? 'bảo lưu' : 'chuyển lớp'}`}
+            >
+              {task.task_type === 'BAO_LUU' ? (
+                <DetailField
+                  label="Số tháng bảo lưu"
+                  mode="view"
+                  value={task.payload.months !== undefined ? String(task.payload.months) : ''}
+                />
+              ) : (
+                <>
+                  <DetailField
+                    label="Loại chuyển"
+                    mode="view"
+                    value={
+                      TRANSFER_KINDS.find((k) => k.value === task.payload.kind_code)?.label ?? ''
+                    }
+                  />
+                  <DetailField
+                    label="Hiệu lực từ ngày"
+                    mode="view"
+                    value={task.payload.start_date ? formatDate(task.payload.start_date) : ''}
+                  />
+                </>
+              )}
+            </DetailSection>
+          </div>
+        )}
         {task.task_type === 'CAP_NHAT_HO_SO' && (
           <div className="mt-6">
             <DetailSection
