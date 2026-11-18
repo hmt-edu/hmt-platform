@@ -79,3 +79,19 @@ export type UpsaleRecord = {
   events: UpsaleEvent[];
   actions: UpsaleAction[];
 };
+
+/** app.list_upsale_order_options (migration 418): tuỳ chọn cho hộp Tạo đơn. */
+export type UpsaleOrderOptions = {
+  delivery_mode_code: string | null;
+  packages: { id: string; code: string; name: string; prices: Record<string, number> }[];
+  terms: { id: string; name: string }[];
+  sessions: string[];
+};
+
+export type UpsaleOrderRow = {
+  id: string;
+  code: string;
+  status_code: string;
+  total_amount: number;
+  created_at: string;
+};

@@ -41,3 +41,15 @@ Nhãn «Tái tục MM/YYYY» tính từ ngày hết giờ dự kiến, không c�
 2. **Deadline, Stage Deadline, Next Activity, Assign Date, Nhân sự hỗ trợ, Lần liên hệ gần nhất** (khối «Xem thêm (6 trường)» của canvas): chưa có luật và cột; không làm.
 3. **Ghi chú tự do (Chatter) và lịch hẹn của phiếu**: cần đăng ký loại ghi chú `UPSALE` ở `note_target` và sửa `can_see_note_target` (hàm dùng chung nhiều PR); dòng thời gian hiện chỉ có sự kiện nghiệp vụ. Nút «Thêm lịch hẹn» chưa có.
 4. **TT-D2 (đề xuất, chưa làm, dính tiền):** «Tạo báo giá», «Tạo đơn» từ phiếu ở L6, L7A, L7B, L8A. Bảng `app.quotation` đã có `renewal_ticket_id`, nhưng `sales_order` và hàm tính dòng (`order_write_priced_lines`) đang lấy học sinh từ cơ hội (`prospect_student`); đơn từ phiếu cần dòng gắn `student_id`, lớp và hình thức học giữ như ghi danh cũ (R-GD-13), cùng móc đơn đóng đủ thì phiếu sang L8A. Xin Chat duyệt thiết kế trước khi viết.
+
+## TT-D2a (migration 417): tạo đơn từ phiếu tái tục
+
+- `app.create_order_from_upsale_ticket(phiếu, dòng, điều khoản, ngày vào lớp)`: cần **cả hai** quyền Đơn hàng · Tạo và Phiếu tái tục · Sửa (Chat 13:20, mỗi bước kiểm riêng), một giao dịch: đơn Nháp (gốc là phiếu, không cơ hội), dòng gắn học sinh và lớp CỦA PHIẾU (không nhận từ đầu vào), hình thức học giữ như ghi danh cũ, giá `price_line` như đơn thường, điều khoản, phiếu L6 → L7B. Chặn: phiếu chưa L6 (`HMT_PHIEU_CHUA_DONG_Y`), đã có đơn đang sống (`HMT_PHIEU_DA_CO_DON`), học sinh không còn học ở lớp (`HMT_HOC_SINH_KHONG_O_LOP`), ngày vào lớp không phải buổi của lớp (`HMT_NGAY_VAO_LOP_SAI`; mặc định lấy buổi sắp tới gần nhất).
+- `app.list_upsale_orders(phiếu)`: đơn của phiếu cho tab «Báo giá và đơn».
+- `app.reconcile_upsale_orders()`: đơn Đã duyệt đã thu đủ thì phiếu sang L8A; mọi đơn Huỷ thì về L6. Chạy cùng lịch đêm (`sync_upsale_cron` nay lên lịch cả hai việc; vẫn chờ anh duyệt đăng ký).
+- Ghi danh mới: hàm sẵn có `create_enrollments_for_order` đã xếp thẳng vào lớp của phiếu (pgTAP chứng minh), không vào hàng chờ xếp lớp.
+- **Chưa làm:** hộp «Tạo đơn» trên màn TT-02 (chọn gói), báo giá từ phiếu (bảng báo giá còn bắt buộc cơ hội), sửa đơn Nháp từ phiếu bằng `save_order`.
+
+## TT-D2b (migration 418): hộp «Tạo đơn» ở TT-02
+
+`app.list_upsale_order_options(phiếu)` (chỉ đọc; cần cả Đơn hàng · Tạo và Phiếu tái tục · Sửa) trả gói bán được cho lớp (đúng môn, tính theo giờ, có giá hôm nay), hình thức học giữ như ghi danh cũ, điều khoản thanh toán đang dùng, các buổi sắp tới của lớp. Màn TT-02 ở L6 có nút «Tạo đơn» (hộp: gói, số giờ, ngày vào lớp, điều khoản); tạo xong mở trang đơn Nháp; tab «Báo giá và đơn» liệt kê đơn của phiếu. Giá chỉ để xem; tiền tính ở máy chủ. Báo giá từ phiếu: chưa làm (chờ Chat chốt).
