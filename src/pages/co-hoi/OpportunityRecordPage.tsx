@@ -515,16 +515,17 @@ function OpportunityView({ record }: { record: OppRecord }) {
             key: 'bao-gia',
             label: 'Báo giá',
             icon: 'payment',
-            count: 0,
-            unavailable: 'Có ở phần Bán hàng (giai đoạn sau)',
+            // Mã báo giá (BG-…) còn hiệu lực của cơ hội; sales_documents gộp cả mã đơn (DH-…), tách theo tiền tố mã (docs/spec/02).
+            count: (record.sales_documents ?? []).filter((c) => c.startsWith('BG-')).length,
+            unavailable: 'Xem ở menu Bán hàng, mục Báo giá',
             onOpen: () => undefined,
           },
           {
             key: 'don-hang',
             label: 'Đơn hàng',
             icon: 'file',
-            count: record.sales_documents?.length ?? 0,
-            unavailable: 'Có ở phần Bán hàng (giai đoạn sau)',
+            count: (record.sales_documents ?? []).filter((c) => c.startsWith('DH-')).length,
+            unavailable: 'Xem ở menu Bán hàng, mục Đơn hàng',
             onOpen: () => undefined,
           },
           {
@@ -532,8 +533,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             label: 'Phụ huynh',
             icon: 'user',
             count: 1,
-            unavailable: 'Có khi làm màn Khách hàng',
-            onOpen: () => undefined,
+            onOpen: () => openFrom(`/crm/phu-huynh/${record.parent_id}`),
           },
           {
             key: 'lead-goc',

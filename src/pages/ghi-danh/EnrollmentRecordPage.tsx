@@ -9,6 +9,7 @@ import { errorOf } from '../../lib/db';
 import { formatDate, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
+import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
@@ -32,6 +33,13 @@ const STEPS: StageStep[] = [
   { code: 'DANG_HOC', label: 'Đang học' },
   { code: 'HOAN_THANH', label: 'Hoàn thành' },
 ];
+
+// Tên trường và giá trị trong lịch sử thay đổi (không hiện mã thô như CHO_XEP_LOP).
+const CHATTER_FORMAT = {
+  labels: { status_code: 'Tình trạng', start_date: 'Start Date', end_date: 'End Date' },
+  value: (column: string, value: unknown): string | null =>
+    column === 'status_code' ? (STEPS.find((x) => x.code === value)?.label ?? null) : null,
+};
 
 export function EnrollmentRecordPage() {
   const { id } = useParams();
@@ -84,9 +92,13 @@ export function EnrollmentRecordPage() {
         }}
         stageNote="Tình trạng chỉ đọc, đổi bằng nút bên dưới."
         aside={
-          <p className="p-3 text-body text-fg-muted">
-            Ghi chú và hoạt động của ghi danh làm sau 17/11. Mọi cộng, trừ giờ xem ở Sổ giờ.
-          </p>
+          <RecordChatter
+            entityType="ENROLLMENT"
+            entityId={e.id}
+            format={CHATTER_FORMAT}
+            createdText="Tạo ghi danh."
+            canWrite
+          />
         }
         businessActions={
           <span className="flex flex-wrap items-center gap-2">

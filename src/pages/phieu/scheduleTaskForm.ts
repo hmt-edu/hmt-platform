@@ -1,10 +1,18 @@
 // Biểu mẫu phiếu Đổi lịch học từ ticket (CS-11, CSN-06e): kiểm sớm và dựng dữ liệu cho app.create_ticket_task. Luật chặn thật ở DB (migration 429, R-CS-03, R-LOP-10).
+<<<<<<< HEAD
 // Hành động: dời MỘT buổi; đổi ca cố định (làm ở Sửa lớp, phiếu chỉ ghi nhận); xin học bù (R-BUOI-03: quản lý duyệt sinh buổi mới, không chọn buổi có sẵn).
 export type ScheduleAction = 'DOI_BUOI' | 'DOI_CA' | 'HOC_BU';
 export const SCHEDULE_ACTIONS: { value: ScheduleAction; label: string }[] = [
   { value: 'DOI_BUOI', label: 'Dời một buổi' },
   { value: 'DOI_CA', label: 'Đổi ca cố định' },
   { value: 'HOC_BU', label: 'Xin học bù' },
+=======
+// Hành động: dời MỘT buổi; đổi ca cố định (làm ở Sửa lớp, phiếu chỉ ghi nhận). Học bù làm ở PR sau (R-BUOI-03: quản lý duyệt sinh buổi mới, không chọn buổi có sẵn).
+export type ScheduleAction = 'DOI_BUOI' | 'DOI_CA';
+export const SCHEDULE_ACTIONS: { value: ScheduleAction; label: string }[] = [
+  { value: 'DOI_BUOI', label: 'Dời một buổi' },
+  { value: 'DOI_CA', label: 'Đổi ca cố định' },
+>>>>>>> origin/main
 ];
 
 export type ScheduleSession = {
@@ -19,7 +27,10 @@ export type ScheduleSession = {
 export type ScheduleDraft = {
   action: ScheduleAction;
   sessionId: string;
+<<<<<<< HEAD
   classId: string;
+=======
+>>>>>>> origin/main
   date: string;
   start: string;
   end: string;
@@ -30,7 +41,10 @@ export type ScheduleErrors = Partial<Record<keyof ScheduleDraft, string>>;
 export const EMPTY_SCHEDULE_DRAFT: ScheduleDraft = {
   action: 'DOI_BUOI',
   sessionId: '',
+<<<<<<< HEAD
   classId: '',
+=======
+>>>>>>> origin/main
   date: '',
   start: '',
   end: '',
@@ -43,11 +57,16 @@ export function validateScheduleDraft(draft: ScheduleDraft, hasStudent: boolean)
   const e: ScheduleErrors = {};
   if (!hasStudent) e.sessionId = 'Ticket chưa gắn học sinh nên chưa tạo phiếu này được.';
   if (draft.reason.trim() === '') e.reason = 'Nhập lý do của phiếu.';
+<<<<<<< HEAD
   if (draft.action === 'HOC_BU' && hasStudent && draft.classId === '')
     e.classId = 'Chọn lớp học bù.';
   if (draft.action === 'DOI_BUOI' || draft.action === 'HOC_BU') {
     if (draft.action === 'DOI_BUOI' && hasStudent && draft.sessionId === '')
       e.sessionId = 'Chọn buổi cần dời.';
+=======
+  if (draft.action === 'DOI_BUOI') {
+    if (hasStudent && draft.sessionId === '') e.sessionId = 'Chọn buổi cần dời.';
+>>>>>>> origin/main
     if (draft.date === '') e.date = 'Chọn ngày mới.';
     if (draft.start === '') e.start = 'Nhập giờ bắt đầu mới.';
     if (draft.end === '') e.end = 'Nhập giờ kết thúc mới.';
@@ -60,6 +79,7 @@ export function validateScheduleDraft(draft: ScheduleDraft, hasStudent: boolean)
 /** Khoá payload đúng theo migration 429: DOI_BUOI {action, session_id, date, start, end, note}; DOI_CA {action, note}. */
 export function buildSchedulePayload(draft: ScheduleDraft) {
   if (draft.action === 'DOI_CA') return { action: 'DOI_CA', note: draft.reason.trim() };
+<<<<<<< HEAD
   // Học bù (R-BUOI-03): quản lý duyệt thì sinh buổi Học bù mới cho em của ticket, không chọn buổi có sẵn; không trừ giờ.
   if (draft.action === 'HOC_BU')
     return {
@@ -70,6 +90,8 @@ export function buildSchedulePayload(draft: ScheduleDraft) {
       end: draft.end,
       note: draft.reason.trim(),
     };
+=======
+>>>>>>> origin/main
   return {
     action: 'DOI_BUOI',
     session_id: draft.sessionId,

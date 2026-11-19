@@ -16,6 +16,7 @@ export type DiscountPolicy = {
   branch_ids: string[];
   is_active: boolean;
   is_flexible: boolean;
+  applies_to: string[];
 };
 
 export type GiftPolicy = {
@@ -77,6 +78,7 @@ export function policyCode(name: string): string {
 const MAX_PERCENT = 100; // allow-number: phần trăm tối đa (cùng luật DB)
 
 export type FormValues = {
+  appliesTo: string[];
   name: string;
   kind: 'PERCENT' | 'GIFT_HOURS';
   maxValue: string;
@@ -132,6 +134,24 @@ export function branchesLabel(ids: string[], code: (id: string) => string): stri
 }
 
 /** Mức tối đa hiển thị: "10%", "4 giờ", "1 bộ / đơn" do nơi gọi ghép đơn vị. */
+export const APPLIES_TO_OPTIONS = [
+  { code: 'BAO_GIA', name: 'Báo giá' },
+  { code: 'DON', name: 'Đơn' },
+  { code: 'PHIEU_THU', name: 'Phiếu thu' },
+] as const;
+
+/** Cột «Áp dụng cho» ("Báo giá, Đơn, Phiếu thu"), theo thứ tự cố định. */
+export function appliesToLabel(p: Pick<DiscountPolicy, 'applies_to'>): string {
+  return APPLIES_TO_OPTIONS.filter((o) => p.applies_to.includes(o.code))
+    .map((o) => o.name)
+    .join(', ');
+}
+
+/** Cột «Giá trị»: mức áp đúng khi chính sách áp đúng mức; còn lại nhân viên chọn nên hiện «Tuỳ chọn». Cột «Mức tối đa» luôn là trần. */
+export function discountAppliedLabel(p: DiscountPolicy): string {
+  return p.fixed_value ? discountValueLabel(p) : 'Tuỳ chọn';
+}
+
 export function discountValueLabel(p: DiscountPolicy): string {
   const n = p.max_value.toLocaleString('vi-VN');
   return p.kind === 'PERCENT' ? `${n}%` : `${n} giờ`;

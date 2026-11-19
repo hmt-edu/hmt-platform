@@ -63,6 +63,7 @@ describe('scheduleTaskForm (phiếu Đổi lịch học, CS-11)', () => {
       ),
     ).toBe('L1 · Buổi 4 · 2026-11-24 18:00–19:30');
   });
+<<<<<<< HEAD
   it('Xin học bù cần lớp, ngày, giờ, lý do; payload không có buổi gốc', () => {
     const draft = { ...EMPTY_SCHEDULE_DRAFT, action: 'HOC_BU' as const, reason: 'Em ốm' };
     expect(Object.keys(validateScheduleDraft(draft, true)).sort()).toEqual([
@@ -82,4 +83,6 @@ describe('scheduleTaskForm (phiếu Đổi lịch học, CS-11)', () => {
       note: 'Em ốm',
     });
   });
+=======
+>>>>>>> origin/main
 });

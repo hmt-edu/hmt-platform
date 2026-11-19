@@ -24,6 +24,7 @@
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
     "db:seed-users": "node scripts/seed-users.ts",
+    "db:seed-staging": "docker exec -i \"supabase_db_$(sed -n 's/^project_id = \"\\(.*\\)\"/\\1/p' supabase/config.toml)\" psql -U postgres -q < supabase/seed-staging.sql",
     "db:seed-lon": "docker exec -i \"supabase_db_$(sed -n 's/^project_id = \"\\(.*\\)\"/\\1/p' supabase/config.toml)\" psql -U postgres -q < supabase/seed-lon.sql",
     "size": "node scripts/bundle-size.ts",
     "db:seed-lon-lop-buoi": "docker exec -i \"supabase_db_$(sed -n 's/^project_id = \"\\(.*\\)\"/\\1/p' supabase/config.toml)\" psql -U postgres -q < supabase/seed-lon-lop-buoi.sql",

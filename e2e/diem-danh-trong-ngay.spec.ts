@@ -88,7 +88,7 @@ test('BUOI-15: buổi hôm nay của lớp hiện ở danh sách, chưa có danh
   await page.getByRole('button', { name: 'Ghi đủ', exact: true }).click();
   await expect(page.getByRole('row').filter({ hasText: classCode })).toHaveCount(0);
   await page.getByRole('button', { name: 'Tất cả', exact: true }).click();
-  await row.getByRole('link', { name: new RegExp(classCode) }).click();
+  await row.getByRole('link', { name: 'Xem' }).click();
   await expect(page).toHaveURL(/\/crm\/buoi-hoc\/[0-9a-f-]{36}$/);
 });
 

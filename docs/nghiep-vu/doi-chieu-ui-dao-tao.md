@@ -15,6 +15,7 @@ Cách làm: so tiêu đề cột (`<th>`) của khung canvas 9933/9189 với c�
 | TS-01 Lead, TS-07 Cơ hội | cột riêng Phụ huynh, SĐT, Source type, Source, Medium, Stage, Sub-stage | đã tách (F40, #260) | khớp |
 | TS-11 Lịch hẹn | Loại hoạt động, Tiêu đề, Gắn với, Thời gian, Người phụ trách, Trạng thái | thêm cột Cơ sở | khớp (Cơ sở cần cho nhiều cơ sở) |
 | TS-16 Phiếu kiểm tra | Mã PKT, Học sinh, Người tạo, Môn, Hình thức, Cấp độ, Ngày giờ test, Cơ sở test, Người phụ trách, GV chấm, Điểm, Trạng thái, Cơ hội gốc, Cơ sở tạo | thiếu Điểm, Cơ hội gốc, Cơ sở tạo | **lệch**: ba cột thiếu; Điểm cần dữ liệu từ hàm; xin Chat giao thẻ |
-| BUOI-11, BUOI-15 | BUOI-11: Học sinh, Lớp, Buổi, Tình trạng, Lý do liên hệ, Xử lý; BUOI-15: Ngày, Giờ, Lớp, Cơ sở, Giáo viên, Tình trạng buổi, Điểm danh, … | bản dựng dùng thẻ và bảng riêng (không K10) | chưa so từng cột: cần ảnh chụp bản dựng, giao Tester |
+| BUOI-15 Điểm danh trong ngày | Giờ, Lớp (kèm Buổi, phòng), Cơ sở, Giáo viên, Tình trạng buổi, Điểm danh, VH điểm danh, GV điểm danh, Lưu ý, CSKH, Xử lý | thiếu Tình trạng buổi, CSKH, Xử lý; nhãn «Vận hành», «Giáo viên ghi» | **đã sửa (F51, migration 562)**: thêm ba cột, đổi nhãn theo canvas |
+| BUOI-11 Điểm danh vận hành | Học sinh, Lớp, Buổi, Tình trạng, Lý do liên hệ, Xử lý | bản dựng dùng thẻ và bảng riêng (màn buổi vắng hôm nay) | chưa so từng cột: cần ảnh chụp bản dựng, giao Tester |
 
 Chưa kiểm được bằng chương trình: bố cục, nút, trạng thái tải/lỗi/trống từng màn (cần ảnh chụp bản dựng; xin Tester chụp theo bảng này).
