@@ -3,6 +3,7 @@
 import { keepPreviousData, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
+import type { GroupCounts } from '../lead/leadTypes';
 import { rpc, useDb } from '../../lib/db';
 import type { ClassFilters } from './classFilters';
 import type { ClassPage, ClassRecord, WeekSession } from './classTypes';
@@ -192,5 +193,17 @@ export function useCurriculumLessons(frameId: string) {
       });
       return res.lessons;
     },
+  });
+}
+
+/** Số lớp theo trường nhóm (Group By ở máy chủ, tối đa hai cấp): app.class_group_counts, bộ lọc giống list_classes. */
+export function useClassGroupCounts(filters: ClassFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['class-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'class_group_counts', { p_filters: filters, p_fields: fields }),
   });
 }

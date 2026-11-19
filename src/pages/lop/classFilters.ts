@@ -37,3 +37,25 @@ export function classSortParam(key: string | null, direction: 'asc' | 'desc' | n
   if (key === 'start' && direction === 'desc') return 'start_desc';
   return 'code_asc';
 }
+
+/** Trường nhóm của giao diện Lớp (khoá cấu hình) → tên trường của app.class_group_counts. */
+export const CLASS_GROUP_FIELD_OF: Record<string, string> = {
+  subject: 'subject',
+  grade: 'grade',
+  type: 'type',
+  branch: 'branch',
+  status: 'status',
+  operating: 'operating',
+};
+
+/** Bộ lọc của MỘT nhóm (để mở nhóm tải dòng bằng list_classes). Khoá rỗng («Chưa có») không lọc thêm. */
+export function classGroupFilter(field: string, key: string): ClassFilters {
+  if (key === '') return {};
+  if (field === 'subject') return { subject_code: key };
+  if (field === 'grade') return { grade_code: key };
+  if (field === 'type') return { class_type_code: key };
+  if (field === 'branch') return { branch_id: key };
+  if (field === 'status') return { status: [key] };
+  if (field === 'operating') return { operating: [key] };
+  return {};
+}
