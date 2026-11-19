@@ -34,7 +34,7 @@ function list(page: Page) {
     : page.getByRole('table', { name: 'Đơn hàng' });
 }
 
-test('Sale CS5: danh sách đủ cột, Đã thu và Còn phải thu để "—", không có Tạo, Thu tiền, Xuất', async ({
+test('Sale CS5: danh sách đủ cột (Đã thu, Còn phải thu, Thu tiền theo canvas BH06), không có nút Tạo, Thu tiền, Xuất', async ({
   page,
 }, testInfo) => {
   const setup = orderSetupOf(testInfo.project.name);
@@ -61,11 +61,13 @@ test('Sale CS5: danh sách đủ cột, Đã thu và Còn phải thu để "—"
       'Đã thu (đ)',
       'Còn phải thu (đ)',
       'Tình trạng',
+      'Thu tiền',
     ]) {
       await expect(rows.getByRole('columnheader', { name })).toBeVisible();
     }
-    // Đ262: không có cột Thu tiền.
-    await expect(rows.getByRole('columnheader', { name: 'Thu tiền' })).toHaveCount(0);
+    // Đ262 giữ «—» «cho tới khi có phiếu thu»; phiếu thu đã làm (B50, canvas BH06): đơn chưa duyệt vẫn «—» ở Còn phải thu và Thu tiền.
+    const nhapRow = rows.getByRole('row').filter({ hasText: seeded.orders.nhap });
+    await expect(nhapRow.getByText('—').first()).toBeVisible();
   }
   // R-CRM-19, R-TIEN-02: danh sách không có nút Tạo; Đ262: không có nút Thu tiền; Đ105: Sale không có nút Xuất.
   await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toHaveCount(0);
