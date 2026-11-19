@@ -5,7 +5,7 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import { useCallback } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { rpc, useDb } from '../../lib/db';
-import type { CatalogSummary, CatalogTree } from './catalogLogic';
+import type { CatalogHistoryPage, CatalogSummary, CatalogTree } from './catalogLogic';
 
 export function useCatalogSummary() {
   const supabase = useDb();
@@ -89,5 +89,26 @@ export function setSessionTypeForm(supabase: SupabaseClient, typeCode: string, f
   return rpc<null>(supabase, 'set_session_type_form', {
     p_type_code: typeCode,
     p_form_code: formCode,
+  });
+}
+
+/** Một trang lịch sử sửa mục của một danh mục (rpc list_catalog_history, chỉ Admin). */
+export function useCatalogHistory(
+  rootCode: string | null,
+  offset: number,
+  limit: number | null,
+  enabled: boolean,
+) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['catalog-history', rootCode, offset, limit],
+    enabled: enabled && rootCode !== null && limit !== null,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<CatalogHistoryPage>(supabase, 'list_catalog_history', {
+        p_root_code: rootCode,
+        p_limit: limit,
+        p_offset: offset,
+      }),
   });
 }
