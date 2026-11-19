@@ -144,5 +144,16 @@ select app.approve_session_request((select id from app.session_request where not
 select is((select type_code || ':' || no_charge from app.class_session where id = (select created_session_id from app.session_request where note = 'Kiểm tra củng cố')), 'KIEM_TRA:false', 'Kiểm tra từ củng cố: loại Kiểm tra, có trừ giờ');
 select is(app.session_deducts_hours((select s from app.class_session s where id = (select created_session_id from app.session_request where note = 'Kiểm tra củng cố'))), true, 'session_deducts_hours: kiểm tra thường trừ giờ (R-V2-18)');
 
+-- ================= A25 PR1: yêu cầu củng cố chọn Kiểm tra giữa kỳ: buổi đúng loại, form điểm, trừ giờ =================
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select app.save_session_request(null, pg_temp.c('f'), pg_temp.fut() + 11, '18:00', '19:30');
+select pg_temp.sudo($$update app.session_request set note = 'Kiểm tra giữa kỳ' where kind = 'CUNG_CO' and note is null$$);
+select is(pg_temp.err($$select app.set_request_exam((select id from app.session_request where note = 'Kiểm tra giữa kỳ'), true, 'x', 10, 'TONG', 0, 0, 0, 'CHINH')$$), 'HMT_LOAI_BUOI_SAI', 'Chặn: loại Chính không phải loại kiểm tra (form 9 tiêu chí)');
+select app.set_request_exam((select id from app.session_request where note = 'Kiểm tra giữa kỳ'), true, 'Chương 1', 10, 'TONG', 0, 0, 0, 'KT_GIUA_KY');
+select app.submit_session_request((select id from app.session_request where note = 'Kiểm tra giữa kỳ'));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_session_request((select id from app.session_request where note = 'Kiểm tra giữa kỳ'));
+select is((select type_code || ':' || review_form || ':' || no_charge from app.class_session where id = (select created_session_id from app.session_request where note = 'Kiểm tra giữa kỳ')), 'KT_GIUA_KY:DIEM:false', 'Kiểm tra giữa kỳ: đúng loại, chụp form điểm, có trừ giờ');
+
 select * from finish();
 rollback;
