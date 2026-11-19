@@ -97,7 +97,15 @@ export function buildSessionConfig(
       { key: 'session_date', label: 'Ngày học', type: 'date', ops: ['from', 'to'] },
       ...branchField(access),
     ],
-    groupFields: [],
+    // Group By ở máy chủ (Kho #17, F65): giá trị đọc từ dòng chỉ để khoá nhóm, nhãn do máy chủ trả.
+    groupFields: [
+      { key: 'date', label: 'Ngày học', value: (r) => r.session_date },
+      { key: 'class', label: 'Lớp', value: (r) => r.class_id },
+      { key: 'branch', label: 'Cơ sở', value: (r) => r.branch_code },
+      { key: 'teacher', label: 'Giáo viên', value: (r) => r.teacher_name ?? '' },
+      { key: 'type', label: 'Loại buổi', value: (r) => r.type_code },
+      { key: 'status', label: 'Tình trạng', value: (r) => r.status_code },
+    ],
     dateFields: [{ key: 'session_date', label: 'Ngày học' }],
     views: ['list'],
   };

@@ -143,6 +143,7 @@ Không đổi luật ghi; chỉ thêm hàm đọc (security definer, kiểm quy�
 | Hàm | Ai gọi | Việc |
 |---|---|---|
 | `session_list(bộ lọc, sắp xếp, số dòng, bỏ qua)` | Buổi học · Xem (toàn hệ thống hoặc cơ sở) | BUOI-01: lọc ngày, lớp, giáo viên, cơ sở, tình trạng, mã lớp; cột Ghi chú = lý do chưa Done của buổi Đã chốt |
+| `session_group_counts(bộ lọc, trường nhóm[])` | Buổi học · Xem | Group By ở máy chủ (E65, migration 513): số đếm theo một đến hai trường (ngày, lớp, cơ sở, giáo viên, loại buổi, tình trạng); cùng phạm vi và bộ lọc với `session_list`; `session_list` thêm bộ lọc `type_code`, `no_teacher` để mở nhóm. Lỗi `HMT_NHOM_SAI`. |
 | `session_record(buổi)` | như trên (không phải giáo viên "được phân công") | BUOI-02: thông tin buổi, danh sách hai cột điểm danh (thẻ Lệch), em không vào danh sách kèm lý do, nhận xét, hạn giáo viên hoàn tất (R-GV-05) |
 | `session_ops_sheet(buổi)` | Điểm danh · Sửa (vận hành) | BUOI-03: bảng điểm danh vận hành, danh mục trạng thái và lý do liên hệ |
 | `absent_today_list(bộ lọc, số dòng, bỏ qua)` | Điểm danh · Sửa (vận hành) | BUOI-11: em vắng hoặc chưa đến của buổi Đã chốt hôm nay. Quy tắc hiển thị TẠM (Chat 10/11, chưa vào luật): ô giáo viên quyết định; giáo viên đã chọn Có mặt thì không hiện dù vận hành ghi gì; ô vận hành chỉ dùng khi ô giáo viên trống; Chưa đến = buổi đã bắt đầu mà cả hai ô trống |
