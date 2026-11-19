@@ -3,7 +3,7 @@
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
 import { DB_URL } from './bao-gia-seed';
-import { PASSWORD, expectAccessible, loginStaff } from './helpers';
+import { PASSWORD, expectAccessible, isPhone, loginStaff } from './helpers';
 import { seedAttendance, type AttendanceSeed } from './gv-diem-danh-seed';
 
 test.skip(!PASSWORD, 'Cần SEED_PASSWORD.');
@@ -38,9 +38,13 @@ test('GV-16: giờ dạy tháng này có buổi Done (1,5 giờ) kèm Trễ hạ
   const summary = page.getByRole('region', { name: 'Tóm tắt' });
   for (const label of ['Số buổi', 'Tổng giờ', 'Buổi trễ hạn', 'Giờ trễ'])
     await expect(summary.getByText(label, { exact: true })).toBeVisible();
+  // Điện thoại (canvas GV16_dt): danh sách «Buổi trong tháng» nằm sau nút «Xem chi tiết», mở thành tấm trượt có nút Đóng.
+  const phone = isPhone(page);
+  if (phone) await page.getByRole('button', { name: 'Xem chi tiết' }).click();
   await expect(page.getByText('Trễ hạn 2,5 giờ').first()).toBeVisible();
   await expect(page.getByText('Buổi chính').first()).toBeVisible();
   await expect(page.getByText(/Buổi huỷ không tính/)).toBeVisible();
+  if (phone) await page.getByRole('dialog').getByRole('button', { name: 'Đóng' }).click();
   await expectAccessible(page);
   // Đổi tháng: nhãn tháng đổi, Tháng này quay lại đúng tháng cũ.
   const label = page.getByText(/^Tháng \d{2}\/\d{4}$/);

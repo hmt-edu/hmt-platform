@@ -17,7 +17,7 @@ Cách rà: lấy chữ nhãn của từng khung điện thoại (`GVxx_dt`) tron
 | GV-11 Lớp chi tiết | **Lệch cấu trúc, chưa sửa** | Canvas: một trang cuộn các khối (thông tin, Học sinh, Lịch học, Lịch sử buổi, **Tiến độ khung chương trình**, BTVN gần đây, Yêu cầu bổ trợ). Mã: bốn thẻ tab (Học sinh, Lịch, Buổi, BTVN) và **chưa có khối «Tiến độ khung chương trình»** (cần dữ liệu tiến độ khung từ hàm DB). Ghi chú 9189 nói GV-11 chưa so với fcd1: làm theo luật và bản đồ màn hình, khung chỉ tham khảo |
 | GV-14 Tạo ticket giáo viên | Đúng về chữ | Các chữ «Đổi lịch học», «Khác môn»… là tên nhóm con từ danh mục |
 | GV-15 Chấm kiểm tra đầu vào | Đúng | Chữ canvas có trong màn phiếu kiểm tra của giáo viên |
-| GV-16 Giờ dạy của tôi | Lệch nhỏ, chưa sửa | Canvas: danh sách «Buổi trong tháng» ẩn sau nút **Xem chi tiết** (hộp trượt có nút Đóng); mã: danh sách hiện sẵn dưới «Giờ theo loại buổi». Không mất thông tin; đổi theo canvas nếu Design yêu cầu |
+| GV-16 Giờ dạy của tôi | Lệch nhỏ → **đã sửa (D, 19/11)** trên điện thoại: nút «Xem chi tiết» mở tấm trượt «Buổi trong tháng» có nút Đóng; máy tính giữ bảng | Canvas: danh sách «Buổi trong tháng» ẩn sau nút **Xem chi tiết** (hộp trượt có nút Đóng); mã: danh sách hiện sẵn dưới «Giờ theo loại buổi». Không mất thông tin; đổi theo canvas nếu Design yêu cầu |
 | BUOI-03 (điểm danh trong buổi) | Đúng về chữ | «Đã vào lớp», «Xin nghỉ học» là trạng thái vận hành ghép lúc chạy |
 | BUOI-07..09 (yêu cầu buổi bổ trợ, học bù, chèn bài) | Chưa rà kỹ | Nhãn «Lớp học bù…», «Nhãn bài hiện tại/sau khi chèn», «Kiểm tra giữa kỳ/cuối kỳ» chưa thấy trong mã khớp từng chữ: Code E rà (thuộc nhóm Lớp, Buổi) |
 | GV07X Xuất nhận xét | Chưa rà kỹ | Thẻ xuất vẽ bằng bộ dựng ảnh riêng (`exportRender`); cần chụp màn hình so với `GV07X_*` |

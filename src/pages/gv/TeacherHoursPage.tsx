@@ -8,6 +8,7 @@ import { errorOf, rpc, useDb } from '../../lib/db';
 import { vnDayBounds } from '../../lib/vnDay';
 import { Button } from '../../ui/Button';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Dialog } from '../../ui/Overlays';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import {
   hoursText,
@@ -27,6 +28,8 @@ export function TeacherHoursPage() {
   const todayKey = vnDayBounds().dateKey;
   const thisMonth = `${todayKey.slice(0, 8)}01`; // allow-number: cắt chuỗi yyyy-mm-dd
   const [month, setMonth] = useState(thisMonth);
+  // Điện thoại (canvas GV16_dt): danh sách «Buổi trong tháng» ẩn sau nút «Xem chi tiết», mở thành tấm trượt có nút Đóng.
+  const [detailOpen, setDetailOpen] = useState(false);
   const query = useQuery({
     queryKey: ['gv-hours', month],
     queryFn: () => rpc<MyHours>(supabase, 'teacher_my_hours', { p_month: month }),
@@ -120,25 +123,35 @@ export function TeacherHoursPage() {
               ))}
             </ul>
           </section>
-          <h2 className="text-h4">Buổi trong tháng</h2>
+          {!narrow && <h2 className="text-h4">Buổi trong tháng</h2>}
           {narrow ? (
-            <ul className="flex flex-col gap-2">
-              {d.rows.map((r) => (
-                <li
-                  key={r.session_id}
-                  className="rounded-control border border-border bg-surface p-3"
-                >
-                  <p className="font-semibold">{rowDay(r)}</p>
-                  <p className="text-body">
-                    {r.subject_name ?? r.class_code} · {r.type_name ?? r.type_code} ·{' '}
-                    {hoursText(r.hours)} giờ
-                  </p>
-                  <p className="text-caption text-fg-muted">
-                    {roleText(r.my_role)} · {lateText(r)}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <div>
+              <Button onClick={() => setDetailOpen(true)}>Xem chi tiết</Button>
+              <Dialog
+                open={detailOpen}
+                onOpenChange={setDetailOpen}
+                title="Buổi trong tháng"
+                footer={<Button onClick={() => setDetailOpen(false)}>Đóng</Button>}
+              >
+                <ul className="flex flex-col gap-2">
+                  {d.rows.map((r) => (
+                    <li
+                      key={r.session_id}
+                      className="rounded-control border border-border bg-surface p-3"
+                    >
+                      <p className="font-semibold">{rowDay(r)}</p>
+                      <p className="text-body">
+                        {r.subject_name ?? r.class_code} · {r.type_name ?? r.type_code} ·{' '}
+                        {hoursText(r.hours)} giờ
+                      </p>
+                      <p className="text-caption text-fg-muted">
+                        {roleText(r.my_role)} · {lateText(r)}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </Dialog>
+            </div>
           ) : (
             <div className="overflow-x-auto rounded-control border border-border">
               <table aria-label="Buổi trong tháng" className="w-full text-body">
