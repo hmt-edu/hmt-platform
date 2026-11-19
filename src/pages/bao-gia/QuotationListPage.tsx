@@ -15,9 +15,22 @@ import { useToast } from '../../ui/toastContext';
 import { downloadText, toCsv } from '../lead/csv';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { EMPTY_QUOTE_STATE, buildQuoteConfig } from './quoteConfig';
-import { buildQuoteFilters, nextQuoteSort, quoteSortParam } from './quoteFilters';
+import {
+  QUOTE_GROUP_FIELD_OF,
+  buildQuoteFilters,
+  nextQuoteSort,
+  quoteGroupFilter,
+  quoteSortParam,
+} from './quoteFilters';
+import { buildLeadGroupTree } from '../lead/leadGroups';
+import { useLeafRows } from '../lead/useLeadData';
 import type { QuotationRow } from './quoteTypes';
-import { exportQuotations, useQuotationPage, useRefreshQuotations } from './useQuoteData';
+import {
+  exportQuotations,
+  useQuotationGroupCounts,
+  useQuotationPage,
+  useRefreshQuotations,
+} from './useQuoteData';
 
 const EXPORT_COLUMNS = [
   { key: 'code', label: 'Mã' },
@@ -60,10 +73,51 @@ export function QuotationListPage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useQuotationPage(filters, sortValue, page * (pageSize ?? 0), pageSize);
-  const rows: QuotationRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
-  const errorText = list.isError ? errorOf(list.error).message : null;
+  // Group By ở máy chủ (K1_nhom): chọn trường nhóm thì danh sách thành cây nhóm có số đếm; nhóm lá tải dòng khi mở.
+  const groupFields = state.group.flatMap((k) =>
+    QUOTE_GROUP_FIELD_OF[k] ? [QUOTE_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const list = useQuotationPage(filters, sortValue, page * (pageSize ?? 0), pageSize, !grouped);
+  const counts = useQuotationGroupCounts(filters, groupFields, view === 'list');
+  const leaves = useLeafRows<QuotationRow>(
+    filters,
+    sortValue,
+    pageSize,
+    pagingKey,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_quotations',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<QuotationRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            quoteGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
+  const pageRows: QuotationRow[] = list.data?.rows ?? [];
+  const rows: QuotationRow[] = useMemo(
+    () =>
+      grouping
+        ? grouping.tree
+            .flatMap((g) => (g.children.length > 0 ? g.children : [g]))
+            .flatMap((g) => g.rows)
+        : pageRows,
+    // pageRows suy ra từ list.data.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouping, list.data],
+  );
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
+  const errorText = activeQuery.isError ? errorOf(activeQuery.error).message : null;
 
   async function exportFile() {
     if (exporting) return;
@@ -104,9 +158,14 @@ export function QuotationListPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.parent_name}`}
-      loading={list.isPending || list.isPlaceholderData}
+      loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
-      onRetry={() => void list.refetch()}
+      onRetry={() => void activeQuery.refetch()}
+      groupTree={grouped ? grouping?.tree : undefined}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
+      }}
       actions={
         canExport
           ? [

@@ -167,7 +167,13 @@ export function buildQuoteConfig(
         : []),
       { key: 'created', label: 'Ngày tạo', type: 'date' },
     ],
-    groupFields: [],
+    // Group By ở máy chủ (K1_nhom): tình trạng hiển thị, cơ sở (khi xem nhiều cơ sở).
+    groupFields: [
+      { key: 'status', label: 'Tình trạng', value: (r) => r.display_status_code },
+      ...(access.seesAllBranches
+        ? [{ key: 'branch', label: 'Cơ sở', value: (r: QuotationRow) => r.branch_code }]
+        : []),
+    ],
     dateFields: [{ key: 'created', label: 'Ngày tạo' }],
     views: ['list'],
   };
