@@ -3,6 +3,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
+import type { GroupCounts } from '../lead/leadTypes';
 import type {
   AssignOptions,
   EnrollmentPage,
@@ -20,11 +21,12 @@ export function useEnrollmentPage(
   sort: string | undefined,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['enrollment-list', filters, sort ?? null, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<EnrollmentPage>(supabase, 'enrollment_list', {
@@ -185,5 +187,21 @@ export function useSameClassPeers(id: string | undefined) {
     enabled: id !== undefined,
     retry: false,
     queryFn: () => rpc<SameClassPeers>(supabase, 'enrollment_same_class_peers', { p_id: id }),
+  });
+}
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+export function useEnrollmentGroupCounts(filters: EnrollFilters, fields: string[]) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['enrollment-groups', filters, fields],
+    enabled: fields.length > 0,
+    placeholderData: keepPreviousData,
+    retry: false,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'enrollment_group_counts', {
+        p_filters: filters,
+        p_fields: fields,
+      }),
   });
 }

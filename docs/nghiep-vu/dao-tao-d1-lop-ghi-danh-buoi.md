@@ -95,6 +95,7 @@ Luật: R-GD-05 (hàng chờ CHỈ ghi danh Chờ xếp lớp), R-GD-04 (sổ gi
 | Hàm | Ai | Việc |
 | --- | --- | --- |
 | `enrollment_list(bộ lọc, sắp xếp, số dòng, bỏ qua)` | Ghi danh · Xem (toàn hệ thống, cơ sở) | GD-01. Lọc q, status[], branch_id, class_id, student_id, parent_id; sắp code_desc, code_asc, student_asc, student_desc, remaining_asc, remaining_desc; kết quả {total, rows} kèm giờ cấp, đã học, còn lại. |
+| `enrollment_group_counts(bộ lọc, trường nhóm[])` | Ghi danh · Xem | Group By ở máy chủ (E65, migration 512): số đếm theo một đến hai trường (hình thức học, lớp hiện tại, tình trạng); cùng phạm vi và bộ lọc với `enrollment_list`, mở nhóm bằng `delivery_mode_code`, `class_id`, `status`, `no_class`. Lỗi `HMT_NHOM_SAI` khi trường lạ, trùng hoặc quá hai cấp. |
 | `enrollment_queue(bộ lọc, số dòng, bỏ qua)` | Ghi danh · Sửa | GD-06. Chỉ ghi danh Chờ xếp lớp, cũ nhất trước. |
 | `enrollment_record(id)` | Ghi danh · Xem | GD-02. Thông tin, quỹ giờ, dòng xếp lớp kèm giờ đã học tại lớp. Ngày hết giờ dự kiến và hạn gói chưa tính (null). |
 | `enrollment_ledger(id, số dòng, bỏ qua)` | Ghi danh · Xem | GD-04. Mọi dòng sổ giờ, mới nhất trước, kèm số dư sau mỗi dòng; chuyển phí nêu mã ticket. |

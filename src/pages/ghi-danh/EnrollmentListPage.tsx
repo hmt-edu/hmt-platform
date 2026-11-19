@@ -8,11 +8,24 @@ import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import type { SortState } from '../../ui/Data';
+import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import { useLeafRows } from '../lead/useLeadData';
+import { useToast } from '../../ui/toastContext';
 import { buildEnrollConfig } from './enrollConfig';
-import { EMPTY_ENROLL_STATE, buildEnrollFilters, enrollSortParam } from './enrollFilters';
+import {
+  EMPTY_ENROLL_STATE,
+  ENROLL_GROUP_FIELD_OF,
+  buildEnrollFilters,
+  enrollGroupFilter,
+  enrollSortParam,
+} from './enrollFilters';
 import type { EnrollmentRow } from './enrollTypes';
-import { useEnrollmentPage, useRefreshEnrollments } from './useEnrollmentData';
+import {
+  useEnrollmentGroupCounts,
+  useEnrollmentPage,
+  useRefreshEnrollments,
+} from './useEnrollmentData';
 
 export function EnrollmentListPage() {
   const access = useAccess();
@@ -40,9 +53,48 @@ export function EnrollmentListPage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useEnrollmentPage(filters, sortValue, page * (pageSize ?? 0), pageSize);
-  const rows: EnrollmentRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  // Group By ở máy chủ (Kho #17, F65): chọn trường nhóm thì danh sách thành cây nhóm có số đếm; mở nhóm mới tải dòng.
+  const groupFields = state.group.flatMap((k) =>
+    ENROLL_GROUP_FIELD_OF[k] ? [ENROLL_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const toast = useToast();
+  const list = useEnrollmentPage(filters, sortValue, page * (pageSize ?? 0), pageSize, !grouped);
+  const counts = useEnrollmentGroupCounts(filters, groupFields);
+  const leaves = useLeafRows<EnrollmentRow>(
+    filters,
+    sortValue ?? 'code_desc',
+    pageSize,
+    `${JSON.stringify(filters)}|${sortValue ?? ''}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'enrollment_list',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<EnrollmentRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            enrollGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
+  const rows: EnrollmentRow[] = useMemo(
+    () =>
+      grouping
+        ? grouping.tree
+            .flatMap((g) => (g.children.length > 0 ? g.children : [g]))
+            .flatMap((g) => g.rows)
+        : (list.data?.rows ?? []),
+    [grouping, list.data],
+  );
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const active = grouped ? counts : list;
 
   return (
     <ListScreen
@@ -54,9 +106,9 @@ export function EnrollmentListPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.student_name}`}
-      loading={list.isPending || list.isPlaceholderData}
-      error={list.isError ? errorOf(list.error).message : null}
-      onRetry={() => void list.refetch()}
+      loading={active.isPending || active.isPlaceholderData}
+      error={active.isError ? errorOf(active.error).message : null}
+      onRetry={() => void active.refetch()}
       onRefresh={() => void refreshData()}
       onRowClick={(r) => void navigate(`/crm/ghi-danh/${r.id}`)}
       pager={{
@@ -67,6 +119,11 @@ export function EnrollmentListPage() {
         ...(page * (pageSize ?? 0) + rows.length < total
           ? { onNext: () => setPage(page + 1) }
           : {}),
+      }}
+      groupTree={grouped ? grouping?.tree : undefined}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
       }}
       sort={sort}
       onSortChange={setSort}
