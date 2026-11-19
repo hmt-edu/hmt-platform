@@ -2,7 +2,7 @@
 // Kiểm giờ còn lại KHÔNG đổi và tình trạng ghi danh sau mỗi bước (Bảo lưu → vẫn Bảo lưu khi gia hạn → Chờ xếp lớp khi tiếp tục học, không tự xếp lớp).
 // Dữ liệu giả dựng bằng SQL (một ghi danh Đang học 5 giờ) và hàm nghiệp vụ với quyền Admin; ba ticket (bảo lưu, gia hạn, tiếp tục), mã có dấu riêng mỗi lần chạy.
 // Chuyển lớp chưa có trong bài này (cần lớp đã duyệt đủ điều kiện, dựng nặng): báo trong PR.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Browser, type Page } from '@playwright/test';
 import pg from 'pg';
 import { DOMAIN, PASSWORD, enterAs, isPhone, pickOption } from './helpers';
 import { DB_URL } from './lich-hen-seed';
@@ -52,6 +52,7 @@ async function openTicket(page: Page, title: string) {
 
 // CSKH tạo phiếu từ ticket theo hình thức đã chọn, trình duyệt; Trưởng cơ sở duyệt và thực hiện.
 async function runTask(
+  browser: Browser,
   page: Page,
   title: string,
   mode: 'Bảo lưu mới' | 'Gia hạn bảo lưu' | 'Tiếp tục học',
@@ -75,19 +76,26 @@ async function runTask(
   await page.getByRole('button', { name: 'Trình duyệt' }).click();
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
   const taskUrl = page.url();
-  await enterAs(page, 'truongcs.cs5');
-  await page.goto(taskUrl);
-  await page.getByRole('button', { name: 'Duyệt', exact: true }).click();
-  const approve = page.getByRole('dialog', { name: 'Duyệt phiếu' });
-  await approve.getByLabel('Ghi chú').fill('Đồng ý');
-  await approve.getByRole('button', { name: 'Duyệt', exact: true }).click();
-  await expect(page.getByText('Chờ duyệt → Đã duyệt.')).toBeVisible();
-  await page.getByRole('button', { name: 'Thực hiện', exact: true }).click();
-  await page
-    .getByRole('alertdialog')
-    .getByRole('button', { name: 'Thực hiện', exact: true })
-    .click();
-  await expect(page.getByText('Thực hiện phiếu. Đã duyệt → Đã thực hiện.')).toBeVisible();
+  // Trưởng cơ sở đăng nhập ở ngữ cảnh riêng (không dùng chung phiên với CSKH).
+  const context = await browser.newContext();
+  try {
+    const manager = await context.newPage();
+    await enterAs(manager, 'truongcs.cs5');
+    await manager.goto(taskUrl);
+    await manager.getByRole('button', { name: 'Duyệt', exact: true }).click();
+    const approve = manager.getByRole('dialog', { name: 'Duyệt phiếu' });
+    await approve.getByLabel('Ghi chú').fill('Đồng ý');
+    await approve.getByRole('button', { name: 'Duyệt', exact: true }).click();
+    await expect(manager.getByText('Chờ duyệt → Đã duyệt.')).toBeVisible();
+    await manager.getByRole('button', { name: 'Thực hiện', exact: true }).click();
+    await manager
+      .getByRole('alertdialog')
+      .getByRole('button', { name: 'Thực hiện', exact: true })
+      .click();
+    await expect(manager.getByText('Thực hiện phiếu. Đã duyệt → Đã thực hiện.')).toBeVisible();
+  } finally {
+    await context.close();
+  }
 }
 
 // eslint-disable-next-line no-empty-pattern
@@ -166,16 +174,18 @@ test.afterAll(async () => {
 });
 
 test('Bảo lưu mới: phiếu duyệt và thực hiện → ghi danh Bảo lưu, giờ giữ nguyên', async ({
+  browser,
   page,
 }) => {
-  await runTask(page, titles.hold, 'Bảo lưu mới', '2');
+  await runTask(browser, page, titles.hold, 'Bảo lưu mới', '2');
   expect(await enrollmentState(`GDE2E${tag}`)).toEqual({ status: 'BAO_LUU', hours: '5.00' });
 });
 
 test('Gia hạn bảo lưu: nối tiếp bản đang chạy, ghi danh vẫn Bảo lưu, giờ giữ nguyên', async ({
+  browser,
   page,
 }) => {
-  await runTask(page, titles.extend, 'Gia hạn bảo lưu', '1');
+  await runTask(browser, page, titles.extend, 'Gia hạn bảo lưu', '1');
   expect(await enrollmentState(`GDE2E${tag}`)).toEqual({ status: 'BAO_LUU', hours: '5.00' });
   const holds = await withDb(
     async (db) =>
@@ -191,8 +201,9 @@ test('Gia hạn bảo lưu: nối tiếp bản đang chạy, ghi danh vẫn Bả
 });
 
 test('Tiếp tục học: bảo lưu kết thúc, ghi danh về hàng chờ xếp lớp, giờ giữ nguyên', async ({
+  browser,
   page,
 }) => {
-  await runTask(page, titles.resume, 'Tiếp tục học', null);
+  await runTask(browser, page, titles.resume, 'Tiếp tục học', null);
   expect(await enrollmentState(`GDE2E${tag}`)).toEqual({ status: 'CHO_XEP_LOP', hours: '5.00' });
 });
