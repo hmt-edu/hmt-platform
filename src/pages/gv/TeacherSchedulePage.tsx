@@ -80,6 +80,7 @@ export function TeacherSchedulePage() {
         </Link>
       </div>
       <div className="flex flex-wrap items-center gap-2">
+        <Tag>Chỉ buổi của tôi (R-GV-08)</Tag>
         <div role="group" aria-label="Kiểu xem" className="flex gap-1">
           <Button
             variant={view === 'tuan' ? 'primary' : 'secondary'}
@@ -244,8 +245,19 @@ export function TeacherSchedulePage() {
     <div className="mx-auto flex max-w-5xl flex-col gap-4">
       {header}
       {empty && (
-        <StateView kind="empty" title="Tuần này bạn không có buổi dạy" headingLevel={2}>
-          Chọn tuần khác để xem lịch.
+        <StateView
+          kind="empty"
+          title="Tuần này bạn chưa có buổi dạy"
+          headingLevel={2}
+          actions={
+            monday !== mondayOf(todayKey) ? (
+              <Button variant="secondary" onClick={() => go(mondayOf(todayKey))}>
+                Về tuần này
+              </Button>
+            ) : undefined
+          }
+        >
+          Chỉ hiện buổi của lớp bạn được phân công (R-GV-08).
         </StateView>
       )}
       {narrow ? (
