@@ -83,6 +83,15 @@ export type ClassRecord = Omit<ClassRow, 'enrolled' | 'branch_code' | 'subject_n
   students: ClassStudent[];
   session_counts: Record<string, number>;
   sessions: ClassSessionRow[];
+  /** Các lớp KHÁC cùng nhóm lớp (R-LOP-14), mỗi lớp độc lập. */
+  group_classes?: {
+    id: string;
+    code: string;
+    subject_name: string | null;
+    status_code: string;
+    status_name: string | null;
+    teacher_names: string | null;
+  }[];
   clash_warnings: { kind?: string; message?: string }[] | unknown[];
   events: { event_code: string; created_at: string; note: string | null }[];
 };

@@ -266,7 +266,32 @@ function ClassView({ record }: { record: ClassRecord }) {
           </DetailSection>
         </div>
 
+        {(record.group_classes ?? []).length > 0 && (
+          <DetailSection title="Nhóm lớp">
+            <DetailField mode="view" label="Cùng nhóm" value={record.group_name ?? 'Nhóm lớp'} />
+            <ul className="flex flex-col gap-1 py-1">
+              {(record.group_classes ?? []).map((g) => (
+                <li key={g.id} className="flex flex-wrap items-center gap-x-3">
+                  <span className="text-caption text-fg-muted">Lớp còn lại của nhóm:</span>
+                  <Link className="font-medium text-link underline" to={`/crm/lop/${g.id}`}>
+                    {[g.subject_name, g.code].filter(Boolean).join(' · ')}
+                  </Link>
+                  {g.teacher_names && <span className="text-fg-muted">GV {g.teacher_names}</span>}
+                  <Tag>{g.status_name ?? g.status_code}</Tag>
+                </li>
+              ))}
+            </ul>
+            <p className="text-caption text-fg-muted">
+              Nhóm không có mã riêng. Mỗi lớp trong nhóm vẫn độc lập: giáo viên, lịch, sĩ số, bước
+              duyệt riêng (R-LOP-14).
+            </p>
+          </DetailSection>
+        )}
+
         <DetailSection title="Time Table">
+          <p className="text-caption text-fg-muted">
+            Bốn ô Lịch học, Phòng, Giáo viên, Trợ giảng của lớp tự sinh từ Time Table này.
+          </p>
           <Tabs
             label="Time Table theo thứ"
             value={dayTab}

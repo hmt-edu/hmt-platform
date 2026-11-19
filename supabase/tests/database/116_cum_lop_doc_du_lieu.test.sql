@@ -157,6 +157,13 @@ select is((app.list_classes() ->> 'total')::int, 2, 'Giáo viên thấy lớp đ
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(app.get_class_record(pg_temp.c('p')) ->> 'status_code', 'DA_DUYET', 'Hồ sơ lớp có tình trạng duyệt');
 select is(jsonb_array_length(app.get_class_record(pg_temp.c('p')) -> 'students'), 3, 'Hồ sơ lớp liệt kê 3 học sinh đang xếp');
+-- LOP-02 (migration 310): «Lớp còn lại của nhóm»: lớp chưa vào nhóm thì rỗng; hai lớp cùng nhóm thì mỗi lớp thấy lớp kia (R-LOP-14).
+select is(jsonb_array_length(app.get_class_record(pg_temp.c('p')) -> 'group_classes'), 0, 'Lớp chưa thuộc nhóm: không có lớp còn lại của nhóm');
+select pg_temp.sudo($$update app.class set subject_code = 'HINH' where id = pg_temp.c('f')$$);
+select pg_temp.sudo($$with g as (insert into app.class_group (branch_id, grade_code) select branch_id, grade_code from app.class where id = pg_temp.c('p') returning id)
+  update app.class set group_id = (select id from g) where id in (pg_temp.c('p'), pg_temp.c('f'))$$);
+select is((app.get_class_record(pg_temp.c('p')) -> 'group_classes' -> 0 ->> 'id')::uuid, pg_temp.c('f'), 'Lớp p thấy lớp f cùng nhóm là lớp còn lại của nhóm');
+select is(jsonb_array_length(app.get_class_record(pg_temp.c('f')) -> 'group_classes'), 1, 'Lớp f cũng thấy đúng một lớp còn lại (không tự liệt kê chính nó)');
 select is(jsonb_array_length(app.get_class_record(pg_temp.c('p')) -> 'slots'), 1, 'Hồ sơ lớp có 1 khung giờ');
 select is((app.get_class_record(pg_temp.c('p')) -> 'session_counts' ->> 'DA_CHOT')::int, 3, 'Đếm buổi theo tình trạng: 3 buổi Đã chốt');
 select is((app.get_class_record(pg_temp.c('p')) -> 'students' -> 0) ? 'phone', false, 'Hồ sơ lớp không có số điện thoại học sinh');
