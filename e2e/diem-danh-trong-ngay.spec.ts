@@ -1,6 +1,6 @@
 // BUOI-15 Điểm danh trong ngày (danh sách theo dõi chỉ đọc, sau cờ DIEM_DANH_TRONG_NGAY tắt mặc định; ĐỀ XUẤT docs/spec/de-xuat-luat-a.md). Máy tính.
 // Dữ liệu giả: bật cờ ở CS5; dựng một lớp Đại số 9 CS5 đã duyệt có một buổi HÔM NAY (khung cùng thứ, ngày đầu là hôm nay), buổi Nháp nên chưa có danh sách.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
 import { DB_URL } from './bao-gia-seed';
 import { DOMAIN, PASSWORD, enterAs, expectAccessible } from './helpers';
@@ -74,6 +74,19 @@ test.afterAll(async () => {
   );
 });
 
+/** Danh sách phân trang ở máy chủ và các bài khác cũng dựng buổi hôm nay: lật trang tới khi thấy dòng của lớp (không giả định nó nằm trang đầu). */
+async function rowOfClass(page: Page, code: string) {
+  const row = page.getByRole('row').filter({ hasText: code });
+  const next = page.getByRole('button', { name: 'Trang sau' });
+  for (let i = 0; i < 20; i += 1) {
+    if ((await row.count()) > 0) return row;
+    if (!(await next.isEnabled())) break;
+    await next.click();
+    await page.waitForLoadState('networkidle');
+  }
+  return row;
+}
+
 test('BUOI-15: buổi hôm nay của lớp hiện ở danh sách, chưa có danh sách; lọc theo tình trạng ghi', async ({
   page,
 }) => {
@@ -88,7 +101,7 @@ test('BUOI-15: buổi hôm nay của lớp hiện ở danh sách, chưa có danh
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/diem-danh-trong-ngay');
   await expect(page.getByRole('heading', { level: 1, name: 'Điểm danh trong ngày' })).toBeVisible();
-  const row = page.getByRole('row').filter({ hasText: classCode });
+  const row = await rowOfClass(page, classCode);
   await expect(row).toBeVisible();
   await expect(row).toContainText('Chưa có danh sách');
   await expect(row).toContainText('18:00–19:30');
@@ -96,7 +109,7 @@ test('BUOI-15: buổi hôm nay của lớp hiện ở danh sách, chưa có danh
   await page.getByRole('button', { name: 'Ghi đủ', exact: true }).click();
   await expect(page.getByRole('row').filter({ hasText: classCode })).toHaveCount(0);
   await page.getByRole('button', { name: 'Tất cả', exact: true }).click();
-  await row.getByRole('link', { name: 'Xem' }).click();
+  await (await rowOfClass(page, classCode)).getByRole('link', { name: 'Xem' }).click();
   await expect(page).toHaveURL(/\/crm\/buoi-hoc\/[0-9a-f-]{36}$/);
 });
 
