@@ -253,6 +253,10 @@ const FeatureFlagsPage = lazyScreen(
   'FeatureFlagsPage',
 );
 const SettingsPage = lazyScreen(() => import('../pages/tham-so/SettingsPage'), 'SettingsPage');
+const PackageRecordPage = lazyScreen(
+  () => import('../pages/goi-ban/PackageRecordPage'),
+  'PackageRecordPage',
+);
 const PackageListPage = lazyScreen(
   () => import('../pages/goi-ban/PackageListPage'),
   'PackageListPage',
@@ -812,6 +816,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="cau-hinh/goi-ban">
                 <PackageListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/goi-ban/:id',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/goi-ban">
+                <PackageRecordPage />
               </GatedCrmEntry>
             ),
           },
