@@ -1,13 +1,13 @@
-// GV-11 Chi tiết lớp (cổng giáo viên, chỉ đọc): tab Học sinh (chuyên cần, TB tiêu chí), Lịch, Buổi (nhãn Trễ hạn), BTVN.
+// GV-11 Chi tiết lớp (cổng giáo viên, chỉ đọc), theo canvas 9189: một trang gồm thông tin lớp, Học sinh (chuyên cần, TB tiêu chí), Lịch học, Lịch sử buổi (nhãn Trễ hạn), BTVN gần đây, Yêu cầu bổ trợ.
+// Chưa có khối «Tiến độ khung chương trình» của canvas (hàm teacher_class_overview chưa trả tiến độ khung): thẻ riêng.
 // Máy chủ quyết lớp nào xem được (app.teacher_class_overview, R-GV-08) và tính mọi con số; trang chỉ đặt chữ. Nút «Yêu cầu bổ trợ», «Tạo ticket» CHƯA làm (sau 17/11): ẩn.
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { errorOf, rpc, useDb } from '../../lib/db';
-import { Button } from '../../ui/Button';
+import { Button, ButtonLink } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
-import { Tabs } from '../../ui/Overlays';
 import {
   attendanceText,
   homeworkSessions,
@@ -22,10 +22,13 @@ import { hhmm } from './todayLogic';
 import { GvForbidden } from './GvForbidden';
 import { isForbidden } from './forbidden';
 
+/** Số học sinh hiện sẵn trước nút «Xem thêm» (canvas GV-11 hiện 4 em đầu). */
+const PREVIEW_STUDENTS = 4;
+
 export function TeacherClassPage() {
   const supabase = useDb();
   const { classId = '' } = useParams();
-  const [tab, setTab] = useState('hoc-sinh');
+  const [showAll, setShowAll] = useState(false);
   const query = useQuery({
     queryKey: ['gv-class', classId],
     queryFn: () => rpc<ClassOverview>(supabase, 'teacher_class_overview', { p_class_id: classId }),
@@ -61,145 +64,183 @@ export function TeacherClassPage() {
 
   const o = query.data;
   const homework = homeworkSessions(o.sessions);
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const next = [...o.sessions]
+    .filter((x) => x.status_code !== 'DONE' && x.session_date >= todayIso)
+    .sort((a, b) => a.session_date.localeCompare(b.session_date))[0];
+  const teachers = [...new Set(o.slots.map((x) => x.teacher_name).filter(Boolean))].join(', ');
+  const shown = showAll ? o.students : o.students.slice(0, PREVIEW_STUDENTS);
+  const hidden = o.students.length - shown.length;
   return (
-    <div className="mx-auto flex max-w-xl flex-col gap-4">
+    <div className="mx-auto flex max-w-xl flex-col gap-5">
       <div>
         <p className="text-caption">{back}</p>
         <h1 className="text-h2">{classTitle(o.class) || o.class.code}</h1>
         <p className="text-body text-fg-muted">{o.class.code}</p>
       </div>
-      <Tabs
-        label="Chi tiết lớp"
-        value={tab}
-        onChange={setTab}
-        items={[
-          {
-            value: 'hoc-sinh',
-            label: 'Học sinh',
-            count: o.students.length,
-            content:
-              o.students.length === 0 ? (
-                <StateView kind="empty" title="Lớp chưa có học sinh" headingLevel={2}>
-                  Khi có học sinh xếp lớp, danh sách sẽ hiện ở đây.
-                </StateView>
-              ) : (
-                <ul className="flex flex-col gap-2">
-                  {o.students.map((s) => (
-                    <li
-                      key={s.student_id}
-                      className="rounded-control border border-border bg-surface p-3"
-                    >
-                      <p className="font-semibold">
-                        <Link
-                          to={`/gv/lop/${o.class.id}/hoc-sinh/${s.student_id}`}
-                          className="text-link hover:underline"
-                        >
-                          {s.full_name}
-                        </Link>
-                      </p>
-                      <p className="text-caption text-fg-muted">
-                        {attendanceText(s)} · {scoreText(s.avg_score)}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              ),
-          },
-          {
-            value: 'lich',
-            label: 'Lịch',
-            content:
-              o.slots.length === 0 ? (
-                <p className="text-body text-fg-muted">Lớp chưa có lịch học cố định.</p>
-              ) : (
-                <ul className="flex flex-col gap-2">
-                  {o.slots.map((s, i) => (
-                    <li
-                      key={`${s.weekday}-${s.start_time}-${i}`}
-                      className="rounded-control border border-border bg-surface p-3"
-                    >
-                      <p className="font-semibold">{slotText(s)}</p>
-                      <p className="text-caption text-fg-muted">
-                        {[
-                          s.room_name,
-                          s.teacher_name && `GV ${s.teacher_name}`,
-                          s.assistant_name && `TG ${s.assistant_name}`,
-                        ]
-                          .filter(Boolean)
-                          .join(' · ')}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              ),
-          },
-          {
-            value: 'buoi',
-            label: 'Buổi',
-            count: o.sessions.length,
-            content:
-              o.sessions.length === 0 ? (
-                <p className="text-body text-fg-muted">Lớp chưa có buổi nào.</p>
-              ) : (
-                <div className="flex flex-col gap-2">
+
+      <dl className="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-body">
+        <dt className="text-fg-muted">Lớp</dt>
+        <dd>{classTitle(o.class) || o.class.code}</dd>
+        {teachers && (
+          <>
+            <dt className="text-fg-muted">Giáo viên</dt>
+            <dd>{teachers}</dd>
+          </>
+        )}
+        <dt className="text-fg-muted">Sĩ số</dt>
+        <dd>{o.students.length} học sinh</dd>
+        {next && (
+          <>
+            <dt className="text-fg-muted">Buổi tiếp theo</dt>
+            <dd>
+              {shortDate(next.session_date)} · {hhmm(next.start_time)}
+            </dd>
+          </>
+        )}
+      </dl>
+
+      <section aria-labelledby="gv11-hs" className="flex flex-col gap-2">
+        <h2 id="gv11-hs" className="text-h4">
+          Học sinh · {o.students.length}
+        </h2>
+        {o.students.length === 0 ? (
+          <StateView kind="empty" title="Lớp chưa có học sinh" headingLevel={2}>
+            Khi có học sinh xếp lớp, danh sách sẽ hiện ở đây.
+          </StateView>
+        ) : (
+          <>
+            <ul className="flex flex-col gap-2">
+              {shown.map((s) => (
+                <li
+                  key={s.student_id}
+                  className="rounded-control border border-border bg-surface p-3"
+                >
+                  <p className="font-semibold">{s.full_name}</p>
                   <p className="text-caption text-fg-muted">
-                    Lịch sử buổi chỉ gồm buổi của giáo viên này.
+                    {attendanceText(s)} · {scoreText(s.avg_score)}
                   </p>
-                  <ul className="flex flex-col gap-2">
-                    {o.sessions.map((s) => {
-                      const label = timelinessLabel(s.timeliness);
-                      return (
-                        <li
-                          key={s.id}
-                          className="flex items-start justify-between gap-2 rounded-control border border-border bg-surface p-3"
-                        >
-                          <div>
-                            <p className="font-semibold">
-                              {s.session_no ? `Buổi ${s.session_no}` : 'Buổi'} ·{' '}
-                              {shortDate(s.session_date)}
-                            </p>
-                            <p className="text-caption text-fg-muted">
-                              {hhmm(s.start_time)}–{hhmm(s.end_time)} · {s.type_name ?? s.type_code}
-                            </p>
-                          </div>
-                          <div className="flex flex-col items-end gap-1">
-                            {s.status_code === 'DONE' && <Tag tone="success">Đã hoàn tất</Tag>}
-                            {label && (
-                              <Tag tone={s.timeliness === 'TRE_HAN' ? 'danger' : 'success'}>
-                                {label}
-                              </Tag>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ),
-          },
-          {
-            value: 'btvn',
-            label: 'BTVN',
-            count: homework.length,
-            content:
-              homework.length === 0 ? (
-                <p className="text-body text-fg-muted">Chưa có buổi nào giao BTVN.</p>
-              ) : (
-                <ul className="flex flex-col gap-2">
-                  {homework.map((s) => (
-                    <li key={s.id} className="rounded-control border border-border bg-surface p-3">
-                      <p className="text-caption font-semibold text-fg-label">
+                  <Link
+                    to={`/gv/lop/${o.class.id}/hoc-sinh/${s.student_id}`}
+                    className="text-caption text-link hover:underline"
+                  >
+                    Mở học sinh
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {hidden > 0 && <Button onClick={() => setShowAll(true)}>Xem thêm {hidden} em</Button>}
+          </>
+        )}
+      </section>
+
+      <section aria-labelledby="gv11-lich" className="flex flex-col gap-2">
+        <h2 id="gv11-lich" className="text-h4">
+          Lịch học
+        </h2>
+        {o.slots.length === 0 ? (
+          <p className="text-body text-fg-muted">Lớp chưa có lịch học cố định.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {o.slots.map((s, i) => (
+              <li
+                key={`${s.weekday}-${s.start_time}-${i}`}
+                className="rounded-control border border-border bg-surface p-3"
+              >
+                <p className="font-semibold">{slotText(s)}</p>
+                <p className="text-caption text-fg-muted">
+                  {[
+                    s.room_name,
+                    s.teacher_name && `GV ${s.teacher_name}`,
+                    s.assistant_name && `TG ${s.assistant_name}`,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section aria-labelledby="gv11-buoi" className="flex flex-col gap-2">
+        <h2 id="gv11-buoi" className="text-h4">
+          Lịch sử buổi
+        </h2>
+        {o.sessions.length === 0 ? (
+          <p className="text-body text-fg-muted">Lớp chưa có buổi nào.</p>
+        ) : (
+          <>
+            <ul className="flex flex-col gap-2">
+              {o.sessions.map((s) => {
+                const label = timelinessLabel(s.timeliness);
+                return (
+                  <li
+                    key={s.id}
+                    className="flex items-start justify-between gap-2 rounded-control border border-border bg-surface p-3"
+                  >
+                    <div>
+                      <p className="font-semibold">
                         {s.session_no ? `Buổi ${s.session_no}` : 'Buổi'} ·{' '}
                         {shortDate(s.session_date)}
                       </p>
-                      <p className="whitespace-pre-line">{s.homework_text}</p>
-                    </li>
-                  ))}
-                </ul>
-              ),
-          },
-        ]}
-      />
+                      <p className="text-caption text-fg-muted">
+                        {hhmm(s.start_time)}–{hhmm(s.end_time)} · {s.type_name ?? s.type_code}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      {s.status_code === 'DONE' ? (
+                        <Tag tone="success">Hoàn thành</Tag>
+                      ) : (
+                        <Tag tone="warning">Cần hoàn tất</Tag>
+                      )}
+                      {label && (
+                        <Tag tone={s.timeliness === 'TRE_HAN' ? 'danger' : 'success'}>{label}</Tag>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="text-caption text-fg-muted">
+              Lịch sử buổi chỉ gồm buổi của giáo viên này.
+            </p>
+          </>
+        )}
+      </section>
+
+      <section aria-labelledby="gv11-btvn" className="flex flex-col gap-2">
+        <h2 id="gv11-btvn" className="text-h4">
+          BTVN gần đây
+        </h2>
+        {homework.length === 0 ? (
+          <p className="text-body text-fg-muted">Chưa có buổi nào giao BTVN.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {homework.map((s) => (
+              <li key={s.id} className="rounded-control border border-border bg-surface p-3">
+                <p className="text-caption font-semibold text-fg-label">
+                  {s.session_no ? `Buổi ${s.session_no}` : 'Buổi'} giao ·{' '}
+                  {shortDate(s.session_date)}
+                </p>
+                <p className="whitespace-pre-line">{s.homework_text}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section aria-labelledby="gv11-bo-tro" className="flex flex-col gap-2">
+        <h2 id="gv11-bo-tro" className="text-h4">
+          Yêu cầu bổ trợ
+        </h2>
+        <p className="text-body text-fg-muted">
+          Cần học bù hoặc buổi bổ trợ cho lớp: gửi ticket để vận hành xử lý.
+        </p>
+        <div>
+          <ButtonLink to="/gv/ticket/tao">Tạo ticket</ButtonLink>
+        </div>
+      </section>
     </div>
   );
 }

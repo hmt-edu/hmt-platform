@@ -75,24 +75,25 @@ test.beforeAll(async ({}, testInfo) => {
   otherClass = await seedOtherClass();
 });
 
-test('GV-11: mở lớp của mình thấy đủ bốn tab với dữ liệu đúng của lớp; không có nút chưa làm', async ({
+test('GV-11: mở lớp của mình thấy đủ các khối theo canvas với dữ liệu đúng của lớp', async ({
   page,
 }) => {
   await loginStaff(page, 'gv.cs5');
   await expect(page).toHaveURL(/\/gv$/);
   await page.goto(`/gv/lop/${myClass}`);
-  for (const name of ['Học sinh', 'Lịch', 'Buổi', 'BTVN'])
-    await expect(page.getByRole('tab', { name: new RegExp(`^${name}`) })).toBeVisible();
-  // Tab Học sinh: dữ liệu giả không xếp học sinh vào lớp (chỉ có dòng điểm danh), nên trống và báo rõ.
+  for (const name of [/^Học sinh · /, 'Lịch học', 'Lịch sử buổi', 'BTVN gần đây', 'Yêu cầu bổ trợ'])
+    await expect(page.getByRole('heading', { level: 2, name })).toBeVisible();
+  // Khối Học sinh: dữ liệu giả không xếp học sinh vào lớp (chỉ có dòng điểm danh), nên trống và báo rõ.
   await expect(page.getByText('Lớp chưa có học sinh')).toBeVisible();
-  await page.getByRole('tab', { name: /^Lịch/ }).click();
   await expect(page.getByText(/Thứ Hai 18:00–19:30/)).toBeVisible();
-  await page.getByRole('tab', { name: /^Buổi/ }).click();
-  await expect(page.getByText(/Buổi 901/)).toBeVisible();
-  await expect(page.getByText(/Buổi 902/)).toBeVisible();
-  await page.getByRole('tab', { name: /^BTVN/ }).click();
+  await expect(page.getByText(/Buổi 901/).first()).toBeVisible();
+  await expect(page.getByText(/Buổi 902/).first()).toBeVisible();
   await expect(page.getByText('Làm bài 1 đến 5 trang 10')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Yêu cầu bổ trợ|Tạo ticket/ })).toHaveCount(0);
+  // Yêu cầu bổ trợ: nút Tạo ticket đưa sang biểu mẫu ticket giáo viên (GV-14).
+  await expect(page.getByRole('link', { name: 'Tạo ticket' })).toHaveAttribute(
+    'href',
+    '/gv/ticket/tao',
+  );
   await expectAccessible(page);
 });
 
@@ -102,7 +103,7 @@ test('GV-11: lớp của người khác: báo không có quyền, không lộ d�
   await page.goto(`/gv/lop/${otherClass}`);
   // Khung 9189 GV11_quyen: trạng thái không có quyền riêng (GvForbidden), không còn dòng lỗi đỏ chung.
   await expect(page.getByText('Bạn không xem được mục này')).toBeVisible();
-  await expect(page.getByRole('tab', { name: /^Học sinh/ })).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 2, name: /^Học sinh · / })).toHaveCount(0);
 });
 
 test('GV-11: từ danh sách GV-10 bấm lớp tới chi tiết', async ({ page }) => {
@@ -110,10 +111,10 @@ test('GV-11: từ danh sách GV-10 bấm lớp tới chi tiết', async ({ page 
   await expect(page).toHaveURL(/\/gv$/);
   await page.goto('/gv/lop');
   await page.locator(`a[href="/gv/lop/${myClass}"]`).click();
-  await expect(page.getByRole('tab', { name: /^Học sinh/ })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: /^Học sinh · / })).toBeVisible();
 });
 
-// GV-13 Học sinh (hồ sơ rút gọn): mở từ địa chỉ, vì dữ liệu giả của bài này chỉ có dòng điểm danh (chưa xếp lớp) nên tab Học sinh của GV-11 trống.
+// GV-13 Học sinh (hồ sơ rút gọn): mở từ địa chỉ, vì dữ liệu giả của bài này chỉ có dòng điểm danh (chưa xếp lớp) nên khối Học sinh của GV-11 trống.
 async function studentIdByName(name: string): Promise<string> {
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
