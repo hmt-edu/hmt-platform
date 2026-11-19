@@ -62,7 +62,7 @@ test.beforeAll(async ({}, testInfo) => {
 test('Danh sách ticket có cột Nhóm · Nhóm con, Học sinh; Kanban hiện thẻ', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/ticket');
-  await page.getByPlaceholder(/Tìm/).fill(ticketTitle);
+  await page.getByRole('main').getByPlaceholder(/Tìm/).fill(ticketTitle);
   if (isPhone(page)) {
     const card = page
       .getByRole('list', { name: 'Ticket' })

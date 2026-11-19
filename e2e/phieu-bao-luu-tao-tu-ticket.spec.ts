@@ -62,7 +62,7 @@ test.beforeAll(async ({}, testInfo) => {
 test('CSKH mở hộp thoại tạo phiếu Bảo lưu và thấy lỗi từng ô khi để trống', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/ticket');
-  await page.getByPlaceholder(/Tìm/).fill(ticketTitle);
+  await page.getByRole('main').getByPlaceholder(/Tìm/).fill(ticketTitle);
   await (
     isPhone(page)
       ? page

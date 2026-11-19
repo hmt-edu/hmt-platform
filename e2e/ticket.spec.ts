@@ -80,7 +80,7 @@ test('Tạo khiếu nại: thiếu ô thì báo tại ô; đủ thì lưu và m�
 test('Chi tiết: thêm ghi chú; Đã xử lý cần kết quả; huỷ cần lý do', async ({ page }, testInfo) => {
   await enterAs(page, setupOf(testInfo.project.name).account);
   await page.goto('/crm/ticket');
-  await page.getByPlaceholder(/Tìm/).fill(title);
+  await page.getByRole('main').getByPlaceholder(/Tìm/).fill(title);
   // Máy tính là bảng (bấm ô tiêu đề), điện thoại là danh sách thẻ.
   await (
     isPhone(page)
