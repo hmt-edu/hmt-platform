@@ -269,6 +269,9 @@ test('Tạo lead: ô bắt buộc báo tại ô; tạo xong về trang Lead; SĐ
   // Tạo lại cùng số: hộp cảnh báo, không có "Gắn vào hồ sơ có sẵn" vì chưa có hồ sơ phụ huynh để gắn.
   await page.goto('/crm/lead/moi');
   await fill(`${first} hai`);
+  // TS-03 (canvas): cảnh báo trùng hiện NGAY dưới ô Số điện thoại khi rời ô, trước khi bấm Lưu.
+  await expect(page.getByText('Số điện thoại này đã có trong hệ thống')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Mở bản ghi trùng' })).toBeVisible();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Số điện thoại này đã có khách hàng' });
   await expect(dialog).toBeVisible();
