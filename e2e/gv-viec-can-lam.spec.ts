@@ -130,6 +130,11 @@ test('GV-12: buổi chưa hoàn tất kèm hạn và bài Nộp sau chờ cập 
   await expect(sessionRow.getByTestId('gv12-deadline')).toHaveText(/^(Quá hạn|Còn) \d+ giờ$/);
   await expect(open.getByRole('listitem').filter({ hasText: `${code} · Buổi 1` })).toBeVisible();
 
+  // R-V2-37: menu «Cần làm» có số đếm công việc (ít nhất hai buổi chưa hoàn tất của lớp giả).
+  const badge = page.getByTestId('tab-badge').filter({ visible: true });
+  await expect(badge.first()).toHaveText(/^\d+\+?$/);
+  expect(Number((await badge.first().textContent())?.replace('+', ''))).toBeGreaterThanOrEqual(2);
+
   const late = page.getByRole('list', { name: 'Bài Nộp sau chờ cập nhật' });
   const lateRow = late.getByRole('listitem').filter({ hasText: code });
   await expect(lateRow).toContainText('1 bài');

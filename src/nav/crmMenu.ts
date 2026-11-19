@@ -92,6 +92,13 @@ export const CRM_MENU: MenuGroup[] = [
     entries: [
       { code: 'KH-01', label: 'Phụ huynh', slug: 'phu-huynh', requires: can('PARENT'), stage: '' },
       { code: 'KH-04', label: 'Học sinh', slug: 'hoc-sinh', requires: can('STUDENT'), stage: '' },
+      {
+        code: 'KH-08',
+        label: 'Lên khối đầu năm',
+        slug: 'len-khoi-dau-nam',
+        requires: can('ADMIN'),
+        stage: '',
+      },
     ],
   },
   {

@@ -117,6 +117,10 @@ const TicketCategoriesPage = lazyScreen(
   'TicketCategoriesPage',
 );
 const BranchRoomPage = lazyScreen(() => import('../pages/co-so/BranchRoomPage'), 'BranchRoomPage');
+const TeachingProfilePage = lazyScreen(
+  () => import('../pages/ho-so-day/TeachingProfilePage'),
+  'TeachingProfilePage',
+);
 const TaskListPage = lazyScreen(() => import('../pages/phieu/TaskListPage'), 'TaskListPage');
 const TaskRecordPage = lazyScreen(() => import('../pages/phieu/TaskRecordPage'), 'TaskRecordPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
@@ -272,6 +276,14 @@ const PackageListPage = lazyScreen(
 );
 const PriceListPage = lazyScreen(() => import('../pages/bang-gia/PriceListPage'), 'PriceListPage');
 const UserListPage = lazyScreen(() => import('../pages/nguoi-dung/UserListPage'), 'UserListPage');
+const StudentAccountPage = lazyScreen(
+  () => import('../pages/tai-khoan-hoc-sinh/StudentAccountPage'),
+  'StudentAccountPage',
+);
+const GradePromotionPage = lazyScreen(
+  () => import('../pages/len-khoi/GradePromotionPage'),
+  'GradePromotionPage',
+);
 const UserRecordPage = lazyScreen(
   () => import('../pages/nguoi-dung/UserRecordPage'),
   'UserRecordPage',
@@ -881,6 +893,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'quan-tri/giao-vien',
+            element: (
+              <GatedCrmEntry slug="quan-tri/giao-vien">
+                <TeachingProfilePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'cau-hinh/rubric',
             element: (
               <GatedCrmEntry slug="cau-hinh/rubric">
@@ -1005,6 +1025,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/nguoi-dung">
                 <UserListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/tai-khoan-hoc-sinh',
+            element: (
+              <GatedCrmEntry slug="quan-tri/tai-khoan-hoc-sinh">
+                <StudentAccountPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'len-khoi-dau-nam',
+            element: (
+              <GatedCrmEntry slug="len-khoi-dau-nam">
+                <GradePromotionPage />
               </GatedCrmEntry>
             ),
           },

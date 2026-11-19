@@ -58,4 +58,22 @@ describe('Lịch tuần cơ sở (LOP-08)', () => {
   it('đếm buổi bị cảnh báo trùng', () => {
     expect(clashCount([s({}), s({ room_clash: true }), s({ teacher_clash: true })])).toBe(2);
   });
+
+  it('tuần qua ranh giới năm: Chủ nhật 03/01/2027 thuộc tuần bắt đầu 28/12/2026', () => {
+    expect(weekStart('2027-01-03')).toBe('2026-12-28');
+    expect(weekDays('2026-12-28')[6]).toBe('2027-01-03');
+    expect(addDays('2026-12-31', 1)).toBe('2027-01-01');
+  });
+
+  it('màu viền theo nhóm cố định giữa các lần gọi; lớp không nhóm dùng màu trung tính', () => {
+    expect(groupColor('g-123')).toBe(groupColor('g-123'));
+    expect(groupColor(null)).toBe('#9CA3AF');
+    expect(groupColor('g-123')).not.toBe('#9CA3AF');
+  });
+
+  it('không có buổi nào trùng thì đếm 0; trùng phòng và trùng giáo viên cùng buổi chỉ đếm một lần', () => {
+    expect(clashCount([])).toBe(0);
+    expect(clashCount([s({ session_id: 'a' }), s({ session_id: 'b' })])).toBe(0);
+    expect(clashCount([s({ room_clash: true, teacher_clash: true })])).toBe(1);
+  });
 });

@@ -41,10 +41,12 @@ export function SessionOpsPage() {
       <StateView
         kind={forbidden ? 'forbidden' : 'not-found'}
         title={
-          forbidden ? 'Bạn không có quyền điểm danh vận hành buổi này' : 'Không tìm thấy buổi học'
+          forbidden ? 'Bạn không có quyền ghi điểm danh trong ngày' : 'Không tìm thấy buổi học'
         }
       >
-        {err.message}
+        {forbidden
+          ? 'Chỉ CSKH và Admin ghi điểm danh phía vận hành. Giáo viên điểm danh ở cổng giáo viên (R-DD-02). Nếu cần, hãy liên hệ quản trị viên của trung tâm.'
+          : err.message}
       </StateView>
     );
   }
@@ -113,6 +115,11 @@ export function SessionOpsPage() {
           Buổi đã Hoàn thành, đã trừ giờ: điểm danh trong ngày chỉ còn xem. Sai thì Trưởng cơ sở sửa
           kèm lý do ở bản ghi buổi (BUOI-14, R-GIO-07).
         </Alert>
+      )}
+      {sheet.listed && !done && (
+        <p className="text-caption text-fg-muted">
+          Mỗi em một thẻ. Chưa chọn nghĩa là chưa làm. Ô Giáo viên (chính thức) chỉ đọc.
+        </p>
       )}
       {sheet.listed && (
         <ul className="flex flex-col gap-2" aria-label="Danh sách em">
