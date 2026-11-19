@@ -1,3 +1,4 @@
+// @vitest-environment node
 // Bài tái hiện lỗi «e2e đỏ quanh nửa đêm giờ Việt Nam» (17:00–24:00 UTC): CI chạy giờ UTC, mà ứng dụng tính «hôm nay» theo giờ Việt Nam.
 // Dữ liệu giả của bài e2e dựng bằng `current_date` (UTC) lệch một ngày với màn hình trong khung 00:00–07:00 giờ Việt Nam. Quy ước: mọi ngày trong e2e dùng
 // `(now() at time zone 'Asia/Ho_Chi_Minh')::date`, không dùng `current_date`.
