@@ -345,7 +345,7 @@ export const CRM_MENU: MenuGroup[] = [
         code: 'CH-08',
         label: 'Chiến dịch marketing',
         slug: 'cau-hinh/chien-dich',
-        requires: can('CONFIG_SALES'),
+        requires: { kind: 'always' }, // R-CRM-11 (19/11): mọi vai trò vào được cổng CRM đều xem và tạo được
         stage: GD1,
       },
       {
