@@ -1,6 +1,6 @@
 // Kiểu dữ liệu màn Lead: khớp kết quả các hàm list_leads, lead_board, lead_group_counts, list_assignable_staff, export_leads.
 
-export type LeadStatus = 'DANG_DUNG' | 'DA_GOP';
+export type LeadStatus = 'DANG_DUNG' | 'DA_GOP' | 'DA_HUY';
 
 export type LeadRow = {
   id: string;

@@ -5,6 +5,7 @@ export type UserRow = {
   id: string;
   display_name: string;
   login_name: string;
+  username: string | null;
   staff_code: string | null;
   branch_code: string;
   roles: UserRoleRef[];
