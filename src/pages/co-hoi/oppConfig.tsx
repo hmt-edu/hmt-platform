@@ -59,17 +59,19 @@ export function buildOppConfig(
         key: 'stage',
         label: 'Stage',
         render: (r) =>
-          r.record_status === 'DA_GOP' ? (
-            <Tag>{r.merged_into_code ? `Đã gộp vào ${r.merged_into_code}` : 'Đã gộp'}</Tag>
-          ) : (
-            <Tag>{stageLabel(r.stage_code)}</Tag>
-          ),
+          r.record_status === 'DA_GOP' ? <Tag>Đã gộp</Tag> : <Tag>{stageLabel(r.stage_code)}</Tag>,
       },
       {
         key: 'substage',
         label: 'Sub-stage',
         render: (r) =>
-          r.record_status !== 'DA_GOP' && r.substage_code ? (
+          r.record_status === 'DA_GOP' ? (
+            r.merged_into_code ? (
+              `vào ${r.merged_into_code}`
+            ) : (
+              <span className="text-fg-muted">—</span>
+            )
+          ) : r.substage_code ? (
             codeAndName(r.substage_code, catalogs.name('OPP_SUBSTAGE', r.substage_code))
           ) : (
             <span className="text-fg-muted">—</span>
