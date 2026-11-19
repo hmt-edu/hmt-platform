@@ -44,3 +44,7 @@ Thẻ D21, 18/11/2026. Quét `raise_error` trong các migration 212, 231, 232, 2
 - Lỗi từ kiểm tra khoá chủ yếu chỉ lộ ở hàm nội bộ gọi qua hàm giao diện; hàm nội bộ gọi thẳng từ giao diện báo `42501` (không cấp quyền).
 
 - `HMT_AP_DUNG_CHO_SAI` (migration 476, `app.save_discount_policy`): «Áp dụng cho» của chính sách chiết khấu trống hoặc có giá trị ngoài Báo giá, Đơn, Phiếu thu. Cột `app.discount_policy.applies_to` mặc định cả ba; `app.list_applicable_discount_policies` chỉ trả chính sách áp dụng cho Báo giá hoặc Đơn và có thêm khoá `applies_to`.
+
+## LOP-09 Học sinh của lớp (migration 477)
+
+- `app.list_class_students(lớp, bộ lọc, sắp xếp, số dòng, bỏ qua)`: mọi dòng xếp lớp (đang học và đã rời), phân trang máy chủ, quyền như `get_class_record`. Chỉ mục `enrollment_class_class_idx (class_id, start_date)`. Màn `/crm/lop/:id/hoc-sinh`. «Xuất» chưa làm: ma trận chưa có quyền Xuất cho phân hệ Lớp.

@@ -270,6 +270,10 @@ const UserRecordPage = lazyScreen(
 );
 const ClassListPage = lazyScreen(() => import('../pages/lop/ClassListPage'), 'ClassListPage');
 const ClassFormPage = lazyScreen(() => import('../pages/lop/ClassFormPage'), 'ClassFormPage');
+const ClassStudentsPage = lazyScreen(
+  () => import('../pages/lop/ClassStudentsPage'),
+  'ClassStudentsPage',
+);
 const ClassRecordPage = lazyScreen(() => import('../pages/lop/ClassRecordPage'), 'ClassRecordPage');
 const WeekCalendarPage = lazyScreen(
   () => import('../pages/lop/WeekCalendarPage'),
@@ -1025,6 +1029,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="lop" need={['CLASS', 'SUA']}>
                 <ClassFormPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'lop/:id/hoc-sinh',
+            element: (
+              <GatedCrmEntry slug="lop">
+                <ClassStudentsPage />
               </GatedCrmEntry>
             ),
           },

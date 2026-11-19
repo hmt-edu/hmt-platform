@@ -306,7 +306,33 @@ select app.approve_ticket_task((select (j ->> 'id')::uuid from tt5));
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt5))$$), 'HMT_BUOI_GIO_SAI', 'C60 Chặn: giờ kết thúc không sau giờ bắt đầu');
 select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt5)), 'DA_DUYET', 'C60 Nguyên tử: lỗi thì phiếu vẫn Đã duyệt');
--- Học bù từ phiếu chưa làm: báo rõ, không đổi gì.
+-- C60 (migration 430): Xin học bù từ phiếu sinh buổi Học bù MỚI cho em của ticket, không trừ giờ (R-BUOI-03, R-BUOI-01); chặn khi cờ tắt hoặc em không trong lớp.
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'YEU_CAU_BUOI', id, true from app.branch where code = 'CS1'
+  on conflict (module_code, branch_id) do update set enabled = true$$);
+create temp table tk6 (j jsonb);
+create temp table tt6 (j jsonb);
+grant all on tk6, tt6 to public;
+select pg_temp.sudo($$create function pg_temp.hbn(p_cls uuid) returns integer language sql stable security definer as
+  'select count(*)::int from app.class_session where class_id = p_cls and type_code = ''HOC_BU''' $$);
+select pg_temp.sudo($$grant execute on function pg_temp.hbn(uuid) to public$$);
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk6 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Học bù giả', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_05', 'parent_id', pg_temp.d1par(), 'student_id', pg_temp.d1stu()));
+insert into tt6 select app.create_ticket_task((select (j ->> 'id')::uuid from tk6), 'DOI_LICH', 'Em ốm nghỉ buổi 4',
+  jsonb_build_object('action', 'HOC_BU', 'class_id', pg_temp.c('a'), 'date', pg_temp.mon() + 40, 'start', '09:00', 'end', '10:30', 'note', 'Em ốm'));
+select app.submit_ticket_task((select (j ->> 'id')::uuid from tt6));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt6));
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select pg_temp.sudo($$update app.feature_flag set enabled = false where module_code = 'YEU_CAU_BUOI' and branch_id = (select id from app.branch where code = 'CS1')$$);
+select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt6))$$), 'HMT_TINH_NANG_TAT', 'C60 Chặn: công tắc YEU_CAU_BUOI tắt thì không sinh buổi học bù');
+select pg_temp.sudo($$update app.feature_flag set enabled = true where module_code = 'YEU_CAU_BUOI' and branch_id = (select id from app.branch where code = 'CS1')$$);
+select is(pg_temp.hbn(pg_temp.c('a')), 0, 'C60 Trước: lớp chưa có buổi Học bù');
+select app.execute_ticket_task((select (j ->> 'id')::uuid from tt6));
+select is(pg_temp.hbn(pg_temp.c('a')), 1, 'C60 Đúng: phiếu sinh đúng một buổi Học bù mới');
+select is((select count(*)::int from app.session_request q join app.session_request_student qs on qs.request_id = q.id
+            where q.kind = 'HOC_BU' and q.status_code = 'DA_DUYET' and qs.student_id = pg_temp.d1stu()), 1, 'C60 Đúng: có yêu cầu học bù Đã duyệt gắn em của ticket');
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt6)), 'DA_THUC_HIEN', 'C60 Thực hiện: phiếu Đã thực hiện');
 
 -- ================= C60 (migration 427): phiếu Dừng học đi hết đường ticket → giữ số dư (R-GD-16, R-TIEN-33) =================
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'DUNG_HOC', id, true from app.branch where code = 'CS1'

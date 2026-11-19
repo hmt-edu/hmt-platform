@@ -63,4 +63,23 @@ describe('scheduleTaskForm (phiếu Đổi lịch học, CS-11)', () => {
       ),
     ).toBe('L1 · Buổi 4 · 2026-11-24 18:00–19:30');
   });
+  it('Xin học bù cần lớp, ngày, giờ, lý do; payload không có buổi gốc', () => {
+    const draft = { ...EMPTY_SCHEDULE_DRAFT, action: 'HOC_BU' as const, reason: 'Em ốm' };
+    expect(Object.keys(validateScheduleDraft(draft, true)).sort()).toEqual([
+      'classId',
+      'date',
+      'end',
+      'start',
+    ]);
+    const ok = { ...draft, classId: 'c1', date: '2026-11-25', start: '18:00', end: '19:30' };
+    expect(validateScheduleDraft(ok, true)).toEqual({});
+    expect(buildSchedulePayload(ok)).toEqual({
+      action: 'HOC_BU',
+      class_id: 'c1',
+      date: '2026-11-25',
+      start: '18:00',
+      end: '19:30',
+      note: 'Em ốm',
+    });
+  });
 });
