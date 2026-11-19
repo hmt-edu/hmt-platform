@@ -35,6 +35,15 @@ const PRIORITY_TONE: Record<string, TagTone> = {
   THAP: 'neutral',
 };
 
+/** Cột «Hạn» (canvas CSN-01): Quá hạn, Sắp quá hạn, Chờ đóng, Trong hạn; ticket đã xử lý, đóng, huỷ không tính hạn. */
+function slaCell(status: string, sla: string) {
+  if (['DA_XU_LY', 'DA_DONG', 'DA_HUY'].includes(status) && sla !== 'CHO_DONG') return MUTED;
+  if (sla === 'QUA_HAN') return <Tag tone="danger">Quá hạn</Tag>;
+  if (sla === 'SAP_QUA_HAN') return <Tag tone="warning">Sắp quá hạn</Tag>;
+  if (sla === 'CHO_DONG') return <Tag tone="warning">Chờ đóng</Tag>;
+  return <Tag tone="success">Trong hạn</Tag>;
+}
+
 export function buildTicketConfig(
   catalogs: LeadCatalogs,
   access: AccessView,
@@ -57,7 +66,6 @@ export function buildTicketConfig(
       },
       { key: 'title', label: 'Tiêu đề', render: (r) => r.title },
       { key: 'type', label: 'Loại', render: (r) => TYPE_LABEL[r.ticket_type] ?? r.ticket_type },
-      { key: 'sender', label: 'Người gửi', render: (r) => r.sender_name ?? MUTED },
       {
         key: 'category',
         label: 'Nhóm · Nhóm con',
@@ -69,7 +77,6 @@ export function buildTicketConfig(
             : MUTED,
       },
       { key: 'student', label: 'Học sinh', render: (r) => r.student_name ?? MUTED },
-      { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
       {
         key: 'priority',
         label: 'Mức độ',
@@ -79,7 +86,6 @@ export function buildTicketConfig(
           </Tag>
         ),
       },
-      { key: 'assignee', label: 'Người phụ trách', render: (r) => r.assignee_name ?? MUTED },
       {
         key: 'status',
         label: 'Trạng thái',
@@ -89,26 +95,26 @@ export function buildTicketConfig(
           </Tag>
         ),
       },
+      { key: 'assignee', label: 'Người xử lý', render: (r) => r.assignee_name ?? 'Chưa giao' },
+      // Canvas CSN-01: cột «Hạn» chỉ hiện tình trạng hạn (không gộp ngày); ngày hạn ở cột riêng «Hạn xử lý» (ẩn mặc định).
+      {
+        key: 'sla',
+        label: 'Hạn',
+        render: (r) => slaCell(r.status_code, r.sla_state),
+      },
       {
         key: 'due',
         label: 'Hạn xử lý',
-        render: (r) => (
-          <span
-            className={
-              r.sla_state === 'QUA_HAN'
-                ? 'text-danger'
-                : r.sla_state === 'SAP_QUA_HAN'
-                  ? 'text-warning'
-                  : undefined
-            }
-          >
-            {formatDateTime(r.resolve_due_at)}
-            {r.sla_state === 'QUA_HAN' ? ' · Quá hạn' : ''}
-            {r.sla_state === 'SAP_QUA_HAN' ? ' · Sắp quá hạn' : ''}
-            {r.sla_state === 'CHO_DONG' ? ' · Chờ đóng' : ''}
-          </span>
-        ),
+        defaultVisible: false,
+        render: (r) => formatDateTime(r.resolve_due_at),
       },
+      {
+        key: 'sender',
+        label: 'Người gửi',
+        defaultVisible: false,
+        render: (r) => r.sender_name ?? MUTED,
+      },
+      { key: 'branch', label: 'Cơ sở', defaultVisible: false, render: (r) => r.branch_code },
       { key: 'created', label: 'Tạo lúc', render: (r) => formatDateTime(r.created_at) },
     ],
     quickGroups: [
