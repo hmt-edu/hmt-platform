@@ -265,7 +265,7 @@ function studentTag(
   criteria: ReviewCriterion[],
 ): string {
   if (student.attendance_code === null) return 'Chưa điểm danh';
-  if (!isPresent(student)) return 'Vắng, không chấm';
+  if (!isPresent(student)) return 'Vắng: không có điểm';
   const p = progressOfStudent(draft, student, criteria);
   return p.total > 0 && p.done === p.total ? 'Đủ' : `${p.done}/${p.total}`;
 }
