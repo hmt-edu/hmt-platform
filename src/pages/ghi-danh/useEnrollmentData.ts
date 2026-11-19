@@ -169,3 +169,21 @@ export function useAdjustHours(enrollmentId: string) {
     onSuccess: () => refresh(),
   });
 }
+
+/** Khối «Em có N ghi danh ở lớp này» (GD-02): các ghi danh khác của cùng học sinh ở cùng lớp, kèm tổng giờ còn của lớp. */
+export type SameClassPeers = {
+  class_id: string | null;
+  class_code: string | null;
+  total_remaining: number | null;
+  peers: { id: string; code: string; remaining: number }[];
+};
+
+export function useSameClassPeers(id: string | undefined) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['enrollment-peers', id],
+    enabled: id !== undefined,
+    retry: false,
+    queryFn: () => rpc<SameClassPeers>(supabase, 'enrollment_same_class_peers', { p_id: id }),
+  });
+}
