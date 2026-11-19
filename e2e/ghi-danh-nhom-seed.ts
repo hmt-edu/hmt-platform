@@ -47,9 +47,9 @@ export async function seedGroup(project: string): Promise<GroupSeed> {
       const r = await db.query<{ id: string; code: string }>(
         `select r ->> 'id' as id, r ->> 'code' as code from (select app.create_class(jsonb_build_object('branch_id', (select id from app.branch where code = 'CS5'),
            'year_code', '2627', 'subject_code', $1::text, 'grade_code', 'K08', 'class_type_code', 'CB', 'level_code', 'A', 'max_students', 0,
-           'start_date', (date_trunc('week', current_date) + interval '14 days')::date, 'total_sessions', 6,
+           'start_date', (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days')::date, 'total_sessions', 6,
            'slots', jsonb_build_array(jsonb_build_object('weekday', $2::int, 'start_time', '18:00', 'end_time', '19:30', 'repeat_weeks', 1,
-             'first_date', (date_trunc('week', current_date) + interval '14 days' + make_interval(days => $2::int - 1))::date)))) as r) x`,
+             'first_date', (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days' + make_interval(days => $2::int - 1))::date)))) as r) x`,
         [subject, weekday],
       );
       const c = r.rows[0];

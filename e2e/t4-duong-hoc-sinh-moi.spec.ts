@@ -250,9 +250,9 @@ test('13. TẮT: dựng lớp Đại số khối 9 CS5 đã duyệt, giáo viên
     const created = await db.query<{ id: string; code: string }>(
       `select r ->> 'id' as id, r ->> 'code' as code from (select app.create_class(jsonb_build_object('branch_id', (select id from app.branch where code = 'CS5'),
          'year_code', '2627', 'subject_code', 'DAI', 'grade_code', 'K09', 'class_type_code', 'CB', 'level_code', 'A', 'max_students', 0,
-         'start_date', (date_trunc('week', current_date) + interval '14 days')::date, 'total_sessions', 6,
+         'start_date', (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days')::date, 'total_sessions', 6,
          'slots', jsonb_build_array(jsonb_build_object('weekday', 1, 'start_time', '18:00', 'end_time', '19:30', 'repeat_weeks', 1,
-           'first_date', (date_trunc('week', current_date) + interval '14 days')::date, 'teacher_id', $1::uuid)))) as r) x`,
+           'first_date', (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days')::date, 'teacher_id', $1::uuid)))) as r) x`,
       [gv],
     );
     const cls = created.rows[0];
@@ -283,20 +283,21 @@ test('14. CSKH xếp lớp cho ghi danh trong hàng chờ (GD-06, GD-03)', async
   await expect(table.getByRole('row').filter({ hasText: STUDENT })).toHaveCount(0);
 });
 
+// Ngày của (bây giờ − 1 giờ) theo giờ Việt Nam: buổi 00:00–00:30 luôn đã kết thúc khi bài 18 chạy, kể cả quanh nửa đêm giờ Việt Nam (17:00–17:30 UTC).
 test('15. TẮT: đưa buổi 1 của lớp về hôm nay (đã kết thúc) và ngày vào lớp về hôm nay để vào danh sách buổi', async () => {
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
   try {
     await db.query('begin');
     const s = await db.query<{ id: string }>(
-      `update app.class_session set session_date = (now() at time zone 'Asia/Ho_Chi_Minh')::date, start_time = '00:00', end_time = '00:30'
+      `update app.class_session set session_date = ((now() - interval '1 hour') at time zone 'Asia/Ho_Chi_Minh')::date, start_time = '00:00', end_time = '00:30'
         where class_id = $1::uuid and session_no = 1 returning id`,
       [state.classId],
     );
     state.sessionId = s.rows[0]?.id ?? '';
     expect(state.sessionId).not.toBe('');
     await db.query(
-      `update app.enrollment_class set start_date = (now() at time zone 'Asia/Ho_Chi_Minh')::date where class_id = $1::uuid`,
+      `update app.enrollment_class set start_date = ((now() - interval '1 hour') at time zone 'Asia/Ho_Chi_Minh')::date where class_id = $1::uuid`,
       [state.classId],
     );
     await db.query('commit');
