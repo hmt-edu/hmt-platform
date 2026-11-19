@@ -106,15 +106,19 @@ export function TeacherTodayPage() {
               </h2>
               <ul className="flex flex-col gap-2">
                 {urgent.map((s) => (
-                  <li
-                    key={s.session_id}
-                    className="rounded-control border border-border bg-warning-subtle p-3 text-on-warning-subtle"
-                  >
-                    <p className="font-semibold">{sessionTitle(s)}</p>
-                    <p className="text-caption">
-                      Kết thúc {hhmm(s.end_time)} · {formatDeadline(s.deadline_at, todayKey)}
-                    </p>
-                    <p className="text-caption font-medium">{hoursLeftText(s.deadline_at, now)}</p>
+                  <li key={s.session_id}>
+                    <Link
+                      to={`/gv/buoi/${s.session_id}`}
+                      className="tap block rounded-control border border-border bg-warning-subtle p-3 text-on-warning-subtle hover:underline"
+                    >
+                      <p className="font-semibold">{sessionTitle(s)}</p>
+                      <p className="text-caption">
+                        Kết thúc {hhmm(s.end_time)} · {formatDeadline(s.deadline_at, todayKey)}
+                      </p>
+                      <p className="text-caption font-medium">
+                        {hoursLeftText(s.deadline_at, now)}
+                      </p>
+                    </Link>
                   </li>
                 ))}
               </ul>
