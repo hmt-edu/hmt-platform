@@ -128,7 +128,12 @@ export function BusinessTaskDialog({
       {errors.reasonCode && (
         <p className="text-caption text-on-danger-subtle">{errors.reasonCode}</p>
       )}
-      {type === 'BAO_LUU' ? (
+      {type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC' ? (
+        <p className="text-caption text-fg-muted">
+          Khi thực hiện, bảo lưu kết thúc và em về hàng chờ xếp lớp, giữ nguyên số giờ còn lại. CSKH
+          xếp lớp như thường; em vào danh sách buổi sau khi được xếp lớp.
+        </p>
+      ) : type === 'BAO_LUU' ? (
         <TextField
           label={draft.holdMode === 'GIA_HAN' ? 'Số tháng gia hạn' : 'Số tháng bảo lưu'}
           required
