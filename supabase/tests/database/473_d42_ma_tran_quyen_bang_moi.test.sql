@@ -68,7 +68,7 @@ begin
   return v_n;
 end $$;
 -- Số dòng THẤY THẬT khi chạy bằng vai authenticated với phiên của người đó (RLS).
-create function pg_temp.visible(p_user uuid, p_table text) returns bigint language plpgsql security definer as $$
+create function pg_temp.visible(p_user uuid, p_table text) returns bigint language plpgsql as $$
 declare v_n bigint;
 begin
   perform pg_temp.jwt(p_user);
@@ -79,7 +79,7 @@ begin
   return v_n;
 end $$;
 -- Ghi thẳng bảng (thêm, sửa, xoá) bằng vai authenticated: trả mã lỗi của lần đầu thất bại, hoặc null nếu có lần lọt.
-create function pg_temp.direct_write(p_user uuid, p_table text) returns text language plpgsql security definer as $$
+create function pg_temp.direct_write(p_user uuid, p_table text) returns text language plpgsql as $$
 declare v_state text; v_sql text; v_out text := '42501';
 begin
   perform pg_temp.jwt(p_user);
