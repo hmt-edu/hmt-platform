@@ -346,7 +346,9 @@ export function TicketRecordPage() {
               </Button>
               {ticket.ticket_type !== 'GV' && <Button onClick={openReclass}>Phân loại lại</Button>}
               {canEscalate && <Button onClick={openEscalate}>Nâng cấp</Button>}
-              {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP'].includes(ticket.business_type ?? '') &&
+              {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP', 'DUNG_HOC'].includes(
+                ticket.business_type ?? '',
+              ) &&
                 !(record.data?.tasks ?? []).some((k) =>
                   ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(k.status_code),
                 ) && <Button onClick={openTask}>Tạo phiếu</Button>}
@@ -525,7 +527,9 @@ export function TicketRecordPage() {
           </div>
         )}
       </RecordDetail>
-      {(ticket.business_type === 'BAO_LUU' || ticket.business_type === 'CHUYEN_LOP') && (
+      {(ticket.business_type === 'BAO_LUU' ||
+        ticket.business_type === 'CHUYEN_LOP' ||
+        ticket.business_type === 'DUNG_HOC') && (
         <BusinessTaskDialog
           type={ticket.business_type}
           ticketId={ticket.id}
