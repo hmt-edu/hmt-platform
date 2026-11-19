@@ -44,6 +44,7 @@ const BANG_CHUNG: Record<string, string> = {
 // Các bảng rà tay đối chiếu canvas (mỗi dòng bảng nhắc mã màn và kết luận).
 const NGUON_RA_UI = [
   'docs/nghiep-vu/ra-ui-quan-tri-d50.md',
+  'docs/nghiep-vu/doi-chieu-ui-ban-hang-thu-chi.md',
   'docs/design/doi-chieu-ui-cham-soc-khach-hang.md',
   'docs/design/doi-chieu-ui-cong-giao-vien.md',
   'docs/nghiep-vu/doi-chieu-ui-dao-tao.md',
