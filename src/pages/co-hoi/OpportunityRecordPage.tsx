@@ -533,8 +533,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             label: 'Phụ huynh',
             icon: 'user',
             count: 1,
-            unavailable: 'Có khi làm màn Khách hàng',
-            onOpen: () => undefined,
+            onOpen: () => openFrom(`/crm/phu-huynh/${record.parent_id}`),
           },
           {
             key: 'lead-goc',
