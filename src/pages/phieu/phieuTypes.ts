@@ -42,6 +42,8 @@ export type TaskDetail = {
     months?: number;
     start_date?: string;
     kind_code?: string;
+    dest_branch_id?: string;
+    to_class_id?: string;
     note?: string;
   };
   result: {
@@ -96,6 +98,7 @@ export const TASK_STATUS_LABEL: Record<string, string> = {
 };
 export const LEVEL_ROLE_LABEL: Record<string, string> = {
   QUAN_LY_CO_SO: 'Quản lý cơ sở',
+  QUAN_LY_CO_SO_DICH: 'Quản lý cơ sở đích',
   KE_TOAN: 'Kế toán',
 };
 export const TASK_FIELD_LABEL: Record<string, string> = {
@@ -107,4 +110,41 @@ export const TASK_FIELD_LABEL: Record<string, string> = {
   grade: 'Khối',
   goal: 'Mục tiêu',
   gender: 'Giới tính',
+};
+
+/** Phiếu Chuyển cơ sở nhìn từ quản lý cơ sở đích (app.get_task_for_destination, migration 568): chỉ khi tới lượt. */
+export type DestinationClass = {
+  id: string;
+  code: string;
+  subject_code: string | null;
+  seats_left: number | null;
+  upcoming: { date: string; session_no: number }[];
+};
+export type DestinationTask = {
+  task: {
+    id: string;
+    code: string;
+    reason: string;
+    level: number;
+    level_total: number;
+    from_branch_code: string;
+    dest_branch_code: string;
+    to_class_id: string | null;
+    start_date: string | null;
+    student_name: string | null;
+    hours_left: number;
+    subject_code: string | null;
+    approved_by_source: string | null;
+  };
+  classes: DestinationClass[];
+};
+/** Dòng danh sách phiếu đang chờ cơ sở đích (app.list_tasks_for_destination). */
+export type DestinationRow = {
+  id: string;
+  code: string;
+  ticket_code: string;
+  student_name: string | null;
+  from_branch_code: string;
+  dest_branch_code: string;
+  created_at: string;
 };

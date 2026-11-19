@@ -36,11 +36,13 @@ export type TaskOptions = {
 /** Loại phiếu nghiệp vụ tạo bằng hộp thoại chung: Bảo lưu (kèm gia hạn, tiếp tục học), Chuyển lớp, Dừng học, Chuyển phí. */
 export type BusinessType = 'BAO_LUU' | 'CHUYEN_LOP' | 'DUNG_HOC' | 'CHUYEN_PHI';
 
-/** Loại chuyển lớp chọn được ở phiếu; Chuyển cơ sở chưa làm (cần quản lý hai cơ sở duyệt, R-CS-07). */
+/** Loại chuyển lớp chọn được ở phiếu. Chuyển cơ sở (CS-07, R-CS-07): quản lý cơ sở đi duyệt, rồi quản lý cơ sở đến chọn lớp mới và duyệt. */
+export const BRANCH_TRANSFER = 'CHUYEN_CO_SO';
 export const TRANSFER_KINDS = [
   { value: 'DOI_GIO', label: 'Đổi giờ học' },
   { value: 'DOI_TRINH_DO', label: 'Đổi trình độ' },
   { value: 'DOI_GIAO_VIEN', label: 'Đổi giáo viên' },
+  { value: BRANCH_TRANSFER, label: 'Chuyển cơ sở' },
 ] as const;
 
 /** Hình thức phiếu Bảo lưu: bảo lưu mới hoặc gia hạn bản đang chạy (CSN-06b). */
@@ -60,6 +62,7 @@ export type BusinessDraft = {
   toClassId: string;
   startDate: string;
   kindCode: string;
+  destBranchId: string;
 };
 export type BusinessErrors = Partial<Record<keyof BusinessDraft, string>>;
 
@@ -72,6 +75,7 @@ export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
   toClassId: '',
   startDate: '',
   kindCode: '',
+  destBranchId: '',
 };
 
 export function validateBusinessDraft(
@@ -95,6 +99,11 @@ export function validateBusinessDraft(
           : 'Nhập số tháng bảo lưu (từ 1).';
   } else {
     if (draft.kindCode === '') e.kindCode = 'Chọn loại chuyển.';
+    if (draft.kindCode === BRANCH_TRANSFER) {
+      // Chuyển cơ sở: lớp mới và ngày bắt đầu do quản lý cơ sở đích chọn ở cấp của họ (migration 568), lúc tạo chỉ cần cơ sở đích.
+      if (draft.destBranchId === '') e.destBranchId = 'Chọn cơ sở đích.';
+      return e;
+    }
     if (draft.toClassId === '') e.toClassId = 'Chọn lớp mới.';
     if (draft.startDate === '') e.startDate = 'Chọn buổi bắt đầu ở lớp mới.';
   }
@@ -130,6 +139,14 @@ export function buildBusinessPayload(
       // Gia hạn: nối tiếp bản đang chạy của ghi danh (hàm áp dụng kiểm lại, migration 234).
       ...(draft.holdMode === 'GIA_HAN' && holdId ? { extends_hold_id: holdId } : {}),
     };
+  if (draft.kindCode === BRANCH_TRANSFER)
+    return {
+      enrollment_id: draft.enrollmentId,
+      kind_code: BRANCH_TRANSFER,
+      dest_branch_id: draft.destBranchId,
+      reason_code: draft.reasonCode,
+      note: draft.reason.trim(),
+    };
   return {
     enrollment_id: draft.enrollmentId,
     to_class_id: draft.toClassId,
@@ -161,4 +178,12 @@ export function holdEnrollmentChoices(options: TaskOptions, mode: HoldMode) {
 /** Bảo lưu đang chạy của một ghi danh (để gia hạn); không có thì null. */
 export function runningHold(options: TaskOptions, enrollmentId: string) {
   return (options.holds ?? []).find((h) => h.enrollment_id === enrollmentId) ?? null;
+}
+
+/** Cơ sở đích chọn được: cơ sở dạy học, khác cơ sở của ticket (máy chủ kiểm lại cơ sở đang hoạt động). */
+export function destBranchChoices(
+  branches: { id: string; code: string; name: string; is_office: boolean }[],
+  ticketBranchCode: string | null,
+) {
+  return branches.filter((b) => !b.is_office && b.code !== ticketBranchCode);
 }

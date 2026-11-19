@@ -1,11 +1,14 @@
 // Hộp thoại tạo phiếu Bảo lưu hoặc Chuyển lớp từ chi tiết ticket (CSN-06a, CSN-06b). Dữ liệu gửi app.create_ticket_task; luật chặn thật ở DB.
 import { useState } from 'react';
+import { useAccess } from '../../nav/AccessContext';
 import { FormDialog } from '../../ui/Dialogs';
 import { TextAreaField, TextField } from '../../ui/Field';
 import { OptionalSelect } from '../../ui/OptionalSelect';
 import { formatDate } from '../../lib/format';
 import {
+  BRANCH_TRANSFER,
   buildBusinessPayload,
+  destBranchChoices,
   classChoices,
   EMPTY_BUSINESS_DRAFT,
   HOLD_MODES,
@@ -24,6 +27,7 @@ export function BusinessTaskDialog({
   type,
   ticketId,
   ticketCode,
+  ticketBranchCode = null,
   hasStudent,
   open,
   onOpenChange,
@@ -34,6 +38,8 @@ export function BusinessTaskDialog({
   type: BusinessType;
   ticketId: string;
   ticketCode: string;
+  /** Cơ sở của ticket, loại khỏi danh sách cơ sở đích khi Chuyển cơ sở. */
+  ticketBranchCode?: string | null;
   hasStudent: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -42,6 +48,7 @@ export function BusinessTaskDialog({
   onCreate: (reason: string, payload: unknown) => void;
 }) {
   const options = useTaskOptions(ticketId, open && hasStudent);
+  const access = useAccess();
   const [draft, setDraft] = useState<BusinessDraft>(EMPTY_BUSINESS_DRAFT);
   const [show, setShow] = useState(false);
   const set = (patch: Partial<BusinessDraft>) => setDraft((d) => ({ ...d, ...patch }));
@@ -64,6 +71,8 @@ export function BusinessTaskDialog({
         : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU');
   const hold = data && type === 'BAO_LUU' ? runningHold(data, draft.enrollmentId) : null;
   const newClass = classes.find((c) => c.id === draft.toClassId);
+  const toOtherBranch = draft.kindCode === BRANCH_TRANSFER;
+  const destBranches = destBranchChoices(access.allBranches, ticketBranchCode);
 
   const submit = () => {
     setShow(true);
@@ -167,7 +176,7 @@ export function BusinessTaskDialog({
           <OptionalSelect
             label="Loại chuyển"
             value={draft.kindCode}
-            onChange={(v) => set({ kindCode: v })}
+            onChange={(v) => set({ kindCode: v, toClassId: '', startDate: '', destBranchId: '' })}
             options={TRANSFER_KINDS.map((k) => ({ value: k.value, label: k.label }))}
             placeholder="Chọn loại chuyển"
             invalid={errors.kindCode !== undefined}
@@ -175,32 +184,54 @@ export function BusinessTaskDialog({
           {errors.kindCode && (
             <p className="text-caption text-on-danger-subtle">{errors.kindCode}</p>
           )}
-          <OptionalSelect
-            label="Lớp mới"
-            value={draft.toClassId}
-            onChange={(v) => set({ toClassId: v, startDate: '' })}
-            options={classes.map((c) => ({ value: c.id, label: c.code }))}
-            placeholder="Chọn lớp"
-            disabled={draft.enrollmentId === ''}
-            invalid={errors.toClassId !== undefined}
-          />
-          {errors.toClassId && (
-            <p className="text-caption text-on-danger-subtle">{errors.toClassId}</p>
-          )}
-          <OptionalSelect
-            label="Hiệu lực từ buổi"
-            value={draft.startDate}
-            onChange={(v) => set({ startDate: v })}
-            options={(newClass?.upcoming ?? []).map((u) => ({
-              value: u.date,
-              label: `Buổi ${u.session_no} · ${formatDate(u.date)}`,
-            }))}
-            placeholder="Chọn buổi"
-            disabled={newClass === undefined}
-            invalid={errors.startDate !== undefined}
-          />
-          {errors.startDate && (
-            <p className="text-caption text-on-danger-subtle">{errors.startDate}</p>
+          {toOtherBranch ? (
+            <>
+              <OptionalSelect
+                label="Cơ sở đích"
+                value={draft.destBranchId}
+                onChange={(v) => set({ destBranchId: v })}
+                options={destBranches.map((b) => ({ value: b.id, label: `${b.code} · ${b.name}` }))}
+                placeholder="Chọn cơ sở"
+                invalid={errors.destBranchId !== undefined}
+              />
+              {errors.destBranchId && (
+                <p className="text-caption text-on-danger-subtle">{errors.destBranchId}</p>
+              )}
+              <p className="text-caption text-fg-muted">
+                Chuyển cơ sở giữ nguyên số giờ còn lại. Quản lý cơ sở đi duyệt trước; rồi quản lý cơ
+                sở đích chọn lớp mới và duyệt.
+              </p>
+            </>
+          ) : (
+            <>
+              <OptionalSelect
+                label="Lớp mới"
+                value={draft.toClassId}
+                onChange={(v) => set({ toClassId: v, startDate: '' })}
+                options={classes.map((c) => ({ value: c.id, label: c.code }))}
+                placeholder="Chọn lớp"
+                disabled={draft.enrollmentId === ''}
+                invalid={errors.toClassId !== undefined}
+              />
+              {errors.toClassId && (
+                <p className="text-caption text-on-danger-subtle">{errors.toClassId}</p>
+              )}
+              <OptionalSelect
+                label="Hiệu lực từ buổi"
+                value={draft.startDate}
+                onChange={(v) => set({ startDate: v })}
+                options={(newClass?.upcoming ?? []).map((u) => ({
+                  value: u.date,
+                  label: `Buổi ${u.session_no} · ${formatDate(u.date)}`,
+                }))}
+                placeholder="Chọn buổi"
+                disabled={newClass === undefined}
+                invalid={errors.startDate !== undefined}
+              />
+              {errors.startDate && (
+                <p className="text-caption text-on-danger-subtle">{errors.startDate}</p>
+              )}
+            </>
           )}
         </>
       )}

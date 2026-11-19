@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  BRANCH_TRANSFER,
   buildBusinessPayload,
+  destBranchChoices,
   holdEnrollmentChoices,
   runningHold,
   classChoices,
@@ -180,5 +182,32 @@ describe('Phiếu Chuyển phí (CS-10, R-GD-10 mục 9)', () => {
       reason_code: 'DOI_LICH_BAN',
       note: 'Chuyển sang môn khác',
     });
+  });
+});
+
+describe('phiếu Chuyển cơ sở (CS-07)', () => {
+  const branch = { ...full, kindCode: BRANCH_TRANSFER };
+  it('bắt chọn cơ sở đích, không cần lớp mới và ngày bắt đầu', () => {
+    expect(validateBusinessDraft('CHUYEN_LOP', branch, true).destBranchId).toBeDefined();
+    expect(validateBusinessDraft('CHUYEN_LOP', { ...branch, destBranchId: 'b2' }, true)).toEqual(
+      {},
+    );
+  });
+  it('payload có dest_branch_id, không có lớp và ngày', () => {
+    expect(buildBusinessPayload('CHUYEN_LOP', { ...branch, destBranchId: 'b2' })).toEqual({
+      enrollment_id: 'e1',
+      kind_code: 'CHUYEN_CO_SO',
+      dest_branch_id: 'b2',
+      reason_code: 'BAN_THI',
+      note: 'Em tham gia đội tuyển.',
+    });
+  });
+  it('cơ sở đích bỏ văn phòng và cơ sở của ticket', () => {
+    const all = [
+      { id: '1', code: 'CS1', name: 'A', is_office: false },
+      { id: '2', code: 'CS2', name: 'B', is_office: false },
+      { id: '3', code: 'VP', name: 'Văn phòng', is_office: true },
+    ];
+    expect(destBranchChoices(all, 'CS1').map((b) => b.code)).toEqual(['CS2']);
   });
 });

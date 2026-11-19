@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
-import { TRANSFER_KINDS } from './businessTaskForm';
+import { BRANCH_TRANSFER, TRANSFER_KINDS } from './businessTaskForm';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
@@ -26,7 +26,14 @@ import {
   TASK_STATUS_LABEL,
   TASK_TYPE_LABEL,
 } from './phieuTypes';
-import { runTaskAction, useRefreshTasks, useTaskRecord, type TaskAction } from './usePhieuData';
+import { DestinationTaskView } from './DestinationTaskView';
+import {
+  runTaskAction,
+  useDestinationTask,
+  useRefreshTasks,
+  useTaskRecord,
+  type TaskAction,
+} from './usePhieuData';
 
 const STEPS: StageStep[] = ['NHAP', 'CHO_DUYET', 'DA_DUYET', 'DA_THUC_HIEN'].map((code) => ({
   code,
@@ -46,6 +53,8 @@ export function TaskRecordPage() {
   const toast = useToast();
   const refresh = useRefreshTasks();
   const record = useTaskRecord(id);
+  // Người ở cơ sở đích không đọc được phiếu theo đường thường: thử đường dành riêng cho cơ sở đích (chỉ khi tới lượt, CS-07).
+  const destination = useDestinationTask(id, record.isError);
   const [asking, setAsking] = useState<Asking>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
@@ -54,7 +63,12 @@ export function TaskRecordPage() {
   useCrumbTail(task?.code ?? '');
   const entries = useMemo(() => taskTimeline(record.data?.events ?? []), [record.data]);
 
-  if (record.isPending) return <Spinner label="Đang tải phiếu…" />;
+  if (
+    record.isPending ||
+    (record.isError && destination.isPending && destination.fetchStatus !== 'idle')
+  )
+    return <Spinner label="Đang tải phiếu…" />;
+  if (record.isError && destination.data) return <DestinationTaskView data={destination.data} />;
   if (record.isError || !task || !record.data)
     return (
       <QueryErrorView error={record.error} subject="phiếu" onRetry={() => void record.refetch()} />
@@ -253,6 +267,27 @@ export function TaskRecordPage() {
                       TRANSFER_KINDS.find((k) => k.value === task.payload.kind_code)?.label ?? ''
                     }
                   />
+                  {task.payload.kind_code === BRANCH_TRANSFER && (
+                    <>
+                      <DetailField
+                        label="Cơ sở đích"
+                        mode="view"
+                        value={
+                          access.allBranches.find((b) => b.id === task.payload.dest_branch_id)
+                            ?.name ?? ''
+                        }
+                      />
+                      <DetailField
+                        label="Lớp mới"
+                        mode="view"
+                        value={
+                          task.payload.to_class_id
+                            ? 'Quản lý cơ sở đích đã chọn'
+                            : 'Chờ quản lý cơ sở đích chọn'
+                        }
+                      />
+                    </>
+                  )}
                   <DetailField
                     label="Hiệu lực từ ngày"
                     mode="view"
