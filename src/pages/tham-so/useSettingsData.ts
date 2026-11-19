@@ -1,10 +1,10 @@
 // Gọi dữ liệu QT-09 Cài đặt tham số: đọc setting_def và setting_branch (Admin; vài chục dòng, một lần gọi mỗi bảng), ghi qua hàm DB set_setting và
 // clear_setting_override (kiểm quyền, kiểm khoảng và ghi nhật ký ở DB).
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { fetchRows, rpc, useDb } from '../../lib/db';
-import type { SettingDef, SettingOverride } from './settingsLogic';
+import type { SettingDef, SettingHistoryPage, SettingOverride } from './settingsLogic';
 
 export function useSettingDefs() {
   const supabase = useDb();
@@ -69,4 +69,25 @@ export function useRefreshSettings() {
       client.invalidateQueries({ queryKey: ['setting-int'] }),
     ]);
   }, [client]);
+}
+
+/** Một trang lịch sử đổi giá trị tham số (rpc list_setting_history, chỉ Admin); key rỗng = mọi tham số. */
+export function useSettingHistory(
+  key: string | null,
+  offset: number,
+  limit: number | null,
+  enabled: boolean,
+) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['setting-history', key, offset, limit],
+    enabled: enabled && limit !== null,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<SettingHistoryPage>(supabase, 'list_setting_history', {
+        p_key: key,
+        p_limit: limit,
+        p_offset: offset,
+      }),
+  });
 }

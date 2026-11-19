@@ -20,6 +20,31 @@ export type SettingOverride = {
   is_active: boolean;
 };
 
+/** Một dòng lịch sử đổi giá trị (khớp app.list_setting_history, migration 480). branch_code rỗng = giá trị chung. */
+export type SettingHistoryRow = {
+  id: number;
+  at: string;
+  setting_key: string;
+  branch_code: string | null;
+  action: 'I' | 'U';
+  old_value: string | null;
+  new_value: string | null;
+  actor_name: string | null;
+};
+export type SettingHistoryPage = { total: number; rows: SettingHistoryRow[] };
+
+/** Giá trị trong lịch sử: kèm đơn vị khi biết tham số; thiếu giá trị (nhật ký không chép lúc tạo) hiện gạch. */
+export function formatHistoryValue(def: SettingDef | undefined, stored: string | null): string {
+  if (stored === null) return '—';
+  return def ? formatSetting(def, stored) : stored;
+}
+
+/** Tên người sửa trong lịch sử; không có người (khai báo bằng migration) hiện "Hệ thống". */
+export const historyActor = (name: string | null): string => name ?? 'Hệ thống';
+
+/** Phạm vi của dòng lịch sử: "Chung" hoặc mã cơ sở. */
+export const historyScope = (row: SettingHistoryRow): string => row.branch_code ?? 'Chung';
+
 /** Tên nhóm theo `module` của tham số; tham số không có module vào nhóm "Chung". */
 export const GROUP_LABEL: Record<string, string> = {
   BAN_HANG: 'Bán hàng',
