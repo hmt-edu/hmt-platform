@@ -191,7 +191,7 @@ test('Gia hạn bảo lưu: nối tiếp bản đang chạy, ghi danh vẫn Bả
     async (db) =>
       (
         await db.query<{ kind: string; status: string }>(
-          `select kind_code as kind, status_code as status from app.enrollment_hold h join app.enrollment e on e.id = h.enrollment_id
+          `select h.kind_code as kind, h.status_code as status from app.enrollment_hold h join app.enrollment e on e.id = h.enrollment_id
           where e.code = $1 order by h.created_at`,
           [`GDE2E${tag}`],
         )
