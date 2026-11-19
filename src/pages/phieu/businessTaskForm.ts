@@ -30,10 +30,11 @@ export const TRANSFER_KINDS = [
 ] as const;
 
 /** Hình thức phiếu Bảo lưu: bảo lưu mới hoặc gia hạn bản đang chạy (CSN-06b). */
-export type HoldMode = 'MOI' | 'GIA_HAN';
+export type HoldMode = 'MOI' | 'GIA_HAN' | 'TIEP_TUC';
 export const HOLD_MODES: { value: HoldMode; label: string }[] = [
   { value: 'MOI', label: 'Bảo lưu mới' },
   { value: 'GIA_HAN', label: 'Gia hạn bảo lưu' },
+  { value: 'TIEP_TUC', label: 'Tiếp tục học' },
 ];
 
 export type BusinessDraft = {
@@ -71,7 +72,7 @@ export function validateBusinessDraft(
   if (draft.reason.trim() === '') e.reason = 'Nhập lý do của phiếu.';
   if (type === 'BAO_LUU') {
     const m = Number(draft.months);
-    if (!Number.isInteger(m) || m < 1)
+    if (draft.holdMode !== 'TIEP_TUC' && (!Number.isInteger(m) || m < 1))
       e.months =
         draft.holdMode === 'GIA_HAN'
           ? 'Nhập số tháng gia hạn (từ 1).'
@@ -90,6 +91,14 @@ export function buildBusinessPayload(
   draft: BusinessDraft,
   holdId: string | null = null,
 ) {
+  if (type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC')
+    // Tiếp tục học (quay lại sớm): kết thúc bảo lưu, về hàng chờ xếp lớp, giữ giờ (migration 424).
+    return {
+      enrollment_id: draft.enrollmentId,
+      reason_code: draft.reasonCode,
+      note: draft.reason.trim(),
+      resume: true,
+    };
   if (type === 'BAO_LUU')
     return {
       enrollment_id: draft.enrollmentId,
@@ -119,7 +128,7 @@ export function classChoices(options: TaskOptions, enrollmentId: string) {
   );
 }
 
-/** Ghi danh chọn được theo hình thức: Gia hạn chỉ cho ghi danh có bảo lưu đang chạy; Bảo lưu mới chỉ cho ghi danh chưa bảo lưu. */
+/** Ghi danh chọn được theo hình thức: Gia hạn và Tiếp tục học chỉ cho ghi danh có bảo lưu đang chạy; Bảo lưu mới chỉ cho ghi danh chưa bảo lưu. */
 export function holdEnrollmentChoices(options: TaskOptions, mode: HoldMode) {
   const running = new Set((options.holds ?? []).map((h) => h.enrollment_id));
   return options.enrollments.filter((x) =>

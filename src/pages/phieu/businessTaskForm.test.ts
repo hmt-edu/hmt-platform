@@ -120,4 +120,15 @@ describe('Gia hạn bảo lưu (CSN-06b, R-GD-09)', () => {
       'Nhập số tháng gia hạn (từ 1).',
     );
   });
+  it('Tiếp tục học: gửi resume, không đòi số tháng, chỉ ghi danh có bảo lưu đang chạy', () => {
+    const draft = { ...full, holdMode: 'TIEP_TUC' as const, months: '' };
+    expect(validateBusinessDraft('BAO_LUU', draft, true).months).toBeUndefined();
+    expect(buildBusinessPayload('BAO_LUU', draft, 'h1')).toEqual({
+      enrollment_id: 'b',
+      reason_code: 'THI',
+      note: 'Chưa thi xong',
+      resume: true,
+    });
+    expect(holdEnrollmentChoices(options, 'TIEP_TUC').map((x) => x.id)).toEqual(['b']);
+  });
 });
