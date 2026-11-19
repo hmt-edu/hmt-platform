@@ -5,7 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
-import { errorOf, useDb } from '../../lib/db';
+import { errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
@@ -51,6 +51,7 @@ export function TicketRecordPage() {
   const { id } = useParams();
   const supabase = useDb();
   const access = useAccess();
+  const warnPercent = useIntSetting('as_sla_warn_percent');
   const toast = useToast();
   const queryClient = useQueryClient();
   const catalogs = useLeadCatalogs();
@@ -420,6 +421,7 @@ export function TicketRecordPage() {
             <DetailField label="Người phụ trách" mode="view" value={ticket.assignee_name ?? ''} />
             <DetailField
               label="Mức độ"
+              hint="Đổi mức độ thì hạn tính lại từ lúc tạo."
               mode="view"
               value={catalogs.name('TICKET_PRIORITY', ticket.priority_code) ?? ''}
             />
@@ -434,6 +436,11 @@ export function TicketRecordPage() {
             />
             <DetailField
               label="Hạn xử lý"
+              hint={
+                warnPercent !== null
+                  ? `Theo loại, mức độ, nhóm con. Còn dưới ${warnPercent}% thời gian thì Sắp quá hạn.`
+                  : undefined
+              }
               mode="view"
               value={
                 <>
@@ -534,7 +541,8 @@ export function TicketRecordPage() {
       </RecordDetail>
       {(ticket.business_type === 'BAO_LUU' ||
         ticket.business_type === 'CHUYEN_LOP' ||
-        ticket.business_type === 'DUNG_HOC') && (
+        ticket.business_type === 'DUNG_HOC' ||
+        ticket.business_type === 'CHUYEN_PHI') && (
         <BusinessTaskDialog
           type={ticket.business_type}
           ticketId={ticket.id}

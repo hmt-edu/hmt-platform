@@ -215,7 +215,7 @@ select is((select status_code from app.ticket_task where id = pg_temp.pk('tt')),
 
 -- ================= Phiếu Chuyển lớp =================
 select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cl'), 'CHUYEN_LOP', 'Đổi giờ', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'reason_code', 'KHAC'))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: phiếu Chuyển lớp thiếu lớp mới, ngày, loại');
-select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cl'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'to_class_id', pg_temp.c('x5'), 'start_date', pg_temp.mon(), 'kind_code', 'CHUYEN_CO_SO', 'reason_code', 'KHAC'))$$), 'HMT_PHIEU_CHUA_LAM', 'Chặn: Chuyển cơ sở cần hai quản lý duyệt, chưa làm ở phiếu');
+select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cl'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'kind_code', 'CHUYEN_CO_SO', 'reason_code', 'KHAC'))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: chuyển cơ sở thiếu cơ sở đích (CS-07; lớp mới do quản lý cơ sở đích chọn sau)');
 insert into tp select 'cl', (app.create_ticket_task(pg_temp.k('cl'), 'CHUYEN_LOP', 'Đổi giờ học', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'to_class_id', pg_temp.c('c'), 'start_date', pg_temp.mon() + 1, 'kind_code', 'DOI_GIO', 'reason_code', 'KHAC')) ->> 'id')::uuid;
 select app.submit_ticket_task(pg_temp.pk('cl'));
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');

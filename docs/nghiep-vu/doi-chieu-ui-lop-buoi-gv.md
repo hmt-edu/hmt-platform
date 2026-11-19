@@ -8,11 +8,11 @@ Cách làm: lấy mọi chữ hiện trong các khung canvas cùng mã màn (`LO
 | LOP-03 Tạo, sửa lớp | cùng khối «Tổ chức lớp»; «Tạo lớp còn lại cho nhóm này»; «Xem trước ngày kết thúc dự kiến» (số buổi theo khung, đã bỏ ngày nghỉ lễ); câu lỗi «Bắt buộc nhập…» | **lệch**: ba chỗ thiếu (khối Tổ chức lớp, tạo lớp còn lại, khung xem trước); câu lỗi khác chữ |
 | LOP-05 Trình, xác nhận, duyệt, từ chối lớp | khối «Tổ chức lớp» (như LOP-02) | **gần đúng** |
 | LOP-06 Đóng, huỷ lớp | khối «Tổ chức lớp» (như LOP-02); các câu chặn có | **gần đúng** |
-| LOP-08 Lịch tuần cơ sở | chú giải «Cùng nhóm: cùng màu viền», «Cảnh báo trùng phòng hoặc giáo viên (không chặn)» | **gần đúng**: có luân phiên và cảnh báo trùng, thiếu chữ chú giải |
+| LOP-08 Lịch tuần cơ sở | chú giải «Cùng nhóm: cùng màu viền», «Cảnh báo trùng phòng hoặc giáo viên (không chặn)» | **đúng** (20/11: đã thêm chú giải ba dòng theo khung Man_LOP08) |
 | BUOI-02 Buổi học (bản ghi) | «Kênh báo», «Người ghi» (buổi nháp), «Trung tâm huỷ buổi (cả lớp nghỉ)», «Buổi đã huỷ theo yêu cầu của học sinh lớp riêng» | **gần đúng**: thiếu các nhãn ở khối huỷ buổi và ghi nhận báo vắng |
 | BUOI-04 Huỷ buổi | «Buổi đã huỷ: không có nhận xét» | **gần đúng** |
 | BUOI-05 Dời buổi, BUOI-06 Thêm học thử | không có chữ thiếu | khớp |
-| BUOI-07 Học bù (tạo), BUOI-08 Củng cố (tạo), BUOI-09 Bổ trợ (tạo) | «Thông tin yêu cầu», «Nhãn bài hiện tại», «Nhãn bài sau khi chèn», câu lỗi «Bắt buộc chọn buổi học bù», «Bắt buộc nhập ngày buổi củng cố» | **gần đúng**: thiếu nhãn khối và chữ lỗi |
+| BUOI-07 Học bù (tạo), BUOI-08 Củng cố (tạo), BUOI-09 Bổ trợ (tạo) | «Thông tin yêu cầu», «Nhãn bài hiện tại», «Nhãn bài sau khi chèn», câu lỗi «Bắt buộc chọn buổi học bù», «Bắt buộc nhập ngày buổi củng cố» | **gần đúng** (20/11: đã thêm nhãn khối «Thông tin yêu cầu», «Buổi củng cố», «Buổi học bổ trợ»). Còn vênh, chưa làm: (1) BUOI-07 canvas chọn Lớp học bù và Buổi học bù có sẵn, code theo luật R-BUOI-03 (sinh buổi mới, tạo từ lớp) nên luật thắng; (2) BUOI-08 thiếu bảng «Xem trước dời nhãn bài» (cần hàm đọc, xin Chat) và ô Học sinh (cả lớp); (3) BUOI-09 canvas hiện «còn N giờ» cạnh từng em, code chưa hiện; (4) chữ lỗi «Bắt buộc…» canvas khác câu «Chọn…» hiện có, chưa đổi vì chưa thấy khung chữ lỗi |
 | BUOI-11 Điểm danh vận hành | chỉ có tên mẫu và nhãn «Lọc thông minh» | khớp |
 | BUOI-13 Đổi giáo viên một buổi, BUOI-14 Sửa điểm danh | chỉ có tên mẫu | khớp |
 | GV-11 Lớp (chi tiết giáo viên) | «Lớp chưa có học sinh và chưa có buổi», «Về Lớp của tôi» (trạng thái trống) | **gần đúng**: thiếu câu trạng thái trống |

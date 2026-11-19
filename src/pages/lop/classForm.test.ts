@@ -9,6 +9,7 @@ import {
   newSlot,
   longSlotWarning,
   slotSummary,
+  teacherOptionLabel,
   slotsPayload,
   validateForm,
   type ClassFormState,
@@ -218,5 +219,58 @@ describe('longSlotWarning (nhắc khung giờ quá dài, không chặn)', () => 
   it('giờ trống hoặc kết thúc không sau bắt đầu thì không nhắc (đã có lỗi riêng)', () => {
     expect(longSlotWarning('', '23:30')).toBeNull();
     expect(longSlotWarning('20:00', '19:00')).toBeNull();
+  });
+});
+
+describe('teacherOptionLabel (gợi ý từ hồ sơ dạy)', () => {
+  it('chưa biết hồ sơ thì chỉ tên; chưa có hồ sơ thì ghi rõ nhưng vẫn chọn được', () => {
+    expect(teacherOptionLabel({ name: 'Cô Lan' })).toBe('Cô Lan');
+    expect(teacherOptionLabel({ name: 'Cô Lan', has_profile: false })).toBe(
+      'Cô Lan (chưa có hồ sơ dạy)',
+    );
+  });
+  it('có hồ sơ thì kèm môn, khối', () => {
+    expect(
+      teacherOptionLabel({
+        name: 'Cô Lan',
+        has_profile: true,
+        subject_names: ['Toán', 'Tiếng Anh'],
+        grade_names: ['Lớp 6'],
+      }),
+    ).toBe('Cô Lan · Toán, Tiếng Anh · Lớp 6');
+    expect(teacherOptionLabel({ name: 'Cô Lan', has_profile: true })).toBe('Cô Lan');
+  });
+
+  it('Time Table: buổi đầu rơi đúng thứ, kể cả khi khai giảng đúng thứ đó hoặc là Chủ nhật', () => {
+    expect(firstDateOnOrAfter('2026-11-17', 2)).toBe('2026-11-17'); // thứ Ba khai giảng thứ Ba
+    expect(firstDateOnOrAfter('2026-11-17', 1)).toBe('2026-11-23'); // thứ Hai kế tiếp
+    expect(firstDateOnOrAfter('2026-11-22', 7)).toBe('2026-11-22'); // Chủ nhật
+    expect(firstDateOnOrAfter('', 2)).toBe('');
+    expect(isoWeekday('2026-11-22')).toBe(7);
+  });
+
+  it('Time Table: dữ liệu gửi đổi ô trống thành null và cách lặp thành số, giữ nhiều khung một ngày', () => {
+    const a: SlotDraft = {
+      ...newSlot(2, '2026-11-17'),
+      key: 'a',
+      teacherId: 't1',
+      repeatWeeks: '2',
+    };
+    const b: SlotDraft = { ...newSlot(2, '2026-11-17'), key: 'b', start: '19:30', end: '21:00' };
+    const out = slotsPayload([a, b]);
+    expect(out).toHaveLength(2);
+    expect(out[0]).toMatchObject({
+      weekday: 2,
+      teacher_id: 't1',
+      assistant_id: null,
+      room_id: null,
+      repeat_weeks: 2,
+    });
+    expect(out[1]).toMatchObject({
+      start_time: '19:30',
+      end_time: '21:00',
+      teacher_id: null,
+      repeat_weeks: 1,
+    });
   });
 });

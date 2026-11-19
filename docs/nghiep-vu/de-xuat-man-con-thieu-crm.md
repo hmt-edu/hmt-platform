@@ -29,3 +29,16 @@ Script không thấy mã ở đầu file nên báo «chưa có» hoặc «chỉ 
   4. Em đang bảo lưu, đã dừng học hoặc nghỉ: có lên khối không, hay bỏ qua?
   5. Xem trước: có hiện danh sách từng em (khối cũ, khối mới) để bỏ tick loại trừ trước khi xác nhận không? Em học vượt cấp hoặc học lại thì sửa tay thế nào?
   6. Hoàn tác: sau khi xác nhận có cho hoàn tác cả đợt (trong bao lâu) không, hay chỉ sửa khối từng em? Ghi nhật ký theo từng em hay một dòng cho cả đợt?
+
+## LOP-02 / LOP-03: câu hỏi quyết định DB (Code A, 20/11/2026, để Chat hỏi anh Trường)
+
+Hiện trạng: nhóm lớp đã có (bảng `app.class_group`, cột `app.class.group_id`, luật R-LOP-14 đã CHỐT). LOP-02 đã hiện «Cùng nhóm» và «Lớp còn lại của nhóm» (migration 310). Canvas 9933 (`LOP03_tao`, `LOP03_sua`, `LOP02_*`) còn bốn chỗ chưa có trong code. Chi tiết đề xuất cũ: `docs/spec/de-xuat-hinh-thuc-hoc-to-chuc-lop.md`.
+
+| # | Câu hỏi | Lựa chọn | Khuyến nghị | Hệ quả |
+|---|---|---|---|---|
+| 1 | Ô «Tổ chức lớp» (Học chung, Học riêng) trùng ý Phân loại «Lớp riêng»? | A. Bỏ ô, hiện chữ tự suy từ Phân loại (Lớp riêng = Học riêng, còn lại = Học chung). B. Giữ thành cột riêng, tự nhập. | **A** | A: không migration, không mâu thuẫn «Cơ bản + Học riêng». B: thêm cột, phải nêu quan hệ với Phân loại. |
+| 2 | «Hình thức học» của LỚP (Offline, Online, OMO): thêm không? Ghi danh đã có OFF, ONL (R-TIEN-12). | A. Thêm danh mục lớp OFF, ONL, OMO + cột `delivery_mode_code` (lớp cũ mặc định OFF); xếp lớp chỉ CẢNH BÁO khi lệch. B. Như A nhưng CHẶN xếp lớp khi lệch (OMO nhận cả hai). C. Không thêm. | **A** (chặn sau khi anh thấy dữ liệu thật) | A, B: một migration mức CAO nhẹ + pgTAP, B đụng luật xếp lớp, cần Tester. C: bỏ ô, canvas vênh. |
+| 3 | «Tạo lớp còn lại cho nhóm này»: lớp mới có sao chép giáo viên, lịch không? | A. Điền sẵn nhóm, cơ sở, năm, khối, phân loại; để TRỐNG môn, giáo viên, lịch (mỗi lớp độc lập, R-LOP-14). B. Sao chép cả lịch, giáo viên. | **A** | Không migration (dùng `create_class` có `group_id`). Làm được ngay khi anh chốt. |
+| 4 | «Xem trước ngày kết thúc dự kiến» ở form Tạo/sửa lớp (số buổi theo khung, bỏ ngày nghỉ lễ, R-LOP-09, R-LOP-12). | A. Hàm đọc mới tính từ khung giờ đang nhập (chưa lưu). B. Chỉ hiện sau khi Lưu nháp (dùng ngày đã sinh). | **A** | A: một hàm đọc `security definer`, không đổi bảng, một migration nhẹ + pgTAP. B: không migration nhưng không «xem trước» đúng nghĩa. |
+
+Ghi chú: «kiểm môn theo khối khi tạo lớp» (R-LOP-14, [CHỜ anh quyết]) vẫn chưa quyết, không gộp vào bốn câu trên.
