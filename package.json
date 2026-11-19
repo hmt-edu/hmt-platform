@@ -27,7 +27,8 @@
     "db:seed-lon": "docker exec -i \"supabase_db_$(sed -n 's/^project_id = \"\\(.*\\)\"/\\1/p' supabase/config.toml)\" psql -U postgres -q < supabase/seed-lon.sql",
     "size": "node scripts/bundle-size.ts",
     "db:seed-lon-lop-buoi": "docker exec -i \"supabase_db_$(sed -n 's/^project_id = \"\\(.*\\)\"/\\1/p' supabase/config.toml)\" psql -U postgres -q < supabase/seed-lon-lop-buoi.sql",
-    "db:seed-lon-phieu-thu": "docker exec -i \"supabase_db_$(sed -n 's/^project_id = \"\\(.*\\)\"/\\1/p' supabase/config.toml)\" psql -U postgres -q < supabase/seed-lon-phieu-thu.sql"
+    "db:seed-lon-phieu-thu": "docker exec -i \"supabase_db_$(sed -n 's/^project_id = \"\\(.*\\)\"/\\1/p' supabase/config.toml)\" psql -U postgres -q < supabase/seed-lon-phieu-thu.sql",
+    "chup-anh": "bash scripts/chup-anh.sh"
   },
   "dependencies": {
     "@fontsource/be-vietnam-pro": "5.3.0",
