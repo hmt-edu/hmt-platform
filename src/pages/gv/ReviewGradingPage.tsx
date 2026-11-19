@@ -239,6 +239,8 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
               onNext={() =>
                 setSelected((current) => Math.min(current + 1, sheet.students.length - 1))
               }
+              onSaveNext={() => submit(Math.min(selected + 1, sheet.students.length - 1))}
+              saving={save.isPending}
               onPrev={() => setSelected((current) => Math.max(current - 1, 0))}
               showHint={showHint}
               toggleHint={() => setShowHint((v) => !v)}
@@ -278,6 +280,8 @@ function StudentCard({
   setDraft,
   editable,
   onNext,
+  onSaveNext,
+  saving,
   onPrev,
   showHint,
   toggleHint,
@@ -291,6 +295,9 @@ function StudentCard({
   setDraft: (next: ReviewDraft) => void;
   editable: boolean;
   onNext: () => void;
+  /** Lưu cả phiếu rồi sang em kế (canvas GV-07 điện thoại: «Lưu và em tiếp theo»). */
+  onSaveNext: () => void;
+  saving: boolean;
   onPrev: () => void;
   showHint: boolean;
   toggleHint: () => void;
@@ -310,7 +317,7 @@ function StudentCard({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-body font-medium">
-            [HS {index + 1}/{sheet.students.length}] {student.full_name}
+            Em {index + 1}/{sheet.students.length} · {student.full_name}
           </p>
           <p className="text-caption text-fg-muted">
             {student.attendance_name ?? 'Chưa điểm danh'}
@@ -327,6 +334,11 @@ function StudentCard({
           <Button size="sm" onClick={onNext} disabled={index >= sheet.students.length - 1}>
             Em kế ›
           </Button>
+          {editable && dirty && index < sheet.students.length - 1 && (
+            <Button size="sm" variant="primary" loading={saving} onClick={onSaveNext}>
+              Lưu và em tiếp theo
+            </Button>
+          )}
         </div>
       </div>
 
