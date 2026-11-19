@@ -137,7 +137,7 @@ select pg_temp.sudo($$select app.auto_close_sessions()$$);
 select pg_temp.sudo($$select app.auto_complete_sessions()$$);
 select is((select count(*)::int from app.hour_ledger l join app.enrollment e on e.id = l.enrollment_id where e.legacy_ref like 'M-HS-%' and l.entry_type = 'TRU_BUOI'), 0, 'Sau tự chốt, tự Done: chưa có dòng trừ giờ nào (Q-199)');
 select is(app.enrollment_hours_balance((select id from app.enrollment where legacy_ref = 'M-HS-0001|T4M1')), 22.50::numeric, 'Số dư đầu kỳ nguyên vẹn sau tự chốt, tự Done (Q-199)');
-select is((select count(*)::int from app.class_session s join app.class c on c.id = s.class_id where c.legacy_ref like 'T%M1' and s.status_code in ('DA_CHOT', 'DONE')), 0, 'Không có buổi Đã chốt hay Done nào từ lớp nạp (buổi nằm sau ngày chốt)');
+select is((select count(*)::int from app.class_session s join app.class c on c.id = s.class_id where c.legacy_ref like 'T%M1' and s.status_code in ('DA_CHOT', 'DONE') and ((s.session_date + s.end_time) at time zone 'Asia/Ho_Chi_Minh') > now() + interval '2 days'), 0, 'Không có buổi Đã chốt hay Done nào từ lớp nạp ở các buổi còn xa (buổi nằm sau ngày chốt; buổi sát giờ được hệ thống tự chốt đúng luật)');
 
 -- ================= Buổi học và Điểm danh cũ chỉ để đối soát (R-V2-33, Q-186) =================
 create temp table rows_bh (j jsonb);

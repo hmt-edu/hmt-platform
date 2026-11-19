@@ -56,7 +56,11 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await page.getByLabel('Tổng số buổi').fill('12');
   await page.getByLabel('Ngày khai giảng').fill('2027-01-05');
   // Một khung giờ Thứ 3 (ngày 05/01/2027 là Thứ 3).
-  await page.getByRole('button', { name: 'Thêm khung giờ' }).nth(1).click();
+  // Time Table là 7 tab theo thứ (Thứ 2 … Chủ nhật); mỗi tab chỉ hiện khung giờ của ngày đó, tab có số khung giờ.
+  await expect(page.getByRole('tab')).toHaveCount(7);
+  await page.getByRole('tab', { name: /^Thứ 3/ }).click();
+  await page.getByRole('button', { name: 'Thêm khung giờ' }).click();
+  await expect(page.getByRole('tab', { name: /^Thứ 3\s*1$/ })).toBeVisible();
   await page.getByRole('button', { name: 'Lưu nháp' }).click();
   await expect(page).toHaveURL(/\/crm\/lop\/[0-9a-f-]{36}$/);
   const recordUrl = page.url();
