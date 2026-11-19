@@ -2,7 +2,6 @@ import { mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import AxeBuilder from '@axe-core/playwright';
-import { generateSync } from 'otplib';
 import pg from 'pg';
 import { expect, type Locator, type Page } from '@playwright/test';
 
@@ -94,8 +93,7 @@ export async function enterAs(page: Page, account: string) {
 }
 
 /**
- * Vào CRM bằng tài khoản Admin (bắt buộc xác thực hai bước): lần đầu xoá thiết bị cũ, đăng nhập, thiết lập một thiết bị mới bằng mã TOTP
- * rồi lưu phiên đã đạt mức hai bước để các bài sau dùng lại. Mỗi Admin giả chỉ nên dùng ở một file bài (tránh tranh thiết bị).
+ * Vào CRM bằng tài khoản Admin: lần đầu xoá thiết bị hai bước cũ, đăng nhập mật khẩu (hai bước không bắt buộc từ D41), lưu phiên để các bài sau dùng lại. Mỗi Admin giả chỉ nên dùng ở một file bài (tránh tranh thiết bị).
  */
 export async function enterAsAdmin(page: Page, account: string) {
   if (await restoreSession(page, account)) return;
@@ -109,14 +107,8 @@ export async function enterAsAdmin(page: Page, account: string) {
   } finally {
     await db.end();
   }
-  await loginStaff(page, account);
-  await expect(page).toHaveURL(/\/thiet-lap-hai-buoc$/);
-  const secret = (await page.locator('code').first().textContent())?.replace(/\s+/g, '') ?? '';
-  expect(secret.length).toBeGreaterThan(10);
-  await page.getByRole('button', { name: 'Tiếp', exact: true }).click();
-  await page.getByLabel('Mã xác thực').fill(generateSync({ secret }));
-  await page.getByRole('button', { name: 'Hoàn tất' }).click();
-  await expect(page).toHaveURL(/\/crm$/);
+  // D41 (19/11/2026): hai bước không còn bắt buộc (tham số mfa_required_enabled tắt), Admin đăng nhập mật khẩu vào thẳng CRM.
+  await loginStaffUntil(page, account, /\/crm$/);
   await saveSession(page, account);
 }
 

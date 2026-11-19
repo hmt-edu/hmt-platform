@@ -20,3 +20,5 @@ Thời điểm đến lượt: thời điểm trình, hoặc thời điểm cấ
 Hiệu năng: mỗi nguồn quét dòng đang chờ nhờ chỉ mục sẵn có (branch_id, status_code, ...) và `receipt_waiting_accounting_idx`; EXPLAIN 100.000 phiếu thu, 200 chờ kế toán: dùng chỉ mục, 53 ms. Không thêm chỉ mục mới.
 
 **Migration 557 (giao diện):** mỗi dòng có thêm `open_id`: id bản ghi để mở khi bấm dòng (id ghi danh cho hoàn phí, dừng học, bảo lưu, chuyển lớp; chính `ref_id` cho các loại còn lại). Màn: `/crm/viec-cho-duyet`; mã hiển thị của bốn loại trên là mã ghi danh.
+
+**Migration 559 (hiệu năng):** `my_approval_items` tính phạm vi quyền một lần và lọc rẻ trước `can_approve_as_manager`; kết quả giữ nguyên. Đo trên dữ liệu giả 3.500 việc chờ: từ 2,2–2,8 giây xuống 10–50 ms.

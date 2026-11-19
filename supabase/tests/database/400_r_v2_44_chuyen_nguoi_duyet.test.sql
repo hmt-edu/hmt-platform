@@ -1,5 +1,7 @@
 -- R-V2-44 Chuyển người duyệt (migration 400). Mỗi điều kiện có ca đúng và ca bị chặn. Dựng đơn thật như test 250. Dữ liệu giả.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

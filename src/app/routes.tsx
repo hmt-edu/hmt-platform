@@ -235,6 +235,7 @@ const PermissionMatrixPage = lazyScreen(
   'PermissionMatrixPage',
 );
 const RubricPage = lazyScreen(() => import('../pages/rubric/RubricPage'), 'RubricPage');
+const CampaignPage = lazyScreen(() => import('../pages/chien-dich/CampaignPage'), 'CampaignPage');
 const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
 const CurriculumFramePage = lazyScreen(
   () => import('../pages/khung-chuong-trinh/CurriculumFramePage'),
@@ -253,6 +254,10 @@ const FeatureFlagsPage = lazyScreen(
   'FeatureFlagsPage',
 );
 const SettingsPage = lazyScreen(() => import('../pages/tham-so/SettingsPage'), 'SettingsPage');
+const PackageRecordPage = lazyScreen(
+  () => import('../pages/goi-ban/PackageRecordPage'),
+  'PackageRecordPage',
+);
 const PackageListPage = lazyScreen(
   () => import('../pages/goi-ban/PackageListPage'),
   'PackageListPage',
@@ -816,6 +821,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'cau-hinh/goi-ban/:id',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/goi-ban">
+                <PackageRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'cau-hinh/bang-gia',
             element: (
               <GatedCrmEntry slug="cau-hinh/bang-gia">
@@ -932,6 +945,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="bao-cao/gio-day">
                 <TeachingHoursPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/chien-dich',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/chien-dich">
+                <CampaignPage />
               </GatedCrmEntry>
             ),
           },

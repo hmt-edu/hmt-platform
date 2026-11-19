@@ -24,6 +24,8 @@ if [ "${CHUP_ANH_DU_LIEU:-1}" = "1" ]; then
   npm run db:seed-lon
   npm run db:seed-lon-lop-buoi
   npm run db:seed-lon-phieu-thu
+  # Buổi HÔM NAY của giáo viên giả gv.cs5 (E36) cho các ảnh cổng Giáo viên.
+  npm run db:seed-anh-huong-dan
 fi
 CHUP_ANH=1 npx playwright test e2e/chup-anh.spec.ts --project=may-tinh --reporter=list
 echo "Xong. Ảnh ở: ${ANH_OUT:-$HOME/VanPhongAI/hmt-ca/ANH-HUONG-DAN} (xem BAO-CAO.txt trong từng thư mục vai)."

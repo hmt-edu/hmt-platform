@@ -171,7 +171,7 @@ export function ProfilePage() {
         </div>
       </section>
 
-      {claims.requireMfa && <TwoStepSection />}
+      {(claims.requireMfa || claims.mfaOptional) && <TwoStepSection />}
     </div>
   );
 }

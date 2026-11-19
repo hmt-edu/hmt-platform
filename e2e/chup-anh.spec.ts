@@ -5,6 +5,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { test, type Page } from '@playwright/test';
+import pg from 'pg';
 import { PASSWORD, enterAs, enterAsAdmin, loginStaffUntil } from './helpers';
 import { ROLES, type Shot } from './chup-anh-ban-do';
 
@@ -27,9 +28,30 @@ test.beforeEach(({}, testInfo) => {
 });
 
 /** Chụp một ảnh; trả về ghi chú khi không mở được bản ghi vì màn không có dữ liệu mẫu (ảnh thành xấp xỉ). */
+/** Mã buổi HÔM NAY của giáo viên giả gv.cs5 (seed supabase/seed-anh-huong-dan.sql); null nếu chưa nạp seed. */
+async function gvSessionId(): Promise<string | null> {
+  const db = new pg.Client({ connectionString: process.env.DB_URL ?? '' });
+  await db.connect();
+  try {
+    const r = await db.query<{ id: string }>(
+      `select s.id from app.class_session s join app.user_account u on u.id = s.teacher_id
+        where u.login_name like 'gv.cs5@%' and s.session_date = (now() at time zone 'Asia/Ho_Chi_Minh')::date order by s.start_time limit 1`,
+    );
+    return r.rows[0]?.id ?? null;
+  } finally {
+    await db.end();
+  }
+}
+
 async function capture(page: Page, shot: Shot, file: string): Promise<string | null> {
   let note: string | null = null;
-  await page.goto(shot.route);
+  let route = shot.route;
+  if (shot.gvSession !== undefined) {
+    const id = await gvSessionId();
+    if (!id) return 'không có buổi hôm nay của gv.cs5 (chưa nạp seed-anh-huong-dan.sql)';
+    route = `/gv/buoi/${id}${shot.gvSession}`;
+  }
+  await page.goto(route);
   await page.waitForLoadState('networkidle');
   if (shot.view) {
     const button = page.getByRole('button', { name: shot.view, exact: true });
