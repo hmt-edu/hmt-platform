@@ -91,6 +91,7 @@ export function TeacherHoursPage() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
       {header}
+      <p className="-mb-2 text-caption font-semibold text-fg-label">Căn cứ tính lương</p>
       <section aria-label="Tóm tắt" className="grid grid-cols-2 gap-2 md:grid-cols-4">
         {cards.map(([label, value]) => (
           <div key={label} className="rounded-control border border-border bg-surface p-3">

@@ -9,6 +9,8 @@ export type TaskOptions = {
     class_code: string | null;
     remaining_hours: number;
   }[];
+  /** Bảo lưu đang chạy của học sinh (cho Gia hạn bảo lưu, R-GD-09). */
+  holds?: { id: string; enrollment_id: string; start_date: string; end_date: string }[];
   hold_reasons: { code: string; name: string }[];
   transfer_reasons: { code: string; name: string }[];
   classes: {
@@ -27,7 +29,16 @@ export const TRANSFER_KINDS = [
   { value: 'DOI_GIAO_VIEN', label: 'Đổi giáo viên' },
 ] as const;
 
+/** Hình thức phiếu Bảo lưu: bảo lưu mới hoặc gia hạn bản đang chạy (CSN-06b). */
+export type HoldMode = 'MOI' | 'GIA_HAN' | 'TIEP_TUC';
+export const HOLD_MODES: { value: HoldMode; label: string }[] = [
+  { value: 'MOI', label: 'Bảo lưu mới' },
+  { value: 'GIA_HAN', label: 'Gia hạn bảo lưu' },
+  { value: 'TIEP_TUC', label: 'Tiếp tục học' },
+];
+
 export type BusinessDraft = {
+  holdMode: HoldMode;
   enrollmentId: string;
   reasonCode: string;
   reason: string;
@@ -39,6 +50,7 @@ export type BusinessDraft = {
 export type BusinessErrors = Partial<Record<keyof BusinessDraft, string>>;
 
 export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
+  holdMode: 'MOI',
   enrollmentId: '',
   reasonCode: '',
   reason: '',
@@ -60,7 +72,11 @@ export function validateBusinessDraft(
   if (draft.reason.trim() === '') e.reason = 'Nhập lý do của phiếu.';
   if (type === 'BAO_LUU') {
     const m = Number(draft.months);
-    if (!Number.isInteger(m) || m < 1) e.months = 'Nhập số tháng bảo lưu (từ 1).';
+    if (draft.holdMode !== 'TIEP_TUC' && (!Number.isInteger(m) || m < 1))
+      e.months =
+        draft.holdMode === 'GIA_HAN'
+          ? 'Nhập số tháng gia hạn (từ 1).'
+          : 'Nhập số tháng bảo lưu (từ 1).';
   } else {
     if (draft.kindCode === '') e.kindCode = 'Chọn loại chuyển.';
     if (draft.toClassId === '') e.toClassId = 'Chọn lớp mới.';
@@ -70,13 +86,27 @@ export function validateBusinessDraft(
 }
 
 /** Khoá payload đúng theo migration 262: BAO_LUU {enrollment_id, months, reason_code}; CHUYEN_LOP {enrollment_id, to_class_id, start_date, kind_code, reason_code}. */
-export function buildBusinessPayload(type: 'BAO_LUU' | 'CHUYEN_LOP', draft: BusinessDraft) {
+export function buildBusinessPayload(
+  type: 'BAO_LUU' | 'CHUYEN_LOP',
+  draft: BusinessDraft,
+  holdId: string | null = null,
+) {
+  if (type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC')
+    // Tiếp tục học (quay lại sớm): kết thúc bảo lưu, về hàng chờ xếp lớp, giữ giờ (migration 424).
+    return {
+      enrollment_id: draft.enrollmentId,
+      reason_code: draft.reasonCode,
+      note: draft.reason.trim(),
+      resume: true,
+    };
   if (type === 'BAO_LUU')
     return {
       enrollment_id: draft.enrollmentId,
       months: Number(draft.months),
       reason_code: draft.reasonCode,
       note: draft.reason.trim(),
+      // Gia hạn: nối tiếp bản đang chạy của ghi danh (hàm áp dụng kiểm lại, migration 234).
+      ...(draft.holdMode === 'GIA_HAN' && holdId ? { extends_hold_id: holdId } : {}),
     };
   return {
     enrollment_id: draft.enrollmentId,
@@ -96,4 +126,17 @@ export function classChoices(options: TaskOptions, enrollmentId: string) {
     (c) =>
       c.id !== enr.class_id && (enr.subject_code === null || c.subject_code === enr.subject_code),
   );
+}
+
+/** Ghi danh chọn được theo hình thức: Gia hạn và Tiếp tục học chỉ cho ghi danh có bảo lưu đang chạy; Bảo lưu mới chỉ cho ghi danh chưa bảo lưu. */
+export function holdEnrollmentChoices(options: TaskOptions, mode: HoldMode) {
+  const running = new Set((options.holds ?? []).map((h) => h.enrollment_id));
+  return options.enrollments.filter((x) =>
+    mode !== 'MOI' ? running.has(x.id) : x.status_code !== 'BAO_LUU',
+  );
+}
+
+/** Bảo lưu đang chạy của một ghi danh (để gia hạn); không có thì null. */
+export function runningHold(options: TaskOptions, enrollmentId: string) {
+  return (options.holds ?? []).find((h) => h.enrollment_id === enrollmentId) ?? null;
 }
