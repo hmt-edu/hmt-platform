@@ -95,3 +95,31 @@ test('KH-04 → KH-05: tìm học sinh, hồ sơ 360° là Tiềm năng, chưa c
   await expect(page.getByText('Chưa có điểm danh.')).toBeVisible();
   await expectAccessible(page);
 });
+
+test('KH-03, KH-06: nhân viên Sale sửa phụ huynh và học sinh; số điện thoại sai bị chặn', async ({
+  page,
+}, testInfo) => {
+  const sfx = suffix(testInfo.project.name);
+  await enterAs(page, 'sale.cs5');
+  await page.goto('/crm/phu-huynh');
+  await page.getByPlaceholder('Tìm tên, số điện thoại, mã…').fill(phone(testInfo.project.name));
+  await page
+    .getByRole('link', { name: `Phụ huynh E2EKH ${sfx}` })
+    .first()
+    .click();
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  await page.getByLabel('Địa chỉ', { exact: true }).fill('Số 9 phố Mẫu');
+  await page.getByLabel('Số điện thoại', { exact: true }).fill('123');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Số điện thoại cần đủ 10 số, bắt đầu bằng 0.').first()).toBeVisible();
+  await page.getByLabel('Số điện thoại', { exact: true }).fill(phone(testInfo.project.name));
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Số 9 phố Mẫu').first()).toBeVisible();
+
+  await page.getByRole('tab', { name: 'Các con' }).click();
+  await page.getByRole('button', { name: `Em E2EKH ${sfx} 1` }).click();
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  await page.getByLabel('Trường học', { exact: true }).fill('THCS Mẫu E2E');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('THCS Mẫu E2E').first()).toBeVisible();
+});
