@@ -8,7 +8,7 @@ import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { errorOf } from '../../lib/db';
-import { formatDate, formatDateTime } from '../../lib/format';
+import { formatDate, formatDateTime, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
@@ -281,6 +281,7 @@ export function SessionRecordPage() {
                         <th className="px-3 py-2">Ghi danh</th>
                         <th className="px-3 py-2">Trung tâm điểm danh</th>
                         <th className="px-3 py-2">Điểm danh giáo viên (chính thức)</th>
+                        <th className="px-3 py-2 text-right">Giờ trừ</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -294,6 +295,9 @@ export function SessionRecordPage() {
                           <td className="px-3 py-2">
                             {st.teacher_status_name ?? MUTED}{' '}
                             {st.mismatch && <Tag tone="warning">Lệch</Tag>}
+                          </td>
+                          <td className="tabular px-3 py-2 text-right">
+                            {st.hours_deducted ? `−${formatNumber(st.hours_deducted)}` : MUTED}
                           </td>
                         </tr>
                       ))}

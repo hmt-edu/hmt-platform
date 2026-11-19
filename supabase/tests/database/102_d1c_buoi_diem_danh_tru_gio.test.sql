@@ -184,6 +184,10 @@ select ok((select completion_late_hours from app.class_session where id = pg_tem
 select ok((select completion_stamped_at from app.class_session where id = pg_temp.s('p', 1)) is not null, 'Dấu: có thời điểm đóng dấu');
 select is(app.enrollment_hours_balance(pg_temp.e('a')), 2.50::numeric, 'Đúng: có tên trong danh sách thì trừ 1,5 giờ dù vắng không phép (R-GIO-01)');
 select is(app.enrollment_hours_balance(pg_temp.e('a2')), 4.00::numeric, 'Ghi danh thứ hai không bị trừ: trừ đúng một lần, vào ghi danh sớm nhất (R-GIO-04)');
+-- BUOI-02 (migration 308): bản ghi buổi trả «hours_deducted» của từng em (cột Giờ trừ): em 1 bị trừ 1,5 giờ ở buổi 1 Done.
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select is((select (x ->> 'hours_deducted')::numeric from jsonb_array_elements(app.session_record(pg_temp.s('p', 1)) -> 'students') x where x ->> 'student_id' = pg_temp.st(1)::text), 1.50::numeric, 'BUOI-02: session_record trả giờ trừ 1,5 của em đã bị trừ');
+select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is((select count(*)::int from app.hour_ledger where session_id = pg_temp.s('p', 1) and entry_type = 'TRU_BUOI'), 1, 'Sổ giờ có đúng một dòng trừ cho buổi này (R-GIO-04)');
 select is((select status_code from app.enrollment where id = pg_temp.e('a')), 'DANG_HOC', 'Ghi danh sang Đang học khi có buổi Done đầu tiên (R-GD-05)');
