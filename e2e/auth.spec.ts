@@ -148,6 +148,20 @@ test('CHUNG-06, CHUNG-07: học sinh đăng nhập bằng mã HS, bị yêu cầ
   await expect(page).toHaveURL(/\/doi-mat-khau$/);
 });
 
+test('CHUNG-07: học sinh đổi mật khẩu lần đầu, bấm Lưu đến khi vào /hoc (E27)', async ({
+  page,
+}) => {
+  await loginStudent(page, 'hs900002');
+  await expect(page).toHaveURL(/\/doi-mat-khau$/);
+  // Luật mật khẩu tải xong (nút hết mờ khi đã nhập, điều kiện hiện) rồi mới nhập.
+  await expect(page.getByLabel('Điều kiện mật khẩu')).toBeVisible();
+  const newPassword = `HocSinh${Date.now()}x`;
+  await page.getByLabel('Mật khẩu mới', { exact: true }).fill(newPassword);
+  await page.getByLabel('Nhập lại mật khẩu mới').fill(newPassword);
+  await page.getByRole('button', { name: 'Đổi mật khẩu và tiếp tục' }).click();
+  await expect(page).toHaveURL(/\/hoc$/);
+});
+
 test('CHUNG-10, CHUNG-13: khung CRM và hồ sơ cá nhân đạt kiểm truy cập; đăng xuất về trang đăng nhập', async ({
   page,
 }) => {

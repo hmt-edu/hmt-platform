@@ -3,8 +3,16 @@ import type { PasswordPolicy } from '../../../supabase/functions/_shared/login-r
 import { readBoolSetting, readIntSetting } from './api';
 import { useAuth } from './authContext';
 
-/** Luật mật khẩu đọc từ Cài đặt (độ dài tối thiểu, bắt có chữ và số). */
-export function usePasswordPolicy(): PasswordPolicy | null {
+export type PasswordPolicyState = {
+  policy: PasswordPolicy | null;
+  /** Đã thử đọc luật mà lỗi (mạng hoặc máy chủ): giao diện phải báo, không được im lặng (Soát S16). */
+  failed: boolean;
+  loading: boolean;
+  retry: () => void;
+};
+
+/** Luật mật khẩu đọc từ Cài đặt (độ dài tối thiểu, bắt có chữ và số), kèm trạng thái tải và lỗi. */
+export function usePasswordPolicyState(): PasswordPolicyState {
   const { supabase, claims } = useAuth();
   const query = useQuery({
     queryKey: ['password-policy', claims?.userId],
@@ -20,7 +28,17 @@ export function usePasswordPolicy(): PasswordPolicy | null {
       return { minLength, requireLetterDigit };
     },
   });
-  return query.data ?? null;
+  return {
+    policy: query.data ?? null,
+    failed: query.isError,
+    loading: query.isPending,
+    retry: () => void query.refetch(),
+  };
+}
+
+/** Chỉ lấy luật (null khi chưa có hoặc lỗi). Màn cần báo lỗi dùng usePasswordPolicyState. */
+export function usePasswordPolicy(): PasswordPolicy | null {
+  return usePasswordPolicyState().policy;
 }
 
 export function policyHint(policy: PasswordPolicy | null): string {
