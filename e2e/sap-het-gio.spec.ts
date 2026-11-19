@@ -2,7 +2,7 @@
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
 import { DB_URL } from './bao-gia-seed';
-import { DOMAIN, PASSWORD, enterAs, expectAccessible } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng học sinh giả).');
 test.describe.configure({ mode: 'serial' });
@@ -105,16 +105,27 @@ test('GD-07: em còn 2 giờ hiện ở danh sách với tình trạng Sắp h�
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/sap-het-gio');
   await expect(page.getByRole('heading', { level: 1, name: 'Sắp hết giờ' })).toBeVisible();
-  await page.getByLabel('Tìm tên học sinh hoặc mã lớp').fill(STUDENT);
+  await page.getByPlaceholder('Tìm tên học sinh hoặc mã lớp').fill(STUDENT);
   const row = page.getByRole('row').filter({ hasText: STUDENT });
   await expect(row).toBeVisible();
   await expect(row).toContainText('Sắp hết giờ');
   await expect(row).toContainText(classCode);
   await expect(row).toContainText('2');
   await expectAccessible(page);
-  await page.getByRole('button', { name: 'Hết giờ', exact: true }).click();
+  // Lọc nhanh «Tình trạng» nằm trong Filters (khuôn K03): chọn Hết giờ thì dòng Sắp hết giờ biến mất, đổi sang Sắp hết giờ thì hiện lại.
+  const phone = isPhone(page);
+  const pick = async (label: string, on: boolean) => {
+    await page.getByRole('button', { name: 'Filters', exact: true }).click();
+    const box = page.getByLabel(label, { exact: true });
+    if (on) await box.check();
+    else await box.uncheck();
+    if (phone) await page.getByRole('button', { name: 'Áp dụng' }).click();
+    else await page.keyboard.press('Escape');
+  };
+  await pick('Hết giờ', true);
   await expect(page.getByRole('row').filter({ hasText: STUDENT })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Sắp hết giờ', exact: true }).click();
+  await pick('Hết giờ', false);
+  await pick('Sắp hết giờ', true);
   await expect(page.getByRole('row').filter({ hasText: STUDENT })).toBeVisible();
 });
 
