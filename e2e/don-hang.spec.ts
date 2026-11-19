@@ -134,7 +134,7 @@ test('K03: cột bỏ ở nút «Cột» vẫn ẩn sau khi tải lại trang (T
   await expect(rows.getByRole('columnheader', { name: 'Học sinh' })).toHaveCount(0);
   // Đặt lại về cột mặc định thì cột trở lại và không còn bản lưu.
   await page.getByRole('button', { name: 'Cột', exact: true }).click();
-  await page.getByRole('button', { name: "Mặc định" }).click();
+  await page.getByRole('button', { name: 'Mặc định' }).click();
   await page.keyboard.press('Escape');
   await page.reload();
   await expect(rows.getByRole('columnheader', { name: 'Học sinh' })).toBeVisible();
