@@ -1,0 +1,72 @@
+# pgTAP trên main (D31, 19/11/2026): mỗi lần đẩy (gộp PR) vào main mà có đụng migration thì chạy lại toàn bộ pgTAP, để main đỏ DB không bị bỏ sót
+# (CI của PR chạy trên bản gộp tại thời điểm đó; hai PR gộp cách nhau có thể làm vỡ nhau mà không PR nào thấy). Một lần mỗi lần đẩy, huỷ lượt cũ khi có lần đẩy mới.
+# Chỉ chạy pgTAP (không Playwright). Repo công khai nên phút Actions miễn phí; ước lượng khoảng 3 đến 4 phút mỗi lượt. Đỏ thì mở issue để Chat thấy.
+name: pgTAP trên main
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - 'supabase/seed*.sql'
+  # Chạy thử: PR đổi chính tệp này tự chạy một lượt (bằng chứng), và chạy tay trên main sau khi gộp (Actions, Run workflow).
+  pull_request:
+    paths:
+      - '.github/workflows/pgtap-main.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: pgtap-main-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  pgtap:
+    name: pgTAP trên main
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+        timeout-minutes: 5
+
+      - name: Khởi động Supabase local (chỉ dịch vụ cần)
+        timeout-minutes: 15
+        run: bash scripts/supabase-start-retry.sh
+
+      - name: Dựng lại DB từ migration + seed
+        run: npx supabase db reset
+
+      - name: Kiểm thử DB (pgTAP)
+        run: npx supabase test db
+
+  bao-do:
+    name: Báo main đỏ pgTAP
+    needs: [pgtap]
+    if: always() && needs.pgtap.result == 'failure' && github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA: ${{ github.sha }}
+        run: |
+          gh issue create --repo "$REPO" --title "pgTAP trên main đỏ (commit ${SHA:0:7})" \
+            --body "Lần đẩy vào main có đụng migration làm pgTAP đỏ. Xem: ${RUN_URL}. Sửa trước mọi việc khác."

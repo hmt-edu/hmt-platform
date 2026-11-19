@@ -4,6 +4,7 @@ import {
   clientIp,
   decideLogin,
   isInternalStudentEmail,
+  isWarmPing,
   LOGIN_MESSAGES,
   normalizeLogin,
   toAuthEmail,
@@ -89,5 +90,17 @@ describe('đăng nhập không được: không lộ tài khoản có tồn tạ
   it('lỗi captcha, giới hạn tốc độ theo IP: không ghi là sai mật khẩu', () => {
     expect(decideLogin('OK', { ok: false, status: 400, errorCode: 'captcha_failed' })).toEqual({ outcome: 'CAPTCHA', record: null });
     expect(decideLogin('OK', { ok: false, status: 429, errorCode: 'over_request_rate_limit' })).toEqual({ outcome: 'QUA_NHIEU', record: null });
+  });
+});
+
+describe('yêu cầu hâm nóng (A9)', () => {
+  it('chỉ GET có ?ping=1', () => {
+    expect(isWarmPing('GET', 'https://x.supabase.co/functions/v1/login?ping=1')).toBe(true);
+    expect(isWarmPing('GET', 'https://x.supabase.co/functions/v1/login')).toBe(false);
+    expect(isWarmPing('GET', 'https://x.supabase.co/functions/v1/login?ping=0')).toBe(false);
+    expect(isWarmPing('POST', 'https://x.supabase.co/functions/v1/login?ping=1')).toBe(false);
+  });
+  it('địa chỉ hỏng thì không phải ping', () => {
+    expect(isWarmPing('GET', 'khong-phai-dia-chi')).toBe(false);
   });
 });

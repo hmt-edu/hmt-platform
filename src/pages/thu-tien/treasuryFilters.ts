@@ -1,6 +1,6 @@
 // Đổi trạng thái màn danh sách (ListState) thành bộ lọc gửi list_money_in / list_receivables. Hàm thuần, có kiểm thử.
-import { datePresetRange } from '../../lib/dateRange';
-import { vnDayBounds, vnDayStartOf } from '../../lib/vnDay';
+import { datePresetDateKeys, datePresetInstants } from '../../lib/dateRange';
+import { vnDayStartOf } from '../../lib/vnDay';
 import type { Condition, ListState } from '../../list/types';
 import type { SortState } from '../../ui/Data';
 import type { DebtStatus } from './treasuryTypes';
@@ -41,7 +41,7 @@ export function buildMoneyInFilters(state: ListState, today: Date = new Date()):
       if (start) filters.created_to = new Date(start.getTime() + DAY_MS).toISOString();
     }
   }
-  const range = datePresetRange(state.datePreset, today);
+  const range = datePresetInstants(state.datePreset, today);
   if (range && state.dateField === 'created') {
     filters.created_from = range.from.toISOString();
     filters.created_to = new Date(range.to.getTime() + 1).toISOString();
@@ -76,10 +76,10 @@ export function buildReceivableFilters(
     }
   }
   if (status.size > 0) filters.status = [...status];
-  const range = datePresetRange(state.datePreset, today);
-  if (range && state.dateField === 'due') {
-    filters.due_from = vnDayBounds(range.from).dateKey;
-    filters.due_to = vnDayBounds(range.to).dateKey;
+  const keys = datePresetDateKeys(state.datePreset, today);
+  if (keys && state.dateField === 'due') {
+    filters.due_from = keys.from;
+    filters.due_to = keys.to;
   }
   return filters;
 }

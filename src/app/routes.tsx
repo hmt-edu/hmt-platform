@@ -97,6 +97,7 @@ const UpsaleListPage = lazyScreen(
   () => import('../pages/tai-tuc/UpsaleListPage'),
   'UpsaleListPage',
 );
+const ReconcilePage = lazyScreen(() => import('../pages/tai-tuc/ReconcilePage'), 'ReconcilePage');
 const TicketListPage = lazyScreen(() => import('../pages/ticket/TicketListPage'), 'TicketListPage');
 const TicketRecordPage = lazyScreen(
   () => import('../pages/ticket/TicketRecordPage'),
@@ -215,6 +216,11 @@ const LateTeachersPage = lazyScreen(
   () => import('../pages/bao-cao-tre-han/LateTeachersPage'),
   'LateTeachersPage',
 );
+const LoginLogPage = lazyScreen(
+  () => import('../pages/nhat-ky-dang-nhap/LoginLogPage'),
+  'LoginLogPage',
+);
+const AuditLogPage = lazyScreen(() => import('../pages/nhat-ky/AuditLogPage'), 'AuditLogPage');
 const TeachingHoursPage = lazyScreen(
   () => import('../pages/bao-cao-gio-day/TeachingHoursPage'),
   'TeachingHoursPage',
@@ -530,6 +536,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="tai-tuc">
                 <UpsaleRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'doi-chieu-tai-tuc',
+            element: (
+              <GatedCrmEntry slug="doi-chieu-tai-tuc">
+                <ReconcilePage />
               </GatedCrmEntry>
             ),
           },
@@ -874,6 +888,22 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/tham-so">
                 <SettingsPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/nhat-ky-dang-nhap',
+            element: (
+              <GatedCrmEntry slug="quan-tri/nhat-ky-dang-nhap">
+                <LoginLogPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/nhat-ky',
+            element: (
+              <GatedCrmEntry slug="quan-tri/nhat-ky">
+                <AuditLogPage />
               </GatedCrmEntry>
             ),
           },
