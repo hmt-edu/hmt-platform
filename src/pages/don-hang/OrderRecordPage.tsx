@@ -223,20 +223,40 @@ function OrderView({ record }: { record: OrderRecord }) {
     approvesInstead: access.can('ADMIN', 'XEM'),
     phone,
   });
-  const menuItems: MenuItem[] = [
-    ...(canUseBalance
+  // Canvas BH05_huy_chan: đơn đã có phiếu thu hoặc còn ghi danh (cho học trước) thì «Huỷ đơn» mờ, nêu lý do và mời tạo ticket hoàn tiền (CS-05).
+  const cancelBlock = record.cancel_block ?? null;
+  const cancelBlockedText =
+    cancelBlock === 'GHI_DANH'
+      ? 'Đã bật cho học trước và em đã học buổi: đi qua ticket hoàn tiền (CS-05).'
+      : cancelBlock === 'PHIEU_THU'
+        ? 'Đơn đã có phiếu thu: đi qua ticket hoàn tiền (CS-05).'
+        : undefined;
+  const canCreateRefundTicket = access.can('TICKET', 'TAO') && !phone;
+  const cancelMenuItems: MenuItem[] = canCancel
+    ? cancelBlockedText
       ? [
           {
-            kind: 'action' as const,
-            label: 'Dùng số dư',
-            onSelect: () => setBalanceOpen(true),
+            kind: 'action',
+            label: 'Huỷ đơn',
+            unavailable: cancelBlockedText,
+            onSelect: () => undefined,
           },
+          ...(canCreateRefundTicket
+            ? [
+                {
+                  kind: 'action' as const,
+                  label: 'Tạo ticket hoàn tiền',
+                  onSelect: () =>
+                    openFrom(
+                      `/crm/ticket/moi?phu-huynh=${record.parent_id}&ma=${encodeURIComponent(record.parent_code)}&nhom=HOAN_TIEN`,
+                    ),
+                },
+              ]
+            : []),
         ]
-      : []),
-    ...(canCancel
-      ? [
+      : [
           {
-            kind: 'action' as const,
+            kind: 'action',
             label: 'Huỷ đơn',
             onSelect: () => {
               setCancelError(null);
@@ -244,7 +264,13 @@ function OrderView({ record }: { record: OrderRecord }) {
             },
           },
         ]
+    : [];
+  // TC-16: mục «Dùng số dư» đứng trước các mục huỷ đơn.
+  const menuItems: MenuItem[] = [
+    ...(canUseBalance
+      ? [{ kind: 'action' as const, label: 'Dùng số dư', onSelect: () => setBalanceOpen(true) }]
       : []),
+    ...cancelMenuItems,
   ];
   const errorLines = submitError ? errorLineNumbers(submitError.message) : [];
 
@@ -613,7 +639,7 @@ function OrderView({ record }: { record: OrderRecord }) {
     <div className="flex flex-col gap-4">
       <section className="flex flex-col gap-1.5">
         <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
-          Lịch đóng tiền từng đợt
+          Lịch đóng tiền từng đợt (tự tính, chỉ đọc)
         </h3>
         {record.installments.length === 0 ? (
           <p className="text-fg-muted">
@@ -662,7 +688,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         </h3>
         <p className="text-fg-muted">
           {receiptCount === 0
-            ? 'Chưa có phiếu thu.'
+            ? 'Chưa có phiếu thu. Đơn đã duyệt thì bấm Tạo phiếu thu để lập phiếu nháp.'
             : `Có ${receiptCount} phiếu thu. Bấm nút Phiếu thu ở đầu trang để xem.`}
         </p>
       </section>
