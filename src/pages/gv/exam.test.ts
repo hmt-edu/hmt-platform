@@ -77,6 +77,9 @@ describe('Chấm kiểm tra (GV-07K)', () => {
   it('3 nhóm: tổng tự cộng, nhóm vượt tối đa hoặc thiếu là lỗi', () => {
     expect(entryOf(draft({ memory: '3', understand: '4', apply: '2' }), NHOM).total).toBe(9);
     expect(entryOf(draft({ memory: '4', understand: '4', apply: '2' }), NHOM).error).toBe(
+      'Vượt điểm tối đa của nhóm (3).',
+    );
+    expect(entryOf(draft({ memory: '-1', understand: '4', apply: '2' }), NHOM).error).toBe(
       'Điểm Ghi nhớ phải từ 0 đến 3.',
     );
     expect(entryOf(draft({ memory: '3', understand: '4' }), NHOM).error).toBe(

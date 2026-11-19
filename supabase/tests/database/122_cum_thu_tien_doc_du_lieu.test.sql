@@ -98,6 +98,8 @@ select is((app.list_money_in() ->> 'sum')::bigint, 1600000::bigint, 'Tổng kho�
 select is(app.list_money_in() -> 'rows' -> 0 ->> 'code', 'KTV-TC-4', 'Mặc định sắp mới nhất trước');
 select is(app.list_money_in('{}', 'amount_desc') -> 'rows' -> 0 ->> 'code', 'KTV-TC-1', 'Sắp theo số tiền giảm dần');
 select is((app.list_money_in('{"kind":"DAO"}') ->> 'total')::int, 1, 'Lọc khoản đảo (âm) thấy 1 khoản (R-TIEN-26)');
+select is((select r ->> 'reversed_by_code' from jsonb_array_elements(app.list_money_in('{}', 'amount_desc') -> 'rows') r where r ->> 'code' = 'KTV-TC-1'), 'KTV-TC-3', 'C76 Khoản gốc đã bị đảo trả mã khoản đảo (cột Đã hoàn tác bằng …)');
+select is((select r ->> 'reversed_by_code' from jsonb_array_elements(app.list_money_in('{}', 'amount_desc') -> 'rows') r where r ->> 'code' = 'KTV-TC-2'), null, 'C76 Khoản chưa bị đảo thì reversed_by_code rỗng');
 select is((app.list_money_in('{"kind":"THU"}') ->> 'total')::int, 3, 'Lọc khoản thu thấy 3 khoản');
 select is((app.list_money_in('{"q":"dh-tc-o1"}') ->> 'total')::int, 3, 'Tìm theo mã đơn');
 select is((app.list_money_in('{"q":"phu huynh gia tc5"}') ->> 'total')::int, 1, 'Tìm theo tên phụ huynh không dấu');

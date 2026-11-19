@@ -50,6 +50,11 @@ describe('TC-09 nút Hoàn tác khoản tiền', () => {
     expect(cell(config, 'reverse', row).querySelector('button')).toBeNull();
     expect(cell(config, 'note', row).textContent).toBe('Đã hoàn tác');
   });
+  it('TC-09: khoản đã hoàn tác ghi rõ mã khoản đảo (canvas TC09_dao)', () => {
+    const config = buildMoneyInConfig(accessOf(true), vi.fn());
+    const row = { ...base, is_reversed: true, reversed_by_code: 'KTV-CS5-2610-0006' };
+    expect(cell(config, 'note', row).textContent).toBe('Đã hoàn tác bằng KTV-CS5-2610-0006');
+  });
   it('TC-02: khoản thu nợ đầu kỳ không có đơn thì cột Đơn hàng hiện nhãn Nợ đầu kỳ, không có link', () => {
     const config = buildMoneyInConfig(accessOf(true), vi.fn());
     const row = { ...base, order_id: null, order_code: null };

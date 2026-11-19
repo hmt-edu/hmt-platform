@@ -467,3 +467,7 @@ Anh Trường duyệt 19/11/2026, phương án A (chỉ Lead; cơ hội, phụ h
 | Trigger `opportunity_chan_lead_da_huy`, `appointment_chan_lead_da_huy` | Không tạo cơ hội, lịch hẹn mới cho lead đã huỷ (`HMT_LEAD_DA_HUY`). |
 
 Lead đã huỷ tự ẩn khỏi danh sách mặc định và không tính trùng SĐT vì các hàm đang lọc `record_status = 'DANG_DUNG'`. Giao diện (hộp K08, chip «Đã huỷ» của Admin, banner ở bản ghi lead) làm ở PR sau.
+
+## E67 (KHẨN): cảnh báo trùng SĐT không lộ hồ sơ ngoài phạm vi (migration `20261121000514`)
+
+`app.find_duplicate_contacts(p_phone, p_exclude_lead_id)` (TS-03, TS-14): hồ sơ ngoài phạm vi người xem (`visible = false`) trả `id`, `code`, `label`, `branch_code` đều `null`; người xem chỉ biết «đã có trong hệ thống» (giao diện hiện «Hồ sơ ngoài phạm vi bạn xem»). Hồ sơ trong phạm vi trả đủ như cũ. Thay quy ước cũ «lộ mã và cơ sở, không lộ tên» (bài 017 đã sửa).

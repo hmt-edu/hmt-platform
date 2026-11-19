@@ -14,6 +14,7 @@ import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
   blankRow,
   giftRow,
+  addFamilyRows,
   insertPackageRow,
   modesOfPrices,
   type EditRow,
@@ -547,6 +548,20 @@ export function QuoteLineGrid({
           }
         >
           Thêm dòng
+        </Button>
+        <Button
+          icon="plus"
+          disabled={disabled || students.length < 2}
+          onClick={() =>
+            onChange(
+              addFamilyRows(
+                rows,
+                students.map((st) => st.id),
+              ),
+            )
+          }
+        >
+          Thêm cả nhà
         </Button>
         <Button icon="plus" disabled={disabled} onClick={() => setGiftOpen(true)}>
           Thêm quà tặng
