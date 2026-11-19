@@ -1,12 +1,12 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 158 có màn, 10 chỉ có DB (chưa thấy màn), 29 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 159 có màn, 10 chỉ có DB (chưa thấy màn), 28 chưa có.**
 
 ## Số theo cổng
 
 | Cổng | Tổng | Có màn | Chỉ có DB | Chưa có |
 |---|---|---|---|---|
-| CRM (còn lại) | 155 | 139 | 3 | 13 |
+| CRM (còn lại) | 155 | 140 | 3 | 12 |
 | Giáo viên (GV) | 18 | 16 | 0 | 2 |
 | Học sinh (HT) | 9 | 0 | 0 | 9 |
 | Phụ huynh (PH) | 5 | 0 | 0 | 5 |
@@ -117,7 +117,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TC-11 | Phiếu chi (bản ghi) | B | **Có màn** `src/pages/phieu-chi/VoucherRecordPage.tsx` | có (12 khung) | Gần đúng | phieu-chi-so-du.spec.ts | Code C/D |
 | TC-12 | Bản in phiếu chi | C | **Có màn** `src/pages/phieu-chi/VoucherPrintPage.tsx` | không có khung | chưa kiểm | trang-chu.spec.ts | Code C/D |
 | TC-14 | Số dư khách hàng (tiền dư giữ lại) | C | **Có màn** `/crm/so-du-khach-hang` | không có khung | chưa kiểm | phieu-chi-so-du.spec.ts | Code C/D |
-| TC-16 | Dùng số dư khách hàng cho đơn mới | C | **Chỉ có DB** `20261118000453_tc14_doc_so_du_khach_hang.sql` | không có khung | chưa kiểm | — | Code C/D |
+| TC-16 | Dùng số dư khách hàng cho đơn mới | C | **Có màn** `src/pages/don-hang/UseBalanceDialog.tsx` | không có khung | chưa kiểm | — | Code C/D |
 | TC-17 | Quản lý duyệt phiếu thu | B | **Có màn** `src/features/approver-reassign/ReassignApproverDialog.tsx` | có (9 khung) | Gần đúng | — | Code C/D |
 | GD-01 | Ghi danh (danh sách) | B | **Có màn** `/crm/ghi-danh` | có (16 khung) | Đúng | ghi-danh.spec.ts | Code A |
 | GD-02 | Ghi danh (bản ghi) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (36 khung) | Lệch (chưa sửa) | ghi-danh.spec.ts | Code A |
@@ -162,7 +162,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | CS-07 | Thực hiện chuyển cơ sở | B | **Chưa có** | không có khung | chưa kiểm | — | Code B |
 | CS-08 | Duyệt / từ chối ticket (từng cấp) | B | **Có màn** `src/pages/phieu/TaskRecordPage.tsx` | không có khung | chưa kiểm | cskh-khieu-nai-bao-luu.spec.ts | Code B |
 | CS-09 | Thực hiện bảo lưu (mới, gia hạn, quay lại sớm) | B | **Có màn** `src/pages/phieu/BusinessTaskDialog.tsx` | không có khung | chưa kiểm | — | Code B |
-| CS-10 | Thực hiện chuyển phí (sang môn khác, anh chị em, gói khác) | B | **Chưa có** | không có khung | chưa kiểm | gv-ticket.spec.ts | Code B |
+| CS-10 | Thực hiện chuyển phí (sang môn khác, anh chị em, gói khác) | B | **Chỉ có DB** `20261121000567_cs10_chuyen_phi_qua_phieu.sql` | không có khung | chưa kiểm | gv-ticket.spec.ts | Code B |
 | CS-11 | Thực hiện đổi lịch học (dời buổi, đổi ca, xin học bù) | B | **Có màn** `src/pages/phieu/ScheduleTaskDialog.tsx` | không có khung | chưa kiểm | — | Code B |
 | CS-12 | Từ chối / khách huỷ ticket (lý do) | C | **Chưa có** | không có khung | chưa kiểm | — | Code B |
 | CS-13 | Nâng cấp / mở lại khiếu nại | C | **Có màn** `src/pages/ticket/TicketRecordPage.tsx` | không có khung | chưa kiểm | cskh-khieu-nai-bao-luu.spec.ts | Code B |
