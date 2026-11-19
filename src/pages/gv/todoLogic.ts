@@ -77,3 +77,10 @@ export function groupLate(session: MySession, late: LateItem[]): LateGroup | nul
     total: late.length,
   };
 }
+
+/** Số đếm nhỏ trên menu «Cần làm» (R-V2-37): ẩn khi 0 hoặc chưa biết; trên 99 thì ghi «99+». */
+export function todoBadgeText(count: number | null | undefined): string | null {
+  if (!count || count <= 0) return null;
+  return count > BADGE_MAX ? `${BADGE_MAX}+` : String(count);
+}
+const BADGE_MAX = 99; // allow-number: trần hiển thị của chấm số đếm trên menu, chỉ là giao diện
