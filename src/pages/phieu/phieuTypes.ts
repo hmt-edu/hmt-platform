@@ -7,6 +7,8 @@ export type TaskRow = {
   level: number;
   level_total: number;
   next_role: string | null;
+  /** Tên người duyệt dự kiến của cấp đang chờ (migration 428); null thì hiện tên vai. */
+  next_approver?: string | null;
   ticket_id: string;
   ticket_code: string;
   student_name: string | null;
@@ -61,6 +63,7 @@ export type TaskDetail = {
   created_by_name: string | null;
   can_approve: boolean;
   is_creator: boolean;
+  next_approver?: string | null;
 };
 export type TaskRecord = {
   task: TaskDetail;

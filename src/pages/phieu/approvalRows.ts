@@ -16,6 +16,7 @@ export function approvalRows(
   status: string,
   events: TaskEvent[],
   roleLabel: (level: string) => string,
+  nextApprover: string | null = null,
 ): ApprovalRow[] {
   const lastSubmit = events.map((e) => e.event_type).lastIndexOf('TRINH');
   const cycle = lastSubmit >= 0 ? events.slice(lastSubmit) : [];
@@ -35,7 +36,7 @@ export function approvalRows(
         at: rejected.created_at,
       };
     if (i === approved.length && status === 'CHO_DUYET')
-      return { ...base, approver: null, result: 'Đang chờ', at: null };
+      return { ...base, approver: nextApprover, result: 'Đang chờ', at: null };
     return { ...base, approver: null, result: 'Chưa tới', at: null };
   });
 }
