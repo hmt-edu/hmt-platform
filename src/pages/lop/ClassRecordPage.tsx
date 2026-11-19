@@ -331,27 +331,41 @@ function ClassView({ record }: { record: ClassRecord }) {
                   record.students.length === 0 ? (
                     <p className="py-2 text-fg-muted">Chưa có học sinh xếp vào lớp.</p>
                   ) : (
-                    <LineTable
-                      caption="Học sinh của lớp"
-                      rows={record.students}
-                      rowKey={(x) => x.enrollment_id}
-                      columns={[
-                        {
-                          key: 'name',
-                          header: 'Học sinh',
-                          cell: (x) => <b className="font-medium">{x.full_name}</b>,
-                        },
-                        { key: 'code', header: 'Mã học sinh', cell: (x) => x.student_code },
-                        { key: 'enr', header: 'Ghi danh', cell: (x) => x.enrollment_code },
-                        { key: 'start', header: 'Vào lớp', cell: (x) => formatDate(x.start_date) },
-                        {
-                          key: 'hours',
-                          header: 'Giờ còn lại',
-                          align: 'right',
-                          cell: (x) => x.hours_left,
-                        },
-                      ]}
-                    />
+                    <>
+                      <p className="mb-2">
+                        <Link
+                          to={`/crm/lop/${record.id}/hoc-sinh`}
+                          className="text-link hover:underline"
+                        >
+                          Xem đầy đủ: học sinh đã rời, lọc, tìm kiếm (LOP-09)
+                        </Link>
+                      </p>
+                      <LineTable
+                        caption="Học sinh của lớp"
+                        rows={record.students}
+                        rowKey={(x) => x.enrollment_id}
+                        columns={[
+                          {
+                            key: 'name',
+                            header: 'Học sinh',
+                            cell: (x) => <b className="font-medium">{x.full_name}</b>,
+                          },
+                          { key: 'code', header: 'Mã học sinh', cell: (x) => x.student_code },
+                          { key: 'enr', header: 'Ghi danh', cell: (x) => x.enrollment_code },
+                          {
+                            key: 'start',
+                            header: 'Vào lớp',
+                            cell: (x) => formatDate(x.start_date),
+                          },
+                          {
+                            key: 'hours',
+                            header: 'Giờ còn lại',
+                            align: 'right',
+                            cell: (x) => x.hours_left,
+                          },
+                        ]}
+                      />
+                    </>
                   ),
               },
               {
