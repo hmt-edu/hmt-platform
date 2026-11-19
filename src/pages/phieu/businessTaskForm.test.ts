@@ -132,3 +132,28 @@ describe('Gia hạn bảo lưu (CSN-06b, R-GD-09)', () => {
     expect(holdEnrollmentChoices(options, 'TIEP_TUC').map((x) => x.id)).toEqual(['b']);
   });
 });
+
+describe('Phiếu Dừng học (CS-14, R-GD-16)', () => {
+  const draft = {
+    ...EMPTY_BUSINESS_DRAFT,
+    enrollmentId: 'e1',
+    reasonCode: 'CHUYEN',
+    reason: 'Chuyển nhà',
+  };
+  it('chỉ cần ghi danh, lý do danh mục và lý do chữ; không đòi số tháng hay lớp', () => {
+    expect(validateBusinessDraft('DUNG_HOC', draft, true)).toEqual({});
+    expect(
+      validateBusinessDraft('DUNG_HOC', { ...draft, enrollmentId: '' }, true).enrollmentId,
+    ).toBe('Chọn ghi danh.');
+    expect(validateBusinessDraft('DUNG_HOC', { ...draft, reasonCode: '' }, true).reasonCode).toBe(
+      'Chọn lý do.',
+    );
+  });
+  it('payload gửi ghi danh, lý do và ghi chú', () => {
+    expect(buildBusinessPayload('DUNG_HOC', draft)).toEqual({
+      enrollment_id: 'e1',
+      reason_code: 'CHUYEN',
+      note: 'Chuyển nhà',
+    });
+  });
+});
