@@ -1,6 +1,8 @@
 // CH-04: tình trạng theo ngày, kiểm biểu mẫu (câu theo khung CH04_loi), mã chính sách, tóm tắt lỗi.
 import { describe, expect, it } from 'vitest';
 import {
+  appliesToLabel,
+  discountAppliedLabel,
   branchesLabel,
   errorSummary,
   formErrors,
@@ -20,6 +22,7 @@ const base: FormValues = {
   validTo: new Date(2027, 7, 31),
   packageTypes: ['LC'],
   branchIds: [],
+  appliesTo: ['BAO_GIA', 'DON', 'PHIEU_THU'],
 };
 
 describe('CH-04 tình trạng', () => {
@@ -74,5 +77,24 @@ describe('CH-04 mã và cơ sở', () => {
   it('phạm vi cơ sở: rỗng là Tất cả cơ sở', () => {
     expect(branchesLabel([], () => 'x')).toBe('Tất cả cơ sở');
     expect(branchesLabel(['a', 'b'], (id) => id.toUpperCase())).toBe('A, B');
+  });
+});
+
+describe('CH-04 cột Áp dụng cho, Giá trị', () => {
+  const policy = {
+    kind: 'PERCENT' as const,
+    max_value: 10,
+    fixed_value: false,
+    applies_to: ['PHIEU_THU', 'BAO_GIA'],
+  };
+  it('Áp dụng cho theo thứ tự Báo giá, Đơn, Phiếu thu', () => {
+    expect(appliesToLabel(policy)).toBe('Báo giá, Phiếu thu');
+    expect(appliesToLabel({ applies_to: ['BAO_GIA', 'DON', 'PHIEU_THU'] })).toBe(
+      'Báo giá, Đơn, Phiếu thu',
+    );
+  });
+  it('Giá trị: áp đúng mức thì hiện mức, không thì Tuỳ chọn', () => {
+    expect(discountAppliedLabel(policy as never)).toBe('Tuỳ chọn');
+    expect(discountAppliedLabel({ ...policy, fixed_value: true } as never)).toBe('10%');
   });
 });
