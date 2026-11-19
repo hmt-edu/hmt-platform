@@ -74,7 +74,15 @@ export function TicketListPage() {
             onMove={() => undefined}
             onBlocked={(reason) => toast({ tone: 'warning', title: reason })}
             note="Đổi trạng thái ticket bằng thanh trạng thái trong hồ sơ ticket (Đang xử lý, Đã xử lý, Đóng, Huỷ)."
-            renderCard={(c) => <TicketCard row={c} />}
+            renderCard={(c) => (
+              <TicketCard
+                row={c}
+                priorityName={(code) =>
+                  catalogs.filterOptions('TICKET_PRIORITY').find((o) => o.value === code)?.label ??
+                  code
+                }
+              />
+            )}
           />
         )
       }
