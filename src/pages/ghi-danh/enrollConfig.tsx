@@ -95,7 +95,12 @@ export function buildEnrollConfig(
           ]
         : []),
     ],
-    groupFields: [],
+    // Group By ở máy chủ (Kho #17, F65): hình thức học, lớp hiện tại, tình trạng; giá trị đọc từ dòng chỉ để khoá nhóm, nhãn do máy chủ trả.
+    groupFields: [
+      { key: 'mode', label: 'Hình thức học', value: (r) => r.delivery_mode_code ?? '' },
+      { key: 'class', label: 'Lớp', value: (r) => r.class_id ?? '' },
+      { key: 'status', label: 'Tình trạng', value: (r) => r.status_code },
+    ],
     dateFields: [],
     views: ['list'],
   };

@@ -52,3 +52,18 @@ export function enrollSortParam(sort: SortState): string | undefined {
   if (sort.key === 'remaining') return `remaining_${dir}`;
   return undefined;
 }
+
+/** Trường nhóm của giao diện → tên trường máy chủ (enrollment_group_counts). */
+export const ENROLL_GROUP_FIELD_OF: Record<string, string> = {
+  mode: 'mode',
+  class: 'class',
+  status: 'status',
+};
+
+/** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có»; lớp trống = chưa có lớp hiện tại). */
+export function enrollGroupFilter(field: string, key: string): EnrollFilters {
+  if (field === 'mode') return key === '' ? {} : { delivery_mode_code: [key] };
+  if (field === 'class') return key === '' ? { no_class: true } : { class_id: key };
+  if (field === 'status') return key === '' ? {} : { status: [key] };
+  return {};
+}

@@ -140,3 +140,24 @@ export function buildPendingFilters(state: ListState): SessionFilters {
   if (kinds.size === 1) filters.kind = [...kinds][0];
   return filters;
 }
+
+/** Trường nhóm của giao diện → tên trường máy chủ (session_group_counts). */
+export const SESSION_GROUP_FIELD_OF: Record<string, string> = {
+  date: 'date',
+  class: 'class',
+  branch: 'branch',
+  teacher: 'teacher',
+  type: 'type',
+  status: 'status',
+};
+
+/** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có»; giáo viên trống = chưa có giáo viên). */
+export function sessionGroupFilter(field: string, key: string): SessionFilters {
+  if (field === 'date') return key === '' ? {} : { date_from: key, date_to: key };
+  if (field === 'class') return key === '' ? {} : { class_id: key };
+  if (field === 'branch') return key === '' ? {} : { branch_id: key };
+  if (field === 'teacher') return key === '' ? { no_teacher: true } : { teacher_id: key };
+  if (field === 'type') return key === '' ? {} : { type_code: [key] };
+  if (field === 'status') return key === '' ? {} : { status: [key] };
+  return {};
+}

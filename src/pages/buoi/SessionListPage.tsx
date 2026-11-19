@@ -8,11 +8,20 @@ import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import type { SortState } from '../../ui/Data';
+import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import { useLeafRows } from '../lead/useLeadData';
+import { useToast } from '../../ui/toastContext';
 import { buildSessionConfig } from './sessionConfig';
-import { EMPTY_SESSION_STATE, buildSessionFilters, sessionSortParam } from './sessionLogic';
+import {
+  EMPTY_SESSION_STATE,
+  SESSION_GROUP_FIELD_OF,
+  buildSessionFilters,
+  sessionGroupFilter,
+  sessionSortParam,
+} from './sessionLogic';
 import type { SessionRow } from './sessionTypes';
-import { useRefreshSessions, useSessionPage } from './useSessionData';
+import { useRefreshSessions, useSessionGroupCounts, useSessionPage } from './useSessionData';
 
 export function SessionListPage() {
   const access = useAccess();
@@ -40,9 +49,48 @@ export function SessionListPage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useSessionPage(filters, sortValue, page * (pageSize ?? 0), pageSize);
-  const rows: SessionRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  // Group By ở máy chủ (Kho #17, F65): chọn trường nhóm thì danh sách thành cây nhóm có số đếm; mở nhóm mới tải dòng.
+  const groupFields = state.group.flatMap((k) =>
+    SESSION_GROUP_FIELD_OF[k] ? [SESSION_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const toast = useToast();
+  const list = useSessionPage(filters, sortValue, page * (pageSize ?? 0), pageSize, !grouped);
+  const counts = useSessionGroupCounts(filters, groupFields);
+  const leaves = useLeafRows<SessionRow>(
+    filters,
+    sortValue,
+    pageSize,
+    `${JSON.stringify(filters)}|${sortValue}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'session_list',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<SessionRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            sessionGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
+  const rows: SessionRow[] = useMemo(
+    () =>
+      grouping
+        ? grouping.tree
+            .flatMap((g) => (g.children.length > 0 ? g.children : [g]))
+            .flatMap((g) => g.rows)
+        : (list.data?.rows ?? []),
+    [grouping, list.data],
+  );
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const active = grouped ? counts : list;
 
   return (
     <ListScreen
@@ -54,9 +102,9 @@ export function SessionListPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.class_code} ${r.start_time}`}
-      loading={list.isPending || list.isPlaceholderData}
-      error={list.isError ? errorOf(list.error).message : null}
-      onRetry={() => void list.refetch()}
+      loading={active.isPending || active.isPlaceholderData}
+      error={active.isError ? errorOf(active.error).message : null}
+      onRetry={() => void active.refetch()}
       onRefresh={() => void refreshData()}
       onRowClick={(r) => void navigate(`/crm/buoi-hoc/${r.id}`)}
       pager={{
@@ -67,6 +115,11 @@ export function SessionListPage() {
         ...(page * (pageSize ?? 0) + rows.length < total
           ? { onNext: () => setPage(page + 1) }
           : {}),
+      }}
+      groupTree={grouped ? grouping?.tree : undefined}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
       }}
       sort={sort}
       onSortChange={setSort}

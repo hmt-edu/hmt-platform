@@ -2,6 +2,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
+import type { GroupCounts } from '../lead/leadTypes';
 import type {
   AbsentPage,
   CancelPreview,
@@ -20,11 +21,12 @@ export function useSessionPage(
   sort: string,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['session-list', filters, sort, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<SessionPage>(supabase, 'session_list', {
@@ -269,5 +271,18 @@ export function useMoveSession(sessionId: string) {
         p_room_id: a.roomId,
       }),
     onSuccess: () => refresh(),
+  });
+}
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+export function useSessionGroupCounts(filters: SessionFilters, fields: string[]) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-groups', filters, fields],
+    enabled: fields.length > 0,
+    placeholderData: keepPreviousData,
+    retry: false,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'session_group_counts', { p_filters: filters, p_fields: fields }),
   });
 }
