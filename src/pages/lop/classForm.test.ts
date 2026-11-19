@@ -7,9 +7,11 @@ import {
   infoPayload,
   isoWeekday,
   newSlot,
+  slotSummary,
   slotsPayload,
   validateForm,
   type ClassFormState,
+  type SlotDraft,
 } from './classForm';
 
 const valid: ClassFormState = {
@@ -167,5 +169,40 @@ describe('Biểu mẫu tạo / sửa lớp (LOP-03)', () => {
       teacherId: 't1',
       repeatWeeks: '2',
     });
+  });
+});
+
+describe('slotSummary (tóm tắt tự sinh từ Time Table, LOP-03)', () => {
+  const slot = (o: Partial<SlotDraft>): SlotDraft => ({
+    key: 'k',
+    weekday: 1,
+    start: '18:00',
+    end: '19:30',
+    teacherId: '',
+    assistantId: '',
+    roomId: '',
+    repeatWeeks: '1',
+    firstDate: '',
+    ...o,
+  });
+  const opt = {
+    teachers: [{ id: 't1', name: 'Cô Lan' }],
+    assistants: [{ id: 'a1', name: 'Anh Nam' }],
+    rooms: [{ id: 'r1', name: 'P201' }],
+  };
+  it('chưa có khung giờ thì báo rõ', () => {
+    expect(slotSummary([], opt)).toEqual({ schedule: 'Chưa có khung giờ', rooms: '—', staff: '—' });
+  });
+  it('sắp theo thứ rồi giờ, gộp phòng và người trùng', () => {
+    const out = slotSummary(
+      [
+        slot({ key: 'a', weekday: 4, start: '08:00', end: '09:30', teacherId: 't1', roomId: 'r1' }),
+        slot({ key: 'b', weekday: 2, teacherId: 't1', assistantId: 'a1', roomId: 'r1' }),
+      ],
+      opt,
+    );
+    expect(out.schedule).toBe('Thứ 3 18:00–19:30; Thứ 5 08:00–09:30');
+    expect(out.rooms).toBe('P201');
+    expect(out.staff).toBe('Cô Lan, Anh Nam');
   });
 });
