@@ -168,7 +168,7 @@ test('10. Sale tạo phiếu thu từ đơn Đã duyệt (thu đủ cả đơn),
   await expect(dialog.getByLabel('Số tiền')).not.toHaveValue('');
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
-  let total = '';
+  let total: string;
   try {
     const r = await db.query<{ t: string }>(
       `select total_amount::text as t from app.sales_order where id = $1::uuid`,
