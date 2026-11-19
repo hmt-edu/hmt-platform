@@ -420,6 +420,7 @@ export function TicketRecordPage() {
             <DetailField label="Người phụ trách" mode="view" value={ticket.assignee_name ?? ''} />
             <DetailField
               label="Mức độ"
+              hint="Đổi mức độ thì hạn tính lại từ lúc tạo."
               mode="view"
               value={catalogs.name('TICKET_PRIORITY', ticket.priority_code) ?? ''}
             />
