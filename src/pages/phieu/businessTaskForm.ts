@@ -12,6 +12,8 @@ export type TaskOptions = {
   /** Bảo lưu đang chạy của học sinh (cho Gia hạn bảo lưu, R-GD-09). */
   holds?: { id: string; enrollment_id: string; start_date: string; end_date: string }[];
   hold_reasons: { code: string; name: string }[];
+  /** Lý do dừng học (STOP_REASON, migration 427). */
+  stop_reasons?: { code: string; name: string }[];
   transfer_reasons: { code: string; name: string }[];
   classes: {
     id: string;
@@ -21,6 +23,9 @@ export type TaskOptions = {
     upcoming: { date: string; session_no: number }[];
   }[];
 };
+
+/** Loại phiếu nghiệp vụ tạo bằng hộp thoại chung: Bảo lưu (kèm gia hạn, tiếp tục học), Chuyển lớp, Dừng học. */
+export type BusinessType = 'BAO_LUU' | 'CHUYEN_LOP' | 'DUNG_HOC';
 
 /** Loại chuyển lớp chọn được ở phiếu; Chuyển cơ sở chưa làm (cần quản lý hai cơ sở duyệt, R-CS-07). */
 export const TRANSFER_KINDS = [
@@ -61,7 +66,7 @@ export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
 };
 
 export function validateBusinessDraft(
-  type: 'BAO_LUU' | 'CHUYEN_LOP',
+  type: BusinessType,
   draft: BusinessDraft,
   hasStudent: boolean,
 ): BusinessErrors {
@@ -70,7 +75,9 @@ export function validateBusinessDraft(
   else if (draft.enrollmentId === '') e.enrollmentId = 'Chọn ghi danh.';
   if (draft.reasonCode === '') e.reasonCode = 'Chọn lý do.';
   if (draft.reason.trim() === '') e.reason = 'Nhập lý do của phiếu.';
-  if (type === 'BAO_LUU') {
+  if (type === 'DUNG_HOC') {
+    // Dừng học: chỉ cần ghi danh, lý do (danh mục) và ghi chú; luật chặn ở hàm áp dụng (R-GD-16).
+  } else if (type === 'BAO_LUU') {
     const m = Number(draft.months);
     if (draft.holdMode !== 'TIEP_TUC' && (!Number.isInteger(m) || m < 1))
       e.months =
@@ -87,10 +94,16 @@ export function validateBusinessDraft(
 
 /** Khoá payload đúng theo migration 262: BAO_LUU {enrollment_id, months, reason_code}; CHUYEN_LOP {enrollment_id, to_class_id, start_date, kind_code, reason_code}. */
 export function buildBusinessPayload(
-  type: 'BAO_LUU' | 'CHUYEN_LOP',
+  type: BusinessType,
   draft: BusinessDraft,
   holdId: string | null = null,
 ) {
+  if (type === 'DUNG_HOC')
+    return {
+      enrollment_id: draft.enrollmentId,
+      reason_code: draft.reasonCode,
+      note: draft.reason.trim(),
+    };
   if (type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC')
     // Tiếp tục học (quay lại sớm): kết thúc bảo lưu, về hàng chờ xếp lớp, giữ giờ (migration 424).
     return {

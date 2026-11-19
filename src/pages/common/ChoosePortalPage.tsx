@@ -3,7 +3,7 @@ import { AuthLayout } from '../../layout/AuthLayout';
 import { PORTAL_NAMES } from '../../layout/portalNames';
 import { useAuth } from '../../lib/auth/authContext';
 import { PORTALS, pendingStep, portalAccess, type Portal } from '../../lib/auth/claims';
-import { AuthNote } from '../auth/authParts';
+import { AuthNote, SignOutLink } from '../auth/authParts';
 import { Icon, type IconName } from '../../ui/icons';
 
 const PORTAL_CARD: Record<Portal, { icon: IconName; hint: string }> = {
@@ -49,6 +49,7 @@ export function ChoosePortalPage() {
         ))}
       </ul>
       <AuthNote center>Đổi cổng bất cứ lúc nào ở menu tài khoản (ảnh đại diện góc trên).</AuthNote>
+      <SignOutLink label="Đăng xuất" />
     </AuthLayout>
   );
 }

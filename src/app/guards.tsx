@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router';
 import { AuthLayout } from '../layout/AuthLayout';
+import { SignOutButton } from '../layout/SignOutButton';
 import { PORTAL_NAMES } from '../layout/portalNames';
 import { useAuth } from '../lib/auth/authContext';
 import { pendingStep, portalAccess, type Portal } from '../lib/auth/claims';
@@ -34,11 +35,14 @@ export function NoPortalPage({ portal }: { portal?: Portal }) {
               : 'Tài khoản chưa được cấp cổng nào'
         }
         actions={
-          home !== '/khong-co-quyen' && (
-            <ButtonLink to={home} variant="primary">
-              Về cổng của tôi
-            </ButtonLink>
-          )
+          <>
+            {home !== '/khong-co-quyen' && (
+              <ButtonLink to={home} variant="primary">
+                Về cổng của tôi
+              </ButtonLink>
+            )}
+            <SignOutButton variant={home !== '/khong-co-quyen' ? 'secondary' : 'primary'} />
+          </>
         }
       >
         {portal === 'gv'

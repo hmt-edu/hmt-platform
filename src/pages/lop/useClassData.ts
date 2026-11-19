@@ -156,3 +156,41 @@ export function useClassBoard(filters: ClassFilters, perColumn: number | null, e
     }),
   });
 }
+
+export type FrameOption = { id: string; code: string; version: number };
+export type LessonOption = { code: string; title: string };
+
+/**
+ * Khung chương trình đang dùng khớp môn, khối, phân loại, năm học của lớp (LOP-03: ô chọn Khung chương trình, R-LOP-07).
+ * Đọc bằng app.list_curriculum_frames (quyền Cấu hình đào tạo · Xem: Trưởng cơ sở, CSKH đều có); chưa chọn đủ bốn trường thì không gọi.
+ */
+export function useCurriculumFrames(subject: string, grade: string, level: string, year: string) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['class-form-frames', subject, grade, level, year],
+    enabled: subject !== '' && grade !== '' && level !== '' && year !== '',
+    queryFn: async () => {
+      const res = await rpc<{ rows: FrameOption[] }>(supabase, 'list_curriculum_frames', {
+        p_filters: { status: ['DANG_DUNG'], subject, grade, level, year },
+        p_limit: 100, // allow-number: trần phân trang theo quy ước hiệu năng
+        p_offset: 0,
+      });
+      return res.rows;
+    },
+  });
+}
+
+/** Các bài của một khung, theo thứ tự (ô Bài bắt đầu). frameId rỗng thì không gọi. */
+export function useCurriculumLessons(frameId: string) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['class-form-lessons', frameId],
+    enabled: frameId !== '',
+    queryFn: async () => {
+      const res = await rpc<{ lessons: LessonOption[] }>(supabase, 'get_curriculum_frame', {
+        p_id: frameId,
+      });
+      return res.lessons;
+    },
+  });
+}
