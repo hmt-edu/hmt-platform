@@ -142,7 +142,7 @@ test('GV-07K: nhập điểm 3 nhóm, tổng tự cộng, chặn vượt tối �
   await page.getByLabel('Ghi nhớ của Em giả E2E Bình').fill('4');
   await page.getByLabel('Hiểu của Em giả E2E Bình').fill('4');
   await page.getByLabel('Vận dụng của Em giả E2E Bình').fill('2');
-  await expect(page.getByText('Điểm Ghi nhớ phải từ 0 đến 3.')).toBeVisible();
+  await expect(page.getByText('Vượt điểm tối đa của nhóm (3).')).toBeVisible();
   await page.getByLabel('Ghi nhớ của Em giả E2E Bình').fill('3');
   await page.getByLabel('Nhận xét chung', { exact: true }).first().fill('Làm bài tốt');
   await save.click();
