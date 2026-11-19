@@ -117,6 +117,10 @@ const TicketCategoriesPage = lazyScreen(
   'TicketCategoriesPage',
 );
 const BranchRoomPage = lazyScreen(() => import('../pages/co-so/BranchRoomPage'), 'BranchRoomPage');
+const TeachingProfilePage = lazyScreen(
+  () => import('../pages/ho-so-day/TeachingProfilePage'),
+  'TeachingProfilePage',
+);
 const TaskListPage = lazyScreen(() => import('../pages/phieu/TaskListPage'), 'TaskListPage');
 const TaskRecordPage = lazyScreen(() => import('../pages/phieu/TaskRecordPage'), 'TaskRecordPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
@@ -873,6 +877,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/co-so">
                 <BranchRoomPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'quan-tri/giao-vien',
+            element: (
+              <GatedCrmEntry slug="quan-tri/giao-vien">
+                <TeachingProfilePage />
               </GatedCrmEntry>
             ),
           },

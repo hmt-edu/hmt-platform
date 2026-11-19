@@ -46,6 +46,17 @@ Các hàm dưới đây đã gộp và chạy nhưng chưa có mục trong `docs
 | `app.session_is_exam(p_session)` | Buổi này chấm bằng form điểm không. Thay cho so sánh mã `KIEM_TRA` ở các hàm nhận xét, Done, hạn hoàn tất. | Nội bộ, không gọi từ giao diện. |
 | `app.set_request_exam(..., p_type_code)` | Thêm tham số loại kiểm tra (mặc định `KIEM_TRA`; cũng `KT_GIUA_KY`, `KT_CUOI_KY`). Chỉ nhận loại có form điểm. Duyệt yêu cầu sinh buổi đúng loại. Cả ba loại kiểm tra trừ giờ như buổi Chính. | Buổi học · Tạo, như trước. |
 
+## Hồ sơ giáo viên, trợ giảng (migration `20261121000313_qt16_ho_so_giao_vien`, QT-16)
+
+Bảng `app.teaching_profile`: mỗi người dùng có vai Giáo viên (TEACHER) hoặc Trợ giảng (TA) có tối đa MỘT hồ sơ dạy (môn, khối, cơ sở thường dạy, ghi chú, đang dạy hay ngừng). Mã GV/TG là mã nhân sự (`staff_code`) của tài khoản. Hồ sơ chỉ là thông tin tham khảo khi xếp lịch (R-LOP-08, R-LOP-10): khi tạo lớp vẫn chọn được mọi giáo viên đúng cơ sở, hồ sơ không chặn. Không xoá, chỉ Ngừng.
+
+| Hàm | Làm gì | Ai gọi, luật |
+|---|---|---|
+| `app.list_teaching_profiles(p_filters, p_sort, p_limit, p_offset)` | Danh sách hồ sơ dạy, phân trang ở máy chủ. Bộ lọc: `search`, `kind` (GV, TG), `subject`, `grade`, `branch_id`, `active`. Trả tên môn, khối từ danh mục, mã cơ sở. | Cấu hình đào tạo · Xem (Admin, Trưởng cơ sở, CSKH, giáo viên). |
+| `app.list_teaching_candidates()` | Người dùng đang hoạt động có vai Giáo viên hoặc Trợ giảng mà chưa có hồ sơ (ô chọn khi tạo). | Quản trị · Sửa (Admin). |
+| `app.save_teaching_profile(p_data)` | Thêm (có `user_id`) hoặc sửa (có `id`) hồ sơ: `subject_codes`, `grade_codes` (mã ĐANG DÙNG của danh mục SUBJECT, GRADE), `branch_ids`, `note`. Loại GV nếu có vai Giáo viên, không thì TG. Lỗi: `HMT_KHONG_PHAI_GIAO_VIEN`, `HMT_HO_SO_DA_CO`, `HMT_MON_SAI`, `HMT_KHOI_SAI`. | Quản trị · Sửa (Admin). |
+| `app.set_teaching_profile_active(p_id, p_active)` | Ngừng hoặc Dùng lại hồ sơ. | Quản trị · Sửa (Admin). |
+
 ## Chưa liệt kê (cố ý)
 
 Hàm nhập dữ liệu cũ (`import_one_*`), trigger (`tg_*`), hàm đọc phạm vi (`enrollment_read_scope`, `session_read_scope`, `session_visible`, `is_assigned_to_*`) và hàm khoá dòng (`enrollment_hold_for_update`, `enrollment_stop_for_update`, `refund_request_for_update`, `finish_enrollment_hold`) thuộc tài liệu nạp dữ liệu và quyền; không mô tả lại ở đây.
