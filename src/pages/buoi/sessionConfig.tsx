@@ -126,11 +126,8 @@ export function buildAbsentConfig(
         render: (r) => r.student_name,
       },
       { key: 'class', label: 'Lớp', render: (r) => classLabel(r.subject_name, r.class_code) },
-      {
-        key: 'session',
-        label: 'Buổi',
-        render: (r) => `${formatDate(r.session_date)} · ${r.start_time}`,
-      },
+      { key: 'session_date', label: 'Ngày học', render: (r) => formatDate(r.session_date) },
+      { key: 'start_time', label: 'Giờ bắt đầu', render: (r) => r.start_time },
       {
         key: 'kind',
         label: 'Tình trạng',
@@ -198,11 +195,8 @@ export function buildPendingConfig(access: AccessView, canRemind: boolean): List
         render: (r) => classLabel(r.subject_name, r.class_code),
       },
       { key: 'no', label: 'Buổi', render: (r) => sessionNoLabel(r.session_no) },
-      {
-        key: 'time',
-        label: 'Giờ học',
-        render: (r) => `${formatDate(r.session_date)} · ${r.start_time}`,
-      },
+      { key: 'date', label: 'Ngày học', render: (r) => formatDate(r.session_date) },
+      { key: 'time', label: 'Giờ bắt đầu', render: (r) => r.start_time },
       { key: 'teacher', label: 'Giáo viên', render: (r) => r.teacher_name ?? MUTED },
       {
         key: 'deadline',
