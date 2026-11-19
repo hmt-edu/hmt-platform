@@ -53,7 +53,16 @@ export function TeacherTicketCreatePage() {
         {errorOf(options.error).message}
       </StateView>
     ) : (
-      <StateView kind="error" title="Không tải được form" actions={back}>
+      <StateView
+        kind="error"
+        title="Không tải được form"
+        actions={
+          <>
+            <Button onClick={() => void options.refetch()}>Thử lại</Button>
+            {back}
+          </>
+        }
+      >
         {errorOf(options.error).message}
       </StateView>
     );

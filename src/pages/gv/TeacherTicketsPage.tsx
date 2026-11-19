@@ -52,7 +52,12 @@ export function TeacherTicketsPage() {
         ) : isForbidden(query.error) ? (
           <GvForbidden />
         ) : (
-          <Alert tone="danger">{errorOf(query.error).message}</Alert>
+          <div className="flex flex-col gap-2">
+            <Alert tone="danger">{errorOf(query.error).message}</Alert>
+            <div>
+              <Button onClick={() => void query.refetch()}>Thử lại</Button>
+            </div>
+          </div>
         )
       ) : query.data.rows.length === 0 ? (
         <StateView kind="empty" title="Chưa có ticket" headingLevel={2}>
