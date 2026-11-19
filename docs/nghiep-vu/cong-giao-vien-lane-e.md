@@ -1,4 +1,4 @@
-# Cổng Giáo viên và cấu hình rubric: hàm và chính sách của lane E (migration 500 đến 510; 508 huỷ lead xem `tuyen-sinh.md`)
+# Cổng Giáo viên và cấu hình rubric: hàm và chính sách của lane E (migration 500 đến 511; 508 huỷ lead xem `tuyen-sinh.md`)
 
 Cập nhật theo CLAUDE.md mục 8. Hàm ở schema `app`, giao diện gọi qua `rpc`. Hàm chỉ đọc trừ khi cột «Làm gì» ghi là ghi, sửa, tạo.
 
@@ -28,7 +28,8 @@ Cập nhật theo CLAUDE.md mục 8. Hàm ở schema `app`, giao diện gọi qu
 Màn CH-07 `/crm/cau-hinh/rubric` (chỉ Admin, máy tính): tab «Mô tả mức» (chọn Môn, Phiên bản; Sửa/Lưu/Huỷ; Tạo phiên bản) và tab «Câu mẫu lời nhắn phụ huynh». Chữ mô tả mức nạp ở migration 103 là chữ mẫu, chờ sheet Rubric chính thức.
 | 509 | `app.can_see_note_target` (thêm hai nhánh) + loại ghi chú `ENROLLMENT`, `CLASS_SESSION` | Cột «Ghi chú và hoạt động» cho Ghi danh (GD-02) và Buổi học (BUOI-02): ghi chú, nhắc tên, lịch sử thay đổi | CSKH, Trưởng cơ sở, Admin theo quyền Xem của phân hệ ở cơ sở của bản ghi; giáo viên (được phân công) không đọc | E61, R-GV-13, CHUNG-22 |
 | 510 | `app.enrollment_same_class_peers(p_id)` | Chỉ đọc: các ghi danh khác của cùng học sinh ở cùng lớp hiện tại, giờ còn từng ghi danh và tổng giờ còn của lớp (khối «Em có N ghi danh ở lớp này», GD-02) | Người có quyền Ghi danh · Xem trong phạm vi cơ sở; giáo viên không đọc | E63, R-GV-13 |
+| 511 | `app.can_see_note_target` (thêm nhánh `CLASS`) + loại ghi chú `CLASS` | Cột «Ghi chú và hoạt động» cho Lớp (LOP-02): ghi chú, nhắc tên, lịch sử thay đổi; sự kiện của lớp (Tạo, Sửa, Trình…) trộn vào dòng thời gian | Người có quyền Lớp · Xem ở cơ sở của lớp; giáo viên (được phân công) không đọc | E64, CHUNG-22 |
 
-Bài pgTAP: `500`, `501`, `502` (lane E giáo viên), `503` (rubric, kèm 504 và 506), `507` (đổi mật khẩu lần đầu theo tham số), `509` (ghi chú ghi danh và buổi), `510` (ghi danh cùng lớp), `104` (đã sửa để đếm cặp tiêu chí-mức theo phiên bản).
+Bài pgTAP: `500`, `501`, `502` (lane E giáo viên), `503` (rubric, kèm 504 và 506), `507` (đổi mật khẩu lần đầu theo tham số), `509` (ghi chú ghi danh và buổi), `510` (ghi danh cùng lớp), `511` (ghi chú lớp), `104` (đã sửa để đếm cặp tiêu chí-mức theo phiên bản).
 
 Màn: GV-12 mục phiếu test (`/gv/viec-can-lam`), GV-15 (`/gv/phieu-test/:testId`). Chưa làm: ô «Lớp đề xuất» của GV-15 (bảng phiếu chưa có cột).

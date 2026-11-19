@@ -4,9 +4,10 @@
 import { useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
+import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { Button } from '../../ui/Button';
 import { HmtError, errorOf, useDb } from '../../lib/db';
-import { formatDate, formatDateTime } from '../../lib/format';
+import { formatDate } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Tag } from '../../ui/Data';
@@ -157,23 +158,22 @@ function ClassView({ record }: { record: ClassRecord }) {
         onCancel={() => undefined}
         onRefresh={() => void refresh()}
         menu={menu.length > 0 ? { label: 'Hành động', items: menu } : undefined}
-        asideLabel="Lịch sử lớp"
+        asideLabel="Ghi chú và hoạt động"
         aside={
-          record.events.length === 0 ? (
-            <p className="p-3 text-fg-muted">Chưa có lịch sử.</p>
-          ) : (
-            <ul className="flex flex-col divide-y divide-border p-3">
-              {record.events.map((e, i) => (
-                <li key={i} className="flex flex-col gap-0.5 py-1.5">
-                  <span>
-                    {EVENT_LABEL[e.event_code] ?? e.event_code}
-                    {e.note ? `: ${e.note}` : ''}
-                  </span>
-                  <span className="text-caption text-fg-muted">{formatDateTime(e.created_at)}</span>
-                </li>
-              ))}
-            </ul>
-          )
+          <RecordChatter
+            entityType="CLASS"
+            entityId={record.id}
+            format={CHATTER_FORMAT}
+            createdText="Tạo lớp."
+            canWrite
+            events={record.events.map((e, i) => ({
+              kind: 'system' as const,
+              id: `ev-${i}`,
+              at: e.created_at,
+              author: 'Hệ thống',
+              text: `${EVENT_LABEL[e.event_code] ?? e.event_code}${e.note ? `: ${e.note}` : ''}`,
+            }))}
+          />
         }
         smart={[
           {
@@ -470,6 +470,13 @@ const STEP_LABEL: Record<string, string> = {
   DA_XAC_NHAN: 'Đã xác nhận',
   DA_DUYET: 'Đã duyệt',
   DA_DONG: 'Đã đóng',
+};
+
+// Tên trường và giá trị trong lịch sử thay đổi của lớp (không hiện mã thô như DA_DUYET).
+const CHATTER_FORMAT = {
+  labels: { status_code: 'Tình trạng', max_students: 'Sĩ số tối đa', start_date: 'Ngày bắt đầu' },
+  value: (column: string, value: unknown): string | null =>
+    column === 'status_code' && typeof value === 'string' ? (STEP_LABEL[value] ?? null) : null,
 };
 
 const EVENT_LABEL: Record<string, string> = {
