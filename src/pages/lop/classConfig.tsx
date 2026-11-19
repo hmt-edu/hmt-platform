@@ -80,10 +80,6 @@ export function buildClassConfig(opts: {
           </span>
         ),
       },
-      { key: 'legacy', label: 'Mã cũ', defaultVisible: false, render: (r) => r.legacy_ref ?? '' },
-      { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
-      { key: 'schedule', label: 'Lịch học', render: (r) => scheduleText(r.schedule) },
-      { key: 'teacher', label: 'Giáo viên', render: (r) => r.teacher_names ?? '' },
       { key: 'subject', label: 'Môn', render: (r) => r.subject_name ?? r.subject_code },
       { key: 'grade', label: 'Khối', render: (r) => r.grade_code.replace(/^K0?/, '') },
       {
@@ -91,6 +87,21 @@ export function buildClassConfig(opts: {
         label: 'Phân loại',
         render: (r) =>
           [r.class_type_name ?? r.class_type_code, r.level_name].filter(Boolean).join(' · '),
+      },
+      { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
+      { key: 'schedule', label: 'Lịch học', render: (r) => scheduleText(r.schedule) },
+      { key: 'teacher', label: 'Giáo viên', render: (r) => r.teacher_names ?? '' },
+      {
+        key: 'size',
+        label: 'Sĩ số',
+        numeric: true,
+        render: (r) => (r.max_students > 0 ? `${r.enrolled}/${r.max_students}` : `${r.enrolled}`),
+      },
+      {
+        key: 'start',
+        label: 'Bắt đầu',
+        sortable: true,
+        render: (r) => <span className="tabular">{formatDate(r.start_date)}</span>,
       },
       {
         key: 'status',
@@ -104,25 +115,13 @@ export function buildClassConfig(opts: {
         label: 'Vận hành',
         render: (r) => (r.operating_status ? OPERATING_LABEL[r.operating_status] : '—'),
       },
-      {
-        key: 'size',
-        label: 'Sĩ số',
-        numeric: true,
-        render: (r) => (r.max_students > 0 ? `${r.enrolled}/${r.max_students}` : `${r.enrolled}`),
-      },
+      { key: 'legacy', label: 'Mã cũ', defaultVisible: false, render: (r) => r.legacy_ref ?? '' },
       {
         key: 'seats',
         label: 'Còn chỗ',
         numeric: true,
         defaultVisible: false,
         render: (r) => (r.seats_left === null ? 'Không giới hạn' : r.seats_left),
-      },
-      {
-        key: 'start',
-        label: 'Khai giảng',
-        sortable: true,
-        defaultVisible: false,
-        render: (r) => <span className="tabular">{formatDate(r.start_date)}</span>,
       },
       { key: 'group', label: 'Nhóm lớp', defaultVisible: false, render: (r) => r.group_name ?? '' },
     ],
