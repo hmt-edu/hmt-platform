@@ -136,6 +136,9 @@ select is(app.teacher_class_overview(pg_temp.c('p')) -> 'class' ->> 'code', (sel
 select is(jsonb_array_length(app.teacher_class_overview(pg_temp.c('p')) -> 'students'), 3, 'Tab Học sinh: 3 em đang xếp lớp');
 select is(jsonb_array_length(app.teacher_class_overview(pg_temp.c('p')) -> 'slots'), 1, 'Tab Lịch: 1 khung giờ');
 select is(jsonb_array_length(app.teacher_class_overview(pg_temp.c('p')) -> 'sessions'), 3, 'Tab Buổi: 3 buổi của lớp');
+-- E69: khối «Tiến độ khung chương trình» (tạm = buổi đã chốt ÷ buổi dự kiến, nhãn «ước tính»).
+select is((app.teacher_class_progress(pg_temp.c('p')) ->> 'done_sessions')::int, (select count(*)::int from app.class_session s where s.class_id = pg_temp.c('p') and s.status_code in ('DA_CHOT', 'DONE')), 'E69: số buổi đã chốt hoặc hoàn thành khớp dữ liệu');
+select is((app.teacher_class_progress(pg_temp.c('p')) ->> 'planned_sessions')::int, (select total_sessions from app.class where id = pg_temp.c('p')), 'E69: số buổi dự kiến lấy từ lớp');
 
 -- ================= Chuyên cần, điểm trung bình (R-GV-02, R-GV-03, R-GV-04) =================
 create function pg_temp.sv(p_n integer, p_key text) returns jsonb language sql stable as $$
@@ -170,10 +173,12 @@ select ok(not (app.teacher_class_overview(pg_temp.c('p'))::text like '%090010100
 -- ================= Chặn =================
 select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
 select is(pg_temp.err($$select app.teacher_class_overview(pg_temp.c('p'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên khác không được phân công (R-GV-08)');
+select is(pg_temp.err($$select app.teacher_class_progress(pg_temp.c('p'))$$), 'HMT_KHONG_CO_QUYEN', 'E69: giáo viên khác không xem được tiến độ lớp (R-GV-08)');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err($$select app.teacher_class_overview(pg_temp.c('p'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: vận hành không phân công dùng hàm này (cổng giáo viên)');
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(pg_temp.err($$select app.teacher_class_overview(gen_random_uuid())$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: lớp không tồn tại cùng một lỗi (không lộ lớp)');
+select is(pg_temp.err($$select app.teacher_class_progress(gen_random_uuid())$$), 'HMT_KHONG_CO_QUYEN', 'E69: lớp không tồn tại cùng một lỗi (không lộ lớp)');
 reset role;
 select is(has_function_privilege('anon', 'app.teacher_class_overview(uuid)', 'execute'), false, 'Người chưa đăng nhập không gọi được hàm');
 
