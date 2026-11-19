@@ -58,7 +58,8 @@ test('Nhóm bên trái, tìm tham số, Lịch sử thay đổi mờ', async ({ 
   await expect(groups(page).getByRole('button', { name: /^Bán hàng/ })).toBeVisible();
   await groups(page).getByRole('textbox', { name: 'Tìm tham số' }).fill('hạn hiệu lực báo giá');
   await expect(rowOf(page)).toBeVisible();
-  await expect(rowOf(page)).toContainText('14 ngày');
+  await expect(rowOf(page).getByRole('cell', { name: '14', exact: true })).toBeVisible();
+  await expect(rowOf(page).getByRole('cell', { name: 'ngày', exact: true }).first()).toBeVisible();
   await expect(rowOf(page)).toContainText('1–90 ngày');
   await expectAccessible(page);
 });
@@ -81,7 +82,7 @@ test('Sửa giá trị chung: ngoài khoảng khoá nút Lưu; hợp lệ thì x
   await expect(confirm.getByText('20 ngày')).toBeVisible();
   await confirm.getByRole('button', { name: 'Lưu' }).click();
   await expect(page.getByText('Đã lưu tham số.').first()).toBeVisible();
-  await expect(rowOf(page)).toContainText('20 ngày');
+  await expect(rowOf(page).getByRole('cell', { name: '20', exact: true })).toBeVisible();
   const rows = await sql<{ value: string }>('select value from app.setting_def where key = $1', [
     KEY,
   ]);
@@ -100,7 +101,7 @@ test('Ghi đè theo cơ sở: thêm rồi bỏ ghi đè', async ({ page }) => {
   await dialog.getByRole('button', { name: 'Lưu' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Lưu' }).click();
   await expect(rowOf(page)).toContainText('CS5');
-  await expect(rowOf(page)).toContainText('7 ngày');
+  await expect(rowOf(page)).toContainText('7 ngày'); // chip ghi đè kèm đơn vị
   await rowOf(page).getByRole('button', { name: 'Bỏ ghi đè CS5' }).click();
   await expect(page.getByText('Đã bỏ ghi đè CS5.').first()).toBeVisible();
   await expect(rowOf(page)).toContainText('chưa ghi đè');
