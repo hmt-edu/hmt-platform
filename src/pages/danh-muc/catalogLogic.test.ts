@@ -9,7 +9,7 @@ import {
   type CatalogNode,
   type CatalogSummary,
   SESSION_TYPE_CATALOG,
-  sessionTypeFormLabel,
+  sessionFormLabel,
 } from './catalogLogic';
 
 const node = (
@@ -154,11 +154,11 @@ describe('hộp Thêm mục: kiểm mã ở ô nhập', () => {
   });
 });
 
-describe('E23 Danh mục Loại buổi: cột Form nhận xét (chỉ đọc)', () => {
-  it('buổi Kiểm tra chấm bằng Form điểm, mọi loại còn lại 9 tiêu chí (R-V2-19, R-V2-20)', () => {
-    expect(sessionTypeFormLabel('KIEM_TRA')).toBe('Form điểm');
-    for (const code of ['CHINH', 'CUNG_CO', 'HOC_BU', 'BO_TRO'])
-      expect(sessionTypeFormLabel(code)).toBe('9 tiêu chí');
+describe('A25 Danh mục Loại buổi: cột Form nhận xét (sửa được)', () => {
+  it('mã DIEM là Form điểm, mã khác hoặc chưa tải là 9 tiêu chí (R-V2-19, R-V2-20)', () => {
+    expect(sessionFormLabel('DIEM')).toBe('Form điểm');
+    expect(sessionFormLabel('TIEU_CHI')).toBe('9 tiêu chí');
+    expect(sessionFormLabel(undefined)).toBe('9 tiêu chí');
   });
   it('chỉ danh mục SESSION_TYPE có cột này', () => {
     expect(SESSION_TYPE_CATALOG).toBe('SESSION_TYPE');

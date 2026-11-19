@@ -9,7 +9,12 @@ import { Field, TextField } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
 import { Select } from '../../ui/Overlays';
 import { addInputErrors, type CatalogNode } from './catalogLogic';
-import { addCatalogItem, renameCatalogItem, setCatalogItemActive } from './useCatalogData';
+import {
+  addCatalogItem,
+  renameCatalogItem,
+  setCatalogItemActive,
+  setSessionTypeForm,
+} from './useCatalogData';
 
 function useRun(onOpenChange: (open: boolean) => void, onDone: (message: string) => void) {
   const [busy, setBusy] = useState(false);
@@ -220,6 +225,79 @@ function RenameForm({
           onChange={(e) => setName(e.target.value)}
           help="Đổi tên không đổi mã, dữ liệu cũ vẫn gắn mục này."
         />
+      </div>
+    </FormDialog>
+  );
+}
+
+/** Sửa form nhận xét của một loại buổi (A25, Q-176): 9 tiêu chí hoặc form điểm. Chỉ áp dụng cho buổi tạo SAU; buổi đã tạo giữ form lúc tạo. Mã loại buổi không đổi. */
+export function EditSessionFormDialog({
+  node,
+  formCode,
+  onOpenChange,
+  onDone,
+}: {
+  node: CatalogNode | null;
+  formCode: string;
+  onOpenChange: (open: boolean) => void;
+  onDone: (message: string) => void;
+}) {
+  return node ? (
+    <EditSessionForm
+      key={node.id}
+      node={node}
+      formCode={formCode}
+      onOpenChange={onOpenChange}
+      onDone={onDone}
+    />
+  ) : null;
+}
+
+function EditSessionForm({
+  node,
+  formCode,
+  onOpenChange,
+  onDone,
+}: {
+  node: CatalogNode;
+  formCode: string;
+  onOpenChange: (open: boolean) => void;
+  onDone: (message: string) => void;
+}) {
+  const supabase = useDb();
+  const [value, setValue] = useState(formCode);
+  const { busy, error, run } = useRun(onOpenChange, onDone);
+  return (
+    <FormDialog
+      open
+      onOpenChange={onOpenChange}
+      title={`Sửa form nhận xét · ${node.name}`}
+      confirmLabel="Lưu form"
+      canSubmit={value !== formCode}
+      busy={busy}
+      error={error}
+      onSubmit={() =>
+        void run(() => setSessionTypeForm(supabase, node.code, value), 'Đã đổi form nhận xét.')
+      }
+    >
+      <div className="flex flex-col gap-3">
+        <Field label="Form nhận xét">
+          {(field) => (
+            <Select
+              id={field.id}
+              label="Form nhận xét"
+              value={value}
+              onChange={setValue}
+              options={[
+                { value: 'TIEU_CHI', label: '9 tiêu chí' },
+                { value: 'DIEM', label: 'Form điểm' },
+              ]}
+            />
+          )}
+        </Field>
+        <Alert tone="info">
+          Đổi form chỉ áp dụng cho buổi tạo sau. Buổi đã tạo giữ form lúc tạo.
+        </Alert>
       </div>
     </FormDialog>
   );

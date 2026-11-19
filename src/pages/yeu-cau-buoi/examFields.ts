@@ -1,6 +1,8 @@
 // A25: ô «Buổi kiểm tra» ở form yêu cầu buổi (BUOI-07, 08, 09). Luật R-V2-20 (điểm tối đa, điểm tổng hoặc ba nhóm; tổng ba nhóm = điểm tối đa), R-V2-18 (kiểm tra trừ giờ như buổi Chính),
 // R-BUOI-03 (kiểm tra bù từ học bù, bổ trợ KHÔNG trừ giờ). Máy chủ kiểm lại (app.set_request_exam); đây là kiểm nhập cơ bản để báo lỗi tại ô.
 export type ExamInput = {
+  /** Loại kiểm tra (một loại buổi dùng form điểm: Kiểm tra, giữa kỳ, cuối kỳ; A25). */
+  typeCode: string;
   scope: string;
   maxScore: string;
   mode: 'TONG' | 'NHOM';
@@ -9,6 +11,7 @@ export type ExamInput = {
   apply: string;
 };
 export const EMPTY_EXAM: ExamInput = {
+  typeCode: 'KIEM_TRA',
   scope: '',
   maxScore: '',
   mode: 'TONG',
@@ -51,6 +54,7 @@ export function examRpcArgs(e: ExamInput): {
   p_max_memory: number;
   p_max_understand: number;
   p_max_apply: number;
+  p_type_code: string;
 } {
   const n = (t: string) => (t.trim() === '' ? 0 : num(t));
   return {
@@ -60,6 +64,7 @@ export function examRpcArgs(e: ExamInput): {
     p_max_memory: e.mode === 'NHOM' ? n(e.memory) : 0,
     p_max_understand: e.mode === 'NHOM' ? n(e.understand) : 0,
     p_max_apply: e.mode === 'NHOM' ? n(e.apply) : 0,
+    p_type_code: e.typeCode,
   };
 }
 

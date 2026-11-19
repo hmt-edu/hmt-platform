@@ -63,6 +63,25 @@ test('Danh mục Loại buổi (E23): có cột Form nhận xét chỉ đọc (F
   await expectAccessible(page);
 });
 
+test('Danh mục Loại buổi (A25): có hai loại kiểm tra mới, Sửa form mở hộp (chưa đổi thì chưa lưu được)', async ({
+  page,
+}) => {
+  await open(page);
+  await pick(page, /^Loại buổi/);
+  const table = panel(page).getByRole('table');
+  await expect(table.getByRole('row', { name: /KT_GIUA_KY/ })).toContainText('Form điểm');
+  await expect(table.getByRole('row', { name: /KT_CUOI_KY/ })).toContainText('Form điểm');
+  await table
+    .getByRole('row', { name: /KT_CUOI_KY/ })
+    .getByRole('button', { name: 'Sửa form' })
+    .click();
+  const dialog = page.getByRole('dialog', { name: /Sửa form nhận xét/ });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText('Đổi form chỉ áp dụng cho buổi tạo sau.')).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Lưu form' })).toBeDisabled();
+  await expectAccessible(page);
+});
+
 test('Danh mục Mở: thêm mục (câu lỗi, rồi thêm được), đổi tên, ▲▼, Ngừng rồi Dùng lại', async ({
   page,
 }) => {

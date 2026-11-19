@@ -67,3 +67,27 @@ export function setCatalogItemActive(supabase: SupabaseClient, id: string, activ
 export function moveCatalogItem(supabase: SupabaseClient, id: string, direction: 'LEN' | 'XUONG') {
   return rpc<null>(supabase, 'catalog_move_item', { p_item_id: id, p_direction: direction });
 }
+
+/** Form nhận xét của từng loại buổi (A25): 9 tiêu chí hoặc form điểm; đọc app.list_session_type_forms, sửa bằng app.set_session_type_form (Admin). */
+export type SessionTypeForm = {
+  type_code: string;
+  name: string;
+  form_code: 'TIEU_CHI' | 'DIEM';
+  is_active: boolean;
+  sort_order: number;
+};
+
+export function useSessionTypeForms() {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-type-forms'],
+    queryFn: () => rpc<SessionTypeForm[]>(supabase, 'list_session_type_forms'),
+  });
+}
+
+export function setSessionTypeForm(supabase: SupabaseClient, typeCode: string, formCode: string) {
+  return rpc<null>(supabase, 'set_session_type_form', {
+    p_type_code: typeCode,
+    p_form_code: formCode,
+  });
+}

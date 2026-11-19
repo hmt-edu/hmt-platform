@@ -146,3 +146,21 @@ begin
        where sa.session_id = s.id and sa.is_active), '[]'::jsonb));
 end;
 $$;
+
+-- app.list_session_type_forms(): các loại buổi kèm form nhận xét (Danh mục · Loại buổi và ô Loại kiểm tra ở form yêu cầu buổi).
+-- Ai gọi: mọi người đã đăng nhập (cấu hình không nhạy cảm). Kết quả: mảng {type_code, name, form_code, is_active, sort_order} theo thứ tự danh mục.
+create or replace function app.list_session_type_forms()
+returns jsonb
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce(jsonb_agg(jsonb_build_object('type_code', f.type_code, 'name', ci.name, 'form_code', f.form_code,
+                                               'is_active', ci.is_active, 'sort_order', ci.sort_order) order by ci.sort_order, f.type_code), '[]'::jsonb)
+    from app.session_type_form f
+    join app.catalog_item ci on ci.catalog_code = f.type_catalog and ci.code = f.type_code
+   where auth.uid() is not null;
+$$;
+revoke execute on function app.list_session_type_forms() from public, anon;
+grant execute on function app.list_session_type_forms() to authenticated;
