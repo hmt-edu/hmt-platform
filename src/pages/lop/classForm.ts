@@ -1,5 +1,6 @@
 // Logic thuần của LOP-03 Tạo / sửa lớp: trạng thái biểu mẫu, kiểm hợp lệ, dựng dữ liệu gửi app.create_class, app.save_class_info,
 // app.save_class_timetable. Luật R-LOP-02 (sửa theo tình trạng), R-LOP-06 (cơ sở mình), R-LOP-10, 13 (khung giờ, lặp mỗi N tuần), R-LOP-14 (nhóm lớp).
+import { WEEKDAY_LABEL } from './classLabels';
 import type { ClassRecord } from './classTypes';
 
 export type SlotDraft = {
@@ -216,4 +217,30 @@ export function formFromRecord(r: ClassRecord): ClassFormState {
       firstDate: s.first_date,
     })),
   };
+}
+
+/** Tóm tắt tự sinh từ các khung giờ đang nhập: lịch học, phòng, giáo viên và trợ giảng (chỉ đọc, canvas LOP-03). */
+export function slotSummary(
+  slots: SlotDraft[],
+  opt:
+    | {
+        teachers: { id: string; name: string }[];
+        assistants: { id: string; name: string }[];
+        rooms: { id: string; name: string }[];
+      }
+    | undefined,
+): { schedule: string; rooms: string; staff: string } {
+  const name = (list: { id: string; name: string }[] | undefined, id: string) =>
+    list?.find((x) => x.id === id)?.name ?? '';
+  const uniq = (xs: string[]) => [...new Set(xs.filter((x) => x !== ''))];
+  const sorted = [...slots].sort((a, b) => a.weekday - b.weekday || a.start.localeCompare(b.start));
+  const schedule = sorted
+    .filter((x) => x.start !== '' && x.end !== '')
+    .map((x) => `${WEEKDAY_LABEL[x.weekday] ?? ''} ${x.start}–${x.end}`)
+    .join('; ');
+  const rooms = uniq(sorted.map((x) => name(opt?.rooms, x.roomId))).join(', ');
+  const staff = uniq(
+    sorted.flatMap((x) => [name(opt?.teachers, x.teacherId), name(opt?.assistants, x.assistantId)]),
+  ).join(', ');
+  return { schedule: schedule || 'Chưa có khung giờ', rooms: rooms || '—', staff: staff || '—' };
 }

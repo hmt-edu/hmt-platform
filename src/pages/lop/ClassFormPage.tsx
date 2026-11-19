@@ -22,6 +22,7 @@ import {
   formFromRecord,
   infoPayload,
   newSlot,
+  slotSummary,
   slotsPayload,
   validateForm,
   type ClassFormState,
@@ -202,6 +203,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
   const opts = (catalog: string) => catalogs.options(catalog);
   const groupsForGrade = (opt?.groups ?? []).filter((g) => g.grade_code === form.gradeCode);
 
+  const summary = slotSummary(form.slots, opt);
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4">
       <UnsavedGuard when={dirty && !busy} />
@@ -255,6 +257,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
         <h2 id="lop3-general" className="text-h4 md:col-span-3">
           Thông tin chung
         </h2>
+        <ReadOnlyField label="Mã lớp" value={record?.code ?? 'Tự cấp khi lưu'} />
         <Field label="Cơ sở" required error={err('branchId')}>
           {(p) => (
             <select
@@ -396,6 +399,25 @@ function FormView({ record }: { record: ClassRecord | null }) {
             })
           }
         />
+      </section>
+
+      <section aria-labelledby="lop3-summary" className="grid gap-3 md:grid-cols-2">
+        <h2 id="lop3-summary" className="text-h4 md:col-span-2">
+          Lịch học, phòng và giáo viên (tự sinh từ Time Table)
+        </h2>
+        <ReadOnlyField
+          label="Kết thúc dự kiến"
+          value={record?.expected_end_date ?? 'Tính sau khi lưu'}
+        />
+        <ReadOnlyField label="Lịch học" value={summary.schedule} />
+        <ReadOnlyField label="Phòng học" value={summary.rooms} />
+        <ReadOnlyField label="Giáo viên và trợ giảng" value={summary.staff} />
+      </section>
+
+      <section aria-labelledby="lop3-ops" className="grid gap-3 md:grid-cols-3">
+        <h2 id="lop3-ops" className="text-h4 md:col-span-3">
+          Vận hành và chăm sóc khách hàng
+        </h2>
         <TextField
           label="Sĩ số tối đa"
           type="number"
@@ -423,6 +445,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
             </select>
           )}
         </Field>
+        <ReadOnlyField label="Sĩ số hiện tại" value={String(record?.students.length ?? 0)} />
       </section>
 
       {!editing && (
@@ -505,6 +528,10 @@ function FormView({ record }: { record: ClassRecord | null }) {
                 setPreview(null);
               }}
             />
+            <p className="w-full text-caption text-fg-muted">
+              Buổi trước ngày này và buổi đã diễn ra giữ nguyên. Buổi đã chỉnh lẻ tay cũng giữ
+              (R-LOP-11).
+            </p>
             <Button onClick={() => void previewChange()} disabled={!form.applyFrom || busy}>
               Xem trước số buổi đổi
             </Button>
@@ -518,18 +545,21 @@ function FormView({ record }: { record: ClassRecord | null }) {
         {[1, 2, 3, 4, 5, 6, 7].map((day) => {
           const slots = form.slots.filter((s) => s.weekday === day);
           return (
-            <div key={day} className="rounded-lg border border-border p-3">
+            <div key={day} className="rounded-lg border border-border bg-surface p-3">
               <h3 className="mb-2 font-medium">
                 {WEEKDAY_LABEL[day]}
                 {slots.length > 0 ? ` (${slots.length})` : ''}
               </h3>
               {slots.length === 0 && (
                 <p className="text-caption text-fg-muted">
-                  Chưa có khung giờ nào cho {WEEKDAY_LABEL[day]}.
+                  Chưa có khung giờ nào cho {WEEKDAY_LABEL[day]}. Bấm Thêm khung giờ ở dưới.
                 </p>
               )}
               {slots.map((s) => (
-                <div key={s.key} className="mb-2 grid gap-2 md:grid-cols-6">
+                <div
+                  key={s.key}
+                  className="mb-3 grid gap-3 rounded-md bg-surface-subtle p-3 md:grid-cols-3"
+                >
                   <label className="flex flex-col gap-1 text-caption">
                     Giờ bắt đầu
                     <input
@@ -688,5 +718,21 @@ function PersonSelect({
         ))}
       </select>
     </label>
+  );
+}
+
+function ReadOnlyField({ label, value }: { label: string; value: string }) {
+  return (
+    <Field label={label}>
+      {(p) => (
+        <input
+          id={p.id}
+          aria-describedby={p['aria-describedby']}
+          readOnly
+          value={value}
+          className={`${INPUT_CLASS} bg-surface-subtle text-fg-label`}
+        />
+      )}
+    </Field>
   );
 }
