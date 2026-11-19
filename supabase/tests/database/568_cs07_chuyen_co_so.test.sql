@@ -148,8 +148,10 @@ select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cs'), 'CHUYEN_L
           'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: cơ sở đích trùng cơ sở của ticket');
 select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cs'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'kind_code', 'CHUYEN_CO_SO', 'reason_code', 'KHAC'))$$),
           'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: Chuyển cơ sở thiếu cơ sở đích');
-select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cs'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'kind_code', 'CHUYEN_CO_SO', 'dest_branch_id', pg_temp.cs('CS3'), 'reason_code', 'KHAC'))$$),
-          'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: cơ sở đích là văn phòng (Hội sở), không có lớp học');
+-- Dữ liệu giả không có văn phòng: thêm một văn phòng thử (chỉ trong giao dịch của bài).
+select pg_temp.sudo($$insert into app.branch (code, name, sort_order, is_office) values ('CS9', 'Văn phòng thử', 99, true)$$);
+select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cs'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'kind_code', 'CHUYEN_CO_SO', 'dest_branch_id', pg_temp.cs('CS9'), 'reason_code', 'KHAC'))$$),
+          'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: cơ sở đích là văn phòng, không có lớp học');
 select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cs'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'kind_code', 'CHUYEN_CO_SO', 'dest_branch_id', 'không-phải-uuid', 'reason_code', 'KHAC'))$$),
           'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: cơ sở đích không phải mã hợp lệ');
 insert into dst select 'cs', (app.create_ticket_task(pg_temp.k('cs'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'kind_code', 'CHUYEN_CO_SO', 'dest_branch_id', pg_temp.cs('CS5'), 'reason_code', 'KHAC')) ->> 'id')::uuid;
