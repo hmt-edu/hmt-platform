@@ -24,7 +24,7 @@ describe('Nội dung buổi (GV-06, R-V2-35)', () => {
   });
 
   it('buổi Kiểm tra lưu được khi không có dòng nội dung (Q-252)', () => {
-    expect(saveBlocker([''], 'KIEM_TRA')).toBeNull();
+    expect(saveBlocker([''], 'DIEM')).toBeNull();
     expect(saveBlocker([''], 'CHINH')).toBe(NO_LINES_MESSAGE);
   });
 

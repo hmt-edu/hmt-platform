@@ -27,14 +27,21 @@ import {
   type CatalogTree,
   type TreeRow,
   SESSION_TYPE_CATALOG,
-  sessionTypeFormLabel,
+  sessionFormLabel,
 } from './catalogLogic';
-import { AddItemDialog, RenameItemDialog, StopItemDialog, type AddTarget } from './CatalogDialogs';
+import {
+  AddItemDialog,
+  EditSessionFormDialog,
+  RenameItemDialog,
+  StopItemDialog,
+  type AddTarget,
+} from './CatalogDialogs';
 import {
   moveCatalogItem,
   setCatalogItemActive,
   useCatalogSummary,
   useCatalogTree,
+  useSessionTypeForms,
   useRefreshCatalogs,
 } from './useCatalogData';
 
@@ -68,6 +75,9 @@ export function CatalogPage() {
   const canEdit = access.can('ADMIN', 'SUA');
   const [adding, setAdding] = useState<AddTarget | null>(null);
   const [renaming, setRenaming] = useState<CatalogNode | null>(null);
+  const [editingForm, setEditingForm] = useState<CatalogNode | null>(null);
+  const typeForms = useSessionTypeForms();
+  const formOf = (code: string) => typeForms.data?.find((f) => f.type_code === code)?.form_code;
   const [stopping, setStopping] = useState<CatalogNode | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -119,6 +129,8 @@ export function CatalogPage() {
               busyId={busyId}
               onAdd={setAdding}
               onRename={setRenaming}
+              formOf={formOf}
+              onEditForm={setEditingForm}
               onStop={setStopping}
               onReuse={(node) =>
                 void act(
@@ -152,6 +164,12 @@ export function CatalogPage() {
       <RenameItemDialog
         node={renaming}
         onOpenChange={(o) => !o && setRenaming(null)}
+        onDone={done}
+      />
+      <EditSessionFormDialog
+        node={editingForm}
+        formCode={editingForm ? (formOf(editingForm.code) ?? 'TIEU_CHI') : 'TIEU_CHI'}
+        onOpenChange={(o) => !o && setEditingForm(null)}
         onDone={done}
       />
       <StopItemDialog
@@ -257,6 +275,8 @@ function CatalogPanel({
   busyId,
   onAdd,
   onRename,
+  formOf,
+  onEditForm,
   onStop,
   onReuse,
   onMove,
@@ -267,6 +287,8 @@ function CatalogPanel({
   busyId: string | null;
   onAdd: (target: AddTarget) => void;
   onRename: (node: CatalogNode) => void;
+  formOf: (code: string) => string | undefined;
+  onEditForm: (node: CatalogNode) => void;
   onStop: (node: CatalogNode) => void;
   onReuse: (node: CatalogNode) => void;
   onMove: (node: CatalogNode, dir: 'LEN' | 'XUONG') => void;
@@ -382,7 +404,7 @@ function CatalogPanel({
                 {
                   key: 'form',
                   header: 'Form nhận xét',
-                  cell: (r: TreeRow) => sessionTypeFormLabel(r.node.code),
+                  cell: (r: TreeRow) => sessionFormLabel(formOf(r.node.code)),
                 },
               ]
             : []),
@@ -400,6 +422,11 @@ function CatalogPanel({
                       Đổi tên
                     </Button>
                   ) : null}
+                  {tree.root.code === SESSION_TYPE_CATALOG && r.node.is_active && (
+                    <Button size="sm" onClick={() => onEditForm(r.node)}>
+                      Sửa form
+                    </Button>
+                  )}
                   {writable && r.node.is_active && childName && (
                     <Button size="sm" onClick={() => onAdd(addTarget(r.depth + 1, r.node))}>
                       Thêm {childName.toLowerCase()}

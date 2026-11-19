@@ -69,7 +69,7 @@ export function ExamGradingPage() {
     );
   }
   // Buổi thường chấm bằng 9 tiêu chí, không ở màn này.
-  if (query.data.session.type_code !== 'KIEM_TRA') {
+  if (query.data.session.review_form !== 'DIEM') {
     return <Navigate to={`/gv/buoi/${query.data.session.session_id}/cham-nhan-xet`} replace />;
   }
   return <ExamForm key={query.data.session.session_id} sheet={query.data} />;

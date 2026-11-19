@@ -5,6 +5,8 @@ export type SessionOverview = {
   session_id: string;
   status_code: string;
   type_code: string;
+  /** Form nhận xét của buổi (chụp lúc tạo): TIEU_CHI = 9 tiêu chí, DIEM = form điểm (Kiểm tra các loại, A25). */
+  review_form: string;
   type_name: string | null;
   /** Buổi Kiểm tra: cấu hình do vận hành đặt, giáo viên chỉ xem; null nếu chưa đặt. */
   exam: {
@@ -47,7 +49,8 @@ export type SessionOverview = {
   completion?: { late: boolean; late_hours: number; stamped_at: string } | null;
 };
 
-export const EXAM_TYPE = 'KIEM_TRA';
+/** Mã form điểm của buổi Kiểm tra (app.class_session.review_form). */
+export const EXAM_FORM = 'DIEM';
 export const NO_LINES_MESSAGE = 'Cần ít nhất một dòng nội dung.';
 
 /** Bỏ dòng trống, cắt khoảng trắng đầu cuối (khớp app.save_session_content). */
@@ -74,8 +77,8 @@ export function isDirty(
 
 /** Lỗi chặn nút Lưu; null là lưu được. */
 /** Buổi Kiểm tra không đòi dòng nội dung (Q-252). */
-export function saveBlocker(lines: string[], typeCode = 'CHINH'): string | null {
-  if (typeCode === EXAM_TYPE) return null;
+export function saveBlocker(lines: string[], reviewForm = 'TIEU_CHI'): string | null {
+  if (reviewForm === EXAM_FORM) return null;
   return cleanLines(lines).length === 0 ? NO_LINES_MESSAGE : null;
 }
 

@@ -34,6 +34,7 @@ export type ExamSheet = {
     session_id: string;
     status_code: string;
     type_code: string;
+    review_form: string;
     session_no: number | null;
     session_date: string;
     start_time: string;

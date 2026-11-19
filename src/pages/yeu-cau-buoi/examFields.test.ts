@@ -31,6 +31,7 @@ describe('kiểm nhập ô Buổi kiểm tra (A25)', () => {
       p_max_memory: 0,
       p_max_understand: 0,
       p_max_apply: 0,
+      p_type_code: 'KIEM_TRA',
     });
     expect(
       examRpcArgs({
@@ -43,6 +44,9 @@ describe('kiểm nhập ô Buổi kiểm tra (A25)', () => {
       }),
     ).toMatchObject({ p_max_memory: 3, p_max_apply: 4 });
     expect(examRpcArgs(EMPTY_EXAM).p_max_score).toBeNull();
+  });
+  it('gửi đúng loại kiểm tra đã chọn (giữa kỳ, cuối kỳ; A25)', () => {
+    expect(examRpcArgs({ ...EMPTY_EXAM, typeCode: 'KT_GIUA_KY' }).p_type_code).toBe('KT_GIUA_KY');
   });
   it('câu giải thích tính giờ theo loại yêu cầu', () => {
     expect(examChargeNote('CUNG_CO')).toContain('trừ giờ như buổi Chính');

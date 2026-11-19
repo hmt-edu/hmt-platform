@@ -10,7 +10,7 @@ import { formatDate } from '../../lib/format';
 import {
   cleanLines,
   CONFLICT_CODE,
-  EXAM_TYPE,
+  EXAM_FORM,
   initialLines,
   isContentEditable,
   isDirty,
@@ -76,8 +76,8 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
     { lines: overview.lines, homework: overview.homework_text },
     { lines, homework },
   );
-  const isExam = overview.type_code === EXAM_TYPE;
-  const blocker = saveBlocker(lines, overview.type_code);
+  const isExam = overview.review_form === EXAM_FORM;
+  const blocker = saveBlocker(lines, overview.review_form);
   const conflict = saveError?.code === CONFLICT_CODE;
 
   function setLine(index: number, value: string) {

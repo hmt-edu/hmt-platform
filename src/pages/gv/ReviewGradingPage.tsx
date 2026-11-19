@@ -79,7 +79,7 @@ export function ReviewGradingPage() {
     );
   }
   // Buổi Kiểm tra chấm bằng điểm ở màn GV-07K.
-  if (query.data.session.type_code === 'KIEM_TRA') {
+  if (query.data.session.review_form === 'DIEM') {
     return <Navigate to={`/gv/buoi/${query.data.session.session_id}/cham-kiem-tra`} replace />;
   }
   return <ReviewForm key={query.data.session.session_id} sheet={query.data} />;
@@ -94,7 +94,7 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
   const [selected, setSelected] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const editable = isReviewEditable(sheet.session.status_code, sheet.session.type_code);
+  const editable = isReviewEditable(sheet.session.status_code, sheet.session.review_form);
   const dirty = isReviewDirty(sheet, draft);
   const progress = classProgress(draft, sheet.students, sheet.criteria);
   const student = sheet.students[Math.min(selected, sheet.students.length - 1)];

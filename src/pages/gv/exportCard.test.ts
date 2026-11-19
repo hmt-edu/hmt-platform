@@ -14,6 +14,7 @@ const session = {
   session_id: 's1',
   status_code: 'DA_CHOT',
   type_code: 'CHINH',
+  review_form: 'TIEU_CHI',
   session_no: 4,
   session_date: '2026-11-18',
   start_time: '18:00:00',

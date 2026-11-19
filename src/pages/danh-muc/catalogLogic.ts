@@ -145,10 +145,7 @@ export function addInputErrors(code: string): AddInputErrors {
 /** Danh mục «Loại buổi» (E23): có thêm cột Form nhận xét chỉ đọc. */
 export const SESSION_TYPE_CATALOG = 'SESSION_TYPE';
 
-/**
- * Form nhận xét của một loại buổi (chỉ đọc, E23 phương án b, Chat chốt 19/11): buổi Kiểm tra chấm bằng Form điểm (R-V2-20), mọi loại còn lại chấm
- * 9 tiêu chí (R-V2-19). Phản ánh đúng luật đang chạy trong hàm DB; đổi form theo loại chưa có (cần bảng cấu hình, anh Trường chưa chốt).
- */
-export function sessionTypeFormLabel(typeCode: string): string {
-  return typeCode === 'KIEM_TRA' ? 'Form điểm' : '9 tiêu chí';
+/** Tên form nhận xét theo mã (A25): DIEM = Form điểm (R-V2-20), còn lại 9 tiêu chí (R-V2-19). Đổi form ở Danh mục chỉ áp dụng cho buổi tạo sau. */
+export function sessionFormLabel(formCode: string | undefined): string {
+  return formCode === 'DIEM' ? 'Form điểm' : '9 tiêu chí';
 }
