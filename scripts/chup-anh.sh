@@ -18,5 +18,12 @@ export VITE_APP_ENV=local
 SEED_PASSWORD="Ci$(openssl rand -hex 12)9"
 export SEED_PASSWORD
 npm run db:seed-users
+# Dữ liệu mẫu cho ảnh «bản ghi» (lead, cơ hội, đơn, phiếu thu, lớp, buổi, ghi danh): dùng bộ seed giả lớn có sẵn (mã LDL/PHL/DHL/PTL/LPL…, KHÔNG dữ liệu thật).
+# Tắt bằng CHUP_ANH_DU_LIEU=0 (ảnh bản ghi sẽ là danh sách trống, báo cáo ghi XẤP XỈ). Ticket, phiếu nghiệp vụ, khoản tiền chưa có seed: ảnh liên quan vẫn XẤP XỈ.
+if [ "${CHUP_ANH_DU_LIEU:-1}" = "1" ]; then
+  npm run db:seed-lon
+  npm run db:seed-lon-lop-buoi
+  npm run db:seed-lon-phieu-thu
+fi
 CHUP_ANH=1 npx playwright test e2e/chup-anh.spec.ts --project=may-tinh --reporter=list
 echo "Xong. Ảnh ở: ${ANH_OUT:-$HOME/VanPhongAI/hmt-ca/ANH-HUONG-DAN} (xem BAO-CAO.txt trong từng thư mục vai)."
