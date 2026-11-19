@@ -41,7 +41,7 @@ insert into app.user_role (user_id, role_code) select id, role_code from u;
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'BAN_HANG', id, true from app.branch where code in ('CS1', 'CS5') on conflict (module_code, branch_id) do update set enabled = true$$);
 
 -- Dữ liệu: một phiếu tái tục ở mỗi cơ sở (kèm nhật ký), một khung và hai bài; rubric đã có từ migration.
-select pg_temp.sudo($$insert into app.parent (code, full_name, phone, branch_id) select 'PH42' || b.code, 'Phụ huynh giả ' || b.code, '09004200' || right(b.code, 1), b.id from app.branch b where b.code in ('CS1', 'CS5')$$);
+select pg_temp.sudo($$insert into app.parent (code, full_name, phone, branch_id) select 'PH42' || b.code, 'Phụ huynh giả ' || b.code, '090042000' || right(b.code, 1), b.id from app.branch b where b.code in ('CS1', 'CS5')$$);
 select pg_temp.sudo($$insert into app.student (code, parent_id, full_name, birth_year, branch_id) select 'HS42' || b.code, p.id, 'Em ' || b.code, 2012, b.id from app.branch b join app.parent p on p.branch_id = b.id and p.code = 'PH42' || b.code$$);
 select pg_temp.sudo($$insert into app.class (code, branch_id, year_code, subject_code, grade_code, class_type_code, level_code, start_date, total_sessions) select 'LOP42' || b.code, b.id, '2627', 'TOAN', 'K09', 'CB', 'A', current_date, 10 from app.branch b where b.code in ('CS1', 'CS5')$$);
 select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id, parent_id, class_id, origin_code)
