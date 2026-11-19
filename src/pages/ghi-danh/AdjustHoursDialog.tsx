@@ -1,6 +1,6 @@
 // GD-05 Điều chỉnh giờ (hộp thoại K08): thêm một dòng điều chỉnh vào sổ giờ, giờ khác 0 (dương thêm, âm bớt), bắt buộc lý do (danh mục "Lý do điều chỉnh giờ"),
 // ghi chú bắt buộc khi lý do "Khác". Sổ giờ chỉ thêm dòng, không sửa dòng cũ (R-GD-04); không để quỹ âm khi bớt (R-GD-18). Luật do máy chủ quyết
-// (app.adjust_enrollment_hours); chỉ Ghi danh · Duyệt (Trưởng cơ sở, Admin). Chưa có khung hộp trong canvas (khung GD05_dieu_chinh là bản ghi có nút Điều chỉnh giờ): dựng theo K08.
+// (app.adjust_enrollment_hours); chỉ Ghi danh · Duyệt (Trưởng cơ sở, Admin). Canvas 9933 (GD05_dieu_chinh) vẽ thêm nút Cộng giờ/Trừ giờ, nút «Xác nhận»; code giữ ô số có dấu và nút «Thêm dòng điều chỉnh» (bài e2e hiện hành), vênh ghi trong docs/nghiep-vu/doi-chieu-ui-dao-tao.md.
 import { useState } from 'react';
 import { errorOf } from '../../lib/db';
 import { formatNumber } from '../../lib/format';
@@ -100,6 +100,16 @@ function Body({
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
+        <p className="text-caption text-fg-muted">
+          Hệ thống ghi thêm <b>một dòng mới</b> vào sổ giờ (dòng ngược dấu), không sửa dòng cũ.
+          {hours !== null && (
+            <>
+              {' '}
+              Quỹ sau điều chỉnh: {formatNumber(remaining)} → {formatNumber(remaining + hours)} giờ.
+            </>
+          )}{' '}
+          Muốn chuyển giờ sang ghi danh khác, tạo ticket Đề nghị nhóm “Chuyển phí” (R-GD-18).
+        </p>
       </div>
     </FormDialog>
   );
