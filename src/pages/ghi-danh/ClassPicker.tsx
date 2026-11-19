@@ -91,32 +91,38 @@ export function ClassPicker({
           Không có lớp phù hợp: chưa có lớp đã duyệt còn chỗ đúng môn, khối, cơ sở của gói này.
         </p>
       )}
-      {chosen && (
-        <div className="flex flex-col gap-1">
-          {chosen.has_sessions ? (
-            <Select
-              label="Ngày vào lớp"
-              value={value.date}
-              onChange={(date) => onChange({ ...value, date })}
-              options={chosen.upcoming.map((u) => ({
-                value: u.date,
-                label: upcomingLabel(u.date, u.session_no),
-              }))}
-              placeholder="Chọn buổi vào lớp"
-            />
-          ) : (
-            <>
-              <DateInput
+      {/* Giữ chỗ cố định cho ô Ngày vào lớp: chọn lớp không làm hộp dài ra, nút Xếp lớp không dịch xuống (T2-21: bấm lần đầu không ăn). */}
+      <div className="flex min-h-24 flex-col gap-1">
+        {!chosen && classes.length > 0 && (
+          <p className="text-caption text-fg-muted">Chọn lớp để chọn ngày vào lớp.</p>
+        )}
+        {chosen && (
+          <div className="flex flex-col gap-1">
+            {chosen.has_sessions ? (
+              <Select
                 label="Ngày vào lớp"
-                value={keyToDate(value.date)}
-                min={keyToDate(chosen.class_start_date) ?? undefined}
-                onChange={(d) => onChange({ ...value, date: d ? dateKey(d) : '' })}
+                value={value.date}
+                onChange={(date) => onChange({ ...value, date })}
+                options={chosen.upcoming.map((u) => ({
+                  value: u.date,
+                  label: upcomingLabel(u.date, u.session_no),
+                }))}
+                placeholder="Chọn buổi vào lớp"
               />
-              <p className="text-caption text-fg-muted">{startHint(chosen)}</p>
-            </>
-          )}
-        </div>
-      )}
+            ) : (
+              <>
+                <DateInput
+                  label="Ngày vào lớp"
+                  value={keyToDate(value.date)}
+                  min={keyToDate(chosen.class_start_date) ?? undefined}
+                  onChange={(d) => onChange({ ...value, date: d ? dateKey(d) : '' })}
+                />
+                <p className="text-caption text-fg-muted">{startHint(chosen)}</p>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -185,6 +185,7 @@ function ClassView({ record }: { record: ClassRecord }) {
             onOpen: () => undefined,
           },
         ]}
+        stageShowCode={false}
         stage={{
           steps: ['NHAP', 'DA_TRINH', 'DA_XAC_NHAN', 'DA_DUYET', 'DA_DONG'].map((code) => ({
             code,
@@ -331,7 +332,15 @@ function ClassView({ record }: { record: ClassRecord }) {
           open
           onOpenChange={(open) => !open && !busy && setPending(null)}
           title={pending.title}
-          description={pending.description}
+          description={
+            pending.to === 'DA_DUYET'
+              ? `${pending.description} Dự kiến sinh ${record.total_sessions} buổi theo Time Table (bỏ ngày nghỉ lễ)${
+                  record.expected_end_date
+                    ? `, kết thúc dự kiến ${formatDate(record.expected_end_date)}`
+                    : ''
+                }.`
+              : pending.description
+          }
           confirmLabel={pending.label}
           tone={pending.danger ? 'danger' : 'primary'}
           busy={busy}
