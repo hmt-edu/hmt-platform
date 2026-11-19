@@ -41,6 +41,19 @@ test('CHUNG-16: sale mở cổng Giáo viên thì báo rõ không có quyền', 
     page.getByRole('heading', { name: 'Tài khoản chưa liên kết hồ sơ giáo viên' }),
   ).toBeVisible();
   await expectAccessible(page);
+  // Trang chặn luôn có lối thoát: Đăng xuất để dùng tài khoản khác (không bị kẹt).
+  await page.getByRole('button', { name: 'Đăng xuất' }).click();
+  await expect(page).toHaveURL(/\/dang-nhap/);
+});
+
+test('trang /khong-co-quyen có nút Đăng xuất (không kẹt tài khoản)', async ({ page }) => {
+  await loginStaff(page, 'sale.cs5');
+  await page.goto('/khong-co-quyen');
+  await expect(
+    page.getByRole('heading', { name: 'Tài khoản chưa được cấp cổng nào' }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Đăng xuất' }).click();
+  await expect(page).toHaveURL(/\/dang-nhap/);
 });
 
 test('đăng nhập xong tự về đúng cổng của mình khi địa chỉ đang mở dở thuộc cổng khác', async ({
