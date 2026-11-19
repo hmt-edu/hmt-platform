@@ -121,6 +121,21 @@ Viết 13/11/2026 theo thử thật trên cơ sở dữ liệu cục bộ với 
 
 **Quy tắc ngắn:** bấm **Xem trước** trước, chỉ bấm **Nạp** khi báo cáo xem trước có 0 lỗi. Nạp cùng một file nhiều lần không sinh trùng, nên nạp lại là cách làm lại an toàn.
 
+### 10.0. Quy trình năm bước khi nạp hỏng giữa chừng (bổ sung 19/11/2026, thẻ B22)
+
+Dùng khi lần nạp bị cắt, báo lỗi lạ, hoặc nạp xong mà số liệu không như file. Làm đúng thứ tự; bảng chi tiết từng triệu chứng ở 10.1 và 10.2.
+
+1. **Dừng.** Không bấm Nạp lần nữa, không mở màn Nhập ở tab khác, không nạp song song bằng hai người. Báo Chat ngay (một tin: giờ, file nào, loại nào, báo cáo hiện gì hoặc không hiện gì). Không sửa tay trong cơ sở dữ liệu.
+2. **Ghi lại hiện trạng.** Chụp màn báo cáo (số dòng, nạp được, trùng, lỗi). Chạy `docs/van-hanh/sql-kiem-truoc-nap.sql` khối (e) trong SQL Editor của project (chỉ đọc, không in họ tên và số điện thoại) để biết đã có bao nhiêu hồ sơ từ dữ liệu cũ; gửi Chat ảnh.
+3. **Đối chiếu số dòng.** Bấm **Xem trước** với đúng file vừa nạp (không bấm Nạp): số dòng báo «trùng» là số dòng đã vào cơ sở dữ liệu; so với số dòng của file. Kết quả ba trường hợp:
+   - Mọi dòng đúng đều «trùng»: lần nạp đã xong; chỉ còn các dòng lỗi cần sửa file.
+   - Một phần «trùng», phần còn lại báo hợp lệ (chưa nạp): lần nạp bị cắt hoặc bị bỏ qua dòng; nạp lại an toàn (bước 5).
+   - Số «trùng» **nhiều hơn mong đợi**, hoặc dữ liệu nạp **sai nội dung** (nhầm file, nhầm ngày chốt): chuyển bước 4.
+4. **Quyết: nạp lại hay khôi phục.** Anh Trường quyết, Chat điều phối.
+   - **Nạp lại** (thường dùng): khi chỉ thiếu dòng hoặc có dòng lỗi. Nạp cùng một file nhiều lần không sinh trùng và không ghi đè (xem 10.1), nên không cần dọn.
+   - **Khôi phục từ sao lưu**: chỉ khi dữ liệu đã nạp **sai nội dung** và nạp lại không sửa được (nạp lại không ghi đè dòng đã có, không có chức năng hoàn tác một lần nạp). Bản sao lưu là file `.age` trên Google Drive `HMT-backup/`; **tình trạng thật tới 19/11:** chưa có workflow nạp bản sao lưu lên `hmt-prod`, chỉ có khôi phục thử vào DB tạm trên máy anh (xem `quay-lai-khi-deploy-loi.md` mục 4, `deploy/README.md` mục «Khôi phục thử»). Vì vậy **trước mỗi lần nạp thật phải chạy tay Backup production và thấy file `.age` mới** (làm như `dua-len-chay-that.md` mục sao lưu), để có điểm quay lại; nếu workflow Restore production chưa có thì khôi phục sẽ phải nhờ xử lý riêng, không tự làm trên máy.
+5. **Chạy lại và kiểm.** Sửa file (các dòng lỗi theo mục 5 của tài liệu này), **nạp lại cả file** (dòng đã nạp báo «trùng»). Xong: bấm **Xem trước** một lần nữa, mong đợi 0 lỗi và mọi dòng đúng đều «trùng»; chạy lại khối (e) của `sql-kiem-truoc-nap.sql`, số hồ sơ khớp file; gửi Chat ảnh. Với file Người dùng làm thêm bước ở 10.2 (mật khẩu tạm của người đã tạo trước khi bị cắt không còn, dùng «Đặt lại mật khẩu»).
+
 ### 10.1. Phụ huynh, Học sinh, Cơ hội, Lớp, Ghi danh, Buổi học, Điểm danh (hàm trong cơ sở dữ liệu)
 
 Bảy loại này dùng cùng một cách chạy: **một lần bấm Nạp là một lần gọi, một giao dịch**; trong đó mỗi dòng được thử riêng, dòng lỗi bị bỏ qua và dòng đúng được giữ.
