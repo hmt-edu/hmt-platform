@@ -1,6 +1,6 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.mjs` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file trong `src/`, `e2e/`, `design/`. **197 mã màn: 159 có code, 38 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file trong `src/`, `e2e/`, `design/`. **197 mã màn: 159 có code, 38 chưa có.**
 
 Cách đọc: «Có code» = mục menu có tuyến thật, hoặc mã màn được nhắc ở đầu một file trong `src/` (đường dẫn file; có thể là hộp thoại của màn khác); dòng **chưa có** chưa thấy bằng chứng, cần người giữ xác nhận. «Đúng canvas» chỉ ghi «có» cho màn đã đối chiếu tay (xem `doi-chieu-*.md`), còn lại «chưa kiểm». «Ai giữ» theo tiền tố mã (gần đúng, theo phân làn 18/11).
 
