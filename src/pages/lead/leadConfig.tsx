@@ -7,7 +7,6 @@ import { Code, Tag } from '../../ui/Data';
 import type { ListConfig, ListState } from '../../list/types';
 import { appointmentTag, codeAndName, formatPhone } from './leadFormat';
 import type { LeadRow } from './leadTypes';
-import { Stacked } from './LeadCells';
 import type { LeadCatalogs } from './useCatalogs';
 
 export const LEAD_SCREEN_CODE = 'TS-01';
@@ -36,54 +35,60 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
       { key: 'code', label: 'Mã', locked: true, render: (r) => <Code>{r.code}</Code> },
       {
         key: 'parent',
-        label: 'Phụ huynh · SĐT',
+        label: 'Phụ huynh',
         locked: true,
         primary: true,
         sortable: true,
         render: (r) => (
-          <Stacked
-            top={
-              <Link to={`/crm/lead/${r.id}`} className="font-medium text-link hover:underline">
-                {r.parent_name}
-              </Link>
-            }
-            bottom={formatPhone(r.parent_phone)}
-          />
+          <Link to={`/crm/lead/${r.id}`} className="font-medium text-link hover:underline">
+            {r.parent_name}
+          </Link>
         ),
       },
+      { key: 'phone', label: 'SĐT', render: (r) => formatPhone(r.parent_phone) },
       {
         key: 'student',
         label: 'Học sinh',
         render: (r) => r.student_name ?? <span className="text-fg-muted">—</span>,
       },
       {
+        key: 'source_type',
+        label: 'Source type',
+        render: (r) => catalogs.name('SOURCE_TYPE', r.source_type_code) ?? r.source_type_code,
+      },
+      {
         key: 'source',
-        label: 'Source · Sub-source',
-        render: (r) => (
-          <Stacked
-            top={catalogs.name('SOURCE', r.source_code) ?? r.source_code}
-            bottom={catalogs.name('SOURCE_CHANNEL', r.channel_code)}
-          />
-        ),
+        label: 'Source',
+        render: (r) => catalogs.name('SOURCE', r.source_code) ?? r.source_code,
+      },
+      {
+        key: 'medium',
+        label: 'Medium',
+        render: (r) =>
+          r.channel_code ? (
+            (catalogs.name('SOURCE_CHANNEL', r.channel_code) ?? r.channel_code)
+          ) : (
+            <span className="text-fg-muted">—</span>
+          ),
       },
       {
         key: 'stage',
-        label: 'Stage · Sub-stage',
+        label: 'Stage',
         render: (r) =>
           r.record_status === 'DA_GOP' ? (
-            <Stacked
-              top={<Tag>Đã gộp</Tag>}
-              bottom={r.merged_into_code ? `vào ${r.merged_into_code}` : undefined}
-            />
+            <Tag>{r.merged_into_code ? `Đã gộp vào ${r.merged_into_code}` : 'Đã gộp'}</Tag>
           ) : (
-            <Stacked
-              top={<Tag>{stageLabel(r.stage_code)}</Tag>}
-              bottom={
-                r.substage_code
-                  ? codeAndName(r.substage_code, catalogs.name('LEAD_SUBSTAGE', r.substage_code))
-                  : undefined
-              }
-            />
+            <Tag>{stageLabel(r.stage_code)}</Tag>
+          ),
+      },
+      {
+        key: 'substage',
+        label: 'Sub-stage',
+        render: (r) =>
+          r.record_status !== 'DA_GOP' && r.substage_code ? (
+            codeAndName(r.substage_code, catalogs.name('LEAD_SUBSTAGE', r.substage_code))
+          ) : (
+            <span className="text-fg-muted">—</span>
           ),
       },
       { key: 'owner', label: 'Sale phụ trách', render: (r) => r.owner_name ?? '' },
