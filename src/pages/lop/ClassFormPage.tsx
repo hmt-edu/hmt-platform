@@ -23,6 +23,7 @@ import {
   formFromRecord,
   infoPayload,
   newSlot,
+  longSlotWarning,
   slotSummary,
   slotsPayload,
   validateForm,
@@ -791,6 +792,13 @@ function SlotRow({
           </Button>
         </td>
       </tr>
+      {!error && longSlotWarning(s.start, s.end) && (
+        <tr>
+          <td colSpan={8} role="status" className="px-1 pb-2 text-caption text-on-warning-subtle">
+            {longSlotWarning(s.start, s.end)}
+          </td>
+        </tr>
+      )}
       {error && (
         <tr>
           <td colSpan={8} role="alert" className="px-1 pb-2 text-caption text-on-danger-subtle">

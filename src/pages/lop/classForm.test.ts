@@ -7,6 +7,7 @@ import {
   infoPayload,
   isoWeekday,
   newSlot,
+  longSlotWarning,
   slotSummary,
   slotsPayload,
   validateForm,
@@ -204,5 +205,18 @@ describe('slotSummary (tóm tắt tự sinh từ Time Table, LOP-03)', () => {
     expect(out.schedule).toBe('Thứ 3 18:00–19:30; Thứ 5 08:00–09:30');
     expect(out.rooms).toBe('P201');
     expect(out.staff).toBe('Cô Lan, Anh Nam');
+  });
+});
+
+describe('longSlotWarning (nhắc khung giờ quá dài, không chặn)', () => {
+  it('khung 18:00–19:30 không nhắc', () => {
+    expect(longSlotWarning('18:00', '19:30')).toBeNull();
+  });
+  it('khung 12:30–23:30 nhắc 11 giờ', () => {
+    expect(longSlotWarning('12:30', '23:30')).toContain('11 giờ');
+  });
+  it('giờ trống hoặc kết thúc không sau bắt đầu thì không nhắc (đã có lỗi riêng)', () => {
+    expect(longSlotWarning('', '23:30')).toBeNull();
+    expect(longSlotWarning('20:00', '19:00')).toBeNull();
   });
 });
