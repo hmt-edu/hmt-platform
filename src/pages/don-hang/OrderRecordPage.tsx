@@ -593,7 +593,7 @@ function OrderView({ record }: { record: OrderRecord }) {
     <div className="flex flex-col gap-4">
       <section className="flex flex-col gap-1.5">
         <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
-          Lịch đóng tiền từng đợt
+          Lịch đóng tiền từng đợt (tự tính, chỉ đọc)
         </h3>
         {record.installments.length === 0 ? (
           <p className="text-fg-muted">
@@ -642,7 +642,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         </h3>
         <p className="text-fg-muted">
           {receiptCount === 0
-            ? 'Chưa có phiếu thu.'
+            ? 'Chưa có phiếu thu. Đơn đã duyệt thì bấm Tạo phiếu thu để lập phiếu nháp.'
             : `Có ${receiptCount} phiếu thu. Bấm nút Phiếu thu ở đầu trang để xem.`}
         </p>
       </section>
