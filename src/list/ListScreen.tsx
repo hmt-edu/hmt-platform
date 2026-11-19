@@ -10,6 +10,7 @@ import { Icon, type IconName } from '../ui/icons';
 import { Select } from '../ui/Overlays';
 import { useMedia } from '../ui/useMedia';
 import { FavoritesList, SaveFilterForm } from './Favorites';
+import { usePersistedColumns } from './persistColumns';
 import { AdvancedDialog, ColumnsPanel, GroupPanel, PanelHost, QuickFilterPanel } from './Panels';
 import {
   DATE_PRESETS,
@@ -126,6 +127,7 @@ export function ListScreen<Row>({
     | undefined;
 }) {
   const sheet = useMedia('(max-width: 639px)');
+  usePersistedColumns(config.screenCode, state, onStateChange);
   const [open, setOpen] = useState<'filters' | 'group' | 'cols' | 'fav' | 'save' | null>(null);
   const [advanced, setAdvanced] = useState(false);
   // Điện thoại: thay đổi nằm trong bản nháp tới khi bấm Áp dụng.

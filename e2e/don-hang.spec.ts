@@ -115,3 +115,27 @@ test('Công tắc Bán hàng: CS1 chưa bật thì mở thẳng đường dẫn 
   await page.goto('/crm/don-hang');
   await expect(page.getByText(/chưa bật/i).first()).toBeVisible();
 });
+
+test('K03: cột bỏ ở nút «Cột» vẫn ẩn sau khi tải lại trang (T-STG2)', async ({
+  page,
+}, testInfo) => {
+  test.skip(isPhone(page), 'Bảng cột là bảng tuỳ chỉnh của máy tính.');
+  const setup = orderSetupOf(testInfo.project.name);
+  await openOrders(page, setup.sale, setup.mark);
+  const rows = list(page);
+  await expect(rows.getByRole('columnheader', { name: 'Học sinh' })).toBeVisible();
+  await page.getByRole('button', { name: 'Cột', exact: true }).click();
+  await page.getByRole('checkbox', { name: 'Học sinh' }).uncheck();
+  await page.keyboard.press('Escape');
+  await expect(rows.getByRole('columnheader', { name: 'Học sinh' })).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole('heading', { level: 1, name: 'Đơn hàng' })).toBeVisible();
+  await expect(rows.getByRole('columnheader', { name: 'Mã' })).toBeVisible();
+  await expect(rows.getByRole('columnheader', { name: 'Học sinh' })).toHaveCount(0);
+  // Đặt lại về cột mặc định thì cột trở lại và không còn bản lưu.
+  await page.getByRole('button', { name: 'Cột', exact: true }).click();
+  await page.getByRole('button', { name: 'Mặc định' }).click();
+  await page.keyboard.press('Escape');
+  await page.reload();
+  await expect(rows.getByRole('columnheader', { name: 'Học sinh' })).toBeVisible();
+});
