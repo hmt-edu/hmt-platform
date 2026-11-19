@@ -68,12 +68,13 @@ const CREATE_OPP_BLOCKED_REASON =
 /** Lead tạo cơ hội được khi ở C4C, hoặc C4D (đã có cơ hội, tạo thêm có xác nhận lần hai, R-CRM-01). */
 const canOpenOpp = (substage: string | null) => substage === 'C4C' || substage === SYSTEM_SUBSTAGE;
 
+// E67: hồ sơ ngoài phạm vi (visible = false) máy chủ KHÔNG trả id, mã, tên, cơ sở; người xem chỉ biết «đã có trong hệ thống».
 type Duplicate = {
   kind: 'LEAD' | 'PARENT';
-  id: string;
-  code: string;
-  label: string;
-  branch_code: string;
+  id: string | null;
+  code: string | null;
+  label: string | null;
+  branch_code: string | null;
   visible: boolean;
 };
 
@@ -1253,7 +1254,7 @@ function duplicateGroups(rows: Duplicate[]) {
         `${d.code} · ${d.label}`
       )
     ) : (
-      `${d.code} · hồ sơ ở cơ sở ${d.branch_code}, ngoài phạm vi bạn xem`
+      'Hồ sơ ngoài phạm vi bạn xem (không hiện mã, tên, cơ sở)'
     );
   return [
     { title: 'Lead đã có', lines: rows.filter((d) => d.kind === 'LEAD').map(line) },
