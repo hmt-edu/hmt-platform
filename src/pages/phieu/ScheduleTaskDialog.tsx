@@ -41,6 +41,13 @@ export function ScheduleTaskDialog({
   const set = (patch: Partial<ScheduleDraft>) => setDraft((d) => ({ ...d, ...patch }));
   const errors = show ? validateScheduleDraft(draft, hasStudent) : {};
   const sessions = (options.data?.sessions ?? []) as ScheduleSession[];
+  const classes = [
+    ...new Map(
+      (options.data?.enrollments ?? [])
+        .filter((x) => x.class_id !== null && x.class_code !== null)
+        .map((x) => [x.class_id as string, x.class_code as string] as const),
+    ),
+  ];
 
   const submit = () => {
     setShow(true);
@@ -73,21 +80,44 @@ export function ScheduleTaskDialog({
         options={SCHEDULE_ACTIONS.map((a) => ({ value: a.value, label: a.label }))}
         placeholder="Chọn hình thức"
       />
-      {draft.action === 'DOI_BUOI' ? (
+      {draft.action === 'DOI_CA' ? (
+        <p className="text-caption text-fg-muted">
+          Đổi ca cố định là sửa thời khoá biểu của lớp ở màn Sửa lớp (áp dụng từ một ngày). Phiếu
+          này chỉ ghi nhận việc đổi ca; sau khi duyệt, mở màn Sửa lớp để đổi thật.
+        </p>
+      ) : (
         <>
-          <OptionalSelect
-            label="Buổi cần dời"
-            value={draft.sessionId}
-            onChange={(v) => set({ sessionId: v })}
-            options={sessions.map((s) => ({ value: s.id, label: sessionLabel(s, formatDate) }))}
-            placeholder="Chọn buổi"
-            invalid={errors.sessionId !== undefined}
-          />
-          {errors.sessionId && (
-            <p className="text-caption text-on-danger-subtle">{errors.sessionId}</p>
+          {draft.action === 'DOI_BUOI' ? (
+            <>
+              <OptionalSelect
+                label="Buổi cần dời"
+                value={draft.sessionId}
+                onChange={(v) => set({ sessionId: v })}
+                options={sessions.map((s) => ({ value: s.id, label: sessionLabel(s, formatDate) }))}
+                placeholder="Chọn buổi"
+                invalid={errors.sessionId !== undefined}
+              />
+              {errors.sessionId && (
+                <p className="text-caption text-on-danger-subtle">{errors.sessionId}</p>
+              )}
+            </>
+          ) : (
+            <>
+              <OptionalSelect
+                label="Lớp học bù"
+                value={draft.classId}
+                onChange={(v) => set({ classId: v })}
+                options={classes.map(([value, label]) => ({ value, label }))}
+                placeholder="Chọn lớp"
+                invalid={errors.classId !== undefined}
+              />
+              {errors.classId && (
+                <p className="text-caption text-on-danger-subtle">{errors.classId}</p>
+              )}
+            </>
           )}
           <TextField
-            label="Ngày mới"
+            label={draft.action === 'HOC_BU' ? 'Ngày học bù' : 'Ngày mới'}
             required
             type="date"
             value={draft.date}
@@ -111,14 +141,11 @@ export function ScheduleTaskDialog({
             onChange={(e) => set({ end: e.target.value })}
           />
           <p className="text-caption text-fg-muted">
-            Dời một buổi chưa diễn ra của lớp; trùng phòng hoặc giáo viên chỉ cảnh báo, không chặn.
+            {draft.action === 'DOI_BUOI'
+              ? 'Dời một buổi chưa diễn ra của lớp; trùng phòng hoặc giáo viên chỉ cảnh báo, không chặn.'
+              : 'Học bù không trừ giờ. Quản lý cơ sở duyệt xong thì hệ thống sinh một buổi loại Học bù mới cho em (không chọn buổi có sẵn).'}
           </p>
         </>
-      ) : (
-        <p className="text-caption text-fg-muted">
-          Đổi ca cố định là sửa thời khoá biểu của lớp ở màn Sửa lớp (áp dụng từ một ngày). Phiếu
-          này chỉ ghi nhận việc đổi ca; sau khi duyệt, mở màn Sửa lớp để đổi thật.
-        </p>
       )}
       <TextAreaField
         label="Lý do"
@@ -128,7 +155,7 @@ export function ScheduleTaskDialog({
         onChange={(e) => set({ reason: e.target.value })}
       />
       <p className="text-caption text-fg-muted">
-        Phiếu tạo ở bước Nháp; trình duyệt ở màn Phiếu nghiệp vụ. Học bù tạo ở màn Yêu cầu buổi.
+        Phiếu tạo ở bước Nháp; trình duyệt ở màn Phiếu nghiệp vụ.
       </p>
     </FormDialog>
   );
