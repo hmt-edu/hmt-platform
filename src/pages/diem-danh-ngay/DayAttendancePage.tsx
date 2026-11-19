@@ -9,6 +9,7 @@ import { Tag } from '../../ui/Data';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { TextField } from '../../ui/Field';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
+import { useLeadCatalogs } from '../lead/useCatalogs';
 import { countsText, noticeText, stateName, stateTone, type DayRow } from './dayLogic';
 import { useDayPage } from './useDayData';
 
@@ -27,6 +28,7 @@ export function DayAttendancePage() {
   const [filter, setFilter] = useState('tat-ca');
   const [page, setPage] = useState(0);
   const f = FILTERS.find((x) => x.key === filter) ?? FILTERS[0];
+  const catalogs = useLeadCatalogs();
   const query = useDayPage(
     { date, state: f?.state ?? null, hasNotice: f?.notice ?? null },
     page * PAGE_SIZE,
@@ -108,13 +110,16 @@ export function DayAttendancePage() {
             <thead className="bg-surface-subtle text-left text-caption text-fg-muted">
               <tr>
                 <th className="px-3 py-2">Giờ</th>
-                <th className="px-3 py-2">Lớp · Buổi</th>
+                <th className="px-3 py-2">Lớp</th>
                 <th className="px-3 py-2">Cơ sở</th>
                 <th className="px-3 py-2">Giáo viên</th>
+                <th className="px-3 py-2">Tình trạng buổi</th>
                 <th className="px-3 py-2">Điểm danh</th>
-                <th className="px-3 py-2">Vận hành</th>
-                <th className="px-3 py-2">Giáo viên ghi</th>
+                <th className="px-3 py-2">VH điểm danh</th>
+                <th className="px-3 py-2">GV điểm danh</th>
                 <th className="px-3 py-2">Lưu ý</th>
+                <th className="px-3 py-2">CSKH</th>
+                <th className="px-3 py-2">Xử lý</th>
               </tr>
             </thead>
             <tbody>
@@ -123,15 +128,32 @@ export function DayAttendancePage() {
                   <td className="px-3 py-2">
                     {r.start_time}–{r.end_time}
                   </td>
-                  <td className="px-3 py-2">{sessionLink(r)}</td>
+                  <td className="px-3 py-2">
+                    <span className="flex flex-col">
+                      <span className="font-medium">{r.class_code}</span>
+                      <span className="text-caption text-fg-muted">
+                        Buổi {r.session_no}
+                        {r.room_name ? ` · ${r.room_name}` : ''}
+                      </span>
+                    </span>
+                  </td>
                   <td className="px-3 py-2">{r.branch_code}</td>
                   <td className="px-3 py-2">{r.teacher_name ?? '—'}</td>
+                  <td className="px-3 py-2">
+                    {catalogs.name('SESSION_STATUS', r.status_code) ?? r.status_code}
+                  </td>
                   <td className="px-3 py-2">
                     <Tag tone={stateTone(r.state)}>{stateName(r.state)}</Tag>
                   </td>
                   <td className="px-3 py-2">{countsText(r.ops)}</td>
                   <td className="px-3 py-2">{countsText(r.teacher)}</td>
                   <td className="px-3 py-2">{noticeText(r.notice)}</td>
+                  <td className="px-3 py-2">{r.cskh_name ?? '—'}</td>
+                  <td className="px-3 py-2">
+                    <Link className="text-link underline" to={`/crm/buoi-hoc/${r.session_id}`}>
+                      Xem
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>

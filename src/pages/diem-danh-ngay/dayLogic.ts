@@ -20,6 +20,8 @@ export type DayRow = {
   room_name: string | null;
   teacher_name: string | null;
   status_code: string;
+  /** CSKH phụ trách lớp (canvas BUOI15, migration 562). */
+  cskh_name: string | null;
   total: number;
   ops: Counts;
   teacher: Counts;
