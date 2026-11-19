@@ -17,3 +17,15 @@ Gửi Chat để anh Trường duyệt trước khi làm (CLAUDE.md: thay đổi
 
 ## Nhầm lẫn đã sửa trong bảng màn hình (cùng PR)
 Script không thấy mã ở đầu file nên báo «chưa có» hoặc «chỉ có DB»: CHUNG-07 (đổi mật khẩu bắt buộc: `PasswordPages.tsx`), CHUNG-18 (Xuất: nút «Xuất» ở các danh sách), CHUNG-19 (Favorites: `list/Favorites.tsx`), CHUNG-22 (Ghi chú và hoạt động: `ui/Chatter.tsx`), TS-14 (cảnh báo trùng: `ui/Dialogs.tsx`), GV-06 (`SessionContentPage.tsx`), GV-07 (`ReviewGradingPage.tsx`), LOP-04, LOP-07, LOP-10 (đã gộp vào LOP-03). Số mới: 197 màn, **157 có màn**, 10 chỉ có DB, 30 chưa có (HT 9, PH 5 để sau go-live; CRM 14, Giáo viên 2, trong đó 5 màn có đề xuất ở trên).
+
+## Cập nhật 19/11 23:05 (anh Trường duyệt)
+
+- TS-12: đổi trạng thái thành «Gộp vào CHUNG-14» (không làm riêng).
+- QT-13: làm (Code F, PR riêng, rủi ro CAO).
+- KH-08: **chưa làm vì thiếu luật.** Sáu câu hỏi gửi anh:
+  1. Ai được chạy việc «Lên khối»: chỉ Admin, hay cả Trưởng cơ sở cho cơ sở của mình?
+  2. Chạy khi nào: một lần cố định mỗi năm (ngày nào), hay anh bấm khi sang năm học mới (theo danh mục năm học)?
+  3. Khối nào lên khối nào: mỗi em tăng một khối (ví dụ 6 lên 7)? Em lớp 12 thì chuyển «Đã tốt nghiệp» hay giữ nguyên?
+  4. Em đang bảo lưu, đã dừng học hoặc nghỉ: có lên khối không, hay bỏ qua?
+  5. Xem trước: có hiện danh sách từng em (khối cũ, khối mới) để bỏ tick loại trừ trước khi xác nhận không? Em học vượt cấp hoặc học lại thì sửa tay thế nào?
+  6. Hoàn tác: sau khi xác nhận có cho hoàn tác cả đợt (trong bao lâu) không, hay chỉ sửa khối từng em? Ghi nhật ký theo từng em hay một dòng cho cả đợt?
