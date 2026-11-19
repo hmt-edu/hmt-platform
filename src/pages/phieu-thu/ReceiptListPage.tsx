@@ -21,7 +21,17 @@ export function ReceiptListPage({ waitingAccounting = false }: { waitingAccounti
   const catalogs = useLeadCatalogs();
   const config = useMemo(() => {
     const base = buildReceiptConfig(catalogs, access);
-    return waitingAccounting ? { ...base, screenCode: 'TC-04', title: 'Chờ kế toán duyệt' } : base;
+    return waitingAccounting
+      ? {
+          ...base,
+          screenCode: 'TC-04',
+          title: 'Chờ kế toán duyệt',
+          // Canvas TC04: có cột «Mã giao dịch» hiện sẵn.
+          columns: base.columns.map((c) =>
+            c.key === 'txn_ref' ? { ...c, defaultVisible: true } : c,
+          ),
+        }
+      : base;
   }, [catalogs, access, waitingAccounting]);
   const pageSize = useIntSetting('list_page_size_default');
   const [state, setState] = useState<ListState>(EMPTY_RECEIPT_STATE);
