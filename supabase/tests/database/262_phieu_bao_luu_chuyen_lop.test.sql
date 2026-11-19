@@ -227,13 +227,13 @@ select is((select count(*)::int from app.enrollment_class where enrollment_id = 
 select is((select ticket_ref from app.class_transfer where id = (select (result ->> 'transfer_id')::uuid from app.ticket_task where id = pg_temp.pk('cl'))),
           (select code from app.ticket where id = pg_temp.k('cl')), 'Bản ghi chuyển lớp giữ mã ticket (R-CS-02)');
 
--- ================= Loại còn lại vẫn báo chưa làm =================
+-- ================= Phiếu Đổi lịch thiếu dữ liệu bị chặn (CS-11 đã làm dời buổi, đổi ca; học bù báo chưa làm) =================
 insert into tp select 'dl', (app.create_ticket_task(pg_temp.k('dl'), 'DOI_LICH', 'Đổi lịch', '{}'::jsonb) ->> 'id')::uuid;
 select app.submit_ticket_task(pg_temp.pk('dl'));
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select app.approve_ticket_task(pg_temp.pk('dl'));
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
-select is(pg_temp.err($$select app.execute_ticket_task(pg_temp.pk('dl'))$$), 'HMT_PHIEU_CHUA_LAM', 'Phiếu Đổi lịch chưa thực hiện được (chưa có hàm áp dụng)');
+select is(pg_temp.err($$select app.execute_ticket_task(pg_temp.pk('dl'))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Phiếu Đổi lịch thiếu hành động bị chặn lúc thực hiện (C60 CS-11: dời buổi, đổi ca, học bù)');
 
 select * from finish();
 rollback;
