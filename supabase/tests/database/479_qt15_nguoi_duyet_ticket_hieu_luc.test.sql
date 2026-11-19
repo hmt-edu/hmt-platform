@@ -41,15 +41,15 @@ grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Người dùng giả ----------
 create temp table u (key text primary key, id uuid not null default gen_random_uuid());
-insert into u (key) values ('admin'), ('bm1'), ('bm1b'), ('sales1'), ('sales5'), ('ke'), ('bm5');
+insert into u (key) values ('admin'), ('bm1'), ('bm1b'), ('sales1'), ('sales5'), ('ke'), ('bm5'), ('cskh5');
 grant select on u to authenticated;
 insert into auth.users (id, aud, role, email) select id, 'authenticated', 'authenticated', key || '@d216.hoamatoan.invalid' from u;
 insert into app.user_account (id, display_name, login_name, branch_id, must_change_password)
 select u.id, 'Giả ' || u.key, u.key || '@d216.hoamatoan.invalid', (select id from app.branch where code = v.cs), false
-  from u join (values ('admin', 'CS1'), ('bm1', 'CS1'), ('bm1b', 'CS1'), ('sales1', 'CS1'), ('sales5', 'CS5'), ('ke', 'CS1'), ('bm5', 'CS5')) as v (key, cs) on v.key = u.key;
+  from u join (values ('admin', 'CS1'), ('bm1', 'CS1'), ('bm1b', 'CS1'), ('sales1', 'CS1'), ('sales5', 'CS5'), ('ke', 'CS1'), ('bm5', 'CS5'), ('cskh5', 'CS5')) as v (key, cs) on v.key = u.key;
 insert into app.user_role (user_id, role_code)
 select u.id, v.role from u join (values ('admin', 'ADMIN'), ('bm1', 'BRANCH_MANAGER'), ('bm1b', 'BRANCH_MANAGER'), ('sales1', 'SALES'),
-  ('sales5', 'SALES'), ('ke', 'ACCOUNTANT'), ('bm5', 'BRANCH_MANAGER')) as v (key, role) on v.key = u.key;
+  ('sales5', 'SALES'), ('ke', 'ACCOUNTANT'), ('bm5', 'BRANCH_MANAGER'), ('cskh5', 'CSKH')) as v (key, role) on v.key = u.key;
 update app.user_role set is_active = false where role_code = 'ADMIN' and is_active and user_id not in (select id from u);
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select m, id, true from app.branch, (values ('BAN_HANG'), ('VAN_HANH_LOP')) v (m) where code = 'CS1'
   on conflict (module_code, branch_id) do update set enabled = true$$);
@@ -227,6 +227,39 @@ select is((select jsonb_array_length(x -> 'history') from jsonb_array_elements(a
 -- Chỉ thêm: không sửa, không xoá phiên bản.
 select is(pg_temp.err($$select pg_temp.sudo('update app.ticket_task_rule_version set levels = array[''KE_TOAN'']')$$), 'HMT_CHI_THEM', 'QT-15 chặn: không sửa phiên bản');
 select is(pg_temp.err($$select pg_temp.sudo('delete from app.ticket_task_rule_version')$$), 'HMT_CHI_THEM', 'QT-15 chặn: không xoá phiên bản');
+
+-- ---------- Phiếu thật: create_ticket_task phải chụp cấp duyệt THEO PHIÊN BẢN CÓ HIỆU LỰC (bắt lỗi migration sau ghi đè hàm) ----------
+reset role;
+select pg_temp.sudo($$insert into app.parent (code, full_name, phone, branch_id) values ('PHQ15', 'Phụ huynh giả QT15', '0900015001', (select id from app.branch where code = 'CS5'))$$);
+select pg_temp.sudo($$insert into app.student (code, parent_id, full_name, birth_year, branch_id)
+  values ('HSQ15', (select id from app.parent where code = 'PHQ15'), 'Học sinh giả QT15', 2013, (select id from app.branch where code = 'CS5'))$$);
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'AFTERSALE', id, true from app.branch where code = 'CS5'
+  on conflict (module_code, branch_id) do update set enabled = true$$);
+select pg_temp.sudo($$create function pg_temp.tlv(p_id uuid) returns text[] language sql stable security definer as 'select levels from app.ticket_task where id = p_id'$$);
+create function pg_temp.mk15() returns jsonb language sql as $$
+  select jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS5'), 'title', 'Tiêu đề giả', 'description', 'Mô tả giả',
+    'channel_code', 'GOI_DIEN', 'category_code', 'DN_04_01', 'parent_id', (select id from app.parent where code = 'PHQ15'),
+    'student_id', (select id from app.student where code = 'HSQ15')) $$;
+create temp table tk15 (key text primary key, id uuid);
+grant all on tk15 to public;
+grant execute on all functions in schema pg_temp to public;
+set local role authenticated;
+select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
+insert into tk15 select 't1', (app.create_ticket(pg_temp.mk15()) ->> 'id')::uuid;
+insert into tk15 select 'k1', (app.create_ticket_task((select id from tk15 where key = 't1'), 'CAP_NHAT_HO_SO', 'Đổi trường 1', '{"entity":"STUDENT","changes":{"school":"Trường A"}}'::jsonb) ->> 'id')::uuid;
+select is(pg_temp.tlv((select id from tk15 where key = 'k1')), array['QUAN_LY_CO_SO'], 'QT-15 đúng: phiếu lập trước khi đổi cấu hình chụp cấp duyệt cũ (Quản lý cơ sở)');
+
+-- Admin thêm phiên bản hiệu lực từ hôm nay: Quản lý cơ sở rồi Kế toán.
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+select is(pg_temp.err($$select app.save_ticket_task_rule('CAP_NHAT_HO_SO', array['QUAN_LY_CO_SO', 'KE_TOAN'], (now() at time zone 'Asia/Ho_Chi_Minh')::date)$$), null, 'QT-15 đúng: Admin đổi cấp duyệt Cập nhật hồ sơ từ hôm nay');
+select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
+insert into tk15 select 't2', (app.create_ticket(pg_temp.mk15()) ->> 'id')::uuid;
+insert into tk15 select 'k2', (app.create_ticket_task((select id from tk15 where key = 't2'), 'CAP_NHAT_HO_SO', 'Đổi trường 2', '{"entity":"STUDENT","changes":{"school":"Trường B"}}'::jsonb) ->> 'id')::uuid;
+select is(pg_temp.tlv((select id from tk15 where key = 'k2')), array['QUAN_LY_CO_SO', 'KE_TOAN'], 'QT-15 đúng: create_ticket_task thật chụp cấp duyệt theo phiên bản có hiệu lực (không đọc cấu hình gốc)');
+select is(pg_temp.tlv((select id from tk15 where key = 'k1')), array['QUAN_LY_CO_SO'], 'QT-15 đúng: phiếu đã lập không đổi khi cấu hình đổi');
+-- Chặn: loại phiếu khác nhóm con; một ticket một phiếu đang mở.
+select is(pg_temp.err($$select app.create_ticket_task((select id from tk15 where key = 't2'), 'DOI_LICH', 'Sai loại', '{}'::jsonb)$$), 'HMT_PHIEU_KHAC_NHOM', 'QT-15 chặn: loại phiếu không đúng nhóm con của ticket');
+select is(pg_temp.err($$select app.create_ticket_task((select id from tk15 where key = 't2'), 'CAP_NHAT_HO_SO', 'Phiếu thứ hai', '{"entity":"STUDENT","changes":{"school":"C"}}'::jsonb)$$), 'HMT_PHIEU_DA_CO', 'QT-15 chặn: ticket đã có phiếu đang mở');
 
 select * from finish();
 rollback;
