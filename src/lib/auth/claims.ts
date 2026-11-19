@@ -12,6 +12,8 @@ export type HmtClaims = {
   portals: Portal[];
   viewOnlyPortals: Portal[];
   requireMfa: boolean;
+  /** Vai trò có cờ hai bước nhưng tham số bắt buộc đang tắt (D41): vẫn cho cài thiết bị hai bước tự nguyện ở Hồ sơ. */
+  mfaOptional: boolean;
   mustChangePassword: boolean;
   aal: string;
 };
@@ -49,6 +51,7 @@ export function readClaims(accessToken: string): HmtClaims | null {
     portals: portalArray(payload.hmt_portals),
     viewOnlyPortals: portalArray(payload.hmt_view_only_portals),
     requireMfa: payload.hmt_require_mfa === true,
+    mfaOptional: payload.hmt_mfa_optional === true,
     mustChangePassword: payload.hmt_must_change_password === true,
     aal: typeof payload.aal === 'string' ? payload.aal : 'aal1',
   };
