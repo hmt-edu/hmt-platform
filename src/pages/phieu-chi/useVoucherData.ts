@@ -1,4 +1,5 @@
 // Gọi dữ liệu màn Phiếu chi: danh sách phân trang ở máy chủ, bản ghi, và thao tác ghi nhận đã chi (máy chủ kiểm quyền và luật).
+import type { GroupCounts } from '../lead/leadTypes';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
@@ -6,11 +7,16 @@ import { rpc, useDb } from '../../lib/db';
 import type { VoucherFilters } from './voucherFilters';
 import type { VoucherPage, VoucherRecord } from './voucherTypes';
 
-export function useVoucherPage(filters: VoucherFilters, offset: number, limit: number | null) {
+export function useVoucherPage(
+  filters: VoucherFilters,
+  offset: number,
+  limit: number | null,
+  enabled = true,
+) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['voucher-list', filters, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<VoucherPage>(supabase, 'list_payment_vouchers', {
@@ -18,6 +24,18 @@ export function useVoucherPage(filters: VoucherFilters, offset: number, limit: n
         p_limit: limit,
         p_offset: offset,
       }),
+  });
+}
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+export function useVoucherGroupCounts(filters: VoucherFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['voucher-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'voucher_group_counts', { p_filters: filters, p_fields: fields }),
   });
 }
 

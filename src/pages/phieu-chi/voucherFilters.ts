@@ -44,3 +44,17 @@ export function buildVoucherFilters(state: ListState, today: Date = new Date()):
   }
   return filters;
 }
+
+/** Trường nhóm của giao diện → tên trường của voucher_group_counts (Group By ở máy chủ, K1_nhom). */
+export const VOUCHER_GROUP_FIELD_OF: Record<string, string> = {
+  status: 'status',
+  branch: 'branch',
+};
+
+/** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có», không lọc thêm). */
+export function voucherGroupFilter(field: string, key: string): VoucherFilters {
+  if (key === '') return {};
+  if (field === 'status') return { status: [key] };
+  if (field === 'branch') return { branch_id: key };
+  return {};
+}
