@@ -224,7 +224,13 @@ select is((select amount from app.payment_voucher where id = pg_temp.f('pv')), (
 select ok((select code from app.payment_voucher where id = pg_temp.f('pv')) ~ '^PC-CS1-\d{4}-\d{4}$', 'Mã phiếu chi dạng PC-CS-YYMM-STT (spec 02)');
 select is((select status_code from app.refund_request where id = pg_temp.f('a')), 'DA_DUYET', 'Yêu cầu sang Đã duyệt');
 select is(pg_temp.err($$select app.approve_refund_accountant(pg_temp.f('a'))$$), 'HMT_HOAN_PHI_KHONG_DUOC_SUA', 'Chặn: duyệt hai lần (không ghi sổ giờ hai lần)');
-select lives_ok($$select app.pay_payment_voucher(pg_temp.f('pv'), 'Chuyển khoản')$$, 'Đúng: ghi nhận đã chi');
+select is(pg_temp.err($$select app.pay_payment_voucher(pg_temp.f('pv'), 'Chuyển khoản', 'KHONG_CO_TRONG_DANH_MUC')$$), 'HMT_HINH_THUC_KHONG_HOP_LE', 'Chặn: hình thức chi không có trong danh mục hình thức thanh toán chung với Phiếu thu');
+select is((select status_code from app.payment_voucher where id = pg_temp.f('pv')), 'CHO_CHI', 'Hình thức sai thì phiếu vẫn Chờ chi (không ghi nửa chừng)');
+select lives_ok($$select app.pay_payment_voucher(pg_temp.f('pv'), 'Chuyển khoản', 'CHUYEN_KHOAN')$$, 'Đúng: ghi nhận đã chi kèm hình thức chi');
+select is((select payment_method_code from app.payment_voucher where id = pg_temp.f('pv')), 'CHUYEN_KHOAN', 'Phiếu chi lưu hình thức chi (danh mục chung với Phiếu thu)');
+select is((select r ->> 'payment_method' from jsonb_array_elements(app.list_payment_vouchers('{}'::jsonb) -> 'rows') r where (r ->> 'id')::uuid = pg_temp.f('pv')),
+          (select name from app.catalog_item where catalog_code = 'PAYMENT_METHOD' and code = 'CHUYEN_KHOAN'), 'Danh sách phiếu chi trả tên hình thức chi');
+select is(app.get_payment_voucher(pg_temp.f('pv')) -> 'voucher' ->> 'payment_method_code', 'CHUYEN_KHOAN', 'Bản ghi phiếu chi trả hình thức chi');
 select is((select status_code from app.refund_request where id = pg_temp.f('a')), 'DA_CHI', 'Yêu cầu sang Đã chi');
 select is(pg_temp.err($$select app.pay_payment_voucher(pg_temp.f('pv'))$$), 'HMT_PHIEU_CHI_DA_CHI', 'Chặn: chi hai lần');
 
