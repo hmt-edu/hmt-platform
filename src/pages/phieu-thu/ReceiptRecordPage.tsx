@@ -128,10 +128,12 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   const can = (a: ReceiptRecord['actions'][number]) => record.actions.includes(a) && !phone;
   const canEdit = can('sua');
   const statusName = (code: string) => catalogs.name('RECEIPT_STATUS', code) ?? code;
-  const steps: StageStep[] = receiptSteps(record.status_code).map((code) => ({
-    code,
-    label: statusName(code),
-  }));
+  const steps: StageStep[] = receiptSteps(record.status_code, record.is_opening_debt === true).map(
+    (code) => ({
+      code,
+      label: statusName(code),
+    }),
+  );
   const isDraft = record.status_code === 'NHAP';
   const order = useOrder(
     record.order && (isDraft || tab === 'lines') ? record.order.id : undefined,
@@ -409,7 +411,11 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
         }
         stageShowCode={false}
         stage={{ steps, current: record.status_code, forwardOnly: true, onSelect: () => undefined }}
-        stageNote="Stage chỉ đọc, đổi bằng nút bên dưới."
+        stageNote={
+          record.is_opening_debt
+            ? 'Nháp → Chờ kế toán → Đã duyệt (không qua quản lý). Stage chỉ đọc.'
+            : 'Stage chỉ đọc, đổi bằng nút bên dưới.'
+        }
         menu={menu.length > 0 ? { label: 'Hành động', items: menu } : undefined}
         businessActions={
           <span className="flex flex-wrap items-center gap-2">
@@ -420,7 +426,11 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 disabled={editing}
                 onClick={requestSubmit}
               >
-                {rejection ? 'Trình lại' : 'Trình quản lý'}
+                {rejection
+                  ? 'Trình lại'
+                  : record.is_opening_debt
+                    ? 'Gửi kế toán duyệt'
+                    : 'Trình quản lý'}
               </Button>
             )}
             {can('gui') && editing && (
@@ -765,8 +775,10 @@ function Banner({ record }: { record: ReceiptRecord }) {
   if (record.status_code === 'CHO_KE_TOAN')
     return (
       <Notice>
-        Quản lý đã duyệt, chờ Kế toán duyệt. Trong lúc chờ không sửa được; còn Huỷ được khi phiếu
-        chưa duyệt.
+        {record.is_opening_debt
+          ? 'Đã gửi, chờ Kế toán duyệt (phiếu nợ đầu kỳ không qua quản lý).'
+          : 'Quản lý đã duyệt, chờ Kế toán duyệt.'}{' '}
+        Trong lúc chờ không sửa được; còn Huỷ được khi phiếu chưa duyệt.
       </Notice>
     );
   if (record.status_code === 'DA_DUYET')
