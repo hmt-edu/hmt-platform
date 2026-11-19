@@ -117,7 +117,7 @@ export const CRM_MENU: MenuGroup[] = [
       },
       {
         code: 'TC-04',
-        label: 'Chờ kế toán duyệt',
+        label: 'Hàng chờ kế toán duyệt',
         slug: 'cho-ke-toan-duyet',
         requires: can('RECEIPT', 'DUYET'),
         stage: GD1,
@@ -239,7 +239,7 @@ export const CRM_MENU: MenuGroup[] = [
     label: 'Chăm sóc khách hàng',
     icon: 'service',
     entries: [
-      { code: 'CS-01', label: 'Ticket', slug: 'ticket', requires: can('TICKET'), stage: '' },
+      { code: 'CS-01', label: 'Tất cả ticket', slug: 'ticket', requires: can('TICKET'), stage: '' },
       {
         code: 'CS-05',
         label: 'Phiếu nghiệp vụ',
@@ -418,7 +418,7 @@ export const CRM_MENU: MenuGroup[] = [
       },
       {
         code: 'QT-08',
-        label: 'Cơ sở và phòng học',
+        label: 'Cơ sở và phòng',
         slug: 'quan-tri/co-so',
         requires: can('ADMIN'),
         stage: B4,
@@ -453,7 +453,7 @@ export const CRM_MENU: MenuGroup[] = [
       },
       {
         code: 'QT-11',
-        label: 'Nhật ký thao tác',
+        label: 'Nhật ký',
         slug: 'quan-tri/nhat-ky',
         requires: can('ADMIN'),
         stage: B4,
