@@ -1,4 +1,5 @@
 // Gọi dữ liệu màn Phiếu tái tục: danh sách phân trang ở máy chủ, Kanban một lần gọi, thao tác tạo, giao (máy chủ kiểm quyền, luật, công tắc).
+import type { GroupCounts } from '../lead/leadTypes';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
@@ -14,11 +15,16 @@ import type {
   UpsaleRecord,
 } from './upsaleTypes';
 
-export function useUpsalePage(filters: UpsaleFilters, offset: number, limit: number | null) {
+export function useUpsalePage(
+  filters: UpsaleFilters,
+  offset: number,
+  limit: number | null,
+  enabled = true,
+) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['upsale-list', filters, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<UpsalePage>(supabase, 'list_upsale_tickets', {
@@ -26,6 +32,18 @@ export function useUpsalePage(filters: UpsaleFilters, offset: number, limit: num
         p_limit: limit,
         p_offset: offset,
       }),
+  });
+}
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+export function useUpsaleGroupCounts(filters: UpsaleFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['upsale-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'upsale_group_counts', { p_filters: filters, p_fields: fields }),
   });
 }
 
