@@ -47,7 +47,7 @@ test('truongcs.cs5: mở Giáo viên trễ hạn thấy tiêu đề và thẻ t�
   await expect(
     page.getByRole('heading', { level: 1, name: 'Giáo viên trễ hạn hằng tháng' }),
   ).toBeVisible();
-  await expect(page.getByText('Người có buổi trễ')).toBeVisible();
+  await expect(page.getByText('Người có buổi trễ', { exact: true })).toBeVisible();
 });
 
 test('sale.cs5: không có quyền Báo cáo nên báo không có quyền', async ({ page }) => {
