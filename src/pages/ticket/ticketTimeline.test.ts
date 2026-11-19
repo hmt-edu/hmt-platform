@@ -34,4 +34,14 @@ describe('ticketTimeline (dòng thời gian CSN-03)', () => {
     const [e] = ticketTimeline([ev({ created_by_name: null })], name);
     expect(e?.author).toBe('Hệ thống');
   });
+  it('nâng cấp khiếu nại hiện thành dòng hệ thống kèm lý do (R-CS-06)', () => {
+    const [e] = ticketTimeline(
+      [ev({ event_type: 'NANG_CAP', note: 'Nâng cấp lên Quản lý cơ sở: quá hạn' })],
+      name,
+    );
+    expect(e).toMatchObject({
+      kind: 'system',
+      text: 'Nâng cấp khiếu nại. Nâng cấp lên Quản lý cơ sở: quá hạn',
+    });
+  });
 });
