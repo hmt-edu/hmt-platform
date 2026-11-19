@@ -14,6 +14,15 @@ exception when others then
   get stacked diagnostics v_hint = pg_exception_hint, v_state = returned_sqlstate;
   return case when v_hint like 'HMT\_%' then v_hint else v_state end;
 end $$;
+create function pg_temp.msg(p_sql text) returns text language plpgsql as $$
+declare v_msg text;
+begin
+  execute p_sql;
+  return null;
+exception when others then
+  get stacked diagnostics v_msg = message_text;
+  return v_msg;
+end $$;
 create function pg_temp.claims(p_user uuid, p_aal text) returns void language plpgsql security definer as $$
 declare v_result jsonb;
 begin
@@ -109,6 +118,25 @@ reset role;
 select pg_temp.claims(pg_temp.uid('sales2'), 'aal1');
 set local role authenticated;
 select is(pg_temp.err($$select app.update_student((select s1 from ids), '{"school":"X"}'::jsonb)$$), 'HMT_KHONG_CO_QUYEN', 'Sale cơ sở khác không sửa được học sinh');
+reset role;
+
+-- ===== Không lộ tên, mã của hồ sơ trùng ở cơ sở ngoài phạm vi (cùng loại lỗi E67) =====
+insert into app.parent (code, full_name, phone, branch_id)
+values ('PHKH36C', 'Phụ huynh Cơ sở Hai', '0991360004', (select id from app.branch where code = 'CS2'));
+insert into app.student (code, parent_id, full_name, birth_year, branch_id)
+values ('HSKH363', (select id from app.parent where code = 'PHKH36A'), 'Em Kaba', 2014, (select id from app.branch where code = 'CS2'));
+-- Ma trận mặc định cho Sale xem toàn hệ thống (R-CRM-26); ở đây thu hẹp về cơ sở mình để thử trường hợp ngoài phạm vi.
+update app.permission set scope_code = 'CO_SO' where role_code = 'SALES' and module_code in ('PARENT', 'STUDENT') and action_code = 'XEM' and is_active;
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+set local role authenticated;
+select is(pg_temp.err($$select app.update_parent((select pb from ids), '{"phone":"0991360004"}'::jsonb)$$), 'HMT_SDT_TRUNG', 'Trùng SĐT với phụ huynh cơ sở khác vẫn bị chặn');
+select is(pg_temp.msg($$select app.update_parent((select pb from ids), '{"phone":"0991360004"}'::jsonb)$$), 'Số điện thoại đã có ở phụ huynh khác.',
+          'Luật phạm vi: trùng SĐT ở cơ sở ngoài phạm vi, thông báo chung, không lộ tên, mã');
+select ok(pg_temp.msg($$select app.update_parent((select pb from ids), '{"phone":"0991360001"}'::jsonb)$$) like '%PHKH36A%',
+          'Trong phạm vi: trùng SĐT ở cơ sở mình, thông báo có tên và mã');
+select is(pg_temp.err($$select app.update_student((select s2 from ids), '{"full_name":"Em Kaba","birth_date":null,"birth_year":2014}'::jsonb)$$), 'HMT_HOC_SINH_TRUNG', 'Trùng em ở cơ sở khác vẫn bị chặn');
+select is(pg_temp.msg($$select app.update_student((select s2 from ids), '{"full_name":"Em Kaba","birth_date":null,"birth_year":2014}'::jsonb)$$),
+          'Phụ huynh này đã có học sinh trùng họ tên và năm sinh.', 'Luật phạm vi: em trùng ở cơ sở ngoài phạm vi, thông báo chung, không lộ tên, mã');
 reset role;
 
 -- ===== Bản đã gộp chỉ đọc (R-CRM-25) =====

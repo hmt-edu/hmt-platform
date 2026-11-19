@@ -53,8 +53,12 @@ begin
        and (o.phone in (v.phone, coalesce(v.phone_2, '')) or o.phone_2 in (v.phone, coalesce(v.phone_2, '')))
      order by o.created_at limit 1;
     if v_other.id is not null then
-      perform app.raise_error('HMT_SDT_TRUNG',
-        'Số điện thoại đã có ở phụ huynh khác: ' || v_other.full_name || ' (' || v_other.code || ').');
+      -- Chỉ nêu tên và mã khi người sửa xem được cơ sở của hồ sơ trùng; ngoài phạm vi thì báo chung, không lộ tên, mã, cơ sở.
+      if app.can_see_branch('PARENT', 'XEM', v_other.branch_id) then
+        perform app.raise_error('HMT_SDT_TRUNG',
+          'Số điện thoại đã có ở phụ huynh khác: ' || v_other.full_name || ' (' || v_other.code || ').');
+      end if;
+      perform app.raise_error('HMT_SDT_TRUNG', 'Số điện thoại đã có ở phụ huynh khác.');
     end if;
   end if;
   -- Luật: phường, tỉnh phải là mục đang dùng trong danh mục.
@@ -133,8 +137,12 @@ begin
        and app.fold_text(o.full_name) = app.fold_text(v.full_name) and o.birth_year = v.birth_year
      limit 1;
     if v_other.id is not null then
-      perform app.raise_error('HMT_HOC_SINH_TRUNG',
-        'Phụ huynh này đã có học sinh trùng họ tên và năm sinh: ' || v_other.full_name || ' (' || v_other.code || ').');
+      -- Chỉ nêu tên và mã khi người sửa xem được cơ sở của em trùng; ngoài phạm vi thì báo chung.
+      if app.can_see_branch('STUDENT', 'XEM', v_other.branch_id) then
+        perform app.raise_error('HMT_HOC_SINH_TRUNG',
+          'Phụ huynh này đã có học sinh trùng họ tên và năm sinh: ' || v_other.full_name || ' (' || v_other.code || ').');
+      end if;
+      perform app.raise_error('HMT_HOC_SINH_TRUNG', 'Phụ huynh này đã có học sinh trùng họ tên và năm sinh.');
     end if;
   end if;
   -- Luật R-CRM-28: cơ sở tiếp nhận chỉ Admin sửa.
