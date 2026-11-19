@@ -625,6 +625,16 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 mode="view"
                 value={record.status ?? statusName(record.status_code)}
               />
+              {/* Canvas TC02_huy: phiếu Huỷ hiện «Lý do huỷ» thành một dòng của khối thông tin (ngoài dải thông báo). */}
+              {record.status_code === 'HUY' && (
+                <DetailField
+                  label="Lý do huỷ"
+                  mode="view"
+                  value={
+                    [record.cancel_reason, record.cancel_note].filter(Boolean).join(': ') || '—'
+                  }
+                />
+              )}
               <DetailField
                 label="Người lập"
                 mode="view"

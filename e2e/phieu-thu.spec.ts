@@ -189,6 +189,8 @@ test('Người lập huỷ phiếu chưa duyệt: chọn lý do, phiếu về Hu
   await page.getByRole('option', { name: 'Sai số tiền' }).click();
   await dialog.getByRole('button', { name: 'Huỷ phiếu thu' }).click();
   await expect(page.getByText(/Phiếu đã huỷ: Sai số tiền/)).toBeVisible();
+  // Canvas TC02_huy: «Lý do huỷ» là một dòng của khối thông tin.
+  await expect(page.locator('dt', { hasText: /^Lý do huỷ$/ })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
   void isPhone;
 });
