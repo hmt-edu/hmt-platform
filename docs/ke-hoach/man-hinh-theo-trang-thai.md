@@ -1,13 +1,13 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 147 có màn, 17 chỉ có DB (chưa thấy màn), 33 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 157 có màn, 10 chỉ có DB (chưa thấy màn), 30 chưa có.**
 
 ## Số theo cổng
 
 | Cổng | Tổng | Có màn | Chỉ có DB | Chưa có |
 |---|---|---|---|---|
-| CRM (còn lại) | 155 | 130 | 8 | 17 |
-| Giáo viên (GV) | 18 | 14 | 2 | 2 |
+| CRM (còn lại) | 155 | 138 | 3 | 14 |
+| Giáo viên (GV) | 18 | 16 | 0 | 2 |
 | Học sinh (HT) | 9 | 0 | 0 | 9 |
 | Phụ huynh (PH) | 5 | 0 | 0 | 5 |
 | Báo cáo (BC) | 10 | 3 | 7 | 0 |
@@ -22,7 +22,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | CHUNG-04 | Quên mật khẩu (liên hệ quản trị viên) **(theo thiết kế P1 v4, 18/10)** | B | **Có màn** `src/pages/auth/PasswordPages.tsx` | không có khung | chưa kiểm | smoke.spec.ts | Code F |
 | CHUNG-05 | Đặt mật khẩu mới (từ link email) **(HOÃN, thiết kế P1 v4)** | C | **Chưa có** | không có khung | chưa kiểm | smoke.spec.ts | Code F |
 | CHUNG-06 | Đăng nhập học sinh (mã HS) | A | **Có màn** `src/pages/auth/LoginPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, smoke.spec.ts | Code F |
-| CHUNG-07 | Đổi mật khẩu bắt buộc lần đầu | B | **Chỉ có DB** `20261118000470_d35_get_setting_luat_mat_khau.sql` | không có khung | chưa kiểm | auth.spec.ts, so-sanh-dang-nhap.spec.ts | Code F |
+| CHUNG-07 | Đổi mật khẩu bắt buộc lần đầu | B | **Có màn** `src/pages/auth/PasswordPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, so-sanh-dang-nhap.spec.ts | Code F |
 | CHUNG-08 | Không thể đăng nhập **(chốt 12/10; chữ theo thiết kế P1 v4)** | C | **Chưa có** | không có khung | chưa kiểm | smoke.spec.ts | Code F |
 | CHUNG-09 | Hết phiên làm việc | C | **Có màn** `src/pages/auth/SessionEndDialog.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
 | CHUNG-10 | Khung ứng dụng CRM (menu trái, thanh trên, chọn cơ sở; điện thoại: menu thu gọn) | A | **Có màn** `src/layout/CrmShell.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
@@ -32,10 +32,10 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | CHUNG-14 | Trang chủ CRM theo vai trò (việc của tôi hôm nay) | A | **Có màn** `src/pages/home/CrmHome.tsx` | không có khung | chưa kiểm | trang-chu.spec.ts | Code F |
 | CHUNG-16 | Không có quyền truy cập | C | **Có màn** `src/pages/common/PortalPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, quan-tri-chan-quyen.spec.ts | Code F |
 | CHUNG-17 | Không tìm thấy / lỗi hệ thống | C | **Có màn** `src/pages/common/PortalPages.tsx` | không có khung | chưa kiểm | smoke.spec.ts | Code F |
-| CHUNG-18 | Xuất file (có nhật ký) | C | **Chỉ có DB** `20261019000033_lead_danh_sach.sql` | không có khung | chưa kiểm | — | Code F |
-| CHUNG-19 | Lưu bộ lọc yêu thích | C | **Chỉ có DB** `20261012000016_khuon_dung_chung.sql` | không có khung | chưa kiểm | — | Code F |
+| CHUNG-18 | Xuất file (có nhật ký) | C | **Có màn** `src/pages/lead/LeadListPage.tsx` | không có khung | chưa kiểm | — | Code F |
+| CHUNG-19 | Lưu bộ lọc yêu thích | C | **Có màn** `src/list/Favorites.tsx` | không có khung | chưa kiểm | — | Code F |
 | CHUNG-20 | Xoá bản ghi nhập nhầm (chỉ Admin) | C | **Có màn** `src/pages/lead/CancelLeadDialog.tsx` | không có khung | chưa kiểm | — | Code F |
-| CHUNG-22 | Ghi chú trao đổi + lịch sử thay đổi (cột phải mọi bản ghi) | A | **Chỉ có DB** `20261012000016_khuon_dung_chung.sql` | không có khung | chưa kiểm | — | Code F |
+| CHUNG-22 | Ghi chú trao đổi + lịch sử thay đổi (cột phải mọi bản ghi) | A | **Có màn** `src/ui/Chatter.tsx` | không có khung | chưa kiểm | — | Code F |
 | CHUNG-24 | Phân hệ chưa bật ở cơ sở này | C | **Có màn** `src/pages/common/PortalPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, so-sanh.spec.ts | Code F |
 | CHUNG-25 | Chọn cổng (người có nhiều vai trò) | C | **Có màn** `src/pages/common/ChoosePortalPage.tsx` | không có khung | chưa kiểm | — | Code F |
 | CHUNG-26 | Hộp thoại xác nhận chung + cảnh báo rời trang chưa lưu | B | **Có màn** `src/ui/Dialogs.tsx` | không có khung | chưa kiểm | — | Code F |
@@ -73,7 +73,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TS-11 | Lịch hẹn (danh sách + lịch tuần) | A | **Có màn** `/crm/lich-hen` | có (15 khung) | Đúng | lich-hen.spec.ts | Code ? |
 | TS-12 | Việc tuyển sinh hôm nay (lọc sẵn) | C | **Chưa có** | không có khung | chưa kiểm | trang-chu.spec.ts | Code ? |
 | TS-13 | Tạo / dời lịch hẹn | B | **Có màn** `src/features/appointments/AppointmentDialog.tsx` | có (5 khung) | Đúng | lead-ban-ghi.spec.ts, so-sanh.spec.ts | Code ? |
-| TS-14 | Cảnh báo trùng khách hàng | C | **Chỉ có DB** `20261017000024_ts_bang_nen.sql` | không có khung | chưa kiểm | lead-ban-ghi.spec.ts, so-sanh.spec.ts | Code ? |
+| TS-14 | Cảnh báo trùng khách hàng | C | **Có màn** `src/ui/Dialogs.tsx` | không có khung | chưa kiểm | lead-ban-ghi.spec.ts, so-sanh.spec.ts | Code ? |
 | TS-15 | Tạo phiếu kiểm tra từ cơ hội (gồm xếp lịch, đổi lịch) | B | **Có màn** `src/pages/phieu/CreateTestDialog.tsx` | có (9 khung) | Gần đúng | phieu.spec.ts | Code ? |
 | TS-16 | Phiếu kiểm tra (danh sách + Kanban + lịch) | B | **Có màn** `/crm/phieu-kiem-tra` | có (15 khung) | Lệch → đã sửa | phieu.spec.ts | Code ? |
 | TS-17 | Phiếu kiểm tra (bản ghi) | A | **Có màn** `src/pages/phieu/TestDialogs.tsx` | có (5 khung) | Gần đúng | phieu.spec.ts | Code ? |
@@ -132,13 +132,13 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | LOP-01 | Lớp (danh sách / kanban theo bước duyệt) | B | **Có màn** `/crm/lop` | có (17 khung) | Lệch → đã sửa | lop.spec.ts | Code A |
 | LOP-02 | Lớp (bản ghi) | A | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (27 khung) | Lệch (chưa sửa) | lop.spec.ts | Code A |
 | LOP-03 | Tạo / sửa lớp (chỉ ở Nháp, Từ chối) | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | có (26 khung) | Lệch (chưa sửa) | lop.spec.ts | Code A |
-| LOP-04 | Thời khoá biểu lớp **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | A | **Chưa có** | không có khung | chưa kiểm | — | Code A |
+| LOP-04 | Thời khoá biểu lớp **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | A | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
 | LOP-05 | Trình / xác nhận / duyệt / từ chối lớp | B | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (12 khung) | Gần đúng | lop.spec.ts | Code A |
 | LOP-06 | Đóng / huỷ lớp (bị chặn thì liệt kê lý do) | B | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (6 khung) | Gần đúng | lop.spec.ts | Code A |
-| LOP-07 | Đổi giáo viên và sinh lại buổi chưa diễn ra **(đã gộp vào LOP-03, 26/10, R-LOP-10, R-LOP-11)** | B | **Chưa có** | không có khung | chưa kiểm | — | Code A |
+| LOP-07 | Đổi giáo viên và sinh lại buổi chưa diễn ra **(đã gộp vào LOP-03, 26/10, R-LOP-10, R-LOP-11)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
 | LOP-08 | Lịch tuần cơ sở (theo phòng, giáo viên) | A | **Có màn** `/crm/lich-tuan` | có (18 khung) | Gần đúng | lop.spec.ts | Code A |
 | LOP-09 | Danh sách học sinh của lớp (dòng xếp lớp) | C | **Có màn** `src/pages/lop/ClassStudentsPage.tsx` | có (4 khung) | chưa kiểm | duong-di-hoc-sinh.spec.ts | Code A |
-| LOP-10 | Đổi lịch cố định của lớp đã duyệt **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | B | **Chưa có** | không có khung | chưa kiểm | — | Code A |
+| LOP-10 | Đổi lịch cố định của lớp đã duyệt **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
 | BUOI-01 | Buổi học (danh sách, mặc định hôm nay) | B | **Có màn** `/crm/buoi-hoc` | có (8 khung) | Đúng | buoi-a.spec.ts, buoi-b.spec.ts | Code A |
 | BUOI-02 | Buổi học (bản ghi) | A | **Có màn** `src/pages/buoi/SessionListPage.tsx` | có (16 khung) | Gần đúng | buoi-a.spec.ts, duong-di-hoc-sinh.spec.ts | Code A |
 | BUOI-03 | Điểm danh phía vận hành + lý do liên hệ | B | **Có màn** `src/pages/buoi/AbsentTodayPage.tsx` | có (16 khung) | Đúng | buoi-a.spec.ts, duong-di-hoc-sinh.spec.ts | Code A |
@@ -174,8 +174,8 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | GV-03 | Lịch dạy (tuần, tháng) | B | **Có màn** `src/pages/gv/TeacherSchedulePage.tsx` | có (16 khung) | Đúng | gv-lich-day.spec.ts | Code E |
 | GV-04 | Buổi dạy (tổng quan các bước cần làm) | A | **Có màn** `src/pages/gv/TeacherSchedulePage.tsx` | có (31 khung) | Lệch → đã sửa | gv-cham-btvn.spec.ts, gv-cham-kiem-tra.spec.ts | Code E |
 | GV-05 | Điểm danh (4 trạng thái) | A | **Có màn** `src/pages/gv/TeacherAttendancePage.tsx` | có (23 khung) | Đúng | buoi-a.spec.ts, gv-diem-danh.spec.ts | Code E |
-| GV-06 | Nội dung buổi + giao BTVN | B | **Chỉ có DB** `20261111000107_gv_doc_du_lieu_giao_vien.sql` | có (28 khung) | Đúng | gv-noi-dung.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code E |
-| GV-07 | Chấm nhận xét từng em | A | **Chỉ có DB** `20261111000107_gv_doc_du_lieu_giao_vien.sql` | có (53 khung) | Lệch → đã sửa | gv-cham-btvn.spec.ts, gv-cham-kiem-tra.spec.ts | Code E |
+| GV-06 | Nội dung buổi + giao BTVN | B | **Có màn** `src/pages/gv/SessionContentPage.tsx` | có (28 khung) | Đúng | gv-noi-dung.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code E |
+| GV-07 | Chấm nhận xét từng em | A | **Có màn** `src/pages/gv/ReviewGradingPage.tsx` | có (53 khung) | Lệch → đã sửa | gv-cham-btvn.spec.ts, gv-cham-kiem-tra.spec.ts | Code E |
 | GV-08 | Chấm BTVN của buổi trước (5 trạng thái) | A | **Có màn** `src/pages/gv/TeacherTodoPage.tsx` | có (39 khung) | Đúng | gv-cham-btvn.spec.ts, gv-gio-day.spec.ts | Code E |
 | GV-09 | Kiểm còn thiếu (QĐ-Đ21) | B | **Có màn** `src/pages/gv/CompleteDialog.tsx` | có (12 khung) | Gần đúng | gv-diem-danh.spec.ts, gv-hoan-tat.spec.ts | Code E |
 | GV-10 | Lớp của tôi (danh sách) | B | **Có màn** `src/pages/gv/TeacherClassesPage.tsx` | có (16 khung) | Đúng | gv-chi-tiet-lop.spec.ts, gv-lop-cua-toi.spec.ts | Code E |
