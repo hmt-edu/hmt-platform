@@ -30,7 +30,9 @@ export function ticketTimeline(
               ? 'Đổi nhóm con.'
               : e.event_type === 'SUA_KHIEU_NAI'
                 ? 'Cập nhật phần riêng của khiếu nại.'
-                : 'Đổi mức độ.';
+                : e.event_type === 'NANG_CAP'
+                  ? 'Nâng cấp khiếu nại.'
+                  : 'Đổi mức độ.';
     return {
       kind: 'system',
       id: e.id,
