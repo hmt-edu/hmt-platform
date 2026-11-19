@@ -397,7 +397,24 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             empty={null}
             columns={[
               { key: 'line', header: 'Dòng', cell: (a) => `Dòng ${a.line_no}` },
+              {
+                key: 'student',
+                header: 'Học sinh',
+                cell: (a) =>
+                  (order.data?.lines ?? []).find((l) => l.line_no === a.line_no)?.student_name ??
+                  '—',
+              },
               { key: 'pkg', header: 'Sản phẩm', cell: (a) => a.package_name },
+              {
+                key: 'total',
+                header: 'Thành tiền (đ)',
+                cell: (a) => {
+                  const line = (order.data?.lines ?? []).find((l) => l.line_no === a.line_no);
+                  return (
+                    <span className="tabular">{line ? formatNumber(line.line_total) : '—'}</span>
+                  );
+                },
+              },
               {
                 key: 'amt',
                 header: 'Tiền chia về dòng (đ)',
