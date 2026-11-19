@@ -105,10 +105,13 @@ test.beforeAll(async () => {
       [enrollmentId, classId],
     );
     // Ghi danh có từ 40 ngày trước: ghi danh sinh sau ngày buổi thì không lọt vào danh sách (R-GIO-02).
+    // (Trigger khung chung giữ created_at nguyên khi sửa, nên tắt trigger trong giao dịch này như các bài dựng dữ liệu khác.)
+    await db.query("set local session_replication_role = 'replica'");
     await db.query(
       "update app.enrollment set created_at = now() - interval '40 days' where id = $1",
       [enrollmentId],
     );
+    await db.query("set local session_replication_role = 'origin'");
     // Dời buổi 1 về hôm qua để Done được (buổi chưa diễn ra thì chưa Done).
     await db.query(
       `update app.class_session set session_date = current_date - 1 where class_id = $1 and session_no = 1`,
