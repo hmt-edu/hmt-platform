@@ -271,6 +271,43 @@ select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt2))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: phiếu Hoàn học phí thiếu dữ liệu không thực hiện được');
 select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt2)), 'DA_DUYET', 'Phiếu thiếu dữ liệu giữ Đã duyệt');
 
+-- ================= C60 (migration 429): phiếu Đổi lịch học, dời một buổi và đổi ca cố định (CS-11, R-CS-03) =================
+create temp table tk4 (j jsonb);
+create temp table tt4 (j jsonb);
+create temp table tt5 (j jsonb);
+grant all on tk4, tt4, tt5 to public;
+select pg_temp.sudo($$create function pg_temp.sess1() returns uuid language sql stable security definer as
+  'select s.id from app.class_session s where s.class_id = pg_temp.c(''a'') and s.status_code in (''NHAP'', ''DA_CHOT'') order by s.session_date limit 1'$$);
+select pg_temp.sudo($$create function pg_temp.sdate(p_id uuid) returns date language sql stable security definer as 'select session_date from app.class_session where id = p_id'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.sess1(), pg_temp.sdate(uuid) to public$$);
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk4 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Đổi lịch giả', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_05', 'parent_id', pg_temp.d1par(), 'student_id', pg_temp.d1stu()));
+select ok(jsonb_array_length(app.get_task_form_options((select (j ->> 'id')::uuid from tk4)) -> 'sessions') > 0, 'C60 Đúng: tuỳ chọn biểu mẫu có buổi sắp tới của lớp học sinh');
+insert into tt4 select app.create_ticket_task((select (j ->> 'id')::uuid from tk4), 'DOI_LICH', 'Trùng lịch thi',
+  jsonb_build_object('action', 'DOI_BUOI', 'session_id', pg_temp.sess1(), 'date', pg_temp.mon() + 30, 'start', '17:00', 'end', '18:30'));
+select app.submit_ticket_task((select (j ->> 'id')::uuid from tt4));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt4));
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select app.execute_ticket_task((select (j ->> 'id')::uuid from tt4));
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt4)), 'DA_THUC_HIEN', 'C60 Thực hiện: phiếu Đổi lịch (dời buổi) Đã thực hiện');
+select is((select count(*)::int from app.class_session s where s.class_id = pg_temp.c('a') and s.session_date = pg_temp.mon() + 30 and s.start_time = '17:00'::time), 1, 'C60 Đúng: buổi đã dời sang ngày giờ mới');
+select is((select status_code from app.ticket where id = (select (j ->> 'id')::uuid from tk4)), 'DA_XU_LY', 'C60 Ticket tự sang Đã xử lý (AS-03)');
+-- Dữ liệu sai: giờ kết thúc không sau giờ bắt đầu thì chặn lúc thực hiện, phiếu giữ Đã duyệt.
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk4 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Đổi lịch giả 2', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_05', 'parent_id', pg_temp.d1par(), 'student_id', pg_temp.d1stu()));
+insert into tt5 select app.create_ticket_task((select (j ->> 'id')::uuid from tk4 offset 1 limit 1), 'DOI_LICH', 'Sai giờ',
+  jsonb_build_object('action', 'DOI_BUOI', 'session_id', pg_temp.sess1(), 'date', pg_temp.mon() + 31, 'start', '19:00', 'end', '18:00'));
+select app.submit_ticket_task((select (j ->> 'id')::uuid from tt5));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt5));
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt5))$$), 'HMT_BUOI_GIO_SAI', 'C60 Chặn: giờ kết thúc không sau giờ bắt đầu');
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt5)), 'DA_DUYET', 'C60 Nguyên tử: lỗi thì phiếu vẫn Đã duyệt');
+-- Học bù từ phiếu chưa làm: báo rõ, không đổi gì.
+
 -- ================= C60 (migration 427): phiếu Dừng học đi hết đường ticket → giữ số dư (R-GD-16, R-TIEN-33) =================
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'DUNG_HOC', id, true from app.branch where code = 'CS1'
   on conflict (module_code, branch_id) do update set enabled = true$$);
