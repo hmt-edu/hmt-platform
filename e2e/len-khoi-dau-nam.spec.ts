@@ -26,10 +26,26 @@ async function sql(query: string, params: unknown[] = []) {
   }
 }
 
+/** Dọn dữ liệu giả: bảng nghiệp vụ chặn xoá (khung chung), nên xoá trong một giao dịch tắt trigger. */
+async function purge(statements: [string, unknown[]?][]) {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query('begin');
+    await db.query("set local session_replication_role = 'replica'");
+    for (const [q, p] of statements) await db.query(q, p ?? []);
+    await db.query('commit');
+  } finally {
+    await db.end();
+  }
+}
+
 async function cleanup() {
-  await sql(`delete from app.enrollment where code in ('GDE2EKH081', 'GDE2EKH082')`);
-  await sql(`delete from app.student where code in ($1, $2)`, [CODE_A, CODE_B]);
-  await sql(`delete from app.parent where code = 'PHE2EKH08'`);
+  await purge([
+    ["delete from app.enrollment where code in ('GDE2EKH081', 'GDE2EKH082')"],
+    ['delete from app.student where code in ($1, $2)', [CODE_A, CODE_B]],
+    ["delete from app.parent where code = 'PHE2EKH08'"],
+  ]);
 }
 
 test.beforeAll(async () => {
