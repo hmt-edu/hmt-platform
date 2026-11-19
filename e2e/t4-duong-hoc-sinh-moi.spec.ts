@@ -153,7 +153,7 @@ test('9. Trưởng cơ sở duyệt đơn (BH-07)', async ({ page }) => {
   await expect(page.getByText('Đã duyệt · khoá').first()).toBeVisible();
 });
 
-test('10. Sale tạo phiếu thu từ đơn Đã duyệt (số tiền gợi ý = còn thu được), trình quản lý (TC-03)', async ({
+test('10. Sale tạo phiếu thu từ đơn Đã duyệt (thu đủ cả đơn), trình quản lý (TC-03)', async ({
   page,
 }) => {
   await enterAs(page, SALE);
@@ -164,7 +164,21 @@ test('10. Sale tạo phiếu thu từ đơn Đã duyệt (số tiền gợi ý =
   await page.getByRole('button', { name: 'Tạo phiếu thu' }).click();
   const dialog = dialogOf(page, 'Tạo phiếu thu');
   await pickOption(page, dialog.getByRole('combobox', { name: 'Hình thức' }), 'Tiền mặt');
+  // Số tiền điền sẵn theo đợt tới hạn đầu tiên (T2-04); bài này đi đường thu đủ cả đơn để ghi danh sinh ra ở bước 12.
   await expect(dialog.getByLabel('Số tiền')).not.toHaveValue('');
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  let total: string;
+  try {
+    const r = await db.query<{ t: string }>(
+      `select total_amount::text as t from app.sales_order where id = $1::uuid`,
+      [state.orderId],
+    );
+    total = r.rows[0]?.t ?? '';
+  } finally {
+    await db.end();
+  }
+  await dialog.getByLabel('Số tiền').fill(total);
   await dialog.getByRole('button', { name: 'Tạo phiếu nháp' }).click();
   await expect(page).toHaveURL(/\/crm\/phieu-thu\/[0-9a-f-]{36}$/);
   state.receiptUrl = new URL(page.url()).pathname;

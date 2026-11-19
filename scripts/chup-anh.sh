@@ -18,14 +18,11 @@ export VITE_APP_ENV=local
 SEED_PASSWORD="Ci$(openssl rand -hex 12)9"
 export SEED_PASSWORD
 npm run db:seed-users
-# Dữ liệu mẫu cho ảnh «bản ghi» (lead, cơ hội, đơn, phiếu thu, lớp, buổi, ghi danh): dùng bộ seed giả lớn có sẵn (mã LDL/PHL/DHL/PTL/LPL…, KHÔNG dữ liệu thật).
-# Tắt bằng CHUP_ANH_DU_LIEU=0 (ảnh bản ghi sẽ là danh sách trống, báo cáo ghi XẤP XỈ). Ticket, phiếu nghiệp vụ, khoản tiền chưa có seed: ảnh liên quan vẫn XẤP XỈ.
+# Dữ liệu mẫu cho ảnh «bản ghi» (F63): dùng supabase/seed-staging.sql, CHÍNH bộ dữ liệu giả của bản thử nghiệm (lead, cơ hội, báo giá, đơn, phiếu thu, khoản tiền vào, lớp, buổi, ghi danh,
+# ticket, phiếu nghiệp vụ, tái tục; có buổi HÔM NAY của gv.cs5 cho ảnh cổng Giáo viên). Ảnh chụp ở máy nên giống hệt bản thử nghiệm sau khi nạp cùng file này (npm run db:seed-staging).
+# Tắt bằng CHUP_ANH_DU_LIEU=0 (ảnh bản ghi sẽ là danh sách trống, báo cáo ghi XẤP XỈ).
 if [ "${CHUP_ANH_DU_LIEU:-1}" = "1" ]; then
-  npm run db:seed-lon
-  npm run db:seed-lon-lop-buoi
-  npm run db:seed-lon-phieu-thu
-  # Buổi HÔM NAY của giáo viên giả gv.cs5 (E36) cho các ảnh cổng Giáo viên.
-  npm run db:seed-anh-huong-dan
+  npm run db:seed-staging
 fi
 CHUP_ANH=1 npx playwright test e2e/chup-anh.spec.ts --project=may-tinh --reporter=list
 echo "Xong. Ảnh ở: ${ANH_OUT:-$HOME/VanPhongAI/hmt-ca/ANH-HUONG-DAN} (xem BAO-CAO.txt trong từng thư mục vai)."

@@ -122,6 +122,9 @@ select is((app.list_classes() ->> 'total')::int, 2, 'Trưởng cơ sở CS1 th�
 select is((app.list_classes('{"search":"zzz-khong-co"}') ->> 'total')::int, 0, 'Tìm không thấy thì 0 lớp');
 select is((app.list_classes(jsonb_build_object('search', (select code from app.class where id = pg_temp.c('p')))) ->> 'total')::int, 1, 'Tìm theo mã lớp');
 select is((app.list_classes('{"status":["DA_DUYET"]}') ->> 'total')::int, 2, 'Lọc tình trạng duyệt: cả 2 lớp Đã duyệt');
+-- T2 mục 10 (migration 307): mỗi khung của «schedule» có thêm khoá giáo viên, phòng (để danh sách ghi rõ thứ nào do ai dạy, phòng nào).
+select ok(exists (select from jsonb_array_elements(app.list_classes() -> 'rows') r, jsonb_array_elements(r -> 'schedule') sl where sl ? 'teacher_name' and sl ? 'room_name'),
+  'list_classes: mỗi khung giờ trong schedule có khoá teacher_name và room_name');
 select is((app.list_classes('{"status":["NHAP"]}') ->> 'total')::int, 0, 'Lọc tình trạng duyệt: không lớp Nháp');
 select is((app.list_classes('{"operating":["CHUA_KHAI_GIANG"]}') ->> 'total')::int, 2, 'Lọc tình trạng vận hành: 2 lớp Chưa khai giảng');
 select is((app.list_classes('{"subject_code":"TOAN","grade_code":"K08"}') ->> 'total')::int, 2, 'Lọc môn và khối');

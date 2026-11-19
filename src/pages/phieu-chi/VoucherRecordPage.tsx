@@ -6,6 +6,7 @@ import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, useDb } from '../../lib/db';
 import { formatDateTime, formatMoney, formatNumber } from '../../lib/format';
+import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table } from '../../ui/Data';
@@ -60,6 +61,7 @@ const STEPS: StageStep[] = [
 ];
 
 function VoucherView({ record }: { record: VoucherRecord }) {
+  const access = useAccess();
   const openFrom = useNavigateFrom();
   const supabase = useDb();
   const toast = useToast();
@@ -194,7 +196,11 @@ function VoucherView({ record }: { record: VoucherRecord }) {
                 value={VOUCHER_STATUS_NAME[v.status_code] ?? v.status_code}
               />
               <DetailField label="Người lập" mode="view" value={v.created_by_name ?? 'Hệ thống'} />
-              <DetailField label="Cơ sở" mode="view" value={v.branch_code} />
+              <DetailField
+                label="Cơ sở"
+                mode="view"
+                value={access.branchName(v.branch_code) ?? v.branch_code}
+              />
               <DetailField label="Số tiền hoàn" mode="view" value={formatMoney(v.amount)} />
               {v.paid_at && (
                 <DetailField

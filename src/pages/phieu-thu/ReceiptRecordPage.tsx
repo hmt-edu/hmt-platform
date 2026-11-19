@@ -128,6 +128,19 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   useCrumbTail(record.code);
 
   const can = (a: ReceiptRecord['actions'][number]) => record.actions.includes(a) && !phone;
+  const hasAction =
+    can('gui') ||
+    can('duyet_quan_ly') ||
+    can('duyet_ke_toan') ||
+    can('tu_choi') ||
+    (reassign.data?.can === true && !phone);
+  const waitingCaption = hasAction
+    ? null
+    : record.status_code === 'DA_GUI'
+      ? `Chờ ${record.approval_route === 'TRUONG_CS' ? 'Trưởng cơ sở' : 'quản lý'} duyệt.`
+      : record.status_code === 'CHO_KE_TOAN'
+        ? 'Chờ Kế toán duyệt.'
+        : null;
   // Dòng chặn trình (canvas TC02_nhap_xem_ql_khoa, _ql_thieu_quyen, _chua_ql; GHI_CHU mục 9): người duyệt dự kiến theo đúng hàm mà lúc Trình dùng.
   const expected = useReceiptExpectedApprover(
     record.id,
@@ -513,6 +526,8 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 Từ chối
               </Button>
             )}
+            {/* Không có việc nào cho người đang xem (đang chờ người khác duyệt): ghi rõ chờ ai thay vì để thanh nút trống (T2-04). */}
+            {waitingCaption && <span className="text-caption text-fg-label">{waitingCaption}</span>}
           </span>
         }
         smart={[
