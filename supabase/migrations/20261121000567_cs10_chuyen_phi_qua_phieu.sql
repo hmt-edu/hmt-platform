@@ -4,13 +4,14 @@
 -- KHÔNG làm ở migration này: đơn Nháp cho Sale và dùng số dư vào đơn mới (cơ chế DUNG_CHO_DON chưa có): ghi trong PR, cần bước sau.
 select set_config('hmt.migration', 'on', false);
 
+-- Giữ đủ mọi loại đã có (kể cả THU_NO_DAU_KY, DAO_THU_NO_DAU_KY của migration 251) khi thêm TU_CHUYEN_PHI.
 alter table app.customer_balance_entry drop constraint if exists customer_balance_entry_entry_type_check;
 alter table app.customer_balance_entry drop constraint if exists customer_balance_entry_sign_check;
 alter table app.customer_balance_entry add constraint customer_balance_entry_entry_type_check
-  check (entry_type in ('DAU_KY_THU_THUA', 'DAU_KY_CONG_NO', 'TU_DUNG_HOC', 'TU_CHUYEN_PHI', 'DUNG_CHO_DON', 'DIEU_CHINH'));
+  check (entry_type in ('DAU_KY_THU_THUA', 'DAU_KY_CONG_NO', 'TU_DUNG_HOC', 'TU_CHUYEN_PHI', 'DUNG_CHO_DON', 'DIEU_CHINH', 'THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY'));
 alter table app.customer_balance_entry add constraint customer_balance_entry_sign_check
-  check ((entry_type in ('DAU_KY_THU_THUA', 'TU_DUNG_HOC', 'TU_CHUYEN_PHI') and amount > 0)
-         or (entry_type in ('DAU_KY_CONG_NO', 'DUNG_CHO_DON') and amount < 0)
+  check ((entry_type in ('DAU_KY_THU_THUA', 'TU_DUNG_HOC', 'TU_CHUYEN_PHI', 'THU_NO_DAU_KY') and amount > 0)
+         or (entry_type in ('DAU_KY_CONG_NO', 'DUNG_CHO_DON', 'DAO_THU_NO_DAU_KY') and amount < 0)
          or entry_type = 'DIEU_CHINH');
 
 -- app.apply_fee_transfer(ghi danh, phụ huynh nhận, lý do, ghi chú, mã ticket): trả id dòng số dư (null nếu số dư bằng 0). Ai gọi: chỉ app.execute_ticket_task (phiếu đã qua hai cấp duyệt).
