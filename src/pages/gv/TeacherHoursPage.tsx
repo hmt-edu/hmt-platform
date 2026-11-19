@@ -105,8 +105,8 @@ export function TeacherHoursPage() {
       </section>
       {d.rows.length === 0 ? (
         <StateView kind="empty" title="Tháng này chưa có buổi dạy" headingLevel={2}>
-          Tháng không có buổi nào đã hoàn tất thì không có giờ để tính. Chọn tháng khác bằng nút
-          Tháng trước, Tháng sau.
+          Tháng không có buổi nào đã hoàn tất thì không có giờ để tính. Chọn tháng khác bằng mũi
+          tên.
         </StateView>
       ) : (
         <>

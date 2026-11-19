@@ -4,7 +4,7 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import { errorOf, rpc, useDb } from '../../lib/db';
 import { vnDayBounds } from '../../lib/vnDay';
 import { Button, ButtonLink } from '../../ui/Button';
-import { Alert, Spinner } from '../../ui/Feedback';
+import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { formatDateTime } from '../../lib/format';
 import type { PendingTestsResult } from './testGrading';
 import { cn } from '../../ui/cn';
@@ -63,7 +63,34 @@ export function TeacherTodoPage() {
     })),
   });
 
+  const lateGroups = classes.flatMap((s, i) => {
+    const data = sheets[i]?.data;
+    const g = data ? groupLate(s, data.late) : null;
+    return g ? [g] : [];
+  });
+  // Canvas GV12_trong: cả ba mục đều trống (và tải đủ, không lỗi) thì hiện một trạng thái trống chung.
+  const allEmpty =
+    open.data?.rows.length === 0 &&
+    tests.data?.rows.length === 0 &&
+    recent.data !== undefined &&
+    sheets.every((q) => q.isSuccess) &&
+    lateGroups.length === 0;
   const now = new Date();
+  if (allEmpty) {
+    return (
+      <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
+        <h1 className="text-h2">Cần làm</h1>
+        <StateView
+          kind="empty"
+          title="Bạn đã làm hết việc"
+          headingLevel={2}
+          actions={<ButtonLink to="/gv">Về trang Hôm nay</ButtonLink>}
+        >
+          Không có buổi chưa hoàn tất, bài Nộp sau hay phiếu test chờ chấm.
+        </StateView>
+      </div>
+    );
+  }
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
       <div>
@@ -143,14 +170,7 @@ export function TeacherTodoPage() {
             </Button>
           </Alert>
         ) : (
-          <LateList
-            groups={classes.flatMap((s, i) => {
-              const data = sheets[i]?.data;
-              const g = data ? groupLate(s, data.late) : null;
-              return g ? [g] : [];
-            })}
-            failed={sheets.filter((q) => q.isError).length}
-          />
+          <LateList groups={lateGroups} failed={sheets.filter((q) => q.isError).length} />
         )}
       </section>
 

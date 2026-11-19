@@ -84,8 +84,8 @@ export function TeacherStudentPage() {
       </Alert>
       <h2 className="text-h4">Theo buổi</h2>
       {p.sessions.length === 0 ? (
-        <StateView kind="empty" title="Chưa có buổi nào" headingLevel={2}>
-          Khi em có buổi học trong lớp, điểm danh và điểm sẽ hiện ở đây.
+        <StateView kind="empty" title="Em chưa có buổi nào trong lớp" headingLevel={2}>
+          Em mới vào lớp, điểm danh và điểm sẽ hiện sau buổi đầu tiên.
         </StateView>
       ) : narrow ? (
         <ul className="flex flex-col gap-2">
