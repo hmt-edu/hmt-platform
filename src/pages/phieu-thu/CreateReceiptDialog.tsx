@@ -19,13 +19,15 @@ type Props = {
   orderCode: string;
   /** Phần còn thu được của đơn (do hàm DB tính). */
   receivable: number | null;
+  /** Số tiền điền sẵn (đợt tới hạn đầu tiên chưa thu đủ); trống thì điền phần còn thu được. */
+  suggested?: number | null;
 };
 
 export function CreateReceiptDialog(props: Props) {
   return props.open ? <CreateForm {...props} /> : null;
 }
 
-function CreateForm({ open, onOpenChange, orderId, orderCode, receivable }: Props) {
+function CreateForm({ open, onOpenChange, orderId, orderCode, receivable, suggested }: Props) {
   const supabase = useDb();
   const navigate = useNavigate();
   const toast = useToast();
@@ -33,7 +35,7 @@ function CreateForm({ open, onOpenChange, orderId, orderCode, receivable }: Prop
   const refresh = useRefreshReceipt('', orderId);
   const methods = catalogs.options('PAYMENT_METHOD');
   const [amount, setAmount] = useState<number | null>(
-    receivable !== null && receivable > 0 ? receivable : null,
+    suggested ?? (receivable !== null && receivable > 0 ? receivable : null),
   );
   const [method, setMethod] = useState('');
   const [busy, setBusy] = useState(false);
