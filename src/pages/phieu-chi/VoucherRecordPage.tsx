@@ -91,20 +91,23 @@ function VoucherView({ record }: { record: VoucherRecord }) {
   };
 
   // Bảng tính hoàn: các con số do máy chủ trả (chụp lúc tạo yêu cầu), giao diện chỉ hiện (R-TIEN-28).
+  const n = formatNumber;
   const rows =
     r.kind_code === 'TOAN_BO'
       ? [
-          { key: 'paid', label: 'Phụ huynh đã đóng cho ghi danh', amount: r.paid_amount },
+          { key: 'paid', label: 'Phụ huynh đã đóng cho ghi danh', how: '—', amount: r.paid_amount },
           {
             key: 'used',
-            label: `Giờ đã học × giá gốc (${formatNumber(r.hours_used)} giờ × ${formatNumber(r.unit_price_base)} đ)`,
+            label: 'Giờ đã học × giá gốc',
+            how: `${n(r.hours_used)} giờ × ${n(r.unit_price_base)} đ, giá gốc`,
             amount: -(r.hours_used * r.unit_price_base),
           },
         ]
       : [
           {
             key: 'hours',
-            label: `Giờ hoàn × giá sau chiết khấu (${formatNumber(r.hours_refund)} giờ × ${formatNumber(r.unit_price_net)} đ)`,
+            label: 'Giờ hoàn × giá sau chiết khấu',
+            how: `${n(r.hours_refund)} giờ × ${n(r.unit_price_net)} đ`,
             amount: r.base_amount,
           },
         ];
@@ -115,10 +118,24 @@ function VoucherView({ record }: { record: VoucherRecord }) {
       // Canvas TC-11: hoàn toàn bộ gọi «Còn lại sau khi trừ giờ đã học»; hoàn một phần giữ «Số tiền hoàn trước phí».
       label:
         r.kind_code === 'TOAN_BO' ? 'Còn lại sau khi trừ giờ đã học' : 'Số tiền hoàn trước phí',
+      how:
+        r.kind_code === 'TOAN_BO'
+          ? `${n(r.paid_amount)} − ${n(r.hours_used * r.unit_price_base)}`
+          : '—',
       amount: r.base_amount,
     },
-    { key: 'fee', label: `Phí xử lý (${formatNumber(r.fee_percent)}%)`, amount: -r.fee_amount },
-    { key: 'refund', label: 'Số tiền hoàn', amount: r.refund_amount },
+    {
+      key: 'fee',
+      label: `Phí xử lý (${n(r.fee_percent)}%)`,
+      how: `${n(r.fee_percent)}% của ${n(r.base_amount)}`,
+      amount: -r.fee_amount,
+    },
+    {
+      key: 'refund',
+      label: 'Số tiền hoàn',
+      how: `${n(r.base_amount)} − ${n(r.fee_amount)}`,
+      amount: r.refund_amount,
+    },
   ];
 
   return (
@@ -236,6 +253,7 @@ function VoucherView({ record }: { record: VoucherRecord }) {
                 header: 'Số tiền (đ)',
                 cell: (x) => <span className="tabular">{formatNumber(x.amount)}</span>,
               },
+              { key: 'how', header: 'Cách tính', cell: (x) => x.how },
             ]}
           />
           <p className="text-caption text-fg-muted">
