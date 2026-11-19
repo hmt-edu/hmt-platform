@@ -62,6 +62,10 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   const recordUrl = page.url();
   await expect(page.getByText(/CS5-\d{4}-/).first()).toBeVisible();
   await expect(page.getByText('Nháp').first()).toBeVisible();
+  // Chi tiết lớp theo khuôn chung: Time Table 7 tab theo thứ; Học sinh và Buổi học là tab có bảng riêng.
+  await expect(page.getByRole('tab', { name: /^Thứ 3/ })).toBeVisible();
+  await expect(page.getByRole('tab', { name: /^Học sinh/ })).toBeVisible();
+  await expect(page.getByRole('tab', { name: /^Buổi học/ })).toBeVisible();
 
   // LOP-01: tìm theo mã cũ (R-LOP-15).
   await page.goto('/crm/lop');
