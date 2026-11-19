@@ -5,7 +5,6 @@ import { formatDate } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Code, Tag } from '../../ui/Data';
 import type { ListConfig, ListState } from '../../list/types';
-import { Stacked } from '../lead/LeadCells';
 import { appointmentTag, codeAndName, formatPhone } from '../lead/leadFormat';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import type { OpportunityRow } from './oppTypes';
@@ -54,40 +53,47 @@ export function buildOppConfig(
           </Link>
         ),
       },
-      {
-        key: 'parent',
-        label: 'Phụ huynh · SĐT',
-        render: (r) => <Stacked top={r.parent_name} bottom={formatPhone(r.parent_phone)} />,
-      },
+      { key: 'parent', label: 'Phụ huynh', render: (r) => r.parent_name },
+      { key: 'phone', label: 'SĐT', render: (r) => formatPhone(r.parent_phone) },
       {
         key: 'stage',
-        label: 'Stage · Sub-stage',
+        label: 'Stage',
         render: (r) =>
           r.record_status === 'DA_GOP' ? (
-            <Stacked
-              top={<Tag>Đã gộp</Tag>}
-              bottom={r.merged_into_code ? `vào ${r.merged_into_code}` : undefined}
-            />
+            <Tag>{r.merged_into_code ? `Đã gộp vào ${r.merged_into_code}` : 'Đã gộp'}</Tag>
           ) : (
-            <Stacked
-              top={<Tag>{stageLabel(r.stage_code)}</Tag>}
-              bottom={
-                r.substage_code
-                  ? codeAndName(r.substage_code, catalogs.name('OPP_SUBSTAGE', r.substage_code))
-                  : undefined
-              }
-            />
+            <Tag>{stageLabel(r.stage_code)}</Tag>
           ),
       },
       {
+        key: 'substage',
+        label: 'Sub-stage',
+        render: (r) =>
+          r.record_status !== 'DA_GOP' && r.substage_code ? (
+            codeAndName(r.substage_code, catalogs.name('OPP_SUBSTAGE', r.substage_code))
+          ) : (
+            <span className="text-fg-muted">—</span>
+          ),
+      },
+      {
+        key: 'source_type',
+        label: 'Source type',
+        render: (r) => catalogs.name('SOURCE_TYPE', r.source_type_code) ?? r.source_type_code,
+      },
+      {
         key: 'source',
-        label: 'Source · Sub-source',
-        render: (r) => (
-          <Stacked
-            top={catalogs.name('SOURCE', r.source_code) ?? r.source_code}
-            bottom={catalogs.name('SOURCE_CHANNEL', r.channel_code)}
-          />
-        ),
+        label: 'Source',
+        render: (r) => catalogs.name('SOURCE', r.source_code) ?? r.source_code,
+      },
+      {
+        key: 'medium',
+        label: 'Medium',
+        render: (r) =>
+          r.channel_code ? (
+            (catalogs.name('SOURCE_CHANNEL', r.channel_code) ?? r.channel_code)
+          ) : (
+            <span className="text-fg-muted">—</span>
+          ),
       },
       { key: 'owner', label: 'Sale phụ trách', render: (r) => r.owner_name ?? '' },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
