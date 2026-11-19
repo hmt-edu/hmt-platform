@@ -160,6 +160,30 @@ jobs:
           npx supabase secrets set --project-ref "$ref" --env-file "$env_file"
           npx supabase functions deploy --project-ref "$ref" --use-api
 
+      # Mở schema `app` qua Data API của hmt-staging. config.toml chỉ áp ở local, `db push` không đổi cài đặt API của project hosted:
+      # thiếu bước này thì mọi lệnh gọi rpc vào schema app báo PGRST106 và đăng nhập báo «Hệ thống đang lỗi». Làm đúng một lần cho mỗi lượt triển khai,
+      # idempotent (chỉ thêm `app` nếu chưa có, giữ nguyên các schema khác). Cần SUPABASE_ACCESS_TOKEN; chưa có thì cảnh báo, bước kiểm cuối sẽ báo lỗi.
+      - name: Mở schema app qua Data API trên hmt-staging
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "::warning::Chưa có SUPABASE_ACCESS_TOKEN: không tự mở được schema app qua Data API."
+            exit 0
+          fi
+          ref="$(printf '%s' "$VITE_SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')"
+          api="https://api.supabase.com/v1/projects/$ref/postgrest"
+          current="$(curl -fsS "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN")"
+          schemas="$(printf '%s' "$current" | jq -r '.db_schema')"
+          if printf ',%s,' "$schemas" | grep -q ',app,'; then
+            echo "Schema app đã mở qua Data API."
+            exit 0
+          fi
+          body="$(jq -nc --arg s "$schemas,app" '{db_schema: $s}')"
+          curl -fsS -X PATCH "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' -d "$body" > /dev/null
+          echo "Đã thêm schema app vào Exposed schemas của hmt-staging."
+
       # Bài kiểm chủ động: khoá của hmt-platform KHÔNG được chạm hmt-prod (chốt 10/10/2026).
       # Mỗi khoá thử hai chiều; logic và kiểm thử ở scripts/check-isolation.{sh,test.ts}.
       - name: Kiểm khoá của hmt-platform không chạm được hmt-prod
@@ -290,3 +314,18 @@ jobs:
             echo "- Địa chỉ: https://hmt-staging.pages.dev"
             echo "- Đưa lên chạy thật: repo \`hmt-deploy\` > Actions > Deploy production > nhập \`$tag\`"
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # Kiểm cuối (sau khi bản đã lên và tag đã gắn): schema app phải mở qua Data API. Gọi bằng khoá publishable, không cần đăng nhập:
+      # nếu schema chưa mở, PostgREST trả 406 (PGRST106); đã mở thì trả 200 hoặc 401/403 (RLS, quyền) nhưng không phải 406.
+      - name: Kiểm schema app mở qua Data API (đăng nhập cần)
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          code="$(curl -s -o /dev/null -w '%{http_code}' "$VITE_SUPABASE_URL/rest/v1/catalog?select=code&limit=1" \
+            -H "apikey: $VITE_SUPABASE_PUBLISHABLE_KEY" -H 'Accept-Profile: app')"
+          if [ "$code" = "406" ]; then
+            echo "::error::Schema app CHƯA mở qua Data API của hmt-staging (PGRST106): đăng nhập sẽ báo «Hệ thống đang lỗi». Vào Supabase > Settings > API > Exposed schemas, thêm app."
+            exit 1
+          fi
+          echo "Schema app mở qua Data API (mã $code): đúng."
