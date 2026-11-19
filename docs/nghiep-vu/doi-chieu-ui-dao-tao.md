@@ -6,6 +6,7 @@ Cách làm: so tiêu đề cột (`<th>`) của khung canvas 9933/9189 với c�
 |---|---|---|---|
 | GD-01 Ghi danh | Mã, Học sinh, Gói, Hình thức học, Lớp, Giờ cấp, Đã học, Còn lại, Tình trạng | giống hệt | khớp |
 | GD-04 Sổ giờ | Ngày, Loại, Lớp, Buổi, Phiếu thu, Khoản tiền, Người điều chỉnh, Lý do, Giờ +/−, Số dư | có Mã ticket thay cho Khoản tiền | lệch nhỏ, chờ Code A (GD-05) |
+| GD-05 Điều chỉnh giờ (hộp) | nút Cộng giờ/Trừ giờ, «Số giờ», «Lý do», đoạn «Hệ thống ghi thêm một dòng mới… Quỹ sau điều chỉnh: a → b giờ… ticket Chuyển phí (R-GD-18)», nút «Xác nhận» | 20/11: đã thêm đoạn giải thích và dòng quỹ sau điều chỉnh (dự kiến, máy chủ quyết). Còn vênh, chưa làm: ô số có dấu thay cho nút Cộng/Trừ, nút «Thêm dòng điều chỉnh» thay «Xác nhận» (đổi cần sửa bài e2e) | gần đúng |
 | GD-06 Hàng chờ xếp lớp | Ghi danh, Học sinh, Môn, Hình thức, Lý do chờ, Chờ từ, Xử lý | giống hệt | khớp |
 | GD-07 Sắp hết giờ | Học sinh, Lớp, Ghi danh (n), Giờ còn, Hết giờ dự kiến, Hạn gói (dự báo), Tình trạng, **Phiếu tái tục** | thiếu cột Phiếu tái tục | **đã thêm (F51, migration 561)**: mã phiếu tái tục đang mở, bấm mở phiếu; nhãn «Ghi danh (n)» |
 | LOP-01 Lớp | Mã lớp, Môn, Khối, Phân loại, Cơ sở, Hình thức học, Lịch học, Giáo viên, Sĩ số, Bắt đầu, Tình trạng duyệt, Vận hành | thứ tự khác, «Khai giảng» ẩn, thiếu Hình thức học | **đã sửa thứ tự và nhãn «Bắt đầu» (hiện mặc định)** trong PR này; «Hình thức học» chưa có dữ liệu ở danh sách lớp (cần hàm trả) |

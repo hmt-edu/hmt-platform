@@ -95,6 +95,15 @@ export function WeekCalendarPage() {
         </div>
       </header>
 
+      <ul
+        className="flex flex-wrap gap-x-4 gap-y-1 text-caption text-fg-muted"
+        aria-label="Chú giải"
+      >
+        <li>Cùng nhóm: cùng màu viền</li>
+        <li>Luân phiên: không báo trùng</li>
+        <li>Cảnh báo trùng phòng hoặc giáo viên (không chặn)</li>
+      </ul>
+
       {clashes > 0 && (
         <Alert tone="warning" title={`${clashes} buổi trùng phòng hoặc giáo viên`}>
           Chỉ cảnh báo, không chặn (R-LOP-08). Lớp luân phiên cùng nhóm không báo trùng.
