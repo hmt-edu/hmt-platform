@@ -259,7 +259,10 @@ test('Tạo lead: ô bắt buộc báo tại ô; tạo xong về trang Lead; SĐ
   await page.getByRole('searchbox').fill(first);
   const row = page.getByRole(isPhone(page) ? 'listitem' : 'row').filter({ hasText: first });
   await expect(row).toHaveCount(1);
-  await row.getByText('Website').click();
+  // Trên iPhone dòng là thẻ, chữ Website có thể nằm ngoài khung nhìn: cuộn vào khung trước khi bấm (không tăng thời gian chờ).
+  const sourceCell = row.getByText('Website');
+  await sourceCell.scrollIntoViewIfNeeded();
+  await sourceCell.click();
   await expect(page).toHaveURL(createdUrl);
   await expect(page.getByRole('heading', { level: 2, name: new RegExp(first) })).toBeVisible();
 
