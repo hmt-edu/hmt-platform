@@ -12,7 +12,7 @@ Vai: Admin hệ thống. Admin cần **thiết lập hai bước** khi đăng nh
 ## 2. Quản lý tài khoản
 - **Các bước:** mở một người ở danh sách. Menu **«Hành động»**: «Sửa vai trò», «Đổi cơ sở», «Quản lý trực tiếp» (người duyệt đơn cho Sale/CSKH), «Sửa email», «Khoá» (hộp «Khoá tài khoản» xác nhận) hoặc «Mở khoá», «Thu hồi phiên» (đăng xuất mọi máy), «Đặt lại mật khẩu» (cấp mật khẩu tạm mới), «Đặt lại hai bước» (cho Admin hoặc Kế toán mất thiết bị). Cuối trang có «Lịch sử đăng nhập».
 - **Kết quả mong đợi:** thay đổi ghi vào nhật ký (ai, lúc nào, trường nào đổi).
-- **Lỗi thường gặp:** không khoá được người cuối cùng giữ quyền Admin (câu lý do trên màn); gán vai Kế toán cho người cụ thể là cách duy nhất để người đó duyệt tiền. **Ảnh:** [ẢNH: nguoi-dung-ban-ghi], [ẢNH: nguoi-dung-hanh-dong]
+- **Lỗi thường gặp:** không khoá hoặc gỡ quyền người Admin cuối cùng (`HMT_ADMIN_CUOI_CUNG`) và Admin không tự gỡ quyền quản trị của mình (`HMT_ADMIN_GIU_QUYEN_QUAN_TRI`), câu lý do hiện trên màn; gán vai Kế toán cho người cụ thể là cách duy nhất để người đó duyệt tiền. **Ảnh:** [ẢNH: nguoi-dung-ban-ghi], [ẢNH: nguoi-dung-hanh-dong]
 
 ## 3. Danh mục
 - **Mục đích:** chỉnh các danh sách chọn dùng khắp hệ thống (môn, khối, lý do…).
