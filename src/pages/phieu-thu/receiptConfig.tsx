@@ -77,15 +77,10 @@ export function buildReceiptConfig(
         label: 'Hình thức',
         render: (r) => r.payment_method ?? r.payment_method_code,
       },
-      { key: 'paid_on', label: 'Ngày thu', render: (r) => formatDate(r.paid_on) },
-      {
-        key: 'branch',
-        label: 'Cơ sở thu',
-        render: (r) =>
-          r.collect_branch_code === r.branch_code
-            ? r.collect_branch_code
-            : `${r.collect_branch_code} (đơn ${r.branch_code})`,
-      },
+      { key: 'paid_on', label: 'Ngày nhận', render: (r) => formatDate(r.paid_on) },
+      // Canvas TC01: «Cơ sở» là cơ sở thu tiền; cơ sở của đơn tách sang cột riêng (không gộp hai thông tin vào một ô).
+      { key: 'branch', label: 'Cơ sở', render: (r) => r.collect_branch_code },
+      { key: 'order_branch', label: 'Cơ sở đơn', render: (r) => r.branch_code },
       { key: 'creator', label: 'Người lập', render: (r) => r.created_by_name ?? '' },
       {
         key: 'status',
