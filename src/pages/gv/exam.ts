@@ -110,7 +110,11 @@ export function entryOf(draft: ExamDraft, exam: ExamConfig): Entry {
     const n = parseScore(draft[g.key]);
     if (n === null)
       return { total: null, error: `Nhập điểm ${g.label} (0 đến ${max}).`, empty: false };
-    if (n < 0 || n > max) {
+    // Canvas GV-07K (3nhom): «Vượt điểm tối đa của nhóm (4).»
+    if (n > max) {
+      return { total: null, error: `Vượt điểm tối đa của nhóm (${max}).`, empty: false };
+    }
+    if (n < 0) {
       return { total: null, error: `Điểm ${g.label} phải từ 0 đến ${max}.`, empty: false };
     }
     sum += n;

@@ -95,6 +95,17 @@ export function insertPackageRow(rows: EditRow[], row: EditRow): EditRow[] {
     : [...rows.slice(0, firstGift), row, ...rows.slice(firstGift)];
 }
 
+/** «Thêm cả nhà» (canvas BH02_chon): thêm một dòng trống cho mỗi em của cơ hội chưa có dòng gói nào; dòng quà tặng không tính. */
+export function addFamilyRows(rows: EditRow[], studentIds: string[]): EditRow[] {
+  const used = new Set(rows.filter((r) => r.kind === 'ENROL').map((r) => r.studentId));
+  let next = rows;
+  for (const id of studentIds) {
+    if (used.has(id)) continue;
+    next = insertPackageRow(next, { ...blankRow(), studentId: id });
+  }
+  return next;
+}
+
 /** Dòng sửa từ bản ghi đã lưu. */
 export function rowsFromRecord(record: Pick<QuotationRecord, 'lines'>): EditRow[] {
   return record.lines.map((l) => ({

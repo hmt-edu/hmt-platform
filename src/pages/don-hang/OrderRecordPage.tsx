@@ -53,6 +53,7 @@ import {
 import { OrderEditLines } from './OrderEditLines';
 import { PayLaterDialog } from './PayLaterDialog';
 import { useOrderPayLater } from './usePayLater';
+import { UseBalanceDialog } from './UseBalanceDialog';
 import { QuotePackageDialog } from '../bao-gia/QuotePackageDialog';
 import { useOpportunityStudents } from '../bao-gia/useQuoteData';
 import { orderEventEntries, reasonLine } from './orderEventEntries';
@@ -183,6 +184,14 @@ function OrderView({ record }: { record: OrderRecord }) {
     access.featureOn('BAN_HANG') &&
     !phone &&
     (payLaterOn || (paymentQuery.data !== undefined && paymentQuery.data.paid === 0));
+  // TC-16: Kế toán (Kế toán · Duyệt; Admin không có, R-HT-01) cấn số dư của phụ huynh vào đơn Đã duyệt còn thu. Máy chủ kiểm quyền, cờ, số tiền.
+  const [balanceOpen, setBalanceOpen] = useState(false);
+  const orderRemaining = paymentQuery.data?.remaining ?? 0;
+  const canUseBalance =
+    record.status_code === 'DA_DUYET' &&
+    access.can('ACCOUNTING', 'DUYET') &&
+    !phone &&
+    orderRemaining > 0;
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
   useCrumbTail(record.code);
@@ -223,7 +232,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         ? 'Đơn đã có phiếu thu: đi qua ticket hoàn tiền (CS-05).'
         : undefined;
   const canCreateRefundTicket = access.can('TICKET', 'TAO') && !phone;
-  const menuItems: MenuItem[] = canCancel
+  const cancelMenuItems: MenuItem[] = canCancel
     ? cancelBlockedText
       ? [
           {
@@ -256,6 +265,13 @@ function OrderView({ record }: { record: OrderRecord }) {
           },
         ]
     : [];
+  // TC-16: mục «Dùng số dư» đứng trước các mục huỷ đơn.
+  const menuItems: MenuItem[] = [
+    ...(canUseBalance
+      ? [{ kind: 'action' as const, label: 'Dùng số dư', onSelect: () => setBalanceOpen(true) }]
+      : []),
+    ...cancelMenuItems,
+  ];
   const errorLines = submitError ? errorLineNumbers(submitError.message) : [];
 
   // Đơn Nháp sửa được khi người xem có quyền Sửa (can_submit cùng điều kiện quyền, trạng thái, công tắc), máy tính; điện thoại chỉ đọc (Đ248).
@@ -1080,6 +1096,15 @@ function OrderView({ record }: { record: OrderRecord }) {
         orderId={record.id}
         orderCode={record.code}
         enabled={payLaterOn}
+        onDone={() => void refresh()}
+      />
+      <UseBalanceDialog
+        open={balanceOpen}
+        onOpenChange={setBalanceOpen}
+        orderId={record.id}
+        orderCode={record.code}
+        parentId={record.parent_id}
+        remaining={orderRemaining}
         onDone={() => void refresh()}
       />
       <CreateReceiptDialog
