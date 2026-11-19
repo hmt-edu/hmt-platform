@@ -4,11 +4,15 @@ import {
   buildGroups,
   formatSetting,
   formatSettingValue,
+  formatHistoryValue,
   fromInputText,
+  historyActor,
+  historyScope,
   inputError,
   rangeLabel,
   toInputText,
   type SettingDef,
+  type SettingHistoryRow,
 } from './settingsLogic';
 
 const def = (over: Partial<SettingDef>): SettingDef => ({
@@ -83,5 +87,30 @@ describe('QT-09 tham số lưu bằng phút, hiện theo ngày', () => {
   });
   it('bật tắt hiện chữ Bật, Tắt', () => {
     expect(formatSetting(def({ value_type: 'BOOL', unit: null }), 'true')).toBe('Bật');
+  });
+});
+
+describe('lịch sử thay đổi tham số (QT09_lich_su)', () => {
+  const row = (over: Partial<SettingHistoryRow>): SettingHistoryRow => ({
+    id: 1,
+    at: '2026-11-05T03:12:00Z',
+    setting_key: 'quotation_validity_days',
+    branch_code: null,
+    action: 'U',
+    old_value: '21',
+    new_value: '14',
+    actor_name: 'Admin B',
+    ...over,
+  });
+  it('giá trị cũ, mới kèm đơn vị; thiếu giá trị (lúc tạo ghi đè) hiện gạch', () => {
+    expect(formatHistoryValue(def({}), '21')).toBe('21 ngày');
+    expect(formatHistoryValue(def({}), null)).toBe('—');
+    expect(formatHistoryValue(undefined, '5')).toBe('5');
+  });
+  it('phạm vi: Chung hoặc mã cơ sở; không có người sửa thì là Hệ thống', () => {
+    expect(historyScope(row({}))).toBe('Chung');
+    expect(historyScope(row({ branch_code: 'CS5' }))).toBe('CS5');
+    expect(historyActor(null)).toBe('Hệ thống');
+    expect(historyActor('Admin B')).toBe('Admin B');
   });
 });
