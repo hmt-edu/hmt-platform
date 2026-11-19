@@ -1,6 +1,8 @@
 -- T4a (migration 068; spec 04 R-V2-29, 30, 31): nạp dữ liệu cũ theo loại, Phụ huynh và Học sinh.
 -- Mỗi luật có ca đúng và ca bị chặn. Dữ liệu giả (tên, SĐT bịa, không dùng dữ liệu thật).
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

@@ -77,6 +77,11 @@ export function changeTicketStatus(
   });
 }
 
+/** Nâng cấp khiếu nại thêm một mức: Quản lý cơ sở rồi Ban giám đốc, lý do bắt buộc (app.escalate_ticket, migration 425). */
+export function escalateTicket(supabase: SupabaseClient, args: { id: string; reason: string }) {
+  return rpc<string>(supabase, 'escalate_ticket', { p_id: args.id, p_reason: args.reason });
+}
+
 /** Nhân viên nhận giao ticket của một cơ sở (app.list_ticket_assignees); chỉ gọi khi mở hộp thoại Giao. */
 export function useTicketAssignees(branchId: string | null, enabled: boolean) {
   const supabase = useDb();

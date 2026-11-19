@@ -236,7 +236,7 @@ async function enrollDevice(page: Page): Promise<string> {
   return secret;
 }
 
-test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý tối đa 2 thiết bị', async ({
+test('Admin, Kế toán: không bắt hai bước (D41), vào CRM bằng mật khẩu, tự nguyện thêm tối đa 2 thiết bị', async ({
   page,
 }) => {
   test.skip(!DB_URL, 'Chưa có DB_URL: không dọn được thiết bị hai bước của tài khoản giả.');
@@ -244,16 +244,9 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
   const account = phone ? 'ketoan' : 'admin.cs1';
   await clearTotp(`${account}@${DOMAIN}`);
 
-  // Đăng nhập lần đầu đôi khi về lại /dang-nhap (dịch vụ đăng nhập local vừa dựng lại): thử lại tới khi vào trang thiết lập (Q-164).
-  await loginStaffUntil(page, account, /\/thiet-lap-hai-buoc$/);
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Bật xác thực hai bước' }),
-  ).toBeVisible();
-  await expectAccessible(page);
-  // Chưa xong hai bước thì không vào được cổng.
+  // Tham số mfa_required_enabled tắt (mặc định): đăng nhập mật khẩu là vào thẳng CRM, không qua trang thiết lập.
+  await loginStaffUntil(page, account, /\/crm$/);
   await page.goto('/crm');
-  await expect(page).toHaveURL(/\/thiet-lap-hai-buoc$/);
-  await enrollDevice(page);
   await expect(page).toHaveURL(/\/crm$/);
 
   if (!phone) {
@@ -278,6 +271,9 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
 
   await page.goto('/crm/tai-khoan');
   await expect(page.getByRole('heading', { name: 'Xác thực hai bước' })).toBeVisible();
+  // Tự nguyện thêm thiết bị đầu tiên.
+  await page.getByRole('button', { name: 'Thêm thiết bị' }).click();
+  await enrollDevice(page);
   await expect(page.getByText('Thiết bị 1')).toBeVisible();
   // Chỉ còn một thiết bị thì không gỡ được.
   await expect(page.getByRole('button', { name: 'Gỡ' })).toBeDisabled();

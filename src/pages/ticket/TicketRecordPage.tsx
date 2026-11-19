@@ -36,6 +36,7 @@ import {
   addTicketNote,
   assignTicket,
   changeTicketStatus,
+  escalateTicket,
   reclassifyTicket,
   useTicketCategories,
   useTicketAssignees,
@@ -60,6 +61,8 @@ export function TicketRecordPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [complaintOpen, setComplaintOpen] = useState(false);
+  const [escalateOpen, setEscalateOpen] = useState(false);
+  const [escalateReason, setEscalateReason] = useState('');
   const [complaint, setComplaint] = useState({
     accused: '',
     date: '',
@@ -218,6 +221,29 @@ export function TicketRecordPage() {
     }
   };
 
+  const nextEscalation =
+    ticket.escalation_level === 'QUAN_LY_CO_SO' ? 'Ban giám đốc' : 'Quản lý cơ sở';
+  const canEscalate = ticket.ticket_type === 'KN' && ticket.escalation_level !== 'BAN_GIAM_DOC';
+  const openEscalate = () => {
+    setEscalateReason('');
+    setError(null);
+    setEscalateOpen(true);
+  };
+  const submitEscalate = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await escalateTicket(supabase, { id: ticket.id, reason: escalateReason.trim() });
+      setEscalateOpen(false);
+      toast({ tone: 'success', title: `Đã nâng cấp lên ${nextEscalation}.` });
+      await refresh();
+    } catch (cause) {
+      setError(errorOf(cause).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const openTask = () => {
     setTaskDraft(EMPTY_TASK_DRAFT);
     setTaskShow(false);
@@ -319,6 +345,7 @@ export function TicketRecordPage() {
                 Giao ticket
               </Button>
               {ticket.ticket_type !== 'GV' && <Button onClick={openReclass}>Phân loại lại</Button>}
+              {canEscalate && <Button onClick={openEscalate}>Nâng cấp</Button>}
               {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP'].includes(ticket.business_type ?? '') &&
                 !(record.data?.tasks ?? []).some((k) =>
                   ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(k.status_code),
@@ -415,6 +442,17 @@ export function TicketRecordPage() {
         {ticket.ticket_type === 'KN' && (
           <div className="mt-6">
             <DetailSection title="Riêng khiếu nại">
+              <DetailField
+                label="Mức nâng cấp"
+                mode="view"
+                value={
+                  ticket.escalation_level === 'BAN_GIAM_DOC'
+                    ? 'Ban giám đốc'
+                    : ticket.escalation_level === 'QUAN_LY_CO_SO'
+                      ? 'Quản lý cơ sở'
+                      : 'Chưa nâng cấp'
+                }
+              />
               <DetailField
                 label="Người bị khiếu nại"
                 mode="view"
@@ -570,6 +608,29 @@ export function TicketRecordPage() {
         <p className="text-caption text-fg-muted">
           Ô để trống là giữ nguyên. Phiếu tạo ở bước Nháp; trình duyệt ở màn Phiếu nghiệp vụ.
         </p>
+      </FormDialog>
+      <FormDialog
+        open={escalateOpen}
+        onOpenChange={setEscalateOpen}
+        title="Nâng cấp khiếu nại"
+        subtitle={ticket.code}
+        confirmLabel={`Nâng cấp lên ${nextEscalation}`}
+        canSubmit={escalateReason.trim() !== ''}
+        busy={busy}
+        error={error}
+        onSubmit={() => void submitEscalate()}
+      >
+        <p className="text-caption text-fg-muted">
+          {ticket.escalation_level === 'QUAN_LY_CO_SO'
+            ? 'Khiếu nại đang ở Quản lý cơ sở. Nâng cấp sẽ chuyển lên Ban giám đốc.'
+            : 'Khiếu nại sẽ được nâng cấp lên Quản lý cơ sở. Nâng thêm một mức nữa là Ban giám đốc.'}
+        </p>
+        <TextAreaField
+          label="Lý do nâng cấp"
+          required
+          value={escalateReason}
+          onChange={(e) => setEscalateReason(e.target.value)}
+        />
       </FormDialog>
       <FormDialog
         open={reclassOpen}

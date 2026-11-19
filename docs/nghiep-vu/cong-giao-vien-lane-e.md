@@ -1,4 +1,4 @@
-# Cổng Giáo viên và cấu hình rubric: hàm và chính sách của lane E (migration 500 đến 506)
+# Cổng Giáo viên và cấu hình rubric: hàm và chính sách của lane E (migration 500 đến 507)
 
 Cập nhật theo CLAUDE.md mục 8. Hàm ở schema `app`, giao diện gọi qua `rpc`. Hàm chỉ đọc trừ khi cột «Làm gì» ghi là ghi, sửa, tạo.
 
@@ -21,10 +21,12 @@ Cập nhật theo CLAUDE.md mục 8. Hàm ở schema `app`, giao diện gọi qu
 | 503 | `app.set_review_criterion_active(id, p_active)` | Ngừng hoặc Dùng lại một tiêu chí (không xoá); mỗi nhóm của mỗi bộ còn ít nhất một tiêu chí (`HMT_RUBRIC_NHOM_TRONG`). Chưa có nút ở giao diện (khung không vẽ). | Admin | CH-07 |
 | 504 | `app.update_review_level_descs(p_version_id, p_items)` | Lưu nhiều mô tả mức trong MỘT giao dịch (màn Sửa lưu cả bảng); gọi lại hàm một ô, một ô sai thì quay lại cả lần. | Admin | CH-07 |
 | 506 | `app.get_parent_phrases()`, `app.update_parent_phrases(p_items)` | Đọc và sửa 24 câu mẫu lời nhắn phụ huynh (loại buổi × mức 1–4 × 3 câu) của `app.parent_phrase`; chỉ sửa câu có sẵn, không thêm bớt, không để trống. Canvas CH07_cau_mau vẽ theo tiêu chí × mức 1–5 vênh luật: làm theo luật (Chat chốt 18/11). | Admin | R-V2-39 |
+| 507 | `app.first_password_change_required(p_account)` | Cờ «phải đổi mật khẩu lần đầu» có hiệu lực không: đúng khi `must_change_password` còn VÀ tham số của loại tài khoản đang Bật (có `student_code` = học sinh, còn lại = nhân viên). Đọc thẳng `setting_def` (quyền chủ DB). Dùng ở `app.current_user_ready` và hook token (`hmt_must_change_password`). | Nội bộ (không cấp cho người dùng) | R-HT-03, CHUNG-07 |
+| 507 | Tham số `first_password_change_required_student` (mặc định Tắt), `first_password_change_required_staff` (mặc định Bật) | Học sinh không bắt đổi mật khẩu lần đầu (anh Trường chốt 19/11, E31); nhân viên giữ như cũ. Học sinh tự đổi ở màn tài khoản. Cờ trong bảng giữ nguyên, Bật lại tham số thì áp lại. | Admin đổi ở Tham số nghiệp vụ | R-HT-03 |
 
 
 Màn CH-07 `/crm/cau-hinh/rubric` (chỉ Admin, máy tính): tab «Mô tả mức» (chọn Môn, Phiên bản; Sửa/Lưu/Huỷ; Tạo phiên bản) và tab «Câu mẫu lời nhắn phụ huynh». Chữ mô tả mức nạp ở migration 103 là chữ mẫu, chờ sheet Rubric chính thức.
 
-Bài pgTAP: `500`, `501`, `502` (lane E giáo viên), `503` (rubric, kèm 504 và 506), `104` (đã sửa để đếm cặp tiêu chí-mức theo phiên bản).
+Bài pgTAP: `500`, `501`, `502` (lane E giáo viên), `503` (rubric, kèm 504 và 506), `507` (đổi mật khẩu lần đầu theo tham số), `104` (đã sửa để đếm cặp tiêu chí-mức theo phiên bản).
 
 Màn: GV-12 mục phiếu test (`/gv/viec-can-lam`), GV-15 (`/gv/phieu-test/:testId`). Chưa làm: ô «Lớp đề xuất» của GV-15 (bảng phiếu chưa có cột).

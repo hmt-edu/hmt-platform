@@ -1,6 +1,8 @@
 -- P5a-DB1b-2 (đơn hàng, hàm đọc và xuất): get_order, list_orders, export_orders; Đ105 (Xuất), Đ106, R-TIEN-02, 06, 07; R-HT-06.
 -- Mỗi vai đọc trong và ngoài phạm vi; bộ lọc, phân trang, sắp xếp, xuất có nhật ký.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

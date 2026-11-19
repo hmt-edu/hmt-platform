@@ -1,6 +1,8 @@
 -- T4b (migration 069; spec 04 R-V2-29, 30, 34): nạp Người dùng, phần DB (kiểm dòng, tạo tài khoản, gắn quản lý, khoá, nhật ký).
 -- Mỗi luật có ca đúng và ca bị chặn. Dữ liệu giả. Edge Function `import-users` gọi các hàm này bằng token của Admin.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

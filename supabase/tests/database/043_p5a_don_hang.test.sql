@@ -1,6 +1,8 @@
 -- P5a-DB1b-1 (đơn hàng, phần bảng và hàm ghi): QĐ-Đ201 đến Đ205; R-TIEN-02, 03, 06, 07, 14, 35, 37, 38; R-GD-06, R-GD-08; R-CRM-16, 27;
 -- R-HT-01, R-HT-06. Mỗi luật có ca đúng và ca bị chặn; mỗi vai đọc, ghi trong và ngoài phạm vi.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
