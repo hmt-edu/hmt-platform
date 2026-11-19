@@ -104,6 +104,11 @@ test.beforeAll(async () => {
       `insert into app.enrollment_class (enrollment_id, class_id, branch_id, start_date) values ($1, $2, ${branch}, current_date - 30)`,
       [enrollmentId, classId],
     );
+    // Ghi danh có từ 40 ngày trước: ghi danh sinh sau ngày buổi thì không lọt vào danh sách (R-GIO-02).
+    await db.query(
+      "update app.enrollment set created_at = now() - interval '40 days' where id = $1",
+      [enrollmentId],
+    );
     // Dời buổi 1 về hôm qua để Done được (buổi chưa diễn ra thì chưa Done).
     await db.query(
       `update app.class_session set session_date = current_date - 1 where class_id = $1 and session_no = 1`,
