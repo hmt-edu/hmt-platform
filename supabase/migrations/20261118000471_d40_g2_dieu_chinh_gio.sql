@@ -25,15 +25,13 @@ begin
   if e.id is null then
     perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy ghi danh.');
   end if;
-  -- Luật G2 (a) (R-GIO-01, R-GIO-04): chỉ điều chỉnh giờ cho ghi danh còn hiệu lực; ghi danh Dừng, Hoàn phí, Hoàn thành, Huỷ thì giờ đã chốt, giờ là tiền.
-  if e.status_code not in ('CHO_XEP_LOP', 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
-    perform app.raise_error('HMT_GIO_DIEU_CHINH_GHI_DANH_DONG', 'Ghi danh này không còn hiệu lực (đã dừng, hoàn phí, hoàn thành hoặc huỷ) nên không điều chỉnh giờ được.');
-  end if;
-  -- Luật G2 (c): CỘNG giờ (giờ là tiền) chỉ người có Kế toán · Duyệt làm được (Kế toán; Admin không có quyền này, R-HT-01). BỚT giờ giữ quyền Ghi danh · Duyệt như trước.
-  if p_hours is not null and p_hours > 0 then
-    perform app.assert_can('ACCOUNTING', 'DUYET', e.branch_id);
-  else
+  -- Quyền nền: Ghi danh · Duyệt (Trưởng cơ sở, Admin) hoặc Kế toán · Duyệt (Kế toán) ở cơ sở của ghi danh; còn lại báo không có quyền.
+  if not (app.can_see_branch('ENROLLMENT', 'DUYET', e.branch_id) or app.can_see_branch('ACCOUNTING', 'DUYET', e.branch_id)) then
     perform app.assert_can('ENROLLMENT', 'DUYET', e.branch_id);
+  end if;
+  -- Luật G2 (a) (R-GIO-01, R-GIO-04): chỉ điều chỉnh giờ cho ghi danh còn hiệu lực; ghi danh Dừng, Hoàn phí, Hoàn thành, Chuyển lớp, Huỷ thì giờ đã chốt, giờ là tiền.
+  if e.status_code not in ('CHO_XEP_LOP', 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
+    perform app.raise_error('HMT_GIO_DIEU_CHINH_GHI_DANH_DONG', 'Ghi danh này không còn hiệu lực (đã dừng, hoàn phí, hoàn thành, chuyển lớp hoặc huỷ) nên không điều chỉnh giờ được.');
   end if;
   if p_hours is null or p_hours = 0 then
     perform app.raise_error('HMT_GIO_DIEU_CHINH_SAI', 'Số giờ điều chỉnh phải khác 0.');
@@ -51,6 +49,10 @@ begin
   select requires_note into v_requires_note from app.catalog_item where catalog_code = 'HOURS_ADJUST_REASON' and code = p_reason_code;
   if v_requires_note and btrim(coalesce(p_note, '')) = '' then
     perform app.raise_error('HMT_CAN_GHI_CHU', 'Lý do "Khác" cần ghi chú.');
+  end if;
+  -- Luật G2 (c): CỘNG giờ (giờ là tiền) chỉ người có Kế toán · Duyệt làm được (Kế toán; Admin không có quyền này, R-HT-01). BỚT giờ giữ quyền nền ở trên.
+  if p_hours > 0 then
+    perform app.assert_can('ACCOUNTING', 'DUYET', e.branch_id);
   end if;
   -- Luật R-GD-18: không cho quỹ âm bằng điều chỉnh tay.
   if p_hours < 0 and app.enrollment_hours_balance(e.id) + p_hours < 0 then
