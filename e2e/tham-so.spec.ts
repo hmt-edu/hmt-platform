@@ -52,9 +52,16 @@ const groups = (page: Page) => page.getByRole('navigation', { name: 'Nhóm tham 
 const table = (page: Page) => page.getByRole('region', { name: 'Tham số của nhóm' });
 const rowOf = (page: Page) => table(page).getByRole('row', { name: /Hạn hiệu lực báo giá/ });
 
-test('Nhóm bên trái, tìm tham số, Lịch sử thay đổi mờ', async ({ page }) => {
+test('Nhóm bên trái, tìm tham số, Lịch sử thay đổi mở hộp', async ({ page }) => {
   await open(page);
-  await expect(page.getByRole('button', { name: 'Lịch sử thay đổi' })).toBeDisabled();
+  // Nút bật (PR lịch sử thay đổi): mở hộp lịch sử, đóng được.
+  const history = page.getByRole('button', { name: 'Lịch sử thay đổi' });
+  await expect(history).toBeEnabled();
+  await history.click();
+  const dialog = page.getByRole('dialog', { name: 'Lịch sử thay đổi' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'Đóng' }).first().click();
+  await expect(dialog).toBeHidden();
   await expect(groups(page).getByRole('button', { name: /^Bán hàng/ })).toBeVisible();
   await groups(page).getByRole('textbox', { name: 'Tìm tham số' }).fill('hạn hiệu lực báo giá');
   await expect(rowOf(page)).toBeVisible();
