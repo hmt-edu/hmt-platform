@@ -140,7 +140,13 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
         : []),
       { key: 'created', label: 'Ngày tạo', type: 'date' },
     ],
-    groupFields: [],
+    // Group By ở máy chủ (K1_nhom): tình trạng, cơ sở (khi xem nhiều cơ sở).
+    groupFields: [
+      { key: 'status', label: 'Tình trạng', value: (r) => r.status_code },
+      ...(access.seesAllBranches
+        ? [{ key: 'branch', label: 'Cơ sở', value: (r: OrderRow) => r.branch_code }]
+        : []),
+    ],
     dateFields: [{ key: 'created', label: 'Ngày tạo' }],
     views: ['list'],
   };

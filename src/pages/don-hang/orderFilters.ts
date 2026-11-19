@@ -66,3 +66,17 @@ export function nextOrderSort(sort: SortState): SortState {
   if (sort && orderSortParam(sort) === undefined) return null;
   return sort;
 }
+
+/** Trường nhóm của giao diện → tên trường của order_group_counts (Group By ở máy chủ, K1_nhom). */
+export const ORDER_GROUP_FIELD_OF: Record<string, string> = {
+  status: 'status',
+  branch: 'branch',
+};
+
+/** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có», không lọc thêm). */
+export function orderGroupFilter(field: string, key: string): OrderFilters {
+  if (key === '') return {};
+  if (field === 'status') return { status: [key] };
+  if (field === 'branch') return { branch_id: key };
+  return {};
+}
