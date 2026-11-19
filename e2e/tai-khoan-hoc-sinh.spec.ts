@@ -76,10 +76,9 @@ test('Admin: tìm theo mã HS thấy em «Chưa cấp», mở hộp cấp tài k
   await expect(row).toBeVisible();
   await expect(row.getByText('Chưa cấp')).toBeVisible();
   await row.getByRole('button', { name: 'Cấp tài khoản' }).click();
-  const dialog = page.getByRole('dialog');
-  await expect(dialog.getByText('Tên đăng nhập là mã HS')).toBeVisible();
-  await dialog.getByRole('button', { name: 'Huỷ' }).click();
-  await expect(dialog).toBeHidden();
+  await expect(page.getByText('Tên đăng nhập là mã HS')).toBeVisible();
+  await page.getByRole('button', { name: 'Huỷ' }).click();
+  await expect(page.getByText('Tên đăng nhập là mã HS')).toBeHidden();
 });
 
 test('Nhân viên không phải Admin: không vào được màn Tài khoản học sinh', async ({ page }) => {
