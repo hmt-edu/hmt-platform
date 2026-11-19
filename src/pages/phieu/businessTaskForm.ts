@@ -132,7 +132,7 @@ export function classChoices(options: TaskOptions, enrollmentId: string) {
 export function holdEnrollmentChoices(options: TaskOptions, mode: HoldMode) {
   const running = new Set((options.holds ?? []).map((h) => h.enrollment_id));
   return options.enrollments.filter((x) =>
-    mode === 'GIA_HAN' ? running.has(x.id) : x.status_code !== 'BAO_LUU',
+    mode !== 'MOI' ? running.has(x.id) : x.status_code !== 'BAO_LUU',
   );
 }
 
