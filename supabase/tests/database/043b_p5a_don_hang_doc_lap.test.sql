@@ -1,6 +1,8 @@
 -- P5a-DB1b-1 (đơn hàng): bài kiểm ĐỘC LẬP, viết chỉ dựa trên chữ luật (R-CRM-16, 27; R-TIEN-01, 02, 03, 06, 07, 14, 35, 37, 38;
 -- R-GD-06, 08; R-HT-01, 06). Cố phá từng luật. Bài trượt vì code lệch luật được giữ nguyên.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

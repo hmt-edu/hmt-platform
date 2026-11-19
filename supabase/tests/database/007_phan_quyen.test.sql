@@ -1,6 +1,8 @@
 -- Kiểm thử phân quyền theo từng vai trò (spec 03 mục Phân quyền; docs/nghiep-vu/phan-quyen.md).
 -- Mỗi người dùng giả đăng nhập bằng token sinh từ chính hook custom_access_token_hook.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 -- Migration 182 (QT-05): lưu ma trận qua API chỉ khi tham số permission_matrix_edit_enabled bật; các bài này thử luật lưu nên bật trong giao dịch của bài (hoàn tác khi kết thúc).

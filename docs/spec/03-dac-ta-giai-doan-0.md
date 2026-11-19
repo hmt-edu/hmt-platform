@@ -51,12 +51,12 @@ Project Supabase Free tự tạm dừng sau 1 tuần không dùng: workflow hằ
 |---|---|---|---|
 | Nhân viên | Email + mật khẩu (HMT chưa có Google Workspace; có sau thì bật thêm Google) | Admin | 0 |
 | Giáo viên, trợ giảng | Như nhân viên | Admin | 0 |
-| Học sinh | Tên đăng nhập = mã học sinh + mật khẩu trung tâm cấp, đổi mật khẩu lần đầu, không cần email | CSKH hoặc Admin | 0 làm khung, 4 dùng thật |
+| Học sinh | Tên đăng nhập = mã học sinh + mật khẩu trung tâm cấp, **không bắt đổi mật khẩu lần đầu** (anh Trường chốt 19/11/2026, E31: «học sinh không cần đổi lần đầu, cần thì tự đổi sau»; tham số `first_password_change_required_student`, mặc định Tắt; nhân viên `first_password_change_required_staff` mặc định Bật), không cần email | CSKH hoặc Admin | 0 làm khung, 4 dùng thật |
 | Phụ huynh | Chốt sau | CSKH | 4 |
 
 - Nghỉ việc, dừng học thì **khoá** tài khoản, không xoá.
 - Quên mật khẩu: giai đoạn 0 nhân viên liên hệ quản trị viên (theo thiết kế P1 v4, anh OK 18/10); tự đặt lại qua email làm sau; học sinh nhờ CSKH.
-- Admin và Kế toán bật xác thực hai bước.
+- Admin và Kế toán: xác thực hai bước KHÔNG bắt buộc từ 19/11/2026 (anh Trường chốt: «mỗi lần vào phải xác thực là không cần thiết»). Một tham số `mfa_required_enabled` (mặc định tắt) quyết định; bật lại thì bắt buộc như cũ. Trang cài thiết bị hai bước vẫn có ở Hồ sơ (tự nguyện). Xem migration 472.
 - **Không chuyển mật khẩu từ hệ thống cũ.**
 
 ## Phân quyền

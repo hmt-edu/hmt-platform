@@ -1,6 +1,8 @@
 -- Quản trị người dùng (QT-01, QT-02; QĐ-Đ44 đến Đ50): list_users, get_user, export_users, admin_revoke_sessions, admin_reset_mfa.
 -- Mỗi luật có ca đúng và ca bị chặn; mỗi vai trò thử đọc, ghi; Admin chưa xác thực hai bước (aal1) bị chặn.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

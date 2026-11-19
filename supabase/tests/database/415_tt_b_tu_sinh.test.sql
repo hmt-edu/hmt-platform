@@ -1,6 +1,8 @@
 -- TT-B (migration 415): tự sinh, đối soát phiếu tái tục. Luật R-GD-13: ngưỡng giờ hoặc ngày, mỗi cặp một phiếu mở, L5 không sinh lại, bảo lưu dừng sinh, dừng học đóng phiếu,
 -- chuyển lớp chuyển phiếu, cờ rủi ro vắng; cờ tắt mặc định. Dữ liệu giả.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

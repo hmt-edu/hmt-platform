@@ -1,5 +1,7 @@
 -- QT-11 app.list_audit_log (migration 550): chỉ Admin đọc; lọc theo bảng, loại, khoảng ngày; phân trang. Dữ liệu giả.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
