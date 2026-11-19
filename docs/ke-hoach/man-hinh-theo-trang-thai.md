@@ -1,12 +1,12 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 146 có màn, 17 chỉ có DB (chưa thấy màn), 34 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 147 có màn, 17 chỉ có DB (chưa thấy màn), 33 chưa có.**
 
 ## Số theo cổng
 
 | Cổng | Tổng | Có màn | Chỉ có DB | Chưa có |
 |---|---|---|---|---|
-| CRM (còn lại) | 155 | 129 | 8 | 18 |
+| CRM (còn lại) | 155 | 130 | 8 | 17 |
 | Giáo viên (GV) | 18 | 14 | 2 | 2 |
 | Học sinh (HT) | 9 | 0 | 0 | 9 |
 | Phụ huynh (PH) | 5 | 0 | 0 | 5 |
@@ -67,7 +67,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TS-05 | Giao người phụ trách (lead, cơ hội, phiếu tái tục, ticket) | C | **Có màn** `src/features/assign/AssignDialog.tsx` | không có khung | chưa kiểm | lead.spec.ts, so-sanh.spec.ts | Code ? |
 | TS-06 | Tạo cơ hội từ lead (cảnh báo đã có cơ hội) | B | **Có màn** `src/pages/co-hoi/CreateOpportunityDialog.tsx` | có (13 khung) | Gần đúng | co-hoi.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code ? |
 | TS-07 | Cơ hội (danh sách / kanban L1–L8) | B | **Có màn** `/crm/co-hoi` | có (14 khung) | Lệch → đã sửa | co-hoi.spec.ts | Code ? |
-| TS-08 | Cơ hội (bản ghi) | A | **Có màn** `src/pages/co-hoi/OpportunityRecordPage.tsx` | có (36 khung) | Lệch (chưa sửa) | co-hoi.spec.ts | Code ? |
+| TS-08 | Cơ hội (bản ghi) | A | **Có màn** `src/pages/co-hoi/OpportunityRecordPage.tsx` | có (36 khung) | Gần đúng | co-hoi.spec.ts | Code ? |
 | TS-09 | Chuyển giai đoạn cơ hội (chọn nhóm con, lý do) | C | **Có màn** `src/pages/co-hoi/OpportunityListPage.tsx` | có (25 khung) | Đúng | co-hoi.spec.ts | Code ? |
 | TS-10 | Gộp lead / cơ hội trùng | C | **Có màn** `src/features/merge/MergeDialog.tsx` | có (14 khung) | Đúng | gop-trung.spec.ts | Code ? |
 | TS-11 | Lịch hẹn (danh sách + lịch tuần) | A | **Có màn** `/crm/lich-hen` | có (15 khung) | Đúng | lich-hen.spec.ts | Code ? |
@@ -77,35 +77,35 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TS-15 | Tạo phiếu kiểm tra từ cơ hội (gồm xếp lịch, đổi lịch) | B | **Có màn** `src/pages/phieu/CreateTestDialog.tsx` | có (9 khung) | Gần đúng | phieu.spec.ts | Code ? |
 | TS-16 | Phiếu kiểm tra (danh sách + Kanban + lịch) | B | **Có màn** `/crm/phieu-kiem-tra` | có (15 khung) | Lệch → đã sửa | phieu.spec.ts | Code ? |
 | TS-17 | Phiếu kiểm tra (bản ghi) | A | **Có màn** `src/pages/phieu/TestDialogs.tsx` | có (5 khung) | Gần đúng | phieu.spec.ts | Code ? |
-| KH-01 | Phụ huynh (danh sách) | B | **Có màn** `/crm/phu-huynh` | có (24 khung) | chưa kiểm | khach-hang.spec.ts | Code ? |
-| KH-02 | Phụ huynh (bản ghi) | B | **Có màn** `src/pages/khach-hang/ParentRecordPage.tsx` | có (34 khung) | chưa kiểm | khach-hang.spec.ts | Code ? |
-| KH-03 | Sửa phụ huynh (không có Tạo tay) | C | **Có màn** `src/pages/khach-hang/ParentRecordPage.tsx` | có (10 khung) | chưa kiểm | — | Code ? |
-| KH-04 | Học sinh (danh sách) | B | **Có màn** `/crm/hoc-sinh` | có (24 khung) | chưa kiểm | khach-hang.spec.ts | Code ? |
-| KH-05 | Học sinh (hồ sơ 360°) | B | **Có màn** `src/pages/khach-hang/StudentRecordPage.tsx` | có (48 khung) | chưa kiểm | khach-hang.spec.ts | Code ? |
-| KH-06 | Sửa học sinh (không có Tạo tay) | C | **Có màn** `src/pages/khach-hang/StudentRecordPage.tsx` | có (10 khung) | chưa kiểm | — | Code ? |
-| KH-07 | Gộp phụ huynh / học sinh trùng | C | **Có màn** `src/pages/khach-hang/ParentRecordPage.tsx` | có (24 khung) | chưa kiểm | — | Code ? |
+| KH-01 | Phụ huynh (danh sách) | B | **Có màn** `/crm/phu-huynh` | có (24 khung) | Gần đúng | khach-hang.spec.ts | Code ? |
+| KH-02 | Phụ huynh (bản ghi) | B | **Có màn** `src/pages/khach-hang/ParentRecordPage.tsx` | có (34 khung) | Gần đúng | khach-hang.spec.ts | Code ? |
+| KH-03 | Sửa phụ huynh (không có Tạo tay) | C | **Có màn** `src/pages/khach-hang/ParentRecordPage.tsx` | có (10 khung) | Gần đúng | — | Code ? |
+| KH-04 | Học sinh (danh sách) | B | **Có màn** `/crm/hoc-sinh` | có (24 khung) | Gần đúng | khach-hang.spec.ts | Code ? |
+| KH-05 | Học sinh (hồ sơ 360°) | B | **Có màn** `src/pages/khach-hang/StudentRecordPage.tsx` | có (48 khung) | Gần đúng | khach-hang.spec.ts | Code ? |
+| KH-06 | Sửa học sinh (không có Tạo tay) | C | **Có màn** `src/pages/khach-hang/StudentRecordPage.tsx` | có (10 khung) | Gần đúng | — | Code ? |
+| KH-07 | Gộp phụ huynh / học sinh trùng | C | **Có màn** `src/pages/khach-hang/ParentRecordPage.tsx` | có (24 khung) | Gần đúng | — | Code ? |
 | BH-01 | Báo giá (danh sách) | B | **Có màn** `/crm/bao-gia` | có (16 khung) | Đúng | bao-gia.spec.ts | Code C |
-| BH-02 | Báo giá (bản ghi, dòng gói) | A | **Có màn** `src/pages/bao-gia/QuotationCreatePage.tsx` | có (65 khung) | chưa kiểm | bao-gia.spec.ts | Code C |
-| BH-03 | Bản in / gửi báo giá cho phụ huynh | B | **Có màn** `src/pages/bao-gia/QuotationPrintPage.tsx` | có (4 khung) | chưa kiểm | bao-gia.spec.ts | Code C |
+| BH-02 | Báo giá (bản ghi, dòng gói) | A | **Có màn** `src/pages/bao-gia/QuotationCreatePage.tsx` | có (65 khung) | Gần đúng | bao-gia.spec.ts | Code C |
+| BH-03 | Bản in / gửi báo giá cho phụ huynh | B | **Có màn** `src/pages/bao-gia/QuotationPrintPage.tsx` | có (4 khung) | Gần đúng | bao-gia.spec.ts | Code C |
 | BH-04 | Từ chối báo giá (lý do) | C | **Có màn** `src/pages/bao-gia/QuotationRecordPage.tsx` | không có khung | chưa kiểm | bao-gia.spec.ts | Code C |
 | BH-05 | Đơn hàng (bản ghi) | A | **Có màn** `src/pages/don-hang/OrderCreatePage.tsx` | có (89 khung) | Gần đúng | don-hang-ban-ghi.spec.ts | Code C |
 | BH-06 | Đơn hàng (danh sách) | B | **Có màn** `/crm/don-hang` | có (16 khung) | Đúng | don-hang-ban-ghi.spec.ts, don-hang.spec.ts | Code C |
 | BH-07 | Duyệt / từ chối đơn hàng | B | **Có màn** `src/pages/don-hang/OrderApproveDialogs.tsx` | có (8 khung) | Đúng | don-hang-duyet.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code C |
 | BH-08 | Chọn lớp và ngày vào lớp cho dòng đơn | A | **Có màn** `src/pages/don-hang/OrderCreatePage.tsx` | có (20 khung) | Đúng | chon-lop-don.spec.ts | Code C |
-| BH-09 | Bật "Cho học trước, đóng tiền sau" | B | **Có màn** `src/pages/don-hang/PayLaterDialog.tsx` | có (4 khung) | chưa kiểm | don-hang-cho-hoc-truoc.spec.ts | Code C |
+| BH-09 | Bật "Cho học trước, đóng tiền sau" | B | **Có màn** `src/pages/don-hang/PayLaterDialog.tsx` | có (4 khung) | Đúng | don-hang-cho-hoc-truoc.spec.ts | Code C |
 | BH-10 | Huỷ đơn hàng (lý do) | C | **Có màn** `src/pages/don-hang/OrderRecordPage.tsx` | không có khung | chưa kiểm | — | Code C |
 | BH-11 | Cảnh báo cơ hội đã có đơn nháp | C | **Có màn** `src/pages/don-hang/OrderCreatePage.tsx` | không có khung | chưa kiểm | don-hang-tao.spec.ts | Code C |
 | TC-01 | Phiếu thu (danh sách) | B | **Có màn** `/crm/phieu-thu` | có (17 khung) | Lệch (chưa sửa) | — | Code C/D |
 | TC-02 | Phiếu thu (bản ghi) | A | **Có màn** `src/pages/phieu-thu/CreateReceiptDialog.tsx` | có (69 khung) | Gần đúng | phieu-thu-no-dau-ky.spec.ts, phieu-thu.spec.ts | Code C/D |
-| TC-03 | Tạo phiếu thu từ đơn hàng | B | **Có màn** `src/pages/phieu-thu/CreateReceiptDialog.tsx` | có (6 khung) | chưa kiểm | phieu-thu.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code C/D |
+| TC-03 | Tạo phiếu thu từ đơn hàng | B | **Có màn** `src/pages/phieu-thu/CreateReceiptDialog.tsx` | có (6 khung) | Gần đúng | phieu-thu.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code C/D |
 | TC-04 | Hàng chờ kế toán duyệt | B | **Có màn** `/crm/cho-ke-toan-duyet` | có (20 khung) | Lệch (chưa sửa) | — | Code C/D |
 | TC-05 | Kế toán duyệt / từ chối phiếu thu | A | **Có màn** `src/pages/phieu-thu/ReceiptRecordPage.tsx` | có (24 khung) | Gần đúng | phieu-thu.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code C/D |
 | TC-06 | Huỷ phiếu thu (lý do) | C | **Có màn** `src/pages/phieu-thu/ReceiptRecordPage.tsx` | không có khung | chưa kiểm | — | Code C/D |
-| TC-07 | Bản in phiếu thu / biên nhận | B | **Có màn** `src/pages/phieu-chi/VoucherPrintPage.tsx` | có (4 khung) | chưa kiểm | phieu-thu.spec.ts | Code C/D |
+| TC-07 | Bản in phiếu thu / biên nhận | B | **Có màn** `src/pages/phieu-chi/VoucherPrintPage.tsx` | có (4 khung) | Gần đúng | phieu-thu.spec.ts | Code C/D |
 | TC-08 | Khoản tiền vào (sổ thu tiền) | B | **Có màn** `/crm/khoan-tien-vao` | có (20 khung) | Đúng | thu-tien.spec.ts | Code C/D |
 | TC-09 | Đảo khoản tiền (lý do) | B | **Chỉ có DB** `20261111000122_cum_thu_tien_doc_du_lieu.sql` | có (8 khung) | chưa kiểm | cskh-khieu-nai-bao-luu.spec.ts, duong-ke-toan.spec.ts | Code C/D |
 | TC-13 | Công nợ (đơn chưa thu đủ) | B | **Có màn** `/crm/cong-no` | có (16 khung) | Đúng | thu-tien.spec.ts | Code C/D |
-| TC-15 | Đối soát thu tiền | B | **Chưa có** | có (16 khung) | chưa kiểm | duong-ke-toan.spec.ts | Code C/D |
+| TC-15 | Đối soát thu tiền | B | **Có màn** `/crm/doi-soat-thu-tien` | có (16 khung) | chưa kiểm | duong-ke-toan.spec.ts | Code C/D |
 | GV-15 | Chấm kiểm tra đầu vào | B | **Có màn** `src/pages/gv/TeacherTodoPage.tsx` | có (20 khung) | Đúng | — | Code E |
 | QT-14 | Ngày nghỉ lễ | B | **Có màn** `/crm/cau-hinh/ngay-nghi` | không có khung | chưa kiểm | ngay-nghi.spec.ts | Code F |
 | QT-15 | Cấu hình người duyệt ticket theo nhóm con | B | **Chưa có** | không có khung | chưa kiểm | — | Code F |
@@ -113,22 +113,22 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | CH-05 | Khung chương trình (danh sách phiên bản) | B | **Có màn** `/crm/cau-hinh/khung-chuong-trinh` | có (14 khung) | chưa kiểm | lop.spec.ts | Code F |
 | CH-06 | Khung chương trình (danh sách bài học) | B | **Có màn** `src/pages/khung-chuong-trinh/CurriculumFramePage.tsx` | có (14 khung) | chưa kiểm | — | Code F |
 | KH-08 | Lên khối đầu năm học (hàng loạt) | C | **Chưa có** | không có khung | chưa kiểm | — | Code ? |
-| TC-10 | Phiếu chi (danh sách) | B | **Có màn** `/crm/phieu-chi` | có (16 khung) | chưa kiểm | phieu-chi-so-du.spec.ts | Code C/D |
-| TC-11 | Phiếu chi (bản ghi) | B | **Có màn** `src/pages/phieu-chi/VoucherRecordPage.tsx` | có (12 khung) | chưa kiểm | phieu-chi-so-du.spec.ts | Code C/D |
+| TC-10 | Phiếu chi (danh sách) | B | **Có màn** `/crm/phieu-chi` | có (16 khung) | Đúng | phieu-chi-so-du.spec.ts | Code C/D |
+| TC-11 | Phiếu chi (bản ghi) | B | **Có màn** `src/pages/phieu-chi/VoucherRecordPage.tsx` | có (12 khung) | Gần đúng | phieu-chi-so-du.spec.ts | Code C/D |
 | TC-12 | Bản in phiếu chi | C | **Có màn** `src/pages/phieu-chi/VoucherPrintPage.tsx` | không có khung | chưa kiểm | trang-chu.spec.ts | Code C/D |
 | TC-14 | Số dư khách hàng (tiền dư giữ lại) | C | **Có màn** `/crm/so-du-khach-hang` | không có khung | chưa kiểm | phieu-chi-so-du.spec.ts | Code C/D |
 | TC-16 | Dùng số dư khách hàng cho đơn mới | C | **Chỉ có DB** `20261118000453_tc14_doc_so_du_khach_hang.sql` | không có khung | chưa kiểm | — | Code C/D |
-| TC-17 | Quản lý duyệt phiếu thu | B | **Có màn** `src/features/approver-reassign/ReassignApproverDialog.tsx` | có (9 khung) | chưa kiểm | — | Code C/D |
+| TC-17 | Quản lý duyệt phiếu thu | B | **Có màn** `src/features/approver-reassign/ReassignApproverDialog.tsx` | có (9 khung) | Gần đúng | — | Code C/D |
 | GD-01 | Ghi danh (danh sách) | B | **Có màn** `/crm/ghi-danh` | có (16 khung) | Đúng | ghi-danh.spec.ts | Code A |
 | GD-02 | Ghi danh (bản ghi) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (36 khung) | Lệch (chưa sửa) | ghi-danh.spec.ts | Code A |
 | GD-03 | Xếp lớp cho ghi danh (theo nhóm hoặc theo lớp) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (24 khung) | Đúng | duong-di-hoc-sinh.spec.ts, ghi-danh-nhom.spec.ts | Code A |
 | GD-04 | Sổ giờ của ghi danh | B | **Có màn** `src/pages/ghi-danh/EnrollmentLedgerPage.tsx` | có (16 khung) | Lệch → đã sửa | ghi-danh-dieu-chinh-gio.spec.ts, ghi-danh.spec.ts | Code A |
-| GD-05 | Điều chỉnh giờ (dòng ngược dấu, bắt buộc lý do) | B | **Có màn** `src/pages/ghi-danh/AdjustHoursDialog.tsx` | có (4 khung) | chưa kiểm | ghi-danh-dieu-chinh-gio.spec.ts, ghi-danh.spec.ts | Code A |
+| GD-05 | Điều chỉnh giờ (dòng ngược dấu, bắt buộc lý do) | B | **Có màn** `src/pages/ghi-danh/AdjustHoursDialog.tsx` | có (4 khung) | Gần đúng | ghi-danh-dieu-chinh-gio.spec.ts, ghi-danh.spec.ts | Code A |
 | GD-06 | Hàng chờ xếp lớp | B | **Có màn** `/crm/cho-xep-lop` | có (16 khung) | Đúng | ghi-danh.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code A |
 | GD-07 | Sắp hết giờ / dự báo hết giờ | B | **Có màn** `/crm/sap-het-gio` | có (16 khung) | Lệch → đã sửa | sap-het-gio.spec.ts | Code A |
 | TT-01 | Phiếu tái tục (danh sách / kanban L1–L8) | B | **Có màn** `/crm/tai-tuc` | có (10 khung) | Đúng | — | Code C |
-| TT-02 | Phiếu tái tục (bản ghi) | B | **Có màn** `src/pages/bao-gia/QuotationCreatePage.tsx` | có (16 khung) | chưa kiểm | — | Code C |
-| TT-03 | Tạo phiếu tái tục thủ công | C | **Có màn** `src/pages/ghi-danh/EnrollmentRecordPage.tsx` | có (2 khung) | chưa kiểm | ghi-danh.spec.ts | Code C |
+| TT-02 | Phiếu tái tục (bản ghi) | B | **Có màn** `src/pages/bao-gia/QuotationCreatePage.tsx` | có (16 khung) | Gần đúng | — | Code C |
+| TT-03 | Tạo phiếu tái tục thủ công | C | **Có màn** `src/pages/ghi-danh/EnrollmentRecordPage.tsx` | có (2 khung) | Gần đúng | ghi-danh.spec.ts | Code C |
 | LOP-01 | Lớp (danh sách / kanban theo bước duyệt) | B | **Có màn** `/crm/lop` | có (17 khung) | Lệch → đã sửa | lop.spec.ts | Code A |
 | LOP-02 | Lớp (bản ghi) | A | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (27 khung) | Lệch (chưa sửa) | lop.spec.ts | Code A |
 | LOP-03 | Tạo / sửa lớp (chỉ ở Nháp, Từ chối) | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | có (26 khung) | Lệch (chưa sửa) | lop.spec.ts | Code A |

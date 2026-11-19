@@ -11,7 +11,7 @@ Nguồn: `HOP-THU/MAN-CHUA-KIEM.md` nhóm A (luật anh Trường 21:32). Cách 
 | TS-03 Lead (tạo mới) | «Chọn source type trước», «Tạo chiến dịch mới», «Hệ thống tự tính sau khi lưu» | **gần đúng**: thiếu chữ hướng dẫn |
 | TS-04 Giao lead | không thiếu chữ | khớp |
 | TS-06 Lead (bản ghi có cơ hội) | «Lead này đã có cơ hội» | **gần đúng** (như TS-02) |
-| TS-08 Cơ hội (bản ghi) | «Môn quan tâm», «Lịch rảnh», «Trường đang học» (code có «Trường học», «Học lực tự đánh giá», «Nhu cầu»), «Sửa ở hồ sơ học sinh», câu mất kết nối | **lệch**: «Môn quan tâm» và «Lịch rảnh» không có cột trong dữ liệu; cần Chat quyết thêm cột hay bỏ khỏi canvas |
+| TS-08 Cơ hội (bản ghi) | «Môn quan tâm», «Lịch rảnh», «Trường đang học» (code có «Trường học», «Học lực tự đánh giá», «Nhu cầu»), «Sửa ở hồ sơ học sinh», câu mất kết nối | **gần đúng**, canvas vênh luật, làm theo luật: R-CRM-23 ghi «khối và môn không nằm trong danh sách em» nên không có «Môn quan tâm»; luật không có «Lịch rảnh» (không có ở docs/spec 04, 02, 06). Để anh duyệt sau; khi anh chốt thêm thì mở thẻ migration và pgTAP |
 | TS-09 Đổi giai đoạn | chữ khớp (phần thiếu là của TS-08) | khớp |
 | TS-10 Lịch hẹn (hộp) | chỉ khác dữ liệu mẫu | khớp |
 | TS-13 Lịch hẹn của cơ hội | chỉ khác dữ liệu mẫu | khớp |
