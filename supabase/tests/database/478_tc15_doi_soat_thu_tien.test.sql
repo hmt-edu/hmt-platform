@@ -173,9 +173,9 @@ select pg_temp.sudo($$create function pg_temp.racc(p_id uuid) returns text langu
 select pg_temp.sudo($$create function pg_temp.audits(p_id uuid) returns bigint language sql stable security definer as 'select count(*) from app.audit_log where record_id = p_id and action = ''U'''$$);
 select pg_temp.sudo($$grant execute on function pg_temp.rid(integer), pg_temp.mt(uuid), pg_temp.mby(uuid), pg_temp.racc(uuid), pg_temp.audits(uuid) to public$$);
 select pg_temp.sudo($$insert into app.catalog_item (catalog_code, code, name, sort_order) values ('RECEIVING_ACCOUNT', 'VCB_3456', 'Vietcombank …3456', 1), ('RECEIVING_ACCOUNT', 'TCB_1122', 'Techcombank …1122', 2)$$);
-select pg_temp.pay('d1', 1000000);
-select pg_temp.pay('d1', 2000000);
-select pg_temp.pay('d2', 500000);
+select pg_temp.pay('d1', 300000);
+select pg_temp.pay('d1', 400000);
+select pg_temp.pay('d2', 200000);
 -- Một phiếu Nháp (chưa duyệt) để thử chặn.
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select pg_temp.mkr('nhap', 'd3', '{"amount": 100000, "payment_method_code": "TIEN_MAT"}'::jsonb);
@@ -187,7 +187,7 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.list_receipt_reconciliation()$$), 'HMT_KHONG_CO_QUYEN', 'TC-15 chặn: Sale không xem đối soát');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select is((app.list_receipt_reconciliation() ->> 'total')::int, 3, 'TC-15 đúng: Kế toán thấy 3 phiếu Đã duyệt (không thấy phiếu Nháp)');
-select is((app.list_receipt_reconciliation() ->> 'sum_all')::bigint, 3500000::bigint, 'TC-15: tổng tiền thu 3.500.000');
+select is((app.list_receipt_reconciliation() ->> 'sum_all')::bigint, 900000::bigint, 'TC-15: tổng tiền thu 900.000');
 select is((app.list_receipt_reconciliation() ->> 'count_unmatched')::int, 3, 'TC-15: ban đầu cả 3 phiếu chưa khớp');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select is((app.list_receipt_reconciliation() ->> 'total')::int, 3, 'TC-15 đúng: Admin cũng xem được');
@@ -205,7 +205,7 @@ select is(pg_temp.mt(pg_temp.rid(1)) is not null and pg_temp.mby(pg_temp.rid(1))
 select is(pg_temp.racc(pg_temp.rid(1)), 'VCB_3456', 'TC-15: tài khoản nhận đã ghi');
 select is(pg_temp.audits(pg_temp.rid(1)) >= 1, true, 'TC-15: nhật ký audit có dòng sửa phiếu thu');
 select is((app.list_receipt_reconciliation() ->> 'count_unmatched')::int, 1, 'TC-15: còn 1 phiếu chưa khớp');
-select is((app.list_receipt_reconciliation() ->> 'sum_matched')::bigint + (app.list_receipt_reconciliation() ->> 'sum_unmatched')::bigint, 3500000::bigint, 'TC-15: tổng khớp + chưa khớp = tổng thu');
+select is((app.list_receipt_reconciliation() ->> 'sum_matched')::bigint + (app.list_receipt_reconciliation() ->> 'sum_unmatched')::bigint, 900000::bigint, 'TC-15: tổng khớp + chưa khớp = tổng thu');
 select is((app.list_receipt_reconciliation('{"matched": "CHUA"}') ->> 'total')::int, 1, 'TC-15: lọc Chưa khớp ra 1 phiếu');
 select is((app.list_receipt_reconciliation('{"matched": "KHOP"}') ->> 'total')::int, 2, 'TC-15: lọc Đã khớp ra 2 phiếu');
 select is((app.list_receipt_reconciliation('{"account": "VCB_3456"}') ->> 'total')::int, 2, 'TC-15: lọc theo tài khoản nhận');
