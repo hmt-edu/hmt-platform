@@ -1,7 +1,7 @@
 // LOP-02 Lớp (bản ghi, khuôn K06): thanh duyệt, thông tin, thời khoá biểu, học sinh (dòng xếp lớp), buổi, lịch sử, cảnh báo trùng.
 // Thao tác trong menu Hành động theo tình trạng duyệt (LOP-05: Trình, Xác nhận, Duyệt, Từ chối, Đưa về Nháp, Huỷ; LOP-06: Đóng, Huỷ,
 // bị chặn thì hộp thoại hiện lý do máy chủ trả, có tên học sinh). Sửa dẫn tới LOP-03. Quyền thật do máy chủ kiểm.
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { Button } from '../../ui/Button';
@@ -13,7 +13,8 @@ import { Tag } from '../../ui/Data';
 import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
-import type { MenuItem } from '../../ui/Overlays';
+import { LineTable } from '../../ui/LineTable';
+import { Tabs, type MenuItem } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { editKind, transitionsFrom, type Transition } from './classTransitions';
 import { SESSION_STATUS_LABEL, WEEKDAY_LABEL, timeText } from './classLabels';
@@ -136,6 +137,13 @@ function ClassView({ record }: { record: ClassRecord }) {
 
   const clash = Array.isArray(record.clash_warnings) ? record.clash_warnings : [];
   const counts = Object.entries(record.session_counts);
+  const [dayTab, setDayTab] = useState(() => String(record.slots[0]?.weekday ?? 1));
+  const [listTab, setListTab] = useState('hoc-sinh');
+  const detailRef = useRef<HTMLDivElement>(null);
+  const openList = (tab: string) => {
+    setListTab(tab);
+    detailRef.current?.scrollIntoView({ block: 'start' });
+  };
 
   return (
     <>
@@ -173,16 +181,14 @@ function ClassView({ record }: { record: ClassRecord }) {
             label: 'Học sinh',
             icon: 'training',
             count: record.students.length,
-            unavailable: 'Danh sách học sinh của lớp hiện ở bên dưới',
-            onOpen: () => undefined,
+            onOpen: () => openList('hoc-sinh'),
           },
           {
             key: 'buoi-hoc',
             label: 'Buổi học',
             icon: 'calendar',
             count: counts.reduce((sum, [, n]) => sum + n, 0),
-            unavailable: 'Màn Buổi học sắp có (BUOI-01)',
-            onOpen: () => undefined,
+            onOpen: () => openList('buoi-hoc'),
           },
         ]}
         stage={{
@@ -201,7 +207,7 @@ function ClassView({ record }: { record: ClassRecord }) {
           </Alert>
         )}
         <div className="grid gap-x-8 gap-y-4 md:grid-cols-2">
-          <DetailSection title="Thông tin lớp">
+          <DetailSection title="Thông tin chung">
             <DetailField mode="view" label="Mã lớp" value={record.code} />
             <DetailField mode="view" label="Mã cũ (Sheet)" value={record.legacy_ref ?? ''} />
             <DetailField
@@ -228,7 +234,7 @@ function ClassView({ record }: { record: ClassRecord }) {
             />
             <DetailField mode="view" label="Nhóm lớp" value={record.group_name ?? ''} />
           </DetailSection>
-          <DetailSection title="Lịch và sĩ số">
+          <DetailSection title="Thời gian và địa điểm">
             <DetailField mode="view" label="Khai giảng" value={formatDate(record.start_date)} />
             <DetailField
               mode="view"
@@ -255,75 +261,143 @@ function ClassView({ record }: { record: ClassRecord }) {
           </DetailSection>
         </div>
 
-        <DetailSection title="Thời khoá biểu">
-          {record.slots.length === 0 ? (
-            <p className="py-2 text-fg-muted">Chưa có khung giờ.</p>
-          ) : (
-            <ul className="flex flex-col gap-1 py-1">
-              {record.slots.map((s) => (
-                <li key={s.id} className="flex flex-wrap gap-x-3">
-                  <span className="font-medium">
-                    {WEEKDAY_LABEL[s.weekday]} {timeText(s.start_time)}–{timeText(s.end_time)}
-                  </span>
-                  <span className="text-fg-muted">
-                    {[
-                      s.teacher_name && `GV ${s.teacher_name}`,
-                      s.assistant_name && `TG ${s.assistant_name}`,
-                      s.room_name,
-                      s.repeat_weeks > 1 ? `lặp mỗi ${s.repeat_weeks} tuần` : null,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
+        <DetailSection title="Time Table">
+          <Tabs
+            label="Time Table theo thứ"
+            value={dayTab}
+            onChange={setDayTab}
+            items={[1, 2, 3, 4, 5, 6, 7].map((day) => {
+              const slots = record.slots.filter((x) => x.weekday === day);
+              return {
+                value: String(day),
+                label: WEEKDAY_LABEL[day] ?? '',
+                count: slots.length > 0 ? slots.length : undefined,
+                content:
+                  slots.length === 0 ? (
+                    <p className="py-2 text-fg-muted">{WEEKDAY_LABEL[day]} không có khung giờ.</p>
+                  ) : (
+                    <LineTable
+                      caption={`Khung giờ ${WEEKDAY_LABEL[day]}`}
+                      rows={slots}
+                      rowKey={(x) => x.id}
+                      columns={[
+                        {
+                          key: 'time',
+                          header: 'Giờ',
+                          cell: (x) => `${timeText(x.start_time)}–${timeText(x.end_time)}`,
+                        },
+                        { key: 'teacher', header: 'Giáo viên', cell: (x) => x.teacher_name ?? '—' },
+                        {
+                          key: 'assistant',
+                          header: 'Trợ giảng',
+                          cell: (x) => x.assistant_name ?? '—',
+                        },
+                        { key: 'room', header: 'Phòng', cell: (x) => x.room_name ?? '—' },
+                        {
+                          key: 'repeat',
+                          header: 'Cách lặp',
+                          cell: (x) =>
+                            x.repeat_weeks > 1 ? `Mỗi ${x.repeat_weeks} tuần` : 'Hàng tuần',
+                        },
+                        {
+                          key: 'first',
+                          header: 'Buổi đầu tiên',
+                          cell: (x) => formatDate(x.first_date),
+                        },
+                      ]}
+                    />
+                  ),
+              };
+            })}
+          />
         </DetailSection>
 
-        <DetailSection title={`Học sinh (${record.students.length})`}>
-          {record.students.length === 0 ? (
-            <p className="py-2 text-fg-muted">Chưa có học sinh xếp vào lớp.</p>
-          ) : (
-            <ul className="flex flex-col divide-y divide-border">
-              {record.students.map((s) => (
-                <li key={s.enrollment_id} className="flex flex-wrap justify-between gap-2 py-1.5">
-                  <span>
-                    <span className="font-medium">{s.full_name}</span>{' '}
-                    <span className="text-caption text-fg-muted">{s.student_code}</span>
-                  </span>
-                  <span className="text-caption text-fg-muted">
-                    Vào lớp {formatDate(s.start_date)} · còn {s.hours_left} giờ
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </DetailSection>
-
-        <DetailSection title="Buổi học">
-          <p className="py-1 text-fg-muted">
-            {counts.length === 0
-              ? 'Chưa có buổi (sinh khi lớp được duyệt).'
-              : counts.map(([k, n]) => `${SESSION_STATUS_LABEL[k] ?? k}: ${n}`).join(' · ')}
-          </p>
-          {record.sessions.length > 0 && (
-            <ul className="flex max-h-72 flex-col divide-y divide-border overflow-y-auto">
-              {record.sessions.map((s) => (
-                <li key={s.id} className="flex flex-wrap justify-between gap-2 py-1.5">
-                  <span>
-                    {s.session_no ? `Buổi ${s.session_no} · ` : ''}
-                    {formatDate(s.session_date)} {timeText(s.start_time)}–{timeText(s.end_time)}
-                  </span>
-                  <span className="text-caption text-fg-muted">
-                    {SESSION_STATUS_LABEL[s.status_code] ?? s.status_code}
-                    {s.teacher_name ? ` · ${s.teacher_name}` : ''}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </DetailSection>
+        <div ref={detailRef}>
+          <Tabs
+            label="Học sinh và buổi học của lớp"
+            value={listTab}
+            onChange={setListTab}
+            items={[
+              {
+                value: 'hoc-sinh',
+                label: 'Học sinh',
+                count: record.students.length,
+                content:
+                  record.students.length === 0 ? (
+                    <p className="py-2 text-fg-muted">Chưa có học sinh xếp vào lớp.</p>
+                  ) : (
+                    <LineTable
+                      caption="Học sinh của lớp"
+                      rows={record.students}
+                      rowKey={(x) => x.enrollment_id}
+                      columns={[
+                        {
+                          key: 'name',
+                          header: 'Học sinh',
+                          cell: (x) => <b className="font-medium">{x.full_name}</b>,
+                        },
+                        { key: 'code', header: 'Mã học sinh', cell: (x) => x.student_code },
+                        { key: 'enr', header: 'Ghi danh', cell: (x) => x.enrollment_code },
+                        { key: 'start', header: 'Vào lớp', cell: (x) => formatDate(x.start_date) },
+                        {
+                          key: 'hours',
+                          header: 'Giờ còn lại',
+                          align: 'right',
+                          cell: (x) => x.hours_left,
+                        },
+                      ]}
+                    />
+                  ),
+              },
+              {
+                value: 'buoi-hoc',
+                label: 'Buổi học',
+                count: record.sessions.length,
+                content: (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-fg-muted">
+                      {counts.length === 0
+                        ? 'Chưa có buổi (sinh khi lớp được duyệt).'
+                        : counts
+                            .map(([k, n]) => `${SESSION_STATUS_LABEL[k] ?? k}: ${n}`)
+                            .join(' · ')}
+                    </p>
+                    {record.sessions.length > 0 && (
+                      <LineTable
+                        caption="Buổi học của lớp"
+                        rows={record.sessions}
+                        rowKey={(x) => x.id}
+                        columns={[
+                          {
+                            key: 'no',
+                            header: 'Buổi',
+                            cell: (x) => (x.session_no ? `Buổi ${x.session_no}` : '—'),
+                          },
+                          { key: 'date', header: 'Ngày', cell: (x) => formatDate(x.session_date) },
+                          {
+                            key: 'time',
+                            header: 'Giờ',
+                            cell: (x) => `${timeText(x.start_time)}–${timeText(x.end_time)}`,
+                          },
+                          {
+                            key: 'teacher',
+                            header: 'Giáo viên',
+                            cell: (x) => x.teacher_name ?? '—',
+                          },
+                          {
+                            key: 'status',
+                            header: 'Tình trạng',
+                            cell: (x) => SESSION_STATUS_LABEL[x.status_code] ?? x.status_code,
+                          },
+                        ]}
+                      />
+                    )}
+                  </div>
+                ),
+              },
+            ]}
+          />
+        </div>
       </RecordDetail>
 
       {pending?.dialog === 'confirm' && (
