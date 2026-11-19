@@ -250,3 +250,21 @@ describe('R-V2-12: đơn Đã trình chờ Trưởng cơ sở (Q-117)', () => {
     expect(waitingApproverName({ approval_route: null, approver_name: null })).toBeNull();
   });
 });
+
+describe('Dòng chặn trình dùng chung cho phiếu thu (C16 cụm 1)', () => {
+  const base = {
+    status_code: 'NHAP' as const,
+    expected_route: 'QUAN_LY' as const,
+    expected_approver_can_approve: false,
+    expected_approver_name: 'Lê Văn Phong',
+    expected_block: 'NGUOI_DUYET_THIEU_QUYEN' as const,
+    created_by_name: 'Người lập',
+  };
+  it('gọi đúng tên loại chứng từ khi người duyệt thiếu quyền', () => {
+    expect(approverWarning(base)).toContain('quyền Duyệt đơn hàng');
+    expect(approverWarning(base, 'phiếu thu')).toContain('quyền Duyệt phiếu thu');
+  });
+  it('dòng cạnh nút Trình của phiếu thu nêu phiếu thu', () => {
+    expect(approverLine(base, true, 'phiếu thu')).toContain('phiếu thu');
+  });
+});
