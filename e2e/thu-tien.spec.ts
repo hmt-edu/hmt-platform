@@ -192,19 +192,24 @@ test('TC-09: Kế toán hoàn tác khoản tiền, khoản đã hoàn tác khôn
     await enterAsAdmin(page, 'ketoan.cs5');
     await page.goto('/crm/khoan-tien-vao');
     await search(page, `${m}-O1`);
-    const reverseButtons = page.getByRole('button', { name: 'Hoàn tác khoản tiền' });
-    await expect(reverseButtons.first()).toBeVisible();
-    const buttonsBefore = await reverseButtons.count();
-    const row = page.getByRole('row', { name: new RegExp(`KTV-${m}-2`) });
+    // Không đếm nút trên cả danh sách: lúc trang vừa mở, danh sách chưa lọc còn lẫn khoản của các bài chạy song song (thu nợ đầu kỳ, phiếu thu…),
+    // đếm trước khi bộ lọc có hiệu lực làm số nút lệch (gốc lỗi chập chờn 19/11). Chỉ kiểm đúng dòng của bài này.
+    const origin = new RegExp(`^KTV-${m}-2\\b`);
+    const row = page.getByRole('row', { name: origin });
     await expect(row).toHaveCount(1);
-    await row.getByRole('button', { name: 'Hoàn tác khoản tiền' }).click();
+    const reverseButton = row.getByRole('button', { name: 'Hoàn tác khoản tiền' });
+    await expect(reverseButton).toHaveCount(1);
+    await reverseButton.click();
     const dialog = page.getByRole('alertdialog', { name: 'Hoàn tác khoản tiền' });
     await pickOption(page, dialog.getByRole('combobox'), 'Nhập sai số tiền');
     await dialog.getByRole('button', { name: 'Hoàn tác', exact: true }).click();
     await expect(page.getByText('Đã hoàn tác khoản tiền.').first()).toBeVisible();
     // Khoản âm mới trỏ về khoản gốc; khoản gốc không còn nút Hoàn tác (không đảo hai lần).
     await expect(page.getByText(`Hoàn tác của KTV-${m}-2`).first()).toBeVisible();
-    await expect(reverseButtons).toHaveCount(buttonsBefore - 1);
+    await expect(page.getByRole('row', { name: origin })).toHaveCount(1);
+    await expect(
+      page.getByRole('row', { name: origin }).getByRole('button', { name: 'Hoàn tác khoản tiền' }),
+    ).toHaveCount(0);
   } finally {
     await flag(before);
   }
