@@ -48,3 +48,8 @@ Thẻ D21, 18/11/2026. Quét `raise_error` trong các migration 212, 231, 232, 2
 ## LOP-09 Học sinh của lớp (migration 477)
 
 - `app.list_class_students(lớp, bộ lọc, sắp xếp, số dòng, bỏ qua)`: mọi dòng xếp lớp (đang học và đã rời), phân trang máy chủ, quyền như `get_class_record`. Chỉ mục `enrollment_class_class_idx (class_id, start_date)`. Màn `/crm/lop/:id/hoc-sinh`. «Xuất» chưa làm: ma trận chưa có quyền Xuất cho phân hệ Lớp.
+
+## TC-15 Đối soát thu tiền (migration 478)
+
+- Danh mục mới `RECEIVING_ACCOUNT` «Tài khoản nhận tiền» (Admin sửa ở QT-07). Cột mới của `app.receipt`: `receiving_account_code`, `bank_matched_at`, `bank_matched_by`.
+- `app.list_receipt_reconciliation(bộ lọc, sắp xếp, số dòng, bỏ qua)`: phiếu thu Đã duyệt + tổng (tổng thu, đã khớp, chưa khớp, số phiếu chưa khớp). `app.mark_receipts_bank_matched(ids, đã khớp, tài khoản)`: đánh dấu, bỏ đánh dấu, gán tài khoản nhận. Chỉ Kế toán và Admin (Xem Kế toán và Sửa phiếu thu cùng phạm vi toàn hệ thống). Lỗi: `HMT_KHONG_CO_QUYEN`, `HMT_DOI_SOAT_CHUA_CHON`, `HMT_DOI_SOAT_QUA_NHIEU`, `HMT_TAI_KHOAN_NHAN_KHONG_CO`, `HMT_DOI_SOAT_PHIEU_CHUA_DUYET`. Lịch sử thay đổi do trigger audit chuẩn của bảng phiếu thu.

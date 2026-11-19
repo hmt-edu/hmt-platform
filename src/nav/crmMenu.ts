@@ -154,7 +154,8 @@ export const CRM_MENU: MenuGroup[] = [
         code: 'TC-15',
         label: 'Đối soát thu tiền',
         slug: 'doi-soat-thu-tien',
-        requires: can('ACCOUNTING', 'DUYET'),
+        // Kế toán và Admin (cùng có Kế toán · Xuất; Trưởng cơ sở chỉ Xem). Máy chủ kiểm lại phạm vi toàn hệ thống.
+        requires: can('ACCOUNTING', 'XUAT'),
         stage: GD1,
       },
     ],
