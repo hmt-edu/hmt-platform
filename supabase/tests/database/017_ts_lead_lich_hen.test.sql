@@ -139,8 +139,14 @@ select is((select count(*)::int from app.parent where id = (select id from other
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select is(pg_temp.err($$select app.create_lead(pg_temp.lead_data('0900000001'))$$), 'HMT_SDT_TRUNG', 'Trùng với lead cơ sở khác: vẫn cảnh báo');
 select is((select array[visible::text, coalesce(label, 'ẨN')] from app.find_duplicate_contacts('0900000001') order by code limit 1),
-          array['false', 'ẨN'], 'Hồ sơ cơ sở khác: chỉ lộ mã và cơ sở, không lộ tên');
+          array['false', 'ẨN'], 'Hồ sơ cơ sở khác: không lộ tên');
+-- E67 (KHẨN): hồ sơ ngoài phạm vi cũng KHÔNG lộ id, mã, cơ sở; người xem chỉ biết «đã có trong hệ thống».
+select is((select count(*)::int from app.find_duplicate_contacts('0900000001') where not visible), 2, 'E67: hai lead cơ sở khác báo là ngoài phạm vi (visible = false)');
+select is((select count(*)::int from app.find_duplicate_contacts('0900000001') where not visible and (id is not null or code is not null or branch_code is not null or label is not null)), 0,
+          'E67: hồ sơ ngoài phạm vi không lộ id, mã, tên, cơ sở');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is((select count(*)::int from app.find_duplicate_contacts('0900000001') where visible and id is not null and code is not null and branch_code is not null), 2,
+          'E67: hồ sơ trong phạm vi vẫn trả đủ id, mã, cơ sở');
 
 -- Giao việc khi tạo: giao cho người khác cần quyền Giao việc (Tuyển sinh có từ ma trận phiên bản 3).
 select is(pg_temp.err(format($f$select app.create_lead(pg_temp.lead_data('0900000019', '{"owner_id": "%s"}'))$f$, pg_temp.uid('sales1b'))),

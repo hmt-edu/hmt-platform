@@ -2,7 +2,7 @@
 // Mã cấp tự động khi lưu (AS-01); hạn phản hồi, hạn xử lý tính ở máy chủ lúc tạo (AS-07).
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
@@ -58,13 +58,19 @@ export function TicketCreatePage() {
   const navigate = useNavigate();
   const catalogs = useLeadCatalogs();
   const categories = useTicketCategories();
-  const [draft, setDraft] = useState<TicketDraft>(EMPTY_TICKET_DRAFT);
+  // Mở từ nút «Tạo ticket hoàn tiền» của Đơn hàng (BH05_huy_chan): điền sẵn phụ huynh (tìm theo mã) và nhóm Hoàn tiền; người dùng sửa được.
+  const [query] = useSearchParams();
+  const [draft, setDraft] = useState<TicketDraft>(() => ({
+    ...EMPTY_TICKET_DRAFT,
+    parentId: query.get('phu-huynh') ?? '',
+    groupCode: query.get('nhom') ?? '',
+  }));
   const [errors, setErrors] = useState<ReturnType<typeof validateTicketDraft>>({});
   const [saving, setSaving] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
   // Id ticket vừa tạo: có thì bỏ cờ "chưa lưu" rồi mới chuyển trang (không hỏi Rời trang).
   const [createdId, setCreatedId] = useState<string | null>(null);
-  const [parentQuery, setParentQuery] = useState('');
+  const [parentQuery, setParentQuery] = useState(query.get('ma') ?? '');
   const [studentQuery, setStudentQuery] = useState('');
   const parentQ = useDebounced(parentQuery).trim();
   const studentQ = useDebounced(studentQuery).trim();

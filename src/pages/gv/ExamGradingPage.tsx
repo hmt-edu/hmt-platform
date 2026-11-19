@@ -111,7 +111,15 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
         toast({ tone: 'success', title: 'Đã lưu điểm kiểm tra' });
         if (next !== undefined) setSelected(next);
       },
-      onError: (error) => setSaveError(errorOf(error).message),
+      onError: (error) => {
+        const e = errorOf(error);
+        // Canvas GV-07K (loi_luu): lỗi mạng báo rõ dữ liệu vừa nhập vẫn còn trên màn hình.
+        setSaveError(
+          e.code === 'HMT_MANG'
+            ? 'Mạng bị gián đoạn. Dữ liệu em vừa nhập vẫn còn trên màn hình.'
+            : e.message,
+        );
+      },
     });
   }
 
@@ -178,7 +186,10 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
       {done && (
         <Alert tone="info" title="Buổi đã Hoàn thành: giáo viên không sửa được điểm.">
           Cần sửa thì tạo ticket gửi quản lý đào tạo; chỉ quản lý đào tạo sửa điểm và phải ghi lý
-          do.
+          do.{' '}
+          <ButtonLink to="/gv/ticket/tao" size="sm">
+            Tạo ticket sửa điểm
+          </ButtonLink>
         </Alert>
       )}
       {unmarked && !done && (

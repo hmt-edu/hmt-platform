@@ -1,12 +1,12 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 157 có màn, 10 chỉ có DB (chưa thấy màn), 30 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 158 có màn, 10 chỉ có DB (chưa thấy màn), 29 chưa có.**
 
 ## Số theo cổng
 
 | Cổng | Tổng | Có màn | Chỉ có DB | Chưa có |
 |---|---|---|---|---|
-| CRM (còn lại) | 155 | 138 | 3 | 14 |
+| CRM (còn lại) | 155 | 139 | 3 | 13 |
 | Giáo viên (GV) | 18 | 16 | 0 | 2 |
 | Học sinh (HT) | 9 | 0 | 0 | 9 |
 | Phụ huynh (PH) | 5 | 0 | 0 | 5 |
@@ -71,7 +71,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TS-09 | Chuyển giai đoạn cơ hội (chọn nhóm con, lý do) | C | **Có màn** `src/pages/co-hoi/OpportunityListPage.tsx` | có (25 khung) | Đúng | co-hoi.spec.ts | Code ? |
 | TS-10 | Gộp lead / cơ hội trùng | C | **Có màn** `src/features/merge/MergeDialog.tsx` | có (14 khung) | Đúng | gop-trung.spec.ts | Code ? |
 | TS-11 | Lịch hẹn (danh sách + lịch tuần) | A | **Có màn** `/crm/lich-hen` | có (15 khung) | Đúng | lich-hen.spec.ts | Code ? |
-| TS-12 | Việc tuyển sinh hôm nay (lọc sẵn) | C | **Chưa có** | không có khung | chưa kiểm | trang-chu.spec.ts | Code ? |
+| TS-12 | Việc tuyển sinh hôm nay (lọc sẵn) | C | **Có màn** `src/pages/home/CrmHome.tsx` | không có khung | chưa kiểm | trang-chu.spec.ts | Code ? |
 | TS-13 | Tạo / dời lịch hẹn | B | **Có màn** `src/features/appointments/AppointmentDialog.tsx` | có (5 khung) | Đúng | lead-ban-ghi.spec.ts, so-sanh.spec.ts | Code ? |
 | TS-14 | Cảnh báo trùng khách hàng | C | **Có màn** `src/ui/Dialogs.tsx` | không có khung | chưa kiểm | lead-ban-ghi.spec.ts, so-sanh.spec.ts | Code ? |
 | TS-15 | Tạo phiếu kiểm tra từ cơ hội (gồm xếp lịch, đổi lịch) | B | **Có màn** `src/pages/phieu/CreateTestDialog.tsx` | có (9 khung) | Gần đúng | phieu.spec.ts | Code ? |

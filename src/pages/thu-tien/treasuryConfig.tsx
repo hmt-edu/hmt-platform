@@ -110,7 +110,9 @@ export function buildMoneyInConfig(
           r.amount < 0 ? (
             <Tag tone="warning">{`Hoàn tác của ${r.reversal_of_code ?? ''}`.trim()}</Tag>
           ) : r.is_reversed ? (
-            <Tag tone="neutral">Đã hoàn tác</Tag>
+            <Tag tone="neutral">
+              {r.reversed_by_code ? `Đã hoàn tác bằng ${r.reversed_by_code}` : 'Đã hoàn tác'}
+            </Tag>
           ) : (
             ''
           ),
