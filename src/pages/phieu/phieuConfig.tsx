@@ -69,7 +69,8 @@ export function buildTaskConfig(access: AccessView): ListConfig<TaskRow> {
       {
         key: 'next',
         label: 'Người duyệt kế tiếp',
-        render: (r) => (r.next_role ? (LEVEL_ROLE_LABEL[r.next_role] ?? r.next_role) : MUTED),
+        render: (r) =>
+          r.next_approver ?? (r.next_role ? (LEVEL_ROLE_LABEL[r.next_role] ?? r.next_role) : MUTED),
       },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
       {
