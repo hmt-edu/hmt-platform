@@ -72,9 +72,9 @@ test.beforeAll(async () => {
     const created = await db.query<{ id: string }>(
       `select app.create_class(jsonb_build_object('branch_id', ${branch},
          'year_code', '2627', 'subject_code', 'DAI', 'grade_code', 'K09', 'class_type_code', 'CB', 'level_code', 'A', 'max_students', 0,
-         'start_date', (date_trunc('week', current_date) + interval '14 days')::date, 'total_sessions', 4,
+         'start_date', (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days')::date, 'total_sessions', 4,
          'slots', jsonb_build_array(jsonb_build_object('weekday', 1, 'start_time', '18:00', 'end_time', '19:30', 'repeat_weeks', 1,
-           'first_date', (date_trunc('week', current_date) + interval '14 days')::date, 'teacher_id', $1::uuid)))) ->> 'id' as id`,
+           'first_date', (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days')::date, 'teacher_id', $1::uuid)))) ->> 'id' as id`,
       [gv],
     );
     classId = created.rows[0]?.id ?? '';
@@ -102,7 +102,7 @@ test.beforeAll(async () => {
       [enrollmentId, START_HOURS],
     );
     await db.query(
-      `insert into app.enrollment_class (enrollment_id, class_id, branch_id, start_date) values ($1, $2, ${branch}, current_date - 30)`,
+      `insert into app.enrollment_class (enrollment_id, class_id, branch_id, start_date) values ($1, $2, ${branch}, (now() at time zone 'Asia/Ho_Chi_Minh')::date - 30)`,
       [enrollmentId, classId],
     );
     // Ghi danh có từ 40 ngày trước: ghi danh sinh sau ngày buổi thì không lọt vào danh sách (R-GIO-02).
@@ -115,7 +115,7 @@ test.beforeAll(async () => {
     await db.query("set local session_replication_role = 'origin'");
     // Dời buổi 1 về hôm qua để Done được (buổi chưa diễn ra thì chưa Done).
     await db.query(
-      `update app.class_session set session_date = current_date - 1 where class_id = $1 and session_no = 1`,
+      `update app.class_session set session_date = (now() at time zone 'Asia/Ho_Chi_Minh')::date - 1 where class_id = $1 and session_no = 1`,
       [classId],
     );
     const list = await db.query<{ id: string }>(

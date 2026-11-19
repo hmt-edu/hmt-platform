@@ -33,8 +33,8 @@ export type TaskOptions = {
   }[];
 };
 
-/** Loại phiếu nghiệp vụ tạo bằng hộp thoại chung: Bảo lưu (kèm gia hạn, tiếp tục học), Chuyển lớp, Dừng học. */
-export type BusinessType = 'BAO_LUU' | 'CHUYEN_LOP' | 'DUNG_HOC';
+/** Loại phiếu nghiệp vụ tạo bằng hộp thoại chung: Bảo lưu (kèm gia hạn, tiếp tục học), Chuyển lớp, Dừng học, Chuyển phí. */
+export type BusinessType = 'BAO_LUU' | 'CHUYEN_LOP' | 'DUNG_HOC' | 'CHUYEN_PHI';
 
 /** Loại chuyển lớp chọn được ở phiếu; Chuyển cơ sở chưa làm (cần quản lý hai cơ sở duyệt, R-CS-07). */
 export const TRANSFER_KINDS = [
@@ -84,8 +84,8 @@ export function validateBusinessDraft(
   else if (draft.enrollmentId === '') e.enrollmentId = 'Chọn ghi danh.';
   if (draft.reasonCode === '') e.reasonCode = 'Chọn lý do.';
   if (draft.reason.trim() === '') e.reason = 'Nhập lý do của phiếu.';
-  if (type === 'DUNG_HOC') {
-    // Dừng học: chỉ cần ghi danh, lý do (danh mục) và ghi chú; luật chặn ở hàm áp dụng (R-GD-16).
+  if (type === 'DUNG_HOC' || type === 'CHUYEN_PHI') {
+    // Dừng học, Chuyển phí: chỉ cần ghi danh, lý do (danh mục) và ghi chú; luật chặn ở hàm áp dụng (R-GD-16, R-GD-10).
   } else if (type === 'BAO_LUU') {
     const m = Number(draft.months);
     if (draft.holdMode !== 'TIEP_TUC' && (!Number.isInteger(m) || m < 1))
@@ -107,7 +107,7 @@ export function buildBusinessPayload(
   draft: BusinessDraft,
   holdId: string | null = null,
 ) {
-  if (type === 'DUNG_HOC')
+  if (type === 'DUNG_HOC' || type === 'CHUYEN_PHI')
     return {
       enrollment_id: draft.enrollmentId,
       reason_code: draft.reasonCode,

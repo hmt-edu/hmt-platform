@@ -157,3 +157,28 @@ describe('Phiếu Dừng học (CS-14, R-GD-16)', () => {
     });
   });
 });
+
+describe('Phiếu Chuyển phí (CS-10, R-GD-10 mục 9)', () => {
+  const draft = {
+    ...EMPTY_BUSINESS_DRAFT,
+    enrollmentId: 'e1',
+    reasonCode: 'DOI_LICH_BAN',
+    reason: 'Chuyển sang môn khác',
+  };
+  it('chỉ cần ghi danh, lý do danh mục và lý do chữ (như Dừng học), không đòi lớp', () => {
+    expect(validateBusinessDraft('CHUYEN_PHI', draft, true)).toEqual({});
+    expect(
+      validateBusinessDraft('CHUYEN_PHI', { ...draft, enrollmentId: '' }, true).enrollmentId,
+    ).toBe('Chọn ghi danh.');
+    expect(validateBusinessDraft('CHUYEN_PHI', draft, false).enrollmentId).toBe(
+      'Ticket chưa gắn học sinh nên chưa tạo phiếu này được.',
+    );
+  });
+  it('payload gửi ghi danh, lý do và ghi chú', () => {
+    expect(buildBusinessPayload('CHUYEN_PHI', draft)).toEqual({
+      enrollment_id: 'e1',
+      reason_code: 'DOI_LICH_BAN',
+      note: 'Chuyển sang môn khác',
+    });
+  });
+});

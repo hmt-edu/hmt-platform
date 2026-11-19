@@ -59,7 +59,7 @@ export function BusinessTaskDialog({
     ? []
     : type === 'BAO_LUU'
       ? holdEnrollmentChoices(data, draft.holdMode)
-      : type === 'DUNG_HOC'
+      : type === 'DUNG_HOC' || type === 'CHUYEN_PHI'
         ? data.enrollments
         : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU');
   const hold = data && type === 'BAO_LUU' ? runningHold(data, draft.enrollmentId) : null;
@@ -136,7 +136,13 @@ export function BusinessTaskDialog({
       {errors.reasonCode && (
         <p className="text-caption text-on-danger-subtle">{errors.reasonCode}</p>
       )}
-      {type === 'DUNG_HOC' ? (
+      {type === 'CHUYEN_PHI' ? (
+        <p className="text-caption text-fg-muted">
+          Chuyển phí: ghi danh cũ dừng; giờ mua còn lại × giá sau chiết khấu (chụp lúc mua) giữ
+          thành số dư khách hàng, không tự hoàn tiền; giờ tặng còn lại bị huỷ. Sale lập đơn mới cho
+          khách sau khi phiếu được thực hiện. Cần quản lý cơ sở rồi kế toán duyệt.
+        </p>
+      ) : type === 'DUNG_HOC' ? (
         <p className="text-caption text-fg-muted">
           Dừng học: giờ còn lại giữ thành số dư khách hàng (giờ còn lại × giá sau chiết khấu, không
           trừ phí); giờ tặng còn lại bị huỷ. Muốn hoàn tiền thì tạo phiếu Hoàn học phí. Cần quản lý
