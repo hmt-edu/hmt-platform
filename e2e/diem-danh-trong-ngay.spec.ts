@@ -77,6 +77,14 @@ test.afterAll(async () => {
 test('BUOI-15: buổi hôm nay của lớp hiện ở danh sách, chưa có danh sách; lọc theo tình trạng ghi', async ({
   page,
 }) => {
+  // Chạy qua nửa đêm giờ Việt Nam (17:00 UTC) thì ngày dựng lúc beforeAll đã thành «hôm qua»: đưa buổi đầu của lớp về hôm nay (giờ Việt Nam) ngay trước khi kiểm.
+  await withDb((db) =>
+    db.query(
+      `update app.class_session s set session_date = (now() at time zone 'Asia/Ho_Chi_Minh')::date
+         from app.class c where s.class_id = c.id and c.code = $1 and s.session_no = 1`,
+      [classCode],
+    ),
+  );
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/diem-danh-trong-ngay');
   await expect(page.getByRole('heading', { level: 1, name: 'Điểm danh trong ngày' })).toBeVisible();
