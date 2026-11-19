@@ -16,6 +16,8 @@ export type MoneyInRow = {
   reversal_of_code: string | null;
   /** Khoản gốc đã bị hoàn tác (không hoàn tác lần hai). */
   is_reversed: boolean;
+  /** Mã khoản đảo đã hoàn tác khoản này (migration 438). */
+  reversed_by_code?: string | null;
   reason_code: string | null;
 };
 export type MoneyInPage = { total: number; sum: number; rows: MoneyInRow[] };
