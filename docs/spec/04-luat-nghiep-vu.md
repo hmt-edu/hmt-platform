@@ -258,6 +258,7 @@ Tên tham số là tên đã đặt trong repo (GĐ0 bước 2, bước 3). Tham
 | `complaint_parent_confirm_days` **(12/10)** | 3 ngày | R-CS-14 |
 | `login_lock_after_failures`, `login_lock_minutes` | 10 lần, 15 phút | R-HT-03 |
 | `staff_idle_logout_minutes`, `teacher_idle_logout_minutes`, `student_idle_logout_minutes` | 60 phút, 7 ngày, 7 ngày (lưu bằng phút: 10.080) | R-HT-03 |
+| `first_password_change_required_student`, `first_password_change_required_staff` | Tắt, Bật (E31, anh Trường chốt 19/11/2026: học sinh không bắt đổi mật khẩu lần đầu, tự đổi sau; nhân viên giữ như cũ) | R-HT-03, CHUNG-07 |
 
 ### Đối chiếu tên tham số: tài liệu gốc → repo
 

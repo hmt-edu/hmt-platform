@@ -25,7 +25,7 @@ test('GD-05: CSKH không có nút Điều chỉnh giờ (thiếu quyền Ghi dan
   await expect(page.getByRole('button', { name: 'Điều chỉnh giờ' })).toHaveCount(0);
 });
 
-test('GD-05: Trưởng cơ sở bớt quá quỹ giờ thì bị chặn; thêm giờ kèm lý do thì sổ giờ có dòng Điều chỉnh', async ({
+test('GD-05 (G2): Trưởng cơ sở bớt quá trần thì bị chặn, cộng giờ cần Kế toán, bớt giờ kèm lý do thì sổ giờ có dòng Điều chỉnh', async ({
   page,
 }) => {
   await enterAs(page, 'truongcs.cs5');
@@ -42,8 +42,16 @@ test('GD-05: Trưởng cơ sở bớt quá quỹ giờ thì bị chặn; thêm g
   );
   await expect(save).toBeEnabled();
   await save.click();
-  await expect(dialog.getByText('Quỹ giờ của ghi danh không đủ để bớt số giờ này.')).toBeVisible();
+  // G2 (b): trần mỗi lần là tham số hours_adjust_max_per_call (mặc định 20 giờ), kiểm trước quỹ.
+  await expect(dialog.getByText(/Mỗi lần chỉ điều chỉnh tối đa/)).toBeVisible();
+  // G2 (c): cộng giờ cần Kế toán · Duyệt, Trưởng cơ sở bị chặn.
   await dialog.getByLabel(/Số giờ/).fill('2');
+  await save.click();
+  await expect(
+    dialog.getByText('Bạn không có quyền thực hiện thao tác này ở cơ sở này.'),
+  ).toBeVisible();
+  // Bớt giờ trong trần và trong quỹ thì được.
+  await dialog.getByLabel(/Số giờ/).fill('-2');
   await save.click();
   // Thông báo hiện cả ở khung toast và vùng đọc màn hình của Radix (chữ khớp 2 phần tử, strict mode): lấy phần tử đầu.
   await expect(page.getByText(/Đã điều chỉnh giờ/).first()).toBeVisible();
