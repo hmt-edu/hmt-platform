@@ -1,4 +1,4 @@
--- Code B (19/11/2026), thẻ B50 (rà UI/UX Bán hàng và Thu chi), migration 561: danh sách đơn hàng app.list_orders trả thêm paid_amount và app.list_receipts trả thêm receiver_name (tiền đã thu theo khoản tiền vào) cho cột «Đã thu», «Còn phải thu», «Thu tiền» của canvas BH06.
+-- Code B (19/11/2026), thẻ B50 (rà UI/UX Bán hàng và Thu chi), migration 563: danh sách đơn hàng app.list_orders trả thêm paid_amount và app.list_receipts trả thêm receiver_name (tiền đã thu theo khoản tiền vào) cho cột «Đã thu», «Còn phải thu», «Thu tiền» của canvas BH06.
 -- Chỉ thêm một khoá vào JSON, mọi lọc, quyền, phân trang giữ nguyên bản của migration 422 (C28). Luật R-TIEN-01 (tiền thu qua khoản tiền vào), R-TIEN-26 (khoản âm hoàn tác tính vào).
 -- Chỉ mục: tra money_in theo order_id (chỉ mục sẵn có của khoản tiền vào); chạy trên tối đa 100 dòng mỗi trang.
 select set_config('hmt.migration', 'on', false);

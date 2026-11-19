@@ -18,7 +18,7 @@ export type OrderRow = {
   student_names: string[];
   line_count: number;
   total_amount: number;
-  /** Tiền đã thu của đơn (khoản tiền vào, kể cả khoản âm hoàn tác); migration 561. */
+  /** Tiền đã thu của đơn (khoản tiền vào, kể cả khoản âm hoàn tác); migration 563. */
   paid_amount?: number;
   needs_acknowledgement: boolean;
   submitted_at: string | null;

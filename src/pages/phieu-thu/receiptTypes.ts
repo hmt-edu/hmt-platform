@@ -22,7 +22,7 @@ export type ReceiptRow = {
   created_at: string;
   created_by_name: string | null;
   approver_name: string | null;
-  /** Người nhận tiền (canvas TC01); migration 561. */
+  /** Người nhận tiền (canvas TC01); migration 563. */
   receiver_name?: string | null;
   submitted_at: string | null;
 };

@@ -204,10 +204,10 @@ select is((select sum(a.amount)::bigint from app.money_in_allocation a join app.
           'Tiền chia về dòng đúng tổng khoản tiền vào');
 select is(pg_temp.err($$select app.approve_receipt_accounting(pg_temp.r('p1'))$$), 'HMT_SAI_TRANG_THAI', 'Duyệt lần hai thì chặn (không sinh khoản tiền vào thứ hai)');
 select is((select count(*)::int from app.money_in where receipt_id = pg_temp.r('p1')), 1, 'Chỉ một khoản tiền vào cho một phiếu');
--- Danh sách phiếu thu (migration 561, canvas TC01): mỗi dòng có receiver_name (người nhận tiền).
+-- Danh sách phiếu thu (migration 563, canvas TC01): mỗi dòng có receiver_name (người nhận tiền).
 select ok((select r ->> 'receiver_name' from jsonb_array_elements(app.list_receipts(jsonb_build_object('q', (select code from app.receipt where id = pg_temp.r('p1'))) ) -> 'rows') r) is not null,
           'Danh sách phiếu thu trả receiver_name (người nhận tiền)');
--- Danh sách đơn hàng (migration 561, canvas BH06): mỗi dòng có paid_amount = tiền đã thu của đơn.
+-- Danh sách đơn hàng (migration 563, canvas BH06): mỗi dòng có paid_amount = tiền đã thu của đơn.
 select is((select (r ->> 'paid_amount')::bigint from jsonb_array_elements(app.list_orders(jsonb_build_object('q', (select code from app.sales_order where id = pg_temp.o('d1'))) ) -> 'rows') r),
           1000000::bigint, 'Danh sách đơn hàng trả paid_amount = tiền đã thu (khớp order_paid_amount)');
 select is((select (r ->> 'paid_amount')::bigint from jsonb_array_elements(app.list_orders(jsonb_build_object('q', (select code from app.sales_order where id = pg_temp.o('d1'))) ) -> 'rows') r),
