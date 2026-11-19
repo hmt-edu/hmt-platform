@@ -39,6 +39,20 @@ const BANG_CHUNG: Record<string, string> = {
   'TC-05': 'src/pages/phieu-thu/ReceiptRecordPage.tsx',
   'TC-06': 'src/pages/phieu-thu/ReceiptRecordPage.tsx',
   'CS-13': 'src/pages/ticket/TicketRecordPage.tsx',
+  // F70 (19/11): màn đã làm nhưng script không thấy mã ở đầu file (nằm trong khuôn dùng chung hoặc chú thích giữa file).
+  'CHUNG-07': 'src/pages/auth/PasswordPages.tsx',
+  'CHUNG-18': 'src/pages/lead/LeadListPage.tsx',
+  'CHUNG-19': 'src/list/Favorites.tsx',
+  'CHUNG-22': 'src/ui/Chatter.tsx',
+  'TS-14': 'src/ui/Dialogs.tsx',
+  'GV-06': 'src/pages/gv/SessionContentPage.tsx',
+  'GV-07': 'src/pages/gv/ReviewGradingPage.tsx',
+  // Đã gộp vào trang chủ theo vai trò (CHUNG-14), không làm riêng (bản đồ màn hình K09b; anh duyệt 19/11 23:05).
+  'TS-12': 'src/pages/home/CrmHome.tsx',
+  // Đã gộp vào LOP-03 (26/10, R-LOP-10, R-LOP-11): cùng một màn Tạo/Sửa lớp.
+  'LOP-04': 'src/pages/lop/ClassFormPage.tsx',
+  'LOP-07': 'src/pages/lop/ClassFormPage.tsx',
+  'LOP-10': 'src/pages/lop/ClassFormPage.tsx',
 };
 
 // Các bảng rà tay đối chiếu canvas (mỗi dòng bảng nhắc mã màn và kết luận).
