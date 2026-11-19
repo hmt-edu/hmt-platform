@@ -11,14 +11,26 @@ import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import { Spinner } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
+import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import { useLeafRows } from '../lead/useLeadData';
 import { AssignUpsaleDialog } from './AssignUpsaleDialog';
 import { CreateUpsaleDialog } from './CreateUpsaleDialog';
 import { UpsaleCard } from './UpsaleCard';
 import { buildUpsaleConfig } from './upsaleConfig';
-import { EMPTY_UPSALE_STATE, buildUpsaleFilters } from './upsaleFilters';
+import {
+  EMPTY_UPSALE_STATE,
+  UPSALE_GROUP_FIELD_OF,
+  buildUpsaleFilters,
+  upsaleGroupFilter,
+} from './upsaleFilters';
 import type { UpsaleRow } from './upsaleTypes';
-import { useRefreshUpsale, useUpsaleBoard, useUpsalePage } from './useUpsaleData';
+import {
+  useRefreshUpsale,
+  useUpsaleBoard,
+  useUpsaleGroupCounts,
+  useUpsalePage,
+} from './useUpsaleData';
 
 export function UpsaleListPage() {
   const access = useAccess();
@@ -46,10 +58,51 @@ export function UpsaleListPage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useUpsalePage(filters, page * (pageSize ?? 0), pageSize);
+  // Group By ở máy chủ (K1_nhom): chọn trường nhóm thì danh sách thành cây nhóm có số đếm; nhóm lá tải dòng khi mở.
+  const groupFields = state.group.flatMap((k) =>
+    UPSALE_GROUP_FIELD_OF[k] ? [UPSALE_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const list = useUpsalePage(filters, page * (pageSize ?? 0), pageSize, !grouped);
+  const counts = useUpsaleGroupCounts(filters, groupFields, view === 'list');
+  const leaves = useLeafRows<UpsaleRow>(
+    filters,
+    undefined,
+    pageSize,
+    pagingKey,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_upsale_tickets_grouped',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<UpsaleRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            upsaleGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
   const board = useUpsaleBoard(filters, pageSize, view === 'kanban');
-  const rows: UpsaleRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  const pageRows: UpsaleRow[] = list.data?.rows ?? [];
+  const rows: UpsaleRow[] = useMemo(
+    () =>
+      grouping
+        ? grouping.tree
+            .flatMap((g) => (g.children.length > 0 ? g.children : [g]))
+            .flatMap((g) => g.rows)
+        : pageRows,
+    // pageRows suy ra từ list.data.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouping, list.data],
+  );
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
 
   return (
     <>
@@ -99,9 +152,14 @@ export function UpsaleListPage() {
         onRowClick={(r) => void navigate(`/crm/tai-tuc/${r.id}`)}
         rowKey={(r) => r.id}
         rowLabel={(r) => `${r.code} ${r.student_name}`}
-        loading={list.isPending || list.isPlaceholderData}
-        error={list.isError ? errorOf(list.error).message : null}
-        onRetry={() => void list.refetch()}
+        loading={activeQuery.isPending || activeQuery.isPlaceholderData}
+        error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+        onRetry={() => void activeQuery.refetch()}
+        groupTree={grouped ? grouping?.tree : undefined}
+        onGroupToggle={(key, open) => {
+          const spec = grouping?.specs.get(key);
+          if (spec) leaves.toggle(key, spec.filters, open);
+        }}
         onRefresh={() => void refreshData()}
         pager={{
           from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
