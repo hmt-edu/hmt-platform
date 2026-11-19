@@ -147,6 +147,11 @@ function Steps({ overview }: { overview: SessionOverview }) {
             {deadlineText(overview.deadline_at, new Date())}
           </p>
         )}
+        {!isDone && (
+          <p className="text-caption text-fg-muted">
+            Dấu Đúng hạn hoặc Trễ hạn tự đóng khi đủ bốn bước.
+          </p>
+        )}
       </section>
 
       <ol className="flex flex-col gap-2" aria-label="Các bước của buổi">
