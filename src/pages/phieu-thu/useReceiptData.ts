@@ -3,19 +3,33 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
+import type { GroupCounts } from '../lead/leadTypes';
 import type { ReceiptFilters } from './receiptFilters';
 import type { OrderPayment, ReceiptInput, ReceiptPage, ReceiptRecord } from './receiptTypes';
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+export function useReceiptGroupCounts(filters: ReceiptFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['receipt-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'receipt_group_counts', { p_filters: filters, p_fields: fields }),
+  });
+}
 
 export function useReceiptPage(
   filters: ReceiptFilters,
   sort: string | undefined,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['receipt-list', filters, sort ?? null, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<ReceiptPage>(supabase, 'list_receipts', {
