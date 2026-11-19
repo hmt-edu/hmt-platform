@@ -296,21 +296,24 @@ export function ListScreen<Row>({
             {a.label}
           </Button>
         ))}
-        <div className="relative order-last min-w-60 flex-1 basis-full md:order-none md:basis-0">
-          <Icon
-            name="search"
-            size={16}
-            className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-fg-muted"
-          />
-          <input
-            type="search"
-            aria-label={searchHint ?? config.searchPlaceholder}
-            placeholder={config.searchPlaceholder}
-            value={state.search}
-            onChange={(e) => onStateChange({ ...state, search: e.target.value })}
-            className="focus-ring tap h-[34px] w-full rounded-control border border-border-strong bg-surface pr-2.5 pl-8 text-body placeholder:text-fg-muted focus-visible:border-focus"
-          />
-        </div>
+        {/* Màn không có ô tìm (searchPlaceholder rỗng, vd. Việc chờ tôi duyệt) không vẽ ô trống không nhãn (axe: label). */}
+        {config.searchPlaceholder !== '' && (
+          <div className="relative order-last min-w-60 flex-1 basis-full md:order-none md:basis-0">
+            <Icon
+              name="search"
+              size={16}
+              className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-fg-muted"
+            />
+            <input
+              type="search"
+              aria-label={searchHint ?? config.searchPlaceholder}
+              placeholder={config.searchPlaceholder}
+              value={state.search}
+              onChange={(e) => onStateChange({ ...state, search: e.target.value })}
+              className="focus-ring tap h-[34px] w-full rounded-control border border-border-strong bg-surface pr-2.5 pl-8 text-body placeholder:text-fg-muted focus-visible:border-focus"
+            />
+          </div>
+        )}
         <div className="ml-auto flex items-center gap-2">
           {onRefresh && (
             <Button icon="refresh" onClick={onRefresh}>

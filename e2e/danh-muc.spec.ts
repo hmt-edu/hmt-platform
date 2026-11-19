@@ -51,6 +51,18 @@ test('Cột trái: danh mục kèm nhãn Mở, Khoá, Chỉ xem; tìm theo tên 
   await expectAccessible(page);
 });
 
+test('Danh mục Loại buổi (E23): có cột Form nhận xét chỉ đọc (Form điểm cho Kiểm tra) và đạt kiểm trợ năng', async ({
+  page,
+}) => {
+  await open(page);
+  await pick(page, /^Loại buổi/);
+  const table = panel(page).getByRole('table');
+  await expect(table.getByRole('columnheader', { name: 'Form nhận xét' })).toBeVisible();
+  await expect(table.getByRole('row', { name: /KIEM_TRA/ })).toContainText('Form điểm');
+  await expect(table.getByRole('row', { name: /CHINH/ })).toContainText('9 tiêu chí');
+  await expectAccessible(page);
+});
+
 test('Danh mục Mở: thêm mục (câu lỗi, rồi thêm được), đổi tên, ▲▼, Ngừng rồi Dùng lại', async ({
   page,
 }) => {
@@ -213,4 +225,20 @@ test('Danh mục nhiều cấp (Loại nguồn): Thêm nguồn ở một loại,
   await row.getByRole('button', { name: 'Ngừng' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Ngừng mục' }).click();
   await expect(row).toContainText('Ngừng');
+});
+
+// E26: kiểm trợ năng (axe) cho hai màn Nhật ký của Quản trị, cùng tệp (cùng worker, nối tiếp) để không tranh thiết bị hai bước của quantri.cs5.
+test('QT-11 Nhật ký thao tác: mở được và đạt kiểm trợ năng', async ({ page }) => {
+  await enterAsAdmin(page, 'quantri.cs5');
+  await page.goto('/crm/quan-tri/nhat-ky');
+  await expect(page.getByRole('heading', { level: 1, name: 'Nhật ký thao tác' })).toBeVisible();
+  await expect(page.getByRole('table').or(page.getByText('Chưa có dòng nhật ký'))).toBeVisible();
+  await expectAccessible(page);
+});
+
+test('QT-12 Nhật ký đăng nhập và xuất file: mở được và đạt kiểm trợ năng', async ({ page }) => {
+  await enterAsAdmin(page, 'quantri.cs5');
+  await page.goto('/crm/quan-tri/nhat-ky-dang-nhap');
+  await expect(page.getByRole('heading', { level: 1, name: /Nhật ký đăng nhập/ })).toBeVisible();
+  await expectAccessible(page);
 });
