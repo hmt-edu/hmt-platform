@@ -42,3 +42,5 @@ Thẻ D21, 18/11/2026. Quét `raise_error` trong các migration 212, 231, 232, 2
 
 - Hàm đọc (`list_*`, `get_*`) ngoài phạm vi báo `HMT_KHONG_TIM_THAY`; không có quyền xem báo `HMT_KHONG_CO_QUYEN`.
 - Lỗi từ kiểm tra khoá chủ yếu chỉ lộ ở hàm nội bộ gọi qua hàm giao diện; hàm nội bộ gọi thẳng từ giao diện báo `42501` (không cấp quyền).
+
+- `HMT_AP_DUNG_CHO_SAI` (migration 476, `app.save_discount_policy`): «Áp dụng cho» của chính sách chiết khấu trống hoặc có giá trị ngoài Báo giá, Đơn, Phiếu thu. Cột `app.discount_policy.applies_to` mặc định cả ba; `app.list_applicable_discount_policies` chỉ trả chính sách áp dụng cho Báo giá hoặc Đơn và có thêm khoá `applies_to`.
