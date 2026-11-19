@@ -11,6 +11,15 @@ export type TaskOptions = {
   }[];
   /** Bảo lưu đang chạy của học sinh (cho Gia hạn bảo lưu, R-GD-09). */
   holds?: { id: string; enrollment_id: string; start_date: string; end_date: string }[];
+  /** Buổi sắp tới của lớp học sinh đang học (phiếu Đổi lịch, migration 429). */
+  sessions?: {
+    id: string;
+    class_code: string;
+    session_no: number | null;
+    date: string;
+    start: string;
+    end: string;
+  }[];
   hold_reasons: { code: string; name: string }[];
   /** Lý do dừng học (STOP_REASON, migration 427). */
   stop_reasons?: { code: string; name: string }[];
