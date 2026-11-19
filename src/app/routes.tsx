@@ -241,6 +241,10 @@ const PermissionMatrixPage = lazyScreen(
 const RubricPage = lazyScreen(() => import('../pages/rubric/RubricPage'), 'RubricPage');
 const CampaignPage = lazyScreen(() => import('../pages/chien-dich/CampaignPage'), 'CampaignPage');
 const HolidayPage = lazyScreen(() => import('../pages/ngay-nghi/HolidayPage'), 'HolidayPage');
+const LessonListPage = lazyScreen(
+  () => import('../pages/khung-chuong-trinh/LessonListPage'),
+  'LessonListPage',
+);
 const CurriculumFramePage = lazyScreen(
   () => import('../pages/khung-chuong-trinh/CurriculumFramePage'),
   'CurriculumFramePage',
@@ -885,6 +889,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="cau-hinh/rubric">
                 <RubricPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/khung-chuong-trinh/:id',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/khung-chuong-trinh">
+                <LessonListPage />
               </GatedCrmEntry>
             ),
           },

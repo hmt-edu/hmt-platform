@@ -99,6 +99,7 @@ export function SessionRequestCreatePage() {
         </Alert>
       )}
       {classes.isError && <Alert tone="danger">{errorOf(classes.error).message}</Alert>}
+      <h2 className="text-body font-semibold">Buổi củng cố</h2>
       <TextField
         label="Tìm lớp"
         value={search}
