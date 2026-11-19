@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  addFamilyRows,
   blankRow,
   buildSaveLines,
   flexibleLimitIssues,
@@ -286,5 +287,20 @@ describe('flexibleLimitIssues (Ưu đãi linh hoạt vượt hạn mức, Q-151)
     const ok = rowWith([{ policyId: 'flex', value: '1,5' }]);
     expect(flexibleLimitIssues([ok], policies)).toEqual([]);
     expect(buildSaveLines([ok])[0]?.discounts).toEqual([{ policy_id: 'flex', value: 1.5 }]);
+  });
+});
+
+describe('addFamilyRows (Thêm cả nhà, BH02_chon)', () => {
+  it('thêm dòng trống cho mỗi em chưa có dòng, bỏ qua em đã có dòng gói', () => {
+    const existing = { ...blankRow(), studentId: 'a' };
+    const out = addFamilyRows([existing], ['a', 'b', 'c']);
+    expect(out.map((r) => r.studentId)).toEqual(['a', 'b', 'c']);
+    expect(out.slice(1).every((r) => r.packageId === '' && r.kind === 'ENROL')).toBe(true);
+  });
+  it('đã đủ mọi em thì không thêm; dòng quà tặng nằm cuối', () => {
+    const gift = { ...blankRow(), kind: 'GIFT' as const };
+    const out = addFamilyRows([{ ...blankRow(), studentId: 'a' }, gift], ['a', 'b']);
+    expect(out.map((r) => `${r.kind}:${r.studentId}`)).toEqual(['ENROL:a', 'ENROL:b', 'GIFT:']);
+    expect(addFamilyRows(out, ['a', 'b'])).toEqual(out);
   });
 });
