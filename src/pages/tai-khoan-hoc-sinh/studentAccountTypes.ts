@@ -1,4 +1,4 @@
-// Kiểu dữ liệu màn Tài khoản học sinh (QT-13): khớp kết quả app.list_student_accounts (migration 568).
+// Kiểu dữ liệu màn Tài khoản học sinh (QT-13): khớp kết quả app.list_student_accounts (migration 569).
 export type StudentAccountState = 'CHUA_CAP' | 'HOAT_DONG' | 'BI_KHOA';
 
 export type StudentAccountRow = {
