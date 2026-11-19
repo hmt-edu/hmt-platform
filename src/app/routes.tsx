@@ -272,6 +272,10 @@ const PackageListPage = lazyScreen(
 );
 const PriceListPage = lazyScreen(() => import('../pages/bang-gia/PriceListPage'), 'PriceListPage');
 const UserListPage = lazyScreen(() => import('../pages/nguoi-dung/UserListPage'), 'UserListPage');
+const GradePromotionPage = lazyScreen(
+  () => import('../pages/len-khoi/GradePromotionPage'),
+  'GradePromotionPage',
+);
 const UserRecordPage = lazyScreen(
   () => import('../pages/nguoi-dung/UserRecordPage'),
   'UserRecordPage',
@@ -1005,6 +1009,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="quan-tri/nguoi-dung">
                 <UserListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'len-khoi-dau-nam',
+            element: (
+              <GatedCrmEntry slug="len-khoi-dau-nam">
+                <GradePromotionPage />
               </GatedCrmEntry>
             ),
           },
