@@ -44,6 +44,7 @@ export function buildAccess(
 
   return {
     can: (module, action) => granted.has(`${module}|${action}`),
+    isAdmin: granted.has('ADMIN|XEM'),
     canAnyModule: (action) => actions.has(action),
     featureOn: (feature) =>
       data.features.some(
