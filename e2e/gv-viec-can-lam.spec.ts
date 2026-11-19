@@ -60,7 +60,7 @@ test.beforeAll(async ({}, testInfo) => {
     const cls = (
       await db.query<{ id: string }>(
         `insert into app.class (code, branch_id, year_code, subject_code, grade_code, class_type_code, level_code, start_date, total_sessions)
-         values ($1, $2, '2627', 'TOAN', 'K08', 'CB', 'A', current_date - 10, 3) returning id`,
+         values ($1, $2, '2627', 'TOAN', 'K08', 'CB', 'A', (now() at time zone 'Asia/Ho_Chi_Minh')::date - 10, 3) returning id`,
         [code, branch],
       )
     ).rows[0]!.id;
@@ -68,7 +68,7 @@ test.beforeAll(async ({}, testInfo) => {
       (
         await db.query<{ id: string }>(
           `insert into app.class_session (class_id, branch_id, session_no, session_date, start_time, end_time, teacher_id, status_code)
-           values ($1, $2, $3, current_date - ${daysAgo}, '08:00', '09:30', $4, 'DA_CHOT') returning id`,
+           values ($1, $2, $3, (now() at time zone 'Asia/Ho_Chi_Minh')::date - ${daysAgo}, '08:00', '09:30', $4, 'DA_CHOT') returning id`,
           [cls, branch, no, teacher],
         )
       ).rows[0]!.id;

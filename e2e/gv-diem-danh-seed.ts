@@ -47,9 +47,9 @@ export async function seedAttendance(project: string): Promise<AttendanceSeed> {
     const created = await db.query<{ cls: string }>(
       `select app.create_class(jsonb_build_object('branch_id', (select id from app.branch where code = 'CS5'), 'year_code', '2627',
          'subject_code', 'TOAN', 'grade_code', 'K08', 'class_type_code', 'CB', 'level_code', 'A', 'max_students', 0,
-         'start_date', (date_trunc('week', current_date) + interval '14 days')::date, 'total_sessions', 5,
+         'start_date', (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days')::date, 'total_sessions', 5,
          'slots', jsonb_build_array(jsonb_build_object('weekday', 1, 'start_time', '18:00', 'end_time', '19:30', 'repeat_weeks', 1,
-           'first_date', (date_trunc('week', current_date) + interval '14 days')::date, 'teacher_id', $1::uuid)))) ->> 'id' as cls`,
+           'first_date', (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days')::date, 'teacher_id', $1::uuid)))) ->> 'id' as cls`,
       [gv],
     );
     const cls = created.rows[0]?.cls ?? '';

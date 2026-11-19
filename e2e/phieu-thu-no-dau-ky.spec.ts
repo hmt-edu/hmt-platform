@@ -53,7 +53,7 @@ test.beforeAll(async ({}, testInfo) => {
     );
     await db.query(
       `insert into app.customer_balance_entry (parent_id, student_id, branch_id, entry_type, amount, entry_date, source_ref)
-       select s.parent_id, s.id, s.branch_id, 'DAU_KY_CONG_NO', -3000000, current_date, 'E2ENDK'
+       select s.parent_id, s.id, s.branch_id, 'DAU_KY_CONG_NO', -3000000, (now() at time zone 'Asia/Ho_Chi_Minh')::date, 'E2ENDK'
          from app.student s where s.code = 'HSN' || $1`,
       [RUN],
     );
