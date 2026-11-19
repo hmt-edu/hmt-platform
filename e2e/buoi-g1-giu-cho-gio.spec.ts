@@ -101,10 +101,8 @@ test.beforeAll(async () => {
 async function closeSession(page: import('@playwright/test').Page, id: string) {
   await page.goto(`/crm/buoi-hoc/${id}`);
   await page.getByRole('button', { name: 'Chốt danh sách' }).click();
-  await page
-    .getByRole('dialog', { name: 'Chốt danh sách buổi này?' })
-    .getByRole('button', { name: 'Chốt danh sách' })
-    .click();
+  // Hộp xác nhận (alertdialog): nút xác nhận là nút «Chốt danh sách» thứ hai trên màn.
+  await page.getByRole('button', { name: 'Chốt danh sách', exact: true }).last().click();
   await expect(page.getByText('Đã chốt danh sách').first()).toBeVisible();
 }
 
