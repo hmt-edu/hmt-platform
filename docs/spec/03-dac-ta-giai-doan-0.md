@@ -51,7 +51,7 @@ Project Supabase Free tự tạm dừng sau 1 tuần không dùng: workflow hằ
 |---|---|---|---|
 | Nhân viên | Email + mật khẩu (HMT chưa có Google Workspace; có sau thì bật thêm Google) | Admin | 0 |
 | Giáo viên, trợ giảng | Như nhân viên | Admin | 0 |
-| Học sinh | Tên đăng nhập = mã học sinh + mật khẩu trung tâm cấp, đổi mật khẩu lần đầu, không cần email | CSKH hoặc Admin | 0 làm khung, 4 dùng thật |
+| Học sinh | Tên đăng nhập = mã học sinh + mật khẩu trung tâm cấp, **không bắt đổi mật khẩu lần đầu** (anh Trường chốt 19/11/2026, E31: «học sinh không cần đổi lần đầu, cần thì tự đổi sau»; tham số `first_password_change_required_student`, mặc định Tắt; nhân viên `first_password_change_required_staff` mặc định Bật), không cần email | CSKH hoặc Admin | 0 làm khung, 4 dùng thật |
 | Phụ huynh | Chốt sau | CSKH | 4 |
 
 - Nghỉ việc, dừng học thì **khoá** tài khoản, không xoá.
