@@ -18,6 +18,9 @@ import { useToast } from '../../ui/toastContext';
 import {
   branchesLabel,
   dateToIso,
+  APPLIES_TO_OPTIONS,
+  appliesToLabel,
+  discountAppliedLabel,
   discountValueLabel,
   errorSummary,
   formErrors,
@@ -162,10 +165,22 @@ export function DiscountPolicyPage() {
       cell: (p) => (p.kind === 'PERCENT' ? '%' : 'Giờ tặng'),
     },
     {
+      key: 'value',
+      header: 'Giá trị',
+      width: 'w-28',
+      cell: (p) => discountAppliedLabel(p),
+    },
+    {
       key: 'max',
       header: 'Mức tối đa',
-      width: 'w-40',
-      cell: (p) => `${discountValueLabel(p)}${p.fixed_value ? ' (áp đúng mức)' : ''}`,
+      width: 'w-32',
+      cell: (p) => discountValueLabel(p),
+    },
+    {
+      key: 'applies',
+      header: 'Áp dụng cho',
+      width: 'w-44',
+      cell: (p) => appliesToLabel(p),
     },
     ...common<DiscountPolicy>(
       'DISCOUNT_POLICY',
@@ -347,6 +362,10 @@ function PolicyForm({
     validTo: p?.valid_to ? isoToDate(p.valid_to) : null,
     packageTypes: p?.package_type_codes ?? [],
     branchIds: p?.branch_ids ?? [],
+    appliesTo:
+      editing.kind === 'discount' && editing.policy
+        ? editing.policy.applies_to
+        : APPLIES_TO_OPTIONS.map((o) => o.code),
   });
   const [giftPackageId, setGiftPackageId] = useState(
     editing.kind === 'gift' ? (editing.policy?.gift_package_id ?? '') : '',
@@ -389,6 +408,7 @@ function PolicyForm({
           ...base,
           ...(p ? {} : { code: policyCode(v.name) }),
           kind: v.kind,
+          applies_to: v.appliesTo,
           max_value: Number(v.maxValue.replace(',', '.')),
           fixed_value: v.kind === 'PERCENT' && v.fixedValue,
         });
@@ -516,6 +536,24 @@ function PolicyForm({
             ))}
           </div>
         </fieldset>
+        {!isGift && (
+          <fieldset className="flex flex-col gap-1">
+            <legend className="text-body font-semibold">Áp dụng cho *</legend>
+            <div className="flex flex-wrap gap-x-4">
+              {APPLIES_TO_OPTIONS.map((o) => (
+                <Checkbox
+                  key={o.code}
+                  label={o.name}
+                  checked={v.appliesTo.includes(o.code)}
+                  onChange={() => set({ appliesTo: toggleIn(v.appliesTo, o.code) })}
+                />
+              ))}
+            </div>
+            {tried && v.appliesTo.length === 0 && (
+              <p className="text-caption text-danger">Chọn ít nhất một nơi áp dụng.</p>
+            )}
+          </fieldset>
+        )}
         <Checkbox
           label="Cần duyệt (quản lý cơ sở duyệt)"
           checked={v.requiresApproval}

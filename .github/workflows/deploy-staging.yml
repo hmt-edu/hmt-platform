@@ -277,6 +277,26 @@ jobs:
           fi
           npm run db:seed-users
 
+      # Dữ liệu giả vừa phải CHỈ cho hmt-staging (D61b): Lead, Cơ hội, Báo giá, Đơn, Phiếu thu, Lớp, Học sinh, Ticket ở 5 cơ sở, để kiểm tìm kiếm, lọc, nhóm và đường đi trọn.
+      # File do Code F viết (supabase/seed-staging.sql), phải chạy lại được, không nhân đôi, chỉ dữ liệu giả. Cùng STAGING_DB_URL như bước seed.sql; bản chạy thật
+      # (hmt-deploy) không bao giờ chạy bước này. File chưa có thì bỏ qua kèm cảnh báo. Kiểm cuối: đếm số dòng vài bảng (không in dữ liệu).
+      - name: Nạp dữ liệu giả vừa phải vào hmt-staging
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          if [ ! -f supabase/seed-staging.sql ]; then
+            echo "::warning::Chưa có supabase/seed-staging.sql: bỏ qua nạp dữ liệu giả vừa phải."
+            exit 0
+          fi
+          psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f supabase/seed-staging.sql
+          counts="$(psql "$STAGING_DB_URL" -X -At -F ' ' -c "select 'lead', count(*) from app.lead union all select 'opportunity', count(*) from app.opportunity union all select 'quotation', count(*) from app.quotation union all select 'sales_order', count(*) from app.sales_order union all select 'receipt', count(*) from app.receipt union all select 'class', count(*) from app.class union all select 'enrollment', count(*) from app.enrollment union all select 'ticket', count(*) from app.ticket")"
+          echo "$counts" | sed 's/^/Số dòng: /'
+          # Bảng quan trọng rỗng thì lượt triển khai báo đỏ (dữ liệu giả không vào).
+          if echo "$counts" | awk '$2 == 0 {bad = 1} END {exit bad ? 0 : 1}'; then
+            echo "::error::Sau seed-staging.sql vẫn còn bảng rỗng (xem dòng «Số dòng» ở trên)."
+            exit 1
+          fi
+
       - name: Build bản thử nghiệm
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}

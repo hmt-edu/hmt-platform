@@ -238,7 +238,8 @@ function FormView({ record }: { record: ClassRecord | null }) {
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4">
       <UnsavedGuard when={dirty && !busy} />
-      <header className="flex flex-wrap items-center justify-between gap-3">
+      {/* Thanh tiêu đề và nút Lưu/Huỷ ghim đầu khung cuộn: cuộn xuống cuối Time Table vẫn thấy nút (báo cáo T2, mục 3). */}
+      <header className="sticky top-topbar z-[9] flex flex-wrap items-center justify-between gap-3 border-b border-border bg-canvas py-2">
         <div>
           <h1 className="text-h3">{editing ? `Sửa lớp ${record.code}` : 'Tạo lớp mới'}</h1>
           <p className="text-caption text-fg-muted">

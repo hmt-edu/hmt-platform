@@ -12,6 +12,7 @@ import {
   sameDay,
   startOfDay,
   vnToday,
+  vnWall,
   weekDays,
   type CalendarEvent,
 } from './calendarLogic';
@@ -57,7 +58,7 @@ function rangeTitle(mode: CalendarMode, anchor: Date): string {
 }
 
 export function CalendarView({
-  events,
+  events: rawEvents,
   kinds,
   mode,
   onModeChange,
@@ -91,6 +92,12 @@ export function CalendarView({
   /** Giờ hiện tại để vẽ vạch "bây giờ"; không truyền thì không vẽ. */
   now?: Date | undefined;
 }) {
+  // Sự kiện đổi sang giờ treo tường Việt Nam trước khi nhóm theo ngày và vẽ theo giờ (R-HT-07); nội dung chi tiết chỉ dùng id.
+  const events = useMemo(
+    () => rawEvents.map((e) => ({ ...e, start: vnWall(e.start), end: vnWall(e.end) })),
+    [rawEvents],
+  );
+  const nowWall = useMemo(() => (now ? vnWall(now) : undefined), [now]);
   const kindOf = (key: string) => kinds.find((k) => k.key === key);
   const hours = Array.from({ length: endHour - startHour + 1 }, (_, i) => startHour + i);
   const step = mode === 'day' ? 1 : mode === 'week' ? 7 : 0;
@@ -326,17 +333,20 @@ export function CalendarView({
                       width: `calc(${PERCENT / p.lanes}% - 6px)`,
                     }),
                   )}
-                  {isToday && now && now.getHours() >= startHour && now.getHours() <= endHour && (
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute right-0 left-0 z-[1] h-0.5 bg-focus"
-                      style={{
-                        top:
-                          (now.getHours() - startHour) * HOUR_PX +
-                          (now.getMinutes() / 60) * HOUR_PX, // allow-number: 60 phút một giờ
-                      }}
-                    />
-                  )}
+                  {isToday &&
+                    nowWall &&
+                    nowWall.getHours() >= startHour &&
+                    nowWall.getHours() <= endHour && (
+                      <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute right-0 left-0 z-[1] h-0.5 bg-focus"
+                        style={{
+                          top:
+                            (nowWall.getHours() - startHour) * HOUR_PX +
+                            (nowWall.getMinutes() / 60) * HOUR_PX, // allow-number: 60 phút một giờ
+                        }}
+                      />
+                    )}
                 </div>
               );
             })}

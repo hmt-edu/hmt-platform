@@ -200,6 +200,7 @@ export function TaskRecordPage() {
                   task.status_code,
                   record.data?.events ?? [],
                   (l) => LEVEL_ROLE_LABEL[l] ?? l,
+                  task.next_approver ?? null,
                 ).map((r) => (
                   <tr key={r.level} className="border-t border-border">
                     <td className="py-1 pr-3">Cấp {r.level}</td>

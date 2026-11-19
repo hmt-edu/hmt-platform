@@ -21,6 +21,7 @@ import type { StageStep } from '../../ui/Stage';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useToast } from '../../ui/toastContext';
 import { formatPhone } from '../lead/leadFormat';
+import { useOpportunity } from '../co-hoi/useOppData';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { QuoteLineEditor } from './QuoteLineEditor';
 import {
@@ -128,6 +129,9 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [editing, setEditing] = useState(false);
   const [rows, setRows] = useState<EditRow[]>([]);
   const discountPolicies = useDiscountPolicies(record.opportunity_id, editing);
+  // R-CRM-16: đơn chỉ lưu được khi cơ hội ở L8; biết trước để khoá nút Chuyển thành đơn và nêu lý do (T2-03). Không đọc được cơ hội thì để nút mở, máy chủ vẫn kiểm khi Lưu.
+  const opportunity = useOpportunity(record.opportunity_id);
+  const notL8 = opportunity.data !== undefined && opportunity.data.stage_code !== 'L8';
   const [baseline, setBaseline] = useState('');
   const [saving, setSaving] = useState(false);
   const [issues, setIssues] = useState<RowIssue[]>([]);
@@ -428,7 +432,12 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             {!editing && canConvert && (
               <Button
                 variant="primary"
-                disabled={busy}
+                disabled={busy || notL8}
+                title={
+                  notL8
+                    ? 'Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới chuyển được thành đơn (R-CRM-16).'
+                    : undefined
+                }
                 onClick={() => openFrom(`/crm/don-hang/tao?bao-gia=${record.id}`)}
               >
                 Chuyển thành đơn

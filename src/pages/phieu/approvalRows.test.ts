@@ -58,4 +58,15 @@ describe('approvalRows (bảng Duyệt CSN-06)', () => {
     const rows = approvalRows(levels, 'HUY', [ev('TRINH', 'Lan', '1')], role);
     expect(rows.map((r) => r.result)).toEqual(['Không áp dụng', 'Không áp dụng']);
   });
+  it('cấp đang chờ hiện tên người duyệt dự kiến khi có', () => {
+    const rows = approvalRows(
+      levels,
+      'CHO_DUYET',
+      [ev('TRINH', 'Lan', '1')],
+      role,
+      'Nguyễn Văn Phúc',
+    );
+    expect(rows[0]).toMatchObject({ result: 'Đang chờ', approver: 'Nguyễn Văn Phúc' });
+    expect(rows[1]).toMatchObject({ result: 'Chưa tới', approver: null });
+  });
 });
