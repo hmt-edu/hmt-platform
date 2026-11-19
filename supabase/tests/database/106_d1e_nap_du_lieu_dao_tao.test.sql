@@ -137,7 +137,9 @@ select pg_temp.sudo($$select app.auto_close_sessions()$$);
 select pg_temp.sudo($$select app.auto_complete_sessions()$$);
 select is((select count(*)::int from app.hour_ledger l join app.enrollment e on e.id = l.enrollment_id where e.legacy_ref like 'M-HS-%' and l.entry_type = 'TRU_BUOI'), 0, 'Sau tự chốt, tự Done: chưa có dòng trừ giờ nào (Q-199)');
 select is(app.enrollment_hours_balance((select id from app.enrollment where legacy_ref = 'M-HS-0001|T4M1')), 22.50::numeric, 'Số dư đầu kỳ nguyên vẹn sau tự chốt, tự Done (Q-199)');
-select is((select count(*)::int from app.class_session s join app.class c on c.id = s.class_id where c.legacy_ref like 'T%M1' and s.status_code in ('DA_CHOT', 'DONE')), 0, 'Không có buổi Đã chốt hay Done nào từ lớp nạp (buổi nằm sau ngày chốt)');
+-- Sửa lỗi phụ thuộc ngày (C63): hệ thống tự chốt buổi sắp tới theo giờ thật nên khi ngày chạy tới sát buổi đầu (21/11) thì buổi đó được chốt đúng luật. Điều cần giữ (Q-199): KHÔNG buổi nào của lớp nạp tự Done (không trừ giờ), và không buổi nào bị chốt khi còn xa (quá 7 ngày nữa mới học).
+select is((select count(*)::int from app.class_session s join app.class c on c.id = s.class_id where c.legacy_ref like 'T%M1' and s.status_code = 'DONE'), 0, 'Không có buổi Done nào từ lớp nạp (buổi nằm sau ngày chốt)');
+select is((select count(*)::int from app.class_session s join app.class c on c.id = s.class_id where c.legacy_ref like 'T%M1' and s.status_code = 'DA_CHOT' and s.session_date > (now() at time zone 'Asia/Ho_Chi_Minh')::date + 7), 0, 'Không có buổi Đã chốt khi còn xa (quá 7 ngày nữa mới học)'); -- allow-number: số ngày an toàn trong bài kiểm
 
 -- ================= Buổi học và Điểm danh cũ chỉ để đối soát (R-V2-33, Q-186) =================
 create temp table rows_bh (j jsonb);
