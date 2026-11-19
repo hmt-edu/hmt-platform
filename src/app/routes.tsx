@@ -145,6 +145,10 @@ const ReceivableListPage = lazyScreen(
   () => import('../pages/thu-tien/TreasuryListPages'),
   'ReceivableListPage',
 );
+const ReceiptReconcilePage = lazyScreen(
+  () => import('../pages/doi-soat/ReceiptReconcilePage'),
+  'ReceiptReconcilePage',
+);
 const ReceiptListPage = lazyScreen(
   () => import('../pages/phieu-thu/ReceiptListPage'),
   'ReceiptListPage',
@@ -517,6 +521,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="khoan-tien-vao">
                 <MoneyInListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'doi-soat-thu-tien',
+            element: (
+              <GatedCrmEntry slug="doi-soat-thu-tien">
+                <ReceiptReconcilePage />
               </GatedCrmEntry>
             ),
           },
