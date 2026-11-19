@@ -110,7 +110,13 @@ function VoucherView({ record }: { record: VoucherRecord }) {
         ];
   const calc = [
     ...rows,
-    { key: 'base', label: 'Số tiền hoàn trước phí', amount: r.base_amount },
+    {
+      key: 'base',
+      // Canvas TC-11: hoàn toàn bộ gọi «Còn lại sau khi trừ giờ đã học»; hoàn một phần giữ «Số tiền hoàn trước phí».
+      label:
+        r.kind_code === 'TOAN_BO' ? 'Còn lại sau khi trừ giờ đã học' : 'Số tiền hoàn trước phí',
+      amount: r.base_amount,
+    },
     { key: 'fee', label: `Phí xử lý (${formatNumber(r.fee_percent)}%)`, amount: -r.fee_amount },
     { key: 'refund', label: 'Số tiền hoàn', amount: r.refund_amount },
   ];
