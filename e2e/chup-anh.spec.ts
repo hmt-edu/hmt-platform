@@ -60,6 +60,21 @@ async function capture(page: Page, shot: Shot, file: string): Promise<string | n
       note = 'không mở được bản ghi (DB giả chưa có dữ liệu loại này)';
     }
   }
+  for (const click of shot.clicks ?? []) {
+    const isTab = click.startsWith('tab:');
+    const name = isTab ? click.slice(4) : click;
+    // Tên nút/thẻ có thể kèm biểu tượng: khớp một phần theo vai trò, hoặc theo chữ hiện trên màn; chờ tối đa 8 giây (màn bản ghi tải xong mới có nút).
+    const target = page
+      .getByRole(isTab ? 'tab' : 'button', { name })
+      .or(page.getByText(name, { exact: true }))
+      .first();
+    try {
+      await target.click({ timeout: 8000 });
+      await page.waitForTimeout(300);
+    } catch {
+      note = `không thấy ${isTab ? 'thẻ' : 'nút'} «${name}» để bấm`;
+    }
+  }
   await page.waitForTimeout(400);
   await page.screenshot({ path: file, fullPage: false });
   return note;

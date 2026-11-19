@@ -6,6 +6,8 @@ export type Shot = {
   route: string;
   row?: boolean;
   view?: string;
+  /** Bấm lần lượt sau khi mở bản ghi: tên nút, hoặc «tab:Tên» cho thẻ (tab). Có `clicks` thì ảnh không còn là xấp xỉ (nếu không ghi `approx`). */
+  clicks?: string[];
   approx?: string;
 };
 
@@ -29,7 +31,7 @@ export const ROLES: Role[] = [
         name: 'lead-hanh-dong',
         route: '/crm/lead',
         row: true,
-        approx: 'bản ghi; hộp hành động chưa mở tự động',
+        clicks: ['Hành động'],
       },
       {
         name: 'lead-tao-co-hoi',
@@ -51,7 +53,7 @@ export const ROLES: Role[] = [
         name: 'don-hang-chon-lop',
         route: '/crm/don-hang',
         row: true,
-        approx: 'bản ghi đơn; hộp chọn lớp chưa mở tự động',
+        approx: 'bản ghi đơn; tab Ghi danh chưa bấm được tự động',
       },
       { name: 'don-hang-trinh', route: '/crm/don-hang', row: true },
       { name: 'phieu-thu-tao', route: '/crm/phieu-thu' },
