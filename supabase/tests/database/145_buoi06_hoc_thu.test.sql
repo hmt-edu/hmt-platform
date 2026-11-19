@@ -91,7 +91,7 @@ select pg_temp.sudo($$insert into app.student (code, parent_id, full_name, birth
   select 'HSD1C0' || n, (select id from app.parent where code = 'PHD1C01'), 'Em giả GD7 ' || n, 2012, pg_temp.cs('CS1') from generate_series(1, 4) n$$);
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select pg_temp.mkclass('f', 'CB', pg_temp.fut(), 3);
-select pg_temp.sudo($$select pg_temp.mke('a', 1, true, 3)$$);   -- còn 3 giờ: sắp hết (ngưỡng 10 giờ)
+select pg_temp.sudo($$select pg_temp.mke('a', 1, true, 4.5)$$);   -- còn 4,5 giờ (đủ ba buổi sau khi G1 tính giữ chỗ): sắp hết (ngưỡng 10 giờ)
 select pg_temp.sudo($$select pg_temp.mke('b', 2, true, 40)$$);  -- còn 40 giờ, 1,5 giờ một tuần: chưa tới ngưỡng
 select pg_temp.sudo($$select pg_temp.mke('c', 3, true, 0)$$);   -- hết giờ
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
