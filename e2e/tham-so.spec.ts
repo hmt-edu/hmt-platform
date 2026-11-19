@@ -101,7 +101,7 @@ test('Ghi đè theo cơ sở: thêm rồi bỏ ghi đè', async ({ page }) => {
   await dialog.getByRole('button', { name: 'Lưu' }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Lưu' }).click();
   await expect(rowOf(page)).toContainText('CS5');
-  await expect(rowOf(page).getByRole('cell', { name: '7', exact: true })).toBeVisible();
+  await expect(rowOf(page)).toContainText('7 ngày'); // chip ghi đè kèm đơn vị
   await rowOf(page).getByRole('button', { name: 'Bỏ ghi đè CS5' }).click();
   await expect(page.getByText('Đã bỏ ghi đè CS5.').first()).toBeVisible();
   await expect(rowOf(page)).toContainText('chưa ghi đè');
