@@ -94,6 +94,17 @@ export function ExpiringListPage() {
               <p className="py-1">
                 <Tag tone={statusTone(r.status_code)}>{statusName(r.status_code)}</Tag>
               </p>
+              {r.upsale_id && r.upsale_code && (
+                <p className="text-body">
+                  Phiếu tái tục:{' '}
+                  <Link
+                    to={`/crm/tai-tuc/${r.upsale_id}`}
+                    className="font-medium text-link hover:underline"
+                  >
+                    {r.upsale_code}
+                  </Link>
+                </p>
+              )}
             </li>
           ))}
         </ul>
@@ -104,11 +115,12 @@ export function ExpiringListPage() {
               <tr>
                 <th className="px-3 py-2">Học sinh</th>
                 <th className="px-3 py-2">Lớp</th>
-                <th className="px-3 py-2">Ghi danh</th>
+                <th className="px-3 py-2">Ghi danh (n)</th>
                 <th className="px-3 py-2">Giờ còn</th>
                 <th className="px-3 py-2">Hết giờ dự kiến</th>
                 <th className="px-3 py-2">Hạn gói (dự báo)</th>
                 <th className="px-3 py-2">Tình trạng</th>
+                <th className="px-3 py-2">Phiếu tái tục</th>
               </tr>
             </thead>
             <tbody>
@@ -122,6 +134,18 @@ export function ExpiringListPage() {
                   <td className="px-3 py-2">{dateText(r.validity_date)}</td>
                   <td className="px-3 py-2">
                     <Tag tone={statusTone(r.status_code)}>{statusName(r.status_code)}</Tag>
+                  </td>
+                  <td className="px-3 py-2">
+                    {r.upsale_id && r.upsale_code ? (
+                      <Link
+                        to={`/crm/tai-tuc/${r.upsale_id}`}
+                        className="font-medium text-link hover:underline"
+                      >
+                        {r.upsale_code}
+                      </Link>
+                    ) : (
+                      <span className="text-fg-muted">—</span>
+                    )}
                   </td>
                 </tr>
               ))}

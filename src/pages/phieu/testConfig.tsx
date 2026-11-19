@@ -73,10 +73,18 @@ export function buildTestConfig(
         render: (r) => r.grader_name ?? <span className="text-fg-muted">—</span>,
       },
       {
+        key: 'score',
+        label: 'Điểm',
+        numeric: true,
+        render: (r) => r.score ?? <span className="text-fg-muted">—</span>,
+      },
+      {
         key: 'status',
         label: 'Trạng thái',
         render: (r) => <Tag tone={TEST_TONE[r.status_code]}>{STATUS_LABEL[r.status_code]}</Tag>,
       },
+      { key: 'opportunity', label: 'Cơ hội gốc', render: (r) => <Code>{r.opportunity_code}</Code> },
+      { key: 'created_branch', label: 'Cơ sở tạo', render: (r) => r.branch_code },
     ],
     quickGroups: [
       {

@@ -11,6 +11,9 @@ export type ExpiringRow = {
   projected_end: string | null;
   validity_date: string | null;
   status_code: ExpiringStatus;
+  /** Phiếu tái tục đang mở của (học sinh, lớp), nếu có (canvas GD07, thẻ F51). */
+  upsale_id: string | null;
+  upsale_code: string | null;
 };
 
 export type ExpiringPage = { total: number; rows: ExpiringRow[] };

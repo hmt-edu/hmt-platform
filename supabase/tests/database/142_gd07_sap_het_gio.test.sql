@@ -108,6 +108,14 @@ select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enab
 select is((app.list_expiring_enrollments('{}'::jsonb) ->> 'total')::int, 2, 'Chỉ em sắp hết giờ và hết giờ có trong danh sách (em còn 40 giờ không)');
 select is((select r ->> 'status_code' from jsonb_array_elements(app.list_expiring_enrollments('{}'::jsonb) -> 'rows') r where r ->> 'student_id' = pg_temp.st(1)::text), 'SAP_HET_GIO', 'Còn 3 giờ: Sắp hết giờ');
 select is((select r ->> 'status_code' from jsonb_array_elements(app.list_expiring_enrollments('{}'::jsonb) -> 'rows') r where r ->> 'student_id' = pg_temp.st(3)::text), 'HET_GIO', 'Hết giờ: giờ còn 0');
+-- Cột «Phiếu tái tục» (canvas GD07, thẻ F51): phiếu ĐANG MỞ của (học sinh, lớp) hiện ở dòng; chưa có thì null.
+select is((select r ->> 'upsale_code' from jsonb_array_elements(app.list_expiring_enrollments('{}'::jsonb) -> 'rows') r where r ->> 'student_id' = pg_temp.st(1)::text), null, 'Chưa có phiếu tái tục: cột Phiếu tái tục trống');
+create temp table t51 as select (r ->> 'class_id')::uuid as cid from jsonb_array_elements(app.list_expiring_enrollments('{}'::jsonb) -> 'rows') r where r ->> 'student_id' = pg_temp.st(1)::text;
+grant select on t51 to public;
+select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id, parent_id, class_id, stage_code, substage_code, origin_code)
+  select 'TT142001', s.branch_id, s.id, s.parent_id, (select cid from t51), 'L2', null, 'HE_THONG' from app.student s where s.id = pg_temp.st(1)$$);
+select is((select r ->> 'upsale_code' from jsonb_array_elements(app.list_expiring_enrollments('{}'::jsonb) -> 'rows') r where r ->> 'student_id' = pg_temp.st(1)::text), 'TT142001', 'Có phiếu tái tục đang mở: hiện mã ở cột Phiếu tái tục');
+
 select is((select r ->> 'student_id' from jsonb_array_elements(app.list_expiring_enrollments('{}'::jsonb) -> 'rows') r where r ->> 'student_id' = pg_temp.st(2)::text), null, 'Còn 40 giờ, xa ngưỡng: không hiện');
 select is((select (r ->> 'projected_end')::date from jsonb_array_elements(app.list_expiring_enrollments('{}'::jsonb) -> 'rows') r where r ->> 'student_id' = pg_temp.st(1)::text),
           (now() at time zone 'Asia/Ho_Chi_Minh')::date + 14, 'Hết giờ dự kiến = hôm nay + 3 giờ / 1,5 giờ mỗi tuần x 7 ngày');
