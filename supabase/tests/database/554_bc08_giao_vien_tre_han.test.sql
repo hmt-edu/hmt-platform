@@ -58,6 +58,10 @@ select is((select (j -> 'rows' -> 0 ->> 'late_hours')::numeric from r), 3.5, 'BC
 select is((select (j -> 'rows' -> 0 ->> 'done_sessions')::int from r), 2, 'BC-08: gv1 có hai buổi Done trong tháng');
 select is((select count(*)::int from r, jsonb_array_elements(j -> 'rows') x where x ->> 'name' = 'Giả gv2'), 0, 'BC-08: CHỈ người có buổi trễ (gv2 chỉ có buổi đúng hạn và buổi nháp)');
 select is((select (x ->> 'late_hours')::numeric from r, jsonb_array_elements(j -> 'rows') x where x ->> 'name' = 'Giả ta1'), 2.5, 'BC-08: trợ giảng cũng được tính buổi trễ chung với giáo viên');
+select is((select (j -> 'totals' ->> 'late_sessions')::int from r), 4, 'BC-08: tổng số buổi trễ toàn tháng (s1 tính cho gv1 và ta1, s2 cho gv1, s5 cho gv3)');
+select is((select (j -> 'totals' ->> 'people')::int from r), 3, 'BC-08: số người có buổi trễ');
+select is((select x ->> 'role' from r, jsonb_array_elements(j -> 'rows') x where x ->> 'name' = 'Giả ta1'), 'TRO_GIANG', 'BC-08: trợ giảng ghi vai TRO_GIANG');
+select is((select x ->> 'role' from r, jsonb_array_elements(j -> 'rows') x where x ->> 'name' = 'Giả gv1'), 'GIAO_VIEN', 'BC-08: giáo viên ghi vai GIAO_VIEN');
 -- Lọc cơ sở và phân trang.
 select is((app.report_teacher_late(null, (select id from app.branch where code = 'CS2')) ->> 'total')::int, 1, 'BC-08: lọc cơ sở CS2 chỉ còn gv3');
 select is(jsonb_array_length(app.report_teacher_late(null, null, 1, 0) -> 'rows'), 1, 'BC-08: phân trang theo số dòng');
