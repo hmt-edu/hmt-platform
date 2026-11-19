@@ -176,6 +176,8 @@ export type OrderRecord = {
   /** Việc người gọi làm được ở tình trạng hiện tại (get_order từ migration 063): giao diện chỉ hiện nút đúng, máy chủ kiểm lại. */
   can_submit: boolean;
   can_cancel: boolean;
+  /** Lý do không huỷ được (migration 565): đã có phiếu thu, hoặc còn ghi danh hiệu lực (cho học trước); trống thì huỷ được. */
+  cancel_block?: 'PHIEU_THU' | 'GHI_DANH' | null;
   can_approve: boolean;
   can_reject: boolean;
   lines: OrderLine[];

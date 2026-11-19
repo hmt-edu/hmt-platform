@@ -214,17 +214,47 @@ function OrderView({ record }: { record: OrderRecord }) {
     approvesInstead: access.can('ADMIN', 'XEM'),
     phone,
   });
+  // Canvas BH05_huy_chan: đơn đã có phiếu thu hoặc còn ghi danh (cho học trước) thì «Huỷ đơn» mờ, nêu lý do và mời tạo ticket hoàn tiền (CS-05).
+  const cancelBlock = record.cancel_block ?? null;
+  const cancelBlockedText =
+    cancelBlock === 'GHI_DANH'
+      ? 'Đã bật cho học trước và em đã học buổi: đi qua ticket hoàn tiền (CS-05).'
+      : cancelBlock === 'PHIEU_THU'
+        ? 'Đơn đã có phiếu thu: đi qua ticket hoàn tiền (CS-05).'
+        : undefined;
+  const canCreateRefundTicket = access.can('TICKET', 'TAO') && !phone;
   const menuItems: MenuItem[] = canCancel
-    ? [
-        {
-          kind: 'action',
-          label: 'Huỷ đơn',
-          onSelect: () => {
-            setCancelError(null);
-            setCancelOpen(true);
+    ? cancelBlockedText
+      ? [
+          {
+            kind: 'action',
+            label: 'Huỷ đơn',
+            unavailable: cancelBlockedText,
+            onSelect: () => undefined,
           },
-        },
-      ]
+          ...(canCreateRefundTicket
+            ? [
+                {
+                  kind: 'action' as const,
+                  label: 'Tạo ticket hoàn tiền',
+                  onSelect: () =>
+                    openFrom(
+                      `/crm/ticket/moi?phu-huynh=${record.parent_id}&ma=${encodeURIComponent(record.parent_code)}&nhom=HOAN_TIEN`,
+                    ),
+                },
+              ]
+            : []),
+        ]
+      : [
+          {
+            kind: 'action',
+            label: 'Huỷ đơn',
+            onSelect: () => {
+              setCancelError(null);
+              setCancelOpen(true);
+            },
+          },
+        ]
     : [];
   const errorLines = submitError ? errorLineNumbers(submitError.message) : [];
 

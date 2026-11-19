@@ -173,11 +173,15 @@ select is(pg_temp.nenr('m'), 0, 'T3 chuẩn bị: đơn m chưa có ghi danh');
 select is((pg_temp.pl('m') ->> 'enabled')::boolean, true, 'T3 chuẩn bị: bật cho học trước, sinh ghi danh');
 select is(pg_temp.err($$select app.cancel_order(pg_temp.o('m'), 'KHACH_DOI_Y')$$), 'HMT_DON_CO_GHI_DANH', 'T3 chặn: đơn cho học trước còn ghi danh hiệu lực thì không huỷ được');
 select isnt((select status_code from app.sales_order where id = pg_temp.o('m')), 'HUY', 'T3: đơn không bị đổi sang Huỷ sau khi bị chặn');
+-- Migration 565 (canvas BH05_huy_chan): get_order báo sẵn lý do chặn huỷ để menu giải thích và mời tạo ticket hoàn tiền.
+select is(app.get_order(pg_temp.o('m')) ->> 'cancel_block', 'GHI_DANH', 'get_order: đơn cho học trước còn ghi danh hiệu lực báo cancel_block = GHI_DANH');
+select is(app.get_order(pg_temp.o('n')) ->> 'cancel_block', null, 'get_order: đơn không bị chặn (không ghi danh, không phiếu thu) không có cancel_block');
 select lives_ok($$select app.cancel_order(pg_temp.o('n'), 'KHACH_DOI_Y')$$, 'T3 đúng: đơn không có ghi danh vẫn huỷ được');
 
 -- ---- T4: ghi danh đã Dừng không được cấp lại giờ ----
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select pg_temp.pay('m', 600000);
+select is(app.get_order(pg_temp.o('m')) ->> 'cancel_block', 'PHIEU_THU', 'get_order: đơn đã có phiếu thu báo cancel_block = PHIEU_THU (ưu tiên trước ghi danh)');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select ok(pg_temp.hours('m', 'CAP_MUA') > 0, 'T4 chuẩn bị: thu tiền thì được cấp giờ mua');
 create temp table h0 (v numeric);
