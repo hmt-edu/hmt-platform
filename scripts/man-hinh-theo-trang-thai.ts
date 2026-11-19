@@ -45,6 +45,7 @@ const BANG_CHUNG: Record<string, string> = {
 const NGUON_RA_UI = [
   'docs/nghiep-vu/ra-ui-quan-tri-d50.md',
   'docs/nghiep-vu/doi-chieu-ui-ban-hang-thu-chi.md',
+  'docs/nghiep-vu/doi-chieu-ui-lop-buoi-gv.md',
   'docs/design/doi-chieu-ui-cham-soc-khach-hang.md',
   'docs/design/doi-chieu-ui-cong-giao-vien.md',
   'docs/nghiep-vu/doi-chieu-ui-dao-tao.md',
