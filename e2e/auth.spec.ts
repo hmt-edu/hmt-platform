@@ -134,38 +134,16 @@ test('sai mật khẩu, tài khoản bị khoá, tài khoản không có: cùng 
   await expect(page).toHaveURL(/\/crm$/);
 });
 
-test('CHUNG-06, CHUNG-07: học sinh đăng nhập bằng mã HS, bị yêu cầu đổi mật khẩu lần đầu', async ({
+test('CHUNG-06, CHUNG-07: học sinh đăng nhập bằng mã HS vào thẳng cổng học, không bị bắt đổi mật khẩu lần đầu (E31)', async ({
   page,
 }) => {
   await loginStudent(page, 'hs900001');
-  await expect(page).toHaveURL(/\/doi-mat-khau$/);
-  await expect(page.getByRole('heading', { level: 1, name: 'Đổi mật khẩu lần đầu' })).toBeVisible();
-  await expect(page.locator('html')).toHaveAttribute('data-product', 'lms');
-  // Ô tên đăng nhập ẩn giúp trình quản lý mật khẩu lưu đúng tài khoản (mã HS).
-  await expect(page.locator('input[name="username"]')).toHaveValue('HS900001');
-  await expectAccessible(page);
-  await page.goto('/hoc');
-  await expect(page).toHaveURL(/\/doi-mat-khau$/);
-});
-
-// Đang CHỜ D35: từ migration 466 (R2) chính sách đọc setting_def chỉ cho nhân viên và khoá student_idle_logout_minutes, nên học sinh KHÔNG đọc được
-// password_min_length, password_require_letter_digit: luật mật khẩu không tải được, màn đổi mật khẩu lần đầu của học sinh không dùng được (màn nay báo lỗi
-// tiếng Việt, E27). Khi D35 mở hai khoá này cho học sinh, đổi WAIT_D35 thành false để bài chạy.
-const WAIT_D35 = true;
-
-test('CHUNG-07: học sinh đổi mật khẩu lần đầu, bấm Lưu đến khi vào /hoc (E27)', async ({
-  page,
-}) => {
-  test.fixme(WAIT_D35, 'Chờ D35: học sinh chưa đọc được luật mật khẩu (migration 466, R2).');
-  await loginStudent(page, 'hs900002');
-  await expect(page).toHaveURL(/\/doi-mat-khau$/);
-  // Luật mật khẩu tải xong (nút hết mờ khi đã nhập, điều kiện hiện) rồi mới nhập.
-  await expect(page.getByLabel('Điều kiện mật khẩu')).toBeVisible();
-  const newPassword = `HocSinh${Date.now()}x`;
-  await page.getByLabel('Mật khẩu mới', { exact: true }).fill(newPassword);
-  await page.getByLabel('Nhập lại mật khẩu mới').fill(newPassword);
-  await page.getByRole('button', { name: 'Đổi mật khẩu và tiếp tục' }).click();
   await expect(page).toHaveURL(/\/hoc$/);
+  await expect(page.locator('html')).toHaveAttribute('data-product', 'lms');
+  // Tham số «Học sinh bắt đổi mật khẩu lần đầu» mặc định Tắt: màn đổi mật khẩu không chặn; mở thẳng vẫn vào được cổng học.
+  await page.goto('/hoc');
+  await expect(page).toHaveURL(/\/hoc$/);
+  await expectAccessible(page);
 });
 
 test('CHUNG-10, CHUNG-13: khung CRM và hồ sơ cá nhân đạt kiểm truy cập; đăng xuất về trang đăng nhập', async ({
@@ -258,7 +236,7 @@ async function enrollDevice(page: Page): Promise<string> {
   return secret;
 }
 
-test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý tối đa 2 thiết bị', async ({
+test('Admin, Kế toán: không bắt hai bước (D41), vào CRM bằng mật khẩu, tự nguyện thêm tối đa 2 thiết bị', async ({
   page,
 }) => {
   test.skip(!DB_URL, 'Chưa có DB_URL: không dọn được thiết bị hai bước của tài khoản giả.');
@@ -266,16 +244,9 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
   const account = phone ? 'ketoan' : 'admin.cs1';
   await clearTotp(`${account}@${DOMAIN}`);
 
-  // Đăng nhập lần đầu đôi khi về lại /dang-nhap (dịch vụ đăng nhập local vừa dựng lại): thử lại tới khi vào trang thiết lập (Q-164).
-  await loginStaffUntil(page, account, /\/thiet-lap-hai-buoc$/);
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Bật xác thực hai bước' }),
-  ).toBeVisible();
-  await expectAccessible(page);
-  // Chưa xong hai bước thì không vào được cổng.
+  // Tham số mfa_required_enabled tắt (mặc định): đăng nhập mật khẩu là vào thẳng CRM, không qua trang thiết lập.
+  await loginStaffUntil(page, account, /\/crm$/);
   await page.goto('/crm');
-  await expect(page).toHaveURL(/\/thiet-lap-hai-buoc$/);
-  await enrollDevice(page);
   await expect(page).toHaveURL(/\/crm$/);
 
   if (!phone) {
@@ -300,6 +271,9 @@ test('Admin, Kế toán: bắt thiết lập hai bước, vào CRM, quản lý t
 
   await page.goto('/crm/tai-khoan');
   await expect(page.getByRole('heading', { name: 'Xác thực hai bước' })).toBeVisible();
+  // Tự nguyện thêm thiết bị đầu tiên.
+  await page.getByRole('button', { name: 'Thêm thiết bị' }).click();
+  await enrollDevice(page);
   await expect(page.getByText('Thiết bị 1')).toBeVisible();
   // Chỉ còn một thiết bị thì không gỡ được.
   await expect(page.getByRole('button', { name: 'Gỡ' })).toBeDisabled();

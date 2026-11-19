@@ -52,6 +52,8 @@ export type TicketDetail = TicketRow & {
   accused_user_id: string | null;
   accused_name: string | null;
   complaint_date: string | null;
+  /** Mức nâng cấp khiếu nại (migration 425): null = chưa nâng cấp. */
+  escalation_level?: 'QUAN_LY_CO_SO' | 'BAN_GIAM_DOC' | null;
   customer_wish: string | null;
   root_cause: string | null;
   compensation_note: string | null;
@@ -64,7 +66,14 @@ export type TicketDetail = TicketRow & {
 export type TicketEvent = {
   id: string;
   event_type:
-    'TAO' | 'GIAO' | 'DOI_TRANG_THAI' | 'DOI_NHOM_CON' | 'DOI_MUC_DO' | 'GHI_CHU' | 'SUA_KHIEU_NAI';
+    | 'TAO'
+    | 'GIAO'
+    | 'DOI_TRANG_THAI'
+    | 'DOI_NHOM_CON'
+    | 'DOI_MUC_DO'
+    | 'GHI_CHU'
+    | 'SUA_KHIEU_NAI'
+    | 'NANG_CAP';
   from_status: string | null;
   to_status: string | null;
   note: string | null;
