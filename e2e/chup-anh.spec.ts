@@ -36,14 +36,22 @@ async function capture(page: Page, shot: Shot, file: string): Promise<string | n
     if (await button.count()) await button.first().click();
   }
   if (shot.row) {
-    // Dòng dữ liệu đầu tiên của bảng (bỏ dòng tiêu đề); bấm vào liên kết trong dòng nếu có, nếu không thì bấm dòng.
+    // Dòng dữ liệu đầu tiên của bảng (bỏ dòng tiêu đề); bấm vào liên kết trong dòng nếu có, nếu không thì bấm dòng. Địa chỉ không đổi = không mở được bản ghi.
+    const before = page.url();
     const row = page.getByRole('row').nth(1);
-    if ((await row.count()) === 0 || (await page.getByRole('row').count()) < 2) {
-      note = 'màn không có dòng dữ liệu mẫu để mở bản ghi (DB giả chưa có dữ liệu loại này)';
-    } else {
+    if (await row.count()) {
       const link = row.getByRole('link').first();
-      await ((await link.count()) ? link : row).click();
+      await ((await link.count()) ? link : row).click({ timeout: 5000 }).catch(() => undefined);
       await page.waitForLoadState('networkidle');
+    }
+    // Màn trống («Chưa có …», «… sẽ hiện ở đây»), hoặc địa chỉ không đổi: không có bản ghi nào để mở.
+    const empty = await page
+      .getByText(/^Chưa có |sẽ hiện ở đây|Không có (việc|dòng|bản ghi)/)
+      .first()
+      .isVisible()
+      .catch(() => false);
+    if (empty || page.url() === before) {
+      note = 'không mở được bản ghi (DB giả chưa có dữ liệu loại này)';
     }
   }
   await page.waitForTimeout(400);
@@ -66,10 +74,9 @@ for (const role of ROLES) {
     for (const shot of role.shots) {
       const file = join(dir, `${shot.name}.png`);
       try {
-        await capture(page, shot, file);
-        report.push(
-          `${shot.approx ? 'XẤP XỈ' : 'ĐÃ CHỤP'}  ${shot.name}${shot.approx ? `  (${shot.approx})` : ''}`,
-        );
+        const note = await capture(page, shot, file);
+        const why = shot.approx ?? note;
+        report.push(`${why ? 'XẤP XỈ' : 'ĐÃ CHỤP'}  ${shot.name}${why ? `  (${why})` : ''}`);
       } catch (e) {
         report.push(`LỖI      ${shot.name}  (${String(e).split('\n')[0]?.slice(0, 120)})`);
       }
