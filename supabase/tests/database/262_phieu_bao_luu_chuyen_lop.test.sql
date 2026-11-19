@@ -186,6 +186,33 @@ select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select app.execute_ticket_task(pg_temp.pk('gh'));
 select is((select count(*)::int from app.enrollment_hold where enrollment_id = pg_temp.e('1') and kind_code = 'GIA_HAN' and status_code = 'DANG_BAO_LUU'), 1, 'C30 Đúng: phiếu Gia hạn tạo bản gia hạn đang bảo lưu');
 
+-- ================= C31 (migration 424): phiếu Bảo lưu hành động Tiếp tục học (quay lại sớm), R-GD-09 =================
+insert into tt values ('tt2', pg_temp.tk('DN_01_01', 2));
+select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('tt2'), 'BAO_LUU', 'Quay lại', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'reason_code', 'BAN_THI', 'resume', true))$$),
+          'HMT_PHIEU_DU_LIEU_SAI', 'C31 Chặn: ghi danh không có bảo lưu đang chạy thì không tạo phiếu Tiếp tục học');
+create function pg_temp.hrs1() returns numeric language sql stable security definer as $$ select coalesce(sum(hours), 0) from app.hour_ledger where enrollment_id = pg_temp.e('1') $$;
+grant execute on function pg_temp.hrs1() to public;
+create temp table hb (v numeric);
+grant all on hb to public;
+insert into hb select pg_temp.hrs1();
+insert into tt values ('tt', pg_temp.tk('DN_01_01', 1));
+insert into tp select 'tt', (app.create_ticket_task(pg_temp.k('tt'), 'BAO_LUU', 'Em quay lại học sớm', jsonb_build_object('enrollment_id', pg_temp.e('1'), 'reason_code', 'BAN_THI', 'resume', true)) ->> 'id')::uuid;
+select is((select status_code from app.ticket_task where id = pg_temp.pk('tt')), 'NHAP', 'C31 Đúng: phiếu Tiếp tục học tạo ở Nháp, không đòi số tháng');
+select app.submit_ticket_task(pg_temp.pk('tt'));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_ticket_task(pg_temp.pk('tt'));
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select pg_temp.sudo($$update app.feature_flag set enabled = false where module_code = 'BAO_LUU'$$);
+select is(pg_temp.err($$select app.execute_ticket_task(pg_temp.pk('tt'))$$), 'HMT_TINH_NANG_TAT', 'C31 Chặn: công tắc BAO_LUU tắt thì không tiếp tục học');
+select pg_temp.sudo($$update app.feature_flag set enabled = true where module_code = 'BAO_LUU'$$);
+select app.execute_ticket_task(pg_temp.pk('tt'));
+select is((select status_code from app.enrollment where id = pg_temp.e('1')), 'CHO_XEP_LOP', 'C31 Đúng: ghi danh về hàng chờ xếp lớp, không tự xếp lớp');
+select is((select count(*)::int from app.enrollment_hold where enrollment_id = pg_temp.e('1') and status_code = 'DANG_BAO_LUU'), 0, 'C31 Đúng: không còn bảo lưu đang chạy');
+select is((select count(*)::int from app.enrollment_hold where enrollment_id = pg_temp.e('1') and end_kind = 'QUAY_LAI_SOM'), 1, 'C31 Đúng: bảo lưu kết thúc kiểu quay lại sớm');
+select is((select count(*)::int from app.enrollment_class where enrollment_id = pg_temp.e('1') and end_date is null), 0, 'C31 Đúng: không còn dòng xếp lớp đang mở');
+select is(pg_temp.hrs1(), (select v from hb), 'C31 Đúng: giữ nguyên giờ còn lại (R-GD-09)');
+select is((select status_code from app.ticket_task where id = pg_temp.pk('tt')), 'DA_THUC_HIEN', 'C31 Đúng: phiếu Đã thực hiện');
+
 -- ================= Phiếu Chuyển lớp =================
 select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cl'), 'CHUYEN_LOP', 'Đổi giờ', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'reason_code', 'KHAC'))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: phiếu Chuyển lớp thiếu lớp mới, ngày, loại');
 select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cl'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'to_class_id', pg_temp.c('x5'), 'start_date', pg_temp.mon(), 'kind_code', 'CHUYEN_CO_SO', 'reason_code', 'KHAC'))$$), 'HMT_PHIEU_CHUA_LAM', 'Chặn: Chuyển cơ sở cần hai quản lý duyệt, chưa làm ở phiếu');
