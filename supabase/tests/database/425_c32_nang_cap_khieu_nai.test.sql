@@ -64,7 +64,7 @@ select is((select count(*)::int from app.ticket_event where ticket_id = (select 
 -- ================= Chặn =================
 create temp table t2 (j jsonb);
 grant all on t2 to public;
-insert into t2 select app.create_ticket(pg_temp.mk('DN', 'DN_02_01'));
+insert into t2 select app.create_ticket(pg_temp.mk('DN', 'DN_02_01', jsonb_build_object('student_id', (select id from app.student where code = 'HSAS501'))));
 select is(pg_temp.err($$select app.escalate_ticket((select (j ->> 'id')::uuid from t2), 'Thử')$$), 'HMT_TICKET_LOAI_SAI', 'Chặn: ticket đề nghị không có nâng cấp (R-CS-06)');
 create temp table t3 (j jsonb);
 grant all on t3 to public;
