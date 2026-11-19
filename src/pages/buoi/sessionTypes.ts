@@ -31,6 +31,8 @@ export type RecordStudent = {
   teacher_status_code: string | null;
   teacher_status_name: string | null;
   mismatch: boolean;
+  /** Giờ đã trừ của em cho buổi này (sổ giờ); null khi buổi chưa Done hoặc không trừ giờ. */
+  hours_deducted?: number | null;
 };
 export type SessionRecord = {
   session: {
