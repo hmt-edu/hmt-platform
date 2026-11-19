@@ -34,11 +34,18 @@ const nav = (page: Page) => page.getByRole('navigation', { name: 'Danh sách dan
 const pick = (page: Page, name: RegExp) => nav(page).getByRole('button', { name }).click();
 const panel = (page: Page) => page.getByRole('region', { name: 'Các mục của danh mục' });
 
-test('Cột trái: danh mục kèm nhãn Mở, Khoá, Chỉ xem; tìm theo tên không dấu; Lịch sử thay đổi mờ', async ({
+test('Cột trái: danh mục kèm nhãn Mở, Khoá, Chỉ xem; tìm theo tên không dấu; Lịch sử thay đổi mở hộp', async ({
   page,
 }) => {
   await open(page);
-  await expect(page.getByRole('button', { name: 'Lịch sử thay đổi' })).toBeDisabled();
+  // Nút bật (PR lịch sử thay đổi): mở hộp lịch sử, đóng được.
+  const history = page.getByRole('button', { name: 'Lịch sử thay đổi' });
+  await expect(history).toBeEnabled();
+  await history.click();
+  const dialog = page.getByRole('dialog', { name: 'Lịch sử thay đổi' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: 'Đóng' }).first().click();
+  await expect(dialog).toBeHidden();
   await expect(nav(page).getByText(/^\d+$/).first()).toBeVisible();
   const stage = nav(page).getByRole('button', { name: /^Giai đoạn cơ hội/ });
   await expect(stage).toContainText('Khoá');
