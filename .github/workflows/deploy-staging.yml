@@ -164,6 +164,7 @@ jobs:
       # thiếu bước này thì mọi lệnh gọi rpc vào schema app báo PGRST106 và đăng nhập báo «Hệ thống đang lỗi». Làm đúng một lần cho mỗi lượt triển khai,
       # idempotent (chỉ thêm `app` nếu chưa có, giữ nguyên các schema khác). Cần SUPABASE_ACCESS_TOKEN; chưa có thì cảnh báo, bước kiểm cuối sẽ báo lỗi.
       - name: Mở schema app qua Data API trên hmt-staging
+        continue-on-error: true
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
@@ -174,14 +175,16 @@ jobs:
           fi
           ref="$(printf '%s' "$VITE_SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')"
           api="https://api.supabase.com/v1/projects/$ref/postgrest"
-          current="$(curl -fsS "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN")"
+          # Token đọc được nhưng có thể thiếu quyền GHI cấu hình project (403): chỉ cảnh báo, KHÔNG làm đỏ lượt triển khai; anh bật tay (docs/van-hanh/mo-schema-app-data-api.md).
+          warn_manual() { echo "::warning::Token SUPABASE_ACCESS_TOKEN thiếu quyền ghi cấu hình project (hoặc API lỗi): anh Trường bật tay Exposed schemas thêm app (docs/van-hanh/mo-schema-app-data-api.md). Bước kiểm cuối sẽ báo nếu vẫn thiếu."; exit 0; }
+          current="$(curl -fsS "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN")" || warn_manual
           schemas="$(printf '%s' "$current" | jq -r '.db_schema')"
           if printf ',%s,' "$schemas" | grep -q ',app,'; then
             echo "Schema app đã mở qua Data API."
             exit 0
           fi
           body="$(jq -nc --arg s "$schemas,app" '{db_schema: $s}')"
-          curl -fsS -X PATCH "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' -d "$body" > /dev/null
+          curl -fsS -X PATCH "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' -d "$body" > /dev/null || warn_manual
           echo "Đã thêm schema app vào Exposed schemas của hmt-staging."
 
       # Đồng bộ cài đặt Auth của hmt-staging với supabase/config.toml (chỉ áp ở local, db push không đổi project hosted). Thiếu Auth Hook
@@ -212,8 +215,11 @@ jobs:
             refresh_token_rotation_enabled: true,
             security_refresh_token_reuse_interval: 10
           }')"
-          curl -fsS -X PATCH "https://api.supabase.com/v1/projects/$ref/config/auth" \
-            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' -d "$body" > /dev/null
+          if ! curl -fsS -X PATCH "https://api.supabase.com/v1/projects/$ref/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' -d "$body" > /dev/null; then
+            echo "::warning::Token thiếu quyền ghi cấu hình Auth (hoặc API lỗi): anh Trường bật tay Auth Hook Customize Access Token và các mục Auth (docs/van-hanh/mo-schema-app-data-api.md). Bước kiểm cuối sẽ báo nếu vẫn thiếu."
+            exit 0
+          fi
           echo "Đã đồng bộ cài đặt Auth của hmt-staging (hook token, đăng ký, mật khẩu, hai bước)."
 
       # Bài kiểm chủ động: khoá của hmt-platform KHÔNG được chạm hmt-prod (chốt 10/10/2026).
