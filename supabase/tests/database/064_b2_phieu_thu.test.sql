@@ -286,6 +286,7 @@ select ok((select count(*)::int from app.receipt) >= 5, 'RLS: Sale CS1 thấy ph
 select is((app.list_receipts('{"status": ["NHAP"]}') ->> 'total')::int, 1, 'Danh sách: lọc trạng thái Nháp (p6)');
 select is((app.list_receipts('{"mine": true, "status": ["DA_DUYET"]}') ->> 'total')::int, 3, 'Danh sách: phiếu của tôi, Đã duyệt (p1, p2, p3)');
 select is((app.list_receipts('{}', 'created_desc', 2, 0) -> 'rows')::jsonb -> 0 ->> 'code' is not null, true, 'Danh sách có mã phiếu');
+select ok((app.list_receipts('{}', 'created_desc', 2, 0) -> 'rows' -> 0) ? 'txn_ref', 'C67 Danh sách phiếu thu trả khoá txn_ref (cột Mã giao dịch của TC-04)');
 select is(jsonb_array_length(app.list_receipts('{}', 'created_desc', 2, 0) -> 'rows'), 2, 'Danh sách: phân trang ở máy chủ, giới hạn số dòng');
 select is((app.list_receipts(jsonb_build_object('q', 'phieu thu')) ->> 'total')::int >= 5, true, 'Danh sách: tìm theo tên phụ huynh (bỏ dấu)');
 select is((app.list_receipts('{"q": "0900007001"}') ->> 'total')::int >= 2, true, 'Danh sách: tìm theo SĐT phụ huynh');

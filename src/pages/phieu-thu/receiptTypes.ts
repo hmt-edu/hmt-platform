@@ -24,6 +24,8 @@ export type ReceiptRow = {
   approver_name: string | null;
   /** Người nhận tiền (canvas TC01); migration 563. */
   receiver_name?: string | null;
+  /** Mã giao dịch (TC-04, migration 431). */
+  txn_ref?: string | null;
   submitted_at: string | null;
 };
 
