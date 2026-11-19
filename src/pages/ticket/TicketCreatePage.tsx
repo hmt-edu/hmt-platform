@@ -126,10 +126,11 @@ export function TicketCreatePage() {
             label="Mã"
             mode="create"
             value=""
-            editor={<span className="text-fg-muted">Cấp tự động khi lưu, không sửa được.</span>}
+            editor={<span className="text-fg-muted">Cấp tự động, không sửa được.</span>}
           />
           <DetailField
             label="Loại"
+            hint="Đổi loại khi tiếp nhận được, có ghi nhật ký."
             required
             mode="create"
             value=""
@@ -186,6 +187,7 @@ export function TicketCreatePage() {
           />
           <DetailField
             label="Người gửi"
+            hint="Nhân viên tạo hộ vẫn ghi người gửi thật."
             required
             mode="create"
             value=""

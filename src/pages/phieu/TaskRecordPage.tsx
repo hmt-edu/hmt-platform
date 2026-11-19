@@ -37,6 +37,15 @@ const STEPS: StageStep[] = ['NHAP', 'CHO_DUYET', 'DA_DUYET', 'DA_THUC_HIEN'].map
 const beforeText = (v: unknown) =>
   typeof v === 'string' || typeof v === 'number' ? String(v) : '—';
 
+/** Câu dưới hộp Duyệt (canvas CSN06): bạn duyệt ở cấp nào; cấp cuối thì phiếu sang Đã duyệt và người tạo bấm Thực hiện, chưa cuối thì chuyển cấp kế. */
+function approveHint(level: number, levels: string[]): string {
+  const role = (l: string | undefined) => (l ? (LEVEL_ROLE_LABEL[l] ?? l) : '');
+  const head = `Bạn duyệt ở cấp ${level}: ${role(levels[level - 1])}. `;
+  return level >= levels.length
+    ? `${head}Sau khi duyệt, phiếu sang Đã duyệt và người tạo bấm Thực hiện.`
+    : `${head}Sau khi duyệt, phiếu chuyển lên cấp ${level + 1}: ${role(levels[level])}.`;
+}
+
 type Asking = { action: 'approve' | 'reject' | 'cancel' | 'execute' } | null;
 
 export function TaskRecordPage() {
@@ -315,11 +324,22 @@ export function TaskRecordPage() {
         onSubmit={() => asking && asking.action !== 'execute' && void run(asking.action, note)}
       >
         <TextAreaField
-          label={needsNote ? 'Lý do' : 'Ghi chú'}
+          label={needsNote ? 'Lý do' : 'Ghi chú duyệt'}
           required={needsNote}
           value={note}
           onChange={(e) => setNote(e.target.value)}
         />
+        {asking?.action === 'reject' && (
+          <p className="text-caption text-fg-muted">
+            Bắt buộc. Phiếu về trạng thái Từ chối, người tạo sửa và gửi lại.
+          </p>
+        )}
+        {asking?.action === 'cancel' && (
+          <p className="text-caption text-fg-muted">Phiếu không xoá được, chỉ chuyển sang Huỷ.</p>
+        )}
+        {asking?.action === 'approve' && (
+          <p className="text-caption text-fg-muted">{approveHint(task.level, task.levels)}</p>
+        )}
       </FormDialog>
       <ConfirmDialog
         open={asking?.action === 'execute'}
