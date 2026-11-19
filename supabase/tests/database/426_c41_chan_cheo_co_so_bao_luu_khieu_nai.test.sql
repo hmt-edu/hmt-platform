@@ -84,6 +84,7 @@ select pg_temp.claims(pg_temp.uid('qlcs5'), 'aal1');
 select app.approve_ticket_task(pg_temp.p('bl'), 'Đồng ý');
 select pg_temp.claims(pg_temp.uid('qlcs1'), 'aal1');
 select is(pg_temp.err($$select app.execute_ticket_task(pg_temp.p('bl'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn chéo cơ sở: Trưởng cơ sở CS1 không thực hiện phiếu Bảo lưu của CS5');
+select pg_temp.claims(pg_temp.uid('qlcs5'), 'aal1');
 select is((select status_code from app.enrollment where id = pg_temp.enr()), 'DANG_HOC', 'Nguyên vẹn: ghi danh vẫn Đang học sau các lần bị chặn');
 select pg_temp.claims(pg_temp.uid('qlcs5'), 'aal1');
 select app.execute_ticket_task(pg_temp.p('bl'));
@@ -104,10 +105,13 @@ select pg_temp.claims(pg_temp.uid('qlcs5'), 'aal1');
 select app.approve_ticket_task(pg_temp.p('tt'), 'Đồng ý');
 select pg_temp.claims(pg_temp.uid('qlcs1'), 'aal1');
 select is(pg_temp.err($$select app.execute_ticket_task(pg_temp.p('tt'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn chéo cơ sở: Trưởng cơ sở CS1 không thực hiện phiếu Tiếp tục học của CS5');
+select pg_temp.claims(pg_temp.uid('qlcs5'), 'aal1');
 select is((select status_code from app.enrollment where id = pg_temp.enr()), 'BAO_LUU', 'Nguyên vẹn: ghi danh vẫn Bảo lưu, chưa về hàng chờ');
 
 -- ================= Nâng cấp khiếu nại: người cơ sở khác bị chặn =================
+select pg_temp.claims(pg_temp.uid('qlcs1'), 'aal1');
 select is(pg_temp.err($$select app.escalate_ticket(pg_temp.k('kn'), 'Thử')$$), 'HMT_KHONG_CO_QUYEN', 'Chặn chéo cơ sở: Trưởng cơ sở CS1 không nâng cấp khiếu nại CS5 (R-CS-06)');
+select pg_temp.claims(pg_temp.uid('qlcs5'), 'aal1');
 select is((select escalation_level from app.ticket where id = pg_temp.k('kn')), null, 'Nguyên vẹn: khiếu nại CS5 chưa bị nâng cấp');
 select pg_temp.claims(pg_temp.uid('qlcs5'), 'aal1');
 select is(app.escalate_ticket(pg_temp.k('kn'), 'Quản lý đúng cơ sở nâng cấp'), 'QUAN_LY_CO_SO', 'Đúng: Trưởng cơ sở CS5 nâng cấp được');
