@@ -376,7 +376,7 @@ export function TicketRecordPage() {
         }
       >
         <div className="grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
-          <DetailSection title="Thông tin ticket">
+          <DetailSection title="Tiếp nhận">
             <DetailField label="Mã" mode="view" value={ticket.code} />
             <DetailField label="Loại" mode="view" value={TYPE_NAME[ticket.ticket_type]} />
             <DetailField label="Tiêu đề" mode="view" value={ticket.title} />
@@ -387,11 +387,8 @@ export function TicketRecordPage() {
               value={catalogs.name('TICKET_CHANNEL', ticket.channel_code) ?? ticket.channel_code}
             />
             <DetailField label="Cơ sở" mode="view" value={ticket.branch_code} />
-            <DetailField label="Học sinh" mode="view" value={ticket.student_name ?? ''} />
-            <DetailField label="Lớp" mode="view" value={ticket.class_code ?? ''} />
-            <DetailField label="Ghi danh" mode="view" value={ticket.enrollment_code ?? ''} />
-            <DetailField label="Ticket gốc" mode="view" value={ticket.related_ticket_code ?? ''} />
-            <DetailField label="Nhóm" mode="view" value={ticket.category_name ?? ''} />
+            <DetailField label="Nhóm" mode="view" value={ticket.group_name ?? ''} />
+            <DetailField label="Nhóm con" mode="view" value={ticket.category_name ?? ''} />
             {ticket.nature_code && (
               <DetailField
                 label="Tính chất"
@@ -400,6 +397,12 @@ export function TicketRecordPage() {
               />
             )}
             <DetailField label="Mô tả" mode="view" value={ticket.description} />
+          </DetailSection>
+          <DetailSection title="Liên kết">
+            <DetailField label="Học sinh" mode="view" value={ticket.student_name ?? ''} />
+            <DetailField label="Lớp" mode="view" value={ticket.class_code ?? ''} />
+            <DetailField label="Ghi danh" mode="view" value={ticket.enrollment_code ?? ''} />
+            <DetailField label="Ticket khác" mode="view" value={ticket.related_ticket_code ?? ''} />
           </DetailSection>
           <DetailSection title="Xử lý">
             <DetailField
