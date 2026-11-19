@@ -267,82 +267,90 @@ function ClassView({ record }: { record: ClassRecord }) {
         </div>
 
         {(record.group_classes ?? []).length > 0 && (
-          <DetailSection title="Nhóm lớp">
-            <DetailField mode="view" label="Cùng nhóm" value={record.group_name ?? 'Nhóm lớp'} />
-            <ul className="flex flex-col gap-1 py-1">
-              {(record.group_classes ?? []).map((g) => (
-                <li key={g.id} className="flex flex-wrap items-center gap-x-3">
-                  <span className="text-caption text-fg-muted">Lớp còn lại của nhóm:</span>
-                  <Link className="font-medium text-link underline" to={`/crm/lop/${g.id}`}>
-                    {[g.subject_name, g.code].filter(Boolean).join(' · ')}
-                  </Link>
-                  {g.teacher_names && <span className="text-fg-muted">GV {g.teacher_names}</span>}
-                  <Tag>{g.status_name ?? g.status_code}</Tag>
-                </li>
-              ))}
-            </ul>
-            <p className="text-caption text-fg-muted">
-              Nhóm không có mã riêng. Mỗi lớp trong nhóm vẫn độc lập: giáo viên, lịch, sĩ số, bước
-              duyệt riêng (R-LOP-14).
-            </p>
-          </DetailSection>
+          <div className="mt-6">
+            <DetailSection title="Nhóm lớp">
+              <DetailField mode="view" label="Cùng nhóm" value={record.group_name ?? 'Nhóm lớp'} />
+              <ul className="flex flex-col gap-1 py-1">
+                {(record.group_classes ?? []).map((g) => (
+                  <li key={g.id} className="flex flex-wrap items-center gap-x-3">
+                    <span className="text-caption text-fg-muted">Lớp còn lại của nhóm:</span>
+                    <Link className="font-medium text-link underline" to={`/crm/lop/${g.id}`}>
+                      {[g.subject_name, g.code].filter(Boolean).join(' · ')}
+                    </Link>
+                    {g.teacher_names && <span className="text-fg-muted">GV {g.teacher_names}</span>}
+                    <Tag>{g.status_name ?? g.status_code}</Tag>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-caption text-fg-muted">
+                Nhóm không có mã riêng. Mỗi lớp trong nhóm vẫn độc lập: giáo viên, lịch, sĩ số, bước
+                duyệt riêng (R-LOP-14).
+              </p>
+            </DetailSection>
+          </div>
         )}
 
-        <DetailSection title="Time Table">
-          <p className="text-caption text-fg-muted">
-            Bốn ô Lịch học, Phòng, Giáo viên, Trợ giảng của lớp tự sinh từ Time Table này.
-          </p>
-          <Tabs
-            label="Time Table theo thứ"
-            value={dayTab}
-            onChange={setDayTab}
-            items={[1, 2, 3, 4, 5, 6, 7].map((day) => {
-              const slots = record.slots.filter((x) => x.weekday === day);
-              return {
-                value: String(day),
-                label: WEEKDAY_LABEL[day] ?? '',
-                count: slots.length > 0 ? slots.length : undefined,
-                content:
-                  slots.length === 0 ? (
-                    <p className="py-2 text-fg-muted">{WEEKDAY_LABEL[day]} không có khung giờ.</p>
-                  ) : (
-                    <LineTable
-                      caption={`Khung giờ ${WEEKDAY_LABEL[day]}`}
-                      rows={slots}
-                      rowKey={(x) => x.id}
-                      columns={[
-                        {
-                          key: 'time',
-                          header: 'Giờ',
-                          cell: (x) => `${timeText(x.start_time)}–${timeText(x.end_time)}`,
-                        },
-                        { key: 'teacher', header: 'Giáo viên', cell: (x) => x.teacher_name ?? '—' },
-                        {
-                          key: 'assistant',
-                          header: 'Trợ giảng',
-                          cell: (x) => x.assistant_name ?? '—',
-                        },
-                        { key: 'room', header: 'Phòng', cell: (x) => x.room_name ?? '—' },
-                        {
-                          key: 'repeat',
-                          header: 'Cách lặp',
-                          cell: (x) =>
-                            x.repeat_weeks > 1 ? `Mỗi ${x.repeat_weeks} tuần` : 'Hàng tuần',
-                        },
-                        {
-                          key: 'first',
-                          header: 'Buổi đầu tiên',
-                          cell: (x) => formatDate(x.first_date),
-                        },
-                      ]}
-                    />
-                  ),
-              };
-            })}
-          />
-        </DetailSection>
+        <div className="mt-6">
+          <DetailSection title="Time Table">
+            <p className="text-caption text-fg-muted">
+              Bốn ô Lịch học, Phòng, Giáo viên, Trợ giảng của lớp tự sinh từ Time Table này.
+            </p>
+            <Tabs
+              label="Time Table theo thứ"
+              value={dayTab}
+              onChange={setDayTab}
+              items={[1, 2, 3, 4, 5, 6, 7].map((day) => {
+                const slots = record.slots.filter((x) => x.weekday === day);
+                return {
+                  value: String(day),
+                  label: WEEKDAY_LABEL[day] ?? '',
+                  count: slots.length > 0 ? slots.length : undefined,
+                  content:
+                    slots.length === 0 ? (
+                      <p className="py-2 text-fg-muted">{WEEKDAY_LABEL[day]} không có khung giờ.</p>
+                    ) : (
+                      <LineTable
+                        caption={`Khung giờ ${WEEKDAY_LABEL[day]}`}
+                        rows={slots}
+                        rowKey={(x) => x.id}
+                        columns={[
+                          {
+                            key: 'time',
+                            header: 'Giờ',
+                            cell: (x) => `${timeText(x.start_time)}–${timeText(x.end_time)}`,
+                          },
+                          {
+                            key: 'teacher',
+                            header: 'Giáo viên',
+                            cell: (x) => x.teacher_name ?? '—',
+                          },
+                          {
+                            key: 'assistant',
+                            header: 'Trợ giảng',
+                            cell: (x) => x.assistant_name ?? '—',
+                          },
+                          { key: 'room', header: 'Phòng', cell: (x) => x.room_name ?? '—' },
+                          {
+                            key: 'repeat',
+                            header: 'Cách lặp',
+                            cell: (x) =>
+                              x.repeat_weeks > 1 ? `Mỗi ${x.repeat_weeks} tuần` : 'Hàng tuần',
+                          },
+                          {
+                            key: 'first',
+                            header: 'Buổi đầu tiên',
+                            cell: (x) => formatDate(x.first_date),
+                          },
+                        ]}
+                      />
+                    ),
+                };
+              })}
+            />
+          </DetailSection>
+        </div>
 
-        <div ref={detailRef}>
+        <div ref={detailRef} className="mt-6">
           <Tabs
             label="Học sinh và buổi học của lớp"
             value={listTab}
