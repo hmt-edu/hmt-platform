@@ -1,5 +1,6 @@
 // Gọi dữ liệu màn Báo giá (BH-01): danh sách phân trang ở máy chủ và Xuất. Giao diện KHÔNG tính tiền, giờ, chiết khấu; chỉ hiện kết quả
 // từ hàm cơ sở dữ liệu (app.price_line là nơi duy nhất tính, CLAUDE.md).
+import type { GroupCounts } from '../lead/leadTypes';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
@@ -12,11 +13,12 @@ export function useQuotationPage(
   sort: string | undefined,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['quotation-list', filters, sort ?? null, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<QuotationPage>(supabase, 'list_quotations', {
@@ -24,6 +26,21 @@ export function useQuotationPage(
         p_sort: sort ?? 'created_desc',
         p_limit: limit,
         p_offset: offset,
+      }),
+  });
+}
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+export function useQuotationGroupCounts(filters: QuoteFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['quotation-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'quotation_group_counts', {
+        p_filters: filters,
+        p_fields: fields,
       }),
   });
 }
