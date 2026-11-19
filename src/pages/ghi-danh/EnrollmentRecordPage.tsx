@@ -18,7 +18,7 @@ import type { StageStep } from '../../ui/Stage';
 import { AdjustHoursDialog } from './AdjustHoursDialog';
 import { AssignClassDialog } from './AssignClassDialog';
 import { statusTone } from './enrollConfig';
-import { useEnrollmentRecord } from './useEnrollmentData';
+import { useEnrollmentRecord, useSameClassPeers } from './useEnrollmentData';
 
 const END_REASON: Record<string, string> = {
   CHUYEN_LOP: 'Đã chuyển lớp',
@@ -45,6 +45,7 @@ const CHATTER_FORMAT = {
 export function EnrollmentRecordPage() {
   const { id } = useParams();
   const query = useEnrollmentRecord(id);
+  const peers = useSameClassPeers(id).data;
   const access = useAccess();
   const openFrom = useNavigateFrom();
   const [assigning, setAssigning] = useState(false);
@@ -283,6 +284,17 @@ export function EnrollmentRecordPage() {
                     </tbody>
                   </table>
                 </div>
+              )}
+              {peers && peers.peers.length > 0 && (
+                <p className="text-body">
+                  Em có {peers.peers.length + 1} ghi danh ở lớp này ({e.code} còn{' '}
+                  {formatNumber(hours.remaining)} giờ
+                  {peers.peers
+                    .map((p) => `, ${p.code} còn ${formatNumber(p.remaining)} giờ`)
+                    .join('')}
+                  ). Giờ còn của lớp = tổng các ghi danh:{' '}
+                  <b>{formatNumber(peers.total_remaining ?? 0)} giờ</b>.
+                </p>
               )}
               <p className="text-caption text-fg-muted">
                 Ngày hết giờ dự kiến cộng lịch của lớp đang học, chỉ để dự báo, không chặn gì.
