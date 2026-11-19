@@ -388,7 +388,11 @@ export function TicketRecordPage() {
               mode="view"
               value={catalogs.name('TICKET_CHANNEL', ticket.channel_code) ?? ticket.channel_code}
             />
-            <DetailField label="Cơ sở" mode="view" value={ticket.branch_code} />
+            <DetailField
+              label="Cơ sở"
+              mode="view"
+              value={access.branchName(ticket.branch_code) ?? ticket.branch_code}
+            />
             <DetailField label="Nhóm" mode="view" value={ticket.group_name ?? ''} />
             <DetailField label="Nhóm con" mode="view" value={ticket.category_name ?? ''} />
             {ticket.nature_code && (
