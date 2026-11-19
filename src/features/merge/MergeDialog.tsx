@@ -96,7 +96,7 @@ function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialo
     ...(c.can_merge ? {} : { disabledReason: c.blocker_message ?? 'Không gộp được với bản này.' }),
   }));
   const found: ComboOption[] = (q === '' ? [] : (search.data ?? []))
-    .filter((r) => r.id !== current.id && r.record_status !== 'DA_GOP')
+    .filter((r) => r.id !== current.id && r.record_status === 'DANG_DUNG')
     .map((r) => ({
       value: r.id,
       label: `${r.code} · ${r.student_name ? `${r.student_name} · ` : ''}${r.parent_name}`,

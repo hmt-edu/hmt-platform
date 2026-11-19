@@ -58,6 +58,7 @@ import {
 } from './leadRecord';
 import { changeLeadStage } from './useLeadData';
 import { LeadStageDialog } from './LeadStageDialog';
+import { CancelLeadDialog } from './CancelLeadDialog';
 import { SYSTEM_SUBSTAGE, canRestore, selectableSubstages } from './leadStage';
 import { useLeadCatalogs } from './useCatalogs';
 
@@ -135,13 +136,18 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
 
   const creating = record === null;
   const merged = record?.record_status === 'DA_GOP';
-  const canEdit = access.can('LEAD', 'SUA') && !merged;
-  const canAssign = access.can('LEAD', 'GIAO_VIEC') && !merged;
+  // Lead đã huỷ nhập nhầm (CHUNG-20) cũng chỉ xem, như bản đã gộp.
+  const cancelled = record?.record_status === 'DA_HUY';
+  const locked = merged || cancelled;
+  const canCancelLead = access.can('ADMIN', 'TAO') && record?.record_status === 'DANG_DUNG';
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const canEdit = access.can('LEAD', 'SUA') && !locked;
+  const canAssign = access.can('LEAD', 'GIAO_VIEC') && !locked;
   const canCreate = access.can('LEAD', 'TAO');
   // Gộp trùng dùng quyền Duyệt trên phân hệ Lead (R-CRM-22); bản đã gộp chỉ đọc.
-  const canMerge = access.can('LEAD', 'DUYET') && !merged;
-  const canAppt = access.can('APPOINTMENT', 'TAO') && !merged;
-  const canCreateOpp = access.can('OPPORTUNITY', 'TAO') && !merged;
+  const canMerge = access.can('LEAD', 'DUYET') && !locked;
+  const canAppt = access.can('APPOINTMENT', 'TAO') && !locked;
+  const canCreateOpp = access.can('OPPORTUNITY', 'TAO') && !locked;
   const refreshRecord = useRefreshLeadRecord(record?.id ?? '');
   const undoAppointment = useUndoAppointment(refreshRecord);
 
@@ -452,7 +458,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           </>
         }
         menu={
-          (canAssign || canMerge) && record
+          (canAssign || canMerge || canCancelLead) && record
             ? {
                 label: 'Hành động',
                 items: [
@@ -471,6 +477,15 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                           kind: 'action' as const,
                           label: 'Gộp trùng',
                           onSelect: () => setMergeOpen(true),
+                        },
+                      ]
+                    : []),
+                  ...(canCancelLead
+                    ? [
+                        {
+                          kind: 'action' as const,
+                          label: 'Huỷ lead nhập nhầm',
+                          onSelect: () => setCancelOpen(true),
                         },
                       ]
                     : []),
@@ -601,7 +616,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                 labels: LEAD_FIELD_LABELS,
                 value: leadHistoryValue(catalogs, record),
               }}
-              canWrite={!merged}
+              canWrite={!locked}
               actions={
                 canAppt ? (
                   <Button icon="calendar" onClick={() => setApptOpen(true)}>
@@ -613,8 +628,8 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                 <UpcomingActivities
                   rows={upcoming.data?.rows ?? []}
                   activityName={activityName}
-                  canEdit={access.can('APPOINTMENT', 'SUA') && !merged}
-                  canCancel={access.can('APPOINTMENT', 'HUY') && !merged}
+                  canEdit={access.can('APPOINTMENT', 'SUA') && !locked}
+                  canCancel={access.can('APPOINTMENT', 'HUY') && !locked}
                   busyId={busyId}
                   onComplete={(row) => void complete(row)}
                   onReschedule={(row) => setMoving({ ...row, branchId: record.branch_id })}
@@ -636,6 +651,17 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           )
         }
       >
+        {cancelled && (
+          <p className="mb-4 rounded-control bg-surface-subtle px-3 py-2 text-fg-muted">
+            <Tag tone="danger">Đã huỷ</Tag> Lead nhập nhầm, đã huỷ
+            {record?.cancel_reason ? (
+              <>
+                : <b>{record.cancel_reason}</b>
+              </>
+            ) : null}
+            . Chỉ đọc.
+          </p>
+        )}
         {merged && record?.merged_into_code && (
           <p className="mb-4 rounded-control bg-surface-subtle px-3 py-2 text-fg-muted">
             <Tag>Đã gộp</Tag> Lead này đã gộp vào <b>{record.merged_into_code}</b>, chỉ đọc.
@@ -954,6 +980,18 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         </div>
       </RecordDetail>
 
+      {record && canCancelLead && (
+        <CancelLeadDialog
+          leadId={record.id}
+          summary={`${record.code} · ${leadTitle(record)} · ${formatPhone(record.parent_phone)}`}
+          open={cancelOpen}
+          onClose={() => setCancelOpen(false)}
+          onCancelled={() => {
+            toast({ title: 'Đã huỷ lead nhập nhầm.' });
+            void refreshRecord();
+          }}
+        />
+      )}
       {record && canMerge && (
         <MergeDialog
           open={mergeOpen}
