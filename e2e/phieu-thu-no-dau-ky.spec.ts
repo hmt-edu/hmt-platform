@@ -145,3 +145,27 @@ test('Phiếu nợ đầu kỳ: Kế toán khác người lập duyệt được
   await expect(page.getByText(/Phiếu đã duyệt và khoá/)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
 });
+
+// N1 (Soát S14, migration 421), R-V2-15: Kế toán tự lập rồi tự gửi phiếu nợ đầu kỳ thì KHÔNG tự duyệt được (cần Kế toán khác). Bài chạy sau bài duyệt ở trên (nợ còn 2.000.000).
+test('Phiếu nợ đầu kỳ: Kế toán tự lập, tự gửi không tự duyệt được', async ({ page }) => {
+  await enterAsAdmin(page, 'ketoan.cs5');
+  await page.goto('/crm/phieu-thu');
+  await page.getByRole('button', { name: 'Thu nợ đầu kỳ' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Thu nợ đầu kỳ' });
+  await dialog.getByRole('combobox', { name: 'Phụ huynh' }).click();
+  await page.getByPlaceholder('Gõ để tìm (không cần dấu)').fill(PARENT);
+  await page.getByRole('option', { name: new RegExp(PARENT) }).click();
+  await dialog.getByRole('combobox', { name: 'Em' }).click();
+  await page.getByRole('option', { name: new RegExp(STUDENT) }).click();
+  await dialog.getByRole('combobox', { name: 'Hình thức' }).click();
+  await page.getByRole('option', { name: 'Tiền mặt' }).click();
+  await dialog.getByLabel('Số tiền').fill('500000');
+  await dialog.getByRole('button', { name: 'Tạo phiếu nháp' }).click();
+  await expect(page).toHaveURL(/\/crm\/phieu-thu\/[0-9a-f-]{36}$/);
+  await page.getByRole('button', { name: 'Gửi kế toán duyệt' }).click();
+  await expect(page.getByText(/chờ Kế toán duyệt/)).toBeVisible();
+  await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await expect(page.getByText(/không tự duyệt phiếu của mình/)).toBeVisible();
+  // Phiếu vẫn chờ Kế toán khác duyệt.
+  await expect(page.getByText(/chờ Kế toán duyệt/)).toBeVisible();
+});
