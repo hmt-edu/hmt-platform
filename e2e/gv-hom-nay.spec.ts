@@ -120,6 +120,8 @@ test('GV-02: có buổi: nhóm việc sắp trễ hạn và danh sách buổi h�
   await expect(today.getByRole('listitem')).toHaveCount(3);
   await expect(today.getByText('Đã hoàn tất')).toBeVisible();
   await expect(today.getByText('Cần hoàn tất')).toHaveCount(2);
+  // T2-23: thẻ buổi bấm được, mở trang các bước của buổi.
+  await expect(today.getByRole('link', { name: /LSAP/ })).toHaveAttribute('href', '/gv/buoi/b');
   await expect(page.getByText(/quá hạn/i)).toHaveCount(0);
   await expectAccessible(page);
 });
