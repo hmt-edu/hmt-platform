@@ -6,8 +6,17 @@ import { cn } from '../ui/cn';
 import { Icon, type IconName } from '../ui/icons';
 import { AccountMenu } from './AccountMenu';
 import { useProduct, type Product } from './useProduct';
+import { useTodoCount } from '../pages/gv/useTodoCount';
+import { todoBadgeText } from '../pages/gv/todoLogic';
 
-export type ShellTab = { to: string; label: string; icon: IconName; end?: boolean };
+export type ShellTab = {
+  to: string;
+  label: string;
+  icon: IconName;
+  end?: boolean;
+  /** Chấm số đếm nhỏ cạnh nhãn (chuỗi đã định dạng; không có thì không hiện). */
+  badge?: string | null;
+};
 
 type TabShellProps = {
   portal: Portal;
@@ -49,7 +58,7 @@ export function TabShell({ portal, product, title, tabs, sidebar, contentClass }
               end={tab.end ?? false}
               className={({ isActive }) =>
                 cn(
-                  'focus-ring flex rounded-control text-fg',
+                  'focus-ring relative flex rounded-control text-fg',
                   sidebar === 'rail'
                     ? 'min-h-14 flex-col items-center justify-center gap-1 px-1 text-center text-caption'
                     : 'min-h-11 items-center gap-3 px-3 text-body',
@@ -59,6 +68,7 @@ export function TabShell({ portal, product, title, tabs, sidebar, contentClass }
             >
               <Icon name={tab.icon} />
               <span>{tab.label}</span>
+              <TabBadge text={tab.badge} />
             </NavLink>
           ))}
         </nav>
@@ -91,17 +101,30 @@ export function TabShell({ portal, product, title, tabs, sidebar, contentClass }
             end={tab.end ?? false}
             className={({ isActive }) =>
               cn(
-                'focus-ring flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-caption',
+                'focus-ring relative flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-caption',
                 isActive ? 'font-semibold text-on-selected' : 'text-fg-muted',
               )
             }
           >
             <Icon name={tab.icon} />
             <span className="max-w-full truncate">{tab.label}</span>
+            <TabBadge text={tab.badge} />
           </NavLink>
         ))}
       </nav>
     </div>
+  );
+}
+
+function TabBadge({ text }: { text: string | null | undefined }) {
+  if (!text) return null;
+  return (
+    <span
+      data-testid="tab-badge"
+      className="absolute right-1 top-1 min-w-5 rounded-full bg-danger-solid px-1 text-center text-caption font-semibold text-on-solid"
+    >
+      {text}
+    </span>
   );
 }
 
@@ -123,14 +146,12 @@ const STUDENT_TABS: ShellTab[] = [
 
 /** GV-01 · Khung cổng giáo viên: điện thoại có thanh dưới 5 mục, laptop có menu trái thu gọn. */
 export function TeacherShell() {
+  const count = useTodoCount();
+  const tabs = TEACHER_TABS.map((t) =>
+    t.to === '/gv/viec-can-lam' ? { ...t, badge: todoBadgeText(count) } : t,
+  );
   return (
-    <TabShell
-      portal="gv"
-      product="teacher"
-      title="Cổng Giáo viên"
-      tabs={TEACHER_TABS}
-      sidebar="rail"
-    />
+    <TabShell portal="gv" product="teacher" title="Cổng Giáo viên" tabs={tabs} sidebar="rail" />
   );
 }
 

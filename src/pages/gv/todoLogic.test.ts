@@ -7,6 +7,7 @@ import {
   isOverdue,
   latestSessionPerClass,
   sortByDeadline,
+  todoBadgeText,
 } from './todoLogic';
 
 const mk = (over: Partial<MySession>): MySession => ({
@@ -91,5 +92,19 @@ describe('Cần làm (GV-12): bài Nộp sau', () => {
       { assignedSessionId: 'x1', sessionNo: 1, date: '2026-11-01', names: ['An'] },
       { assignedSessionId: 'x2', sessionNo: 2, date: '2026-11-05', names: ['Bình', 'Chi'] },
     ]);
+  });
+});
+
+describe('GV-12: số đếm trên menu «Cần làm» (R-V2-37)', () => {
+  it('0, chưa biết, âm thì không hiện số', () => {
+    expect(todoBadgeText(0)).toBeNull();
+    expect(todoBadgeText(null)).toBeNull();
+    expect(todoBadgeText(undefined)).toBeNull();
+    expect(todoBadgeText(-1)).toBeNull();
+  });
+  it('có việc thì hiện số; trên 99 ghi «99+»', () => {
+    expect(todoBadgeText(3)).toBe('3');
+    expect(todoBadgeText(99)).toBe('99');
+    expect(todoBadgeText(100)).toBe('99+');
   });
 });
