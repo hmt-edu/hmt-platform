@@ -1,7 +1,7 @@
 // Logic thuần của màn GV-04 (Buổi dạy): các bước của buổi, tiến độ, hạn hoàn tất.
 // Luật: R-GIO-06, R-GV-04, R-GV-05 (hạn hoàn tất = `teacher_session_complete_hours` sau khi buổi kết thúc), R-V2-35 (bước BTVN buổi trước bỏ qua khi
 // buổi đầu của lớp hoặc buổi trước không giao BTVN), R-GIO-08 (chưa chốt danh sách thì chưa điểm danh, chưa chấm).
-import type { SessionOverview } from './sessionContent';
+import { EXAM_FORM, type SessionOverview } from './sessionContent';
 
 export type StepState = 'DONE' | 'DOING' | 'TODO' | 'WAIT' | 'SKIP';
 
@@ -22,7 +22,7 @@ export const STATE_LABEL: Record<StepState, string> = {
 
 export function buildSteps(o: SessionOverview): SessionStep[] {
   const listed = o.status_code === 'DA_CHOT' || o.status_code === 'DONE';
-  const isExam = o.type_code === 'KIEM_TRA';
+  const isExam = o.review_form === EXAM_FORM;
 
   const attendance: SessionStep = !listed
     ? { key: 'attendance', title: 'Điểm danh', state: 'WAIT', detail: 'Chờ chốt danh sách' }

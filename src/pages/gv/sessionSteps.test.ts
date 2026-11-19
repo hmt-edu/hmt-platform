@@ -6,6 +6,7 @@ const base: SessionOverview = {
   session_id: 's1',
   status_code: 'DA_CHOT',
   type_code: 'CHINH',
+  review_form: 'TIEU_CHI',
   type_name: 'Buổi học thường',
   exam: null,
   class_code: 'L1',
@@ -74,7 +75,12 @@ describe('Các bước của buổi dạy (GV-04)', () => {
   });
 
   it('buổi Kiểm tra: nội dung xong khi chỉ có BTVN, tên bước chấm là chấm điểm', () => {
-    const steps = buildSteps({ ...base, type_code: 'KIEM_TRA', homework_text: 'Làm lại bài 3' });
+    const steps = buildSteps({
+      ...base,
+      type_code: 'KIEM_TRA',
+      review_form: 'DIEM',
+      homework_text: 'Làm lại bài 3',
+    });
     expect(steps[1]?.state).toBe('DONE');
     expect(steps[2]?.title).toBe('Chấm điểm kiểm tra');
   });

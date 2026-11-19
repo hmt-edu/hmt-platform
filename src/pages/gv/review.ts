@@ -38,6 +38,7 @@ export type ReviewSheet = {
     session_id: string;
     status_code: string;
     type_code: string;
+    review_form: string;
     session_no: number | null;
     session_date: string;
     start_time: string;
@@ -212,6 +213,6 @@ export function isReviewDirty(sheet: ReviewSheet, draft: ReviewDraft): boolean {
 }
 
 /** Buổi chỉ chấm được khi Đã chốt; buổi Kiểm tra chấm bằng điểm (chưa có màn trong đợt này). */
-export function isReviewEditable(statusCode: string, typeCode: string): boolean {
-  return statusCode === 'DA_CHOT' && typeCode !== 'KIEM_TRA';
+export function isReviewEditable(statusCode: string, reviewForm: string): boolean {
+  return statusCode === 'DA_CHOT' && reviewForm !== 'DIEM';
 }

@@ -43,6 +43,7 @@ const sheet = (exam: ExamConfig | null, students: ExamStudent[]): ExamSheet => (
     session_id: 's',
     status_code: 'DA_CHOT',
     type_code: 'KIEM_TRA',
+    review_form: 'DIEM',
     session_no: 6,
     session_date: '2026-10-31',
     start_time: '18:00',

@@ -7,6 +7,7 @@ const full: SessionOverview = {
   session_id: 's1',
   status_code: 'DA_CHOT',
   type_code: 'CHINH',
+  review_form: 'TIEU_CHI',
   type_name: null,
   exam: null,
   class_code: 'L1',

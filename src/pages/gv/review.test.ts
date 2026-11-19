@@ -40,6 +40,7 @@ const sheet = (students: ReviewStudent[], criteria: ReviewCriterion[]): ReviewSh
     session_id: 's',
     status_code: 'DA_CHOT',
     type_code: 'CHINH',
+    review_form: 'TIEU_CHI',
     session_no: 1,
     session_date: '2026-10-24',
     start_time: '18:00',
@@ -110,8 +111,8 @@ describe('Chấm nhận xét từng em (GV-07)', () => {
   });
 
   it('chỉ buổi thường Đã chốt chấm được', () => {
-    expect(isReviewEditable('DA_CHOT', 'CHINH')).toBe(true);
-    expect(isReviewEditable('DA_CHOT', 'KIEM_TRA')).toBe(false);
-    expect(isReviewEditable('DONE', 'CHINH')).toBe(false);
+    expect(isReviewEditable('DA_CHOT', 'TIEU_CHI')).toBe(true);
+    expect(isReviewEditable('DA_CHOT', 'DIEM')).toBe(false);
+    expect(isReviewEditable('DONE', 'TIEU_CHI')).toBe(false);
   });
 });
