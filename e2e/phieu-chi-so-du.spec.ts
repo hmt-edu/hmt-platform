@@ -51,7 +51,7 @@ test.beforeAll(async ({}, testInfo) => {
     // Số dư: +1.000.000 (từ dừng học) và −200.000 (điều chỉnh) = 800.000.
     await db.query(
       `insert into app.customer_balance_entry (parent_id, branch_id, entry_type, amount, entry_date, note)
-       values ($1, $2, 'TU_DUNG_HOC', 1000000, current_date, $3), ($1, $2, 'DIEU_CHINH', -200000, current_date, $4)`,
+       values ($1, $2, 'TU_DUNG_HOC', 1000000, (now() at time zone 'Asia/Ho_Chi_Minh')::date, $3), ($1, $2, 'DIEU_CHINH', -200000, (now() at time zone 'Asia/Ho_Chi_Minh')::date, $4)`,
       [parent, branch, `${m} dừng học`, `${m} điều chỉnh`],
     );
     // Yêu cầu hoàn một phần 3 giờ: 594.000 trừ phí 10% = 534.600; phiếu chi đang Chờ chi.
