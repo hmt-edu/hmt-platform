@@ -26,7 +26,9 @@ test.beforeEach(({}, testInfo) => {
   );
 });
 
-async function capture(page: Page, shot: Shot, file: string): Promise<void> {
+/** Chụp một ảnh; trả về ghi chú khi không mở được bản ghi vì màn không có dữ liệu mẫu (ảnh thành xấp xỉ). */
+async function capture(page: Page, shot: Shot, file: string): Promise<string | null> {
+  let note: string | null = null;
   await page.goto(shot.route);
   await page.waitForLoadState('networkidle');
   if (shot.view) {
@@ -36,7 +38,9 @@ async function capture(page: Page, shot: Shot, file: string): Promise<void> {
   if (shot.row) {
     // Dòng dữ liệu đầu tiên của bảng (bỏ dòng tiêu đề); bấm vào liên kết trong dòng nếu có, nếu không thì bấm dòng.
     const row = page.getByRole('row').nth(1);
-    if (await row.count()) {
+    if ((await row.count()) === 0 || (await page.getByRole('row').count()) < 2) {
+      note = 'màn không có dòng dữ liệu mẫu để mở bản ghi (DB giả chưa có dữ liệu loại này)';
+    } else {
       const link = row.getByRole('link').first();
       await ((await link.count()) ? link : row).click();
       await page.waitForLoadState('networkidle');
@@ -44,6 +48,7 @@ async function capture(page: Page, shot: Shot, file: string): Promise<void> {
   }
   await page.waitForTimeout(400);
   await page.screenshot({ path: file, fullPage: false });
+  return note;
 }
 
 for (const role of ROLES) {

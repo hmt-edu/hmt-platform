@@ -21,3 +21,7 @@ Mỗi thư mục vai có `BAO-CAO.txt`: **ĐÃ CHỤP** (đúng màn), **XẤP X
 
 ## Thêm hoặc sửa ảnh
 Sửa bảng `ROLES` ở `e2e/chup-anh-ban-do.ts`: mỗi ảnh có `name` (đúng tên trong `[ẢNH: ten]`), `route`, `row` (bấm dòng đầu của bảng), `view` (chọn kiểu xem). Dữ liệu trong ảnh là dữ liệu giả của seed; đừng chụp trên bản có dữ liệu thật.
+
+## Giới hạn hiện tại (đã chạy thử 19/11)
+- Chạy thử trên DB seed thường: 6 vai chạy xong, không lỗi, nhưng DB giả **chưa có dữ liệu mẫu** (lead, đơn, phiếu thu, lớp, ticket… trống) nên nhiều ảnh «bản ghi» chỉ là danh sách trống: `BAO-CAO.txt` ghi XẤP XỈ kèm lý do. Muốn ảnh đẹp cần bước dựng dữ liệu mẫu nhỏ (lead, cơ hội, đơn, phiếu thu, lớp, buổi, ticket) trước khi chụp: việc tiếp theo, chưa làm.
+- Hộp thoại chưa mở tự động (đánh dấu XẤP XỈ trong bảng ánh xạ).
