@@ -265,3 +265,18 @@ export function longSlotWarning(start: string, end: string): string | null {
     ? `Khung giờ dài ${Number.isInteger(hours) ? hours : hours.toFixed(1)} giờ, kiểm tra lại giờ bắt đầu và kết thúc.`
     : null;
 }
+
+/** Nhãn ô chọn giáo viên, trợ giảng: tên kèm môn, khối từ hồ sơ dạy (QT-16, R-LOP-10); chưa có hồ sơ thì ghi rõ, vẫn chọn được (hồ sơ chỉ gợi ý, không chặn). */
+export function teacherOptionLabel(p: {
+  name: string;
+  has_profile?: boolean | undefined;
+  subject_names?: string[] | undefined;
+  grade_names?: string[] | undefined;
+}): string {
+  if (p.has_profile === undefined) return p.name;
+  if (!p.has_profile) return `${p.name} (chưa có hồ sơ dạy)`;
+  const hint = [(p.subject_names ?? []).join(', '), (p.grade_names ?? []).join(', ')]
+    .filter((x) => x !== '')
+    .join(' · ');
+  return hint === '' ? p.name : `${p.name} · ${hint}`;
+}

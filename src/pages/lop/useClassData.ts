@@ -112,9 +112,19 @@ export function transitionClass(
   return rpc<TransitionResult>(supabase, 'transition_class', { p_id: id, p_to: to, p_note: note });
 }
 
+/** Giáo viên, trợ giảng ở ô chọn: kèm gợi ý từ hồ sơ dạy (QT-16): môn, khối; chưa có hồ sơ thì has_profile = false (vẫn chọn được). */
+export type TeacherOption = {
+  id: string;
+  name: string;
+  staff_code: string | null;
+  has_profile?: boolean;
+  subject_names?: string[];
+  grade_names?: string[];
+};
+
 export type FormOptions = {
-  teachers: { id: string; name: string; staff_code: string | null }[];
-  assistants: { id: string; name: string; staff_code: string | null }[];
+  teachers: TeacherOption[];
+  assistants: TeacherOption[];
   cskh: { id: string; name: string; staff_code: string | null }[];
   rooms: { id: string; name: string; capacity: number | null }[];
   groups: { id: string; grade_code: string; name: string | null }[];

@@ -52,6 +52,11 @@ select is((select kind from app.teaching_profile where user_id = pg_temp.uid('ta
 select is((select kind from app.teaching_profile where user_id = pg_temp.uid('gv1')), 'GV', 'Hồ sơ của giáo viên là loại GV');
 select ok(not exists (select from jsonb_array_elements(app.list_teaching_candidates()) x where x ->> 'name' = 'Giả gv1'), 'Ứng viên: người đã có hồ sơ không còn trong danh sách');
 
+-- ================= Ô chọn giáo viên khi tạo lớp (migration 314): kèm gợi ý từ hồ sơ dạy, không chặn =================
+select is((select (x ->> 'has_profile')::boolean from jsonb_array_elements(app.list_class_form_options(pg_temp.cs1()) -> 'teachers') x where x ->> 'name' = 'Giả gv1'), true, 'Tạo lớp: giáo viên có hồ sơ dạy được đánh dấu has_profile');
+select is((select x -> 'subject_names' from jsonb_array_elements(app.list_class_form_options(pg_temp.cs1()) -> 'teachers') x where x ->> 'name' = 'Giả gv1'), '["Toán", "Tiếng Anh"]'::jsonb, 'Tạo lớp: ô chọn có môn dạy từ hồ sơ');
+select is((select (x ->> 'has_profile')::boolean from jsonb_array_elements(app.list_class_form_options(pg_temp.cs1()) -> 'teachers') x where x ->> 'name' = 'Giả gv2'), false, 'Tạo lớp: giáo viên chưa có hồ sơ vẫn có trong ô chọn (hồ sơ chỉ gợi ý, không chặn)');
+
 -- ================= Danh sách, lọc =================
 select is((app.list_teaching_profiles('{"search": "gv1"}') ->> 'total')::int, 1, 'Danh sách: tìm theo tên');
 select is((app.list_teaching_profiles('{"kind": "TG"}') ->> 'total')::int, 1, 'Danh sách: lọc theo loại TG');
