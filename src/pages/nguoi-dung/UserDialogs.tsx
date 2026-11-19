@@ -84,9 +84,9 @@ function RolesForm({
       onSubmit={() => void action.run(() => onSave(selected))}
     >
       <fieldset className="flex flex-col gap-1">
-        <legend className="mb-1 text-caption font-semibold text-fg-label">
-          Vai trò (chọn một hoặc nhiều)
-        </legend>
+        <legend className="mb-1 text-caption font-semibold text-fg-label">Vai trò *</legend>
+        <p className="text-caption text-fg-muted">Được chọn nhiều vai trò.</p>
+
         {roles.map((r) => (
           <Checkbox
             key={r.code}
