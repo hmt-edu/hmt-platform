@@ -6,6 +6,7 @@ import { rpc, useDb } from '../../lib/db';
 import { readNumberSetting } from '../../lib/auth/api';
 import { withFlexibleMax } from './orderEdit';
 import type { OrderFilters } from './orderFilters';
+import type { GroupCounts } from '../lead/leadTypes';
 import type { AddEdit } from './orderEdit';
 import type { OrderExportResult, OrderPage, OrderRecord } from './orderTypes';
 
@@ -14,11 +15,12 @@ export function useOrderPage(
   sort: string | undefined,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['order-list', filters, sort ?? null, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<OrderPage>(supabase, 'list_orders', {
@@ -27,6 +29,18 @@ export function useOrderPage(
         p_limit: limit,
         p_offset: offset,
       }),
+  });
+}
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+export function useOrderGroupCounts(filters: OrderFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['order-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'order_group_counts', { p_filters: filters, p_fields: fields }),
   });
 }
 
