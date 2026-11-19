@@ -88,6 +88,8 @@ select is((select (x ->> 'level_total')::int from jsonb_array_elements(pg_temp.i
 select is((pg_temp.items('{"kind": "DON_HANG"}') ->> 'total')::int, 1, 'CHUNG-15: lọc theo loại việc');
 select is((pg_temp.items() -> 'rows' -> 0 ->> 'kind'), 'DON_HANG', 'CHUNG-15: chờ lâu nhất lên đầu (đơn nộp 2 ngày trước)');
 select is(jsonb_array_length(pg_temp.items() -> 'rows'), (pg_temp.items() ->> 'total')::int, 'CHUNG-15: số dòng khớp tổng khi một trang');
+select is((pg_temp.items('{"kind": "HOAN_PHI"}') -> 'rows' -> 0 ->> 'open_id')::uuid, (select id from app.enrollment where code = 'GD5561'), 'CHUNG-15: dòng hoàn phí mở bản ghi ghi danh (open_id là id ghi danh)');
+select is((pg_temp.items('{"kind": "DON_HANG"}') -> 'rows' -> 0 ->> 'open_id')::uuid, (select id from app.sales_order where code = 'DH556'), 'CHUNG-15: dòng đơn hàng mở chính đơn (open_id là id đơn)');
 select is(jsonb_array_length(app.list_my_approvals('{}', 2, 0) -> 'rows'), 2, 'CHUNG-15: phân trang theo số dòng');
 reset role;
 

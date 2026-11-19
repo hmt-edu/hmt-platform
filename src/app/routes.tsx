@@ -89,6 +89,10 @@ const ReviewGradingPage = lazyScreen(
 const ExamGradingPage = lazyScreen(() => import('../pages/gv/ExamGradingPage'), 'ExamGradingPage');
 const CrmHome = lazyScreen(() => import('../pages/home/CrmHome'), 'CrmHome');
 const CrmSectionPage = lazyScreen(() => import('../pages/common/PortalPages'), 'CrmSectionPage');
+const ApprovalsPage = lazyScreen(
+  () => import('../pages/viec-cho-duyet/ApprovalsPage'),
+  'ApprovalsPage',
+);
 const UpsaleRecordPage = lazyScreen(
   () => import('../pages/tai-tuc/UpsaleRecordPage'),
   'UpsaleRecordPage',
@@ -516,6 +520,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="cho-ke-toan-duyet">
                 <ReceiptListPage waitingAccounting />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'viec-cho-duyet',
+            element: (
+              <GatedCrmEntry slug="viec-cho-duyet">
+                <ApprovalsPage />
               </GatedCrmEntry>
             ),
           },
