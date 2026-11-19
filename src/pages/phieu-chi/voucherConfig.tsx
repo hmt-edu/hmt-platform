@@ -58,6 +58,11 @@ export function buildVoucherConfig(access: AccessView): ListConfig<VoucherRow> {
         numeric: true,
         render: (r) => formatNumber(r.amount),
       },
+      {
+        key: 'method',
+        label: 'Hình thức',
+        render: (r) => r.payment_method ?? <span className="text-fg-muted">—</span>,
+      },
       { key: 'created', label: 'Ngày lập', render: (r) => formatDate(r.created_at) },
       { key: 'paid', label: 'Ngày chi', render: (r) => (r.paid_at ? formatDate(r.paid_at) : '—') },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },

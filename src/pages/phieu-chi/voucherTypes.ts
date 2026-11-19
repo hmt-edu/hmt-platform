@@ -15,6 +15,9 @@ export type VoucherRow = {
   branch_code: string;
   created_at: string;
   paid_at: string | null;
+  /** Hình thức chi (danh mục PAYMENT_METHOD chung với Phiếu thu); trống tới khi ghi nhận đã chi. */
+  payment_method?: string | null;
+  payment_method_code?: string | null;
 };
 
 export type VoucherPage = { total: number; rows: VoucherRow[] };
@@ -27,6 +30,8 @@ export type VoucherRecord = {
     status_code: VoucherStatus;
     amount: number;
     pay_note: string | null;
+    payment_method?: string | null;
+    payment_method_code?: string | null;
     created_at: string;
     paid_at: string | null;
     created_by_name: string | null;

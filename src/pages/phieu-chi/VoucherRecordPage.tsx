@@ -10,11 +10,12 @@ import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Table } from '../../ui/Data';
-import { ConfirmDialog } from '../../ui/Dialogs';
+import { ReasonDialog } from '../../ui/Dialogs';
 import { Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
+import { useLeadCatalogs } from '../lead/useCatalogs';
 import { VOUCHER_STATUS_NAME } from './voucherConfig';
 import type { VoucherRecord } from './voucherTypes';
 import { payVoucher, useRefreshVoucher, useVoucher } from './useVoucherData';
@@ -67,6 +68,7 @@ function VoucherView({ record }: { record: VoucherRecord }) {
   const toast = useToast();
   const phone = useMedia(NARROW_TABLE);
   const refresh = useRefreshVoucher(record.voucher.id);
+  const catalogs = useLeadCatalogs();
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,10 +77,10 @@ function VoucherView({ record }: { record: VoucherRecord }) {
   const r = record.refund;
   const canPay = v.can_pay && !phone;
 
-  const pay = () => {
+  const pay = (methodCode: string, note: string) => {
     setBusy(true);
     setError(null);
-    payVoucher(supabase, v.id, null)
+    payVoucher(supabase, v.id, note.trim() === '' ? null : note.trim(), methodCode)
       .then(async () => {
         setConfirming(false);
         await refresh();
@@ -209,6 +211,9 @@ function VoucherView({ record }: { record: VoucherRecord }) {
                   value={`${formatDateTime(v.paid_at)}${v.paid_by_name ? ` · ${v.paid_by_name}` : ''}`}
                 />
               )}
+              {v.payment_method && (
+                <DetailField label="Hình thức chi" mode="view" value={v.payment_method} />
+              )}
               {v.pay_note && <DetailField label="Ghi chú chi" mode="view" value={v.pay_note} />}
             </dl>
           </section>
@@ -232,14 +237,21 @@ function VoucherView({ record }: { record: VoucherRecord }) {
           </p>
         </div>
       </RecordDetail>
-      <ConfirmDialog
+      {/* Hình thức chi dùng chung danh mục hình thức thanh toán của Phiếu thu (anh Trường chốt 20/11/2026); hộp K08 chọn một mục kèm ghi chú. */}
+      <ReasonDialog
         open={confirming}
         onOpenChange={(o) => !busy && setConfirming(o)}
         title={`Ghi nhận đã chi ${v.code}`}
         description={`Xác nhận đã chi ${formatMoney(v.amount)} cho ${v.parent_name}. Không hoàn tác được.`}
+        options={catalogs.options('PAYMENT_METHOD').map((o) => ({ ...o, needsNote: false }))}
+        reasonLabel="Hình thức chi"
+        noteLabel="Ghi chú chi"
+        notePlaceholder="Ghi chú thêm (không bắt buộc)"
         confirmLabel="Ghi nhận đã chi"
         cancelLabel="Quay lại"
-        onConfirm={pay}
+        busy={busy}
+        error={error}
+        onConfirm={(result) => pay(result.option, result.note)}
       />
     </>
   );

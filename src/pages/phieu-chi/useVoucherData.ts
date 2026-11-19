@@ -50,6 +50,15 @@ export function useRefreshVoucher(id: string) {
 }
 
 /** Ghi nhận đã chi tiền (Chờ chi → Đã chi). Chỉ Kế toán; máy chủ kiểm lại quyền. */
-export function payVoucher(supabase: SupabaseClient, id: string, note: string | null) {
-  return rpc<null>(supabase, 'pay_payment_voucher', { p_voucher_id: id, p_note: note });
+export function payVoucher(
+  supabase: SupabaseClient,
+  id: string,
+  note: string | null,
+  methodCode: string | null,
+) {
+  return rpc<null>(supabase, 'pay_payment_voucher', {
+    p_voucher_id: id,
+    p_note: note,
+    p_method_code: methodCode,
+  });
 }
