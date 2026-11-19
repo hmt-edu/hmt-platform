@@ -69,7 +69,7 @@ declare
   v_id uuid;
   v_today date := (now() at time zone 'Asia/Ho_Chi_Minh')::date;
 begin
-  perform app.assert_can('ADMIN', 'SUA');
+  perform app.assert_can('ADMIN', 'SUA', null);
   if not exists (select from app.ticket_task_rule r where r.task_type = p_type) then
     perform app.raise_error('HMT_PHIEU_LOAI_SAI', 'Loại phiếu nghiệp vụ không có.');
   end if;
