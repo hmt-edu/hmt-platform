@@ -110,7 +110,7 @@ function Steps({ overview }: { overview: SessionOverview }) {
         <Alert tone="info" title="Buổi chưa chốt danh sách.">
           Chưa có dòng điểm danh nên chưa điểm danh, chưa chấm được. Giáo viên không tạo dòng điểm
           danh. Danh sách sẽ được hệ thống chốt trước giờ học. Dấu thời hạn chỉ tính khi buổi đã
-          chốt danh sách và đủ bốn bước.
+          chốt danh sách và đủ các bước (bước Bỏ qua không tính).
         </Alert>
       )}
 
@@ -149,7 +149,7 @@ function Steps({ overview }: { overview: SessionOverview }) {
         )}
         {!isDone && (
           <p className="text-caption text-fg-muted">
-            Dấu Đúng hạn hoặc Trễ hạn tự đóng khi đủ bốn bước.
+            Dấu Đúng hạn hoặc Trễ hạn tự đóng khi đủ {total} bước.
           </p>
         )}
       </section>
