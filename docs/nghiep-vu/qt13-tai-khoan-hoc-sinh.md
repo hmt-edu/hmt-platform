@@ -2,7 +2,7 @@
 
 Màn `/crm/quan-tri/tai-khoan-hoc-sinh`: Admin (đã xác thực hai bước) thấy mọi học sinh kèm tình trạng tài khoản đăng nhập app học tập, rồi cấp, đặt lại mật khẩu, khoá. Luật: R-CRM-32 (mật khẩu không bao giờ hiển thị sau lần đầu, chỉ đặt lại để tạo mới), bản đồ màn hình QT-13. Không mang mật khẩu hệ thống cũ sang.
 
-## Hàm DB (migration 567)
+## Hàm DB (migration 568)
 | Hàm | Làm gì | Ai gọi |
 |---|---|---|
 | `app.list_student_accounts(p_filters, p_limit, p_offset)` | Học sinh + tình trạng `CHUA_CAP`, `HOAT_DONG`, `BI_KHOA`; lọc `q` (tên, mã HS, tên phụ huynh), `branch_id`, `state`; phân trang máy chủ, sắp theo mã HS | Admin (Quản trị · Xem, aal2) |

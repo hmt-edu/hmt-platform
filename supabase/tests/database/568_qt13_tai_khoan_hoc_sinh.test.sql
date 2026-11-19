@@ -1,4 +1,4 @@
--- QT-13 Tài khoản học sinh: app.list_student_accounts, app.admin_check_student_account (migration 567).
+-- QT-13 Tài khoản học sinh: app.list_student_accounts, app.admin_check_student_account (migration 568).
 -- Luật: chỉ Admin (đã xác thực hai bước); tình trạng CHUA_CAP, HOAT_DONG, BI_KHOA; lọc theo tên, mã HS, tên phụ huynh, cơ sở, tình trạng;
 -- phân trang ở máy chủ; chỉ cấp tài khoản cho học sinh có thật và chưa có tài khoản.
 begin;
