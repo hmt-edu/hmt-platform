@@ -5,6 +5,7 @@ import { UnsavedGuard } from '../../ui/Dialogs';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
+import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { errorOf, FORBIDDEN_CODE } from '../../lib/db';
 import { formatDate } from '../../lib/format';
 import {
@@ -82,6 +83,9 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
   const [drafts, setDrafts] = useState<ExamDrafts>({});
   const [saveError, setSaveError] = useState<string | null>(null);
   const [tried, setTried] = useState(false);
+  // Điện thoại (canvas GV-07K): chấm từng em một; máy tính giữ danh sách cả lớp (K14).
+  const phone = useMedia(NARROW_TABLE);
+  const [selected, setSelected] = useState(0);
   const exam = sheet.exam;
   const editable = isExamEditable(sheet.session.status_code, exam);
   const done = sheet.session.status_code === 'DONE';
@@ -95,7 +99,7 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
   const setDraft = (s: ExamStudent, next: ExamDraft) =>
     setDrafts((current) => ({ ...current, [s.student_id]: next }));
 
-  function submit() {
+  function submit(next?: number) {
     setTried(true);
     const payload = buildExamSave(sheet, drafts);
     if (payload === null) return;
@@ -105,6 +109,7 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
         setTried(false);
         setDrafts({});
         toast({ tone: 'success', title: 'Đã lưu điểm kiểm tra' });
+        if (next !== undefined) setSelected(next);
       },
       onError: (error) => setSaveError(errorOf(error).message),
     });
@@ -144,7 +149,7 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
             variant="primary"
             loading={save.isPending}
             disabled={!editable || !dirty}
-            onClick={submit}
+            onClick={() => submit()}
           >
             Lưu
           </Button>
@@ -187,7 +192,7 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
       {saveError && (
         <Alert tone="danger" title="Chưa lưu được điểm.">
           {saveError}{' '}
-          <Button size="sm" onClick={submit}>
+          <Button size="sm" onClick={() => submit()}>
             Thử lại
           </Button>
         </Alert>
@@ -215,7 +220,62 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
         />
       )}
 
-      {exam && (
+      {exam && phone && sheet.students.length > 0 && (
+        <section aria-label="Chấm từng em" className="flex flex-col gap-2">
+          {(() => {
+            const index = Math.min(selected, sheet.students.length - 1);
+            const s = sheet.students[index] as ExamStudent;
+            const last = index >= sheet.students.length - 1;
+            return (
+              <>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-body font-medium">
+                    Em {index + 1}/{sheet.students.length} · {s.full_name}
+                  </p>
+                  <div className="flex gap-1.5">
+                    <Button
+                      size="sm"
+                      onClick={() => setSelected(Math.max(index - 1, 0))}
+                      disabled={index === 0}
+                    >
+                      ‹ Em trước
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => setSelected(Math.min(index + 1, sheet.students.length - 1))}
+                      disabled={last}
+                    >
+                      Em kế ›
+                    </Button>
+                  </div>
+                </div>
+                <ul className="flex flex-col gap-2" aria-label="Học sinh">
+                  <StudentRow
+                    key={s.student_id}
+                    student={s}
+                    exam={exam}
+                    draft={draftOf(s)}
+                    editable={editable}
+                    showErrors={tried}
+                    onChange={(next) => setDraft(s, next)}
+                  />
+                </ul>
+                {editable && dirty && !last && (
+                  <Button
+                    variant="primary"
+                    loading={save.isPending}
+                    onClick={() => submit(index + 1)}
+                  >
+                    Lưu và em tiếp theo
+                  </Button>
+                )}
+              </>
+            );
+          })()}
+        </section>
+      )}
+
+      {exam && !phone && (
         <ul className="flex flex-col gap-2" aria-label="Học sinh">
           {sheet.students.map((s) => (
             <StudentRow
