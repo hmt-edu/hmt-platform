@@ -38,6 +38,14 @@ Các hàm dưới đây đã gộp và chạy nhưng chưa có mục trong `docs
 | `app.save_room(p_data)` | Thêm phòng (không có `id`) hoặc sửa phòng (có `id`). Dữ liệu: `id` (sửa), `branch_id` và `code` (thêm), `name`, `capacity`. Mã chỉ chữ hoa, số, gạch dưới, không trùng trong cơ sở; tên không rỗng, không trùng trong cơ sở (không phân biệt hoa thường, dấu); sức chứa là số nguyên lớn hơn 0; cơ sở phải là cơ sở dạy học. Mã phòng và cơ sở không đổi sau khi tạo. Kết quả `{id, created}`. | Quản trị · Sửa (QT-08). |
 | `app.set_room_active(p_id, p_active)` | Ngừng hoặc Dùng lại một phòng. Ngừng thì không hiện ở ô chọn phòng mới; dữ liệu cũ giữ nguyên; không xoá phòng. | Quản trị · Sửa. |
 
+## Loại buổi và form nhận xét (migration `20261119000305_a25_loai_buoi_form_nhan_xet`, A25, Q-176)
+
+| Hàm | Làm gì | Ai gọi, luật |
+|---|---|---|
+| `app.set_session_type_form(p_type_code, p_form_code)` | Đổi form nhận xét của một loại buổi: `TIEU_CHI` (9 tiêu chí) hoặc `DIEM` (form điểm). Mã loại buổi không đổi. Chỉ áp dụng cho buổi tạo SAU; buổi đã tạo giữ form lúc tạo (cột `class_session.review_form`). | Admin cấu hình (`assert_config_writer`). |
+| `app.session_is_exam(p_session)` | Buổi này chấm bằng form điểm không. Thay cho so sánh mã `KIEM_TRA` ở các hàm nhận xét, Done, hạn hoàn tất. | Nội bộ, không gọi từ giao diện. |
+| `app.set_request_exam(..., p_type_code)` | Thêm tham số loại kiểm tra (mặc định `KIEM_TRA`; cũng `KT_GIUA_KY`, `KT_CUOI_KY`). Chỉ nhận loại có form điểm. Duyệt yêu cầu sinh buổi đúng loại. Cả ba loại kiểm tra trừ giờ như buổi Chính. | Buổi học · Tạo, như trước. |
+
 ## Chưa liệt kê (cố ý)
 
 Hàm nhập dữ liệu cũ (`import_one_*`), trigger (`tg_*`), hàm đọc phạm vi (`enrollment_read_scope`, `session_read_scope`, `session_visible`, `is_assigned_to_*`) và hàm khoá dòng (`enrollment_hold_for_update`, `enrollment_stop_for_update`, `refund_request_for_update`, `finish_enrollment_hold`) thuộc tài liệu nạp dữ liệu và quyền; không mô tả lại ở đây.
