@@ -480,9 +480,16 @@ export type MenuAccess = {
   can: (module: string, action: string) => boolean;
   canAnyModule: (action: string) => boolean;
   featureOn: (feature: string) => boolean;
+  /**
+   * Quản trị viên (có quyền Quản trị · Xem): vào được mọi mục menu và mọi phân hệ để xem, kể cả mục cần quyền riêng (Hàng chờ kế toán duyệt,
+   * Ticket, Báo cáo) và phân hệ đang tắt ở cơ sở đang chọn (anh Trường chốt 21/11/2026). Chỉ mở XEM màn; việc ghi (tiền, duyệt) vẫn do
+   * ma trận quyền và hàm cơ sở dữ liệu quyết.
+   */
+  isAdmin?: boolean;
 };
 
 export function entryAllowed(entry: MenuEntry, access: MenuAccess): boolean {
+  if (access.isAdmin) return true;
   switch (entry.requires.kind) {
     case 'always':
       return true;
@@ -496,11 +503,12 @@ export function entryAllowed(entry: MenuEntry, access: MenuAccess): boolean {
 /** Menu một người thấy: bỏ mục không có quyền, bỏ nhóm bị tắt công tắc hoặc không còn mục nào. */
 export function visibleMenu(menu: MenuGroup[], access: MenuAccess): MenuGroup[] {
   return menu
-    .filter((group) => !group.feature || access.featureOn(group.feature))
+    .filter((group) => !group.feature || access.isAdmin || access.featureOn(group.feature))
     .map((group) => ({
       ...group,
       entries: group.entries.filter(
-        (e) => entryAllowed(e, access) && (!e.feature || access.featureOn(e.feature)),
+        (e) =>
+          entryAllowed(e, access) && (!e.feature || access.isAdmin || access.featureOn(e.feature)),
       ),
     }))
     .filter((group) => group.entries.length > 0);
@@ -518,8 +526,10 @@ export function checkRoute(menu: MenuGroup[], slug: string, access: MenuAccess):
     const entry = group.entries.find((e) => e.slug === slug);
     if (!entry) continue;
     if (!entryAllowed(entry, access)) return { status: 'forbidden' };
-    if (group.feature && !access.featureOn(group.feature)) return { status: 'feature-off' };
-    if (entry.feature && !access.featureOn(entry.feature)) return { status: 'feature-off' };
+    if (!access.isAdmin) {
+      if (group.feature && !access.featureOn(group.feature)) return { status: 'feature-off' };
+      if (entry.feature && !access.featureOn(entry.feature)) return { status: 'feature-off' };
+    }
     return { status: 'ok', group, entry };
   }
   return { status: 'not-found' };
