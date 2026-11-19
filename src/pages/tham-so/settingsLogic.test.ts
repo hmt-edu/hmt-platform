@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildGroups,
   formatSetting,
+  formatSettingValue,
   fromInputText,
   inputError,
   rangeLabel,
@@ -71,6 +72,8 @@ describe('QT-09 tham số lưu bằng phút, hiện theo ngày', () => {
   it('hiện 7 ngày, nhập 14 ngày lưu 20160 phút', () => {
     expect(toInputText(logout, '10080')).toBe('7');
     expect(formatSetting(logout, '10080')).toBe('7 ngày');
+    // D50: cột Giá trị hiện tại không kèm đơn vị (đơn vị ở cột riêng).
+    expect(formatSettingValue(logout, '10080')).toBe('7');
     expect(fromInputText(logout, '14')).toBe('20160');
     expect(rangeLabel(logout)).toBe('5 phút–14 ngày');
   });

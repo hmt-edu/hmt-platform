@@ -17,6 +17,7 @@ import { useToast } from '../../ui/toastContext';
 import {
   buildGroups,
   formatSetting,
+  formatSettingValue,
   fromInputText,
   inputError,
   rangeLabel,
@@ -85,9 +86,15 @@ export function SettingsPage() {
     },
     {
       key: 'value',
-      header: 'Giá trị chung',
-      width: 'w-36',
-      cell: (d) => <b>{formatSetting(d, d.value)}</b>,
+      header: 'Giá trị hiện tại',
+      width: 'w-32',
+      cell: (d) => <b>{formatSettingValue(d, d.value)}</b>,
+    },
+    {
+      key: 'unit',
+      header: 'Đơn vị',
+      width: 'w-24',
+      cell: (d) => unitLabel(d) || '—',
     },
     {
       key: 'range',
