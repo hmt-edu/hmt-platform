@@ -27,9 +27,29 @@ async function sql(query: string, params: unknown[] = []) {
   }
 }
 
+/** Dọn dữ liệu giả: bảng nghiệp vụ chặn xoá (khung chung), nên xoá trong một giao dịch tắt trigger. */
+async function purge(statements: [string, unknown[]?][]) {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query('begin');
+    await db.query("set local session_replication_role = 'replica'");
+    for (const [q, p] of statements) await db.query(q, p ?? []);
+    await db.query('commit');
+  } finally {
+    await db.end();
+  }
+}
+
+async function cleanup() {
+  await purge([
+    ['delete from app.student where code = $1', [CODE]],
+    ["delete from app.parent where code = 'PHE2EQT13'"],
+  ]);
+}
+
 test.beforeAll(async () => {
-  await sql(`delete from app.student where code = $1`, [CODE]);
-  await sql(`delete from app.parent where code = 'PHE2EQT13'`);
+  await cleanup();
   await sql(
     `insert into app.parent (code, full_name, phone, branch_id) values ('PHE2EQT13', 'Phụ huynh E2E QT13', '0991301301', (select id from app.branch where code = 'CS5'))`,
   );
@@ -40,10 +60,7 @@ test.beforeAll(async () => {
   );
 });
 
-test.afterAll(async () => {
-  await sql(`delete from app.student where code = $1`, [CODE]);
-  await sql(`delete from app.parent where code = 'PHE2EQT13'`);
-});
+test.afterAll(cleanup);
 
 test('Admin: tìm theo mã HS thấy em «Chưa cấp», mở hộp cấp tài khoản, lọc Chưa cấp', async ({
   page,
