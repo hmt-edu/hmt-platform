@@ -40,9 +40,9 @@ Vai: Trưởng cơ sở (quản lý cơ sở). Việc chính: duyệt lớp, duy
 ## 6. Điều chỉnh giờ của ghi danh
 - **Mục đích:** thêm dòng cộng hoặc trừ giờ (có lý do), không sửa dòng cũ.
 - **Ai làm:** Trưởng cơ sở.
-- **Các bước:** **Ghi danh** → mở ghi danh → **«Điều chỉnh giờ»** → nhập số giờ (âm hoặc dương), chọn lý do, ghi chú → xác nhận. Kiểm ở **«Sổ giờ»**.
+- **Các bước:** **Ghi danh** → mở ghi danh → **«Điều chỉnh giờ»** → hộp «Điều chỉnh giờ»: nhập «Số giờ (+ thêm, − bớt)», chọn «Lý do», ghi «Ghi chú» → bấm **«Thêm dòng điều chỉnh»**. Kiểm ở **«Sổ giờ»**.
 - **Kết quả mong đợi:** sổ giờ có dòng điều chỉnh mới; «Còn lại» đổi theo.
-- **Lỗi thường gặp:** lý do bắt buộc; hạn mức hoặc quy tắc «Tặng giờ cần duyệt» có thể chặn (câu lý do hiện trên màn). **Ảnh:** [ẢNH: dieu-chinh-gio]
+- **Lỗi thường gặp:** lý do bắt buộc; nếu máy chủ từ chối thì câu lý do tiếng Việt hiện ngay trong hộp. **Ảnh:** [ẢNH: dieu-chinh-gio]
 
 ## 7. Duyệt phiếu nghiệp vụ (cấp quản lý cơ sở)
 - **Mục đích:** duyệt cập nhật hồ sơ, bảo lưu, chuyển lớp, và cấp 1 của hoàn học phí do CSKH trình.
