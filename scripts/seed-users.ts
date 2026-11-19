@@ -46,6 +46,14 @@ export const SEED_USERS: SeedUser[] = [
   },
   { key: 'khoa.cs5', name: 'Đã nghỉ việc (giả)', branch: 'CS5', roles: ['SALES'], locked: true },
   { key: 'HS900001', name: 'Học sinh (giả)', branch: 'CS5', roles: ['STUDENT'], student: true },
+  // Học sinh thứ hai chỉ cho bài e2e đổi mật khẩu lần đầu đến hết (đổi thật nên không dùng chung với HS900001; seed lại mỗi lần chạy).
+  {
+    key: 'HS900002',
+    name: 'Học sinh đổi mật khẩu (giả)',
+    branch: 'CS5',
+    roles: ['STUDENT'],
+    student: true,
+  },
 ];
 
 /** Quản lý trực tiếp mặc định của Sale, CSKH giả (người → quản lý), theo cơ sở. Dùng khi SEED_ASSIGN_MANAGERS=1. */

@@ -4,7 +4,7 @@ import {
   type PasswordPolicy,
 } from '../../../supabase/functions/_shared/login-rules.ts';
 import { useAuth } from '../../lib/auth/authContext';
-import { usePasswordPolicy } from '../../lib/auth/usePasswordPolicy';
+import { usePasswordPolicyState } from '../../lib/auth/usePasswordPolicy';
 import { Button } from '../../ui/Button';
 import { Icon } from '../../ui/icons';
 import { cn } from '../../ui/cn';
@@ -51,7 +51,12 @@ export function NewPasswordForm({
   onDone: () => void;
 }) {
   const { supabase, session, refresh } = useAuth();
-  const policy = usePasswordPolicy();
+  const {
+    policy,
+    failed: policyFailed,
+    loading: policyLoading,
+    retry: retryPolicy,
+  } = usePasswordPolicyState();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [fieldError, setFieldError] = useState<{
@@ -66,7 +71,15 @@ export function NewPasswordForm({
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!supabase || !policy) return;
+    if (!supabase) return;
+    // Luật mật khẩu chưa có (đang tải hoặc lỗi): báo bằng chữ, không được im lặng (Soát S16).
+    if (!policy) {
+      return setError(
+        policyFailed
+          ? 'Không tải được luật mật khẩu. Kiểm tra mạng rồi bấm «Tải lại luật mật khẩu».'
+          : 'Đang tải luật mật khẩu, chờ một chút rồi bấm lại.',
+      );
+    }
     const problems = {
       password: checkPassword(password, policy) ?? undefined,
       confirm: password === confirm ? undefined : 'Hai lần nhập mật khẩu không khớp.',
@@ -150,6 +163,19 @@ export function NewPasswordForm({
         value={confirm}
         onChange={(e) => setConfirm(e.target.value)}
       />
+      {policyFailed && !policy && (
+        <AuthAlert tone="danger">
+          Không tải được luật mật khẩu. Kiểm tra mạng rồi thử lại.
+          <Button type="button" size="sm" onClick={retryPolicy}>
+            Tải lại luật mật khẩu
+          </Button>
+        </AuthAlert>
+      )}
+      {policyLoading && !policy && !policyFailed && (
+        <p className="text-[13px] text-fg-muted" role="status">
+          Đang tải luật mật khẩu…
+        </p>
+      )}
       {error && <AuthAlert tone="danger">{error}</AuthAlert>}
       <Button
         type="submit"
