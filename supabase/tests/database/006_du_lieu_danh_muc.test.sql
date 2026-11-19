@@ -20,7 +20,7 @@ select is(pg_temp.codes('STUDENT_STATUS'), array['TIEM_NANG', 'DANG_HOC', 'BAO_L
 select is(pg_temp.codes('ENROLLMENT_STATUS'),
           array['CHO_XEP_LOP', 'DANG_HOC', 'DA_XEP_LOP', 'BAO_LUU', 'HOAN_THANH', 'CHUYEN_LOP', 'DUNG', 'HOAN_PHI'], 'Tình trạng ghi danh đúng spec 02');
 select is(pg_temp.codes('ATTENDANCE_STATUS'), array['CO_MAT', 'DI_MUON', 'VANG_CO_PHEP', 'VANG_KHONG_PHEP'], 'Điểm danh đúng spec 02');
-select is(pg_temp.codes('SESSION_TYPE'), array['CHINH', 'CUNG_CO', 'HOC_BU', 'BO_TRO', 'KIEM_TRA'], 'Loại buổi: chính, củng cố, học bù, bổ trợ, kiểm tra (R-V2-18, Q-176)');
+select is(pg_temp.codes('SESSION_TYPE'), array['CHINH', 'CUNG_CO', 'HOC_BU', 'BO_TRO', 'KIEM_TRA', 'KT_GIUA_KY', 'KT_CUOI_KY'], 'Loại buổi: chính, củng cố, học bù, bổ trợ, kiểm tra, giữa kỳ, cuối kỳ (A25, R-V2-18, Q-176)');
 select is(pg_temp.codes('CLASS_TYPE'), array['CB', 'NC', 'LR'], 'Phân loại lớp CB, NC, LR');
 select is(pg_temp.codes('STUDY_MODE'), array['OFF', 'ONL'], 'Hình thức OFF, ONL');
 -- So không theo thứ tự và chỉ kiểm các loại gốc: mỗi PR thêm một loại chứng từ (GV, YB, PNV…) làm dòng này xung đột liên tục.
