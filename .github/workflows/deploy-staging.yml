@@ -164,6 +164,7 @@ jobs:
       # thiếu bước này thì mọi lệnh gọi rpc vào schema app báo PGRST106 và đăng nhập báo «Hệ thống đang lỗi». Làm đúng một lần cho mỗi lượt triển khai,
       # idempotent (chỉ thêm `app` nếu chưa có, giữ nguyên các schema khác). Cần SUPABASE_ACCESS_TOKEN; chưa có thì cảnh báo, bước kiểm cuối sẽ báo lỗi.
       - name: Mở schema app qua Data API trên hmt-staging
+        continue-on-error: true
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
@@ -174,15 +175,52 @@ jobs:
           fi
           ref="$(printf '%s' "$VITE_SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')"
           api="https://api.supabase.com/v1/projects/$ref/postgrest"
-          current="$(curl -fsS "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN")"
+          # Token đọc được nhưng có thể thiếu quyền GHI cấu hình project (403): chỉ cảnh báo, KHÔNG làm đỏ lượt triển khai; anh bật tay (docs/van-hanh/mo-schema-app-data-api.md).
+          warn_manual() { echo "::warning::Token SUPABASE_ACCESS_TOKEN thiếu quyền ghi cấu hình project (hoặc API lỗi): anh Trường bật tay Exposed schemas thêm app (docs/van-hanh/mo-schema-app-data-api.md). Bước kiểm cuối sẽ báo nếu vẫn thiếu."; exit 0; }
+          current="$(curl -fsS "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN")" || warn_manual
           schemas="$(printf '%s' "$current" | jq -r '.db_schema')"
           if printf ',%s,' "$schemas" | grep -q ',app,'; then
             echo "Schema app đã mở qua Data API."
             exit 0
           fi
           body="$(jq -nc --arg s "$schemas,app" '{db_schema: $s}')"
-          curl -fsS -X PATCH "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' -d "$body" > /dev/null
+          curl -fsS -X PATCH "$api" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' -d "$body" > /dev/null || warn_manual
           echo "Đã thêm schema app vào Exposed schemas của hmt-staging."
+
+      # Đồng bộ cài đặt Auth của hmt-staging với supabase/config.toml (chỉ áp ở local, db push không đổi project hosted). Thiếu Auth Hook
+      # «Customize Access Token» thì token không có vai trò (hmt_roles), đăng nhập vào được nhưng không có quyền gì. Idempotent: PATCH cùng giá trị.
+      # Không đụng captcha, SMTP, URL (khác nhau giữa môi trường). Bước kiểm cuối cùng sẽ báo đỏ nếu hook vẫn tắt.
+      - name: Đồng bộ cài đặt Auth trên hmt-staging
+        continue-on-error: true
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+        run: |
+          if [ -z "$SUPABASE_ACCESS_TOKEN" ]; then
+            echo "::warning::Chưa có SUPABASE_ACCESS_TOKEN: không đồng bộ được cài đặt Auth."
+            exit 0
+          fi
+          ref="$(printf '%s' "$VITE_SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')"
+          # Giá trị theo config.toml: hook, tắt tự đăng ký, tắt ẩn danh, mật khẩu >= 8 chữ + số, TOTP tối đa 2 thiết bị, xoay refresh token.
+          body="$(jq -nc '{
+            hook_custom_access_token_enabled: true,
+            hook_custom_access_token_uri: "pg-functions://postgres/app/custom_access_token_hook",
+            disable_signup: true,
+            external_anonymous_users_enabled: false,
+            password_min_length: 8,
+            password_required_characters: "abcdefghijklmnopqrstuvwxyz:ABCDEFGHIJKLMNOPQRSTUVWXYZ:0123456789",
+            mfa_totp_enroll_enabled: true,
+            mfa_totp_verify_enabled: true,
+            mfa_max_enrolled_factors: 2,
+            refresh_token_rotation_enabled: true,
+            security_refresh_token_reuse_interval: 10
+          }')"
+          if ! curl -fsS -X PATCH "https://api.supabase.com/v1/projects/$ref/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H 'Content-Type: application/json' -d "$body" > /dev/null; then
+            echo "::warning::Token thiếu quyền ghi cấu hình Auth (hoặc API lỗi): anh Trường bật tay Auth Hook Customize Access Token và các mục Auth (docs/van-hanh/mo-schema-app-data-api.md). Bước kiểm cuối sẽ báo nếu vẫn thiếu."
+            exit 0
+          fi
+          echo "Đã đồng bộ cài đặt Auth của hmt-staging (hook token, đăng ký, mật khẩu, hai bước)."
 
       # Bài kiểm chủ động: khoá của hmt-platform KHÔNG được chạm hmt-prod (chốt 10/10/2026).
       # Mỗi khoá thử hai chiều; logic và kiểm thử ở scripts/check-isolation.{sh,test.ts}.
@@ -329,3 +367,30 @@ jobs:
             exit 1
           fi
           echo "Schema app mở qua Data API (mã $code): đúng."
+
+      # Kiểm cuối: đăng nhập thật bằng tài khoản giả (mật khẩu seed), token phải có vai trò (Auth Hook bật). Không in mật khẩu, không in token.
+      - name: Kiểm đăng nhập thật thấy claim vai trò (Auth Hook)
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          SEED_PASSWORD: ${{ secrets.STAGING_SEED_PASSWORD }}
+        run: |
+          if [ -z "$SEED_PASSWORD" ]; then
+            echo "::warning::Chưa có STAGING_SEED_PASSWORD: bỏ qua kiểm đăng nhập thật."
+            exit 0
+          fi
+          echo "::add-mask::$SEED_PASSWORD"
+          payload="$(jq -nc --arg e 'quantri.cs5@thu.hoamatoan.invalid' --arg p "$SEED_PASSWORD" '{email: $e, password: $p}')"
+          resp="$(curl -s -X POST "$VITE_SUPABASE_URL/auth/v1/token?grant_type=password" \
+            -H "apikey: $VITE_SUPABASE_PUBLISHABLE_KEY" -H 'Content-Type: application/json' -d "$payload")"
+          token="$(printf '%s' "$resp" | jq -r '.access_token // empty')"
+          if [ -z "$token" ]; then
+            echo "::error::Không đăng nhập được bằng tài khoản giả (mã: $(printf '%s' "$resp" | jq -r '.error_code // .code // "không rõ"' | cut -c1-60)). Kiểm Auth Hook, schema app, mật khẩu seed."
+            exit 1
+          fi
+          roles="$(printf '%s' "$token" | cut -d. -f2 | tr '_-' '/+' | base64 -d 2>/dev/null | jq -r '.hmt_roles | length' 2>/dev/null || echo 0)"
+          if [ "${roles:-0}" -lt 1 ]; then
+            echo "::error::Token đăng nhập KHÔNG có claim vai trò (hmt_roles): Auth Hook «Customize Access Token» chưa bật trên hmt-staging."
+            exit 1
+          fi
+          echo "Đăng nhập thật đạt: token có $roles vai trò."
