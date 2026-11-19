@@ -20,6 +20,8 @@ import { ChangeStaffDialog } from './ChangeStaffDialog';
 import { CorrectAttendanceDialog } from './CorrectAttendanceDialog';
 import { MoveSessionDialog } from './MoveSessionDialog';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { RecordChatter } from '../../features/chatter/RecordChatter';
+import { CustTabs } from '../khach-hang/CustTabs';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { sessionTone } from './sessionConfig';
@@ -34,6 +36,19 @@ const STEPS: StageStep[] = [
 
 const MUTED = <span className="text-fg-muted">—</span>;
 
+const CHATTER_FORMAT = {
+  labels: {
+    status_code: 'Tình trạng',
+    session_date: 'Ngày học',
+    start_time: 'Giờ bắt đầu',
+    end_time: 'Giờ kết thúc',
+    teacher_id: 'Giáo viên',
+    room_id: 'Phòng',
+  },
+  value: (column: string, value: unknown): string | null =>
+    column === 'status_code' ? (STEPS.find((x) => x.code === value)?.label ?? null) : null,
+};
+
 export function SessionRecordPage() {
   const { id } = useParams();
   const query = useSessionRecord(id);
@@ -47,6 +62,7 @@ export function SessionRecordPage() {
   const [changingStaff, setChangingStaff] = useState(false);
   const [addingTrial, setAddingTrial] = useState(false);
   const [correcting, setCorrecting] = useState(false);
+  const [tab, setTab] = useState('list');
   const [actionError, setActionError] = useState<string | null>(null);
   useCrumbTail(
     query.data
@@ -124,9 +140,13 @@ export function SessionRecordPage() {
         }}
         stageNote="Tình trạng chỉ đọc, đổi bằng nút bên dưới."
         aside={
-          <p className="p-3 text-body text-fg-muted">
-            Ghi chú và hoạt động của buổi làm sau 17/11.
-          </p>
+          <RecordChatter
+            entityType="CLASS_SESSION"
+            entityId={s.id}
+            format={CHATTER_FORMAT}
+            createdText="Tạo buổi học."
+            canWrite
+          />
         }
         businessActions={
           <span className="flex flex-wrap items-center gap-2">
@@ -227,94 +247,109 @@ export function SessionRecordPage() {
           </div>
         )}
 
-        <section className="mt-6 flex flex-col gap-2" aria-labelledby="buoi02-list">
-          <h3
-            id="buoi02-list"
-            className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
-          >
-            Danh sách và điểm danh
-          </h3>
-          {!listed ? (
-            <p className="text-body text-fg-muted">
-              Chưa có danh sách. Danh sách chốt khi buổi chuyển sang Đã chốt.
-            </p>
-          ) : students.length === 0 ? (
-            <p className="text-body text-fg-muted">Buổi không có em nào trong danh sách.</p>
-          ) : (
-            <div className="overflow-x-auto rounded-control border border-border">
-              <table aria-label="Danh sách và điểm danh" className="w-full text-body">
-                <thead className="bg-surface-subtle text-left text-caption text-fg-muted">
-                  <tr>
-                    <th className="px-3 py-2">Học sinh</th>
-                    <th className="px-3 py-2">Ghi danh</th>
-                    <th className="px-3 py-2">Trung tâm điểm danh</th>
-                    <th className="px-3 py-2">Điểm danh giáo viên (chính thức)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.map((st) => (
-                    <tr key={st.student_id} className="border-t border-border">
-                      <td className="px-3 py-2">
-                        {st.full_name} {st.is_trial && <Tag tone="info">Học thử</Tag>}
-                      </td>
-                      <td className="px-3 py-2">{st.enrollment_code ?? MUTED}</td>
-                      <td className="px-3 py-2">{st.ops_status_name ?? MUTED}</td>
-                      <td className="px-3 py-2">
-                        {st.teacher_status_name ?? MUTED}{' '}
-                        {st.mismatch && <Tag tone="warning">Lệch</Tag>}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          <p className="text-caption text-fg-muted">
-            Một em một dòng. Ô của giáo viên quyết định trạng thái chính thức (R-DD-02). Thẻ Lệch:
-            điểm danh của trung tâm khác của giáo viên, chỉ để đối chiếu.
-          </p>
-        </section>
+        <div className="mt-6">
+          <CustTabs
+            active={tab}
+            onChange={setTab}
+            tabs={[
+              { key: 'list', label: 'Danh sách và điểm danh' },
+              { key: 'review', label: 'Nhận xét' },
+            ]}
+          />
+        </div>
+        {tab === 'list' && (
+          <>
+            <section className="mt-6 flex flex-col gap-2" aria-labelledby="buoi02-list">
+              <h3
+                id="buoi02-list"
+                className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
+              >
+                Danh sách và điểm danh
+              </h3>
+              {!listed ? (
+                <p className="text-body text-fg-muted">
+                  Chưa có danh sách. Danh sách chốt khi buổi chuyển sang Đã chốt.
+                </p>
+              ) : students.length === 0 ? (
+                <p className="text-body text-fg-muted">Buổi không có em nào trong danh sách.</p>
+              ) : (
+                <div className="overflow-x-auto rounded-control border border-border">
+                  <table aria-label="Danh sách và điểm danh" className="w-full text-body">
+                    <thead className="bg-surface-subtle text-left text-caption text-fg-muted">
+                      <tr>
+                        <th className="px-3 py-2">Học sinh</th>
+                        <th className="px-3 py-2">Ghi danh</th>
+                        <th className="px-3 py-2">Trung tâm điểm danh</th>
+                        <th className="px-3 py-2">Điểm danh giáo viên (chính thức)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {students.map((st) => (
+                        <tr key={st.student_id} className="border-t border-border">
+                          <td className="px-3 py-2">
+                            {st.full_name} {st.is_trial && <Tag tone="info">Học thử</Tag>}
+                          </td>
+                          <td className="px-3 py-2">{st.enrollment_code ?? MUTED}</td>
+                          <td className="px-3 py-2">{st.ops_status_name ?? MUTED}</td>
+                          <td className="px-3 py-2">
+                            {st.teacher_status_name ?? MUTED}{' '}
+                            {st.mismatch && <Tag tone="warning">Lệch</Tag>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              <p className="text-caption text-fg-muted">
+                Một em một dòng. Ô của giáo viên quyết định trạng thái chính thức (R-DD-02). Thẻ
+                Lệch: điểm danh của trung tâm khác của giáo viên, chỉ để đối chiếu.
+              </p>
+            </section>
 
-        {excluded.length > 0 && (
-          <section className="mt-6 flex flex-col gap-2" aria-labelledby="buoi02-excluded">
+            {excluded.length > 0 && (
+              <section className="mt-6 flex flex-col gap-2" aria-labelledby="buoi02-excluded">
+                <h3
+                  id="buoi02-excluded"
+                  className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
+                >
+                  Em không vào danh sách
+                </h3>
+                <ul className="flex flex-col gap-1 text-body">
+                  {excluded.map((e) => (
+                    <li key={e.student_id}>
+                      {e.full_name}: {EXCLUDED_LABEL[e.reason_code] ?? e.reason_code}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </>
+        )}
+        {tab === 'review' && (
+          <section className="mt-6 flex flex-col gap-2" aria-labelledby="buoi02-review">
             <h3
-              id="buoi02-excluded"
+              id="buoi02-review"
               className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
             >
-              Em không vào danh sách
+              Nhận xét của giáo viên
             </h3>
-            <ul className="flex flex-col gap-1 text-body">
-              {excluded.map((e) => (
-                <li key={e.student_id}>
-                  {e.full_name}: {EXCLUDED_LABEL[e.reason_code] ?? e.reason_code}
-                </li>
-              ))}
-            </ul>
+            {!listed || s.status_code === 'HUY_CO_PHI' || s.status_code === 'HUY_KHONG_PHI' ? (
+              <p className="text-body text-fg-muted">
+                Chưa có nhận xét: giáo viên nhập sau buổi học.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-1 text-body">
+                {reviews.map((r) => (
+                  <li key={r.student_id}>
+                    <b>{r.full_name}</b>:{' '}
+                    {r.comment ?? <span className="text-fg-muted">chưa có</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         )}
-
-        <section className="mt-6 flex flex-col gap-2" aria-labelledby="buoi02-review">
-          <h3
-            id="buoi02-review"
-            className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
-          >
-            Nhận xét của giáo viên
-          </h3>
-          {!listed || s.status_code === 'HUY_CO_PHI' || s.status_code === 'HUY_KHONG_PHI' ? (
-            <p className="text-body text-fg-muted">
-              Chưa có nhận xét: giáo viên nhập sau buổi học.
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-1 text-body">
-              {reviews.map((r) => (
-                <li key={r.student_id}>
-                  <b>{r.full_name}</b>:{' '}
-                  {r.comment ?? <span className="text-fg-muted">chưa có</span>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
       </RecordDetail>
       <CancelSessionDialog
         sessionId={s.id}
