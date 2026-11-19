@@ -462,6 +462,7 @@ function QuotationForm({
   const supabase = useDb();
   const toast = useToast();
   const refreshOrders = useRefreshOrders();
+  const catalogs = useLeadCatalogs();
   const [removed, setRemoved] = useState<ReadonlySet<number>>(new Set());
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -553,7 +554,9 @@ function QuotationForm({
                     <td className="px-3 py-2">{i + 1}</td>
                     <td className="px-3 py-2">{l.student_name ?? '—'}</td>
                     <td className="px-3 py-2">{l.package_name}</td>
-                    <td className="px-3 py-2">{l.delivery_mode_code}</td>
+                    <td className="px-3 py-2">
+                      {catalogs.name('STUDY_MODE', l.delivery_mode_code) ?? l.delivery_mode_code}
+                    </td>
                     <td className="tabular px-3 py-2 text-right">{formatNumber(l.quantity)}</td>
                     <td className="tabular px-3 py-2 text-right">{formatMoney(l.unit_price)}</td>
                     <td className="tabular px-3 py-2 text-right">{formatMoney(l.line_total)}</td>
