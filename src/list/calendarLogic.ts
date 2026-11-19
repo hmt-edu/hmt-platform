@@ -26,6 +26,24 @@ export function vnToday(now: Date = new Date()): Date {
   const [y, m, d] = vnDayBounds(now).dateKey.split('-').map(Number);
   return new Date(y ?? 0, (m ?? 1) - 1, d ?? 1);
 }
+/**
+ * Đổi một thời điểm thật sang «giờ treo tường Việt Nam» (R-HT-07, Q-172): Date có các trường giờ, ngày của MÁY khớp đúng ngày giờ ở Việt Nam,
+ * để lưới Calendar (nhóm theo ngày, vẽ theo giờ bằng getHours, getDate của máy) hiện sự kiện đúng ngày giờ VN dù trình duyệt đặt múi giờ nào.
+ */
+export function vnWall(d: Date): Date {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(d);
+  const n = (t: string) => Number(parts.find((x) => x.type === t)?.value ?? 0);
+  return new Date(n('year'), n('month') - 1, n('day'), n('hour'), n('minute'), n('second'));
+}
 export const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
 /**
