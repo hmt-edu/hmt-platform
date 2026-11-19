@@ -1,6 +1,8 @@
 -- GĐ0 bước 4b: tìm không dấu, ghi chú nhắc tên + thông báo, lịch sử bản ghi, bộ lọc yêu thích, tìm kiếm.
 -- Các phép đếm chỉ tính dữ liệu của tài khoản tạm trong bài, để chạy được cả trên DB local đã có dữ liệu giả.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

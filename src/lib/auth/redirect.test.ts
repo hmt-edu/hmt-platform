@@ -11,6 +11,7 @@ function claims(over: Partial<HmtClaims> = {}): HmtClaims {
     portals: ['crm'],
     viewOnlyPortals: [],
     requireMfa: false,
+    mfaOptional: false,
     mustChangePassword: false,
     aal: 'aal1',
     ...over,

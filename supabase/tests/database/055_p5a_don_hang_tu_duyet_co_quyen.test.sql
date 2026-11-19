@@ -1,6 +1,8 @@
 -- P5a-DB-O2c (migration 063, Đ283): tự duyệt khi Trưởng cơ sở trình (Q-P6, Đ102, R-TIEN-35, KD6, R-HT-06) và bốn cờ quyền của get_order.
 -- Mỗi luật có ca đúng và ca bị chặn; ma trận cờ so với việc hàm ghi chạy được hay bị chặn (từng vai, từng trạng thái); mỗi vai đọc trong và ngoài cơ sở.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

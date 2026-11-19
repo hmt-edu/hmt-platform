@@ -1,6 +1,8 @@
 -- Tái hiện các lỗ hổng tìm thấy khi soát bảo mật bước 3 (10/10/2026, PR #7), mỗi lỗi một nhóm bài.
 -- Trước khi sửa: các bài này đỏ. Sau migration 20261010000014: xanh. Chi tiết: docs/nghiep-vu/phan-quyen.md.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

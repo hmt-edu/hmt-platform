@@ -56,7 +56,7 @@ Project Supabase Free tự tạm dừng sau 1 tuần không dùng: workflow hằ
 
 - Nghỉ việc, dừng học thì **khoá** tài khoản, không xoá.
 - Quên mật khẩu: giai đoạn 0 nhân viên liên hệ quản trị viên (theo thiết kế P1 v4, anh OK 18/10); tự đặt lại qua email làm sau; học sinh nhờ CSKH.
-- Admin và Kế toán bật xác thực hai bước.
+- Admin và Kế toán: xác thực hai bước KHÔNG bắt buộc từ 19/11/2026 (anh Trường chốt: «mỗi lần vào phải xác thực là không cần thiết»). Một tham số `mfa_required_enabled` (mặc định tắt) quyết định; bật lại thì bắt buộc như cũ. Trang cài thiết bị hai bước vẫn có ở Hồ sơ (tự nguyện). Xem migration 472.
 - **Không chuyển mật khẩu từ hệ thống cũ.**
 
 ## Phân quyền
