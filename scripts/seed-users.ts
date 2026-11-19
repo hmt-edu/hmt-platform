@@ -33,6 +33,8 @@ export const SEED_USERS: SeedUser[] = [
   { key: 'ketoan.cs5', name: 'Kế toán CS5 (giả)', branch: 'CS5', roles: ['ACCOUNTANT'] },
   // Kế toán thứ hai CS5 riêng cho bài đường học sinh mới (T4): hai file bài không dùng chung một tài khoản hai bước (tránh tranh thiết bị).
   { key: 'ketoan2.cs5', name: 'Kế toán thứ hai CS5 (giả)', branch: 'CS5', roles: ['ACCOUNTANT'] },
+  // Kế toán CS5 thứ ba riêng cho bài đường Sale tích hợp (duong-sale): thiết lập hai bước trong bài xoá thiết bị cũ của CHÍNH tài khoản đó, nên hai file bài chạy song song (hai worker) dùng chung một tài khoản sẽ làm hỏng phiên của nhau.
+  { key: 'ketoan3.cs5', name: 'Kế toán thứ ba CS5 (giả)', branch: 'CS5', roles: ['ACCOUNTANT'] },
   { key: 'quantri.cs1', name: 'Quản trị CS1 (giả)', branch: 'CS1', roles: ['ADMIN'] },
   { key: 'gv.cs5', name: 'Giáo viên CS5 (giả)', branch: 'CS5', roles: ['TEACHER'] },
   // Giáo viên thứ hai: giáo viên của buổi "người khác" ở bài Playwright (buổi phải có giáo viên đủ vai trò, F5).
