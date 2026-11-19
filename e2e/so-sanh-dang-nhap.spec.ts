@@ -22,6 +22,17 @@ test.skip(
   !process.env.SO_SANH || !PASSWORD || !DB_URL,
   'Chỉ chạy khi SO_SANH=1 và có SEED_PASSWORD, DB_URL.',
 );
+/** E31: học sinh mặc định không bị bắt đổi mật khẩu lần đầu; bật tham số tạm thời để chụp màn DN07/CHUNG-07, xong trả lại. */
+async function setStudentFirstChange(on: boolean) {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  await db.query(
+    "update app.setting_def set value = $1 where key = 'first_password_change_required_student'",
+    [on ? 'true' : 'false'],
+  );
+  await db.end();
+}
+
 test.describe.configure({ mode: 'serial' });
 
 /** Ghép ảnh thiết kế (design/hmt-p0-p2/png/<tên>.png) với ảnh bản dựng thành một ảnh JPEG. */
@@ -94,12 +105,14 @@ for (const device of ['pc', 'mb'] as const) {
     await page.goto('/khong-dang-nhap-duoc');
     await save(browser, page, `DN08_${device}_lock`);
     // DN07 đổi mật khẩu lần đầu của học sinh (không bấm gửi).
+    await setStudentFirstChange(true);
     await loginStudent(page, 'hs900001');
     await expect(page).toHaveURL(/\/doi-mat-khau$/);
     await save(browser, page, `DN07_${device}_new`);
     await page.getByLabel('Mật khẩu mới', { exact: true }).fill('MatKhauMoi123a');
     await page.getByLabel('Nhập lại mật khẩu mới', { exact: true }).fill('MatKhauMoi123a');
     await save(browser, page, `DN07_${device}_ok`);
+    await setStudentFirstChange(false);
   });
 
   test(`DN04, DN03, DN10 (${device})`, async ({ page, browser }) => {

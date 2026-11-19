@@ -29,6 +29,17 @@ test.skip(
   !process.env.SO_SANH || !PASSWORD || !DB_URL,
   'Chỉ chạy khi SO_SANH=1 và có SEED_PASSWORD, DB_URL.',
 );
+/** E31: học sinh mặc định không bị bắt đổi mật khẩu lần đầu; bật tham số tạm thời để chụp màn DN07/CHUNG-07, xong trả lại. */
+async function setStudentFirstChange(on: boolean) {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  await db.query(
+    "update app.setting_def set value = $1 where key = 'first_password_change_required_student'",
+    [on ? 'true' : 'false'],
+  );
+  await db.end();
+}
+
 test.describe.configure({ mode: 'serial' });
 
 /** Ghép ảnh thiết kế (nếu có) và ảnh bản dựng thành một ảnh JPEG. */
@@ -99,6 +110,7 @@ test('khung cổng Giáo viên và cổng Học tập', async ({ page, browser }
   await signOut(page);
 
   await page.setViewportSize(DESKTOP);
+  await setStudentFirstChange(true);
   await loginStudent(page, 'hs900001');
   await expect(page).toHaveURL(/\/doi-mat-khau$/);
   await save(browser, page, 'CHUNG-07');
@@ -107,6 +119,7 @@ test('khung cổng Giáo viên và cổng Học tập', async ({ page, browser }
   await page.getByLabel('Nhập lại mật khẩu mới', { exact: true }).fill(newPassword);
   await page.getByRole('button', { name: 'Đổi mật khẩu và tiếp tục' }).click();
   await expect(page).toHaveURL(/\/hoc$/);
+  await setStudentFirstChange(false);
   await save(browser, page, 'HT-09');
   await page.setViewportSize(PHONE);
   await save(browser, page, 'HT-09', 'điện thoại');
