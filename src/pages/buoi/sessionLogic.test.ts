@@ -8,6 +8,7 @@ import {
   classLabel,
   deadlineLabel,
   moveArgsOf,
+  sessionGroupFilter,
   sessionNoLabel,
   sessionSortParam,
   ymd,
@@ -100,5 +101,22 @@ describe('BUOI-12, BUOI-04, BUOI-05', () => {
     });
     expect(moveArgsOf('2026-10-20', '19:30', '18:00', null)).toBeNull();
     expect(moveArgsOf('', '18:00', '19:30', null)).toBeNull();
+  });
+});
+
+describe('sessionGroupFilter (bộ lọc của một nhóm Group By)', () => {
+  it('ánh xạ trường nhóm sang bộ lọc của session_list', () => {
+    expect(sessionGroupFilter('date', '2026-11-19')).toEqual({
+      date_from: '2026-11-19',
+      date_to: '2026-11-19',
+    });
+    expect(sessionGroupFilter('class', 'c1')).toEqual({ class_id: 'c1' });
+    expect(sessionGroupFilter('teacher', 'u1')).toEqual({ teacher_id: 'u1' });
+    expect(sessionGroupFilter('type', 'CHINH')).toEqual({ type_code: 'CHINH' });
+    expect(sessionGroupFilter('status', 'DONE')).toEqual({ status: ['DONE'] });
+  });
+  it('nhóm «Chưa có» (khoá rỗng) hoặc trường lạ không lọc thêm', () => {
+    expect(sessionGroupFilter('teacher', '')).toEqual({});
+    expect(sessionGroupFilter('khac', 'x')).toEqual({});
   });
 });

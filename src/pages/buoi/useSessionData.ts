@@ -1,6 +1,7 @@
 // Gọi dữ liệu cụm Buổi A: danh sách buổi, bản ghi buổi, bảng điểm danh vận hành, em vắng/chưa đến hôm nay (đọc, phân trang ở máy chủ) và các thao tác ghi dùng hàm D1c.
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import type { GroupCounts } from '../lead/leadTypes';
 import { rpc, useDb } from '../../lib/db';
 import type {
   AbsentPage,
@@ -269,5 +270,17 @@ export function useMoveSession(sessionId: string) {
         p_room_id: a.roomId,
       }),
     onSuccess: () => refresh(),
+  });
+}
+
+/** Số buổi theo trường nhóm (Group By ở máy chủ, tối đa hai cấp): app.session_group_counts, bộ lọc giống session_list. */
+export function useSessionGroupCounts(filters: SessionFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'session_group_counts', { p_filters: filters, p_fields: fields }),
   });
 }

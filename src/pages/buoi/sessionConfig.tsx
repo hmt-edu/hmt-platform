@@ -97,7 +97,13 @@ export function buildSessionConfig(
       { key: 'session_date', label: 'Ngày học', type: 'date', ops: ['from', 'to'] },
       ...branchField(access),
     ],
-    groupFields: [],
+    groupFields: [
+      { key: 'date', label: 'Ngày', value: (r) => r.session_date },
+      { key: 'class', label: 'Lớp', value: (r) => r.class_id },
+      { key: 'teacher', label: 'Giáo viên', value: (r) => r.teacher_name ?? '' },
+      { key: 'type', label: 'Loại buổi', value: (r) => r.type_code },
+      { key: 'status', label: 'Tình trạng', value: (r) => r.status_code },
+    ],
     dateFields: [{ key: 'session_date', label: 'Ngày học' }],
     views: ['list'],
   };

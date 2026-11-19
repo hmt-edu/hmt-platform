@@ -91,6 +91,16 @@ select is((app.session_list(jsonb_build_object('class_id', (select id from cl), 
   'BUOI-01: lọc theo lớp và đến hết ngày mai: 4 buổi giả');
 select is((app.session_list(jsonb_build_object('class_id', (select id from cl), 'date_to', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1, 'status', jsonb_build_array('DONE'))) ->> 'total')::int, 1,
   'BUOI-01: lọc theo tình trạng Done: 1 buổi');
+-- Group By ở máy chủ (migration 312): session_group_counts theo một hoặc hai trường, bộ lọc và phạm vi quyền như session_list; lọc type_code đọc được.
+select is((app.session_group_counts(jsonb_build_object('class_id', (select id from cl), 'date_to', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1), array['status']) ->> 'total')::int, 4, 'Group By: tổng bằng 4 buổi của lớp trong phạm vi CSKH');
+select is((select sum((x ->> 'count')::int)::int from jsonb_array_elements(app.session_group_counts(jsonb_build_object('class_id', (select id from cl), 'date_to', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1), array['status']) -> 'groups') x), 4, 'Group By tình trạng: các nhóm cộng lại bằng tổng');
+select is((select (x ->> 'count')::int from jsonb_array_elements(app.session_group_counts(jsonb_build_object('class_id', (select id from cl), 'date_to', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1, 'status', jsonb_build_array('DONE')), array['status']) -> 'groups') x), 1, 'Group By theo đúng bộ lọc: chỉ nhóm Done, 1 buổi');
+select is(jsonb_typeof(app.session_group_counts(jsonb_build_object('class_id', (select id from cl), 'date_to', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1), array['status', 'type']) -> 'groups' -> 0 -> 'k2'), 'string', 'Group By hai cấp: có khoá cấp hai');
+select is(pg_temp.err($$select app.session_group_counts('{}', array['status', 'status'])$$), 'HMT_NHOM_SAI', 'Chặn: hai cấp nhóm phải khác nhau');
+select is(pg_temp.err($$select app.session_group_counts('{}', array['khong_co'])$$), 'HMT_NHOM_SAI', 'Chặn: trường nhóm không cho phép');
+select is(pg_temp.err($$select app.session_group_counts('{}', array['status', 'type', 'date'])$$), 'HMT_NHOM_SAI', 'Chặn: nhóm quá hai cấp');
+select is((app.session_list(jsonb_build_object('class_id', (select id from cl), 'date_to', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1, 'type_code', 'KHONG_CO_LOAI')) ->> 'total')::int, 0, 'Lọc loại buổi (type_code) đã được đọc');
+select is(has_function_privilege('anon', 'app.session_group_counts(jsonb, text[])', 'execute'), false, 'Người chưa đăng nhập không gọi được session_group_counts');
 select is((app.session_list(jsonb_build_object('class_id', (select id from cl), 'date_to', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1)) -> 'rows' -> 0 ->> 'session_no')::int, 202,
   'BUOI-01: mặc định xếp theo ngày, giờ tăng dần (hôm qua đứng đầu)');
 select is((app.session_list(jsonb_build_object('class_id', (select id from cl), 'date_to', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1), 'time_desc') -> 'rows' -> 0 ->> 'session_no')::int, 203,

@@ -140,3 +140,23 @@ export function buildPendingFilters(state: ListState): SessionFilters {
   if (kinds.size === 1) filters.kind = [...kinds][0];
   return filters;
 }
+
+/** Trường nhóm của giao diện Buổi học (khoá cấu hình) → tên trường của app.session_group_counts. */
+export const SESSION_GROUP_FIELD_OF: Record<string, string> = {
+  date: 'date',
+  class: 'class',
+  teacher: 'teacher',
+  type: 'type',
+  status: 'status',
+};
+
+/** Bộ lọc của MỘT nhóm (mở nhóm tải dòng bằng session_list). Khoá rỗng («Chưa có», ví dụ chưa có giáo viên) không lọc thêm. */
+export function sessionGroupFilter(field: string, key: string): SessionFilters {
+  if (key === '') return {};
+  if (field === 'date') return { date_from: key, date_to: key };
+  if (field === 'class') return { class_id: key };
+  if (field === 'teacher') return { teacher_id: key };
+  if (field === 'type') return { type_code: key };
+  if (field === 'status') return { status: [key] };
+  return {};
+}
