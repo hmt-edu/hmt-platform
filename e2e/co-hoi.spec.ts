@@ -84,7 +84,7 @@ test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dù
   await expect(page.getByRole('button', { name: 'Kiểm tra 1' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Báo giá 0' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Đơn hàng 0' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Phụ huynh 1' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Phụ huynh 1' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Lead gốc 1' })).toBeEnabled();
   // Tạo báo giá (R-CRM-19): có ở bản ghi cơ hội cho người có quyền lập báo giá khi Bán hàng bật; điện thoại ẩn nút (Đ248).
   await expect(page.getByRole('button', { name: 'Tạo báo giá' })).toHaveCount(
