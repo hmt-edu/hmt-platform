@@ -33,7 +33,8 @@ export type LeadRecord = {
   campaign_name: string | null;
   stage_code: string;
   substage_code: string | null;
-  record_status: 'DANG_DUNG' | 'DA_GOP';
+  record_status: 'DANG_DUNG' | 'DA_GOP' | 'DA_HUY';
+  cancel_reason?: string | null;
   merged_into_id: string | null;
   merged_into_code: string | null;
   assigned_at: string;
@@ -245,7 +246,8 @@ export function leadHistoryValue(
       return value === record.supporter_id
         ? (record.supporter_name ?? 'nhân sự khác')
         : 'nhân sự khác';
-    if (column === 'record_status') return value === 'DA_GOP' ? 'Đã gộp' : 'Đang dùng';
+    if (column === 'record_status')
+      return value === 'DA_GOP' ? 'Đã gộp' : value === 'DA_HUY' ? 'Đã huỷ' : 'Đang dùng';
     return null;
   };
 }

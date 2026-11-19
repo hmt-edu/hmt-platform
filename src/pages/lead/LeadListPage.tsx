@@ -203,7 +203,12 @@ export function LeadListPage() {
           ? formatDateTime(String(r.next_appointment_at))
           : '',
         created_at: formatDateTime(String(r.created_at)),
-        record_status: r.record_status === 'DA_GOP' ? 'Đã gộp' : 'Đang dùng',
+        record_status:
+          r.record_status === 'DA_GOP'
+            ? 'Đã gộp'
+            : r.record_status === 'DA_HUY'
+              ? 'Đã huỷ'
+              : 'Đang dùng',
       }));
       downloadText(`lead-${vnDayBounds().dateKey}.csv`, toCsv(rows, EXPORT_COLUMNS));
       toast(
@@ -387,7 +392,7 @@ export function LeadListPage() {
           const spec = grouping?.specs.get(key);
           if (spec) leaves.toggle(key, spec.filters, open);
         }}
-        rowMuted={(r) => r.record_status === 'DA_GOP'}
+        rowMuted={(r) => r.record_status !== 'DANG_DUNG'}
         onRowClick={(r) => void navigate(`/crm/lead/${r.id}`)}
         kanban={
           board.isPending ? (
