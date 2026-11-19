@@ -34,6 +34,8 @@ import type { ClassRecord } from './classTypes';
 import {
   useClassCatalogs,
   useClassFormOptions,
+  useCurriculumFrames,
+  useCurriculumLessons,
   useClassRecord,
   useRefreshClasses,
 } from './useClassData';
@@ -204,6 +206,28 @@ function FormView({ record }: { record: ClassRecord | null }) {
   const groupsForGrade = (opt?.groups ?? []).filter((g) => g.grade_code === form.gradeCode);
 
   const summary = slotSummary(form.slots, opt);
+  // Khung chương trình khớp môn, khối, phân loại, năm học; giá trị cũ ngoài danh sách vẫn hiện để không mất dữ liệu.
+  const frames = useCurriculumFrames(
+    form.subjectCode,
+    form.gradeCode,
+    form.typeCode,
+    form.yearCode,
+  );
+  const frameList = frames.data ?? [];
+  const frameId = frameList.find((f) => f.code === form.curriculumRef)?.id ?? '';
+  const lessons = useCurriculumLessons(frameId);
+  const keepOld = (value: string, list: { value: string; label: string }[]) =>
+    value !== '' && !list.some((o) => o.value === value)
+      ? [...list, { value, label: `${value} (giá trị cũ)` }]
+      : list;
+  const frameOptions = keepOld(
+    form.curriculumRef,
+    frameList.map((f) => ({ value: f.code, label: `${f.code} · bản ${f.version}` })),
+  );
+  const lessonOptions = keepOld(
+    form.startLesson,
+    (lessons.data ?? []).map((l) => ({ value: l.code, label: `${l.code} · ${l.title}` })),
+  );
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4">
       <UnsavedGuard when={dirty && !busy} />
@@ -358,18 +382,21 @@ function FormView({ record }: { record: ClassRecord | null }) {
         <h2 id="lop3-time" className="text-h4 md:col-span-3">
           Thời gian và địa điểm
         </h2>
-        <TextField
+        <Select
           label="Khung chương trình"
-          help="Không bắt buộc"
+          error={undefined}
           value={form.curriculumRef}
           disabled={!full}
-          onChange={(e) => set('curriculumRef', e.target.value)}
+          options={frameOptions}
+          onChange={(v) => setForm({ ...form, curriculumRef: v, startLesson: '' })}
         />
-        <TextField
+        <Select
           label="Bài bắt đầu"
+          error={undefined}
           value={form.startLesson}
-          disabled={!full}
-          onChange={(e) => set('startLesson', e.target.value)}
+          disabled={!full || frameId === ''}
+          options={lessonOptions}
+          onChange={(v) => set('startLesson', v)}
         />
         <TextField
           label="Tổng số buổi"

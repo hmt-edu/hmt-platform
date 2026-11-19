@@ -50,6 +50,9 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await page.getByLabel('Khối').selectOption({ index: 5 });
   await page.getByLabel('Phân loại').selectOption({ label: 'Cơ bản' });
   await page.getByLabel('Trình độ').selectOption({ index: 1 });
+  // A50: Khung chương trình và Bài bắt đầu là ô chọn (lấy từ khung ở CH-05), không còn ô gõ chữ; chưa có khung khớp thì chỉ còn «— Chọn —».
+  await expect(page.getByLabel('Khung chương trình')).toBeVisible();
+  await expect(page.getByLabel('Bài bắt đầu')).toBeDisabled();
   await page.getByLabel('Tổng số buổi').fill('12');
   await page.getByLabel('Ngày khai giảng').fill('2027-01-05');
   // Một khung giờ Thứ 3 (ngày 05/01/2027 là Thứ 3).
