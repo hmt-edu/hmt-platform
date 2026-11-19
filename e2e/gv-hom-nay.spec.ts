@@ -116,6 +116,8 @@ test('GV-02: có buổi: nhóm việc sắp trễ hạn và danh sách buổi h�
   await expect(urgent.getByRole('listitem')).toHaveCount(1);
   await expect(urgent.getByText('Toán · LSAP · Buổi 6')).toBeVisible();
   await expect(urgent.getByText('Còn 1 giờ')).toBeVisible();
+  // Thẻ việc sắp trễ hạn cũng bấm được, mở trang các bước của buổi (T2-23).
+  await expect(urgent.getByRole('link', { name: /LSAP/ })).toHaveAttribute('href', '/gv/buoi/b');
   const today = page.getByRole('region', { name: /BUỔI HÔM NAY/ });
   await expect(today.getByRole('listitem')).toHaveCount(3);
   await expect(today.getByText('Đã hoàn tất')).toBeVisible();

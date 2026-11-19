@@ -6,14 +6,23 @@ import { Tag } from '../../ui/Data';
 import { WEEKDAY_LABEL, timeText } from './classLabels';
 import { OPERATING_LABEL, type ClassRow } from './classTypes';
 
-/** Lịch học dạng khung LOP-01: "Thứ 3, Thứ 6 · 18:00–19:30" (gộp các thứ cùng giờ). */
+/**
+ * Lịch học ở danh sách Lớp (LOP-01, báo cáo T2 mục 10): gộp các thứ có CÙNG giờ, giáo viên, phòng, rồi ghi rõ giáo viên và phòng của nhóm đó:
+ * "Thứ 2, Thứ 6 · 18:00–19:30 · GV A · P201; Thứ 4 · 18:00–19:30 · GV B". Khung không có giáo viên, phòng thì bỏ phần đó.
+ */
 export function scheduleText(schedule: ClassRow['schedule']): string {
   const groups = new Map<string, string[]>();
   for (const s of schedule) {
-    const time = `${timeText(s.start_time)}–${timeText(s.end_time)}`;
-    groups.set(time, [...(groups.get(time) ?? []), WEEKDAY_LABEL[s.weekday] ?? String(s.weekday)]);
+    const key = [
+      `${timeText(s.start_time)}–${timeText(s.end_time)}`,
+      s.teacher_name ? `GV ${s.teacher_name}` : '',
+      s.room_name ?? '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+    groups.set(key, [...(groups.get(key) ?? []), WEEKDAY_LABEL[s.weekday] ?? String(s.weekday)]);
   }
-  return [...groups].map(([time, days]) => `${days.join(', ')} · ${time}`).join('; ');
+  return [...groups].map(([detail, days]) => `${days.join(', ')} · ${detail}`).join('; ');
 }
 
 export const CLASS_SCREEN_CODE = 'LOP-01';

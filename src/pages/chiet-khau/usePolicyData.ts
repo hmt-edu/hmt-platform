@@ -20,7 +20,7 @@ export function useDiscountPolicies() {
             .schema('app')
             .from('discount_policy')
             .select(
-              'id, code, name, kind, max_value, fixed_value, requires_approval, valid_from, valid_to, package_type_codes, branch_ids, is_active, is_flexible',
+              'id, code, name, kind, max_value, fixed_value, requires_approval, valid_from, valid_to, package_type_codes, branch_ids, is_active, is_flexible, applies_to',
             )
             .order('is_flexible', { ascending: false })
             .order('name'),

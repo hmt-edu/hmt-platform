@@ -173,7 +173,11 @@ export function TaskRecordPage() {
               }
             />
             <DetailField label="Học sinh" mode="view" value={ticket.student_name ?? ''} />
-            <DetailField label="Cơ sở" mode="view" value={task.branch_code} />
+            <DetailField
+              label="Cơ sở"
+              mode="view"
+              value={access.branchName(task.branch_code) ?? task.branch_code}
+            />
             <DetailField label="Người tạo" mode="view" value={task.created_by_name ?? ''} />
             <DetailField label="Lý do" mode="view" value={task.reason} />
             {task.reject_reason && (
@@ -200,6 +204,7 @@ export function TaskRecordPage() {
                   task.status_code,
                   record.data?.events ?? [],
                   (l) => LEVEL_ROLE_LABEL[l] ?? l,
+                  task.next_approver ?? null,
                 ).map((r) => (
                   <tr key={r.level} className="border-t border-border">
                     <td className="py-1 pr-3">Cấp {r.level}</td>

@@ -221,7 +221,11 @@ function ClassView({ record }: { record: ClassRecord }) {
               label="Vận hành"
               value={record.operating_status ? OPERATING_LABEL[record.operating_status] : '—'}
             />
-            <DetailField mode="view" label="Cơ sở" value={record.branch_code} />
+            <DetailField
+              mode="view"
+              label="Cơ sở"
+              value={access.branchName(record.branch_code) ?? record.branch_code}
+            />
             <DetailField
               mode="view"
               label="Môn"

@@ -82,6 +82,7 @@ export function buildReceiptConfig(
       { key: 'branch', label: 'Cơ sở', render: (r) => r.collect_branch_code },
       { key: 'order_branch', label: 'Cơ sở đơn', render: (r) => r.branch_code },
       { key: 'creator', label: 'Người lập', render: (r) => r.created_by_name ?? '' },
+      { key: 'receiver', label: 'Người nhận tiền', render: (r) => r.receiver_name ?? '' },
       {
         key: 'status',
         label: 'Tình trạng',

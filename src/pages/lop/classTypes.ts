@@ -22,7 +22,13 @@ export type ClassRow = {
   expected_end_date: string | null;
   total_sessions: number;
   group_name: string | null;
-  schedule: { weekday: number; start_time: string; end_time: string }[];
+  schedule: {
+    weekday: number;
+    start_time: string;
+    end_time: string;
+    teacher_name?: string | null;
+    room_name?: string | null;
+  }[];
   teacher_names: string | null;
 };
 

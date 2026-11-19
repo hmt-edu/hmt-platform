@@ -79,7 +79,23 @@ test('Báo giá Đã gửi: Chuyển thành đơn mở form trắng, bỏ dòng 
   test.skip(isPhone(page), 'Đ248: điện thoại ẩn nút Chuyển thành đơn.');
   await enterAs(page, setupOf(testInfo.project.name).sale);
   await page.goto(`/crm/bao-gia/${sentQuoteId}`);
-  await page.getByRole('button', { name: 'Chuyển thành đơn' }).click();
+  // Cơ hội chưa ở L8 (R-CRM-16): nút mờ kèm lý do ngay trên báo giá (T2-03), không đợi tới lúc Lưu mới báo.
+  const convert = page.getByRole('button', { name: 'Chuyển thành đơn' });
+  await expect(convert).toBeDisabled();
+  await expect(convert).toHaveAttribute('title', /L8/);
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  try {
+    await db.query(
+      `update app.opportunity set stage_code = 'L8', substage_code = 'L8A' where id = $1`,
+      [sentOppId],
+    );
+  } finally {
+    await db.end();
+  }
+  await page.reload();
+  await expect(convert).toBeEnabled();
+  await convert.click();
   await expect(page).toHaveURL(new RegExp(`/crm/don-hang/tao\\?bao-gia=${sentQuoteId}$`));
   // Form trắng: chưa có bản ghi, chưa cấp mã.
   await expect(page.getByRole('heading', { level: 2, name: 'Tạo đơn hàng' })).toBeVisible();

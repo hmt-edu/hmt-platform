@@ -27,6 +27,7 @@ import {
   type TaskDraft,
 } from '../phieu/taskForm';
 import { BusinessTaskDialog } from '../phieu/BusinessTaskDialog';
+import { ScheduleTaskDialog } from '../phieu/ScheduleTaskDialog';
 import { createTicketTask, useTaskFields } from '../phieu/useTaskCreate';
 import { TASK_STATUS_LABEL, TASK_TYPE_LABEL } from '../phieu/taskLabels';
 import { groupsOf, subgroupsOf } from './ticketCreate';
@@ -346,7 +347,7 @@ export function TicketRecordPage() {
               </Button>
               {ticket.ticket_type !== 'GV' && <Button onClick={openReclass}>Phân loại lại</Button>}
               {canEscalate && <Button onClick={openEscalate}>Nâng cấp</Button>}
-              {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP', 'DUNG_HOC'].includes(
+              {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP', 'DUNG_HOC', 'DOI_LICH'].includes(
                 ticket.business_type ?? '',
               ) &&
                 !(record.data?.tasks ?? []).some((k) =>
@@ -388,7 +389,11 @@ export function TicketRecordPage() {
               mode="view"
               value={catalogs.name('TICKET_CHANNEL', ticket.channel_code) ?? ticket.channel_code}
             />
-            <DetailField label="Cơ sở" mode="view" value={ticket.branch_code} />
+            <DetailField
+              label="Cơ sở"
+              mode="view"
+              value={access.branchName(ticket.branch_code) ?? ticket.branch_code}
+            />
             <DetailField label="Nhóm" mode="view" value={ticket.group_name ?? ''} />
             <DetailField label="Nhóm con" mode="view" value={ticket.category_name ?? ''} />
             {ticket.nature_code && (
@@ -616,6 +621,18 @@ export function TicketRecordPage() {
           Ô để trống là giữ nguyên. Phiếu tạo ở bước Nháp; trình duyệt ở màn Phiếu nghiệp vụ.
         </p>
       </FormDialog>
+      {ticket.business_type === 'DOI_LICH' && (
+        <ScheduleTaskDialog
+          ticketId={ticket.id}
+          ticketCode={ticket.code}
+          hasStudent={ticket.student_name !== null}
+          open={taskOpen}
+          onOpenChange={setTaskOpen}
+          busy={busy}
+          error={error}
+          onCreate={(reason, payload) => void createBusinessTask(reason, payload)}
+        />
+      )}
       <FormDialog
         open={escalateOpen}
         onOpenChange={setEscalateOpen}

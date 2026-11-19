@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ListState } from '../../list/types';
 import { buildClassFilters, classSortParam } from './classFilters';
-
+import { scheduleText } from './classConfig';
 const empty: ListState = {
   search: '',
   quick: {},
@@ -46,5 +46,23 @@ describe('Bộ lọc danh sách lớp (LOP-01)', () => {
     expect(classSortParam(null, null)).toBe('code_asc');
     expect(classSortParam('code', 'desc')).toBe('code_desc');
     expect(classSortParam('start', 'desc')).toBe('start_desc');
+  });
+});
+
+describe('scheduleText (lịch học ở danh sách Lớp, T2 mục 10)', () => {
+  const t = (weekday: number, teacher?: string | null, room?: string | null) => ({
+    weekday,
+    start_time: '18:00:00',
+    end_time: '19:30:00',
+    teacher_name: teacher ?? null,
+    room_name: room ?? null,
+  });
+  it('gộp các thứ cùng giờ, giáo viên, phòng; ghi giáo viên và phòng', () => {
+    expect(scheduleText([t(1, 'A', 'P201'), t(3, 'B', 'P201'), t(5, 'A', 'P201')])).toBe(
+      'Thứ 2, Thứ 6 · 18:00–19:30 · GV A · P201; Thứ 4 · 18:00–19:30 · GV B · P201',
+    );
+  });
+  it('khung chưa có giáo viên, phòng thì chỉ ghi giờ', () => {
+    expect(scheduleText([t(2)])).toBe('Thứ 3 · 18:00–19:30');
   });
 });

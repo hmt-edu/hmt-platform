@@ -97,13 +97,19 @@ export function rangeLabel(def: SettingDef): string {
   return `${def.min_value}–${def.max_value}${unit ? ` ${unit}` : ''}`;
 }
 
-/** Câu hiển thị giá trị trong bảng ("14 ngày", "Bật"). */
-export function formatSetting(def: SettingDef, stored: string): string {
+/** Giá trị không kèm đơn vị ("14", "Bật"): cột «Giá trị hiện tại» của bảng, đơn vị ở cột riêng (canvas QT-09). */
+export function formatSettingValue(def: SettingDef, stored: string): string {
   if (def.value_type === 'BOOL') return stored === 'true' ? 'Bật' : 'Tắt';
   if (def.value_type === 'TEXT') return stored;
   const shown = toInputText(def, stored);
   const asNumber = Number(shown);
-  const text = Number.isFinite(asNumber) ? asNumber.toLocaleString('vi-VN') : shown;
+  return Number.isFinite(asNumber) ? asNumber.toLocaleString('vi-VN') : shown;
+}
+
+/** Câu hiển thị giá trị kèm đơn vị ("14 ngày", "Bật"): hộp xác nhận và chip ghi đè. */
+export function formatSetting(def: SettingDef, stored: string): string {
+  const text = formatSettingValue(def, stored);
+  if (def.value_type === 'BOOL' || def.value_type === 'TEXT') return text;
   const unit = unitLabel(def);
   return unit ? `${text} ${unit}` : text;
 }

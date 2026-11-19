@@ -10,6 +10,7 @@ import type { ListConfig, ListState } from '../../list/types';
 import { Stacked } from '../lead/LeadCells';
 import { formatPhone } from '../lead/leadFormat';
 import type { LeadCatalogs } from '../lead/useCatalogs';
+import { orderCollection } from './orderCollection';
 import type { OrderRow } from './orderTypes';
 
 export const ORDER_SCREEN_CODE = 'BH-06';
@@ -80,8 +81,21 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
         sortable: true,
         render: (r) => formatNumber(r.total_amount),
       },
-      { key: 'paid', label: 'Đã thu (đ)', numeric: true, render: () => MUTED_DASH },
-      { key: 'due', label: 'Còn phải thu (đ)', numeric: true, render: () => MUTED_DASH },
+      {
+        key: 'paid',
+        label: 'Đã thu (đ)',
+        numeric: true,
+        render: (r) => formatNumber(r.paid_amount ?? 0),
+      },
+      {
+        key: 'due',
+        label: 'Còn phải thu (đ)',
+        numeric: true,
+        render: (r) => {
+          const c = orderCollection(r.status_code, r.total_amount, r.paid_amount ?? 0);
+          return c.receivable === null ? MUTED_DASH : formatNumber(c.receivable);
+        },
+      },
       {
         key: 'status',
         label: 'Tình trạng',
@@ -92,6 +106,12 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
               : statusName(r.status_code)}
           </Tag>
         ),
+      },
+      {
+        key: 'collect',
+        label: 'Thu tiền',
+        render: (r) =>
+          orderCollection(r.status_code, r.total_amount, r.paid_amount ?? 0).label ?? MUTED_DASH,
       },
     ],
     quickGroups: [

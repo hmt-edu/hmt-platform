@@ -210,7 +210,19 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   async function save(confirmDuplicate = false, parentId: string | null = null) {
     const found = validateDraft(draft, { creating, channelRequired: channelOptions.length > 0 });
     setErrors(found);
-    if (Object.keys(found).length > 0) return;
+    if (Object.keys(found).length > 0) {
+      // T2-01: báo ngay ở đầu trang và đưa con trỏ tới ô lỗi đầu tiên, không để lỗi nằm im dưới màn hình.
+      toast({
+        tone: 'danger',
+        title: `Chưa lưu được: còn ${Object.keys(found).length} ô cần điền hoặc sửa (báo đỏ).`,
+      });
+      requestAnimationFrame(() => {
+        const first = document.querySelector<HTMLElement>('[aria-invalid="true"]');
+        first?.scrollIntoView({ block: 'center' });
+        first?.focus();
+      });
+      return;
+    }
     setSaving(true);
     try {
       const payload = draftPayload(draft, catalogs, { creating });

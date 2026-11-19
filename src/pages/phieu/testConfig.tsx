@@ -1,7 +1,7 @@
 // Cấu hình màn Phiếu kiểm tra cho khuôn danh sách K1 (TS-16): cột, lọc nhanh, trường lọc nâng cao, trường nhóm.
 // Mọi lọc, nhóm làm ở máy chủ nên cấu hình không có hàm `test`/`value` chạy ở trình duyệt.
 import { Link } from 'react-router';
-import { formatDateTime } from '../../lib/format';
+import { formatDateTime, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import type { ListConfig, ListState } from '../../list/types';
 import { Code, Tag, type TagTone } from '../../ui/Data';
@@ -75,16 +75,28 @@ export function buildTestConfig(
       {
         key: 'score',
         label: 'Điểm',
-        numeric: true,
-        render: (r) => r.score ?? <span className="text-fg-muted">—</span>,
+        render: (r) =>
+          r.score === null ? (
+            <span className="text-fg-muted">—</span>
+          ) : (
+            <span className="tabular">{formatNumber(r.score)}</span>
+          ),
       },
       {
         key: 'status',
         label: 'Trạng thái',
         render: (r) => <Tag tone={TEST_TONE[r.status_code]}>{STATUS_LABEL[r.status_code]}</Tag>,
       },
-      { key: 'opportunity', label: 'Cơ hội gốc', render: (r) => <Code>{r.opportunity_code}</Code> },
-      { key: 'created_branch', label: 'Cơ sở tạo', render: (r) => r.branch_code },
+      {
+        key: 'opportunity',
+        label: 'Cơ hội gốc',
+        render: (r) => (
+          <Link to={`/crm/co-hoi/${r.opportunity_id}`} className="text-link hover:underline">
+            {r.opportunity_code}
+          </Link>
+        ),
+      },
+      { key: 'branch', label: 'Cơ sở tạo', render: (r) => r.branch_code },
     ],
     quickGroups: [
       {
