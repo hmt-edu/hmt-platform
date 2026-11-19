@@ -89,7 +89,7 @@ select pg_temp.sudo($$grant execute on function pg_temp.rst(text), pg_temp.rev(t
 create temp table cl (key text primary key, id uuid);
 grant all on cl to public;
 create function pg_temp.c(p_key text) returns uuid language sql stable as $$ select id from cl where key = p_key $$;
-create function pg_temp.mon() returns date language sql stable as $$ select (date_trunc('week', current_date) + interval '14 days')::date $$;
+create function pg_temp.mon() returns date language sql stable as $$ select (date_trunc('week', (now() at time zone 'Asia/Ho_Chi_Minh')::date) + interval '14 days')::date $$;
 create function pg_temp.mkclass(p_key text, p_max integer) returns void language plpgsql as $$
 declare v jsonb;
 begin
@@ -194,30 +194,30 @@ select pg_temp.sudo($$grant execute on function pg_temp.lv(text, date), pg_temp.
 
 -- Phiên bản đầu = cấu hình hiện có.
 select is(pg_temp.vn(), (select count(*) from app.ticket_task_rule), 'QT-15: mỗi loại phiếu có phiên bản đầu');
-select is(pg_temp.lv('HOAN_PHI', current_date), array['QUAN_LY_CO_SO', 'KE_TOAN'], 'QT-15: Hoàn phí hiện duyệt qua Quản lý cơ sở rồi Kế toán');
-select is(pg_temp.lv('DOI_LICH', current_date), array['QUAN_LY_CO_SO'], 'QT-15: Đổi lịch chỉ Quản lý cơ sở');
+select is(pg_temp.lv('HOAN_PHI', (now() at time zone 'Asia/Ho_Chi_Minh')::date), array['QUAN_LY_CO_SO', 'KE_TOAN'], 'QT-15: Hoàn phí hiện duyệt qua Quản lý cơ sở rồi Kế toán');
+select is(pg_temp.lv('DOI_LICH', (now() at time zone 'Asia/Ho_Chi_Minh')::date), array['QUAN_LY_CO_SO'], 'QT-15: Đổi lịch chỉ Quản lý cơ sở');
 
 -- Quyền.
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN'], current_date + 1)$$), 'HMT_KHONG_CO_QUYEN', 'QT-15 chặn: Trưởng cơ sở không sửa cấu hình');
+select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN'], (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1)$$), 'HMT_KHONG_CO_QUYEN', 'QT-15 chặn: Trưởng cơ sở không sửa cấu hình');
 select is(pg_temp.err($$select app.list_ticket_approver_config()$$), 'HMT_KHONG_CO_QUYEN', 'QT-15 chặn: Trưởng cơ sở không xem cấu hình');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 
 -- Giá trị sai.
-select is(pg_temp.err($$select app.save_ticket_task_rule('KHONG_CO', array['KE_TOAN'], current_date + 1)$$), 'HMT_PHIEU_LOAI_SAI', 'QT-15 chặn: loại phiếu không có');
-select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['GIAM_DOC'], current_date + 1)$$), 'HMT_CAP_DUYET_SAI', 'QT-15 chặn: cấp duyệt không có trong danh sách');
-select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN', 'KE_TOAN'], current_date + 1)$$), 'HMT_CAP_DUYET_SAI', 'QT-15 chặn: cấp duyệt lặp');
-select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array[]::text[], current_date + 1)$$), 'HMT_CAP_DUYET_SAI', 'QT-15 chặn: không cấp nào');
-select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN'], current_date - 1)$$), 'HMT_HIEU_LUC_QUA_KHU', 'QT-15 chặn: ngày hiệu lực quá khứ');
+select is(pg_temp.err($$select app.save_ticket_task_rule('KHONG_CO', array['KE_TOAN'], (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1)$$), 'HMT_PHIEU_LOAI_SAI', 'QT-15 chặn: loại phiếu không có');
+select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['GIAM_DOC'], (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1)$$), 'HMT_CAP_DUYET_SAI', 'QT-15 chặn: cấp duyệt không có trong danh sách');
+select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN', 'KE_TOAN'], (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1)$$), 'HMT_CAP_DUYET_SAI', 'QT-15 chặn: cấp duyệt lặp');
+select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array[]::text[], (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1)$$), 'HMT_CAP_DUYET_SAI', 'QT-15 chặn: không cấp nào');
+select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN'], (now() at time zone 'Asia/Ho_Chi_Minh')::date - 1)$$), 'HMT_HIEU_LUC_QUA_KHU', 'QT-15 chặn: ngày hiệu lực quá khứ');
 
 -- Đúng: thêm phiên bản có hiệu lực từ ngày mai; hôm nay chưa đổi, ngày mai đổi.
-select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['QUAN_LY_CO_SO', 'KE_TOAN'], current_date + 1)$$), null, 'QT-15 đúng: Admin thêm phiên bản Đổi lịch thêm Kế toán từ ngày mai');
-select is(pg_temp.lv('DOI_LICH', current_date), array['QUAN_LY_CO_SO'], 'QT-15: hôm nay vẫn cấp cũ');
-select is(pg_temp.lv('DOI_LICH', current_date + 1), array['QUAN_LY_CO_SO', 'KE_TOAN'], 'QT-15: từ ngày mai dùng cấp mới');
-select is(pg_temp.lv('DOI_LICH', current_date + 30), array['QUAN_LY_CO_SO', 'KE_TOAN'], 'QT-15: các ngày sau vẫn cấp mới');
-select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN'], current_date + 1)$$), 'HMT_HIEU_LUC_TRUNG', 'QT-15 chặn: trùng ngày hiệu lực');
-select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN'], current_date)$$), null, 'QT-15 đúng: phiên bản hiệu lực từ hôm nay');
-select is(pg_temp.lv('DOI_LICH', current_date), array['KE_TOAN'], 'QT-15: hôm nay dùng phiên bản mới nhất có hiệu lực');
+select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['QUAN_LY_CO_SO', 'KE_TOAN'], (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1)$$), null, 'QT-15 đúng: Admin thêm phiên bản Đổi lịch thêm Kế toán từ ngày mai');
+select is(pg_temp.lv('DOI_LICH', (now() at time zone 'Asia/Ho_Chi_Minh')::date), array['QUAN_LY_CO_SO'], 'QT-15: hôm nay vẫn cấp cũ');
+select is(pg_temp.lv('DOI_LICH', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1), array['QUAN_LY_CO_SO', 'KE_TOAN'], 'QT-15: từ ngày mai dùng cấp mới');
+select is(pg_temp.lv('DOI_LICH', (now() at time zone 'Asia/Ho_Chi_Minh')::date + 30), array['QUAN_LY_CO_SO', 'KE_TOAN'], 'QT-15: các ngày sau vẫn cấp mới');
+select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN'], (now() at time zone 'Asia/Ho_Chi_Minh')::date + 1)$$), 'HMT_HIEU_LUC_TRUNG', 'QT-15 chặn: trùng ngày hiệu lực');
+select is(pg_temp.err($$select app.save_ticket_task_rule('DOI_LICH', array['KE_TOAN'], (now() at time zone 'Asia/Ho_Chi_Minh')::date)$$), null, 'QT-15 đúng: phiên bản hiệu lực từ hôm nay');
+select is(pg_temp.lv('DOI_LICH', (now() at time zone 'Asia/Ho_Chi_Minh')::date), array['KE_TOAN'], 'QT-15: hôm nay dùng phiên bản mới nhất có hiệu lực');
 
 -- Màn đọc.
 select is((select jsonb_array_length(app.list_ticket_approver_config())), (select count(*)::int from app.ticket_task_rule), 'QT-15: danh sách đủ các loại phiếu');
