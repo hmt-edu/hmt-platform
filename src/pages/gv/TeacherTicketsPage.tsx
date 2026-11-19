@@ -60,8 +60,8 @@ export function TeacherTicketsPage() {
           </div>
         )
       ) : query.data.rows.length === 0 ? (
-        <StateView kind="empty" title="Chưa có ticket" headingLevel={2}>
-          Chưa có ticket nào trong lớp của bạn.
+        <StateView kind="empty" title="Chưa có ticket nào trong lớp của bạn" headingLevel={2}>
+          Ticket bạn tạo và ticket của các lớp bạn dạy sẽ hiện ở đây.
         </StateView>
       ) : (
         <ul className="flex flex-col gap-2" aria-label="Ticket của lớp tôi">
