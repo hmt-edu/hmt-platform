@@ -29,3 +29,7 @@ Theo thư Chat 15:28 (a): kiểm kê MỌI hàm, view đang giả định phiế
 Không ảnh hưởng (đã đọc thân hàm): `cancel_receipt`, `reject_receipt`, `approve_receipt_manager`, `receipt_search_text` (coalesce), `order_paid_amount`, `order_receivable`, `sync_enrollment_hours`, `enrollment_target_hours`, `create_enrollments_for_order`, `compute_refund`, báo cáo 211 (tổng `money_in` theo ngày: khoản nợ đầu kỳ tính là tiền thu), view 214 (theo allocation), `get_parent` (117). Giao diện: kiểu `ReceiptRecord`, `ReceiptRow` và các link «Đơn hàng» ở màn Phiếu thu còn giả định có đơn (làm ở PR giao diện); TC-08 đã sửa.
 Vì các hàm cũ chuyển sang nhánh nợ đầu kỳ, giao diện dùng chung `save_receipt`, `submit_receipt`, `approve_receipt_accounting` cho cả hai loại phiếu.
 **Chưa làm (PR giao diện sau):** 19 khung `TC02_no_dau_ky_*` ở phiếu thu (tạo, chờ kế toán, đã duyệt, lỗi vượt nợ…), nút «Thu nợ đầu kỳ» ở phụ huynh.
+
+## N1 (migration 421): người lập hoặc người gửi không tự duyệt
+
+Phiếu thu nợ đầu kỳ không có bước quản lý (R-V2-15), nên Kế toán (có cả quyền Tạo lẫn Duyệt) từng có thể tự lập, tự gửi, tự duyệt (Soát S14, N1). `approve_opening_debt_receipt` nay chặn người duyệt trùng người LẬP hoặc người GỬI bằng `HMT_CUNG_NGUOI_DUYET_HAI_BUOC`; đường hàm cũ `approve_receipt_accounting` chuyển phiếu nợ đầu kỳ sang hàm này nên cũng bị chặn. Phiếu bị chặn vẫn ở Chờ kế toán cho Kế toán khác duyệt. pgTAP `421_n1_ke_toan_khong_tu_duyet_no_dau_ky.test.sql`.
