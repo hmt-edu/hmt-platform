@@ -189,10 +189,16 @@ select is((select count(*)::int from app.hour_ledger where session_id = pg_temp.
 select is((select status_code from app.enrollment where id = pg_temp.e('a')), 'DANG_HOC', 'Ghi danh sang Đang học khi có buổi Done đầu tiên (R-GD-05)');
 select is((select status_code from app.enrollment where id = pg_temp.e('a2')), 'DA_XEP_LOP', 'Ghi danh chưa bị trừ giờ vẫn Đã xếp lớp (R-GD-05)');
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 1) || '''::uuid)')$$), 'HMT_BUOI_CHUA_DONE_DUOC', 'Chặn: Done lần hai (không trừ giờ hai lần)');
--- Quỹ không được âm (R-GD-18): buổi 2 và 3 đều chốt khi còn 2,5 giờ; Done buổi 2 còn 1,0; Done buổi 3 bị chặn.
+-- Quỹ không được âm (R-GD-18): em 1 còn 2,5 giờ. G1 (migration 304): chốt buổi 3 sau khi buổi 2 đã chốt thì tính giờ GIỮ CHỖ của buổi 2, em 1 chỉ còn 1,0 giờ khả dụng nên KHÔNG vào danh sách buổi 3
+-- (trước G1 em vào cả hai buổi rồi buổi 3 kẹt HMT_QUY_GIO_AM lúc Done). Ghi danh thứ hai a2 cho dừng để chỉ còn ghi danh a. Lớp bảo vệ cuối của Done vẫn được kiểm bằng dòng điểm danh dựng tay (dữ liệu cũ trước G1).
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(app.close_session(pg_temp.s('p', 2)), 1, 'Chốt buổi 2: em 1 còn đủ giờ');
-select is(app.close_session(pg_temp.s('p', 3)), 2, 'Chốt buổi 3: em 1 còn đủ giờ lúc chốt, em 4 đã tới ngày vào lớp nên vào danh sách');
+select pg_temp.sudo($$update app.enrollment set status_code = 'DUNG' where id = pg_temp.e('a2')$$);
+select is(app.close_session(pg_temp.s('p', 3)), 1, 'G1: chốt buổi 3 chỉ có em 4; em 1 hết giờ khả dụng vì buổi 2 đã giữ chỗ (R-GIO-03)');
+select is((select excluded_reason from app.session_attendance where session_id = pg_temp.s('p', 3) and student_id = pg_temp.st(1)), 'HET_GIO', 'G1: em 1 bị loại khỏi buổi 3 với lý do hết giờ');
+select pg_temp.sudo($$insert into app.session_attendance (session_id, class_id, branch_id, student_id, enrollment_id, is_active)
+  select pg_temp.s('p', 3), s.class_id, s.branch_id, pg_temp.st(1), pg_temp.e('a'), true from app.class_session s where s.id = pg_temp.s('p', 3)
+  on conflict (session_id, student_id) do update set enrollment_id = excluded.enrollment_id, is_active = true, excluded_reason = null$$);
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select app.set_attendance_teacher(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'CO_MAT')));
 select app.set_attendance_teacher(pg_temp.s('p', 3), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'DI_MUON'),

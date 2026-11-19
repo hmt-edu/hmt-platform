@@ -131,6 +131,11 @@ select app.assign_enrollment_class(pg_temp.e('b'), pg_temp.c('q'), pg_temp.past(
 select app.close_session(pg_temp.s('p', 1));
 select app.close_session(pg_temp.s('p', 2));
 select app.close_session(pg_temp.s('p', 3));
+-- G1 (migration 304): chốt buổi 3 với 4 giờ đã giữ chỗ 3 giờ ở buổi 1, 2 nên em không còn vào danh sách buổi 3 nữa. Bài này kiểm đường LỖI của tự Done (quỹ âm, R-GD-18)
+-- nên dựng tay dòng điểm danh buổi 3 như dữ liệu chốt từ trước G1.
+select pg_temp.sudo($$insert into app.session_attendance (session_id, class_id, branch_id, student_id, enrollment_id, is_active)
+  select pg_temp.s('p', 3), s.class_id, s.branch_id, pg_temp.st(1), pg_temp.e('a'), true from app.class_session s where s.id = pg_temp.s('p', 3)
+  on conflict (session_id, student_id) do update set enrollment_id = excluded.enrollment_id, is_active = true, excluded_reason = null$$);
 select app.close_session(pg_temp.s('q', 1));
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select app.set_attendance_teacher(pg_temp.s('p', n), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'CO_MAT'))) from generate_series(1, 3) n;
