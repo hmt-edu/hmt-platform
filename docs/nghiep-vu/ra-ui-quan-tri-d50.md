@@ -1,6 +1,6 @@
 # Rà UI/UX nhóm Quản trị và Cấu hình so với canvas dc47 (thẻ D50, 19/11/2026)
 
-Cách rà: so cột bảng, nhãn và bố cục trong code với khung canvas `design/hmt-canvas-dc47/` (chữ trích từ khung) và `docs/nghiep-vu/doi-chieu-canvas-quan-tri-v2.md`. Rà đợt 1 (19/11): QT-01/03, QT-07, QT-08, QT-09, CH-01, CH-03. Đợt 3 (19/11, cùng PR đợt 2): QT-18, CH-04, CH-09. Còn lại (QT-02, QT-10, Vai trò) rà ở đợt sau.
+Cách rà: so cột bảng, nhãn và bố cục trong code với khung canvas `design/hmt-canvas-dc47/` (chữ trích từ khung) và `docs/nghiep-vu/doi-chieu-canvas-quan-tri-v2.md`. Rà đợt 1 (19/11): QT-01/03, QT-07, QT-08, QT-09, CH-01, CH-03. Đợt 3 (19/11, cùng PR đợt 2): QT-18, CH-04, CH-09. QT-02, QT-04, QT-10: không có khung bảng để so (xem dòng cuối).
 
 | Màn | Canvas | Code | Kết luận |
 |---|---|---|---|
@@ -13,3 +13,4 @@ Cách rà: so cột bảng, nhãn và bố cục trong code với khung canvas `
 | QT-18 Nhập dữ liệu | Thứ tự, Loại nạp, Mô tả, Cần có trước, Trạng thái, nút Nhập | giống (loại chưa có hàm nạp ghi «Sắp có») | Khớp |
 | CH-09 Điều khoản | Đợt, Cách chia, Giá trị, Số ngày đến hạn | giống | Khớp |
 | CH-04 Chiết khấu | Tên chính sách, Kiểu, **Giá trị**, Mức tối đa, Hiệu lực, Nhóm gói, Cơ sở, **Áp dụng cho** (Báo giá, Đơn, Phiếu thu), Cần duyệt, Trạng thái | Tên chính sách, Kiểu, Mức tối đa (gộp giá trị và «áp đúng mức»), Hiệu lực, Nhóm gói, Cơ sở, Cần duyệt, Trạng thái | **Lệch, chưa sửa, cần anh/Chat quyết**: (1) cột «Áp dụng cho» chưa có dữ liệu trong DB (cần migration thêm trường phạm vi áp dụng và thay đổi hàm lưu chính sách); (2) tách «Giá trị» và «Mức tối đa» cần chốt nghĩa hai cột khi chính sách «áp đúng mức» (`fixed_value`). Dừng mục này theo luật «thiếu dữ liệu thì báo», phần còn lại tiếp tục |
+| QT-02 Hồ sơ người dùng, QT-04 Vai trò, QT-10 Công tắc | dc47 chỉ có khung hành động QT-02 (Đặt lại mật khẩu, đã làm #172); gói P2 chỉ có khung gộp «Cấu hình hệ thống» (Danh mục, Tham số, Công tắc); không có khung bảng Vai trò hay Công tắc (BAN-DO-VIEC ghi «Thiếu khung canvas») | Dựng từ khuôn K10 | Không rà được cột: **thiếu khung canvas**. Nếu Design vẽ thêm thì rà tiếp |
