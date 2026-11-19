@@ -35,6 +35,12 @@ async function capture(page: Page, shot: Shot, file: string): Promise<string | n
     const button = page.getByRole('button', { name: shot.view, exact: true });
     if (await button.count()) await button.first().click();
   }
+  // Bộ lọc mặc định (vd. «Ngày học: Hôm nay») có thể làm danh sách trống: bấm «Xoá bộ lọc» một lần để thấy dữ liệu mẫu.
+  const clearFilter = page.getByRole('button', { name: 'Xoá bộ lọc', exact: true });
+  if (shot.row && (await clearFilter.isVisible().catch(() => false))) {
+    await clearFilter.click();
+    await page.waitForLoadState('networkidle');
+  }
   if (shot.row) {
     // Dòng dữ liệu đầu tiên của bảng (bỏ dòng tiêu đề); bấm vào liên kết trong dòng nếu có, nếu không thì bấm dòng. Địa chỉ không đổi = không mở được bản ghi.
     const before = page.url();
@@ -46,7 +52,7 @@ async function capture(page: Page, shot: Shot, file: string): Promise<string | n
     }
     // Màn trống («Chưa có …», «… sẽ hiện ở đây»), hoặc địa chỉ không đổi: không có bản ghi nào để mở.
     const empty = await page
-      .getByText(/^Chưa có |sẽ hiện ở đây|Không có (việc|dòng|bản ghi)/)
+      .getByText(/^Chưa có |sẽ hiện ở đây|Không có (việc|dòng|bản ghi|kết quả)/)
       .first()
       .isVisible()
       .catch(() => false);
