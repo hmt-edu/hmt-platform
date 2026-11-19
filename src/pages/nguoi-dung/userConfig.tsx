@@ -37,8 +37,14 @@ export function buildUserConfig(
         render: (r) => <span className="tabular">{r.staff_code ?? '—'}</span>,
       },
       {
+        key: 'username',
+        label: 'Tên đăng nhập',
+        locked: true,
+        render: (r) => <span className="tabular">{r.username ?? '—'}</span>,
+      },
+      {
         key: 'name',
-        label: 'Tên',
+        label: 'Tên hiển thị',
         locked: true,
         primary: true,
         render: (r) => (
@@ -47,7 +53,12 @@ export function buildUserConfig(
           </Link>
         ),
       },
-      { key: 'email', label: 'Email đăng nhập', render: (r) => r.login_name },
+      {
+        key: 'email',
+        label: 'Email đăng nhập',
+        defaultVisible: false,
+        render: (r) => r.login_name,
+      },
       {
         key: 'roles',
         label: 'Vai trò',

@@ -271,5 +271,36 @@ select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt2))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: phiếu Hoàn học phí thiếu dữ liệu không thực hiện được');
 select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt2)), 'DA_DUYET', 'Phiếu thiếu dữ liệu giữ Đã duyệt');
 
+-- ================= C60 (migration 427): phiếu Dừng học đi hết đường ticket → giữ số dư (R-GD-16, R-TIEN-33) =================
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'DUNG_HOC', id, true from app.branch where code = 'CS1'
+  on conflict (module_code, branch_id) do update set enabled = true$$);
+create temp table tk3 (j jsonb);
+create temp table tt3 (j jsonb);
+grant all on tk3, tt3 to public;
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select ok(jsonb_array_length(app.get_task_form_options((select (j ->> 'id')::uuid from tk)) -> 'stop_reasons') > 0, 'C60 Đúng: tuỳ chọn biểu mẫu có lý do dừng học');
+insert into tk3 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Dừng học giả', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_06', 'parent_id', pg_temp.d1par(), 'student_id', pg_temp.d1stu()));
+insert into tt3 select app.create_ticket_task((select (j ->> 'id')::uuid from tk3), 'DUNG_HOC', 'Chuyển nhà',
+  jsonb_build_object('enrollment_id', pg_temp.d1e(), 'reason_code', 'CHUYEN_NOI_O', 'note', 'Gia đình chuyển nhà'));
+select app.submit_ticket_task((select (j ->> 'id')::uuid from tt3));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt3));
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt3));
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select pg_temp.sudo($$update app.feature_flag set enabled = false where module_code = 'DUNG_HOC' and branch_id = (select id from app.branch where code = 'CS1')$$);
+select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt3))$$), 'HMT_TINH_NANG_TAT', 'C60 Chặn: công tắc DUNG_HOC tắt thì không thực hiện phiếu Dừng học');
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt3)), 'DA_DUYET', 'C60 Nguyên tử: lỗi thì phiếu vẫn Đã duyệt');
+select pg_temp.sudo($$update app.feature_flag set enabled = true where module_code = 'DUNG_HOC' and branch_id = (select id from app.branch where code = 'CS1')$$);
+select app.execute_ticket_task((select (j ->> 'id')::uuid from tt3));
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt3)), 'DA_THUC_HIEN', 'C60 Thực hiện: phiếu Đã thực hiện');
+select is(pg_temp.est(pg_temp.d1e()), 'DUNG', 'C60 Đúng: ghi danh sang Dừng');
+select is(pg_temp.hrs(pg_temp.d1e()), 0.00::numeric, 'C60 Đúng: giờ còn lại về 0 (giữ thành số dư, không hoàn tiền)');
+select ok(pg_temp.bal(pg_temp.d1e()) > 0, 'C60 Đúng: có số dư khách hàng sau dừng học');
+select is((select ticket_ref from app.enrollment_stop where enrollment_id = pg_temp.d1e()), (select j ->> 'code' from tk3), 'C60 Yêu cầu dừng học giữ mã ticket (R-CS-02)');
+select is((select status_code from app.ticket where id = (select (j ->> 'id')::uuid from tk3)), 'DA_XU_LY', 'C60 Ticket tự sang Đã xử lý (AS-03)');
+select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt3))$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'C60 Chặn: thực hiện lại phiếu đã thực hiện');
+
 select * from finish();
 rollback;

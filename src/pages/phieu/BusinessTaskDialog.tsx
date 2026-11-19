@@ -11,6 +11,7 @@ import {
   HOLD_MODES,
   holdEnrollmentChoices,
   runningHold,
+  type BusinessType,
   type HoldMode,
   TRANSFER_KINDS,
   validateBusinessDraft,
@@ -30,7 +31,7 @@ export function BusinessTaskDialog({
   error,
   onCreate,
 }: {
-  type: 'BAO_LUU' | 'CHUYEN_LOP';
+  type: BusinessType;
   ticketId: string;
   ticketCode: string;
   hasStudent: boolean;
@@ -46,14 +47,21 @@ export function BusinessTaskDialog({
   const set = (patch: Partial<BusinessDraft>) => setDraft((d) => ({ ...d, ...patch }));
   const errors = show ? validateBusinessDraft(type, draft, hasStudent) : {};
   const data = options.data;
-  const reasons = (type === 'BAO_LUU' ? data?.hold_reasons : data?.transfer_reasons) ?? [];
+  const reasons =
+    (type === 'BAO_LUU'
+      ? data?.hold_reasons
+      : type === 'DUNG_HOC'
+        ? data?.stop_reasons
+        : data?.transfer_reasons) ?? [];
   const enrollment = data?.enrollments.find((x) => x.id === draft.enrollmentId);
   const classes = data ? classChoices(data, draft.enrollmentId) : [];
   const enrollmentChoices = !data
     ? []
     : type === 'BAO_LUU'
       ? holdEnrollmentChoices(data, draft.holdMode)
-      : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU');
+      : type === 'DUNG_HOC'
+        ? data.enrollments
+        : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU');
   const hold = data && type === 'BAO_LUU' ? runningHold(data, draft.enrollmentId) : null;
   const newClass = classes.find((c) => c.id === draft.toClassId);
 
@@ -128,7 +136,13 @@ export function BusinessTaskDialog({
       {errors.reasonCode && (
         <p className="text-caption text-on-danger-subtle">{errors.reasonCode}</p>
       )}
-      {type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC' ? (
+      {type === 'DUNG_HOC' ? (
+        <p className="text-caption text-fg-muted">
+          Dừng học: giờ còn lại giữ thành số dư khách hàng (giờ còn lại × giá sau chiết khấu, không
+          trừ phí); giờ tặng còn lại bị huỷ. Muốn hoàn tiền thì tạo phiếu Hoàn học phí. Cần quản lý
+          cơ sở rồi kế toán duyệt.
+        </p>
+      ) : type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC' ? (
         <p className="text-caption text-fg-muted">
           Khi thực hiện, bảo lưu kết thúc và em về hàng chờ xếp lớp, giữ nguyên số giờ còn lại. CSKH
           xếp lớp như thường; em vào danh sách buổi sau khi được xếp lớp.

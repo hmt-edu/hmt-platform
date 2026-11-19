@@ -1,7 +1,8 @@
 // Các phần dùng chung của nhóm trang đăng nhập (khuôn K11, thiết kế P1 v4 `design/hmt-p0-p2` DN01 đến DN10):
 // khối thông báo cỡ lớn, dòng chú, liên kết, biểu tượng tròn lớn. Ô nhập, nút dùng cỡ `lg` / `xl` của thành phần chung.
 import type { ReactNode } from 'react';
-import { Link, type LinkProps } from 'react-router';
+import { Link, useNavigate, type LinkProps } from 'react-router';
+import { useAuth } from '../../lib/auth/authContext';
 import { cn } from '../../ui/cn';
 import { Icon, type IconName } from '../../ui/icons';
 
@@ -92,5 +93,18 @@ export function AuthBigIcon({
     >
       <Icon name={icon} size={24} />
     </div>
+  );
+}
+
+/** Liên kết «Đăng xuất» ở các trang đăng nhập dở dang (DN03 hai bước, đổi mật khẩu lần đầu, chọn cổng): đăng xuất rồi về trang đăng nhập. */
+export function SignOutLink({ label = 'Đăng nhập tài khoản khác' }: { label?: string }) {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+  return (
+    <p className="text-center text-[14px]">
+      <AuthLinkButton onClick={() => void signOut().then(() => navigate('/dang-nhap'))}>
+        {label}
+      </AuthLinkButton>
+    </p>
   );
 }

@@ -75,7 +75,13 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
         key: 'stage',
         label: 'Stage',
         render: (r) =>
-          r.record_status === 'DA_GOP' ? <Tag>Đã gộp</Tag> : <Tag>{stageLabel(r.stage_code)}</Tag>,
+          r.record_status === 'DA_GOP' ? (
+            <Tag>Đã gộp</Tag>
+          ) : r.record_status === 'DA_HUY' ? (
+            <Tag tone="danger">Đã huỷ</Tag>
+          ) : (
+            <Tag>{stageLabel(r.stage_code)}</Tag>
+          ),
       },
       {
         key: 'substage',
