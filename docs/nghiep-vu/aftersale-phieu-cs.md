@@ -22,7 +22,7 @@ Bổ sung cho `aftersale-lat-dau.md` (ticket) và `aftersale-phieu-a1.md` (phi�
 - Migration 353: phiếu **Hoàn học phí** thực hiện thẳng bằng `app.apply_refund_request` (migration 235): `execute_ticket_task` kiểm dữ liệu phiếu lúc thực hiện (ghi danh, lý do, hình thức TOAN_BO/MOT_PHAN, MOT_PHAN cần số giờ > 0), gắn mã ticket, ghi người duyệt cấp 1 và cấp 2 lấy từ nhật ký phiếu vào yêu cầu hoàn phí (`manager_by`, `accountant_by`). `apply_refund_request` thêm hai tham số `p_manager_by`, `p_accountant_by` (mặc định null). **Siết cấp duyệt** ở `approve_ticket_task`: cấp kế toán chỉ vai ACCOUNTANT; cấp quản lý của phiếu có cấp kế toán chỉ BRANCH_MANAGER; một người không duyệt hai cấp của cùng một phiếu (`HMT_PHIEU_MOT_NGUOI_HAI_CAP`). Kiểm thử: `354_phieu_hoan_phi.test.sql`.
 
 ## Còn lại
-- Chưa nối vào phiếu: Dừng học (`apply_enrollment_stop`, cùng luật cấp duyệt như Hoàn học phí), Chuyển phí, Đổi lịch học bù, Chuyển cơ sở.
+- Chưa nối vào phiếu: Dừng học (`apply_enrollment_stop`, cùng luật cấp duyệt như Hoàn học phí), Chuyển phí, Đổi lịch học bù (Chuyển phí và Chuyển cơ sở đã nối ở các mục dưới).
 - Giao diện tạo phiếu Hoàn học phí và gia hạn bảo lưu từ ticket chưa làm (cần `REFUND_REASON` trong `get_task_form_options`).
 
 ## Phiếu Chuyển phí (CS-10, anh Trường chốt 23:17 ngày 20/11/2026, migration 567)
@@ -32,3 +32,20 @@ Bổ sung cho `aftersale-lat-dau.md` (ticket) và `aftersale-phieu-a1.md` (phi�
 - **Thực hiện** (`execute_ticket_task` → `app.apply_fee_transfer`, nội bộ): ghi danh cũ sang Dừng; giờ còn lại ghi sổ giờ ngược dấu (giờ tặng còn lại bị huỷ, không thành tiền, R-GD-16); **tiền còn = giờ mua còn lại × giá sau chiết khấu chụp trên dòng đơn lúc mua** (cùng `app.compute_stop_balance` với Dừng học); số tiền giữ thành **số dư khách hàng**, dòng sổ `TU_CHUYEN_PHI` (dương); **không tự hoàn tiền** (muốn hoàn thì phiếu Hoàn học phí). Mã lỗi: `HMT_CHUYEN_PHI_GHI_DANH_SAI` (ghi danh không còn hiệu lực), `HMT_PHIEU_DU_LIEU_SAI` (thiếu dữ liệu phiếu).
 - **Chưa làm (ghi để bước sau):** «tạo đơn Nháp cho Sale» và dùng số dư vào đơn mới (thiếu thì đóng thêm, dư giữ số dư): cần cơ chế dùng số dư cho đơn (`DUNG_CHO_DON`, chưa có) và chọn dòng đơn mới; hiện Sale lập đơn mới như thường, số dư hiện ở màn Số dư khách hàng.
 - Kiểm thử: `567_cs10_chuyen_phi_qua_phieu.test.sql` (đường ticket → phiếu → hai cấp duyệt → thực hiện; số dư chuyển sang phụ huynh nhận; không thực hiện hai lần; hàm áp dụng không gọi thẳng được).
+
+## Phiếu Chuyển cơ sở (CS-07, anh Trường chốt 23:17 ngày 20/11/2026, migration 568; giao diện PR #387)
+
+Luật: R-GD-10 (giữ nguyên số giờ), R-CS-07 / R-V2-24 (người duyệt theo cấu hình). Là phiếu `CHUYEN_LOP` với `kind_code = CHUYEN_CO_SO`; cột mới `ticket_task.dest_branch_id`.
+
+| Hàm | Ai gọi | Việc làm | Luật chặn (mã lỗi) |
+|---|---|---|---|
+| `app.create_ticket_task` (nhánh `CHUYEN_CO_SO`) | Người có quyền Ticket · Sửa ở cơ sở ticket | Tạo phiếu Nháp với `dest_branch_id`; cấp duyệt `[QUAN_LY_CO_SO, QUAN_LY_CO_SO_DICH]`; chưa cần lớp mới | Cơ sở đích bắt buộc, khác cơ sở ticket, là cơ sở dạy học đang hoạt động (`HMT_PHIEU_DU_LIEU_SAI`) |
+| `app.approve_ticket_task` (cấp `QUAN_LY_CO_SO_DICH`) | Quản lý cơ sở **đích** (Ticket · Duyệt tại cơ sở đích) | Duyệt cấp 2 | Phải tới lượt và đã chọn lớp (`HMT_PHIEU_CHUA_CHON_LOP`); quản lý cơ sở đi không duyệt được cấp này (`HMT_KHONG_CO_QUYEN`) |
+| `app.set_task_destination_class(phiếu, lớp, ngày)` | Quản lý cơ sở đích, chỉ khi tới lượt | Ghi `to_class_id`, `start_date` vào phiếu; sự kiện `CHON_LOP` | Chưa tới lượt (`HMT_PHIEU_CHUA_DEN_LUOT`); lớp phải thuộc cơ sở đích, đã duyệt, còn chỗ; ngày là buổi sắp tới của lớp (`HMT_PHIEU_DU_LIEU_SAI`) |
+| `app.get_task_for_destination(phiếu)` | Quản lý cơ sở đích, chỉ khi tới lượt | Đọc phiếu tối thiểu (học sinh, cơ sở đi, giờ còn lại, lớp còn chỗ) | Không tới lượt hoặc không phải quản lý cơ sở đích: `HMT_KHONG_TIM_THAY` (không lộ phiếu) |
+| `app.list_tasks_for_destination()` | Quản lý cơ sở đích | Liệt kê phiếu đang chờ cơ sở mình, tối đa số dòng trang tối đa | Rỗng trước lượt |
+| `app.execute_ticket_task` → `apply_class_transfer(CHUYEN_CO_SO)` | Như các phiếu khác | Chuyển ghi danh sang lớp của cơ sở đích, giữ giờ | Lớp mới phải thuộc cơ sở khác |
+
+- Thứ tự: quản lý cơ sở đi duyệt → phiếu tới lượt cơ sở đích → chọn lớp → duyệt → thực hiện. Cơ sở đích **không** đọc bảng phiếu qua RLS, chỉ qua hai hàm đọc `security definer` khi tới lượt.
+- Chưa làm: quản lý cơ sở đích **Từ chối** (`reject_ticket_task` kiểm quyền tại cơ sở của phiếu; đề xuất migration 569); hàng việc CHUNG-15 chưa liệt kê phiếu này (tạm có khối ở danh sách Phiếu nghiệp vụ).
+- Kiểm thử: `568_cs07_chuyen_co_so.test.sql` (đúng và bị chặn từng luật trên, RLS theo vai).
