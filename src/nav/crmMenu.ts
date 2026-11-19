@@ -256,7 +256,7 @@ export const CRM_MENU: MenuGroup[] = [
       },
       {
         code: 'TT-01',
-        label: 'Phiếu tái tục',
+        label: 'Tái tục',
         slug: 'tai-tuc',
         requires: can('UPSALE'),
         stage: '',
