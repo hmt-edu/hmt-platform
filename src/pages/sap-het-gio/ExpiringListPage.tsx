@@ -1,7 +1,7 @@
 // GD-07 Sắp hết giờ (danh sách dự báo chỉ đọc) theo khuôn K03 (canvas 9933 GD07): thanh công cụ Filters, lọc nhanh Tình trạng, tìm, làm mới, cột chọn được,
 // phân trang «1–n / tổng». ĐỀ XUẤT docs/spec/de-xuat-luat-a.md: mỗi dòng một (học sinh, lớp); giờ còn, hết giờ dự kiến, hạn gói (dự báo, R-GD-07: không chặn gì),
 // tình trạng gợi ý. Không sinh phiếu tái tục (R-V2-25), không có nút tạo tay (R-TIEN-02). Phân hệ SAP_HET_GIO tắt mặc định (cờ theo cơ sở).
-// Máy chủ quyết quyền, cờ và tính toán (app.list_expiring_enrollments); phân trang ở máy chủ. Cột «Phiếu tái tục» của canvas chờ máy chủ trả mã phiếu (đề xuất riêng).
+// Máy chủ quyết quyền, cờ và tính toán (app.list_expiring_enrollments); phân trang ở máy chủ. Cột «Phiếu tái tục» (canvas GD07, F51) lấy mã phiếu đang mở do máy chủ trả (migration 561).
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { ListScreen } from '../../list/ListScreen';
@@ -72,6 +72,18 @@ const CONFIG: ListConfig<ExpiringRow> = {
       key: 'validity',
       label: 'Hạn gói (dự báo)',
       render: (r) => <span className="tabular">{dateText(r.validity_date)}</span>,
+    },
+    {
+      key: 'upsale',
+      label: 'Phiếu tái tục',
+      render: (r) =>
+        r.upsale_id && r.upsale_code ? (
+          <Link className="text-link hover:underline" to={`/crm/tai-tuc/${r.upsale_id}`}>
+            {r.upsale_code}
+          </Link>
+        ) : (
+          <span className="text-fg-muted">—</span>
+        ),
     },
     {
       key: 'status',
