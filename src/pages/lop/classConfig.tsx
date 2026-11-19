@@ -148,7 +148,14 @@ export function buildClassConfig(opts: {
       { key: 'grade', label: 'Khối', type: 'select', ops: ['eq'], options: opts.grades },
       { key: 'type', label: 'Phân loại', type: 'select', ops: ['eq'], options: opts.types },
     ],
-    groupFields: [],
+    groupFields: [
+      { key: 'subject', label: 'Môn', value: (r) => r.subject_code },
+      { key: 'grade', label: 'Khối', value: (r) => r.grade_code },
+      { key: 'type', label: 'Phân loại', value: (r) => r.class_type_code },
+      { key: 'branch', label: 'Cơ sở', value: (r) => r.branch_id },
+      { key: 'status', label: 'Tình trạng duyệt', value: (r) => r.status_code },
+      { key: 'operating', label: 'Vận hành', value: (r) => r.operating_status ?? '' },
+    ],
     dateFields: [],
     views: ['list', 'kanban'],
   };

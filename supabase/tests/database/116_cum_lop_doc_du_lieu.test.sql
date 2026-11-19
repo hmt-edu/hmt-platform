@@ -119,6 +119,16 @@ select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 -- ================= Danh sách lớp (LOP-01) =================
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((app.list_classes() ->> 'total')::int, 2, 'Trưởng cơ sở CS1 thấy 2 lớp của cơ sở mình');
+-- Group By ở máy chủ (migration 309): class_group_counts đếm theo một hoặc hai trường, bộ lọc và phạm vi quyền giống list_classes.
+select is((app.class_group_counts('{}', array['status']) ->> 'total')::int, 2, 'Group By: tổng bằng số lớp trong phạm vi của Trưởng cơ sở CS1');
+select is(jsonb_array_length(app.class_group_counts('{}', array['status']) -> 'groups'), 1, 'Group By tình trạng duyệt: cả hai lớp cùng Đã duyệt nên một nhóm');
+select is((app.class_group_counts('{}', array['status']) -> 'groups' -> 0 ->> 'l1'), 'Đã duyệt', 'Nhóm có nhãn tiếng Việt từ danh mục');
+select is((app.class_group_counts('{}', array['subject', 'type']) -> 'groups' -> 0 ->> 'k2') is not null, true, 'Group By hai cấp: có khoá cấp hai');
+select is((app.class_group_counts('{"status":["NHAP"]}', array['status']) ->> 'total')::int, 0, 'Group By theo đúng bộ lọc: không lớp Nháp thì tổng 0');
+select is(pg_temp.err($$select app.class_group_counts('{}', array['status', 'status'])$$), 'HMT_NHOM_SAI', 'Chặn: hai cấp nhóm phải khác nhau');
+select is(pg_temp.err($$select app.class_group_counts('{}', array['khong_co'])$$), 'HMT_NHOM_SAI', 'Chặn: trường nhóm không cho phép');
+select is(pg_temp.err($$select app.class_group_counts('{}', array['subject', 'grade', 'type'])$$), 'HMT_NHOM_SAI', 'Chặn: nhóm quá hai cấp');
+select is(has_function_privilege('anon', 'app.class_group_counts(jsonb, text[])', 'execute'), false, 'Người chưa đăng nhập không gọi được class_group_counts');
 select is((app.list_classes('{"search":"zzz-khong-co"}') ->> 'total')::int, 0, 'Tìm không thấy thì 0 lớp');
 select is((app.list_classes(jsonb_build_object('search', (select code from app.class where id = pg_temp.c('p')))) ->> 'total')::int, 1, 'Tìm theo mã lớp');
 select is((app.list_classes('{"status":["DA_DUYET"]}') ->> 'total')::int, 2, 'Lọc tình trạng duyệt: cả 2 lớp Đã duyệt');

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ListState } from '../../list/types';
-import { buildClassFilters, classSortParam } from './classFilters';
+import { buildClassFilters, classGroupFilter, classSortParam } from './classFilters';
 import { scheduleText } from './classConfig';
 const empty: ListState = {
   search: '',
@@ -64,5 +64,20 @@ describe('scheduleText (lịch học ở danh sách Lớp, T2 mục 10)', () => 
   });
   it('khung chưa có giáo viên, phòng thì chỉ ghi giờ', () => {
     expect(scheduleText([t(2)])).toBe('Thứ 3 · 18:00–19:30');
+  });
+});
+
+describe('classGroupFilter (bộ lọc của một nhóm Group By)', () => {
+  it('ánh xạ trường nhóm sang bộ lọc của list_classes', () => {
+    expect(classGroupFilter('subject', 'TOAN')).toEqual({ subject_code: 'TOAN' });
+    expect(classGroupFilter('grade', 'K09')).toEqual({ grade_code: 'K09' });
+    expect(classGroupFilter('type', 'CB')).toEqual({ class_type_code: 'CB' });
+    expect(classGroupFilter('branch', 'b1')).toEqual({ branch_id: 'b1' });
+    expect(classGroupFilter('status', 'DA_DUYET')).toEqual({ status: ['DA_DUYET'] });
+    expect(classGroupFilter('operating', 'DANG_HOC')).toEqual({ operating: ['DANG_HOC'] });
+  });
+  it('nhóm «Chưa có» (khoá rỗng) hoặc trường lạ không lọc thêm', () => {
+    expect(classGroupFilter('subject', '')).toEqual({});
+    expect(classGroupFilter('khac', 'x')).toEqual({});
   });
 });

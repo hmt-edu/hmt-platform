@@ -12,13 +12,22 @@ import { useAccess } from '../../nav/AccessContext';
 import type { SortState } from '../../ui/Data';
 import { Spinner } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
-import { buildClassFilters, classSortParam } from './classFilters';
+import { buildLeadGroupTree } from '../lead/leadGroups';
+import { useLeafRows } from '../lead/useLeadData';
+import {
+  buildClassFilters,
+  CLASS_GROUP_FIELD_OF,
+  classGroupFilter,
+  classSortParam,
+} from './classFilters';
 import { buildClassConfig, classPath, EMPTY_CLASS_STATE, NEW_CLASS_PATH } from './classConfig';
 import { ClassCard } from './ClassCard';
+import type { ClassRow } from './classTypes';
 import {
   KANBAN_STATUSES,
   useClassBoard,
   useClassCatalogs,
+  useClassGroupCounts,
   useClassPage,
   useRefreshClasses,
 } from './useClassData';
@@ -47,11 +56,48 @@ export function ClassListPage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useClassPage(filters, sortValue, page * (pageSize ?? 0), pageSize, view === 'list');
+  // Group By ở máy chủ (tối đa hai cấp): số đếm từ class_group_counts, dòng tải khi mở từng nhóm lá (list_classes).
+  const groupFields = state.group.flatMap((k) =>
+    CLASS_GROUP_FIELD_OF[k] ? [CLASS_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const [tick, setTick] = useState(0);
+  const list = useClassPage(
+    filters,
+    sortValue,
+    page * (pageSize ?? 0),
+    pageSize,
+    view === 'list' && !grouped,
+  );
+  const counts = useClassGroupCounts(filters, groupFields, view === 'list');
+  const leaves = useLeafRows<ClassRow>(
+    filters,
+    sortValue,
+    pageSize,
+    `${JSON.stringify(filters)}|${sortValue}|${tick}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_classes',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<ClassRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            classGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
   const board = useClassBoard(filters, pageSize, view === 'kanban');
   const rows = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
-  const errorText = list.isError ? errorOf(list.error).message : null;
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
+  const errorText = activeQuery.isError ? errorOf(activeQuery.error).message : null;
 
   const config = useMemo(
     () =>
@@ -99,9 +145,9 @@ export function ClassListPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => r.code}
-      loading={list.isPending || list.isPlaceholderData}
+      loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
-      onRetry={() => void list.refetch()}
+      onRetry={() => void activeQuery.refetch()}
       actions={
         canCreate
           ? [
@@ -113,16 +159,28 @@ export function ClassListPage() {
             ]
           : []
       }
-      onRefresh={() => void refreshData()}
-      pager={{
-        from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
-        to: page * (pageSize ?? 0) + rows.length,
-        total,
-        ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
-        ...(page * (pageSize ?? 0) + rows.length < total
-          ? { onNext: () => setPage(page + 1) }
-          : {}),
+      onRefresh={() => {
+        setTick((t) => t + 1);
+        void refreshData();
       }}
+      groupTree={grouping?.tree}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
+      }}
+      pager={
+        grouped
+          ? undefined
+          : {
+              from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
+              to: page * (pageSize ?? 0) + rows.length,
+              total,
+              ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
+              ...(page * (pageSize ?? 0) + rows.length < total
+                ? { onNext: () => setPage(page + 1) }
+                : {}),
+            }
+      }
       sort={sort}
       onSortChange={(next) => setSort(next?.key === 'code' || next?.key === 'start' ? next : null)}
       onRowClick={(r) => void navigate(classPath(r.id))}
