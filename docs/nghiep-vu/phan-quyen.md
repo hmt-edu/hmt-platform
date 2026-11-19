@@ -299,3 +299,9 @@ Danh sách cho phép thay cho chặn riêng ADMIN: ô Kế toán · Duyệt ch�
 
 `app.get_setting` (và `_int`, `_numeric`, `_bool` gọi lại nó) báo `HMT_KHONG_CO_QUYEN` khi phiên là người KHÔNG phải nhân viên (có vai trò, `is_staff()` sai) đọc khoá khác `student_idle_logout_minutes`, `list_page_size`, `list_page_size_default`, `list_page_size_max`. Nhân viên và nơi gọi không có phiên (hook đăng nhập, pg_cron, migration) đọc như cũ. `feature_enabled` giữ nguyên.
 
+
+## Hai bước Admin, Kế toán (D41, 19/11/2026)
+
+- Tham số `mfa_required_enabled` (BOOL, mặc định tắt, toàn hệ thống). Hàm duy nhất `app.mfa_required_for_role(vai_trò)` = cờ `require_mfa` của vai trò và tham số bật; `app.mfa_enforced()` đọc tham số.
+- Dùng ở `app.mfa_satisfied()` (kiểm quyền ở DB) và hook token (`hmt_require_mfa`; thêm `hmt_mfa_optional` khi vai trò có cờ nhưng tham số tắt, để Hồ sơ vẫn cho cài thiết bị).
+- Tắt: Admin, Kế toán đăng nhập bằng mật khẩu có đủ quyền theo ma trận, giao diện bỏ bước `/xac-thuc-hai-buoc`. Bật: bắt buộc aal2 như cũ. Bài pgTAP 472 kiểm cả hai trạng thái; bài cũ kiểm luật aal2 tự bật tham số.
