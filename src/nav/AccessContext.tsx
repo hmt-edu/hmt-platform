@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import { useAuth } from '../lib/auth/authContext';
 import { Spinner, StateView } from '../ui/Feedback';
+import { SignOutButton } from '../layout/SignOutButton';
 import { Button } from '../ui/Button';
 import { ALL_BRANCHES, buildAccess, type AccessView } from './access';
 import { useAccessData } from './accessData';
@@ -53,7 +54,12 @@ export function AccessProvider({ children }: { children: ReactNode }) {
       <StateView
         kind="error"
         title="Không tải được trang"
-        actions={<Button onClick={() => void query.refetch()}>Thử lại</Button>}
+        actions={
+          <>
+            <Button onClick={() => void query.refetch()}>Thử lại</Button>
+            <SignOutButton />
+          </>
+        }
       >
         Kiểm tra mạng rồi bấm Thử lại. Nếu vẫn lỗi, báo quản trị viên.
       </StateView>
