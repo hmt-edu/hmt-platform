@@ -43,7 +43,10 @@ test('GD-02, GD-04: bản ghi nêu quỹ giờ và lớp; Sổ giờ nêu dòng 
   // Không có nút "Tạo phiếu thu tái tục thủ công" (TT-03 đã bỏ) và ghi danh Đang học không có nút Xếp lớp.
   await expect(page.getByRole('button', { name: /tái tục/i })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Xếp lớp', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Sổ giờ' }).click();
+  // GD-02: mục «Sổ giờ gần đây» có bảng xem nhanh và nút mở sổ đầy đủ (canvas GD02).
+  await expect(page.getByRole('table', { name: 'Sổ giờ gần đây' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mở sổ giờ đầy đủ' })).toBeVisible();
+  await page.getByRole('button', { name: 'Sổ giờ', exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/ghi-danh/${seed.learning.id}/so-gio$`));
   const ledger = page.getByRole('table', { name: 'Sổ giờ' });
   await expect(ledger).toContainText('Cấp từ phiếu thu');

@@ -12,12 +12,13 @@ import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
+import { LineTable } from '../../ui/LineTable';
 import { Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
 import { AdjustHoursDialog } from './AdjustHoursDialog';
 import { AssignClassDialog } from './AssignClassDialog';
 import { statusTone } from './enrollConfig';
-import { useEnrollmentRecord } from './useEnrollmentData';
+import { useEnrollmentLedger, useEnrollmentRecord } from './useEnrollmentData';
 
 const END_REASON: Record<string, string> = {
   CHUYEN_LOP: 'Đã chuyển lớp',
@@ -118,8 +119,7 @@ export function EnrollmentRecordPage() {
             label: 'Học sinh',
             icon: 'user',
             count: 1,
-            unavailable: 'Hồ sơ học sinh làm sau 17/11',
-            onOpen: () => undefined,
+            onOpen: () => openFrom(`/crm/hoc-sinh/${e.student_id}`),
           },
           {
             key: 'don-hang',
@@ -251,6 +251,18 @@ export function EnrollmentRecordPage() {
             Ngày hết giờ dự kiến cộng lịch của lớp đang học, chỉ để dự báo, không chặn gì.
           </p>
         </section>
+        <section className="mt-6 flex flex-col gap-2" aria-labelledby="gd02-ledger">
+          <h3
+            id="gd02-ledger"
+            className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
+          >
+            Sổ giờ gần đây
+          </h3>
+          <RecentLedger
+            enrollmentId={e.id}
+            onOpen={() => openFrom(`/crm/ghi-danh/${e.id}/so-gio`)}
+          />
+        </section>
       </RecordDetail>
       <AdjustHoursDialog
         enrollmentId={e.id}
@@ -263,5 +275,54 @@ export function EnrollmentRecordPage() {
         onClose={() => setAssigning(false)}
       />
     </>
+  );
+}
+
+/** Bốn dòng gần nhất của sổ giờ (khung GD02: «Sổ giờ chỉ thêm dòng, không sửa dòng cũ») kèm nút mở sổ đầy đủ (GD-04). */
+const RECENT_LEDGER_ROWS = 4; // allow-number: số dòng sổ giờ xem nhanh ở bản ghi (canvas GD02)
+function RecentLedger({ enrollmentId, onOpen }: { enrollmentId: string; onOpen: () => void }) {
+  const ledger = useEnrollmentLedger(enrollmentId, 0, RECENT_LEDGER_ROWS);
+  if (ledger.isPending) return <Spinner />;
+  if (ledger.isError) return <p className="text-fg-muted">{errorOf(ledger.error).message}</p>;
+  return (
+    <div className="flex flex-col gap-2">
+      {ledger.data.rows.length === 0 ? (
+        <p className="py-2 text-fg-muted">Chưa có dòng nào trong sổ giờ.</p>
+      ) : (
+        <LineTable
+          caption="Sổ giờ gần đây"
+          rows={ledger.data.rows}
+          rowKey={(r) => r.id}
+          columns={[
+            { key: 'date', header: 'Ngày', cell: (r) => formatDate(r.on_date) },
+            { key: 'type', header: 'Loại', cell: (r) => r.entry_name },
+            {
+              key: 'source',
+              header: 'Nguồn',
+              cell: (r) =>
+                [
+                  r.class_code,
+                  r.session_no ? `Buổi ${r.session_no}` : null,
+                  r.session_date ? formatDate(r.session_date) : null,
+                  r.reason_name ? `Lý do: ${r.reason_name}` : null,
+                ]
+                  .filter(Boolean)
+                  .join(' · ') || '—',
+            },
+            { key: 'hours', header: 'Giờ +/−', align: 'right', cell: (r) => formatNumber(r.hours) },
+            {
+              key: 'balance',
+              header: 'Số dư (giờ)',
+              align: 'right',
+              cell: (r) => formatNumber(r.balance),
+            },
+          ]}
+        />
+      )}
+      <p className="text-caption text-fg-muted">Sổ giờ chỉ thêm dòng, không sửa dòng cũ.</p>
+      <div>
+        <Button onClick={onOpen}>Mở sổ giờ đầy đủ</Button>
+      </div>
+    </div>
   );
 }
