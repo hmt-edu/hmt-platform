@@ -3,6 +3,7 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
+import type { GroupCounts } from '../lead/leadTypes';
 import type { TreasuryFilters } from './treasuryFilters';
 import type { MoneyInPage, ReceivablePage } from './treasuryTypes';
 
@@ -11,11 +12,12 @@ export function useMoneyInPage(
   sort: string | undefined,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['money-in-list', filters, sort ?? null, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<MoneyInPage>(supabase, 'list_money_in', {
@@ -32,11 +34,12 @@ export function useReceivablePage(
   sort: string | undefined,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['receivable-list', filters, sort ?? null, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<ReceivablePage>(supabase, 'list_receivables', {
@@ -45,6 +48,22 @@ export function useReceivablePage(
         p_limit: limit,
         p_offset: offset,
       }),
+  });
+}
+
+/** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ: khoản tiền vào (TC-08) hoặc công nợ (TC-13). */
+export function useTreasuryGroupCounts(
+  kind: 'money_in_group_counts' | 'receivable_group_counts',
+  filters: TreasuryFilters,
+  fields: string[],
+  enabled: boolean,
+) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['treasury-groups', kind, filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () => rpc<GroupCounts>(supabase, kind, { p_filters: filters, p_fields: fields }),
   });
 }
 

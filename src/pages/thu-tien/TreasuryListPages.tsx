@@ -9,13 +9,19 @@ import { useAccess } from '../../nav/AccessContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { ReasonDialog } from '../../ui/Dialogs';
 import { useToast } from '../../ui/toastContext';
+import { buildLeadGroupTree } from '../lead/leadGroups';
+import { useLeafRows } from '../lead/useLeadData';
 import type { SortState } from '../../ui/Data';
 import { emptyTreasuryState, buildMoneyInConfig, buildReceivableConfig } from './treasuryConfig';
 import {
   buildMoneyInFilters,
   buildReceivableFilters,
+  MONEY_IN_GROUP_FIELD_OF,
+  RECEIVABLE_GROUP_FIELD_OF,
+  moneyInGroupFilter,
   moneyInSortParam,
   nextReceivableSort,
+  receivableGroupFilter,
   receivableSortParam,
 } from './treasuryFilters';
 import type { MoneyInRow, ReceivableRow } from './treasuryTypes';
@@ -24,6 +30,7 @@ import {
   useMoneyInPage,
   useReceivablePage,
   useRefreshTreasury,
+  useTreasuryGroupCounts,
 } from './useTreasuryData';
 
 export function MoneyInListPage() {
@@ -52,9 +59,55 @@ export function MoneyInListPage() {
   const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
-  const list = useMoneyInPage(filters, sortValue, page * size, pageSize);
-  const rows: MoneyInRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  // Group By ở máy chủ (K1_nhom): chọn trường nhóm thì danh sách thành cây nhóm có số đếm; nhóm lá tải dòng khi mở.
+  const groupFields = state.group.flatMap((k) =>
+    MONEY_IN_GROUP_FIELD_OF[k] ? [MONEY_IN_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const list = useMoneyInPage(filters, sortValue, page * size, pageSize, !grouped);
+  const counts = useTreasuryGroupCounts(
+    'money_in_group_counts',
+    filters,
+    groupFields,
+    view === 'list',
+  );
+  const leaves = useLeafRows<MoneyInRow>(
+    filters,
+    sortValue,
+    pageSize,
+    pagingKey,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_money_in',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<MoneyInRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            moneyInGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
+  const pageRows: MoneyInRow[] = list.data?.rows ?? [];
+  const rows: MoneyInRow[] = useMemo(
+    () =>
+      grouping
+        ? grouping.tree
+            .flatMap((g) => (g.children.length > 0 ? g.children : [g]))
+            .flatMap((g) => g.rows)
+        : pageRows,
+    // pageRows suy ra từ list.data.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouping, list.data],
+  );
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
   return (
     <>
       <ListScreen
@@ -66,9 +119,14 @@ export function MoneyInListPage() {
         rows={rows}
         rowKey={(r) => r.id}
         rowLabel={(r) => `${r.code} ${r.parent_name}`}
-        loading={list.isPending || list.isPlaceholderData}
-        error={list.isError ? errorOf(list.error).message : null}
-        onRetry={() => void list.refetch()}
+        loading={activeQuery.isPending || activeQuery.isPlaceholderData}
+        error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+        onRetry={() => void activeQuery.refetch()}
+        groupTree={grouped ? grouping?.tree : undefined}
+        onGroupToggle={(key, open) => {
+          const spec = grouping?.specs.get(key);
+          if (spec) leaves.toggle(key, spec.filters, open);
+        }}
         actions={[]}
         onRefresh={() => void refresh()}
         pager={{
@@ -137,6 +195,7 @@ export function MoneyInListPage() {
 
 export function ReceivableListPage() {
   const access = useAccess();
+  const toast = useToast();
   const refresh = useRefreshTreasury();
   const config = useMemo(() => buildReceivableConfig(access), [access]);
   const pageSize = useIntSetting('list_page_size_default');
@@ -154,9 +213,55 @@ export function ReceivableListPage() {
   const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
-  const list = useReceivablePage(filters, sortValue, page * size, pageSize);
-  const rows: ReceivableRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  // Group By ở máy chủ (K1_nhom): chọn trường nhóm thì danh sách thành cây nhóm có số đếm; nhóm lá tải dòng khi mở.
+  const groupFields = state.group.flatMap((k) =>
+    RECEIVABLE_GROUP_FIELD_OF[k] ? [RECEIVABLE_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const list = useReceivablePage(filters, sortValue, page * size, pageSize, !grouped);
+  const counts = useTreasuryGroupCounts(
+    'receivable_group_counts',
+    filters,
+    groupFields,
+    view === 'list',
+  );
+  const leaves = useLeafRows<ReceivableRow>(
+    filters,
+    sortValue,
+    pageSize,
+    pagingKey,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_receivables',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<ReceivableRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            receivableGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
+  const pageRows: ReceivableRow[] = list.data?.rows ?? [];
+  const rows: ReceivableRow[] = useMemo(
+    () =>
+      grouping
+        ? grouping.tree
+            .flatMap((g) => (g.children.length > 0 ? g.children : [g]))
+            .flatMap((g) => g.rows)
+        : pageRows,
+    // pageRows suy ra từ list.data.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouping, list.data],
+  );
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
   return (
     <>
       <ListScreen
@@ -168,9 +273,14 @@ export function ReceivableListPage() {
         rows={rows}
         rowKey={(r) => `${r.order_id}:${r.seq}`}
         rowLabel={(r) => `${r.order_code} đợt ${r.seq} ${r.parent_name}`}
-        loading={list.isPending || list.isPlaceholderData}
-        error={list.isError ? errorOf(list.error).message : null}
-        onRetry={() => void list.refetch()}
+        loading={activeQuery.isPending || activeQuery.isPlaceholderData}
+        error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+        onRetry={() => void activeQuery.refetch()}
+        groupTree={grouped ? grouping?.tree : undefined}
+        onGroupToggle={(key, open) => {
+          const spec = grouping?.specs.get(key);
+          if (spec) leaves.toggle(key, spec.filters, open);
+        }}
         actions={[]}
         onRefresh={() => void refresh()}
         pager={{
