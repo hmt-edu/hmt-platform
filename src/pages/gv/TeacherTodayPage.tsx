@@ -138,23 +138,29 @@ export function TeacherTodayPage() {
 }
 
 function SessionItem({ session: s }: { session: MySession }) {
+  // Thẻ buổi bấm được: mở trang các bước của buổi (như Lịch dạy), T2-23.
   return (
-    <li className="flex gap-3 rounded-control border border-border bg-surface p-3">
-      <div className="w-12 shrink-0 text-body tabular">
-        <p className="font-semibold">{hhmm(s.start_time)}</p>
-        <p className="text-fg-muted">{hhmm(s.end_time)}</p>
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="font-semibold">{sessionTitle(s)}</p>
-        {s.my_role === 'TRO_GIANG' && <p className="text-caption text-fg-muted">Trợ giảng</p>}
-        <div className="mt-1">
-          {s.status_code === 'DONE' ? (
-            <Tag tone="success">Đã hoàn tất</Tag>
-          ) : (
-            <Tag tone="warning">Cần hoàn tất</Tag>
-          )}
+    <li>
+      <Link
+        to={`/gv/buoi/${s.session_id}`}
+        className="tap flex gap-3 rounded-control border border-border bg-surface p-3 hover:bg-surface-subtle"
+      >
+        <div className="w-12 shrink-0 text-body tabular">
+          <p className="font-semibold">{hhmm(s.start_time)}</p>
+          <p className="text-fg-muted">{hhmm(s.end_time)}</p>
         </div>
-      </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold">{sessionTitle(s)}</p>
+          {s.my_role === 'TRO_GIANG' && <p className="text-caption text-fg-muted">Trợ giảng</p>}
+          <div className="mt-1">
+            {s.status_code === 'DONE' ? (
+              <Tag tone="success">Đã hoàn tất</Tag>
+            ) : (
+              <Tag tone="warning">Cần hoàn tất</Tag>
+            )}
+          </div>
+        </div>
+      </Link>
     </li>
   );
 }

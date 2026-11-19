@@ -5,7 +5,7 @@ import { homePortal } from '../../lib/auth/claims';
 import { afterLoginPath } from '../../lib/auth/redirect';
 import { ButtonLink } from '../../ui/Button';
 import { Alert, Spinner } from '../../ui/Feedback';
-import { AuthAlert, AuthBigIcon, AuthNote } from './authParts';
+import { AuthAlert, AuthBigIcon, AuthNote, SignOutLink } from './authParts';
 import { NewPasswordForm } from './NewPasswordForm';
 
 /**
@@ -85,6 +85,7 @@ export function ChangePasswordPage() {
         afterAuthUpdate={confirmChange}
         onDone={() => void navigate('/dang-nhap', { replace: true })}
       />
+      <SignOutLink />
     </AuthLayout>
   );
 }

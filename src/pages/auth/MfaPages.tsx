@@ -8,7 +8,7 @@ import { afterLoginPath } from '../../lib/auth/redirect';
 import { Button } from '../../ui/Button';
 import { Spinner } from '../../ui/Feedback';
 import { OtpInput } from '../../ui/Field';
-import { AuthAlert, AuthLinkButton, AuthNote } from './authParts';
+import { AuthAlert, AuthNote, SignOutLink } from './authParts';
 import { TotpEnroll } from './TotpEnroll';
 
 function useTotpDevices() {
@@ -22,19 +22,6 @@ function useTotpDevices() {
       return listTotpDevices(supabase);
     },
   });
-}
-
-/** Liên kết "Đăng nhập tài khoản khác" (DN03): đăng xuất rồi về trang đăng nhập. */
-function SignOutLink() {
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
-  return (
-    <p className="text-center text-[14px]">
-      <AuthLinkButton onClick={() => void signOut().then(() => navigate('/dang-nhap'))}>
-        Đăng nhập tài khoản khác
-      </AuthLinkButton>
-    </p>
-  );
 }
 
 /** DN03 · Xác thực hai bước: nhập mã 6 số sau khi đăng nhập (Admin, Kế toán). Không có mã dự phòng. */
