@@ -139,7 +139,13 @@ export function buildMoneyInConfig(
       },
     ],
     filterFields: [...branchField(access), { key: 'created', label: 'Ngày ghi sổ', type: 'date' }],
-    groupFields: [],
+    // Group By ở máy chủ (K1_nhom): cơ sở (khi xem nhiều cơ sở), ngày ghi sổ.
+    groupFields: [
+      ...(access.seesAllBranches
+        ? [{ key: 'branch', label: 'Cơ sở', value: (r: MoneyInRow) => r.branch_code }]
+        : []),
+      { key: 'day', label: 'Ngày ghi sổ', value: (r: MoneyInRow) => r.created_at.slice(0, 10) },
+    ],
     dateFields: [{ key: 'created', label: 'Ngày ghi sổ' }],
     views: ['list'],
   };
@@ -211,7 +217,14 @@ export function buildReceivableConfig(access: AccessView): ListConfig<Receivable
       ...branchField(access),
       { key: 'due', label: 'Hạn đóng', type: 'date' },
     ],
-    groupFields: [],
+    // Group By ở máy chủ (K1_nhom): cơ sở (khi xem nhiều cơ sở), người lập đơn, tình trạng nợ.
+    groupFields: [
+      ...(access.seesAllBranches
+        ? [{ key: 'branch', label: 'Cơ sở', value: (r: ReceivableRow) => r.branch_code }]
+        : []),
+      { key: 'sale', label: 'Người lập đơn', value: (r: ReceivableRow) => r.sale_name ?? '' },
+      { key: 'status', label: 'Tình trạng', value: (r: ReceivableRow) => r.status },
+    ],
     dateFields: [{ key: 'due', label: 'Hạn đóng' }],
     views: ['list'],
   };

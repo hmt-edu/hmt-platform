@@ -105,3 +105,35 @@ export function nextReceivableSort(sort: SortState): SortState {
   if (sort && receivableSortParam(sort) === undefined) return null;
   return sort;
 }
+
+/** Trường nhóm của giao diện → tên trường của money_in_group_counts, receivable_group_counts (Group By ở máy chủ, K1_nhom). */
+export const MONEY_IN_GROUP_FIELD_OF: Record<string, string> = { branch: 'branch', day: 'day' };
+export const RECEIVABLE_GROUP_FIELD_OF: Record<string, string> = {
+  branch: 'branch',
+  sale: 'sale',
+  status: 'status',
+};
+
+/** Bộ lọc của một nhóm khoản tiền vào (khoá trống: «Chưa có», không lọc thêm). Nhóm «ngày» lọc đúng ngày giờ Việt Nam. */
+export function moneyInGroupFilter(field: string, key: string): TreasuryFilters {
+  if (key === '') return {};
+  if (field === 'branch') return { branch_id: key };
+  if (field === 'day') {
+    const start = vnDayStartOf(key);
+    if (!start) return {};
+    return {
+      created_from: start.toISOString(),
+      created_to: new Date(start.getTime() + DAY_MS).toISOString(),
+    };
+  }
+  return {};
+}
+
+/** Bộ lọc của một nhóm công nợ (khoá trống: «Chưa có», không lọc thêm). */
+export function receivableGroupFilter(field: string, key: string): TreasuryFilters {
+  if (key === '') return {};
+  if (field === 'branch') return { branch_id: key };
+  if (field === 'sale') return { sale_id: key };
+  if (field === 'status') return { status: [key] };
+  return {};
+}
