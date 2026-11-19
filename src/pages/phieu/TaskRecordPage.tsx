@@ -18,6 +18,7 @@ import { TextAreaField } from '../../ui/Field';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { taskStatusTone } from './phieuConfig';
+import { approvalRows } from './approvalRows';
 import { taskTimeline } from './phieuTimeline';
 import {
   LEVEL_ROLE_LABEL,
@@ -183,20 +184,33 @@ export function TaskRecordPage() {
             )}
           </DetailSection>
           <DetailSection title="Duyệt">
-            <DetailField
-              label="Các cấp duyệt"
-              mode="view"
-              value={task.levels.map((l) => LEVEL_ROLE_LABEL[l] ?? l).join(' → ')}
-            />
-            <DetailField
-              label="Đang ở"
-              mode="view"
-              value={
-                task.status_code === 'CHO_DUYET'
-                  ? `Cấp ${task.level}/${task.level_total}: ${LEVEL_ROLE_LABEL[task.levels[task.level - 1] ?? ''] ?? ''}`
-                  : ''
-              }
-            />
+            <table aria-label="Các cấp duyệt" className="mb-4 w-full text-body">
+              <thead>
+                <tr className="text-left text-caption text-fg-muted">
+                  <th className="py-1 pr-3 font-medium">Cấp</th>
+                  <th className="py-1 pr-3 font-medium">Vai trò</th>
+                  <th className="py-1 pr-3 font-medium">Người duyệt</th>
+                  <th className="py-1 pr-3 font-medium">Kết quả</th>
+                  <th className="py-1 font-medium">Lúc</th>
+                </tr>
+              </thead>
+              <tbody>
+                {approvalRows(
+                  task.levels,
+                  task.status_code,
+                  record.data?.events ?? [],
+                  (l) => LEVEL_ROLE_LABEL[l] ?? l,
+                ).map((r) => (
+                  <tr key={r.level} className="border-t border-border">
+                    <td className="py-1 pr-3">Cấp {r.level}</td>
+                    <td className="py-1 pr-3">{r.role}</td>
+                    <td className="py-1 pr-3">{r.approver ?? '—'}</td>
+                    <td className="py-1 pr-3">{r.result}</td>
+                    <td className="py-1">{r.at ? formatDateTime(r.at) : '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
             <DetailField
               label="Trình lúc"
               mode="view"
