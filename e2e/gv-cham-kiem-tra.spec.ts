@@ -2,7 +2,7 @@
 // ba em giả (có mặt, đi muộn, vắng có phép). Luật R-V2-20: tổng tự cộng, ô trống ≠ 0; R-GV-04: em vắng không nhập điểm.
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, expectAccessible, loginStaffUntil } from './helpers';
+import { DOMAIN, PASSWORD, expectAccessible, isPhone, loginStaffUntil } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng buổi học giả).');
@@ -130,6 +130,14 @@ test('GV-07K: nhập điểm 3 nhóm, tổng tự cộng, chặn vượt tối �
   await page.getByLabel('Hiểu của Em giả E2E An').fill('4');
   await page.getByLabel('Vận dụng của Em giả E2E An').fill('2,5');
   await expect(page.getByText('Tổng 9,5/10')).toBeVisible();
+  // Điện thoại chấm từng em một (canvas GV-07K): sang em kế bằng «Lưu và em tiếp theo» rồi nhập điểm Bình.
+  if (isPhone(page)) {
+    await expect(page.getByText(/^Em 1\/3 · /)).toBeVisible();
+    await expect(page.getByLabel('Ghi nhớ của Em giả E2E Bình')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Lưu và em tiếp theo' }).click();
+    await expect(page.getByText('Đã lưu điểm kiểm tra').first()).toBeVisible();
+    await expect(page.getByText(/^Em 2\/3 · /)).toBeVisible();
+  }
   // Một nhóm vượt tối đa: chặn, nêu lý do, không lưu.
   await page.getByLabel('Ghi nhớ của Em giả E2E Bình').fill('4');
   await page.getByLabel('Hiểu của Em giả E2E Bình').fill('4');
@@ -142,6 +150,10 @@ test('GV-07K: nhập điểm 3 nhóm, tổng tự cộng, chặn vượt tối �
 
   await page.reload();
   await expect(page.getByLabel('Vận dụng của Em giả E2E An')).toHaveValue('2.5');
+  if (isPhone(page)) {
+    await page.getByRole('button', { name: 'Em kế ›' }).click();
+    await page.getByRole('button', { name: 'Em kế ›' }).click();
+  }
   await expect(page.getByText('Đã chấm 2/2 em có mặt.', { exact: false })).toBeVisible();
   // Em vắng: không có ô điểm.
   await expect(page.getByText('Vắng: không nhập điểm, không tự tính 0.')).toBeVisible();
