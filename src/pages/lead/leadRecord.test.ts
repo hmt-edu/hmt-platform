@@ -158,6 +158,7 @@ describe('lịch sử thay đổi của lead hiện chữ dễ đọc', () => {
   });
   it('trạng thái bản ghi và giá trị không phải chuỗi dùng cách mặc định', () => {
     expect(value('record_status', 'DA_GOP')).toBe('Đã gộp');
+    expect(value('record_status', 'DA_HUY')).toBe('Đã huỷ');
     expect(value('need', 'abc')).toBeNull();
     expect(value('student_birth_year', 2012)).toBeNull();
   });
