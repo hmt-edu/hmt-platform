@@ -6,6 +6,8 @@ export type Shot = {
   route: string;
   row?: boolean;
   view?: string;
+  /** Cổng Giáo viên: hậu tố địa chỉ của buổi HÔM NAY của gv.cs5 (seed supabase/seed-anh-huong-dan.sql), vd «/diem-danh»; rỗng = trang các bước của buổi. */
+  gvSession?: string;
   approx?: string;
 };
 
@@ -178,18 +180,23 @@ export const ROLES: Role[] = [
     shots: [
       { name: 'gv-hom-nay', route: '/gv' },
       { name: 'gv-lich-day', route: '/gv/lich-day' },
+      { name: 'gv-diem-danh', route: '', gvSession: '/diem-danh' },
       {
-        name: 'gv-diem-danh',
-        route: '/gv',
-        row: true,
-        approx: 'trang Hôm nay; màn điểm danh cần mở một buổi cụ thể, chưa chụp tự động',
+        name: 'gv-diem-danh-luu',
+        route: '',
+        gvSession: '/diem-danh',
+        approx: 'màn điểm danh; ảnh sau khi bấm Lưu chưa chụp tự động',
       },
-      { name: 'gv-diem-danh-luu', route: '/gv', approx: 'trang Hôm nay; chưa chụp tự động' },
-      { name: 'gv-noi-dung-buoi', route: '/gv', approx: 'trang Hôm nay; chưa chụp tự động' },
-      { name: 'gv-cham-nhan-xet', route: '/gv', approx: 'trang Hôm nay; chưa chụp tự động' },
-      { name: 'gv-cham-nhan-xet-bang', route: '/gv', approx: 'trang Hôm nay; chưa chụp tự động' },
-      { name: 'gv-cham-btvn', route: '/gv', approx: 'trang Hôm nay; chưa chụp tự động' },
-      { name: 'gv-hoan-tat-buoi', route: '/gv', approx: 'trang Hôm nay; chưa chụp tự động' },
+      { name: 'gv-noi-dung-buoi', route: '', gvSession: '/noi-dung' },
+      { name: 'gv-cham-nhan-xet', route: '', gvSession: '/cham-nhan-xet' },
+      {
+        name: 'gv-cham-nhan-xet-bang',
+        route: '',
+        gvSession: '/cham-nhan-xet',
+        approx: 'chấm từng em (điện thoại); bảng chấm nhanh là bản máy tính, chưa chụp',
+      },
+      { name: 'gv-cham-btvn', route: '', gvSession: '/cham-btvn' },
+      { name: 'gv-hoan-tat-buoi', route: '', gvSession: '' },
       { name: 'gv-ticket-tao', route: '/gv/ticket/tao' },
     ],
   },
