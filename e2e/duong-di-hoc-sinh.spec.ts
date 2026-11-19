@@ -1,3 +1,4 @@
+// Bao phủ màn LOP-09 (danh sách học sinh của lớp) và đường đi trọn BUOI-02, BUOI-03, GD-03.
 // A40 (hàng chung): đường đi trọn của MỘT học sinh giả trên DB local: ghi danh có 3 giờ → xếp lớp → chốt danh sách buổi (giao diện CRM) → giáo viên điểm danh → nhận xét → Done → trừ giờ.
 // Kiểm số giờ còn lại ở từng bước (R-GIO-01, 03, 04): chưa Done thì chưa trừ; Done trừ đúng giờ buổi một lần; Done lần hai bị chặn, không trừ hai lần. Dữ liệu giả; máy tính.
 import { expect, test } from '@playwright/test';
@@ -199,6 +200,14 @@ test('Đường đi trọn: ghi danh 3 giờ, chốt danh sách, điểm danh, n
       withDb((db) => db.query('select app.mark_session_done($1::uuid)', [first])),
     ).rejects.toThrow();
     expect(await balance()).toBe(START_HOURS - SESSION_HOURS);
+  });
+
+  await test.step('LOP-09: chi tiết lớp, tab Học sinh liệt kê em đã xếp lớp kèm giờ còn lại', async () => {
+    await page.goto(`/crm/lop/${classId}`);
+    await page.getByRole('tab', { name: /^Học sinh/ }).click();
+    const table = page.getByRole('table', { name: 'Học sinh của lớp' });
+    await expect(table.getByText(STUDENT)).toBeVisible();
+    await expect(table.getByText(String(START_HOURS - SESSION_HOURS))).toBeVisible();
   });
 
   await test.step('Màn buổi hiện tình trạng Done', async () => {
