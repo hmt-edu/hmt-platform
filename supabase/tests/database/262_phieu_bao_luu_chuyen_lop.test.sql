@@ -171,6 +171,21 @@ select is((select ticket_ref from app.enrollment_hold where id = (select (result
           (select code from app.ticket where id = pg_temp.k('bl')), 'Bản ghi bảo lưu giữ mã ticket (R-CS-02)');
 select is((select status_code from app.ticket where id = pg_temp.k('bl')), 'DA_XU_LY', 'Ticket tự sang Đã xử lý (AS-03)');
 
+-- ================= C30 (migration 423): tuỳ chọn Gia hạn bảo lưu, phiếu Gia hạn =================
+select is((select e ->> 'status_code' from jsonb_array_elements(app.get_task_form_options(pg_temp.k('bl')) -> 'enrollments') e where e ->> 'id' = pg_temp.e('1')::text), 'BAO_LUU',
+          'C30 Đúng: tuỳ chọn có cả ghi danh đang Bảo lưu (để gia hạn)');
+select is(jsonb_array_length(app.get_task_form_options(pg_temp.k('bl')) -> 'holds'), 1, 'C30 Đúng: tuỳ chọn trả bảo lưu đang chạy của học sinh');
+select is(app.get_task_form_options(pg_temp.k('bl')) -> 'holds' -> 0 ->> 'enrollment_id', pg_temp.e('1')::text, 'C30 Đúng: bảo lưu đang chạy thuộc ghi danh 1');
+insert into tt values ('gh', pg_temp.tk('DN_01_01', 1));
+insert into tp select 'gh', (app.create_ticket_task(pg_temp.k('gh'), 'BAO_LUU', 'Chưa thi xong', jsonb_build_object('enrollment_id', pg_temp.e('1'), 'months', 1, 'reason_code', 'BAN_THI',
+  'extends_hold_id', (app.get_task_form_options(pg_temp.k('gh')) -> 'holds' -> 0 ->> 'id')::uuid)) ->> 'id')::uuid;
+select app.submit_ticket_task(pg_temp.pk('gh'));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_ticket_task(pg_temp.pk('gh'));
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select app.execute_ticket_task(pg_temp.pk('gh'));
+select is((select count(*)::int from app.enrollment_hold where enrollment_id = pg_temp.e('1') and kind_code = 'GIA_HAN' and status_code = 'DANG_BAO_LUU'), 1, 'C30 Đúng: phiếu Gia hạn tạo bản gia hạn đang bảo lưu');
+
 -- ================= Phiếu Chuyển lớp =================
 select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cl'), 'CHUYEN_LOP', 'Đổi giờ', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'reason_code', 'KHAC'))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: phiếu Chuyển lớp thiếu lớp mới, ngày, loại');
 select is(pg_temp.err($$select app.create_ticket_task(pg_temp.k('cl'), 'CHUYEN_LOP', 'Chuyển cơ sở', jsonb_build_object('enrollment_id', pg_temp.e('2'), 'to_class_id', pg_temp.c('x5'), 'start_date', pg_temp.mon(), 'kind_code', 'CHUYEN_CO_SO', 'reason_code', 'KHAC'))$$), 'HMT_PHIEU_CHUA_LAM', 'Chặn: Chuyển cơ sở cần hai quản lý duyệt, chưa làm ở phiếu');

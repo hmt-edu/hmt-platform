@@ -8,6 +8,10 @@ import {
   buildBusinessPayload,
   classChoices,
   EMPTY_BUSINESS_DRAFT,
+  HOLD_MODES,
+  holdEnrollmentChoices,
+  runningHold,
+  type HoldMode,
   TRANSFER_KINDS,
   validateBusinessDraft,
   type BusinessDraft,
@@ -45,12 +49,18 @@ export function BusinessTaskDialog({
   const reasons = (type === 'BAO_LUU' ? data?.hold_reasons : data?.transfer_reasons) ?? [];
   const enrollment = data?.enrollments.find((x) => x.id === draft.enrollmentId);
   const classes = data ? classChoices(data, draft.enrollmentId) : [];
+  const enrollmentChoices = !data
+    ? []
+    : type === 'BAO_LUU'
+      ? holdEnrollmentChoices(data, draft.holdMode)
+      : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU');
+  const hold = data && type === 'BAO_LUU' ? runningHold(data, draft.enrollmentId) : null;
   const newClass = classes.find((c) => c.id === draft.toClassId);
 
   const submit = () => {
     setShow(true);
     if (Object.keys(validateBusinessDraft(type, draft, hasStudent)).length > 0) return;
-    onCreate(draft.reason.trim(), buildBusinessPayload(type, draft));
+    onCreate(draft.reason.trim(), buildBusinessPayload(type, draft, hold?.id ?? null));
   };
 
   return (
@@ -71,11 +81,20 @@ export function BusinessTaskDialog({
       error={error ?? (options.error ? 'Không tải được dữ liệu biểu mẫu. Thử lại sau.' : null)}
       onSubmit={submit}
     >
+      {type === 'BAO_LUU' && (
+        <OptionalSelect
+          label="Hình thức"
+          value={draft.holdMode}
+          onChange={(v) => set({ holdMode: v as HoldMode, enrollmentId: '' })}
+          options={HOLD_MODES.map((m) => ({ value: m.value, label: m.label }))}
+          placeholder="Chọn hình thức"
+        />
+      )}
       <OptionalSelect
         label="Ghi danh"
         value={draft.enrollmentId}
         onChange={(v) => set({ enrollmentId: v, toClassId: '', startDate: '' })}
-        options={(data?.enrollments ?? []).map((x) => ({
+        options={enrollmentChoices.map((x) => ({
           value: x.id,
           label: `${x.code}${x.class_code ? ` · ${x.class_code}` : ''}`,
         }))}
@@ -84,6 +103,12 @@ export function BusinessTaskDialog({
       />
       {errors.enrollmentId && (
         <p className="text-caption text-on-danger-subtle">{errors.enrollmentId}</p>
+      )}
+      {hold && (
+        <p className="text-caption text-fg-muted">
+          Bảo lưu đang chạy từ {formatDate(hold.start_date)} đến {formatDate(hold.end_date)}. Gia
+          hạn nối tiếp từ ngày {formatDate(hold.end_date)}.
+        </p>
       )}
       {enrollment && (
         <p className="text-caption text-fg-muted">
@@ -105,7 +130,7 @@ export function BusinessTaskDialog({
       )}
       {type === 'BAO_LUU' ? (
         <TextField
-          label="Số tháng bảo lưu"
+          label={draft.holdMode === 'GIA_HAN' ? 'Số tháng gia hạn' : 'Số tháng bảo lưu'}
           required
           inputMode="numeric"
           value={draft.months}

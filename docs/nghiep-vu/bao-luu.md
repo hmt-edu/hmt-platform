@@ -22,3 +22,8 @@ Chưa làm: dừng sinh phiếu tái tục khi bảo lưu (R-GD-13: chưa có b�
 ## Cập nhật (migration 234)
 
 `apply_enrollment_hold(...)`: hàm nội bộ cho phiếu nghiệp vụ Aftersale, tạo bản ghi bảo lưu (mới hoặc gia hạn) ở trạng thái Đang bảo lưu, bắt đầu ngay (không duyệt lần hai). Xem `ap-dung-phieu-cho-code-b.md`.
+
+## Gia hạn bảo lưu từ phiếu (C30, migration 423, CSN-06b)
+
+`get_task_form_options` trả thêm ghi danh đang Bảo lưu và khoá `holds` (bảo lưu đang chạy: id, ghi danh, từ ngày, đến ngày). Hộp thoại tạo phiếu Bảo lưu có ô «Hình thức»: Bảo lưu mới (ghi danh chưa bảo lưu) hoặc Gia hạn bảo lưu (ghi danh có bản đang chạy, gửi `extends_hold_id`). Hàm áp dụng (234) kiểm lại. Chỗ vênh canvas: canvas ghi «ngày quay lại mới», luật và hàm dùng **số tháng** (R-GD-09, tối đa `reservation_max_months` mỗi lần), nên giao diện hỏi số tháng gia hạn.
+Chưa làm (chờ Chat): phiếu **Tiếp tục học** (quay lại sớm, chọn lớp quay lại), nâng cấp ticket lên Quản lý cơ sở/Ban giám đốc (CS-13), khung `GD02_bao_luu` (không có trong canvas 9189).

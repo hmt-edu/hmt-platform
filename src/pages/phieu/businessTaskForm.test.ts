@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildBusinessPayload,
+  holdEnrollmentChoices,
+  runningHold,
   classChoices,
   EMPTY_BUSINESS_DRAFT,
   validateBusinessDraft,
@@ -71,5 +73,51 @@ describe('phiếu Chuyển lớp', () => {
       ],
     };
     expect(classChoices(o, 'e1').map((c) => c.id)).toEqual(['c2']);
+  });
+});
+
+describe('Gia hạn bảo lưu (CSN-06b, R-GD-09)', () => {
+  const enr = (id: string, status: string) => ({
+    id,
+    code: id,
+    status_code: status,
+    subject_code: null,
+    class_id: null,
+    class_code: null,
+    remaining_hours: 5,
+  });
+  const options = {
+    enrollments: [enr('a', 'DANG_HOC'), enr('b', 'BAO_LUU')],
+    holds: [{ id: 'h1', enrollment_id: 'b', start_date: '2026-11-01', end_date: '2027-01-01' }],
+    hold_reasons: [],
+    transfer_reasons: [],
+    classes: [],
+  };
+  const full = {
+    ...EMPTY_BUSINESS_DRAFT,
+    enrollmentId: 'b',
+    reasonCode: 'THI',
+    reason: 'Chưa thi xong',
+    months: '1',
+    holdMode: 'GIA_HAN' as const,
+  };
+  it('Gia hạn chỉ cho ghi danh có bảo lưu đang chạy, Bảo lưu mới loại ghi danh đang bảo lưu', () => {
+    expect(holdEnrollmentChoices(options, 'GIA_HAN').map((x) => x.id)).toEqual(['b']);
+    expect(holdEnrollmentChoices(options, 'MOI').map((x) => x.id)).toEqual(['a']);
+  });
+  it('Gia hạn gửi extends_hold_id của bản đang chạy; bảo lưu mới thì không', () => {
+    expect(runningHold(options, 'b')?.id).toBe('h1');
+    expect(buildBusinessPayload('BAO_LUU', full, 'h1')).toMatchObject({
+      extends_hold_id: 'h1',
+      months: 1,
+    });
+    expect(buildBusinessPayload('BAO_LUU', { ...full, holdMode: 'MOI' }, 'h1')).not.toHaveProperty(
+      'extends_hold_id',
+    );
+  });
+  it('Gia hạn báo thiếu số tháng gia hạn', () => {
+    expect(validateBusinessDraft('BAO_LUU', { ...full, months: '' }, true).months).toBe(
+      'Nhập số tháng gia hạn (từ 1).',
+    );
   });
 });
