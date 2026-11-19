@@ -134,7 +134,9 @@ Deno.serve(async (req) => {
       item.row.warnings = [...item.row.warnings, 'Chưa khoá được tài khoản người nghỉ: ' + error.message];
       continue;
     }
-    await admin.auth.admin.updateUserById(item.userId, { ban_duration: BAN_FOREVER });
+    // Soát E3: kiểm kết quả cấm đăng nhập ở Auth, lỗi thì ghi cảnh báo (không im lặng).
+    const { error: banError } = await admin.auth.admin.updateUserById(item.userId, { ban_duration: BAN_FOREVER });
+    if (banError) item.row.warnings = [...item.row.warnings, 'Chưa cấm được đăng nhập ở Auth: ' + banError.message];
   }
 
   const final = counts();

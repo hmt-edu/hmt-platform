@@ -29,6 +29,17 @@ export function isInternalStudentEmail(email: string): boolean {
   return email.trim().toLowerCase().endsWith(`@${STUDENT_EMAIL_DOMAIN}`);
 }
 
+/**
+ * Loại thư Auth bị từ chối ở hook gửi thư (R-HT-12, Soát E6): chỉ Admin sửa email người dùng (bằng API quản trị, không cần thư xác nhận).
+ * Nhân viên tự đổi email qua Auth sẽ lệch tên đăng nhập, mất khoá tạm theo tài khoản và dấu trong nhật ký đăng nhập.
+ */
+export function isEmailActionRejected(actionType: string): boolean {
+  return actionType === 'email_change' || actionType === 'email_change_current' || actionType === 'email_change_new';
+}
+
+/** Độ dài tối đa tên đăng nhập nhận vào (Soát E5): không ghi chuỗi dài vào nhật ký đăng nhập. */
+export const MAX_LOGIN_LENGTH = 254; // allow-number: độ dài tối đa một địa chỉ email theo RFC 5321
+
 export interface PasswordPolicy {
   minLength: number;
   requireLetterDigit: boolean;

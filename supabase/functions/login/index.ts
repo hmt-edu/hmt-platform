@@ -9,7 +9,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.117.3';
 import { verifyCaptcha } from '../_shared/captcha.ts';
 import { corsHeaders, fail, HTTP, json, secretKey } from '../_shared/http.ts';
-import { type AuthAttempt, clientIp, decideLogin, isWarmPing, LOGIN_MESSAGES, type LoginRecord, toAuthEmail } from '../_shared/login-rules.ts';
+import { type AuthAttempt, clientIp, decideLogin, isWarmPing, LOGIN_MESSAGES, type LoginRecord, MAX_LOGIN_LENGTH, toAuthEmail } from '../_shared/login-rules.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 
@@ -36,6 +36,9 @@ Deno.serve(async (req) => {
   const login = typeof body.login === 'string' ? body.login : '';
   const password = typeof body.password === 'string' ? body.password : '';
   const captchaToken = typeof body.captchaToken === 'string' ? body.captchaToken : undefined;
+  if (login.length > MAX_LOGIN_LENGTH) {
+    return fail(req, HTTP.BAD_REQUEST, 'HMT_YEU_CAU_SAI', 'Tên đăng nhập quá dài.');
+  }
   if (!login.trim() || !password) {
     return fail(req, HTTP.BAD_REQUEST, 'HMT_THIEU_THONG_TIN', 'Nhập tên đăng nhập và mật khẩu.');
   }

@@ -3,7 +3,9 @@ import {
   checkPassword,
   clientIp,
   decideLogin,
+  isEmailActionRejected,
   isInternalStudentEmail,
+  MAX_LOGIN_LENGTH,
   isWarmPing,
   LOGIN_MESSAGES,
   normalizeLogin,
@@ -102,5 +104,24 @@ describe('yêu cầu hâm nóng (A9)', () => {
   });
   it('địa chỉ hỏng thì không phải ping', () => {
     expect(isWarmPing('GET', 'khong-phai-dia-chi')).toBe(false);
+  });
+});
+
+describe('R-HT-12: không gửi thư đổi email (Soát E6)', () => {
+  it('từ chối mọi loại thư đổi email', () => {
+    expect(isEmailActionRejected('email_change')).toBe(true);
+    expect(isEmailActionRejected('email_change_current')).toBe(true);
+    expect(isEmailActionRejected('email_change_new')).toBe(true);
+  });
+  it('vẫn cho các loại thư khác (đặt lại mật khẩu, mời, xác minh)', () => {
+    for (const type of ['recovery', 'magiclink', 'signup', 'invite', 'reauthentication', '']) {
+      expect(isEmailActionRejected(type)).toBe(false);
+    }
+  });
+});
+
+describe('E5: trần độ dài tên đăng nhập', () => {
+  it('là độ dài tối đa một địa chỉ email', () => {
+    expect(MAX_LOGIN_LENGTH).toBeGreaterThan(100);
   });
 });

@@ -143,6 +143,9 @@ Deno.serve(async (req) => {
       }
       const problem = await passwordProblem(password);
       if (problem) return fail(req, HTTP.BAD_REQUEST, 'HMT_MAT_KHAU_YEU', problem);
+      // Soát E2: kiểm người dùng đích tồn tại TRƯỚC khi đổi mật khẩu ở Auth (đổi rồi mới thấy không có đích thì mật khẩu đã đổi mà không đánh dấu bắt đổi lại).
+      const { data: target, error: targetError } = await admin.auth.admin.getUserById(userId);
+      if (targetError || !target?.user) return fail(req, HTTP.NOT_FOUND, 'HMT_KHONG_TIM_THAY', 'Không tìm thấy người dùng.');
       const { error: authError } = await admin.auth.admin.updateUserById(userId, { password });
       if (authError) return fail(req, HTTP.BAD_REQUEST, 'HMT_LOI', authError.message);
       const { error } = await asCaller.rpc('admin_mark_password_reset', { p_user_id: userId });
