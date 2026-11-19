@@ -67,3 +67,19 @@ export function nextReceiptSort(sort: SortState): SortState {
   if (sort && receiptSortParam(sort) === undefined) return null;
   return sort;
 }
+
+/** Trường nhóm của giao diện → tên trường của receipt_group_counts (Group By ở máy chủ, K1_nhom). */
+export const RECEIPT_GROUP_FIELD_OF: Record<string, string> = {
+  status: 'status',
+  method: 'method',
+  branch: 'branch',
+};
+
+/** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có», không lọc thêm). */
+export function receiptGroupFilter(field: string, key: string): ReceiptFilters {
+  if (key === '') return {};
+  if (field === 'status') return { status: [key] };
+  if (field === 'method') return { payment_method: [key] };
+  if (field === 'branch') return { branch_id: key };
+  return {};
+}
