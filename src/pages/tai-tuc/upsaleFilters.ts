@@ -39,3 +39,23 @@ export function buildUpsaleFilters(state: ListState): UpsaleFilters {
   }
   return filters;
 }
+
+/** Trường nhóm của giao diện → tên trường của upsale_group_counts (Group By ở máy chủ, K1_nhom). */
+export const UPSALE_GROUP_FIELD_OF: Record<string, string> = {
+  stage: 'stage',
+  substage: 'substage',
+  campaign: 'campaign',
+  owner: 'owner',
+  branch: 'branch',
+};
+
+/** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có», không lọc thêm). */
+export function upsaleGroupFilter(field: string, key: string): UpsaleFilters {
+  if (key === '') return {};
+  if (field === 'stage') return { stage_code: key };
+  if (field === 'substage') return { substage_code: key };
+  if (field === 'campaign') return { campaign_month: key };
+  if (field === 'owner') return { owner_id: key };
+  if (field === 'branch') return { branch_id: key };
+  return {};
+}

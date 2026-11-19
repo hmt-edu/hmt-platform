@@ -32,7 +32,7 @@ import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog, DuplicateDialog, ReasonDialog } from '../../ui/Dialogs';
-import { StateView, Spinner } from '../../ui/Feedback';
+import { Alert, StateView, Spinner } from '../../ui/Feedback';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
 import { DateInput } from '../../ui/Inputs';
@@ -165,6 +165,8 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState('source');
   const [duplicates, setDuplicates] = useState<Duplicate[] | null>(null);
+  // TS-03 (canvas): cảnh báo trùng SĐT ngay dưới ô Số điện thoại khi rời ô, trước khi bấm Lưu. Hộp thoại lúc Lưu vẫn là lớp chặn thứ hai.
+  const [inlineDup, setInlineDup] = useState<{ phone: string; rows: Duplicate[] } | null>(null);
   const [confirmPhone, setConfirmPhone] = useState(false);
   const [assignOpen, setAssignOpen] = useState(false);
   const [mergeOpen, setMergeOpen] = useState(false);
@@ -396,6 +398,22 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const emptyRequired = (key: keyof LeadDraft, needed = true) =>
     editing && needed && draft[key].trim() === '' && !errors[key];
 
+  async function checkPhoneDuplicate() {
+    if (!creating) return;
+    const phone = draft.parent_phone.replace(/[\s.-]/g, '');
+    if (!/^0[0-9]{9}$/.test(phone) || inlineDup?.phone === phone) return;
+    try {
+      const rows = await rpc<Duplicate[]>(supabase, 'find_duplicate_contacts', {
+        p_phone: phone,
+        p_exclude_lead_id: null,
+      });
+      setInlineDup({ phone, rows });
+    } catch {
+      // Lỗi mạng ở bước dò sớm: bỏ qua, lúc bấm Lưu máy chủ vẫn chặn trùng.
+      setInlineDup(null);
+    }
+  }
+
   const text = (
     key:
       | 'parent_name'
@@ -411,6 +429,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
       hint?: string;
       placeholder?: string;
       show?: (value: string) => string;
+      onBlur?: () => void;
     },
   ) => (
     <DetailField
@@ -425,6 +444,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           aria-label={label}
           value={draft[key]}
           placeholder={extra?.placeholder}
+          onBlur={extra?.onBlur}
           onChange={(e) => set(key, e.target.value)}
           aria-invalid={errors[key] ? true : undefined}
           data-required-empty={extra?.required && emptyRequired(key) ? 'true' : undefined}
@@ -686,7 +706,42 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
               required: true,
               show: formatPhone,
               placeholder: '0912 000 121',
+              onBlur: () => void checkPhoneDuplicate(),
             })}
+            {creating &&
+              inlineDup !== null &&
+              inlineDup.rows.length > 0 &&
+              inlineDup.phone === draft.parent_phone.replace(/[\s.-]/g, '') && (
+                <Alert tone="warning" title="Số điện thoại này đã có trong hệ thống">
+                  <div className="flex flex-col gap-2">
+                    {duplicateGroups(inlineDup.rows).map((g) => (
+                      <div key={g.title}>
+                        <div className="font-medium">{g.title}</div>
+                        <ul className="list-inside list-disc">
+                          {g.lines.map((l, i) => (
+                            <li key={i}>{l}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                    {(() => {
+                      const first = inlineDup.rows.find((d) => d.visible);
+                      return first ? (
+                        <Link
+                          to={
+                            first.kind === 'LEAD'
+                              ? `/crm/lead/${first.id}`
+                              : `/crm/phu-huynh/${first.id}`
+                          }
+                          className="font-medium text-link hover:underline"
+                        >
+                          Mở bản ghi trùng
+                        </Link>
+                      ) : null;
+                    })()}
+                  </div>
+                </Alert>
+              )}
             <DetailField
               label="Tỉnh/Thành phố"
               mode={mode}

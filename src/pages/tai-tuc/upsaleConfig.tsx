@@ -140,7 +140,16 @@ export function buildUpsaleConfig(
           ]
         : []),
     ],
-    groupFields: [],
+    // Group By ở máy chủ (K1_nhom): giai đoạn, nhóm con, đợt tái tục, phụ trách, cơ sở (khi xem nhiều cơ sở).
+    groupFields: [
+      { key: 'stage', label: 'Giai đoạn', value: (r) => r.stage_code },
+      { key: 'substage', label: 'Sub-stage', value: (r) => r.substage_code ?? '' },
+      { key: 'campaign', label: 'Campaign', value: (r) => r.campaign_label ?? '' },
+      { key: 'owner', label: 'Phụ trách', value: (r) => r.owner_id ?? '' },
+      ...(access.seesAllBranches
+        ? [{ key: 'branch', label: 'Cơ sở', value: (r: UpsaleRow) => r.branch_code }]
+        : []),
+    ],
     dateFields: [],
     views: ['list', 'kanban'],
   };

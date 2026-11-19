@@ -303,6 +303,12 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
               {error}
             </Alert>
           )}
+          {t.stage_code === 'L6' && (
+            <Alert tone="info">
+              Phụ huynh đã đồng ý tái tục. Tạo báo giá hoặc tạo đơn từ phiếu này; gửi báo giá thì
+              phiếu sang L7 Dự thu.
+            </Alert>
+          )}
           {t.stage_code === 'L5' && (
             <Alert tone="info">
               Không tái tục:{' '}
@@ -372,7 +378,10 @@ const ORDER_STATUS: Record<string, string> = {
 
 /** Tab «Báo giá và đơn»: đơn sinh ra từ phiếu (báo giá từ phiếu làm ở PR sau). */
 function OrdersTab({ orders }: { orders: UpsaleOrderRow[] }) {
-  if (orders.length === 0) return <p className="text-fg-muted">Chưa có báo giá hay đơn.</p>;
+  if (orders.length === 0)
+    return (
+      <p className="text-fg-muted">Chưa có báo giá hay đơn tái tục. Tạo từ các nút phía trên.</p>
+    );
   return (
     <ul className="flex flex-col gap-2">
       {orders.map((o) => (
