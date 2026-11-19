@@ -191,6 +191,7 @@ grant execute on function pg_temp.f(text) to public;
 create function pg_temp.hook(p_user uuid) returns jsonb language sql stable security definer as $$
   select app.custom_access_token_hook(jsonb_build_object('user_id', p_user, 'claims', jsonb_build_object('sub', p_user, 'role', 'authenticated', 'aal', 'aal1'))) -> 'claims' $$;
 select pg_temp.sudo($$grant execute on function pg_temp.hook(uuid) to public$$);
+select pg_temp.sudo($$grant execute on function app.custom_access_token_hook(jsonb) to public$$);
 
 -- ================= Tham số TẮT (mặc định): đăng nhập mật khẩu là đủ =================
 select is((select value from app.setting_def where key = 'mfa_required_enabled'), 'false', 'D41: tham số mfa_required_enabled mặc định TẮT');

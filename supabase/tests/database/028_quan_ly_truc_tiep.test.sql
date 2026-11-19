@@ -1,6 +1,8 @@
 -- R-HT-06: Quản lý trực tiếp, đường duyệt của người lập, người duyệt ở bước quản lý (đơn hàng, phiếu thu).
 -- Mỗi luật có ca đúng và ca bị chặn; mỗi vai trò nhập trong và ngoài cơ sở.
 begin;
+-- D41 (migration 472): bài này kiểm luật «Admin, Kế toán phải qua hai bước»; luật chỉ áp khi tham số mfa_required_enabled bật (mặc định tắt), nên bật tham số ở đây.
+update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
