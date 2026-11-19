@@ -1,5 +1,5 @@
 // GV-11 Chi tiết lớp (cổng giáo viên, chỉ đọc), theo canvas 9189: một trang gồm thông tin lớp, Học sinh (chuyên cần, TB tiêu chí), Lịch học, Lịch sử buổi (nhãn Trễ hạn), BTVN gần đây, Yêu cầu bổ trợ.
-// Chưa có khối «Tiến độ khung chương trình» của canvas (hàm teacher_class_overview chưa trả tiến độ khung): thẻ riêng.
+// Khối «Tiến độ khung chương trình»: tạm = buổi đã chốt ÷ buổi dự kiến, nhãn «ước tính» (app.teacher_class_progress, E69).
 // Máy chủ quyết lớp nào xem được (app.teacher_class_overview, R-GV-08) và tính mọi con số; trang chỉ đặt chữ. Nút «Yêu cầu bổ trợ», «Tạo ticket» CHƯA làm (sau 17/11): ẩn.
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -33,6 +33,16 @@ export function TeacherClassPage() {
     queryKey: ['gv-class', classId],
     queryFn: () => rpc<ClassOverview>(supabase, 'teacher_class_overview', { p_class_id: classId }),
     refetchOnWindowFocus: true,
+  });
+  // E69 (canvas GV-11): «Tiến độ khung chương trình». Tạm tính bằng buổi đã chốt ÷ buổi dự kiến, ghi «ước tính» (Chat 22:52); lỗi thì ẩn khối, không chặn trang.
+  const progress = useQuery({
+    queryKey: ['gv-class-progress', classId],
+    queryFn: () =>
+      rpc<{ done_sessions: number; planned_sessions: number | null }>(
+        supabase,
+        'teacher_class_progress',
+        { p_class_id: classId },
+      ),
   });
   const back = (
     <Link className="text-link underline" to="/gv/lop">
@@ -209,6 +219,23 @@ export function TeacherClassPage() {
         )}
       </section>
 
+      {progress.data && (
+        <section aria-labelledby="gv11-tien-do" className="flex flex-col gap-2">
+          <h2 id="gv11-tien-do" className="text-h4">
+            Tiến độ khung chương trình
+          </h2>
+          <p className="text-body">
+            {progress.data.planned_sessions
+              ? `${progress.data.done_sessions}/${progress.data.planned_sessions} buổi`
+              : `${progress.data.done_sessions} buổi đã chốt`}{' '}
+            <Tag>ước tính</Tag>
+          </p>
+          <p className="text-caption text-fg-muted">
+            Ước tính theo số buổi đã chốt trên số buổi dự kiến; lớp chưa có khung chương trình theo
+            bài.
+          </p>
+        </section>
+      )}
       <section aria-labelledby="gv11-btvn" className="flex flex-col gap-2">
         <h2 id="gv11-btvn" className="text-h4">
           BTVN gần đây
