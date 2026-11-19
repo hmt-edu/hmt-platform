@@ -8,15 +8,29 @@ import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import type { SortState } from '../../ui/Data';
+import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import { useLeafRows } from '../lead/useLeadData';
+import { useToast } from '../../ui/toastContext';
 import { buildEnrollConfig } from './enrollConfig';
-import { EMPTY_ENROLL_STATE, buildEnrollFilters, enrollSortParam } from './enrollFilters';
+import {
+  ENROLL_GROUP_FIELD_OF,
+  EMPTY_ENROLL_STATE,
+  buildEnrollFilters,
+  enrollGroupFilter,
+  enrollSortParam,
+} from './enrollFilters';
 import type { EnrollmentRow } from './enrollTypes';
-import { useEnrollmentPage, useRefreshEnrollments } from './useEnrollmentData';
+import {
+  useEnrollmentGroupCounts,
+  useEnrollmentPage,
+  useRefreshEnrollments,
+} from './useEnrollmentData';
 
 export function EnrollmentListPage() {
   const access = useAccess();
   const navigate = useNavigate();
+  const toast = useToast();
   const refreshData = useRefreshEnrollments();
   const catalogs = useLeadCatalogs();
   const config = useMemo(() => buildEnrollConfig(catalogs, access), [catalogs, access]);
@@ -40,9 +54,45 @@ export function EnrollmentListPage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useEnrollmentPage(filters, sortValue, page * (pageSize ?? 0), pageSize);
+  // Group By ở máy chủ (tối đa hai cấp): số đếm từ enrollment_group_counts, dòng tải khi mở từng nhóm lá (enrollment_list).
+  const groupFields = state.group.flatMap((k) =>
+    ENROLL_GROUP_FIELD_OF[k] ? [ENROLL_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const [tick, setTick] = useState(0);
+  const list = useEnrollmentPage(
+    filters,
+    sortValue,
+    page * (pageSize ?? 0),
+    grouped ? null : pageSize,
+  );
+  const counts = useEnrollmentGroupCounts(filters, groupFields, true);
+  const leaves = useLeafRows<EnrollmentRow>(
+    filters,
+    sortValue,
+    pageSize,
+    `${JSON.stringify(filters)}|${sortValue}|${tick}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'enrollment_list',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<EnrollmentRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            enrollGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
+  const activeQuery = grouped ? counts : list;
   const rows: EnrollmentRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
 
   return (
     <ListScreen
@@ -54,20 +104,32 @@ export function EnrollmentListPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.student_name}`}
-      loading={list.isPending || list.isPlaceholderData}
-      error={list.isError ? errorOf(list.error).message : null}
-      onRetry={() => void list.refetch()}
-      onRefresh={() => void refreshData()}
-      onRowClick={(r) => void navigate(`/crm/ghi-danh/${r.id}`)}
-      pager={{
-        from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
-        to: page * (pageSize ?? 0) + rows.length,
-        total,
-        ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
-        ...(page * (pageSize ?? 0) + rows.length < total
-          ? { onNext: () => setPage(page + 1) }
-          : {}),
+      loading={activeQuery.isPending || activeQuery.isPlaceholderData}
+      error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+      onRetry={() => void activeQuery.refetch()}
+      onRefresh={() => {
+        setTick((t) => t + 1);
+        void refreshData();
       }}
+      groupTree={grouping?.tree}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
+      }}
+      onRowClick={(r) => void navigate(`/crm/ghi-danh/${r.id}`)}
+      pager={
+        grouped
+          ? undefined
+          : {
+              from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
+              to: page * (pageSize ?? 0) + rows.length,
+              total,
+              ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
+              ...(page * (pageSize ?? 0) + rows.length < total
+                ? { onNext: () => setPage(page + 1) }
+                : {}),
+            }
+      }
       sort={sort}
       onSortChange={setSort}
       emptyMessage={{

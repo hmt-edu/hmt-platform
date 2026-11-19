@@ -91,6 +91,16 @@ select is((select string_agg(r ->> 'code', ',' order by ord) from jsonb_array_el
 select is((select string_agg(r ->> 'code', ',' order by ord) from jsonb_array_elements(app.enrollment_list('{"q": "GD113"}', 'code_asc') -> 'rows') with ordinality t(r, ord)),
   'GD113A,GD113B,GD113C,GD113D', 'Sắp xếp theo mã tăng dần');
 select is((app.enrollment_list('{"q": "GD113", "status": ["CHO_XEP_LOP"]}') ->> 'total')::int, 1, 'Lọc theo tình trạng Chờ xếp lớp');
+-- Group By ở máy chủ (migration 311): enrollment_group_counts theo một hoặc hai trường, bộ lọc và phạm vi quyền như enrollment_list; lọc hình thức học đọc được.
+select is((app.enrollment_group_counts('{"q": "GD113"}', array['status']) ->> 'total')::int, 4, 'Group By: tổng bằng 4 ghi danh CS1 trong phạm vi CSKH CS1');
+select is((select sum((x ->> 'count')::int)::int from jsonb_array_elements(app.enrollment_group_counts('{"q": "GD113"}', array['status']) -> 'groups') x), 4, 'Group By tình trạng: các nhóm cộng lại bằng tổng');
+select is((select (x ->> 'count')::int from jsonb_array_elements(app.enrollment_group_counts('{"q": "GD113", "status": ["CHO_XEP_LOP"]}', array['status']) -> 'groups') x), 1, 'Group By theo đúng bộ lọc: chỉ nhóm Chờ xếp lớp, 1 ghi danh');
+select is(jsonb_typeof(app.enrollment_group_counts('{"q": "GD113"}', array['status', 'class']) -> 'groups' -> 0 -> 'k2'), 'string', 'Group By hai cấp: có khoá cấp hai (lớp, chỗ rỗng là chuỗi rỗng)');
+select is(pg_temp.err($$select app.enrollment_group_counts('{}', array['status', 'status'])$$), 'HMT_NHOM_SAI', 'Chặn: hai cấp nhóm phải khác nhau');
+select is(pg_temp.err($$select app.enrollment_group_counts('{}', array['khong_co'])$$), 'HMT_NHOM_SAI', 'Chặn: trường nhóm không cho phép');
+select is(pg_temp.err($$select app.enrollment_group_counts('{}', array['status', 'class', 'delivery'])$$), 'HMT_NHOM_SAI', 'Chặn: nhóm quá hai cấp');
+select is((app.enrollment_list('{"q": "GD113", "delivery_mode_code": "KHONG_CO_HINH_THUC"}') ->> 'total')::int, 0, 'Lọc hình thức học (delivery_mode_code) đã được đọc');
+select is(has_function_privilege('anon', 'app.enrollment_group_counts(jsonb, text[])', 'execute'), false, 'Người chưa đăng nhập không gọi được enrollment_group_counts');
 select is((app.enrollment_list('{"q": "em giả 113 b"}') -> 'rows' -> 0 ->> 'code'), 'GD113B', 'Tìm theo tên học sinh (không phân biệt hoa thường, dấu)');
 select is(jsonb_array_length(app.enrollment_list('{"q": "GD113"}', 'code_asc', 1, 1) -> 'rows'), 1, 'Phân trang: một dòng');
 select is((app.enrollment_list('{"q": "GD113"}', 'code_asc', 1, 1) -> 'rows' -> 0 ->> 'code'), 'GD113B', 'Phân trang: bỏ qua một dòng ra dòng thứ hai');

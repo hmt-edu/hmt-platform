@@ -95,7 +95,11 @@ export function buildEnrollConfig(
           ]
         : []),
     ],
-    groupFields: [],
+    groupFields: [
+      { key: 'status', label: 'Tình trạng', value: (r) => r.status_code },
+      { key: 'class', label: 'Lớp', value: (r) => r.class_id ?? '' },
+      { key: 'delivery', label: 'Hình thức học', value: (r) => r.delivery_mode_code ?? '' },
+    ],
     dateFields: [],
     views: ['list'],
   };

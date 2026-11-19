@@ -2,6 +2,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
+import type { GroupCounts } from '../lead/leadTypes';
 import { rpc, useDb } from '../../lib/db';
 import type {
   AssignOptions,
@@ -185,5 +186,24 @@ export function useSameClassPeers(id: string | undefined) {
     enabled: id !== undefined,
     retry: false,
     queryFn: () => rpc<SameClassPeers>(supabase, 'enrollment_same_class_peers', { p_id: id }),
+  });
+}
+
+/** Số ghi danh theo trường nhóm (Group By ở máy chủ, tối đa hai cấp): app.enrollment_group_counts, bộ lọc giống enrollment_list. */
+export function useEnrollmentGroupCounts(
+  filters: EnrollFilters,
+  fields: string[],
+  enabled: boolean,
+) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['enrollment-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'enrollment_group_counts', {
+        p_filters: filters,
+        p_fields: fields,
+      }),
   });
 }

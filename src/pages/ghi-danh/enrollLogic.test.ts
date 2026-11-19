@@ -11,7 +11,7 @@ import {
   parseHours,
 } from './enrollLogic';
 import type { MatchingClass } from './enrollTypes';
-
+import { enrollGroupFilter } from './enrollFilters';
 const cls: MatchingClass = {
   id: 'c',
   code: 'CS1-2627-DAI-K08-CB-A-001',
@@ -75,5 +75,18 @@ describe('parseHours (GD-05: số giờ điều chỉnh)', () => {
     expect(parseHours('0')).toBeNull();
     expect(parseHours('')).toBeNull();
     expect(parseHours('hai')).toBeNull();
+  });
+});
+
+describe('enrollGroupFilter (bộ lọc của một nhóm Group By)', () => {
+  it('ánh xạ trường nhóm sang bộ lọc của enrollment_list', () => {
+    expect(enrollGroupFilter('status', 'DANG_HOC')).toEqual({ status: ['DANG_HOC'] });
+    expect(enrollGroupFilter('class', 'c1')).toEqual({ class_id: 'c1' });
+    expect(enrollGroupFilter('delivery', 'OFF')).toEqual({ delivery_mode_code: 'OFF' });
+    expect(enrollGroupFilter('branch', 'b1')).toEqual({ branch_id: 'b1' });
+  });
+  it('nhóm «Chưa có» (khoá rỗng, chưa xếp lớp) hoặc trường lạ không lọc thêm', () => {
+    expect(enrollGroupFilter('class', '')).toEqual({});
+    expect(enrollGroupFilter('khac', 'x')).toEqual({});
   });
 });
