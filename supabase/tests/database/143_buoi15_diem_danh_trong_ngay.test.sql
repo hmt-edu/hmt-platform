@@ -109,6 +109,7 @@ select is(app.session_day_attendance(jsonb_build_object('date', (select session_
 select is(app.close_session(pg_temp.s('f', 1)), 3, 'Chốt danh sách ba em');
 select is(app.session_day_attendance(jsonb_build_object('date', (select session_date from app.class_session where id = pg_temp.s('f', 1)))) -> 'rows' -> 0 ->> 'state', 'CHUA_GHI', 'Chưa em nào có ô giáo viên: Chưa ghi');
 select is(app.session_day_attendance(jsonb_build_object('date', (select session_date from app.class_session where id = pg_temp.s('f', 1)))) -> 'rows' -> 0 ->> 'total', '3', 'Ba em trong danh sách');
+select ok((app.session_day_attendance(jsonb_build_object('date', (select session_date from app.class_session where id = pg_temp.s('f', 1)))) -> 'rows' -> 0) ? 'cskh_name', 'Dòng có khoá cskh_name (cột CSKH, canvas BUOI15)');
 
 -- Vận hành ghi báo nghỉ cho em 1 (lý do liên hệ XIN_NGHI_HOC) và Có mặt cho em 2.
 select is(app.set_attendance_ops(pg_temp.s('f', 1), jsonb_build_array(
