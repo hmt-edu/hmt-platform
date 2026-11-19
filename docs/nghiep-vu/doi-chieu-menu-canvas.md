@@ -24,5 +24,7 @@ Nguồn canvas: các khung sidebar (`hmt-sb-l1`, `hmt-sb-l2`) trong `design/hmt-
 | QT-13 | Tài khoản học sinh, phụ huynh | Tài khoản học sinh | màn QT-13 chưa dựng (giai đoạn 4, R-CRM-32) |
 | Cấu hình | hai mục gộp «Bán hàng: gói, giá, chiết khấu» và «Đào tạo: khung, rubric, ngày nghỉ» | các mục lẻ CH-01, 03, 04, 09, 05, 07, QT-14 | cấu trúc: canvas gộp theo nhóm |
 | Báo cáo | «Báo cáo Looker Studio ↗» (liên kết ngoài) | không có | cần địa chỉ Looker từ anh Trường |
-| TT-01, TT-04 | nằm nhóm Đào tạo (Tái tục, Đối chiếu tái tục) | nhóm Chăm sóc khách hàng | cần Chat chốt nhóm |
+| TT-01, TT-04 | nằm nhóm Đào tạo (Tái tục, Đối chiếu tái tục) | nhóm Chăm sóc khách hàng; nhãn TT-01 đã đổi «Phiếu tái tục» thành «Tái tục» theo canvas (F30) | VỊ TRÍ nhóm chờ anh quyết, không tự đổi |
 | BUOI-11 | không có | Điểm danh vận hành | giữ nếu luật cần (thẻ F-MENU hỏi Chat) |
+
+**F30 (19/11/2026, sau khi PR menu #233 và #240 gộp):** dò lại toàn bộ nhãn menu với canvas bằng chương trình: ngoài các dòng «Chưa sửa» ở trên, không còn nhãn mục nào lệch. Nhãn còn khác chỉ là nhóm lớn («&» thay «và», «KH»), mục gộp theo cấu trúc canvas, và các mục chỉ có ở code (Chiến dịch marketing, Nhận xét chờ gửi, Nhóm ticket, SLA ticket, Người duyệt ticket, Khung chương trình, Rubric nhận xét, Giáo viên, trợ giảng, Điều khoản thanh toán): canvas sidebar không liệt kê.
