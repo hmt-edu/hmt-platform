@@ -25,6 +25,7 @@ import {
   newSlot,
   longSlotWarning,
   slotSummary,
+  teacherOptionLabel,
   slotsPayload,
   validateForm,
   type ClassFormState,
@@ -819,7 +820,13 @@ function PersonCell({
 }: {
   label: string;
   value: string;
-  people: { id: string; name: string }[];
+  people: {
+    id: string;
+    name: string;
+    has_profile?: boolean | undefined;
+    subject_names?: string[] | undefined;
+    grade_names?: string[] | undefined;
+  }[];
   onChange: (v: string) => void;
 }) {
   return (
@@ -832,7 +839,7 @@ function PersonCell({
       <option value="">— Chọn —</option>
       {people.map((p) => (
         <option key={p.id} value={p.id}>
-          {p.name}
+          {teacherOptionLabel(p)}
         </option>
       ))}
     </select>

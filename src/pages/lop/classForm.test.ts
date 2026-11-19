@@ -9,6 +9,7 @@ import {
   newSlot,
   longSlotWarning,
   slotSummary,
+  teacherOptionLabel,
   slotsPayload,
   validateForm,
   type ClassFormState,
@@ -218,5 +219,25 @@ describe('longSlotWarning (nhắc khung giờ quá dài, không chặn)', () => 
   it('giờ trống hoặc kết thúc không sau bắt đầu thì không nhắc (đã có lỗi riêng)', () => {
     expect(longSlotWarning('', '23:30')).toBeNull();
     expect(longSlotWarning('20:00', '19:00')).toBeNull();
+  });
+});
+
+describe('teacherOptionLabel (gợi ý từ hồ sơ dạy)', () => {
+  it('chưa biết hồ sơ thì chỉ tên; chưa có hồ sơ thì ghi rõ nhưng vẫn chọn được', () => {
+    expect(teacherOptionLabel({ name: 'Cô Lan' })).toBe('Cô Lan');
+    expect(teacherOptionLabel({ name: 'Cô Lan', has_profile: false })).toBe(
+      'Cô Lan (chưa có hồ sơ dạy)',
+    );
+  });
+  it('có hồ sơ thì kèm môn, khối', () => {
+    expect(
+      teacherOptionLabel({
+        name: 'Cô Lan',
+        has_profile: true,
+        subject_names: ['Toán', 'Tiếng Anh'],
+        grade_names: ['Lớp 6'],
+      }),
+    ).toBe('Cô Lan · Toán, Tiếng Anh · Lớp 6');
+    expect(teacherOptionLabel({ name: 'Cô Lan', has_profile: true })).toBe('Cô Lan');
   });
 });

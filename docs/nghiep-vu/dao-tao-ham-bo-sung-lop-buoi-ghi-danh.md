@@ -57,6 +57,8 @@ Bảng `app.teaching_profile`: mỗi người dùng có vai Giáo viên (TEACHER
 | `app.save_teaching_profile(p_data)` | Thêm (có `user_id`) hoặc sửa (có `id`) hồ sơ: `subject_codes`, `grade_codes` (mã ĐANG DÙNG của danh mục SUBJECT, GRADE), `branch_ids`, `note`. Loại GV nếu có vai Giáo viên, không thì TG. Lỗi: `HMT_KHONG_PHAI_GIAO_VIEN`, `HMT_HO_SO_DA_CO`, `HMT_MON_SAI`, `HMT_KHOI_SAI`. | Quản trị · Sửa (Admin). |
 | `app.set_teaching_profile_active(p_id, p_active)` | Ngừng hoặc Dùng lại hồ sơ. | Quản trị · Sửa (Admin). |
 
+Ô chọn giáo viên, trợ giảng khi tạo, sửa lớp (migration `20261121000314_qt16_chon_giao_vien_tu_ho_so`): `app.list_class_form_options` thêm cho mỗi giáo viên, trợ giảng `has_profile`, `subject_names`, `grade_names` từ hồ sơ dạy đang dùng; giao diện ghi «Tên · Môn · Khối» hoặc «Tên (chưa có hồ sơ dạy)». Chỉ gợi ý, KHÔNG chặn (người chưa có hồ sơ vẫn chọn được).
+
 ## Chưa liệt kê (cố ý)
 
 Hàm nhập dữ liệu cũ (`import_one_*`), trigger (`tg_*`), hàm đọc phạm vi (`enrollment_read_scope`, `session_read_scope`, `session_visible`, `is_assigned_to_*`) và hàm khoá dòng (`enrollment_hold_for_update`, `enrollment_stop_for_update`, `refund_request_for_update`, `finish_enrollment_hold`) thuộc tài liệu nạp dữ liệu và quyền; không mô tả lại ở đây.
