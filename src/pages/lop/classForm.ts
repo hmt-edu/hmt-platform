@@ -244,3 +244,24 @@ export function slotSummary(
   ).join(', ');
   return { schedule: schedule || 'Chưa có khung giờ', rooms: rooms || '—', staff: staff || '—' };
 }
+
+/** Ngưỡng giờ một khung giờ bị coi là dài bất thường (chỉ nhắc ở giao diện, không chặn; báo cáo T2: 12:30–23:30 lưu được không cảnh báo). */
+const LONG_SLOT_HOURS = 4; // allow-number: ngưỡng nhắc ở giao diện, không phải luật nghiệp vụ
+const MINUTES_PER_HOUR = 60; // allow-number: số phút trong một giờ
+
+/** Khung giờ dài hơn ngưỡng thì trả câu nhắc (không chặn lưu); giờ trống hoặc không hợp lệ thì null (đã có lỗi riêng). */
+export function longSlotWarning(start: string, end: string): string | null {
+  const toMin = (t: string) => {
+    const [h, m] = t.split(':').map(Number);
+    return Number.isFinite(h) && Number.isFinite(m)
+      ? (h as number) * MINUTES_PER_HOUR + (m as number)
+      : null;
+  };
+  const a = toMin(start);
+  const b = toMin(end);
+  if (a === null || b === null || b <= a) return null;
+  const hours = (b - a) / MINUTES_PER_HOUR;
+  return hours > LONG_SLOT_HOURS
+    ? `Khung giờ dài ${Number.isInteger(hours) ? hours : hours.toFixed(1)} giờ, kiểm tra lại giờ bắt đầu và kết thúc.`
+    : null;
+}
