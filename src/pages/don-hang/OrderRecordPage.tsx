@@ -77,6 +77,7 @@ import {
   totalPercentText,
 } from './orderApprove';
 import { CreateReceiptDialog } from '../phieu-thu/CreateReceiptDialog';
+import { suggestedReceiptAmount } from '../phieu-thu/suggestedAmount';
 import { ChooseClassDialog, type ChooseClassTarget } from '../ghi-danh/ChooseClassDialog';
 import { setOrderLineClass, useOrderLineClasses } from '../ghi-danh/useEnrollmentData';
 import { mergeLineClasses, type PendingClass } from './pendingClasses';
@@ -244,6 +245,8 @@ function OrderView({ record }: { record: OrderRecord }) {
 
   function startEdit() {
     setEditError(null);
+    // Dải đỏ «Chưa trình được» là lỗi của lần trình trước; sửa đơn là để khắc phục nó nên bỏ dải khi bắt đầu sửa (T2-04).
+    setSubmitError(null);
     setDraft(draftOf(record, initialTermId, fixedPolicyIds));
     setEditing(true);
     setTab('lines');
@@ -337,6 +340,8 @@ function OrderView({ record }: { record: OrderRecord }) {
       setPendingClasses({});
       void lineClassQuery.refetch();
       await refresh();
+      // Đã lưu thay đổi (ví dụ chọn điều khoản thanh toán): lỗi trình cũ không còn đúng, bỏ dải đỏ.
+      setSubmitError(null);
       setEditing(false);
       setDraft(null);
       toast({ title: 'Đã lưu đơn.' });
@@ -1053,6 +1058,11 @@ function OrderView({ record }: { record: OrderRecord }) {
         orderId={record.id}
         orderCode={record.code}
         receivable={paymentQuery.data?.receivable ?? null}
+        suggested={suggestedReceiptAmount(
+          record.installments,
+          paymentQuery.data?.paid ?? 0,
+          paymentQuery.data?.receivable ?? null,
+        )}
       />
       <ReasonDialog
         open={cancelOpen}
