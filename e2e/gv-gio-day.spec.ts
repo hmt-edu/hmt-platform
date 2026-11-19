@@ -44,7 +44,8 @@ test('GV-16: giờ dạy tháng này có buổi Done (1,5 giờ) kèm Trễ hạ
   await expect(page.getByText('Trễ hạn 2,5 giờ').first()).toBeVisible();
   await expect(page.getByText('Buổi chính').first()).toBeVisible();
   await expect(page.getByText(/Buổi huỷ không tính/)).toBeVisible();
-  if (phone) await page.getByRole('dialog').getByRole('button', { name: 'Đóng' }).click();
+  // Hộp có nút «Đóng» ở chân và nút đóng góc (cùng tên): bấm nút chân hộp (cuối cùng).
+  if (phone) await page.getByRole('dialog').getByRole('button', { name: 'Đóng' }).last().click();
   await expectAccessible(page);
   // Đổi tháng: nhãn tháng đổi, Tháng này quay lại đúng tháng cũ.
   const label = page.getByText(/^Tháng \d{2}\/\d{4}$/);
