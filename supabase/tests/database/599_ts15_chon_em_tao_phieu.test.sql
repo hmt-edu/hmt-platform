@@ -1,5 +1,5 @@
 begin;
--- Migration 597: tạo phiếu kiểm tra chọn em trong danh sách em của cơ hội (app.create_student_test, p_data.prospect_student_id; TS-15).
+-- Migration 599: tạo phiếu kiểm tra chọn em trong danh sách em của cơ hội (app.create_student_test, p_data.prospect_student_id; TS-15).
 -- Luật: R-CRM-23 (phiếu chọn em trong danh sách của cơ hội), R-CRM-27 (hồ sơ học sinh tìm hoặc tạo từ em), R-CRM-05 (L5 trở đi). Dữ liệu giả.
 create extension if not exists pgtap with schema extensions;
 select no_plan();
