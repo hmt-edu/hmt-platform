@@ -34,6 +34,18 @@ export function removeProspectStudent(supabase: SupabaseClient, lineId: string) 
   return rpc<ProspectStudent[]>(supabase, 'remove_prospect_student', { p_id: lineId });
 }
 
+/** «Thêm em vào cơ hội cũ» (TS-06): chép em của chính lead sang cơ hội đã có. */
+export function addLeadStudentsToOpportunity(
+  supabase: SupabaseClient,
+  opportunityId: string,
+  studentIds: string[],
+) {
+  return rpc<ProspectStudent[]>(supabase, 'add_lead_students_to_opportunity', {
+    p_opportunity_id: opportunityId,
+    p_student_ids: studentIds,
+  });
+}
+
 export type ParentChild = {
   id: string;
   code: string;
