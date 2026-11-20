@@ -30,6 +30,17 @@ export function buildPackageCode(d: PackageDraft): string {
   return `${d.type}-${d.subject}-${d.gradeFrom}${to}`;
 }
 
+/** Chữ hộp thoại Gói bán theo canvas dc47 (CH01_sua_ten, CH01_ngung); giữ một chỗ để bài kiểm khoá chữ. */
+export const packageDialogText = {
+  editTitle: (code: string) => `Sửa gói ${code}`,
+  codeHelp: 'Mã không đổi được.',
+  legacyHelp: 'Mã cũ trên Sheet, dùng để tìm kiếm. Sửa được; mã gói vẫn khoá.',
+  nameHelp: 'Đổi tên không đổi mã.',
+  stopTitle: (code: string) => `Ngừng bán gói ${code}?`,
+  stopBody: (code: string) =>
+    `Gói ${code} sẽ không hiện ở ô chọn khi tạo báo giá, đơn mới. Đơn đã tạo vẫn giữ gói này. Muốn bán lại, bấm Dùng lại.`,
+};
+
 /** Khối đến nhỏ hơn khối từ (so theo thứ tự trong danh mục): trả câu báo lỗi, ngược lại null. */
 export function gradeRangeError(order: string[], from: string, to: string): string | null {
   if (from === '' || to === '' || to === from) return null;

@@ -71,14 +71,14 @@ test('Sửa gói: chỉ tên và mã cũ, mã khoá; Ngừng bán rồi Dùng l�
   await page.getByLabel('Tìm gói').fill(CODE);
   const row = page.getByRole('row', { name: new RegExp(CODE) });
   await row.getByRole('button', { name: 'Sửa' }).click();
-  const edit = page.getByRole('dialog', { name: 'Sửa gói bán' });
+  const edit = page.getByRole('dialog', { name: `Sửa gói ${CODE}` });
   await expect(edit.getByLabel('Mã gói')).toHaveAttribute('readonly', '');
   await edit.getByLabel('Tên gói').fill('Lớp chung Anh 5 đến 6 (đổi tên)');
   await edit.getByRole('button', { name: 'Lưu' }).click();
   await expect(edit).toHaveCount(0);
   await expect(row).toContainText('đổi tên');
   await row.getByRole('button', { name: 'Ngừng' }).click();
-  const stop = page.getByRole('alertdialog', { name: 'Ngừng bán gói' });
+  const stop = page.getByRole('alertdialog', { name: `Ngừng bán gói ${CODE}?` });
   await stop.getByRole('button', { name: 'Ngừng bán' }).click();
   await expect(row).toContainText('Ngừng');
   await row.getByRole('button', { name: 'Dùng lại' }).click();

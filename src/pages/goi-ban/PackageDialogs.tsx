@@ -6,7 +6,7 @@ import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
 import { Field, TextField } from '../../ui/Field';
 import { Select } from '../../ui/Overlays';
 import { createPackage, editPackage, setPackageActive, type PackageRow } from './usePackageData';
-import { buildPackageCode, gradeRangeError, isHourType } from './packageLogic';
+import { buildPackageCode, gradeRangeError, isHourType, packageDialogText } from './packageLogic';
 
 type Option = { value: string; label: string };
 
@@ -200,8 +200,7 @@ function EditForm({ row, onOpenChange, onDone }: EditProps & { row: PackageRow }
     <FormDialog
       open
       onOpenChange={onOpenChange}
-      title="Sửa gói bán"
-      subtitle={row.code}
+      title={packageDialogText.editTitle(row.code)}
       confirmLabel="Lưu"
       canSubmit={name.trim() !== '' && changed}
       busy={busy}
@@ -214,17 +213,19 @@ function EditForm({ row, onOpenChange, onDone }: EditProps & { row: PackageRow }
       }
     >
       <div className="flex flex-col gap-3">
-        <TextField label="Mã gói" readOnly value={row.code} help="Mã gói luôn khoá." />
+        <TextField label="Mã gói" readOnly value={row.code} help={packageDialogText.codeHelp} />
+        <TextField
+          label="Mã cũ (Sheet)"
+          value={legacy}
+          onChange={(e) => setLegacy(e.target.value)}
+          help={packageDialogText.legacyHelp}
+        />
         <TextField
           label="Tên gói"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-        />
-        <TextField
-          label="Mã cũ (Sheet)"
-          value={legacy}
-          onChange={(e) => setLegacy(e.target.value)}
+          help={packageDialogText.nameHelp}
         />
       </div>
     </FormDialog>
@@ -240,14 +241,18 @@ export function ActivePackageDialog({ row, onOpenChange, onDone }: EditProps) {
     <ConfirmDialog
       open={row !== null}
       onOpenChange={onOpenChange}
-      title={stopping ? 'Ngừng bán gói' : 'Dùng lại gói'}
-      summary={[
-        { label: 'Mã gói', value: row?.code ?? '' },
-        { label: 'Tên gói', value: row?.name ?? '' },
-      ]}
+      title={stopping ? packageDialogText.stopTitle(row?.code ?? '') : 'Dùng lại gói'}
+      summary={
+        stopping
+          ? undefined
+          : [
+              { label: 'Mã gói', value: row?.code ?? '' },
+              { label: 'Tên gói', value: row?.name ?? '' },
+            ]
+      }
       description={
         stopping
-          ? 'Gói không hiện ở ô chọn khi lập báo giá, đơn mới. Đơn đã tạo giữ nguyên. Có thể Dùng lại sau.'
+          ? packageDialogText.stopBody(row?.code ?? '')
           : 'Gói hiện lại ở ô chọn khi lập báo giá, đơn mới.'
       }
       confirmLabel={stopping ? 'Ngừng bán' : 'Dùng lại'}
