@@ -85,3 +85,17 @@ Cả năm mục đều đụng bảng hoặc hàm tiền nên rủi ro **CAO**, 
 
 ### Đề xuất thứ tự
 1. Mục 1 (giá trị cao nhất cho Quản lý duyệt, không đổi bảng); 2. Mục 3 và 4 (nhỏ, cùng hàm danh sách); 3. Mục 2 và 5 sau khi anh trả lời hai câu hỏi.
+
+## Đề xuất DB còn lại của Ghi danh GD-02, GD-03 (Code A, 20/11/2026, theo thư Chat 20:22; CHƯA code, chờ anh Trường duyệt rồi mới cấp số migration)
+
+Năm chỗ canvas 9933 ghi chữ có số liệu mà hàm đọc hiện chưa trả (đã làm phần chữ không cần số liệu ở #412, #420). Cả năm đều **chỉ đọc** (thêm khoá vào kết quả hàm đọc có sẵn, không đổi bảng, quyền, bộ lọc), nên rủi ro **THẤP về dữ liệu** nhưng vẫn là migration: một migration, một PR, pgTAP đúng và bị chặn. Không có số cứng: hạn mức đọc từ tham số.
+
+| # | Chỗ lệch | Khung | Thêm vào hàm nào | Nguồn dữ liệu | Hiện tại |
+|---|---|---|---|---|---|
+| 1 | «Quỹ giờ được âm tối đa N buổi (M giờ), hiện −X giờ» | GD02_hoc_truoc | `enrollment_record` trả `negative_limit_hours` (và số buổi) | tham số `max_sessions_ahead` «Cho học trước tối đa» (R-GD-12) theo cơ sở, đổi ra giờ bằng giờ của buổi | câu chỉ ghi «trong hạn mức», không ghi số |
+| 2 | «Đang bảo lưu từ ngày … đến ngày …» | GD02_bao_luu | `enrollment_record` trả `hold_start`, `hold_end` | `enrollment_hold` (start_date, end_date) lần bảo lưu đang chạy (migration 215) | câu không ghi ngày |
+| 3 | «Ghi danh đã hoàn phí theo phiếu chi PC-…» | GD02_hoan_phi | `enrollment_record` trả `refund_voucher_code` | phiếu chi hoàn phí gắn ghi danh (`payment_voucher`) | câu không ghi mã phiếu |
+| 4 | Nhắc mềm «Em mới có ghi danh Hình học, chưa có Đại số. Chỉ nhắc, không chặn xếp lớp» | GD03_nhac_mem | `enrollment_assign_options` trả `sibling_hint` (môn đã có, môn còn thiếu trong nhóm Đại, Hình của em, Toán 7+) | môn các ghi danh của cùng học sinh, khối của gói | chưa có nhắc |
+| 5 | «Trùng buổi 03/11/2026, 18:00–19:30 với lớp … mà em đang học» | GD03_trung_gio | `enrollment_matching_classes` trả `clash_first` {ngày, giờ, mã lớp} (buổi trùng đầu tiên) | cùng phép so buổi đang dùng cho `clash_sessions` | chỉ hiện «Trùng N buổi» |
+
+Câu hỏi cho anh: (a) Làm cả năm hay chỉ 1, 2, 3 (vì hiện ghi danh ít khi rơi vào ba trạng thái này)? (b) Mục 4: nhắc mềm áp cho mọi nhóm Đại, Hình hay chỉ Toán 7+ như khung ghi? Khuyến nghị: làm 1 migration gộp cả năm (đều chỉ đọc), một PR, Tester ĐẠT; mục 4 theo khung (Toán 7+).
