@@ -288,7 +288,14 @@ test('Tạo người dùng: gợi ý tên đăng nhập (tên + chữ cái đầ
   await expect(drawer.getByText('Tên đăng nhập này đã có người dùng.')).toBeVisible();
   await drawer.getByLabel('Tên đăng nhập').fill('thugv');
   await expect(drawer.getByText('Tên đăng nhập này đã có người dùng.')).toHaveCount(0);
-  await drawer.getByRole('checkbox', { name: 'Giáo viên', exact: true }).check();
+  // So canvas QT03_tao: vai trò là chip, thêm bằng nút «Thêm vai trò», bỏ bằng dấu x.
+  await drawer.getByRole('button', { name: 'Thêm vai trò' }).click();
+  await page.getByRole('menuitem', { name: 'Giáo viên', exact: true }).click();
+  await expect(drawer.getByRole('button', { name: 'Bỏ vai trò Giáo viên' })).toBeVisible();
+  await drawer.getByRole('button', { name: 'Bỏ vai trò Giáo viên' }).click();
+  await expect(drawer.getByRole('button', { name: 'Bỏ vai trò Giáo viên' })).toHaveCount(0);
+  await drawer.getByRole('button', { name: 'Thêm vai trò' }).click();
+  await page.getByRole('menuitem', { name: 'Giáo viên', exact: true }).click();
   await expectAccessible(page);
   await drawer.getByRole('button', { name: 'Tạo tài khoản' }).click();
   const dialog = page.getByRole('dialog', { name: 'Mật khẩu tạm' });
