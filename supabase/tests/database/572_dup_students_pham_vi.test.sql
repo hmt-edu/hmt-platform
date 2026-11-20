@@ -1,4 +1,4 @@
--- Rà security definer: app.duplicate_students_of_parent chỉ nêu học sinh trong phạm vi Xem (migration 571, cùng loại E67).
+-- Rà security definer: app.duplicate_students_of_parent chỉ nêu học sinh trong phạm vi Xem (migration 572, cùng loại E67).
 begin;
 update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;

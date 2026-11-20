@@ -130,7 +130,7 @@ Kiểm thử: `supabase/tests/database/023_gop_trung.test.sql` (106 bài), `022`
 | `app.merge_opportunities` | Chuyển lịch hẹn, ghi chú, phiếu; ô trống của bản giữ lại lấy của bản kia; **giai đoạn bản giữ lại giữ nguyên**; chặn: khác phụ huynh, khác học sinh, bản bị gộp có báo giá hoặc đơn; cảnh báo: bản bị gộp ở giai đoạn cao hơn | R-CRM-22, 37(a), 02 |
 | `app.merge_students` | Chuyển cơ hội, phiếu, ghi chú; chặn nếu khác phụ huynh | R-CRM-37(b) |
 | `app.merge_parents` | Chuyển lead, cơ hội, học sinh, ghi chú; không tự gộp học sinh; trả danh sách học sinh trùng; không chặn theo báo giá, đơn (R-CRM-25 còn [CHỜ]) | R-CRM-25, 37(c) |
-| `app.duplicate_students_of_parent` | Các cặp học sinh trùng tên (chuẩn hoá) và năm sinh dưới một phụ huynh; chỉ nêu học sinh trong phạm vi Xem của người gọi (migration 571) | R-CRM-37(c) |
+| `app.duplicate_students_of_parent` | Các cặp học sinh trùng tên (chuẩn hoá) và năm sinh dưới một phụ huynh; chỉ nêu học sinh trong phạm vi Xem của người gọi (migration 572) | R-CRM-37(c) |
 | Nội bộ: `merge_common`, `merge_check_opportunities`, `merge_check_students`, `move_notes`, `add_system_note`, `opportunity_sales_documents` | Kiểm chung, điều kiện chặn từng loại, chuyển ghi chú (cờ trong giao dịch), ghi chú hệ thống, điểm nối báo giá và đơn (rỗng, P5 thay thân) | |
 
 Quyền: hành động Duyệt của phân hệ, kiểm cho **cả hai** hồ sơ; người một cơ sở chỉ gộp khi cả hai ở cơ sở mình; hai cơ sở khác nhau chỉ Admin. Không hoàn tác, cần xác nhận. Làm phẳng chuỗi gộp (A→B rồi B→C thì A cũng trỏ về C). Tìm hoặc tạo phụ huynh, học sinh và dò trùng SĐT gặp hồ sơ đã gộp thì trỏ về bản giữ lại; danh sách lead, cơ hội: bản đã gộp vẫn tìm được bằng mã.
