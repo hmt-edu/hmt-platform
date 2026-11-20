@@ -68,7 +68,14 @@ export function useClassCatalogs() {
         .schema('app')
         .from('catalog_item')
         .select('catalog_code, code, name, is_active, sort_order')
-        .in('catalog_code', ['SUBJECT', 'GRADE', 'CLASS_TYPE', 'LEVEL', 'CLASS_STATUS'])
+        .in('catalog_code', [
+          'SUBJECT',
+          'GRADE',
+          'CLASS_TYPE',
+          'LEVEL',
+          'CLASS_STATUS',
+          'CLASS_DELIVERY',
+        ])
         .order('sort_order');
       if (error) throw error;
       return data;
