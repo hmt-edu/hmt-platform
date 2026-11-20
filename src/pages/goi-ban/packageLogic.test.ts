@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildPackageCode, gradeRangeError, isHourType } from './packageLogic';
+import { buildPackageCode, gradeRangeError, isHourType, packageDialogText } from './packageLogic';
 
 const base = { type: 'LC', subject: 'TOAN', gradeFrom: 'K09', gradeTo: '', suffix: '' };
 
@@ -26,5 +26,22 @@ describe('packageLogic', () => {
     expect(gradeRangeError(order, 'K08', 'K06')).not.toBeNull();
     expect(gradeRangeError(order, 'K06', 'K08')).toBeNull();
     expect(gradeRangeError(order, 'K06', '')).toBeNull();
+  });
+});
+
+describe('chữ hộp thoại Gói bán (So canvas CH-01, dc47)', () => {
+  it('Sửa gói: tiêu đề có mã; ba dòng gợi ý đúng khung CH01_sua_ten', () => {
+    expect(packageDialogText.editTitle('LC-TOAN-K09')).toBe('Sửa gói LC-TOAN-K09');
+    expect(packageDialogText.codeHelp).toBe('Mã không đổi được.');
+    expect(packageDialogText.legacyHelp).toBe(
+      'Mã cũ trên Sheet, dùng để tìm kiếm. Sửa được; mã gói vẫn khoá.',
+    );
+    expect(packageDialogText.nameHelp).toBe('Đổi tên không đổi mã.');
+  });
+  it('Ngừng bán: tiêu đề hỏi kèm mã; câu nói đơn đã tạo giữ gói và cách bán lại (CH01_ngung)', () => {
+    expect(packageDialogText.stopTitle('LC-TOAN-K06')).toBe('Ngừng bán gói LC-TOAN-K06?');
+    expect(packageDialogText.stopBody('LC-TOAN-K06')).toBe(
+      'Gói LC-TOAN-K06 sẽ không hiện ở ô chọn khi tạo báo giá, đơn mới. Đơn đã tạo vẫn giữ gói này. Muốn bán lại, bấm Dùng lại.',
+    );
   });
 });
