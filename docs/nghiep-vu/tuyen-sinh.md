@@ -483,11 +483,3 @@ Dùng cho thẻ em và hộp «Thêm em» ở hồ sơ lead, cơ hội (TS-02, T
 | `app.remove_prospect_student(id dòng em)` | Quyền Sửa hồ sơ cha | Bỏ em khỏi danh sách (không xoá hồ sơ học sinh) | Em đã có phiếu kiểm tra, dòng báo giá hoặc dòng đơn thì không bỏ (HMT_EM_DANG_DUNG); từ L5 cơ hội còn ít nhất một em (HMT_EM_CUOI) |
 Chung: hồ sơ đã gộp chỉ xem (HMT_BAN_GHI_DA_GOP); hàm trong `app.prospect_guard` khoá hồ sơ cha, kiểm quyền; khách (anon) không gọi được.
 **Bỏ em là xoá dòng thật** (khác quy ước «không xoá cứng»): dòng em chỉ là ghi nhận trong danh sách, không phải hồ sơ nghiệp vụ. Trigger chặn xoá của bảng `prospect_student` được thay bằng bản chỉ mở khi `remove_prospect_student` bật cờ `hmt.prospect_remove` trong giao dịch của nó; mọi đường xoá khác vẫn báo HMT_KHONG_XOA; `audit_log` vẫn ghi dòng bị bỏ.
-
-## Chọn em khi tạo cơ hội, Thêm em vào cơ hội cũ (migration 589, Code B, 21/11/2026)
-Dùng cho hộp TS-06 «Tạo cơ hội từ lead». Trước đây chỉ chép em đầu của lead.
-| Hàm | Ai gọi | Việc | Luật, lỗi |
-|---|---|---|---|
-| `app.create_opportunity(lead, p_data, p_confirm_existing, p_student_ids)` | Quyền Cơ hội · Tạo và Lead · Xem ở cơ sở của lead (như trước) | Thêm tham số `p_student_ids` (id dòng em của lead): `null` = chép TẤT CẢ em, mảng rỗng = 0 em. Bản ba tham số bị bỏ (gọi cũ vẫn chạy, `p_data` ghi đè em đầu như trước) | R-CRM-23: mặc định chọn hết, được chọn 0 em; em không thuộc lead (HMT_EM_KHONG_THUOC_LEAD); em trùng (cùng hồ sơ học sinh, hoặc cùng họ tên chuẩn hoá và năm sinh) chỉ chép một dòng; vượt `prospect_max_students` (HMT_EM_TOI_DA). Các luật khác giữ nguyên (C4C, R-CRM-01, R-CRM-09) |
-| `app.add_lead_students_to_opportunity(cơ hội, p_student_ids)` | Quyền Sửa cơ hội và Xem lead ở cơ sở của cơ hội | «Thêm em vào cơ hội cũ»: chép em của CHÍNH lead đã sinh cơ hội đó (`null` = tất cả); bỏ em đã có; trả danh sách em đầy đủ | HMT_EM_KHONG_THUOC_LEAD; HMT_EM_TOI_DA (chặn cả thao tác); từ L5 mỗi em phải có tên và năm sinh (R-CRM-03, HMT_THIEU_HOC_SINH); cơ hội đã gộp chỉ xem (HMT_BAN_GHI_DA_GOP) |
-Hàm trong `app.prospect_copy_lines` dùng chung hai hàm trên (không mở cho API).
