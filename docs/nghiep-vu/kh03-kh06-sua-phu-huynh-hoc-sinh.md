@@ -10,4 +10,4 @@ Luật: R-CRM-27 (không Tạo tay, chỉ Sửa và Gộp), R-CRM-28 (cơ sở t
 
 Luật chính: báo trùng chỉ nêu tên và mã khi người sửa xem được cơ sở của hồ sơ trùng (theo ma trận quyền Xem), ngoài phạm vi thì báo chung; SĐT (số chính hoặc số thứ hai) không trùng phụ huynh khác; cùng phụ huynh không có hai em trùng họ tên (không dấu) và năm sinh; có ngày sinh thì năm sinh phải khớp; đổi cơ sở tiếp nhận chỉ vai Admin (giao diện hiện chỉ xem, Admin đổi qua ticket Chuyển cơ sở theo R-CRM-28).
 Kiểm thử: `supabase/tests/database/570_kh03_kh06_sua_ho_so.test.sql` (35 bài), e2e `khach-hang.spec.ts`.
-Chưa làm (PR sau): KH-07 Gộp ngay trên bản ghi phụ huynh, học sinh (hàm `merge_parents`, `merge_students` đã có; hộp thoại gộp dùng chung với TS-10).
+KH-07 Gộp ngay trên bản ghi phụ huynh, học sinh: đã làm (migration 583, 596): Hành động → Gộp mở hộp gộp dùng chung với TS-10, quyền Duyệt; xem `tuyen-sinh.md` (các hàm gộp).

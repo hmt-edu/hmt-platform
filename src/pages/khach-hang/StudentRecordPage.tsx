@@ -2,7 +2,9 @@
 // ghi chú và hoạt động (Chatter). Không có Tạo tay (R-CRM-27). Sửa (KH-06) gọi update_student; cơ sở tiếp nhận chỉ xem (R-CRM-28). Gộp, Tạo ticket, tài khoản học tập: chưa làm, hiện mờ kèm chú thích.
 // Giáo viên được phân công xem hồ sơ trong lớp mình nhưng không thấy SĐT phụ huynh (R-GV-13): máy chủ trả null.
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { MergeDialog } from '../../features/merge/MergeDialog';
+import { formatPhone } from '../lead/leadFormat';
+import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { Button } from '../../ui/Button';
 import { HmtError, errorOf, rpc, useDb } from '../../lib/db';
@@ -19,6 +21,7 @@ import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
 import { ATTENDANCE_LABEL, STUDENT_STATUS_LABEL, type StudentRecord } from './custTypes';
+import { studentPath } from './custConfig';
 import { useRefreshCustomers, useStudentRecord } from './useCustData';
 
 const FORMAT = {
@@ -105,6 +108,7 @@ export function StudentRecordPage() {
 
 function StudentView({ record }: { record: StudentRecord }) {
   const refresh = useRefreshCustomers();
+  const navigate = useNavigate();
   const [tab, setTab] = useState('overview');
   useCrumbTail(`${record.full_name} · ${record.code}`);
   const merged = record.record_status === 'DA_GOP';
@@ -113,6 +117,9 @@ function StudentView({ record }: { record: StudentRecord }) {
   const supabase = useDb();
   const toast = useToast();
   const canEdit = access.can('STUDENT', 'SUA') && !merged;
+  // Gộp trùng dùng quyền Duyệt (R-CRM-25); bản đã gộp chỉ đọc.
+  const canMerge = access.can('STUDENT', 'DUYET') && !merged;
+  const [mergeOpen, setMergeOpen] = useState(false);
   const [mode, setMode] = useState<DetailMode>('view');
   const [draft, setDraft] = useState<StudentDraft>(() => toStudentDraft(record));
   const [errors, setErrors] = useState<Partial<Record<keyof StudentDraft, string>>>({});
@@ -165,358 +172,384 @@ function StudentView({ record }: { record: StudentRecord }) {
   }
 
   return (
-    <RecordDetail
-      kind="Học sinh"
-      title={`${record.full_name} · ${record.code}`}
-      mode={mode}
-      dirty={dirty}
-      saving={saving}
-      readOnly={!canEdit}
-      onEdit={startEdit}
-      onSave={() => void save()}
-      onCancel={() => {
-        setErrors({});
-        setMode('view');
-      }}
-      onRefresh={() => void refresh()}
-      menu={{
-        label: 'Hành động',
-        items: [
+    <>
+      <RecordDetail
+        kind="Học sinh"
+        title={`${record.full_name} · ${record.code}`}
+        mode={mode}
+        dirty={dirty}
+        saving={saving}
+        readOnly={!canEdit}
+        onEdit={startEdit}
+        onSave={() => void save()}
+        onCancel={() => {
+          setErrors({});
+          setMode('view');
+        }}
+        onRefresh={() => void refresh()}
+        menu={{
+          label: 'Hành động',
+          items: [
+            {
+              kind: 'action',
+              label: 'Sửa',
+              onSelect: startEdit,
+              ...(canEdit
+                ? {}
+                : {
+                    unavailable: merged
+                      ? 'Hồ sơ đã gộp chỉ xem được'
+                      : 'Bạn không có quyền sửa học sinh',
+                  }),
+            },
+            {
+              kind: 'action',
+              label: 'Gộp',
+              onSelect: () => setMergeOpen(true),
+              ...(canMerge
+                ? {}
+                : {
+                    unavailable: merged
+                      ? 'Hồ sơ đã gộp chỉ xem được'
+                      : 'Bạn không có quyền gộp (cần quyền Duyệt)',
+                  }),
+            },
+            {
+              kind: 'action',
+              label: 'Tạo ticket',
+              onSelect: () => undefined,
+              unavailable: 'Ticket chăm sóc (CS-04) làm sau',
+            },
+            {
+              kind: 'action',
+              label: 'Cấp tài khoản',
+              onSelect: () => undefined,
+              unavailable: 'Tài khoản học tập làm ở giai đoạn 4',
+            },
+          ],
+        }}
+        smart={[
           {
-            kind: 'action',
-            label: 'Sửa',
-            onSelect: startEdit,
-            ...(canEdit
-              ? {}
-              : {
-                  unavailable: merged
-                    ? 'Hồ sơ đã gộp chỉ xem được'
-                    : 'Bạn không có quyền sửa học sinh',
-                }),
+            key: 'ghi-danh',
+            label: 'Ghi danh',
+            icon: 'training',
+            count: record.counts.enrollments,
+            onOpen: () => setTab('study'),
           },
           {
-            kind: 'action',
-            label: 'Gộp',
-            onSelect: () => undefined,
-            unavailable: 'Gộp hồ sơ trùng (KH-07) làm sau',
+            key: 'lop',
+            label: 'Lớp',
+            icon: 'training',
+            count: record.counts.classes,
+            onOpen: () => setTab('study'),
           },
           {
-            kind: 'action',
-            label: 'Tạo ticket',
-            onSelect: () => undefined,
-            unavailable: 'Ticket chăm sóc (CS-04) làm sau',
-          },
-          {
-            kind: 'action',
-            label: 'Cấp tài khoản',
-            onSelect: () => undefined,
-            unavailable: 'Tài khoản học tập làm ở giai đoạn 4',
-          },
-        ],
-      }}
-      smart={[
-        {
-          key: 'ghi-danh',
-          label: 'Ghi danh',
-          icon: 'training',
-          count: record.counts.enrollments,
-          onOpen: () => setTab('study'),
-        },
-        {
-          key: 'lop',
-          label: 'Lớp',
-          icon: 'training',
-          count: record.counts.classes,
-          onOpen: () => setTab('study'),
-        },
-        {
-          key: 'phieu-test',
-          label: 'Phiếu test',
-          icon: 'results',
-          count: record.counts.tests,
-          onOpen: () => setTab('exam'),
-        },
-      ]}
-      aside={
-        <RecordChatter
-          entityType="STUDENT"
-          entityId={record.id}
-          format={FORMAT}
-          createdText="Tạo học sinh."
-          canWrite={!merged}
-        />
-      }
-      asideLabel="Ghi chú và hoạt động"
-    >
-      {merged && (
-        <p role="status" className="rounded-control bg-canvas p-3">
-          Hồ sơ này đã gộp vào hồ sơ khác.{' '}
-          {record.merged_into_id && (
-            <Link
-              className="font-medium text-link hover:underline"
-              to={`/crm/hoc-sinh/${record.merged_into_id}`}
-            >
-              Mở hồ sơ đích
-            </Link>
-          )}
-        </p>
-      )}
-      <div className="flex flex-wrap items-center gap-2">
-        <Tag tone={record.status === 'DANG_HOC' ? 'success' : 'neutral'}>
-          {STUDENT_STATUS_LABEL[record.status]}
-        </Tag>
-      </div>
-      <CustTabs
-        active={tab}
-        onChange={setTab}
-        tabs={[
-          { key: 'overview', label: 'Tổng quan' },
-          { key: 'study', label: 'Học tập' },
-          { key: 'attendance', label: 'Điểm danh' },
-          { key: 'exam', label: 'Điểm kiểm tra' },
-          { key: 'care', label: 'Chăm sóc', note: 'Chưa có dữ liệu (chăm sóc làm sau)' },
-          {
-            key: 'tickets',
-            label: 'Đề nghị & khiếu nại',
-            note: 'Chưa có dữ liệu (ticket làm sau)',
+            key: 'phieu-test',
+            label: 'Phiếu test',
+            icon: 'results',
+            count: record.counts.tests,
+            onOpen: () => setTab('exam'),
           },
         ]}
-      />
-      {tab === 'overview' && (
-        <DetailSection title="Thông tin học sinh">
-          <DetailField
-            mode="view"
-            label="Mã cũ (Sheet)"
-            hint="chỉ xem, Admin sửa được"
-            value={record.legacy_ref ?? ''}
+        aside={
+          <RecordChatter
+            entityType="STUDENT"
+            entityId={record.id}
+            format={FORMAT}
+            createdText="Tạo học sinh."
+            canWrite={!merged}
           />
-          <DetailField
-            mode={mode}
-            label="Họ tên"
-            required
-            value={record.full_name}
-            error={errors.full_name ?? null}
-            editor={
-              <input
-                aria-label="Họ tên"
-                value={draft.full_name}
-                onChange={(e) => set('full_name', e.target.value)}
-                aria-invalid={errors.full_name ? true : undefined}
-                className={INPUT_CLASS}
-              />
-            }
-          />
-          <DetailField
-            mode={mode}
-            label="Ngày sinh"
-            value={record.birth_date ? formatDate(record.birth_date) : ''}
-            editor={
-              <DateInput
-                label="Ngày sinh"
-                value={isoToDate(draft.birth_date)}
-                onChange={(d) =>
-                  setDraft((x) => ({
-                    ...x,
-                    birth_date: dateToIso(d),
-                    birth_year: d ? String(d.getFullYear()) : x.birth_year,
-                  }))
-                }
-              />
-            }
-          />
-          <DetailField
-            mode={mode}
-            label="Năm sinh"
-            required
-            value={record.birth_year ?? ''}
-            error={errors.birth_year ?? null}
-            editor={
-              <input
-                aria-label="Năm sinh"
-                inputMode="numeric"
-                value={draft.birth_year}
-                onChange={(e) => set('birth_year', e.target.value.replace(/\D/g, ''))}
-                aria-invalid={errors.birth_year ? true : undefined}
-                className={INPUT_CLASS}
-              />
-            }
-          />
-          <DetailField
-            mode={mode}
-            label="Khối"
-            value={record.grade ? `Lớp ${record.grade}` : ''}
-            editor={
-              <OptionalSelect
-                label="Khối"
-                value={draft.grade}
-                onChange={(v) => set('grade', v)}
-                options={GRADE_OPTIONS}
-                placeholder="Chọn khối"
-              />
-            }
-          />
-          <DetailField
-            mode={mode}
-            label="Trường học"
-            value={record.school ?? ''}
-            editor={
-              <input
-                aria-label="Trường học"
-                value={draft.school}
-                onChange={(e) => set('school', e.target.value)}
-                className={INPUT_CLASS}
-              />
-            }
-          />
-          <DetailField
-            mode={mode}
-            label="Mục tiêu"
-            value={record.goal ?? ''}
-            editor={
-              <TextAreaField
-                label="Mục tiêu"
-                value={draft.goal}
-                onChange={(e) => set('goal', e.target.value)}
-              />
-            }
-          />
-          <DetailField
-            mode="view"
-            label="Phụ huynh"
-            value={
-              record.parent ? (
-                <Link
-                  className="font-medium text-link hover:underline"
-                  to={`/crm/phu-huynh/${record.parent.id}`}
-                >
-                  {record.parent.full_name}
-                </Link>
-              ) : (
-                ''
-              )
-            }
-          />
-          <DetailField mode="view" label="SĐT phụ huynh" value={record.parent?.phone ?? ''} />
-          <DetailField
-            mode="view"
-            label="Tình trạng"
-            hint="hệ thống tự đổi theo ghi danh"
-            value={STUDENT_STATUS_LABEL[record.status]}
-          />
-          <DetailField
-            mode="view"
-            label="Cơ sở tiếp nhận"
-            hint="chỉ Admin sửa"
-            value={record.branch_code}
-          />
-          <DetailField
-            mode="view"
-            label="Đang học tại"
-            hint="tự tính từ các lớp"
-            value={record.studying_at.join(', ')}
-          />
-          <DetailField
-            mode="view"
-            label="Cập nhật lần cuối"
-            value={formatDateTime(record.updated_at)}
-          />
-        </DetailSection>
-      )}
-      {tab === 'study' &&
-        (record.enrollments.length === 0 ? (
-          <p className="py-2 text-fg-muted">Chưa có ghi danh.</p>
-        ) : (
-          <ul className="flex flex-col divide-y divide-border">
-            {record.enrollments.map((e) => (
-              <li key={e.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <span>
-                  <span className="font-medium">{e.code}</span>{' '}
-                  <span className="text-fg-muted">{e.subject_name ?? e.subject_code}</span>
-                </span>
-                <span className="text-caption text-fg-muted">
-                  {e.status_name ?? e.status_code}
-                  {e.class_id && e.class_code ? (
-                    <>
-                      {' · '}
-                      <Link className="text-link hover:underline" to={`/crm/lop/${e.class_id}`}>
-                        {e.class_code}
-                      </Link>
-                    </>
-                  ) : (
-                    ' · chưa xếp lớp'
-                  )}
-                  {` · còn ${e.hours_left} giờ`}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ))}
-      {tab === 'attendance' && (
-        <div className="flex flex-col gap-2">
-          <p className="text-fg-muted">
-            {summary.length === 0
-              ? 'Chưa có điểm danh.'
-              : summary.map(([k, n]) => `${ATTENDANCE_LABEL[k] ?? k}: ${n}`).join(' · ')}
+        }
+        asideLabel="Ghi chú và hoạt động"
+      >
+        {merged && (
+          <p role="status" className="rounded-control bg-canvas p-3">
+            Hồ sơ này đã gộp vào hồ sơ khác.{' '}
+            {record.merged_into_id && (
+              <Link
+                className="font-medium text-link hover:underline"
+                to={`/crm/hoc-sinh/${record.merged_into_id}`}
+              >
+                Mở hồ sơ đích
+              </Link>
+            )}
           </p>
-          <ul className="flex flex-col divide-y divide-border">
-            {record.attendance.map((a, i) => (
-              <li key={i} className="flex flex-wrap justify-between gap-2 py-1.5">
-                <span>
-                  {formatDate(a.session_date)} {a.start_time.slice(0, 5)} · {a.class_code}
-                </span>
-                <span className="text-caption text-fg-muted">
-                  {ATTENDANCE_LABEL[a.status ?? 'CHUA'] ?? a.status}
-                </span>
-              </li>
-            ))}
-          </ul>
+        )}
+        <div className="flex flex-wrap items-center gap-2">
+          <Tag tone={record.status === 'DANG_HOC' ? 'success' : 'neutral'}>
+            {STUDENT_STATUS_LABEL[record.status]}
+          </Tag>
         </div>
-      )}
-      {tab === 'exam' && (
-        <div className="flex flex-col gap-3">
-          <DetailSection title="Điểm kiểm tra trong lớp">
-            {record.exam_scores.length === 0 ? (
-              <p className="py-2 text-fg-muted">Chưa có điểm kiểm tra.</p>
-            ) : (
-              <ul className="flex flex-col divide-y divide-border">
-                {record.exam_scores.map((x, i) => (
-                  <li key={i} className="flex flex-wrap justify-between gap-2 py-1.5">
-                    <span>
-                      {formatDate(x.session_date)} · {x.class_code}
-                    </span>
-                    <span className="tabular font-medium">
-                      {x.total_score ?? '—'}
-                      {x.max_score ? ` / ${x.max_score}` : ''}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
+        <CustTabs
+          active={tab}
+          onChange={setTab}
+          tabs={[
+            { key: 'overview', label: 'Tổng quan' },
+            { key: 'study', label: 'Học tập' },
+            { key: 'attendance', label: 'Điểm danh' },
+            { key: 'exam', label: 'Điểm kiểm tra' },
+            { key: 'care', label: 'Chăm sóc', note: 'Chưa có dữ liệu (chăm sóc làm sau)' },
+            {
+              key: 'tickets',
+              label: 'Đề nghị & khiếu nại',
+              note: 'Chưa có dữ liệu (ticket làm sau)',
+            },
+          ]}
+        />
+        {tab === 'overview' && (
+          <DetailSection title="Thông tin học sinh">
+            <DetailField
+              mode="view"
+              label="Mã cũ (Sheet)"
+              hint="chỉ xem, Admin sửa được"
+              value={record.legacy_ref ?? ''}
+            />
+            <DetailField
+              mode={mode}
+              label="Họ tên"
+              required
+              value={record.full_name}
+              error={errors.full_name ?? null}
+              editor={
+                <input
+                  aria-label="Họ tên"
+                  value={draft.full_name}
+                  onChange={(e) => set('full_name', e.target.value)}
+                  aria-invalid={errors.full_name ? true : undefined}
+                  className={INPUT_CLASS}
+                />
+              }
+            />
+            <DetailField
+              mode={mode}
+              label="Ngày sinh"
+              value={record.birth_date ? formatDate(record.birth_date) : ''}
+              editor={
+                <DateInput
+                  label="Ngày sinh"
+                  value={isoToDate(draft.birth_date)}
+                  onChange={(d) =>
+                    setDraft((x) => ({
+                      ...x,
+                      birth_date: dateToIso(d),
+                      birth_year: d ? String(d.getFullYear()) : x.birth_year,
+                    }))
+                  }
+                />
+              }
+            />
+            <DetailField
+              mode={mode}
+              label="Năm sinh"
+              required
+              value={record.birth_year ?? ''}
+              error={errors.birth_year ?? null}
+              editor={
+                <input
+                  aria-label="Năm sinh"
+                  inputMode="numeric"
+                  value={draft.birth_year}
+                  onChange={(e) => set('birth_year', e.target.value.replace(/\D/g, ''))}
+                  aria-invalid={errors.birth_year ? true : undefined}
+                  className={INPUT_CLASS}
+                />
+              }
+            />
+            <DetailField
+              mode={mode}
+              label="Khối"
+              value={record.grade ? `Lớp ${record.grade}` : ''}
+              editor={
+                <OptionalSelect
+                  label="Khối"
+                  value={draft.grade}
+                  onChange={(v) => set('grade', v)}
+                  options={GRADE_OPTIONS}
+                  placeholder="Chọn khối"
+                />
+              }
+            />
+            <DetailField
+              mode={mode}
+              label="Trường học"
+              value={record.school ?? ''}
+              editor={
+                <input
+                  aria-label="Trường học"
+                  value={draft.school}
+                  onChange={(e) => set('school', e.target.value)}
+                  className={INPUT_CLASS}
+                />
+              }
+            />
+            <DetailField
+              mode={mode}
+              label="Mục tiêu"
+              value={record.goal ?? ''}
+              editor={
+                <TextAreaField
+                  label="Mục tiêu"
+                  value={draft.goal}
+                  onChange={(e) => set('goal', e.target.value)}
+                />
+              }
+            />
+            <DetailField
+              mode="view"
+              label="Phụ huynh"
+              value={
+                record.parent ? (
+                  <Link
+                    className="font-medium text-link hover:underline"
+                    to={`/crm/phu-huynh/${record.parent.id}`}
+                  >
+                    {record.parent.full_name}
+                  </Link>
+                ) : (
+                  ''
+                )
+              }
+            />
+            <DetailField mode="view" label="SĐT phụ huynh" value={record.parent?.phone ?? ''} />
+            <DetailField
+              mode="view"
+              label="Tình trạng"
+              hint="hệ thống tự đổi theo ghi danh"
+              value={STUDENT_STATUS_LABEL[record.status]}
+            />
+            <DetailField
+              mode="view"
+              label="Cơ sở tiếp nhận"
+              hint="chỉ Admin sửa"
+              value={record.branch_code}
+            />
+            <DetailField
+              mode="view"
+              label="Đang học tại"
+              hint="tự tính từ các lớp"
+              value={record.studying_at.join(', ')}
+            />
+            <DetailField
+              mode="view"
+              label="Cập nhật lần cuối"
+              value={formatDateTime(record.updated_at)}
+            />
           </DetailSection>
-          <DetailSection title="Phiếu kiểm tra đầu vào">
-            {record.tests.length === 0 ? (
-              <p className="py-2 text-fg-muted">Chưa có phiếu kiểm tra.</p>
-            ) : (
-              <ul className="flex flex-col divide-y divide-border">
-                {record.tests.map((t) => (
-                  <li key={t.id} className="flex flex-wrap justify-between gap-2 py-1.5">
-                    <Link
-                      to={`/crm/phieu-kiem-tra/${t.id}`}
-                      className="font-medium text-link hover:underline"
-                    >
-                      {t.code}
-                    </Link>
-                    <span className="text-caption text-fg-muted">
-                      {t.scheduled_at ? formatDate(t.scheduled_at) : '—'}
-                      {t.score !== null ? ` · điểm ${t.score}` : ''}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </DetailSection>
-        </div>
+        )}
+        {tab === 'study' &&
+          (record.enrollments.length === 0 ? (
+            <p className="py-2 text-fg-muted">Chưa có ghi danh.</p>
+          ) : (
+            <ul className="flex flex-col divide-y divide-border">
+              {record.enrollments.map((e) => (
+                <li key={e.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <span>
+                    <span className="font-medium">{e.code}</span>{' '}
+                    <span className="text-fg-muted">{e.subject_name ?? e.subject_code}</span>
+                  </span>
+                  <span className="text-caption text-fg-muted">
+                    {e.status_name ?? e.status_code}
+                    {e.class_id && e.class_code ? (
+                      <>
+                        {' · '}
+                        <Link className="text-link hover:underline" to={`/crm/lop/${e.class_id}`}>
+                          {e.class_code}
+                        </Link>
+                      </>
+                    ) : (
+                      ' · chưa xếp lớp'
+                    )}
+                    {` · còn ${e.hours_left} giờ`}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        {tab === 'attendance' && (
+          <div className="flex flex-col gap-2">
+            <p className="text-fg-muted">
+              {summary.length === 0
+                ? 'Chưa có điểm danh.'
+                : summary.map(([k, n]) => `${ATTENDANCE_LABEL[k] ?? k}: ${n}`).join(' · ')}
+            </p>
+            <ul className="flex flex-col divide-y divide-border">
+              {record.attendance.map((a, i) => (
+                <li key={i} className="flex flex-wrap justify-between gap-2 py-1.5">
+                  <span>
+                    {formatDate(a.session_date)} {a.start_time.slice(0, 5)} · {a.class_code}
+                  </span>
+                  <span className="text-caption text-fg-muted">
+                    {ATTENDANCE_LABEL[a.status ?? 'CHUA'] ?? a.status}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {tab === 'exam' && (
+          <div className="flex flex-col gap-3">
+            <DetailSection title="Điểm kiểm tra trong lớp">
+              {record.exam_scores.length === 0 ? (
+                <p className="py-2 text-fg-muted">Chưa có điểm kiểm tra.</p>
+              ) : (
+                <ul className="flex flex-col divide-y divide-border">
+                  {record.exam_scores.map((x, i) => (
+                    <li key={i} className="flex flex-wrap justify-between gap-2 py-1.5">
+                      <span>
+                        {formatDate(x.session_date)} · {x.class_code}
+                      </span>
+                      <span className="tabular font-medium">
+                        {x.total_score ?? '—'}
+                        {x.max_score ? ` / ${x.max_score}` : ''}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </DetailSection>
+            <DetailSection title="Phiếu kiểm tra đầu vào">
+              {record.tests.length === 0 ? (
+                <p className="py-2 text-fg-muted">Chưa có phiếu kiểm tra.</p>
+              ) : (
+                <ul className="flex flex-col divide-y divide-border">
+                  {record.tests.map((t) => (
+                    <li key={t.id} className="flex flex-wrap justify-between gap-2 py-1.5">
+                      <Link
+                        to={`/crm/phieu-kiem-tra/${t.id}`}
+                        className="font-medium text-link hover:underline"
+                      >
+                        {t.code}
+                      </Link>
+                      <span className="text-caption text-fg-muted">
+                        {t.scheduled_at ? formatDate(t.scheduled_at) : '—'}
+                        {t.score !== null ? ` · điểm ${t.score}` : ''}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </DetailSection>
+          </div>
+        )}
+      </RecordDetail>
+      {canMerge && (
+        <MergeDialog
+          open={mergeOpen}
+          onOpenChange={setMergeOpen}
+          entity="STUDENT"
+          current={{
+            id: record.id,
+            code: record.code,
+            label: record.full_name,
+            phone: formatPhone(record.parent?.phone ?? ''),
+          }}
+          onMerged={(keepId, keepCode) => {
+            toast({ title: `Đã gộp vào ${keepCode}.` });
+            if (keepId === record.id) void refresh();
+            else void navigate(studentPath(keepId), { replace: true });
+          }}
+        />
       )}
-    </RecordDetail>
+    </>
   );
 }

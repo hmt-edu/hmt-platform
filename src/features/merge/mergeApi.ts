@@ -4,7 +4,11 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 import { rpc, useDb } from '../../lib/db';
 
-export type MergeEntity = 'LEAD' | 'OPPORTUNITY';
+export type MergeEntity = 'LEAD' | 'OPPORTUNITY' | 'PARENT' | 'STUDENT';
+
+/** Lead, cơ hội dùng hộp TS-10; phụ huynh, học sinh dùng hộp KH-07 (gợi ý, gộp ở hàm riêng). */
+export const isPeopleEntity = (entity: MergeEntity): boolean =>
+  entity === 'PARENT' || entity === 'STUDENT';
 
 export type MergeCandidate = {
   id: string;
@@ -33,6 +37,11 @@ export type MergeSide = {
   tests?: number;
   appointments: number;
   notes: number;
+  /** Phụ huynh, học sinh: SĐT 2, năm sinh, khối và số dòng theo nhóm dữ liệu sẽ chuyển. */
+  phone_2?: string | null;
+  birth_year?: number | null;
+  grade?: number | null;
+  counts?: Record<string, number>;
 };
 
 export type MergeNotice = { code: string; message: string };
@@ -40,7 +49,9 @@ export type MergeNotice = { code: string; message: string };
 export type MergePreview = {
   keep_code: string;
   merge_code: string;
-  move: { appointments?: number; notes?: number; opportunities?: number; tests?: number };
+  move: Record<string, number>;
+  /** Phụ huynh, học sinh: số dư của bản bị gộp, cộng vào bản giữ lại. */
+  money?: { balance: number };
   blockers: MergeNotice[];
   warnings: MergeNotice[];
   sides: { keep: MergeSide; merge: MergeSide };
@@ -61,7 +72,11 @@ export function useMergeCandidates(entity: MergeEntity, id: string, enabled: boo
     gcTime: 0,
     retry: false,
     queryFn: () =>
-      rpc<MergeCandidate[]>(supabase, 'merge_candidates', { p_entity: entity, p_id: id }),
+      rpc<MergeCandidate[]>(
+        supabase,
+        isPeopleEntity(entity) ? 'merge_candidates_people' : 'merge_candidates',
+        { p_entity: entity, p_id: id },
+      ),
   });
 }
 
@@ -86,6 +101,13 @@ export function useMergePreview(
   });
 }
 
+const MERGE_FUNCTION: Record<MergeEntity, string> = {
+  LEAD: 'merge_leads',
+  OPPORTUNITY: 'merge_opportunities',
+  PARENT: 'merge_parents',
+  STUDENT: 'merge_students',
+};
+
 /** Gộp thật (không hoàn tác). Hàm DB bắt buộc p_confirm = true. */
 export function mergeRecords(
   supabase: SupabaseClient,
@@ -93,7 +115,7 @@ export function mergeRecords(
   keepId: string,
   mergeId: string,
 ): Promise<MergeResult> {
-  return rpc<MergeResult>(supabase, entity === 'LEAD' ? 'merge_leads' : 'merge_opportunities', {
+  return rpc<MergeResult>(supabase, MERGE_FUNCTION[entity], {
     p_keep: keepId,
     p_merge: mergeId,
     p_confirm: true,

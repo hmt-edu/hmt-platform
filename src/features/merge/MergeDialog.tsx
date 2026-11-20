@@ -4,13 +4,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
 import { errorOf, rpc, useDb } from '../../lib/db';
-import { formatDate, formatDateTime } from '../../lib/format';
+import { formatDate, formatDateTime, formatMoney } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { formatPhone } from '../../pages/lead/leadFormat';
 import { useLeadCatalogs } from '../../pages/lead/useCatalogs';
 import type { LeadPage } from '../../pages/lead/leadTypes';
 import { STATUS_LABEL, type AppointmentStatus } from '../../pages/lich-hen/appointmentTypes';
 import type { OpportunityPage } from '../../pages/co-hoi/oppTypes';
+import type { ParentPage, StudentPage } from '../../pages/khach-hang/custTypes';
 import { cn } from '../../ui/cn';
 import { FormDialog } from '../../ui/Dialogs';
 import { Alert, Spinner } from '../../ui/Feedback';
@@ -18,6 +19,7 @@ import { Checkbox } from '../../ui/Field';
 import { Combobox, type ComboOption } from '../../ui/Inputs';
 import { Tag } from '../../ui/Data';
 import {
+  isPeopleEntity,
   mergeRecords,
   useMergeCandidates,
   useMergePreview,
@@ -26,10 +28,12 @@ import {
 } from './mergeApi';
 import {
   afterMergeNote,
+  dialogTitle,
   entityNoun,
   keepAndMerge,
   matchSentence,
   moreItems,
+  moveLines,
   type KeepSide,
 } from './mergeLogic';
 
@@ -56,6 +60,59 @@ export function MergeDialog(props: MergeDialogProps) {
   return props.open ? <MergeForm {...props} /> : null;
 }
 
+type FoundRow = { id: string; label: string; branch_code: string; keywords: string };
+
+/** Tìm tay bản để gộp: lead, cơ hội theo danh sách của TS; phụ huynh, học sinh theo danh sách KH-01, KH-04 (phân trang ở máy chủ, 8 dòng). */
+async function searchRecords(
+  supabase: ReturnType<typeof useDb>,
+  entity: MergeEntity,
+  q: string,
+): Promise<FoundRow[]> {
+  const base = { p_sort: 'created_desc', p_limit: 8, p_offset: 0 };
+  if (entity === 'PARENT') {
+    const page = await rpc<ParentPage>(supabase, 'list_parents', {
+      ...base,
+      p_sort: 'name_asc',
+      p_filters: { search: q },
+    });
+    return page.rows.map((r) => ({
+      id: r.id,
+      label: `${r.code} · ${r.full_name}`,
+      branch_code: r.branch_code,
+      keywords: `${r.code} ${r.full_name} ${r.phone}`,
+    }));
+  }
+  if (entity === 'STUDENT') {
+    const page = await rpc<StudentPage>(supabase, 'list_students', {
+      ...base,
+      p_sort: 'name_asc',
+      p_filters: { search: q },
+    });
+    return page.rows.map((r) => ({
+      id: r.id,
+      label: `${r.code} · ${r.full_name} · ${r.parent_name}`,
+      branch_code: r.branch_code,
+      keywords: `${r.code} ${r.full_name} ${r.parent_name}`,
+    }));
+  }
+  const page = await rpc<LeadPage | OpportunityPage>(
+    supabase,
+    entity === 'LEAD' ? 'list_leads' : 'list_opportunities',
+    {
+      ...base,
+      p_filters: { q },
+    },
+  );
+  return page.rows
+    .filter((r) => r.record_status === 'DANG_DUNG')
+    .map((r) => ({
+      id: r.id,
+      label: `${r.code} · ${r.student_name ? `${r.student_name} · ` : ''}${r.parent_name}`,
+      branch_code: r.branch_code,
+      keywords: `${r.code} ${r.parent_name} ${r.parent_phone}`,
+    }));
+}
+
 function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialogProps) {
   const supabase = useDb();
   const noun = entityNoun(entity);
@@ -70,22 +127,13 @@ function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialo
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Tìm tay ở máy chủ khi người dùng gõ (lead hoặc cơ hội theo tên, SĐT, mã).
+  // Tìm tay ở máy chủ khi người dùng gõ (lead, cơ hội, phụ huynh, học sinh theo tên, SĐT, mã).
   const search = useQuery({
     queryKey: ['merge-search', entity, q],
     enabled: q !== '',
     staleTime: 0,
     gcTime: 0,
-    queryFn: async () => {
-      const fn = entity === 'LEAD' ? 'list_leads' : 'list_opportunities';
-      const page = await rpc<LeadPage | OpportunityPage>(supabase, fn, {
-        p_filters: { q },
-        p_sort: 'created_desc',
-        p_limit: 8,
-        p_offset: 0,
-      });
-      return page.rows;
-    },
+    queryFn: (): Promise<FoundRow[]> => searchRecords(supabase, entity, q),
   });
 
   const suggested: ComboOption[] = (candidates.data ?? []).map((c) => ({
@@ -96,13 +144,8 @@ function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialo
     ...(c.can_merge ? {} : { disabledReason: c.blocker_message ?? 'Không gộp được với bản này.' }),
   }));
   const found: ComboOption[] = (q === '' ? [] : (search.data ?? []))
-    .filter((r) => r.id !== current.id && r.record_status === 'DANG_DUNG')
-    .map((r) => ({
-      value: r.id,
-      label: `${r.code} · ${r.student_name ? `${r.student_name} · ` : ''}${r.parent_name}`,
-      hint: r.branch_code,
-      keywords: `${r.code} ${r.parent_name} ${r.parent_phone}`,
-    }));
+    .filter((r) => r.id !== current.id)
+    .map((r) => ({ value: r.id, label: r.label, hint: r.branch_code, keywords: r.keywords }));
   const options = [...(q === '' ? suggested : found)];
   if (picked && !options.some((o) => o.value === picked.value)) options.unshift(picked);
 
@@ -144,7 +187,7 @@ function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialo
       open={open}
       onOpenChange={onOpenChange}
       wide
-      title={entity === 'LEAD' ? 'Gộp lead trùng' : 'Gộp cơ hội trùng'}
+      title={dialogTitle(entity)}
       subtitle={matchSentence(entity, current.phone)}
       confirmLabel={keepCode ? `Gộp vào ${keepCode}` : 'Gộp'}
       canSubmit={data !== undefined && blockers.length === 0 && confirmed && !preview.isFetching}
@@ -222,37 +265,59 @@ function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialo
               <h3 className="text-body font-semibold">
                 Chuyển từ {mergeCode} sang {keepCode}
               </h3>
-              {entity === 'LEAD' && (move.opportunities ?? 0) > 0 && (
-                <p className="text-body">
-                  Cơ hội ({move.opportunities}) cũng chuyển sang {keepCode}.
-                </p>
+              {isPeopleEntity(entity) ? (
+                <>
+                  <ul className="flex list-disc flex-col gap-0.5 pl-5 text-body">
+                    {moveLines(move).map((l) => (
+                      <li key={l.label}>
+                        {l.label}: {l.count}
+                      </li>
+                    ))}
+                    {moveLines(move).length === 0 && <li>Không có dữ liệu nào cần chuyển.</li>}
+                  </ul>
+                  {data.money && data.money.balance !== 0 && (
+                    <Alert tone="info">
+                      Số dư khách hàng {formatMoney(data.money.balance)} đ của {mergeCode} cộng vào{' '}
+                      {keepCode}. Hệ thống kiểm tổng số dư, tiền, giờ trước và sau khi gộp; lệch thì
+                      huỷ gộp.
+                    </Alert>
+                  )}
+                </>
+              ) : (
+                <>
+                  {entity === 'LEAD' && (move.opportunities ?? 0) > 0 && (
+                    <p className="text-body">
+                      Cơ hội ({move.opportunities}) cũng chuyển sang {keepCode}.
+                    </p>
+                  )}
+                  {entity === 'OPPORTUNITY' && (move.tests ?? 0) > 0 && (
+                    <p className="text-body">
+                      Phiếu kiểm tra ({move.tests}) cũng chuyển sang {keepCode}.
+                    </p>
+                  )}
+                  <ItemList
+                    title={`Lịch hẹn (${move.appointments ?? 0})`}
+                    more={moreItems(move.appointments ?? 0, data.items.appointments.length)}
+                  >
+                    {data.items.appointments.map((a, i) => (
+                      <li key={i}>
+                        {a.title} · {formatDateTime(a.scheduled_at)} ·{' '}
+                        {STATUS_LABEL[a.status as AppointmentStatus] ?? a.status}
+                      </li>
+                    ))}
+                  </ItemList>
+                  <ItemList
+                    title={`Ghi chú (${move.notes ?? 0})`}
+                    more={moreItems(move.notes ?? 0, data.items.notes.length)}
+                  >
+                    {data.items.notes.map((n, i) => (
+                      <li key={i}>
+                        {n.author ?? 'Hệ thống'} · {formatDateTime(n.created_at)} · “{n.body}”
+                      </li>
+                    ))}
+                  </ItemList>
+                </>
               )}
-              {entity === 'OPPORTUNITY' && (move.tests ?? 0) > 0 && (
-                <p className="text-body">
-                  Phiếu kiểm tra ({move.tests}) cũng chuyển sang {keepCode}.
-                </p>
-              )}
-              <ItemList
-                title={`Lịch hẹn (${move.appointments ?? 0})`}
-                more={moreItems(move.appointments ?? 0, data.items.appointments.length)}
-              >
-                {data.items.appointments.map((a, i) => (
-                  <li key={i}>
-                    {a.title} · {formatDateTime(a.scheduled_at)} ·{' '}
-                    {STATUS_LABEL[a.status as AppointmentStatus] ?? a.status}
-                  </li>
-                ))}
-              </ItemList>
-              <ItemList
-                title={`Ghi chú (${move.notes ?? 0})`}
-                more={moreItems(move.notes ?? 0, data.items.notes.length)}
-              >
-                {data.items.notes.map((n, i) => (
-                  <li key={i}>
-                    {n.author ?? 'Hệ thống'} · {formatDateTime(n.created_at)} · “{n.body}”
-                  </li>
-                ))}
-              </ItemList>
             </section>
             <p className="text-caption text-fg-muted">{afterMergeNote(keepCode, mergeCode)}</p>
             <Checkbox
@@ -271,6 +336,62 @@ function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialo
   );
 }
 
+function sideRows(
+  entity: MergeEntity,
+  side: MergeSide,
+  stageName: (catalog: string, code: string | null | undefined) => string | undefined,
+): [string, ReactNode][] {
+  if (entity === 'PARENT') {
+    const c = side.counts ?? {};
+    return [
+      ['SĐT', formatPhone(side.phone)],
+      ['SĐT 2', side.phone_2 ? formatPhone(side.phone_2) : '—'],
+      ['Cơ sở', side.branch_code],
+      ['Ngày tạo', formatDate(side.created_at)],
+      [
+        'Học sinh · lead · cơ hội',
+        `${c.students ?? 0} · ${c.leads ?? 0} · ${c.opportunities ?? 0}`,
+      ],
+      [
+        'Đơn · phiếu thu · ghi danh',
+        `${c.orders ?? 0} · ${c.receipts ?? 0} · ${c.enrollments ?? 0}`,
+      ],
+      ['Ghi chú', String(side.notes)],
+    ];
+  }
+  if (entity === 'STUDENT') {
+    const c = side.counts ?? {};
+    return [
+      ['Phụ huynh', `${side.parent_name} · ${formatPhone(side.phone)}`],
+      ['Năm sinh', side.birth_year ? String(side.birth_year) : '—'],
+      ['Khối', side.grade ? String(side.grade) : '—'],
+      ['Cơ sở', side.branch_code],
+      ['Ngày tạo', formatDate(side.created_at)],
+      ['Ghi danh · phiếu kiểm tra', `${c.enrollments ?? 0} · ${c.tests ?? 0}`],
+      ['Dòng điểm danh · ghi chú', `${c.attendance ?? 0} · ${side.notes}`],
+    ];
+  }
+  return [
+    ['SĐT', formatPhone(side.phone)],
+    ['Học sinh', side.student_name ?? '—'],
+    entity === 'LEAD'
+      ? ['Source', side.source ?? '—']
+      : [
+          'Giai đoạn',
+          side.stage_code
+            ? `${side.stage_code} ${stageName('OPP_STAGE', side.stage_code) ?? ''}`.trim()
+            : '—',
+        ],
+    ['Sale phụ trách', side.owner ?? '—'],
+    ['Cơ sở', side.branch_code],
+    ['Ngày tạo', formatDate(side.created_at)],
+    entity === 'LEAD'
+      ? ['Cơ hội', String(side.opportunities ?? 0)]
+      : ['Phiếu kiểm tra', String(side.tests ?? 0)],
+    ['Lịch hẹn · ghi chú', `${side.appointments} lịch hẹn · ${side.notes} ghi chú`],
+  ];
+}
+
 function SideCard({
   entity,
   title,
@@ -286,28 +407,7 @@ function SideCard({
   side: MergeSide | undefined;
   stageName: (catalog: string, code: string | null | undefined) => string | undefined;
 }) {
-  const rows: [string, ReactNode][] =
-    side === undefined
-      ? []
-      : [
-          ['SĐT', formatPhone(side.phone)],
-          ['Học sinh', side.student_name ?? '—'],
-          entity === 'LEAD'
-            ? ['Source', side.source ?? '—']
-            : [
-                'Giai đoạn',
-                side.stage_code
-                  ? `${side.stage_code} ${stageName('OPP_STAGE', side.stage_code) ?? ''}`.trim()
-                  : '—',
-              ],
-          ['Sale phụ trách', side.owner ?? '—'],
-          ['Cơ sở', side.branch_code],
-          ['Ngày tạo', formatDate(side.created_at)],
-          entity === 'LEAD'
-            ? ['Cơ hội', String(side.opportunities ?? 0)]
-            : ['Phiếu kiểm tra', String(side.tests ?? 0)],
-          ['Lịch hẹn · ghi chú', `${side.appointments} lịch hẹn · ${side.notes} ghi chú`],
-        ];
+  const rows: [string, ReactNode][] = side === undefined ? [] : sideRows(entity, side, stageName);
   return (
     <label
       className={cn(
@@ -325,7 +425,9 @@ function SideCard({
           className="size-4 accent-[var(--action-primary-bg)]"
         />
         <span className="tabular text-caption text-fg-muted">{title}</span>
-        <span className="min-w-0 flex-1 truncate font-semibold">{side?.parent_name}</span>
+        <span className="min-w-0 flex-1 truncate font-semibold">
+          {entity === 'STUDENT' ? side?.student_name : side?.parent_name}
+        </span>
         <Tag tone={kept ? 'brand' : 'neutral'}>{kept ? 'Giữ lại' : 'Gộp vào bản giữ lại'}</Tag>
       </span>
       <dl className="grid grid-cols-[8.5rem_1fr] gap-x-2 gap-y-1 text-body">
