@@ -84,6 +84,11 @@ function ImportForm({
     if (!picked) return;
     setFileError(null);
     try {
+      // Khung QT18_sai_dinh_dang: chỉ nhận CSV; file Excel thì chỉ cách lưu lại.
+      if (!/\.csv$/i.test(picked.name))
+        throw new Error(
+          'File không đọc được. Chỉ nhận file CSV (UTF-8). Hãy mở file trong Excel, chọn Lưu thành → CSV UTF-8 rồi tải lại.',
+        );
       const table = parseCsv(await picked.text());
       if (table.rows.length === 0)
         throw new Error('File chưa có dòng dữ liệu nào (chỉ có dòng tên cột).');
@@ -274,12 +279,15 @@ function Tiles({
   shown: Shown;
   onShown: (s: Shown) => void;
 }) {
-  const items: { status: ImportRowStatus; count: number; label: string }[] = [
-    { status: 'HOP_LE', count: result.imported, label: 'dòng hợp lệ' },
-    { status: 'TRUNG', count: result.duplicates, label: 'dòng trùng' },
-    { status: 'LOI', count: result.errors, label: 'dòng lỗi' },
+  // Khung QT18_xem_truoc: bốn ô «Tất cả dòng», «Hợp lệ», «Trùng (bỏ qua)», «Lỗi (bỏ qua)».
+  const items: { status: Shown; count: number; label: string }[] = [
+    { status: 'ALL', count: result.total, label: 'Tất cả dòng' },
+    { status: 'HOP_LE', count: result.imported, label: 'Hợp lệ' },
+    { status: 'TRUNG', count: result.duplicates, label: 'Trùng (bỏ qua)' },
+    { status: 'LOI', count: result.errors, label: 'Lỗi (bỏ qua)' },
   ];
   const style = {
+    ALL: 'bg-surface-subtle text-fg',
     HOP_LE: 'bg-success-subtle text-on-success-subtle',
     TRUNG: 'bg-warning-subtle text-on-warning-subtle',
     LOI: 'bg-danger-subtle text-on-danger-subtle',
@@ -291,7 +299,7 @@ function Tiles({
           key={t.status}
           type="button"
           aria-pressed={shown === t.status}
-          onClick={() => onShown(shown === t.status ? 'ALL' : t.status)}
+          onClick={() => onShown(t.status === 'ALL' || shown === t.status ? 'ALL' : t.status)}
           className={cn(
             'focus-ring flex flex-1 flex-col gap-0.5 rounded-control border px-3 py-2.5 text-left',
             style[t.status],
@@ -313,9 +321,12 @@ function ResultTable({ config, rows }: { config: ImportKindConfig; rows: ImportL
         <thead className="sticky top-0 bg-surface-subtle text-left text-caption text-fg-label">
           <tr>
             <th className="px-3 py-2 text-right font-semibold">Dòng</th>
-            <th className="px-3 py-2 font-semibold">{config.subject}</th>
+            <th className="px-3 py-2 font-semibold">
+              {config.training ? config.subject : 'Chữ cái đầu tên'}
+            </th>
             <th className="px-3 py-2 font-semibold">Kết quả</th>
-            {config.training && <th className="px-3 py-2 font-semibold">Cảnh báo</th>}
+            <th className="px-3 py-2 font-semibold">Giải thích</th>
+            <th className="px-3 py-2 font-semibold">Cảnh báo</th>
           </tr>
         </thead>
         <tbody>
@@ -333,23 +344,19 @@ function ResultTable({ config, rows }: { config: ImportKindConfig; rows: ImportL
               </td>
               <td className="px-3 py-1.5">
                 <Tag tone={STATUS_TONE[r.status]}>{STATUS_TEXT[r.status]}</Tag>
-                {r.message && <div className="text-caption text-fg-muted">{r.message}</div>}
-                {!config.training &&
+              </td>
+              <td className="px-3 py-1.5 text-fg-muted">{r.message ?? '—'}</td>
+              <td className="px-3 py-1.5">
+                {(r.warnings ?? []).length === 0 ? (
+                  <span className="text-fg-muted">—</span>
+                ) : (
                   (r.warnings ?? []).map((w) => (
                     <div key={w} className="text-caption text-on-warning-subtle">
                       {w}
                     </div>
-                  ))}
+                  ))
+                )}
               </td>
-              {config.training && (
-                <td className="px-3 py-1.5">
-                  {(r.warnings ?? []).map((w) => (
-                    <div key={w} className="text-caption text-on-warning-subtle">
-                      {w}
-                    </div>
-                  ))}
-                </td>
-              )}
             </tr>
           ))}
         </tbody>
