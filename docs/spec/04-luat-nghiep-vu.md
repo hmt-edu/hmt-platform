@@ -118,7 +118,7 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-GD-04 | Số dư quỹ giờ luôn tính từ sổ giờ. Sổ giờ chỉ thêm dòng, không sửa, không xoá; điều chỉnh bằng dòng ngược dấu kèm lý do. | [CHỐT] |
 | R-GD-05 | Tình trạng ghi danh: Chờ xếp lớp, **Đã xếp lớp (12/10)**, Đang học, Bảo lưu, Hoàn thành, Chuyển lớp, Dừng, Hoàn phí (spec 02). Chờ xếp lớp = chưa có dòng xếp lớp đang mở; Đã xếp lớp = có lớp nhưng chưa có buổi Done; chuyển sang Đang học khi có buổi Done đầu tiên. Hàng chờ xếp lớp chỉ gồm ghi danh Chờ xếp lớp. | [CHỐT] |
 | R-GD-06 | Ngày vào lớp: không bao giờ mặc định theo ngày duyệt phiếu thu. Chọn trên dòng đơn khi đã chọn lớp (bắt buộc có ngày nếu có lớp, chặn khi trình duyệt đơn); lớp đã có buổi thì chọn từ danh sách buổi sắp tới, chưa có buổi thì chọn ngày, kiểm ngày đúng thứ có lịch và không trước ngày khai giảng. Không chọn lớp thì ghi danh ở Chờ xếp lớp, vận hành xếp sau. | [CHỐT] |
-| R-GD-07 | Thời hạn gói (`package_default_validity_months`, mặc định 6 tháng, tính từ ngày vào lớp) **chỉ để dự báo và báo cáo, không chặn gì**: quá hạn mà còn giờ thì em vẫn học tiếp bình thường, không mất giờ, không cần gia hạn. *[CHỜ anh quyết 17/10: một ghi danh một lớp nên mỗi lớp có ngày hết hạn riêng; chưa đổi chữ.]* | [CHỐT] |
+| R-GD-07 | Thời hạn gói (`package_default_validity_months`, mặc định 6 tháng, tính từ ngày vào lớp) **chỉ để dự báo và báo cáo, không chặn gì**: quá hạn mà còn giờ thì em vẫn học tiếp bình thường, không mất giờ, không cần gia hạn. Một ghi danh một lớp nên mỗi lớp có ngày hết hạn riêng (anh Trường chốt 20/11, Chat ghi). Màn Sắp hết giờ (GD-07) có tình trạng «Sắp hết hạn gói» khi hạn gói còn trong `upsale_days_left_threshold` ngày, chỉ để dự báo và báo cáo. | [CHỐT] |
 | R-GD-08 | Đơn chỉ chọn được lớp đã duyệt (Approved), còn chỗ (sĩ số tối đa; 0 = không giới hạn), đúng môn, khối, cơ sở. (26/10) Lớp trên dòng đơn phải đã duyệt, đúng môn, khối, cơ sở và còn chỗ; kiểm khi lưu, khi trình và khi duyệt đơn. Đơn không giữ chỗ trước; ghi danh kiểm chỗ lần cuối. | [CHỐT] |
 | R-GD-09 | Bảo lưu (chỉ qua ticket đề nghị đã duyệt): giữ nguyên giờ còn lại; một lần không quá `reservation_max_months` (mặc định 6 tháng). Trong thời gian bảo lưu em không vào danh sách buổi. | [CHỐT] |
 | R-GD-10 | Chuyển lớp, chuyển cơ sở (chỉ qua ticket đề nghị đã duyệt): đóng dòng xếp lớp cũ, mở dòng mới; giờ còn lại đi theo ghi danh. Giá các cơ sở như nhau nên chuyển cơ sở giữ nguyên số giờ. Doanh thu ghi cho cơ sở nơi buổi học Done. Chuyển lớp khác môn là chuyển phí (mục 9). | [CHỐT] |
@@ -354,7 +354,7 @@ Luật mới phát sinh thì thêm vào đúng mục, đánh dấu [CẦN CHỐT
 **Đã làm (10/11, Q-172, theo R-HT-07):** "hôm nay" ở trang bản ghi Đơn hàng (`todayKey`) và ở Calendar (ô "Hôm nay", ô tô sáng ngày hiện tại) lấy theo ngày Việt Nam, không theo UTC hay múi giờ máy. Chưa làm: lưới Calendar và các sự kiện vẫn nhóm theo ngày lịch của máy (chung phần Q-171).
 
 **Chờ anh quyết, chưa đưa vào luật (17/10):**
-- R-GD-07 (thời hạn gói): một ghi danh một lớp nên mỗi lớp có ngày hết hạn riêng; chưa đổi chữ.
+- R-GD-07 (thời hạn gói): một ghi danh một lớp nên mỗi lớp có ngày hết hạn riêng (đã đổi chữ 20/11).
 - R-GD-09, R-GD-16 và spec 02 mục 5: bảo lưu, dừng học vẫn ở cấp ghi danh; một ticket đề nghị cho chọn nhiều ghi danh.
 - R-GIO-03, R-GIO-04: "số dư" là quỹ của ghi danh; chỉ khi hai ghi danh cùng xếp vào một lớp mới xét hạn sử dụng sớm nhất.
 - Spec 02 mục 3 (gợi ý Đại + Hình chuyển lên bước lập đơn, khi xếp lớp chỉ nhắc nếu thiếu lớp còn lại), mục 6, 7 (quỹ và dự báo hết giờ theo từng ghi danh).
