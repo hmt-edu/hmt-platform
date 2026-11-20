@@ -13,6 +13,28 @@ export const EMPTY_TICKET_STATE: ListState = {
   datePreset: '',
 };
 
+/** Trường nhóm của giao diện Ticket (khoá cấu hình) → tên trường của app.ticket_group_counts. */
+export const TICKET_GROUP_FIELD_OF: Record<string, string> = {
+  type: 'type',
+  group: 'group',
+  priority: 'priority',
+  status: 'status',
+  assignee: 'assignee',
+  branch: 'branch',
+};
+
+/** Bộ lọc của MỘT nhóm (để mở nhóm tải dòng bằng list_tickets). Khoá rỗng chỉ có ở «người xử lý»: chưa giao. */
+export function ticketGroupFilter(field: string, key: string): TicketFilters {
+  if (field === 'assignee') return key === '' ? { no_assignee: true } : { assignee_id: key };
+  if (key === '') return {};
+  if (field === 'type') return { ticket_type: key };
+  if (field === 'group') return { group_code: key };
+  if (field === 'priority') return { priority_code: key };
+  if (field === 'status') return { status_code: key };
+  if (field === 'branch') return { branch_id: key };
+  return {};
+}
+
 export const TICKET_TYPES = ['DN', 'KN', 'GV'];
 export const SLA_STATES = ['QUA_HAN', 'SAP_QUA_HAN', 'CHO_DONG'];
 

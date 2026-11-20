@@ -17,10 +17,10 @@ Lead TS-01, Cơ hội TS-07, Lịch hẹn TS-11, Phiếu kiểm tra TS-16: đún
 | LOP-01 Lớp | Môn, Khối, Phân loại, Cơ sở, Giáo viên, Tình trạng duyệt, Vận hành | A |
 | GD-01 Ghi danh | Hình thức học, Lớp, Tình trạng | A |
 | BUOI-01 Buổi học | Ngày, Lớp, Cơ sở, Giáo viên, Loại, Tình trạng | A |
-| KH-01 Khách hàng | Tình trạng, Cơ sở tiếp nhận, Đang học tại | B |
+| KH-01 Khách hàng (Phụ huynh) | Tình trạng, Cơ sở tiếp nhận, Đang học tại | B (xong, migration 571; «Đang học tại» chưa làm) |
 | TT-01 Tái tục | Giai đoạn, Sub-stage, Campaign, Phụ trách | A/C |
 | TT-04 Đối soát tái tục | Cơ sở, Campaign, Lý do chưa có phiếu | A/C |
-| CS-01 Ticket | Loại, Nhóm, Mức độ, Trạng thái, Người xử lý, Cơ sở | B |
+| CS-01 Ticket | Loại, Nhóm, Mức độ, Trạng thái, Người xử lý, Cơ sở | B (xong, migration 571) |
 
 Còn nhiều danh sách chưa có cấu hình K03 trong `src/` (TS-02..17, GD-06, GD-07, BUOI-10..15, KH-04, LOP-08, LOP-09, TC-09) mà canvas có nút Group By: gom vào cùng việc khi từng màn được chuyển sang khuôn.
 
@@ -29,3 +29,15 @@ CS-05 Phiếu nghiệp vụ, TC-14 Số dư khách hàng, CHUNG-15 Việc chờ 
 
 ## Cách làm khi sửa (cho lane nhận)
 Nhóm ở máy chủ (đã có mẫu «Group By ở máy chủ», `src/list/khuon-may-chu.test.tsx`): không nhóm trên 50 dòng đã tải, vì kết quả sai khi có nhiều trang. Mỗi danh sách cần hàm đếm theo trường nhóm trong DB (nên có chỉ mục trên cột nhóm) rồi tải dòng khi mở nhóm.
+
+## Đã làm: KH-01 Phụ huynh và CS-01 Ticket (Code B, 20/11/2026, kho #19, migration 571)
+| Hàm | Ai gọi | Việc | Luật |
+|---|---|---|---|
+| `app.parent_group_counts(bộ lọc, trường nhóm)` | Vai có «Phụ huynh · Xem» (security definer, kiểm quyền bên trong) | Đếm phụ huynh theo `status` (Có con đang học / Chưa có con đang học) và `branch` (cơ sở tiếp nhận), tối đa hai cấp khác nhau; bộ lọc giống `list_parents` | R-CRM-27, K1_nhom |
+| `app.ticket_group_counts(bộ lọc, trường nhóm)` | Mọi người đăng nhập, dưới RLS ticket (không security definer) | Đếm ticket theo `type`, `group`, `priority`, `status`, `assignee`, `branch`, tối đa hai cấp; bộ lọc giống `list_tickets` | AS-07, K1_nhom |
+| `app.ticket_filter_rows(bộ lọc)` | `list_tickets`, `ticket_board`, `ticket_group_counts` | MỘT nơi định nghĩa bộ lọc ticket; thêm khoá `group_code` (nhóm cha của danh mục), `assignee_id`, `no_assignee` | AS-07 |
+| `app.ticket_group_label(trường, khoá)` | `ticket_group_counts` | Tên hiển thị nhóm (danh mục, cơ sở, người dùng) | |
+
+Lỗi: `HMT_NHOM_SAI` (trường lạ, trùng hai cấp, quá hai cấp, không chọn), `HMT_KHONG_CO_QUYEN` (phụ huynh, người không có quyền xem). Mở một nhóm thì giao diện gọi `list_parents` (`status`, `branch_id`) hoặc `list_tickets` (`ticket_type`, `group_code`, `priority_code`, `status_code`, `assignee_id` hoặc `no_assignee`, `branch_id`) với bộ lọc của nhóm. Nhóm «Người xử lý» chưa giao: khoá rỗng, nhãn «Chưa có».
+
+Chỗ chưa làm, chờ Chat chốt: «Đang học tại» của KH-01 (một phụ huynh học ở nhiều cơ sở cùng lúc nên lọt nhiều nhóm, tổng đếm sai). Không thêm chỉ mục mới (cột nhóm đã có chỉ mục).

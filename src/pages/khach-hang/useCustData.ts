@@ -2,6 +2,7 @@
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
+import type { GroupCounts } from '../lead/leadTypes';
 import type { CustFilters } from './custFilters';
 import type { ParentPage, ParentRecord, StudentPage, StudentRecord } from './custTypes';
 
@@ -12,19 +13,37 @@ function usePage<T>(
   sort: string,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: [key, filters, sort, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<T>(supabase, fn, { p_filters: filters, p_sort: sort, p_limit: limit, p_offset: offset }),
   });
 }
 
-export const useParentPage = (f: CustFilters, s: string, o: number, l: number | null) =>
-  usePage<ParentPage>('list_parents', 'parent-list', f, s, o, l);
+/** Số phụ huynh theo trường nhóm (Group By ở máy chủ, tối đa hai cấp): app.parent_group_counts, bộ lọc giống list_parents. */
+export function useParentGroupCounts(filters: CustFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['parent-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'parent_group_counts', { p_filters: filters, p_fields: fields }),
+  });
+}
+
+export const useParentPage = (
+  f: CustFilters,
+  s: string,
+  o: number,
+  l: number | null,
+  enabled = true,
+) => usePage<ParentPage>('list_parents', 'parent-list', f, s, o, l, enabled);
 export const useStudentPage = (f: CustFilters, s: string, o: number, l: number | null) =>
   usePage<StudentPage>('list_students', 'student-list', f, s, o, l);
 
@@ -53,8 +72,8 @@ export function useRefreshCustomers() {
   return useCallback(
     () =>
       Promise.all(
-        ['parent-list', 'student-list', 'parent-record', 'student-record'].map((k) =>
-          client.invalidateQueries({ queryKey: [k] }),
+        ['parent-list', 'parent-groups', 'student-list', 'parent-record', 'student-record'].map(
+          (k) => client.invalidateQueries({ queryKey: [k] }),
         ),
       ),
     [client],

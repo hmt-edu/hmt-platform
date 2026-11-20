@@ -3,13 +3,19 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
 import { errorOf, rpc, useDb } from '../../lib/db';
+import type { GroupCounts } from '../lead/leadTypes';
 import type { TicketBoardColumn, TicketFilters, TicketPage, TicketRecord } from './ticketTypes';
 
-export function useTicketPage(filters: TicketFilters, offset: number, limit: number | null) {
+export function useTicketPage(
+  filters: TicketFilters,
+  offset: number,
+  limit: number | null,
+  enabled = true,
+) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['ticket-list', filters, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<TicketPage>(supabase, 'list_tickets', {
@@ -20,12 +26,24 @@ export function useTicketPage(filters: TicketFilters, offset: number, limit: num
   });
 }
 
+/** Số ticket theo trường nhóm (Group By ở máy chủ, tối đa hai cấp): app.ticket_group_counts, bộ lọc giống list_tickets. */
+export function useTicketGroupCounts(filters: TicketFilters, fields: string[], enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['ticket-groups', filters, fields],
+    enabled: enabled && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'ticket_group_counts', { p_filters: filters, p_fields: fields }),
+  });
+}
+
 export function useRefreshTickets() {
   const queryClient = useQueryClient();
   return useCallback(
     () =>
       Promise.all(
-        ['ticket-list', 'ticket-board'].map((key) =>
+        ['ticket-list', 'ticket-board', 'ticket-groups'].map((key) =>
           queryClient.invalidateQueries({ queryKey: [key] }),
         ),
       ),

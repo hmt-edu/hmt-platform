@@ -156,7 +156,16 @@ export function buildTicketConfig(
           ]
         : []),
     ],
-    groupFields: [],
+    groupFields: [
+      { key: 'type', label: 'Loại', value: (r) => r.ticket_type },
+      { key: 'group', label: 'Nhóm', value: (r) => r.group_name ?? '' },
+      { key: 'priority', label: 'Mức độ', value: (r) => r.priority_code },
+      { key: 'status', label: 'Trạng thái', value: (r) => r.status_code },
+      { key: 'assignee', label: 'Người xử lý', value: (r) => r.assignee_name ?? '' },
+      ...(access.seesAllBranches
+        ? [{ key: 'branch', label: 'Cơ sở', value: (r: TicketRow) => r.branch_code }]
+        : []),
+    ],
     dateFields: [],
     views: ['list', 'kanban'],
   };
