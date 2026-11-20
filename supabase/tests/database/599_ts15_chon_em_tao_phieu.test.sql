@@ -42,15 +42,18 @@ select u.id, v.role from u join (values ('admin', 'ADMIN'), ('sales1', 'SALES'),
 update app.user_role set is_active = false where role_code = 'ADMIN' and is_active and user_id not in (select id from u);
 
 
--- ================= Dựng dữ liệu: hai lead ở CS1 (sales1); lead 1 có 2 em (Em Đầu 2012, Em Hai 2014) và thành cơ hội L5; lead 2 là cơ hội khác =================
+-- ================= Dựng dữ liệu: hai lead ở CS1 (sales1); cơ hội 1 có 2 em (Em Đầu 2012, Em Hai 2014 thêm vào cơ hội) và thành cơ hội L5; lead 2 là cơ hội khác =================
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select app.create_lead(pg_temp.lead_data('0900590001'));
 select app.create_lead(pg_temp.lead_data('0900590002'));
-select app.add_prospect_student('LEAD', (select id from app.lead where parent_phone = '0900590001'), '{"full_name": "Em Hai", "birth_year": 2014}');
 select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where stage_code = 'C1'$$);
 select app.create_opportunity((select id from app.lead where parent_phone = '0900590001'));
 select app.create_opportunity((select id from app.lead where parent_phone = '0900590002'));
+-- Em thứ hai thêm thẳng vào cơ hội 1 (không phụ thuộc cách chép em từ lead).
+select pg_temp.sudo($$create function pg_temp.oid0(p_phone text) returns uuid language sql stable security definer as 'select o.id from app.opportunity o join app.parent p on p.id = o.parent_id where p.phone = p_phone'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.oid0(text) to public$$);
+select app.add_prospect_student('OPPORTUNITY', pg_temp.oid0('0900590001'), '{"full_name": "Em Hai", "birth_year": 2014}');
 select pg_temp.sudo($$create function pg_temp.oid(p_phone text) returns uuid language sql stable security definer as
   'select o.id from app.opportunity o join app.parent p on p.id = o.parent_id where p.phone = p_phone'$$);
 select pg_temp.sudo($$create function pg_temp.em(p_phone text, p_pos integer) returns uuid language sql stable security definer as
