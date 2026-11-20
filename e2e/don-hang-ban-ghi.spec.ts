@@ -143,9 +143,7 @@ test('Nháp bị từ chối: lý do và ghi chú nằm ở dòng thời gian (k
   await page.getByRole('tab', { name: 'Thanh toán' }).click();
   await expect(page.getByText('Chưa có phiếu thu.')).toBeVisible();
   await page.getByRole('tab', { name: 'Ghi danh' }).click();
-  await expect(
-    page.getByText(/Làm ở phân hệ sau\. Ghi danh sinh khi tiền đã vào đủ cọc/),
-  ).toBeVisible();
+  await expect(page.getByText(/Ghi danh sinh khi tiền đã vào đủ cọc tối thiểu/)).toBeVisible();
   // Không còn khối "Lịch sử xử lý" cuối trang (Q-48): sự kiện nằm ở dòng thời gian bên phải.
   await expect(page.getByText('Lịch sử xử lý')).toHaveCount(0);
   const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });

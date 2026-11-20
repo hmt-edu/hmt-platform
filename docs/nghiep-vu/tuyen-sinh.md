@@ -128,8 +128,10 @@ Kiểm thử: `supabase/tests/database/023_gop_trung.test.sql` (106 bài), `022`
 | `app.merge_preview(loại, giữ, gộp)` | Xem trước: số bản ghi sẽ chuyển, điều kiện chặn, cảnh báo; cùng kiểm quyền như gộp thật | TS-10, KH-07 |
 | `app.merge_leads` | Chuyển lịch hẹn, ghi chú, cơ hội sang lead giữ lại | R-CRM-22 |
 | `app.merge_opportunities` | Chuyển lịch hẹn, ghi chú, phiếu; ô trống của bản giữ lại lấy của bản kia; **giai đoạn bản giữ lại giữ nguyên**; chặn: khác phụ huynh, khác học sinh, bản bị gộp có báo giá hoặc đơn; cảnh báo: bản bị gộp ở giai đoạn cao hơn | R-CRM-22, 37(a), 02 |
-| `app.merge_students` | Chuyển cơ hội, phiếu, ghi chú; chặn nếu khác phụ huynh | R-CRM-37(b) |
-| `app.merge_parents` | Chuyển lead, cơ hội, học sinh, ghi chú; không tự gộp học sinh; trả danh sách học sinh trùng; không chặn theo báo giá, đơn (R-CRM-25 còn [CHỜ]) | R-CRM-25, 37(c) |
+| `app.merge_students` | Chuyển TOÀN BỘ dữ liệu có khoá học sinh (danh sách em, phiếu kiểm tra, ghi danh, sổ số dư, điểm danh, BTVN...) sang học sinh giữ lại; kiểm tổng số dư, giờ, tiền trước = sau (HMT_GOP_LECH_TIEN); chặn nếu khác phụ huynh, cùng ghi danh hiệu lực ở cùng lớp (HMT_GOP_CUNG_LOP) hoặc hai lớp trùng giờ (HMT_GOP_TRUNG_GIO); trùng ràng buộc duy nhất thì HMT_GOP_XUNG_DOT (migration 583) | R-CRM-25, R-CRM-37(b) |
+| `app.merge_move_refs` (nội bộ) | Duyệt pg_constraint, đổi mọi khoá ngoại trỏ hồ sơ bị gộp sang hồ sơ giữ lại (SQL động có chủ đích); lead đã huỷ giữ nguyên; bật cờ giao dịch hmt.merge cho trigger sổ chỉ-thêm | R-CRM-25 |
+| `app.merge_totals`, `app.merge_assert_totals` (nội bộ) | Tổng số dư, đơn, phiếu thu, tiền vào, phiếu chi, giờ, số ghi danh để so trước và sau gộp | R-CRM-25 |
+| `app.merge_parents` | Chuyển TOÀN BỘ dữ liệu có khoá phụ huynh (lead, cơ hội, học sinh, báo giá, đơn, phiếu thu, tiền vào, số dư, ghi danh...) sang phụ huynh giữ lại; kiểm tổng tiền, giờ trước = sau; không tự gộp học sinh; trả danh sách học sinh trùng (migration 583) | R-CRM-25, R-CRM-37(c) |
 | `app.duplicate_students_of_parent` | Các cặp học sinh trùng tên (chuẩn hoá) và năm sinh dưới một phụ huynh; chỉ nêu học sinh trong phạm vi Xem của người gọi (migration 572) | R-CRM-37(c) |
 | Nội bộ: `merge_common`, `merge_check_opportunities`, `merge_check_students`, `move_notes`, `add_system_note`, `opportunity_sales_documents` | Kiểm chung, điều kiện chặn từng loại, chuyển ghi chú (cờ trong giao dịch), ghi chú hệ thống, điểm nối báo giá và đơn (rỗng, P5 thay thân) | |
 
