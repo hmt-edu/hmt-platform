@@ -73,3 +73,39 @@ export function classNotes(status: string, slotCount: number): ClassNotes {
 /** Chữ ở ô Nhóm lớp khi lớp không thuộc nhóm nào (canvas LOP05_thieu_tkb). */
 export const NO_GROUP_TEXT =
   'Lớp không thuộc nhóm nào. Lớp Đại số, Hình học cùng khối, cùng cơ sở có thể gắn vào một nhóm khi tạo hoặc sửa lớp (LOP-03).';
+
+/**
+ * Bốn ô tự sinh từ Time Table ở bản ghi lớp (canvas LOP05_venhap: Lịch học, Phòng học, Giáo viên, Trợ giảng). Chỉ gom chữ từ khung giờ máy chủ đã trả.
+ */
+export function recordSlotSummary(
+  slots: {
+    weekday: number;
+    start_time: string;
+    end_time: string;
+    teacher_name?: string | null;
+    assistant_name?: string | null;
+    room_name?: string | null;
+  }[],
+): { schedule: string; rooms: string; teachers: string; assistants: string } {
+  const sorted = [...slots].sort(
+    (a, b) => a.weekday - b.weekday || a.start_time.localeCompare(b.start_time),
+  );
+  const uniq = (xs: (string | null | undefined)[]) => [
+    ...new Set(xs.filter((x): x is string => !!x && x.trim() !== '')),
+  ];
+  const join = (xs: string[], empty: string) => (xs.length > 0 ? xs.join(', ') : empty);
+  return {
+    schedule:
+      sorted.length > 0
+        ? sorted
+            .map(
+              (x) =>
+                `${WEEKDAY_LABEL[x.weekday] ?? ''} ${timeText(x.start_time)}–${timeText(x.end_time)}`,
+            )
+            .join(' · ')
+        : 'Chưa có lịch học (chưa có Time Table)',
+    rooms: join(uniq(sorted.map((x) => x.room_name)), '—'),
+    teachers: join(uniq(sorted.map((x) => x.teacher_name)), 'Chưa phân công'),
+    assistants: join(uniq(sorted.map((x) => x.assistant_name)), 'Không có'),
+  };
+}
