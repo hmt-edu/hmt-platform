@@ -39,9 +39,9 @@ select pg_temp.sudo($$set local session_replication_role = 'replica'$$);
 select pg_temp.sudo($$insert into app.receipt (code, order_id, parent_id, branch_id, collect_branch_id, status_code, amount, payment_method_code, search_text)
   select v.c, gen_random_uuid(), (select id from app.parent where code = 'PHC82'), (select id from app.branch where code = v.b), (select id from app.branch where code = v.b), v.s, 500000, v.m, app.fold_text(v.c)
     from (values ('PTC82-1', 'CS5', 'NHAP', 'TIEN_MAT'), ('PTC82-2', 'CS5', 'NHAP', 'TIEN_MAT'), ('PTC82-3', 'CS5', 'DA_GUI', 'CHUYEN_KHOAN'), ('PTC82-4', 'CS1', 'NHAP', 'TIEN_MAT')) v (c, b, s, m)$$);
-select pg_temp.sudo($$set local session_replication_role = 'origin'$$);
--- PTC82-1 đã được Kế toán đánh dấu khớp sao kê (TC-15); ba phiếu còn lại chưa.
+-- PTC82-1 đã được Kế toán đánh dấu khớp sao kê (TC-15); ba phiếu còn lại chưa. (cập nhật khi còn replica: dòng vừa thêm cùng giao dịch bị kiểm lại khoá ngoại)
 select pg_temp.sudo($$update app.receipt set bank_matched_at = now(), bank_matched_by = gen_random_uuid() where code = 'PTC82-1'$$);
+select pg_temp.sudo($$set local session_replication_role = 'origin'$$);
 
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
