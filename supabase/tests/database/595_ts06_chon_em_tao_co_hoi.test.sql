@@ -1,5 +1,5 @@
 begin;
--- Migration 589: chọn em khi tạo cơ hội từ lead (app.create_opportunity p_student_ids) và app.add_lead_students_to_opportunity (TS-06).
+-- Migration 595: chọn em khi tạo cơ hội từ lead (app.create_opportunity p_student_ids) và app.add_lead_students_to_opportunity (TS-06).
 -- Luật: R-CRM-23 (mặc định chọn tất cả em, được chọn 0 em, tối đa prospect_max_students, em trùng gộp một dòng), R-CRM-01, R-CRM-03 (từ L5 mỗi em có tên và năm sinh). Dữ liệu giả.
 create extension if not exists pgtap with schema extensions;
 select no_plan();

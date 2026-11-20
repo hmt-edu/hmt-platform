@@ -484,7 +484,7 @@ Dùng cho thẻ em và hộp «Thêm em» ở hồ sơ lead, cơ hội (TS-02, T
 Chung: hồ sơ đã gộp chỉ xem (HMT_BAN_GHI_DA_GOP); hàm trong `app.prospect_guard` khoá hồ sơ cha, kiểm quyền; khách (anon) không gọi được.
 **Bỏ em là xoá dòng thật** (khác quy ước «không xoá cứng»): dòng em chỉ là ghi nhận trong danh sách, không phải hồ sơ nghiệp vụ. Trigger chặn xoá của bảng `prospect_student` được thay bằng bản chỉ mở khi `remove_prospect_student` bật cờ `hmt.prospect_remove` trong giao dịch của nó; mọi đường xoá khác vẫn báo HMT_KHONG_XOA; `audit_log` vẫn ghi dòng bị bỏ.
 
-## Chọn em khi tạo cơ hội, Thêm em vào cơ hội cũ (migration 589, Code B, 21/11/2026)
+## Chọn em khi tạo cơ hội, Thêm em vào cơ hội cũ (migration 595, Code B, 21/11/2026)
 Dùng cho hộp TS-06 «Tạo cơ hội từ lead». Trước đây chỉ chép em đầu của lead.
 | Hàm | Ai gọi | Việc | Luật, lỗi |
 |---|---|---|---|
