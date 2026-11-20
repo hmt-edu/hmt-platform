@@ -1,12 +1,12 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 162 có màn, 11 chỉ có DB (chưa thấy màn), 24 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 163 có màn, 11 chỉ có DB (chưa thấy màn), 23 chưa có.**
 
 ## Số theo cổng
 
 | Cổng | Tổng | Có màn | Chỉ có DB | Chưa có |
 |---|---|---|---|---|
-| CRM (còn lại) | 155 | 143 | 4 | 8 |
+| CRM (còn lại) | 155 | 144 | 4 | 7 |
 | Giáo viên (GV) | 18 | 16 | 0 | 2 |
 | Học sinh (HT) | 9 | 0 | 0 | 9 |
 | Phụ huynh (PH) | 5 | 0 | 0 | 5 |
@@ -108,7 +108,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TC-15 | Đối soát thu tiền | B | **Có màn** `/crm/doi-soat-thu-tien` | có (16 khung) | chưa kiểm | duong-ke-toan.spec.ts | Code C/D |
 | GV-15 | Chấm kiểm tra đầu vào | B | **Có màn** `src/pages/gv/TeacherTodoPage.tsx` | có (20 khung) | Đúng | — | Code E |
 | QT-14 | Ngày nghỉ lễ | B | **Có màn** `/crm/cau-hinh/ngay-nghi` | không có khung | chưa kiểm | ngay-nghi.spec.ts | Code F |
-| QT-15 | Cấu hình người duyệt ticket theo nhóm con | B | **Chưa có** | không có khung | chưa kiểm | — | Code F |
+| QT-15 | Cấu hình người duyệt ticket theo nhóm con | B | **Có màn** `/crm/cau-hinh/nguoi-duyet-ticket` | không có khung | chưa kiểm | — | Code F |
 | QT-16 | Giáo viên, trợ giảng (hồ sơ dạy) | B | **Có màn** `/crm/quan-tri/giao-vien` | không có khung | chưa kiểm | ho-so-day.spec.ts | Code F |
 | CH-05 | Khung chương trình (danh sách phiên bản) | B | **Có màn** `/crm/cau-hinh/khung-chuong-trinh` | có (14 khung) | chưa kiểm | lop.spec.ts | Code F |
 | CH-06 | Khung chương trình (danh sách bài học) | B | **Có màn** `src/pages/khung-chuong-trinh/CurriculumFramePage.tsx` | có (14 khung) | chưa kiểm | — | Code F |
@@ -159,10 +159,10 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | CS-04 | Tạo ticket (chọn loại, nhóm, nhóm con) | B | **Có màn** `src/pages/ghi-danh/EnrollmentRecordPage.tsx` | không có khung | chưa kiểm | — | Code B |
 | CS-05 | Thực hiện hoàn tiền (bảng tính hoàn) | A | **Có màn** `/crm/phieu-nghiep-vu` | không có khung | chưa kiểm | — | Code B |
 | CS-06 | Thực hiện chuyển lớp (cùng môn) | B | **Có màn** `src/pages/phieu/TaskRecordPage.tsx` | không có khung | Lệch → đã sửa | cskh-khieu-nai-bao-luu.spec.ts | Code B |
-| CS-07 | Thực hiện chuyển cơ sở | B | **Chỉ có DB** `20261121000568_cs07_chuyen_co_so_hai_co_so_duyet.sql` | không có khung | chưa kiểm | — | Code B |
+| CS-07 | Thực hiện chuyển cơ sở | B | **Chỉ có DB** `20261119000479_qt15_nguoi_duyet_ticket_hieu_luc.sql` | không có khung | chưa kiểm | — | Code B |
 | CS-08 | Duyệt / từ chối ticket (từng cấp) | B | **Có màn** `src/pages/phieu/TaskRecordPage.tsx` | không có khung | chưa kiểm | cskh-khieu-nai-bao-luu.spec.ts | Code B |
 | CS-09 | Thực hiện bảo lưu (mới, gia hạn, quay lại sớm) | B | **Có màn** `src/pages/phieu/BusinessTaskDialog.tsx` | không có khung | chưa kiểm | — | Code B |
-| CS-10 | Thực hiện chuyển phí (sang môn khác, anh chị em, gói khác) | B | **Chỉ có DB** `20261121000567_cs10_chuyen_phi_qua_phieu.sql` | không có khung | chưa kiểm | gv-ticket.spec.ts | Code B |
+| CS-10 | Thực hiện chuyển phí (sang môn khác, anh chị em, gói khác) | B | **Chỉ có DB** `20261119000479_qt15_nguoi_duyet_ticket_hieu_luc.sql` | không có khung | chưa kiểm | gv-ticket.spec.ts | Code B |
 | CS-11 | Thực hiện đổi lịch học (dời buổi, đổi ca, xin học bù) | B | **Có màn** `src/pages/phieu/ScheduleTaskDialog.tsx` | không có khung | chưa kiểm | — | Code B |
 | CS-12 | Từ chối / khách huỷ ticket (lý do) | C | **Chưa có** | không có khung | chưa kiểm | — | Code B |
 | CS-13 | Nâng cấp / mở lại khiếu nại | C | **Có màn** `src/pages/ticket/TicketRecordPage.tsx` | không có khung | chưa kiểm | cskh-khieu-nai-bao-luu.spec.ts | Code B |
