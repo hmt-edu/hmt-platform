@@ -7,8 +7,10 @@ import { useDebounced } from '../../lib/useDebounced';
 import { Button } from '../../ui/Button';
 import { FormDialog } from '../../ui/Dialogs';
 import { Alert } from '../../ui/Feedback';
-import { Checkbox, Field, TextField } from '../../ui/Field';
-import { Drawer, Select } from '../../ui/Overlays';
+import { Field, TextField } from '../../ui/Field';
+import { Drawer, DropdownMenu, Select } from '../../ui/Overlays';
+import { Tag } from '../../ui/Data';
+import { Icon } from '../../ui/icons';
 import {
   checkAccountFields,
   createUser,
@@ -208,23 +210,40 @@ function CreateUserForm({ open, onOpenChange, roles, branches, defaultBranch, on
             )}
           </Field>
         </div>
-        <fieldset className="flex flex-col gap-1">
-          <legend className="mb-1 text-caption font-semibold text-fg-label">Vai trò *</legend>
-          <p className="text-caption text-fg-muted">Được chọn nhiều vai trò.</p>
-
-          {roles.map((r) => (
-            <Checkbox
-              key={r.code}
-              label={r.name}
-              checked={picked.includes(r.code)}
-              onChange={(e) =>
-                setPicked((prev) =>
-                  e.target.checked ? [...prev, r.code] : prev.filter((c) => c !== r.code),
-                )
+        <div className="flex flex-col gap-1" role="group" aria-label="Vai trò">
+          <span className="text-caption font-semibold text-fg-label">Vai trò *</span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            {picked.map((code) => (
+              <Tag key={code} tone="info">
+                {roles.find((r) => r.code === code)?.name ?? code}
+                <button
+                  type="button"
+                  aria-label={`Bỏ vai trò ${roles.find((r) => r.code === code)?.name ?? code}`}
+                  className="focus-ring inline-flex"
+                  onClick={() => setPicked((prev) => prev.filter((c) => c !== code))}
+                >
+                  <Icon name="close" size={16} />
+                </button>
+              </Tag>
+            ))}
+            <DropdownMenu
+              align="start"
+              trigger={
+                <Button size="sm" icon="plus">
+                  Thêm vai trò
+                </Button>
               }
+              items={roles
+                .filter((r) => !picked.includes(r.code))
+                .map((r) => ({
+                  kind: 'action' as const,
+                  label: r.name,
+                  onSelect: () => setPicked((prev) => [...prev, r.code]),
+                }))}
             />
-          ))}
-        </fieldset>
+          </div>
+          <p className="text-caption text-fg-muted">Được chọn nhiều vai trò.</p>
+        </div>
         <TextField
           label="Mã nhân sự"
           readOnly

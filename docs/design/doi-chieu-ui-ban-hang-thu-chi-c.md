@@ -39,6 +39,17 @@ Bốn màn là hộp thoại K08 (mức C). Canvas 9933 không có khung hộp t
 | BH-10 Huỷ đơn hàng | `OrderRecordPage.tsx` hộp «Huỷ đơn hàng»; dòng «Huỷ đơn» kèm lý do; đơn đã có phiếu thu bị chặn kèm mời tạo ticket hoàn tiền | `BH05_huy`: «Huỷ đơn. Lý do: … Chưa thu tiền.» | Gần đúng: canvas thêm câu «Chưa thu tiền.» cuối dòng; câu này là chú thích minh hoạ của khung, giữ như hiện tại (không đổi luật R-TIEN-03) |
 | BH-11 Cảnh báo cơ hội đã có đơn nháp | `OrderCreatePage.tsx`, `OpportunityRecordPage.tsx`, hàm migration 88 (R-TIEN-39) | `BH02_bh11` | Đúng về luật: có cảnh báo kèm mã đơn nháp, nút Mở đơn cũ, Vẫn tạo |
 
+## So luật TC-12, TC-14, TC-16 (không có khung canvas; Code C, 20/11/2026, thẻ 20:22)
+
+Bản đồ màn hình xếp ba màn mức C; đối chiếu với luật R-TIEN-08, R-TIEN-28, R-TIEN-33, R-CS-03 và mã hiện có.
+
+| Màn | Luật | Trong code | Kết quả |
+|---|---|---|---|
+| TC-12 Bản in phiếu chi | R-TIEN-08 (có bản in phiếu chi), R-TIEN-28 (tiền hoàn = đã đóng − giờ học × giá gốc − phí xử lý) | `VoucherPrintPage.tsx` dùng khuôn K13; bản in chỉ có 3 dòng: trước phí, phí, số hoàn | **Đã sửa** (PR C86): bản in thêm các dòng «Phụ huynh đã đóng», «Giờ đã học × giá gốc», «Còn lại sau khi trừ giờ đã học» (hoàn toàn bộ) hoặc «Giờ hoàn × giá sau chiết khấu» (một phần), cùng nhãn và số với bản ghi TC-11; hàm `voucherPrintRows` có Vitest |
+| TC-14 Số dư khách hàng | R-TIEN-33 (sổ chỉ thêm dòng, không hết hạn), R-CS-03 | `BalanceListPage`, `BalanceHistoryPage`; sổ chỉ thêm dòng ở DB (`tg_customer_balance_append_only`); cột Phụ huynh, Mã, Số dư, Phát sinh gần nhất, Số dòng sổ, Cơ sở; lọc «Còn tiền dư» | Đúng về luật. **Thiếu nút «Cấn vào đơn mới» trên danh sách** (bản đồ màn hình liệt kê hành động này); xem câu hỏi bên dưới |
+| TC-16 Dùng số dư cho đơn mới | R-TIEN-33 (ghi như một khoản tiền vào của đơn mới, không có phiếu thu) | `UseBalanceDialog.tsx` hộp K08 mở từ bản ghi đơn: số tiền mặc định bằng mức tối đa, chặn vượt số dư hoặc phần đơn còn thiếu, câu giải thích «không có phiếu thu» | Đúng |
+
+**Câu hỏi cho Chat (TC-14):** nút «Cấn vào đơn mới» ở danh sách số dư nên làm gì? A. Mở danh sách Đơn hàng lọc theo phụ huynh đó, người dùng vào đơn rồi «Dùng số dư» (TC-16); không code mới nhiều. B. Hộp chọn đơn của phụ huynh rồi mở TC-16 ngay: cần Design vẽ khung chọn đơn. Khuyến nghị **A**.
 ## So canvas BH-01, BH-02, BH-05, BH-06, BH-07, TC-02, TC-05 (Code C, 20/11/2026, thẻ 19:58)
 
 Cách rà: lấy chữ của mọi khung `BH01*`, `BH05*`, `BH06*`, `BH07*`, `TC02*`, `TC05*` (canvas 9933, abea), bỏ tên người, số liệu minh hoạ, rồi tìm từng nhãn trong `src/` và `supabase/migrations/`. Nhãn không thấy thì đọc khung và quyết định.
