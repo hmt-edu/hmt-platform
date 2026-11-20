@@ -115,11 +115,12 @@ test('GV-01: giáo viên chỉ có cổng Giáo viên; điện thoại có thanh
   const nav = page.getByRole('navigation', {
     name: isPhone(page) ? 'Thanh điều hướng Cổng Giáo viên' : 'Menu Cổng Giáo viên',
   });
+  // Menu «Cần làm» có thể kèm số đếm công việc (R-V2-37, E73) tuỳ dữ liệu giả lúc chạy: nhãn chấp nhận số sau chữ.
   await expect(nav.getByRole('link')).toHaveText([
     'Hôm nay',
     'Lịch dạy',
     'Lớp',
-    'Cần làm',
+    /^Cần làm\d*\+?$/,
     'Tài khoản',
   ]);
   await nav.getByRole('link', { name: 'Lịch dạy' }).click();
