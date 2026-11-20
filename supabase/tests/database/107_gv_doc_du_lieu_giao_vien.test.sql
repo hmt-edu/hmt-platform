@@ -4,6 +4,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
+-- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
+create function pg_temp.session_pending_reason(p uuid) returns text language sql security definer as $$ select app.session_pending_reason(p) $$;
+grant execute on function pg_temp.session_pending_reason(uuid) to public;
+
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;
 begin
@@ -160,13 +164,13 @@ select is((select count(*)::int from app.session_content_line where is_active), 
 
 -- ================= Điều kiện Done khi tham số Tắt (Q-198, Q-208, R-V2-35) =================
 select pg_temp.sudo($$update app.setting_def set value = 'false' where key = 'session_done_requires_review'$$);
-select is(app.session_pending_reason(pg_temp.s('p', 1)), 'Giáo viên chưa nhập nội dung buổi.', 'Tắt: đã điểm danh xong nhưng chưa có nội dung thì chặn Done (Q-208)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), 'Giáo viên chưa nhập nội dung buổi.', 'Tắt: đã điểm danh xong nhưng chưa có nội dung thì chặn Done (Q-208)');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 1) || '''::uuid)')$$), 'HMT_BUOI_CHUA_DONE_DUOC', 'Tắt: chốt Done bị chặn khi thiếu nội dung buổi (Q-208)');
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(app.save_session_content(pg_temp.s('p', 1), array['Ôn tập chương 1'], null), 1, 'Giáo viên nhập nội dung, không BTVN');
-select is(app.session_pending_reason(pg_temp.s('p', 1)), null, 'Tắt: có nội dung (BTVN trống) thì đủ điều kiện Done (R-V2-35, Q-208)');
-select is(app.session_pending_reason(pg_temp.s('p', 2)), null, 'Tắt: buổi Kiểm tra không đòi dòng nội dung (khung GV-06 kiểm tra, Q-231)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), null, 'Tắt: có nội dung (BTVN trống) thì đủ điều kiện Done (R-V2-35, Q-208)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 2)), null, 'Tắt: buổi Kiểm tra không đòi dòng nội dung (khung GV-06 kiểm tra, Q-231)');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 1))$$);
 select is((select status_code from app.class_session where id = pg_temp.s('p', 1)), 'DONE', 'Tắt: có nội dung thì buổi Done được');
@@ -175,13 +179,13 @@ select is(pg_temp.err($$select app.save_session_content(pg_temp.s('p', 1), array
 select is((app.teacher_my_sessions('CAN_LAM') ->> 'total')::int, 2, 'Buổi đã Done rời khỏi danh sách Cần làm');
 -- Nhánh Bật: điều kiện nhận xét vẫn đứng như D2.
 select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'session_done_requires_review'$$);
-select is(app.session_pending_reason(pg_temp.s('p', 2)), 'Buổi kiểm tra chưa đặt điểm tối đa và cách nhập điểm.', 'Bật: điều kiện của buổi kiểm tra giữ như D2, không đòi dòng nội dung (Q-231)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 2)), 'Buổi kiểm tra chưa đặt điểm tối đa và cách nhập điểm.', 'Bật: điều kiện của buổi kiểm tra giữ như D2, không đòi dòng nội dung (Q-231)');
 -- Nhánh Bật, hai chiều (Q-231): buổi thường thiếu nội dung thì chặn trước cả nhận xét; có nội dung thì sang điều kiện nhận xét.
-select is(app.session_pending_reason(pg_temp.s('p', 3)), 'Buổi kiểm tra chưa đặt điểm tối đa và cách nhập điểm.', 'Bật: buổi Kiểm tra thứ hai cũng chỉ bị chặn vì chưa cấu hình điểm');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 3)), 'Buổi kiểm tra chưa đặt điểm tối đa và cách nhập điểm.', 'Bật: buổi Kiểm tra thứ hai cũng chỉ bị chặn vì chưa cấu hình điểm');
 select pg_temp.sudo($$update app.class_session set type_code = 'CHINH' where id = pg_temp.s('p', 3)$$);
-select is(app.session_pending_reason(pg_temp.s('p', 3)), 'Giáo viên chưa nhập nội dung buổi.', 'Bật: buổi thường thiếu nội dung thì chặn Done (Q-231)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 3)), 'Giáo viên chưa nhập nội dung buổi.', 'Bật: buổi thường thiếu nội dung thì chặn Done (Q-231)');
 select pg_temp.sudo($$insert into app.session_content_line (session_id, branch_id, sort_order, line_text) select id, branch_id, 1, 'Nội dung giả' from app.class_session where id = pg_temp.s('p', 3)$$);
-select is(app.session_pending_reason(pg_temp.s('p', 3)), 'Giáo viên chưa mở phần nhận xét của buổi.', 'Bật: đã có nội dung thì chuyển sang điều kiện nhận xét như D2 (Q-231)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 3)), 'Giáo viên chưa mở phần nhận xét của buổi.', 'Bật: đã có nội dung thì chuyển sang điều kiện nhận xét như D2 (Q-231)');
 
 select * from finish();
 rollback;

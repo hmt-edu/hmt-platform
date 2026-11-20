@@ -4,6 +4,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
+-- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
+create function pg_temp.opening_debt_remaining(p uuid) returns bigint language sql security definer as $$ select app.opening_debt_remaining(p) $$;
+grant execute on function pg_temp.opening_debt_remaining(uuid) to public;
+
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;
 begin
@@ -67,8 +71,8 @@ set local role authenticated;
 select pg_temp.claims((select id from u where key = 'cskh'), 'aal1');
 
 -- ---- Nợ còn lại ----
-select is(app.opening_debt_remaining(pg_temp.pid('PH251A')), 3000000::bigint, 'Nợ đầu kỳ còn lại của phụ huynh A là 3.000.000');
-select is(app.opening_debt_remaining(pg_temp.pid('PH251B')), 0::bigint, 'Phụ huynh B không có nợ: còn lại 0');
+select is(pg_temp.opening_debt_remaining(pg_temp.pid('PH251A')), 3000000::bigint, 'Nợ đầu kỳ còn lại của phụ huynh A là 3.000.000');
+select is(pg_temp.opening_debt_remaining(pg_temp.pid('PH251B')), 0::bigint, 'Phụ huynh B không có nợ: còn lại 0');
 
 -- ---- Tạo phiếu: luật R-V2-15 ----
 select is(pg_temp.err($$select app.create_opening_debt_receipt(pg_temp.pid('PH251B'), pg_temp.dat(1000))$$), 'HMT_SO_TIEN_VUOT', 'Phụ huynh không có nợ: không tạo được phiếu (vượt nợ còn lại)');
@@ -78,7 +82,7 @@ select is(pg_temp.err($$select app.create_opening_debt_receipt(pg_temp.pid('PH25
 insert into rc select app.create_opening_debt_receipt(pg_temp.pid('PH251A'), pg_temp.dat(1000000));
 select is((select status_code from app.receipt where id = (select (v ->> 'id')::uuid from rc)), 'NHAP', 'CSKH tạo được phiếu nợ đầu kỳ, trạng thái Nháp');
 select is((select order_id from app.receipt where id = (select (v ->> 'id')::uuid from rc)), null, 'Phiếu không gắn đơn hàng');
-select is(app.opening_debt_remaining(pg_temp.pid('PH251A')), 2000000::bigint, 'Phiếu đang chờ được trừ khỏi nợ còn lại (không thu vượt)');
+select is(pg_temp.opening_debt_remaining(pg_temp.pid('PH251A')), 2000000::bigint, 'Phiếu đang chờ được trừ khỏi nợ còn lại (không thu vượt)');
 select is(pg_temp.err($$select app.create_opening_debt_receipt(pg_temp.pid('PH251A'), pg_temp.dat(2000001))$$), 'HMT_SO_TIEN_VUOT', 'Phiếu thứ hai vượt phần còn lại sau phiếu đang chờ: bị chặn');
 
 -- ---- Học sinh chỉ là ghi chú tham chiếu (R-V2-15, Chat 15:28 (b)) ----
@@ -100,7 +104,7 @@ insert into ap select app.approve_opening_debt_receipt((select (v ->> 'id')::uui
 select is((select status_code from app.receipt where id = (select (v ->> 'id')::uuid from rc)), 'DA_DUYET', 'Kế toán duyệt: phiếu Đã duyệt');
 select is((select amount from app.money_in where id = (select (v ->> 'money_in_id')::uuid from ap)), 1000000::bigint, 'Sinh khoản tiền vào đúng số tiền');
 select is((select order_id from app.money_in where id = (select (v ->> 'money_in_id')::uuid from ap)), null, 'Khoản tiền vào không gắn đơn');
-select is(app.opening_debt_remaining(pg_temp.pid('PH251A')), 2000000::bigint, 'Nợ đầu kỳ còn lại giảm đúng 1.000.000 sau khi duyệt');
+select is(pg_temp.opening_debt_remaining(pg_temp.pid('PH251A')), 2000000::bigint, 'Nợ đầu kỳ còn lại giảm đúng 1.000.000 sau khi duyệt');
 select is(pg_temp.bal(pg_temp.pid('PH251A')), -2000000::bigint, 'Sổ số dư: -3.000.000 + 1.000.000');
 select is(pg_temp.err($$select app.approve_opening_debt_receipt((select (v ->> 'id')::uuid from rc))$$), 'HMT_SAI_TRANG_THAI', 'Duyệt hai lần: bị chặn (phiếu đã duyệt)');
 
@@ -116,7 +120,7 @@ select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'mon
 set local role authenticated;
 select pg_temp.claims((select id from u where key = 'ke'), 'aal2');
 select lives_ok($$select app.reverse_money_in((select (v ->> 'money_in_id')::uuid from ap), 'NHAP_SAI_SO_TIEN')$$, 'Kế toán hoàn tác khoản thu nợ đầu kỳ được (không có đơn, không tính giờ)');
-select is(app.opening_debt_remaining(pg_temp.pid('PH251A')), 3000000::bigint, 'Hoàn tác: nợ đầu kỳ còn lại trở về 3.000.000');
+select is(pg_temp.opening_debt_remaining(pg_temp.pid('PH251A')), 3000000::bigint, 'Hoàn tác: nợ đầu kỳ còn lại trở về 3.000.000');
 select is(pg_temp.nrev(pg_temp.pid('PH251A')), 1, 'Sổ số dư ghi một dòng hoàn tác');
 select is((select (app.list_money_in('{}'::jsonb) ->> 'total')::int), 2, 'Sổ khoản tiền vào (TC-08) thấy khoản thu nợ đầu kỳ và khoản đảo dù không có đơn');
 select is(pg_temp.err($$select app.reverse_money_in((select (v ->> 'money_in_id')::uuid from ap), 'TRUNG_PHIEU')$$), 'HMT_DA_DAO_KHOAN', 'Chặn hoàn tác hai lần (R-TIEN-26)');
