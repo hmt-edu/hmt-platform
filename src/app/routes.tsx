@@ -149,6 +149,10 @@ const ReceivableListPage = lazyScreen(
   () => import('../pages/thu-tien/TreasuryListPages'),
   'ReceivableListPage',
 );
+const ApproverConfigPage = lazyScreen(
+  () => import('../pages/nguoi-duyet-ticket/ApproverConfigPage'),
+  'ApproverConfigPage',
+);
 const ReceiptReconcilePage = lazyScreen(
   () => import('../pages/doi-soat/ReceiptReconcilePage'),
   'ReceiptReconcilePage',
@@ -929,6 +933,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="cau-hinh/ngay-nghi">
                 <HolidayPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'cau-hinh/nguoi-duyet-ticket',
+            element: (
+              <GatedCrmEntry slug="cau-hinh/nguoi-duyet-ticket">
+                <ApproverConfigPage />
               </GatedCrmEntry>
             ),
           },

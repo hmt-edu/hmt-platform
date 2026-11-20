@@ -53,3 +53,8 @@ Thẻ D21, 18/11/2026. Quét `raise_error` trong các migration 212, 231, 232, 2
 
 - Danh mục mới `RECEIVING_ACCOUNT` «Tài khoản nhận tiền» (Admin sửa ở QT-07). Cột mới của `app.receipt`: `receiving_account_code`, `bank_matched_at`, `bank_matched_by`.
 - `app.list_receipt_reconciliation(bộ lọc, sắp xếp, số dòng, bỏ qua)`: phiếu thu Đã duyệt + tổng (tổng thu, đã khớp, chưa khớp, số phiếu chưa khớp). `app.mark_receipts_bank_matched(ids, đã khớp, tài khoản)`: đánh dấu, bỏ đánh dấu, gán tài khoản nhận. Chỉ Kế toán và Admin (Xem Kế toán và Sửa phiếu thu cùng phạm vi toàn hệ thống). Lỗi: `HMT_KHONG_CO_QUYEN`, `HMT_DOI_SOAT_CHUA_CHON`, `HMT_DOI_SOAT_QUA_NHIEU`, `HMT_TAI_KHOAN_NHAN_KHONG_CO`, `HMT_DOI_SOAT_PHIEU_CHUA_DUYET`. Lịch sử thay đổi do trigger audit chuẩn của bảng phiếu thu.
+
+## QT-15 Người duyệt ticket theo loại phiếu, có ngày hiệu lực (migration 479)
+
+- Bảng `app.ticket_task_rule_version` (chỉ thêm): phiên bản cấp duyệt của từng loại phiếu nghiệp vụ theo ngày hiệu lực; phiên bản đầu chép từ `ticket_task_rule`. `app.ticket_task_levels(loại, ngày)` (nội bộ) trả phiên bản mới nhất có hiệu lực. `app.create_ticket_task` (thân bản 424) đọc cấp duyệt qua hàm này; phiếu chụp `levels` lúc lập nên đổi cấu hình không đổi phiếu đã lập.
+- `app.save_ticket_task_rule(loại, cấp, ngày hiệu lực)`: Admin (ADMIN · Sửa). Lỗi: `HMT_KHONG_CO_QUYEN`, `HMT_PHIEU_LOAI_SAI`, `HMT_CAP_DUYET_SAI`, `HMT_HIEU_LUC_QUA_KHU`, `HMT_HIEU_LUC_TRUNG`. `app.list_ticket_approver_config()`: màn `/crm/cau-hinh/nguoi-duyet-ticket` (Admin xem).
