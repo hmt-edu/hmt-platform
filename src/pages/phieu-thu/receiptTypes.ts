@@ -26,6 +26,8 @@ export type ReceiptRow = {
   receiver_name?: string | null;
   /** Mã giao dịch (TC-04, migration 431). */
   txn_ref?: string | null;
+  /** Đã khớp sao kê (TC-15, migration 576); cột «Sao kê» của TC-04. */
+  bank_matched?: boolean;
   submitted_at: string | null;
 };
 

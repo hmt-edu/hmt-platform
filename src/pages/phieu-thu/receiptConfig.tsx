@@ -98,6 +98,17 @@ export function buildReceiptConfig(
         defaultVisible: false,
         render: (r) => r.txn_ref ?? '—',
       },
+      // Canvas TC04: «Sao kê» = Đã khớp / Chưa khớp (cờ Kế toán đánh dấu ở TC-15); ẩn mặc định ở TC-01.
+      {
+        key: 'bank_matched',
+        label: 'Sao kê',
+        defaultVisible: false,
+        render: (r) => (
+          <Tag tone={r.bank_matched ? 'success' : 'neutral'} dot>
+            {r.bank_matched ? 'Đã khớp' : 'Chưa khớp'}
+          </Tag>
+        ),
+      },
       {
         key: 'status',
         label: 'Tình trạng',
