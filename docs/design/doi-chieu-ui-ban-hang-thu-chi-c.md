@@ -27,3 +27,14 @@ Cấu hình đọc từ `CFG` của `TC01.dc.html`, `TC04.dc.html` (trường t�
 | TC-04 Group By «Sao kê» | thêm nhóm Sao kê | chưa có | **Chưa sửa**: cần migration (`receipt_group_counts` thêm trường `bank`, số > 576); xin Chat cấp số và duyệt |
 | TC-01, TC-04 Lọc nhanh «Cơ sở» (CS1, CS2, CS4, CS5) | chip nhiều cơ sở | chỉ lọc nâng cao một cơ sở (khi xem nhiều cơ sở) | **Chưa sửa**: máy chủ nhận một `branch_id`; muốn chip nhiều cơ sở cần đổi hàm thành mảng (migration). Xin Chat quyết |
 | Yêu thích mẫu («Chờ kế toán duyệt», «Chưa khớp sao kê», «Chuyển khoản CS2») | ví dụ minh hoạ | Yêu thích là bộ lọc người dùng tự lưu (`saved_filter`), không có mẫu dựng sẵn | Không làm (đúng khuôn K1_fav; số liệu minh hoạ) |
+
+## So canvas TC-06, BH-04, BH-10, BH-11 (Code C, 20/11/2026, thẻ 18:20)
+
+Bốn màn là hộp thoại K08 (mức C). Canvas 9933 không có khung hộp thoại riêng cho từng màn: chỉ có khung bản ghi sau thao tác (`TC02_huy`, `BH02_tu_choi`, `BH05_huy`, `BH02_bh11`). Đã đối chiếu từng hộp thoại có trong code và dòng nhật ký sau thao tác.
+
+| Màn | Trong code | Canvas (khung bản ghi) | Kết quả |
+|---|---|---|---|
+| TC-06 Huỷ phiếu thu | `ReceiptRecordPage.tsx` hộp «Huỷ phiếu thu», lý do bắt buộc, chỉ phiếu chưa duyệt | `TC02_huy`: dòng «Huỷ phiếu thu. Lý do: …», trạng thái Đã trình → Huỷ | Đúng |
+| BH-04 Từ chối báo giá | `QuotationRecordPage.tsx` hộp «Từ chối báo giá», lý do từ danh mục, «Khác» bắt ghi chú | `BH02_tu_choi`: «Từ chối báo giá. Lý do: …», Đã gửi → Từ chối | Đúng |
+| BH-10 Huỷ đơn hàng | `OrderRecordPage.tsx` hộp «Huỷ đơn hàng»; dòng «Huỷ đơn» kèm lý do; đơn đã có phiếu thu bị chặn kèm mời tạo ticket hoàn tiền | `BH05_huy`: «Huỷ đơn. Lý do: … Chưa thu tiền.» | Gần đúng: canvas thêm câu «Chưa thu tiền.» cuối dòng; câu này là chú thích minh hoạ của khung, giữ như hiện tại (không đổi luật R-TIEN-03) |
+| BH-11 Cảnh báo cơ hội đã có đơn nháp | `OrderCreatePage.tsx`, `OpportunityRecordPage.tsx`, hàm migration 88 (R-TIEN-39) | `BH02_bh11` | Đúng về luật: có cảnh báo kèm mã đơn nháp, nút Mở đơn cũ, Vẫn tạo |
