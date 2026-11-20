@@ -2,6 +2,12 @@
 // Luật thật ở hàm cơ sở dữ liệu (R-CRM-05, 06, 10, 11, 15, 21); đây chỉ để hiện đúng nút và chặn sớm ô sai dạng.
 import type { TestStatus } from './testTypes';
 
+/** Chữ hộp Tạo phiếu kiểm tra theo canvas 9933 (TS15_hop); giữ một chỗ để bài kiểm khoá chữ. */
+export const createTestText = {
+  ownerHelp: 'Mặc định là người tạo phiếu; nhận lịch hẹn nhắc và theo dõi lịch test.',
+  submitHint: 'Chọn Ngày test và Giờ test để bật nút Tạo phiếu.',
+};
+
 export type TestAction =
   | 'start' // Bắt đầu test: Nháp → Đang test
   | 'submit' // Nộp bài: Đang test → Chờ giáo viên chấm

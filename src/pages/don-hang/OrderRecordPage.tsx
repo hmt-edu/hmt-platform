@@ -953,6 +953,16 @@ function OrderView({ record }: { record: OrderRecord }) {
                   }
                 />
                 <DetailField label="Ngày lập" mode="view" value={formatDate(record.created_at)} />
+              </dl>
+            </div>
+          </section>
+          {/* Canvas BH05 (9933): khối «Người xử lý và cơ sở» tách riêng khỏi «Thông tin chung» và «Thanh toán». */}
+          <section className="flex min-w-0 flex-col">
+            <h3 className="mb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase">
+              Người xử lý và cơ sở
+            </h3>
+            <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+              <dl className="flex min-w-0 flex-col">
                 <DetailField label="Người lập" mode="view" value={record.created_by_name ?? ''} />
                 <DetailField
                   label="Người duyệt"
@@ -968,6 +978,15 @@ function OrderView({ record }: { record: OrderRecord }) {
                   mode="view"
                   value={branchName ? `${record.branch_code} ${branchName}` : record.branch_code}
                 />
+              </dl>
+            </div>
+          </section>
+          <section className="flex min-w-0 flex-col">
+            <h3 className="mb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase">
+              Thanh toán
+            </h3>
+            <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+              <dl className="flex min-w-0 flex-col">
                 <DetailField
                   label="Điều khoản thanh toán"
                   hint="danh mục cấu hình; lịch đợt ở tab Thanh toán"

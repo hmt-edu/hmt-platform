@@ -4,6 +4,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
+-- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
+create function pg_temp.session_pending_reason(p uuid) returns text language sql security definer as $$ select app.session_pending_reason(p) $$;
+grant execute on function pg_temp.session_pending_reason(uuid) to public;
+
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;
 begin
@@ -140,7 +144,7 @@ select is(app.session_type_deducts_hours('KIEM_TRA'), true, 'Buổi Kiểm tra t
 select is(app.session_type_deducts_hours('HOC_BU'), false, 'Học bù vẫn không trừ giờ (R-BUOI-01)');
 
 -- ================= Nhận xét 9 tiêu chí: mở, công tắc, chấm (R-V2-19, R-GV-02, R-GV-04, R-GV-08) =================
-select is(app.session_pending_reason(pg_temp.s('p', 1)), 'Giáo viên chưa mở phần nhận xét của buổi.', 'Chặn Done: giáo viên chưa mở nhận xét (R-GIO-06, R-V2-19)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), 'Giáo viên chưa mở phần nhận xét của buổi.', 'Chặn Done: giáo viên chưa mở nhận xét (R-GIO-06, R-V2-19)');
 select pg_temp.claims(pg_temp.uid('gv2'), 'aal1');
 select is(pg_temp.err($$select app.open_session_review(pg_temp.s('p', 1))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên không được phân công không mở nhận xét (R-GV-08)');
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
@@ -167,15 +171,15 @@ select is(pg_temp.err($$select app.set_review_scores(pg_temp.s('p', 1), jsonb_bu
 select is(pg_temp.err($$select app.set_review_criteria(pg_temp.s('p', 1), (select jsonb_agg(jsonb_build_object('criterion_id', criterion_id, 'enabled', false)) from app.session_review_criterion where session_id = pg_temp.s('p', 1)))$$),
           'HMT_NHAN_XET_CAN_TIEU_CHI', 'Chặn: tắt hết tiêu chí');
 -- Hai em có mặt (em 1 Có mặt, em 2 Đi muộn); 8 tiêu chí đang bật → 16 ô cần chấm.
-select is(app.session_pending_reason(pg_temp.s('p', 1)), 'Còn 16 ô nhận xét chưa đánh giá.', 'Chặn Done: còn ô Chưa đánh giá, em vắng không tính (R-GV-04, R-V2-19)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), 'Còn 16 ô nhận xét chưa đánh giá.', 'Chặn Done: còn ô Chưa đánh giá, em vắng không tính (R-GV-04, R-V2-19)');
 select is(pg_temp.err($$select app.set_review_all_class(pg_temp.s('p', 1), (select id from app.review_criterion where code = 'TD_CHU_DONG'), 9)$$), 'HMT_DIEM_KHONG_HOP_LE', 'Chặn: nút Cả lớp với mức ngoài 1 đến 5');
 select is(app.set_review_all_class(pg_temp.s('p', 1), (select id from app.review_criterion where code = 'TD_CHU_DONG')), 2, 'Đúng: nút Cả lớp gán cho 2 em có mặt (không gán em vắng)');
 select is((select score::int from app.session_review_score sc join app.session_attendance sa on sa.id = sc.attendance_id
             where sa.session_id = pg_temp.s('p', 1) and sa.student_id = pg_temp.st(1) limit 1), 3, 'Nút Cả lớp dùng mức mặc định 3 từ Cài đặt (review_all_class_level)');
-select is(app.session_pending_reason(pg_temp.s('p', 1)), 'Còn 14 ô nhận xét chưa đánh giá.', 'Còn 14 ô sau khi chấm 1 tiêu chí cho cả lớp');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), 'Còn 14 ô nhận xét chưa đánh giá.', 'Còn 14 ô sau khi chấm 1 tiêu chí cho cả lớp');
 -- "Chưa đủ căn cứ" là một lựa chọn đã xử lý; "Chưa đánh giá" thì chưa.
 select app.set_review_scores(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'criterion_id', (select id from app.review_criterion where code = 'TD_TU_GIAC'), 'state', 'CHUA_DU_CAN_CU')));
-select is(app.session_pending_reason(pg_temp.s('p', 1)), 'Còn 13 ô nhận xét chưa đánh giá.', 'Chưa đủ căn cứ tính là đã xử lý ô đó');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), 'Còn 13 ô nhận xét chưa đánh giá.', 'Chưa đủ căn cứ tính là đã xử lý ô đó');
 -- Chấm các tiêu chí còn lại bằng nút Cả lớp rồi sửa em khác biệt.
 select app.set_review_all_class(pg_temp.s('p', 1), rc.criterion_id) from app.session_review_criterion rc where rc.session_id = pg_temp.s('p', 1) and rc.enabled;
 -- Em 1: tiêu chí Chủ động 5, còn lại 3 (Tự giác vừa bị Cả lớp ghi đè thành 3): 7×3 + 5 = 26 → 26 ÷ 8 = 3,25.
@@ -190,7 +194,7 @@ select is((app.parent_message_hint(pg_temp.s('p', 1), pg_temp.st(1)) ->> 'level'
 select is(jsonb_array_length(app.parent_message_hint(pg_temp.s('p', 1), pg_temp.st(1)) -> 'phrases'), 3, 'Mỗi mức gợi ý 3 câu mẫu (R-V2-39)');
 select is(app.parent_message_hint(pg_temp.s('p', 1), pg_temp.st(3)) -> 'level', 'null'::jsonb, 'Em vắng chưa có điểm thì chưa có mức gợi ý');
 -- Nhận xét của giáo viên không bắt buộc (R-V2-39, bỏ luật v1).
-select is(app.session_pending_reason(pg_temp.s('p', 1)), null, 'Đủ điều kiện Done dù giáo viên không viết nhận xét nào (R-GV-04 sau 04/11)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), null, 'Đủ điều kiện Done dù giáo viên không viết nhận xét nào (R-GV-04 sau 04/11)');
 select is(pg_temp.err($$select app.set_student_review_note(pg_temp.s('p', 1), pg_temp.st(3), 'Em vắng')$$), 'HMT_EM_KHONG_CO_MAT', 'Chặn: nhận xét cho em vắng');
 select lives_ok($$select app.set_student_review_note(pg_temp.s('p', 1), pg_temp.st(1), 'Em chú ý nghe giảng', 'Làm thêm bài tập dạng 2')$$, 'Đúng: giáo viên ghi nhận xét chung và định hướng');
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 1))$$);
@@ -236,13 +240,13 @@ select is(pg_temp.err($$select app.set_exam_config(pg_temp.s('p', 2), 'Chương 
 select is(pg_temp.err($$select app.set_exam_config(pg_temp.s('p', 1), 'Chương 1', 10, 'TONG')$$), 'HMT_SAI_LOAI_BUOI', 'Chặn: cấu hình kiểm tra cho buổi không phải Kiểm tra');
 select lives_ok($$select app.set_exam_config(pg_temp.s('p', 2), 'Chương 1', null, 'TONG')$$, 'Đúng: đặt cấu hình, điểm tối đa lấy mặc định');
 select is((select max_score from app.session_exam where session_id = pg_temp.s('p', 2)), 10.00::numeric, 'Điểm tối đa mặc định 10 từ Cài đặt, chụp lại cho buổi (R-V2-20)');
-select is(app.session_pending_reason(pg_temp.s('p', 2)), 'Giáo viên chưa chấm điểm kiểm tra 2 em.', 'Chặn Done: còn em có mặt ở Chưa chấm; em vắng không tự nhận 0 (R-V2-20)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 2)), 'Giáo viên chưa chấm điểm kiểm tra 2 em.', 'Chặn Done: còn em có mặt ở Chưa chấm; em vắng không tự nhận 0 (R-V2-20)');
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(pg_temp.err($$select app.set_exam_scores(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'total', 11)))$$), 'HMT_DIEM_VUOT_TOI_DA', 'Chặn: điểm vượt điểm tối đa');
 select is(pg_temp.err($$select app.set_exam_scores(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(3), 'total', 5)))$$), 'HMT_EM_KHONG_CO_MAT', 'Chặn: chấm điểm em vắng');
 select is(app.set_exam_scores(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'total', 8.5), jsonb_build_object('student_id', pg_temp.st(2), 'total', 10))), 2, 'Đúng: giáo viên nhập điểm tổng');
 select is((select count(*)::int from app.exam_score where session_id = pg_temp.s('p', 2)), 2, 'Em vắng không có dòng điểm (không tự nhận 0)');
-select is(app.session_pending_reason(pg_temp.s('p', 2)), null, 'Buổi kiểm tra chấm xong khi không còn em có mặt ở Chưa chấm');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 2)), null, 'Buổi kiểm tra chấm xong khi không còn em có mặt ở Chưa chấm');
 select is((app.parent_message_hint(pg_temp.s('p', 2), pg_temp.st(1)) ->> 'level')::int, 3, 'Kiểm tra 85% → mức 3 (R-V2-39: từ 75% đến dưới 90%)');
 select is((app.parent_message_hint(pg_temp.s('p', 2), pg_temp.st(2)) ->> 'kind'), 'KIEM_TRA', 'Buổi kiểm tra dùng bộ mẫu câu Kiểm tra');
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 2))$$);
@@ -275,9 +279,9 @@ select is((select es.correction_reason_code from app.exam_score es join app.sess
 
 -- ================= Q-198: tham số session_done_requires_review, nhánh Tắt =================
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
-select is(app.session_pending_reason(pg_temp.s('p', 3)), 'Giáo viên chưa chấm điểm kiểm tra 1 em.', 'Bật: buổi kiểm tra còn em chưa chấm thì chưa Done (Q-198)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 3)), 'Giáo viên chưa chấm điểm kiểm tra 1 em.', 'Bật: buổi kiểm tra còn em chưa chấm thì chưa Done (Q-198)');
 select pg_temp.sudo($$update app.setting_def set value = 'false' where key = 'session_done_requires_review'$$);
-select is(app.session_pending_reason(pg_temp.s('p', 3)), null, 'Tắt: đã điểm danh xong thì Done được dù chưa chấm điểm (Q-198)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 3)), null, 'Tắt: đã điểm danh xong thì Done được dù chưa chấm điểm (Q-198)');
 select pg_temp.sudo($$select app.mark_session_done(pg_temp.s('p', 3))$$);
 select is((select status_code from app.class_session where id = pg_temp.s('p', 3)), 'DONE', 'Tắt: buổi Done không cần nhận xét hay điểm (Q-198)');
 select is(app.enrollment_hours_balance(pg_temp.e('b')), 5.50::numeric, 'Tắt: giờ vẫn trừ như bình thường: 10 − 3 × 1,5 (Q-198, R-GIO-01)');

@@ -5,6 +5,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
+-- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
+create function pg_temp.class_clash_warnings(p uuid) returns jsonb language sql security definer as $$ select app.class_clash_warnings(p) $$;
+grant execute on function pg_temp.class_clash_warnings(uuid) to public;
+
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;
 begin
@@ -216,7 +220,7 @@ select is((select count(*)::int from app.class_session a join app.class_session 
             where a.class_id = pg_temp.c('dai') and b.class_id = pg_temp.c('hinh')), 0, 'Đúng: lớp luân phiên Đại, Hình không buổi nào trùng ngày (R-LOP-13)');
 select is((select (array_agg(session_date order by session_date))[2] - (array_agg(session_date order by session_date))[1] from app.class_session where class_id = pg_temp.c('dai')),
           14, 'Lặp mỗi 2 tuần: hai buổi liên tiếp cách 14 ngày (R-LOP-13)');
-select is(jsonb_array_length(app.class_clash_warnings(pg_temp.c('dai'))), 0, 'Hai lớp luân phiên không cảnh báo trùng (R-LOP-08)');
+select is(jsonb_array_length(pg_temp.class_clash_warnings(pg_temp.c('dai'))), 0, 'Hai lớp luân phiên không cảnh báo trùng (R-LOP-08)');
 
 -- ================= RLS: đọc theo phạm vi, ghi chỉ qua hàm =================
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
