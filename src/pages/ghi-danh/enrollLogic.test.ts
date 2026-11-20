@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   dateKey,
+  deliveryMismatchWarning,
   defaultStart,
   disabledReason,
   keyToDate,
@@ -75,5 +76,25 @@ describe('parseHours (GD-05: số giờ điều chỉnh)', () => {
     expect(parseHours('0')).toBeNull();
     expect(parseHours('')).toBeNull();
     expect(parseHours('hai')).toBeNull();
+  });
+});
+
+describe('deliveryMismatchWarning (xếp lớp lệch hình thức: chỉ cảnh báo, anh Trường chốt 20/11)', () => {
+  it('lớp Offline nhận ghi danh Online: cảnh báo, câu ghi rõ không chặn', () => {
+    expect(deliveryMismatchWarning('OFF', 'ONL')).toMatch(
+      /Lớp học Offline, ghi danh Online.*vẫn xếp được/,
+    );
+  });
+  it('lớp Online nhận ghi danh Offline: cảnh báo', () => {
+    expect(deliveryMismatchWarning('ONL', 'OFF')).not.toBeNull();
+  });
+  it('lớp OMO nhận cả hai: không cảnh báo', () => {
+    expect(deliveryMismatchWarning('OMO', 'OFF')).toBeNull();
+    expect(deliveryMismatchWarning('OMO', 'ONL')).toBeNull();
+  });
+  it('cùng hình thức hoặc thiếu dữ liệu: không cảnh báo', () => {
+    expect(deliveryMismatchWarning('OFF', 'OFF')).toBeNull();
+    expect(deliveryMismatchWarning(undefined, 'OFF')).toBeNull();
+    expect(deliveryMismatchWarning('OFF', null)).toBeNull();
   });
 });

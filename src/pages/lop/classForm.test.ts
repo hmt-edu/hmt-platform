@@ -7,6 +7,9 @@ import {
   infoPayload,
   isoWeekday,
   newSlot,
+  organizationText,
+  prefillFromParams,
+  remainingClassPath,
   longSlotWarning,
   slotSummary,
   teacherOptionLabel,
@@ -272,5 +275,51 @@ describe('teacherOptionLabel (gợi ý từ hồ sơ dạy)', () => {
       teacher_id: null,
       repeat_weeks: 1,
     });
+  });
+});
+
+describe('Hình thức học, Tổ chức lớp, Tạo lớp còn lại (LOP-02/03, anh Trường chốt 20/11)', () => {
+  it('mặc định Offline và gửi delivery_mode_code khi tạo, khi sửa Nháp; lớp Đã duyệt không gửi', () => {
+    expect(EMPTY_FORM.deliveryModeCode).toBe('OFF');
+    expect(createPayload({ ...valid, deliveryModeCode: 'OMO' }, null).delivery_mode_code).toBe(
+      'OMO',
+    );
+    expect(infoPayload({ ...valid, deliveryModeCode: 'ONL' }, 'NHAP')).toMatchObject({
+      delivery_mode_code: 'ONL',
+    });
+    expect(infoPayload(valid, 'DA_DUYET')).not.toHaveProperty('delivery_mode_code');
+  });
+  it('bắt buộc chọn hình thức học khi tạo lớp', () => {
+    expect(validateForm({ ...valid, deliveryModeCode: '' }, true, false).deliveryModeCode).toBe(
+      'Chọn hình thức học.',
+    );
+  });
+  it('Tổ chức lớp tự suy từ Phân loại: Lớp riêng là Học riêng, còn lại Học chung, chưa chọn thì trống', () => {
+    expect(organizationText('LR')).toBe('Học riêng');
+    expect(organizationText('CB')).toBe('Học chung');
+    expect(organizationText('')).toBe('');
+  });
+  it('Tạo lớp còn lại: chỉ điền nhóm, cơ sở, năm, khối, phân loại; để trống môn, trình độ, lịch', () => {
+    const path = remainingClassPath({
+      group_id: 'g1',
+      branch_id: 'b1',
+      year_code: '2627',
+      grade_code: 'K09',
+      class_type_code: 'CB',
+    });
+    const prefill = prefillFromParams(new URL(path, 'http://x').searchParams);
+    expect(prefill).toEqual({
+      groupMode: 'EXISTING',
+      groupId: 'g1',
+      branchId: 'b1',
+      yearCode: '2627',
+      gradeCode: 'K09',
+      typeCode: 'CB',
+    });
+    expect(prefill).not.toHaveProperty('subjectCode');
+    expect(prefill).not.toHaveProperty('levelCode');
+  });
+  it('địa chỉ không có tham số thì không điền sẵn gì', () => {
+    expect(prefillFromParams(new URLSearchParams(''))).toEqual({});
   });
 });
