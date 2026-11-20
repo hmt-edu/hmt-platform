@@ -31,6 +31,13 @@ describe('bộ lọc danh sách phiếu thu (TC-01, TC-04)', () => {
     });
   });
 
+  it('«Hình thức» (TC-01, TC-04): nhiều hình thức gửi thành mảng payment_method', () => {
+    expect(
+      buildReceiptFilters({ ...EMPTY, quick: { method: ['CHUYEN_KHOAN', 'TIEN_MAT'] } }),
+    ).toEqual({ payment_method: ['CHUYEN_KHOAN', 'TIEN_MAT'] });
+    expect(buildReceiptFilters({ ...EMPTY, quick: { method: [] } })).toEqual({});
+  });
+
   it('«Sao kê» của TC-04: chọn một bên thì lọc, chọn cả hai hoặc giá trị lạ thì không', () => {
     expect(buildReceiptFilters({ ...EMPTY, quick: { bank: ['KHOP'] } })).toEqual({
       bank_matched: 'KHOP',

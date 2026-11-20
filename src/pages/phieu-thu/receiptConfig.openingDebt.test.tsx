@@ -31,7 +31,11 @@ const row = (over: Partial<ReceiptRow>): ReceiptRow => ({
 });
 
 function orderCell(r: ReceiptRow) {
-  const catalogs = { filterOptions: () => [], name: () => undefined } as unknown as LeadCatalogs;
+  const catalogs = {
+    filterOptions: () => [],
+    options: () => [],
+    name: () => undefined,
+  } as unknown as LeadCatalogs;
   const access = {
     can: () => true,
     teachingBranches: [],
