@@ -31,7 +31,7 @@ export function EnrollmentLedgerPage() {
         }
         title={
           err.code === 'HMT_KHONG_CO_QUYEN'
-            ? 'Bạn không có quyền xem sổ giờ'
+            ? 'Bạn không có quyền xem dòng sổ giờ'
             : 'Không tìm thấy ghi danh'
         }
       >
@@ -74,8 +74,8 @@ export function EnrollmentLedgerPage() {
             : {}),
         }}
         emptyMessage={{
-          title: 'Sổ giờ chưa có dòng nào',
-          hint: 'Dòng đầu tiên là Cấp từ phiếu thu khi tiền vào.',
+          title: 'Chưa có dòng sổ giờ nào',
+          hint: 'Sổ giờ chỉ thêm dòng, không sửa dòng cũ (R-GD-04). Dòng đầu tiên sinh khi phiếu thu được duyệt.',
         }}
       />
     </div>

@@ -6,6 +6,7 @@ import { ListScreen } from '../../list/ListScreen';
 import type { ListState } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
+import { useClassRecord } from './useClassData';
 import { useAccess } from '../../nav/AccessContext';
 import type { SortState } from '../../ui/Data';
 import { useLeadCatalogs } from '../lead/useCatalogs';
@@ -13,6 +14,7 @@ import {
   EMPTY_CLASS_STUDENT_STATE,
   buildClassStudentFilters,
   classStudentSortParam,
+  classTitleLabel,
   useClassStudentPage,
 } from './classStudents';
 import { buildClassStudentsConfig } from './classStudentsConfig';
@@ -22,6 +24,7 @@ export function ClassStudentsPage() {
   const access = useAccess();
   const navigate = useNavigate();
   const catalogs = useLeadCatalogs();
+  const classRecord = useClassRecord(id).data;
   const pageSize = useIntSetting('list_page_size_default');
 
   const [state, setState] = useState<ListState>(EMPTY_CLASS_STUDENT_STATE);
@@ -46,11 +49,12 @@ export function ClassStudentsPage() {
   const config = useMemo(
     () =>
       buildClassStudentsConfig({
+        classLabel: classRecord ? classTitleLabel(classRecord) : undefined,
         modes: catalogs.options('STUDY_MODE'),
         modeName: (code) => (code ? (catalogs.name('STUDY_MODE', code) ?? code) : '—'),
         statusName: (code) => catalogs.name('ENROLLMENT_STATUS', code),
       }),
-    [catalogs],
+    [catalogs, classRecord],
   );
   const canAssign = access.can('ENROLLMENT', 'SUA');
 

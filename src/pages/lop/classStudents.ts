@@ -74,3 +74,16 @@ export function useClassStudentPage(
       }),
   });
 }
+
+/** Tên lớp ở tiêu đề LOP-09 (canvas LOP09): «Đại số 9 · cơ bản A»; Lớp riêng không có trình độ thì chỉ «Lớp riêng». */
+export function classTitleLabel(c: {
+  subject_name: string | null;
+  subject_code: string;
+  grade_code: string;
+  class_type_name: string | null;
+  level_name: string | null;
+}): string {
+  const grade = c.grade_code.replace(/^K0?/, '');
+  const kind = [c.class_type_name?.toLowerCase(), c.level_name].filter(Boolean).join(' ');
+  return [`${c.subject_name ?? c.subject_code} ${grade}`, kind].filter((x) => x.trim()).join(' · ');
+}
