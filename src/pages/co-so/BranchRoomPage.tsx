@@ -308,7 +308,7 @@ function RoomForm({
   const [show, setShow] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const errors = validateRoom(draft, rooms, room?.id ?? null);
+  const errors = validateRoom(draft, rooms, room?.id ?? null, `${branch.code} ${branch.name}`);
   return (
     <FormDialog
       open
@@ -346,7 +346,7 @@ function RoomForm({
           error={show ? errors.code : null}
           help={
             room
-              ? 'Không đổi được sau khi tạo.'
+              ? 'Mã phòng không đổi được.'
               : 'Chữ viết hoa, số, dấu gạch dưới. Không trùng trong cơ sở. Không đổi được sau khi tạo.'
           }
           onChange={(e) => setDraft((d) => ({ ...d, code: e.target.value.toUpperCase() }))}

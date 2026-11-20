@@ -240,8 +240,11 @@ test('Đặt lại mật khẩu: hộp xác nhận, rồi hộp mật khẩu t�
   await openMenu(page);
   await menuItem(page, 'Đặt lại mật khẩu').click();
   const confirm = page.getByRole('alertdialog', { name: 'Đặt lại mật khẩu' });
-  await expect(confirm.getByText(TARGET_NAME)).toBeVisible();
-  await expect(confirm.getByText(/chỉ hiện một lần/)).toBeVisible();
+  await expect(confirm.getByText(TARGET_NAME).first()).toBeVisible();
+  // So canvas QT02_xac_nhan_dat_lai: câu hết hiệu lực ngay, thu hồi phiên, hiện đúng một lần, chỉ Admin.
+  await expect(confirm.getByText(/Mật khẩu cũ hết hiệu lực ngay/)).toBeVisible();
+  await expect(confirm.getByText(/hiện đúng một lần/)).toBeVisible();
+  await expect(confirm.getByText(/Chỉ Admin được đặt lại mật khẩu/)).toBeVisible();
   await confirm.getByRole('button', { name: 'Đặt lại mật khẩu' }).click();
   const dialog = page.getByRole('dialog', { name: 'Mật khẩu tạm' });
   await expect(dialog.getByLabel('Mật khẩu tạm')).toHaveText(temp);

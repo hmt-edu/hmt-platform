@@ -90,7 +90,8 @@ test('QT-08 Cơ sở và phòng: Admin sửa địa chỉ cơ sở, thêm phòng
   await again.getByLabel('Tên phòng').fill('Tên khác');
   await again.getByLabel('Sức chứa').fill('10');
   await again.getByRole('button', { name: 'Thêm phòng', exact: true }).click();
-  await expect(again.getByText(`Mã ${tag} đã có trong cơ sở.`)).toBeVisible();
+  // So canvas QT08_loi_phong: câu báo trùng nêu tên cơ sở.
+  await expect(again.getByText(new RegExp(`Mã ${tag} đã có trong CS1 `))).toBeVisible();
   await again.getByRole('button', { name: 'Huỷ' }).click();
   // Ngừng (có hộp xác nhận), rồi Dùng lại.
   await row.getByRole('button', { name: 'Ngừng' }).click();

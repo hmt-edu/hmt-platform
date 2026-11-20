@@ -44,20 +44,23 @@ export function validateRoom(
   draft: RoomDraft,
   rooms: Room[],
   editingId: string | null,
+  /** Tên cơ sở hiện trong câu báo trùng, ví dụ «CS5 Mỹ Đình» (khung QT08_loi_phong). */
+  branchLabel = 'cơ sở',
 ): RoomErrors {
   const errors: RoomErrors = {};
   if (editingId === null) {
     if (!ROOM_CODE_PATTERN.test(draft.code.trim()))
       errors.code = 'Mã phòng chỉ gồm chữ viết hoa, số và dấu gạch dưới (ví dụ P101).';
     else if (rooms.some((r) => r.code === draft.code.trim()))
-      errors.code = `Mã ${draft.code.trim()} đã có trong cơ sở.`;
+      errors.code = `Mã ${draft.code.trim()} đã có trong ${branchLabel}.`;
   }
   if (draft.name.trim() === '') errors.name = 'Nhập tên phòng.';
   else if (rooms.some((r) => r.id !== editingId && foldName(r.name) === foldName(draft.name)))
-    errors.name = 'Tên phòng này đã có trong cơ sở.';
+    errors.name = `Tên phòng này đã có trong ${branchLabel}.`;
   const cap = Number(draft.capacity);
-  if (draft.capacity.trim() === '' || !Number.isInteger(cap) || cap <= 0)
+  if (draft.capacity.trim() === '' || !Number.isInteger(cap))
     errors.capacity = 'Nhập sức chứa, là số lớn hơn 0.';
+  else if (cap <= 0) errors.capacity = 'Sức chứa phải lớn hơn 0.';
   return errors;
 }
 

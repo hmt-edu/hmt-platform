@@ -281,9 +281,9 @@ function UserView({ record }: { record: UserRecord }) {
         {...common}
         open={dialog === 'password'}
         onOpenChange={close}
-        title="Đặt lại mật khẩu"
-        description="Tạo mật khẩu tạm mới cho người này; mật khẩu cũ hết hiệu lực và họ bị đăng xuất khỏi mọi thiết bị."
-        note="Mật khẩu tạm chỉ hiện một lần ở hộp kế tiếp. Người này phải đổi mật khẩu ở lần đăng nhập đầu."
+        title={`Đặt lại mật khẩu của ${record.username ?? record.display_name}?`}
+        description={`Mật khẩu cũ hết hiệu lực ngay. Mọi phiên đăng nhập của ${record.username ?? record.display_name} bị thu hồi, người này bị đăng xuất khỏi mọi thiết bị.`}
+        note="Hệ thống tạo một mật khẩu tạm mới và hiện đúng một lần ở hộp kế tiếp. Người dùng phải đổi mật khẩu ở lần đăng nhập kế tiếp. Chỉ Admin được đặt lại mật khẩu. Thao tác ghi nhật ký (không ghi mật khẩu)."
         confirmLabel="Đặt lại mật khẩu"
         danger
         onConfirm={async () => {

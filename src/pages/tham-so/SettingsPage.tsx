@@ -115,7 +115,7 @@ export function SettingsPage() {
         if (!d.allow_branch_override) return <span className="text-fg-muted">Không</span>;
         const list = overridesOf(d.key);
         return list.length === 0 ? (
-          <span className="text-fg-muted">Có · chưa ghi đè</span>
+          <span className="text-fg-muted">Có · Chưa cơ sở nào ghi đè</span>
         ) : (
           <ul className="flex flex-wrap gap-1">
             {list.map((o) => (
@@ -440,7 +440,7 @@ function EditDialog({
             onChange={(e) => setText(e.target.value)}
             invalid={error !== null}
             error={error ?? undefined}
-            help={range ? `Khoảng cho phép: ${range}.` : undefined}
+            help={range ? `Cho phép ${range}${unit ? ` ${unit}` : ''}` : undefined}
             inputMode={def.value_type === 'TEXT' ? 'text' : 'decimal'}
           />
         )}
