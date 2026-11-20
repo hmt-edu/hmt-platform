@@ -63,6 +63,19 @@ export function buildVoucherConfig(access: AccessView): ListConfig<VoucherRow> {
         label: 'Hình thức',
         render: (r) => r.payment_method ?? <span className="text-fg-muted">—</span>,
       },
+      // Canvas TC10, TC11: «Tài khoản nhận» (chữ tự do) và «Ngày chi dự kiến»; ẩn mặc định để giữ bề ngang bảng.
+      {
+        key: 'payout_account',
+        label: 'Tài khoản nhận',
+        defaultVisible: false,
+        render: (r) => r.payout_account_note ?? <span className="text-fg-muted">—</span>,
+      },
+      {
+        key: 'planned',
+        label: 'Ngày chi dự kiến',
+        defaultVisible: false,
+        render: (r) => (r.planned_on ? formatDate(r.planned_on) : '—'),
+      },
       { key: 'created', label: 'Ngày lập', render: (r) => formatDate(r.created_at) },
       { key: 'paid', label: 'Ngày chi', render: (r) => (r.paid_at ? formatDate(r.paid_at) : '—') },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },

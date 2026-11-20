@@ -5,12 +5,16 @@ import { Link, useParams } from 'react-router';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, useDb } from '../../lib/db';
-import { formatDateTime, formatMoney, formatNumber } from '../../lib/format';
+import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
+import { TextField } from '../../ui/Field';
+import { DateInput } from '../../ui/Inputs';
+import { Select } from '../../ui/Overlays';
+import { vnDayBounds } from '../../lib/vnDay';
 import { Table } from '../../ui/Data';
-import { ReasonDialog } from '../../ui/Dialogs';
+import { FormDialog, ReasonDialog } from '../../ui/Dialogs';
 import { Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
@@ -18,7 +22,7 @@ import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { VOUCHER_STATUS_NAME } from './voucherConfig';
 import type { VoucherRecord } from './voucherTypes';
-import { payVoucher, useRefreshVoucher, useVoucher } from './useVoucherData';
+import { payVoucher, setVoucherPlan, useRefreshVoucher, useVoucher } from './useVoucherData';
 
 export function VoucherRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -56,6 +60,14 @@ export function VoucherRecordPage() {
   return <VoucherView key={query.data.voucher.id} record={query.data} />;
 }
 
+const ACCOUNT_NOTE_MAX = 200; // allow-number: khớp giới hạn 200 ký tự ở máy chủ (migration 581)
+const planToDate = (key: string): Date | null => {
+  const [y, m, d] = key.split('-').map(Number);
+  return y && m && d ? new Date(y, m - 1, d) : null;
+};
+const toDateKey = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; // allow-number: hai chữ số
+
 const STEPS: StageStep[] = [
   { code: 'CHO_CHI', label: VOUCHER_STATUS_NAME.CHO_CHI ?? 'Chờ chi' },
   { code: 'DA_CHI', label: VOUCHER_STATUS_NAME.DA_CHI ?? 'Đã chi' },
@@ -70,6 +82,9 @@ function VoucherView({ record }: { record: VoucherRecord }) {
   const refresh = useRefreshVoucher(record.voucher.id);
   const catalogs = useLeadCatalogs();
   const [confirming, setConfirming] = useState(false);
+  // Kế hoạch chi (TC-11): hình thức chi, tài khoản nhận (chữ tự do), ngày chi dự kiến; Kế toán ghi trước khi chi.
+  const [planning, setPlanning] = useState(false);
+  const [plan, setPlan] = useState({ methodCode: '', accountNote: '', plannedOn: '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   useCrumbTail(record.voucher.code);
@@ -89,6 +104,34 @@ function VoucherView({ record }: { record: VoucherRecord }) {
       .catch((e: unknown) => setError(errorOf(e).message))
       .finally(() => setBusy(false));
   };
+
+  const openPlan = () => {
+    setError(null);
+    setPlan({
+      methodCode: v.payment_method_code ?? '',
+      accountNote: v.payout_account_note ?? '',
+      plannedOn: v.planned_on ?? '',
+    });
+    setPlanning(true);
+  };
+  const savePlan = () => {
+    setBusy(true);
+    setError(null);
+    setVoucherPlan(supabase, v.id, {
+      methodCode: plan.methodCode === '' ? null : plan.methodCode,
+      accountNote: plan.accountNote.trim() === '' ? null : plan.accountNote.trim(),
+      plannedOn: plan.plannedOn === '' ? null : plan.plannedOn,
+    })
+      .then(async () => {
+        setPlanning(false);
+        await refresh();
+        toast({ title: 'Đã lưu kế hoạch chi.' });
+      })
+      .catch((e: unknown) => setError(errorOf(e).message))
+      .finally(() => setBusy(false));
+  };
+  // Ngày chi dự kiến chỉ CẢNH BÁO, không chặn (anh Trường chốt 20/11/2026): chưa tới ngày thì nhắc trong hộp xác nhận.
+  const notYetPlanned = v.planned_on && v.planned_on > vnDayBounds().dateKey ? v.planned_on : null;
 
   // Bảng tính hoàn: các con số do máy chủ trả (chụp lúc tạo yêu cầu), giao diện chỉ hiện (R-TIEN-28).
   const n = formatNumber;
@@ -177,15 +220,18 @@ function VoucherView({ record }: { record: VoucherRecord }) {
         }
         businessActions={
           canPay ? (
-            <Button
-              variant="primary"
-              onClick={() => {
-                setError(null);
-                setConfirming(true);
-              }}
-            >
-              Ghi nhận đã chi
-            </Button>
+            <>
+              <Button onClick={openPlan}>Kế hoạch chi</Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setError(null);
+                  setConfirming(true);
+                }}
+              >
+                Ghi nhận đã chi
+              </Button>
+            </>
           ) : undefined
         }
       >
@@ -234,9 +280,18 @@ function VoucherView({ record }: { record: VoucherRecord }) {
                   value={`${formatDateTime(v.paid_at)}${v.paid_by_name ? ` · ${v.paid_by_name}` : ''}`}
                 />
               )}
-              {v.payment_method && (
-                <DetailField label="Hình thức chi" mode="view" value={v.payment_method} />
-              )}
+              {/* Canvas TC11: ba trường «Hình thức chi», «Tài khoản nhận» (chữ tự do), «Ngày chi dự kiến». */}
+              <DetailField label="Hình thức chi" mode="view" value={v.payment_method ?? '—'} />
+              <DetailField
+                label="Tài khoản nhận"
+                mode="view"
+                value={v.payout_account_note ?? '—'}
+              />
+              <DetailField
+                label="Ngày chi dự kiến"
+                mode="view"
+                value={v.planned_on ? formatDate(v.planned_on) : '—'}
+              />
               {v.pay_note && <DetailField label="Ghi chú chi" mode="view" value={v.pay_note} />}
             </dl>
           </section>
@@ -266,7 +321,7 @@ function VoucherView({ record }: { record: VoucherRecord }) {
         open={confirming}
         onOpenChange={(o) => !busy && setConfirming(o)}
         title={`Ghi nhận đã chi ${v.code}`}
-        description={`Xác nhận đã chi ${formatMoney(v.amount)} cho ${v.parent_name}. Không hoàn tác được.`}
+        description={`Xác nhận đã chi ${formatMoney(v.amount)} cho ${v.parent_name}. Không hoàn tác được.${notYetPlanned ? ` Chưa tới ngày chi dự kiến (${formatDate(notYetPlanned)}); vẫn ghi nhận được.` : ''}`}
         options={catalogs.options('PAYMENT_METHOD').map((o) => ({ ...o, needsNote: false }))}
         reasonLabel="Hình thức chi"
         noteLabel="Ghi chú chi"
@@ -277,6 +332,40 @@ function VoucherView({ record }: { record: VoucherRecord }) {
         error={error}
         onConfirm={(result) => pay(result.option, result.note)}
       />
+      <FormDialog
+        open={planning}
+        onOpenChange={(o) => !busy && setPlanning(o)}
+        title={`Kế hoạch chi ${v.code}`}
+        subtitle="Ghi trước khi chi; chưa chi tiền. Ngày chi dự kiến chỉ để nhắc, không chặn chi."
+        confirmLabel="Lưu kế hoạch"
+        canSubmit
+        busy={busy}
+        error={error}
+        onSubmit={savePlan}
+      >
+        <div className="flex flex-col gap-3">
+          <Select
+            label="Hình thức chi"
+            value={plan.methodCode}
+            placeholder="Chưa chọn"
+            onChange={(val) => setPlan({ ...plan, methodCode: val })}
+            options={catalogs.options('PAYMENT_METHOD')}
+            className="w-full"
+          />
+          <TextField
+            label="Tài khoản nhận"
+            value={plan.accountNote}
+            onChange={(e) => setPlan({ ...plan, accountNote: e.target.value })}
+            placeholder="Ví dụ: Techcombank …5544 (chữ tự do)"
+            maxLength={ACCOUNT_NOTE_MAX}
+          />
+          <DateInput
+            label="Ngày chi dự kiến"
+            value={planToDate(plan.plannedOn)}
+            onChange={(d) => setPlan({ ...plan, plannedOn: d ? toDateKey(d) : '' })}
+          />
+        </div>
+      </FormDialog>
     </>
   );
 }
