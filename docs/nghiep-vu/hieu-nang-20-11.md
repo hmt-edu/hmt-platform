@@ -55,3 +55,18 @@ and ((select app.permission_scope('TICKET', 'DUYET')) = 'TOAN_HE_THONG'
 - QT-13 đo bằng cách nạp thân hàm từ nhánh PR trong giao dịch (chưa có trong `main`); đo lại sau khi #370 gộp.
 - Không đo ghi (run/undo lên khối với 35.000 em): thao tác Admin chạy tay, hiếm; nếu cần đo thì dùng cùng kịch bản.
 - Chỉ đo một cơ sở tải; số liệu chỉ để so sánh tương đối.
+
+## Dung lượng gói tải trang đầu cổng CRM (Code C, 20/11/2026, thẻ Chat 20:22)
+
+Đo bằng bước dò có sẵn của CI (`npm run build` rồi `npm run size`, `scripts/bundle-size.ts`) trên `main` lúc 20:35. Số nén gzip, gồm gói điểm vào, các gói nó import tĩnh và CSS. **Chỉ báo số, không đặt ngưỡng** (anh Trường chốt 18/10/2026).
+
+| Điểm vào | Dung lượng nén | Số tệp |
+|---|---|---|
+| Đăng nhập | 201 KB | 10 |
+| **Trang đầu cổng CRM (khung + trang chủ)** | **229 KB** | 17 |
+| Cổng Giáo viên (khung + trang đầu) | 226 KB | 16 |
+| Cổng Học tập (khung + trang đầu) | 226 KB | 16 |
+| Màn danh sách mẫu `/dev/danh-sach` (thêm vào khung CRM) | 280 KB | 28 |
+| Màn Lead `/crm/lead` (thêm vào khung CRM) | 292 KB | 37 |
+
+Nhận xét: trang đầu CRM 229 KB, dưới mốc tham chiếu khoảng 250 KB của CLAUDE.md (còn dư khoảng 21 KB, chưa phải ngưỡng cứng). Màn danh sách thêm khoảng 50 đến 60 KB vào khung. Mỗi màn mới đã tải lười theo màn nên không cộng vào trang đầu. Cần theo dõi: nếu khung CRM (menu, K03) lớn thêm hơn 20 KB thì trang đầu vượt mốc 250 KB.

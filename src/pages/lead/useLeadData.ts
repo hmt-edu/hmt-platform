@@ -60,6 +60,8 @@ type LeafStore<Row> = { key: string; leaves: Record<string, Leaf<Row>> };
  * `resetKey` đổi (đổi bộ lọc, sắp xếp, làm mới) thì bỏ dữ liệu cũ và tải lại các nhóm đang mở.
  * Nhóm đang mở mà chưa có dữ liệu coi là đang tải. Lỗi báo qua `onError` (hộp thông báo của màn).
  */
+const NO_EXTRA_ARGS: Record<string, unknown> = {};
+
 export function useLeafRows<Row = LeadRow>(
   baseFilters: LeadFilters,
   /** null: hàm danh sách không có tham số p_sort (ví dụ list_tickets), không gửi. */
@@ -69,6 +71,8 @@ export function useLeafRows<Row = LeadRow>(
   onError: (message: string) => void,
   /** Hàm danh sách phân trang gọi để tải dòng của nhóm (mặc định danh sách lead). */
   listFunction: string = 'list_leads',
+  /** Tham số thêm của hàm danh sách (ví dụ p_month của đối chiếu tái tục); mặc định không có. */
+  extraArgs: Record<string, unknown> = NO_EXTRA_ARGS,
 ) {
   const supabase = useDb();
   const [store, setStore] = useState<LeafStore<Row>>({ key: resetKey, leaves: {} });
@@ -91,6 +95,7 @@ export function useLeafRows<Row = LeadRow>(
           ...(sort === null ? {} : { p_sort: sort ?? 'created_desc' }),
           p_limit: pageSize,
           p_offset: offset,
+          ...extraArgs,
         });
       } catch (error) {
         onError(errorOf(error).message);
@@ -99,7 +104,7 @@ export function useLeafRows<Row = LeadRow>(
         inflight.current.delete(`${resetKey}|${key}|${offset}`);
       }
     },
-    [supabase, baseFilters, sort, pageSize, resetKey, onError, listFunction],
+    [supabase, baseFilters, sort, pageSize, resetKey, onError, listFunction, extraArgs],
   );
 
   const apply = useCallback(

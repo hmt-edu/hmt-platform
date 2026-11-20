@@ -45,3 +45,17 @@ export function buildReconcileQuery(state: ListState, now: Date = new Date()): R
 
 /** Ngày đầu tháng (YYYY-MM-01) gửi cho p_month. */
 export const monthStart = (month: string): string => `${month}-01`;
+
+/** Trường nhóm của giao diện → tên trường máy chủ (upsale_reconcile_group_counts). */
+export const RECONCILE_GROUP_FIELD_OF: Record<string, string> = {
+  branch: 'branch',
+  campaign: 'campaign',
+  reason: 'reason',
+};
+
+/** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (campaign là tháng đang xem nên không lọc thêm; khoá trống: nhóm «Chưa có»). */
+export function reconcileGroupFilter(field: string, key: string): Record<string, unknown> {
+  if (field === 'branch') return key === '' ? {} : { branch_id: key };
+  if (field === 'reason') return key === '' ? {} : { reason: [key] };
+  return {};
+}

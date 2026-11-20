@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { RecordDetail, DetailField } from '../../record/Detail';
-import { HmtError, errorOf, useDb } from '../../lib/db';
+import { HmtError, errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
@@ -21,6 +21,7 @@ import { AssignUpsaleDialog } from './AssignUpsaleDialog';
 import { ChangeUpsaleStageDialog } from './ChangeUpsaleStageDialog';
 import { CreateUpsaleOrderDialog } from './CreateUpsaleOrderDialog';
 import { upsaleEventEntries } from './upsaleEventEntries';
+import { upsaleStageNote } from './upsaleNotes';
 import type { UpsaleOrderRow, UpsaleRecord } from './upsaleTypes';
 import {
   saveUpsaleNotes,
@@ -70,6 +71,8 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const toast = useToast();
   const access = useAccess();
   const catalogs = useLeadCatalogs();
+  const hoursThreshold = useIntSetting('upsale_hours_left_threshold');
+  const daysThreshold = useIntSetting('upsale_days_left_threshold');
   const phone = useMedia(NARROW_TABLE);
   const t = record.ticket;
   const refresh = useRefreshUpsaleRecord(t.id);
@@ -113,8 +116,17 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
     }
   }
 
+  const stageNote = upsaleStageNote(
+    t,
+    t.lost_reason_code
+      ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
+      : null,
+    { hours: hoursThreshold, days: daysThreshold },
+  );
+
   const overview = (
     <div className="flex flex-col gap-6">
+      {stageNote && <Alert tone={stageNote.tone}>{stageNote.text}</Alert>}
       {t.risk_flag && (
         <Alert tone="warning">
           Học sinh vắng từ{' '}

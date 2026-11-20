@@ -200,6 +200,10 @@ export const ROLES: Role[] = [
       { name: 'gv-cham-btvn', route: '', gvSession: '/cham-btvn' },
       { name: 'gv-hoan-tat-buoi', route: '', gvSession: '' },
       { name: 'gv-ticket-tao', route: '/gv/ticket/tao' },
+      { name: 'gv-viec-can-lam', route: '/gv/viec-can-lam' },
+      { name: 'gv-lop-cua-toi', route: '/gv/lop' },
+      { name: 'gv-gio-day', route: '/gv/gio-day' },
+      { name: 'gv-ticket-ds', route: '/gv/ticket' },
     ],
   },
   {
