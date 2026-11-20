@@ -27,6 +27,23 @@ export function disabledReason(cls: MatchingClass): string | null {
   return null;
 }
 
+/** Tên hình thức học để hiện trong câu cảnh báo. */
+const MODE_NAME: Record<string, string> = { OFF: 'Offline', ONL: 'Online', OMO: 'OMO' };
+
+/**
+ * Cảnh báo lệch hình thức khi xếp lớp (anh Trường chốt 20/11): CHỈ cảnh báo, không chặn.
+ * Lớp OMO nhận cả Offline và Online; lớp Offline hoặc Online lệch hình thức của ghi danh thì nhắc. Thiếu dữ liệu một bên thì không nhắc.
+ */
+export function deliveryMismatchWarning(
+  classMode: string | undefined,
+  enrollMode: string | null | undefined,
+): string | null {
+  if (!classMode || !enrollMode || classMode === 'OMO' || classMode === enrollMode) return null;
+  const c = MODE_NAME[classMode] ?? classMode;
+  const e = MODE_NAME[enrollMode] ?? enrollMode;
+  return `Lớp học ${c}, ghi danh ${e}: lệch hình thức học. Chỉ cảnh báo, vẫn xếp được.`;
+}
+
 /** "Còn 4 chỗ" / "Không giới hạn sĩ số". */
 export function seatsText(cls: MatchingClass): string {
   return cls.seats_left === null ? 'Không giới hạn sĩ số' : `Còn ${cls.seats_left} chỗ`;

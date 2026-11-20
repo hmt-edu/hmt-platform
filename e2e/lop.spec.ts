@@ -50,6 +50,11 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await page.getByLabel('Khối').selectOption({ index: 5 });
   await page.getByLabel('Phân loại').selectOption({ label: 'Cơ bản' });
   await page.getByLabel('Trình độ').selectOption({ index: 1 });
+  // LOP-03 (anh Trường chốt 20/11): Hình thức học là ô chọn (mặc định Offline); Tổ chức lớp không phải ô nhập, tự suy từ Phân loại (Cơ bản = Học chung).
+  await expect(page.getByLabel('Hình thức học')).toHaveValue('OFF');
+  await page.getByLabel('Hình thức học').selectOption({ label: 'OMO' });
+  await expect(page.getByLabel('Tổ chức lớp')).toHaveValue('Học chung');
+  await expect(page.getByLabel('Tổ chức lớp')).not.toBeEditable();
   // A50: Khung chương trình và Bài bắt đầu là ô chọn (lấy từ khung ở CH-05), không còn ô gõ chữ; chưa có khung khớp thì chỉ còn «— Chọn —».
   await expect(page.getByLabel('Khung chương trình')).toBeVisible();
   await expect(page.getByLabel('Bài bắt đầu')).toBeDisabled();
@@ -61,11 +66,15 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await page.getByRole('tab', { name: /^Thứ 3/ }).click();
   await page.getByRole('button', { name: 'Thêm khung giờ' }).click();
   await expect(page.getByRole('tab', { name: /^Thứ 3\s*1$/ })).toBeVisible();
+  // «Xem trước ngày kết thúc dự kiến»: tính ở máy chủ từ khung giờ đang nhập, chưa lưu.
+  await expect(page.getByLabel('Kết thúc dự kiến')).toHaveValue(/^\d{2}\/\d{2}\/\d{4}$/);
   await page.getByRole('button', { name: 'Lưu nháp' }).click();
   await expect(page).toHaveURL(/\/crm\/lop\/[0-9a-f-]{36}$/);
   const recordUrl = page.url();
   await expect(page.getByText(/CS5-\d{4}-/).first()).toBeVisible();
   await expect(page.getByText('Nháp').first()).toBeVisible();
+  await expect(page.getByText('OMO').first()).toBeVisible();
+  await expect(page.getByText('Học chung').first()).toBeVisible();
   // Chi tiết lớp theo khuôn chung: Time Table 7 tab theo thứ; Học sinh và Buổi học là tab có bảng riêng.
   await expect(page.getByRole('tab', { name: /^Thứ 3/ })).toBeVisible();
   await expect(page.getByRole('tab', { name: /^Học sinh/ })).toBeVisible();

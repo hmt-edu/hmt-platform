@@ -75,6 +75,9 @@ export type ClassRecord = Omit<ClassRow, 'enrolled' | 'branch_code' | 'subject_n
   branch_code: string;
   subject_name: string | null;
   year_code: string;
+  /** Hình thức học của lớp: OFF, ONL, OMO (danh mục CLASS_DELIVERY). */
+  delivery_mode_code?: string;
+  delivery_mode_name?: string | null;
   curriculum_ref: string | null;
   start_lesson: string | null;
   cskh_id: string | null;

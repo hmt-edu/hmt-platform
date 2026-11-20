@@ -177,7 +177,13 @@ function AssignBody({ data, onClose }: { data: AssignOptions; onClose: () => voi
           <p className="text-caption text-fg-muted">
             Chọn từng ghi danh một lớp: dùng khi học sinh không học theo nhóm.
           </p>
-          <ClassPicker classes={data.classes} value={pick} onChange={setPick} name="lop-le" />
+          <ClassPicker
+            classes={data.classes}
+            value={pick}
+            onChange={setPick}
+            name="lop-le"
+            enrollMode={data.enrollment.delivery_mode_code}
+          />
         </div>
       )}
 
