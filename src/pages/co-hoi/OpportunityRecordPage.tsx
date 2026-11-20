@@ -10,6 +10,7 @@ import { MergeDialog } from '../../features/merge/MergeDialog';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
+import { ProspectStudents } from '../../features/prospect/ProspectStudents';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, rpc, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
@@ -661,6 +662,16 @@ function OpportunityView({ record }: { record: OppRecord }) {
             {text('self_rating', 'Học lực tự đánh giá', { placeholder: 'VD Khá, yếu phần Hình' })}
             {text('goal', 'Mục tiêu', { placeholder: 'Mục tiêu của học sinh' })}
           </DetailSection>
+          <ProspectStudents
+            entity="OPPORTUNITY"
+            recordId={record.id}
+            students={record.students ?? []}
+            parent={{ id: record.parent_id, code: record.parent_code, name: record.parent_name }}
+            requireYear={stageIndex(record.stage_code) >= stageIndex('L5')}
+            canEdit={canEdit}
+            pageEditing={mode !== 'view'}
+            onChanged={() => void refreshRecord()}
+          />
         </div>
         <div className="mt-6">
           <Tabs
