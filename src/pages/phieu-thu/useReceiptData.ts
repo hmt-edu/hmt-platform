@@ -5,7 +5,13 @@ import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
 import type { GroupCounts } from '../lead/leadTypes';
 import type { ReceiptFilters } from './receiptFilters';
-import type { OrderPayment, ReceiptInput, ReceiptPage, ReceiptRecord } from './receiptTypes';
+import type {
+  OrderPayment,
+  ReceiptAllocPreview,
+  ReceiptInput,
+  ReceiptPage,
+  ReceiptRecord,
+} from './receiptTypes';
 
 /** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
 export function useReceiptGroupCounts(filters: ReceiptFilters, fields: string[], enabled: boolean) {
@@ -47,6 +53,18 @@ export function useRefreshReceipts() {
     () => queryClient.invalidateQueries({ queryKey: ['receipt-list'] }),
     [queryClient],
   );
+}
+
+/** Chia tiền vào dòng đơn của phiếu (xem trước hoặc đã chia thật); `status` đổi thì tải lại. */
+export function useReceiptAllocPreview(id: string | undefined, status: string) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['receipt-alloc', id, status],
+    enabled: id !== undefined,
+    retry: false,
+    queryFn: () =>
+      rpc<ReceiptAllocPreview>(supabase, 'preview_receipt_allocation', { p_receipt_id: id }),
+  });
 }
 
 export function useReceipt(id: string | undefined) {
