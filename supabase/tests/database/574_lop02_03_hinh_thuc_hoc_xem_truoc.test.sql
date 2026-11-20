@@ -1,4 +1,4 @@
--- Migration 571 (LOP-02/03, anh Trường chốt 20/11): Hình thức học của lớp (OFF, ONL, OMO) và app.preview_class_end_date.
+-- Migration 574 (LOP-02/03, anh Trường chốt 20/11): Hình thức học của lớp (OFF, ONL, OMO) và app.preview_class_end_date.
 -- Luật: R-LOP-02 (sửa thông tin ở Nháp, Từ chối), R-LOP-09 (ngày kết thúc dự kiến), R-LOP-12 (bỏ ngày nghỉ lễ), R-LOP-13. Mỗi luật có ca đúng và ca bị chặn. Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
