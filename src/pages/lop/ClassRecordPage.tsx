@@ -18,7 +18,14 @@ import { LineTable } from '../../ui/LineTable';
 import { Tabs, type MenuItem } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { editKind, transitionsFrom, type Transition } from './classTransitions';
-import { SESSION_STATUS_LABEL, WEEKDAY_LABEL, timeText } from './classLabels';
+import {
+  NO_GROUP_TEXT,
+  SESSION_STATUS_LABEL,
+  WEEKDAY_LABEL,
+  classNotes,
+  recordSlotSummary,
+  timeText,
+} from './classLabels';
 import { editClassPath } from './classConfig';
 import { organizationText, remainingClassPath } from './classForm';
 import { OPERATING_LABEL, type ClassRecord } from './classTypes';
@@ -139,6 +146,8 @@ function ClassView({ record }: { record: ClassRecord }) {
 
   const clash = Array.isArray(record.clash_warnings) ? record.clash_warnings : [];
   const counts = Object.entries(record.session_counts);
+  const notes = classNotes(record.status_code, record.slots.length);
+  const summary = recordSlotSummary(record.slots);
   const [dayTab, setDayTab] = useState(() => String(record.slots[0]?.weekday ?? 1));
   const [listTab, setListTab] = useState('hoc-sinh');
   const detailRef = useRef<HTMLDivElement>(null);
@@ -203,6 +212,11 @@ function ClassView({ record }: { record: ClassRecord }) {
           onSelect: () => undefined,
         }}
       >
+        {notes.top && (
+          <Alert tone={notes.top.tone} className="mb-4">
+            {notes.top.text}
+          </Alert>
+        )}
         {clash.length > 0 && (
           <Alert tone="warning" title="Cảnh báo trùng phòng hoặc giáo viên">
             Có buổi trùng phòng hoặc giáo viên với lớp khác (chỉ cảnh báo, không chặn).
@@ -248,15 +262,29 @@ function ClassView({ record }: { record: ClassRecord }) {
               label="Tổ chức lớp"
               value={organizationText(record.class_type_code)}
             />
-            <DetailField mode="view" label="Nhóm lớp" value={record.group_name ?? ''} />
+            <DetailField
+              mode="view"
+              label="Nhóm lớp"
+              value={record.group_id === null ? NO_GROUP_TEXT : (record.group_name ?? '')}
+            />
           </DetailSection>
           <DetailSection title="Thời gian và địa điểm">
             <DetailField mode="view" label="Khai giảng" value={formatDate(record.start_date)} />
             <DetailField
               mode="view"
               label="Kết thúc dự kiến"
-              value={record.expected_end_date ? formatDate(record.expected_end_date) : ''}
+              value={
+                record.expected_end_date
+                  ? formatDate(record.expected_end_date)
+                  : record.slots.length === 0
+                    ? 'chưa tính (chưa có thời khoá biểu)'
+                    : 'chưa tính'
+              }
             />
+            <DetailField mode="view" label="Lịch học" value={summary.schedule} />
+            <DetailField mode="view" label="Phòng học" value={summary.rooms} />
+            <DetailField mode="view" label="Giáo viên" value={summary.teachers} />
+            <DetailField mode="view" label="Trợ giảng" value={summary.assistants} />
             <DetailField mode="view" label="Số buổi" value={record.total_sessions} />
             <DetailField
               mode="view"
@@ -370,6 +398,7 @@ function ClassView({ record }: { record: ClassRecord }) {
                 };
               })}
             />
+            {notes.bottom && <p className="text-caption text-fg-muted">{notes.bottom}</p>}
           </DetailSection>
         </div>
 
