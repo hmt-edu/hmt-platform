@@ -1,4 +1,4 @@
--- KH-07 PR2: hộp so sánh gộp phụ huynh, học sinh: gợi ý bản trùng, xem trước (migration 589; R-CRM-25).
+-- KH-07 PR2: hộp so sánh gộp phụ huynh, học sinh: gợi ý bản trùng, xem trước (migration 596; R-CRM-25).
 begin;
 update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
