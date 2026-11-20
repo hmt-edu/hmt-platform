@@ -18,6 +18,10 @@ export type VoucherRow = {
   /** Hình thức chi (danh mục PAYMENT_METHOD chung với Phiếu thu); trống tới khi ghi nhận đã chi. */
   payment_method?: string | null;
   payment_method_code?: string | null;
+  /** Tài khoản nhận của người nhận hoàn tiền, chữ tự do (TC-10, TC-11; migration 581). */
+  payout_account_note?: string | null;
+  /** Ngày chi dự kiến (YYYY-MM-DD); chỉ cảnh báo, không chặn chi. */
+  planned_on?: string | null;
 };
 
 export type VoucherPage = { total: number; rows: VoucherRow[] };
@@ -32,6 +36,8 @@ export type VoucherRecord = {
     pay_note: string | null;
     payment_method?: string | null;
     payment_method_code?: string | null;
+    payout_account_note?: string | null;
+    planned_on?: string | null;
     created_at: string;
     paid_at: string | null;
     created_by_name: string | null;
