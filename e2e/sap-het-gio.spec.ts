@@ -111,6 +111,12 @@ test('GD-07: em còn 2 giờ hiện ở danh sách với tình trạng Sắp h�
   await expect(row).toContainText('Sắp hết giờ');
   await expect(row).toContainText(classCode);
   await expect(row).toContainText('2');
+  // Canvas GD07: câu giải thích đầu danh sách (ngưỡng lấy từ tham số) và cột Tình trạng đứng trước Phiếu tái tục.
+  await expect(page.getByText(/Mỗi dòng là một học sinh trong một lớp/)).toBeVisible();
+  const headers = await page.getByRole('columnheader').allInnerTexts();
+  expect(headers.findIndex((h) => h.includes('Tình trạng'))).toBeLessThan(
+    headers.findIndex((h) => h.includes('Phiếu tái tục')),
+  );
   await expectAccessible(page);
   // Lọc nhanh «Tình trạng» nằm trong Filters (khuôn K03): chọn Hết giờ thì dòng Sắp hết giờ biến mất, đổi sang Sắp hết giờ thì hiện lại.
   const phone = isPhone(page);

@@ -45,3 +45,22 @@ export function dateText(iso: string | null): string {
 export function hoursText(hours: number): string {
   return Number.isInteger(hours) ? String(hours) : hours.toFixed(1).replace('.', ',');
 }
+
+/** Ô «Phiếu tái tục» khi chưa có phiếu: Hết giờ thì nói rõ phiếu sẽ do đợt quét đêm sinh (canvas GD07), còn lại gạch ngang. */
+export function noUpsaleText(status: ExpiringStatus): string {
+  return status === 'HET_GIO' ? 'Chưa có phiếu · chờ đợt quét đêm' : '—';
+}
+
+/**
+ * Câu giải thích đầu danh sách (canvas GD07). Ngưỡng giờ, ngày lấy từ tham số upsale_hours_left_threshold,
+ * upsale_days_left_threshold (không viết cứng); chưa đọc được tham số thì bỏ phần ngưỡng.
+ */
+export function expiringIntro(
+  hoursThreshold: number | null,
+  daysThreshold: number | null,
+  todayText: string,
+): string {
+  const base = 'Mỗi dòng là một học sinh trong một lớp; giờ còn là tổng các ghi danh còn hiệu lực.';
+  if (hoursThreshold === null || daysThreshold === null) return base;
+  return `${base} Gắn «Sắp hết giờ» khi giờ còn ≤ ${hoursThreshold} giờ hoặc ngày hết giờ dự kiến ≤ ${daysThreshold} ngày tính từ hôm nay (${todayText}).`;
+}

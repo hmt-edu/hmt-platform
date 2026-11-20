@@ -17,8 +17,12 @@ import {
   statusTone,
   type ExpiringRow,
   type ExpiringStatus,
+  expiringIntro,
+  noUpsaleText,
 } from './expiringLogic';
 import { useExpiringPage } from './useExpiringData';
+import { formatDate } from '../../lib/format';
+import { vnToday } from '../../list/calendarLogic';
 
 const STATUS_OPTIONS: { value: ExpiringStatus; label: string }[] = [
   { value: 'SAP_HET_GIO', label: statusName('SAP_HET_GIO') },
@@ -74,6 +78,11 @@ const CONFIG: ListConfig<ExpiringRow> = {
       render: (r) => <span className="tabular">{dateText(r.validity_date)}</span>,
     },
     {
+      key: 'status',
+      label: 'Tình trạng',
+      render: (r) => <Tag tone={statusTone(r.status_code)}>{statusName(r.status_code)}</Tag>,
+    },
+    {
       key: 'upsale',
       label: 'Phiếu tái tục',
       render: (r) =>
@@ -82,13 +91,8 @@ const CONFIG: ListConfig<ExpiringRow> = {
             {r.upsale_code}
           </Link>
         ) : (
-          <span className="text-fg-muted">—</span>
+          <span className="text-fg-muted">{noUpsaleText(r.status_code)}</span>
         ),
-    },
-    {
-      key: 'status',
-      label: 'Tình trạng',
-      render: (r) => <Tag tone={statusTone(r.status_code)}>{statusName(r.status_code)}</Tag>,
     },
   ],
   quickGroups: [{ key: 'status', label: 'Tình trạng', options: STATUS_OPTIONS }],
@@ -100,6 +104,8 @@ const CONFIG: ListConfig<ExpiringRow> = {
 
 export function ExpiringListPage() {
   const pageSize = useIntSetting('list_page_size_default');
+  const hoursThreshold = useIntSetting('upsale_hours_left_threshold');
+  const daysThreshold = useIntSetting('upsale_days_left_threshold');
   const [state, setState] = useState<ListState>(EMPTY_STATE);
   const [paging, setPaging] = useState({ key: '', page: 0 });
   const search = useDebounced(state.search).trim();
@@ -151,11 +157,16 @@ export function ExpiringListPage() {
           ? { onNext: () => setPage(page + 1) }
           : {}),
       }}
+      belowToolbar={
+        <p className="px-4 pt-2 text-caption text-fg-muted">
+          {expiringIntro(hoursThreshold, daysThreshold, formatDate(vnToday()))}
+        </p>
+      }
       sort={null}
       onSortChange={() => undefined}
       emptyMessage={{
         title: 'Chưa có học sinh sắp hết giờ',
-        hint: 'Không có học sinh nào khớp bộ lọc này.',
+        hint: 'Dự báo theo từng ghi danh (từng lớp). Hạn gói chỉ để dự báo: quá hạn gói mà còn giờ vẫn học (R-GD-07).',
       }}
     />
   );
