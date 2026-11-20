@@ -3,6 +3,7 @@ import { parseCsv } from '../lead/importCsv';
 import {
   buildRows,
   errorRowsCsv,
+  explainLine,
   normalizeHeader,
   passwordsCsv,
   type ImportResult,
@@ -133,5 +134,24 @@ describe('màn Nhập: đọc file CSV theo loại', () => {
       'PHIEU_TEST',
       'SO_DU',
     ]);
+  });
+});
+
+describe('QT-18: câu Giải thích có tên cột lỗi (khung QT18_ket_qua)', () => {
+  it('có cột mà câu chưa nhắc thì thêm «Cột <tên>: » ở đầu', () => {
+    expect(explainLine({ message: 'Số điện thoại cần đủ 10 số.', column: 'sdt' })).toBe(
+      'Cột sdt: Số điện thoại cần đủ 10 số.',
+    );
+  });
+  it('câu đã nêu tên cột thì giữ nguyên, không lặp', () => {
+    expect(explainLine({ message: 'Cột diem phải từ 0 đến 10.', column: 'diem' })).toBe(
+      'Cột diem phải từ 0 đến 10.',
+    );
+  });
+  it('không biết cột (null hoặc trống) thì giữ nguyên câu; không có câu thì trống', () => {
+    expect(explainLine({ message: 'Dòng không đúng định dạng.', column: null })).toBe(
+      'Dòng không đúng định dạng.',
+    );
+    expect(explainLine({ message: null, column: 'sdt' })).toBe('');
   });
 });

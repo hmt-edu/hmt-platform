@@ -14,9 +14,22 @@ export type ImportLine = {
   code: string | null;
   message: string | null;
   warnings?: string[];
-  /** Mã lỗi nghiệp vụ (loại đào tạo), ví dụ HMT_NAP_THIEU_COT. */
+  /** Mã lỗi nghiệp vụ, ví dụ HMT_NAP_THIEU_COT. */
   error_code?: string | null;
+  /** Tên cột gây lỗi (migration 584), có khi máy chủ biết chắc; không biết thì trống. */
+  column?: string | null;
 };
+
+/**
+ * Câu «Giải thích» của một dòng (khung QT18_ket_qua: «Cột ma_lop: không tìm thấy lớp»): có tên cột và câu chưa nhắc cột đó thì thêm «Cột <tên>: » ở đầu.
+ * Câu đã nêu tên cột (ví dụ «Cột diem phải từ 0 đến 10.») giữ nguyên.
+ */
+export function explainLine(line: Pick<ImportLine, 'message' | 'column'>): string {
+  const message = line.message ?? '';
+  const column = line.column ?? '';
+  if (message === '' || column === '' || message.includes(column)) return message;
+  return `Cột ${column}: ${message}`;
+}
 
 /** Báo cáo nạp Cơ hội: số cơ hội theo giai đoạn, số dòng thiếu thông tin em, số dòng gắn vào phụ huynh có sẵn. */
 export type ImportSummary = {
@@ -105,7 +118,7 @@ export function errorRowsCsv(
       const out: Record<string, string | number> = { dong: r.row };
       for (const c of columns) out[c] = cells[names.indexOf(c)] ?? '';
       out.ket_qua = r.status === 'LOI' ? 'Lỗi' : r.status === 'TRUNG' ? 'Trùng' : 'Hợp lệ';
-      out.ly_do = [r.message ?? '', ...(r.warnings ?? [])].filter(Boolean).join(' | ');
+      out.ly_do = [explainLine(r), ...(r.warnings ?? [])].filter(Boolean).join(' | ');
       return out;
     });
   return toCsv(lines, [
