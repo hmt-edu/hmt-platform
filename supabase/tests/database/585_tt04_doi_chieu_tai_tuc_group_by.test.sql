@@ -1,4 +1,4 @@
--- Kho #19 (migration 578): Group By TT-04 Đối chiếu tái tục (cơ sở, campaign, lý do chưa có phiếu): đếm theo nhóm, bộ lọc lý do mở nhóm, quyền. Dữ liệu dựng như bài 553, giả.
+-- Kho #19 (migration 585): Group By TT-04 Đối chiếu tái tục (cơ sở, campaign, lý do chưa có phiếu): đếm theo nhóm, bộ lọc lý do mở nhóm, quyền. Dữ liệu dựng như bài 553, giả.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
