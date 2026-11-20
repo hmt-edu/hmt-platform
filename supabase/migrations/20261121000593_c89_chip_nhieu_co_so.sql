@@ -1,4 +1,4 @@
--- C89 (KHO-VIEC dòng 14; anh Trường duyệt 20/11 20:38, thư Chat 20:44; migration 580, rủi ro CAO: sửa hàm danh sách và đếm tiền, RLS/phạm vi cơ sở). TC-01, TC-04: chip chọn NHIỀU cơ sở (CS1, CS2, CS4, CS5) theo canvas.
+-- C89 (KHO-VIEC dòng 14; anh Trường duyệt 20/11 20:38, thư Chat 20:44; migration 593, rủi ro CAO: sửa hàm danh sách và đếm tiền, RLS/phạm vi cơ sở). TC-01, TC-04: chip chọn NHIỀU cơ sở (CS1, CS2, CS4, CS5) theo canvas.
 -- Làm gì: list_receipts và receipt_group_counts nhận thêm bộ lọc `branch_ids` (mảng mã cơ sở); giữ `branch_id` cũ để tương thích. Phạm vi cơ sở của người gọi vẫn cắt BÊN TRONG hàm (cùng điều kiện v_scope); mảng chỉ thu hẹp thêm, người chỉ thấy cơ sở của mình không thấy phiếu cơ sở khác dù đưa mảng.
 -- Chỉ đọc; không đổi bảng; dùng chỉ mục sẵn có theo branch_id của phiếu thu. Mọi luật còn lại giữ nguyên bản 576 (list_receipts) và 579 (receipt_group_counts).
 select set_config('hmt.migration', 'on', false);
