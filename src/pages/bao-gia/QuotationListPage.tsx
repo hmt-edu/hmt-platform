@@ -3,6 +3,7 @@
 // Giao diện không tính tiền: tổng tiền, quá hạn đều do hàm cơ sở dữ liệu trả.
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
@@ -160,6 +161,7 @@ export function QuotationListPage() {
       rowLabel={(r) => `${r.code} ${r.parent_name}`}
       loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
+      forbidden={listForbiddenOf(activeQuery.error, 'báo giá', 'Bán hàng và thu chi')}
       onRetry={() => void activeQuery.refetch()}
       groupTree={grouped ? grouping?.tree : undefined}
       onGroupToggle={(key, open) => {

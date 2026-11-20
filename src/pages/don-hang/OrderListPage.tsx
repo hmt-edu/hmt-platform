@@ -2,6 +2,7 @@
 // Không có nút Tạo (đơn sinh từ báo giá, cơ hội, phiếu tái tục; R-CRM-19, R-TIEN-02); có nút Xuất cho vai có quyền Xuất (Trưởng cơ sở, Kế toán, Admin, Đ105).
 // Giao diện không tính tiền: tổng tiền do hàm cơ sở dữ liệu trả. Chưa có màn bản ghi đơn (BH-05) nên dòng chưa mở được.
 import { useMemo, useState } from 'react';
+import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
@@ -154,6 +155,7 @@ export function OrderListPage() {
       rowLabel={(r) => `${r.code} ${r.parent_name}`}
       loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
+      forbidden={listForbiddenOf(activeQuery.error, 'đơn hàng', 'Bán hàng và thu chi')}
       onRetry={() => void activeQuery.refetch()}
       groupTree={grouped ? grouping?.tree : undefined}
       onGroupToggle={(key, open) => {

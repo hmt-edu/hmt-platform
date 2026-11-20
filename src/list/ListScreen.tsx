@@ -10,6 +10,8 @@ import { Icon, type IconName } from '../ui/icons';
 import { Select } from '../ui/Overlays';
 import { useMedia } from '../ui/useMedia';
 import { FavoritesList, SaveFilterForm } from './Favorites';
+import { ListForbidden } from './ListForbidden';
+import type { ListForbiddenSpec } from './forbiddenSpec';
 import { usePersistedColumns } from './persistColumns';
 import { AdvancedDialog, ColumnsPanel, GroupPanel, PanelHost, QuickFilterPanel } from './Panels';
 import {
@@ -50,6 +52,7 @@ export function ListScreen<Row>({
   rowLabel,
   loading = false,
   error,
+  forbidden,
   onRetry,
   actions = [],
   onRefresh,
@@ -81,6 +84,8 @@ export function ListScreen<Row>({
   rowLabel: (row: Row) => string;
   loading?: boolean | undefined;
   error?: string | null | undefined;
+  /** Máy chủ báo không có quyền xem: hiện khung «Không có quyền» của canvas thay cho khung lỗi chung. */
+  forbidden?: ListForbiddenSpec | undefined;
   onRetry?: (() => void) | undefined;
   actions?: Action[] | undefined;
   onRefresh?: (() => void) | undefined;
@@ -474,7 +479,11 @@ export function ListScreen<Row>({
 
       {bulk}
 
-      {error ? (
+      {forbidden ? (
+        <div className="rounded-box border border-border bg-surface">
+          <ListForbidden {...forbidden} />
+        </div>
+      ) : error ? (
         <div className="rounded-box border border-border bg-surface">
           <StateView
             kind="error"

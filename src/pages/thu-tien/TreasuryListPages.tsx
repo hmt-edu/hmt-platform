@@ -1,5 +1,6 @@
 // TC-08 Khoản tiền vào và TC-13 Công nợ: khuôn K03 nối list_money_in và list_receivables. Chỉ đọc; không có nút Tạo.
 import { useMemo, useState } from 'react';
+import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
@@ -121,6 +122,7 @@ export function MoneyInListPage() {
         rowLabel={(r) => `${r.code} ${r.parent_name}`}
         loading={activeQuery.isPending || activeQuery.isPlaceholderData}
         error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+        forbidden={listForbiddenOf(activeQuery.error, 'khoản tiền vào', 'Bán hàng và thu chi')}
         onRetry={() => void activeQuery.refetch()}
         groupTree={grouped ? grouping?.tree : undefined}
         onGroupToggle={(key, open) => {
@@ -275,6 +277,7 @@ export function ReceivableListPage() {
         rowLabel={(r) => `${r.order_code} đợt ${r.seq} ${r.parent_name}`}
         loading={activeQuery.isPending || activeQuery.isPlaceholderData}
         error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+        forbidden={listForbiddenOf(activeQuery.error, 'khoản công nợ', 'Bán hàng và thu chi')}
         onRetry={() => void activeQuery.refetch()}
         groupTree={grouped ? grouping?.tree : undefined}
         onGroupToggle={(key, open) => {

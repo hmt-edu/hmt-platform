@@ -1,6 +1,7 @@
 // TC-01 Phiếu thu (danh sách) và TC-04 Chờ kế toán duyệt: khuôn K03 nối list_receipts. Lọc, sắp xếp, phân trang làm ở máy chủ.
 // Phiếu thu có đơn chỉ tạo từ đơn Đã duyệt (R-TIEN-02); riêng «Thu nợ đầu kỳ» (R-V2-15, không cần đơn) tạo bằng nút ở đầu danh sách. TC-04 là cùng màn với bộ lọc cố định Chờ kế toán.
 import { useMemo, useState } from 'react';
+import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
@@ -141,6 +142,11 @@ export function ReceiptListPage({ waitingAccounting = false }: { waitingAccounti
         rowLabel={(r) => `${r.code} ${r.parent_name}`}
         loading={activeQuery.isPending || activeQuery.isPlaceholderData}
         error={errorText}
+        forbidden={listForbiddenOf(
+          activeQuery.error,
+          waitingAccounting ? 'phiếu thu chờ duyệt' : 'phiếu thu',
+          'Bán hàng và thu chi',
+        )}
         onRetry={() => void activeQuery.refetch()}
         groupTree={grouped ? grouping?.tree : undefined}
         onGroupToggle={(key, open) => {
