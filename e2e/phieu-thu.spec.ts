@@ -260,6 +260,8 @@ test('Kế toán duyệt phiếu: phiếu Đã duyệt và khoá, sinh đúng m�
   await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
   await expect(page.getByText('Đã duyệt phiếu thu, tiền đã ghi nhận.').first()).toBeVisible();
   await expect(page.getByText(/Phiếu đã duyệt và khoá\. Tiền đã ghi nhận \(.+\)\./)).toBeVisible();
+  // So canvas TC02_duyet: phiếu Đã duyệt hiện «Duyệt bởi» kèm ngày.
+  await expect(page.getByText('Duyệt bởi', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
   const after = await moneyIn();
   expect(after?.n).toBe('1');
