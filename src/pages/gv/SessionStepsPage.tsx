@@ -13,6 +13,7 @@ import {
   nextStep,
   progressOf,
   STATE_LABEL,
+  stepCountWord,
   type SessionStep,
   type StepState,
 } from './sessionSteps';
@@ -149,7 +150,7 @@ function Steps({ overview }: { overview: SessionOverview }) {
         )}
         {!isDone && (
           <p className="text-caption text-fg-muted">
-            Dấu Đúng hạn hoặc Trễ hạn tự đóng khi đủ {total} bước.
+            Dấu Đúng hạn hoặc Trễ hạn tự đóng khi đủ {stepCountWord(total)} bước.
           </p>
         )}
       </section>
