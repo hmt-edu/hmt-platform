@@ -30,6 +30,9 @@ export function buildReceiptFilters(
   const mine = state.quick.mine ?? [];
   if (mine.includes('mine')) filters.mine = true;
   if (mine.includes('waiting_manager')) filters.waiting_manager = true;
+  // «Hình thức» (TC-01, TC-04): cùng nhóm là HOẶC; máy chủ lọc theo mảng payment_method.
+  const methods = (state.quick.method ?? []).filter(Boolean);
+  if (methods.length > 0) filters.payment_method = methods;
   // «Sao kê» (TC-04): chọn đúng một bên thì lọc; chọn cả hai hoặc không chọn thì không lọc.
   const bank = (state.quick.bank ?? []).filter((v) => v === 'KHOP' || v === 'CHUA');
   if (bank.length === 1) filters.bank_matched = bank[0];

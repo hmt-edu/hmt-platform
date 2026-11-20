@@ -129,6 +129,8 @@ export function buildReceiptConfig(
         ],
       },
       { key: 'status', label: 'Tình trạng', options: statusOptions },
+      // Canvas TC01, TC04: nhóm lọc «Hình thức» (Chuyển khoản, Tiền mặt, Quẹt thẻ…) lấy từ danh mục.
+      { key: 'method', label: 'Hình thức', options: catalogs.options('PAYMENT_METHOD') },
     ],
     filterFields: [
       { key: 'status', label: 'Tình trạng', type: 'multi', options: statusOptions },

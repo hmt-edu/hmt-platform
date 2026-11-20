@@ -12,3 +12,18 @@ Cách rà: đối chiếu chữ nhãn của khung canvas (abea, 9933, 1aab) vớ
 | BH-03 Báo giá (in) | Gần đúng | Như TC-07 |
 | BH-02 Báo giá, đơn (tạo/sửa, 27 khung) | **Chưa kiểm được bằng nhãn** | Nhiều nhãn nút «+ Thêm em», «+ Thêm cả nhà», «+ Thêm quà tặng» ghép biểu tượng nên so chữ không đủ: cần Tester so ảnh trên staging |
 | CH-05, CH-06, CH-07 | Không có khung cùng mã trong canvas abea, 9933; thuộc 1aab (Code A đã làm) | Giao Tester/Code A |
+
+## So canvas TC-01, TC-04 (Code C, 20/11/2026, thẻ 18:20; canvas 9933, TC01*, TC04*)
+
+Cấu hình đọc từ `CFG` của `TC01.dc.html`, `TC04.dc.html` (trường tìm, nhóm, lọc, yêu thích) và so với `receiptConfig.tsx`, `receiptFilters.ts`. So canvas TC-01, TC-04.
+
+| Mục | Canvas | Code | Kết quả |
+|---|---|---|---|
+| TC-01, TC-04 Lọc «Hình thức» | nhóm lọc Chuyển khoản, Tiền mặt, Quẹt thẻ | trước đây chỉ có Tình trạng và trường nâng cao | **Đã sửa** (PR C83): nhóm lọc nhanh «Hình thức» lấy từ danh mục PAYMENT_METHOD, máy chủ lọc theo mảng `payment_method` |
+| TC-04 Lọc, cột «Sao kê» | Đã khớp, Chưa khớp | thiếu | **Đã sửa** ở PR C82 (#404, migration 576) |
+| TC-04 Cột «Mã giao dịch» | có | có | Đúng (migration 431) |
+| TC-01, TC-04 Trường tìm | TC-01: Mã, Đơn hàng, Phụ huynh; TC-04: Mã, Phụ huynh, Mã giao dịch | ô tìm một ô, `search_text` đã gồm mã, đơn, phụ huynh, mã giao dịch | Đúng |
+| TC-01 Group By | Tình trạng, Hình thức, Cơ sở | Tình trạng, Hình thức, Cơ sở | Đúng |
+| TC-04 Group By «Sao kê» | thêm nhóm Sao kê | chưa có | **Chưa sửa**: cần migration (`receipt_group_counts` thêm trường `bank`, số > 576); xin Chat cấp số và duyệt |
+| TC-01, TC-04 Lọc nhanh «Cơ sở» (CS1, CS2, CS4, CS5) | chip nhiều cơ sở | chỉ lọc nâng cao một cơ sở (khi xem nhiều cơ sở) | **Chưa sửa**: máy chủ nhận một `branch_id`; muốn chip nhiều cơ sở cần đổi hàm thành mảng (migration). Xin Chat quyết |
+| Yêu thích mẫu («Chờ kế toán duyệt», «Chưa khớp sao kê», «Chuyển khoản CS2») | ví dụ minh hoạ | Yêu thích là bộ lọc người dùng tự lưu (`saved_filter`), không có mẫu dựng sẵn | Không làm (đúng khuôn K1_fav; số liệu minh hoạ) |
