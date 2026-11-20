@@ -48,3 +48,25 @@ Vai: Giáo viên, Trợ giảng (thấy các buổi mình được phân công).
 
 ## 8. Tạo ticket cho lớp mình
 Mục «Lớp» → mở lớp → tạo ticket (ví dụ học sinh nghỉ nhiều, cơ sở vật chất); ticket hiện ở danh sách «Ticket» của lớp. Giáo viên không thấy số tiền và ghi chú nội bộ. **Ảnh:** [ẢNH: gv-ticket-tao]
+
+## 9. Xem việc cần làm
+- **Mục đích:** biết buổi nào chưa hoàn tất và bài BTVN nào đang chờ bạn cập nhật, để làm trước khi quá hạn.
+- **Các bước:** thanh dưới bấm «Cần làm» (số đỏ là số việc đang chờ). Có hai danh sách: «Buổi chưa hoàn tất» (buổi quá hạn lâu nhất ở trên cùng, kèm «còn bao nhiêu giờ» hoặc «quá hạn bao nhiêu giờ») và «Bài Nộp sau chờ cập nhật». Bấm «Mở» ở dòng nào thì vào đúng buổi đó.
+- **Kết quả mong đợi:** làm xong việc nào thì dòng đó biến mất khỏi danh sách; hết việc thì màn báo «Bạn đã làm hết việc».
+- **Lỗi thường gặp:** mạng lỗi → «Thử lại». **Ảnh:** [ẢNH: gv-viec-can-lam]
+
+## 10. Xem lớp của tôi và học sinh trong lớp
+- **Mục đích:** xem lớp mình được phân công, danh sách em, lịch sử buổi và điểm danh, điểm của từng em.
+- **Các bước:** 1) Bấm «Lớp»: thấy các lớp được phân công (mã lớp, sĩ số, lịch học, buổi tiếp theo). Chỉ thấy lớp của mình. 2) Bấm một lớp để xem «Học sinh», «Lịch học», «Lịch sử buổi», «Tiến độ khung chương trình», «BTVN gần đây». 3) Bấm tên một em để xem hồ sơ rút gọn: chuyên cần, điểm tiêu chí trung bình và từng buổi.
+- **Kết quả mong đợi:** hồ sơ em chỉ có điểm danh, điểm tiêu chí và BTVN trong lớp của bạn. Bạn **không thấy** số điện thoại, phụ huynh hay học phí của em.
+- **Lỗi thường gặp:** chưa được phân công lớp nào → «Bạn chưa được phân công lớp nào»; lớp chưa có em → «Lớp chưa có học sinh». Cần học bù hoặc buổi bổ trợ cho lớp thì dùng nút «Tạo ticket» trong màn lớp (mục 8). **Ảnh:** [ẢNH: gv-lop-cua-toi]
+
+## 11. Xem giờ dạy của tôi
+- **Mục đích:** biết tháng này bạn đã dạy bao nhiêu buổi, bao nhiêu giờ.
+- **Các bước:** «Lịch dạy» → «Giờ dạy của tôi». Dùng «Tháng trước», «Tháng này» để đổi tháng. Phần «Tóm tắt» cho «Số buổi», «Tổng giờ», «Buổi trễ hạn» và «Giờ trễ»; bấm «Xem chi tiết» để xem từng buổi.
+- **Kết quả mong đợi:** chỉ tính buổi đã hoàn tất (Done) của bạn, tính theo ngày buổi diễn ra; buổi huỷ không tính. Buổi hoàn tất trễ có nhãn «Trễ hạn» kèm số giờ.
+- **Lỗi thường gặp:** giờ khác với bạn nhớ → kiểm lại buổi đó đã hoàn tất chưa (mục 7) rồi báo CSKH nếu vẫn lệch. **Ảnh:** [ẢNH: gv-gio-day]
+
+## 12. Xem ticket của lớp mình
+«Lớp của tôi» → liên kết «Ticket của lớp tôi»: danh sách ticket bạn tạo hoặc của lớp bạn được phân công, kèm trạng thái. Chỉ xem trạng thái và nội dung bạn được phép thấy; không có số tiền và ghi chú nội bộ. **Ảnh:** [ẢNH: gv-ticket-ds]
+

@@ -50,6 +50,7 @@ import {
   saveReceipt,
   submitReceipt,
   useReceipt,
+  useReceiptAllocPreview,
   useReceiptExpectedApprover,
   useReceiverOptions,
   useRefreshReceipt,
@@ -392,53 +393,77 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
     </div>
   );
 
+  // TC-17 (canvas 9933): bảng «Chia tiền vào dòng đơn» hiện từ bước Đã trình (xem trước, tính bằng đúng thuật toán lúc duyệt) và sau khi duyệt (tiền đã chia thật).
+  const allocPreview = useReceiptAllocPreview(record.id, record.status_code);
+  const allocLines = allocPreview.data?.lines ?? [];
   const allocations = (
     <div className="flex flex-col gap-3">
-      {record.money_in ? (
+      {allocPreview.isPending && record.order ? (
+        <Spinner label="Đang tính chia tiền…" />
+      ) : allocLines.length > 0 ? (
         <>
           <p className="text-body">
-            Khoản tiền vào <b>{record.money_in.code}</b>: {formatMoney(record.money_in.amount)},
-            chia về các dòng đơn:
+            {allocPreview.data?.actual && record.money_in ? (
+              <>
+                Khoản tiền vào <b>{record.money_in.code}</b>: {formatMoney(record.money_in.amount)},
+                chia về các dòng đơn:
+              </>
+            ) : (
+              <>
+                Dự kiến chia {formatMoney(record.amount)} về các dòng đơn khi Kế toán duyệt (số liệu
+                chỉ để xem, chưa ghi):
+              </>
+            )}
           </p>
           <Table
             caption="Chia về các dòng đơn"
-            rows={record.money_in.allocations}
+            rows={allocLines}
             rowKey={(a) => String(a.line_no)}
             rowLabel={(a) => `Dòng ${a.line_no}`}
             empty={null}
             columns={[
               { key: 'line', header: 'Dòng', cell: (a) => `Dòng ${a.line_no}` },
-              {
-                key: 'student',
-                header: 'Học sinh',
-                cell: (a) =>
-                  (order.data?.lines ?? []).find((l) => l.line_no === a.line_no)?.student_name ??
-                  '—',
-              },
-              { key: 'pkg', header: 'Sản phẩm', cell: (a) => a.package_name },
+              { key: 'student', header: 'Học sinh', cell: (a) => a.student_name ?? '—' },
+              { key: 'pkg', header: 'Lớp', cell: (a) => a.package_name },
               {
                 key: 'total',
                 header: 'Thành tiền (đ)',
-                cell: (a) => {
-                  const line = (order.data?.lines ?? []).find((l) => l.line_no === a.line_no);
-                  return (
-                    <span className="tabular">{line ? formatNumber(line.line_total) : '—'}</span>
-                  );
-                },
+                cell: (a) => <span className="tabular">{formatNumber(a.line_total)}</span>,
               },
               {
                 key: 'amt',
                 header: 'Tiền chia về dòng (đ)',
-                cell: (a) => <span className="tabular">{formatNumber(a.amount)}</span>,
+                cell: (a) => (
+                  <span className="tabular">
+                    {formatNumber(a.amount)}
+                    {a.first && <span className="ml-2 text-caption text-fg-muted">Dồn trước</span>}
+                  </span>
+                ),
+              },
+              {
+                key: 'hours',
+                header: 'Giờ cấp',
+                cell: (a) => (
+                  <span className="tabular">
+                    {formatNumber(a.hours)} / {formatNumber(a.hours_total)} giờ
+                  </span>
+                ),
               },
             ]}
           />
+          <p className="text-caption text-fg-muted">
+            Giờ cấp = giờ dòng × tiền chia ÷ thành tiền dòng (R-TIEN-21). Giờ tặng chỉ cấp khi đơn
+            thu đủ (R-TIEN-24).
+          </p>
         </>
       ) : (
         <p className="text-fg-muted">
           {record.status_code === 'HUY'
             ? 'Phiếu đã huỷ, không chia tiền.'
-            : 'Tiền chỉ được chia về các dòng đơn khi Kế toán duyệt phiếu.'}
+            : (allocPreview.data?.note ??
+              (record.order
+                ? 'Chưa có dòng nào nhận tiền.'
+                : 'Phiếu thu nợ đầu kỳ không qua đơn nên không chia về dòng.'))}
         </p>
       )}
     </div>

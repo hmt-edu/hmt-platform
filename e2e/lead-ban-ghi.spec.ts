@@ -169,6 +169,34 @@ async function pickSubstage(page: Page, code: string) {
   await dialog.getByRole('button', { name: 'Chuyển giai đoạn' }).click();
 }
 
+test('Danh sách em: thêm em mới (chỉ bắt buộc họ tên), thiếu họ tên báo tại ô, bỏ em', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openRecord(page, setup.low, seeded.mainId);
+  const section = page.getByRole('region', { name: 'Danh sách em' });
+  await section.getByRole('button', { name: 'Thêm em' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Thêm em' });
+  await expect(
+    dialog.getByText(
+      'Thêm em chỉ ghi nhận vào lead. Hồ sơ học sinh được tạo khi tạo phiếu kiểm tra hoặc duyệt đơn.',
+    ),
+  ).toBeVisible();
+  await dialog.getByRole('button', { name: 'Thêm em' }).click();
+  await expect(dialog.getByText('Nhập họ tên của em.')).toBeVisible();
+  await dialog.getByLabel('Họ tên em').fill('Em thêm bằng e2e');
+  await dialog.getByRole('button', { name: 'Thêm em' }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(section.getByRole('button', { name: /Em thêm bằng e2e/ })).toBeVisible();
+  await section.getByRole('button', { name: /Em thêm bằng e2e/ }).click();
+  await section.getByRole('button', { name: 'Bỏ em' }).click();
+  await page
+    .getByRole('alertdialog', { name: /Bỏ em Em thêm bằng e2e/ })
+    .getByRole('button', { name: 'Bỏ em' })
+    .click();
+  await expect(section.getByRole('button', { name: /Em thêm bằng e2e/ })).toHaveCount(0);
+});
+
 test('Đổi giai đoạn tự do có Hoàn tác, bắt chọn nhóm con; đổi nhóm con', async ({
   page,
 }, testInfo) => {

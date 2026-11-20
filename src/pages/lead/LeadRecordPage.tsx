@@ -27,6 +27,7 @@ import { CreateOpportunityDialog } from '../co-hoi/CreateOpportunityDialog';
 import type { OpportunityPage } from '../co-hoi/oppTypes';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
+import { ProspectStudents } from '../../features/prospect/ProspectStudents';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
@@ -831,6 +832,17 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
             {text('self_rating', 'Học lực tự đánh giá', { placeholder: 'VD Khá, yếu phần Hình' })}
             {text('goal', 'Mục tiêu', { placeholder: 'Mục tiêu của học sinh' })}
           </DetailSection>
+          {record && (
+            <ProspectStudents
+              entity="LEAD"
+              recordId={record.id}
+              students={record.students ?? []}
+              requireYear={false}
+              canEdit={canEdit}
+              pageEditing={mode !== 'view'}
+              onChanged={() => void refreshRecord()}
+            />
+          )}
         </div>
         <div className="mt-6">
           <Tabs
