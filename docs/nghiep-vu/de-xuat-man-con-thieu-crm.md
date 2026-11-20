@@ -99,3 +99,28 @@ Năm chỗ canvas 9933 ghi chữ có số liệu mà hàm đọc hiện chưa tr
 | 5 | «Trùng buổi 03/11/2026, 18:00–19:30 với lớp … mà em đang học» | GD03_trung_gio | `enrollment_matching_classes` trả `clash_first` {ngày, giờ, mã lớp} (buổi trùng đầu tiên) | cùng phép so buổi đang dùng cho `clash_sessions` | chỉ hiện «Trùng N buổi» |
 
 Câu hỏi cho anh: (a) Làm cả năm hay chỉ 1, 2, 3 (vì hiện ghi danh ít khi rơi vào ba trạng thái này)? (b) Mục 4: nhắc mềm áp cho mọi nhóm Đại, Hình hay chỉ Toán 7+ như khung ghi? Khuyến nghị: làm 1 migration gộp cả năm (đều chỉ đọc), một PR, Tester ĐẠT; mục 4 theo khung (Toán 7+).
+
+## Đề xuất DB còn lại của KH-02/KH-05, CH-04, KH-01 (Code B, 21/11/2026, theo thư Chat 20:44; CHƯA code, chờ Chat/anh duyệt rồi mới làm; số dự kiến 587, 588)
+
+Ba khoản lệch canvas 9933 mà chỉ giao diện không làm được. Khoản 1 và 2 là migration nhỏ, **không đổi bảng**; khoản 3 là quyết định luật.
+
+### Khoản 1 · Tab «Ticket» ở hồ sơ phụ huynh (KH-02), học sinh (KH-05) (số dự kiến 587, mức THẤP)
+- **Lệch:** cả hai tab ghi «Chưa có dữ liệu (ticket làm sau)», canvas `KH02_ticket` có danh sách ticket của phụ huynh. Nút thông minh «Ticket mở» cũng chưa có số.
+- **Làm:** `create or replace app.ticket_filter_rows` thêm hai khoá bộ lọc `parent_id`, `student_id` (hàm đang là nơi duy nhất định nghĩa bộ lọc ticket, dùng chung cho `list_tickets`, Kanban, đếm nhóm; migration 575). Không hàm mới, không đổi bảng.
+- **Chỉ mục:** đã có `ticket_parent_idx` (parent_id) và `ticket_student_idx` (student_id), migration 157; không thêm.
+- **Quyền:** `list_tickets` chạy dưới RLS ticket (người không có quyền Xem ticket thấy 0 dòng, không lộ). Tab chỉ hiện khi có quyền Ticket · Xem.
+- **Giao diện:** tab gọi `list_tickets` với `parent_id` (hoặc `student_id`) và phân trang; «Ticket mở» = tổng với `status_code` chưa Đóng, Huỷ (lọc theo nhóm trạng thái ở máy chủ). Nút «Tạo ticket» ở hồ sơ phụ huynh đã nối (#419); hồ sơ học sinh cần màn tạo ticket nhận thêm tham số học sinh (giao diện, không DB).
+- **pgTAP:** lọc đúng phụ huynh, đúng học sinh; người không có quyền Xem ticket thấy 0; kết quả danh sách khớp tổng.
+
+### Khoản 2 · CH-04 «Lịch sử thay đổi» (số dự kiến 588, mức THẤP)
+- **Lệch:** canvas có nút «Lịch sử thay đổi» ở đầu trang CH-04 (cũng ở CH-01, CH-03, CH-09, mọi màn Cấu hình). Hiện chưa có (QT-07, QT-09 đã làm theo mẫu migration 480, 481).
+- **Làm:** hàm đọc `app.list_policy_history(p_kind, p_limit, p_offset)` theo mẫu `list_setting_history`: đọc `audit_log` của `app.discount_policy`, `app.gift_policy` (đổi giá trị, hiệu lực, Ngừng và Dùng lại); chỉ Admin (hoặc quyền Cấu hình bán hàng) đọc; phân trang tối đa theo `list_page_size_max`.
+- **Chỉ mục:** tra theo `(table_id, record_id, at)` đã có `audit_log_record_idx`, nhánh «tất cả chính sách» dùng `audit_log_at_idx`; không thêm.
+- **Giao diện:** hộp «Lịch sử thay đổi» (như hộp của Tham số), một lần gọi mỗi trang. CH-01, CH-03, CH-09 dùng lại hàm khi anh muốn (đổi `p_kind`).
+- **pgTAP:** đúng bản ghi chính sách; chỉ người có quyền đọc; không lộ chính sách ngoài quyền.
+- **Câu hỏi kèm:** quà tặng «Áp dụng cho» (canvas có ở form quà tặng, bảng `gift_policy` chưa có cột; migration riêng và sửa `save_gift_policy`): làm không? Khuyến nghị: làm cùng đợt nếu anh xác nhận luật R-TIEN-30 áp «Báo giá, Đơn, Phiếu thu» cho quà tặng như chiết khấu.
+
+### Khoản 3 · KH-01 «Đang học tại» làm trường Group By (cần anh quyết luật, chưa cấp số)
+- **Vướng:** một phụ huynh có con học ở nhiều cơ sở cùng lúc, nên đếm theo «Đang học tại» đưa phụ huynh vào nhiều nhóm và tổng các nhóm lớn hơn số phụ huynh.
+- **Phương án A (khuyến nghị):** không làm Group By trường này; thêm bộ lọc «Đang học tại» (chọn một cơ sở) cho danh sách KH-01: khoá `studying_branch_id` ở `list_parents`, một điều kiện `exists` trên ghi danh Đã xếp lớp, Đang học (đã có chỉ mục ghi danh theo `parent_id`). Mức THẤP, không đổi bảng.
+- **Phương án B:** vẫn Group By nhưng cho một phụ huynh xuất hiện ở mỗi nhóm cơ sở của họ, ghi rõ ở đầu nhóm «một phụ huynh có thể ở nhiều nhóm; tổng nhóm không bằng tổng phụ huynh». Cần anh duyệt cách hiển thị.
