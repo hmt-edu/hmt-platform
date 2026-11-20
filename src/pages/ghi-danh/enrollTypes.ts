@@ -58,8 +58,18 @@ export type EnrollmentRecord = {
     start_date: string | null;
     expected_end_date: string | null;
     package_deadline: string | null;
+    hold_start?: string | null;
+    hold_end?: string | null;
+    refund_voucher_code?: string | null;
   };
-  hours: { granted: number; gifted: number; used: number; remaining: number };
+  hours: {
+    granted: number;
+    gifted: number;
+    used: number;
+    remaining: number;
+    negative_limit_sessions?: number | null;
+    negative_limit_hours?: number | null;
+  };
   classes: {
     class_id: string;
     class_code: string;
@@ -109,6 +119,8 @@ export type MatchingClass = {
   weekdays: number[];
   upcoming: { date: string; session_no: number | null }[];
   clash_sessions: number;
+  /** Buổi trùng đầu tiên (migration 591); thiếu ở máy chủ cũ. */
+  clash_first?: { date: string; start_time: string; end_time: string; class_code: string } | null;
 };
 
 export type AssignOptions = {
@@ -121,6 +133,13 @@ export type AssignOptions = {
     package_id: string | null;
     delivery_mode_code: string | null;
   };
+  /** Nhắc mềm thiếu môn Đại hoặc Hình (migration 591), không chặn. */
+  sibling_hint?: {
+    have_subject_code: string;
+    missing_subject_code: string;
+    have_subject_name: string;
+    missing_subject_name: string;
+  } | null;
   siblings: {
     id: string;
     code: string;
