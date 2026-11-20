@@ -7,6 +7,8 @@ import {
   emPayload,
   emptyListText,
   fullListText,
+  pickEmText,
+  uniqueEms,
   validateEmDraft,
   type ProspectStudent,
 } from './prospectLogic';
@@ -82,5 +84,28 @@ describe('Danh sách em: dữ liệu gửi và câu chữ', () => {
       'Con đã có hồ sơ của phụ huynh Chị Lê Thu Hằng (PH000061).',
     );
     expect(emLabel({ ...em, full_name: null })).toBe('Em chưa có tên');
+  });
+});
+
+describe('Chọn em khi tạo cơ hội (TS-06)', () => {
+  const a: ProspectStudent = { ...em, id: 'a', full_name: 'Lê Gia Huy', birth_year: 2012 };
+  const b: ProspectStudent = { ...em, id: 'b', full_name: '  le  gia HUY ', birth_year: 2012 };
+  const c: ProspectStudent = { ...em, id: 'c', full_name: 'Lê Gia Huy', birth_year: 2013 };
+  const d: ProspectStudent = {
+    ...em,
+    id: 'd',
+    full_name: null,
+    student_id: 's1',
+    birth_year: null,
+  };
+  it('em trùng họ tên (không dấu, hoa thường, khoảng trắng) và năm sinh gộp một dòng', () => {
+    expect(uniqueEms([a, b, c]).map((x) => x.id)).toEqual(['a', 'c']);
+  });
+  it('em gắn hồ sơ học sinh gộp theo hồ sơ', () => {
+    expect(uniqueEms([d, { ...d, id: 'e' }]).map((x) => x.id)).toEqual(['d']);
+  });
+  it('chữ theo canvas TS-06', () => {
+    expect(pickEmText.tooMany(5)).toBe('Chọn tối đa 5 em.');
+    expect(pickEmText.addToExisting).toBe('Thêm em vào cơ hội cũ');
   });
 });

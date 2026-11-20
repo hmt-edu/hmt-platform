@@ -101,3 +101,38 @@ export const addEmText = {
   existingNote: (parentName: string, parentCode: string) =>
     `Con đã có hồ sơ của phụ huynh ${parentName} (${parentCode}).`,
 };
+
+/** Khoá nhận diện một em để gộp em trùng: cùng hồ sơ học sinh, hoặc cùng họ tên (không dấu, không phân biệt hoa thường, một khoảng trắng) và năm sinh. */
+export function emKey(s: ProspectStudent): string {
+  if (s.student_id) return `S:${s.student_id}`;
+  const name = (s.full_name ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/gi, 'd')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+  return `N:${name}|${s.birth_year ?? ''}`;
+}
+
+/** Danh sách em của lead để chọn khi tạo cơ hội: em trùng họ tên và năm sinh gộp một dòng (TS-06). Giữ em đứng trước. */
+export function uniqueEms(students: ProspectStudent[]): ProspectStudent[] {
+  const seen = new Set<string>();
+  const out: ProspectStudent[] = [];
+  for (const s of students) {
+    const key = emKey(s);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(s);
+  }
+  return out;
+}
+
+/** Chữ hộp «Tạo cơ hội từ lead» phần chọn em (TS-06). */
+export const pickEmText = {
+  heading: 'Em đưa sang cơ hội',
+  none: 'Chưa chọn em nào: cơ hội sẽ không có em. Thêm em sau ở hồ sơ cơ hội.',
+  tooMany: (max: number) => `Chọn tối đa ${max} em.`,
+  existing: 'Chọn Mở cơ hội cũ, Thêm em vào cơ hội cũ, hoặc Vẫn tạo thêm để mở thêm một cơ hội.',
+  addToExisting: 'Thêm em vào cơ hội cũ',
+};

@@ -2,7 +2,14 @@
 // luôn ở L1 (R-CRM-36). Lead đã có cơ hội thì cảnh báo kèm mã cũ, xác nhận lần hai mới tạo thêm, hoặc mở cơ hội cũ (R-CRM-01).
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { errorOf, rpc, useDb } from '../../lib/db';
+import { addLeadStudentsToOpportunity } from '../../features/prospect/useProspect';
+import {
+  emLabel,
+  pickEmText,
+  uniqueEms,
+  type ProspectStudent,
+} from '../../features/prospect/prospectLogic';
+import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { Button } from '../../ui/Button';
 import { FormDialog } from '../../ui/Dialogs';
 import { Alert } from '../../ui/Feedback';
@@ -18,6 +25,8 @@ export type OppSource = {
   parent_phone: string;
   student_name: string | null;
   need: string | null;
+  /** Danh sách em của lead (chọn em đưa sang cơ hội, R-CRM-23). */
+  students: ProspectStudent[];
 };
 
 type Props = {
@@ -40,6 +49,11 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const max = useIntSetting('prospect_max_students');
+  const choices = uniqueEms(lead.students ?? []);
+  // Mặc định chọn tất cả em (R-CRM-23); được bỏ tick hết để tạo cơ hội 0 em.
+  const [picked, setPicked] = useState<Set<string>>(() => new Set(choices.map((s) => s.id)));
+  const tooMany = max !== null && picked.size > max;
   const existing = useQuery({
     queryKey: ['lead-opportunities', lead.id],
     // Cảnh báo phải theo cơ hội hiện có ngay lúc mở hộp, không dùng bản nhớ của lần mở trước.
@@ -64,9 +78,29 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
         p_lead_id: lead.id,
         p_data: {},
         p_confirm_existing: hasExisting && confirm,
+        p_student_ids: choices.filter((s) => picked.has(s.id)).map((s) => s.id),
       });
       await onCreated(created);
       onOpenChange(false);
+    } catch (e) {
+      setError(errorOf(e).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  /** «Thêm em vào cơ hội cũ» (TS-06): chép các em đang chọn sang một cơ hội đã có của lead, rồi mở cơ hội đó. */
+  async function addToExisting(id: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      await addLeadStudentsToOpportunity(
+        supabase,
+        id,
+        choices.filter((s) => picked.has(s.id)).map((s) => s.id),
+      );
+      onOpenChange(false);
+      onOpenExisting(id);
     } catch (e) {
       setError(errorOf(e).message);
     } finally {
@@ -81,7 +115,7 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
       title="Tạo cơ hội từ lead"
       subtitle={`Lead ${lead.code} · ${lead.parent_name}`}
       confirmLabel={hasExisting ? 'Vẫn tạo thêm' : 'Tạo cơ hội'}
-      canSubmit={!existing.isPending && (!hasExisting || confirm)}
+      canSubmit={!existing.isPending && (!hasExisting || confirm) && !tooMany}
       busy={busy}
       error={error}
       onSubmit={() => void submit()}
@@ -107,12 +141,19 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
                   >
                     Mở cơ hội cũ
                   </Button>
+                  <Button
+                    size="sm"
+                    disabled={busy || picked.size === 0 || tooMany}
+                    onClick={() => void addToExisting(r.id)}
+                  >
+                    {pickEmText.addToExisting}
+                  </Button>
                 </li>
               ))}
             </ul>
             <p className="mt-1">
-              Chỉ tạo thêm khi cần cơ hội mới (ví dụ em khác trong nhà cần test). Xác nhận bên dưới
-              để tạo thêm.
+              Chỉ tạo thêm khi cần cơ hội mới (ví dụ em khác trong nhà cần test).{' '}
+              {pickEmText.existing}
             </p>
           </Alert>
         )}
@@ -121,11 +162,34 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
           <dd>
             {lead.parent_name} · {formatPhone(lead.parent_phone)}
           </dd>
-          <dt className="text-fg-muted">Học sinh</dt>
-          <dd>{lead.student_name ?? '—'}</dd>
           <dt className="text-fg-muted">Nhu cầu</dt>
           <dd className="break-words">{lead.need ?? '—'}</dd>
         </dl>
+        <fieldset className="flex flex-col gap-1">
+          <legend className="text-body font-semibold">{pickEmText.heading}</legend>
+          {choices.length === 0 && <p className="text-body text-fg-muted">Lead chưa có em.</p>}
+          {choices.map((s) => (
+            <Checkbox
+              key={s.id}
+              label={`${emLabel(s)}${s.birth_year ? ` · sinh ${s.birth_year}` : ''}${s.student_code ? ` · ${s.student_code}` : ''}`}
+              checked={picked.has(s.id)}
+              onChange={() =>
+                setPicked((cur) => {
+                  const next = new Set(cur);
+                  if (next.has(s.id)) next.delete(s.id);
+                  else next.add(s.id);
+                  return next;
+                })
+              }
+            />
+          ))}
+          {choices.length > 0 && picked.size === 0 && (
+            <p className="text-caption text-fg-muted">{pickEmText.none}</p>
+          )}
+          {tooMany && max !== null && (
+            <p className="text-caption text-danger-action">{pickEmText.tooMany(max)}</p>
+          )}
+        </fieldset>
         <p className="text-caption text-fg-muted">
           Cơ hội mới chép thông tin từ lead, bắt đầu ở giai đoạn L1; lead tự chuyển về C4D "Tạo cơ
           hội thành công". Hồ sơ phụ huynh khớp theo số điện thoại, không có thì tạo mới.
