@@ -102,5 +102,8 @@ describe('chữ hộp Tạo phiếu kiểm tra (So canvas TS-15)', () => {
       'Mặc định là người tạo phiếu; nhận lịch hẹn nhắc và theo dõi lịch test.',
     );
     expect(createTestText.submitHint).toBe('Chọn Ngày test và Giờ test để bật nút Tạo phiếu.');
+    expect(createTestText.emHelp).toBe(
+      'Chưa thấy em? Đóng hộp này và bấm + Thêm em ở cột Thông tin học sinh.',
+    );
   });
 });
