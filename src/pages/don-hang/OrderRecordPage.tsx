@@ -170,6 +170,7 @@ function OrderView({ record }: { record: OrderRecord }) {
   const [confirmUnedited, setConfirmUnedited] = useState(false);
   const editOptions = useOrderEditOptions(editing);
   const cap = useIntSetting('discount_total_cap_percent');
+  const depositMin = useIntSetting('deposit_min_amount'); // tiền cọc tối thiểu để sinh ghi danh (R-GD-01)
   const paymentQuery = useOrderPayment(record.status_code === 'DA_DUYET' ? record.id : undefined);
   const receiptsQuery = useReceiptPage({ order_id: record.id }, 'created_desc', 0, 1);
   const receiptCount = receiptsQuery.data?.total ?? 0;
@@ -1021,8 +1022,13 @@ function OrderView({ record }: { record: OrderRecord }) {
                 label: 'Ghi danh',
                 content: (
                   <p className="text-fg-muted">
-                    Làm ở phân hệ sau. Ghi danh sinh khi tiền đã vào đủ cọc tối thiểu (mỗi dòng đơn
-                    một ghi danh).
+                    Ghi danh sinh khi tiền đã vào đủ cọc tối thiểu
+                    {depositMin !== null ? ` ${formatMoney(depositMin)}` : ''} (mỗi dòng đơn một ghi
+                    danh). Xem ở màn{' '}
+                    <Link to="/crm/ghi-danh" className="text-link hover:underline">
+                      Ghi danh
+                    </Link>
+                    .
                   </p>
                 ),
               },
