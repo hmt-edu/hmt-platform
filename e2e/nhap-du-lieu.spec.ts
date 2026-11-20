@@ -41,6 +41,14 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   await page.getByRole('button', { name: 'Nhập phụ huynh' }).click();
   const dialog = page.getByRole('dialog', { name: 'Nhập phụ huynh từ file' });
   await expect(dialog.getByRole('button', { name: 'Tiếp' })).toBeDisabled();
+  // So canvas QT18_sai_dinh_dang: file không phải CSV bị từ chối kèm cách lưu lại.
+  await dialog.getByLabel('Chọn file CSV').setInputFiles({
+    name: 'phu-huynh.xlsx',
+    mimeType: 'application/vnd.ms-excel',
+    buffer: Buffer.from('x', 'utf8'),
+  });
+  await expect(dialog.getByText(/Chỉ nhận file CSV \(UTF-8\)/)).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Tiếp' })).toBeDisabled();
   await dialog.getByLabel('Chọn file CSV').setInputFiles({
     name: 'phu-huynh.csv',
     mimeType: 'text/csv',
@@ -51,12 +59,17 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
 
   // Hai hợp lệ, một trùng SĐT với dòng trước, một lỗi (SĐT thiếu số).
   const tiles = dialog.getByRole('button', { pressed: false });
-  await expect(tiles.filter({ hasText: 'dòng hợp lệ' })).toContainText('2');
-  await expect(tiles.filter({ hasText: 'dòng trùng' })).toContainText('1');
-  await expect(tiles.filter({ hasText: 'dòng lỗi' })).toContainText('1');
+  await expect(tiles.filter({ hasText: 'Hợp lệ' })).toContainText('2');
+  await expect(tiles.filter({ hasText: 'Trùng (bỏ qua)' })).toContainText('1');
+  await expect(tiles.filter({ hasText: 'Lỗi (bỏ qua)' })).toContainText('1');
+  // So canvas QT18_xem_truoc: ô «Tất cả dòng» (4), bảng có cột Giải thích, Cảnh báo.
+  await expect(dialog.getByRole('button', { name: /Tất cả dòng/ })).toContainText('4');
   const table = dialog.getByRole('table', { name: 'Kết quả từng dòng' });
+  await expect(table.getByRole('columnheader', { name: 'Chữ cái đầu tên' })).toBeVisible();
+  await expect(table.getByRole('columnheader', { name: 'Giải thích' })).toBeVisible();
+  await expect(table.getByRole('columnheader', { name: 'Cảnh báo' })).toBeVisible();
   await expect(table.getByRole('row')).toHaveCount(5);
-  await tiles.filter({ hasText: 'dòng lỗi' }).click();
+  await tiles.filter({ hasText: 'Lỗi (bỏ qua)' }).click();
   await expect(table.getByRole('row')).toHaveCount(2);
   // Không in họ tên hay SĐT: chỉ chữ cái đầu.
   await expect(dialog.getByText('Chị Nạp')).toHaveCount(0);
@@ -87,7 +100,7 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   });
   await again.getByRole('button', { name: 'Tiếp' }).click();
   await expect(
-    again.getByRole('button', { pressed: false }).filter({ hasText: 'dòng hợp lệ' }),
+    again.getByRole('button', { pressed: false }).filter({ hasText: 'Hợp lệ' }),
   ).toContainText('0');
   await expect(again.getByText('Chưa có dòng hợp lệ nào để nạp.')).toBeVisible();
   await expect(again.getByRole('button', { name: 'Nạp', exact: true })).toBeDisabled();
@@ -172,8 +185,8 @@ test('Nhập Cơ hội: báo cáo theo giai đoạn, dòng thiếu thông tin em
   });
   await dialog.getByRole('button', { name: 'Tiếp' }).click();
   const tiles = dialog.getByRole('button', { pressed: false });
-  await expect(tiles.filter({ hasText: 'dòng hợp lệ' })).toContainText('2');
-  await expect(tiles.filter({ hasText: 'dòng lỗi' })).toContainText('1');
+  await expect(tiles.filter({ hasText: 'Hợp lệ' })).toContainText('2');
+  await expect(tiles.filter({ hasText: 'Lỗi (bỏ qua)' })).toContainText('1');
   const report = dialog.getByLabel('Báo cáo cơ hội');
   await expect(report).toContainText('L2: 1');
   await expect(report).toContainText('L5: 1');
@@ -198,10 +211,10 @@ test('Nhập Cơ hội: báo cáo theo giai đoạn, dòng thiếu thông tin em
   });
   await again.getByRole('button', { name: 'Tiếp' }).click();
   await expect(
-    again.getByRole('button', { pressed: false }).filter({ hasText: 'dòng hợp lệ' }),
+    again.getByRole('button', { pressed: false }).filter({ hasText: 'Hợp lệ' }),
   ).toContainText('0');
   await expect(
-    again.getByRole('button', { pressed: false }).filter({ hasText: 'dòng trùng' }),
+    again.getByRole('button', { pressed: false }).filter({ hasText: 'Trùng (bỏ qua)' }),
   ).toContainText('2');
 });
 
@@ -244,8 +257,8 @@ test('Nhập Lớp: xem trước có cột Cảnh báo, báo cáo lớp chưa c�
   });
   await dialog.getByRole('button', { name: 'Tiếp' }).click();
   const tiles = dialog.getByRole('button', { pressed: false });
-  await expect(tiles.filter({ hasText: 'dòng hợp lệ' })).toContainText('1');
-  await expect(tiles.filter({ hasText: 'dòng lỗi' })).toContainText('1');
+  await expect(tiles.filter({ hasText: 'Hợp lệ' })).toContainText('1');
+  await expect(tiles.filter({ hasText: 'Lỗi (bỏ qua)' })).toContainText('1');
   const table = dialog.getByRole('table', { name: 'Kết quả từng dòng' });
   await expect(table.getByRole('columnheader', { name: 'Cảnh báo' })).toBeVisible();
   await expect(table.getByText('Chưa ghép được giáo viên')).toBeVisible();
