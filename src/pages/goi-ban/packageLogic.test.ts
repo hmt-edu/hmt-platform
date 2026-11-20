@@ -45,3 +45,11 @@ describe('chữ hộp thoại Gói bán (So canvas CH-01, dc47)', () => {
     );
   });
 });
+
+describe('chữ ô Mã cũ ở hộp Tạo gói (So canvas CH01_tao_ma_cu, đợt 2)', () => {
+  it('ô tuỳ chọn có dòng «Không bắt buộc…», đứng trước ô Tên gói', () => {
+    expect(packageDialogText.legacyCreateHelp).toBe(
+      'Không bắt buộc. Mã cũ trên Sheet, dùng để tìm kiếm.',
+    );
+  });
+});
