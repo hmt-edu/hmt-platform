@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EMPTY_TICKET_STATE, buildTicketFilters } from './ticketFilters';
+import { EMPTY_TICKET_STATE, buildTicketFilters, ticketGroupFilter } from './ticketFilters';
 
 const STATUS = ['MOI', 'DA_GIAO', 'DANG_XU_LY'];
 
@@ -41,5 +41,21 @@ describe('Bộ lọc danh sách ticket (CS-01)', () => {
       ],
     };
     expect(buildTicketFilters(state, STATUS)).toEqual({ branch_id: 'b-1', priority_code: 'KHAN' });
+  });
+});
+
+describe('ticketGroupFilter (bộ lọc của một nhóm Group By, CS-01)', () => {
+  it('ánh xạ trường nhóm sang bộ lọc của list_tickets', () => {
+    expect(ticketGroupFilter('type', 'KN')).toEqual({ ticket_type: 'KN' });
+    expect(ticketGroupFilter('group', 'G1')).toEqual({ group_code: 'G1' });
+    expect(ticketGroupFilter('priority', 'KHAN')).toEqual({ priority_code: 'KHAN' });
+    expect(ticketGroupFilter('status', 'MOI')).toEqual({ status_code: 'MOI' });
+    expect(ticketGroupFilter('assignee', 'u1')).toEqual({ assignee_id: 'u1' });
+    expect(ticketGroupFilter('branch', 'b1')).toEqual({ branch_id: 'b1' });
+  });
+  it('nhóm «Chưa có»: người xử lý chưa giao lọc no_assignee, trường khác không lọc thêm', () => {
+    expect(ticketGroupFilter('assignee', '')).toEqual({ no_assignee: true });
+    expect(ticketGroupFilter('type', '')).toEqual({});
+    expect(ticketGroupFilter('khac', 'x')).toEqual({});
   });
 });

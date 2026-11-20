@@ -10,12 +10,24 @@ import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import { Spinner } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
+import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeadCatalogs } from '../lead/useCatalogs';
+import { useLeafRows } from '../lead/useLeadData';
 import { TicketCard } from './TicketCard';
 import { buildTicketConfig } from './ticketConfig';
-import { EMPTY_TICKET_STATE, buildTicketFilters } from './ticketFilters';
+import {
+  EMPTY_TICKET_STATE,
+  TICKET_GROUP_FIELD_OF,
+  buildTicketFilters,
+  ticketGroupFilter,
+} from './ticketFilters';
 import type { TicketRow } from './ticketTypes';
-import { useRefreshTickets, useTicketBoard, useTicketPage } from './useTicketData';
+import {
+  useRefreshTickets,
+  useTicketBoard,
+  useTicketGroupCounts,
+  useTicketPage,
+} from './useTicketData';
 
 export function TicketListPage() {
   const access = useAccess();
@@ -42,10 +54,41 @@ export function TicketListPage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useTicketPage(filters, page * (pageSize ?? 0), pageSize);
+  // Group By ở máy chủ (tối đa hai cấp, chỉ ở dạng danh sách): số đếm từ ticket_group_counts, dòng tải khi mở từng nhóm lá (list_tickets).
+  const groupFields = state.group.flatMap((k) =>
+    TICKET_GROUP_FIELD_OF[k] ? [TICKET_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0 && view === 'list';
+  const [tick, setTick] = useState(0);
+  const list = useTicketPage(filters, page * (pageSize ?? 0), pageSize, !grouped);
   const board = useTicketBoard(filters, pageSize, view === 'kanban');
+  const counts = useTicketGroupCounts(filters, groupFields, grouped);
+  const leaves = useLeafRows<TicketRow>(
+    filters,
+    null,
+    pageSize,
+    `${JSON.stringify(filters)}|${tick}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_tickets',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<TicketRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            ticketGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
   const rows: TicketRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
 
   return (
     <ListScreen
@@ -102,19 +145,31 @@ export function TicketListPage() {
       onRowClick={(r) => void navigate(`/crm/ticket/${r.id}`)}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.title}`}
-      loading={list.isPending || list.isPlaceholderData}
-      error={list.isError ? errorOf(list.error).message : null}
-      onRetry={() => void list.refetch()}
-      onRefresh={() => void refreshData()}
-      pager={{
-        from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
-        to: page * (pageSize ?? 0) + rows.length,
-        total,
-        ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
-        ...(page * (pageSize ?? 0) + rows.length < total
-          ? { onNext: () => setPage(page + 1) }
-          : {}),
+      loading={activeQuery.isPending || activeQuery.isPlaceholderData}
+      error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+      onRetry={() => void activeQuery.refetch()}
+      onRefresh={() => {
+        setTick((t) => t + 1);
+        void refreshData();
       }}
+      groupTree={grouping?.tree}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
+      }}
+      pager={
+        grouped
+          ? undefined
+          : {
+              from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
+              to: page * (pageSize ?? 0) + rows.length,
+              total,
+              ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
+              ...(page * (pageSize ?? 0) + rows.length < total
+                ? { onNext: () => setPage(page + 1) }
+                : {}),
+            }
+      }
       emptyMessage={{
         title: 'Chưa có ticket nào',
         hint: 'Ticket đề nghị, khiếu nại của phụ huynh và ticket của giáo viên hiện ở đây. Nếu phân hệ Aftersale chưa bật ở cơ sở của bạn thì danh sách luôn trống.',

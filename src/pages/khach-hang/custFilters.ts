@@ -36,6 +36,17 @@ export function buildStudentFilters(state: ListState): CustFilters {
   return f;
 }
 
+/** Trường nhóm của giao diện Phụ huynh (khoá cấu hình) → tên trường của app.parent_group_counts. */
+export const PARENT_GROUP_FIELD_OF: Record<string, string> = { status: 'status', branch: 'branch' };
+
+/** Bộ lọc của MỘT nhóm (để mở nhóm tải dòng bằng list_parents). */
+export function parentGroupFilter(field: string, key: string): CustFilters {
+  if (key === '') return {};
+  if (field === 'status') return { status: [key] };
+  if (field === 'branch') return { branch_id: key };
+  return {};
+}
+
 export function custSortParam(key: string | null, direction: 'asc' | 'desc' | null): string {
   if (key === 'name') return 'name_asc';
   if (key === 'code' && direction === 'desc') return 'code_desc';

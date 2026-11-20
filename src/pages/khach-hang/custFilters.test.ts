@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { ListState } from '../../list/types';
-import { buildParentFilters, buildStudentFilters, custSortParam } from './custFilters';
+import {
+  buildParentFilters,
+  buildStudentFilters,
+  custSortParam,
+  parentGroupFilter,
+} from './custFilters';
 
 const empty: ListState = {
   search: '',
@@ -46,5 +51,16 @@ describe('Bộ lọc Khách hàng (KH-01, KH-04)', () => {
     expect(custSortParam(null, null)).toBe('code_asc');
     expect(custSortParam('name', 'asc')).toBe('name_asc');
     expect(custSortParam('code', 'desc')).toBe('code_desc');
+  });
+});
+
+describe('parentGroupFilter (bộ lọc của một nhóm Group By, KH-01)', () => {
+  it('ánh xạ trường nhóm sang bộ lọc của list_parents', () => {
+    expect(parentGroupFilter('status', 'DANG_HOC')).toEqual({ status: ['DANG_HOC'] });
+    expect(parentGroupFilter('branch', 'b1')).toEqual({ branch_id: 'b1' });
+  });
+  it('khoá rỗng hoặc trường lạ không lọc thêm', () => {
+    expect(parentGroupFilter('status', '')).toEqual({});
+    expect(parentGroupFilter('khac', 'x')).toEqual({});
   });
 });

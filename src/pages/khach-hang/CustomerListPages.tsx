@@ -7,6 +7,9 @@ import type { ListState } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
+import { useToast } from '../../ui/toastContext';
+import { buildLeadGroupTree } from '../lead/leadGroups';
+import { useLeafRows } from '../lead/useLeadData';
 import type { SortState } from '../../ui/Data';
 import {
   buildParentConfig,
@@ -15,8 +18,20 @@ import {
   parentPath,
   studentPath,
 } from './custConfig';
-import { buildParentFilters, buildStudentFilters, custSortParam } from './custFilters';
-import { useParentPage, useRefreshCustomers, useStudentPage } from './useCustData';
+import {
+  PARENT_GROUP_FIELD_OF,
+  buildParentFilters,
+  buildStudentFilters,
+  custSortParam,
+  parentGroupFilter,
+} from './custFilters';
+import type { ParentRow } from './custTypes';
+import {
+  useParentGroupCounts,
+  useParentPage,
+  useRefreshCustomers,
+  useStudentPage,
+} from './useCustData';
 
 function usePaging(filters: object, sortValue: string) {
   const key = `${JSON.stringify(filters)}|${sortValue}`;
@@ -29,6 +44,7 @@ function usePaging(filters: object, sortValue: string) {
 
 export function ParentListPage() {
   const access = useAccess();
+  const toast = useToast();
   const navigate = useNavigate();
   const refresh = useRefreshCustomers();
   const pageSize = useIntSetting('list_page_size_default');
@@ -41,9 +57,40 @@ export function ParentListPage() {
   );
   const sortValue = custSortParam(sort?.key ?? null, sort?.direction ?? null);
   const { page, setPage } = usePaging(filters, sortValue);
-  const list = useParentPage(filters, sortValue, page * (pageSize ?? 0), pageSize);
+  // Group By ở máy chủ (tối đa hai cấp): số đếm từ parent_group_counts, dòng tải khi mở từng nhóm lá (list_parents).
+  const groupFields = state.group.flatMap((k) =>
+    PARENT_GROUP_FIELD_OF[k] ? [PARENT_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const [tick, setTick] = useState(0);
+  const list = useParentPage(filters, sortValue, page * (pageSize ?? 0), pageSize, !grouped);
+  const counts = useParentGroupCounts(filters, groupFields, true);
+  const leaves = useLeafRows<ParentRow>(
+    filters,
+    sortValue,
+    pageSize,
+    `${JSON.stringify(filters)}|${sortValue}|${tick}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_parents',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<ParentRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            parentGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
   const rows = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
   const config = useMemo(
     () =>
       buildParentConfig(
@@ -61,19 +108,31 @@ export function ParentListPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => r.full_name}
-      loading={list.isPending || list.isPlaceholderData}
-      error={list.isError ? errorOf(list.error).message : null}
-      onRetry={() => void list.refetch()}
-      onRefresh={() => void refresh()}
-      pager={{
-        from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
-        to: page * (pageSize ?? 0) + rows.length,
-        total,
-        ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
-        ...(page * (pageSize ?? 0) + rows.length < total
-          ? { onNext: () => setPage(page + 1) }
-          : {}),
+      loading={activeQuery.isPending || activeQuery.isPlaceholderData}
+      error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+      onRetry={() => void activeQuery.refetch()}
+      onRefresh={() => {
+        setTick((t) => t + 1);
+        void refresh();
       }}
+      groupTree={grouping?.tree}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
+      }}
+      pager={
+        grouped
+          ? undefined
+          : {
+              from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
+              to: page * (pageSize ?? 0) + rows.length,
+              total,
+              ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
+              ...(page * (pageSize ?? 0) + rows.length < total
+                ? { onNext: () => setPage(page + 1) }
+                : {}),
+            }
+      }
       sort={sort}
       onSortChange={(next) => setSort(next?.key === 'name' ? next : null)}
       onRowClick={(r) => void navigate(parentPath(r.id))}

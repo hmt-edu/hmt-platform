@@ -62,7 +62,8 @@ type LeafStore<Row> = { key: string; leaves: Record<string, Leaf<Row>> };
  */
 export function useLeafRows<Row = LeadRow>(
   baseFilters: LeadFilters,
-  sort: string | undefined,
+  /** null: hàm danh sách không có tham số p_sort (ví dụ list_tickets), không gửi. */
+  sort: string | null | undefined,
   pageSize: number | null,
   resetKey: string,
   onError: (message: string) => void,
@@ -87,7 +88,7 @@ export function useLeafRows<Row = LeadRow>(
       try {
         return await rpc<{ total: number; rows: Row[] }>(supabase, listFunction, {
           p_filters: { ...baseFilters, ...groupFilters },
-          p_sort: sort ?? 'created_desc',
+          ...(sort === null ? {} : { p_sort: sort ?? 'created_desc' }),
           p_limit: pageSize,
           p_offset: offset,
         });
