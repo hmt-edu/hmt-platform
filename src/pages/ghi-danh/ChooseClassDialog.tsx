@@ -19,6 +19,8 @@ export type ChooseClassTarget = {
   packageName: string;
   studentName: string | null;
   branchId: string;
+  /** Hình thức học của dòng đơn (OFF, ONL): lớp lệch hình thức chỉ hiện cảnh báo, không chặn. */
+  deliveryModeCode?: string | null;
   /** Lớp, ngày đang chọn của dòng (nếu có). */
   current: { classId: string; date: string } | null;
 };
@@ -124,6 +126,7 @@ function ChooseBody({
         value={pick}
         onChange={setPick}
         name="bh08-lop"
+        enrollMode={target.deliveryModeCode}
         allowLater
         laterLabel="Chưa chọn lớp (ghi danh ở Chờ xếp lớp, vận hành xếp sau)"
       />
