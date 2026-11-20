@@ -73,3 +73,51 @@ export function parseHours(text: string): number | null {
   const n = Number(text.trim().replace(',', '.'));
   return Number.isFinite(n) && n !== 0 ? n : null;
 }
+
+export type EnrollmentNotice = { tone: 'info' | 'warning'; title: string; text: string };
+
+/**
+ * Dòng giải thích theo tình trạng và quỹ giờ ở GD-02 (canvas 9933: GD02_cho_xep, _het_gio, _hoc_truoc, _bao_luu, _hoan_phi).
+ * Chỉ chọn câu từ số liệu máy chủ đã trả, không tính giờ. Hạn mức âm của «học trước» do tham số cơ sở quy định nên câu không ghi số.
+ */
+export function enrollmentNotice(
+  status: string,
+  hours: { granted: number; gifted: number; remaining: number },
+): EnrollmentNotice | null {
+  if (status === 'HOAN_PHI') {
+    return {
+      tone: 'info',
+      title: 'Ghi danh đã hoàn phí.',
+      text: 'Không sửa được nữa (R-GD-16).',
+    };
+  }
+  if (status === 'BAO_LUU') {
+    return {
+      tone: 'info',
+      title: 'Đang bảo lưu.',
+      text: 'Giờ còn lại giữ nguyên, em ra khỏi danh sách các buổi trong thời gian này (R-GD-09).',
+    };
+  }
+  if (status === 'CHO_XEP_LOP') {
+    return {
+      tone: 'info',
+      title: 'Chưa có lớp.',
+      text: 'Bấm Xếp lớp để chọn lớp và ngày vào lớp.',
+    };
+  }
+  if (hours.remaining < 0) {
+    return {
+      tone: 'warning',
+      title: 'Đang học trước, chưa đóng tiền.',
+      text: `Quỹ giờ đang âm (hiện −${Math.abs(hours.remaining)} giờ), trong hạn mức «Cho học trước tối đa». Quá hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale (R-GD-12).`,
+    };
+  }
+  if (hours.remaining === 0 && hours.granted + hours.gifted > 0 && status === 'DANG_HOC') {
+    return {
+      tone: 'warning',
+      title: 'Quỹ giờ bằng 0.',
+      text: 'Hết phí ở lớp này: học sinh không được điểm danh trừ giờ, hệ thống chặn, không cho âm (R-GD-18). Muốn học tiếp: lập phiếu tái tục, hoặc chuyển giờ từ ghi danh khác qua ticket “Chuyển phí”.',
+    };
+  }
+  return null;
+}

@@ -14,11 +14,12 @@ import { Button } from '../../ui/Button';
 import { CustTabs } from '../khach-hang/CustTabs';
 import { Tag } from '../../ui/Data';
 import { LineTable } from '../../ui/LineTable';
-import { Spinner, StateView } from '../../ui/Feedback';
+import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
 import { AdjustHoursDialog } from './AdjustHoursDialog';
 import { AssignClassDialog } from './AssignClassDialog';
 import { statusTone } from './enrollConfig';
+import { enrollmentNotice } from './enrollLogic';
 import { useEnrollmentLedger, useEnrollmentRecord, useSameClassPeers } from './useEnrollmentData';
 
 const END_REASON: Record<string, string> = {
@@ -77,6 +78,7 @@ export function EnrollmentRecordPage() {
   const canAssign = e.status_code === 'CHO_XEP_LOP' && access.can('ENROLLMENT', 'SUA');
   // Điều chỉnh giờ: chỉ Ghi danh · Duyệt (Trưởng cơ sở, Admin), GD-05, R-GD-04.
   const canAdjust = access.can('ENROLLMENT', 'DUYET');
+  const notice = enrollmentNotice(e.status_code, hours);
   return (
     <>
       <RecordDetail
@@ -230,6 +232,11 @@ export function EnrollmentRecordPage() {
         )}
         {tab === 'fund' && (
           <>
+            {notice && (
+              <Alert tone={notice.tone} title={notice.title} className="mt-6">
+                {notice.text}
+              </Alert>
+            )}
             <div className="mt-6 grid gap-6 md:grid-cols-2">
               <DetailSection title="Quỹ giờ">
                 <DetailField label="Giờ cấp" mode={view} value={formatNumber(hours.granted)} />
@@ -252,7 +259,7 @@ export function EnrollmentRecordPage() {
               </h3>
               {classes.length === 0 ? (
                 <p className="text-body text-fg-muted">
-                  Chưa có lớp. Ghi danh Chờ xếp lớp: bấm Xếp lớp để xếp.
+                  Chưa có dòng xếp lớp. Bấm Xếp lớp để chọn lớp và ngày vào lớp.
                 </p>
               ) : (
                 <div className="overflow-x-auto rounded-control border border-border">
@@ -299,7 +306,9 @@ export function EnrollmentRecordPage() {
                 </p>
               )}
               <p className="text-caption text-fg-muted">
-                Ngày hết giờ dự kiến cộng lịch của lớp đang học, chỉ để dự báo, không chặn gì.
+                {classes.length === 0 && 'Ngày hết giờ dự kiến chưa có (chưa có lớp): '}
+                {classes.length > 0 && 'Ngày hết giờ dự kiến '}
+                cộng lịch của lớp đang học, chỉ để dự báo, không chặn gì.
               </p>
             </section>
           </>
