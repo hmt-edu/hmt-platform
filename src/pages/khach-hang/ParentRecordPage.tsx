@@ -2,6 +2,8 @@
 // Không có Tạo tay (R-CRM-27). Sửa (KH-03) gọi update_parent; cơ sở tiếp nhận chỉ xem (R-CRM-28, Admin đổi qua ticket Chuyển cơ sở).
 // Gộp (KH-07), Tạo ticket (CS-04) chưa làm: hiện mờ kèm chú thích. Ticket và Tài chính: chưa có dữ liệu.
 import { useState } from 'react';
+import { MergeDialog } from '../../features/merge/MergeDialog';
+import { formatPhone } from '../lead/leadFormat';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { Button } from '../../ui/Button';
@@ -18,7 +20,7 @@ import { newTicketForParentPath } from './custFilters';
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
-import { studentPath } from './custConfig';
+import { parentPath, studentPath } from './custConfig';
 import { STUDENT_STATUS_LABEL, type ParentRecord } from './custTypes';
 import { useParentRecord, useRefreshCustomers } from './useCustData';
 
@@ -112,6 +114,9 @@ function ParentView({ record }: { record: ParentRecord }) {
   const toast = useToast();
   const catalogs = useLeadCatalogs();
   const canEdit = access.can('PARENT', 'SUA') && !merged;
+  // Gộp trùng dùng quyền Duyệt (R-CRM-25); bản đã gộp chỉ đọc.
+  const canMerge = access.can('PARENT', 'DUYET') && !merged;
+  const [mergeOpen, setMergeOpen] = useState(false);
   const [mode, setMode] = useState<DetailMode>('view');
   const [draft, setDraft] = useState<ParentDraft>(() => toParentDraft(record, null));
   const [errors, setErrors] = useState<Partial<Record<keyof ParentDraft, string>>>({});
@@ -203,251 +208,281 @@ function ParentView({ record }: { record: ParentRecord }) {
   );
 
   return (
-    <RecordDetail
-      kind="Phụ huynh"
-      title={`${record.full_name} · ${record.code}`}
-      mode={mode}
-      dirty={dirty}
-      saving={saving}
-      readOnly={!canEdit}
-      onEdit={() => void startEdit()}
-      onSave={() => void save()}
-      onCancel={cancelEdit}
-      onRefresh={() => void refresh()}
-      menu={{
-        label: 'Hành động',
-        items: [
+    <>
+      <RecordDetail
+        kind="Phụ huynh"
+        title={`${record.full_name} · ${record.code}`}
+        mode={mode}
+        dirty={dirty}
+        saving={saving}
+        readOnly={!canEdit}
+        onEdit={() => void startEdit()}
+        onSave={() => void save()}
+        onCancel={cancelEdit}
+        onRefresh={() => void refresh()}
+        menu={{
+          label: 'Hành động',
+          items: [
+            {
+              kind: 'action',
+              label: 'Sửa',
+              onSelect: () => void startEdit(),
+              ...(canEdit
+                ? {}
+                : {
+                    unavailable: merged
+                      ? 'Hồ sơ đã gộp chỉ xem được'
+                      : 'Bạn không có quyền sửa phụ huynh',
+                  }),
+            },
+            {
+              kind: 'action',
+              label: 'Gộp',
+              onSelect: () => setMergeOpen(true),
+              ...(canMerge
+                ? {}
+                : {
+                    unavailable: merged
+                      ? 'Hồ sơ đã gộp chỉ xem được'
+                      : 'Bạn không có quyền gộp (cần quyền Duyệt)',
+                  }),
+            },
+            {
+              kind: 'action',
+              label: 'Tạo ticket',
+              onSelect: () => void navigate(newTicketForParentPath(record.id, record.code)),
+              ...(access.can('TICKET', 'TAO') && !merged
+                ? {}
+                : {
+                    unavailable: merged
+                      ? 'Hồ sơ đã gộp chỉ xem được'
+                      : 'Bạn không có quyền tạo ticket',
+                  }),
+            },
+          ],
+        }}
+        smart={[
           {
-            kind: 'action',
-            label: 'Sửa',
-            onSelect: () => void startEdit(),
-            ...(canEdit
-              ? {}
-              : {
-                  unavailable: merged
-                    ? 'Hồ sơ đã gộp chỉ xem được'
-                    : 'Bạn không có quyền sửa phụ huynh',
-                }),
+            key: 'con',
+            label: 'Con',
+            icon: 'training',
+            count: record.counts.children,
+            onOpen: () => setTab('children'),
           },
           {
-            kind: 'action',
-            label: 'Gộp',
-            onSelect: () => undefined,
-            unavailable: 'Gộp hồ sơ trùng (KH-07) làm sau',
+            key: 'co-hoi',
+            label: 'Cơ hội',
+            icon: 'results',
+            count: record.counts.opportunities,
+            unavailable: 'Mở cơ hội từ menu Tuyển sinh',
+            onOpen: () => undefined,
           },
           {
-            kind: 'action',
-            label: 'Tạo ticket',
-            onSelect: () => void navigate(newTicketForParentPath(record.id, record.code)),
-            ...(access.can('TICKET', 'TAO') && !merged
-              ? {}
-              : {
-                  unavailable: merged
-                    ? 'Hồ sơ đã gộp chỉ xem được'
-                    : 'Bạn không có quyền tạo ticket',
-                }),
+            key: 'phieu-test',
+            label: 'Phiếu test',
+            icon: 'results',
+            count: record.counts.tests,
+            unavailable: 'Mở phiếu test từ menu Tuyển sinh',
+            onOpen: () => undefined,
           },
-        ],
-      }}
-      smart={[
-        {
-          key: 'con',
-          label: 'Con',
-          icon: 'training',
-          count: record.counts.children,
-          onOpen: () => setTab('children'),
-        },
-        {
-          key: 'co-hoi',
-          label: 'Cơ hội',
-          icon: 'results',
-          count: record.counts.opportunities,
-          unavailable: 'Mở cơ hội từ menu Tuyển sinh',
-          onOpen: () => undefined,
-        },
-        {
-          key: 'phieu-test',
-          label: 'Phiếu test',
-          icon: 'results',
-          count: record.counts.tests,
-          unavailable: 'Mở phiếu test từ menu Tuyển sinh',
-          onOpen: () => undefined,
-        },
-        {
-          key: 'ghi-danh',
-          label: 'Ghi danh',
-          icon: 'training',
-          count: record.counts.enrollments,
-          unavailable: 'Màn Ghi danh sắp có',
-          onOpen: () => undefined,
-        },
-        {
-          key: 'phieu-thu',
-          label: 'Phiếu thu',
-          icon: 'results',
-          count: record.counts.receipts,
-          onOpen: () => setTab('receipts'),
-        },
-      ]}
-      aside={
-        <RecordChatter
-          entityType="PARENT"
-          entityId={record.id}
-          format={FORMAT}
-          createdText="Tạo phụ huynh."
-          canWrite={!merged}
-        />
-      }
-      asideLabel="Ghi chú và hoạt động"
-    >
-      {merged && (
-        <p role="status" className="rounded-control bg-canvas p-3">
-          Hồ sơ này đã gộp vào hồ sơ khác.{' '}
-          {record.merged_into_id && (
-            <Link
-              className="font-medium text-link hover:underline"
-              to={`/crm/phu-huynh/${record.merged_into_id}`}
-            >
-              Mở hồ sơ đích
-            </Link>
-          )}
-        </p>
-      )}
-      <div className="flex flex-wrap items-center gap-2">
-        <Tag tone={record.is_studying ? 'success' : 'neutral'}>
-          {record.is_studying ? 'Có con đang học' : 'Chưa có con đang học'}
-        </Tag>
-      </div>
-      <CustTabs
-        active={tab}
-        onChange={setTab}
-        tabs={[
-          { key: 'overview', label: 'Tổng quan' },
-          { key: 'children', label: 'Các con' },
-          { key: 'orders', label: 'Đơn hàng' },
-          { key: 'receipts', label: 'Phiếu thu' },
-          { key: 'tickets', label: 'Ticket', note: 'Chưa có dữ liệu (ticket làm sau)' },
-          { key: 'finance', label: 'Tài chính', note: 'Chưa có dữ liệu (số dư, công nợ làm sau)' },
+          {
+            key: 'ghi-danh',
+            label: 'Ghi danh',
+            icon: 'training',
+            count: record.counts.enrollments,
+            unavailable: 'Màn Ghi danh sắp có',
+            onOpen: () => undefined,
+          },
+          {
+            key: 'phieu-thu',
+            label: 'Phiếu thu',
+            icon: 'results',
+            count: record.counts.receipts,
+            onOpen: () => setTab('receipts'),
+          },
         ]}
-      />
-      {tab === 'overview' && (
-        <DetailSection title="Thông tin phụ huynh">
-          {text('full_name', 'Họ tên', true)}
-          {text('phone', 'Số điện thoại', true)}
-          {text('phone_2', 'Số điện thoại 2')}
-          {text('relative_name', 'Người thân')}
-          <DetailField
-            mode={mode}
-            label="Tỉnh/Thành phố"
-            value={record.province_name ?? ''}
-            editor={
-              <OptionalSelect
-                label="Tỉnh/Thành phố"
-                value={draft.province_code}
-                onChange={(v) => setDraft((d) => ({ ...d, province_code: v, ward_code: '' }))}
-                options={catalogs.options('PROVINCE', draft.province_code || undefined)}
-                placeholder="Chọn tỉnh/thành phố"
-              />
-            }
+        aside={
+          <RecordChatter
+            entityType="PARENT"
+            entityId={record.id}
+            format={FORMAT}
+            createdText="Tạo phụ huynh."
+            canWrite={!merged}
           />
-          <DetailField
-            mode={mode}
-            label="Phường/Xã"
-            value={record.ward_name ?? ''}
-            editor={
-              <OptionalSelect
-                label="Phường/Xã"
-                value={draft.ward_code}
-                onChange={(v) => set('ward_code', v)}
-                options={catalogs.childrenOf(
-                  'WARD',
-                  'PROVINCE',
-                  draft.province_code,
-                  draft.ward_code || undefined,
-                )}
-                placeholder="Chọn phường/xã"
-                disabled={draft.province_code === ''}
-              />
-            }
-          />
-          {text('address', 'Địa chỉ')}
-          <DetailField
-            mode="view"
-            label="Cơ sở tiếp nhận"
-            hint="cố định, chỉ Admin sửa"
-            value={record.branch_code}
-          />
-          <DetailField
-            mode="view"
-            label="Đang học tại"
-            hint="tự tính từ ghi danh của các con"
-            value={record.studying_at.join(', ')}
-          />
-          <DetailField mode="view" label="Ngày tạo" value={formatDate(record.created_at)} />
-        </DetailSection>
+        }
+        asideLabel="Ghi chú và hoạt động"
+      >
+        {merged && (
+          <p role="status" className="rounded-control bg-canvas p-3">
+            Hồ sơ này đã gộp vào hồ sơ khác.{' '}
+            {record.merged_into_id && (
+              <Link
+                className="font-medium text-link hover:underline"
+                to={`/crm/phu-huynh/${record.merged_into_id}`}
+              >
+                Mở hồ sơ đích
+              </Link>
+            )}
+          </p>
+        )}
+        <div className="flex flex-wrap items-center gap-2">
+          <Tag tone={record.is_studying ? 'success' : 'neutral'}>
+            {record.is_studying ? 'Có con đang học' : 'Chưa có con đang học'}
+          </Tag>
+        </div>
+        <CustTabs
+          active={tab}
+          onChange={setTab}
+          tabs={[
+            { key: 'overview', label: 'Tổng quan' },
+            { key: 'children', label: 'Các con' },
+            { key: 'orders', label: 'Đơn hàng' },
+            { key: 'receipts', label: 'Phiếu thu' },
+            { key: 'tickets', label: 'Ticket', note: 'Chưa có dữ liệu (ticket làm sau)' },
+            {
+              key: 'finance',
+              label: 'Tài chính',
+              note: 'Chưa có dữ liệu (số dư, công nợ làm sau)',
+            },
+          ]}
+        />
+        {tab === 'overview' && (
+          <DetailSection title="Thông tin phụ huynh">
+            {text('full_name', 'Họ tên', true)}
+            {text('phone', 'Số điện thoại', true)}
+            {text('phone_2', 'Số điện thoại 2')}
+            {text('relative_name', 'Người thân')}
+            <DetailField
+              mode={mode}
+              label="Tỉnh/Thành phố"
+              value={record.province_name ?? ''}
+              editor={
+                <OptionalSelect
+                  label="Tỉnh/Thành phố"
+                  value={draft.province_code}
+                  onChange={(v) => setDraft((d) => ({ ...d, province_code: v, ward_code: '' }))}
+                  options={catalogs.options('PROVINCE', draft.province_code || undefined)}
+                  placeholder="Chọn tỉnh/thành phố"
+                />
+              }
+            />
+            <DetailField
+              mode={mode}
+              label="Phường/Xã"
+              value={record.ward_name ?? ''}
+              editor={
+                <OptionalSelect
+                  label="Phường/Xã"
+                  value={draft.ward_code}
+                  onChange={(v) => set('ward_code', v)}
+                  options={catalogs.childrenOf(
+                    'WARD',
+                    'PROVINCE',
+                    draft.province_code,
+                    draft.ward_code || undefined,
+                  )}
+                  placeholder="Chọn phường/xã"
+                  disabled={draft.province_code === ''}
+                />
+              }
+            />
+            {text('address', 'Địa chỉ')}
+            <DetailField
+              mode="view"
+              label="Cơ sở tiếp nhận"
+              hint="cố định, chỉ Admin sửa"
+              value={record.branch_code}
+            />
+            <DetailField
+              mode="view"
+              label="Đang học tại"
+              hint="tự tính từ ghi danh của các con"
+              value={record.studying_at.join(', ')}
+            />
+            <DetailField mode="view" label="Ngày tạo" value={formatDate(record.created_at)} />
+          </DetailSection>
+        )}
+        {tab === 'children' &&
+          (record.children.length === 0 ? (
+            <p className="py-2 text-fg-muted">Chưa có học sinh.</p>
+          ) : (
+            <ul className="flex flex-col divide-y divide-border">
+              {record.children.map((c) => (
+                <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <button
+                    type="button"
+                    className="text-left font-medium text-link hover:underline"
+                    onClick={() => void navigate(studentPath(c.id))}
+                  >
+                    {c.full_name}
+                  </button>
+                  <span className="text-caption text-fg-muted">
+                    {c.code}
+                    {c.grade ? ` · Lớp ${c.grade}` : ''} · {STUDENT_STATUS_LABEL[c.status]}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        {tab === 'orders' &&
+          (record.orders.length === 0 ? (
+            <p className="py-2 text-fg-muted">Chưa có đơn hàng.</p>
+          ) : (
+            <ul className="flex flex-col divide-y divide-border">
+              {record.orders.map((o) => (
+                <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <Link
+                    to={`/crm/don-hang/${o.id}`}
+                    className="font-medium text-link hover:underline"
+                  >
+                    {o.code}
+                  </Link>
+                  <span className="text-caption text-fg-muted">
+                    {formatDate(o.created_at)} · {formatMoney(o.total_amount)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ))}
+        {tab === 'receipts' &&
+          (record.receipts.length === 0 ? (
+            <p className="py-2 text-fg-muted">Chưa có phiếu thu.</p>
+          ) : (
+            <ul className="flex flex-col divide-y divide-border">
+              {record.receipts.map((r) => (
+                <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <Link
+                    to={`/crm/phieu-thu/${r.id}`}
+                    className="font-medium text-link hover:underline"
+                  >
+                    {r.code}
+                  </Link>
+                  <span className="text-caption text-fg-muted">
+                    {r.paid_on ? formatDate(r.paid_on) : '—'} · {formatMoney(r.amount)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ))}
+      </RecordDetail>
+      {canMerge && (
+        <MergeDialog
+          open={mergeOpen}
+          onOpenChange={setMergeOpen}
+          entity="PARENT"
+          current={{
+            id: record.id,
+            code: record.code,
+            label: record.full_name,
+            phone: formatPhone(record.phone),
+          }}
+          onMerged={(keepId, keepCode) => {
+            toast({ title: `Đã gộp vào ${keepCode}.` });
+            if (keepId === record.id) void refresh();
+            else void navigate(parentPath(keepId), { replace: true });
+          }}
+        />
       )}
-      {tab === 'children' &&
-        (record.children.length === 0 ? (
-          <p className="py-2 text-fg-muted">Chưa có học sinh.</p>
-        ) : (
-          <ul className="flex flex-col divide-y divide-border">
-            {record.children.map((c) => (
-              <li key={c.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <button
-                  type="button"
-                  className="text-left font-medium text-link hover:underline"
-                  onClick={() => void navigate(studentPath(c.id))}
-                >
-                  {c.full_name}
-                </button>
-                <span className="text-caption text-fg-muted">
-                  {c.code}
-                  {c.grade ? ` · Lớp ${c.grade}` : ''} · {STUDENT_STATUS_LABEL[c.status]}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ))}
-      {tab === 'orders' &&
-        (record.orders.length === 0 ? (
-          <p className="py-2 text-fg-muted">Chưa có đơn hàng.</p>
-        ) : (
-          <ul className="flex flex-col divide-y divide-border">
-            {record.orders.map((o) => (
-              <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <Link
-                  to={`/crm/don-hang/${o.id}`}
-                  className="font-medium text-link hover:underline"
-                >
-                  {o.code}
-                </Link>
-                <span className="text-caption text-fg-muted">
-                  {formatDate(o.created_at)} · {formatMoney(o.total_amount)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ))}
-      {tab === 'receipts' &&
-        (record.receipts.length === 0 ? (
-          <p className="py-2 text-fg-muted">Chưa có phiếu thu.</p>
-        ) : (
-          <ul className="flex flex-col divide-y divide-border">
-            {record.receipts.map((r) => (
-              <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                <Link
-                  to={`/crm/phieu-thu/${r.id}`}
-                  className="font-medium text-link hover:underline"
-                >
-                  {r.code}
-                </Link>
-                <span className="text-caption text-fg-muted">
-                  {r.paid_on ? formatDate(r.paid_on) : '—'} · {formatMoney(r.amount)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ))}
-    </RecordDetail>
+    </>
   );
 }
