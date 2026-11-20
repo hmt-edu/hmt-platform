@@ -12,6 +12,7 @@ import { Spinner, StateView } from '../../ui/Feedback';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import type { VoucherRecord } from './voucherTypes';
 import { useVoucher } from './useVoucherData';
+import { voucherPrintRows } from './voucherPrint';
 
 export function VoucherPrintPage() {
   const { id } = useParams<{ id: string }>();
@@ -154,18 +155,12 @@ function VoucherPrint({ record }: { record: VoucherRecord }) {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Số tiền hoàn trước phí</td>
-                <td className="r">{formatNumber(r.base_amount)}</td>
-              </tr>
-              <tr>
-                <td>{`Phí xử lý (${formatNumber(r.fee_percent)}%)`}</td>
-                <td className="r">{formatNumber(-r.fee_amount)}</td>
-              </tr>
-              <tr>
-                <td>Số tiền hoàn</td>
-                <td className="r">{formatNumber(r.refund_amount)}</td>
-              </tr>
+              {voucherPrintRows(r).map((row) => (
+                <tr key={row.key}>
+                  <td>{row.label}</td>
+                  <td className="r">{formatNumber(row.amount)}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </PrintSheet>
