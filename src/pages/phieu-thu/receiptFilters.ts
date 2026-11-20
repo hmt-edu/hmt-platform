@@ -33,6 +33,9 @@ export function buildReceiptFilters(
   // «Hình thức» (TC-01, TC-04): cùng nhóm là HOẶC; máy chủ lọc theo mảng payment_method.
   const methods = (state.quick.method ?? []).filter(Boolean);
   if (methods.length > 0) filters.payment_method = methods;
+  // «Cơ sở» (chip nhiều cơ sở, TC-01, TC-04): máy chủ nhận mảng branch_ids và vẫn cắt theo phạm vi của người gọi.
+  const branchIds = (state.quick.branches ?? []).filter(Boolean);
+  if (branchIds.length > 0) filters.branch_ids = branchIds;
   // «Sao kê» (TC-04): chọn đúng một bên thì lọc; chọn cả hai hoặc không chọn thì không lọc.
   const bank = (state.quick.bank ?? []).filter((v) => v === 'KHOP' || v === 'CHUA');
   if (bank.length === 1) filters.bank_matched = bank[0];
