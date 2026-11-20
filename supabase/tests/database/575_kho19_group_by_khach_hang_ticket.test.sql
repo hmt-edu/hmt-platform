@@ -76,7 +76,7 @@ select is((select (g ->> 'count')::int from jsonb_array_elements(app.parent_grou
 select is(jsonb_array_length(app.parent_group_counts('{"search":"gia 571"}', array['branch']) -> 'groups'), 2, 'Phụ huynh nhóm Cơ sở: 2 cơ sở (CS1, CS5)');
 select is(jsonb_array_length(app.parent_group_counts('{"search":"gia 571"}', array['branch', 'status']) -> 'groups'), 3, 'Phụ huynh hai cấp Cơ sở rồi Tình trạng: 3 nhóm lá');
 select is((app.parent_group_counts('{"search":"gia 571","status":["DANG_HOC"]}', array['branch']) ->> 'total')::int, 1, 'Phụ huynh: bộ lọc nhanh Tình trạng áp dụng cho số đếm nhóm');
-select is((app.parent_group_counts('{"search":"gia 571","branch_id":"' || pg_temp.cs('CS5') || '"}', array['status']) ->> 'total')::int, 1, 'Phụ huynh: điều kiện cơ sở áp dụng cho số đếm nhóm');
+select is((app.parent_group_counts(jsonb_build_object('search', 'gia 571', 'branch_id', pg_temp.cs('CS5')), array['status']) ->> 'total')::int, 1, 'Phụ huynh: điều kiện cơ sở áp dụng cho số đếm nhóm');
 -- Mở một nhóm: bộ lọc của nhóm cho đúng số dòng.
 select is((app.list_parents('{"search":"gia 571","status":["CHUA_DANG_HOC"]}') ->> 'total')::int, 2, 'Phụ huynh: mở nhóm Chưa có con đang học cho 2 dòng khớp số đếm');
 select is(pg_temp.err($$select app.parent_group_counts('{}', array['studying_at'])$$), 'HMT_NHOM_SAI', 'Chặn: Đang học tại không phải trường nhóm (nhiều cơ sở cùng lúc)');
@@ -106,7 +106,7 @@ select ok((select bool_and(g ->> 'l1' is not null) from jsonb_array_elements(app
 -- Chưa giao: một nhóm khoá rỗng «Chưa có»; mở nhóm bằng no_assignee cho đúng 3 dòng.
 select is((select g ->> 'k1' from jsonb_array_elements(app.ticket_group_counts('{"q":"giả 571"}', array['assignee']) -> 'groups') g), '', 'Ticket nhóm Người xử lý: chưa ai được giao nên chỉ có nhóm khoá rỗng');
 select is((app.list_tickets('{"q":"giả 571","no_assignee":true}') ->> 'total')::int, 3, 'Ticket: bộ lọc no_assignee (mở nhóm Chưa có) cho 3 dòng');
-select is((app.list_tickets('{"q":"giả 571","assignee_id":"' || pg_temp.uid('cskh5') || '"}') ->> 'total')::int, 0, 'Ticket: bộ lọc assignee_id không khớp người nào thì 0 dòng');
+select is((app.list_tickets(jsonb_build_object('q', 'giả 571', 'assignee_id', pg_temp.uid('cskh5'))) ->> 'total')::int, 0, 'Ticket: bộ lọc assignee_id không khớp người nào thì 0 dòng');
 -- Mở nhóm: bộ lọc của từng nhóm khớp số đếm.
 select is((app.list_tickets('{"q":"giả 571","ticket_type":"KN"}') ->> 'total')::int, 2, 'Ticket: mở nhóm Loại Khiếu nại cho 2 dòng khớp số đếm');
 select is((app.list_tickets(jsonb_build_object('q', 'giả 571', 'group_code', (select g ->> 'k1' from jsonb_array_elements(app.ticket_group_counts('{"q":"giả 571"}', array['group']) -> 'groups') g
@@ -115,8 +115,8 @@ select is((app.list_tickets(jsonb_build_object('q', 'giả 571', 'group_code', (
           'Ticket: mở nhóm theo group_code cho số dòng bằng số đếm của nhóm đó');
 -- Bộ lọc cũ của list_tickets giữ nguyên sau khi chuyển sang app.ticket_filter_rows.
 select is((app.list_tickets('{"q":"giả 571","sla_state":"QUA_HAN"}') ->> 'total')::int, 0, 'Ticket: bộ lọc hạn xử lý Quá hạn vẫn chạy (ticket mới chưa quá hạn)');
-select is((app.list_tickets('{"q":"giả 571","branch_id":"' || pg_temp.cs('CS1') || '"}') ->> 'total')::int, 1, 'Ticket: bộ lọc cơ sở vẫn chạy');
-select is((select count(*)::int from app.ticket_board('{"q":"giả 571"}') b, jsonb_array_elements(b -> 'rows')), 3, 'Ticket: Kanban (ticket_board) vẫn dùng bộ lọc chung, đủ 3 ticket');
+select is((app.list_tickets(jsonb_build_object('q', 'giả 571', 'branch_id', pg_temp.cs('CS1'))) ->> 'total')::int, 1, 'Ticket: bộ lọc cơ sở vẫn chạy');
+select is((select count(*)::int from jsonb_array_elements(app.ticket_board('{"q":"giả 571"}')) b, jsonb_array_elements(b -> 'rows')), 3, 'Ticket: Kanban (ticket_board) vẫn dùng bộ lọc chung, đủ 3 ticket');
 select is(jsonb_array_length(app.list_tickets('{"q":"giả 571"}', 2, 0) -> 'rows'), 2, 'Ticket: phân trang limit 2 chỉ hai dòng');
 select is((app.list_tickets('{"q":"giả 571"}', 2, 0) ->> 'total')::int, 3, 'Ticket: phân trang vẫn báo tổng 3');
 -- Phạm vi quyền (RLS): người gọi chỉ đếm ticket mình thấy, số đếm nhóm luôn bằng total của danh sách.
