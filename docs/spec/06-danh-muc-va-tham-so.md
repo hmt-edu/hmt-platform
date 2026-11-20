@@ -29,7 +29,7 @@ Không danh mục nào được xoá hay đổi mã.
 | 10 | Giai đoạn lead | 2 | Khoá mục cha; nhóm con chỉ đổi tên, thêm hoặc ngừng bằng migration (R-V2-42, 08/11); C4D khoá | Xem 1.2 |
 | 11 | Giai đoạn cơ hội | 2 | Khoá mục cha; **nhóm con chỉ đổi tên, thêm hoặc ngừng bằng migration (R-V2-42, Q-122, 08/11)**; L5C–L5O và L5Q nối với lý do huỷ test (L5P không nối) | Xem 1.3 |
 | 12 | Giai đoạn phiếu tái tục | 2 | Khoá mục cha | Xem 1.4 |
-| 13 | Lý do huỷ test | 1 | Mở, mỗi lý do nối một nhóm con L5, trừ "Tạo phiếu sai" | Như các nhóm con L5C–L5O ở 1.3; **(16/10 tối)** thêm "Trung tâm không xếp được lịch test" (nối L5Q) và "Tạo phiếu sai" (không nối). "Lên lịch sai" không phải lý do huỷ, dùng Đổi lịch trên phiếu |
+| 13 | Lý do huỷ test | 1 | Mở, mỗi lý do nối một nhóm con L5, trừ "Tạo phiếu sai". **(20/11, anh Trường duyệt, migration 594)** Thêm mục: ô «Nối nhóm con» bắt buộc chọn, có lựa chọn tường minh «Không nối nhóm con» (chỉ cho lý do không đổi giai đoạn); chỉ liệt kê L5C–L5O đang dùng (không L5A, L5B, L5P, L5Q); không sửa mục nối sau khi tạo | Như các nhóm con L5C–L5O ở 1.3; **(16/10 tối)** thêm "Trung tâm không xếp được lịch test" (nối L5Q) và "Tạo phiếu sai" (không nối). "Lên lịch sai" không phải lý do huỷ, dùng Đổi lịch trên phiếu |
 | 14 | Hình thức test | 1 | Mở | Offline, Online |
 | 15 | Cấp độ đề test | 1 | Mở | Cơ bản, Nâng cao |
 | 16 | Loại hoạt động (lịch hẹn) | 1 | Mở | Gọi điện, Zalo, Email, Gặp trực tiếp, SMS, Nhắc thu tiền (**chốt 12/10**: giữ 6 mục đã nạp trong repo) |

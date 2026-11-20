@@ -5,7 +5,7 @@ import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-quer
 import { useCallback } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { rpc, useDb } from '../../lib/db';
-import type { CatalogHistoryPage, CatalogSummary, CatalogTree } from './catalogLogic';
+import type { CatalogHistoryPage, CatalogSummary, CatalogTree, LinkOption } from './catalogLogic';
 
 export function useCatalogSummary() {
   const supabase = useDb();
@@ -45,6 +45,9 @@ export function addCatalogItem(
     name: string;
     parent_id: string | null;
     sort_order: number | null;
+    /** Chỉ «Lý do huỷ test»: nhóm con cần nối, hoặc noLink = «Không nối nhóm con». */
+    linked_item_id?: string | null;
+    no_link?: boolean;
   },
 ) {
   return rpc<string>(supabase, 'catalog_add_item', {
@@ -53,6 +56,19 @@ export function addCatalogItem(
     p_name: input.name,
     p_sort_order: input.sort_order,
     p_parent_id: input.parent_id,
+    ...(input.catalog_code === 'TEST_CANCEL_REASON'
+      ? { p_linked_item_id: input.linked_item_id ?? null, p_no_link: input.no_link ?? false }
+      : {}),
+  });
+}
+
+/** Nhóm con cho ô «Nối nhóm con» của Lý do huỷ test: L5C đến L5O đang dùng (máy chủ lọc, hàm list_test_cancel_link_options). */
+export function useTestCancelLinkOptions(enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['test-cancel-link-options'],
+    enabled,
+    queryFn: () => rpc<LinkOption[]>(supabase, 'list_test_cancel_link_options'),
   });
 }
 

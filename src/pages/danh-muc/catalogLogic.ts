@@ -23,7 +23,26 @@ export type CatalogNode = {
   is_active: boolean;
   is_locked: boolean;
   parent_id: string | null;
+  /** Chỉ «Lý do huỷ test»: nhóm con của Giai đoạn cơ hội đã nối (không có nghĩa «Không nối nhóm con»). */
+  linked_item_id?: string | null;
+  linked_code?: string | null;
+  linked_name?: string | null;
 };
+
+/** Danh mục có ô «Nối nhóm con» bắt buộc (migration 594, QT07_them_muc_lien_ket). */
+export const LINKED_CATALOG_CODE = 'TEST_CANCEL_REASON';
+/** Lựa chọn tường minh «Không nối nhóm con» ở ô chọn (khác chưa chọn). */
+export const NO_LINK = 'KHONG_NOI';
+export const LINK_REQUIRED_TEXT = 'Chọn một nhóm con, hoặc «Không nối nhóm con».';
+
+export type LinkOption = { id: string; code: string; name: string };
+
+/** Chữ hiện ở cột «Nối nhóm con»: «L5C · Huỷ test, không liên hệ được» hoặc «Không nối nhóm con». */
+export function linkedLabel(node: Pick<CatalogNode, 'linked_code' | 'linked_name'>): string {
+  return node.linked_code
+    ? `${node.linked_code} · ${node.linked_name ?? ''}`.trim()
+    : 'Không nối nhóm con';
+}
 
 export type CatalogTree = {
   root: {
