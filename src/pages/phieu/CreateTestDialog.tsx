@@ -19,6 +19,7 @@ import { Field, INPUT_CLASS } from '../../ui/Field';
 import { DateInput } from '../../ui/Inputs';
 import { Select } from '../../ui/Overlays';
 import type { LeadCatalogs } from '../lead/useCatalogs';
+import { emLabel, type ProspectStudent } from '../../features/prospect/prospectLogic';
 import { createTestText, defaultReminder } from './testLogic';
 import { createTest } from './useTestData';
 
@@ -26,6 +27,8 @@ export type TestSource = {
   id: string;
   code: string;
   student_name: string | null;
+  /** Danh sách em của cơ hội (TS-15: chọn em làm phiếu). */
+  students: ProspectStudent[];
   parent_name: string;
   branch_id: string;
 };
@@ -65,6 +68,8 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
 
   const myBranch = access.teachingBranches.find((b) => b.code === claims?.branchCode);
   const [grade, setGrade] = useState('');
+  // Em làm phiếu: mặc định em đầu của danh sách em (TS-15); phiếu không tạo em mới.
+  const [emId, setEmId] = useState(opportunity.students[0]?.id ?? '');
   const [subject, setSubject] = useState('');
   const [mode, setMode] = useState('');
   const [level, setLevel] = useState('');
@@ -117,6 +122,7 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
   ];
 
   const canSubmit =
+    emId !== '' &&
     grade !== '' &&
     subject !== '' &&
     mode !== '' &&
@@ -134,6 +140,7 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
       const created = await createTest(supabase, {
         opportunityId: opportunity.id,
         data: {
+          prospect_student_id: emId,
           subject_code: subject,
           grade_code: grade,
           mode_code: mode,
@@ -192,17 +199,19 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
     >
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
-          <Field
-            label="Tên học sinh"
-            required
-            help="Tên học sinh lấy từ cơ hội (mỗi cơ hội một học sinh)."
-          >
+          <Field label="Em" required help={createTestText.emHelp}>
             {(field) => (
-              <input
-                {...field}
-                readOnly
-                value={opportunity.student_name ?? ''}
-                className={INPUT_CLASS}
+              <Select
+                id={field.id}
+                label="Em"
+                value={emId}
+                onChange={setEmId}
+                options={opportunity.students.map((s) => ({
+                  value: s.id,
+                  label: `${emLabel(s)}${s.birth_year ? ` · sinh ${s.birth_year}` : ''}`,
+                }))}
+                placeholder="Chọn em"
+                className="w-full"
               />
             )}
           </Field>

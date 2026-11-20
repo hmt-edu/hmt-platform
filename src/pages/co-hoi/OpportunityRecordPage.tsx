@@ -824,6 +824,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
           id: record.id,
           code: record.code,
           student_name: record.student_name,
+          students: record.students ?? [],
           parent_name: record.parent_name,
           branch_id: record.branch_id,
         }}
