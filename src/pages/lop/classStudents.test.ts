@@ -3,6 +3,7 @@ import {
   EMPTY_CLASS_STUDENT_STATE,
   buildClassStudentFilters,
   classStudentSortParam,
+  classTitleLabel,
 } from './classStudents';
 import { studentStateLabel } from './classStudentsConfig';
 
@@ -32,5 +33,26 @@ describe('LOP-09 học sinh của lớp', () => {
       'Đang học',
     );
     expect(studentStateLabel({ end_date: null, enrollment_status: 'X' }, name)).toBe('X');
+  });
+});
+
+describe('classTitleLabel (tiêu đề LOP-09)', () => {
+  const base = {
+    subject_name: 'Đại số',
+    subject_code: 'DAI',
+    grade_code: 'K09',
+    class_type_name: 'Cơ bản',
+    level_name: 'A',
+  };
+  it('«Đại số 9 · cơ bản A» theo canvas LOP09', () => {
+    expect(classTitleLabel(base)).toBe('Đại số 9 · cơ bản A');
+  });
+  it('lớp riêng không có trình độ', () => {
+    expect(classTitleLabel({ ...base, class_type_name: 'Lớp riêng', level_name: null })).toBe(
+      'Đại số 9 · lớp riêng',
+    );
+  });
+  it('thiếu tên môn thì dùng mã môn', () => {
+    expect(classTitleLabel({ ...base, subject_name: null })).toBe('DAI 9 · cơ bản A');
   });
 });

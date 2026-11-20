@@ -18,13 +18,15 @@ export function studentStateLabel(
 }
 
 export function buildClassStudentsConfig(opts: {
+  /** Tên lớp nối sau tiêu đề (canvas LOP09: «Học sinh của lớp · Đại số 9 · cơ bản A»); chưa tải xong thì chỉ có tiêu đề. */
+  classLabel?: string | undefined;
   modes: Option[];
   modeName: (code: string | null) => string;
   statusName: (code: string) => string | undefined;
 }): ListConfig<ClassStudentRow> {
   return {
     screenCode: CLASS_STUDENTS_SCREEN_CODE,
-    title: 'Học sinh của lớp',
+    title: opts.classLabel ? `Học sinh của lớp · ${opts.classLabel}` : 'Học sinh của lớp',
     searchPlaceholder: 'Tìm tên, mã học sinh, mã ghi danh…',
     columns: [
       {
