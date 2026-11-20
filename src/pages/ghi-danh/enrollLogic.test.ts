@@ -127,3 +127,41 @@ describe('enrollmentNotice (GD-02: câu giải thích theo tình trạng và qu�
     expect(enrollmentNotice('HOAN_PHI', h(0))?.title).toBe('Ghi danh đã hoàn phí.');
   });
 });
+
+describe('GD-02, GD-03: số liệu từ hàm đọc (migration 591)', () => {
+  const h = { granted: 0, gifted: 0, remaining: -3 };
+  it('học trước: nêu hạn mức buổi và giờ khi máy chủ trả, thiếu thì dùng câu theo tham số', () => {
+    const n = enrollmentNotice('DANG_HOC', {
+      ...h,
+      negative_limit_sessions: 2,
+      negative_limit_hours: 3,
+    });
+    expect(n?.text).toContain('tối đa 2 buổi (3 giờ), hiện −3 giờ');
+    expect(enrollmentNotice('DANG_HOC', h)?.text).toContain('«Cho học trước tối đa»');
+  });
+  it('bảo lưu nêu ngày bắt đầu, kết thúc; hoàn phí nêu mã phiếu chi', () => {
+    expect(
+      enrollmentNotice(
+        'BAO_LUU',
+        { ...h, remaining: 15 },
+        { holdStart: '2026-10-01', holdEnd: '2026-10-31' },
+      )?.title,
+    ).toBe('Đang bảo lưu 01/10/2026 đến 31/10/2026.');
+    expect(enrollmentNotice('HOAN_PHI', h, { refundVoucher: 'PC-1' })?.text).toContain(
+      'phiếu chi PC-1',
+    );
+  });
+  it('lớp trùng buổi: nêu ngày, giờ, lớp khi có clash_first', () => {
+    const c = {
+      ...cls,
+      clash_sessions: 1,
+      clash_first: {
+        date: '2026-11-03',
+        start_time: '18:00:00',
+        end_time: '19:30:00',
+        class_code: 'L1',
+      },
+    };
+    expect(disabledReason(c)).toContain('Trùng buổi 03/11/2026, 18:00–19:30 với lớp L1');
+  });
+});
