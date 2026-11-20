@@ -343,6 +343,92 @@ const SAMPLE_VALUES: Record<string, string> = {
   gio_con_lai: '30',
 };
 
+/** Ý nghĩa ngắn của từng cột nhận (bảng «Cột nhận của loại» ở bước Tải file, khung QT18_tai_file). Chỉ là mô tả, luật kiểm dòng nằm ở máy chủ. */
+const COLUMN_MEANING: Record<string, string> = {
+  co_so: 'Mã cơ sở (CS1 đến CS5)',
+  co_so_truy_cap: 'Các cơ sở người dùng được vào, cách nhau dấu chấm phẩy',
+  cong_no_phai_thu_dong: 'Công nợ phải thu, tính bằng đồng',
+  danh_sach_em: 'Tên các em, cách nhau dấu chấm phẩy',
+  dia_chi: 'Địa chỉ',
+  diem: 'Điểm bài test (dấu phẩy hoặc dấu chấm)',
+  email: 'Email',
+  ghi_chu: 'Ghi chú',
+  giai_doan: 'Giai đoạn cơ hội (L1 đến L8)',
+  gio_con_lai: 'Số giờ còn lại',
+  gio_da_hoc: 'Số giờ đã học',
+  gio_da_hoc_cu: 'Số giờ đã học ở hệ thống cũ',
+  gio_du_kien: 'Số giờ dự kiến của ghi danh',
+  gio_test: 'Giờ test (hh:mm, giờ Việt Nam)',
+  gioi_tinh: 'Giới tính (Nam hoặc Nữ)',
+  ho_ten: 'Họ tên',
+  ho_ten_2: 'Họ tên người thân thứ hai',
+  ho_ten_hs: 'Họ tên học sinh',
+  ho_ten_ph: 'Họ tên phụ huynh',
+  hoc_sinh_ma_cu: 'Mã cũ của học sinh',
+  khoi: 'Khối (1 đến 12)',
+  lich_hoc: 'Lịch học các buổi trong tuần',
+  loai_lop: 'Loại lớp',
+  loai_truong: 'Loại trường',
+  ly_do_huy: 'Lý do huỷ test',
+  ma_cu: 'Mã cũ trên Sheet',
+  ma_gv: 'Mã giáo viên',
+  ma_lop_cu: 'Mã lớp cũ',
+  ma_nv: 'Mã nhân sự',
+  medium: 'Kênh trong danh mục nguồn',
+  mon: 'Môn học (trống là Toán)',
+  nam_hoc: 'Năm học',
+  nam_sinh: 'Năm sinh của em',
+  ngay_chot: 'Ngày chốt số dư (trống: theo tham số)',
+  ngay_khai_giang: 'Ngày khai giảng (yyyy-mm-dd)',
+  ngay_sinh: 'Ngày sinh (yyyy-mm-dd)',
+  ngay_tao: 'Ngày tạo (yyyy-mm-dd)',
+  ngay_test: 'Ngày test (yyyy-mm-dd)',
+  ngay_vao_lop: 'Ngày vào lớp (yyyy-mm-dd)',
+  nguoi_phu_trach: 'Tên đăng nhập người phụ trách',
+  nguoi_phu_trach_goc: 'Người phụ trách ban đầu',
+  nguon: 'Nguồn khách',
+  nguon_dong: 'Số dòng trên Sheet gốc (bỏ qua)',
+  nguon_goc: 'Nguồn gốc khách',
+  nguon_tab: 'Tab trên Sheet gốc (bỏ qua)',
+  nhom_con: 'Nhóm con của giai đoạn',
+  nhu_cau: 'Nhu cầu của khách',
+  phan_loai: 'Phân loại lớp',
+  quan_ly: 'Tên đăng nhập của quản lý trực tiếp',
+  sdt: 'Số điện thoại',
+  sdt_2: 'Số điện thoại thứ hai',
+  sdt_ph: 'Số điện thoại phụ huynh',
+  si_so_toi_da: 'Sĩ số tối đa',
+  so_buoi: 'Số buổi',
+  thoi_luong_buoi: 'Số giờ mỗi buổi',
+  tien_thu_thua_dong: 'Tiền thu thừa, tính bằng đồng',
+  tinh_trang: 'Tình trạng',
+  tinh_trang_cu: 'Tình trạng ở hệ thống cũ',
+  tinh_trang_moi: 'Tình trạng ghi danh',
+  trang_thai: 'Trạng thái tài khoản',
+  trang_thai_phieu: 'Trạng thái phiếu test',
+  trinh_do: 'Trình độ',
+  truong: 'Trường học',
+  username: 'Tên đăng nhập',
+  vai_tro: 'Vai trò (mã vai trò)',
+};
+
+export type ImportColumnRow = {
+  name: string;
+  meaning: string;
+  required: boolean;
+  example: string;
+};
+
+/** Các dòng bảng «Cột nhận của loại»: tên cột, ý nghĩa, bắt buộc hay tuỳ chọn, ví dụ giả (cùng giá trị với file mẫu). */
+export function columnRows(config: ImportKindConfig): ImportColumnRow[] {
+  return Array.from(new Set(config.columns)).map((name) => ({
+    name,
+    meaning: COLUMN_MEANING[name] ?? name,
+    required: config.required.includes(name),
+    example: SAMPLE_VALUES[name] ?? 'ví dụ',
+  }));
+}
+
 /** Nội dung CSV của file mẫu: dòng tên cột (đúng cột hàm nạp nhận) và một dòng ví dụ giả. */
 export function sampleCsvText(config: ImportKindConfig): string {
   const cols = Array.from(new Set(config.columns));

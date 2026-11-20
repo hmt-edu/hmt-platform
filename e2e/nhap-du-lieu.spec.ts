@@ -55,6 +55,10 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
     buffer: Buffer.from(csv, 'utf8'),
   });
   await expect(dialog.getByText('phu-huynh.csv · 4 dòng · 7 cột')).toBeVisible();
+  // So canvas QT18_tai_file: bảng «Cột nhận của loại» có ý nghĩa, yêu cầu, ví dụ.
+  const cols = dialog.getByRole('table', { name: 'Cột nhận của loại' });
+  await expect(cols.getByRole('columnheader', { name: 'Ý nghĩa' })).toBeVisible();
+  await expect(cols.getByRole('row', { name: /ho_ten.*Bắt buộc/ })).toBeVisible();
   await dialog.getByRole('button', { name: 'Tiếp' }).click();
 
   // Hai hợp lệ, một trùng SĐT với dòng trước, một lỗi (SĐT thiếu số).
@@ -62,6 +66,7 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   await expect(tiles.filter({ hasText: 'Hợp lệ' })).toContainText('2');
   await expect(tiles.filter({ hasText: 'Trùng (bỏ qua)' })).toContainText('1');
   await expect(tiles.filter({ hasText: 'Lỗi (bỏ qua)' })).toContainText('1');
+  await expect(dialog.getByRole('button', { name: /Tải dòng lỗi và trùng \(2\)/ })).toBeVisible();
   // So canvas QT18_xem_truoc: ô «Tất cả dòng» (4), bảng có cột Giải thích, Cảnh báo.
   await expect(dialog.getByRole('button', { name: /Tất cả dòng/ })).toContainText('4');
   const table = dialog.getByRole('table', { name: 'Kết quả từng dòng' });
