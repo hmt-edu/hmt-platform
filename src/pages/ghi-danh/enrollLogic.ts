@@ -1,5 +1,6 @@
 // Hàm thuần cho các hộp chọn lớp (BH-08, GD-03): nhãn thứ, nhãn buổi sắp tới, ngày vào lớp mặc định, lý do mờ. Luật (đúng thứ, đúng buổi, trùng giờ)
 // do máy chủ quyết (app.assert_enrol_start_date, app.assert_no_time_clash); giao diện chỉ gợi ý và hiện lý do báo trước.
+import { formatDate } from '../../lib/format';
 import type { MatchingClass } from './enrollTypes';
 
 export function weekdayLabel(isodow: number): string {
@@ -22,6 +23,11 @@ export function defaultStart(cls: MatchingClass): string {
 /** Lý do báo trước vì sao lớp mờ (không chọn được), hoặc null. R-GD-15: lớp luân phiên không báo trùng (máy chủ đã tính). */
 export function disabledReason(cls: MatchingClass): string | null {
   if (cls.clash_sessions > 0) {
+    const f = cls.clash_first;
+    // Canvas GD03_trung_gio: nêu buổi trùng đầu tiên (ngày, giờ, lớp) khi máy chủ trả; chưa có thì chỉ nêu số buổi.
+    if (f) {
+      return `Trùng buổi ${formatDate(f.date)}, ${f.start_time.slice(0, 5)}–${f.end_time.slice(0, 5)} với lớp ${f.class_code} mà em đang học (xét theo từng buổi thật)`;
+    }
     return `Trùng ${cls.clash_sessions} buổi với lớp em đang học`;
   }
   return null;
@@ -78,23 +84,40 @@ export type EnrollmentNotice = { tone: 'info' | 'warning'; title: string; text: 
 
 /**
  * Dòng giải thích theo tình trạng và quỹ giờ ở GD-02 (canvas 9933: GD02_cho_xep, _het_gio, _hoc_truoc, _bao_luu, _hoan_phi).
- * Chỉ chọn câu từ số liệu máy chủ đã trả, không tính giờ. Hạn mức âm của «học trước» do tham số cơ sở quy định nên câu không ghi số.
+ * Chỉ chọn câu từ số liệu máy chủ đã trả, không tính giờ. Hạn mức âm của «học trước», ngày bảo lưu, mã phiếu chi hoàn phí do máy chủ trả (migration 591); thiếu thì câu bỏ phần đó.
  */
 export function enrollmentNotice(
   status: string,
-  hours: { granted: number; gifted: number; remaining: number },
+  hours: {
+    granted: number;
+    gifted: number;
+    remaining: number;
+    negative_limit_sessions?: number | null | undefined;
+    negative_limit_hours?: number | null | undefined;
+  },
+  extra: {
+    holdStart?: string | null | undefined;
+    holdEnd?: string | null | undefined;
+    refundVoucher?: string | null | undefined;
+  } = {},
 ): EnrollmentNotice | null {
   if (status === 'HOAN_PHI') {
     return {
       tone: 'info',
       title: 'Ghi danh đã hoàn phí.',
-      text: 'Không sửa được nữa (R-GD-16).',
+      text: extra.refundVoucher
+        ? `Ghi danh đã hoàn phí theo phiếu chi ${extra.refundVoucher}. Không sửa được nữa (R-GD-16).`
+        : 'Không sửa được nữa (R-GD-16).',
     };
   }
   if (status === 'BAO_LUU') {
+    const range =
+      extra.holdStart && extra.holdEnd
+        ? ` ${formatDate(extra.holdStart)} đến ${formatDate(extra.holdEnd)}`
+        : '';
     return {
       tone: 'info',
-      title: 'Đang bảo lưu.',
+      title: range ? `Đang bảo lưu${range}.` : 'Đang bảo lưu.',
       text: 'Giờ còn lại giữ nguyên, em ra khỏi danh sách các buổi trong thời gian này (R-GD-09).',
     };
   }
@@ -109,7 +132,11 @@ export function enrollmentNotice(
     return {
       tone: 'warning',
       title: 'Đang học trước, chưa đóng tiền.',
-      text: `Quỹ giờ đang âm (hiện −${Math.abs(hours.remaining)} giờ), trong hạn mức «Cho học trước tối đa». Quá hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale (R-GD-12).`,
+      text: `Quỹ giờ được âm tối đa ${
+        hours.negative_limit_sessions != null && hours.negative_limit_hours != null
+          ? `${hours.negative_limit_sessions} buổi (${hours.negative_limit_hours} giờ)`
+          : 'theo hạn mức «Cho học trước tối đa»'
+      }, hiện −${Math.abs(hours.remaining)} giờ. Quá hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale (R-GD-12).`,
     };
   }
   if (hours.remaining === 0 && hours.granted + hours.gifted > 0 && status === 'DANG_HOC') {

@@ -27,6 +27,7 @@ import { vnToday } from '../../list/calendarLogic';
 const STATUS_OPTIONS: { value: ExpiringStatus; label: string }[] = [
   { value: 'SAP_HET_GIO', label: statusName('SAP_HET_GIO') },
   { value: 'HET_GIO', label: statusName('HET_GIO') },
+  { value: 'SAP_HET_HAN_GOI', label: statusName('SAP_HET_HAN_GOI') },
   { value: 'QUA_HAN_CON_GIO', label: statusName('QUA_HAN_CON_GIO') },
 ];
 
