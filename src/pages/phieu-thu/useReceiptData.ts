@@ -106,6 +106,18 @@ export function saveReceipt(
   });
 }
 
+/** Ghi hoặc xoá tài khoản nhận của phiếu (migration 582): người lập (phiếu Nháp) hoặc Kế toán (Đã gửi, Chờ kế toán); máy chủ kiểm quyền. */
+export function setReceiptAccount(
+  supabase: SupabaseClient,
+  id: string,
+  accountCode: string | null,
+): Promise<void> {
+  return rpc<null>(supabase, 'set_receipt_receiving_account', {
+    p_receipt_id: id,
+    p_account_code: accountCode,
+  }).then(() => undefined);
+}
+
 export function submitReceipt(
   supabase: SupabaseClient,
   id: string,
