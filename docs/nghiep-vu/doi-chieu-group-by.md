@@ -41,3 +41,24 @@ Nhóm ở máy chủ (đã có mẫu «Group By ở máy chủ», `src/list/khuo
 Lỗi: `HMT_NHOM_SAI` (trường lạ, trùng hai cấp, quá hai cấp, không chọn), `HMT_KHONG_CO_QUYEN` (phụ huynh, người không có quyền xem). Mở một nhóm thì giao diện gọi `list_parents` (`status`, `branch_id`) hoặc `list_tickets` (`ticket_type`, `group_code`, `priority_code`, `status_code`, `assignee_id` hoặc `no_assignee`, `branch_id`) với bộ lọc của nhóm. Nhóm «Người xử lý» chưa giao: khoá rỗng, nhãn «Chưa có».
 
 Chỗ chưa làm, chờ Chat chốt: «Đang học tại» của KH-01 (một phụ huynh học ở nhiều cơ sở cùng lúc nên lọt nhiều nhóm, tổng đếm sai). Không thêm chỉ mục mới (cột nhóm đã có chỉ mục).
+
+## Rà lại Group By của Thu chi, Bán hàng với canvas 9933 (Code C, 21/11/2026, thư Chat 02:07)
+
+Cách rà: lấy `gfields` trong cấu hình của từng khung canvas (`BH01`, `BH06`, `TC01`, `TC04`, `TC08`, `TC10`, `TC13`, `TT01`, `TT04`) và so với `groupFields` của `*Config.tsx`.
+
+| Màn | Canvas (nhóm được) | Code | Kết quả |
+|---|---|---|---|
+| BH-01 Báo giá | Tình trạng, Cơ sở, **Người lập** | Tình trạng, Cơ sở | **Thiếu «Người lập»** |
+| BH-06 Đơn hàng | Tình trạng, Cơ sở, **Sale** | Tình trạng, Cơ sở | **Thiếu «Sale»** (người lập đơn) |
+| TC-01 Phiếu thu | Tình trạng, Hình thức, Cơ sở | đủ ba | Đúng |
+| TC-04 Chờ kế toán | Tình trạng, Cơ sở, Hình thức, Sao kê | đủ bốn (Sao kê: #434, migration 579) | Đúng |
+| TC-08 Khoản tiền vào | Cơ sở, **Ngày** | Cơ sở | **Thiếu nhóm «Ngày»** |
+| TC-10 Phiếu chi | Tình trạng, Cơ sở, **Hình thức** | Tình trạng, Cơ sở | **Thiếu «Hình thức»** (cột đã có từ migration 564) |
+| TC-13 Công nợ | Cơ sở, **Sale**, **Tình trạng** | Cơ sở | **Thiếu «Sale», «Tình trạng»** |
+| TT-01 Tái tục | Campaign, Giai đoạn, Phụ trách | Giai đoạn, Sub-stage, Campaign, Phụ trách, Cơ sở | Đúng (code nhiều hơn canvas) |
+| TT-04 Đối soát tái tục | Cơ sở, Lý do chưa có phiếu | đã làm ở migration 585 | Đúng |
+
+Mỗi chỗ thiếu cần sửa hàm đếm nhóm của màn (trường nhóm mới, nhãn, giữ phạm vi cơ sở) nên là **migration, mức CAO theo quy ước** (hàm danh sách tiền). Đề xuất gom hai PR, mỗi PR một migration, pgTAP đúng và bị chặn: (a) Bán hàng: `quotation_group_counts` thêm `creator`, `order_group_counts` thêm `sale`; (b) Thu chi: `voucher_group_counts` thêm `method`, `money_in_group_counts` thêm `day`, `receivable_group_counts` thêm `sale`, `status`. **Xin Chat cấp hai số migration** (từ 594 trở đi) và duyệt làm.
+
+### So canvas TC chưa kiểm (TC-08, TC-09, TC-13, TC-15)
+Chữ nhãn của các khung khớp code, trừ hai chỗ: (1) **khung «không có quyền» của TC-08 và TC-13** (`TC08_khong_quyen`, `TC13_khong_quyen`) vẽ tiêu đề «Bạn không có quyền xem khoản tiền vào» / «…khoản công nợ», câu «Vai trò … chưa được cấp quyền xem phân hệ Bán hàng và thu chi. Nếu cần xem, hãy liên hệ quản trị viên của trung tâm.» và nút «Về trang chủ»; code hiện «Không tải được danh sách» kèm câu lỗi của máy chủ. Nguyên nhân chung ở khuôn danh sách (`src/list/ListScreen.tsx` nhận lỗi dạng chữ, không phân biệt mã `HMT_KHONG_CO_QUYEN`), nên sửa một lần cho mọi danh sách K03: **xin Chat duyệt**; (2) «Lọc thông minh» ở thanh công cụ của khung mẫu: không có trong bản đồ màn hình, Tester so ảnh. TC-09 và TC-15: đúng nhãn, các tên người và số liệu là minh hoạ.
