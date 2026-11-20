@@ -191,6 +191,12 @@ function AssignBody({ data, onClose }: { data: AssignOptions; onClose: () => voi
         </div>
       )}
 
+      {data.sibling_hint && (
+        <Alert tone="info">
+          Em mới có ghi danh {data.sibling_hint.have_subject_name}, chưa có{' '}
+          {data.sibling_hint.missing_subject_name}. Chỉ nhắc, không chặn xếp lớp.
+        </Alert>
+      )}
       {error && <Alert tone="danger">{error}</Alert>}
       <div className="flex justify-end gap-2">
         <Button onClick={onClose} disabled={busy}>

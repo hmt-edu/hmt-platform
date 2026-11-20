@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { ListState } from '../../list/types';
-import { buildReceiptFilters, nextReceiptSort, receiptSortParam } from './receiptFilters';
+import {
+  RECEIPT_GROUP_FIELD_OF,
+  buildReceiptFilters,
+  nextReceiptSort,
+  receiptGroupFilter,
+  receiptSortParam,
+} from './receiptFilters';
 
 const EMPTY: ListState = {
   search: '',
@@ -78,5 +84,12 @@ describe('bộ lọc danh sách phiếu thu (TC-01, TC-04)', () => {
     expect(receiptSortParam({ key: 'amount', direction: 'desc' })).toBe('amount_desc');
     expect(receiptSortParam({ key: 'amount', direction: 'asc' })).toBeUndefined();
     expect(nextReceiptSort({ key: 'amount', direction: 'asc' })).toBeNull();
+  });
+
+  it('Group By «Sao kê» (TC-04): trường nhóm bank, mở nhóm lọc bank_matched', () => {
+    expect(RECEIPT_GROUP_FIELD_OF.bank).toBe('bank');
+    expect(receiptGroupFilter('bank', 'KHOP')).toEqual({ bank_matched: 'KHOP' });
+    expect(receiptGroupFilter('bank', 'CHUA')).toEqual({ bank_matched: 'CHUA' });
+    expect(receiptGroupFilter('bank', '')).toEqual({});
   });
 });

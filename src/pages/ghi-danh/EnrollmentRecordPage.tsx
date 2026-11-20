@@ -78,7 +78,11 @@ export function EnrollmentRecordPage() {
   const canAssign = e.status_code === 'CHO_XEP_LOP' && access.can('ENROLLMENT', 'SUA');
   // Điều chỉnh giờ: chỉ Ghi danh · Duyệt (Trưởng cơ sở, Admin), GD-05, R-GD-04.
   const canAdjust = access.can('ENROLLMENT', 'DUYET');
-  const notice = enrollmentNotice(e.status_code, hours);
+  const notice = enrollmentNotice(e.status_code, hours, {
+    holdStart: e.hold_start,
+    holdEnd: e.hold_end,
+    refundVoucher: e.refund_voucher_code,
+  });
   return (
     <>
       <RecordDetail
