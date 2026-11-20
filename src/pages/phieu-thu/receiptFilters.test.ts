@@ -92,4 +92,11 @@ describe('bộ lọc danh sách phiếu thu (TC-01, TC-04)', () => {
     expect(receiptGroupFilter('bank', 'CHUA')).toEqual({ bank_matched: 'CHUA' });
     expect(receiptGroupFilter('bank', '')).toEqual({});
   });
+
+  it('Chip nhiều «Cơ sở»: gửi mảng branch_ids, không chọn thì không lọc', () => {
+    expect(buildReceiptFilters({ ...EMPTY, quick: { branches: ['cs1-id', 'cs2-id'] } })).toEqual({
+      branch_ids: ['cs1-id', 'cs2-id'],
+    });
+    expect(buildReceiptFilters({ ...EMPTY, quick: { branches: [] } })).toEqual({});
+  });
 });

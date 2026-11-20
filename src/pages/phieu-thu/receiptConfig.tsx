@@ -131,6 +131,16 @@ export function buildReceiptConfig(
       { key: 'status', label: 'Tình trạng', options: statusOptions },
       // Canvas TC01, TC04: nhóm lọc «Hình thức» (Chuyển khoản, Tiền mặt, Quẹt thẻ…) lấy từ danh mục.
       { key: 'method', label: 'Hình thức', options: catalogs.options('PAYMENT_METHOD') },
+      // Canvas TC01, TC04: chip chọn nhiều cơ sở (CS1, CS2, …); chỉ hiện khi người dùng xem được nhiều cơ sở.
+      ...(access.seesAllBranches
+        ? [
+            {
+              key: 'branches',
+              label: 'Cơ sở',
+              options: access.teachingBranches.map((b) => ({ value: b.id, label: b.code })),
+            },
+          ]
+        : []),
     ],
     filterFields: [
       { key: 'status', label: 'Tình trạng', type: 'multi', options: statusOptions },
