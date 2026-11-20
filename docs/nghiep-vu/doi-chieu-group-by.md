@@ -19,7 +19,7 @@ Lead TS-01, Cơ hội TS-07, Lịch hẹn TS-11, Phiếu kiểm tra TS-16: đún
 | BUOI-01 Buổi học | Ngày, Lớp, Cơ sở, Giáo viên, Loại, Tình trạng | A |
 | KH-01 Khách hàng (Phụ huynh) | Tình trạng, Cơ sở tiếp nhận, Đang học tại | B (xong, migration 575; «Đang học tại» chưa làm) |
 | TT-01 Tái tục | Giai đoạn, Sub-stage, Campaign, Phụ trách | A/C |
-| TT-04 Đối soát tái tục | Cơ sở, Campaign, Lý do chưa có phiếu | A/C |
+| TT-04 Đối soát tái tục | Cơ sở, Campaign, Lý do chưa có phiếu | A (xong, migration 578; Campaign là tháng đang xem nên một nhóm) |
 | CS-01 Ticket | Loại, Nhóm, Mức độ, Trạng thái, Người xử lý, Cơ sở | B (xong, migration 575) |
 
 Còn nhiều danh sách chưa có cấu hình K03 trong `src/` (TS-02..17, GD-06, GD-07, BUOI-10..15, KH-04, LOP-08, LOP-09, TC-09) mà canvas có nút Group By: gom vào cùng việc khi từng màn được chuyển sang khuôn.

@@ -6,6 +6,7 @@ import {
   currentMonthVn,
   monthStart,
   reasonLabel,
+  reconcileGroupFilter,
 } from './reconcileLogic';
 
 const NOW = new Date('2026-11-18T05:00:00Z');
@@ -45,5 +46,18 @@ describe('đối chiếu tái tục (TT-04)', () => {
     expect(reasonLabel('LOP_CHUA_CO_LICH')).toBe('Lớp chưa có lịch');
     expect(reasonLabel('CHO_QUET_DEM')).toBe('Chờ đợt quét đêm');
     expect(reasonLabel(null)).toBe('');
+  });
+});
+
+describe('Group By TT-04: bộ lọc mở nhóm', () => {
+  it('nhóm cơ sở lọc theo branch_id, nhóm lý do lọc theo mã lý do', () => {
+    expect(reconcileGroupFilter('branch', 'b1')).toEqual({ branch_id: 'b1' });
+    expect(reconcileGroupFilter('reason', 'CHO_QUET_DEM')).toEqual({ reason: ['CHO_QUET_DEM'] });
+    expect(reconcileGroupFilter('reason', 'DA_CO_PHIEU')).toEqual({ reason: ['DA_CO_PHIEU'] });
+  });
+  it('campaign là tháng đang xem nên không lọc thêm; khoá trống không lọc', () => {
+    expect(reconcileGroupFilter('campaign', '2026-11')).toEqual({});
+    expect(reconcileGroupFilter('branch', '')).toEqual({});
+    expect(reconcileGroupFilter('reason', '')).toEqual({});
   });
 });

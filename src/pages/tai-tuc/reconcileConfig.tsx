@@ -97,7 +97,18 @@ export function buildReconcileConfig(
           ]
         : []),
     ],
-    groupFields: [],
+    // Group By ở máy chủ (Kho #19, doi-chieu-group-by.md): Cơ sở (người xem nhiều cơ sở), Campaign, Lý do chưa có phiếu.
+    groupFields: [
+      ...(access.seesAllBranches
+        ? [{ key: 'branch', label: 'Cơ sở', value: (r: ReconcileRow) => r.branch_code }]
+        : []),
+      { key: 'campaign', label: 'Campaign', value: (r) => r.campaign_label },
+      {
+        key: 'reason',
+        label: 'Lý do chưa có phiếu',
+        value: (r) => r.missing_reason ?? 'DA_CO_PHIEU',
+      },
+    ],
     dateFields: [],
     views: ['list'],
   };
