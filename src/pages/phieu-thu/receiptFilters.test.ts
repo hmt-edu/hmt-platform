@@ -31,6 +31,17 @@ describe('bộ lọc danh sách phiếu thu (TC-01, TC-04)', () => {
     });
   });
 
+  it('«Sao kê» của TC-04: chọn một bên thì lọc, chọn cả hai hoặc giá trị lạ thì không', () => {
+    expect(buildReceiptFilters({ ...EMPTY, quick: { bank: ['KHOP'] } })).toEqual({
+      bank_matched: 'KHOP',
+    });
+    expect(buildReceiptFilters({ ...EMPTY, quick: { bank: ['CHUA'] } })).toEqual({
+      bank_matched: 'CHUA',
+    });
+    expect(buildReceiptFilters({ ...EMPTY, quick: { bank: ['KHOP', 'CHUA'] } })).toEqual({});
+    expect(buildReceiptFilters({ ...EMPTY, quick: { bank: ['LA'] } })).toEqual({});
+  });
+
   it('bộ lọc cố định của TC-04 luôn được giữ', () => {
     expect(buildReceiptFilters({ ...EMPTY, search: 'x' }, { waiting_accounting: true })).toEqual({
       q: 'x',

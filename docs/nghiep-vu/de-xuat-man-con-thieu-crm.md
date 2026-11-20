@@ -42,3 +42,16 @@ Hiện trạng: nhóm lớp đã có (bảng `app.class_group`, cột `app.class
 | 4 | «Xem trước ngày kết thúc dự kiến» ở form Tạo/sửa lớp (số buổi theo khung, bỏ ngày nghỉ lễ, R-LOP-09, R-LOP-12). | A. Hàm đọc mới tính từ khung giờ đang nhập (chưa lưu). B. Chỉ hiện sau khi Lưu nháp (dùng ngày đã sinh). | **A** | A: một hàm đọc `security definer`, không đổi bảng, một migration nhẹ + pgTAP. B: không migration nhưng không «xem trước» đúng nghĩa. |
 
 Ghi chú: «kiểm môn theo khối khi tạo lớp» (R-LOP-14, [CHỜ anh quyết]) vẫn chưa quyết, không gộp vào bốn câu trên.
+
+## Kho #14: các mục «CẦN CHAT» còn lại của Thu chi và Bán hàng (Code C, 20/11/2026, để Chat hỏi anh Trường)
+
+Đã làm xong: TC-04 cột «Sao kê» và nhóm lọc «Sao kê» (Đã khớp, Chưa khớp) lấy từ cờ TC-15 `bank_matched_at` (migration 439, PR C82). Cột «Mã giao dịch» đã có (migration 431). Phần dưới chưa làm vì thiếu luật hoặc thiếu dữ liệu; mỗi câu có khuyến nghị.
+
+| # | Màn, chỗ thiếu | Câu hỏi | Lựa chọn | Khuyến nghị |
+|---|---|---|---|---|
+| 1 | TC-04 cột «Xử lý» (nút Duyệt, Từ chối ngay trên dòng) | Có cho duyệt, từ chối ngay trên dòng danh sách không, hay chỉ ở bản ghi? Từ chối cần lý do (hộp K08) | A. Giữ duyệt ở bản ghi TC-02, danh sách chỉ có nút mở. B. Thêm hai nút trên dòng, bấm Từ chối mở hộp K08 nhập lý do, Duyệt mở hộp xác nhận. | **A** (tiền, tránh bấm nhầm; R-HT-01, R-V2-44 không đổi). Nếu chọn B: cần Design vẽ khuôn nút trên dòng, không có trong K03 |
+| 2 | TC-10, TC-11 «Hình thức chi», «Tài khoản nhận», «Ngày chi dự kiến» | Phiếu chi có ba trường này không? Hiện bảng phiếu chi chưa có cột tương ứng | A. Thêm cột `payment_method_code`, `payout_account`, `planned_on` (tuỳ chọn). B. Không thêm, bỏ khỏi canvas. | **A** nếu kế toán cần theo dõi chi; «Tài khoản nhận» tái dùng danh mục RECEIVING_ACCOUNT hay danh mục riêng cho tài khoản người nhận? (Chat hỏi anh) |
+| 3 | TT-02 «Lịch sử liên hệ» và «Đã mua gần nhất» | Lịch sử liên hệ dùng ghi chú (note_target) loại UPSALE hay bảng riêng? «Đã mua gần nhất» lấy đơn đã thanh toán gần nhất của phụ huynh? | A. Dùng ghi chú loại UPSALE và đơn Đã duyệt gần nhất theo ngày. B. Bảng liên hệ riêng. | **A** (không bảng mới, một migration nhỏ thêm loại ghi chú) |
+| 4 | TC-03, TC-17 «Lịch đóng tiền từng đợt», «Ưu đãi đóng sớm», «Dồn trước» | Lịch đóng từng đợt lấy từ đơn nào? Ưu đãi đóng sớm tính ở đâu? | Thuộc lane B (Bán hàng): chờ Chat giao thẻ và luật chiết khấu đóng sớm trong docs/spec/04 | Chat giao lane B |
+
+Ngoài phạm vi Thu chi: GV-11 «Tiến độ khung chương trình» cần luật tính bài đã dạy (Chat giao lane E).

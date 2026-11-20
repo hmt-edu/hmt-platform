@@ -37,8 +37,20 @@ export function ReceiptListPage({ waitingAccounting = false }: { waitingAccounti
           title: 'Chờ kế toán duyệt',
           // Canvas TC04: có cột «Mã giao dịch» hiện sẵn.
           columns: base.columns.map((c) =>
-            c.key === 'txn_ref' ? { ...c, defaultVisible: true } : c,
+            c.key === 'txn_ref' || c.key === 'bank_matched' ? { ...c, defaultVisible: true } : c,
           ),
+          // Canvas TC04: nhóm lọc nhanh «Sao kê» (Đã khớp, Chưa khớp).
+          quickGroups: [
+            ...base.quickGroups,
+            {
+              key: 'bank',
+              label: 'Sao kê',
+              options: [
+                { value: 'KHOP', label: 'Đã khớp' },
+                { value: 'CHUA', label: 'Chưa khớp' },
+              ],
+            },
+          ],
         }
       : base;
   }, [catalogs, access, waitingAccounting]);
