@@ -15,6 +15,7 @@ import { parseCsv, type CsvTable } from '../lead/importCsv';
 import {
   buildRows,
   errorRowsCsv,
+  explainLine,
   passwordsCsv,
   type ImportLine,
   type ImportResult,
@@ -345,7 +346,7 @@ function ResultTable({ config, rows }: { config: ImportKindConfig; rows: ImportL
               <td className="px-3 py-1.5">
                 <Tag tone={STATUS_TONE[r.status]}>{STATUS_TEXT[r.status]}</Tag>
               </td>
-              <td className="px-3 py-1.5 text-fg-muted">{r.message ?? '—'}</td>
+              <td className="px-3 py-1.5 text-fg-muted">{explainLine(r) || '—'}</td>
               <td className="px-3 py-1.5">
                 {(r.warnings ?? []).length === 0 ? (
                   <span className="text-fg-muted">—</span>
