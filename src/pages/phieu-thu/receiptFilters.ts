@@ -79,6 +79,8 @@ export const RECEIPT_GROUP_FIELD_OF: Record<string, string> = {
   status: 'status',
   method: 'method',
   branch: 'branch',
+  // Canvas TC04: nhóm «Sao kê» (Đã khớp, Chưa khớp), chỉ ở TC-04.
+  bank: 'bank',
 };
 
 /** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có», không lọc thêm). */
@@ -87,5 +89,6 @@ export function receiptGroupFilter(field: string, key: string): ReceiptFilters {
   if (field === 'status') return { status: [key] };
   if (field === 'method') return { payment_method: [key] };
   if (field === 'branch') return { branch_id: key };
+  if (field === 'bank') return { bank_matched: key };
   return {};
 }
