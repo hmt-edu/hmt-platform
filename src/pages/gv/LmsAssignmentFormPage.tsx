@@ -9,7 +9,7 @@ import { flushSync } from 'react-dom';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { errorOf, rpc, useDb } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
-import { Button } from '../../ui/Button';
+import { Button, ButtonLink } from '../../ui/Button';
 import { ConfirmDialog, UnsavedGuard } from '../../ui/Dialogs';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { Checkbox, TextAreaField, TextField } from '../../ui/Field';
@@ -455,6 +455,11 @@ function LmsForm({
         <Button variant="text" onClick={() => void navigate(listPath)}>
           Huỷ
         </Button>
+        {editing && (
+          <ButtonLink to={`/gv/lop/${classId}/bai-giao/${assignmentId}/cham`}>
+            Chấm bài nộp
+          </ButtonLink>
+        )}
         {editing && !locked && (
           <Button
             variant="danger"
