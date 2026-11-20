@@ -1,11 +1,14 @@
 // Trang Lead (TS-02, TS-03): kiểu bản ghi, bản nháp của biểu mẫu, kiểm tra ô bắt buộc, đổi nháp thành dữ liệu gửi hàm.
 // Hàm thuần, có kiểm thử. Luật thật ở create_lead, update_lead; chỗ này chỉ chặn sớm các ô trống, sai dạng.
+import type { ProspectStudent } from '../../features/prospect/prospectLogic';
 import { toIsoDate } from '../../lib/dateText';
 import type { LeadCatalogs } from './useCatalogs';
 
 export type LeadRecord = {
   id: string;
   code: string;
+  /** Danh sách em (app.prospect_students_json). */
+  students: ProspectStudent[];
   parent_name: string;
   parent_phone: string;
   ward_code: string | null;

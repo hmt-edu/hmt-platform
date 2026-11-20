@@ -22,7 +22,7 @@ import {
   type ImportSummary,
   type TrainingSummary,
 } from './importFile';
-import { sampleCsvText, type ImportKindConfig } from './importKinds';
+import { columnRows, sampleCsvText, type ImportKindConfig } from './importKinds';
 import { runImport } from './useImportData';
 
 const STEPS = ['Tải file', 'Xem trước'];
@@ -208,6 +208,7 @@ function ImportForm({
               Tải file mẫu
             </Button>
           </div>
+          <ColumnTable config={config} />
           {fileError && <Alert tone="danger">{fileError}</Alert>}
           {built && built.missing.length > 0 && (
             <Alert tone="danger">
@@ -243,6 +244,21 @@ function ImportForm({
                   setPage(1);
                 }}
               />
+              {file && result.errors + result.duplicates > 0 && (
+                <div>
+                  <Button
+                    icon="download"
+                    onClick={() =>
+                      downloadText(
+                        `dong-loi-${file.name}`,
+                        errorRowsCsv(file.table, config, result),
+                      )
+                    }
+                  >
+                    Tải dòng lỗi và trùng ({result.errors + result.duplicates})
+                  </Button>
+                </div>
+              )}
               {config.blockOnError && result.errors > 0 && (
                 <Alert tone="danger">
                   Còn <b>{result.errors}</b> dòng lỗi. Loại này không nạp từng phần: sửa file cho
@@ -267,6 +283,37 @@ function ImportForm({
         </div>
       )}
     </StepDialog>
+  );
+}
+
+/** Bảng «Cột nhận của loại» (khung QT18_tai_file): tên cột, ý nghĩa, yêu cầu, ví dụ giả. */
+function ColumnTable({ config }: { config: ImportKindConfig }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <b className="text-body">Cột nhận của loại {config.title}</b>
+      <div className="max-h-[260px] overflow-auto rounded-control border border-border">
+        <table className="w-full text-body" aria-label="Cột nhận của loại">
+          <thead className="sticky top-0 bg-surface-subtle text-left text-caption text-fg-label">
+            <tr>
+              <th className="px-3 py-2 font-semibold">Tên cột</th>
+              <th className="px-3 py-2 font-semibold">Ý nghĩa</th>
+              <th className="px-3 py-2 font-semibold">Yêu cầu</th>
+              <th className="px-3 py-2 font-semibold">Ví dụ (dữ liệu giả)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {columnRows(config).map((c) => (
+              <tr key={c.name} className="border-t border-border align-top">
+                <td className="px-3 py-1.5 font-mono">{c.name}</td>
+                <td className="px-3 py-1.5">{c.meaning}</td>
+                <td className="px-3 py-1.5">{c.required ? 'Bắt buộc' : 'Tuỳ chọn'}</td>
+                <td className="px-3 py-1.5 text-fg-muted">{c.example === '' ? '—' : c.example}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 

@@ -1,5 +1,7 @@
 // Kiểu dữ liệu màn Cơ hội: khớp kết quả các hàm list_opportunities, opportunity_board, get_opportunity (docs/spec/04 R-CRM-02, 03, 12 đến 17).
 
+import type { ProspectStudent } from '../../features/prospect/prospectLogic';
+
 export type OppStatus = 'DANG_DUNG' | 'DA_GOP';
 
 export type OpportunityRow = {
@@ -88,6 +90,8 @@ export type OppTestState = {
 export type OppRecord = {
   id: string;
   code: string;
+  /** Danh sách em (app.prospect_students_json). */
+  students: ProspectStudent[];
   lead_id: string;
   lead_code: string;
   parent_id: string;
