@@ -14,6 +14,7 @@ import { useLeadCatalogs } from '../lead/useCatalogs';
 import { formatDate, formatMoney } from '../../lib/format';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
+import { newTicketForParentPath } from './custFilters';
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
@@ -237,8 +238,14 @@ function ParentView({ record }: { record: ParentRecord }) {
           {
             kind: 'action',
             label: 'Tạo ticket',
-            onSelect: () => undefined,
-            unavailable: 'Ticket chăm sóc (CS-04) làm sau',
+            onSelect: () => void navigate(newTicketForParentPath(record.id, record.code)),
+            ...(access.can('TICKET', 'TAO') && !merged
+              ? {}
+              : {
+                  unavailable: merged
+                    ? 'Hồ sơ đã gộp chỉ xem được'
+                    : 'Bạn không có quyền tạo ticket',
+                }),
           },
         ],
       }}

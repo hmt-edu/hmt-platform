@@ -47,6 +47,11 @@ export function parentGroupFilter(field: string, key: string): CustFilters {
   return {};
 }
 
+/** Đường dẫn «Tạo ticket» từ hồ sơ phụ huynh: màn tạo ticket điền sẵn phụ huynh (id) và ô tìm theo mã. */
+export function newTicketForParentPath(id: string, code: string): string {
+  return `/crm/ticket/moi?phu-huynh=${id}&ma=${encodeURIComponent(code)}`;
+}
+
 export function custSortParam(key: string | null, direction: 'asc' | 'desc' | null): string {
   if (key === 'name') return 'name_asc';
   if (key === 'code' && direction === 'desc') return 'code_desc';
