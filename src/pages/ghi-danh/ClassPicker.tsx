@@ -6,6 +6,7 @@ import { cn } from '../../ui/cn';
 import {
   dateKey,
   defaultStart,
+  deliveryMismatchWarning,
   disabledReason,
   keyToDate,
   seatsText,
@@ -23,6 +24,7 @@ export function ClassPicker({
   name,
   allowLater = false,
   laterLabel = 'Chưa chọn lớp',
+  enrollMode,
 }: {
   classes: MatchingClass[];
   value: ClassPick;
@@ -32,6 +34,8 @@ export function ClassPicker({
   /** BH-08: cho chọn "Chưa chọn lớp" (ghi danh ở Chờ xếp lớp, vận hành xếp sau). */
   allowLater?: boolean;
   laterLabel?: string;
+  /** Hình thức học của ghi danh: lớp lệch hình thức chỉ hiện cảnh báo, không chặn. */
+  enrollMode?: string | null;
 }) {
   const chosen = classes.find((c) => c.id === value.classId) ?? null;
   return (
@@ -66,6 +70,11 @@ export function ClassPicker({
                   </span>
                   {reason && (
                     <span className="block text-caption text-on-warning-subtle">{reason}</span>
+                  )}
+                  {!reason && deliveryMismatchWarning(c.delivery_mode_code, enrollMode) && (
+                    <span className="block text-caption text-on-warning-subtle">
+                      {deliveryMismatchWarning(c.delivery_mode_code, enrollMode)}
+                    </span>
                   )}
                 </span>
               </label>

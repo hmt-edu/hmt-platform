@@ -99,6 +99,8 @@ export type MatchingClass = {
   grade_code: string;
   group_id: string | null;
   group_name: string | null;
+  /** Hình thức học của lớp (OFF, ONL, OMO); thiếu ở máy chủ cũ. */
+  delivery_mode_code?: string;
   schedule_text: string | null;
   teacher_name: string | null;
   seats_left: number | null;

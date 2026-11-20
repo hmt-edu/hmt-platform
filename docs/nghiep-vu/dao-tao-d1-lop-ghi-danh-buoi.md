@@ -26,6 +26,7 @@ Luật: `docs/spec/04` mục 3 (R-GD), 4 (R-LOP), 5 (R-BUOI, R-GIO), 6 (R-DD), 7
 | `save_class_timetable(lớp, khung, ngày áp dụng, xem trước)`           | Lớp học · Sửa                     | R-LOP-02, 10, 13                              |
 | `transition_class(lớp, đích, ghi chú)`                                | Sửa / Duyệt / Huỷ theo bước       | R-LOP-01, 02, 03, 04                          |
 | `create_class_group(cơ sở, khối, tên)`                                | Lớp học · Tạo                     | R-LOP-14                                      |
+| `preview_class_end_date(cơ sở, ngày bắt đầu, số buổi, khung giờ)`     | Lớp học · Xem, cơ sở của lớp      | R-LOP-09, 12, 13 (chỉ đọc, không ghi; migration 571) |
 | `class_operating_status`, `class_clash_warnings`, `compute_class_schedule` | Đọc                          | R-LOP-05, 08, 09                              |
 | `assign_enrollment_class(ghi danh, lớp, ngày vào)`                    | Ghi danh · Sửa                    | R-GD-05, 06, 08, 15                           |
 | `adjust_enrollment_hours(ghi danh, giờ, lý do, ghi chú)`              | Ghi danh · Duyệt (Trưởng cơ sở, Admin) | R-GD-04, R-GD-18                         |
@@ -201,3 +202,13 @@ Luật: R-V2-20, R-GV-04, R-GV-08, R-GV-13. Các hàm ghi điểm (`set_exam_sco
 | `save_exam_grading(buổi, điểm, nhận xét)`        | Điểm danh · Sửa, buổi Đã chốt       | Một giao dịch: ghi điểm (tổng hoặc 3 nhóm, tổng tự cộng) và nhận xét; em vắng không nhập điểm; ngoài giới hạn hoặc buổi Done thì chặn, không ghi gì |
 
 Chưa làm: sửa điểm sau Done (qua ticket, chỉ quản lý đào tạo), «Theo tiêu chí», «Cả lớp», xuất nhận xét (sau 17/11).
+
+## Hình thức học của lớp, Tổ chức lớp, xem trước ngày kết thúc (migration 571, LOP-02/03, anh Trường chốt 20/11/2026)
+
+- **Hình thức học**: cột `class.delivery_mode_code` (OFF, ONL, OMO; lớp cũ mặc định OFF), danh mục `CLASS_DELIVERY` riêng, KHÔNG thêm OMO vào `STUDY_MODE` (hình thức bán của ghi danh và bảng giá). `create_class` nhận `delivery_mode_code` (mặc định OFF); `save_class_info` sửa được ở Nháp, Từ chối (lớp Đã duyệt bị khoá như các thông tin khác, R-LOP-02); `get_class_record` trả `delivery_mode_code`, `delivery_mode_name`; `enrollment_matching_classes` trả `delivery_mode_code` mỗi lớp. Mã không có trong danh mục: `HMT_DANH_MUC_KHONG_CO`.
+- **Xếp lớp lệch hình thức chỉ CẢNH BÁO, không chặn**: ở hộp Xếp lớp (GD-03) lớp Offline nhận ghi danh Online (hoặc ngược lại) hiện dòng nhắc; lớp OMO nhận cả hai. Máy chủ không chặn.
+- **Tổ chức lớp** không còn là ô nhập, không cột DB: hiện chữ tự suy từ Phân loại (Lớp riêng = Học riêng, còn lại = Học chung).
+- **Tạo lớp còn lại cho nhóm này** (hồ sơ lớp): mở màn Tạo lớp với nhóm, cơ sở, năm, khối, phân loại điền sẵn; môn, trình độ, giáo viên, lịch để trống; mỗi lớp trong nhóm vẫn độc lập (R-LOP-14). Không migration.
+- **Xem trước ngày kết thúc dự kiến**: `preview_class_end_date` (security definer, chỉ đọc) tính từ khung giờ đang nhập, dùng `class_normalize_slots` và `compute_class_schedule` như lúc sinh buổi nên bỏ cả ngày nghỉ lễ (R-LOP-12). Trả null khi chưa có khung giờ hoặc số buổi; khung sai báo lỗi có mã như lúc lưu.
+- Luật R-LOP-14 «kiểm môn theo khối khi tạo lớp» CHƯA quyết, không làm.
+- Kiểm thử: pgTAP `571_lop02_03_hinh_thuc_hoc_xem_truoc.test.sql`; Vitest `classForm.test.ts`, `enrollLogic.test.ts`; e2e `lop.spec.ts`.

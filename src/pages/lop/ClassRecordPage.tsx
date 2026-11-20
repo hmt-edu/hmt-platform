@@ -20,6 +20,7 @@ import { useToast } from '../../ui/toastContext';
 import { editKind, transitionsFrom, type Transition } from './classTransitions';
 import { SESSION_STATUS_LABEL, WEEKDAY_LABEL, timeText } from './classLabels';
 import { editClassPath } from './classConfig';
+import { organizationText, remainingClassPath } from './classForm';
 import { OPERATING_LABEL, type ClassRecord } from './classTypes';
 import { transitionClass, useClassRecord, useRefreshClasses } from './useClassData';
 
@@ -237,6 +238,16 @@ function ClassView({ record }: { record: ClassRecord }) {
               label="Phân loại"
               value={[record.class_type_name, record.level_name].filter(Boolean).join(' · ')}
             />
+            <DetailField
+              mode="view"
+              label="Hình thức học"
+              value={record.delivery_mode_name ?? record.delivery_mode_code ?? ''}
+            />
+            <DetailField
+              mode="view"
+              label="Tổ chức lớp"
+              value={organizationText(record.class_type_code)}
+            />
             <DetailField mode="view" label="Nhóm lớp" value={record.group_name ?? ''} />
           </DetailSection>
           <DetailSection title="Thời gian và địa điểm">
@@ -266,7 +277,7 @@ function ClassView({ record }: { record: ClassRecord }) {
           </DetailSection>
         </div>
 
-        {(record.group_classes ?? []).length > 0 && (
+        {record.group_id !== null && (
           <div className="mt-6">
             <DetailSection title="Nhóm lớp">
               <DetailField mode="view" label="Cùng nhóm" value={record.group_name ?? 'Nhóm lớp'} />
@@ -282,6 +293,18 @@ function ClassView({ record }: { record: ClassRecord }) {
                   </li>
                 ))}
               </ul>
+              {/* «Tạo lớp còn lại cho nhóm này» (anh Trường chốt 20/11): chỉ điền sẵn nhóm, cơ sở, năm, khối, phân loại; để trống môn, giáo viên, lịch. */}
+              {access.can('CLASS', 'TAO') &&
+                (record.group_classes ?? []).every((g) => g.status_code === 'HUY') && (
+                  <div className="py-1">
+                    <Button
+                      variant="secondary"
+                      onClick={() => void navigate(remainingClassPath(record))}
+                    >
+                      Tạo lớp còn lại cho nhóm này
+                    </Button>
+                  </div>
+                )}
               <p className="text-caption text-fg-muted">
                 Nhóm không có mã riêng. Mỗi lớp trong nhóm vẫn độc lập: giáo viên, lịch, sĩ số, bước
                 duyệt riêng (R-LOP-14).

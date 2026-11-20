@@ -217,3 +217,32 @@ export function useClassGroupCounts(filters: ClassFilters, fields: string[], ena
       rpc<GroupCounts>(supabase, 'class_group_counts', { p_filters: filters, p_fields: fields }),
   });
 }
+
+/**
+ * «Xem trước ngày kết thúc dự kiến» (LOP-03, anh Trường chốt 20/11): tính ở máy chủ (app.preview_class_end_date) từ khung giờ ĐANG NHẬP, chưa lưu.
+ * Không gọi khi chưa đủ cơ sở, ngày khai giảng, số buổi hoặc khung giờ; khung sai thì trả lỗi có mã để hiện câu của máy chủ.
+ */
+export function useClassEndPreview(args: {
+  branchId: string;
+  startDate: string;
+  totalSessions: number;
+  slots: unknown[];
+  enabled: boolean;
+}) {
+  const supabase = useDb();
+  const { branchId, startDate, totalSessions, slots, enabled } = args;
+  return useQuery({
+    queryKey: ['class-end-preview', branchId, startDate, totalSessions, slots],
+    enabled:
+      enabled && branchId !== '' && startDate !== '' && totalSessions > 0 && slots.length > 0,
+    retry: false,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<string | null>(supabase, 'preview_class_end_date', {
+        p_branch_id: branchId,
+        p_start_date: startDate,
+        p_total_sessions: totalSessions,
+        p_slots: slots,
+      }),
+  });
+}

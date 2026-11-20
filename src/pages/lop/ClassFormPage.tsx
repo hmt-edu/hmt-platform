@@ -3,7 +3,7 @@
 // Nháp, Từ chối: sửa mọi trường được phép. Đã trình, Đã xác nhận, Đã duyệt: chỉ Time Table (Đã duyệt: áp dụng từ ngày, xem trước số buổi đổi).
 // Lưu nháp xong bấm Trình ở màn lớp (R-LOP-02, R-LOP-03). Trùng phòng, trùng giáo viên chỉ cảnh báo, không chặn (R-LOP-08).
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Button } from '../../ui/Button';
 import { UnsavedGuard } from '../../ui/Dialogs';
 import { Field, INPUT_CLASS, TextField } from '../../ui/Field';
@@ -11,6 +11,8 @@ import { Tabs } from '../../ui/Overlays';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { useAuth } from '../../lib/auth/authContext';
 import { errorOf, rpc, useDb } from '../../lib/db';
+import { formatDate } from '../../lib/format';
+import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import { useToast } from '../../ui/toastContext';
 import { classPath } from './classConfig';
@@ -23,6 +25,8 @@ import {
   formFromRecord,
   infoPayload,
   newSlot,
+  organizationText,
+  prefillFromParams,
   longSlotWarning,
   slotSummary,
   teacherOptionLabel,
@@ -36,6 +40,7 @@ import { editKind } from './classTransitions';
 import type { ClassRecord } from './classTypes';
 import {
   useClassCatalogs,
+  useClassEndPreview,
   useClassFormOptions,
   useCurriculumFrames,
   useCurriculumLessons,
@@ -81,6 +86,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
   const toast = useToast();
   const navigate = useNavigate();
   const refresh = useRefreshClasses();
+  const [searchParams] = useSearchParams();
   const catalogs = useClassCatalogs();
   const editing = record !== null;
   const kind = record ? editKind(record.status_code) : 'FULL';
@@ -95,8 +101,9 @@ function FormView({ record }: { record: ClassRecord | null }) {
       access.selectedBranch !== 'all'
         ? access.selectedBranch
         : (own ?? access.allBranches[0]?.id ?? '');
-    return { ...EMPTY_FORM, branchId: branch };
-  }, [record, access, claims?.branchCode]);
+    // «Tạo lớp còn lại cho nhóm này»: nhóm, cơ sở, năm, khối, phân loại điền sẵn từ địa chỉ; môn, giáo viên, lịch để trống.
+    return { ...EMPTY_FORM, branchId: branch, ...prefillFromParams(searchParams) };
+  }, [record, access, claims?.branchCode, searchParams]);
   const [form, setForm] = useState<ClassFormState>(initial);
   const [tried, setTried] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -214,6 +221,39 @@ function FormView({ record }: { record: ClassRecord | null }) {
   const groupsForGrade = (opt?.groups ?? []).filter((g) => g.grade_code === form.gradeCode);
 
   const summary = slotSummary(form.slots, opt);
+  // Xem trước ngày kết thúc dự kiến từ khung giờ đang nhập (chưa lưu): hàm đọc ở máy chủ, gọi sau khi ngừng gõ. Lớp đã có buổi thì hiện ngày đã lưu.
+  const slotsReady =
+    form.slots.length > 0 && form.slots.every((x) => x.start && x.end && x.firstDate);
+  const previewKey = useDebounced(
+    JSON.stringify({
+      branchId: form.branchId,
+      startDate: form.startDate,
+      totalSessions: Number(form.totalSessions),
+      slots: slotsPayload(form.slots),
+    }),
+  );
+  const previewArgs = useMemo(
+    () =>
+      JSON.parse(previewKey) as {
+        branchId: string;
+        startDate: string;
+        totalSessions: number;
+        slots: unknown[];
+      },
+    [previewKey],
+  );
+  const endPreview = useClassEndPreview({ ...previewArgs, enabled: full && slotsReady });
+  const endText = !full
+    ? record?.expected_end_date
+      ? formatDate(record.expected_end_date)
+      : ''
+    : endPreview.isError
+      ? errorOf(endPreview.error).message
+      : endPreview.data
+        ? formatDate(endPreview.data)
+        : endPreview.isFetching
+          ? 'Đang tính…'
+          : 'Nhập ngày khai giảng, số buổi và khung giờ để xem trước';
   // Khung chương trình khớp môn, khối, phân loại, năm học; giá trị cũ ngoài danh sách vẫn hiện để không mất dữ liệu.
   const frames = useCurriculumFrames(
     form.subjectCode,
@@ -385,6 +425,17 @@ function FormView({ record }: { record: ClassRecord | null }) {
             onChange={(v) => set('levelCode', v)}
           />
         )}
+        <Select
+          label="Hình thức học"
+          required
+          error={err('deliveryModeCode')}
+          value={form.deliveryModeCode}
+          disabled={!full}
+          options={opts('CLASS_DELIVERY')}
+          onChange={(v) => set('deliveryModeCode', v)}
+        />
+        {/* Tổ chức lớp tự suy từ Phân loại, không phải ô nhập (anh Trường chốt 20/11). */}
+        <ReadOnlyField label="Tổ chức lớp" value={organizationText(form.typeCode)} />
       </section>
 
       <section aria-labelledby="lop3-time" className="grid gap-3 md:grid-cols-3">
@@ -441,10 +492,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
         <h2 id="lop3-summary" className="text-h4 md:col-span-2">
           Lịch học, phòng và giáo viên (tự sinh từ Time Table)
         </h2>
-        <ReadOnlyField
-          label="Kết thúc dự kiến"
-          value={record?.expected_end_date ?? 'Tính sau khi lưu'}
-        />
+        <ReadOnlyField label="Kết thúc dự kiến" value={endText} />
         <ReadOnlyField label="Lịch học" value={summary.schedule} />
         <ReadOnlyField label="Phòng học" value={summary.rooms} />
         <ReadOnlyField label="Giáo viên và trợ giảng" value={summary.staff} />

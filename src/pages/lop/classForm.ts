@@ -25,6 +25,8 @@ export type ClassFormState = {
   gradeCode: string;
   typeCode: string;
   levelCode: string;
+  /** Hình thức học của lớp: OFF, ONL, OMO. */
+  deliveryModeCode: string;
   legacyRef: string;
   curriculumRef: string;
   startLesson: string;
@@ -47,6 +49,7 @@ export const EMPTY_FORM: ClassFormState = {
   gradeCode: '',
   typeCode: '',
   levelCode: '',
+  deliveryModeCode: 'OFF',
   legacyRef: '',
   curriculumRef: '',
   startLesson: '',
@@ -108,6 +111,7 @@ export function validateForm(f: ClassFormState, full: boolean, approvedEdit: boo
     if (!f.subjectCode) e.subjectCode = 'Chọn môn học.';
     if (!f.gradeCode) e.gradeCode = 'Chọn khối.';
     if (!f.typeCode) e.typeCode = 'Chọn phân loại.';
+    if (!f.deliveryModeCode) e.deliveryModeCode = 'Chọn hình thức học.';
     if (f.typeCode && f.typeCode !== PRIVATE_TYPE && !f.levelCode) e.levelCode = 'Chọn trình độ.';
     if (!(Number(f.totalSessions) > 0)) e.totalSessions = 'Nhập tổng số buổi lớn hơn 0.';
     if (!f.startDate) e.startDate = 'Chọn ngày khai giảng.';
@@ -156,6 +160,7 @@ export function createPayload(f: ClassFormState, groupId: string | null) {
     grade_code: f.gradeCode,
     class_type_code: f.typeCode,
     level_code: f.typeCode === PRIVATE_TYPE ? null : f.levelCode,
+    delivery_mode_code: f.deliveryModeCode,
     max_students: f.maxStudents === '' ? 0 : Number(f.maxStudents),
     start_date: f.startDate,
     total_sessions: Number(f.totalSessions),
@@ -182,6 +187,7 @@ export function infoPayload(f: ClassFormState, status: string) {
     curriculum_ref: f.curriculumRef.trim() || null,
     start_lesson: f.startLesson.trim() || null,
     legacy_ref: f.legacyRef.trim() || null,
+    delivery_mode_code: f.deliveryModeCode,
   };
 }
 
@@ -194,6 +200,7 @@ export function formFromRecord(r: ClassRecord): ClassFormState {
     gradeCode: r.grade_code,
     typeCode: r.class_type_code,
     levelCode: r.level_code ?? '',
+    deliveryModeCode: r.delivery_mode_code ?? 'OFF',
     legacyRef: r.legacy_ref ?? '',
     curriculumRef: r.curriculum_ref ?? '',
     startLesson: r.start_lesson ?? '',
@@ -279,4 +286,50 @@ export function teacherOptionLabel(p: {
     .filter((x) => x !== '')
     .join(' · ');
   return hint === '' ? p.name : `${p.name} · ${hint}`;
+}
+
+/** «Tổ chức lớp» tự suy từ Phân loại, không phải ô nhập (anh Trường chốt 20/11): Lớp riêng là Học riêng, còn lại là Học chung. Chưa chọn phân loại thì trống. */
+export function organizationText(typeCode: string): string {
+  if (typeCode === '') return '';
+  return typeCode === PRIVATE_TYPE ? 'Học riêng' : 'Học chung';
+}
+
+export type ClassPrefill = Partial<
+  Pick<ClassFormState, 'branchId' | 'yearCode' | 'gradeCode' | 'typeCode' | 'groupMode' | 'groupId'>
+>;
+
+/**
+ * «Tạo lớp còn lại cho nhóm này» (anh Trường chốt 20/11): chỉ điền sẵn nhóm, cơ sở, năm, khối, phân loại từ địa chỉ; để TRỐNG môn, giáo viên, lịch.
+ * Tham số: nhom, co_so, nam, khoi, phan_loai. Giá trị trống bị bỏ qua.
+ */
+export function prefillFromParams(params: URLSearchParams): ClassPrefill {
+  const out: ClassPrefill = {};
+  const pick = (key: string) => (params.get(key) ?? '').trim();
+  if (pick('co_so')) out.branchId = pick('co_so');
+  if (pick('nam')) out.yearCode = pick('nam');
+  if (pick('khoi')) out.gradeCode = pick('khoi');
+  if (pick('phan_loai')) out.typeCode = pick('phan_loai');
+  if (pick('nhom')) {
+    out.groupMode = 'EXISTING';
+    out.groupId = pick('nhom');
+  }
+  return out;
+}
+
+/** Địa chỉ mở màn Tạo lớp với phần điền sẵn của «Tạo lớp còn lại cho nhóm này». */
+export function remainingClassPath(c: {
+  group_id: string | null;
+  branch_id: string;
+  year_code: string;
+  grade_code: string;
+  class_type_code: string;
+}): string {
+  const q = new URLSearchParams({
+    nhom: c.group_id ?? '',
+    co_so: c.branch_id,
+    nam: c.year_code,
+    khoi: c.grade_code,
+    phan_loai: c.class_type_code,
+  });
+  return `/crm/lop/tao?${q.toString()}`;
 }
