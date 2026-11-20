@@ -54,6 +54,26 @@ export type ReceiptEvent = {
   by_name: string | null;
 };
 
+/** Bản chia tiền vào dòng đơn của một phiếu (TC-17, migration 578): xem trước từ bước Đã trình, tiền thật khi Đã duyệt. */
+export type ReceiptAllocLine = {
+  line_id: string;
+  line_no: number;
+  student_name: string | null;
+  package_name: string;
+  line_total: number;
+  amount: number;
+  /** Giờ cấp của dòng cho phiếu này (R-TIEN-21). */
+  hours: number;
+  hours_total: number;
+  /** Dòng được cấn trước («Dồn trước», R-TIEN-23). */
+  first: boolean;
+};
+export type ReceiptAllocPreview = {
+  actual: boolean;
+  note: string | null;
+  lines: ReceiptAllocLine[];
+};
+
 export type OrderPayment = {
   order_id: string;
   total: number;
