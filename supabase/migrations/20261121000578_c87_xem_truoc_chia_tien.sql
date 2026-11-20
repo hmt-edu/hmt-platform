@@ -162,7 +162,7 @@ as $$
            'student_name', coalesce(s.full_name, v.full_name),
            'package_name', l.package_name,
            'line_total', l.line_total, 'amount', p_amount,
-           'hours', case when l.line_total = 0 then 0 else round(l.quantity * p_amount::numeric / l.line_total, 2) end,
+           'hours', case when l.line_total = 0 then 0 else round(l.quantity * p_amount::numeric / l.line_total, 2) end, -- allow-number: làm tròn 2 chữ số thập phân của giờ (numeric(6,2)), như enrollment_target_hours
            'hours_total', l.quantity, 'first', p_first)
     from app.sales_order_line l
     left join app.prospect_student_v v on v.id = l.prospect_student_id
