@@ -3,6 +3,7 @@ import {
   addInputErrors,
   catalogMode,
   childLevelName,
+  describeCatalogChange,
   flattenTree,
   rootLabel,
   summaryLine,
@@ -162,5 +163,29 @@ describe('A25 Danh mục Loại buổi: cột Form nhận xét (sửa được)'
   });
   it('chỉ danh mục SESSION_TYPE có cột này', () => {
     expect(SESSION_TYPE_CATALOG).toBe('SESSION_TYPE');
+  });
+});
+
+describe('QT-07: lịch sử thay đổi danh mục', () => {
+  it('mô tả tạo mục, đổi tên, Ngừng, Dùng lại, đổi thứ tự', () => {
+    expect(describeCatalogChange({ action: 'I', changes: null })).toBe('Thêm mục');
+    expect(describeCatalogChange({ action: 'U', changes: { name: ['A', 'B'] } })).toBe(
+      'Đổi tên: A → B',
+    );
+    expect(describeCatalogChange({ action: 'U', changes: { is_active: [true, false] } })).toBe(
+      'Ngừng',
+    );
+    expect(describeCatalogChange({ action: 'U', changes: { is_active: [false, true] } })).toBe(
+      'Dùng lại',
+    );
+    expect(describeCatalogChange({ action: 'U', changes: { sort_order: [1, 2] } })).toBe(
+      'Đổi thứ tự',
+    );
+    expect(
+      describeCatalogChange({
+        action: 'U',
+        changes: { name: ['A', 'B'], is_active: [true, false] },
+      }),
+    ).toBe('Đổi tên: A → B; Ngừng');
   });
 });

@@ -1,13 +1,19 @@
 // KH-02 Phụ huynh (bản ghi, khuôn K06): thông tin, các con, đơn hàng, phiếu thu; nút liên kết có số đếm; ghi chú và hoạt động (Chatter).
-// Không có Tạo tay (R-CRM-27). Sửa (KH-03), Gộp (KH-07), Tạo ticket (CS-04) chưa làm: hiện mờ kèm chú thích. Ticket và Tài chính: chưa có dữ liệu.
+// Không có Tạo tay (R-CRM-27). Sửa (KH-03) gọi update_parent; cơ sở tiếp nhận chỉ xem (R-CRM-28, Admin đổi qua ticket Chuyển cơ sở).
+// Gộp (KH-07), Tạo ticket (CS-04) chưa làm: hiện mờ kèm chú thích. Ticket và Tài chính: chưa có dữ liệu.
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { Button } from '../../ui/Button';
-import { HmtError, errorOf } from '../../lib/db';
+import { HmtError, errorOf, rpc, useDb } from '../../lib/db';
+import { useAccess } from '../../nav/AccessContext';
+import { INPUT_CLASS } from '../../ui/Field';
+import { OptionalSelect } from '../../ui/OptionalSelect';
+import { useToast } from '../../ui/toastContext';
+import { useLeadCatalogs } from '../lead/useCatalogs';
 import { formatDate, formatMoney } from '../../lib/format';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
-import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
+import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
@@ -24,6 +30,31 @@ const FORMAT = {
     relative_name: 'Người thân',
   },
 };
+
+type ParentDraft = {
+  full_name: string;
+  phone: string;
+  phone_2: string;
+  relative_name: string;
+  province_code: string;
+  ward_code: string;
+  address: string;
+};
+
+function toParentDraft(
+  r: ParentRecord,
+  refs: { ward_code: string | null; province_code: string | null } | null,
+): ParentDraft {
+  return {
+    full_name: r.full_name,
+    phone: r.phone,
+    phone_2: r.phone_2 ?? '',
+    relative_name: r.relative_name ?? '',
+    province_code: refs?.province_code ?? '',
+    ward_code: refs?.ward_code ?? '',
+    address: r.address ?? '',
+  };
+}
 
 export function ParentRecordPage() {
   const { id } = useParams();
@@ -75,16 +106,112 @@ function ParentView({ record }: { record: ParentRecord }) {
   const [tab, setTab] = useState('overview');
   useCrumbTail(`${record.full_name} · ${record.code}`);
   const merged = record.record_status === 'DA_GOP';
+  const access = useAccess();
+  const supabase = useDb();
+  const toast = useToast();
+  const catalogs = useLeadCatalogs();
+  const canEdit = access.can('PARENT', 'SUA') && !merged;
+  const [mode, setMode] = useState<DetailMode>('view');
+  const [draft, setDraft] = useState<ParentDraft>(() => toParentDraft(record, null));
+  const [errors, setErrors] = useState<Partial<Record<keyof ParentDraft, string>>>({});
+  const [saving, setSaving] = useState(false);
+  const editing = mode !== 'view';
+  // Mã phường, tỉnh chỉ lấy khi vào chế độ Sửa (get_parent_record chỉ trả tên): gọi một lần rồi mới mở ô sửa.
+  const [baseline, setBaseline] = useState<ParentDraft>(() => toParentDraft(record, null));
+  const dirty = editing && JSON.stringify(draft) !== JSON.stringify(baseline);
+
+  async function startEdit() {
+    try {
+      const refs = await rpc<{ ward_code: string | null; province_code: string | null }>(
+        supabase,
+        'get_parent_edit_refs',
+        { p_id: record.id },
+      );
+      const initial = toParentDraft(record, refs);
+      setBaseline(initial);
+      setDraft(initial);
+      setErrors({});
+      setMode('edit');
+    } catch (e) {
+      toast({ tone: 'danger', title: errorOf(e).message });
+    }
+  }
+  function cancelEdit() {
+    setErrors({});
+    setMode('view');
+  }
+  function set<K extends keyof ParentDraft>(key: K, value: ParentDraft[K]) {
+    setDraft((d) => ({ ...d, [key]: value }));
+  }
+  async function save() {
+    // Luật: họ tên, số điện thoại bắt buộc; số còn lại để hàm DB kiểm.
+    const found: Partial<Record<keyof ParentDraft, string>> = {};
+    if (draft.full_name.trim() === '') found.full_name = 'Bắt buộc nhập họ tên';
+    if (draft.phone.trim() === '') found.phone = 'Bắt buộc nhập số điện thoại';
+    setErrors(found);
+    if (Object.keys(found).length > 0) return;
+    setSaving(true);
+    try {
+      await rpc<null>(supabase, 'update_parent', {
+        p_id: record.id,
+        p_data: {
+          full_name: draft.full_name,
+          phone: draft.phone,
+          phone_2: draft.phone_2,
+          relative_name: draft.relative_name,
+          province_code: draft.province_code === '' ? null : draft.province_code,
+          ward_code: draft.ward_code === '' ? null : draft.ward_code,
+          address: draft.address,
+        },
+      });
+      await refresh();
+      setMode('view');
+      toast({ title: 'Đã lưu.' });
+    } catch (e) {
+      const error = errorOf(e);
+      if (error.code === 'HMT_SDT_SAI' || error.code === 'HMT_SDT_TRUNG')
+        setErrors((x) => ({ ...x, phone: error.message }));
+      else if (error.code === 'HMT_THIEU_THONG_TIN')
+        setErrors((x) => ({ ...x, full_name: error.message }));
+      else toast({ tone: 'danger', title: error.message });
+    } finally {
+      setSaving(false);
+    }
+  }
+  const text = (
+    key: Exclude<keyof ParentDraft, 'province_code' | 'ward_code'>,
+    label: string,
+    required = false,
+  ) => (
+    <DetailField
+      mode={mode}
+      label={label}
+      required={required}
+      value={String(record[key] ?? '')}
+      error={errors[key] ?? null}
+      editor={
+        <input
+          aria-label={label}
+          value={draft[key]}
+          onChange={(e) => set(key, e.target.value)}
+          aria-invalid={errors[key] ? true : undefined}
+          className={INPUT_CLASS}
+        />
+      }
+    />
+  );
 
   return (
     <RecordDetail
       kind="Phụ huynh"
       title={`${record.full_name} · ${record.code}`}
-      mode="view"
-      readOnly
-      onEdit={() => undefined}
-      onSave={() => undefined}
-      onCancel={() => undefined}
+      mode={mode}
+      dirty={dirty}
+      saving={saving}
+      readOnly={!canEdit}
+      onEdit={() => void startEdit()}
+      onSave={() => void save()}
+      onCancel={cancelEdit}
       onRefresh={() => void refresh()}
       menu={{
         label: 'Hành động',
@@ -92,8 +219,14 @@ function ParentView({ record }: { record: ParentRecord }) {
           {
             kind: 'action',
             label: 'Sửa',
-            onSelect: () => undefined,
-            unavailable: 'Màn Sửa phụ huynh (KH-03) làm sau',
+            onSelect: () => void startEdit(),
+            ...(canEdit
+              ? {}
+              : {
+                  unavailable: merged
+                    ? 'Hồ sơ đã gộp chỉ xem được'
+                    : 'Bạn không có quyền sửa phụ huynh',
+                }),
           },
           {
             kind: 'action',
@@ -192,13 +325,45 @@ function ParentView({ record }: { record: ParentRecord }) {
       />
       {tab === 'overview' && (
         <DetailSection title="Thông tin phụ huynh">
-          <DetailField mode="view" label="Họ tên" value={record.full_name} />
-          <DetailField mode="view" label="Số điện thoại" value={record.phone} />
-          <DetailField mode="view" label="Số điện thoại 2" value={record.phone_2 ?? ''} />
-          <DetailField mode="view" label="Người thân" value={record.relative_name ?? ''} />
-          <DetailField mode="view" label="Phường/Xã" value={record.ward_name ?? ''} />
-          <DetailField mode="view" label="Tỉnh/Thành phố" value={record.province_name ?? ''} />
-          <DetailField mode="view" label="Địa chỉ" value={record.address ?? ''} />
+          {text('full_name', 'Họ tên', true)}
+          {text('phone', 'Số điện thoại', true)}
+          {text('phone_2', 'Số điện thoại 2')}
+          {text('relative_name', 'Người thân')}
+          <DetailField
+            mode={mode}
+            label="Tỉnh/Thành phố"
+            value={record.province_name ?? ''}
+            editor={
+              <OptionalSelect
+                label="Tỉnh/Thành phố"
+                value={draft.province_code}
+                onChange={(v) => setDraft((d) => ({ ...d, province_code: v, ward_code: '' }))}
+                options={catalogs.options('PROVINCE', draft.province_code || undefined)}
+                placeholder="Chọn tỉnh/thành phố"
+              />
+            }
+          />
+          <DetailField
+            mode={mode}
+            label="Phường/Xã"
+            value={record.ward_name ?? ''}
+            editor={
+              <OptionalSelect
+                label="Phường/Xã"
+                value={draft.ward_code}
+                onChange={(v) => set('ward_code', v)}
+                options={catalogs.childrenOf(
+                  'WARD',
+                  'PROVINCE',
+                  draft.province_code,
+                  draft.ward_code || undefined,
+                )}
+                placeholder="Chọn phường/xã"
+                disabled={draft.province_code === ''}
+              />
+            }
+          />
+          {text('address', 'Địa chỉ')}
           <DetailField
             mode="view"
             label="Cơ sở tiếp nhận"

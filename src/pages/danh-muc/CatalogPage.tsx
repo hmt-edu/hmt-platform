@@ -1,6 +1,6 @@
 // QT-06 Danh mục (cột trái: danh sách danh mục, tìm theo tên) và QT-07 (bảng bên phải: sửa các mục), khuôn K10. Canvas bổ sung v2 `1794108604-3066`.
 // Ba kiểu danh mục: Mở (thêm, đổi tên, đổi thứ tự ▲▼, Ngừng, Dùng lại), Khoá (chỉ đổi tên: Giai đoạn lead, Giai đoạn cơ hội và nhóm con; R-V2-42),
-// Chỉ xem (Tỉnh, phường nạp từ file chuẩn; Q-110). Mã không đổi, không xoá. Nút Lịch sử thay đổi vẽ mờ: Nhật ký (QT-11) chưa dựng.
+// Chỉ xem (Tỉnh, phường nạp từ file chuẩn; Q-110). Mã không đổi, không xoá. Nút Lịch sử thay đổi mở hộp lịch sử của danh mục đang chọn (nhật ký QT-11).
 // Luật và quyền do hàm DB kiểm; giao diện chỉ ẩn nút cho đúng kiểu danh mục.
 import { useMemo, useState } from 'react';
 import { errorOf, useDb } from '../../lib/db';
@@ -29,6 +29,7 @@ import {
   SESSION_TYPE_CATALOG,
   sessionFormLabel,
 } from './catalogLogic';
+import { CatalogHistoryDialog } from './CatalogHistoryDialog';
 import {
   AddItemDialog,
   EditSessionFormDialog,
@@ -79,6 +80,7 @@ export function CatalogPage() {
   const typeForms = useSessionTypeForms();
   const formOf = (code: string) => typeForms.data?.find((f) => f.type_code === code)?.form_code;
   const [stopping, setStopping] = useState<CatalogNode | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const done = (message: string) => {
@@ -101,8 +103,7 @@ export function CatalogPage() {
     <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-h1">Danh mục</h1>
-        {/* Nhật ký (QT-11) chưa dựng: nút vẽ mờ như khung QT07. */}
-        <Button icon="history" disabled>
+        <Button icon="history" disabled={selected === null} onClick={() => setHistoryOpen(true)}>
           Lịch sử thay đổi
         </Button>
       </div>
@@ -160,6 +161,12 @@ export function CatalogPage() {
           )}
         </section>
       </div>
+      <CatalogHistoryDialog
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        rootCode={selectedCode}
+        rootLabel={selected ? rootLabel(selected.code, selected.name) : ''}
+      />
       <AddItemDialog target={adding} onOpenChange={(o) => !o && setAdding(null)} onDone={done} />
       <RenameItemDialog
         node={renaming}

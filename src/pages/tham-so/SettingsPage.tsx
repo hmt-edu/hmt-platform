@@ -1,7 +1,7 @@
 // QT-09 Cài đặt tham số nghiệp vụ, khuôn K10 (nhóm bên trái, bảng tham số bên phải). Canvas bổ sung v2 `1794124725-dc47` (QT09_*), chỉ Admin, chỉ máy tính.
 // Sửa: ô nhập có kiểm khoảng ngay (nút Lưu khoá khi ngoài khoảng), bấm Lưu thì hộp xác nhận giá trị cũ → mới. Ghi đè theo cơ sở chỉ ở tham số cho phép.
 // VÊNH CANVAS (ghi ở PR): canvas vẽ 26 tham số / 8 nhóm theo spec 06 §2; DB có đủ tham số nên màn hiện TẤT CẢ, nhóm theo module của tham số.
-// Chưa làm: tab Lịch sử (QT09_lich_su) chờ Nhật ký (QT-11), nút vẽ mờ như màn Danh mục.
+// Lịch sử thay đổi (QT09_lich_su): nút «Lịch sử» ở mỗi dòng xem một tham số; nút ở đầu trang xem mọi tham số (canvas chỉ vẽ hộp theo một tham số). Dữ liệu từ nhật ký (QT-11).
 import { useMemo, useState } from 'react';
 import { errorOf, useDb } from '../../lib/db';
 import { useAccess } from '../../nav/AccessContext';
@@ -14,6 +14,7 @@ import { Field, TextField } from '../../ui/Field';
 import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { Select } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
+import { SettingHistoryDialog } from './SettingHistoryDialog';
 import {
   buildGroups,
   formatSetting,
@@ -46,6 +47,8 @@ export function SettingsPage() {
   const [search, setSearch] = useState('');
   const [picked, setPicked] = useState<string | null>(null);
   const [editing, setEditing] = useState<Target | null>(null);
+  // Hộp lịch sử: một tham số, 'all' = mọi tham số, null = đóng.
+  const [history, setHistory] = useState<SettingDef | 'all' | null>(null);
   const [confirming, setConfirming] = useState<(Target & { next: string }) | null>(null);
   const [busy, setBusy] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -142,19 +145,23 @@ export function SettingsPage() {
       header: 'Thao tác',
       headerSrOnly: 'Thao tác',
       width: 'w-48',
-      cell: (d) =>
-        canEdit ? (
-          <div className="flex flex-wrap gap-1">
+      cell: (d) => (
+        <div className="flex flex-wrap gap-1">
+          {canEdit && (
             <Button variant="text" onClick={() => setEditing({ def: d, branchId: null })}>
               Sửa
             </Button>
-            {d.allow_branch_override && (
-              <Button variant="text" onClick={() => setEditing({ def: d, branchId: '' })}>
-                Ghi đè cơ sở
-              </Button>
-            )}
-          </div>
-        ) : null,
+          )}
+          {canEdit && d.allow_branch_override && (
+            <Button variant="text" onClick={() => setEditing({ def: d, branchId: '' })}>
+              Ghi đè cơ sở
+            </Button>
+          )}
+          <Button variant="text" onClick={() => setHistory(d)}>
+            Lịch sử
+          </Button>
+        </div>
+      ),
     },
   ];
 
@@ -162,8 +169,7 @@ export function SettingsPage() {
     <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-h1">Cài đặt tham số nghiệp vụ</h1>
-        {/* Lịch sử thay đổi cần Nhật ký (QT-11), chưa dựng: nút vẽ mờ như màn Danh mục. */}
-        <Button icon="history" disabled>
+        <Button icon="history" onClick={() => setHistory('all')}>
           Lịch sử thay đổi
         </Button>
       </div>
@@ -249,6 +255,12 @@ export function SettingsPage() {
           )}
         </section>
       </div>
+      <SettingHistoryDialog
+        open={history !== null}
+        onOpenChange={(o) => !o && setHistory(null)}
+        target={history === 'all' ? null : history}
+        defs={defs.data ?? []}
+      />
       {editing && (
         <EditDialog
           key={`${editing.def.key}:${editing.branchId ?? ''}`}

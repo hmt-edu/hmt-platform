@@ -149,3 +149,27 @@ export const SESSION_TYPE_CATALOG = 'SESSION_TYPE';
 export function sessionFormLabel(formCode: string | undefined): string {
   return formCode === 'DIEM' ? 'Form điểm' : '9 tiêu chí';
 }
+
+/** Một dòng lịch sử sửa mục danh mục (khớp app.list_catalog_history, migration 481). changes: {"cột": [cũ, mới]} chỉ gồm name, is_active, sort_order. */
+export type CatalogHistoryRow = {
+  id: number;
+  at: string;
+  catalog_code: string;
+  item_code: string;
+  item_name: string;
+  action: 'I' | 'U';
+  changes: Record<string, [unknown, unknown]> | null;
+  actor_name: string | null;
+};
+export type CatalogHistoryPage = { total: number; rows: CatalogHistoryRow[] };
+
+/** Câu mô tả lần sửa: tạo mục, đổi tên "cũ → mới", Ngừng, Dùng lại, đổi thứ tự (nhiều thay đổi nối bằng "; "). */
+export function describeCatalogChange(row: Pick<CatalogHistoryRow, 'action' | 'changes'>): string {
+  if (row.action === 'I') return 'Thêm mục';
+  const c = row.changes ?? {};
+  const parts: string[] = [];
+  if (c.name) parts.push(`Đổi tên: ${String(c.name[0])} → ${String(c.name[1])}`);
+  if (c.is_active) parts.push(c.is_active[1] === false ? 'Ngừng' : 'Dùng lại');
+  if (c.sort_order) parts.push('Đổi thứ tự');
+  return parts.length > 0 ? parts.join('; ') : '—';
+}
