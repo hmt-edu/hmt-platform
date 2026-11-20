@@ -35,7 +35,7 @@ export function ClassPicker({
   allowLater?: boolean;
   laterLabel?: string;
   /** Hình thức học của ghi danh: lớp lệch hình thức chỉ hiện cảnh báo, không chặn. */
-  enrollMode?: string | null;
+  enrollMode?: string | null | undefined;
 }) {
   const chosen = classes.find((c) => c.id === value.classId) ?? null;
   return (

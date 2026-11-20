@@ -586,6 +586,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                 packageName: l.package_name,
                 studentName: l.student_name ?? null,
                 branchId: record.branch_id,
+                deliveryModeCode: l.delivery_mode_code,
                 current: lineClasses[l.line_no]
                   ? {
                       classId: lineClasses[l.line_no]?.class_id ?? '',
