@@ -1,4 +1,4 @@
--- KHO #19 (migration 571): Group By ở máy chủ cho KH-01 Phụ huynh (app.parent_group_counts) và CS-01 Ticket (app.ticket_group_counts, app.ticket_filter_rows, bộ lọc mới của list_tickets).
+-- KHO #19 (migration 575): Group By ở máy chủ cho KH-01 Phụ huynh (app.parent_group_counts) và CS-01 Ticket (app.ticket_group_counts, app.ticket_filter_rows, bộ lọc mới của list_tickets).
 -- Luật: R-CRM-27 (phụ huynh chỉ xem, quyền «Phụ huynh · Xem»), AS-07 (bộ lọc hạn xử lý), RLS ticket theo cơ sở, Group By tối đa hai cấp khác nhau (K1_nhom). Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
