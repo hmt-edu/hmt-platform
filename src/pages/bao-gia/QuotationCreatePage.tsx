@@ -6,7 +6,7 @@ import { flushSync } from 'react-dom';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
-import { HmtError, errorOf, useDb } from '../../lib/db';
+import { HmtError, errorOf, useDb, useIntSetting } from '../../lib/db';
 import { useAuth } from '../../lib/auth/authContext';
 import { formatDate } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
@@ -115,6 +115,7 @@ function CreateForm({
   const toast = useToast();
   const { claims } = useAuth();
   const catalogs = useLeadCatalogs();
+  const validityDays = useIntSetting('quotation_validity_days'); // hạn hiệu lực báo giá (R-TIEN-05), khung BH02: «N ngày kể từ ngày Gửi»
   const refreshList = useRefreshQuotations();
   const students = useOpportunityStudents(opportunityId, true);
   const discountPolicies = useDiscountPolicies(opportunityId, true);
@@ -235,7 +236,13 @@ function CreateForm({
                 mode="view"
                 value={formatDate(new Date().toISOString())}
               />
-              <DetailField label="Hạn hiệu lực" mode="view" value="tính từ ngày Gửi" />
+              <DetailField
+                label="Hạn hiệu lực"
+                mode="view"
+                value={
+                  validityDays === null ? 'tính từ ngày Gửi' : `${validityDays} ngày kể từ ngày Gửi`
+                }
+              />
               <DetailField label="Người lập" mode="view" value={claims?.name ?? ''} />
             </dl>
           </div>
