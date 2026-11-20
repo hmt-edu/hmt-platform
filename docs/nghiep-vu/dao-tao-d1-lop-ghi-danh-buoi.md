@@ -212,3 +212,5 @@ Chưa làm: sửa điểm sau Done (qua ticket, chỉ quản lý đào tạo), �
 - **Xem trước ngày kết thúc dự kiến**: `preview_class_end_date` (security definer, chỉ đọc) tính từ khung giờ đang nhập, dùng `class_normalize_slots` và `compute_class_schedule` như lúc sinh buổi nên bỏ cả ngày nghỉ lễ (R-LOP-12). Trả null khi chưa có khung giờ hoặc số buổi; khung sai báo lỗi có mã như lúc lưu.
 - Luật R-LOP-14 «kiểm môn theo khối khi tạo lớp» CHƯA quyết, không làm.
 - Kiểm thử: pgTAP `574_lop02_03_hinh_thuc_hoc_xem_truoc.test.sql`; Vitest `classForm.test.ts`, `enrollLogic.test.ts`; e2e `lop.spec.ts`.
+
+- **R-LOP-14 kiểm môn theo khối (migration 589)**: `create_class` chặn khi tham số `class_subject_grade_check_enabled` bật: khối từ `algebra_geometry_split_grade` trở lên không tạo lớp chung `TOAN`, khối dưới không tạo `DAI`, `HINH`, lớp riêng `LR` được miễn; lỗi `HMT_LOP_MON_SAI_KHOI`. Mặc định TẮT, Admin bật khi go-live. Kiểm thử pgTAP `589_rlop14_kiem_mon_theo_khoi.test.sql`.
