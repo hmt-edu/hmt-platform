@@ -363,28 +363,30 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
           <DetailField
             label="Tài khoản nhận"
             hint="không bắt buộc"
-            mode="view"
+            mode={canSetAccount ? 'edit' : 'view'}
             value={record.receiving_account ?? '—'}
+            editor={
+              <Select
+                label="Tài khoản nhận"
+                value={record.receiving_account_code ?? ''}
+                placeholder="Chưa chọn"
+                onChange={(v) =>
+                  void run(
+                    'account',
+                    () => setReceiptAccount(supabase, record.id, v === NO_ACCOUNT ? null : v),
+                    'Đã lưu tài khoản nhận.',
+                  )
+                }
+                options={[
+                  ...(record.receiving_account_code
+                    ? [{ value: NO_ACCOUNT, label: 'Bỏ chọn' }]
+                    : []),
+                  ...catalogs.options('RECEIVING_ACCOUNT', record.receiving_account_code),
+                ]}
+                className="w-full"
+              />
+            }
           />
-          {canSetAccount && (
-            <Select
-              label="Chọn tài khoản nhận"
-              value={record.receiving_account_code ?? ''}
-              placeholder="Chưa chọn"
-              onChange={(v) =>
-                void run(
-                  'account',
-                  () => setReceiptAccount(supabase, record.id, v === NO_ACCOUNT ? null : v),
-                  'Đã lưu tài khoản nhận.',
-                )
-              }
-              options={[
-                ...(record.receiving_account_code ? [{ value: NO_ACCOUNT, label: 'Bỏ chọn' }] : []),
-                ...catalogs.options('RECEIVING_ACCOUNT', record.receiving_account_code),
-              ]}
-              className="w-full"
-            />
-          )}
           {/* Canvas TC02_duyet: «Duyệt bởi» = Kế toán duyệt phiếu, kèm ngày (sự kiện DUYET_KT gần nhất). */}
           {approvedBy && <DetailField label="Duyệt bởi" mode="view" value={approvedBy} />}
         </dl>
