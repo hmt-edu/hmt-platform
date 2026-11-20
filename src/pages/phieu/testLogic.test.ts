@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   ACTIONS_BY_STATUS,
   STEP_BACK_TARGET,
+  createTestText,
   defaultReminder,
   formatScore,
   parseScore,
@@ -92,5 +93,14 @@ describe('điểm (R-CRM-10: 0–10, một chữ số thập phân)', () => {
   it('hiện điểm kiểu Việt Nam', () => {
     expect(formatScore(7.5)).toBe('7,5/10');
     expect(formatScore(null)).toBe('');
+  });
+});
+
+describe('chữ hộp Tạo phiếu kiểm tra (So canvas TS-15)', () => {
+  it('dòng gợi ý Người phụ trách và dòng nhắc bật nút Tạo phiếu đúng khung TS15_hop', () => {
+    expect(createTestText.ownerHelp).toBe(
+      'Mặc định là người tạo phiếu; nhận lịch hẹn nhắc và theo dõi lịch test.',
+    );
+    expect(createTestText.submitHint).toBe('Chọn Ngày test và Giờ test để bật nút Tạo phiếu.');
   });
 });
