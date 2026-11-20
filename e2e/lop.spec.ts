@@ -74,6 +74,9 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await expect(page.getByText(/CS5-\d{4}-/).first()).toBeVisible();
   await expect(page.getByText('Nháp').first()).toBeVisible();
   await expect(page.getByText('OMO').first()).toBeVisible();
+  // Canvas LOP05: câu theo tình trạng; Nháp có khung giờ thì «sửa được thông tin», lớp không thuộc nhóm có câu giải thích.
+  await expect(page.getByText('Lớp ở Nháp: sửa được thông tin.')).toBeVisible();
+  await expect(page.getByText('Lớp không thuộc nhóm nào.', { exact: false })).toBeVisible();
   await expect(page.getByText('Học chung').first()).toBeVisible();
   // Chi tiết lớp theo khuôn chung: Time Table 7 tab theo thứ; Học sinh và Buổi học là tab có bảng riêng.
   await expect(page.getByRole('tab', { name: /^Thứ 3/ })).toBeVisible();
@@ -94,6 +97,9 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await page.getByRole('button', { name: 'Trình', exact: true }).click();
   await expect(page.getByText('Trình xong.').first()).toBeVisible();
   await expect(page.getByText('Đã trình').first()).toBeVisible();
+  await expect(
+    page.getByText('Lớp đã trình, đang chờ quản lý cơ sở xác nhận.', { exact: false }),
+  ).toBeVisible();
 
   await page.getByRole('button', { name: 'Hành động' }).click();
   await page.getByRole('menuitem', { name: 'Huỷ lớp' }).click();
