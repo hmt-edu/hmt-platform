@@ -34,6 +34,7 @@ export function buildPackageCode(d: PackageDraft): string {
 export const packageDialogText = {
   editTitle: (code: string) => `Sửa gói ${code}`,
   codeHelp: 'Mã không đổi được.',
+  legacyCreateHelp: 'Không bắt buộc. Mã cũ trên Sheet, dùng để tìm kiếm.',
   legacyHelp: 'Mã cũ trên Sheet, dùng để tìm kiếm. Sửa được; mã gói vẫn khoá.',
   nameHelp: 'Đổi tên không đổi mã.',
   stopTitle: (code: string) => `Ngừng bán gói ${code}?`,

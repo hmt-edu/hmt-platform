@@ -160,15 +160,16 @@ function CreateForm({ open, onOpenChange, types, subjects, grades, onDone }: Cre
           help="Tự tạo theo Loại-Môn-Khối, không sửa được."
         />
         <TextField
+          label="Mã cũ (Sheet)"
+          value={legacy}
+          onChange={(e) => setLegacy(e.target.value)}
+          help={packageDialogText.legacyCreateHelp}
+        />
+        <TextField
           label="Tên gói"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-        />
-        <TextField
-          label="Mã cũ (Sheet)"
-          value={legacy}
-          onChange={(e) => setLegacy(e.target.value)}
         />
         <p className="text-caption text-fg-muted">
           Giá offline, online đặt ở Bảng giá có ngày hiệu lực. Số giờ nhập khi lập dòng đơn, không
