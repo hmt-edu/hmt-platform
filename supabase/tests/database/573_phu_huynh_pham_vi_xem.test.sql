@@ -1,4 +1,4 @@
--- Rà security definer cụm 2: list_parents, get_parent_record theo phạm vi Xem phụ huynh (migration 572; R-CRM-26, chính sách parent_read).
+-- Rà security definer cụm 2: list_parents, get_parent_record theo phạm vi Xem phụ huynh (migration 573; R-CRM-26, chính sách parent_read).
 begin;
 update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
 create extension if not exists pgtap with schema extensions;
