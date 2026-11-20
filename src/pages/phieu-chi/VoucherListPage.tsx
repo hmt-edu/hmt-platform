@@ -1,5 +1,6 @@
 // TC-10 Phiếu chi (danh sách): khuôn K03 nối list_payment_vouchers. Lọc, phân trang làm ở máy chủ. Không có nút Tạo (R-TIEN-34).
 import { useMemo, useState } from 'react';
+import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
@@ -87,6 +88,7 @@ export function VoucherListPage() {
       rowLabel={(r) => `${r.code} ${r.parent_name}`}
       loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
+      forbidden={listForbiddenOf(activeQuery.error, 'phiếu chi', 'Bán hàng và thu chi')}
       onRetry={() => void activeQuery.refetch()}
       groupTree={grouped ? grouping?.tree : undefined}
       onGroupToggle={(key, open) => {
