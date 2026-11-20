@@ -1,5 +1,5 @@
 begin;
--- Migration 590: tạo phiếu kiểm tra chọn em trong danh sách em của cơ hội (app.create_student_test, p_data.prospect_student_id; TS-15).
+-- Migration 595: tạo phiếu kiểm tra chọn em trong danh sách em của cơ hội (app.create_student_test, p_data.prospect_student_id; TS-15).
 -- Luật: R-CRM-23 (phiếu chọn em trong danh sách của cơ hội), R-CRM-27 (hồ sơ học sinh tìm hoặc tạo từ em), R-CRM-05 (L5 trở đi). Dữ liệu giả.
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -58,7 +58,7 @@ select pg_temp.sudo($$create function pg_temp.em(p_phone text, p_pos integer) re
 select pg_temp.sudo($$create function pg_temp.td(p_extra jsonb default '{}'::jsonb) returns jsonb language sql stable as
   'select jsonb_build_object(''subject_code'', ''TOAN'', ''grade_code'', (select code from app.catalog_item where catalog_code = ''GRADE'' order by sort_order limit 1),
      ''mode_code'', ''OFFLINE'', ''level_code'', ''CO_BAN'', ''exam_name'', ''Toán cơ bản'', ''scheduled_at'', now() + interval ''3 days'') || p_extra'$$);
-select pg_temp.sudo($$create function pg_temp.test_em(p_test_id uuid) returns uuid language sql stable security definer as
+select pg_temp.sudo($$create function pg_temp.test_em(p_test_id uuid) returns uuid language sql security definer as
   'select prospect_student_id from app.student_test where id = p_test_id'$$);
 select pg_temp.sudo($$grant execute on function pg_temp.oid(text), pg_temp.em(text, integer), pg_temp.td(jsonb), pg_temp.test_em(uuid) to public$$);
 select app.change_opportunity_stage(pg_temp.oid('0900590001'), 'L5');
