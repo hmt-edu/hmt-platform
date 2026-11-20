@@ -42,3 +42,19 @@ Hiện trạng: nhóm lớp đã có (bảng `app.class_group`, cột `app.class
 | 4 | «Xem trước ngày kết thúc dự kiến» ở form Tạo/sửa lớp (số buổi theo khung, bỏ ngày nghỉ lễ, R-LOP-09, R-LOP-12). | A. Hàm đọc mới tính từ khung giờ đang nhập (chưa lưu). B. Chỉ hiện sau khi Lưu nháp (dùng ngày đã sinh). | **A** | A: một hàm đọc `security definer`, không đổi bảng, một migration nhẹ + pgTAP. B: không migration nhưng không «xem trước» đúng nghĩa. |
 
 Ghi chú: «kiểm môn theo khối khi tạo lớp» (R-LOP-14, [CHỜ anh quyết]) vẫn chưa quyết, không gộp vào bốn câu trên.
+
+## KH-07 Gộp phụ huynh / học sinh trên bản ghi: câu hỏi luật cho anh Trường (Code F, 20/11/2026, rủi ro CAO: tiền, điểm danh)
+
+**Hiện trạng (đã đọc code):** DB có `merge_parents`, `merge_students` nhưng chỉ chuyển lead, cơ hội, học sinh, phiếu kiểm tra, ghi chú. R-CRM-25 nói bản giữ lại phải nhận cả đơn và ghi danh. Các bảng về sau đã có cột `parent_id` hoặc `student_id` mà hàm gộp chưa chuyển: báo giá, đơn, phiếu thu, ghi danh, số dư khách hàng, hoàn phí, bảo lưu, chuyển lớp, điểm danh và điểm, BTVN, ticket, buổi học thử. Nếu gộp ngay hôm nay thì đơn, ghi danh của hồ sơ bị gộp vẫn trỏ về hồ sơ «Đã gộp» (chỉ đọc). Hộp so sánh (`merge_candidates`, `merge_side`, `merge_items`) mới hỗ trợ lead, cơ hội; canvas có 24 khung KH07_* (trùng, chặn, khác cơ sở, tải).
+
+**Câu 1. Gộp có chuyển cả dữ liệu tiền và ghi danh không?**
+- A (khuyến nghị): chuyển TOÀN BỘ bảng có khoá phụ huynh/học sinh, kể cả tiền; trong cùng giao dịch kiểm tổng số dư và công nợ trước = sau, lệch thì huỷ gộp. Hệ quả: đúng R-CRM-25, không còn hồ sơ mồ côi; PR DB rủi ro cao, cần Tester ĐẠT và pgTAP kiểm tổng tiền.
+- B: chỉ chuyển như hiện nay, chặn gộp nếu hồ sơ bị gộp đã có đơn hoặc ghi danh. Hệ quả: an toàn, nhưng trùng hồ sơ đã mua hàng thì không bao giờ gộp được.
+
+**Câu 2. Điều kiện chặn (R-CRM-25 còn [CHỜ]).**
+- A (khuyến nghị): chặn khi (i) hai học sinh cùng có ghi danh còn hiệu lực ở cùng một lớp, hoặc (ii) hai học sinh đang học hai lớp trùng giờ; còn lại cho gộp. Hệ quả: gộp được hầu hết trùng nhập nhầm; hai ca chặn xử lý tay qua ticket.
+- B: chặn thêm khi hai hồ sơ khác cơ sở tiếp nhận (phải đi qua ticket Chuyển cơ sở trước). Hệ quả: chặt hơn, đúng R-CRM-28, thêm một bước cho Sale.
+
+**Câu 3. Ai làm?** Khuyến nghị giao Code F làm cả DB lẫn giao diện (đã quen hộp MergeDialog) nhưng Code A và Code C soát phần ghi danh và tiền trước khi gộp; hoặc giao Code C làm phần tiền. Ai được bấm Gộp: khuyến nghị theo quyền Gộp đã có ở lead (không thêm quyền mới).
+
+Làm xong khi anh chốt: PR DB (migration dải 550–599, pgTAP đúng và bị chặn) rồi PR giao diện (nút Gộp ở KH-02, KH-05). Chưa code gì cho tới khi có câu trả lời.
