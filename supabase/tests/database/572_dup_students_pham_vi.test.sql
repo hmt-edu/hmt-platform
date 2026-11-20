@@ -49,7 +49,7 @@ reset role;
 
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 set local role authenticated;
-select is((select student_codes::text from app.duplicate_students_of_parent((select p from ids))), '{HSDUP711,HSDUP712}',
+select is((select (select array_agg(x order by x) from unnest(student_codes) x)::text from app.duplicate_students_of_parent((select p from ids))), '{HSDUP711,HSDUP712}',
           'Admin (toàn hệ thống) vẫn thấy đủ hai mã học sinh trùng');
 reset role;
 
