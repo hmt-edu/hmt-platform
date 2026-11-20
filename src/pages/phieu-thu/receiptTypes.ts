@@ -99,6 +99,9 @@ export type ReceiptRecord = {
   payment_method_code: string;
   payment_method: string | null;
   txn_ref: string | null;
+  /** Tài khoản nhận tiền (danh mục RECEIVING_ACCOUNT, tuỳ chọn; migration 582) và tên hiển thị. */
+  receiving_account_code?: string | null;
+  receiving_account?: string | null;
   paid_on: string;
   note: string | null;
   target_line_id: string | null;
