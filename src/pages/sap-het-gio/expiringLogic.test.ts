@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { dateText, hoursText, statusName, statusTone } from './expiringLogic';
+import {
+  dateText,
+  expiringIntro,
+  hoursText,
+  noUpsaleText,
+  statusName,
+  statusTone,
+} from './expiringLogic';
 
 describe('GD-07 expiringLogic', () => {
   it('tên và màu tình trạng', () => {
@@ -18,5 +25,23 @@ describe('GD-07 expiringLogic', () => {
     expect(hoursText(3)).toBe('3');
     expect(hoursText(2.5)).toBe('2,5');
     expect(hoursText(0)).toBe('0');
+  });
+});
+
+describe('GD-07 câu theo canvas', () => {
+  it('Hết giờ chưa có phiếu: chờ đợt quét đêm; trạng thái khác gạch ngang', () => {
+    expect(noUpsaleText('HET_GIO')).toBe('Chưa có phiếu · chờ đợt quét đêm');
+    expect(noUpsaleText('SAP_HET_GIO')).toBe('—');
+  });
+  it('câu giới thiệu lấy ngưỡng từ tham số, không viết cứng', () => {
+    const t = expiringIntro(7, 21, '20/11/2026');
+    expect(t).toContain('≤ 7 giờ');
+    expect(t).toContain('≤ 21 ngày');
+    expect(t).toContain('20/11/2026');
+  });
+  it('chưa đọc được tham số thì chỉ còn câu đầu', () => {
+    expect(expiringIntro(null, 30, 'x')).toBe(
+      'Mỗi dòng là một học sinh trong một lớp; giờ còn là tổng các ghi danh còn hiệu lực.',
+    );
   });
 });
