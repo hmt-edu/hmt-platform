@@ -253,6 +253,60 @@ test('Danh mục nhiều cấp (Loại nguồn): Thêm nguồn ở một loại,
   await expect(row).toContainText('Ngừng');
 });
 
+// So canvas QT07_lien_ket_xem, QT07_them_muc_lien_ket(_chua_chon) (Design đợt 2, migration 594): Lý do huỷ test có cột «Nối nhóm con» và ô «Nối nhóm con» bắt buộc chọn.
+test('Lý do huỷ test: cột Nối nhóm con; thêm mục bắt buộc chọn nhóm con hoặc «Không nối nhóm con»', async ({
+  page,
+}) => {
+  test.setTimeout(120_000);
+  const code = `E2E${Date.now() % 1_000_000}`;
+  await open(page);
+  await pick(page, /^Lý do huỷ test/);
+  await expect(panel(page).getByRole('columnheader', { name: /Nối nhóm con/ })).toBeVisible();
+  await expect(
+    panel(page)
+      .getByText(/L5C · /)
+      .first(),
+  ).toBeVisible();
+  await expect(panel(page).getByText('Mục nối không đổi được sau khi tạo.')).toBeVisible();
+  await panel(page).getByRole('button', { name: 'Thêm mục' }).click();
+  const add = page.getByRole('dialog', { name: 'Thêm mục · Lý do huỷ test' });
+  await add.getByLabel('Mã', { exact: true }).fill(code);
+  await add.getByLabel('Tên hiển thị').fill('Lý do thử e2e');
+  // Chưa chọn nối: báo câu của khung, nút Thêm mục mờ.
+  await expect(add.getByText('Chọn một nhóm con, hoặc «Không nối nhóm con».')).toBeVisible();
+  await expect(add.getByRole('button', { name: 'Thêm mục' })).toBeDisabled();
+  // Ô chọn có «Không nối nhóm con» và chỉ L5C–L5O (không L5A, L5B, L5P, L5Q).
+  await add.getByRole('combobox', { name: 'Nối nhóm con (Giai đoạn cơ hội)' }).click();
+  await expect(page.getByRole('option', { name: 'Không nối nhóm con' })).toBeVisible();
+  await expect(page.getByRole('option', { name: /^L5C · / })).toBeVisible();
+  await expect(page.getByRole('option', { name: /^L5(A|B|P|Q) · / })).toHaveCount(0);
+  await page.getByRole('option', { name: 'Không nối nhóm con' }).click();
+  await expect(add.getByRole('button', { name: 'Thêm mục' })).toBeEnabled();
+  await add.getByRole('button', { name: 'Thêm mục' }).click();
+  await expect(page.getByText(`Đã thêm mục ${code}.`).first()).toBeVisible();
+  await expect(panel(page).getByRole('row').filter({ hasText: code })).toContainText(
+    'Không nối nhóm con',
+  );
+  const linked = await sql<{ linked_item_id: string | null }>(
+    "select linked_item_id from app.catalog_item where catalog_code = 'TEST_CANCEL_REASON' and code = $1",
+    [code],
+  );
+  expect(linked[0]?.linked_item_id).toBeNull();
+});
+
+// So canvas QT06_tim_khong_thay (Design đợt 2): tìm không có kết quả hiện câu của khung và nút Xoá ô tìm.
+test('Tìm danh mục không thấy: câu «Không có danh mục nào khớp», Xoá ô tìm trả lại danh sách', async ({
+  page,
+}) => {
+  await open(page);
+  await nav(page).getByRole('textbox', { name: 'Tìm danh mục' }).fill('xyzxyz');
+  await expect(nav(page).getByText('Không có danh mục nào khớp «xyzxyz»')).toBeVisible();
+  await expect(nav(page).getByText('Thử tên khác hoặc xoá ô tìm.')).toBeVisible();
+  await expect(panel(page).getByText('Chưa chọn danh mục')).toBeVisible();
+  await nav(page).getByRole('button', { name: 'Xoá ô tìm' }).click();
+  await expect(nav(page).getByRole('button', { name: /^Loại hoạt động/ })).toBeVisible();
+});
+
 // E26: kiểm trợ năng (axe) cho hai màn Nhật ký của Quản trị, cùng tệp (cùng worker, nối tiếp) để không tranh thiết bị hai bước của quantri.cs5.
 test('QT-11 Nhật ký thao tác: mở được và đạt kiểm trợ năng', async ({ page }) => {
   await enterAsAdmin(page, 'quantri.cs5');

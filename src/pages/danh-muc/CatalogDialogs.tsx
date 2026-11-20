@@ -8,12 +8,19 @@ import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
 import { Field, TextField } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
 import { Select } from '../../ui/Overlays';
-import { addInputErrors, type CatalogNode } from './catalogLogic';
+import {
+  addInputErrors,
+  LINK_REQUIRED_TEXT,
+  LINKED_CATALOG_CODE,
+  NO_LINK,
+  type CatalogNode,
+} from './catalogLogic';
 import {
   addCatalogItem,
   renameCatalogItem,
   setCatalogItemActive,
   setSessionTypeForm,
+  useTestCancelLinkOptions,
 } from './useCatalogData';
 
 function useRun(onOpenChange: (open: boolean) => void, onDone: (message: string) => void) {
@@ -83,6 +90,9 @@ function AddForm({
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [parentId, setParentId] = useState(target.parent?.id ?? '');
+  const [link, setLink] = useState('');
+  const needsLink = target.catalogCode === LINKED_CATALOG_CODE;
+  const linkOptions = useTestCancelLinkOptions(needsLink);
   const { busy, error, run } = useRun(onOpenChange, onDone);
   const child = target.parents.length > 0;
   const errors = addInputErrors(code);
@@ -94,7 +104,11 @@ function AddForm({
       title={title}
       confirmLabel={`Thêm ${target.levelName}`}
       canSubmit={
-        code.trim() !== '' && name.trim() !== '' && !errors.code && (!child || parentId !== '')
+        code.trim() !== '' &&
+        name.trim() !== '' &&
+        !errors.code &&
+        (!child || parentId !== '') &&
+        (!needsLink || link !== '')
       }
       busy={busy}
       error={error}
@@ -107,6 +121,9 @@ function AddForm({
               name,
               parent_id: child ? parentId : null,
               sort_order: null,
+              ...(needsLink
+                ? { linked_item_id: link === NO_LINK ? null : link, no_link: link === NO_LINK }
+                : {}),
             }),
           `Đã thêm ${target.levelName} ${code.trim().toUpperCase()}.`,
         )
@@ -153,6 +170,37 @@ function AddForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
+        {needsLink && (
+          <Field
+            label="Nối nhóm con (Giai đoạn cơ hội)"
+            required
+            help="Bắt buộc chọn. Chọn «Không nối nhóm con» chỉ cho lý do không đổi giai đoạn, như «Tạo phiếu sai». Không đổi được sau khi tạo."
+            error={
+              link === '' && code.trim() !== '' && name.trim() !== ''
+                ? LINK_REQUIRED_TEXT
+                : undefined
+            }
+          >
+            {(field) => (
+              <Select
+                id={field.id}
+                label="Nối nhóm con (Giai đoạn cơ hội)"
+                value={link}
+                onChange={setLink}
+                placeholder="Chọn nhóm con"
+                requiredEmpty={link === ''}
+                invalid={link === '' && code.trim() !== '' && name.trim() !== ''}
+                options={[
+                  { value: NO_LINK, label: 'Không nối nhóm con' },
+                  ...(linkOptions.data ?? []).map((o) => ({
+                    value: o.id,
+                    label: `${o.code} · ${o.name}`,
+                  })),
+                ]}
+              />
+            )}
+          </Field>
+        )}
       </div>
     </FormDialog>
   );

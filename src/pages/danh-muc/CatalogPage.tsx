@@ -8,10 +8,10 @@ import { foldText } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { cn } from '../../ui/cn';
 import { useAccess } from '../../nav/AccessContext';
-import { Button, IconButton } from '../../ui/Button';
-import { Tag } from '../../ui/Data';
+import { Button, ButtonLink, IconButton } from '../../ui/Button';
+import { Skeleton, Tag } from '../../ui/Data';
 import { LineTable, type LineColumn } from '../../ui/LineTable';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Alert, StateView } from '../../ui/Feedback';
 import { TextField } from '../../ui/Field';
 import { useToast } from '../../ui/toastContext';
 import {
@@ -27,6 +27,8 @@ import {
   type CatalogTree,
   type TreeRow,
   SESSION_TYPE_CATALOG,
+  LINKED_CATALOG_CODE,
+  linkedLabel,
   sessionFormLabel,
 } from './catalogLogic';
 import { CatalogHistoryDialog } from './CatalogHistoryDialog';
@@ -99,6 +101,25 @@ export function CatalogPage() {
     }
   };
 
+  // Khung QT06_khong_quyen: chỉ Admin xem danh mục (máy chủ trả HMT_KHONG_CO_QUYEN).
+  const denied =
+    summary.isError && /HMT_KHONG_CO_QUYEN|Chỉ quản trị viên/.test(errorOf(summary.error).message);
+  if (denied) {
+    return (
+      <StateView
+        kind="forbidden"
+        title="Bạn không có quyền xem Danh mục"
+        actions={
+          <ButtonLink to="/" variant="primary">
+            Về trang chủ
+          </ButtonLink>
+        }
+      >
+        Danh mục chỉ dành cho Admin. Nếu cần xem, hãy liên hệ quản trị viên của trung tâm.
+      </StateView>
+    );
+  }
+
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -144,6 +165,18 @@ export function CatalogPage() {
                 void act(node.id, () => moveCatalogItem(supabase, node.id, dir), 'Đã đổi thứ tự.')
               }
             />
+          ) : summary.isError ? (
+            <div className="p-4">
+              <StateView kind="empty" title="Chưa có danh mục nào được mở" headingLevel={2}>
+                Danh sách chưa tải được nên chưa chọn danh mục.
+              </StateView>
+            </div>
+          ) : !summary.isPending && selected === null ? (
+            <div className="p-4">
+              <StateView kind="empty" title="Chưa chọn danh mục" headingLevel={2}>
+                Chọn một danh mục ở cột trái để xem các mục.
+              </StateView>
+            </div>
           ) : tree.isError ? (
             <div className="p-4">
               <StateView
@@ -155,8 +188,11 @@ export function CatalogPage() {
               </StateView>
             </div>
           ) : (
-            <div className="p-4">
-              <Spinner label="Đang tải danh mục…" />
+            <div className="flex flex-col gap-3 p-4" role="status" aria-label="Đang tải danh mục">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
             </div>
           )}
         </section>
@@ -230,20 +266,36 @@ function CatalogList({
       </div>
       {error ? (
         <div className="p-3">
-          <StateView
-            kind="error"
-            title="Không tải được danh sách"
-            actions={<Button onClick={onRetry}>Thử lại</Button>}
+          <Alert
+            tone="danger"
+            title="Không tải được danh sách danh mục. Kiểm tra mạng rồi thử lại."
           >
             {error}
-          </StateView>
+          </Alert>
+          <div className="mt-2">
+            <Button onClick={onRetry}>Thử lại</Button>
+          </div>
         </div>
       ) : loading ? (
-        <div className="p-3">
-          <Spinner />
+        <div
+          className="flex flex-col gap-3 p-3"
+          role="status"
+          aria-label="Đang tải danh sách danh mục"
+        >
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
         </div>
       ) : list.length === 0 ? (
-        <div className="p-3 text-body text-fg-muted">Không có danh mục nào khớp.</div>
+        <StateView
+          kind="empty"
+          title={`Không có danh mục nào khớp «${search.trim()}»`}
+          headingLevel={2}
+          actions={<Button onClick={() => onSearch('')}>Xoá ô tìm</Button>}
+        >
+          Thử tên khác hoặc xoá ô tìm.
+        </StateView>
       ) : (
         <ul className="max-h-[70vh] overflow-y-auto border-t border-border">
           {list.map((c) => {
@@ -376,6 +428,19 @@ function CatalogPanel({
               </span>
             ),
           },
+          ...(tree.root.code === LINKED_CATALOG_CODE
+            ? [
+                {
+                  key: 'linked',
+                  header: 'Nối nhóm con (Giai đoạn cơ hội)',
+                  cell: (r: TreeRow) => (
+                    <span className={cn(!r.node.is_active && 'text-fg-label')}>
+                      {linkedLabel(r.node)}
+                    </span>
+                  ),
+                },
+              ]
+            : []),
           {
             key: 'order',
             header: 'Thứ tự',
@@ -498,6 +563,7 @@ function CatalogPanel({
         {mode === 'open' && !nested && (
           <p className="text-caption text-fg-muted">
             Không xoá mục: chỉ Ngừng. Mục Ngừng không hiện ở ô chọn mới, dữ liệu cũ vẫn giữ.
+            {tree.root.code === LINKED_CATALOG_CODE && ' Mục nối không đổi được sau khi tạo.'}
           </p>
         )}
       </div>
