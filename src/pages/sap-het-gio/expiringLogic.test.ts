@@ -13,6 +13,8 @@ describe('GD-07 expiringLogic', () => {
     expect(statusName('HET_GIO')).toBe('Hết giờ');
     expect(statusName('SAP_HET_GIO')).toBe('Sắp hết giờ');
     expect(statusName('QUA_HAN_CON_GIO')).toBe('Quá hạn gói, còn giờ');
+    expect(statusName('SAP_HET_HAN_GOI')).toBe('Sắp hết hạn gói');
+    expect(statusTone('SAP_HET_HAN_GOI')).toBe('warning');
     expect(statusTone('HET_GIO')).toBe('danger');
     expect(statusTone('SAP_HET_GIO')).toBe('warning');
     expect(statusTone('QUA_HAN_CON_GIO')).toBe('neutral');
