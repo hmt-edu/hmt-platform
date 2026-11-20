@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { IMPORT_KIND_ROWS, IMPORT_KINDS, kindConfig, sampleCsvText } from './importKinds';
+import {
+  columnRows,
+  IMPORT_KIND_ROWS,
+  IMPORT_KINDS,
+  kindConfig,
+  sampleCsvText,
+} from './importKinds';
 
 describe('Bảng chọn loại QT-18 (Q-209)', () => {
   it('đủ 8 loại theo thứ tự nạp đã chốt', () => {
@@ -55,5 +61,17 @@ describe('Tải file mẫu', () => {
     const text = IMPORT_KINDS.map((c) => sampleCsvText(c)).join('\n');
     const phones = text.match(/(?<![0-9])0[0-9]{9}(?![0-9])/g) ?? [];
     expect(new Set(phones)).toEqual(new Set(['0900000001']));
+  });
+
+  it('bảng «Cột nhận»: đủ mọi cột của loại, cột bắt buộc ghi Bắt buộc, ví dụ khớp file mẫu', () => {
+    for (const config of IMPORT_KINDS) {
+      const rows = columnRows(config);
+      expect(rows.map((r) => r.name)).toEqual(Array.from(new Set(config.columns)));
+      for (const r of rows) {
+        expect(r.meaning.length).toBeGreaterThan(0);
+        expect(r.meaning).not.toBe(r.name); // mọi cột đều có ý nghĩa tiếng Việt
+        expect(r.required).toBe(config.required.includes(r.name));
+      }
+    }
   });
 });
