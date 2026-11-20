@@ -19,7 +19,7 @@ import { Field, INPUT_CLASS } from '../../ui/Field';
 import { DateInput } from '../../ui/Inputs';
 import { Select } from '../../ui/Overlays';
 import type { LeadCatalogs } from '../lead/useCatalogs';
-import { defaultReminder } from './testLogic';
+import { createTestText, defaultReminder } from './testLogic';
 import { createTest } from './useTestData';
 
 export type TestSource = {
@@ -228,11 +228,7 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
             />
           )}
         </Field>
-        <Field
-          label="Người phụ trách"
-          required
-          help="Mặc định là người tạo; nhận lịch hẹn nhắc và theo dõi phiếu."
-        >
+        <Field label="Người phụ trách" required help={createTestText.ownerHelp}>
           {(field) =>
             canAssign ? (
               <Select
@@ -317,11 +313,7 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
             <p className="text-caption text-fg-muted">Nhắc lúc {formatDateTime(reminder)}.</p>
           )}
         </div>
-        {!canSubmit && (
-          <p className="text-caption text-fg-muted">
-            Chọn đủ các ô bắt buộc, ngày và giờ test để bật nút Tạo phiếu.
-          </p>
-        )}
+        {!canSubmit && <p className="text-caption text-fg-muted">{createTestText.submitHint}</p>}
       </div>
     </FormDialog>
   );

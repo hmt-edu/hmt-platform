@@ -68,6 +68,10 @@ test('Mở đơn từ BH-06; Nháp: thông tin chung, chưa có quản lý trự
   }
   await expect(page.getByText('Stage chỉ đọc, đổi bằng nút bên dưới.')).toBeVisible();
   // Khối thông tin: nhãn "Người duyệt" (không dùng "Quản lý cơ sở", "Trưởng cơ sở"), không có Hình thức thanh toán, Cơ sở thu tiền.
+  // So canvas BH05: ba khối Thông tin chung, Người xử lý và cơ sở, Thanh toán (tiêu đề khối riêng).
+  for (const name of ['Thông tin chung', 'Người xử lý và cơ sở', 'Thanh toán']) {
+    await expect(page.getByRole('heading', { level: 3, name, exact: true })).toBeVisible();
+  }
   await expect(page.getByText('Điều khoản thanh toán')).toBeVisible();
   await expect(page.getByText('Hình thức thanh toán')).toHaveCount(0);
   await expect(page.getByText('Cơ sở thu tiền')).toHaveCount(0);

@@ -5,6 +5,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
+-- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
+create function pg_temp.opening_debt_remaining(p uuid) returns bigint language sql security definer as $$ select app.opening_debt_remaining(p) $$;
+grant execute on function pg_temp.opening_debt_remaining(uuid) to public;
+
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;
 begin
@@ -78,7 +82,7 @@ select is(pg_temp.stu(app.opening_debt_by_student(pg_temp.pid('PH253A')), 'HS253
 select is(pg_temp.stu(app.opening_debt_by_student(pg_temp.pid('PH253A')), 'HS253B', 'credit'), '500000', 'Em B: tiền thu thừa 500.000 hiện riêng');
 select is((app.opening_debt_by_student(pg_temp.pid('PH253A')) ->> 'parent_remaining')::bigint, 8000000::bigint, 'Tổng nợ phụ huynh = cộng nợ các em (không trừ tiền thu thừa)');
 select is((app.opening_debt_by_student(pg_temp.pid('PH253A')) ->> 'parent_credit')::bigint, 500000::bigint, 'Tổng tiền thu thừa của phụ huynh');
-select is(app.opening_debt_remaining(pg_temp.pid('PH253A')), 8000000::bigint, 'Trần theo phụ huynh (migration 251) vẫn là 8.000.000');
+select is(pg_temp.opening_debt_remaining(pg_temp.pid('PH253A')), 8000000::bigint, 'Trần theo phụ huynh (migration 251) vẫn là 8.000.000');
 
 -- ---- Trần theo em ----
 select is(pg_temp.err($$select app.create_opening_debt_receipt(pg_temp.pid('PH253A'), pg_temp.dst(3000001, 'HS253A'))$$), 'HMT_SO_TIEN_VUOT', 'Vượt nợ của em A (3.000.001) bị chặn dù tổng nợ phụ huynh là 8.000.000');

@@ -4,6 +4,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
+-- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
+create function pg_temp.session_pending_reason(p uuid) returns text language sql security definer as $$ select app.session_pending_reason(p) $$;
+grant execute on function pg_temp.session_pending_reason(uuid) to public;
+
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;
 begin
@@ -166,7 +170,7 @@ select is(pg_temp.err($$select app.set_attendance_ops(pg_temp.s('p', 1), jsonb_b
 select is(app.set_attendance_ops(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'CO_MAT', 'contact_reason_code', 'DA_NHAC_VAO_LOP'))),
           1, 'Đúng: vận hành ghi trạng thái và lý do liên hệ (R-DD-03)');
 -- Chưa Done được: giáo viên chưa điểm danh.
-select is(app.session_pending_reason(pg_temp.s('p', 1)), 'Giáo viên chưa điểm danh 1 em.', 'Lý do chưa Done: giáo viên chưa điểm danh (R-GIO-06)');
+select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), 'Giáo viên chưa điểm danh 1 em.', 'Lý do chưa Done: giáo viên chưa điểm danh (R-GIO-06)');
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 1) || '''::uuid)')$$), 'HMT_BUOI_CHUA_DONE_DUOC', 'Chặn: Done khi giáo viên chưa điểm danh xong (R-GIO-06)');
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(app.set_attendance_teacher(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'VANG_KHONG_PHEP'))), 1,
@@ -246,14 +250,14 @@ select is((select status_code from app.class_session where id = pg_temp.s('p', 4
 select is((select count(*)::int from app.class_session where class_id = pg_temp.c('f') and status_code = 'NHAP'), 4, 'Tự chốt: buổi cách 2 tuần chưa vào cửa sổ quét, giữ Nháp (R-GIO-05)');
 select pg_temp.sudo($$select app.auto_complete_sessions()$$);
 select is((select status_code from app.class_session where id = pg_temp.s('p', 4)), 'DA_CHOT', 'Tự Done: giáo viên chưa điểm danh thì giữ Đã chốt (R-GIO-06)');
-select ok(app.session_pending_reason(pg_temp.s('p', 4)) like 'Giáo viên chưa điểm danh%', 'Lý do buổi chưa Done được nêu rõ (R-GIO-06)');
+select ok(pg_temp.session_pending_reason(pg_temp.s('p', 4)) like 'Giáo viên chưa điểm danh%', 'Lý do buổi chưa Done được nêu rõ (R-GIO-06)');
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select app.set_attendance_teacher(pg_temp.s('p', 4), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'CO_MAT'),
   jsonb_build_object('student_id', pg_temp.st(4), 'status_code', 'VANG_CO_PHEP')));
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 4))$$);
 select pg_temp.sudo($$select app.auto_complete_sessions()$$);
 select is((select status_code from app.class_session where id = pg_temp.s('p', 4)), 'DONE', 'Tự Done: đủ điều kiện thì Done (R-GIO-06)');
-select is(app.session_pending_reason(pg_temp.s('f', 1)), 'Buổi chưa chốt danh sách.', 'Lý do chưa Done: buổi Nháp chưa chốt');
+select is(pg_temp.session_pending_reason(pg_temp.s('f', 1)), 'Buổi chưa chốt danh sách.', 'Lý do chưa Done: buổi Nháp chưa chốt');
 
 -- ================= Sửa sau Done (R-GIO-07) =================
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');

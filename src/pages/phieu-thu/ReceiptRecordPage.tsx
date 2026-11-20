@@ -227,6 +227,15 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
       ]
     : [];
 
+  // «Duyệt bởi» (canvas TC02_duyet): chỉ phiếu Đã duyệt; lấy người và ngày của sự kiện Kế toán duyệt gần nhất.
+  const accountantEvent =
+    record.status_code === 'DA_DUYET'
+      ? [...record.events].reverse().find((e) => e.event_code === 'DUYET_KT')
+      : undefined;
+  const approvedBy = accountantEvent
+    ? `${accountantEvent.by_name ?? 'Hệ thống'} · ${formatDate(accountantEvent.at)}`
+    : null;
+
   const lineLabel = (l: { line_no: number; student_name: string | null; package_name: string }) =>
     `Dòng ${l.line_no} · ${l.student_name ?? 'Chưa có học sinh'} · ${l.package_name}`;
   const lineOptions = [
@@ -338,6 +347,8 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
               />
             }
           />
+          {/* Canvas TC02_duyet: «Duyệt bởi» = Kế toán duyệt phiếu, kèm ngày (sự kiện DUYET_KT gần nhất). */}
+          {approvedBy && <DetailField label="Duyệt bởi" mode="view" value={approvedBy} />}
         </dl>
       </section>
       <section className="flex min-w-0 flex-col">

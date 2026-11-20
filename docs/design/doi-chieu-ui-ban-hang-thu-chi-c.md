@@ -38,3 +38,17 @@ Bốn màn là hộp thoại K08 (mức C). Canvas 9933 không có khung hộp t
 | BH-04 Từ chối báo giá | `QuotationRecordPage.tsx` hộp «Từ chối báo giá», lý do từ danh mục, «Khác» bắt ghi chú | `BH02_tu_choi`: «Từ chối báo giá. Lý do: …», Đã gửi → Từ chối | Đúng |
 | BH-10 Huỷ đơn hàng | `OrderRecordPage.tsx` hộp «Huỷ đơn hàng»; dòng «Huỷ đơn» kèm lý do; đơn đã có phiếu thu bị chặn kèm mời tạo ticket hoàn tiền | `BH05_huy`: «Huỷ đơn. Lý do: … Chưa thu tiền.» | Gần đúng: canvas thêm câu «Chưa thu tiền.» cuối dòng; câu này là chú thích minh hoạ của khung, giữ như hiện tại (không đổi luật R-TIEN-03) |
 | BH-11 Cảnh báo cơ hội đã có đơn nháp | `OrderCreatePage.tsx`, `OpportunityRecordPage.tsx`, hàm migration 88 (R-TIEN-39) | `BH02_bh11` | Đúng về luật: có cảnh báo kèm mã đơn nháp, nút Mở đơn cũ, Vẫn tạo |
+
+## So canvas BH-01, BH-02, BH-05, BH-06, BH-07, TC-02, TC-05 (Code C, 20/11/2026, thẻ 19:58)
+
+Cách rà: lấy chữ của mọi khung `BH01*`, `BH05*`, `BH06*`, `BH07*`, `TC02*`, `TC05*` (canvas 9933, abea), bỏ tên người, số liệu minh hoạ, rồi tìm từng nhãn trong `src/` và `supabase/migrations/`. Nhãn không thấy thì đọc khung và quyết định.
+
+| Màn | Lệch | Kết quả |
+|---|---|---|
+| BH-05 Đơn hàng (bản ghi) | Tiêu đề khối «Người xử lý và cơ sở» (35 khung) và khối «Thanh toán» tách riêng; code gộp Người lập, Người duyệt, Cơ sở vận hành, Điều khoản thanh toán vào «Thông tin chung» | **Đã sửa** (PR C85): ba khối «Thông tin chung», «Người xử lý và cơ sở», «Thanh toán»; e2e kiểm tiêu đề |
+| TC-02, TC-05 Phiếu thu (bản ghi) | Nhãn «Duyệt bởi» (tên Kế toán · ngày) khi Đã duyệt | **Đã sửa** (PR C85): lấy từ sự kiện DUYET_KT gần nhất; e2e kiểm nhãn |
+| TC-02, TC-05 «Dồn trước», cột «Giờ cấp» | cần dữ liệu cấn dòng và giờ cấp theo dòng | Chưa sửa: đề xuất DB mục 1 ở `de-xuat-man-con-thieu-crm.md` |
+| TC-02 Gợi ý «khoá khi rời Nháp», «Chỉ hiện tài khoản của cơ sở thu đã chọn» | chú dưới ô Cấn vào dòng, Tài khoản nhận | Chưa sửa: «Tài khoản nhận» chưa do nhân viên chọn (đề xuất DB mục 5); chú «khoá khi rời Nháp» sẽ thêm cùng lúc |
+| BH-07 Duyệt đơn: ô «Đồng ý chiết khấu vượt trần» (D12) | canvas vẽ ô tích bắt buộc trước khi Duyệt | **Không làm, theo luật**: R-V2-11 (chốt) bỏ ô tích đồng ý (thay Đ102); trần 20% chỉ cảnh báo. Canvas vênh luật thì theo luật |
+| BH-01, BH-06 | «Lọc thông minh» (2 khung) | Chưa rõ: nút của khung canvas mẫu, không có trong bản đồ màn hình; Tester so ảnh trên staging |
+| BH-02 Báo giá, đơn (tạo/sửa) | nhãn «+ Thêm dòng», «+ Thêm quà tặng», «+ Thêm cả nhà», «Tặng tối đa 4 giờ»… là dữ liệu mẫu và nút ghép biểu tượng | Không so được bằng chữ (đã ghi ở bảng trên): cần Tester so ảnh |

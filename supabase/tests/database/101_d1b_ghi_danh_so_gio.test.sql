@@ -5,6 +5,10 @@ begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 
+-- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
+create function pg_temp.class_seats_left(p uuid) returns integer language sql security definer as $$ select app.class_seats_left(p) $$;
+grant execute on function pg_temp.class_seats_left(uuid) to public;
+
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;
 begin
@@ -115,8 +119,8 @@ select pg_temp.sudo($$select pg_temp.mke('1', 1)$$);
 select pg_temp.sudo($$select pg_temp.mke('2', 2)$$);
 select pg_temp.sudo($$select pg_temp.mke('3', 3)$$);
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
-select is(app.class_seats_left(pg_temp.c('a')), 2, 'Lớp sĩ số tối đa 2: còn 2 chỗ (R-GD-08)');
-select is(app.class_seats_left(pg_temp.c('b')), null, 'Sĩ số tối đa 0 = không giới hạn (R-GD-08)');
+select is(pg_temp.class_seats_left(pg_temp.c('a')), 2, 'Lớp sĩ số tối đa 2: còn 2 chỗ (R-GD-08)');
+select is(pg_temp.class_seats_left(pg_temp.c('b')), null, 'Sĩ số tối đa 0 = không giới hạn (R-GD-08)');
 select is(pg_temp.err($$select app.assign_enrollment_class(pg_temp.e('1'), pg_temp.c('a'), null)$$), 'HMT_NGAY_VAO_LOP_THIEU', 'Chặn: xếp lớp thiếu ngày vào lớp (R-GD-06)');
 select is(pg_temp.err($$select app.assign_enrollment_class(pg_temp.e('1'), pg_temp.c('a'), pg_temp.mon() + 1)$$), 'HMT_NGAY_VAO_LOP_SAI', 'Chặn: ngày vào lớp không phải một buổi của lớp (R-GD-06)');
 select is(pg_temp.err($$select app.assign_enrollment_class(pg_temp.e('1'), pg_temp.c('n'), pg_temp.mon() + 3)$$), 'HMT_LOP_CHUA_DUYET', 'Chặn: lớp chưa duyệt (R-GD-08)');
@@ -126,7 +130,7 @@ select is((select status_code from app.enrollment where id = pg_temp.e('1')), 'D
 select is((select count(*)::int from app.enrollment_class where enrollment_id = pg_temp.e('1') and end_date is null), 1, 'Có đúng một dòng xếp lớp đang mở (R-GD-02)');
 select is(pg_temp.err($$select app.assign_enrollment_class(pg_temp.e('1'), pg_temp.c('c'), pg_temp.mon() + 1)$$), 'HMT_GHI_DANH_KHONG_CHO_XEP', 'Chặn: ghi danh đã xếp lớp không xếp lần đầu nữa, đổi lớp qua ticket (R-GD-10)');
 select lives_ok($$select app.assign_enrollment_class(pg_temp.e('2'), pg_temp.c('a'), pg_temp.mon())$$, 'Đúng: em thứ hai vào lớp');
-select is(app.class_seats_left(pg_temp.c('a')), 0, 'Lớp đủ 2 em: hết chỗ');
+select is(pg_temp.class_seats_left(pg_temp.c('a')), 0, 'Lớp đủ 2 em: hết chỗ');
 select is(pg_temp.err($$select app.assign_enrollment_class(pg_temp.e('3'), pg_temp.c('a'), pg_temp.mon())$$), 'HMT_LOP_HET_CHO', 'Chặn: lớp đã đủ sĩ số tối đa (R-GD-08)');
 select is(pg_temp.err($$select app.check_order_line_class(1, pg_temp.c('a'), null, pg_temp.cs('CS1'))$$), 'HMT_LOP_HET_CHO', 'Kiểm lớp trên dòng đơn cũng chặn lớp đầy (R-GD-08)');
 select is(pg_temp.err($$select app.check_order_line_class(1, gen_random_uuid(), null, pg_temp.cs('CS1'))$$), 'HMT_LOP_KHONG_TIM_THAY', 'Kiểm lớp trên dòng đơn: lớp không có thì báo (R-GD-08)');
@@ -186,7 +190,7 @@ select is((select count(*)::int from app.enrollment_class where enrollment_id = 
 select is((select count(*)::int from app.enrollment_class where enrollment_id = pg_temp.e('1') and end_date is null and class_id = pg_temp.c('c')), 1, 'Dòng mới ở lớp C đang mở');
 select is((select end_reason from app.enrollment_class where enrollment_id = pg_temp.e('1') and class_id = pg_temp.c('a')), 'CHUYEN_LOP', 'Dòng cũ đóng với lý do chuyển lớp');
 select is(app.enrollment_hours_balance(pg_temp.e('1')), 5.00::numeric, 'Giờ còn lại đi theo ghi danh khi chuyển lớp (R-GD-10)');
-select is(app.class_seats_left(pg_temp.c('a')), 1, 'Chuyển đi thì lớp cũ trả lại một chỗ');
+select is(pg_temp.class_seats_left(pg_temp.c('a')), 1, 'Chuyển đi thì lớp cũ trả lại một chỗ');
 
 -- ================= RLS =================
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
