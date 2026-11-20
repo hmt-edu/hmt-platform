@@ -319,6 +319,7 @@ function EmailForm({ open, onOpenChange, userId, label, currentEmail, onDone }: 
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           error={shown}
+          help="Mỗi email chỉ dùng cho một tài khoản."
         />
         <p className="text-caption text-fg-muted">
           Tên đăng nhập giữ nguyên. Người này bị đăng xuất khỏi mọi thiết bị và đăng nhập lại bằng

@@ -39,6 +39,22 @@ describe('QT-08: kiểm biểu mẫu phòng (canvas QT08_loi_phong)', () => {
       validateRoom({ code: 'P102', name: 'PHONG 101', capacity: '5' }, rooms, null).name,
     ).toContain('đã có');
   });
+  it('câu báo trùng nêu tên cơ sở; sức chứa 0 báo «phải lớn hơn 0» (QT08_loi_phong)', () => {
+    const rooms = [room({})];
+    const label = 'CS5 Mỹ Đình';
+    expect(validateRoom({ code: 'P101', name: 'A', capacity: '5' }, rooms, null, label).code).toBe(
+      'Mã P101 đã có trong CS5 Mỹ Đình.',
+    );
+    expect(
+      validateRoom({ code: 'P102', name: 'PHONG 101', capacity: '5' }, rooms, null, label).name,
+    ).toBe('Tên phòng này đã có trong CS5 Mỹ Đình.');
+    expect(validateRoom({ code: 'P9', name: 'X', capacity: '0' }, [], null).capacity).toBe(
+      'Sức chứa phải lớn hơn 0.',
+    );
+    expect(validateRoom({ code: 'P9', name: 'X', capacity: '' }, [], null).capacity).toBe(
+      'Nhập sức chứa, là số lớn hơn 0.',
+    );
+  });
   it('sức chứa 0, âm, lẻ, trống đều bị chặn', () => {
     for (const c of ['0', '-3', '2.5', '']) {
       expect(validateRoom({ code: 'P9', name: 'X', capacity: c }, [], null).capacity).toBeDefined();

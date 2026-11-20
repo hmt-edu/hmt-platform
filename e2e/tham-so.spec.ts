@@ -111,5 +111,5 @@ test('Ghi đè theo cơ sở: thêm rồi bỏ ghi đè', async ({ page }) => {
   await expect(rowOf(page)).toContainText('7 ngày'); // chip ghi đè kèm đơn vị
   await rowOf(page).getByRole('button', { name: 'Bỏ ghi đè CS5' }).click();
   await expect(page.getByText('Đã bỏ ghi đè CS5.').first()).toBeVisible();
-  await expect(rowOf(page)).toContainText('chưa ghi đè');
+  await expect(rowOf(page)).toContainText('Chưa cơ sở nào ghi đè');
 });
