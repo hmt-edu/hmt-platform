@@ -4,6 +4,7 @@ import {
   buildParentFilters,
   buildStudentFilters,
   custSortParam,
+  newTicketForParentPath,
   parentGroupFilter,
 } from './custFilters';
 
@@ -62,5 +63,13 @@ describe('parentGroupFilter (bộ lọc của một nhóm Group By, KH-01)', () 
   it('khoá rỗng hoặc trường lạ không lọc thêm', () => {
     expect(parentGroupFilter('status', '')).toEqual({});
     expect(parentGroupFilter('khac', 'x')).toEqual({});
+  });
+});
+
+describe('newTicketForParentPath (nút Tạo ticket ở hồ sơ phụ huynh, KH-02)', () => {
+  it('đưa sang màn tạo ticket kèm id và mã phụ huynh để điền sẵn', () => {
+    expect(newTicketForParentPath('p-1', 'PH000123')).toBe(
+      '/crm/ticket/moi?phu-huynh=p-1&ma=PH000123',
+    );
   });
 });
