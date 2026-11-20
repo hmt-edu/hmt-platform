@@ -51,7 +51,7 @@ export function ReceiptListPage({ waitingAccounting = false }: { waitingAccounti
               ],
             },
           ],
-          // Canvas TC04: thêm nhóm Group By «Sao kê» (máy chủ đếm theo cờ đối soát, migration 579).
+          // Canvas TC04: thêm nhóm Group By «Sao kê» (máy chủ đếm theo cờ đối soát, migration 592).
           groupFields: [
             ...base.groupFields,
             {

@@ -1,4 +1,4 @@
--- C88 (migration 579): list_receipts trả `bank_matched` và lọc «Sao kê» (KHOP, CHUA) cho cột TC-04; người không có quyền xem phiếu thu bị chặn. Dựng theo mẫu test 434.
+-- C88 (migration 592): list_receipts trả `bank_matched` và lọc «Sao kê» (KHOP, CHUA) cho cột TC-04; người không có quyền xem phiếu thu bị chặn. Dựng theo mẫu test 434.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();

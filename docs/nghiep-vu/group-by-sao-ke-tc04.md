@@ -1,4 +1,4 @@
-# Group By «Sao kê» của TC-04 (migration 579)
+# Group By «Sao kê» của TC-04 (migration 592)
 
 Anh Trường duyệt 20/11/2026 (Chat 20:38/20:44): canvas TC04 có nhóm Group By «Sao kê» (Đã khớp, Chưa khớp), làm theo canvas.
 
@@ -8,4 +8,4 @@ Anh Trường duyệt 20/11/2026 (Chat 20:38/20:44): canvas TC04 có nhóm Group
 | `app.receipt_group_label(trường, khoá)` | Thêm nhãn «Đã khớp», «Chưa khớp» | hàm trong | — |
 
 Giao diện: nhóm «Sao kê» chỉ có ở TC-04 (TC-01 không có theo canvas); mở một nhóm lọc `bank_matched`.
-Chỉ đọc, không đổi bảng, không thêm chỉ mục. Bài pgTAP `579_c88_group_by_sao_ke.test.sql`: đếm hai nhóm, nhãn, bộ lọc khớp danh sách, hai cấp, chặn trường lạ và hai cấp trùng, giáo viên bị chặn.
+Chỉ đọc, không đổi bảng, không thêm chỉ mục. Bài pgTAP `592_c88_group_by_sao_ke.test.sql`: đếm hai nhóm, nhãn, bộ lọc khớp danh sách, hai cấp, chặn trường lạ và hai cấp trùng, giáo viên bị chặn.

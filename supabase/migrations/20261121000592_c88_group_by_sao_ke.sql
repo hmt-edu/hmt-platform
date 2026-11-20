@@ -1,4 +1,4 @@
--- C88 (KHO-VIEC dòng 14; anh Trường duyệt 20/11 20:38, thư Chat 20:44; migration 579, rủi ro CAO theo quy ước: sửa hàm danh sách tiền). TC-04 Group By «Sao kê» (canvas TC04: nhóm Sao kê, Đã khớp / Chưa khớp).
+-- C88 (KHO-VIEC dòng 14; anh Trường duyệt 20/11 20:38, thư Chat 20:44; migration 592, rủi ro CAO theo quy ước: sửa hàm danh sách tiền). TC-04 Group By «Sao kê» (canvas TC04: nhóm Sao kê, Đã khớp / Chưa khớp).
 -- Làm gì: receipt_group_counts nhận thêm trường nhóm `bank` (KHOP | CHUA) và bộ lọc `bank_matched` (cùng nghĩa với list_receipts, migration 576) để số đếm khớp danh sách; receipt_group_label thêm nhãn. Giữ nguyên quyền, phạm vi cơ sở, hai cấp tối đa (Đ35).
 -- Chỉ đọc; không đổi bảng, không thêm chỉ mục (nhóm trên cột bank_matched_at đã có trong bảng, phạm vi lọc theo cơ sở như cũ).
 select set_config('hmt.migration', 'on', false);
