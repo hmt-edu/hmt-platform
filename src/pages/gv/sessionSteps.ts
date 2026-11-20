@@ -146,3 +146,9 @@ export function deadlineText(deadlineIso: string, now: Date): string {
 export function nextStep(steps: SessionStep[]): SessionStep | null {
   return steps.find((step) => step.state === 'TODO' || step.state === 'DOING') ?? null;
 }
+
+/** Số bước viết bằng chữ như canvas GV-04 («ba bước», «bốn bước»); số khác giữ chữ số. */
+export function stepCountWord(n: number): string {
+  const words: Record<number, string> = { 3: 'ba', 4: 'bốn' };
+  return words[n] ?? String(n);
+}

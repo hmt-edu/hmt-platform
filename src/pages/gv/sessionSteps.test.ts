@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { SessionOverview } from './sessionContent';
-import { buildSteps, deadlineText, hoursLeft, nextStep, progressOf } from './sessionSteps';
+import {
+  buildSteps,
+  deadlineText,
+  hoursLeft,
+  nextStep,
+  progressOf,
+  stepCountWord,
+} from './sessionSteps';
 
 const base: SessionOverview = {
   session_id: 's1',
@@ -101,5 +108,13 @@ describe('Các bước của buổi dạy (GV-04)', () => {
     expect(hoursLeft('2026-10-24T20:30:00Z', now)).toBe(5);
     expect(deadlineText('2026-10-24T20:30:00Z', now)).toBe('còn 5 giờ');
     expect(deadlineText('2026-10-24T10:30:00Z', now)).toBe('quá hạn 5 giờ');
+  });
+});
+
+describe('stepCountWord (So canvas GV-04)', () => {
+  it('ba và bốn viết bằng chữ như canvas, số khác giữ chữ số', () => {
+    expect(stepCountWord(3)).toBe('ba');
+    expect(stepCountWord(4)).toBe('bốn');
+    expect(stepCountWord(5)).toBe('5');
   });
 });
