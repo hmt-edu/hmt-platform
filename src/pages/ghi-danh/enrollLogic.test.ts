@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   dateKey,
+  enrollmentNotice,
   deliveryMismatchWarning,
   defaultStart,
   disabledReason,
@@ -96,5 +97,33 @@ describe('deliveryMismatchWarning (xếp lớp lệch hình thức: chỉ cảnh
     expect(deliveryMismatchWarning('OFF', 'OFF')).toBeNull();
     expect(deliveryMismatchWarning(undefined, 'OFF')).toBeNull();
     expect(deliveryMismatchWarning('OFF', null)).toBeNull();
+  });
+});
+
+describe('enrollmentNotice (GD-02: câu giải thích theo tình trạng và quỹ giờ)', () => {
+  const h = (remaining: number, granted = 24, gifted = 0) => ({ granted, gifted, remaining });
+  it('Chờ xếp lớp: nhắc bấm Xếp lớp', () => {
+    expect(enrollmentNotice('CHO_XEP_LOP', h(24))?.text).toMatch(/Bấm Xếp lớp/);
+  });
+  it('Đang học hết giờ: báo chặn điểm danh trừ giờ (R-GD-18), tông cảnh báo', () => {
+    const n = enrollmentNotice('DANG_HOC', h(0));
+    expect(n?.title).toBe('Quỹ giờ bằng 0.');
+    expect(n?.text).toMatch(/R-GD-18/);
+    expect(n?.tone).toBe('warning');
+  });
+  it('Đang học còn giờ: không có câu', () => {
+    expect(enrollmentNotice('DANG_HOC', h(28))).toBeNull();
+  });
+  it('Quỹ âm (học trước): câu R-GD-12 kèm số giờ âm', () => {
+    const n = enrollmentNotice('DANG_HOC', h(-3, 0));
+    expect(n?.title).toBe('Đang học trước, chưa đóng tiền.');
+    expect(n?.text).toMatch(/hiện −3 giờ/);
+  });
+  it('Quỹ 0 mà chưa từng cấp giờ: không báo hết giờ', () => {
+    expect(enrollmentNotice('DANG_HOC', h(0, 0, 0))).toBeNull();
+  });
+  it('Bảo lưu và Hoàn phí có câu riêng', () => {
+    expect(enrollmentNotice('BAO_LUU', h(15))?.text).toMatch(/R-GD-09/);
+    expect(enrollmentNotice('HOAN_PHI', h(0))?.title).toBe('Ghi danh đã hoàn phí.');
   });
 });

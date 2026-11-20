@@ -54,6 +54,19 @@ test('GD-02, GD-04: bản ghi nêu quỹ giờ và lớp; Sổ giờ nêu dòng 
   await expect(ledger).toContainText('+24');
 });
 
+test('GD-02: ghi danh Chờ xếp lớp có câu «Chưa có lớp. Bấm Xếp lớp…», ghi danh Đang học còn giờ không có câu cảnh báo', async ({
+  page,
+}) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto(`/crm/ghi-danh/${seed.waiting.id}`);
+  await expect(page.getByText('Bấm Xếp lớp để chọn lớp và ngày vào lớp.').first()).toBeVisible();
+  await expect(page.getByText('Ngày hết giờ dự kiến chưa có (chưa có lớp)')).toBeVisible();
+  await page.goto(`/crm/ghi-danh/${seed.learning.id}`);
+  await expect(page.getByRole('heading', { level: 2, name: seed.learning.code })).toBeVisible();
+  await expect(page.getByText('Quỹ giờ bằng 0.')).toHaveCount(0);
+  await expect(page.getByText('Chưa có lớp.', { exact: true })).toHaveCount(0);
+});
+
 test('GD-06, GD-03: hàng chờ chỉ có ghi danh Chờ xếp lớp; xếp một lớp lẻ thì rời hàng chờ', async ({
   page,
 }) => {
