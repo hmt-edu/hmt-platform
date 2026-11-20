@@ -79,6 +79,9 @@ import {
   CircleX,
   Video,
   CalendarCheck,
+  RotateCw,
+  ZoomIn,
+  ZoomOut,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -164,6 +167,9 @@ export const ICONS = {
   trash: Trash2,
   user: CircleUser,
   warning: TriangleAlert,
+  rotate: RotateCw,
+  zoomIn: ZoomIn,
+  zoomOut: ZoomOut,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;
