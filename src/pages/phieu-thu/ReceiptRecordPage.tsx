@@ -48,6 +48,7 @@ import {
   cancelReceipt,
   rejectReceipt,
   saveReceipt,
+  setReceiptAccount,
   submitReceipt,
   useReceipt,
   useReceiptAllocPreview,
@@ -62,6 +63,9 @@ const toDate = (key: string): Date | null => {
 };
 const toKey = (d: Date) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; // allow-number: hai chữ số
+
+/** Giá trị đại diện «Bỏ chọn» trong ô chọn tài khoản nhận (ô chọn không nhận giá trị rỗng). */
+const NO_ACCOUNT = '__KHONG__';
 
 export function ReceiptRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -161,6 +165,14 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
       ? null
       : approverLine(approverFields, (claims?.userId ?? '') === record.created_by, 'phiếu thu');
   const canEdit = can('sua');
+  // «Tài khoản nhận»: người lập khi phiếu Nháp (đang có quyền sửa), hoặc Kế toán khi phiếu Đã gửi, Chờ kế toán (máy chủ kiểm lại).
+  const canSetAccount =
+    !phone &&
+    !record.is_opening_debt &&
+    (canEdit ||
+      (['DA_GUI', 'CHO_KE_TOAN'].includes(record.status_code) &&
+        access.can('RECEIPT', 'SUA') &&
+        access.can('ACCOUNTING', 'XEM')));
   const statusName = (code: string) => catalogs.name('RECEIPT_STATUS', code) ?? code;
   const steps: StageStep[] = receiptSteps(record.status_code, record.is_opening_debt === true).map(
     (code) => ({
@@ -344,6 +356,34 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 value={draft.collectBranchId}
                 onChange={(v) => setDraft({ ...draft, collectBranchId: v })}
                 options={branchOptions}
+                className="w-full"
+              />
+            }
+          />
+          {/* Canvas TC17, TC02: «Tài khoản nhận» (danh mục RECEIVING_ACCOUNT, không bắt buộc); người lập (Nháp) hoặc Kế toán (Đã gửi, Chờ kế toán) chọn được. */}
+          <DetailField
+            label="Tài khoản nhận"
+            hint="không bắt buộc"
+            mode={canSetAccount ? 'edit' : 'view'}
+            value={record.receiving_account ?? '—'}
+            editor={
+              <Select
+                label="Tài khoản nhận"
+                value={record.receiving_account_code ?? ''}
+                placeholder="Chưa chọn"
+                onChange={(v) =>
+                  void run(
+                    'account',
+                    () => setReceiptAccount(supabase, record.id, v === NO_ACCOUNT ? null : v),
+                    'Đã lưu tài khoản nhận.',
+                  )
+                }
+                options={[
+                  ...(record.receiving_account_code
+                    ? [{ value: NO_ACCOUNT, label: 'Bỏ chọn' }]
+                    : []),
+                  ...catalogs.options('RECEIVING_ACCOUNT', record.receiving_account_code),
+                ]}
                 className="w-full"
               />
             }
