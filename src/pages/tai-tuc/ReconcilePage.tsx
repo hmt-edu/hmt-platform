@@ -7,12 +7,21 @@ import { errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatNumber } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
+import { buildLeadGroupTree } from '../lead/leadGroups';
+import { useLeafRows } from '../lead/useLeadData';
 import { useToast } from '../../ui/toastContext';
 import { buildReconcileConfig } from './reconcileConfig';
-import { EMPTY_RECONCILE_STATE, buildReconcileQuery } from './reconcileLogic';
+import {
+  EMPTY_RECONCILE_STATE,
+  RECONCILE_GROUP_FIELD_OF,
+  buildReconcileQuery,
+  monthStart,
+  reconcileGroupFilter,
+} from './reconcileLogic';
 import type { ReconcileRow } from './reconcileTypes';
 import {
   createEarlyUpsale,
+  useReconcileGroupCounts,
   useReconcilePage,
   useReconcileSummary,
   useRefreshReconcile,
@@ -48,10 +57,50 @@ export function ReconcilePage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useReconcilePage(query, page * (pageSize ?? 0), pageSize);
+  // Group By ở máy chủ (Kho #19): chọn trường nhóm thì danh sách thành cây nhóm có số đếm; mở nhóm mới tải dòng.
+  const groupFields = state.group.flatMap((k) =>
+    RECONCILE_GROUP_FIELD_OF[k] ? [RECONCILE_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const list = useReconcilePage(query, page * (pageSize ?? 0), pageSize, !grouped);
+  const counts = useReconcileGroupCounts(query, groupFields);
+  const leafExtra = useMemo(() => ({ p_month: monthStart(query.month) }), [query.month]);
+  const leaves = useLeafRows<ReconcileRow>(
+    query.filters,
+    null,
+    pageSize,
+    JSON.stringify(query),
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_upsale_reconcile',
+    leafExtra,
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<ReconcileRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            reconcileGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
   const summary = useReconcileSummary(query);
-  const rows: ReconcileRow[] = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  const rows: ReconcileRow[] = useMemo(
+    () =>
+      grouping
+        ? grouping.tree
+            .flatMap((g) => (g.children.length > 0 ? g.children : [g]))
+            .flatMap((g) => g.rows)
+        : (list.data?.rows ?? []),
+    [grouping, list.data],
+  );
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const active = grouped ? counts : list;
   const s = summary.data;
 
   async function createTicket(row: ReconcileRow) {
@@ -111,9 +160,14 @@ export function ReconcilePage() {
       onRowClick={() => undefined}
       rowKey={(r) => `${r.student_id}:${r.class_id}`}
       rowLabel={(r) => `${r.student_name} ${r.class_code}`}
-      loading={list.isPending || list.isPlaceholderData}
-      error={list.isError ? errorOf(list.error).message : null}
-      onRetry={() => void list.refetch()}
+      loading={active.isPending || active.isPlaceholderData}
+      error={active.isError ? errorOf(active.error).message : null}
+      onRetry={() => void active.refetch()}
+      groupTree={grouped ? grouping?.tree : undefined}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
+      }}
       onRefresh={() => void refreshData()}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
