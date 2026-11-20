@@ -225,7 +225,7 @@ select pg_temp.sudo($$insert into app.prospect_student (opportunity_id, branch_i
 select pg_temp.sudo($$update app.student_test set student_id = (select mrg from st) where opportunity_id = (select id from app.opportunity where code = 'CO000001')$$);
 select is(pg_temp.err($$select app.merge_students((select keep from st), (select other from st), true)$$), 'HMT_GOP_KHAC_PHU_HUYNH', 'R-CRM-37(b): khác phụ huynh thì gộp phụ huynh trước');
 select is((app.merge_preview('STUDENT', (select keep from st), (select other from st)) -> 'blockers' -> 0 ->> 'code'), 'HMT_GOP_KHAC_PHU_HUYNH', 'Xem trước nêu điều kiện chặn');
-select is((app.merge_preview('STUDENT', (select keep from st), (select mrg from st)) -> 'move'), '{"tests": 1, "notes": 0, "opportunities": 1}'::jsonb, 'Xem trước học sinh: cơ hội, phiếu, ghi chú sẽ chuyển');
+select is((app.merge_preview('STUDENT', (select keep from st), (select mrg from st)) -> 'move'), '{"tests": 1, "notes": 0, "opportunities": 1, "attendance": 0, "enrollments": 0, "balance_entries": 0}'::jsonb, 'Xem trước học sinh: cơ hội, phiếu, ghi chú (và ghi danh, điểm danh, số dư, migration 589) sẽ chuyển');
 select is(pg_temp.err($$select app.merge_students((select keep from st), (select mrg from st))$$), 'HMT_CAN_XAC_NHAN', 'Gộp học sinh cần xác nhận');
 select is(pg_temp.err($$select app.merge_students((select keep from st), (select mrg from st), true)$$), null, 'Gộp học sinh cùng phụ huynh: được');
 select is((select record_status from app.student where id = (select mrg from st)), 'DA_GOP', 'Học sinh bị gộp thành Đã gộp');
@@ -245,7 +245,7 @@ select pg_temp.sudo($$insert into app.student (code, parent_id, full_name, birth
   select 'HS990001', (select mrg from pr), 'Em Một Hai', 2012, (select id from app.branch where code = 'CS1')$$);
 select pg_temp.sudo($$insert into app.note (entity_type, entity_id, body) values ('PARENT', (select mrg from pr), 'Ghi chú phụ huynh bị gộp')$$);
 select is((app.merge_preview('PARENT', (select keep from pr), (select mrg from pr)) -> 'move'),
-          '{"leads": 2, "notes": 1, "students": 1, "opportunities": 2}'::jsonb, 'Xem trước phụ huynh: lead, cơ hội, học sinh, ghi chú sẽ chuyển');
+          '{"leads": 2, "notes": 1, "students": 1, "opportunities": 2, "orders": 0, "receipts": 0, "quotations": 0, "enrollments": 0, "balance_entries": 0}'::jsonb, 'Xem trước phụ huynh: lead, cơ hội, học sinh, ghi chú (và đơn, phiếu thu, ghi danh, số dư, migration 589) sẽ chuyển');
 select pg_temp.docs_stub($$'BG000009'$$);
 select is(pg_temp.err($$select app.merge_parents((select keep from pr), (select mrg from pr), true)$$), null,
           'R-CRM-25: gộp phụ huynh không chặn theo báo giá, đơn (còn [CHỜ]): được dù cơ hội có báo giá');
