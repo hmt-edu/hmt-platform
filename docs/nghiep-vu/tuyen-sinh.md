@@ -476,3 +476,13 @@ Lead đã huỷ tự ẩn khỏi danh sách mặc định và không tính trùn
 ## E67 (KHẨN): cảnh báo trùng SĐT không lộ hồ sơ ngoài phạm vi (migration `20261121000514`)
 
 `app.find_duplicate_contacts(p_phone, p_exclude_lead_id)` (TS-03, TS-14): hồ sơ ngoài phạm vi người xem (`visible = false`) trả `id`, `code`, `label`, `branch_code` đều `null`; người xem chỉ biết «đã có trong hệ thống» (giao diện hiện «Hồ sơ ngoài phạm vi bạn xem»). Hồ sơ trong phạm vi trả đủ như cũ. Thay quy ước cũ «lộ mã và cơ sở, không lộ tên» (bài 017 đã sửa).
+
+## Danh sách em: Thêm, Sửa, Bỏ em (migration 586, Code B, 20/11/2026)
+Dùng cho thẻ em và hộp «Thêm em» ở hồ sơ lead, cơ hội (TS-02, TS-06, TS-08, TS-15). Cả ba trả lại DANH SÁCH EM đầy đủ (cùng dạng `prospect_students_json` của get_lead, get_opportunity) để màn tải lại một lần.
+| Hàm | Ai gọi | Việc | Luật, lỗi |
+|---|---|---|---|
+| `app.add_prospect_student(loại, id hồ sơ cha, dữ liệu)` | Quyền Sửa lead hoặc cơ hội ở cơ sở của hồ sơ | Em mới (`full_name` bắt buộc, `birth_date`, `birth_year`, `school`, `self_rating`, `goal`) hoặc, chỉ cơ hội, `student_id` = chọn con có sẵn của phụ huynh | R-CRM-23: tối đa `prospect_max_students` (HMT_EM_TOI_DA); em mới chỉ bắt buộc họ tên (HMT_THIEU_TEN_EM); năm sinh 4 chữ số (HMT_NAM_SINH_SAI); chọn con có sẵn chỉ ở cơ hội (HMT_EM_CHI_O_CO_HOI), con của phụ huynh đó (HMT_EM_KHAC_PHU_HUYNH), chưa có trong danh sách (HMT_EM_TRUNG). R-CRM-03: từ L5 bắt buộc năm sinh (HMT_THIEU_HOC_SINH). Không tạo hồ sơ học sinh (R-CRM-27) |
+| `app.update_prospect_student(id dòng em, dữ liệu)` | Quyền Sửa hồ sơ cha; dòng đã gắn học sinh cần thêm Học sinh · Sửa | Ghi đè ô nào có trong dữ liệu; dòng gắn học sinh thì sửa luôn hồ sơ học sinh | R-CRM-26, 27; không xoá trống họ tên; từ L5 giữ tên và năm sinh |
+| `app.remove_prospect_student(id dòng em)` | Quyền Sửa hồ sơ cha | Bỏ em khỏi danh sách (không xoá hồ sơ học sinh) | Em đã có phiếu kiểm tra, dòng báo giá hoặc dòng đơn thì không bỏ (HMT_EM_DANG_DUNG); từ L5 cơ hội còn ít nhất một em (HMT_EM_CUOI) |
+Chung: hồ sơ đã gộp chỉ xem (HMT_BAN_GHI_DA_GOP); hàm trong `app.prospect_guard` khoá hồ sơ cha, kiểm quyền; khách (anon) không gọi được.
+**Bỏ em là xoá dòng thật** (khác quy ước «không xoá cứng»): dòng em chỉ là ghi nhận trong danh sách, không phải hồ sơ nghiệp vụ. Trigger chặn xoá của bảng `prospect_student` được thay bằng bản chỉ mở khi `remove_prospect_student` bật cờ `hmt.prospect_remove` trong giao dịch của nó; mọi đường xoá khác vẫn báo HMT_KHONG_XOA; `audit_log` vẫn ghi dòng bị bỏ.

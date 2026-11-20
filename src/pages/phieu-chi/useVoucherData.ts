@@ -80,3 +80,17 @@ export function payVoucher(
     p_method_code: methodCode,
   });
 }
+
+/** Ghi trước khi chi: hình thức chi, tài khoản nhận (chữ tự do), ngày chi dự kiến (migration 581). Chỉ Kế toán, phiếu Chờ chi. */
+export function setVoucherPlan(
+  supabase: SupabaseClient,
+  id: string,
+  plan: { methodCode: string | null; accountNote: string | null; plannedOn: string | null },
+) {
+  return rpc<null>(supabase, 'set_payment_voucher_plan', {
+    p_voucher_id: id,
+    p_method_code: plan.methodCode,
+    p_account_note: plan.accountNote,
+    p_planned_on: plan.plannedOn,
+  });
+}
