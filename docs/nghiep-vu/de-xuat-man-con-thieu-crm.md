@@ -124,3 +124,6 @@ Ba khoản lệch canvas 9933 mà chỉ giao diện không làm được. Khoả
 - **Vướng:** một phụ huynh có con học ở nhiều cơ sở cùng lúc, nên đếm theo «Đang học tại» đưa phụ huynh vào nhiều nhóm và tổng các nhóm lớn hơn số phụ huynh.
 - **Phương án A (khuyến nghị):** không làm Group By trường này; thêm bộ lọc «Đang học tại» (chọn một cơ sở) cho danh sách KH-01: khoá `studying_branch_id` ở `list_parents`, một điều kiện `exists` trên ghi danh Đã xếp lớp, Đang học (đã có chỉ mục ghi danh theo `parent_id`). Mức THẤP, không đổi bảng.
 - **Phương án B:** vẫn Group By nhưng cho một phụ huynh xuất hiện ở mỗi nhóm cơ sở của họ, ghi rõ ở đầu nhóm «một phụ huynh có thể ở nhiều nhóm; tổng nhóm không bằng tổng phụ huynh». Cần anh duyệt cách hiển thị.
+
+### Đã làm: CH-04 «Lịch sử thay đổi» (migration 601, Code B, 21/11/2026)
+`app.list_policy_history(p_kind, p_limit, p_offset)`: một trang lịch sử tạo, sửa, Ngừng chính sách chiết khấu (`DISCOUNT`) và quà tặng (`GIFT`), mới nhất trước. Ai gọi: người có Cấu hình bán hàng · Xem (như đọc chính sách; giáo viên bị chặn HMT_KHONG_CO_QUYEN; loại lạ HMT_LOAI_SAI). Kết quả {total, rows:[{id, at, kind, code, name, action, changes, actor_name}]}; `changes` chỉ giữ cột cấu hình dạng {"cột":[cũ,mới]}. Không đổi bảng; tra theo `audit_log_record_idx`. Giao diện hộp lịch sử: PR kế sau khi 601 vào main.

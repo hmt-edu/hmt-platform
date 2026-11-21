@@ -23,14 +23,14 @@ begin
 end $$;
 
 create temp table u (key text primary key, id uuid not null default gen_random_uuid());
-insert into u (key) values ('admin'), ('cskh5');
+insert into u (key) values ('admin'), ('cskh5'), ('gv5');
 grant select on u to authenticated;
 create function pg_temp.uid(p_key text) returns uuid language sql stable as $$ select id from u where key = p_key $$;
 insert into auth.users (id, aud, role, email) select id, 'authenticated', 'authenticated', key || '@lp.hoamatoan.invalid' from u;
 insert into app.user_account (id, display_name, login_name, branch_id, must_change_password)
 select u.id, 'Giả ' || u.key, u.key || '@lp.hoamatoan.invalid', (select id from app.branch where code = 'CS5'), false from u;
 insert into app.user_role (user_id, role_code)
-select id, case when key = 'admin' then 'ADMIN' else 'CSKH' end from u;
+select id, case when key = 'admin' then 'ADMIN' when key = 'gv5' then 'TEACHER' else 'CSKH' end from u;
 update app.user_role set is_active = false where role_code = 'ADMIN' and is_active and user_id not in (select id from u);
 grant execute on all functions in schema pg_temp to public;
 
@@ -41,9 +41,11 @@ grant execute on all functions in schema pg_temp to public;
 
 set local role authenticated;
 
--- Chặn: CSKH không có quyền Cấu hình bán hàng · Xem; Admin chưa hai bước (luật S03-12) cũng bị chặn.
+-- Chặn: giáo viên không có quyền Cấu hình bán hàng · Xem; Admin chưa hai bước (luật S03-12) cũng bị chặn.
+select pg_temp.claims(pg_temp.uid('gv5'), 'aal1');
+select is(pg_temp.err($$select app.list_policy_history()$$), 'HMT_KHONG_CO_QUYEN', 'Lịch sử chính sách: giáo viên (không có Cấu hình bán hàng · Xem) bị chặn');
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
-select is(pg_temp.err($$select app.list_policy_history()$$), 'HMT_KHONG_CO_QUYEN', 'Lịch sử chính sách: CSKH bị chặn');
+select is(pg_temp.err($$select app.list_policy_history()$$), null, 'Lịch sử chính sách: CSKH có Cấu hình bán hàng · Xem (như đọc chính sách) đọc được');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal1');
 select is(pg_temp.err($$select app.list_policy_history()$$), 'HMT_KHONG_CO_QUYEN', 'Lịch sử chính sách: Admin chưa xác thực hai bước bị chặn');
 
