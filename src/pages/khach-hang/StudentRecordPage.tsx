@@ -20,6 +20,7 @@ import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../..
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
+import { CustTickets } from './CustTickets';
 import { ATTENDANCE_LABEL, STUDENT_STATUS_LABEL, type StudentRecord } from './custTypes';
 import { studentPath } from './custConfig';
 import { useRefreshCustomers, useStudentRecord } from './useCustData';
@@ -289,11 +290,13 @@ function StudentView({ record }: { record: StudentRecord }) {
             { key: 'attendance', label: 'Điểm danh' },
             { key: 'exam', label: 'Điểm kiểm tra' },
             { key: 'care', label: 'Chăm sóc', note: 'Chưa có dữ liệu (chăm sóc làm sau)' },
-            {
-              key: 'tickets',
-              label: 'Đề nghị & khiếu nại',
-              note: 'Chưa có dữ liệu (ticket làm sau)',
-            },
+            access.can('TICKET', 'XEM')
+              ? { key: 'tickets', label: 'Đề nghị & khiếu nại' }
+              : {
+                  key: 'tickets',
+                  label: 'Đề nghị & khiếu nại',
+                  note: 'Bạn không có quyền xem ticket',
+                },
           ]}
         />
         {tab === 'overview' && (
@@ -486,6 +489,7 @@ function StudentView({ record }: { record: StudentRecord }) {
             </ul>
           </div>
         )}
+        {tab === 'tickets' && <CustTickets owner={{ key: 'student_id', id: record.id }} />}
         {tab === 'exam' && (
           <div className="flex flex-col gap-3">
             <DetailSection title="Điểm kiểm tra trong lớp">
