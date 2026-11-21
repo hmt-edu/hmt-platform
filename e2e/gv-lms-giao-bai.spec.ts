@@ -65,6 +65,8 @@ test('GV-17: giao bài, thấy trong Bài đã giao, sửa, rồi gỡ bài', as
   await page.getByRole('link', { name: 'Giao bài' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Giao bài trên LMS' })).toBeVisible();
   await expect(page.getByText('3 em sẽ nhận bài.')).toBeVisible();
+  // Ô «Buổi giao» chỉ có buổi của chính giáo viên: buổi 903 của giáo viên khác không được mời chọn (lỗi gốc của Tester 21/11).
+  await expect(page.getByRole('combobox', { name: 'Buổi giao' })).not.toContainText('903');
   // Chưa nhập gì: bấm Giao bài báo lỗi ngay tại chỗ, không gọi máy chủ.
   await page.getByRole('button', { name: 'Giao bài', exact: true }).click();
   await expect(page.getByText('Cần nhập tiêu đề bài.')).toBeVisible();

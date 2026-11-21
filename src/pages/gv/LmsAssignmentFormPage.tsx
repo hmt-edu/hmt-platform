@@ -27,6 +27,7 @@ import {
   type LmsAssignmentRow,
   type LmsFormErrors,
   type LmsList,
+  type LmsSessionLite,
 } from './lms';
 
 const PAGE_SIZE = 100; // allow-number: tối đa một trang theo quy ước hiệu năng
@@ -64,6 +65,13 @@ export function LmsAssignmentFormPage() {
       }),
   });
   const existing = editing ? list.data?.rows.find((r) => r.id === assignmentId) : undefined;
+  // Buổi giao chọn được: máy chủ chỉ trả buổi mà người này giao bài được (giáo viên, trợ giảng của buổi), tránh chọn buổi của người khác.
+  const giveable = useQuery({
+    queryKey: ['gv-lms-giveable', classId],
+    enabled: !editing,
+    queryFn: () =>
+      rpc<LmsSessionLite[]>(supabase, 'lms_giveable_sessions', { p_class_id: classId }),
+  });
 
   const back = (
     <Link className="text-link underline" to={`/gv/lop/${classId}/bai-giao`}>
@@ -71,22 +79,23 @@ export function LmsAssignmentFormPage() {
     </Link>
   );
 
-  if (klass.isPending || (editing && list.isPending))
+  if (klass.isPending || (editing && list.isPending) || (!editing && giveable.isPending))
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3 p-3">
         <h1 className="text-h2">{editing ? 'Sửa bài đã giao' : 'Giao bài trên LMS'}</h1>
         <Spinner />
       </div>
     );
-  if (klass.isError || (editing && list.isError))
+  if (klass.isError || (editing && list.isError) || (!editing && giveable.isError))
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3 p-3">
         <QueryErrorView
-          error={klass.error ?? list.error}
+          error={klass.error ?? list.error ?? giveable.error}
           subject="lớp này"
           onRetry={() => {
             void klass.refetch();
             if (editing) void list.refetch();
+            else void giveable.refetch();
           }}
         />
       </div>
@@ -102,6 +111,7 @@ export function LmsAssignmentFormPage() {
     <LmsForm
       key={assignmentId ?? 'moi'}
       klass={klass.data}
+      giveable={giveable.data ?? []}
       existing={existing}
       classId={classId}
       assignmentId={assignmentId}
@@ -112,12 +122,14 @@ export function LmsAssignmentFormPage() {
 
 function LmsForm({
   klass,
+  giveable,
   existing,
   classId,
   assignmentId,
   wantedSession,
 }: {
   klass: ClassOverview;
+  giveable: LmsSessionLite[];
   existing: LmsAssignmentRow | undefined;
   classId: string;
   assignmentId: string | undefined;
@@ -129,12 +141,13 @@ function LmsForm({
   const queryClient = useQueryClient();
   const editing = assignmentId !== undefined;
   const due = existing ? vnParts(existing.due_at) : { date: '', time: '' };
-  const sessions = giveableSessions(klass.sessions);
-  // Buổi giao mặc định (chế độ giao): buổi trong địa chỉ ?buoi=, không thì buổi gần nhất đã diễn ra hoặc đang diễn ra.
-  const todayKey = new Date().toISOString().slice(0, 10);
+  // Chế độ giao: chỉ buổi người này giao được (mới nhất trước). Sửa bài: buổi giao cố định theo bài.
+  const sessions = editing ? giveableSessions(klass.sessions) : giveable;
+  // Buổi giao mặc định: buổi trong địa chỉ ?buoi=, không thì buổi gần nhất đã diễn ra hoặc đang diễn ra, không có thì buổi sớm nhất sắp tới.
+  const todayKey = vnParts(new Date().toISOString()).date;
   const past = sessions.filter((s) => s.session_date <= todayKey);
   const defaultSession =
-    sessions.find((s) => s.id === wantedSession) ?? past[past.length - 1] ?? sessions[0];
+    sessions.find((s) => s.id === wantedSession) ?? past[0] ?? sessions[sessions.length - 1];
   const [sessionId, setSessionId] = useState(existing?.session_id ?? defaultSession?.id ?? '');
   const [audience, setAudience] = useState<'CA_LOP' | 'CHON_EM'>(existing?.audience ?? 'CA_LOP');
   const [studentIds, setStudentIds] = useState<string[]>([]);
