@@ -4,8 +4,7 @@
 // Q4 (mặc định Cho nộp lại bật, Nhận bài muộn tắt), Q10 (không có buổi sau: bắt buộc hạn), Q11 (tối thiểu 1 em).
 // Lệch khung có chủ đích (Chat 02:29, phương án B): chưa bật lưu tệp (ô đính kèm tắt, nói rõ lý do); mô tả bắt buộc; không có «Lưu nháp» (máy chủ chưa có bài nháp).
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { flushSync } from 'react-dom';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { errorOf, rpc, useDb } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
@@ -148,6 +147,11 @@ function LmsForm({
   const [errors, setErrors] = useState<LmsFormErrors>({});
   const [error, setError] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
+  // Đã lưu xong, đang chuyển màn: tắt bộ chặn «chưa lưu» rồi mới chuyển (làm trong effect để bộ chặn chắc chắn đã cập nhật).
+  const [leaveTo, setLeaveTo] = useState<string | null>(null);
+  useEffect(() => {
+    if (leaveTo !== null) void navigate(leaveTo, { replace: true });
+  }, [leaveTo, navigate]);
   const [confirm, setConfirm] = useState<'giao' | 'go' | null>(null);
 
   const next = nextSessionOf(klass.sessions, sessionId);
@@ -235,12 +239,11 @@ function LmsForm({
   async function onSubmit() {
     try {
       await save.mutateAsync();
-      // Tắt hộp «chưa lưu» ngay (trước khi chuyển màn), nếu không bộ chặn rời màn còn hiểu là đang nhập dở.
-      flushSync(() => setDirty(false));
+      setDirty(false);
+      setLeaveTo(listPath);
       setConfirm(null);
       void queryClient.invalidateQueries({ queryKey: ['gv-lms-list', classId] });
       toast({ tone: 'success', title: editing ? 'Đã lưu bài giao' : 'Đã giao bài' });
-      void navigate(listPath, { replace: true });
     } catch (e) {
       setConfirm(null);
       setError(errorOf(e).message);
@@ -249,12 +252,11 @@ function LmsForm({
   async function onWithdraw() {
     try {
       await withdraw.mutateAsync();
-      // Tắt hộp «chưa lưu» ngay (trước khi chuyển màn), nếu không bộ chặn rời màn còn hiểu là đang nhập dở.
-      flushSync(() => setDirty(false));
+      setDirty(false);
+      setLeaveTo(listPath);
       setConfirm(null);
       void queryClient.invalidateQueries({ queryKey: ['gv-lms-list', classId] });
       toast({ tone: 'success', title: 'Đã gỡ bài' });
-      void navigate(listPath, { replace: true });
     } catch (e) {
       setConfirm(null);
       setError(errorOf(e).message);
@@ -270,7 +272,7 @@ function LmsForm({
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4 p-3">
       <UnsavedGuard
-        when={dirty}
+        when={dirty && leaveTo === null}
         title="Rời màn khi chưa lưu?"
         description="Bài giao bạn vừa nhập chưa được lưu. Rời màn thì các thay đổi này mất."
       />
