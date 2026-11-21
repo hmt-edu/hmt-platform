@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { ListState } from '../../list/types';
-import { buildOrderFilters, nextOrderSort, orderSortParam } from './orderFilters';
+import {
+  ORDER_GROUP_FIELD_OF,
+  buildOrderFilters,
+  nextOrderSort,
+  orderGroupFilter,
+  orderSortParam,
+} from './orderFilters';
 
 const EMPTY: ListState = {
   search: '',
@@ -58,5 +64,11 @@ describe('bộ lọc danh sách Đơn hàng', () => {
       key: 'total',
       direction: 'desc',
     });
+  });
+
+  it('Group By «Sale» (BH-06): trường nhóm sale, mở nhóm lọc creator_id', () => {
+    expect(ORDER_GROUP_FIELD_OF.sale).toBe('sale');
+    expect(orderGroupFilter('sale', 'u-1')).toEqual({ creator_id: 'u-1' });
+    expect(orderGroupFilter('sale', '')).toEqual({});
   });
 });

@@ -71,6 +71,8 @@ export function nextOrderSort(sort: SortState): SortState {
 export const ORDER_GROUP_FIELD_OF: Record<string, string> = {
   status: 'status',
   branch: 'branch',
+  // Canvas BH06: nhóm «Sale» = người lập đơn (migration 604).
+  sale: 'sale',
 };
 
 /** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có», không lọc thêm). */
@@ -78,5 +80,6 @@ export function orderGroupFilter(field: string, key: string): OrderFilters {
   if (key === '') return {};
   if (field === 'status') return { status: [key] };
   if (field === 'branch') return { branch_id: key };
+  if (field === 'sale') return { creator_id: key };
   return {};
 }
