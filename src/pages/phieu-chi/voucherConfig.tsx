@@ -114,6 +114,8 @@ export function buildVoucherConfig(access: AccessView): ListConfig<VoucherRow> {
       ...(access.seesAllBranches
         ? [{ key: 'branch', label: 'Cơ sở', value: (r: VoucherRow) => r.branch_code }]
         : []),
+      // Canvas TC10: nhóm «Hình thức» (hình thức chi, danh mục PAYMENT_METHOD).
+      { key: 'method', label: 'Hình thức', value: (r) => r.payment_method_code ?? '' },
     ],
     dateFields: [{ key: 'created', label: 'Ngày lập' }],
     views: ['list'],

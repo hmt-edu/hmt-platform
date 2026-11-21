@@ -78,3 +78,14 @@ test('Thêm chiết khấu: thiếu thì báo tóm tắt; đủ thì lưu, rồi
   await row.getByRole('button', { name: 'Dùng lại' }).click();
   await expect(row).toContainText('Chưa tới hạn');
 });
+
+test('Lịch sử thay đổi: hộp hiện chính sách vừa tạo, sửa, Ngừng; đóng được', async ({ page }) => {
+  await open(page);
+  await page.getByRole('button', { name: 'Lịch sử thay đổi' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Lịch sử thay đổi' });
+  await expect(dialog.getByRole('row', { name: new RegExp(NAME) }).first()).toBeVisible();
+  await expect(dialog.getByText('Tạo mới').first()).toBeVisible();
+  await expect(dialog.getByText(/Trạng thái: .* → /).first()).toBeVisible();
+  await dialog.getByRole('button', { name: 'Đóng' }).first().click();
+  await expect(dialog).toHaveCount(0);
+});

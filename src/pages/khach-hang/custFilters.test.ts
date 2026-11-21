@@ -73,3 +73,26 @@ describe('newTicketForParentPath (nút Tạo ticket ở hồ sơ phụ huynh, KH
     );
   });
 });
+
+describe('Bộ lọc «Đang học tại» của KH-01 (migration 603)', () => {
+  it('điều kiện «Đang học tại» thành khoá studying_branch_id gửi list_parents', () => {
+    const state: ListState = {
+      ...empty,
+      conditions: [{ id: 'c1', field: 'studying', op: 'eq', value: 'cs1-id' }],
+    };
+    expect(buildParentFilters(state)).toEqual({ studying_branch_id: 'cs1-id' });
+  });
+  it('kết hợp với cơ sở tiếp nhận: hai khoá độc lập', () => {
+    const state: ListState = {
+      ...empty,
+      conditions: [
+        { id: 'c1', field: 'branch', op: 'eq', value: 'cs5-id' },
+        { id: 'c2', field: 'studying', op: 'eq', value: 'cs1-id' },
+      ],
+    };
+    expect(buildParentFilters(state)).toEqual({
+      branch_id: 'cs5-id',
+      studying_branch_id: 'cs1-id',
+    });
+  });
+});
