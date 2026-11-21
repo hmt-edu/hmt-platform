@@ -8,7 +8,6 @@ import { Pagination, Tag } from '../../ui/Data';
 import { StepDialog } from '../../ui/Dialogs';
 import { Alert, Spinner } from '../../ui/Feedback';
 import { Icon } from '../../ui/icons';
-import { Dialog } from '../../ui/Overlays';
 import { cn } from '../../ui/cn';
 import { downloadText } from '../lead/csv';
 import { parseCsv, type CsvTable } from '../lead/importCsv';
@@ -26,7 +25,8 @@ import {
 import { columnRows, sampleCsvText, type ImportKindConfig } from './importKinds';
 import { runImport } from './useImportData';
 
-const STEPS = ['Tải file', 'Xem trước'];
+// Khung QT18: bốn bước trong một hộp K4b. «Chọn loại» làm ở trang trước (bấm Nhập …), nên hộp mở ở bước 2; Quay lại ở bước 2 đóng hộp về trang chọn loại.
+const STEPS = ['Chọn loại', 'Tải file', 'Xem trước', 'Kết quả'];
 const PAGE_SIZE = 50;
 type Shown = 'ALL' | ImportRowStatus;
 
@@ -67,6 +67,7 @@ function ImportForm({
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const [done, setDone] = useState<ImportResult | null>(null);
+  const [passwordsSaved, setPasswordsSaved] = useState(false);
   const input = useRef<HTMLInputElement>(null);
 
   const built = useMemo(() => (file ? buildRows(file.table, config) : null), [file, config]);
@@ -130,34 +131,62 @@ function ImportForm({
   const shownRows = (result?.rows ?? []).filter((r) => shown === 'ALL' || r.status === shown);
   const pageRows = shownRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  if (done && file) {
-    return (
-      <ResultDialog config={config} file={file} result={done} onClose={() => onOpenChange(false)} />
-    );
-  }
+  // Bước kết quả (index trong hộp = 3): nạp xong. Người dùng có mật khẩu tạm thì chưa đóng được cho tới khi tải file.
+  const finished = done !== null;
+  const passwordsPending = finished && (done.passwords ?? []).length > 0 && !passwordsSaved;
+  const stepIndex = finished ? 3 : step + 1;
 
   return (
     <StepDialog
       open={open}
       onOpenChange={onOpenChange}
-      title={`Nhập ${config.title.toLowerCase()} từ file`}
+      title={
+        finished
+          ? `Đã nạp ${config.title.toLowerCase()}`
+          : `Nhập ${config.title.toLowerCase()} từ file`
+      }
       steps={STEPS}
-      step={step}
+      step={stepIndex}
       onStepChange={(next) => {
         setError(null);
-        if (next === 1) {
+        if (finished) return;
+        // Bước 1 «Chọn loại» là trang trước: Quay lại ở bước Tải file đóng hộp.
+        if (next === 0) {
+          onOpenChange(false);
+          return;
+        }
+        // Từ Xem trước sang Kết quả: nạp thật, xong mới sang bước kết quả.
+        if (next === 3) {
+          void finish();
+          return;
+        }
+        if (next === 2) {
           setShown('ALL');
           setPage(1);
           setNonce((n) => n + 1);
         }
-        setStep(next);
+        setStep(next - 1);
       }}
-      canNext={canNext}
-      onFinish={() => void finish()}
-      finishLabel="Nạp"
+      canNext={finished ? !passwordsPending : canNext}
+      onFinish={() => onOpenChange(false)}
+      finishLabel="Xong"
+      nextLabel={step === 1 ? 'Nạp thật' : 'Tiếp'}
+      backLabel={step === 1 ? 'Đổi file' : 'Quay lại'}
+      hideBack={finished}
+      hideCancel={finished}
+      locked={passwordsPending}
       busy={busy}
     >
-      {step === 0 && (
+      {finished && file && (
+        <ResultBody
+          file={file}
+          config={config}
+          result={done}
+          saved={passwordsSaved}
+          onSaved={() => setPasswordsSaved(true)}
+        />
+      )}
+      {!finished && step === 0 && (
         <div className="flex flex-col gap-2">
           <label
             htmlFor="import-data-file"
@@ -231,7 +260,7 @@ function ImportForm({
         </div>
       )}
 
-      {step === 1 && (
+      {!finished && step === 1 && (
         <div className="flex flex-col gap-3">
           {(preview.isPending || preview.isFetching) && <Spinner label="Đang kiểm các dòng…" />}
           {preview.isError && <Alert tone="danger">{errorOf(preview.error).message}</Alert>}
@@ -413,78 +442,66 @@ function ResultTable({ config, rows }: { config: ImportKindConfig; rows: ImportL
   );
 }
 
-/** Hộp kết quả sau khi nạp thật. Người dùng: mật khẩu tạm chỉ hiện một lần, tải ngay. */
-function ResultDialog({
+/** Bước «Kết quả» sau khi nạp thật (trong hộp nhiều bước). Người dùng: mật khẩu tạm chỉ hiện một lần, tải ngay. */
+function ResultBody({
   config,
   file,
   result,
-  onClose,
+  saved,
+  onSaved,
 }: {
   config: ImportKindConfig;
   file: { name: string; table: CsvTable };
   result: ImportResult;
-  onClose: () => void;
+  saved: boolean;
+  onSaved: () => void;
 }) {
-  const [saved, setSaved] = useState(false);
   const passwords = result.passwords ?? [];
   const problems = result.rows.filter((r) => r.status !== 'HOP_LE');
   return (
-    <Dialog
-      open
-      onOpenChange={() => undefined}
-      title={`Đã nạp ${config.title.toLowerCase()}`}
-      wide
-      dismissible={false}
-      footer={
-        <Button variant="primary" disabled={passwords.length > 0 && !saved} onClick={onClose}>
-          Xong
-        </Button>
-      }
-    >
-      <div className="flex flex-col gap-3">
-        <p>
-          <b className="tabular">{result.imported}</b> dòng đã nạp,{' '}
-          <b className="tabular">{result.duplicates}</b> dòng trùng bỏ qua,{' '}
-          <b className="tabular">{result.errors}</b> dòng lỗi (tổng {result.total} dòng).
-        </p>
-        {result.summary && <SummaryBlock summary={result.summary} />}
-        {passwords.length > 0 && (
-          <Alert tone="warning">
-            Mật khẩu tạm của {passwords.length} tài khoản chỉ hiện <b>một lần</b>, không lưu ở đâu.
-            Tải file ngay để giao từng người; người dùng phải đổi mật khẩu ở lần đăng nhập đầu. Chưa
-            tải thì chưa đóng được hộp này.
-            <div className="mt-2">
-              <Button
-                icon="download"
-                onClick={() => {
-                  downloadText('mat-khau-tam.csv', passwordsCsv(passwords));
-                  setSaved(true);
-                }}
-              >
-                Tải file mật khẩu tạm
-              </Button>
-              {saved && <span className="ml-2 text-caption">Đã tải.</span>}
-            </div>
-          </Alert>
-        )}
-        {problems.length > 0 && (
-          <div>
+    <div className="flex flex-col gap-3">
+      <p>
+        <b className="tabular">{result.imported}</b> dòng đã nạp,{' '}
+        <b className="tabular">{result.duplicates}</b> dòng trùng bỏ qua,{' '}
+        <b className="tabular">{result.errors}</b> dòng lỗi (tổng {result.total} dòng).
+      </p>
+      {result.summary && <SummaryBlock summary={result.summary} />}
+      {passwords.length > 0 && (
+        <Alert tone="warning">
+          Mật khẩu tạm của {passwords.length} tài khoản chỉ hiện <b>một lần</b>, không lưu ở đâu.
+          Tải file ngay để giao từng người; người dùng phải đổi mật khẩu ở lần đăng nhập đầu. Chưa
+          tải thì chưa đóng được hộp này.
+          <div className="mt-2">
             <Button
               icon="download"
-              onClick={() =>
-                downloadText(`dong-loi-${file.name}`, errorRowsCsv(file.table, config, result))
-              }
+              onClick={() => {
+                downloadText('mat-khau-tam.csv', passwordsCsv(passwords));
+                onSaved();
+              }}
             >
-              Tải dòng lỗi và trùng ({problems.length})
+              Tải file mật khẩu tạm
             </Button>
-            <p className="mt-1 text-caption text-fg-muted">
-              File giữ nguyên các cột của file gốc, thêm cột ket_qua và ly_do. Sửa rồi nạp lại: dòng
-              đã nạp sẽ báo trùng, bỏ qua.
-            </p>
+            {saved && <span className="ml-2 text-caption">Đã tải.</span>}
           </div>
-        )}
-      </div>
-    </Dialog>
+        </Alert>
+      )}
+      {problems.length > 0 && (
+        <div>
+          <Button
+            icon="download"
+            onClick={() =>
+              downloadText(`dong-loi-${file.name}`, errorRowsCsv(file.table, config, result))
+            }
+          >
+            Tải dòng lỗi và trùng ({problems.length})
+          </Button>
+          <p className="mt-1 text-caption text-fg-muted">
+            File giữ nguyên các cột của file gốc, thêm cột ket_qua và ly_do. Sửa rồi nạp lại: dòng
+            đã nạp sẽ báo trùng, bỏ qua.
+          </p>
+        </div>
+      )}
+    </div>
   );
 }
 

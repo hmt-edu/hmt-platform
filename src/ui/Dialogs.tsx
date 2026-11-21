@@ -507,6 +507,11 @@ export function StepDialog({
   onFinish,
   finishLabel,
   busy = false,
+  nextLabel = 'Tiếp',
+  backLabel = 'Quay lại',
+  hideBack = false,
+  hideCancel = false,
+  locked = false,
   children,
 }: {
   open: boolean;
@@ -521,24 +526,36 @@ export function StepDialog({
   /** Nút chính ở bước cuối ("Nhập"). */
   finishLabel: string;
   busy?: boolean | undefined;
+  /** Nhãn nút «Tiếp» ở các bước giữa (ví dụ «Nạp thật» ở bước xem trước của QT-18). */
+  nextLabel?: string | undefined;
+  /** Nhãn nút quay lại (ví dụ «Đổi file»). */
+  backLabel?: string | undefined;
+  /** Ẩn nút quay lại (bước kết quả không quay lại được). */
+  hideBack?: boolean | undefined;
+  /** Ẩn nút Huỷ (bước kết quả chỉ còn nút chính). */
+  hideCancel?: boolean | undefined;
+  /** Khoá đóng hộp (Huỷ, Esc, bấm nền) cho tới khi người dùng làm xong việc bắt buộc (tải mật khẩu tạm). */
+  locked?: boolean | undefined;
   children: ReactNode;
 }) {
   const last = step === steps.length - 1;
   return (
     <Dialog
       open={open}
-      onOpenChange={(next) => !busy && onOpenChange(next)}
+      onOpenChange={(next) => !busy && !locked && onOpenChange(next)}
       title={title}
       wide
-      dismissible={!busy}
+      dismissible={!busy && !locked}
       footer={
         <>
-          <Button onClick={() => onOpenChange(false)} disabled={busy}>
-            Huỷ
-          </Button>
-          {step > 0 && (
+          {!hideCancel && (
+            <Button onClick={() => onOpenChange(false)} disabled={busy || locked}>
+              Huỷ
+            </Button>
+          )}
+          {step > 0 && !hideBack && (
             <Button onClick={() => onStepChange(step - 1)} disabled={busy}>
-              Quay lại
+              {backLabel}
             </Button>
           )}
           <Button
@@ -547,7 +564,7 @@ export function StepDialog({
             disabled={!canNext}
             onClick={() => (last ? onFinish() : onStepChange(step + 1))}
           >
-            {last ? finishLabel : 'Tiếp'}
+            {last ? finishLabel : nextLabel}
           </Button>
         </>
       }
