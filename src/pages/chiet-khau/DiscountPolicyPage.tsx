@@ -2,6 +2,7 @@
 // Luật R-TIEN-29, R-TIEN-30, R-TIEN-14 (Ngừng thì không hiện ở chỗ chọn mới; đơn cũ giữ giá trị đã chụp; không xoá). Quyền Cấu hình bán hàng, DB kiểm.
 // VÊNH CANVAS (làm theo luật và DB, ghi ở PR): DB chỉ có kiểu % và Giờ tặng (không «Số tiền cố định»), «Giá trị» và «Mức tối đa» là một (max_value, kèm cờ «áp đúng mức»).
 // Chính sách «Ưu đãi linh hoạt» (hệ thống, hạn mức ở Tham số nghiệp vụ) không sửa, không ngừng ở màn này.
+import { PolicyHistoryDialog } from './PolicyHistoryDialog';
 import { useState } from 'react';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate } from '../../lib/format';
@@ -67,6 +68,7 @@ export function DiscountPolicyPage() {
   const [tab, setTab] = useState('discount');
   const [editing, setEditing] = useState<Editing | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const canCreate = access.can('CONFIG_SALES', 'TAO');
   const canEdit = access.can('CONFIG_SALES', 'SUA');
   const branches = access.teachingBranches;
@@ -234,7 +236,13 @@ export function DiscountPolicyPage() {
 
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <h1 className="text-h1">Chính sách chiết khấu</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-h1">Chính sách chiết khấu</h1>
+        <Button icon="history" onClick={() => setHistoryOpen(true)}>
+          Lịch sử thay đổi
+        </Button>
+      </div>
+      <PolicyHistoryDialog open={historyOpen} onOpenChange={setHistoryOpen} />
       {failed ? (
         <StateView
           kind="error"
