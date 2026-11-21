@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ListState } from '../../list/types';
-import { buildVoucherFilters } from './voucherFilters';
+import { VOUCHER_GROUP_FIELD_OF, buildVoucherFilters, voucherGroupFilter } from './voucherFilters';
 
 const base: ListState = {
   search: '',
@@ -33,5 +33,13 @@ describe('buildVoucherFilters', () => {
       ],
     };
     expect(buildVoucherFilters(state)).toEqual({ branch_id: 'b1', status: ['DA_CHI'] });
+  });
+
+  it('Group By «Hình thức» (TC-10): trường nhóm method, mở nhóm lọc payment_method', () => {
+    expect(VOUCHER_GROUP_FIELD_OF.method).toBe('method');
+    expect(voucherGroupFilter('method', 'CHUYEN_KHOAN')).toEqual({
+      payment_method: ['CHUYEN_KHOAN'],
+    });
+    expect(voucherGroupFilter('method', '')).toEqual({});
   });
 });

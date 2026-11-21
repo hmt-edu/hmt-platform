@@ -47,7 +47,7 @@ select is((select g ->> 'l1' from jsonb_array_elements(app.order_group_counts('{
 select is(jsonb_array_length(app.order_group_counts('{"q": "DHC69"}'::jsonb, array['status', 'branch']) -> 'groups'), 3, 'Hai cấp tình trạng, cơ sở: ba nhóm lá (Nháp CS5, Nháp CS1, Đã duyệt CS5)');
 select is((app.order_group_counts(jsonb_build_object('q', 'DHC69', 'branch_id', (select id from app.branch where code = 'CS1')), array['status']) ->> 'total')::int, 1, 'Bộ lọc cơ sở áp dụng cho số đếm');
 select is((app.order_group_counts('{"q": "DHC69", "status": ["DA_DUYET"]}'::jsonb, array['branch']) ->> 'total')::int, 1, 'Bộ lọc tình trạng áp dụng cho số đếm');
-select is(pg_temp.err($$select app.order_group_counts('{}'::jsonb, array['sale'])$$), 'HMT_NHOM_SAI', 'Chặn: trường nhóm không cho phép');
+select is(pg_temp.err($$select app.order_group_counts('{}'::jsonb, array['creator'])$$), 'HMT_NHOM_SAI', 'Chặn: trường nhóm không cho phép');
 select is(pg_temp.err($$select app.order_group_counts('{}'::jsonb, array['status', 'status'])$$), 'HMT_NHOM_SAI', 'Chặn: hai cấp giống nhau');
 select is(pg_temp.err($$select app.order_group_counts('{}'::jsonb, array['status', 'branch', 'status'])$$), 'HMT_NHOM_SAI', 'Chặn: quá hai cấp');
 select is(pg_temp.err($$select app.order_group_counts('{}'::jsonb, array[]::text[])$$), 'HMT_NHOM_SAI', 'Chặn: không chọn trường nhóm');

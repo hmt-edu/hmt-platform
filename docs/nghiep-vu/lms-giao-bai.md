@@ -27,3 +27,8 @@ Ma trận hiện có cho vai SALES (Xem, theo cơ sở) và MARKETING (Xem, toà
 | `app.lms_save_grade(p_assignment_id, p_student_id, p_status, p_score, p_note, p_version)` | Lưu trạng thái, điểm 1–5, ghi chú; Không làm, Nộp sau, Không áp dụng thì bỏ điểm (Q5); em chưa nộp: chỉ Nộp sau, Không làm (vắng: thêm Không áp dụng); «Nộp sau» chưa đóng dấu đã chấm | `HMT_DIEM_KHONG_HOP_LE`, `HMT_LMS_CHUA_NOP_BAI`, `HMT_XUNG_DOT`, `HMT_LMS_DA_GO`, `HMT_LMS_EM_KHONG_NHAN_BAI` |
 | `app.lms_reopen_submission(p_assignment_id, p_student_id)` | Mở lại bài đã chấm để em nộp lại (R-LMS-03; UI hỏi xác nhận, Q12); điểm cũ giữ đến khi chấm lại | `HMT_LMS_CHUA_CHAM`, `HMT_LMS_DA_GO` |
 Quyền như migration 597: Xem dùng ATTENDANCE Xem, Chấm và Mở lại dùng ATTENDANCE Sửa (Q14), công tắc HOC_TAP.
+
+## EXPLAIN trên dữ liệu giả lớn (21/11/2026, máy local)
+Nạp 20.000 bài giao, khoảng 100.000 dòng em nhận bài, khoảng 50.000 bài nộp (dữ liệu giả, chỉ để thử tốc độ). Cả hai câu chính đều dùng chỉ mục, không quét cả bảng lớn:
+- **«Bài đã giao» của một lớp** (`lms_list_assignments`, 50 dòng mới nhất kèm số em nhận, đã nộp, đã chấm): dùng `lms_assignment_class_idx (class_id, created_at desc)` và khoá duy nhất `(assignment_id, student_id)` của bảng em nhận, bài nộp; **7,4 ms** thực thi.
+- **Danh sách em của một bài** (`lms_grading_list`): dùng khoá duy nhất `(assignment_id, student_id)` của `lms_assignment_target` và `lms_submission`, khoá chính `lms_assignment`; **0,5 ms** thực thi.
