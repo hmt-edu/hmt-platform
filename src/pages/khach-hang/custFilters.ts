@@ -16,6 +16,7 @@ export function buildParentFilters(state: ListState): CustFilters {
   for (const c of state.conditions) {
     const v = valuesOf(c);
     if (v.length > 0 && c.op === 'eq' && c.field === 'branch') f.branch_id = v[0];
+    if (v.length > 0 && c.op === 'eq' && c.field === 'studying') f.studying_branch_id = v[0];
   }
   return f;
 }

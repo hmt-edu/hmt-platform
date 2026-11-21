@@ -53,7 +53,7 @@ select is((select g ->> 'l1' from jsonb_array_elements(app.voucher_group_counts(
 select is(jsonb_array_length(app.voucher_group_counts('{"q": "PCC69"}'::jsonb, array['status', 'branch']) -> 'groups'), 3, 'Hai cấp tình trạng, cơ sở: ba nhóm lá');
 select is((app.voucher_group_counts('{"q": "PCC69", "status": ["DA_CHI"]}'::jsonb, array['branch']) ->> 'total')::int, 1, 'Bộ lọc tình trạng áp dụng cho số đếm');
 select is((app.list_payment_vouchers_grouped('{"q": "PCC69", "status": ["CHO_CHI"]}'::jsonb, 'created_desc', 50, 0) ->> 'total')::int, 3, 'Vỏ bọc mở nhóm lá trả đúng 3 phiếu Chờ chi');
-select is(pg_temp.err($$select app.voucher_group_counts('{}'::jsonb, array['method'])$$), 'HMT_NHOM_SAI', 'Chặn: trường nhóm không cho phép (hình thức chưa có dữ liệu)');
+select is(pg_temp.err($$select app.voucher_group_counts('{}'::jsonb, array['creator'])$$), 'HMT_NHOM_SAI', 'Chặn: trường nhóm không cho phép (hình thức chưa có dữ liệu)');
 select is(pg_temp.err($$select app.voucher_group_counts('{}'::jsonb, array['status', 'status'])$$), 'HMT_NHOM_SAI', 'Chặn: hai cấp giống nhau');
 select pg_temp.claims(pg_temp.uid('gv5'), 'aal1');
 select is(pg_temp.err($$select app.voucher_group_counts('{}'::jsonb, array['status'])$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên không có quyền xem phiếu chi');

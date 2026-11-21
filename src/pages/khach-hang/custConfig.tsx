@@ -85,6 +85,7 @@ export function buildParentConfig(branches: Option[]): ListConfig<ParentRow> {
     ],
     filterFields: [
       { key: 'branch', label: 'Cơ sở tiếp nhận', type: 'select', ops: ['eq'], options: branches },
+      { key: 'studying', label: 'Đang học tại', type: 'select', ops: ['eq'], options: branches },
     ],
     groupFields: [
       {
