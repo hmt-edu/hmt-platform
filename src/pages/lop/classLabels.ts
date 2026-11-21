@@ -43,7 +43,13 @@ export function classNotes(status: string, slotCount: number): ClassNotes {
         }
       : status === 'NHAP'
         ? { top: { tone: 'info', text: 'Lớp ở Nháp: sửa được thông tin.' } }
-        : {};
+        : {
+            // Canvas LOP02_tu_choi: lớp bị từ chối vẫn sửa được; lý do từ chối nằm ở dòng thời gian.
+            top: {
+              tone: 'warning',
+              text: 'Lớp bị từ chối, lý do ở dòng thời gian. Sửa được; bấm “Đưa về Nháp” hoặc sửa rồi trình lại.',
+            },
+          };
   }
   if (status === 'DA_TRINH') {
     return {
@@ -57,8 +63,20 @@ export function classNotes(status: string, slotCount: number): ClassNotes {
   }
   if (status === 'DA_XAC_NHAN') {
     return {
+      top: {
+        tone: 'info',
+        text: 'Lớp đã xác nhận, đang chờ quản lý cơ sở duyệt. Chỉ sửa được Time Table; thông tin khác bị khoá (R-LOP-02).',
+      },
       bottom:
-        'Lớp đã xác nhận: chỉ sửa được Time Table (giáo viên, lịch học tự cập nhật theo); thông tin khác của lớp vẫn khoá. Sửa Time Table thì lớp quay về Đã trình để quản lý cơ sở duyệt đúng bản cuối.',
+        'Lớp đã xác nhận: chỉ sửa được Time Table (giáo viên, lịch học tự cập nhật theo); thông tin khác bị khoá. Sửa Time Table thì lớp quay về Đã trình để quản lý duyệt lại (R-LOP-02).',
+    };
+  }
+  if (status === 'HUY' || status === 'DA_DONG') {
+    return {
+      top: {
+        tone: 'info',
+        text: status === 'HUY' ? 'Lớp đã huỷ, chỉ còn xem.' : 'Lớp đã đóng, chỉ còn xem.',
+      },
     };
   }
   if (status === 'DA_DUYET') {
