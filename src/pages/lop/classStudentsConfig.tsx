@@ -89,7 +89,12 @@ export function buildClassStudentsConfig(opts: {
       { key: 'delivery', label: 'Hình thức học', options: opts.modes },
     ],
     filterFields: [],
-    groupFields: [],
+    // Canvas LOP09: nhóm Tình trạng, Cơ sở phụ trách, Hình thức học (máy chủ đếm, migration 606).
+    groupFields: [
+      { key: 'state', label: 'Tình trạng', value: (r) => (r.end_date ? 'DA_ROI' : 'DANG_HOC') },
+      { key: 'branch', label: 'Cơ sở phụ trách', value: (r) => r.branch_code ?? '' },
+      { key: 'delivery', label: 'Hình thức học', value: (r) => r.delivery_mode_code ?? '' },
+    ],
     dateFields: [],
     views: ['list'],
   };

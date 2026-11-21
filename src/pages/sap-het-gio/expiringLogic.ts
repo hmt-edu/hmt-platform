@@ -65,3 +65,12 @@ export function expiringIntro(
   if (hoursThreshold === null || daysThreshold === null) return base;
   return `${base} Gắn «Sắp hết giờ» khi giờ còn ≤ ${hoursThreshold} giờ hoặc ngày hết giờ dự kiến ≤ ${daysThreshold} ngày tính từ hôm nay (${todayText}).`;
 }
+
+/** Trường nhóm giao diện GD-07 (canvas GD07: Tình trạng) → tên trường của app.expiring_group_counts. */
+export const EXPIRING_GROUP_FIELD_OF: Record<string, string> = { status: 'status' };
+
+/** Bộ lọc của MỘT nhóm (để mở nhóm tải dòng bằng list_expiring_enrollments). */
+export function expiringGroupFilter(field: string, key: string): Record<string, unknown> {
+  if (field === 'status' && key !== '') return { status: [key] };
+  return {};
+}

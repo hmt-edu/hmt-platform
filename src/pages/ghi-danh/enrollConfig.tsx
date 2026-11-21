@@ -153,7 +153,11 @@ export function buildQueueConfig(
     ],
     quickGroups: [{ key: 'mode', label: 'Hình thức học', options: modeOptions }],
     filterFields: [{ key: 'mode', label: 'Hình thức học', type: 'multi', options: modeOptions }],
-    groupFields: [],
+    // Canvas GD06 (anh chốt 21/11): nhóm Lý do chờ (luôn «Chưa có lớp», R-GD-05) và Hình thức học; máy chủ đếm (migration 606).
+    groupFields: [
+      { key: 'reason', label: 'Lý do chờ', value: () => 'CHUA_CO_LOP' },
+      { key: 'mode', label: 'Hình thức học', value: (r) => r.delivery_mode_code ?? '' },
+    ],
     dateFields: [],
     views: ['list'],
   };

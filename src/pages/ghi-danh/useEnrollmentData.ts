@@ -38,11 +38,16 @@ export function useEnrollmentPage(
   });
 }
 
-export function useEnrollmentQueue(filters: EnrollFilters, offset: number, limit: number | null) {
+export function useEnrollmentQueue(
+  filters: EnrollFilters,
+  offset: number,
+  limit: number | null,
+  enabled = true,
+) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['enrollment-queue', filters, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<QueuePage>(supabase, 'enrollment_queue', {
@@ -148,9 +153,13 @@ export function useRefreshEnrollments() {
   const queryClient = useQueryClient();
   return useCallback(async () => {
     await Promise.all(
-      ['enrollment-list', 'enrollment-queue', 'enrollment-record', 'enrollment-ledger'].map((key) =>
-        queryClient.invalidateQueries({ queryKey: [key] }),
-      ),
+      [
+        'enrollment-list',
+        'enrollment-queue',
+        'enrollment-queue-groups',
+        'enrollment-record',
+        'enrollment-ledger',
+      ].map((key) => queryClient.invalidateQueries({ queryKey: [key] })),
     );
   }, [queryClient]);
 }
@@ -191,6 +200,21 @@ export function useSameClassPeers(id: string | undefined) {
 }
 
 /** Đếm nhóm cho Group By (một đến hai cấp), tính ở máy chủ. */
+/** Số ghi danh chờ xếp lớp theo trường nhóm (Group By ở máy chủ, tối đa hai cấp): app.enrollment_queue_group_counts. */
+export function useQueueGroupCounts(filters: EnrollFilters, fields: string[]) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['enrollment-queue-groups', filters, fields],
+    enabled: fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'enrollment_queue_group_counts', {
+        p_filters: filters,
+        p_fields: fields,
+      }),
+  });
+}
+
 export function useEnrollmentGroupCounts(filters: EnrollFilters, fields: string[]) {
   const supabase = useDb();
   return useQuery({

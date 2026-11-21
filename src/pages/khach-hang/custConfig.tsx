@@ -166,7 +166,12 @@ export function buildStudentConfig(branches: Option[], grades: Option[]): ListCo
       { key: 'branch', label: 'Cơ sở tiếp nhận', type: 'select', ops: ['eq'], options: branches },
       { key: 'grade', label: 'Khối', type: 'select', ops: ['eq'], options: grades },
     ],
-    groupFields: [],
+    // Canvas KH04: nhóm Tình trạng, Khối, Cơ sở tiếp nhận (máy chủ đếm, migration 606).
+    groupFields: [
+      { key: 'status', label: 'Tình trạng', value: (r) => r.status },
+      { key: 'grade', label: 'Khối', value: (r) => (r.grade ? String(r.grade) : '') },
+      { key: 'branch', label: 'Cơ sở tiếp nhận', value: (r) => r.branch_code },
+    ],
     dateFields: [],
     views: ['list'],
   };
