@@ -40,7 +40,7 @@ export function useGiftPolicies() {
             .schema('app')
             .from('gift_policy')
             .select(
-              'id, code, name, gift_package_id, max_quantity, requires_approval, valid_from, valid_to, package_type_codes, branch_ids, is_active, gift_package:sales_package(code, name, package_type_code)',
+              'id, code, name, gift_package_id, max_quantity, requires_approval, valid_from, valid_to, package_type_codes, branch_ids, is_active, applies_to, gift_package:sales_package(code, name, package_type_code)',
             )
             .order('name'),
         )

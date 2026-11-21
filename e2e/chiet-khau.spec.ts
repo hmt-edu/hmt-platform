@@ -50,6 +50,11 @@ test('Hai tab Chiết khấu và Quà tặng; chính sách Ưu đãi linh hoạt
   await expect(flexible.getByRole('button', { name: 'Sửa' })).toHaveCount(0);
   await page.getByRole('tab', { name: /^Quà tặng/ }).click();
   await expect(page.getByRole('button', { name: 'Thêm quà tặng' })).toBeVisible();
+  // Quà tặng có cột «Áp dụng cho» và ô cùng tên trong form (canvas CH04_chinh).
+  await expect(page.getByRole('columnheader', { name: 'Áp dụng cho' })).toBeVisible();
+  await page.getByRole('button', { name: 'Thêm quà tặng' }).click();
+  await expect(page.getByRole('dialog').getByText('Áp dụng cho *')).toBeVisible();
+  await page.getByRole('dialog').getByRole('button', { name: 'Huỷ' }).click();
   await expectAccessible(page);
 });
 

@@ -31,6 +31,7 @@ export type GiftPolicy = {
   package_type_codes: string[];
   branch_ids: string[];
   is_active: boolean;
+  applies_to: string[];
   gift_package: { code: string; name: string; package_type_code: string } | null;
 };
 
