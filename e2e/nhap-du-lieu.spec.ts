@@ -41,6 +41,15 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   await page.getByRole('button', { name: 'Nhập phụ huynh' }).click();
   const dialog = page.getByRole('dialog', { name: 'Nhập phụ huynh từ file' });
   await expect(dialog.getByRole('button', { name: 'Tiếp' })).toBeDisabled();
+  // So canvas QT18 (anh chốt 21/11, khuôn K4b): bốn bước trong một hộp, hộp mở ở bước Tải file.
+  const stepList = dialog.getByRole('list', { name: 'Các bước' });
+  await expect(stepList.getByRole('listitem')).toHaveText([
+    /Chọn loại/,
+    /Tải file/,
+    /Xem trước/,
+    /Kết quả/,
+  ]);
+  await expect(stepList.getByRole('listitem').nth(1)).toHaveAttribute('aria-current', 'step');
   // So canvas QT18_sai_dinh_dang: file không phải CSV bị từ chối kèm cách lưu lại.
   await dialog.getByLabel('Chọn file CSV').setInputFiles({
     name: 'phu-huynh.xlsx',
@@ -60,6 +69,10 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   await expect(cols.getByRole('columnheader', { name: 'Ý nghĩa' })).toBeVisible();
   await expect(cols.getByRole('row', { name: /ho_ten.*Bắt buộc/ })).toBeVisible();
   await dialog.getByRole('button', { name: 'Tiếp' }).click();
+  // Bước Xem trước: nút «Đổi file» (quay lại) và «Nạp thật».
+  await expect(stepList.getByRole('listitem').nth(2)).toHaveAttribute('aria-current', 'step');
+  await expect(dialog.getByRole('button', { name: 'Đổi file' })).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Nạp thật', exact: true })).toBeVisible();
 
   // Hai hợp lệ, một trùng SĐT với dòng trước, một lỗi (SĐT thiếu số).
   const tiles = dialog.getByRole('button', { pressed: false });
@@ -80,8 +93,14 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   await expect(dialog.getByText('Chị Nạp')).toHaveCount(0);
   await expect(dialog.getByText(`09${stamp}`)).toHaveCount(0);
 
-  await dialog.getByRole('button', { name: 'Nạp', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Nạp thật', exact: true }).click();
   const done = page.getByRole('dialog', { name: 'Đã nạp phụ huynh' });
+  // Bước Kết quả trong cùng hộp: không còn Huỷ, Đổi file; chỉ còn Xong.
+  await expect(
+    done.getByRole('list', { name: 'Các bước' }).getByRole('listitem').nth(3),
+  ).toHaveAttribute('aria-current', 'step');
+  await expect(done.getByRole('button', { name: 'Huỷ' })).toHaveCount(0);
+  await expect(done.getByRole('button', { name: 'Đổi file' })).toHaveCount(0);
   await expect(done.getByText(/dòng trùng bỏ qua/)).toContainText(
     '2 dòng đã nạp, 1 dòng trùng bỏ qua, 1 dòng lỗi',
   );
@@ -108,7 +127,7 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
     again.getByRole('button', { pressed: false }).filter({ hasText: 'Hợp lệ' }),
   ).toContainText('0');
   await expect(again.getByText('Chưa có dòng hợp lệ nào để nạp.')).toBeVisible();
-  await expect(again.getByRole('button', { name: 'Nạp', exact: true })).toBeDisabled();
+  await expect(again.getByRole('button', { name: 'Nạp thật', exact: true })).toBeDisabled();
 });
 
 test('Nhập Người dùng: file thiếu cột bắt buộc bị chặn ngay ở bước tải file, nêu tên cột', async ({
@@ -199,7 +218,7 @@ test('Nhập Cơ hội: báo cáo theo giai đoạn, dòng thiếu thông tin em
   // Không in họ tên, SĐT; cảnh báo nêu rõ thiếu thông tin em.
   await expect(dialog.getByText('Chị Cơ Hội')).toHaveCount(0);
   await expect(dialog.getByText(/Thiếu thông tin em \(dữ liệu cũ\)/)).toBeVisible();
-  await dialog.getByRole('button', { name: 'Nạp', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Nạp thật', exact: true }).click();
   const done = page.getByRole('dialog', { name: 'Đã nạp cơ hội' });
   await expect(done.getByText(/dòng trùng bỏ qua/)).toContainText(
     '2 dòng đã nạp, 0 dòng trùng bỏ qua, 1 dòng lỗi',
