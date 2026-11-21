@@ -146,6 +146,8 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
       ...(access.seesAllBranches
         ? [{ key: 'branch', label: 'Cơ sở', value: (r: OrderRow) => r.branch_code }]
         : []),
+      // Canvas BH06: nhóm «Sale» = người lập đơn.
+      { key: 'sale', label: 'Sale', value: (r) => r.created_by_name ?? '' },
     ],
     dateFields: [{ key: 'created', label: 'Ngày tạo' }],
     views: ['list'],
