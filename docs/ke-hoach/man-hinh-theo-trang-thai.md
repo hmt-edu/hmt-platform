@@ -120,7 +120,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TC-16 | Dùng số dư khách hàng cho đơn mới | C | **Có màn** `src/pages/don-hang/UseBalanceDialog.tsx` | không có khung | chưa kiểm | — | Code C/D |
 | TC-17 | Quản lý duyệt phiếu thu | B | **Có màn** `src/features/approver-reassign/ReassignApproverDialog.tsx` | có (9 khung) | Gần đúng | — | Code C/D |
 | GD-01 | Ghi danh (danh sách) | B | **Có màn** `/crm/ghi-danh` | có (16 khung) | Đúng | ghi-danh.spec.ts | Code A |
-| GD-02 | Ghi danh (bản ghi) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (36 khung) | Lệch (chưa sửa) | ghi-danh.spec.ts | Code A |
+| GD-02 | Ghi danh (bản ghi) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (36 khung) | Gần đúng (so lại 20/11, #412 #446; còn ticket CS-04) | ghi-danh.spec.ts | Code A |
 | GD-03 | Xếp lớp cho ghi danh (theo nhóm hoặc theo lớp) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (24 khung) | Đúng | duong-di-hoc-sinh.spec.ts, ghi-danh-nhom.spec.ts | Code A |
 | GD-04 | Sổ giờ của ghi danh | B | **Có màn** `src/pages/ghi-danh/EnrollmentLedgerPage.tsx` | có (16 khung) | Lệch → đã sửa | ghi-danh-dieu-chinh-gio.spec.ts, ghi-danh.spec.ts | Code A |
 | GD-05 | Điều chỉnh giờ (dòng ngược dấu, bắt buộc lý do) | B | **Có màn** `src/pages/ghi-danh/AdjustHoursDialog.tsx` | có (4 khung) | Gần đúng | ghi-danh-dieu-chinh-gio.spec.ts, ghi-danh.spec.ts | Code A |
@@ -130,15 +130,15 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TT-02 | Phiếu tái tục (bản ghi) | B | **Có màn** `src/pages/bao-gia/QuotationCreatePage.tsx` | có (16 khung) | Gần đúng | — | Code C |
 | TT-03 | Tạo phiếu tái tục thủ công | C | **Có màn** `src/pages/ghi-danh/EnrollmentRecordPage.tsx` | có (2 khung) | Gần đúng | ghi-danh.spec.ts | Code C |
 | LOP-01 | Lớp (danh sách / kanban theo bước duyệt) | B | **Có màn** `/crm/lop` | có (17 khung) | Lệch → đã sửa | lop.spec.ts | Code A |
-| LOP-02 | Lớp (bản ghi) | A | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (27 khung) | Lệch (chưa sửa) | lop.spec.ts | Code A |
-| LOP-03 | Tạo / sửa lớp (chỉ ở Nháp, Từ chối) | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | có (26 khung) | Lệch (chưa sửa) | lop.spec.ts | Code A |
-| LOP-04 | Thời khoá biểu lớp **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | A | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
+| LOP-02 | Lớp (bản ghi) | A | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (27 khung) | Gần đúng (so lại 21/11, #407 #420 #471) | lop.spec.ts | Code A |
+| LOP-03 | Tạo / sửa lớp (chỉ ở Nháp, Từ chối) | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | có (26 khung) | Gần đúng (so lại 21/11, #407) | lop.spec.ts | Code A |
+| LOP-04 | Thời khoá biểu lớp **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | A | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | Gần đúng (gộp vào LOP-03, so cùng LOP-03) | — | Code A |
 | LOP-05 | Trình / xác nhận / duyệt / từ chối lớp | B | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (12 khung) | Gần đúng | lop.spec.ts | Code A |
 | LOP-06 | Đóng / huỷ lớp (bị chặn thì liệt kê lý do) | B | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (6 khung) | Gần đúng | lop.spec.ts | Code A |
-| LOP-07 | Đổi giáo viên và sinh lại buổi chưa diễn ra **(đã gộp vào LOP-03, 26/10, R-LOP-10, R-LOP-11)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
+| LOP-07 | Đổi giáo viên và sinh lại buổi chưa diễn ra **(đã gộp vào LOP-03, 26/10, R-LOP-10, R-LOP-11)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | Gần đúng (gộp vào LOP-03, so cùng LOP-03) | — | Code A |
 | LOP-08 | Lịch tuần cơ sở (theo phòng, giáo viên) | A | **Có màn** `/crm/lich-tuan` | có (18 khung) | Lệch → đã sửa | lop.spec.ts | Code A |
-| LOP-09 | Danh sách học sinh của lớp (dòng xếp lớp) | C | **Có màn** `src/pages/lop/ClassStudentsPage.tsx` | có (4 khung) | chưa kiểm | duong-di-hoc-sinh.spec.ts | Code A |
-| LOP-10 | Đổi lịch cố định của lớp đã duyệt **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
+| LOP-09 | Danh sách học sinh của lớp (dòng xếp lớp) | C | **Có màn** `src/pages/lop/ClassStudentsPage.tsx` | có (4 khung) | Gần đúng (#415) | duong-di-hoc-sinh.spec.ts | Code A |
+| LOP-10 | Đổi lịch cố định của lớp đã duyệt **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | Gần đúng (gộp vào LOP-03, so cùng LOP-03) | — | Code A |
 | BUOI-01 | Buổi học (danh sách, mặc định hôm nay) | B | **Có màn** `/crm/buoi-hoc` | có (8 khung) | Đúng | buoi-a.spec.ts, buoi-b.spec.ts | Code A |
 | BUOI-02 | Buổi học (bản ghi) | A | **Có màn** `src/pages/buoi/SessionListPage.tsx` | có (16 khung) | Gần đúng | buoi-a.spec.ts, duong-di-hoc-sinh.spec.ts | Code A |
 | BUOI-03 | Điểm danh phía vận hành + lý do liên hệ | B | **Có màn** `src/pages/buoi/AbsentTodayPage.tsx` | có (16 khung) | Đúng | buoi-a.spec.ts, duong-di-hoc-sinh.spec.ts | Code A |
