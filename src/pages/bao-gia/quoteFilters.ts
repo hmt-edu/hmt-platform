@@ -73,6 +73,8 @@ export function nextQuoteSort(sort: SortState): SortState {
 export const QUOTE_GROUP_FIELD_OF: Record<string, string> = {
   status: 'status',
   branch: 'branch',
+  // Canvas BH01: nhóm «Người lập» (migration 604).
+  creator: 'creator',
 };
 
 /** Bộ lọc của một nhóm Group By để mở dòng của nhóm đó (khoá trống: nhóm «Chưa có», không lọc thêm). */
@@ -80,5 +82,6 @@ export function quoteGroupFilter(field: string, key: string): QuoteFilters {
   if (key === '') return {};
   if (field === 'status') return { status: [key] };
   if (field === 'branch') return { branch_id: key };
+  if (field === 'creator') return { creator_id: key };
   return {};
 }

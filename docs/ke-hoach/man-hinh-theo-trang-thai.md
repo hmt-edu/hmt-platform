@@ -1,13 +1,13 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 163 có màn, 14 chỉ có DB (chưa thấy màn), 20 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 163 có màn, 15 chỉ có DB (chưa thấy màn), 19 chưa có.**
 
 ## Số theo cổng
 
 | Cổng | Tổng | Có màn | Chỉ có DB | Chưa có |
 |---|---|---|---|---|
 | CRM (còn lại) | 155 | 144 | 4 | 7 |
-| Giáo viên (GV) | 18 | 16 | 1 | 1 |
+| Giáo viên (GV) | 18 | 16 | 2 | 0 |
 | Học sinh (HT) | 9 | 0 | 2 | 7 |
 | Phụ huynh (PH) | 5 | 0 | 0 | 5 |
 | Báo cáo (BC) | 10 | 3 | 7 | 0 |
@@ -120,7 +120,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TC-16 | Dùng số dư khách hàng cho đơn mới | C | **Có màn** `src/pages/don-hang/UseBalanceDialog.tsx` | không có khung | chưa kiểm | — | Code C/D |
 | TC-17 | Quản lý duyệt phiếu thu | B | **Có màn** `src/features/approver-reassign/ReassignApproverDialog.tsx` | có (9 khung) | Gần đúng | — | Code C/D |
 | GD-01 | Ghi danh (danh sách) | B | **Có màn** `/crm/ghi-danh` | có (16 khung) | Đúng | ghi-danh.spec.ts | Code A |
-| GD-02 | Ghi danh (bản ghi) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (36 khung) | Lệch (chưa sửa) | ghi-danh.spec.ts | Code A |
+| GD-02 | Ghi danh (bản ghi) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (36 khung) | Gần đúng (so lại 20/11, #412 #446; còn ticket CS-04) | ghi-danh.spec.ts | Code A |
 | GD-03 | Xếp lớp cho ghi danh (theo nhóm hoặc theo lớp) | A | **Có màn** `src/pages/ghi-danh/AssignClassDialog.tsx` | có (24 khung) | Đúng | duong-di-hoc-sinh.spec.ts, ghi-danh-nhom.spec.ts | Code A |
 | GD-04 | Sổ giờ của ghi danh | B | **Có màn** `src/pages/ghi-danh/EnrollmentLedgerPage.tsx` | có (16 khung) | Lệch → đã sửa | ghi-danh-dieu-chinh-gio.spec.ts, ghi-danh.spec.ts | Code A |
 | GD-05 | Điều chỉnh giờ (dòng ngược dấu, bắt buộc lý do) | B | **Có màn** `src/pages/ghi-danh/AdjustHoursDialog.tsx` | có (4 khung) | Gần đúng | ghi-danh-dieu-chinh-gio.spec.ts, ghi-danh.spec.ts | Code A |
@@ -130,15 +130,15 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TT-02 | Phiếu tái tục (bản ghi) | B | **Có màn** `src/pages/bao-gia/QuotationCreatePage.tsx` | có (16 khung) | Gần đúng | — | Code C |
 | TT-03 | Tạo phiếu tái tục thủ công | C | **Có màn** `src/pages/ghi-danh/EnrollmentRecordPage.tsx` | có (2 khung) | Gần đúng | ghi-danh.spec.ts | Code C |
 | LOP-01 | Lớp (danh sách / kanban theo bước duyệt) | B | **Có màn** `/crm/lop` | có (17 khung) | Lệch → đã sửa | lop.spec.ts | Code A |
-| LOP-02 | Lớp (bản ghi) | A | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (27 khung) | Lệch (chưa sửa) | lop.spec.ts | Code A |
-| LOP-03 | Tạo / sửa lớp (chỉ ở Nháp, Từ chối) | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | có (26 khung) | Lệch (chưa sửa) | lop.spec.ts | Code A |
-| LOP-04 | Thời khoá biểu lớp **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | A | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
+| LOP-02 | Lớp (bản ghi) | A | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (27 khung) | Gần đúng (so lại 21/11, #407 #420 #471) | lop.spec.ts | Code A |
+| LOP-03 | Tạo / sửa lớp (chỉ ở Nháp, Từ chối) | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | có (26 khung) | Gần đúng (so lại 21/11, #407) | lop.spec.ts | Code A |
+| LOP-04 | Thời khoá biểu lớp **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | A | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | Gần đúng (gộp vào LOP-03, so cùng LOP-03) | — | Code A |
 | LOP-05 | Trình / xác nhận / duyệt / từ chối lớp | B | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (12 khung) | Gần đúng | lop.spec.ts | Code A |
 | LOP-06 | Đóng / huỷ lớp (bị chặn thì liệt kê lý do) | B | **Có màn** `src/pages/lop/ClassRecordPage.tsx` | có (6 khung) | Gần đúng | lop.spec.ts | Code A |
-| LOP-07 | Đổi giáo viên và sinh lại buổi chưa diễn ra **(đã gộp vào LOP-03, 26/10, R-LOP-10, R-LOP-11)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
+| LOP-07 | Đổi giáo viên và sinh lại buổi chưa diễn ra **(đã gộp vào LOP-03, 26/10, R-LOP-10, R-LOP-11)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | Gần đúng (gộp vào LOP-03, so cùng LOP-03) | — | Code A |
 | LOP-08 | Lịch tuần cơ sở (theo phòng, giáo viên) | A | **Có màn** `/crm/lich-tuan` | có (18 khung) | Lệch → đã sửa | lop.spec.ts | Code A |
-| LOP-09 | Danh sách học sinh của lớp (dòng xếp lớp) | C | **Có màn** `src/pages/lop/ClassStudentsPage.tsx` | có (4 khung) | chưa kiểm | duong-di-hoc-sinh.spec.ts | Code A |
-| LOP-10 | Đổi lịch cố định của lớp đã duyệt **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | chưa kiểm | — | Code A |
+| LOP-09 | Danh sách học sinh của lớp (dòng xếp lớp) | C | **Có màn** `src/pages/lop/ClassStudentsPage.tsx` | có (4 khung) | Gần đúng (#415) | duong-di-hoc-sinh.spec.ts | Code A |
+| LOP-10 | Đổi lịch cố định của lớp đã duyệt **(đã gộp vào LOP-03, 26/10, R-LOP-10)** | B | **Có màn** `src/pages/lop/ClassFormPage.tsx` | không có khung | Gần đúng (gộp vào LOP-03, so cùng LOP-03) | — | Code A |
 | BUOI-01 | Buổi học (danh sách, mặc định hôm nay) | B | **Có màn** `/crm/buoi-hoc` | có (8 khung) | Đúng | buoi-a.spec.ts, buoi-b.spec.ts | Code A |
 | BUOI-02 | Buổi học (bản ghi) | A | **Có màn** `src/pages/buoi/SessionListPage.tsx` | có (16 khung) | Gần đúng | buoi-a.spec.ts, duong-di-hoc-sinh.spec.ts | Code A |
 | BUOI-03 | Điểm danh phía vận hành + lý do liên hệ | B | **Có màn** `src/pages/buoi/AbsentTodayPage.tsx` | có (16 khung) | Đúng | buoi-a.spec.ts, duong-di-hoc-sinh.spec.ts | Code A |
@@ -190,7 +190,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | C | **Chưa có** | không có khung | chưa kiểm | — | Code F |
 | QT-18 | Nhập dữ liệu cũ (chọn loại, tải file CSV, xem trước từng dòng, nạp, tải dòng lỗi) | B | **Có màn** `/crm/quan-tri/nhap-du-lieu` | có (10 khung) | Đúng | nhap-du-lieu.spec.ts | Code F |
 | GV-17 | Giao bài trên LMS (đề, tệp, hạn nộp) | B | **Chỉ có DB** `20261121000597_lms_giao_bai.sql` | không có khung | chưa kiểm | — | Code E |
-| GV-18 | Chấm bài nộp online | B | **Chưa có** | không có khung | chưa kiểm | — | Code E |
+| GV-18 | Chấm bài nộp online | B | **Chỉ có DB** `20261121000598_lms_cham_bai.sql` | không có khung | chưa kiểm | — | Code E |
 | HT-01 | Trang chủ học sinh | A | **Chưa có** | không có khung | chưa kiểm | phieu-chi-so-du.spec.ts, phieu-thu-no-dau-ky.spec.ts | giai đoạn sau |
 | HT-02 | Bài tập (cần làm, đã nộp, đã chấm) | B | **Chưa có** | không có khung | chưa kiểm | auth.spec.ts | giai đoạn sau |
 | HT-03 | Chi tiết bài tập | B | **Chỉ có DB** `20261121000597_lms_giao_bai.sql` | không có khung | chưa kiểm | — | giai đoạn sau |
