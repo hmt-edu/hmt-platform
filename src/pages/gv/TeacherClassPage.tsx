@@ -268,6 +268,13 @@ export function TeacherClassPage() {
           <ButtonLink to="/gv/ticket/tao">Tạo ticket</ButtonLink>
         </div>
       </section>
+      <section className="flex flex-col gap-2">
+        <h2 className="text-h3">Bài đã giao trên LMS</h2>
+        <p className="text-fg-muted">Giao bài cho cả lớp hoặc từng em, xem em nào đã nộp.</p>
+        <div>
+          <ButtonLink to={`/gv/lop/${classId}/bai-giao`}>Bài đã giao</ButtonLink>
+        </div>
+      </section>
     </div>
   );
 }
