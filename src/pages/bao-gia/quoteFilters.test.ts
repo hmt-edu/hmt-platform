@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { ListState } from '../../list/types';
-import { buildQuoteFilters, nextQuoteSort, quoteSortParam } from './quoteFilters';
+import {
+  QUOTE_GROUP_FIELD_OF,
+  buildQuoteFilters,
+  nextQuoteSort,
+  quoteGroupFilter,
+  quoteSortParam,
+} from './quoteFilters';
 
 const EMPTY: ListState = {
   search: '',
@@ -72,5 +78,11 @@ describe('bộ lọc danh sách Báo giá', () => {
       key: 'valid',
       direction: 'asc',
     });
+  });
+
+  it('Group By «Người lập» (BH-01): trường nhóm creator, mở nhóm lọc creator_id', () => {
+    expect(QUOTE_GROUP_FIELD_OF.creator).toBe('creator');
+    expect(quoteGroupFilter('creator', 'u-1')).toEqual({ creator_id: 'u-1' });
+    expect(quoteGroupFilter('creator', '')).toEqual({});
   });
 });

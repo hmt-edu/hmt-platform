@@ -173,6 +173,8 @@ export function buildQuoteConfig(
       ...(access.seesAllBranches
         ? [{ key: 'branch', label: 'Cơ sở', value: (r: QuotationRow) => r.branch_code }]
         : []),
+      // Canvas BH01: nhóm «Người lập» (khoá nhóm là mã người lập, máy chủ trả tên).
+      { key: 'creator', label: 'Người lập', value: (r) => r.created_by_name ?? '' },
     ],
     dateFields: [{ key: 'created', label: 'Ngày tạo' }],
     views: ['list'],
