@@ -19,9 +19,13 @@ describe('classNotes (câu theo tình trạng duyệt, LOP-02)', () => {
     expect(n.bottom).toMatch(/R-LOP-11/);
     expect(n.top).toBeUndefined();
   });
-  it('Đã đóng, Huỷ: không có câu', () => {
-    expect(classNotes('DA_DONG', 3)).toEqual({});
-    expect(classNotes('HUY', 0)).toEqual({});
+  it('Đã đóng, Huỷ: chỉ còn xem', () => {
+    expect(classNotes('DA_DONG', 3).top?.text).toBe('Lớp đã đóng, chỉ còn xem.');
+    expect(classNotes('HUY', 0).top?.text).toBe('Lớp đã huỷ, chỉ còn xem.');
+  });
+  it('Đã xác nhận: câu trên đầu chờ duyệt; Từ chối có khung giờ: nhắc Đưa về Nháp', () => {
+    expect(classNotes('DA_XAC_NHAN', 1).top?.text).toMatch(/chờ quản lý cơ sở duyệt/);
+    expect(classNotes('TU_CHOI', 1).top?.text).toMatch(/Đưa về Nháp/);
   });
 });
 
