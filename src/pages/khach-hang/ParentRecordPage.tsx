@@ -20,6 +20,7 @@ import { newTicketForParentPath } from './custFilters';
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
+import { CustTickets } from './CustTickets';
 import { parentPath, studentPath } from './custConfig';
 import { STUDENT_STATUS_LABEL, type ParentRecord } from './custTypes';
 import { useParentRecord, useRefreshCustomers } from './useCustData';
@@ -338,7 +339,9 @@ function ParentView({ record }: { record: ParentRecord }) {
             { key: 'children', label: 'Các con' },
             { key: 'orders', label: 'Đơn hàng' },
             { key: 'receipts', label: 'Phiếu thu' },
-            { key: 'tickets', label: 'Ticket', note: 'Chưa có dữ liệu (ticket làm sau)' },
+            access.can('TICKET', 'XEM')
+              ? { key: 'tickets', label: 'Ticket' }
+              : { key: 'tickets', label: 'Ticket', note: 'Bạn không có quyền xem ticket' },
             {
               key: 'finance',
               label: 'Tài chính',
@@ -444,6 +447,7 @@ function ParentView({ record }: { record: ParentRecord }) {
               ))}
             </ul>
           ))}
+        {tab === 'tickets' && <CustTickets owner={{ key: 'parent_id', id: record.id }} />}
         {tab === 'receipts' &&
           (record.receipts.length === 0 ? (
             <p className="py-2 text-fg-muted">Chưa có phiếu thu.</p>

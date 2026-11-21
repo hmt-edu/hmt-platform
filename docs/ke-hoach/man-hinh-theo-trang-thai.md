@@ -1,14 +1,14 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 163 có màn, 11 chỉ có DB (chưa thấy màn), 23 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 163 có màn, 14 chỉ có DB (chưa thấy màn), 20 chưa có.**
 
 ## Số theo cổng
 
 | Cổng | Tổng | Có màn | Chỉ có DB | Chưa có |
 |---|---|---|---|---|
 | CRM (còn lại) | 155 | 144 | 4 | 7 |
-| Giáo viên (GV) | 18 | 16 | 0 | 2 |
-| Học sinh (HT) | 9 | 0 | 0 | 9 |
+| Giáo viên (GV) | 18 | 16 | 1 | 1 |
+| Học sinh (HT) | 9 | 0 | 2 | 7 |
 | Phụ huynh (PH) | 5 | 0 | 0 | 5 |
 | Báo cáo (BC) | 10 | 3 | 7 | 0 |
 
@@ -189,13 +189,13 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | CHUNG-23 | Đăng nhập phụ huynh | C | **Chưa có** | không có khung | chưa kiểm | — | Code F |
 | QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | C | **Chưa có** | không có khung | chưa kiểm | — | Code F |
 | QT-18 | Nhập dữ liệu cũ (chọn loại, tải file CSV, xem trước từng dòng, nạp, tải dòng lỗi) | B | **Có màn** `/crm/quan-tri/nhap-du-lieu` | có (10 khung) | Đúng | nhap-du-lieu.spec.ts | Code F |
-| GV-17 | Giao bài trên LMS (đề, tệp, hạn nộp) | B | **Chưa có** | không có khung | chưa kiểm | — | Code E |
+| GV-17 | Giao bài trên LMS (đề, tệp, hạn nộp) | B | **Chỉ có DB** `20261121000597_lms_giao_bai.sql` | không có khung | chưa kiểm | — | Code E |
 | GV-18 | Chấm bài nộp online | B | **Chưa có** | không có khung | chưa kiểm | — | Code E |
 | HT-01 | Trang chủ học sinh | A | **Chưa có** | không có khung | chưa kiểm | phieu-chi-so-du.spec.ts, phieu-thu-no-dau-ky.spec.ts | giai đoạn sau |
 | HT-02 | Bài tập (cần làm, đã nộp, đã chấm) | B | **Chưa có** | không có khung | chưa kiểm | auth.spec.ts | giai đoạn sau |
-| HT-03 | Chi tiết bài tập | B | **Chưa có** | không có khung | chưa kiểm | — | giai đoạn sau |
+| HT-03 | Chi tiết bài tập | B | **Chỉ có DB** `20261121000597_lms_giao_bai.sql` | không có khung | chưa kiểm | — | giai đoạn sau |
 | HT-04 | Nộp bài (chụp ảnh, tải tệp) | A | **Chưa có** | không có khung | chưa kiểm | — | giai đoạn sau |
-| HT-05 | Kết quả bài và nhận xét | B | **Chưa có** | không có khung | chưa kiểm | — | giai đoạn sau |
+| HT-05 | Kết quả bài và nhận xét | B | **Chỉ có DB** `20261121000597_lms_giao_bai.sql` | không có khung | chưa kiểm | — | giai đoạn sau |
 | HT-06 | Lịch học của em | B | **Chưa có** | không có khung | chưa kiểm | phieu-thu.spec.ts | giai đoạn sau |
 | HT-07 | Kết quả học tập (tiêu chí theo thời gian) | B | **Chưa có** | không có khung | chưa kiểm | — | giai đoạn sau |
 | HT-08 | Nhận xét các buổi học | C | **Chưa có** | không có khung | chưa kiểm | — | giai đoạn sau |
