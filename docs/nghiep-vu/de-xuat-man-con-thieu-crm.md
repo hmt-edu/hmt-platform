@@ -124,3 +124,6 @@ Ba khoản lệch canvas 9933 mà chỉ giao diện không làm được. Khoả
 - **Vướng:** một phụ huynh có con học ở nhiều cơ sở cùng lúc, nên đếm theo «Đang học tại» đưa phụ huynh vào nhiều nhóm và tổng các nhóm lớn hơn số phụ huynh.
 - **Phương án A (khuyến nghị):** không làm Group By trường này; thêm bộ lọc «Đang học tại» (chọn một cơ sở) cho danh sách KH-01: khoá `studying_branch_id` ở `list_parents`, một điều kiện `exists` trên ghi danh Đã xếp lớp, Đang học (đã có chỉ mục ghi danh theo `parent_id`). Mức THẤP, không đổi bảng.
 - **Phương án B:** vẫn Group By nhưng cho một phụ huynh xuất hiện ở mỗi nhóm cơ sở của họ, ghi rõ ở đầu nhóm «một phụ huynh có thể ở nhiều nhóm; tổng nhóm không bằng tổng phụ huynh». Cần anh duyệt cách hiển thị.
+
+### Đã làm: KH-01 bộ lọc «Đang học tại» (migration 603, Code B, 21/11/2026; phương án A)
+`app.list_parents` và `app.parent_group_counts` thêm khoá lọc `studying_branch_id` (id cơ sở): phụ huynh có ghi danh Đã xếp lớp hoặc Đang học ở cơ sở đó, cùng nghĩa với cột «Đang học tại». Hai hàm dùng cùng điều kiện nên tổng nhóm bằng total danh sách. Chỉ mục: `enrollment_parent_idx` có sẵn. Nhân tiện: `parent_group_counts` nay chỉ cho phạm vi Xem Toàn hệ thống, Cơ sở như `list_parents` (migration 573). Giao diện ô lọc «Đang học tại» ở KH-01: PR kế sau khi 603 vào main.
