@@ -182,8 +182,10 @@ export async function pickChip(scope: Locator, name: string) {
 
 // Mở ô chọn rồi chọn một mục; mở chưa được (hộp đang hiện) thì mở lại.
 export async function pickOption(page: Page, combobox: Locator, option: string | RegExp) {
+  // Hộp chọn mở thì ô tìm trong hộp (cmdk) cũng là combobox cùng tên với nút mở: lần thử thứ hai báo strict mode violation (ticket.spec iPhone đỏ khi lần đầu chậm). Luôn lấy nút mở, nằm trước hộp trong DOM (hộp gắn cuối body).
+  const trigger = combobox.first();
   await expect(async () => {
-    if ((await combobox.getAttribute('aria-expanded')) !== 'true') await combobox.click();
+    if ((await trigger.getAttribute('aria-expanded')) !== 'true') await trigger.click();
     // Cuộn tới mục trước khi bấm: trên điện thoại danh sách dài, mục nằm ngoài khung nhìn thì lần bấm trượt (lead-ban-ghi.spec.ts:202 chập chờn).
     const item = page.getByRole('option', { name: option });
     await item.scrollIntoViewIfNeeded({ timeout: 2000 });

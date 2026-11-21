@@ -17,3 +17,13 @@ Mặc định công tắc: Cho nộp lại BẬT, Nhận bài muộn TẮT (Q4).
 
 ## Ghi chú quyền cần Chat biết
 Ma trận hiện có cho vai SALES (Xem, theo cơ sở) và MARKETING (Xem, toàn hệ thống) quyền Xem Điểm danh, nên cùng phạm vi đó đọc được bài giao (tiêu đề, mô tả), giống như đọc buổi học. Giáo viên chỉ đọc bài của lớp mình dạy. Nếu muốn chặn Sale, Marketing đọc bài giao thì cần mã quyền riêng (ngoài Q14), xin Chat quyết.
+
+## Migration 598: chấm bài nộp (GV-18)
+Điểm và trạng thái ghi vào `app.homework_result` của **buổi giao** (không bảng điểm thứ hai, Q1); `lms_submission.graded_at` là dấu «đã chấm» (khoá bài nộp, R-LMS-03). Chưa có hàm nộp bài của học sinh (HT-05).
+| Hàm | Làm gì | Lỗi chính |
+|---|---|---|
+| `app.lms_grading_list(p_assignment_id, p_filter)` | Danh sách em của bài: trạng thái nộp (Chưa nộp, Đã nộp, nhãn Nộp muộn), trạng thái chấm; lọc `CHUA_CHAM` / `DA_CHAM`; tiến độ đã chấm x/y | `HMT_THAM_SO_SAI` |
+| `app.lms_grading_sheet(p_assignment_id, p_student_id)` | Phiếu chấm một em: các trang bài nộp, điểm hiện có (kèm `version`), các trạng thái được chọn và trạng thái gợi ý (em vắng buổi giao chưa nộp: Không áp dụng, Q6) | `HMT_LMS_EM_KHONG_NHAN_BAI` |
+| `app.lms_save_grade(p_assignment_id, p_student_id, p_status, p_score, p_note, p_version)` | Lưu trạng thái, điểm 1–5, ghi chú; Không làm, Nộp sau, Không áp dụng thì bỏ điểm (Q5); em chưa nộp: chỉ Nộp sau, Không làm (vắng: thêm Không áp dụng); «Nộp sau» chưa đóng dấu đã chấm | `HMT_DIEM_KHONG_HOP_LE`, `HMT_LMS_CHUA_NOP_BAI`, `HMT_XUNG_DOT`, `HMT_LMS_DA_GO`, `HMT_LMS_EM_KHONG_NHAN_BAI` |
+| `app.lms_reopen_submission(p_assignment_id, p_student_id)` | Mở lại bài đã chấm để em nộp lại (R-LMS-03; UI hỏi xác nhận, Q12); điểm cũ giữ đến khi chấm lại | `HMT_LMS_CHUA_CHAM`, `HMT_LMS_DA_GO` |
+Quyền như migration 597: Xem dùng ATTENDANCE Xem, Chấm và Mở lại dùng ATTENDANCE Sửa (Q14), công tắc HOC_TAP.
