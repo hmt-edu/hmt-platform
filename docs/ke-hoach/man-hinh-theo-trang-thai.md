@@ -1,13 +1,13 @@
 # Màn hình theo trạng thái (sinh tự động)
 
-Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 163 có màn, 14 chỉ có DB (chưa thấy màn), 20 chưa có.**
+Sinh bằng `node scripts/man-hinh-theo-trang-thai.ts` từ `docs/design/ban-do-man-hinh.md`, `src/nav/crmMenu.ts`, `src/app/routes.tsx`, đầu file màn trong `src/`, `supabase/migrations/`, `e2e/`, `design/` và các bảng rà tay. **197 mã màn: 163 có màn, 15 chỉ có DB (chưa thấy màn), 19 chưa có.**
 
 ## Số theo cổng
 
 | Cổng | Tổng | Có màn | Chỉ có DB | Chưa có |
 |---|---|---|---|---|
 | CRM (còn lại) | 155 | 144 | 4 | 7 |
-| Giáo viên (GV) | 18 | 16 | 1 | 1 |
+| Giáo viên (GV) | 18 | 16 | 2 | 0 |
 | Học sinh (HT) | 9 | 0 | 2 | 7 |
 | Phụ huynh (PH) | 5 | 0 | 0 | 5 |
 | Báo cáo (BC) | 10 | 3 | 7 | 0 |
@@ -190,7 +190,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | C | **Chưa có** | không có khung | chưa kiểm | — | Code F |
 | QT-18 | Nhập dữ liệu cũ (chọn loại, tải file CSV, xem trước từng dòng, nạp, tải dòng lỗi) | B | **Có màn** `/crm/quan-tri/nhap-du-lieu` | có (10 khung) | Đúng | nhap-du-lieu.spec.ts | Code F |
 | GV-17 | Giao bài trên LMS (đề, tệp, hạn nộp) | B | **Chỉ có DB** `20261121000597_lms_giao_bai.sql` | không có khung | chưa kiểm | — | Code E |
-| GV-18 | Chấm bài nộp online | B | **Chưa có** | không có khung | chưa kiểm | — | Code E |
+| GV-18 | Chấm bài nộp online | B | **Chỉ có DB** `20261121000598_lms_cham_bai.sql` | không có khung | chưa kiểm | — | Code E |
 | HT-01 | Trang chủ học sinh | A | **Chưa có** | không có khung | chưa kiểm | phieu-chi-so-du.spec.ts, phieu-thu-no-dau-ky.spec.ts | giai đoạn sau |
 | HT-02 | Bài tập (cần làm, đã nộp, đã chấm) | B | **Chưa có** | không có khung | chưa kiểm | auth.spec.ts | giai đoạn sau |
 | HT-03 | Chi tiết bài tập | B | **Chỉ có DB** `20261121000597_lms_giao_bai.sql` | không có khung | chưa kiểm | — | giai đoạn sau |
