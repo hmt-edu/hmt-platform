@@ -35,7 +35,7 @@ Nhóm ở máy chủ (đã có mẫu «Group By ở máy chủ», `src/list/khuo
 |---|---|---|---|
 | `app.parent_group_counts(bộ lọc, trường nhóm)` | Vai có «Phụ huynh · Xem» (security definer, kiểm quyền bên trong) | Đếm phụ huynh theo `status` (Có con đang học / Chưa có con đang học) và `branch` (cơ sở tiếp nhận), tối đa hai cấp khác nhau; bộ lọc giống `list_parents` | R-CRM-27, K1_nhom |
 | `app.ticket_group_counts(bộ lọc, trường nhóm)` | Mọi người đăng nhập, dưới RLS ticket (không security definer) | Đếm ticket theo `type`, `group`, `priority`, `status`, `assignee`, `branch`, tối đa hai cấp; bộ lọc giống `list_tickets` | AS-07, K1_nhom |
-| `app.ticket_filter_rows(bộ lọc)` | `list_tickets`, `ticket_board`, `ticket_group_counts` | MỘT nơi định nghĩa bộ lọc ticket; thêm khoá `group_code` (nhóm cha của danh mục), `assignee_id`, `no_assignee` | AS-07 |
+| `app.ticket_filter_rows(bộ lọc)` | `list_tickets`, `ticket_board`, `ticket_group_counts` | MỘT nơi định nghĩa bộ lọc ticket; thêm khoá `group_code` (nhóm cha của danh mục), `assignee_id`, `no_assignee`; migration 600 thêm `parent_id`, `student_id` (tab Ticket ở hồ sơ phụ huynh KH-02, học sinh KH-05; chỉ mục `ticket_parent_idx`, `ticket_student_idx` có sẵn) | AS-07 |
 | `app.ticket_group_label(trường, khoá)` | `ticket_group_counts` | Tên hiển thị nhóm (danh mục, cơ sở, người dùng) | |
 
 Lỗi: `HMT_NHOM_SAI` (trường lạ, trùng hai cấp, quá hai cấp, không chọn), `HMT_KHONG_CO_QUYEN` (phụ huynh, người không có quyền xem). Mở một nhóm thì giao diện gọi `list_parents` (`status`, `branch_id`) hoặc `list_tickets` (`ticket_type`, `group_code`, `priority_code`, `status_code`, `assignee_id` hoặc `no_assignee`, `branch_id`) với bộ lọc của nhóm. Nhóm «Người xử lý» chưa giao: khoá rỗng, nhãn «Chưa có».
