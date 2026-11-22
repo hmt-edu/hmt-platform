@@ -246,5 +246,20 @@ select is(pg_temp.err($$select app.set_payment_voucher_plan(pg_temp.f('pv'), nul
 select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
 select is(pg_temp.err($$select app.set_payment_voucher_plan(pg_temp.f('pv'), null, 'x', null)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Trưởng cơ sở khác không ghi được');
 
+-- ================= Tài khoản nhận riêng tư (migration 617, D-23-05) =================
+-- Luật: số tài khoản không ghi vào nhật ký; chỉ vai có quyền chi (Đối soát kế toán · Duyệt) thấy.
+select is((select count(*)::int from app.audit_log a join app.audited_table t on t.id = a.table_id
+            where t.table_name = 'app.payment_voucher' and a.record_id = pg_temp.f('pv') and a.changes::text like '%Techcombank%'), 0, 'Nhật ký KHÔNG chứa nội dung tài khoản nhận');
+select ok((select count(*) from app.audit_log a join app.audited_table t on t.id = a.table_id
+            where t.table_name = 'app.payment_voucher' and a.record_id = pg_temp.f('pv') and a.changes ? 'payout_account_note') > 0, 'Nhật ký vẫn ghi việc trường tài khoản nhận có đổi (nội dung che)');
+select ok(not has_column_privilege('authenticated', 'app.payment_voucher', 'payout_account_note', 'select'), 'Chặn: authenticated không đọc thẳng cột tài khoản nhận');
+select ok(has_column_privilege('authenticated', 'app.payment_voucher', 'amount', 'select'), 'Đúng: các cột khác của phiếu chi vẫn đọc được');
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select is(app.get_payment_voucher(pg_temp.f('pv')) -> 'voucher' ->> 'payout_account_note', 'Techcombank …5544', 'Đúng: Kế toán (có quyền chi) thấy tài khoản nhận ở bản ghi');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is(app.get_payment_voucher(pg_temp.f('pv')) -> 'voucher' ->> 'payout_account_note', null, 'Chặn: vai không có quyền chi không thấy tài khoản nhận ở bản ghi');
+select is((select r ->> 'payout_account_note' from jsonb_array_elements(app.list_payment_vouchers('{}'::jsonb) -> 'rows') r where (r ->> 'id')::uuid = pg_temp.f('pv')), null, 'Chặn: vai không có quyền chi không thấy tài khoản nhận ở danh sách');
+select ok(app.get_payment_voucher(pg_temp.f('pv')) -> 'voucher' ->> 'planned_on' is not null, 'Đúng: ngày chi dự kiến vẫn hiện cho vai chỉ xem');
+
 select * from finish();
 rollback;
