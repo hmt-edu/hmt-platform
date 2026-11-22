@@ -1,4 +1,55 @@
-# Ghi chú cho Code · canvas HMT Quản trị và Nạp dữ liệu · bổ sung
+# GHI CHÚ CHO CODE · Canvas HMT Quản trị & Nạp dữ liệu · bổ sung · bản v11 (`1795374781-adad`)
+
+Xuất 23/11/2026. 80 khung. Gói gồm: `canvas/`, `hmt.css`, file này.
+
+## Cách dùng gói này
+- Thư mục `canvas/` là nội dung canvas đúng như đang đăng: `canvas.json` (chỉ mục: vị trí, kích thước, tên khung), các file `*.dc.html` (mỗi file một khung), `ds/hmt/` (design system, bản sao), `assets/hmt-logo.svg`.
+- Khung `*.dc.html` nạp `./support.js` (do trình canvas cấp, không nằm trong gói) và `ds/hmt/handoff/hmt-tokens.css`, `ds/hmt/components/bundle.css`. Muốn xem khung ngoài canvas thì bỏ thẻ `<x-dc>` và đưa nội dung `<helmet>` vào `<head>`.
+- `hmt.css` ở gốc gói là hai file CSS của design system gộp một, để Code tra nhanh biến và thành phần. Không cần thay cho `ds/`.
+- Dữ liệu trong khung là dữ liệu giả. Số trong khung là số minh hoạ, không chép vào code hay test. Chỗ canvas vênh luật thì làm theo luật (`docs/spec/`), ghi vào PR.
+
+## Thay đổi so với Version 8 (`1794124725-dc47`, 08/11)
+Thêm 21 khung (59 → 80): QT-17 Tài khoản phụ huynh (8 khung), CHUNG-21 Đính kèm tệp (7 khung), CHUNG-23 Đăng nhập phụ huynh (3 khung), cộng 3 khung tiêu đề `Man_QT17`, `Man_CHUNG21`, `Man_CHUNG23`. Không sửa, không xoá khung cũ. Chi tiết ở phần A.
+- `Muc_luc_bs` và `00_DOC_TRUOC.md` (số "50 khung") chưa cập nhật cho 21 khung mới. **Phần A của file này thắng.**
+
+---
+
+# A. Bổ sung 23/11/2026: QT-17, CHUNG-21, CHUNG-23 (đã đăng)
+
+## A1. QT-17 Tài khoản phụ huynh (K03, máy tính, CS và AD): 8 khung
+`QT17_ds`, `QT17_tai`, `QT17_trong`, `QT17_loi`, `QT17_quyen`, `QT17_cap`, `QT17_khoa`, `QT17_dat_lai`.
+- Cột (anh Trường chốt): Mã PH, Phụ huynh, Số con, Tài khoản (Chưa cấp, Đang dùng, Đã khoá), Đăng nhập gần nhất, Thao tác. Chip lọc theo trạng thái tài khoản. Mã PH dạng `PH000412` (theo `docs/spec/02`).
+- Nút theo trạng thái: Chưa cấp → Cấp tài khoản; Đang dùng → Đặt lại mật khẩu, Khoá; Đã khoá → **chỉ** Đặt lại mật khẩu. **Không có Mở khoá** (anh Trường chốt).
+- Khoá **không bắt lý do** (anh Trường chốt).
+- Ba hộp xác nhận K08 theo mẫu `QT02_xac_nhan_dat_lai`. Cấp và Đặt lại mở tiếp hộp mật khẩu tạm **K4g có sẵn** (canvas HMT Platform), không vẽ lại.
+- Menu dùng mục có sẵn «Tài khoản học sinh, phụ huynh»; tiêu đề màn «Tài khoản phụ huynh». Phần học sinh chưa có màn, chưa vẽ.
+
+## A2. CHUNG-21 Đính kèm tệp (hộp K08, cả hai): 7 khung
+`CHUNG21_trong`, `CHUNG21_co_tep`, `CHUNG21_dang_tai`, `CHUNG21_loi`, `CHUNG21_xem`, `CHUNG21_dt_trong`, `CHUNG21_dt_dang_tai`.
+- Máy tính: hộp K08 trên nền ticket. Điện thoại: ngăn kéo từ dưới lên (Chụp ảnh, Chọn tệp).
+- Mỗi tệp: Xem, Gỡ; đang tải có thanh tiến độ và Huỷ tải; lỗi có Thử lại, Gỡ.
+- Khung giữ ở mức **minh hoạ** (anh Trường chốt). Giới hạn (JPG, PNG, PDF; tối đa 10 MB mỗi tệp; 5 tệp mỗi lần) là số minh hoạ, **Code đọc từ tham số**, không viết cứng. Nơi lưu tệp chưa có (CLAUDE.md ghi giai đoạn 4, Cloudflare R2): chưa dựng chức năng thật trong đợt này.
+
+## A3. CHUNG-23 Đăng nhập phụ huynh (cổng, điện thoại): 3 khung
+`CHUNG23_dt_ok`, `CHUNG23_dt_loi`, `CHUNG23_dt_tai`.
+- Đăng nhập bằng **mã PH + mật khẩu**, dựng theo khuôn **DN02** (đăng nhập học sinh: mã + mật khẩu) của canvas HMT Platform. Có Turnstile. Ghi chú: DN03 là OTP, không dùng cho màn này.
+- Quên mật khẩu: khung ghi «liên hệ bộ phận chăm sóc khách hàng ở cơ sở để được cấp lại»; không có luồng tự đặt lại.
+- Chỉ điện thoại. Tên màn ghi «(cổng)».
+
+## A4. Đã có khung ở canvas khác, không vẽ lại
+- **CHUNG-05 Đặt mật khẩu mới**: `DN06_pc_new`, `DN06_pc_ok`, `DN06_mb_new`, `DN06_mb_ok` (canvas HMT Platform, đang ghi HOÃN).
+- **CHUNG-08 Không thể đăng nhập**: `DN08_pc_lock`, `DN08_mb_lock` (chốt 12/10).
+
+## A5. Chỗ vênh bản đồ và canvas
+Mã **PH-01, PH-03, HS-02** trên khung `KH02_*`, `KH05_hoc_tap` của canvas HMT Platform là tab Phụ huynh, Học sinh trong CRM, **trùng mã** với màn cổng Phụ huynh PH-01..05 và cổng Học sinh HT-01..09 của bản đồ. Khung cổng ghi «(cổng …)» trong tiêu đề để khỏi nhầm.
+
+## A6. Cách đã kiểm
+Render ảnh từng khung bằng trình duyệt dựng thử (bỏ phần chạy của canvas) rồi xem. Chưa thử các nút bấm trong trình xem canvas thật.
+
+---
+
+# B. Ghi chú cũ của canvas (bản v8 và trước, giữ nguyên)
+
 
 Chỉ gồm ghi chú cho Code. Chỗ ghi **[Code chốt]** là chỗ khung chỉ minh hoạ.
 

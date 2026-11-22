@@ -365,5 +365,42 @@ select is((select ticket_ref from app.enrollment_stop where enrollment_id = pg_t
 select is((select status_code from app.ticket where id = (select (j ->> 'id')::uuid from tk3)), 'DA_XU_LY', 'C60 Ticket tự sang Đã xử lý (AS-03)');
 select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt3))$$), 'HMT_PHIEU_TRANG_THAI_SAI', 'C60 Chặn: thực hiện lại phiếu đã thực hiện');
 
+-- ================= D-23-07 (migration 618): phiếu Dừng học chọn «Xử lý tiền còn lại» và «Ngày dừng» (CS-14; R-GD-16, R-TIEN-28) =================
+select pg_temp.sudo($$create function pg_temp.d3stu() returns uuid language sql stable security definer as 'select student_id from app.enrollment where id = pg_temp.d3e()'$$);
+select pg_temp.sudo($$create function pg_temp.d3par() returns uuid language sql stable security definer as 'select parent_id from app.enrollment where id = pg_temp.d3e()'$$);
+select pg_temp.sudo($$create function pg_temp.d3rest() returns bigint language sql stable security definer as 'select line_total - 1000000 from app.sales_order_line where order_id = pg_temp.o(''d3'')'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.d3stu(), pg_temp.d3par(), pg_temp.d3rest() to public$$);
+select pg_temp.pay('d3', pg_temp.d3rest());
+create temp table tk7 (j jsonb);
+create temp table tt7 (j jsonb);
+grant all on tk7, tt7 to public;
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk7 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Dừng học hoàn tiền giả', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_06', 'parent_id', pg_temp.d3par(), 'student_id', pg_temp.d3stu()));
+-- Chặn lúc tạo: cách xử lý tiền sai, ngày dừng quá xa, ngày dừng không đọc được.
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk7), 'DUNG_HOC', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'TANG_QUA'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-07 Chặn: Xử lý tiền còn lại ngoài Hoàn tiền, Giữ số dư');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk7), 'DUNG_HOC', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'stop_date', (current_date + 30)::text))$$),
+  'HMT_DUNG_HOC_NGAY_SAI', 'D-23-07 Chặn: Ngày dừng sau hôm nay quá tham số stop_date_max_days_ahead (mặc định 0)');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk7), 'DUNG_HOC', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'stop_date', '31/31/2026'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-07 Chặn: Ngày dừng không hợp lệ');
+-- Đúng: Hoàn tiền, ngày dừng hôm nay.
+insert into tt7 select app.create_ticket_task((select (j ->> 'id')::uuid from tk7), 'DUNG_HOC', 'Chuyển nhà',
+  jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'HOAN_TIEN', 'stop_date', current_date::text));
+select app.submit_ticket_task((select (j ->> 'id')::uuid from tt7));
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt7));
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select app.approve_ticket_task((select (j ->> 'id')::uuid from tt7));
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'HOAN_PHI', id, true from app.branch where code = 'CS1' on conflict (module_code, branch_id) do update set enabled = true$$);
+select app.execute_ticket_task((select (j ->> 'id')::uuid from tt7));
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt7)), 'DA_THUC_HIEN', 'D-23-07 Thực hiện: phiếu Dừng học hoàn tiền Đã thực hiện');
+select is((select result ->> 'money_mode' from app.ticket_task where id = (select (j ->> 'id')::uuid from tt7)), 'HOAN_TIEN', 'D-23-07 Đúng: kết quả phiếu ghi cách xử lý tiền');
+select ok((select (result ->> 'payment_voucher_id') is not null from app.ticket_task where id = (select (j ->> 'id')::uuid from tt7)), 'D-23-07 Đúng: Hoàn tiền sinh phiếu chi (R-TIEN-28, R-TIEN-34)');
+select is((select kind_code from app.refund_request where enrollment_id = pg_temp.d3e()), 'TOAN_BO', 'D-23-07 Đúng: Hoàn tiền là hoàn toàn bộ (R-TIEN-28)');
+select is((select manager_by from app.refund_request where enrollment_id = pg_temp.d3e()), pg_temp.uid('bm1'), 'D-23-07 Người duyệt cấp 1 ghi đúng (R-TIEN-01)');
+select is(pg_temp.bal(pg_temp.d3e()), 0::bigint, 'D-23-07 Đúng: hoàn tiền thì KHÔNG giữ số dư');
+
 select * from finish();
 rollback;

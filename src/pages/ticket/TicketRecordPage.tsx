@@ -57,6 +57,7 @@ export function TicketRecordPage() {
   const catalogs = useLeadCatalogs();
   const record = useTicketRecord(id);
   const [target, setTarget] = useState<string | null>(null);
+  const [customerCancel, setCustomerCancel] = useState(false);
   const [note, setNote] = useState('');
   const [resolution, setResolution] = useState('');
   const [satisfaction, setSatisfaction] = useState('');
@@ -114,6 +115,7 @@ export function TicketRecordPage() {
     to: target ?? '',
     ticketType: ticket.ticket_type,
     businessType: ticket.business_type,
+    customerCancel,
   });
   const needNote = dialogSpec.noteRequired;
   const satisfactionValue = Number(satisfaction);
@@ -124,6 +126,7 @@ export function TicketRecordPage() {
 
   const close = () => {
     setTarget(null);
+    setCustomerCancel(false);
     setNote('');
     setResolution('');
     setSatisfaction('');
@@ -138,7 +141,10 @@ export function TicketRecordPage() {
       await changeTicketStatus(supabase, {
         id: ticket.id,
         to: target,
-        ...(note.trim() !== '' && { note: note.trim() }),
+        // Khách huỷ: ghi rõ ở nhật ký để phân biệt với huỷ nội bộ (không thêm trạng thái mới).
+        ...(note.trim() !== '' && {
+          note: customerCancel ? `Khách huỷ: ${note.trim()}` : note.trim(),
+        }),
         ...(resolution.trim() !== '' && { resolution: resolution.trim() }),
         ...(needSatisfaction && { satisfaction: satisfactionValue }),
       });
@@ -347,6 +353,16 @@ export function TicketRecordPage() {
                 Giao ticket
               </Button>
               {ticket.ticket_type !== 'GV' && <Button onClick={openReclass}>Phân loại lại</Button>}
+              {ticket.ticket_type === 'DN' && (
+                <Button
+                  onClick={() => {
+                    setCustomerCancel(true);
+                    setTarget('DA_HUY');
+                  }}
+                >
+                  Khách huỷ
+                </Button>
+              )}
               {canEscalate && <Button onClick={openEscalate}>Nâng cấp</Button>}
               {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP', 'DUNG_HOC', 'DOI_LICH'].includes(
                 ticket.business_type ?? '',
@@ -547,6 +563,7 @@ export function TicketRecordPage() {
           type={ticket.business_type}
           ticketId={ticket.id}
           ticketCode={ticket.code}
+          ticketBranchId={ticket.branch_id}
           hasStudent={ticket.student_name !== null}
           open={taskOpen}
           onOpenChange={setTaskOpen}

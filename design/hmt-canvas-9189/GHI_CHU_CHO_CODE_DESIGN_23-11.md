@@ -1,0 +1,368 @@
+# GHI CHÚ CHO CODE · Canvas HMT Đào tạo & Giáo viên · bản v52 (`1795374789-e1b0`)
+
+Xuất 23/11/2026. 391 khung. Gói gồm: `canvas/`, `hmt.css`, file này.
+
+## Cách dùng gói này
+- Thư mục `canvas/` là nội dung canvas đúng như đang đăng: `canvas.json` (chỉ mục: vị trí, kích thước, tên khung), các file `*.dc.html` (mỗi file một khung), `ds/hmt/` (design system, bản sao), `assets/hmt-logo.svg`.
+- Khung `*.dc.html` nạp `./support.js` (do trình canvas cấp, không nằm trong gói) và `ds/hmt/handoff/hmt-tokens.css`, `ds/hmt/components/bundle.css`. Muốn xem khung ngoài canvas thì bỏ thẻ `<x-dc>` và đưa nội dung `<helmet>` vào `<head>`.
+- `hmt.css` ở gốc gói là hai file CSS của design system gộp một, để Code tra nhanh biến và thành phần. Không cần thay cho `ds/`.
+- Dữ liệu trong khung là dữ liệu giả. Số trong khung là số minh hoạ, không chép vào code hay test. Chỗ canvas vênh luật thì làm theo luật (`docs/spec/`), ghi vào PR.
+
+## Thay đổi so với bản v41 trong repo (`design/hmt-canvas-9189/`)
+- Thêm 18 khung Aftersale 23/11: CS-16 (`CSN10_*`, 6 khung), CS-12 Khách huỷ (`CSN04_khach_huy*`, 3 khung), khung lỗi lưu / đang tải / điện thoại cho CS-07 (`CSN06a_chuyen_co_so_*`), CS-10 (`CSN06d_chuyen_phi_*`), CS-14 (`CSN06e_dung_hoc_*`). Chi tiết ở phần A.
+- Đã xoá khỏi canvas 9 file mồ côi (không có trong chỉ mục, chưa ai duyệt): `CS16_ds`, `CS16_da_gui`, `CS16_dt`, `CS16_loi`, `CS16_quyen`, `CS16_tai`, `CS16_trong`, `CSN06f_dieu_chinh_cho_kt`, `CSN06f_dieu_chinh_hoc_phi` (anh Trường duyệt xoá 23/11). **Code không dùng các tên này.** Khung CS-16 hiện hành là `CSN10_*`.
+- **23 khung `GV07b_*`, `GV08b_*` là bản NHÁP, CHƯA LÀM: không làm** (vẫn nằm trong chỉ mục và trong thư mục để đối chiếu).
+- Mục lục `Main.dc.html` chưa cập nhật số khung mới (còn ghi CS-16 đã bỏ). Mục A dưới đây thắng.
+- Chưa có trong gói này: cổng Học sinh (HT-01..09) và cổng Phụ huynh (PH-01..05). Đang vẽ, chưa đăng.
+
+---
+
+# A. Bổ sung Aftersale 23/11/2026
+
+## 1. Quyết định chính (anh Trường chọn hướng A, 23/11)
+
+CS-07 Chuyển cơ sở, CS-10 Chuyển phí, CS-14 Dừng học **làm theo phiếu nghiệp vụ (PNV)**, đúng khung đã có:
+- CS-07 → `CSN06a_chuyen_co_so`
+- CS-10 → `CSN06d_chuyen_phi_em`, `CSN06d_chuyen_phi_gia`, `CSN06d_chuyen_phi_phu_huynh`
+- CS-14 → `CSN06e_dung_hoc`
+
+**Không dựng hộp thoại K08 cho ba màn này.** `docs/design/ban-do-man-hinh.md` còn ghi "Hộp thoại · K08" cho CS-05 đến CS-14, bản đồ này sẽ do Chat sửa. Khung nào thay khung nào: **không khung nào bị thay**, chỉ bổ sung.
+
+## 2. Danh sách khung mới
+
+| Mã màn | Khung | Nội dung |
+|---|---|---|
+| CS-16 (khuôn K03) | `CSN10_ds` | Danh sách Nhận xét chờ gửi phụ huynh, chip Chờ gửi / Đã gửi |
+| CS-16 | `CSN10_xem` | Hộp thoại xem lời nhắn: Sao chép, Xuất ảnh, Đánh dấu đã gửi |
+| CS-16 | `CSN10_tai`, `CSN10_trong`, `CSN10_loi`, `CSN10_quyen` | Đang tải, rỗng, lỗi tải (nút Thử lại), không có quyền |
+| CS-12 (K08) | `CSN04_khach_huy` | Khách huỷ ticket: bắt buộc lý do (R-CS-05), nút khoá tới khi nhập lý do |
+| CS-12 | `CSN04_khach_huy_loi`, `CSN04_khach_huy_luu` | Lỗi lưu (giữ lý do đã nhập), đang lưu |
+| CS-07 | `CSN06a_chuyen_co_so_loi_luu`, `_tai`, `_dt` | Lỗi lưu, đang tải, điện thoại |
+| CS-10 | `CSN06d_chuyen_phi_loi_luu`, `_tai`, `_dt` | Như trên (dựng từ kiểu "sang anh chị em", dùng chung cho ba kiểu chuyển) |
+| CS-14 | `CSN06e_dung_hoc_loi_luu`, `_tai`, `_dt` | Như trên |
+
+Khung rỗng không áp dụng cho CS-07, 10, 14 (đây là bản ghi, không phải danh sách).
+
+## 3. Chi tiết cần biết khi dựng
+
+**CS-16 (`CSN10_*`)**
+- Cột: Học sinh, Lớp, Buổi, Phụ huynh, Lời nhắn (một dòng, cắt bằng "…"), Trạng thái, Thao tác. Thao tác mỗi dòng: Sao chép, Xuất ảnh, Đánh dấu đã gửi. Bấm tên học sinh mở hộp xem đầy đủ.
+- Vai trò: CS, AD (theo bản đồ). Luật tham chiếu R-GV-04, R-CS-13.
+- Khung dùng thành phần khuôn chung (K03 như `CSN05_ds`, hộp K08). Không thêm thành phần mới.
+- Menu: thêm một mục «Nhận xét chờ gửi» dưới «Chăm sóc KH» để màn có chỗ mở (xem câu hỏi 1).
+- Chưa vẽ: bản điện thoại (bản đồ ghi Máy tính), khung riêng cho chip Đã gửi (cùng bảng, trạng thái Đã gửi), hình ảnh xuất ra (dùng mẫu ảnh có sẵn `GV07X_mau_anh_thuong`, `GV07X_mau_anh_kiem_tra`, chờ anh xác nhận).
+
+**CS-12 (`CSN04_khach_huy*`)**
+- Hộp thoại K08 trên nền ticket đề nghị. Mở từ menu Hành động của ticket đề nghị (CS-02, nút "Khách huỷ"). Khung nền giữ như `CSN04_huy`, không thêm nút mới ngoài bản đồ.
+- Từ chối ticket (bắt buộc lý do) đã có ở `CSN07_tu_choi`, `CSN06_tu_choi`. Huỷ ticket nội bộ ở `CSN04_huy`. Ba việc này khác nhau, không gộp.
+
+**PNV (CS-07, 10, 14) khung lỗi, tải, điện thoại**
+- `_loi_luu`: giống `CSN06_loi_luu` (nút Thử lại, báo "Chưa lưu được phiếu", nội dung nhập vẫn còn), áp lên đúng trang của từng loại phiếu.
+- `_tai`: khung xương, đúng bố cục `CSN06_tai`, thêm thẻ loại phiếu.
+- `_dt` (390 × 844): màn xem phiếu ở trạng thái Nháp, danh sách thông tin, mục Duyệt, hai nút cuối trang Lưu nháp và Gửi duyệt. Không có ô chọn. Sửa đổi số liệu làm trên máy tính.
+
+## 4. Anh Trường đã trả lời (23/11)
+1. Menu CS-16: mục «Nhận xét chờ gửi» dưới «Chăm sóc KH», sau «Phiếu nghiệp vụ». OK.
+2. Cột CS-16: Học sinh, Lớp, Buổi, Phụ huynh, Lời nhắn, Trạng thái, Thao tác. OK.
+3. CS-16 không có bản điện thoại.
+4. Chuyển phí âm: chưa cần khung riêng.
+5. Khách huỷ: chỉ ticket loại Đề nghị; khiếu nại không có.
+
+## 5. File mồ côi: đã xoá
+Xem phần đầu file này. Anh Trường duyệt xoá 23/11, canvas v52 không còn.
+
+## 6. Cách em đã kiểm
+Đã render ảnh cả 18 khung bằng trình duyệt dựng thử (bỏ phần chạy của canvas) và xem. **Chưa mở trong trình xem thật của canvas**, nên các nút bấm (mở hộp xem, chuyển chip) chưa thử trên canvas thật.
+
+---
+
+---
+
+# B. Ghi chú cũ của canvas (bản v41, giữ nguyên, nếu vênh phần A thì phần A thắng)
+
+# GHI CHÚ CHO CODE: canvas Đào tạo & Giáo viên (design/hmt-canvas-9189)
+
+Gói này xuất từ bản đang đăng **Version 48, version id 1794298939-2a56** (đăng 10/11/2026 sau "OK ĐĂNG" Q-246). Bản lùi: Version 47 `1794297332-bf12` (trước đó v46 `1794297020-dadf`, v45 `1794295687-73e6`, v44 `1794293583-d882`). 373 khung, canvas.json, ds/, assets/. Kiểm bằng file, chưa xem trên trình duyệt thật.
+
+**Từ Version 45 trở đi, đọc hai mục cuối file này trước: «Cập nhật Q-232, Q-233» (v45) rồi «Cập nhật Q-241 đến Q-245» (v46 đến v48).** Các mục A đến D bên dưới viết cho Version 44; v45 chỉ thêm 9 khung mới và sửa 6 khung (không đổi gì khác).
+
+So với 1794278144-9189, bản này đổi 20 khung và 2 tiêu đề trong canvas.json (chi tiết ở mục B).
+
+## A. NHÁP, CHƯA LÀM: Code KHÔNG làm 23 khung này
+
+23 khung GV07b_* và GV08b_* tự ghi "NHÁP, CHƯA LÀM". Code không dựng màn theo các khung này:
+
+- `GV07b_bo_qua_dt`
+- `GV07b_cap1_dt`
+- `GV07b_cap2_dt`
+- `GV07b_cap2_du_dt`
+- `GV07b_cap3_dt`
+- `GV07b_dang_luu_dt`
+- `GV07b_loi_luu_dt`
+- `GV07b_loi_mang_dt`
+- `GV07b_loi_nhan_dt`
+- `GV07b_luu_thieu_dt`
+- `GV07b_mo_ta_dt`
+- `GV07b_tai_dt`
+- `GV08b_cap2_dt`
+- `GV08b_cap3_dt`
+- `GV08b_cap3_du_dt`
+- `GV08b_ds_dt`
+- `GV08b_gia_han_dt`
+- `GV08b_khong_cham_dt`
+- `GV08b_khong_giao_dt`
+- `GV08b_loi_mang_dt`
+- `GV08b_o_rieng_dt`
+- `GV08b_tai_dt`
+- `GV08b_tu_xep_dt`
+
+## B. Đã sửa cho khớp luật trong bản 1794293583-d882 (Code làm theo luật, khung nay khớp)
+
+Hai luật (đối chiếu spec 04, Chat xác nhận):
+- **R-V2-37:** GV-02 chỉ hiện buổi trong ngày và việc sắp trễ hạn của các buổi đó. Buổi quá hạn không hiện ở GV-02, xem ở GV-12.
+- **R-V2-35:** BTVN là tuỳ giáo viên. Để trống = không giao. Không có ô tích «không giao BTVN». Bước 2 (nội dung buổi) chỉ cần có ít nhất một dòng nội dung, không còn điều kiện BTVN. Dòng tóm tắt bước 2 do hệ thống tự ghi: «BTVN đã nhập» khi có BTVN, «Không giao BTVN» khi để trống (không phải ô tích).
+
+20 khung đã sửa:
+- GV-02: GV02_dt, GV02_pc (bỏ thẻ buổi quá hạn, nhóm «VIỆC SẮP TRỄ HẠN»), GV02_trong, GV02_trong_bs_pc, ghi chú Man_GV02, Man_GV02_bs_dt.
+- GV-06: GV06_trong, GV06_trong_bs_pc (bỏ dấu *, bỏ ô tích, nhãn «Không bắt buộc»), ghi chú Man_GV06, Man_GV06_bs_dt.
+- GV-04: ghi chú Man_GV04, Man_GV04_bs_dt.
+- GV-08: ghi chú Man_GV08, Man_GV08_bs_dt; GV08_trong, GV08_trong_bs_pc («Done» thành «Hoàn thành»).
+- GV-09: GV09_thieu_btvn_dt, GV09_thieu_btvn_pc (bước 2 ghi «Không giao BTVN»; hộp «Còn thiếu» không có dòng BTVN), ghi chú Man_GV09, Man_GV09_bs_dt.
+- canvas.json: tiêu đề 2 khung GV09_thieu_btvn thành «…BTVN để trống thì bước 2 vẫn Xong (điện thoại/laptop)».
+
+Chưa sửa, Code lưu ý khi làm: tiêu đề GV07K_done_dt, GV07K_done_pc còn chữ «Done» (làm màn thì dùng chữ «Hoàn thành»).
+
+## C. Chưa so
+
+Chưa so với fcd1: GV-03, GV-09 (chỉ rà riêng phần BTVN theo R-V2-35, đã sửa), GV-10, GV-11, GV-12, GV-13, GV-14, GV-15, GV-16, và canvas.json ngoài tiêu đề. Các màn này làm theo luật và `docs/design/ban-do-man-hinh.md`; khung chỉ để tham khảo giao diện.
+
+## D. So với fcd1
+
+(Dán nguyên văn danh sách từ file DS_khac_biet_GV_9189_vs_fcd1.md.)
+
+LƯU Ý: danh sách này lập cho bản 1794278144-9189, trước đợt sửa Q-226. Nếu mâu thuẫn với mục B thì theo mục B (ví dụ thẻ buổi quá hạn ở GV-02 và ô tích «không giao BTVN» ở GV-06 mà danh sách ghi là đổi/thêm, nay đã bỏ).
+
+---
+
+# So canvas Đào tạo & Giáo viên: bản hiện hành 1794278144-9189 với bản zip fcd1 (04/11), chỉ GV-01, 02, 04, 05, 06, 07, 08
+
+Kiểm bằng file (so từng khung bằng máy), chưa xem trên trình duyệt. Chỉ liệt kê, không sửa.
+
+- Khung giống hệt: 85. Khung đổi: 39. Khung thêm: 23. Khung bớt: 0.
+
+## 1. Khung THÊM (23 khung, đều điện thoại, tiêu đề ghi "NHÁP, CHƯA LÀM")
+
+- `GV07b_bo_qua_dt`: GV-07 · Chấm nhận xét · bộ mới · một tiêu chí đang Bỏ qua (điện thoại)
+- `GV07b_cap1_dt`: GV-07 · Chấm nhận xét · bộ mới Cấp 1, 9 tiêu chí theo file (điện thoại)
+- `GV07b_cap2_dt`: GV-07 · Chấm nhận xét · bộ mới Cấp 2, 7 tiêu chí (điện thoại)
+- `GV07b_cap2_du_dt`: GV-07 · Chấm nhận xét · bộ mới Cấp 2 · đủ mục bắt buộc (điện thoại)
+- `GV07b_cap3_dt`: GV-07 · Chấm nhận xét · bộ mới Cấp 3, 9 tiêu chí (điện thoại)
+- `GV07b_dang_luu_dt`: GV-07 · Chấm nhận xét · bộ mới · đang lưu (điện thoại)
+- `GV07b_loi_luu_dt`: GV-07 · Chấm nhận xét · bộ mới · lỗi khi lưu, thử lại (điện thoại)
+- `GV07b_loi_mang_dt`: GV-07 · Chấm nhận xét · bộ mới · lỗi mạng, thử lại (điện thoại)
+- `GV07b_loi_nhan_dt`: GV-07 · Chấm nhận xét · bộ mới · cuối danh sách, lời nhắn phụ huynh (điện thoại)
+- `GV07b_luu_thieu_dt`: GV-07 · Chấm nhận xét · bộ mới · bấm Lưu khi còn thiếu (điện thoại)
+- `GV07b_mo_ta_dt`: GV-07 · Chấm nhận xét · ngăn xem mô tả 5 mức (điện thoại)
+- `GV07b_tai_dt`: GV-07 · Chấm nhận xét · bộ mới · đang tải tiêu chí (điện thoại)
+- `GV08b_cap2_dt`: GV-08 · Chấm BTVN · bộ mới Cấp 2, 8 tiêu chí (điện thoại)
+- `GV08b_cap3_dt`: GV-08 · Chấm BTVN · bộ mới Cấp 3, 15 tiêu chí, còn thiếu điểm bài làm (điện thoại)
+- `GV08b_cap3_du_dt`: GV-08 · Chấm BTVN · bộ mới Cấp 3 · đủ mục bắt buộc, nộp muộn có gia hạn (điện thoại)
+- `GV08b_ds_dt`: GV-08 · Chấm BTVN · bộ mới · danh sách em theo trạng thái (điện thoại)
+- `GV08b_gia_han_dt`: GV-08 · Chấm BTVN · bộ mới · ghi nhận gia hạn nộp bài, chờ luật (điện thoại)
+- `GV08b_khong_cham_dt`: GV-08 · Chấm BTVN · bộ mới · Không làm, Nộp sau, Không áp dụng: không chấm tiêu chí (điện thoại)
+- `GV08b_khong_giao_dt`: GV-08 · Chấm BTVN · bộ mới · buổi trước không giao BTVN (điện thoại)
+- `GV08b_loi_mang_dt`: GV-08 · Chấm BTVN · bộ mới · lỗi mạng, thử lại (điện thoại)
+- `GV08b_o_rieng_dt`: GV-08 · Chấm BTVN · bộ mới · ba ô riêng cuối danh sách (điện thoại)
+- `GV08b_tai_dt`: GV-08 · Chấm BTVN · bộ mới · đang tải (điện thoại)
+- `GV08b_tu_xep_dt`: GV-08 · Chấm BTVN · bộ mới · ngăn dưới giải thích cách xếp mức Thời gian nộp (điện thoại)
+
+**Lưu ý:** cả 23 khung này tự ghi "NHÁP, CHƯA LÀM", Code không làm theo. GV07b là bộ tiêu chí chấm nhận xét mới (Cấp 1: 9 tiêu chí, Cấp 2: 7, Cấp 3: 9; ngăn mô tả 5 mức). GV08b là bộ tiêu chí chấm BTVN mới (Cấp 2: 8, Cấp 3: 15; ba ô riêng cuối danh sách; gia hạn nộp bài "chờ luật").
+
+## 2. Khung ĐỔI có thay đổi chữ, nút, trường (đã bỏ chi tiết kỹ thuật)
+
+### GV02_dt
+- -VIỆC SẮP TRỄ HẠN
+- +VIỆC SẮP TRỄ HẠN / QUÁ HẠN
+- +Mở buổi (màn GV-04).
+- +Hình 9 · cơ bản A · Buổi 5
+- +Kết thúc 22/10 15:30 · hạn 22/10 23:30
+- +Quá hạn 47 giờ
+### GV02_pc
+- -VIỆC SẮP TRỄ HẠN
+- +VIỆC SẮP TRỄ HẠN / QUÁ HẠN
+- +Mở buổi (màn GV-04).
+- +Hình 9 · cơ bản A · Buổi 5
+- +Kết thúc 22/10 15:30 · hạn 22/10 23:30
+- +Quá hạn 47 giờ
+### GV02_trong
+- -Không có việc sắp trễ hạn. Buổi tiếp theo: Thứ Hai 26/10 19:30.
+- +Không có việc sắp trễ hạn hay quá hạn. Buổi tiếp theo: Thứ Hai 26/10 19:30.
+### GV04_chua_chot
+- -Chưa có dòng điểm danh nên chưa điểm danh, chưa chấm được. Giáo viên không tạo dòng điểm danh (R-GV-08, R-GIO-02).
+- +Chưa có dòng điểm danh nên chưa điểm danh, chưa chấm được. Giáo viên không tạo dòng điểm danh (R-GV-08, R-GIO-02). Danh sách sẽ được hệ thống chốt trước giờ học.
+### GV04_dt
+- -Đã nhập 3 dòng nội dung
+- +3 dòng nội dung · BTVN đã nhập
+- -3 dòng nội dung
+- +3 dòng nội dung · BTVN đã nhập
+### GV04_dung_han
+- -Đã nhập 3 dòng nội dung
+- +3 dòng nội dung · BTVN đã nhập
+- -3 dòng nội dung
+- +3 dòng nội dung · BTVN đã nhập
+### GV04_pc
+- -Đại số 9 · cơ bản A · Buổi 5 · 24/10 18:00–19:30
+- +ĐẠI SỐ 9 · CƠ BẢN A
+- +Buổi 5
+- +24/10 18:00–19:30
+- -Đã nhập 3 dòng nội dung
+- +3 dòng nội dung · BTVN đã nhập
+- -3 dòng nội dung
+- +3 dòng nội dung · BTVN đã nhập
+### GV04_tre_han
+- -Đã nhập 3 dòng nội dung
+- +3 dòng nội dung · BTVN đã nhập
+- -3 dòng nội dung
+- +3 dòng nội dung · BTVN đã nhập
+### GV05_chua_chot
+- -Danh sách tự chốt trước giờ học 2 giờ. Khi chốt xong, các em hiện ở đây.
+- +Danh sách sẽ được hệ thống chốt trước giờ học. Khi chốt xong, các em hiện ở đây.
+### GV05_done_dt
+- -GV-05 · Điểm danh · buổi đã Done, chỉ xem (điện thoại)
+- +GV-05 · Điểm danh · buổi đã Hoàn thành, chỉ xem (điện thoại)
+- -Buổi đã Done: chỉ xem.
+- +Buổi đã Hoàn thành: chỉ xem.
+- +Đổi sang Vắng?
+- +Đóng
+- +Em này
+- +Điểm đã nhập của em này sẽ không được tính. Đổi lại Có mặt thì hiện lại.
+- +Đổi sang Vắng
+- +Giữ nguyên
+### GV05_dt
+- +Đã chấm nhận xét ở bước 3. Đổi sang Vắng thì điểm không được tính.
+- +Đã chấm nhận xét ở bước 3. Đổi sang Vắng thì điểm không được tính.
+- +Đổi sang Vắng?
+- +Đóng
+- +Em này
+- +Điểm đã nhập của em này sẽ không được tính. Đổi lại Có mặt thì hiện lại.
+- +Đổi sang Vắng
+- +Giữ nguyên
+### GV05_pc
+- -Điểm danh · Đại số 9 · cơ bản A · Buổi 5
+- +ĐẠI SỐ 9 · CƠ BẢN A
+- +Buổi 5 · Điểm danh
+- +24/10 · 18:00–19:30
+- +Đã chấm nhận xét
+- +Đã chấm nhận xét
+- +Đổi sang Vắng?
+- +Đóng
+- +Em này
+- +Điểm đã nhập của em này sẽ không được tính. Đổi lại Có mặt thì hiện lại.
+- +Đổi sang Vắng
+- +Giữ nguyên
+### GV06_dt
+- +Loại buổi: Buổi học thường
+- -Dòng nội dung 1
+- +Dòng nội dung 1 Phương trình bậc nhất một ẩn
+- -Dòng nội dung 2
+- +Dòng nội dung 2 Giải bài toán bằng cách lập phương trình
+- -Dòng nội dung 3
+- +Dòng nội dung 3 Bất đẳng thức cơ bản
+- +Không bắt buộc
+- -Buổi này không giao BTVN
+- +Giao bài về nhà là tuỳ giáo viên. Để trống nếu buổi này không giao; không ảnh hưởng việc hoàn thành bước 2.
+- -Cần ít nhất một dòng nội dung. Không tự lưu.
+- +Cần ít nhất một dòng nội dung. BTVN tuỳ giáo viên. Không tự lưu.
+### GV06_pc
+- -Nội dung buổi và BTVN · Đại số 9 · cơ bản A · Buổi 5
+- +ĐẠI SỐ 9 · CƠ BẢN A
+- +Buổi 5 · Nội dung buổi và BTVN
+- +24/10 · 18:00–19:30
+- +Loại buổi: Buổi học thường
+- -Dòng nội dung 1
+- +Dòng nội dung 1 Phương trình bậc nhất một ẩn
+- -Dòng nội dung 2
+- +Dòng nội dung 2 Giải bài toán bằng cách lập phương trình
+- -Dòng nội dung 3
+- +Dòng nội dung 3 Bất đẳng thức cơ bản
+- +Không bắt buộc
+- -Buổi này không giao BTVN
+- +Giao bài về nhà là tuỳ giáo viên. Để trống nếu buổi này không giao; không ảnh hưởng việc hoàn thành bước 2.
+### GV06_trong
+- +*
+- +Nhập BTVN giao mới hoặc tích Buổi này không giao BTVN
+- +Phải nhập BTVN giao mới hoặc tích không giao thì bước 2 mới tính Xong (R-GIO-06).
+- -Cần ít nhất một dòng nội dung. Không tự lưu.
+- +Cần ít nhất một dòng nội dung và BTVN (hoặc tích không giao). Không tự lưu.
+### GV08_dt
+- -GV-08 · Chấm BTVN buổi trước (điện thoại)
+- +GV-08 · Chấm BTVN buổi trước · (điện thoại)
+### GV08_pc
+- -Chấm BTVN buổi trước · Đại số 9 · cơ bản A · Buổi 5
+- +ĐẠI SỐ 9 · CƠ BẢN A
+- +Buổi 5 · Chấm BTVN buổi trước
+- +24/10 · 18:00–19:30
+- -Điểm BTVN, Trần Gia Hân
+- +Điểm BTVN, Trần Gia Hân 4
+- -Điểm BTVN, Đỗ Phương Thảo
+- +Điểm BTVN, Đỗ Phương Thảo 3
+### GV08_trong
+- -Buổi trước đã đánh dấu không giao BTVN nên bước này tự bỏ qua, không cần làm gì và không chặn Done (QĐ-Đ22, R-GIO-06).
+- +Buổi trước giáo viên không giao BTVN (giao bài là tuỳ giáo viên) nên không có bài để chấm. Bước này tự bỏ qua, không cần làm gì và không chặn Done (QĐ-Đ22).
+### Man_GV02
+- +Buổi đã quá hạn cũng hiện ở đây (Hình 9 · Buổi 5, quá hạn 47 giờ, tính lúc 22:30 như GV-12). Tiêu đề nhóm: «VIỆC SẮP TRỄ HẠN / QUÁ HẠN».
+### Man_GV04
+- +Chưa chốt danh sách: «Danh sách sẽ được hệ thống chốt trước giờ học», không hiện danh sách tạm (R-GIO-02, R-GIO-03). Bước 2 chỉ Xong khi có BTVN giao mới hoặc tích «không giao» (ghi «BTVN đã nhập» hoặc «Không giao BTVN»). Thêm 3 
+### Man_GV05
+- +Chưa chốt danh sách: «Danh sách sẽ được hệ thống chốt trước giờ học». Đổi em đã chấm nhận xét sang Vắng thì hỏi trước: «Điểm đã nhập của em này sẽ không được tính. Đổi lại Có mặt thì hiện lại.» Hai nút: Đổi sang Vắng · Giữ nguyên
+### Man_GV06
+- -QĐ-Đ22: giữ ô "Buổi này không giao BTVN"; buổi đánh dấu không giao thì buổi sau không phải chấm BTVN buổi trước (R-GIO-06). QĐ-Đ23: nội dung buổi phải có ít nhất một dòng.
+- +QĐ-Đ22: giữ ô «Buổi này không giao BTVN»; buổi đánh dấu không giao thì buổi sau không phải chấm BTVN buổi trước (R-GIO-06). QĐ-Đ23: nội dung buổi phải có ít nhất một dòng. Mỗi buổi phải nhập BTVN giao mới hoặc tích không giao, th
+### Man_GV08
+- -QĐ-Đ22: buổi trước đánh dấu "không giao BTVN" thì bước này tự bỏ qua, không chặn Done (R-GIO-06). Đã vẽ ở khung "buổi trước không giao BTVN".
+- +QĐ-Đ22: buổi trước đánh dấu «không giao BTVN» thì bước này tự bỏ qua, không chặn Hoàn thành (R-GIO-06). Thêm khung: em vắng buổi giao bài (đặt sẵn «Không áp dụng», đổi được, có chú thích), em vắng buổi chấm (không bắt buộc ở buổi
+
+## 3. Khung ĐỔI chỉ ở script (không đổi giao diện nhìn thấy)
+
+`GV01_dt`, `GV01_pc`, `GV01_quyen`, `GV02_quyen`, `GV02_tai`, `GV04_quyen`, `GV04_tai`, `GV05_quyen`, `GV05_tai`, `GV06_quyen`, `GV06_tai`, `GV07_quyen`, `GV07_tai`, `GV07_trong`, `GV08_quyen`, `GV08_tai`. Thêm đoạn script đặt giá trị ban đầu cho ô nhập (`data-val`); riêng GV06 có thêm kiểm tra "cần ít nhất một dòng nội dung".
+
+## 4. Không đổi (85 khung)
+Mọi khung GV-07 bản chính (`GV07_*`, `GV07K_*`, `GV07X_*`) giống hệt fcd1 về giao diện (3 khung `quyen`, `tai`, `trong` chỉ đổi script). GV-01, GV-04, GV-05, GV-08 bản `*_bs_pc`/`Man_*_bs_dt` giống hệt.
+
+## 5. Đề xuất
+Khác biệt vừa phải, tập trung ở GV-02, 04, 05, 06, 08 (chữ và vài nút/hộp thoại) cộng 23 khung nháp GV07b/GV08b chưa làm. Đề xuất **xuất gói 9189 vào repo** (cả canvas, để Code 2 làm đúng bản hiện hành), kèm dặn: bỏ qua 23 khung "NHÁP, CHƯA LÀM". Chưa so GV-03, GV-09 đến GV-16 và canvas.json ngoài tiêu đề.
+
+## Cập nhật Q-232, Q-233: Version 45 `1794295687-73e6` (10/11/2026)
+- 9 khung mới (GV05_vang_xac_nhan_dt/pc, GV06_xung_dot_dt/pc, GV04_chua_chot_pc, GV05_chua_chot_pc, GV07_vang_da_nhap_dt/pc, GV07_vang_pc) đã vào canvas.
+- «Done» → «Hoàn thành» ở GV07K_done_dt/pc (tiêu đề và chữ trong khung).
+- Q-233: ô «Ảnh» ở GV-14 (GV14_dt, GV14_pc, GV14_tk_giao_vien_dt, GV14_tk_giao_vien_pc) giữ chỗ, nhãn «Làm sau», nút «Chọn ảnh» mờ, chữ «Làm sau: bản 17/11 chưa tải ảnh, ticket chỉ gõ chữ.» Code không làm tải ảnh ở bản 17/11. Nội dung giữ nguyên theo R-V2-23, R-CS-10.
+- Khung đổi trong v45 so với v44: 9 khung mới ở trên (nằm cuối canvas), GV07K_done_dt/pc (chữ), GV14_dt, GV14_pc, GV14_tk_giao_vien_dt, GV14_tk_giao_vien_pc (ô Ảnh). Còn lại giữ nguyên.
+- (Ghi chú v45, đã lỗi thời) Hộp BH-11 nằm ở canvas Bán hàng & Thu chi bổ sung (xem gói abea). Ô Tính chất tự chọn của GV-14 (v46) đã bị bỏ ở v48, xem mục cuối.
+- R-V2-36 (GV-05, đổi Có mặt sang Vắng): hộp xác nhận ở `GV05_vang_xac_nhan_dt/pc`. R-V2-36 chưa có trong `docs/spec/04` của repo, khung vẽ theo lời anh Trường qua Chat.
+
+## Cập nhật Q-241 đến Q-245: Version 48 `1794298939-2a56` (10/11/2026)
+Lịch sử sau v45: v46 `1794297020-dadf` (GV-14 Tính chất tự chọn, ĐÃ BỊ BỎ ở v48), v47 `1794297332-bf12` (GV12_pc, GV13_dt, GV13_pc), v48 `1794298939-2a56`. Gói này là v48; khung đổi từ v45 sang v48 gồm 20 khung (liệt kê dưới đây).
+
+**GV-14 (6 khung: GV14_dt, GV14_pc, GV14_tk_giao_vien_dt/pc, GV14_tk_phan_anh_dt/pc; hai khung phan_anh mới từ v46)**
+- Tính chất CHỈ ĐỌC, tự gắn theo nhóm con, giáo viên không chọn. Không có ô chọn, không có hai nút. Chữ «Cần hỗ trợ», «Phản ánh» theo R-V2-23 và v2-aftersale.md. Ghi chú «Tự gắn theo nhóm con, giáo viên không chọn.»
+- Nhóm «Khác»: Tính chất hiện «Chưa xếp» (chỉ đọc, thẻ trung tính), ghi chú «CSKH xếp nhóm con khi tiếp nhận thì tính chất mới gắn.»
+- GV14_tk_phan_anh_dt/pc: ví dụ nhóm con «Hành vi trong lớp» (nhóm Học sinh) thuộc Phản ánh; tính chất hiện «Phản ánh». Ô Học sinh chỉ bắt buộc với Học kém và Nghỉ nhiều.
+- Nhóm con ví dụ: Cơ sở vật chất (Thiết bị lớp học, Phòng học) thuộc Cần hỗ trợ; Hành vi trong lớp, Phản ánh phân công thuộc Phản ánh. Ví dụ giả; danh mục chính thức duyệt sau (R-V2-28), khác danh mục trong tài liệu.
+- Câu cuối khung: «Cơ sở xử lý. Giáo viên chỉ tạo và theo dõi (R-CS-10).» Ô Ảnh «Làm sau» (Q-233) giữ nguyên.
+- CSKH đổi nhóm con khi tiếp nhận thì tính chất đổi theo: việc của CRM, chưa vẽ.
+- **Sau 17/11: GV-14 thêm chỗ giáo viên trả lời trong ticket.**
+
+**GV-06 (11 khung: GV06_btvn_de_trong_dt, GV06_dt, GV06_pc, GV06_sau_cham_dt, GV06_sau_cham_pc, GV06_trong, GV06_trong_bs_pc, GV06_xung_dot_dt, GV06_xung_dot_pc, Man_GV06, Man_GV06_bs_dt)** (Q-244, Q-245; R-GV-01 04/11, R-V2-19)
+- Nội dung buổi là danh sách dòng, cần ít nhất một dòng; trước khi Done thêm, sửa, xoá dòng tự do. KHÔNG còn mục chấm vận dụng theo dòng, KHÔNG còn «Thiếu 1 mục», KHÔNG còn «Dòng đã có điểm vận dụng thì không xoá được».
+- Dòng chữ «Mỗi dòng là một mục chấm vận dụng ở bước 3 (R-GV-07)» thành «Cần ít nhất một dòng nội dung.» (ở ô trống GV06_trong, GV06_trong_bs_pc bỏ câu lặp).
+- GV06_sau_cham_dt/pc: GIỮ TÊN KHUNG (Code có thể đang tham chiếu). Nay là «sửa nội dung sau khi đã chấm xong, buổi chưa Done»: nút xoá mở khoá cả 3 dòng, bỏ khung «Đã thêm 1 dòng», ghi chú «Trước khi Done vẫn thêm, sửa, xoá dòng nội dung được. Điểm 9 tiêu chí của các em không đổi.»
+- Man_GV06, Man_GV06_bs_dt: ghi chú đổi theo.
+- GV05_dt, GV05_vang_xac_nhan_dt, GV05_xung_dot_dt còn «Đã chấm nhận xét ở bước 3»: ý khác (đổi sang Vắng thì điểm không tính), không đổi.
+
+**GV-12, GV-13 (v47):** GV12_pc chân trang ghi «6 việc, 1 việc đã quá hạn» (trước ghi 5 việc); GV13_dt, GV13_pc dẫn R-GV-13 thay R-GV-08 (GV13_quyen, GV13_quyen_bs_pc giữ).
+
+**Còn mở / lệch đã báo anh Trường**
+- Danh sách «Ticket lớp tôi» giữ trạng thái «Đã giao», «Đã xử lý» và mã GV theo R-V2-23 (anh chốt giữ).
+- Tên 7 bước trạng thái trong v2-aftersale.md không kiểm được (sơ đồ không có trong phần chữ).
+- Hai khung phan_anh và khung «Khác» chưa mở xem ảnh ở trạng thái Khác; Man_GV06, Man_GV06_bs_dt chưa mở ảnh (chỉ đổi một dòng chữ).
+- R-V2-xx chưa có trong `docs/spec/04` của repo; khung vẽ theo lời anh Trường qua Chat.

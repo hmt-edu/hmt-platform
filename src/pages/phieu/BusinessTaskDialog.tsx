@@ -9,21 +9,25 @@ import {
   classChoices,
   EMPTY_BUSINESS_DRAFT,
   HOLD_MODES,
+  MONEY_MODES,
+  type MoneyMode,
   holdEnrollmentChoices,
   runningHold,
   type BusinessType,
   type HoldMode,
+  TRANSFER_BRANCH_KIND,
   TRANSFER_KINDS,
   validateBusinessDraft,
   type BusinessDraft,
 } from './businessTaskForm';
 import { TASK_TYPE_LABEL } from './taskLabels';
-import { useTaskOptions } from './useTaskCreate';
+import { useDestBranches, useTaskOptions } from './useTaskCreate';
 
 export function BusinessTaskDialog({
   type,
   ticketId,
   ticketCode,
+  ticketBranchId,
   hasStudent,
   open,
   onOpenChange,
@@ -34,6 +38,8 @@ export function BusinessTaskDialog({
   type: BusinessType;
   ticketId: string;
   ticketCode: string;
+  /** Cơ sở của ticket: loại khỏi danh sách cơ sở mới. */
+  ticketBranchId?: string;
   hasStudent: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -42,6 +48,7 @@ export function BusinessTaskDialog({
   onCreate: (reason: string, payload: unknown) => void;
 }) {
   const options = useTaskOptions(ticketId, open && hasStudent);
+  const branches = useDestBranches(open && type === 'CHUYEN_LOP');
   const [draft, setDraft] = useState<BusinessDraft>(EMPTY_BUSINESS_DRAFT);
   const [show, setShow] = useState(false);
   const set = (patch: Partial<BusinessDraft>) => setDraft((d) => ({ ...d, ...patch }));
@@ -143,11 +150,32 @@ export function BusinessTaskDialog({
           khách sau khi phiếu được thực hiện. Cần quản lý cơ sở rồi kế toán duyệt.
         </p>
       ) : type === 'DUNG_HOC' ? (
-        <p className="text-caption text-fg-muted">
-          Dừng học: giờ còn lại giữ thành số dư khách hàng (giờ còn lại × giá sau chiết khấu, không
-          trừ phí); giờ tặng còn lại bị huỷ. Muốn hoàn tiền thì tạo phiếu Hoàn học phí. Cần quản lý
-          cơ sở rồi kế toán duyệt.
-        </p>
+        <>
+          <TextField
+            label="Ngày dừng"
+            required
+            type="date"
+            value={draft.stopDate}
+            error={errors.stopDate ?? null}
+            onChange={(e) => set({ stopDate: e.target.value })}
+          />
+          <OptionalSelect
+            label="Xử lý tiền còn lại"
+            value={draft.moneyMode}
+            onChange={(v) => set({ moneyMode: v as MoneyMode })}
+            options={MONEY_MODES.map((m) => ({ value: m.value, label: m.label }))}
+            placeholder="Chọn cách xử lý"
+            invalid={errors.moneyMode !== undefined}
+          />
+          {errors.moneyMode && (
+            <p className="text-caption text-on-danger-subtle">{errors.moneyMode}</p>
+          )}
+          <p className="text-caption text-fg-muted">
+            Dừng học đóng ghi danh; giờ tặng còn lại bị huỷ. Hoàn tiền: hoàn phí toàn bộ theo giá
+            gốc, trừ phí xử lý. Giữ số dư: giờ mua còn lại × giá sau chiết khấu, không trừ phí. Ngày
+            dừng chỉ ghi nhận, không đổi cách tính giờ. Cần quản lý cơ sở rồi kế toán duyệt.
+          </p>
+        </>
       ) : type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC' ? (
         <p className="text-caption text-fg-muted">
           Khi thực hiện, bảo lưu kết thúc và em về hàng chờ xếp lớp, giữ nguyên số giờ còn lại. CSKH
@@ -175,32 +203,56 @@ export function BusinessTaskDialog({
           {errors.kindCode && (
             <p className="text-caption text-on-danger-subtle">{errors.kindCode}</p>
           )}
-          <OptionalSelect
-            label="Lớp mới"
-            value={draft.toClassId}
-            onChange={(v) => set({ toClassId: v, startDate: '' })}
-            options={classes.map((c) => ({ value: c.id, label: c.code }))}
-            placeholder="Chọn lớp"
-            disabled={draft.enrollmentId === ''}
-            invalid={errors.toClassId !== undefined}
-          />
-          {errors.toClassId && (
-            <p className="text-caption text-on-danger-subtle">{errors.toClassId}</p>
-          )}
-          <OptionalSelect
-            label="Hiệu lực từ buổi"
-            value={draft.startDate}
-            onChange={(v) => set({ startDate: v })}
-            options={(newClass?.upcoming ?? []).map((u) => ({
-              value: u.date,
-              label: `Buổi ${u.session_no} · ${formatDate(u.date)}`,
-            }))}
-            placeholder="Chọn buổi"
-            disabled={newClass === undefined}
-            invalid={errors.startDate !== undefined}
-          />
-          {errors.startDate && (
-            <p className="text-caption text-on-danger-subtle">{errors.startDate}</p>
+          {draft.kindCode === TRANSFER_BRANCH_KIND ? (
+            <>
+              <OptionalSelect
+                label="Cơ sở mới"
+                value={draft.destBranchId}
+                onChange={(v) => set({ destBranchId: v })}
+                options={(branches.data ?? [])
+                  .filter((b) => b.id !== ticketBranchId)
+                  .map((b) => ({ value: b.id, label: `${b.code} ${b.name}` }))}
+                placeholder="Chọn cơ sở"
+                invalid={errors.destBranchId !== undefined}
+              />
+              {errors.destBranchId && (
+                <p className="text-caption text-on-danger-subtle">{errors.destBranchId}</p>
+              )}
+              <p className="text-caption text-fg-muted">
+                Chuyển cơ sở giữ nguyên số giờ. Quản lý cơ sở hiện tại duyệt trước, rồi quản lý cơ
+                sở mới duyệt và chọn lớp mới, buổi bắt đầu ở bước của họ.
+              </p>
+            </>
+          ) : (
+            <>
+              <OptionalSelect
+                label="Lớp mới"
+                value={draft.toClassId}
+                onChange={(v) => set({ toClassId: v, startDate: '' })}
+                options={classes.map((c) => ({ value: c.id, label: c.code }))}
+                placeholder="Chọn lớp"
+                disabled={draft.enrollmentId === ''}
+                invalid={errors.toClassId !== undefined}
+              />
+              {errors.toClassId && (
+                <p className="text-caption text-on-danger-subtle">{errors.toClassId}</p>
+              )}
+              <OptionalSelect
+                label="Hiệu lực từ buổi"
+                value={draft.startDate}
+                onChange={(v) => set({ startDate: v })}
+                options={(newClass?.upcoming ?? []).map((u) => ({
+                  value: u.date,
+                  label: `Buổi ${u.session_no} · ${formatDate(u.date)}`,
+                }))}
+                placeholder="Chọn buổi"
+                disabled={newClass === undefined}
+                invalid={errors.startDate !== undefined}
+              />
+              {errors.startDate && (
+                <p className="text-caption text-on-danger-subtle">{errors.startDate}</p>
+              )}
+            </>
           )}
         </>
       )}

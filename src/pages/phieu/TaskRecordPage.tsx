@@ -5,14 +5,15 @@ import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
-import { TRANSFER_KINDS } from './businessTaskForm';
+import { MONEY_MODES, TRANSFER_BRANCH_KIND, TRANSFER_KINDS } from './businessTaskForm';
+import { useDestBranches } from './useTaskCreate';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
-import { Spinner } from '../../ui/Feedback';
+import { Alert, Spinner } from '../../ui/Feedback';
 import { QueryErrorView } from '../../ui/QueryErrorView';
 import { TextAreaField } from '../../ui/Field';
 import type { StageStep } from '../../ui/Stage';
@@ -55,6 +56,9 @@ export function TaskRecordPage() {
   const toast = useToast();
   const refresh = useRefreshTasks();
   const record = useTaskRecord(id);
+  const destBranches = useDestBranches(
+    record.data?.task.payload.kind_code === TRANSFER_BRANCH_KIND,
+  );
   const [asking, setAsking] = useState<Asking>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
@@ -155,6 +159,21 @@ export function TaskRecordPage() {
           />
         }
       >
+        {/* CSN06a «Lỗi lưu»: lỗi khi Trình duyệt (không có hộp thoại) hiện ngay trên phiếu, giữ nguyên nội dung, có nút Thử lại. */}
+        {error && asking === null && (
+          <div className="mb-4">
+            <Alert tone="danger">
+              <span className="flex flex-wrap items-center gap-3">
+                <span>
+                  <b>Chưa lưu được phiếu.</b> {error} Nội dung vẫn còn trên màn hình.
+                </span>
+                <Button loading={busy} onClick={() => void run('submit')}>
+                  Thử lại
+                </Button>
+              </span>
+            </Alert>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
           <DetailSection title="Thông tin phiếu">
             <DetailField label="Mã phiếu" mode="view" value={task.code} />
@@ -262,13 +281,43 @@ export function TaskRecordPage() {
                       TRANSFER_KINDS.find((k) => k.value === task.payload.kind_code)?.label ?? ''
                     }
                   />
-                  <DetailField
-                    label="Hiệu lực từ ngày"
-                    mode="view"
-                    value={task.payload.start_date ? formatDate(task.payload.start_date) : ''}
-                  />
+                  {task.payload.kind_code === TRANSFER_BRANCH_KIND ? (
+                    <DetailField
+                      label="Cơ sở mới"
+                      mode="view"
+                      value={
+                        destBranches.data?.find((b) => b.id === task.payload.dest_branch_id)
+                          ?.name ?? ''
+                      }
+                    />
+                  ) : (
+                    <DetailField
+                      label="Hiệu lực từ ngày"
+                      mode="view"
+                      value={task.payload.start_date ? formatDate(task.payload.start_date) : ''}
+                    />
+                  )}
                 </>
               )}
+            </DetailSection>
+          </div>
+        )}
+        {task.task_type === 'DUNG_HOC' && (
+          <div className="mt-6">
+            <DetailSection title="Nội dung dừng học">
+              <DetailField
+                label="Ngày dừng"
+                mode="view"
+                value={task.payload.stop_date ? formatDate(task.payload.stop_date) : ''}
+              />
+              <DetailField
+                label="Xử lý tiền còn lại"
+                mode="view"
+                value={
+                  MONEY_MODES.find((m) => m.value === (task.payload.money_mode ?? 'GIU_SO_DU'))
+                    ?.label ?? ''
+                }
+              />
             </DetailSection>
           </div>
         )}
