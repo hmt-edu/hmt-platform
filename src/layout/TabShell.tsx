@@ -144,6 +144,25 @@ const STUDENT_TABS: ShellTab[] = [
   { to: '/hoc/tai-khoan', label: 'Tài khoản', icon: 'user' },
 ];
 
+const PARENT_TABS: ShellTab[] = [
+  { to: '/ph', label: 'Trang chủ', icon: 'home', end: true },
+  { to: '/ph/tai-khoan', label: 'Tài khoản', icon: 'user' },
+];
+
+/** Khung cổng phụ huynh (trang đích tạm của CHUNG-23: cổng PH-01.. làm ở giai đoạn sau). */
+export function ParentShell() {
+  return (
+    <TabShell
+      portal="ph"
+      product="lms"
+      title="Phụ huynh"
+      tabs={PARENT_TABS}
+      sidebar="wide"
+      contentClass="mx-auto max-w-[45rem]"
+    />
+  );
+}
+
 /** GV-01 · Khung cổng giáo viên: điện thoại có thanh dưới 5 mục, laptop có menu trái thu gọn. */
 export function TeacherShell() {
   const count = useTodoCount();

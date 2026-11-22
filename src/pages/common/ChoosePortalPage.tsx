@@ -13,6 +13,7 @@ const PORTAL_CARD: Record<Portal, { icon: IconName; hint: string }> = {
   },
   gv: { icon: 'training', hint: 'Lịch dạy, điểm danh, chấm nhận xét, bài tập về nhà.' },
   hoc: { icon: 'homework', hint: 'Bài tập, lịch học, kết quả.' },
+  ph: { icon: 'user', hint: 'Theo dõi việc học của con.' },
 };
 
 /** CHUNG-25 · Chọn cổng: người vừa là nhân viên vừa là giáo viên chọn vào CRM hoặc cổng Giáo viên. */
