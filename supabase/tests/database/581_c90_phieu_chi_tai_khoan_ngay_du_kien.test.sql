@@ -37,6 +37,8 @@ create function pg_temp.lead_data(p_phone text, p_extra jsonb default '{}'::json
                             'source_type_code', 'MARKETING', 'source_code', 'FACEBOOK_ADS',
                             'channel_code', 'FACEBOOK_ADS_LEAD_FORM') || p_extra;
 $$;
+create function pg_temp.sq(p_sql text) returns text language plpgsql security definer as $$
+declare v text; begin execute p_sql into v; return v; end $$;
 grant execute on all functions in schema pg_temp to public;
 
 -- ---------- Người dùng giả ----------
@@ -226,7 +228,7 @@ select ok((select code from app.payment_voucher where id = pg_temp.f('pv')) ~ '^
 -- ================= Kế hoạch chi (migration 581) =================
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select lives_ok($$select app.set_payment_voucher_plan(pg_temp.f('pv'), 'CHUYEN_KHOAN', '  Techcombank …5544  ', current_date + 3)$$, 'Đúng: Kế toán ghi hình thức, tài khoản nhận, ngày dự kiến trên phiếu Chờ chi');
-select is((select payout_account_note from app.payment_voucher where id = pg_temp.f('pv')), 'Techcombank …5544', 'Tài khoản nhận là chữ tự do, đã cắt khoảng trắng hai đầu');
+select is(pg_temp.sq(format('select payout_account_note from app.payment_voucher where id = %L', pg_temp.f('pv'))), 'Techcombank …5544', 'Tài khoản nhận là chữ tự do, đã cắt khoảng trắng hai đầu');
 select is((select planned_on from app.payment_voucher where id = pg_temp.f('pv')), current_date + 3, 'Ngày chi dự kiến được lưu');
 select is(app.get_payment_voucher(pg_temp.f('pv')) -> 'voucher' ->> 'payout_account_note', 'Techcombank …5544', 'Bản ghi phiếu chi trả Tài khoản nhận');
 select is(app.get_payment_voucher(pg_temp.f('pv')) -> 'voucher' ->> 'planned_on', (current_date + 3)::text, 'Bản ghi phiếu chi trả Ngày chi dự kiến');
@@ -235,7 +237,7 @@ select is((select r ->> 'payout_account_note' from jsonb_array_elements(app.list
 select is(pg_temp.err($$select app.set_payment_voucher_plan(pg_temp.f('pv'), 'BITCOIN', null, null)$$), 'HMT_HINH_THUC_KHONG_HOP_LE', 'Chặn: hình thức ngoài danh mục');
 select is(pg_temp.err($$select app.set_payment_voucher_plan(pg_temp.f('pv'), null, repeat('x', 201), null)$$), 'HMT_TAI_KHOAN_NHAN_DAI', 'Chặn: tài khoản nhận quá 200 ký tự');
 select is(pg_temp.err($$select app.set_payment_voucher_plan(gen_random_uuid(), null, null, null)$$), 'HMT_KHONG_TIM_THAY', 'Chặn: phiếu không tồn tại');
-select is((select payout_account_note from app.payment_voucher where id = pg_temp.f('pv')), 'Techcombank …5544', 'Lỗi thì không ghi nửa chừng');
+select is(pg_temp.sq(format('select payout_account_note from app.payment_voucher where id = %L', pg_temp.f('pv'))), 'Techcombank …5544', 'Lỗi thì không ghi nửa chừng');
 -- Ngày chi dự kiến chỉ cảnh báo: chi trước ngày dự kiến vẫn được; hình thức đã ghi được giữ khi chi không chọn lại.
 select lives_ok($$select app.pay_payment_voucher(pg_temp.f('pv'), 'Chi sớm')$$, 'Đúng: chi trước ngày dự kiến không bị chặn (chỉ cảnh báo ở giao diện)');
 select is((select payment_method_code from app.payment_voucher where id = pg_temp.f('pv')), 'CHUYEN_KHOAN', 'Chi không chọn lại hình thức thì giữ hình thức đã ghi trước');
@@ -248,10 +250,8 @@ select is(pg_temp.err($$select app.set_payment_voucher_plan(pg_temp.f('pv'), nul
 
 -- ================= Tài khoản nhận riêng tư (migration 617, D-23-05) =================
 -- Luật: số tài khoản không ghi vào nhật ký; chỉ vai có quyền chi (Đối soát kế toán · Duyệt) thấy.
-select is((select count(*)::int from app.audit_log a join app.audited_table t on t.id = a.table_id
-            where t.table_name = 'app.payment_voucher' and a.record_id = pg_temp.f('pv') and a.changes::text like '%Techcombank%'), 0, 'Nhật ký KHÔNG chứa nội dung tài khoản nhận');
-select ok((select count(*) from app.audit_log a join app.audited_table t on t.id = a.table_id
-            where t.table_name = 'app.payment_voucher' and a.record_id = pg_temp.f('pv') and a.changes ? 'payout_account_note') > 0, 'Nhật ký vẫn ghi việc trường tài khoản nhận có đổi (nội dung che)');
+select is(pg_temp.sq(format($q$select count(*) from app.audit_log a join app.audited_table t on t.id = a.table_id where t.table_name = 'app.payment_voucher' and a.record_id = %L and a.changes::text like '%%Techcombank%%'$q$, pg_temp.f('pv')))::int, 0, 'Nhật ký KHÔNG chứa nội dung tài khoản nhận');
+select ok(pg_temp.sq(format($q$select count(*) from app.audit_log a join app.audited_table t on t.id = a.table_id where t.table_name = 'app.payment_voucher' and a.record_id = %L and a.changes ? 'payout_account_note'$q$, pg_temp.f('pv')))::int > 0, 'Nhật ký vẫn ghi việc trường tài khoản nhận có đổi (nội dung che)');
 select ok(not has_column_privilege('authenticated', 'app.payment_voucher', 'payout_account_note', 'select'), 'Chặn: authenticated không đọc thẳng cột tài khoản nhận');
 select ok(has_column_privilege('authenticated', 'app.payment_voucher', 'amount', 'select'), 'Đúng: các cột khác của phiếu chi vẫn đọc được');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
