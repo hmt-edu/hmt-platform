@@ -391,8 +391,8 @@ select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
 select pg_temp.sudo($$update app.sales_order set total_amount = 1 where id = pg_temp.o('d3')$$);
 select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
 select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e(), null, pg_temp.d3o())$$), 'HMT_CHUYEN_PHI_AM', 'D-23-08 Chặn: giá trị chuyển lớn hơn giá trị đơn nhận');
-select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
-select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e())$$), 'HMT_KHONG_CO_QUYEN', 'D-23-08 Chặn: Sale không có quyền Ticket · Sửa nên không xem trước chuyển phí');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e())$$), 'HMT_KHONG_CO_QUYEN', 'D-23-08 Chặn: người cơ sở khác không xem trước chuyển phí của ghi danh này');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk8), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'kind_code', 'SANG_SAO_HOA'))$$),
   'HMT_PHIEU_DU_LIEU_SAI', 'D-23-08 Chặn: kiểu chuyển ngoài ba kiểu của canvas');
