@@ -4,8 +4,8 @@ Cách làm: (1) danh sách: so tiêu đề cột `<th>` của khung canvas 9933/
 
 | Màn | Canvas | Code | Kết quả |
 |---|---|---|---|
-| TC-01 Phiếu thu (danh sách) | Mã, Đơn hàng, Phụ huynh, Số tiền, Hình thức, Ngày nhận, Cơ sở, Người lập, Người nhận tiền, **Người duyệt**, Tình trạng (abea) | không có cột Người duyệt; thừa cột «Cơ sở đơn» (canvas không có) | **lệch**: thiếu «Người duyệt», thừa «Cơ sở đơn»; cần hàm trả tên người duyệt (cần Chat chốt, Code C/D) |
-| TC-04 Hàng chờ kế toán duyệt | Mã, Đơn hàng, Phụ huynh, Cơ sở, Người lập, Người nhận tiền, Số tiền, Hình thức, **Mã giao dịch**, Ngày nhận, Tình trạng, **Sao kê** (Đã khớp/Chưa khớp), **Xử lý** (nút Duyệt, Từ chối ngay trên dòng) | dùng lại bảng TC-01 (không có Mã giao dịch, Sao kê, Xử lý) | **lệch**: ba cột thiếu; «Sao kê» cần dữ liệu đối soát (TC-15 chưa có) nên cần Chat chốt trước |
+| TC-01 Phiếu thu (danh sách) | Mã, Đơn hàng, Phụ huynh, Số tiền, Hình thức, Ngày nhận, Cơ sở, Người lập, Người nhận tiền, **Người duyệt**, Tình trạng (abea) | không có cột Người duyệt; thừa cột «Cơ sở đơn» (canvas không có) | **Đã sửa** (#327, #300, #262): có «Người duyệt», «Cơ sở đơn» ẩn mặc định. Cập nhật 23/11 sau rà code (thẻ C-23-01) |
+| TC-04 Hàng chờ kế toán duyệt | Mã, Đơn hàng, Phụ huynh, Cơ sở, Người lập, Người nhận tiền, Số tiền, Hình thức, **Mã giao dịch**, Ngày nhận, Tình trạng, **Sao kê** (Đã khớp/Chưa khớp), **Xử lý** (nút Duyệt, Từ chối ngay trên dòng) | dùng lại bảng TC-01 (không có Mã giao dịch, Sao kê, Xử lý) | **Đã sửa** phần cột: «Mã giao dịch» (#327), «Sao kê» (#404, TC-15 đã có). **Còn chờ anh chốt luật**: cột «Xử lý» (nút Duyệt, Từ chối ngay trên dòng) — chưa làm (thẻ C-23-01 bỏ qua) |
 | TC-08 Khoản tiền vào | Mã, Phiếu thu, Đơn hàng, Phụ huynh, Số tiền, Ngày, Cơ sở, Ghi chú, Hoàn tác | giống hệt | khớp |
 | TC-13 Công nợ | Đơn hàng, Phụ huynh, Cơ sở, Sale, Đợt, Hạn đóng, Phải đóng, Đã đóng, Còn nợ, Tình trạng | giống hệt | khớp |
 | TC-02 Phiếu thu (bản ghi) | thêm chữ «Duyệt bởi», «Dồn trước», cột «Thành tiền» ở bảng chia tiền về dòng | không thấy ba chữ này | **gần đúng**: bố cục khớp, thiếu ba nhãn; Tester so ảnh |
