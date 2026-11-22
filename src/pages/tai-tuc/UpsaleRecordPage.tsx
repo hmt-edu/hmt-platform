@@ -5,7 +5,13 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { RecordDetail, DetailField } from '../../record/Detail';
 import { HmtError, errorOf, useDb, useIntSetting } from '../../lib/db';
-import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib/format';
+import {
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  formatMonth,
+  formatNumber,
+} from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
@@ -217,6 +223,15 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
         label="Đã mua (gồm giờ tặng)"
         mode="view"
         value={`${formatNumber(record.hours.bought)} giờ`}
+      />
+      <DetailField
+        label="Đã mua gần nhất"
+        mode="view"
+        value={
+          record.hours.last_purchase
+            ? `${formatNumber(record.hours.last_purchase.hours)} giờ · ${formatMonth(record.hours.last_purchase.at)}`
+            : '—'
+        }
       />
       <DetailField label="Đã học" mode="view" value={`${formatNumber(record.hours.used)} giờ`} />
       <DetailField
