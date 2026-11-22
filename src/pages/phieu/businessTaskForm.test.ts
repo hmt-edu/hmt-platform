@@ -182,3 +182,26 @@ describe('Phiếu Dừng học (CS-14, R-GD-16)', () => {
     });
   });
 });
+
+describe('phiếu Chuyển cơ sở (R-GD-10, R-CS-07; migration 568)', () => {
+  const cs = { ...full, kindCode: 'CHUYEN_CO_SO' };
+  it('chưa chọn cơ sở mới thì chặn; không đòi lớp mới và buổi bắt đầu', () => {
+    const e = validateBusinessDraft('CHUYEN_LOP', cs, true);
+    expect(e.destBranchId).toBeDefined();
+    expect(e.toClassId).toBeUndefined();
+    expect(e.startDate).toBeUndefined();
+  });
+  it('đã chọn cơ sở mới thì qua', () => {
+    expect(validateBusinessDraft('CHUYEN_LOP', { ...cs, destBranchId: 'b2' }, true)).toEqual({});
+  });
+  it('payload gửi cơ sở đích, không gửi lớp mới', () => {
+    const p = buildBusinessPayload('CHUYEN_LOP', { ...cs, destBranchId: 'b2', toClassId: 'x' });
+    expect(p).toEqual({
+      enrollment_id: 'e1',
+      kind_code: 'CHUYEN_CO_SO',
+      dest_branch_id: 'b2',
+      reason_code: 'BAN_THI',
+      note: 'Em tham gia đội tuyển.',
+    });
+  });
+});

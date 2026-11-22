@@ -2,7 +2,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 import { errorOf, rpc, useDb } from '../../lib/db';
-import type { FeeTransferOrder, FeeTransferPreview, TaskOptions } from './businessTaskForm';
+import type {
+  DestBranch,
+  FeeTransferOrder,
+  FeeTransferPreview,
+  TaskOptions,
+} from './businessTaskForm';
 import type { TaskFieldDef } from './taskForm';
 
 /** Trường hồ sơ sửa được bằng phiếu Cập nhật hồ sơ (cấu hình app.ticket_task_field), cho biểu mẫu tạo phiếu. */
@@ -77,5 +82,28 @@ export function useFeeTransferOrders(enrollmentId: string, enabled: boolean) {
         p_enrollment_id: enrollmentId,
         p_to_parent_id: null,
       }),
+  });
+}
+
+/** Cơ sở dạy học đang hoạt động để chọn cơ sở mới khi Chuyển cơ sở (bảng nhỏ, vài cơ sở; không lấy phòng ban/hội sở). */
+export function useDestBranches(enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['task-dest-branches'],
+    enabled,
+    staleTime: Infinity,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .schema('app')
+        .from('branch')
+        .select('id, code, name')
+        .eq('is_active', true)
+        .eq('is_office', false)
+        .order('sort_order')
+        .order('code')
+        .returns<DestBranch[]>();
+      if (error) throw errorOf(error);
+      return data;
+    },
   });
 }
