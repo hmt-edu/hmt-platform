@@ -5,7 +5,8 @@ import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
-import { TRANSFER_KINDS } from './businessTaskForm';
+import { TRANSFER_BRANCH_KIND, TRANSFER_KINDS } from './businessTaskForm';
+import { useDestBranches } from './useTaskCreate';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
@@ -55,6 +56,9 @@ export function TaskRecordPage() {
   const toast = useToast();
   const refresh = useRefreshTasks();
   const record = useTaskRecord(id);
+  const destBranches = useDestBranches(
+    record.data?.task.payload.kind_code === TRANSFER_BRANCH_KIND,
+  );
   const [asking, setAsking] = useState<Asking>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
@@ -262,11 +266,22 @@ export function TaskRecordPage() {
                       TRANSFER_KINDS.find((k) => k.value === task.payload.kind_code)?.label ?? ''
                     }
                   />
-                  <DetailField
-                    label="Hiệu lực từ ngày"
-                    mode="view"
-                    value={task.payload.start_date ? formatDate(task.payload.start_date) : ''}
-                  />
+                  {task.payload.kind_code === TRANSFER_BRANCH_KIND ? (
+                    <DetailField
+                      label="Cơ sở mới"
+                      mode="view"
+                      value={
+                        destBranches.data?.find((b) => b.id === task.payload.dest_branch_id)
+                          ?.name ?? ''
+                      }
+                    />
+                  ) : (
+                    <DetailField
+                      label="Hiệu lực từ ngày"
+                      mode="view"
+                      value={task.payload.start_date ? formatDate(task.payload.start_date) : ''}
+                    />
+                  )}
                 </>
               )}
             </DetailSection>
