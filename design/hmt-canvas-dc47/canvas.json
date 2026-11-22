@@ -531,6 +531,192 @@
    "title": "QT-07 · Thêm nguồn",
    "expand": "fill",
    "is_interactive": true
+  },
+  "Man_QT17.dc.html": {
+   "x": 0,
+   "y": 18984,
+   "w": 1440,
+   "h": 100,
+   "title": "Màn · QT-17 · Tài khoản phụ huynh · 8 khung",
+   "expand": "fill"
+  },
+  "QT17_ds.dc.html": {
+   "x": 0,
+   "y": 19204,
+   "w": 1440,
+   "h": 1000,
+   "title": "QT-17 · Tài khoản phụ huynh · Danh sách",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "QT17_tai.dc.html": {
+   "x": 1600,
+   "y": 19204,
+   "w": 1440,
+   "h": 1000,
+   "title": "QT-17 · Tài khoản phụ huynh · Đang tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "QT17_trong.dc.html": {
+   "x": 3200,
+   "y": 19204,
+   "w": 1440,
+   "h": 1000,
+   "title": "QT-17 · Tài khoản phụ huynh · Trống",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "QT17_loi.dc.html": {
+   "x": 4800,
+   "y": 19204,
+   "w": 1440,
+   "h": 1000,
+   "title": "QT-17 · Tài khoản phụ huynh · Lỗi tải",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "QT17_quyen.dc.html": {
+   "x": 0,
+   "y": 20384,
+   "w": 1440,
+   "h": 1000,
+   "title": "QT-17 · Tài khoản phụ huynh · Không có quyền",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "QT17_cap.dc.html": {
+   "x": 1600,
+   "y": 20384,
+   "w": 1440,
+   "h": 1000,
+   "title": "QT-17 · Tài khoản phụ huynh · Hộp Cấp tài khoản",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "QT17_khoa.dc.html": {
+   "x": 3200,
+   "y": 20384,
+   "w": 1440,
+   "h": 1000,
+   "title": "QT-17 · Tài khoản phụ huynh · Hộp Khoá",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "QT17_dat_lai.dc.html": {
+   "x": 4800,
+   "y": 20384,
+   "w": 1440,
+   "h": 1000,
+   "title": "QT-17 · Tài khoản phụ huynh · Hộp Đặt lại mật khẩu",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "Man_CHUNG21.dc.html": {
+   "x": 0,
+   "y": 21684,
+   "w": 1440,
+   "h": 100,
+   "title": "Màn · CHUNG-21 · Đính kèm tệp · 7 khung",
+   "expand": "fill"
+  },
+  "CHUNG21_trong.dc.html": {
+   "x": 0,
+   "y": 21904,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-21 · Đính kèm tệp · Chưa chọn tệp",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "CHUNG21_co_tep.dc.html": {
+   "x": 1600,
+   "y": 21904,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-21 · Đính kèm tệp · Đã chọn tệp",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "CHUNG21_dang_tai.dc.html": {
+   "x": 3200,
+   "y": 21904,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-21 · Đính kèm tệp · Đang tải lên",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "CHUNG21_loi.dc.html": {
+   "x": 4800,
+   "y": 21904,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-21 · Đính kèm tệp · Lỗi tải lên",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "CHUNG21_xem.dc.html": {
+   "x": 6400,
+   "y": 21904,
+   "w": 1440,
+   "h": 1000,
+   "title": "CHUNG-21 · Đính kèm tệp · Xem trước",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "CHUNG21_dt_trong.dc.html": {
+   "x": 0,
+   "y": 23084,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-21 · Đính kèm tệp · Điện thoại · Chưa chọn tệp",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "CHUNG21_dt_dang_tai.dc.html": {
+   "x": 600,
+   "y": 23084,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-21 · Đính kèm tệp · Điện thoại · Đang tải lên",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "Man_CHUNG23.dc.html": {
+   "x": 0,
+   "y": 24184,
+   "w": 1440,
+   "h": 100,
+   "title": "Màn · CHUNG-23 (cổng) · Đăng nhập phụ huynh · 3 khung",
+   "expand": "fill"
+  },
+  "CHUNG23_dt_ok.dc.html": {
+   "x": 0,
+   "y": 24404,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-23 (cổng) · Đăng nhập phụ huynh · Điện thoại · Bình thường",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "CHUNG23_dt_loi.dc.html": {
+   "x": 600,
+   "y": 24404,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-23 (cổng) · Đăng nhập phụ huynh · Điện thoại · Sai thông tin",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "CHUNG23_dt_tai.dc.html": {
+   "x": 1200,
+   "y": 24404,
+   "w": 390,
+   "h": 844,
+   "title": "CHUNG-23 (cổng) · Đăng nhập phụ huynh · Điện thoại · Đang đăng nhập",
+   "expand": "fill",
+   "is_interactive": true
   }
  },
  "order": [
@@ -592,7 +778,28 @@
   "QT09_ghi_de_co_so.dc.html",
   "QT09_lich_su.dc.html",
   "QT09_dang_tai.dc.html",
-  "QT09_khong_quyen.dc.html"
+  "QT09_khong_quyen.dc.html",
+  "Man_QT17.dc.html",
+  "QT17_ds.dc.html",
+  "QT17_tai.dc.html",
+  "QT17_trong.dc.html",
+  "QT17_loi.dc.html",
+  "QT17_quyen.dc.html",
+  "QT17_cap.dc.html",
+  "QT17_khoa.dc.html",
+  "QT17_dat_lai.dc.html",
+  "Man_CHUNG21.dc.html",
+  "CHUNG21_trong.dc.html",
+  "CHUNG21_co_tep.dc.html",
+  "CHUNG21_dang_tai.dc.html",
+  "CHUNG21_loi.dc.html",
+  "CHUNG21_xem.dc.html",
+  "CHUNG21_dt_trong.dc.html",
+  "CHUNG21_dt_dang_tai.dc.html",
+  "Man_CHUNG23.dc.html",
+  "CHUNG23_dt_ok.dc.html",
+  "CHUNG23_dt_loi.dc.html",
+  "CHUNG23_dt_tai.dc.html"
  ],
  "notes": {},
  "designSystems": [
