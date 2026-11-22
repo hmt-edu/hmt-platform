@@ -18,6 +18,15 @@ function claims(over: Partial<HmtClaims> = {}): HmtClaims {
   };
 }
 
+describe('afterLoginPath · phụ huynh (CHUNG-23)', () => {
+  it('phụ huynh chỉ có cổng ph thì vào /ph', () => {
+    expect(afterLoginPath(claims({ roles: ['PARENT'], portals: ['ph'] }), null)).toBe('/ph');
+  });
+  it('phụ huynh không mở được địa chỉ cổng CRM đang mở dở', () => {
+    expect(afterLoginPath(claims({ roles: ['PARENT'], portals: ['ph'] }), '/crm/lead')).toBe('/ph');
+  });
+});
+
 describe('afterLoginPath', () => {
   it('phải đổi mật khẩu lần đầu thì làm trước mọi thứ', () => {
     expect(afterLoginPath(claims({ mustChangePassword: true }), '/crm/lead')).toBe('/doi-mat-khau');

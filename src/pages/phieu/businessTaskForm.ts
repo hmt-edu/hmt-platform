@@ -54,7 +54,17 @@ export const HOLD_MODES: { value: HoldMode; label: string }[] = [
   { value: 'TIEP_TUC', label: 'Tiếp tục học' },
 ];
 
+/** Cách xử lý tiền còn lại khi Dừng học (CS-14, R-GD-16): Hoàn tiền (hoàn phí toàn bộ, R-TIEN-28) hoặc Giữ số dư (R-TIEN-33). */
+export type MoneyMode = 'HOAN_TIEN' | 'GIU_SO_DU';
+export const MONEY_MODES: { value: MoneyMode; label: string }[] = [
+  { value: 'HOAN_TIEN', label: 'Hoàn tiền (sang phiếu Hoàn học phí)' },
+  { value: 'GIU_SO_DU', label: 'Giữ số dư (không trừ phí)' },
+];
+
 export type BusinessDraft = {
+  /** Phiếu Dừng học: ngày dừng (chỉ ghi nhận) và cách xử lý tiền còn lại. */
+  stopDate: string;
+  moneyMode: MoneyMode | '';
   holdMode: HoldMode;
   enrollmentId: string;
   reasonCode: string;
@@ -70,6 +80,8 @@ export type DestBranch = { id: string; code: string; name: string };
 export type BusinessErrors = Partial<Record<keyof BusinessDraft, string>>;
 
 export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
+  stopDate: '',
+  moneyMode: '',
   holdMode: 'MOI',
   enrollmentId: '',
   reasonCode: '',
@@ -91,8 +103,12 @@ export function validateBusinessDraft(
   else if (draft.enrollmentId === '') e.enrollmentId = 'Chọn ghi danh.';
   if (draft.reasonCode === '') e.reasonCode = 'Chọn lý do.';
   if (draft.reason.trim() === '') e.reason = 'Nhập lý do của phiếu.';
-  if (type === 'DUNG_HOC' || type === 'CHUYEN_PHI') {
-    // Dừng học, Chuyển phí: chỉ cần ghi danh, lý do (danh mục) và ghi chú; luật chặn ở hàm áp dụng (R-GD-16, R-GD-10).
+  if (type === 'DUNG_HOC') {
+    // Dừng học (CSN06e): thêm Ngày dừng và Xử lý tiền còn lại; luật chặn thật ở hàm DB (R-GD-16, R-TIEN-28).
+    if (draft.stopDate === '') e.stopDate = 'Chọn ngày dừng.';
+    if (draft.moneyMode === '') e.moneyMode = 'Chọn cách xử lý tiền còn lại.';
+  } else if (type === 'CHUYEN_PHI') {
+    // Chuyển phí: chỉ cần ghi danh, lý do (danh mục) và ghi chú; luật chặn ở hàm áp dụng (R-GD-10).
   } else if (type === 'BAO_LUU') {
     const m = Number(draft.months);
     if (draft.holdMode !== 'TIEP_TUC' && (!Number.isInteger(m) || m < 1))
@@ -119,7 +135,15 @@ export function buildBusinessPayload(
   draft: BusinessDraft,
   holdId: string | null = null,
 ) {
-  if (type === 'DUNG_HOC' || type === 'CHUYEN_PHI')
+  if (type === 'DUNG_HOC')
+    return {
+      enrollment_id: draft.enrollmentId,
+      reason_code: draft.reasonCode,
+      note: draft.reason.trim(),
+      stop_date: draft.stopDate,
+      money_mode: draft.moneyMode,
+    };
+  if (type === 'CHUYEN_PHI')
     return {
       enrollment_id: draft.enrollmentId,
       reason_code: draft.reasonCode,
