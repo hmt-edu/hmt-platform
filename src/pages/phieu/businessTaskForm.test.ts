@@ -139,8 +139,10 @@ describe('Phiếu Dừng học (CS-14, R-GD-16)', () => {
     enrollmentId: 'e1',
     reasonCode: 'CHUYEN',
     reason: 'Chuyển nhà',
+    stopDate: '2026-11-23',
+    moneyMode: 'GIU_SO_DU' as const,
   };
-  it('chỉ cần ghi danh, lý do danh mục và lý do chữ; không đòi số tháng hay lớp', () => {
+  it('cần ghi danh, lý do, ngày dừng và cách xử lý tiền; không đòi số tháng hay lớp', () => {
     expect(validateBusinessDraft('DUNG_HOC', draft, true)).toEqual({});
     expect(
       validateBusinessDraft('DUNG_HOC', { ...draft, enrollmentId: '' }, true).enrollmentId,
@@ -148,37 +150,48 @@ describe('Phiếu Dừng học (CS-14, R-GD-16)', () => {
     expect(validateBusinessDraft('DUNG_HOC', { ...draft, reasonCode: '' }, true).reasonCode).toBe(
       'Chọn lý do.',
     );
+    expect(validateBusinessDraft('DUNG_HOC', { ...draft, stopDate: '' }, true).stopDate).toBe(
+      'Chọn ngày dừng.',
+    );
+    expect(validateBusinessDraft('DUNG_HOC', { ...draft, moneyMode: '' }, true).moneyMode).toBe(
+      'Chọn cách xử lý tiền còn lại.',
+    );
   });
-  it('payload gửi ghi danh, lý do và ghi chú', () => {
-    expect(buildBusinessPayload('DUNG_HOC', draft)).toEqual({
+  it('payload gửi ghi danh, lý do, ghi chú, ngày dừng và cách xử lý tiền', () => {
+    expect(buildBusinessPayload('DUNG_HOC', { ...draft, moneyMode: 'HOAN_TIEN' })).toEqual({
       enrollment_id: 'e1',
       reason_code: 'CHUYEN',
       note: 'Chuyển nhà',
+      stop_date: '2026-11-23',
+      money_mode: 'HOAN_TIEN',
     });
+  });
+  it('Chuyển phí vẫn chỉ cần ghi danh và lý do', () => {
+    expect(
+      validateBusinessDraft('CHUYEN_PHI', { ...draft, stopDate: '', moneyMode: '' }, true),
+    ).toEqual({});
   });
 });
 
-describe('Phiếu Chuyển phí (CS-10, R-GD-10 mục 9)', () => {
-  const draft = {
-    ...EMPTY_BUSINESS_DRAFT,
-    enrollmentId: 'e1',
-    reasonCode: 'DOI_LICH_BAN',
-    reason: 'Chuyển sang môn khác',
-  };
-  it('chỉ cần ghi danh, lý do danh mục và lý do chữ (như Dừng học), không đòi lớp', () => {
-    expect(validateBusinessDraft('CHUYEN_PHI', draft, true)).toEqual({});
-    expect(
-      validateBusinessDraft('CHUYEN_PHI', { ...draft, enrollmentId: '' }, true).enrollmentId,
-    ).toBe('Chọn ghi danh.');
-    expect(validateBusinessDraft('CHUYEN_PHI', draft, false).enrollmentId).toBe(
-      'Ticket chưa gắn học sinh nên chưa tạo phiếu này được.',
-    );
+describe('phiếu Chuyển cơ sở (R-GD-10, R-CS-07; migration 568)', () => {
+  const cs = { ...full, kindCode: 'CHUYEN_CO_SO' };
+  it('chưa chọn cơ sở mới thì chặn; không đòi lớp mới và buổi bắt đầu', () => {
+    const e = validateBusinessDraft('CHUYEN_LOP', cs, true);
+    expect(e.destBranchId).toBeDefined();
+    expect(e.toClassId).toBeUndefined();
+    expect(e.startDate).toBeUndefined();
   });
-  it('payload gửi ghi danh, lý do và ghi chú', () => {
-    expect(buildBusinessPayload('CHUYEN_PHI', draft)).toEqual({
+  it('đã chọn cơ sở mới thì qua', () => {
+    expect(validateBusinessDraft('CHUYEN_LOP', { ...cs, destBranchId: 'b2' }, true)).toEqual({});
+  });
+  it('payload gửi cơ sở đích, không gửi lớp mới', () => {
+    const p = buildBusinessPayload('CHUYEN_LOP', { ...cs, destBranchId: 'b2', toClassId: 'x' });
+    expect(p).toEqual({
       enrollment_id: 'e1',
-      reason_code: 'DOI_LICH_BAN',
-      note: 'Chuyển sang môn khác',
+      kind_code: 'CHUYEN_CO_SO',
+      dest_branch_id: 'b2',
+      reason_code: 'BAN_THI',
+      note: 'Em tham gia đội tuyển.',
     });
   });
 });

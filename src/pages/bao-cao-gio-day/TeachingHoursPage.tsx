@@ -1,13 +1,16 @@
 // BC-09 Giờ dạy giáo viên (khuôn báo cáo, canvas 1aab BC09_pc, BC09_trong_pc, BC09_tai_pc, BC09_quyen_pc, BC09_bm_pc): chọn tháng và cơ sở, thẻ tổng,
 // bảng mỗi giáo viên hoặc trợ giảng một dòng, tách Học chính, Củng cố, Học bù, Học bổ trợ. Số liệu một lần gọi app.report_teaching_hours (R-GV-14).
-// CHƯA CÓ «Chốt tháng» và «Xuất CSV»: chốt tháng cần bảng chốt trong DB (thẻ riêng); khung ghi tháng chưa chốt thì số còn đổi nếu sửa buổi.
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+// «Chốt tháng» (migration 619): cả hệ thống một lần, khoá, không Mở lại; tháng đã chốt đọc số từ ảnh chụp lúc chốt (app.teaching_hours_view). Trưởng cơ sở
+// (một cơ sở) không có nút Chốt. CHƯA CÓ «Xuất CSV» (khung có; thẻ riêng).
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
-import { formatNumber } from '../../lib/format';
+import { formatDateTime, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
 import { Pagination, Table, Tag, type Column } from '../../ui/Data';
+import { ConfirmDialog } from '../../ui/Dialogs';
+import { useToast } from '../../ui/toastContext';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { Select } from '../../ui/Overlays';
 import {
@@ -16,6 +19,7 @@ import {
   mergePerPerson,
   monthOptions,
   type HoursReport,
+  monthEnded,
   type HoursRow,
 } from './teachingHoursLogic';
 
@@ -48,7 +52,7 @@ export function TeachingHoursPage() {
     placeholderData: keepPreviousData,
     retry: false,
     queryFn: () =>
-      rpc<HoursReport>(supabase, 'report_teaching_hours', {
+      rpc<HoursReport>(supabase, 'teaching_hours_view', {
         p_month: month,
         p_branch_id: branch === ALL ? null : branch,
         p_limit: pageSize,
@@ -56,6 +60,34 @@ export function TeachingHoursPage() {
       }),
   });
   const d = query.data;
+  const toast = useToast();
+  const client = useQueryClient();
+  const [confirming, setConfirming] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const [closeError, setCloseError] = useState<string | null>(null);
+  // Nút Chốt chỉ cho người xem được nhiều cơ sở và có quyền Xuất báo cáo (Kế toán, Admin); DB kiểm lại. Tháng đã chốt hoặc chưa kết thúc thì không có nút.
+  const canClose =
+    access.can('REPORT', 'XUAT') &&
+    access.allBranches.length > 1 &&
+    d !== undefined &&
+    d.closed === null &&
+    monthEnded(month);
+  const monthLabel = months.find((m) => m.value === month)?.label.replace('Tháng ', '') ?? '';
+
+  async function closeMonth() {
+    setClosing(true);
+    setCloseError(null);
+    try {
+      await rpc(supabase, 'close_teaching_hours_month', { p_month: month });
+      setConfirming(false);
+      await client.invalidateQueries({ queryKey: ['report-teaching-hours'] });
+      toast({ title: `Đã chốt giờ dạy tháng ${monthLabel}.` });
+    } catch (e) {
+      setCloseError(errorOf(e).message);
+    } finally {
+      setClosing(false);
+    }
+  }
   // Xem «Tất cả cơ sở»: người dạy nhiều cơ sở gộp một dòng (trong phạm vi trang đang xem).
   const rows = useMemo(() => (d ? mergePerPerson(d.rows) : []), [d]);
 
@@ -87,7 +119,20 @@ export function TeachingHoursPage() {
 
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <h1 className="text-h1">Giờ dạy giáo viên</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-h1">Giờ dạy giáo viên</h1>
+        {canClose && (
+          <Button
+            variant="primary"
+            onClick={() => {
+              setCloseError(null);
+              setConfirming(true);
+            }}
+          >
+            Chốt tháng
+          </Button>
+        )}
+      </div>
       <div className="flex flex-wrap items-end gap-3">
         <Select
           label="Tháng"
@@ -112,7 +157,15 @@ export function TeachingHoursPage() {
             ]}
           />
         )}
+        {d && (
+          <Tag tone={d.closed ? 'success' : 'neutral'}>{d.closed ? 'Đã chốt' : 'Chưa chốt'}</Tag>
+        )}
       </div>
+      {d?.closed && (
+        <p className="text-body text-fg-muted">
+          Đã chốt bởi {d.closed.closed_by_name} lúc {formatDateTime(d.closed.closed_at)}
+        </p>
+      )}
       {query.isError ? (
         <StateView
           kind="error"
@@ -158,10 +211,32 @@ export function TeachingHoursPage() {
             )}
             . Giờ dạy tính cho người dạy thật, chỉ buổi đã Hoàn thành, mọi loại buổi thực dạy (gồm
             học bổ trợ), theo thời lượng buổi. Buổi huỷ, kể cả huỷ có tính phí, không tính. Tháng
-            tính theo ngày buổi diễn ra. Số liệu còn đổi nếu buổi được sửa.
+            tính theo ngày buổi diễn ra.{' '}
+            {d.closed
+              ? 'Tháng đã chốt: số liệu giữ nguyên như lúc chốt.'
+              : 'Tháng chưa chốt: số liệu còn đổi nếu buổi được sửa.'}
           </p>
         </>
       )}
+      <ConfirmDialog
+        open={confirming}
+        onOpenChange={setConfirming}
+        title={`Chốt giờ dạy tháng ${monthLabel}?`}
+        summary={[
+          { label: 'Tháng', value: monthLabel },
+          { label: 'Phạm vi', value: 'Tất cả cơ sở' },
+          {
+            label: 'Người có giờ dạy',
+            value: d ? formatNumber(d.totals.teachers + d.totals.assistants) : '',
+          },
+          { label: 'Tổng giờ dạy', value: d ? `${formatHours(d.totals.hours)} giờ` : '' },
+        ]}
+        note="Chốt xong, tháng giữ nguyên và không sửa được. Sửa buổi sau đó thì chênh lệch đưa vào tháng sau."
+        confirmLabel="Chốt tháng"
+        busy={closing}
+        error={closeError}
+        onConfirm={() => void closeMonth()}
+      />
     </div>
   );
 }
