@@ -13,7 +13,7 @@ import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
-import { Spinner } from '../../ui/Feedback';
+import { Alert, Spinner } from '../../ui/Feedback';
 import { QueryErrorView } from '../../ui/QueryErrorView';
 import { TextAreaField } from '../../ui/Field';
 import type { StageStep } from '../../ui/Stage';
@@ -159,6 +159,21 @@ export function TaskRecordPage() {
           />
         }
       >
+        {/* CSN06a «Lỗi lưu»: lỗi khi Trình duyệt (không có hộp thoại) hiện ngay trên phiếu, giữ nguyên nội dung, có nút Thử lại. */}
+        {error && asking === null && (
+          <div className="mb-4">
+            <Alert tone="danger">
+              <span className="flex flex-wrap items-center gap-3">
+                <span>
+                  <b>Chưa lưu được phiếu.</b> {error} Nội dung vẫn còn trên màn hình.
+                </span>
+                <Button loading={busy} onClick={() => void run('submit')}>
+                  Thử lại
+                </Button>
+              </span>
+            </Alert>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
           <DetailSection title="Thông tin phiếu">
             <DetailField label="Mã phiếu" mode="view" value={task.code} />
