@@ -12,6 +12,14 @@ import { AccessProvider } from '../nav/AccessContext';
 import { ButtonLink } from '../ui/Button';
 import { Spinner, StateView } from '../ui/Feedback';
 
+/** Trang đăng nhập theo cổng: học sinh bằng mã HS, phụ huynh bằng mã PH, còn lại bằng email. */
+const LOGIN_PATH: Record<Portal, string> = {
+  crm: '/dang-nhap',
+  gv: '/dang-nhap',
+  hoc: '/dang-nhap/hoc-sinh',
+  ph: '/dang-nhap/phu-huynh',
+};
+
 function SessionWatch({ children }: { children: ReactNode }) {
   useIdleLogout();
   useSessionGuard();
@@ -64,12 +72,7 @@ export function RequirePortal({ portal, children }: { portal: Portal; children: 
   if (session === undefined) return <Spinner />;
   if (!claims) {
     const next = encodeURIComponent(location.pathname + location.search);
-    return (
-      <Navigate
-        to={`${portal === 'hoc' ? '/dang-nhap/hoc-sinh' : '/dang-nhap'}?next=${next}`}
-        replace
-      />
-    );
+    return <Navigate to={`${LOGIN_PATH[portal]}?next=${next}`} replace />;
   }
   if (pendingStep(claims)) return <Navigate to={afterLoginPath(claims, null)} replace />;
   if (portalAccess(claims, portal) === 'none') return <NoPortalPage portal={portal} />;
