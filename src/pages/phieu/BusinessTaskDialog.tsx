@@ -3,11 +3,12 @@ import { useState } from 'react';
 import { FormDialog } from '../../ui/Dialogs';
 import { TextAreaField, TextField } from '../../ui/Field';
 import { OptionalSelect } from '../../ui/OptionalSelect';
-import { formatDate } from '../../lib/format';
+import { formatDate, formatMoney } from '../../lib/format';
 import {
   buildBusinessPayload,
   classChoices,
   EMPTY_BUSINESS_DRAFT,
+  FEE_TRANSFER_KINDS,
   HOLD_MODES,
   MONEY_MODES,
   type MoneyMode,
@@ -20,7 +21,7 @@ import {
   type BusinessDraft,
 } from './businessTaskForm';
 import { TASK_TYPE_LABEL } from './taskLabels';
-import { useTaskOptions } from './useTaskCreate';
+import { useFeeTransferOrders, useFeeTransferPreview, useTaskOptions } from './useTaskCreate';
 
 export function BusinessTaskDialog({
   type,
@@ -66,6 +67,13 @@ export function BusinessTaskDialog({
         : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU');
   const hold = data && type === 'BAO_LUU' ? runningHold(data, draft.enrollmentId) : null;
   const newClass = classes.find((c) => c.id === draft.toClassId);
+
+  const feeOrders = useFeeTransferOrders(draft.enrollmentId, open && type === 'CHUYEN_PHI');
+  const feePreview = useFeeTransferPreview(
+    draft.enrollmentId,
+    draft.orderId,
+    open && type === 'CHUYEN_PHI',
+  );
 
   const submit = () => {
     setShow(true);
@@ -139,11 +147,81 @@ export function BusinessTaskDialog({
         <p className="text-caption text-on-danger-subtle">{errors.reasonCode}</p>
       )}
       {type === 'CHUYEN_PHI' ? (
-        <p className="text-caption text-fg-muted">
-          Chuyển phí: ghi danh cũ dừng; giờ mua còn lại × giá sau chiết khấu (chụp lúc mua) giữ
-          thành số dư khách hàng, không tự hoàn tiền; giờ tặng còn lại bị huỷ. Sale lập đơn mới cho
-          khách sau khi phiếu được thực hiện. Cần quản lý cơ sở rồi kế toán duyệt.
-        </p>
+        <>
+          <OptionalSelect
+            label="Kiểu chuyển"
+            value={draft.kindCode}
+            onChange={(v) => set({ kindCode: v })}
+            options={FEE_TRANSFER_KINDS.map((k) => ({ value: k.value, label: k.label }))}
+            placeholder="Chọn kiểu chuyển"
+            invalid={errors.kindCode !== undefined}
+          />
+          {errors.kindCode && (
+            <p className="text-caption text-on-danger-subtle">{errors.kindCode}</p>
+          )}
+          <OptionalSelect
+            label="Đơn nhận (tham khảo)"
+            value={draft.orderId}
+            onChange={(v) => set({ orderId: v })}
+            options={(feeOrders.data ?? []).map((o) => ({
+              value: o.id,
+              label: `${o.code} · ${formatMoney(o.total_amount)}`,
+            }))}
+            placeholder="Chọn đơn nhận"
+            disabled={draft.enrollmentId === ''}
+          />
+          {feePreview.error && (
+            <p className="text-caption text-on-danger-subtle">{feePreview.error.message}</p>
+          )}
+          {feePreview.data && (
+            <table className="w-full text-caption" aria-label="Bảng tính chuyển phí">
+              <tbody>
+                <tr>
+                  <td>Giờ mua</td>
+                  <td className="text-right">{feePreview.data.hours_bought} giờ</td>
+                </tr>
+                <tr>
+                  <td>Giờ đã học</td>
+                  <td className="text-right">{feePreview.data.hours_used} giờ</td>
+                </tr>
+                <tr>
+                  <td>Giá sau chiết khấu</td>
+                  <td className="text-right">{formatMoney(feePreview.data.unit_price_net)}</td>
+                </tr>
+                <tr>
+                  <td>Đã đóng</td>
+                  <td className="text-right">{formatMoney(feePreview.data.paid_amount)}</td>
+                </tr>
+                <tr>
+                  <td>Giá trị chuyển</td>
+                  <td className="text-right">{formatMoney(feePreview.data.transfer_value)}</td>
+                </tr>
+                <tr>
+                  <td>Giờ tặng bị huỷ</td>
+                  <td className="text-right">{feePreview.data.hours_gift_cancelled} giờ</td>
+                </tr>
+                {feePreview.data.order_total !== null && (
+                  <>
+                    <tr>
+                      <td>Giá trị đơn nhận</td>
+                      <td className="text-right">{formatMoney(feePreview.data.order_total)}</td>
+                    </tr>
+                    <tr>
+                      <td>Phụ huynh đóng thêm</td>
+                      <td className="text-right">{formatMoney(feePreview.data.extra_to_pay)}</td>
+                    </tr>
+                  </>
+                )}
+              </tbody>
+            </table>
+          )}
+          <p className="text-caption text-fg-muted">
+            Chuyển phí: ghi danh cũ dừng; giờ mua còn lại × giá sau chiết khấu giữ thành số dư khách
+            hàng, không trừ phí, không tự hoàn tiền; giờ tặng còn lại bị huỷ. Bảng trên chỉ tham
+            khảo, số dư chưa trừ vào đơn nhận; tính lại khi thực hiện phiếu. Cần quản lý cơ sở rồi
+            kế toán duyệt.
+          </p>
+        </>
       ) : type === 'DUNG_HOC' ? (
         <>
           <TextField

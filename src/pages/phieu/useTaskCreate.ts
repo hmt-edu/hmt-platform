@@ -2,7 +2,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 import { errorOf, rpc, useDb } from '../../lib/db';
-import type { TaskOptions } from './businessTaskForm';
+import type { FeeTransferOrder, FeeTransferPreview, TaskOptions } from './businessTaskForm';
 import type { TaskFieldDef } from './taskForm';
 
 /** Trường hồ sơ sửa được bằng phiếu Cập nhật hồ sơ (cấu hình app.ticket_task_field), cho biểu mẫu tạo phiếu. */
@@ -47,5 +47,35 @@ export function useTaskOptions(ticketId: string, enabled: boolean) {
     queryKey: ['task-options', ticketId],
     enabled,
     queryFn: () => rpc<TaskOptions>(supabase, 'get_task_form_options', { p_ticket_id: ticketId }),
+  });
+}
+
+/** Bảng xem trước Chuyển phí (app.preview_fee_transfer, migration 621); tham khảo, không ghi gì. Lỗi nghiệp vụ (đơn nhận nhỏ hơn giá trị chuyển) hiện bằng query.error. */
+export function useFeeTransferPreview(enrollmentId: string, orderId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['fee-transfer-preview', enrollmentId, orderId],
+    enabled: enabled && enrollmentId !== '',
+    retry: false,
+    queryFn: () =>
+      rpc<FeeTransferPreview>(supabase, 'preview_fee_transfer', {
+        p_enrollment_id: enrollmentId,
+        p_to_parent_id: null,
+        p_order_id: orderId === '' ? null : orderId,
+      }),
+  });
+}
+
+/** Đơn chọn làm «Đơn nhận» của Chuyển phí (app.list_fee_transfer_orders). */
+export function useFeeTransferOrders(enrollmentId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['fee-transfer-orders', enrollmentId],
+    enabled: enabled && enrollmentId !== '',
+    queryFn: () =>
+      rpc<FeeTransferOrder[]>(supabase, 'list_fee_transfer_orders', {
+        p_enrollment_id: enrollmentId,
+        p_to_parent_id: null,
+      }),
   });
 }
