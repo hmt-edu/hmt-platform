@@ -36,12 +36,15 @@ export type TaskOptions = {
 /** Loại phiếu nghiệp vụ tạo bằng hộp thoại chung: Bảo lưu (kèm gia hạn, tiếp tục học), Chuyển lớp, Dừng học, Chuyển phí. */
 export type BusinessType = 'BAO_LUU' | 'CHUYEN_LOP' | 'DUNG_HOC' | 'CHUYEN_PHI';
 
-/** Loại chuyển lớp chọn được ở phiếu; Chuyển cơ sở chưa làm (cần quản lý hai cơ sở duyệt, R-CS-07). */
+/** Loại chuyển chọn được ở phiếu Chuyển lớp. Chuyển cơ sở (R-GD-10, R-CS-07) chỉ chọn cơ sở mới; lớp mới do quản lý cơ sở đích chọn ở cấp duyệt của họ (migration 568). */
 export const TRANSFER_KINDS = [
   { value: 'DOI_GIO', label: 'Đổi giờ học' },
   { value: 'DOI_TRINH_DO', label: 'Đổi trình độ' },
   { value: 'DOI_GIAO_VIEN', label: 'Đổi giáo viên' },
+  { value: 'CHUYEN_CO_SO', label: 'Chuyển cơ sở' },
 ] as const;
+
+export const TRANSFER_BRANCH_KIND = 'CHUYEN_CO_SO';
 
 /** Hình thức phiếu Bảo lưu: bảo lưu mới hoặc gia hạn bản đang chạy (CSN-06b). */
 export type HoldMode = 'MOI' | 'GIA_HAN' | 'TIEP_TUC';
@@ -60,7 +63,10 @@ export type BusinessDraft = {
   toClassId: string;
   startDate: string;
   kindCode: string;
+  destBranchId: string;
 };
+/** Cơ sở dạy học chọn làm cơ sở mới (đang hoạt động, khác cơ sở của ticket). */
+export type DestBranch = { id: string; code: string; name: string };
 export type BusinessErrors = Partial<Record<keyof BusinessDraft, string>>;
 
 export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
@@ -72,6 +78,7 @@ export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
   toClassId: '',
   startDate: '',
   kindCode: '',
+  destBranchId: '',
 };
 
 export function validateBusinessDraft(
@@ -95,6 +102,11 @@ export function validateBusinessDraft(
           : 'Nhập số tháng bảo lưu (từ 1).';
   } else {
     if (draft.kindCode === '') e.kindCode = 'Chọn loại chuyển.';
+    if (draft.kindCode === TRANSFER_BRANCH_KIND) {
+      // Chuyển cơ sở: chỉ cần cơ sở mới; lớp mới và buổi bắt đầu do quản lý cơ sở đích chọn sau (migration 568).
+      if (draft.destBranchId === '') e.destBranchId = 'Chọn cơ sở mới.';
+      return e;
+    }
     if (draft.toClassId === '') e.toClassId = 'Chọn lớp mới.';
     if (draft.startDate === '') e.startDate = 'Chọn buổi bắt đầu ở lớp mới.';
   }
@@ -129,6 +141,14 @@ export function buildBusinessPayload(
       note: draft.reason.trim(),
       // Gia hạn: nối tiếp bản đang chạy của ghi danh (hàm áp dụng kiểm lại, migration 234).
       ...(draft.holdMode === 'GIA_HAN' && holdId ? { extends_hold_id: holdId } : {}),
+    };
+  if (draft.kindCode === TRANSFER_BRANCH_KIND)
+    return {
+      enrollment_id: draft.enrollmentId,
+      kind_code: draft.kindCode,
+      dest_branch_id: draft.destBranchId,
+      reason_code: draft.reasonCode,
+      note: draft.reason.trim(),
     };
   return {
     enrollment_id: draft.enrollmentId,
