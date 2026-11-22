@@ -23,7 +23,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | CHUNG-05 | Đặt mật khẩu mới (từ link email) **(HOÃN, thiết kế P1 v4)** | C | **Chưa có** | không có khung | chưa kiểm | smoke.spec.ts | Code F |
 | CHUNG-06 | Đăng nhập học sinh (mã HS) | A | **Có màn** `src/pages/auth/LoginPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, smoke.spec.ts | Code F |
 | CHUNG-07 | Đổi mật khẩu bắt buộc lần đầu | B | **Có màn** `src/pages/auth/PasswordPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, so-sanh-dang-nhap.spec.ts | Code F |
-| CHUNG-08 | Không thể đăng nhập **(chốt 12/10; chữ theo thiết kế P1 v4)** | C | **Chưa có** | không có khung | chưa kiểm | smoke.spec.ts | Code F |
+| CHUNG-08 | Không thể đăng nhập **(chốt 12/10; chữ theo thiết kế P1 v4)** | C | **Có màn** `/khong-dang-nhap-duoc` (`CannotLoginPage`, PasswordPages.tsx) | có (DN08_pc_lock, DN08_mb_lock, canvas 9933) | đã so 23/11: khớp tiêu đề, một câu chung, nút «Quay lại đăng nhập», dòng «Cần hỗ trợ đăng nhập»; không nói lý do hay thời gian khoá (S03-18); không lệch | smoke.spec.ts (CHUNG-08), dang-nhap-thiet-ke.spec.ts | Code F |
 | CHUNG-09 | Hết phiên làm việc | C | **Có màn** `src/pages/auth/SessionEndDialog.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
 | CHUNG-10 | Khung ứng dụng CRM (menu trái, thanh trên, chọn cơ sở; điện thoại: menu thu gọn) | A | **Có màn** `src/layout/CrmShell.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
 | CHUNG-11 | Tìm kiếm toàn hệ thống | B | **Có màn** `src/layout/GlobalSearch.tsx` | không có khung | chưa kiểm | — | Code F |

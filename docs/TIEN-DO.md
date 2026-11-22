@@ -1,6 +1,6 @@
 # Tiến độ HMT Platform
 
-Cập nhật: 19/11/2026 (mục «Trạng thái 19/11/2026» bên dưới là bản mới nhất, liệt kê 114 PR (#50, #67 đến #203) theo ngày gộp; mục «Trạng thái 16/11/2026» ghi: repo chuyển sang `hmt-edu/hmt-platform`, số PR đánh lại từ #1, ghi các PR đã gộp từ 15/11 tới 16/11 chiều, #1 đến #66; các mục ghi ngày cũ hơn (số PR cũ #2xx) là lịch sử).
+Cập nhật: 23/11/2026 (mục «Trạng thái 23/11/2026» bên dưới là bản mới nhất, liệt kê 284 PR (#85 đến #502) gộp từ 19/11 06:30 tới 23/11 02:25; mục «Trạng thái 19/11/2026» liệt kê 114 PR (#50, #67 đến #203) theo ngày gộp; mục «Trạng thái 16/11/2026» ghi: repo chuyển sang `hmt-edu/hmt-platform`, số PR đánh lại từ #1, ghi các PR đã gộp từ 15/11 tới 16/11 chiều, #1 đến #66; các mục ghi ngày cũ hơn (số PR cũ #2xx) là lịch sử).
 
 **Từ 04/11/2026 (Đ285 đến Đ290): v2 (`hmt-v2`) dừng hẳn; v1 (repo này) làm tiếp cho Cơ sở 5 chạy thật.** Thiết kế bám v1; từ v2 chỉ lấy nghiệp vụ (mục 14 của `docs/spec/04`, thắng các mục khác khi khác nhau). Canvas chuẩn là `design/hmt-canvas-9933/` (v146, thay `6f57`, Đ293; `6f57` thay `8ab9`) và `design/hmt-canvas-9189/` (Đào tạo, Giáo viên, bản hiện hành là nội dung thư mục này; `design/hmt-canvas-fcd1/` v41 `1793782759-fcd1` giữ để đối chiếu, không còn là bản hiện hành; bảng khác biệt: `docs/nghiep-vu/doi-chieu-canvas-dao-tao-v41.md`). Mốc: 10/11 Tuyển sinh + màn Nhập CS5; ~12/11 Bán hàng, Thu chi; ~17/11 Đào tạo, Cổng giáo viên, Aftersale (ngày chốt giờ học 17/11). Bảng khác biệt và kế hoạch theo mốc: `docs/nghiep-vu/doi-chieu-quyet-dinh-v2.md` (chờ anh OK trước khi viết migration). Chưa sửa giao diện Báo giá, Đơn hàng, Phiếu thu khi anh chưa gửi yêu cầu.
 
@@ -111,6 +111,314 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm phiếu tái tục: khoá các giai đoạn con **L7A, L7B, L8A** của `UPSALE_SUBSTAGE` (không Ngừng được), cùng cách khoá L5A, L5B, L5P của cơ hội, khi viết hàm dùng chúng.
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
+
+## Trạng thái 23/11/2026 (PR đã gộp từ 19/11 06:30 tới 23/11 02:25 giờ Việt Nam; 284 PR, #85 đến #502)
+
+Danh sách lấy từ `gh pr list --state merged` của `hmt-edu/hmt-platform` (tiêu đề PR giữ nguyên), theo ngày gộp, mới nhất ở trên. Tiếp tục mô hình kéo việc (xem mục 19/11); từ 23/11 đội dùng tài khoản chung lead.vanhanh.hmt, luật L-01 đến L-18 ở hộp thư điều phối. Mục «Trạng thái 19/11/2026» bên dưới giữ nguyên làm lịch sử.
+
+### 23/11
+
+| Giờ | PR | Việc |
+|---|---|---|
+| 02:25 | #501 | Tài liệu: báo cáo BC-02..07, BC-10 ở Looker, không dựng màn (D-23-06) |
+| 02:25 | #502 | Bản đồ màn hình: CS-05..CS-14 theo mô hình phiếu nghiệp vụ (B-23-03) |
+| 02:25 | #500 | Bảng màn theo trạng thái: CS-01..09 nhận khung CSN (B-23-01) |
+| 02:24 | #499 | Tài liệu: bản đồ việc BAN-DO.md (D-23-04) |
+| 02:24 | #498 | CLAUDE.md gọn: tối đa 3 file đầu phiên, canvas ra file riêng (D-23-03) |
+| 02:24 | #497 | CLAUDE.md: kiểm nhanh trên Mac theo L-09 (D-23-02) |
+| 02:24 | #496 | Tài liệu: quy-trinh-theo-ca CŨ, bỏ khỏi CLAUDE.md (D-23-01) |
+| 01:35 | #474 | GV-18 giao diện: danh sách em, chấm bốn bước, Mở lại (base main; cần PR migration 598 gộp trước) |
+| 01:27 | #472 | GV-17 giao diện: Bài đã giao, Giao bài, Sửa, Gỡ (đăng lại cho đúng base main) |
+| 01:26 | #495 | TC-09: bảng màn nhầm «Chỉ có DB»: màn đã có (hành động Hoàn tác ở TC-08) |
+
+### 21/11
+
+| Giờ | PR | Việc |
+|---|---|---|
+| 14:30 | #490 | Bảng màn theo trạng thái: cập nhật 7 màn nhóm Code A (tài liệu) |
+| 13:47 | #492 | LMS: lms_giveable_sessions (buổi giao được) + pgTAP, sửa gốc e2e GV-17 đỏ ở Tester (CAO, base main) |
+| 13:31 | #482 | KH-01: bộ lọc Đang học tại (giao diện, phụ thuộc #477) |
+| 13:30 | #473 | Group By còn thiếu: Người lập (BH-01), Sale (BH-06), Hình thức (TC-10) (migration 604, CAO) |
+| 13:25 | #477 | KH-01: bộ lọc Đang học tại (migration 603, rủi ro thấp) |
+| 13:22 | #488 | LMS: ghi kết quả EXPLAIN trên dữ liệu giả lớn (chỉ tài liệu) |
+| 13:21 | #489 | Tài liệu: làm mới bảng màn hình theo trạng thái (21/11 trưa) |
+| 13:21 | #491 | QT-18: bốn bước trong một hộp K4b (anh chốt giữ khuôn K4b) |
+| 12:42 | #476 | CH-04: quà tặng «Áp dụng cho» (migration 602, rủi ro CAO) |
+| 08:50 | #480 | CH-04: hộp Lịch sử thay đổi chính sách (giao diện, phụ thuộc #475) |
+| 08:29 | #479 | KH-02, KH-05: tab Ticket ở hồ sơ phụ huynh, học sinh (giao diện, phụ thuộc #470) |
+| 08:29 | #471 | LOP-02, LOP-03: so canvas lại, câu trên đầu bản ghi lớp theo tình trạng (không migration) |
+| 08:29 | #475 | CH-04: Lịch sử thay đổi chính sách (migration 601, rủi ro thấp) |
+| 08:07 | #470 | KH-02/KH-05: bộ lọc ticket theo phụ huynh, học sinh (migration 600, rủi ro thấp) |
+| 07:46 | #478 | e2e: pickOption lấy nút mở hộp chọn (sửa lỗi strict mode, ticket.spec iPhone đỏ ở #466) |
+| 07:46 | #469 | LMS chấm bài (GV-18) phần DB: migration 598 + pgTAP (mức CAO, cần Tester ĐẠT lại) |
+| 07:03 | #468 | Tài liệu: làm mới bảng màn hình theo trạng thái (21/11 sáng) |
+| 05:39 | #457 | So canvas TS-15: ô Em trong hộp Tạo phiếu kiểm tra (giao diện, phụ thuộc #456) |
+| 05:19 | #456 | TS-15: tạo phiếu kiểm tra chọn em (migration 599, rủi ro CAO) |
+| 04:57 | #462 | GV-17 giao diện: Bài đã giao, Giao bài, Sửa, Gỡ (phụ thuộc #461) |
+| 04:57 | #465 | LMS chấm bài (GV-18) phần DB: migration 598 + pgTAP (mức CAO, phụ thuộc #461) |
+| 04:35 | #460 | Đề xuất DB 587, 588 và KH-01 Đang học tại (chỉ tài liệu, chờ duyệt) |
+| 04:35 | #461 | LMS giao bài (GV-17) phần DB: migration 597 + pgTAP (mức CAO) |
+| 04:14 | #464 | So canvas TC01, TC04, TC08, TC10, TC13, BH01, BH06: khung «Không có quyền» của danh sách (C94) |
+| 04:14 | #463 | BH-02: so canvas báo giá, ô Hạn hiệu lực nêu số ngày theo tham số (không migration) |
+| 04:14 | #453 | So canvas TS-06: chọn em khi tạo cơ hội, Thêm em vào cơ hội cũ (giao diện, phụ thuộc #451) |
+| 04:14 | #447 | KH-07 PR2: hộp Gộp phụ huynh, học sinh + nút Gộp ở KH-02, KH-05 (migration 589, rủi ro cao) |
+| 03:53 | #451 | TS-06: chọn em khi tạo cơ hội từ lead, Thêm em vào cơ hội cũ (migration 595, rủi ro CAO) |
+| 03:31 | #454 | QT-07: nối nhóm con bắt buộc cho Lý do huỷ test (migration 594), QT-06 trạng thái, sửa R-CRM-06 |
+| 03:11 | #452 | TC-01, TC-04: chip nhiều Cơ sở, branch_ids (migration 593, CAO; thay #437) |
+| 02:49 | #441 | TC-17, TC-02: Tài khoản nhận của phiếu thu (migration 582, CAO) |
+| 02:29 | #455 | BH-09: tab Ghi danh của đơn nêu tiền cọc tối thiểu theo tham số, so canvas BH-03 BH-09 (không migration) |
+| 02:28 | #459 | Tài liệu: rà Group By Thu chi, Bán hàng; so canvas TC-08, TC-09, TC-13, TC-15 (C93) |
+| 02:28 | #458 | Đề xuất DB LMS cho GV-17, GV-18 (chỉ tài liệu, chờ Chat duyệt) |
+| 02:28 | #450 | R-LOP-14: kiểm môn theo khối khi tạo lớp, sau tham số mặc định tắt (migration 589, CAO) |
+| 02:07 | #448 | GV-17/GV-18: thành phần dùng chung (công tắc, tiến độ, hàng tệp, thẻ chọn, khung xem bài nộp) |
+| 02:07 | #449 | So canvas CH-01 đợt 2: ô Mã cũ ở hộp Tạo gói (rủi ro THẤP) |
+
+### 20/11
+
+| Giờ | PR | Việc |
+|---|---|---|
+| 23:59 | #444 | KH-07 PR1 (DB): gộp phụ huynh, học sinh chuyển toàn bộ dữ liệu kể cả tiền (migration 583, rủi ro CAO) |
+| 23:38 | #446 | GD-02, GD-03: hàm đọc bổ sung số liệu (migration 591, CAO) |
+| 23:17 | #434 | TC-04: Group By «Sao kê» (migration 579, CAO) |
+| 22:55 | #436 | GD-07: tình trạng «Sắp hết hạn gói» (migration 590, CAO) |
+| 22:34 | #442 | QT-18: báo tên cột lỗi khi nạp dữ liệu cũ (migration 584) |
+| 22:12 | #440 | Phiếu chi: Tài khoản nhận, Ngày chi dự kiến, Hình thức chi ghi trước (migration 581, CAO) |
+| 22:09 | #433 | Danh sách em: Thêm, Sửa, Bỏ em cho lead và cơ hội (migration 586, rủi ro CAO) |
+| 21:49 | #445 | Spec: R-V2-46..49 theo anh chốt 20/11 (Thu chi theo canvas) |
+| 21:49 | #443 | So canvas TS-02, TS-08: danh sách em ở hồ sơ lead, cơ hội (PR2, phụ thuộc #433) |
+| 21:49 | #431 | QT-18: bảng Cột nhận của loại, Tải dòng lỗi và trùng ở bước xem trước |
+| 21:49 | #432 | TC-17: xem trước chia tiền vào dòng đơn, cột Lớp, Giờ cấp, Dồn trước (migration 578, CAO) |
+| 21:27 | #429 | TC-12 bản in phiếu chi đủ dòng tính hoàn; so luật TC-14, TC-16; đo dung lượng gói (C86) |
+| 21:27 | #435 | QT-03: chọn vai trò dạng chip, nút Thêm vai trò |
+| 21:27 | #438 | Hướng dẫn Giáo viên: Cần làm, Lớp và học sinh, Giờ dạy, Ticket lớp |
+| 21:27 | #439 | TT-02: câu theo giai đoạn của phiếu tái tục (không migration) |
+| 21:27 | #430 | TT-04: Group By ở máy chủ (cơ sở, campaign, lý do chưa có phiếu), migration 585 (CAO) |
+| 20:44 | #428 | Đề xuất DB GD-02, GD-03: năm chỗ chỉ đọc (chưa code, tài liệu) |
+| 20:44 | #427 | So canvas TS-15: chữ hộp Tạo phiếu kiểm tra (rủi ro THẤP) |
+| 20:44 | #426 | So canvas BH-05, TC-02, TC-05: khối «Người xử lý và cơ sở», «Duyệt bởi» (C85) |
+| 20:44 | #422 | Rà security definer cụm 3: thu quyền gọi 5 hàm trợ giúp (migration 577, rủi ro cao) |
+| 20:22 | #423 | Tài liệu: đề xuất DB còn lại của Thu chi (TC-17, TC-10/11, TC-04, chip Cơ sở), chờ anh duyệt |
+| 20:22 | #424 | So canvas GV-04: số bước viết bằng chữ |
+| 20:22 | #425 | GD-07: so canvas Sắp hết giờ: câu giải thích, thứ tự cột, ô phiếu tái tục (không migration) |
+| 20:22 | #420 | LOP-02, LOP-05, LOP-06: câu theo tình trạng duyệt của lớp (không migration) |
+| 19:58 | #418 | So canvas TC-01, TC-04: lọc nhanh «Hình thức»; so TC-06, BH-04, BH-10, BH-11 (C83, thay #414) |
+| 19:57 | #421 | So canvas dc47: QT-02, QT-03, QT-08, QT-09 (sửa chữ) |
+| 19:57 | #419 | So canvas KH-02: nút Tạo ticket ở hồ sơ phụ huynh (rủi ro THẤP) |
+| 19:15 | #412 | GD-02: câu giải thích theo tình trạng và quỹ giờ trên bản ghi ghi danh (không migration) |
+| 19:15 | #417 | So canvas CH-01 Gói bán (dc47): chữ hộp Sửa gói, Ngừng bán; CH-03 ghi chú (rủi ro THẤP) |
+| 18:50 | #416 | QT-18: so canvas dc47, sửa chữ ô đếm, cột Giải thích, báo file sai định dạng |
+| 18:50 | #413 | Tài liệu: làm mới bảng màn hình theo trạng thái (20/11 tối) |
+| 18:50 | #415 | GD-04, LOP-09: so canvas, chữ trạng thái Sổ giờ và tên lớp ở tiêu đề (không migration) |
+| 18:50 | #411 | BH-08: cảnh báo lệch hình thức học khi chọn lớp cho dòng đơn (không migration) |
+| 18:50 | #404 | TC-04: cột và nhóm lọc «Sao kê» (migration 439, Kho #14) |
+| 18:29 | #406 | Kho #19: Group By ở máy chủ cho KH-01 Phụ huynh và CS-01 Ticket (migration 571, rủi ro THẤP) |
+| 18:08 | #408 | Sửa bài e2e GV-01: nhãn menu «Cần làm» chấp nhận số đếm (rủi ro THẤP) |
+| 18:08 | #407 | LOP-02/03: Hình thức học của lớp, Tổ chức lớp tự suy, Tạo lớp còn lại, xem trước ngày kết thúc (migration 571, CAO) |
+| 17:46 | #410 | Sửa bài pgTAP 572 chập chờn: so mã học sinh theo thứ tự mã (rủi ro THẤP) |
+| 17:25 | #405 | Rà security definer cụm 2: danh sách, bản ghi phụ huynh theo phạm vi Xem (migration 573, rủi ro cao) |
+| 17:03 | #403 | Rà security definer: duplicate_students_of_parent không lộ tên, mã ngoài phạm vi (migration 572, rủi ro cao) |
+| 16:42 | #369 | QT-15: Người duyệt ticket theo loại phiếu, có ngày hiệu lực (migration 479, CAO) |
+| 16:21 | #402 | Tài liệu: KH-07 câu hỏi luật; làm mới bảng màn hình theo trạng thái |
+| 05:18 | #399 | QT-09: Lịch sử thay đổi tham số (migration 480) |
+| 04:51 | #394 | KH-03, KH-06: Sửa phụ huynh, Sửa học sinh (migration 570, rủi ro cao) |
+| 04:46 | #401 | QT-07: Lịch sử thay đổi danh mục (migration 481) |
+| 04:15 | #400 | CS-07: docs/nghiep-vu Phiếu Chuyển cơ sở + pgTAP 568 thêm ba bài chặn lúc tạo |
+| 03:44 | #398 | Tài liệu hiệu năng 20/11: EXPLAIN QT-16, KH-08, CS-07, CS-10 (+QT-13, QT-15 nhánh); đề xuất sửa list_tasks_for_destination |
+| 03:44 | #395 | Đề xuất LOP-02/03: bốn câu quyết định DB cho anh Trường |
+| 03:44 | #397 | E73 GV-01/GV-12: số đếm trên menu «Cần làm» (R-V2-37) + bài kiểm |
+| 03:44 | #396 | Vitest bổ sung: Time Table lớp, Lịch tuần cơ sở (LOP-03, LOP-08) |
+| 03:44 | #370 | QT-13 Tài khoản học sinh: danh sách, cấp, đặt lại mật khẩu, khoá (migration 569, rủi ro cao) |
+| 02:46 | #371 | QT-16 Hồ sơ giáo viên, trợ giảng (Chat 23:05, anh Trường duyệt; migration 313, mức CAO) |
+| 02:43 | #393 | GD-05: đoạn giải thích hộp Điều chỉnh giờ theo canvas 9933 |
+| 02:42 | #392 | BUOI-03: chữ chặn quyền và gợi ý theo canvas 9189 |
+| 02:42 | #391 | LOP-08: chú giải Lịch tuần cơ sở theo canvas 9189 |
+| 02:42 | #390 | CSN so canvas: câu hướng dẫn hộp Duyệt/Từ chối/Huỷ phiếu và gợi ý ô ticket |
+| 02:42 | #389 | E72 So canvas GV-10, 12, 13, 14, 15, 16 (chữ trạng thái trống) |
+| 02:42 | #387 | B66 CS-07 PR2 (giao diện): Chuyển cơ sở qua phiếu |
+| 02:42 | #379 | KH-08 Lên khối đầu năm học (migration 566, rủi ro cao) |
+| 02:10 | #380 | B66 CS-07 PR1 (DB): Chuyển cơ sở, hai quản lý cơ sở duyệt tuần tự (migration 568) |
+| 01:54 | #388 | BUOI-07/08/09: nhãn khối theo canvas 9189 (rà màn chưa kiểm) |
+| 01:38 | #386 | CH-06 danh sách bài học lên main (#140 gộp nhầm vào nhánh chồng) + CH-05 chú thích; So canvas CH-05/06/07 |
+| 01:23 | #385 | Cập nhật bảng màn hình theo trạng thái 20/11 (chỉ tài liệu) |
+| 01:23 | #384 | E71 Tài liệu: yêu cầu khung Design cho GV-17, GV-18 |
+| 01:17 | #383 | Sửa bài BUOI-15: lật trang tìm dòng của lớp (hết đỏ ngẫu nhiên) |
+| 01:17 | #382 | KHẨN: e2e ổn định quanh nửa đêm giờ Việt Nam (ngày giả theo giờ VN, bài 18 T4, BUOI-15) |
+| 00:56 | #381 | E70 GV-03: Lịch dạy khớp canvas (nhãn phạm vi, trạng thái trống) |
+| 00:16 | #375 | B64 CS-10: Thực hiện phiếu Chuyển phí → số dư khách hàng (migration 567) |
+| 00:03 | #355 | Chi tiết lớp: thêm khoảng cách giữa các khối (ảnh staging stg-lop-chi-tiet) |
+| 00:03 | #360 | TC-16: Dùng số dư cho đơn mới (hộp K08 ở đơn Đã duyệt; DB sẵn từ migration 454) |
+
+### 19/11
+
+| Giờ | PR | Việc |
+|---|---|---|
+| 23:50 | #378 | E69 GV-11: khối «Tiến độ khung chương trình» (ước tính) theo canvas |
+| 23:50 | #377 | E68 GV-07K: chấm kiểm tra khớp canvas (lỗi vượt tối đa, lỗi mạng, ticket sửa điểm) |
+| 23:49 | #373 | E67 KHẨN: cảnh báo trùng SĐT không lộ mã, cơ sở của hồ sơ ngoài phạm vi (TS-03) |
+| 23:36 | #372 | BH-02: nút «Thêm cả nhà» ở lưới dòng báo giá (so canvas BH02_chon) |
+| 23:31 | #368 | TC-09: «Đã hoàn tác bằng <mã khoản đảo>» theo canvas (list_money_in trả reversed_by_code) |
+| 23:31 | #374 | Vá e2e GV-16: hai nút Đóng trong hộp Buổi trong tháng (strict mode) |
+| 23:23 | #367 | B64: bỏ mục menu CS-16 «Nhận xét chờ gửi» (R-V2-40) |
+| 23:12 | #361 | B65: Huỷ đơn bị chặn thì giải thích và mời Tạo ticket hoàn tiền (BH05_huy_chan, migration 565) |
+| 23:11 | #363 | TC-17: bảng chia tiền về dòng đơn thêm Học sinh, Thành tiền (so canvas) |
+| 23:11 | #364 | BH-09, TC-03: chữ bản ghi đơn theo canvas (Lịch đóng tiền, Phiếu thu) |
+| 23:11 | #365 | docs: so canvas nhóm Bán hàng, Thu chi lượt C (TC-17, TC-03, BH-09, TC-09...) |
+| 23:10 | #366 | F71: TS-12 gộp vào CHUNG-14; sáu câu hỏi luật KH-08 |
+| 22:56 | #359 | F70: sửa nhầm «chưa có» trong bảng màn hình; đề xuất 5 màn CRM còn thiếu |
+| 22:55 | #362 | So canvas KH-01..07 (Code D, chỉ tài liệu) |
+| 22:55 | #358 | TC-11 Phiếu chi: cột «Cách tính» của bảng tính hoàn (theo canvas, luật giữ nguyên) |
+| 22:41 | #357 | F69: rà nhóm B (40 màn không có khung canvas) |
+| 22:29 | #345 | Kho #18 TC-08, TC-13: Group By ở máy chủ cho Khoản tiền vào và Công nợ |
+| 22:29 | #352 | QT-03: nhãn Vai trò và gợi ý nhiều vai trò theo canvas dc47 (nhỏ) |
+| 22:29 | #353 | E66 TS-03: cảnh báo trùng SĐT inline dưới ô Số điện thoại (theo canvas) |
+| 22:28 | #354 | F68: TS-08 canvas vênh luật; rà tiếp 17 màn nhóm A với canvas |
+| 22:28 | #356 | TC-11: nhãn bảng tính hoàn theo canvas («Còn lại sau khi trừ giờ đã học») |
+| 22:20 | #350 | Kho #19 TT-01: Group By ở máy chủ cho Tái tục (giai đoạn, nhóm con, đợt, phụ trách, cơ sở) |
+| 22:15 | #347 | Kho #18 TC-10: Group By ở máy chủ cho Phiếu chi (tình trạng, cơ sở) |
+| 22:15 | #348 | So canvas nhóm A (Code D): TC-10 Đúng, TC-11 Lệch cần chốt (chỉ tài liệu) |
+| 22:15 | #351 | TT-02: chữ trống Báo giá và đơn, thanh L6 theo canvas + bảng so canvas Tái tục |
+| 22:07 | #349 | F67: rà 13 màn nhóm A (Tuyển sinh, Quản trị, Cấu hình) với canvas |
+| 22:03 | #338 | TC-15: Đối soát thu tiền (danh mục Tài khoản nhận, cờ khớp sao kê, migration 478, CAO) |
+| 21:59 | #340 | Kho #18 TC-01, TC-04: Group By ở máy chủ cho Phiếu thu (tình trạng, hình thức, cơ sở) |
+| 21:59 | #346 | B63: Quản trị viên vào được mọi màn để xem (menu và phân hệ) |
+| 21:54 | #339 | LOP-02: khối Nhóm lớp «Lớp còn lại của nhóm» + câu Time Table (KHO dòng 20 phần đọc, migration 310 chỉ đọc) |
+| 21:50 | #335 | E65 Kho #17: Group By ở máy chủ cho Ghi danh GD-01 và Buổi học BUOI-01 (migration 512, 513) |
+| 21:47 | #336 | Kho #18 BH-01: Group By ở máy chủ cho Báo giá (tình trạng, cơ sở) |
+| 21:43 | #337 | B62: Phiếu chi cột Hình thức (danh mục chung với Phiếu thu, migration 564) |
+| 21:33 | #342 | B50: Phiếu thu Huỷ hiện «Lý do huỷ» trong khối thông tin (TC02_huy) |
+| 21:26 | #333 | Group By ở máy chủ cho Lớp LOP-01 (KHO dòng 17, phần 1/3; migration 309 chỉ đọc) |
+| 21:22 | #272 | F51: thêm cột thiếu theo canvas: Phiếu tái tục (GD-07, mig 561), Điểm, Cơ hội gốc, Cơ sở tạo (TS-16) |
+| 21:22 | #341 | GV-16 Giờ dạy của tôi: điện thoại có nút Xem chi tiết mở danh sách buổi (canvas 9189) |
+| 21:15 | #332 | Kho #18 BH-06: Group By ở máy chủ cho Đơn hàng (tình trạng, cơ sở) |
+| 21:11 | #331 | BUOI-02 Buổi học (bản ghi): cột Giờ trừ theo canvas 9933 (migration 308 chỉ đọc) |
+| 21:08 | #329 | E64: Lớp: cột Ghi chú và hoạt động (LOP-02, migration 511) |
+| 20:53 | #327 | Kho #14: TC-01 cột Người duyệt, TC-04 cột Mã giao dịch (đúng canvas) |
+| 20:53 | #334 | F66: rà màn Lớp, Buổi, Giáo viên với canvas (điền Đúng/Lệch) |
+| 20:40 | #311 | C60 CS-11 học bù: phiếu Đổi lịch sinh buổi Học bù mới (xếp chồng sau #297) |
+| 20:40 | #326 | GD-02 Ghi danh (bản ghi): sổ giờ gần đây và thẻ Học sinh theo canvas GD02 (không DB) |
+| 20:39 | #330 | F65: rà Group By các danh sách K03 với canvas (14 danh sách lệch) |
+| 20:26 | #328 | LOP-09: Học sinh của lớp (danh sách K03 theo canvas 9933, migration 477) |
+| 20:26 | #323 | GD-07 Sắp hết giờ: dựng lại theo khuôn danh sách K03 đúng canvas (đóng «Lệch chưa sửa») |
+| 20:26 | #324 | B61: cột K03 giữ sau khi tải lại trang (sửa ở khuôn dùng chung) |
+| 19:55 | #322 | E63: Ghi danh chia tab (GD-02) + khối «Em có N ghi danh ở lớp này» (migration 510) |
+| 19:50 | #325 | F64: rà 11 màn Bán hàng, Thu chi, Ghi danh với canvas (điền Đúng/Lệch) |
+| 19:29 | #320 | KHO-VIEC 6: danh sách nhãn tiếng Anh (đều là chữ canvas, không đổi mã; chỉ tài liệu) |
+| 19:15 | #318 | Danh sách Lớp: lịch học ghi rõ giáo viên và phòng (T2 mục 10, migration 307 nhẹ) |
+| 19:15 | #313 | B51 cụm 3: dải đỏ tự mất, Số tiền phiếu thu gợi ý theo đợt, «Chờ … duyệt» thay thanh nút trống |
+| 19:05 | #319 | Tên cơ sở nhất quán ở trang bản ghi (Kho #7) |
+| 19:04 | #321 | F63: kịch bản chụp ảnh hướng dẫn dùng seed-staging (sau #309) |
+| 18:51 | #316 | Cổng GV: khung tải lỗi có Thử lại cho GV-14 (Kho #12) |
+| 18:51 | #317 | Kho #2: Lead lưu thiếu ô bắt buộc báo ngay; nút Phụ huynh ở Cơ hội mở được |
+| 18:47 | #309 | Seed staging: supabase/seed-staging.sql dựng bằng hàm nghiệp vụ, dữ liệu giả (F62) |
+| 18:47 | #297 | C60 CS-11: phiếu Đổi lịch học (dời một buổi, đổi ca cố định) — xếp chồng sau #287 |
+| 18:38 | #274 | F51: BUOI-15 Điểm danh trong ngày: thêm Tình trạng buổi, CSKH (mig 562), Xử lý theo canvas |
+| 18:33 | #300 | B50 cụm 2: Đơn hàng hiện Đã thu, Còn phải thu, Thu tiền; Phiếu thu hiện Người nhận tiền (migration 563) |
+| 18:29 | #298 | CH-04: Chiết khấu thêm «Áp dụng cho» (Báo giá, Đơn, Phiếu thu), tách Giá trị / Mức tối đa (migration 476, CAO) |
+| 18:17 | #314 | Form Tạo/Sửa lớp: ghim thanh nút Lưu/Huỷ khi cuộn (T2 mục 3) |
+| 18:17 | #295 | C60: người duyệt kế tiếp (tên) ở danh sách phiếu và bảng Duyệt (CSN-05, CSN-06) |
+| 18:04 | #307 | E62: Ghi danh chia tab theo canvas GD-02 (xếp chồng trên #292) |
+| 18:04 | #280 | B51 cụm 1: ô đếm Báo giá/Đơn hàng ở Cơ hội; Chuyển thành đơn mờ khi chưa L8 |
+| 18:04 | #296 | Kho #4: tìm mã thô hiện ra giao diện; sửa hình thức học ở tạo đơn |
+| 18:04 | #301 | e2e: bao phủ LOP-09 (KHO-VIEC dòng 10, lane A) |
+| 18:04 | #304 | GV-11: chi tiết lớp một trang theo canvas 9189 (bỏ bốn tab) |
+| 18:04 | #312 | Calendar: sự kiện theo giờ Việt Nam (đóng phần «chưa làm» Q-172, R-HT-07) |
+| 18:04 | #315 | Cổng GV: thẻ «Việc sắp trễ hạn» ở Hôm nay bấm được (Kho #5) |
+| 18:04 | #305 | D61b: deploy-staging nạp seed-staging.sql (khung bước, chờ file của Code F) và kiểm đếm dòng |
+| 18:03 | #292 | E61: Ghi danh và Buổi học: cột Ghi chú và hoạt động + tab (theo bảng lệch K06 của Tester 2) |
+| 17:50 | #269 | D50 đợt 2: QT-09 Tham số tách cột Đơn vị, nhãn Giá trị hiện tại |
+| 17:50 | #310 | docs: đo hiệu năng năm danh sách lane E (Kho #11) |
+| 17:50 | #294 | GV-07K PR1: điện thoại chấm kiểm tra từng em một; máy tính giữ danh sách cả lớp |
+| 17:50 | #299 | Kho #13: Phiếu kiểm tra (TS-16) thêm cột Điểm, Cơ hội gốc, Cơ sở tạo |
+| 17:50 | #302 | Sửa bảng màn hình theo trạng thái: hết báo thừa HT, thêm DB, Đúng/Lệch, số theo cổng (F61) |
+| 17:36 | #306 | pgTAP 106: bài phụ thuộc giờ thật (buổi 19h00 hôm nay tự chốt) đỏ mọi PR |
+| 17:08 | #287 | C60 CS-14: Thực hiện Dừng học từ ticket (phiếu Dừng học giữ số dư) |
+| 17:08 | #293 | B51 cụm 2: đổi tài khoản trong cùng thẻ thì xoá bộ nhớ đệm dữ liệu |
+| 17:08 | #278 | KHẨN: Time Table form Tạo/Sửa lớp thành 7 tab theo thứ (bảng gọn) |
+| 16:54 | #291 | docs: bảng màn hình theo trạng thái, 197 mã (script sinh tự động) |
+| 16:54 | #285 | docs: phạm vi đào tạo, nạp dữ liệu và triển khai CS5 (bảng, mục cần anh quyết) |
+| 16:54 | #284 | docs: bảng rà UI cổng Giáo viên với canvas 9189 (Đúng/Lệch) |
+| 16:54 | #290 | E60 CHUNG-20 (2/2): giao diện huỷ lead nhập nhầm |
+| 16:54 | #289 | E60 CHUNG-20 (1/2): huỷ lead nhập nhầm: DB + pgTAP (migration 508) |
+| 16:47 | #288 | D60: kiểm QT-17, CHUNG-18 (chỉ tài liệu): CHUNG-18 đã có nhật ký theo từng danh sách; QT-17 dừng chờ chốt cách đăng nhập phụ huynh |
+| 16:47 | #286 | B52: kế hoạch chuyển dữ liệu thật CS5 (tài liệu) |
+| 16:47 | #279 | KHẨN: trang chi tiết lớp theo khuôn chung (tab Time Table, Học sinh, Buổi học dạng bảng) |
+| 16:47 | #265 | D50 đợt 1: rà UI Quản trị, danh sách Người dùng có cột Tên đăng nhập (migration 475) |
+| 16:47 | #276 | KHẨN: trang chặn có nút Đăng xuất (/khong-co-quyen, lỗi tải quyền, chọn cổng, đổi mật khẩu lần đầu) |
+| 16:34 | #261 | A50 PR2: ô chọn Khung chương trình và Bài bắt đầu ở Tạo/sửa lớp (không DB) |
+| 16:33 | #283 | Lớp (báo cáo T2): thanh duyệt không còn mã thô, Duyệt lớp có số buổi dự kiến, hộp Xếp lớp không dịch nút |
+| 16:16 | #281 | Cổng GV: thẻ buổi ở Hôm nay bấm được; tiến độ không nói «bốn bước» khi chỉ có 3 (T2-TONG-HOP) |
+| 16:15 | #282 | Cổng GV cụm 2: chấm nhận xét có «Lưu và em tiếp theo», tiêu đề «Em n/m · tên» (GV-07) |
+| 16:15 | #262 | B50 cụm 1: danh sách Phiếu thu theo canvas TC01 (Ngày nhận, Cơ sở, Cơ sở đơn tách riêng) |
+| 15:52 | #277 | KHẨN: deploy-staging tự bật Auth Hook token và đồng bộ cài đặt Auth; kiểm đăng nhập thật |
+| 15:52 | #275 | Sửa bài lead.spec «Đã gộp» đỏ sau khi tách cột Lead, Cơ hội |
+| 15:25 | #273 | KHẨN: deploy-staging tự mở schema app qua Data API và kiểm cuối (đăng nhập staging báo lỗi hệ thống) |
+| 15:12 | #270 | E41: danh sách buổi: tách cột Ngày học và Giờ bắt đầu (cột không gộp thông tin) |
+| 15:12 | #271 | C50 cụm 4: thẻ Kanban ticket (CSN-02) đúng canvas, không gộp thông tin |
+| 15:00 | #268 | C50 cụm 3: chi tiết phiếu nghiệp vụ (CSN-06) bảng cấp duyệt, không gộp thành dòng chữ |
+| 15:00 | #266 | Rà UI nhóm Đào tạo với canvas: cột danh sách Lớp, bảng lệch (thẻ F50) |
+| 15:00 | #267 | docs: prompt Design cho khuôn xem trước hàng loạt (KH-08 Lên khối) |
+| 14:51 | #264 | C50 cụm 2: chi tiết ticket (CSN-03) đúng canvas: Tiếp nhận / Liên kết, Nhóm và Nhóm con tách riêng |
+| 14:51 | #263 | C50 cụm 1: danh sách ticket (CSN-01) đúng canvas, cột không gộp thông tin + bảng lệch |
+| 14:21 | #259 | A50 PR1: màn Tạo/sửa lớp (LOP-03) và Time Table theo canvas 9933 (không DB) |
+| 14:19 | #255 | E34: công cụ chụp ảnh hướng dẫn hỗ trợ bước bấm (clicks); lead-hanh-dong mở menu Hành động |
+| 14:18 | #260 | Lead, Cơ hội: tách cột gộp theo canvas (thẻ F40) |
+| 14:18 | #256 | Menu CRM: rà lại nhãn với canvas 9933, nhãn Tái tục (thẻ F30) |
+| 14:00 | #244 | A25 PR2: Danh mục sửa form Loại buổi, ô Loại kiểm tra ở yêu cầu buổi, giao diện GV theo review_form (migration 306) |
+| 13:51 | #254 | B41 e2e đường Kế toán tích hợp: thu tiền, duyệt hai bước, hoàn tác khoản tiền, tổng và công nợ |
+| 13:51 | #228 | CHUNG-15: tối ưu hiệu năng việc chờ tôi duyệt (migration 559) trên main |
+| 13:49 | #246 | C40: e2e Bảo lưu toàn luồng từ ticket (xếp chồng sau C31) |
+| 13:43 | #248 | C41: pgTAP chặn chéo cơ sở: Bảo lưu, Tiếp tục học, nâng cấp khiếu nại (xếp chồng sau C32) |
+| 13:40 | #258 | E36: seed nhỏ cho ảnh hướng dẫn (buổi hôm nay của gv.cs5); cổng Giáo viên chụp 8 ảnh đúng màn |
+| 13:31 | #238 | CH-02: màn Gói bán (bản ghi): giá theo hiệu lực, Sửa, Thêm giá mới |
+| 13:20 | #230 | CH-08: màn Chiến dịch marketing, mọi vai trò cổng CRM tạo được (migration 560) |
+| 13:11 | #257 | KHẨN: dựng lại hàm token gộp D41 (hai bước theo tham số) và E31 (đổi mật khẩu lần đầu theo tham số), migration 473 |
+| 12:39 | #241 | e2e: đường đi trọn của một học sinh giả, ghi danh đến Done trừ giờ (A40, chỉ thêm bài kiểm thử) |
+| 12:22 | #252 | C42: e2e đường CSKH: khiếu nại → nâng cấp → Bảo lưu → Tiếp tục học |
+| 12:22 | #233 | Menu Đào tạo: danh sách phẳng theo canvas (bỏ tiêu đề nhóm con trùng mục) |
+| 12:21 | #235 | D41: bỏ bắt buộc xác thực hai bước cho Admin và Kế toán bằng tham số (migration 472, CAO) [nháp: chờ CI liệt kê bài cần chỉnh] |
+| 12:11 | #250 | docs: lane E migration 507 (E31 đổi mật khẩu lần đầu theo tham số) |
+| 12:10 | #251 | B40 e2e đường Sale tích hợp: báo giá → đơn → duyệt → phiếu thu → hai bước duyệt → khoản tiền vào, công nợ |
+| 12:10 | #245 | C32: Nâng cấp khiếu nại thủ công (CS-13, R-CS-06) |
+| 12:00 | #249 | E32 bước 3: chụp ảnh hướng dẫn bỏ bộ lọc mặc định trước khi mở bản ghi |
+| 11:59 | #224 | e2e: kịch bản G1 qua giao diện (A31, chỉ thêm bài kiểm thử) |
+| 11:59 | #240 | Menu CRM: sửa nhãn theo canvas và bảng đối chiếu (thẻ F20) |
+| 11:59 | #236 | E31 (CAO): học sinh không bắt đổi mật khẩu lần đầu; tham số hai phạm vi (migration 507) |
+| 11:48 | #227 | D40: sửa G2, điều chỉnh giờ tay có trần, chặn ghi danh đóng, cộng giờ cần Kế toán (migration 471, CAO) |
+| 11:37 | #239 | E32: chụp ảnh tự động cho hướng dẫn người dùng (npm run chup-anh), chạy trên DB local |
+| 11:32 | #242 | D42: pgTAP ma trận quyền cho bảng mới từ 17/11 (chỉ thêm bài, nháp chờ CI) |
+| 11:25 | #247 | KHẨN: sửa e2e thu-tien TC-09 chập chờn (gốc: đếm nút trên danh sách chưa lọc, lẫn khoản bài chạy song song) |
+| 11:25 | #237 | C31: Tiếp tục học (quay lại sớm) từ phiếu Bảo lưu (CS-09, CSN06b_tiep_tuc) |
+| 11:13 | #243 | E33: chữ cổng Giáo viên khớp canvas 9189 (GV-04, GV-07, GV-16), chỉ đổi chữ |
+| 11:02 | #231 | A25 PR1 (DB, CAO): loại buổi quyết định form nhận xét; thêm Kiểm tra giữa kỳ, cuối kỳ |
+| 10:40 | #234 | docs: hướng dẫn chung, Giáo viên, Quản trị (nội dung chưa ảnh) (B32, chỉ tài liệu) |
+| 10:40 | #232 | docs: hướng dẫn người dùng cổng CRM (nội dung chưa ảnh) cho Sale, CSKH, Kế toán, Trưởng cơ sở (B31, chỉ tài liệu) |
+| 10:03 | #229 | C30 (một phần): Gia hạn bảo lưu từ phiếu nghiệp vụ CSN-06b |
+| 09:13 | #225 | KHẨN D35: sửa P1, Học sinh đổi được mật khẩu lần đầu (get_setting cho phép luật mật khẩu; R2c) (migration 470, CAO) |
+| 08:56 | #222 | E27 (KHẨN, Soát S16): màn đặt mật khẩu mới báo lỗi khi không tải được luật mật khẩu; bài e2e học sinh đổi mật khẩu lần đầu |
+| 08:56 | #85 | CHUNG-11 Tìm kiếm toàn hệ thống: nhiều loại bản ghi (migration 552), ô tìm ở thanh trên |
+| 08:42 | #223 | C28: đóng R1c, R1d, R3 của Soát S16 (phạm vi hẹp ở hàm và chính sách còn sót) |
+| 08:34 | #220 | E26: axe trên màn mới: sửa ô tìm không nhãn ở Việc chờ tôi duyệt; thêm bài axe (Loại buổi, Nhật ký QT-11/12, Việc chờ duyệt) |
+| 08:30 | #219 | docs: rà soát chữ tiếng Anh trên giao diện và câu báo lỗi HMT_* (B23, chỉ tài liệu) |
+| 08:30 | #162 | BC-08: màn Giáo viên trễ hạn hằng tháng (giao diện + migration 558) |
+| 08:22 | #215 | e2e: sửa chập chờn lead-ban-ghi trên iPhone (cuộn dòng Website vào khung nhìn) |
+| 08:17 | #218 | D34: bọc (select ...) hàm quyền còn trần trong 20 chính sách RLS (migration 469, CAO) |
+| 08:03 | #221 | C27: bài pgTAP quét RLS và audit_log toàn bảng (chỉ thêm bài kiểm) |
+| 08:03 | #214 | G1: chốt danh sách tính giờ giữ chỗ của buổi Đã chốt chưa Done (A30, mức CAO) |
+| 07:51 | #174 | CHUNG-15: tối ưu hiệu năng việc chờ tôi duyệt (migration 559) |
+| 07:51 | #209 | D33: sửa E6 (nhân viên tự đổi email), E2, E3, E5 của Soát S13 (Edge Function, Vitest) |
+| 07:48 | #216 | Seed giả lớn Lớp/Buổi/Ghi danh + EXPLAIN danh sách (A28, không cần chỉ mục mới) |
+| 07:47 | #217 | C25: e2e ca N1 (Kế toán không tự duyệt phiếu nợ đầu kỳ do mình lập, gửi) |
+| 07:37 | #151 | CHUNG-15: màn Việc chờ tôi duyệt (giao diện + migration 557 thêm open_id) |
+| 07:28 | #155 | C16 cụm 1: dòng chặn trình của phiếu thu (migration 420) |
+| 07:23 | #210 | C25: phiếu thu nợ đầu kỳ đúng khung (3 bước, nút Gửi kế toán) và e2e ca chặn quyền |
+| 07:23 | #208 | N1 (CAO, tiền): người lập hoặc người gửi không tự duyệt phiếu thu nợ đầu kỳ (migration 421) |
+| 07:20 | #211 | E23: Danh mục «Loại buổi» có cột Form nhận xét (chỉ đọc, phương án b) |
+| 07:10 | #213 | docs: nạp dữ liệu, quy trình năm bước khi nạp hỏng giữa chừng (B22, chỉ tài liệu) |
+| 07:10 | #212 | docs: danh sách kiểm tay trên staging cho 28 màn LÕI (B21, chỉ tài liệu) |
+| 06:55 | #204 | D32: rà chỉ mục bảng lane D, thêm chỉ mục opening_debt_student_id (migration 468) |
+| 06:42 | #205 | docs: đề xuất G1 tính giờ giữ chỗ khi chốt danh sách (thẻ A29, chờ duyệt, chỉ tài liệu) |
+| 06:42 | #207 | docs: nghiệp vụ, mô tả 10 hàm còn thiếu (đối chiếu migration 300-349, 400-467, 500-599) (B20, chỉ tài liệu) |
+| 06:42 | #206 | docs: TIEN-DO cập nhật 19/11, 114 PR đã gộp từ 16/11 18:00 (B19, chỉ tài liệu) |
 
 ## Trạng thái 19/11/2026 (PR đã gộp từ 16/11 18:00 tới 19/11 06:30 giờ Việt Nam; 114 PR; #50 và #67 đến #203)
 
