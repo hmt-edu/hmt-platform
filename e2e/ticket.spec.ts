@@ -128,9 +128,9 @@ test('Khách huỷ (CS-12): chỉ ticket Đề nghị có nút; lý do bắt bu�
   await page.getByRole('option', { name: 'Gọi điện' }).click();
   await pickOption(page, page.getByRole('combobox', { name: 'Phụ huynh' }), parentName);
   await page.getByLabel('Nhóm', { exact: true }).click();
-  await page.getByRole('option').first().click();
+  await page.getByRole('option', { name: 'Hỗ trợ', exact: true }).click();
   await page.getByLabel('Nhóm con').click();
-  await page.getByRole('option').first().click();
+  await page.getByRole('option', { name: 'Tư vấn lộ trình' }).click();
   await page.getByLabel('Mô tả').fill('Đề nghị giả cho bài kiểm thử Khách huỷ.');
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/ticket\/[0-9a-f-]{36}$/);
