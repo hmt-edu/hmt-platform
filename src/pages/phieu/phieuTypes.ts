@@ -44,6 +44,8 @@ export type TaskDetail = {
     kind_code?: string;
     dest_branch_id?: string;
     note?: string;
+    stop_date?: string;
+    money_mode?: string;
   };
   result: {
     entity?: string;
