@@ -18,6 +18,7 @@ const SessionContentPage = lazyScreen(
 const StudentShell = lazyScreen(() => import('../layout/TabShell'), 'StudentShell');
 const LoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'LoginPage');
 const StudentLoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'StudentLoginPage');
+const ParentLoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'ParentLoginPage');
 const MfaSetupPage = lazyScreen(() => import('../pages/auth/MfaPages'), 'MfaSetupPage');
 const MfaVerifyPage = lazyScreen(() => import('../pages/auth/MfaPages'), 'MfaVerifyPage');
 const CannotLoginPage = lazyScreen(() => import('../pages/auth/PasswordPages'), 'CannotLoginPage');
@@ -399,6 +400,7 @@ export const routes: RouteObject[] = [
       // Đăng nhập và các bước bắt buộc (khuôn K11).
       { path: 'dang-nhap', element: <LoginPage /> },
       { path: 'dang-nhap/hoc-sinh', element: <StudentLoginPage /> },
+      { path: 'dang-nhap/phu-huynh', element: <ParentLoginPage /> },
       { path: 'xac-thuc-hai-buoc', element: <MfaVerifyPage /> },
       { path: 'thiet-lap-hai-buoc', element: <MfaSetupPage /> },
       { path: 'quen-mat-khau', element: <ForgotPasswordPage /> },
