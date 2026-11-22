@@ -454,6 +454,13 @@ export const CRM_MENU: MenuGroup[] = [
         stage: B4,
       },
       {
+        code: 'QT-17',
+        label: 'Tài khoản phụ huynh',
+        slug: 'quan-tri/tai-khoan-phu-huynh',
+        requires: can('ADMIN'),
+        stage: B4,
+      },
+      {
         code: 'QT-11',
         label: 'Nhật ký',
         slug: 'quan-tri/nhat-ky',
