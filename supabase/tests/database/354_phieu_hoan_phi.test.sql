@@ -387,7 +387,9 @@ select is((app.preview_fee_transfer(pg_temp.d3e(), null, pg_temp.d3o()) ->> 'ext
           (app.preview_fee_transfer(pg_temp.d3e(), null, pg_temp.d3o()) ->> 'order_total')::bigint - (app.preview_fee_transfer(pg_temp.d3e()) ->> 'transfer_value')::bigint,
           'D-23-08 Đúng: đóng thêm = giá trị đơn nhận − giá trị chuyển');
 select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e(), pg_temp.d1par(), pg_temp.d3o())$$), 'HMT_CHUYEN_PHI_DON_SAI', 'D-23-08 Chặn: đơn nhận không của phụ huynh nhận số dư');
+select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
 select pg_temp.sudo($$update app.sales_order set total_amount = 1 where id = pg_temp.o('d3')$$);
+select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
 select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e(), null, pg_temp.d3o())$$), 'HMT_CHUYEN_PHI_AM', 'D-23-08 Chặn: giá trị chuyển lớn hơn giá trị đơn nhận');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e())$$), 'HMT_KHONG_CO_QUYEN', 'D-23-08 Chặn: Sale không có quyền Ticket · Sửa nên không xem trước chuyển phí');
@@ -396,7 +398,9 @@ select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid
   'HMT_PHIEU_DU_LIEU_SAI', 'D-23-08 Chặn: kiểu chuyển ngoài ba kiểu của canvas');
 select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk8), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'kind_code', 'SANG_MON', 'order_id', pg_temp.d3o()))$$),
   'HMT_CHUYEN_PHI_AM', 'D-23-08 Chặn lúc tạo phiếu: giá trị chuyển lớn hơn giá trị đơn nhận');
+select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
 select pg_temp.sudo($$update app.sales_order set total_amount = 100000000 where id = pg_temp.o('d3')$$);
+select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
 select lives_ok($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk8), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'kind_code', 'SANG_MON', 'order_id', pg_temp.d3o()))$$,
   'D-23-08 Đúng: đơn nhận đủ lớn thì tạo phiếu Chuyển phí được');
 
