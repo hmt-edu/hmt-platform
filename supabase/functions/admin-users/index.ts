@@ -56,13 +56,21 @@ Deno.serve(async (req) => {
   switch (action) {
     case 'create': {
       const isStudent = body.kind === 'student';
+      const isParent = body.kind === 'parent';
       const studentCode = typeof body.studentCode === 'string' ? body.studentCode.trim().toUpperCase() : null;
-      const loginEmail = isStudent ? toAuthEmail(studentCode ?? '') : String(body.email ?? '').trim().toLowerCase();
+      const parentCode = isParent && typeof body.parentCode === 'string' ? body.parentCode.trim().toUpperCase() : null;
+      const loginEmail = isStudent
+        ? toAuthEmail(studentCode ?? '')
+        : isParent
+          ? toAuthEmail(parentCode ?? '')
+          : String(body.email ?? '').trim().toLowerCase();
       // Không gửi sẵn mật khẩu thì máy chủ sinh mật khẩu tạm và trả một lần (form Tạo người dùng QT-03).
       let password = String(body.password ?? '');
       const generated = password === '';
       if (generated) password = await makeTempPassword();
-      if (!loginEmail || (isStudent && !studentCode)) return fail(req, HTTP.BAD_REQUEST, 'HMT_THIEU_THONG_TIN', 'Thiếu email hoặc mã học sinh.');
+      if (!loginEmail || (isStudent && !studentCode) || (isParent && !parentCode)) {
+        return fail(req, HTTP.BAD_REQUEST, 'HMT_THIEU_THONG_TIN', 'Thiếu email, mã học sinh hoặc mã phụ huynh.');
+      }
       // QT-13: cấp cho học sinh thì kiểm trước học sinh có thật và chưa có tài khoản, lấy tên và cơ sở từ hồ sơ học sinh (không tin dữ liệu gửi lên).
       let studentName = String(body.displayName ?? '');
       let studentBranch = String(body.branchCode ?? '');
@@ -72,6 +80,14 @@ Deno.serve(async (req) => {
         studentName = String((info as { display_name: string }).display_name);
         studentBranch = String((info as { branch_code: string }).branch_code);
       }
+      // QT-17: cấp cho phụ huynh thì kiểm trước phụ huynh có thật và chưa có tài khoản, lấy tên và cơ sở từ hồ sơ (không tin dữ liệu gửi lên).
+      if (isParent) {
+        const { data: info, error: checkError } = await asCaller.rpc('admin_check_parent_account', { p_parent_code: parentCode });
+        if (checkError) return rpcFail(checkError);
+        studentName = String((info as { display_name: string }).display_name);
+        studentBranch = String((info as { branch_code: string }).branch_code);
+      }
+      const external = isStudent || isParent;
       const problem = await passwordProblem(password);
       if (problem) return fail(req, HTTP.BAD_REQUEST, 'HMT_MAT_KHAU_YEU', problem);
 
@@ -86,13 +102,14 @@ Deno.serve(async (req) => {
       }
       const { error } = await asCaller.rpc('admin_create_account', {
         p_user_id: created.user.id,
-        p_display_name: isStudent ? studentName : String(body.displayName ?? ''),
+        p_display_name: external ? studentName : String(body.displayName ?? ''),
         p_login_name: loginEmail,
-        p_branch_code: isStudent ? studentBranch : String(body.branchCode ?? ''),
-        p_roles: isStudent ? ['STUDENT'] : Array.isArray(body.roles) ? body.roles : [],
+        p_branch_code: external ? studentBranch : String(body.branchCode ?? ''),
+        p_roles: isStudent ? ['STUDENT'] : isParent ? ['PARENT'] : Array.isArray(body.roles) ? body.roles : [],
         p_staff_code: typeof body.staffCode === 'string' ? body.staffCode : null,
         p_staff_kind: typeof body.staffKind === 'string' ? body.staffKind : null,
         p_student_code: studentCode,
+        p_parent_code: parentCode,
         p_username: typeof body.username === 'string' && body.username.trim() !== '' ? body.username : null,
       });
       if (error) {

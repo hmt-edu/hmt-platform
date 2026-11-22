@@ -56,6 +56,23 @@ test('DN01: sai thông tin thì câu lỗi nằm trên các ô, hai ô viền đ
   await expect(password).toHaveValue('MatKhauSai1');
 });
 
+test('CHUNG-23: phụ huynh "Chào phụ huynh", ô Mã phụ huynh, liên kết sang đăng nhập nhân viên', async ({
+  page,
+}) => {
+  await page.goto('/dang-nhap/phu-huynh');
+  await expect(page.getByRole('heading', { level: 1, name: 'Chào phụ huynh' })).toBeVisible();
+  await expect(page.getByLabel('Mã phụ huynh', { exact: true })).toHaveAttribute(
+    'placeholder',
+    'PH000212',
+  );
+  await expect(page.getByRole('button', { name: 'Đăng nhập', exact: true })).toBeVisible();
+  await expect(
+    page.getByRole('status').filter({ hasText: 'bộ phận chăm sóc khách hàng' }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: 'đăng nhập ở đây' }).click();
+  await expect(page).toHaveURL(/\/dang-nhap$/);
+});
+
 test('DN02: học sinh "Chào em", có khối nhắc quên mật khẩu và liên kết sang đăng nhập nhân viên', async ({
   page,
 }) => {

@@ -1,8 +1,8 @@
 // Đọc thông tin người dùng từ token (do hook custom_access_token_hook đưa vào).
 // Chỉ dùng để giao diện ẩn/hiện cho gọn; quyền thật do RLS trong cơ sở dữ liệu quyết định.
 
-export type Portal = 'crm' | 'gv' | 'hoc';
-export const PORTALS: readonly Portal[] = ['crm', 'gv', 'hoc'];
+export type Portal = 'crm' | 'gv' | 'hoc' | 'ph';
+export const PORTALS: readonly Portal[] = ['crm', 'gv', 'hoc', 'ph'];
 
 export type HmtClaims = {
   userId: string;

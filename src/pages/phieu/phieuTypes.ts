@@ -42,7 +42,10 @@ export type TaskDetail = {
     months?: number;
     start_date?: string;
     kind_code?: string;
+    dest_branch_id?: string;
     note?: string;
+    stop_date?: string;
+    money_mode?: string;
   };
   result: {
     entity?: string;
@@ -96,6 +99,7 @@ export const TASK_STATUS_LABEL: Record<string, string> = {
 };
 export const LEVEL_ROLE_LABEL: Record<string, string> = {
   QUAN_LY_CO_SO: 'Quản lý cơ sở',
+  QUAN_LY_CO_SO_DICH: 'Quản lý cơ sở mới',
   KE_TOAN: 'Kế toán',
 };
 export const TASK_FIELD_LABEL: Record<string, string> = {
