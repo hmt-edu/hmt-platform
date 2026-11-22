@@ -58,6 +58,41 @@ export function StudentLoginPage() {
             Nhân viên, giáo viên:{' '}
             <AuthLink to={withNext('/dang-nhap', params.get('next'))}>đăng nhập ở đây</AuthLink>
           </AuthNote>
+          <AuthNote center>
+            Phụ huynh?{' '}
+            <AuthLink to={withNext('/dang-nhap/phu-huynh', params.get('next'))}>
+              Đăng nhập bằng mã phụ huynh
+            </AuthLink>
+          </AuthNote>
+        </>
+      }
+    />
+  );
+}
+
+/**
+ * CHUNG-23 · Đăng nhập phụ huynh (khuôn DN03, điện thoại): mã PH + mật khẩu trung tâm cấp (QT-17).
+ * Dùng luồng đăng nhập chung (Edge Function login: chống dò, khoá tạm); không đổi luật khoá.
+ */
+export function ParentLoginPage() {
+  const [params] = useSearchParams();
+  return (
+    <LoginForm
+      title="Chào phụ huynh"
+      subtitle="Đăng nhập để theo dõi việc học của con."
+      product="lms"
+      loginLabel="Mã phụ huynh"
+      loginPlaceholder="PH000212"
+      wrongText="Mã phụ huynh hoặc mật khẩu chưa đúng. Anh chị kiểm tra lại nhé."
+      footer={
+        <>
+          <AuthAlert tone="info">
+            Quên mật khẩu? Anh chị liên hệ bộ phận chăm sóc khách hàng ở cơ sở để được cấp lại.
+          </AuthAlert>
+          <AuthNote center>
+            Nhân viên, giáo viên:{' '}
+            <AuthLink to={withNext('/dang-nhap', params.get('next'))}>đăng nhập ở đây</AuthLink>
+          </AuthNote>
         </>
       }
     />
