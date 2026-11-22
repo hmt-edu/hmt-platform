@@ -122,6 +122,10 @@ const TeachingProfilePage = lazyScreen(
   'TeachingProfilePage',
 );
 const TaskListPage = lazyScreen(() => import('../pages/phieu/TaskListPage'), 'TaskListPage');
+const ParentMessageListPage = lazyScreen(
+  () => import('../pages/nhan-xet-cho-gui/ParentMessageListPage'),
+  'ParentMessageListPage',
+);
 const TaskRecordPage = lazyScreen(() => import('../pages/phieu/TaskRecordPage'), 'TaskRecordPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
@@ -626,6 +630,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="phieu-nghiep-vu">
                 <TaskListPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'nhan-xet-cho-gui',
+            element: (
+              <GatedCrmEntry slug="nhan-xet-cho-gui">
+                <ParentMessageListPage />
               </GatedCrmEntry>
             ),
           },
