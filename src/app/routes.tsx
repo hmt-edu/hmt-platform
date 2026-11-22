@@ -16,6 +16,7 @@ const SessionContentPage = lazyScreen(
   'SessionContentPage',
 );
 const StudentShell = lazyScreen(() => import('../layout/TabShell'), 'StudentShell');
+const ParentShell = lazyScreen(() => import('../layout/TabShell'), 'ParentShell');
 const LoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'LoginPage');
 const StudentLoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'StudentLoginPage');
 const ParentLoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'ParentLoginPage');
@@ -1230,6 +1231,19 @@ export const routes: RouteObject[] = [
           { path: 'bai-tap', element: <PortalTabPage title="Bài tập" stage={GD4} /> },
           { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
           { path: 'ket-qua', element: <PortalTabPage title="Kết quả" stage={GD4} /> },
+          { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: '*', element: <NotFoundView /> },
+        ],
+      },
+      {
+        path: 'ph',
+        element: (
+          <RequirePortal portal="ph">
+            <ParentShell />
+          </RequirePortal>
+        ),
+        children: [
+          { index: true, element: <PortalTabPage title="Trang chủ" stage={GD4} /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },
         ],
