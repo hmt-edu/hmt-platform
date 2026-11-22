@@ -1,4 +1,4 @@
--- C96 (migration 606): Group By LOP-09 Học sinh của lớp (class_student_group_counts) và bộ lọc branch_id của list_class_students; phạm vi lớp; chặn trường lạ. Dựng theo test 477.
+-- C96 (migration 614): Group By LOP-09 Học sinh của lớp (class_student_group_counts) và bộ lọc branch_id của list_class_students; phạm vi lớp; chặn trường lạ. Dựng theo test 477.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -72,7 +72,7 @@ select is(pg_temp.err($$select app.list_class_students(pg_temp.cid('LOP410'))$$)
 reset role;
 
 
--- ================= C96 (migration 606): Group By LOP-09 Học sinh của lớp (class_student_group_counts) =================
+-- ================= C96 (migration 614): Group By LOP-09 Học sinh của lớp (class_student_group_counts) =================
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((app.class_student_group_counts(pg_temp.cid('LOP410'), '{}'::jsonb, array['state']) ->> 'total')::int, 3, 'LOP-09 Group By tình trạng: tổng 3 dòng xếp lớp');

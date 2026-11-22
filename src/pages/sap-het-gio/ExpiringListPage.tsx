@@ -103,7 +103,7 @@ const CONFIG: ListConfig<ExpiringRow> = {
   ],
   quickGroups: [{ key: 'status', label: 'Tình trạng', options: STATUS_OPTIONS }],
   filterFields: [],
-  // Canvas GD07: nhóm Tình trạng (máy chủ đếm, migration 606).
+  // Canvas GD07: nhóm Tình trạng (máy chủ đếm, migration 614).
   groupFields: [{ key: 'status', label: 'Tình trạng', value: (r) => r.status_code }],
   dateFields: [],
   views: ['list'],

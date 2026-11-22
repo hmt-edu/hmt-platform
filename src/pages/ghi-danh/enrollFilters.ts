@@ -54,15 +54,6 @@ export function enrollSortParam(sort: SortState): string | undefined {
 }
 
 /** Trường nhóm của giao diện → tên trường máy chủ (enrollment_group_counts). */
-/** Trường nhóm giao diện GD-06 Hàng chờ xếp lớp (canvas GD06: Lý do chờ, Hình thức) → tên trường của app.enrollment_queue_group_counts. */
-export const QUEUE_GROUP_FIELD_OF: Record<string, string> = { reason: 'reason', mode: 'delivery' };
-
-/** Bộ lọc của MỘT nhóm hàng chờ (để mở nhóm tải dòng bằng enrollment_queue). Lý do chờ luôn «Chưa có lớp» (R-GD-05): một nhóm, không lọc thêm. */
-export function queueGroupFilter(field: string, key: string): EnrollFilters {
-  if (field === 'mode' && key !== '') return { delivery_mode_code: key };
-  return {};
-}
-
 export const ENROLL_GROUP_FIELD_OF: Record<string, string> = {
   mode: 'mode',
   class: 'class',

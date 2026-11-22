@@ -1,4 +1,4 @@
--- C96 (migration 606): Group By BUOI-11 Điểm danh vận hành trong ngày (absent_today_group_counts): Vắng, Chưa tới; khớp danh sách; phạm vi; chặn trường lạ, giáo viên. Dựng theo test 120.
+-- C96 (migration 614): Group By BUOI-11 Điểm danh vận hành trong ngày (absent_today_group_counts): Vắng, Chưa tới; khớp danh sách; phạm vi; chặn trường lạ, giáo viên. Dựng theo test 120.
 -- Luật: R-BUOI-02, R-GIO-02, R-GIO-06, R-GIO-08, R-DD-01, R-DD-02, R-DD-03, R-GV-05, R-GV-08, R-GV-13, R-HT-07. Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
@@ -186,7 +186,7 @@ select is((select count(*) from jsonb_array_elements(app.teacher_attendance_shee
 reset role;
 
 
--- ================= C96 (migration 606): Group By BUOI-11 Điểm danh vận hành trong ngày (absent_today_group_counts) =================
+-- ================= C96 (migration 614): Group By BUOI-11 Điểm danh vận hành trong ngày (absent_today_group_counts) =================
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 set local role authenticated;
 select is((app.absent_today_group_counts(jsonb_build_object('q', 'HSBA'), array['status']) ->> 'total')::int, 3, 'BUOI-11 Group By tình trạng: tổng 3 em');

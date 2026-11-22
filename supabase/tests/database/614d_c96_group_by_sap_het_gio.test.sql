@@ -1,4 +1,4 @@
--- C96 (migration 606): Group By GD-07 Sắp hết giờ (expiring_group_counts): đếm theo tình trạng, khớp danh sách (hàm tính chung expiring_enrollment_rows); quyền; chặn trường lạ. Dựng theo test 590.
+-- C96 (migration 614): Group By GD-07 Sắp hết giờ (expiring_group_counts): đếm theo tình trạng, khớp danh sách (hàm tính chung expiring_enrollment_rows); quyền; chặn trường lạ. Dựng theo test 590.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -123,7 +123,7 @@ select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(pg_temp.err($$select app.list_expiring_enrollments('{}'::jsonb)$$), 'HMT_KHONG_CO_QUYEN', 'Giáo viên không xem được danh sách sắp hết giờ');
 
 
--- ================= C96 (migration 606): Group By GD-07 Sắp hết giờ (expiring_group_counts, expiring_enrollment_rows) =================
+-- ================= C96 (migration 614): Group By GD-07 Sắp hết giờ (expiring_group_counts, expiring_enrollment_rows) =================
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is((app.expiring_group_counts('{}'::jsonb, array['status']) ->> 'total')::int, (app.list_expiring_enrollments('{}'::jsonb) ->> 'total')::int, 'GD-07: tổng số đếm bằng tổng danh sách (cùng một hàm tính tình trạng)');
 select is((select (g ->> 'count')::int from jsonb_array_elements(app.expiring_group_counts('{}'::jsonb, array['status']) -> 'groups') g where g ->> 'k1' = 'SAP_HET_HAN_GOI'), 1, 'Nhóm Sắp hết hạn gói có 1 dòng');

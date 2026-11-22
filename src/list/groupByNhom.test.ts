@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { QUEUE_GROUP_FIELD_OF, queueGroupFilter } from '../pages/ghi-danh/enrollFilters';
 import { STUDENT_GROUP_FIELD_OF, studentGroupFilter } from '../pages/khach-hang/custFilters';
 import { CLASS_STUDENT_GROUP_FIELD_OF, classStudentGroupFilter } from '../pages/lop/classStudents';
 import { EXPIRING_GROUP_FIELD_OF, expiringGroupFilter } from '../pages/sap-het-gio/expiringLogic';
@@ -10,7 +9,7 @@ import {
   pendingGroupFilter,
 } from '../pages/buoi/sessionLogic';
 
-// Group By ở máy chủ cho các danh sách K03 còn thiếu theo canvas 9933 (migration 606): ánh xạ trường nhóm và bộ lọc mở một nhóm.
+// Group By ở máy chủ cho các danh sách K03 còn thiếu theo canvas 9933 (migration 614): ánh xạ trường nhóm và bộ lọc mở một nhóm.
 describe('Group By KH-04 Học sinh (canvas KH04)', () => {
   it('ba trường nhóm; mở nhóm lọc đúng khoá của list_students', () => {
     expect(STUDENT_GROUP_FIELD_OF).toEqual({ status: 'status', grade: 'grade', branch: 'branch' });
@@ -32,15 +31,6 @@ describe('Group By LOP-09 Học sinh của lớp (canvas LOP09)', () => {
     expect(classStudentGroupFilter('branch', 'b-1')).toEqual({ branch_id: 'b-1' });
     expect(classStudentGroupFilter('delivery', 'OFF')).toEqual({ delivery: ['OFF'] });
     expect(classStudentGroupFilter('delivery', '')).toEqual({});
-  });
-});
-
-describe('Group By GD-06 Hàng chờ xếp lớp (canvas GD06, anh chốt 21/11)', () => {
-  it('Lý do chờ và Hình thức; lý do chờ không lọc thêm, hình thức lọc delivery_mode_code (giá trị đơn)', () => {
-    expect(QUEUE_GROUP_FIELD_OF).toEqual({ reason: 'reason', mode: 'delivery' });
-    expect(queueGroupFilter('reason', 'CHUA_CO_LOP')).toEqual({});
-    expect(queueGroupFilter('mode', 'OFF')).toEqual({ delivery_mode_code: 'OFF' });
-    expect(queueGroupFilter('mode', '')).toEqual({});
   });
 });
 

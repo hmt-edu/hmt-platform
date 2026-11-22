@@ -1,5 +1,5 @@
--- C96 (thư Chat 12:18; migration 606, rủi ro CAO theo quy ước: hàm danh sách, phạm vi quyền). Group By còn thiếu theo canvas 9933 cho các danh sách đã dùng khuôn K03 mà chưa có nút Group By (docs/nghiep-vu/doi-chieu-group-by.md):
--- KH-04 Học sinh, LOP-09 Học sinh của lớp, GD-06 Hàng chờ xếp lớp (anh chốt theo canvas), GD-07 Sắp hết giờ, BUOI-11 Điểm danh vận hành trong ngày, BUOI-12 Buổi chưa Done.
+-- C96 (thư Chat 12:18, đổi số 13:47; migration 614, rủi ro CAO theo quy ước: hàm danh sách, phạm vi quyền). Group By còn thiếu theo canvas 9933 cho các danh sách đã dùng khuôn K03 mà chưa có nút Group By (docs/nghiep-vu/doi-chieu-group-by.md):
+-- KH-04 Học sinh, LOP-09 Học sinh của lớp, GD-07 Sắp hết giờ, BUOI-11 Điểm danh vận hành trong ngày, BUOI-12 Buổi chưa Done. GD-06 Hàng chờ xếp lớp do Code A làm riêng (migration 615, cột «Lý do chờ» thật theo canvas) nên KHÔNG có trong migration này.
 -- Mỗi màn: một hàm đếm nhóm (tối đa hai cấp khác nhau, Đ35), quyền và bộ lọc GIỐNG hàm danh sách; một hàm nhãn; hàm danh sách thêm bộ lọc để mở nhóm khi thiếu (LOP-09: branch_id; BUOI-12: teacher_id). Chỉ đọc, không đổi bảng, không thêm chỉ mục
 -- (đếm trên cùng tập dòng mà hàm danh sách đã quét). GD-07: tách phần tính tình trạng ra expiring_enrollment_rows để danh sách và đếm không thể lệch nhau.
 -- Không làm trong PR này: BUOI-10 (Yêu cầu buổi, chưa dùng khuôn K03), BUOI-13, BUOI-14, TC-09 (hộp thoại K08), LOP-08 (Lịch K05): không có danh sách để nhóm.
@@ -229,77 +229,6 @@ as $$
     when coalesce(p_key, '') = '' then 'Chưa có'
     when p_field = 'state' then case p_key when 'DANG_HOC' then 'Đang học' when 'DA_ROI' then 'Đã rời' else p_key end
     when p_field = 'branch' then coalesce((select b.code || ' ' || b.name from app.branch b where b.id = p_key::uuid), p_key)
-    when p_field = 'delivery' then coalesce((select c.name from app.catalog_item c where c.catalog_code = 'STUDY_MODE' and c.code = p_key), p_key)
-    else p_key end;
-$$;
-
-
--- ===== GD-06 Hàng chờ xếp lớp =====
--- app.enrollment_queue_group_counts(bộ lọc, trường nhóm): quyền như enrollment_queue (Ghi danh · Sửa, toàn hệ thống hoặc cơ sở). Bộ lọc giống enrollment_queue: branch_id, delivery_mode_code, q.
--- Trường nhóm (anh chốt 21/11: GD-06 theo canvas): reason (Lý do chờ: luôn «Chưa có lớp» theo R-GD-05 nên chỉ một nhóm), delivery (Hình thức học).
-create or replace function app.enrollment_queue_group_counts(p_filters jsonb default '{}'::jsonb, p_fields text[] default array[]::text[])
-returns jsonb
-language plpgsql
-stable
-security definer
-set search_path = ''
-as $$
-declare
-  v_scope text := app.permission_scope('ENROLLMENT', 'SUA');
-  v_my_branch uuid := app.current_branch_id();
-  v_q text := app.fold_text(nullif(btrim(coalesce(p_filters ->> 'q', '')), ''));
-  v_branch uuid := nullif(p_filters ->> 'branch_id', '')::uuid;
-  v_mode text := nullif(p_filters ->> 'delivery_mode_code', '');
-  v_f1 text := p_fields[1];
-  v_f2 text := p_fields[2]; -- allow-number: luật Group By tối đa hai cấp (K1_nhom), không phải số nghiệp vụ cấu hình
-  v_result jsonb;
-begin
-  if v_scope is null or v_scope not in ('TOAN_HE_THONG', 'CO_SO') then
-    perform app.raise_error('HMT_KHONG_CO_QUYEN', 'Bạn không có quyền xem hàng chờ xếp lớp.');
-  end if;
-  -- Luật Đ35: chỉ nhóm theo trường cho phép, tối đa hai cấp, hai cấp khác nhau.
-  if coalesce(cardinality(p_fields), 0) not between 1 and 2 -- allow-number: luật Group By tối đa hai cấp (K1_nhom), không phải số nghiệp vụ cấu hình
-     or exists (select from unnest(p_fields) x where x not in ('reason', 'delivery'))
-     or (v_f2 is not null and v_f1 = v_f2) then
-    perform app.raise_error('HMT_NHOM_SAI', 'Chọn một hoặc hai trường nhóm khác nhau (lý do chờ, hình thức học).');
-  end if;
-  with g as not materialized (
-    select e.delivery_mode_code
-      from app.enrollment e join app.student st on st.id = e.student_id
-     where e.status_code = 'CHO_XEP_LOP'
-       and (v_scope = 'TOAN_HE_THONG' or e.branch_id = v_my_branch)
-       and (v_branch is null or e.branch_id = v_branch)
-       and (v_mode is null or e.delivery_mode_code = v_mode)
-       and (v_q is null or e.search_text like '%' || v_q || '%' or app.fold_text(st.full_name) like '%' || v_q || '%')
-  ), keyed as (
-    select case v_f1 when 'reason' then 'CHUA_CO_LOP' when 'delivery' then g.delivery_mode_code end as k1,
-           case v_f2 when 'reason' then 'CHUA_CO_LOP' when 'delivery' then g.delivery_mode_code end as k2
-      from g
-  ),
-  grouped as (select k1, k2, count(*) as n from keyed group by k1, k2)
-  select jsonb_build_object(
-           'total', (select coalesce(sum(n), 0) from grouped),
-           'groups', coalesce(jsonb_agg(jsonb_build_object(
-             'k1', coalesce(g.k1, ''), 'l1', app.queue_group_label(v_f1, g.k1),
-             'k2', case when v_f2 is null then null else coalesce(g.k2, '') end,
-             'l2', case when v_f2 is null then null else app.queue_group_label(v_f2, g.k2) end,
-             'count', g.n) order by g.k1 nulls first, g.k2 nulls first), '[]'::jsonb))
-    into v_result
-    from grouped g;
-  return v_result;
-end;
-$$;
-
-create or replace function app.queue_group_label(p_field text, p_key text)
-returns text
-language sql
-stable
-security definer
-set search_path = ''
-as $$
-  select case
-    when coalesce(p_key, '') = '' then 'Chưa có'
-    when p_field = 'reason' then 'Chưa có lớp'
     when p_field = 'delivery' then coalesce((select c.name from app.catalog_item c where c.catalog_code = 'STUDY_MODE' and c.code = p_key), p_key)
     else p_key end;
 $$;
@@ -663,9 +592,9 @@ as $$
     else p_key end;
 $$;
 
-revoke execute on function app.student_group_label(text, text), app.class_student_group_label(text, text), app.queue_group_label(text, text), app.expiring_group_label(text, text) from public, anon, authenticated;
-revoke execute on function app.student_group_counts(jsonb, text[]), app.class_student_group_counts(uuid, jsonb, text[]), app.enrollment_queue_group_counts(jsonb, text[]),
+revoke execute on function app.student_group_label(text, text), app.class_student_group_label(text, text), app.expiring_group_label(text, text) from public, anon, authenticated;
+revoke execute on function app.student_group_counts(jsonb, text[]), app.class_student_group_counts(uuid, jsonb, text[]),
   app.expiring_group_counts(jsonb, text[]), app.session_pending_group_counts(jsonb, text[]), app.absent_today_group_counts(jsonb, text[]) from public, anon;
-grant execute on function app.student_group_counts(jsonb, text[]), app.class_student_group_counts(uuid, jsonb, text[]), app.enrollment_queue_group_counts(jsonb, text[]),
+grant execute on function app.student_group_counts(jsonb, text[]), app.class_student_group_counts(uuid, jsonb, text[]),
   app.expiring_group_counts(jsonb, text[]), app.session_pending_group_counts(jsonb, text[]), app.absent_today_group_counts(jsonb, text[]) to authenticated;
 select set_config('hmt.migration', '', false);

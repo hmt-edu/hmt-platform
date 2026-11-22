@@ -1,4 +1,4 @@
--- C96 (migration 606): Group By KH-04 Học sinh (student_group_counts): đếm theo tình trạng, khối, cơ sở, hai cấp; khớp danh sách; phạm vi giáo viên (R-GV-13); chặn trường lạ. Dựng theo test 117.
+-- C96 (migration 614): Group By KH-04 Học sinh (student_group_counts): đếm theo tình trạng, khối, cơ sở, hai cấp; khớp danh sách; phạm vi giáo viên (R-GV-13); chặn trường lạ. Dựng theo test 117.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -186,7 +186,7 @@ select pg_temp.sudo($$insert into app.enrollment (code, student_id, parent_id, b
 select is(app.get_student_record(pg_temp.st(1)) ->> 'status', 'DANG_HOC', 'Vừa Bảo lưu vừa Đang học: Đang học thắng');
 
 
--- ================= C96 (migration 606): Group By KH-04 Học sinh (student_group_counts) =================
+-- ================= C96 (migration 614): Group By KH-04 Học sinh (student_group_counts) =================
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((app.student_group_counts('{}'::jsonb, array['status']) ->> 'total')::int, 6, 'KH-04 Group By tình trạng: tổng 6 em');
 select is((select (g ->> 'count')::int from jsonb_array_elements(app.student_group_counts('{}'::jsonb, array['status']) -> 'groups') g where g ->> 'k1' = 'DANG_HOC'), 3, 'Nhóm Đang học có 3 em');

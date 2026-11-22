@@ -177,7 +177,7 @@ export function buildAbsentConfig(
       { key: 'kind', label: 'Tình trạng', type: 'multi', options: KIND_OPTIONS },
       ...branchField(access),
     ],
-    // Canvas BUOI11: nhóm Tình trạng (Vắng, Chưa tới); máy chủ đếm (migration 606).
+    // Canvas BUOI11: nhóm Tình trạng (Vắng, Chưa tới); máy chủ đếm (migration 614).
     groupFields: [{ key: 'status', label: 'Tình trạng', value: (r) => r.kind }],
     dateFields: [],
     views: ['list'],
@@ -249,7 +249,7 @@ export function buildPendingConfig(access: AccessView, canRemind: boolean): List
       { key: 'kind', label: 'Hạn', type: 'multi', options: PENDING_KINDS },
       ...branchField(access),
     ],
-    // Canvas BUOI12: nhóm Giáo viên (khoá nhóm là mã giáo viên, máy chủ trả tên); máy chủ đếm (migration 606).
+    // Canvas BUOI12: nhóm Giáo viên (khoá nhóm là mã giáo viên, máy chủ trả tên); máy chủ đếm (migration 614).
     groupFields: [{ key: 'teacher', label: 'Giáo viên', value: (r) => r.teacher_name ?? '' }],
     dateFields: [],
     views: ['list'],

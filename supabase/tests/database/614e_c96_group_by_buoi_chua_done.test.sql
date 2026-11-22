@@ -1,4 +1,4 @@
--- C96 (migration 606): Group By BUOI-12 Buổi chưa Done (session_pending_group_counts) và bộ lọc teacher_id của session_pending_list; phạm vi cơ sở; chặn trường lạ. Dựng theo test 123.
+-- C96 (migration 614): Group By BUOI-12 Buổi chưa Done (session_pending_group_counts) và bộ lọc teacher_id của session_pending_list; phạm vi cơ sở; chặn trường lạ. Dựng theo test 123.
 -- Luật: R-BUOI-06, R-BUOI-07, R-BUOI-09, R-LOP-08, R-GIO-06, R-GV-05, R-GV-08, R-HT-07. Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
@@ -158,7 +158,7 @@ select is((select count(*) from app.notification where user_id = pg_temp.uid('gv
 select is((select actor_id from app.notification where user_id = pg_temp.uid('gv1') and kind = 'NHAC_HOAN_TAT_BUOI'), pg_temp.uid('cskh1'), 'Thông báo ghi người nhắc');
 
 
--- ================= C96 (migration 606): Group By BUOI-12 Buổi chưa Done (session_pending_group_counts) =================
+-- ================= C96 (migration 614): Group By BUOI-12 Buổi chưa Done (session_pending_group_counts) =================
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 set local role authenticated;
 select is((app.session_pending_group_counts(jsonb_build_object('q', (select code from app.class where id = (select id from cl))), array['teacher']) ->> 'total')::int, 1, 'BUOI-12 Group By giáo viên: tổng 1 buổi kẹt');
