@@ -18,6 +18,14 @@ export type LateReport = {
   rows: LateRow[];
 };
 
+export type LateExport = {
+  month: string;
+  total: number;
+  exported: number;
+  truncated: boolean;
+  rows: LateRow[];
+};
+
 const MONTHS_BACK = 12; // allow-number: số tháng gần nhất cho chọn tháng (hiển thị, không phải luật)
 
 /** Danh sách tháng gần nhất (mới trước) theo giờ Việt Nam: giá trị `YYYY-MM-01`, nhãn `Tháng MM/YYYY`. */

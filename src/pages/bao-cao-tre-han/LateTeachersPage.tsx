@@ -1,12 +1,14 @@
 // BC-08 Giáo viên trễ hạn hằng tháng (khuôn báo cáo, canvas 1aab BC08_pc, BC08_khong_xuat_pc, BC08_trong_pc, BC08_tai_pc, BC08_quyen_pc): chọn tháng và cơ sở,
 // ba thẻ tổng, bảng mỗi giáo viên hoặc trợ giảng CÓ buổi trễ một dòng. Chỉ ghi số liệu (R-GV-06): không tính vi phạm, không hiện mức xử lý.
-// Số liệu một lần gọi app.report_teacher_late. CHƯA có «Xuất CSV» (khung có; làm khi Chat xác nhận).
+// Số liệu một lần gọi app.report_teacher_late. «Xuất CSV» gọi app.export_teacher_late (quyền Báo cáo · Xuất, ghi nhật ký xuất file, mọi dòng của tháng).
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
+import { useToast } from '../../ui/toastContext';
+import { downloadText, toCsv } from '../lead/csv';
 import { Pagination, Table, Tag, type Column } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { Select } from '../../ui/Overlays';
@@ -14,11 +16,20 @@ import {
   formatHours,
   mergePerPerson,
   monthOptions,
+  type LateExport,
   type LateReport,
   type LateRow,
 } from './lateLogic';
 
 const ALL = '__all__';
+
+const EXPORT_COLUMNS = [
+  { key: 'code', label: 'Mã' },
+  { key: 'name', label: 'Giáo viên, trợ giảng' },
+  { key: 'role', label: 'Vai' },
+  { key: 'late_sessions', label: 'Số buổi trễ' },
+  { key: 'late_hours', label: 'Tổng giờ trễ (giờ)' },
+];
 
 function Tile({ label, value, note }: { label: string; value: string; note: string }) {
   return (
@@ -56,6 +67,41 @@ export function LateTeachersPage() {
   });
   const d = query.data;
   const rows = useMemo(() => (d ? mergePerPerson(d.rows) : []), [d]);
+  const toast = useToast();
+  const canExport = access.can('REPORT', 'XUAT');
+  const [exporting, setExporting] = useState(false);
+
+  /** Xuất mọi dòng của tháng (không phân trang) qua hàm DB có kiểm quyền và ghi nhật ký; gộp một dòng mỗi người như màn hình. */
+  async function exportFile() {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const result = await rpc<LateExport>(supabase, 'export_teacher_late', {
+        p_month: month,
+        p_branch_id: branch === ALL ? null : branch,
+      });
+      const lines = mergePerPerson(result.rows).map((r) => ({
+        code: r.code ?? '',
+        name: r.name,
+        role: r.role === 'TRO_GIANG' ? 'Trợ giảng' : 'Giáo viên',
+        late_sessions: r.late_sessions,
+        late_hours: r.late_hours,
+      }));
+      downloadText(`giao-vien-tre-han-${month.slice(0, 7)}.csv`, toCsv(lines, EXPORT_COLUMNS));
+      toast(
+        result.truncated
+          ? {
+              tone: 'warning',
+              title: `Đã xuất ${result.exported} trên ${result.total} dòng (quá giới hạn mỗi lần xuất). Chọn cơ sở để xuất phần còn lại.`,
+            }
+          : { title: `Đã xuất ${lines.length} người.` },
+      );
+    } catch (e) {
+      toast({ tone: 'danger', title: errorOf(e).message });
+    } finally {
+      setExporting(false);
+    }
+  }
 
   const columns: Column<LateRow>[] = [
     { key: 'code', header: 'Mã', cell: (r) => r.code ?? '—' },
@@ -109,6 +155,11 @@ export function LateTeachersPage() {
               ...access.allBranches.map((b) => ({ value: b.id, label: `${b.code} ${b.name}` })),
             ]}
           />
+        )}
+        {canExport && (
+          <Button onClick={() => void exportFile()} loading={exporting}>
+            Xuất CSV
+          </Button>
         )}
       </div>
       {query.isError ? (
