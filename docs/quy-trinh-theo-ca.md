@@ -1,3 +1,5 @@
+> **CŨ — không dùng.** Cách làm theo ca này đã thay bằng quy trình hộp thư và `HANG-DOI.md` (repo điều phối). Giữ lại để tra cứu, không đọc đầu phiên.
+
 # Cách làm việc theo ca (Q-276, hiệu lực 11/11/2026)
 
 ## 1. Vai trò

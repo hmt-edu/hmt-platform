@@ -140,7 +140,11 @@ const canvasFiles = walk('design')
   .filter((f) => f.endsWith('.dc.html'))
   .map((f) => f.split('/').pop() ?? '');
 const canvasOf = (code: string): number => {
-  const k = code.replace('-', '').toUpperCase();
+  // Khung Aftersale mang mã CSN (CSN01..09) cho màn CS-01..09.
+  const k = code
+    .replace('-', '')
+    .replace(/^CS(?=\d)/, 'CSN')
+    .toUpperCase();
   return canvasFiles.filter(
     (n) => n.toUpperCase().startsWith(k) && /^[A-Za-z]+\d+[a-z]?(_|\.)/.test(n),
   ).length;
