@@ -5,6 +5,8 @@ export type StatusDialogInput = {
   to: string;
   ticketType: 'DN' | 'KN' | 'GV';
   businessType: string | null;
+  /** Khách huỷ (CSN04_khach_huy): chỉ ticket Đề nghị; cùng đích Huỷ nhưng ghi nhận là khách yêu cầu (R-CS-05). */
+  customerCancel?: boolean;
 };
 export type StatusDialogSpec = {
   title: string | null; // null: dùng tiêu đề chung «Chuyển sang …»
@@ -15,6 +17,14 @@ export type StatusDialogSpec = {
 };
 
 export function statusDialogSpec(i: StatusDialogInput): StatusDialogSpec {
+  if (i.to === 'DA_HUY' && i.customerCancel === true)
+    return {
+      title: 'Khách huỷ ticket',
+      confirmLabel: 'Khách huỷ',
+      noteLabel: 'Lý do khách huỷ',
+      noteRequired: true,
+      hint: 'Khách không muốn tiếp tục đề nghị này. Ticket không xoá được, chỉ chuyển sang Huỷ.',
+    };
   if (i.to === 'DA_HUY')
     return {
       title: null,
