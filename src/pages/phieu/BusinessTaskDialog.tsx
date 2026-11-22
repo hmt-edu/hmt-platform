@@ -9,6 +9,8 @@ import {
   classChoices,
   EMPTY_BUSINESS_DRAFT,
   HOLD_MODES,
+  MONEY_MODES,
+  type MoneyMode,
   holdEnrollmentChoices,
   runningHold,
   type BusinessType,
@@ -143,11 +145,32 @@ export function BusinessTaskDialog({
           khách sau khi phiếu được thực hiện. Cần quản lý cơ sở rồi kế toán duyệt.
         </p>
       ) : type === 'DUNG_HOC' ? (
-        <p className="text-caption text-fg-muted">
-          Dừng học: giờ còn lại giữ thành số dư khách hàng (giờ còn lại × giá sau chiết khấu, không
-          trừ phí); giờ tặng còn lại bị huỷ. Muốn hoàn tiền thì tạo phiếu Hoàn học phí. Cần quản lý
-          cơ sở rồi kế toán duyệt.
-        </p>
+        <>
+          <TextField
+            label="Ngày dừng"
+            required
+            type="date"
+            value={draft.stopDate}
+            error={errors.stopDate ?? null}
+            onChange={(e) => set({ stopDate: e.target.value })}
+          />
+          <OptionalSelect
+            label="Xử lý tiền còn lại"
+            value={draft.moneyMode}
+            onChange={(v) => set({ moneyMode: v as MoneyMode })}
+            options={MONEY_MODES.map((m) => ({ value: m.value, label: m.label }))}
+            placeholder="Chọn cách xử lý"
+            invalid={errors.moneyMode !== undefined}
+          />
+          {errors.moneyMode && (
+            <p className="text-caption text-on-danger-subtle">{errors.moneyMode}</p>
+          )}
+          <p className="text-caption text-fg-muted">
+            Dừng học đóng ghi danh; giờ tặng còn lại bị huỷ. Hoàn tiền: hoàn phí toàn bộ theo giá
+            gốc, trừ phí xử lý. Giữ số dư: giờ mua còn lại × giá sau chiết khấu, không trừ phí. Ngày
+            dừng chỉ ghi nhận, không đổi cách tính giờ. Cần quản lý cơ sở rồi kế toán duyệt.
+          </p>
+        </>
       ) : type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC' ? (
         <p className="text-caption text-fg-muted">
           Khi thực hiện, bảo lưu kết thúc và em về hàng chờ xếp lớp, giữ nguyên số giờ còn lại. CSKH

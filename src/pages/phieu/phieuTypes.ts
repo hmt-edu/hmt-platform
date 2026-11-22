@@ -43,6 +43,8 @@ export type TaskDetail = {
     start_date?: string;
     kind_code?: string;
     note?: string;
+    stop_date?: string;
+    money_mode?: string;
   };
   result: {
     entity?: string;

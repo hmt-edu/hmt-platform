@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
-import { TRANSFER_KINDS } from './businessTaskForm';
+import { MONEY_MODES, TRANSFER_KINDS } from './businessTaskForm';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
@@ -269,6 +269,25 @@ export function TaskRecordPage() {
                   />
                 </>
               )}
+            </DetailSection>
+          </div>
+        )}
+        {task.task_type === 'DUNG_HOC' && (
+          <div className="mt-6">
+            <DetailSection title="Nội dung dừng học">
+              <DetailField
+                label="Ngày dừng"
+                mode="view"
+                value={task.payload.stop_date ? formatDate(task.payload.stop_date) : ''}
+              />
+              <DetailField
+                label="Xử lý tiền còn lại"
+                mode="view"
+                value={
+                  MONEY_MODES.find((m) => m.value === (task.payload.money_mode ?? 'GIU_SO_DU'))
+                    ?.label ?? ''
+                }
+              />
             </DetailSection>
           </div>
         )}
