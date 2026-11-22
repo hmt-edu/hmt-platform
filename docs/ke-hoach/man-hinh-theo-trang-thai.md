@@ -184,8 +184,8 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | GV-13 | Học sinh (hồ sơ rút gọn cho giáo viên) | C | **Có màn** `src/pages/gv/TeacherStudentPage.tsx` | có (16 khung) | Đúng | gv-chi-tiet-lop.spec.ts | Code E |
 | GV-14 | Tạo ticket từ cổng giáo viên + ticket lớp tôi | B | **Có màn** `src/pages/gv/TeacherTicketCreatePage.tsx` | có (22 khung) | Đúng | gv-chi-tiet-lop.spec.ts, gv-ticket.spec.ts | Code E |
 | GV-16 | Giờ dạy của tôi (căn cứ lương) | B | **Có màn** `src/pages/gv/TeacherHoursPage.tsx` | có (24 khung) | Lệch → đã sửa | gv-gio-day.spec.ts | Code E |
-| BC-08 | Giáo viên trễ hạn hằng tháng | B | **Có màn** `/crm/bao-cao/giao-vien-tre-han` | có (10 khung) | chưa kiểm | bc08-tre-han.spec.ts | Code F |
-| BC-09 | Giờ dạy giáo viên (căn cứ tính lương) | B | **Có màn** `/crm/bao-cao/gio-day` | có (16 khung) | chưa kiểm | bc09-gio-day.spec.ts | Code F |
+| BC-08 | Giáo viên trễ hạn hằng tháng | B | **Có màn** `/crm/bao-cao/giao-vien-tre-han` | có (10 khung) | đã so 23/11 (5 khung): khớp bảng, thẻ tổng, trống, tải; LỆCH LỚN: chưa có «Xuất CSV» (khung có, chờ Chat xác nhận); chữ trang không quyền chưa theo khung | bc08-tre-han.spec.ts | Code F |
+| BC-09 | Giờ dạy giáo viên (căn cứ tính lương) | B | **Có màn** `/crm/bao-cao/gio-day` | có (16 khung) | đã so 23/11 (8 khung): khớp bảng, trống, tải; LỆCH LỚN: chưa có Chốt tháng, trạng thái Chưa chốt/Đã chốt, hộp Chốt, Xuất CSV (cần bảng chốt trong DB, thẻ riêng; luật: chốt cả hệ thống, không Mở lại, Trưởng cơ sở không có nút Chốt) | bc09-gio-day.spec.ts | Code F |
 | CHUNG-23 | Đăng nhập phụ huynh | C | **Chưa có** | không có khung | chưa kiểm | — | Code F |
 | QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | C | **Chưa có** | không có khung | chưa kiểm | — | Code F |
 | QT-18 | Nhập dữ liệu cũ (chọn loại, tải file CSV, xem trước từng dòng, nạp, tải dòng lỗi) | B | **Có màn** `/crm/quan-tri/nhap-du-lieu` | có (10 khung) | Đúng | nhap-du-lieu.spec.ts | Code F |
