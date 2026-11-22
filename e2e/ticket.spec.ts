@@ -139,5 +139,5 @@ test('Khách huỷ (CS-12): chỉ ticket Đề nghị có nút; lý do bắt bu�
   await expect(dialog.getByRole('button', { name: 'Khách huỷ', exact: true })).toBeDisabled();
   await dialog.getByLabel('Lý do khách huỷ').fill('Gia đình đổi kế hoạch.');
   await dialog.getByRole('button', { name: 'Khách huỷ', exact: true }).click();
-  await expect(page.getByText('Khách huỷ: Gia đình đổi kế hoạch.')).toBeVisible();
+  await expect(page.getByText('Khách huỷ: Gia đình đổi kế hoạch.', { exact: true })).toBeVisible();
 });
