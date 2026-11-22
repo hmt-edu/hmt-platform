@@ -110,8 +110,8 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | QT-14 | Ngày nghỉ lễ | B | **Có màn** `/crm/cau-hinh/ngay-nghi` | không có khung | chưa kiểm | ngay-nghi.spec.ts | Code F |
 | QT-15 | Cấu hình người duyệt ticket theo nhóm con | B | **Có màn** `/crm/cau-hinh/nguoi-duyet-ticket` | không có khung | chưa kiểm | — | Code F |
 | QT-16 | Giáo viên, trợ giảng (hồ sơ dạy) | B | **Có màn** `/crm/quan-tri/giao-vien` | không có khung | chưa kiểm | ho-so-day.spec.ts | Code F |
-| CH-05 | Khung chương trình (danh sách phiên bản) | B | **Có màn** `/crm/cau-hinh/khung-chuong-trinh` | có (14 khung) | chưa kiểm | lop.spec.ts | Code F |
-| CH-06 | Khung chương trình (danh sách bài học) | B | **Có màn** `src/pages/khung-chuong-trinh/CurriculumFramePage.tsx` | có (14 khung) | chưa kiểm | — | Code F |
+| CH-05 | Khung chương trình (danh sách phiên bản) | B | **Có màn** `/crm/cau-hinh/khung-chuong-trinh` | có (14 khung) | đã so 23/11 (7 khung): khớp chữ, nút, hộp Tạo bản mới/Ngừng, trạng thái trống/tải/quyền; không lệch | lop.spec.ts | Code F |
+| CH-06 | Khung chương trình (danh sách bài học) | B | **Có màn** `src/pages/khung-chuong-trinh/CurriculumFramePage.tsx` | có (14 khung) | đã so 23/11 (7 khung): khớp; lệch có chủ đích: kéo tay nắm → nút Lên/Xuống; «Nhập từ file» chỉ nút mờ (thiếu khuôn T5) | — | Code F |
 | KH-08 | Lên khối đầu năm học (hàng loạt) | C | **Có màn** `/crm/len-khoi-dau-nam` | không có khung | chưa kiểm | len-khoi-dau-nam.spec.ts | Code ? |
 | TC-10 | Phiếu chi (danh sách) | B | **Có màn** `/crm/phieu-chi` | có (16 khung) | Đúng | phieu-chi-so-du.spec.ts | Code C/D |
 | TC-11 | Phiếu chi (bản ghi) | B | **Có màn** `src/pages/phieu-chi/VoucherRecordPage.tsx` | có (12 khung) | Gần đúng | phieu-chi-so-du.spec.ts | Code C/D |
@@ -167,7 +167,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | CS-12 | Từ chối / khách huỷ ticket (lý do) | C | **Chưa có** | không có khung | chưa kiểm | — | Code B |
 | CS-13 | Nâng cấp / mở lại khiếu nại | C | **Có màn** `src/pages/ticket/TicketRecordPage.tsx` | không có khung | chưa kiểm | cskh-khieu-nai-bao-luu.spec.ts | Code B |
 | CS-14 | Thực hiện dừng học (ticket nhóm Dừng học) | C | **Chỉ có DB** `20261119000427_c60_dung_hoc_qua_phieu.sql` | không có khung | chưa kiểm | — | Code B |
-| CH-07 | Rubric nhận xét (tiêu chí, mô tả mức 1–5, theo môn) | B | **Có màn** `/crm/cau-hinh/rubric` | có (14 khung) | chưa kiểm | — | Code F |
+| CH-07 | Rubric nhận xét (tiêu chí, mô tả mức 1–5, theo môn) | B | **Có màn** `/crm/cau-hinh/rubric` | có (14 khung) | đã so 23/11 (7 khung): khớp; lệch luật: tab Câu mẫu theo R-V2-39 (24 câu), canvas vẽ tiêu chí × mức 1–5; chưa có Ngừng/Dùng lại tiêu chí (khung không có nút); mô tả mức là chữ mẫu | — | Code F |
 | CS-16 | Nhận xét chờ gửi phụ huynh | B | **Chưa có** | không có khung | chưa kiểm | — | Code B |
 | GV-01 | Khung cổng giáo viên (điện thoại: thanh dưới · laptop: menu trái thu gọn) | B | **Có màn** `src/layout/TabShell.tsx` | có (8 khung) | Đúng | auth.spec.ts, so-sanh.spec.ts | Code E |
 | GV-02 | Hôm nay (buổi dạy, việc sắp trễ hạn) | A | **Có màn** `src/pages/gv/TeacherTodayPage.tsx` | có (16 khung) | Lệch → đã sửa | gv-hom-nay.spec.ts | Code E |
