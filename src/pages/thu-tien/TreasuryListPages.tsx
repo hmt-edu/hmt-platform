@@ -1,4 +1,5 @@
 // TC-08 Khoản tiền vào và TC-13 Công nợ: khuôn K03 nối list_money_in và list_receivables. Chỉ đọc; không có nút Tạo.
+// TC-09 Đảo khoản tiền (lý do): hành động «Hoàn tác khoản tiền» ở từng dòng TC-08, hộp thoại lý do K08 (danh mục REVERSAL_REASON), gọi reverse_money_in.
 import { useMemo, useState } from 'react';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
