@@ -1,7 +1,7 @@
 // CH-04 Chính sách chiết khấu và quà tặng (canvas 9933: CH04_chinh, CH04_loi): hai tab Chiết khấu, Quà tặng; bảng, hộp Thêm/Sửa, Ngừng/Dùng lại.
 // Luật R-TIEN-29, R-TIEN-30, R-TIEN-14 (Ngừng thì không hiện ở chỗ chọn mới; đơn cũ giữ giá trị đã chụp; không xoá). Quyền Cấu hình bán hàng, DB kiểm.
-// VÊNH CANVAS (làm theo luật và DB, ghi ở PR): DB chỉ có kiểu % và Giờ tặng (không «Số tiền cố định»), «Giá trị» và «Mức tối đa» là một (max_value, kèm cờ «áp đúng mức»),
-// không có cột «Áp dụng cho» (Báo giá, Đơn, Phiếu thu). Chính sách «Ưu đãi linh hoạt» (hệ thống, hạn mức ở Tham số nghiệp vụ) không sửa, không ngừng ở màn này.
+// VÊNH CANVAS (làm theo luật và DB, ghi ở PR): DB chỉ có kiểu % và Giờ tặng (không «Số tiền cố định»), «Giá trị» và «Mức tối đa» là một (max_value, kèm cờ «áp đúng mức»).
+// Chính sách «Ưu đãi linh hoạt» (hệ thống, hạn mức ở Tham số nghiệp vụ) không sửa, không ngừng ở màn này.
 import { PolicyHistoryDialog } from './PolicyHistoryDialog';
 import { useState } from 'react';
 import { errorOf, useDb } from '../../lib/db';
@@ -204,6 +204,11 @@ export function DiscountPolicyPage() {
       width: 'w-40',
       cell: (p) => `${p.max_quantity.toLocaleString('vi-VN')} / đơn`,
     },
+    {
+      key: 'applies',
+      header: 'Áp dụng cho',
+      cell: (p) => appliesToLabel(p),
+    },
     ...common<GiftPolicy>(
       'GIFT_POLICY',
       (p) => setEditing({ kind: 'gift', policy: p }),
@@ -370,10 +375,7 @@ function PolicyForm({
     validTo: p?.valid_to ? isoToDate(p.valid_to) : null,
     packageTypes: p?.package_type_codes ?? [],
     branchIds: p?.branch_ids ?? [],
-    appliesTo:
-      editing.kind === 'discount' && editing.policy
-        ? editing.policy.applies_to
-        : APPLIES_TO_OPTIONS.map((o) => o.code),
+    appliesTo: editing.policy ? editing.policy.applies_to : APPLIES_TO_OPTIONS.map((o) => o.code),
   });
   const [giftPackageId, setGiftPackageId] = useState(
     editing.kind === 'gift' ? (editing.policy?.gift_package_id ?? '') : '',
@@ -410,6 +412,7 @@ function PolicyForm({
           ...base,
           ...(p ? {} : { code: policyCode(v.name) }),
           gift_package_id: giftPackageId,
+          applies_to: v.appliesTo,
           max_quantity: Number(v.maxValue.replace(',', '.')),
         })
       : saveDiscountPolicy(supabase, p?.id ?? null, {
@@ -544,24 +547,22 @@ function PolicyForm({
             ))}
           </div>
         </fieldset>
-        {!isGift && (
-          <fieldset className="flex flex-col gap-1">
-            <legend className="text-body font-semibold">Áp dụng cho *</legend>
-            <div className="flex flex-wrap gap-x-4">
-              {APPLIES_TO_OPTIONS.map((o) => (
-                <Checkbox
-                  key={o.code}
-                  label={o.name}
-                  checked={v.appliesTo.includes(o.code)}
-                  onChange={() => set({ appliesTo: toggleIn(v.appliesTo, o.code) })}
-                />
-              ))}
-            </div>
-            {tried && v.appliesTo.length === 0 && (
-              <p className="text-caption text-danger">Chọn ít nhất một nơi áp dụng.</p>
-            )}
-          </fieldset>
-        )}
+        <fieldset className="flex flex-col gap-1">
+          <legend className="text-body font-semibold">Áp dụng cho *</legend>
+          <div className="flex flex-wrap gap-x-4">
+            {APPLIES_TO_OPTIONS.map((o) => (
+              <Checkbox
+                key={o.code}
+                label={o.name}
+                checked={v.appliesTo.includes(o.code)}
+                onChange={() => set({ appliesTo: toggleIn(v.appliesTo, o.code) })}
+              />
+            ))}
+          </div>
+          {tried && v.appliesTo.length === 0 && (
+            <p className="text-caption text-danger">Chọn ít nhất một nơi áp dụng.</p>
+          )}
+        </fieldset>
         <Checkbox
           label="Cần duyệt (quản lý cơ sở duyệt)"
           checked={v.requiresApproval}
