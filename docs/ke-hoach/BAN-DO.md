@@ -30,13 +30,13 @@ Cỡ: S = vài giờ, một PR nhỏ; M = nửa ngày đến một ngày; L = nh
 | PH-03 | Học phí và giờ học của con | Chưa có | L | giai đoạn sau go-live; cần Design vẽ khung cổng HS/PH |
 | PH-04 | Gửi đề nghị / khiếu nại và theo dõi | Chưa có | L | giai đoạn sau go-live; cần Design vẽ khung cổng HS/PH |
 | PH-05 | Lịch học của con | Chưa có | L | giai đoạn sau go-live; cần Design vẽ khung cổng HS/PH |
-| BC-02 | Báo cáo tuyển sinh (phễu lead → đăng ký) | Chỉ có DB* | M | chưa có khung báo cáo; anh chốt hướng BC-02..07, BC-10 (Looker không vẽ) |
-| BC-03 | Doanh thu ghi nhận theo buổi Done | Chỉ có DB* | M | chưa có khung báo cáo; anh chốt hướng BC-02..07, BC-10 (Looker không vẽ) |
-| BC-04 | Thu tiền và giờ chưa dạy (quỹ giờ còn) | Chỉ có DB* | M | chưa có khung báo cáo; anh chốt hướng BC-02..07, BC-10 (Looker không vẽ) |
-| BC-05 | Tái tục | Chỉ có DB* | M | chưa có khung báo cáo; anh chốt hướng BC-02..07, BC-10 (Looker không vẽ) |
-| BC-06 | Sĩ số, lấp đầy lớp, chuyên cần | Chỉ có DB* | M | chưa có khung báo cáo; anh chốt hướng BC-02..07, BC-10 (Looker không vẽ) |
-| BC-07 | BTVN (tỉ lệ làm bài, điểm TB) | Chỉ có DB* | M | chưa có khung báo cáo; anh chốt hướng BC-02..07, BC-10 (Looker không vẽ) |
-| BC-10 | Báo cáo ticket | Chỉ có DB* | M | chưa có khung báo cáo; anh chốt hướng BC-02..07, BC-10 (Looker không vẽ) |
+| BC-02 | Báo cáo tuyển sinh (phễu lead → đăng ký) | Looker, không dựng màn CRM | — | anh duyệt 23/11: vẽ ở Looker Studio; vai trò DB chỉ đọc riêng sau go-live (docs/nghiep-vu/bao-cao-looker.md) |
+| BC-03 | Doanh thu ghi nhận theo buổi Done | Looker, không dựng màn CRM | — | anh duyệt 23/11: vẽ ở Looker Studio; vai trò DB chỉ đọc riêng sau go-live (docs/nghiep-vu/bao-cao-looker.md) |
+| BC-04 | Thu tiền và giờ chưa dạy (quỹ giờ còn) | Looker, không dựng màn CRM | — | anh duyệt 23/11: vẽ ở Looker Studio; vai trò DB chỉ đọc riêng sau go-live (docs/nghiep-vu/bao-cao-looker.md) |
+| BC-05 | Tái tục | Looker, không dựng màn CRM | — | anh duyệt 23/11: vẽ ở Looker Studio; vai trò DB chỉ đọc riêng sau go-live (docs/nghiep-vu/bao-cao-looker.md) |
+| BC-06 | Sĩ số, lấp đầy lớp, chuyên cần | Looker, không dựng màn CRM | — | anh duyệt 23/11: vẽ ở Looker Studio; vai trò DB chỉ đọc riêng sau go-live (docs/nghiep-vu/bao-cao-looker.md) |
+| BC-07 | BTVN (tỉ lệ làm bài, điểm TB) | Looker, không dựng màn CRM | — | anh duyệt 23/11: vẽ ở Looker Studio; vai trò DB chỉ đọc riêng sau go-live (docs/nghiep-vu/bao-cao-looker.md) |
+| BC-10 | Báo cáo ticket | Looker, không dựng màn CRM | — | anh duyệt 23/11: vẽ ở Looker Studio; vai trò DB chỉ đọc riêng sau go-live (docs/nghiep-vu/bao-cao-looker.md) |
 
 ## B. Màn đã có nhưng lệch canvas hoặc chưa so canvas (việc kiểm/sửa)
 
