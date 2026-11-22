@@ -547,6 +547,7 @@ export function TicketRecordPage() {
           type={ticket.business_type}
           ticketId={ticket.id}
           ticketCode={ticket.code}
+          ticketBranchId={ticket.branch_id}
           hasStudent={ticket.student_name !== null}
           open={taskOpen}
           onOpenChange={setTaskOpen}
