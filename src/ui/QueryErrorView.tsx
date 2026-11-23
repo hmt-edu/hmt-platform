@@ -19,7 +19,7 @@ export function QueryErrorView({
       title={spec.title}
       actions={spec.canRetry ? <Button onClick={onRetry}>Thử lại</Button> : undefined}
     >
-      {spec.canRetry ? 'Kiểm tra mạng rồi bấm Thử lại.' : undefined}
+      {spec.canRetry ? 'Kiểm tra mạng rồi bấm Thử lại.' : spec.detail}
     </StateView>
   );
 }

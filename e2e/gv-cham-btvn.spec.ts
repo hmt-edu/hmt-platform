@@ -274,9 +274,9 @@ test('GV-07: mở nhận xét, chấm ô 4 trạng thái, tắt tiêu chí, lưu
   await expect(again.getByLabel('Nhận xét chung')).toHaveValue('Tập trung tốt');
   await expect(again.getByText('Không áp dụng cả buổi (tắt ở Tiêu chí của buổi)')).toBeVisible();
 
-  // Em vắng: không chấm.
+  // Em vắng có phép (Dũng ở buổi chấm): không chấm, câu báo riêng cho vắng có phép (E-23-21 mục 6, #629).
   await page.getByRole('button', { name: /Em giả E2E Dũng/ }).click();
-  await expect(page.getByText('Em vắng: không chấm nhận xét.')).toBeVisible();
+  await expect(page.getByText('Em vắng có phép: không chấm.')).toBeVisible();
 });
 
 test('GV-07X: xuất nhận xét của một em ra ảnh PNG: tải file, hiện «Đã xuất»; còn thay đổi chưa lưu thì khoá nút', async ({

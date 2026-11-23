@@ -9,6 +9,8 @@ import {
   isWarmPing,
   LOGIN_MESSAGES,
   normalizeLogin,
+  normalizePhone,
+  phoneFallbackEmail,
   toAuthEmail,
 } from './login-rules.ts';
 
@@ -137,5 +139,25 @@ describe('R-HT-12: không gửi thư đổi email (Soát E6)', () => {
 describe('E5: trần độ dài tên đăng nhập', () => {
   it('là độ dài tối đa một địa chỉ email', () => {
     expect(MAX_LOGIN_LENGTH).toBeGreaterThan(100);
+  });
+});
+
+describe('đăng nhập bằng số điện thoại phụ huynh (DN11)', () => {
+  it('nhận số 10 chữ số bắt đầu bằng 0, bỏ khoảng trắng, chấm, gạch ngang', () => {
+    expect(normalizePhone('0901234567')).toBe('0901234567');
+    expect(normalizePhone(' 090 123.45-67 ')).toBe('0901234567');
+  });
+  it('không nhận email, mã HS, mã PH, số thiếu hoặc thừa chữ số', () => {
+    expect(normalizePhone('ph000212')).toBeNull();
+    expect(normalizePhone('hs000123')).toBeNull();
+    expect(normalizePhone('a@b.vn')).toBeNull();
+    expect(normalizePhone('090123456')).toBeNull();
+    expect(normalizePhone('09012345678')).toBeNull();
+    expect(normalizePhone('1901234567')).toBeNull();
+  });
+  it('số chưa có tài khoản đổi ra email nội bộ không tồn tại, không gửi thư được', () => {
+    const email = phoneFallbackEmail('0901234567');
+    expect(email).toBe('sdt0901234567@phuhuynh.hoamatoan.edu.vn');
+    expect(isInternalStudentEmail(email)).toBe(true);
   });
 });

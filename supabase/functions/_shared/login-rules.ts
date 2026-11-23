@@ -11,6 +11,20 @@ export const PARENT_EMAIL_DOMAIN = 'phuhuynh.hoamatoan.edu.vn';
 
 const PARENT_CODE_PATTERN = /^PH\d+$/;
 
+/** Số điện thoại di động Việt Nam 10 số, bắt đầu bằng 0 (cùng khuôn app.parent.phone): phụ huynh đăng nhập bằng số này (DN11). */
+const PHONE_PATTERN = /^0\d{9}$/;
+
+/** Chuỗi nhập có phải số điện thoại không (bỏ khoảng trắng, dấu chấm, gạch ngang). */
+export function normalizePhone(raw: string): string | null {
+  const value = raw.replace(/[\s.-]/g, '');
+  return PHONE_PATTERN.test(value) ? value : null;
+}
+
+/** Email nội bộ không tồn tại cho số điện thoại chưa có tài khoản: để lần đăng nhập sai như mọi lần sai khác. */
+export function phoneFallbackEmail(phone: string): string {
+  return `sdt${phone}@${PARENT_EMAIL_DOMAIN}`;
+}
+
 /** Chuẩn hoá tên đăng nhập: bỏ khoảng trắng; mã HS viết hoa; email viết thường. */
 export function normalizeLogin(raw: string): string {
   const value = raw.trim();

@@ -28,7 +28,7 @@ select is(pg_temp.names('TEST_LEVEL'), array['Cơ bản', 'Nâng cao'], 'Spec 06
 select is(pg_temp.names('ATTENDANCE_CONTACT_REASON'),
           array['Không nghe máy', 'Đã nhắc vào lớp', 'Đã vào lớp', 'Xin nghỉ học', 'Khác'], 'Spec 06 #17: Lý do liên hệ khi điểm danh');
 select is(pg_temp.names('COMPLAINT_SEVERITY'), array['Thấp', 'Trung bình', 'Cao', 'Nghiêm trọng'], 'Spec 06 #21: Mức độ khiếu nại');
-select is(pg_temp.names('TICKET_CHANNEL'), array['Gọi điện', 'Zalo', 'Trực tiếp', 'Email', 'Giáo viên báo', 'Khác'], 'Spec 06 #22: Kênh tiếp nhận ticket');
+select is(pg_temp.names('TICKET_CHANNEL'), array['Gọi điện', 'Zalo', 'Trực tiếp', 'Email', 'Giáo viên báo', 'Khác', 'Phụ huynh không đồng ý'], 'Spec 06 #22: Kênh tiếp nhận ticket');
 select is(pg_temp.names('SESSION_CANCEL_REASON'),
           array['Nghỉ lễ đột xuất', 'Giáo viên nghỉ', 'Sự cố cơ sở vật chất', 'Thời tiết', 'Ốm', 'Việc gia đình', 'Thi ở trường', 'Khác'],
           'Spec 06 #23: Lý do huỷ buổi (trung tâm rồi học sinh)');
