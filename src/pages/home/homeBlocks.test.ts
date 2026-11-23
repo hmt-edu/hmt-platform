@@ -19,4 +19,14 @@ describe('khối của Trang chủ hiện theo quyền và công tắc tính nă
   it('phân hệ tắt ở cơ sở thì ẩn dù có quyền', () => {
     expect(visibleHomeBlocks(HOME_BLOCKS, only('APPOINTMENT|XEM'), () => false)).toEqual([]);
   });
+
+  it('khối việc theo vai trò: mỗi khối hiện theo quyền và công tắc của màn nguồn', () => {
+    const ids = (can: (m: string, a: string) => boolean, feature = () => true) =>
+      visibleHomeBlocks(HOME_BLOCKS, can, feature).map((b) => b.id);
+    expect(ids(only('TICKET|SUA'))).toEqual(['reviews']);
+    expect(ids(only('SESSION|XEM'))).toEqual(['sessions']);
+    expect(ids(only('SESSION|XEM'), () => false)).toEqual([]);
+    expect(ids(only('SALES_ORDER|XEM'))).toEqual(['debt']);
+    expect(ids((m, a) => m === '*' && a === 'DUYET')).toEqual(['approvals']);
+  });
 });
