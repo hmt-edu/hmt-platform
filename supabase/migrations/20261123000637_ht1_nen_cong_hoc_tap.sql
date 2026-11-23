@@ -4,7 +4,7 @@
 -- Nhận diện người gọi: học sinh qua user_account.student_code, phụ huynh qua user_account.parent_code (đã có, migration 616).
 
 -- 1. Danh sách học sinh người gọi được thấy: học sinh = chính mình; phụ huynh = các con; nhân viên và người khác = rỗng.
--- Ai gọi: các hàm cổng bên dưới (không cấp trực tiếp cho giao diện). Tài khoản bị khoá thì rỗng.
+-- Ai gọi: các hàm cổng bên dưới (không cấp trực tiếp cho giao diện). Tài khoản bị khoá hoặc bị thu hồi phiên (token cũ) thì rỗng (app.current_user_ready).
 create or replace function app.portal_student_ids()
 returns setof uuid
 language sql
@@ -17,7 +17,7 @@ as $$
     join app.student s
       on (a.student_code is not null and s.code = a.student_code)
       or (a.parent_code is not null and s.parent_id = (select p.id from app.parent p where p.code = a.parent_code))
-   where a.id = (select auth.uid()) and not a.is_locked;
+   where a.id = (select auth.uid()) and (select app.current_user_ready());
 $$;
 comment on function app.portal_student_ids() is 'Học sinh người gọi được thấy ở cổng: HS = chính mình, PH = các con, còn lại rỗng. Dùng làm nền cho mọi hàm hs_*, ph_*.';
 
