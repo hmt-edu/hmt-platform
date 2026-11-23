@@ -11,6 +11,13 @@ export type AccessView = MenuAccess & {
   seesAllBranches: boolean;
   /** Cơ sở dạy học cho ô chọn cơ sở của dữ liệu nghiệp vụ: không có Hội sở CS3 (R-HT-02). */
   teachingBranches: BranchRow[];
+  /**
+   * Cơ sở để mở màn theo cơ sở khi chưa chọn gì: người một cơ sở thì cơ sở của mình (máy chủ chỉ cho xem cơ sở này);
+   * người thấy mọi cơ sở thì cơ sở dạy học đầu tiên. Không tìm thấy thì undefined.
+   */
+  defaultBranchId: string | undefined;
+  /** Các cơ sở người này được CHỌN để xem: người thấy mọi cơ sở thì mọi cơ sở dạy học, người một cơ sở thì chỉ cơ sở của mình. */
+  viewableBranches: BranchRow[];
   /** Mọi cơ sở đang hoạt động, kể cả Hội sở (người dùng có thể thuộc văn phòng; màn Người dùng của Admin). */
   allBranches: BranchRow[];
   /** Mọi vai trò (màn Người dùng của Admin). */
@@ -51,6 +58,12 @@ export function buildAccess(
         (f) => f.enabled && f.module_code === feature && scopeBranchIds.includes(f.branch_id),
       ),
     seesAllBranches,
+    viewableBranches: seesAllBranches
+      ? teachingBranches
+      : data.branches.filter((b) => b.code === user.branchCode),
+    defaultBranchId: seesAllBranches
+      ? teachingBranches[0]?.id
+      : data.branches.find((b) => b.code === user.branchCode)?.id,
     teachingBranches,
     allBranches: data.branches,
     allRoles: data.roles.map((r) => ({ code: r.code, name: r.name })),
