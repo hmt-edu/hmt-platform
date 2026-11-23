@@ -105,7 +105,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TC-08 | Khoản tiền vào (sổ thu tiền) | B | **Có màn** `/crm/khoan-tien-vao` | có (20 khung) | Đúng | thu-tien.spec.ts | Code C/D |
 | TC-09 | Đảo khoản tiền (lý do) | B | **Có màn** `/crm/khoan-tien-vao` (nút Hoàn tác ở từng dòng, hộp lý do K08) | có (8 khung) | Đúng | cskh-khieu-nai-bao-luu.spec.ts, duong-ke-toan.spec.ts | Code C/D |
 | TC-13 | Công nợ (đơn chưa thu đủ) | B | **Có màn** `/crm/cong-no` | có (16 khung) | Đúng | thu-tien.spec.ts | Code C/D |
-| TC-15 | Đối soát thu tiền | B | **Có màn** `/crm/doi-soat-thu-tien` | có (16 khung) | chưa kiểm | duong-ke-toan.spec.ts | Code C/D |
+| TC-15 | Đối soát thu tiền | B | **Có màn** `/crm/doi-soat-thu-tien` | có (16 khung) | đã so 23/11 (4 khung TC15, TC15_trong, TC15_tai, TC15_khong_quyen): khớp bộ lọc (Thời gian, Cơ sở, Tài khoản nhận, Hình thức, Mã giao dịch, Sao kê), bốn ô tổng, cột bảng, nút Đánh dấu đã khớp; LỆCH: khung có nút «Xuất» ở đầu trang, màn chưa có (cần hàm xuất có nhật ký như BC-08, báo Chat) | duong-ke-toan.spec.ts | Code C/D |
 | GV-15 | Chấm kiểm tra đầu vào | B | **Có màn** `src/pages/gv/TeacherTodoPage.tsx` | có (20 khung) | Đúng | — | Code E |
 | QT-14 | Ngày nghỉ lễ | B | **Có màn** `/crm/cau-hinh/ngay-nghi` | không có khung | chưa kiểm | ngay-nghi.spec.ts | Code F |
 | QT-15 | Cấu hình người duyệt ticket theo nhóm con | B | **Có màn** `/crm/cau-hinh/nguoi-duyet-ticket` | không có khung | chưa kiểm | — | Code F |
