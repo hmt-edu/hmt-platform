@@ -170,7 +170,9 @@ export function CrmShell() {
     [crumbs, pathname, search],
   );
   const branchName = access.branchName(claims?.branchCode ?? null);
-  const roleLine = [access.roleNames.join(', '), branchName].filter(Boolean).join(' · ');
+  const roleLines = [access.roleNames.join(', '), branchName].filter((line): line is string =>
+    Boolean(line),
+  );
 
   const toggleCollapsed = () => {
     const next = !collapsed;
@@ -292,7 +294,7 @@ export function CrmShell() {
                 <BranchPicker className="w-56" />
               </div>
               <NotificationBell />
-              <AccountMenu portal="crm" roleLine={roleLine} />
+              <AccountMenu portal="crm" roleLines={roleLines} />
             </header>
             <main className="min-w-0 flex-1">
               <div className="p-4 lg:p-5">

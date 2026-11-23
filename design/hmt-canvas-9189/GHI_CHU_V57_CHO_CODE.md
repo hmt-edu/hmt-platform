@@ -148,3 +148,14 @@ Anh Trường đã trả lời 23/11:
 5. Chip chọn con: ẩn khi phụ huynh chỉ có một con (chỉ ghi chú, không vẽ khung riêng; anh chốt).
 
 Cổng Học tập (HT) anh đã chốt: tab «Tài khoản» chưa vẽ (giữ nút trên thanh dưới); HT-04 khi giáo viên tắt «Cho nộp lại» chỉ ẩn nút «Nộp lại», không vẽ khung riêng; HT-05 ba trạng thái Không làm / Nộp sau / Không áp dụng chỉ đổi nhãn; HT-07 học sinh hai lớp dùng chip đổi lớp (phụ huynh dùng chung PH-02); HT-02 bài quá hạn nằm ở «Cần làm» nhãn đỏ «Quá hạn», bài không nhận muộn khoá nút ở HT-03.
+
+
+# ƯU TIÊN 4: Ticket xem gọn CSN-03 (4 khung, ĐÃ ĐĂNG, canvas Đào tạo & GV v56, 465 khung)
+Bản xem gọn là bản LÀM DUY NHẤT của màn Ticket. 13 khung CSN03_* cũ gắn nhãn «BẢN CŨ, KHÔNG LÀM» (xem tiêu đề trong canvas.json), không làm. Còn dùng, KHÔNG gắn nhãn: CSN03_tao_moi, CSN03_tai, CSN03_quyen, CSN03_loi_luu. Canvas v57, 465 khung.
+Khung: CSN03_gon_moi, CSN03_gon_dang_xu_ly (menu Khác mở), CSN03_gon_khieu_nai_ghi_ket_qua, CSN03_gon_huy. Máy tính 1440×900, khuôn K06.
+- Đầu màn: tiêu đề + mã nhỏ; thanh 6 bước, Huỷ là nhánh riêng bên phải; MỘT nút chính theo bước (Mới → «Giao cho tôi»; Đang xử lý → «Tạo phiếu» hoặc «Ghi kết quả»); menu «Khác» (Phân loại lại, Khách huỷ, Nâng cấp).
+- Phiếu nghiệp vụ là nút số đếm trên đầu, chỉ hiện khi có từ 1 phiếu.
+- Dải 4 ô: Hạn xử lý (màu theo SLA, ngày giờ ở nhãn), Người phụ trách, SĐT người gửi (bấm gọi), Mức độ. Ô trống: ẩn (Hạn xử lý ở ticket Huỷ) hoặc lời nhắc (Người phụ trách trống chỉ ghi «Chưa giao», không lặp nút chính; SĐT trống «Chưa có SĐT · Thêm số»).
+- «Riêng khiếu nại» chỉ hiện ở loại Khiếu nại.
+- Ticket Huỷ: trạng thái cuối, KHÔNG có menu Khác, không nút nào (chưa có luật Mở lại ticket đã huỷ).
+- Số trong khung là số minh hoạ.

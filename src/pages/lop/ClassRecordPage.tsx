@@ -166,7 +166,7 @@ function ClassView({ record }: { record: ClassRecord }) {
               kind: 'system' as const,
               id: `ev-${i}`,
               at: e.created_at,
-              author: 'Hệ thống',
+              author: '',
               text: `${EVENT_LABEL[e.event_code] ?? e.event_code}${e.note ? `: ${e.note}` : ''}`,
             }))}
           />
@@ -233,11 +233,8 @@ function ClassView({ record }: { record: ClassRecord }) {
               value={record.subject_name ?? record.subject_code}
             />
             <DetailField mode="view" label="Khối" value={record.grade_code.replace(/^K0?/, '')} />
-            <DetailField
-              mode="view"
-              label="Phân loại"
-              value={[record.class_type_name, record.level_name].filter(Boolean).join(' · ')}
-            />
+            <DetailField mode="view" label="Phân loại" value={record.class_type_name ?? ''} />
+            <DetailField mode="view" label="Trình độ" value={record.level_name ?? ''} />
             <DetailField
               mode="view"
               label="Hình thức học"
@@ -444,6 +441,7 @@ const STEP_LABEL: Record<string, string> = {
 
 // Tên trường và giá trị trong lịch sử thay đổi của lớp (không hiện mã thô như DA_DUYET).
 const CHATTER_FORMAT = {
+  coveredByEvents: ['status_code'],
   labels: { status_code: 'Tình trạng', max_students: 'Sĩ số tối đa', start_date: 'Ngày bắt đầu' },
   value: (column: string, value: unknown): string | null =>
     column === 'status_code' && typeof value === 'string' ? (STEP_LABEL[value] ?? null) : null,

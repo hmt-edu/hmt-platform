@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { Button } from '../../ui/Button';
+import { StickyActionBar } from '../../ui/StickyActionBar';
+import { Button, ButtonLink } from '../../ui/Button';
 import { UnsavedGuard } from '../../ui/Dialogs';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -107,11 +108,14 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4">
       <UnsavedGuard when={dirty} />
       <nav aria-label="Đường dẫn" className="text-caption text-fg-muted">
-        <Link to="/gv" className="underline">
+        <Link to="/gv" className="inline-flex min-h-11 items-center underline">
           Hôm nay
         </Link>
         {' › '}
-        <Link to={`/gv/buoi/${overview.session_id}`} className="underline">
+        <Link
+          to={`/gv/buoi/${overview.session_id}`}
+          className="inline-flex min-h-11 items-center underline"
+        >
           Buổi dạy
         </Link>
         {' › Nội dung buổi và BTVN'}
@@ -137,17 +141,6 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
               Loại buổi: {overview.type_name}
             </span>
           )}
-        </div>
-        <div className="flex items-center gap-3">
-          {dirty && <span className="text-caption text-fg-muted">Chưa lưu</span>}
-          <Button
-            variant="primary"
-            loading={save.isPending}
-            disabled={!editable || !dirty}
-            onClick={submit}
-          >
-            Lưu
-          </Button>
         </div>
       </header>
 
@@ -262,6 +255,20 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
           ? 'Dòng nội dung và BTVN đều tuỳ giáo viên. Không tự lưu.'
           : 'Cần ít nhất một dòng nội dung. BTVN tuỳ giáo viên. Không tự lưu.'}
       </p>
+      <StickyActionBar>
+        {dirty && <span className="text-caption text-fg-muted">Chưa lưu</span>}
+        {!dirty && editable && (
+          <ButtonLink to={`/gv/buoi/${overview.session_id}`}>Bước tiếp ›</ButtonLink>
+        )}
+        <Button
+          variant="primary"
+          loading={save.isPending}
+          disabled={!editable || !dirty}
+          onClick={submit}
+        >
+          Lưu
+        </Button>
+      </StickyActionBar>
     </div>
   );
 }

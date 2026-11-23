@@ -112,7 +112,7 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | QT-16 | Giáo viên, trợ giảng (hồ sơ dạy) | B | **Có màn** `/crm/quan-tri/giao-vien` | không có khung | chưa kiểm | ho-so-day.spec.ts | Code F |
 | CH-05 | Khung chương trình (danh sách phiên bản) | B | **Có màn** `/crm/cau-hinh/khung-chuong-trinh` | có (14 khung) | đã so 23/11 (7 khung): khớp chữ, nút, hộp Tạo bản mới/Ngừng, trạng thái trống/tải/quyền; không lệch | lop.spec.ts | Code F |
 | CH-06 | Khung chương trình (danh sách bài học) | B | **Có màn** `src/pages/khung-chuong-trinh/CurriculumFramePage.tsx` | có (14 khung) | đã so 23/11 (7 khung): khớp; lệch có chủ đích: kéo tay nắm → nút Lên/Xuống; «Nhập từ file» chỉ nút mờ (thiếu khuôn T5) | — | Code F |
-| KH-08 | Lên khối đầu năm học (hàng loạt) | C | **Có màn** `/crm/len-khoi-dau-nam` | không có khung | chưa kiểm | len-khoi-dau-nam.spec.ts | Code ? |
+| KH-08 | Lên khối đầu năm học (hàng loạt) | C | **Có màn** `/crm/len-khoi-dau-nam` | không có khung | Đúng luật và khuôn K08 (so 23/11: xem trước từng em, loại trừ, xác nhận, hoàn tác theo tham số, chỉ Admin; không có khung canvas) | len-khoi-dau-nam.spec.ts | Code ? |
 | TC-10 | Phiếu chi (danh sách) | B | **Có màn** `/crm/phieu-chi` | có (16 khung) | Đúng | phieu-chi-so-du.spec.ts | Code C/D |
 | TC-11 | Phiếu chi (bản ghi) | B | **Có màn** `src/pages/phieu-chi/VoucherRecordPage.tsx` | có (12 khung) | Gần đúng | phieu-chi-so-du.spec.ts | Code C/D |
 | TC-12 | Bản in phiếu chi | C | **Có màn** `src/pages/phieu-chi/VoucherPrintPage.tsx` | không có khung | Đúng luật (có In, Tải PDF; không có khung, 23/11) | trang-chu.spec.ts | Code C/D |
