@@ -383,6 +383,9 @@ export function TicketRecordPage() {
                   </Button>
                 )}
             </>
+          ) : canEdit && ticket.status_code === 'DA_DONG' ? (
+            // Mở lại ticket đã đóng (R-CS-06, AS-03): quá số ngày cho phép thì DB báo lỗi, hộp thoại hiện lỗi đó.
+            <Button onClick={() => setTarget('DANG_XU_LY')}>Mở lại</Button>
           ) : undefined
         }
         stage={{
