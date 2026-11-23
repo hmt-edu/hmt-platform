@@ -426,11 +426,13 @@ function OpportunityView({ record }: { record: OppRecord }) {
               }
             : undefined
         }
+        quietEdit
         businessActions={
           <>
             {/* R-CRM-19, R-TIEN-02: Tạo báo giá chỉ nằm ở bản ghi cơ hội, bấm chỉ mở form trắng. Điện thoại giữ bản chỉ đọc (Đ248): ẩn nút. */}
             {!phone && (
               <Button
+                variant={!orderReason.ok && quoteReason.ok ? 'primary' : 'secondary'}
                 disabled={!quoteReason.ok}
                 title={quoteReason.ok ? undefined : quoteReason.reason}
                 onClick={() => openFrom(`/crm/bao-gia/tao?co-hoi=${record.id}`)}
@@ -441,6 +443,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             {/* R-CRM-16, R-CRM-19, R-TIEN-39: Tạo đơn hàng chỉ ở cơ hội L8, bấm chỉ mở form trắng. Điện thoại ẩn nút (Đ248). */}
             {!phone && (
               <Button
+                variant={orderReason.ok ? 'primary' : 'secondary'}
                 disabled={!orderReason.ok}
                 title={orderReason.ok ? undefined : orderReason.reason}
                 onClick={() => openFrom(`/crm/don-hang/tao?co-hoi=${record.id}`)}
