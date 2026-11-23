@@ -274,9 +274,7 @@ function Entry({ entry }: { entry: ChatterEntry }) {
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <p className="text-caption text-fg-muted">
-          <b className="font-semibold text-fg">
-            {system && entry.kind === 'system' ? 'Hệ thống' : entry.author}
-          </b>
+          <b className="font-semibold text-fg">{entry.author}</b>
           {' · '}
           <span className="tabular">{formatTime(entry.at)}</span>
           {entry.kind === 'note' && ' · Ghi chú'}
