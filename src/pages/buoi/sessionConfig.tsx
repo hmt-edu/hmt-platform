@@ -68,7 +68,7 @@ export function buildSessionConfig(
       { key: 'subject', label: 'Môn', render: (r) => r.subject_name ?? MUTED },
       { key: 'class', label: 'Lớp', render: (r) => r.class_code },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
-      { key: 'no', label: 'Buổi', render: (r) => sessionNoLabel(r.session_no) },
+      { key: 'no', label: 'Buổi', render: (r) => sessionNoLabel(r.session_no, r.type_name) },
       { key: 'type', label: 'Loại', render: (r) => r.type_name },
       { key: 'teacher', label: 'Giáo viên', render: (r) => r.teacher_name ?? MUTED },
       { key: 'room', label: 'Phòng', render: (r) => r.room_name ?? MUTED },

@@ -1,5 +1,5 @@
 // Số tiền gợi ý khi lập phiếu thu từ đơn (T2-04): theo điều khoản thanh toán của đơn, gợi ý đợt tới hạn đầu tiên chưa thu đủ
-// (ví dụ «Cọc rồi chia hai đợt» gợi ý khoản cọc), không gợi ý cả đơn. Chỉ là gợi ý để điền sẵn; máy chủ vẫn kiểm mức thu tối đa (R-TIEN-01).
+// (ví dụ «Cọc rồi đóng phần còn lại» gợi ý khoản cọc), không gợi ý cả đơn. Chỉ là gợi ý để điền sẵn; máy chủ vẫn kiểm mức thu tối đa (R-TIEN-01).
 export type InstallmentLike = { seq: number; amount: number };
 
 export function suggestedReceiptAmount(

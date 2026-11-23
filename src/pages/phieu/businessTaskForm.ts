@@ -62,6 +62,20 @@ export type FeeTransferPreview = {
   order_total: number | null;
   extra_to_pay: number | null;
 };
+/** Kết quả app.preview_stop_task_money (migration 632): tiền xem trước của phiếu Dừng học hoặc Hoàn học phí. Số có thể null khi không tính được (xem refund_error). */
+export type StopMoneyPreview = {
+  task_type: 'DUNG_HOC' | 'HOAN_PHI';
+  money_mode?: MoneyMode;
+  hours_left?: number | null;
+  hours_cancelled?: number | null;
+  unit_price_net: number | null;
+  balance_amount?: number | null;
+  paid_amount: number | null;
+  fee_percent: number | null;
+  fee_amount: number | null;
+  refund_amount: number | null;
+  refund_error: string | null;
+};
 export type FeeTransferOrder = {
   id: string;
   code: string;

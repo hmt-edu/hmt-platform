@@ -10,6 +10,7 @@ import {
   setDraft,
   sheetTitle,
   sheetWhen,
+  summarizeStatuses,
   type AttendanceStudent,
 } from './attendanceLogic';
 
@@ -116,5 +117,22 @@ describe('GV-05: chữ hiển thị', () => {
       sheetTitle({ ...session, level_name: null, class_type_name: 'riêng', session_no: null }),
     ).toBe('Đại số 9 · riêng');
     expect(sheetWhen(session)).toBe('24/10 18:00–19:30');
+  });
+});
+
+describe('GV-05: dòng tóm tắt sau khi lưu (GV05_buoc_tiep)', () => {
+  const statuses = [
+    { code: 'CO_MAT', name: 'Có mặt' },
+    { code: 'DI_MUON', name: 'Đi muộn' },
+    { code: 'VANG_CO_PHEP', name: 'Vắng có phép' },
+  ];
+  it('đếm theo từng trạng thái theo thứ tự danh mục, bỏ trạng thái không em nào', () => {
+    expect(summarizeStatuses(students, statuses, {})).toBe('Có mặt 1 · Vắng có phép 1');
+  });
+  it('tính cả bản nháp; chưa em nào được điểm danh thì chuỗi rỗng', () => {
+    expect(summarizeStatuses(students, statuses, { '2': 'CO_MAT' })).toBe(
+      'Có mặt 2 · Vắng có phép 1',
+    );
+    expect(summarizeStatuses([mk('9', null)], statuses, {})).toBe('');
   });
 });

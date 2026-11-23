@@ -2,6 +2,8 @@
 
 > Ghi chú của repo (12/10/2026): chép từ `HMT_BAN_DO_MAN_HINH.md` của anh Trường; các dòng CHUNG-02, CHUNG-03, CHUNG-08, CHUNG-13, QT-08, QT-13 đã sửa theo chốt của anh chiều 12/10 (đánh dấu **(chốt 12/10)**). Mã luật `R-*` xem `docs/spec/04-luat-nghiep-vu.md`. **Bước 4 điều chỉnh TC-05, TC-09, TC-11**: Admin không duyệt phiếu thu, đảo khoản, phiếu chi trực tiếp (R-HT-01); cột Vai trò của ba màn này còn ghi "KT, AD". Chi tiết: `docs/nghiep-vu/doi-chieu-luat-1210.md`.
 
+> **Canvas hiện hành (cập nhật 23/11/2026, E-23-19).** Bản đồ này liệt kê màn; khung vẽ nằm ở các thư mục `design/`. Bản hiện hành: HMT Platform `design/hmt-canvas-9933/` v152 (repo đang giữ bản nhập v150); Bán hàng & Thu chi bổ sung `design/hmt-canvas-abea/` v16 (repo v15); Đào tạo & Giáo viên `design/hmt-canvas-9189/` v60 (repo v58); Quản trị và Nạp dữ liệu `design/hmt-canvas-dc47/` giữ nguyên; cổng Học tập, Phụ huynh `design/hmt-hoc-tap-phu-huynh/` (HT 41, PH 29 khung, #605). Chỗ nào repo còn bản cũ thì khung mới (đổi tên vai trò, sửa DN, PH04) chưa có trong thư mục: làm theo luật và ghi chú của Design, hỏi nếu vênh. `design/hmt-canvas-fcd1/` và `design/hmt-platform/` (P5) chỉ để đối chiếu; thứ tự ưu tiên khi nguồn vênh nhau xem `CLAUDE.md`.
+
 Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là một màn hoặc hộp thoại; **mã màn là tên artboard**. Không thêm, bớt màn khi chưa ghi vào manifest.
 
 **Mức:** A = vẽ đầy đủ mọi trạng thái · B = vẽ bố cục bằng khuôn, một trạng thái chính · C = không vẽ, chỉ ghi trong manifest là dựng từ khuôn nào · Looker = báo cáo làm trên Looker Studio, không vẽ.

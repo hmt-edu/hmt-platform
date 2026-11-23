@@ -55,7 +55,7 @@ insert into app.gift_policy (code, name, gift_package_id, max_quantity, valid_fr
 select 'QUA_TAI_LIEU', 'Tặng bộ tài liệu Toán', p.id, 1, date '2026-09-01' from app.sales_package p where p.code = 'TL-MATOAN'
 on conflict (code) do nothing;
 insert into app.payment_term (code, version, name, valid_from) values
-  ('COC_VA_CHIA_DOT', 1, 'Cọc rồi chia hai đợt', date '2026-09-01'), ('CHIA_3_DOT', 1, 'Chia ba đợt 40, 30, 30', date '2026-09-01')
+  ('COC_VA_CHIA_DOT', 1, 'Cọc rồi đóng phần còn lại', date '2026-09-01'), ('CHIA_3_DOT', 1, 'Chia ba đợt 40, 30, 30', date '2026-09-01')
 on conflict (code, version) do nothing;
 insert into app.payment_term_installment (term_id, seq, share_percent, fixed_amount, due_days)
 select t.id, v.seq, v.pct, v.amt, v.due
