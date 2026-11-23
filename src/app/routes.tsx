@@ -410,6 +410,7 @@ const StudentAssignmentPage = lazyScreen(
 );
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
+const GuidePage = lazyScreen(() => import('../pages/huong-dan/GuidePage'), 'GuidePage');
 const HomePage = lazyScreen(() => import('../pages/HomePage'), 'HomePage');
 const DetailDemoPage = lazyScreen(() => import('../pages/dev/DetailDemoPage'), 'DetailDemoPage');
 const DialogsDemoPage = lazyScreen(() => import('../pages/dev/DialogsDemoPage'), 'DialogsDemoPage');
@@ -468,6 +469,7 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { index: true, element: <CrmHome /> },
+          { path: 'huong-dan/:slug?', element: <GuidePage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           {
             path: 'lead',
