@@ -395,6 +395,10 @@ const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
   'TeacherSchedulePage',
 );
+const StudentSchedulePage = lazyScreen(
+  () => import('../pages/hoc/StudentSchedulePage'),
+  'StudentSchedulePage',
+);
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
 const HomePage = lazyScreen(() => import('../pages/HomePage'), 'HomePage');
@@ -1265,7 +1269,7 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: <PortalTabPage title="Trang chủ" stage={GD4} /> },
           { path: 'bai-tap', element: <PortalTabPage title="Bài tập" stage={GD4} /> },
-          { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
+          { path: 'lich', element: <StudentSchedulePage /> },
           { path: 'ket-qua', element: <PortalTabPage title="Kết quả" stage={GD4} /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },
