@@ -35,7 +35,7 @@ stable
 security definer
 set search_path = ''
 as $$
-  with y as (select b.id as branch_id, app.school_year_start(b.id) as start_on from app.branch b)
+  with y as materialized (select b.id as branch_id, app.school_year_start(b.id) as start_on from app.branch b)
   select i.student_id, max(bt.created_at)
     from app.grade_promotion_item i
     join app.grade_promotion_batch bt on bt.id = i.batch_id
