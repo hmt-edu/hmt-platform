@@ -257,6 +257,13 @@ export const CRM_MENU: MenuGroup[] = [
       },
       // CS-16 «Nhận xét chờ gửi» đã BỎ (R-V2-40): giáo viên tự xuất ảnh, PDF và gửi tay vào group Zalo lớp; CSKH không tham gia.
       {
+        code: 'CS-07',
+        label: 'Phiếu chuyển cơ sở đến',
+        slug: 'phieu-chuyen-co-so-den',
+        requires: can('TICKET', 'DUYET'),
+        stage: '',
+      },
+      {
         code: 'TT-01',
         label: 'Tái tục',
         slug: 'tai-tuc',
