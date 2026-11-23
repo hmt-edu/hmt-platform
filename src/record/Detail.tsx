@@ -75,6 +75,20 @@ export function SmartButtons({
   );
 }
 
+/** Chú thích thường trực thu vào biểu tượng (i): rê chuột hoặc dùng bàn phím để đọc (mẫu B3, rà soát 23/11). */
+export function InfoTip({ text }: { text: string }) {
+  return (
+    <button
+      type="button"
+      title={text}
+      aria-label={text}
+      className="focus-ring ml-1.5 inline-flex align-middle text-fg-muted hover:text-fg-label"
+    >
+      <Icon name="info" size={16} />
+    </button>
+  );
+}
+
 /** Tên trường và giá trị trong thân bản ghi. */
 export function DetailField({
   label,
@@ -97,12 +111,15 @@ export function DetailField({
   error?: string | null | undefined;
 }) {
   const editing = mode !== 'view' && editor !== undefined;
+  // Mẫu B6: khi xem, trường không có giá trị thì không dựng dòng «—» (giá trị hiển thị được vẫn hiện).
+  if (!editing && (value === '' || value === null || value === undefined || value === false))
+    return null;
   return (
     <div className="grid min-h-8 grid-cols-1 items-center gap-1 py-1 sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-2">
       <dt className="text-body font-semibold">
         {label}
         {required && editing && <span className="text-on-danger-subtle"> *</span>}
-        {hint && <span className="ml-1.5 text-caption font-normal text-fg-muted">{hint}</span>}
+        {hint && <InfoTip text={hint} />}
       </dt>
       <dd className="min-w-0">
         {editing ? (
@@ -116,7 +133,7 @@ export function DetailField({
             )}
           </div>
         ) : (
-          <span className="break-words">{value === '' || value === null ? '—' : value}</span>
+          <span className="break-words">{value}</span>
         )}
       </dd>
     </div>
@@ -242,6 +259,10 @@ export function RecordDetail({
             <Button onClick={onCancel} disabled={saving}>
               Huỷ
             </Button>
+            {/* Mẫu B15: chỗ cho nhãn «Chưa lưu» luôn có khi sửa, hiện nhãn thì nút Lưu/Huỷ không dời. */}
+            <span className="inline-block min-w-[4.5rem] text-caption text-fg-muted">
+              {dirty && !saving ? 'Chưa lưu' : ''}
+            </span>
           </>
         ) : (
           <>
@@ -311,7 +332,9 @@ export function RecordDetail({
                 disabled={creating || readOnly}
               />
               {stageNote && (
-                <p className="px-3.5 pt-1.5 pb-1 text-caption text-fg-muted">{stageNote}</p>
+                <p className="px-3.5 pt-1.5 pb-1 text-caption text-fg-muted">
+                  <InfoTip text={stageNote} />
+                </p>
               )}
             </div>
           )}
