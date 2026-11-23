@@ -16,9 +16,9 @@ import { Button } from '../../ui/Button';
 import { Table } from '../../ui/Data';
 import { ReassignApproverDialog } from '../../features/approver-reassign/ReassignApproverDialog';
 import { useReassignState } from '../../features/approver-reassign/useReassign';
-import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
+import { ConfirmDialog, FormDialog, ReasonDialog, Summary } from '../../ui/Dialogs';
 import { Spinner, StateView } from '../../ui/Feedback';
-import { TextField } from '../../ui/Field';
+import { Checkbox, TextField } from '../../ui/Field';
 import { Combobox, DateInput, MoneyInput, type ComboOption } from '../../ui/Inputs';
 import { Select, Tabs, type MenuItem } from '../../ui/Overlays';
 import type { StageStep } from '../../ui/Stage';
@@ -132,6 +132,8 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
     'reject' | 'cancel' | 'resubmit' | 'reassign' | 'approve_ql' | 'approve_kt' | null
   >(null);
   const [dialogError, setDialogError] = useState<string | null>(null);
+  // Ô «Đã kiểm tra…» của hộp duyệt (TC17): mỗi lần mở hộp phải tích lại.
+  const [checked, setChecked] = useState(false);
   useCrumbTail(record.code);
 
   const can = (a: ReceiptRecord['actions'][number]) => record.actions.includes(a) && !phone;
@@ -575,6 +577,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 loading={busy === 'ql'}
                 onClick={() => {
                   setDialogError(null);
+                  setChecked(false);
                   setDialog('approve_ql');
                 }}
               >
@@ -587,6 +590,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 loading={busy === 'kt'}
                 onClick={() => {
                   setDialogError(null);
+                  setChecked(false);
                   setDialog('approve_kt');
                 }}
               >
@@ -810,35 +814,21 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             .finally(() => setBusy(null));
         }}
       />
-      {/* K08 «Duyệt tiền»: tóm tắt số tiền, đơn, phụ huynh rồi mới duyệt (thẻ C-23-12). Số lấy từ phiếu, không viết cứng. */}
-      <ConfirmDialog
+      {/* TC17_duyet (abea v15): hộp duyệt tóm tắt phiếu, phải tích «Đã kiểm tra» mới bấm Duyệt; số lấy từ phiếu, không viết cứng. */}
+      <FormDialog
         open={dialog === 'approve_ql' || dialog === 'approve_kt'}
         onOpenChange={(o) => !o && setDialog(null)}
         title={
           dialog === 'approve_kt'
-            ? `Duyệt phiếu thu ${record.code}?`
-            : `Duyệt phiếu thu ${record.code}, chuyển Kế toán?`
-        }
-        summary={[
-          {
-            label: 'Số tiền',
-            value: <span className="tabular font-semibold">{formatMoney(record.amount)}</span>,
-          },
-          {
-            label: record.order ? 'Đơn hàng' : 'Loại phiếu',
-            value: record.order ? record.order.code : 'Thu nợ đầu kỳ',
-          },
-          { label: 'Phụ huynh', value: record.parent?.name ?? '—' },
-        ]}
-        note={
-          dialog === 'approve_kt'
-            ? 'Kế toán duyệt xong, tiền được ghi nhận và chia về các dòng đơn. Không hoàn tác bằng nút.'
-            : 'Quản lý duyệt xong, phiếu chuyển Kế toán duyệt tiếp.'
+            ? `Duyệt phiếu thu ${record.code} (kế toán)`
+            : `Duyệt phiếu thu ${record.code} (quản lý)`
         }
         confirmLabel="Xác nhận duyệt"
+        cancelLabel="Quay lại"
+        canSubmit={checked}
         busy={busy === 'ql' || busy === 'kt'}
         error={dialogError}
-        onConfirm={() => {
+        onSubmit={() => {
           const kt = dialog === 'approve_kt';
           setBusy(kt ? 'kt' : 'ql');
           setDialogError(null);
@@ -856,7 +846,45 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             .catch((e: unknown) => setDialogError(errorOf(e).message))
             .finally(() => setBusy(null));
         }}
-      />
+      >
+        <Summary
+          rows={[
+            { label: 'Phiếu thu', value: record.code },
+            {
+              label: record.order ? 'Đơn hàng' : 'Loại phiếu',
+              value: record.order ? record.order.code : 'Thu nợ đầu kỳ',
+            },
+            {
+              label: 'Phụ huynh',
+              value: record.parent ? `${record.parent.name} · ${record.parent.phone}` : '—',
+            },
+            { label: 'Người lập', value: record.created_by_name ?? '—' },
+            { label: 'Cơ sở thu tiền', value: record.collect_branch_code },
+            {
+              label: 'Số tiền',
+              value: (
+                <span className="tabular">
+                  {formatMoney(record.amount)}
+                  {record.payment_method ? ` · ${record.payment_method}` : ''}
+                </span>
+              ),
+            },
+            { label: 'Ngày nhận', value: formatDate(record.paid_on) },
+            { label: 'Tài khoản nhận', value: record.receiving_account ?? '—' },
+            { label: 'Mã giao dịch', value: record.txn_ref ?? '—' },
+          ]}
+        />
+        <Checkbox
+          label="Đã kiểm tra số tiền, hình thức nhận và đơn hàng của phiếu"
+          checked={checked}
+          onChange={(e) => setChecked(e.target.checked)}
+        />
+        <p className="text-caption text-fg-muted">
+          {dialog === 'approve_kt'
+            ? 'Khi duyệt: tiền được ghi nhận và chia về các dòng đơn, sinh khoản tiền vào. Không hoàn tác bằng nút.'
+            : 'Khi duyệt: phiếu chuyển sang Chờ kế toán, ghi tên người duyệt vào lịch sử. Chưa sinh khoản tiền vào, chưa cấp giờ: chỉ khi Kế toán duyệt.'}
+        </p>
+      </FormDialog>
       <ConfirmDialog
         open={dialog === 'resubmit'}
         onOpenChange={(o) => !o && setDialog(null)}
