@@ -45,8 +45,8 @@ export function DayAttendancePage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-4">
       <h1 className="text-h2">Điểm danh trong ngày</h1>
       <p className="text-body text-fg-muted">
-        Theo dõi điểm danh các buổi trong ngày. Ô giáo viên là trạng thái chính thức (R-DD-02); sửa
-        ở màn buổi.
+        Theo dõi điểm danh các buổi trong ngày. Ô giáo viên là trạng thái chính thức; sửa ở màn
+        buổi.
       </p>
       <TextField
         label="Ngày (để trống là hôm nay)"

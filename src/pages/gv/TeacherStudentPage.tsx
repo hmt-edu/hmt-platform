@@ -80,7 +80,7 @@ export function TeacherStudentPage() {
         </div>
       </section>
       <Alert tone="info">
-        Hồ sơ rút gọn: chỉ điểm danh, điểm tiêu chí, BTVN trong lớp của bạn (R-GV-13).
+        Hồ sơ rút gọn: chỉ điểm danh, điểm tiêu chí, BTVN trong lớp của bạn.
       </Alert>
       <h2 className="text-h4">Theo buổi</h2>
       {p.sessions.length === 0 ? (

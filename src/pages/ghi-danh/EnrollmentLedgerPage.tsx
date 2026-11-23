@@ -75,7 +75,7 @@ export function EnrollmentLedgerPage() {
         }}
         emptyMessage={{
           title: 'Chưa có dòng sổ giờ nào',
-          hint: 'Sổ giờ chỉ thêm dòng, không sửa dòng cũ (R-GD-04). Dòng đầu tiên sinh khi phiếu thu được duyệt.',
+          hint: 'Sổ giờ chỉ thêm dòng, không sửa dòng cũ. Dòng đầu tiên sinh khi phiếu thu được duyệt.',
         }}
       />
     </div>

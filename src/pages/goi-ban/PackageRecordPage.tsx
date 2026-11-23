@@ -104,7 +104,7 @@ export function PackageRecordPage() {
         onCancel={() => undefined}
         aside={
           <p className="p-3 text-body text-fg-muted">
-            Ghi chú và hoạt động của gói làm sau. Mọi sửa cấu hình đã ghi nhật ký thao tác (QT-11).
+            Ghi chú và hoạt động của gói làm sau. Mọi sửa cấu hình đã ghi nhật ký thao tác.
           </p>
         }
         businessActions={
@@ -121,7 +121,7 @@ export function PackageRecordPage() {
               </Button>
             )}
             <Link className="text-body text-action-link underline" to="/crm/cau-hinh/bang-gia">
-              Xem bảng giá (CH-03)
+              Xem bảng giá
             </Link>
             <Tag tone={pkg.is_active ? 'success' : 'neutral'}>
               {pkg.is_active ? 'Đang bán' : 'Ngừng'}

@@ -109,7 +109,7 @@ export function SessionPendingPage() {
       }
       emptyMessage={{
         title: 'Không có buổi nào chưa hoàn tất',
-        hint: 'Buổi đã chốt mà giáo viên chưa hoàn tất trong hạn sẽ hiện ở đây (R-BUOI-02).',
+        hint: 'Buổi đã chốt mà giáo viên chưa hoàn tất trong hạn sẽ hiện ở đây.',
       }}
     />
   );
