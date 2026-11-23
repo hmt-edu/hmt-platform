@@ -250,7 +250,7 @@ export function TeacherAttendancePage() {
                 </p>
                 {s.has_review && (
                   <p className="text-caption text-fg-muted">
-                    Đã chấm nhận xét. Đổi sang Vắng thì điểm không được tính.
+                    Đã chấm nhận xét ở bước 3. Đổi sang Vắng thì điểm không được tính.
                   </p>
                 )}
               </div>
@@ -284,7 +284,7 @@ export function TeacherAttendancePage() {
           </Button>
           {!dirty && (
             <ButtonLink to={`/gv/buoi/${id}`} fullWidth>
-              Bước tiếp ›
+              Bước tiếp: Nội dung buổi ›
             </ButtonLink>
           )}
           <p className="text-caption text-fg-muted">Bấm Lưu mới ghi. Không tự lưu.</p>
