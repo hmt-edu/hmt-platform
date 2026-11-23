@@ -10,9 +10,19 @@ export type CompleteDraft = {
 
 export type CompleteErrors = { result?: string; next?: string };
 
-/** Kết quả bắt buộc khi lịch là Gọi điện (anh chốt 23/11, TS-13); loại khác tuỳ chọn. */
-export function resultRequired(activityCode: string): boolean {
-  return activityCode === CALL_ACTIVITY;
+/** Khoá tham số bật luật bắt Kết quả (QT-09); cùng khoá với app.complete_appointment. */
+export const RESULT_REQUIRED_SETTING = 'appointment_call_result_required';
+
+/**
+ * Kết quả bắt buộc CHỈ khi: loại hẹn là Gọi điện, không phải lịch tự nhắc, và tham số bật (anh chốt 15:54 23/11, TS-13).
+ * Khớp luật trong app.complete_appointment (migration 628); tham số chưa đọc được (null) thì không bắt, DB vẫn chặn.
+ */
+export function resultRequired(
+  activityCode: string,
+  isAutoReminder: boolean,
+  settingOn: boolean | null,
+): boolean {
+  return activityCode === CALL_ACTIVITY && !isAutoReminder && settingOn === true;
 }
 
 /**
@@ -20,13 +30,13 @@ export function resultRequired(activityCode: string): boolean {
  * thời điểm phải sau hiện tại (`nextAt` đã ghép giờ Việt Nam, null khi chưa đủ ngày giờ).
  */
 export function completeErrors(
-  activityCode: string,
+  required: boolean,
   draft: CompleteDraft,
   nextAt: Date | null,
   now: Date,
 ): CompleteErrors {
   const e: CompleteErrors = {};
-  if (resultRequired(activityCode) && draft.resultCode === '') e.result = 'Chọn kết quả.';
+  if (required && draft.resultCode === '') e.result = 'Chọn kết quả.';
   const hasAny = draft.nextDate !== null || draft.nextTime.trim() !== '';
   if (hasAny) {
     if (nextAt === null) e.next = 'Chọn đủ ngày và giờ của lần hẹn sau.';

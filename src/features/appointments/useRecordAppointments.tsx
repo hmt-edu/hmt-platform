@@ -98,6 +98,7 @@ export function useOpportunityAppointments({
             ? {
                 id: completing.id,
                 activityCode: completing.activity_code,
+                isAutoReminder: completing.is_auto_reminder,
                 label: `${activityName(completing.activity_code)} · ${completing.title}`,
                 context: `${label} · ${formatDateTime(completing.scheduled_at)}`,
               }

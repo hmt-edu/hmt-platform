@@ -1,13 +1,18 @@
 // TS-11 Hoàn thành lịch hẹn (khuôn K08 FormDialog): Kết quả (bắt buộc với Gọi điện, danh mục từ DB), Hẹn lần sau (tuỳ chọn), Ghi chú (tuỳ chọn).
 // Luật chặn thật ở app.complete_appointment (migration 628); giao diện chỉ kiểm sớm.
 import { useState } from 'react';
-import { errorOf } from '../../lib/db';
+import { errorOf, useBoolSetting } from '../../lib/db';
 import { FormDialog } from '../../ui/Dialogs';
 import { Field, INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { DateInput } from '../../ui/Inputs';
 import { OptionalSelect } from '../../ui/OptionalSelect';
 import { combineVn } from './appointmentTime';
-import { completeErrors, resultRequired, type CompleteDraft } from './completeAppointmentForm';
+import {
+  RESULT_REQUIRED_SETTING,
+  completeErrors,
+  resultRequired,
+  type CompleteDraft,
+} from './completeAppointmentForm';
 
 /** Mã kết quả gợi ý bật «Hẹn lần sau» (nhắc người dùng chọn ngày gọi lại); DB không ép. */
 const CALL_BACK = 'HEN_GOI_LAI';
@@ -15,6 +20,8 @@ const CALL_BACK = 'HEN_GOI_LAI';
 export type CompleteTarget = {
   id: string;
   activityCode: string;
+  /** Lịch tự nhắc do hệ thống tạo: không bắt Kết quả. */
+  isAutoReminder: boolean;
   /** «Gọi điện · Gọi lại hỏi lịch học». */
   label: string;
   /** «Cơ hội CO000121 · 11/10/2026 09:00 · Trần Thu Hà». */
@@ -70,8 +77,9 @@ function Body({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const nextAt = combineVn(draft.nextDate, draft.nextTime);
-  const errors = completeErrors(target.activityCode, draft, nextAt, new Date());
-  const required = resultRequired(target.activityCode);
+  const settingOn = useBoolSetting(RESULT_REQUIRED_SETTING);
+  const required = resultRequired(target.activityCode, target.isAutoReminder, settingOn);
+  const errors = completeErrors(required, draft, nextAt, new Date());
   // Nút Hoàn thành mờ tới khi chọn Kết quả (nếu bắt buộc); lỗi ô khác hiện sau khi bấm.
   const canSubmit = !busy && errors.result === undefined && (!show || errors.next === undefined);
 

@@ -14,6 +14,8 @@ export type UpcomingAppointment = {
   status: 'CHUA_LAM' | 'HOAN_THANH' | 'HUY';
   owner_id: string;
   owner_name: string | null;
+  /** Lịch tự nhắc do hệ thống tạo (list_appointments trả sẵn). */
+  is_auto_reminder: boolean;
 };
 
 const ACTIVITY_ICON: Record<string, IconName> = {

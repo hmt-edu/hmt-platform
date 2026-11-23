@@ -1118,6 +1118,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
             ? {
                 id: completing.id,
                 activityCode: completing.activity_code,
+                isAutoReminder: completing.is_auto_reminder,
                 label: `${activityName(completing.activity_code)} · ${completing.title}`,
                 context: `Lead ${record.code} · ${formatDateTime(completing.scheduled_at)} · ${leadTitle(record)}`,
               }
