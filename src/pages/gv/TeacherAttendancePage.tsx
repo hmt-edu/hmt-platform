@@ -12,6 +12,7 @@ import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { Dialog } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { cn } from '../../ui/cn';
+import { SessionStepBar } from './SessionStepBar';
 import {
   buildEntries,
   countMarked,
@@ -22,6 +23,7 @@ import {
   setDraft,
   sheetTitle,
   sheetWhen,
+  summarizeStatuses,
   type AttendanceConflict,
   type AttendanceSheet,
   type AttendanceStatus,
@@ -128,6 +130,8 @@ export function TeacherAttendancePage() {
   const total = data.students.length;
   const marked = countMarked(data.students, draft);
   const firstStatus = data.statuses[0];
+  // Đã điểm danh đủ và không còn bản nháp: hiện tóm tắt, nút «Bước tiếp» và «Sửa điểm danh» (khung GV05_buoc_tiep).
+  const allMarked = total > 0 && marked === total;
 
   function choose(student: AttendanceStudent, code: string | null) {
     if (done) return;
@@ -195,6 +199,7 @@ export function TeacherAttendancePage() {
 
   return (
     <Shell title="Điểm danh" subtitle={subtitle}>
+      <SessionStepBar current={1} done={allMarked && !dirty ? [1] : []} />
       <UnsavedGuard
         when={dirty}
         title="Chưa lưu thay đổi"
@@ -283,10 +288,23 @@ export function TeacherAttendancePage() {
           >
             Lưu điểm danh
           </Button>
+          {!dirty && allMarked && (
+            <p className="text-caption font-semibold" role="status">
+              {marked}/{total} · {summarizeStatuses(data.students, data.statuses, draft)}
+            </p>
+          )}
           {!dirty && (
-            <ButtonLink to={`/gv/buoi/${id}`} fullWidth>
+            <ButtonLink to={`/gv/buoi/${id}/noi-dung`} fullWidth>
               Bước tiếp: Nội dung buổi ›
             </ButtonLink>
+          )}
+          {!dirty && allMarked && (
+            <Button
+              variant="secondary"
+              onClick={() => rows.current[data.students[0]?.student_id ?? '']?.focus()}
+            >
+              Sửa điểm danh
+            </Button>
           )}
           <p className="text-caption text-fg-muted">Bấm Lưu mới ghi. Không tự lưu.</p>
         </div>
