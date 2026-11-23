@@ -5,6 +5,7 @@ import {
 } from '../../../supabase/functions/_shared/login-rules.ts';
 import { useAuth } from '../../lib/auth/authContext';
 import { usePasswordPolicyState } from '../../lib/auth/usePasswordPolicy';
+import { verifyCurrentPassword } from '../../lib/auth/verifyCurrentPassword';
 import { Button } from '../../ui/Button';
 import { Icon } from '../../ui/icons';
 import { cn } from '../../ui/cn';
@@ -39,6 +40,7 @@ export function NewPasswordForm({
   submitLabel,
   footnote,
   disableUntilFilled = false,
+  askCurrent = false,
   afterAuthUpdate,
   onDone,
 }: {
@@ -47,6 +49,8 @@ export function NewPasswordForm({
   footnote?: string;
   /** Nút mờ cho tới khi cả hai ô đã nhập (DN07, đổi mật khẩu lần đầu). */
   disableUntilFilled?: boolean;
+  /** Hỏi mật khẩu hiện tại và kiểm trước khi đổi (đổi trong hồ sơ cá nhân, S8). Đổi lần đầu và đặt lại từ email không hỏi. */
+  askCurrent?: boolean;
   afterAuthUpdate?: () => Promise<string | null>;
   onDone: () => void;
 }) {
@@ -57,12 +61,15 @@ export function NewPasswordForm({
     loading: policyLoading,
     retry: retryPolicy,
   } = usePasswordPolicyState();
+  const [current, setCurrent] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [fieldError, setFieldError] = useState<{
+    current: string | undefined;
     password: string | undefined;
     confirm: string | undefined;
   }>({
+    current: undefined,
     password: undefined,
     confirm: undefined,
   });
@@ -81,13 +88,27 @@ export function NewPasswordForm({
       );
     }
     const problems = {
+      current: askCurrent && current === '' ? 'Nhập mật khẩu hiện tại.' : undefined,
       password: checkPassword(password, policy) ?? undefined,
       confirm: password === confirm ? undefined : 'Hai lần nhập mật khẩu không khớp.',
     };
     setFieldError(problems);
-    if (problems.password || problems.confirm) return;
+    if (problems.current || problems.password || problems.confirm) return;
     setBusy(true);
     setError(null);
+    // S8: kiểm mật khẩu hiện tại trước khi đổi; không kiểm được thì không đổi.
+    if (askCurrent) {
+      const email = session?.user.email ?? '';
+      const verdict = await verifyCurrentPassword(email, current);
+      if (verdict !== 'ok') {
+        setBusy(false);
+        if (verdict === 'wrong') {
+          setFieldError({ ...problems, current: 'Mật khẩu hiện tại không đúng.' });
+          return;
+        }
+        return setError('Chưa kiểm tra được mật khẩu hiện tại. Kiểm tra mạng rồi thử lại.');
+      }
+    }
     const { error: authError } = await supabase.auth.updateUser({ password });
     if (authError) {
       setBusy(false);
@@ -97,6 +118,7 @@ export function NewPasswordForm({
     await refresh();
     setBusy(false);
     if (problem) return setError(problem);
+    setCurrent('');
     setPassword('');
     setConfirm('');
     onDone();
@@ -115,6 +137,18 @@ export function NewPasswordForm({
         aria-hidden="true"
         className="sr-only"
       />
+      {askCurrent && (
+        <PasswordInput
+          size="lg"
+          label="Mật khẩu hiện tại"
+          name="current-password"
+          autoComplete="current-password"
+          required
+          error={fieldError.current}
+          value={current}
+          onChange={(e) => setCurrent(e.target.value)}
+        />
+      )}
       <PasswordInput
         size="lg"
         label="Mật khẩu mới"
