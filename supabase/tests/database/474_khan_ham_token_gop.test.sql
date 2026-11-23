@@ -203,8 +203,8 @@ select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_must_change_password')::bool
 select pg_temp.sudo($$update app.setting_def set value = 'false' where key = 'first_password_change_required_staff'$$);
 select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_must_change_password')::boolean, false, 'Token: tắt tham số nhân viên thì hết bắt đổi mật khẩu (E31)');
 select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'mfa_required_enabled'$$);
-select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_require_mfa')::boolean, true, 'Token Kế toán: bật tham số thì đòi hai bước');
-select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_mfa_optional')::boolean, false, 'Token Kế toán: bật tham số thì hết mfa_optional');
+select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_require_mfa')::boolean, false, 'Token Kế toán: bật tham số vẫn không đòi hai bước (A-23-27: chỉ Admin)');
+select is((pg_temp.hook(pg_temp.uid('admin')) ->> 'hmt_require_mfa')::boolean, true, 'Token Admin: bật tham số thì đòi hai bước (A-23-27)');
 
 select * from finish();
 rollback;
