@@ -88,3 +88,35 @@ export function isContentEditable(statusCode: string): boolean {
 }
 
 export const CONFLICT_CODE = 'HMT_XUNG_DOT';
+
+/**
+ * Hộp «hai người cùng sửa» (khung GV06_xung_dot): các ô bản của bạn khác bản vừa lấy từ máy chủ.
+ * Chỉ so sau khi làm sạch dòng trống. Rỗng nghĩa là hai bên giống nhau (không còn gì để chọn).
+ */
+export function conflictCells(
+  mine: { lines: string[]; homework: string },
+  theirs: { lines: string[]; homework: string | null },
+): { key: 'lines' | 'homework'; label: string; mine: string; theirs: string }[] {
+  const out: { key: 'lines' | 'homework'; label: string; mine: string; theirs: string }[] = [];
+  const myLines = cleanLines(mine.lines);
+  const theirLines = cleanLines(theirs.lines);
+  if (myLines.length !== theirLines.length || myLines.some((l, i) => l !== theirLines[i])) {
+    out.push({
+      key: 'lines',
+      label: 'Nội dung buổi',
+      mine: myLines.join('; '),
+      theirs: theirLines.join('; '),
+    });
+  }
+  const myHomework = mine.homework.trim();
+  const theirHomework = (theirs.homework ?? '').trim();
+  if (myHomework !== theirHomework) {
+    out.push({
+      key: 'homework',
+      label: 'Bài tập về nhà',
+      mine: myHomework,
+      theirs: theirHomework,
+    });
+  }
+  return out;
+}

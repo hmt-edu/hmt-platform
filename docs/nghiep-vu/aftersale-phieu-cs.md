@@ -49,3 +49,7 @@ Luật: R-GD-10 (giữ nguyên số giờ), R-CS-07 / R-V2-24 (người duyệt 
 - Thứ tự: quản lý cơ sở đi duyệt → phiếu tới lượt cơ sở đích → chọn lớp → duyệt → thực hiện. Cơ sở đích **không** đọc bảng phiếu qua RLS, chỉ qua hai hàm đọc `security definer` khi tới lượt.
 - Chưa làm: quản lý cơ sở đích **Từ chối** (`reject_ticket_task` kiểm quyền tại cơ sở của phiếu; đề xuất migration 569); hàng việc CHUNG-15 chưa liệt kê phiếu này (tạm có khối ở danh sách Phiếu nghiệp vụ).
 - Kiểm thử: `568_cs07_chuyen_co_so.test.sql` (đúng và bị chặn từng luật trên, RLS theo vai).
+
+## Cấp duyệt Quản lý cơ sở (migration 646, C-23-35, R-CS-07, anh chốt 24/11/2026)
+- `app.approve_ticket_task`: phiếu ở cấp `QUAN_LY_CO_SO` do Trưởng cơ sở đúng cơ sở phiếu **hoặc Admin** duyệt; **Kế toán không duyệt** (`HMT_KHONG_CO_QUYEN`). Trưởng cơ sở khác cơ sở vẫn bị chặn. Phiếu tiền (có cấp Kế toán) ở cấp quản lý vẫn chỉ Trưởng cơ sở duyệt, Admin không duyệt tiền (R-HT-01).
+- `app.get_ticket_task` (`can_approve`), `app.list_ticket_tasks` (bộ lọc «Chờ tôi duyệt»), `app.my_approval_items` («Việc chờ tôi duyệt»): cấp quản lý cơ sở chỉ hiện cho Trưởng cơ sở hoặc Admin; Kế toán không thấy nút Duyệt và phiếu đó biến khỏi danh sách chờ của Kế toán.
