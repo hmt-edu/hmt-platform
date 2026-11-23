@@ -33,8 +33,16 @@ async function db<T>(fn: (c: pg.Client) => Promise<T>): Promise<T> {
   }
 }
 
-/** Bật hoặc tắt cờ hoàn tác chỉ cho cơ sở CS5 (ghi đè theo cơ sở). */
+/**
+ * Bật hoặc tắt cờ hoàn tác: ghi đè theo cơ sở CS5 (hàm DB kiểm theo cơ sở) và giá trị chung
+ * (giao diện từ #586 đọc cờ không kèm cơ sở nên chỉ thấy giá trị chung, nút Hoàn tác mới hiện).
+ */
 async function branchFlag(on: boolean) {
+  await db((c) =>
+    c.query("update app.setting_def set value = $1 where key = 'money_reversal_enabled'", [
+      on ? 'true' : 'false',
+    ]),
+  );
   await db((c) =>
     c.query(
       `insert into app.setting_branch (setting_key, branch_id, value, is_active)
