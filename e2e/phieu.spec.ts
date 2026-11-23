@@ -236,12 +236,12 @@ test('Phiếu Nháp: Đổi lịch, Sửa phòng và tên đề, Huỷ chọn l�
   await expect(
     page.getByRole('button', { name: 'Phiếu đã huỷ. Mở lại để đưa về Nháp.' }),
   ).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Mở lại' })).toBeVisible();
-  await page.getByRole('button', { name: 'Mở lại' }).click();
+  await expect(page.getByRole('button', { name: 'Mở lại', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Mở lại', exact: true }).click();
   const reopen = dialogOf(page, 'Mở lại phiếu');
-  await expect(reopen.getByRole('button', { name: 'Mở lại' })).toBeDisabled();
+  await expect(reopen.getByRole('button', { name: 'Mở lại', exact: true })).toBeDisabled();
   await reopen.getByLabel(/^Lý do/).fill('Phụ huynh đổi ý');
-  await reopen.getByRole('button', { name: 'Mở lại' }).click();
+  await reopen.getByRole('button', { name: 'Mở lại', exact: true }).click();
   await expect(toastText(page, 'Đã mở lại phiếu về Nháp.')).toBeVisible();
   await expect(stageBar(page).getByRole('button', { name: /^Nháp/ })).toHaveAttribute(
     'aria-current',
