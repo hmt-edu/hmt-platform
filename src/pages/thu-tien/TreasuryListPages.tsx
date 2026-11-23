@@ -143,7 +143,7 @@ export function MoneyInListPage() {
         onSortChange={setSort}
         emptyMessage={{
           title: 'Chưa có khoản tiền vào nào',
-          hint: 'Khoản tiền vào tự sinh khi Kế toán duyệt phiếu thu, không ai tạo tay. Sổ không sửa, không xoá; chỉ Kế toán hoàn tác từng khoản, có lý do (R-TIEN-01, R-TIEN-26).',
+          hint: 'Khoản tiền vào tự sinh khi Kế toán duyệt phiếu thu, không ai tạo tay. Sổ không sửa, không xoá; chỉ Kế toán hoàn tác từng khoản, có lý do.',
         }}
       />
       <ReasonDialog
@@ -298,7 +298,7 @@ export function ReceivableListPage() {
         onSortChange={(next) => setSort(nextReceivableSort(next))}
         emptyMessage={{
           title: 'Không có công nợ nào',
-          hint: 'Công nợ đọc từ lịch đợt tự tính theo Điều khoản thanh toán của đơn đã duyệt (BH-05). Đợt nào đóng đủ thì biến khỏi danh sách.',
+          hint: 'Công nợ đọc từ lịch đợt tự tính theo Điều khoản thanh toán của đơn đã duyệt. Đợt nào đóng đủ thì biến khỏi danh sách.',
         }}
       />
       {list.data && (

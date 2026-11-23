@@ -176,8 +176,8 @@ export function PaymentTermPage() {
                 />
                 <p className="p-4 text-caption text-fg-muted">
                   Điều khoản đã tạo không sửa được. Muốn đổi, tạo bản mới; đơn cũ giữ lịch đóng đã
-                  sinh. Lịch dùng để theo dõi công nợ, nhắc sắp đến hạn và quá hạn; không chặn học
-                  (R-TIEN-07). Số ngày đến hạn tính từ ngày duyệt đơn.
+                  sinh. Lịch dùng để theo dõi công nợ, nhắc sắp đến hạn và quá hạn; không chặn học.
+                  Số ngày đến hạn tính từ ngày duyệt đơn.
                 </p>
               </>
             ) : (

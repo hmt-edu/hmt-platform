@@ -104,8 +104,7 @@ function Body({
         </div>
         {who === 'TT' ? (
           <p className="text-body">
-            Trung tâm huỷ: <b>không tính phí</b>. Hệ thống tự thêm một buổi vào cuối lịch
-            (R-BUOI-06).
+            Trung tâm huỷ: <b>không tính phí</b>. Hệ thống tự thêm một buổi vào cuối lịch.
           </p>
         ) : (
           <div role="radiogroup" aria-label="Tính phí" className="flex flex-wrap gap-2">
@@ -149,8 +148,8 @@ function Body({
         )}
         {who === 'HS' && (
           <p className="text-caption text-fg-muted">
-            Người huỷ tự chọn có hay không tính phí. Không áp mốc giờ cố định (R-BUOI-07). Huỷ không
-            tính phí thì xếp buổi bù ở bước sau.
+            Người huỷ tự chọn có hay không tính phí. Không áp mốc giờ cố định. Huỷ không tính phí
+            thì xếp buổi bù ở bước sau.
           </p>
         )}
       </div>

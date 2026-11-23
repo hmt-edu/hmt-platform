@@ -223,8 +223,7 @@ export function SessionRecordPage() {
           <div className="mt-6">
             <Alert tone="info">
               <b>{s.status_name}.</b> Lý do: {s.cancel_reason_name ?? 'không ghi'}
-              {s.cancel_note ? ` · ${s.cancel_note}` : ''}. Các dòng điểm danh đã bị vô hiệu
-              (R-BUOI-09).
+              {s.cancel_note ? ` · ${s.cancel_note}` : ''}. Các dòng điểm danh đã bị vô hiệu.
             </Alert>
           </div>
         )}
@@ -306,8 +305,8 @@ export function SessionRecordPage() {
                 </div>
               )}
               <p className="text-caption text-fg-muted">
-                Một em một dòng. Ô của giáo viên quyết định trạng thái chính thức (R-DD-02). Thẻ
-                Lệch: điểm danh của trung tâm khác của giáo viên, chỉ để đối chiếu.
+                Một em một dòng. Ô của giáo viên quyết định trạng thái chính thức. Thẻ Lệch: điểm
+                danh của trung tâm khác của giáo viên, chỉ để đối chiếu.
               </p>
             </section>
 
@@ -381,7 +380,7 @@ export function SessionRecordPage() {
         open={confirming}
         onOpenChange={setConfirming}
         title="Chốt danh sách buổi này?"
-        description="Danh sách em chốt ngay theo ghi danh hiện tại. Ghi danh sinh sau không lọt vào danh sách (R-GIO-02)."
+        description="Danh sách em chốt ngay theo ghi danh hiện tại. Ghi danh sinh sau không lọt vào danh sách."
         confirmLabel="Chốt danh sách"
         cancelLabel="Để sau"
         busy={close.isPending}

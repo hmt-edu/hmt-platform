@@ -378,8 +378,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
       <div className="flex flex-wrap items-center justify-between gap-2 text-caption text-fg-muted">
         {capPercent !== null ? (
           <p>
-            Chiết khấu (gồm giờ tặng) vượt {capPercent}% thì cần Trưởng cơ sở duyệt (R-TIEN-29); vẫn
-            lưu được
+            Chiết khấu (gồm giờ tặng) vượt {capPercent}% thì cần Trưởng cơ sở duyệt; vẫn lưu được
           </p>
         ) : (
           <span />
@@ -435,7 +434,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                 disabled={busy || notL8}
                 title={
                   notL8
-                    ? 'Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới chuyển được thành đơn (R-CRM-16).'
+                    ? 'Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới chuyển được thành đơn.'
                     : undefined
                 }
                 onClick={() => openFrom(`/crm/don-hang/tao?bao-gia=${record.id}`)}

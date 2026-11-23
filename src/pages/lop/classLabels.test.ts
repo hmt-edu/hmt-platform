@@ -6,17 +6,18 @@ describe('classNotes (câu theo tình trạng duyệt, LOP-02)', () => {
     const n = classNotes('NHAP', 0);
     expect(n.top?.tone).toBe('warning');
     expect(n.top?.text).toMatch(/chưa trình được/);
-    expect(n.bottom).toMatch(/R-LOP-03/);
+    expect(n.bottom).toMatch(/Thêm, sửa khung giờ ở màn Sửa lớp/);
+    expect(n.bottom).not.toMatch(/R-LOP-/);
   });
   it('Nháp đã có khung giờ: chỉ nhắc sửa được thông tin', () => {
     expect(classNotes('NHAP', 2).top?.text).toBe('Lớp ở Nháp: sửa được thông tin.');
   });
   it('Đã trình: chỉ sửa Time Table (R-LOP-02)', () => {
-    expect(classNotes('DA_TRINH', 1).top?.text).toMatch(/R-LOP-02/);
+    expect(classNotes('DA_TRINH', 1).top?.text).toMatch(/Lớp đã trình, đang chờ/);
   });
   it('Đã duyệt: câu R-LOP-11 dưới Time Table, không có dòng trên đầu', () => {
     const n = classNotes('DA_DUYET', 3);
-    expect(n.bottom).toMatch(/R-LOP-11/);
+    expect(n.bottom).toMatch(/Lớp đã duyệt: bấm Sửa/);
     expect(n.top).toBeUndefined();
   });
   it('Đã đóng, Huỷ: chỉ còn xem', () => {

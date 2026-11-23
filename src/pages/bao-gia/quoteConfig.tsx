@@ -133,7 +133,7 @@ export function buildQuoteConfig(
           {
             value: 'expired',
             label: 'Đã quá hạn',
-            hint: 'đã gửi và quá hạn; quá hạn chỉ là nhãn, không chặn chuyển đơn (R-TIEN-05)',
+            hint: 'đã gửi và quá hạn; quá hạn chỉ là nhãn, không chặn chuyển đơn',
           },
         ],
       },

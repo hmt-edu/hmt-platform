@@ -242,8 +242,8 @@ function VoucherView({ record }: { record: VoucherRecord }) {
             </p>
           )}
           <p className="text-caption text-fg-muted">
-            Sinh từ yêu cầu hoàn phí đã duyệt, không tạo tay (R-TIEN-28). Số tiền hoàn tự tính theo
-            bảng dưới, không sửa tay.
+            Sinh từ yêu cầu hoàn phí đã duyệt, không tạo tay. Số tiền hoàn tự tính theo bảng dưới,
+            không sửa tay.
           </p>
           <section className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
             <dl className="flex min-w-0 flex-col">

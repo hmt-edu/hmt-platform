@@ -188,7 +188,7 @@ export function OrderListPage() {
       onSortChange={(next) => setSort(nextOrderSort(next))}
       emptyMessage={{
         title: 'Chưa có đơn hàng nào',
-        hint: 'Đơn sinh từ báo giá hoặc cơ hội: mở báo giá rồi bấm Chuyển thành đơn, hoặc mở cơ hội ở L8 rồi bấm Tạo đơn hàng. Danh sách này không có nút Tạo (R-TIEN-02).',
+        hint: 'Đơn sinh từ báo giá hoặc cơ hội: mở báo giá rồi bấm Chuyển thành đơn, hoặc mở cơ hội ở L8 rồi bấm Tạo đơn hàng. Danh sách này không có nút Tạo.',
       }}
     />
   );

@@ -219,7 +219,7 @@ function StudentView({ record }: { record: StudentRecord }) {
               kind: 'action',
               label: 'Tạo ticket',
               onSelect: () => undefined,
-              unavailable: 'Ticket chăm sóc (CS-04) làm sau',
+              unavailable: 'Ticket chăm sóc làm sau',
             },
             {
               kind: 'action',

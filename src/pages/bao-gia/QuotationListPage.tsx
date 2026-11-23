@@ -195,7 +195,7 @@ export function QuotationListPage() {
       onRowClick={(r) => void navigate(`/crm/bao-gia/${r.id}`)}
       emptyMessage={{
         title: 'Chưa có báo giá nào',
-        hint: 'Báo giá sinh từ cơ hội: mở cơ hội rồi bấm Tạo báo giá. Danh sách này không có nút Tạo (R-TIEN-02).',
+        hint: 'Báo giá sinh từ cơ hội: mở cơ hội rồi bấm Tạo báo giá. Danh sách này không có nút Tạo.',
       }}
     />
   );

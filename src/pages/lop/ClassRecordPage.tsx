@@ -321,7 +321,7 @@ function ClassView({ record }: { record: ClassRecord }) {
                 )}
               <p className="text-caption text-fg-muted">
                 Nhóm không có mã riêng. Mỗi lớp trong nhóm vẫn độc lập: giáo viên, lịch, sĩ số, bước
-                duyệt riêng (R-LOP-14).
+                duyệt riêng.
               </p>
             </DetailSection>
           </div>
