@@ -116,6 +116,8 @@ test('6. Tạo đơn hàng từ cơ hội L8 bằng giao diện UI-O4', async ({
     .first()
     .click();
   await page.getByLabel('Số lượng dòng 1').fill('10');
+  await page.getByLabel('Kiểu thanh toán').click();
+  await page.getByRole('option').first().click();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/don-hang\/[0-9a-f-]{36}$/);
   state.orderId = page.url().split('/').pop() ?? '';

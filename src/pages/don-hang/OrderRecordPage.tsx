@@ -992,7 +992,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                   label="Điều khoản thanh toán"
                   hint="danh mục cấu hình; lịch đợt ở tab Thanh toán"
                   mode={editing ? 'edit' : 'view'}
-                  value={record.payment_term_name ?? 'Thanh toán một lần'}
+                  value={record.payment_term_name ?? 'Chưa chọn điều khoản'}
                   editor={
                     <Select
                       label="Kiểu thanh toán"
