@@ -225,7 +225,7 @@ function StudentView({ record }: { record: StudentRecord }) {
               kind: 'action',
               label: 'Cấp tài khoản',
               onSelect: () => undefined,
-              unavailable: 'Tài khoản học tập làm ở giai đoạn 4',
+              unavailable: 'Tài khoản học tập chưa bật',
             },
           ],
         }}
