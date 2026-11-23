@@ -3,15 +3,45 @@
 
 export type GuideSection = { slug: string; no: number; title: string; file: string };
 
+// Thứ tự: 0 giới thiệu (mục mở đầu, slug bat-dau là đường mặc định), 1 bắt đầu nhanh, 2 thao tác cơ bản, 3 theo vai, 4 từ điển, 5 hỏi đáp,
+// rồi các hướng dẫn chi tiết theo vai (bản đầu, còn dùng). Mọi file .md trong docs/huong-dan (trừ README, CHUP-ANH) phải có ở đây: guideIndex.test.ts giữ.
 export const GUIDE_SECTIONS: GuideSection[] = [
-  { slug: 'bat-dau', no: 0, title: 'Bắt đầu: đăng nhập, menu, tìm và lọc', file: 'chung.md' },
-  { slug: 'sale', no: 1, title: 'Sale và Tuyển sinh', file: 'sale.md' },
-  { slug: 'cham-soc-khach-hang', no: 2, title: 'Chăm sóc khách hàng', file: 'cskh.md' },
-  { slug: 'ke-toan', no: 3, title: 'Kế toán', file: 'ke-toan.md' },
-  { slug: 'truong-co-so', no: 4, title: 'Trưởng cơ sở', file: 'truong-co-so.md' },
-  { slug: 'giao-vien', no: 5, title: 'Giáo viên', file: 'giao-vien.md' },
-  { slug: 'quan-tri', no: 6, title: 'Quản trị', file: 'quan-tri.md' },
-  { slug: 'hoi-dap', no: 7, title: 'Hỏi đáp và lỗi thường gặp', file: '05-hoi-dap.md' },
+  { slug: 'bat-dau', no: 0, title: 'Giới thiệu hệ thống', file: '00-gioi-thieu.md' },
+  { slug: 'bat-dau-nhanh', no: 1, title: 'Bắt đầu nhanh', file: '01-bat-dau-nhanh.md' },
+  {
+    slug: 'thao-tac-co-ban',
+    no: 2,
+    title: 'Thao tác cơ bản dùng chung',
+    file: '02-thao-tac-co-ban.md',
+  },
+  {
+    slug: 'theo-vai-tu-van',
+    no: 3,
+    title: 'Theo vai: Tư vấn tuyển sinh',
+    file: '03-tu-van-tuyen-sinh.md',
+  },
+  { slug: 'theo-vai-cskh', no: 4, title: 'Theo vai: CSKH và vận hành lớp', file: '03-cskh.md' },
+  { slug: 'theo-vai-ke-toan', no: 5, title: 'Theo vai: Kế toán', file: '03-ke-toan.md' },
+  {
+    slug: 'theo-vai-truong-co-so',
+    no: 6,
+    title: 'Theo vai: Trưởng cơ sở',
+    file: '03-truong-co-so.md',
+  },
+  { slug: 'tu-dien', no: 7, title: 'Từ điển thuật ngữ', file: '04-tu-dien.md' },
+  { slug: 'hoi-dap', no: 8, title: 'Hỏi đáp và lỗi thường gặp', file: '05-hoi-dap.md' },
+  {
+    slug: 'chung',
+    no: 9,
+    title: 'Hướng dẫn chung (đăng nhập, menu, tìm và lọc)',
+    file: 'chung.md',
+  },
+  { slug: 'sale', no: 10, title: 'Sale và Tuyển sinh', file: 'sale.md' },
+  { slug: 'cham-soc-khach-hang', no: 11, title: 'Chăm sóc khách hàng', file: 'cskh.md' },
+  { slug: 'ke-toan', no: 12, title: 'Kế toán', file: 'ke-toan.md' },
+  { slug: 'truong-co-so', no: 13, title: 'Trưởng cơ sở', file: 'truong-co-so.md' },
+  { slug: 'giao-vien', no: 14, title: 'Giáo viên', file: 'giao-vien.md' },
+  { slug: 'quan-tri', no: 15, title: 'Quản trị', file: 'quan-tri.md' },
 ];
 
 export const DEFAULT_SECTION = GUIDE_SECTIONS[0]!;
