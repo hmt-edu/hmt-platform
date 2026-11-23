@@ -434,6 +434,16 @@ select is((select kind_code from app.refund_request where enrollment_id = pg_tem
 select is((select manager_by from app.refund_request where enrollment_id = pg_temp.d3e()), pg_temp.uid('bm1'), 'D-23-07 Người duyệt cấp 1 ghi đúng (R-TIEN-01)');
 select is(pg_temp.bal(pg_temp.d3e()), 0::bigint, 'D-23-07 Đúng: hoàn tiền thì KHÔNG giữ số dư');
 
+-- D-23-26: xem trước tiền của phiếu Dừng học (migration 632). Phiếu tt7 là Hoàn tiền; số liệu tính lại từ dữ liệu hiện tại nên chỉ kiểm cấu trúc, quyền và nhánh chặn.
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is((select app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'money_mode'), 'HOAN_TIEN', 'D-23-26 Đúng: xem trước ghi cách xử lý tiền phiếu đã chọn');
+select ok((select (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) -> 'balance_amount') is not null), 'D-23-26 Đúng: xem trước có số dư giữ lại (R-TIEN-33)');
+select ok((select (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'refund_amount') is not null
+            or (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'refund_error') is not null), 'D-23-26 Đúng: có số hoàn hoặc mã lỗi vì sao không tính được (R-TIEN-28)');
+select is(pg_temp.err($$select app.preview_stop_task_money(gen_random_uuid())$$), 'HMT_KHONG_TIM_THAY', 'D-23-26 Chặn: phiếu không tồn tại');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select isnt(pg_temp.err($$select app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7))$$), null, 'D-23-26 Chặn: người ngoài cơ sở của phiếu không xem được tiền');
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 -- D-23-30 (migration 636): phiếu Hoàn học phí, Dừng học, Chuyển phí kiểm phạm vi dữ liệu (chặn em khác, cơ sở khác, phụ huynh nhận ngoài cơ sở, sửa payload sau khi tạo).
 select pg_temp.sudo($$update app.enrollment set status_code = 'DANG_HOC' where id = pg_temp.d1e()$$); -- dữ liệu thử: ghi danh còn hiệu lực (các bài trên đã đóng hai ghi danh)
 select pg_temp.sudo($$create function pg_temp.act_enr() returns uuid language sql stable security definer as

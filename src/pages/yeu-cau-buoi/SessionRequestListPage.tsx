@@ -25,6 +25,7 @@ import {
 } from './requestLogic';
 import {
   useApproveRequest,
+  useRequestClashCheck,
   useCancelRequest,
   useRejectRequest,
   useRequestPage,
@@ -45,11 +46,29 @@ export function SessionRequestListPage() {
   const status = FILTERS.find((f) => f.key === filter)?.status ?? null;
   const query = useRequestPage(status, page * PAGE_SIZE, PAGE_SIZE);
   const approve = useApproveRequest();
+  const clashCheck = useRequestClashCheck();
+  const [clashing, setClashing] = useState<{ row: RequestRow; lines: string[] } | null>(null);
   const cancel = useCancelRequest();
   const [rejecting, setRejecting] = useState<RequestRow | null>(null);
   const [cancelling, setCancelling] = useState<RequestRow | null>(null);
   const [error, setError] = useState<string | null>(null);
   const canCreate = access.can('SESSION', 'TAO');
+
+  // G21: kiểm trùng giờ giáo viên, phòng TRƯỚC khi duyệt; có trùng thì hỏi lại (cảnh báo, không chặn). Kiểm lỗi thì cứ duyệt như cũ.
+  async function startApprove(r: RequestRow) {
+    setError(null);
+    try {
+      const clash = await clashCheck.mutateAsync(r.id);
+      const lines = [...clash.teacher_clash, ...clash.room_clash];
+      if (lines.length > 0) {
+        setClashing({ row: r, lines });
+        return;
+      }
+    } catch {
+      // Không kiểm được thì không chặn việc duyệt: máy chủ vẫn trả cảnh báo sau khi duyệt.
+    }
+    await doApprove(r);
+  }
 
   async function doApprove(r: RequestRow) {
     setError(null);
@@ -87,8 +106,8 @@ export function SessionRequestListPage() {
           <Button
             size="sm"
             variant="primary"
-            disabled={approve.isPending}
-            onClick={() => void doApprove(r)}
+            disabled={approve.isPending || clashCheck.isPending}
+            onClick={() => void startApprove(r)}
           >
             Duyệt
           </Button>
@@ -226,6 +245,29 @@ export function SessionRequestListPage() {
         </div>
       )}
       <RejectDialog row={rejecting} onClose={() => setRejecting(null)} />
+      <ConfirmDialog
+        open={clashing !== null}
+        onOpenChange={(o) => !o && setClashing(null)}
+        title="Trùng giờ, vẫn duyệt?"
+        description={
+          clashing ? (
+            <span className="flex flex-col gap-1">
+              {clashing.lines.map((l) => (
+                <span key={l}>{l}</span>
+              ))}
+            </span>
+          ) : undefined
+        }
+        note="Đây chỉ là cảnh báo, bạn vẫn duyệt được."
+        confirmLabel="Vẫn duyệt"
+        cancelLabel="Quay lại"
+        busy={approve.isPending}
+        onConfirm={() => {
+          const row = clashing?.row;
+          setClashing(null);
+          if (row) void doApprove(row);
+        }}
+      />
       <ConfirmDialog
         open={cancelling !== null}
         onOpenChange={(o) => !o && setCancelling(null)}
