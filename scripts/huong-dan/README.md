@@ -14,3 +14,4 @@ node scripts/huong-dan/chay.mjs            # cả ba bài; hoặc: dang-nhap | d
 - Bài `ban-ghi` ghi một ghi chú giả có tiền tố «[Hướng dẫn mẫu]» vào một cơ hội của dữ liệu giả.
 - Chữ nút thật nằm ở `nhan.mjs` (một chỗ); giao diện đổi chữ thì sửa ở đó. Thêm bài: thêm mục vào `BAI` trong `chay.mjs` (mảng bước `{chu, loc, lam}`).
 - `muc-1.mjs`: ảnh thật cho `docs/huong-dan/01-bat-dau-nhanh.md` (10 ảnh, ra `docs/huong-dan/assets/`, tài khoản giả, khung cam). Chạy: `node scripts/huong-dan/muc-1.mjs [tên-ảnh …]`. Chưa chụp: `doi-mat-khau-lan-dau`, `hai-buoc-*` (cần tài khoản đổi mật khẩu lần đầu/chưa thiết lập hai bước), `thanh-duoi-hoc-sinh` (cần phiên học sinh).
+- `muc-2.mjs`: ảnh thật cho `docs/huong-dan/02-thao-tac-co-ban.md` (19 ảnh, ra `docs/huong-dan/assets/`). Chạy: `node scripts/huong-dan/muc-2.mjs [tên-ảnh …]`. Không lưu bộ lọc, không gửi ghi chú, không lưu bản ghi (chỉ mở hộp rồi chụp).
