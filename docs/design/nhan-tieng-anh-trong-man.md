@@ -13,3 +13,11 @@ Quét `src/` tìm nhãn (label, header, title, placeholder, aria-label) bằng t
 | Lead, Ticket, Email | tìm kiếm, bản ghi phụ huynh, tạo người dùng | Có |
 
 **Không có nhãn tiếng Anh nào nằm ngoài canvas**, nên không đổi gì trong mã. Nếu anh Trường muốn Việt hoá một số nhãn dù canvas đang dùng tiếng Anh (ví dụ Source thành «Nguồn», Time Table thành «Thời khoá biểu»), cần anh chốt từng nhãn và nhờ Design cập nhật canvas trước, rồi Code đổi một lượt (chỉ chữ, không đổi mã).
+
+## Anh Trường chốt 23/11/2026 13:58: KHÔNG DỊCH
+
+Anh chốt giữ nguyên các nhãn tiếng Anh: **Stage, Sub-stage, Source, Sub-source, Source type, Medium, Assign, Campaign, Time Table, Done**, cộng bốn nhãn của khuôn K03 (Filters, Group By, Favorites, Save to Favorites, ngoại lệ Đ268). Đây là câu trả lời cho phần «nếu anh muốn Việt hoá thì cần anh chốt»: anh không muốn Việt hoá.
+
+- Danh sách chính thức nằm ở MỘT file: `config/nhan-tieng-anh-giu-nguyen.json`. Mọi script dò chữ giao diện (dò mã kỹ thuật lộ ra, dò tiếng Anh) phải đọc file này để cho qua; không viết danh sách thứ hai ở nơi khác.
+- Mục B5 của báo cáo rà soát (`docs/design/ra-soat-chu-tieng-anh-b23.md`) **bỏ khỏi danh sách việc cần sửa**.
+- Thêm nhãn mới vào ngoại lệ phải có anh chốt.

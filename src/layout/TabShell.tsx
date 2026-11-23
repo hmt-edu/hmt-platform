@@ -77,7 +77,7 @@ export function TabShell({ portal, product, title, tabs, sidebar, contentClass }
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-10 flex h-14 items-center gap-2 border-b border-border bg-surface px-4">
           <p className="min-w-0 flex-1 truncate font-display text-h3">{title}</p>
-          <AccountMenu portal={portal} roleLine={claims?.branchCode ?? ''} />
+          <AccountMenu portal={portal} roleLines={claims?.branchCode ? [claims.branchCode] : []} />
         </header>
         <main className={cn('w-full min-w-0 flex-1 p-4 pb-24 lg:pb-6', contentClass)}>
           {viewOnly && (
