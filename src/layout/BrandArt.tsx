@@ -136,7 +136,7 @@ const SLOGAN_STEP_SECONDS = 0.42; // allow-number: nhịp sáng từng từ theo
 /** Slogan đáy cột: từng từ sáng lần lượt (tắt khi giảm chuyển động); nhãn đọc màn hình là câu đầy đủ, các từ ẩn với trình đọc. */
 export function BrandSlogan() {
   return (
-    <p className="auth-slogan" aria-label={SLOGAN_FULL}>
+    <p className="auth-slogan" role="img" aria-label={SLOGAN_FULL}>
       {SLOGAN_WORDS.map((w, i) => (
         <span
           key={i}
