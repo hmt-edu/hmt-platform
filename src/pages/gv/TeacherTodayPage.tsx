@@ -6,7 +6,7 @@ import { errorOf, rpc, useDb } from '../../lib/db';
 import { vnDayBounds } from '../../lib/vnDay';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Alert, StateView } from '../../ui/Feedback';
 import {
   NEXT_LOOKAHEAD_DAYS,
   addDays,
@@ -20,11 +20,13 @@ import {
   type MySession,
   type MySessionsResult,
 } from './todayLogic';
+import { useTodoCount } from './useTodoCount';
 import { GvForbidden } from './GvForbidden';
 import { isForbidden } from './forbidden';
 
 export function TeacherTodayPage() {
   const supabase = useDb();
+  const overdue = useTodoCount() ?? 0;
   const todayKey = vnDayBounds().dateKey;
   const query = useQuery({
     queryKey: ['gv-today', todayKey],
@@ -54,7 +56,11 @@ export function TeacherTodayPage() {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3">
         <h1 className="text-h2">Hôm nay</h1>
-        <Spinner />
+        <div role="status" aria-label="Đang tải" className="flex flex-col gap-2">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-16 animate-pulse rounded-control bg-surface-subtle" />
+          ))}
+        </div>
       </div>
     );
   }
@@ -87,7 +93,17 @@ export function TeacherTodayPage() {
 
       {rows.length === 0 ? (
         <StateView kind="empty" title="Hôm nay bạn không có buổi dạy" headingLevel={2}>
-          Không có việc sắp trễ hạn.
+          {overdue > 0 ? (
+            <>
+              Có {overdue} việc quá hạn ·{' '}
+              <Link className="text-link underline" to="/gv/viec-can-lam">
+                Xem
+              </Link>
+              .
+            </>
+          ) : (
+            'Không có việc sắp trễ hạn.'
+          )}
           {nextSession && ` Buổi tiếp theo: ${formatNextSession(nextSession)}.`}
           {
             <span className="mt-2 block">

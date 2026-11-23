@@ -87,7 +87,7 @@ function Steps({ overview }: { overview: SessionOverview }) {
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 p-4">
       <nav aria-label="Đường dẫn" className="text-caption text-fg-muted">
-        <Link to="/gv" className="underline">
+        <Link to="/gv" className="inline-flex min-h-11 items-center underline">
           Hôm nay
         </Link>
         {' › Buổi dạy'}

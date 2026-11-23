@@ -4,7 +4,7 @@
 // (StepDialog); thêm xem trước tác động (ImpactDialog), chọn từ danh sách có kiểm tra (ChoiceDialog) và cảnh báo
 // trùng (DuplicateDialog). Dưới 640px mọi hộp thành tấm trượt từ dưới lên (K4e). Nút xác nhận mờ cho tới khi đủ
 // điều kiện. Chữ trên nút và câu thông báo do nơi dùng truyền vào, đúng theo gói thiết kế.
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { AlertDialog } from 'radix-ui';
 import { useBlocker } from 'react-router';
 import { Button } from './Button';
@@ -351,28 +351,66 @@ export function FormDialog({
   onSubmit: () => void;
   wide?: boolean | undefined;
 }) {
+  // Hộp đã có dữ liệu nhập thì bấm nền hoặc Esc KHÔNG đóng mà hỏi trước (mẫu B11); nút Huỷ vẫn đóng thẳng. Đánh dấu «đã nhập» khi có gõ, đổi giá trị, chọn mục.
+  const dirty = useRef(false);
+  const [asking, setAsking] = useState(false);
+  useEffect(() => {
+    if (open) dirty.current = false;
+  }, [open]);
+  const markDirty = () => {
+    dirty.current = true;
+  };
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(next) => !busy && onOpenChange(next)}
-      title={title}
-      description={subtitle}
-      wide={wide}
-      dismissible={!busy}
-      footer={
-        <>
-          <Button onClick={() => onOpenChange(false)} disabled={busy}>
-            {cancelLabel}
-          </Button>
-          <Button variant="primary" loading={busy} disabled={!canSubmit} onClick={onSubmit}>
-            {confirmLabel}
-          </Button>
-        </>
-      }
-    >
-      {children}
-      <ErrorLine error={error} />
-    </Dialog>
+    <>
+      <Dialog
+        open={open}
+        onOpenChange={(next) => !busy && onOpenChange(next)}
+        title={title}
+        description={subtitle}
+        wide={wide}
+        dismissible={!busy}
+        onDismissRequest={() => {
+          if (!dirty.current) return false;
+          setAsking(true);
+          return true;
+        }}
+        footer={
+          <>
+            <Button onClick={() => onOpenChange(false)} disabled={busy}>
+              {cancelLabel}
+            </Button>
+            <Button variant="primary" loading={busy} disabled={!canSubmit} onClick={onSubmit}>
+              {confirmLabel}
+            </Button>
+          </>
+        }
+      >
+        <div
+          className="contents"
+          onInput={markDirty}
+          onChange={markDirty}
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest('[role="option"]')) markDirty();
+          }}
+        >
+          {children}
+        </div>
+        <ErrorLine error={error} />
+      </Dialog>
+      <ConfirmDialog
+        open={asking && open}
+        onOpenChange={setAsking}
+        title="Bỏ nội dung đang nhập?"
+        description="Nội dung đã nhập trong hộp này sẽ mất."
+        confirmLabel="Bỏ nội dung"
+        cancelLabel="Tiếp tục nhập"
+        tone="danger"
+        onConfirm={() => {
+          setAsking(false);
+          onOpenChange(false);
+        }}
+      />
+    </>
   );
 }
 
