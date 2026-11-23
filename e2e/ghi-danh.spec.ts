@@ -98,6 +98,7 @@ test('GD-06, GD-03: hàng chờ chỉ có ghi danh Chờ xếp lớp; xếp mộ
   // Sang danh sách: ghi danh đã Đã xếp lớp.
   await page.goto('/crm/ghi-danh');
   await page.getByRole('searchbox').fill(seed.waiting.student);
+  await showAllColumns(page); // cột Tình trạng có thể nằm ngoài 8 cột mặc định (#570)
   await expect(
     page
       .getByRole('table', { name: 'Ghi danh' })
