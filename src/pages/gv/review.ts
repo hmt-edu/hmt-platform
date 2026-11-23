@@ -124,6 +124,25 @@ export function progressOfStudent(
   return { done, total: active.length };
 }
 
+/** Đếm ô theo 4 trạng thái của một em; tiêu chí tắt cả buổi tính vào «Không áp dụng». */
+export function countCellStates(
+  draft: ReviewDraft,
+  student: ReviewStudent,
+  criteria: ReviewCriterion[],
+): Record<CellState, number> {
+  const counts: Record<CellState, number> = {
+    DA_DANH_GIA: 0,
+    CHUA_DANH_GIA: 0,
+    CHUA_DU_CAN_CU: 0,
+    KHONG_AP_DUNG: 0,
+  };
+  for (const c of criteria) {
+    if (!isEnabled(draft, c)) counts.KHONG_AP_DUNG += 1;
+    else counts[cellOf(draft, student, c.criterion_id).state] += 1;
+  }
+  return counts;
+}
+
 /** Em có mặt chấm đủ mọi tiêu chí đang bật. */
 export function isStudentComplete(
   draft: ReviewDraft,

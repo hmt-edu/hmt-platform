@@ -12,6 +12,7 @@ import { formatDate } from '../../lib/format';
 import {
   buildSave,
   cellOf,
+  countCellStates,
   classProgress,
   EMPTY_DRAFT,
   GROUP_LABEL,
@@ -27,6 +28,7 @@ import {
   pickLevel,
   previewAverage,
   progressOfStudent,
+  savedCell,
   setCell,
   type Cell,
   type ReviewCriterion,
@@ -313,6 +315,7 @@ function StudentCard({
   const avg = previewAverage(draft, student, sheet.criteria);
   const note = noteOf(draft, student);
   const progress = progressOfStudent(draft, student, sheet.criteria);
+  const counts = countCellStates(draft, student, sheet.criteria);
 
   return (
     <section
@@ -362,20 +365,36 @@ function StudentCard({
             </div>
           ) : (
             <ul className="flex flex-col gap-1.5">
-              {sheet.criteria.map((criterion) => (
-                <li
-                  key={criterion.criterion_id}
-                  className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-border p-2 text-body"
-                >
-                  <span>{criterion.name}</span>
-                  <span className="text-caption text-fg-muted">Không chấm</span>
-                </li>
-              ))}
+              {sheet.criteria.map((criterion) => {
+                const saved = savedCell(student, criterion.criterion_id);
+                const kept = saved.state === 'DA_DANH_GIA' && saved.score !== null;
+                return (
+                  <li
+                    key={criterion.criterion_id}
+                    className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-border p-2 text-body"
+                  >
+                    <span>{criterion.name}</span>
+                    <span className="text-caption text-fg-muted">
+                      {kept ? `Giữ, không tính · Mức ${saved.score}` : 'Không chấm'}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </>
       ) : (
         <>
+          <div
+            role="group"
+            aria-label="Thống kê ô của em này"
+            className="grid grid-cols-2 gap-2 rounded-lg border border-border p-2 text-caption sm:grid-cols-4"
+          >
+            <span>{counts.DA_DANH_GIA} Đã đánh giá</span>
+            <span>{counts.CHUA_DANH_GIA} Chưa đánh giá</span>
+            <span>{counts.CHUA_DU_CAN_CU} Chưa đủ căn cứ</span>
+            <span>{counts.KHONG_AP_DUNG} Không áp dụng</span>
+          </div>
           {GROUP_ORDER.map((group) => {
             const items = sheet.criteria.filter((c) => c.group_code === group);
             if (items.length === 0) return null;
