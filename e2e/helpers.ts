@@ -204,3 +204,19 @@ export function shotPath(group: string, file: string): string {
   mkdirSync(dir, { recursive: true });
   return join(dir, file);
 }
+
+/**
+ * K03: bảng máy tính mặc định chỉ hiện tối đa 8 cột (mẫu B12, #570); các cột còn lại ở nút «Cột».
+ * Bài kiểm cần thấy cột nào thì gọi hàm này sau khi danh sách đã mở: bật mọi cột chưa hiện (điện thoại là dạng thẻ, không có nút Cột nên bỏ qua).
+ */
+export async function showAllColumns(page: Page) {
+  if (isPhone(page)) return;
+  await page.getByRole('button', { name: 'Cột', exact: true }).click();
+  const panel = page
+    .locator('div.flex.flex-col')
+    .filter({ has: page.getByText('Cột hiển thị', { exact: true }) })
+    .last();
+  const off = panel.getByRole('checkbox', { checked: false });
+  while ((await off.count()) > 0) await off.first().check();
+  await page.keyboard.press('Escape');
+}

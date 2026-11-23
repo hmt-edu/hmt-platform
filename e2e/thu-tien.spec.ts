@@ -3,7 +3,15 @@
 // Luật R-TIEN-01 (khoản tiền vào tự sinh, chỉ đọc), R-TIEN-07 (lịch đợt, quá hạn, sắp đến hạn), R-TIEN-26 (khoản âm là khoản đảo).
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, enterAsAdmin, expectAccessible, isPhone, pickOption } from './helpers';
+import {
+  PASSWORD,
+  enterAs,
+  enterAsAdmin,
+  expectAccessible,
+  isPhone,
+  pickOption,
+  showAllColumns,
+} from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
@@ -157,6 +165,7 @@ test('TC-13: công nợ theo đợt, quá hạn và sắp đến hạn; đợt �
   await search(page, m);
   // O1 đợt 1 (còn 300.000, quá hạn 14 ngày), O1 đợt 2 (1.200.000), O2 đợt 1 (sắp đến hạn), O2 đợt 2.
   await expect(page.getByText('1–4 / 4')).toBeVisible();
+  await showAllColumns(page);
   await expect(page.getByText('Quá hạn 14 ngày').first()).toBeVisible();
   await expect(page.getByText('Sắp đến hạn').first()).toBeVisible();
   await expect(page.getByText('Tổng còn nợ (theo bộ lọc): 2.500.000 đ')).toBeVisible();
