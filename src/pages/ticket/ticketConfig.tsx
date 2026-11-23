@@ -66,16 +66,8 @@ export function buildTicketConfig(
       },
       { key: 'title', label: 'Tiêu đề', render: (r) => r.title },
       { key: 'type', label: 'Loại', render: (r) => TYPE_LABEL[r.ticket_type] ?? r.ticket_type },
-      {
-        key: 'category',
-        label: 'Nhóm · Nhóm con',
-        render: (r) =>
-          r.category_name
-            ? r.group_name
-              ? `${r.group_name} · ${r.category_name}`
-              : r.category_name
-            : MUTED,
-      },
+      { key: 'group', label: 'Nhóm', render: (r) => r.group_name ?? MUTED },
+      { key: 'category', label: 'Nhóm con', render: (r) => r.category_name ?? MUTED },
       { key: 'student', label: 'Học sinh', render: (r) => r.student_name ?? MUTED },
       {
         key: 'priority',

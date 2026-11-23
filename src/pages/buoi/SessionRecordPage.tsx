@@ -191,25 +191,20 @@ export function SessionRecordPage() {
         {actionError && <Alert tone="danger">{actionError}</Alert>}
         <div className="grid gap-6 md:grid-cols-2">
           <DetailSection title="Thông tin buổi">
-            <DetailField
-              label="Buổi"
-              mode={view}
-              value={`${sessionNoLabel(s.session_no)} · ${s.status_name}`}
-            />
+            <DetailField label="Buổi" mode={view} value={sessionNoLabel(s.session_no)} />
+            <DetailField label="Tình trạng" mode={view} value={s.status_name} />
+            <DetailField label="Môn" mode={view} value={s.subject_name ?? ''} />
             <DetailField
               label="Lớp"
               mode={view}
               value={
                 <Link to={`/crm/lop/${s.class_id}`} className="text-link hover:underline">
-                  {classLabel(s.subject_name, s.class_code)}
+                  {s.class_code}
                 </Link>
               }
             />
-            <DetailField
-              label="Ngày giờ"
-              mode={view}
-              value={`${formatDate(s.session_date)} · ${s.start_time}–${s.end_time}`}
-            />
+            <DetailField label="Ngày" mode={view} value={formatDate(s.session_date)} />
+            <DetailField label="Giờ học" mode={view} value={`${s.start_time}–${s.end_time}`} />
             <DetailField label="Cơ sở" mode={view} value={`${s.branch_code} ${s.branch_name}`} />
             <DetailField label="Phòng" mode={view} value={s.room_name ?? ''} />
             <DetailField label="Giáo viên" mode={view} value={s.teacher_name ?? ''} />

@@ -114,7 +114,7 @@ export function ProspectStudents({
           <p className="text-body text-fg-muted">{emptyListText(entity)}</p>
         ) : (
           <div className="flex flex-col gap-2">
-            <dl className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
+            <dl className="grid grid-cols-1 gap-y-1">
               <Row label="Tên học sinh" value={selected.full_name} />
               <Row
                 label="Ngày sinh"
@@ -194,11 +194,13 @@ export function ProspectStudents({
   );
 }
 
+/** Một dòng nhãn và giá trị; giá trị trống thì ẩn cả dòng (K06: không hiện «—» tràn lan). Giá trị dài xuống dòng trong ô của mình, không đè lên nhãn. */
 function Row({ label, value }: { label: string; value: string | null }) {
+  if (value === null || value === '') return null;
   return (
     <div className="flex gap-2">
       <dt className="w-40 shrink-0 text-body text-fg-muted">{label}</dt>
-      <dd className="text-body">{value && value !== '' ? value : '—'}</dd>
+      <dd className="min-w-0 text-body break-words">{value}</dd>
     </div>
   );
 }

@@ -160,16 +160,10 @@ export function EnrollmentRecordPage() {
               mode={view}
               value={e.legacy_ref ? `${e.code} · mã cũ ${e.legacy_ref}` : e.code}
             />
-            <DetailField
-              label="Học sinh"
-              mode={view}
-              value={`${e.student_name} · ${e.student_code}`}
-            />
-            <DetailField
-              label="Phụ huynh"
-              mode={view}
-              value={`${e.parent_name} · ${e.parent_code}`}
-            />
+            <DetailField label="Học sinh" mode={view} value={e.student_name} />
+            <DetailField label="Mã học sinh" mode={view} value={e.student_code} />
+            <DetailField label="Phụ huynh" mode={view} value={e.parent_name} />
+            <DetailField label="Mã phụ huynh" mode={view} value={e.parent_code} />
             <DetailField label="Gói" mode={view} value={e.package_code ?? ''} />
             <DetailField label="Hình thức học" mode={view} value={e.delivery_mode_name ?? ''} />
             <DetailField

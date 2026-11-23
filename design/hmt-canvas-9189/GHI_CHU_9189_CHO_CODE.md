@@ -284,3 +284,6 @@ Lịch sử sau v45: v46 `1794297020-dadf` (GV-14 Tính chất tự chọn, ĐÃ
 - Tên 7 bước trạng thái trong v2-aftersale.md không kiểm được (sơ đồ không có trong phần chữ).
 - Hai khung phan_anh và khung «Khác» chưa mở xem ảnh ở trạng thái Khác; Man_GV06, Man_GV06_bs_dt chưa mở ảnh (chỉ đổi một dòng chữ).
 - R-V2-xx chưa có trong `docs/spec/04` của repo; khung vẽ theo lời anh Trường qua Chat.
+
+## Ticket xem gọn CSN-03 (canvas v56, 23/11/2026)
+Bản xem gọn là bản LÀM DUY NHẤT của màn Ticket (bản ghi, khuôn K06): `CSN03_gon_moi`, `CSN03_gon_dang_xu_ly` (menu Khác mở), `CSN03_gon_khieu_nai_ghi_ket_qua`, `CSN03_gon_huy`. 13 khung `CSN03_*` cũ gắn nhãn «BẢN CŨ, KHÔNG LÀM»: không làm; còn dùng, không nhãn: `CSN03_tao_moi`, `CSN03_tai`, `CSN03_quyen`, `CSN03_loi_luu` (canvas v57, 465 khung). Chi tiết luật hiển thị ở `GHI_CHU_V57_CHO_CODE.md`, mục «ƯU TIÊN 4» (thanh 6 bước, một nút chính theo bước, menu Khác, dải 4 ô Hạn xử lý, Người phụ trách, SĐT, Mức độ; ticket Huỷ không có menu Khác). Số trong khung là số minh hoạ.
