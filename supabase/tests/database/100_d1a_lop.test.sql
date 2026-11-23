@@ -4,6 +4,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
+create function pg_temp.op_status(p uuid) returns text language sql security definer as $$ select app.class_operating_status(p) $$;
 
 -- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
 create function pg_temp.class_clash_warnings(p uuid) returns jsonb language sql security definer as $$ select app.class_clash_warnings(p) $$;
@@ -146,8 +147,8 @@ select is((select array_agg(session_date order by session_date)::text from app.c
 select is((select expected_end_date from app.class where id = pg_temp.c('a')), pg_temp.mon() + 42, 'Ngày kết thúc dự kiến = buổi cuối (R-LOP-09)');
 select is((select array_agg(session_no order by session_date)::text from app.class_session where class_id = pg_temp.c('a')), '{1,2,3,4,5,6}', 'Số buổi đánh 1..6 theo ngày');
 select is((select teacher_id from app.class_session where class_id = pg_temp.c('a') order by session_date limit 1), pg_temp.uid('gv1'), 'Buổi lấy giáo viên từ khung giờ');
-select is(app.class_operating_status(pg_temp.c('a')), 'CHUA_KHAI_GIANG', 'Tình trạng vận hành: Chưa khai giảng khi chưa có buổi Done (R-LOP-05)');
-select is(app.class_operating_status(pg_temp.c('ns')), null, 'Trước Đã duyệt tình trạng vận hành hiện "—" (R-LOP-05)');
+select is(pg_temp.op_status(pg_temp.c('a')), 'CHUA_KHAI_GIANG', 'Tình trạng vận hành: Chưa khai giảng khi chưa có buổi Done (R-LOP-05)');
+select is(pg_temp.op_status(pg_temp.c('ns')), null, 'Trước Đã duyệt tình trạng vận hành hiện "—" (R-LOP-05)');
 
 -- R-LOP-02: lớp Đã duyệt chỉ sửa CSKH phụ trách và sĩ số.
 select is(pg_temp.err($$select app.save_class_info(pg_temp.c('a'), '{"total_sessions": 10}')$$), 'HMT_LOP_DA_KHOA', 'Chặn: lớp đã duyệt không sửa số buổi (R-LOP-02)');
@@ -173,10 +174,10 @@ select is((select count(*)::int from app.class_slot where class_id = pg_temp.c('
 
 -- ================= Huỷ, đóng (R-LOP-04) =================
 select pg_temp.sudo($$update app.class_session set status_code = 'DONE' where class_id = pg_temp.c('a') and session_no = 1$$);
-select is(app.class_operating_status(pg_temp.c('a')), 'DANG_HOC', 'Tình trạng vận hành: Đang học khi có buổi Done (R-LOP-05)');
+select is(pg_temp.op_status(pg_temp.c('a')), 'DANG_HOC', 'Tình trạng vận hành: Đang học khi có buổi Done (R-LOP-05)');
 select is(pg_temp.err($$select app.transition_class(pg_temp.c('a'), 'HUY')$$), 'HMT_LOP_DA_CO_BUOI_DONE', 'Chặn: huỷ lớp đã có buổi Done (R-LOP-04)');
 select is((app.transition_class(pg_temp.c('a'), 'DA_DONG')) ->> 'to', 'DA_DONG', 'Đúng: đóng lớp khi không còn học sinh còn giờ (R-LOP-04)');
-select is(app.class_operating_status(pg_temp.c('a')), 'DA_KET_THUC', 'Tình trạng vận hành: Đã kết thúc khi lớp Đã đóng (R-LOP-05)');
+select is(pg_temp.op_status(pg_temp.c('a')), 'DA_KET_THUC', 'Tình trạng vận hành: Đã kết thúc khi lớp Đã đóng (R-LOP-05)');
 select is(pg_temp.err($$select app.save_class_timetable(pg_temp.c('a'), '[]'::jsonb)$$), 'HMT_LOP_DA_KHOA', 'Chặn: lớp đã đóng không sửa Time Table');
 
 -- Huỷ lớp chưa có buổi Done: các buổi chưa Done chuyển Huỷ không tính phí.
