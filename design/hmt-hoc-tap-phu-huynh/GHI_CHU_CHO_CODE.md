@@ -1,6 +1,6 @@
 # Ghi chú cho Code · cổng Học tập (HT) và Phụ huynh (PH) · 23/11/2026
 
-Nguồn: canvas **HMT Đào tạo & Giáo viên** (bản hiện hành; khung HT, PH đăng từ v53, v54, v55). Zip này chỉ có khung HT, PH để đọc riêng; `canvas.json` trong zip là bản lọc.
+Nguồn: canvas **HMT Đào tạo & Giáo viên** (v60 sau sửa PH-04 ngày 23/11; HMT Platform v152 cho khung đăng nhập DN; khung HT, PH đăng từ v53, v54, v55). Zip này chỉ có khung HT, PH để đọc riêng; `canvas.json` trong zip là bản lọc.
 **Số lượng thực tế: HT 41 khung, PH 29 khung (không phải 28).** 28 khung PH đăng ở v54, thêm PH04_khong_dong_y ở v55 = 29. Tổng 70 khung.
 Số trong khung (giờ còn, tiền, mã DH/PT, ngày, tên con Minh Anh, Gia Bảo, số tệp, dung lượng) là **số minh hoạ, không chép vào code hay test**; giới hạn tệp, ngưỡng giờ thấp đọc từ tham số.
 Cả hai cổng ưu tiên điện thoại 390×844. Khổ máy tính 1440×900 chỉ có 2 khung ở HT (HT04_pc, HT09_pc). PH không có khổ máy tính.
@@ -52,7 +52,7 @@ Thanh dưới 5 tab: Trang chủ, Kết quả, Học phí, Lịch, Đề nghị.
 | | PH03_gio_thap (giờ còn thấp) | Trạng thái nghiệp vụ |
 | | PH03_tai, PH03_trong (chưa có đơn), PH03_loi | Trạng thái |
 | PH-04 Đề nghị và khiếu nại (K07) | PH04_ds, PH04_gui, PH04_chi_tiet (theo dõi 4 bước), PH04_phuong_an (xác nhận phương án), PH04_hai_long (chấm hài lòng) | Màn |
-| | PH04_khong_dong_y (nhập lý do, bắt buộc; Gửi, Huỷ) | Màn con (hộp nhập) |
+| | PH04_khong_dong_y (hộp thoại nhập lý do mở trên nền màn phương án; **không phải màn riêng**) | Trạng thái (hộp thoại) |
 | | PH04_tai, PH04_trong (chưa có), PH04_loi, PH04_loi_gui (lỗi khi gửi) | Trạng thái |
 | PH-05 Lịch học của con (K05) | PH05_ds | Màn |
 | | PH05_tai, PH05_trong (tuần không có buổi), PH05_loi | Trạng thái |
@@ -60,19 +60,25 @@ Thanh dưới 5 tab: Trang chủ, Kết quả, Học phí, Lịch, Đề nghị.
 Tóm: 5 màn (PH-01..05). PH-02 dùng chung dữ liệu HT-07, HT-08; PH-05 giống HT-06.
 **Trùng mã:** PH-01, PH-03, HS-02 cũng là mã tab Phụ huynh/Học sinh trong CRM (KH02_*, KH05_hoc_tap). Khung cổng ghi «(cổng Học sinh)» hoặc «(cổng Phụ huynh)» trong tiêu đề để khỏi nhầm.
 
-## 3. Chỗ em chưa chắc hoặc cần anh Trường chốt luật (em KHÔNG tự chọn)
-Đã chốt rồi (không còn mở): tab «Tài khoản» HT chưa vẽ; HT-04 tắt «Cho nộp lại» chỉ ẩn nút; HT-05 ba trạng thái còn lại chỉ đổi nhãn; HT-07 hai lớp dùng chip; HT-02 quá hạn ở «Cần làm»; PH-03 chỉ xem; chip chọn con ẩn khi có một con; PH-04 giữ 4 bước, có khung «Không đồng ý».
+## 3. Luật anh Trường đã chốt 23/11 (áp cho HT, PH)
+1. **Học sinh đăng nhập lần đầu KHÔNG bắt buộc đổi mật khẩu.** Khung DN02 (đăng nhập học sinh) vào thẳng trang chủ. DN07 «Đổi mật khẩu lần đầu» chỉ cho nhân viên.
+2. **Học sinh nhỏ không có email hay số điện thoại:** CSKH hoặc phụ huynh đặt lại mật khẩu (DN02 ghi «Nhờ phụ huynh hoặc CSKH đặt lại»).
+3. **Phụ huynh đăng nhập bằng SỐ ĐIỆN THOẠI của phụ huynh + mật khẩu** (khung DN11_mb_ok, DN11_mb_err, DN11_pc_ok, DN11_pc_err, canvas HMT Platform, mới ở v152). Không dùng mã PH hay OTP. Quên mật khẩu: **CSKH ở cơ sở đặt lại.** Mọi lỗi (sai số điện thoại, sai mật khẩu, định dạng sai...) dùng chung khung «Sai thông tin». Không thêm link «Phụ huynh» ở DN01, DN02.
+4. **PH-04 «Không đồng ý phương án»:** hộp thoại ngay trên màn phương án (PH04_phuong_an), lý do bắt buộc. Gửi xong: tạo ticket mới nếu chưa có, mở lại nếu đã có. Không có màn riêng.
+5. Đã chốt trước đó: tab «Tài khoản» HT chưa vẽ; HT-04 tắt «Cho nộp lại» chỉ ẩn nút; HT-05 ba trạng thái còn lại chỉ đổi nhãn; HT-07 hai lớp dùng chip; HT-02 quá hạn ở «Cần làm»; PH-03 chỉ xem; chip chọn con ẩn khi có một con; PH-04 giữ 4 bước.
 
-Còn mở:
-1. **Phụ huynh «Không đồng ý phương án» (PH-04):** khung chỉ vẽ ô nhập lý do. Chưa có luật: gửi xong ticket chuyển trạng thái nào; ai nhận (nhân viên chăm sóc theo chữ trên khung, nhưng chưa đối chiếu R-CS); có giới hạn số lần từ chối không; có hạn xử lý lại không. Anh chốt R-CS-06/09/14 (anh dặn code đối chiếu, lệch thì báo).
-2. **Đăng nhập học sinh lần đầu:** khung DN02 (đăng nhập học sinh) và DN07 (đổi mật khẩu lần đầu) nằm ở canvas HMT Platform, không thuộc zip này. Chưa chốt: học sinh có bắt buộc đổi mật khẩu lần đầu không; học sinh nhỏ tuổi không có email/SĐT thì quên mật khẩu theo cách nào (DN05 chỉ «Liên hệ quản trị viên»); đăng nhập phụ huynh bằng mã PH hay OTP (DN03 là xác thực hai bước, không phải OTP phụ huynh); DN06 đang HOÃN.
-3. **Tài khoản** (mục 5 thanh dưới HT): chỉ có nút, chưa có màn: Code để nút dẫn tới đâu cần anh chốt khi có màn.
-4. **Học sinh có nhiều con / một phụ huynh nhiều con nhiều cơ sở:** chip chọn con vẽ cho 2 con; chưa vẽ trường hợp nhiều con (từ 3), cuộn chip.
-5. **HT-03 bài quá hạn không nhận muộn:** đang để trong «Cần làm» với nút khoá (anh đã chốt); chưa có luật quá bao lâu thì ẩn khỏi danh sách.
-6. **PH-03 «Ngày hết dự kiến», ngưỡng «giờ còn thấp»:** Design chỉ vẽ chỗ hiển thị; công thức và tham số bên code chốt.
-7. **Ảnh bài nộp, kho tệp:** HT-04 vẽ chọn nhiều ảnh, xem trước, kéo thả (máy tính). Chưa có nơi lưu tệp (R2, giai đoạn 4): giới hạn đọc từ tham số theo R-LMS-04; chưa dựng được bước tải thật.
-8. **Chưa kiểm tận mắt:** em xem ảnh xem trước từ file khung, không mở được canvas thật (riêng tư, không có đăng nhập trong môi trường em). Hộp thoại, tương tác do JavaScript chưa kiểm trên canvas thật.
-9. Độ tương phản chữ nhỏ, chạm 44px trên thiết bị thật: chưa đo.
+Khung đăng nhập liên quan (ở canvas HMT Platform, không nằm trong zip này): DN02_* đăng nhập học sinh (4), **DN11_* đăng nhập phụ huynh (4, mới)**, DN07_* đổi mật khẩu lần đầu (4, chỉ nhân viên). Bản chép của 12 khung này nằm trong thư mục `dang_nhap_lien_quan/`.
+**DN10 Chọn cổng:** là màn của nhân viên có nhiều cổng (thẻ CRM, Giáo viên). Học sinh, phụ huynh vào thẳng cổng của mình sau đăng nhập nên **không có thẻ Phụ huynh, Học tập** ở DN10; em chưa thêm (xem mục 3a).
+
+## 3a. Còn mở, cần anh chốt (em KHÔNG tự chọn)
+1. **DN10 và thẻ Phụ huynh:** anh dặn «chưa có thì thêm». Em chưa thêm vì DN10 chỉ hiện cho tài khoản nhân viên («Tài khoản của bạn vào được hai cổng»); phụ huynh đăng nhập bằng DN11 rồi vào thẳng cổng PH. Nếu anh vẫn muốn có thẻ (ví dụ tài khoản nhân viên đồng thời là phụ huynh), xin anh nói để em vẽ.
+2. **Tài khoản** (mục 5 thanh dưới HT): chỉ có nút, chưa có màn; nút dẫn tới đâu khi có màn thì anh chốt.
+3. **Một phụ huynh nhiều con, hoặc một số điện thoại gắn nhiều phụ huynh:** chip chọn con vẽ cho 2 con; chưa có luật khi một số điện thoại gắn nhiều hồ sơ phụ huynh.
+4. **HT-03 bài quá hạn không nhận muộn:** đang ở «Cần làm» với nút khoá (đã chốt); chưa có luật quá bao lâu thì ẩn.
+5. **PH-03 «Ngày hết dự kiến», ngưỡng «giờ còn thấp»:** Design chỉ vẽ chỗ hiển thị; công thức và tham số bên code chốt.
+6. **Ảnh bài nộp:** HT-04 vẽ chọn nhiều ảnh, kéo thả; chưa có nơi lưu tệp (R2, giai đoạn 4); giới hạn đọc từ tham số theo R-LMS-04.
+7. **PH-04 quy tắc ticket:** «mở lại nếu đã có» cần code định nghĩa «đã có» (cùng đề nghị, cùng học sinh?); đối chiếu R-CS-06/09/14, lệch thì báo.
+8. **Chưa kiểm tận mắt:** em xem ảnh xem trước dựng từ file khung, không mở được canvas thật. Hộp thoại PH-04 chạy bằng script nên chưa kiểm khi bấm thật. Độ tương phản chữ nhỏ, vùng chạm 44px chưa đo.
 
 ## 4. Luật đã áp
 R-LMS-02 (quá hạn, nhãn «Nộp muộn», tắt nhận muộn thì khoá nút), R-LMS-03 (nộp lại tới khi chấm), R-LMS-04 (số tệp, dung lượng là tham số), R-LMS-05 (sao, chuỗi chỉ hiện khi cơ sở bật; không xếp hạng), R-GV-11, R-GV-12 (trạng thái BTVN), R-V2-35 (lớp không có BTVN thì ẩn phần BTVN).
