@@ -179,7 +179,7 @@ test('CSKH cơ sở đi: tạo phiếu Chuyển cơ sở từ ticket và trình 
   await dialog.getByRole('button', { name: 'Tạo phiếu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/phieu-nghiep-vu\/[0-9a-f-]{36}$/);
   taskUrl = page.url();
-  await page.getByRole('button', { name: 'Trình duyệt' }).click();
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
 });
 
