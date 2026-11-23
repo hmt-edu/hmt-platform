@@ -229,13 +229,15 @@ export function buildBusinessPayload(
   };
 }
 
-/** Lớp mới gợi ý: cùng môn với ghi danh, bỏ lớp hiện tại. */
+/** Lớp mới gợi ý: cùng môn với lớp đang học của ghi danh (R-CS-03: khác môn đi nhánh Chuyển phí), bỏ lớp hiện tại. */
 export function classChoices(options: TaskOptions, enrollmentId: string) {
   const enr = options.enrollments.find((x) => x.id === enrollmentId);
   if (!enr) return [];
+  // Môn của lớp đang học là chuẩn (đúng thứ máy chủ so sánh); môn lưu trên ghi danh có thể trống.
+  const subject =
+    options.classes.find((c) => c.id === enr.class_id)?.subject_code ?? enr.subject_code;
   return options.classes.filter(
-    (c) =>
-      c.id !== enr.class_id && (enr.subject_code === null || c.subject_code === enr.subject_code),
+    (c) => c.id !== enr.class_id && (subject === null || c.subject_code === subject),
   );
 }
 

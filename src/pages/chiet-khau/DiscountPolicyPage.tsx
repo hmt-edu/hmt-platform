@@ -278,7 +278,7 @@ export function DiscountPolicyPage() {
                     <p className="text-body text-fg-muted">
                       Nhiều chiết khấu trên một dòng thì cộng dồn; tổng không quá trần chiết khấu
                       (tham số, đổi ở Tham số nghiệp vụ). Giờ tặng tính vào trần: giờ tặng ÷ giờ
-                      mua. Vượt trần phải quản lý cơ sở duyệt (R-TIEN-29).
+                      mua. Vượt trần phải quản lý cơ sở duyệt.
                     </p>
                     {canCreate && (
                       <Button
@@ -293,7 +293,7 @@ export function DiscountPolicyPage() {
                   {table(discountColumns, discounts.data, 'Chính sách chiết khấu', (p) => p.id)}
                   <p className="text-caption text-fg-muted">
                     Ngừng một chính sách thì không hiện ở chỗ chọn mới; đơn cũ giữ nguyên chiết khấu
-                    đã chụp lúc tạo (R-TIEN-14). Không xoá.
+                    đã chụp lúc tạo. Không xoá.
                   </p>
                 </div>
               ),
@@ -306,8 +306,7 @@ export function DiscountPolicyPage() {
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-body text-fg-muted">
-                      Quà tặng là tài liệu, dịch vụ (dòng giá 0 đ). Không tính vào trần chiết khấu
-                      (R-TIEN-30).
+                      Quà tặng là tài liệu, dịch vụ (dòng giá 0 đ). Không tính vào trần chiết khấu.
                     </p>
                     {canCreate && (
                       <Button

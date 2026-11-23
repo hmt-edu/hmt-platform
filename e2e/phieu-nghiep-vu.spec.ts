@@ -86,7 +86,7 @@ test('CSKH mở phiếu Nháp và trình duyệt', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: 'Phiếu nghiệp vụ' })).toBeVisible();
   await openTask(page);
   await expect(page.getByText('Trường E2E').first()).toBeVisible();
-  await page.getByRole('button', { name: 'Trình duyệt' }).click();
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
 });
 

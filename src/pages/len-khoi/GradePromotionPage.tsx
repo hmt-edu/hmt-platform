@@ -6,7 +6,7 @@ import { Button } from '../../ui/Button';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListConfig, ListState } from '../../list/types';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
-import { formatDateTime } from '../../lib/format';
+import { formatDate, formatDateTime } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import { BulkActionBar, Code, Table, Tag } from '../../ui/Data';
@@ -232,7 +232,7 @@ export function GradePromotionPage() {
       />
       {summary && (
         <p className="mx-4 mt-3 text-sm text-fg-muted" data-testid="promotion-summary">
-          {`Sẽ chạy ${after?.total ?? 0} em (${after?.promoting ?? 0} lên khối, ${after?.graduating ?? 0} tốt nghiệp), loại trừ ${excluded.size} em. Bỏ qua: ${summary.skipped.khong_dang_hoc} em bảo lưu hoặc đã dừng học, ${summary.skipped.tiem_nang} em chưa ghi danh, ${summary.skipped.chua_co_khoi} em chưa có khối, ${summary.skipped.da_tot_nghiep} em đã tốt nghiệp.`}
+          {`Sẽ chạy ${after?.total ?? 0} em (${after?.promoting ?? 0} lên khối, ${after?.graduating ?? 0} tốt nghiệp), loại trừ ${excluded.size} em. Bỏ qua: ${summary.skipped.khong_dang_hoc} em bảo lưu hoặc đã dừng học, ${summary.skipped.tiem_nang} em chưa ghi danh, ${summary.skipped.chua_co_khoi} em chưa có khối, ${summary.skipped.da_tot_nghiep} em đã tốt nghiệp, ${summary.skipped.da_len_khoi_nam_nay} em đã lên khối trong năm học này${summary.last_run_at ? ` (lần chạy trước ${formatDate(summary.last_run_at)})` : ''}.`}
         </p>
       )}
       <section className="mx-4 mt-6 pb-8" aria-labelledby="batches-heading">

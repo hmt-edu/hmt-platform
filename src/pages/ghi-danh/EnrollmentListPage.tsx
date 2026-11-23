@@ -129,7 +129,7 @@ export function EnrollmentListPage() {
       onSortChange={setSort}
       emptyMessage={{
         title: 'Chưa có ghi danh nào',
-        hint: 'Ghi danh sinh từ dòng đơn khi tiền đã vào đủ cọc tối thiểu (mỗi dòng đơn một ghi danh). Danh sách này không có nút Tạo (R-GD-01).',
+        hint: 'Ghi danh sinh từ dòng đơn khi tiền đã vào đủ cọc tối thiểu (mỗi dòng đơn một ghi danh). Danh sách này không có nút Tạo.',
       }}
     />
   );

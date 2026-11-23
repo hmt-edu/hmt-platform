@@ -106,8 +106,8 @@ export function enrollmentNotice(
       tone: 'info',
       title: 'Ghi danh đã hoàn phí.',
       text: extra.refundVoucher
-        ? `Ghi danh đã hoàn phí theo phiếu chi ${extra.refundVoucher}. Không sửa được nữa (R-GD-16).`
-        : 'Không sửa được nữa (R-GD-16).',
+        ? `Ghi danh đã hoàn phí theo phiếu chi ${extra.refundVoucher}. Không sửa được nữa.`
+        : 'Không sửa được nữa.',
     };
   }
   if (status === 'BAO_LUU') {
@@ -118,7 +118,7 @@ export function enrollmentNotice(
     return {
       tone: 'info',
       title: range ? `Đang bảo lưu${range}.` : 'Đang bảo lưu.',
-      text: 'Giờ còn lại giữ nguyên, em ra khỏi danh sách các buổi trong thời gian này (R-GD-09).',
+      text: 'Giờ còn lại giữ nguyên, em ra khỏi danh sách các buổi trong thời gian này.',
     };
   }
   if (status === 'CHO_XEP_LOP') {
@@ -136,14 +136,14 @@ export function enrollmentNotice(
         hours.negative_limit_sessions != null && hours.negative_limit_hours != null
           ? `${hours.negative_limit_sessions} buổi (${hours.negative_limit_hours} giờ)`
           : 'theo hạn mức «Cho học trước tối đa»'
-      }, hiện −${Math.abs(hours.remaining)} giờ. Quá hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale (R-GD-12).`,
+      }, hiện −${Math.abs(hours.remaining)} giờ. Quá hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale.`,
     };
   }
   if (hours.remaining === 0 && hours.granted + hours.gifted > 0 && status === 'DANG_HOC') {
     return {
       tone: 'warning',
       title: 'Quỹ giờ bằng 0.',
-      text: 'Hết phí ở lớp này: học sinh không được điểm danh trừ giờ, hệ thống chặn, không cho âm (R-GD-18). Muốn học tiếp: lập phiếu tái tục, hoặc chuyển giờ từ ghi danh khác qua ticket “Chuyển phí”.',
+      text: 'Hết phí ở lớp này: học sinh không được điểm danh trừ giờ, hệ thống chặn, không cho âm. Muốn học tiếp: lập phiếu tái tục, hoặc chuyển giờ từ ghi danh khác qua ticket “Chuyển phí”.',
     };
   }
   return null;
