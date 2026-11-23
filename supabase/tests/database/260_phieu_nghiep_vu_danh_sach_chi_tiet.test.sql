@@ -63,8 +63,11 @@ grant all on pt2 to public;
 insert into pt2 select app.create_ticket(pg_temp.mk('DN', 'DN_02_01', jsonb_build_object('student_id', (select id from app.student where code = 'HSAS501'))));
 create temp table pk2 (j jsonb);
 grant all on pk2 to public;
+-- D-23-30: ghi danh thật chưa có ở bộ dữ liệu này; dựng phiếu bằng cờ di chuyển dữ liệu (luật phạm vi bỏ qua), việc thử ở đây là danh sách, không phải payload.
+select set_config('hmt.migration', 'on', true);
 insert into pk2 select app.create_ticket_task((select (j ->> 'id')::uuid from pt2), 'HOAN_PHI', 'Chuyển nhà', '{}'::jsonb);
 select app.submit_ticket_task((select (j ->> 'id')::uuid from pk2));
+select set_config('hmt.migration', 'off', true);
 select app.submit_ticket_task((select (j ->> 'id')::uuid from pk1));
 -- Trong một giao dịch mọi dòng cùng created_at (now()), và trigger khung chung giữ created_at không đổi khi sửa: thứ tự kế là id tăng dần (hàm sắp created_at giảm, rồi id).
 

@@ -4,6 +4,8 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
+create function pg_temp.term_amounts(p uuid, t bigint) returns table (seq integer, due_days integer, amount bigint) language sql security definer as $$ select * from app.payment_term_amounts(p, t) $$;
+create function pg_temp.price_at(p uuid, m text, d date) returns bigint language sql security definer as $$ select app.package_price_at(p, m, d) $$;
 
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
 declare v_hint text; v_state text;
@@ -118,16 +120,16 @@ select throws_ok($$update app.sales_package set name = 'x' where code = 'LC-TOAN
 select lives_ok($$select app.add_package_price(pg_temp.pkg('LC-TOAN-K08'), 'OFF', 200000, date '2026-01-01')$$, 'Thêm giá offline');
 select lives_ok($$select app.add_package_price(pg_temp.pkg('LC-TOAN-K08'), 'OFF', 230000, date '2026-10-01')$$, 'Thêm giá offline mới từ ngày sau');
 select lives_ok($$select app.add_package_price(pg_temp.pkg('LC-TOAN-K08'), 'ONL', 110000, date '2025-01-01')$$, 'Giá có thể ở quá khứ (g)');
-select is(app.package_price_at(pg_temp.pkg('LC-TOAN-K08'), 'OFF', date '2026-09-30'), 200000::bigint, 'Giá theo ngày: trước ngày hiệu lực mới vẫn giá cũ (R-TIEN-14)');
-select is(app.package_price_at(pg_temp.pkg('LC-TOAN-K08'), 'OFF', date '2026-10-01'), 230000::bigint, 'Giá theo ngày: từ ngày hiệu lực dùng giá mới');
-select is(app.package_price_at(pg_temp.pkg('LC-TOAN-K08'), 'OFF', date '2025-12-31'), null, 'Chưa có giá tại ngày đó thì null (không bán)');
-select is(app.package_price_at(pg_temp.pkg('LC-TOAN-K08'), 'ONL', date '2026-06-01'), 110000::bigint, 'Một gói hai giá: giá online riêng giá offline');
+select is(pg_temp.price_at(pg_temp.pkg('LC-TOAN-K08'), 'OFF', date '2026-09-30'), 200000::bigint, 'Giá theo ngày: trước ngày hiệu lực mới vẫn giá cũ (R-TIEN-14)');
+select is(pg_temp.price_at(pg_temp.pkg('LC-TOAN-K08'), 'OFF', date '2026-10-01'), 230000::bigint, 'Giá theo ngày: từ ngày hiệu lực dùng giá mới');
+select is(pg_temp.price_at(pg_temp.pkg('LC-TOAN-K08'), 'OFF', date '2025-12-31'), null, 'Chưa có giá tại ngày đó thì null (không bán)');
+select is(pg_temp.price_at(pg_temp.pkg('LC-TOAN-K08'), 'ONL', date '2026-06-01'), 110000::bigint, 'Một gói hai giá: giá online riêng giá offline');
 select is(pg_temp.err($$select app.add_package_price(pg_temp.pkg('LC-TOAN-K08'), 'OFF', 999000, date '2026-10-01')$$), 'HMT_GIA_DA_CO', 'Trùng (gói, hình thức, ngày) thì chặn');
 select is(pg_temp.err($$select app.add_package_price(pg_temp.pkg('LC-TOAN-K08'), 'OFF', 0, date '2027-01-01')$$), 'HMT_GIA_SAI', 'Giá không dương thì chặn');
 select is(pg_temp.err($$select app.add_package_price(pg_temp.pkg('LC-TOAN-K08'), 'OFF', 100000, null)$$), 'HMT_THIEU_THONG_TIN', 'Thiếu ngày hiệu lực thì chặn');
 select lives_ok($$select app.add_package_price(pg_temp.pkg('LC-TOAN-K08'), 'ONL', null, date '2026-07-01')$$, 'Giá trống: ngừng bán hình thức online từ ngày đó');
-select is(app.package_price_at(pg_temp.pkg('LC-TOAN-K08'), 'ONL', date '2026-07-01'), null, 'Giá trống = không bán hình thức đó');
-select is(app.package_price_at(pg_temp.pkg('LC-TOAN-K08'), 'ONL', date '2026-06-30'), 110000::bigint, 'Trước ngày ngừng bán vẫn có giá');
+select is(pg_temp.price_at(pg_temp.pkg('LC-TOAN-K08'), 'ONL', date '2026-07-01'), null, 'Giá trống = không bán hình thức đó');
+select is(pg_temp.price_at(pg_temp.pkg('LC-TOAN-K08'), 'ONL', date '2026-06-30'), 110000::bigint, 'Trước ngày ngừng bán vẫn có giá');
 select is(pg_temp.err($$select app.add_package_price(pg_temp.pkg('DV-HOTRO'), 'ONL', 100000, date '2026-01-01')$$), 'HMT_GOI_KHONG_CO_ONLINE', 'R-TIEN-15: gói dịch vụ không có giá online');
 select isnt(pg_temp.err($$select app.add_package_price(pg_temp.pkg('LC-TOAN-K08'), 'XX', 100000, date '2026-01-01')$$), null, 'Hình thức phải thuộc danh mục');
 select pg_temp.sudo($$set local hmt.migration = ''$$);
@@ -168,11 +170,11 @@ select is(pg_temp.err($$select app.create_payment_term('TIEN_DOT_2', 'x', date '
 select is(pg_temp.err($$select app.create_payment_term('COC_MOT_DOT', 'x', date '2026-09-01', '[{"seq": 1, "fixed_amount": 500000, "due_days": 0}]')$$), 'HMT_DIEU_KHOAN_SAI', 'Đợt 1 cố định mà không có đợt sau thì chặn');
 select is(pg_temp.err($$select app.create_payment_term('NGAY_AM', 'x', date '2026-09-01', '[{"seq": 1, "share_percent": 100, "due_days": -1}]')$$), 'HMT_DIEU_KHOAN_SAI', 'Số ngày đến hạn âm thì chặn');
 select is(pg_temp.err($$select app.create_payment_term('RONG', 'x', date '2026-09-01', '[]')$$), 'HMT_DIEU_KHOAN_SAI', 'Không có đợt nào thì chặn');
-select is((select string_agg(amount::text, ',' order by seq) from app.payment_term_amounts((select id from app.payment_term where code = 'CHIA_HAI' and version = 1), 10000000)), '5000000,5000000', 'Cách tính: hai đợt 50, 50');
-select is((select string_agg(amount::text || '/' || due_days, ',' order by seq) from app.payment_term_amounts((select id from app.payment_term where code = 'COC_THU'), 10000000)), '1000000/0,5400000/15,3600000/45', 'Cách tính: cọc 1.000.000, phần còn lại 9.000.000 chia 60%, 40%');
-select is((select sum(amount) from app.payment_term_amounts((select id from app.payment_term where code = 'COC_THU'), 1234567)), 1234567::numeric, 'Cách tính: đợt cuối nhận phần dư, tổng đúng bằng tổng đơn');
-select is(pg_temp.err($$select * from app.payment_term_amounts((select id from app.payment_term where code = 'COC_THU'), 1000000)$$), 'HMT_COC_VUOT_DON', 'Cách tính: tiền cọc không nhỏ hơn tổng đơn thì chặn');
-select is(pg_temp.err($$select * from app.payment_term_amounts((select id from app.payment_term where code = 'COC_THU'), 0)$$), 'HMT_TONG_DON_SAI', 'Cách tính: tổng đơn phải lớn hơn 0');
+select is((select string_agg(amount::text, ',' order by seq) from pg_temp.term_amounts((select id from app.payment_term where code = 'CHIA_HAI' and version = 1), 10000000)), '5000000,5000000', 'Cách tính: hai đợt 50, 50');
+select is((select string_agg(amount::text || '/' || due_days, ',' order by seq) from pg_temp.term_amounts((select id from app.payment_term where code = 'COC_THU'), 10000000)), '1000000/0,5400000/15,3600000/45', 'Cách tính: cọc 1.000.000, phần còn lại 9.000.000 chia 60%, 40%');
+select is((select sum(amount) from pg_temp.term_amounts((select id from app.payment_term where code = 'COC_THU'), 1234567)), 1234567::numeric, 'Cách tính: đợt cuối nhận phần dư, tổng đúng bằng tổng đơn');
+select is(pg_temp.err($$select * from pg_temp.term_amounts((select id from app.payment_term where code = 'COC_THU'), 1000000)$$), 'HMT_COC_VUOT_DON', 'Cách tính: tiền cọc không nhỏ hơn tổng đơn thì chặn');
+select is(pg_temp.err($$select * from pg_temp.term_amounts((select id from app.payment_term where code = 'COC_THU'), 0)$$), 'HMT_TONG_DON_SAI', 'Cách tính: tổng đơn phải lớn hơn 0');
 select throws_ok($$select pg_temp.sudo('update app.payment_term_installment set due_days = 99')$$, null, null, 'Đợt đã tạo không sửa được (chỉ thêm bản mới)');
 select throws_ok($$select pg_temp.sudo('update app.payment_term set name = ''đổi tên'' where code = ''COC_THU''')$$, null, null, 'Điều khoản đã tạo không đổi tên');
 
