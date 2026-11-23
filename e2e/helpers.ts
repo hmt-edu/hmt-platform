@@ -193,6 +193,24 @@ export async function pickOption(page: Page, combobox: Locator, option: string |
   }).toPass({ timeout: 10000 });
 }
 
+// Như pickOption nhưng cho ô lấy danh sách từ máy chủ theo từ tìm (Combobox có onSearch): gõ từ tìm vào ô trong hộp, đợi kết quả rồi mới chọn.
+// Không gõ thì chỉ thấy trang đầu của danh sách; trên CI nhiều phụ huynh từ các bài khác nên mục cần chọn không nằm trong trang đầu (ticket.spec điện thoại đỏ 23/11).
+export async function pickSearchedOption(
+  page: Page,
+  combobox: Locator,
+  query: string,
+  option: string | RegExp,
+) {
+  const trigger = combobox.first();
+  await expect(async () => {
+    if ((await trigger.getAttribute('aria-expanded')) !== 'true') await trigger.click();
+    await combobox.last().fill(query);
+    const item = page.getByRole('option', { name: option });
+    await item.scrollIntoViewIfNeeded({ timeout: 2000 });
+    await item.click({ timeout: 2000 });
+  }).toPass({ timeout: 15000 });
+}
+
 /**
  * Đường dẫn ảnh chụp của bài e2e. Mặc định ghi ra thư mục tạm (bước kiểm thử không ghi đè ảnh trong repo); chỉ khi đặt
  * SO_SANH_GHI_VAO_REPO=1 mới ghi vào docs/anh-chup/<nhóm>/ (như kịch bản so sánh, so-sanh*.spec.ts). Tạo thư mục khi cần.
