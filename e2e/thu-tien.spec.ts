@@ -206,6 +206,8 @@ test('TC-09: Kế toán hoàn tác khoản tiền, khoản đã hoàn tác khôn
     const origin = new RegExp(`^KTV-${m}-2\\b`);
     const row = page.getByRole('row', { name: origin });
     await expect(row).toHaveCount(1);
+    // Cột «Hoàn tác» nằm ngoài 8 cột mặc định (#570): bật mọi cột rồi mới tìm nút.
+    await showAllColumns(page);
     const reverseButton = row.getByRole('button', { name: 'Hoàn tác khoản tiền' });
     await expect(reverseButton).toHaveCount(1);
     await reverseButton.click();
