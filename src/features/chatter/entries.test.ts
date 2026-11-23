@@ -123,4 +123,34 @@ describe('ghi chú của lead gốc hiện ở cơ hội (lỗi 26/10)', () => {
     const withCreated = buildEntries([], history, { labels: {} }, 'Tạo đơn hàng.', [event]);
     expect(withCreated.map((e) => e.kind)).toEqual(['event', 'system']);
   });
+
+  it('B10: sự kiện không tên lấy người làm từ nhật ký cùng thao tác; cột đã có sự kiện không hiện thêm dòng đổi trường', () => {
+    const fmt = {
+      labels: { status_code: 'Tình trạng', max_students: 'Sĩ số' },
+      coveredByEvents: ['status_code'],
+    };
+    const history = [
+      {
+        id: 5,
+        at: '2026-11-23T03:00:01Z',
+        actor_name: 'CSKH CS5',
+        action: 'U',
+        changes: { status_code: ['NHAP', 'DA_TRINH'], max_students: [10, 12] },
+      },
+    ] as never;
+    const entries = buildEntries([], history, fmt, null, [
+      { kind: 'system', id: 'ev', at: '2026-11-23T03:00:00Z', author: '', text: 'Trình' },
+    ]);
+    expect(entries.find((e) => e.kind === 'system')).toMatchObject({ author: 'CSKH CS5' });
+    const change = entries.find((e) => e.kind === 'change');
+    expect(change).toMatchObject({ changes: [{ label: 'Sĩ số' }] });
+    const only = buildEntries(
+      [],
+      [{ ...(history as object[])[0], changes: { status_code: ['NHAP', 'DA_TRINH'] } }] as never,
+      fmt,
+      null,
+      [{ kind: 'system', id: 'ev', at: '2026-11-23T03:00:00Z', author: '', text: 'Trình' }],
+    );
+    expect(only.map((e) => e.kind)).toEqual(['system']);
+  });
 });
