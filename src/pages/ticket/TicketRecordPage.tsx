@@ -372,9 +372,14 @@ export function TicketRecordPage() {
                 </Button>
               )}
               {canEscalate && <Button onClick={openEscalate}>Nâng cấp</Button>}
-              {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP', 'DUNG_HOC', 'DOI_LICH'].includes(
-                ticket.business_type ?? '',
-              ) &&
+              {[
+                'CAP_NHAT_HO_SO',
+                'BAO_LUU',
+                'CHUYEN_LOP',
+                'DUNG_HOC',
+                'DOI_LICH',
+                'CHUYEN_PHI',
+              ].includes(ticket.business_type ?? '') &&
                 !(record.data?.tasks ?? []).some((k) =>
                   ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(k.status_code),
                 ) && (
