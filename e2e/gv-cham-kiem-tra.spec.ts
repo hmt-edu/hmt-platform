@@ -70,7 +70,7 @@ test.beforeAll(async ({}, testInfo) => {
     const session = (
       await db.query<{ id: string }>(
         `insert into app.class_session (class_id, branch_id, session_no, session_date, start_time, end_time, teacher_id, status_code, type_code, review_form)
-         values ($1, $2, 1, (now() at time zone 'Asia/Ho_Chi_Minh')::date, '18:00', '19:30', $3, 'DA_CHOT', 'KIEM_TRA', 'DIEM') returning id`,
+         values ($1, $2, 1, (now() at time zone 'Asia/Ho_Chi_Minh')::date, '23:00', '23:59', $3, 'DA_CHOT', 'KIEM_TRA', 'DIEM') returning id`,
         [cls, branch, teacher],
       )
     ).rows[0]!.id;

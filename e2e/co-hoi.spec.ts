@@ -82,8 +82,9 @@ test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dù
   );
   await expect(page.getByRole('button', { name: 'Lịch hẹn 0' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Kiểm tra 1' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Báo giá 0' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: 'Đơn hàng 0' })).toBeDisabled();
+  // Luật K3 16/10 (Chat 14:21 23/11): nút số đếm bấm được cả khi 0, mở danh sách lọc theo cơ hội (rỗng).
+  await expect(page.getByRole('button', { name: 'Báo giá 0' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Đơn hàng 0' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Phụ huynh 1' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Lead gốc 1' })).toBeEnabled();
   // Tạo báo giá (R-CRM-19): có ở bản ghi cơ hội cho người có quyền lập báo giá khi Bán hàng bật; điện thoại ẩn nút (Đ248).

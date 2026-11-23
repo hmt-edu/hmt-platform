@@ -39,7 +39,7 @@ export function classNotes(status: string, slotCount: number): ClassNotes {
             text: 'Chưa có thời khoá biểu, nên chưa trình được. Thêm khung giờ ở mục Time Table bên dưới rồi bấm Trình.',
           },
           bottom:
-            'Thêm, sửa khung giờ ở màn Sửa lớp (LOP-03), mục Time Table. Trình lớp bắt buộc có Time Table (R-LOP-03).',
+            'Thêm, sửa khung giờ ở màn Sửa lớp, mục Time Table. Trình lớp bắt buộc có Time Table.',
         }
       : status === 'NHAP'
         ? { top: { tone: 'info', text: 'Lớp ở Nháp: sửa được thông tin.' } }
@@ -55,7 +55,7 @@ export function classNotes(status: string, slotCount: number): ClassNotes {
     return {
       top: {
         tone: 'info',
-        text: 'Lớp đã trình, đang chờ quản lý cơ sở xác nhận. Chỉ sửa được Time Table; thông tin khác bị khoá (R-LOP-02).',
+        text: 'Lớp đã trình, đang chờ quản lý cơ sở xác nhận. Chỉ sửa được Time Table; thông tin khác bị khoá.',
       },
       bottom:
         'Lớp đã trình: chỉ sửa được Time Table (giáo viên, lịch học tự cập nhật theo); thông tin khác của lớp vẫn khoá. Sửa xong quản lý cơ sở thấy bản mới khi xác nhận, duyệt.',
@@ -65,10 +65,10 @@ export function classNotes(status: string, slotCount: number): ClassNotes {
     return {
       top: {
         tone: 'info',
-        text: 'Lớp đã xác nhận, đang chờ quản lý cơ sở duyệt. Chỉ sửa được Time Table; thông tin khác bị khoá (R-LOP-02).',
+        text: 'Lớp đã xác nhận, đang chờ quản lý cơ sở duyệt. Chỉ sửa được Time Table; thông tin khác bị khoá.',
       },
       bottom:
-        'Lớp đã xác nhận: chỉ sửa được Time Table (giáo viên, lịch học tự cập nhật theo); thông tin khác bị khoá. Sửa Time Table thì lớp quay về Đã trình để quản lý duyệt lại (R-LOP-02).',
+        'Lớp đã xác nhận: chỉ sửa được Time Table (giáo viên, lịch học tự cập nhật theo); thông tin khác bị khoá. Sửa Time Table thì lớp quay về Đã trình để quản lý duyệt lại.',
     };
   }
   if (status === 'HUY' || status === 'DA_DONG') {
@@ -82,7 +82,7 @@ export function classNotes(status: string, slotCount: number): ClassNotes {
   if (status === 'DA_DUYET') {
     return {
       bottom:
-        'Lớp đã duyệt: bấm Sửa để đổi Time Table (giáo viên, lịch học), CSKH phụ trách, Sĩ số tối đa; các thông tin khác bị khoá. Thay đổi Time Table áp dụng từ ngày chọn, buổi đã diễn ra giữ nguyên (R-LOP-11).',
+        'Lớp đã duyệt: bấm Sửa để đổi Time Table (giáo viên, lịch học), CSKH phụ trách, Sĩ số tối đa; các thông tin khác bị khoá. Thay đổi Time Table áp dụng từ ngày chọn, buổi đã diễn ra giữ nguyên.',
     };
   }
   return {};
@@ -90,7 +90,7 @@ export function classNotes(status: string, slotCount: number): ClassNotes {
 
 /** Chữ ở ô Nhóm lớp khi lớp không thuộc nhóm nào (canvas LOP05_thieu_tkb). */
 export const NO_GROUP_TEXT =
-  'Lớp không thuộc nhóm nào. Lớp Đại số, Hình học cùng khối, cùng cơ sở có thể gắn vào một nhóm khi tạo hoặc sửa lớp (LOP-03).';
+  'Lớp không thuộc nhóm nào. Lớp Đại số, Hình học cùng khối, cùng cơ sở có thể gắn vào một nhóm khi tạo hoặc sửa lớp.';
 
 /**
  * Bốn ô tự sinh từ Time Table ở bản ghi lớp (canvas LOP05_venhap: Lịch học, Phòng học, Giáo viên, Trợ giảng). Chỉ gom chữ từ khung giờ máy chủ đã trả.

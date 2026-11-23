@@ -15,8 +15,8 @@ export function upsaleStageNote(
     if (t.origin_code !== 'HE_THONG') return null;
     const why =
       thresholds.hours !== null && thresholds.days !== null
-        ? `giờ còn ≤ ${thresholds.hours} giờ hoặc ngày hết giờ dự kiến ≤ ${thresholds.days} ngày (R-GD-13)`
-        : 'giờ còn ít hoặc sắp tới ngày hết giờ dự kiến (R-GD-13)';
+        ? `giờ còn ≤ ${thresholds.hours} giờ hoặc ngày hết giờ dự kiến ≤ ${thresholds.days} ngày`
+        : 'giờ còn ít hoặc sắp tới ngày hết giờ dự kiến';
     return {
       tone: 'info',
       text: `Phiếu do hệ thống tự sinh vì ${why}. Bấm Giao để chọn người phụ trách.`,

@@ -42,8 +42,11 @@ export async function loginWithPassword(
 export async function readIntSetting(
   supabase: SupabaseClient,
   key: string,
+  branchId?: string,
 ): Promise<number | null> {
-  const { data, error } = (await supabase.schema('app').rpc('get_setting_int', { p_key: key })) as {
+  const { data, error } = (await supabase
+    .schema('app')
+    .rpc('get_setting_int', { p_key: key, ...(branchId ? { p_branch_id: branchId } : {}) })) as {
     data: unknown;
     error: unknown;
   };

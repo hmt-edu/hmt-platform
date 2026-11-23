@@ -40,7 +40,7 @@ export function TeacherTicketsPage() {
         </ButtonLink>
       </div>
       <p className="text-body text-fg-muted">
-        Chỉ hiện ticket trong lớp của bạn. Cơ sở xử lý; giáo viên chỉ tạo và theo dõi (R-CS-10).
+        Chỉ hiện ticket trong lớp của bạn. Cơ sở xử lý; giáo viên chỉ tạo và theo dõi.
       </p>
       {query.isPending ? (
         <Spinner />

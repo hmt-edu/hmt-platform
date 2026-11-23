@@ -6,7 +6,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 **Mức:** A = vẽ đầy đủ mọi trạng thái · B = vẽ bố cục bằng khuôn, một trạng thái chính · C = không vẽ, chỉ ghi trong manifest là dựng từ khuôn nào · Looker = báo cáo làm trên Looker Studio, không vẽ.
 
-**Vai trò:** AD Admin · BM Trưởng cơ sở · SA Tuyển sinh · CS CSKH/vận hành lớp · KT Kế toán · GV Giáo viên · TG Trợ giảng · HS Học sinh · PH Phụ huynh.
+**Vai trò:** AD Admin · BM Trưởng cơ sở · SA Tư vấn tuyển sinh · CS CSKH/vận hành lớp · KT Kế toán · GV Giáo viên · TG Trợ giảng · HS Học sinh · PH Phụ huynh.
 
 **Mã luật:** R-* xem file [luat-cho-thiet-ke.md](luat-cho-thiet-ke.md) (mục 4–5); S02-* luật xếp lớp; S03-* đăng nhập, quyền, cấu hình: bảng mã ở [ma-luat-S02-S03.md](ma-luat-S02-S03.md).
 

@@ -188,7 +188,7 @@ function AddPricesForm({
           required
           value={effective}
           onChange={setEffective}
-          help="Được chọn ngày trong quá khứ. Đơn đã tạo giữ giá cũ (R-TIEN-14)."
+          help="Được chọn ngày trong quá khứ. Đơn đã tạo giữ giá cũ."
         />
         <div className="grid gap-3 md:grid-cols-2">
           <PriceCommon
