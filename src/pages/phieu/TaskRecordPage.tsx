@@ -128,7 +128,7 @@ export function TaskRecordPage() {
           <>
             {task.status_code === 'NHAP' && canEdit && (
               <Button variant="primary" loading={busy} onClick={() => void run('submit')}>
-                Trình duyệt
+                Gửi duyệt
               </Button>
             )}
             {task.status_code === 'CHO_DUYET' && task.can_approve && (
@@ -184,7 +184,7 @@ export function TaskRecordPage() {
             <Alert tone="warning">{featureOff}</Alert>
           </div>
         )}
-        {/* CSN06a «Lỗi lưu»: lỗi khi Trình duyệt (không có hộp thoại) hiện ngay trên phiếu, giữ nguyên nội dung, có nút Thử lại. */}
+        {/* CSN06a «Lỗi lưu»: lỗi khi Gửi duyệt (không có hộp thoại) hiện ngay trên phiếu, giữ nguyên nội dung, có nút Thử lại. */}
         {error && asking === null && (
           <div className="mb-4">
             <Alert tone="danger">
