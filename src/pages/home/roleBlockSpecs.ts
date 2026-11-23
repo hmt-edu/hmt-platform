@@ -2,7 +2,6 @@
 import type { useDb } from '../../lib/db';
 import { rpc } from '../../lib/db';
 import { formatDate, formatMoney } from '../../lib/format';
-import { sessionLabel } from '../nhan-xet-cho-gui/parentMessageTypes';
 import { KIND_LABELS } from '../viec-cho-duyet/approvalsLogic';
 import type { ApprovalPage } from '../viec-cho-duyet/approvalsTypes';
 import type { PendingPage } from '../buoi/sessionTypes';
@@ -44,35 +43,6 @@ export const ROLE_BLOCK_SPECS = {
           key: `${r.kind}-${r.ref_id}`,
           title: r.subject_name ?? r.detail ?? r.code,
           sub: join([KIND_LABELS[r.kind], r.code, showBranch && r.branch_code]),
-        })),
-      };
-    },
-  },
-  reviews: {
-    title: 'Nhận xét chờ gửi phụ huynh',
-    to: '/crm/nhan-xet-cho-gui',
-    empty: 'Không có nhận xét nào chờ gửi.',
-    load: async (supabase, branch) => {
-      const page = await rpc<{
-        total: number;
-        rows: {
-          id: string;
-          student_name: string;
-          class_code: string;
-          session_no: number | null;
-          session_date: string;
-        }[];
-      }>(supabase, 'list_parent_messages', {
-        p_filters: { status: 'CHO_GUI', ...branch },
-        p_limit: PREVIEW_ROWS,
-        p_offset: 0,
-      });
-      return {
-        total: page.total,
-        lines: page.rows.map((r) => ({
-          key: r.id,
-          title: r.student_name,
-          sub: join([r.class_code, sessionLabel(r.session_no, r.session_date)]),
         })),
       };
     },

@@ -4,7 +4,7 @@
 // Cờ hoàn tác bật bằng GHI ĐÈ THEO CƠ SỞ CS5 (không đụng giá trị chung mà bài thu-tien TC-09 bật và trả lại), trả lại khi xong. Máy tính (Đ248).
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, enterAsAdmin, pickOption } from './helpers';
+import { PASSWORD, enterAs, enterAsAdmin, pickOption, showAllColumns } from './helpers';
 import { DB_URL, clearMark, seedOrders, type SeededOrders } from './don-hang-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
@@ -118,6 +118,7 @@ test('Kế toán hoàn tác khoản tiền: khoản âm trỏ về khoản gốc
   await expect(page.getByRole('heading', { level: 1, name: 'Khoản tiền vào' })).toBeVisible();
   await page.getByRole('searchbox').fill(seeded.orders.dduyet);
   await expect(page.getByText(`Tổng số tiền (theo bộ lọc): 200.000 đ`)).toBeVisible();
+  await showAllColumns(page); // cột Thao tác (nút Hoàn tác) có thể nằm ngoài 8 cột mặc định (#570)
   const row = page.getByRole('row').filter({ hasText: seeded.orders.dduyet });
   await expect(row).toHaveCount(1);
   await row.getByRole('button', { name: 'Hoàn tác khoản tiền' }).click();

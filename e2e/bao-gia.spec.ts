@@ -2,7 +2,7 @@
 // Dữ liệu giả dựng bằng hàm nghiệp vụ (xem bao-gia-seed.ts), tìm bằng dấu riêng của từng dự án.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible, isPhone, shotPath } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, shotPath, showAllColumns } from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded } from './bao-gia-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng báo giá giả).');
@@ -48,6 +48,7 @@ test('Sale CS5: danh sách đủ cột theo canvas, không có Tạo, không có
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
   await openQuotes(page, setup.sale, setup.mark);
+  await showAllColumns(page);
   const rows = list(page);
   await expect(rows.getByText(seeded.code.draft)).toBeVisible();
   await expect(rows.getByText(seeded.code.sent)).toBeVisible();

@@ -26,3 +26,16 @@ describe('QT-10 công tắc tính năng', () => {
     expect(shortName('Cổng giáo viên')).toBe('Cổng giáo viên');
   });
 });
+
+import { withSwitch } from './featureLogic';
+
+describe('withSwitch: phân hệ không có công tắc (QT-10)', () => {
+  it('bỏ «Cổng giáo viên», giữ các phân hệ khác theo thứ tự', () => {
+    const rows = [
+      { code: 'BAN_HANG', name: 'Bán hàng' },
+      { code: 'CONG_GIAO_VIEN', name: 'Cổng giáo viên' },
+      { code: 'HOC_TAP', name: 'Học tập' },
+    ];
+    expect(withSwitch(rows).map((m) => m.code)).toEqual(['BAN_HANG', 'HOC_TAP']);
+  });
+});
