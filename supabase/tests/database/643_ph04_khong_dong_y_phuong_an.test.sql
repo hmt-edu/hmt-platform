@@ -92,5 +92,10 @@ select is(pg_temp.err(format($$select app.ph_reject_proposal(%L, 'x')$$, pg_temp
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err(format($$select app.ph_reject_proposal(%L, 'x')$$, pg_temp.k('cho'))), 'HMT_PH_KHONG_PHAI_PHU_HUYNH', 'Chặn: nhân viên không dùng hàm của phụ huynh');
 
+-- Chặn: tài khoản bị thu hồi phiên (phải đổi mật khẩu lại) thì token cũ không gọi được hàm ghi.
+select pg_temp.sudo($$update app.user_account set must_change_password = true where parent_code = 'PH643001'$$);
+select pg_temp.claims(pg_temp.uid('ph1'), 'aal1');
+select is(pg_temp.err(format($$select app.ph_reject_proposal(%L, 'x')$$, pg_temp.k('cho'))), 'HMT_PH_KHONG_PHAI_PHU_HUYNH', 'Chặn: phiên đã bị thu hồi thì không gọi được hàm của phụ huynh');
+
 select * from finish();
 rollback;

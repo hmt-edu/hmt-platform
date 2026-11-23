@@ -38,8 +38,8 @@ declare
   v_now timestamptz := now();
   v_reopened boolean := false;
 begin
-  -- Chỉ tài khoản phụ huynh còn dùng được.
-  select ua.parent_code into v_parent_code from app.user_account ua where ua.id = auth.uid() and not ua.is_locked;
+  -- Chỉ tài khoản phụ huynh còn dùng được (không khoá, không bị thu hồi phiên: app.current_user_ready, như các hàm cổng).
+  select ua.parent_code into v_parent_code from app.user_account ua where ua.id = auth.uid() and (select app.current_user_ready());
   select p.id into v_parent_id from app.parent p where p.code = v_parent_code;
   if v_parent_id is null then
     perform app.raise_error('HMT_PH_KHONG_PHAI_PHU_HUYNH', 'Chỉ tài khoản phụ huynh mới dùng được chức năng này.');
