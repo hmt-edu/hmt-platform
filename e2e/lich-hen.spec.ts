@@ -1,7 +1,15 @@
 // P3c-3b: màn Lịch hẹn (TS-11): danh sách, Kanban, Lịch; Hoàn thành, Dời, Huỷ, Mở lại; Tạo gắn với lead; dải "quá hạn bị ẩn".
 // Dữ liệu giả dựng bằng create_lead, create_appointment; tìm bằng dấu riêng của từng dự án.
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible, isPhone, pickChip, pickOption } from './helpers';
+import {
+  PASSWORD,
+  confirmCompleteAppointment,
+  enterAs,
+  expectAccessible,
+  isPhone,
+  pickChip,
+  pickOption,
+} from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded, type Setup } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lịch hẹn giả).');
@@ -34,7 +42,7 @@ const rows = (page: Page) =>
 const row = (page: Page, title: string) => rows(page).filter({ hasText: title });
 const toastText = (page: Page, text: string | RegExp) => page.getByText(text).first();
 
-test('Danh sách: nhóm Hôm nay, đủ nút theo trạng thái; Hoàn thành một bấm', async ({
+test('Danh sách: nhóm Hôm nay, đủ nút theo trạng thái; Hoàn thành qua hộp', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -49,6 +57,8 @@ test('Danh sách: nhóm Hôm nay, đủ nút theo trạng thái; Hoàn thành m�
   await expect(done.getByRole('button', { name: 'Mở lại' })).toBeVisible();
   await expect(done.getByRole('button', { name: 'Hoàn thành' })).toHaveCount(0);
   await call.getByRole('button', { name: 'Hoàn thành' }).click();
+  // TS-11: lịch Gọi điện mở hộp «Hoàn thành lịch hẹn» (chọn Kết quả rồi bấm Hoàn thành).
+  await confirmCompleteAppointment(page);
   await expect(toastText(page, 'Đã hoàn thành lịch hẹn.')).toBeVisible();
   await expect(
     row(page, `Gọi tư vấn ${setup.mark}`).getByRole('button', { name: 'Mở lại' }),
@@ -214,6 +224,7 @@ test('Hoàn tác sau Hoàn thành ở danh sách: lịch về Chưa làm', async
   await openList(page, setup);
   const title = `Hẹn hoàn tác trong danh sách ${setup.mark}`;
   await row(page, title).getByRole('button', { name: 'Hoàn thành' }).click();
+  await confirmCompleteAppointment(page);
   await expect(toastText(page, 'Đã hoàn thành lịch hẹn.')).toBeVisible();
   await expect(row(page, title).getByRole('button', { name: 'Mở lại' })).toBeVisible();
   await page.getByRole('button', { name: 'Hoàn tác', exact: true }).click();

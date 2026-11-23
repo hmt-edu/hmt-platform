@@ -14,6 +14,8 @@ export type UpcomingAppointment = {
   status: 'CHUA_LAM' | 'HOAN_THANH' | 'HUY';
   owner_id: string;
   owner_name: string | null;
+  /** Lịch tự nhắc do hệ thống tạo (list_appointments trả sẵn). */
+  is_auto_reminder: boolean;
 };
 
 const ACTIVITY_ICON: Record<string, IconName> = {
@@ -127,8 +129,22 @@ export async function rescheduleAppointment(
   });
 }
 
-export async function completeAppointment(supabase: SupabaseClient, id: string): Promise<void> {
-  await rpc<null>(supabase, 'complete_appointment', { p_id: id });
+/** Hoàn thành lịch hẹn (R-CRM-04) kèm kết quả cuộc gọi, ghi chú và hẹn lần sau (migration 628); bỏ trống thì như cách gọi cũ. */
+export async function completeAppointment(
+  supabase: SupabaseClient,
+  id: string,
+  extra?: { resultCode: string | null; note: string; nextAt: Date | null },
+): Promise<void> {
+  await rpc<null>(supabase, 'complete_appointment', {
+    p_id: id,
+    ...(extra
+      ? {
+          p_result_code: extra.resultCode,
+          p_result_note: extra.note.trim() === '' ? null : extra.note.trim(),
+          p_next_at: extra.nextAt ? extra.nextAt.toISOString() : null,
+        }
+      : {}),
+  });
 }
 
 export async function cancelAppointment(

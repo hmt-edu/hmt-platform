@@ -19,6 +19,10 @@ import {
   type UpcomingAppointment,
 } from '../../features/appointments/appointmentApi';
 import { AppointmentDialog } from '../../features/appointments/AppointmentDialog';
+import {
+  CompleteAppointmentDialog,
+  type CompleteArgs,
+} from '../../features/appointments/CompleteAppointmentDialog';
 import { useUndoAppointment } from '../../features/appointments/useUndoAppointment';
 import { UpcomingActivities } from '../../features/appointments/UpcomingActivities';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
@@ -180,7 +184,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const [canceling, setCanceling] = useState<UpcomingAppointment | null>(null);
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [completing, setCompleting] = useState<UpcomingAppointment | null>(null);
   // Rời trang có chủ ý (tạo xong, Huỷ khi Tạo): bỏ cờ "chưa lưu" rồi mới chuyển, để hộp hỏi rời trang không hiện.
   const [exitTo, setExitTo] = useState<string | null>(null);
   useEffect(() => {
@@ -341,17 +345,11 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   }
 
   // ---- Lịch hẹn (R-CRM-04) ----
-  async function complete(row: UpcomingAppointment) {
-    setBusyId(row.id);
-    try {
-      await completeAppointment(supabase, row.id);
-      await refreshRecord();
-      toast({ title: 'Đã hoàn thành lịch hẹn.', action: undoAppointment(row.id) });
-    } catch (e) {
-      toast({ tone: 'danger', title: errorOf(e).message });
-    } finally {
-      setBusyId(null);
-    }
+  /** Hộp «Hoàn thành lịch hẹn» (TS-11): lỗi ném lại để hộp hiện câu lỗi. */
+  async function completeWith(id: string, args: CompleteArgs) {
+    await completeAppointment(supabase, id, args);
+    await refreshRecord();
+    toast({ title: 'Đã hoàn thành lịch hẹn.', action: undoAppointment(id) });
   }
 
   /** Nút "Cơ hội": một cơ hội thì mở thẳng bản ghi, nhiều thì mở danh sách đã lọc theo lead (K3, smart button). */
@@ -667,8 +665,8 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                   activityName={activityName}
                   canEdit={access.can('APPOINTMENT', 'SUA') && !locked}
                   canCancel={access.can('APPOINTMENT', 'HUY') && !locked}
-                  busyId={busyId}
-                  onComplete={(row) => void complete(row)}
+                  busyId={null}
+                  onComplete={(row) => setCompleting(row)}
                   onReschedule={(row) => setMoving({ ...row, branchId: record.branch_id })}
                   onCancel={(row) => {
                     setCancelError(null);
@@ -1112,6 +1110,24 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           }}
         />
       )}
+
+      <CompleteAppointmentDialog
+        open={completing !== null}
+        onOpenChange={(o) => !o && setCompleting(null)}
+        target={
+          completing && record
+            ? {
+                id: completing.id,
+                activityCode: completing.activity_code,
+                isAutoReminder: completing.is_auto_reminder,
+                label: `${activityName(completing.activity_code)} · ${completing.title}`,
+                context: `Lead ${record.code} · ${formatDateTime(completing.scheduled_at)} · ${leadTitle(record)}`,
+              }
+            : null
+        }
+        resultOptions={catalogs.options('APPOINTMENT_RESULT')}
+        onComplete={completeWith}
+      />
 
       {record && target && (
         <AppointmentDialog
