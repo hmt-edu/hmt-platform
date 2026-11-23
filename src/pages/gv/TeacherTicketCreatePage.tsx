@@ -1,5 +1,5 @@
 // GV-14 Tạo ticket (cổng giáo viên, biểu mẫu K07, ưu tiên điện thoại): Nhóm, Nhóm con, Tính chất (chỉ đọc, tự gắn theo nhóm con), Lớp, Học sinh (bắt buộc theo nhóm con),
-// Tiêu đề, Mô tả. Ô Ảnh «Làm sau» (Q-233): chưa tải ảnh. Không tự lưu: bấm Tạo mới gửi (app.teacher_create_ticket); chỉ tạo cho lớp mình (R-CS-10).
+// Tiêu đề, Mô tả. Chưa có ô tải ảnh (chờ kho tệp, anh Trường hoãn R2): ẩn hẳn, không hiện nút chưa chạy được (E-23-06). Không tự lưu: bấm Tạo mới gửi (app.teacher_create_ticket); chỉ tạo cho lớp mình (R-CS-10).
 // Chưa làm: hộp «Chưa lưu thay đổi» khi rời màn (canvas GV14); ghi vào PR.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -167,13 +167,6 @@ export function TeacherTicketCreatePage() {
         error={errors.description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <div>
-        <p className="text-body font-semibold">Ảnh</p>
-        <p className="text-caption text-fg-muted">
-          Làm sau: bản 17/11 chưa tải ảnh, ticket chỉ gõ chữ.
-        </p>
-        <Button disabled>Chọn ảnh</Button>
-      </div>
       <div className="flex flex-wrap gap-2">
         <Button variant="primary" loading={create.isPending} onClick={() => void submit()}>
           Tạo ticket
