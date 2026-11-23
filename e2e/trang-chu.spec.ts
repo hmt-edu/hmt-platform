@@ -158,8 +158,7 @@ test('phân hệ Bán hàng tắt ở CS1 thì Sale CS1 không thấy khối l�
   page,
 }) => {
   await openHome(page, 'sale.cs1');
-  await expect(
-    page.getByRole('heading', { name: 'Chưa có mục nhắc việc nào cho bạn.' }),
-  ).toBeVisible();
+  // Từ #555 trang chủ có thêm khối việc theo vai trò nên câu «Chưa có mục nhắc việc» chỉ hiện khi không khối nào hiện; ở đây chỉ kiểm khối lịch hẹn ẩn.
+  await expect(page.getByRole('heading', { level: 1, name: 'Việc của tôi hôm nay' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Lịch hẹn hôm nay' })).toHaveCount(0);
 });

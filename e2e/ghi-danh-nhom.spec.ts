@@ -1,7 +1,7 @@
 // GD-03 xếp lớp THEO NHÓM LỚP (nợ của cụm Ghi danh, Chat 10/11): một học sinh có hai ghi danh Chờ xếp lớp (Đại, Hình); nhóm lớp có một lớp Đại và một lớp Hình.
 // Chọn nhóm thì ghi danh Đại vào lớp Đại, ghi danh Hình vào lớp Hình, cả hai trong một lần. Máy tính (màn Đào tạo ưu tiên máy tính).
 import { expect, test } from '@playwright/test';
-import { PASSWORD, enterAs } from './helpers';
+import { PASSWORD, enterAs, showAllColumns } from './helpers';
 import { DB_URL } from './bao-gia-seed';
 import { seedGroup, type GroupSeed } from './ghi-danh-nhom-seed';
 
@@ -50,6 +50,7 @@ test('GD-03: theo nhóm lớp xếp cả hai ghi danh vào đúng lớp của t�
   // Danh sách ghi danh: cả hai Đã xếp lớp, mỗi ghi danh đúng lớp của mình.
   await page.goto('/crm/ghi-danh');
   await page.getByRole('searchbox').fill(seed.student);
+  await showAllColumns(page);
   const list = page.getByRole('table', { name: 'Ghi danh' });
   const dai = list.getByRole('row', { name: new RegExp(seed.daiEnrollment) });
   const hinh = list.getByRole('row', { name: new RegExp(seed.hinhEnrollment) });
