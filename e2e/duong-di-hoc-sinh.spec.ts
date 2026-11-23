@@ -4,7 +4,7 @@
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
 import { DB_URL } from './bao-gia-seed';
-import { DOMAIN, PASSWORD, enterAs } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, showAllColumns } from './helpers';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lớp, học sinh giả).');
 test.describe.configure({ mode: 'serial' });
@@ -206,6 +206,7 @@ test('Đường đi trọn: ghi danh 3 giờ, chốt danh sách, điểm danh, n
     await page.goto(`/crm/lop/${classId}`);
     await page.getByRole('button', { name: /^Học sinh/ }).click();
     await expect(page).toHaveURL(new RegExp(`/crm/lop/${classId}/hoc-sinh$`));
+    await showAllColumns(page);
     const row = page.getByRole('row').filter({ hasText: STUDENT });
     await expect(row).toBeVisible();
     await expect(row.getByText(String(START_HOURS - SESSION_HOURS), { exact: true })).toBeVisible();
@@ -213,6 +214,8 @@ test('Đường đi trọn: ghi danh 3 giờ, chốt danh sách, điểm danh, n
 
   await test.step('Màn buổi hiện tình trạng Done', async () => {
     await page.goto(`/crm/buoi-hoc/${first}`);
-    await expect(page.getByText('Buổi 1 · Done').first()).toBeVisible();
+    // Bản ghi Buổi (T13, #551): «Buổi» và «Tình trạng» là hai ô riêng.
+    await expect(page.getByText('Buổi 1', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Done', { exact: true }).first()).toBeVisible();
   });
 });
