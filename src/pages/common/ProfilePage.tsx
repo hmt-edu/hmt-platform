@@ -167,7 +167,7 @@ export function ProfilePage() {
               Đã đổi mật khẩu.
             </Alert>
           )}
-          <NewPasswordForm submitLabel="Đổi mật khẩu" onDone={() => setChanged(true)} />
+          <NewPasswordForm submitLabel="Đổi mật khẩu" askCurrent onDone={() => setChanged(true)} />
         </div>
       </section>
 
