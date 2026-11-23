@@ -135,8 +135,11 @@ grant all on t4 to public;
 insert into t4 select app.create_ticket(pg_temp.mk('DN', 'DN_02_01', jsonb_build_object('student_id', (select id from app.student where code = 'HSAS501'))));
 create temp table k4 (j jsonb);
 grant all on k4 to public;
+-- D-23-30: dữ liệu phiếu giả chưa có ghi danh thật; dựng bằng cờ di chuyển dữ liệu (luật phạm vi bỏ qua), việc thử ở đây không phải payload.
+select set_config('hmt.migration', 'on', true);
 insert into k4 select app.create_ticket_task((select (j ->> 'id')::uuid from t4), 'HOAN_PHI', 'Gia đình chuyển nhà', '{}'::jsonb);
 select app.submit_ticket_task((select (j ->> 'id')::uuid from k4));
+select set_config('hmt.migration', 'off', true);
 select pg_temp.claims(pg_temp.uid('qlcs5'), 'aal1');
 select app.approve_ticket_task((select (j ->> 'id')::uuid from k4));
 select is((select status_code || '/' || current_level from app.ticket_task where id = (select (j ->> 'id')::uuid from k4)), 'CHO_DUYET/2', 'Hoàn học phí: duyệt cấp 1 xong còn chờ cấp 2 (kế toán)');
