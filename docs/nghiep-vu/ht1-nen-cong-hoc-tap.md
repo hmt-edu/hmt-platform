@@ -9,3 +9,4 @@ Nguyên tắc: học sinh chỉ thấy chính mình, phụ huynh chỉ thấy co
 | `app.portal_student_ids()` | Các học sinh người gọi được thấy: HS = chính mình (`student_code`), PH = các con (`parent_code`); nhân viên và tài khoản khoá = rỗng | hàm cổng |
 | `app.portal_require_student(student_id)` | Kiểm học sinh thuộc người gọi và công tắc Học tập (`HOC_TAP`) bật ở cơ sở học sinh; trả cơ sở. Lỗi `HMT_KHONG_CO_QUYEN`, `HMT_TINH_NANG_TAT` | đầu mọi hàm cổng |
 | `app.portal_children()` | Mảng `{id, code, full_name}` các con (chip chọn con, ẩn khi một con); chỉ cơ sở đã bật Học tập | giao diện cổng |
+| `app.portal_schedule(student_id, from, to)` (migration 638, HT-06 và PH-05) | Lịch học một học sinh trong khoảng ngày: buổi của lớp đang học (dòng xếp lớp còn hiệu lực) và buổi có tên trong điểm danh (bù, bổ trợ); bỏ buổi `DA_THAY`; tối đa `list_page_size_max` dòng. Lỗi `HMT_KHOANG_NGAY_SAI` | giao diện cổng |
