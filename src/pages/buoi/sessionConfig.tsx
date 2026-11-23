@@ -6,7 +6,7 @@ import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
 import type { LeadCatalogs } from '../lead/useCatalogs';
-import { classLabel, deadlineLabel, sessionNoLabel } from './sessionLogic';
+import { deadlineLabel, sessionNoLabel } from './sessionLogic';
 import type { AbsentRow, PendingRow, SessionRow } from './sessionTypes';
 
 export const SESSION_SCREEN_CODE = 'BUOI-01';
@@ -65,7 +65,8 @@ export function buildSessionConfig(
         ),
       },
       { key: 'date', label: 'Ngày', render: (r) => formatDate(r.session_date) },
-      { key: 'class', label: 'Lớp', render: (r) => classLabel(r.subject_name, r.class_code) },
+      { key: 'subject', label: 'Môn', render: (r) => r.subject_name ?? MUTED },
+      { key: 'class', label: 'Lớp', render: (r) => r.class_code },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
       { key: 'no', label: 'Buổi', render: (r) => sessionNoLabel(r.session_no) },
       { key: 'type', label: 'Loại', render: (r) => r.type_name },
@@ -133,7 +134,8 @@ export function buildAbsentConfig(
         primary: true,
         render: (r) => r.student_name,
       },
-      { key: 'class', label: 'Lớp', render: (r) => classLabel(r.subject_name, r.class_code) },
+      { key: 'subject', label: 'Môn', render: (r) => r.subject_name ?? MUTED },
+      { key: 'class', label: 'Lớp', render: (r) => r.class_code },
       { key: 'session_date', label: 'Ngày học', render: (r) => formatDate(r.session_date) },
       { key: 'start_time', label: 'Giờ bắt đầu', render: (r) => r.start_time },
       {
@@ -201,8 +203,9 @@ export function buildPendingConfig(access: AccessView, canRemind: boolean): List
         label: 'Lớp',
         locked: true,
         primary: true,
-        render: (r) => classLabel(r.subject_name, r.class_code),
+        render: (r) => r.class_code,
       },
+      { key: 'subject', label: 'Môn', render: (r) => r.subject_name ?? MUTED },
       { key: 'no', label: 'Buổi', render: (r) => sessionNoLabel(r.session_no) },
       { key: 'date', label: 'Ngày học', render: (r) => formatDate(r.session_date) },
       { key: 'time', label: 'Giờ bắt đầu', render: (r) => r.start_time },
