@@ -195,7 +195,7 @@ function CreateForm({
       onOpenChange={(open) => !open && onClose()}
       title="Tạo chiến dịch"
       confirmLabel="Tạo"
-      canSubmit={name.trim() !== ''}
+      canSubmit={name.trim() !== '' && !(from && to && to < from)}
       busy={busy}
       error={error}
       onSubmit={() => {
@@ -220,6 +220,11 @@ function CreateForm({
         />
         <DateInput label="Ngày bắt đầu" value={from} onChange={setFrom} />
         <DateInput label="Ngày kết thúc" value={to} onChange={setTo} />
+        {from && to && to < from && (
+          <p className="text-caption text-on-danger-subtle">
+            Ngày kết thúc phải từ ngày bắt đầu trở đi.
+          </p>
+        )}
       </div>
     </FormDialog>
   );

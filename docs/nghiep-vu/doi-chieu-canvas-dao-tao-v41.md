@@ -58,3 +58,26 @@ Quy ước: khung nháp GV07b, GV08b (23 khung của 8a0d) không còn trong gó
 
 ## 5. Việc kế tiếp (sau khi anh duyệt bảng này)
 D1/D2 (DB): loại buổi và Kiểm tra, 9 tiêu chí, bảng điểm kiểm tra (3 nhóm điểm), tiêu chí theo buổi, tham số ngưỡng mức gợi ý và danh mục mẫu câu, cờ "Đã xuất". Giao diện cổng giáo viên dựng theo khuôn KG của `design/hmt-canvas-fcd1/`. Mốc ~17/11 (sau Bán hàng, Thu chi ~12/11). **Chưa viết mã Đào tạo; Bán hàng làm trước Đào tạo** (anh 04/11).
+
+## 6. Rà lại ngày 23/11/2026 với canvas v52 (thẻ A-23-05, Code A)
+
+**Phạm vi:** cổng giáo viên (GV-01..16, GV07K, GV07X) và BUOI-03, BUOI-07..09, so với `design/hmt-canvas-9189/` bản v52 (391 khung).
+
+**Kết quả chính:** từ bản v48 (#231) tới v52 (#512) **không khung GV, GV07X, BUOI nào đổi** (chỉ thêm 18 khung Aftersale CSN và đổi `canvas.json`). Vì vậy kết luận đối chiếu của bảng `docs/ke-hoach/man-hinh-theo-trang-thai.md` (GV-02, 04, 07, 16 «Lệch → đã sửa»; các màn khác Đúng hoặc Gần đúng) vẫn đúng với v52. 23 khung `GV07b_*`, `GV08b_*` là bản nháp, không làm (đã kiểm: code không dựng).
+
+**Đã kiểm trong code (đọc mã, không chụp màn hình):**
+
+| Luật / khung | Kết quả |
+|---|---|
+| R-V2-37: GV-02 không hiện buổi quá hạn | Đúng: `TeacherTodayPage` ghi buổi quá hạn ở GV-12, máy chủ quyết buổi nào hiện (`app.teacher_today`) |
+| R-V2-35: BTVN tuỳ giáo viên, không ô «không giao BTVN» | Đúng: `SessionContentPage`; GV-08 buổi trước không giao thì tự bỏ qua, không chặn Done (`HomeworkGradingPage`, Vitest `sessionSteps.test.ts`) |
+| GV-07 / GV07K: «Nhận xét chung», «Định hướng cải thiện», bỏ «Lời nhắn phụ huynh» | Đúng (`ExamGradingPage`; không còn chuỗi «Lời nhắn phụ huynh» ở cổng giáo viên) |
+| Tiêu chí «Tự giác» (trước «Tinh thần học tập») | Đúng: danh mục nạp bằng migration `…0103` (mã `TD_TU_GIAC`), không còn tên cũ |
+| GV-14: trường «Tính chất» chỉ đọc | Có (`TeacherTicketCreatePage`) |
+| Chữ «Done» thay «Hoàn thành» ở tình trạng buổi | Phần lớn đúng; còn vài chỗ viết «Buổi đã Hoàn thành» (`ExamGradingPage` dòng 155, 187; `TeacherAttendancePage` 207) |
+
+**Lệch nhỏ chưa sửa (chữ, không ảnh hưởng nghiệp vụ; mã nằm vùng Code E nên chỉ ghi, không sửa chéo vùng):**
+1. Ba chỗ chữ «Hoàn thành» ở trên nên đổi thành «Done» cho thống nhất với GV-09, GV-11 và khuôn KG.
+2. GV-11: canvas bản máy tính dùng nút «Mở» ở một số dòng; code dùng «Mở học sinh» (khớp các khung còn lại). Không đổi.
+
+**Chưa kiểm:** so từng khung ở cỡ điện thoại bằng ảnh chụp, và e2e: do Tester/CI. Không có lệch lớn nào cần báo anh.

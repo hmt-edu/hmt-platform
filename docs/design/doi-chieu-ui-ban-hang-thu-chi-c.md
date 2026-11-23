@@ -24,8 +24,8 @@ Cấu hình đọc từ `CFG` của `TC01.dc.html`, `TC04.dc.html` (trường t�
 | TC-04 Cột «Mã giao dịch» | có | có | Đúng (migration 431) |
 | TC-01, TC-04 Trường tìm | TC-01: Mã, Đơn hàng, Phụ huynh; TC-04: Mã, Phụ huynh, Mã giao dịch | ô tìm một ô, `search_text` đã gồm mã, đơn, phụ huynh, mã giao dịch | Đúng |
 | TC-01 Group By | Tình trạng, Hình thức, Cơ sở | Tình trạng, Hình thức, Cơ sở | Đúng |
-| TC-04 Group By «Sao kê» | thêm nhóm Sao kê | chưa có | **Chưa sửa**: cần migration (`receipt_group_counts` thêm trường `bank`, số > 576); xin Chat cấp số và duyệt |
-| TC-01, TC-04 Lọc nhanh «Cơ sở» (CS1, CS2, CS4, CS5) | chip nhiều cơ sở | chỉ lọc nâng cao một cơ sở (khi xem nhiều cơ sở) | **Chưa sửa**: máy chủ nhận một `branch_id`; muốn chip nhiều cơ sở cần đổi hàm thành mảng (migration). Xin Chat quyết |
+| TC-04 Group By «Sao kê» | thêm nhóm Sao kê | có | **Đã sửa** (migration 579, ReceiptListPage: nhóm Group By «Sao kê»). Cập nhật 23/11 sau rà code |
+| TC-01, TC-04 Lọc nhanh «Cơ sở» (CS1, CS2, CS4, CS5) | chip nhiều cơ sở | chip nhiều cơ sở (chỉ hiện khi xem được nhiều cơ sở) | **Đã sửa** (#452, migration 593, `branch_ids`). Cập nhật 23/11 sau rà code |
 | Yêu thích mẫu («Chờ kế toán duyệt», «Chưa khớp sao kê», «Chuyển khoản CS2») | ví dụ minh hoạ | Yêu thích là bộ lọc người dùng tự lưu (`saved_filter`), không có mẫu dựng sẵn | Không làm (đúng khuôn K1_fav; số liệu minh hoạ) |
 
 ## So canvas TC-06, BH-04, BH-10, BH-11 (Code C, 20/11/2026, thẻ 18:20)

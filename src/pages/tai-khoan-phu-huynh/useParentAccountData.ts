@@ -53,7 +53,14 @@ export async function issueParentAccount(
   return result.password;
 }
 
-/** Khoá tài khoản phụ huynh: QT-17 không bắt lý do (Design 23/11); máy chủ đăng xuất mọi thiết bị. */
+/** Lý do ghi vào nhật ký khi khoá ở QT-17: hộp Khoá không có ô lý do (anh chốt 23/11), hàm DB lại bắt lý do nên gửi chữ cố định này. */
+export const PARENT_LOCK_REASON = 'Khoá tài khoản phụ huynh';
+
+/** Khoá tài khoản phụ huynh: không bắt người dùng nhập lý do; máy chủ đăng xuất mọi thiết bị. */
 export async function lockParentAccount(supabase: SupabaseClient, userId: string): Promise<void> {
-  await callFunction(supabase, 'admin-users', { action: 'lock', userId });
+  await callFunction(supabase, 'admin-users', {
+    action: 'lock',
+    userId,
+    reason: PARENT_LOCK_REASON,
+  });
 }

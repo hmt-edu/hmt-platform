@@ -44,6 +44,31 @@ export const TRANSFER_KINDS = [
   { value: 'CHUYEN_CO_SO', label: 'Chuyển cơ sở' },
 ] as const;
 
+/** Kiểu chuyển phí (CSN06d): sang môn khác, gói khác hoặc anh chị em. */
+export const FEE_TRANSFER_KINDS = [
+  { value: 'SANG_MON', label: 'Sang môn khác' },
+  { value: 'SANG_GOI', label: 'Sang gói khác' },
+  { value: 'SANG_ANH_CHI_EM', label: 'Sang anh chị em' },
+] as const;
+
+/** Kết quả app.preview_fee_transfer (bảng tính tham khảo, tiền đồng, giờ). */
+export type FeeTransferPreview = {
+  hours_bought: number;
+  hours_used: number;
+  unit_price_net: number;
+  paid_amount: number;
+  transfer_value: number;
+  hours_gift_cancelled: number;
+  order_total: number | null;
+  extra_to_pay: number | null;
+};
+export type FeeTransferOrder = {
+  id: string;
+  code: string;
+  status_code: string;
+  total_amount: number;
+};
+
 export const TRANSFER_BRANCH_KIND = 'CHUYEN_CO_SO';
 
 /** Hình thức phiếu Bảo lưu: bảo lưu mới hoặc gia hạn bản đang chạy (CSN-06b). */
@@ -64,6 +89,8 @@ export const MONEY_MODES: { value: MoneyMode; label: string }[] = [
 export type BusinessDraft = {
   /** Phiếu Dừng học: ngày dừng (chỉ ghi nhận) và cách xử lý tiền còn lại. */
   stopDate: string;
+  /** Chuyển phí: đơn nhận (tuỳ chọn, chỉ tham khảo). */
+  orderId: string;
   moneyMode: MoneyMode | '';
   holdMode: HoldMode;
   enrollmentId: string;
@@ -81,6 +108,7 @@ export type BusinessErrors = Partial<Record<keyof BusinessDraft, string>>;
 
 export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
   stopDate: '',
+  orderId: '',
   moneyMode: '',
   holdMode: 'MOI',
   enrollmentId: '',
@@ -108,7 +136,8 @@ export function validateBusinessDraft(
     if (draft.stopDate === '') e.stopDate = 'Chọn ngày dừng.';
     if (draft.moneyMode === '') e.moneyMode = 'Chọn cách xử lý tiền còn lại.';
   } else if (type === 'CHUYEN_PHI') {
-    // Chuyển phí: chỉ cần ghi danh, lý do (danh mục) và ghi chú; luật chặn ở hàm áp dụng (R-GD-10).
+    // Chuyển phí (CSN06d): thêm Kiểu chuyển; đơn nhận tuỳ chọn; luật chặn ở hàm DB (R-GD-10, HMT_CHUYEN_PHI_AM).
+    if (draft.kindCode === '') e.kindCode = 'Chọn kiểu chuyển.';
   } else if (type === 'BAO_LUU') {
     const m = Number(draft.months);
     if (draft.holdMode !== 'TIEP_TUC' && (!Number.isInteger(m) || m < 1))
@@ -148,6 +177,8 @@ export function buildBusinessPayload(
       enrollment_id: draft.enrollmentId,
       reason_code: draft.reasonCode,
       note: draft.reason.trim(),
+      kind_code: draft.kindCode,
+      ...(draft.orderId !== '' ? { order_id: draft.orderId } : {}),
     };
   if (type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC')
     // Tiếp tục học (quay lại sớm): kết thúc bảo lưu, về hàng chờ xếp lớp, giữ giờ (migration 424).
