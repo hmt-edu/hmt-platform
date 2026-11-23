@@ -14,16 +14,20 @@ export type StatusDialogSpec = {
   noteLabel: string;
   noteRequired: boolean;
   hint: string | null;
+  /** Câu giới thiệu dưới tiêu đề (CSN04_khach_huy); null: không có. */
+  intro?: string | null;
 };
 
 export function statusDialogSpec(i: StatusDialogInput): StatusDialogSpec {
   if (i.to === 'DA_HUY' && i.customerCancel === true)
     return {
       title: 'Khách huỷ ticket',
-      confirmLabel: 'Khách huỷ',
+      confirmLabel: 'Xác nhận khách huỷ',
       noteLabel: 'Lý do khách huỷ',
       noteRequired: true,
-      hint: 'Khách không muốn tiếp tục đề nghị này. Ticket không xoá được, chỉ chuyển sang Huỷ.',
+      hint: 'Bắt buộc. Ghi vào nhật ký ticket (R-CS-05).',
+      intro:
+        'Dùng khi khách (phụ huynh hoặc học sinh) rút lại đề nghị. Ticket chuyển sang Huỷ, không mở lại được.',
     };
   if (i.to === 'DA_HUY')
     return {

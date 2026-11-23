@@ -4,7 +4,7 @@ import { filterRoles, portalsLabel, type RoleSummary } from './roleLogic';
 
 const role = (over: Partial<RoleSummary>): RoleSummary => ({
   code: 'SALES',
-  name: 'Tuyển sinh',
+  name: 'Tư vấn tuyển sinh',
   default_scope: 'CO_SO',
   portals: ['crm'],
   view_only_portals: [],

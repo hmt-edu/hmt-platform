@@ -125,7 +125,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const orderReason: { ok: true } | { ok: false; reason: string } = merged
     ? { ok: false, reason: 'Cơ hội đã gộp vào bản khác, không tạo đơn hàng.' }
     : record.stage_code !== 'L8'
-      ? { ok: false, reason: 'Chỉ tạo đơn hàng khi cơ hội ở L8 (R-CRM-16)' }
+      ? { ok: false, reason: 'Chỉ tạo đơn hàng khi cơ hội ở L8' }
       : !access.can('SALES_ORDER', 'TAO')
         ? { ok: false, reason: 'Bạn không có quyền tạo đơn hàng.' }
         : !access.featureOn('BAN_HANG')
@@ -426,11 +426,13 @@ function OpportunityView({ record }: { record: OppRecord }) {
               }
             : undefined
         }
+        quietEdit
         businessActions={
           <>
             {/* R-CRM-19, R-TIEN-02: Tạo báo giá chỉ nằm ở bản ghi cơ hội, bấm chỉ mở form trắng. Điện thoại giữ bản chỉ đọc (Đ248): ẩn nút. */}
             {!phone && (
               <Button
+                variant={!orderReason.ok && quoteReason.ok ? 'primary' : 'secondary'}
                 disabled={!quoteReason.ok}
                 title={quoteReason.ok ? undefined : quoteReason.reason}
                 onClick={() => openFrom(`/crm/bao-gia/tao?co-hoi=${record.id}`)}
@@ -441,6 +443,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
             {/* R-CRM-16, R-CRM-19, R-TIEN-39: Tạo đơn hàng chỉ ở cơ hội L8, bấm chỉ mở form trắng. Điện thoại ẩn nút (Đ248). */}
             {!phone && (
               <Button
+                variant={orderReason.ok ? 'primary' : 'secondary'}
                 disabled={!orderReason.ok}
                 title={orderReason.ok ? undefined : orderReason.reason}
                 onClick={() => openFrom(`/crm/don-hang/tao?co-hoi=${record.id}`)}
@@ -518,16 +521,19 @@ function OpportunityView({ record }: { record: OppRecord }) {
             icon: 'payment',
             // Mã báo giá (BG-…) còn hiệu lực của cơ hội; sales_documents gộp cả mã đơn (DH-…), tách theo tiền tố mã (docs/spec/02).
             count: (record.sales_documents ?? []).filter((c) => c.startsWith('BG-')).length,
-            unavailable: 'Xem ở menu Bán hàng, mục Báo giá',
-            onOpen: () => undefined,
+            hidden: !access.can('QUOTATION', 'XEM'),
+            // Danh sách báo giá đã lọc theo cơ hội (chỉ có mã, chưa có id nên một bản ghi cũng mở danh sách).
+            onOpen: () =>
+              openFrom(`/crm/bao-gia?co-hoi=${record.id}&ma=${encodeURIComponent(record.code)}`),
           },
           {
             key: 'don-hang',
             label: 'Đơn hàng',
             icon: 'file',
             count: (record.sales_documents ?? []).filter((c) => c.startsWith('DH-')).length,
-            unavailable: 'Xem ở menu Bán hàng, mục Đơn hàng',
-            onOpen: () => undefined,
+            hidden: !access.can('SALES_ORDER', 'XEM'),
+            onOpen: () =>
+              openFrom(`/crm/don-hang?co-hoi=${record.id}&ma=${encodeURIComponent(record.code)}`),
           },
           {
             key: 'phu-huynh',
@@ -564,7 +570,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
                     disabled={!canCreateTest || stageIndex(record.stage_code) < stageIndex('L5')}
                     title={
                       stageIndex(record.stage_code) < stageIndex('L5')
-                        ? 'Chỉ tạo phiếu khi cơ hội ở L5 trở đi (R-CRM-05)'
+                        ? 'Chỉ tạo phiếu khi cơ hội ở L5 trở đi'
                         : !canCreateTest
                           ? 'Bạn không có quyền tạo phiếu kiểm tra'
                           : undefined

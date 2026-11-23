@@ -68,8 +68,13 @@ export function buildQuoteConfig(
             <span className="text-fg-muted">Chưa có học sinh</span>
           ),
       },
-      { key: 'opportunity', label: 'Cơ hội', render: (r) => <Code>{r.opportunity_code}</Code> },
-      { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
+      {
+        key: 'opportunity',
+        defaultVisible: false,
+        label: 'Cơ hội',
+        render: (r) => <Code>{r.opportunity_code}</Code>,
+      },
+      { key: 'branch', defaultVisible: false, label: 'Cơ sở', render: (r) => r.branch_code },
       {
         key: 'total',
         label: 'Tổng tiền (đ)',
@@ -103,7 +108,12 @@ export function buildQuoteConfig(
           </Tag>
         ),
       },
-      { key: 'creator', label: 'Người lập', render: (r) => r.created_by_name ?? '' },
+      {
+        key: 'creator',
+        defaultVisible: false,
+        label: 'Người lập',
+        render: (r) => r.created_by_name ?? '',
+      },
     ],
     quickGroups: [
       {
@@ -133,7 +143,7 @@ export function buildQuoteConfig(
           {
             value: 'expired',
             label: 'Đã quá hạn',
-            hint: 'đã gửi và quá hạn; quá hạn chỉ là nhãn, không chặn chuyển đơn (R-TIEN-05)',
+            hint: 'đã gửi và quá hạn; quá hạn chỉ là nhãn, không chặn chuyển đơn',
           },
         ],
       },

@@ -106,7 +106,7 @@ export function WeekCalendarPage() {
 
       {clashes > 0 && (
         <Alert tone="warning" title={`${clashes} buổi trùng phòng hoặc giáo viên`}>
-          Chỉ cảnh báo, không chặn (R-LOP-08). Lớp luân phiên cùng nhóm không báo trùng.
+          Chỉ cảnh báo, không chặn. Lớp luân phiên cùng nhóm không báo trùng.
         </Alert>
       )}
 

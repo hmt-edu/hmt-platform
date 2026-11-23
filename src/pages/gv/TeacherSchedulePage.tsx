@@ -80,7 +80,7 @@ export function TeacherSchedulePage() {
         </Link>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Tag>Chỉ buổi của tôi (R-GV-08)</Tag>
+        <Tag>Chỉ buổi của tôi</Tag>
         <div role="group" aria-label="Kiểu xem" className="flex gap-1">
           <Button
             variant={view === 'tuan' ? 'primary' : 'secondary'}
@@ -257,7 +257,7 @@ export function TeacherSchedulePage() {
             ) : undefined
           }
         >
-          Chỉ hiện buổi của lớp bạn được phân công (R-GV-08).
+          Chỉ hiện buổi của lớp bạn được phân công.
         </StateView>
       )}
       {narrow ? (

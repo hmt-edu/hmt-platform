@@ -57,9 +57,10 @@ test.beforeAll(async ({}, testInfo) => {
        values ($1, $2, '2627', 'TOAN', 'K08', 'CB', 'A', (now() at time zone 'Asia/Ho_Chi_Minh')::date, 3) returning id`,
       [code, branch.rows[0]!.id],
     );
+    // Giờ kết thúc 23:59: buổi chưa hết giờ nên bước lưu của giáo viên chưa tự Done (A-23-12); để 19:30 thì CI chạy sau 19:30 giờ Việt Nam sẽ Done ngay và khoá ô nhập.
     const session = await db.query<{ id: string }>(
       `insert into app.class_session (class_id, branch_id, session_no, session_date, start_time, end_time, teacher_id, status_code)
-       values ($1, $2, 1, (now() at time zone 'Asia/Ho_Chi_Minh')::date, '18:00', '19:30', $3, 'DA_CHOT') returning id`,
+       values ($1, $2, 1, (now() at time zone 'Asia/Ho_Chi_Minh')::date, '23:00', '23:59', $3, 'DA_CHOT') returning id`,
       [cls.rows[0]!.id, branch.rows[0]!.id, teacher.rows[0]!.id],
     );
     await db.query('commit');

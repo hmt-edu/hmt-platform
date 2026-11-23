@@ -159,6 +159,7 @@ export function RecordDetail({
   onRefresh,
   readOnly = false,
   editLabel = 'Sửa',
+  quietEdit = false,
   showEdit,
   menuWhileEditing = false,
   stage,
@@ -193,6 +194,8 @@ export function RecordDetail({
   onRefresh?: (() => void) | undefined;
   /** Chỉ đọc (bản "Đã gộp", hoặc người xem không có quyền Sửa): ẩn Sửa và các nút cạnh Sửa, khoá thanh giai đoạn. */
   readOnly?: boolean | undefined;
+  /** Nút Sửa viền (không cam) khi màn có nút bước tiếp theo cam («một màn một nút cam»: Lead, Cơ hội). */
+  quietEdit?: boolean | undefined;
   /** Chữ nút Sửa ở thanh tiêu đề (Đơn hàng: "Sửa đơn"). */
   editLabel?: string | undefined;
   /** Hiện nút Sửa; mặc định theo `!readOnly`. Đơn hàng, Phiếu thu khoá thanh giai đoạn (readOnly) nhưng vẫn hiện nút Sửa khi có quyền. */
@@ -246,7 +249,7 @@ export function RecordDetail({
         ) : (
           <>
             {(showEdit ?? !readOnly) && (
-              <Button variant="primary" icon="edit" onClick={onEdit}>
+              <Button variant={quietEdit ? 'secondary' : 'primary'} icon="edit" onClick={onEdit}>
                 {editLabel}
               </Button>
             )}
@@ -255,7 +258,7 @@ export function RecordDetail({
         )}
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {attachments && !editing && (
-            <Button variant="text" icon="attach" disabled title="Đính kèm có từ giai đoạn 4">
+            <Button variant="text" icon="attach" disabled title="Đính kèm chưa bật">
               Đính kèm ({attachments.count})
             </Button>
           )}

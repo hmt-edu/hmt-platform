@@ -17,7 +17,11 @@ export type PromotionPreview = {
     chua_co_khoi: number;
     khong_dang_hoc: number;
     tiem_nang: number;
+    /** Em đủ điều kiện nhưng đã lên khối trong năm học này (KH-08, migration 635). */
+    da_len_khoi_nam_nay: number;
   };
+  /** Lúc chạy gần nhất của những em đã lên khối năm học này; null nếu chưa có. */
+  last_run_at: string | null;
   total: number;
   rows: PromotionRow[];
 };
