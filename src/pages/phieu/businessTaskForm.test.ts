@@ -166,10 +166,20 @@ describe('Phiếu Dừng học (CS-14, R-GD-16)', () => {
       money_mode: 'HOAN_TIEN',
     });
   });
-  it('Chuyển phí vẫn chỉ cần ghi danh và lý do', () => {
-    expect(
-      validateBusinessDraft('CHUYEN_PHI', { ...draft, stopDate: '', moneyMode: '' }, true),
-    ).toEqual({});
+  it('Chuyển phí cần thêm kiểu chuyển; payload mang kiểu chuyển và đơn nhận nếu có', () => {
+    const fee = { ...draft, stopDate: '', moneyMode: '' as const };
+    expect(validateBusinessDraft('CHUYEN_PHI', fee, true).kindCode).toBe('Chọn kiểu chuyển.');
+    const ok = { ...fee, kindCode: 'SANG_MON' };
+    expect(validateBusinessDraft('CHUYEN_PHI', ok, true)).toEqual({});
+    expect(buildBusinessPayload('CHUYEN_PHI', ok)).toEqual({
+      enrollment_id: 'e1',
+      reason_code: 'CHUYEN',
+      note: 'Chuyển nhà',
+      kind_code: 'SANG_MON',
+    });
+    expect(buildBusinessPayload('CHUYEN_PHI', { ...ok, orderId: 'o1' })).toMatchObject({
+      order_id: 'o1',
+    });
   });
 });
 
