@@ -27,10 +27,10 @@ export function WeekCalendarPage() {
   const today = vnDayBounds().dateKey;
   const [start, setStart] = useState(() => weekStart(today));
   const [by, setBy] = useState<GroupBy>('ROOM');
-  const branches = access.allBranches;
+  const branches = access.viewableBranches;
   const [chosen, setChosen] = useState<string | undefined>(undefined);
   const branchId =
-    chosen ?? (access.selectedBranch !== 'all' ? access.selectedBranch : branches[0]?.id);
+    chosen ?? (access.selectedBranch !== 'all' ? access.selectedBranch : access.defaultBranchId);
   const days = useMemo(() => weekDays(start), [start]);
   const query = useWeekSessions(branchId, days[0] ?? start, days[6] ?? start);
   const sessions = useMemo(() => query.data ?? [], [query.data]);
