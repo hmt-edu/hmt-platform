@@ -151,7 +151,7 @@ Cổng Học tập (HT) anh đã chốt: tab «Tài khoản» chưa vẽ (giữ 
 
 
 # ƯU TIÊN 4: Ticket xem gọn CSN-03 (4 khung, ĐÃ ĐĂNG, canvas Đào tạo & GV v56, 465 khung)
-Bản xem gọn là bản LÀM DUY NHẤT của màn Ticket. 17 khung CSN03_* cũ đã gắn nhãn «BẢN CŨ, KHÔNG LÀM» (xem tiêu đề trong canvas.json), không làm.
+Bản xem gọn là bản LÀM DUY NHẤT của màn Ticket. 13 khung CSN03_* cũ gắn nhãn «BẢN CŨ, KHÔNG LÀM» (xem tiêu đề trong canvas.json), không làm. Còn dùng, KHÔNG gắn nhãn: CSN03_tao_moi, CSN03_tai, CSN03_quyen, CSN03_loi_luu. Canvas v57, 465 khung.
 Khung: CSN03_gon_moi, CSN03_gon_dang_xu_ly (menu Khác mở), CSN03_gon_khieu_nai_ghi_ket_qua, CSN03_gon_huy. Máy tính 1440×900, khuôn K06.
 - Đầu màn: tiêu đề + mã nhỏ; thanh 6 bước, Huỷ là nhánh riêng bên phải; MỘT nút chính theo bước (Mới → «Giao cho tôi»; Đang xử lý → «Tạo phiếu» hoặc «Ghi kết quả»); menu «Khác» (Phân loại lại, Khách huỷ, Nâng cấp).
 - Phiếu nghiệp vụ là nút số đếm trên đầu, chỉ hiện khi có từ 1 phiếu.

@@ -543,7 +543,9 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           record && canCreateOpp ? (
             // Luật mới 26/10: chỉ tạo cơ hội khi lead ở C4C (hoặc C4D, tạo thêm có xác nhận). Nút mờ chỉ là gợi ý; chặn thật ở hàm.
             canOpenOpp(record.substage_code) ? (
-              <Button onClick={() => setOppOpen(true)}>Tạo cơ hội</Button>
+              <Button variant="primary" onClick={() => setOppOpen(true)}>
+                Tạo cơ hội
+              </Button>
             ) : (
               <Button disabled title={CREATE_OPP_BLOCKED_REASON}>
                 Tạo cơ hội
