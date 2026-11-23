@@ -230,8 +230,9 @@ export function shotPath(group: string, file: string): string {
 export async function confirmCompleteAppointment(page: Page) {
   const dialog = page.getByRole('dialog', { name: 'Hoàn thành lịch hẹn' });
   await expect(dialog).toBeVisible();
-  const result = dialog.getByLabel(/^Kết quả/);
-  await result.selectOption({ index: 1 });
+  // Ô «Kết quả» là hộp chọn của khuôn chung (không phải <select>): mở ra rồi chọn mục đầu tiên sau mục «không chọn».
+  await dialog.getByRole('combobox', { name: /^Kết quả/ }).click();
+  await page.getByRole('option').nth(1).click();
   await dialog.getByRole('button', { name: 'Hoàn thành', exact: true }).click();
 }
 
