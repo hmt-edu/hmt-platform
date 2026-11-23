@@ -43,6 +43,7 @@ export type TaskDetail = {
     start_date?: string;
     kind_code?: string;
     dest_branch_id?: string;
+    enrollment_id?: string;
     note?: string;
     stop_date?: string;
     money_mode?: string;
