@@ -34,4 +34,10 @@ describe('hộp thoại đổi trạng thái (CSN-04)', () => {
     expect(s.noteRequired).toBe(false);
     expect(s.confirmLabel).toBe('Chuyển');
   });
+  it('khách huỷ (CS-12): bắt buộc lý do, tiêu đề riêng; không bật thì vẫn là huỷ thường', () => {
+    const s = statusDialogSpec({ ...base, to: 'DA_HUY', customerCancel: true });
+    expect(s.title).toBe('Khách huỷ ticket');
+    expect(s.noteRequired).toBe(true);
+    expect(statusDialogSpec({ ...base, to: 'DA_HUY' }).title).toBeNull();
+  });
 });

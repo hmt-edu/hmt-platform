@@ -4,11 +4,16 @@ import {
   formatDate,
   formatDateTime,
   formatMoney,
+  formatMonth,
   formatWhen,
   parseMoney,
 } from './format';
 
 describe('định dạng', () => {
+  it('tháng: mm/yyyy theo giờ Việt Nam (TT-02 Đã mua gần nhất)', () => {
+    expect(formatMonth('2026-05-31T18:00:00Z')).toBe('06/2026');
+    expect(formatMonth(null)).toBe('');
+  });
   it('tiền: dấu chấm ngăn nghìn, đuôi "đ"', () => {
     expect(formatMoney(9504000)).toBe('9.504.000 đ');
     expect(formatMoney(0)).toBe('0 đ');

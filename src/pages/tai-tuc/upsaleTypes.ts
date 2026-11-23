@@ -75,7 +75,14 @@ export type UpsaleRecord = {
   student: { id: string; code: string; name: string } | null;
   class: { id: string; code: string; teacher_name: string | null };
   enrollments: { id: string; code: string; status_code: string; hours_left: number }[];
-  hours: { bought: number; used: number; absences_window: number; window_days: number };
+  hours: {
+    bought: number;
+    used: number;
+    absences_window: number;
+    window_days: number;
+    /** Lần cấp giờ mua mới nhất (migration 623); null khi chưa có. */
+    last_purchase: { hours: number; at: string } | null;
+  };
   events: UpsaleEvent[];
   actions: UpsaleAction[];
 };
