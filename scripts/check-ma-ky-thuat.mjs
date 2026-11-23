@@ -79,9 +79,12 @@ export function findLeaks(text, keep = []) {
 
 function main() {
   const root = resolve(fileURLToPath(import.meta.url), '..', '..');
-  const keep = JSON.parse(
+  /** @type {unknown} */
+  const parsed = JSON.parse(
     readFileSync(join(root, 'config/nhan-tieng-anh-giu-nguyen.json'), 'utf8'),
-  ).nhan;
+  );
+  const config = /** @type {{ nhan: string[] }} */ (parsed);
+  const keep = config.nhan;
   /** @type {{ file: string, line: number, kind: string, found: string }[]} */
   const findings = [];
   /** @param {string} dir */
