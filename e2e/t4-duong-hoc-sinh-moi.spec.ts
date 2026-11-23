@@ -116,6 +116,8 @@ test('6. Tạo đơn hàng từ cơ hội L8 bằng giao diện UI-O4', async ({
     .first()
     .click();
   await page.getByLabel('Số lượng dòng 1').fill('10');
+  await page.getByLabel('Kiểu thanh toán').click();
+  await page.getByRole('option').first().click();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/don-hang\/[0-9a-f-]{36}$/);
   state.orderId = page.url().split('/').pop() ?? '';
@@ -129,8 +131,9 @@ test('7. Sale chọn điều khoản thanh toán cho đơn Nháp rồi Lưu (UI-
   await enterAs(page, SALE);
   await page.goto(`/crm/don-hang/${state.orderId}`);
   await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
+  // Đơn đã có điều khoản từ lúc tạo (B-23-13): đổi sang điều khoản khác (cuối danh sách) để có thay đổi mà lưu.
   await page.getByLabel('Kiểu thanh toán').click();
-  await page.getByRole('option').first().click();
+  await page.getByRole('option').last().click();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
 });
