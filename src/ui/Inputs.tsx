@@ -494,7 +494,7 @@ export function FileUpload({
       />
       {!available && (
         <p id={noteId} className="text-caption text-fg-muted">
-          Chưa bật lưu tệp. Tính năng đính kèm có từ giai đoạn 4.
+          Chưa bật lưu tệp đính kèm.
         </p>
       )}
     </div>

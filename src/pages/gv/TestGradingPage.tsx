@@ -55,9 +55,7 @@ export function TestGradingPage() {
           )
         }
       >
-        {forbidden
-          ? 'Giáo viên chỉ thấy phiếu kiểm tra được giao cho mình chấm (R-GV-08, R-GV-13).'
-          : error.message}
+        {forbidden ? 'Giáo viên chỉ thấy phiếu kiểm tra được giao cho mình chấm.' : error.message}
       </StateView>
     );
   }
@@ -118,7 +116,7 @@ function TestForm({ sheet }: { sheet: TestSheet }) {
       {!editable && (
         <Alert tone="success">
           Đã nộp kết quả cho sale. Phiếu đã Hoàn thành, chỉ xem. Sửa sau khi Hoàn thành do người phụ
-          trách làm bên CRM (R-CRM-21).
+          trách làm bên CRM.
         </Alert>
       )}
       {saveError && <Alert tone="danger">{saveError}</Alert>}

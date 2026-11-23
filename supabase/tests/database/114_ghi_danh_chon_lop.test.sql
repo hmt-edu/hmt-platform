@@ -240,5 +240,28 @@ set local role authenticated;
 select is(pg_temp.err(format($$select app.set_order_line_class('%s', 1, null, null)$$, pg_temp.od('DH-G114-0001'))), 'HMT_KHONG_CO_QUYEN', 'Giáo viên không gắn lớp cho đơn');
 reset role;
 
+-- ================= G20 (migration 633): cờ «đã có ghi danh khác cùng lớp» trong tuỳ chọn xếp lớp =================
+select pg_temp.sudo($$update app.enrollment set status_code = 'DA_XEP_LOP' where id = pg_temp.en('GD114E2')$$);
+select pg_temp.sudo($$update app.enrollment_class set class_id = pg_temp.c('a') where enrollment_id = pg_temp.en('GD114E2') and end_date is null$$);
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+set local role authenticated;
+select is((select c -> 'same_class_enrollments' from jsonb_array_elements(app.enrollment_assign_options(pg_temp.en('GD114E1')) -> 'classes') c where c ->> 'id' = pg_temp.c('a')::text),
+          jsonb_build_array('GD114E2'), 'G20: em đã có ghi danh khác (GD114E2) trong lớp A thì lớp A có cờ kèm mã ghi danh đó');
+select is((select c -> 'same_class_enrollments' from jsonb_array_elements(app.enrollment_assign_options(pg_temp.en('GD114E1')) -> 'classes') c where c ->> 'id' = pg_temp.c('d')::text),
+          '[]'::jsonb, 'G20: lớp D em chưa có ghi danh nào khác thì mảng rỗng');
+select is((select count(*)::int from jsonb_array_elements(app.enrollment_assign_options(pg_temp.en('GD114E1')) -> 'classes') c where not (c ? 'same_class_enrollments')), 0, 'G20: mọi lớp đều có khoá same_class_enrollments');
+reset role;
+select pg_temp.sudo($$update app.enrollment_class set end_date = start_date, end_reason = 'NHAP_NHAM' where enrollment_id = pg_temp.en('GD114E2') and class_id = pg_temp.c('a')$$);
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+set local role authenticated;
+select is((select c -> 'same_class_enrollments' from jsonb_array_elements(app.enrollment_assign_options(pg_temp.en('GD114E1')) -> 'classes') c where c ->> 'id' = pg_temp.c('a')::text),
+          '[]'::jsonb, 'G20: ghi danh đã rời lớp A thì không còn tính là «đã có ghi danh cùng lớp»');
+select is(pg_temp.err(format($$select app.enrollment_assign_options('%s')$$, pg_temp.en('GD114E1'))), null, 'G20: quyền không đổi: CSKH cơ sở mình vẫn xem được');
+reset role;
+select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
+set local role authenticated;
+select is(pg_temp.err(format($$select app.enrollment_assign_options('%s')$$, pg_temp.en('GD114E1'))), 'HMT_KHONG_TIM_THAY', 'G20: cơ sở khác vẫn không thấy');
+reset role;
+
 select * from finish();
 rollback;

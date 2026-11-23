@@ -116,6 +116,8 @@ test('6. Tạo đơn hàng từ cơ hội L8 bằng giao diện UI-O4', async ({
     .first()
     .click();
   await page.getByLabel('Số lượng dòng 1').fill('10');
+  await page.getByLabel('Kiểu thanh toán').click();
+  await page.getByRole('option').first().click();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/don-hang\/[0-9a-f-]{36}$/);
   state.orderId = page.url().split('/').pop() ?? '';
@@ -129,8 +131,9 @@ test('7. Sale chọn điều khoản thanh toán cho đơn Nháp rồi Lưu (UI-
   await enterAs(page, SALE);
   await page.goto(`/crm/don-hang/${state.orderId}`);
   await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
+  // Đơn đã có điều khoản từ lúc tạo (B-23-13): đổi sang điều khoản khác (cuối danh sách) để có thay đổi mà lưu.
   await page.getByLabel('Kiểu thanh toán').click();
-  await page.getByRole('option').first().click();
+  await page.getByRole('option').last().click();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
 });
@@ -190,6 +193,8 @@ test('11. Trưởng cơ sở duyệt phiếu thu, chuyển Kế toán (TC-05)', 
   await enterAs(page, MANAGER);
   await page.goto(state.receiptUrl);
   await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await page.getByRole('dialog').getByRole('checkbox').check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
 });
 
@@ -200,6 +205,8 @@ test('12. Kế toán duyệt phiếu thu: sinh khoản tiền vào, ghi danh Ch�
   await enterAsAdmin(page, ACCOUNTANT);
   await page.goto(state.receiptUrl);
   await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await page.getByRole('dialog').getByRole('checkbox').check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText('Đã duyệt phiếu thu, tiền đã ghi nhận.').first()).toBeVisible();
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
@@ -343,7 +350,14 @@ test('18. TẮT: hệ thống tự Done buổi (hàm mark_session_done, pg_cron 
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
   try {
-    await db.query('select app.mark_session_done($1::uuid)', [state.sessionId]);
+    // A-23-12: giáo viên lưu bước cuối thì buổi Done NGAY; chỉ gọi hàm tự Done khi buổi còn Đã chốt (không đủ bước thì hàm báo lỗi).
+    const before = await db.query<{ status_code: string }>(
+      'select status_code from app.class_session where id = $1::uuid',
+      [state.sessionId],
+    );
+    if (before.rows[0]?.status_code !== 'DONE') {
+      await db.query('select app.mark_session_done($1::uuid)', [state.sessionId]);
+    }
     const st = await db.query<{ status_code: string }>(
       'select status_code from app.class_session where id = $1::uuid',
       [state.sessionId],

@@ -92,8 +92,8 @@ function Body({ sessionId, onClose }: { sessionId: string; onClose: () => void }
     >
       <div className="flex flex-col gap-3">
         <p className="text-body">
-          Học thử miễn phí, không trừ giờ, không tính vào sĩ số lớp (R-GD-11, R-GD-17). Chỉ cơ hội
-          từ L5 trở lên; mỗi cơ hội có hạn mức số buổi học thử.
+          Học thử miễn phí, không trừ giờ, không tính vào sĩ số lớp. Chỉ cơ hội từ L5 trở lên; mỗi
+          cơ hội có hạn mức số buổi học thử.
         </p>
         <Combobox
           label="Cơ hội"

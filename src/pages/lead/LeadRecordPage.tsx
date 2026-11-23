@@ -537,6 +537,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
               }
             : undefined
         }
+        quietEdit
         businessActions={
           record && canCreateOpp ? (
             // Luật mới 26/10: chỉ tạo cơ hội khi lead ở C4C (hoặc C4D, tạo thêm có xác nhận). Nút mờ chỉ là gợi ý; chặn thật ở hàm.

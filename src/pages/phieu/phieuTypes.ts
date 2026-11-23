@@ -1,4 +1,5 @@
 // Kiểu dữ liệu màn Phiếu nghiệp vụ (CSN-05, CSN-06): khớp app.list_ticket_tasks và app.get_ticket_task (migration 260).
+import type { TaskTransfer } from './transferSummary';
 export type TaskRow = {
   id: string;
   code: string;
@@ -79,6 +80,8 @@ export type TaskRecord = {
     student_name: string | null;
   };
   events: TaskEvent[];
+  /** Chỉ phiếu Chuyển lớp: tóm tắt lớp cho hộp Duyệt (migration 634). */
+  transfer?: TaskTransfer | null;
 };
 
 export const TASK_TYPE_LABEL: Record<string, string> = {

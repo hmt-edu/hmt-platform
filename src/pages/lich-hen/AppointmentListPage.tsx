@@ -68,7 +68,7 @@ import {
 } from './useAppointmentData';
 
 const NOTE =
-  'Lịch hẹn đổi trạng thái bằng nút trên thẻ: Hoàn thành, Huỷ, Mở lại. Hoàn thành và Huỷ không chuyển thẳng cho nhau, phải Mở lại trước (R-CRM-04).';
+  'Lịch hẹn đổi trạng thái bằng nút trên thẻ: Hoàn thành, Huỷ, Mở lại. Hoàn thành và Huỷ không chuyển thẳng cho nhau, phải Mở lại trước.';
 const BLOCKED =
   'Lịch hẹn đổi trạng thái bằng nút Hoàn thành, Huỷ hoặc Mở lại trên thẻ, không kéo thả.';
 

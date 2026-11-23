@@ -142,6 +142,8 @@ test('Phiếu nợ đầu kỳ: Kế toán khác người lập duyệt được
   await enterAsAdmin(page, 'ketoan.cs5');
   await page.goto(receiptPath);
   await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await page.getByRole('dialog').getByRole('checkbox').check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/Phiếu đã duyệt và khoá/)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
 });
@@ -165,6 +167,8 @@ test('Phiếu nợ đầu kỳ: Kế toán tự lập, tự gửi không tự du
   await page.getByRole('button', { name: 'Gửi kế toán duyệt' }).click();
   await expect(page.getByText(/chờ Kế toán duyệt/)).toBeVisible();
   await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await page.getByRole('dialog').getByRole('checkbox').check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/không tự duyệt phiếu của mình/)).toBeVisible();
   // Phiếu vẫn chờ Kế toán khác duyệt.
   await expect(page.getByText(/chờ Kế toán duyệt/)).toBeVisible();

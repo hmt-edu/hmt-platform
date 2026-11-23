@@ -61,10 +61,10 @@ export type GradingFilter = 'TAT_CA' | 'CHUA_CHAM' | 'DA_CHAM';
 /** Giải thích từng trạng thái ở bước 3 (chữ theo khung GV18_b3). */
 export const STATUS_HELP: Record<HomeworkStatus, string> = {
   DA_CHAM: 'Điểm 1–5.',
-  LAM_CHUA_XONG: 'Làm chưa xong vẫn có điểm 1–5 (R-GV-11).',
-  KHONG_LAM: 'Không làm không phải điểm 0; tính vào tỉ lệ làm bài (R-GV-12).',
-  NOP_SAU: 'Chờ cập nhật ở buổi sau; sửa điểm được mà không mở lại buổi cũ (R-GV-11).',
-  KHONG_AP_DUNG: 'Vắng buổi giao bài hoặc giáo viên miễn; không tính vào tỉ lệ (R-GV-12).',
+  LAM_CHUA_XONG: 'Làm chưa xong vẫn có điểm 1–5.',
+  KHONG_LAM: 'Không làm không phải điểm 0; tính vào tỉ lệ làm bài.',
+  NOP_SAU: 'Chờ cập nhật ở buổi sau; sửa điểm được mà không mở lại buổi cũ.',
+  KHONG_AP_DUNG: 'Vắng buổi giao bài hoặc giáo viên miễn; không tính vào tỉ lệ.',
 };
 
 export function statusLabel(code: HomeworkStatus): string {

@@ -590,7 +590,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
           )}
           <p className="text-caption text-fg-muted">
             Nhóm không có mã riêng; chỉ môn {GROUP_SUBJECTS.join(', ')} (Đại, Hình). Mỗi lớp trong
-            nhóm vẫn độc lập (R-LOP-14).
+            nhóm vẫn độc lập.
           </p>
         </section>
       )}
@@ -613,8 +613,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
               }}
             />
             <p className="w-full text-caption text-fg-muted">
-              Buổi trước ngày này và buổi đã diễn ra giữ nguyên. Buổi đã chỉnh lẻ tay cũng giữ
-              (R-LOP-11).
+              Buổi trước ngày này và buổi đã diễn ra giữ nguyên. Buổi đã chỉnh lẻ tay cũng giữ.
             </p>
             <Button onClick={() => void previewChange()} disabled={!form.applyFrom || busy}>
               Xem trước số buổi đổi
@@ -704,8 +703,8 @@ function FormView({ record }: { record: ClassRecord | null }) {
           })}
         />
         <p className="text-caption text-fg-muted">
-          Lưu nháp xong, bấm Trình ở màn lớp. Trình lớp bắt buộc có Time Table (R-LOP-02, R-LOP-03).
-          Khung lặp mỗi 2 tuần thì «Buổi đầu» quyết định tuần nào có buổi (R-LOP-13).
+          Lưu nháp xong, bấm Trình ở màn lớp. Trình lớp bắt buộc có Time Table. Khung lặp mỗi 2 tuần
+          thì «Buổi đầu» quyết định tuần nào có buổi.
         </p>
       </section>
     </div>

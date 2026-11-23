@@ -99,7 +99,7 @@ function ErrorLine({ error }: { error?: string | null | undefined }) {
 export type SummaryRow = { label: string; value: ReactNode };
 
 /** Bảng tóm tắt việc sắp làm (Phụ huynh, Học sinh, Gói, Số giờ, Thành tiền…). */
-function Summary({ rows }: { rows: SummaryRow[] }) {
+export function Summary({ rows }: { rows: SummaryRow[] }) {
   return (
     <dl className="flex flex-col gap-1 rounded-control bg-canvas px-3 py-2.5 text-body">
       {rows.map((row) => (

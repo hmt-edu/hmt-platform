@@ -60,10 +60,10 @@ nguyên (chỉ Admin), thêm bốn phân hệ quyền (danh mục `PERM_MODULE`)
 
 | Phân hệ | Mục menu | Quyền (ngoài ADMIN, ADMIN đủ 7 hành động toàn hệ thống) |
 |---|---|---|
-| Cấu hình bán hàng `CONFIG_SALES` | Gói bán, Bảng giá, Chiết khấu, Điều khoản thanh toán, Chiến dịch marketing | Xem, toàn hệ thống: Trưởng cơ sở, Kế toán, Tuyển sinh, CSKH |
+| Cấu hình bán hàng `CONFIG_SALES` | Gói bán, Bảng giá, Chiết khấu, Điều khoản thanh toán, Chiến dịch marketing | Xem, toàn hệ thống: Trưởng cơ sở, Kế toán, Tư vấn tuyển sinh, CSKH |
 | Cấu hình đào tạo `CONFIG_TRAINING` | Khung chương trình, Rubric | Xem, toàn hệ thống: Trưởng cơ sở, CSKH, giáo viên, trợ giảng |
-| Ngày nghỉ lễ `HOLIDAY` | Ngày nghỉ lễ | Trưởng cơ sở: Xem, Tạo, Sửa, Huỷ, cơ sở mình. Tuyển sinh, CSKH: Xem, cơ sở mình |
-| Lịch hẹn `APPOINTMENT` | Lịch hẹn (nhóm Tuyển sinh) | Trưởng cơ sở: như Cơ hội (đủ 7 hành động, cơ sở mình). Tuyển sinh, CSKH: Xem, Tạo, Sửa, Huỷ, cơ sở mình (mở lại tính là Sửa) |
+| Ngày nghỉ lễ `HOLIDAY` | Ngày nghỉ lễ | Trưởng cơ sở: Xem, Tạo, Sửa, Huỷ, cơ sở mình. Tư vấn tuyển sinh, CSKH: Xem, cơ sở mình |
+| Lịch hẹn `APPOINTMENT` | Lịch hẹn (nhóm Tuyển sinh) | Trưởng cơ sở: như Cơ hội (đủ 7 hành động, cơ sở mình). Tư vấn tuyển sinh, CSKH: Xem, Tạo, Sửa, Huỷ, cơ sở mình (mở lại tính là Sửa) |
 
 - Giáo viên, trợ giảng, học sinh, phụ huynh không có Lịch hẹn, Ngày nghỉ lễ; học sinh, phụ huynh không có phân hệ mới nào.
 - "Người duyệt ticket" (QT-15) vẫn thuộc Quản trị, chỉ Admin.
@@ -80,14 +80,14 @@ Nạp 15 ô, phạm vi cơ sở mình, ghi chú của phiên bản: "Duyệt tr�
 
 | Vai trò | Phân hệ | Hành động thêm |
 |---|---|---|
-| Tuyển sinh | Lead, Cơ hội | Giao việc, Duyệt |
-| Tuyển sinh | Phụ huynh, Học sinh | Duyệt |
-| Tuyển sinh | Kiểm tra đầu vào | Huỷ |
+| Tư vấn tuyển sinh | Lead, Cơ hội | Giao việc, Duyệt |
+| Tư vấn tuyển sinh | Phụ huynh, Học sinh | Duyệt |
+| Tư vấn tuyển sinh | Kiểm tra đầu vào | Huỷ |
 | CSKH | Lead, Cơ hội | Giao việc, Duyệt |
 | CSKH | Phụ huynh, Học sinh | Duyệt |
 | CSKH | Kiểm tra đầu vào | Huỷ, Giao việc |
 
-- **Duyệt** trên Lead, Cơ hội, Phụ huynh, Học sinh = **gộp trùng** (R-CRM-22, R-CRM-25): Tuyển sinh, CSKH, Trưởng cơ sở gộp trong cơ sở
+- **Duyệt** trên Lead, Cơ hội, Phụ huynh, Học sinh = **gộp trùng** (R-CRM-22, R-CRM-25): Tư vấn tuyển sinh, CSKH, Trưởng cơ sở gộp trong cơ sở
   mình; Admin mọi cơ sở; hai hồ sơ khác cơ sở chỉ Admin. Các phân hệ này chưa có luồng duyệt nào khác.
 - Giáo viên, trợ giảng vẫn không Huỷ phiếu kiểm tra (xem lại khi làm cổng giáo viên).
 
@@ -96,9 +96,9 @@ Nạp 17 ô theo R-CRM-26, 27, 29. Ghi chú của phiên bản: "R-CRM-26, 27, 2
 
 | Thay đổi | Vai trò | TRƯỚC | SAU | Số ô |
 |---|---|---|---|---|
-| Bỏ Tạo (R-CRM-27) | Tuyển sinh, CSKH, Trưởng cơ sở, Admin | có Tạo | không | 8 |
+| Bỏ Tạo (R-CRM-27) | Tư vấn tuyển sinh, CSKH, Trưởng cơ sở, Admin | có Tạo | không | 8 |
 | Bỏ Xuất (R-CRM-29) | Trưởng cơ sở | Xuất, cơ sở mình | không (chỉ Admin còn Xuất) | 2 |
-| Xem toàn hệ thống (R-CRM-26) | Tuyển sinh, CSKH, Trưởng cơ sở | Xem, cơ sở mình | Xem, **toàn hệ thống** (Sửa, Duyệt vẫn cơ sở mình) | 6 |
+| Xem toàn hệ thống (R-CRM-26) | Tư vấn tuyển sinh, CSKH, Trưởng cơ sở | Xem, cơ sở mình | Xem, **toàn hệ thống** (Sửa, Duyệt vẫn cơ sở mình) | 6 |
 | Thêm Xem Phụ huynh | Kế toán | không có | Xem, toàn hệ thống | 1 |
 | Giữ nguyên | Giáo viên, trợ giảng | Xem Học sinh (được phân công) | không đổi | 0 |
 
