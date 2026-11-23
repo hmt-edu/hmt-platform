@@ -1,5 +1,5 @@
 // Hình minh hoạ của cột giới thiệu trang đăng nhập (thiết kế P1 v4, DN01): mạng nút nối nhau, ký hiệu toán và
-// robot thầy giáo. Mã SVG lấy từ gói thiết kế; chuyển động bằng CSS ở `index.css` (tắt khi người dùng bật giảm chuyển động).
+// cột tiến bộ. Mã SVG lấy từ gói thiết kế; chuyển động bằng CSS ở `index.css` (tắt khi người dùng bật giảm chuyển động).
 
 export function BrandArt() {
   return (
@@ -72,140 +72,81 @@ export function BrandArt() {
   );
 }
 
-export function BrandRobot() {
+/** Năm cột bo tròn tăng dần (năm cơ sở, tiến bộ), cột cao nhất cắm cờ, hai ngôi sao lấp lánh (canvas 9933 v149). Chuyển động ở `index.css`. */
+export function BrandBars() {
   return (
-    <svg className="auth-robot" viewBox="0 0 170 190" aria-hidden="true">
-      <g className="auth-bob">
-        <g className="auth-bub" transform="translate(-6,-10)">
-          <rect x="0" y="0" width="82" height="26" rx="13" fill="#FFFFFF" />
-          <path d="M52 24 L62 36 L40 25Z" fill="#FFFFFF" />
-          <text
-            x="41"
-            y="17.5"
-            fontSize="12"
-            fontWeight="700"
-            fill="#AB420F"
-            fontFamily="Be Vietnam Pro, Inter, sans-serif"
-            textAnchor="middle"
-          >
-            Xin chào!
-          </text>
-        </g>
-        <rect x="96" y="64" width="68" height="54" rx="8" fill="#FFFFFF" />
-        <rect x="101" y="69" width="58" height="44" rx="5" fill="#FFF4ED" />
-        <text
-          x="108"
-          y="97"
-          fontSize="14"
-          fontWeight="700"
-          fill="#CB4D0E"
-          fontFamily="Be Vietnam Pro, Inter, sans-serif"
-        >
-          2+3=
-        </text>
-        <text
-          className="auth-q1"
-          x="145"
-          y="97"
-          fontSize="17"
-          fontWeight="700"
-          fill="#AB420F"
-          fontFamily="Be Vietnam Pro, Inter, sans-serif"
-        >
-          ?
-        </text>
-        <text
-          className="auth-q2"
-          x="145"
-          y="97"
-          fontSize="17"
-          fontWeight="700"
-          fill="#1F7A3E"
-          fontFamily="Be Vietnam Pro, Inter, sans-serif"
-        >
-          5
-        </text>
-        <path
-          d="M104 118 L96 170 M156 118 L164 170"
-          stroke="#FFFFFF"
+    <svg className="auth-bars" viewBox="0 0 320 250" aria-hidden="true">
+      <g className="auth-rise">
+        <rect x="14" y="170" width="46" height="60" rx="12" fill="#fff" fillOpacity=".2" />
+      </g>
+      <g className="auth-rise" style={{ animationDelay: '.2s' }}>
+        <rect x="70" y="140" width="46" height="90" rx="12" fill="#fff" fillOpacity=".34" />
+      </g>
+      <g className="auth-rise" style={{ animationDelay: '.4s' }}>
+        <rect x="126" y="108" width="46" height="122" rx="12" fill="#fff" fillOpacity=".52" />
+      </g>
+      <g className="auth-rise" style={{ animationDelay: '.6s' }}>
+        <rect x="182" y="74" width="46" height="156" rx="12" fill="#fff" fillOpacity=".74" />
+      </g>
+      <g className="auth-rise" style={{ animationDelay: '.8s' }}>
+        <rect x="238" y="40" width="46" height="190" rx="12" fill="#fff" />
+      </g>
+      <g className="auth-flag">
+        <line
+          x1="261"
+          y1="40"
+          x2="261"
+          y2="6"
+          stroke="#fff"
           strokeWidth="4"
           strokeLinecap="round"
         />
-        <rect x="108" y="114" width="46" height="5" rx="2.5" fill="#FDC6A6" />
-        <line
-          x1="62"
-          y1="22"
-          x2="62"
-          y2="40"
-          stroke="#FFFFFF"
-          strokeWidth="3"
-          strokeLinecap="round"
-        />
-        <circle className="auth-ant" cx="62" cy="19" r="5.5" fill="#FDC6A6" />
-        <rect x="24" y="56" width="8" height="18" rx="4" fill="#FFFFFF" />
-        <rect x="92" y="56" width="8" height="18" rx="4" fill="#FFFFFF" />
-        <rect x="30" y="38" width="64" height="52" rx="18" fill="#FFFFFF" />
-        <rect x="38" y="47" width="48" height="34" rx="12" fill="#FFE4D3" />
-        <circle cx="52" cy="62" r="6.5" fill="#CB4D0E" />
-        <circle cx="72" cy="62" r="6.5" fill="#CB4D0E" />
-        <circle cx="54.5" cy="63.5" r="2.4" fill="#FFFFFF" />
-        <circle cx="74.5" cy="63.5" r="2.4" fill="#FFFFFF" />
-        <path
-          d="M46 52 Q52 49 58 52"
-          stroke="#8C3510"
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-        />
-        <path
-          d="M66 50 Q72 48 78 52"
-          stroke="#8C3510"
-          strokeWidth="2"
-          fill="none"
-          strokeLinecap="round"
-        />
-        <circle cx="45" cy="73" r="3.2" fill="#FDC6A6" />
-        <circle cx="79" cy="73" r="3.2" fill="#FDC6A6" />
-        <path
-          d="M57 74 Q62 78 67 74"
-          stroke="#CB4D0E"
-          strokeWidth="2.4"
-          fill="none"
-          strokeLinecap="round"
-        />
-        <rect x="36" y="94" width="52" height="46" rx="16" fill="#FFFFFF" />
-        <rect x="48" y="104" width="28" height="18" rx="6" fill="#FFE4D3" />
-        <text
-          x="62"
-          y="118"
-          fontSize="14"
-          fontWeight="700"
-          fill="#CB4D0E"
-          textAnchor="middle"
-          fontFamily="Be Vietnam Pro, Inter, sans-serif"
-        >
-          π
-        </text>
-        <rect
-          x="22"
-          y="100"
-          width="12"
-          height="30"
-          rx="6"
-          fill="#FFFFFF"
-          transform="rotate(8 28 102)"
-        />
-        <g className="auth-pen">
-          <path d="M84 106 L102 92" stroke="#FFFFFF" strokeWidth="12" strokeLinecap="round" />
-          <circle cx="104" cy="90" r="6.5" fill="#FFFFFF" />
-          <g transform="rotate(-35 104 90)">
-            <rect x="103" y="76" width="4.4" height="20" rx="1.6" fill="#FDC6A6" />
-            <path d="M103 76 L105.2 69 L107.4 76Z" fill="#8C3510" />
-          </g>
-        </g>
-        <rect x="42" y="142" width="14" height="16" rx="6" fill="#FFFFFF" />
-        <rect x="68" y="142" width="14" height="16" rx="6" fill="#FFFFFF" />
+        <path d="M263 7 L292 17 L263 28Z" fill="#FFD3B5" />
+      </g>
+      <g className="auth-spk">
+        <path d="M30 120 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4z" fill="#fff" />
+      </g>
+      <g className="auth-spk" style={{ animationDelay: '1.2s' }}>
+        <path d="M190 36 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#fff" />
       </g>
     </svg>
+  );
+}
+
+const SLOGAN_WORDS = [
+  'HỌC',
+  'TẬP',
+  '=',
+  'NIỀM',
+  'VUI,',
+  'TIẾN',
+  'BỘ',
+  '=',
+  'NĂNG',
+  'LỰC,',
+  'CHINH',
+  'PHỤC',
+  '∀',
+  'CUỘC',
+  'THI',
+];
+const SLOGAN_FULL = 'Học tập bằng niềm vui, tiến bộ bằng năng lực, chinh phục mọi cuộc thi';
+const SLOGAN_STEP_SECONDS = 0.42; // allow-number: nhịp sáng từng từ theo canvas, không phải số nghiệp vụ
+
+/** Slogan đáy cột: từng từ sáng lần lượt (tắt khi giảm chuyển động); nhãn đọc màn hình là câu đầy đủ, các từ ẩn với trình đọc. */
+export function BrandSlogan() {
+  return (
+    <p className="auth-slogan" role="img" aria-label={SLOGAN_FULL}>
+      {SLOGAN_WORDS.map((w, i) => (
+        <span
+          key={i}
+          className={w === '=' || w === '∀' ? 'auth-w auth-w-sym' : 'auth-w'}
+          style={{ animationDelay: `${(i * SLOGAN_STEP_SECONDS).toFixed(2)}s` }}
+          aria-hidden="true"
+        >
+          {w}
+        </span>
+      ))}
+    </p>
   );
 }
