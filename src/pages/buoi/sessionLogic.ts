@@ -88,8 +88,12 @@ export function sessionSortParam(sort: SortState): string {
 export const classLabel = (subjectName: string | null, classCode: string) =>
   subjectName ? `${subjectName} · ${classCode}` : classCode;
 
-/** "Buổi N" hoặc "—" khi buổi chưa đánh số. */
-export const sessionNoLabel = (n: number | null) => (n === null ? '—' : `Buổi ${n}`);
+/**
+ * "Buổi N"; buổi học bù, bổ trợ không có số (A-23-18, G18) nên hiện tên loại buổi (lấy từ danh mục SESSION_TYPE);
+ * không có số cũng không có tên loại thì "—".
+ */
+export const sessionNoLabel = (n: number | null, typeName?: string | null) =>
+  n === null ? (typeName ? typeName : '—') : `Buổi ${n}`;
 
 /** Lý do em không vào danh sách buổi (R-GIO-02). Mã kỹ thuật cố định của D1c. */
 export const EXCLUDED_LABEL: Record<string, string> = {
