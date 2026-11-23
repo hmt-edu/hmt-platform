@@ -5,6 +5,7 @@ import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
+import { StopMoneyPreviewSection } from './StopMoneyPreviewSection';
 import { MONEY_MODES, TRANSFER_BRANCH_KIND, TRANSFER_KINDS } from './businessTaskForm';
 import { useDestBranches } from './useTaskCreate';
 import { useAccess } from '../../nav/AccessContext';
@@ -352,6 +353,12 @@ export function TaskRecordPage() {
             </DetailSection>
           </div>
         )}
+        {(task.task_type === 'DUNG_HOC' || task.task_type === 'HOAN_PHI') &&
+          ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(task.status_code) && (
+            <div className="mt-6">
+              <StopMoneyPreviewSection taskId={task.id} taskType={task.task_type} />
+            </div>
+          )}
         {task.task_type === 'CAP_NHAT_HO_SO' && (
           <div className="mt-6">
             <DetailSection
