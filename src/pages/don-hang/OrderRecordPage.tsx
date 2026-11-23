@@ -807,6 +807,7 @@ function OrderView({ record }: { record: OrderRecord }) {
             label: 'Báo giá',
             icon: 'file',
             count: record.quotation_id ? 1 : 0,
+            hidden: !access.can('QUOTATION', 'XEM'),
             ...(record.quotation_id
               ? { onOpen: () => openFrom(`/crm/bao-gia/${record.quotation_id ?? ''}`) }
               : { unavailable: 'Đơn này không sinh từ báo giá', onOpen: () => undefined }),
@@ -816,6 +817,7 @@ function OrderView({ record }: { record: OrderRecord }) {
             label: 'Phiếu thu',
             icon: 'payment',
             count: receiptCount,
+            hidden: !access.can('RECEIPT', 'XEM'),
             onOpen: () =>
               openFrom(onlyReceiptId ? `/crm/phieu-thu/${onlyReceiptId}` : '/crm/phieu-thu'),
           },
@@ -824,6 +826,8 @@ function OrderView({ record }: { record: OrderRecord }) {
             label: 'Ghi danh',
             icon: 'classes',
             count: 0,
+            // Kế toán không có quyền xem Ghi danh thì ẩn nút, không hiện «0» sai.
+            hidden: !access.can('ENROLLMENT', 'XEM'),
             unavailable: 'Làm ở phân hệ sau',
             onOpen: () => undefined,
           },
