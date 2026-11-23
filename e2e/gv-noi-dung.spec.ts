@@ -119,7 +119,7 @@ test('GV-04: màn Buổi dạy hiện các bước và tiến độ; mở bướ
   await expect(page).toHaveURL(new RegExp(`/gv/buoi/${sessionId}/noi-dung$`));
 });
 
-test('GV-06: người khác vừa sửa thì từ chối lưu, báo tải lại, không ghi đè (Q-243)', async ({
+test('GV-06: người khác vừa sửa thì từ chối lưu, hộp chọn Giữ của tôi / Lấy của người kia, không ghi đè (Q-243, GV06_xung_dot)', async ({
   page,
 }) => {
   await loginStaffUntil(page, 'gv.cs5', /\/gv$/);
@@ -137,8 +137,12 @@ test('GV-06: người khác vừa sửa thì từ chối lưu, báo tải lại,
     );
   });
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
-  await expect(page.getByText('Ô này vừa được người khác sửa, tải lại để xem.')).toBeVisible();
-  await page.getByRole('button', { name: 'Tải lại', exact: true }).click();
+  // GV06_xung_dot: hộp cho chọn bên nào được ghi; bản nháp của bạn vẫn còn cho tới khi chọn.
+  const dialog = page.getByRole('dialog', { name: 'Có ô vừa được người khác sửa' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('Của bạn: Bản của tôi');
+  await expect(dialog).toContainText('Của người kia: Bản của người khác');
+  await dialog.getByRole('button', { name: 'Lấy của người kia' }).click();
   await expect(page.getByLabel('Dòng nội dung 1')).toHaveValue('Bản của người khác');
 });
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   cleanLines,
+  conflictCells,
   initialLines,
   isContentEditable,
   isDirty,
@@ -45,5 +46,23 @@ describe('Nội dung buổi (GV-06, R-V2-35)', () => {
     expect(isContentEditable('DA_CHOT')).toBe(true);
     expect(isContentEditable('DONE')).toBe(false);
     expect(isContentEditable('HUY_CO_PHI')).toBe(false);
+  });
+});
+
+describe('GV-06: hộp hai người cùng sửa (GV06_xung_dot)', () => {
+  it('chỉ liệt kê ô khác nhau, bỏ qua dòng trống và khoảng trắng', () => {
+    expect(
+      conflictCells(
+        { lines: ['Bài 1', ''], homework: ' Bài 6 ' },
+        { lines: ['Bài 1'], homework: 'Bài 6' },
+      ),
+    ).toEqual([]);
+    const cells = conflictCells(
+      { lines: ['Bài 1', 'Bài 2'], homework: 'A' },
+      { lines: ['Bài 1'], homework: null },
+    );
+    expect(cells.map((c) => c.key)).toEqual(['lines', 'homework']);
+    expect(cells[0]).toMatchObject({ mine: 'Bài 1; Bài 2', theirs: 'Bài 1' });
+    expect(cells[1]).toMatchObject({ mine: 'A', theirs: '' });
   });
 });
