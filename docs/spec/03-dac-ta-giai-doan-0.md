@@ -66,7 +66,7 @@ Quyền = vai trò × phạm vi dữ liệu × hành động trên từng phân 
 |---|---|---|
 | `ADMIN` Ban giám đốc, IT (anh Trường) | Toàn hệ thống | Mọi việc, quản trị người dùng, quyền, danh mục, cài đặt |
 | `BRANCH_MANAGER` Trưởng cơ sở | Cơ sở mình | Mọi việc trong cơ sở, duyệt |
-| `SALES` Tuyển sinh | Cơ sở mình | Lead, cơ hội, kiểm tra đầu vào, báo giá, đơn hàng, phiếu thu |
+| `SALES` Tư vấn tuyển sinh | Cơ sở mình | Lead, cơ hội, kiểm tra đầu vào, báo giá, đơn hàng, phiếu thu |
 | `CSKH` Chăm sóc, vận hành lớp | Cơ sở mình | Phụ huynh, học sinh, ghi danh, lớp, buổi, điểm danh, tái tục |
 | `ACCOUNTANT` Kế toán | Toàn hệ thống | Duyệt phiếu thu, đối soát, xuất số liệu |
 | `TEACHER` Giáo viên | Lớp, buổi được phân công | Lịch dạy, điểm danh, nhận xét, chấm bài |
