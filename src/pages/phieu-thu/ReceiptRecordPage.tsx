@@ -786,7 +786,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
         open={dialog === 'reject'}
         onOpenChange={(o) => !o && setDialog(null)}
         title="Từ chối phiếu thu"
-        description="Phiếu về Nháp để người lập sửa; Trình lại thì đi lại từ bước quản lý."
+        description={`Phiếu thu ${record.code} · ${formatMoney(record.amount)}. Phiếu về Nháp để người lập sửa; Trình lại thì đi lại từ bước quản lý.`}
         options={catalogs.optionsFor('REJECT_REASON', 'PHIEU_THU').map((o) => ({
           value: o.value,
           label: o.label,
@@ -884,6 +884,20 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             ? 'Khi duyệt: tiền được ghi nhận và chia về các dòng đơn, sinh khoản tiền vào. Không hoàn tác bằng nút.'
             : 'Khi duyệt: phiếu chuyển sang Chờ kế toán, ghi tên người duyệt vào lịch sử. Chưa sinh khoản tiền vào, chưa cấp giờ: chỉ khi Kế toán duyệt.'}
         </p>
+        {/* TC17_tu_choi: từ chối ngay trong hộp Duyệt, chuyển sang hộp lý do (Thiếu thông tin / Sai số tiền / Sai chứng từ / Khác). */}
+        {can('tu_choi') && (
+          <div>
+            <Button
+              disabled={busy !== null}
+              onClick={() => {
+                setDialogError(null);
+                setDialog('reject');
+              }}
+            >
+              Từ chối…
+            </Button>
+          </div>
+        )}
       </FormDialog>
       <ConfirmDialog
         open={dialog === 'resubmit'}
