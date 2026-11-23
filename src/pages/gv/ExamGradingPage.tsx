@@ -127,11 +127,11 @@ function ExamForm({ sheet }: { sheet: ExamSheet }) {
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">
       <UnsavedGuard when={dirty} />
       <nav aria-label="Đường dẫn" className="text-caption text-fg-muted">
-        <Link to="/gv" className="underline">
+        <Link to="/gv" className="inline-flex min-h-11 items-center underline">
           Hôm nay
         </Link>
         {' › '}
-        <Link to={`/gv/buoi/${sessionId}`} className="underline">
+        <Link to={`/gv/buoi/${sessionId}`} className="inline-flex min-h-11 items-center underline">
           Buổi dạy
         </Link>
         {' › Chấm kiểm tra'}
