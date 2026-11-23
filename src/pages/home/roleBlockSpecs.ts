@@ -107,9 +107,9 @@ export const ROLE_BLOCK_SPECS = {
     to: '/crm/lop',
     empty: 'Không có lớp nào chờ duyệt.',
     load: async (supabase, branch, showBranch) => {
-      // Lớp đã trình (DA_TRINH) chờ người có quyền duyệt; hàm đọc có sẵn của màn Lớp học.
+      // Lớp đã trình (DA_TRINH) và đã xác nhận (DA_XAC_NHAN, chờ Duyệt cuối) chờ người có quyền duyệt; hàm đọc có sẵn của màn Lớp học.
       const page = await rpc<ClassPage>(supabase, 'list_classes', {
-        p_filters: { status: ['DA_TRINH'], ...branch },
+        p_filters: { status: ['DA_TRINH', 'DA_XAC_NHAN'], ...branch },
         p_sort: 'code_asc',
         p_limit: PREVIEW_ROWS,
         p_offset: 0,
@@ -151,10 +151,9 @@ export const ROLE_BLOCK_SPECS = {
     to: '/crm/diem-danh-trong-ngay',
     empty: 'Hôm nay không có buổi nào.',
     load: async (supabase, branch, showBranch) => {
-      // Hàm điểm danh trong ngày (BUOI-15) lọc theo ngày Việt Nam; hàm này chưa nhận lọc cơ sở nên cơ sở theo quyền xem (RLS).
-      void branch;
+      // Hàm điểm danh trong ngày (BUOI-15) lọc theo ngày Việt Nam và theo cơ sở đang chọn như các khối khác.
       const page = await rpc<DayPage>(supabase, 'session_day_attendance', {
-        p_filters: { date: vnDayBounds().dateKey },
+        p_filters: { date: vnDayBounds().dateKey, ...branch },
         p_limit: PREVIEW_ROWS,
         p_offset: 0,
       });
