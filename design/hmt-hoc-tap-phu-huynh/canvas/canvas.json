@@ -1,0 +1,636 @@
+{
+ "boards": {
+  "HT01_ds.dc.html": {
+   "x": 0,
+   "y": 128600,
+   "w": 390,
+   "h": 844,
+   "title": "HT-01 · Trang chủ (cổng Học sinh) · bình thường",
+   "is_interactive": true
+  },
+  "HT01_tai.dc.html": {
+   "x": 450,
+   "y": 128600,
+   "w": 390,
+   "h": 844,
+   "title": "HT-01 · Trang chủ (cổng Học sinh) · đang tải",
+   "is_interactive": true
+  },
+  "HT01_trong.dc.html": {
+   "x": 900,
+   "y": 128600,
+   "w": 390,
+   "h": 844,
+   "title": "HT-01 · Trang chủ (cổng Học sinh) · không có bài cần làm",
+   "is_interactive": true
+  },
+  "HT01_loi.dc.html": {
+   "x": 1350,
+   "y": 128600,
+   "w": 390,
+   "h": 844,
+   "title": "HT-01 · Trang chủ (cổng Học sinh) · lỗi tải",
+   "is_interactive": true
+  },
+  "HT02_can_lam.dc.html": {
+   "x": 0,
+   "y": 129904,
+   "w": 390,
+   "h": 844,
+   "title": "HT-02 · Bài tập (cổng Học sinh) · Cần làm",
+   "is_interactive": true
+  },
+  "HT02_da_nop.dc.html": {
+   "x": 450,
+   "y": 129904,
+   "w": 390,
+   "h": 844,
+   "title": "HT-02 · Bài tập (cổng Học sinh) · Đã nộp",
+   "is_interactive": true
+  },
+  "HT02_da_cham.dc.html": {
+   "x": 900,
+   "y": 129904,
+   "w": 390,
+   "h": 844,
+   "title": "HT-02 · Bài tập (cổng Học sinh) · Đã chấm",
+   "is_interactive": true
+  },
+  "HT02_tai.dc.html": {
+   "x": 1350,
+   "y": 129904,
+   "w": 390,
+   "h": 844,
+   "title": "HT-02 · Bài tập (cổng Học sinh) · đang tải",
+   "is_interactive": true
+  },
+  "HT02_trong.dc.html": {
+   "x": 1800,
+   "y": 129904,
+   "w": 390,
+   "h": 844,
+   "title": "HT-02 · Bài tập (cổng Học sinh) · rỗng",
+   "is_interactive": true
+  },
+  "HT02_loi.dc.html": {
+   "x": 2250,
+   "y": 129904,
+   "w": 390,
+   "h": 844,
+   "title": "HT-02 · Bài tập (cổng Học sinh) · lỗi tải",
+   "is_interactive": true
+  },
+  "HT03_ds.dc.html": {
+   "x": 0,
+   "y": 131208,
+   "w": 390,
+   "h": 844,
+   "title": "HT-03 · Chi tiết bài tập (cổng Học sinh) · còn hạn",
+   "is_interactive": true
+  },
+  "HT03_muon.dc.html": {
+   "x": 450,
+   "y": 131208,
+   "w": 390,
+   "h": 844,
+   "title": "HT-03 · Chi tiết bài tập (cổng Học sinh) · quá hạn, vẫn nhận",
+   "is_interactive": true
+  },
+  "HT03_het_han.dc.html": {
+   "x": 900,
+   "y": 131208,
+   "w": 390,
+   "h": 844,
+   "title": "HT-03 · Chi tiết bài tập (cổng Học sinh) · quá hạn, không nhận",
+   "is_interactive": true
+  },
+  "HT03_tai.dc.html": {
+   "x": 1350,
+   "y": 131208,
+   "w": 390,
+   "h": 844,
+   "title": "HT-03 · Chi tiết bài tập (cổng Học sinh) · đang tải",
+   "is_interactive": true
+  },
+  "HT03_loi.dc.html": {
+   "x": 1800,
+   "y": 131208,
+   "w": 390,
+   "h": 844,
+   "title": "HT-03 · Chi tiết bài tập (cổng Học sinh) · lỗi tải",
+   "is_interactive": true
+  },
+  "HT04_dt_trong.dc.html": {
+   "x": 0,
+   "y": 132512,
+   "w": 390,
+   "h": 844,
+   "title": "HT-04 · Nộp bài (cổng Học sinh) · chưa chọn tệp",
+   "is_interactive": true
+  },
+  "HT04_dt_da_chon.dc.html": {
+   "x": 450,
+   "y": 132512,
+   "w": 390,
+   "h": 844,
+   "title": "HT-04 · Nộp bài (cổng Học sinh) · đã chọn 3 ảnh",
+   "is_interactive": true
+  },
+  "HT04_dt_xem_lai.dc.html": {
+   "x": 900,
+   "y": 132512,
+   "w": 390,
+   "h": 844,
+   "title": "HT-04 · Nộp bài (cổng Học sinh) · xem lại trước khi nộp",
+   "is_interactive": true
+  },
+  "HT04_dt_dang_nop.dc.html": {
+   "x": 1350,
+   "y": 132512,
+   "w": 390,
+   "h": 844,
+   "title": "HT-04 · Nộp bài (cổng Học sinh) · đang nộp",
+   "is_interactive": true
+  },
+  "HT04_dt_loi_tep.dc.html": {
+   "x": 1800,
+   "y": 132512,
+   "w": 390,
+   "h": 844,
+   "title": "HT-04 · Nộp bài (cổng Học sinh) · tệp không hợp lệ",
+   "is_interactive": true
+  },
+  "HT04_dt_loi_mang.dc.html": {
+   "x": 2250,
+   "y": 132512,
+   "w": 390,
+   "h": 844,
+   "title": "HT-04 · Nộp bài (cổng Học sinh) · lỗi mạng khi nộp",
+   "is_interactive": true
+  },
+  "HT04_dt_da_nop.dc.html": {
+   "x": 2700,
+   "y": 132512,
+   "w": 390,
+   "h": 844,
+   "title": "HT-04 · Nộp bài (cổng Học sinh) · đã nộp, còn nộp lại được",
+   "is_interactive": true
+  },
+  "HT04_pc.dc.html": {
+   "x": 0,
+   "y": 133516,
+   "w": 1440,
+   "h": 900,
+   "title": "HT-04 · Nộp bài (cổng Học sinh) · máy tính, kéo thả, xem trước",
+   "is_interactive": true
+  },
+  "HT05_cham.dc.html": {
+   "x": 0,
+   "y": 134876,
+   "w": 390,
+   "h": 844,
+   "title": "HT-05 · Kết quả bài (cổng Học sinh) · đã chấm",
+   "is_interactive": true
+  },
+  "HT05_chua_xong.dc.html": {
+   "x": 450,
+   "y": 134876,
+   "w": 390,
+   "h": 844,
+   "title": "HT-05 · Kết quả bài (cổng Học sinh) · làm chưa xong",
+   "is_interactive": true
+  },
+  "HT05_tai.dc.html": {
+   "x": 900,
+   "y": 134876,
+   "w": 390,
+   "h": 844,
+   "title": "HT-05 · Kết quả bài (cổng Học sinh) · đang tải",
+   "is_interactive": true
+  },
+  "HT05_loi.dc.html": {
+   "x": 1350,
+   "y": 134876,
+   "w": 390,
+   "h": 844,
+   "title": "HT-05 · Kết quả bài (cổng Học sinh) · lỗi tải",
+   "is_interactive": true
+  },
+  "HT06_ds.dc.html": {
+   "x": 0,
+   "y": 136180,
+   "w": 390,
+   "h": 844,
+   "title": "HT-06 · Lịch học (cổng Học sinh) · bình thường",
+   "is_interactive": true
+  },
+  "HT06_tai.dc.html": {
+   "x": 450,
+   "y": 136180,
+   "w": 390,
+   "h": 844,
+   "title": "HT-06 · Lịch học (cổng Học sinh) · đang tải",
+   "is_interactive": true
+  },
+  "HT06_trong.dc.html": {
+   "x": 900,
+   "y": 136180,
+   "w": 390,
+   "h": 844,
+   "title": "HT-06 · Lịch học (cổng Học sinh) · tuần không có buổi",
+   "is_interactive": true
+  },
+  "HT06_loi.dc.html": {
+   "x": 1350,
+   "y": 136180,
+   "w": 390,
+   "h": 844,
+   "title": "HT-06 · Lịch học (cổng Học sinh) · lỗi tải",
+   "is_interactive": true
+  },
+  "HT07_ds.dc.html": {
+   "x": 0,
+   "y": 137484,
+   "w": 390,
+   "h": 844,
+   "title": "HT-07 · Kết quả học tập (cổng Học sinh) · bình thường",
+   "is_interactive": true
+  },
+  "HT07_khong_btvn.dc.html": {
+   "x": 450,
+   "y": 137484,
+   "w": 390,
+   "h": 844,
+   "title": "HT-07 · Kết quả học tập (cổng Học sinh) · lớp không có BTVN",
+   "is_interactive": true
+  },
+  "HT07_tai.dc.html": {
+   "x": 900,
+   "y": 137484,
+   "w": 390,
+   "h": 844,
+   "title": "HT-07 · Kết quả học tập (cổng Học sinh) · đang tải",
+   "is_interactive": true
+  },
+  "HT07_loi.dc.html": {
+   "x": 1350,
+   "y": 137484,
+   "w": 390,
+   "h": 844,
+   "title": "HT-07 · Kết quả học tập (cổng Học sinh) · lỗi tải",
+   "is_interactive": true
+  },
+  "HT08_ds.dc.html": {
+   "x": 0,
+   "y": 138788,
+   "w": 390,
+   "h": 844,
+   "title": "HT-08 · Nhận xét các buổi (cổng Học sinh) · bình thường",
+   "is_interactive": true
+  },
+  "HT08_tai.dc.html": {
+   "x": 450,
+   "y": 138788,
+   "w": 390,
+   "h": 844,
+   "title": "HT-08 · Nhận xét các buổi (cổng Học sinh) · đang tải",
+   "is_interactive": true
+  },
+  "HT08_trong.dc.html": {
+   "x": 900,
+   "y": 138788,
+   "w": 390,
+   "h": 844,
+   "title": "HT-08 · Nhận xét các buổi (cổng Học sinh) · rỗng",
+   "is_interactive": true
+  },
+  "HT08_loi.dc.html": {
+   "x": 1350,
+   "y": 138788,
+   "w": 390,
+   "h": 844,
+   "title": "HT-08 · Nhận xét các buổi (cổng Học sinh) · lỗi tải",
+   "is_interactive": true
+  },
+  "HT09_dt.dc.html": {
+   "x": 0,
+   "y": 140092,
+   "w": 390,
+   "h": 844,
+   "title": "HT-09 · Khung cổng (cổng Học sinh) · điện thoại, thanh dưới",
+   "is_interactive": true
+  },
+  "HT09_pc.dc.html": {
+   "x": 450,
+   "y": 140092,
+   "w": 1440,
+   "h": 900,
+   "title": "HT-09 · Khung cổng (cổng Học sinh) · máy tính, menu trái",
+   "is_interactive": true
+  },
+  "PH01_ds.dc.html": {
+   "x": 0,
+   "y": 141900,
+   "w": 390,
+   "h": 844,
+   "title": "PH-01 · Trang chủ (cổng Phụ huynh) · bình thường",
+   "is_interactive": true
+  },
+  "PH01_tai.dc.html": {
+   "x": 450,
+   "y": 141900,
+   "w": 390,
+   "h": 844,
+   "title": "PH-01 · Trang chủ (cổng Phụ huynh) · đang tải",
+   "is_interactive": true
+  },
+  "PH01_trong.dc.html": {
+   "x": 900,
+   "y": 141900,
+   "w": 390,
+   "h": 844,
+   "title": "PH-01 · Trang chủ (cổng Phụ huynh) · không có việc cần chú ý",
+   "is_interactive": true
+  },
+  "PH01_loi.dc.html": {
+   "x": 1350,
+   "y": 141900,
+   "w": 390,
+   "h": 844,
+   "title": "PH-01 · Trang chủ (cổng Phụ huynh) · lỗi tải",
+   "is_interactive": true
+  },
+  "PH02_ds.dc.html": {
+   "x": 0,
+   "y": 143204,
+   "w": 390,
+   "h": 844,
+   "title": "PH-02 · Kết quả và nhận xét (cổng Phụ huynh) · bình thường",
+   "is_interactive": true
+  },
+  "PH02_nhan_xet.dc.html": {
+   "x": 450,
+   "y": 143204,
+   "w": 390,
+   "h": 844,
+   "title": "PH-02 · Kết quả và nhận xét (cổng Phụ huynh) · tất cả nhận xét",
+   "is_interactive": true
+  },
+  "PH02_tai.dc.html": {
+   "x": 900,
+   "y": 143204,
+   "w": 390,
+   "h": 844,
+   "title": "PH-02 · Kết quả và nhận xét (cổng Phụ huynh) · đang tải",
+   "is_interactive": true
+  },
+  "PH02_trong.dc.html": {
+   "x": 1350,
+   "y": 143204,
+   "w": 390,
+   "h": 844,
+   "title": "PH-02 · Kết quả và nhận xét (cổng Phụ huynh) · chưa có kết quả",
+   "is_interactive": true
+  },
+  "PH02_loi.dc.html": {
+   "x": 1800,
+   "y": 143204,
+   "w": 390,
+   "h": 844,
+   "title": "PH-02 · Kết quả và nhận xét (cổng Phụ huynh) · lỗi tải",
+   "is_interactive": true
+  },
+  "PH03_ds.dc.html": {
+   "x": 0,
+   "y": 144508,
+   "w": 390,
+   "h": 844,
+   "title": "PH-03 · Học phí và giờ học (cổng Phụ huynh) · bình thường",
+   "is_interactive": true
+  },
+  "PH03_gio_thap.dc.html": {
+   "x": 450,
+   "y": 144508,
+   "w": 390,
+   "h": 844,
+   "title": "PH-03 · Học phí và giờ học (cổng Phụ huynh) · giờ còn thấp",
+   "is_interactive": true
+  },
+  "PH03_don.dc.html": {
+   "x": 900,
+   "y": 144508,
+   "w": 390,
+   "h": 844,
+   "title": "PH-03 · Học phí và giờ học (cổng Phụ huynh) · chi tiết đơn",
+   "is_interactive": true
+  },
+  "PH03_tai.dc.html": {
+   "x": 1350,
+   "y": 144508,
+   "w": 390,
+   "h": 844,
+   "title": "PH-03 · Học phí và giờ học (cổng Phụ huynh) · đang tải",
+   "is_interactive": true
+  },
+  "PH03_trong.dc.html": {
+   "x": 1800,
+   "y": 144508,
+   "w": 390,
+   "h": 844,
+   "title": "PH-03 · Học phí và giờ học (cổng Phụ huynh) · chưa có đơn",
+   "is_interactive": true
+  },
+  "PH03_loi.dc.html": {
+   "x": 2250,
+   "y": 144508,
+   "w": 390,
+   "h": 844,
+   "title": "PH-03 · Học phí và giờ học (cổng Phụ huynh) · lỗi tải",
+   "is_interactive": true
+  },
+  "PH04_ds.dc.html": {
+   "x": 0,
+   "y": 145812,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · danh sách",
+   "is_interactive": true
+  },
+  "PH04_gui.dc.html": {
+   "x": 450,
+   "y": 145812,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · gửi mới",
+   "is_interactive": true
+  },
+  "PH04_chi_tiet.dc.html": {
+   "x": 900,
+   "y": 145812,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · theo dõi các bước",
+   "is_interactive": true
+  },
+  "PH04_phuong_an.dc.html": {
+   "x": 1350,
+   "y": 145812,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · xác nhận phương án",
+   "is_interactive": true
+  },
+  "PH04_hai_long.dc.html": {
+   "x": 1800,
+   "y": 145812,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · chấm hài lòng",
+   "is_interactive": true
+  },
+  "PH04_tai.dc.html": {
+   "x": 2250,
+   "y": 145812,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · đang tải",
+   "is_interactive": true
+  },
+  "PH04_trong.dc.html": {
+   "x": 2700,
+   "y": 145812,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · chưa có",
+   "is_interactive": true
+  },
+  "PH04_loi.dc.html": {
+   "x": 0,
+   "y": 146716,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · lỗi tải",
+   "is_interactive": true
+  },
+  "PH04_loi_gui.dc.html": {
+   "x": 450,
+   "y": 146716,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · lỗi khi gửi",
+   "is_interactive": true
+  },
+  "PH05_ds.dc.html": {
+   "x": 0,
+   "y": 148020,
+   "w": 390,
+   "h": 844,
+   "title": "PH-05 · Lịch học của con (cổng Phụ huynh) · bình thường",
+   "is_interactive": true
+  },
+  "PH05_tai.dc.html": {
+   "x": 450,
+   "y": 148020,
+   "w": 390,
+   "h": 844,
+   "title": "PH-05 · Lịch học của con (cổng Phụ huynh) · đang tải",
+   "is_interactive": true
+  },
+  "PH05_trong.dc.html": {
+   "x": 900,
+   "y": 148020,
+   "w": 390,
+   "h": 844,
+   "title": "PH-05 · Lịch học của con (cổng Phụ huynh) · tuần không có buổi",
+   "is_interactive": true
+  },
+  "PH05_loi.dc.html": {
+   "x": 1350,
+   "y": 148020,
+   "w": 390,
+   "h": 844,
+   "title": "PH-05 · Lịch học của con (cổng Phụ huynh) · lỗi tải",
+   "is_interactive": true
+  },
+  "PH04_khong_dong_y.dc.html": {
+   "x": 900,
+   "y": 146716,
+   "w": 390,
+   "h": 844,
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · không đồng ý phương án (hộp nhập lý do)",
+   "is_interactive": true
+  }
+ },
+ "order": [
+  "HT01_ds.dc.html",
+  "HT01_tai.dc.html",
+  "HT01_trong.dc.html",
+  "HT01_loi.dc.html",
+  "HT02_can_lam.dc.html",
+  "HT02_da_nop.dc.html",
+  "HT02_da_cham.dc.html",
+  "HT02_tai.dc.html",
+  "HT02_trong.dc.html",
+  "HT02_loi.dc.html",
+  "HT03_ds.dc.html",
+  "HT03_muon.dc.html",
+  "HT03_het_han.dc.html",
+  "HT03_tai.dc.html",
+  "HT03_loi.dc.html",
+  "HT04_dt_trong.dc.html",
+  "HT04_dt_da_chon.dc.html",
+  "HT04_dt_xem_lai.dc.html",
+  "HT04_dt_dang_nop.dc.html",
+  "HT04_dt_loi_tep.dc.html",
+  "HT04_dt_loi_mang.dc.html",
+  "HT04_dt_da_nop.dc.html",
+  "HT04_pc.dc.html",
+  "HT05_cham.dc.html",
+  "HT05_chua_xong.dc.html",
+  "HT05_tai.dc.html",
+  "HT05_loi.dc.html",
+  "HT06_ds.dc.html",
+  "HT06_tai.dc.html",
+  "HT06_trong.dc.html",
+  "HT06_loi.dc.html",
+  "HT07_ds.dc.html",
+  "HT07_khong_btvn.dc.html",
+  "HT07_tai.dc.html",
+  "HT07_loi.dc.html",
+  "HT08_ds.dc.html",
+  "HT08_tai.dc.html",
+  "HT08_trong.dc.html",
+  "HT08_loi.dc.html",
+  "HT09_dt.dc.html",
+  "HT09_pc.dc.html",
+  "PH01_ds.dc.html",
+  "PH01_tai.dc.html",
+  "PH01_trong.dc.html",
+  "PH01_loi.dc.html",
+  "PH02_ds.dc.html",
+  "PH02_nhan_xet.dc.html",
+  "PH02_tai.dc.html",
+  "PH02_trong.dc.html",
+  "PH02_loi.dc.html",
+  "PH03_ds.dc.html",
+  "PH03_gio_thap.dc.html",
+  "PH03_don.dc.html",
+  "PH03_tai.dc.html",
+  "PH03_trong.dc.html",
+  "PH03_loi.dc.html",
+  "PH04_ds.dc.html",
+  "PH04_gui.dc.html",
+  "PH04_chi_tiet.dc.html",
+  "PH04_phuong_an.dc.html",
+  "PH04_hai_long.dc.html",
+  "PH04_tai.dc.html",
+  "PH04_trong.dc.html",
+  "PH04_loi.dc.html",
+  "PH04_loi_gui.dc.html",
+  "PH05_ds.dc.html",
+  "PH05_tai.dc.html",
+  "PH05_trong.dc.html",
+  "PH05_loi.dc.html",
+  "PH04_khong_dong_y.dc.html"
+ ]
+}
