@@ -5,6 +5,25 @@ import { DOMAIN, PASSWORD, loginStaff } from './helpers';
 
 const INPUT_HEIGHT = 44; // ô nhập và nút của nhóm đăng nhập cao 44px (bản vẽ)
 
+test('DN01 cột cam (canvas 9933 v149): tiêu đề chữ hoa, slogan có nhãn đầy đủ, không còn robot, không tràn cột', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'may-tinh', 'Điện thoại không có cột cam.');
+  await page.goto('/dang-nhap');
+  const panel = page.getByRole('complementary', { name: 'Giới thiệu hệ thống' });
+  await expect(panel).toBeVisible();
+  const title = panel.getByText('Hệ thống quản lý trung tâm');
+  await expect(title).toHaveCSS('text-transform', 'uppercase');
+  await expect(
+    panel.getByLabel('Học tập bằng niềm vui, tiến bộ bằng năng lực, chinh phục mọi cuộc thi'),
+  ).toBeVisible();
+  await expect(panel.getByText('Cần hỗ trợ đăng nhập')).toHaveCount(0);
+  await expect(panel.getByText('Xin chào!')).toHaveCount(0);
+  // Tiêu đề cỡ 30 không tràn cột cam.
+  const [t, p] = [await title.boundingBox(), await panel.boundingBox()];
+  expect(t && p && t.x + t.width <= p.x + p.width).toBe(true);
+});
+
 test('DN01: ô và nút cao 44px, nhãn không có dấu *, mật khẩu có nút con mắt, liên kết căn giữa không gạch chân', async ({
   page,
 }) => {
