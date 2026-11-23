@@ -35,9 +35,24 @@ export function emptyState<Row>(config: ListConfig<Row>): ListState {
   };
 }
 
-/** Cột hiện mặc định theo cấu hình (cột khoá luôn có), giữ đúng thứ tự khai báo. */
+/** Bảng K03 mặc định hiện tối đa bấy nhiêu cột (mẫu B12, 23/11/2026); còn lại để người dùng bật ở nút «Cột». */
+export const DEFAULT_MAX_COLUMNS = 8; // allow-number: giới hạn hiển thị mặc định theo mẫu rà soát B12, không phải số nghiệp vụ
+
+/**
+ * Cột hiện mặc định theo cấu hình, giữ đúng thứ tự khai báo: cột khoá luôn có; các cột còn lại lấy theo thứ tự cho tới khi đủ
+ * DEFAULT_MAX_COLUMNS (cột khoá tính vào số này). Cột nào cấu hình đặt `defaultVisible: false` thì không vào mặc định.
+ */
 export function defaultColumnKeys<Row>(config: ListConfig<Row>): string[] {
-  return config.columns.filter((c) => c.locked || c.defaultVisible !== false).map((c) => c.key);
+  const locked = config.columns.filter((c) => c.locked).length;
+  let room = Math.max(DEFAULT_MAX_COLUMNS - locked, 0);
+  return config.columns
+    .filter((c) => {
+      if (c.locked) return true;
+      if (c.defaultVisible === false || room <= 0) return false;
+      room -= 1;
+      return true;
+    })
+    .map((c) => c.key);
 }
 
 /** Cột đang hiện, theo thứ tự người dùng chọn; cột khoá luôn hiện và luôn đứng đầu. */

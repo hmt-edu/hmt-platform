@@ -44,3 +44,21 @@ describe('việc chờ tôi duyệt (CHUNG-15)', () => {
     expect(Object.keys(KIND_LABELS)).not.toContain('CHIET_KHAU');
   });
 });
+
+import { detailText } from './approvalsLogic';
+
+describe('detailText: không lộ mã kỹ thuật ở «Nội dung»', () => {
+  it('phiếu nghiệp vụ hiện tên việc tiếng Việt', () => {
+    expect(detailText({ kind: 'PHIEU_NGHIEP_VU', detail: 'CAP_NHAT_HO_SO' })).toBe(
+      'Cập nhật hồ sơ',
+    );
+    expect(detailText({ kind: 'PHIEU_NGHIEP_VU', detail: 'BAO_LUU' })).toBe(
+      'Bảo lưu, tiếp tục học',
+    );
+  });
+  it('loại lạ giữ nguyên, loại việc khác không đổi, rỗng giữ rỗng', () => {
+    expect(detailText({ kind: 'PHIEU_NGHIEP_VU', detail: 'LOAI_MOI' })).toBe('LOAI_MOI');
+    expect(detailText({ kind: 'DON_HANG', detail: 'Đơn 3 dòng' })).toBe('Đơn 3 dòng');
+    expect(detailText({ kind: 'LOP', detail: null })).toBeNull();
+  });
+});

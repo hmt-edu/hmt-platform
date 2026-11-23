@@ -530,7 +530,7 @@
    "expand": "fill",
    "h": 1000,
    "is_interactive": true,
-   "title": "TC-17 · Quản lý duyệt phiếu thu (hộp thoại)",
+   "title": "TC-17 · Quản lý duyệt phiếu thu (hộp thoại, có dòng Phụ huynh)",
    "w": 1440,
    "x": 7700,
    "y": 14660
@@ -561,6 +561,22 @@
    "w": 1440,
    "x": 1540,
    "y": 15860
+  },
+  "BH05_chua_chon_dk.dc.html": {
+   "x": 0,
+   "y": 17100,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Nháp · Xem · Chưa chọn điều khoản thanh toán",
+   "is_interactive": true
+  },
+  "BH05_dot1_nho_hon_coc.dc.html": {
+   "x": 1540,
+   "y": 17100,
+   "w": 1440,
+   "h": 1000,
+   "title": "BH-05 · Đơn hàng · Nháp · Xem · Đợt 1 nhỏ hơn cọc tối thiểu (cảnh báo vàng)",
+   "is_interactive": true
   }
  },
  "order": [
@@ -625,7 +641,9 @@
   "TC17_duyet.dc.html",
   "TC17_tu_choi.dc.html",
   "BH05_co_don_nhap_3.dc.html",
-  "BH05_co_don_nhap_8.dc.html"
+  "BH05_co_don_nhap_8.dc.html",
+  "BH05_chua_chon_dk.dc.html",
+  "BH05_dot1_nho_hon_coc.dc.html"
  ],
  "notes": {},
  "designSystems": [
