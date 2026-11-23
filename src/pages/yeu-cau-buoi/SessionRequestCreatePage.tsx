@@ -91,7 +91,7 @@ export function SessionRequestCreatePage() {
       <p className="text-body text-fg-muted">
         Chưa lưu: yêu cầu chưa có mã. Bấm Lưu nháp hoặc Gửi duyệt để tạo. Buổi củng cố tính tiền như
         buổi thường (trừ giờ) nên cần Trưởng cơ sở duyệt; duyệt thì chèn buổi vào lịch của lớp và
-        dời nhãn bài các buổi sau (R-BUOI-04).
+        dời nhãn bài các buổi sau.
       </p>
       {error !== null && (
         <Alert tone="danger" title="Chưa lưu được.">

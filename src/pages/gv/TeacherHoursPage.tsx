@@ -183,8 +183,8 @@ export function TeacherHoursPage() {
         </>
       )}
       <p className="text-caption text-fg-muted">
-        Tính theo ngày buổi diễn ra (R-GV-14). Buổi huỷ không tính. Buổi chưa hoàn tất chưa được
-        tính giờ, xem ở Cần làm.
+        Tính theo ngày buổi diễn ra. Buổi huỷ không tính. Buổi chưa hoàn tất chưa được tính giờ, xem
+        ở Cần làm.
       </p>
     </div>
   );

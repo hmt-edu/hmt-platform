@@ -243,7 +243,7 @@ function Composer({
             }}
           />
           {/* Đính kèm (CHUNG-21): chưa có nơi lưu tệp nên nút tắt, nói rõ lý do. */}
-          <IconButton icon="attach" label="Đính kèm tệp (có từ giai đoạn 4)" disabled />
+          <IconButton icon="attach" label="Đính kèm tệp (chưa bật)" disabled />
         </div>
         <Button
           icon="send"

@@ -123,7 +123,7 @@ export function validateForm(f: ClassFormState, full: boolean, approvedEdit: boo
       f.subjectCode &&
       !GROUP_SUBJECTS.includes(f.subjectCode)
     ) {
-      e.groupMode = 'Nhóm lớp chỉ gồm lớp Đại số và Hình học (R-LOP-14).';
+      e.groupMode = 'Nhóm lớp chỉ gồm lớp Đại số và Hình học.';
     }
   }
   f.slots.forEach((s) => {

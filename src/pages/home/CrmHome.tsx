@@ -145,6 +145,9 @@ const BLOCK_VIEW = {
   approvals: () => <RoleBlock id="approvals" />,
   sessions: () => <RoleBlock id="sessions" />,
   debt: () => <RoleBlock id="debt" />,
+  classesPending: () => <RoleBlock id="classesPending" />,
+  tickets: () => <RoleBlock id="tickets" />,
+  sessionsToday: () => <RoleBlock id="sessionsToday" />,
 } as const;
 
 /**

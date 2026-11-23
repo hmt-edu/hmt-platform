@@ -96,7 +96,7 @@ function Body({ session, onClose }: { session: SessionRecord['session']; onClose
         <div aria-live="polite" className="flex flex-col gap-2">
           {clashes.map((c) => (
             <Alert key={c} tone="warning">
-              {c}. Chỉ cảnh báo, vẫn lưu được (R-LOP-08).
+              {c}. Chỉ cảnh báo, vẫn lưu được.
             </Alert>
           ))}
         </div>

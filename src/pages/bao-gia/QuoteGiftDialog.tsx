@@ -27,7 +27,7 @@ export function QuoteGiftDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="Chọn chính sách quà tặng"
-      description={`Mỗi chính sách chọn được sẽ thêm một dòng quà tặng. Quà tặng không tính vào trần chiết khấu${cap === null ? '' : ` ${String(cap)}%`} (R-TIEN-30).`}
+      description={`Mỗi chính sách chọn được sẽ thêm một dòng quà tặng. Quà tặng không tính vào trần chiết khấu${cap === null ? '' : ` ${String(cap)}%`}.`}
       footer={<Button onClick={() => onOpenChange(false)}>Đóng</Button>}
     >
       {policies.length === 0 ? (

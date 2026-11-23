@@ -112,7 +112,7 @@ Luật 16/10 đã đưa vào `docs/spec/04` (R-CRM-03 bổ sung, R-CRM-12…20) 
 - Hàm sửa ngày nghỉ lễ: ngày nghỉ chung (không gắn cơ sở) chỉ Admin sửa; Trưởng cơ sở chỉ tạo, sửa, huỷ ngày nghỉ của cơ sở mình (chốt 16/10).
 - Đơn từ phiếu tái tục, chuyển phí: tính khi làm màn tái tục.
 
-## Trạng thái 23/11/2026 (PR đã gộp từ 19/11 06:30 tới 23/11 02:25 giờ Việt Nam; 284 PR, #85 đến #502)
+## Trạng thái 23/11/2026 (PR đã gộp từ 19/11 06:30 tới 23/11 21:34 giờ Việt Nam; 350 PR, #85 đến #604)
 
 Danh sách lấy từ `gh pr list --state merged` của `hmt-edu/hmt-platform` (tiêu đề PR giữ nguyên), theo ngày gộp, mới nhất ở trên. Tiếp tục mô hình kéo việc (xem mục 19/11); từ 23/11 đội dùng tài khoản chung lead.vanhanh.hmt, luật L-01 đến L-18 ở hộp thư điều phối. Mục «Trạng thái 19/11/2026» bên dưới giữ nguyên làm lịch sử.
 
@@ -120,6 +120,72 @@ Danh sách lấy từ `gh pr list --state merged` của `hmt-edu/hmt-platform` (
 
 | Giờ | PR | Việc |
 |---|---|---|
+| 21:34 | #526 | CS-12 khách huỷ, CS-07 nút «Gửi duyệt» theo khung mới (C-23-04, giao diện, thấp) |
+| 21:33 | #541 | e2e CS-10, CS-14, CS-16 + sửa nút «Tạo phiếu» thiếu cho ticket Chuyển phí (C-23-08) |
+| 21:33 | #542 | e2e: CS-07 chuyển cơ sở trọn luồng và QT-17 khoá phụ huynh không cần lý do (F-23-13) |
+| 21:33 | #554 | Done ngay khi giáo viên lưu bước cuối; LOP-09 một dòng mỗi em (A-23-12, A-23-13) |
+| 21:32 | #564 | Chuyển lớp khác môn: chặn sớm, lớp đích chỉ cùng môn (C-23-13, migration 625, CAO) |
+| 21:32 | #567 | Quyền phiếu nghiệp vụ: chỉ CSKH, Trưởng cơ sở, Admin Thực hiện và Huỷ (C-23-14, migration 626, CAO) |
+| 21:32 | #575 | Báo giá: không gọi get_opportunity khi thiếu quyền Cơ hội (C-23-18, T-E) |
+| 21:31 | #568 | Duyệt phiếu thu: hộp xác nhận tóm tắt số tiền, đơn, phụ huynh (C-23-12 phần 3, CAO) |
+| 21:25 | #594 | Trang chủ CRM đợt 1: Lớp chờ duyệt, Ticket quá hạn, Buổi hôm nay (F-23-25) |
+| 21:25 | #604 | GV: chữ khớp khung điện thoại GV05, GV06 (E-23-10) |
+| 21:21 | #597 | Báo giá: hạn hiệu lực theo cơ sở; Đơn từ báo giá hiện tên cơ sở (C-23-24) |
+| 20:52 | #602 | e2e: sửa 2 bài đỏ chung của main (hoàn tác khoản tiền, hàng chờ xếp lớp) |
+| 19:30 | #601 | GV-02: bỏ dòng việc quá hạn khi hôm nay trống (R-V2-37) |
+| 19:19 | #599 | e2e: sửa bài đỏ điện thoại và TC-09 (D-23-27, xếp trên #590) |
+| 17:34 | #591 | B-23-17: tiêu đề bảo mật S7 (CSP báo cáo, HSTS, chống nhúng khung) bằng public/_headers |
+| 17:14 | #587 | Việc chờ tôi duyệt: bỏ mã thô CAP_NHAT_HO_SO, ẩn cột đối tượng trống (F-23-22 phần CHUNG-12) |
+| 17:13 | #586 | TC-08: ẩn nút Hoàn tác khoản tiền khi công tắc tắt (C-23-20, B8) |
+| 17:13 | #582 | Đề xuất A-23-17: nhãn buổi bù, bổ trợ và cảnh báo trùng giờ giáo viên (chỉ tài liệu) |
+| 17:13 | #583 | Trang chủ: gỡ khối Nhận xét chờ gửi theo K09c (D-23-24) |
+| 16:51 | #581 | Thiết kế: gói Design 23/11 (9189 v58, 9933 v150, abea v15) |
+| 16:25 | #576 | GV: ẩn ô đính kèm tệp chưa chạy được (E-23-06) |
+| 16:13 | #570 | K03: bảng mặc định tối đa 8 cột (F-23-15 mẫu B12, một phần) |
+| 16:12 | #569 | QT-10: bỏ công tắc «Cổng giáo viên» (F-23-17 phần 1) |
+| 16:12 | #574 | CI staging: kiểm Auth Hook bằng khoá secret + kiểm gọi thẳng Auth không captcha (A-23-16) |
+| 16:12 | #573 | Tài liệu: LESSONS.md bài học từ PR bị trả lại (E-23-01) |
+| 15:59 | #572 | Đề xuất DB: Hoàn thành lịch hẹn kèm Kết quả cuộc gọi (D-23-21, bước 1) |
+| 15:59 | #565 | Sửa axe: nút menu tài khoản (label-content-name-mismatch) (D-23-20, KHẨN) |
+| 15:45 | #555 | CHUNG-14 Trang chủ CRM theo vai trò, giai đoạn 1: 4 khối việc (D-23-15) |
+| 15:33 | #562 | Cổng giáo viên: mất mạng, vùng chạm 44px, Lưu xuống đáy, GV-07 gọn (E-23-03/04) |
+| 15:32 | #561 | K08: hộp FormDialog có dữ liệu không đóng khi bấm nền, hỏi trước (F-23-15 mẫu B11, một phần) |
+| 15:32 | #560 | Ticket Đã đóng có nút Mở lại; TC-04 không nút trên dòng (C-23-11b) |
+| 15:32 | #566 | Ghi chú: Ticket xem gọn CSN03_gon_* không làm (D-23-18) |
+| 15:20 | #559 | Lead/Cơ hội màn đầu: nút Tạo cơ hội chính, khối em gọn (D-23-16, phần nhỏ) |
+| 15:08 | #556 | Thiết kế: canvas 9189 lên v57 (nhãn CSN03, mục lục Main) |
+| 14:56 | #553 | B10: dòng thời gian ghi đúng người làm, một thao tác một dòng (C-23-10) |
+| 14:44 | #552 | Thiết kế: canvas 9189 lên v56 (465 khung, Ticket xem gọn) |
+| 14:34 | #550 | B2 nút liên kết có số đếm: ẩn khi chưa lưu, ẩn khi không có quyền (B-23-12 phần 1) |
+| 14:34 | #551 | T13 một ô một thông tin: thanh tài khoản, bản ghi Lớp và Buổi (D-23-14, 3/3 phần này) |
+| 14:34 | #549 | T13 một ô một thông tin: Bán hàng, Thu chi, Ghi danh, Tái tục (D-23-14, 2/3) |
+| 14:34 | #547 | T13 một ô một thông tin: Đào tạo và Chăm sóc (D-23-14, 1/3) |
+| 14:33 | #548 | Nhãn tiếng Anh giữ nguyên, không dịch: cập nhật ngoại lệ Đ268 (F-23-16) |
+| 14:33 | #530 | docs: bảng màn: KH-08 và TC-15 so xong, Đúng (A-23-06) |
+| 13:52 | #544 | Phiếu nghiệp vụ: hiện lỗi hộp Thực hiện + công tắc tính năng ở giao diện (C-23-09) |
+| 13:52 | #540 | Lịch tuần cơ sở: Trưởng cơ sở xem cơ sở của mình, không lấy CS1 (A-23-09) |
+| 13:52 | #538 | Lớp chi tiết: bỏ khối tab thừa, smart button mở danh sách theo lớp, hiện lại nút Sửa (A-23-08) |
+| 13:52 | #535 | Đăng nhập: cột cam theo canvas 9933 v149 (F-23-12) |
+| 13:51 | #546 | Kế hoạch dựng cổng Học tập và Phụ huynh (D-23-13, tài liệu) |
+| 13:51 | #545 | Thiết kế: canvas 9189 lên v55 (461 khung, cổng HT và PH) |
+| 13:51 | #543 | Tài liệu: rà chỗ gộp nhiều thông tin vào một ô (D-23-11) |
+| 11:21 | #532 | Bảng màn: so canvas TC-15 Đối soát thu tiền (F-23-09) |
+| 11:13 | #536 | Bảng màn: so chữ 10 màn Tuyển sinh nhóm A (F-23-11) |
+| 11:02 | #537 | Rà màn nhóm B (D-23-10): bảng đối chiếu và sửa lệch nhỏ |
+| 10:41 | #534 | docs: đối chiếu CHUNG-01..13, 10 màn Đúng (A-23-07) |
+| 10:31 | #528 | CS-07 phần 2: màn quản lý cơ sở đích (B-23-08) |
+| 10:23 | #533 | Tài liệu: 9 màn Tiền/CS đã kiểm so canvas (C-23-06) |
+| 10:15 | #527 | Tài liệu: TC-06, TC-15 đã kiểm so canvas (C-23-04) |
+| 10:13 | #510 | Group By nhóm danh sách K03: KH-04, LOP-09, GD-06, GD-07, BUOI-11, BUOI-12 (migration 614, rủi ro cao) |
+| 10:07 | #529 | CS-14: trang phiếu nghiệp vụ Dừng học theo CSN06e (chỉ giao diện) |
+| 10:06 | #518 | CS-10 Chuyển phí: xem trước và đơn nhận (migration 621, rủi ro CAO) |
+| 09:59 | #531 | QT-17: sửa lỗi Khoá phụ huynh đòi lý do (F-23-10) |
+| 09:52 | #525 | docs: đối chiếu cổng giáo viên với canvas v52 (A-23-05) |
+| 09:45 | #519 | CS-16 DB: Nhận xét chờ gửi phụ huynh (migration 622, rủi ro CAO: quyền) |
+| 09:36 | #523 | Tài liệu: đối chiếu TC-01, TC-04 cập nhật hiện trạng (C-23-01) |
+| 09:35 | #521 | docs: bản đồ việc + bản đồ màn hình: CS-07 có giao diện, khung v52 (A-23-04) |
+| 09:12 | #522 | TT-02 Đã mua gần nhất (migration 623, chỉ đọc, rủi ro thấp-vừa) [C-23-02] |
+| 09:06 | #514 | BC-08: Xuất CSV giáo viên trễ hạn (migration 620) |
 | 02:25 | #501 | Tài liệu: báo cáo BC-02..07, BC-10 ở Looker, không dựng màn (D-23-06) |
 | 02:25 | #502 | Bản đồ màn hình: CS-05..CS-14 theo mô hình phiếu nghiệp vụ (B-23-03) |
 | 02:25 | #500 | Bảng màn theo trạng thái: CS-01..09 nhận khung CSN (B-23-01) |
@@ -130,6 +196,14 @@ Danh sách lấy từ `gh pr list --state merged` của `hmt-edu/hmt-platform` (
 | 01:35 | #474 | GV-18 giao diện: danh sách em, chấm bốn bước, Mở lại (base main; cần PR migration 598 gộp trước) |
 | 01:27 | #472 | GV-17 giao diện: Bài đã giao, Giao bài, Sửa, Gỡ (đăng lại cho đúng base main) |
 | 01:26 | #495 | TC-09: bảng màn nhầm «Chỉ có DB»: màn đã có (hành động Hoàn tác ở TC-08) |
+
+Ghi thêm cuối ngày 23/11 (gộp từ thư điều phối, không phải PR):
+
+- **Main đỏ Playwright đã sạch.** Sau T13 (#547 #549 #550 #551) và bảng 8 cột (#570), 14 bài e2e lỗi thời làm đỏ mọi PR; sửa ở #599 và #602 (cổng điện thoại cũng giới hạn 8 cột nên bài phải mở nút «Cột»; hoàn tác khoản tiền cần cờ chung `money_reversal_enabled` vì giao diện #586 đọc cờ không theo cơ sở). Bài #590 đóng, đã vào main qua #599 và #602.
+- **Cổng CRM:** Trang chủ theo vai trò đợt 1 (#555 #594, gỡ khối Nhận xét chờ gửi #583), K03 bảng mặc định 8 cột (#570), hộp xác nhận (#561 #568), phiếu nghiệp vụ (#564 #567 #526 #541 #542), báo giá và đơn (#575 #597), hoàn tác khoản tiền ẩn khi công tắc tắt (#586).
+- **Cổng Giáo viên:** #562 mất mạng, vùng chạm 44px, GV-07 gọn; #576 ẩn ô đính kèm chưa chạy; #554 Done ngay khi lưu bước cuối; #601 GV-02 không hiện việc quá hạn (R-V2-37); #604 chữ GV05, GV06 khớp khung điện thoại. Còn chờ quyết (ghi ở thư điều phối): thanh 4 bước, nút «Sửa điểm danh», nút «Điểm danh em này», hộp xung đột GV06, chấm theo cột GV07.
+- **Design đã đăng:** đổi tên vai trò (canvas 9933 v151, abea v16); bản sửa DN và PH04 (9933 v152, 9189 v60). Gói Học tập (9 màn, 41 khung) và Phụ huynh (5 màn, 29 khung) đã giao Code C, B, F dựng.
+- **Migration:** số đã dùng đến 636 (PR #603 đang mở), số kế tiếp 637.
 
 ### 21/11
 

@@ -13,6 +13,7 @@ import { HmtError, errorOf, useDb } from '../../lib/db';
 import { useAuth } from '../../lib/auth/authContext';
 import { formatDate, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
+import { branchLabel } from './orderBranch';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
@@ -220,7 +221,7 @@ function FromOpportunity({
   if (opp.stage_code !== 'L8')
     return (
       <StateView kind="forbidden" title="Cơ hội chưa ở L8" actions={backLink}>
-        Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng (R-CRM-16).
+        Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng.
       </StateView>
     );
   return (
@@ -406,6 +407,7 @@ function FromQuotation({
   backLink: React.ReactNode;
 }) {
   const query = useQuotation(quotationId);
+  const access = useAccess();
   if (query.isPending) return <Spinner label="Đang tải báo giá…" />;
   if (query.isError) {
     const forbidden = query.error instanceof HmtError && query.error.code === 'HMT_KHONG_CO_QUYEN';
@@ -424,7 +426,7 @@ function FromQuotation({
   if (q.status_code !== 'DA_GUI')
     return (
       <StateView kind="forbidden" title="Báo giá chưa chuyển thành đơn được" actions={backLink}>
-        Chỉ báo giá ở tình trạng Đã gửi mới chuyển thành đơn (R-TIEN-14).
+        Chỉ báo giá ở tình trạng Đã gửi mới chuyển thành đơn.
       </StateView>
     );
   const open = q.lines.filter((l) => l.order_id === null);
@@ -439,7 +441,7 @@ function FromQuotation({
       quotationId={q.id}
       quotationCode={q.code}
       parent={`${q.parent_name} · ${q.parent_code} · ${formatPhone(q.parent_phone)}`}
-      branch={`${q.branch_code}`}
+      branch={branchLabel(q.branch_code, access.teachingBranches)}
       lines={open}
     />
   );
