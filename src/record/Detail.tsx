@@ -93,6 +93,7 @@ export function InfoTip({ text }: { text: string }) {
 export function DetailField({
   label,
   hint,
+  keepEmpty = false,
   required,
   mode,
   value,
@@ -102,6 +103,8 @@ export function DetailField({
   label: string;
   /** Chú nhỏ cạnh nhãn ("bắt buộc từ L5"). */
   hint?: string | undefined;
+  /** Giữ dòng khi chưa có giá trị (form tạo: «Mã … cấp khi Lưu»); mặc định ẩn trường trống (K06). */
+  keepEmpty?: boolean | undefined;
   required?: boolean | undefined;
   mode: DetailMode;
   /** Giá trị khi xem. */
@@ -112,7 +115,11 @@ export function DetailField({
 }) {
   const editing = mode !== 'view' && editor !== undefined;
   // Mẫu B6: khi xem, trường không có giá trị thì không dựng dòng «—» (giá trị hiển thị được vẫn hiện).
-  if (!editing && (value === '' || value === null || value === undefined || value === false))
+  if (
+    !editing &&
+    !keepEmpty &&
+    (value === '' || value === null || value === undefined || value === false)
+  )
     return null;
   return (
     <div className="grid min-h-8 grid-cols-1 items-center gap-1 py-1 sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-2">

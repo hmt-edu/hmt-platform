@@ -36,7 +36,7 @@ const completeButton = (page: Page) =>
 const toastText = (page: Page, text: string | RegExp) => page.getByText(text).first();
 const dialogOf = (page: Page, name: string | RegExp) => page.getByRole('dialog', { name });
 const actionMenu = async (page: Page, item: string | RegExp) => {
-  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('button', { name: 'Hành động', exact: true }).click();
   await page.getByRole('menuitem', { name: item }).click();
 };
 /** Mở ô chọn rồi chọn mục đầu tiên (danh mục thật, tên có thể đổi). */
