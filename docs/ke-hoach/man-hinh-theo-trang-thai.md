@@ -105,14 +105,14 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TC-08 | Khoản tiền vào (sổ thu tiền) | B | **Có màn** `/crm/khoan-tien-vao` | có (20 khung) | Đúng | thu-tien.spec.ts | Code C/D |
 | TC-09 | Đảo khoản tiền (lý do) | B | **Có màn** `/crm/khoan-tien-vao` (nút Hoàn tác ở từng dòng, hộp lý do K08) | có (8 khung) | Đúng | cskh-khieu-nai-bao-luu.spec.ts, duong-ke-toan.spec.ts | Code C/D |
 | TC-13 | Công nợ (đơn chưa thu đủ) | B | **Có màn** `/crm/cong-no` | có (16 khung) | Đúng | thu-tien.spec.ts | Code C/D |
-| TC-15 | Đối soát thu tiền | B | **Có màn** `/crm/doi-soat-thu-tien` | có (16 khung) | chưa kiểm | duong-ke-toan.spec.ts | Code C/D |
+| TC-15 | Đối soát thu tiền | B | **Có màn** `/crm/doi-soat-thu-tien` | có (16 khung) | Đúng (so lại 23/11 với TC15, TC15_trong, TC15_khong_quyen: bộ lọc, 4 ô tổng, cột, hộp Đánh dấu đã khớp, trống, không quyền) | duong-ke-toan.spec.ts | Code C/D |
 | GV-15 | Chấm kiểm tra đầu vào | B | **Có màn** `src/pages/gv/TeacherTodoPage.tsx` | có (20 khung) | Đúng | — | Code E |
 | QT-14 | Ngày nghỉ lễ | B | **Có màn** `/crm/cau-hinh/ngay-nghi` | không có khung | chưa kiểm | ngay-nghi.spec.ts | Code F |
 | QT-15 | Cấu hình người duyệt ticket theo nhóm con | B | **Có màn** `/crm/cau-hinh/nguoi-duyet-ticket` | không có khung | chưa kiểm | — | Code F |
 | QT-16 | Giáo viên, trợ giảng (hồ sơ dạy) | B | **Có màn** `/crm/quan-tri/giao-vien` | không có khung | chưa kiểm | ho-so-day.spec.ts | Code F |
 | CH-05 | Khung chương trình (danh sách phiên bản) | B | **Có màn** `/crm/cau-hinh/khung-chuong-trinh` | có (14 khung) | đã so 23/11 (7 khung): khớp chữ, nút, hộp Tạo bản mới/Ngừng, trạng thái trống/tải/quyền; không lệch | lop.spec.ts | Code F |
 | CH-06 | Khung chương trình (danh sách bài học) | B | **Có màn** `src/pages/khung-chuong-trinh/CurriculumFramePage.tsx` | có (14 khung) | đã so 23/11 (7 khung): khớp; lệch có chủ đích: kéo tay nắm → nút Lên/Xuống; «Nhập từ file» chỉ nút mờ (thiếu khuôn T5) | — | Code F |
-| KH-08 | Lên khối đầu năm học (hàng loạt) | C | **Có màn** `/crm/len-khoi-dau-nam` | không có khung | chưa kiểm | len-khoi-dau-nam.spec.ts | Code ? |
+| KH-08 | Lên khối đầu năm học (hàng loạt) | C | **Có màn** `/crm/len-khoi-dau-nam` | không có khung | Đúng luật và khuôn K08 (so 23/11: xem trước từng em, loại trừ, xác nhận, hoàn tác theo tham số, chỉ Admin; không có khung canvas) | len-khoi-dau-nam.spec.ts | Code ? |
 | TC-10 | Phiếu chi (danh sách) | B | **Có màn** `/crm/phieu-chi` | có (16 khung) | Đúng | phieu-chi-so-du.spec.ts | Code C/D |
 | TC-11 | Phiếu chi (bản ghi) | B | **Có màn** `src/pages/phieu-chi/VoucherRecordPage.tsx` | có (12 khung) | Gần đúng | phieu-chi-so-du.spec.ts | Code C/D |
 | TC-12 | Bản in phiếu chi | C | **Có màn** `src/pages/phieu-chi/VoucherPrintPage.tsx` | không có khung | chưa kiểm | trang-chu.spec.ts | Code C/D |
