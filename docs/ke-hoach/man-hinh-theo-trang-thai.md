@@ -16,19 +16,19 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 
 | Mã | Tên màn | Mức | Trạng thái (bằng chứng) | Khung canvas | Đúng canvas | e2e nhắc | Ai giữ |
 |---|---|---|---|---|---|---|---|
-| CHUNG-01 | Đăng nhập nhân viên, giáo viên | A | **Có màn** `src/pages/auth/LoginPages.tsx` | không có khung | chưa kiểm | smoke.spec.ts | Code F |
-| CHUNG-02 | Xác thực hai bước (nhập mã TOTP) | B | **Có màn** `src/pages/auth/MfaPages.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
-| CHUNG-03 | Thiết lập xác thực hai bước lần đầu | B | **Có màn** `src/pages/auth/TotpEnroll.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
-| CHUNG-04 | Quên mật khẩu (liên hệ quản trị viên) **(theo thiết kế P1 v4, 18/10)** | B | **Có màn** `src/pages/auth/PasswordPages.tsx` | không có khung | chưa kiểm | smoke.spec.ts | Code F |
+| CHUNG-01 | Đăng nhập nhân viên, giáo viên | A | **Có màn** `src/pages/auth/LoginPages.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | smoke.spec.ts | Code F |
+| CHUNG-02 | Xác thực hai bước (nhập mã TOTP) | B | **Có màn** `src/pages/auth/MfaPages.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | auth.spec.ts | Code F |
+| CHUNG-03 | Thiết lập xác thực hai bước lần đầu | B | **Có màn** `src/pages/auth/TotpEnroll.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | auth.spec.ts | Code F |
+| CHUNG-04 | Quên mật khẩu (liên hệ quản trị viên) **(theo thiết kế P1 v4, 18/10)** | B | **Có màn** `src/pages/auth/PasswordPages.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | smoke.spec.ts | Code F |
 | CHUNG-05 | Đặt mật khẩu mới (từ link email) **(HOÃN, thiết kế P1 v4)** | C | **Chưa có** | không có khung | chưa kiểm | smoke.spec.ts | Code F |
-| CHUNG-06 | Đăng nhập học sinh (mã HS) | A | **Có màn** `src/pages/auth/LoginPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, smoke.spec.ts | Code F |
+| CHUNG-06 | Đăng nhập học sinh (mã HS) | A | **Có màn** `src/pages/auth/LoginPages.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | auth.spec.ts, smoke.spec.ts | Code F |
 | CHUNG-07 | Đổi mật khẩu bắt buộc lần đầu | B | **Có màn** `src/pages/auth/PasswordPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, so-sanh-dang-nhap.spec.ts | Code F |
 | CHUNG-08 | Không thể đăng nhập **(chốt 12/10; chữ theo thiết kế P1 v4)** | C | **Có màn** `/khong-dang-nhap-duoc` (`CannotLoginPage`, PasswordPages.tsx) | có (DN08_pc_lock, DN08_mb_lock, canvas 9933) | đã so 23/11: khớp tiêu đề, một câu chung, nút «Quay lại đăng nhập», dòng «Cần hỗ trợ đăng nhập»; không nói lý do hay thời gian khoá (S03-18); không lệch | smoke.spec.ts (CHUNG-08), dang-nhap-thiet-ke.spec.ts | Code F |
-| CHUNG-09 | Hết phiên làm việc | C | **Có màn** `src/pages/auth/SessionEndDialog.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
-| CHUNG-10 | Khung ứng dụng CRM (menu trái, thanh trên, chọn cơ sở; điện thoại: menu thu gọn) | A | **Có màn** `src/layout/CrmShell.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
-| CHUNG-11 | Tìm kiếm toàn hệ thống | B | **Có màn** `src/layout/GlobalSearch.tsx` | không có khung | chưa kiểm | — | Code F |
-| CHUNG-12 | Trung tâm thông báo | B | **Có màn** `src/layout/NotificationBell.tsx` | không có khung | chưa kiểm | — | Code F |
-| CHUNG-13 | Hồ sơ cá nhân (đổi mật khẩu, hai bước, phiên đăng nhập) | C | **Có màn** `src/pages/common/ProfilePage.tsx` | không có khung | chưa kiểm | auth.spec.ts | Code F |
+| CHUNG-09 | Hết phiên làm việc | C | **Có màn** `src/pages/auth/SessionEndDialog.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | auth.spec.ts | Code F |
+| CHUNG-10 | Khung ứng dụng CRM (menu trái, thanh trên, chọn cơ sở; điện thoại: menu thu gọn) | A | **Có màn** `src/layout/CrmShell.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | auth.spec.ts | Code F |
+| CHUNG-11 | Tìm kiếm toàn hệ thống | B | **Có màn** `src/layout/GlobalSearch.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | — | Code F |
+| CHUNG-12 | Trung tâm thông báo | B | **Có màn** `src/layout/NotificationBell.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | — | Code F |
+| CHUNG-13 | Hồ sơ cá nhân (đổi mật khẩu, hai bước, phiên đăng nhập) | C | **Có màn** `src/pages/common/ProfilePage.tsx` | không có khung | Đúng (so 23/11, xem docs/nghiep-vu/doi-chieu-chung-01-13.md) | auth.spec.ts | Code F |
 | CHUNG-14 | Trang chủ CRM theo vai trò (việc của tôi hôm nay) | A | **Có màn** `src/pages/home/CrmHome.tsx` | không có khung | chưa kiểm | trang-chu.spec.ts | Code F |
 | CHUNG-16 | Không có quyền truy cập | C | **Có màn** `src/pages/common/PortalPages.tsx` | không có khung | chưa kiểm | auth.spec.ts, quan-tri-chan-quyen.spec.ts | Code F |
 | CHUNG-17 | Không tìm thấy / lỗi hệ thống | C | **Có màn** `src/pages/common/PortalPages.tsx` | không có khung | chưa kiểm | smoke.spec.ts | Code F |
