@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { rpc, useDb } from '../../lib/db';
 import { Tag } from '../../ui/Data';
 import { StateView } from '../../ui/Feedback';
-import { QueryErrorView } from '../../ui/QueryErrorView';
+import { Button } from '../../ui/Button';
 import {
   attentionLine,
   attentionTitle,
@@ -38,11 +38,13 @@ export function ParentHomePage() {
   }
   if (query.isError) {
     return (
-      <QueryErrorView
-        error={query.error}
-        subject="trang chủ"
-        onRetry={() => void query.refetch()}
-      />
+      <StateView
+        kind="error"
+        title="Không tải được dữ liệu"
+        actions={<Button onClick={() => void query.refetch()}>Thử lại</Button>}
+      >
+        Kiểm tra kết nối mạng rồi thử lại.
+      </StateView>
     );
   }
   const { children, attention } = query.data;
@@ -58,12 +60,15 @@ export function ParentHomePage() {
       <h1 className="text-h2">Xin chào quý phụ huynh</h1>
       <section aria-label="Việc cần chú ý" className="flex flex-col gap-2">
         <h2 className="text-caption font-semibold uppercase text-fg-muted">
-          Việc cần chú ý{attention.length > 0 ? ` · ${attention.length}` : ''}
+          Việc cần chú ý · {attention.length}
         </h2>
         {attention.length === 0 ? (
-          <p className="rounded-control border border-border bg-surface p-4 text-fg-muted">
-            Hiện không có việc cần chú ý.
-          </p>
+          <div className="rounded-control border border-border bg-surface p-4">
+            <p className="font-medium">Không có việc cần chú ý</p>
+            <p className="text-fg-muted">
+              Khi có việc cần quý phụ huynh xem, mục này sẽ hiện ở đây.
+            </p>
+          </div>
         ) : (
           attention.map((item, i) => <AttentionCard key={i} item={item} />)
         )}
