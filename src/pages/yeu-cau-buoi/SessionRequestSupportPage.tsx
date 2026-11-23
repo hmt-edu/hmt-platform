@@ -119,8 +119,7 @@ function Form({
       <h1 className="text-h2">Tạo yêu cầu học bổ trợ</h1>
       <p className="text-body text-fg-muted">
         Lớp <b>{title}</b> (tạo từ lớp, không chọn lại). Học bổ trợ không trừ giờ của học sinh nhưng
-        vẫn tính vào giờ dạy của giáo viên; Trưởng cơ sở duyệt (R-BUOI-05). Chưa lưu: yêu cầu chưa
-        có mã.
+        vẫn tính vào giờ dạy của giáo viên; Trưởng cơ sở duyệt. Chưa lưu: yêu cầu chưa có mã.
       </p>
       {error !== null && (
         <Alert tone="danger" title="Chưa lưu được.">

@@ -2,7 +2,7 @@
 // Không có nút Tạo (báo giá sinh từ cơ hội, R-TIEN-02); có nút Xuất cho vai có quyền Xuất (Trưởng cơ sở, Kế toán, Admin, Đ105).
 // Giao diện không tính tiền: tổng tiền, quá hạn đều do hàm cơ sở dữ liệu trả.
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
@@ -64,10 +64,17 @@ export function QuotationListPage() {
   const [paging, setPaging] = useState({ key: '', page: 0 });
   const [exporting, setExporting] = useState(false);
 
+  const [params, setParams] = useSearchParams();
+  const parentOpp = params.get('co-hoi');
+  const parentCode = params.get('ma') ?? '';
   const debouncedSearch = useDebounced(state.search);
   const filters = useMemo(
-    () => buildQuoteFilters({ ...state, search: debouncedSearch }),
-    [state, debouncedSearch],
+    () => ({
+      ...buildQuoteFilters({ ...state, search: debouncedSearch }),
+      // Mở từ nút số đếm của trang Cơ hội (K3): chỉ bản ghi của cơ hội đó; bỏ chip thì về danh sách chung.
+      ...(parentOpp ? { opportunity_id: parentOpp } : {}),
+    }),
+    [state, debouncedSearch, parentOpp],
   );
   const sortValue = quoteSortParam(sort);
   const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
@@ -151,6 +158,17 @@ export function QuotationListPage() {
 
   return (
     <ListScreen
+      parent={
+        parentOpp
+          ? {
+              entityLabel: 'Cơ hội',
+              code: parentCode,
+              childLabel: 'Báo giá',
+              onOpenParent: () => void navigate(`/crm/co-hoi/${parentOpp}`),
+              onClear: () => setParams({}),
+            }
+          : undefined
+      }
       config={config}
       state={state}
       onStateChange={setState}
@@ -195,7 +213,7 @@ export function QuotationListPage() {
       onRowClick={(r) => void navigate(`/crm/bao-gia/${r.id}`)}
       emptyMessage={{
         title: 'Chưa có báo giá nào',
-        hint: 'Báo giá sinh từ cơ hội: mở cơ hội rồi bấm Tạo báo giá. Danh sách này không có nút Tạo (R-TIEN-02).',
+        hint: 'Báo giá sinh từ cơ hội: mở cơ hội rồi bấm Tạo báo giá. Danh sách này không có nút Tạo.',
       }}
     />
   );

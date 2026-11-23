@@ -515,7 +515,7 @@ export function QuoteLineGrid({
               )}
               {gift && (
                 <p className="text-fg-muted">
-                  {`Quà tặng: không tính vào trần chiết khấu${cap_ === null ? '' : ` ${String(cap_)}%`}, không có chiết khấu (R-TIEN-30).`}
+                  {`Quà tặng: không tính vào trần chiết khấu${cap_ === null ? '' : ` ${String(cap_)}%`}, không có chiết khấu.`}
                 </p>
               )}
               {issue && (

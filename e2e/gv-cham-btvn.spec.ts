@@ -276,7 +276,7 @@ test('GV-07: mở nhận xét, chấm ô 4 trạng thái, tắt tiêu chí, lưu
 
   // Em vắng: không chấm.
   await page.getByRole('button', { name: /Em giả E2E Dũng/ }).click();
-  await expect(page.getByText('Em vắng: không chấm nhận xét (R-GV-04).')).toBeVisible();
+  await expect(page.getByText('Em vắng: không chấm nhận xét.')).toBeVisible();
 });
 
 test('GV-07X: xuất nhận xét của một em ra ảnh PNG: tải file, hiện «Đã xuất»; còn thay đổi chưa lưu thì khoá nút', async ({

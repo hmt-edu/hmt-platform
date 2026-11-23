@@ -646,7 +646,7 @@ function TestView({ record }: { record: TestRecord }) {
         onOpenChange={setBackOpen}
         title="Đưa về Nháp"
         subtitle={`${record.code} · ${record.student_name}`}
-        hint="Đưa phiếu đã Hoàn thành về Nháp bắt buộc có lý do (R-CRM-21). Cơ hội không lùi giai đoạn."
+        hint="Đưa phiếu đã Hoàn thành về Nháp bắt buộc có lý do. Cơ hội không lùi giai đoạn."
         confirmLabel="Đưa về Nháp"
         onSubmit={async (reason) => {
           await stepBackTest(supabase, record.id, reason);
@@ -659,7 +659,7 @@ function TestView({ record }: { record: TestRecord }) {
         onOpenChange={setReopenOpen}
         title="Mở lại phiếu"
         subtitle={`${record.code} · ${record.student_name}`}
-        hint="Mở lại phiếu đã huỷ về Nháp bắt buộc có lý do (R-CRM-10)."
+        hint="Mở lại phiếu đã huỷ về Nháp bắt buộc có lý do."
         confirmLabel="Mở lại"
         onSubmit={async (reason) => {
           await reopenTest(supabase, record.id, reason);

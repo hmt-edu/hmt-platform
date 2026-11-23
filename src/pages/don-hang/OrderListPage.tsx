@@ -2,6 +2,7 @@
 // Không có nút Tạo (đơn sinh từ báo giá, cơ hội, phiếu tái tục; R-CRM-19, R-TIEN-02); có nút Xuất cho vai có quyền Xuất (Trưởng cơ sở, Kế toán, Admin, Đ105).
 // Giao diện không tính tiền: tổng tiền do hàm cơ sở dữ liệu trả. Chưa có màn bản ghi đơn (BH-05) nên dòng chưa mở được.
 import { useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
@@ -44,6 +45,7 @@ const EXPORT_COLUMNS = [
 ];
 
 export function OrderListPage() {
+  const navigate = useNavigate();
   const supabase = useDb();
   const access = useAccess();
   const toast = useToast();
@@ -58,10 +60,17 @@ export function OrderListPage() {
   const [paging, setPaging] = useState({ key: '', page: 0 });
   const [exporting, setExporting] = useState(false);
 
+  const [params, setParams] = useSearchParams();
+  const parentOpp = params.get('co-hoi');
+  const parentCode = params.get('ma') ?? '';
   const debouncedSearch = useDebounced(state.search);
   const filters = useMemo(
-    () => buildOrderFilters({ ...state, search: debouncedSearch }),
-    [state, debouncedSearch],
+    () => ({
+      ...buildOrderFilters({ ...state, search: debouncedSearch }),
+      // Mở từ nút số đếm của trang Cơ hội (K3): chỉ bản ghi của cơ hội đó; bỏ chip thì về danh sách chung.
+      ...(parentOpp ? { opportunity_id: parentOpp } : {}),
+    }),
+    [state, debouncedSearch, parentOpp],
   );
   const sortValue = orderSortParam(sort);
   const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
@@ -145,6 +154,17 @@ export function OrderListPage() {
 
   return (
     <ListScreen
+      parent={
+        parentOpp
+          ? {
+              entityLabel: 'Cơ hội',
+              code: parentCode,
+              childLabel: 'Đơn hàng',
+              onOpenParent: () => void navigate(`/crm/co-hoi/${parentOpp}`),
+              onClear: () => setParams({}),
+            }
+          : undefined
+      }
       config={config}
       state={state}
       onStateChange={setState}
@@ -188,7 +208,7 @@ export function OrderListPage() {
       onSortChange={(next) => setSort(nextOrderSort(next))}
       emptyMessage={{
         title: 'Chưa có đơn hàng nào',
-        hint: 'Đơn sinh từ báo giá hoặc cơ hội: mở báo giá rồi bấm Chuyển thành đơn, hoặc mở cơ hội ở L8 rồi bấm Tạo đơn hàng. Danh sách này không có nút Tạo (R-TIEN-02).',
+        hint: 'Đơn sinh từ báo giá hoặc cơ hội: mở báo giá rồi bấm Chuyển thành đơn, hoặc mở cơ hội ở L8 rồi bấm Tạo đơn hàng. Danh sách này không có nút Tạo.',
       }}
     />
   );

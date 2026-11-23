@@ -74,6 +74,29 @@ describe('phiếu Chuyển lớp', () => {
     };
     expect(classChoices(o, 'e1').map((c) => c.id)).toEqual(['c2']);
   });
+  it('môn ghi danh để trống thì lấy môn của lớp đang học (khác môn không hiện)', () => {
+    const o: TaskOptions = {
+      enrollments: [
+        {
+          id: 'e1',
+          code: 'GD1',
+          status_code: 'DANG_HOC',
+          subject_code: null,
+          class_id: 'c1',
+          class_code: 'A',
+          remaining_hours: 10,
+        },
+      ],
+      hold_reasons: [],
+      transfer_reasons: [],
+      classes: [
+        { id: 'c1', code: 'A', subject_code: 'ANH', seats_left: 3, upcoming: [] },
+        { id: 'c2', code: 'B', subject_code: 'ANH', seats_left: 3, upcoming: [] },
+        { id: 'c3', code: 'C', subject_code: 'TOAN', seats_left: 3, upcoming: [] },
+      ],
+    };
+    expect(classChoices(o, 'e1').map((c) => c.id)).toEqual(['c2']);
+  });
 });
 
 describe('Gia hạn bảo lưu (CSN-06b, R-GD-09)', () => {

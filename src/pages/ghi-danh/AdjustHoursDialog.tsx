@@ -108,7 +108,7 @@ function Body({
               Quỹ sau điều chỉnh: {formatNumber(remaining)} → {formatNumber(remaining + hours)} giờ.
             </>
           )}{' '}
-          Muốn chuyển giờ sang ghi danh khác, tạo ticket Đề nghị nhóm “Chuyển phí” (R-GD-18).
+          Muốn chuyển giờ sang ghi danh khác, tạo ticket Đề nghị nhóm “Chuyển phí”.
         </p>
       </div>
     </FormDialog>

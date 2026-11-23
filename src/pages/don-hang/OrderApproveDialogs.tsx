@@ -92,7 +92,7 @@ export function ApproveOrderDialog({ record, open, onOpenChange, onDone, onRejec
         {editedNote && (
           <Alert tone="warning" title="Đơn đã sửa so với báo giá.">
             {editedNoteText(editedNote)}
-            <span className="block">Chỉ để xem xét, không chặn duyệt (Q-31).</span>
+            <span className="block">Chỉ để xem xét, không chặn duyệt.</span>
           </Alert>
         )}
         {over.length > 0 && (
