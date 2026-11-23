@@ -11,7 +11,14 @@ test('truongcs.cs5: mở Việc chờ tôi duyệt thấy tiêu đề và bảng
   await enterAs(page, 'truongcs.cs5');
   await page.goto('/crm/viec-cho-duyet');
   await expect(page.getByRole('heading', { level: 1, name: 'Việc chờ tôi duyệt' })).toBeVisible();
-  await expect(page.getByRole('table').or(page.getByText('Không có việc chờ duyệt'))).toBeVisible();
+  // Máy tính: bảng; điện thoại: danh sách thẻ (<ul>); không có việc: câu trạng thái trống.
+  await expect(
+    page
+      .getByRole('table')
+      .or(page.getByRole('list'))
+      .or(page.getByText('Không có việc chờ duyệt'))
+      .first(),
+  ).toBeVisible();
   await expectAccessible(page);
 });
 
