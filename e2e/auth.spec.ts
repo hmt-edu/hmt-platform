@@ -286,6 +286,12 @@ test('Admin, Kế toán: không bắt hai bước (D41), vào CRM bằng mật k
   }
 
   await page.goto('/crm/tai-khoan');
+  if (phone) {
+    // A-23-27: Kế toán không thuộc diện hai bước, Hồ sơ không có mục «Xác thực hai bước». Phần thêm thiết bị chỉ thử với Admin (bản máy tính).
+    await expect(page.getByRole('heading', { name: 'Đổi mật khẩu' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Xác thực hai bước' })).toHaveCount(0);
+    return;
+  }
   await expect(page.getByRole('heading', { name: 'Xác thực hai bước' })).toBeVisible();
   // Tự nguyện thêm thiết bị đầu tiên.
   await page.getByRole('button', { name: 'Thêm thiết bị' }).click();
