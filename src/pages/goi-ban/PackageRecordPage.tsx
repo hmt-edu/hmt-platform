@@ -43,13 +43,23 @@ export function PackageRecordPage() {
   const [addingPrice, setAddingPrice] = useState(false);
   useCrumbTail(query.data?.pkg ? query.data.pkg.code : null);
 
-  if (query.isPending) return <Spinner />;
-  if (query.isError || !query.data.pkg) {
+  if (query.isPending) return <Spinner label="Đang tải gói bán…" />;
+  // Lỗi tải (mạng, máy chủ) khác với «không tìm thấy»: có nút Thử lại.
+  if (query.isError) {
+    return (
+      <StateView
+        kind="error"
+        title="Không tải được gói bán"
+        actions={<Button onClick={() => void query.refetch()}>Thử lại</Button>}
+      >
+        {errorOf(query.error).message}
+      </StateView>
+    );
+  }
+  if (!query.data.pkg) {
     return (
       <StateView kind="not-found" title="Không tìm thấy gói bán">
-        {query.isError
-          ? errorOf(query.error).message
-          : 'Gói không tồn tại hoặc bạn không có quyền xem.'}
+        Gói không tồn tại hoặc bạn không có quyền xem.
       </StateView>
     );
   }
