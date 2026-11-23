@@ -53,9 +53,12 @@ const branchField = (access: AccessView) =>
 export function buildMoneyInConfig(
   access: AccessView,
   onReverse?: (row: MoneyInRow) => void,
+  reversalEnabled = false,
 ): ListConfig<MoneyInRow> {
   // R-HT-01: chỉ người có Kế toán · Duyệt thấy nút (Admin không có quyền này); máy chủ vẫn kiểm lại.
-  const canReverse = access.can('ACCOUNTING', 'DUYET') && onReverse !== undefined;
+  // Tham số money_reversal_enabled tắt thì ẩn nút (CLAUDE.md: công tắc kiểm cả giao diện lẫn hàm DB), không để bấm tới hộp lý do mới báo lỗi.
+  const canReverse =
+    access.can('ACCOUNTING', 'DUYET') && onReverse !== undefined && reversalEnabled;
   return {
     screenCode: MONEY_IN_SCREEN_CODE,
     title: 'Khoản tiền vào',
