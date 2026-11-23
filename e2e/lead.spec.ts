@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone, showAllColumns } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lead giả).');
@@ -179,6 +179,7 @@ test('Bản "Đã gộp" ẩn mặc định, hiện khi chọn Trạng thái b�
   await expect(list(page).getByText(seeded.names.over)).toBeVisible();
   await expect(list(page).getByText(seeded.names.merged)).toHaveCount(0);
   await pickFilters(page, ['Đã gộp']);
+  await showAllColumns(page);
   await expect(list(page).getByText(seeded.names.merged)).toBeVisible();
   await expect(list(page).getByText(/^vào LD/)).toBeVisible();
   // Kanban không hiện bản đã gộp.

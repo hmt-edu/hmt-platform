@@ -2,7 +2,7 @@
 // lọc theo tình trạng, Xuất theo quyền, mục menu theo công tắc Bán hàng. Dữ liệu giả dựng bằng don-hang-seed.ts.
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, showAllColumns } from './helpers';
 import { DB_URL, clearMark, orderSetupOf, seedOrders, type SeededOrders } from './don-hang-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
@@ -39,6 +39,7 @@ test('Sale CS5: danh sách đủ cột (Đã thu, Còn phải thu, Thu tiền th
 }, testInfo) => {
   const setup = orderSetupOf(testInfo.project.name);
   await openOrders(page, setup.sale, setup.mark);
+  await showAllColumns(page);
   const rows = list(page);
   await expect(rows.getByText(seeded.orders.nhap)).toBeVisible();
   await expect(rows.getByText(seeded.orders.dtrinh)).toBeVisible();
