@@ -26,6 +26,12 @@ export function formatDate(value: string | Date | null | undefined): string {
   return date ? DATE.format(date) : '';
 }
 
+/** 05/2026 */
+export function formatMonth(value: string | Date | null | undefined): string {
+  const date = value ? toDate(value) : null;
+  return date ? DATE.format(date).slice(3) : '';
+}
+
 /** 09:42 */
 export function formatTime(value: string | Date | null | undefined): string {
   const date = value ? toDate(value) : null;
