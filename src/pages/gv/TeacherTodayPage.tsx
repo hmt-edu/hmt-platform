@@ -20,13 +20,11 @@ import {
   type MySession,
   type MySessionsResult,
 } from './todayLogic';
-import { useTodoCount } from './useTodoCount';
 import { GvForbidden } from './GvForbidden';
 import { isForbidden } from './forbidden';
 
 export function TeacherTodayPage() {
   const supabase = useDb();
-  const overdue = useTodoCount() ?? 0;
   const todayKey = vnDayBounds().dateKey;
   const query = useQuery({
     queryKey: ['gv-today', todayKey],
@@ -93,17 +91,8 @@ export function TeacherTodayPage() {
 
       {rows.length === 0 ? (
         <StateView kind="empty" title="Hôm nay bạn không có buổi dạy" headingLevel={2}>
-          {overdue > 0 ? (
-            <>
-              Có {overdue} việc quá hạn ·{' '}
-              <Link className="text-link underline" to="/gv/viec-can-lam">
-                Xem
-              </Link>
-              .
-            </>
-          ) : (
-            'Không có việc sắp trễ hạn.'
-          )}
+          {/* R-V2-37: buổi quá hạn không hiện ở GV-02 (xem GV-12); khung GV02_trong chỉ có câu này. */}
+          Không có việc sắp trễ hạn.
           {nextSession && ` Buổi tiếp theo: ${formatNextSession(nextSession)}.`}
           {
             <span className="mt-2 block">
