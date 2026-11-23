@@ -166,6 +166,27 @@ describe('cột hiển thị', () => {
   });
 });
 
+describe('cột mặc định tối đa 8 (mẫu B12)', () => {
+  const many = {
+    ...CONFIG,
+    columns: Array.from({ length: 12 }, (_, i) => ({
+      key: `c${i}`,
+      label: `Cột ${i}`,
+      render: () => null,
+      locked: i < 2,
+    })),
+  };
+  it('cột khoá tính vào 8; các cột sau cùng bị ẩn mặc định nhưng vẫn bật được ở nút Cột', () => {
+    const keys = defaultColumnKeys(many);
+    expect(keys).toEqual(['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7']);
+    const s = { ...emptyState(many), columns: ['c9'] };
+    expect(visibleColumnKeys(many, s)).toEqual(['c0', 'c1', 'c9']);
+  });
+  it('màn ít hơn 8 cột không bị cắt', () => {
+    expect(defaultColumnKeys(CONFIG).length).toBeLessThanOrEqual(8);
+  });
+});
+
 describe('Group By', () => {
   it('nhóm hai cấp, giữ thứ tự xuất hiện, có số đếm', () => {
     const tree = buildGroupTree(ROWS, ['stage', 'source'], CONFIG.groupFields);

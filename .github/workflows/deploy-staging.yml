@@ -393,6 +393,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          SECRET_KEY: ${{ secrets.STAGING_SUPABASE_SECRET_KEY }}
           SEED_PASSWORD: ${{ secrets.STAGING_SEED_PASSWORD }}
         run: |
           if [ -z "$SEED_PASSWORD" ]; then
@@ -400,9 +401,14 @@ jobs:
             exit 0
           fi
           echo "::add-mask::$SEED_PASSWORD"
+          # A-23-16: gọi bằng khoá secret như Edge Function login (Supabase Auth bỏ qua captcha với khoá secret), nên bước này vẫn chạy khi captcha ở Auth được bật.
+          # Không có khoá secret thì quay về khoá publishable (chỉ đúng khi captcha Auth chưa bật).
+          SECRET_KEY="$(printf '%s' "$SECRET_KEY" | tr -d '[:space:]')"
+          [ -z "$SECRET_KEY" ] || echo "::add-mask::$SECRET_KEY"
+          api_key="${SECRET_KEY:-$VITE_SUPABASE_PUBLISHABLE_KEY}"
           payload="$(jq -nc --arg e 'quantri.cs5@thu.hoamatoan.invalid' --arg p "$SEED_PASSWORD" '{email: $e, password: $p}')"
           resp="$(curl -s -X POST "$VITE_SUPABASE_URL/auth/v1/token?grant_type=password" \
-            -H "apikey: $VITE_SUPABASE_PUBLISHABLE_KEY" -H 'Content-Type: application/json' -d "$payload")"
+            -H "apikey: $api_key" -H 'Content-Type: application/json' -d "$payload")"
           token="$(printf '%s' "$resp" | jq -r '.access_token // empty')"
           if [ -z "$token" ]; then
             echo "::error::Không đăng nhập được bằng tài khoản giả (mã: $(printf '%s' "$resp" | jq -r '.error_code // .code // "không rõ"' | cut -c1-60)). Kiểm Auth Hook, schema app, mật khẩu seed."
@@ -414,3 +420,26 @@ jobs:
             exit 1
           fi
           echo "Đăng nhập thật đạt: token có $roles vai trò."
+
+      # A-23-16: lỗ hổng rà soát 23/11: gọi thẳng Supabase Auth bằng khoá publishable, KHÔNG mã captcha, không đi qua Edge Function login (bỏ qua đếm sai, khoá tạm).
+      # Captcha (Attack Protection) bật thì lời gọi này phải bị từ chối với captcha_failed. Gửi tên đăng nhập không tồn tại và mật khẩu bịa: không đụng tài khoản thật.
+      # Biến repo STAGING_CAPTCHA_ENFORCED=true (đặt sau khi anh bật captcha ở hmt-staging) thì lỗi là ĐỎ; chưa đặt thì chỉ cảnh báo để không chặn deploy.
+      - name: Kiểm gọi thẳng Auth không captcha bị chặn (captcha_failed)
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          ENFORCED: ${{ vars.STAGING_CAPTCHA_ENFORCED }}
+        run: |
+          resp="$(curl -s -X POST "$VITE_SUPABASE_URL/auth/v1/token?grant_type=password" \
+            -H "apikey: $VITE_SUPABASE_PUBLISHABLE_KEY" -H 'Content-Type: application/json' \
+            -d '{"email":"kiem.captcha@thu.hoamatoan.invalid","password":"KhongPhaiMatKhau1"}')"
+          code="$(printf '%s' "$resp" | jq -r '.error_code // .code // "khong-co"' 2>/dev/null | cut -c1-60)"
+          if [ "$code" = "captcha_failed" ]; then
+            echo "Gọi thẳng Auth không captcha bị chặn (captcha_failed): đúng."
+            exit 0
+          fi
+          if [ "$ENFORCED" = "true" ]; then
+            echo "::error::Gọi thẳng /auth/v1/token KHÔNG captcha không bị chặn (mã: $code). Captcha ở Authentication > Attack Protection của hmt-staging đã bị tắt hoặc chưa bật."
+            exit 1
+          fi
+          echo "::warning::Gọi thẳng /auth/v1/token không captcha KHÔNG bị chặn (mã: $code). Bật captcha ở hmt-staging rồi đặt biến STAGING_CAPTCHA_ENFORCED=true để bước này thành bắt buộc."
