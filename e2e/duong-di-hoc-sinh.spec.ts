@@ -202,12 +202,13 @@ test('Đường đi trọn: ghi danh 3 giờ, chốt danh sách, điểm danh, n
     expect(await balance()).toBe(START_HOURS - SESSION_HOURS);
   });
 
-  await test.step('LOP-09: chi tiết lớp, tab Học sinh liệt kê em đã xếp lớp kèm giờ còn lại', async () => {
+  await test.step('LOP-09: smart button Học sinh ở lớp mở danh sách em đã xếp lớp kèm giờ còn lại', async () => {
     await page.goto(`/crm/lop/${classId}`);
-    await page.getByRole('tab', { name: /^Học sinh/ }).click();
-    const table = page.getByRole('table', { name: 'Học sinh của lớp' });
-    await expect(table.getByText(STUDENT)).toBeVisible();
-    await expect(table.getByText(String(START_HOURS - SESSION_HOURS))).toBeVisible();
+    await page.getByRole('button', { name: /^Học sinh/ }).click();
+    await expect(page).toHaveURL(new RegExp(`/crm/lop/${classId}/hoc-sinh$`));
+    const row = page.getByRole('row').filter({ hasText: STUDENT });
+    await expect(row).toBeVisible();
+    await expect(row.getByText(String(START_HOURS - SESSION_HOURS), { exact: true })).toBeVisible();
   });
 
   await test.step('Màn buổi hiện tình trạng Done', async () => {

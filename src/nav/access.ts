@@ -11,6 +11,13 @@ export type AccessView = MenuAccess & {
   seesAllBranches: boolean;
   /** Cơ sở dạy học cho ô chọn cơ sở của dữ liệu nghiệp vụ: không có Hội sở CS3 (R-HT-02). */
   teachingBranches: BranchRow[];
+  /**
+   * Cơ sở để mở màn theo cơ sở khi chưa chọn gì: người một cơ sở thì cơ sở của mình (máy chủ chỉ cho xem cơ sở này);
+   * người thấy mọi cơ sở thì cơ sở dạy học đầu tiên. Không tìm thấy thì undefined.
+   */
+  defaultBranchId: string | undefined;
+  /** Các cơ sở người này được CHỌN để xem: người thấy mọi cơ sở thì mọi cơ sở dạy học, người một cơ sở thì chỉ cơ sở của mình. */
+  viewableBranches: BranchRow[];
   /** Mọi cơ sở đang hoạt động, kể cả Hội sở (người dùng có thể thuộc văn phòng; màn Người dùng của Admin). */
   allBranches: BranchRow[];
   /** Mọi vai trò (màn Người dùng của Admin). */
@@ -19,6 +26,8 @@ export type AccessView = MenuAccess & {
   crmRoles: { code: string; name: string }[];
   /** Tên các vai trò của người dùng, để hiện ở góc tài khoản. */
   roleNames: string[];
+  /** Công tắc tính năng của MỘT cơ sở cụ thể (mã cơ sở của bản ghi): hàm DB kiểm đúng cơ sở của bản ghi (app.require_feature), giao diện cũng phải kiểm như vậy. */
+  featureOnAt: (feature: string, branchCode: string | null) => boolean;
   /** "CS1 Nguyễn Chí Thanh" từ mã cơ sở; không thấy thì trả mã. */
   branchName: (code: string | null) => string | null;
 };
@@ -50,7 +59,22 @@ export function buildAccess(
       data.features.some(
         (f) => f.enabled && f.module_code === feature && scopeBranchIds.includes(f.branch_id),
       ),
+    featureOnAt: (feature, branchCode) => {
+      const branch = data.branches.find((b) => b.code === branchCode);
+      return (
+        branch !== undefined &&
+        data.features.some(
+          (f) => f.enabled && f.module_code === feature && f.branch_id === branch.id,
+        )
+      );
+    },
     seesAllBranches,
+    viewableBranches: seesAllBranches
+      ? teachingBranches
+      : data.branches.filter((b) => b.code === user.branchCode),
+    defaultBranchId: seesAllBranches
+      ? teachingBranches[0]?.id
+      : data.branches.find((b) => b.code === user.branchCode)?.id,
     teachingBranches,
     allBranches: data.branches,
     allRoles: data.roles.map((r) => ({ code: r.code, name: r.name })),

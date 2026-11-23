@@ -1,7 +1,7 @@
 // LOP-02 Lớp (bản ghi, khuôn K06): thanh duyệt, thông tin, thời khoá biểu, học sinh (dòng xếp lớp), buổi, lịch sử, cảnh báo trùng.
 // Thao tác trong menu Hành động theo tình trạng duyệt (LOP-05: Trình, Xác nhận, Duyệt, Từ chối, Đưa về Nháp, Huỷ; LOP-06: Đóng, Huỷ,
 // bị chặn thì hộp thoại hiện lý do máy chủ trả, có tên học sinh). Sửa dẫn tới LOP-03. Quyền thật do máy chủ kiểm.
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
@@ -20,7 +20,6 @@ import { useToast } from '../../ui/toastContext';
 import { editKind, transitionsFrom, type Transition } from './classTransitions';
 import {
   NO_GROUP_TEXT,
-  SESSION_STATUS_LABEL,
   WEEKDAY_LABEL,
   classNotes,
   recordSlotSummary,
@@ -79,15 +78,6 @@ function ClassView({ record }: { record: ClassRecord }) {
   const edit = editKind(record.status_code);
   const allowed = (action: Transition['action']) => access.can('CLASS', action);
   const menu: MenuItem[] = [
-    ...(edit && allowed('SUA')
-      ? [
-          {
-            kind: 'action' as const,
-            label: edit === 'FULL' ? 'Sửa' : 'Sửa thời khoá biểu',
-            onSelect: () => void navigate(editClassPath(record.id)),
-          },
-        ]
-      : []),
     // BUOI-09, BUOI-07: yêu cầu học bổ trợ (R-BUOI-05) và học bù (R-BUOI-03) tạo từ lớp đã duyệt; có quyền tạo yêu cầu buổi và phân hệ YEU_CAU_BUOI bật.
     ...(record.status_code === 'DA_DUYET' &&
     access.can('SESSION', 'TAO') &&
@@ -149,12 +139,6 @@ function ClassView({ record }: { record: ClassRecord }) {
   const notes = classNotes(record.status_code, record.slots.length);
   const summary = recordSlotSummary(record.slots);
   const [dayTab, setDayTab] = useState(() => String(record.slots[0]?.weekday ?? 1));
-  const [listTab, setListTab] = useState('hoc-sinh');
-  const detailRef = useRef<HTMLDivElement>(null);
-  const openList = (tab: string) => {
-    setListTab(tab);
-    detailRef.current?.scrollIntoView({ block: 'start' });
-  };
 
   return (
     <>
@@ -163,7 +147,9 @@ function ClassView({ record }: { record: ClassRecord }) {
         title={record.code}
         mode="view"
         readOnly
-        onEdit={() => undefined}
+        showEdit={Boolean(edit) && allowed('SUA')}
+        editLabel="Sửa"
+        onEdit={() => void navigate(editClassPath(record.id))}
         onSave={() => undefined}
         onCancel={() => undefined}
         onRefresh={() => void refresh()}
@@ -191,14 +177,14 @@ function ClassView({ record }: { record: ClassRecord }) {
             label: 'Học sinh',
             icon: 'training',
             count: record.students.length,
-            onOpen: () => openList('hoc-sinh'),
+            onOpen: () => void navigate(`/crm/lop/${record.id}/hoc-sinh`),
           },
           {
             key: 'buoi-hoc',
             label: 'Buổi học',
             icon: 'calendar',
             count: counts.reduce((sum, [, n]) => sum + n, 0),
-            onOpen: () => openList('buoi-hoc'),
+            onOpen: () => void navigate(`/crm/buoi-hoc?lop=${record.id}`),
           },
         ]}
         stageShowCode={false}
@@ -400,107 +386,6 @@ function ClassView({ record }: { record: ClassRecord }) {
             />
             {notes.bottom && <p className="text-caption text-fg-muted">{notes.bottom}</p>}
           </DetailSection>
-        </div>
-
-        <div ref={detailRef} className="mt-6">
-          <Tabs
-            label="Học sinh và buổi học của lớp"
-            value={listTab}
-            onChange={setListTab}
-            items={[
-              {
-                value: 'hoc-sinh',
-                label: 'Học sinh',
-                count: record.students.length,
-                content:
-                  record.students.length === 0 ? (
-                    <p className="py-2 text-fg-muted">Chưa có học sinh xếp vào lớp.</p>
-                  ) : (
-                    <>
-                      <p className="mb-2">
-                        <Link
-                          to={`/crm/lop/${record.id}/hoc-sinh`}
-                          className="text-link hover:underline"
-                        >
-                          Xem đầy đủ: học sinh đã rời, lọc, tìm kiếm (LOP-09)
-                        </Link>
-                      </p>
-                      <LineTable
-                        caption="Học sinh của lớp"
-                        rows={record.students}
-                        rowKey={(x) => x.enrollment_id}
-                        columns={[
-                          {
-                            key: 'name',
-                            header: 'Học sinh',
-                            cell: (x) => <b className="font-medium">{x.full_name}</b>,
-                          },
-                          { key: 'code', header: 'Mã học sinh', cell: (x) => x.student_code },
-                          { key: 'enr', header: 'Ghi danh', cell: (x) => x.enrollment_code },
-                          {
-                            key: 'start',
-                            header: 'Vào lớp',
-                            cell: (x) => formatDate(x.start_date),
-                          },
-                          {
-                            key: 'hours',
-                            header: 'Giờ còn lại',
-                            align: 'right',
-                            cell: (x) => x.hours_left,
-                          },
-                        ]}
-                      />
-                    </>
-                  ),
-              },
-              {
-                value: 'buoi-hoc',
-                label: 'Buổi học',
-                count: record.sessions.length,
-                content: (
-                  <div className="flex flex-col gap-2">
-                    <p className="text-fg-muted">
-                      {counts.length === 0
-                        ? 'Chưa có buổi (sinh khi lớp được duyệt).'
-                        : counts
-                            .map(([k, n]) => `${SESSION_STATUS_LABEL[k] ?? k}: ${n}`)
-                            .join(' · ')}
-                    </p>
-                    {record.sessions.length > 0 && (
-                      <LineTable
-                        caption="Buổi học của lớp"
-                        rows={record.sessions}
-                        rowKey={(x) => x.id}
-                        columns={[
-                          {
-                            key: 'no',
-                            header: 'Buổi',
-                            cell: (x) => (x.session_no ? `Buổi ${x.session_no}` : '—'),
-                          },
-                          { key: 'date', header: 'Ngày', cell: (x) => formatDate(x.session_date) },
-                          {
-                            key: 'time',
-                            header: 'Giờ',
-                            cell: (x) => `${timeText(x.start_time)}–${timeText(x.end_time)}`,
-                          },
-                          {
-                            key: 'teacher',
-                            header: 'Giáo viên',
-                            cell: (x) => x.teacher_name ?? '—',
-                          },
-                          {
-                            key: 'status',
-                            header: 'Tình trạng',
-                            cell: (x) => SESSION_STATUS_LABEL[x.status_code] ?? x.status_code,
-                          },
-                        ]}
-                      />
-                    )}
-                  </div>
-                ),
-              },
-            ]}
-          />
         </div>
       </RecordDetail>
 
