@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
-import { errorOf, useDb, useIntSetting } from '../../lib/db';
+import { errorOf, useBoolSetting, useDb, useIntSetting } from '../../lib/db';
 import { formatNumber } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
@@ -45,7 +45,11 @@ export function MoneyInListPage() {
   const [target, setTarget] = useState<MoneyInRow | null>(null);
   const [busy, setBusy] = useState(false);
   const [reverseError, setReverseError] = useState<string | null>(null);
-  const config = useMemo(() => buildMoneyInConfig(access, setTarget), [access]);
+  const reversalEnabled = useBoolSetting('money_reversal_enabled') === true;
+  const config = useMemo(
+    () => buildMoneyInConfig(access, setTarget, reversalEnabled),
+    [access, reversalEnabled],
+  );
   const pageSize = useIntSetting('list_page_size_default');
   const [state, setState] = useState<ListState>(() => emptyTreasuryState('created'));
   const [view, setView] = useState<ViewMode>('list');
