@@ -69,18 +69,15 @@ test('Sale: báo giá Đã gửi chuyển thành đơn, Lưu thành đơn Nháp 
   await openByUrl(page, SETUP.sale, `/crm/bao-gia/${quote.rows[0]?.id ?? ''}`);
   await page.getByRole('button', { name: 'Chuyển thành đơn' }).click();
   await expect(page).toHaveURL(/\/crm\/don-hang\/tao\?bao-gia=/);
+  // Điều khoản thanh toán bắt buộc chọn lúc tạo đơn (anh chốt 23/11): chọn «Chia ba đợt» rồi mới Lưu được.
+  await page.getByLabel('Kiểu thanh toán').click();
+  await page.getByRole('option', { name: /Chia ba đợt/ }).click();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/don-hang\/[0-9a-f-]{36}$/);
   orderUrl = new URL(page.url()).pathname;
   const heading = page.getByRole('heading', { level: 2, name: /^DH-/ });
   await expect(heading).toBeVisible();
   orderCode = (await heading.textContent())?.trim() ?? '';
-  // Đơn mới tạo chưa chọn điều khoản thanh toán: Sửa đơn, chọn «Chia ba đợt», Lưu rồi mới trình được.
-  await page.getByRole('button', { name: 'Sửa đơn' }).click();
-  await page.getByLabel('Kiểu thanh toán').click();
-  await page.getByRole('option', { name: /Chia ba đợt/ }).click();
-  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
-  await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
   await page.getByRole('button', { name: 'Trình duyệt' }).click();
   // Em chưa đủ thông tin thì có hộp xác nhận «Vẫn trình»; không có thì trình luôn.
   const stillSubmit = page.getByRole('button', { name: 'Vẫn trình' });

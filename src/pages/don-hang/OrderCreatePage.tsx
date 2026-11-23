@@ -413,22 +413,24 @@ function TermSection({ termId, onChange }: { termId: string; onChange: (id: stri
       <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
         Thanh toán
       </h3>
-      <DetailField
-        label="Điều khoản thanh toán"
-        required
-        hint="bắt buộc chọn"
-        mode="create"
-        value=""
-        editor={
-          <Select
-            label="Kiểu thanh toán"
-            value={termId}
-            placeholder="Chọn điều khoản"
-            onChange={onChange}
-            options={(options.data?.terms ?? []).map((t) => ({ value: t.id, label: t.name }))}
-          />
-        }
-      />
+      <dl className="flex min-w-0 flex-col">
+        <DetailField
+          label="Điều khoản thanh toán"
+          required
+          hint="bắt buộc chọn"
+          mode="create"
+          value=""
+          editor={
+            <Select
+              label="Kiểu thanh toán"
+              value={termId}
+              placeholder="Chọn điều khoản"
+              onChange={onChange}
+              options={(options.data?.terms ?? []).map((t) => ({ value: t.id, label: t.name }))}
+            />
+          }
+        />
+      </dl>
       {termId === '' && (
         <p className="text-caption text-fg-muted">Chọn điều khoản thanh toán để lưu đơn.</p>
       )}
