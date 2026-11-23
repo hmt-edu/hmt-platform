@@ -6,7 +6,7 @@ export type TicketRow = {
   ticket_type: 'DN' | 'KN' | 'GV';
   branch_code: string;
   category_name: string | null;
-  /** Nhóm của nhóm con và học sinh (migration 351), cho cột «Nhóm · Nhóm con», «Học sinh» của canvas CSN01. */
+  /** Nhóm của nhóm con và học sinh (migration 351), cho hai cột «Nhóm», «Nhóm con» và cột «Học sinh» của canvas CSN01. */
   group_name?: string | null;
   student_name?: string | null;
   priority_code: 'KHAN' | 'CAO' | 'THUONG' | 'THAP';

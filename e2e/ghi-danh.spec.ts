@@ -1,6 +1,6 @@
 // Cụm Ghi danh: GD-01 danh sách, GD-02 bản ghi, GD-04 sổ giờ, GD-06 hàng chờ, GD-03 xếp lớp. Máy tính (màn Đào tạo ưu tiên máy tính). Dữ liệu giả dựng bằng ghi-danh-seed.ts.
 import { expect, test } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, showAllColumns } from './helpers';
 import { DB_URL } from './bao-gia-seed';
 import { seedGhiDanh, type GhiDanhSeed } from './ghi-danh-seed';
 
@@ -22,6 +22,7 @@ test('GD-01: danh sách ghi danh có đủ cột, tìm theo tên học sinh, m�
   await page.goto('/crm/ghi-danh');
   await expect(page.getByRole('heading', { level: 1, name: 'Ghi danh' })).toBeVisible();
   await page.getByRole('searchbox').fill(seed.learning.student);
+  await showAllColumns(page);
   const table = page.getByRole('table', { name: 'Ghi danh' });
   await expect(table.getByRole('link', { name: seed.learning.code })).toBeVisible();
   const row = table.getByRole('row', { name: new RegExp(seed.learning.code) });
@@ -49,6 +50,7 @@ test('GD-02, GD-04: bản ghi nêu quỹ giờ và lớp; Sổ giờ nêu dòng 
   await expect(page.getByRole('button', { name: 'Mở sổ giờ đầy đủ' })).toBeVisible();
   await page.getByRole('button', { name: 'Sổ giờ', exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/ghi-danh/${seed.learning.id}/so-gio$`));
+  await showAllColumns(page);
   const ledger = page.getByRole('table', { name: 'Sổ giờ' });
   await expect(ledger).toContainText('Cấp từ phiếu thu');
   await expect(ledger).toContainText('+24');

@@ -2,39 +2,52 @@ import type { ReactNode } from 'react';
 import logo from '../../design/hmt-p0-p2/assets/Logo-HMT-cropped.svg';
 import { useBranchNames } from '../lib/auth/branches';
 import { cn } from '../ui/cn';
-import { BrandArt, BrandRobot } from './BrandArt';
+import { BrandArt, BrandBars, BrandSlogan } from './BrandArt';
 import { useProduct, type Product } from './useProduct';
 
-/** Cột giới thiệu bên trái (chỉ máy tính): tên hệ thống, lời giới thiệu, các cơ sở dạy học, chỗ nhờ hỗ trợ. */
+/**
+ * Cột giới thiệu bên trái (chỉ máy tính, canvas 9933 v149): tiêu đề chữ hoa, đoạn giới thiệu căn đều, nhãn CÁC CƠ SỞ với các viên cơ sở
+ * (đọc từ hàm công khai login_branch_names, theo thứ tự danh mục, không viết cứng), hình năm cột, slogan chạy từng từ ở đáy.
+ */
 function BrandPanel() {
   const branches = useBranchNames();
   return (
     <aside
       aria-label="Giới thiệu hệ thống"
-      className="relative hidden flex-col gap-5 overflow-hidden bg-action bg-[linear-gradient(180deg,transparent_45%,rgb(101_41_16/0.28))] px-16 pt-[150px] pb-12 text-neutral-0 lg:flex"
+      className="relative hidden flex-col overflow-hidden bg-action bg-[linear-gradient(180deg,transparent_45%,rgb(101_41_16/0.28))] px-16 pt-[150px] pb-12 text-neutral-0 lg:flex"
     >
       <BrandArt />
-      <BrandRobot />
-      <p className="relative max-w-[520px] font-display text-[38px] leading-[1.22] font-bold tracking-tight">
-        Hệ thống quản lý trung tâm
-      </p>
-      <p className="relative max-w-[440px] text-[16px] leading-[1.65]">
-        Tuyển sinh, bán hàng, lớp học, buổi học và chăm sóc khách hàng ở một nơi. Giáo viên điểm
-        danh, chấm bài ngay trên điện thoại.
-      </p>
-      {branches.data && branches.data.length > 0 && (
-        <ul className="relative mt-3 flex max-w-[440px] flex-col gap-2.5 border-t border-neutral-0/45 pt-[22px]">
-          {branches.data.map((b) => (
-            <li key={b.code} className="flex items-center gap-2.5 text-body font-semibold">
-              <span className="size-2 shrink-0 rounded-full bg-neutral-0" aria-hidden="true" />
-              {b.code} {b.name}
-            </li>
-          ))}
-        </ul>
-      )}
-      <p className="relative mt-5 max-w-[440px] text-caption">
-        Cần hỗ trợ đăng nhập: liên hệ quản trị viên của trung tâm.
-      </p>
+      <BrandBars />
+      <div className="relative flex w-max max-w-full flex-col gap-5">
+        <p className="font-display text-[30px] leading-[1.3] font-bold tracking-[0.02em] whitespace-nowrap uppercase">
+          Hệ thống quản lý trung tâm
+        </p>
+        <p className="w-0 min-w-full text-justify text-[16px] leading-[1.65] text-pretty">
+          Tuyển sinh, bán hàng, lớp học, buổi học và chăm sóc khách hàng ở một nơi. Giáo viên điểm
+          danh, chấm bài ngay trên điện thoại.
+        </p>
+        {branches.data && branches.data.length > 0 && (
+          <div className="mt-3 w-0 min-w-full border-t border-neutral-0/45 pt-[22px]">
+            <p className="mb-3.5 text-[12px] font-semibold tracking-[0.14em] opacity-90">
+              CÁC CƠ SỞ
+            </p>
+            <ul className="flex flex-wrap gap-2.5">
+              {branches.data.map((b) => (
+                <li
+                  key={b.code}
+                  className="inline-flex items-center gap-2.5 rounded-full border border-neutral-0/30 bg-neutral-0/[0.14] py-[5px] pr-4 pl-[5px] text-[14px] font-semibold"
+                >
+                  <b className="inline-flex h-[26px] min-w-[42px] items-center justify-center rounded-full bg-neutral-0 text-[12px] font-bold text-[#AB420F]">
+                    {b.code}
+                  </b>
+                  {b.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+      <BrandSlogan />
     </aside>
   );
 }

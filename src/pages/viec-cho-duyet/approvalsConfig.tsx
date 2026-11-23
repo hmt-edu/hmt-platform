@@ -1,9 +1,9 @@
 // Cấu hình bảng CHUNG-15 «Việc chờ tôi duyệt» cho khuôn K03 (canvas 1aab CHUNG15_pc, CHUNG15_kt_pc, CHUNG15_ad_pc).
-// Cột: Loại việc, Mã, Học sinh · đối tượng, Cấp duyệt, Người tạo, Cơ sở (khi thấy nhiều cơ sở), Thời gian chờ. Dòng chỉ để mở bản ghi; không có nút Duyệt hàng loạt.
+// Cột: Loại việc, Mã, Học sinh hoặc Phụ huynh, Mã đối tượng, Nội dung, Cấp, Vai trò duyệt, Người tạo, Cơ sở (khi thấy nhiều cơ sở), Thời gian chờ. Dòng chỉ để mở bản ghi; không có nút Duyệt hàng loạt.
 import type { AccessView } from '../../nav/access';
 import { Tag } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
-import { KIND_LABELS, KIND_ORDER, waitingText } from './approvalsLogic';
+import { KIND_LABELS, KIND_ORDER, detailText, waitingText } from './approvalsLogic';
 import type { ApprovalKind, ApprovalPage, ApprovalRow } from './approvalsTypes';
 
 export const APPROVALS_SCREEN_CODE = 'CHUNG-15';
@@ -12,6 +12,8 @@ const MUTED = <span className="text-fg-muted">—</span>;
 export function buildApprovalsConfig(
   access: AccessView,
   counts: ApprovalPage['counts'] | undefined,
+  /** Trang này có dòng nào có tên học sinh/phụ huynh không; không có thì ẩn hai cột đối tượng mặc định (còn bật được ở «Cột»). */
+  hasSubject = true,
 ): ListConfig<ApprovalRow> {
   const multiBranch = access.seesAllBranches;
   return {
@@ -27,28 +29,22 @@ export function buildApprovalsConfig(
         render: (r) => <Tag tone="info">{KIND_LABELS[r.kind]}</Tag>,
       },
       { key: 'code', label: 'Mã', render: (r) => <span className="font-medium">{r.code}</span> },
+      // T13 «một ô một thông tin»: đối tượng được tách thành tên, mã, nội dung; cấp duyệt tách thành Cấp và Vai trò duyệt.
       {
         key: 'subject',
-        label: 'Học sinh · đối tượng',
-        render: (r) =>
-          r.subject_name || r.detail ? (
-            <span>
-              {r.subject_name ?? r.detail}
-              {r.subject_code ? <span className="text-fg-muted"> {r.subject_code}</span> : null}
-            </span>
-          ) : (
-            MUTED
-          ),
+        label: 'Học sinh / Phụ huynh',
+        defaultVisible: hasSubject,
+        render: (r) => r.subject_name ?? MUTED,
       },
       {
-        key: 'level',
-        label: 'Cấp duyệt',
-        render: (r) => (
-          <span>
-            {r.level_no}/{r.level_total} <span className="text-fg-muted">{r.level_label}</span>
-          </span>
-        ),
+        key: 'subject_code',
+        label: 'Mã đối tượng',
+        defaultVisible: hasSubject,
+        render: (r) => r.subject_code ?? MUTED,
       },
+      { key: 'detail', label: 'Nội dung', render: (r) => detailText(r) ?? MUTED },
+      { key: 'level', label: 'Cấp', render: (r) => `${r.level_no}/${r.level_total}` },
+      { key: 'level_role', label: 'Vai trò duyệt', render: (r) => r.level_label ?? MUTED },
       { key: 'creator', label: 'Người tạo', render: (r) => r.creator_name ?? MUTED },
       ...(multiBranch
         ? [{ key: 'branch', label: 'Cơ sở', render: (r: ApprovalRow) => r.branch_code ?? MUTED }]

@@ -21,6 +21,7 @@ import { useToast } from '../../ui/toastContext';
 import { taskStatusTone } from './phieuConfig';
 import { approvalRows } from './approvalRows';
 import { taskTimeline } from './phieuTimeline';
+import { taskFeatureOffMessage } from './taskFeature';
 import {
   LEVEL_ROLE_LABEL,
   TASK_FIELD_LABEL,
@@ -81,6 +82,8 @@ export function TaskRecordPage() {
     );
   const ticket = record.data.ticket;
   const canEdit = access.can('TICKET', 'SUA');
+  // Công tắc tính năng của cơ sở phiếu: tắt thì khoá Gửi duyệt, Duyệt, Thực hiện kèm câu rõ ràng (hàm DB cũng chặn).
+  const featureOff = taskFeatureOffMessage(task.task_type, access.featureOnAt, task.branch_code);
   const open = ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(task.status_code);
   const needsNote = asking?.action === 'reject' || asking?.action === 'cancel';
 
@@ -128,14 +131,22 @@ export function TaskRecordPage() {
             )}
             {task.status_code === 'CHO_DUYET' && task.can_approve && (
               <>
-                <Button variant="primary" onClick={() => setAsking({ action: 'approve' })}>
+                <Button
+                  variant="primary"
+                  disabled={featureOff !== null}
+                  onClick={() => setAsking({ action: 'approve' })}
+                >
                   Duyệt
                 </Button>
                 <Button onClick={() => setAsking({ action: 'reject' })}>Từ chối</Button>
               </>
             )}
             {task.status_code === 'DA_DUYET' && canEdit && (
-              <Button variant="primary" onClick={() => setAsking({ action: 'execute' })}>
+              <Button
+                variant="primary"
+                disabled={featureOff !== null}
+                onClick={() => setAsking({ action: 'execute' })}
+              >
                 Thực hiện
               </Button>
             )}
@@ -166,6 +177,11 @@ export function TaskRecordPage() {
           />
         }
       >
+        {featureOff && (
+          <div className="mb-4">
+            <Alert tone="warning">{featureOff}</Alert>
+          </div>
+        )}
         {/* CSN06a «Lỗi lưu»: lỗi khi Trình duyệt (không có hộp thoại) hiện ngay trên phiếu, giữ nguyên nội dung, có nút Thử lại. */}
         {error && asking === null && (
           <div className="mb-4">
@@ -412,6 +428,7 @@ export function TaskRecordPage() {
         description="Hồ sơ sẽ được cập nhật theo nội dung phiếu, ticket chuyển sang Đã xử lý. Không hoàn tác bằng nút."
         confirmLabel="Thực hiện"
         busy={busy}
+        error={error}
         onConfirm={() => void run('execute')}
       />
     </>

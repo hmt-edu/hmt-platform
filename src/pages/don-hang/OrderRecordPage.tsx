@@ -905,11 +905,9 @@ function OrderView({ record }: { record: OrderRecord }) {
                     </>
                   }
                 />
-                <DetailField
-                  label="Phụ huynh"
-                  mode="view"
-                  value={`${record.parent_name} · ${record.parent_code} · ${formatPhone(record.parent_phone)}`}
-                />
+                <DetailField label="Phụ huynh" mode="view" value={record.parent_name} />
+                <DetailField label="Mã phụ huynh" mode="view" value={record.parent_code} />
+                <DetailField label="SĐT" mode="view" value={formatPhone(record.parent_phone)} />
                 {record.opportunity_id && (
                   <DetailField
                     label="Cơ hội"
@@ -970,10 +968,17 @@ function OrderView({ record }: { record: OrderRecord }) {
                   mode="view"
                   value={
                     record.approved_at
-                      ? `${record.approved_by_name ?? ''} · ${formatDate(record.approved_at)}${record.approved_on_behalf ? ' (duyệt thay)' : ''}`
+                      ? `${record.approved_by_name ?? ''}${record.approved_on_behalf ? ' (duyệt thay)' : ''}`
                       : (waitingApproverName(record) ?? '')
                   }
                 />
+                {record.approved_at && (
+                  <DetailField
+                    label="Duyệt lúc"
+                    mode="view"
+                    value={formatDate(record.approved_at)}
+                  />
+                )}
                 <DetailField
                   label="Cơ sở vận hành"
                   mode="view"

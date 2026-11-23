@@ -86,34 +86,54 @@
   opacity: 0;
   animation: auth-float 16s ease-in-out infinite;
 }
-.auth-robot {
+.auth-bars {
   position: absolute;
-  right: 28px;
-  bottom: 28px;
-  width: 160px;
+  right: 48px;
+  bottom: 92px;
+  z-index: 3;
+  width: 300px;
   height: auto;
   overflow: visible;
   pointer-events: none;
 }
-.auth-robot .auth-q2 {
-  opacity: 0;
-  animation: auth-q2 6s ease-in-out infinite;
+.auth-bars .auth-rise {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: auth-rise 6s ease-in-out infinite;
 }
-.auth-robot .auth-q1 {
-  animation: auth-q1 6s ease-in-out infinite;
+.auth-bars .auth-flag {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: auth-flag 6s ease-in-out infinite;
 }
-.auth-robot .auth-bob {
-  animation: auth-bob 3s ease-in-out infinite;
+.auth-bars .auth-spk {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: auth-spk 3s ease-in-out infinite;
 }
-.auth-robot .auth-pen {
-  transform-origin: 84px 106px;
-  animation: auth-pen 0.8s ease-in-out infinite;
+.auth-slogan {
+  position: absolute;
+  left: 64px;
+  bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  line-height: 1.5;
+  white-space: nowrap;
+  color: #fff;
 }
-.auth-robot .auth-ant {
-  animation: auth-blink 2s ease-in-out infinite;
+.auth-slogan .auth-w {
+  display: inline-block;
+  opacity: 0.38;
+  animation: auth-read 9s ease-in-out infinite;
 }
-.auth-robot .auth-bub {
-  animation: auth-bub 6s ease-in-out infinite;
+.auth-slogan .auth-w-sym {
+  font-size: 16px;
+  font-weight: 800;
+  animation-name: auth-reads;
 }
 /* Mỗi nút lệch 0,45 giây, mỗi ký hiệu toán lệch 1,8 giây (như bản thiết kế). */
 .auth-art .auth-nd:nth-of-type(2) {
@@ -203,88 +223,105 @@
     transform: translateY(-90px);
   }
 }
-@keyframes auth-bob {
-  0%,
-  100% {
-    transform: translateY(0);
+@keyframes auth-rise {
+  0% {
+    transform: scaleY(0.35);
+    opacity: 0.2;
   }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-@keyframes auth-pen {
-  0%,
-  100% {
-    transform: rotate(-5deg);
-  }
-  50% {
-    transform: rotate(8deg);
-  }
-}
-@keyframes auth-q1 {
-  0%,
-  40% {
+  18%,
+  86% {
+    transform: scaleY(1);
     opacity: 1;
   }
-  50%,
-  92% {
+  100% {
+    transform: scaleY(0.35);
+    opacity: 0.2;
+  }
+}
+@keyframes auth-flag {
+  0%,
+  22% {
     opacity: 0;
+    transform: translateY(12px);
   }
-  100% {
+  34%,
+  86% {
     opacity: 1;
-  }
-}
-@keyframes auth-q2 {
-  0%,
-  42% {
-    opacity: 0;
-  }
-  52%,
-  90% {
-    opacity: 1;
+    transform: none;
   }
   100% {
     opacity: 0;
   }
 }
-@keyframes auth-blink {
+@keyframes auth-spk {
   0%,
   100% {
-    opacity: 0.45;
+    opacity: 0.25;
+    transform: scale(0.7);
   }
   50% {
     opacity: 1;
+    transform: scale(1.1);
   }
 }
-@keyframes auth-bub {
-  0%,
+@keyframes auth-read {
+  0% {
+    opacity: 0.38;
+    transform: none;
+  }
+  4% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
   8% {
-    opacity: 0;
+    opacity: 1;
+    transform: none;
   }
-  16%,
-  80% {
+  70% {
     opacity: 1;
   }
-  90%,
+  82%,
   100% {
-    opacity: 0;
+    opacity: 0.38;
   }
 }
-/* Giảm chuyển động: hình đứng yên (đường nét liền nhạt, ký hiệu toán mờ, robot hiện câu chào và dấu "?"). */
+@keyframes auth-reads {
+  0% {
+    opacity: 0.38;
+    transform: scale(1);
+  }
+  4% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+  9% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  70% {
+    opacity: 1;
+  }
+  82%,
+  100% {
+    opacity: 0.38;
+  }
+}
+/* Giảm chuyển động: hình đứng yên (đường nét liền nhạt, ký hiệu toán mờ, năm cột và cờ hiện đủ, slogan hiện đủ chữ). */
 @media (prefers-reduced-motion: reduce) {
   .auth-art .auth-ln,
   .auth-art .auth-nd,
   .auth-art .auth-sy,
-  .auth-robot .auth-q1,
-  .auth-robot .auth-q2,
-  .auth-robot .auth-bob,
-  .auth-robot .auth-pen,
-  .auth-robot .auth-ant,
-  .auth-robot .auth-bub {
+  .auth-bars .auth-rise,
+  .auth-bars .auth-flag,
+  .auth-bars .auth-spk,
+  .auth-slogan .auth-w {
     animation: none !important;
   }
   .auth-art .auth-sy {
     opacity: 0.2;
+  }
+  .auth-slogan .auth-w {
+    opacity: 1;
   }
 }
 

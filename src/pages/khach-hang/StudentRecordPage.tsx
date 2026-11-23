@@ -235,6 +235,7 @@ function StudentView({ record }: { record: StudentRecord }) {
             label: 'Ghi danh',
             icon: 'training',
             count: record.counts.enrollments,
+            hidden: !access.can('ENROLLMENT', 'XEM'),
             onOpen: () => setTab('study'),
           },
           {
@@ -242,6 +243,7 @@ function StudentView({ record }: { record: StudentRecord }) {
             label: 'Lớp',
             icon: 'training',
             count: record.counts.classes,
+            hidden: !access.can('CLASS', 'XEM'),
             onOpen: () => setTab('study'),
           },
           {
@@ -249,6 +251,7 @@ function StudentView({ record }: { record: StudentRecord }) {
             label: 'Phiếu test',
             icon: 'results',
             count: record.counts.tests,
+            hidden: !access.can('STUDENT_TEST', 'XEM'),
             onOpen: () => setTab('exam'),
           },
         ]}

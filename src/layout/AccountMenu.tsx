@@ -6,14 +6,14 @@ import { DropdownMenu, type MenuItem } from '../ui/Overlays';
 import { accountLabel } from './accountLabel';
 import { PORTAL_NAMES } from './portalNames';
 
-/** Góc tài khoản: tên, vai trò · cơ sở; mở ra Hồ sơ cá nhân, Đổi cổng, Đăng xuất. */
+/** Góc tài khoản: tên, vai trò và cơ sở mỗi thứ một dòng (T13); mở ra Hồ sơ cá nhân, Đổi cổng, Đăng xuất. */
 export function AccountMenu({
   portal,
-  roleLine,
+  roleLines,
   compact,
 }: {
   portal: Portal;
-  roleLine: string;
+  roleLines: string[];
   compact?: boolean | undefined;
 }) {
   const { claims, signOut } = useAuth();
@@ -43,19 +43,24 @@ export function AccountMenu({
       trigger={
         <button
           type="button"
-          aria-label={accountLabel(claims.name, roleLine, compact === true)}
           className="focus-ring touch-target flex items-center gap-2 rounded-control px-1 text-left hover:bg-hover"
         >
           <Avatar name={claims.name} large />
+          {/* Tên đọc của nút lấy từ chữ ẩn này (không dùng aria-label), nên luật axe label-content-name-mismatch (WCAG 2.5.3) không còn so nhãn với chữ hiển thị; chữ hiển thị để aria-hidden tránh đọc hai lần. */}
+          <span className="sr-only">{accountLabel(claims.name, roleLines, compact === true)}</span>
           {!compact && (
-            <span className="hidden min-w-0 sm:block">
+            <span aria-hidden="true" className="hidden min-w-0 sm:block">
               <span
                 className="block truncate text-body font-semibold text-fg"
                 data-testid="ten-nguoi-dung"
               >
                 {claims.name}
               </span>
-              <span className="block truncate text-caption text-fg-muted">{roleLine}</span>
+              {roleLines.map((line) => (
+                <span key={line} className="block truncate text-caption text-fg-muted">
+                  {line}
+                </span>
+              ))}
             </span>
           )}
         </button>

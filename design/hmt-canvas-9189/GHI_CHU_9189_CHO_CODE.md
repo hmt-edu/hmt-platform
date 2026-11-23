@@ -284,3 +284,6 @@ Lịch sử sau v45: v46 `1794297020-dadf` (GV-14 Tính chất tự chọn, ĐÃ
 - Tên 7 bước trạng thái trong v2-aftersale.md không kiểm được (sơ đồ không có trong phần chữ).
 - Hai khung phan_anh và khung «Khác» chưa mở xem ảnh ở trạng thái Khác; Man_GV06, Man_GV06_bs_dt chưa mở ảnh (chỉ đổi một dòng chữ).
 - R-V2-xx chưa có trong `docs/spec/04` của repo; khung vẽ theo lời anh Trường qua Chat.
+
+## Ticket xem gọn CSN-03: BỎ (anh bỏ 23/11)
+Bản «xem gọn» (CSN03_gon_*) đã gỡ khỏi canvas v58; 13 khung CSN03_* cũ bỏ nhãn «BẢN CŨ, KHÔNG LÀM» và là khung hiện hành. Ticket, Lead, Cơ hội, Đơn hàng, Phiếu thu giữ bố cục hiện tại. Ghi chú đợt 23/11: `GHI_CHU_V58_CHO_CODE.md` và `design/GHI_CHU_DOT_23_11.md`.

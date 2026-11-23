@@ -7,6 +7,7 @@ import { errorOf, useDb } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
+import { UnsavedGuard } from '../../ui/Dialogs';
 import { Tag } from '../../ui/Data';
 import { cn } from '../../ui/cn';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -102,6 +103,8 @@ export function PermissionMatrixPage() {
   return (
     <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* CHUNG-26: đang sửa mà có ô đã đổi thì hỏi trước khi rời trang. */}
+        <UnsavedGuard when={editing && draft.size > 0} />
         <h1 className="text-h1">Ma trận quyền</h1>
         {current && (
           <p className="text-body text-fg-muted">

@@ -148,7 +148,7 @@ export function PasswordInput({
             {...input}
             {...field}
             type={shown ? 'text' : 'password'}
-            className={cn(large ? INPUT_LG_CLASS : INPUT_CLASS, large ? 'pr-12' : 'pr-10')}
+            className={cn(large ? INPUT_LG_CLASS : INPUT_CLASS, 'pr-12')}
           />
           <button
             type="button"
@@ -157,7 +157,7 @@ export function PasswordInput({
             aria-label={shown ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
             className={cn(
               'focus-ring absolute flex items-center justify-center rounded-control text-fg-label hover:bg-brand-50',
-              large ? 'top-1 right-1 size-9' : 'inset-y-1 right-1 w-8',
+              'top-1/2 right-0 size-11 -translate-y-1/2',
             )}
           >
             <Icon name={shown ? 'eyeOff' : 'eye'} size={16} />

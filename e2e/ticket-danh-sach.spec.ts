@@ -1,7 +1,7 @@
-// Danh sách ticket (CS-01, canvas CSN01): cột Nhóm · Nhóm con, Học sinh, Tạo lúc; chuyển sang Kanban thấy thẻ ticket. Dữ liệu giả dựng bằng hàm nghiệp vụ với quyền Admin (bật AFTERSALE cho CS5, phụ huynh, học sinh, ticket).
+// Danh sách ticket (CS-01, canvas CSN01): cột Nhóm, Nhóm con, Học sinh, Tạo lúc; chuyển sang Kanban thấy thẻ ticket. Dữ liệu giả dựng bằng hàm nghiệp vụ với quyền Admin (bật AFTERSALE cho CS5, phụ huynh, học sinh, ticket).
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, isPhone } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, isPhone, showAllColumns } from './helpers';
 import { DB_URL } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng ticket giả).');
@@ -59,7 +59,7 @@ test.beforeAll(async ({}, testInfo) => {
   }
 });
 
-test('Danh sách ticket có cột Nhóm · Nhóm con, Học sinh; Kanban hiện thẻ', async ({ page }) => {
+test('Danh sách ticket có cột Nhóm, Nhóm con, Học sinh; Kanban hiện thẻ', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/ticket');
   await page.getByRole('main').getByPlaceholder(/Tìm/).fill(ticketTitle);
@@ -71,7 +71,9 @@ test('Danh sách ticket có cột Nhóm · Nhóm con, Học sinh; Kanban hiện 
       .first();
     await expect(card).toBeVisible();
   } else {
-    await expect(page.getByRole('columnheader', { name: 'Nhóm · Nhóm con' })).toBeVisible();
+    await showAllColumns(page);
+    await expect(page.getByRole('columnheader', { name: 'Nhóm', exact: true })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Nhóm con' })).toBeVisible();
     await expect(page.getByRole('columnheader', { name: 'Học sinh' })).toBeVisible();
     await expect(page.getByRole('columnheader', { name: 'Tạo lúc' })).toBeVisible();
     const row = page.getByRole('row').filter({ hasText: ticketTitle });

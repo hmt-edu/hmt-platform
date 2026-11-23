@@ -11,6 +11,7 @@ import { Alert, StateView } from '../../ui/Feedback';
 import { cn } from '../../ui/cn';
 import { Icon } from '../../ui/icons';
 import { HOME_BLOCKS, visibleHomeBlocks } from './homeBlocks';
+import { RoleBlock } from './roleBlocks';
 import { useAppointmentsToday } from './useAppointmentsToday';
 
 /** Vai trò làm việc ở cổng CRM để Admin xem thử bố cục (đọc từ bảng vai trò, không viết cứng tên vai trò). */
@@ -139,7 +140,12 @@ function AppointmentsBlock() {
   );
 }
 
-const BLOCK_VIEW = { appointments: AppointmentsBlock } as const;
+const BLOCK_VIEW = {
+  appointments: AppointmentsBlock,
+  approvals: () => <RoleBlock id="approvals" />,
+  sessions: () => <RoleBlock id="sessions" />,
+  debt: () => <RoleBlock id="debt" />,
+} as const;
 
 /**
  * CHUNG-14 · Trang chủ CRM: "Việc của tôi hôm nay" (K09b, TS-12). Chỉ nhắc việc; KPI để báo cáo.
@@ -156,8 +162,12 @@ export function CrmHome() {
   const previewing = canPreview && previewRole !== null;
   const granted = new Set((preview.data ?? []).map((p) => `${p.module_code}|${p.action_code}`));
   const can = previewing
-    ? (module: string, action: string) => granted.has(`${module}|${action}`)
-    : access.can;
+    ? (module: string, action: string) =>
+        module === '*'
+          ? [...granted].some((g) => g.endsWith(`|${action}`))
+          : granted.has(`${module}|${action}`)
+    : (module: string, action: string) =>
+        module === '*' ? access.canAnyModule(action) : access.can(module, action);
   const blocks =
     previewing && preview.isPending ? [] : visibleHomeBlocks(HOME_BLOCKS, can, access.featureOn);
   const previewName = roles.find((r) => r.code === previewRole)?.name ?? '';
