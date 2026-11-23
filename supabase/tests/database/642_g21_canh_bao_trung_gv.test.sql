@@ -1,4 +1,4 @@
--- A-23-18 PR 2 / G21 (migration 631): cảnh báo trùng giờ giáo viên khi duyệt yêu cầu buổi (chỉ cảnh báo, không chặn). Dữ liệu giả.
+-- A-23-18 PR 2 / G21 (migration 642): cảnh báo trùng giờ giáo viên khi duyệt yêu cầu buổi (chỉ cảnh báo, không chặn). Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
