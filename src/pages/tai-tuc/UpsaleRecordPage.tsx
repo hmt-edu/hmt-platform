@@ -143,11 +143,8 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
       <section className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
         <dl className="flex min-w-0 flex-col">
           <DetailField label="Phiếu tái tục" mode="view" value={t.code} />
-          <DetailField
-            label="Học sinh"
-            mode="view"
-            value={record.student ? `${record.student.name} · ${record.student.code}` : '—'}
-          />
+          <DetailField label="Học sinh" mode="view" value={record.student?.name ?? '—'} />
+          <DetailField label="Mã học sinh" mode="view" value={record.student?.code ?? '—'} />
           <DetailField label="Lớp" mode="view" value={record.class.code} />
           <DetailField
             label="Giáo viên lớp hiện tại"

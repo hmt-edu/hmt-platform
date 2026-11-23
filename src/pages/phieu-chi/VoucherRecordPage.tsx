@@ -249,11 +249,8 @@ function VoucherView({ record }: { record: VoucherRecord }) {
             <dl className="flex min-w-0 flex-col">
               <DetailField label="Phiếu chi" mode="view" value={v.code} />
               <DetailField label="Ticket hoàn tiền" mode="view" value={r.ticket_ref ?? '—'} />
-              <DetailField
-                label="Phụ huynh"
-                mode="view"
-                value={`${v.parent_name} · ${v.parent_code}`}
-              />
+              <DetailField label="Phụ huynh" mode="view" value={v.parent_name} />
+              <DetailField label="Mã phụ huynh" mode="view" value={v.parent_code} />
               <DetailField
                 label="Ghi danh hoàn phí"
                 mode="view"

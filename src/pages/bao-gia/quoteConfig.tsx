@@ -6,7 +6,6 @@ import { formatDate, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Code, Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig, ListState } from '../../list/types';
-import { Stacked } from '../lead/LeadCells';
 import { formatPhone } from '../lead/leadFormat';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import type { QuotationRow } from './quoteTypes';
@@ -53,10 +52,11 @@ export function buildQuoteConfig(
           </Link>
         ),
       },
+      { key: 'parent', label: 'Phụ huynh', render: (r) => r.parent_name },
       {
-        key: 'parent',
-        label: 'Phụ huynh',
-        render: (r) => <Stacked top={r.parent_name} bottom={formatPhone(r.parent_phone)} />,
+        key: 'phone',
+        label: 'SĐT',
+        render: (r) => <span className="tabular">{formatPhone(r.parent_phone)}</span>,
       },
       {
         key: 'students',
