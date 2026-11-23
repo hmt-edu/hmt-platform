@@ -128,5 +128,11 @@ select pg_temp.claims(pg_temp.uid('ph2'));
 set local role authenticated;
 select is((select count(*)::int from app.portal_student_ids()), 1, 'ph2 chỉ thấy con mình');
 select is(pg_temp.err(format($$select app.ph_hours_orders(%L)$$, pg_temp.sid('HS645001'))), 'HMT_KHONG_CO_QUYEN', 'ph2 xem học phí con nhà khác bị chặn');
+-- ===== Phiên bị thu hồi (Admin tăng số phiên bản): token cũ không thấy gì =====
+select pg_temp.claims(pg_temp.uid('ph2'));
+select pg_temp.sudo($$update app.user_account set session_version = session_version + 1 where parent_code = 'PH645003'$$);
+set local role authenticated;
+select is((select count(*)::int from app.portal_student_ids()), 0, 'Chặn: phiên đã bị thu hồi thì không thấy con nào');
+select is(pg_temp.err(format($$select app.ph_order(%L)$$, pg_temp.k('dh3'))), 'HMT_KHONG_CO_QUYEN', 'Chặn: phiên đã bị thu hồi thì không xem được đơn');
 select * from finish();
 rollback;

@@ -8,7 +8,7 @@ values ('TICKET_CHANNEL', 'CONG_PHU_HUYNH', 'Cổng phụ huynh', 91, false)
 on conflict (catalog_code, code) do nothing;
 
 -- 1. Các hồ sơ phụ huynh mà người gọi được coi là «mình»: hồ sơ gắn với tài khoản (mã PH) và mọi hồ sơ CÙNG số điện thoại (PH-2: một SĐT nhiều hồ sơ, một tài khoản thấy nhiều con).
--- Ai gọi: các hàm cổng. Tài khoản khoá thì rỗng. Chỉ mục: parent_phone_idx (tra theo SĐT), parent.code unique.
+-- Ai gọi: các hàm cổng. Tài khoản khoá hoặc bị thu hồi phiên (token cũ) thì rỗng (app.current_user_ready). Chỉ mục: parent_phone_idx (tra theo SĐT), parent.code unique.
 create or replace function app.portal_parent_ids()
 returns setof uuid
 language sql
@@ -20,7 +20,7 @@ as $$
     from app.user_account a
     join app.parent p on p.code = a.parent_code
     join app.parent p2 on p2.phone = p.phone
-   where a.id = (select auth.uid()) and a.parent_code is not null and not a.is_locked;
+   where a.id = (select auth.uid()) and a.parent_code is not null and (select app.current_user_ready());
 $$;
 
 -- 2. Học sinh người gọi được thấy: học sinh = chính mình; phụ huynh = con của MỌI hồ sơ cùng SĐT (thay bản ở migration 637).
@@ -34,7 +34,7 @@ as $$
   select s.id
     from app.user_account a
     join app.student s on a.student_code is not null and s.code = a.student_code
-   where a.id = (select auth.uid()) and not a.is_locked
+   where a.id = (select auth.uid()) and (select app.current_user_ready())
   union
   select s.id from app.student s where s.parent_id in (select app.portal_parent_ids());
 $$;
