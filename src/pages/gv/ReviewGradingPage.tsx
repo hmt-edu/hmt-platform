@@ -355,7 +355,9 @@ function StudentCard({
           <Alert tone="info">
             {student.attendance_code === null
               ? 'Em chưa được điểm danh. Điểm danh em này trước khi chấm. Chưa biết em có mặt hay vắng nên chưa chấm được.'
-              : 'Em vắng: không chấm nhận xét.'}
+              : student.attendance_code === 'VANG_CO_PHEP'
+                ? 'Em vắng có phép: không chấm. Không nhập điểm, không cần nhận xét.'
+                : 'Em vắng: không chấm nhận xét.'}
           </Alert>
           {student.attendance_code === null ? (
             <div>
