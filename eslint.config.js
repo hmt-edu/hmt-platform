@@ -42,6 +42,19 @@ export default defineConfig(
     languageOptions: { globals: globals.browser },
   },
   {
+    // Kịch bản chạy tay chụp ảnh hướng dẫn (JS thuần, tham số Playwright không có kiểu): không dò kiểu.
+    files: ['scripts/huong-dan/**/*.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+    rules: {
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+    },
+  },
+  {
     files: ['scripts/**/*.{ts,mjs}', '*.config.{ts,js}', 'e2e/**/*.ts'],
     languageOptions: { globals: globals.node },
   },
