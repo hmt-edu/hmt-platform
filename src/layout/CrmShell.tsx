@@ -147,6 +147,7 @@ function menuBreadcrumb(menu: MenuGroup[], tail: string | null, pathname: string
     }
   }
   if (pathname === '/crm/tai-khoan') return [{ label: 'Hồ sơ cá nhân' }];
+  if (pathname.startsWith('/crm/huong-dan')) return [{ label: 'Hướng dẫn sử dụng' }];
   return [{ label: 'CRM' }];
 }
 
