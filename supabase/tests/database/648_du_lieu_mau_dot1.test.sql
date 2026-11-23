@@ -98,11 +98,11 @@ select is(pg_temp.err($$insert into app.demo_data_set (branch_id) select id from
   'RLS: không ghi thẳng vào bảng bộ dữ liệu mẫu, chỉ qua hàm');
 
 -- Luật (3): quyền xoá.
-select is(pg_temp.err(format($$select app.delete_demo_data_set(%L)$$, (select id from s1))), 'HMT_DEMO_KHONG_THAY_BO',
-  'Luật xoá: người khác không thấy bộ của người kia (không xoá được)');
+select is(pg_temp.err(format($$select app.delete_demo_data_set(%L)$$, (select id from s1))), 'HMT_DEMO_KHONG_DU_QUYEN',
+  'Luật xoá: người thường không xoá được bộ của người kia');
 select pg_temp.claims(pg_temp.uid('cskh5a'), 'aal1');
-select is(pg_temp.err(format($$select app.delete_demo_data_set(%L)$$, (select id from s2))), 'HMT_DEMO_KHONG_THAY_BO',
-  'Luật xoá: không xoá được bộ của người khác');
+select is(pg_temp.err(format($$select app.delete_demo_data_set(%L)$$, (select id from s2))), 'HMT_DEMO_KHONG_DU_QUYEN',
+  'Luật xoá: người thường không xoá được bộ của người khác');
 select is(pg_temp.err(format($$select app.delete_demo_data_set(%L)$$, (select id from s1))), null, 'Đúng: chủ bộ xoá được bộ của mình');
 select is((select status_code from app.demo_data_set where id = (select id from s1)), 'DA_XOA', 'Xoá = đổi trạng thái, không xoá cứng');
 select is(pg_temp.err(format($$select app.delete_demo_data_set(%L)$$, (select id from s1))), 'HMT_DEMO_DA_XOA', 'Luật xoá: xoá lại bộ đã xoá bị chặn');
