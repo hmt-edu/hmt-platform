@@ -161,3 +161,21 @@ export function sessionGroupFilter(field: string, key: string): SessionFilters {
   if (field === 'status') return key === '' ? {} : { status: [key] };
   return {};
 }
+
+/** BUOI-12 Buổi chưa Done (canvas BUOI12: Giáo viên) → tên trường của app.session_pending_group_counts. */
+export const PENDING_GROUP_FIELD_OF: Record<string, string> = { teacher: 'teacher' };
+
+/** Bộ lọc của MỘT nhóm Buổi chưa Done (để mở nhóm tải dòng bằng session_pending_list). Khoá trống: buổi chưa có giáo viên, mở không lọc thêm. */
+export function pendingGroupFilter(field: string, key: string): SessionFilters {
+  if (field === 'teacher' && key !== '') return { teacher_id: key };
+  return {};
+}
+
+/** BUOI-11 Điểm danh vận hành trong ngày (canvas BUOI11: Tình trạng Vắng, Chưa tới) → tên trường của app.absent_today_group_counts. */
+export const ABSENT_GROUP_FIELD_OF: Record<string, string> = { status: 'status' };
+
+/** Bộ lọc của MỘT nhóm Điểm danh trong ngày (để mở nhóm tải dòng bằng absent_today_list; dùng bộ lọc kind có sẵn). */
+export function absentGroupFilter(field: string, key: string): SessionFilters {
+  if (field === 'status' && key !== '') return { kind: key };
+  return {};
+}

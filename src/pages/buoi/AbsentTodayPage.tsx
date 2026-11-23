@@ -4,6 +4,8 @@
 // Chưa làm: ghi lý do hàng loạt nhiều em một lần (canvas chỉ vẽ ghi từng em).
 import { useMemo, useState } from 'react';
 import { ListScreen } from '../../list/ListScreen';
+import { buildLeadGroupTree } from '../lead/leadGroups';
+import { useLeafRows } from '../lead/useLeadData';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
@@ -14,9 +16,19 @@ import { OptionalSelect } from '../../ui/OptionalSelect';
 import { useToast } from '../../ui/toastContext';
 import { useQuery } from '@tanstack/react-query';
 import { buildAbsentConfig } from './sessionConfig';
-import { EMPTY_ABSENT_STATE, buildAbsentFilters } from './sessionLogic';
+import {
+  ABSENT_GROUP_FIELD_OF,
+  EMPTY_ABSENT_STATE,
+  absentGroupFilter,
+  buildAbsentFilters,
+} from './sessionLogic';
 import type { AbsentRow, OpsSheet } from './sessionTypes';
-import { useAbsentPage, useRefreshSessions, useSaveOps } from './useSessionData';
+import {
+  useAbsentGroupCounts,
+  useAbsentPage,
+  useRefreshSessions,
+  useSaveOps,
+} from './useSessionData';
 
 export function AbsentTodayPage() {
   const access = useAccess();
@@ -35,9 +47,41 @@ export function AbsentTodayPage() {
   const pagingKey = JSON.stringify(filters);
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
-  const list = useAbsentPage(filters, page * (pageSize ?? 0), pageSize);
+  // Group By ở máy chủ: số đếm từ absent_today_group_counts, dòng tải khi mở nhóm lá (absent_today_list, không có p_sort).
+  const toast = useToast();
+  const groupFields = state.group.flatMap((k) =>
+    ABSENT_GROUP_FIELD_OF[k] ? [ABSENT_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const [tick, setTick] = useState(0);
+  const list = useAbsentPage(filters, page * (pageSize ?? 0), pageSize, !grouped);
+  const counts = useAbsentGroupCounts(filters, groupFields);
+  const leaves = useLeafRows<AbsentRow>(
+    filters,
+    null,
+    pageSize,
+    `${pagingKey}|${tick}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'absent_today_list',
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<AbsentRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            absentGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
   const rows = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
   const config = useMemo(() => buildAbsentConfig(access, setEditing), [access]);
 
   return (
@@ -51,19 +95,31 @@ export function AbsentTodayPage() {
         rows={rows}
         rowKey={(r) => `${r.session_id}-${r.student_id}`}
         rowLabel={(r) => `${r.student_name} ${r.class_code}`}
-        loading={list.isPending || list.isPlaceholderData}
-        error={list.isError ? errorOf(list.error).message : null}
-        onRetry={() => void list.refetch()}
-        onRefresh={() => void refreshData()}
-        pager={{
-          from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
-          to: page * (pageSize ?? 0) + rows.length,
-          total,
-          ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
-          ...(page * (pageSize ?? 0) + rows.length < total
-            ? { onNext: () => setPage(page + 1) }
-            : {}),
+        loading={activeQuery.isPending || activeQuery.isPlaceholderData}
+        error={activeQuery.isError ? errorOf(activeQuery.error).message : null}
+        onRetry={() => void activeQuery.refetch()}
+        onRefresh={() => {
+          setTick((t) => t + 1);
+          void refreshData();
         }}
+        groupTree={grouping?.tree}
+        onGroupToggle={(key, open) => {
+          const spec = grouping?.specs.get(key);
+          if (spec) leaves.toggle(key, spec.filters, open);
+        }}
+        pager={
+          grouped
+            ? undefined
+            : {
+                from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
+                to: page * (pageSize ?? 0) + rows.length,
+                total,
+                ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
+                ...(page * (pageSize ?? 0) + rows.length < total
+                  ? { onNext: () => setPage(page + 1) }
+                  : {}),
+              }
+        }
         emptyMessage={{
           title: 'Hôm nay chưa có học sinh vắng',
           hint: 'Học sinh vắng hoặc chưa đến lớp trong ngày sẽ hiện ở đây để CSKH liên hệ.',
