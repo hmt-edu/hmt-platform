@@ -12,7 +12,7 @@ import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
 import { Tag } from '../../ui/Data';
-import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
+import { ConfirmDialog, FormDialog, Summary } from '../../ui/Dialogs';
 import { Alert, Spinner } from '../../ui/Feedback';
 import { QueryErrorView } from '../../ui/QueryErrorView';
 import { TextAreaField } from '../../ui/Field';
@@ -21,6 +21,7 @@ import { useToast } from '../../ui/toastContext';
 import { taskStatusTone } from './phieuConfig';
 import { approvalRows } from './approvalRows';
 import { taskTimeline } from './phieuTimeline';
+import { classLine, classTeachers } from './transferSummary';
 import { taskFeatureOffMessage } from './taskFeature';
 import {
   LEVEL_ROLE_LABEL,
@@ -418,6 +419,29 @@ export function TaskRecordPage() {
         )}
         {asking?.action === 'cancel' && (
           <p className="text-caption text-fg-muted">Phiếu không xoá được, chỉ chuyển sang Huỷ.</p>
+        )}
+        {asking?.action === 'approve' && record.data.transfer && (
+          <Summary
+            rows={[
+              { label: 'Học sinh', value: ticket.student_name ?? '—' },
+              { label: 'Lớp hiện tại', value: classLine(record.data.transfer.from_class) },
+              {
+                label: 'Lớp mới',
+                value:
+                  [
+                    classLine(record.data.transfer.to_class),
+                    classTeachers(record.data.transfer.to_class) &&
+                      `GV ${classTeachers(record.data.transfer.to_class)}`,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ') || '—',
+              },
+              {
+                label: 'Bắt đầu học',
+                value: `${record.data.transfer.start_date ? formatDate(record.data.transfer.start_date) : '—'} · còn ${record.data.transfer.hours_left} giờ`,
+              },
+            ]}
+          />
         )}
         {asking?.action === 'approve' && (
           <p className="text-caption text-fg-muted">{approveHint(task.level, task.levels)}</p>
