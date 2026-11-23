@@ -146,5 +146,19 @@ select is(app.session_type_numbered('HOC_BU'), false, 'session_type_numbered: h�
 select is(app.session_type_numbered('BO_TRO'), false, 'session_type_numbered: bổ trợ không đánh số');
 select is(app.session_type_numbered('CHINH'), true, 'session_type_numbered: buổi chính đánh số');
 
+-- Lỗi tester2 17:32: generate_class_sessions đếm cả buổi học bù vào số buổi giữ lại nên sinh thiếu buổi chính (R-LOP-10, A-23-18).
+select pg_temp.mkclass('h', 'CB', pg_temp.past(), 4);
+select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time, type_code, status_code, is_manual)
+  select c.id, c.branch_id, pg_temp.past() + 3, '10:00', '11:00', 'HOC_BU', 'NHAP', true from app.class c where c.id = pg_temp.c('h')$$);
+select pg_temp.sudo($$update app.class_session set status_code = 'DA_THAY' where class_id = pg_temp.c('h') and type_code <> 'HOC_BU'$$);
+select pg_temp.sudo($$select app.generate_class_sessions(pg_temp.c('h'), pg_temp.past())$$);
+select is((select count(*)::int from app.class_session where class_id = pg_temp.c('h') and type_code not in ('HOC_BU', 'BO_TRO') and status_code = 'NHAP'), 4,
+  'G18: đổi lịch khi có học bù chen giữa, sinh lại đủ 4 buổi chính (học bù không chiếm số buổi giữ lại)');
+select is((select array_agg(session_no order by session_date) from app.class_session where class_id = pg_temp.c('h') and type_code not in ('HOC_BU', 'BO_TRO') and status_code = 'NHAP'),
+  array[1, 2, 3, 4], 'G18: sau khi sinh lại, buổi chính đánh số 1 đến 4');
+select is((select expected_end_date from app.class where id = pg_temp.c('h')),
+  (select max(session_date) from app.class_session where class_id = pg_temp.c('h') and type_code not in ('HOC_BU', 'BO_TRO') and status_code = 'NHAP'),
+  'G18: ngày kết thúc dự kiến theo buổi chính cuối, không theo buổi học bù');
+
 select * from finish();
 rollback;

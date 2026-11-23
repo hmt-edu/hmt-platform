@@ -46,7 +46,8 @@ begin
   update app.class_session set status_code = 'DA_THAY'
    where class_id = p_class_id and status_code = 'NHAP' and not is_manual and session_date >= p_from;
   select count(*) into v_kept from app.class_session
-   where class_id = p_class_id and status_code in ('NHAP', 'DA_CHOT', 'DONE', 'HUY_CO_PHI');
+   where class_id = p_class_id and status_code in ('NHAP', 'DA_CHOT', 'DONE', 'HUY_CO_PHI')
+     and app.session_type_numbered(type_code); -- học bù, bổ trợ không chiếm số buổi chính (A-23-18)
   select coalesce(jsonb_agg(jsonb_build_object('start_time', s.start_time, 'end_time', s.end_time,
                                                'repeat_weeks', s.repeat_weeks, 'first_date', s.first_date, 'id', s.id)), '[]'::jsonb)
     into v_slots from app.class_slot s where s.class_id = p_class_id and s.is_active;
@@ -64,7 +65,8 @@ begin
   -- Đánh lại số buổi chính theo ngày, giờ (A-23-18: học bù, bổ trợ không chiếm số).
   perform app.renumber_class_sessions(p_class_id);
   update app.class set expected_end_date = (select max(session_date) from app.class_session
-                                             where class_id = p_class_id and status_code in ('NHAP', 'DA_CHOT', 'DONE', 'HUY_CO_PHI'))
+                                             where class_id = p_class_id and status_code in ('NHAP', 'DA_CHOT', 'DONE', 'HUY_CO_PHI')
+                                               and app.session_type_numbered(type_code))
    where id = p_class_id;
   return v_made;
 end;
