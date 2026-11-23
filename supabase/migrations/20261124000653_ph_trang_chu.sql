@@ -1,4 +1,4 @@
--- Code F (24/11/2026), thẻ PH-3 → PH-01 Trang chủ cổng Phụ huynh, migration 646.
+-- Code F (24/11/2026), thẻ PH-3 → PH-01 Trang chủ cổng Phụ huynh, migration 653.
 -- Một lần gọi cho cả màn (quy ước hiệu năng): các con, việc cần chú ý, buổi gần nhất, nhận xét mới, giờ còn. Chỉ xem.
 -- Dựa trên app.portal_student_ids, portal_parent_ids, portal_low_hours_threshold (migration 637, 645). KHÔNG mở RLS cho vai PARENT.
 -- Luật: docs/ke-hoach/cong-hoc-tap-phu-huynh.md mục 3; R-GD-13 (ngưỡng giờ còn thấp); R-DD-02 (ô của giáo viên quyết định điểm danh chính thức).
