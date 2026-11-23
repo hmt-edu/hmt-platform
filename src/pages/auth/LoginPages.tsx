@@ -78,17 +78,15 @@ export function ParentLoginPage() {
   const [params] = useSearchParams();
   return (
     <LoginForm
-      title="Chào phụ huynh"
-      subtitle="Đăng nhập để theo dõi việc học của con."
+      title="Chào quý phụ huynh"
+      subtitle="Đăng nhập để xem kết quả, học phí và lịch học của con."
       product="lms"
-      loginLabel="Mã phụ huynh"
-      loginPlaceholder="PH000212"
-      wrongText="Mã phụ huynh hoặc mật khẩu chưa đúng. Anh chị kiểm tra lại nhé."
+      loginLabel="Số điện thoại"
+      loginInputMode="tel"
+      wrongText="Số điện thoại hoặc mật khẩu chưa đúng. Quý phụ huynh kiểm tra lại."
       footer={
         <>
-          <AuthAlert tone="info">
-            Quên mật khẩu? Anh chị liên hệ bộ phận chăm sóc khách hàng ở cơ sở để được cấp lại.
-          </AuthAlert>
+          <AuthAlert tone="info">Quên mật khẩu? Liên hệ CSKH ở cơ sở để đặt lại.</AuthAlert>
           <AuthNote center>
             Nhân viên, giáo viên:{' '}
             <AuthLink to={withNext('/dang-nhap', params.get('next'))}>đăng nhập ở đây</AuthLink>
