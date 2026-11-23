@@ -114,6 +114,10 @@ test('Báo giá Đã gửi: Chuyển thành đơn mở form trắng, bỏ dòng 
     return;
   }
   await expect(rows).toHaveCount(before);
+  // Điều khoản thanh toán bắt buộc chọn (anh chốt 23/11): chưa chọn thì Lưu mờ.
+  await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeDisabled();
+  await page.getByLabel('Kiểu thanh toán').click();
+  await page.getByRole('option').first().click();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/don-hang\/[0-9a-f-]{36}$/);
   await expect(page.getByRole('heading', { level: 2, name: /^DH-/ })).toBeVisible();
@@ -153,6 +157,8 @@ test('Cơ hội L8: Tạo đơn hàng mở form trắng, nhập dòng, Lưu tạ
     .getByRole('button', { name: /LC-TOAN-K09/ })
     .first()
     .click();
+  await page.getByLabel('Kiểu thanh toán').click();
+  await page.getByRole('option').first().click();
   // Chưa nhập số lượng thì chưa tạo.
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Bắt buộc nhập số lượng.')).toBeVisible();
@@ -172,6 +178,8 @@ test('Cơ hội L8: Tạo đơn hàng mở form trắng, nhập dòng, Lưu tạ
     .first()
     .click();
   await page.getByLabel('Số lượng dòng 1').fill('2');
+  await page.getByLabel('Kiểu thanh toán').click();
+  await page.getByRole('option').first().click();
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   const dialog = page.getByRole('alertdialog', { name: 'Cơ hội đã có đơn Nháp' });
   await expect(dialog).toBeVisible();

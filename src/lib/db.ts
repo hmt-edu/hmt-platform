@@ -93,9 +93,9 @@ export function useDb(): SupabaseClient {
 }
 
 /** Tham số số nguyên trong Cài đặt (vd list_page_size). Chưa tải xong thì trả null. */
-export function useIntSetting(key: string): number | null {
+export function useIntSetting(key: string, branchId?: string): number | null {
   const supabase = useDb();
-  const query = useQuery(intSettingQuery(supabase, key));
+  const query = useQuery(intSettingQuery(supabase, key, branchId));
   return query.data ?? null;
 }
 
@@ -111,10 +111,10 @@ export function useBoolSetting(key: string): boolean | null {
 }
 
 /** Cấu hình truy vấn tham số số nguyên: dùng chung cho useIntSetting và tải sẵn (cùng khoá nên màn không gọi lại). */
-export function intSettingQuery(supabase: SupabaseClient, key: string) {
+export function intSettingQuery(supabase: SupabaseClient, key: string, branchId?: string) {
   return {
-    queryKey: ['setting-int', key],
-    queryFn: () => readIntSetting(supabase, key),
+    queryKey: branchId ? ['setting-int', key, branchId] : ['setting-int', key],
+    queryFn: () => readIntSetting(supabase, key, branchId),
     staleTime: Infinity,
   } as const;
 }

@@ -167,7 +167,7 @@ function AssignBody({ data, onClose }: { data: AssignOptions; onClose: () => voi
           </div>
           <p className="text-caption text-fg-muted">
             Hai lớp của nhóm cùng thứ, giờ, phòng nhưng luân phiên: không có buổi nào trùng, xếp
-            được cả hai (R-GD-15).
+            được cả hai.
           </p>
           <p className="text-caption text-fg-muted">
             Chọn nhóm thì ghi danh Đại vào lớp Đại, ghi danh Hình vào lớp Hình. Học sinh chỉ có một
