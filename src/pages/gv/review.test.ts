@@ -4,6 +4,7 @@ import {
   cellOf,
   classProgress,
   EMPTY_DRAFT,
+  clearCell,
   isReviewDirty,
   isReviewEditable,
   pickInsufficient,
@@ -53,10 +54,11 @@ const sheet = (students: ReviewStudent[], criteria: ReviewCriterion[]): ReviewSh
 });
 
 describe('Chấm nhận xét từng em (GV-07)', () => {
-  it('bấm lại đúng mức thì về Chưa đánh giá, không phải điểm 0', () => {
+  it('bấm lại đúng mức KHÔNG bỏ chọn; muốn bỏ thì Xoá điểm về Chưa đánh giá, không phải điểm 0', () => {
     const first = pickLevel({ state: 'CHUA_DANH_GIA', score: null }, 4);
     expect(first).toEqual({ state: 'DA_DANH_GIA', score: 4 });
-    expect(pickLevel(first, 4)).toEqual({ state: 'CHUA_DANH_GIA', score: null });
+    expect(pickLevel(first, 4)).toEqual({ state: 'DA_DANH_GIA', score: 4 });
+    expect(clearCell()).toEqual({ state: 'CHUA_DANH_GIA', score: null });
     expect(pickLevel(first, 5).score).toBe(5);
   });
 

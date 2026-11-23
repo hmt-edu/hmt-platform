@@ -4,6 +4,7 @@ import { portalAccess, type Portal } from '../lib/auth/claims';
 import { Alert } from '../ui/Feedback';
 import { cn } from '../ui/cn';
 import { Icon, type IconName } from '../ui/icons';
+import { useOnline } from '../ui/useOnline';
 import { AccountMenu } from './AccountMenu';
 import { useProduct, type Product } from './useProduct';
 import { useTodoCount } from '../pages/gv/useTodoCount';
@@ -37,6 +38,7 @@ type TabShellProps = {
 export function TabShell({ portal, product, title, tabs, sidebar, contentClass }: TabShellProps) {
   useProduct(product);
   const { claims } = useAuth();
+  const online = useOnline();
   const viewOnly = claims ? portalAccess(claims, portal) === 'view' : false;
 
   return (
@@ -80,6 +82,12 @@ export function TabShell({ portal, product, title, tabs, sidebar, contentClass }
           <AccountMenu portal={portal} roleLine={claims?.branchCode ?? ''} />
         </header>
         <main className={cn('w-full min-w-0 flex-1 p-4 pb-24 lg:pb-6', contentClass)}>
+          {!online && (
+            <Alert tone="warning" title="Mất kết nối mạng" className="mb-4">
+              Dữ liệu có thể chưa mới và thao tác lưu chưa gửi được. Kiểm tra mạng rồi thử lại;
+              trang tự tải lại khi có mạng.
+            </Alert>
+          )}
           {viewOnly && (
             <Alert tone="info" className="mb-4">
               Chế độ chỉ xem: bạn xem được cổng này nhưng không thao tác.
