@@ -7,22 +7,31 @@ import { WEEKDAY_LABEL, timeText } from './classLabels';
 import { OPERATING_LABEL, type ClassRow } from './classTypes';
 
 /**
- * Lịch học ở danh sách Lớp (LOP-01, báo cáo T2 mục 10): gộp các thứ có CÙNG giờ, giáo viên, phòng, rồi ghi rõ giáo viên và phòng của nhóm đó:
- * "Thứ 2, Thứ 6 · 18:00–19:30 · GV A · P201; Thứ 4 · 18:00–19:30 · GV B". Khung không có giáo viên, phòng thì bỏ phần đó.
+ * Lịch học ở danh sách Lớp (LOP-01, T13 «một ô một thông tin»): mỗi khung là một dòng, ba cột riêng Thứ, Giờ học, Phòng cùng thứ tự để các dòng thẳng hàng.
+ * Giáo viên đã có cột riêng nên không ghép vào lịch. Khung chưa có phòng thì để «—».
  */
-export function scheduleText(schedule: ClassRow['schedule']): string {
-  const groups = new Map<string, string[]>();
-  for (const s of schedule) {
-    const key = [
-      `${timeText(s.start_time)}–${timeText(s.end_time)}`,
-      s.teacher_name ? `GV ${s.teacher_name}` : '',
-      s.room_name ?? '',
-    ]
-      .filter(Boolean)
-      .join(' · ');
-    groups.set(key, [...(groups.get(key) ?? []), WEEKDAY_LABEL[s.weekday] ?? String(s.weekday)]);
-  }
-  return [...groups].map(([detail, days]) => `${days.join(', ')} · ${detail}`).join('; ');
+export type ScheduleSlot = { day: string; time: string; room: string };
+export function scheduleSlots(schedule: ClassRow['schedule']): ScheduleSlot[] {
+  return [...schedule]
+    .sort((x, y) => x.weekday - y.weekday || x.start_time.localeCompare(y.start_time))
+    .map((s) => ({
+      day: WEEKDAY_LABEL[s.weekday] ?? String(s.weekday),
+      time: `${timeText(s.start_time)}–${timeText(s.end_time)}`,
+      room: s.room_name ?? '—',
+    }));
+}
+
+/** Ô nhiều dòng: mỗi khung một dòng, cùng thứ tự giữa các cột lịch. */
+function slotLines(schedule: ClassRow['schedule'], pick: (s: ScheduleSlot) => string) {
+  const slots = scheduleSlots(schedule);
+  if (slots.length === 0) return '';
+  return (
+    <span className="flex flex-col">
+      {slots.map((s, i) => (
+        <span key={i}>{pick(s)}</span>
+      ))}
+    </span>
+  );
 }
 
 export const CLASS_SCREEN_CODE = 'LOP-01';
@@ -91,14 +100,12 @@ export function buildClassConfig(opts: {
       },
       { key: 'subject', label: 'Môn', render: (r) => r.subject_name ?? r.subject_code },
       { key: 'grade', label: 'Khối', render: (r) => r.grade_code.replace(/^K0?/, '') },
-      {
-        key: 'type',
-        label: 'Phân loại',
-        render: (r) =>
-          [r.class_type_name ?? r.class_type_code, r.level_name].filter(Boolean).join(' · '),
-      },
+      { key: 'type', label: 'Phân loại', render: (r) => r.class_type_name ?? r.class_type_code },
+      { key: 'level', label: 'Trình độ', render: (r) => r.level_name ?? '' },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
-      { key: 'schedule', label: 'Lịch học', render: (r) => scheduleText(r.schedule) },
+      { key: 'weekday', label: 'Thứ', render: (r) => slotLines(r.schedule, (s) => s.day) },
+      { key: 'time', label: 'Giờ học', render: (r) => slotLines(r.schedule, (s) => s.time) },
+      { key: 'room', label: 'Phòng', render: (r) => slotLines(r.schedule, (s) => s.room) },
       { key: 'teacher', label: 'Giáo viên', render: (r) => r.teacher_names ?? '' },
       {
         key: 'size',
