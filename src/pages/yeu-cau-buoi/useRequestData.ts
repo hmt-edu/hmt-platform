@@ -78,6 +78,17 @@ export function useApproveRequest() {
   });
 }
 
+/** Kết quả kiểm trùng giờ trước khi duyệt (G21): chỉ cảnh báo, không chặn. */
+export type RequestClash = { teacher_clash: string[]; room_clash: string[] };
+
+export function useRequestClashCheck() {
+  const supabase = useDb();
+  return useMutation({
+    mutationFn: (id: string) =>
+      rpc<RequestClash>(supabase, 'session_request_clash_check', { p_id: id }),
+  });
+}
+
 export function useRejectRequest() {
   const supabase = useDb();
   const refresh = useRefreshRequests();
