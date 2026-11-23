@@ -190,6 +190,8 @@ test('11. Trưởng cơ sở duyệt phiếu thu, chuyển Kế toán (TC-05)', 
   await enterAs(page, MANAGER);
   await page.goto(state.receiptUrl);
   await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await page.getByRole('dialog').getByRole('checkbox').check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
 });
 
@@ -200,6 +202,8 @@ test('12. Kế toán duyệt phiếu thu: sinh khoản tiền vào, ghi danh Ch�
   await enterAsAdmin(page, ACCOUNTANT);
   await page.goto(state.receiptUrl);
   await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await page.getByRole('dialog').getByRole('checkbox').check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText('Đã duyệt phiếu thu, tiền đã ghi nhận.').first()).toBeVisible();
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
