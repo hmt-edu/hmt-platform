@@ -54,3 +54,26 @@ describe('Đặt mật khẩu mới: luật mật khẩu không tải được t
     expect(screen.queryByText(/Không tải được luật mật khẩu/)).toBeNull();
   });
 });
+
+describe('Đổi mật khẩu trong hồ sơ hỏi mật khẩu hiện tại (S8, CHUNG-13)', () => {
+  beforeEach(() => {
+    state.value = {
+      policy: { minLength: 8, requireLetterDigit: true },
+      failed: false,
+      loading: false,
+      retry: () => undefined,
+    };
+  });
+
+  it('askCurrent: có ô «Mật khẩu hiện tại»; để trống thì báo và không đổi', () => {
+    render(<NewPasswordForm submitLabel="Lưu" askCurrent onDone={() => undefined} />);
+    expect(screen.getByLabelText(/Mật khẩu hiện tại/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Lưu' }));
+    expect(screen.getByText('Nhập mật khẩu hiện tại.')).toBeTruthy();
+  });
+
+  it('đổi lần đầu và đặt lại từ email (không askCurrent): không có ô mật khẩu hiện tại', () => {
+    renderForm();
+    expect(screen.queryByLabelText(/Mật khẩu hiện tại/)).toBeNull();
+  });
+});

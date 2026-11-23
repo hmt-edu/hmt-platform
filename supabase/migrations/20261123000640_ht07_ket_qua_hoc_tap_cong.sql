@@ -11,6 +11,7 @@
 --  * BTVN (R-V2-35): lớp không có dòng kết quả BTVN nào (trừ «Không áp dụng») thì has = false, giao diện ẩn cả phần BTVN. Tỉ lệ làm = số buổi
 --    Đã chấm, Làm chưa xong, Nộp sau trên số buổi áp dụng; điểm trung bình lấy từ các buổi có điểm (R-GV-11).
 --  * Điểm theo buổi: trung bình các tiêu chí đã đánh giá (DA_DANH_GIA) của từng nhóm THAI_DO, TIEP_THU, VAN_DUNG; nhóm chưa có điểm trả null; em vắng không có dòng điểm.
+--  * Mức chặt (Chat chọn 03:35): điểm của một buổi chỉ hiện khi buổi ở trạng thái DONE VÀ nhận xét của em đã gửi phụ huynh (parent_sent_at không rỗng).
 --  * Số buổi hiện tối đa bằng tham số list_page_size_default mỗi lớp (mới nhất trước); số lớp tối đa list_page_size_max.
 create or replace function app.portal_results(p_student_id uuid)
 returns jsonb
@@ -66,6 +67,11 @@ begin
                                   join app.class_session cs on cs.id = a.session_id
                                  where a.student_id = p_student_id and a.class_id = c.id and a.is_active
                                    and a.teacher_status_code in ('CO_MAT', 'DI_MUON')
+                                   -- Mức chặt (Chat chọn 03:35, nới sau được bằng cách bỏ điều kiện parent_sent_at): buổi phải DONE và
+                                   -- nhận xét của em ở buổi đó đã gửi phụ huynh thì điểm mới hiện; buổi nháp hoặc chưa gửi thì không hiện.
+                                   and cs.status_code = 'DONE'
+                                   and exists (select 1 from app.session_student_review rv
+                                                where rv.attendance_id = a.id and rv.parent_sent_at is not null)
                                  order by cs.session_date desc, cs.session_no desc
                                  limit v_session_max
                               ) s), '[]'::jsonb)) as j

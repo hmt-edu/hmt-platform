@@ -8,6 +8,7 @@
 -- Luật:
 --  * R-V2-39: chỉ lời nhắn là chữ giáo viên (session_student_review.teacher_comment); không hiện ghi chú cần cải thiện nội bộ (improvement_note).
 --  * R-GV-04: em vắng không có nhận xét; chỉ buổi giáo viên điểm danh CO_MAT hoặc DI_MUON, lời nhắn không trống.
+--  * Mức chặt (Chat chọn 03:35, nới sau được bằng cách bỏ điều kiện parent_sent_at): chỉ hiện khi buổi ở trạng thái DONE VÀ nhận xét đã gửi phụ huynh (parent_sent_at không rỗng); lời nhắn nháp thì không hiện.
 --  * Số dòng mỗi trang mặc định list_page_size_default, tối đa list_page_size_max.
 create or replace function app.portal_reviews(p_student_id uuid, p_limit integer default null, p_offset integer default 0)
 returns jsonb
@@ -29,7 +30,9 @@ begin
     from app.session_student_review r
     join app.session_attendance a on a.id = r.attendance_id
    where a.student_id = p_student_id and a.is_active and a.teacher_status_code in ('CO_MAT', 'DI_MUON')
-     and nullif(btrim(coalesce(r.teacher_comment, '')), '') is not null;
+     and nullif(btrim(coalesce(r.teacher_comment, '')), '') is not null
+     and r.parent_sent_at is not null
+     and exists (select 1 from app.class_session s0 where s0.id = r.session_id and s0.status_code = 'DONE');
 
   select coalesce(jsonb_agg(x.j order by x.session_date desc, x.session_no desc), '[]'::jsonb) into v_rows
     from (
@@ -43,6 +46,7 @@ begin
         left join app.catalog_item sub on sub.catalog_code = c.subject_catalog and sub.code = c.subject_code
        where a.student_id = p_student_id and a.is_active and a.teacher_status_code in ('CO_MAT', 'DI_MUON')
          and nullif(btrim(coalesce(r.teacher_comment, '')), '') is not null
+         and r.parent_sent_at is not null and cs.status_code = 'DONE'
        order by cs.session_date desc, cs.session_no desc
        limit v_limit offset v_offset
     ) x;

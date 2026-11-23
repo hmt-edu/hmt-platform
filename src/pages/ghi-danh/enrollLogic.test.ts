@@ -108,7 +108,8 @@ describe('enrollmentNotice (GD-02: câu giải thích theo tình trạng và qu�
   it('Đang học hết giờ: báo chặn điểm danh trừ giờ (R-GD-18), tông cảnh báo', () => {
     const n = enrollmentNotice('DANG_HOC', h(0));
     expect(n?.title).toBe('Quỹ giờ bằng 0.');
-    expect(n?.text).toMatch(/R-GD-18/);
+    expect(n?.text).toMatch(/Hết phí ở lớp này/);
+    expect(n?.text).not.toMatch(/R-GD-/);
     expect(n?.tone).toBe('warning');
   });
   it('Đang học còn giờ: không có câu', () => {
@@ -123,7 +124,7 @@ describe('enrollmentNotice (GD-02: câu giải thích theo tình trạng và qu�
     expect(enrollmentNotice('DANG_HOC', h(0, 0, 0))).toBeNull();
   });
   it('Bảo lưu và Hoàn phí có câu riêng', () => {
-    expect(enrollmentNotice('BAO_LUU', h(15))?.text).toMatch(/R-GD-09/);
+    expect(enrollmentNotice('BAO_LUU', h(15))?.text).toMatch(/Giờ còn lại giữ nguyên/);
     expect(enrollmentNotice('HOAN_PHI', h(0))?.title).toBe('Ghi danh đã hoàn phí.');
   });
 });

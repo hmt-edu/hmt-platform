@@ -1,7 +1,15 @@
 // P3c-2: trang Lead (TS-02), Tạo lead (TS-03, TS-14), lịch hẹn (TS-13). Dữ liệu giả dựng bằng create_lead, tìm bằng dấu riêng.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone, pickOption } from './helpers';
+import {
+  DOMAIN,
+  PASSWORD,
+  confirmCompleteAppointment,
+  enterAs,
+  expectAccessible,
+  isPhone,
+  pickOption,
+} from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lead giả).');
@@ -350,6 +358,7 @@ test('Lịch hẹn: tạo, dời (Tuyển sinh không đổi được người p
 
   // Hoàn thành.
   await upcoming.getByRole('button', { name: 'Hoàn thành' }).click();
+  await confirmCompleteAppointment(page);
   await expect(toastText(page, 'Đã hoàn thành lịch hẹn.')).toBeVisible();
   await expect(upcoming.getByText('Gọi lại E2E một')).toHaveCount(0);
 

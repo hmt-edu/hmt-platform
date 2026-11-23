@@ -153,7 +153,10 @@ export function TicketRecordPage() {
       toast({ tone: 'success', title: 'Đã đổi trạng thái ticket.' });
       await refresh();
     } catch (cause) {
-      setError(errorOf(cause).message);
+      // CSN04_khach_huy_loi: lý do vừa nhập vẫn giữ nguyên (không đóng hộp thoại).
+      setError(
+        customerCancel ? `Chưa huỷ được ticket. ${errorOf(cause).message}` : errorOf(cause).message,
+      );
     } finally {
       setBusy(false);
     }
@@ -372,9 +375,14 @@ export function TicketRecordPage() {
                 </Button>
               )}
               {canEscalate && <Button onClick={openEscalate}>Nâng cấp</Button>}
-              {['CAP_NHAT_HO_SO', 'BAO_LUU', 'CHUYEN_LOP', 'DUNG_HOC', 'DOI_LICH'].includes(
-                ticket.business_type ?? '',
-              ) &&
+              {[
+                'CAP_NHAT_HO_SO',
+                'BAO_LUU',
+                'CHUYEN_LOP',
+                'DUNG_HOC',
+                'DOI_LICH',
+                'CHUYEN_PHI',
+              ].includes(ticket.business_type ?? '') &&
                 !(record.data?.tasks ?? []).some((k) =>
                   ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(k.status_code),
                 ) && (
@@ -841,6 +849,7 @@ export function TicketRecordPage() {
         error={error}
         onSubmit={() => void submit()}
       >
+        {dialogSpec.intro && <p className="text-body text-fg-muted">{dialogSpec.intro}</p>}
         {needResolution && (
           <TextAreaField
             label="Kết quả"

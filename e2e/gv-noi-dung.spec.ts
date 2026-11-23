@@ -57,9 +57,10 @@ test.beforeAll(async ({}, testInfo) => {
        values ($1, $2, '2627', 'TOAN', 'K08', 'CB', 'A', (now() at time zone 'Asia/Ho_Chi_Minh')::date, 3) returning id`,
       [code, branch.rows[0]!.id],
     );
+    // Giờ kết thúc 23:59: buổi chưa hết giờ nên bước lưu của giáo viên chưa tự Done (A-23-12); để 19:30 thì CI chạy sau 19:30 giờ Việt Nam sẽ Done ngay và khoá ô nhập.
     const session = await db.query<{ id: string }>(
       `insert into app.class_session (class_id, branch_id, session_no, session_date, start_time, end_time, teacher_id, status_code)
-       values ($1, $2, 1, (now() at time zone 'Asia/Ho_Chi_Minh')::date, '18:00', '19:30', $3, 'DA_CHOT') returning id`,
+       values ($1, $2, 1, (now() at time zone 'Asia/Ho_Chi_Minh')::date, '23:00', '23:59', $3, 'DA_CHOT') returning id`,
       [cls.rows[0]!.id, branch.rows[0]!.id, teacher.rows[0]!.id],
     );
     await db.query('commit');
@@ -118,7 +119,7 @@ test('GV-04: màn Buổi dạy hiện các bước và tiến độ; mở bướ
   await expect(page).toHaveURL(new RegExp(`/gv/buoi/${sessionId}/noi-dung$`));
 });
 
-test('GV-06: người khác vừa sửa thì từ chối lưu, báo tải lại, không ghi đè (Q-243)', async ({
+test('GV-06: người khác vừa sửa thì từ chối lưu, hộp chọn Giữ của tôi / Lấy của người kia, không ghi đè (Q-243, GV06_xung_dot)', async ({
   page,
 }) => {
   await loginStaffUntil(page, 'gv.cs5', /\/gv$/);
@@ -136,8 +137,12 @@ test('GV-06: người khác vừa sửa thì từ chối lưu, báo tải lại,
     );
   });
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
-  await expect(page.getByText('Ô này vừa được người khác sửa, tải lại để xem.')).toBeVisible();
-  await page.getByRole('button', { name: 'Tải lại', exact: true }).click();
+  // GV06_xung_dot: hộp cho chọn bên nào được ghi; bản nháp của bạn vẫn còn cho tới khi chọn.
+  const dialog = page.getByRole('dialog', { name: 'Có ô vừa được người khác sửa' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('Của bạn: Bản của tôi');
+  await expect(dialog).toContainText('Của người kia: Bản của người khác');
+  await dialog.getByRole('button', { name: 'Lấy của người kia' }).click();
   await expect(page.getByLabel('Dòng nội dung 1')).toHaveValue('Bản của người khác');
 });
 

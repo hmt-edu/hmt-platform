@@ -62,6 +62,20 @@ export type FeeTransferPreview = {
   order_total: number | null;
   extra_to_pay: number | null;
 };
+/** Kết quả app.preview_stop_task_money (migration 632): tiền xem trước của phiếu Dừng học hoặc Hoàn học phí. Số có thể null khi không tính được (xem refund_error). */
+export type StopMoneyPreview = {
+  task_type: 'DUNG_HOC' | 'HOAN_PHI';
+  money_mode?: MoneyMode;
+  hours_left?: number | null;
+  hours_cancelled?: number | null;
+  unit_price_net: number | null;
+  balance_amount?: number | null;
+  paid_amount: number | null;
+  fee_percent: number | null;
+  fee_amount: number | null;
+  refund_amount: number | null;
+  refund_error: string | null;
+};
 export type FeeTransferOrder = {
   id: string;
   code: string;
@@ -215,13 +229,15 @@ export function buildBusinessPayload(
   };
 }
 
-/** Lớp mới gợi ý: cùng môn với ghi danh, bỏ lớp hiện tại. */
+/** Lớp mới gợi ý: cùng môn với lớp đang học của ghi danh (R-CS-03: khác môn đi nhánh Chuyển phí), bỏ lớp hiện tại. */
 export function classChoices(options: TaskOptions, enrollmentId: string) {
   const enr = options.enrollments.find((x) => x.id === enrollmentId);
   if (!enr) return [];
+  // Môn của lớp đang học là chuẩn (đúng thứ máy chủ so sánh); môn lưu trên ghi danh có thể trống.
+  const subject =
+    options.classes.find((c) => c.id === enr.class_id)?.subject_code ?? enr.subject_code;
   return options.classes.filter(
-    (c) =>
-      c.id !== enr.class_id && (enr.subject_code === null || c.subject_code === enr.subject_code),
+    (c) => c.id !== enr.class_id && (subject === null || c.subject_code === subject),
   );
 }
 

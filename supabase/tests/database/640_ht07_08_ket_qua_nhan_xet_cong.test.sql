@@ -1,5 +1,5 @@
 -- HT-07 / HT-08 / PH-02: app.portal_results (640) và app.portal_reviews (641). Luật: chuyên cần theo ô giáo viên; BTVN ẩn khi lớp không giao (R-V2-35);
--- điểm ba nhóm theo buổi; nhận xét chỉ em có mặt và lời nhắn không trống (R-GV-04, R-V2-39); quyền riêng theo học sinh/con.
+-- điểm ba nhóm theo buổi (mức chặt: buổi DONE và đã gửi phụ huynh mới hiện); nhận xét chỉ em có mặt và lời nhắn không trống (R-GV-04, R-V2-39); quyền riêng theo học sinh/con.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -91,6 +91,23 @@ select a.id, a.session_id, a.branch_id, v.msg, v.note
   join app.student st on st.code = v.stu
   join app.session_attendance a on a.session_id = cs.id and a.student_id = st.id;
 
+-- Mức chặt (Chat chọn 03:35): chỉ hiện khi buổi DONE VÀ nhận xét đã gửi phụ huynh (parent_sent_at). Đánh dấu ĐÃ GỬI cho buổi 1 lớp 71 của HS993001 và của HS993003.
+update app.session_student_review set parent_sent_at = now()
+ where teacher_comment in ('Em tập trung tốt.', 'Nhận xét em khác.');
+-- Lớp 72 thêm hai buổi cho HS993001 (có mặt): buổi 2 NHÁP (lời nhắn nháp, dù đã đánh dấu gửi), buổi 3 DONE nhưng CHƯA gửi.
+insert into app.class_session (class_id, branch_id, session_no, session_date, start_time, end_time, status_code, type_code)
+select c.id, c.branch_id, v.no, current_date + v.d, '18:00', '19:30', v.st, 'CHINH'
+  from app.class c, (values (2, -4, 'NHAP'), (3, -3, 'DONE')) as v (no, d, st) where c.code = 'LOPHT72';
+insert into app.session_attendance (session_id, class_id, branch_id, student_id, teacher_status_code)
+select cs.id, cs.class_id, cs.branch_id, st.id, 'CO_MAT'
+  from app.class_session cs join app.class c on c.id = cs.class_id and c.code = 'LOPHT72' and cs.session_no in (2, 3), app.student st where st.code = 'HS993001';
+insert into app.session_student_review (attendance_id, session_id, branch_id, teacher_comment, parent_sent_at)
+select a.id, a.session_id, a.branch_id, case cs.session_no when 2 then 'Lời nhắn nháp.' else 'DONE chưa gửi.' end,
+       case cs.session_no when 2 then now() else null end
+  from app.session_attendance a join app.class_session cs on cs.id = a.session_id
+  join app.class c on c.id = cs.class_id and c.code = 'LOPHT72' and cs.session_no in (2, 3)
+  join app.student st on st.id = a.student_id and st.code = 'HS993001';
+
 -- ===== HT-07: học sinh xem kết quả của mình =====
 select pg_temp.claims(pg_temp.uid('hs1'));
 set local role authenticated;
@@ -111,6 +128,23 @@ select is(app.portal_reviews(pg_temp.sid('HS993001')) -> 'rows' -> 0 ->> 'commen
 select is(app.portal_reviews(pg_temp.sid('HS993001')) -> 'rows' -> 0 ? 'improvement_note', false, 'Luật R-V2-39: không lộ ghi chú nội bộ');
 select is(jsonb_array_length(app.portal_reviews(pg_temp.sid('HS993001'), 1, 5) -> 'rows'), 0, 'Nhận xét: trang vượt quá tổng trả rỗng');
 select is(pg_temp.err($$select app.portal_reviews(pg_temp.sid('HS993003'))$$), 'HMT_KHONG_CO_QUYEN', 'Luật quyền riêng: học sinh xem nhận xét em khác bị chặn');
+select is(app.portal_reviews(pg_temp.sid('HS993001')) -> 'rows' @> '[{"comment": "Lời nhắn nháp."}]'::jsonb, false, 'Mức chặt: buổi NHÁP có lời nhắn (dù đã đánh dấu gửi) KHÔNG hiện nhận xét');
+select is(app.portal_reviews(pg_temp.sid('HS993001')) -> 'rows' @> '[{"comment": "DONE chưa gửi."}]'::jsonb, false, 'Mức chặt: buổi DONE nhưng chưa gửi phụ huynh KHÔNG hiện nhận xét');
+select is(jsonb_array_length(app.portal_results(pg_temp.sid('HS993001')) -> 'classes' -> 1 -> 'sessions'), 0, 'Mức chặt: lớp 72 không có buổi nào vừa DONE vừa đã gửi nên không hiện điểm buổi nào (buổi nháp, DONE chưa gửi đều ẩn)');
+reset role;
+-- Cùng buổi 1 lớp 71 nhưng CHƯA gửi thì cả nhận xét lẫn điểm biến mất.
+update app.session_student_review set parent_sent_at = null where teacher_comment = 'Em tập trung tốt.';
+select pg_temp.claims(pg_temp.uid('hs1'));
+set local role authenticated;
+select is((app.portal_reviews(pg_temp.sid('HS993001')) ->> 'total')::int, 0, 'Mức chặt: DONE chưa gửi thì không có nhận xét nào hiện');
+select is(jsonb_array_length(app.portal_results(pg_temp.sid('HS993001')) -> 'classes' -> 0 -> 'sessions'), 0, 'Mức chặt: DONE chưa gửi thì điểm theo buổi không hiện');
+reset role;
+update app.session_student_review set parent_sent_at = now() where teacher_comment = 'Em tập trung tốt.';
+-- Học sinh khác không thấy nhận xét của bạn.
+select pg_temp.claims(pg_temp.uid('hs2'));
+set local role authenticated;
+select is(app.portal_reviews(pg_temp.sid('HS993003')) -> 'rows' @> '[{"comment": "Em tập trung tốt."}]'::jsonb, false, 'Học sinh khác không thấy nhận xét của bạn (chỉ thấy của mình)');
+select is((app.portal_reviews(pg_temp.sid('HS993003')) ->> 'total')::int, 1, 'Học sinh khác chỉ thấy nhận xét của chính mình đã gửi');
 reset role;
 
 -- ===== Phụ huynh xem con mình, chặn con nhà khác; nhân viên bị chặn =====

@@ -73,7 +73,7 @@ async function runTask(
   await dialog.getByLabel('Lý do', { exact: true }).fill(`Lý do E2E ${mode}`);
   await dialog.getByRole('button', { name: 'Tạo phiếu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/phieu-nghiep-vu\/[0-9a-f-]{36}$/);
-  await page.getByRole('button', { name: 'Trình duyệt' }).click();
+  await page.getByRole('button', { name: 'Gửi duyệt' }).click();
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
   const taskUrl = page.url();
   // Trưởng cơ sở đăng nhập ở ngữ cảnh riêng (không dùng chung phiên với CSKH).

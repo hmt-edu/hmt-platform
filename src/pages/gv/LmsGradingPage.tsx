@@ -270,7 +270,7 @@ function GradingForm({
             ))}
           </div>
           <p className="text-caption text-fg-muted">
-            Điểm tính khi trạng thái ở bước sau là Đã chấm hoặc Làm chưa xong (R-GV-11).
+            Điểm tính khi trạng thái ở bước sau là Đã chấm hoặc Làm chưa xong.
           </p>
           {!submitted && (
             <p className="text-caption text-fg-muted">Em chưa nộp nên không chấm điểm được.</p>

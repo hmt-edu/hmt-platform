@@ -23,6 +23,7 @@ describe('keepAndMerge', () => {
 describe('câu chữ', () => {
   it('lead trùng theo SĐT, cơ hội theo phụ huynh', () => {
     expect(matchSentence('LEAD', '0912 000 121')).toContain('Hai lead cùng SĐT 0912 000 121');
+    expect(matchSentence('LEAD', '0912 000 121', false)).not.toContain('cùng SĐT');
     expect(matchSentence('OPPORTUNITY', '0912 000 121')).toContain('Hai cơ hội cùng phụ huynh');
   });
   it('nêu số mục không liệt kê hết', () => {

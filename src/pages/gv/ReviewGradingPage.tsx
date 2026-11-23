@@ -348,11 +348,32 @@ function StudentCard({
       </div>
 
       {!present ? (
-        <Alert tone="info">
-          {student.attendance_code === null
-            ? 'Em chưa được điểm danh. Điểm danh em này trước khi chấm. Chưa biết em có mặt hay vắng nên chưa chấm được.'
-            : 'Em vắng: không chấm nhận xét (R-GV-04).'}
-        </Alert>
+        <>
+          <Alert tone="info">
+            {student.attendance_code === null
+              ? 'Em chưa được điểm danh. Điểm danh em này trước khi chấm. Chưa biết em có mặt hay vắng nên chưa chấm được.'
+              : 'Em vắng: không chấm nhận xét.'}
+          </Alert>
+          {student.attendance_code === null ? (
+            <div>
+              <ButtonLink to={`/gv/buoi/${sheet.session.session_id}/diem-danh`} variant="primary">
+                Điểm danh em này
+              </ButtonLink>
+            </div>
+          ) : (
+            <ul className="flex flex-col gap-1.5">
+              {sheet.criteria.map((criterion) => (
+                <li
+                  key={criterion.criterion_id}
+                  className="flex items-center justify-between gap-2 rounded-lg border border-dashed border-border p-2 text-body"
+                >
+                  <span>{criterion.name}</span>
+                  <span className="text-caption text-fg-muted">Không chấm</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       ) : (
         <>
           {GROUP_ORDER.map((group) => {
@@ -506,7 +527,7 @@ function CriterionRow({
             disabled={!editable}
             onClick={() => onChange(clearCell())}
           >
-            Xoá điểm
+            Chấm lại ô này
           </Button>
         )}
       </div>

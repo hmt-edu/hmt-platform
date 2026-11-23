@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router';
 import { StickyActionBar } from '../../ui/StickyActionBar';
 import { Button, ButtonLink } from '../../ui/Button';
 import { UnsavedGuard } from '../../ui/Dialogs';
+import { Dialog } from '../../ui/Overlays';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
@@ -11,6 +12,7 @@ import { formatDate } from '../../lib/format';
 import {
   cleanLines,
   CONFLICT_CODE,
+  conflictCells,
   EXAM_FORM,
   initialLines,
   isContentEditable,
@@ -19,6 +21,7 @@ import {
   type SessionOverview,
 } from './sessionContent';
 import { useSaveSessionContent, useSessionOverview } from './useSessionContent';
+import { SessionStepBar } from './SessionStepBar';
 
 /**
  * GV-06 · Nội dung buổi và BTVN. Lưu bằng nút Lưu (không tự lưu). Cần ít nhất một dòng nội dung; BTVN để trống nghĩa là buổi này
@@ -55,10 +58,10 @@ export function SessionContentPage() {
       </StateView>
     );
   }
-  // key theo phiên bản: tải lại sau xung đột hoặc sau khi lưu thì dựng lại ô nhập theo bản mới nhất của máy chủ.
+  // key chỉ theo buổi: khi máy chủ có bản mới (người khác sửa) thì giữ bản nháp của bạn để hộp xung đột cho chọn bên nào được ghi.
   return (
     <ContentForm
-      key={`${query.data.session_id}:${query.data.content_version}`}
+      key={query.data.session_id}
       overview={query.data}
       reload={() => void query.refetch()}
     />
@@ -73,35 +76,74 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
   const [saveError, setSaveError] = useState<{ code: string; message: string } | null>(null);
   const [tried, setTried] = useState(false);
   const editable = isContentEditable(overview.status_code);
-  const dirty = isDirty(
-    { lines: overview.lines, homework: overview.homework_text },
-    { lines, homework },
-  );
+  // Bản đã lưu mà bạn đang sửa trên đó (snap) và số phiên bản của nó (base). Máy chủ có bản mới hơn (người khác sửa):
+  // chưa sửa gì thì tự lấy bản mới; đã sửa thì giữ bản nháp, chờ bạn chọn ở hộp xung đột (GV06_xung_dot).
+  const [snap, setSnap] = useState({ lines: overview.lines, homework: overview.homework_text });
+  const [base, setBase] = useState(overview.content_version);
+  const [conflictOpen, setConflictOpen] = useState(false);
+  const dirty = isDirty(snap, { lines, homework });
+  if (overview.content_version !== base && !dirty && !conflictOpen) {
+    setBase(overview.content_version);
+    setSnap({ lines: overview.lines, homework: overview.homework_text });
+    setLines(initialLines(overview.lines));
+    setHomework(overview.homework_text ?? '');
+  }
   const isExam = overview.review_form === EXAM_FORM;
   const blocker = saveBlocker(lines, overview.review_form);
   const conflict = saveError?.code === CONFLICT_CODE;
+  // Đã lấy được bản của người kia (phiên bản máy chủ khác bản bạn đang sửa trên đó).
+  const theirsLoaded = overview.content_version !== base;
+  const cells = theirsLoaded
+    ? conflictCells(
+        { lines, homework },
+        { lines: overview.lines, homework: overview.homework_text },
+      )
+    : [];
 
   function setLine(index: number, value: string) {
     setLines((current) => current.map((line, i) => (i === index ? value : line)));
   }
 
-  function submit() {
+  function submit(version = base) {
     setTried(true);
     if (blocker) return;
     setSaveError(null);
     save.mutate(
-      { lines: cleanLines(lines), homework, version: overview.content_version },
+      { lines: cleanLines(lines), homework, version },
       {
-        onSuccess: () => {
+        onSuccess: (newVersion) => {
           setTried(false);
+          setConflictOpen(false);
+          setSnap({ lines: cleanLines(lines), homework });
+          setBase(typeof newVersion === 'number' ? newVersion : version);
           toast({ tone: 'success', title: 'Đã lưu nội dung buổi' });
         },
         onError: (error) => {
           const { code, message } = errorOf(error);
           setSaveError({ code, message });
+          if (code === CONFLICT_CODE) {
+            setConflictOpen(true);
+            reload(); // lấy bản của người kia để hiện trong hộp; bản nháp của bạn vẫn giữ
+          }
         },
       },
     );
+  }
+
+  /** «Giữ của tôi»: ghi bản của bạn lên trên bản vừa lấy. */
+  function keepMine() {
+    setConflictOpen(false);
+    submit(overview.content_version);
+  }
+
+  /** «Lấy của người kia»: bỏ bản nháp, dùng bản máy chủ. */
+  function takeTheirs() {
+    setLines(initialLines(overview.lines));
+    setHomework(overview.homework_text ?? '');
+    setSnap({ lines: overview.lines, homework: overview.homework_text });
+    setBase(overview.content_version);
+    setSaveError(null);
+    setConflictOpen(false);
   }
 
   return (
@@ -120,6 +162,14 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
         </Link>
         {' › Nội dung buổi và BTVN'}
       </nav>
+      <SessionStepBar
+        current={2}
+        done={
+          overview.attendance_total > 0 && overview.attendance_marked === overview.attendance_total
+            ? [1]
+            : []
+        }
+      />
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-caption text-fg-muted uppercase">
@@ -127,7 +177,8 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
             {overview.subject_name ? ` · ${overview.subject_name}` : ''}
           </p>
           <h1 className="text-h3">
-            {overview.session_no ? `Buổi ${overview.session_no} · ` : ''}Nội dung buổi và BTVN
+            {overview.session_no ? `Buổi ${overview.session_no} · ` : ''}
+            {isExam ? 'Phạm vi kiểm tra và BTVN' : 'Nội dung buổi và BTVN'}
           </h1>
           <p className="text-caption text-fg-muted">
             {formatDate(overview.session_date)} · {overview.start_time.slice(0, 5)}–
@@ -159,11 +210,11 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
         <Alert tone={conflict ? 'warning' : 'danger'}>
           {saveError.message}{' '}
           {conflict ? (
-            <Button size="sm" variant="primary" onClick={reload}>
-              Tải lại
+            <Button size="sm" variant="primary" onClick={() => setConflictOpen(true)}>
+              Chọn bản
             </Button>
           ) : (
-            <Button size="sm" onClick={submit}>
+            <Button size="sm" onClick={() => submit()}>
               Thử lại
             </Button>
           )}
@@ -173,7 +224,7 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
       {isExam && overview.exam && (
         <section aria-labelledby="gv06-exam" className="flex flex-col gap-1">
           <h2 id="gv06-exam" className="text-h4">
-            Phạm vi kiểm tra
+            Phạm vi kiến thức
           </h2>
           <p>{overview.exam.scope_text ?? 'Chưa nhập phạm vi kiến thức.'}</p>
           <p className="text-caption text-fg-muted">
@@ -264,11 +315,46 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
           variant="primary"
           loading={save.isPending}
           disabled={!editable || !dirty}
-          onClick={submit}
+          onClick={() => submit()}
         >
           Lưu
         </Button>
       </StickyActionBar>
+
+      {/* GV06_xung_dot: có người lưu trước bạn. Chọn bên nào thì bên đó được ghi. */}
+      <Dialog
+        open={conflictOpen}
+        onOpenChange={setConflictOpen}
+        title="Có ô vừa được người khác sửa"
+        description="Từ lúc bạn mở màn, có người đã sửa các ô dưới đây. Chọn bên nào sẽ được ghi."
+        dismissible
+        footer={
+          <>
+            <Button onClick={takeTheirs} disabled={!theirsLoaded}>
+              Lấy của người kia
+            </Button>
+            <Button variant="primary" onClick={keepMine} disabled={!theirsLoaded}>
+              Giữ của tôi
+            </Button>
+          </>
+        }
+      >
+        {theirsLoaded ? (
+          <ul className="flex flex-col gap-2 text-body">
+            {cells.map((c) => (
+              <li key={c.key}>
+                <b>{c.label}</b>
+                <br />
+                Của bạn: {c.mine || 'trống'}
+                <br />
+                Của người kia: {c.theirs || 'trống'}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Spinner label="Đang lấy bản mới" />
+        )}
+      </Dialog>
     </div>
   );
 }

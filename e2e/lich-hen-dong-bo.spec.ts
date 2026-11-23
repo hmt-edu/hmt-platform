@@ -3,7 +3,7 @@
 // dựng bằng hàm nghiệp vụ (co-hoi-seed.ts) cộng lịch hẹn gắn cơ hội, dấu riêng của bài này.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, isPhone, pickOption } from './helpers';
+import { PASSWORD, confirmCompleteAppointment, enterAs, isPhone, pickOption } from './helpers';
 import { DB_URL, clearMark, seed, type Seeded, type Setup } from './co-hoi-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng cơ hội giả).');
@@ -90,6 +90,7 @@ test('Hoàn thành, Mở lại ở màn Lịch hẹn thì trang Cơ hội đổi
   // Sang màn Lịch hẹn (điều hướng trong ứng dụng, không tải lại), hoàn thành lịch A.
   await openAppointments(page, setup.mark);
   await rowOf(page, `Hẹn A ${setup.mark}`).getByRole('button', { name: 'Hoàn thành' }).click();
+  await confirmCompleteAppointment(page);
   await expect(page.getByText('Đã hoàn thành lịch hẹn.').first()).toBeVisible();
   // Về trang Cơ hội bằng nút Quay lại: còn một lịch sắp tới, dòng thời gian ghi lại việc vừa làm.
   await page.goBack();
@@ -138,6 +139,7 @@ test('Hoàn thành ở trang Cơ hội thì màn Lịch hẹn đã tải trướ
     .filter({ hasText: `Hẹn B ${setup.mark}` })
     .getByRole('button', { name: 'Hoàn thành' })
     .click();
+  await confirmCompleteAppointment(page);
   await expect(page.getByText('Đã hoàn thành lịch hẹn.').first()).toBeVisible();
   // Về màn Lịch hẹn (quay lại hai bước): lịch B đã Hoàn thành, không còn nút Hoàn thành.
   await page.goBack();

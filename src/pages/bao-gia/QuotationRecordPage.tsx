@@ -130,7 +130,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [rows, setRows] = useState<EditRow[]>([]);
   const discountPolicies = useDiscountPolicies(record.opportunity_id, editing);
   // R-CRM-16: đơn chỉ lưu được khi cơ hội ở L8; biết trước để khoá nút Chuyển thành đơn và nêu lý do (T2-03). Không đọc được cơ hội thì để nút mở, máy chủ vẫn kiểm khi Lưu.
-  const opportunity = useOpportunity(record.opportunity_id);
+  const opportunity = useOpportunity(record.opportunity_id, access.can('OPPORTUNITY', 'XEM'));
   const notL8 = opportunity.data !== undefined && opportunity.data.stage_code !== 'L8';
   const [baseline, setBaseline] = useState('');
   const [saving, setSaving] = useState(false);
@@ -378,8 +378,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
       <div className="flex flex-wrap items-center justify-between gap-2 text-caption text-fg-muted">
         {capPercent !== null ? (
           <p>
-            Chiết khấu (gồm giờ tặng) vượt {capPercent}% thì cần Trưởng cơ sở duyệt (R-TIEN-29); vẫn
-            lưu được
+            Chiết khấu (gồm giờ tặng) vượt {capPercent}% thì cần Trưởng cơ sở duyệt; vẫn lưu được
           </p>
         ) : (
           <span />
@@ -435,7 +434,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                 disabled={busy || notL8}
                 title={
                   notL8
-                    ? 'Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới chuyển được thành đơn (R-CRM-16).'
+                    ? 'Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới chuyển được thành đơn.'
                     : undefined
                 }
                 onClick={() => openFrom(`/crm/don-hang/tao?bao-gia=${record.id}`)}

@@ -66,7 +66,7 @@ export function SessionRecordPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   useCrumbTail(
     query.data
-      ? `${classLabel(query.data.session.subject_name, query.data.session.class_code)} · ${sessionNoLabel(query.data.session.session_no)}`
+      ? `${classLabel(query.data.session.subject_name, query.data.session.class_code)} · ${sessionNoLabel(query.data.session.session_no, query.data.session.type_name)}`
       : null,
   );
 
@@ -106,7 +106,7 @@ export function SessionRecordPage() {
   const canCorrect =
     s.status_code === 'DONE' && access.can('ATTENDANCE', 'DUYET') && students.length > 0;
   const cancelled = s.status_code === 'HUY_CO_PHI' || s.status_code === 'HUY_KHONG_PHI';
-  const title = `${classLabel(s.subject_name, s.class_code)} · ${sessionNoLabel(s.session_no)} · ${formatDate(s.session_date)}`;
+  const title = `${classLabel(s.subject_name, s.class_code)} · ${sessionNoLabel(s.session_no, s.type_name)} · ${formatDate(s.session_date)}`;
 
   async function doClose() {
     setActionError(null);
@@ -191,7 +191,11 @@ export function SessionRecordPage() {
         {actionError && <Alert tone="danger">{actionError}</Alert>}
         <div className="grid gap-6 md:grid-cols-2">
           <DetailSection title="Thông tin buổi">
-            <DetailField label="Buổi" mode={view} value={sessionNoLabel(s.session_no)} />
+            <DetailField
+              label="Buổi"
+              mode={view}
+              value={sessionNoLabel(s.session_no, s.type_name)}
+            />
             <DetailField label="Tình trạng" mode={view} value={s.status_name} />
             <DetailField label="Môn" mode={view} value={s.subject_name ?? ''} />
             <DetailField
@@ -218,8 +222,7 @@ export function SessionRecordPage() {
           <div className="mt-6">
             <Alert tone="info">
               <b>{s.status_name}.</b> Lý do: {s.cancel_reason_name ?? 'không ghi'}
-              {s.cancel_note ? ` · ${s.cancel_note}` : ''}. Các dòng điểm danh đã bị vô hiệu
-              (R-BUOI-09).
+              {s.cancel_note ? ` · ${s.cancel_note}` : ''}. Các dòng điểm danh đã bị vô hiệu.
             </Alert>
           </div>
         )}
@@ -301,8 +304,8 @@ export function SessionRecordPage() {
                 </div>
               )}
               <p className="text-caption text-fg-muted">
-                Một em một dòng. Ô của giáo viên quyết định trạng thái chính thức (R-DD-02). Thẻ
-                Lệch: điểm danh của trung tâm khác của giáo viên, chỉ để đối chiếu.
+                Một em một dòng. Ô của giáo viên quyết định trạng thái chính thức. Thẻ Lệch: điểm
+                danh của trung tâm khác của giáo viên, chỉ để đối chiếu.
               </p>
             </section>
 
@@ -376,7 +379,7 @@ export function SessionRecordPage() {
         open={confirming}
         onOpenChange={setConfirming}
         title="Chốt danh sách buổi này?"
-        description="Danh sách em chốt ngay theo ghi danh hiện tại. Ghi danh sinh sau không lọt vào danh sách (R-GIO-02)."
+        description="Danh sách em chốt ngay theo ghi danh hiện tại. Ghi danh sinh sau không lọt vào danh sách."
         confirmLabel="Chốt danh sách"
         cancelLabel="Để sau"
         busy={close.isPending}

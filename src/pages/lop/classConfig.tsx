@@ -99,13 +99,28 @@ export function buildClassConfig(opts: {
         ),
       },
       { key: 'subject', label: 'Môn', render: (r) => r.subject_name ?? r.subject_code },
-      { key: 'grade', label: 'Khối', render: (r) => r.grade_code.replace(/^K0?/, '') },
-      { key: 'type', label: 'Phân loại', render: (r) => r.class_type_name ?? r.class_type_code },
-      { key: 'level', label: 'Trình độ', render: (r) => r.level_name ?? '' },
+      {
+        key: 'grade',
+        defaultVisible: false,
+        label: 'Khối',
+        render: (r) => r.grade_code.replace(/^K0?/, ''),
+      },
+      {
+        key: 'type',
+        defaultVisible: false,
+        label: 'Phân loại',
+        render: (r) => r.class_type_name ?? r.class_type_code,
+      },
+      { key: 'level', defaultVisible: false, label: 'Trình độ', render: (r) => r.level_name ?? '' },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
       { key: 'weekday', label: 'Thứ', render: (r) => slotLines(r.schedule, (s) => s.day) },
       { key: 'time', label: 'Giờ học', render: (r) => slotLines(r.schedule, (s) => s.time) },
-      { key: 'room', label: 'Phòng', render: (r) => slotLines(r.schedule, (s) => s.room) },
+      {
+        key: 'room',
+        defaultVisible: false,
+        label: 'Phòng',
+        render: (r) => slotLines(r.schedule, (s) => s.room),
+      },
       { key: 'teacher', label: 'Giáo viên', render: (r) => r.teacher_names ?? '' },
       {
         key: 'size',
@@ -115,6 +130,7 @@ export function buildClassConfig(opts: {
       },
       {
         key: 'start',
+        defaultVisible: false,
         label: 'Bắt đầu',
         sortable: true,
         render: (r) => <span className="tabular">{formatDate(r.start_date)}</span>,
@@ -128,6 +144,7 @@ export function buildClassConfig(opts: {
       },
       {
         key: 'operating',
+        defaultVisible: false,
         label: 'Vận hành',
         render: (r) => (r.operating_status ? OPERATING_LABEL[r.operating_status] : '—'),
       },
