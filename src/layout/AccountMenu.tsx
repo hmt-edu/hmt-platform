@@ -23,6 +23,16 @@ export function AccountMenu({
   const others = PORTALS.filter((p) => p !== portal && portalAccess(claims, p) !== 'none');
   const items: MenuItem[] = [
     { kind: 'link', label: 'Hồ sơ cá nhân', to: `/${portal}/tai-khoan`, icon: 'user' },
+    ...(portal === 'crm'
+      ? [
+          {
+            kind: 'link',
+            label: 'Hướng dẫn sử dụng',
+            to: '/crm/huong-dan',
+            icon: 'info',
+          } satisfies MenuItem,
+        ]
+      : []),
     ...others.map<MenuItem>((p) => ({
       kind: 'link',
       label: `Sang cổng ${PORTAL_NAMES[p]}`,

@@ -201,7 +201,10 @@ select ok(app.has_permission('ADMIN', 'XEM'), 'Tham số tắt: Admin aal1 có q
 select pg_temp.claims(pg_temp.uid('ke'), 'aal1');
 select ok(app.has_permission('ACCOUNTING', 'DUYET'), 'Tham số tắt: Kế toán aal1 có quyền Kế toán · Duyệt theo ma trận');
 select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_require_mfa')::boolean, false, 'Tham số tắt: token Kế toán không đòi hai bước');
-select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_mfa_optional')::boolean, true, 'Tham số tắt: token báo hai bước tự nguyện (vẫn cài được thiết bị)');
+select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_mfa_optional')::boolean, false, 'A-23-27: Kế toán không thuộc diện hai bước nên không có mfa_optional');
+select is((pg_temp.hook(pg_temp.uid('admin')) ->> 'hmt_mfa_optional')::boolean, true, 'Tham số tắt: token Admin báo hai bước tự nguyện (vẫn cài được thiết bị)');
+select is((select require_mfa from app.role where code = 'ACCOUNTANT'), false, 'A-23-27: vai Kế toán không có cờ bắt hai bước');
+select is((select require_mfa from app.role where code = 'ADMIN'), true, 'A-23-27: vai Admin vẫn có cờ bắt hai bước');
 select is((pg_temp.hook(pg_temp.uid('bm1')) ->> 'hmt_mfa_optional')::boolean, false, 'Vai trò không có cờ hai bước: không có mfa_optional');
 
 -- ================= Tham số BẬT: bắt buộc như cũ =================
@@ -211,12 +214,14 @@ select is(app.mfa_satisfied(), false, 'Tham số bật: Admin aal1 chưa đạt 
 select is(app.has_permission('ADMIN', 'XEM'), false, 'Tham số bật: Admin aal1 không có quyền');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select ok(app.has_permission('ADMIN', 'XEM'), 'Tham số bật: Admin aal2 có quyền');
+select is((pg_temp.hook(pg_temp.uid('admin')) ->> 'hmt_require_mfa')::boolean, true, 'Tham số bật: token Admin đòi hai bước');
+select is((pg_temp.hook(pg_temp.uid('admin')) ->> 'hmt_mfa_optional')::boolean, false, 'Tham số bật: Admin không còn mfa_optional');
+-- A-23-27: Kế toán KHÔNG bắt hai bước, aal1 vẫn đủ quyền theo ma trận.
 select pg_temp.claims(pg_temp.uid('ke'), 'aal1');
-select is(app.has_permission('ACCOUNTING', 'DUYET'), false, 'Tham số bật: Kế toán aal1 không có quyền');
-select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
-select ok(app.has_permission('ACCOUNTING', 'DUYET'), 'Tham số bật: Kế toán aal2 có quyền');
-select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_require_mfa')::boolean, true, 'Tham số bật: token Kế toán đòi hai bước');
-select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_mfa_optional')::boolean, false, 'Tham số bật: không còn mfa_optional');
+select ok(app.mfa_satisfied(), 'A-23-27, tham số bật: Kế toán aal1 vẫn đạt (không thuộc diện hai bước)');
+select ok(app.has_permission('ACCOUNTING', 'DUYET'), 'A-23-27, tham số bật: Kế toán aal1 có quyền Kế toán · Duyệt');
+select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_require_mfa')::boolean, false, 'A-23-27, tham số bật: token Kế toán không đòi hai bước');
+select is((pg_temp.hook(pg_temp.uid('ke')) ->> 'hmt_mfa_optional')::boolean, false, 'A-23-27, tham số bật: Kế toán không có mfa_optional');
 
 -- ================= Vai trò khác không đổi ở cả hai trạng thái =================
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
