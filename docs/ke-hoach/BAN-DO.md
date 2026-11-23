@@ -8,14 +8,14 @@ Cỡ: S = vài giờ, một PR nhỏ; M = nửa ngày đến một ngày; L = nh
 |---|---|---|---|---|
 | CHUNG-05 | Đặt mật khẩu mới (từ link email) (HOÃN, thiết kế P1 v | Chưa có | S | hoãn/không khung; chờ thiết kế P1 |
 | CHUNG-08 | Không thể đăng nhập (chốt 12/10; chữ theo thiết kế P1 | Chưa có | S | hoãn/không khung; chờ thiết kế P1 |
-| CHUNG-21 | Đính kèm tệp (tải lên, xem trước) | Chưa có | S | hoãn/không khung; chờ thiết kế P1 |
-| CS-07 | Thực hiện chuyển cơ sở | Chỉ có DB* | M | không khung CS-07/10/12/14/16; chờ Design hoặc luật R-GD-09/16 |
+| CHUNG-21 | Đính kèm tệp (tải lên, xem trước) | Chưa có | S | có 7 khung CHUNG21_* (canvas dc47 v11, 23/11); chưa làm; file để Cloudflare R2 (giai đoạn 4) |
+| CS-07 | Thực hiện chuyển cơ sở | Có giao diện (1/2) | M | PR #504 tạo phiếu Chuyển cơ sở; còn PR 2/2: màn quản lý cơ sở đích (chờ Chat chốt chỗ đặt); canvas CSN06a_* vênh luật R-CS-07, làm theo luật |
 | CS-10 | Thực hiện chuyển phí (sang môn khác, anh chị em, gói kh | Chỉ có DB* | M | không khung CS-07/10/12/14/16; chờ Design hoặc luật R-GD-09/16 |
 | CS-12 | Từ chối / khách huỷ ticket (lý do) | Chưa có | M | không khung CS-07/10/12/14/16; chờ Design hoặc luật R-GD-09/16 |
 | CS-14 | Thực hiện dừng học (ticket nhóm Dừng học) | Chỉ có DB* | M | không khung CS-07/10/12/14/16; chờ Design hoặc luật R-GD-09/16 |
-| CS-16 | Nhận xét chờ gửi phụ huynh | Chưa có | M | không khung CS-07/10/12/14/16; chờ Design hoặc luật R-GD-09/16 |
-| CHUNG-23 | Đăng nhập phụ huynh | Chưa có | L | giai đoạn sau go-live; cần Design vẽ khung cổng HS/PH |
-| QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | Chưa có | L | giai đoạn sau go-live; cần Design vẽ khung cổng HS/PH |
+| CS-16 | Nhận xét chờ gửi phụ huynh | Chưa có | M | có 6 khung CSN10_* (canvas 9189 v52, 23/11); chưa làm |
+| CHUNG-23 | Đăng nhập phụ huynh | Chưa có | L | có 3 khung CHUNG23_dt_* (canvas dc47 v11); làm sau go-live (cổng HS/PH) |
+| QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | Chưa có | L | có 8 khung QT17_* (canvas dc47 v11; không có nút Mở khoá); làm sau go-live (cổng HS/PH) |
 | HT-01 | Trang chủ học sinh | Chưa có | L | giai đoạn sau go-live; cần Design vẽ khung cổng HS/PH |
 | HT-02 | Bài tập (cần làm, đã nộp, đã chấm) | Chưa có | L | giai đoạn sau go-live; cần Design vẽ khung cổng HS/PH |
 | HT-03 | Chi tiết bài tập | Chỉ có DB* | L | giai đoạn sau go-live; cần Design vẽ khung cổng HS/PH |
