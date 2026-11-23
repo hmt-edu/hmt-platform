@@ -3,6 +3,9 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { ListScreen } from '../../list/ListScreen';
+import { buildLeadGroupTree } from '../lead/leadGroups';
+import { useLeafRows } from '../lead/useLeadData';
+import { useToast } from '../../ui/toastContext';
 import type { ListState } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
@@ -11,11 +14,15 @@ import { useAccess } from '../../nav/AccessContext';
 import type { SortState } from '../../ui/Data';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
+  CLASS_STUDENT_GROUP_FIELD_OF,
   EMPTY_CLASS_STUDENT_STATE,
   buildClassStudentFilters,
+  classStudentGroupFilter,
   classStudentSortParam,
   classTitleLabel,
+  useClassStudentGroupCounts,
   useClassStudentPage,
+  type ClassStudentRow,
 } from './classStudents';
 import { buildClassStudentsConfig } from './classStudentsConfig';
 
@@ -41,10 +48,51 @@ export function ClassStudentsPage() {
   const page = paging.key === pagingKey ? paging.page : 0;
   const setPage = (next: number) => setPaging({ key: pagingKey, page: next });
 
-  const list = useClassStudentPage(id, filters, sortValue, page * (pageSize ?? 0), pageSize);
+  // Group By ở máy chủ (tối đa hai cấp): số đếm từ class_student_group_counts, dòng tải khi mở từng nhóm lá (list_class_students).
+  const toast = useToast();
+  const groupFields = state.group.flatMap((k) =>
+    CLASS_STUDENT_GROUP_FIELD_OF[k] ? [CLASS_STUDENT_GROUP_FIELD_OF[k]] : [],
+  );
+  const grouped = groupFields.length > 0;
+  const [tick, setTick] = useState(0);
+  const list = useClassStudentPage(
+    id,
+    filters,
+    sortValue,
+    page * (pageSize ?? 0),
+    pageSize,
+    !grouped,
+  );
+  const counts = useClassStudentGroupCounts(id, filters, groupFields, true);
+  const leafExtra = useMemo(() => ({ p_class_id: id }), [id]);
+  const leaves = useLeafRows<ClassStudentRow>(
+    filters,
+    sortValue,
+    pageSize,
+    `${JSON.stringify(filters)}|${sortValue}|${tick}`,
+    (message) => toast({ tone: 'danger', title: message }),
+    'list_class_students',
+    leafExtra,
+  );
+  const grouping = useMemo(
+    () =>
+      grouped && counts.data
+        ? buildLeadGroupTree<ClassStudentRow>(
+            counts.data,
+            groupFields,
+            leaves.leaves,
+            (key, spec) => leaves.more(key, spec.filters),
+            classStudentGroupFilter,
+          )
+        : null,
+    // groupFields suy ra từ state.group; leaves.more đổi theo bộ lọc.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [grouped, counts.data, state.group, leaves.leaves, leaves.more],
+  );
   const rows = list.data?.rows ?? [];
-  const total = list.data?.total ?? 0;
-  const errorText = list.isError ? errorOf(list.error).message : null;
+  const total = grouped ? (counts.data?.total ?? 0) : (list.data?.total ?? 0);
+  const activeQuery = grouped ? counts : list;
+  const errorText = activeQuery.isError ? errorOf(activeQuery.error).message : null;
 
   const config = useMemo(
     () =>
@@ -68,9 +116,14 @@ export function ClassStudentsPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => r.full_name}
-      loading={list.isPending || list.isPlaceholderData}
+      loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
-      onRetry={() => void list.refetch()}
+      onRetry={() => void activeQuery.refetch()}
+      groupTree={grouping?.tree}
+      onGroupToggle={(key, open) => {
+        const spec = grouping?.specs.get(key);
+        if (spec) leaves.toggle(key, spec.filters, open);
+      }}
       actions={
         canAssign
           ? [
@@ -82,16 +135,23 @@ export function ClassStudentsPage() {
             ]
           : []
       }
-      onRefresh={() => void list.refetch()}
-      pager={{
-        from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
-        to: page * (pageSize ?? 0) + rows.length,
-        total,
-        ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
-        ...(page * (pageSize ?? 0) + rows.length < total
-          ? { onNext: () => setPage(page + 1) }
-          : {}),
+      onRefresh={() => {
+        setTick((t) => t + 1);
+        void activeQuery.refetch();
       }}
+      pager={
+        grouped
+          ? undefined
+          : {
+              from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
+              to: page * (pageSize ?? 0) + rows.length,
+              total,
+              ...(page > 0 ? { onPrev: () => setPage(page - 1) } : {}),
+              ...(page * (pageSize ?? 0) + rows.length < total
+                ? { onNext: () => setPage(page + 1) }
+                : {}),
+            }
+      }
       sort={sort}
       onSortChange={(next) => setSort(next?.key === 'start' || next?.key === 'hours' ? next : null)}
       onRowClick={(r) => void navigate(`/crm/ghi-danh/${r.enrollment_id}`)}

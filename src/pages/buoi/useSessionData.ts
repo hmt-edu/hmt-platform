@@ -38,11 +38,16 @@ export function useSessionPage(
   });
 }
 
-export function useAbsentPage(filters: SessionFilters, offset: number, limit: number | null) {
+export function useAbsentPage(
+  filters: SessionFilters,
+  offset: number,
+  limit: number | null,
+  enabled = true,
+) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['session-absent', filters, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<AbsentPage>(supabase, 'absent_today_list', {
@@ -85,6 +90,8 @@ export function useRefreshSessions() {
         'session-absent',
         'session-ops-sheet',
         'session-pending',
+        'session-pending-groups',
+        'session-absent-groups',
       ].map((key) => client.invalidateQueries({ queryKey: [key] })),
     );
   }, [client]);
@@ -119,11 +126,16 @@ export function useCloseSession() {
   });
 }
 
-export function usePendingPage(filters: SessionFilters, offset: number, limit: number | null) {
+export function usePendingPage(
+  filters: SessionFilters,
+  offset: number,
+  limit: number | null,
+  enabled = true,
+) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['session-pending', filters, offset, limit],
-    enabled: limit !== null,
+    enabled: enabled && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<PendingPage>(supabase, 'session_pending_list', {
@@ -284,5 +296,37 @@ export function useSessionGroupCounts(filters: SessionFilters, fields: string[])
     retry: false,
     queryFn: () =>
       rpc<GroupCounts>(supabase, 'session_group_counts', { p_filters: filters, p_fields: fields }),
+  });
+}
+
+/** Số buổi chưa Done theo trường nhóm (Group By ở máy chủ): app.session_pending_group_counts, bộ lọc giống session_pending_list. */
+export function usePendingGroupCounts(filters: SessionFilters, fields: string[]) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-pending-groups', filters, fields],
+    enabled: fields.length > 0,
+    placeholderData: keepPreviousData,
+    retry: false,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'session_pending_group_counts', {
+        p_filters: filters,
+        p_fields: fields,
+      }),
+  });
+}
+
+/** Số dòng điểm danh trong ngày theo trường nhóm (Group By ở máy chủ): app.absent_today_group_counts, bộ lọc giống absent_today_list. */
+export function useAbsentGroupCounts(filters: SessionFilters, fields: string[]) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-absent-groups', filters, fields],
+    enabled: fields.length > 0,
+    placeholderData: keepPreviousData,
+    retry: false,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'absent_today_group_counts', {
+        p_filters: filters,
+        p_fields: fields,
+      }),
   });
 }

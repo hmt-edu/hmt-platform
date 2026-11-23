@@ -48,6 +48,22 @@ export function parentGroupFilter(field: string, key: string): CustFilters {
   return {};
 }
 
+/** Trường nhóm của giao diện Học sinh (khoá cấu hình) → tên trường của app.student_group_counts (canvas KH04: Tình trạng, Khối, Cơ sở tiếp nhận). */
+export const STUDENT_GROUP_FIELD_OF: Record<string, string> = {
+  status: 'status',
+  grade: 'grade',
+  branch: 'branch',
+};
+
+/** Bộ lọc của MỘT nhóm Học sinh (để mở nhóm tải dòng bằng list_students). */
+export function studentGroupFilter(field: string, key: string): CustFilters {
+  if (key === '') return {};
+  if (field === 'status') return { status: [key] };
+  if (field === 'grade') return { grade: key };
+  if (field === 'branch') return { branch_id: key };
+  return {};
+}
+
 /** Đường dẫn «Tạo ticket» từ hồ sơ phụ huynh: màn tạo ticket điền sẵn phụ huynh (id) và ô tìm theo mã. */
 export function newTicketForParentPath(id: string, code: string): string {
   return `/crm/ticket/moi?phu-huynh=${id}&ma=${encodeURIComponent(code)}`;
