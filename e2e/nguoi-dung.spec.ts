@@ -47,6 +47,16 @@ const menuItem = (page: Page, name: string) => page.getByRole('menuitem', { name
 async function openMenu(page: Page) {
   await page.getByRole('button', { name: 'Hành động' }).click();
 }
+// #561 (mẫu B11): hộp đã nhập dữ liệu thì Esc không đóng ngay mà hỏi «Bỏ nội dung đang nhập?»; hộp chưa nhập thì đóng luôn.
+async function dismissDialog(page: Page) {
+  await page.keyboard.press('Escape');
+  const ask = page.getByRole('alertdialog', { name: 'Bỏ nội dung đang nhập?' });
+  const asked = await ask
+    .waitFor({ state: 'visible', timeout: 1500 })
+    .then(() => true)
+    .catch(() => false);
+  if (asked) await ask.getByRole('button', { name: 'Bỏ nội dung' }).click();
+}
 const toastText = (page: Page, text: string | RegExp) => page.getByText(text).first();
 
 test('Danh sách: có nút Tạo người dùng, tìm, lọc đã khoá, Xuất tải CSV', async ({ page }) => {
@@ -122,13 +132,13 @@ test('Hộp Sửa vai trò, Đổi cơ sở, Khoá: kiểm biểu mẫu (không 
   await expect(roles.getByRole('button', { name: 'Lưu' })).toBeDisabled();
   await roles.getByRole('checkbox', { name: 'Giáo viên' }).check();
   await expect(roles.getByRole('button', { name: 'Lưu' })).toBeEnabled();
-  await page.keyboard.press('Escape');
+  await dismissDialog(page);
   // Đổi cơ sở: cơ sở hiện tại thì Lưu mờ.
   await openMenu(page);
   await menuItem(page, 'Đổi cơ sở').click();
   const branch = page.getByRole('dialog', { name: 'Đổi cơ sở' });
   await expect(branch.getByRole('button', { name: 'Lưu' })).toBeDisabled();
-  await page.keyboard.press('Escape');
+  await dismissDialog(page);
   // Khoá: bắt chọn lý do từ danh mục.
   await openMenu(page);
   await menuItem(page, 'Khoá').click();
