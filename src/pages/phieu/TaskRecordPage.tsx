@@ -27,7 +27,13 @@ import {
   TASK_STATUS_LABEL,
   TASK_TYPE_LABEL,
 } from './phieuTypes';
-import { runTaskAction, useRefreshTasks, useTaskRecord, type TaskAction } from './usePhieuData';
+import {
+  runTaskAction,
+  useRefreshTasks,
+  useTaskEnrollmentCode,
+  useTaskRecord,
+  type TaskAction,
+} from './usePhieuData';
 
 const STEPS: StageStep[] = ['NHAP', 'CHO_DUYET', 'DA_DUYET', 'DA_THUC_HIEN'].map((code) => ({
   code,
@@ -59,6 +65,7 @@ export function TaskRecordPage() {
   const destBranches = useDestBranches(
     record.data?.task.payload.kind_code === TRANSFER_BRANCH_KIND,
   );
+  const enrollmentCode = useTaskEnrollmentCode(record.data?.task.payload.enrollment_id);
   const [asking, setAsking] = useState<Asking>(null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
@@ -201,6 +208,9 @@ export function TaskRecordPage() {
               }
             />
             <DetailField label="Học sinh" mode="view" value={ticket.student_name ?? ''} />
+            {task.payload.enrollment_id && (
+              <DetailField label="Ghi danh" mode="view" value={enrollmentCode.data ?? ''} />
+            )}
             <DetailField
               label="Cơ sở"
               mode="view"
@@ -304,7 +314,7 @@ export function TaskRecordPage() {
         )}
         {task.task_type === 'DUNG_HOC' && (
           <div className="mt-6">
-            <DetailSection title="Nội dung dừng học">
+            <DetailSection title="Dừng học">
               <DetailField
                 label="Ngày dừng"
                 mode="view"
@@ -318,6 +328,11 @@ export function TaskRecordPage() {
                     ?.label ?? ''
                 }
               />
+              <p className="text-caption text-fg-muted">
+                Dừng học đóng ghi danh; giờ tặng còn lại huỷ. Hoàn tiền: hoàn phí toàn bộ theo giá
+                gốc, trừ phí xử lý. Giữ số dư: giờ mua còn lại × giá sau chiết khấu, không trừ phí.
+                Ngày dừng chỉ ghi nhận, không đổi cách tính giờ.
+              </p>
             </DetailSection>
           </div>
         )}
