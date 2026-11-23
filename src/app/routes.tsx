@@ -400,6 +400,7 @@ const StudentSchedulePage = lazyScreen(
   () => import('../pages/hoc/StudentSchedulePage'),
   'StudentSchedulePage',
 );
+const StudentHomePage = lazyScreen(() => import('../pages/hoc/StudentHomePage'), 'StudentHomePage');
 const StudentAssignmentsPage = lazyScreen(
   () => import('../pages/hoc/StudentAssignmentsPage'),
   'StudentAssignmentsPage',
@@ -1278,7 +1279,7 @@ export const routes: RouteObject[] = [
           </RequirePortal>
         ),
         children: [
-          { index: true, element: <PortalTabPage title="Trang chủ" stage={GD4} /> },
+          { index: true, element: <StudentHomePage /> },
           { path: 'bai-tap', element: <StudentAssignmentsPage /> },
           { path: 'bai-tap/:id', element: <StudentAssignmentPage /> },
           { path: 'lich', element: <StudentSchedulePage /> },
