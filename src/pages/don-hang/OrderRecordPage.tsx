@@ -19,6 +19,7 @@ import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
 import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { depositWarning } from './depositWarning';
 import { ReassignApproverDialog } from '../../features/approver-reassign/ReassignApproverDialog';
 import { useReassignState } from '../../features/approver-reassign/useReassign';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
@@ -645,7 +646,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         </h3>
         {record.installments.length === 0 ? (
           <p className="text-fg-muted">
-            Đơn chưa có lịch đóng tiền: không chọn điều khoản thì thanh toán một lần.
+            Đơn chưa có lịch đóng tiền: chưa chọn điều khoản thanh toán hoặc đơn chưa có dòng.
           </p>
         ) : (
           <Table<OrderInstallment>
@@ -846,6 +847,16 @@ function OrderView({ record }: { record: OrderRecord }) {
         }
       >
         <div className="flex flex-col gap-6">
+          {(() => {
+            const warn = depositWarning(record.status_code, record.installments, depositMin);
+            return warn ? (
+              <Notice tone="warning" title="Đợt 1 nhỏ hơn tiền cọc tối thiểu">
+                Đợt 1 theo lịch là {formatMoney(warn.firstAmount)}, nhỏ hơn cọc tối thiểu{' '}
+                {formatMoney(warn.depositMin)}: thu đủ đợt 1 thì đơn vẫn không sinh ghi danh cho tới
+                khi tổng tiền đã vào đạt cọc tối thiểu. Chỉ cảnh báo, hệ thống không tự đổi tiền.
+              </Notice>
+            ) : null;
+          })()}
           {record.status_code === 'DA_TRINH' && overCapLines(record.lines).length > 0 && (
             <Notice tone="warning" title={`Chiết khấu vượt trần ${capPercentText(cap)}`}>
               {overCapLines(record.lines)
