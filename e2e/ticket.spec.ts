@@ -136,8 +136,10 @@ test('Khách huỷ (CS-12): chỉ ticket Đề nghị có nút; lý do bắt bu�
   await expect(page).toHaveURL(/\/crm\/ticket\/[0-9a-f-]{36}$/);
   await page.getByRole('button', { name: 'Khách huỷ', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Khách huỷ ticket' });
-  await expect(dialog.getByRole('button', { name: 'Khách huỷ', exact: true })).toBeDisabled();
+  await expect(
+    dialog.getByRole('button', { name: 'Xác nhận khách huỷ', exact: true }),
+  ).toBeDisabled();
   await dialog.getByLabel('Lý do khách huỷ').fill('Gia đình đổi kế hoạch.');
-  await dialog.getByRole('button', { name: 'Khách huỷ', exact: true }).click();
+  await dialog.getByRole('button', { name: 'Xác nhận khách huỷ', exact: true }).click();
   await expect(page.getByText('Khách huỷ: Gia đình đổi kế hoạch.', { exact: true })).toBeVisible();
 });
