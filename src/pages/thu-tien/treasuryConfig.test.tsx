@@ -34,36 +34,40 @@ function cell(config: ReturnType<typeof buildMoneyInConfig>, key: string, row: M
 describe('TC-09 nút Hoàn tác khoản tiền', () => {
   it('Kế toán thấy nút ở khoản thu chưa bị hoàn tác, bấm thì gọi onReverse', () => {
     const onReverse = vi.fn();
-    const box = cell(buildMoneyInConfig(accessOf(true), onReverse), 'reverse', base);
+    const box = cell(buildMoneyInConfig(accessOf(true), onReverse, true), 'reverse', base);
     const button = box.querySelector('button');
     expect(button?.textContent).toBe('Hoàn tác khoản tiền');
     button?.click();
     expect(onReverse).toHaveBeenCalledWith(base);
+  });
+  it('B8: tham số money_reversal_enabled tắt thì Kế toán cũng không thấy nút', () => {
+    const box = cell(buildMoneyInConfig(accessOf(true), vi.fn(), false), 'reverse', base);
+    expect(box.querySelector('button')).toBeNull();
   });
   it('R-HT-01: người không có Kế toán · Duyệt (Admin) không thấy nút', () => {
     const box = cell(buildMoneyInConfig(accessOf(false), vi.fn()), 'reverse', base);
     expect(box.querySelector('button')).toBeNull();
   });
   it('R-TIEN-26: khoản đã bị hoàn tác không còn nút, hiện nhãn Đã hoàn tác', () => {
-    const config = buildMoneyInConfig(accessOf(true), vi.fn());
+    const config = buildMoneyInConfig(accessOf(true), vi.fn(), true);
     const row = { ...base, is_reversed: true };
     expect(cell(config, 'reverse', row).querySelector('button')).toBeNull();
     expect(cell(config, 'note', row).textContent).toBe('Đã hoàn tác');
   });
   it('TC-09: khoản đã hoàn tác ghi rõ mã khoản đảo (canvas TC09_dao)', () => {
-    const config = buildMoneyInConfig(accessOf(true), vi.fn());
+    const config = buildMoneyInConfig(accessOf(true), vi.fn(), true);
     const row = { ...base, is_reversed: true, reversed_by_code: 'KTV-CS5-2610-0006' };
     expect(cell(config, 'note', row).textContent).toBe('Đã hoàn tác bằng KTV-CS5-2610-0006');
   });
   it('TC-02: khoản thu nợ đầu kỳ không có đơn thì cột Đơn hàng hiện nhãn Nợ đầu kỳ, không có link', () => {
-    const config = buildMoneyInConfig(accessOf(true), vi.fn());
+    const config = buildMoneyInConfig(accessOf(true), vi.fn(), true);
     const row = { ...base, order_id: null, order_code: null };
     const box = cell(config, 'order', row);
     expect(box.textContent).toBe('Nợ đầu kỳ');
     expect(box.querySelector('a')).toBeNull();
   });
   it('Khoản đảo (âm) không có nút, không có link phiếu thu, ghi mã khoản gốc', () => {
-    const config = buildMoneyInConfig(accessOf(true), vi.fn());
+    const config = buildMoneyInConfig(accessOf(true), vi.fn(), true);
     const row = {
       ...base,
       amount: -1000000,
