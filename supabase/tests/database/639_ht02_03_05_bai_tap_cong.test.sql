@@ -71,7 +71,7 @@ select cs.id, cs.class_id, cs.branch_id, (select id from app.student where code 
 -- ---------- Bài giao (chụp em được giao): B1 còn hạn, B2 quá hạn nhận muộn, B3 quá hạn không nhận, B4 đã nộp, B5 đã chấm, B6 đã gỡ, B7 giao em khác ----------
 insert into app.lms_assignment (class_id, session_id, branch_id, title, description, due_at, allow_resubmit, allow_late, audience, status)
 select cs.class_id, cs.id, cs.branch_id, v.title, 'Mô tả ' || v.title, now() + v.due, v.resub, v.late, 'CHON_EM', v.st
-  from (values ('B1', interval '2 days', true, false, 'DANG_GIAO'), ('B2', interval '-1 day', true, true, 'DANG_GIAO'),
+  from (values ('B1', interval '2 days', true, false, 'DANG_GIAO'), ('B2', interval '-2 days', true, true, 'DANG_GIAO'),
                ('B3', interval '-1 day', true, false, 'DANG_GIAO'), ('B4', interval '1 day', false, false, 'DANG_GIAO'),
                ('B5', interval '1 day', true, false, 'DANG_GIAO'), ('B6', interval '1 day', true, false, 'DA_GO'),
                ('B7', interval '1 day', true, false, 'DANG_GIAO')) as v (title, due, resub, late, st)

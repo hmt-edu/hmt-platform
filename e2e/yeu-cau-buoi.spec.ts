@@ -1,9 +1,15 @@
 // BUOI-08 Tạo yêu cầu buổi củng cố, BUOI-10 danh sách và duyệt (lát đầu, R-BUOI-04, R-BUOI-10). Máy tính. Dữ liệu giả: bật cờ YEU_CAU_BUOI ở CS5 (mặc định tắt),
 // dựng một lớp Đại số khối 9 CS5 đã duyệt bằng hàm nghiệp vụ (giáo viên gv.cs5). CSKH tạo và gửi; Trưởng cơ sở duyệt hoặc từ chối.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
 import { DB_URL } from './bao-gia-seed';
 import { DOMAIN, PASSWORD, enterAs, expectAccessible, pickOption } from './helpers';
+
+// G21: yêu cầu trùng giờ giáo viên thì hộp «Trùng giờ, vẫn duyệt?» hiện trước khi duyệt (cảnh báo, không chặn): bấm «Vẫn duyệt» để đi tiếp.
+async function acceptClashIfAny(page: Page): Promise<void> {
+  const go = page.getByRole('button', { name: 'Vẫn duyệt' });
+  if (await go.isVisible({ timeout: 1500 }).catch(() => false)) await go.click();
+}
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lớp giả).');
 test.describe.configure({ mode: 'serial' });
@@ -154,6 +160,7 @@ test('BUOI-10: Trưởng cơ sở Duyệt thì buổi củng cố được chèn
   await page.goto('/crm/yeu-cau-buoi');
   await expect(page.getByRole('heading', { level: 1, name: 'Yêu cầu buổi' })).toBeVisible();
   await page.getByRole('button', { name: 'Duyệt', exact: true }).first().click();
+  await acceptClashIfAny(page);
   await expect(page.getByText(/^Đã duyệt YB-CS5-/).first()).toBeVisible();
   await page.getByRole('button', { name: 'Tất cả' }).click();
   await expect(page.getByRole('row').filter({ hasText: 'Đã duyệt' }).first()).toBeVisible();
@@ -225,6 +232,7 @@ test('BUOI-09: Trưởng cơ sở duyệt thì buổi Bổ trợ được chèn,
     .getByRole('button', { name: 'Duyệt', exact: true })
     .first()
     .click();
+  await acceptClashIfAny(page);
   await expect(page.getByText(/^Đã duyệt YB-CS5-/).first()).toBeVisible();
   await page.getByRole('button', { name: 'Tất cả' }).click();
   await page
@@ -272,6 +280,7 @@ test('BUOI-07: Trưởng cơ sở duyệt yêu cầu học bù thì buổi Học
     .getByRole('button', { name: 'Duyệt', exact: true })
     .first()
     .click();
+  await acceptClashIfAny(page);
   await expect(page.getByText(/^Đã duyệt YB-CS5-/).first()).toBeVisible();
   await page.getByRole('button', { name: 'Tất cả' }).click();
   await page
@@ -331,6 +340,7 @@ test('A25: Trưởng cơ sở duyệt yêu cầu học bù loại Kiểm tra th�
     .getByRole('button', { name: 'Duyệt', exact: true })
     .first()
     .click();
+  await acceptClashIfAny(page);
   await expect(page.getByText(/^Đã duyệt YB-CS5-/).first()).toBeVisible();
   await page.getByRole('button', { name: 'Tất cả' }).click();
   await page

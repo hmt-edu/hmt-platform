@@ -19,6 +19,7 @@ import {
   type SessionOverview,
 } from './sessionContent';
 import { useSaveSessionContent, useSessionOverview } from './useSessionContent';
+import { SessionStepBar } from './SessionStepBar';
 
 /**
  * GV-06 · Nội dung buổi và BTVN. Lưu bằng nút Lưu (không tự lưu). Cần ít nhất một dòng nội dung; BTVN để trống nghĩa là buổi này
@@ -120,6 +121,14 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
         </Link>
         {' › Nội dung buổi và BTVN'}
       </nav>
+      <SessionStepBar
+        current={2}
+        done={
+          overview.attendance_total > 0 && overview.attendance_marked === overview.attendance_total
+            ? [1]
+            : []
+        }
+      />
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-caption text-fg-muted uppercase">

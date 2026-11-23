@@ -37,7 +37,7 @@ export function DayAttendancePage() {
 
   const sessionLink = (r: DayRow) => (
     <Link className="text-link underline" to={`/crm/buoi-hoc/${r.session_id}`}>
-      {r.class_code} · Buổi {r.session_no}
+      {r.class_code} · {r.session_no ? `Buổi ${r.session_no}` : 'Buổi'}
     </Link>
   );
 
@@ -132,7 +132,7 @@ export function DayAttendancePage() {
                     <span className="flex flex-col">
                       <span className="font-medium">{r.class_code}</span>
                       <span className="text-caption text-fg-muted">
-                        Buổi {r.session_no}
+                        {r.session_no ? `Buổi ${r.session_no}` : 'Buổi'}
                         {r.room_name ? ` · ${r.room_name}` : ''}
                       </span>
                     </span>

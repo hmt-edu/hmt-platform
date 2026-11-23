@@ -132,3 +132,23 @@ export function sheetWhen(session: AttendanceSheet['session']): string {
   const [, m, d] = session.session_date.split('-');
   return `${d}/${m} ${session.start_time}–${session.end_time}`;
 }
+
+/**
+ * Dòng tóm tắt sau khi lưu điểm danh (khung GV05_buoc_tiep): «Có mặt 3 · Vắng có phép 1».
+ * Đếm theo trạng thái hiệu lực (có tính bản nháp), theo thứ tự danh mục; bỏ trạng thái không em nào.
+ */
+export function summarizeStatuses(
+  students: AttendanceStudent[],
+  statuses: { code: string; name: string }[],
+  draft: Draft,
+): string {
+  const counts = new Map<string, number>();
+  for (const s of students) {
+    const code = effectiveStatus(s, draft);
+    if (code !== null) counts.set(code, (counts.get(code) ?? 0) + 1);
+  }
+  return statuses
+    .filter((st) => (counts.get(st.code) ?? 0) > 0)
+    .map((st) => `${st.name} ${counts.get(st.code)}`)
+    .join(' · ');
+}

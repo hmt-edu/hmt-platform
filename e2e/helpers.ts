@@ -224,6 +224,19 @@ export function shotPath(group: string, file: string): string {
 }
 
 /**
+ * Hộp «Hoàn thành lịch hẹn» (TS-11) mở ra sau khi bấm nút Hoàn thành của một lịch: chọn kết quả đầu tiên trong danh mục nếu cần
+ * (bắt buộc với Gọi điện), rồi bấm Hoàn thành trong hộp.
+ */
+export async function confirmCompleteAppointment(page: Page) {
+  const dialog = page.getByRole('dialog', { name: 'Hoàn thành lịch hẹn' });
+  await expect(dialog).toBeVisible();
+  // Ô «Kết quả» là hộp chọn của khuôn chung (không phải <select>): mở ra rồi chọn mục đầu tiên sau mục «không chọn».
+  await dialog.getByRole('combobox', { name: /^Kết quả/ }).click();
+  await page.getByRole('option').nth(1).click();
+  await dialog.getByRole('button', { name: 'Hoàn thành', exact: true }).click();
+}
+
+/**
  * K03: bảng máy tính mặc định chỉ hiện tối đa 8 cột (mẫu B12, #570); các cột còn lại ở nút «Cột».
  * Bài kiểm cần thấy cột nào thì gọi hàm này sau khi danh sách đã mở: bật mọi cột chưa hiện (điện thoại: bấm «Áp dụng» sau khi bật).
  */
