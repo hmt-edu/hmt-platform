@@ -12,7 +12,7 @@ import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
 import { Chatter } from '../../ui/Chatter';
 import { Tag } from '../../ui/Data';
 import { FormDialog } from '../../ui/Dialogs';
-import { Spinner } from '../../ui/Feedback';
+import { Alert, Spinner } from '../../ui/Feedback';
 import { QueryErrorView } from '../../ui/QueryErrorView';
 import { Button } from '../../ui/Button';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
@@ -32,6 +32,7 @@ import { createTicketTask, useTaskFields } from '../phieu/useTaskCreate';
 import { TASK_STATUS_LABEL, TASK_TYPE_LABEL } from '../phieu/taskLabels';
 import { groupsOf, subgroupsOf } from './ticketCreate';
 import { statusDialogSpec } from './statusDialog';
+import { taskFeatureOffMessage } from '../phieu/taskFeature';
 import { ticketTimeline } from './ticketTimeline';
 import {
   addTicketNote,
@@ -334,6 +335,13 @@ export function TicketRecordPage() {
     setTarget(step.code);
   };
 
+  // Công tắc tính năng theo cơ sở của ticket (hàm DB cũng chặn): tắt thì khoá «Tạo phiếu» kèm câu rõ ràng, không để đi tới bước cuối mới lỗi.
+  const taskFeatureOff = taskFeatureOffMessage(
+    ticket.business_type ?? '',
+    access.featureOnAt,
+    ticket.branch_code,
+  );
+
   return (
     <>
       <RecordDetail
@@ -369,7 +377,11 @@ export function TicketRecordPage() {
               ) &&
                 !(record.data?.tasks ?? []).some((k) =>
                   ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(k.status_code),
-                ) && <Button onClick={openTask}>Tạo phiếu</Button>}
+                ) && (
+                  <Button disabled={taskFeatureOff !== null} onClick={openTask}>
+                    Tạo phiếu
+                  </Button>
+                )}
             </>
           ) : undefined
         }
@@ -395,6 +407,11 @@ export function TicketRecordPage() {
           />
         }
       >
+        {taskFeatureOff && ticket.business_type && !closed && (
+          <div className="mb-4">
+            <Alert tone="warning">{taskFeatureOff}</Alert>
+          </div>
+        )}
         <div className="grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
           <DetailSection title="Tiếp nhận">
             <DetailField label="Mã" mode="view" value={ticket.code} />

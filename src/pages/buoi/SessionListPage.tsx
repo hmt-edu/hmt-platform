@@ -1,7 +1,7 @@
 // BUOI-01 Buổi học (danh sách, khuôn K03): nối với session_list. Mặc định lọc hôm nay. Lọc, sắp xếp, phân trang làm ở máy chủ. Bấm dòng mở BUOI-02.
 // Chưa có bộ lọc theo giáo viên, lớp riêng (chỉ tìm theo mã lớp): thêm khi có ô chọn giáo viên dùng chung.
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
@@ -21,6 +21,7 @@ import {
   sessionSortParam,
 } from './sessionLogic';
 import type { SessionRow } from './sessionTypes';
+import { useClassRecord } from '../lop/useClassData';
 import { useRefreshSessions, useSessionGroupCounts, useSessionPage } from './useSessionData';
 
 export function SessionListPage() {
@@ -34,15 +35,24 @@ export function SessionListPage() {
     [catalogs],
   );
   const pageSize = useIntSetting('list_page_size_default');
-  const [state, setState] = useState<ListState>(EMPTY_SESSION_STATE);
+  // Từ nút «Buổi học» ở trang Lớp (LOP-02): ?lop=<id> lọc theo lớp đó, bỏ mốc «hôm nay», có nút quay lại lớp.
+  const [searchParams] = useSearchParams();
+  const classId = searchParams.get('lop');
+  const classRecord = useClassRecord(classId ?? undefined).data;
+  const [state, setState] = useState<ListState>(
+    classId ? { ...EMPTY_SESSION_STATE, datePreset: '' } : EMPTY_SESSION_STATE,
+  );
   const [view, setView] = useState<ViewMode>('list');
   const [sort, setSort] = useState<SortState>(null);
   const [paging, setPaging] = useState({ key: '', page: 0 });
 
   const debouncedSearch = useDebounced(state.search);
   const filters = useMemo(
-    () => buildSessionFilters({ ...state, search: debouncedSearch }, statusCodes),
-    [state, debouncedSearch, statusCodes],
+    () => ({
+      ...buildSessionFilters({ ...state, search: debouncedSearch }, statusCodes),
+      ...(classId ? { class_id: classId } : {}),
+    }),
+    [state, debouncedSearch, statusCodes, classId],
   );
   const sortValue = sessionSortParam(sort);
   const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
@@ -106,6 +116,17 @@ export function SessionListPage() {
       error={active.isError ? errorOf(active.error).message : null}
       onRetry={() => void active.refetch()}
       onRefresh={() => void refreshData()}
+      actions={
+        classId
+          ? [
+              {
+                label: `Quay lại lớp ${classRecord?.code ?? ''}`.trim(),
+                icon: 'back' as const,
+                onClick: () => void navigate(`/crm/lop/${classId}`),
+              },
+            ]
+          : []
+      }
       onRowClick={(r) => void navigate(`/crm/buoi-hoc/${r.id}`)}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,

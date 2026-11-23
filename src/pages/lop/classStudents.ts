@@ -2,6 +2,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { rpc, useDb } from '../../lib/db';
 import type { ListState } from '../../list/types';
+import type { GroupCounts } from '../lead/leadTypes';
 
 export type ClassStudentRow = {
   id: string;
@@ -43,6 +44,43 @@ export function buildClassStudentFilters(state: ListState): ClassStudentFilters 
   return filters;
 }
 
+/** Trường nhóm giao diện LOP-09 (canvas LOP09: Tình trạng, Cơ sở phụ trách, Hình thức học) → tên trường của app.class_student_group_counts. */
+export const CLASS_STUDENT_GROUP_FIELD_OF: Record<string, string> = {
+  state: 'state',
+  branch: 'branch',
+  delivery: 'delivery',
+};
+
+/** Bộ lọc của MỘT nhóm (để mở nhóm tải dòng bằng list_class_students). */
+export function classStudentGroupFilter(field: string, key: string): ClassStudentFilters {
+  if (key === '') return {};
+  if (field === 'state') return { state: [key] };
+  if (field === 'branch') return { branch_id: key };
+  if (field === 'delivery') return { delivery: [key] };
+  return {};
+}
+
+/** Số dòng xếp lớp theo trường nhóm (Group By ở máy chủ, tối đa hai cấp): app.class_student_group_counts, bộ lọc giống list_class_students. */
+export function useClassStudentGroupCounts(
+  classId: string | undefined,
+  filters: ClassStudentFilters,
+  fields: string[],
+  enabled: boolean,
+) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['class-student-groups', classId, filters, fields],
+    enabled: enabled && classId !== undefined && fields.length > 0,
+    placeholderData: keepPreviousData,
+    queryFn: () =>
+      rpc<GroupCounts>(supabase, 'class_student_group_counts', {
+        p_class_id: classId,
+        p_filters: filters,
+        p_fields: fields,
+      }),
+  });
+}
+
 export function classStudentSortParam(
   key: string | null,
   direction: 'asc' | 'desc' | null,
@@ -58,11 +96,12 @@ export function useClassStudentPage(
   sort: string,
   offset: number,
   limit: number | null,
+  enabled = true,
 ) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['class-students', classId, filters, sort, offset, limit],
-    enabled: classId !== undefined && limit !== null,
+    enabled: enabled && classId !== undefined && limit !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<ClassStudentPage>(supabase, 'list_class_students', {

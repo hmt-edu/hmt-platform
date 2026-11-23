@@ -18,7 +18,7 @@ R-V2-38: dấu «Đã xuất», **một cờ cho mỗi em mỗi buổi**, không
 
 ## 4. Quyền theo vai
 - Giáo viên, trợ giảng được phân công của buổi: xuất, thấy dấu «Đã xuất».
-- CSKH, Trưởng cơ sở, Admin: không có nút ở cổng giáo viên (CS-16 đã bỏ, CSKH không tham gia gửi nhận xét).
+- CSKH, Trưởng cơ sở, Admin: không có nút ở cổng giáo viên (**CS-16 sống lại 23/11/2026 (anh Trường)**: CSKH, Admin có màn Nhận xét chờ gửi riêng ở cổng CRM để gửi tay và đánh dấu đã gửi; giáo viên vẫn tự xuất và tự gửi vào group Zalo lớp).
 - Khoá theo cờ phân hệ? Không đề xuất cờ mới (chức năng chỉ thêm nút, không đổi luật).
 
 ## 5. Phạm vi các PR (mỗi PR một việc)
