@@ -125,7 +125,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const orderReason: { ok: true } | { ok: false; reason: string } = merged
     ? { ok: false, reason: 'Cơ hội đã gộp vào bản khác, không tạo đơn hàng.' }
     : record.stage_code !== 'L8'
-      ? { ok: false, reason: 'Chỉ tạo đơn hàng khi cơ hội ở L8 (R-CRM-16)' }
+      ? { ok: false, reason: 'Chỉ tạo đơn hàng khi cơ hội ở L8' }
       : !access.can('SALES_ORDER', 'TAO')
         ? { ok: false, reason: 'Bạn không có quyền tạo đơn hàng.' }
         : !access.featureOn('BAN_HANG')
@@ -567,7 +567,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
                     disabled={!canCreateTest || stageIndex(record.stage_code) < stageIndex('L5')}
                     title={
                       stageIndex(record.stage_code) < stageIndex('L5')
-                        ? 'Chỉ tạo phiếu khi cơ hội ở L5 trở đi (R-CRM-05)'
+                        ? 'Chỉ tạo phiếu khi cơ hội ở L5 trở đi'
                         : !canCreateTest
                           ? 'Bạn không có quyền tạo phiếu kiểm tra'
                           : undefined

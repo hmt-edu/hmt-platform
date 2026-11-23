@@ -355,9 +355,7 @@ function GradingForm({
           <h2 id="gv08-late" className="text-h4">
             Bài Nộp sau chờ cập nhật · {sheet.late.length}
           </h2>
-          <p className="text-caption text-fg-muted">
-            Cập nhật ở đây, không mở lại buổi cũ (R-GV-11).
-          </p>
+          <p className="text-caption text-fg-muted">Cập nhật ở đây, không mở lại buổi cũ.</p>
           <ul className="flex flex-col gap-2">
             {sheet.late.map((item) => (
               <LateRow

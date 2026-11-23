@@ -228,9 +228,9 @@ function OrderView({ record }: { record: OrderRecord }) {
   const cancelBlock = record.cancel_block ?? null;
   const cancelBlockedText =
     cancelBlock === 'GHI_DANH'
-      ? 'Đã bật cho học trước và em đã học buổi: đi qua ticket hoàn tiền (CS-05).'
+      ? 'Đã bật cho học trước và em đã học buổi: đi qua ticket hoàn tiền.'
       : cancelBlock === 'PHIEU_THU'
-        ? 'Đơn đã có phiếu thu: đi qua ticket hoàn tiền (CS-05).'
+        ? 'Đơn đã có phiếu thu: đi qua ticket hoàn tiền.'
         : undefined;
   const canCreateRefundTicket = access.can('TICKET', 'TAO') && !phone;
   const cancelMenuItems: MenuItem[] = canCancel
@@ -645,7 +645,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         </h3>
         {record.installments.length === 0 ? (
           <p className="text-fg-muted">
-            Đơn chưa có lịch đóng tiền: không chọn điều khoản thì thanh toán một lần (R-TIEN-07).
+            Đơn chưa có lịch đóng tiền: không chọn điều khoản thì thanh toán một lần.
           </p>
         ) : (
           <Table<OrderInstallment>
@@ -681,7 +681,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         )}
         <p className="text-caption text-fg-muted">
           Lịch tự tính từ Điều khoản thanh toán của đơn, chỉ đọc. Dùng để theo dõi công nợ và nhắc
-          hạn, không chặn học (R-TIEN-07).
+          hạn, không chặn học.
         </p>
       </section>
       <section className="flex flex-col gap-1">
@@ -884,8 +884,7 @@ function OrderView({ record }: { record: OrderRecord }) {
           )}
           {record.status_code === 'NHAP' && record.has_incomplete_students && (
             <Notice tone="warning" title="Có em chưa đủ thông tin">
-              Mỗi em cần họ tên và năm sinh trước khi trình (R-TIEN-35). Bổ sung ở cơ hội rồi quay
-              lại.
+              Mỗi em cần họ tên và năm sinh trước khi trình. Bổ sung ở cơ hội rồi quay lại.
             </Notice>
           )}
           <section className="flex min-w-0 flex-col">

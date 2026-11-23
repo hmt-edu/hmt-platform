@@ -48,7 +48,7 @@ export function PayLaterDialog({
       ]}
       description={
         turnOn
-          ? 'Ghi danh được tạo sớm cho các dòng của đơn, em học trước khi đóng tiền. Quỹ giờ được âm tối đa bằng hạn mức; vượt hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale. Khi thu tiền, các buổi đã học vẫn tính là đã học và trừ vào giờ được cấp (R-GD-12).'
+          ? 'Ghi danh được tạo sớm cho các dòng của đơn, em học trước khi đóng tiền. Quỹ giờ được âm tối đa bằng hạn mức; vượt hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale. Khi thu tiền, các buổi đã học vẫn tính là đã học và trừ vào giờ được cấp.'
           : 'Các ghi danh của đơn không còn được học trước. Chỉ tắt được khi mọi ghi danh còn quỹ giờ không âm; nếu đã học trước thì thu tiền trước.'
       }
       confirmLabel={turnOn ? 'Bật' : 'Tắt'}

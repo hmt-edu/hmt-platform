@@ -218,7 +218,7 @@ export function ExpiringListPage() {
       onSortChange={() => undefined}
       emptyMessage={{
         title: 'Chưa có học sinh sắp hết giờ',
-        hint: 'Dự báo theo từng ghi danh (từng lớp). Hạn gói chỉ để dự báo: quá hạn gói mà còn giờ vẫn học (R-GD-07).',
+        hint: 'Dự báo theo từng ghi danh (từng lớp). Hạn gói chỉ để dự báo: quá hạn gói mà còn giờ vẫn học.',
       }}
     />
   );

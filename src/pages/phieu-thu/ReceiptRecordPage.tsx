@@ -431,7 +431,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
         </dl>
         <p className="mt-1 text-caption text-fg-muted">
           Tiền vào dòng đã chọn trước, tối đa bằng thành tiền dòng; phần thừa chia tỉ lệ cho các
-          dòng khác (R-TIEN-23). Giờ tặng chỉ cấp khi đơn thu đủ (R-TIEN-24).
+          dòng khác. Giờ tặng chỉ cấp khi đơn thu đủ.
         </p>
       </section>
     </div>
@@ -496,8 +496,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             ]}
           />
           <p className="text-caption text-fg-muted">
-            Giờ cấp = giờ dòng × tiền chia ÷ thành tiền dòng (R-TIEN-21). Giờ tặng chỉ cấp khi đơn
-            thu đủ (R-TIEN-24).
+            Giờ cấp = giờ dòng × tiền chia ÷ thành tiền dòng. Giờ tặng chỉ cấp khi đơn thu đủ.
           </p>
         </>
       ) : (

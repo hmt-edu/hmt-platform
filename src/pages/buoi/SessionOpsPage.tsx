@@ -45,7 +45,7 @@ export function SessionOpsPage() {
         }
       >
         {forbidden
-          ? 'Chỉ CSKH và Admin ghi điểm danh phía vận hành. Giáo viên điểm danh ở cổng giáo viên (R-DD-02). Nếu cần, hãy liên hệ quản trị viên của trung tâm.'
+          ? 'Chỉ CSKH và Admin ghi điểm danh phía vận hành. Giáo viên điểm danh ở cổng giáo viên. Nếu cần, hãy liên hệ quản trị viên của trung tâm.'
           : err.message}
       </StateView>
     );
@@ -106,14 +106,13 @@ export function SessionOpsPage() {
       {!sheet.listed && (
         <StateView kind="empty" title="Buổi chưa chốt danh sách">
           Buổi đang ở Nháp nên chưa có dòng điểm danh. Dòng điểm danh sinh khi buổi chuyển sang Đã
-          chốt (R-GIO-02). Hệ thống tự chốt trước giờ bắt đầu; bấm Chốt danh sách ở bản ghi buổi để
-          chốt ngay.
+          chốt. Hệ thống tự chốt trước giờ bắt đầu; bấm Chốt danh sách ở bản ghi buổi để chốt ngay.
         </StateView>
       )}
       {done && (
         <Alert tone="info">
           Buổi đã Hoàn thành, đã trừ giờ: điểm danh trong ngày chỉ còn xem. Sai thì Trưởng cơ sở sửa
-          kèm lý do ở bản ghi buổi (BUOI-14, R-GIO-07).
+          kèm lý do ở bản ghi buổi.
         </Alert>
       )}
       {sheet.listed && !done && (
@@ -185,9 +184,8 @@ export function SessionOpsPage() {
       )}
       {error && <Alert tone="danger">{error}</Alert>}
       <p className="text-caption text-fg-muted">
-        Cột Giáo viên (chính thức) chỉ đọc: ô của giáo viên quyết định trạng thái chính thức
-        (R-DD-02). Lý do liên hệ ghi được cho mọi trạng thái (R-DD-03). Em chưa chọn nghĩa là chưa
-        làm.
+        Cột Giáo viên (chính thức) chỉ đọc: ô của giáo viên quyết định trạng thái chính thức. Lý do
+        liên hệ ghi được cho mọi trạng thái. Em chưa chọn nghĩa là chưa làm.
       </p>
     </div>
   );

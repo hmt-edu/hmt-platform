@@ -221,7 +221,7 @@ function FromOpportunity({
   if (opp.stage_code !== 'L8')
     return (
       <StateView kind="forbidden" title="Cơ hội chưa ở L8" actions={backLink}>
-        Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng (R-CRM-16).
+        Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng.
       </StateView>
     );
   return (
@@ -426,7 +426,7 @@ function FromQuotation({
   if (q.status_code !== 'DA_GUI')
     return (
       <StateView kind="forbidden" title="Báo giá chưa chuyển thành đơn được" actions={backLink}>
-        Chỉ báo giá ở tình trạng Đã gửi mới chuyển thành đơn (R-TIEN-14).
+        Chỉ báo giá ở tình trạng Đã gửi mới chuyển thành đơn.
       </StateView>
     );
   const open = q.lines.filter((l) => l.order_id === null);
