@@ -264,6 +264,13 @@ export const CRM_MENU: MenuGroup[] = [
         stage: '',
       },
       {
+        code: 'CS-07',
+        label: 'Phiếu chuyển cơ sở đến',
+        slug: 'phieu-chuyen-co-so-den',
+        requires: can('TICKET', 'DUYET'),
+        stage: '',
+      },
+      {
         code: 'TT-01',
         label: 'Tái tục',
         slug: 'tai-tuc',
