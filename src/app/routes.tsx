@@ -407,6 +407,14 @@ const StudentReviewsPage = lazyScreen(
   () => import('../pages/hoc/StudentReviewsPage'),
   'StudentReviewsPage',
 );
+const StudentAssignmentsPage = lazyScreen(
+  () => import('../pages/hoc/StudentAssignmentsPage'),
+  'StudentAssignmentsPage',
+);
+const StudentAssignmentPage = lazyScreen(
+  () => import('../pages/hoc/StudentAssignmentPage'),
+  'StudentAssignmentPage',
+);
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
 const GuidePage = lazyScreen(() => import('../pages/huong-dan/GuidePage'), 'GuidePage');
@@ -1278,7 +1286,8 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { index: true, element: <PortalTabPage title="Trang chủ" stage={GD4} /> },
-          { path: 'bai-tap', element: <PortalTabPage title="Bài tập" stage={GD4} /> },
+          { path: 'bai-tap', element: <StudentAssignmentsPage /> },
+          { path: 'bai-tap/:id', element: <StudentAssignmentPage /> },
           { path: 'lich', element: <StudentSchedulePage /> },
           { path: 'ket-qua', element: <StudentResultsPage /> },
           { path: 'ket-qua/nhan-xet', element: <StudentReviewsPage /> },

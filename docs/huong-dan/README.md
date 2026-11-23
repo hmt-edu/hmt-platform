@@ -8,3 +8,4 @@ Soạn 19/11/2026 (Code B, thẻ B31). Một file mỗi vai: `sale.md`, `cskh.md
 - Lỗi do máy chủ trả về luôn hiện **câu tiếng Việt** ngay trên màn (kèm mã `HMT_…` ở dạng đọc được khi cần báo Chat). Bảng dưới mỗi nghiệp vụ chỉ nêu lỗi hay gặp.
 - Dữ liệu trong ví dụ là giả; không dùng dữ liệu thật khi tập.
 - Muốn kiểm tay từng màn: `docs/van-hanh/kiem-tay-staging.md`.
+- Từ điển thuật ngữ (mục 4): `04-tu-dien.md`.
