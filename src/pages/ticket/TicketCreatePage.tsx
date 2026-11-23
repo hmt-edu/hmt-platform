@@ -180,7 +180,8 @@ export function TicketCreatePage() {
                 label="Kênh"
                 value={draft.channel}
                 onChange={(v) => set('channel', v)}
-                options={catalogs.options('TICKET_CHANNEL')}
+                // Kênh hệ thống (vd «Phụ huynh không đồng ý») chỉ do hệ thống ghi: không cho chọn tay (cột applies_to không có TICKET_TAY).
+                options={catalogs.optionsFor('TICKET_CHANNEL', 'TICKET_TAY')}
                 placeholder="Chọn kênh"
               />
             }
