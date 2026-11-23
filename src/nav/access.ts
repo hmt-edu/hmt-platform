@@ -19,6 +19,8 @@ export type AccessView = MenuAccess & {
   crmRoles: { code: string; name: string }[];
   /** Tên các vai trò của người dùng, để hiện ở góc tài khoản. */
   roleNames: string[];
+  /** Công tắc tính năng của MỘT cơ sở cụ thể (mã cơ sở của bản ghi): hàm DB kiểm đúng cơ sở của bản ghi (app.require_feature), giao diện cũng phải kiểm như vậy. */
+  featureOnAt: (feature: string, branchCode: string | null) => boolean;
   /** "CS1 Nguyễn Chí Thanh" từ mã cơ sở; không thấy thì trả mã. */
   branchName: (code: string | null) => string | null;
 };
@@ -50,6 +52,15 @@ export function buildAccess(
       data.features.some(
         (f) => f.enabled && f.module_code === feature && scopeBranchIds.includes(f.branch_id),
       ),
+    featureOnAt: (feature, branchCode) => {
+      const branch = data.branches.find((b) => b.code === branchCode);
+      return (
+        branch !== undefined &&
+        data.features.some(
+          (f) => f.enabled && f.module_code === feature && f.branch_id === branch.id,
+        )
+      );
+    },
     seesAllBranches,
     teachingBranches,
     allBranches: data.branches,
