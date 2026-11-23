@@ -22,10 +22,10 @@ test('Hướng dẫn: mở từ menu tài khoản, đổi mục, tìm kiếm tro
   await expect(page.getByRole('heading', { level: 1, name: 'Hướng dẫn sử dụng' })).toBeVisible();
 
   // Tìm: kết quả trỏ về đúng mục; từ lạ thì báo không thấy.
-  await page.getByLabel('Tìm trong hướng dẫn').fill('bấm');
+  await page.getByLabel('Tìm trong hướng dẫn', { exact: true }).fill('bấm');
   const results = page.getByRole('list', { name: 'Kết quả tìm trong hướng dẫn' });
   await expect(results.getByRole('link').first()).toBeVisible();
-  await page.getByLabel('Tìm trong hướng dẫn').fill('zzzkhongcotuNay');
+  await page.getByLabel('Tìm trong hướng dẫn', { exact: true }).fill('zzzkhongcotuNay');
   await expect(page.getByText('Không thấy mục nào có')).toBeVisible();
 });
 
