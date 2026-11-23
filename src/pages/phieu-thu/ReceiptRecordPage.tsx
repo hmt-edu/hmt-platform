@@ -701,14 +701,12 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                   )
                 }
               />
+              <DetailField label="Phụ huynh" mode="view" value={record.parent?.name ?? '—'} />
+              <DetailField label="Mã phụ huynh" mode="view" value={record.parent?.code ?? '—'} />
               <DetailField
-                label="Phụ huynh"
+                label="SĐT"
                 mode="view"
-                value={
-                  record.parent
-                    ? `${record.parent.name} · ${record.parent.code} · ${formatPhone(record.parent.phone)}`
-                    : '—'
-                }
+                value={record.parent ? formatPhone(record.parent.phone) : '—'}
               />
             </dl>
             <dl className="flex min-w-0 flex-col">
@@ -727,17 +725,23 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                   }
                 />
               )}
-              <DetailField
-                label="Người lập"
-                mode="view"
-                value={`${record.created_by_name ?? '—'} · ${formatDateTime(record.created_at)}`}
-              />
+              <DetailField label="Người lập" mode="view" value={record.created_by_name ?? '—'} />
+              <DetailField label="Lập lúc" mode="view" value={formatDateTime(record.created_at)} />
               {'paid' in payment ? (
-                <DetailField
-                  label="Đơn đã thu"
-                  mode="view"
-                  value={`${formatMoney(payment.paid)} / ${formatMoney(payment.total)} · còn ${formatMoney(payment.remaining)} · ${payment.deposit_reached ? 'đã đủ cọc' : 'chưa đủ cọc'}`}
-                />
+                <>
+                  <DetailField label="Tổng đơn" mode="view" value={formatMoney(payment.total)} />
+                  <DetailField label="Đã thu" mode="view" value={formatMoney(payment.paid)} />
+                  <DetailField
+                    label="Còn phải thu"
+                    mode="view"
+                    value={formatMoney(payment.remaining)}
+                  />
+                  <DetailField
+                    label="Đủ cọc"
+                    mode="view"
+                    value={payment.deposit_reached ? 'Có' : 'Không'}
+                  />
+                </>
               ) : (
                 <>
                   <DetailField

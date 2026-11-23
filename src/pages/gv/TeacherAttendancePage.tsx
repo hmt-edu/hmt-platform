@@ -283,6 +283,11 @@ export function TeacherAttendancePage() {
           >
             Lưu điểm danh
           </Button>
+          {!dirty && (
+            <ButtonLink to={`/gv/buoi/${id}`} fullWidth>
+              Bước tiếp ›
+            </ButtonLink>
+          )}
           <p className="text-caption text-fg-muted">Bấm Lưu mới ghi. Không tự lưu.</p>
         </div>
       )}

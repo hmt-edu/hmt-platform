@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router';
 import { Button, ButtonLink } from '../../ui/Button';
+import { StickyActionBar } from '../../ui/StickyActionBar';
 import { UnsavedGuard } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -22,6 +23,7 @@ import {
   LEVELS,
   noteOf,
   pickInsufficient,
+  clearCell,
   pickLevel,
   previewAverage,
   progressOfStudent,
@@ -118,11 +120,11 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4 p-4">
       <UnsavedGuard when={dirty} />
       <nav aria-label="Đường dẫn" className="text-caption text-fg-muted">
-        <Link to="/gv" className="underline">
+        <Link to="/gv" className="inline-flex min-h-11 items-center underline">
           Hôm nay
         </Link>
         {' › '}
-        <Link to={`/gv/buoi/${sessionId}`} className="underline">
+        <Link to={`/gv/buoi/${sessionId}`} className="inline-flex min-h-11 items-center underline">
           Buổi dạy
         </Link>
         {' › Chấm nhận xét'}
@@ -140,17 +142,6 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
             {formatDate(sheet.session.session_date)} · {sheet.session.start_time.slice(0, 5)}–
             {sheet.session.end_time.slice(0, 5)}
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          {dirty && <span className="text-caption text-fg-muted">Chưa lưu</span>}
-          <Button
-            variant="primary"
-            loading={save.isPending}
-            disabled={!editable || !dirty}
-            onClick={() => submit()}
-          >
-            Lưu
-          </Button>
         </div>
       </header>
 
@@ -191,20 +182,6 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
               Đủ {progress.done}/{progress.total} em có mặt
             </p>
           </section>
-
-          <ExportPanel
-            sessionId={sessionId}
-            classCode={sheet.session.class_code}
-            sessionDate={sheet.session.session_date}
-            currentStudentId={student?.student_id ?? null}
-            dirty={dirty}
-            items={sheet.students.map((s) => ({
-              studentId: s.student_id,
-              name: s.full_name,
-              card: buildReviewCard(sheet, s),
-              exported: exportedSet.has(s.student_id),
-            }))}
-          />
 
           <section aria-labelledby="gv07-students" className="flex flex-col gap-2">
             <h2 id="gv07-students" className="text-h4">
@@ -255,6 +232,34 @@ function ReviewForm({ sheet }: { sheet: ReviewSheet }) {
             setDraft={setDraft}
             editable={editable}
           />
+          <ExportPanel
+            sessionId={sessionId}
+            classCode={sheet.session.class_code}
+            sessionDate={sheet.session.session_date}
+            currentStudentId={student?.student_id ?? null}
+            dirty={dirty}
+            items={sheet.students.map((s) => ({
+              studentId: s.student_id,
+              name: s.full_name,
+              card: buildReviewCard(sheet, s),
+              exported: exportedSet.has(s.student_id),
+            }))}
+          />
+
+          <StickyActionBar>
+            {dirty && <span className="text-caption text-fg-muted">Chưa lưu</span>}
+            {!dirty && editable && (
+              <ButtonLink to={`/gv/buoi/${sessionId}`}>Bước tiếp ›</ButtonLink>
+            )}
+            <Button
+              variant="primary"
+              loading={save.isPending}
+              disabled={!editable || !dirty}
+              onClick={() => submit()}
+            >
+              Lưu
+            </Button>
+          </StickyActionBar>
         </>
       )}
     </div>
@@ -474,7 +479,7 @@ function CriterionRow({
             key={level}
             size="sm"
             variant={cell.state === 'DA_DANH_GIA' && cell.score === level ? 'primary' : 'secondary'}
-            className="min-w-9 justify-center"
+            className="h-11 min-w-11 justify-center"
             aria-pressed={cell.state === 'DA_DANH_GIA' && cell.score === level}
             aria-label={`Mức ${level}`}
             disabled={!editable}
@@ -486,12 +491,24 @@ function CriterionRow({
         <Button
           size="sm"
           variant={cell.state === 'CHUA_DU_CAN_CU' ? 'primary' : 'secondary'}
+          className="h-11"
           aria-pressed={cell.state === 'CHUA_DU_CAN_CU'}
           disabled={!editable}
           onClick={() => onChange(pickInsufficient(cell))}
         >
           Chưa đủ căn cứ
         </Button>
+        {cell.state !== 'CHUA_DANH_GIA' && (
+          <Button
+            size="sm"
+            variant="text"
+            className="h-11"
+            disabled={!editable}
+            onClick={() => onChange(clearCell())}
+          >
+            Xoá điểm
+          </Button>
+        )}
       </div>
       <p
         className={cn('text-caption', cell.state === 'CHUA_DANH_GIA' ? 'text-fg-muted' : 'text-fg')}

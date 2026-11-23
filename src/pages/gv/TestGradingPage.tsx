@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { errorOf, FORBIDDEN_CODE } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
+import { StickyActionBar } from '../../ui/StickyActionBar';
 import { Button, ButtonLink } from '../../ui/Button';
 import { UnsavedGuard } from '../../ui/Dialogs';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -100,7 +101,7 @@ function TestForm({ sheet }: { sheet: TestSheet }) {
     <div className="mx-auto flex w-full max-w-xl flex-col gap-4 p-4">
       <UnsavedGuard when={dirty} />
       <nav aria-label="Đường dẫn" className="text-caption text-fg-muted">
-        <Link to="/gv/viec-can-lam" className="underline">
+        <Link to="/gv/viec-can-lam" className="inline-flex min-h-11 items-center underline">
           Cần làm
         </Link>
         {' › Chấm kiểm tra đầu vào'}
@@ -164,21 +165,21 @@ function TestForm({ sheet }: { sheet: TestSheet }) {
         onChange={(e) => patch({ note: e.target.value })}
       />
       {editable && (
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-3">
+        <>
+          <p className="text-caption text-fg-muted">
+            Lưu chỉ lưu nháp. Trả về sale là nộp kết quả, cần đủ điểm, trình độ, phân loại, nhận
+            xét.
+          </p>
+          <StickyActionBar>
+            {dirty && <span className="text-caption text-fg-muted">Chưa lưu</span>}
             <Button loading={save.isPending} onClick={() => run(false)}>
               Lưu
             </Button>
             <Button variant="primary" loading={save.isPending} onClick={() => run(true)}>
               Trả về sale
             </Button>
-            {dirty && <span className="text-caption text-fg-muted">Chưa lưu</span>}
-          </div>
-          <p className="text-caption text-fg-muted">
-            Lưu chỉ lưu nháp. Trả về sale là nộp kết quả, cần đủ điểm, trình độ, phân loại, nhận
-            xét.
-          </p>
-        </div>
+          </StickyActionBar>
+        </>
       )}
     </div>
   );

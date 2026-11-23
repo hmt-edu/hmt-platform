@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ListState } from '../../list/types';
 import { buildClassFilters, classGroupFilter, classSortParam } from './classFilters';
-import { scheduleText } from './classConfig';
+import { scheduleSlots } from './classConfig';
 const empty: ListState = {
   search: '',
   quick: {},
@@ -49,21 +49,22 @@ describe('Bộ lọc danh sách lớp (LOP-01)', () => {
   });
 });
 
-describe('scheduleText (lịch học ở danh sách Lớp, T2 mục 10)', () => {
-  const t = (weekday: number, teacher?: string | null, room?: string | null) => ({
+describe('scheduleSlots (lịch học ở danh sách Lớp, T13 một ô một thông tin)', () => {
+  const t = (weekday: number, room?: string | null, start = '18:00:00') => ({
     weekday,
-    start_time: '18:00:00',
+    start_time: start,
     end_time: '19:30:00',
-    teacher_name: teacher ?? null,
+    teacher_name: 'GV A',
     room_name: room ?? null,
   });
-  it('gộp các thứ cùng giờ, giáo viên, phòng; ghi giáo viên và phòng', () => {
-    expect(scheduleText([t(1, 'A', 'P201'), t(3, 'B', 'P201'), t(5, 'A', 'P201')])).toBe(
-      'Thứ 2, Thứ 6 · 18:00–19:30 · GV A · P201; Thứ 4 · 18:00–19:30 · GV B · P201',
-    );
+  it('mỗi khung một dòng tách Thứ, Giờ, Phòng; sắp theo thứ rồi giờ; không ghép giáo viên', () => {
+    expect(scheduleSlots([t(5, 'P201'), t(1, 'P202')])).toEqual([
+      { day: 'Thứ 2', time: '18:00–19:30', room: 'P202' },
+      { day: 'Thứ 6', time: '18:00–19:30', room: 'P201' },
+    ]);
   });
-  it('khung chưa có giáo viên, phòng thì chỉ ghi giờ', () => {
-    expect(scheduleText([t(2)])).toBe('Thứ 3 · 18:00–19:30');
+  it('khung chưa có phòng thì phòng là «—»', () => {
+    expect(scheduleSlots([t(2)])).toEqual([{ day: 'Thứ 3', time: '18:00–19:30', room: '—' }]);
   });
 });
 

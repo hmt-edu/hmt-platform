@@ -19,6 +19,8 @@ export type SmartItem = {
   label: string;
   icon: IconName;
   count: number;
+  /** Ẩn hẳn nút (người xem không có quyền với bản ghi liên quan, ví dụ Kế toán không có Ghi danh): không hiện «0» gây hiểu nhầm. */
+  hidden?: boolean | undefined;
   /** Nút chưa dùng được (chưa có màn đích): mờ, kèm chú thích. */
   unavailable?: string | undefined;
   /** Gọi khi bấm: `target` cho biết mở danh sách (nhiều), mở thẳng bản ghi (một) hay danh sách rỗng (không có). */
@@ -35,6 +37,8 @@ export function SmartButtons({
   disabled?: boolean | undefined;
   zero?: SmartZeroBehavior | undefined;
 }) {
+  const visible = items.filter((item) => item.hidden !== true);
+  if (visible.length === 0) return null;
   return (
     <ul
       aria-label="Bản ghi liên quan"
@@ -43,7 +47,7 @@ export function SmartButtons({
         disabled && 'opacity-50',
       )}
     >
-      {items.map((item) => {
+      {visible.map((item) => {
         const target = smartTarget(item.count, zero);
         return (
           <li
@@ -324,7 +328,8 @@ export function RecordDetail({
               {subStage && <div className="ml-auto flex items-center gap-2">{subStage}</div>}
             </div>
           )}
-          {smart && <SmartButtons items={smart} disabled={creating} zero={smartZero} />}
+          {/* Bản ghi chưa lưu thì chưa có gì liên quan: ẩn cả hàng nút (không hiện nút mờ số 0). */}
+          {smart && !creating && <SmartButtons items={smart} zero={smartZero} />}
           <article className="rounded-box border border-border bg-surface px-6 pt-5 pb-6">
             <h2 className="mb-4 font-display text-h1">
               {title || (creating ? `${kind} mới` : kind)}
