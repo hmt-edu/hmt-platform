@@ -255,7 +255,7 @@ export function RecordDetail({
         )}
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {attachments && !editing && (
-            <Button variant="text" icon="attach" disabled title="Đính kèm có từ giai đoạn 4">
+            <Button variant="text" icon="attach" disabled title="Đính kèm chưa bật">
               Đính kèm ({attachments.count})
             </Button>
           )}

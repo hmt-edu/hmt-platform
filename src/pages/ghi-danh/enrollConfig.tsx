@@ -52,7 +52,12 @@ export function buildEnrollConfig(
       },
       { key: 'student', label: 'Học sinh', sortable: true, render: (r) => r.student_name },
       { key: 'package', label: 'Gói', render: (r) => r.package_code ?? MUTED },
-      { key: 'mode', label: 'Hình thức học', render: (r) => r.delivery_mode_name ?? MUTED },
+      {
+        key: 'mode',
+        defaultVisible: false,
+        label: 'Hình thức học',
+        render: (r) => r.delivery_mode_name ?? MUTED,
+      },
       {
         key: 'class',
         label: 'Lớp',

@@ -72,8 +72,8 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
             <span className="text-fg-muted">Chưa có học sinh</span>
           ),
       },
-      { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
-      { key: 'sale', label: 'Sale', render: (r) => r.created_by_name ?? '' },
+      { key: 'branch', defaultVisible: false, label: 'Cơ sở', render: (r) => r.branch_code },
+      { key: 'sale', defaultVisible: false, label: 'Sale', render: (r) => r.created_by_name ?? '' },
       {
         key: 'total',
         label: 'Tổng tiền (đ)',
@@ -83,6 +83,7 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
       },
       {
         key: 'paid',
+        defaultVisible: false,
         label: 'Đã thu (đ)',
         numeric: true,
         render: (r) => formatNumber(r.paid_amount ?? 0),

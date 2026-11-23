@@ -53,16 +53,19 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
       },
       {
         key: 'source_type',
+        defaultVisible: false,
         label: 'Source type',
         render: (r) => catalogs.name('SOURCE_TYPE', r.source_type_code) ?? r.source_type_code,
       },
       {
         key: 'source',
+        defaultVisible: false,
         label: 'Source',
         render: (r) => catalogs.name('SOURCE', r.source_code) ?? r.source_code,
       },
       {
         key: 'medium',
+        defaultVisible: false,
         label: 'Medium',
         render: (r) =>
           r.channel_code ? (
@@ -100,7 +103,7 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
           ),
       },
       { key: 'owner', label: 'Sale phụ trách', render: (r) => r.owner_name ?? '' },
-      { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
+      { key: 'branch', defaultVisible: false, label: 'Cơ sở', render: (r) => r.branch_code },
       {
         key: 'next',
         label: 'Lịch hẹn kế tiếp',
@@ -117,6 +120,7 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
       },
       {
         key: 'created',
+        defaultVisible: false,
         label: 'Ngày tạo',
         numeric: true,
         sortable: true,
