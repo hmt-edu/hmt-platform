@@ -19,7 +19,7 @@ Kiểm thử: `supabase/tests/database/007_phan_quyen.test.sql` (pgTAP), `supaba
   Luật nằm ở `decideLogin` (`supabase/functions/_shared/login-rules.ts`).
 - Lần đầu đăng nhập bằng mật khẩu tạm (Admin cấp): bắt đổi mật khẩu (`/doi-mat-khau`), rồi
   `app.complete_first_password_change()` (chỉ nhận khi mật khẩu đã thật sự khác mật khẩu tạm).
-- ADMIN, ACCOUNTANT bắt buộc xác thực hai bước (TOTP, `/xac-thuc-hai-buoc`); chưa xác thực thì RLS không cho đọc gì.
+- ADMIN bắt buộc xác thực hai bước (TOTP, `/xac-thuc-hai-buoc`) khi tham số `mfa_required_enabled` bật (từ A-23-27, 24/11/2026 chỉ Admin; Kế toán không bắt); chưa xác thực thì RLS không cho đọc gì.
 - Tự đăng xuất khi không thao tác: `staff_idle_logout_minutes`, `teacher_idle_logout_minutes`, `student_idle_logout_minutes`.
 - Mật khẩu: tối thiểu `password_min_length`, có chữ và số (`password_require_letter_digit`); Supabase Auth cũng đặt 8 ký tự, chữ + số.
 - Quên mật khẩu: code sẵn (`send-email`), chờ cấu hình gửi thư (SMTP/Resend + DNS) mới bật.
@@ -30,7 +30,7 @@ Kiểm thử: `supabase/tests/database/007_phan_quyen.test.sql` (pgTAP), `supaba
 | ADMIN | Toàn hệ thống | CRM (GV, Học tập: chỉ xem) | Bắt buộc |
 | BRANCH_MANAGER | Cơ sở mình | CRM | |
 | SALES, CSKH | Cơ sở mình | CRM | |
-| ACCOUNTANT | Toàn hệ thống | CRM | Bắt buộc |
+| ACCOUNTANT | Toàn hệ thống | CRM | Không (A-23-27) |
 | TEACHER, TA | Được phân công | Giáo viên | |
 | STUDENT | Chính mình | Học tập | |
 | PARENT | (chưa cấp quyền, GĐ4) | | |
@@ -205,7 +205,7 @@ Sửa ở migration `20261010000014_sua_loi_soat_bao_mat.sql`.
 |---|---|---|
 | C1 | Mã băm mật khẩu tạm đọc được qua API (Trưởng cơ sở đọc của nhân viên cùng cơ sở), nằm trong nhật ký thao tác | Bảng riêng `app.user_temp_password`, không ai đọc qua API, không ghi nhật ký; ghi qua `app.remember_temp_password` |
 | C2 | Gọi thẳng Supabase Auth thì lách khoá tạm | Hook từ chối cấp token khi đang khoá tạm; bật Turnstile, giới hạn theo IP (`docs/van-hanh/chong-do-mat-khau.md`) |
-| T1 | ADMIN, Kế toán chưa xác thực hai bước đọc, ghi được ghi chú mọi cơ sở | `can_see_note_target` đòi đủ hai bước như `has_permission` |
+| T1 | ADMIN chưa xác thực hai bước (Kế toán không còn bắt từ A-23-27) đọc, ghi được ghi chú mọi cơ sở | `can_see_note_target` đòi đủ hai bước như `has_permission` |
 | T2 | Tài khoản bị khoá huỷ được ghi chú của mình bằng token cũ | `cancel_note` đòi tài khoản còn dùng được |
 | T3 | Hàm mới trong `app` mặc định ai cũng chạy được, kể cả khách | Thu quyền mặc định ở mức toàn cục; hàm nào cần thì `GRANT` rõ |
 | T4 | Khi đang khoá tạm, mỗi lời gọi ghi một dòng nhật ký (không qua Turnstile) → làm đầy DB | Mỗi tên đăng nhập chỉ ghi một dòng `KHOA_TAM` mỗi đợt khoá |
@@ -222,7 +222,7 @@ tạm, không ghi nhật ký; thiếu khoá `HMT_TURNSTILE_SECRET` thì từ ch�
 **Khoá tạm là lớp bảo vệ thứ hai.** Khoá công khai (publishable) cho phép gọi thẳng Supabase Auth, không qua Edge
 Function `login`, nên lần sai ở đường đó không được đếm, không vào `app.login_event` (gói Free không có hook kiểm mật
 khẩu). Lớp chính: **Turnstile** (mỗi lần thử cần một mã chống máy), **giới hạn đăng nhập theo IP** của Supabase Auth, và
-**xác thực hai bước** cho ADMIN, Kế toán. Hook chặn cấp token khi đang khoá tạm, nên đoán đúng mật khẩu trong lúc khoá
+**xác thực hai bước** cho ADMIN (Kế toán không bắt từ A-23-27). Hook chặn cấp token khi đang khoá tạm, nên đoán đúng mật khẩu trong lúc khoá
 cũng không vào được.
 
 **Chấp nhận (L3):** `get_setting*`, `feature_enabled` là `security definer`, nên tài khoản bị khoá còn token cũ vẫn đọc
@@ -300,8 +300,9 @@ Danh sách cho phép thay cho chặn riêng ADMIN: ô Kế toán · Duyệt ch�
 `app.get_setting` (và `_int`, `_numeric`, `_bool` gọi lại nó) báo `HMT_KHONG_CO_QUYEN` khi phiên là người KHÔNG phải nhân viên (có vai trò, `is_staff()` sai) đọc khoá khác `student_idle_logout_minutes`, `list_page_size`, `list_page_size_default`, `list_page_size_max`. Nhân viên và nơi gọi không có phiên (hook đăng nhập, pg_cron, migration) đọc như cũ. `feature_enabled` giữ nguyên.
 
 
-## Hai bước Admin, Kế toán (D41, 19/11/2026)
+## Hai bước chỉ Admin (D41, 19/11/2026; A-23-27, 24/11/2026)
 
+- **A-23-27 (migration 647, anh chốt 24/11/2026):** bắt hai bước chỉ cho ADMIN. Migration chỉ đặt cờ `require_mfa = false` cho ACCOUNTANT; không đổi giá trị tham số `mfa_required_enabled` (giữ tắt, Admin bật ở QT-09: staging sau khi Tester ĐẠT, prod bật riêng). Supabase không «nhớ thiết bị»: mỗi phiên đăng nhập mới là aal1 và phải nhập mã TOTP, kể cả máy đã có thiết bị. Admin chưa có thiết bị vào luồng đăng ký lần đầu `/thiet-lap-hai-buoc`. Kế toán chỉ cần mật khẩu; vì cờ gỡ nên token Kế toán không còn `hmt_mfa_optional` (mục «Hai bước» ở Hồ sơ không hiện cho Kế toán).
 - Tham số `mfa_required_enabled` (BOOL, mặc định tắt, toàn hệ thống). Hàm duy nhất `app.mfa_required_for_role(vai_trò)` = cờ `require_mfa` của vai trò và tham số bật; `app.mfa_enforced()` đọc tham số.
 - Dùng ở `app.mfa_satisfied()` (kiểm quyền ở DB) và hook token (`hmt_require_mfa`; thêm `hmt_mfa_optional` khi vai trò có cờ nhưng tham số tắt, để Hồ sơ vẫn cho cài thiết bị).
 - Tắt: Admin, Kế toán đăng nhập bằng mật khẩu có đủ quyền theo ma trận, giao diện bỏ bước `/xac-thuc-hai-buoc`. Bật: bắt buộc aal2 như cũ. Bài pgTAP 472 kiểm cả hai trạng thái; bài cũ kiểm luật aal2 tự bật tham số.
