@@ -66,7 +66,7 @@ export function SessionRecordPage() {
   const [actionError, setActionError] = useState<string | null>(null);
   useCrumbTail(
     query.data
-      ? `${classLabel(query.data.session.subject_name, query.data.session.class_code)} · ${sessionNoLabel(query.data.session.session_no)}`
+      ? `${classLabel(query.data.session.subject_name, query.data.session.class_code)} · ${sessionNoLabel(query.data.session.session_no, query.data.session.type_name)}`
       : null,
   );
 
@@ -106,7 +106,7 @@ export function SessionRecordPage() {
   const canCorrect =
     s.status_code === 'DONE' && access.can('ATTENDANCE', 'DUYET') && students.length > 0;
   const cancelled = s.status_code === 'HUY_CO_PHI' || s.status_code === 'HUY_KHONG_PHI';
-  const title = `${classLabel(s.subject_name, s.class_code)} · ${sessionNoLabel(s.session_no)} · ${formatDate(s.session_date)}`;
+  const title = `${classLabel(s.subject_name, s.class_code)} · ${sessionNoLabel(s.session_no, s.type_name)} · ${formatDate(s.session_date)}`;
 
   async function doClose() {
     setActionError(null);
@@ -191,7 +191,11 @@ export function SessionRecordPage() {
         {actionError && <Alert tone="danger">{actionError}</Alert>}
         <div className="grid gap-6 md:grid-cols-2">
           <DetailSection title="Thông tin buổi">
-            <DetailField label="Buổi" mode={view} value={sessionNoLabel(s.session_no)} />
+            <DetailField
+              label="Buổi"
+              mode={view}
+              value={sessionNoLabel(s.session_no, s.type_name)}
+            />
             <DetailField label="Tình trạng" mode={view} value={s.status_name} />
             <DetailField label="Môn" mode={view} value={s.subject_name ?? ''} />
             <DetailField
