@@ -1,4 +1,4 @@
-// Edge Function đăng nhập (chốt 10/10/2026): nhận email hoặc mã HS + mật khẩu + mã Turnstile,
+// Edge Function đăng nhập (chốt 10/10/2026): nhận email, mã HS, mã PH hoặc số điện thoại phụ huynh + mật khẩu + mã Turnstile,
 // kiểm khoá/khoá tạm, gọi Supabase Auth (chuyển IP thật qua Sb-Forwarded-For để giới hạn tốc độ
 // theo IP vẫn đúng), ghi sự kiện đăng nhập, trả phiên về trình duyệt.
 // Sai tên, sai mật khẩu, tài khoản không có, bị khoá: cùng một câu trả lời (decideLogin); lý do thật
@@ -9,7 +9,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.117.3';
 import { verifyCaptcha } from '../_shared/captcha.ts';
 import { corsHeaders, fail, HTTP, json, secretKey } from '../_shared/http.ts';
-import { type AuthAttempt, clientIp, decideLogin, isWarmPing, LOGIN_MESSAGES, type LoginRecord, MAX_LOGIN_LENGTH, toAuthEmail } from '../_shared/login-rules.ts';
+import { type AuthAttempt, clientIp, decideLogin, isWarmPing, LOGIN_MESSAGES, type LoginRecord, MAX_LOGIN_LENGTH, normalizePhone, phoneFallbackEmail, toAuthEmail } from '../_shared/login-rules.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 
@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     return fail(req, HTTP.BAD_REQUEST, 'HMT_THIEU_THONG_TIN', 'Nhập tên đăng nhập và mật khẩu.');
   }
 
-  const email = toAuthEmail(login);
+  const phone = normalizePhone(login);
   const ip = clientIp(req.headers);
 
   // Luật: mã chống máy tự động sai hoặc thiếu thì dừng ngay: không kiểm mật khẩu, không đếm khoá tạm,
@@ -59,6 +59,16 @@ Deno.serve(async (req) => {
   const userAgent = req.headers.get('user-agent') ?? '';
   const key = secretKey();
   const db = createClient(SUPABASE_URL, key, { db: { schema: 'app' }, auth: { persistSession: false } });
+  // Luật (DN11): phụ huynh nhập số điện thoại; đổi sang mã PH của tài khoản rồi đăng nhập như thường. Không có tài khoản: cùng câu sai mật khẩu.
+  let email = phone ? phoneFallbackEmail(phone) : toAuthEmail(login);
+  if (phone) {
+    const { data: parentCode, error: phoneError } = await db.rpc('login_parent_code_by_phone', { p_phone: phone });
+    if (phoneError) {
+      console.error('login_parent_code_by_phone lỗi', phoneError.code);
+      return fail(req, HTTP.SERVER_ERROR, 'HMT_LOI_HE_THONG', 'Hệ thống đang lỗi, thử lại sau.');
+    }
+    if (typeof parentCode === 'string') email = toAuthEmail(parentCode);
+  }
   const record = (result: LoginRecord) =>
     db.rpc('login_record', { p_login_name: email, p_result: result, p_ip: ip ?? '', p_user_agent: userAgent });
 

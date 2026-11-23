@@ -75,18 +75,21 @@ test('DN01: sai thông tin thì câu lỗi nằm trên các ô, hai ô viền đ
   await expect(password).toHaveValue('MatKhauSai1');
 });
 
-test('CHUNG-23: phụ huynh "Chào phụ huynh", ô Mã phụ huynh, liên kết sang đăng nhập nhân viên', async ({
+test('DN11: phụ huynh "Chào quý phụ huynh", ô Số điện thoại, liên kết sang đăng nhập nhân viên', async ({
   page,
 }) => {
   await page.goto('/dang-nhap/phu-huynh');
-  await expect(page.getByRole('heading', { level: 1, name: 'Chào phụ huynh' })).toBeVisible();
-  await expect(page.getByLabel('Mã phụ huynh', { exact: true })).toHaveAttribute(
-    'placeholder',
-    'PH000212',
+  await expect(page.getByRole('heading', { level: 1, name: 'Chào quý phụ huynh' })).toBeVisible();
+  await expect(
+    page.getByText('Đăng nhập để xem kết quả, học phí và lịch học của con.'),
+  ).toBeVisible();
+  await expect(page.getByLabel('Số điện thoại', { exact: true })).toHaveAttribute(
+    'inputmode',
+    'tel',
   );
   await expect(page.getByRole('button', { name: 'Đăng nhập', exact: true })).toBeVisible();
   await expect(
-    page.getByRole('status').filter({ hasText: 'bộ phận chăm sóc khách hàng' }),
+    page.getByRole('status').filter({ hasText: 'Liên hệ CSKH ở cơ sở để đặt lại' }),
   ).toBeVisible();
   await page.getByRole('link', { name: 'đăng nhập ở đây' }).click();
   await expect(page).toHaveURL(/\/dang-nhap$/);
