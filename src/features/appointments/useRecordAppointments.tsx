@@ -16,6 +16,8 @@ import {
   type UpcomingAppointment,
 } from './appointmentApi';
 import { AppointmentDialog } from './AppointmentDialog';
+import { CompleteAppointmentDialog, type CompleteArgs } from './CompleteAppointmentDialog';
+import { formatDateTime } from '../../lib/format';
 import { UpcomingActivities } from './UpcomingActivities';
 import { useUndoAppointment } from './useUndoAppointment';
 
@@ -58,22 +60,16 @@ export function useOpportunityAppointments({
   const [canceling, setCanceling] = useState<UpcomingAppointment | null>(null);
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [completing, setCompleting] = useState<UpcomingAppointment | null>(null);
 
   const activityName = (code: string) => catalogs.name('ACTIVITY_TYPE', code) ?? code;
   const target = { label, branchId };
 
-  async function complete(row: UpcomingAppointment) {
-    setBusyId(row.id);
-    try {
-      await completeAppointment(supabase, row.id);
-      await refreshAll();
-      toast({ title: 'Đã hoàn thành lịch hẹn.', action: undo(row.id) });
-    } catch (e) {
-      toast({ tone: 'danger', title: errorOf(e).message });
-    } finally {
-      setBusyId(null);
-    }
+  /** Gọi từ hộp «Hoàn thành lịch hẹn» (TS-11): lỗi ném lại để hộp hiện câu lỗi, giữ nội dung đã nhập. */
+  async function complete(id: string, args: CompleteArgs) {
+    await completeAppointment(supabase, id, args);
+    await refreshAll();
+    toast({ title: 'Đã hoàn thành lịch hẹn.', action: undo(id) });
   }
 
   const upcoming = (
@@ -82,8 +78,8 @@ export function useOpportunityAppointments({
       activityName={activityName}
       canEdit={canEdit}
       canCancel={canCancel}
-      busyId={busyId}
-      onComplete={(row) => void complete(row)}
+      busyId={null}
+      onComplete={(row) => setCompleting(row)}
       onReschedule={(row) => setMoving({ ...row, branchId })}
       onCancel={(row) => {
         setCancelError(null);
@@ -94,6 +90,22 @@ export function useOpportunityAppointments({
 
   const dialogs = (
     <>
+      <CompleteAppointmentDialog
+        open={completing !== null}
+        onOpenChange={(o) => !o && setCompleting(null)}
+        target={
+          completing
+            ? {
+                id: completing.id,
+                activityCode: completing.activity_code,
+                label: `${activityName(completing.activity_code)} · ${completing.title}`,
+                context: `${label} · ${formatDateTime(completing.scheduled_at)}`,
+              }
+            : null
+        }
+        resultOptions={catalogs.options('APPOINTMENT_RESULT')}
+        onComplete={complete}
+      />
       <AppointmentDialog
         open={createOpen}
         onOpenChange={setCreateOpen}

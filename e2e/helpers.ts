@@ -204,3 +204,15 @@ export function shotPath(group: string, file: string): string {
   mkdirSync(dir, { recursive: true });
   return join(dir, file);
 }
+
+/**
+ * Hộp «Hoàn thành lịch hẹn» (TS-11) mở ra sau khi bấm nút Hoàn thành của một lịch: chọn kết quả đầu tiên trong danh mục nếu cần
+ * (bắt buộc với Gọi điện), rồi bấm Hoàn thành trong hộp.
+ */
+export async function confirmCompleteAppointment(page: Page) {
+  const dialog = page.getByRole('dialog', { name: 'Hoàn thành lịch hẹn' });
+  await expect(dialog).toBeVisible();
+  const result = dialog.getByLabel(/^Kết quả/);
+  await result.selectOption({ index: 1 });
+  await dialog.getByRole('button', { name: 'Hoàn thành', exact: true }).click();
+}
