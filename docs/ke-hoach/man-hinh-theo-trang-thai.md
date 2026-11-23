@@ -100,12 +100,12 @@ Cách đọc: **Có màn** = mục menu có tuyến thật, hoặc mã màn nằ
 | TC-03 | Tạo phiếu thu từ đơn hàng | B | **Có màn** `src/pages/phieu-thu/CreateReceiptDialog.tsx` | có (6 khung) | Gần đúng | phieu-thu.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code C/D |
 | TC-04 | Hàng chờ kế toán duyệt | B | **Có màn** `/crm/cho-ke-toan-duyet` | có (20 khung) | Lệch (chưa sửa) | — | Code C/D |
 | TC-05 | Kế toán duyệt / từ chối phiếu thu | A | **Có màn** `src/pages/phieu-thu/ReceiptRecordPage.tsx` | có (24 khung) | Gần đúng | phieu-thu.spec.ts, t4-duong-hoc-sinh-moi.spec.ts | Code C/D |
-| TC-06 | Huỷ phiếu thu (lý do) | C | **Có màn** `src/pages/phieu-thu/ReceiptRecordPage.tsx` | không có khung | chưa kiểm | — | Code C/D |
+| TC-06 | Huỷ phiếu thu (lý do) | C | **Có màn** `src/pages/phieu-thu/ReceiptRecordPage.tsx` | không có khung | Đúng (so khung bản ghi TC02_huy, 23/11) | — | Code C/D |
 | TC-07 | Bản in phiếu thu / biên nhận | B | **Có màn** `src/pages/phieu-chi/VoucherPrintPage.tsx` | có (4 khung) | Gần đúng | phieu-thu.spec.ts | Code C/D |
 | TC-08 | Khoản tiền vào (sổ thu tiền) | B | **Có màn** `/crm/khoan-tien-vao` | có (20 khung) | Đúng | thu-tien.spec.ts | Code C/D |
 | TC-09 | Đảo khoản tiền (lý do) | B | **Có màn** `/crm/khoan-tien-vao` (nút Hoàn tác ở từng dòng, hộp lý do K08) | có (8 khung) | Đúng | cskh-khieu-nai-bao-luu.spec.ts, duong-ke-toan.spec.ts | Code C/D |
 | TC-13 | Công nợ (đơn chưa thu đủ) | B | **Có màn** `/crm/cong-no` | có (16 khung) | Đúng | thu-tien.spec.ts | Code C/D |
-| TC-15 | Đối soát thu tiền | B | **Có màn** `/crm/doi-soat-thu-tien` | có (16 khung) | chưa kiểm | duong-ke-toan.spec.ts | Code C/D |
+| TC-15 | Đối soát thu tiền | B | **Có màn** `/crm/doi-soat-thu-tien` | có (16 khung) | Đúng nhãn (so TC15, _tai, _trong, _khong_quyen, 23/11; chip lọc mặc định do khuôn K03) | duong-ke-toan.spec.ts | Code C/D |
 | GV-15 | Chấm kiểm tra đầu vào | B | **Có màn** `src/pages/gv/TeacherTodoPage.tsx` | có (20 khung) | Đúng | — | Code E |
 | QT-14 | Ngày nghỉ lễ | B | **Có màn** `/crm/cau-hinh/ngay-nghi` | không có khung | chưa kiểm | ngay-nghi.spec.ts | Code F |
 | QT-15 | Cấu hình người duyệt ticket theo nhóm con | B | **Có màn** `/crm/cau-hinh/nguoi-duyet-ticket` | không có khung | chưa kiểm | — | Code F |
