@@ -63,3 +63,5 @@ Cách rà: lấy chữ của mọi khung `BH01*`, `BH05*`, `BH06*`, `BH07*`, `TC
 | BH-07 Duyệt đơn: ô «Đồng ý chiết khấu vượt trần» (D12) | canvas vẽ ô tích bắt buộc trước khi Duyệt | **Không làm, theo luật**: R-V2-11 (chốt) bỏ ô tích đồng ý (thay Đ102); trần 20% chỉ cảnh báo. Canvas vênh luật thì theo luật |
 | BH-01, BH-06 | «Lọc thông minh» (2 khung) | Chưa rõ: nút của khung canvas mẫu, không có trong bản đồ màn hình; Tester so ảnh trên staging |
 | BH-02 Báo giá, đơn (tạo/sửa) | nhãn «+ Thêm dòng», «+ Thêm quà tặng», «+ Thêm cả nhà», «Tặng tối đa 4 giờ»… là dữ liệu mẫu và nút ghép biểu tượng | Không so được bằng chữ (đã ghi ở bảng trên): cần Tester so ảnh |
+
+- TC-04 cột «Xử lý» (anh chốt 23/11 14:03, thẻ C-23-01): KHÔNG có nút Duyệt/Từ chối trên dòng; duyệt và từ chối làm trong trang chi tiết. Danh sách phiếu thu hiện chỉ có cột Người duyệt, không có nút trên dòng: đúng, không cần sửa.
