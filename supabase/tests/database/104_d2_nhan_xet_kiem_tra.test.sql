@@ -3,6 +3,8 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
+create function pg_temp.rev_avg(p uuid) returns numeric language sql security definer as $$ select app.review_average(p) $$;
+create function pg_temp.rc_count(p text, p_like text default null) returns integer language sql security definer as $$ select count(*)::int from app.review_criteria_for_subject(p) where p_like is null or code like p_like $$;
 
 -- Migration 577: hàm trợ giúp không cấp cho authenticated; bài kiểm gọi qua hàm bọc chạy bằng quyền chủ (pg_temp).
 create function pg_temp.session_pending_reason(p uuid) returns text language sql security definer as $$ select app.session_pending_reason(p) $$;
@@ -123,12 +125,12 @@ select app.set_attendance_teacher(pg_temp.s('p', 3), jsonb_build_array(jsonb_bui
 select pg_temp.sudo($$insert into app.session_content_line (session_id, branch_id, sort_order, line_text) select id, branch_id, 1, 'Nội dung buổi giả' from app.class_session where id = pg_temp.s('p', 1)$$);
 
 -- ================= Dữ liệu nạp sẵn (R-V2-19, R-V2-39) =================
-select is((select count(*)::int from app.review_criteria_for_subject('TOAN')), 9, 'Toán có đúng 9 tiêu chí: 3 Thái độ chung + 3 Tiếp thu + 3 Vận dụng (R-V2-19)');
-select is((select count(*)::int from app.review_criteria_for_subject('DAI')), 9, 'Đại số dùng bộ Toán (Q-186)');
-select is((select count(*)::int from app.review_criteria_for_subject('LY')), 9, 'Môn phụ (Vật lý) có đúng 9 tiêu chí chung (Q-189)');
-select is((select count(*)::int from app.review_criteria_for_subject('SAT')), 9, 'Môn phụ (SAT) có đúng 9 tiêu chí chung (Q-189)');
-select is((select count(*)::int from app.review_criteria_for_subject('LY') where code like 'TOAN\_%'), 0, 'Môn phụ không nhận tiêu chí riêng của Toán');
-select is((select count(*)::int from app.review_criteria_for_subject('TOAN') where code like 'TT\_%' or code like 'VD\_%'), 0, 'Toán không nhận tiêu chí của bộ môn phụ');
+select is(pg_temp.rc_count('TOAN'), 9, 'Toán có đúng 9 tiêu chí: 3 Thái độ chung + 3 Tiếp thu + 3 Vận dụng (R-V2-19)');
+select is(pg_temp.rc_count('DAI'), 9, 'Đại số dùng bộ Toán (Q-186)');
+select is(pg_temp.rc_count('LY'), 9, 'Môn phụ (Vật lý) có đúng 9 tiêu chí chung (Q-189)');
+select is(pg_temp.rc_count('SAT'), 9, 'Môn phụ (SAT) có đúng 9 tiêu chí chung (Q-189)');
+select is(pg_temp.rc_count('LY', 'TOAN\_%'), 0, 'Môn phụ không nhận tiêu chí riêng của Toán');
+select is((pg_temp.rc_count('TOAN', 'TT\_%') + pg_temp.rc_count('TOAN', 'VD\_%')), 0, 'Toán không nhận tiêu chí của bộ môn phụ');
 select is((select count(*)::int from app.review_criterion where is_active and subject_set = 'MOI_MON' and group_code = 'THAI_DO'), 3, 'Nhóm Thái độ có 3 tiêu chí chung mọi môn (R-V2-19)');
 select is((select string_agg(name, ' | ' order by sort_order) from app.review_criterion where subject_set = 'MON_PHU'),
           'Ghi nhớ kiến thức | Hiểu bản chất | Nhận biết dạng bài | Làm bài vận dụng | Tư duy lập luận | Trình bày chính xác', 'Tên 6 tiêu chí môn phụ đúng thứ tự (Q-189)');
@@ -184,11 +186,11 @@ select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), 'Còn 13 ô nhận 
 select app.set_review_all_class(pg_temp.s('p', 1), rc.criterion_id) from app.session_review_criterion rc where rc.session_id = pg_temp.s('p', 1) and rc.enabled;
 -- Em 1: tiêu chí Chủ động 5, còn lại 3 (Tự giác vừa bị Cả lớp ghi đè thành 3): 7×3 + 5 = 26 → 26 ÷ 8 = 3,25.
 select app.set_review_scores(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'criterion_id', (select id from app.review_criterion where code = 'TD_CHU_DONG'), 'state', 'DA_DANH_GIA', 'score', 5)));
-select is(app.review_average((select id from app.session_attendance where session_id = pg_temp.s('p', 1) and student_id = pg_temp.st(1))), 3.25::numeric, 'Điểm trung bình do DB tính, không làm tròn: 26 ÷ 8 = 3,25 (R-GV-03)');
+select is(pg_temp.rev_avg((select id from app.session_attendance where session_id = pg_temp.s('p', 1) and student_id = pg_temp.st(1))), 3.25::numeric, 'Điểm trung bình do DB tính, không làm tròn: 26 ÷ 8 = 3,25 (R-GV-03)');
 -- Em 2: bốn tiêu chí 5 và bốn tiêu chí 4 → 36 ÷ 8 = 4,5 đúng ngưỡng mức 4.
 select app.set_review_scores(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(2), 'criterion_id', c.id, 'state', 'DA_DANH_GIA', 'score', case when c.rn <= 4 then 5 else 4 end)))
   from (select rc.criterion_id as id, row_number() over (order by rc.sort_order) as rn from app.session_review_criterion rc where rc.session_id = pg_temp.s('p', 1) and rc.enabled) c;
-select is(app.review_average((select id from app.session_attendance where session_id = pg_temp.s('p', 1) and student_id = pg_temp.st(2))), 4.5::numeric, 'Trung bình em 2 đúng 4,5');
+select is(pg_temp.rev_avg((select id from app.session_attendance where session_id = pg_temp.s('p', 1) and student_id = pg_temp.st(2))), 4.5::numeric, 'Trung bình em 2 đúng 4,5');
 select is((app.parent_message_hint(pg_temp.s('p', 1), pg_temp.st(2)) ->> 'level')::int, 4, 'Mức gợi ý 4 khi trung bình đúng 4,5 (R-V2-39: từ 4,5)');
 select is((app.parent_message_hint(pg_temp.s('p', 1), pg_temp.st(1)) ->> 'level')::int, 2, 'Mức gợi ý 2 khi trung bình 3,25 (R-V2-39: từ 2,5 đến dưới 3,5)');
 select is(jsonb_array_length(app.parent_message_hint(pg_temp.s('p', 1), pg_temp.st(1)) -> 'phrases'), 3, 'Mỗi mức gợi ý 3 câu mẫu (R-V2-39)');
