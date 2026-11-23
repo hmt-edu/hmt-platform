@@ -28,8 +28,13 @@ export function ApprovalsPage() {
   const rows: ApprovalRow[] = list.data?.rows ?? [];
   const total = list.data?.total ?? 0;
   const config = useMemo(
-    () => buildApprovalsConfig(access, list.data?.counts),
-    [access, list.data?.counts],
+    () =>
+      buildApprovalsConfig(
+        access,
+        list.data?.counts,
+        list.data === undefined || list.data.rows.some((r) => r.subject_name !== null),
+      ),
+    [access, list.data],
   );
 
   return (

@@ -2,7 +2,7 @@
 // Dữ liệu giả: bật phân hệ AFTERSALE cho CS5 và dựng một phụ huynh giả có dấu riêng mỗi dự án; ticket tạo bằng giao diện.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, expectAccessible, isPhone, pickOption } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, pickSearchedOption } from './helpers';
 import { DB_URL, setupOf } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phụ huynh giả).');
@@ -64,7 +64,12 @@ test('Tạo khiếu nại: thiếu ô thì báo tại ô; đủ thì lưu và m�
   await page.getByLabel('Tiêu đề').fill(title);
   await page.getByLabel('Kênh').click();
   await page.getByRole('option', { name: 'Gọi điện' }).click();
-  await pickOption(page, page.getByRole('combobox', { name: 'Phụ huynh' }), parentName);
+  await pickSearchedOption(
+    page,
+    page.getByRole('combobox', { name: 'Phụ huynh' }),
+    parentName,
+    parentName,
+  );
   await page.getByLabel('Nhóm', { exact: true }).click();
   await page.getByRole('option', { name: 'Học sinh trong lớp' }).click();
   await page.getByLabel('Nhóm con').click();
@@ -126,7 +131,12 @@ test('Khách huỷ (CS-12): chỉ ticket Đề nghị có nút; lý do bắt bu�
   await page.getByLabel('Tiêu đề').fill(dnTitle);
   await page.getByLabel('Kênh').click();
   await page.getByRole('option', { name: 'Gọi điện' }).click();
-  await pickOption(page, page.getByRole('combobox', { name: 'Phụ huynh' }), parentName);
+  await pickSearchedOption(
+    page,
+    page.getByRole('combobox', { name: 'Phụ huynh' }),
+    parentName,
+    parentName,
+  );
   await page.getByLabel('Nhóm', { exact: true }).click();
   await page.getByRole('option', { name: 'Hỗ trợ', exact: true }).click();
   await page.getByLabel('Nhóm con').click();

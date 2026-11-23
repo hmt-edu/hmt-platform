@@ -3,7 +3,7 @@
 // Luật R-TIEN-28, R-TIEN-33, R-TIEN-34, R-HT-01.
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, expectAccessible } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, showAllColumns } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phiếu chi giả).');
@@ -86,6 +86,7 @@ test('TC-10, TC-11: danh sách phiếu chi không có nút Tạo; bản ghi hi�
   await page.goto('/crm/phieu-chi');
   await expect(page.getByRole('heading', { level: 1, name: 'Phiếu chi' })).toBeVisible();
   await page.getByRole('searchbox').fill(`PC-${m}`);
+  await showAllColumns(page);
   await expect(page.getByText(`PC-${m}`).first()).toBeVisible();
   await expect(page.getByText('534.600').first()).toBeVisible();
   await expect(page.getByText('Chờ chi').first()).toBeVisible();

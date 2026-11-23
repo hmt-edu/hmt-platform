@@ -49,7 +49,10 @@ test('khung CRM: menu tối theo quyền, đường dẫn trên thanh trên, chu
   await expect(crumbs).toContainText('Trang chủ');
   if (!isPhone(page)) {
     await expect(page.getByTestId('ten-nguoi-dung')).toBeVisible();
-    await expect(page.getByText(/Tuyển sinh · CS5 Mỹ Đình/)).toBeVisible();
+    // Thanh tài khoản (T13): vai trò và cơ sở mỗi thứ một dòng dưới tên, không còn dấu «·».
+    const account = page.getByTestId('ten-nguoi-dung').locator('..');
+    await expect(account).toContainText('Tuyển sinh');
+    await expect(account).toContainText('CS5 Mỹ Đình');
   }
   await expect(page.getByRole('button', { name: /^Thông báo/ })).toBeEnabled();
   await expectAccessible(page);
