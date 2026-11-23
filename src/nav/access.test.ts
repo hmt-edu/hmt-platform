@@ -29,6 +29,19 @@ const perm = (module_code: string, action_code: string, role_code = 'SALE') => (
 const slugs = (menu: ReturnType<typeof visibleMenu>) =>
   menu.flatMap((g) => g.entries.map((e) => e.slug));
 
+describe('buildAccess: cơ sở mặc định (lịch tuần cơ sở, A-23-09)', () => {
+  it('người một cơ sở (Trưởng CS5) mặc định là CS5, không phải cơ sở đầu danh sách CS1; ô chọn chỉ có CS5', () => {
+    const access = buildAccess(data(), { roles: ['SALE'], branchCode: 'CS5' }, ALL_BRANCHES);
+    expect(access.defaultBranchId).toBe('b5');
+    expect(access.viewableBranches.map((b) => b.code)).toEqual(['CS5']);
+  });
+  it('người thấy mọi cơ sở: mặc định là cơ sở dạy học đầu tiên, chọn được mọi cơ sở dạy học', () => {
+    const access = buildAccess(data(), { roles: ['ADMIN'], branchCode: 'CS3' }, ALL_BRANCHES);
+    expect(access.defaultBranchId).toBe('b1');
+    expect(access.viewableBranches.map((b) => b.code)).toEqual(['CS1', 'CS5']);
+  });
+});
+
 describe('buildAccess', () => {
   it('quyền đọc từ ma trận: có dòng (phân hệ, hành động) mới được', () => {
     const access = buildAccess(

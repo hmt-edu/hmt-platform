@@ -78,10 +78,21 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await expect(page.getByText('Lớp ở Nháp: sửa được thông tin.')).toBeVisible();
   await expect(page.getByText('Lớp không thuộc nhóm nào.', { exact: false })).toBeVisible();
   await expect(page.getByText('Học chung').first()).toBeVisible();
-  // Chi tiết lớp theo khuôn chung: Time Table 7 tab theo thứ; Học sinh và Buổi học là tab có bảng riêng.
+  // Chi tiết lớp theo khuôn chung: Time Table 7 tab theo thứ; Học sinh và Buổi học là smart button (không còn bảng tab lặp bên dưới).
   await expect(page.getByRole('tab', { name: /^Thứ 3/ })).toBeVisible();
-  await expect(page.getByRole('tab', { name: /^Học sinh/ })).toBeVisible();
-  await expect(page.getByRole('tab', { name: /^Buổi học/ })).toBeVisible();
+  await expect(page.getByRole('tab', { name: /^Học sinh/ })).toHaveCount(0);
+  await expect(page.getByRole('tab', { name: /^Buổi học/ })).toHaveCount(0);
+  // Nút Sửa hiện ở thanh trên (lớp Nháp), không chỉ trong menu Hành động.
+  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
+  // Smart button mở danh sách của lớp, có nút quay lại lớp.
+  await page.getByRole('button', { name: /^Học sinh/ }).click();
+  await expect(page).toHaveURL(/\/crm\/lop\/[0-9a-f-]{36}\/hoc-sinh$/);
+  await page.getByRole('button', { name: /^Quay lại lớp/ }).click();
+  await expect(page).toHaveURL(recordUrl);
+  await page.getByRole('button', { name: /^Buổi học/ }).click();
+  await expect(page).toHaveURL(/\/crm\/buoi-hoc\?lop=[0-9a-f-]{36}$/);
+  await page.getByRole('button', { name: /^Quay lại lớp/ }).click();
+  await expect(page).toHaveURL(recordUrl);
 
   // LOP-01: tìm theo mã cũ (R-LOP-15).
   await page.goto('/crm/lop');
