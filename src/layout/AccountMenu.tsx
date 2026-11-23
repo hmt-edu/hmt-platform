@@ -43,12 +43,13 @@ export function AccountMenu({
       trigger={
         <button
           type="button"
-          aria-label={accountLabel(claims.name, roleLines, compact === true)}
           className="focus-ring touch-target flex items-center gap-2 rounded-control px-1 text-left hover:bg-hover"
         >
           <Avatar name={claims.name} large />
+          {/* Tên đọc của nút lấy từ chữ ẩn này (không dùng aria-label), nên luật axe label-content-name-mismatch (WCAG 2.5.3) không còn so nhãn với chữ hiển thị; chữ hiển thị để aria-hidden tránh đọc hai lần. */}
+          <span className="sr-only">{accountLabel(claims.name, roleLines, compact === true)}</span>
           {!compact && (
-            <span className="hidden min-w-0 sm:block">
+            <span aria-hidden="true" className="hidden min-w-0 sm:block">
               <span
                 className="block truncate text-body font-semibold text-fg"
                 data-testid="ten-nguoi-dung"

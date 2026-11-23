@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { fetchRows, rpc, useDb } from '../../lib/db';
-import type { FeatureFlag, FeatureModule } from './featureLogic';
+import { withSwitch, type FeatureFlag, type FeatureModule } from './featureLogic';
 
 export function useFeatureModules() {
   const supabase = useDb();
@@ -11,17 +11,19 @@ export function useFeatureModules() {
     queryKey: ['feature-modules'],
     staleTime: Infinity,
     queryFn: async () =>
-      (
-        await fetchRows<FeatureModule>(
-          supabase
-            .schema('app')
-            .from('catalog_item')
-            .select('code, name')
-            .eq('catalog_code', 'MODULE')
-            .eq('is_active', true)
-            .order('sort_order'),
-        )
-      ).rows,
+      withSwitch(
+        (
+          await fetchRows<FeatureModule>(
+            supabase
+              .schema('app')
+              .from('catalog_item')
+              .select('code, name')
+              .eq('catalog_code', 'MODULE')
+              .eq('is_active', true)
+              .order('sort_order'),
+          )
+        ).rows,
+      ),
   });
 }
 
