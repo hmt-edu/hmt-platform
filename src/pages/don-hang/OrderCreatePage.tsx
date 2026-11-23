@@ -13,6 +13,7 @@ import { HmtError, errorOf, useDb } from '../../lib/db';
 import { useAuth } from '../../lib/auth/authContext';
 import { formatDate, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
+import { branchLabel } from './orderBranch';
 import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
@@ -406,6 +407,7 @@ function FromQuotation({
   backLink: React.ReactNode;
 }) {
   const query = useQuotation(quotationId);
+  const access = useAccess();
   if (query.isPending) return <Spinner label="Đang tải báo giá…" />;
   if (query.isError) {
     const forbidden = query.error instanceof HmtError && query.error.code === 'HMT_KHONG_CO_QUYEN';
@@ -439,7 +441,7 @@ function FromQuotation({
       quotationId={q.id}
       quotationCode={q.code}
       parent={`${q.parent_name} · ${q.parent_code} · ${formatPhone(q.parent_phone)}`}
-      branch={`${q.branch_code}`}
+      branch={branchLabel(q.branch_code, access.teachingBranches)}
       lines={open}
     />
   );
