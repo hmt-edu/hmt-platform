@@ -395,8 +395,21 @@ const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
   'TeacherSchedulePage',
 );
+const StudentSchedulePage = lazyScreen(
+  () => import('../pages/hoc/StudentSchedulePage'),
+  'StudentSchedulePage',
+);
+const StudentAssignmentsPage = lazyScreen(
+  () => import('../pages/hoc/StudentAssignmentsPage'),
+  'StudentAssignmentsPage',
+);
+const StudentAssignmentPage = lazyScreen(
+  () => import('../pages/hoc/StudentAssignmentPage'),
+  'StudentAssignmentPage',
+);
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
+const GuidePage = lazyScreen(() => import('../pages/huong-dan/GuidePage'), 'GuidePage');
 const HomePage = lazyScreen(() => import('../pages/HomePage'), 'HomePage');
 const DetailDemoPage = lazyScreen(() => import('../pages/dev/DetailDemoPage'), 'DetailDemoPage');
 const DialogsDemoPage = lazyScreen(() => import('../pages/dev/DialogsDemoPage'), 'DialogsDemoPage');
@@ -455,6 +468,7 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { index: true, element: <CrmHome /> },
+          { path: 'huong-dan/:slug?', element: <GuidePage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           {
             path: 'lead',
@@ -1264,8 +1278,9 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { index: true, element: <PortalTabPage title="Trang chủ" stage={GD4} /> },
-          { path: 'bai-tap', element: <PortalTabPage title="Bài tập" stage={GD4} /> },
-          { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
+          { path: 'bai-tap', element: <StudentAssignmentsPage /> },
+          { path: 'bai-tap/:id', element: <StudentAssignmentPage /> },
+          { path: 'lich', element: <StudentSchedulePage /> },
           { path: 'ket-qua', element: <PortalTabPage title="Kết quả" stage={GD4} /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },

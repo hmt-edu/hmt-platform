@@ -2,6 +2,8 @@
 -- Luật: R-CRM-27 (không trùng SĐT, không trùng em), R-CRM-28 (cơ sở tiếp nhận chỉ Admin), R-CRM-25 (bản đã gộp chỉ đọc), R-V2-04, Đ165.
 begin;
 update app.setting_def set value = 'true' where key = 'mfa_required_enabled';
+-- 647 (A-23-27): bắt hai bước chỉ còn Admin; bài này vẫn kiểm luật aal2 cho Kế toán nên dựng lại cờ trong giao dịch của bài (hoàn tác khi kết thúc).
+do $$ begin perform set_config('hmt.migration', 'on', true); update app.role set require_mfa = true where code = 'ACCOUNTANT'; perform set_config('hmt.migration', '', true); end $$;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 

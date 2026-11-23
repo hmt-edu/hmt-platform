@@ -3,6 +3,7 @@ import {
   buildSave,
   cellOf,
   classProgress,
+  countCellStates,
   EMPTY_DRAFT,
   clearCell,
   isReviewDirty,
@@ -116,5 +117,29 @@ describe('Chấm nhận xét từng em (GV-07)', () => {
     expect(isReviewEditable('DA_CHOT', 'TIEU_CHI')).toBe(true);
     expect(isReviewEditable('DA_CHOT', 'DIEM')).toBe(false);
     expect(isReviewEditable('DONE', 'TIEU_CHI')).toBe(false);
+  });
+});
+
+describe('countCellStates (hộp thống kê 4 ô GV07)', () => {
+  it('đếm đủ 4 trạng thái, tiêu chí tắt cả buổi tính Không áp dụng', () => {
+    const criteria = ['a', 'b', 'c', 'd'].map((id) => ({
+      criterion_id: id,
+      group_code: 'THAI_DO',
+      name: id,
+      hint: null,
+      levels: null,
+      enabled: id !== 'd',
+    })) as unknown as ReviewCriterion[];
+    const student = {
+      student_id: 's1',
+      scores: {
+        a: { state: 'DA_DANH_GIA', score: 4 },
+        b: { state: 'CHUA_DU_CAN_CU', score: null },
+      },
+    } as unknown as ReviewStudent;
+    const counts = countCellStates(EMPTY_DRAFT, student, criteria);
+    expect(counts.DA_DANH_GIA).toBe(1);
+    expect(counts.CHUA_DU_CAN_CU).toBe(1);
+    expect(counts.CHUA_DANH_GIA + counts.KHONG_AP_DUNG).toBe(2);
   });
 });
