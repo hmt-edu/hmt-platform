@@ -1,4 +1,5 @@
 // Hàm thuần của CHUNG-15: nhãn loại việc, đường mở bản ghi, thời gian chờ, bộ lọc. Có kiểm thử.
+import { TASK_TYPE_LABEL } from '../phieu/taskLabels';
 import type { ListState } from '../../list/types';
 import type { ApprovalFilters, ApprovalKind, ApprovalRow } from './approvalsTypes';
 
@@ -65,4 +66,13 @@ export function approvalFilters(state: ListState): ApprovalFilters {
     if (value !== '' && cond.field === 'branch' && cond.op === 'eq') filters.branch_id = value;
   }
   return filters;
+}
+
+/**
+ * Chữ cột «Nội dung»: phiếu nghiệp vụ lấy mã loại phiếu từ máy chủ (CAP_NHAT_HO_SO…); người dùng chỉ thấy tên việc tiếng Việt từ bảng nhãn dùng chung.
+ * Loại không có trong bảng nhãn thì để nguyên chữ máy chủ gửi (không đoán).
+ */
+export function detailText(row: Pick<ApprovalRow, 'kind' | 'detail'>): string | null {
+  if (row.detail === null) return null;
+  return row.kind === 'PHIEU_NGHIEP_VU' ? (TASK_TYPE_LABEL[row.detail] ?? row.detail) : row.detail;
 }
