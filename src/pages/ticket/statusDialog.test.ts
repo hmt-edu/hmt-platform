@@ -38,6 +38,8 @@ describe('hộp thoại đổi trạng thái (CSN-04)', () => {
     const s = statusDialogSpec({ ...base, to: 'DA_HUY', customerCancel: true });
     expect(s.title).toBe('Khách huỷ ticket');
     expect(s.noteRequired).toBe(true);
+    expect(s.confirmLabel).toBe('Xác nhận khách huỷ');
+    expect(s.hint).toBe('Bắt buộc. Ghi vào nhật ký ticket (R-CS-05).');
     expect(statusDialogSpec({ ...base, to: 'DA_HUY' }).title).toBeNull();
   });
 });
