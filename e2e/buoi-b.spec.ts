@@ -2,7 +2,7 @@
 // Máy tính: cổng CRM ưu tiên máy tính nên chỉ chạy dự án may-tinh.
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, pickOption } from './helpers';
+import { PASSWORD, enterAs, pickOption, showAllColumns } from './helpers';
 import { DB_URL } from './bao-gia-seed';
 import { seedAttendance, type AttendanceSeed } from './gv-diem-danh-seed';
 
@@ -64,6 +64,7 @@ test('BUOI-01: buổi đã huỷ hiện lý do ở cột Ghi chú', async ({ pag
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/buoi-hoc');
   await page.getByRole('searchbox').fill(classCode);
+  await showAllColumns(page);
   const row = page.locator(`a[href="/crm/buoi-hoc/${seed.nhap}"]`).first();
   await expect(row).toBeVisible();
   await expect(page.getByRole('row').filter({ has: row })).toContainText('Thời tiết');
@@ -96,6 +97,7 @@ test('BUOI-12: buổi Đã chốt đã kết thúc có trong danh sách kèm h�
   await page.goto('/crm/buoi-chua-done');
   await expect(page.getByRole('heading', { level: 1, name: 'Buổi chưa hoàn tất' })).toBeVisible();
   await page.getByRole('searchbox').fill(classCode);
+  await showAllColumns(page);
   const row = page.getByRole('row').filter({ hasText: classCode }).first();
   await expect(row).toBeVisible();
   await expect(row).toContainText(/Quá hạn|Còn/);

@@ -23,7 +23,8 @@ describe('khối của Trang chủ hiện theo quyền và công tắc tính nă
   it('khối việc theo vai trò: mỗi khối hiện theo quyền và công tắc của màn nguồn', () => {
     const ids = (can: (m: string, a: string) => boolean, feature = () => true) =>
       visibleHomeBlocks(HOME_BLOCKS, can, feature).map((b) => b.id);
-    expect(ids(only('TICKET|SUA'))).toEqual(['reviews']);
+    // K09c: không có khối «Nhận xét chờ gửi» (CS-16 đã bỏ).
+    expect(ids(only('TICKET|SUA'))).toEqual([]);
     expect(ids(only('SESSION|XEM'))).toEqual(['sessions']);
     expect(ids(only('SESSION|XEM'), () => false)).toEqual([]);
     expect(ids(only('SALES_ORDER|XEM'))).toEqual(['debt']);
