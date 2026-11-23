@@ -30,3 +30,12 @@ describe('Lịch học cổng HT-06/PH-05', () => {
     expect(timeRange(base)).toBe('18:00 – 19:30');
   });
 });
+
+describe('Bài tập cổng HT-02', () => {
+  it('nhãn hạn nộp theo công tắc nhận bài muộn (R-LMS-02)', async () => {
+    const { dueNote } = await import('./portalData');
+    expect(dueNote({ is_overdue: false, allow_late: false })).toBe('Hạn nộp');
+    expect(dueNote({ is_overdue: true, allow_late: true })).toContain('vẫn nhận');
+    expect(dueNote({ is_overdue: true, allow_late: false })).toContain('không nhận');
+  });
+});
