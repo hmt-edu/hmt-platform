@@ -220,12 +220,12 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-  preview:
-    name: Bản xem trước (Cloudflare Pages)
+  # S5 (RS-23-12): tách dựng và triển khai. Job dựng chạy mã của PR (npm ci, build) nhưng KHÔNG có secret, KHÔNG có environment, chỉ quyền đọc;
+  # job triển khai bên dưới mới có token Cloudflare và không chạy bất kỳ mã nào của PR (không checkout, không npm ci).
+  preview-build:
+    name: Dựng bản xem trước (không có khoá)
     needs: [checks, db, e2e, changes]
-    # Chỉ khi PR gắn nhãn `preview` (Q-21, anh chốt 06/11), chỉ PR từ chính repo (PR từ fork không có secrets) và chỉ khi PR đổi giao diện.
-    # Gắn nhãn `preview` thì chỉ job này chạy (kiểm nhanh, DB, Playwright bị bỏ: kết quả skipped được chấp nhận); đẩy commit mới thì chờ kiểm nhanh
-    # và DB xanh như trước. Bộ lọc/job `changes` hỏng hoặc bị bỏ thì vẫn chạy (an toàn); always() để không bị bỏ qua dây chuyền.
+    # Chỉ khi PR gắn nhãn `preview` (Q-21, anh chốt 06/11), chỉ PR từ chính repo và chỉ khi PR đổi giao diện (điều kiện giống job triển khai).
     if: >-
       always() && contains(github.event.pull_request.labels.*.name, 'preview') &&
       (needs.checks.result == 'success' || needs.checks.result == 'skipped') &&
@@ -237,6 +237,58 @@ jobs:
       (needs.changes.outputs.full == 'true' && needs.changes.outputs.ui == 'true'))
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_APP_ENV: preview
+      VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
+    outputs:
+      ready: ${{ steps.cfg.outputs.ready }}
+    steps:
+      - name: Kiểm tra biến công khai
+        id: cfg
+        run: |
+          if [ -n "$VITE_SUPABASE_URL" ] && [ -n "$VITE_SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Bỏ qua bản xem trước vì chưa cài VITE_SUPABASE_URL hoặc VITE_SUPABASE_PUBLISHABLE_KEY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.cfg.outputs.ready == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - if: steps.cfg.outputs.ready == 'true'
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - if: steps.cfg.outputs.ready == 'true'
+        run: npm ci
+
+      - if: steps.cfg.outputs.ready == 'true'
+        run: npm run build
+
+      - if: steps.cfg.outputs.ready == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: preview-dist
+          path: dist/
+          retention-days: 1
+          if-no-files-found: error
+
+  preview:
+    name: Bản xem trước (Cloudflare Pages)
+    needs: [preview-build]
+    # Chỉ chạy khi job dựng thành công (cùng điều kiện nhãn/PR của job dựng).
+    if: needs.preview-build.result == 'success' && needs.preview-build.outputs.ready == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     # Repo công khai (16/11/2026): secret Cloudflare phải nằm trong GitHub Environment `preview` có «Required reviewers» và chỉ nhánh được phép,
     # KHÔNG để ở secret chung của repo. Nhờ vậy PR sửa workflow hoặc gắn nhãn `preview` không tự đọc được token; người duyệt bấm Approve mới chạy.
     # (Cài đặt Environment làm trên web: Settings > Environments > preview; xem SECURITY.md.)
@@ -244,12 +296,10 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    # Khoá Cloudflare chỉ đưa vào đúng bước cần, không để npm ci thấy.
+    # Khoá Cloudflare chỉ đưa vào đúng bước cần. Job này không checkout, không chạy mã của PR.
     env:
-      VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
-      VITE_APP_ENV: preview
-      VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
+      # Ghim phiên bản wrangler (S6, RS-23-12); giữ khớp với "wrangler" trong package.json.
+      WRANGLER_VERSION: 4.161.0
       HEAD_REF: ${{ github.event.pull_request.head.ref }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
     steps:
@@ -275,8 +325,6 @@ jobs:
           missing=""
           [ -n "$CLOUDFLARE_API_TOKEN" ] || missing="$missing CLOUDFLARE_API_TOKEN"
           [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing="$missing CLOUDFLARE_ACCOUNT_ID"
-          [ -n "$VITE_SUPABASE_URL" ] || missing="$missing VITE_SUPABASE_URL"
-          [ -n "$VITE_SUPABASE_PUBLISHABLE_KEY" ] || missing="$missing VITE_SUPABASE_PUBLISHABLE_KEY"
           if [ -n "$missing" ]; then
             echo "::notice::Bỏ qua bản xem trước vì chưa cài:$missing"
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -285,21 +333,24 @@ jobs:
           fi
 
       - if: steps.cfg.outputs.ready == 'true'
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          persist-credentials: false
+          name: preview-dist
+          path: dist
 
       - if: steps.cfg.outputs.ready == 'true'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version-file: .nvmrc
-          cache: npm
+          # Không checkout nên không đọc được .nvmrc; giữ khớp với .nvmrc (24).
+          node-version: 24
 
-      - if: steps.cfg.outputs.ready == 'true'
-        run: npm ci
-
-      - if: steps.cfg.outputs.ready == 'true'
-        run: npm run build
+      # Cài wrangler đúng phiên bản ghim vào thư mục tạm NGOÀI mã PR, tắt script cài đặt (S5, S6).
+      - name: Cài wrangler bản ghim
+        if: steps.cfg.outputs.ready == 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/wr"
+          npm install --prefix "$RUNNER_TEMP/wr" --no-save --ignore-scripts --no-audit --no-fund "wrangler@$WRANGLER_VERSION"
+          echo "$RUNNER_TEMP/wr/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Tạo project Pages hmt-staging nếu chưa có
         if: steps.cfg.outputs.ready == 'true'
@@ -320,7 +371,7 @@ jobs:
             echo "::error::Secret CLOUDFLARE_ACCOUNT_ID sai dạng (phải là 32 ký tự 0-9, a-f)."
             exit 1
           fi
-          if ! out="$(npx wrangler pages project create hmt-staging --production-branch=main 2>&1)"; then
+          if ! out="$(wrangler pages project create hmt-staging --production-branch=main 2>&1)"; then
             if printf '%s' "$out" | grep -qiE 'already exists|8000002'; then
               echo "Project hmt-staging đã có."
             else
@@ -356,7 +407,7 @@ jobs:
           if [ -z "$branch" ] || [ "$branch" = "main" ]; then
             branch="pr-$PR_NUMBER"
           fi
-          out="$(npx wrangler pages deploy dist --project-name=hmt-staging --branch="$branch" 2>&1)" || {
+          out="$(wrangler pages deploy dist --project-name=hmt-staging --branch="$branch" 2>&1)" || {
             echo "::error::wrangler pages deploy lỗi. Vài dòng cuối đã lọc:"
             printf '%s\n' "$out" | tail -n 5 | cut -c1-200
             exit 1
