@@ -302,3 +302,5 @@ test('Admin, Kế toán: không bắt hai bước (D41), vào CRM bằng mật k
   await page.getByRole('dialog').getByRole('button', { name: 'Gỡ thiết bị' }).click();
   await expect(page.getByRole('button', { name: 'Gỡ' })).toHaveCount(1);
 });
+
+// B-23-10: dòng ghi chú tạm để CI chạy Playwright đầy đủ; PR này không gộp.
