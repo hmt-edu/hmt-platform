@@ -49,7 +49,9 @@ test('khung CRM: menu tối theo quyền, đường dẫn trên thanh trên, chu
   await expect(crumbs).toContainText('Trang chủ');
   if (!isPhone(page)) {
     await expect(page.getByTestId('ten-nguoi-dung')).toBeVisible();
-    await expect(page.getByText(/Tuyển sinh · CS5 Mỹ Đình/)).toBeVisible();
+    // T13: vai trò và cơ sở mỗi thứ một dòng.
+    await expect(page.getByText('Tuyển sinh', { exact: true })).toBeVisible();
+    await expect(page.getByText('CS5 Mỹ Đình', { exact: true }).first()).toBeVisible();
   }
   await expect(page.getByRole('button', { name: /^Thông báo/ })).toBeEnabled();
   await expectAccessible(page);
