@@ -55,7 +55,10 @@ export function TeacherTodayPage() {
   if (query.isPending) {
     return (
       <div className="mx-auto flex max-w-xl flex-col gap-3">
-        <h1 className="text-h2">Hôm nay</h1>
+        <div>
+          <h1 className="text-h2">Hôm nay</h1>
+          <p className="text-body text-fg-muted">{formatDayHeading(todayKey)}</p>
+        </div>
         <div role="status" aria-label="Đang tải" className="flex flex-col gap-2">
           {[0, 1, 2].map((i) => (
             <div key={i} className="h-16 animate-pulse rounded-control bg-surface-subtle" />
@@ -171,6 +174,11 @@ function SessionItem({ session: s }: { session: MySession }) {
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{sessionTitle(s)}</p>
+          {(s.room_name || s.session_type_name) && (
+            <p className="text-caption text-fg-muted">
+              {[s.room_name, s.session_type_name].filter(Boolean).join(' · ')}
+            </p>
+          )}
           {s.my_role === 'TRO_GIANG' && <p className="text-caption text-fg-muted">Trợ giảng</p>}
           <div className="mt-1">
             {s.status_code === 'DONE' ? (

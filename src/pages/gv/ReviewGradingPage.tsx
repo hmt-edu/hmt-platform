@@ -5,6 +5,7 @@ import { StickyActionBar } from '../../ui/StickyActionBar';
 import { UnsavedGuard } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { GvLoading } from './GvLoading';
 import { cn } from '../../ui/cn';
 import { useToast } from '../../ui/toastContext';
 import { errorOf, FORBIDDEN_CODE } from '../../lib/db';
@@ -49,11 +50,7 @@ export function ReviewGradingPage() {
   const query = useReviewSheet(sessionId);
 
   if (query.isPending) {
-    return (
-      <div className="flex min-h-40 items-center justify-center p-4">
-        <Spinner />
-      </div>
-    );
+    return <GvLoading title="Chấm nhận xét" />;
   }
   if (query.isError) {
     const error = errorOf(query.error);

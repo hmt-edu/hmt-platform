@@ -8,7 +8,8 @@ import { errorOf, rpc, useDb } from '../../lib/db';
 import { Button, ButtonLink } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog, UnsavedGuard } from '../../ui/Dialogs';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Alert, StateView } from '../../ui/Feedback';
+import { GvLoading } from './GvLoading';
 import { Dialog } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { cn } from '../../ui/cn';
@@ -68,11 +69,7 @@ export function TeacherAttendancePage() {
   });
 
   if (query.isPending) {
-    return (
-      <Shell title="Điểm danh">
-        <Spinner />
-      </Shell>
-    );
+    return <GvLoading title="Điểm danh" />;
   }
   if (query.isError) {
     const err = errorOf(query.error);

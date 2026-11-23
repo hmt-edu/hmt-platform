@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { Button, ButtonLink } from '../../ui/Button';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Alert, StateView } from '../../ui/Feedback';
+import { GvLoading } from './GvLoading';
 import { errorOf, FORBIDDEN_CODE } from '../../lib/db';
 import { formatDate, formatDateTime, formatNumber } from '../../lib/format';
 import { cn } from '../../ui/cn';
@@ -46,11 +47,7 @@ export function SessionStepsPage() {
   const query = useSessionOverview(sessionId);
 
   if (query.isPending) {
-    return (
-      <div className="flex min-h-40 items-center justify-center p-4">
-        <Spinner />
-      </div>
-    );
+    return <GvLoading title="Buổi dạy" />;
   }
   if (query.isError) {
     const error = errorOf(query.error);

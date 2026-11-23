@@ -4,7 +4,8 @@ import { StickyActionBar } from '../../ui/StickyActionBar';
 import { Button, ButtonLink } from '../../ui/Button';
 import { UnsavedGuard } from '../../ui/Dialogs';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
-import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { Alert, StateView } from '../../ui/Feedback';
+import { GvLoading } from './GvLoading';
 import { useToast } from '../../ui/toastContext';
 import { errorOf, FORBIDDEN_CODE } from '../../lib/db';
 import { formatDate } from '../../lib/format';
@@ -29,11 +30,7 @@ export function SessionContentPage() {
   const query = useSessionOverview(sessionId);
 
   if (query.isPending) {
-    return (
-      <div className="flex min-h-40 items-center justify-center p-4">
-        <Spinner />
-      </div>
-    );
+    return <GvLoading title="Nội dung buổi và BTVN" />;
   }
   if (query.isError) {
     const error = errorOf(query.error);
