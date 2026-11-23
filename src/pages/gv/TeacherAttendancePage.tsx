@@ -87,8 +87,8 @@ export function TeacherAttendancePage() {
             </ButtonLink>
           }
         >
-          Giáo viên và trợ giảng chỉ thấy buổi của lớp mình được phân công (R-GV-08, R-GV-09). Nếu
-          đây là lớp của bạn, hãy liên hệ quản trị viên.
+          Giáo viên và trợ giảng chỉ thấy buổi của lớp mình được phân công. Nếu đây là lớp của bạn,
+          hãy liên hệ quản trị viên.
         </StateView>
       );
     }
@@ -109,7 +109,7 @@ export function TeacherAttendancePage() {
       <Shell title="Điểm danh" subtitle={subtitle}>
         <Alert tone="info">
           <b>Buổi chưa chốt danh sách.</b> Chưa có dòng điểm danh nên chưa điểm danh được. Giáo viên
-          không tạo dòng điểm danh (R-GV-08, R-GIO-02).
+          không tạo dòng điểm danh.
         </Alert>
         <StateView kind="empty" title="Chưa có danh sách để điểm danh" headingLevel={2}>
           Danh sách sẽ được hệ thống chốt trước giờ học. Khi chốt xong, các em hiện ở đây.
@@ -204,7 +204,8 @@ export function TeacherAttendancePage() {
       />
       {done && (
         <Alert tone="info">
-          <b>Buổi đã Hoàn thành: chỉ xem.</b> Sai thì Trưởng cơ sở sửa ở BUOI-14.
+          <b>Buổi đã Hoàn thành: chỉ xem.</b> Sai thì Trưởng cơ sở sửa ở màn Buổi học (Sửa điểm
+          danh).
         </Alert>
       )}
       <div className="flex flex-wrap items-center gap-2">
@@ -222,7 +223,7 @@ export function TeacherAttendancePage() {
         {dirty && <Tag tone="warning">Chưa lưu</Tag>}
       </div>
       <p className="text-caption text-fg-muted">
-        Ô của giáo viên là trạng thái chính thức (R-DD-02). Ô trống là chưa điểm danh.
+        Ô của giáo viên là trạng thái chính thức. Ô trống là chưa điểm danh.
       </p>
       {!done && (
         <p className="hidden text-caption text-fg-muted lg:block">
@@ -250,7 +251,7 @@ export function TeacherAttendancePage() {
                 </p>
                 {s.has_review && (
                   <p className="text-caption text-fg-muted">
-                    Đã chấm nhận xét. Đổi sang Vắng thì điểm không được tính.
+                    Đã chấm nhận xét ở bước 3. Đổi sang Vắng thì điểm không được tính.
                   </p>
                 )}
               </div>
@@ -284,7 +285,7 @@ export function TeacherAttendancePage() {
           </Button>
           {!dirty && (
             <ButtonLink to={`/gv/buoi/${id}`} fullWidth>
-              Bước tiếp ›
+              Bước tiếp: Nội dung buổi ›
             </ButtonLink>
           )}
           <p className="text-caption text-fg-muted">Bấm Lưu mới ghi. Không tự lưu.</p>

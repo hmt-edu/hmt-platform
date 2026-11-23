@@ -12,7 +12,6 @@ import { Button } from '../../ui/Button';
 import { ConfirmDialog, UnsavedGuard } from '../../ui/Dialogs';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { Checkbox, TextAreaField, TextField } from '../../ui/Field';
-import { FileUpload } from '../../ui/Inputs';
 import { Switch } from '../../ui/Lms';
 import { OptionalSelect } from '../../ui/OptionalSelect';
 import { QueryErrorView } from '../../ui/QueryErrorView';
@@ -402,7 +401,7 @@ function LmsForm({
           placeholder="Nhập đề bài hoặc dặn dò cho học sinh"
           onChange={(e) => mark(setDescription)(e.target.value)}
         />
-        <FileUpload label="Chọn ảnh hoặc PDF" available={false} />
+        {/* Đính kèm ảnh/PDF chờ kho tệp (R2 hoãn sang phase sau): ẩn, không hiện ô chưa chạy được (E-23-06). */}
       </section>
 
       <section className="flex flex-col gap-3" aria-label="Hạn nộp và tuỳ chọn">

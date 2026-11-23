@@ -37,7 +37,7 @@ export function DayAttendancePage() {
 
   const sessionLink = (r: DayRow) => (
     <Link className="text-link underline" to={`/crm/buoi-hoc/${r.session_id}`}>
-      {r.class_code} · Buổi {r.session_no}
+      {r.class_code} · {r.session_no ? `Buổi ${r.session_no}` : 'Buổi'}
     </Link>
   );
 
@@ -45,8 +45,8 @@ export function DayAttendancePage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-4">
       <h1 className="text-h2">Điểm danh trong ngày</h1>
       <p className="text-body text-fg-muted">
-        Theo dõi điểm danh các buổi trong ngày. Ô giáo viên là trạng thái chính thức (R-DD-02); sửa
-        ở màn buổi.
+        Theo dõi điểm danh các buổi trong ngày. Ô giáo viên là trạng thái chính thức; sửa ở màn
+        buổi.
       </p>
       <TextField
         label="Ngày (để trống là hôm nay)"
@@ -132,7 +132,7 @@ export function DayAttendancePage() {
                     <span className="flex flex-col">
                       <span className="font-medium">{r.class_code}</span>
                       <span className="text-caption text-fg-muted">
-                        Buổi {r.session_no}
+                        {r.session_no ? `Buổi ${r.session_no}` : 'Buổi'}
                         {r.room_name ? ` · ${r.room_name}` : ''}
                       </span>
                     </span>

@@ -19,6 +19,7 @@ import { Button } from '../../ui/Button';
 import { Table, Tag, type TagTone } from '../../ui/Data';
 import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { depositWarning } from './depositWarning';
 import { ReassignApproverDialog } from '../../features/approver-reassign/ReassignApproverDialog';
 import { useReassignState } from '../../features/approver-reassign/useReassign';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
@@ -228,9 +229,9 @@ function OrderView({ record }: { record: OrderRecord }) {
   const cancelBlock = record.cancel_block ?? null;
   const cancelBlockedText =
     cancelBlock === 'GHI_DANH'
-      ? 'Đã bật cho học trước và em đã học buổi: đi qua ticket hoàn tiền (CS-05).'
+      ? 'Đã bật cho học trước và em đã học buổi: đi qua ticket hoàn tiền.'
       : cancelBlock === 'PHIEU_THU'
-        ? 'Đơn đã có phiếu thu: đi qua ticket hoàn tiền (CS-05).'
+        ? 'Đơn đã có phiếu thu: đi qua ticket hoàn tiền.'
         : undefined;
   const canCreateRefundTicket = access.can('TICKET', 'TAO') && !phone;
   const cancelMenuItems: MenuItem[] = canCancel
@@ -645,7 +646,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         </h3>
         {record.installments.length === 0 ? (
           <p className="text-fg-muted">
-            Đơn chưa có lịch đóng tiền: không chọn điều khoản thì thanh toán một lần (R-TIEN-07).
+            Đơn chưa có lịch đóng tiền: chưa chọn điều khoản thanh toán hoặc đơn chưa có dòng.
           </p>
         ) : (
           <Table<OrderInstallment>
@@ -681,7 +682,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         )}
         <p className="text-caption text-fg-muted">
           Lịch tự tính từ Điều khoản thanh toán của đơn, chỉ đọc. Dùng để theo dõi công nợ và nhắc
-          hạn, không chặn học (R-TIEN-07).
+          hạn, không chặn học.
         </p>
       </section>
       <section className="flex flex-col gap-1">
@@ -807,6 +808,7 @@ function OrderView({ record }: { record: OrderRecord }) {
             label: 'Báo giá',
             icon: 'file',
             count: record.quotation_id ? 1 : 0,
+            hidden: !access.can('QUOTATION', 'XEM'),
             ...(record.quotation_id
               ? { onOpen: () => openFrom(`/crm/bao-gia/${record.quotation_id ?? ''}`) }
               : { unavailable: 'Đơn này không sinh từ báo giá', onOpen: () => undefined }),
@@ -816,6 +818,7 @@ function OrderView({ record }: { record: OrderRecord }) {
             label: 'Phiếu thu',
             icon: 'payment',
             count: receiptCount,
+            hidden: !access.can('RECEIPT', 'XEM'),
             onOpen: () =>
               openFrom(onlyReceiptId ? `/crm/phieu-thu/${onlyReceiptId}` : '/crm/phieu-thu'),
           },
@@ -824,6 +827,8 @@ function OrderView({ record }: { record: OrderRecord }) {
             label: 'Ghi danh',
             icon: 'classes',
             count: 0,
+            // Kế toán không có quyền xem Ghi danh thì ẩn nút, không hiện «0» sai.
+            hidden: !access.can('ENROLLMENT', 'XEM'),
             unavailable: 'Làm ở phân hệ sau',
             onOpen: () => undefined,
           },
@@ -842,6 +847,16 @@ function OrderView({ record }: { record: OrderRecord }) {
         }
       >
         <div className="flex flex-col gap-6">
+          {(() => {
+            const warn = depositWarning(record.status_code, record.installments, depositMin);
+            return warn ? (
+              <Notice tone="warning" title="Đợt 1 nhỏ hơn tiền cọc tối thiểu">
+                Đợt 1 theo lịch là {formatMoney(warn.firstAmount)}, nhỏ hơn cọc tối thiểu{' '}
+                {formatMoney(warn.depositMin)}: thu đủ đợt 1 thì đơn vẫn không sinh ghi danh cho tới
+                khi tổng tiền đã vào đạt cọc tối thiểu. Chỉ cảnh báo, hệ thống không tự đổi tiền.
+              </Notice>
+            ) : null;
+          })()}
           {record.status_code === 'DA_TRINH' && overCapLines(record.lines).length > 0 && (
             <Notice tone="warning" title={`Chiết khấu vượt trần ${capPercentText(cap)}`}>
               {overCapLines(record.lines)
@@ -880,8 +895,7 @@ function OrderView({ record }: { record: OrderRecord }) {
           )}
           {record.status_code === 'NHAP' && record.has_incomplete_students && (
             <Notice tone="warning" title="Có em chưa đủ thông tin">
-              Mỗi em cần họ tên và năm sinh trước khi trình (R-TIEN-35). Bổ sung ở cơ hội rồi quay
-              lại.
+              Mỗi em cần họ tên và năm sinh trước khi trình. Bổ sung ở cơ hội rồi quay lại.
             </Notice>
           )}
           <section className="flex min-w-0 flex-col">
@@ -997,7 +1011,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                   label="Điều khoản thanh toán"
                   hint="danh mục cấu hình; lịch đợt ở tab Thanh toán"
                   mode={editing ? 'edit' : 'view'}
-                  value={record.payment_term_name ?? 'Thanh toán một lần'}
+                  value={record.payment_term_name ?? 'Chưa chọn điều khoản'}
                   editor={
                     <Select
                       label="Kiểu thanh toán"

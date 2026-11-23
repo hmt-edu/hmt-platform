@@ -259,17 +259,16 @@ select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uui
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 insert into tk2 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Hoàn học phí giả 2', 'description', 'Mô tả giả',
   'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_01', 'parent_id', pg_temp.d1par(), 'student_id', pg_temp.d1stu()));
-insert into tt2 select app.create_ticket_task((select (j ->> 'id')::uuid from tk2), 'HOAN_PHI', 'Thiếu dữ liệu', '{}'::jsonb);
+-- D-23-30: phiếu thiếu dữ liệu bị chặn ngay lúc tạo (trước đây chỉ bị chặn lúc thực hiện).
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk2), 'HOAN_PHI', 'Thiếu dữ liệu', '{}'::jsonb)$$), 'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: phiếu Hoàn học phí thiếu ghi danh bị chặn lúc tạo');
+insert into tt2 select app.create_ticket_task((select (j ->> 'id')::uuid from tk2), 'HOAN_PHI', 'Hai cấp', jsonb_build_object('enrollment_id', pg_temp.d1e(), 'kind', 'MOT_PHAN', 'hours', 1, 'reason_code', 'KHONG_HOP'));
 select app.submit_ticket_task((select (j ->> 'id')::uuid from tt2));
 select pg_temp.claims(pg_temp.uid('ca2'), 'aal2');
 select app.approve_ticket_task((select (j ->> 'id')::uuid from tt2));
 select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt2))$$), 'HMT_PHIEU_MOT_NGUOI_HAI_CAP', 'Chặn: một người vừa là quản lý cơ sở vừa là kế toán không duyệt cả hai cấp (R-TIEN-01)');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select app.approve_ticket_task((select (j ->> 'id')::uuid from tt2));
--- Phiếu thiếu dữ liệu duyệt đủ cấp nhưng thực hiện bị chặn, giữ Đã duyệt.
-select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
-select is(pg_temp.err($$select app.execute_ticket_task((select (j ->> 'id')::uuid from tt2))$$), 'HMT_PHIEU_DU_LIEU_SAI', 'Chặn: phiếu Hoàn học phí thiếu dữ liệu không thực hiện được');
-select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt2)), 'DA_DUYET', 'Phiếu thiếu dữ liệu giữ Đã duyệt');
+-- (Phiếu thiếu dữ liệu không còn tạo được nên không còn bước «thực hiện bị chặn» ở đây; luật chặn lúc tạo kiểm ở trên, D-23-30.)
 
 -- ================= C60 (migration 429): phiếu Đổi lịch học, dời một buổi và đổi ca cố định (CS-11, R-CS-03) =================
 create temp table tk4 (j jsonb);
@@ -434,6 +433,66 @@ select ok((select (result ->> 'payment_voucher_id') is not null from app.ticket_
 select is((select kind_code from app.refund_request where enrollment_id = pg_temp.d3e()), 'TOAN_BO', 'D-23-07 Đúng: Hoàn tiền là hoàn toàn bộ (R-TIEN-28)');
 select is((select manager_by from app.refund_request where enrollment_id = pg_temp.d3e()), pg_temp.uid('bm1'), 'D-23-07 Người duyệt cấp 1 ghi đúng (R-TIEN-01)');
 select is(pg_temp.bal(pg_temp.d3e()), 0::bigint, 'D-23-07 Đúng: hoàn tiền thì KHÔNG giữ số dư');
+
+-- D-23-26: xem trước tiền của phiếu Dừng học (migration 632). Phiếu tt7 là Hoàn tiền; số liệu tính lại từ dữ liệu hiện tại nên chỉ kiểm cấu trúc, quyền và nhánh chặn.
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is((select app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'money_mode'), 'HOAN_TIEN', 'D-23-26 Đúng: xem trước ghi cách xử lý tiền phiếu đã chọn');
+select ok((select (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) -> 'balance_amount') is not null), 'D-23-26 Đúng: xem trước có số dư giữ lại (R-TIEN-33)');
+select ok((select (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'refund_amount') is not null
+            or (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'refund_error') is not null), 'D-23-26 Đúng: có số hoàn hoặc mã lỗi vì sao không tính được (R-TIEN-28)');
+select is(pg_temp.err($$select app.preview_stop_task_money(gen_random_uuid())$$), 'HMT_KHONG_TIM_THAY', 'D-23-26 Chặn: phiếu không tồn tại');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select isnt(pg_temp.err($$select app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7))$$), null, 'D-23-26 Chặn: người ngoài cơ sở của phiếu không xem được tiền');
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+-- D-23-30 (migration 636): phiếu Hoàn học phí, Dừng học, Chuyển phí kiểm phạm vi dữ liệu (chặn em khác, cơ sở khác, phụ huynh nhận ngoài cơ sở, sửa payload sau khi tạo).
+select pg_temp.sudo($$update app.enrollment set status_code = 'DANG_HOC' where id = pg_temp.d1e()$$); -- dữ liệu thử: ghi danh còn hiệu lực (các bài trên đã đóng hai ghi danh)
+select pg_temp.sudo($$create function pg_temp.act_enr() returns uuid language sql stable security definer as
+  'select e.id from app.enrollment e where e.id = pg_temp.d1e()'$$);
+select pg_temp.sudo($$create function pg_temp.act_stu() returns uuid language sql stable security definer as 'select student_id from app.enrollment where id = pg_temp.act_enr()'$$);
+select pg_temp.sudo($$create function pg_temp.act_par() returns uuid language sql stable security definer as 'select parent_id from app.enrollment where id = pg_temp.act_enr()'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.act_enr(), pg_temp.act_stu(), pg_temp.act_par() to public$$);
+select pg_temp.sudo($$create function pg_temp.other_enr() returns uuid language sql stable security definer as
+  'select e.id from app.enrollment e where e.student_id <> pg_temp.act_stu() order by e.created_at limit 1'$$);
+select pg_temp.sudo($$create function pg_temp.other_branch_enr() returns uuid language sql stable security definer as
+  'select e.id from app.enrollment e where e.branch_id <> (select id from app.branch where code = ''CS1'') order by e.created_at limit 1'$$);
+select pg_temp.sudo($$insert into app.parent (code, full_name, phone, branch_id)
+  select 'PH-D2330', 'Phụ huynh cơ sở khác giả', '0900000230', id from app.branch where code <> 'CS1' and not is_office order by code limit 1$$);
+select pg_temp.sudo($$create function pg_temp.other_branch_parent() returns uuid language sql stable security definer as
+  'select id from app.parent where code = ''PH-D2330'''$$);
+select pg_temp.sudo($$grant execute on function pg_temp.other_enr(), pg_temp.other_branch_enr(), pg_temp.other_branch_parent() to public$$);
+create temp table tk9 (j jsonb);
+create temp table tk10 (j jsonb);
+create temp table tk11 (j jsonb);
+grant all on tk9, tk10, tk11 to public;
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk9 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Phạm vi phiếu giả', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_06', 'parent_id', pg_temp.act_par(), 'student_id', pg_temp.act_stu()));
+insert into tk10 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Phạm vi phiếu giả', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_01', 'parent_id', pg_temp.act_par(), 'student_id', pg_temp.act_stu()));
+insert into tk11 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Phạm vi phiếu giả', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_02', 'parent_id', pg_temp.act_par(), 'student_id', pg_temp.act_stu()));
+select ok(pg_temp.other_enr() is not null, 'D-23-30 Dữ liệu thử: có ghi danh của em khác');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk9), 'DUNG_HOC', 'x', jsonb_build_object('enrollment_id', pg_temp.other_enr(), 'reason_code', 'CHUYEN_NOI_O'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: phiếu Dừng học với ghi danh của em khác');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk9), 'DUNG_HOC', 'x', jsonb_build_object('enrollment_id', pg_temp.other_branch_enr(), 'reason_code', 'CHUYEN_NOI_O'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: phiếu Dừng học với ghi danh cơ sở khác');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk9), 'DUNG_HOC', 'x', jsonb_build_object('reason_code', 'CHUYEN_NOI_O'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: phiếu Dừng học thiếu ghi danh');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk10), 'HOAN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.other_enr(), 'kind', 'TOAN_BO', 'reason_code', 'CHUYEN_NOI_O'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: phiếu Hoàn học phí với ghi danh của em khác');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk10), 'HOAN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.other_branch_enr(), 'kind', 'TOAN_BO', 'reason_code', 'CHUYEN_NOI_O'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: phiếu Hoàn học phí với ghi danh cơ sở khác');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk10), 'HOAN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'kind', 'TANG_QUA', 'reason_code', 'CHUYEN_NOI_O'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: phiếu Hoàn học phí loại hoàn sai');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk11), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'reason_code', 'CHUYEN_NOI_O', 'to_parent_id', pg_temp.other_branch_parent()))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: phiếu Chuyển phí với phụ huynh nhận ở cơ sở khác');
+-- Đúng: ghi danh của đúng em, cùng cơ sở thì tạo được; payload không sửa được sau đó (kể cả quyền chủ bảng).
+create temp table tt9 (j jsonb);
+grant all on tt9 to public;
+insert into tt9 select app.create_ticket_task((select (j ->> 'id')::uuid from tk9), 'DUNG_HOC', 'Chuyển nhà', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'reason_code', 'CHUYEN_NOI_O'));
+select ok((select (j ->> 'id') is not null from tt9), 'D-23-30 Đúng: ghi danh của đúng em, cùng cơ sở thì tạo được phiếu Dừng học');
+select is(pg_temp.err($q$select pg_temp.sudo($$update app.ticket_task set payload = jsonb_build_object('enrollment_id', pg_temp.other_enr(), 'reason_code', 'CHUYEN_NOI_O') where id = (select (j ->> 'id')::uuid from tt9)$$)$q$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-30 Chặn: không đổi payload phiếu sau khi tạo');
 
 select * from finish();
 rollback;

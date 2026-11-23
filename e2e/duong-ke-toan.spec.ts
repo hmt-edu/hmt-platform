@@ -4,7 +4,7 @@
 // Cờ hoàn tác bật bằng GHI ĐÈ THEO CƠ SỞ CS5 (không đụng giá trị chung mà bài thu-tien TC-09 bật và trả lại), trả lại khi xong. Máy tính (Đ248).
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, enterAsAdmin, pickOption } from './helpers';
+import { PASSWORD, enterAs, enterAsAdmin, pickOption, showAllColumns } from './helpers';
 import { DB_URL, clearMark, seedOrders, type SeededOrders } from './don-hang-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
@@ -33,8 +33,16 @@ async function db<T>(fn: (c: pg.Client) => Promise<T>): Promise<T> {
   }
 }
 
-/** Bật hoặc tắt cờ hoàn tác chỉ cho cơ sở CS5 (ghi đè theo cơ sở). */
+/**
+ * Bật hoặc tắt cờ hoàn tác: ghi đè theo cơ sở CS5 (hàm DB kiểm theo cơ sở) và giá trị chung
+ * (giao diện từ #586 đọc cờ không kèm cơ sở nên chỉ thấy giá trị chung, nút Hoàn tác mới hiện).
+ */
 async function branchFlag(on: boolean) {
+  await db((c) =>
+    c.query("update app.setting_def set value = $1 where key = 'money_reversal_enabled'", [
+      on ? 'true' : 'false',
+    ]),
+  );
   await db((c) =>
     c.query(
       `insert into app.setting_branch (setting_key, branch_id, value, is_active)
@@ -90,6 +98,8 @@ test('Sale lập phiếu thu từ đơn Đã duyệt và trình quản lý', asy
 test('Trưởng cơ sở duyệt phiếu thu, chuyển Kế toán', async ({ page }) => {
   await open(page, SETUP.manager, receiptUrl);
   await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await page.getByRole('dialog').getByRole('checkbox').check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
 });
 
@@ -98,6 +108,8 @@ test('Kế toán duyệt phiếu thu: sinh đúng một khoản tiền vào cùn
   await enterAsAdmin(page, ACCOUNTANT);
   await page.goto(receiptUrl);
   await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await page.getByRole('dialog').getByRole('checkbox').check();
+  await page.getByRole('dialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText('Đã duyệt phiếu thu, tiền đã ghi nhận.').first()).toBeVisible();
   const m = await db((c) =>
     c.query<{ n: string; total: string }>(
@@ -118,6 +130,7 @@ test('Kế toán hoàn tác khoản tiền: khoản âm trỏ về khoản gốc
   await expect(page.getByRole('heading', { level: 1, name: 'Khoản tiền vào' })).toBeVisible();
   await page.getByRole('searchbox').fill(seeded.orders.dduyet);
   await expect(page.getByText(`Tổng số tiền (theo bộ lọc): 200.000 đ`)).toBeVisible();
+  await showAllColumns(page); // cột Thao tác (nút Hoàn tác) có thể nằm ngoài 8 cột mặc định (#570)
   const row = page.getByRole('row').filter({ hasText: seeded.orders.dduyet });
   await expect(row).toHaveCount(1);
   await row.getByRole('button', { name: 'Hoàn tác khoản tiền' }).click();

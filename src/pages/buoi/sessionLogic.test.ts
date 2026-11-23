@@ -75,6 +75,8 @@ describe('nhãn', () => {
     expect(classLabel(null, 'CS1-X')).toBe('CS1-X');
     expect(sessionNoLabel(5)).toBe('Buổi 5');
     expect(sessionNoLabel(null)).toBe('—');
+    expect(sessionNoLabel(null, 'Học bù')).toBe('Học bù');
+    expect(sessionNoLabel(5, 'Học bù')).toBe('Buổi 5');
     expect(ymd(new Date(2026, 0, 5))).toBe('2026-01-05');
   });
 });

@@ -85,7 +85,7 @@ export function substageRule(stage: string, current: string | null, codes: strin
   if (stage === 'L8' && current === L8C) {
     return {
       allowed: [],
-      lockedReason: 'Cơ hội đã L8C (thu đủ), không đổi nhóm con (R-CRM-17).',
+      lockedReason: 'Cơ hội đã L8C (thu đủ), không đổi nhóm con.',
     };
   }
   if (stage === 'L8') return { allowed: codes.filter((c) => c !== L8C), lockedReason: null };

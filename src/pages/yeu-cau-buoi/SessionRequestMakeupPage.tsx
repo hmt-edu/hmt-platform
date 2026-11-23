@@ -118,8 +118,8 @@ function Form({
       <h1 className="text-h2">Tạo yêu cầu học bù</h1>
       <p className="text-body text-fg-muted">
         Lớp <b>{title}</b> (tạo từ lớp, không chọn lại). Học bù không trừ giờ của học sinh, không
-        gắn với buổi gốc; Trưởng cơ sở duyệt thì hệ thống sinh buổi mới (R-BUOI-03). Chưa lưu: yêu
-        cầu chưa có mã.
+        gắn với buổi gốc; Trưởng cơ sở duyệt thì hệ thống sinh buổi mới. Chưa lưu: yêu cầu chưa có
+        mã.
       </p>
       {error !== null && (
         <Alert tone="danger" title="Chưa lưu được.">

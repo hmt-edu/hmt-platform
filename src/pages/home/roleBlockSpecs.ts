@@ -2,10 +2,13 @@
 import type { useDb } from '../../lib/db';
 import { rpc } from '../../lib/db';
 import { formatDate, formatMoney } from '../../lib/format';
-import { sessionLabel } from '../nhan-xet-cho-gui/parentMessageTypes';
 import { KIND_LABELS } from '../viec-cho-duyet/approvalsLogic';
 import type { ApprovalPage } from '../viec-cho-duyet/approvalsTypes';
 import type { PendingPage } from '../buoi/sessionTypes';
+import type { ClassPage } from '../lop/classTypes';
+import type { TicketPage } from '../ticket/ticketTypes';
+import { stateName, type DayPage } from '../diem-danh-ngay/dayLogic';
+import { vnDayBounds } from '../../lib/vnDay';
 import type { ReceivablePage } from '../thu-tien/treasuryTypes';
 
 /** Số dòng xem nhanh trên Trang chủ (bản vẽ K09b: bốn đến năm dòng); số tổng vẫn đủ. */
@@ -44,35 +47,6 @@ export const ROLE_BLOCK_SPECS = {
           key: `${r.kind}-${r.ref_id}`,
           title: r.subject_name ?? r.detail ?? r.code,
           sub: join([KIND_LABELS[r.kind], r.code, showBranch && r.branch_code]),
-        })),
-      };
-    },
-  },
-  reviews: {
-    title: 'Nhận xét chờ gửi phụ huynh',
-    to: '/crm/nhan-xet-cho-gui',
-    empty: 'Không có nhận xét nào chờ gửi.',
-    load: async (supabase, branch) => {
-      const page = await rpc<{
-        total: number;
-        rows: {
-          id: string;
-          student_name: string;
-          class_code: string;
-          session_no: number | null;
-          session_date: string;
-        }[];
-      }>(supabase, 'list_parent_messages', {
-        p_filters: { status: 'CHO_GUI', ...branch },
-        p_limit: PREVIEW_ROWS,
-        p_offset: 0,
-      });
-      return {
-        total: page.total,
-        lines: page.rows.map((r) => ({
-          key: r.id,
-          title: r.student_name,
-          sub: join([r.class_code, sessionLabel(r.session_no, r.session_date)]),
         })),
       };
     },
@@ -124,6 +98,72 @@ export const ROLE_BLOCK_SPECS = {
             showBranch && r.branch_code,
           ]),
           tone: 'danger' as const,
+        })),
+      };
+    },
+  },
+  classesPending: {
+    title: 'Lớp chờ duyệt',
+    to: '/crm/lop',
+    empty: 'Không có lớp nào chờ duyệt.',
+    load: async (supabase, branch, showBranch) => {
+      // Lớp đã trình (DA_TRINH) và đã xác nhận (DA_XAC_NHAN, chờ Duyệt cuối) chờ người có quyền duyệt; hàm đọc có sẵn của màn Lớp học.
+      const page = await rpc<ClassPage>(supabase, 'list_classes', {
+        p_filters: { status: ['DA_TRINH', 'DA_XAC_NHAN'], ...branch },
+        p_sort: 'code_asc',
+        p_limit: PREVIEW_ROWS,
+        p_offset: 0,
+      });
+      return {
+        total: page.total,
+        lines: page.rows.map((r) => ({
+          key: r.id,
+          title: join([r.code, r.subject_name]),
+          sub: join([r.class_type_name, r.level_name, showBranch && r.branch_code]),
+        })),
+      };
+    },
+  },
+  tickets: {
+    title: 'Ticket quá hạn',
+    to: '/crm/ticket',
+    empty: 'Không có ticket nào quá hạn.',
+    load: async (supabase, branch, showBranch) => {
+      // Hạn do hàm DB tính (sla_state), giao diện không tự tính.
+      const page = await rpc<TicketPage>(supabase, 'list_tickets', {
+        p_filters: { sla_state: 'QUA_HAN', ...branch },
+        p_limit: PREVIEW_ROWS,
+        p_offset: 0,
+      });
+      return {
+        total: page.total,
+        lines: page.rows.map((r) => ({
+          key: r.id,
+          title: r.title,
+          sub: join([r.code, r.assignee_name ?? 'Chưa giao', showBranch && r.branch_code]),
+          tone: 'danger' as const,
+        })),
+      };
+    },
+  },
+  sessionsToday: {
+    title: 'Buổi hôm nay',
+    to: '/crm/diem-danh-trong-ngay',
+    empty: 'Hôm nay không có buổi nào.',
+    load: async (supabase, branch, showBranch) => {
+      // Hàm điểm danh trong ngày (BUOI-15) lọc theo ngày Việt Nam và theo cơ sở đang chọn như các khối khác.
+      const page = await rpc<DayPage>(supabase, 'session_day_attendance', {
+        p_filters: { date: vnDayBounds().dateKey, ...branch },
+        p_limit: PREVIEW_ROWS,
+        p_offset: 0,
+      });
+      return {
+        total: page.total,
+        lines: page.rows.map((r) => ({
+          key: r.session_id,
+          title: join([r.class_code, `${r.start_time.slice(0, 5)}–${r.end_time.slice(0, 5)}`]),
+          sub: join([r.teacher_name, stateName(r.state), showBranch && r.branch_code]),
+          ...(r.state === 'CHUA_GHI' ? { tone: 'danger' as const } : {}),
         })),
       };
     },

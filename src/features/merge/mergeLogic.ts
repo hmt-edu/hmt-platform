@@ -53,8 +53,16 @@ export function moveLines(move: Record<string, number>): { label: string; count:
 }
 
 /** Câu dưới tiêu đề: lead trùng khi cùng SĐT, cơ hội trùng khi cùng phụ huynh (hàm gợi ý của cơ sở dữ liệu). */
-export function matchSentence(entity: MergeEntity, phoneLabel: string): string {
+export function matchSentence(
+  entity: MergeEntity,
+  phoneLabel: string,
+  hasCandidate = true,
+): string {
   const noun = entityNoun(entity);
+  // Chưa có bản trùng gợi ý thì không khẳng định «hai bản cùng SĐT» (câu sai khi người dùng tự tìm bản để gộp).
+  if (!hasCandidate) {
+    return `Tìm bản ${noun} muốn gộp với bản này. Chọn bản giữ lại; dữ liệu của bản kia chuyển sang bản giữ lại.`;
+  }
   if (entity === 'PARENT') {
     return `Hai phụ huynh cùng SĐT ${phoneLabel}. Chọn bản giữ lại; mọi dữ liệu (lead, cơ hội, học sinh, đơn, phiếu thu, số dư, ghi danh, ghi chú) của bản kia chuyển sang bản giữ lại.`;
   }

@@ -143,9 +143,11 @@ function AppointmentsBlock() {
 const BLOCK_VIEW = {
   appointments: AppointmentsBlock,
   approvals: () => <RoleBlock id="approvals" />,
-  reviews: () => <RoleBlock id="reviews" />,
   sessions: () => <RoleBlock id="sessions" />,
   debt: () => <RoleBlock id="debt" />,
+  classesPending: () => <RoleBlock id="classesPending" />,
+  tickets: () => <RoleBlock id="tickets" />,
+  sessionsToday: () => <RoleBlock id="sessionsToday" />,
 } as const;
 
 /**

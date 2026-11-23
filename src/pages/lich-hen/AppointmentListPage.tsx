@@ -14,6 +14,10 @@ import {
   rescheduleAppointment,
 } from '../../features/appointments/appointmentApi';
 import { AppointmentDialog } from '../../features/appointments/AppointmentDialog';
+import {
+  CompleteAppointmentDialog,
+  type CompleteArgs,
+} from '../../features/appointments/CompleteAppointmentDialog';
 import { useUndoAppointment } from '../../features/appointments/useUndoAppointment';
 import { RecordPicker, type PickedRecord } from '../../features/appointments/RecordPicker';
 import { AssignDialog } from '../../features/assign/AssignDialog';
@@ -64,7 +68,7 @@ import {
 } from './useAppointmentData';
 
 const NOTE =
-  'Lịch hẹn đổi trạng thái bằng nút trên thẻ: Hoàn thành, Huỷ, Mở lại. Hoàn thành và Huỷ không chuyển thẳng cho nhau, phải Mở lại trước (R-CRM-04).';
+  'Lịch hẹn đổi trạng thái bằng nút trên thẻ: Hoàn thành, Huỷ, Mở lại. Hoàn thành và Huỷ không chuyển thẳng cho nhau, phải Mở lại trước.';
 const BLOCKED =
   'Lịch hẹn đổi trạng thái bằng nút Hoàn thành, Huỷ hoặc Mở lại trên thẻ, không kéo thả.';
 
@@ -168,7 +172,6 @@ export function AppointmentListPage() {
   const [paging, setPaging] = useState({ key: '', page: 0, more: 0 });
   const [calMode, setCalMode] = useState<CalendarMode>('week');
   const [anchor, setAnchor] = useState(() => vnToday());
-  const [busyId, setBusyId] = useState<string | null>(null);
   const [tick, setTick] = useState(0);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   // Mã và cơ sở của các dòng đã chọn (hộp Giao nêu mã dù đổi trang hay nhóm); cập nhật khi chọn.
@@ -183,6 +186,7 @@ export function AppointmentListPage() {
   const [picked, setPicked] = useState<PickedRecord | null>(null);
   const [moving, setMoving] = useState<AppointmentRow | null>(null);
   const [canceling, setCanceling] = useState<AppointmentRow | null>(null);
+  const [completing, setCompleting] = useState<AppointmentRow | null>(null);
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
   const [reopening, setReopening] = useState<AppointmentRow | null>(null);
@@ -305,31 +309,18 @@ export function AppointmentListPage() {
   const branchIdOf = (code: string) =>
     access.teachingBranches.find((b) => b.code === code)?.id ?? '';
 
-  async function run(
-    row: AppointmentRow,
-    action: () => Promise<void>,
-    success: string,
-    undoable = false,
-  ) {
-    if (busyId !== null) return;
-    setBusyId(row.id);
-    try {
-      await action();
-      await refreshData();
-      toast({ title: success, ...(undoable ? { action: undoAppointment(row.id) } : {}) });
-    } catch (e) {
-      toast({ tone: 'danger', title: errorOf(e).message });
-    } finally {
-      setBusyId(null);
-    }
+  /** Hộp «Hoàn thành lịch hẹn» (TS-11): lỗi ném lại để hộp hiện câu lỗi. */
+  async function completeWith(id: string, args: CompleteArgs) {
+    await completeAppointment(supabase, id, args);
+    await refreshData();
+    toast({ title: 'Đã hoàn thành lịch hẹn.', action: undoAppointment(id) });
   }
 
   const actions: RowActions = {
     canEdit,
     canCancel,
-    busyId,
-    onComplete: (row) =>
-      void run(row, () => completeAppointment(supabase, row.id), 'Đã hoàn thành lịch hẹn.', true),
+    busyId: null,
+    onComplete: (row) => setCompleting(row),
     onReschedule: setMoving,
     onCancel: (row) => {
       setCancelError(null);
@@ -351,7 +342,7 @@ export function AppointmentListPage() {
       ),
     // actions đổi mỗi lần vẽ nhưng chỉ chứa các hàm gọi lại ổn định theo trạng thái dưới đây.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [catalogs, access, staff.data, busyId, canEdit, canCancel],
+    [catalogs, access, staff.data, canEdit, canCancel],
   );
 
   const { start, end } = vnDayBounds();
@@ -661,6 +652,29 @@ export function AppointmentListPage() {
         }
       />
 
+      <CompleteAppointmentDialog
+        open={completing !== null}
+        onOpenChange={(o) => !o && setCompleting(null)}
+        target={
+          completing
+            ? {
+                id: completing.id,
+                activityCode: completing.activity_code,
+                isAutoReminder: completing.is_auto_reminder,
+                label: `${activityName(completing.activity_code)} · ${completing.title}`,
+                context: [
+                  completing.record_code,
+                  completing.record_label,
+                  formatDateTime(completing.scheduled_at),
+                ]
+                  .filter(Boolean)
+                  .join(' · '),
+              }
+            : null
+        }
+        resultOptions={catalogs.options('APPOINTMENT_RESULT')}
+        onComplete={completeWith}
+      />
       <AppointmentDialog
         open={creating}
         onOpenChange={setCreating}

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
-import { errorOf, useDb, useIntSetting } from '../../lib/db';
+import { errorOf, useBoolSetting, useDb, useIntSetting } from '../../lib/db';
 import { formatNumber } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
@@ -45,7 +45,11 @@ export function MoneyInListPage() {
   const [target, setTarget] = useState<MoneyInRow | null>(null);
   const [busy, setBusy] = useState(false);
   const [reverseError, setReverseError] = useState<string | null>(null);
-  const config = useMemo(() => buildMoneyInConfig(access, setTarget), [access]);
+  const reversalEnabled = useBoolSetting('money_reversal_enabled') === true;
+  const config = useMemo(
+    () => buildMoneyInConfig(access, setTarget, reversalEnabled),
+    [access, reversalEnabled],
+  );
   const pageSize = useIntSetting('list_page_size_default');
   const [state, setState] = useState<ListState>(() => emptyTreasuryState('created'));
   const [view, setView] = useState<ViewMode>('list');
@@ -143,7 +147,7 @@ export function MoneyInListPage() {
         onSortChange={setSort}
         emptyMessage={{
           title: 'Chưa có khoản tiền vào nào',
-          hint: 'Khoản tiền vào tự sinh khi Kế toán duyệt phiếu thu, không ai tạo tay. Sổ không sửa, không xoá; chỉ Kế toán hoàn tác từng khoản, có lý do (R-TIEN-01, R-TIEN-26).',
+          hint: 'Khoản tiền vào tự sinh khi Kế toán duyệt phiếu thu, không ai tạo tay. Sổ không sửa, không xoá; chỉ Kế toán hoàn tác từng khoản, có lý do.',
         }}
       />
       <ReasonDialog
@@ -298,7 +302,7 @@ export function ReceivableListPage() {
         onSortChange={(next) => setSort(nextReceivableSort(next))}
         emptyMessage={{
           title: 'Không có công nợ nào',
-          hint: 'Công nợ đọc từ lịch đợt tự tính theo Điều khoản thanh toán của đơn đã duyệt (BH-05). Đợt nào đóng đủ thì biến khỏi danh sách.',
+          hint: 'Công nợ đọc từ lịch đợt tự tính theo Điều khoản thanh toán của đơn đã duyệt. Đợt nào đóng đủ thì biến khỏi danh sách.',
         }}
       />
       {list.data && (

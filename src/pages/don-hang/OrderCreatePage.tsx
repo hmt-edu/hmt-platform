@@ -13,7 +13,9 @@ import { HmtError, errorOf, useDb } from '../../lib/db';
 import { useAuth } from '../../lib/auth/authContext';
 import { formatDate, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
+import { branchLabel } from './orderBranch';
 import { DetailField, RecordDetail } from '../../record/Detail';
+import { Select } from '../../ui/Overlays';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { ConfirmDialog } from '../../ui/Dialogs';
@@ -38,6 +40,7 @@ import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
   createOrderFromOpportunity,
   createOrderFromQuotation,
+  useOrderEditOptions,
   getOpportunityDraftOrder,
   useRefreshOrders,
 } from './useOrderData';
@@ -220,7 +223,7 @@ function FromOpportunity({
   if (opp.stage_code !== 'L8')
     return (
       <StateView kind="forbidden" title="Cơ hội chưa ở L8" actions={backLink}>
-        Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng (R-CRM-16).
+        Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng.
       </StateView>
     );
   return (
@@ -258,6 +261,7 @@ function OpportunityForm({
   const [saving, setSaving] = useState(false);
   const [seeded, setSeeded] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [termId, setTermId] = useState('');
   // BH-11 (R-TIEN-39): cơ hội đã có đơn Nháp thì hỏi Mở đơn cũ hay Vẫn tạo thêm.
   const [existing, setExisting] = useState<{
     message: string;
@@ -294,6 +298,7 @@ function OpportunityForm({
         opportunityId,
         buildSaveLines(rows),
         confirmExisting,
+        termId,
       );
       await Promise.all([refreshOrders(), refreshOpp()]);
       toast({ title: `Đã tạo đơn hàng ${created.code}.` });
@@ -321,7 +326,9 @@ function OpportunityForm({
         mode="opportunity"
         dirty={dirty && !saved}
         saving={saving}
-        saveDisabled={flexibleLimitIssues(rows, discountPolicies.data ?? []).length > 0}
+        saveDisabled={
+          termId === '' || flexibleLimitIssues(rows, discountPolicies.data ?? []).length > 0
+        }
         onSave={() => void save(false)}
         // Huỷ: bỏ hết, chưa có bản ghi (R-CRM-19); về bản ghi cơ hội.
         onCancel={() => void navigate(`/crm/co-hoi/${opportunityId}`)}
@@ -365,6 +372,7 @@ function OpportunityForm({
               Chưa thấy em? Thêm em ở cơ hội. Lớp và ngày vào lớp chọn sau khi tạo đơn.
             </p>
           </section>
+          <TermSection termId={termId} onChange={setTermId} />
           <p>
             <Button variant="text" onClick={() => void navigate(`/crm/co-hoi/${opportunityId}`)}>
               Về cơ hội
@@ -398,6 +406,39 @@ function OpportunityForm({
   );
 }
 
+/** Điều khoản thanh toán BẮT BUỘC chọn lúc tạo đơn (anh chốt 23/11, R-TIEN-07): chưa chọn thì nút Lưu mờ kèm lý do; hàm DB vẫn chặn trình khi thiếu (HMT_THIEU_DIEU_KHOAN). */
+function TermSection({ termId, onChange }: { termId: string; onChange: (id: string) => void }) {
+  const options = useOrderEditOptions(true);
+  return (
+    <section className="flex min-w-0 flex-col gap-1">
+      <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
+        Thanh toán
+      </h3>
+      <dl className="flex min-w-0 flex-col">
+        <DetailField
+          label="Điều khoản thanh toán"
+          required
+          hint="bắt buộc chọn"
+          mode="create"
+          value=""
+          editor={
+            <Select
+              label="Kiểu thanh toán"
+              value={termId}
+              placeholder="Chọn điều khoản"
+              onChange={onChange}
+              options={(options.data?.terms ?? []).map((t) => ({ value: t.id, label: t.name }))}
+            />
+          }
+        />
+      </dl>
+      {termId === '' && (
+        <p className="text-caption text-fg-muted">Chọn điều khoản thanh toán để lưu đơn.</p>
+      )}
+    </section>
+  );
+}
+
 function FromQuotation({
   quotationId,
   backLink,
@@ -406,6 +447,7 @@ function FromQuotation({
   backLink: React.ReactNode;
 }) {
   const query = useQuotation(quotationId);
+  const access = useAccess();
   if (query.isPending) return <Spinner label="Đang tải báo giá…" />;
   if (query.isError) {
     const forbidden = query.error instanceof HmtError && query.error.code === 'HMT_KHONG_CO_QUYEN';
@@ -424,7 +466,7 @@ function FromQuotation({
   if (q.status_code !== 'DA_GUI')
     return (
       <StateView kind="forbidden" title="Báo giá chưa chuyển thành đơn được" actions={backLink}>
-        Chỉ báo giá ở tình trạng Đã gửi mới chuyển thành đơn (R-TIEN-14).
+        Chỉ báo giá ở tình trạng Đã gửi mới chuyển thành đơn.
       </StateView>
     );
   const open = q.lines.filter((l) => l.order_id === null);
@@ -439,7 +481,7 @@ function FromQuotation({
       quotationId={q.id}
       quotationCode={q.code}
       parent={`${q.parent_name} · ${q.parent_code} · ${formatPhone(q.parent_phone)}`}
-      branch={`${q.branch_code}`}
+      branch={branchLabel(q.branch_code, access.teachingBranches)}
       lines={open}
     />
   );
@@ -467,12 +509,13 @@ function QuotationForm({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [termId, setTermId] = useState('');
   const kept = lines.filter((l) => !removed.has(l.line_no));
   const students = new Set(kept.map((l) => l.prospect_student_id ?? l.student_name ?? l.line_no))
     .size;
 
   async function save() {
-    if (saving || kept.length === 0) return;
+    if (saving || kept.length === 0 || termId === '') return;
     setSaving(true);
     setError(null);
     try {
@@ -480,6 +523,7 @@ function QuotationForm({
         supabase,
         quotationId,
         kept.map((l) => l.line_no),
+        termId,
       );
       await refreshOrders();
       toast({ title: `Đã tạo đơn hàng ${created.code}.` });
@@ -497,7 +541,7 @@ function QuotationForm({
       mode="quotation"
       dirty={removed.size > 0 && !saved}
       saving={saving}
-      saveDisabled={kept.length === 0}
+      saveDisabled={kept.length === 0 || termId === ''}
       onSave={() => void save()}
       // Huỷ: bỏ hết, chưa có bản ghi; về báo giá.
       onCancel={() => void navigate(`/crm/bao-gia/${quotationId}`)}
@@ -518,6 +562,7 @@ function QuotationForm({
             </span>
           }
         />
+        <TermSection termId={termId} onChange={setTermId} />
         <section className="flex min-w-0 flex-col gap-2">
           <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
             Dòng đơn
