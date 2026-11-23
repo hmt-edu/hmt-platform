@@ -97,11 +97,11 @@ alter table app.demo_data_set enable row level security;
 alter table app.demo_data_item enable row level security;
 grant select on app.demo_data_set, app.demo_data_item to authenticated;
 create policy demo_data_set_read on app.demo_data_set for select to authenticated
-  using (created_by = (select auth.uid()) or 'ADMIN' = any ((select app.current_roles())));
+  using (created_by = (select auth.uid()) or (select app.current_roles()) @> array['ADMIN']::text[]);
 create policy demo_data_item_read on app.demo_data_item for select to authenticated
   using (exists (select 1 from app.demo_data_set s
                   where s.id = demo_data_item.set_id
-                    and (s.created_by = (select auth.uid()) or 'ADMIN' = any ((select app.current_roles())))));
+                    and (s.created_by = (select auth.uid()) or (select app.current_roles()) @> array['ADMIN']::text[])));
 
 -- ---------------------------------------------------------------------------
 -- Kiểm khoá: công tắc bật VÀ môi trường là STAGING. Lỗi HMT_DEMO_TAT.
