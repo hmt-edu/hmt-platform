@@ -56,7 +56,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | CHUNG-17 | Không tìm thấy / lỗi hệ thống | Trang · K11 | C | Cả hai | Tất cả | Link sai, bản ghi không tồn tại, lỗi máy chủ (thông báo dễ hiểu, mã lỗi để báo IT) | Về trang chủ; Thử lại | CHUNG-14 | S03-16 |
 | CHUNG-18 | Xuất file (có nhật ký) | Hộp thoại · K08 | C | Máy tính | Có quyền xuất, AD | Chọn cột, phạm vi, định dạng; mọi lần xuất ghi nhật ký | Xuất | QT-12 | S03-21 |
 | CHUNG-19 | Lưu bộ lọc yêu thích | Hộp thoại · K08 | C | Máy tính | Tất cả NV, AD | Lưu bộ lọc, đặt mặc định, dùng chung hay riêng | Lưu; Đặt mặc định | — | S03-17 |
-| CHUNG-20 | Xoá bản ghi nhập nhầm (chỉ Admin) | Hộp thoại · K08 | C | Máy tính | AD | Xoá cứng có lý do, vẫn ghi nhật ký | Xoá | QT-11 | S03-14 |
+| CHUNG-20 | Xoá bản ghi nhập nhầm (chỉ Admin) | Hộp thoại · K08 | C | Máy tính | AD | Huỷ có lý do (không xoá cứng, theo luật), vẫn ghi nhật ký | Xoá | QT-11 | S03-14 |
 | CHUNG-22 | Ghi chú trao đổi + lịch sử thay đổi (cột phải mọi bản ghi) | Bản ghi · K06 | A | Cả hai | Tất cả NV, GV | Ghi chú, nhắc tên đồng nghiệp, đính kèm; lịch sử ai đổi gì lúc nào của chính bản ghi | Thêm ghi chú; Đính kèm; Lọc ghi chú/lịch sử | CHUNG-21 | S03-13, S03-17, R-CS-09 |
 | CHUNG-24 | Phân hệ chưa bật ở cơ sở này | Trang · K11 | C | Cả hai | Tất cả | Mở link vào phân hệ đang tắt theo công tắc tính năng | Về trang chủ | CHUNG-14 | S03-11 |
 | CHUNG-25 | Chọn cổng (người có nhiều vai trò) | Trang · K11 | C | Cả hai | Tất cả NV, GV | Người vừa là nhân viên vừa là giáo viên chọn vào CRM hoặc cổng Giáo viên; đổi cổng từ menu tài khoản | Chọn cổng | CHUNG-10, GV-01 | S03-06 |
