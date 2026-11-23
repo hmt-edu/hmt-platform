@@ -58,7 +58,8 @@ begin
         ) mine
         join app.class c on c.id = mine.class_id
         left join app.catalog_item sub on sub.catalog_code = c.subject_catalog and sub.code = c.subject_code
-        left join app.homework_result hr on hr.session_id = mine.session_id and hr.student_id = p_student_id
+        -- Luật lộ điểm: chỉ lấy kết quả khi bài đã chấm (graded_at); bài Đã nộp chưa chấm không lộ điểm của bài khác cùng buổi.
+        left join app.homework_result hr on mine.graded_at is not null and hr.session_id = mine.session_id and hr.student_id = p_student_id
         left join app.catalog_item gs on gs.catalog_code = 'HOMEWORK_STATUS' and gs.code = hr.status_code
        where mine.grp = p_group
        order by 1 nulls last, mine.created_at desc

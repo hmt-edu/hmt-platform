@@ -99,6 +99,8 @@ select is(app.portal_assignments(pg_temp.sid('HS992001'), 'CAN_LAM') -> 'rows' -
 select is((app.portal_assignments(pg_temp.sid('HS992001'), 'CAN_LAM') -> 'rows' -> 0 ->> 'is_overdue')::boolean, true, 'Cần làm: bài quá hạn đánh dấu is_overdue');
 select is(app.portal_assignments(pg_temp.sid('HS992001'), 'DA_NOP') -> 'rows' -> 0 ->> 'title', 'B4', 'Nhóm Đã nộp: B4');
 select is((app.portal_assignments(pg_temp.sid('HS992001'), 'DA_CHAM') -> 'rows' -> 0 ->> 'score')::int, 4, 'Nhóm Đã chấm: có điểm');
+select is(app.portal_assignments(pg_temp.sid('HS992001'), 'DA_NOP') -> 'rows' -> 0 -> 'score', 'null'::jsonb, 'Luật lộ điểm: Đã nộp chưa chấm không lộ điểm trong danh sách, không lẫn điểm bài khác cùng buổi');
+select is(app.portal_assignments(pg_temp.sid('HS992001'), 'DA_NOP') -> 'rows' -> 0 -> 'grade_status_code', 'null'::jsonb, 'Luật lộ điểm: Đã nộp chưa chấm không lộ trạng thái chấm');
 select is(jsonb_array_length(app.portal_assignments(pg_temp.sid('HS992001'), 'CAN_LAM', 1, 0) -> 'rows'), 1, 'Phân trang ở máy chủ: một dòng một trang');
 select is(pg_temp.err($$select app.portal_assignments(pg_temp.sid('HS992001'), 'KHAC')$$), 'HMT_THAM_SO_SAI', 'Nhóm không hợp lệ bị chặn');
 select is(pg_temp.err($$select app.portal_assignments(pg_temp.sid('HS992003'), 'CAN_LAM')$$), 'HMT_KHONG_CO_QUYEN', 'Luật quyền riêng: xem bài tập học sinh khác bị chặn');
