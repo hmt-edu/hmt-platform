@@ -25,7 +25,7 @@ export function statusDialogSpec(i: StatusDialogInput): StatusDialogSpec {
       confirmLabel: 'Xác nhận khách huỷ',
       noteLabel: 'Lý do khách huỷ',
       noteRequired: true,
-      hint: 'Bắt buộc. Ghi vào nhật ký ticket (R-CS-05).',
+      hint: 'Bắt buộc. Ghi vào nhật ký ticket.',
       intro:
         'Dùng khi khách (phụ huynh hoặc học sinh) rút lại đề nghị. Ticket chuyển sang Huỷ, không mở lại được.',
     };
