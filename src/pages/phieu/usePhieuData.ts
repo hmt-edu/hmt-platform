@@ -3,7 +3,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
-import { rpc, useDb } from '../../lib/db';
+import { errorOf, rpc, useDb } from '../../lib/db';
 import type { TaskFilters, TaskPage, TaskRecord } from './phieuTypes';
 
 export function useTaskPage(filters: TaskFilters, offset: number, limit: number | null) {
@@ -27,6 +27,26 @@ export function useTaskRecord(id: string | undefined) {
     queryKey: ['task-record', id],
     enabled: id !== undefined,
     queryFn: () => rpc<TaskRecord>(supabase, 'get_ticket_task', { p_id: id }),
+  });
+}
+
+/** Mã ghi danh của phiếu (một dòng theo id, cột `code`); phiếu không có ghi danh thì không gọi. */
+export function useTaskEnrollmentCode(enrollmentId: string | undefined) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['task-enrollment-code', enrollmentId],
+    enabled: enrollmentId !== undefined && enrollmentId !== '',
+    staleTime: Infinity,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .schema('app')
+        .from('enrollment')
+        .select('code')
+        .eq('id', enrollmentId ?? '')
+        .maybeSingle<{ code: string }>();
+      if (error) throw errorOf(error);
+      return data?.code ?? null;
+    },
   });
 }
 

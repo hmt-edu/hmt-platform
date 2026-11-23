@@ -255,7 +255,14 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('TICKET'),
         stage: '',
       },
-      // CS-16 «Nhận xét chờ gửi» đã BỎ (R-V2-40): giáo viên tự xuất ảnh, PDF và gửi tay vào group Zalo lớp; CSKH không tham gia.
+      // CS-16 «Nhận xét chờ gửi» sống lại 23/11/2026 (anh Trường, sửa R-V2-40): CSKH gửi tay qua Zalo rồi đánh dấu đã gửi. Cần quyền sửa Ticket (giáo viên không có).
+      {
+        code: 'CS-16',
+        label: 'Nhận xét chờ gửi',
+        slug: 'nhan-xet-cho-gui',
+        requires: can('TICKET', 'SUA'),
+        stage: '',
+      },
       {
         code: 'CS-07',
         label: 'Phiếu chuyển cơ sở đến',

@@ -90,7 +90,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
 | CHUNG-15 | Hàng việc chờ tôi duyệt (gộp mọi loại) | Danh sách · K03 | A | Cả hai | BM, KT, AD | Một chỗ thấy mọi thứ chờ mình duyệt: đơn, phiếu thu, lớp, yêu cầu buổi, ticket, chiết khấu vượt trần | Duyệt; Từ chối; Mở bản ghi | BH-07, TC-17, TC-05, LOP-05, BUOI-10, CS-08 | R-TIEN-01, R-LOP-02, R-BUOI-03, R-CS-07, S03-22, R-HT-05 |
-| CHUNG-21 | Đính kèm tệp (tải lên, xem trước) | Hộp thoại · K08 | C | Cả hai | Tất cả NV, GV | Tải ảnh, PDF vào ghi chú trao đổi hoặc chứng từ | Tải lên; Xem; Gỡ | — | S03-13, R-CS-09 |
+| CHUNG-21 | Đính kèm tệp (tải lên, xem trước) | Hộp thoại · K08 · CHUNG21_trong, _co_tep, _dang_tai, _loi, _xem, _dt_trong, _dt_dang_tai | C | Cả hai | Tất cả NV, GV | Tải ảnh, PDF vào ghi chú trao đổi hoặc chứng từ | Tải lên; Xem; Gỡ | — | S03-13, R-CS-09 |
 
 ### Cấu hình bán hàng
 
@@ -305,7 +305,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| CS-16 | Nhận xét chờ gửi phụ huynh | Danh sách · K03 | B | Máy tính | CS, AD | Lời nhắn phụ huynh sau mỗi buổi đã chấm xong: xem, sao chép nhanh hoặc xuất ảnh để gửi Zalo tay, đánh dấu đã gửi | Sao chép; Xuất ảnh; Đánh dấu đã gửi | KH-05 | R-GV-04, R-CS-13 |
+| CS-16 | Nhận xét chờ gửi phụ huynh | Danh sách · K03 · CSN10_ds, _xem, _tai, _trong, _loi, _quyen | B | Máy tính | CS, AD | Lời nhắn phụ huynh sau mỗi buổi đã chấm xong: xem, sao chép nhanh hoặc xuất ảnh để gửi Zalo tay, đánh dấu đã gửi | Sao chép; Xuất ảnh; Đánh dấu đã gửi | KH-05 | R-GV-04, R-CS-13 |
 
 ### Cổng giáo viên
 
@@ -343,13 +343,13 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| CHUNG-23 | Đăng nhập phụ huynh | Trang · K11 | C | Điện thoại | PH | Cách đăng nhập chốt ở GĐ4 | Đăng nhập | PH-01 | — |
+| CHUNG-23 | Đăng nhập phụ huynh | Trang · K11 · CHUNG23_dt_tai, _dt_ok, _dt_loi | C | Điện thoại | PH | Cách đăng nhập chốt ở GĐ4 | Đăng nhập | PH-01 | — |
 
 ### Quản trị
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | Danh sách · K03 | C | Máy tính | CS, AD | Cấp tài khoản theo mã PH khi mở cổng phụ huynh | Cấp; Khoá; Đặt lại mật khẩu | KH-02 | — |
+| QT-17 | Tài khoản phụ huynh (cấp, khoá, đặt lại) | Danh sách · K03 · QT17_ds, _tai, _trong, _loi, _quyen, _cap, _khoa, _dat_lai | C | Máy tính | CS, AD | Cấp tài khoản theo mã PH khi mở cổng phụ huynh | Cấp; Khoá; Đặt lại mật khẩu | KH-02 | — |
 | QT-18 | Nhập dữ liệu cũ (chọn loại, tải file CSV, xem trước từng dòng, nạp, tải dòng lỗi) | Trang + hộp nhiều bước · K4b ⑤ | B | Máy tính | AD | **(anh chốt 05/11: Design chưa vẽ, dựng tối giản theo khuôn có sẵn)** Loại nạp: Người dùng, Phụ huynh, Học sinh (Cơ hội sau T4c); xem trước đếm Hợp lệ, Trùng, Lỗi; mật khẩu tạm Người dùng hiện một lần | Nạp thật, Tải dòng lỗi | QT-01 | docs/nghiep-vu/nap-du-lieu.md |
 
 ### Cổng giáo viên

@@ -371,6 +371,39 @@ select pg_temp.sudo($$create function pg_temp.d3par() returns uuid language sql 
 select pg_temp.sudo($$create function pg_temp.d3rest() returns bigint language sql stable security definer as 'select line_total - 1000000 from app.sales_order_line where order_id = pg_temp.o(''d3'')'$$);
 select pg_temp.sudo($$grant execute on function pg_temp.d3stu(), pg_temp.d3par(), pg_temp.d3rest() to public$$);
 select pg_temp.pay('d3', pg_temp.d3rest());
+create temp table tk8 (j jsonb);
+grant all on tk8 to public;
+-- ================= D-23-08 (migration 621): Chuyển phí xem trước và kiểm đơn nhận (CS-10) =================
+select pg_temp.sudo($$create function pg_temp.d3o() returns uuid language sql stable security definer as 'select pg_temp.o(''d3'')'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.d3o() to public$$);
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk8 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Chuyển phí giả', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_02', 'parent_id', pg_temp.d3par(), 'student_id', pg_temp.d3stu()));
+select ok((app.preview_fee_transfer(pg_temp.d3e()) ->> 'transfer_value')::bigint > 0, 'D-23-08 Đúng: xem trước có giá trị chuyển (giờ mua còn lại × giá sau chiết khấu)');
+select is(app.preview_fee_transfer(pg_temp.d3e()) ->> 'order_total', null, 'D-23-08 Đúng: chưa chọn đơn nhận thì chưa có giá trị đơn, đóng thêm');
+select is((app.preview_fee_transfer(pg_temp.d3e()) ->> 'hours_used')::numeric, 9::numeric, 'D-23-08 Đúng: bảng hiện giờ đã học');
+select ok(jsonb_array_length(app.list_fee_transfer_orders(pg_temp.d3e())) >= 1, 'D-23-08 Đúng: danh sách đơn nhận có đơn của phụ huynh');
+select is((app.preview_fee_transfer(pg_temp.d3e(), null, pg_temp.d3o()) ->> 'extra_to_pay')::bigint,
+          (app.preview_fee_transfer(pg_temp.d3e(), null, pg_temp.d3o()) ->> 'order_total')::bigint - (app.preview_fee_transfer(pg_temp.d3e()) ->> 'transfer_value')::bigint,
+          'D-23-08 Đúng: đóng thêm = giá trị đơn nhận − giá trị chuyển');
+select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e(), pg_temp.d1par(), pg_temp.d3o())$$), 'HMT_CHUYEN_PHI_DON_SAI', 'D-23-08 Chặn: đơn nhận không của phụ huynh nhận số dư');
+select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
+select pg_temp.sudo($$update app.sales_order set total_amount = 1 where id = pg_temp.o('d3')$$);
+select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
+select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e(), null, pg_temp.d3o())$$), 'HMT_CHUYEN_PHI_AM', 'D-23-08 Chặn: giá trị chuyển lớn hơn giá trị đơn nhận');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.preview_fee_transfer(pg_temp.d3e())$$), 'HMT_KHONG_CO_QUYEN', 'D-23-08 Chặn: người cơ sở khác không xem trước chuyển phí của ghi danh này');
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk8), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'kind_code', 'SANG_SAO_HOA'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-08 Chặn: kiểu chuyển ngoài ba kiểu của canvas');
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk8), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'kind_code', 'SANG_MON', 'order_id', pg_temp.d3o()))$$),
+  'HMT_CHUYEN_PHI_AM', 'D-23-08 Chặn lúc tạo phiếu: giá trị chuyển lớn hơn giá trị đơn nhận');
+select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
+select pg_temp.sudo($$update app.sales_order set total_amount = 100000000 where id = pg_temp.o('d3')$$);
+select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
+select lives_ok($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk8), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d3e(), 'reason_code', 'CHUYEN_NOI_O', 'kind_code', 'SANG_MON', 'order_id', pg_temp.d3o()))$$,
+  'D-23-08 Đúng: đơn nhận đủ lớn thì tạo phiếu Chuyển phí được');
+
 create temp table tk7 (j jsonb);
 create temp table tt7 (j jsonb);
 grant all on tk7, tt7 to public;
