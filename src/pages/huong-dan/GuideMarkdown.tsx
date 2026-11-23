@@ -164,6 +164,10 @@ export function GuideMarkdown({ blocks }: { blocks: Block[] }): ReactNode {
             return (
               <pre
                 key={idx}
+                // Khối cuộn ngang được: phải focus được bằng bàn phím (axe: scrollable-region-focusable).
+                tabIndex={0}
+                role="region"
+                aria-label="Sơ đồ hoặc khối chữ cố định"
                 className="overflow-x-auto rounded-control bg-surface-subtle p-3 text-caption"
               >
                 {b.text}
