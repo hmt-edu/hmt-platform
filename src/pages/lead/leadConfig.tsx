@@ -59,7 +59,6 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
       },
       {
         key: 'source',
-        defaultVisible: false,
         label: 'Source',
         render: (r) => catalogs.name('SOURCE', r.source_code) ?? r.source_code,
       },
@@ -88,6 +87,7 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
       },
       {
         key: 'substage',
+        defaultVisible: false,
         label: 'Sub-stage',
         render: (r) =>
           r.record_status === 'DA_GOP' ? (
