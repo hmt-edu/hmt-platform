@@ -1,0 +1,19 @@
+{
+  "ghiChu": "Nhãn tiếng Anh GIỮ NGUYÊN trên giao diện, không dịch (anh Trường chốt 23/11/2026 13:58, mở rộng ngoại lệ Đ268). MỘT file duy nhất: mọi script dò chữ giao diện (dò mã kỹ thuật, dò tiếng Anh) đọc danh sách này để cho qua. Thêm nhãn mới phải có anh chốt.",
+  "nhan": [
+    "Filters",
+    "Group By",
+    "Favorites",
+    "Save to Favorites",
+    "Stage",
+    "Sub-stage",
+    "Source",
+    "Sub-source",
+    "Source type",
+    "Medium",
+    "Assign",
+    "Campaign",
+    "Time Table",
+    "Done"
+  ]
+}

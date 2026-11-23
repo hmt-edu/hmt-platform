@@ -78,7 +78,7 @@ File anh Trường đưa vào nằm trong `_inbox/` (không bao giờ commit; d�
 
 ## Giao diện
 - Chữ trên giao diện bằng tiếng Việt; tên biến, bảng, hàm bằng tiếng Anh.
-- Ngoại lệ có chủ đích (Đ268): các nhãn "Filters", "Group By", "Favorites", "Save to Favorites" của khuôn K03 giữ tiếng Anh theo khuôn canvas; không dịch.
+- Ngoại lệ có chủ đích (Đ268, mở rộng anh chốt 23/11/2026): các nhãn tiếng Anh **giữ nguyên, không dịch**: Filters, Group By, Favorites, Save to Favorites (khuôn K03), Stage, Sub-stage, Source, Sub-source, Source type, Medium, Assign, Campaign, Time Table, Done. Danh sách nằm ở MỘT file `config/nhan-tieng-anh-giu-nguyen.json`; mọi script dò chữ giao diện đọc file đó để cho qua. Thêm nhãn mới cần anh chốt.
 - Hệ thống thiết kế HMT (Claude Design làm): cam `#EF6925`, nền tối `#211C16`. Chưa có thì dùng component trung tính, không tự chế phong cách.
 - Cổng CRM ưu tiên máy tính; cổng Giáo viên, Học tập ưu tiên điện thoại.
 
