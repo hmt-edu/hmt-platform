@@ -19,4 +19,21 @@ describe('màn lỗi tải dữ liệu', () => {
     const s = queryErrorSpec(new Error('Failed to fetch'), 'cấu hình SLA');
     expect(s).toEqual({ kind: 'error', title: 'Chưa tải được cấu hình SLA', canRetry: true });
   });
+  it('lỗi nghiệp vụ (mã HMT_*) hiện câu tiếng Việt của lỗi, không nhắc mạng, không Thử lại (D-23-38)', () => {
+    const s = queryErrorSpec(
+      new HmtError('HMT_TINH_NANG_TAT', 'Phân hệ chưa bật ở cơ sở này.'),
+      'phiếu',
+    );
+    expect(s).toEqual({
+      kind: 'error',
+      title: 'Chưa tải được phiếu',
+      canRetry: false,
+      detail: 'Phân hệ chưa bật ở cơ sở này.',
+    });
+  });
+  it('lỗi chung HMT_LOI (không rõ nguyên nhân) vẫn cho Thử lại', () => {
+    const s = queryErrorSpec(new HmtError('HMT_LOI', 'Có lỗi xảy ra, thử lại sau.'), 'phiếu');
+    expect(s.canRetry).toBe(true);
+    expect(s.detail).toBeUndefined();
+  });
 });
