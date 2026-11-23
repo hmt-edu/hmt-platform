@@ -6,6 +6,7 @@ import type {
   DestBranch,
   FeeTransferOrder,
   FeeTransferPreview,
+  StopMoneyPreview,
   TaskOptions,
 } from './businessTaskForm';
 import type { TaskFieldDef } from './taskForm';
@@ -68,6 +69,18 @@ export function useFeeTransferPreview(enrollmentId: string, orderId: string, ena
         p_to_parent_id: null,
         p_order_id: orderId === '' ? null : orderId,
       }),
+  });
+}
+
+/** Tiền xem trước của phiếu Dừng học, Hoàn học phí (app.preview_stop_task_money, migration 632); chỉ đọc, tính lại từ dữ liệu hiện tại. */
+export function useStopMoneyPreview(taskId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['stop-money-preview', taskId],
+    enabled,
+    retry: false,
+    queryFn: () =>
+      rpc<StopMoneyPreview>(supabase, 'preview_stop_task_money', { p_task_id: taskId }),
   });
 }
 
