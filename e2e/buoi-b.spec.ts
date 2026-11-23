@@ -97,6 +97,7 @@ test('BUOI-12: buổi Đã chốt đã kết thúc có trong danh sách kèm h�
   await page.goto('/crm/buoi-chua-done');
   await expect(page.getByRole('heading', { level: 1, name: 'Buổi chưa hoàn tất' })).toBeVisible();
   await page.getByRole('searchbox').fill(classCode);
+  await showAllColumns(page);
   const row = page.getByRole('row').filter({ hasText: classCode }).first();
   await expect(row).toBeVisible();
   await expect(row).toContainText(/Quá hạn|Còn/);

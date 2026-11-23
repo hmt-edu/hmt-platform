@@ -214,6 +214,8 @@ test('Đường đi trọn: ghi danh 3 giờ, chốt danh sách, điểm danh, n
 
   await test.step('Màn buổi hiện tình trạng Done', async () => {
     await page.goto(`/crm/buoi-hoc/${first}`);
-    await expect(page.getByText('Buổi 1 · Done').first()).toBeVisible();
+    // Bản ghi Buổi (T13, #551): «Buổi» và «Tình trạng» là hai ô riêng.
+    await expect(page.getByText('Buổi 1', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText('Done', { exact: true }).first()).toBeVisible();
   });
 });
