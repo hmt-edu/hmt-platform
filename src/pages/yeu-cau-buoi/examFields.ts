@@ -71,6 +71,6 @@ export function examRpcArgs(e: ExamInput): {
 /** Câu giải thích cách tính giờ theo loại yêu cầu (R-V2-18, R-BUOI-03). */
 export function examChargeNote(kind: 'CUNG_CO' | 'BO_TRO' | 'HOC_BU'): string {
   return kind === 'CUNG_CO'
-    ? 'Buổi kiểm tra từ yêu cầu củng cố trừ giờ như buổi Chính (R-V2-18).'
-    : 'Kiểm tra bù (thi bù) không trừ giờ của học sinh, đi theo luật học bù, bổ trợ (R-BUOI-03, R-V2-20).';
+    ? 'Buổi kiểm tra từ yêu cầu củng cố trừ giờ như buổi Chính.'
+    : 'Kiểm tra bù (thi bù) không trừ giờ của học sinh, đi theo luật học bù, bổ trợ.';
 }

@@ -54,7 +54,7 @@ export function NoPortalPage({ portal }: { portal?: Portal }) {
         }
       >
         {portal === 'gv'
-          ? 'Cổng giáo viên chỉ mở cho giáo viên và trợ giảng được phân công (R-GV-08, R-GV-13). Hãy liên hệ quản trị viên.'
+          ? 'Cổng giáo viên chỉ mở cho giáo viên và trợ giảng được phân công. Hãy liên hệ quản trị viên.'
           : 'Cần dùng thì liên hệ quản trị viên để được cấp quyền.'}
       </StateView>
     </AuthLayout>

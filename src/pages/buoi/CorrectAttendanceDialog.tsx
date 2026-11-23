@@ -85,8 +85,8 @@ function Body({
     >
       <div className="flex flex-col gap-3">
         <p className="text-body">
-          Buổi đã hoàn thành. Đổi giữa các trạng thái đi học không đổi giờ đã trừ (R-GIO-07). Bắt
-          buộc ghi lý do.
+          Buổi đã hoàn thành. Đổi giữa các trạng thái đi học không đổi giờ đã trừ. Bắt buộc ghi lý
+          do.
         </p>
         <OptionalSelect
           label="Học sinh"

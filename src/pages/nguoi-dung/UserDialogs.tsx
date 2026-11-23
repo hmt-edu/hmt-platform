@@ -238,7 +238,7 @@ function ManagerForm({
         placeholder="Chưa có quản lý"
         loading={search.isFetching}
         onSearch={setQuery}
-        help="Quản lý là người duyệt đơn hàng của nhân viên này (R-HT-06). Gõ tên, email hoặc mã để tìm."
+        help="Quản lý là người duyệt đơn hàng của nhân viên này. Gõ tên, email hoặc mã để tìm."
       />
       {managerId !== null && (
         <button

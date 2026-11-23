@@ -271,8 +271,7 @@ function ImportForm({
             }}
           />
           <p className="text-caption text-fg-muted">
-            Nhận file CSV (.csv), dòng đầu là tên cột. Từ Excel, lưu bằng “CSV UTF-8”. Excel (.xlsx)
-            sẽ có sau.
+            Nhận file CSV (.csv), dòng đầu là tên cột. Từ Excel, lưu bằng “CSV UTF-8” rồi tải lên.
             {maxRows !== null && ` Tối đa ${maxRows} dòng mỗi lần.`}
           </p>
           {fileError && <Alert tone="danger">{fileError}</Alert>}
