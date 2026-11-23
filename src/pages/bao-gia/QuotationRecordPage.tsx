@@ -539,11 +539,9 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                     </>
                   }
                 />
-                <DetailField
-                  label="Phụ huynh"
-                  mode="view"
-                  value={`${record.parent_name} · ${record.parent_code} · ${formatPhone(record.parent_phone)}`}
-                />
+                <DetailField label="Phụ huynh" mode="view" value={record.parent_name} />
+                <DetailField label="Mã phụ huynh" mode="view" value={record.parent_code} />
+                <DetailField label="SĐT" mode="view" value={formatPhone(record.parent_phone)} />
                 <DetailField
                   label="Cơ hội"
                   mode="view"
