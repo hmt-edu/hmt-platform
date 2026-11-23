@@ -233,11 +233,8 @@ function ClassView({ record }: { record: ClassRecord }) {
               value={record.subject_name ?? record.subject_code}
             />
             <DetailField mode="view" label="Khối" value={record.grade_code.replace(/^K0?/, '')} />
-            <DetailField
-              mode="view"
-              label="Phân loại"
-              value={[record.class_type_name, record.level_name].filter(Boolean).join(' · ')}
-            />
+            <DetailField mode="view" label="Phân loại" value={record.class_type_name ?? ''} />
+            <DetailField mode="view" label="Trình độ" value={record.level_name ?? ''} />
             <DetailField
               mode="view"
               label="Hình thức học"
