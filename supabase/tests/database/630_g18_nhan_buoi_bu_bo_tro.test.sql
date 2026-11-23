@@ -160,5 +160,22 @@ select is((select expected_end_date from app.class where id = pg_temp.c('h')),
   (select max(session_date) from app.class_session where class_id = pg_temp.c('h') and type_code not in ('HOC_BU', 'BO_TRO') and status_code = 'NHAP'),
   'G18: ngày kết thúc dự kiến theo buổi chính cuối, không theo buổi học bù');
 
+-- A-23-21: huỷ buổi học bù, bổ trợ (trung tâm huỷ) không thêm buổi Chính vào cuối lịch; huỷ buổi Chính vẫn thêm.
+select pg_temp.mkclass('k', 'CB', pg_temp.fut(), 4);
+select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time, type_code, status_code, is_manual)
+  select c.id, c.branch_id, pg_temp.fut() + 3, '10:00', '11:00', 'HOC_BU', 'NHAP', true from app.class c where c.id = pg_temp.c('k')$$);
+select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time, type_code, status_code, is_manual)
+  select c.id, c.branch_id, pg_temp.fut() + 4, '10:00', '11:00', 'BO_TRO', 'NHAP', true from app.class c where c.id = pg_temp.c('k')$$);
+select is((app.session_cancel_preview((select id from app.class_session where class_id = pg_temp.c('k') and type_code = 'HOC_BU')) ->> 'added_date'), null,
+  'A-23-21: xem trước huỷ buổi học bù không có buổi thêm cuối lịch');
+select is((select (app.cancel_session((select id from app.class_session where class_id = pg_temp.c('k') and type_code = 'HOC_BU'), 'HUY_KHONG_PHI', 'TT_THOI_TIET') ->> 'added_session_id')), null,
+  'A-23-21: huỷ buổi học bù không thêm buổi');
+select is((select (app.cancel_session((select id from app.class_session where class_id = pg_temp.c('k') and type_code = 'BO_TRO'), 'HUY_KHONG_PHI', 'TT_THOI_TIET') ->> 'added_session_id')), null,
+  'A-23-21: huỷ buổi bổ trợ không thêm buổi');
+select is((select count(*)::int from app.class_session where class_id = pg_temp.c('k') and type_code not in ('HOC_BU', 'BO_TRO') and status_code = 'NHAP'), 4,
+  'A-23-21: sau khi huỷ bù và bổ trợ lớp vẫn đúng 4 buổi chính');
+select isnt((app.cancel_session(pg_temp.s('k', 2), 'HUY_KHONG_PHI', 'TT_THOI_TIET') ->> 'added_session_id'), null,
+  'A-23-21: huỷ buổi Chính (trung tâm huỷ) vẫn thêm một buổi cuối lịch (R-BUOI-06)');
+
 select * from finish();
 rollback;

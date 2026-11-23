@@ -86,6 +86,10 @@ declare
   v_no integer;
 begin
   s := app.assert_session_access(p_session_id, 'SESSION', 'SUA', true);
+  -- A-23-21: học bù, bổ trợ huỷ không thêm buổi cuối lịch: không có xem trước.
+  if not app.session_type_numbered(s.type_code) then
+    return jsonb_build_object('added_session_no', null, 'added_date', null);
+  end if;
   -- Luật R-BUOI-06: buổi thêm vào cuối lịch, theo các khung giờ đang dùng, sau buổi cuối đang sống.
   select coalesce(jsonb_agg(jsonb_build_object('start_time', sl.start_time, 'end_time', sl.end_time, 'repeat_weeks', sl.repeat_weeks,
                                                'first_date', sl.first_date, 'id', sl.id)), '[]'::jsonb)
@@ -110,3 +114,78 @@ begin
     perform app.renumber_class_sessions(r.class_id);
   end loop;
 end $$;
+
+-- (6) A-23-21: app.cancel_session giữ nguyên bản mig 123, chỉ thêm điều kiện «buổi có số» trước khi tự thêm buổi cuối lịch (R-BUOI-06; học bù, bổ trợ không thêm).
+create or replace function app.cancel_session(p_session_id uuid, p_kind text, p_reason_code text, p_note text default null)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  s app.class_session;
+  c app.class;
+  v_requires_note boolean;
+  v_center boolean;
+  v_kind text;
+  v_slots jsonb;
+  v_made uuid;
+begin
+  s := app.assert_session_access(p_session_id, 'SESSION', 'SUA', true);
+  select * into c from app.class where id = s.class_id;
+  perform app.require_feature('VAN_HANH_LOP', s.branch_id);
+  -- Luật R-BUOI-09: huỷ được tới khi Done.
+  if s.status_code not in ('NHAP', 'DA_CHOT') then
+    perform app.raise_error('HMT_BUOI_KHONG_HUY_DUOC', 'Chỉ huỷ được buổi chưa Done và chưa huỷ. Buổi đã Done sai thì sửa điểm danh kèm lý do.');
+  end if;
+  perform app.assert_catalog_code_active('SESSION_CANCEL_REASON', p_reason_code);
+  select requires_note into v_requires_note from app.catalog_item where catalog_code = 'SESSION_CANCEL_REASON' and code = p_reason_code;
+  if v_requires_note and btrim(coalesce(p_note, '')) = '' then
+    perform app.raise_error('HMT_CAN_GHI_CHU', 'Lý do "Khác" cần ghi chú.');
+  end if;
+  v_center := p_reason_code like 'TT\_%';
+  if v_center then
+    -- Luật R-BUOI-06: trung tâm huỷ thì không tính phí.
+    v_kind := 'HUY_KHONG_PHI';
+  else
+    -- Luật R-BUOI-07: học sinh huỷ chỉ áp lớp riêng; người huỷ tự chọn có/không tính phí.
+    if c.class_type_code <> 'LR' then
+      perform app.raise_error('HMT_HUY_BUOI_HS_CHI_LOP_RIENG', 'Lý do của học sinh chỉ dùng cho lớp riêng. Lớp chung huỷ vì lý do của trung tâm.');
+    end if;
+    if p_kind is null or p_kind not in ('HUY_CO_PHI', 'HUY_KHONG_PHI') then
+      perform app.raise_error('HMT_HUY_BUOI_CAN_CHON_KIEU', 'Chọn huỷ có tính phí hoặc không tính phí.');
+    end if;
+    v_kind := p_kind;
+  end if;
+  -- Huỷ có tính phí: cần danh sách để trừ giờ; buổi Nháp thì chốt trước.
+  if v_kind = 'HUY_CO_PHI' then
+    if s.status_code = 'NHAP' then
+      perform app.build_session_roster(s.id);
+    end if;
+    perform app.deduct_session_hours(s.id);
+  end if;
+  update app.session_attendance set is_active = false where session_id = s.id and is_active;
+  -- Lưu lý do và ghi chú huỷ (BUOI-04: BUOI-01, BUOI-02 hiện lại lý do).
+  update app.class_session set status_code = v_kind, cancel_reason_code = p_reason_code, cancel_note = nullif(btrim(coalesce(p_note, '')), '') where id = s.id;
+
+  -- Luật R-BUOI-06: trung tâm huỷ thì tự thêm một buổi vào cuối lịch, đánh lại số buổi.
+  -- A-23-21 (G18): buổi học bù, bổ trợ không đánh số nên huỷ không đẩy lịch lớp, không thêm buổi Chính.
+  if v_center and app.session_type_numbered(s.type_code) then
+    select coalesce(jsonb_agg(jsonb_build_object('start_time', sl.start_time, 'end_time', sl.end_time, 'repeat_weeks', sl.repeat_weeks,
+                                                 'first_date', sl.first_date, 'id', sl.id)), '[]'::jsonb)
+      into v_slots from app.class_slot sl where sl.class_id = c.id and sl.is_active;
+    insert into app.class_session (class_id, branch_id, slot_id, session_date, start_time, end_time, teacher_id, assistant_id, room_id)
+    select c.id, c.branch_id, sl.id, x.session_date, x.start_time, x.end_time, sl.teacher_id, sl.assistant_id, sl.room_id
+      from app.compute_class_schedule(c.branch_id,
+             (select max(session_date) from app.class_session where class_id = c.id and status_code in ('NHAP', 'DA_CHOT', 'DONE', 'HUY_CO_PHI')) + 1,
+             1, v_slots) x
+      join app.class_slot sl on sl.id = (v_slots -> x.slot_no ->> 'id')::uuid
+    returning id into v_made;
+    perform app.renumber_class_sessions(c.id);
+    update app.class set expected_end_date = (select max(session_date) from app.class_session
+                                               where class_id = c.id and status_code in ('NHAP', 'DA_CHOT', 'DONE', 'HUY_CO_PHI'))
+     where id = c.id;
+  end if;
+  return jsonb_build_object('status', v_kind, 'added_session_id', v_made);
+end;
+$$;
