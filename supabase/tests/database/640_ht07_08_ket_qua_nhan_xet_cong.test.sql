@@ -1,4 +1,4 @@
--- HT-07 / HT-08 / PH-02: app.portal_results (639) và app.portal_reviews (640). Luật: chuyên cần theo ô giáo viên; BTVN ẩn khi lớp không giao (R-V2-35);
+-- HT-07 / HT-08 / PH-02: app.portal_results (640) và app.portal_reviews (641). Luật: chuyên cần theo ô giáo viên; BTVN ẩn khi lớp không giao (R-V2-35);
 -- điểm ba nhóm theo buổi; nhận xét chỉ em có mặt và lời nhắn không trống (R-GV-04, R-V2-39); quyền riêng theo học sinh/con.
 begin;
 create extension if not exists pgtap with schema extensions;
