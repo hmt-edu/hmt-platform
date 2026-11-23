@@ -130,7 +130,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [rows, setRows] = useState<EditRow[]>([]);
   const discountPolicies = useDiscountPolicies(record.opportunity_id, editing);
   // R-CRM-16: đơn chỉ lưu được khi cơ hội ở L8; biết trước để khoá nút Chuyển thành đơn và nêu lý do (T2-03). Không đọc được cơ hội thì để nút mở, máy chủ vẫn kiểm khi Lưu.
-  const opportunity = useOpportunity(record.opportunity_id);
+  const opportunity = useOpportunity(record.opportunity_id, access.can('OPPORTUNITY', 'XEM'));
   const notL8 = opportunity.data !== undefined && opportunity.data.stage_code !== 'L8';
   const [baseline, setBaseline] = useState('');
   const [saving, setSaving] = useState(false);
