@@ -116,6 +116,7 @@ test('Sale lập phiếu thu từ đơn Đã duyệt và trình quản lý', asy
 test('Trưởng cơ sở duyệt phiếu thu, chuyển Kế toán', async ({ page }) => {
   await openByUrl(page, SETUP.manager, receiptUrl);
   await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
 });
 
@@ -126,6 +127,7 @@ test('Kế toán duyệt phiếu thu: sinh đúng một khoản tiền vào, đ�
   await enterAsAdmin(page, ACCOUNTANT);
   await page.goto(receiptUrl);
   await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText('Đã duyệt phiếu thu, tiền đã ghi nhận.').first()).toBeVisible();
   const receiptId = receiptUrl.split('/').pop() ?? '';
   const money = await db((c) =>

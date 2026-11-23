@@ -128,7 +128,9 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const [dialog, setDialog] = useState<'reject' | 'cancel' | 'resubmit' | 'reassign' | null>(null);
+  const [dialog, setDialog] = useState<
+    'reject' | 'cancel' | 'resubmit' | 'reassign' | 'approve_ql' | 'approve_kt' | null
+  >(null);
   const [dialogError, setDialogError] = useState<string | null>(null);
   useCrumbTail(record.code);
 
@@ -571,13 +573,10 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
               <Button
                 variant="primary"
                 loading={busy === 'ql'}
-                onClick={() =>
-                  void run(
-                    'ql',
-                    () => approveReceiptManager(supabase, record.id),
-                    'Đã duyệt, chuyển Kế toán.',
-                  )
-                }
+                onClick={() => {
+                  setDialogError(null);
+                  setDialog('approve_ql');
+                }}
               >
                 Duyệt (chuyển Kế toán)
               </Button>
@@ -586,15 +585,10 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
               <Button
                 variant="primary"
                 loading={busy === 'kt'}
-                onClick={() =>
-                  void run(
-                    'kt',
-                    async () => {
-                      await approveReceiptAccounting(supabase, record.id);
-                    },
-                    'Đã duyệt phiếu thu, tiền đã ghi nhận.',
-                  )
-                }
+                onClick={() => {
+                  setDialogError(null);
+                  setDialog('approve_kt');
+                }}
               >
                 Duyệt phiếu thu
               </Button>
@@ -811,6 +805,53 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
               setDialog(null);
               await refresh();
               toast({ title: 'Đã từ chối, phiếu về Nháp.' });
+            })
+            .catch((e: unknown) => setDialogError(errorOf(e).message))
+            .finally(() => setBusy(null));
+        }}
+      />
+      {/* K08 «Duyệt tiền»: tóm tắt số tiền, đơn, phụ huynh rồi mới duyệt (thẻ C-23-12). Số lấy từ phiếu, không viết cứng. */}
+      <ConfirmDialog
+        open={dialog === 'approve_ql' || dialog === 'approve_kt'}
+        onOpenChange={(o) => !o && setDialog(null)}
+        title={
+          dialog === 'approve_kt'
+            ? `Duyệt phiếu thu ${record.code}?`
+            : `Duyệt phiếu thu ${record.code}, chuyển Kế toán?`
+        }
+        summary={[
+          {
+            label: 'Số tiền',
+            value: <span className="tabular font-semibold">{formatMoney(record.amount)}</span>,
+          },
+          {
+            label: record.order ? 'Đơn hàng' : 'Loại phiếu',
+            value: record.order ? record.order.code : 'Thu nợ đầu kỳ',
+          },
+          { label: 'Phụ huynh', value: record.parent?.name ?? '—' },
+        ]}
+        note={
+          dialog === 'approve_kt'
+            ? 'Kế toán duyệt xong, tiền được ghi nhận và chia về các dòng đơn. Không hoàn tác bằng nút.'
+            : 'Quản lý duyệt xong, phiếu chuyển Kế toán duyệt tiếp.'
+        }
+        confirmLabel="Xác nhận duyệt"
+        busy={busy === 'ql' || busy === 'kt'}
+        error={dialogError}
+        onConfirm={() => {
+          const kt = dialog === 'approve_kt';
+          setBusy(kt ? 'kt' : 'ql');
+          setDialogError(null);
+          (kt
+            ? approveReceiptAccounting(supabase, record.id)
+            : approveReceiptManager(supabase, record.id)
+          )
+            .then(async () => {
+              setDialog(null);
+              await refresh();
+              toast({
+                title: kt ? 'Đã duyệt phiếu thu, tiền đã ghi nhận.' : 'Đã duyệt, chuyển Kế toán.',
+              });
             })
             .catch((e: unknown) => setDialogError(errorOf(e).message))
             .finally(() => setBusy(null));

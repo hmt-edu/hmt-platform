@@ -123,6 +123,7 @@ test('Trưởng cơ sở duyệt phiếu: chuyển Kế toán, không còn nút 
     page.getByText('Phiếu chờ').or(page.getByText(/Đã trình, chờ quản lý duyệt/)),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
   await expect(page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' })).toHaveCount(0);
 });
@@ -222,6 +223,7 @@ test('Phiếu thứ hai: Trưởng cơ sở duyệt chuyển Kế toán', async 
   await enterAs(page, setup.manager);
   await page.goto(receipt2Url);
   await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
 });
 
@@ -258,6 +260,7 @@ test('Kế toán duyệt phiếu: phiếu Đã duyệt và khoá, sinh đúng m�
   // Trước khi duyệt chưa có khoản tiền vào.
   expect((await moneyIn())?.n).toBe('0');
   await page.getByRole('button', { name: 'Duyệt phiếu thu' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText('Đã duyệt phiếu thu, tiền đã ghi nhận.').first()).toBeVisible();
   await expect(page.getByText(/Phiếu đã duyệt và khoá\. Tiền đã ghi nhận \(.+\)\./)).toBeVisible();
   // So canvas TC02_duyet: phiếu Đã duyệt hiện «Duyệt bởi» kèm ngày.
@@ -296,5 +299,6 @@ test('R-V2-12: Trưởng cơ sở duyệt phiếu chờ Trưởng cơ sở, chuy
   await enterAs(page, setup.manager);
   await page.goto(receipt3Url);
   await page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Xác nhận duyệt' }).click();
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
 });
