@@ -82,6 +82,8 @@ export function TaskRecordPage() {
     );
   const ticket = record.data.ticket;
   const canEdit = access.can('TICKET', 'SUA');
+  // Thực hiện, Huỷ phiếu: chỉ vai trò có quyền «Thực hiện phiếu» trong ma trận (CSKH, Trưởng cơ sở, Admin); Tư vấn, Giáo viên, Trợ giảng chỉ xem (hàm DB cũng chặn).
+  const canAct = canEdit && access.can('TICKET', 'THUC_HIEN');
   // Công tắc tính năng của cơ sở phiếu: tắt thì khoá Gửi duyệt, Duyệt, Thực hiện kèm câu rõ ràng (hàm DB cũng chặn).
   const featureOff = taskFeatureOffMessage(task.task_type, access.featureOnAt, task.branch_code);
   const open = ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(task.status_code);
@@ -141,7 +143,7 @@ export function TaskRecordPage() {
                 <Button onClick={() => setAsking({ action: 'reject' })}>Từ chối</Button>
               </>
             )}
-            {task.status_code === 'DA_DUYET' && canEdit && (
+            {task.status_code === 'DA_DUYET' && canAct && (
               <Button
                 variant="primary"
                 disabled={featureOff !== null}
@@ -150,7 +152,7 @@ export function TaskRecordPage() {
                 Thực hiện
               </Button>
             )}
-            {open && canEdit && (
+            {open && canAct && (
               <Button onClick={() => setAsking({ action: 'cancel' })}>Huỷ phiếu</Button>
             )}
           </>
