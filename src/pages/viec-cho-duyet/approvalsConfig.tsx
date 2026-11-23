@@ -3,7 +3,7 @@
 import type { AccessView } from '../../nav/access';
 import { Tag } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
-import { KIND_LABELS, KIND_ORDER, waitingText } from './approvalsLogic';
+import { KIND_LABELS, KIND_ORDER, detailText, waitingText } from './approvalsLogic';
 import type { ApprovalKind, ApprovalPage, ApprovalRow } from './approvalsTypes';
 
 export const APPROVALS_SCREEN_CODE = 'CHUNG-15';
@@ -12,6 +12,8 @@ const MUTED = <span className="text-fg-muted">—</span>;
 export function buildApprovalsConfig(
   access: AccessView,
   counts: ApprovalPage['counts'] | undefined,
+  /** Trang này có dòng nào có tên học sinh/phụ huynh không; không có thì ẩn hai cột đối tượng mặc định (còn bật được ở «Cột»). */
+  hasSubject = true,
 ): ListConfig<ApprovalRow> {
   const multiBranch = access.seesAllBranches;
   return {
@@ -28,9 +30,19 @@ export function buildApprovalsConfig(
       },
       { key: 'code', label: 'Mã', render: (r) => <span className="font-medium">{r.code}</span> },
       // T13 «một ô một thông tin»: đối tượng được tách thành tên, mã, nội dung; cấp duyệt tách thành Cấp và Vai trò duyệt.
-      { key: 'subject', label: 'Học sinh / Phụ huynh', render: (r) => r.subject_name ?? MUTED },
-      { key: 'subject_code', label: 'Mã đối tượng', render: (r) => r.subject_code ?? MUTED },
-      { key: 'detail', label: 'Nội dung', render: (r) => r.detail ?? MUTED },
+      {
+        key: 'subject',
+        label: 'Học sinh / Phụ huynh',
+        defaultVisible: hasSubject,
+        render: (r) => r.subject_name ?? MUTED,
+      },
+      {
+        key: 'subject_code',
+        label: 'Mã đối tượng',
+        defaultVisible: hasSubject,
+        render: (r) => r.subject_code ?? MUTED,
+      },
+      { key: 'detail', label: 'Nội dung', render: (r) => detailText(r) ?? MUTED },
       { key: 'level', label: 'Cấp', render: (r) => `${r.level_no}/${r.level_total}` },
       { key: 'level_role', label: 'Vai trò duyệt', render: (r) => r.level_label ?? MUTED },
       { key: 'creator', label: 'Người tạo', render: (r) => r.creator_name ?? MUTED },

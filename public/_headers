@@ -1,2 +1,14 @@
+# Tiêu đề bảo mật cho Cloudflare Pages (B-23-17, ra-soat N9, mức VỪA). File tĩnh, miễn phí, không thêm dịch vụ.
+# Nguồn được phép lấy từ mã: ứng dụng tự phục vụ chữ (fontsource) và ảnh; gọi Supabase (REST/Auth, *.supabase.co); Cloudflare Turnstile (script + khung);
+# ảnh data:/blob: cho xuất ảnh nhận xét (GV07X) và tệp tạo trên trình duyệt; kiểu dáng nội tuyến của giao diện (thuộc tính style).
+# Lộ trình CSP: bắt đầu ở chế độ BÁO CÁO (Report-Only, không chặn) để không vỡ giao diện; sau khi Tester xem console staging không còn vi phạm thì đổi tên tiêu đề
+# Content-Security-Policy-Report-Only thành Content-Security-Policy (một dòng). Các tiêu đề còn lại bật thật ngay.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=31536000
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.supabase.co; frame-src https://challenges.cloudflare.com blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
