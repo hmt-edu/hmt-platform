@@ -646,8 +646,7 @@ function OrderView({ record }: { record: OrderRecord }) {
         </h3>
         {record.installments.length === 0 ? (
           <p className="text-fg-muted">
-            Đơn chưa có lịch đóng tiền: chưa chọn điều khoản thanh toán hoặc đơn chưa có dòng
-            (R-TIEN-07).
+            Đơn chưa có lịch đóng tiền: chưa chọn điều khoản thanh toán hoặc đơn chưa có dòng.
           </p>
         ) : (
           <Table<OrderInstallment>
