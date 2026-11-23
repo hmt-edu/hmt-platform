@@ -99,7 +99,7 @@ function QuotationPrint({ record }: { record: QuotationRecord }) {
           stamp={printStamp(record.status_code)}
           printedOn={formatDate(new Date())}
           words={amountInWords(record.total_amount)}
-          note={hasGift ? 'Quà tặng không có giá, không tính vào tổng (R-TIEN-30).' : undefined}
+          note={hasGift ? 'Quà tặng không có giá, không tính vào tổng.' : undefined}
           boxes={
             <>
               <div className="k13-box">

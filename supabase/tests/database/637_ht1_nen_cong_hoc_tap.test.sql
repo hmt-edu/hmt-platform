@@ -102,5 +102,16 @@ select is(pg_temp.err($$select app.portal_require_student(pg_temp.sid('HS992004'
 select is(app.portal_children(), '[]'::jsonb, 'Luật công tắc: danh sách con rỗng khi Học tập tắt');
 reset role;
 
+-- ===== Luật: bị thu hồi phiên (token cũ) thì không đọc được dữ liệu con (học sinh, phụ huynh được miễn đổi mật khẩu lần đầu, migration 507) =====
+reset role;
+select pg_temp.claims(pg_temp.uid('hs1'));
+set local role authenticated;
+select is((select count(*)::int from app.portal_student_ids()), 1, 'Luật phiên: token còn hiệu lực thì thấy chính mình');
+reset role;
+update app.user_account set session_version = session_version + 1 where id = pg_temp.uid('hs1');
+set local role authenticated;
+select is((select count(*)::int from app.portal_student_ids()), 0, 'Luật phiên: Admin thu hồi phiên thì token cũ không đọc được dữ liệu con');
+reset role;
+
 select * from finish();
 rollback;

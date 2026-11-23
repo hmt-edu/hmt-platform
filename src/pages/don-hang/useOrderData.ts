@@ -227,11 +227,12 @@ export function createOrderFromOpportunity(
   opportunityId: string,
   lines: Record<string, unknown>[],
   confirmExistingDraft: boolean,
+  paymentTermId: string,
 ): Promise<CreatedOrder> {
   return rpc<CreatedOrder>(supabase, 'create_order_from_opportunity', {
     p_opportunity_id: opportunityId,
     p_lines: lines,
-    p_payment_term_id: null,
+    p_payment_term_id: paymentTermId,
     p_confirm_existing_draft: confirmExistingDraft,
   });
 }
@@ -241,11 +242,12 @@ export function createOrderFromQuotation(
   supabase: SupabaseClient,
   quotationId: string,
   lineNos: number[],
+  paymentTermId: string,
 ): Promise<CreatedOrder> {
   return rpc<CreatedOrder>(supabase, 'create_order_from_quotation', {
     p_quotation_id: quotationId,
     p_line_nos: lineNos,
-    p_payment_term_id: null,
+    p_payment_term_id: paymentTermId,
   });
 }
 

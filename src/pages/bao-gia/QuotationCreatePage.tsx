@@ -91,6 +91,7 @@ export function QuotationCreatePage() {
   return (
     <CreateForm
       opportunityId={opp.id}
+      branchId={opp.branch_id}
       opportunityCode={opp.code}
       parent={`${opp.parent_name} · ${opp.parent_code} · ${formatPhone(opp.parent_phone)}`}
       branch={`${opp.branch_code} ${opp.branch_name}`}
@@ -101,10 +102,12 @@ export function QuotationCreatePage() {
 function CreateForm({
   opportunityId,
   opportunityCode,
+  branchId,
   parent,
   branch,
 }: {
   opportunityId: string;
+  branchId: string;
   opportunityCode: string;
   parent: string;
   branch: string;
@@ -115,7 +118,7 @@ function CreateForm({
   const toast = useToast();
   const { claims } = useAuth();
   const catalogs = useLeadCatalogs();
-  const validityDays = useIntSetting('quotation_validity_days'); // hạn hiệu lực báo giá (R-TIEN-05), khung BH02: «N ngày kể từ ngày Gửi»
+  const validityDays = useIntSetting('quotation_validity_days', branchId); // theo cơ sở của cơ hội, cùng nguồn với hàm Gửi; // hạn hiệu lực báo giá (R-TIEN-05), khung BH02: «N ngày kể từ ngày Gửi»
   const refreshList = useRefreshQuotations();
   const students = useOpportunityStudents(opportunityId, true);
   const discountPolicies = useDiscountPolicies(opportunityId, true);

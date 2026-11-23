@@ -123,7 +123,7 @@ export function PriceListPage() {
           <h1 className="text-h1">Bảng giá</h1>
           <p className="mt-1 text-body text-fg-muted">
             Giá của từng gói theo hình thức học, tại ngày chọn. Giá đã tạo không sửa được: muốn đổi,
-            thêm giá với ngày hiệu lực mới. Đơn đã tạo giữ giá lúc tạo (R-TIEN-14).
+            thêm giá với ngày hiệu lực mới. Đơn đã tạo giữ giá lúc tạo.
           </p>
         </div>
         {canAdd && (
@@ -223,9 +223,9 @@ export function PriceListPage() {
         />
       )}
       <p className="text-caption text-fg-muted">
-        Giá trống nghĩa là gói không bán hình thức đó (R-TIEN-10). Chip &quot;Chưa có giá&quot;: chờ
-        cập nhật, không phải ngừng bán. Chip &quot;Không bán&quot;: gói không bán hình thức đó, ví
-        dụ dịch vụ, tài liệu không có giá online (R-TIEN-15).
+        Giá trống nghĩa là gói không bán hình thức đó. Chip &quot;Chưa có giá&quot;: chờ cập nhật,
+        không phải ngừng bán. Chip &quot;Không bán&quot;: gói không bán hình thức đó, ví dụ dịch vụ,
+        tài liệu không có giá online.
       </p>
       <AddPricesDialog
         open={adding}

@@ -22,7 +22,13 @@ Chỉ Admin đã xác thực hai bước (Quản trị · Sửa để chạy và
 
 ## Còn mở
 - Em loại trừ chỉ giữ trên trình duyệt trong lúc xem; đổi bộ lọc cơ sở vẫn giữ danh sách loại trừ.
-- Lên khối theo khoá ngoại «năm học» (danh mục năm học) chưa dùng: mỗi lần anh bấm là một đợt; cần luật nếu muốn chặn chạy hai lần trong một năm học.
+- Chặn chạy lần hai trong năm học: xem mục «Chặn lần hai» (migration 635). Danh mục «năm học» thật chưa có; đang dùng tham số tạm.
 
 ## Hiệu năng
 `app.grade_promotion_candidates` trên 30.000 học sinh giả, một nửa có ghi danh: 14 ms. Xem trước phân trang ở máy chủ (50 dòng).
+
+## Chặn lần hai trong năm học (migration 635, anh chốt 23/11/2026)
+- «Năm học này» = từ ngày 1 của tháng `school_year_start_month` (INT 1..12, mặc định 6, chỉnh ở Cài đặt, ghi đè theo cơ sở được) gần nhất tính đến hôm nay (giờ Việt Nam). Đây là định nghĩa tạm theo tham số; anh Trường đổi tháng khi cần.
+- Em có dòng đợt chưa hoàn tác của một đợt «Đã chạy» tạo từ ngày đó thì bị bỏ qua ở xem trước và khi chạy (theo cơ sở hay mọi cơ sở đều vậy). Hoàn tác đợt (7 ngày) thì em chạy lại được.
+- Hàm: `app.school_year_start(branch)`, `app.grade_promotion_done_this_year(branch)` (nội bộ); `app.grade_promotion_candidates` loại em đã lên khối năm nay; xem trước thêm `skipped.da_len_khoi_nam_nay`, `last_run_at`; chạy báo `HMT_DA_LEN_KHOI_NAM_NAY` (kèm ngày chạy lần trước) khi không còn em nào mà có em đã lên khối năm nay.
+- pgTAP: `635_kh08_chan_len_khoi_lan_hai.test.sql`.

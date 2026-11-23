@@ -127,7 +127,8 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
             {overview.subject_name ? ` · ${overview.subject_name}` : ''}
           </p>
           <h1 className="text-h3">
-            {overview.session_no ? `Buổi ${overview.session_no} · ` : ''}Nội dung buổi và BTVN
+            {overview.session_no ? `Buổi ${overview.session_no} · ` : ''}
+            {isExam ? 'Phạm vi kiểm tra và BTVN' : 'Nội dung buổi và BTVN'}
           </h1>
           <p className="text-caption text-fg-muted">
             {formatDate(overview.session_date)} · {overview.start_time.slice(0, 5)}–
@@ -173,7 +174,7 @@ function ContentForm({ overview, reload }: { overview: SessionOverview; reload: 
       {isExam && overview.exam && (
         <section aria-labelledby="gv06-exam" className="flex flex-col gap-1">
           <h2 id="gv06-exam" className="text-h4">
-            Phạm vi kiểm tra
+            Phạm vi kiến thức
           </h2>
           <p>{overview.exam.scope_text ?? 'Chưa nhập phạm vi kiến thức.'}</p>
           <p className="text-caption text-fg-muted">

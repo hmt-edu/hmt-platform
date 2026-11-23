@@ -79,7 +79,12 @@ export function buildReceiptConfig(
       },
       { key: 'paid_on', label: 'Ngày nhận', render: (r) => formatDate(r.paid_on) },
       // Canvas TC01: «Cơ sở» là cơ sở thu tiền; cơ sở của đơn tách sang cột riêng (không gộp hai thông tin vào một ô).
-      { key: 'branch', label: 'Cơ sở', render: (r) => r.collect_branch_code },
+      {
+        key: 'branch',
+        defaultVisible: false,
+        label: 'Cơ sở',
+        render: (r) => r.collect_branch_code,
+      },
       // Canvas TC01 không có «Cơ sở đơn»: giữ nhưng ẩn mặc định (bật ở Cột khi cần).
       {
         key: 'order_branch',
@@ -87,10 +92,25 @@ export function buildReceiptConfig(
         defaultVisible: false,
         render: (r) => r.branch_code,
       },
-      { key: 'creator', label: 'Người lập', render: (r) => r.created_by_name ?? '' },
-      { key: 'receiver', label: 'Người nhận tiền', render: (r) => r.receiver_name ?? '' },
+      {
+        key: 'creator',
+        defaultVisible: false,
+        label: 'Người lập',
+        render: (r) => r.created_by_name ?? '',
+      },
+      {
+        key: 'receiver',
+        defaultVisible: false,
+        label: 'Người nhận tiền',
+        render: (r) => r.receiver_name ?? '',
+      },
       // Canvas TC01: «Người duyệt» (người duyệt được phân công của phiếu).
-      { key: 'approver', label: 'Người duyệt', render: (r) => r.approver_name ?? '—' },
+      {
+        key: 'approver',
+        defaultVisible: false,
+        label: 'Người duyệt',
+        render: (r) => r.approver_name ?? '—',
+      },
       // Canvas TC04 (hàng chờ kế toán): «Mã giao dịch»; ẩn mặc định ở TC-01.
       {
         key: 'txn_ref',

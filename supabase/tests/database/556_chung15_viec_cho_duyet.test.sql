@@ -69,8 +69,11 @@ select pg_temp.sudo($$insert into app.class_transfer (enrollment_id, student_id,
     from app.enrollment e where e.code = 'GD5565'$$);
 select pg_temp.sudo($$insert into app.ticket (code, ticket_type, branch_id, parent_id, title, description, channel_code, category_code, priority_code, response_due_at, resolve_due_at)
   select 'TK556', 'DN', b.id, p.id, 'Giả', 'Giả', 'EMAIL', 'DN_01', 'THUONG', now() + interval '1 day', now() + interval '2 days' from app.branch b, app.parent p where b.code = 'CS1' and p.code = 'PH556'$$);
+-- D-23-30: dữ liệu phiếu giả chưa có ghi danh thật; dựng bằng cờ di chuyển dữ liệu (luật phạm vi bỏ qua), việc thử ở đây không phải payload.
+select set_config('hmt.migration', 'on', true);
 select pg_temp.sudo($$insert into app.ticket_task (code, ticket_id, branch_id, task_type, status_code, reason, levels, current_level, created_by, submitted_at)
   select 'PN556', t.id, t.branch_id, 'CHUYEN_PHI', 'CHO_DUYET', 'Giả', array['KE_TOAN'], 1, pg_temp.uid('sales1'), now() - interval '3 hours' from app.ticket t where t.code = 'TK556'$$);
+select set_config('hmt.migration', 'off', true);
 
 -- Bảng dùng chung cho các lần gọi.
 create function pg_temp.items(p_filters jsonb default '{}') returns jsonb language sql stable as $$ select app.list_my_approvals(p_filters) $$;

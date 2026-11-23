@@ -188,7 +188,7 @@ function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialo
       onOpenChange={onOpenChange}
       wide
       title={dialogTitle(entity)}
-      subtitle={matchSentence(entity, current.phone)}
+      subtitle={matchSentence(entity, current.phone, !noRecord)}
       confirmLabel={keepCode ? `Gộp vào ${keepCode}` : 'Gộp'}
       canSubmit={data !== undefined && blockers.length === 0 && confirmed && !preview.isFetching}
       busy={busy}

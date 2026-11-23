@@ -58,11 +58,12 @@ export function useOppGroupCounts(filters: LeadFilters, fields: string[], enable
   });
 }
 
-export function useOpportunity(id: string | undefined) {
+/** `allowed` = false (người xem không có quyền Cơ hội · Xem) thì không gọi, tránh lỗi 400 ngầm. */
+export function useOpportunity(id: string | undefined, allowed = true) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['opp-record', id],
-    enabled: id !== undefined,
+    enabled: id !== undefined && allowed,
     queryFn: () => rpc<OppRecord>(supabase, 'get_opportunity', { p_id: id }),
     retry: false,
   });
