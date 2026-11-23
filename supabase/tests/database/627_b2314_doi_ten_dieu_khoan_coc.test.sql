@@ -1,4 +1,4 @@
--- B-23-14 (migration 624): đổi tên điều khoản COC_VA_CHIA_DOT cho đúng số lần đóng; không đổi code, số đợt, số tiền.
+-- B-23-14 (migration 627): đổi tên điều khoản COC_VA_CHIA_DOT cho đúng số lần đóng; không đổi code, số đợt, số tiền.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
