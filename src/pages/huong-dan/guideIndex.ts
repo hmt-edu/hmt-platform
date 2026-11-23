@@ -11,6 +11,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   { slug: 'truong-co-so', no: 4, title: 'Trưởng cơ sở', file: 'truong-co-so.md' },
   { slug: 'giao-vien', no: 5, title: 'Giáo viên', file: 'giao-vien.md' },
   { slug: 'quan-tri', no: 6, title: 'Quản trị', file: 'quan-tri.md' },
+  { slug: 'hoi-dap', no: 7, title: 'Hỏi đáp và lỗi thường gặp', file: '05-hoi-dap.md' },
 ];
 
 export const DEFAULT_SECTION = GUIDE_SECTIONS[0]!;
