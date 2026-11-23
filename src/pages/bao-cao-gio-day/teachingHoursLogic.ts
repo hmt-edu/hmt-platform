@@ -16,6 +16,8 @@ export type HoursReport = {
   total: number;
   totals: { hours: number; teachers: number; assistants: number; by_type: HoursByType };
   rows: HoursRow[];
+  /** null: chưa chốt; có giá trị: tháng đã chốt (cả hệ thống). */
+  closed: { closed_at: string; closed_by_name: string } | null;
 };
 
 export const TYPE_COLUMNS: { key: keyof HoursByType; label: string }[] = [
@@ -59,3 +61,10 @@ export function mergePerPerson(rows: HoursRow[]): HoursRow[] {
 
 /** Giờ hiển thị một chữ số thập phân, dấu phẩy: 13,5. */
 export const formatHours = (h: number): string => h.toFixed(1).replace('.', ',');
+
+/** Tháng `YYYY-MM-01` đã kết thúc (hôm nay, giờ Việt Nam, đã sang tháng sau)? Chỉ để ẩn nút Chốt; DB kiểm lại. */
+export function monthEnded(monthStart: string, now: Date = new Date()): boolean {
+  const [y, m] = monthStart.split('-').map(Number) as [number, number];
+  const [ty, tm] = vnDayBounds(now).dateKey.split('-').map(Number) as [number, number];
+  return ty * 12 + tm > y * 12 + m;
+}

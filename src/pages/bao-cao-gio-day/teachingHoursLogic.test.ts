@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { formatHours, mergePerPerson, monthOptions, type HoursRow } from './teachingHoursLogic';
+import {
+  formatHours,
+  mergePerPerson,
+  monthEnded,
+  monthOptions,
+  type HoursRow,
+} from './teachingHoursLogic';
 
 const row = (user: string, branch: string, c: number, k: number): HoursRow => ({
   user_id: user,
@@ -38,5 +44,17 @@ describe('giờ dạy giáo viên (BC-09)', () => {
   it('định dạng giờ dấu phẩy', () => {
     expect(formatHours(13.5)).toBe('13,5');
     expect(formatHours(0)).toBe('0,0');
+  });
+});
+
+describe('monthEnded (nút Chốt tháng)', () => {
+  it('tháng trước đã kết thúc, tháng hiện tại chưa', () => {
+    const now = new Date('2026-11-20T05:00:00Z');
+    expect(monthEnded('2026-10-01', now)).toBe(true);
+    expect(monthEnded('2026-11-01', now)).toBe(false);
+    expect(monthEnded('2025-12-01', now)).toBe(true);
+  });
+  it('tính theo giờ Việt Nam: 31/10 17:30 UTC đã là 01/11 giờ VN', () => {
+    expect(monthEnded('2026-10-01', new Date('2026-10-31T17:30:00Z'))).toBe(true);
   });
 });

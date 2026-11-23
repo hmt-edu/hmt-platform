@@ -115,3 +115,29 @@ test('Chi tiết: thêm ghi chú; Đã xử lý cần kết quả; huỷ cần l
   await page.getByRole('button', { name: 'Huỷ ticket', exact: true }).click();
   await expect(page.getByText('Đổi trạng thái: Mới → Đã huỷ.')).toBeVisible();
 });
+
+test('Khách huỷ (CS-12): chỉ ticket Đề nghị có nút; lý do bắt buộc; huỷ xong ghi «Khách huỷ» ở nhật ký', async ({
+  page,
+}, testInfo) => {
+  const dnTitle = `${title} DN`;
+  await openCreate(page, setupOf(testInfo.project.name).account);
+  await page.getByLabel('Loại').click();
+  await page.getByRole('option', { name: 'Đề nghị' }).click();
+  await page.getByLabel('Tiêu đề').fill(dnTitle);
+  await page.getByLabel('Kênh').click();
+  await page.getByRole('option', { name: 'Gọi điện' }).click();
+  await pickOption(page, page.getByRole('combobox', { name: 'Phụ huynh' }), parentName);
+  await page.getByLabel('Nhóm', { exact: true }).click();
+  await page.getByRole('option', { name: 'Hỗ trợ', exact: true }).click();
+  await page.getByLabel('Nhóm con').click();
+  await page.getByRole('option', { name: 'Tư vấn lộ trình' }).click();
+  await page.getByLabel('Mô tả').fill('Đề nghị giả cho bài kiểm thử Khách huỷ.');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page).toHaveURL(/\/crm\/ticket\/[0-9a-f-]{36}$/);
+  await page.getByRole('button', { name: 'Khách huỷ', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Khách huỷ ticket' });
+  await expect(dialog.getByRole('button', { name: 'Khách huỷ', exact: true })).toBeDisabled();
+  await dialog.getByLabel('Lý do khách huỷ').fill('Gia đình đổi kế hoạch.');
+  await dialog.getByRole('button', { name: 'Khách huỷ', exact: true }).click();
+  await expect(page.getByText('Khách huỷ: Gia đình đổi kế hoạch.', { exact: true })).toBeVisible();
+});

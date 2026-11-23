@@ -16,8 +16,10 @@ const SessionContentPage = lazyScreen(
   'SessionContentPage',
 );
 const StudentShell = lazyScreen(() => import('../layout/TabShell'), 'StudentShell');
+const ParentShell = lazyScreen(() => import('../layout/TabShell'), 'ParentShell');
 const LoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'LoginPage');
 const StudentLoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'StudentLoginPage');
+const ParentLoginPage = lazyScreen(() => import('../pages/auth/LoginPages'), 'ParentLoginPage');
 const MfaSetupPage = lazyScreen(() => import('../pages/auth/MfaPages'), 'MfaSetupPage');
 const MfaVerifyPage = lazyScreen(() => import('../pages/auth/MfaPages'), 'MfaVerifyPage');
 const CannotLoginPage = lazyScreen(() => import('../pages/auth/PasswordPages'), 'CannotLoginPage');
@@ -284,6 +286,10 @@ const PackageListPage = lazyScreen(
 );
 const PriceListPage = lazyScreen(() => import('../pages/bang-gia/PriceListPage'), 'PriceListPage');
 const UserListPage = lazyScreen(() => import('../pages/nguoi-dung/UserListPage'), 'UserListPage');
+const ParentAccountPage = lazyScreen(
+  () => import('../pages/tai-khoan-phu-huynh/ParentAccountPage'),
+  'ParentAccountPage',
+);
 const StudentAccountPage = lazyScreen(
   () => import('../pages/tai-khoan-hoc-sinh/StudentAccountPage'),
   'StudentAccountPage',
@@ -403,6 +409,7 @@ export const routes: RouteObject[] = [
       // Đăng nhập và các bước bắt buộc (khuôn K11).
       { path: 'dang-nhap', element: <LoginPage /> },
       { path: 'dang-nhap/hoc-sinh', element: <StudentLoginPage /> },
+      { path: 'dang-nhap/phu-huynh', element: <ParentLoginPage /> },
       { path: 'xac-thuc-hai-buoc', element: <MfaVerifyPage /> },
       { path: 'thiet-lap-hai-buoc', element: <MfaSetupPage /> },
       { path: 'quen-mat-khau', element: <ForgotPasswordPage /> },
@@ -1066,6 +1073,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'quan-tri/tai-khoan-phu-huynh',
+            element: (
+              <GatedCrmEntry slug="quan-tri/tai-khoan-phu-huynh">
+                <ParentAccountPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'quan-tri/tai-khoan-hoc-sinh',
             element: (
               <GatedCrmEntry slug="quan-tri/tai-khoan-hoc-sinh">
@@ -1228,6 +1243,19 @@ export const routes: RouteObject[] = [
           { path: 'bai-tap', element: <PortalTabPage title="Bài tập" stage={GD4} /> },
           { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
           { path: 'ket-qua', element: <PortalTabPage title="Kết quả" stage={GD4} /> },
+          { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: '*', element: <NotFoundView /> },
+        ],
+      },
+      {
+        path: 'ph',
+        element: (
+          <RequirePortal portal="ph">
+            <ParentShell />
+          </RequirePortal>
+        ),
+        children: [
+          { index: true, element: <PortalTabPage title="Trang chủ" stage={GD4} /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },
         ],

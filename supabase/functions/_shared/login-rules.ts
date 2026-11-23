@@ -6,10 +6,15 @@ export const STUDENT_EMAIL_DOMAIN = 'hocsinh.hoamatoan.edu.vn';
 
 const STUDENT_CODE_PATTERN = /^HS\d+$/;
 
+/** Tên miền email nội bộ cho phụ huynh (QT-17, CHUNG-23): cũng không nhận thư. */
+export const PARENT_EMAIL_DOMAIN = 'phuhuynh.hoamatoan.edu.vn';
+
+const PARENT_CODE_PATTERN = /^PH\d+$/;
+
 /** Chuẩn hoá tên đăng nhập: bỏ khoảng trắng; mã HS viết hoa; email viết thường. */
 export function normalizeLogin(raw: string): string {
   const value = raw.trim();
-  if (STUDENT_CODE_PATTERN.test(value.toUpperCase())) {
+  if (STUDENT_CODE_PATTERN.test(value.toUpperCase()) || PARENT_CODE_PATTERN.test(value.toUpperCase())) {
     return value.toUpperCase();
   }
   return value.toLowerCase();
@@ -21,12 +26,17 @@ export function toAuthEmail(login: string): string {
   if (STUDENT_CODE_PATTERN.test(value)) {
     return `${value.toLowerCase()}@${STUDENT_EMAIL_DOMAIN}`;
   }
+  // Mã PH → email nội bộ (PH000123 → ph000123@phuhuynh.hoamatoan.edu.vn).
+  if (PARENT_CODE_PATTERN.test(value)) {
+    return `${value.toLowerCase()}@${PARENT_EMAIL_DOMAIN}`;
+  }
   return value;
 }
 
-/** Địa chỉ nội bộ của học sinh: tuyệt đối không gửi thư. */
+/** Địa chỉ nội bộ của học sinh hoặc phụ huynh: tuyệt đối không gửi thư. */
 export function isInternalStudentEmail(email: string): boolean {
-  return email.trim().toLowerCase().endsWith(`@${STUDENT_EMAIL_DOMAIN}`);
+  const value = email.trim().toLowerCase();
+  return value.endsWith(`@${STUDENT_EMAIL_DOMAIN}`) || value.endsWith(`@${PARENT_EMAIL_DOMAIN}`);
 }
 
 /**

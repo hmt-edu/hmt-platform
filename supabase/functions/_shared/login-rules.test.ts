@@ -29,6 +29,20 @@ describe('đăng nhập bằng mã học sinh', () => {
   });
 });
 
+describe('đăng nhập bằng mã phụ huynh (QT-17, CHUNG-23)', () => {
+  it('mã PH (viết thường, có khoảng trắng) đổi thành email nội bộ riêng của phụ huynh', () => {
+    expect(toAuthEmail(' ph000212 ')).toBe('ph000212@phuhuynh.hoamatoan.edu.vn');
+    expect(normalizeLogin('ph000212')).toBe('PH000212');
+  });
+  it('địa chỉ nội bộ của phụ huynh cũng không gửi thư', () => {
+    expect(isInternalStudentEmail('ph000212@phuhuynh.hoamatoan.edu.vn')).toBe(true);
+    expect(isInternalStudentEmail('x@phuhuynh.hoamatoan.edu.vn.evil.com')).toBe(false);
+  });
+  it('email thường bắt đầu bằng ph nhưng không phải mã PH thì giữ nguyên', () => {
+    expect(toAuthEmail('Phong@Example.com')).toBe('phong@example.com');
+  });
+});
+
 describe('chính sách mật khẩu (tham số Cài đặt)', () => {
   it('đủ 8 ký tự, có chữ và số: đạt; không bắt chữ hoa', () => {
     expect(checkPassword('abcdef12', policy)).toBeNull();
