@@ -95,10 +95,14 @@ export function setCell(
 }
 
 /** Bấm lại đúng mức đang chọn thì bỏ chọn về Chưa đánh giá (không phải điểm 0). */
-export function pickLevel(current: Cell, level: number): Cell {
-  return current.state === 'DA_DANH_GIA' && current.score === level
-    ? { state: 'CHUA_DANH_GIA', score: null }
-    : { state: 'DA_DANH_GIA', score: level };
+// Bấm lại cùng mức KHÔNG bỏ chọn (chạm nhầm trên điện thoại làm mất điểm); muốn bỏ thì bấm nút «Xoá điểm» (clearCell).
+export function pickLevel(_current: Cell, level: number): Cell {
+  return { state: 'DA_DANH_GIA', score: level };
+}
+
+/** Xoá điểm: về «Chưa đánh giá» (khác điểm 0). */
+export function clearCell(): Cell {
+  return { state: 'CHUA_DANH_GIA', score: null };
 }
 
 export function pickInsufficient(current: Cell): Cell {

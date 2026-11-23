@@ -47,6 +47,7 @@ export function Dialog({
   children,
   footer,
   dismissible = true,
+  onDismissRequest,
   wide = false,
 }: {
   open: boolean;
@@ -56,11 +57,13 @@ export function Dialog({
   children?: ReactNode | undefined;
   footer?: ReactNode | undefined;
   dismissible?: boolean | undefined;
+  /** Bấm nền hoặc Esc: trả true thì KHÔNG đóng (nơi dùng tự hỏi trước, ví dụ hộp đang có dữ liệu chưa lưu). */
+  onDismissRequest?: (() => boolean) | undefined;
   /** Hộp rộng 720px (nhiều bước, xem trước); mặc định 440px. */
   wide?: boolean | undefined;
 }) {
   const block = (event: Event) => {
-    if (!dismissible) event.preventDefault();
+    if (!dismissible || onDismissRequest?.() === true) event.preventDefault();
   };
   const focus = useReturnFocus();
   // Điện thoại (dưới 640px): hộp thoại thành tấm trượt từ dưới lên (K4e), có thanh nắm.
