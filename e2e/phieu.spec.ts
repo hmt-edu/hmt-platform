@@ -233,7 +233,9 @@ test('Phiếu Nháp: Đổi lịch, Sửa phòng và tên đề, Huỷ chọn l�
   await cancel.getByLabel('Ghi chú').fill('Phụ huynh báo bận');
   await cancel.getByRole('button', { name: 'Huỷ phiếu' }).click();
   await expect(toastText(page, 'Đã huỷ phiếu.')).toBeVisible();
-  await expect(page.getByText('Phiếu đã huỷ. Mở lại để đưa về Nháp.')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Phiếu đã huỷ. Mở lại để đưa về Nháp.' }),
+  ).toBeVisible();
   await expect(page.getByRole('button', { name: 'Mở lại' })).toBeVisible();
   await page.getByRole('button', { name: 'Mở lại' }).click();
   const reopen = dialogOf(page, 'Mở lại phiếu');
