@@ -23,3 +23,5 @@ Các từ còn lại tìm thấy (`close`, `search`, `loading`, `upload`, `login
 
 ## Chỗ lớn còn lại
 Không có. Nếu anh muốn Việt hoá các nhãn canvas giữ tiếng Anh (Start Date, Time Table, Source/Stage) thì cần Design đổi canvas trước (CLAUDE.md: canvas thắng khi khác gói thiết kế); chưa làm.
+
+**Cập nhật 23/11/2026:** anh Trường chốt không dịch các nhãn Stage, Sub-stage, Source, Sub-source, Source type, Medium, Assign, Campaign, Time Table, Done; mục B5 (Việt hoá nhãn) bỏ khỏi danh sách việc sửa. Danh sách ở `config/nhan-tieng-anh-giu-nguyen.json`, xem `nhan-tieng-anh-trong-man.md`.
