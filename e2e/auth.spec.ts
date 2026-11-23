@@ -173,6 +173,8 @@ test('CHUNG-10, CHUNG-13: khung CRM và hồ sơ cá nhân đạt kiểm truy c�
   await expect(page.getByRole('heading', { name: 'Xác thực hai bước' })).toHaveCount(0);
   // Chờ luật mật khẩu tải xong (nút hết mờ) rồi mới kiểm tương phản.
   await expect(page.getByRole('button', { name: 'Đổi mật khẩu' })).toBeEnabled();
+  // S8: đổi mật khẩu trong hồ sơ phải hỏi mật khẩu hiện tại.
+  await expect(page.getByLabel('Mật khẩu hiện tại')).toBeVisible();
   await page.waitForTimeout(300);
   await expectAccessible(page);
   await signOut(page);
