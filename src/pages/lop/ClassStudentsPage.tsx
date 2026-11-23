@@ -124,8 +124,13 @@ export function ClassStudentsPage() {
         const spec = grouping?.specs.get(key);
         if (spec) leaves.toggle(key, spec.filters, open);
       }}
-      actions={
-        canAssign
+      actions={[
+        {
+          label: `Quay lại lớp ${classRecord?.code ?? ''}`.trim(),
+          icon: 'back' as const,
+          onClick: () => void navigate(`/crm/lop/${id ?? ''}`),
+        },
+        ...(canAssign
           ? [
               {
                 label: 'Xếp thêm',
@@ -133,8 +138,8 @@ export function ClassStudentsPage() {
                 onClick: () => void navigate('/crm/ghi-danh/cho-xep-lop'),
               },
             ]
-          : []
-      }
+          : []),
+      ]}
       onRefresh={() => {
         setTick((t) => t + 1);
         void activeQuery.refetch();
