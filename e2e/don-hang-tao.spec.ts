@@ -100,7 +100,7 @@ test('Báo giá Đã gửi: Chuyển thành đơn mở form trắng, bỏ dòng 
   // Form trắng: chưa có bản ghi, chưa cấp mã.
   await expect(page.getByRole('heading', { level: 2, name: 'Tạo đơn hàng' })).toBeVisible();
   await expect(page.getByText('Chưa lưu', { exact: true })).toBeVisible();
-  await expect(page.getByText('cấp khi Lưu, không sửa')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'cấp khi Lưu, không sửa' })).toBeVisible();
   await expect(page.getByText(seeded.code.sent).first()).toBeVisible();
   await expectAccessible(page);
   const rows = page.getByRole('table', { name: 'Dòng đơn' }).getByRole('row');

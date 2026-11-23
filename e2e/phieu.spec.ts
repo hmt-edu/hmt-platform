@@ -151,7 +151,7 @@ test('Trang phiếu Chờ giáo viên chấm: thanh trạng thái chỉ đọc, 
     'aria-current',
     'step',
   );
-  await expect(page.getByText(/^Stage chỉ đọc/)).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Stage chỉ đọc/ })).toBeVisible();
   // Bước khác bị khoá: bấm báo lý do, không đổi.
   await stageBar(page)
     .getByRole('button', { name: /^Hoàn thành/ })
