@@ -2,7 +2,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from './auth/authContext';
-import { readIntSetting } from './auth/api';
+import { readBoolSetting, readIntSetting } from './auth/api';
 import { getSupabaseConfig } from './supabase';
 
 export class HmtError extends Error {
@@ -96,6 +96,17 @@ export function useDb(): SupabaseClient {
 export function useIntSetting(key: string): number | null {
   const supabase = useDb();
   const query = useQuery(intSettingQuery(supabase, key));
+  return query.data ?? null;
+}
+
+/** Tham số đúng/sai trong Cài đặt (vd money_reversal_enabled). Chưa tải xong hoặc không đọc được thì trả null (giao diện coi như tắt; máy chủ vẫn kiểm lại). */
+export function useBoolSetting(key: string): boolean | null {
+  const supabase = useDb();
+  const query = useQuery({
+    queryKey: ['setting-bool', key],
+    queryFn: () => readBoolSetting(supabase, key),
+    staleTime: Infinity,
+  });
   return query.data ?? null;
 }
 
