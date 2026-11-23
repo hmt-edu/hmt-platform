@@ -168,7 +168,11 @@ test('CSKH cơ sở đi: tạo phiếu Chuyển cơ sở từ ticket và trình 
     dialog.getByRole('combobox', { name: 'Ghi danh' }),
     new RegExp(`GDE2ECCS${tag}`),
   );
-  await pickOption(page, dialog.getByRole('combobox', { name: /Lý do \(danh mục\)/ }), /.+/);
+  await pickOption(
+    page,
+    dialog.getByRole('combobox', { name: /Lý do \(danh mục\)/ }),
+    'Chuyển chỗ ở, đổi cơ sở',
+  );
   await pickOption(page, dialog.getByRole('combobox', { name: 'Loại chuyển' }), 'Chuyển cơ sở');
   await pickOption(page, dialog.getByRole('combobox', { name: 'Cơ sở mới' }), /CS1/);
   await dialog.getByLabel('Lý do', { exact: true }).fill('Lý do E2E chuyển cơ sở');
