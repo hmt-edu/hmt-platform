@@ -55,6 +55,27 @@ export interface StoreLike {
   read(id: string): Promise<{ mimeType: string; bytes: Uint8Array }>;
   getStorageQuota(): Promise<{ usage: number; limit: number }>;
 }
+const MAX_PARALLEL_STORE_CALLS = 4; // allow-number: số lời gọi kho (Apps Script) chạy cùng lúc tối đa, tránh dồn hạn mức và hết thời gian
+
+/** Hàng đợi giới hạn số việc chạy cùng lúc; việc nào cũng được chạy theo thứ tự đăng ký. */
+function limiter(max: number): <T>(task: () => Promise<T>) => Promise<T> {
+  let running = 0;
+  const waiting: (() => void)[] = [];
+  const next = (): void => {
+    running--;
+    waiting.shift()?.();
+  };
+  return async <T>(task: () => Promise<T>): Promise<T> => {
+    if (running >= max) await new Promise<void>((resolve) => waiting.push(resolve));
+    running++;
+    try {
+      return await task();
+    } finally {
+      next();
+    }
+  };
+}
+
 export interface FileDeps {
   store: StoreLike;
   /** Hàm DB bằng token người gọi; ném FlowError với mã HMT_* khi bị chặn. */
@@ -64,6 +85,8 @@ export interface FileDeps {
   insertPending(row: PendingRow): Promise<'OK' | 'TRUNG'>;
   /** Đổi dòng CHO_TAI cũ của cùng (bài, học sinh, mã băm) thành DA_XOA; trả số dòng đổi (cho phép nộp lại sau lần tải dở). */
   supersedePending(assignmentId: string, studentId: string | null, sha256: string): Promise<number>;
+  /** Mã tệp BAI_NOP đã tải xong (DANG_DUNG) của đúng học sinh, đúng bài, đúng mã băm; rỗng nếu chưa có. Dùng để lặp lại lệnh tải lên an toàn. */
+  findReady(assignmentId: string, studentId: string, sha256: string): Promise<string | null>;
   /** Đổi dòng vừa tạo (CHO_TAI) sang DA_XOA khi lưu vào kho thất bại. */
   abandon(id: string): Promise<void>;
   markReady(id: string, storageKey: string, thumbKey: string | null): Promise<void>;
@@ -129,9 +152,9 @@ export async function uploadFiles(deps: FileDeps, ownerUserId: string, input: Up
 
   const result: UploadResult = { files: [] };
   // Bước 1 (tuần tự): ghi dòng CHO_TAI cho từng tệp, vì chặn nộp trùng dựa vào chỉ mục duy nhất nên phải theo thứ tự.
-  const pending: { id: string; d: (typeof decoded)[number] }[] = [];
+  const pending: { id: string; d: (typeof decoded)[number]; reused: boolean }[] = [];
   const abandonAll = async (): Promise<void> => {
-    await Promise.all(pending.map((p) => deps.abandon(p.id)));
+    await Promise.all(pending.filter((p) => !p.reused).map((p) => deps.abandon(p.id)));
   };
   for (const d of decoded) {
     const id = deps.newId();
@@ -158,21 +181,31 @@ export async function uploadFiles(deps: FileDeps, ownerUserId: string, input: Up
       const freed = await deps.supersedePending(auth.assignment_id, auth.student_id, d.sha);
       state = freed > 0 ? await deps.insertPending(row) : 'TRUNG';
     }
+    if (state === 'TRUNG' && auth.kind === 'BAI_NOP' && auth.student_id) {
+      // Lặp lại lệnh tải lên (rớt mạng sau khi máy chủ đã lưu xong): ảnh này đã DANG_DUNG của đúng em, đúng bài thì trả lại mã cũ, không báo trùng (soát 02:21).
+      const existing = await deps.findReady(auth.assignment_id, auth.student_id, d.sha);
+      if (existing) {
+        pending.push({ id: existing, d, reused: true });
+        continue;
+      }
+    }
     if (state === 'TRUNG') {
       await abandonAll(); // trả các dòng đã ghi trong lô này về DA_XOA để nộp lại được
       throw new FlowError('HMT_TEP_TRUNG', 'Ảnh này đã nộp rồi.', 409); // allow-number: mã HTTP xung đột
     }
-    pending.push({ id, d });
+    pending.push({ id, d, reused: false });
   }
   // Bước 2 (song song): mỗi lần gọi kho mất vài giây (đo 25/11: ~5 giây/lần, không phụ thuộc cỡ ảnh), nên ảnh đầy và ảnh thu nhỏ của mọi tệp lưu cùng lúc
   // thay vì lần lượt (trước đó ~3 lần gọi nối tiếp mỗi ảnh). Tệp nào lưu hỏng thì dòng của nó về DA_XOA; các tệp đã lưu xong giữ nguyên.
   const folder = [auth.class_id, deps.monthFolder()]; // thư mục con: lớp / năm-tháng (uuid và số, không tên học sinh)
+  // Giới hạn số lời gọi kho cùng lúc (soát 01:54): một lô tối đa ~20 lời gọi, không dồn hết vào Apps Script cùng một lúc.
+  const limited = limiter(MAX_PARALLEL_STORE_CALLS);
   const settled = await Promise.allSettled(
-    pending.map(async ({ id, d }) => {
+    pending.filter((p) => !p.reused).map(async ({ id, d }) => {
       try {
         const [storageKey, thumbKey] = await Promise.all([
-          deps.store.save({ path: folder, name: `${id}.${EXT[d.f.mimeType]}`, mimeType: d.f.mimeType, bytes: d.bytes }),
-          d.thumb ? deps.store.save({ path: folder, name: `${id}-t.webp`, mimeType: 'image/webp', bytes: d.thumb }) : Promise.resolve(null),
+          limited(() => deps.store.save({ path: folder, name: `${id}.${EXT[d.f.mimeType]}`, mimeType: d.f.mimeType, bytes: d.bytes })),
+          d.thumb ? limited(() => deps.store.save({ path: folder, name: `${id}-t.webp`, mimeType: 'image/webp', bytes: d.thumb as Uint8Array })) : Promise.resolve(null),
         ]);
         await deps.markReady(id, storageKey, thumbKey);
       } catch (e) {

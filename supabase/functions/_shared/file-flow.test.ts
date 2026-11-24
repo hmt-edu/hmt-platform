@@ -26,6 +26,7 @@ function makeDeps(over: Partial<FileDeps> = {}) {
       return 'OK';
     }),
     supersedePending: vi.fn(async () => 0),
+    findReady: vi.fn(async () => null),
     abandon: vi.fn(async (id: string) => {
       const r = rows.get(id);
       if (r) r.status = 'DA_XOA';
@@ -115,6 +116,35 @@ describe('uploadFiles: tốc độ và lô', () => {
     expect(await code(uploadFiles(deps, 'u1', input([file(), file(300, 40)])))).toBe('HMT_TEP_TRUNG');
     expect(rows.get('id-1')?.status).toBe('DA_XOA');
     expect(deps.store.save).not.toHaveBeenCalled();
+  });
+});
+
+describe('uploadFiles: lặp lại an toàn và giới hạn song song', () => {
+  it('luật lặp lại an toàn: ảnh đã DANG_DUNG của đúng em, đúng bài thì trả mã cũ, không báo trùng và không lưu lại vào kho', async () => {
+    const { deps } = makeDeps({ insertPending: vi.fn(async () => 'TRUNG' as const), findReady: vi.fn(async () => 'old-1') });
+    expect((await uploadFiles(deps, 'u1', input())).files).toEqual([{ id: 'old-1' }]);
+    expect(deps.findReady).toHaveBeenCalledWith('as', 'st', 'sha400');
+    expect(deps.store.save).not.toHaveBeenCalled();
+  });
+  it('luật trùng thật: chưa có ảnh DANG_DUNG của em thì vẫn báo trùng 409', async () => {
+    const { deps } = makeDeps({ insertPending: vi.fn(async () => 'TRUNG' as const) });
+    expect(await code(uploadFiles(deps, 'u1', input()))).toBe('HMT_TEP_TRUNG');
+  });
+  it('luật giới hạn song song: lô nhiều tệp không có quá 4 lời gọi kho cùng lúc, mọi tệp vẫn lưu đủ', async () => {
+    const { deps } = makeDeps({ authorizeUpload: vi.fn(async () => ({ ...auth, limits: { max_bytes: 1000, max_count: 10, max_total_bytes: 100000 } })) });
+    let inFlight = 0;
+    let peak = 0;
+    deps.store.save = vi.fn(async (p) => {
+      inFlight++;
+      peak = Math.max(peak, inFlight);
+      await new Promise((r) => setTimeout(r, 5));
+      inFlight--;
+      return `D-${p.name}`;
+    });
+    const files = [file(300, 40), file(310, 40), file(320, 40), file(330, 40), file(340, 40)];
+    expect((await uploadFiles(deps, 'u1', input(files))).files).toHaveLength(5);
+    expect(deps.store.save).toHaveBeenCalledTimes(10);
+    expect(peak).toBeLessThanOrEqual(4);
   });
 });
 

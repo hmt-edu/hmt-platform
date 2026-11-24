@@ -68,6 +68,11 @@ export function buildFileDeps(authorization: string): { deps: FileDeps; callerId
       if (error) throw new FlowError('HMT_LOI', 'Chưa ghi được sổ tệp, thử lại.', 500); // allow-number: mã HTTP
       return data?.length ?? 0;
     },
+    async findReady(assignmentId, studentId, sha256) {
+      const { data, error } = await admin.from('stored_file').select('id').eq('assignment_id', assignmentId).eq('student_id', studentId).eq('sha256', sha256).eq('kind', 'BAI_NOP').eq('status', 'DANG_DUNG').limit(1).maybeSingle();
+      if (error) throw new FlowError('HMT_LOI', 'Chưa đọc được sổ tệp, thử lại.', 500); // allow-number: mã HTTP
+      return (data?.id as string | undefined) ?? null;
+    },
     async abandon(id) {
       await admin.from('stored_file').update({ status: 'DA_XOA', cleaned_at: new Date().toISOString() }).eq('id', id).eq('status', 'CHO_TAI');
     },
