@@ -92,7 +92,7 @@ select is((app.file_authorize_upload('BAI_NOP', pg_temp.a('A1'), pg_temp.sid('HS
 select is(pg_temp.nsub('A1'), 1, 'Tạo bài nộp nháp một lần dù gọi hai lần, không nhân đôi');
 select is((app.file_authorize_upload('BAI_NOP', pg_temp.a('A1'), pg_temp.sid('HS993001')) -> 'limits' ->> 'max_count')::int, 10, 'Giới hạn đọc từ tham số: 10 tệp mỗi lần');
 select is((app.file_authorize_upload('BAI_NOP', pg_temp.a('A1'), pg_temp.sid('HS993001')) -> 'limits' ->> 'max_bytes')::bigint, 20::bigint * 1048576, 'Giới hạn đọc từ tham số: 20 MB mỗi tệp');
-select is((app.file_authorize_upload('BAI_NOP', pg_temp.a('A1'), pg_temp.sid('HS993001')) ->> 'delete_after')::date, (now() at time zone 'Asia/Ho_Chi_Minh')::date + 90, 'Hạn giữ chụp lúc tải: 90 ngày (tham số), tính theo ngày Việt Nam');
+select is((app.file_authorize_upload('BAI_NOP', pg_temp.a('A1'), pg_temp.sid('HS993001')) ->> 'delete_after')::date, (now() at time zone 'Asia/Ho_Chi_Minh')::date + 60, 'Hạn giữ chụp lúc tải: 60 ngày (tham số), tính theo ngày Việt Nam');
 select is(pg_temp.err($$select app.file_authorize_upload('BAI_NOP', pg_temp.a('A1'), pg_temp.sid('HS993002'))$$), 'HMT_KHONG_CO_QUYEN', 'Luật quyền riêng: học sinh nộp thay em khác bị chặn');
 select is(pg_temp.err($$select app.file_authorize_upload('BAI_NOP', pg_temp.a('A4'), pg_temp.sid('HS993001'))$$), 'HMT_KHONG_CO_QUYEN', 'Luật: bài không giao cho em này thì bị chặn');
 select is(pg_temp.err($$select app.file_authorize_upload('BAI_NOP', pg_temp.a('A2'), pg_temp.sid('HS993001'))$$), 'HMT_LMS_QUA_HAN', 'R-LMS-02: quá hạn và bài không nhận muộn thì bị chặn');
