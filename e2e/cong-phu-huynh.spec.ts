@@ -91,7 +91,7 @@ test.beforeAll(async () => {
     ).rows[0]?.id;
     await db.query(
       `insert into auth.identities (id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at)
-       values (gen_random_uuid(), $1, $1::text, 'email', jsonb_build_object('sub', $1::text, 'email', $2::text), now(), now(), now())`,
+       values (gen_random_uuid(), $1::uuid, ($1::uuid)::text, 'email', jsonb_build_object('sub', ($1::uuid)::text, 'email', $2::text), now(), now(), now())`,
       [id, EMAIL],
     );
     await db.query(
