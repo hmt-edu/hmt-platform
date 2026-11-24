@@ -1,5 +1,5 @@
 // QT-17 Tài khoản phụ huynh (migration 616): Admin thấy phụ huynh kèm tình trạng tài khoản, nút theo tình trạng (Chưa cấp: Cấp tài khoản; Đang dùng: Đặt lại mật khẩu + Khoá;
-// Đã khoá: chỉ Đặt lại mật khẩu, KHÔNG có Mở khoá), hộp Khoá KHÔNG có ô lý do và vẫn gửi lý do mặc định để hàm khoá không báo thiếu lý do
+// Đã khoá: Đặt lại mật khẩu + Mở khoá, chốt 24/11), hộp Khoá KHÔNG có ô lý do và vẫn gửi lý do mặc định để hàm khoá không báo thiếu lý do
 // (lỗi Tester 23/11, sửa ở #531). Edge Function admin-users không chạy ở môi trường kiểm thử: bài chặn lời gọi bằng page.route để xem nội dung gửi đi.
 // Máy tính (QT chỉ có bản máy tính). Phụ huynh và tài khoản giả riêng, dọn ở cuối bài.
 import { expect, test } from '@playwright/test';
@@ -89,7 +89,7 @@ async function openList(page: import('@playwright/test').Page) {
     .fill('E2E QT17');
 }
 
-test('Nút theo tình trạng: Chưa cấp có Cấp; Đang dùng có Đặt lại + Khoá; Đã khoá chỉ Đặt lại, không Mở khoá', async ({
+test('Nút theo tình trạng: Chưa cấp có Cấp; Đang dùng có Đặt lại + Khoá; Đã khoá có Đặt lại + Mở khoá', async ({
   page,
 }) => {
   await openList(page);
@@ -98,14 +98,15 @@ test('Nút theo tình trạng: Chưa cấp có Cấp; Đang dùng có Đặt l�
   const locked = page.getByRole('row', { name: new RegExp(P.locked) });
   await expect(none.getByText('Chưa cấp')).toBeVisible();
   await expect(none.getByRole('button', { name: 'Cấp tài khoản' })).toBeVisible();
-  await expect(none.getByRole('button', { name: 'Khoá' })).toHaveCount(0);
+  await expect(none.getByRole('button', { name: 'Khoá', exact: true })).toHaveCount(0);
   await expect(active.getByText('Đang dùng')).toBeVisible();
   await expect(active.getByRole('button', { name: 'Đặt lại mật khẩu' })).toBeVisible();
-  await expect(active.getByRole('button', { name: 'Khoá' })).toBeVisible();
+  await expect(active.getByRole('button', { name: 'Khoá', exact: true })).toBeVisible();
   await expect(locked.getByText('Đã khoá')).toBeVisible();
   await expect(locked.getByRole('button', { name: 'Đặt lại mật khẩu' })).toBeVisible();
-  await expect(locked.getByRole('button', { name: 'Khoá' })).toHaveCount(0);
-  await expect(locked.getByRole('button', { name: 'Mở khoá' })).toHaveCount(0);
+  await expect(locked.getByRole('button', { name: 'Khoá', exact: true })).toHaveCount(0);
+  await expect(locked.getByRole('button', { name: 'Mở khoá', exact: true })).toBeVisible();
+  await expect(active.getByRole('button', { name: 'Mở khoá', exact: true })).toHaveCount(0);
 });
 
 test('Khoá không cần lý do: hộp không có ô lý do, lời gọi vẫn kèm lý do mặc định không rỗng', async ({
@@ -118,7 +119,7 @@ test('Khoá không cần lý do: hộp không có ô lý do, lời gọi vẫn k
   });
   await openList(page);
   const row = page.getByRole('row', { name: new RegExp(P.active) });
-  await row.getByRole('button', { name: 'Khoá' }).click();
+  await row.getByRole('button', { name: 'Khoá', exact: true }).click();
   const dialog = page.getByRole('alertdialog').or(page.getByRole('dialog'));
   await expect(dialog.getByText('Khoá tài khoản').first()).toBeVisible();
   // Không có ô chọn lý do, không có ô ghi chú.
@@ -135,4 +136,22 @@ test('Nhân viên không phải Admin: không vào được màn Tài khoản ph
   await enterAs(page, 'sale.cs5');
   await page.goto('/crm/quan-tri/tai-khoan-phu-huynh');
   await expect(page.getByRole('heading', { level: 1, name: 'Tài khoản phụ huynh' })).toHaveCount(0);
+});
+
+test('Mở khoá phụ huynh: hộp xác nhận gọi admin-users action unlock với đúng tài khoản (QT-17, chốt 24/11)', async ({
+  page,
+}) => {
+  const sent: { body?: Record<string, unknown> } = {};
+  await page.route('**/functions/v1/admin-users', async (route) => {
+    sent.body = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({ json: { ok: true } });
+  });
+  await openList(page);
+  const row = page.getByRole('row', { name: new RegExp(P.locked) });
+  await row.getByRole('button', { name: 'Mở khoá', exact: true }).click();
+  const dialog = page.getByRole('alertdialog').or(page.getByRole('dialog'));
+  await expect(dialog.getByText('Mở khoá tài khoản').first()).toBeVisible();
+  await dialog.getByRole('button', { name: 'Mở khoá', exact: true }).click();
+  await expect.poll(() => sent.body?.action).toBe('unlock');
+  expect(typeof sent.body?.userId).toBe('string');
 });
