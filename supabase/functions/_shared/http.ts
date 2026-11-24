@@ -5,6 +5,7 @@ function originAllowed(origin: string): boolean {
   return isOriginAllowed(origin, {
     allowedOrigins: (Deno.env.get('HMT_ALLOWED_ORIGINS') ?? '').split(',').map((s) => s.trim()).filter(Boolean),
     allowStagingPreviews: Deno.env.get('HMT_ALLOW_STAGING_PREVIEWS') === 'true',
+    allowLocalOrigins: Deno.env.get('HMT_ALLOW_LOCAL_ORIGINS') === 'true',
   });
 }
 

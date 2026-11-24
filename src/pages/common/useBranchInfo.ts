@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../lib/auth/authContext';
+import { toHmtError } from '../../lib/db';
 
 export type BranchInfo = { name: string; address: string | null };
 
@@ -18,7 +19,7 @@ export function useBranchInfo(branchId: string | undefined) {
         .select('name, address')
         .eq('id', branchId)
         .maybeSingle();
-      if (result.error) throw new Error(result.error.message);
+      if (result.error) throw toHmtError(result.error);
       return result.data;
     },
   });

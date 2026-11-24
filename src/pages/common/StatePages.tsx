@@ -1,6 +1,7 @@
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 import { useAuth } from '../../lib/auth/authContext';
 import { homePortal } from '../../lib/auth/claims';
+import { HmtError } from '../../lib/db';
 import { Button, ButtonLink } from '../../ui/Button';
 import { StateView } from '../../ui/Feedback';
 
@@ -73,7 +74,7 @@ export function RouteErrorPage() {
   if (isRouteErrorResponse(error) && error.status === HTTP_NOT_FOUND) return <NotFoundView />;
   const detail = isRouteErrorResponse(error)
     ? `HTTP ${error.status}`
-    : error instanceof Error
+    : error instanceof HmtError
       ? error.message
       : 'Lỗi không rõ';
   return (

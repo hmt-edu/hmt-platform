@@ -59,7 +59,7 @@ test('Tạo khiếu nại: thiếu ô thì báo tại ô; đủ thì lưu và m�
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Nhập tiêu đề.')).toBeVisible();
   await expect(page.getByText('Chọn phụ huynh (người gửi).')).toBeVisible();
-  await page.getByLabel('Loại').click();
+  await page.getByLabel('Loại', { exact: true }).click();
   await page.getByRole('option', { name: 'Khiếu nại' }).click();
   await page.getByLabel('Tiêu đề').fill(title);
   await page.getByLabel('Kênh').click();
@@ -126,7 +126,7 @@ test('Khách huỷ (CS-12): chỉ ticket Đề nghị có nút; lý do bắt bu�
 }, testInfo) => {
   const dnTitle = `${title} DN`;
   await openCreate(page, setupOf(testInfo.project.name).account);
-  await page.getByLabel('Loại').click();
+  await page.getByLabel('Loại', { exact: true }).click();
   await page.getByRole('option', { name: 'Đề nghị' }).click();
   await page.getByLabel('Tiêu đề').fill(dnTitle);
   await page.getByLabel('Kênh').click();

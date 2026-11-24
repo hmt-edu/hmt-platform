@@ -178,7 +178,7 @@ test('Khiếu nại: CSKH tạo, nâng cấp lên Quản lý cơ sở rồi Ban 
 }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/ticket/moi');
-  await page.getByLabel('Loại').click();
+  await page.getByLabel('Loại', { exact: true }).click();
   await page.getByRole('option', { name: 'Khiếu nại' }).click();
   await page.getByLabel('Tiêu đề').fill(titles.complaint);
   await page.getByLabel('Kênh').click();

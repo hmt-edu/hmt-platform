@@ -2,7 +2,7 @@
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
-import { rpc, useDb } from '../../lib/db';
+import { rpc, useDb, toHmtError } from '../../lib/db';
 import { readNumberSetting } from '../../lib/auth/api';
 import { withFlexibleMax } from './orderEdit';
 import type { OrderFilters } from './orderFilters';
@@ -194,8 +194,8 @@ export function useOrderEditOptions(enabled: boolean) {
         // Hạn mức Ưu đãi linh hoạt mỗi dòng (R-V2-45): đọc từ Cài đặt, không viết cứng.
         readNumberSetting(supabase, 'flexible_discount_max_percent'),
       ]);
-      if (policies.error) throw new Error(policies.error.message);
-      if (terms.error) throw new Error(terms.error.message);
+      if (policies.error) throw toHmtError(policies.error);
+      if (terms.error) throw toHmtError(terms.error);
       // Chính sách linh hoạt: hạn mức lấy từ Cài đặt (cột max_value của chính sách không phải nguồn hạn mức).
       const policyRows: PolicyOption[] = withFlexibleMax(policies.data ?? [], flexMax);
       const termRows: TermOption[] = terms.data ?? [];
@@ -212,7 +212,7 @@ export function usePaymentTermNames() {
     staleTime: 5 * 60_000, // allow-number: tên điều khoản đổi hiếm
     queryFn: async (): Promise<Map<string, string>> => {
       const { data, error } = await supabase.schema('app').from('payment_term').select('id, name');
-      if (error) throw new Error(error.message);
+      if (error) throw toHmtError(error);
       const rows: TermOption[] = data ?? [];
       return new Map(rows.map((t) => [t.id, t.name]));
     },
