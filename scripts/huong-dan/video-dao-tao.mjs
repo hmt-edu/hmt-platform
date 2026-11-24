@@ -338,6 +338,80 @@ const BAI = {
       chung,
       7,
     ),
+  // DT7 «Tạo lớp, thời khoá biểu và trình duyệt» (CSKH): 7 bước; TẠO THẬT một lớp «[MẪU] Lớp tập DT7» trên staging rồi Trình.
+  dt7: (b) =>
+    chayBai(
+      b,
+      'dt7',
+      vao('/crm/lop'),
+      [
+        {
+          chu: 'Vào «Lớp học», bấm «Tạo lớp»',
+          loc: (p) => p.getByRole('button', { name: 'Tạo lớp' }).first(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tạo lớp' }).first().click();
+            await p.waitForURL(/\/crm\/lop\/tao/);
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Điền «Thông tin chung»: Năm học, Môn học, Khối, Phân loại, Trình độ, Tổng số buổi, Ngày khai giảng',
+          loc: (p) => p.getByLabel('Môn học', { exact: true }),
+          lam: async (p) => {
+            const nam = new Date().getFullYear();
+            await p
+              .getByLabel('Năm học')
+              .selectOption(`${String(nam).slice(2)}${String(nam + 1).slice(2)}`);
+            await p.getByLabel('Mã lớp cũ (Sheet)').fill(`MAU-DT7-${Date.now() % 100000}`);
+            await p.getByLabel('Môn học').selectOption({ label: 'Toán' });
+            await p.getByLabel('Khối').selectOption({ index: 5 });
+            await p.getByLabel('Phân loại').selectOption({ label: 'Cơ bản' });
+            await p.getByLabel('Trình độ').selectOption({ index: 1 });
+            await p.getByLabel('Tổng số buổi').fill('12');
+            await p.getByLabel('Ngày khai giảng').fill('2027-01-05');
+            await p.waitForTimeout(800);
+          },
+        },
+        {
+          chu: '(Tuỳ chọn) Mục «Nhóm lớp»: «Không thuộc nhóm», gắn nhóm có sẵn hoặc tạo nhóm mới',
+          loc: (p) => p.getByText('Nhóm lớp', { exact: false }).first(),
+        },
+        {
+          chu: 'Mục «Time Table»: chọn tab thứ, bấm «Thêm khung giờ», điền giờ, giáo viên, phòng',
+          loc: (p) => p.getByRole('tab', { name: /^Thứ 3/ }),
+          lam: async (p) => {
+            await p.getByRole('tab', { name: /^Thứ 3/ }).click();
+            await p.getByRole('button', { name: 'Thêm khung giờ' }).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Bấm «Lưu nháp»: mở bản ghi lớp ở trạng thái Nháp, có mã lớp',
+          loc: (p) => p.getByRole('button', { name: 'Lưu nháp' }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Lưu nháp' }).click();
+            await p.waitForURL(/\/crm\/lop\/[0-9a-f-]{36}$/, { timeout: 30000 });
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Mở menu «Hành động», chọn «Trình», rồi bấm «Trình» ở hộp xác nhận',
+          loc: (p) => p.getByRole('button', { name: 'Hành động' }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Hành động' }).click();
+            await p.getByRole('menuitem', { name: 'Trình' }).click();
+            await p.getByRole('button', { name: 'Trình', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Sau khi đã trình: bấm «Sửa», chỉ còn sửa được Time Table',
+          loc: (p) => p.getByRole('button', { name: 'Sửa', exact: true }).first(),
+        },
+      ],
+      chung,
+      7,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
