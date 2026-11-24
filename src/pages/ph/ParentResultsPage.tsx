@@ -26,7 +26,7 @@ export function ParentResultsPage() {
 
   const header = (
     <div className="flex flex-col gap-1">
-      <h1 className="text-h2">{reviewsView ? 'Nhận xét' : 'Kết quả'}</h1>
+      <h1 className="text-h2">{reviewsView ? 'Nhận xét các buổi' : 'Kết quả của con'}</h1>
       {reviewsView && (
         <Link to="/ph/ket-qua" className="focus-ring text-caption text-accent">
           Quay lại kết quả
