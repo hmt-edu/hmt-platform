@@ -1,6 +1,6 @@
 # 2. Thao tác cơ bản dùng chung
 
-Áp dụng cho mọi danh sách và bản ghi trong cổng CRM (Lead, Cơ hội, Đơn hàng, Phiếu thu, Ticket…). Xem `README.md` về cách đọc. Chữ trong dấu «…» là chữ trên màn thật (đối chiếu code trên `main` và bảng nhãn K03 do Tester 2 ghi từ staging). Chỗ chèn ảnh ghi `[ẢNH: tên-kịch-bản]`, ảnh chụp sau bằng tài khoản giả. Dữ liệu trong ví dụ là giả.
+Áp dụng cho mọi danh sách và bản ghi trong cổng CRM (Lead, Cơ hội, Đơn hàng, Phiếu thu, Ticket…). Chữ trong dấu «…» là chữ hiện trên màn.
 
 > Các nhãn **Filters**, **Group By**, **Favorites**, **Save to Favorites**, **Calendar** viết bằng tiếng Anh và **giữ nguyên**, không dịch.
 

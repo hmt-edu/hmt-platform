@@ -1,10 +1,9 @@
-# 3b. Hướng dẫn cho CSKH và vận hành lớp (cổng CRM)
+# Vai: CSKH và vận hành lớp (cổng CRM)
 
-Vai: chăm sóc khách hàng (CSKH) và vận hành lớp. Đọc `00-gioi-thieu.md` trước nếu bạn mới. Chữ trong dấu «…» là chữ trên màn thật; chỗ chèn ảnh ghi `[ẢNH: tên-kịch-bản]`, ảnh chụp sau trên bản thử nghiệm bằng tài khoản giả. Dữ liệu trong ví dụ là giả.
+Vai: chăm sóc khách hàng (CSKH) và vận hành lớp. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
 Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (Ghi danh, Lớp, Buổi học, Điểm danh trong ngày), **Chăm sóc KH** (Tất cả ticket, Phiếu nghiệp vụ). Chỉ hiện mục bạn có quyền. Phân hệ chưa bật ở cơ sở của bạn sẽ báo «Phân hệ chưa bật».
 
-Mỗi bài theo khuôn: mục tiêu, các bước đánh số, kết quả mong đợi, lỗi thường gặp, ảnh.
 
 ## Việc hằng ngày của bạn (gợi ý thứ tự)
 
@@ -38,7 +37,7 @@ Mỗi bài theo khuôn: mục tiêu, các bước đánh số, kết quả mong 
 - **Kết quả:** ghi danh sang «Đã xếp lớp», lớp hiện thêm học sinh, chỗ trống của lớp giảm.
 - **Lỗi thường gặp:** lớp không hiện trong danh sách là do chưa duyệt, hết chỗ hoặc sai môn, khối, cơ sở (chọn lớp khác). Báo trùng giờ nghĩa là em đã có lớp trùng giờ (đổi lớp hoặc ngày vào). Xếp xong vẫn «Chờ xếp lớp»: tải lại trang, nếu vẫn vậy thì báo quản trị kèm mã ghi danh.
 - **Ảnh:** [ẢNH: ghi-danh-cho-xep], [ẢNH: ghi-danh-xep-lop], [ẢNH: ghi-danh-so-gio]
-- Điều chỉnh giờ («Điều chỉnh giờ») là việc của quản lý cơ sở, xem `truong-co-so.md`.
+- Điều chỉnh giờ («Điều chỉnh giờ») là việc của quản lý cơ sở, xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so).
 
 ## 3. Tạo lớp và trình duyệt
 
