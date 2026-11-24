@@ -136,7 +136,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | # | Luồng | Vai | Màn | Phủ | Ảnh/video | Ưu tiên |
 |---|---|---|---|---|---|---|
 | CH1 | Đăng nhập, đổi mật khẩu lần đầu, quên mật khẩu, hết phiên | tất cả | CHUNG-01..09 | ✅ 01 §1.1–1.2 | dang-nhap-*, quen-mat-khau, video dang-nhap | P1 |
-| CH2 | Xác thực hai bước (Admin, Kế toán) | AD, KT | CHUNG-02, 03 | ✅ 01 §1.3 | — | P1 |
+| CH2 | Xác thực hai bước (chỉ Admin) | AD | CHUNG-02, 03 | ✅ 01 §1.3 | — | P1 |
 | CH3 | Menu, chọn cơ sở, đổi cổng, đăng xuất | tất cả | CHUNG-10, 25 | ✅ 01 §1.4–1.7 | menu-crm, chon-co-so, menu-tai-khoan | P1 |
 | CH4 | Danh sách: tìm, Filters, Group By, Favorites, cột, phân trang | tất cả | khuôn K03 | ✅ 02 §2.1–2.8 | danh-sach-*, video danh-sach | P1 |
 | CH5 | Bản ghi: mở, tạo, sửa, lưu; ghi chú; nhật ký | tất cả | K06, K07, CHUNG-22 | ✅ 02 §2.9–2.10 | ban-ghi-*, video ghi-chu | P1 |

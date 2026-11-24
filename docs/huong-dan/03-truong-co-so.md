@@ -102,7 +102,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Lớp**, **B
 2. Mở lớp. Menu **«Hành động»**: **«Xác nhận»**, rồi **«Duyệt»**; hoặc **«Từ chối»** (kèm lý do), **«Đưa về Nháp»**.
 3. Hộp duyệt cho xem trước số buổi sẽ sinh; xác nhận.
 
-- **Kết quả:** lớp «Đã duyệt»; buổi hiện ở tab «Buổi học»; thời khoá biểu hiện ở **Lịch tuần**.
+- **Kết quả:** lớp «Đã duyệt»; buổi mở từ nút liên kết «Buổi học» trên bản ghi lớp (bấm vào mở danh sách buổi của lớp); thời khoá biểu hiện ở **Lịch tuần**.
 - **Lỗi thường gặp:** lớp thiếu thời khoá biểu bị chặn kèm lý do; trùng phòng hoặc giáo viên chỉ cảnh báo.
 - **Ảnh:** [ẢNH: lop-duyet], [ẢNH: lich-tuan]
 
