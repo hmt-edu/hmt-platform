@@ -44,7 +44,7 @@ Phụ huynh đóng tiền cho tư vấn **trước**, rồi bạn mới ghi đơ
 | Nhầm gì | Sửa thế nào |
 |---|---|
 | Đơn còn Nháp | sửa thẳng, hoặc «Huỷ đơn» (có lý do) |
-| Đơn đã trình | nhờ người duyệt «Từ chối» → về Nháp → sửa → trình lại |
+| Đơn đã trình | nhờ người duyệt «Từ chối» → về Nháp → sửa → bấm «Trình lại» |
 | Đơn đã có phiếu thu | không huỷ đơn; tạo ticket «Tạo ticket hoàn tiền» cho CSKH |
 
 ## Lỗi hay gặp
