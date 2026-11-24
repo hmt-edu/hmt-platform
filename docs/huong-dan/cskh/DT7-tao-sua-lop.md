@@ -60,7 +60,7 @@ nguoi_viet: Code D
 
 ## Sau bước này
 - **Ai làm tiếp:** quản lý cơ sở «Xác nhận» rồi «Duyệt» (bài «Duyệt hoặc từ chối lớp»). Duyệt xong hệ thống tự sinh buổi.
-- **Bạn xem ở đâu:** bản ghi lớp, nút «Buổi học» (số buổi đã sinh); sau đó xếp học sinh vào lớp ở bài «Xếp lớp cho ghi danh».
+- **Bạn xem ở đâu:** bản ghi lớp, nút «Buổi học» (số buổi đã sinh); sau đó xếp học sinh vào lớp ở bài «Xếp lớp cho ghi danh đang chờ».
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
@@ -74,12 +74,12 @@ nguoi_viet: Code D
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Trình lớp cần có thời khoá biểu (ít nhất một khung giờ).» | chưa thêm khung giờ nào | vào «Sửa», thêm ở «Time Table», trình lại |
-| «Giờ kết thúc phải sau giờ bắt đầu.» | nhập ngược giờ | sửa lại khung giờ |
+| «Trình lớp cần có thời khoá biểu (ít nhất một khung giờ).» (mã HMT_LOP_THIEU_THOI_KHOA_BIEU) | chưa thêm khung giờ nào | vào «Sửa», thêm ở «Time Table», trình lại |
+| «Giờ kết thúc phải sau giờ bắt đầu.» (mã HMT_BUOI_GIO_SAI) | nhập ngược giờ | sửa lại khung giờ |
 | «Chọn buổi đầu tiên.» hoặc «Buổi đầu tiên phải đúng thứ của khung giờ.» | ngày «Buổi đầu» trống hoặc rơi sai thứ | chọn ngày đúng thứ của tab đang sửa |
-| «Chỉ sửa thông tin lớp ở Nháp hoặc Từ chối.» | lớp đã trình hoặc đã duyệt | chỉ sửa Time Table; thông tin khác cần «Đưa về Nháp» |
-| «Nhóm lớp này đã có một lớp cùng môn.» | nhóm đã có lớp Đại (hoặc Hình) | chọn nhóm khác hoặc tạo nhóm mới |
-| «Ngày áp dụng không được sớm hơn hôm nay.» | lớp đã duyệt, chọn ngày quá khứ | chọn từ hôm nay trở đi |
+| «Chỉ sửa thông tin lớp ở Nháp hoặc Từ chối.» (mã HMT_LOP_DA_KHOA) | lớp đã trình hoặc đã duyệt | chỉ sửa Time Table; thông tin khác cần «Đưa về Nháp» |
+| «Nhóm lớp này đã có một lớp cùng môn.» (mã HMT_LOP_NHOM_TRUNG_MON) | nhóm đã có lớp Đại (hoặc Hình) | chọn nhóm khác hoặc tạo nhóm mới |
+| «Ngày áp dụng không được sớm hơn hôm nay.» (mã HMT_LOP_NGAY_AP_DUNG_SAI) | lớp đã duyệt, chọn ngày quá khứ | chọn từ hôm nay trở đi |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH (cskh.cs1 hoặc cskh.cs5, tài khoản giả) và một tài khoản Trưởng cơ sở cùng cơ sở để duyệt.

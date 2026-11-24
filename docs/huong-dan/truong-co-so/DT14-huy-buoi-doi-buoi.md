@@ -65,12 +65,12 @@ di_thu: chưa
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Chỉ huỷ được buổi chưa Done và chưa huỷ. Buổi đã Done sai thì sửa điểm danh kèm lý do.» | buổi đã hoàn thành hoặc đã huỷ | dùng «Sửa điểm danh» nếu điểm danh sai |
-| «Chỉ dời buổi chưa Done và chưa huỷ.» | buổi đã hoàn thành hoặc đã huỷ | không dời được |
-| «Lý do của học sinh chỉ dùng cho lớp riêng. Lớp chung huỷ vì lý do của trung tâm.» | chọn «Học sinh huỷ» cho lớp nhiều em | chọn «Trung tâm huỷ» |
-| «Chọn huỷ có tính phí hoặc không tính phí.» | chưa chọn kiểu khi học sinh huỷ | chọn một trong hai |
-| «Giờ kết thúc phải sau giờ bắt đầu.» | nhập giờ ngược | sửa lại giờ |
-| «Lý do "Khác" cần ghi chú.» | chọn lý do «Khác» mà chưa ghi «Ghi chú» | ghi lý do cụ thể vào «Ghi chú» |
+| «Chỉ huỷ được buổi chưa Done và chưa huỷ. Buổi đã Done sai thì sửa điểm danh kèm lý do.» (mã HMT_BUOI_KHONG_HUY_DUOC) | buổi đã hoàn thành hoặc đã huỷ | dùng «Sửa điểm danh» nếu điểm danh sai |
+| «Chỉ dời buổi chưa Done và chưa huỷ.» (mã HMT_BUOI_KHONG_SUA_DUOC) | buổi đã hoàn thành hoặc đã huỷ | không dời được |
+| «Lý do của học sinh chỉ dùng cho lớp riêng. Lớp chung huỷ vì lý do của trung tâm.» (mã HMT_HUY_BUOI_HS_CHI_LOP_RIENG) | chọn «Học sinh huỷ» cho lớp nhiều em | chọn «Trung tâm huỷ» |
+| «Chọn huỷ có tính phí hoặc không tính phí.» (mã HMT_HUY_BUOI_CAN_CHON_KIEU) | chưa chọn kiểu khi học sinh huỷ | chọn một trong hai |
+| «Giờ kết thúc phải sau giờ bắt đầu.» (mã HMT_BUOI_GIO_SAI) | nhập giờ ngược | sửa lại giờ |
+| «Lý do "Khác" cần ghi chú.» (mã HMT_CAN_GHI_CHU) | chọn lý do «Khác» mà chưa ghi «Ghi chú» | ghi lý do cụ thể vào «Ghi chú» |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản Trưởng cơ sở (truongcs.cs5).

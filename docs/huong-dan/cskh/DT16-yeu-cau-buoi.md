@@ -68,12 +68,12 @@ nguoi_viet: Code D
 | Nhầm gì | Sửa thế nào |
 |---|---|
 | Tạo nhầm, chưa duyệt | bấm «Huỷ» ở dòng yêu cầu, «Xác nhận huỷ» |
-| Đã duyệt rồi mới thấy sai | buổi đã sinh; xử lý như buổi thường (bài «Huỷ buổi, dời một buổi») |
+| Đã duyệt rồi mới thấy sai | buổi đã sinh; xử lý như buổi thường (bài «Huỷ buổi và dời một buổi») |
 
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Chỉ lớp đã duyệt mới có yêu cầu học bù.» (hoặc củng cố, bổ trợ) | lớp chưa «Đã duyệt» | chờ lớp được duyệt |
+| «Chỉ lớp đã duyệt mới có yêu cầu học bù.» (hoặc củng cố, bổ trợ) (mã HMT_LOP_CHUA_DUYET) | lớp chưa «Đã duyệt» | chờ lớp được duyệt |
 | «Chưa chọn lớp» | mở form học bù/bổ trợ không đi từ bản ghi lớp | mở lớp, chọn lại từ menu «Hành động» |
 | «Lớp chưa có học sinh.» | lớp chưa xếp em nào | xếp em vào lớp trước |
 

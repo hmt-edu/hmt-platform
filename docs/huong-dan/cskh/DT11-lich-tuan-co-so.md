@@ -44,11 +44,11 @@ nguoi_viet: Code D
 2. Đọc các cột: «Mã học sinh», «Học sinh», «Ghi danh», «Cơ sở phụ trách», «Hình thức học», «Ngày vào», «Ngày rời», «Tình trạng».
    *Bạn thấy:* em đang học có «Đã xếp lớp»; em đã nghỉ có ngày rời và «Đã rời».
    [ẢNH: dt11-b4]
-3. Muốn thêm em vào lớp: bấm **«Xếp thêm»** (có quyền sửa ghi danh mới thấy). Nút dẫn sang «Hàng chờ xếp lớp» (bài «Xếp lớp cho ghi danh»).
+3. Muốn thêm em vào lớp: bấm **«Xếp thêm»** (có quyền sửa ghi danh mới thấy). Nút dẫn sang «Hàng chờ xếp lớp» (bài «Xếp lớp cho ghi danh đang chờ»).
 4. Bấm **«Quay lại lớp …»** để về bản ghi lớp.
 
 ## Sau bước này
-- **Ai làm tiếp:** có trùng phòng hoặc giáo viên thì người xếp lịch sửa Time Table của lớp (bài «Tạo lớp, thời khoá biểu»).
+- **Ai làm tiếp:** có trùng phòng hoặc giáo viên thì người xếp lịch sửa Time Table của lớp (bài «Tạo lớp, thời khoá biểu và trình duyệt»).
 - **Bạn xem ở đâu:** màn Lịch tuần cơ sở mỗi đầu tuần.
 
 ## Làm nhầm thì sao

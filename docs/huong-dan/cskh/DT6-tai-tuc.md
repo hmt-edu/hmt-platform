@@ -21,7 +21,7 @@ nguoi_viet: Code D
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của em.
-- [ ] Menu «Chăm sóc khách hàng» có mục «Tái tục». Không thấy: tài khoản của bạn chưa có quyền, báo quản trị.
+- [ ] Menu «Chăm sóc khách hàng» có mục «Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay». Không thấy: tài khoản của bạn chưa có quyền, báo quản trị.
 - [ ] Muốn tạo tay: có sẵn **mã ghi danh** của em (ví dụ GD000288). Mã nằm ở màn «Ghi danh», cột mã.
 
 ## Luật cần nhớ (lời thường)
@@ -33,7 +33,7 @@ nguoi_viet: Code D
 - Phiếu đã L5 thì hệ thống không tự sinh phiếu mới cho em đó ở lớp đó. Khi cần, bạn tạo tay.
 
 ## Các bước
-1. Vào «Tái tục». Mặc định là danh sách; bấm «Kanban» ở góc trên nếu muốn xem theo cột giai đoạn.
+1. Vào «Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay». Mặc định là danh sách; bấm «Kanban» ở góc trên nếu muốn xem theo cột giai đoạn.
    *Bạn thấy:* các dòng phiếu có cột Phiếu, Học sinh, Lớp, Giờ còn, Hết giờ dự kiến, Giai đoạn, Phụ trách. Ở Kanban mỗi cột là một giai đoạn (L1 Chờ tái tục, L2 Đã liên hệ…).
    [ẢNH: dt6-b1]
 2. Lọc việc của mình: ở bộ lọc «Phụ trách» chọn «Của tôi», hoặc «Chưa giao» để tìm phiếu chưa có người lo. Có thể lọc «Rủi ro vắng nhiều» để gọi những em hay nghỉ trước.
@@ -52,7 +52,7 @@ nguoi_viet: Code D
 6. Phụ huynh đồng ý (phiếu ở L6 Đồng ý tái tục): bấm «Tạo đơn». Chọn «Gói», nhập «Số giờ», chọn «Ngày vào lớp» (để trống là buổi sắp tới gần nhất của lớp) và «Điều khoản thanh toán» nếu cần, bấm «Tạo đơn nháp».
    *Bạn thấy:* thông báo «Đã tạo đơn nháp …»; phiếu sang L7 Dự thu; tab «Báo giá và đơn» có đơn vừa tạo. Tổng tiền hệ thống tự tính, không sửa tay.
    [CHƯA CHỤP: hộp «Tạo đơn tái tục» ở staging chưa có «Gói» nào để chọn cho lớp mẫu (danh sách Gói trống); cần cấu hình gói bán cho môn Tiếng Anh khối 7 rồi chụp lại]
-7. **Tạo tay một phiếu** (khi chưa đến ngưỡng nhưng phụ huynh muốn mua thêm): ở danh sách «Tái tục» bấm «Tạo», nhập «Mã ghi danh của học sinh», đợi dòng gợi ý hiện tên em, lớp, bấm «Tạo».
+7. **Tạo tay một phiếu** (khi chưa đến ngưỡng nhưng phụ huynh muốn mua thêm): ở danh sách «Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay» bấm «Tạo», nhập «Mã ghi danh của học sinh», đợi dòng gợi ý hiện tên em, lớp, bấm «Tạo».
    *Bạn thấy:* thông báo «Đã tạo phiếu …»; phiếu mới ở L1 Chờ tái tục.
    [ẢNH: dt6-b7]
 
@@ -73,13 +73,13 @@ nguoi_viet: Code D
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Học sinh này đã có phiếu tái tục đang mở ở lớp này.» | em đã có phiếu, không tạo thêm | mở phiếu cũ (danh sách «Tái tục», tìm theo tên em) |
-| «Không tìm thấy ghi danh đang học với mã này. Kiểm lại mã ghi danh.» | gõ sai mã, hoặc ghi danh không còn học | kiểm lại mã ở màn «Ghi danh» |
-| «Học sinh này hiện không học ở lớp đã chọn nên chưa tạo được phiếu tái tục.» | em đã rời lớp | không tạo; nếu em học lại thì xếp lớp trước |
-| «Phiếu tái tục đang ở bước này nên không đổi giai đoạn bằng tay được.» | phiếu đang ở L7 hoặc L8, do hệ thống đặt | chờ đơn và thu tiền; không cần đổi tay |
-| «Chọn lý do không tái tục.» | chọn L5 mà chưa chọn lý do | chọn «Lý do không tái tục» |
-| «Chỉ tạo được đơn khi phiếu tái tục ở giai đoạn Đồng ý tái tục (L6).» | bấm Tạo đơn khi phiếu chưa ở L6 | chuyển phiếu sang L6 trước |
-| «Phiếu tái tục này đã có đơn đang xử lý.» | đã tạo đơn từ phiếu này | mở tab «Báo giá và đơn», làm tiếp trên đơn đó |
+| «Học sinh này đã có phiếu tái tục đang mở ở lớp này.» (mã HMT_DA_CO_PHIEU_TAI_TUC) | em đã có phiếu, không tạo thêm | mở phiếu cũ (danh sách «Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay», tìm theo tên em) |
+| «Không tìm thấy ghi danh đang học với mã này. Kiểm lại mã ghi danh.» (mã HMT_KHONG_TIM_THAY) | gõ sai mã, hoặc ghi danh không còn học | kiểm lại mã ở màn «Ghi danh» |
+| «Học sinh này hiện không học ở lớp đã chọn nên chưa tạo được phiếu tái tục.» (mã HMT_HOC_SINH_KHONG_O_LOP) | em đã rời lớp | không tạo; nếu em học lại thì xếp lớp trước |
+| «Phiếu tái tục đang ở bước này nên không đổi giai đoạn bằng tay được.» (mã HMT_PHIEU_KHONG_DOI_TAY) | phiếu đang ở L7 hoặc L8, do hệ thống đặt | chờ đơn và thu tiền; không cần đổi tay |
+| «Chọn lý do không tái tục.» (mã HMT_LY_DO_THIEU) | chọn L5 mà chưa chọn lý do | chọn «Lý do không tái tục» |
+| «Chỉ tạo được đơn khi phiếu tái tục ở giai đoạn Đồng ý tái tục (L6).» (mã HMT_PHIEU_CHUA_DONG_Y) | bấm Tạo đơn khi phiếu chưa ở L6 | chuyển phiếu sang L6 trước |
+| «Phiếu tái tục này đã có đơn đang xử lý.» (mã HMT_PHIEU_DA_CO_DON) | đã tạo đơn từ phiếu này | mở tab «Báo giá và đơn», làm tiếp trên đơn đó |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH của cơ sở bạn (cskh.cs1 hoặc cskh.cs5, tài khoản giả).

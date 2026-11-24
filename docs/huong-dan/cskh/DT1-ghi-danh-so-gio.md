@@ -68,18 +68,18 @@ Em chưa học buổi nào, nên **số hoàn = số tiền đã đóng − phí
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Bạn không có quyền xem ghi danh này» | ghi danh của cơ sở khác | đổi ô «Cơ sở» hoặc nhờ người cơ sở đó |
+| «Bạn không có quyền xem ghi danh này» (mã HMT_KHONG_CO_QUYEN) | ghi danh của cơ sở khác | đổi ô «Cơ sở» hoặc nhờ người cơ sở đó |
 | «Ghi danh này đã có một yêu cầu hoàn phí chưa xong.» | em đang có hoàn phí hoặc phiếu hoàn khác chưa xong | chờ phiếu cũ xong hoặc huỷ nó |
 | «Ghi danh này không còn hiệu lực.» | em đã Dừng, Hoàn phí, Kết thúc hoặc Huỷ | không làm thêm phiếu tiền cho ghi danh này |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH (cskh.cs5) và Trưởng cơ sở (truongcs.cs5).
-- **Dùng:** Menu tài khoản → «Dữ liệu mẫu của tôi» có sẵn 3 ghi danh [MẪU] **đã xếp lớp** để tập bước 1–5. Bộ mẫu **chưa có** ghi danh «Chờ xếp lớp» để tập bước 6; muốn tập thì lập một đơn không chọn lớp theo bài «Lập đơn hàng» rồi chờ duyệt.
+- **Dùng:** Menu tài khoản → «Dữ liệu mẫu của tôi» có sẵn 3 ghi danh [MẪU] **đã xếp lớp** để tập bước 1–5. Bộ mẫu **chưa có** ghi danh «Chờ xếp lớp» để tập bước 6; muốn tập thì lập một đơn không chọn lớp theo bài «Lập đơn hàng, chọn lớp và ngày vào lớp» rồi chờ duyệt.
 
 ## Hỏi đáp
 - **Vì sao em đã đóng tiền mà không thấy ghi danh?** Phiếu thu chưa được kế toán duyệt, hoặc tiền chưa tới mức cọc.
 - **Giờ tặng có hoàn không?** Không.
-- **Em «Chờ xếp lớp» học được chưa?** Chưa: phải xếp lớp trước (bài «Xếp lớp cho ghi danh»).
+- **Em «Chờ xếp lớp» học được chưa?** Chưa: phải xếp lớp trước (bài «Xếp lớp cho ghi danh đang chờ»).
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Nói đúng em còn bao nhiêu giờ và giờ đó từ đâu ra (đọc «Sổ giờ»).

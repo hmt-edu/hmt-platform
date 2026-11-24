@@ -19,7 +19,7 @@ di_thu: chưa
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của bạn.
-- [ ] Buổi cần ghi đã **«Đã chốt»** (buổi còn Nháp chưa có danh sách em; xem bài «Xem buổi học hôm nay»).
+- [ ] Buổi cần ghi đã **«Đã chốt»** (buổi còn Nháp chưa có danh sách em; xem bài «Xem buổi học hôm nay và theo dõi buổi chưa hoàn tất»).
 - [ ] Bạn có số điện thoại phụ huynh (mở từ hồ sơ em) để gọi.
 
 ## Luật cần nhớ (lời thường)
@@ -62,8 +62,8 @@ di_thu: chưa
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Chỉ ghi điểm danh phía vận hành khi buổi Đã chốt, chưa Done.» | buổi còn Nháp hoặc đã hoàn thành | chốt danh sách trước, hoặc nhờ Trưởng cơ sở nếu đã hoàn thành |
-| «Buổi chưa chốt danh sách nên chưa điểm danh được.» | buổi còn Nháp | chốt danh sách |
+| «Chỉ ghi điểm danh phía vận hành khi buổi Đã chốt, chưa Done.» (mã HMT_BUOI_CHUA_CHOT) | buổi còn Nháp hoặc đã hoàn thành | chốt danh sách trước, hoặc nhờ Trưởng cơ sở nếu đã hoàn thành |
+| «Buổi chưa chốt danh sách nên chưa điểm danh được.» (mã HMT_BUOI_CHUA_CHOT) | buổi còn Nháp | chốt danh sách |
 | «Phân hệ chưa bật» | cơ sở chưa bật màn Điểm danh trong ngày | nhờ Quản trị bật |
 
 ## Tập trên dữ liệu mẫu

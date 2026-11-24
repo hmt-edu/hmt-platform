@@ -18,7 +18,7 @@ nguoi_viet: Code D
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Phân hệ này đã bật cho cơ sở của bạn. Nếu màn hiện «Phân hệ chưa bật», nhờ Quản trị.
-- [ ] Bạn đã biết cách mở phiếu tái tục (bài «Tái tục»).
+- [ ] Bạn đã biết cách mở phiếu tái tục (bài «Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay»).
 
 ## Luật cần nhớ (lời thường)
 - **Mỗi dòng là một học sinh trong một lớp.** Giờ còn là tổng giờ còn của mọi ghi danh còn hiệu lực của em ở lớp đó, kể cả giờ tặng.
@@ -38,14 +38,14 @@ nguoi_viet: Code D
 4. Tìm một em: gõ tên học sinh hoặc mã lớp vào ô tìm.
    *Bạn thấy:* chỉ còn các dòng khớp.
 5. Nhìn cột **«Phiếu tái tục»**:
-   - Có mã phiếu: bấm vào để mở phiếu và gọi phụ huynh (xem bài «Tái tục»).
+   - Có mã phiếu: bấm vào để mở phiếu và gọi phụ huynh (xem bài «Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay»).
    - Ghi «Chưa có phiếu · chờ đợt quét đêm»: em đã hết giờ nhưng hệ thống chưa kịp sinh phiếu; đêm sau phiếu sẽ có.
-   - Ghi «—»: chưa có phiếu. Phiếu tự sinh theo đợt quét đêm; nếu phụ huynh muốn mua thêm ngay, tạo tay một phiếu theo bài «Tái tục».
+   - Ghi «—»: chưa có phiếu. Phiếu tự sinh theo đợt quét đêm; nếu phụ huynh muốn mua thêm ngay, tạo tay một phiếu theo bài «Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay».
    *Bạn thấy:* mã phiếu bấm được dẫn đúng sang phiếu của em đó.
 6. Bấm tên lớp để mở bản ghi lớp khi cần xem lịch và các buổi còn lại.
 
 ## Sau bước này
-- **Ai làm tiếp:** CSKH gọi phụ huynh theo phiếu tái tục; phụ huynh đồng ý thì tạo đơn từ phiếu (bài «Tái tục»).
+- **Ai làm tiếp:** CSKH gọi phụ huynh theo phiếu tái tục; phụ huynh đồng ý thì tạo đơn từ phiếu (bài «Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay»).
 - **Bạn xem ở đâu:** danh sách này mỗi sáng; phiếu ở Chăm sóc khách hàng → Tái tục.
 
 ## Làm nhầm thì sao

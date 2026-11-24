@@ -19,7 +19,7 @@ di_thu: chưa
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của em.
-- [ ] Lớp định xếp **đã được duyệt** (lớp Nháp, Đã trình chưa xếp được: làm bài «Tạo và trình lớp», chờ Trưởng cơ sở duyệt).
+- [ ] Lớp định xếp **đã được duyệt** (lớp Nháp, Đã trình chưa xếp được: làm bài «Tạo lớp, thời khoá biểu và trình duyệt», chờ Trưởng cơ sở duyệt).
 - [ ] Bạn đã hỏi phụ huynh em học ngày nào, lớp nào; không tự chọn thay phụ huynh.
 
 ## Luật cần nhớ (lời thường)
@@ -57,7 +57,7 @@ di_thu: chưa
 |---|---|
 | Xếp nhầm lớp | tạo ticket Đề nghị, phiếu «Chuyển lớp» |
 | Chọn sai ngày vào lớp | cũng qua phiếu «Chuyển lớp» (hoặc nhờ Trưởng cơ sở nếu em chưa học buổi nào) |
-| Em muốn hoàn phí thay vì xếp lớp | em «Chờ xếp lớp» vẫn hoàn phí, dừng học, chuyển phí được: xem bài «Xem ghi danh, quỹ giờ và sổ giờ» |
+| Em muốn hoàn phí thay vì xếp lớp | em «Chờ xếp lớp» vẫn hoàn phí, dừng học, chuyển phí được: xem bài «Xem ghi danh, quỹ giờ và sổ giờ của một em» |
 
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
@@ -66,11 +66,11 @@ di_thu: chưa
 | «…: lớp đã đủ sĩ số tối đa.» | hết chỗ | chọn lớp khác, hoặc nhờ Trưởng cơ sở tăng sĩ số |
 | «…: có N buổi trùng giờ với lớp em đang học, không xếp được.» | em đã có lớp trùng giờ | chọn lớp khác hoặc ngày vào khác |
 | «…: ngày vào lớp phải đúng thứ có lịch và không trước ngày khai giảng.» | chọn sai ngày | chọn lại trong danh sách buổi sắp tới |
-| «Chỉ ghi danh Chờ xếp lớp mới xếp lớp lần đầu.» | em đã có lớp rồi | dùng phiếu «Chuyển lớp» |
+| «Chỉ ghi danh Chờ xếp lớp mới xếp lớp lần đầu.» (mã HMT_GHI_DANH_KHONG_CHO_XEP) | em đã có lớp rồi | dùng phiếu «Chuyển lớp» |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH (cskh.cs5); Trưởng cơ sở (truongcs.cs5) để duyệt lớp nếu cần.
-- **Dùng:** lớp Toán [MẪU] đã duyệt trong «Dữ liệu mẫu của tôi». Bộ mẫu **chưa có** em «Chờ xếp lớp» (3 em mẫu đã vào lớp); muốn tập thì lập một đơn không chọn lớp ở bài «Lập đơn hàng», chờ duyệt đơn và duyệt phiếu thu, em sẽ xuất hiện ở hàng chờ.
+- **Dùng:** lớp Toán [MẪU] đã duyệt trong «Dữ liệu mẫu của tôi». Bộ mẫu **chưa có** em «Chờ xếp lớp» (3 em mẫu đã vào lớp); muốn tập thì lập một đơn không chọn lớp ở bài «Lập đơn hàng, chọn lớp và ngày vào lớp», chờ duyệt đơn và duyệt phiếu thu, em sẽ xuất hiện ở hàng chờ.
 
 ## Hỏi đáp
 - **Xếp lớp xong, phụ huynh có phải đóng thêm gì không?** Tuỳ đơn: đơn đã thu đủ thì không phải đóng thêm; đơn bật «cho học trước, đóng tiền sau» thì vẫn phải thu phần còn lại theo đơn.
