@@ -11,6 +11,8 @@ import {
   FEE_TRANSFER_KINDS,
   HOLD_MODES,
   MONEY_MODES,
+  REFUND_KINDS,
+  type RefundKind,
   type MoneyMode,
   holdEnrollmentChoices,
   runningHold,
@@ -26,6 +28,7 @@ import {
   useDestBranches,
   useFeeTransferOrders,
   useFeeTransferPreview,
+  useRefundReasons,
   useTaskOptions,
 } from './useTaskCreate';
 
@@ -54,6 +57,7 @@ export function BusinessTaskDialog({
   onCreate: (reason: string, payload: unknown) => void;
 }) {
   const options = useTaskOptions(ticketId, open && hasStudent);
+  const refundReasons = useRefundReasons(open && type === 'HOAN_PHI');
   const branches = useDestBranches(open && type === 'CHUYEN_LOP');
   const [draft, setDraft] = useState<BusinessDraft>(EMPTY_BUSINESS_DRAFT);
   const [show, setShow] = useState(false);
@@ -65,14 +69,16 @@ export function BusinessTaskDialog({
       ? data?.hold_reasons
       : type === 'DUNG_HOC'
         ? data?.stop_reasons
-        : data?.transfer_reasons) ?? [];
+        : type === 'HOAN_PHI'
+          ? refundReasons.data
+          : data?.transfer_reasons) ?? [];
   const enrollment = data?.enrollments.find((x) => x.id === draft.enrollmentId);
   const classes = data ? classChoices(data, draft.enrollmentId) : [];
   const enrollmentChoices = !data
     ? []
     : type === 'BAO_LUU'
       ? holdEnrollmentChoices(data, draft.holdMode)
-      : type === 'DUNG_HOC' || type === 'CHUYEN_PHI'
+      : type === 'DUNG_HOC' || type === 'CHUYEN_PHI' || type === 'HOAN_PHI'
         ? data.enrollments
         : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU');
   const hold = data && type === 'BAO_LUU' ? runningHold(data, draft.enrollmentId) : null;
@@ -156,7 +162,36 @@ export function BusinessTaskDialog({
       {errors.reasonCode && (
         <p className="text-caption text-on-danger-subtle">{errors.reasonCode}</p>
       )}
-      {type === 'CHUYEN_PHI' ? (
+      {type === 'HOAN_PHI' ? (
+        <>
+          <OptionalSelect
+            label="Hình thức hoàn"
+            value={draft.refundKind}
+            onChange={(v) => set({ refundKind: v as RefundKind, refundHours: '' })}
+            options={REFUND_KINDS.map((k) => ({ value: k.value, label: k.label }))}
+            placeholder="Chọn hình thức hoàn"
+            invalid={errors.refundKind !== undefined}
+          />
+          {errors.refundKind && (
+            <p className="text-caption text-on-danger-subtle">{errors.refundKind}</p>
+          )}
+          {draft.refundKind === 'MOT_PHAN' && (
+            <TextField
+              label="Số giờ hoàn"
+              required
+              inputMode="decimal"
+              value={draft.refundHours}
+              error={errors.refundHours ?? null}
+              onChange={(e) => set({ refundHours: e.target.value })}
+            />
+          )}
+          <p className="text-caption text-fg-muted">
+            Hoàn toàn bộ: hoàn theo giá gốc, trừ giờ đã học và phí xử lý; giờ tặng không hoàn. Hoàn
+            một phần: số giờ hoàn × giá sau chiết khấu, trừ phí xử lý. Số tiền do máy chủ tính và
+            chụp lại lúc thực hiện. Cần quản lý cơ sở rồi kế toán duyệt; hoàn xong sinh phiếu chi.
+          </p>
+        </>
+      ) : type === 'CHUYEN_PHI' ? (
         <>
           <OptionalSelect
             label="Kiểu chuyển"
