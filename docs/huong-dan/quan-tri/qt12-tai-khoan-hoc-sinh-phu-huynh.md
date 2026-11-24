@@ -79,7 +79,7 @@ cap_nhat: 2026-11-24
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** `bgd.tap` (Admin) trên **staging**; một học sinh và một phụ huynh giả chưa có tài khoản.
-- **Dùng:** cấp tài khoản cho một em, đặt lại mật khẩu, khoá rồi mở khoá; với phụ huynh: cấp, khoá, đặt lại. Không chép mật khẩu của người thật vào chat hay ghi chú.
+- **Dùng:** cấp tài khoản cho một em, đặt lại mật khẩu, khoá rồi mở khoá; với phụ huynh: cấp, khoá, mở khoá, đặt lại. Không chép mật khẩu của người thật vào chat hay ghi chú.
 - Vai Vận hành tập tạm bằng quyền CSKH (anh Trường chốt 24/11): menu này đòi quyền Admin nên CSKH **không vào được**; tập bằng `bgd.tap`.
 - Chưa có trong bộ mẫu: học sinh, phụ huynh giả dành riêng cho việc tập.
 
