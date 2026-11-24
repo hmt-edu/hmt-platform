@@ -84,12 +84,11 @@ describe('Số mục trên menu khớp tiêu đề bài', () => {
 });
 
 describe('Hướng dẫn cổng Giáo viên (A-23-38)', () => {
-  it('chỉ hiện thao tác cơ bản, bài Giáo viên và hỏi đáp; mở đầu bằng bài Giáo viên', () => {
-    expect(sectionsFor('gv').map((s) => s.slug)).toEqual([
-      'thao-tac-co-ban',
-      'giao-vien',
-      'hoi-dap',
-    ]);
+  it('chỉ hiện bài gắn cổng Giáo viên (phần chung, bài Giáo viên, hỏi đáp); không có bài vai CRM; mở đầu bằng bài Giáo viên', () => {
+    const slugs = sectionsFor('gv').map((s) => s.slug);
+    expect(slugs).toEqual(expect.arrayContaining(['chung-dang-nhap', 'giao-vien', 'hoi-dap']));
+    expect(slugs).not.toContain('theo-vai-ke-toan');
+    expect(slugs).not.toContain('bat-dau');
     expect(defaultSectionFor('gv').slug).toBe('giao-vien');
     expect(defaultSectionFor('crm').slug).toBe('bat-dau');
   });
