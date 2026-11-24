@@ -66,3 +66,20 @@ describe('Phần đầu bài hướng dẫn (A-23-42)', () => {
     expect(out.map((x) => x.file)).toEqual(['c.md', 'a.md', 'z.md', 'b.md']);
   });
 });
+
+describe('Phần đầu kiểu quy cách đợt 1 (id, ten, vai, uu_tien…)', () => {
+  it('đọc được: tên, nhóm vai, slug từ id, ưu tiên, mã màn, cổng theo vai', () => {
+    const text = `---\nid: BH1\nten: Lập báo giá\nvai: [tu-van, giao-vien]\nphan_he: ban-hang\nma_man: [BH-01, BH-02]\nuu_tien: P1\ncap_nhat: 2026-11-24\n---\n\n# x\n`;
+    const m = metaFromSource('ban-hang-thu-chi/BH1-lap-bao-gia.md', text);
+    expect(m).toMatchObject({
+      title: 'Lập báo giá',
+      group: 'vai',
+      slug: 'bh1',
+      flow: 'BH1',
+      priority: 'P1',
+      checked: '2026-11-24',
+      screens: ['BH-01', 'BH-02'],
+      portals: ['crm', 'gv'],
+    });
+  });
+});
