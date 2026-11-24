@@ -1,6 +1,6 @@
 // HT-06 Lịch học (cổng học sinh): các buổi của em trong tuần, nhóm theo ngày. Chỉ đọc; quyền do máy chủ quyết (app.portal_schedule).
 // Khung HT06_ds, _tai, _trong, _loi (canvas 9189). Tuần chọn bằng nút Tuần trước/này/sau.
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { errorOf } from '../../lib/db';
 import { vnDayBounds } from '../../lib/vnDay';
 import { Button } from '../../ui/Button';
@@ -19,10 +19,23 @@ import {
 const CANCELLED = ['HUY_CO_PHI', 'HUY_KHONG_PHI'];
 
 export function StudentSchedulePage() {
+  const children = useChildren();
+  return <ScheduleView childrenQuery={children} studentId={children.data?.[0]?.id} />;
+}
+
+/** Thân màn lịch tuần, dùng chung cho cổng Học tập (HT-06) và Phụ huynh (PH-05, thêm chip chọn con ở `chips`). */
+export function ScheduleView({
+  childrenQuery: children,
+  studentId,
+  chips,
+}: {
+  childrenQuery: ReturnType<typeof useChildren>;
+  studentId: string | undefined;
+  chips?: ReactNode;
+}) {
   const todayKey = vnDayBounds().dateKey;
   const [monday, setMonday] = useState(() => mondayOf(todayKey));
-  const children = useChildren();
-  const student = children.data?.[0];
+  const student = studentId === undefined ? undefined : { id: studentId };
   const days = weekDays(monday);
   const to = addDays(monday, DAYS_IN_WEEK - 1);
   const query = usePortalSchedule(student?.id, monday, to);
@@ -30,6 +43,7 @@ export function StudentSchedulePage() {
   const header = (
     <div className="flex flex-col gap-2">
       <h1 className="text-h2">Lịch học</h1>
+      {chips}
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="secondary" onClick={() => setMonday(addDays(monday, -DAYS_IN_WEEK))}>
           Tuần trước
