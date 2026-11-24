@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useAuth } from '../lib/auth/authContext';
-import { intSettingQuery } from '../lib/db';
+import { intSettingQuery, toHmtError } from '../lib/db';
 
 export type PermissionRow = {
   role_code: string;
@@ -30,7 +30,7 @@ async function rows<T>(
   query: PromiseLike<{ data: unknown; error: { message: string } | null }>,
 ): Promise<T[]> {
   const { data, error } = await query;
-  if (error) throw new Error(error.message);
+  if (error) throw toHmtError(error);
   return (data ?? []) as T[];
 }
 

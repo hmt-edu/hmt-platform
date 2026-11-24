@@ -148,6 +148,7 @@ jobs:
           trap 'rm -f "$env_file"' EXIT
           {
             echo "HMT_ALLOW_STAGING_PREVIEWS=true"
+            echo "HMT_ALLOW_LOCAL_ORIGINS=true"
             echo "HMT_ALLOWED_ORIGINS=https://hmt-staging.pages.dev"
             key="$(printf '%s' "$STAGING_SUPABASE_SECRET_KEY" | tr -d '[:space:]')"
             if [ -n "$key" ]; then echo "HMT_SECRET_KEY=$key"; fi

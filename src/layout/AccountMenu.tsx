@@ -5,6 +5,7 @@ import { Avatar } from '../ui/Feedback';
 import { DropdownMenu, type MenuItem } from '../ui/Overlays';
 import { accountLabel } from './accountLabel';
 import { PORTAL_NAMES } from './portalNames';
+import { useDemoAvailable } from '../pages/du-lieu-mau/useDemoData';
 
 /** Góc tài khoản: tên, vai trò và cơ sở mỗi thứ một dòng (T13); mở ra Hồ sơ cá nhân, Đổi cổng, Đăng xuất. */
 export function AccountMenu({
@@ -18,6 +19,7 @@ export function AccountMenu({
 }) {
   const { claims, signOut } = useAuth();
   const navigate = useNavigate();
+  const demo = useDemoAvailable();
   if (!claims) return null;
 
   const others = PORTALS.filter((p) => p !== portal && portalAccess(claims, p) !== 'none');
@@ -29,6 +31,16 @@ export function AccountMenu({
             kind: 'link',
             label: 'Hướng dẫn sử dụng',
             to: '/crm/huong-dan',
+            icon: 'info',
+          } satisfies MenuItem,
+        ]
+      : []),
+    ...(demo.data === true
+      ? [
+          {
+            kind: 'link',
+            label: 'Dữ liệu mẫu của tôi',
+            to: `/${portal}/du-lieu-mau`,
             icon: 'info',
           } satisfies MenuItem,
         ]

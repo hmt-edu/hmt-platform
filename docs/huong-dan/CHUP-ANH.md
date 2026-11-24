@@ -28,6 +28,9 @@ Sửa bảng `ROLES` ở `e2e/chup-anh-ban-do.ts`: mỗi ảnh có `name` (đún
 - Từ bước 2 lệnh `npm run chup-anh` nạp thêm bộ seed giả lớn có sẵn (lead, cơ hội, đơn, phiếu thu, lớp, buổi, ghi danh) trước khi chụp để ảnh «bản ghi» có dòng thật; tắt bằng `CHUP_ANH_DU_LIEU=0`. Ticket, phiếu nghiệp vụ, khoản tiền chưa có seed nên ảnh liên quan vẫn là xấp xỉ.
 - **E36:** `npm run chup-anh` còn nạp `supabase/seed-anh-huong-dan.sql` (một lớp ở CS5 do giáo viên giả gv.cs5 dạy, có buổi HÔM NAY đã chốt danh sách, ba em đang học): bảy ảnh cổng Giáo viên (điểm danh, nội dung buổi, chấm nhận xét, BTVN, hoàn tất…) chụp được. Chạy thử: Giáo viên 8 ảnh đúng màn (trước 3), CSKH 10 (trước 7), Trưởng cơ sở 5 (trước 4); còn xấp xỉ chủ yếu là hộp thoại và ticket, phiếu nghiệp vụ, khoản tiền chưa có seed.
 
+## QUY ƯỚC TÊN ẢNH (MỘT quy ước, thống nhất 24/11)
+Trong tài liệu viết `[ẢNH: tên]` (và `[VIDEO: tên]`), KHÔNG viết `![tên](đường-dẫn)`. Trang Hướng dẫn trong ứng dụng chỉ hiểu dạng này và đọc ảnh ở `public/huong-dan/anh/<tên>.png`. Kịch bản `scripts/huong-dan/*.mjs` xuất thẳng vào thư mục đó. Thêm ảnh mới: chụp vào `public/huong-dan/anh/`, giữ nguyên `[ẢNH: tên]` trong tài liệu.
+
 ## Hướng dẫn có khung đánh dấu và video
 Xem `scripts/huong-dan/README.md` (chạy trên bản thử nghiệm, ba bài mẫu).
 

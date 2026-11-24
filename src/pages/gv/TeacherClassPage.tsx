@@ -11,6 +11,7 @@ import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import {
   attendanceText,
   homeworkSessions,
+  nextSession,
   scoreText,
   shortDate,
   slotText,
@@ -19,6 +20,8 @@ import {
 } from './classOverviewLogic';
 import { classTitle } from './classesLogic';
 import { hhmm } from './todayLogic';
+import { vnDayBounds } from '../../lib/vnDay';
+import { useAccess } from '../../nav/AccessContext';
 import { GvForbidden } from './GvForbidden';
 import { isForbidden } from './forbidden';
 
@@ -27,6 +30,7 @@ const PREVIEW_STUDENTS = 4;
 
 export function TeacherClassPage() {
   const supabase = useDb();
+  const hocTapOn = useAccess().featureOn('HOC_TAP'); // công tắc Học tập: kiểm ở giao diện (hàm DB đã kiểm)
   const { classId = '' } = useParams();
   const [showAll, setShowAll] = useState(false);
   const query = useQuery({
@@ -74,10 +78,7 @@ export function TeacherClassPage() {
 
   const o = query.data;
   const homework = homeworkSessions(o.sessions);
-  const todayIso = new Date().toISOString().slice(0, 10);
-  const next = [...o.sessions]
-    .filter((x) => x.status_code !== 'DONE' && x.session_date >= todayIso)
-    .sort((a, b) => a.session_date.localeCompare(b.session_date))[0];
+  const next = nextSession(o.sessions, vnDayBounds().dateKey);
   const teachers = [...new Set(o.slots.map((x) => x.teacher_name).filter(Boolean))].join(', ');
   const shown = showAll ? o.students : o.students.slice(0, PREVIEW_STUDENTS);
   const hidden = o.students.length - shown.length;
@@ -268,13 +269,15 @@ export function TeacherClassPage() {
           <ButtonLink to="/gv/ticket/tao">Tạo ticket</ButtonLink>
         </div>
       </section>
-      <section className="flex flex-col gap-2">
-        <h2 className="text-h3">Bài đã giao trên LMS</h2>
-        <p className="text-fg-muted">Giao bài cho cả lớp hoặc từng em, xem em nào đã nộp.</p>
-        <div>
-          <ButtonLink to={`/gv/lop/${classId}/bai-giao`}>Bài đã giao</ButtonLink>
-        </div>
-      </section>
+      {hocTapOn && (
+        <section className="flex flex-col gap-2">
+          <h2 className="text-h3">Bài đã giao trên LMS</h2>
+          <p className="text-fg-muted">Giao bài cho cả lớp hoặc từng em, xem em nào đã nộp.</p>
+          <div>
+            <ButtonLink to={`/gv/lop/${classId}/bai-giao`}>Bài đã giao</ButtonLink>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
