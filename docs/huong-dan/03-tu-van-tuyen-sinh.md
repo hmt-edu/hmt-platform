@@ -1,10 +1,9 @@
-# 3a. Hướng dẫn cho Tư vấn tuyển sinh (cổng CRM)
+# Vai: Tư vấn tuyển sinh (cổng CRM)
 
-Vai: **Tư vấn tuyển sinh** (trên màn hiện «Tư vấn tuyển sinh»; một số nhãn trong thiết kế còn ghi «Sale phụ trách», giữ nguyên). Đọc `00-gioi-thieu.md` trước nếu bạn mới. Chữ trong dấu «…» là chữ trên màn thật; chỗ chèn ảnh ghi `[ẢNH: tên-kịch-bản]`, ảnh chụp sau trên bản thử nghiệm bằng tài khoản giả. Dữ liệu trong ví dụ là giả.
+Vai: **Tư vấn tuyển sinh**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
 Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiểm tra), **Bán hàng và thu chi** (Báo giá, Đơn hàng, Phiếu thu). Chỉ hiện mục bạn có quyền; bạn chỉ thấy khách của cơ sở mình.
 
-Mỗi bài theo khuôn: mục tiêu, các bước đánh số, kết quả mong đợi, lỗi thường gặp, ảnh.
 
 ## Việc hằng ngày của bạn (gợi ý thứ tự)
 
@@ -91,9 +90,24 @@ Mỗi bài theo khuôn: mục tiêu, các bước đánh số, kết quả mong 
 4. Khi đơn «Đã duyệt», bấm «Tạo phiếu thu» để thu tiền.
 
 - **Kết quả:** đơn đi Nháp → Đã trình → Đã duyệt; sau khi thu đủ và duyệt phiếu thu, mỗi dòng sinh một ghi danh để CSKH xếp lớp.
-- **Lỗi thường gặp:** «Chưa trình được» hoặc «Có em chưa đủ thông tin»: điền đủ thông tin học sinh ở dòng đơn rồi trình lại. Lớp không hiện trong danh sách là hết chỗ hoặc sai môn, khối: chọn lớp khác. Không thấy «Huỷ đơn»: chỉ người lập huỷ đơn Nháp; đơn đã trình do người duyệt huỷ; đơn đã có phiếu thu phải qua ticket hoàn tiền.
+- **Lỗi thường gặp:** «Chưa trình được» hoặc «Có em chưa đủ thông tin»: điền đủ thông tin học sinh ở dòng đơn rồi trình lại (hoặc bấm «Vẫn trình» nếu hệ thống cho phép). Lớp không hiện trong danh sách là hết chỗ hoặc sai môn, khối: chọn lớp khác. Không thấy «Huỷ đơn»: chỉ người lập huỷ đơn Nháp; đơn đã trình do người duyệt huỷ; đơn đã có phiếu thu phải qua ticket hoàn tiền.
 - **Ảnh:** [ẢNH: don-hang-dong-don], [ẢNH: don-hang-chon-lop], [ẢNH: don-hang-trinh]
+
+## 6. Lập phiếu thu
+
+**Mục tiêu:** ghi khoản phụ huynh đã đóng cho đơn. Làm bởi Tư vấn tuyển sinh hoặc CSKH có quyền lập phiếu thu.
+
+1. Trong đơn «Đã duyệt» bấm **«Tạo phiếu thu»**.
+2. Nhập số tiền, hình thức, ngày nhận, mã giao dịch, đính chứng từ; ở «Chia tiền vào dòng đơn» chia khoản vào các dòng.
+3. Lưu (Nháp), rồi bấm **«Trình quản lý»**.
+4. Nếu bị «Từ chối phiếu thu» (phiếu về Nháp) thì sửa theo lý do rồi trình lại. Bấm «Huỷ phiếu thu» khi nhập nhầm (chỉ phiếu chưa duyệt).
+
+- **Kết quả:** phiếu đi hai bước duyệt (Trưởng cơ sở rồi Kế toán); duyệt xong sinh khoản tiền vào và ghi danh.
+- **Lỗi thường gặp:** số tiền vượt phần còn phải thu thì báo tại ô. Phiếu đã duyệt không sửa được; muốn sửa phải để Kế toán đảo khoản.
+- **Ảnh:** [ẢNH: phieu-thu-tao], [ẢNH: phieu-thu-trinh]
+
+**Việc phụ huynh hỏi sau khi mua:** bạn không duyệt tiền. Khi phụ huynh xin bảo lưu, chuyển lớp, hoàn phí, báo CSKH tạo ticket (xem [bài CSKH](/crm/huong-dan/theo-vai-cskh)).
 
 ## Khi gặp lỗi
 
-Lỗi từ hệ thống hiện thẳng câu tiếng Việt trên màn. Cần báo: chụp màn hình, ghi mã khách hoặc mã đơn và câu lỗi, gửi Trưởng cơ sở. Việc thu tiền, hoàn tiền xem `ke-toan.md`; việc xếp lớp, điểm danh xem `03-cskh.md`.
+Lỗi từ hệ thống hiện thẳng câu tiếng Việt trên màn. Cần báo: chụp màn hình, ghi mã khách hoặc mã đơn và câu lỗi, gửi Trưởng cơ sở. Việc thu tiền, hoàn tiền xem [bài Kế toán](/crm/huong-dan/theo-vai-ke-toan); việc xếp lớp, điểm danh xem [bài CSKH](/crm/huong-dan/theo-vai-cskh).

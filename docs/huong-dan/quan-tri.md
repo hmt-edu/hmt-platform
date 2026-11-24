@@ -1,6 +1,6 @@
-# Hướng dẫn cho Quản trị (Admin)
+# Vai: Quản trị (Admin)
 
-Vai: Admin hệ thống. Admin cần **thiết lập hai bước** khi đăng nhập (xem `chung.md`). Admin xem được mọi cơ sở, nhưng **không duyệt tiền** (phiếu thu, hoàn phí, phiếu chi do Kế toán duyệt). Menu **Quản trị** và **Cấu hình**. Xem `README.md` về cách đọc.
+Vai: Admin hệ thống. Admin cần **thiết lập hai bước** khi đăng nhập (xem [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh)). Admin xem được mọi cơ sở, nhưng **không duyệt tiền** (phiếu thu, hoàn phí, phiếu chi do Kế toán duyệt). Menu **Quản trị** và **Cấu hình**.
 
 ## 1. Tạo người dùng
 - **Mục đích:** cấp tài khoản cho nhân viên, giáo viên, trợ giảng.

@@ -153,7 +153,7 @@ const BAI = {
       {
         chu: 'Nhập email được cấp',
         loc: (p) => p.getByLabel('Email', { exact: true }),
-        lam: (p) => p.getByLabel('Email', { exact: true }).fill(TAI_KHOAN),
+        lam: (p) => p.getByLabel('Email', { exact: true }).fill('ten@hoamatoan.vn'),
       },
       {
         chu: 'Nhập mật khẩu',
