@@ -712,7 +712,7 @@ test('Tạo báo giá: nút nằm ở bản ghi cơ hội (máy tính), ẩn tr�
   // Form trắng: chưa có bản ghi, chưa cấp mã, dòng đầu mặc định em đầu.
   await expect(page.getByRole('heading', { level: 2, name: 'Tạo báo giá' })).toBeVisible();
   await expect(page.getByText('Chưa lưu', { exact: true })).toBeVisible();
-  await expect(page.getByText('cấp khi Lưu, không sửa')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'cấp khi Lưu, không sửa' })).toBeVisible();
   await expect(page.getByText(/ngày kể từ ngày Gửi|tính từ ngày Gửi/)).toBeVisible();
   await expect(page.getByRole('combobox', { name: 'Học sinh dòng 1' })).toContainText('Em Đã Gửi');
   await expect(page.getByText('Lưu để bắt đầu ghi chú: bản ghi chỉ có khi bấm Lưu.')).toBeVisible();
