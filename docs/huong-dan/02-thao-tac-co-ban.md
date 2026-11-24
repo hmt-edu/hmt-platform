@@ -27,6 +27,7 @@
 
 ## 2.4 Group By (nhóm)
 - **Các bước:** 1) Bấm **Group By**. 2) Hộp «Nhóm theo» liệt kê các trường có thể nhóm (ví dụ Đơn hàng: «Tình trạng», «Sale»). 3) Bấm trường muốn nhóm; chọn **tối đa 2 cấp**, theo thứ tự bấm; bấm lại để bỏ. 4) Danh sách chia thành các nhóm có số đếm; bấm một nhóm để mở các dòng bên trong.
+- **Video (18 giây: Filters, Group By, Favorites):** [VIDEO: huong-dan-danh-sach]
 - **Ảnh:** [ẢNH: danh-sach-nhom]
 
 ## 2.5 Favorites và Save to Favorites (lưu bộ lọc)
@@ -64,6 +65,7 @@
 - **Viết ghi chú:** 1) Bấm ô «Viết ghi chú… gõ @ để nhắc đồng nghiệp». 2) Gõ nội dung; gõ `@` rồi chọn đồng nghiệp để nhắc (mục «Nhắc đồng nghiệp»; không có ai thì báo «Không tìm thấy đồng nghiệp nào.»). 3) Bấm «Gửi ghi chú». Lỗi thì báo «Chưa gửi được ghi chú. Thử lại.»
 - **Lọc dòng thời gian:** bộ lọc «Lọc dòng thời gian» có «Tất cả», «Ghi chú», «Hệ thống».
 - **Lưu ý:** đính kèm tệp **chưa bật** (hiện «Đính kèm tệp (chưa bật)»). Không có quyền xem trao đổi thì hiện «Bạn không có quyền xem trao đổi». Nhật ký hệ thống chỉ đọc, không ai sửa hay xoá được.
+- **Video (14 giây: mở cơ hội, viết và gửi ghi chú):** [VIDEO: huong-dan-ghi-chu]
 - **Ảnh:** [ẢNH: ban-ghi-ghi-chu], [ẢNH: ban-ghi-nhat-ky]
 
 ## 2.11 Thông báo
