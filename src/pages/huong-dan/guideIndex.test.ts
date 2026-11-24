@@ -10,7 +10,7 @@ import {
 } from './guideIndex';
 
 // File trong docs/huong-dan không phải bài hướng dẫn người dùng: không đưa vào menu.
-const NOT_GUIDE = new Set(['README.md', 'CHUP-ANH.md']);
+const NOT_GUIDE = new Set(['README.md', 'CHUP-ANH.md', 'KE-NGHIEP-VU.md']);
 
 // Liệt kê file thật bằng chính cơ chế guideIndex dùng (Vite glob), không cần thư viện Node.
 const found = Object.keys(import.meta.glob('../../../docs/huong-dan/*.md', { query: '?raw' })).map(
