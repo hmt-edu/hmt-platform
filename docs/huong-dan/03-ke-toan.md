@@ -1,3 +1,12 @@
+---
+title: Vai: Kế toán
+slug: theo-vai-ke-toan
+group: vai
+order: 60
+role: Kế toán
+portals: [crm]
+---
+
 # Vai: Kế toán (cổng CRM)
 
 Vai: **Kế toán**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
@@ -34,8 +43,8 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 
 **Mục tiêu:** hiểu một khoản thu đi từ đơn hàng tới phiếu thu.
 
-1. **Đơn hàng:** Sale lập đơn, Trưởng cơ sở duyệt, đơn «Đã duyệt» thì Sale lập phiếu thu. Mở đơn để xem «Dòng đơn», điều khoản thanh toán và các đợt.
-2. **Phiếu thu:** Sale trình, Trưởng cơ sở duyệt bước quản lý, rồi đến bạn duyệt bước kế toán (mục 3).
+1. **Đơn hàng:** Sale lập đơn, quản lý trực tiếp của người lập duyệt (thường là Trưởng cơ sở), đơn «Đã duyệt» thì Sale lập phiếu thu. Mở đơn để xem «Dòng đơn», điều khoản thanh toán và các đợt.
+2. **Phiếu thu:** Sale trình, quản lý trực tiếp của người lập duyệt bước quản lý (thường là Trưởng cơ sở), rồi đến bạn duyệt bước kế toán (mục 3).
 
 - **Kết quả:** bạn nắm đơn nào đã có phiếu thu, đã thu bao nhiêu, còn bao nhiêu.
 - **Lỗi thường gặp:** đơn chưa «Đã duyệt» thì chưa lập được phiếu thu.
