@@ -1,3 +1,12 @@
+---
+title: Vai: Tư vấn tuyển sinh
+slug: theo-vai-tu-van
+group: vai
+order: 40
+role: Tư vấn tuyển sinh
+portals: [crm]
+---
+
 # Vai: Tư vấn tuyển sinh (cổng CRM)
 
 Vai: **Tư vấn tuyển sinh**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.

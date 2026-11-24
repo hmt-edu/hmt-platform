@@ -1,11 +1,35 @@
-# Hướng dẫn người dùng cổng CRM (bản nội dung, chưa có ảnh)
+# Hướng dẫn sử dụng: cách thêm một bài (A-23-42)
 
-Soạn 19/11/2026 (Code B, thẻ B31). Một file mỗi vai: `sale.md`, `cskh.md`, `ke-toan.md`, `truong-co-so.md`. Mỗi nghiệp vụ theo khuôn: **Mục đích · Ai làm · Các bước · Kết quả mong đợi · Lỗi thường gặp · Ảnh**.
+Trang `/crm/huong-dan` và `/gv/huong-dan` đọc mọi tệp `.md` trong thư mục này (kể cả thư mục con, ví dụ `tu-van/nhap-lead.md`). **Mục lục tự sinh từ phần đầu của từng bài**: thêm bài = thêm một tệp có phần đầu; không sửa tệp mục lục nào, nhiều người viết cùng lúc không đụng nhau.
 
-- **Người mới đọc trước:** `00-gioi-thieu.md` (hệ thống là gì, chạy trên gì, dữ liệu nối nhau thế nào, từng phân hệ dùng để làm gì).
-- Chữ trong dấu «…» là chữ trên màn thật (lấy từ code trên `main` lúc soạn). Chỗ ghi «nút theo việc làm được» nghĩa là màn tự hiện đúng nút của bước kế tiếp.
-- Chỗ chèn ảnh ghi `[ẢNH: ten-anh]`; ảnh chụp sau trên staging bằng tài khoản giả.
-- Lỗi do máy chủ trả về luôn hiện **câu tiếng Việt** ngay trên màn (kèm mã `HMT_…` ở dạng đọc được khi cần báo Chat). Bảng dưới mỗi nghiệp vụ chỉ nêu lỗi hay gặp.
-- Dữ liệu trong ví dụ là giả; không dùng dữ liệu thật khi tập.
-- Muốn kiểm tay từng màn: `docs/van-hanh/kiem-tay-staging.md`.
-- Từ điển thuật ngữ (mục 4): `04-tu-dien.md`.
+## Phần đầu bài (đặt ở dòng đầu tệp)
+
+```
+---
+title: Nhập lead từ file CSV
+group: vai
+slug: tu-van-nhap-lead
+order: 30
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts2
+screens: [TS-04]
+checked: 2026-11-24
+---
+```
+
+- **Bắt buộc:** `title` (tên hiện trên menu), `group` (`bat-dau`, `vai` hoặc `tra-cuu`).
+- **Tuỳ chọn:** `slug` (đường dẫn; mặc định là đường dẫn tệp, «/» thành «-»; chỉ chữ thường không dấu, số, gạch nối) · `no` (số hiện trước tên, nhóm Bắt đầu) · `order` (số nhỏ hiện trước; mặc định 1000) · `role` (nút «Bạn là ai?» ở đầu hướng dẫn) · `portals` (`[crm]` mặc định; thêm `gv` để hiện ở cổng Giáo viên) · `priority`, `flow` (mã luồng trong `KE-NGHIEP-VU.md`), `screens` (mã màn), `checked` (ngày đi thử lần cuối): công cụ kiểm sau này dùng các trường này.
+- Phần đầu sai khuôn (thiếu `title`, `group` lạ, `slug` trùng) thì **dựng ứng dụng báo lỗi nêu tên tệp**.
+- Tệp **không** có phần đầu (như tệp này, `CHUP-ANH.md`, `KE-NGHIEP-VU.md`) không phải bài người dùng: không vào menu. Muốn thêm tệp loại này, đưa tên vào `NOT_GUIDE` trong `src/pages/huong-dan/guideIndex.test.ts`.
+- Thứ tự menu: nhóm, rồi `order`, rồi tên tệp. «Bài trước / Bài sau» đi theo đúng thứ tự này.
+
+## Ảnh và video
+
+Viết `[ẢNH: tên]` và `[VIDEO: tên]` (xem `CHUP-ANH.md`). Ảnh nằm ở `public/huong-dan/anh/<tên>.png`; video khai ở `public/huong-dan/video-manifest.json`.
+
+## Ghi chú chung khi viết
+
+- Chữ trong dấu «…» là chữ trên màn thật. Lỗi do máy chủ trả về luôn hiện **câu tiếng Việt** ngay trên màn. Dữ liệu trong ví dụ là giả.
+- Từ điển thuật ngữ: `04-tu-dien.md`. Muốn kiểm tay từng màn: `docs/van-hanh/kiem-tay-staging.md`.
