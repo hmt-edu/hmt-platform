@@ -1,5 +1,5 @@
--- F-23-46 (a): bảng sổ tệp `stored_file` cho kho tệp Cloudflare R2 (ảnh/tệp bài nộp HT-04, tệp đính kèm giáo viên GV-18/CHUNG-21) + RLS + chỉ mục + tham số cài đặt.
--- Thiết kế đã duyệt: docs/ke-hoach/luu-tru-tep-r2.md (#691). Chỉ lưu KHOÁ tệp trên R2 và cờ, không lưu nội dung (không dùng Supabase Storage).
+-- F-23-46 (a): bảng sổ tệp `stored_file` cho kho tệp (nơi lưu: Google Drive của tài khoản vận hành, anh chốt 24/11 14:33) (ảnh/tệp bài nộp HT-04, tệp đính kèm giáo viên GV-18/CHUNG-21) + RLS + chỉ mục + tham số cài đặt.
+-- Thiết kế: docs/ke-hoach/luu-tru-tep-drive.md (F-23-47). Chỉ lưu KHOÁ tệp (id tệp trên nơi lưu) và cờ, không lưu nội dung (không dùng Supabase Storage).
 -- Chưa có hàm ghi: Edge Function (file-upload-url, file-upload-done, file-view-url, việc dọn) ghi bằng khoá dịch vụ ở PR sau; giao diện chỉ ĐỌC qua RLS.
 -- Vênh spec: R-LMS-04 ghi 10 MB mỗi tệp, 20 trang; anh chốt 24/11 giới hạn mới 20 MB mỗi tệp, 10 tệp mỗi lần, 50 MB tổng. Giới hạn nằm ở tham số (không viết cứng);
 -- bảng lms_submission_file (597) giữ nguyên, PR sau (HT-04) quyết nối sang stored_file.
@@ -7,8 +7,8 @@ select set_config('hmt.migration', 'on', false);
 
 create table app.stored_file (
   id uuid primary key default gen_random_uuid(),
-  r2_key text not null unique, -- khoá tệp trong bucket: môi trường/cơ sở/lớp/năm-tháng/uuid (không chứa tên hay số điện thoại)
-  thumb_r2_key text, -- ảnh thu nhỏ 20-30 KB (rỗng với PDF)
+  storage_key text not null unique, -- khoá tệp ở nơi lưu (id tệp Drive); không chứa tên hay số điện thoại
+  thumb_storage_key text, -- ảnh thu nhỏ 20-30 KB (rỗng với PDF)
   sha256 text not null check (sha256 ~ '^[0-9a-f]{64}$'), -- chặn nộp trùng
   kind text not null check (kind in ('BAI_NOP', 'DINH_KEM_GV')),
   branch_id uuid not null references app.branch (id),
@@ -22,7 +22,7 @@ create table app.stored_file (
   is_color boolean not null default false, -- ảnh giáo viên đính kèm giữ màu, ảnh học sinh thang xám (anh OK 24/11)
   delete_after date not null, -- chụp lúc tạo từ file_retention_days (luật cấu hình có hiệu lực: không tính lại)
   status text not null default 'CHO_TAI' check (status in ('CHO_TAI', 'DANG_DUNG', 'DA_XOA')),
-  cleaned_at timestamptz, -- lúc việc dọn xoá khỏi R2
+  cleaned_at timestamptz, -- lúc việc dọn xoá vĩnh viễn khỏi nơi lưu
   created_at timestamptz not null default now(),
   created_by uuid,
   updated_at timestamptz not null default now(),
@@ -30,7 +30,7 @@ create table app.stored_file (
   check ((kind = 'BAI_NOP') = (student_id is not null)),
   check (kind = 'BAI_NOP' or submission_id is null)
 );
-comment on table app.stored_file is 'Sổ tệp trên Cloudflare R2 (khoá tệp + cờ). Chỉ Edge Function ghi (khoá dịch vụ); đọc theo quyền xem bài giao.';
+comment on table app.stored_file is 'Sổ tệp ở kho tệp (khoá tệp + cờ). Chỉ Edge Function ghi (khoá dịch vụ); đọc theo quyền xem bài giao.';
 
 -- Chỉ mục (lý do): lớp + thời điểm cho danh sách theo lớp; bài giao và bài nộp cho khoá ngoại và màn chấm; học sinh cho việc dọn theo hạng;
 -- (bài, học sinh, mã băm) duy nhất khi còn dùng: chặn nộp trùng; delete_after cho việc dọn hằng đêm; CHO_TAI cho dọn tệp tải dở.
@@ -63,6 +63,6 @@ insert into app.setting_def (key, name, value_type, unit, min_value, max_value, 
   ('file_max_count_per_upload', 'Số tệp tối đa mỗi lần nộp', 'INT', 'tệp', 1, 30, '10', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 10 tệp mỗi lần.'),
   ('file_max_total_mb_per_upload', 'Tổng dung lượng tối đa mỗi lần nộp', 'INT', 'MB', 1, 200, '50', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 50 MB tổng mỗi lần.'),
   ('file_storage_soft_limit_percent', 'Chặn mềm dung lượng kho tệp', 'INT', '%', 50, 100, '80', false, 'HOC_TAP', 'F-23-46',
-   'Tổng dung lượng chạm mức này (so với hạn mức miễn phí R2) thì chặn tải mới và báo Admin, để không tự phát sinh tiền.'),
-  ('file_storage_free_gb', 'Hạn mức miễn phí của kho tệp', 'INT', 'GB', 1, 1000, '10', false, 'HOC_TAP', 'F-23-46', 'Cloudflare R2 gói Free: 10 GB mỗi tháng (spec 01).')
+   'Tổng dung lượng chạm mức này (so với hạn mức miễn phí của nơi lưu) thì chặn tải mới và báo Admin, để không tự phát sinh tiền.'),
+  ('file_storage_free_gb', 'Hạn mức miễn phí của kho tệp', 'INT', 'GB', 1, 1000, '15', false, 'HOC_TAP', 'F-23-46', 'Google Drive miễn phí: 15 GB cho cả tài khoản (anh chốt 24/11).')
 on conflict (key) do nothing;

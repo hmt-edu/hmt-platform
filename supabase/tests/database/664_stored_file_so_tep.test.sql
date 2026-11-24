@@ -1,4 +1,4 @@
--- F-23-46 (a), migration 664: sổ tệp stored_file. Luật: chỉ lưu khoá và cờ; RLS bật, không ai ghi trực tiếp; chặn nộp trùng bằng mã băm (thiết kế R2 mục 5);
+-- F-23-46 (a), migration 664: sổ tệp stored_file. Luật: chỉ lưu khoá và cờ; RLS bật, không ai ghi trực tiếp; chặn nộp trùng bằng mã băm (thiết kế mục nén ảnh);
 -- loại tệp và trạng thái hợp lệ; tham số mặc định (file_retention_days 90, sau Dừng học 30, dọn chạy thử bật). Dữ liệu giả; khoá ngoại tắt bằng replica chỉ để thử ràng buộc.
 begin;
 create extension if not exists pgtap with schema extensions;
@@ -33,7 +33,7 @@ create temp table ids as select gen_random_uuid() as branch, gen_random_uuid() a
 grant select on ids to public;
 create function pg_temp.ins(p_kind text, p_sha text, p_mime text default 'image/webp', p_student boolean default true, p_status text default 'DANG_DUNG') returns text language plpgsql as $$
 begin
-  return pg_temp.err(format($f$insert into app.stored_file (r2_key, sha256, kind, branch_id, class_id, assignment_id, student_id, mime_type, size_bytes, delete_after, status)
+  return pg_temp.err(format($f$insert into app.stored_file (storage_key, sha256, kind, branch_id, class_id, assignment_id, student_id, mime_type, size_bytes, delete_after, status)
     select gen_random_uuid()::text, %L, %L, branch, cls, asg, %s, %L, 150000, current_date + 90, %L from ids$f$,
     p_sha, p_kind, case when p_student then 'stu' else 'null::uuid' end, p_mime, p_status));
 end $$;
