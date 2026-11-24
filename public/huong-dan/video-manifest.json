@@ -1,0 +1,10 @@
+{
+  "videos": {
+    "huong-dan-dang-nhap": { "url": "/huong-dan/video/huong-dan-dang-nhap.mp4" },
+    "huong-dan-danh-sach": { "url": "/huong-dan/video/huong-dan-danh-sach.mp4" },
+    "huong-dan-du-lieu-mau": { "url": "/huong-dan/video/huong-dan-du-lieu-mau.mp4" },
+    "huong-dan-ghi-chu": { "url": "/huong-dan/video/huong-dan-ghi-chu.mp4" },
+    "huong-dan-ke-toan-phieu-thu": { "url": "/huong-dan/video/huong-dan-ke-toan-phieu-thu.mp4" },
+    "huong-dan-tu-van-tong-quan": { "url": "/huong-dan/video/huong-dan-tu-van-tong-quan.mp4" }
+  }
+}
