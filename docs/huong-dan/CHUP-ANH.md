@@ -15,7 +15,7 @@ Lệnh làm lần lượt: bật Supabase local (nếu chưa), dựng lại DB t
 ## Kết quả
 Ảnh lưu **ngoài repo**: `~/VanPhongAI/hmt-ca/ANH-HUONG-DAN/<vai>/<ten>.png` (đổi thư mục gốc bằng biến `ANH_OUT`). Không commit ảnh. Máy tính rộng 1280 px; cổng Giáo viên cỡ iPhone 390 × 844.
 
-Vai và tài khoản giả (xem `scripts/seed-users.ts`): `sale` (sale.cs5), `cskh` (cskh.cs5), `ke-toan` (ketoan.cs5, có bước hai bước giả), `truong-co-so` (truongcs.cs5), `giao-vien` (gv.cs5), `quan-tri` (quantri.cs5).
+Vai và tài khoản giả (xem `scripts/seed-users.ts`): `sale` (sale.cs5), `cskh` (cskh.cs5), `ke-toan` (ketoan.cs5; xác thực hai bước chỉ áp cho Admin từ 24/11, Kế toán đăng nhập một bước), `truong-co-so` (truongcs.cs5), `giao-vien` (gv.cs5), `quan-tri` (quantri.cs5).
 
 Mỗi thư mục vai có `BAO-CAO.txt`: **ĐÃ CHỤP** (đúng màn), **XẤP XỈ** (chụp màn gần nhất, thường là danh sách hoặc bản ghi, vì hộp thoại hoặc bước cần dữ liệu riêng chưa mở tự động) và **LỖI** (không mở được màn). Chỗ xấp xỉ cần chụp tay hoặc bổ sung bước trong `e2e/chup-anh-ban-do.ts`.
 

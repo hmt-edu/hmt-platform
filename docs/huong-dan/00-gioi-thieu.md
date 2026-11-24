@@ -1,3 +1,12 @@
+---
+title: Giới thiệu hệ thống
+slug: bat-dau
+group: bat-dau
+no: 0
+order: 10
+portals: [crm]
+---
+
 # 0. Giới thiệu hệ thống HMT Platform
 
 Dành cho người mới: nhân viên, giáo viên, kế toán, quản lý cơ sở, quản trị. Đọc bài này trước, rồi sang bài của vai mình (xem mục «Hướng dẫn theo vai trò» ở menu trái). Bài này không dạy bấm nút; nó trả lời ba câu: hệ thống chạy trên gì, dữ liệu nối với nhau thế nào, và mỗi phần dùng để làm việc gì.

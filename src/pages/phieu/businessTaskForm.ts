@@ -278,7 +278,25 @@ export function classChoices(options: TaskOptions, enrollmentId: string) {
 export function holdEnrollmentChoices(options: TaskOptions, mode: HoldMode) {
   const running = new Set((options.holds ?? []).map((h) => h.enrollment_id));
   return options.enrollments.filter((x) =>
-    mode !== 'MOI' ? running.has(x.id) : x.status_code !== 'BAO_LUU',
+    mode !== 'MOI'
+      ? running.has(x.id)
+      : x.status_code !== 'BAO_LUU' && x.status_code !== WAITING_CLASS,
+  );
+}
+
+/** Ghi danh Chờ xếp lớp (chưa có lớp). */
+const WAITING_CLASS = 'CHO_XEP_LOP';
+
+/**
+ * Ghi danh nào được chọn ở phiếu loại này (D-23-50, D-23-51, anh chốt 24/11): chỉ phiếu Hoàn học phí, Dừng học
+ * và Chuyển phí nhận ghi danh Chờ xếp lớp; loại khác ẩn ngay trong hộp để không tạo, gửi duyệt rồi mới bị chặn ở bước Thực hiện.
+ */
+export function enrollmentSelectableFor(type: string, statusCode: string): boolean {
+  return (
+    statusCode !== WAITING_CLASS ||
+    type === 'HOAN_PHI' ||
+    type === 'DUNG_HOC' ||
+    type === 'CHUYEN_PHI'
   );
 }
 
