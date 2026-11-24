@@ -144,7 +144,6 @@ async function chayBai(
   console.log(`✔ ${ten}: ${ghi.length} bước → ${dir}`);
 }
 
-const nutTen = (ten) => (p) => p.getByRole('button', { name: ten, exact: true });
 /** Bản thử nghiệm có bước chống máy tự động (Turnstile) chặn đăng nhập bằng biểu mẫu khi chạy tự động: lấy phiên bằng API Auth (mật khẩu thật của tài khoản giả) rồi nạp vào trình duyệt. */
 const dangNhap = async (page) => {
   const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`, {
@@ -306,9 +305,7 @@ const BAI = {
         {
           chu: 'Bấm một dòng để mở bản ghi buổi',
           loc: (p) =>
-            p
-              .locator('main tbody tr', { hasText: /17\/11\/2026[\s\S]*K06-CB-S-003/ })
-              .first(),
+            p.locator('main tbody tr', { hasText: /17\/11\/2026[\s\S]*K06-CB-S-003/ }).first(),
           lam: async (p) => {
             await p
               .locator('main tbody tr', { hasText: /17\/11\/2026[\s\S]*K06-CB-S-003/ })
