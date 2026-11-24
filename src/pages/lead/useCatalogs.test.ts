@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { activeOptions, childOptions, filterOptions, type CatalogItem } from './useCatalogs';
+import {
+  activeOptions,
+  childOptions,
+  filterOptions,
+  optionsAppliesTo,
+  type CatalogItem,
+} from './useCatalogs';
 
 const item = (
   id: string,
@@ -88,5 +94,32 @@ describe('ô chọn danh mục một cấp', () => {
   it('mục Ngừng không hiện ở ô chọn mới, nhưng bản ghi cũ giữ giá trị đã lưu', () => {
     expect(values(activeOptions(all, 'SOURCE'))).toEqual(['FB']);
     expect(values(activeOptions(all, 'SOURCE', 'TT'))).toEqual(['FB', 'TT']);
+  });
+});
+
+describe('optionsAppliesTo (kênh hệ thống không chọn tay, D-23-38)', () => {
+  const channel = (code: string, applies_to: string[] | null): CatalogItem => ({
+    id: code,
+    catalog_code: 'TICKET_CHANNEL',
+    code,
+    name: code,
+    is_active: true,
+    parent_id: null,
+    requires_note: false,
+    applies_to,
+  });
+  const all = [
+    channel('ZALO', []),
+    channel('GOI_DIEN', null),
+    channel('PH_KHONG_DONG_Y', ['HE_THONG']),
+  ];
+  it('chỉ liệt kê mục để trống hoặc có đúng đối tượng', () => {
+    expect(optionsAppliesTo(all, 'TICKET_CHANNEL', 'TICKET_TAY').map((o) => o.value)).toEqual([
+      'ZALO',
+      'GOI_DIEN',
+    ]);
+    expect(optionsAppliesTo(all, 'TICKET_CHANNEL', 'HE_THONG').map((o) => o.value)).toContain(
+      'PH_KHONG_DONG_Y',
+    );
   });
 });
