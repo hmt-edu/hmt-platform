@@ -58,7 +58,9 @@ export const defaultSectionFor = (portal: GuidePortal): GuideSection => {
 
 /** Địa chỉ cũ (trước khi gộp menu) đổi sang mục mới, để liên kết đã gửi cho người dùng không chết. */
 export const GUIDE_SLUG_ALIASES: Record<string, string> = {
-  chung: 'bat-dau-nhanh',
+  chung: 'chung-dang-nhap',
+  'bat-dau-nhanh': 'chung-dang-nhap',
+  'thao-tac-co-ban': 'chung-danh-sach',
   sale: 'theo-vai-tu-van',
   'cham-soc-khach-hang': 'theo-vai-cskh',
   'ke-toan': 'theo-vai-ke-toan',
