@@ -1,11 +1,12 @@
-// HT-03 Chi tiết bài tập và HT-05 Kết quả bài (khung HT03_ds, _muon, _het_han, _tai, _loi; HT05_cham, _chua_xong, _tai, _loi).
-// Chỉ đọc. Nút Nộp bài (HT-04) ẩn vì kho tệp R2 chưa có (anh chốt 23/11: ẩn mọi ô đính kèm, nộp ảnh).
+// HT-03 Chi tiết bài tập, HT-04 Nộp bài (SubmitPanel) và HT-05 Kết quả bài (khung HT03_*, HT04_*, HT05_*).
+import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { errorOf } from '../../lib/db';
 import { formatDateTime } from '../../lib/datetime';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
+import { SubmitPanel } from './SubmitPanel';
 import { useChildren, usePortalAssignment } from './portalData';
 
 const BACK = (
@@ -19,6 +20,7 @@ export function StudentAssignmentPage() {
   const children = useChildren();
   const student = children.data?.[0];
   const query = usePortalAssignment(student?.id, id);
+  const [resubmitting, setResubmitting] = useState(false);
 
   if (children.isPending || (student !== undefined && query.isPending))
     return <Spinner label="Đang tải bài tập…" />;
@@ -47,6 +49,8 @@ export function StudentAssignmentPage() {
     );
 
   const { assignment: a, window_state: state, submission: sub, result, files } = query.data;
+  const canSubmit = query.data.can_submit;
+  const submitted = sub?.submitted_at != null;
   return (
     <div className="flex flex-col gap-4">
       {BACK}
@@ -74,6 +78,22 @@ export function StudentAssignmentPage() {
       </section>
       {sub?.submitted_at && (
         <p className="text-body">Em đã nộp lúc {formatDateTime(sub.submitted_at)}.</p>
+      )}
+      {canSubmit && (!submitted || resubmitting) && (
+        <SubmitPanel
+          studentId={student.id}
+          assignmentId={a.id}
+          isLate={state !== 'CON_HAN'}
+          resubmit={submitted}
+        />
+      )}
+      {canSubmit && submitted && !resubmitting && a.allow_resubmit && (
+        <div className="flex flex-col gap-1">
+          <p className="text-caption text-fg-muted">
+            Em nộp lại được cho tới khi giáo viên chấm. Chấm rồi thì bài bị khoá.
+          </p>
+          <Button onClick={() => setResubmitting(true)}>Nộp lại</Button>
+        </div>
       )}
       {state === 'QUA_HAN_KHONG_NHAN' && !sub?.submitted_at && (
         <Alert tone="warning">Bài đã quá hạn và không nhận bài muộn.</Alert>
