@@ -140,7 +140,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | CH3 | Menu, chọn cơ sở, đổi cổng, đăng xuất | tất cả | CHUNG-10, 25 | ✅ 01 §1.4–1.7 | menu-crm, chon-co-so, menu-tai-khoan | P1 |
 | CH4 | Danh sách: tìm, Filters, Group By, Favorites, cột, phân trang | tất cả | khuôn K03 | ✅ 02 §2.1–2.8 | danh-sach-*, video danh-sach | P1 |
 | CH5 | Bản ghi: mở, tạo, sửa, lưu; ghi chú; nhật ký | tất cả | K06, K07, CHUNG-22 | ✅ 02 §2.9–2.10 | ban-ghi-*, video ghi-chu | P1 |
-| CH6 | Tìm kiếm toàn hệ thống; thông báo | tất cả | CHUNG-11, 12 | ✅ 02 §2.2, §2.11 | thong-bao | P2 |
+| CH6 | Tìm kiếm toàn hệ thống; thông báo | tất cả | CHUNG-11, 12 | ✅ 02 §2.2, §2.11 và CH6 | thong-bao | P2 |
 | CH7 | Việc chờ tôi duyệt (gộp mọi loại) | BM, KT, AD | CHUNG-15 | ✅ 01 §1.6, 02 §2.12 | viec-cho-toi-duyet-* | P1 |
 | CH8 | Trang chủ theo vai trò | SA, CS, BM, KT | CHUNG-14 | ✅ theo từng vai | ke-toan-trang-chu, truong-co-so-trang-chu | P1 |
 | CH9 | Xuất file (có nhật ký); đính kèm tệp | có quyền | CHUNG-18, 21 | ❌ | — | P2 |
