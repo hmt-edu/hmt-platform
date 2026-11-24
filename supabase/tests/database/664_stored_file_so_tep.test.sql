@@ -1,5 +1,5 @@
 -- F-23-46 (a), migration 664: sổ tệp stored_file. Luật: chỉ lưu khoá và cờ; RLS bật, không ai ghi trực tiếp; chặn nộp trùng bằng mã băm (thiết kế mục nén ảnh);
--- loại tệp và trạng thái hợp lệ; tham số mặc định (file_retention_days 90, sau Dừng học 30, dọn chạy thử bật). Dữ liệu giả; khoá ngoại tắt bằng replica chỉ để thử ràng buộc.
+-- loại tệp và trạng thái hợp lệ; tham số mặc định (file_retention_days 60, sau Dừng học 30, dọn chạy thử bật). Dữ liệu giả; khoá ngoại tắt bằng replica chỉ để thử ràng buộc.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -21,12 +21,14 @@ select ok(not has_table_privilege('authenticated', 'app.stored_file', 'insert') 
 select ok(not has_table_privilege('anon', 'app.stored_file', 'select'), 'Luật RLS: khách chưa đăng nhập không đọc được sổ tệp');
 select is((select count(*)::int from pg_policies where schemaname = 'app' and tablename = 'stored_file' and cmd = 'SELECT'), 1, 'Luật đọc: một chính sách đọc theo quyền xem bài giao');
 
-select is((select value from app.setting_def where key = 'file_retention_days'), '90', 'Tham số: hạn giữ mặc định 90 ngày');
+select is((select value from app.setting_def where key = 'file_retention_days'), '60', 'Tham số: hạn giữ mặc định 60 ngày (anh chốt 24/11)');
 select is((select value from app.setting_def where key = 'file_retention_after_leave_days'), '30', 'Tham số: 30 ngày sau Dừng học');
 select is((select value from app.setting_def where key = 'file_cleanup_dry_run'), 'true', 'Tham số: việc dọn chạy thử lúc đầu');
 select is((select array_agg(value order by key) from app.setting_def where key in ('file_max_mb', 'file_max_count_per_upload', 'file_max_total_mb_per_upload')),
           array['10', '20', '50'], 'Tham số: giới hạn anh chốt 20 MB mỗi tệp, 10 tệp mỗi lần, 50 MB tổng');
 
+select is((select value from app.setting_def where key = 'file_storage_min_free_gb'), '3', 'Tham số: chặn mềm khi còn trống dưới 3 GB');
+select is((select count(*)::int from app.setting_def where key in ('file_storage_soft_limit_percent', 'file_storage_free_gb')), 0, 'Tham số cũ theo phần trăm đã bỏ');
 select is((select value from app.setting_def where key = 'file_log_keep_days'), '180', 'Tham số: giữ dòng sổ tệp đã xoá 180 ngày rồi dọn');
 select is((select count(*)::int from pg_indexes where schemaname = 'app' and tablename = 'stored_file' and indexname ~ '_(idx|uq)$'), 5,
           'Hiệu năng: chỉ giữ 5 chỉ mục cần (bài giao, bài nộp, chặn trùng, tới hạn, dọn dòng đã xoá), mỗi cái có lý do trong migration');
