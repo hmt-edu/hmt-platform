@@ -880,6 +880,78 @@ const BAI = {
       chung,
       3,
     ),
+  // QT8 «Nhập dữ liệu cũ» (Admin): bước 1 đến 6 của bài (bước 7 chỉ riêng loại Người dùng nên không quay); file mẫu tải về từ chính màn, KHÔNG bấm «Nạp thật» (chỉ xem trước), nên không ghi gì lên staging.
+  qt8: (b) => {
+    const tep = join(OUT, 'qt8', 'mau-nhap.csv');
+    return chayBai(
+      b,
+      'qt8',
+      vao('/crm/quan-tri/nguoi-dung'),
+      [
+        {
+          chu: 'Vào Quản trị → Nhập dữ liệu, tìm đúng loại trong bảng',
+          loc: (p) => p.getByRole('link', { name: 'Nhập dữ liệu', exact: true }),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/quan-tri/nhap-du-lieu`);
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Chưa có file: bấm «Tải file mẫu» ở dòng đó, điền theo file mẫu, lưu CSV UTF-8',
+          loc: (p) => p.getByRole('button', { name: /^Tải file mẫu/ }).first(),
+          lam: async (p) => {
+            mkdirSync(join(OUT, 'qt8'), { recursive: true });
+            const [dl] = await Promise.all([
+              p.waitForEvent('download'),
+              p
+                .getByRole('button', { name: /^Tải file mẫu/ })
+                .first()
+                .click(),
+            ]);
+            await dl.saveAs(tep);
+          },
+        },
+        {
+          chu: 'Bấm nút «Nhập …» ở dòng đó: hộp nhiều bước «Nhập … từ file»',
+          loc: (p) =>
+            p
+              .getByRole('button', { name: /^Nhập / })
+              .and(p.locator(':enabled'))
+              .first(),
+          lam: async (p) => {
+            await p
+              .getByRole('button', { name: /^Nhập / })
+              .and(p.locator(':enabled'))
+              .first()
+              .click();
+            await p.waitForTimeout(1800);
+          },
+        },
+        {
+          chu: 'Kéo file CSV vào khung, hoặc bấm «chọn file»',
+          loc: (p) => p.getByText('chọn file').first(),
+          lam: async (p) => {
+            await p.locator('input[type=file]').setInputFiles(tep);
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Bấm «Tiếp» để xem trước: chưa có gì được nạp ở bước này',
+          loc: (p) => p.getByRole('button', { name: 'Tiếp', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tiếp', exact: true }).click();
+            await p.waitForTimeout(3000);
+          },
+        },
+        {
+          chu: 'Xem kỹ dòng «Lỗi» và «Trùng»; hài lòng thì bấm «Nạp thật» (video không bấm)',
+          loc: (p) => p.getByRole('button', { name: 'Nạp thật', exact: true }),
+        },
+      ],
+      chung,
+      6,
+    );
+  },
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
