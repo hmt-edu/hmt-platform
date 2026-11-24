@@ -16,3 +16,9 @@ declare module 'virtual:huong-dan-muc-luc' {
   const index: import('./pages/huong-dan/frontmatter').GuideMeta[];
   export default index;
 }
+
+// Bảng tra mã lỗi HMT_* tự sinh từ supabase/migrations (scripts/vite-huong-dan-ma-loi.ts).
+declare module 'virtual:huong-dan-ma-loi' {
+  const codes: import('../scripts/vite-huong-dan-ma-loi').ErrorCodeEntry[];
+  export default codes;
+}
