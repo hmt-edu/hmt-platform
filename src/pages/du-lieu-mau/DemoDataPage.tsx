@@ -6,7 +6,13 @@ import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
 import { errorOf } from '../../lib/db';
 import { formatDateTime } from '../../lib/datetime';
-import { useCreateDemoSet, useDeleteDemoSet, useDemoAvailable, useDemoSets } from './useDemoData';
+import {
+  demoCreateErrorText,
+  useCreateDemoSet,
+  useDeleteDemoSet,
+  useDemoAvailable,
+  useDemoSets,
+} from './useDemoData';
 import type { DemoSet } from './useDemoData';
 
 /** Dữ liệu mẫu của tôi: tạo bộ dữ liệu giả cho cơ sở đang chọn, xem và xoá bộ. Chỉ có ở môi trường thử nghiệm. */
@@ -47,7 +53,10 @@ export function DemoDataPage() {
             setError(null);
             create.mutate(undefined, {
               onSuccess: () => toast({ tone: 'success', title: 'Đã tạo bộ dữ liệu mẫu' }),
-              onError: (e) => setError(errorOf(e).message),
+              onError: (e) => {
+                const err = errorOf(e);
+                setError(demoCreateErrorText(err.code, err.message));
+              },
             });
           }}
         >
