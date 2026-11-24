@@ -15,8 +15,10 @@ test.beforeEach(({}, testInfo) => {
 const TAG = `PHE${Date.now().toString(36).slice(-5).toUpperCase()}`;
 const PHONE = `0991${String(Date.now()).slice(-6)}`;
 const OTHER_PHONE = `0992${String(Date.now()).slice(-6)}`;
-const CODE = `PH${TAG}`;
-const OTHER_CODE = `PX${TAG}`;
+// Mã phụ huynh chỉ gồm chữ số sau PH (ràng buộc user_account.parent_code, migration 616).
+const DIGITS = String(Date.now()).slice(-9);
+const CODE = `PH${DIGITS}`;
+const OTHER_CODE = `PH${String(Number(DIGITS) + 1).padStart(9, '0')}`;
 const CHILD_A = `Em ${TAG} An`;
 const CHILD_B = `Em ${TAG} Bình`;
 const STRANGER = `Em ${TAG} Lạ`;
