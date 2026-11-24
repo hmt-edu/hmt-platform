@@ -419,6 +419,7 @@ const StudentAssignmentPage = lazyScreen(
 );
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
+const DemoDataPage = lazyScreen(() => import('../pages/du-lieu-mau/DemoDataPage'), 'DemoDataPage');
 const GuidePage = lazyScreen(() => import('../pages/huong-dan/GuidePage'), 'GuidePage');
 const HomePage = lazyScreen(() => import('../pages/HomePage'), 'HomePage');
 const DetailDemoPage = lazyScreen(() => import('../pages/dev/DetailDemoPage'), 'DetailDemoPage');
@@ -480,6 +481,7 @@ export const routes: RouteObject[] = [
           { index: true, element: <CrmHome /> },
           { path: 'huong-dan/:slug?', element: <GuidePage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: 'du-lieu-mau', element: <DemoDataPage /> },
           {
             path: 'lead',
             element: (
@@ -1276,6 +1278,7 @@ export const routes: RouteObject[] = [
           { path: 'buoi/:sessionId/cham-kiem-tra', element: <ExamGradingPage /> },
           { path: 'buoi/:id/diem-danh', element: <TeacherAttendancePage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: 'du-lieu-mau', element: <DemoDataPage /> },
           { path: '*', element: <NotFoundView /> },
         ],
       },
@@ -1294,6 +1297,7 @@ export const routes: RouteObject[] = [
           { path: 'ket-qua', element: <StudentResultsPage /> },
           { path: 'ket-qua/nhan-xet', element: <StudentReviewsPage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: 'du-lieu-mau', element: <DemoDataPage /> },
           { path: '*', element: <NotFoundView /> },
         ],
       },
@@ -1311,6 +1315,7 @@ export const routes: RouteObject[] = [
           { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
           { path: 'de-nghi', element: <PortalTabPage title="Đề nghị" stage={GD4} /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: 'du-lieu-mau', element: <DemoDataPage /> },
           { path: '*', element: <NotFoundView /> },
         ],
       },
