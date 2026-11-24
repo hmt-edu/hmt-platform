@@ -1,16 +1,14 @@
 ---
-id: ts2
-ma_luong: ts2
-ten: Nhập lead từ file CSV
-vai: [tu-van, cskh, truong-co-so]
-cong: crm
-phan_he: Tuyển sinh
-ma_man: [TS-04, QT-18]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ngay_kiem: 2026-11-24
-nguoi_viet: Code B
-di_thu: chờ Tester 2
+title: Nhập lead từ file CSV
+group: vai
+slug: tu-van-ts2
+order: 42
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts2
+screens: [TS-04, QT-18]
+checked: 2026-11-24
 ---
 
 # Nhập lead từ file CSV

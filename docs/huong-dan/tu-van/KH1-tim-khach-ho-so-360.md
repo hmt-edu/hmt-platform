@@ -1,14 +1,14 @@
 ---
-id: kh1
-ten: Tìm khách và xem hồ sơ phụ huynh, học sinh
-vai: [tu-van, cskh]
-phan_he: Khách hàng
-ma_man: [KH-01, KH-02, KH-04, KH-05]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ma_luong: kh1
-cong: crm
-nguoi_viet: Code B
+title: Tìm khách và xem hồ sơ phụ huynh, học sinh
+group: vai
+slug: tu-van-kh1
+order: 49
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: kh1
+screens: [KH-01, KH-02, KH-04, KH-05]
+checked: 2026-11-24
 ---
 
 # Tìm khách và xem hồ sơ phụ huynh, học sinh

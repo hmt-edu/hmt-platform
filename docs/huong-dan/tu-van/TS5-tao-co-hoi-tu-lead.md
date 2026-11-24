@@ -1,14 +1,14 @@
 ---
-id: ts5
-ten: Tạo cơ hội từ lead
-vai: [tu-van, cskh]
-phan_he: Tuyển sinh
-ma_man: [TS-02, TS-06]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ma_luong: ts5
-cong: crm
-nguoi_viet: Code B
+title: Tạo cơ hội từ lead
+group: vai
+slug: tu-van-ts5
+order: 44
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts5
+screens: [TS-02, TS-06]
+checked: 2026-11-24
 ---
 
 # Tạo cơ hội từ lead

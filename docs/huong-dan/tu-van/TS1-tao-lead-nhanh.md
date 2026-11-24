@@ -1,16 +1,14 @@
 ---
-id: ts1
-ma_luong: ts1
-ten: Tạo lead nhanh và xử lý cảnh báo trùng số điện thoại
-vai: [tu-van, cskh]
-cong: crm
-phan_he: Tuyển sinh
-ma_man: [TS-01, TS-03, TS-14]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ngay_kiem: 2026-11-24
-nguoi_viet: Code B
-di_thu: chờ Tester 2
+title: Tạo lead nhanh và xử lý cảnh báo trùng số điện thoại
+group: vai
+slug: tu-van-ts1
+order: 41
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts1
+screens: [TS-01, TS-03, TS-14]
+checked: 2026-11-24
 ---
 
 # Tạo lead nhanh và xử lý cảnh báo trùng số điện thoại

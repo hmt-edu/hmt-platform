@@ -1,14 +1,14 @@
 ---
-id: ts9
-ten: Lịch hẹn: tạo, dời, hoàn thành, huỷ
-vai: [tu-van, cskh]
-phan_he: Tuyển sinh
-ma_man: [TS-11, TS-13]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ma_luong: ts9
-cong: crm
-nguoi_viet: Code B
+title: Lịch hẹn: tạo, dời, hoàn thành, huỷ
+group: vai
+slug: tu-van-ts9
+order: 46
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts9
+screens: [TS-11, TS-13]
+checked: 2026-11-24
 ---
 
 # Lịch hẹn: tạo, dời, hoàn thành, huỷ

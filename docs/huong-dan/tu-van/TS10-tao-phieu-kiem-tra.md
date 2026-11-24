@@ -1,14 +1,14 @@
 ---
-id: ts10
-ten: Tạo phiếu kiểm tra từ cơ hội
-vai: [tu-van, cskh]
-phan_he: Tuyển sinh
-ma_man: [TS-08, TS-15, TS-16]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ma_luong: ts10
-cong: crm
-nguoi_viet: Code B
+title: Tạo phiếu kiểm tra từ cơ hội
+group: vai
+slug: tu-van-ts10
+order: 47
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts10
+screens: [TS-08, TS-15, TS-16]
+checked: 2026-11-24
 ---
 
 # Tạo phiếu kiểm tra từ cơ hội

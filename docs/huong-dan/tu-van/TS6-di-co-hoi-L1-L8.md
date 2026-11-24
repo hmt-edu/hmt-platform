@@ -1,14 +1,14 @@
 ---
-id: ts6
-ten: Đi cơ hội qua các giai đoạn L1 đến L8
-vai: [tu-van, cskh]
-phan_he: Tuyển sinh
-ma_man: [TS-08, TS-09]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ma_luong: ts6
-cong: crm
-nguoi_viet: Code B
+title: Đi cơ hội qua các giai đoạn L1 đến L8
+group: vai
+slug: tu-van-ts6
+order: 45
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts6
+screens: [TS-08, TS-09]
+checked: 2026-11-24
 ---
 
 # Đi cơ hội qua các giai đoạn L1 đến L8

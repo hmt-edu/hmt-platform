@@ -1,14 +1,14 @@
 ---
-id: ts11
-ten: Vòng đời phiếu kiểm tra
-vai: [tu-van, cskh]
-phan_he: Tuyển sinh
-ma_man: [TS-16, TS-17, GV-15]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ma_luong: ts11
-cong: crm
-nguoi_viet: Code B
+title: Vòng đời phiếu kiểm tra
+group: vai
+slug: tu-van-ts11
+order: 48
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts11
+screens: [TS-16, TS-17, GV-15]
+checked: 2026-11-24
 ---
 
 # Vòng đời phiếu kiểm tra

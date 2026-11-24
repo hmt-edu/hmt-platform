@@ -1,16 +1,14 @@
 ---
-id: ts3
-ma_luong: ts3
-ten: Chăm sóc lead, đổi giai đoạn C1–C4 và nhóm con
-vai: [tu-van, cskh]
-cong: crm
-phan_he: Tuyển sinh
-ma_man: [TS-01, TS-02]
-uu_tien: P1
-cap_nhat: 2026-11-24
-ngay_kiem: 2026-11-24
-nguoi_viet: Code B
-di_thu: chờ Tester 2
+title: Chăm sóc lead, đổi giai đoạn C1–C4 và nhóm con
+group: vai
+slug: tu-van-ts3
+order: 43
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: ts3
+screens: [TS-01, TS-02]
+checked: 2026-11-24
 ---
 
 # Chăm sóc lead, đổi giai đoạn C1–C4 và nhóm con
