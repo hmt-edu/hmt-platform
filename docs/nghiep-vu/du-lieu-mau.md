@@ -22,3 +22,8 @@ Thêm trên lead, opportunity, sales_order, student, class, class_session, ticke
 
 ## Đợt 2 (chưa làm)
 Chuỗi dữ liệu cố định, dừng ở trạng thái chờ duyệt; SĐT dải 0999 000 001–999, email `@example.invalid`, loại khỏi mọi gửi tin thật.
+
+### Đợt 2, mảnh lead và cơ hội (migration 655)
+- `app.demo_tag(bộ, loại, id)`: đặt `is_demo` và ghi `demo_data_item`; chỉ gọi từ hàm mẫu.
+- `app.demo_make_leads(bộ, cơ sở)`: 10 lead [MẪU] (giai đoạn C1 đến C4, nguồn lấy từ danh mục đang dùng) và 4 cơ hội [MẪU] (L1, L1, L2A, L4A) của cơ sở người tạo bộ; SĐT 0999 000 001-999 từ bộ đếm `DEMO_PHONE` (không tái dùng; hết dải báo `HMT_DEMO_HET_SO_DIEN_THOAI`). Chèn trực tiếp, không cần quyền tạo lead; mã cấp bằng `issue_crm_code`.
+- `app.create_demo_data_set` thêm một dòng gọi `demo_make_leads`.
