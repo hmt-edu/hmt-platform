@@ -14,7 +14,7 @@ cap_nhat: 2026-11-24
 **Ai làm:** Tư vấn, CSKH, Kế toán (ai xem được phiếu thu thì in được). **Màn:** Phiếu thu → mở phiếu → «In biên nhận».
 
 ## Trước khi bắt đầu, kiểm
-- [ ] **Ở CS5, Tư vấn tuyển sinh thu tiền và không đưa biên nhận in cho phụ huynh ở bước thu.** Chỉ in khi Trưởng cơ sở yêu cầu (ví dụ phụ huynh cần giấy xác nhận).
+- [ ] **Ở CS5, Tư vấn tuyển sinh thu tiền và không đưa biên nhận in cho phụ huynh ở bước thu.** [CẦN CHỐT: luật chỉ có «có bản in biên nhận» (R-TIEN-08); quy định «chỉ in khi Trưởng cơ sở yêu cầu» chưa có nguồn, chờ anh Trường chốt].
 - [ ] Máy tính nối được máy in, hoặc bạn chọn «Lưu thành PDF» trong hộp in.
 
 ## Cần nhớ

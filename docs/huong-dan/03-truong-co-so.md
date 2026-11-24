@@ -135,6 +135,7 @@ Mở **Buổi học** → bản ghi buổi; các nút ở đầu bản ghi theo 
 1. **Ghi danh** → mở ghi danh → **«Điều chỉnh giờ»**.
 2. Trong hộp «Điều chỉnh giờ»: nhập «Số giờ (+ thêm, − bớt)», chọn «Lý do», ghi «Ghi chú».
 3. Bấm **«Thêm dòng điều chỉnh»**. Kiểm ở **«Sổ giờ»**.
+- **Quyền:** Trưởng cơ sở chỉ **BỚT giờ** (số âm). **CỘNG giờ** (số dương) chỉ Kế toán làm (R-GIO-04); nhờ Kế toán nếu cần cộng. Mỗi lần có trần theo tham số «hours_adjust_max_per_call».
 
 - **Kết quả:** sổ giờ có dòng điều chỉnh mới; «Còn lại» đổi theo.
 - **Lỗi thường gặp:** lý do bắt buộc; nếu máy chủ từ chối thì câu lý do tiếng Việt hiện ngay trong hộp.

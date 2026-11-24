@@ -73,7 +73,7 @@ di_thu: chưa
 - **Dùng:** lớp Toán [MẪU] đã duyệt trong «Dữ liệu mẫu của tôi». Bộ mẫu **chưa có** em «Chờ xếp lớp» (3 em mẫu đã vào lớp); muốn tập thì lập một đơn không chọn lớp ở bài «Lập đơn hàng», chờ duyệt đơn và duyệt phiếu thu, em sẽ xuất hiện ở hàng chờ.
 
 ## Hỏi đáp
-- **Xếp lớp xong, phụ huynh có phải đóng thêm gì không?** Không; tiền đã đóng từ lúc lập đơn.
+- **Xếp lớp xong, phụ huynh có phải đóng thêm gì không?** Tuỳ đơn: đơn đã thu đủ thì không phải đóng thêm; đơn bật «cho học trước, đóng tiền sau» thì vẫn phải thu phần còn lại theo đơn.
 - **Em học Toán cả Đại và Hình có xếp riêng được không?** Được: chọn «Một lớp lẻ» cho từng ghi danh, hoặc «Theo nhóm lớp» cho cả hai.
 - **Vì sao lớp đúng mà vẫn mờ?** Đọc dòng lý do dưới tên lớp; thường là trùng giờ hoặc hết chỗ.
 

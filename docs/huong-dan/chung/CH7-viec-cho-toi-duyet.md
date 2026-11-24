@@ -21,7 +21,7 @@ screens: [CHUNG-15]
 
 ## Luật cần nhớ
 - Danh sách chỉ có việc **đến lượt vai của bạn**. Việc còn ở cấp duyệt trước hoặc đã qua cấp bạn thì chưa hiện.
-- **Người lập không tự duyệt việc của mình.** Việc do chính bạn lập sẽ chờ người khác cùng vai duyệt, nên không hiện ở danh sách của bạn.
+- **Người lập không tự duyệt việc của mình.** Với đơn hàng và phiếu thu, việc do bạn lập chờ quản lý trực tiếp của bạn duyệt (không phải người cùng vai), nên không hiện ở danh sách của bạn; Trưởng cơ sở tự lập thì qua cấp Trưởng cơ sở tự động.
 - **Không duyệt hàng loạt.** Mỗi việc mở ra, xem rồi mới duyệt.
 
 ## Các bước
@@ -50,10 +50,10 @@ screens: [CHUNG-15]
 
 ## Hỏi đáp
 - **Có duyệt một lượt nhiều việc được không?** Không, mỗi việc duyệt riêng.
-- **Sao việc tôi vừa lập không hiện ở đây?** Người lập không tự duyệt; việc đó chờ người khác.
+- **Sao việc tôi vừa lập không hiện ở đây?** Người lập không tự duyệt; đơn hàng, phiếu thu chờ quản lý trực tiếp duyệt (Trưởng cơ sở lập thì tự qua cấp của mình).
 - **Mục này có ở cổng Giáo viên không?** Không, chỉ ở cổng CRM.
 
 ## Tập trên dữ liệu mẫu
-Trong «Dữ liệu mẫu của tôi» (menu tài khoản) tạo một bộ mẫu. Phiếu mẫu do chính bạn tạo chờ **người khác** cùng cơ sở duyệt: nhờ một người cùng vai mở mục này để thử bước duyệt.
+Trong «Dữ liệu mẫu của tôi» (menu tài khoản) tạo một bộ mẫu. Phiếu mẫu do chính bạn tạo chờ **quản lý trực tiếp** của bạn duyệt: nhờ người đó mở mục này để thử bước duyệt.
 
 > Video (tạo một bộ, xem danh sách, xoá bộ): [VIDEO: huong-dan-du-lieu-mau]

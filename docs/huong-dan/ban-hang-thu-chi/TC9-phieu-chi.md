@@ -16,7 +16,7 @@ cap_nhat: 2026-11-24
 ## Cần nhớ
 - Phiếu chi **không tạo tay**: hệ thống tạo khi yêu cầu «Hoàn học phí» đã được duyệt đủ hai cấp (Trưởng cơ sở rồi Kế toán) và người tạo bấm «Thực hiện». Phiếu mới ở «Chờ chi».
 - Một người **không duyệt hai cấp** của cùng một phiếu nghiệp vụ.
-- Số tiền hoàn do máy chủ tính (giờ còn lại × giá sau chiết khấu, trừ phí xử lý). Bạn không nhập số.
+- Số tiền hoàn do máy chủ tính, bạn không nhập số. Hoàn toàn bộ (dừng hẳn): tiền đã đóng − giờ đã học × giá gốc (bỏ chiết khấu), trừ phí xử lý (R-TIEN-28). Hoàn một phần: giờ hoàn × giá sau chiết khấu, trừ phí xử lý (R-TIEN-31).
 
 ## Các bước
 1. Duyệt cấp Kế toán: mở phiếu **Hoàn học phí** đang chờ (từ «Việc chờ tôi duyệt»), kiểm số liệu, bấm **«Duyệt»**. Người tạo phiếu bấm **«Thực hiện»**: hệ thống tính hoàn, trừ giờ và tạo phiếu chi `PC-…` ở «Chờ chi».
@@ -36,7 +36,7 @@ cap_nhat: 2026-11-24
 | `HMT_HOAN_PHI_DANG_MO` | ghi danh đã có yêu cầu hoàn phí chưa xong | xử lý yêu cầu đó trước |
 | `HMT_HOAN_PHI_GIO_SAI` | giờ hoàn phải lớn hơn 0 và không quá giờ còn lại (không tính giờ tặng) | sửa số giờ ở phiếu |
 | `HMT_PHIEU_MOT_NGUOI_HAI_CAP` | một người không duyệt hai cấp | nhờ người khác duyệt cấp còn lại |
-| `HMT_KHONG_CO_QUYEN` | phiếu ở cấp Quản lý cơ sở: Kế toán không duyệt cấp này | chờ Trưởng cơ sở hoặc Admin |
+| `HMT_KHONG_CO_QUYEN` | phiếu ở cấp Quản lý cơ sở: Kế toán không duyệt cấp này | nhờ Trưởng cơ sở duyệt cấp này (Kế toán chỉ duyệt cấp Kế toán) |
 
 ## Hỏi đáp
 - **Phụ huynh muốn giữ tiền cho đơn sau?** Chọn giữ thành «số dư khách hàng» ở phiếu dừng học, không tạo phiếu chi (bài «Số dư khách hàng»).
