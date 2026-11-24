@@ -287,3 +287,6 @@ Lịch sử sau v45: v46 `1794297020-dadf` (GV-14 Tính chất tự chọn, ĐÃ
 
 ## Ticket xem gọn CSN-03: BỎ (anh bỏ 23/11)
 Bản «xem gọn» (CSN03_gon_*) đã gỡ khỏi canvas v58; 13 khung CSN03_* cũ bỏ nhãn «BẢN CŨ, KHÔNG LÀM» và là khung hiện hành. Ticket, Lead, Cơ hội, Đơn hàng, Phiếu thu giữ bố cục hiện tại. Ghi chú đợt 23/11: `GHI_CHU_V58_CHO_CODE.md` và `design/GHI_CHU_DOT_23_11.md`.
+
+## Nhập V61 (24/11/2026, 467 khung)
+Khác V58: `PH04_phuong_an` và `PH04_khong_dong_y` (V60: «Không đồng ý» mở hộp thoại nhập lý do, không còn màn riêng); thêm `CSN06c_hoan_phi_dt` (V61: Hoàn học phí điện thoại, chỉ màn xem phiếu Nháp). Chi tiết: `GHI_CHU_V61_CHO_CODE.md`.
