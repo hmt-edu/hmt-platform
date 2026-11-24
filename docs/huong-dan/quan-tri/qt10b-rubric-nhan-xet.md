@@ -11,7 +11,7 @@ cap_nhat: 2026-11-24
 # Rubric nhận xét và câu mẫu lời nhắn phụ huynh
 
 **Làm xong bạn có:** mô tả mức 1 đến 5 của từng tiêu chí đúng ý, hoặc bộ câu mẫu lời nhắn phụ huynh đúng ý, để giáo viên dùng khi chấm nhận xét.
-**Ai làm:** Admin (sửa); vai khác có quyền xem cấu hình đào tạo chỉ xem. **Màn:** menu **Cấu hình** → **Rubric nhận xét**.
+**Ai làm:** chỉ Admin xem và sửa; vai khác mở màn thấy «Bạn không có quyền xem màn này». **Màn:** menu **Cấu hình** → **Rubric nhận xét**.
 
 > Video: [VIDEO: qt10b]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
@@ -19,7 +19,7 @@ cap_nhat: 2026-11-24
 ⚠ **Đây là thao tác thật trên môi trường đang dùng.** Tập thì chỉ tập trên staging.
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Bạn là Admin. Vai khác không thấy nút «Sửa», «Tạo phiên bản».
+- [ ] Bạn là Admin. Vai khác không xem được màn này.
 - [ ] Bạn đã thống nhất với bộ môn về chữ mô tả mới (mô tả mức không được để trống).
 
 ## Luật cần nhớ (lời thường)
@@ -64,12 +64,14 @@ cap_nhat: 2026-11-24
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
 | «Mô tả mức không được để trống.» | có ô bị xoá trắng | Nhập chữ cho ô đó rồi lưu |
+| «Câu mẫu không được để trống.» | có câu mẫu bị xoá trắng | Nhập chữ cho câu đó rồi lưu |
 | «Phiên bản này đã ngừng, chỉ xem. Sửa ở phiên bản đang dùng.» | đang mở phiên bản cũ | Chọn phiên bản «đang dùng» |
 | «Không tải được rubric» / «Không tải được câu mẫu» | lỗi mạng | Bấm «Thử lại» |
 | «Bạn không có quyền xem màn này» | vai trò chưa được cấp | Báo Admin |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** `bgd.tap` (Admin) trên **staging**.
+- Admin đăng nhập lần đầu bị bắt cài xác thực hai bước trước khi dùng được `bgd.tap`.
 - **Dùng:** chọn môn Toán, sửa một ô mô tả, lưu, sau đó đổi lại đúng chữ cũ. Không tạo phiên bản mới nếu không cần, vì phiên bản không xoá được.
 - Chưa có trong bộ mẫu: môn riêng dành cho việc tập.
 

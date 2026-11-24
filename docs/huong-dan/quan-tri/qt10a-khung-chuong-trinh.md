@@ -11,7 +11,7 @@ cap_nhat: 2026-11-24
 # Khung chương trình và danh sách bài học
 
 **Làm xong bạn có:** một khung chương trình (môn, khối, cấp độ, năm học) với danh sách bài đúng thứ tự, sẵn để dùng khi tạo lớp.
-**Ai làm:** Admin (đủ quyền). Trưởng cơ sở chỉ xem. **Màn:** menu **Cấu hình** → **Khung chương trình**.
+**Ai làm:** Admin (đủ quyền). Trưởng cơ sở, CSKH, Giáo viên, Trợ giảng chỉ xem; vai khác không vào được. **Màn:** menu **Cấu hình** → **Khung chương trình**.
 
 > Video: [VIDEO: qt10a]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
@@ -19,7 +19,7 @@ cap_nhat: 2026-11-24
 ⚠ **Đây là thao tác thật trên môi trường đang dùng.** Tập thì chỉ tập trên staging.
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Bạn là Admin. Vai khác vào được màn nhưng không thấy nút «Tạo bản mới», «Thêm bài», «Ngừng»; màn bài học ghi «Bạn chỉ xem được khung chương trình. Admin sửa.»
+- [ ] Bạn là Admin. Trưởng cơ sở, CSKH, Giáo viên, Trợ giảng chỉ xem (không thấy nút «Tạo bản mới», «Thêm bài», «Ngừng»); vai khác không vào được. Màn bài học ghi «Bạn chỉ xem được khung chương trình. Admin sửa.»
 - [ ] Môn và Khối bạn cần đã có trong danh mục (xem bài danh mục). Môn hoặc khối đã ngừng thì không chọn được.
 - [ ] Bạn biết năm học (ví dụ 2026–2027) và cấp độ (Cơ bản hoặc Nâng cao).
 
@@ -62,7 +62,7 @@ cap_nhat: 2026-11-24
 | Nhầm gì | Sửa thế nào |
 |---|---|
 | Tạo nhầm khung | Không xoá được. Bấm «Ngừng» ở dòng khung đó |
-| Ngừng nhầm | Mở khung đó và dùng lại (quyền Sửa); nếu không thấy nút, báo người quản trị hệ thống |
+| Ngừng nhầm | Màn chưa có nút «Dùng lại». Bấm «Tạo bản mới», chọn đúng Môn, Khối, Cấp độ, Năm học, ở ô «Sao chép bài từ bản» chọn bản đã ngừng: được bản `-vN` đang dùng, đủ bài |
 | Tên bài sai | Sửa tại dòng, mã bài giữ nguyên |
 | Thứ tự sai | Dùng Lên/Xuống đưa về đúng chỗ |
 
@@ -79,6 +79,7 @@ cap_nhat: 2026-11-24
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** `bgd.tap` (Admin) trên **staging**.
+- Admin đăng nhập lần đầu bị bắt cài xác thực hai bước (xem bài Xác thực hai bước) trước khi dùng được `bgd.tap`.
 - **Dùng:** tạo khung cho một môn và năm học tập, thêm 3 bài, đổi thứ tự bài 3 lên đầu, rồi Tạo bản mới của đúng bộ đó và kiểm bản `-v2` có đủ 3 bài. Xong thì Ngừng cả hai khung tập.
 - Chưa có trong bộ mẫu: khung dành riêng cho việc tập (khung tạo ra sẽ nằm lại trên staging).
 
