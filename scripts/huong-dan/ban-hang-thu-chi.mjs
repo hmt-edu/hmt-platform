@@ -211,6 +211,23 @@ const taoDonDaTrinh = (browser) =>
     return { url: p.url(), ma };
   });
 
+/** Trưởng cơ sở duyệt đơn `url` (ngoài video). */
+const duyetDon = (browser, url) =>
+  chuanBi(browser, 'truongcs.cs5', async (p) => {
+    await p.goto(url);
+    await p.waitForLoadState('networkidle');
+    await nutTen('Duyệt')(p).click();
+    await p.getByRole('dialog').getByRole('button', { name: 'Duyệt', exact: true }).click();
+    await p.getByText('Đã duyệt đơn hàng.').first().waitFor({ timeout: 15000 });
+  });
+
+/** Sale tạo một đơn đã trình rồi Trưởng cơ sở duyệt: trả địa chỉ đơn «Đã duyệt». */
+const taoDonDaDuyet = async (browser) => {
+  const { url } = await taoDonDaTrinh(browser);
+  await duyetDon(browser, url);
+  return url;
+};
+
 const BAI = {
   // BH1: lập báo giá, gửi, in (luồng chính, 5 bước). Tạo thêm một báo giá mới ở cơ hội mẫu.
   bh1: (b) =>
@@ -370,6 +387,60 @@ const BAI = {
       ],
       { width: 1280, height: 720 },
       3,
+    );
+  },
+  // TC1: tạo phiếu thu từ đơn «Đã duyệt» và trình quản lý (4 bước). Tự tạo một đơn «Đã duyệt» trước khi quay.
+  tc1: async (b) => {
+    const don = await taoDonDaDuyet(b);
+    return chayBai(
+      b,
+      'tc1',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(don);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Ở đơn «Đã duyệt» bấm «Tạo phiếu thu»',
+          loc: nutTen('Tạo phiếu thu'),
+          lam: async (p) => {
+            await nutTen('Tạo phiếu thu')(p).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Ở hộp «Tạo phiếu thu»: kiểm «Số tiền», chọn «Hình thức», bấm «Tạo phiếu nháp»',
+          loc: (p) => p.getByRole('dialog'),
+          lam: async (p) => {
+            await p.getByRole('dialog').getByText('Chọn hình thức').click();
+            await p.getByRole('option', { name: 'Tiền mặt', exact: true }).click();
+            await p
+              .getByRole('dialog')
+              .getByRole('button', { name: 'Tạo phiếu nháp', exact: true })
+              .click();
+            await p
+              .getByText(/Đã tạo phiếu thu nháp/)
+              .first()
+              .waitFor({ timeout: 15000 });
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Trong phiếu, kiểm «Ngày nhận», «Người nhận tiền», «Cơ sở thu tiền», «Tài khoản nhận»',
+          loc: (p) => p.getByText('Ngày nhận').first(),
+        },
+        {
+          chu: 'Bấm «Trình quản lý»: phiếu thành «Đã gửi», chờ quản lý duyệt',
+          loc: nutTen('Trình quản lý'),
+          lam: async (p) => {
+            await nutTen('Trình quản lý')(p).click();
+            await p.waitForTimeout(3000);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      4,
     );
   },
 };
