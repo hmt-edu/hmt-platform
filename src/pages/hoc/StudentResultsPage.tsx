@@ -91,7 +91,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function ClassResult({ cls }: { cls: ResultClass }) {
+export function ClassResult({ cls }: { cls: ResultClass }) {
   const rate = homeworkRate(cls.homework);
   return (
     <section aria-label={cls.class_code} className="flex flex-col gap-3">

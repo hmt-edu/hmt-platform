@@ -417,6 +417,10 @@ const StudentAssignmentPage = lazyScreen(
   () => import('../pages/hoc/StudentAssignmentPage'),
   'StudentAssignmentPage',
 );
+const ParentResultsPage = lazyScreen(
+  () => import('../pages/ph/ParentResultsPage'),
+  'ParentResultsPage',
+);
 const ParentFeesPage = lazyScreen(() => import('../pages/ph/ParentFeesPage'), 'ParentFeesPage');
 const ParentOrderPage = lazyScreen(() => import('../pages/ph/ParentOrderPage'), 'ParentOrderPage');
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
@@ -1312,7 +1316,8 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { index: true, element: <ParentHomePage /> },
-          { path: 'ket-qua', element: <PortalTabPage title="Kết quả" stage={GD4} /> },
+          { path: 'ket-qua', element: <ParentResultsPage /> },
+          { path: 'ket-qua/nhan-xet', element: <ParentResultsPage /> },
           { path: 'hoc-phi', element: <ParentFeesPage /> },
           { path: 'hoc-phi/:orderId', element: <ParentOrderPage /> },
           { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
