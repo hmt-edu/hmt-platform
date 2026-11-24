@@ -433,9 +433,12 @@ const ParentRequestDetailPage = lazyScreen(
   () => import('../pages/ph/ParentRequestsPages'),
   'ParentRequestDetailPage',
 );
+const ParentSchedulePage = lazyScreen(
+  () => import('../pages/ph/ParentSchedulePage'),
+  'ParentSchedulePage',
+);
 const ParentFeesPage = lazyScreen(() => import('../pages/ph/ParentFeesPage'), 'ParentFeesPage');
 const ParentOrderPage = lazyScreen(() => import('../pages/ph/ParentOrderPage'), 'ParentOrderPage');
-const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
 const DemoDataPage = lazyScreen(() => import('../pages/du-lieu-mau/DemoDataPage'), 'DemoDataPage');
 const GuidePage = lazyScreen(() => import('../pages/huong-dan/GuidePage'), 'GuidePage');
@@ -447,8 +450,6 @@ const PatternPage = lazyScreen(() => import('../pages/dev/PatternPage'), 'Patter
 
 // Trang mẫu thành phần: chỉ có ở bản thử nghiệm, xem trước và local; bản chạy thật không có route này.
 const SHOW_PATTERNS = parseAppEnv(import.meta.env.VITE_APP_ENV) !== 'production';
-
-const GD4 = 'giai đoạn 4';
 
 export const routes: RouteObject[] = [
   {
@@ -1332,7 +1333,7 @@ export const routes: RouteObject[] = [
           { path: 'ket-qua/nhan-xet', element: <ParentResultsPage /> },
           { path: 'hoc-phi', element: <ParentFeesPage /> },
           { path: 'hoc-phi/:orderId', element: <ParentOrderPage /> },
-          { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
+          { path: 'lich', element: <ParentSchedulePage /> },
           { path: 'de-nghi', element: <ParentRequestsPage /> },
           { path: 'de-nghi/moi', element: <ParentRequestNewPage /> },
           { path: 'de-nghi/:ticketId', element: <ParentRequestDetailPage /> },

@@ -1,4 +1,4 @@
-# Từ điển thuật ngữ (mục 4)
+# 4. Từ điển thuật ngữ
 
 Dành cho nhân viên, giáo viên mới. Mỗi thuật ngữ có: **tên trên màn**, nghĩa ngắn, ví dụ, **nơi gặp** (nhóm menu trái của cổng CRM, trừ khi ghi khác). Sắp theo ABC. Ví dụ đều là dữ liệu giả. Xem thêm `README.md` (cách đọc bộ hướng dẫn).
 

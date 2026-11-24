@@ -1,4 +1,4 @@
-# 3. Hướng dẫn cho CSKH và vận hành lớp (cổng CRM)
+# 3b. Hướng dẫn cho CSKH và vận hành lớp (cổng CRM)
 
 Vai: chăm sóc khách hàng (CSKH) và vận hành lớp. Đọc `00-gioi-thieu.md` trước nếu bạn mới. Chữ trong dấu «…» là chữ trên màn thật; chỗ chèn ảnh ghi `[ẢNH: tên-kịch-bản]`, ảnh chụp sau trên bản thử nghiệm bằng tài khoản giả. Dữ liệu trong ví dụ là giả.
 

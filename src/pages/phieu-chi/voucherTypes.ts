@@ -57,6 +57,10 @@ export type VoucherRecord = {
     hours_refund: number;
     paid_amount: number;
     hours_used: number;
+    /** Tiền giờ đã học (giờ × giá gốc), máy chủ tính. */
+    used_amount: number;
+    /** Tiền gốc các lần hoàn trước (chỉ khi hoàn toàn bộ), máy chủ tính. */
+    prior_refund_amount: number;
     unit_price_base: number;
     unit_price_net: number;
     base_amount: number;
