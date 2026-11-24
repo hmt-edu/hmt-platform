@@ -4,6 +4,8 @@ Dành cho anh Trường, làm trên **trình duyệt**, từng thẻ nhỏ. Thi�
 
 **Nguyên tắc:** tài khoản Google giữ kho tệp là `[email vận hành]` (anh đã cấp quyền). Làm **hai lần**: lần 1 cho **staging**, lần 2 cho **chạy thật**; mỗi lần một dự án Cloud riêng, một thư mục riêng. Dự án, thư mục và khoá của hai môi trường không dùng chung. Nếu Google đòi **thẻ thanh toán** ở bất cứ bước nào: **dừng, báo Chat**.
 
+**Thứ tự:** làm trọn **staging** (thẻ 1 đến 9) trước; chạy thật làm sau, khi staging đã thử xong. Mỗi lần khoảng 20 đến 30 phút. **Không gửi khoá (client secret, refresh token) vào chat hay PR**: chỉ dán vào ô secret của Supabase/GitHub ở thẻ 8.
+
 Chỗ nào ghi «NHÃN» thì thay bằng `staging` hoặc `prod` tuỳ lần làm.
 
 ## Thẻ 1. Chuẩn bị tài khoản
@@ -54,28 +56,26 @@ Chỗ nào ghi «NHÃN» thì thay bằng `staging` hoặc `prod` tuỳ lần l�
 6. Ô «Refresh token» hiện chuỗi bắt đầu bằng `1//`. Chép vào ghi chú riêng cạnh hai giá trị trước. (Không thấy `Refresh token`: bấm ⚙, tích «Access type: Offline», làm lại từ bước 3.)
 7. Kết quả: ba giá trị trong ghi chú riêng: `client_id`, `client_secret`, `refresh_token`.
 
-## Thẻ 7. Tạo thư mục gốc
+## Thẻ 7. Thư mục gốc: KHÔNG tạo tay
 
-1. Vào `drive.google.com` (cùng tài khoản) > «+ Mới» > «Thư mục mới», tên `HMT-NHÃN` (`HMT-staging` hoặc `HMT-prod`), «Tạo».
-2. Mở thư mục, nhìn thanh địa chỉ: `drive.google.com/drive/folders/XXXXXXXX`. Phần `XXXXXXXX` là `folder_id`; chép vào ghi chú riêng.
-3. Lưu ý: với phạm vi `drive.file`, ứng dụng chỉ thấy thư mục nó tạo hoặc anh mở bằng ứng dụng. Nếu thử một tệp giả mà báo không thấy thư mục: **báo Chat**, Code sẽ cho Edge Function tự tạo thư mục gốc (đã nằm trong danh sách «CHƯA CHẮC» của thiết kế, mục 10).
-4. Kết quả: thư mục tồn tại, có `folder_id`.
+Với phạm vi `drive.file`, ứng dụng chỉ thấy thư mục **do chính nó tạo**; thư mục anh tạo tay trên Drive nhiều khả năng ứng dụng không ghi vào được (CHƯA CHẮC, Code sẽ thử). Vì vậy **không tạo thư mục tay**. Lần thử một tệp giả, Code cho Edge Function tự tạo thư mục `HMT-NHÃN` rồi báo `folder_id`; anh dán `DRIVE_ROOT_FOLDER_ID` ở thẻ 9. Bước tay còn lại ở thẻ này: không có.
 
 ## Thẻ 8. Dán bí mật
 
-Bốn giá trị: `client_id`, `client_secret`, `refresh_token`, `folder_id`. Tên bí mật (Code chốt khi dựng Edge Function, dự kiến): `DRIVE_CLIENT_ID`, `DRIVE_CLIENT_SECRET`, `DRIVE_REFRESH_TOKEN`, `DRIVE_ROOT_FOLDER_ID`.
+Ba giá trị lúc này: `client_id`, `client_secret`, `refresh_token`. Tên bí mật (khớp Edge Function ở PR #704): `DRIVE_CLIENT_ID`, `DRIVE_CLIENT_SECRET`, `DRIVE_REFRESH_TOKEN`. Tên thứ tư `DRIVE_ROOT_FOLDER_ID` thêm ở thẻ 9.
 
-**Staging** (lần 1): vào `supabase.com/dashboard` (tài khoản GitHub của TÀI KHOẢN CHỦ DỰ ÁN, organization HMT) > dự án `hmt-staging` > «Edge Functions» > «Secrets» (hoặc «Project Settings > Edge Functions») > «Add new secret», dán từng cặp tên và giá trị, bấm «Save». Nếu tài khoản này không phải của anh, nhờ Chat sắp xếp.
+**Staging** (lần 1): vào `supabase.com/dashboard` (tài khoản GitHub của TÀI KHOẢN CHỦ DỰ ÁN, organization HMT) > dự án `hmt-staging` > «Edge Functions» > «Secrets» (hoặc «Project Settings > Edge Functions») > «Add new secret», dán từng cặp tên và giá trị, bấm «Save». Dự án `hmt-staging` nằm ở tài khoản Supabase đăng nhập bằng GitHub của TÀI KHOẢN CHỦ DỰ ÁN; nếu anh không đăng nhập được tài khoản đó trên trình duyệt thì **dừng ở thẻ 8, báo Chat** để sắp xếp (không gửi khoá).
 
-**Chạy thật** (lần 2): chỉ làm trên trình duyệt, bằng tài khoản Supabase `[email chạy thật]` (organization HMT Prod) > dự án `hmt-prod` > Edge Functions > Secrets, dán bốn cặp. Bản sao thứ hai nếu quy trình deploy cần: GitHub `hmt-deploy` > «Settings» > «Secrets and variables» > «Actions» > «New repository secret», cùng bốn tên. Không dán ở đâu khác.
+**Chạy thật** (lần 2): chỉ làm trên trình duyệt, bằng tài khoản Supabase `[email chạy thật]` (organization HMT Prod) > dự án `hmt-prod` > Edge Functions > Secrets, dán ba cặp. Bản sao thứ hai nếu quy trình deploy cần: GitHub `hmt-deploy` > «Settings» > «Secrets and variables» > «Actions» > «New repository secret», cùng ba tên. Không dán ở đâu khác.
 
-Kết quả: danh sách Secrets hiện bốn tên (không hiện giá trị).
+Kết quả: danh sách Secrets hiện ba tên (không hiện giá trị).
 
-## Thẻ 9. Dọn và báo
+## Thẻ 9. Thử một tệp giả, dán mã thư mục, dọn
 
-1. Xoá ghi chú riêng chứa khoá khi đã dán xong (hoặc giữ ở trình quản lý mật khẩu, không để file thường).
-2. Báo Chat: «Xong staging» hoặc «Xong prod». Chat báo Code chạy **4 phép thử điểm chưa chắc** (thiết kế mục 10) bằng một tệp giả ở staging, kèm phép thử token staging không đọc được thư mục prod.
-3. Sau khi làm lần 2, cũng chạy phép thử: dùng token staging thử mở `HMT-prod`, phải bị từ chối.
+1. Báo Chat: «Xong thẻ 8 NHÃN» (không kèm khoá). Chat báo Code chạy phép thử một tệp giả: Edge Function tự tạo thư mục `HMT-NHÃN` trên Drive, Code gửi anh `folder_id` (chuỗi ngắn, không phải bí mật).
+2. Anh dán `DRIVE_ROOT_FOLDER_ID` = `folder_id` đó vào cùng ô Secrets như thẻ 8, bấm «Save».
+3. Code chạy **4 phép thử điểm chưa chắc** (thiết kế mục 10); lần chạy thật sau, Code thử dùng token staging mở thư mục prod: phải bị từ chối.
+4. Xoá ghi chú riêng chứa khoá khi đã dán xong (hoặc giữ ở trình quản lý mật khẩu, không để file thường).
 
 ## Về video hướng dẫn
 
