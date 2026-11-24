@@ -940,6 +940,90 @@ const BAI = {
       { width: 1280, height: 720 },
       4,
     ),
+  // Video KHỚP TỪNG BƯỚC bài TS6 (đi cơ hội, LUỒNG CHÍNH): 4 bước. Bước 2 chuyển THẬT cơ hội «[MẪU]» của sale.cs5 lên L2; bước 3 chỉ mở hộp L8 rồi đóng (không hoàn tác được nên không xác nhận).
+  ts6: (b) => {
+    const moCoHoi = async (p, chuoi) => {
+      await p.locator('main input').first().fill(chuoi);
+      await p.waitForTimeout(2500);
+      await p.locator('main tbody tr').first().click();
+      await p.waitForTimeout(2500);
+    };
+    return chayBai(
+      b,
+      'ts6',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/co-hoi`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Mở Cơ hội, mở cơ hội cần chăm',
+          loc: (p) => p.locator('main input').first(),
+          lam: (p) => moCoHoi(p, '[MẪU] Phụ huynh tập TS1'),
+        },
+        {
+          chu: 'Bấm giai đoạn phía trước trên thanh, chọn nhóm con nếu hộp hỏi, bấm «Chuyển giai đoạn»',
+          loc: (p) =>
+            p
+              .locator('main')
+              .getByText(/^L[2-4]$/)
+              .first(),
+          lam: async (p) => {
+            // chạy lại nhiều lần: bấm giai đoạn kế tiếp còn bấm được (L2, L3 rồi L4)
+            for (const n of ['L2', 'L3', 'L4']) {
+              const ok = await p
+                .locator('main')
+                .getByText(n, { exact: true })
+                .first()
+                .click({ timeout: 2500 })
+                .then(() => true)
+                .catch(() => false);
+              if (ok) break;
+            }
+            await p.waitForTimeout(1500);
+            const d = p.getByRole('dialog');
+            if (await d.getByRole('combobox').count()) {
+              await d.getByRole('combobox').first().click();
+              await p.getByRole('option').first().click();
+              await p.waitForTimeout(500);
+            }
+            await d.getByRole('button', { name: 'Chuyển giai đoạn', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Sang L8 «Đăng ký học» chỉ sau khi phụ huynh đã thanh toán: bấm L8, chọn nhóm con, tích xác nhận, bấm «Chuyển L8»',
+          loc: (p) => p.locator('main').getByText(/^L8$/).first(),
+          lam: async (p) => {
+            await p.locator('main').getByText(/^L8$/).first().click();
+            await p.waitForTimeout(2500);
+            await p.keyboard.press('Escape');
+            await p.waitForTimeout(800);
+
+            await p.goto(`${APP}/crm/co-hoi`);
+            await p.waitForLoadState('networkidle');
+            for (
+              let i = 0;
+              i < 6 && !(await p.locator('main tbody tr', { hasText: 'L8' }).count());
+              i++
+            ) {
+              await p.getByRole('button', { name: 'Trang sau' }).click();
+              await p.waitForTimeout(2000);
+            }
+            await p.locator('main tbody tr', { hasText: 'L8' }).first().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Lập đơn từ cơ hội L8: đơn chỉ lập được từ cơ hội ở L8',
+          loc: (p) => p.getByRole('button', { name: /Tạo đơn hàng/ }),
+        },
+      ],
+      { width: 1280, height: 720 },
+      4,
+    );
+  },
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
