@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { useDb } from '../../lib/db';
+import { useDb, toHmtError } from '../../lib/db';
 
 export type CatalogItem = {
   id: string;
@@ -165,7 +165,7 @@ export function useLeadCatalogs(): LeadCatalogs {
         .select('id, catalog_code, code, name, is_active, parent_id, requires_note, applies_to')
         .in('catalog_code', CATALOGS)
         .order('sort_order');
-      if (error) throw new Error(error.message);
+      if (error) throw toHmtError(error);
       return data ?? [];
     },
   });
@@ -178,7 +178,7 @@ export function useLeadCatalogs(): LeadCatalogs {
         .from('campaign')
         .select('id, name, is_active')
         .order('name');
-      if (error) throw new Error(error.message);
+      if (error) throw toHmtError(error);
       return data ?? [];
     },
   });

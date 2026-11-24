@@ -72,6 +72,7 @@ chặn đầu giờ thì nâng lên 30.
 Supabase `hmt-prod` > **Edge Functions** > **Secrets**, thêm:
 
 - `HMT_ALLOWED_ORIGINS` = `https://<tên-miền-chạy-thật>.pages.dev` (sau này thêm tên miền riêng, cách nhau dấu phẩy).
+  Không đặt `HMT_ALLOW_LOCAL_ORIGINS` ở chạy thật: biến này (`true`) chỉ có ở local (`config.toml`) và thử nghiệm, để Edge Function nhận nguồn `localhost`.
 - `HMT_SECRET_KEY` = một khoá secret riêng tạo ở **Project Settings** > **API Keys** > **Secret keys** (tên `hmt_prod_edge`,
   bắt đầu bằng `sb_secret_`). Để Function chuyển IP thật của người dùng sang Supabase Auth; thiếu thì mọi lần đăng nhập bị
   tính chung một IP và giới hạn theo IP chặn nhầm cả hệ thống.

@@ -3,6 +3,13 @@
 /** Loại gói tính theo giờ: có môn và khối, mã = Loại-Môn-Khối (hoặc Loại-Môn-KhốiđầuKhốicuối). Dịch vụ, tài liệu: mã Loại-TÊN. */
 const HOUR_TYPES = ['LC', 'VIP', 'VNN', 'KR'];
 
+/** Làm sạch chữ tìm trước khi ghép vào bộ lọc `.or()` của PostgREST: bỏ ký tự có nghĩa trong cú pháp lọc và ký tự thay thế của `ilike`. */
+export const sanitizeSearchTerm = (raw: string) =>
+  raw
+    .replace(/[%,()"'\\*:]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
 export const isHourType = (type: string) => HOUR_TYPES.includes(type);
 
 export type PackageDraft = {
