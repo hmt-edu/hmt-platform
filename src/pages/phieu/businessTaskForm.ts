@@ -288,11 +288,16 @@ export function holdEnrollmentChoices(options: TaskOptions, mode: HoldMode) {
 const WAITING_CLASS = 'CHO_XEP_LOP';
 
 /**
- * Ghi danh nào được chọn ở phiếu loại này (D-23-50, anh chốt 24/11): chỉ phiếu Hoàn học phí và Dừng học
- * nhận ghi danh Chờ xếp lớp; loại khác ẩn ngay trong hộp để không tạo, gửi duyệt rồi mới bị chặn ở bước Thực hiện.
+ * Ghi danh nào được chọn ở phiếu loại này (D-23-50, D-23-51, anh chốt 24/11): chỉ phiếu Hoàn học phí, Dừng học
+ * và Chuyển phí nhận ghi danh Chờ xếp lớp; loại khác ẩn ngay trong hộp để không tạo, gửi duyệt rồi mới bị chặn ở bước Thực hiện.
  */
 export function enrollmentSelectableFor(type: string, statusCode: string): boolean {
-  return statusCode !== WAITING_CLASS || type === 'HOAN_PHI' || type === 'DUNG_HOC';
+  return (
+    statusCode !== WAITING_CLASS ||
+    type === 'HOAN_PHI' ||
+    type === 'DUNG_HOC' ||
+    type === 'CHUYEN_PHI'
+  );
 }
 
 /** Bảo lưu đang chạy của một ghi danh (để gia hạn); không có thì null. */

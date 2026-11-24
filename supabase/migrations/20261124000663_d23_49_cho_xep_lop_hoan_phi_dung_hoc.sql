@@ -349,8 +349,8 @@ begin
     end if;
     if p_type = 'CHUYEN_PHI' then
       -- CS-10 (anh chốt 23:17, R-GD-10 mục 9): ghi danh cũ phải còn hiệu lực; phụ huynh nhận số dư tuỳ chọn (anh chị em), trống thì giữ ở phụ huynh của ghi danh.
-      -- D-23-50: Chuyển phí chưa cho ghi danh Chờ xếp lớp (chờ anh Trường chốt): giữ danh sách cũ.
-      if v_enr.status_code not in ('DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
+      -- D-23-51 (anh chốt 24/11 15:41): Chuyển phí nhận cả ghi danh Chờ xếp lớp.
+      if v_enr.status_code not in ('CHO_XEP_LOP', 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
         perform app.raise_error('HMT_PHIEU_DU_LIEU_SAI', 'Ghi danh này không còn hiệu lực để chuyển phí.');
       end if;
       if nullif(p_payload ->> 'to_parent_id', '') is not null
@@ -450,8 +450,8 @@ begin
   end if;
   -- Luật trạng thái: ghi danh còn hiệu lực lúc tạo và lúc trình duyệt (sau khi thực hiện, ghi danh đổi trạng thái nên không kiểm lại).
   v_status_check := tg_op = 'INSERT' or new.status_code = 'CHO_DUYET';
-  -- D-23-50: chỉ phiếu Hoàn học phí và Dừng học nhận ghi danh Chờ xếp lớp (anh chốt 24/11); Bảo lưu, Chuyển lớp, Chuyển phí... giữ danh sách cũ để không tạo, gửi duyệt rồi mới bị chặn ở bước Thực hiện.
-  if v_status_check and e.status_code not in (case when new.task_type in ('HOAN_PHI', 'DUNG_HOC') then 'CHO_XEP_LOP' else 'DA_XEP_LOP' end, 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
+  -- D-23-50, D-23-51: trigger này chỉ phục vụ Hoàn học phí, Dừng học, Chuyển phí: cả ba nhận ghi danh Chờ xếp lớp (anh chốt 24/11); loại phiếu khác do app.ticket_task_check_waiting_enrollment chặn.
+  if v_status_check and e.status_code not in ('CHO_XEP_LOP', 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
     perform app.raise_error('HMT_PHIEU_DU_LIEU_SAI', 'Ghi danh này không còn hiệu lực.');
   end if;
   if tg_op = 'INSERT' then
@@ -544,7 +544,7 @@ begin
   );
 end;
 $$;-- D-23-50: app.ticket_task_check_waiting_enrollment: phiếu Bảo lưu, Chuyển lớp, Đổi lịch... KHÔNG nhận ghi danh «Chờ xếp lớp» (chưa có lớp; chỉ Hoàn học phí và Dừng học nhận, anh chốt 24/11).
--- Báo NGAY lúc tạo và lúc gửi duyệt thay vì chờ bước Thực hiện. NỘI BỘ (trigger). Lỗi: HMT_PHIEU_DU_LIEU_SAI. Hoàn học phí, Dừng học, Chuyển phí do trigger phạm vi (ticket_task_check_scope) kiểm.
+-- Báo NGAY lúc tạo và lúc gửi duyệt thay vì chờ bước Thực hiện. NỘI BỘ (trigger). Lỗi: HMT_PHIEU_DU_LIEU_SAI. Hoàn học phí, Dừng học, Chuyển phí (nhận Chờ xếp lớp) do trigger phạm vi (ticket_task_check_scope) kiểm.
 create or replace function app.ticket_task_check_waiting_enrollment()
 returns trigger
 language plpgsql
@@ -579,4 +579,52 @@ create trigger ticket_task_kiem_cho_xep_lop
   before insert or update of status_code on app.ticket_task
   for each row execute function app.ticket_task_check_waiting_enrollment();
 
+
+-- app.apply_fee_transfer: Thực hiện Chuyển phí (R-TIEN-28, R-GD-16, R-GD-10). D-23-51: thêm CHO_XEP_LOP vào tình trạng ghi danh được phép; không đổi gì khác (bản mới nhất là migration 567).
+create or replace function app.apply_fee_transfer(p_enrollment_id uuid, p_to_parent_id uuid, p_reason_code text, p_note text default null, p_ticket_ref text default null)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  e app.enrollment;
+  v jsonb;
+  v_hours numeric;
+  v_amount bigint;
+  v_parent uuid;
+  v_id uuid;
+begin
+  select * into e from app.enrollment where id = p_enrollment_id for update;
+  if e.id is null then
+    perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy ghi danh.');
+  end if;
+  if e.status_code not in ('CHO_XEP_LOP', 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
+    perform app.raise_error('HMT_CHUYEN_PHI_GHI_DANH_SAI', 'Ghi danh này không còn hiệu lực để chuyển phí.');
+  end if;
+  perform app.assert_catalog_code_active('TRANSFER_REASON', p_reason_code);
+  v_parent := coalesce(p_to_parent_id, e.parent_id);
+  if not exists (select from app.parent where id = v_parent) then
+    perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy phụ huynh nhận số dư.');
+  end if;
+  -- Luật R-TIEN-28, R-GD-16: tiền còn = giờ mua còn lại × giá sau chiết khấu chụp trên dòng đơn lúc mua; giờ tặng không thành tiền.
+  v := app.compute_stop_balance(e.id);
+  v_hours := (v ->> 'hours_left')::numeric;
+  v_amount := (v ->> 'balance_amount')::bigint;
+  if v_hours > 0 then
+    insert into app.hour_ledger (enrollment_id, branch_id, entry_type, hours, reason_code, note, source_ref)
+    values (e.id, e.branch_id, 'DIEU_CHINH', -v_hours, 'KHAC', 'Chuyển phí, giữ số dư', 'FEE-' || coalesce(nullif(btrim(p_ticket_ref), ''), e.id::text));
+  end if;
+  update app.enrollment_class set end_date = greatest(current_date, start_date), end_reason = 'DUNG'
+   where enrollment_id = e.id and end_date is null;
+  update app.enrollment set status_code = 'DUNG' where id = e.id;
+  if v_amount > 0 then
+    insert into app.customer_balance_entry (parent_id, student_id, branch_id, entry_type, amount, entry_date, enrollment_id, source_ref, note)
+    values (v_parent, e.student_id, e.branch_id, 'TU_CHUYEN_PHI', v_amount, (now() at time zone 'Asia/Ho_Chi_Minh')::date, e.id,
+            'FEE-' || coalesce(nullif(btrim(p_ticket_ref), ''), e.id::text), coalesce(nullif(btrim(p_note), ''), 'Chuyển phí, giữ thành số dư'))
+    returning id into v_id;
+  end if;
+  return v_id;
+end;
+$$;
 select set_config('hmt.migration', '', false);

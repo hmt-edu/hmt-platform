@@ -668,9 +668,8 @@ select is(pg_temp.hrs(pg_temp.d2b()), 0.00::numeric, 'D-23-49 Đúng: sổ giờ
 -- ================= D-23-50 (migration 663 sửa): chỉ Hoàn học phí và Dừng học nhận ghi danh Chờ xếp lớp; loại khác chặn ngay lúc tạo và lúc gửi duyệt =================
 create temp table tk52 (j jsonb);
 create temp table tk53 (j jsonb);
-create temp table tk54 (j jsonb);
 create temp table tt53 (j jsonb);
-grant all on tk52, tk53, tk54, tt53 to public;
+grant all on tk52, tk53, tt53 to public;
 select pg_temp.sudo($$update app.enrollment set status_code = 'CHO_XEP_LOP' where id = pg_temp.d2a()$$); -- dữ liệu thử: đưa ghi danh về Chờ xếp lớp
 select pg_temp.sudo($$update app.enrollment set status_code = 'DANG_HOC' where id = pg_temp.d2b()$$);
 select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select m, id, true from app.branch, (values ('BAO_LUU')) v (m) where code = 'CS1' on conflict (module_code, branch_id) do update set enabled = true$$);
@@ -681,10 +680,6 @@ insert into tk53 select app.create_ticket(jsonb_build_object('ticket_type', 'DN'
   'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_01', 'parent_id', pg_temp.d2bpar(), 'student_id', pg_temp.d2bstu()));
 select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk52), 'BAO_LUU', 'Gia đình bận', jsonb_build_object('enrollment_id', pg_temp.d2a(), 'months', 3, 'reason_code', 'BAN_THI'))$$),
   'HMT_PHIEU_DU_LIEU_SAI', 'D-23-50 Chặn lúc tạo: phiếu Bảo lưu không nhận ghi danh Chờ xếp lớp');
-insert into tk54 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Chuyển phí Chờ xếp lớp', 'description', 'Mô tả giả',
-  'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_02', 'parent_id', pg_temp.d2par(), 'student_id', pg_temp.d2stu()));
-select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk54), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d2a(), 'reason_code', 'CHUYEN_NOI_O'))$$),
-  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-50 Chặn lúc tạo: phiếu Chuyển phí chưa nhận ghi danh Chờ xếp lớp (chờ anh chốt)');
 -- Gửi duyệt: phiếu Bảo lưu tạo khi ghi danh Đang học; ghi danh về Chờ xếp lớp rồi mới gửi duyệt thì bị chặn.
 insert into tt53 select app.create_ticket_task((select (j ->> 'id')::uuid from tk53), 'BAO_LUU', 'Gia đình bận', jsonb_build_object('enrollment_id', pg_temp.d2b(), 'months', 3, 'reason_code', 'BAN_THI'));
 select ok((select (j ->> 'id') is not null from tt53), 'D-23-50 Đúng: phiếu Bảo lưu tạo được khi ghi danh Đang học');
@@ -694,6 +689,34 @@ select is(pg_temp.err($$select app.submit_ticket_task((select (j ->> 'id')::uuid
 -- Hộp tạo phiếu: danh sách chung vẫn có ghi danh Chờ xếp lớp kèm tình trạng để giao diện lọc theo loại phiếu.
 select ok(exists (select from jsonb_array_elements(app.get_task_form_options((select (j ->> 'id')::uuid from tk52)) -> 'enrollments') x where (x ->> 'id')::uuid = pg_temp.d2a() and x ->> 'status_code' = 'CHO_XEP_LOP'),
   'D-23-50 Đúng: tuỳ chọn biểu mẫu trả tình trạng ghi danh để giao diện lọc theo loại phiếu');
+
+-- ================= D-23-51 (migration 663): Chuyển phí nhận ghi danh Chờ xếp lớp (anh chốt 24/11 15:41; R-TIEN-28, R-GD-16, R-GD-10) =================
+create temp table tk54 (j jsonb);
+create temp table tt54 (j jsonb);
+create temp table tk55 (j jsonb);
+grant all on tk54, tt54, tk55 to public;
+select pg_temp.sudo($$update app.enrollment set status_code = 'CHO_XEP_LOP' where id = pg_temp.d2a()$$); -- dữ liệu thử: ghi danh về Chờ xếp lớp, cấp lại giờ
+select pg_temp.sudo($$insert into app.hour_ledger (enrollment_id, branch_id, entry_type, hours) select e.id, e.branch_id, 'CAP_MUA', 5 from app.enrollment e where e.id = pg_temp.d2a()$$);
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk54 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Chuyển phí Chờ xếp lớp', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_02', 'parent_id', pg_temp.d2par(), 'student_id', pg_temp.d2stu()));
+-- Chặn giữ nguyên: phụ huynh nhận ở cơ sở khác vẫn bị chặn (không mở thêm đường nhận phụ huynh bất kỳ).
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk54), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d2a(), 'reason_code', 'DOI_LICH_BAN', 'to_parent_id', pg_temp.other_branch_parent()))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-51 Chặn: Chuyển phí Chờ xếp lớp sang phụ huynh ở cơ sở khác vẫn bị chặn');
+insert into tt54 select app.create_ticket_task((select (j ->> 'id')::uuid from tk54), 'CHUYEN_PHI', 'Chuyển nhà', jsonb_build_object('enrollment_id', pg_temp.d2a(), 'reason_code', 'DOI_LICH_BAN'));
+select ok((select (j ->> 'id') is not null from tt54), 'D-23-51 Đúng: tạo được phiếu Chuyển phí cho ghi danh Chờ xếp lớp');
+select pg_temp.flow49((select (j ->> 'id')::uuid from tt54));
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt54)), 'DA_THUC_HIEN', 'D-23-51 Đúng: Chuyển phí cho ghi danh Chờ xếp lớp thực hiện được');
+select is(pg_temp.est(pg_temp.d2a()), 'DUNG', 'D-23-51 Đúng: ghi danh sang Dừng sau chuyển phí (luật hiện có)');
+select is(pg_temp.hrs(pg_temp.d2a()), 0.00::numeric, 'D-23-51 Đúng: giờ còn lại về 0 sau chuyển phí');
+select pg_temp.sudo($$create function pg_temp.d2fee() returns bigint language sql stable security definer as 'select coalesce(sum(amount), 0) from app.customer_balance_entry where enrollment_id = pg_temp.d2a() and entry_type = ''TU_CHUYEN_PHI'' and parent_id = pg_temp.d2par()'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.d2fee() to public$$);
+select ok(pg_temp.d2fee() > 0, 'D-23-51 Đúng: số tiền chuyển thành số dư của phụ huynh nhận (R-GD-10)');
+-- Ghi danh đã Dừng vẫn bị chặn.
+insert into tk55 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Chuyển phí đã Dừng', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_02', 'parent_id', pg_temp.d2par(), 'student_id', pg_temp.d2stu()));
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk55), 'CHUYEN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d2a(), 'reason_code', 'DOI_LICH_BAN'))$$),
+  'HMT_PHIEU_DU_LIEU_SAI', 'D-23-51 Chặn: ghi danh đã Dừng không tạo được phiếu Chuyển phí');
 
 select * from finish();
 rollback;

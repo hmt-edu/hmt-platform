@@ -264,13 +264,14 @@ describe('phiếu Hoàn học phí tạo từ ticket (CSN06c, L9)', () => {
   });
 });
 
-describe('D-23-50: ghi danh Chờ xếp lớp chỉ chọn được ở phiếu Hoàn học phí và Dừng học', () => {
-  it('Hoàn học phí và Dừng học nhận Chờ xếp lớp', () => {
+describe('D-23-50, D-23-51: ghi danh Chờ xếp lớp chỉ chọn được ở phiếu Hoàn học phí, Dừng học, Chuyển phí', () => {
+  it('Hoàn học phí, Dừng học, Chuyển phí nhận Chờ xếp lớp', () => {
     expect(enrollmentSelectableFor('HOAN_PHI', 'CHO_XEP_LOP')).toBe(true);
     expect(enrollmentSelectableFor('DUNG_HOC', 'CHO_XEP_LOP')).toBe(true);
+    expect(enrollmentSelectableFor('CHUYEN_PHI', 'CHO_XEP_LOP')).toBe(true);
   });
-  it('Bảo lưu, Chuyển lớp, Chuyển phí ẩn Chờ xếp lớp, tình trạng khác vẫn chọn được', () => {
-    for (const t of ['BAO_LUU', 'CHUYEN_LOP', 'CHUYEN_PHI']) {
+  it('Bảo lưu, Chuyển lớp ẩn Chờ xếp lớp, tình trạng khác vẫn chọn được', () => {
+    for (const t of ['BAO_LUU', 'CHUYEN_LOP']) {
       expect(enrollmentSelectableFor(t, 'CHO_XEP_LOP')).toBe(false);
       expect(enrollmentSelectableFor(t, 'DANG_HOC')).toBe(true);
     }
