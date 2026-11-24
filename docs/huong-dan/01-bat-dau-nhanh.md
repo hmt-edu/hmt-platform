@@ -1,3 +1,12 @@
+---
+title: Bắt đầu nhanh
+slug: bat-dau-nhanh
+group: bat-dau
+no: 1
+order: 20
+portals: [crm]
+---
+
 # 1. Bắt đầu nhanh
 
 Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giáo viên, trợ giảng, học sinh, phụ huynh. Chữ trong dấu «…» là chữ hiện trên màn.

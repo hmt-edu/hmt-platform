@@ -1,3 +1,11 @@
+---
+title: Từ điển thuật ngữ
+slug: tu-dien
+group: tra-cuu
+order: 120
+portals: [crm]
+---
+
 # Từ điển thuật ngữ
 
 Dành cho nhân viên, giáo viên mới. Mỗi thuật ngữ có: **tên trên màn**, nghĩa ngắn, ví dụ, **nơi gặp** (nhóm menu trái của cổng CRM, trừ khi ghi khác). Sắp theo ABC. Ví dụ đều là dữ liệu giả.
@@ -223,5 +231,5 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 
 ### Trưởng cơ sở
 - **Nghĩa:** người phụ trách một cơ sở: duyệt đơn, phiếu, ticket nhạy cảm và nhận thông báo khi phụ huynh không đồng ý phương án xử lý.
-- **Ví dụ:** Trưởng cơ sở duyệt đơn của nhân viên tuyển sinh.
+- **Ví dụ:** quản lý trực tiếp của nhân viên tuyển sinh (thường là Trưởng cơ sở) duyệt đơn của nhân viên đó.
 - **Nơi gặp:** mọi nhóm menu; nút «Duyệt».

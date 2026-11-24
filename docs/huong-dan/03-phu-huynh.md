@@ -1,3 +1,12 @@
+---
+title: Vai: Phụ huynh
+slug: theo-vai-phu-huynh
+group: vai
+order: 90
+role: Phụ huynh
+portals: [crm]
+---
+
 # Vai: Phụ huynh (cổng Phụ huynh)
 
 Vai: **Phụ huynh**. Cổng Phụ huynh dùng trên **điện thoại** là chính. Chữ trong dấu «…» là chữ hiện trên màn. Chưa biết đăng nhập thế nào thì đọc [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh), phần «Phụ huynh» (đăng nhập bằng mã phụ huynh, không bằng số điện thoại).
