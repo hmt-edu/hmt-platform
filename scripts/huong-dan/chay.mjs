@@ -943,9 +943,7 @@ const BAI = {
   // Video KHỚP TỪNG BƯỚC bài TS6 (đi cơ hội, LUỒNG CHÍNH): 4 bước. Bước 2 chuyển THẬT cơ hội «[MẪU]» của sale.cs5 lên L2; bước 3 chỉ mở hộp L8 rồi đóng (không hoàn tác được nên không xác nhận).
   ts6: (b) => {
     const moCoHoi = async (p, chuoi) => {
-      await p.locator('main input').first().fill(chuoi);
-      await p.waitForTimeout(2500);
-      await p.locator('main tbody tr').first().click();
+      await p.locator('main tbody tr', { hasText: chuoi }).first().click();
       await p.waitForTimeout(2500);
     };
     return chayBai(
@@ -959,7 +957,7 @@ const BAI = {
       [
         {
           chu: 'Mở Cơ hội, mở cơ hội cần chăm',
-          loc: (p) => p.locator('main input').first(),
+          loc: (p) => p.locator('main tbody tr', { hasText: '[MẪU] Phụ huynh tập TS1' }).first(),
           lam: (p) => moCoHoi(p, '[MẪU] Phụ huynh tập TS1'),
         },
         {
@@ -1096,6 +1094,85 @@ const BAI = {
           chu: 'Việc khác trong menu «Hành động»: «Gộp», «Tạo ticket», «Cấp tài khoản»',
           loc: (p) => p.getByRole('button', { name: 'Hành động', exact: true }),
           lam: menu,
+        },
+      ],
+      { width: 1280, height: 720 },
+      7,
+    );
+  },
+  // Video KHỚP TỪNG BƯỚC bài TS10 (tạo phiếu kiểm tra): 7 bước. Dùng cơ hội «[MẪU] Phụ huynh tập TS1» ở L5 (nút «Tạo lịch Test» chỉ bật từ L5); bước 7 TẠO THẬT một phiếu «[MẪU]» trên staging.
+  ts10: (b) => {
+    const hop = (p) => p.getByRole('dialog');
+    const chon = async (p, nhan) => {
+      await hop(p).getByLabel(nhan, { exact: true }).click();
+      await p.getByRole('option').first().click();
+      await p.waitForTimeout(500);
+    };
+    return chayBai(
+      b,
+      'ts10',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/co-hoi`);
+        await p.waitForLoadState('networkidle');
+        await p.waitForTimeout(2500);
+      },
+      [
+        {
+          chu: 'Mở Cơ hội, mở cơ hội cần test, bấm «Tạo lịch Test» ở đầu bản ghi',
+          loc: (p) => p.locator('main tbody tr', { hasText: '[MẪU] Phụ huynh tập TS1' }).first(),
+          lam: async (p) => {
+            await p
+              .locator('main tbody tr', { hasText: '[MẪU] Phụ huynh tập TS1' })
+              .first()
+              .click();
+            await p.waitForTimeout(2500);
+            await p.getByRole('button', { name: /Tạo lịch Test/ }).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Ô «Em»: chọn em cần test (hiện tên và năm sinh)',
+          loc: (p) =>
+            hop(p)
+              .getByText(/sinh 2014/)
+              .first(),
+        },
+        {
+          chu: 'Chọn lần lượt «Lớp», «Môn», «Hình thức test», «Cấp độ đề», «Cơ sở test»',
+          loc: (p) => hop(p).getByLabel('Lớp', { exact: true }),
+          lam: async (p) => {
+            for (const n of ['Lớp', 'Môn', 'Hình thức test', 'Cấp độ đề']) await chon(p, n);
+          },
+        },
+        {
+          chu: 'Đề test (không bắt buộc): gõ tên đề; Người phụ trách mặc định là «Bạn»',
+          loc: (p) => hop(p).getByLabel('Đề test', { exact: true }),
+          lam: async (p) => {
+            await hop(p).getByLabel('Đề test', { exact: true }).fill('[MẪU] Toán 9 cơ bản – đề 2');
+            await p.waitForTimeout(600);
+          },
+        },
+        {
+          chu: 'Chọn «Ngày test» và «Giờ test», có thể bấm nhanh ở hàng «Chọn nhanh ngày», «Chọn nhanh giờ»',
+          loc: (p) => hop(p).getByRole('button', { name: 'Ngày mai', exact: true }),
+          lam: async (p) => {
+            await hop(p).getByRole('button', { name: 'Ngày kia', exact: true }).click();
+            await hop(p).getByRole('button', { name: '09:00', exact: true }).click();
+            await p.waitForTimeout(800);
+          },
+        },
+        {
+          chu: 'Xem khối «Lịch hẹn nhắc (tạo cùng phiếu)»: hệ thống tự điền «Ngày nhắc» và «Giờ nhắc»',
+          loc: (p) => hop(p).getByText('Lịch hẹn nhắc (tạo cùng phiếu)'),
+        },
+        {
+          chu: 'Bấm «Tạo phiếu»: trang phiếu mới ở trạng thái Nháp',
+          loc: (p) => hop(p).getByRole('button', { name: 'Tạo phiếu', exact: true }),
+          lam: async (p) => {
+            await hop(p).getByRole('button', { name: 'Tạo phiếu', exact: true }).click();
+            await p.waitForTimeout(3500);
+          },
         },
       ],
       { width: 1280, height: 720 },
