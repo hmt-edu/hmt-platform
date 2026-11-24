@@ -67,7 +67,6 @@ async function chup(browser, ten, { account, viewport = DESKTOP, route, truoc, l
 }
 
 const KT = 'ketoan.cs5';
-const dongDau = async (p) => {
   await p.locator('main tbody tr').first().click();
   await p.waitForTimeout(2500);
 };
