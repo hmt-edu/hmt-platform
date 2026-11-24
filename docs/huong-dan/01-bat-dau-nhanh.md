@@ -13,6 +13,7 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
   4. **Admin và Kế toán** còn một bước «Xác thực hai bước» (xem 1.3).
 - **Kết quả:** vào đúng cổng của mình (CRM cho nhân viên, Giáo viên cho giáo viên và trợ giảng). Ai có nhiều cổng thì chọn cổng ở menu tài khoản (xem 1.6).
 - **Nếu gặp lỗi:** «Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa.» Màn «Không thể đăng nhập» nghĩa là tài khoản chưa dùng được: liên hệ quản trị viên.
+- **Video (15 giây):** [VIDEO: huong-dan-dang-nhap]
 - **Ảnh:** [ẢNH: dang-nhap-nhan-vien]
 
 ### Học sinh
