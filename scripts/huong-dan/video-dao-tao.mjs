@@ -476,6 +476,112 @@ const BAI = {
       chung,
       6,
     ),
+  // DT14 «Huỷ buổi và dời một buổi», phần HUỶ (Trưởng cơ sở): 5 bước (bước 4 là nhánh Học sinh huỷ nên chỉ chỉ vào ô «Ai huỷ»); HUỶ THẬT một buổi của lớp mẫu S-009 trên staging.
+  dt14: (b) =>
+    chayBai(
+      b,
+      'dt14',
+      vao('/crm/buoi-hoc'),
+      [
+        {
+          chu: 'Vào Đào tạo → Buổi học, mở buổi cần huỷ',
+          loc: (p) => p.getByPlaceholder(/Tìm mã lớp/),
+          lam: async (p) => {
+            await p.getByText('Xoá tất cả').first().click();
+            await p.waitForTimeout(1500);
+            await p.getByPlaceholder(/Tìm mã lớp/).fill('K06-CB-S-009');
+            await p.keyboard.press('Enter');
+            await p.waitForTimeout(2500);
+            await p.locator('main tbody tr').first().click();
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Bấm «Huỷ»: hộp «Huỷ buổi» có «Ai huỷ»',
+          loc: (p) => p.getByRole('button', { name: 'Huỷ', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Huỷ', exact: true }).click();
+            await p.getByRole('radiogroup', { name: 'Ai huỷ' }).waitFor();
+          },
+        },
+        {
+          chu: 'Chọn «Trung tâm huỷ», chọn «Lý do huỷ»: hiện dòng «Buổi thêm vào cuối lịch»',
+          loc: (p) => p.getByRole('combobox', { name: 'Lý do huỷ' }),
+          lam: async (p) => {
+            await p.getByText('Trung tâm huỷ (cả lớp nghỉ)').click();
+            await p.getByRole('combobox', { name: 'Lý do huỷ' }).click();
+            await p.waitForTimeout(600);
+            await p.getByRole('option').last().click();
+            await p.waitForTimeout(600);
+            const hop = p.locator('[role=dialog],[role=alertdialog]');
+            if (await hop.getByLabel('Ghi chú').count())
+              await hop.getByLabel('Ghi chú').fill('[MẪU] Tập huỷ buổi');
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Học sinh huỷ (lớp riêng): chọn lý do rồi chọn có tính phí hoặc không tính phí',
+          loc: (p) => p.getByRole('radiogroup', { name: 'Ai huỷ' }),
+        },
+        {
+          chu: 'Bấm «Xác nhận huỷ buổi»: hiện «Đã huỷ buổi»',
+          loc: (p) => p.getByRole('button', { name: 'Xác nhận huỷ buổi' }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Xác nhận huỷ buổi' }).click();
+            await p.waitForTimeout(3000);
+          },
+        },
+      ],
+      chung,
+      5,
+    ),
+  // DT14b «Dời một buổi» (Trưởng cơ sở): 3 bước; DỜI THẬT một buổi của lớp mẫu S-009.
+  dt14b: (b) =>
+    chayBai(
+      b,
+      'dt14b',
+      vao('/crm/buoi-hoc'),
+      [
+        {
+          chu: 'Mở buổi, bấm «Dời»: hộp «Dời buổi» có Ngày mới, Giờ bắt đầu, Giờ kết thúc, Phòng',
+          loc: (p) => p.getByPlaceholder(/Tìm mã lớp/),
+          lam: async (p) => {
+            await p.getByText('Xoá tất cả').first().click();
+            await p.waitForTimeout(1500);
+            await p.getByPlaceholder(/Tìm mã lớp/).fill('K06-CB-S-009');
+            await p.keyboard.press('Enter');
+            await p.waitForTimeout(2500);
+            await p.locator('main tbody tr').nth(1).click();
+            await cho(p);
+            await p.getByRole('button', { name: 'Dời', exact: true }).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Nhập ngày và giờ mới; giờ kết thúc phải sau giờ bắt đầu',
+          loc: (p) => p.getByLabel('Ngày mới'),
+          lam: async (p) => {
+            await p.getByLabel('Ngày mới').fill('2027-02-10');
+            await p.getByLabel('Giờ bắt đầu').fill('19:00');
+            await p.getByLabel('Giờ kết thúc').fill('20:30');
+            await p.waitForTimeout(800);
+          },
+        },
+        {
+          chu: 'Bấm «Xác nhận»: hiện «Đã dời buổi»',
+          loc: (p) => p.getByRole('dialog').getByRole('button', { name: 'Xác nhận', exact: true }),
+          lam: async (p) => {
+            await p
+              .getByRole('dialog')
+              .getByRole('button', { name: 'Xác nhận', exact: true })
+              .click();
+            await p.waitForTimeout(3000);
+          },
+        },
+      ],
+      chung,
+      3,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
