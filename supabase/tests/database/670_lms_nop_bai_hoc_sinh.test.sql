@@ -136,6 +136,9 @@ select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A5'), array[
 select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A4'), array[pg_temp.f('p1')])$$), 'HMT_KHONG_CO_QUYEN', 'Luật: bài không giao cho em này thì bị chặn');
 select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A1'), array[]::uuid[])$$), 'HMT_TEP_THIEU', 'Luật: không có ảnh nào thì không nộp');
 select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A1'), array(select gen_random_uuid() from generate_series(1, 21)))$$), 'HMT_TEP_QUA_NHIEU', 'R-LMS-04: quá 20 trang bị chặn');
+select pg_temp.sudo($$update app.setting_def set value = '3' where key = 'file_max_pages_per_submission'$$);
+select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A1'), array(select gen_random_uuid() from generate_series(1, 4)))$$), 'HMT_TEP_QUA_NHIEU', 'Tham số: đổi số trang tối đa thành 3 thì 4 trang bị chặn');
+select pg_temp.sudo($$update app.setting_def set value = '20' where key = 'file_max_pages_per_submission'$$);
 select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A1'), array[pg_temp.f('p1'), pg_temp.f('p1')])$$), 'HMT_TEP_KHONG_HOP_LE', 'Luật: ảnh lặp trong danh sách bị chặn');
 select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A1'), array[pg_temp.f('cho')])$$), 'HMT_TEP_KHONG_HOP_LE', 'Luật: ảnh chưa tải xong (CHO_TAI) không nộp được');
 select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A1'), array[pg_temp.f('x')])$$), 'HMT_TEP_KHONG_HOP_LE', 'Luật: ảnh của em khác không nộp được');
@@ -154,6 +157,12 @@ select pg_temp.sudo($$update app.feature_flag set enabled = false where module_c
 select is(pg_temp.err($$select app.lms_submit_assignment(pg_temp.a('A1'), array[pg_temp.f('p1')])$$), 'HMT_TINH_NANG_TAT', 'Công tắc: Học tập tắt ở cơ sở thì không nộp được');
 select pg_temp.sudo($$update app.feature_flag set enabled = true where module_code = 'HOC_TAP' and branch_id = pg_temp.cs('CS1')$$);
 select ok(not has_function_privilege('anon', 'app.lms_submit_assignment(uuid, uuid[])', 'execute'), 'Quyền: khách chưa đăng nhập không gọi được hàm nộp bài');
+
+-- Giới hạn cho màn nộp bài: học sinh đọc được 4 số qua hàm riêng; khách thì không.
+select pg_temp.claims(pg_temp.uid('hs1'));
+select is((select app.file_upload_limits() ->> 'max_pages'), '20', 'Giới hạn: học sinh đọc được số trang tối đa qua hàm riêng');
+select ok((select (app.file_upload_limits() ->> 'max_mb')::int >= 1), 'Giới hạn: học sinh đọc được cỡ tệp tối đa');
+select ok(not has_function_privilege('anon', 'app.file_upload_limits()', 'execute'), 'Quyền: khách không đọc giới hạn tệp');
 
 select * from finish();
 rollback;
