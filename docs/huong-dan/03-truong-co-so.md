@@ -1,4 +1,4 @@
-# 3. Hướng dẫn cho Trưởng cơ sở (cổng CRM)
+# 3d. Hướng dẫn cho Trưởng cơ sở (cổng CRM)
 
 Vai: **Trưởng cơ sở** (quản lý cơ sở). Đọc `00-gioi-thieu.md` trước nếu bạn mới. Chữ trong dấu «…» là chữ trên màn thật; chỗ chèn ảnh ghi `[ẢNH: tên-kịch-bản]`, ảnh chụp sau trên staging bằng tài khoản giả. Dữ liệu trong ví dụ là giả.
 

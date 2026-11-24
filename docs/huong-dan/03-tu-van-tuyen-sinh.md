@@ -1,4 +1,4 @@
-# 3. Hướng dẫn cho Tư vấn tuyển sinh (cổng CRM)
+# 3a. Hướng dẫn cho Tư vấn tuyển sinh (cổng CRM)
 
 Vai: **Tư vấn tuyển sinh** (trên màn hiện «Tư vấn tuyển sinh»; một số nhãn trong thiết kế còn ghi «Sale phụ trách», giữ nguyên). Đọc `00-gioi-thieu.md` trước nếu bạn mới. Chữ trong dấu «…» là chữ trên màn thật; chỗ chèn ảnh ghi `[ẢNH: tên-kịch-bản]`, ảnh chụp sau trên bản thử nghiệm bằng tài khoản giả. Dữ liệu trong ví dụ là giả.
 

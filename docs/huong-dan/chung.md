@@ -5,14 +5,14 @@
 ## 1. Đăng nhập
 - **Mục đích:** vào đúng cổng của mình (CRM cho nhân viên, Giáo viên cho giáo viên và trợ giảng).
 - **Ai làm:** mọi người dùng nhân viên. Học sinh có màn riêng («Chào em», «Đăng nhập để xem bài tập»).
-- **Các bước:** 1) Mở địa chỉ hệ thống, màn «Đăng nhập» mục «Dành cho nhân viên». 2) Nhập tên đăng nhập và «Mật khẩu». 3) Bấm đăng nhập. 4) **Admin và Kế toán** thêm bước «Xác thực hai bước»: mở ứng dụng xác thực trên điện thoại, nhập «Mã xác thực». Lần đầu phải thiết lập (quét mã hoặc nhập khoá «Không quét được? Nhập khoá này vào ứng dụng»).
+- **Các bước:** 1) Mở địa chỉ hệ thống, màn «Đăng nhập» mục «Dành cho nhân viên». 2) Nhập tên đăng nhập và «Mật khẩu». 3) Bấm đăng nhập. 4) **Chỉ Admin** thêm bước «Xác thực hai bước»: mở ứng dụng xác thực trên điện thoại, nhập «Mã xác thực». Lần đầu phải thiết lập (quét mã hoặc nhập khoá «Không quét được? Nhập khoá này vào ứng dụng»).
 - **Kết quả mong đợi:** vào đúng cổng; ai có nhiều cổng thì có màn chọn cổng.
 - **Lỗi thường gặp:** sai mật khẩu, tài khoản bị khoá, tài khoản không có đều hiện **cùng một câu báo** (để bảo mật); không tự đoán nguyên nhân, nhờ quản trị. «Quên mật khẩu?» → mục 2. **Ảnh:** [ẢNH: dang-nhap], [ẢNH: hai-buoc]
 
 ## 2. Quên và đổi mật khẩu
 - **Quên mật khẩu:** hiện chưa có tự đặt lại bằng email. 1) Ở màn đăng nhập bấm «Quên mật khẩu?». 2) Màn ghi «Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm.» Liên hệ quản trị viên (hoặc Trưởng cơ sở nhờ quản trị) để được đặt lại. 3) Đăng nhập bằng mật khẩu tạm được cấp; hệ thống bắt «Đổi mật khẩu lần đầu»: nhập «Mật khẩu mới» và «Nhập lại mật khẩu mới»; mục «Điều kiện mật khẩu» báo ngay (có chữ cái, có chữ số, đủ độ dài). Bấm «Quay lại đăng nhập» để trở về.
 - **Đổi mật khẩu lần đầu:** tài khoản mới hoặc vừa đặt lại bị yêu cầu «Đổi mật khẩu lần đầu» trước khi dùng.
-- **Lỗi thường gặp:** «Không thể đăng nhập» → gặp quản trị. Mất thiết bị hai bước (Admin, Kế toán) → nhờ Admin khác đặt lại. **Ảnh:** [ẢNH: quen-mat-khau], [ẢNH: doi-mat-khau-lan-dau]
+- **Lỗi thường gặp:** «Không thể đăng nhập» → gặp quản trị. Mất thiết bị hai bước (Admin) → nhờ Admin khác đặt lại. **Ảnh:** [ẢNH: quen-mat-khau], [ẢNH: doi-mat-khau-lan-dau]
 
 ## 3. Hồ sơ cá nhân và đăng xuất
 - **Các bước:** bấm tên mình ở góc trên (nút «Tài khoản: …»), chọn «Hồ sơ cá nhân» (xem «Họ tên», «Tên đăng nhập», «Cơ sở»; thông tin sai thì nhờ quản trị sửa; quản lý thiết bị xác thực, có hộp «Gỡ thiết bị xác thực?» với «Không gỡ»). Chọn «Đăng xuất» để thoát; muốn sang cổng khác chọn mục «Sang cổng …» trong cùng menu.

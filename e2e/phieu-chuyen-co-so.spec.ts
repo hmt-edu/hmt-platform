@@ -180,7 +180,7 @@ test('CSKH cơ sở đi: tạo phiếu Chuyển cơ sở từ ticket và trình 
   await expect(page).toHaveURL(/\/crm\/phieu-nghiep-vu\/[0-9a-f-]{36}$/);
   taskUrl = page.url();
   await page.getByRole('button', { name: 'Gửi duyệt' }).click();
-  await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
+  await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.', { exact: true })).toBeVisible();
 });
 
 test('Cơ sở đích KHÔNG thấy phiếu trước khi cơ sở đi duyệt', async ({ browser }) => {
@@ -214,12 +214,12 @@ test('Cơ sở đích nhận phiếu: chọn lớp mới và buổi bắt đầu
     await pickOption(page, page.getByRole('combobox', { name: 'Lớp ở cơ sở mới' }), destClassCode);
     await pickOption(page, page.getByRole('combobox', { name: 'Hiệu lực từ buổi' }), /Buổi 1/);
     await page.getByRole('button', { name: 'Lưu lớp' }).click();
-    await expect(page.getByText('Đã lưu lớp mới.')).toBeVisible();
+    await expect(page.getByText('Đã lưu lớp mới.', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Duyệt', exact: true }).click();
     const approve = page.getByRole('dialog', { name: 'Duyệt phiếu' });
     await approve.getByLabel('Ghi chú duyệt').fill('Nhận em');
     await approve.getByRole('button', { name: 'Duyệt', exact: true }).click();
-    await expect(page.getByText('Đã cập nhật phiếu.')).toBeVisible();
+    await expect(page.getByText('Đã cập nhật phiếu.', { exact: true })).toBeVisible();
   });
 });
 
@@ -232,7 +232,9 @@ test('Thực hiện: ghi danh sang lớp của cơ sở đích, giờ giữ nguy
       .getByRole('alertdialog')
       .getByRole('button', { name: 'Thực hiện', exact: true })
       .click();
-    await expect(page.getByText('Thực hiện phiếu. Đã duyệt → Đã thực hiện.')).toBeVisible();
+    await expect(
+      page.getByText('Thực hiện phiếu. Đã duyệt → Đã thực hiện.', { exact: true }),
+    ).toBeVisible();
   });
   expect(await enrollment()).toEqual({ cls: destClassCode, hours: '5.00' });
 });

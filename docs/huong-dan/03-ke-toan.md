@@ -1,4 +1,4 @@
-# 3. Hướng dẫn cho Kế toán (cổng CRM)
+# 3c. Hướng dẫn cho Kế toán (cổng CRM)
 
 Vai: **Kế toán**. Đọc `00-gioi-thieu.md` trước nếu bạn mới. Chữ trong dấu «…» là chữ trên màn thật; chỗ chèn ảnh ghi `[ẢNH: tên-kịch-bản]`, ảnh chụp sau trên staging bằng tài khoản giả. Dữ liệu trong ví dụ là giả.
 
