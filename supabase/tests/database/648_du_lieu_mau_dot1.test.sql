@@ -42,6 +42,9 @@ begin
 end $$;
 grant execute on function pg_temp.sets_of(text) to public;
 
+create function pg_temp.audit_n() returns bigint language sql security definer as $$
+  select count(*) from app.audit_log a join app.audited_table t on t.id = a.table_id where t.table_name = 'app.demo_data_set' or t.table_name = 'demo_data_set' $$;
+grant execute on function pg_temp.audit_n() to public;
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('cskh5a'), 'aal1');
 
@@ -58,9 +61,9 @@ select pg_temp.sudo($$update app.setting_def set value = 'false' where key = 'de
 select is(pg_temp.err($$select app.create_demo_data_set()$$), 'HMT_DEMO_TAT',
   'Luật công tắc: staging nhưng demo_data_enabled tắt thì tạo bộ bị chặn');
 
-select is(app.demo_data_available(), true, 'Đúng: staging và công tắc bật thì nút Dữ liệu mẫu hiện');
 -- Đúng: staging và công tắc bật thì tạo được; bộ gắn cơ sở và người bấm.
 select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'demo_data_enabled'$$);
+select is(app.demo_data_available(), true, 'Đúng: staging và công tắc bật thì nút Dữ liệu mẫu hiện');
 create temp table s1 (id uuid);
 grant all on s1 to public;
 insert into s1 select app.create_demo_data_set();
@@ -115,9 +118,6 @@ select pg_temp.claims(pg_temp.uid('cskh5a'), 'aal1');
 select is(pg_temp.err($$select app.create_demo_data_set()$$), null, 'Hạn mức: bộ đã xoá không tính vào hạn mức');
 
 -- Luật (4): nhật ký tạo và xoá.
-create function pg_temp.audit_n() returns bigint language sql security definer as $$
-  select count(*) from app.audit_log a join app.audited_table t on t.id = a.table_id where t.table_name = 'app.demo_data_set' or t.table_name = 'demo_data_set' $$;
-grant execute on function pg_temp.audit_n() to public;
 select cmp_ok(pg_temp.audit_n(), '>=', 4::bigint, 'Luật nhật ký: tạo và xoá bộ đều có dòng nhật ký');
 
 select * from finish();
