@@ -128,7 +128,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | QT9 | Gói bán, bảng giá có ngày hiệu lực, chiết khấu, điều khoản thanh toán | AD | CH-01..04, CH-09 | ❌ | — | P1 |
 | QT10 | Khung chương trình, rubric nhận xét | AD | CH-05..07 | ✅ qt10a, qt10b | — | P2 |
 | QT11 | Hồ sơ giáo viên, trợ giảng | AD, BM | QT-16 | ✅ qt11 | — | P2 |
-| QT12 | Tài khoản học sinh, phụ huynh (cấp, khoá, đặt lại) | CS, AD | QT-13, QT-17 | ❌ | — | P2 |
+| QT12 | Tài khoản học sinh, phụ huynh (cấp, khoá, đặt lại) | CS, AD | QT-13, QT-17 | ✅ qt12 | — | P2 |
 | QT13 | Dữ liệu mẫu của tôi (tạo, xoá, phiếu chờ người khác duyệt) | tất cả NV | du-lieu-mau | ✅ 01 và 02 (đã bổ sung 24/11) | video du-lieu-mau | P2 |
 | QT14 | Xoá bản ghi nhập nhầm (chỉ Admin) | AD | CHUNG-20 | ❌ | — | P3 |
 
