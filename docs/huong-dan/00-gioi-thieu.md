@@ -1,8 +1,7 @@
 # 0. Giới thiệu hệ thống HMT Platform
 
-Dành cho người mới: nhân viên, giáo viên, kế toán, quản lý cơ sở, quản trị. Đọc bài này trước, rồi sang bài của vai mình (xem `README.md`). Bài này không dạy bấm nút; nó trả lời ba câu: hệ thống chạy trên gì, dữ liệu nối với nhau thế nào, và mỗi phần dùng để làm việc gì.
+Dành cho người mới: nhân viên, giáo viên, kế toán, quản lý cơ sở, quản trị. Đọc bài này trước, rồi sang bài của vai mình (xem mục «Hướng dẫn theo vai trò» ở menu trái). Bài này không dạy bấm nút; nó trả lời ba câu: hệ thống chạy trên gì, dữ liệu nối với nhau thế nào, và mỗi phần dùng để làm việc gì.
 
-Dữ liệu trong mọi ví dụ là giả. Không dùng dữ liệu thật của học sinh, phụ huynh khi tập.
 
 ## 1. HMT Platform là gì
 
@@ -92,7 +91,7 @@ Mã của từng bản ghi (lead, cơ hội, đơn, phiếu thu, ghi danh, lớp
 - **Giáo viên, trợ giảng:** chỉ thấy lớp, buổi của mình.
 - **Quản trị:** thấy mọi cơ sở, cấu hình hệ thống; không tự duyệt thay các cấp duyệt nghiệp vụ.
 - Quyền chi tiết (xem, tạo, sửa, duyệt) nằm trong **ma trận quyền** do quản trị chỉnh. Ai có nhiều cổng thì có màn chọn cổng sau khi đăng nhập.
-- Quản trị viên và kế toán đăng nhập thêm **xác thực hai bước**.
+- Quản trị viên đăng nhập thêm **xác thực hai bước**.
 
 Mỗi tính năng lớn có **công tắc theo cơ sở**; phân hệ chưa bật ở cơ sở của bạn sẽ báo «Phân hệ chưa bật».
 
@@ -118,6 +117,7 @@ Mỗi tính năng lớn có **công tắc theo cơ sở**; phân hệ chưa bậ
 
 ## 9. Đọc tiếp
 
-- `chung.md`: đăng nhập, mật khẩu, menu, tìm kiếm, lọc.
-- `sale.md`, `cskh.md`, `ke-toan.md`, `truong-co-so.md`, `giao-vien.md`, `quan-tri.md`: bài theo vai.
-- `README.md`: cách đọc bộ hướng dẫn và cách đánh dấu chỗ chèn ảnh.
+- [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh): đăng nhập, mật khẩu, hai bước, menu, chọn cơ sở.
+- [Thao tác cơ bản dùng chung](/crm/huong-dan/thao-tac-co-ban): tìm, lọc, nhóm, lưu bộ lọc, mở và sửa bản ghi.
+- Bài theo vai: [Tư vấn tuyển sinh](/crm/huong-dan/theo-vai-tu-van), [CSKH và vận hành lớp](/crm/huong-dan/theo-vai-cskh), [Kế toán](/crm/huong-dan/theo-vai-ke-toan), [Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so), [Giáo viên](/crm/huong-dan/giao-vien), [Quản trị](/crm/huong-dan/quan-tri).
+- Tra cứu: [Từ điển thuật ngữ](/crm/huong-dan/tu-dien), [Hỏi đáp và lỗi thường gặp](/crm/huong-dan/hoi-dap).

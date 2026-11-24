@@ -15,7 +15,7 @@ export type ListItem = { inline: Inline[]; children: ListItem[] };
 export type Block =
   | { kind: 'heading'; level: 1 | 2 | 3 | 4; id: string; inline: Inline[]; text: string }
   | { kind: 'paragraph'; inline: Inline[] }
-  | { kind: 'list'; ordered: boolean; items: ListItem[] }
+  | { kind: 'list'; ordered: boolean; start?: number; items: ListItem[] }
   | { kind: 'table'; header: Inline[][]; rows: Inline[][][] }
   | { kind: 'code'; text: string }
   | { kind: 'quote'; inline: Inline[] }
@@ -180,7 +180,13 @@ export function parseMarkdown(src: string): Block[] {
         else items.push(item);
         i += 1;
       }
-      blocks.push({ kind: 'list', ordered, items });
+      // Danh sách đánh số tiếp sau một bảng hay đoạn chữ phải giữ số đầu (3, 4…), không đếm lại từ 1.
+      const startNo = ordered ? Number.parseInt(/\d+/.exec(first[2] ?? '')?.[0] ?? '1', 10) : 1;
+      blocks.push(
+        startNo > 1
+          ? { kind: 'list', ordered, start: startNo, items }
+          : { kind: 'list', ordered, items },
+      );
       continue;
     }
     // Đoạn: gom các dòng liền nhau.

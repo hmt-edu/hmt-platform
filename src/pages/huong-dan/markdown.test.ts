@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fold, searchGuide } from './guideIndex';
+import { fold, searchGuide, type GuideSection } from './guideIndex';
 import { outline, parseInline, parseMarkdown, plainText, safeHref, slugify } from './markdown';
 
 describe('Hướng dẫn: bộ phân tích markdown (A-23-30)', () => {
@@ -70,7 +70,13 @@ describe('Hướng dẫn: bộ phân tích markdown (A-23-30)', () => {
 });
 
 describe('Hướng dẫn: tìm kiếm (A-23-30)', () => {
-  const section = { slug: 'x', no: '1', title: 'Mục X', file: 'x.md' };
+  const section: GuideSection = {
+    slug: 'x',
+    no: '1',
+    title: 'Mục X',
+    file: 'x.md',
+    group: 'bat-dau',
+  };
   const docs = [
     {
       section,
@@ -89,5 +95,13 @@ describe('Hướng dẫn: tìm kiếm (A-23-30)', () => {
     expect(searchGuide(docs, 'x')).toEqual([]);
     expect(searchGuide(docs, 'khong-co-gi')).toEqual([]);
     expect(searchGuide(docs, 'lop', 1)).toHaveLength(1);
+  });
+
+  it('danh sách đánh số bắt đầu từ số 3 sau một bảng: giữ số đầu, không đếm lại từ 1', () => {
+    const blocks = parseMarkdown('1. a\n2. b\n\n| x | y |\n|---|---|\n| 1 | 2 |\n\n3. c\n4. d');
+    const lists = blocks.filter((b) => b.kind === 'list');
+    expect(lists).toHaveLength(2);
+    expect(lists[1]).toMatchObject({ ordered: true, start: 3 });
+    expect(lists[0]).not.toHaveProperty('start');
   });
 });
