@@ -98,15 +98,15 @@ test('Nút theo tình trạng: Chưa cấp có Cấp; Đang dùng có Đặt l�
   const locked = page.getByRole('row', { name: new RegExp(P.locked) });
   await expect(none.getByText('Chưa cấp')).toBeVisible();
   await expect(none.getByRole('button', { name: 'Cấp tài khoản' })).toBeVisible();
-  await expect(none.getByRole('button', { name: 'Khoá' })).toHaveCount(0);
+  await expect(none.getByRole('button', { name: 'Khoá', exact: true })).toHaveCount(0);
   await expect(active.getByText('Đang dùng')).toBeVisible();
   await expect(active.getByRole('button', { name: 'Đặt lại mật khẩu' })).toBeVisible();
-  await expect(active.getByRole('button', { name: 'Khoá' })).toBeVisible();
+  await expect(active.getByRole('button', { name: 'Khoá', exact: true })).toBeVisible();
   await expect(locked.getByText('Đã khoá')).toBeVisible();
   await expect(locked.getByRole('button', { name: 'Đặt lại mật khẩu' })).toBeVisible();
-  await expect(locked.getByRole('button', { name: 'Khoá' })).toHaveCount(0);
-  await expect(locked.getByRole('button', { name: 'Mở khoá' })).toBeVisible();
-  await expect(active.getByRole('button', { name: 'Mở khoá' })).toHaveCount(0);
+  await expect(locked.getByRole('button', { name: 'Khoá', exact: true })).toHaveCount(0);
+  await expect(locked.getByRole('button', { name: 'Mở khoá', exact: true })).toBeVisible();
+  await expect(active.getByRole('button', { name: 'Mở khoá', exact: true })).toHaveCount(0);
 });
 
 test('Khoá không cần lý do: hộp không có ô lý do, lời gọi vẫn kèm lý do mặc định không rỗng', async ({
@@ -119,7 +119,7 @@ test('Khoá không cần lý do: hộp không có ô lý do, lời gọi vẫn k
   });
   await openList(page);
   const row = page.getByRole('row', { name: new RegExp(P.active) });
-  await row.getByRole('button', { name: 'Khoá' }).click();
+  await row.getByRole('button', { name: 'Khoá', exact: true }).click();
   const dialog = page.getByRole('alertdialog').or(page.getByRole('dialog'));
   await expect(dialog.getByText('Khoá tài khoản').first()).toBeVisible();
   // Không có ô chọn lý do, không có ô ghi chú.
@@ -148,10 +148,10 @@ test('Mở khoá phụ huynh: hộp xác nhận gọi admin-users action unlock 
   });
   await openList(page);
   const row = page.getByRole('row', { name: new RegExp(P.locked) });
-  await row.getByRole('button', { name: 'Mở khoá' }).click();
+  await row.getByRole('button', { name: 'Mở khoá', exact: true }).click();
   const dialog = page.getByRole('alertdialog').or(page.getByRole('dialog'));
   await expect(dialog.getByText('Mở khoá tài khoản').first()).toBeVisible();
-  await dialog.getByRole('button', { name: 'Mở khoá' }).click();
+  await dialog.getByRole('button', { name: 'Mở khoá', exact: true }).click();
   await expect.poll(() => sent.body?.action).toBe('unlock');
   expect(typeof sent.body?.userId).toBe('string');
 });
