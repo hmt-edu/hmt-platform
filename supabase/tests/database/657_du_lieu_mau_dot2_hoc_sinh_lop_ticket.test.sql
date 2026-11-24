@@ -65,8 +65,8 @@ select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_item i j
   'Đúng: bộ có 6 học sinh mẫu của mảnh này (ngoài học sinh do duyệt đơn), mã cấp như bản thật, tên có nhãn [MẪU]');
 select is(pg_temp.items((select id from s1), 'CLASS'), 2::bigint, 'Đúng: bộ có 2 lớp mẫu');
 select is(pg_temp.items((select id from s1), 'TICKET'), 3::bigint, 'Đúng: bộ có 3 ticket mẫu');
-select is(pg_temp.items((select id from s1), 'ENROLLMENT'), 3::bigint, 'Đúng: 3 em được ghi danh vào lớp đã duyệt');
-select is(pg_temp.items((select id from s1), 'HOUR_LEDGER'), 3::bigint, 'Đúng: giờ mẫu ghi ở sổ giờ có cờ is_demo (3 dòng)');
+select is(pg_temp.items((select id from s1), 'ENROLLMENT'), 5::bigint, 'Đúng: 3 em ghi danh vào lớp đã duyệt và 2 em Chờ xếp lớp (migration 666)');
+select is(pg_temp.items((select id from s1), 'HOUR_LEDGER'), 5::bigint, 'Đúng: giờ mẫu ghi ở sổ giờ có cờ is_demo (5 dòng, kể 2 ghi danh chờ xếp lớp của 666)');
 
 -- Hai cặp anh chị em: hai phụ huynh có đúng hai con.
 select is(pg_temp.sql_count(format($$select count(*) from (select s.parent_id from app.student s join app.parent pa on pa.id = s.parent_id and pa.is_demo join app.demo_data_item i on i.entity_id = s.id and i.entity_type = 'STUDENT' and i.set_id = %L group by s.parent_id having count(*) = 2) x$$, (select id from s1))), 2::bigint,
@@ -87,7 +87,7 @@ select is(pg_temp.sql_count(format($$select count(*) from app.class c where c.is
 -- Ghi danh: xếp lớp bằng hàm thật; không đơn, không phiếu thu; giờ mẫu is_demo.
 select is(pg_temp.sql_count(format($$select count(*) from app.enrollment e join app.demo_data_item i on i.entity_id = e.id and i.entity_type = 'ENROLLMENT' and i.set_id = %L where e.status_code = 'DA_XEP_LOP' and e.order_id is null and e.is_demo$$, (select id from s1))), 3::bigint,
   'Đúng: ghi danh mẫu Đã xếp lớp, không gắn đơn thật');
-select is(pg_temp.sql_count(format($$select count(*) from app.hour_ledger h where h.is_demo and h.enrollment_id in (select entity_id from app.demo_data_item where set_id = %L and entity_type = 'ENROLLMENT') and h.entry_type = 'CAP_MUA'$$, (select id from s1))), 3::bigint,
+select is(pg_temp.sql_count(format($$select count(*) from app.hour_ledger h where h.is_demo and h.enrollment_id in (select entity_id from app.demo_data_item where set_id = %L and entity_type = 'ENROLLMENT') and h.entry_type = 'CAP_MUA'$$, (select id from s1))), 5::bigint,
   'Đúng: giờ mẫu chỉ ở sổ giờ is_demo, loại cấp mua');
 select is(pg_temp.sql_count(format($$select count(*) from app.hour_ledger h where h.enrollment_id in (select entity_id from app.demo_data_item where set_id = %L and entity_type = 'ENROLLMENT') and not h.is_demo$$, (select id from s1))), 0::bigint,
   'Luật: không có dòng sổ giờ thật lẫn vào ghi danh mẫu');
@@ -145,12 +145,12 @@ select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select is(pg_temp.err($$insert into s3 select app.create_demo_data_set()$$), null, 'Luật AS-13: Aftersale tắt thì bộ vẫn tạo được, không báo lỗi cả bộ');
 select is(pg_temp.items((select id from s3), 'TICKET'), 0::bigint, 'Luật AS-13: Aftersale tắt thì không có ticket mẫu');
 select is(pg_temp.items((select id from s3), 'CLASS'), 2::bigint, 'Luật AS-13: phần lớp vẫn tạo đủ khi bỏ qua ticket');
-select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_set where id = %L and notice = 'Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.'$$, (select id from s3))), 1::bigint,
+select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_set where id = %L and notice like 'Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.%%'$$, (select id from s3))), 1::bigint,
   'Luật AS-13: bộ ghi chú «đã bỏ qua phần ticket vì Aftersale đang tắt»');
 select is(pg_temp.sql_count($$select count(*) from app.feature_flag where module_code = 'AFTERSALE' and enabled and branch_id = (select id from app.branch where code = 'CS5')$$), 0::bigint,
   'Luật AS-13: tạo bộ không tự bật công tắc Aftersale');
-select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_set where id = %L and notice is not null$$, (select id from s1))), 0::bigint, 'Đúng: bộ có Aftersale bật không có ghi chú bỏ qua');
-select is((select notice from app.list_demo_data_sets(50, 0) where id = (select id from s3)), 'Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.', 'Đúng: danh sách bộ trả ghi chú để trang Dữ liệu mẫu hiện');
+select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_set where id = %L and notice like '%%ticket%%'$$, (select id from s1))), 0::bigint, 'Đúng: bộ có Aftersale bật không có ghi chú bỏ qua phần ticket');
+select is((select left(notice, 56) from app.list_demo_data_sets(50, 0) where id = (select id from s3)), 'Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.', 'Đúng: danh sách bộ trả ghi chú để trang Dữ liệu mẫu hiện');
 
 select * from finish();
 rollback;
