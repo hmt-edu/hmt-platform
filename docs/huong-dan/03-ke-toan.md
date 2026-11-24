@@ -1,3 +1,12 @@
+---
+title: Vai: Kế toán
+slug: theo-vai-ke-toan
+group: vai
+order: 60
+role: Kế toán
+portals: [crm]
+---
+
 # Vai: Kế toán (cổng CRM)
 
 Vai: **Kế toán**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.

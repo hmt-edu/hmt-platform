@@ -1,3 +1,12 @@
+---
+title: Vai: CSKH và vận hành lớp
+slug: theo-vai-cskh
+group: vai
+order: 50
+role: CSKH và vận hành lớp
+portals: [crm]
+---
+
 # Vai: CSKH và vận hành lớp (cổng CRM)
 
 Vai: chăm sóc khách hàng (CSKH) và vận hành lớp. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.

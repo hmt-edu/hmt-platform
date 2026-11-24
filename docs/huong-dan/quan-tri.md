@@ -1,3 +1,12 @@
+---
+title: Vai: Quản trị
+slug: quan-tri
+group: vai
+order: 110
+role: Quản trị
+portals: [crm]
+---
+
 # Vai: Quản trị (Admin)
 
 Vai: Admin hệ thống. Admin cần **thiết lập hai bước** khi đăng nhập (xem [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh)). Admin xem được mọi cơ sở, nhưng **không duyệt tiền** (phiếu thu, hoàn phí, phiếu chi do Kế toán duyệt). Menu **Quản trị** và **Cấu hình**.

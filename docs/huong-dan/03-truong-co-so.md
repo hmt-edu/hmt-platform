@@ -1,3 +1,12 @@
+---
+title: Vai: Trưởng cơ sở
+slug: theo-vai-truong-co-so
+group: vai
+order: 70
+role: Trưởng cơ sở
+portals: [crm]
+---
+
 # Vai: Trưởng cơ sở (cổng CRM)
 
 Vai: **Trưởng cơ sở** (quản lý cơ sở). Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.

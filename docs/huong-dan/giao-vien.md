@@ -1,3 +1,12 @@
+---
+title: Vai: Giáo viên
+slug: giao-vien
+group: vai
+order: 100
+role: Giáo viên
+portals: [crm, gv]
+---
+
 # Vai: Giáo viên và Trợ giảng (cổng Giáo viên, dùng trên điện thoại)
 
 Vai: Giáo viên, Trợ giảng (thấy các buổi mình được phân công). Thanh dưới: «Hôm nay», «Lịch dạy», «Lớp», «Cần làm», «Tài khoản».

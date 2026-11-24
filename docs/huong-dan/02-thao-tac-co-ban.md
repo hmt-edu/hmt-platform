@@ -1,3 +1,12 @@
+---
+title: Thao tác cơ bản dùng chung
+slug: thao-tac-co-ban
+group: bat-dau
+no: 2
+order: 30
+portals: [crm, gv]
+---
+
 # 2. Thao tác cơ bản dùng chung
 
 Áp dụng cho mọi danh sách và bản ghi trong cổng CRM (Lead, Cơ hội, Đơn hàng, Phiếu thu, Ticket…). Chữ trong dấu «…» là chữ hiện trên màn.
