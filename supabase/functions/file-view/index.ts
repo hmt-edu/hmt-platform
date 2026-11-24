@@ -1,5 +1,5 @@
-// Xem tệp: hàm DB kiểm quyền (theo người gọi), Edge Function làm trung gian tải từ Drive, không lộ địa chỉ Drive (F-23-49; thiết kế docs/ke-hoach/luu-tru-tep-drive.md mục 3).
-import { buildFileDeps, driveErrorToFlow } from '../_shared/file-deps.ts';
+// Xem tệp: hàm DB kiểm quyền (theo người gọi), Edge Function làm trung gian đọc từ kho tệp, không lộ địa chỉ kho (F-23-55; thiết kế docs/ke-hoach/kho-tep-apps-script.md mục 2).
+import { buildFileDeps, storeErrorToFlow } from '../_shared/file-deps.ts';
 import { FlowError, viewFile } from '../_shared/file-flow.ts';
 import { corsHeaders, fail, HTTP } from '../_shared/http.ts';
 
@@ -16,13 +16,13 @@ Deno.serve(async (req) => {
   }
   try {
     const { deps } = buildFileDeps(authorization);
-    const { stream, mimeType } = await viewFile(deps, { id: String(body.id ?? ''), thumb: body.thumb === true });
-    return new Response(stream.body, {
+    const { bytes, mimeType } = await viewFile(deps, { id: String(body.id ?? ''), thumb: body.thumb === true });
+    return new Response(bytes, {
       status: HTTP.OK,
       headers: { ...corsHeaders(req), 'Content-Type': mimeType, 'Cache-Control': 'private, no-store' },
     });
   } catch (e) {
-    const err = e instanceof FlowError ? e : driveErrorToFlow(e);
+    const err = e instanceof FlowError ? e : storeErrorToFlow(e);
     if (err) return fail(req, err.status, err.code, err.message);
     return fail(req, HTTP.SERVER_ERROR, 'HMT_LOI', 'Chưa xử lý được, thử lại sau.');
   }
