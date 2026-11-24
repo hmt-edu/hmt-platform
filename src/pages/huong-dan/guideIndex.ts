@@ -96,7 +96,22 @@ const loaders = import.meta.glob('../../../docs/huong-dan/**/*.md', {
 export function loadSource(section: GuideSection): Promise<string> {
   const load = loaders[`../../../docs/huong-dan/${section.file}`];
   if (!load) return Promise.reject(new Error(`Thiếu tài liệu ${section.file}.`));
-  return load().then(stripFrontmatter);
+  return load()
+    .then(stripFrontmatter)
+    .then((text) => (section.slug === ERROR_CODE_SLUG ? withErrorCodes(text) : text));
+}
+
+const ERROR_CODE_SLUG = 'tra-ma-loi';
+
+/** Trang «Tra mã lỗi»: nối bảng mã sinh từ migration (tải riêng, chỉ khi mở trang này). */
+async function withErrorCodes(text: string): Promise<string> {
+  const { default: codes } = await import('virtual:huong-dan-ma-loi');
+  const lines = codes.map((e) => {
+    const said = e.messages.length ? e.messages.join(' / ') : '(không có câu báo cố định)';
+    const links = e.guides.map((g) => `[${g.title}](/crm/huong-dan/${g.slug})`).join(', ');
+    return `- **${e.code}**: ${said}${links ? ` Xem: ${links}.` : ''}`;
+  });
+  return `${text}\n\n## Danh sách mã (${codes.length})\n\n${lines.join('\n')}\n`;
 }
 
 const SNIPPET_MAX = 160; // allow-number: độ dài đoạn trích ở kết quả tìm (trình bày), không phải số nghiệp vụ
