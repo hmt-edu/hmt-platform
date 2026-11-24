@@ -57,6 +57,8 @@ set local role authenticated;
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'demo_data_enabled'$$);
 select pg_temp.sudo($$insert into app.deployment_env (env_code) values ('STAGING')$$);
+-- Aftersale bật rõ ràng cho CS5 (không phụ thuộc công tắc mặc định): bộ mẫu có phần ticket.
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'AFTERSALE', id, true from app.branch where code = 'CS5' on conflict (module_code, branch_id) do update set enabled = true$$);
 
 -- Bộ đầu do CSKH tạo: lead, cơ hội (mảnh F) rồi báo giá, đơn, phiếu thu (mảnh B).
 insert into s1 select app.create_demo_data_set();

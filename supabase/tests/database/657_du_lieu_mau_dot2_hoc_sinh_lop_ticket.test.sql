@@ -37,6 +37,8 @@ create temp table s1 (id uuid);
 grant all on s1 to public;
 create temp table s2 (id uuid);
 grant all on s2 to public;
+create temp table s3 (id uuid);
+grant all on s3 to public;
 -- Đếm bản ghi của một bộ theo loại (đọc trực tiếp, không qua RLS).
 create function pg_temp.items(p_set uuid, p_type text) returns bigint language sql security definer as $$
   select count(*) from app.demo_data_item where set_id = p_set and entity_type = p_type $$;
@@ -48,6 +50,9 @@ set local role authenticated;
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'demo_data_enabled'$$);
 select pg_temp.sudo($$insert into app.deployment_env (env_code) values ('STAGING')$$);
+-- Aftersale bật rõ ràng cho CS5 (không phụ thuộc công tắc mặc định): bộ mẫu có phần ticket.
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'AFTERSALE', id, true from app.branch where code = 'CS5' on conflict (module_code, branch_id) do update set enabled = true$$);
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'VAN_HANH_LOP', id, true from app.branch where code = 'CS5' on conflict (module_code, branch_id) do update set enabled = true$$);
 select pg_temp.sudo($$update app.setting_def set value = '5' where key = 'demo_data_max_per_user'$$);
 select pg_temp.sudo($$update app.setting_def set value = '20' where key = 'demo_data_max_per_branch'$$);
 
@@ -132,6 +137,20 @@ select is(pg_temp.err(format($$select app.demo_make_parents(%L, (select id from 
   'Luật: hàm con demo_make_parents không cấp cho người dùng');
 select is(pg_temp.err(format($$select app.demo_make_education(%L, (select id from app.branch where code = 'CS5'))$$, (select id from s1))), '42501',
   'Luật: hàm gom demo_make_education không cấp cho người dùng');
+
+-- Luật AS-13: Aftersale tắt thì bộ vẫn tạo, bỏ qua phần ticket, có ghi chú tiếng Việt; không tự bật công tắc.
+select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'demo_data_enabled'$$);
+select pg_temp.sudo($$update app.feature_flag set enabled = false where module_code = 'AFTERSALE' and branch_id = (select id from app.branch where code = 'CS5')$$);
+select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
+select is(pg_temp.err($$insert into s3 select app.create_demo_data_set()$$), null, 'Luật AS-13: Aftersale tắt thì bộ vẫn tạo được, không báo lỗi cả bộ');
+select is(pg_temp.items((select id from s3), 'TICKET'), 0::bigint, 'Luật AS-13: Aftersale tắt thì không có ticket mẫu');
+select is(pg_temp.items((select id from s3), 'CLASS'), 2::bigint, 'Luật AS-13: phần lớp vẫn tạo đủ khi bỏ qua ticket');
+select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_set where id = %L and notice = 'Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.'$$, (select id from s3))), 1::bigint,
+  'Luật AS-13: bộ ghi chú «đã bỏ qua phần ticket vì Aftersale đang tắt»');
+select is(pg_temp.sql_count($$select count(*) from app.feature_flag where module_code = 'AFTERSALE' and enabled and branch_id = (select id from app.branch where code = 'CS5')$$), 0::bigint,
+  'Luật AS-13: tạo bộ không tự bật công tắc Aftersale');
+select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_set where id = %L and notice is not null$$, (select id from s1))), 0::bigint, 'Đúng: bộ có Aftersale bật không có ghi chú bỏ qua');
+select is((select notice from app.list_demo_data_sets(50, 0) where id = (select id from s3)), 'Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.', 'Đúng: danh sách bộ trả ghi chú để trang Dữ liệu mẫu hiện');
 
 select * from finish();
 rollback;

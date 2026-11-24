@@ -29,6 +29,8 @@ alter table app.hour_ledger add column is_demo boolean not null default false;
 create index parent_demo_idx on app.parent (id) where is_demo;
 create index enrollment_demo_idx on app.enrollment (id) where is_demo;
 create index hour_ledger_demo_idx on app.hour_ledger (id) where is_demo;
+-- Ghi chú của bộ (một câu tiếng Việt để trang Dữ liệu mẫu hiện), ví dụ phần nào đã bỏ qua và vì sao. Không lọc, không sắp xếp theo cột này: không cần chỉ mục.
+alter table app.demo_data_set add column notice text;
 
 alter table app.demo_data_item drop constraint demo_data_item_entity_type_check;
 alter table app.demo_data_item add constraint demo_data_item_entity_type_check
@@ -438,7 +440,12 @@ begin
   v_students := app.demo_make_students(p_set_id, p_branch_id, v_parents);
   v_classes := app.demo_make_classes(p_set_id, p_branch_id);
   perform app.demo_make_enrollments(p_set_id, p_branch_id, v_students, v_classes[1]);
-  perform app.demo_make_tickets(p_set_id, p_branch_id, v_parents, v_students, v_classes);
+  -- Luật AS-13 (công tắc phân hệ theo cơ sở): Aftersale tắt thì BỎ QUA phần ticket, không báo lỗi cả bộ, không tự bật, không bỏ qua công tắc.
+  if app.feature_enabled('AFTERSALE', p_branch_id) then
+    perform app.demo_make_tickets(p_set_id, p_branch_id, v_parents, v_students, v_classes);
+  else
+    update app.demo_data_set set notice = 'Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.' where id = p_set_id;
+  end if;
   perform set_config('hmt.demo_sales', '', true);
 exception when others then
   perform set_config('hmt.demo_sales', '', true);
@@ -488,5 +495,29 @@ begin
   return v_id;
 end;
 $$;
+
+-- ---------------------------------------------------------------------------
+-- Liệt kê bộ kèm ghi chú (notice). Giữ nguyên luật bản 648: phân trang máy chủ (mặc định, tối đa theo cài đặt), người thường thấy bộ của mình, Admin thấy mọi bộ.
+-- Đổi kiểu trả về nên phải bỏ hàm cũ rồi tạo lại (kèm quyền gọi).
+-- ---------------------------------------------------------------------------
+drop function app.list_demo_data_sets(integer, integer);
+create function app.list_demo_data_sets(p_limit integer default 50, p_offset integer default 0)
+returns table (id uuid, branch_id uuid, branch_name text, status_code text, created_at timestamptz, created_by uuid, creator_name text, total bigint, notice text)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select s.id, s.branch_id, b.name, s.status_code, s.created_at, s.created_by, u.display_name,
+         count(*) over (), s.notice
+    from app.demo_data_set s
+    join app.branch b on b.id = s.branch_id
+    left join app.user_account u on u.id = s.created_by
+   where (s.created_by = auth.uid() or 'ADMIN' = any (app.current_roles()))
+   order by s.created_at desc
+   limit least(greatest(coalesce(p_limit, app.get_setting_int('list_page_size_default')), 1), app.get_setting_int('list_page_size_max')) offset greatest(coalesce(p_offset, 0), 0);
+$$;
+revoke all on function app.list_demo_data_sets(integer, integer) from public, anon;
+grant execute on function app.list_demo_data_sets(integer, integer) to authenticated;
 
 select set_config('hmt.migration', '', false);
