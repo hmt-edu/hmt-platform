@@ -3658,7 +3658,7 @@
    "y": 146716,
    "w": 390,
    "h": 844,
-   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · không đồng ý phương án (nhập lý do)",
+   "title": "PH-04 · Đề nghị và khiếu nại (cổng Phụ huynh) · không đồng ý phương án (hộp nhập lý do)",
    "is_interactive": true
   },
   "GV07_gon_dt.dc.html": {
@@ -3699,6 +3699,14 @@
    "w": 1440,
    "h": 1000,
    "title": "CSN-07 · Hộp thoại · Duyệt phiếu chuyển lớp (cấp 2 kế toán, có tóm tắt lớp mới)",
+   "is_interactive": true
+  },
+  "CSN06c_hoan_phi_dt.dc.html": {
+   "x": 3080,
+   "y": 127600,
+   "w": 390,
+   "h": 844,
+   "title": "CSN-06c · Hoàn học phí (điện thoại)",
    "is_interactive": true
   }
  },
@@ -4168,7 +4176,8 @@
   "GV02_gon_dt.dc.html",
   "GV05_buoc_tiep_dt.dc.html",
   "GV06_buoc_tiep_dt.dc.html",
-  "CSN07_duyet_chuyen_lop.dc.html"
+  "CSN07_duyet_chuyen_lop.dc.html",
+  "CSN06c_hoan_phi_dt.dc.html"
  ],
  "notes": {
   "v19_01": {
