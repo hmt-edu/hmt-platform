@@ -56,15 +56,15 @@ insert into s1 select app.create_demo_data_set();
 
 -- Số lượng đủ.
 select is(pg_temp.items((select id from s1), 'PARENT'), 4::bigint, 'Đúng: bộ có 4 phụ huynh mẫu');
-select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_item i join app.student s on s.id = i.entity_id where i.set_id = %L and i.entity_type = 'STUDENT' and s.full_name like '[MẪU]%%' and s.code ~ '^HS'$$, (select id from s1))), 6::bigint,
-  'Đúng: bộ có 6 học sinh mẫu, mã cấp như bản thật, tên có nhãn [MẪU]');
+select is(pg_temp.sql_count(format($$select count(*) from app.demo_data_item i join app.student s on s.id = i.entity_id join app.parent pa on pa.id = s.parent_id and pa.is_demo where i.set_id = %L and i.entity_type = 'STUDENT' and s.full_name like '[MẪU]%%' and s.code ~ '^HS'$$, (select id from s1))), 6::bigint,
+  'Đúng: bộ có 6 học sinh mẫu của mảnh này (ngoài học sinh do duyệt đơn), mã cấp như bản thật, tên có nhãn [MẪU]');
 select is(pg_temp.items((select id from s1), 'CLASS'), 2::bigint, 'Đúng: bộ có 2 lớp mẫu');
 select is(pg_temp.items((select id from s1), 'TICKET'), 3::bigint, 'Đúng: bộ có 3 ticket mẫu');
 select is(pg_temp.items((select id from s1), 'ENROLLMENT'), 3::bigint, 'Đúng: 3 em được ghi danh vào lớp đã duyệt');
 select is(pg_temp.items((select id from s1), 'HOUR_LEDGER'), 3::bigint, 'Đúng: giờ mẫu ghi ở sổ giờ có cờ is_demo (3 dòng)');
 
 -- Hai cặp anh chị em: hai phụ huynh có đúng hai con.
-select is(pg_temp.sql_count(format($$select count(*) from (select s.parent_id from app.student s join app.demo_data_item i on i.entity_id = s.id and i.entity_type = 'STUDENT' and i.set_id = %L group by s.parent_id having count(*) = 2) x$$, (select id from s1))), 2::bigint,
+select is(pg_temp.sql_count(format($$select count(*) from (select s.parent_id from app.student s join app.parent pa on pa.id = s.parent_id and pa.is_demo join app.demo_data_item i on i.entity_id = s.id and i.entity_type = 'STUDENT' and i.set_id = %L group by s.parent_id having count(*) = 2) x$$, (select id from s1))), 2::bigint,
   'Đúng: có hai cặp anh chị em (hai phụ huynh mỗi người hai con)');
 
 -- Lớp: Toán đã duyệt có buổi (R-LOP-03), Tiếng Anh dừng ở Đã trình, không có buổi.

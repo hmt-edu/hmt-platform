@@ -85,11 +85,12 @@ as $$
 begin
   -- Luật khoá: chạy thật hoặc công tắc tắt thì từ chối.
   perform app.assert_demo_data_allowed();
-  -- Luật: chỉ gọi từ hàm tạo bộ: bộ phải của chính người gọi, còn dùng, chưa đổ loại này.
+  -- Luật: chỉ gọi từ hàm tạo bộ: bộ phải của chính người gọi, còn dùng, chưa đổ loại này (p_entity_type null = chỉ kiểm chủ bộ:
+  -- học sinh có thể đã có từ việc duyệt đơn của mảnh báo giá, nên loại STUDENT không dùng kiểm «chưa đổ»).
   if auth.uid() is null
      or not exists (select 1 from app.demo_data_set where id = p_set_id and created_by = auth.uid()
                        and status_code = 'DANG_DUNG' and branch_id = p_branch_id)
-     or exists (select 1 from app.demo_data_item where set_id = p_set_id and entity_type = p_entity_type) then
+     or (p_entity_type is not null and exists (select 1 from app.demo_data_item where set_id = p_set_id and entity_type = p_entity_type)) then
     perform app.raise_error('HMT_DEMO_KHONG_DU_QUYEN', 'Không tạo được dữ liệu mẫu này cho bộ này.');
   end if;
 end;
@@ -200,7 +201,7 @@ declare
   v_id uuid;
   v_n integer;
 begin
-  perform app.demo_assert_caller_set(p_set_id, p_branch_id, 'STUDENT');
+  perform app.demo_assert_caller_set(p_set_id, p_branch_id, null);
   if coalesce(array_length(p_parent_ids, 1), 0) < 4 then  -- allow-number: kế hoạch dữ liệu mẫu (4 phụ huynh)
     perform app.raise_error('HMT_DEMO_KHONG_DU_QUYEN', 'Thiếu phụ huynh mẫu để tạo học sinh mẫu.');
   end if;
