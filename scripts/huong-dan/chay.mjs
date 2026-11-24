@@ -1179,6 +1179,102 @@ const BAI = {
       7,
     );
   },
+  // Video KHỚP TỪNG BƯỚC bài TS11 (vòng đời phiếu kiểm tra): 6 bước trên phiếu «[MẪU]» của sale.cs5 (đổi trạng thái THẬT trên staging).
+  ts11: (b) => {
+    const hop = (p) => p.getByRole('dialog');
+    return chayBai(
+      b,
+      'ts11',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/phieu-kiem-tra`);
+        await p.waitForLoadState('networkidle');
+        await p.waitForTimeout(2500);
+      },
+      [
+        {
+          chu: 'Mở Phiếu kiểm tra, mở phiếu cần xử lý; đến giờ test, bấm «Bắt đầu test»',
+          loc: (p) => p.locator('main tbody tr', { hasText: 'tập TS1' }).first(),
+          lam: async (p) => {
+            // có thể có nhiều phiếu «[MẪU]»: mở lần lượt tới khi gặp phiếu còn «Bắt đầu test» bấm được
+            const n = await p.locator('main tbody tr', { hasText: 'tập TS1' }).count();
+            for (let k = 0; k < n; k++) {
+              await p.locator('main tbody tr', { hasText: 'tập TS1' }).nth(k).click();
+              await p.waitForTimeout(2500);
+              if (await p.getByRole('button', { name: 'Bắt đầu test', exact: true }).count()) break;
+              await p.goBack();
+              await p.waitForTimeout(2500);
+            }
+            await p.getByRole('button', { name: 'Bắt đầu test', exact: true }).click();
+            await p.waitForTimeout(2000);
+            await p.reload();
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Em làm bài xong, bấm «Nộp bài»',
+          loc: (p) => p.getByRole('button', { name: 'Nộp bài', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Nộp bài', exact: true }).click();
+            await p.waitForTimeout(1500);
+            const x = p.getByRole('dialog').getByRole('button', { name: /Nộp bài|Xác nhận/ });
+            if (await x.count()) await x.last().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Nếu «GV chấm» còn trống: ở khối «Lịch và phụ trách» chọn «GV chấm»',
+          loc: (p) => p.getByText('Lịch và phụ trách', { exact: true }).first(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Sửa', exact: true }).first().click();
+            await p.waitForTimeout(1200);
+            await p
+              .getByLabel(/GV chấm/)
+              .first()
+              .click();
+            await p.getByRole('option').nth(1).click();
+            await p.waitForTimeout(800);
+            await p.getByRole('button', { name: 'Lưu', exact: true }).first().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Giáo viên vắng thì bấm «Nhập kết quả» thay: nhập «Điểm», chọn «Giáo viên chấm», lưu',
+          loc: (p) => p.getByRole('button', { name: /Nhập kết quả/ }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: /Nhập kết quả/ }).click();
+            await p.waitForTimeout(1500);
+            const d = hop(p);
+            await d.getByLabel(/Điểm/).fill('8');
+            await d.getByLabel(/Giáo viên chấm/).click();
+            await p.getByRole('option').nth(1).click();
+            await d.getByLabel(/Nhận xét/).fill('[MẪU] Làm tốt phần đại số.');
+            await p.waitForTimeout(800);
+            await d
+              .getByRole('button', { name: /Lưu|Nhập kết quả/ })
+              .last()
+              .click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Bấm «Hoàn thành»: nút mờ nghĩa là còn thiếu giáo viên chấm, điểm hoặc nhận xét',
+          loc: (p) => p.getByRole('button', { name: 'Hoàn thành', exact: true }).last(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Hoàn thành', exact: true }).last().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Vào cơ hội, chọn nhóm con học lực L6C đến L6G theo kết quả; «Gợi ý lớp» đang mờ',
+          loc: (p) => p.getByRole('button', { name: 'Cơ hội gốc' }),
+        },
+      ],
+      { width: 1280, height: 720 },
+      6,
+    );
+  },
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
