@@ -55,3 +55,17 @@ export function useDeleteDemoSet() {
     onSettled: () => client.invalidateQueries({ queryKey: ['demo-sets'] }),
   });
 }
+
+/** Mã lỗi hàm tạo bộ khi cơ sở đã đủ số bộ tối đa (người bấm có thể chưa có bộ nào để xoá). */
+export const DEMO_BRANCH_FULL_CODE = 'HMT_DEMO_QUA_HAN_MUC_CO_SO';
+
+/**
+ * Câu báo khi tạo bộ lỗi. Cơ sở đủ bộ thì nói rõ nhờ Admin xoá bớt (người bấm không thấy bộ của người khác);
+ * lỗi khác giữ nguyên câu của máy chủ.
+ */
+export function demoCreateErrorText(code: string, message: string): string {
+  if (code === DEMO_BRANCH_FULL_CODE) {
+    return 'Cơ sở đã đủ số bộ mẫu, nhờ Admin xoá bớt.';
+  }
+  return message;
+}
