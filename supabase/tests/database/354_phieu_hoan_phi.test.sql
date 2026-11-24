@@ -583,5 +583,87 @@ select pg_temp.sudo($$update app.ticket_task set status_code = 'DA_THUC_HIEN' wh
 insert into td16 select app.create_ticket_task((select (j ->> 'id')::uuid from tk16), 'DUNG_HOC', 'Hai phiếu', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'HOAN_TIEN'));
 select ok((select (j ->> 'id') is not null from td16), 'D-23-48 Đúng: phiếu cũ đã Thực hiện thì không chặn tạo phiếu Dừng học Hoàn tiền mới');
 
+-- ================= D-23-49 (migration 663): ghi danh «Chờ xếp lớp» được hoàn phí và dừng học (R-TIEN-28, R-TIEN-31, R-GD-16) =================
+-- Đơn d2 chưa chọn lớp nên hai ghi danh (dòng 1 và dòng 2) ở Chờ xếp lớp. Thu đủ tiền rồi thử từng nhánh.
+select pg_temp.sudo($$create function pg_temp.d2tot() returns bigint language sql stable security definer as 'select sum(line_total) from app.sales_order_line where order_id = pg_temp.o(''d2'')'$$);
+select pg_temp.sudo($$create function pg_temp.d2a() returns uuid language sql stable security definer as 'select e.id from app.enrollment e join app.sales_order_line l on l.id = e.order_line_id where l.order_id = pg_temp.o(''d2'') and l.line_no = 1'$$);
+select pg_temp.sudo($$create function pg_temp.d2b() returns uuid language sql stable security definer as 'select e.id from app.enrollment e join app.sales_order_line l on l.id = e.order_line_id where l.order_id = pg_temp.o(''d2'') and l.line_no = 2'$$);
+select pg_temp.sudo($$create function pg_temp.d2par() returns uuid language sql stable security definer as 'select parent_id from app.enrollment where id = pg_temp.d2a()'$$);
+select pg_temp.sudo($$create function pg_temp.d2stu() returns uuid language sql stable security definer as 'select student_id from app.enrollment where id = pg_temp.d2a()'$$);
+select pg_temp.sudo($$create function pg_temp.d2bal(p_enr uuid) returns bigint language sql stable security definer as 'select coalesce(sum(amount), 0) from app.customer_balance_entry where enrollment_id = p_enr'$$);
+select pg_temp.sudo($$create function pg_temp.d2bpar() returns uuid language sql stable security definer as 'select parent_id from app.enrollment where id = pg_temp.d2b()'$$);
+select pg_temp.sudo($$create function pg_temp.d2bstu() returns uuid language sql stable security definer as 'select student_id from app.enrollment where id = pg_temp.d2b()'$$);
+select pg_temp.sudo($$grant execute on function pg_temp.d2tot(), pg_temp.d2a(), pg_temp.d2b(), pg_temp.d2par(), pg_temp.d2stu(), pg_temp.d2bpar(), pg_temp.d2bstu(), pg_temp.d2bal(uuid) to public$$);
+-- Đi hết đường phiếu: gửi duyệt, quản lý cơ sở, kế toán duyệt, thực hiện.
+create function pg_temp.flow49(p_task uuid) returns void language plpgsql as $$
+begin
+  perform pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+  perform app.submit_ticket_task(p_task);
+  perform pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+  perform app.approve_ticket_task(p_task);
+  perform pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+  perform app.approve_ticket_task(p_task);
+  perform pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+  perform app.execute_ticket_task(p_task);
+end $$;
+grant execute on function pg_temp.flow49(uuid) to public;
+select pg_temp.pay('d2', pg_temp.d2tot());
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select m, b.id, true from app.branch b, unnest(array['HOAN_PHI', 'DUNG_HOC']) m where b.code = 'CS1' on conflict (module_code, branch_id) do update set enabled = true$$);
+select is(pg_temp.est(pg_temp.d2a()), 'CHO_XEP_LOP', 'D-23-49 Dữ liệu thử: ghi danh dòng 1 của đơn d2 đang Chờ xếp lớp');
+select is(pg_temp.est(pg_temp.d2b()), 'CHO_XEP_LOP', 'D-23-49 Dữ liệu thử: ghi danh dòng 2 của đơn d2 đang Chờ xếp lớp');
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+-- Hộp tạo phiếu không ẩn ghi danh Chờ xếp lớp.
+create temp table tk49 (j jsonb);
+create temp table tt49 (j jsonb);
+create temp table tk50 (j jsonb);
+create temp table tt50 (j jsonb);
+create temp table tk51 (j jsonb);
+create temp table tt51 (j jsonb);
+grant all on tk49, tt49, tk50, tt50, tk51, tt51 to public;
+insert into tk49 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Hoàn phí Chờ xếp lớp', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_02_01', 'parent_id', pg_temp.d2par(), 'student_id', pg_temp.d2stu()));
+select ok(exists (select from jsonb_array_elements(app.get_task_form_options((select (j ->> 'id')::uuid from tk49)) -> 'enrollments') x where (x ->> 'id')::uuid = pg_temp.d2a()),
+  'D-23-49 Đúng: hộp tạo phiếu vẫn liệt kê ghi danh Chờ xếp lớp');
+-- Hoàn một phần: giờ đã học = 0 nên tiền hoàn = giờ hoàn × giá sau chiết khấu − phí xử lý (R-TIEN-31); ghi danh vẫn Chờ xếp lớp.
+insert into tt49 select app.create_ticket_task((select (j ->> 'id')::uuid from tk49), 'HOAN_PHI', 'Chuyển nhà',
+  jsonb_build_object('enrollment_id', pg_temp.d2a(), 'kind', 'MOT_PHAN', 'hours', 2, 'reason_code', 'KHONG_HOP'));
+select ok((select (j ->> 'id') is not null from tt49), 'D-23-49 Đúng: tạo được phiếu Hoàn học phí cho ghi danh Chờ xếp lớp');
+select pg_temp.flow49((select (j ->> 'id')::uuid from tt49));
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt49)), 'DA_THUC_HIEN', 'D-23-49 Đúng: hoàn một phần cho ghi danh Chờ xếp lớp thực hiện được');
+select is((select hours_used from app.refund_request where enrollment_id = pg_temp.d2a()), 0::numeric, 'D-23-49 Đúng: giờ đã học bằng 0');
+select ok((select fee_amount > 0 and refund_amount = base_amount - fee_amount from app.refund_request where enrollment_id = pg_temp.d2a()), 'D-23-49 Đúng: tiền hoàn = tiền gốc − phí xử lý theo công thức hiện có (R-TIEN-31)');
+select is((select amount from app.payment_voucher where refund_request_id = (select id from app.refund_request where enrollment_id = pg_temp.d2a())), (select refund_amount from app.refund_request where enrollment_id = pg_temp.d2a()), 'D-23-49 Đúng: phiếu chi khớp số tiền hoàn');
+select is(pg_temp.hrs(pg_temp.d2a()), 10.00::numeric, 'D-23-49 Đúng: sổ giờ trừ đúng 2 giờ hoàn (12 → 10)');
+select is(pg_temp.est(pg_temp.d2a()), 'CHO_XEP_LOP', 'D-23-49 Đúng: hoàn một phần thì ghi danh giữ Chờ xếp lớp');
+-- Hoàn dở thì chặn như cũ (659): yêu cầu vừa tạo đang Đã duyệt, chưa chi.
+insert into tk50 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Dừng học Chờ xếp lớp giữ số dư', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_06', 'parent_id', pg_temp.d2par(), 'student_id', pg_temp.d2stu()));
+select pg_temp.sudo($$update app.refund_request set status_code = 'DA_CHI' where enrollment_id = pg_temp.d2a()$$);
+-- Dừng học, Giữ số dư (R-GD-16): hết giờ còn lại thành số dư; ghi danh sang Dừng.
+insert into tt50 select app.create_ticket_task((select (j ->> 'id')::uuid from tk50), 'DUNG_HOC', 'Chuyển nhà',
+  jsonb_build_object('enrollment_id', pg_temp.d2a(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'GIU_SO_DU', 'stop_date', current_date::text));
+select pg_temp.flow49((select (j ->> 'id')::uuid from tt50));
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt50)), 'DA_THUC_HIEN', 'D-23-49 Đúng: Dừng học giữ số dư cho ghi danh Chờ xếp lớp thực hiện được');
+select is(pg_temp.est(pg_temp.d2a()), 'DUNG', 'D-23-49 Đúng: ghi danh sang Dừng sau khi dừng học');
+select is(pg_temp.hrs(pg_temp.d2a()), 0.00::numeric, 'D-23-49 Đúng: giờ còn lại về 0 sau dừng học');
+select ok(pg_temp.d2bal(pg_temp.d2a()) > 0, 'D-23-49 Đúng: tiền còn lại thành số dư của phụ huynh (R-GD-16)');
+-- Trạng thái kết thúc vẫn bị chặn: ghi danh đã Dừng không tạo được phiếu hoàn phí hay dừng học (mã khác tuỳ lớp chặn nhưng phải có lỗi).
+select isnt(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk49), 'HOAN_PHI', 'x', jsonb_build_object('enrollment_id', pg_temp.d2a(), 'kind', 'MOT_PHAN', 'hours', 1, 'reason_code', 'KHONG_HOP'))$$), null,
+  'D-23-49 Chặn: ghi danh đã Dừng không tạo được phiếu Hoàn học phí');
+select isnt(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk50), 'DUNG_HOC', 'x', jsonb_build_object('enrollment_id', pg_temp.d2a(), 'reason_code', 'CHUYEN_NOI_O'))$$), null,
+  'D-23-49 Chặn: ghi danh đã Dừng không tạo được phiếu Dừng học');
+-- Dừng học, Hoàn tiền (R-TIEN-28): ghi danh dòng 2 Chờ xếp lớp, hoàn toàn bộ tiền đã đóng trừ phí xử lý, ra phiếu chi; ghi danh sang Hoàn phí.
+insert into tk51 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Dừng học Chờ xếp lớp hoàn tiền', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_06', 'parent_id', pg_temp.d2bpar(), 'student_id', pg_temp.d2bstu()));
+insert into tt51 select app.create_ticket_task((select (j ->> 'id')::uuid from tk51), 'DUNG_HOC', 'Chuyển nhà',
+  jsonb_build_object('enrollment_id', pg_temp.d2b(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'HOAN_TIEN', 'stop_date', current_date::text));
+select pg_temp.flow49((select (j ->> 'id')::uuid from tt51));
+select is((select result ->> 'money_mode' from app.ticket_task where id = (select (j ->> 'id')::uuid from tt51)), 'HOAN_TIEN', 'D-23-49 Đúng: Dừng học hoàn tiền cho ghi danh Chờ xếp lớp thực hiện được');
+select is(pg_temp.est(pg_temp.d2b()), 'HOAN_PHI', 'D-23-49 Đúng: hoàn tiền toàn bộ thì ghi danh sang Hoàn phí (luật hiện có)');
+select is((select hours_used from app.refund_request where enrollment_id = pg_temp.d2b()), 0::numeric, 'D-23-49 Đúng: hoàn toàn bộ, giờ đã học bằng 0');
+select ok((select refund_amount = base_amount - fee_amount and base_amount = paid_amount from app.refund_request where enrollment_id = pg_temp.d2b()), 'D-23-49 Đúng: tiền hoàn = tiền đã đóng − phí xử lý (R-TIEN-28)');
+select is((select amount from app.payment_voucher where refund_request_id = (select id from app.refund_request where enrollment_id = pg_temp.d2b())), (select refund_amount from app.refund_request where enrollment_id = pg_temp.d2b()), 'D-23-49 Đúng: phiếu chi khớp số tiền hoàn');
+select is(pg_temp.hrs(pg_temp.d2b()), 0.00::numeric, 'D-23-49 Đúng: sổ giờ về 0 sau hoàn toàn bộ');
+
 select * from finish();
 rollback;
