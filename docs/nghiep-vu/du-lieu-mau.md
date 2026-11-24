@@ -46,3 +46,8 @@ Chuỗi dữ liệu cố định, dừng ở trạng thái chờ duyệt; SĐT d
 ### Đợt 2, mảnh buổi học (migration 660; số 658 đã bị #679 dùng, 659 giữ cho #680)
 - `app.demo_make_sessions(bộ, cơ sở)`: điểm danh, nội dung, bài tập, nhận xét, buổi Done gửi phụ huynh cho lớp Toán mẫu (không trừ giờ thật).
 - Trigger `class_session_inherit_demo` (E-23-34): buổi sinh muộn của lớp mẫu (duyệt lớp sau, phân lớp, bù, bổ trợ) tự mang `is_demo` và ghi `demo_data_item` vào đúng bộ, nên xoá bộ ẩn được cả các buổi này.
+
+### Sổ giờ của ghi danh mẫu (migration 661, E-23-36, CAO: sổ giờ)
+- Lỗi: buổi mẫu tự Done (cron) làm `deduct_session_hours` chèn dòng `TRU_BUOI` với `is_demo = false`, không vào `demo_data_item`: lọt báo cáo giờ và xoá bộ không gỡ được.
+- Sửa: trigger `hour_ledger_inherit_demo` (trước khi chèn): ghi danh là ghi danh mẫu thì dòng sổ giờ mang `is_demo` và vào `demo_data_item` đúng bộ. Không đổi luật trừ giờ. Ghi danh thật không bị đụng.
+- Dọn một lần trong migration: dòng sổ giờ đã lọt của ghi danh mẫu được gắn cờ và ghi vào bộ (tắt trigger chỉ-thêm của sổ giờ trong migration này, chỉ đổi cột `is_demo`).
