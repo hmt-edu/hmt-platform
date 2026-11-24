@@ -228,3 +228,37 @@ describe('phiếu Chuyển cơ sở (R-GD-10, R-CS-07; migration 568)', () => {
     });
   });
 });
+
+describe('phiếu Hoàn học phí tạo từ ticket (CSN06c, L9)', () => {
+  const base = {
+    ...EMPTY_BUSINESS_DRAFT,
+    enrollmentId: 'gd1',
+    reasonCode: 'CHUYEN_NOI_O',
+    reason: 'Gia đình chuyển nhà',
+  };
+  it('thiếu hình thức hoàn thì chặn; hoàn một phần phải có số giờ lớn hơn 0', () => {
+    expect(validateBusinessDraft('HOAN_PHI', base, true).refundKind).toBeDefined();
+    const part = { ...base, refundKind: 'MOT_PHAN' as const };
+    expect(validateBusinessDraft('HOAN_PHI', part, true).refundHours).toBeDefined();
+    expect(
+      validateBusinessDraft('HOAN_PHI', { ...part, refundHours: '0' }, true).refundHours,
+    ).toBeDefined();
+    expect(validateBusinessDraft('HOAN_PHI', { ...part, refundHours: '2,5' }, true)).toEqual({});
+  });
+  it('hoàn toàn bộ không gửi số giờ; hoàn một phần gửi giờ dạng số', () => {
+    expect(
+      buildBusinessPayload('HOAN_PHI', { ...base, refundKind: 'TOAN_BO', refundHours: '9' }),
+    ).toEqual({
+      enrollment_id: 'gd1',
+      reason_code: 'CHUYEN_NOI_O',
+      note: 'Gia đình chuyển nhà',
+      kind: 'TOAN_BO',
+    });
+    expect(
+      buildBusinessPayload('HOAN_PHI', { ...base, refundKind: 'MOT_PHAN', refundHours: '2,5' }),
+    ).toMatchObject({ kind: 'MOT_PHAN', hours: 2.5 });
+  });
+  it('không gắn học sinh thì chặn tạo phiếu', () => {
+    expect(validateBusinessDraft('HOAN_PHI', base, false).enrollmentId).toBeDefined();
+  });
+});
