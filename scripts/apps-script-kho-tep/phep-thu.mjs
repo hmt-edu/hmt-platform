@@ -53,10 +53,11 @@ line(bad.json.code === 'SAI_MAT_KHAU', '5a sai mật khẩu bị từ chối', S
 
 // Phép 1: thân 200 KB, 500 KB, 1 MB đi qua chuyển hướng 302.
 const ids = [];
-for (const kb of [200, 500, 1024]) {
+// 500 KB thử 3 lần (lần thử 25/11 có một lần 19,8 s, cần đo lại).
+for (const [i, kb] of [200, 500, 500, 500, 1024].entries()) {
   const r = await call({
     action: 'save',
-    name: `pt_${stamp}_${kb}.bin`,
+    name: `pt_${stamp}_${i}_${kb}.bin`,
     path: ['PHEP-THU'],
     mimeType: 'application/octet-stream',
     dataBase64: mb(kb * 1024),
@@ -71,8 +72,8 @@ for (let i = 0; i < 10; i++) times.push((await call({ action: 'ping' })).ms);
 console.log(`ĐO   | 2 ping 10 lần (ms): ${times.join(', ')}`);
 
 // Phép 6/8: đọc lại tệp 1 MB; sau đó tệp lớn gần trần (~19 MB) để đo thời gian đọc.
-if (ids[2]) {
-  const r = await call({ action: 'read', id: ids[2] });
+if (ids[4]) {
+  const r = await call({ action: 'read', id: ids[4] });
   line(Boolean(r.json.ok) && r.json.dataBase64?.length > 1000, '6 đọc lại tệp 1 MB', `${r.ms} ms`);
 }
 const big = await call({
@@ -119,7 +120,14 @@ if (outside) {
 // Phép 4: xoá vĩnh viễn, dung lượng giảm.
 const q1 = await call({ action: 'quota' });
 let removed = 0;
-for (const id of ids) if ((await call({ action: 'remove', id })).json.removed) removed++;
+for (const id of ids) {
+  const r = await call({ action: 'remove', id });
+  if (r.json.removed) removed++;
+  else
+    console.log(
+      `LỖI  | 4 xoá không được: mã=${r.json.code ?? '(không có)'} ${String(r.json.message ?? '')}`,
+    );
+}
 const q2 = await call({ action: 'quota' });
 line(removed === ids.length, `4 xoá vĩnh viễn ${removed}/${ids.length} tệp`);
 console.log(
