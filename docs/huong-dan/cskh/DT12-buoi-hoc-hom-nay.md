@@ -30,19 +30,19 @@ di_thu: chưa
 ## Các bước
 1. Vào menu **Đào tạo → Buổi học**.
    *Bạn thấy:* danh sách buổi, mặc định chỉ **hôm nay**.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; ảnh dự kiến buoi01-dt12-b1]
+   [ẢNH: dt12-b1]
 2. Lọc theo ngày, lớp hoặc tình trạng nếu cần; tìm theo mã lớp.
    *Bạn thấy:* danh sách thu lại còn đúng buổi cần xem. Không có buổi nào thì hiện «Không có buổi nào».
 3. Bấm một dòng để mở bản ghi buổi.
    *Bạn thấy:* thanh Nháp → Đã chốt → Hoàn thành, khối «Thông tin buổi» (lớp, môn, giáo viên, trợ giảng, giờ học, phòng) và «Danh sách và điểm danh».
-   [CHƯA CHỤP: buoi02-dt12-b3]
+   [ẢNH: dt12-b3]
 4. Buổi còn **Nháp** mà cần chốt ngay: bấm **«Chốt danh sách»**, đọc câu hỏi «Chốt danh sách buổi này?», bấm **«Chốt danh sách»** lần nữa để xác nhận.
    *Bạn thấy:* thông báo «Đã chốt danh sách»; buổi sang «Đã chốt» và hiện danh sách em.
 5. Xem «Danh sách và điểm danh»: hai cột **«Trung tâm điểm danh»** và **«Điểm danh giáo viên (chính thức)»**. Dòng đánh dấu «Lệch» là hai bên ghi khác nhau; **cột của giáo viên quyết định**.
    *Bạn thấy:* mỗi em một dòng kèm «Giờ trừ» khi buổi đã hoàn thành.
 6. Để theo dõi buổi giáo viên chưa hoàn tất, vào **Đào tạo → Buổi chưa hoàn tất**.
    *Bạn thấy:* các buổi đã kết thúc nhưng chưa «Hoàn thành», kèm «Hạn hoàn tất», «Lý do chưa hoàn tất» (thiếu điểm danh, thiếu nhận xét...) và tình trạng «Còn hạn» hoặc «Quá hạn».
-   [CHƯA CHỤP: buoi12-dt12-b6]
+   [ẢNH: dt12-b6]
 7. Bấm **«Mở buổi»** ở dòng cần xử lý để xem chi tiết, rồi gọi hoặc nhắn giáo viên theo lý do hiện trên dòng.
    *Bạn thấy:* bản ghi buổi; nút «Nhắc GV» có thể đang mờ vì cổng giáo viên chưa có chỗ đọc thông báo: **nhắc bằng điện thoại hoặc tin nhắn**.
 

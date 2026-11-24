@@ -35,22 +35,22 @@ nguoi_viet: Code D
 ## Các bước
 1. Vào «Việc chờ tôi duyệt», lọc «Loại việc» là «Lớp», bấm vào dòng của lớp.
    *Bạn thấy:* bản ghi lớp với thanh bước «Nháp · Đã trình · Đã xác nhận · Đã duyệt · Đã đóng». Thanh này chỉ để xem; việc đổi bước làm ở menu «Hành động».
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt8-b1]
+   [ẢNH: dt8-b1]
 2. Đọc kỹ: «Thông tin chung», «Thời gian và địa điểm», mục «Time Table» (từng thứ, giờ, giáo viên, trợ giảng, phòng, cách lặp, buổi đầu tiên). Nếu có khung vàng «Cảnh báo trùng phòng hoặc giáo viên», đọc từng dòng.
    *Bạn thấy:* các thông tin chỉ đọc. Trùng chỉ là cảnh báo, không chặn; bạn quyết định chấp nhận hay trả lại.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt8-b2]
+   [ẢNH: dt8-b2]
 3. Lớp đang «Đã trình»: mở menu «Hành động», chọn «Xác nhận», bấm «Xác nhận» ở hộp «Xác nhận lớp».
    *Bạn thấy:* thông báo «Xác nhận xong.»; thanh bước sang «Đã xác nhận»; dòng nhắc «Lớp đã xác nhận, đang chờ quản lý cơ sở duyệt…».
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt8-b3]
+   [ẢNH: dt8-b3b]
 4. Lớp đang «Đã xác nhận»: menu «Hành động» → «Duyệt». Hộp «Duyệt lớp» cho biết dự kiến sinh bao nhiêu buổi và ngày kết thúc dự kiến. Bấm «Duyệt».
    *Bạn thấy:* thông báo «Duyệt xong. Đã sinh N buổi.»; thanh bước sang «Đã duyệt»; nút «Buổi học» trên bản ghi có số buổi.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt8-b4]
+   [CHƯA CHỤP: không có dữ liệu mẫu ở bước này trên staging]
 5. **Từ chối:** menu «Hành động» → «Từ chối» (có ở lớp «Đã trình» và «Đã xác nhận»). Gõ «Lý do» (bắt buộc), bấm «Từ chối».
    *Bạn thấy:* thông báo «Từ chối xong.»; lớp ở trạng thái Từ chối, lý do hiện ở dòng thời gian bên phải để CSKH đọc.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt8-b5]
+   [ẢNH: dt8-b5]
 6. Kiểm lại sau khi duyệt: bấm nút «Buổi học» trên bản ghi lớp, xem danh sách buổi.
    *Bạn thấy:* các buổi đúng thứ, giờ của Time Table, bắt đầu từ ngày khai giảng.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt8-b6]
+   [ẢNH: dt8-b6]
 
 ⚠ **Sau «Duyệt», lớp không quay về Nháp được.** Sai giáo viên, giờ, phòng thì bảo CSKH bấm «Sửa» và chỉnh Time Table từ ngày áp dụng; sai thông tin khác thì huỷ lớp (chưa có buổi Done) và tạo lớp mới.
 
@@ -95,5 +95,5 @@ nguoi_viet: Code D
 2. Lớp ở Từ chối: bài nói «CSKH Đưa về Nháp rồi trình lại»; code (classLabels) còn cho sửa thẳng ở Từ chối rồi trình lại. Hai cách đều đúng.
 3. Vênh luật ↔ màn: luật R-LOP-01 nói «Đã trình, Đã xác nhận có thêm đường về Nháp: người trình và quản lý cơ sở đều bấm được». Màn khớp (transition NHAP có quyền SUA; DB kiểm người trình hoặc quyền DUYET).
 4. Bài nói «thanh bước chỉ để xem»: đúng với code (onSelect rỗng, ghi chú «Stage chỉ đọc»).
-5. Không chụp được ảnh; mọi [CHƯA CHỤP] cần chụp lại trên staging.
+5. Ảnh chụp trên staging 24/11; bước ghi [CHƯA CHỤP] cần chụp lại khi có dữ liệu mẫu.
 -->
