@@ -13,6 +13,10 @@ if (!url.startsWith('https://script.google.com/') || !secret) {
 }
 const stamp = Date.now().toString(36);
 
+/**
+ * @param {Record<string, unknown>} body
+ * @param {boolean} [withSecret]
+ */
 async function call(body, withSecret = true) {
   const t0 = performance.now();
   const res = await fetch(url, {
@@ -30,8 +34,10 @@ async function call(body, withSecret = true) {
   }
   return { json, ms: Math.round(performance.now() - t0) };
 }
+/** @type {(ok: boolean, name: string, extra?: string) => void} */
 const line = (ok, name, extra = '') =>
   console.log(`${ok ? 'ĐẠT ' : 'TRƯỢT'} | ${name}${extra ? ' | ' + extra : ''}`);
+/** @type {(n: number) => string} */
 const mb = (n) => randomBytes(n).toString('base64');
 
 const ping = await call({ action: 'ping' });
