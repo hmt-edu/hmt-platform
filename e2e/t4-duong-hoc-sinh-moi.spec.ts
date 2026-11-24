@@ -290,8 +290,9 @@ test('14. CSKH xếp lớp cho ghi danh trong hàng chờ (GD-06, GD-03)', async
   await expect(table.getByRole('row').filter({ hasText: STUDENT })).toHaveCount(0);
 });
 
-// Ngày của (bây giờ − 1 giờ) theo giờ Việt Nam: buổi 00:00–00:30 luôn đã kết thúc khi bài 18 chạy, kể cả quanh nửa đêm giờ Việt Nam (17:00–17:30 UTC).
-test('15. TẮT: đưa buổi 1 của lớp về hôm nay (đã kết thúc) và ngày vào lớp về hôm nay để vào danh sách buổi', async () => {
+// Ngày của (bây giờ − 1 giờ) theo giờ Việt Nam: buổi 00:00–00:30 luôn đã kết thúc khi bài 18 chạy; trong 00:00–01:00 giờ Việt Nam đó là HÔM QUA.
+// Luật R-GIO-02: ghi danh sinh sau ngày buổi không lọt vào danh sách, nên ngày tạo ghi danh lùi 2 ngày để bài không phụ thuộc giờ chạy (lỗi E-24-02, Tester 01:33).
+test('15. TẮT: đưa buổi 1 của lớp về hôm nay (đã kết thúc), ngày vào lớp về hôm nay và ngày tạo ghi danh lùi trước buổi để vào danh sách buổi', async () => {
   const db = new pg.Client({ connectionString: DB_URL });
   await db.connect();
   try {
@@ -307,6 +308,22 @@ test('15. TẮT: đưa buổi 1 của lớp về hôm nay (đã kết thúc) và
       `update app.enrollment_class set start_date = ((now() - interval '1 hour') at time zone 'Asia/Ho_Chi_Minh')::date where class_id = $1::uuid`,
       [state.classId],
     );
+    // Trigger khung chung (tg_fill_standard_columns) luôn giữ created_at cũ khi UPDATE, nên phải tắt trigger riêng cho lệnh lùi này (giao dịch kết thúc ngay sau đó).
+    await db.query(`set local session_replication_role = 'replica'`);
+    await db.query(
+      `update app.enrollment set created_at = created_at - interval '2 days' where id in (select enrollment_id from app.enrollment_class where class_id = $1::uuid)`,
+      [state.classId],
+    );
+    // Bài tái hiện lỗi E-24-04: ngày tạo ghi danh (giờ VN) phải TRƯỚC ngày buổi ở MỌI giờ chạy; nếu lệnh lùi bị trigger bỏ qua thì dòng này đỏ.
+    const chk = await db.query<{ ok: boolean }>(
+      `select bool_and((e.created_at at time zone 'Asia/Ho_Chi_Minh')::date < cs.session_date) as ok
+         from app.enrollment e
+         join app.enrollment_class ec on ec.enrollment_id = e.id
+         join app.class_session cs on cs.class_id = ec.class_id and cs.session_no = 1
+        where ec.class_id = $1::uuid`,
+      [state.classId],
+    );
+    expect(chk.rows[0]?.ok).toBe(true);
     await db.query('commit');
   } finally {
     await db.end();
