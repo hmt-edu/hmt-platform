@@ -55,6 +55,7 @@ cap_nhat: 2026-11-24
 
 ## Hỏi đáp
 - **Phụ huynh dừng học thì tiền đi đâu?** Tiền còn lại của ghi danh dừng học được giữ thành số dư; phụ huynh dùng cho đơn mới, hoặc làm ticket hoàn tiền.
+- **Số dư có hết hạn không?** Không. Số dư không hết hạn; sổ số dư chỉ thêm dòng, không sửa, không xoá.
 - **Dùng số dư có ra biên nhận không?** Không có phiếu thu nên không có biên nhận in.
 
 ## Tập trên dữ liệu mẫu
