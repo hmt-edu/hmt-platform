@@ -21,7 +21,7 @@ screens: [CHUNG-15]
 
 ## Luật cần nhớ
 - Danh sách chỉ có việc **đến lượt vai của bạn**. Việc còn ở cấp duyệt trước hoặc đã qua cấp bạn thì chưa hiện.
-- **Người lập không tự duyệt việc của mình.** Việc do chính bạn lập sẽ chờ người khác cùng vai duyệt, nên không hiện ở danh sách của bạn.
+- **Người lập không tự duyệt việc của mình.** Với đơn hàng và phiếu thu, việc do bạn lập chờ **quản lý trực tiếp** của bạn duyệt (chưa có quản lý trực tiếp thì Trưởng cơ sở), nên không hiện ở danh sách của bạn. Trưởng cơ sở lập thì không ai duyệt, việc tự qua bước này.
 - **Không duyệt hàng loạt.** Mỗi việc mở ra, xem rồi mới duyệt.
 
 ## Các bước
@@ -46,7 +46,7 @@ screens: [CHUNG-15]
 |---|---|---|
 | «Không có việc chờ duyệt» | Chưa có gì đến lượt bạn | Không cần làm gì; việc mới sẽ hiện ở đây |
 | «Không có việc nào khớp bộ lọc» | Bộ lọc loại việc hoặc cơ sở quá hẹp | Đổi hoặc bỏ bộ lọc |
-| Người lập báo đã trình mà bạn không thấy | Người lập là chính bạn, hoặc việc chưa đến cấp của bạn | Kiểm cột «Cấp» và «Vai trò duyệt» với người lập; nhờ người cùng vai khác duyệt |
+| Người lập báo đã trình mà bạn không thấy | Người lập là chính bạn, hoặc việc chưa đến cấp của bạn | Kiểm cột «Cấp» và «Vai trò duyệt» với người lập; nhờ quản lý trực tiếp của người lập duyệt (đơn, phiếu thu), hoặc người có vai duyệt khác với người lập (các phiếu nhiều cấp) |
 
 ## Hỏi đáp
 - **Có duyệt một lượt nhiều việc được không?** Không, mỗi việc duyệt riêng.
@@ -54,6 +54,6 @@ screens: [CHUNG-15]
 - **Mục này có ở cổng Giáo viên không?** Không, chỉ ở cổng CRM.
 
 ## Tập trên dữ liệu mẫu
-Trong «Dữ liệu mẫu của tôi» (menu tài khoản) tạo một bộ mẫu. Phiếu mẫu do chính bạn tạo chờ **người khác** cùng cơ sở duyệt: nhờ một người cùng vai mở mục này để thử bước duyệt.
+Trong «Dữ liệu mẫu của tôi» (menu tài khoản) tạo một bộ mẫu. Phiếu mẫu do chính bạn tạo chờ **người khác** có quyền duyệt cùng cơ sở (quản lý trực tiếp của bạn, hoặc Trưởng cơ sở): nhờ họ mở mục này để thử bước duyệt.
 
 > Video (tạo một bộ, xem danh sách, xoá bộ): [VIDEO: huong-dan-du-lieu-mau]
