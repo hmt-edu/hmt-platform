@@ -24,7 +24,7 @@ di_thu: chưa
 ## Luật cần nhớ (lời thường)
 - Ghi danh **tự sinh** khi tiền của phụ huynh đã vào đủ mức cọc và kế toán đã duyệt phiếu thu. Bạn không tạo ghi danh bằng tay.
 - Em chưa có lớp thì ghi danh ở **«Chờ xếp lớp»**; xếp lớp xong thì sang **«Đã xếp lớp»**, sau khi em học xong buổi đầu thì thành **«Đang học»**.
-- **Quỹ giờ** = giờ đã mua + giờ tặng − giờ đã học. Sổ giờ **chỉ thêm dòng, không sửa dòng cũ**; muốn sửa số giờ thì Trưởng cơ sở dùng «Điều chỉnh giờ» kèm lý do.
+- **Quỹ giờ** = giờ đã mua + giờ tặng − giờ đã học. Sổ giờ **chỉ thêm dòng, không sửa dòng cũ**; muốn sửa số giờ thì dùng «Điều chỉnh giờ» kèm lý do: BỚT giờ do Trưởng cơ sở (quyền Ghi danh · Duyệt), CỘNG giờ chỉ Kế toán (quyền Kế toán · Duyệt); mỗi lần có trần theo tham số hours_adjust_max_per_call.
 - Em ở «Chờ xếp lớp» vẫn **hoàn phí được, dừng học được, chuyển phí được** (xem bước 6).
 
 ## Các bước
@@ -63,7 +63,7 @@ Em chưa học buổi nào, nên **số hoàn = số tiền đã đóng − phí
 |---|---|
 | Tạo nhầm loại phiếu khi còn Nháp | huỷ phiếu, tạo lại đúng loại |
 | Chọn nhầm ghi danh | không sửa được sau khi tạo: huỷ phiếu và tạo phiếu mới |
-| Số giờ trong sổ giờ sai | không sửa tay; nhờ Trưởng cơ sở «Điều chỉnh giờ» |
+| Số giờ trong sổ giờ sai | không sửa tay; nhờ «Điều chỉnh giờ» (bớt giờ: Trưởng cơ sở; cộng giờ: Kế toán) |
 
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |

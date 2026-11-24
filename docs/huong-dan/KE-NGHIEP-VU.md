@@ -64,7 +64,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | DT1 | Ghi danh: xem danh sách, bản ghi, số giờ | CS, BM | GD-01, GD-02, GD-04 | ◐ 03-cskh §2 | ghi-danh-so-gio | P1 |
 | DT2 | Xếp lớp cho ghi danh (theo nhóm hoặc theo lớp), hàng chờ xếp lớp | CS, BM | GD-03, GD-06 | ✅ 03-cskh §2 | ghi-danh-cho-xep, ghi-danh-xep-lop | P1 |
 | DT3 | Học sinh hai ghi danh cùng lớp (trừ giờ theo ghi danh cũ trước) | CS | GD-02, GD-04 | ❌ | — | P3 |
-| DT4 | Điều chỉnh giờ (dòng ngược dấu, lý do) | BM | GD-05 | ✅ 03-truong-co-so §9 | — | P2 |
+| DT4 | Điều chỉnh giờ (dòng ngược dấu, lý do; cộng giờ chỉ Kế toán) | BM | GD-05 | ✅ 03-truong-co-so §9 | — | P2 |
 | DT5 | Sắp hết giờ / dự báo hết giờ | CS, SA | GD-07 | ❌ | — | P2 |
 | DT6 | Tái tục: phiếu tái tục (danh sách, kanban L1–L8, tạo thủ công) | CS, SA | TT-01, TT-02, TT-03 | ❌ | — | P1 |
 | DT7 | Tạo / sửa lớp, thời khoá biểu, trình duyệt | CS | LOP-03, LOP-04, LOP-05 | ✅ 03-cskh §3 | lop-trinh | P1 |

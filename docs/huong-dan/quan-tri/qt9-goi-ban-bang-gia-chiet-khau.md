@@ -31,7 +31,7 @@ Bài này gồm bốn việc nhỏ cùng chủ đề. **Bài dài hơn 7 bước
 - **Mã gói** tự ghép theo Loại-Môn-Khối (khối từ - khối đến nếu nhiều khối), **không chứa hình thức** (offline, online). Mã, loại, môn, khối không đổi sau khi tạo; chỉ đổi được «Tên gói» và «Mã cũ (Sheet)».
 - **Gói không có số giờ**: số giờ nhập khi lập dòng đơn. Giá tính theo giờ; dịch vụ tính theo tháng, tài liệu theo bộ; dịch vụ, tài liệu **không có giá online**.
 - **Giá để trống = không bán hình thức đó** từ ngày hiệu lực. Khác với «Chưa có giá» (chờ cập nhật, chưa phải ngừng bán).
-- **Chiết khấu**: có kiểu phần trăm hoặc giờ tặng; nhiều chiết khấu trên một dòng thì cộng dồn, tổng không quá trần (đổi trần ở Tham số nghiệp vụ); vượt trần cần quản lý cơ sở duyệt. Quà tặng (tài liệu, dịch vụ giá 0 đ) không tính vào trần.
+- **Chiết khấu**: có kiểu phần trăm hoặc giờ tặng; nhiều chiết khấu trên một dòng thì cộng dồn, tổng không quá trần (đổi trần ở Tham số nghiệp vụ); vượt trần thì hệ thống chỉ cảnh báo, không chặn và không cần duyệt thêm (R-V2-11). Quà tặng (tài liệu, dịch vụ giá 0 đ) không tính vào trần.
 - **Điều khoản thanh toán** đã tạo **không sửa được**; muốn đổi thì «Tạo bản mới». Lịch đóng dùng để theo dõi công nợ, nhắc hạn; **không chặn học**.
 
 ## A. Gói bán (menu Cấu hình → Gói bán)

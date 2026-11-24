@@ -35,6 +35,9 @@ Mỗi email chỉ một tài khoản. Kiểm lại chính tả, hoặc dùng ema
 **7. Tôi không thấy nút «Duyệt» (hoặc menu).**
 Nút và menu chỉ hiện khi vai trò của bạn có quyền ở đúng cơ sở. Kiểm: (a) bạn đang xem cơ sở nào; (b) vai trò của bạn (hỏi Trưởng cơ sở); (c) bản ghi có đang ở bước cần duyệt không. Báo «Bạn không có quyền …» là thiếu quyền; «Bạn chỉ xem được … của cơ sở mình» là bản ghi thuộc cơ sở khác.
 
+**7a. Tài khoản tập vai «Vận hành» (vh…) có quyền gì?**
+Chưa có vai riêng cho Vận hành. Anh Trường chốt 24/11/2026: tài khoản tập vai Vận hành **dùng tạm quyền của CSKH**, không tạo vai mới. Nên thấy menu và nút như CSKH; việc Trưởng cơ sở hay Kế toán làm (duyệt cấp quản lý, duyệt cấp kế toán, cộng giờ) thì dùng tài khoản đúng vai đó.
+
 **8. Báo «Phân hệ chưa bật».**
 Tính năng đó chưa được bật cho cơ sở của bạn. Nhờ quản trị viên bật ở «Công tắc tính năng».
 

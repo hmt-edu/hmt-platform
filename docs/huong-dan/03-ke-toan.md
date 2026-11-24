@@ -88,8 +88,8 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 **Mục tiêu:** biết đơn nào còn phải thu, đến hạn hay quá hạn; thu khoản nợ từ trước.
 
 1. Vào **Công nợ**: các cột «Phụ huynh», «Đơn hàng», «Sale», «Đợt», «Hạn đóng», «Phải đóng (đ)», «Đã đóng (đ)», «Còn nợ (đ)», «Tình trạng». Lọc sắp đến hạn hoặc quá hạn; bấm dòng để mở đơn.
-2. Thu nợ đầu kỳ: **Phiếu thu** → «Thu nợ đầu kỳ» → chọn «Phụ huynh», nhập «Số tiền», «Hình thức» → «Tạo phiếu nháp».
-3. Trình phiếu, rồi duyệt như mục 3.
+2. Thu nợ đầu kỳ (CSKH tạo): **Phiếu thu** → «Thu nợ đầu kỳ» → chọn «Phụ huynh», nhập «Số tiền», «Hình thức» → «Tạo phiếu nháp».
+3. CSKH tạo phiếu thu nợ đầu kỳ và trình; Kế toán chỉ duyệt (R-V2-15, không qua quản lý trực tiếp). Người tạo không tự duyệt phiếu của mình, nên Kế toán không tự lập rồi tự duyệt: nhờ CSKH tạo phiếu, rồi bạn duyệt như mục 3.
 
 - **Kết quả:** nợ đầu kỳ của phụ huynh giảm đúng số đã duyệt.
 - **Lỗi thường gặp:** `HMT_TINH_NANG_TAT` («Thu nợ đầu kỳ chưa được bật cho cơ sở này»): báo Trưởng cơ sở hoặc Admin bật phân hệ.

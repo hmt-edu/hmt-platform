@@ -91,7 +91,7 @@ nguoi_viet: Code D
 
 ## Hỏi đáp
 - **Vì sao em còn nhiều giờ mà vẫn có phiếu?** Phiếu sinh khi giờ còn ít **hoặc** ngày hết giờ dự kiến đã gần, cái nào đến trước. Hoặc ai đó tạo tay.
-- **Em học cả Đại và Hình thì sao?** Có hai phiếu, mỗi lớp một phiếu. Bạn gộp vào cùng một đơn khi phụ huynh muốn mua chung.
+- **Em học cả Đại và Hình thì sao?** Có hai phiếu, mỗi lớp một phiếu. Mỗi phiếu tạo đơn riêng của lớp đó (tạo từ phiếu tái tục), không gộp hai lớp vào một đơn.
 - **Em đang bảo lưu có phiếu không?** Không. Bảo lưu thì hệ thống dừng sinh phiếu; dừng học thì phiếu đang mở được đóng.
 - **Tab «Tình hình học tập» để làm gì?** Chưa dùng, đang mờ.
 

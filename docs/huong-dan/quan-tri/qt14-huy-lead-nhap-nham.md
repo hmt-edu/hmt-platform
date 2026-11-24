@@ -59,7 +59,7 @@ cap_nhat: 2026-11-24
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
 | «Lead đã có N cơ hội nên không huỷ được.» (HMT_LEAD_CO_CO_HOI) | lead đã được tạo cơ hội | Không huỷ. Xử lý cơ hội trước (chuyển giai đoạn cho phù hợp) |
-| «Lead đã có N lịch hẹn nên không huỷ được.» (HMT_LEAD_CO_LICH_HEN) | lead đã có lịch hẹn | Huỷ hoặc hoàn thành lịch hẹn trước, rồi mới huỷ lead nếu còn cần |
+| «Lead đã có N lịch hẹn nên không huỷ được.» (HMT_LEAD_CO_LICH_HEN) | lead đã có lịch hẹn | Lead đã có lịch hẹn (đang mở, đã hoàn thành hay đã huỷ đều tính) thì không huỷ được. Lead trùng thì dùng Gộp trùng; khách không còn nhu cầu thì để người phụ trách chuyển giai đoạn |
 | «Lead này đã gộp hoặc đã huỷ, không huỷ được nữa.» (HMT_LEAD_KHONG_HUY_DUOC) | đã xử lý rồi | Không cần làm gì |
 | «Cần ghi lý do huỷ lead.» (HMT_THIEU_THONG_TIN) | để trống ô Lý do | Gõ lý do rồi bấm lại |
 | «Chỉ Admin được huỷ lead nhập nhầm.» (HMT_KHONG_CO_QUYEN) | bạn không phải Admin | Nhờ Admin làm |
