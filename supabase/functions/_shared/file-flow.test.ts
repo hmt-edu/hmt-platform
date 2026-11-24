@@ -93,6 +93,31 @@ describe('uploadFiles', () => {
   });
 });
 
+describe('uploadFiles: tốc độ và lô', () => {
+  it('luật tốc độ: ảnh đầy và ảnh thu nhỏ của mọi tệp được gửi vào kho cùng lúc, không chờ nhau', async () => {
+    const { deps } = makeDeps();
+    const release: (() => void)[] = [];
+    deps.store.save = vi.fn(
+      (p) =>
+        new Promise<string>((resolve) => {
+          release.push(() => resolve(`D-${p.name}`));
+        }),
+    );
+    const run = uploadFiles(deps, 'u1', input([file(), file(300, 40)]));
+    await vi.waitFor(() => expect(deps.store.save).toHaveBeenCalledTimes(4)); // 2 tệp x (ảnh đầy + thu nhỏ), chưa cái nào xong
+    release.forEach((r) => r());
+    expect((await run).files).toEqual([{ id: 'id-1' }, { id: 'id-2' }]);
+  });
+  it('luật chặn trùng trong cùng lô: tệp sau trùng thì cả lô trả về DA_XOA, không treo CHO_TAI và không lưu vào kho', async () => {
+    let calls = 0;
+    const { deps, rows } = makeDeps({ insertPending: vi.fn(async (r: PendingRow) => (++calls === 2 ? ('TRUNG' as const) : ((rows0.set(r.id, { ...r, status: 'CHO_TAI' }), 'OK' as const)))) });
+    const rows0 = rows;
+    expect(await code(uploadFiles(deps, 'u1', input([file(), file(300, 40)])))).toBe('HMT_TEP_TRUNG');
+    expect(rows.get('id-1')?.status).toBe('DA_XOA');
+    expect(deps.store.save).not.toHaveBeenCalled();
+  });
+});
+
 describe('viewFile', () => {
   it('hàm DB cho phép thì đọc từ kho: ảnh thu nhỏ khi xin thumb, ảnh đầy khi không', async () => {
     const { deps } = makeDeps();

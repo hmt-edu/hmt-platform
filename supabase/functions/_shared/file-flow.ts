@@ -128,7 +128,11 @@ export async function uploadFiles(deps: FileDeps, ownerUserId: string, input: Up
   }
 
   const result: UploadResult = { files: [] };
-  const folder = [auth.class_id, deps.monthFolder()]; // thư mục con: lớp / năm-tháng (uuid và số, không tên học sinh)
+  // Bước 1 (tuần tự): ghi dòng CHO_TAI cho từng tệp, vì chặn nộp trùng dựa vào chỉ mục duy nhất nên phải theo thứ tự.
+  const pending: { id: string; d: (typeof decoded)[number] }[] = [];
+  const abandonAll = async (): Promise<void> => {
+    await Promise.all(pending.map((p) => deps.abandon(p.id)));
+  };
   for (const d of decoded) {
     const id = deps.newId();
     const row: PendingRow = {
@@ -154,17 +158,32 @@ export async function uploadFiles(deps: FileDeps, ownerUserId: string, input: Up
       const freed = await deps.supersedePending(auth.assignment_id, auth.student_id, d.sha);
       state = freed > 0 ? await deps.insertPending(row) : 'TRUNG';
     }
-    if (state === 'TRUNG') throw new FlowError('HMT_TEP_TRUNG', 'Ảnh này đã nộp rồi.', 409); // allow-number: mã HTTP xung đột
-    try {
-      const storageKey = await deps.store.save({ path: folder, name: `${id}.${EXT[d.f.mimeType]}`, mimeType: d.f.mimeType, bytes: d.bytes });
-      const thumbKey = d.thumb ? await deps.store.save({ path: folder, name: `${id}-t.webp`, mimeType: 'image/webp', bytes: d.thumb }) : null;
-      await deps.markReady(id, storageKey, thumbKey);
-    } catch (e) {
-      await deps.abandon(id); // lưu hỏng: trả dòng về DA_XOA để nộp lại được, không để dòng CHO_TAI treo
-      throw e;
+    if (state === 'TRUNG') {
+      await abandonAll(); // trả các dòng đã ghi trong lô này về DA_XOA để nộp lại được
+      throw new FlowError('HMT_TEP_TRUNG', 'Ảnh này đã nộp rồi.', 409); // allow-number: mã HTTP xung đột
     }
-    result.files.push({ id });
+    pending.push({ id, d });
   }
+  // Bước 2 (song song): mỗi lần gọi kho mất vài giây (đo 25/11: ~5 giây/lần, không phụ thuộc cỡ ảnh), nên ảnh đầy và ảnh thu nhỏ của mọi tệp lưu cùng lúc
+  // thay vì lần lượt (trước đó ~3 lần gọi nối tiếp mỗi ảnh). Tệp nào lưu hỏng thì dòng của nó về DA_XOA; các tệp đã lưu xong giữ nguyên.
+  const folder = [auth.class_id, deps.monthFolder()]; // thư mục con: lớp / năm-tháng (uuid và số, không tên học sinh)
+  const settled = await Promise.allSettled(
+    pending.map(async ({ id, d }) => {
+      try {
+        const [storageKey, thumbKey] = await Promise.all([
+          deps.store.save({ path: folder, name: `${id}.${EXT[d.f.mimeType]}`, mimeType: d.f.mimeType, bytes: d.bytes }),
+          d.thumb ? deps.store.save({ path: folder, name: `${id}-t.webp`, mimeType: 'image/webp', bytes: d.thumb }) : Promise.resolve(null),
+        ]);
+        await deps.markReady(id, storageKey, thumbKey);
+      } catch (e) {
+        await deps.abandon(id); // lưu hỏng: trả dòng về DA_XOA để nộp lại được, không để dòng CHO_TAI treo
+        throw e;
+      }
+    }),
+  );
+  const failed = settled.find((r): r is PromiseRejectedResult => r.status === 'rejected');
+  if (failed) throw failed.reason;
+  for (const p of pending) result.files.push({ id: p.id });
   return result;
 }
 
