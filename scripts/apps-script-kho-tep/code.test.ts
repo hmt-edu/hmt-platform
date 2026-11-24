@@ -10,7 +10,11 @@ interface Reply {
   [k: string]: unknown;
 }
 type Node = { id: string; parents: Node[]; name: string };
-function setup(secret = 'S3CRET-OK', quota = { used: 5, limit: 10 * 1024 ** 3 }) {
+function setup(
+  secret = 'S3CRET-OK',
+  quota = { used: 5, limit: 10 * 1024 ** 3 },
+  opt: { noDrive?: boolean; driveThrows?: boolean } = {},
+) {
   const root: Node = { id: 'ROOT', parents: [], name: 'HMT' };
   const other: Node = { id: 'OTHER', parents: [], name: 'SAOLUU' };
   const inside: Node = { id: 'IN1', parents: [root], name: 'a' };
@@ -54,7 +58,18 @@ function setup(secret = 'S3CRET-OK', quota = { used: 5, limit: 10 * 1024 ** 3 })
       getStorageUsed: () => quota.used,
       getStorageLimit: () => quota.limit,
     },
-    Drive: { Files: { remove: vi.fn((id: string) => removed.push(id)) } },
+    ...(opt.noDrive
+      ? {}
+      : {
+          Drive: {
+            Files: {
+              remove: vi.fn((id: string) => {
+                if (opt.driveThrows) throw new Error('Access Not Configured');
+                removed.push(id);
+              }),
+            },
+          },
+        }),
     Utilities: { newBlob: () => ({}), base64Decode: () => [], base64Encode: () => 'AQI=' },
     ContentService: {
       MimeType: { JSON: 'json' },
@@ -97,6 +112,14 @@ describe('Apps Script kho tệp', () => {
       removed: true,
     });
     expect(removed).toEqual(['IN1']);
+  });
+  it('luật báo lỗi xoá: dịch vụ Drive chưa bật hoặc Drive báo lỗi thì trả mã rõ, không nuốt', () => {
+    const a = setup('S3CRET-OK', undefined, { noDrive: true });
+    expect(a.call({ action: 'remove', secret: 'S3CRET-OK', id: 'IN1' }).code).toBe(
+      'DICH_VU_DRIVE_CHUA_BAT',
+    );
+    const b = setup('S3CRET-OK', undefined, { driveThrows: true });
+    expect(b.call({ action: 'remove', secret: 'S3CRET-OK', id: 'IN1' }).code).toBe('XOA_LOI');
   });
   it('luật tên: tên tệp hoặc thư mục con lạ (dấu cách, ../, tên có dấu) bị chặn; tên hợp lệ lưu được', () => {
     const { call } = setup();

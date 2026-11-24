@@ -114,7 +114,13 @@ function doPost(e) {
         var g = fileInRoot_(req.id);
         if (!g) return out_({ ok: true, removed: false }); // đã không còn hoặc không thuộc kho: coi như xong, không chạm gì
         // Xoá VĨNH VIỄN (Drive.Files.remove), không phải setTrashed: thùng rác vẫn tính dung lượng.
-        Drive.Files.remove(g.getId());
+        // Lỗi xoá KHÔNG được nuốt (F-24-01): dịch vụ nâng cao Drive chưa bật thì báo rõ để người cài biết bước cần làm.
+        if (typeof Drive === 'undefined') return fail_('DICH_VU_DRIVE_CHUA_BAT', 'Chưa bật dịch vụ nâng cao Drive API (Dịch vụ > + > Drive API > Thêm).');
+        try {
+          Drive.Files.remove(g.getId());
+        } catch (errRm) {
+          return fail_('XOA_LOI', 'Không xoá được: ' + String(errRm && errRm.message ? errRm.message : errRm).slice(0, 200));
+        }
         return out_({ ok: true, removed: true });
       }
       default:
