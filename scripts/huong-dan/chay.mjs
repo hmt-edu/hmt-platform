@@ -168,6 +168,21 @@ const vaoDS = async (p) => {
 };
 const timDS = (p) => p.getByPlaceholder(/Tìm tên/).first();
 
+const vaoLead = async (p) => {
+  await vaoDS(p);
+  await timDS(p).fill('[MẪU] Phụ huynh tập TS1');
+  await p.waitForTimeout(2500);
+  await p.locator('main tbody tr').first().click();
+  await p.waitForTimeout(2500);
+};
+const menuTk = (p) =>
+  p
+    .getByRole('banner')
+    .getByRole('button', { name: /Sale CS5/ })
+    .first();
+const vaoDN = (p) => p.goto(`${APP}/dang-nhap`);
+const KH = { width: 1280, height: 720 };
+
 const BAI = {
   // Bài 1: đăng nhập và nhìn menu.
   'dang-nhap': (b) =>
@@ -1448,6 +1463,279 @@ const BAI = {
       ],
       { width: 1280, height: 720 },
       4,
+    ),
+  // ===== CH5 bản ghi: mỗi mục một video =====
+  'ch5-mo': (b) =>
+    chayBai(
+      b,
+      'ch5-mo',
+      vaoDS,
+      [
+        {
+          chu: 'Ở danh sách bấm vào dòng (hoặc mã, tên ở cột đầu): bản ghi mở ra',
+          loc: (p) => p.locator('main tbody tr').first(),
+          lam: async (p) => {
+            await p.locator('main tbody tr').first().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+      ],
+      KH,
+      1,
+    ),
+  'ch5-tao': (b) =>
+    chayBai(
+      b,
+      'ch5-tao',
+      vaoDS,
+      [
+        {
+          chu: 'Bấm nút tạo ở đầu danh sách (ví dụ «Tạo»)',
+          loc: nutTen('Tạo'),
+          lam: async (p) => {
+            await nutTen('Tạo')(p).click();
+            await p.waitForURL(/\/crm\/lead\/moi/);
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Điền các ô; ô thiếu hoặc sai được báo ngay tại ô',
+          loc: (p) => p.getByLabel('Họ tên', { exact: true }),
+          lam: async (p) => {
+            await p.getByLabel('Họ tên', { exact: true }).fill('[MẪU] Phụ huynh tập CH5');
+            await p
+              .getByLabel('Số điện thoại', { exact: true })
+              .fill(`0998${Math.floor(100000 + Math.random() * 900000)}`);
+            await p.getByLabel('Source', { exact: true }).click();
+            await p.getByRole('option', { name: 'Walk-in', exact: true }).click();
+            await p.waitForTimeout(800);
+            await p.evaluate(() =>
+              document.querySelectorAll('*').forEach((e) => {
+                if (e.scrollTop > 0) e.scrollTop = 0;
+              }),
+            );
+          },
+        },
+        {
+          chu: 'Bấm «Lưu»',
+          loc: nutTen('Lưu'),
+          lam: async (p) => {
+            await nutTen('Lưu')(p).click();
+            await p.waitForTimeout(3000);
+          },
+        },
+      ],
+      KH,
+      3,
+    ),
+  'ch5-sua': (b) =>
+    chayBai(
+      b,
+      'ch5-sua',
+      vaoLead,
+      [
+        {
+          chu: 'Bấm «Sửa», đổi dữ liệu',
+          loc: nutTen('Sửa'),
+          lam: async (p) => {
+            await nutTen('Sửa')(p).click();
+            await p.waitForTimeout(1200);
+            await p.getByLabel('Trường học', { exact: true }).fill('[MẪU] Trường tập (đã sửa)');
+          },
+        },
+        {
+          chu: 'Bấm «Lưu» (nút khoá trong lúc lưu): thông báo đã lưu',
+          loc: nutTen('Lưu'),
+          lam: async (p) => {
+            await nutTen('Lưu')(p).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+      ],
+      KH,
+      2,
+    ),
+  'ch5-ghi-chu': (b) =>
+    chayBai(
+      b,
+      'ch5-ghi-chu',
+      vaoLead,
+      [
+        {
+          chu: 'Nhìn cột phải của bản ghi: khối «Ghi chú & hoạt động», dòng thời gian',
+          loc: (p) => p.getByText('Ghi chú & hoạt động').first(),
+        },
+        {
+          chu: 'Viết ghi chú: bấm ô «Viết ghi chú…», gõ nội dung',
+          loc: (p) => p.getByPlaceholder(/Viết ghi chú/),
+          lam: (p) => p.getByPlaceholder(/Viết ghi chú/).fill('[MẪU] Khách hẹn gọi lại chiều mai.'),
+        },
+        {
+          chu: 'Bấm «Gửi ghi chú»: ghi chú xuất hiện đầu dòng thời gian',
+          loc: nutTen('Gửi ghi chú'),
+          lam: async (p) => {
+            await nutTen('Gửi ghi chú')(p).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Lọc dòng thời gian bằng «Tất cả», «Ghi chú», «Hệ thống»',
+          loc: (p) => nutTen('Ghi chú')(p).last(),
+          lam: async (p) => {
+            await nutTen('Ghi chú')(p).last().click();
+            await p.waitForTimeout(1500);
+          },
+        },
+      ],
+      KH,
+      4,
+    ),
+  // ===== CH3 menu: đăng xuất, thông báo =====
+  'ch3-thong-bao': (b) =>
+    chayBai(
+      b,
+      'ch3-thong-bao',
+      vaoDS,
+      [
+        {
+          chu: 'Nhìn biểu tượng chuông «Thông báo» ở thanh trên; số cạnh chuông là số chưa đọc',
+          loc: (p) => p.getByRole('button', { name: /Thông báo/ }).first(),
+        },
+        {
+          chu: 'Bấm chuông: hộp «Thông báo» hiện các mục mới nhất; lọc «Tất cả» hoặc «Chưa đọc»',
+          loc: (p) => p.getByRole('button', { name: /Thông báo/ }).first(),
+          lam: async (p) => {
+            await p
+              .getByRole('button', { name: /Thông báo/ })
+              .first()
+              .click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Bấm một thông báo để đọc và mở đúng bản ghi; «Đánh dấu tất cả đã đọc» để đọc hết',
+          loc: (p) => p.getByText(/Đánh dấu tất cả đã đọc/).first(),
+        },
+      ],
+      KH,
+      3,
+    ),
+  'ch3-dang-xuat': (b) =>
+    chayBai(
+      b,
+      'ch3-dang-xuat',
+      vaoDS,
+      [
+        {
+          chu: 'Bấm tên mình ở góc trên → «Đăng xuất»',
+          loc: menuTk,
+          lam: async (p) => {
+            await menuTk(p).click();
+            await p.waitForTimeout(1200);
+          },
+        },
+        {
+          chu: 'Dùng máy chung thì luôn đăng xuất khi xong việc',
+          loc: (p) =>
+            p
+              .getByRole('menuitem', { name: /Đăng xuất/ })
+              .or(p.getByText('Đăng xuất'))
+              .first(),
+          lam: async (p) => {
+            await p
+              .getByRole('menuitem', { name: /Đăng xuất/ })
+              .or(p.getByText('Đăng xuất'))
+              .first()
+              .click();
+            await p.waitForTimeout(2500);
+          },
+        },
+      ],
+      KH,
+      2,
+    ),
+  // ===== CH1 đăng nhập, đổi mật khẩu, quên mật khẩu =====
+  'ch1-dang-nhap': (b) =>
+    chayBai(
+      b,
+      'ch1-dang-nhap',
+      vaoDN,
+      [
+        {
+          chu: 'Mở địa chỉ hệ thống: màn «Đăng nhập» có hai ô «Email» và «Mật khẩu»',
+          loc: (p) => p.getByLabel('Email', { exact: true }),
+        },
+        {
+          chu: 'Nhập «Email» và «Mật khẩu», bấm «Đăng nhập»',
+          loc: (p) => p.getByLabel('Email', { exact: true }),
+          lam: async (p) => {
+            await p.getByLabel('Email', { exact: true }).fill('ten@hoamatoan.vn');
+            await p.getByLabel('Mật khẩu', { exact: true }).fill('mat-khau-mau');
+            await p.waitForTimeout(1000);
+            await dangNhap(p);
+          },
+        },
+      ],
+      KH,
+      2,
+    ),
+  'ch1-doi-mat-khau': (b) =>
+    chayBai(
+      b,
+      'ch1-doi-mat-khau',
+      vaoDS,
+      [
+        {
+          chu: 'Bấm tên mình ở góc trên, chọn «Hồ sơ cá nhân»',
+          loc: menuTk,
+          lam: async (p) => {
+            await menuTk(p).click();
+            await p.waitForTimeout(1000);
+            await p
+              .getByRole('menuitem', { name: /Hồ sơ cá nhân/ })
+              .or(p.getByText('Hồ sơ cá nhân'))
+              .last()
+              .click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Kéo xuống mục «Đổi mật khẩu»: nhập «Mật khẩu hiện tại», «Mật khẩu mới», «Nhập lại mật khẩu mới», bấm «Đổi mật khẩu»',
+          loc: (p) => p.getByText('Mật khẩu hiện tại').first(),
+        },
+      ],
+      KH,
+      2,
+    ),
+  'ch1-quen-mat-khau': (b) =>
+    chayBai(
+      b,
+      'ch1-quen-mat-khau',
+      vaoDN,
+      [
+        {
+          chu: 'Ở màn đăng nhập bấm «Quên mật khẩu?»',
+          loc: (p) => p.getByText('Quên mật khẩu?').first(),
+          lam: async (p) => {
+            await p.getByText('Quên mật khẩu?').first().click();
+            await p.waitForTimeout(2000);
+          },
+        },
+        {
+          chu: 'Màn ghi: để đặt lại mật khẩu, liên hệ quản trị viên; họ đặt mật khẩu tạm, bạn đổi lại ở lần đăng nhập kế',
+          loc: (p) => p.getByText(/liên hệ quản trị viên/).first(),
+        },
+        {
+          chu: 'Bấm «Quay lại đăng nhập» để trở về',
+          loc: (p) => p.getByText('Quay lại đăng nhập').first(),
+          lam: async (p) => {
+            await p.getByText('Quay lại đăng nhập').first().click();
+            await p.waitForTimeout(1500);
+          },
+        },
+      ],
+      KH,
+      3,
     ),
 };
 
