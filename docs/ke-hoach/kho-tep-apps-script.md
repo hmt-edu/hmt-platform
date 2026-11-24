@@ -54,9 +54,15 @@ Kết luận tạm: Apps Script gỡ được hai vướng của OAuth nhưng **
 
 Kết quả cuối: báo Chat «Xong staging Apps Script» (kèm `ROOT_FOLDER_ID` được, không kèm mật khẩu). Chat báo Code chạy phép thử mục 5. **Chạy thật** làm sau, cùng 5 bước, thư mục `HMT-prod`, mật khẩu khác, dự án script khác, bằng tài khoản chạy thật.
 
-**Nếu «xoá» báo lỗi `DICH_VU_DRIVE_CHUA_BAT` (kết quả thử 25/11: xoá 0/4, dung lượng không giảm):** dịch vụ nâng cao chưa bật ở bước 2. Sửa: mở dự án script > cột trái «Dịch vụ» (Services) > bấm «+» > chọn **Drive API**, phiên bản **v3**, định danh `Drive` > «Thêm» (Add) > dán lại `Code.gs` bản mới > «Triển khai» > «Quản lý bản triển khai» > bút chì > «Phiên bản» chọn «Phiên bản mới» > «Triển khai» (URL giữ nguyên). Có thể Google hỏi cấp quyền lại một lần. Chạy lại `phep-thu.mjs`: phép 4 phải đạt, dung lượng sau < trước. Báo `XOA_LOI` kèm câu lỗi thì chụp câu đó gửi Chat. Tệp `pt_*` thử còn lại ở thư mục `PHEP-THU`: xoá tay (và dọn thùng rác).
+**Sau MỖI lần sửa mã hoặc bật/tắt dịch vụ phải «Triển khai» PHIÊN BẢN MỚI.** Bản triển khai đang chạy giữ nguyên mã và dịch vụ của phiên bản lúc đăng; lưu mã hoặc thêm dịch vụ trong màn soạn KHÔNG đổi bản đang chạy. Làm: «Triển khai» > «Quản lý bản triển khai» > bút chì > «Phiên bản» chọn «Phiên bản mới» > «Triển khai» (URL giữ nguyên; có thể phải cấp quyền lại một lần). Thử 25/11 cho thấy chính chỗ này làm phép xoá trượt 0/4 dù «Dịch vụ» đã có `Drive`: sau khi triển khai phiên bản mới, xoá đạt 4/4.
 
-## 5. Phép thử (CHƯA làm: cần script đã đăng ở bước 4)
+**Xoá báo lỗi rõ:** `remove` trả `DICH_VU_DRIVE_CHUA_BAT` nếu bản đang chạy chưa có dịch vụ `Drive`, hoặc `XOA_LOI` kèm câu lỗi do Drive trả (cắt 200 ký tự); `phep-thu.mjs` in mã và câu đó. `Drive.Files.remove(id)` dùng được cả với Drive API v2 và v3. Bước thêm dịch vụ: cột trái «Dịch vụ» (Services) > «+» > **Drive API** > định danh `Drive` > «Thêm». Tệp `pt_*` thử còn lại ở thư mục `PHEP-THU`: xoá tay (và dọn thùng rác).
+
+## 5. Phép thử
+
+**Kết quả staging 25/11 (anh chạy `phep-thu.mjs`, sau khi triển khai phiên bản mới):** ĐẠT: ping (3,2 s lần đầu; 10 lần 1,1–2,3 s); sai mật khẩu bị từ chối; lưu 200 KB, 500 KB, 1 MB qua chuyển hướng 302 (200 KB 5 s, 1 MB 5,4 s; 500 KB một lần 19,8 s, lần sau 5,1 s: coi là nhiễu); đọc lại 1 MB 4,3 s; lưu và đọc ~19 MB mỗi lần ~33 s; trần 21 MB từ chối tệp 22 MB (`QUA_LON`); xoá vĩnh viễn 4/4 tệp. Dung lượng đã dùng 142.764.458 → 140.999.082 byte (giảm ~1,7 MB, chưa đủ chắc tệp ~19 MB đã trả hết dung lượng: **kiểm lại sau vài phút**). BỎ: 5b (tệp ngoài thư mục gốc, chưa có `OUTSIDE_FILE_ID`). Còn làm tay nhiều ngày: phép 3 (hạn mức/ngày), 7 (`drive.file`).
+
+Phần dưới là danh sách phép thử gốc.
 
 **Chạy các phép thử:** người có URL và mật khẩu (anh, hoặc ai anh giao) chạy `APPS_SCRIPT_URL=… APPS_SCRIPT_SHARED_SECRET=… node scripts/apps-script-kho-tep/phep-thu.mjs` (tuỳ chọn `OUTSIDE_FILE_ID` = id một tệp tạo tay ngoài thư mục gốc). Script chỉ đọc khoá từ biến môi trường, dừng nếu thư mục gốc không có chữ «staging», chỉ lưu tệp giả vào thư mục `PHEP-THU` rồi xoá vĩnh viễn; kết quả dán vào PR. Phép 3 (hạn mức/ngày) và 7 (`drive.file`) làm tay, theo dõi nhiều ngày.
 
