@@ -52,7 +52,6 @@ checked: 2026-11-24
 6. Khi khách có nhu cầu thật: chuyển lên **C4** và chọn **C4C «Đủ điều kiện tạo cơ hội»**. Khi đó nút **«Tạo cơ hội»** hết mờ (bài «Tạo cơ hội từ lead»).
    *Bạn thấy:* nút «Tạo cơ hội» màu cam, bấm được.
    [ẢNH: ts02-ts3-b6]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 7. Đổi người chăm hoặc nhờ người khác hỗ trợ: menu **«Hành động»** → «Giao người phụ trách». Gộp hai hồ sơ của cùng một khách: «Gộp trùng».
    *Bạn thấy:* hộp chọn người; xong có thông báo «Đã giao … cho …».
 

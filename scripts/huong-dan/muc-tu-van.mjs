@@ -79,6 +79,40 @@ const tiep = async (p) => {
 };
 
 // route: trang mở đầu; truoc: thao tác mở hộp/chuyển trang (chỉ đọc); loc: phần tử đóng khung.
+// Mở cơ hội đầu tiên đang ở giai đoạn khớp mẫu (hàng danh sách có chữ giai đoạn), rồi bấm giai đoạn đích trên thanh.
+const oppTheoGD = (hang, dich) => async (p) => {
+  for (let i = 0; i < 6 && !(await p.locator('main tbody tr', { hasText: hang }).count()); i++) {
+    await p.getByRole('button', { name: 'Trang sau' }).click();
+    await p.waitForTimeout(2000);
+  }
+  await p.locator('main tbody tr', { hasText: hang }).first().click();
+  await p.waitForTimeout(2500);
+  await p.locator('main').getByText(dich, { exact: true }).first().click();
+  await p.waitForTimeout(1500);
+};
+// Mở lead đầu tiên có nút «Tạo cơ hội» bấm được (nhóm con C4C), thử tối đa 8 hàng.
+const leadC4C = async (p) => {
+  for (let i = 0; i < 8; i++) {
+    await p.goto(`${APP}/crm/lead`);
+    await p.waitForTimeout(2000);
+    await p.locator('main tbody tr', { hasText: /C4 /i }).nth(i).click();
+    await p.waitForTimeout(2000);
+    if (await btn(p, /Tạo cơ hội/).isEnabled()) return;
+  }
+  throw new Error('Không có lead C4C');
+};
+const tatCaThoiGian = async (p) => {
+  await p.getByRole('button', { name: /Tuần này/ }).click();
+  await p.waitForTimeout(800);
+  await p.getByText('Tất cả thời gian').last().click();
+  await p.waitForTimeout(2000);
+};
+// Mở cơ hội đầu tiên (CO có lịch hẹn «HD-» đang chờ) rồi bấm nút trong khối «Hoạt động sắp tới».
+const nutTrongCoHoi = (ten) => async (p) => {
+  await dong(p, 1);
+  await p.getByRole('button', { name: ten }).last().click();
+  await p.waitForTimeout(1500);
+};
 const SHOTS = {
   // TS1
   'ts03-ts1-b1': { route: '/crm/lead/moi', loc: (p) => btn(p, /^Lưu$/) },
@@ -145,19 +179,106 @@ const SHOTS = {
   'ts02-ts3-b2': { route: '/crm/lead', truoc: lead, loc: (p) => p.getByText('Sub-stage').first() },
   // TS5
   'ts-02-ts5-b1': { route: '/crm/lead', truoc: lead, loc: (p) => btn(p, /Tạo cơ hội/) },
+  // TS6
+  'ts-08-ts6-b1': { route: '/crm/co-hoi', truoc: (p) => dong(p, 1), loc: thanhGD },
+  // TS9
+  'ts-11-ts9-b2': { route: '/crm/lich-hen', loc: (p) => p.getByText(/Hôm nay/).first() },
+  'ts-09-ts6-b2': {
+    route: '/crm/co-hoi',
+    truoc: oppTheoGD(/L2/, 'L3'),
+    loc: (p) => p.getByRole('dialog'),
+  },
+  'ts-09-ts6-b3': {
+    route: '/crm/co-hoi',
+    truoc: oppTheoGD(/L[1-4]/, 'L5'),
+    loc: (p) => p.getByRole('dialog'),
+  },
+  'ts-09-ts6-b5': {
+    route: '/crm/co-hoi',
+    truoc: oppTheoGD(/L[1-5]/, 'L7'),
+    loc: (p) => p.getByRole('dialog'),
+  },
+  'ts-09-ts6-b6': {
+    route: '/crm/co-hoi',
+    truoc: oppTheoGD(/L[1-7]/, 'L8'),
+    loc: (p) => p.getByRole('dialog'),
+  },
   'ts-06-ts5-b2': {
     route: '/crm/lead',
     truoc: async (p) => {
-      await lead(p);
+      await leadC4C(p);
       await btn(p, /Tạo cơ hội/).click();
       await p.waitForTimeout(1500);
     },
     loc: (p) => p.getByRole('dialog'),
   },
-  // TS6
-  'ts-08-ts6-b1': { route: '/crm/co-hoi', truoc: (p) => dong(p, 1), loc: thanhGD },
-  // TS9
-  'ts-11-ts9-b2': { route: '/crm/lich-hen', loc: (p) => p.getByText(/Hôm nay/).first() },
+  'ts-06-ts5-b3': {
+    route: '/crm/lead',
+    truoc: async (p) => {
+      await leadC4C(p);
+      await btn(p, /Tạo cơ hội/).click();
+      await p.waitForTimeout(1500);
+    },
+    loc: (p) => p.getByRole('dialog').getByRole('checkbox').first(),
+  },
+  'ts02-ts3-b6': { route: '/crm/lead', truoc: leadC4C, loc: (p) => btn(p, /Tạo cơ hội/) },
+  'ts-06-ts5-b4': {
+    route: '/crm/lead',
+    truoc: async (p) => {
+      await leadC4C(p);
+      await btn(p, /Tạo cơ hội/).click();
+      await p.waitForTimeout(1500);
+    },
+    loc: (p) =>
+      p
+        .getByText(/Lead này đã có/)
+        .first()
+        .locator('xpath=../..'),
+  },
+  // Chuẩn bị (không xuất ảnh có ích): tạo MỘT lịch hẹn giả «HD-» bằng màn thật để chụp Dời, Hoàn thành, Huỷ. Ghi vào staging, chỉ chạy khi gọi đúng tên.
+  '_tao-lich-hd': {
+    route: '/crm/co-hoi',
+    truoc: async (p) => {
+      await dong(p, 1);
+      await btn(p, /Lên lịch hẹn/).click();
+      await p.waitForTimeout(1200);
+      await p.getByRole('button', { name: 'Ngày mai' }).click();
+      await p.getByRole('button', { name: '09:00' }).click();
+      await p.getByRole('dialog').locator('textarea').fill('HD-lịch hẹn thử cho hướng dẫn');
+      await p.getByRole('button', { name: 'Tạo lịch hẹn' }).click();
+      await p.waitForTimeout(2500);
+    },
+  },
+  'ts-11-ts9-b3': {
+    route: '/crm/lich-hen',
+    truoc: tatCaThoiGian,
+    loc: (p) => p.locator('main tbody').first(),
+  },
+  'ts-13-ts9-b4': {
+    route: '/crm/co-hoi',
+    truoc: nutTrongCoHoi(/^Dời/),
+    loc: (p) => p.getByRole('dialog'),
+  },
+  'ts-11-ts9-b5': {
+    route: '/crm/co-hoi',
+    truoc: nutTrongCoHoi(/^Hoàn thành/),
+    loc: (p) => p.getByRole('dialog'),
+  },
+  'ts-11-ts9-b6': {
+    route: '/crm/co-hoi',
+    truoc: nutTrongCoHoi(/^Huỷ$/),
+    loc: (p) => p.getByText('Huỷ lịch hẹn').first(),
+  },
+  'ts-11-ts9-b7': {
+    route: '/crm/lich-hen',
+    truoc: async (p) => {
+      await btn(p, /^Mở lại/)
+        .first()
+        .click();
+      await p.waitForTimeout(1200);
+    },
+    loc: (p) => p.getByText(/Mở lại lịch hẹn\?/).first(),
+  },
   'ts-13-ts9-b1': {
     route: '/crm/co-hoi',
     truoc: async (p) => {

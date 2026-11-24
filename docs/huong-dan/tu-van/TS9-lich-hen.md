@@ -39,11 +39,9 @@ checked: 2026-11-24
 3. **Xem việc trong ngày.** Vào **Lịch hẹn**: các thẻ «Quá hạn», «Hôm nay», «Sắp tới» cho biết việc cần làm; xem dạng danh sách, bảng thẻ hoặc lịch tuần.
    *Bạn thấy:* mỗi lịch một dòng/thẻ với mã hồ sơ bấm được, giờ hẹn, trạng thái, nút thao tác.
    [ẢNH: ts-11-ts9-b3]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 4. **Dời lịch.** Ở lịch «Chưa làm» bấm **«Dời»**, chọn «Ngày mới», «Giờ mới», bấm **«Dời lịch»**.
    *Bạn thấy:* thông báo «Đã dời lịch hẹn.», lịch nhảy sang ngày mới.
    [ẢNH: ts-13-ts9-b4]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 5. **Hoàn thành lịch (1 bấm).** Gọi hoặc gặp xong, bấm **«Hoàn thành»** trên lịch. Trong hộp **«Hoàn thành lịch hẹn»**:
    - **«Kết quả»**: chọn «Đã tư vấn, quan tâm», «Hẹn gọi lại», «Không nghe máy», «Khách từ chối», «Sai số» hoặc «Đã chốt đăng ký». Với lịch **Gọi điện** ô này có dấu * (bắt buộc) khi quản lý đã bật tham số này.
    - **«Hẹn lần sau»** và **«Giờ»**: không bắt buộc; điền cả hai thì hệ thống tự tạo lịch kế tiếp. Chọn «Hẹn gọi lại» thì nhớ chọn ngày gọi lại.
@@ -51,15 +49,12 @@ checked: 2026-11-24
    Bấm **«Hoàn thành»**.
    *Bạn thấy:* thông báo «Đã hoàn thành lịch hẹn.» kèm nút hoàn tác ngắn hạn; lịch sang trạng thái Hoàn thành; lịch kế tiếp (nếu có) hiện ở ngày đã chọn.
    [ẢNH: ts-11-ts9-b5]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 6. **Huỷ lịch.** Bấm **«Huỷ»**, chọn lý do («PH báo bận», «Không liên lạc được», «Tạo nhầm», «Khác»; chọn «Khác» thì phải ghi chú), bấm **«Huỷ lịch hẹn»**.
    *Bạn thấy:* thông báo «Đã huỷ lịch hẹn.» kèm nút hoàn tác.
    [ẢNH: ts-11-ts9-b6]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 7. **Mở lại.** Ở lịch Hoàn thành hoặc Huỷ bấm **«Mở lại»**, xác nhận ở hộp «Mở lại lịch hẹn?».
    *Bạn thấy:* thông báo «Đã mở lại lịch hẹn.»; lịch về «Chưa làm», giai đoạn của lead hoặc cơ hội không đổi.
    [ẢNH: ts-11-ts9-b7]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 
 ⚠ Hoàn thành hay huỷ lịch lỡ tay: dùng nút hoàn tác trên thông báo ngay lúc đó; hết thông báo thì dùng «Mở lại».
 
