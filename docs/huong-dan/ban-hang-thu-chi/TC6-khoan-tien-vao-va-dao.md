@@ -20,9 +20,11 @@ cap_nhat: 2026-11-24
 - Giờ đã cấp được **tính lại theo số tiền còn lại**: hoàn tác có thể làm đơn thiếu cọc.
 
 ## Các bước
-1. Vào **Khoản tiền vào**: các cột «Cơ sở», «Phiếu thu», «Đơn hàng», «Phụ huynh», «Số tiền (đ)», «Ngày», «Loại» (Khoản thu, Khoản đảo âm). Tìm khoản cần xem bằng ô tìm kiếm hoặc bộ lọc. [CHƯA CHỤP: chờ tài khoản staging]
-2. Ở dòng khoản sai bấm **«Hoàn tác»**. *Bạn thấy:* hộp «Hoàn tác khoản tiền» nêu mã khoản và số tiền. [CHƯA CHỤP]
-3. Chọn lý do (ghi chú nếu lý do «Khác»), bấm **«Hoàn tác»** (hoặc «Giữ nguyên» để thôi). *Bạn thấy:* «Đã hoàn tác khoản tiền.»; có thêm một dòng «Khoản đảo âm»; khoản gốc hiện «Đã hoàn tác». [CHƯA CHỤP]
+1. Vào **Khoản tiền vào**: các cột «Cơ sở», «Phiếu thu», «Đơn hàng», «Phụ huynh», «Số tiền (đ)», «Ngày», «Loại»… Tìm khoản bằng ô tìm kiếm hoặc bộ lọc; mã khoản có dạng `KTV-…`. [ẢNH: tc6-b1]
+2. Cột **«Hoàn tác»** có thể đang ẩn: bấm **«Cột»** và bật «Hoàn tác». Ở dòng khoản sai bấm **«Hoàn tác khoản tiền»**. [ẢNH: tc6-b2]
+3. Hộp «Hoàn tác khoản tiền» nêu mã khoản và số tiền. Chọn lý do (ghi chú nếu lý do «Khác»), bấm **«Hoàn tác»** (hoặc «Giữ nguyên» để thôi). *Bạn thấy:* «Đã hoàn tác khoản tiền.»; có thêm một dòng «Khoản đảo âm»; khoản gốc hiện «Đã hoàn tác».
+
+**Không thấy nút «Hoàn tác khoản tiền»?** Tính năng này **tắt mặc định** theo cơ sở (tham số «Cho phép hoàn tác khoản tiền vào»): báo Trưởng cơ sở hoặc Admin bật. Nút cũng chỉ hiện với Kế toán và với khoản chưa hoàn tác. (Bản thử nghiệm đang tắt nên bài chưa có ảnh hộp hoàn tác.)
 
 ⚠ **Không xoá được khoản đã hoàn tác.** Muốn ghi lại số đúng thì tạo phiếu thu mới.
 
