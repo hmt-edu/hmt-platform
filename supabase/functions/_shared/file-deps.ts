@@ -68,8 +68,8 @@ export function buildFileDeps(authorization: string): { deps: FileDeps; callerId
       const { error } = await admin.from('stored_file').update({ status: 'DANG_DUNG', storage_key: storageKey, thumb_storage_key: thumbKey }).eq('id', id).eq('status', 'CHO_TAI');
       if (error) throw new FlowError('HMT_LOI', 'Chưa ghi được sổ tệp, thử lại.', 500); // allow-number: mã HTTP
     },
-    async softLimitPercent() {
-      const { data } = await admin.from('setting_def').select('value').eq('key', 'file_storage_soft_limit_percent').maybeSingle();
+    async minFreeGb() {
+      const { data } = await admin.from('setting_def').select('value').eq('key', 'file_storage_min_free_gb').maybeSingle();
       return Number((data as { value: string } | null)?.value);
     },
     newId: () => crypto.randomUUID(),

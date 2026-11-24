@@ -15,7 +15,7 @@ function makeDeps(over: Partial<FileDeps> = {}) {
     drive: {
       startResumableUpload: vi.fn(async (p) => `https://upload/${p.name}`),
       getFileInfo: vi.fn(async (id: string) => ({ id, name: [...rows.keys()][0] ?? '', size: 400, mimeType: 'image/webp', trashed: false })),
-      getStorageQuota: vi.fn(async () => ({ usage: 100, limit: 10000 })),
+      getStorageQuota: vi.fn(async () => ({ usage: 100, limit: 20 * 1024 ** 3 })),
       download: vi.fn(async () => new Response('x')),
     },
     rootFolderId: 'root',
@@ -31,7 +31,7 @@ function makeDeps(over: Partial<FileDeps> = {}) {
       return r && r.owner_user_id === owner ? r : null;
     }),
     markReady: vi.fn(async () => undefined),
-    softLimitPercent: vi.fn(async () => 80),
+    minFreeGb: vi.fn(async () => 3),
     newId: () => `id-${++n}`,
     ...over,
   };
@@ -61,9 +61,9 @@ describe('startUpload', () => {
     expect(await go([{ ...file, mimeType: 'application/zip' }])).toBe('HMT_TEP_LOAI_SAI');
     expect(await go([{ ...file, mimeType: 'image/heic' }])).toBe('HMT_TEP_LOAI_SAI'); // không gửi nguyên HEIC
   });
-  it('luật chặn mềm dung lượng: chạm 80% thì chặn tải mới', async () => {
+  it('luật chặn mềm dung lượng: còn trống dưới 3 GB thì chặn tải mới', async () => {
     const { deps } = makeDeps();
-    deps.drive.getStorageQuota = vi.fn(async () => ({ usage: 8000, limit: 10000 }));
+    deps.drive.getStorageQuota = vi.fn(async () => ({ usage: 12.5 * 1024 ** 3, limit: 15 * 1024 ** 3 }));
     expect(await run(startUpload(deps, 'u1', { kind: 'BAI_NOP', assignmentId: 'as', studentId: 'st', files: [file] }))).toBe('HMT_KHO_TEP_DAY');
   });
   it('luật chặn trùng: trùng ảnh đã nộp thì báo; trùng lần tải dở thì cho nộp lại', async () => {

@@ -1,7 +1,7 @@
 // Luồng lưu tệp lên kho (Google Drive) cho Edge Function file-upload-start, file-upload-done, file-view (F-23-49).
 // Thiết kế docs/ke-hoach/luu-tru-tep-drive.md mục 2, 3. Phần lõi thuần (nhận các việc gọi ngoài qua `deps`) để kiểm thử bằng Drive giả, không cần Deno.
 // Luật: quyền do hàm DB kiểm (file_authorize_upload / file_authorize_view) bằng token người gọi; giới hạn đọc từ tham số cài đặt (không viết số);
-// chặn mềm dung lượng khi chạm file_storage_soft_limit_percent; chặn nộp trùng bằng chỉ mục (bài, học sinh, mã băm).
+// chặn mềm khi dung lượng còn trống của tài khoản kho tệp dưới file_storage_min_free_gb; chặn nộp trùng bằng chỉ mục (bài, học sinh, mã băm).
 // Tên tệp trên Drive là uuid của dòng stored_file (không tên học sinh); lúc `done` kiểm tên + cỡ để gắn đúng tệp Drive với đúng dòng sổ.
 
 export class FlowError extends Error {
@@ -68,8 +68,8 @@ export interface FileDeps {
   supersedePending(assignmentId: string, studentId: string | null, sha256: string): Promise<number>;
   getPending(id: string, ownerUserId: string): Promise<(PendingRow & { status: string }) | null>;
   markReady(id: string, storageKey: string, thumbKey: string | null): Promise<void>;
-  /** Phần trăm chặn mềm (file_storage_soft_limit_percent). */
-  softLimitPercent(): Promise<number>;
+  /** Dung lượng còn trống tối thiểu, tính bằng GB (file_storage_min_free_gb). */
+  minFreeGb(): Promise<number>;
   newId(): string;
 }
 
@@ -91,7 +91,7 @@ export interface StartResult {
 }
 
 const SHA_RE = /^[0-9a-f]{64}$/;
-const PERCENT = 100; // allow-number: phần trăm
+const BYTES_PER_GB = 1024 ** 3; // allow-number: đổi GB sang byte
 
 /** Bắt đầu tải lên: kiểm quyền + giới hạn + dung lượng, ghi dòng CHO_TAI, mở phiên tải Drive cho từng tệp. */
 export async function startUpload(deps: FileDeps, ownerUserId: string, input: StartInput): Promise<StartResult> {
@@ -111,8 +111,9 @@ export async function startUpload(deps: FileDeps, ownerUserId: string, input: St
   if (total > limits.max_total_bytes) throw new FlowError('HMT_TEP_TONG_QUA_LON', 'Tổng dung lượng các tệp quá lớn.');
 
   // Luật chặn mềm dung lượng: chạm ngưỡng thì chặn tải mới (không tự phát sinh tiền, thiết kế mục 6).
-  const [quota, softPercent] = await Promise.all([deps.drive.getStorageQuota(), deps.softLimitPercent()]);
-  if (quota.limit > 0 && ((quota.usage + total) * PERCENT) / quota.limit >= softPercent) {
+  const [quota, minFreeGb] = await Promise.all([deps.drive.getStorageQuota(), deps.minFreeGb()]);
+  // Hạn mức 0 là tài khoản không giới hạn (không chặn). Còn trống = hạn mức trừ đã dùng (gồm cả sao lưu đêm và thư) trừ lô sắp tải.
+  if (quota.limit > 0 && quota.limit - quota.usage - total < minFreeGb * BYTES_PER_GB) {
     throw new FlowError('HMT_KHO_TEP_DAY', 'Kho lưu trữ đang gần đầy, chưa nhận thêm ảnh. Báo quản trị viên.', 503); // allow-number: mã HTTP
   }
 
