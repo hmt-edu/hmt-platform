@@ -1,6 +1,6 @@
 # Dữ liệu mẫu đợt 2: học sinh, lớp, ticket (bản thiết kế ngắn, C-23-39)
 
-Trạng thái: **thiết kế đã có trả lời 5 câu (mục 8), chưa viết migration** (chờ #647 gộp, đợt 1 = khung, migration 648). Soạn 24/11/2026 theo thẻ C-23-39 (anh OK concept 01:11). Nguồn đọc: `docs/nghiep-vu/du-lieu-mau.md` và migration 648 trên nhánh #647; hàm hiện có `app.create_class` (589), `app.create_ticket` (cs ticket), `app.issue_person_code`, `app.issue_class_code`.
+Trạng thái: **ĐÃ LÀM ở migration 657 (#674, đã gộp)**; bản làm xong mô tả ở `docs/nghiep-vu/du-lieu-mau.md`, tài liệu này giữ làm lý lịch thiết kế. Khác thiết kế: lớp Toán được duyệt thật, 3 em ghi danh ở sổ giờ mẫu, ticket bỏ qua khi Aftersale tắt (ghi chú `notice`). Soạn 24/11/2026 theo thẻ C-23-39 (anh OK concept 01:11). Nguồn đọc: `docs/nghiep-vu/du-lieu-mau.md` và migration 648 trên nhánh #647; hàm hiện có `app.create_class` (589), `app.create_ticket` (cs ticket), `app.issue_person_code`, `app.issue_class_code`.
 
 ## 1. Việc cần làm
 Mở rộng `app.create_demo_data_set()` (đợt 1 chỉ tạo bản ghi bộ) để đổ **một chuỗi dữ liệu cố định**: **6 học sinh**, **2 lớp**, **3 ticket**, gắn vào bộ để xoá hoặc ẩn cả bộ. Mọi bản ghi mang cờ `is_demo = true` và có dòng trong `app.demo_data_item`.
