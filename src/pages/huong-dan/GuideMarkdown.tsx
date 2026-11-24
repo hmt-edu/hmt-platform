@@ -3,16 +3,22 @@ import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import type { Block, Inline, ListItem } from './markdown';
 
-/** Ảnh hoặc video nhúng từ public/huong-dan/. Chưa có file thì hiện ô chú thích «Ảnh sẽ bổ sung» thay vì ảnh vỡ. */
-function Media({ kind, name }: { kind: 'image' | 'video'; name: string }) {
+/** Ảnh hoặc video nhúng từ public/huong-dan/. Chưa có file thì ẨN (không hiện chữ kỹ thuật cho người dùng) và báo lên để ẩn cả dòng «Ảnh:». */
+function Media({
+  kind,
+  name,
+  onMissing,
+}: {
+  kind: 'image' | 'video';
+  name: string;
+  onMissing: () => void;
+}) {
   const [missing, setMissing] = useState(false);
-  if (missing) {
-    return (
-      <span className="my-1 block rounded-control border border-dashed border-border px-3 py-2 text-caption text-fg-muted">
-        {kind === 'image' ? 'Ảnh' : 'Video'} «{name}» sẽ bổ sung.
-      </span>
-    );
-  }
+  if (missing) return null;
+  const fail = () => {
+    setMissing(true);
+    onMissing();
+  };
   if (kind === 'image') {
     return (
       <img
@@ -20,7 +26,7 @@ function Media({ kind, name }: { kind: 'image' | 'video'; name: string }) {
         alt={name.replace(/-/g, ' ')}
         loading="lazy"
         className="my-2 block max-w-full rounded-control border border-border"
-        onError={() => setMissing(true)}
+        onError={fail}
       />
     );
   }
@@ -31,16 +37,31 @@ function Media({ kind, name }: { kind: 'image' | 'video'; name: string }) {
       preload="none"
       aria-label={name.replace(/-/g, ' ')}
       className="my-2 block max-w-full rounded-control border border-border"
-      onError={() => setMissing(true)}
+      onError={fail}
     />
   );
 }
 
-function Inlines({ inline }: { inline: Inline[] }) {
+const isMedia = (it: Inline) => it.kind === 'image' || it.kind === 'video';
+/** Chữ nối giữa các ảnh («, ») và nhãn «Ảnh:»: ẩn cùng ảnh khi không có ảnh nào. */
+const isAlbumGlue = (it: Inline) =>
+  (it.kind === 'bold' && /^(Ảnh|Video):?$/.test(it.text.trim())) ||
+  (it.kind === 'text' && /^[\s,.;:]*$/.test(it.text));
+
+function Inlines({
+  inline,
+  allGone,
+  onMissing,
+}: {
+  inline: Inline[];
+  allGone: boolean;
+  onMissing: () => void;
+}) {
   return (
     <>
       {inline.map((it, idx) => {
         const key = `${it.kind}-${idx}`;
+        if (allGone && isAlbumGlue(it)) return null;
         switch (it.kind) {
           case 'text':
             return <span key={key}>{it.text}</span>;
@@ -73,28 +94,67 @@ function Inlines({ inline }: { inline: Inline[] }) {
               </a>
             );
           case 'image':
-            return <Media key={key} kind="image" name={it.name} />;
+            return <Media key={key} kind="image" name={it.name} onMissing={onMissing} />;
           case 'video':
-            return <Media key={key} kind="video" name={it.name} />;
+            return <Media key={key} kind="video" name={it.name} onMissing={onMissing} />;
         }
       })}
     </>
   );
 }
 
-function Items({ items, ordered }: { items: ListItem[]; ordered: boolean }) {
+/** Một dòng chữ có thể kèm ảnh; đếm ảnh chưa có để ẩn nhãn «Ảnh:» khi không còn ảnh nào. */
+function RichInline({ inline }: { inline: Inline[] }) {
+  const [gone, setGone] = useState(0);
+  const total = inline.filter(isMedia).length;
+  return (
+    <Inlines
+      inline={inline}
+      allGone={total > 0 && gone >= total}
+      onMissing={() => setGone((n) => n + 1)}
+    />
+  );
+}
+
+/** Dòng danh sách chỉ gồm nhãn «Ảnh:» và ảnh: ẩn cả dòng khi không có ảnh nào. */
+function ListLine({ item, ordered }: { item: ListItem; ordered: boolean }) {
+  const [gone, setGone] = useState(0);
+  const total = item.inline.filter(isMedia).length;
+  const allGone = total > 0 && gone >= total;
+  const onlyAlbum =
+    total > 0 &&
+    item.children.length === 0 &&
+    item.inline.every((x) => isMedia(x) || isAlbumGlue(x));
+  if (allGone && onlyAlbum) return null;
+  return (
+    <li>
+      <Inlines inline={item.inline} allGone={allGone} onMissing={() => setGone((n) => n + 1)} />
+      {item.children.length > 0 && (
+        <div className="mt-1">
+          <Items items={item.children} ordered={ordered} />
+        </div>
+      )}
+    </li>
+  );
+}
+
+function Items({
+  items,
+  ordered,
+  start,
+}: {
+  items: ListItem[];
+  ordered: boolean;
+  start?: number | undefined;
+}) {
   const Tag = ordered ? 'ol' : 'ul';
   return (
-    <Tag className={`${ordered ? 'list-decimal' : 'list-disc'} space-y-1 pl-6`}>
+    <Tag
+      className={`${ordered ? 'list-decimal' : 'list-disc'} space-y-1 pl-6`}
+      {...(ordered && start !== undefined && start > 1 ? { start } : {})}
+    >
       {items.map((it, idx) => (
-        <li key={idx}>
-          <Inlines inline={it.inline} />
-          {it.children.length > 0 && (
-            <div className="mt-1">
-              <Items items={it.children} ordered={ordered} />
-            </div>
-          )}
-        </li>
+        <ListLine key={idx} item={it} ordered={ordered} />
       ))}
     </Tag>
   );
@@ -117,18 +177,18 @@ export function GuideMarkdown({ blocks }: { blocks: Block[] }): ReactNode {
             const Tag = HEADING_TAG[b.level];
             return (
               <Tag key={idx} id={b.id} className={`${HEADING_CLASS[b.level]} scroll-mt-20 pt-2`}>
-                <Inlines inline={b.inline} />
+                <RichInline inline={b.inline} />
               </Tag>
             );
           }
           case 'paragraph':
             return (
               <p key={idx}>
-                <Inlines inline={b.inline} />
+                <RichInline inline={b.inline} />
               </p>
             );
           case 'list':
-            return <Items key={idx} items={b.items} ordered={b.ordered} />;
+            return <Items key={idx} items={b.items} ordered={b.ordered} start={b.start} />;
           case 'table':
             return (
               <div key={idx} className="overflow-x-auto">
@@ -141,7 +201,7 @@ export function GuideMarkdown({ blocks }: { blocks: Block[] }): ReactNode {
                           scope="col"
                           className="border-b border-border px-2 py-1.5 font-semibold"
                         >
-                          <Inlines inline={h} />
+                          <RichInline inline={h} />
                         </th>
                       ))}
                     </tr>
@@ -151,7 +211,7 @@ export function GuideMarkdown({ blocks }: { blocks: Block[] }): ReactNode {
                       <tr key={ri} className="align-top">
                         {r.map((cell, c) => (
                           <td key={c} className="border-b border-surface-subtle px-2 py-1.5">
-                            <Inlines inline={cell} />
+                            <RichInline inline={cell} />
                           </td>
                         ))}
                       </tr>
@@ -176,7 +236,7 @@ export function GuideMarkdown({ blocks }: { blocks: Block[] }): ReactNode {
           case 'quote':
             return (
               <blockquote key={idx} className="border-l-2 border-border pl-3 text-fg-muted">
-                <Inlines inline={b.inline} />
+                <RichInline inline={b.inline} />
               </blockquote>
             );
           case 'rule':

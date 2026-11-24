@@ -1,6 +1,6 @@
-# 4. Từ điển thuật ngữ
+# Từ điển thuật ngữ
 
-Dành cho nhân viên, giáo viên mới. Mỗi thuật ngữ có: **tên trên màn**, nghĩa ngắn, ví dụ, **nơi gặp** (nhóm menu trái của cổng CRM, trừ khi ghi khác). Sắp theo ABC. Ví dụ đều là dữ liệu giả. Xem thêm `README.md` (cách đọc bộ hướng dẫn).
+Dành cho nhân viên, giáo viên mới. Mỗi thuật ngữ có: **tên trên màn**, nghĩa ngắn, ví dụ, **nơi gặp** (nhóm menu trái của cổng CRM, trừ khi ghi khác). Sắp theo ABC. Ví dụ đều là dữ liệu giả.
 
 Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Group By, Favorites, Save to Favorites, Stage, Sub-stage, Source, Sub-source, Source type, Medium, Assign, Campaign, Time Table, Done.
 

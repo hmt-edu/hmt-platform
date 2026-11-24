@@ -1,6 +1,6 @@
-# Hướng dẫn cho Giáo viên và Trợ giảng (cổng Giáo viên, dùng trên điện thoại)
+# Vai: Giáo viên và Trợ giảng (cổng Giáo viên, dùng trên điện thoại)
 
-Vai: Giáo viên, Trợ giảng (thấy các buổi mình được phân công). Thanh dưới: «Hôm nay», «Lịch dạy», «Lớp», «Cần làm», «Tài khoản». Xem `README.md` và `chung.md`.
+Vai: Giáo viên, Trợ giảng (thấy các buổi mình được phân công). Thanh dưới: «Hôm nay», «Lịch dạy», «Lớp», «Cần làm», «Tài khoản».
 
 ## 1. Xem buổi hôm nay
 - **Mục đích:** biết hôm nay dạy gì, buổi nào cần hoàn tất.
@@ -21,7 +21,7 @@ Vai: Giáo viên, Trợ giảng (thấy các buổi mình được phân công).
 | Thấy gì | Nghĩa là | Làm gì |
 |---|---|---|
 | «Buổi chưa chốt danh sách.» / «Chưa có danh sách để điểm danh» | CSKH chưa chốt danh sách buổi | nhờ CSKH chốt danh sách |
-| «Buổi đã Hoàn thành: chỉ xem.» | buổi đã Done | sửa sau Done do Trưởng cơ sở (xem `truong-co-so.md`) |
+| «Buổi đã Hoàn thành: chỉ xem.» | buổi đã Done | sửa sau Done do Trưởng cơ sở (xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so)) |
 | «Bạn không xem được buổi này» | buổi không phân công cho bạn | kiểm lại lịch hoặc báo CSKH |
 
 - **Ảnh:** [ẢNH: gv-diem-danh], [ẢNH: gv-diem-danh-luu]

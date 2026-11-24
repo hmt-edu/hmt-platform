@@ -1,6 +1,6 @@
 # 1. Bắt đầu nhanh
 
-Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giáo viên, trợ giảng, học sinh, phụ huynh. Xem `README.md` về cách đọc. Chữ trong dấu «…» là chữ trên màn thật (đối chiếu với code trên `main`). Chỗ chèn ảnh ghi `[ẢNH: ten-kich-ban]`, ảnh chụp sau bằng tài khoản giả (xem `CHUP-ANH.md`). Dữ liệu trong ví dụ là giả.
+Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giáo viên, trợ giảng, học sinh, phụ huynh. Chữ trong dấu «…» là chữ hiện trên màn.
 
 ## 1.1 Đăng nhập
 
@@ -10,7 +10,7 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
   1. Mở địa chỉ hệ thống, màn «Đăng nhập» (dòng «Dành cho nhân viên, giáo viên và trợ giảng.»).
   2. Nhập «Email» (dạng `ten@hoamatoan.vn`) và «Mật khẩu».
   3. Bấm «Đăng nhập».
-  4. **Admin và Kế toán** còn một bước «Xác thực hai bước» (xem 1.3).
+  4. **Admin** còn một bước «Xác thực hai bước» (xem 1.3).
 - **Kết quả:** vào đúng cổng của mình (CRM cho nhân viên, Giáo viên cho giáo viên và trợ giảng). Ai có nhiều cổng thì chọn cổng ở menu tài khoản (xem 1.6).
 - **Nếu gặp lỗi:** «Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa.» Màn «Không thể đăng nhập» nghĩa là tài khoản chưa dùng được: liên hệ quản trị viên.
 - **Ảnh:** [ẢNH: dang-nhap-nhan-vien]
@@ -55,8 +55,8 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
 - **Các bước:** ở màn đăng nhập bấm «Quên mật khẩu?». Màn «Quên mật khẩu» ghi «Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm.» Liên hệ quản trị viên; bấm «Quay lại đăng nhập» để trở về.
 - **Ảnh:** [ẢNH: quen-mat-khau]
 
-## 1.3 Xác thực hai bước (chỉ Admin và Kế toán)
-- **Ai làm:** chỉ tài khoản Admin và Kế toán («Bắt buộc với tài khoản Admin và Kế toán.»). Vai khác không gặp bước này.
+## 1.3 Xác thực hai bước (chỉ Admin)
+- **Ai làm:** chỉ tài khoản Admin. Vai khác (kể cả Kế toán) không gặp bước này.
 - **Lần đầu (thiết lập):**
   1. Sau khi nhập email, mật khẩu, màn thiết lập hiện mã để quét. Mở ứng dụng xác thực trên điện thoại, quét mã. Không quét được thì nhập khoá ở dòng «Không quét được? Nhập khoá này vào ứng dụng:».
   2. Nhập 6 số vào ô «Mã xác thực».

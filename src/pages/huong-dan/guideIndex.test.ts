@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { GUIDE_SECTIONS } from './guideIndex';
+import {
+  GUIDE_GROUPS,
+  GUIDE_SECTIONS,
+  GUIDE_SLUG_ALIASES,
+  findSection,
+  neighbours,
+} from './guideIndex';
 
 // File trong docs/huong-dan không phải bài hướng dẫn người dùng: không đưa vào menu.
 const NOT_GUIDE = new Set(['README.md', 'CHUP-ANH.md']);
@@ -24,9 +30,28 @@ describe('Danh mục Hướng dẫn (guideIndex)', () => {
   it('slug và số thứ tự không trùng; mục đầu giữ slug mặc định bat-dau', () => {
     const slugs = GUIDE_SECTIONS.map((s) => s.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
-    const nos = GUIDE_SECTIONS.map((s) => s.no);
+    const nos = GUIDE_SECTIONS.map((s) => s.no).filter((n) => n !== undefined);
     expect(new Set(nos).size).toBe(nos.length);
     expect(GUIDE_SECTIONS[0]?.slug).toBe('bat-dau');
+  });
+});
+
+describe('Menu gọn (A-23-37)', () => {
+  it('mọi mục thuộc đúng một nhóm có tiêu đề; không còn bài trùng nội dung cũ', () => {
+    const keys = new Set(GUIDE_GROUPS.map((g) => g.key));
+    expect(GUIDE_SECTIONS.every((s) => keys.has(s.group))).toBe(true);
+    const files = GUIDE_SECTIONS.map((s) => s.file);
+    for (const old of ['chung.md', 'sale.md', 'cskh.md', 'ke-toan.md', 'truong-co-so.md'])
+      expect(files).not.toContain(old);
+  });
+  it('địa chỉ cũ đổi sang mục mới có thật', () => {
+    for (const to of Object.values(GUIDE_SLUG_ALIASES)) expect(findSection(to)).toBeDefined();
+    expect(findSection('sale')?.slug).toBe('theo-vai-tu-van');
+  });
+  it('bài trước / bài sau theo đúng thứ tự menu; đầu không có bài trước, cuối không có bài sau', () => {
+    expect(neighbours(GUIDE_SECTIONS[0]!.slug).prev).toBeUndefined();
+    expect(neighbours(GUIDE_SECTIONS[0]!.slug).next?.slug).toBe(GUIDE_SECTIONS[1]!.slug);
+    expect(neighbours(GUIDE_SECTIONS[GUIDE_SECTIONS.length - 1]!.slug).next).toBeUndefined();
   });
 });
 
