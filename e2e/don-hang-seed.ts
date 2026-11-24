@@ -60,6 +60,14 @@ export const PAY_LATER_SETUPS = {
 export const payLaterSetupOf = (project: string): Setup =>
   PAY_LATER_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 
+// Bộ riêng cho bài «Dùng số dư cho đơn» (TC-16).
+export const BALANCE_SETUPS = {
+  'may-tinh': { mark: 'E2ESDMT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1600 },
+  'dien-thoai': { mark: 'E2ESDDT', sale: 'sale.cs5', manager: 'truongcs.cs5', phone: 1650 },
+} as const;
+export const balanceSetupOf = (project: string): Setup =>
+  BALANCE_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
+
 export const orderSetupOf = (project: string): Setup =>
   ORDER_SETUPS[project === 'dien-thoai' ? 'dien-thoai' : 'may-tinh'];
 
