@@ -89,3 +89,5 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
 
 ## Dữ liệu mẫu
 _(Để trống: viết sau khi tính năng chạy.)_
+
+- **Video (26 giây: tạo một bộ, xem danh sách, xoá bộ):** [VIDEO: huong-dan-du-lieu-mau]

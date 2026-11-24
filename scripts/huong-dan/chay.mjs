@@ -339,6 +339,62 @@ const BAI = {
         },
       ],
     ),
+  // «Dữ liệu mẫu của tôi» (#667): tạo một bộ [MẪU] rồi xoá đúng bộ đó. CHỈ staging, tài khoản giả. Chạy với HD_TAI_KHOAN=sale.cs5@…
+  'du-lieu-mau': (b) =>
+    chayBai(
+      b,
+      'du-lieu-mau',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/du-lieu-mau`);
+        await p.waitForLoadState('networkidle');
+        // Dọn các bộ còn sót của tài khoản giả (tối đa 3 bộ/người) trước khi quay.
+        const xoa = p.getByRole('button', { name: 'Xoá bộ', exact: true });
+        for (let i = 0; i < 5 && (await xoa.count()) > 0; i++) {
+          await xoa.first().click();
+          await xoa.last().click();
+          await p.waitForTimeout(2000);
+        }
+        await p.reload();
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Mở «Dữ liệu mẫu của tôi» từ menu tài khoản',
+          loc: (p) => p.getByRole('heading', { name: 'Dữ liệu mẫu của tôi' }),
+        },
+        {
+          chu: 'Bấm Tạo bộ dữ liệu mẫu',
+          loc: (p) => p.getByRole('button', { name: 'Tạo bộ dữ liệu mẫu', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tạo bộ dữ liệu mẫu', exact: true }).click();
+            await p
+              .getByRole('button', { name: 'Xoá bộ', exact: true })
+              .first()
+              .waitFor({ timeout: 30000 });
+          },
+        },
+        {
+          chu: 'Bộ mới hiện ở danh sách; dữ liệu trong bộ ghi «[MẪU]»',
+          loc: (p) => p.locator('main ul > li').first(),
+        },
+        {
+          chu: 'Dùng xong thì bấm Xoá bộ',
+          loc: (p) => p.getByRole('button', { name: 'Xoá bộ', exact: true }).first(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Xoá bộ', exact: true }).first().click();
+          },
+        },
+        {
+          chu: 'Xác nhận Xoá bộ (không khôi phục được)',
+          loc: (p) => p.getByRole('button', { name: 'Xoá bộ', exact: true }).last(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Xoá bộ', exact: true }).last().click();
+            await p.waitForTimeout(1500);
+          },
+        },
+      ],
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
