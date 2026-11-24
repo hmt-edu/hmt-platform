@@ -37,6 +37,9 @@ async function withDb<T>(fn: (db: pg.Client) => Promise<T>): Promise<T> {
 async function cleanup() {
   await withDb(async (db) => {
     const codes = [CODE, OTHER_CODE];
+    // Bảng nghiệp vụ không cho xoá: dọn bằng phiên "replica" (bỏ trigger chặn xoá) trong một giao dịch, xoá con trước cha.
+    await db.query('begin');
+    await db.query("set local session_replication_role = 'replica'");
     await db.query(
       'delete from app.user_role where user_id in (select id from app.user_account where parent_code = any($1))',
       [codes],
@@ -51,6 +54,7 @@ async function cleanup() {
       [codes],
     );
     await db.query('delete from app.parent where code = any($1)', [codes]);
+    await db.query('commit');
   });
 }
 
