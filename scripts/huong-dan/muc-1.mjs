@@ -133,6 +133,11 @@ const SHOTS = {
     route: '/gv',
     loc: (p) => p.getByRole('navigation').last(),
   },
+  'loi-khong-co-quyen': {
+    account: 'sale.cs5',
+    route: '/crm/quan-tri/nhat-ky',
+    loc: (p) => p.getByRole('link', { name: 'Về trang chủ' }),
+  },
 };
 
 const chon = process.argv.slice(2);

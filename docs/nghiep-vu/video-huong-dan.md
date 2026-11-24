@@ -1,6 +1,6 @@
 # Kế hoạch video hướng dẫn (A-23-41b, 24/11/2026)
 
-Hướng đi anh Trường chốt 24/11: video quay bằng Playwright trên dữ liệu mẫu, có **chữ chú thích từng bước ngay trên màn hình**, 1280×720, mỗi video 1–3 phút cho luồng chi tiết, nén mp4. **Video không nằm trong repo**: lưu trên Google Drive của tài khoản vận hành, trang Hướng dẫn nhúng khung xem trước qua file manifest. Danh sách luồng lấy từ `docs/huong-dan/KE-NGHIEP-VU.md` (PR #696) (mã luồng ở cột đầu).
+Hướng đi anh Trường chốt 24/11: video quay bằng Playwright trên dữ liệu mẫu, có **chữ chú thích từng bước ngay trên màn hình**, 1280×720, **độ dài mỗi video theo nội dung cần truyền đạt, không cố định** (anh chốt 24/11; bảng «Phút» bên dưới chỉ là ước tính để tính dung lượng), nén mp4. **Video không nằm trong repo**: lưu trên Google Drive của tài khoản vận hành, trang Hướng dẫn nhúng khung xem trước qua file manifest. Danh sách luồng lấy từ `docs/huong-dan/KE-NGHIEP-VU.md` (PR #696) (mã luồng ở cột đầu).
 
 ## Cách hoạt động
 1. Quay và nén video (mp4, H.264, không tiếng, 1280×720, 15–25 khung hình/giây).
@@ -8,8 +8,8 @@ Hướng đi anh Trường chốt 24/11: video quay bằng Playwright trên dữ
 3. Lấy ID file từ đường dẫn `https://drive.google.com/file/d/<ID>/view`.
 4. Ghi vào `public/huong-dan/video-manifest.json`: `"ts1": { "drive": "<ID>" }`. Muốn lưu nơi khác (R2, máy chủ riêng) chỉ đổi dòng đó thành `{ "url": "https://…/ts1.mp4" }`; không sửa code.
 5. Trong bài viết chỗ cần video: `[VIDEO: ts1]` (tên = mã luồng viết thường). Bài **chưa có** dòng trong manifest hiện «Video đang cập nhật».
-6. Trang đọc manifest mỗi lần mở (không lưu bộ nhớ đệm trình duyệt lâu), nên thêm video mới **không cần dựng lại** ứng dụng nếu chỉ sửa manifest ở bản đã chạy; đổi file trong repo thì theo quy trình gộp PR bình thường.
-- Sáu video cũ (≤ 60 giây, trong `public/huong-dan/video/`) đã ghi vào manifest dạng `url` nội bộ, vẫn chạy; có thể thay dần bằng bản quay mới rồi xoá file khỏi repo.
+6. Trang đọc manifest mỗi lần mở (không lưu bộ nhớ đệm trình duyệt lâu), nhưng file manifest nằm trong `public/` của repo: **thêm video vẫn phải qua PR, gộp, rồi bản chạy thật chỉ đổi khi anh chạy deploy** (như mọi thay đổi khác). Không có đường tắt sửa trực tiếp trên bản đã chạy.
+- Sáu video cũ (26–60 giây, trong `public/huong-dan/video/`) đã ghi vào manifest dạng `url` nội bộ, vẫn chạy; có thể thay dần bằng bản quay mới rồi xoá file khỏi repo.
 - Khung nhúng: `drive.google.com/file/d/<ID>/preview` trong iframe có `sandbox`; CSP hiện cho phép khung `https:`. Nếu sau này siết `frame-src`, thêm đúng `https://drive.google.com`.
 
 ## Ước lượng

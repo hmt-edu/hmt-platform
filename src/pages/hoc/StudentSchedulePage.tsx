@@ -28,10 +28,13 @@ export function ScheduleView({
   childrenQuery: children,
   studentId,
   chips,
+  parentView = false,
 }: {
   childrenQuery: ReturnType<typeof useChildren>;
   studentId: string | undefined;
   chips?: ReactNode;
+  /** Cổng Phụ huynh: chữ theo khung PH05 («Lịch học của con», «con» thay «em»). */
+  parentView?: boolean;
 }) {
   const todayKey = vnDayBounds().dateKey;
   const [monday, setMonday] = useState(() => mondayOf(todayKey));
@@ -42,7 +45,7 @@ export function ScheduleView({
 
   const header = (
     <div className="flex flex-col gap-2">
-      <h1 className="text-h2">Lịch học</h1>
+      <h1 className="text-h2">{parentView ? 'Lịch học của con' : 'Lịch học'}</h1>
       {chips}
       <div className="flex flex-wrap items-center gap-2">
         <Button variant="secondary" onClick={() => setMonday(addDays(monday, -DAYS_IN_WEEK))}>
@@ -102,7 +105,11 @@ export function ScheduleView({
     <div className="flex flex-col gap-4">
       {header}
       {empty ? (
-        <StateView kind="empty" title="Tuần này em không có buổi học" headingLevel={2}>
+        <StateView
+          kind="empty"
+          title={parentView ? 'Tuần này con không có buổi học' : 'Tuần này em không có buổi học'}
+          headingLevel={2}
+        >
           Chọn tuần khác để xem lịch.
         </StateView>
       ) : (
