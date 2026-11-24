@@ -3,18 +3,12 @@
 // Địa chỉ và mật khẩu của kho tệp (Apps Script) chỉ đọc từ secret của Edge Function: APPS_SCRIPT_URL, APPS_SCRIPT_SHARED_SECRET.
 import { createClient } from 'npm:@supabase/supabase-js@2.117.3';
 import { base64ToBytes, createAppsScriptClient, StoreError } from './apps-script-client.ts';
-import { FlowError, type FileDeps, type PendingRow, type UploadAuth, type ViewAuth } from './file-flow.ts';
+import { FlowError, type FileDeps, type StoreLike, type PendingRow, type UploadAuth, type ViewAuth } from './file-flow.ts';
 import { publishableKey, secretKey } from './http.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const VN_OFFSET_MS = 7 * 3_600_000; // allow-number: Asia/Ho_Chi_Minh là UTC+7
 const PG_UNIQUE_VIOLATION = '23505'; // allow-number: mã lỗi Postgres trùng khoá duy nhất
-
-function need(name: string): string {
-  const v = Deno.env.get(name);
-  if (!v) throw new Error(`Thiếu secret ${name} cho Edge Function.`);
-  return v;
-}
 
 /** Lỗi hàm DB (hint là mã HMT_*) đổi sang FlowError để trả câu tiếng Việt cho giao diện. */
 function rpcError(e: { message: string; hint?: string }): FlowError {
@@ -33,7 +27,21 @@ export function buildFileDeps(authorization: string): { deps: FileDeps; callerId
     global: { headers: { Authorization: authorization } },
   });
   const admin = createClient(SUPABASE_URL, secretKey(), { db: { schema: 'app' }, auth: { persistSession: false } });
-  const store = createAppsScriptClient({ url: need('APPS_SCRIPT_URL'), secret: need('APPS_SCRIPT_SHARED_SECRET') });
+  // Kho tệp tạo muộn, sau bước kiểm quyền: chưa cài kho thì người đã qua kiểm quyền nhận 503 «chưa cài đặt» (không phải 500 chung).
+  let storeClient: StoreLike | null = null;
+  const getStore = (): StoreLike => {
+    if (storeClient) return storeClient;
+    const url = Deno.env.get('APPS_SCRIPT_URL');
+    const secret = Deno.env.get('APPS_SCRIPT_SHARED_SECRET');
+    if (!url || !secret) throw new FlowError('HMT_KHO_TEP_CHUA_CAI', 'Kho tệp chưa được cài đặt, báo quản trị viên.', 503); // allow-number: mã HTTP
+    storeClient = createAppsScriptClient({ url, secret });
+    return storeClient;
+  };
+  const store: StoreLike = {
+    save: (p) => getStore().save(p),
+    read: (id) => getStore().read(id),
+    getStorageQuota: () => getStore().getStorageQuota(),
+  };
 
   const deps: FileDeps = {
     store,
