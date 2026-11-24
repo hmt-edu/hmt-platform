@@ -105,7 +105,6 @@ async function layBuoiDone(browser) {
   return /\/gv\/buoi\//.test(u) ? u : null;
 }
 
-p.getByRole('button', { name: ten }).or(p.getByRole('link', { name: ten }));
 const THANH_DUOI = (p) => p.locator('nav').last();
 
 const browser = await chromium.launch();
