@@ -388,7 +388,7 @@ const BAI = {
     ),
   // BH4: Trưởng cơ sở duyệt đơn (3 bước; Từ chối là ngoại lệ, video riêng bh4b). Tự tạo một đơn «Đã trình» trước khi quay.
   bh4: async (b) => {
-    const { url: don, ma } = await taoDonDaTrinh(b);
+    const { ma } = await taoDonDaTrinh(b);
     return chayBai(
       b,
       'bh4',
@@ -482,7 +482,7 @@ const BAI = {
   },
   // TC2: Trưởng cơ sở duyệt phiếu thu (4 bước, bước 4 từ chối chỉ nêu). Tự tạo phiếu «Đã gửi» trước khi quay.
   tc2: async (b) => {
-    const { url: phieu, ma } = await taoPhieuDaGui(b, await taoDonDaDuyet(b));
+    const { ma } = await taoPhieuDaGui(b, await taoDonDaDuyet(b));
     return chayBai(
       b,
       'tc2',
@@ -643,53 +643,7 @@ const BAI = {
       { width: 1280, height: 720 },
       2,
     ),
-  // TC7b: Thu nợ đầu kỳ (3 bước; dừng ở phiếu nháp rồi «Trình»). Tạo một phiếu nợ đầu kỳ «[MẪU]» trên staging.
-  tc7b: (b) =>
-    chayBai(
-      b,
-      'tc7b',
-      async (p) => {
-        await dangNhap(p, EMAIL('ketoan.cs5'));
-        await p.goto(`${APP}/crm/phieu-thu`);
-        await p.waitForLoadState('networkidle');
-      },
-      [
-        {
-          chu: 'Vào «Phiếu thu» và bấm «Thu nợ đầu kỳ»',
-          loc: nutTen('Thu nợ đầu kỳ'),
-          lam: async (p) => {
-            await nutTen('Thu nợ đầu kỳ')(p).click();
-            await p.waitForTimeout(1500);
-          },
-        },
-        {
-          chu: 'Chọn «Phụ huynh», chọn «Em», nhập «Số tiền», chọn «Hình thức», bấm «Tạo phiếu nháp»',
-          loc: (p) => p.getByRole('dialog'),
-          lam: async (p) => {
-            const hop = p.getByRole('dialog');
-            await hop.getByRole('button', { name: /Tìm phụ huynh/ }).click();
-            await p.keyboard.type('[MẪU]');
-            await p.waitForTimeout(2000);
-            await p.getByRole('option').first().click();
-            await hop.getByRole('button', { name: 'Em', exact: true }).click();
-            await p.getByRole('option').first().click();
-            await hop.getByLabel('Số tiền').fill('500000');
-            await hop.getByRole('button', { name: 'Hình thức', exact: true }).click();
-            await p.getByRole('option', { name: 'Tiền mặt', exact: true }).click();
-            await p.waitForTimeout(1000);
-            await hop.getByRole('button', { name: 'Tạo phiếu nháp', exact: true }).click();
-            await p.waitForLoadState('networkidle');
-            await p.waitForTimeout(2500);
-          },
-        },
-        {
-          chu: 'Trình phiếu; Kế toán duyệt',
-          loc: (p) => p.getByRole('button', { name: /^Trình/ }).first(),
-        },
-      ],
-      { width: 1280, height: 720 },
-      3,
-    ),
+  // TC7b (Thu nợ đầu kỳ): CHƯA quay. Bản thử nghiệm chưa có em nào có nợ đầu kỳ (ô «Chọn em» báo «nợ còn 0 đ»); cần nạp nợ đầu kỳ mẫu rồi thêm bài này.
   // TC9: xem phiếu chi «Chờ chi». KHÔNG bấm «Ghi nhận đã chi» (không hoàn tác được; dữ liệu của người khác): dừng ở hộp rồi «Huỷ».
   tc9: (b) =>
     chayBai(
