@@ -90,6 +90,19 @@ export const GUIDE_SECTIONS: GuideSection[] = [
   { slug: 'hoi-dap', title: 'Hỏi đáp và lỗi thường gặp', file: '05-hoi-dap.md', group: 'tra-cuu' },
 ];
 
+export type GuidePortal = 'crm' | 'gv';
+
+/** Cổng giáo viên (A-23-38) chỉ hiện ba bài: thao tác cơ bản, bài vai Giáo viên, hỏi đáp. */
+const GV_SLUGS = ['thao-tac-co-ban', 'giao-vien', 'hoi-dap'];
+
+/** Các mục hiện ở một cổng, giữ đúng thứ tự menu chung. */
+export const sectionsFor = (portal: GuidePortal): GuideSection[] =>
+  portal === 'gv' ? GUIDE_SECTIONS.filter((s) => GV_SLUGS.includes(s.slug)) : GUIDE_SECTIONS;
+
+/** Mục mở đầu tiên của cổng (cổng CRM: giới thiệu; cổng Giáo viên: bài vai Giáo viên). */
+export const defaultSectionFor = (portal: GuidePortal): GuideSection =>
+  portal === 'gv' ? GUIDE_SECTIONS.find((s) => s.slug === 'giao-vien')! : DEFAULT_SECTION;
+
 /** Địa chỉ cũ (trước khi gộp menu) đổi sang mục mới, để liên kết đã gửi cho người dùng không chết. */
 export const GUIDE_SLUG_ALIASES: Record<string, string> = {
   chung: 'bat-dau-nhanh',
@@ -104,11 +117,15 @@ export const sectionLabel = (s: GuideSection) =>
   s.no !== undefined ? `${s.no}. ${s.title}` : s.title;
 
 /** Mục liền trước và liền sau theo đúng thứ tự menu. */
-export function neighbours(slug: string): { prev?: GuideSection; next?: GuideSection } {
-  const i = GUIDE_SECTIONS.findIndex((s) => s.slug === slug);
+export function neighbours(
+  slug: string,
+  portal: GuidePortal = 'crm',
+): { prev?: GuideSection; next?: GuideSection } {
+  const list = sectionsFor(portal);
+  const i = list.findIndex((s) => s.slug === slug);
   if (i < 0) return {};
-  const prev = GUIDE_SECTIONS[i - 1];
-  const next = GUIDE_SECTIONS[i + 1];
+  const prev = list[i - 1];
+  const next = list[i + 1];
   return { ...(prev ? { prev } : {}), ...(next ? { next } : {}) };
 }
 
