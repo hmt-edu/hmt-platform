@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   GUIDE_GROUPS,
+  defaultSectionFor,
+  sectionsFor,
   GUIDE_SECTIONS,
   GUIDE_SLUG_ALIASES,
   findSection,
@@ -71,5 +73,24 @@ describe('Số mục trên menu khớp tiêu đề bài', () => {
       if (m && m[1] !== s.no) lech.push(`${s.file}: tiêu đề ${m[1]}, menu ${s.no}`);
     }
     expect(lech).toEqual([]);
+  });
+});
+
+describe('Hướng dẫn cổng Giáo viên (A-23-38)', () => {
+  it('chỉ hiện thao tác cơ bản, bài Giáo viên và hỏi đáp; mở đầu bằng bài Giáo viên', () => {
+    expect(sectionsFor('gv').map((s) => s.slug)).toEqual([
+      'thao-tac-co-ban',
+      'giao-vien',
+      'hoi-dap',
+    ]);
+    expect(defaultSectionFor('gv').slug).toBe('giao-vien');
+    expect(defaultSectionFor('crm').slug).toBe('bat-dau');
+  });
+  it('bài trước/sau của cổng Giáo viên không nhảy sang bài CRM', () => {
+    expect(neighbours('giao-vien', 'gv')).toMatchObject({
+      prev: { slug: 'thao-tac-co-ban' },
+      next: { slug: 'hoi-dap' },
+    });
+    expect(neighbours('hoi-dap', 'gv').next).toBeUndefined();
   });
 });

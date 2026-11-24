@@ -1264,6 +1264,7 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { index: true, element: <TeacherTodayPage /> },
+          { path: 'huong-dan/:slug?', element: <GuidePage /> },
           { path: 'lich-day', element: <TeacherSchedulePage /> },
           { path: 'gio-day', element: <TeacherHoursPage /> },
           { path: 'lop', element: <TeacherClassesPage /> },
