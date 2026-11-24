@@ -536,5 +536,52 @@ select pg_temp.sudo($$update app.ticket_task set status_code = 'DA_THUC_HIEN' wh
 select app.submit_ticket_task((select (j ->> 'id')::uuid from tb12));
 select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tb12)), 'CHO_DUYET', 'D-23-47 Đúng: phiếu cũ đã Thực hiện thì không chặn gửi duyệt');
 
+-- ================= D-23-48 (migration 662): phiếu Dừng học chọn Hoàn tiền báo sớm HMT_HOAN_PHI_DANG_MO (R-TIEN-28) =================
+create temp table tk14 (j jsonb);
+create temp table tk15 (j jsonb);
+create temp table td14 (j jsonb);
+create temp table td15 (j jsonb);
+grant all on tk14, tk15, td14, td15 to public;
+-- Dữ liệu thử: phiếu Hoàn học phí của phần trên đã hết hiệu lực, ghi danh nền không còn hoàn dở.
+select pg_temp.sudo($$update app.ticket_task set status_code = 'DA_HUY', cancel_reason = 'Thử' where task_type = 'HOAN_PHI' and payload ->> 'enrollment_id' = pg_temp.act_enr()::text and status_code in ('NHAP', 'CHO_DUYET', 'DA_DUYET')$$);
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+insert into tk14 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Dừng học hoàn tiền A', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_06', 'parent_id', pg_temp.act_par(), 'student_id', pg_temp.act_stu()));
+insert into tk15 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Dừng học hoàn tiền B', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_06', 'parent_id', pg_temp.act_par(), 'student_id', pg_temp.act_stu()));
+-- Ghi danh phát sinh một yêu cầu hoàn phí chưa xong (nhân bản số liệu của yêu cầu cũ, dữ liệu thử).
+select pg_temp.sudo($$insert into app.refund_request (enrollment_id, student_id, branch_id, kind_code, reason_code, hours_refund, paid_amount, hours_used, unit_price_base, unit_price_net, base_amount, fee_percent, fee_amount, refund_amount, status_code)
+  select enrollment_id, student_id, branch_id, kind_code, reason_code, hours_refund, paid_amount, hours_used, unit_price_base, unit_price_net, base_amount, fee_percent, fee_amount, refund_amount, 'CHO_QL'
+  from app.refund_request where enrollment_id = pg_temp.act_enr() order by created_at limit 1$$);
+-- Chặn lúc tạo: Dừng học chọn Hoàn tiền khi ghi danh còn yêu cầu hoàn chưa xong.
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk14), 'DUNG_HOC', 'Chuyển nhà', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'HOAN_TIEN'))$$),
+  'HMT_HOAN_PHI_DANG_MO', 'D-23-48 Chặn sớm: tạo phiếu Dừng học Hoàn tiền khi ghi danh còn yêu cầu hoàn chưa xong (R-TIEN-28)');
+-- Không chặn: Dừng học giữ số dư không đụng tiền hoàn.
+insert into td14 select app.create_ticket_task((select (j ->> 'id')::uuid from tk14), 'DUNG_HOC', 'Chuyển nhà', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'GIU_SO_DU'));
+select ok((select (j ->> 'id') is not null from td14), 'D-23-48 Đúng: Dừng học giữ số dư vẫn tạo được dù ghi danh còn yêu cầu hoàn chưa xong');
+-- Yêu cầu hoàn đã chi xong thì không chặn: tạo Dừng học Hoàn tiền được.
+select pg_temp.sudo($$update app.refund_request set status_code = 'DA_CHI' where enrollment_id = pg_temp.act_enr()$$);
+insert into td15 select app.create_ticket_task((select (j ->> 'id')::uuid from tk15), 'DUNG_HOC', 'Chuyển nhà', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'HOAN_TIEN'));
+select ok((select (j ->> 'id') is not null from td15), 'D-23-48 Đúng: yêu cầu hoàn đã chi xong thì không chặn tạo Dừng học Hoàn tiền');
+-- Chặn lúc gửi duyệt: trong lúc phiếu Nháp, ghi danh lại phát sinh yêu cầu hoàn chưa xong.
+select pg_temp.sudo($$update app.refund_request set status_code = 'CHO_QL' where id = (select id from app.refund_request where enrollment_id = pg_temp.act_enr() order by created_at desc limit 1)$$);
+select is(pg_temp.err($$select app.submit_ticket_task((select (j ->> 'id')::uuid from td15))$$),
+  'HMT_HOAN_PHI_DANG_MO', 'D-23-48 Chặn sớm: gửi duyệt phiếu Dừng học Hoàn tiền khi ghi danh còn yêu cầu hoàn chưa xong (R-TIEN-28)');
+-- Yêu cầu hoàn bị huỷ thì không chặn gửi duyệt.
+select pg_temp.sudo($$update app.refund_request set status_code = 'HUY' where enrollment_id = pg_temp.act_enr() and status_code = 'CHO_QL'$$);
+select app.submit_ticket_task((select (j ->> 'id')::uuid from td15));
+select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from td15)), 'CHO_DUYET', 'D-23-48 Đúng: yêu cầu hoàn đã huỷ thì gửi duyệt được');
+-- Phiếu Dừng học Hoàn tiền khác đang mở (td15 Chờ duyệt) cho cùng ghi danh: phiếu thứ hai ở ticket khác bị chặn lúc tạo; phiếu đầu đã Thực hiện thì không chặn.
+create temp table tk16 (j jsonb);
+create temp table td16 (j jsonb);
+grant all on tk16, td16 to public;
+insert into tk16 select app.create_ticket(jsonb_build_object('ticket_type', 'DN', 'branch_id', (select id from app.branch where code = 'CS1'), 'title', 'Dừng học hoàn tiền C', 'description', 'Mô tả giả',
+  'channel_code', 'GOI_DIEN', 'category_code', 'DN_01_06', 'parent_id', pg_temp.act_par(), 'student_id', pg_temp.act_stu()));
+select is(pg_temp.err($$select app.create_ticket_task((select (j ->> 'id')::uuid from tk16), 'DUNG_HOC', 'Hai phiếu', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'HOAN_TIEN'))$$),
+  'HMT_HOAN_PHI_DANG_MO', 'D-23-48 Chặn sớm: tạo phiếu Dừng học Hoàn tiền thứ hai khi đã có phiếu Dừng học Hoàn tiền khác đang mở cho cùng ghi danh');
+select pg_temp.sudo($$update app.ticket_task set status_code = 'DA_THUC_HIEN' where id = (select (j ->> 'id')::uuid from td15)$$);
+insert into td16 select app.create_ticket_task((select (j ->> 'id')::uuid from tk16), 'DUNG_HOC', 'Hai phiếu', jsonb_build_object('enrollment_id', pg_temp.act_enr(), 'reason_code', 'CHUYEN_NOI_O', 'money_mode', 'HOAN_TIEN'));
+select ok((select (j ->> 'id') is not null from td16), 'D-23-48 Đúng: phiếu cũ đã Thực hiện thì không chặn tạo phiếu Dừng học Hoàn tiền mới');
+
 select * from finish();
 rollback;

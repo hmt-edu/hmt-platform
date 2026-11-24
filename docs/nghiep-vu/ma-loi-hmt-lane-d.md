@@ -15,7 +15,7 @@ Thẻ D21, 18/11/2026. Quét `raise_error` trong các migration 212, 231, 232, 2
 | `HMT_DUNG_HOC_SO_LIEU_DOI` | Số liệu đã thay đổi từ lúc tạo yêu cầu (giờ đã học hoặc tiền đã đóng). Hãy huỷ và tạo yêu cầu mới. | 000232, 000235 |
 | `HMT_DUNG_HOC_THIEU_LY_DO` | Từ chối phải ghi lý do. | 000232 |
 | `HMT_DUNG_HOC_TU_DUYET` | Người tạo yêu cầu không tự duyệt yêu cầu của mình. | 000232, 000458 |
-| `HMT_HOAN_PHI_DANG_MO` | Ghi danh này đã có một yêu cầu hoàn phí chưa xong. | 000231, 000235 |
+| `HMT_HOAN_PHI_DANG_MO` | Ghi danh này đã có một yêu cầu hoàn phí chưa xong. | 000231, 000235, 000659 (chặn sớm phiếu Hoàn học phí), 000662 (chặn sớm Dừng học Hoàn tiền) |
 | `HMT_HOAN_PHI_GHI_DANH_SAI` | Ghi danh này không còn hiệu lực để hoàn phí. | 000231, 000235 |
 | `HMT_HOAN_PHI_GIO_SAI` | Giờ hoàn phải lớn hơn 0 và không quá số giờ còn lại (không tính giờ tặng). | 000212, 000450 |
 | `HMT_HOAN_PHI_KHONG_CON_TIEN` | Không còn tiền để hoàn sau khi trừ giờ đã học và phí xử lý. | 000212, 000450 |
