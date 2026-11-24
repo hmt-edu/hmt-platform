@@ -70,7 +70,7 @@ describe('Hướng dẫn: bộ phân tích markdown (A-23-30)', () => {
 });
 
 describe('Hướng dẫn: tìm kiếm (A-23-30)', () => {
-  const section = { slug: 'x', no: 1, title: 'Mục X', file: 'x.md' };
+  const section = { slug: 'x', no: '1', title: 'Mục X', file: 'x.md' };
   const docs = [
     {
       section,

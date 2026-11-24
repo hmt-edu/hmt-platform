@@ -29,3 +29,22 @@ describe('Danh mục Hướng dẫn (guideIndex)', () => {
     expect(GUIDE_SECTIONS[0]?.slug).toBe('bat-dau');
   });
 });
+
+// Số trên menu phải khớp số ở dòng tiêu đề của bài (B-23-38): mục có số ở tiêu đề thì menu hiện đúng số đó.
+const sources = import.meta.glob<string>('../../../docs/huong-dan/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+
+describe('Số mục trên menu khớp tiêu đề bài', () => {
+  it('tiêu đề bài bắt đầu bằng «<số>. » thì số đó bằng số mục trên menu', () => {
+    const lech: string[] = [];
+    for (const s of GUIDE_SECTIONS) {
+      const text = sources[`../../../docs/huong-dan/${s.file}`] ?? '';
+      const m = /^# (\d+[a-z]?)\.\s/.exec(text);
+      if (m && m[1] !== s.no) lech.push(`${s.file}: tiêu đề ${m[1]}, menu ${s.no}`);
+    }
+    expect(lech).toEqual([]);
+  });
+});
