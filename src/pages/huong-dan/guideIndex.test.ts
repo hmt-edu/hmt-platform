@@ -6,6 +6,9 @@ import {
   GUIDE_SECTIONS,
   GUIDE_SLUG_ALIASES,
   findSection,
+  buildParentTree,
+  childLabel,
+  menuOrder,
   neighbours,
 } from './guideIndex';
 import { stripFrontmatter } from './frontmatter';
@@ -100,5 +103,67 @@ describe('Hướng dẫn cổng Giáo viên (A-23-38)', () => {
       slug: 'hoi-dap',
     });
     expect(neighbours('hoi-dap', 'gv').next).toBeUndefined();
+  });
+});
+
+describe('Menu hai cấp cha/con (A-23-49)', () => {
+  const sec = (slug: string, parent: string | undefined, order: number, flow?: string) =>
+    ({
+      slug,
+      title: `Bài ${slug}`,
+      file: `${slug}.md`,
+      group: 'vai',
+      ...(parent ? { parent } : {}),
+      portals: ['crm'],
+      meta: { order, ...(flow ? { flow } : {}) },
+    }) as unknown as (typeof GUIDE_SECTIONS)[number];
+
+  it('cha theo thứ tự khai báo, con theo order rồi mã luồng tự nhiên (qt2 trước qt10)', () => {
+    const tree = buildParentTree([
+      sec('a', 'quan-tri', 1000, 'qt10'),
+      sec('b', 'quan-tri', 1000, 'qt2'),
+      sec('c', 'thu-chi', 1000, 'tc1'),
+      sec('d', 'quan-tri', 5, 'qt99'),
+    ]);
+    expect(tree.map((n) => n.title)).toEqual(['Thu chi', 'Quản trị']);
+    expect(tree[1]?.children.map((c) => c.slug)).toEqual(['d', 'b', 'a']);
+  });
+
+  it('«cskh» và «cham-soc-khach-hang» gộp một cha; khoá lạ xếp cuối; bài không cha không vào cây', () => {
+    const tree = buildParentTree([
+      sec('x', 'cskh', 1000),
+      sec('y', 'cham-soc-khach-hang', 1000),
+      sec('z', 'la-hoac', 1000),
+      sec('w', undefined, 1000),
+    ]);
+    expect(tree.map((n) => n.title)).toEqual(['Chăm sóc khách hàng', 'la-hoac']);
+    expect(tree[0]?.children).toHaveLength(2);
+  });
+
+  it('chữ «con» có mã luồng khi mã hợp lệ, không thì chỉ tên', () => {
+    expect(childLabel(sec('a', 'chung', 1, 'qt10a'))).toBe('QT10A · Bài a');
+    expect(childLabel(sec('a', 'chung', 1, 'mot-id-dai-dong'))).toBe('Bài a');
+  });
+
+  it('mọi bài nhóm «vai» có phan_he đều thành «con» của một cha', () => {
+    const roi = GUIDE_SECTIONS.filter((s) => s.group === 'vai' && s.parent !== undefined);
+    const inTree = buildParentTree(GUIDE_SECTIONS).flatMap((n) => n.children);
+    expect(inTree.map((s) => s.slug).sort()).toEqual(roi.map((s) => s.slug).sort());
+  });
+});
+
+describe('Thứ tự đọc theo menu (A-23-49)', () => {
+  it('menuOrder có đủ mọi mục một lần và Bài trước/Bài sau đi theo nó', () => {
+    const order = menuOrder('crm').map((s) => s.slug);
+    expect(order.sort()).toEqual(
+      sectionsFor('crm')
+        .map((s) => s.slug)
+        .sort(),
+    );
+    const list = menuOrder('crm');
+    const mid = list[Math.floor(list.length / 2)]!;
+    const { prev, next } = neighbours(mid.slug);
+    expect(prev?.slug).toBe(list[list.indexOf(mid) - 1]?.slug);
+    expect(next?.slug).toBe(list[list.indexOf(mid) + 1]?.slug);
   });
 });

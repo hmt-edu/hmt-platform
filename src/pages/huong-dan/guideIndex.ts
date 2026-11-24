@@ -16,6 +16,8 @@ export type GuideSection = {
   group: GuideGroup;
   /** Mục dành cho một vai: dùng cho khối «Bạn là ai?» ở đầu hướng dẫn. */
   roleLabel?: string;
+  /** Khoá phân hệ «cha» (xem GUIDE_PARENTS); chỉ bài nhóm «vai» có. */
+  parent?: string;
   /** Cổng nào hiện mục này (mặc định chỉ CRM). */
   portals: GuidePortal[];
   /** Phần đầu bài (priority, flow, screens, checked) giữ nguyên cho công cụ kiểm. */
@@ -29,6 +31,68 @@ export const GUIDE_GROUPS: { key: GuideGroup; title: string }[] = [
   { key: 'tra-cuu', title: 'Tra cứu' },
 ];
 
+/** Các «cha» (phân hệ) trên menu, đúng thứ tự hiện. Bài có `parent` (hoặc `phan_he`) trùng khoá thì là «con». Khoá lạ vẫn hiện, xếp cuối. */
+export const GUIDE_PARENTS: { key: string; title: string }[] = [
+  { key: 'tu-van', title: 'Tư vấn tuyển sinh' },
+  { key: 'ban-hang', title: 'Bán hàng' },
+  { key: 'thu-chi', title: 'Thu chi' },
+  { key: 'dao-tao', title: 'Đào tạo' },
+  { key: 'cham-soc-khach-hang', title: 'Chăm sóc khách hàng' },
+  { key: 'cskh', title: 'Chăm sóc khách hàng' },
+  { key: 'giao-vien', title: 'Giáo viên' },
+  { key: 'chung', title: 'Chung' },
+  { key: 'quan-tri', title: 'Quản trị' },
+  { key: 'cau-hinh', title: 'Cấu hình' },
+];
+
+export type GuideParentNode = { key: string; title: string; children: GuideSection[] };
+
+const collator = new Intl.Collator('vi', { numeric: true });
+
+/** Chữ hiện của «con»: mã luồng (nếu có, ví dụ «QT10A») và tên. */
+export const childLabel = (s: GuideSection): string =>
+  s.meta.flow && /^[a-z]{1,4}\d+[a-z]?$/i.test(s.meta.flow)
+    ? `${s.meta.flow.toUpperCase()} · ${s.title}`
+    : s.title;
+
+/**
+ * Cây menu hai cấp từ các mục nhóm «vai» có cha: cha theo thứ tự GUIDE_PARENTS (khoá lạ xếp cuối), con theo `order`,
+ * rồi theo mã luồng (số tự nhiên: qt2 trước qt10), rồi theo tên. Cha trùng tên (cskh và cham-soc-khach-hang) gộp một.
+ */
+export function buildParentTree(sections: GuideSection[]): GuideParentNode[] {
+  const nodes = new Map<string, GuideParentNode>();
+  const titleOf = new Map(GUIDE_PARENTS.map((p) => [p.key, p.title]));
+  const merged = (key: string) => titleOf.get(key) ?? key;
+  for (const s of sections) {
+    if (s.group !== 'vai' || s.parent === undefined) continue;
+    const title = merged(s.parent);
+    const node = nodes.get(title) ?? { key: s.parent, title, children: [] };
+    node.children.push(s);
+    nodes.set(title, node);
+  }
+  const rank = (title: string) => {
+    const i = GUIDE_PARENTS.findIndex((p) => p.title === title);
+    return i < 0 ? GUIDE_PARENTS.length : i;
+  };
+  return [...nodes.values()]
+    .sort((a, b) => rank(a.title) - rank(b.title) || collator.compare(a.title, b.title))
+    .map((n) => ({
+      ...n,
+      children: [...n.children].sort(
+        (a, b) =>
+          a.meta.order - b.meta.order ||
+          collator.compare(a.meta.flow ?? '', b.meta.flow ?? '') ||
+          collator.compare(a.title, b.title),
+      ),
+    }));
+}
+
+/** Mục con thuộc một cha (để biết cha nào mở sẵn). */
+export const parentTitleOf = (s: GuideSection): string | undefined =>
+  s.group === 'vai' && s.parent !== undefined
+    ? (GUIDE_PARENTS.find((p) => p.key === s.parent)?.title ?? s.parent)
+    : undefined;
+
 // Mục lục TỰ SINH từ phần đầu (frontmatter) của mọi bài trong docs/huong-dan/**/*.md (xem frontmatter.ts):
 // thêm bài = thêm tệp có phần đầu, không sửa tệp này. Thứ tự: nhóm, rồi «order», rồi đường dẫn. Slug «bat-dau» là đường mặc định.
 export const GUIDE_SECTIONS: GuideSection[] = index.map((m) => ({
@@ -38,6 +102,7 @@ export const GUIDE_SECTIONS: GuideSection[] = index.map((m) => ({
   file: m.file,
   group: m.group,
   ...(m.role !== undefined ? { roleLabel: m.role } : {}),
+  ...(m.parent !== undefined ? { parent: m.parent } : {}),
   portals: m.portals,
   meta: m,
 }));
@@ -71,12 +136,25 @@ export const GUIDE_SLUG_ALIASES: Record<string, string> = {
 export const sectionLabel = (s: GuideSection) =>
   s.no !== undefined ? `${s.no}. ${s.title}` : s.title;
 
+/** Thứ tự đọc đúng như menu: Bắt đầu, vai (không cha), rồi từng cha với các con, rồi Tra cứu. */
+export function menuOrder(portal: GuidePortal = 'crm'): GuideSection[] {
+  const list = sectionsFor(portal);
+  const flat = (g: GuideGroup) =>
+    list.filter((s) => s.group === g && !(g === 'vai' && s.parent !== undefined));
+  return [
+    ...flat('bat-dau'),
+    ...flat('vai'),
+    ...buildParentTree(list).flatMap((n) => n.children),
+    ...flat('tra-cuu'),
+  ];
+}
+
 /** Mục liền trước và liền sau theo đúng thứ tự menu. */
 export function neighbours(
   slug: string,
   portal: GuidePortal = 'crm',
 ): { prev?: GuideSection; next?: GuideSection } {
-  const list = sectionsFor(portal);
+  const list = menuOrder(portal);
   const i = list.findIndex((s) => s.slug === slug);
   if (i < 0) return {};
   const prev = list[i - 1];
