@@ -44,7 +44,7 @@ cap_nhat: 2026-11-24
    *Bạn thấy:* «Đã ngừng hồ sơ dạy.» hoặc «Đã dùng lại hồ sơ dạy.»
 
 ## Sau bước này
-- **Ai làm tiếp:** người xếp lịch dùng hồ sơ này để tham khảo (môn, khối, cơ sở) khi chọn giáo viên.
+- **Ai làm tiếp:** người tạo lớp: ô chọn giáo viên, trợ giảng ở màn Tạo lớp hiện môn, khối từ hồ sơ đang dùng. Chưa có hồ sơ thì ghi «(chưa có hồ sơ dạy)», vẫn chọn được. Cơ sở không hiện ở đó.
 - **Bạn xem ở đâu:** bảng này, lọc theo Tình trạng. Mọi lần đổi có trong nhật ký thao tác.
 
 ## Làm nhầm thì sao
@@ -59,6 +59,7 @@ cap_nhat: 2026-11-24
 |---|---|---|
 | Ô chọn người không thấy tên cần tìm | người đó đã có hồ sơ (có thể đang «Ngừng»), hoặc chưa có tài khoản giáo viên, trợ giảng | Lọc bảng theo tên, bấm «Dùng lại» nếu đã ngừng; chưa có tài khoản thì tạo người dùng trước |
 | «Ghi chú tối đa 500 ký tự.» | ghi chú quá dài | Rút ngắn ghi chú |
+| «Có môn học không còn dùng hoặc không có trong danh mục.» (HMT_MON_SAI), hoặc câu tương tự cho khối (HMT_KHOI_SAI) | hồ sơ đang có môn, khối đã Ngừng | Bỏ tích môn, khối đó rồi lưu |
 | Thông báo lỗi đỏ trong hộp | máy chủ từ chối | Đọc câu trong hộp, làm theo; không rõ thì báo Admin hệ thống |
 | Lỗi tải danh sách | lỗi mạng | Bấm thử lại |
 
