@@ -57,3 +57,8 @@ Chuỗi dữ liệu cố định, dừng ở trạng thái chờ duyệt; SĐT d
 - Thêm cờ `is_demo` cho `student_test`, `enrollment_hold`, `refund_request`; `app.demo_tag` thêm STUDENT_TEST, ENROLLMENT_HOLD, REFUND_REQUEST.
 - Hạn mức mặc định nâng từ 3 lên 6 bộ mỗi người, từ 10 lên 30 bộ mỗi cơ sở (tham số `demo_data_max_per_user`, `demo_data_max_per_branch`, vẫn đổi được ở màn Cài đặt).
 - Chưa làm: yêu cầu Dừng học chờ duyệt (cần ticket Dừng học và ghi danh có đơn).
+
+### Buổi dạy hôm nay cho giáo viên (migration 668, E-23-44, CAO: dữ liệu đào tạo, chỉ staging)
+- Trước 668 lớp mẫu không có giáo viên: Lịch dạy (GV-02) trống với tài khoản giáo viên tập. `app.demo_make_teaching_today(bộ, cơ sở)` chọn giáo viên đang dùng của cơ sở (người bấm nếu là giáo viên, không thì giáo viên đầu theo tên đăng nhập), gán cho các buổi chưa dạy của lớp Toán mẫu và dời buổi kế tiếp (Nháp) về hôm nay. Không có giáo viên thì bỏ qua và ghi ghi chú của bộ.
+- `app.demo_make_p1` thêm một khối gọi hàm này (thân còn lại giữ như 666). Chỉ bộ tạo SAU 668 có buổi hôm nay; bộ cũ cần xoá và tạo lại.
+- Nhận xét chờ gửi (CS-16) đã có từ 666: 1 dòng chờ gửi mỗi bộ.
