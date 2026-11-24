@@ -1,6 +1,6 @@
 // @ts-nocheck
 // Ảnh THẬT cho docs/huong-dan/01-bat-dau-nhanh.md (chỗ «[ẢNH: tên]»). Chạy tay trên bản thử nghiệm, tài khoản giả. Cách chạy như README.md.
-// Ra: HD_OUT (mặc định docs/huong-dan/assets/): <tên>.png, khung cam #EF6925 quanh phần cần chú ý. Không email, số điện thoại thật.
+// Ra: HD_OUT (mặc định public/huong-dan/anh/): <tên>.png, khung cam #EF6925 quanh phần cần chú ý. Không email, số điện thoại thật.
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { chromium } from '@playwright/test';
@@ -9,7 +9,7 @@ const APP = (process.env.STAGING_URL ?? '').replace(/\/$/, '');
 const PW = process.env.STAGING_PASSWORD ?? '';
 const SB_URL = process.env.HD_SUPABASE_URL ?? '';
 const SB_KEY = process.env.HD_SUPABASE_KEY ?? '';
-const OUT = process.env.HD_OUT ?? join(process.cwd(), 'docs', 'huong-dan', 'assets');
+const OUT = process.env.HD_OUT ?? join(process.cwd(), 'public', 'huong-dan', 'anh');
 const DOMAIN = 'thu.hoamatoan.invalid';
 if (!APP.startsWith('https://') || /prod/i.test(APP) || !PW || !SB_URL || !SB_KEY) {
   console.error(

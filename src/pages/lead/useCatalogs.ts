@@ -74,6 +74,18 @@ export function activeOptions(all: CatalogItem[], catalog: string, keep?: string
     .map(toOption);
 }
 
+/** Mục đang dùng của một danh mục, chỉ những mục áp dụng cho `appliesTo` (cột applies_to; để trống là áp dụng mọi nơi). */
+export function optionsAppliesTo(all: CatalogItem[], catalog: string, appliesTo: string) {
+  return all
+    .filter(
+      (i) =>
+        i.catalog_code === catalog &&
+        i.is_active &&
+        (!i.applies_to || i.applies_to.length === 0 || i.applies_to.includes(appliesTo)),
+    )
+    .map(toOption);
+}
+
 /**
  * Danh sách cho BỘ LỌC (Q-127, R-V2-43): liệt kê cả mục đã Ngừng, kèm nhãn "(ngừng)", để lọc được dữ liệu cũ. Ô chọn khi tạo hoặc sửa
  * dùng `activeOptions`, không có mục Ngừng.
@@ -180,15 +192,7 @@ export function useLeadCatalogs(): LeadCatalogs {
       name: (catalog, code) => (code ? byKey.get(`${catalog}|${code}`)?.name : undefined),
       options: (catalog, keep) => activeOptions(all, catalog, keep),
       filterOptions: (catalog) => filterOptions(all, catalog),
-      optionsFor: (catalog, appliesTo) =>
-        all
-          .filter(
-            (i) =>
-              i.catalog_code === catalog &&
-              i.is_active &&
-              (!i.applies_to || i.applies_to.length === 0 || i.applies_to.includes(appliesTo)),
-          )
-          .map(toOption),
+      optionsFor: (catalog, appliesTo) => optionsAppliesTo(all, catalog, appliesTo),
       childrenOf: (catalog, parentCatalog, parentCode, keep) =>
         childOptions(all, catalog, parentCatalog, parentCode, keep),
       parentCode: (catalog, code, parentCatalog) => {
