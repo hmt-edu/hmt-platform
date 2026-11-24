@@ -11,20 +11,21 @@ cap_nhat: 2026-11-24
 # Kế toán duyệt hoặc từ chối phiếu thu
 
 **Làm xong bạn có:** phiếu «Đã duyệt» (hệ thống tự sinh khoản tiền vào và ghi danh) hoặc phiếu về Nháp kèm lý do.
-**Ai làm:** Kế toán (chỉ vai Kế toán duyệt tiền; Admin và vai khác không duyệt). **Màn:** **Chờ kế toán duyệt**.
+**Ai làm:** Kế toán (chỉ vai Kế toán duyệt tiền; Admin và vai khác không duyệt). **Màn:** **Hàng chờ kế toán duyệt**.
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn có sao kê ngân hàng hoặc chứng từ để đối chiếu.
-- [ ] Phiếu đã qua bước quản lý (tình trạng «Chờ kế toán»).
+- [ ] Phiếu đã qua bước quản lý (tình trạng «Chờ kế toán»). Phiếu **Thu nợ đầu kỳ** không qua quản lý: vào thẳng hàng chờ của bạn.
 - [ ] Bạn không phải người đã duyệt bước quản lý của phiếu này.
 
 ## Các bước
-1. Vào **Chờ kế toán duyệt** (hoặc **Phiếu thu**, lọc «Chờ kế toán duyệt»), mở phiếu. [CHƯA CHỤP: chờ tài khoản staging]
-2. Đối chiếu «Số tiền», «Hình thức», «Ngày nhận», «Mã giao dịch», «Người nhận tiền», «Cơ sở thu tiền», ảnh chứng từ; xem «Chia về các dòng đơn». [CHƯA CHỤP]
-3. Khớp sao kê: bấm **«Duyệt phiếu thu»**. *Bạn thấy:* phiếu «Đã duyệt»; có khoản tiền vào mới; đủ cọc tối thiểu thì đơn sinh ghi danh. [CHƯA CHỤP]
-4. Không khớp: bấm **«Từ chối phiếu thu»**, ghi lý do. *Bạn thấy:* phiếu về Nháp. [CHƯA CHỤP]
+1. Vào **Hàng chờ kế toán duyệt** (menu Bán hàng và thu chi; hoặc **Phiếu thu**, lọc «Chờ kế toán»), bấm mã phiếu. [ẢNH: tc3-b1]
+2. Đối chiếu «Số tiền», «Hình thức», «Ngày nhận», «Mã giao dịch», «Tài khoản nhận», «Người nhận tiền», «Cơ sở thu tiền» với sao kê hoặc chứng từ; xem tab «Chia về các dòng đơn». [ẢNH: tc3-b2]
+3. Khớp: bấm **«Duyệt phiếu thu»**. Hộp «Duyệt phiếu thu … (kế toán)» nhắc «tiền được ghi nhận và chia về các dòng đơn, sinh khoản tiền vào. Không hoàn tác bằng nút.» Tích ô **«Đã kiểm tra số tiền, hình thức nhận và đơn hàng của phiếu»** rồi bấm **«Xác nhận duyệt»**. [ẢNH: tc3-b3]
+   *Bạn thấy:* thông báo «Đã duyệt phiếu thu, tiền đã ghi nhận.», tình trạng **Đã duyệt**, dòng «Tiền đã ghi nhận (KTV-…)», «Đã thu» tăng và «Còn phải thu» giảm. [ẢNH: tc3-b4]
+4. Không khớp: bấm **«Từ chối»** (hoặc «Từ chối…» trong hộp) và ghi lý do. *Bạn thấy:* phiếu về Nháp.
 
-⚠ **Duyệt xong không sửa phiếu.** Sai thì hoàn tác khoản tiền vào (bài «Khoản tiền vào và hoàn tác»).
+**Ghi danh:** chỉ sinh khi tổng tiền đã vào của đơn đạt mức cọc tối thiểu (mặc định 1.000.000 đ). Phiếu 880.000 đ ở trên chưa đủ cọc («Đủ cọc: Không», ghi danh 0): cần thêm phiếu thu nữa.
 
 ## Sau bước này
 - **Ai làm tiếp:** bị từ chối thì người lập sửa, trình lại và phiếu **đi lại từ bước quản lý**. Đã duyệt thì CSKH xếp lớp cho ghi danh «Chờ xếp lớp».

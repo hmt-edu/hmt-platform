@@ -60,9 +60,8 @@ const PRACTICE_PER_BRANCH = 3;
 
 /**
  * Tài khoản TẬP cho buổi đào tạo (E-23-39): theo từng cơ sở dạy học (không phải văn phòng) lấy từ DB, không viết cứng danh sách cơ sở.
- * Mỗi cơ sở: 1 Quản lý cơ sở, 3 Tư vấn tuyển sinh, 3 CSKH. Toàn hệ thống: 1 Kế toán, 1 Trưởng nhóm Marketing, 1 Ban Giám Đốc (Admin).
- * Chưa có vai Vận hành riêng (CSKH đã là «chăm sóc, vận hành lớp») nên không tạo tài khoản Vận hành.
- * Tên đăng nhập: ql.cs5, tvts1.cs5..tvts3.cs5, cskh1.cs5..cskh3.cs5, ketoan.tap, mkt.tap, bgd.tap. Chạy lại không nhân đôi (khoá theo tên).
+ * Mỗi cơ sở: 1 Quản lý cơ sở, 3 Tư vấn tuyển sinh, 3 CSKH, 3 Vận hành (tạm vai CSKH). Toàn hệ thống: 1 Kế toán, 1 Trưởng nhóm Marketing, 1 Ban Giám Đốc (Admin).
+ *  * Tên đăng nhập: ql.cs5, tvts1.cs5..tvts3.cs5, cskh1.cs5..cskh3.cs5, vh1.cs5..vh3.cs5, ketoan.tap, mkt.tap, bgd.tap. Chạy lại không nhân đôi (khoá theo tên).
  */
 export function buildPracticeUsers(branches: PracticeBranch[]): SeedUser[] {
   const teaching = branches.filter((b) => !b.is_office);
@@ -88,6 +87,15 @@ export function buildPracticeUsers(branches: PracticeBranch[]): SeedUser[] {
       users.push({
         key: `cskh${i}.${low}`,
         name: `CSKH ${i} ${b.code} (giả)`,
+        branch: b.code,
+        roles: ['CSKH'],
+      });
+    }
+    // Vận hành: chưa có vai riêng, Chat quyết tạm gán vai CSKH («chăm sóc, vận hành lớp») cho đến khi anh quyết tạo vai mới.
+    for (let i = 1; i <= PRACTICE_PER_BRANCH; i += 1) {
+      users.push({
+        key: `vh${i}.${low}`,
+        name: `Vận hành ${i} ${b.code} (giả)`,
         branch: b.code,
         roles: ['CSKH'],
       });

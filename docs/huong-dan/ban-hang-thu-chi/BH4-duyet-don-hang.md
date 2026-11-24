@@ -22,10 +22,11 @@ cap_nhat: 2026-11-24
 - Dòng vượt trần chiết khấu 20% được đánh dấu để bạn cân nhắc: chỉ cảnh báo, không chặn.
 
 ## Các bước (người duyệt)
-1. Vào **Việc chờ tôi duyệt** (hoặc **Đơn hàng**, lọc «Chờ tôi duyệt»), mở đơn. [CHƯA CHỤP: chờ tài khoản staging]
-2. Đọc từng dòng; dòng vượt trần hiện cảnh báo vàng. [CHƯA CHỤP]
-3. Đồng ý: bấm **«Duyệt»**, xác nhận ở hộp «Duyệt đơn hàng». *Bạn thấy:* tình trạng thành Đã duyệt, đơn khoá. [CHƯA CHỤP]
-4. Chưa đồng ý: bấm **«Từ chối»**, chọn lý do (lý do «Khác» phải ghi chú) ở hộp «Từ chối đơn hàng». *Bạn thấy:* đơn về Nháp, lý do nằm ở dòng thời gian. [CHƯA CHỤP]
+1. Vào **Việc chờ tôi duyệt** (hoặc **Đơn hàng**, lọc «Chờ tôi duyệt»), bấm mã đơn để mở. *Bạn thấy:* đơn tình trạng **Đã trình**, thanh trên có hai nút **«Duyệt»** và **«Từ chối»**. [ẢNH: bh4-b1] [ẢNH: bh4-b2]
+2. Đọc từng dòng đơn (học sinh, sản phẩm, số giờ, chiết khấu, lớp, ngày vào lớp) và điều khoản thanh toán; dòng vượt trần chiết khấu có cảnh báo vàng.
+3. Đồng ý: bấm **«Duyệt»**. Hộp «Duyệt đơn hàng» tóm tắt đơn và nhắc «Duyệt thì đơn tự khoá: không sửa dòng, giá, lớp, ngày vào nữa». Bấm **«Duyệt»** trong hộp để xác nhận. [ẢNH: bh4-b3]
+   *Bạn thấy:* thông báo «Đã duyệt đơn hàng.», tình trạng **Đã duyệt · khoá**, dòng thời gian ghi «Duyệt đơn», xuất hiện nút «Tạo phiếu thu». [ẢNH: bh4-b4]
+4. Chưa đồng ý: bấm **«Từ chối»** (ở thanh trên hoặc trong hộp Duyệt), chọn lý do (lý do «Khác» phải ghi chú). *Bạn thấy:* đơn về Nháp, lý do nằm ở dòng thời gian.
 
 ## Sau bước này
 - **Ai làm tiếp:** người lập lập **phiếu thu** khi đơn «Đã duyệt»; bị từ chối thì sửa rồi trình lại.

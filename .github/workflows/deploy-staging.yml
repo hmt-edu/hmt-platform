@@ -278,6 +278,8 @@ jobs:
           DB_URL: ${{ secrets.STAGING_DB_URL }}
           SEED_PASSWORD: ${{ secrets.STAGING_SEED_PASSWORD }}
           SEED_ASSIGN_MANAGERS: '1'
+          # Tài khoản tập cho đào tạo (ql, tvts, cskh, vh theo cơ sở; ketoan.tap, mkt.tap, bgd.tap). Chỉ thử nghiệm.
+          SEED_PRACTICE: '1'
         run: |
           if [ -z "$SECRET_KEY" ] || [ -z "$SEED_PASSWORD" ]; then
             echo "::warning::Chưa có STAGING_SUPABASE_SECRET_KEY hoặc STAGING_SEED_PASSWORD: chưa tạo tài khoản giả."

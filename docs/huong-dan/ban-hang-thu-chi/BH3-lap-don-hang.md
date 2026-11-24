@@ -23,16 +23,19 @@ Phụ huynh đóng tiền cho tư vấn **trước**, rồi bạn mới ghi đơ
 
 ## Cần nhớ
 - **Một lớp một dòng đơn.** Học hai môn là hai dòng.
-- **Chọn lớp là tuỳ chọn.** Không chọn lớp thì em nằm ở «Chờ xếp lớp», CSKH xếp sau.
+- **Chọn lớp là tuỳ chọn, làm sau khi đã Lưu đơn (nút «Sửa đơn»).** Không chọn lớp thì em nằm ở «Chờ xếp lớp», CSKH xếp sau.
 - **Đã chọn lớp thì bắt buộc có ngày vào lớp**; hệ thống chặn khi trình nếu thiếu. Không bao giờ tự lấy ngày duyệt phiếu thu.
 - **Ghi danh (quyền học) sinh khi tiền đã vào đạt mức cọc tối thiểu** (mặc định 1.000.000 đ), không cần thu đủ cả đơn.
 
 ## Các bước
-1. Bấm **«Tạo đơn hàng»**. *Bạn thấy:* trang đơn mới, khối «Dòng đơn» trống. [CHƯA CHỤP: chờ tài khoản staging]
-2. Chọn gói, em học, số lượng giờ, chiết khấu (nếu có). *Bạn thấy:* thành tiền tự tính. [CHƯA CHỤP]
-3. Ở mỗi dòng bấm **«Chọn lớp»**: chỉ hiện lớp đã duyệt, còn chỗ, đúng môn, khối, cơ sở. Chọn lớp rồi chọn **«Ngày vào lớp»** (lớp đã có buổi thì chọn trong buổi sắp tới; chưa có buổi thì chọn ngày đúng thứ có lịch, không trước ngày khai giảng). *Bạn thấy:* dòng hiện tên lớp và ngày vào lớp. [CHƯA CHỤP]
-4. Chọn **«Điều khoản thanh toán»** (chia đợt, hạn từng đợt). Đợt 1 nhỏ hơn cọc tối thiểu thì hiện cảnh báo: chỉ cảnh báo, kiểm lại cho đúng ý phụ huynh. [CHƯA CHỤP]
-5. **Lưu đơn**, rồi bấm **«Trình duyệt»**. *Bạn thấy:* thông báo «Đã trình đơn.», tình trạng thành Đã trình. [CHƯA CHỤP]
+1. Ở báo giá «Đã gửi» bấm **«Chuyển thành đơn»** (hoặc ở cơ hội đang ở L8 bấm **«Tạo đơn hàng»**; nút mờ nếu cơ hội chưa ở L8).
+   *Bạn thấy:* trang «Tạo đơn hàng», dòng đơn chép từ báo giá (học sinh, sản phẩm, hình thức, số lượng, đơn giá, thành tiền). [ẢNH: bh3-b1]
+2. Chọn **«Điều khoản thanh toán»** (bắt buộc mới Lưu được: ví dụ «Chia ba đợt 40, 30, 30» hoặc «Cọc rồi đóng phần còn lại»), rồi bấm **Lưu**.
+   *Bạn thấy:* thông báo «Đã tạo đơn hàng …», tình trạng **Nháp**. Nếu đợt 1 nhỏ hơn mức cọc tối thiểu thì có khung vàng cảnh báo: chỉ cảnh báo, kiểm lại cho đúng ý phụ huynh. [ẢNH: bh3-b2]
+3. Bấm **«Sửa đơn»**. Ở dòng đơn bấm **«Chọn lớp»**, chọn lớp, rồi chọn **«Ngày vào lớp»** (danh sách buổi sắp tới của lớp), bấm **«Chọn»**, rồi **Lưu**. Chưa quyết lớp thì chọn «Chưa chọn lớp (ghi danh ở Chờ xếp lớp, vận hành xếp sau)».
+   *Bạn thấy:* dòng đơn có «Mã lớp» và «Ngày vào lớp»; dòng thời gian ghi «Sửa đơn». Ở bước này vẫn sửa được số giờ, hình thức, chiết khấu, thêm hoặc bỏ dòng. [ẢNH: bh3-b3]
+4. Bấm **«Trình duyệt»**. Cạnh nút có dòng «Người duyệt: …» cho biết ai sẽ duyệt.
+   *Bạn thấy:* thông báo «Đã trình đơn.», tình trạng **Đã trình**, dòng «Đơn đã trình, chờ … duyệt. Trong lúc chờ không sửa được dòng.» [ẢNH: bh3-b4] [ẢNH: bh3-b5]
 
 ⚠ **Sau khi trình, không sửa dòng đơn.** Sai thì nhờ người duyệt «Từ chối» để đơn về Nháp.
 

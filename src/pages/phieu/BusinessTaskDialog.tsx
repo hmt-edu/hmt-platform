@@ -14,6 +14,7 @@ import {
   REFUND_KINDS,
   type RefundKind,
   type MoneyMode,
+  enrollmentSelectableFor,
   holdEnrollmentChoices,
   runningHold,
   type BusinessType,
@@ -78,9 +79,10 @@ export function BusinessTaskDialog({
     ? []
     : type === 'BAO_LUU'
       ? holdEnrollmentChoices(data, draft.holdMode)
-      : type === 'DUNG_HOC' || type === 'CHUYEN_PHI' || type === 'HOAN_PHI'
-        ? data.enrollments
-        : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU');
+      : (type === 'DUNG_HOC' || type === 'CHUYEN_PHI' || type === 'HOAN_PHI'
+          ? data.enrollments
+          : data.enrollments.filter((x) => x.status_code !== 'BAO_LUU')
+        ).filter((x) => enrollmentSelectableFor(type, x.status_code));
   const hold = data && type === 'BAO_LUU' ? runningHold(data, draft.enrollmentId) : null;
   const newClass = classes.find((c) => c.id === draft.toClassId);
 
