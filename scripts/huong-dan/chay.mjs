@@ -1737,6 +1737,156 @@ const BAI = {
       KH,
       3,
     ),
+  // ===== CH8 trang chủ, CH9 xuất file, CH10 gặp lỗi =====
+  ch8: (b) =>
+    chayBai(
+      b,
+      'ch8',
+      async (p) => {
+        await dangNhap(p);
+      },
+      [
+        {
+          chu: 'Đăng nhập, hệ thống mở «Trang chủ» với tiêu đề «Việc của tôi hôm nay» và ngày hôm nay',
+          loc: (p) => p.getByText('Việc của tôi hôm nay').first(),
+        },
+        {
+          chu: 'Đọc từng khối; mỗi dòng cho biết một việc, bấm dòng để mở bản ghi liên quan',
+          loc: (p) => p.locator('main section, main [class*=card]').first(),
+        },
+        {
+          chu: 'Khối nào ghi «Không có … nào …» nghĩa là bạn không còn việc loại đó',
+          loc: (p) => p.getByText(/Không có .* nào/).first(),
+        },
+        {
+          chu: 'Quay lại trang chủ bằng «Trang chủ» ở menu «Tổng quan» để thấy số mới nhất',
+          loc: (p) => p.getByRole('link', { name: 'Trang chủ', exact: true }).first(),
+          lam: async (p) => {
+            await p.getByRole('link', { name: 'Trang chủ', exact: true }).first().click();
+            await p.waitForTimeout(2000);
+          },
+        },
+      ],
+      KH,
+      4,
+    ),
+  ch9: (b) =>
+    chayBai(
+      b,
+      'ch9',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/lich-hen`);
+        await p.waitForLoadState('networkidle');
+        await p.waitForTimeout(2000);
+      },
+      [
+        {
+          chu: 'Mở danh sách cần xuất (ví dụ Lịch hẹn)',
+          loc: (p) => p.getByRole('heading', { name: 'Lịch hẹn' }).first(),
+        },
+        {
+          chu: 'Đặt bộ lọc và tìm kiếm cho ra đúng các dòng cần',
+          loc: (p) => nutTen('Filters')(p),
+          lam: async (p) => {
+            await nutTen('Filters')(p).click();
+            await p.waitForTimeout(1200);
+            await p.keyboard.press('Escape');
+          },
+        },
+        {
+          chu: 'Bấm Xuất ở thanh trên, chờ vài giây, đừng bấm lại',
+          loc: (p) => p.getByRole('button', { name: /Xuất/ }).first(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: /Xuất/ }).first().click();
+            await p.waitForTimeout(3500);
+          },
+        },
+        {
+          chu: 'Mở file từ thư mục tải về; chữ tiếng Việt lỗi thì chọn mã hoá UTF-8',
+          loc: (p) => p.getByRole('button', { name: /Xuất/ }).first(),
+        },
+      ],
+      KH,
+      4,
+    ),
+  ch10: (b) =>
+    chayBai(
+      b,
+      'ch10',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/khong-co-trang-nay`);
+        await p.waitForLoadState('networkidle');
+        await p.waitForTimeout(1500);
+      },
+      [
+        {
+          chu: 'Đọc câu thông báo (tiếng Việt, nói thẳng lý do); đừng bấm lại liên tục',
+          loc: (p) => p.locator('main').first(),
+        },
+        {
+          chu: 'Bấm nút trong màn (thường là «Về trang chủ» hoặc «Thử lại»)',
+          loc: (p) =>
+            p
+              .getByRole('link', { name: /Về trang chủ/ })
+              .or(p.getByRole('button', { name: /Về trang chủ|Thử lại/ }))
+              .first(),
+          lam: async (p) => {
+            await p
+              .getByRole('link', { name: /Về trang chủ/ })
+              .or(p.getByRole('button', { name: /Về trang chủ|Thử lại/ }))
+              .first()
+              .click();
+            await p.waitForTimeout(2000);
+          },
+        },
+        {
+          chu: 'Lỗi vẫn còn: ghi lại đường dẫn đang mở, việc vừa làm và mã lỗi, gửi quản trị viên',
+          loc: (p) => p.locator('main').first(),
+        },
+      ],
+      KH,
+      3,
+    ),
+  // CH7 việc chờ tôi duyệt: chạy với HD_TAI_KHOAN=truongcs.cs5@… ; KHÔNG bấm Duyệt/Từ chối (chỉ khoanh nút).
+  ch7: (b) =>
+    chayBai(
+      b,
+      'ch7',
+      async (p) => {
+        await dangNhap(p);
+      },
+      [
+        {
+          chu: 'Menu «Tổng quan» → «Việc chờ tôi duyệt»',
+          loc: (p) => p.getByRole('link', { name: 'Việc chờ tôi duyệt', exact: true }).first(),
+          lam: async (p) => {
+            await p.getByRole('link', { name: 'Việc chờ tôi duyệt', exact: true }).first().click();
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Muốn lọc: dùng bộ lọc «Loại việc» (mỗi loại kèm số việc) và «Cơ sở»',
+          loc: (p) => p.getByText(/Loại việc/).first(),
+        },
+        {
+          chu: 'Bấm một dòng',
+          loc: (p) => p.locator('main tbody tr').first(),
+          lam: async (p) => {
+            await p.locator('main tbody tr').first().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Đọc kỹ tóm tắt, rồi bấm «Duyệt» hoặc «Từ chối» ở thanh trạng thái',
+          loc: (p) => p.getByRole('button', { name: /^(Duyệt|Từ chối)/ }).first(),
+        },
+      ],
+      KH,
+      4,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
