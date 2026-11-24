@@ -11,12 +11,13 @@ const branches = [
 describe('buildPracticeUsers', () => {
   const users = buildPracticeUsers(branches);
 
-  it('mỗi cơ sở dạy học có 1 quản lý, 3 tư vấn tuyển sinh, 3 CSKH; văn phòng không có', () => {
+  it('mỗi cơ sở dạy học có 1 quản lý, 3 tư vấn tuyển sinh, 3 CSKH, 3 vận hành; văn phòng không có', () => {
     for (const code of ['CS1', 'CS5']) {
       const of = users.filter((u) => u.branch === code);
       expect(of.filter((u) => u.roles[0] === 'BRANCH_MANAGER')).toHaveLength(1);
       expect(of.filter((u) => u.roles[0] === 'SALES')).toHaveLength(3);
-      expect(of.filter((u) => u.roles[0] === 'CSKH')).toHaveLength(3);
+      expect(of.filter((u) => u.key.startsWith('cskh'))).toHaveLength(3);
+      expect(of.filter((u) => u.key.startsWith('vh'))).toHaveLength(3);
     }
     expect(users.filter((u) => u.branch === 'CS3').map((u) => u.key)).toEqual([
       'ketoan.tap',
@@ -34,7 +35,7 @@ describe('buildPracticeUsers', () => {
 
   it('thêm cơ sở mới thì có thêm tài khoản (không viết cứng cơ sở); tên giả rõ ràng', () => {
     const more = buildPracticeUsers([...branches, { code: 'CS7', is_office: false }]);
-    expect(more.length - users.length).toBe(7);
+    expect(more.length - users.length).toBe(10);
     expect(users.every((u) => u.name.endsWith('(giả)'))).toBe(true);
   });
 

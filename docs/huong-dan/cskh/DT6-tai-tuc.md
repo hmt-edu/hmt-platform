@@ -35,25 +35,25 @@ nguoi_viet: Code D
 ## Các bước
 1. Vào «Tái tục». Mặc định là danh sách; bấm «Kanban» ở góc trên nếu muốn xem theo cột giai đoạn.
    *Bạn thấy:* các dòng phiếu có cột Phiếu, Học sinh, Lớp, Giờ còn, Hết giờ dự kiến, Giai đoạn, Phụ trách. Ở Kanban mỗi cột là một giai đoạn (L1 Chờ tái tục, L2 Đã liên hệ…).
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt6-b1]
+   [ẢNH: dt6-b1]
 2. Lọc việc của mình: ở bộ lọc «Phụ trách» chọn «Của tôi», hoặc «Chưa giao» để tìm phiếu chưa có người lo. Có thể lọc «Rủi ro vắng nhiều» để gọi những em hay nghỉ trước.
    *Bạn thấy:* danh sách rút gọn theo bộ lọc.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt6-b2]
+   [ẢNH: dt6-b2]
 3. Phiếu chưa có người phụ trách: ở cột «Xử lý» bấm «Giao», chọn «Người phụ trách», bấm «Giao».
    *Bạn thấy:* thông báo «Đã giao cho …», cột «Phụ trách» có tên người nhận. (Không thấy nút «Giao»: bạn không có quyền giao việc, nhờ quản lý.)
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt6-b3]
+   [CHƯA CHỤP: không có dữ liệu mẫu ở bước này trên staging]
 4. Bấm một dòng để mở phiếu. Xem tab «Tổng quan» (phụ huynh, số điện thoại, giờ còn, ngày hết giờ dự kiến) và tab «Giờ học» (đã mua, đã học, số buổi vắng). Gọi phụ huynh. Ghi ý của phụ huynh vào hai ô «Mục tiêu / nhu cầu tiếp theo» và «Lộ trình tiếp theo», bấm «Lưu».
    *Bạn thấy:* thông báo «Đã lưu ghi chú phiếu.»; mọi lần sửa được ghi lại ở dòng thời gian bên phải.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt6-b4]
+   [ẢNH: dt6-b4]
 5. Sau cuộc gọi, bấm «Chuyển giai đoạn», chọn «Giai đoạn mới», bấm «Chuyển». Nếu chọn L5: chọn «Lý do không tái tục» (và «Ghi chú» khi chọn «Khác»).
    *Bạn thấy:* thông báo «Đã chuyển giai đoạn.»; thanh giai đoạn đầu phiếu nhảy sang bước mới. Thanh này chỉ để xem, không bấm vào thanh để đổi.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt6-b5]
+   [ẢNH: dt6-b5b]
 6. Phụ huynh đồng ý (phiếu ở L6 Đồng ý tái tục): bấm «Tạo đơn». Chọn «Gói», nhập «Số giờ», chọn «Ngày vào lớp» (để trống là buổi sắp tới gần nhất của lớp) và «Điều khoản thanh toán» nếu cần, bấm «Tạo đơn nháp».
    *Bạn thấy:* thông báo «Đã tạo đơn nháp …»; phiếu sang L7 Dự thu; tab «Báo giá và đơn» có đơn vừa tạo. Tổng tiền hệ thống tự tính, không sửa tay.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt6-b6]
+   [CHƯA CHỤP: không có dữ liệu mẫu ở bước này trên staging]
 7. **Tạo tay một phiếu** (khi chưa đến ngưỡng nhưng phụ huynh muốn mua thêm): ở danh sách «Tái tục» bấm «Tạo», nhập «Mã ghi danh của học sinh», đợi dòng gợi ý hiện tên em, lớp, bấm «Tạo».
    *Bạn thấy:* thông báo «Đã tạo phiếu …»; phiếu mới ở L1 Chờ tái tục.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; tên ảnh dự kiến dt6-b7]
+   [ẢNH: dt6-b7]
 
 ⚠ **Chuyển sang L5 Không tái tục là kết thúc phiếu.** Chọn nhầm thì báo quản lý cơ sở; bạn không tự mở lại được.
 
@@ -103,5 +103,5 @@ nguoi_viet: Code D
 3. Chưa xác minh vai nào có quyền «Giao» (GIAO_VIEC) trên UPSALE; ma trận quyền trong migration 010 chỉ liệt kê SALES {XEM,TAO,SUA,XUAT}. Bài chỉ nói «không thấy nút thì nhờ quản lý».
 4. Nhãn L-stage lấy từ catalog UPSALE_STAGE (migration 019). L5 lý do: bài không liệt kê hết, chỉ nói «Khác» bắt ghi chú (đúng với requiresNote ở migration 019).
 5. Bộ dữ liệu mẫu đợt 2 chưa có phiếu tái tục/gói bán: kiểm trên staging trước khi giao bài tập.
-6. Không chụp được ảnh; mọi [CHƯA CHỤP] cần chụp lại sau khi làm theo bài trên staging.
+6. Ảnh chụp trên staging 24/11; bước ghi [CHƯA CHỤP] cần chụp lại khi có dữ liệu mẫu.
 -->

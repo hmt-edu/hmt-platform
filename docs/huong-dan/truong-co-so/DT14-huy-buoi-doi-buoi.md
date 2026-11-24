@@ -30,12 +30,12 @@ di_thu: chưa
 ## Các bước (huỷ buổi)
 1. Vào **Đào tạo → Buổi học**, mở buổi cần huỷ.
    *Bạn thấy:* bản ghi buổi; nếu bạn có quyền thì thấy hai nút **«Dời»** và **«Huỷ»** ở đầu bản ghi.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; ảnh dự kiến buoi04-dt14-b1]
+   [ẢNH: dt14-b1]
 2. Bấm **«Huỷ»**.
    *Bạn thấy:* hộp «Huỷ buổi» có «Ai huỷ»: «Trung tâm huỷ (cả lớp nghỉ)» và «Học sinh huỷ (lớp riêng)».
 3. Chọn «Ai huỷ». Với **trung tâm huỷ**, chọn «Lý do huỷ» và ghi «Ghi chú» nếu cần.
    *Bạn thấy:* dòng «Buổi thêm vào cuối lịch» với số buổi và ngày dự kiến.
-   [CHƯA CHỤP: buoi04-dt14-b3]
+   [ẢNH: dt14-b2]
 4. Với **học sinh huỷ**: chọn «Lý do huỷ», rồi chọn «Huỷ có tính phí (không bù)» hoặc «Huỷ không tính phí (xếp buổi bù)».
    *Bạn thấy:* chọn không tính phí thì có lời nhắc xếp buổi bù ở bước sau.
 5. Bấm **«Xác nhận huỷ buổi»**.
@@ -44,7 +44,7 @@ di_thu: chưa
 ## Các bước (dời một buổi)
 1. Mở buổi, bấm **«Dời»**.
    *Bạn thấy:* hộp «Dời buổi» với «Ngày mới», «Giờ bắt đầu», «Giờ kết thúc», «Phòng» (ô phòng ghi «Giữ phòng hiện tại»).
-   [CHƯA CHỤP: buoi05-dt14-b1]
+   [ẢNH: dt14-b4]
 2. Nhập ngày và giờ mới; chọn phòng khác nếu cần. Giờ kết thúc phải sau giờ bắt đầu.
 3. Bấm **«Xác nhận»**.
    *Bạn thấy:* thông báo «Đã dời buổi». Nếu trùng phòng hoặc giáo viên, hộp hiện **cảnh báo** nhưng buổi vẫn dời.

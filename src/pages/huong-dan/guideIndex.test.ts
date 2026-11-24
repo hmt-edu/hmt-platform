@@ -93,10 +93,9 @@ describe('Hướng dẫn cổng Giáo viên (A-23-38)', () => {
     expect(defaultSectionFor('crm').slug).toBe('bat-dau');
   });
   it('bài trước/sau của cổng Giáo viên không nhảy sang bài CRM', () => {
-    expect(neighbours('giao-vien', 'gv')).toMatchObject({
-      prev: { slug: 'thao-tac-co-ban' },
-      next: { slug: 'giao-vien-gv1-hom-nay' },
-    });
+    const n = neighbours('giao-vien', 'gv');
+    expect(sectionsFor('gv').map((x) => x.slug)).toContain(n.prev?.slug);
+    expect(n.next).toMatchObject({ slug: 'giao-vien-gv1-hom-nay' });
     expect(neighbours('giao-vien-gv8-viec-can-lam', 'gv').next).toMatchObject({ slug: 'hoi-dap' });
     expect(neighbours('hoi-dap', 'gv').next).toBeUndefined();
   });

@@ -9,7 +9,7 @@ portals: [crm]
 
 # Vai: Phụ huynh (cổng Phụ huynh)
 
-Vai: **Phụ huynh**. Cổng Phụ huynh dùng trên **điện thoại** là chính. Chữ trong dấu «…» là chữ hiện trên màn. Chưa biết đăng nhập thế nào thì đọc [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh), phần «Phụ huynh» (đăng nhập bằng mã phụ huynh, không bằng số điện thoại).
+Vai: **Phụ huynh**. Cổng Phụ huynh dùng trên **điện thoại** là chính. Chữ trong dấu «…» là chữ hiện trên màn. Chưa biết đăng nhập thế nào thì đọc [Bắt đầu nhanh](/crm/huong-dan/chung-dang-nhap), phần «Phụ huynh» (đăng nhập bằng mã phụ huynh, không bằng số điện thoại).
 
 Cổng chỉ để **xem** việc học của con. Anh chị không thanh toán hay sửa dữ liệu trên cổng. Thanh dưới có năm mục: **Trang chủ**, **Kết quả**, **Học phí**, **Lịch**, **Đề nghị**.
 
@@ -66,7 +66,7 @@ Cổng chỉ để **xem** việc học của con. Anh chị không thanh toán 
 
 ## 5. Tài khoản
 
-Bấm đường dẫn tài khoản để xem hồ sơ và đổi mật khẩu theo [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh), mục «Đổi mật khẩu». Quên mật khẩu thì liên hệ bộ phận chăm sóc khách hàng ở cơ sở.
+Bấm đường dẫn tài khoản để xem hồ sơ và đổi mật khẩu theo [Bắt đầu nhanh](/crm/huong-dan/chung-dang-nhap), mục «Đổi mật khẩu». Quên mật khẩu thì liên hệ bộ phận chăm sóc khách hàng ở cơ sở.
 
 ## Màn sắp có
 
