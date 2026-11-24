@@ -756,6 +756,130 @@ const BAI = {
       chung,
       5,
     ),
+  // QT4 «Cơ sở và phòng» (Admin): 6 bước; trên cơ sở CS3 Hội sở: SỬA địa chỉ (còn lại «[MẪU]»), THÊM một phòng mẫu rồi sửa và NGỪNG phòng đó.
+  qt4: (b) =>
+    chayBai(
+      b,
+      'qt4',
+      vao('/crm/quan-tri/nguoi-dung'),
+      [
+        {
+          chu: 'Vào Quản trị → Cơ sở và phòng',
+          loc: (p) => p.getByRole('link', { name: 'Cơ sở và phòng', exact: true }),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/quan-tri/co-so`);
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Bấm vào một cơ sở ở cột trái, rồi bấm «Sửa cơ sở»',
+          loc: (p) => p.getByRole('button', { name: /^CS3 Hội sở/ }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: /^CS3 Hội sở/ }).click();
+            await p.waitForTimeout(1200);
+            await p.getByRole('button', { name: 'Sửa cơ sở' }).click();
+            await p.waitForTimeout(1200);
+          },
+        },
+        {
+          chu: 'Sửa tên hoặc địa chỉ rồi bấm «Lưu»',
+          loc: (p) => p.getByRole('button', { name: 'Lưu', exact: true }),
+          lam: async (p) => {
+            await p.getByLabel('Địa chỉ').fill('[MẪU] Địa chỉ tập');
+            await p.getByRole('button', { name: 'Lưu', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Ở khối «Phòng học» của cơ sở đó, bấm «Thêm phòng»',
+          loc: (p) => p.getByRole('button', { name: 'Thêm phòng', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Thêm phòng', exact: true }).click();
+            await p.waitForTimeout(1200);
+          },
+        },
+        {
+          chu: 'Điền «Mã phòng», «Tên phòng», «Sức chứa» rồi bấm «Thêm phòng»',
+          loc: (p) => p.getByLabel('Mã phòng'),
+          lam: async (p) => {
+            const so = Date.now() % 10000;
+            await p.getByLabel('Mã phòng').fill(`MAU_QT4_${so}`);
+            await p.getByLabel('Tên phòng').fill(`MAU-QT4-${so}`);
+            await p.getByLabel('Sức chứa').fill('12');
+            await p.waitForTimeout(800);
+            await p
+              .getByRole('dialog')
+              .getByRole('button', { name: 'Thêm phòng', exact: true })
+              .click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Đổi tên hoặc sức chứa: «Sửa» ở dòng phòng; muốn ngừng: «Ngừng», rồi «Ngừng phòng»',
+          loc: (p) =>
+            p.locator('tr', { hasText: 'MAU-QT4' }).getByRole('button', { name: 'Ngừng' }),
+          lam: async (p) => {
+            await p
+              .locator('tr', { hasText: 'MAU-QT4' })
+              .getByRole('button', { name: 'Ngừng' })
+              .click();
+            await p.waitForTimeout(1200);
+            await p.getByRole('button', { name: 'Ngừng phòng', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+      ],
+      chung,
+      6,
+    ),
+  // QT6 «Công tắc tính năng» (Admin): 3 bước; BẬT phân hệ Học tập ở CS3 rồi (ngoài video) TẮT lại để giữ nguyên staging.
+  qt6: (b) =>
+    chayBai(
+      b,
+      'qt6',
+      vao('/crm/quan-tri/nguoi-dung'),
+      [
+        {
+          chu: 'Vào Quản trị → Công tắc tính năng',
+          loc: (p) => p.getByRole('link', { name: 'Công tắc tính năng', exact: true }),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/quan-tri/cong-tac`);
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Tìm dòng phân hệ và cột cơ sở, bấm vào ô «Bật» hoặc «Tắt» ở giao điểm',
+          loc: (p) => p.locator('tr', { hasText: 'Học tập (LMS)' }).getByRole('button').nth(4),
+          lam: async (p) => {
+            await p.locator('tr', { hasText: 'Học tập (LMS)' }).getByRole('button').nth(4).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Đọc dòng giải thích trong hộp, rồi bấm «Bật» để xác nhận',
+          loc: (p) =>
+            p
+              .locator('[role=dialog],[role=alertdialog]')
+              .getByRole('button', { name: 'Bật', exact: true }),
+          lam: async (p) => {
+            await p
+              .locator('[role=dialog],[role=alertdialog]')
+              .getByRole('button', { name: 'Bật', exact: true })
+              .click();
+            await p.waitForTimeout(2500);
+            // Hoàn lại ngoài lời thoại: tắt lại phân hệ vừa bật.
+            await p.locator('tr', { hasText: 'Học tập (LMS)' }).getByRole('button').nth(4).click();
+            await p
+              .locator('[role=dialog],[role=alertdialog]')
+              .getByRole('button', { name: 'Tắt', exact: true })
+              .click();
+            await p.waitForTimeout(2000);
+          },
+        },
+      ],
+      chung,
+      3,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
