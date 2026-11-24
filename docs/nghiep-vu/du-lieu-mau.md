@@ -20,7 +20,7 @@ Lỗi: `HMT_DEMO_TAT`, `HMT_DEMO_QUA_HAN_MUC_NGUOI`, `HMT_DEMO_QUA_HAN_MUC_CO_SO
 ## Cờ `is_demo`
 Thêm trên lead, opportunity, sales_order, student, class, class_session, ticket (chỉ mục từng phần `where is_demo`) để bộ lọc báo cáo «Ẩn dữ liệu mẫu» (đợt 2) rẻ.
 
-## Đợt 2 (chưa làm)
+## Đợt 2 (đã làm: 655, 656, 657)
 Chuỗi dữ liệu cố định, dừng ở trạng thái chờ duyệt; SĐT dải 0999 000 001–999, email `@example.invalid`, loại khỏi mọi gửi tin thật.
 
 ### Đợt 2, mảnh lead và cơ hội (migration 655)
@@ -33,3 +33,12 @@ Chuỗi dữ liệu cố định, dừng ở trạng thái chờ duyệt; SĐT d
 - Hồ sơ học sinh do duyệt đơn mẫu tạo ra được gắn vào bộ (loại `STUDENT`). `app.demo_tag` thêm hai loại `QUOTATION`, `RECEIPT`; thêm cờ `is_demo` cho báo giá và phiếu thu.
 - `app.demo_data_is_allowed()`: khoá dữ liệu mẫu dạng đúng/sai; `assert_demo_data_allowed` dùng lại hàm này.
 - **Bốn ràng buộc an toàn** (Chat chốt 24/11): (1) cờ giao dịch `hmt.demo_sales` chỉ do `demo_make_sales` đặt và xoá ngay sau khi xong (kể cả khi lỗi); (2) `app.assert_can` chỉ bỏ qua kiểm quyền khi cờ bật **và** `demo_data_is_allowed()` đúng (STAGING + công tắc bật), mọi trường hợp khác giữ nguyên; (3) pgTAP 656 kiểm: thiếu STAGING hoặc công tắc tắt thì cờ bật vẫn bị chặn, người không quyền gọi thẳng hàm vẫn bị chặn, Kế toán/Giáo viên/Trợ giảng tạo được bộ, hết giao dịch cờ không còn; (4) cơ hội nâng lên L8 bằng cập nhật trực tiếp, chỉ cơ hội `is_demo` của bộ.
+
+### Đợt 2, mảnh phụ huynh, học sinh, lớp, ghi danh, ticket (migration 657, CAO: dùng lại nhánh bỏ qua kiểm quyền của 656)
+- `app.demo_make_education(bộ, cơ sở)` đặt cờ giao dịch `hmt.demo_sales` (cùng nhánh bỏ qua kiểm quyền của `assert_can` ở 656, không thêm nhánh mới), gọi các hàm con theo thứ tự, xoá cờ kể cả khi lỗi. Kế toán, Giáo viên, Trợ giảng cũng tạo được bộ.
+- `demo_make_parents`: 4 phụ huynh [MẪU] (SĐT dải 0999 000 xxx). `demo_make_students`: 6 học sinh (hai cặp anh chị em), khối cao nhất dưới «Khối bắt đầu tách Đại/Hình».
+- `demo_make_classes`: 2 lớp qua `create_class` (Toán, Tiếng Anh; khai giảng sau hôm nay một tuần). Lớp Toán đi hết Đã trình, Đã xác nhận, Đã duyệt bằng `transition_class` **thật** nên buổi sinh đúng R-LOP-03 (8 buổi, đều `is_demo`); lớp Tiếng Anh dừng ở Đã trình. Chưa tạo lớp online/OMO.
+- `demo_make_enrollments`: 3 em ghi danh vào lớp Toán, xếp lớp bằng `assign_enrollment_class` thật; giờ mẫu (20 giờ) ở sổ giờ có cờ `is_demo` (CAP_MUA). Không đơn, không phiếu thu, không trừ giờ thật.
+- `demo_make_tickets`: 3 ticket (Đề nghị, Khiếu nại, Đề nghị gắn lớp) và 1 phiếu «Cập nhật hồ sơ» đã trình (Chờ duyệt, không tự duyệt). Ticket chèn trực tiếp vì `create_ticket` chặn Giáo viên, Trợ giảng tạo Đề nghị. **Aftersale tắt ở cơ sở thì bỏ qua phần ticket** (không lỗi, không tự bật công tắc) và ghi câu «Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.» vào cột `demo_data_set.notice`; `list_demo_data_sets` trả thêm cột `notice`.
+- `app.demo_tag` thêm PARENT, ENROLLMENT, HOUR_LEDGER; thêm cờ `is_demo` cho parent, enrollment, hour_ledger. Học sinh do duyệt đơn (656) cũng nằm trong bộ, nên mảnh học sinh chỉ kiểm chủ bộ, không kiểm «chưa đổ STUDENT».
+

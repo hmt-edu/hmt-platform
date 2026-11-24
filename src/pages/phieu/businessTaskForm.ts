@@ -75,6 +75,12 @@ export type StopMoneyPreview = {
   fee_amount: number | null;
   refund_amount: number | null;
   refund_error: string | null;
+  /** Dòng để bảng cộng khớp (migration 658): loại hoàn, tiền giờ đã học, tiền gốc các lần hoàn trước, còn lại trước phí, giờ hoàn (hoàn một phần). */
+  refund_kind?: 'TOAN_BO' | 'MOT_PHAN';
+  used_amount?: number | null;
+  prior_refund_amount?: number | null;
+  base_amount?: number | null;
+  hours_refund?: number | null;
 };
 export type FeeTransferOrder = {
   id: string;
