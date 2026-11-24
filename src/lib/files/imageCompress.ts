@@ -8,6 +8,13 @@ import {
   toGrayscaleContrast,
 } from './imageProcess';
 
+const WEBP = 'image/webp';
+
+/** Loại tệp THẬT của ảnh đã nén: Safari cũ không nén được WebP và trả PNG, không được ghi nhãn WebP cho ảnh PNG (máy chủ phát nosniff). */
+export function mimeOfBlob(blob: Blob): string {
+  return blob.type === 'image/png' || blob.type === 'image/jpeg' ? blob.type : WEBP;
+}
+
 export interface ProcessedImage {
   blob: Blob;
   thumb: Blob | null;
@@ -63,12 +70,12 @@ export async function compressImage(
     const full = drawScaled(bitmap, FILE_COMPRESS_PROFILE.maxEdge, !opts.keepColor);
     const blob = await toBlob(full.canvas, FILE_COMPRESS_PROFILE.quality);
     const small = drawScaled(bitmap, FILE_COMPRESS_PROFILE.thumbEdge, !opts.keepColor);
-    const thumb = await toBlob(small.canvas, FILE_COMPRESS_PROFILE.thumbQuality);
+    const thumbBlob = await toBlob(small.canvas, FILE_COMPRESS_PROFILE.thumbQuality);
     return {
       blob,
-      thumb,
+      thumb: thumbBlob.type === WEBP ? thumbBlob : null, // Safari cũ không có WebP, canvas trả PNG: bỏ ảnh thu nhỏ, máy chủ ghi và phát nó là WebP
       sha256: await sha256Hex(await blob.arrayBuffer()),
-      mime: 'image/webp',
+      mime: mimeOfBlob(blob),
       width: full.w,
       height: full.h,
     };

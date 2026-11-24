@@ -32,25 +32,29 @@ cap_nhat: 2026-11-24
 ## Các bước
 1. Mở ticket Khiếu nại, bấm «Sửa phần riêng». Điền «Người bị khiếu nại» (chọn người trong danh sách), «Ngày xảy ra», «Mong muốn của khách», «Nguyên nhân gốc». Bấm «Lưu».
    *Bạn thấy:* báo «Đã lưu phần riêng của khiếu nại.»; khối «Riêng khiếu nại» hiện các thông tin vừa nhập, dòng «Mức nâng cấp» ghi «Chưa nâng cấp».
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs2-b1]
+   [ẢNH: cskh-cs2-b1]
+   [ẢNH: cskh-cs2-b1b]
 2. Bấm «Giao ticket», chọn «Đội» và «Người phụ trách», bấm «Giao». Người phụ trách bấm bước «Đang xử lý» rồi «Chuyển».
    *Bạn thấy:* thanh trạng thái đứng ở «Đang xử lý»; «Hạn phản hồi» đổi thành «Đã phản hồi» kèm giờ.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs2-b2]
+   [ẢNH: cskh-cs2-b2]
 3. Xác minh với giáo viên hoặc nhân viên liên quan, ghi lại ở ô «Ghi chú» của cột «Ghi chú & hoạt động», bấm «Gửi ghi chú». Điền «Bồi hoàn» (ghi bằng chữ) trong «Sửa phần riêng» nếu có đền bù.
    *Bạn thấy:* ghi chú hiện ở dòng thời gian, có tên bạn và giờ.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs2-b3]
+   [ẢNH: cskh-cs2-b3]
 4. Gọi phụ huynh nói phương án. Phụ huynh đồng ý: bấm bước «Đã xử lý», gõ «Kết quả» (phương án và điều đã làm), bấm «Chuyển».
    *Bạn thấy:* trạng thái «Đã xử lý»; dòng «Kết quả» có chữ bạn gõ.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs2-b4]
+   [ẢNH: cskh-cs2-b4]
 5. Bấm bước «Đã đóng». Hộp «Đóng khiếu nại» hiện: nhập «Mức hài lòng của phụ huynh (1 đến 5)», có thể thêm «Ghi chú đóng», bấm «Đóng khiếu nại».
    *Bạn thấy:* trạng thái «Đã đóng»; dòng «Mức hài lòng 1–5» có số bạn nhập.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs2-b5]
+   [ẢNH: cskh-cs2-b5]
+   [ẢNH: cskh-cs2-b5b]
 6. Khiếu nại nặng, quá hạn hoặc bạn không quyết được: trước khi đóng, bấm «Nâng cấp», gõ «Lý do nâng cấp», bấm «Nâng cấp lên Quản lý cơ sở» (lần sau là «Nâng cấp lên Ban giám đốc»).
    *Bạn thấy:* báo «Đã nâng cấp lên Quản lý cơ sở.»; dòng «Mức nâng cấp» đổi; dòng thời gian ghi «Nâng cấp khiếu nại.» kèm lý do.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs2-b6]
+   [ẢNH: cskh-cs2-b6]
+   [ẢNH: cskh-cs2-b6b]
 7. Phụ huynh chưa hài lòng sau khi đã đóng: mở ticket đã đóng, bấm «Mở lại», gõ «Lý do mở lại», bấm «Mở lại».
    *Bạn thấy:* ticket quay về «Đang xử lý»; từ đó làm lại từ bước 3.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs2-b7]
+   [ẢNH: cskh-cs2-b7]
+   [ẢNH: cskh-cs2-b7b]
 
 ## Sau bước này
 - **Ai làm tiếp:** nâng cấp thì Quản lý cơ sở hoặc Ban giám đốc nhận việc xử lý khiếu nại đó.
