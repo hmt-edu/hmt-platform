@@ -399,6 +399,14 @@ const StudentSchedulePage = lazyScreen(
   () => import('../pages/hoc/StudentSchedulePage'),
   'StudentSchedulePage',
 );
+const StudentResultsPage = lazyScreen(
+  () => import('../pages/hoc/StudentResultsPage'),
+  'StudentResultsPage',
+);
+const StudentReviewsPage = lazyScreen(
+  () => import('../pages/hoc/StudentReviewsPage'),
+  'StudentReviewsPage',
+);
 const StudentHomePage = lazyScreen(() => import('../pages/hoc/StudentHomePage'), 'StudentHomePage');
 const StudentAssignmentsPage = lazyScreen(
   () => import('../pages/hoc/StudentAssignmentsPage'),
@@ -1282,7 +1290,8 @@ export const routes: RouteObject[] = [
           { path: 'bai-tap', element: <StudentAssignmentsPage /> },
           { path: 'bai-tap/:id', element: <StudentAssignmentPage /> },
           { path: 'lich', element: <StudentSchedulePage /> },
-          { path: 'ket-qua', element: <PortalTabPage title="Kết quả" stage={GD4} /> },
+          { path: 'ket-qua', element: <StudentResultsPage /> },
+          { path: 'ket-qua/nhan-xet', element: <StudentReviewsPage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: '*', element: <NotFoundView /> },
         ],

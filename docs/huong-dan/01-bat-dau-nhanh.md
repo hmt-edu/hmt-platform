@@ -13,7 +13,7 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
   4. **Admin và Kế toán** còn một bước «Xác thực hai bước» (xem 1.3).
 - **Kết quả:** vào đúng cổng của mình (CRM cho nhân viên, Giáo viên cho giáo viên và trợ giảng). Ai có nhiều cổng thì chọn cổng ở menu tài khoản (xem 1.6).
 - **Nếu gặp lỗi:** «Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa.» Màn «Không thể đăng nhập» nghĩa là tài khoản chưa dùng được: liên hệ quản trị viên.
-- **Ảnh:** ![dang-nhap-nhan-vien](assets/dang-nhap-nhan-vien.png)
+- **Ảnh:** [ẢNH: dang-nhap-nhan-vien]
 
 ### Học sinh
 - **Mục tiêu:** vào cổng Học tập để xem bài tập, lịch học và kết quả.
@@ -22,13 +22,13 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
   2. Nhập «Mã học sinh» (ví dụ dạng `HS000212`) và «Mật khẩu» do trung tâm cấp.
   3. Bấm «Vào học».
 - **Nếu gặp lỗi:** «Mã học sinh hoặc mật khẩu chưa đúng. Em kiểm tra lại nhé.» Quên mật khẩu thì nhờ thầy cô hoặc bộ phận chăm sóc khách hàng ở cơ sở cấp lại.
-- **Ảnh:** ![dang-nhap-hoc-sinh](assets/dang-nhap-hoc-sinh.png)
+- **Ảnh:** [ẢNH: dang-nhap-hoc-sinh]
 
 ### Phụ huynh
 - **Mục tiêu:** theo dõi việc học của con.
 - **Các bước:** mở màn «Chào phụ huynh» («Đăng nhập để theo dõi việc học của con.»); nhập «Mã phụ huynh» (dạng `PH000212`) và «Mật khẩu»; bấm «Đăng nhập».
 - **Nếu gặp lỗi:** «Mã phụ huynh hoặc mật khẩu chưa đúng. Anh chị kiểm tra lại nhé.» Quên mật khẩu thì liên hệ bộ phận chăm sóc khách hàng ở cơ sở.
-- **Ảnh:** ![dang-nhap-phu-huynh](assets/dang-nhap-phu-huynh.png)
+- **Ảnh:** [ẢNH: dang-nhap-phu-huynh]
 
 > Lưu ý: học sinh và phụ huynh đăng nhập bằng **mã** (mã học sinh, mã phụ huynh), không bằng số điện thoại.
 
@@ -49,11 +49,11 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
   3. Nhập «Mật khẩu hiện tại», «Mật khẩu mới», «Nhập lại mật khẩu mới».
   4. Bấm «Đổi mật khẩu».
 - **Nếu gặp lỗi:** «Mật khẩu hiện tại không đúng.» thì nhập lại; «Chưa kiểm tra được mật khẩu hiện tại. Kiểm tra mạng rồi thử lại.» thì thử lại sau (không phải do bạn sai mật khẩu).
-- **Ảnh:** ![doi-mat-khau-ho-so](assets/doi-mat-khau-ho-so.png)
+- **Ảnh:** [ẢNH: doi-mat-khau-ho-so]
 
 ### Quên mật khẩu
 - **Các bước:** ở màn đăng nhập bấm «Quên mật khẩu?». Màn «Quên mật khẩu» ghi «Để đặt lại mật khẩu, vui lòng liên hệ quản trị viên của trung tâm.» Liên hệ quản trị viên; bấm «Quay lại đăng nhập» để trở về.
-- **Ảnh:** ![quen-mat-khau](assets/quen-mat-khau.png)
+- **Ảnh:** [ẢNH: quen-mat-khau]
 
 ## 1.3 Xác thực hai bước (chỉ Admin và Kế toán)
 - **Ai làm:** chỉ tài khoản Admin và Kế toán («Bắt buộc với tài khoản Admin và Kế toán.»). Vai khác không gặp bước này.
@@ -70,22 +70,22 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
 - **Thường gặp theo vai** (chỉ để hình dung; mục thật theo quyền): Sale thấy nhiều ở Tuyển sinh và Bán hàng; Kế toán ở Bán hàng và thu chi; CSKH ở Chăm sóc khách hàng; Trưởng cơ sở ở Đào tạo và Báo cáo; Admin thấy cả Cấu hình và Quản trị.
 - **Cổng Giáo viên (điện thoại):** thanh dưới có «Hôm nay», «Lịch dạy», «Lớp», «Cần làm», «Tài khoản».
 - **Cổng Học tập (điện thoại):** thanh dưới có «Trang chủ», «Bài tập», «Lịch», «Kết quả», «Tài khoản».
-- **Ảnh:** ![menu-crm](assets/menu-crm.png), ![thanh-duoi-giao-vien](assets/thanh-duoi-giao-vien.png), [ẢNH: thanh-duoi-hoc-sinh]
+- **Ảnh:** [ẢNH: menu-crm], [ẢNH: thanh-duoi-giao-vien], [ẢNH: thanh-duoi-hoc-sinh]
 
 ## 1.5 Chọn cơ sở
 - **Mục tiêu:** xem số liệu của đúng cơ sở mình cần.
 - **Ai làm:** người nhiều cơ sở (ví dụ Admin, Kế toán) có ô «Cơ sở đang xem» ở thanh trên, chọn «Tất cả cơ sở» hoặc từng cơ sở. Người chỉ thuộc một cơ sở **không có ô này**: cơ sở của mình hiện ở dòng dưới tên trong menu tài khoản, và dữ liệu tự giới hạn theo cơ sở đó.
-- **Ảnh:** ![chon-co-so](assets/chon-co-so.png)
+- **Ảnh:** [ẢNH: chon-co-so]
 
 ## 1.6 Việc của tôi và việc chờ tôi duyệt
 - **Việc của tôi:** «Trang chủ» CRM có «Việc của tôi hôm nay» (nhắc việc cần làm; chưa có việc thì hiện «Chưa có mục nhắc việc nào cho bạn.»). Cổng Giáo viên xem ở «Hôm nay» và «Cần làm».
 - **Việc chờ tôi duyệt:** menu «Tổng quan» › «Việc chờ tôi duyệt». Mục này chỉ hiện với người có quyền duyệt; bấm một dòng để mở bản ghi cần duyệt.
-- **Ảnh:** ![viec-cua-toi-hom-nay](assets/viec-cua-toi-hom-nay.png), ![viec-cho-toi-duyet](assets/viec-cho-toi-duyet.png)
+- **Ảnh:** [ẢNH: viec-cua-toi-hom-nay], [ẢNH: viec-cho-toi-duyet]
 
 ## 1.7 Đổi cổng và đăng xuất
 - **Các bước:** bấm tên mình ở góc trên (nút «Tài khoản: …»). Menu có «Hồ sơ cá nhân», «Sang cổng …» (ví dụ «Sang cổng Giáo viên», chỉ hiện nếu bạn có nhiều cổng) và «Đăng xuất».
 - **Hộp «kết thúc phiên»:** đăng nhập quá số thiết bị cho phép thì hộp hỏi chọn phiên cũ để đóng.
-- **Ảnh:** ![menu-tai-khoan](assets/menu-tai-khoan.png)
+- **Ảnh:** [ẢNH: menu-tai-khoan]
 
 ## Dữ liệu mẫu
 _(Để trống: viết sau khi tính năng chạy.)_
