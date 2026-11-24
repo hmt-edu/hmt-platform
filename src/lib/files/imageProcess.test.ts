@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { sha256Hex, targetSize, toGrayscaleContrast, validateBatch } from './imageProcess';
+import {
+  decodeFailureMessage,
+  outputMime,
+  sha256Hex,
+  targetSize,
+  toGrayscaleContrast,
+  validateBatch,
+} from './imageProcess';
 
 const limits = { maxBytes: 100, maxCount: 2, maxTotalBytes: 150 };
 const ok = { name: 'a.jpg', size: 80, type: 'image/jpeg' };
@@ -74,5 +81,18 @@ describe('validateBatch', () => {
     expect(validateBatch([{ ...ok, type: 'image/svg+xml' }], limits)[0]?.code).toBe('SAI_LOAI_TEP');
     expect(validateBatch([{ ...ok, type: 'image/heic' }], limits)).toEqual([]);
     expect(validateBatch([{ ...ok, type: 'application/pdf' }], limits)).toEqual([]);
+  });
+});
+
+describe('HEIC không gửi nguyên (F-23-50)', () => {
+  it('ảnh luôn ra WebP, kể cả HEIC; PDF giữ nguyên', () => {
+    expect(outputMime('image/heic')).toBe('image/webp');
+    expect(outputMime('image/jpeg')).toBe('image/webp');
+    expect(outputMime('application/pdf')).toBe('application/pdf');
+  });
+  it('không đổi được HEIC thì báo trước khi nộp, chỉ cách chụp JPG', () => {
+    expect(decodeFailureMessage('a.heic', 'image/heic')).toContain('HEIC');
+    expect(decodeFailureMessage('a.heic', 'image/heic')).toContain('JPG');
+    expect(decodeFailureMessage('b.png', 'image/png')).not.toContain('HEIC');
   });
 });

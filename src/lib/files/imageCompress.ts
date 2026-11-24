@@ -1,6 +1,12 @@
 // Nén ảnh bài nộp bằng canvas trong trình duyệt (F-23-46 b). Phần thuần ở imageProcess.ts.
 // Ảnh học sinh: thang xám + tăng tương phản + WebP. Ảnh giáo viên đính kèm: giữ màu (keepColor). PDF giữ nguyên. Không AVIF (iPhone cũ).
-import { FILE_COMPRESS_PROFILE, sha256Hex, targetSize, toGrayscaleContrast } from './imageProcess';
+import {
+  decodeFailureMessage,
+  FILE_COMPRESS_PROFILE,
+  sha256Hex,
+  targetSize,
+  toGrayscaleContrast,
+} from './imageProcess';
 
 export interface ProcessedImage {
   blob: Blob;
@@ -46,7 +52,13 @@ export async function compressImage(
   file: File,
   opts: { keepColor: boolean },
 ): Promise<ProcessedImage> {
-  const bitmap = await createImageBitmap(file);
+  // Đọc được mới nén; không đọc được (HEIC trên trình duyệt chưa hỗ trợ) thì báo ngay, KHÔNG gửi nguyên tệp (F-23-50).
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    throw new Error(decodeFailureMessage(file.name, file.type));
+  }
   try {
     const full = drawScaled(bitmap, FILE_COMPRESS_PROFILE.maxEdge, !opts.keepColor);
     const blob = await toBlob(full.canvas, FILE_COMPRESS_PROFILE.quality);

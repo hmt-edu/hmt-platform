@@ -57,6 +57,18 @@ export interface UploadLimits {
   maxTotalBytes: number; // tổng mỗi lần
 }
 
+/** Loại tệp ra gửi lên kho: ảnh luôn đổi sang WebP ở trình duyệt (kể cả HEIC của iPhone), không gửi nguyên HEIC (F-23-50). PDF giữ nguyên. */
+export function outputMime(inputMime: string): string {
+  return inputMime === 'application/pdf' ? 'application/pdf' : 'image/webp';
+}
+
+/** Câu báo TRƯỚC khi nộp khi trình duyệt không đọc được ảnh (thường là HEIC trên Chrome/Android). Không im lặng, không gửi nguyên tệp. */
+export function decodeFailureMessage(name: string, type: string): string {
+  return type === 'image/heic'
+    ? `Tệp «${name}» là ảnh HEIC mà trình duyệt này chưa đổi được. Hãy chụp lại ở chế độ JPG hoặc chọn «Tương thích nhất» trong cài đặt máy ảnh, rồi nộp lại.`
+    : `Không đọc được ảnh «${name}». Hãy chọn lại ảnh khác (JPG, PNG).`;
+}
+
 export type BatchError =
   | { code: 'QUA_NHIEU_TEP'; message: string }
   | { code: 'TEP_QUA_LON'; message: string; name: string }
