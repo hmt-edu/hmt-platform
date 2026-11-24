@@ -29,7 +29,7 @@ cap_nhat: 2026-11-24
 - Học sinh phải đổi mật khẩu ở lần đăng nhập đầu.
 - Đặt lại mật khẩu: mật khẩu cũ hết hiệu lực, người đó bị đăng xuất khỏi mọi thiết bị.
 - Khoá: người đó không đăng nhập được nữa và bị đăng xuất khỏi mọi thiết bị.
-- Học sinh: khoá rồi có nút **Mở khoá** (đăng nhập lại bằng mật khẩu hiện có). Phụ huynh: khoá rồi **không có Mở khoá**. ⚠ **«Đặt lại mật khẩu» KHÔNG mở lại tài khoản phụ huynh đã khoá** (chỉ đổi mật khẩu, người đó vẫn không đăng nhập được). Hiện màn này chưa có cách mở lại: báo Chat. Cách tạm (chưa thử trên staging): màn **Người dùng** → hồ sơ người đó → «Mở khoá».
+- Khoá rồi thì có nút **Mở khoá** (học sinh và phụ huynh đều có, anh Trường chốt 24/11): đăng nhập lại bằng mật khẩu hiện có. ⚠ **«Đặt lại mật khẩu» không mở lại tài khoản đã khoá**; quên mật khẩu thì Mở khoá rồi Đặt lại.
 - Không xoá tài khoản.
 
 ## Các bước: học sinh (QT-13)
@@ -53,8 +53,8 @@ cap_nhat: 2026-11-24
    [CHƯA CHỤP: cần staging; ảnh dự kiến quan-tri-qt12-b6]
 2. «Chưa cấp»: **Cấp tài khoản** → xác nhận → hộp «Mật khẩu tạm» → **Chép mật khẩu** → **Xong**. Chuyển mật khẩu cho phụ huynh (không có email tự động).
    *Bạn thấy:* «Đã cấp tài khoản cho <tên>.»
-3. Đã có tài khoản: **Đặt lại mật khẩu** hoặc **Khoá** (nút Khoá chỉ hiện khi tài khoản đang hoạt động). Khoá phụ huynh **không bắt chọn lý do**.
-   *Bạn thấy:* «Đã đặt lại mật khẩu cho <tên>.» hoặc «Đã khoá tài khoản của <tên>.» Tài khoản khoá chỉ còn nút **Đặt lại mật khẩu**, nhưng nút này không mở lại được tài khoản đã khoá.
+3. Đã có tài khoản: **Đặt lại mật khẩu**, **Khoá** (chỉ hiện khi đang hoạt động; **không bắt chọn lý do**) hoặc **Mở khoá** (chỉ hiện khi đã khoá).
+   *Bạn thấy:* «Đã đặt lại mật khẩu cho <tên>.», «Đã khoá tài khoản của <tên>.» hoặc «Đã mở khoá tài khoản của <tên>.»
 
 ## Sau bước này
 - **Ai làm tiếp:** học sinh, phụ huynh đăng nhập cổng học tập bằng mã và mật khẩu tạm; học sinh đổi mật khẩu ở lần đầu.
@@ -65,7 +65,7 @@ cap_nhat: 2026-11-24
 |---|---|
 | Lỡ đóng hộp khi chưa chép mật khẩu | Bấm «Đặt lại mật khẩu» để sinh mật khẩu mới |
 | Khoá nhầm học sinh | Bấm «Mở khoá» |
-| Khoá nhầm phụ huynh | **Đặt lại mật khẩu không mở lại được.** Báo Chat; cách tạm chưa thử: màn Người dùng → hồ sơ → «Mở khoá». Nên xác nhận kỹ trước khi bấm «Khoá» |
+| Khoá nhầm phụ huynh | Bấm «Mở khoá» |
 | Cấp nhầm người | Không xoá được. Bấm «Khoá» |
 | Giao nhầm mật khẩu cho người khác | Bấm «Đặt lại mật khẩu» ngay |
 
@@ -85,5 +85,5 @@ cap_nhat: 2026-11-24
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn cấp được một tài khoản và chép được mật khẩu tạm trước khi bấm «Xong».
-- [ ] Bạn nói được khác biệt: học sinh có Mở khoá; phụ huynh khoá rồi thì Đặt lại mật khẩu không mở lại được.
+- [ ] Bạn nói được vì sao «Đặt lại mật khẩu» không thay được «Mở khoá».
 - [ ] Bạn cấp hàng loạt và biết file tải về là nơi duy nhất có mật khẩu.
