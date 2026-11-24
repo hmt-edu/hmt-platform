@@ -166,6 +166,20 @@ const dangNhap = async (page) => {
 // Chạy: HD_TAI_KHOAN=sale.cs5@thu.hoamatoan.invalid node scripts/huong-dan/ban-hang-thu-chi.mjs bh1
 // Dữ liệu ghi trên staging đều thuộc bộ «[MẪU]»; không chạy với bản chạy thật.
 const CO_HOI = process.env.HD_CO_HOI ?? '11fce0a4-513c-4304-a5db-e6c27e2707dc'; // cơ hội mẫu L8 của CS5 (đổi bằng HD_CO_HOI)
+/** Chuẩn bị (ngoài phần quay chính): tạo một báo giá «Đã gửi» mới ở cơ hội mẫu, trả địa chỉ báo giá. */
+async function taoBaoGiaDaGui(p) {
+  await p.goto(`${APP}/crm/bao-gia/tao?co-hoi=${CO_HOI}`);
+  await p.waitForLoadState('networkidle');
+  await p.getByText('Chọn gói…').first().click();
+  await p.getByText('Lớp chung Toán 9').first().click();
+  await p.getByLabel('Số lượng dòng 1', { exact: true }).fill('10');
+  await nutTen('Lưu')(p).click();
+  await p.waitForURL(/\/crm\/bao-gia\/(?!tao)/, { timeout: 30000 });
+  await nutTen('Gửi')(p).click();
+  await p.getByText('Đã gửi báo giá.').first().waitFor({ timeout: 15000 });
+  await p.waitForLoadState('networkidle');
+}
+
 const BAI = {
   // BH1: lập báo giá, gửi, in (luồng chính, 5 bước). Tạo thêm một báo giá mới ở cơ hội mẫu.
   bh1: (b) =>
@@ -228,6 +242,64 @@ const BAI = {
       ],
       { width: 1280, height: 720 },
       5,
+    ),
+  // BH3: lập đơn hàng từ báo giá, chọn lớp và ngày vào lớp, trình duyệt (4 bước). Tự tạo báo giá «Đã gửi» trước khi quay.
+  bh3: (b) =>
+    chayBai(
+      b,
+      'bh3',
+      async (p) => {
+        await dangNhap(p);
+        await taoBaoGiaDaGui(p);
+      },
+      [
+        {
+          chu: 'Ở báo giá «Đã gửi» bấm «Chuyển thành đơn»',
+          loc: nutTen('Chuyển thành đơn'),
+          lam: async (p) => {
+            await nutTen('Chuyển thành đơn')(p).click();
+            await p.waitForURL(/\/crm\/don-hang\/tao/);
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Chọn «Điều khoản thanh toán» (bắt buộc), rồi bấm «Lưu»',
+          loc: (p) => p.getByText('Chọn điều khoản').first(),
+          lam: async (p) => {
+            await p.getByText('Chọn điều khoản').first().click();
+            await p.getByRole('option', { name: 'Cọc rồi đóng phần còn lại' }).click();
+            await nutTen('Lưu')(p).click();
+            await p.waitForURL(/\/crm\/don-hang\/(?!tao)/, { timeout: 30000 });
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Bấm «Sửa đơn», «Chọn lớp», chọn lớp và «Ngày vào lớp», bấm «Chọn», rồi «Lưu»',
+          loc: nutTen('Sửa đơn'),
+          lam: async (p) => {
+            await nutTen('Sửa đơn')(p).click();
+            await p.getByText('Chọn lớp', { exact: true }).first().click();
+            await p.getByRole('radio').first().check();
+            await p.waitForTimeout(1500);
+            const ngay = p.getByRole('dialog').getByRole('radio');
+            if ((await ngay.count()) > 3) await ngay.nth(3).check();
+            await p.waitForTimeout(1500);
+            await p.getByRole('dialog').getByRole('button', { name: 'Chọn', exact: true }).click();
+            await nutTen('Lưu')(p).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Bấm «Trình duyệt»: đơn thành «Đã trình», chờ người duyệt',
+          loc: nutTen('Trình duyệt'),
+          lam: async (p) => {
+            await nutTen('Trình duyệt')(p).click();
+            await p.waitForTimeout(3000);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      4,
     ),
 };
 
