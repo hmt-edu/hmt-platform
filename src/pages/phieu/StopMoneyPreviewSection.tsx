@@ -39,6 +39,27 @@ export function StopMoneyPreviewSection({
           {refunding ? (
             d.refund_amount !== null ? (
               <>
+                {d.refund_kind === 'MOT_PHAN' ? (
+                  <Row
+                    label={`Giờ hoàn × giá sau chiết khấu (${d.hours_refund ?? 0} giờ)`}
+                    value={formatMoney(d.base_amount ?? 0)}
+                  />
+                ) : (
+                  <>
+                    {d.used_amount != null && (
+                      <Row label="Giờ đã học trừ" value={`− ${formatMoney(d.used_amount)}`} />
+                    )}
+                    {(d.prior_refund_amount ?? 0) > 0 && (
+                      <Row
+                        label="Đã hoàn các lần trước"
+                        value={`− ${formatMoney(d.prior_refund_amount ?? 0)}`}
+                      />
+                    )}
+                    {d.base_amount != null && (
+                      <Row label="Còn lại trước phí" value={formatMoney(d.base_amount)} />
+                    )}
+                  </>
+                )}
                 <Row
                   label={`Phí xử lý (${d.fee_percent ?? 0}%)`}
                   value={formatMoney(d.fee_amount ?? 0)}
