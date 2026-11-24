@@ -160,6 +160,14 @@ const dangNhap = async (page) => {
   await page.waitForLoadState('networkidle');
 };
 
+const vaoDS = async (p) => {
+  await dangNhap(p);
+  await p.goto(`${APP}/crm/lead`);
+  await p.waitForLoadState('networkidle');
+  await p.waitForTimeout(2500);
+};
+const timDS = (p) => p.getByPlaceholder(/Tìm tên/).first();
+
 const BAI = {
   // Bài 1: đăng nhập và nhìn menu.
   'dang-nhap': (b) =>
@@ -1275,6 +1283,172 @@ const BAI = {
       6,
     );
   },
+  // ===== Nhóm CHUNG (bài CH4 danh sách): mỗi mục của bài một video, số bước video = số bước của mục. Danh sách Lead, sale.cs5. =====
+  'ch4-tim': (b) =>
+    chayBai(
+      b,
+      'ch4-tim',
+      vaoDS,
+      [
+        {
+          chu: 'Bấm vào ô tìm ở đầu danh sách',
+          loc: timDS,
+          lam: async (p) => {
+            await timDS(p).click();
+          },
+        },
+        {
+          chu: 'Gõ mã, tên hoặc số điện thoại (chữ gợi ý trong ô cho biết tìm theo gì)',
+          loc: timDS,
+          lam: async (p) => {
+            await timDS(p).fill('[MẪU]');
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Không ra dòng nào: màn hiện «Không có kết quả khớp bộ lọc»',
+          loc: timDS,
+          lam: async (p) => {
+            await timDS(p).fill('zzzkhongco');
+            await p.waitForTimeout(2500);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      3,
+    ),
+  'ch4-filters': (b) =>
+    chayBai(
+      b,
+      'ch4-filters',
+      vaoDS,
+      [
+        {
+          chu: 'Bấm Filters: hộp mở có «Lọc nhanh» và dòng «Cùng nhóm là HOẶC, khác nhóm là VÀ.»',
+          loc: nutTen(NHAN.filters),
+          lam: (p) => nutTen(NHAN.filters)(p).click(),
+        },
+        {
+          chu: 'Bấm chip muốn lọc; điều kiện áp dụng ngay',
+          loc: (p) => p.getByText('Tôi phụ trách', { exact: true }).first(),
+          lam: async (p) => {
+            await p.getByText('Tôi phụ trách', { exact: true }).first().click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Lọc kỹ hơn: «Lọc nâng cao…» → «Thêm điều kiện» → chọn trường, phép so sánh, giá trị → «Áp dụng»',
+          loc: (p) => p.getByText(/Lọc nâng cao/).first(),
+          lam: async (p) => {
+            await p
+              .getByText(/Lọc nâng cao/)
+              .first()
+              .click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Lọc theo ngày: chọn «Trường ngày» rồi «Khoảng thời gian»',
+          loc: (p) => p.getByText(/Thêm điều kiện/).first(),
+        },
+      ],
+      { width: 1280, height: 720 },
+      4,
+    ),
+  'ch4-group': (b) =>
+    chayBai(
+      b,
+      'ch4-group',
+      vaoDS,
+      [
+        {
+          chu: 'Bấm Group By; hộp «Nhóm theo» liệt kê trường có thể nhóm',
+          loc: nutTen(NHAN.groupBy),
+          lam: (p) => nutTen(NHAN.groupBy)(p).click(),
+        },
+        {
+          chu: 'Bấm trường muốn nhóm; chọn tối đa 2 cấp, theo thứ tự bấm; bấm lại để bỏ',
+          loc: (p) => p.getByRole('dialog').getByRole('button').nth(1),
+          lam: async (p) => {
+            await p.getByRole('dialog').getByRole('button').nth(1).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      2,
+    ),
+  'ch4-cot': (b) =>
+    chayBai(
+      b,
+      'ch4-cot',
+      vaoDS,
+      [
+        {
+          chu: 'Bấm «Cột»; hộp «Cột hiển thị»: tích hoặc bỏ tích cột muốn hiện/ẩn',
+          loc: nutTen('Cột'),
+          lam: (p) => nutTen('Cột')(p).click(),
+        },
+        {
+          chu: 'Đổi thứ tự bằng cách kéo hoặc nút mũi tên; «Mặc định» để trả về cột gốc',
+          loc: (p) => p.getByRole('button', { name: 'Mặc định' }).first(),
+        },
+      ],
+      { width: 1280, height: 720 },
+      2,
+    ),
+  'ch4-fav': (b) =>
+    chayBai(
+      b,
+      'ch4-fav',
+      vaoDS,
+      [
+        {
+          chu: 'Đặt các bộ lọc như trên',
+          loc: nutTen(NHAN.filters),
+          lam: async (p) => {
+            await nutTen(NHAN.filters)(p).click();
+            await p.getByText('Tôi phụ trách', { exact: true }).first().click();
+            await p.waitForTimeout(1200);
+            await p.keyboard.press('Escape');
+          },
+        },
+        {
+          chu: 'Bấm Save to Favorites, nhập «Tên bộ lọc», lưu',
+          loc: (p) => p.getByRole('button', { name: 'Save to Favorites' }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Save to Favorites' }).click();
+            await p.waitForTimeout(1200);
+            await p.getByRole('button', { name: 'Lưu bộ lọc hiện tại' }).click();
+            await p.waitForTimeout(1200);
+            await p.getByRole('dialog').getByRole('textbox').first().fill('[MẪU] Việc của tôi');
+            await p.getByRole('dialog').getByRole('button', { name: /^Lưu/ }).last().click();
+            await p.waitForTimeout(2000);
+          },
+        },
+        {
+          chu: 'Dùng lại: bấm Favorites, hộp «Bộ lọc của tôi» liệt kê bộ đã lưu; bấm tên để áp dụng',
+          loc: nutTen(NHAN.favorites),
+          lam: async (p) => {
+            await nutTen(NHAN.favorites)(p).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Bỏ bộ đã lưu: ở dòng bộ lọc trong Favorites bấm nút «Bỏ bộ lọc»',
+          loc: (p) => p.getByRole('button', { name: /Bỏ bộ lọc/ }).first(),
+          lam: async (p) => {
+            await p
+              .getByRole('button', { name: /Bỏ bộ lọc/ })
+              .first()
+              .click();
+            await p.waitForTimeout(1500);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      4,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
