@@ -33,6 +33,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run test
       - run: npm run check:hardcode
+      - run: npm run check:huong-dan # chỉ cảnh báo, luôn thoát 0 (A-23-42)
 
       - if: inputs.format-check
         run: npm run format:check

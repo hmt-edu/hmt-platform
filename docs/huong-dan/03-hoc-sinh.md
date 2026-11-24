@@ -9,7 +9,7 @@ portals: [crm]
 
 # Vai: Học sinh (cổng Học tập)
 
-Vai: **Học sinh**. Cổng Học tập dùng trên **điện thoại** là chính (laptop cũng mở được). Chữ trong dấu «…» là chữ hiện trên màn. Chưa biết đăng nhập thế nào thì đọc [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh), phần «Học sinh».
+Vai: **Học sinh**. Cổng Học tập dùng trên **điện thoại** là chính (laptop cũng mở được). Chữ trong dấu «…» là chữ hiện trên màn. Chưa biết đăng nhập thế nào thì đọc [Bắt đầu nhanh](/crm/huong-dan/chung-dang-nhap), phần «Học sinh».
 
 Menu của em ở thanh dưới (điện thoại) hoặc menu trái (laptop): **Trang chủ**, **Bài tập**, **Lịch**, **Kết quả**, **Tài khoản**. Em chỉ **xem** bài và kết quả của chính em.
 
@@ -70,7 +70,7 @@ Menu của em ở thanh dưới (điện thoại) hoặc menu trái (laptop): **
 **Mục tiêu:** xem hồ sơ và đổi mật khẩu.
 
 1. Bấm **Tài khoản** để xem «Hồ sơ cá nhân» (họ tên, tên đăng nhập, cơ sở). Thông tin sai thì nhờ quản trị viên sửa.
-2. Đổi mật khẩu: làm theo [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh), mục «Đổi mật khẩu».
+2. Đổi mật khẩu: làm theo [Bắt đầu nhanh](/crm/huong-dan/chung-dang-nhap), mục «Đổi mật khẩu».
 
 - **Lỗi thường gặp:** quên mật khẩu thì nhờ thầy cô hoặc bộ phận chăm sóc khách hàng ở cơ sở cấp lại; không tự khôi phục trên màn.
 - **Ảnh:** [ẢNH: hoc-sinh-tai-khoan]

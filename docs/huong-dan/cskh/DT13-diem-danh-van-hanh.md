@@ -33,15 +33,15 @@ di_thu: chưa
 1. Vào menu **Đào tạo → Điểm danh trong ngày** để xem toàn cảnh.
    *Bạn thấy:* mỗi dòng một buổi của hôm nay (đổi ngày ở ô «Ngày»), kèm số em theo trạng thái ở phía vận hành (VH điểm danh) và phía giáo viên (GV điểm danh), và cột «Lưu ý» (ví dụ có phụ huynh báo nghỉ).
    Màn này bật theo cơ sở: nếu hiện «Phân hệ chưa bật», nhờ Quản trị.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; ảnh dự kiến buoi15-dt13-b1]
+   [ẢNH: dt13-b1]
 2. Vào **Đào tạo → Điểm danh vận hành** (tên màn: «Học sinh vắng / chưa đến»).
    *Bạn thấy:* các em vắng hoặc chưa đến của buổi hôm nay, mỗi dòng ghi «Vắng» hoặc «Chưa đến», lớp, giờ, «Lý do liên hệ».
-   [CHƯA CHỤP: buoi11-dt13-b2]
+   [ẢNH: dt13-b2]
 3. Gọi phụ huynh. Sau cuộc gọi, ở dòng của em bấm **«Ghi lý do»**, chọn «Lý do liên hệ» (và «Ghi chú» nếu cần), bấm **«Lưu»**.
    *Bạn thấy:* thông báo «Đã ghi lý do liên hệ»; cột «Lý do liên hệ» của dòng đó có chữ vừa chọn.
 4. Muốn ghi trạng thái của trung tâm cho cả lớp: ở dòng bấm **«Mở buổi»**.
    *Bạn thấy:* màn «Điểm danh trong ngày» của buổi, danh sách em; mỗi em có ô «Trung tâm điểm danh», ô «Lý do liên hệ», ô «Ghi chú» và cột «Giáo viên (chính thức)» chỉ đọc.
-   [CHƯA CHỤP: buoi03-dt13-b4]
+   [CHƯA CHỤP: không có dữ liệu mẫu ở bước này trên staging]
 5. Chọn trạng thái cho từng em, lý do liên hệ nếu có, rồi bấm **«Lưu»** ở đầu màn.
    *Bạn thấy:* thông báo «Đã lưu điểm danh vận hành». Chưa lưu mà rời màn thì hiện «Chưa lưu thay đổi» và các sửa đổi sẽ mất.
 6. Nhìn cột **«Giáo viên (chính thức)»**: dòng nào có chữ **«Lệch»** là hai bên ghi khác nhau; **bạn không sửa ô giáo viên**, nhắn giáo viên nếu thấy sai.

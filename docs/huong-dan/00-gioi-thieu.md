@@ -126,7 +126,7 @@ Mỗi tính năng lớn có **công tắc theo cơ sở**; phân hệ chưa bậ
 
 ## 9. Đọc tiếp
 
-- [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh): đăng nhập, mật khẩu, hai bước, menu, chọn cơ sở.
-- [Thao tác cơ bản dùng chung](/crm/huong-dan/thao-tac-co-ban): tìm, lọc, nhóm, lưu bộ lọc, mở và sửa bản ghi.
+- [Bắt đầu nhanh](/crm/huong-dan/chung-dang-nhap): đăng nhập, mật khẩu, hai bước, menu, chọn cơ sở.
+- [Thao tác cơ bản dùng chung](/crm/huong-dan/chung-danh-sach): tìm, lọc, nhóm, lưu bộ lọc, mở và sửa bản ghi.
 - Bài theo vai: [Tư vấn tuyển sinh](/crm/huong-dan/theo-vai-tu-van), [CSKH và vận hành lớp](/crm/huong-dan/theo-vai-cskh), [Kế toán](/crm/huong-dan/theo-vai-ke-toan), [Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so), [Giáo viên](/crm/huong-dan/giao-vien), [Quản trị](/crm/huong-dan/quan-tri).
 - Tra cứu: [Từ điển thuật ngữ](/crm/huong-dan/tu-dien), [Hỏi đáp và lỗi thường gặp](/crm/huong-dan/hoi-dap).

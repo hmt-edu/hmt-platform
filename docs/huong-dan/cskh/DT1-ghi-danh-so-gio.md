@@ -30,18 +30,18 @@ di_thu: chưa
 ## Các bước
 1. Vào menu **Đào tạo → Ghi danh**.
    *Bạn thấy:* danh sách ghi danh của cơ sở, mỗi dòng một ghi danh.
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; ảnh dự kiến gd01-dt1-b1]
+   [ẢNH: dt1-b1]
 2. Gõ tên hoặc mã em vào ô tìm, hoặc lọc theo «Tình trạng».
    *Bạn thấy:* danh sách thu gọn còn đúng em cần.
-   [CHƯA CHỤP: gd01-dt1-b2]
+   [ẢNH: dt1-b2]
 3. Bấm vào dòng ghi danh để mở bản ghi.
    *Bạn thấy:* khối «Thông tin ghi danh» (học sinh, phụ huynh, gói, tình trạng), khối «Quỹ giờ» (Giờ cấp, Giờ tặng, Đã học, Còn lại) và «Dòng xếp lớp».
-   [CHƯA CHỤP: gd02-dt1-b3]
+   [ẢNH: dt1-b3]
 4. Xem «Dòng xếp lớp»: lớp, «Ngày vào», «Ngày rời».
    *Bạn thấy:* em đang ở lớp nào từ ngày nào. Em chưa có lớp thì dòng này trống kèm lời nhắc bấm «Xếp lớp».
 5. Bấm **«Sổ giờ»** để xem từng dòng cộng, trừ giờ.
    *Bạn thấy:* mỗi dòng có ngày, loại, «Giờ +/−», lý do. Dòng đầu tiên sinh khi phiếu thu được duyệt.
-   [CHƯA CHỤP: gd04-dt1-b5]
+   [ẢNH: dt1-b5]
 6. Phụ huynh muốn hoàn phí, dừng học hoặc chuyển phí cho em đang **«Chờ xếp lớp»**: mở ticket Đề nghị của phụ huynh, bấm **«Tạo phiếu»**, chọn loại phiếu (Hoàn học phí, Dừng học hoặc Chuyển phí) rồi chọn đúng ghi danh ở ô «Ghi danh».
    *Bạn thấy:* hộp «Tạo phiếu Hoàn học phí» (hoặc Dừng học, Chuyển phí); ghi danh «Chờ xếp lớp» **có trong danh sách chọn**.
 
@@ -88,7 +88,7 @@ Em chưa học buổi nào, nên **số hoàn = số tiền đã đóng − phí
 **Bước sau:** Xếp lớp cho ghi danh
 
 <!-- GHI CHÚ CHO CHAT (không hiển thị):
-1. Ảnh: chưa chụp được đêm nay (chưa có phiên staging); ghi [CHƯA CHỤP].
+1. Ảnh: đã chụp trên staging 24/11; chỗ [CHƯA CHỤP] là bước staging chưa có dữ liệu mẫu.
 2. «Tình trạng» của ghi danh: đang dùng tên trong danh mục ENROLLMENT_STATUS (Chờ xếp lớp, Đã xếp lớp, Đang học, Hoàn thành...). «Hoàn phí», «Dừng» là mã HOAN_PHI, DUNG: kiểm lại tên hiện trên màn khi chụp ảnh.
 3. Bộ dữ liệu mẫu đợt 2 (mig 657) KHÔNG có ghi danh Chờ xếp lớp: cần thêm vào bộ mẫu nếu muốn tập bước 6 và bài DT2.
 4. Tỷ lệ phí 10% là giá trị mặc định của tham số refund_processing_fee_percent (có thể đổi theo cơ sở).
