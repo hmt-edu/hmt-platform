@@ -219,6 +219,15 @@ select is((app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'refund_amou
 select ok(app.get_payment_voucher(pg_temp.f('pv')) -> 'enrollment' ->> 'code' ~ '^GD', 'Bản ghi: có mã ghi danh hoàn phí');
 select is(pg_temp.err($$select app.get_payment_voucher(gen_random_uuid())$$), 'HMT_KHONG_TIM_THAY', 'Phiếu không có: HMT_KHONG_TIM_THAY');
 
+-- D-23-39: hoàn toàn bộ sau một lần hoàn trước: các dòng bảng tính phải cộng ra «Còn lại» (số minh hoạ trong bài, chụp tay vào yêu cầu).
+select pg_temp.sudo($$update app.refund_request set kind_code = 'TOAN_BO', paid_amount = 4800000, hours_used = 10, unit_price_base = 250000, base_amount = 1860000 where id = pg_temp.f('a')$$);
+select is((app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'used_amount')::bigint, 2500000::bigint, 'Bảng tính TC-11: tiền giờ đã học do máy chủ tính (giờ × giá gốc)');
+select is((app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'prior_refund_amount')::bigint, 440000::bigint, 'Bảng tính TC-11: hiện đã hoàn các lần trước khi hoàn toàn bộ');
+select is((app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'paid_amount')::bigint - (app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'used_amount')::bigint - (app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'prior_refund_amount')::bigint,
+          (app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'base_amount')::bigint, 'Bảng tính TC-11: đã đóng − giờ đã học − đã hoàn trước = Còn lại');
+select pg_temp.sudo($$update app.refund_request set kind_code = 'MOT_PHAN' where id = pg_temp.f('a')$$);
+select is((app.get_payment_voucher(pg_temp.f('pv')) -> 'refund' ->> 'prior_refund_amount')::bigint, 0::bigint, 'Bảng tính TC-11: hoàn một phần không có dòng hoàn trước');
+
 -- ================= Phạm vi cơ sở và quyền =================
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((app.list_payment_vouchers() ->> 'total')::int, 1, 'Trưởng cơ sở CS1: thấy phiếu của cơ sở mình');

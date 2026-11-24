@@ -14,8 +14,11 @@ export function voucherPrintRows(r: VoucherRecord['refund']): PrintRow[] {
           {
             key: 'used',
             label: `Giờ đã học × giá gốc (${n(r.hours_used)} giờ × ${n(r.unit_price_base)} đ)`,
-            amount: -(r.hours_used * r.unit_price_base),
+            amount: -r.used_amount,
           },
+          ...(r.prior_refund_amount > 0
+            ? [{ key: 'prior', label: 'Đã hoàn các lần trước', amount: -r.prior_refund_amount }]
+            : []),
         ]
       : [
           {

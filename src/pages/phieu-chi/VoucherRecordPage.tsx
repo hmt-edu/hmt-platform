@@ -143,8 +143,18 @@ function VoucherView({ record }: { record: VoucherRecord }) {
             key: 'used',
             label: 'Giờ đã học × giá gốc',
             how: `${n(r.hours_used)} giờ × ${n(r.unit_price_base)} đ, giá gốc`,
-            amount: -(r.hours_used * r.unit_price_base),
+            amount: -r.used_amount,
           },
+          ...(r.prior_refund_amount > 0
+            ? [
+                {
+                  key: 'prior',
+                  label: 'Đã hoàn các lần trước',
+                  how: 'Tiền gốc các phiếu hoàn đã duyệt hoặc đã chi',
+                  amount: -r.prior_refund_amount,
+                },
+              ]
+            : []),
         ]
       : [
           {
@@ -163,7 +173,11 @@ function VoucherView({ record }: { record: VoucherRecord }) {
         r.kind_code === 'TOAN_BO' ? 'Còn lại sau khi trừ giờ đã học' : 'Số tiền hoàn trước phí',
       how:
         r.kind_code === 'TOAN_BO'
-          ? `${n(r.paid_amount)} − ${n(r.hours_used * r.unit_price_base)}`
+          ? [
+              n(r.paid_amount),
+              n(r.used_amount),
+              ...(r.prior_refund_amount > 0 ? [n(r.prior_refund_amount)] : []),
+            ].join(' − ')
           : '—',
       amount: r.base_amount,
     },

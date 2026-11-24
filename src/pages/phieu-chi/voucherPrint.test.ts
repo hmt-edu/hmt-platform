@@ -8,6 +8,8 @@ const base = {
   paid_amount: 1_000_000,
   hours_used: 2,
   unit_price_base: 100_000,
+  used_amount: 200_000,
+  prior_refund_amount: 0,
   hours_refund: 0,
   unit_price_net: 0,
   base_amount: 800_000,
@@ -21,6 +23,12 @@ describe('bản in phiếu chi: các dòng tính hoàn (TC-12)', () => {
     const rows = voucherPrintRows(base);
     expect(rows.map((r) => r.key)).toEqual(['paid', 'used', 'base', 'fee', 'refund']);
     expect(rows.map((r) => r.amount)).toEqual([1_000_000, -200_000, 800_000, -80_000, 720_000]);
+  });
+
+  it('hoàn toàn bộ sau một lần hoàn trước: thêm dòng đã hoàn các lần trước, các dòng cộng ra Còn lại (TC-11)', () => {
+    const rows = voucherPrintRows({ ...base, prior_refund_amount: 100_000, base_amount: 700_000 });
+    expect(rows.map((r) => r.key)).toEqual(['paid', 'used', 'prior', 'base', 'fee', 'refund']);
+    expect(rows[0]!.amount + rows[1]!.amount + rows[2]!.amount).toBe(rows[3]!.amount);
   });
 
   it('hoàn một phần: giờ hoàn × giá sau chiết khấu thay hai dòng đầu', () => {
