@@ -1065,6 +1065,75 @@ const BAI = {
       chung,
       4,
     ),
+  qt9c: (b) =>
+    chayBai(
+      b,
+      'qt9c',
+      vao('/crm/cau-hinh/chiet-khau'),
+      [
+        {
+          chu: 'Mở Cấu hình → Chính sách chiết khấu; chọn tab «Chiết khấu» (hoặc «Quà tặng»)',
+          loc: (p) => p.getByRole('tab', { name: /Chiết khấu/ }).first(),
+        },
+        {
+          chu: 'Bấm «Thêm chiết khấu»: hiện hộp «Thêm chính sách chiết khấu»',
+          loc: (p) => p.getByRole('button', { name: 'Thêm chiết khấu', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Thêm chiết khấu', exact: true }).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Nhập «Tên chính sách» và «Mức tối đa (%)»',
+          loc: (p) => p.getByRole('dialog').getByLabel('Tên chính sách'),
+          lam: async (p) => {
+            await p.getByRole('dialog').getByLabel('Tên chính sách').fill('[MẪU] tập');
+            await p.getByRole('dialog').getByLabel('Mức tối đa (%)').fill('5');
+            await p.waitForTimeout(1000);
+          },
+        },
+        {
+          chu: 'Chọn «Nhóm gói» và nơi «Áp dụng cho», rồi bấm «Lưu» (video không bấm)',
+          loc: (p) => p.getByRole('dialog').getByRole('button', { name: 'Lưu', exact: true }),
+        },
+      ],
+      chung,
+      4,
+    ),
+  qt9d: (b) =>
+    chayBai(
+      b,
+      'qt9d',
+      vao('/crm/cau-hinh/dieu-khoan-thanh-toan'),
+      [
+        {
+          chu: 'Mở Cấu hình → Điều khoản thanh toán: danh sách bên trái, các đợt bên phải',
+          loc: (p) => p.getByRole('button', { name: 'Thêm điều khoản', exact: true }),
+        },
+        {
+          chu: 'Bấm «Thêm điều khoản»: hiện hộp «Thêm điều khoản thanh toán»',
+          loc: (p) => p.getByRole('button', { name: 'Thêm điều khoản', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Thêm điều khoản', exact: true }).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Nhập «Tên điều khoản» và «Hiệu lực từ»',
+          loc: (p) => p.getByRole('dialog').getByLabel('Tên điều khoản'),
+          lam: async (p) => {
+            await p.getByRole('dialog').getByLabel('Tên điều khoản').fill('[MẪU] chia 2 đợt');
+            await p.waitForTimeout(1000);
+          },
+        },
+        {
+          chu: 'Điền từng đợt (cách chia, giá trị, số ngày đến hạn), «Thêm đợt» khi cần, rồi «Lưu» (video không bấm)',
+          loc: (p) => p.getByRole('dialog').getByRole('button', { name: 'Thêm đợt' }),
+        },
+      ],
+      chung,
+      4,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
