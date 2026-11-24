@@ -73,7 +73,7 @@ Giả định 500 em, 19.500 ảnh/tháng (không phải số đo):
 | 150 KB     | 90 ngày | khoảng 8,8 GB (trong 15 GB)                   |
 | 300 KB     | 90 ngày | khoảng 17,5 GB (**vượt** 15 GB)               |
 
-Đề xuất: **hạn giữ mặc định 90 ngày nếu nén ≤ 150 KB, rút còn 60 ngày nếu thử nén ra lớn hơn** (anh chưa chốt hạn giữ; là **tham số** `file_retention_days`). 15 GB tính **chung cả tài khoản Google** (Gmail, Drive khác): nên dùng tài khoản riêng cho kho tệp. Chặn mềm khi tổng dung lượng chạm 80% (`file_storage_soft_limit_percent`, hạn mức `file_storage_free_gb` = 15) và báo Admin; Edge Function hỏi dung lượng còn lại của Drive (`about.get`).
+Đề xuất: **hạn giữ mặc định 90 ngày nếu nén ≤ 150 KB, rút còn 60 ngày nếu thử nén ra lớn hơn** (anh chưa chốt hạn giữ; là **tham số** `file_retention_days`). 15 GB tính **chung cả tài khoản Google** (Gmail, Drive khác): **quyết định: kho tệp dùng TÀI KHOẢN GOOGLE RIÊNG** (không chung với sao lưu đêm và hộp thư vận hành; mỗi môi trường một tài khoản, xem mục 8). Không còn là câu hỏi mở. Chặn mềm khi tổng dung lượng chạm 80% (`file_storage_soft_limit_percent`, hạn mức `file_storage_free_gb` = 15) và báo Admin; Edge Function hỏi dung lượng còn lại của Drive (`about.get`).
 
 ## 7. Thư mục và bảng DB
 
@@ -83,31 +83,33 @@ Giả định 500 em, 19.500 ảnh/tháng (không phải số đo):
 
 ## 8. Khoá và môi trường
 
+- **Staging và chạy thật dùng HAI dự án Google Cloud khác nhau**, mỗi dự án có OAuth client và refresh token riêng, mỗi môi trường một thư mục gốc Drive riêng (quyết định, không còn «tốt nhất»). Lý do: khoá staging nằm trong tay Claude Code và CI; nếu chung dự án hay chung token thì khoá staging đọc, xoá được ảnh thật của học sinh.
+  - Staging: dự án `hmt-luu-tru-tep-staging`, tài khoản Google kho tệp staging, thư mục `HMT-staging`; secret dán vào Edge Function của Supabase `hmt-staging` (và Secrets của `hmt-platform` nếu CI cần).
+  - Chạy thật: dự án `hmt-luu-tru-tep-prod`, tài khoản Google kho tệp chạy thật (đăng ký bằng email chạy thật, xác thực hai bước, chỉ dùng trên trình duyệt), thư mục `HMT-prod`; secret chỉ dán ở `hmt-deploy` và Edge Function của `hmt-prod` trên web.
+  - Hai bộ secret khác tên môi trường, không dùng chung giá trị nào. Kiểm tra: dùng token staging thử đọc thư mục prod, phải bị từ chối (làm một lần khi cài, ghi kết quả).
 - Client ID, client secret, refresh token **chỉ ở secret của Edge Function**, không vào repo, không vào `VITE_*`.
-- **Staging dùng thư mục Drive RIÊNG** (tốt nhất refresh token riêng); chạy thật dùng thư mục gốc khác, secret dán từ `hmt-deploy` trên web.
 - **Không khoá chạy thật trên máy Mac** (CLAUDE.md): Claude Code chỉ dựng với thư mục và token staging do anh dán.
 
-## 9. Việc anh làm tay (trên trình duyệt, đăng nhập tài khoản vận hành)
+## 9. Việc anh làm tay (trên trình duyệt)
 
-1. Vào console.cloud.google.com, tạo dự án mới `hmt-luu-tru-tep` (không cần bật thanh toán; nếu Google đòi thẻ ở bước nào thì **dừng và báo**).
-2. «APIs & Services»: bật **Google Drive API**.
-3. «OAuth consent screen»: loại **External**, tên «HMT lưu tệp», email hỗ trợ là email vận hành; thêm scope `drive.file`; bấm **Publish app** để chuyển sang «In production».
-4. «Credentials»: tạo OAuth client ID loại **Web application**; redirect URI do Code cung cấp lúc dựng (hoặc dùng OAuth Playground lấy token một lần, Code viết từng bước lúc đó).
-5. Cấp quyền bằng tài khoản vận hành, nhận **refresh token** (lần đầu chọn `access_type=offline` và `prompt=consent`).
-6. Tạo hai thư mục Drive `HMT-staging` và `HMT-prod`; đưa id thư mục cho Code.
-7. Dán `client_id`, `client_secret`, `refresh_token`, `folder_id` vào secret của Edge Function trên Supabase staging (trên web); bản chạy thật dán ở `hmt-deploy`.
-8. Báo Code, thử một tệp giả.
+Làm **hai lần**, một cho staging, một cho chạy thật (khác tài khoản Google, khác dự án, khác thư mục):
 
-## 10. Cách thử các chỗ CHƯA CHẮC (một tệp giả, trước khi dựng màn)
-
-1. Tạo phiên tải tiếp được từ một Edge Function thử, rồi `PUT` từ một trang trên tên miền staging: CORS có qua không (mục 2 A).
-2. Refresh token trong dự án «In production»: còn sống sau 8 ngày không (mục 1).
-3. Gọi `files.delete` lên tệp do ứng dụng tạo: dung lượng (`about.get`) giảm đúng không (mục 4).
-4. Đo băng thông thật của `file-view` với ảnh thu nhỏ (mục 3).
+1. Tạo tài khoản Google riêng cho kho tệp của môi trường đó (không dùng tài khoản đang giữ sao lưu đêm hay hộp thư vận hành).
+2. Vào console.cloud.google.com bằng tài khoản đó, tạo dự án mới (`hmt-luu-tru-tep-staging` hoặc `hmt-luu-tru-tep-prod`); không bật thanh toán; nếu Google đòi thẻ ở bước nào thì **dừng và báo**.
+3. «APIs & Services»: bật **Google Drive API**.
+4. «OAuth consent screen»: loại **External**, tên «HMT lưu tệp», email hỗ trợ là email vận hành; thêm scope `drive.file`; bấm **Publish app** để chuyển sang «In production».
+5. «Credentials»: tạo OAuth client ID loại **Web application**; redirect URI do Code cung cấp lúc dựng (hoặc dùng OAuth Playground lấy token một lần, Code viết từng bước lúc đó).
+6. Cấp quyền bằng tài khoản kho tệp, nhận **refresh token** (lần đầu chọn `access_type=offline` và `prompt=consent`).
+7. Tạo thư mục Drive gốc (`HMT-staging` hoặc `HMT-prod`); đưa id thư mục cho Code (staging) hoặc dán thẳng vào secret (chạy thật).
+8. Dán `client_id`, `client_secret`, `refresh_token`, `folder_id` vào secret của Edge Function: staging trên Supabase `hmt-staging`; chạy thật ở `hmt-deploy` và Supabase `hmt-prod`, đều trên web.
+9. Báo Code, thử một tệp giả ở staging. Thử đọc thư mục prod bằng token staging: phải bị từ chối.
 
 ## Câu hỏi cho Chat và anh
 
 1. Đồng ý OAuth refresh token + scope `drive.file` + «In production»?
 2. Thử cách A (tải thẳng lên Drive) trước, rơi về B nếu CORS không qua?
-3. Dùng **tài khoản Google riêng** cho kho tệp (15 GB không chung hộp thư), hay dùng thẳng tài khoản vận hành?
+3. ~~Tài khoản Google riêng cho kho tệp?~~ Đã chốt: riêng, mỗi môi trường một tài khoản (mục 6, 8).
 4. Hạn giữ 90 ngày (nén ≤ 150 KB) / 60 ngày (nếu lớn hơn) làm mặc định?
+
+5. Hạng 3 «xoá thẳng sau hạn» khác luật 23/11 (lưu trữ rồi xoá): chờ anh xác nhận; đề xuất xoá hẳn sau hạn.
+6. Ảnh HEIC không gửi nguyên: trình duyệt đổi sang WebP; không đổi được thì báo trước khi nộp (#693).
