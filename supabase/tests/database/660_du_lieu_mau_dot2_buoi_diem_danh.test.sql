@@ -108,8 +108,8 @@ select is(pg_temp.n((select id from s1), 'past'), 2::bigint, 'Đúng: đúng 2 b
 select is(pg_temp.n((select id from s1), 'content'), 2::bigint, 'Đúng: hai buổi có nội dung và bài tập về nhà');
 select is(pg_temp.n((select id from s1), 'lines'), 4::bigint, 'Đúng: mỗi buổi có hai dòng nội dung');
 select cmp_ok(pg_temp.n((select id from s1), 'score'), '>', 0::bigint, 'Đúng: buổi 1 có điểm nhận xét theo tiêu chí');
-select is(pg_temp.n((select id from s1), 'sent'), 3::bigint, 'Đúng: nhận xét 3 em ở buổi Done đã gửi phụ huynh');
-select is(pg_temp.reviews_visible((select id from s1)), 3::bigint, 'Đúng: cổng Học tập và Phụ huynh thấy được 3 nhận xét (buổi Done, đã gửi, có nhận xét)');
+select is(pg_temp.n((select id from s1), 'sent'), 2::bigint, 'Đúng: nhận xét 2 em ở buổi Done đã gửi phụ huynh (em thứ ba chờ gửi, migration 666)');
+select is(pg_temp.reviews_visible((select id from s1)), 2::bigint, 'Đúng: cổng Học tập và Phụ huynh thấy được 2 nhận xét đã gửi (buổi Done, đã gửi, có nhận xét)');
 select is(pg_temp.n((select id from s1), 'hw'), 3::bigint, 'Đúng: bài tập về nhà buổi 1 được chấm ở buổi 2 cho 3 em');
 -- Luật giờ: không trừ giờ thật.
 select is(pg_temp.n((select id from s1), 'tru'), 0::bigint, 'Luật giờ: dữ liệu mẫu không trừ giờ học sinh (không có dòng TRU_BUOI)');
