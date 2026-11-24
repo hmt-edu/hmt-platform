@@ -88,8 +88,8 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 **Mục tiêu:** biết đơn nào còn phải thu, đến hạn hay quá hạn; thu khoản nợ từ trước.
 
 1. Vào **Công nợ**: các cột «Phụ huynh», «Đơn hàng», «Sale», «Đợt», «Hạn đóng», «Phải đóng (đ)», «Đã đóng (đ)», «Còn nợ (đ)», «Tình trạng». Lọc sắp đến hạn hoặc quá hạn; bấm dòng để mở đơn.
-2. Thu nợ đầu kỳ (CSKH tạo): **Phiếu thu** → «Thu nợ đầu kỳ» → chọn «Phụ huynh», nhập «Số tiền», «Hình thức» → «Tạo phiếu nháp».
-3. CSKH tạo phiếu thu nợ đầu kỳ và trình; Kế toán chỉ duyệt (R-V2-15, không qua quản lý trực tiếp). Người tạo không tự duyệt phiếu của mình, nên Kế toán không tự lập rồi tự duyệt: nhờ CSKH tạo phiếu, rồi bạn duyệt như mục 3.
+2. Thu nợ đầu kỳ do **CSKH lập** (không gắn đơn): **Phiếu thu** → «Thu nợ đầu kỳ» → chọn «Phụ huynh», nhập «Số tiền», «Hình thức» → «Tạo phiếu nháp».
+3. CSKH bấm «Gửi duyệt»; bạn (Kế toán) duyệt như mục 3, không qua quản lý trực tiếp. Người lập không tự duyệt phiếu của mình.
 
 - **Kết quả:** nợ đầu kỳ của phụ huynh giảm đúng số đã duyệt.
 - **Lỗi thường gặp:** `HMT_TINH_NANG_TAT` («Thu nợ đầu kỳ chưa được bật cho cơ sở này»): báo Trưởng cơ sở hoặc Admin bật phân hệ.
@@ -100,7 +100,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 **Mục tiêu:** chi trả tiền hoàn cho phụ huynh sau khi yêu cầu được duyệt đủ hai cấp (Trưởng cơ sở, rồi Kế toán).
 
 1. Mở phiếu **Hoàn học phí** đang chờ cấp Kế toán (từ «Việc chờ tôi duyệt» hoặc mục Phiếu nghiệp vụ). Kiểm số liệu, bấm **«Duyệt»**.
-2. Người tạo phiếu bấm **«Thực hiện»**: hệ thống tính hoàn, trừ giờ và tạo **phiếu chi** (mã `PC-…`) ở «Chờ chi».
+2. CSKH (hoặc Trưởng cơ sở) bấm **«Thực hiện»**: hệ thống tính hoàn, trừ giờ và tạo **phiếu chi** (mã `PC-…`) ở «Chờ chi».
 3. Vào **Phiếu chi**, mở phiếu: xem «Phụ huynh đã đóng cho ghi danh», «Số tiền hoàn trước phí», «Số tiền hoàn». Sau khi chuyển tiền thật, ghi «Ghi chú chi» rồi bấm **«Ghi nhận đã chi»**. Có bản in «Hoàn học phí cho phụ huynh».
 
 - **Kết quả:** phiếu chi sang «Đã chi»; hồ sơ phụ huynh thấy khoản hoàn.
@@ -111,7 +111,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 | `HMT_HOAN_PHI_DANG_MO` | ghi danh đã có yêu cầu hoàn phí chưa xong: xử lý yêu cầu đó trước |
 | `HMT_HOAN_PHI_GIO_SAI` | giờ hoàn phải lớn hơn 0 và không quá giờ còn lại (không tính giờ tặng) |
 | `HMT_PHIEU_MOT_NGUOI_HAI_CAP` | một người không duyệt hai cấp của cùng một phiếu |
-| `HMT_KHONG_CO_QUYEN` | phiếu ở cấp Quản lý cơ sở: Kế toán không duyệt cấp này, chờ Trưởng cơ sở hoặc Admin |
+| `HMT_KHONG_CO_QUYEN` | phiếu ở cấp Quản lý cơ sở: Kế toán không duyệt cấp này, chờ Trưởng cơ sở duyệt |
 
 - **Ảnh:** [ẢNH: hoan-hoc-phi-duyet], [ẢNH: phieu-chi-ban-ghi], [ẢNH: phieu-chi-in]
 

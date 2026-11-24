@@ -25,6 +25,7 @@ cap_nhat: 2026-11-24
 - [ ] Bạn đã biết chính xác vai trò nào, phân hệ nào, hành động nào cần đổi, và ai đồng ý.
 
 ## Luật cần nhớ (lời thường)
+- **Vai «Vận hành» chưa có riêng (tạm thời):** người vận hành lớp dùng vai CSKH, quyền như CSKH; tài khoản tập «Vận hành 1…3» (vh1 đến vh3) gán vai CSKH. Đừng tạo vai mới cho việc này.
 - Quyền = **vai trò × phân hệ × hành động**, mỗi ô có một **phạm vi dữ liệu** (ví dụ chỉ cơ sở của mình, hoặc toàn bộ) hoặc «Không có».
 - Mỗi lần **Lưu thay đổi** tạo một **phiên bản mới**, có hiệu lực ngay. Không có «lưu nháp».
 - Phân hệ **Quản trị** chỉ cấp cho Admin: ô của vai khác ở phân hệ này bị mờ, không sửa được.

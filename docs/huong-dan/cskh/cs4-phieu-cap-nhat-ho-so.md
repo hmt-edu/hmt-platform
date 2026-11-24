@@ -31,25 +31,25 @@ cap_nhat: 2026-11-24
 ## Các bước
 1. Mở ticket «Cập nhật thông tin học sinh, phụ huynh», bấm «Tạo phiếu».
    *Bạn thấy:* hộp «Tạo phiếu Cập nhật hồ sơ», dưới tiêu đề ghi mã ticket, ô «Hồ sơ cần sửa» đang chọn «Học sinh».
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs4-b1]
+   [ẢNH: cskh-cs4-b1]
 2. Chọn «Hồ sơ cần sửa» là «Học sinh» hoặc «Phụ huynh».
    *Bạn thấy:* danh sách ô bên dưới đổi theo: mỗi ô có dạng «Trường (giá trị mới)», «Địa chỉ (giá trị mới)»…
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs4-b2]
+   [ẢNH: cskh-cs4-b2]
 3. Gõ giá trị mới vào đúng ô cần đổi, các ô còn lại để trống. Gõ «Lý do» (vì sao sửa, ví dụ «Phụ huynh báo trường mới»).
    *Bạn thấy:* nếu bấm lưu mà chưa nhập ô nào, dưới ô hiện «Nhập giá trị mới cho ít nhất một trường.»; thiếu lý do hiện «Nhập lý do của phiếu.»
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs4-b3]
+   [ẢNH: cskh-cs4-b3]
 4. Bấm «Tạo phiếu».
    *Bạn thấy:* báo «Đã tạo phiếu ở bước Nháp.», trang phiếu mở ra, khối «Nội dung cập nhật (học sinh)» hoặc «(phụ huynh)» liệt kê tên trường và giá trị mới bạn vừa nhập.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs4-b4]
+   [ẢNH: cskh-cs4-b4]
 5. Kiểm lại nội dung, bấm «Gửi duyệt».
-   *Bạn thấy:* trạng thái «Chờ duyệt»; bảng «Các cấp duyệt» có một dòng «Cấp 1», vai «Quản lý cơ sở», kết quả đang chờ.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs4-b5]
+   *Bạn thấy:* trạng thái «Chờ duyệt»; khối «Duyệt» có một dòng «Cấp 1», vai «Quản lý cơ sở», kết quả đang chờ.
+   [ẢNH: cskh-cs4-b5]
 6. **Nhờ Trưởng cơ sở duyệt** (người khác bạn): họ vào «Việc chờ tôi duyệt» hoặc «Phiếu nghiệp vụ» → «Chờ tôi duyệt», mở phiếu, bấm «Duyệt», rồi «Duyệt» trong hộp «Duyệt phiếu». Bạn tự bấm duyệt sẽ bị chặn.
    *Bạn thấy:* với bạn, trạng thái sang «Đã duyệt»; dòng «Duyệt xong lúc» có giờ.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs4-b6]
+   [ẢNH: cskh-cs4-b6]
 7. Mở lại phiếu «Đã duyệt», bấm «Thực hiện», rồi «Thực hiện» trong hộp «Thực hiện phiếu?».
    *Bạn thấy:* phiếu «Đã thực hiện»; ở khối «Nội dung cập nhật», giá trị cũ bị gạch ngang rồi mũi tên tới giá trị mới (ví dụ «~~Trường cũ~~ → Trường mới»); ticket gốc sang «Đã xử lý».
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs4-b7]
+   [ẢNH: cskh-cs4-b7]
 
 ⚠ **Bước 7 không hoàn tác bằng nút.** Nhập nhầm giá trị thì làm một ticket Đề nghị mới và phiếu mới để sửa lại giá trị đúng.
 

@@ -24,6 +24,7 @@ Người mới nên đọc theo thứ tự dưới đây. Bài nào ghi «(sắp
 - **Tuần 1:** đi một cơ hội qua các giai đoạn, lập báo giá, thu tiền, lên «Đăng ký học», lập đơn hàng. Cùng bài, các phần 2 đến 6.
 
 ## CSKH và vận hành lớp
+- **Lưu ý:** chưa có vai «Vận hành» riêng; người vận hành lớp dùng vai CSKH, quyền như CSKH (tài khoản tập vh1 đến vh3 cũng vậy).
 - **Ngày 1:** tìm khách, xem hồ sơ, xếp lớp cho ghi danh. Bài [Vai: CSKH và vận hành lớp](/crm/huong-dan/theo-vai-cskh), các phần 1 và 2.
 - **Tuần 1:** tạo ticket, xử lý khiếu nại, lập các phiếu nghiệp vụ (bảo lưu, chuyển lớp, dừng học, hoàn học phí). Cùng bài, các phần 5 đến 12.
 

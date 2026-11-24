@@ -14,12 +14,12 @@ cap_nhat: 2026-11-24
 **Ai làm:** Kế toán ghi nhận chi; Trưởng cơ sở xem (không thấy nút «Ghi nhận đã chi»). **Màn:** **Phiếu chi**.
 
 ## Cần nhớ
-- Phiếu chi **không tạo tay**: hệ thống tạo khi yêu cầu «Hoàn học phí» đã được duyệt đủ hai cấp (Trưởng cơ sở rồi Kế toán) và người tạo bấm «Thực hiện». Phiếu mới ở «Chờ chi».
+- Phiếu chi **không tạo tay**: hệ thống tạo khi yêu cầu «Hoàn học phí» đã được duyệt đủ hai cấp (Trưởng cơ sở rồi Kế toán) và CSKH (hoặc Trưởng cơ sở) bấm «Thực hiện». Phiếu mới ở «Chờ chi».
 - Một người **không duyệt hai cấp** của cùng một phiếu nghiệp vụ.
-- Số tiền hoàn do máy chủ tính, bạn không nhập số. Hoàn toàn bộ (dừng hẳn): tiền đã đóng − giờ đã học × giá gốc (bỏ chiết khấu), trừ phí xử lý (R-TIEN-28). Hoàn một phần: giờ hoàn × giá sau chiết khấu, trừ phí xử lý (R-TIEN-31).
+- Số tiền hoàn do máy chủ tính, bạn không nhập số. **Hoàn toàn bộ** (dừng hẳn): tiền đã đóng trừ giờ đã học tính theo **giá gốc** (bỏ chiết khấu), trừ phí xử lý (R-TIEN-28). **Hoàn một phần**: số giờ hoàn × giá sau chiết khấu, trừ phí xử lý (R-TIEN-31).
 
 ## Các bước
-1. Duyệt cấp Kế toán: mở phiếu **Hoàn học phí** đang chờ (từ «Việc chờ tôi duyệt»), kiểm số liệu, bấm **«Duyệt»**. Người tạo phiếu bấm **«Thực hiện»**: hệ thống tính hoàn, trừ giờ và tạo phiếu chi `PC-…` ở «Chờ chi».
+1. Duyệt cấp Kế toán: mở phiếu **Hoàn học phí** đang chờ (từ «Việc chờ tôi duyệt»), kiểm số liệu, bấm **«Duyệt»**. CSKH (hoặc Trưởng cơ sở) bấm **«Thực hiện»**: hệ thống tính hoàn, trừ giờ và tạo phiếu chi `PC-…` ở «Chờ chi».
 2. Vào **Phiếu chi** (menu Bán hàng và thu chi), bấm mã phiếu. Bảng «Khoản» cho thấy cách tính: «Phụ huynh đã đóng cho ghi danh», «Giờ đã học × giá gốc», «Đã hoàn các lần trước», «Còn lại sau khi trừ giờ đã học», «Phí xử lý», «Số tiền hoàn». Bạn không sửa số. [ẢNH: tc9-b1]
 3. (Tuỳ chọn) bấm **«Kế hoạch chi»** để ghi trước «Tài khoản nhận» và «Ngày chi dự kiến», rồi **«Lưu kế hoạch»**: chỉ để nhắc, chưa chi tiền và không chặn việc chi. [ẢNH: tc9-b3]
 4. Chuyển tiền thật cho phụ huynh ngoài hệ thống. Rồi bấm **«Ghi nhận đã chi»**, chọn **«Hình thức chi»** (bắt buộc), ghi «Ghi chú chi» nếu cần, bấm **«Ghi nhận đã chi»** trong hộp. Hộp nhắc «Không hoàn tác được». [ẢNH: tc9-b2] [ẢNH: tc9-b4]
@@ -36,7 +36,7 @@ cap_nhat: 2026-11-24
 | `HMT_HOAN_PHI_DANG_MO` | ghi danh đã có yêu cầu hoàn phí chưa xong | xử lý yêu cầu đó trước |
 | `HMT_HOAN_PHI_GIO_SAI` | giờ hoàn phải lớn hơn 0 và không quá giờ còn lại (không tính giờ tặng) | sửa số giờ ở phiếu |
 | `HMT_PHIEU_MOT_NGUOI_HAI_CAP` | một người không duyệt hai cấp | nhờ người khác duyệt cấp còn lại |
-| `HMT_KHONG_CO_QUYEN` | phiếu ở cấp Quản lý cơ sở: Kế toán không duyệt cấp này | nhờ Trưởng cơ sở duyệt cấp này (Kế toán chỉ duyệt cấp Kế toán) |
+| `HMT_KHONG_CO_QUYEN` | phiếu ở cấp Quản lý cơ sở: Kế toán không duyệt cấp này | chờ Trưởng cơ sở duyệt cấp này |
 
 ## Hỏi đáp
 - **Phụ huynh muốn giữ tiền cho đơn sau?** Chọn giữ thành «số dư khách hàng» ở phiếu dừng học, không tạo phiếu chi (bài «Số dư khách hàng»).

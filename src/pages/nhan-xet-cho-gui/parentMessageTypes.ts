@@ -34,6 +34,19 @@ export const EMPTY_PARENT_MESSAGE_STATE: ListState = {
   datePreset: '',
 };
 
+/**
+ * Nhóm «Trạng thái» chỉ nhận MỘT giá trị (máy chủ chỉ lọc một trạng thái, ra soát 02:51): bấm thêm ô thứ hai thì ô mới thay ô cũ,
+ * không để hai ô cùng sáng mà danh sách chỉ theo ô «Chờ gửi».
+ */
+export function keepOneStatus(prev: ListState, next: ListState): ListState {
+  const cur = next.quick.status ?? [];
+  if (cur.length <= 1) return next;
+  const before = prev.quick.status ?? [];
+  const added = cur.filter((v) => !before.includes(v));
+  const pick = added[added.length - 1] ?? cur[cur.length - 1];
+  return { ...next, quick: { ...next.quick, status: pick ? [pick] : [] } };
+}
+
 /** Trạng thái màn → bộ lọc gửi máy chủ. Chip Chờ gửi / Đã gửi chỉ nhận một giá trị; mặc định Chờ gửi. */
 export function buildParentMessageFilters(state: ListState): ParentMessageFilters {
   const f: ParentMessageFilters = {};

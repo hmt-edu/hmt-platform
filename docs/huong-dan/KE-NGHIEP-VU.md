@@ -64,7 +64,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | DT1 | Ghi danh: xem danh sách, bản ghi, số giờ | CS, BM | GD-01, GD-02, GD-04 | ◐ 03-cskh §2 | ghi-danh-so-gio | P1 |
 | DT2 | Xếp lớp cho ghi danh (theo nhóm hoặc theo lớp), hàng chờ xếp lớp | CS, BM | GD-03, GD-06 | ✅ 03-cskh §2 | ghi-danh-cho-xep, ghi-danh-xep-lop | P1 |
 | DT3 | Học sinh hai ghi danh cùng lớp (trừ giờ theo ghi danh cũ trước) | CS | GD-02, GD-04 | ❌ | — | P3 |
-| DT4 | Điều chỉnh giờ (dòng ngược dấu, lý do; cộng giờ chỉ Kế toán) | BM | GD-05 | ✅ 03-truong-co-so §9 | — | P2 |
+| DT4 | Điều chỉnh giờ (bớt: BM; cộng: KT) | BM, KT | GD-05 | ✅ 03-truong-co-so §9 | — | P2 |
 | DT5 | Sắp hết giờ / dự báo hết giờ | CS, SA | GD-07 | ❌ | — | P2 |
 | DT6 | Tái tục: phiếu tái tục (danh sách, kanban L1–L8, tạo thủ công) | CS, SA | TT-01, TT-02, TT-03 | ❌ | — | P1 |
 | DT7 | Tạo / sửa lớp, thời khoá biểu, trình duyệt | CS | LOP-03, LOP-04, LOP-05 | ✅ 03-cskh §3 | lop-trinh | P1 |
@@ -126,9 +126,9 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | QT7 | Nhật ký thao tác; nhật ký đăng nhập và xuất file | AD | QT-11, QT-12 | ✅ §7 | — | P3 |
 | QT8 | Nhập dữ liệu cũ (CSV: chọn loại, xem trước, nạp) | AD | QT-18 | ❌ | — | P1 |
 | QT9 | Gói bán, bảng giá có ngày hiệu lực, chiết khấu, điều khoản thanh toán | AD | CH-01..04, CH-09 | ❌ | — | P1 |
-| QT10 | Khung chương trình, rubric nhận xét | AD | CH-05..07 | ❌ | — | P2 |
-| QT11 | Hồ sơ giáo viên, trợ giảng | AD, BM | QT-16 | ❌ | — | P2 |
-| QT12 | Tài khoản học sinh, phụ huynh (cấp, khoá, đặt lại) | CS, AD | QT-13, QT-17 | ❌ | — | P2 |
+| QT10 | Khung chương trình, rubric nhận xét | AD | CH-05..07 | ✅ qt10a, qt10b | — | P2 |
+| QT11 | Hồ sơ giáo viên, trợ giảng | AD, BM | QT-16 | ✅ qt11 | — | P2 |
+| QT12 | Tài khoản học sinh, phụ huynh (cấp, khoá, đặt lại) | CS, AD | QT-13, QT-17 | ✅ qt12 | — | P2 |
 | QT13 | Dữ liệu mẫu của tôi (tạo, xoá, phiếu chờ người khác duyệt) | tất cả NV | du-lieu-mau | ✅ 01 và 02 (đã bổ sung 24/11) | video du-lieu-mau | P2 |
 | QT14 | Xoá bản ghi nhập nhầm (chỉ Admin) | AD | CHUNG-20 | ❌ | — | P3 |
 
@@ -140,7 +140,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | CH3 | Menu, chọn cơ sở, đổi cổng, đăng xuất | tất cả | CHUNG-10, 25 | ✅ 01 §1.4–1.7 | menu-crm, chon-co-so, menu-tai-khoan | P1 |
 | CH4 | Danh sách: tìm, Filters, Group By, Favorites, cột, phân trang | tất cả | khuôn K03 | ✅ 02 §2.1–2.8 | danh-sach-*, video danh-sach | P1 |
 | CH5 | Bản ghi: mở, tạo, sửa, lưu; ghi chú; nhật ký | tất cả | K06, K07, CHUNG-22 | ✅ 02 §2.9–2.10 | ban-ghi-*, video ghi-chu | P1 |
-| CH6 | Tìm kiếm toàn hệ thống; thông báo | tất cả | CHUNG-11, 12 | ✅ 02 §2.2, §2.11 | thong-bao | P2 |
+| CH6 | Tìm kiếm toàn hệ thống; thông báo | tất cả | CHUNG-11, 12 | ✅ 02 §2.2, §2.11 và CH6 | thong-bao | P2 |
 | CH7 | Việc chờ tôi duyệt (gộp mọi loại) | BM, KT, AD | CHUNG-15 | ✅ 01 §1.6, 02 §2.12 | viec-cho-toi-duyet-* | P1 |
 | CH8 | Trang chủ theo vai trò | SA, CS, BM, KT | CHUNG-14 | ✅ theo từng vai | ke-toan-trang-chu, truong-co-so-trang-chu | P1 |
 | CH9 | Xuất file (có nhật ký); đính kèm tệp | có quyền | CHUNG-18, 21 | ❌ | — | P2 |
