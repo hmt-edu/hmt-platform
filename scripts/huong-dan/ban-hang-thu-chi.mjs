@@ -147,11 +147,11 @@ async function chayBai(
 
 const nutTen = (ten) => (p) => p.getByRole('button', { name: ten, exact: true });
 /** Bản thử nghiệm có bước chống máy tự động (Turnstile) chặn đăng nhập bằng biểu mẫu khi chạy tự động: lấy phiên bằng API Auth (mật khẩu thật của tài khoản giả) rồi nạp vào trình duyệt. */
-const dangNhap = async (page) => {
+const dangNhap = async (page, taiKhoan = TAI_KHOAN) => {
   const r = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`, {
     method: 'POST',
     headers: { apikey: SB_KEY, 'content-type': 'application/json' },
-    body: JSON.stringify({ email: TAI_KHOAN, password: PW }),
+    body: JSON.stringify({ email: taiKhoan, password: PW }),
   });
   if (!r.ok) throw new Error(`Đăng nhập API lỗi ${r.status}`);
   const khoa = `sb-${new URL(SB_URL).hostname.split('.')[0]}-auth-token`;
@@ -179,6 +179,37 @@ async function taoBaoGiaDaGui(p) {
   await p.getByText('Đã gửi báo giá.').first().waitFor({ timeout: 15000 });
   await p.waitForLoadState('networkidle');
 }
+
+const EMAIL = (ten) => `${ten}@thu.hoamatoan.invalid`;
+
+/** Chuẩn bị NGOÀI video: mở một phiên riêng (không quay) với tài khoản `ten`, chạy `fn(page)`, đóng. */
+async function chuanBi(browser, ten, fn) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const page = await context.newPage();
+  try {
+    await dangNhap(page, EMAIL(ten));
+    return await fn(page);
+  } finally {
+    await context.close();
+  }
+}
+
+/** Sale tạo đơn từ báo giá mới, trình duyệt (chưa chọn lớp). Trả địa chỉ đơn (đang «Đã trình»). */
+const taoDonDaTrinh = (browser) =>
+  chuanBi(browser, 'sale.cs5', async (p) => {
+    await taoBaoGiaDaGui(p);
+    await nutTen('Chuyển thành đơn')(p).click();
+    await p.waitForURL(/\/crm\/don-hang\/tao/);
+    await p.getByText('Chọn điều khoản').first().click();
+    await p.getByRole('option', { name: 'Cọc rồi đóng phần còn lại' }).click();
+    await nutTen('Lưu')(p).click();
+    await p.waitForURL(/\/crm\/don-hang\/(?!tao)/, { timeout: 30000 });
+    await p.waitForLoadState('networkidle');
+    await nutTen('Trình duyệt')(p).click();
+    await p.getByText('Đã trình đơn.').first().waitFor({ timeout: 15000 });
+    const ma = (await p.locator('main').innerText()).match(/DH-[A-Z0-9]+-\d+-\d+/)?.[0] ?? '';
+    return { url: p.url(), ma };
+  });
 
 const BAI = {
   // BH1: lập báo giá, gửi, in (luồng chính, 5 bước). Tạo thêm một báo giá mới ở cơ hội mẫu.
@@ -301,6 +332,46 @@ const BAI = {
       { width: 1280, height: 720 },
       4,
     ),
+  // BH4: Trưởng cơ sở duyệt đơn (3 bước; Từ chối là ngoại lệ, video riêng bh4b). Tự tạo một đơn «Đã trình» trước khi quay.
+  bh4: async (b) => {
+    const { url: don, ma } = await taoDonDaTrinh(b);
+    return chayBai(
+      b,
+      'bh4',
+      async (p) => {
+        await dangNhap(p, EMAIL('truongcs.cs5'));
+        await p.goto(`${APP}/crm/viec-cho-duyet`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Vào «Việc chờ tôi duyệt», bấm mã đơn để mở',
+          loc: (p) => p.getByText(ma, { exact: true }),
+          lam: async (p) => {
+            await p.getByText(ma, { exact: true }).first().click();
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Đọc từng dòng đơn và điều khoản thanh toán',
+          loc: (p) => p.getByText('Dòng đơn', { exact: false }).first(),
+        },
+        {
+          chu: 'Đồng ý: bấm «Duyệt», rồi bấm «Duyệt» trong hộp để xác nhận',
+          loc: nutTen('Duyệt'),
+          lam: async (p) => {
+            await nutTen('Duyệt')(p).click();
+            await p.waitForTimeout(1500);
+            await p.getByRole('dialog').getByRole('button', { name: 'Duyệt', exact: true }).click();
+            await p.getByText('Đã duyệt đơn hàng.').first().waitFor({ timeout: 15000 });
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      3,
+    );
+  },
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
