@@ -42,3 +42,7 @@ Chuỗi dữ liệu cố định, dừng ở trạng thái chờ duyệt; SĐT d
 - `demo_make_tickets`: 3 ticket (Đề nghị, Khiếu nại, Đề nghị gắn lớp) và 1 phiếu «Cập nhật hồ sơ» đã trình (Chờ duyệt, không tự duyệt). Ticket chèn trực tiếp vì `create_ticket` chặn Giáo viên, Trợ giảng tạo Đề nghị. **Aftersale tắt ở cơ sở thì bỏ qua phần ticket** (không lỗi, không tự bật công tắc) và ghi câu «Đã bỏ qua phần ticket vì Aftersale đang tắt ở cơ sở này.» vào cột `demo_data_set.notice`; `list_demo_data_sets` trả thêm cột `notice`.
 - `app.demo_tag` thêm PARENT, ENROLLMENT, HOUR_LEDGER; thêm cờ `is_demo` cho parent, enrollment, hour_ledger. Học sinh do duyệt đơn (656) cũng nằm trong bộ, nên mảnh học sinh chỉ kiểm chủ bộ, không kiểm «chưa đổ STUDENT».
 
+
+### Đợt 2, mảnh buổi học (migration 660; số 658 đã bị #679 dùng, 659 giữ cho #680)
+- `app.demo_make_sessions(bộ, cơ sở)`: điểm danh, nội dung, bài tập, nhận xét, buổi Done gửi phụ huynh cho lớp Toán mẫu (không trừ giờ thật).
+- Trigger `class_session_inherit_demo` (E-23-34): buổi sinh muộn của lớp mẫu (duyệt lớp sau, phân lớp, bù, bổ trợ) tự mang `is_demo` và ghi `demo_data_item` vào đúng bộ, nên xoá bộ ẩn được cả các buổi này.
