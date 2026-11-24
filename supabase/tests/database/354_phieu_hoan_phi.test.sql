@@ -438,6 +438,10 @@ select is(pg_temp.bal(pg_temp.d3e()), 0::bigint, 'D-23-07 Đúng: hoàn tiền t
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((select app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'money_mode'), 'HOAN_TIEN', 'D-23-26 Đúng: xem trước ghi cách xử lý tiền phiếu đã chọn');
 select ok((select (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) -> 'balance_amount') is not null), 'D-23-26 Đúng: xem trước có số dư giữ lại (R-TIEN-33)');
+-- D-23-45 (migration 658): bảng xem trước có đủ dòng để cộng khớp (đã đóng − giờ đã học − đã hoàn trước = còn lại).
+select is((select app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'refund_kind'), 'TOAN_BO', 'D-23-45 Đúng: xem trước ghi loại hoàn (Dừng học hoàn tiền là hoàn toàn bộ)');
+select ok((select app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ? 'used_amount' and app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ? 'prior_refund_amount'), 'D-23-45 Đúng: xem trước có dòng giờ đã học trừ và đã hoàn trước');
+select ok((select (j ->> 'used_amount') is null or (j ->> 'paid_amount')::bigint - (j ->> 'used_amount')::bigint - (j ->> 'prior_refund_amount')::bigint = (j ->> 'base_amount')::bigint from (select app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) as j) q), 'D-23-45 Đúng: các dòng xem trước cộng ra Còn lại');
 select ok((select (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'refund_amount') is not null
             or (app.preview_stop_task_money((select (j ->> 'id')::uuid from tt7)) ->> 'refund_error') is not null), 'D-23-26 Đúng: có số hoàn hoặc mã lỗi vì sao không tính được (R-TIEN-28)');
 select is(pg_temp.err($$select app.preview_stop_task_money(gen_random_uuid())$$), 'HMT_KHONG_TIM_THAY', 'D-23-26 Chặn: phiếu không tồn tại');
