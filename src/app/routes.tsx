@@ -421,6 +421,18 @@ const ParentResultsPage = lazyScreen(
   () => import('../pages/ph/ParentResultsPage'),
   'ParentResultsPage',
 );
+const ParentRequestsPage = lazyScreen(
+  () => import('../pages/ph/ParentRequestsPages'),
+  'ParentRequestsPage',
+);
+const ParentRequestNewPage = lazyScreen(
+  () => import('../pages/ph/ParentRequestsPages'),
+  'ParentRequestNewPage',
+);
+const ParentRequestDetailPage = lazyScreen(
+  () => import('../pages/ph/ParentRequestsPages'),
+  'ParentRequestDetailPage',
+);
 const ParentFeesPage = lazyScreen(() => import('../pages/ph/ParentFeesPage'), 'ParentFeesPage');
 const ParentOrderPage = lazyScreen(() => import('../pages/ph/ParentOrderPage'), 'ParentOrderPage');
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
@@ -1321,7 +1333,9 @@ export const routes: RouteObject[] = [
           { path: 'hoc-phi', element: <ParentFeesPage /> },
           { path: 'hoc-phi/:orderId', element: <ParentOrderPage /> },
           { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
-          { path: 'de-nghi', element: <PortalTabPage title="Đề nghị" stage={GD4} /> },
+          { path: 'de-nghi', element: <ParentRequestsPage /> },
+          { path: 'de-nghi/moi', element: <ParentRequestNewPage /> },
+          { path: 'de-nghi/:ticketId', element: <ParentRequestDetailPage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: 'du-lieu-mau', element: <DemoDataPage /> },
           { path: '*', element: <NotFoundView /> },
