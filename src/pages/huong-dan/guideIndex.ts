@@ -21,7 +21,7 @@ export const GUIDE_GROUPS: { key: GuideGroup; title: string }[] = [
 ];
 
 // MỘT danh sách, không trùng. Thứ tự ở đây là thứ tự menu và thứ tự «Bài trước / Bài sau». Slug bat-dau là đường mặc định.
-// Mọi file .md trong docs/huong-dan (trừ README, CHUP-ANH) phải có ở đây: guideIndex.test.ts giữ.
+// Mọi file .md trong docs/huong-dan (trừ README, CHUP-ANH, KE-NGHIEP-VU) phải có ở đây: guideIndex.test.ts giữ.
 export const GUIDE_SECTIONS: GuideSection[] = [
   {
     slug: 'bat-dau',
