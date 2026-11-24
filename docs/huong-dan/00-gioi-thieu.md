@@ -95,6 +95,7 @@ Mã của từng bản ghi (lead, cơ hội, đơn, phiếu thu, ghi danh, lớp
 ## 6. Vai trò và phạm vi
 
 - **Sale, CSKH:** làm việc trên khách hàng và yêu cầu của cơ sở mình.
+- **Vận hành (tài khoản tập):** dùng **tạm quyền của CSKH**, làm được đúng những việc CSKH làm. Chưa có vai riêng; khi bài hướng dẫn nói «CSKH», người tài khoản Vận hành làm theo như vậy.
 - **Quản lý cơ sở:** duyệt đơn, duyệt lớp, duyệt cấp một cho phiếu nghiệp vụ, thấy toàn cơ sở.
 - **Kế toán:** duyệt thu, duyệt cấp hai cho phiếu hoàn tiền, phiếu chi.
 - **Giáo viên, trợ giảng:** chỉ thấy lớp, buổi của mình.

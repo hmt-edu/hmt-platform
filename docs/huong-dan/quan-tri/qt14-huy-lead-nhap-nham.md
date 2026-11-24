@@ -20,7 +20,7 @@ cap_nhat: 2026-11-24
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn là Admin. Vai khác không thấy mục «Huỷ lead nhập nhầm» trong menu «Hành động».
-- [ ] Lead **chưa có cơ hội và chưa có lịch hẹn**. Có rồi thì không huỷ được (xem «Lỗi hay gặp»).
+- [ ] Lead **chưa có cơ hội và chưa có lịch hẹn nào** (kể cả lịch hẹn đã huỷ hoặc đã xong). Có rồi thì không huỷ được (xem «Lỗi hay gặp»).
 - [ ] Đó đúng là lead **nhập nhầm**. Lead trùng với lead khác thì dùng **Gộp trùng** (cùng menu), không huỷ. Khách không còn nhu cầu thì để người phụ trách chuyển giai đoạn, không huỷ.
 - [ ] Bạn có lý do ngắn gọn để ghi.
 
@@ -59,7 +59,7 @@ cap_nhat: 2026-11-24
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
 | «Lead đã có N cơ hội nên không huỷ được.» (HMT_LEAD_CO_CO_HOI) | lead đã được tạo cơ hội | Không huỷ. Xử lý cơ hội trước (chuyển giai đoạn cho phù hợp) |
-| «Lead đã có N lịch hẹn nên không huỷ được.» (HMT_LEAD_CO_LICH_HEN) | lead đã có lịch hẹn | Huỷ hoặc hoàn thành lịch hẹn trước, rồi mới huỷ lead nếu còn cần |
+| «Lead đã có N lịch hẹn nên không huỷ được.» (HMT_LEAD_CO_LICH_HEN) | lead đã có lịch hẹn (hệ thống đếm mọi lịch hẹn, kể cả đã huỷ hoặc đã xong) | Không huỷ được: để người phụ trách chuyển giai đoạn lead và ghi chú rõ đây là lead nhập nhầm |
 | «Lead này đã gộp hoặc đã huỷ, không huỷ được nữa.» (HMT_LEAD_KHONG_HUY_DUOC) | đã xử lý rồi | Không cần làm gì |
 | «Cần ghi lý do huỷ lead.» (HMT_THIEU_THONG_TIN) | để trống ô Lý do | Gõ lý do rồi bấm lại |
 | «Chỉ Admin được huỷ lead nhập nhầm.» (HMT_KHONG_CO_QUYEN) | bạn không phải Admin | Nhờ Admin làm |

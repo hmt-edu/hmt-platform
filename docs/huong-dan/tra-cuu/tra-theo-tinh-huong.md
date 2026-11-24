@@ -38,7 +38,7 @@ Gặp một việc cụ thể mà chưa biết bài nào? Tìm câu gần nhất
 | Học sinh vừa đóng tiền, chờ xếp lớp | [CSKH](/crm/huong-dan/theo-vai-cskh), phần 2 |
 | Cần mở lớp mới | [CSKH](/crm/huong-dan/theo-vai-cskh), phần 3; duyệt lớp: [Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so), phần 6 |
 | Cần huỷ, dời buổi hoặc đổi giáo viên | [Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so), phần 8 |
-| Điều chỉnh giờ của ghi danh | [Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so), phần 9 |
+| Điều chỉnh giờ của ghi danh (bớt: Trưởng cơ sở; cộng: Kế toán) | [Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so), phần 9 |
 
 ## Việc chung và lỗi
 | Tình huống | Làm gì, xem ở đâu |

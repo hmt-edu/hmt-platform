@@ -43,7 +43,7 @@ checked: 2026-11-24
    [ẢNH: ts-09-ts6-b3]
 4. **Phiếu kiểm tra** (bài «Tạo phiếu kiểm tra»): sau khi tạo phiếu, hệ thống tự gắn nhóm con L5. Khi học sinh làm bài xong và phiếu sang «Chờ GV chấm», cơ hội tự lên **L6 (L6A)**; giáo viên chấm xong phiếu «Hoàn thành» thì thành **L6B**. Bạn chọn nhóm con học lực L6C đến L6G theo kết quả.
    *Bạn thấy:* giai đoạn tự đổi mà bạn không bấm; thanh ghi nhóm con mới.
-5. **Sang L7 «Tư vấn»**: chuyển như bước 2. Nếu cơ hội chưa có phiếu kiểm tra hoàn thành, hộp hiện «Lý do bỏ qua test»: chọn một lý do («Học sinh cũ đã biết trình độ», «Phụ huynh không muốn test», «Đã có kết quả test nơi khác», «Khác»; chọn «Khác» thì phải ghi chú). Còn phiếu dang dở thì hộp báo «Chưa chuyển sang L7 được. Cơ hội còn phiếu kiểm tra đang dở»: bấm «Mở phiếu …» rồi hoàn thành hoặc huỷ phiếu.
+5. **Sang L7 «Tư vấn»**: chuyển như bước 2. Nếu cơ hội chưa có phiếu kiểm tra hoàn thành, hộp hiện «Lý do bỏ qua test»: chọn một lý do («PH từ chối làm bài test», «Học sinh đã có kết quả đánh giá trước đó», «Đã đủ thông tin trình độ qua trao đổi», «Ghi danh nhanh theo chương trình khuyến mãi», «Lý do khác»; chọn «Lý do khác» thì phải ghi chú). Còn phiếu dang dở thì hộp báo «Chưa chuyển sang L7 được. Cơ hội còn phiếu kiểm tra đang dở»: bấm «Mở phiếu …» rồi hoàn thành hoặc huỷ phiếu.
    *Bạn thấy:* khi đủ điều kiện, hộp có dòng xanh «Phiếu … đã Hoàn thành» và chuyển được.
    [ẢNH: ts-09-ts6-b5]
 6. **Sang L8 «Đăng ký học»** chỉ sau khi phụ huynh **đã thanh toán**. Bấm L8, ở ô «Sub-stage» chọn nhóm con («L8A PH đặt cọc», «L8B PH thanh toán chia để trả» hoặc «L8C PH hoàn thành 100% học phí»), tích **«Tôi xác nhận: Chuyển L8 không hoàn tác được»**, bấm **«Chuyển L8»**.
@@ -72,7 +72,7 @@ checked: 2026-11-24
 | «Từ giai đoạn L5 trở lên mỗi em bắt buộc có tên và năm sinh.» (HMT_THIEU_HOC_SINH) | Thiếu tên hoặc năm sinh học sinh | Điền ở khối học sinh rồi chuyển lại |
 | «Cơ hội còn phiếu kiểm tra đang dở: … Hoàn thành hoặc huỷ phiếu trước.» (HMT_PHIEU_DANG_DO) | Có phiếu chưa xong | Mở phiếu, hoàn thành hoặc huỷ |
 | «Cơ hội chưa có phiếu kiểm tra hoàn thành: chọn lý do bỏ qua test.» (HMT_THIEU_LY_DO) | Chưa test mà sang L7/L8 | Chọn «Lý do bỏ qua test» |
-| «Chọn lý do "Khác" thì phải ghi chú.» (HMT_THIEU_GHI_CHU) | Lý do «Khác» cần ghi chú | Viết ghi chú |
+| «Chọn "Khác" thì phải ghi chú lý do bỏ qua test.» (HMT_THIEU_GHI_CHU) | Lý do «Lý do khác» cần ghi chú | Viết ghi chú |
 | «Chuyển L8 phải chọn nhóm con L8A, L8B hoặc L8C.» (HMT_L8_CAN_NHOM_CON) | Chưa chọn nhóm con | Chọn nhóm con ở ô «Sub-stage» |
 | «Chuyển sang L8 không hoàn tác được: xác nhận để tiếp tục.» (HMT_L8_CAN_XAC_NHAN) | Chưa tích xác nhận | Tích ô xác nhận |
 | «Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng.» (HMT_CHUA_O_L8) | Lập đơn khi chưa ở L8 | Chuyển L8 sau khi phụ huynh đóng tiền |
