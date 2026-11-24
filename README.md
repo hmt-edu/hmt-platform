@@ -35,6 +35,8 @@ export API_URL=http://127.0.0.1:54321 SECRET_KEY=<Secret key trong supabase stat
 npm run db:seed-users     # vd sale.cs5@thu.hoamatoan.invalid, học sinh HS900001
 ```
 
+Tài khoản TẬP cho buổi đào tạo (chỉ thử nghiệm hoặc local, không bao giờ chạy thật): thêm `SEED_PRACTICE=1`. Mỗi cơ sở dạy học (lấy từ DB, không viết cứng) có 1 Quản lý (`ql.cs5`), 3 Tư vấn tuyển sinh (`tvts1.cs5` đến `tvts3.cs5`), 3 CSKH (`cskh1.cs5` đến `cskh3.cs5`); toàn hệ thống có Kế toán (`ketoan.tap`), Trưởng nhóm Marketing (`mkt.tap`), Ban Giám Đốc (`bgd.tap`). Tên hiển thị có «(giả)». Chạy lại không nhân đôi (khoá theo tên đăng nhập, mật khẩu đặt lại bằng `SEED_PASSWORD`). Trên thử nghiệm dùng mật khẩu của secret `STAGING_SEED_PASSWORD` làm `SEED_PASSWORD`; không ghi mật khẩu vào repo. Chưa có vai Vận hành riêng (CSKH là «chăm sóc, vận hành lớp»), nên chưa tạo tài khoản Vận hành.
+
 Thử tốc độ với dữ liệu giả lớn (chỉ ở local, sau `db:seed-users`): `npm run db:seed-lon` nạp 50.000 lead, 30.000 phụ huynh,
 100.000 lịch hẹn giả (`supabase/seed-lon.sql`, mã `LDL…`, `PHL…`). Muốn làm lại thì `npm run db:reset`. Không chạy ở thử nghiệm hay chạy thật.
 
