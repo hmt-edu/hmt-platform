@@ -56,8 +56,8 @@ create policy stored_file_read on app.stored_file for select to authenticated
 
 -- Tham số cài đặt (anh duyệt 23/11 và 24/11): hạn giữ, dọn, giới hạn tệp, chặn mềm dung lượng. Chỉ Admin đổi.
 insert into app.setting_def (key, name, value_type, unit, min_value, max_value, value, allow_branch_override, module, legacy_ref, description) values
-  ('file_retention_days', 'Hạn giữ ảnh bài làm (học sinh đang học)', 'INT', 'ngày', 30, 365, '90', false, 'HOC_TAP', 'F-23-46',
-   'Quá hạn này, ảnh của học sinh đang học vào hạng 3 (xuất Drive rồi xoá). Rút còn 60 nếu ảnh nén ra lớn hơn 150 KB. Chụp vào delete_after lúc tải lên.'),
+  ('file_retention_days', 'Hạn giữ ảnh bài làm (học sinh đang học)', 'INT', 'ngày', 30, 365, '60', false, 'HOC_TAP', 'F-23-52',
+   'Anh chốt 24/11: quá hạn này ảnh của học sinh đang học bị XOÁ HẲN (xoá vĩnh viễn ở nơi lưu, đánh dấu DA_XOA), không lưu trữ. Chụp vào delete_after lúc tải lên.'),
   ('file_retention_after_leave_days', 'Số ngày giữ ảnh sau khi học sinh Dừng học', 'INT', 'ngày', 7, 180, '30', false, 'HOC_TAP', 'F-23-46',
    'Học sinh đã Dừng học quá số ngày này: ảnh vào hạng 1 (xoá, không xuất Drive). Quay lại trong hạn thì thoát hạng 1.'),
   ('file_cleanup_dry_run', 'Việc dọn tệp chỉ chạy thử', 'BOOL', null, null, null, 'true', false, 'HOC_TAP', 'F-23-46',
@@ -65,9 +65,8 @@ insert into app.setting_def (key, name, value_type, unit, min_value, max_value, 
   ('file_max_mb', 'Dung lượng tối đa mỗi tệp', 'INT', 'MB', 1, 50, '20', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 20 MB mỗi tệp (thay 10 MB của R-LMS-04).'),
   ('file_max_count_per_upload', 'Số tệp tối đa mỗi lần nộp', 'INT', 'tệp', 1, 30, '10', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 10 tệp mỗi lần.'),
   ('file_max_total_mb_per_upload', 'Tổng dung lượng tối đa mỗi lần nộp', 'INT', 'MB', 1, 200, '50', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 50 MB tổng mỗi lần.'),
-  ('file_storage_soft_limit_percent', 'Chặn mềm dung lượng kho tệp', 'INT', '%', 50, 100, '80', false, 'HOC_TAP', 'F-23-46',
-   'Tổng dung lượng chạm mức này (so với hạn mức miễn phí của nơi lưu) thì chặn tải mới và báo Admin, để không tự phát sinh tiền.'),
+  ('file_storage_min_free_gb', 'Dung lượng còn trống tối thiểu của kho tệp', 'INT', 'GB', 1, 15, '3', false, 'HOC_TAP', 'F-23-52',
+   'Anh chốt 24/11: dung lượng còn trống của tài khoản kho tệp (đã gồm sao lưu đêm và thư) xuống dưới mức này thì chặn tải mới và báo Admin, để không tự phát sinh tiền.'),
   ('file_log_keep_days', 'Số ngày giữ dòng sổ tệp đã xoá', 'INT', 'ngày', 30, 730, '180', false, 'HOC_TAP', 'F-23-50',
-   'Dòng stored_file đã DA_XOA quá số ngày này thì việc dọn xoá hẳn khỏi sổ (giữ DB trong 500 MB của gói Free). Nhật ký audit_log vẫn còn bản ghi thao tác.'),
-  ('file_storage_free_gb', 'Hạn mức miễn phí của kho tệp', 'INT', 'GB', 1, 1000, '15', false, 'HOC_TAP', 'F-23-46', 'Google Drive miễn phí: 15 GB cho cả tài khoản (anh chốt 24/11).')
+   'Dòng stored_file đã DA_XOA quá số ngày này thì việc dọn xoá hẳn khỏi sổ (giữ DB trong 500 MB của gói Free). Nhật ký audit_log vẫn còn bản ghi thao tác.')
 on conflict (key) do nothing;
