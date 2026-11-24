@@ -43,7 +43,7 @@ export default defineConfig(
   },
   {
     // Kịch bản chạy tay chụp ảnh hướng dẫn (JS thuần, tham số Playwright không có kiểu): không dò kiểu.
-    files: ['scripts/huong-dan/**/*.mjs'],
+    files: ['scripts/huong-dan/**/*.mjs', 'scripts/apps-script-kho-tep/*.mjs'],
     languageOptions: { globals: { ...globals.node, ...globals.browser } },
     rules: {
       '@typescript-eslint/ban-ts-comment': 'off',

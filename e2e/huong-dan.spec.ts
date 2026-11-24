@@ -64,3 +64,20 @@ test('Hướng dẫn: menu chia ba nhóm không trùng, «Bạn là ai?» dẫn 
   await page.goto('/crm/huong-dan/sale');
   await expect(page).toHaveURL(/\/crm\/huong-dan\/theo-vai-tu-van$/);
 });
+
+test('Hướng dẫn: menu «Theo phân hệ» có cha bấm mở/đóng, con là bài; vào bài con thì cha mở sẵn (A-23-49)', async ({
+  page,
+}) => {
+  await enterAs(page, 'sale.cs5');
+  await page.goto('/crm/huong-dan');
+  const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
+  await expect(nav.getByText('Theo phân hệ', { exact: true })).toBeVisible();
+  const cha = nav.getByRole('button', { expanded: false }).first();
+  await expect(cha).toBeVisible();
+  await cha.click();
+  await expect(nav.getByRole('button', { expanded: true }).first()).toBeVisible();
+  const con = nav.locator('ul[id^="huong-dan-cha-"] a').first();
+  await con.click();
+  await expect(nav.getByRole('button', { expanded: true }).first()).toBeVisible();
+  await expect(nav.locator('a[aria-current="page"]')).toHaveCount(1);
+});

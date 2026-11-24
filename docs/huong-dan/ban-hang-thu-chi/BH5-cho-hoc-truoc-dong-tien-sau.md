@@ -22,7 +22,7 @@ cap_nhat: 2026-11-24
 ## Cần nhớ
 - Học vượt hạn mức thì em **bị loại khỏi danh sách các buổi sau**, và vận hành, sale nhận cảnh báo.
 - Khi thu tiền, các buổi đã học vẫn tính là đã học và **trừ vào giờ được cấp**; không học miễn phí.
-- Đơn đã bật cho học trước mà em đã học thì **không huỷ đơn được**: phải thu tiền, hoặc hoàn phí và dừng học qua ticket (bài «Huỷ đơn hàng»).
+- Đơn đã bật cho học trước mà em đã học thì **không huỷ đơn được**: phải thu tiền, hoặc làm ticket «Dừng học» (bài «Huỷ đơn hàng»). Phụ huynh chưa đóng đồng nào thì không có tiền để hoàn: «Hoàn phí» bị chặn (HMT_HOAN_PHI_KHONG_CON_TIEN), chỉ «Dừng học» được.
 - Chỉ làm trên máy tính, không có trên điện thoại.
 
 ## Các bước
@@ -44,7 +44,7 @@ cap_nhat: 2026-11-24
 | Nhầm gì | Sửa thế nào |
 |---|---|
 | Bật nhầm đơn | bấm «Tắt cho học trước» ngay, khi em chưa học buổi nào |
-| Em đã học trước mà muốn dừng | thu tiền trước, hoặc làm ticket hoàn phí và dừng học |
+| Em đã học trước mà muốn dừng | thu tiền trước, hoặc làm ticket «Dừng học» (chưa đóng đồng nào thì không hoàn phí được) |
 
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì |
@@ -57,7 +57,7 @@ cap_nhat: 2026-11-24
 ## Hỏi đáp
 - **Nút «Cho học trước» đâu rồi?** Chỉ hiện ở đơn «Đã duyệt» chưa thu, với người có quyền duyệt đơn; hoặc tính năng chưa bật cho cơ sở.
 - **Hạn mức đổi được không?** Hạn mức là tham số của cơ sở do Admin chỉnh; bạn không tự đổi.
-- **Phụ huynh không đóng tiền thì sao?** Bạn xử lý theo ticket hoàn phí và dừng học; không tự xoá ghi danh.
+- **Phụ huynh không đóng tiền thì sao?** Bạn làm ticket «Dừng học» (chưa đóng đồng nào thì không có gì để hoàn, nên không dùng «Hoàn phí»); không tự xoá ghi danh.
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản Trưởng cơ sở.
