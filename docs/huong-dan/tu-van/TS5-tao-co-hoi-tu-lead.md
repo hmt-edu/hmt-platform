@@ -33,7 +33,6 @@ checked: 2026-11-24
 1. Mở **Lead**, tìm và mở lead cần tạo cơ hội.
    *Bạn thấy:* bản ghi lead, ô «Sub-stage» ghi C4C.
    [ẢNH: ts-02-ts5-b1]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Bấm **«Tạo cơ hội»** (nút ở đầu bản ghi).
    *Bạn thấy:* hộp «Tạo cơ hội từ lead», dòng phụ ghi mã lead và tên phụ huynh, kèm «Phụ huynh», «Nhu cầu».
    [ẢNH: ts-06-ts5-b2]

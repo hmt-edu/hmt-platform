@@ -35,7 +35,6 @@ checked: 2026-11-24
 1. Mở **Cơ hội**, mở cơ hội cần chăm.
    *Bạn thấy:* thanh giai đoạn L1–L8 ở đầu bản ghi, giai đoạn hiện tại sáng; các nút liên kết «Lead gốc», «Phụ huynh», «Lịch hẹn», «Kiểm tra», «Báo giá», «Đơn hàng» có số đếm.
    [ẢNH: ts-08-ts6-b1]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Sau mỗi lần liên hệ, bấm giai đoạn phía trước trên thanh (hoặc kéo thẻ ở Kanban sang cột kế). Chọn **nhóm con** và ghi chú nếu hộp «Chuyển giai đoạn» hỏi, rồi bấm **«Chuyển giai đoạn»**.
    *Bạn thấy:* giai đoạn mới và nhóm con hiện trên thanh; lịch sử cơ hội có thêm một dòng.
    [ẢNH: ts-09-ts6-b2]

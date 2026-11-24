@@ -33,11 +33,9 @@ checked: 2026-11-24
 1. **Tạo lịch hẹn.** Từ bản ghi lead hoặc cơ hội bấm **«Lên lịch hẹn»** (hoặc ở màn **Lịch hẹn** bấm «Tạo»).
    *Bạn thấy:* hộp «Tạo lịch hẹn» với «Loại hoạt động», «Gắn với», «Ngày», «Giờ», «Người phụ trách», «Ghi chú». Tạo từ lead thì «Gắn với» tự điền và khoá.
    [ẢNH: ts-13-ts9-b1]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Chọn **«Loại hoạt động»** (Gọi điện, Zalo, Email, Gặp trực tiếp, SMS, Nhắc thu tiền), chọn **ngày, giờ** (có hàng «Chọn nhanh ngày», «Chọn nhanh giờ»), chọn **«Người phụ trách»**, ghi «Ghi chú» (ví dụ: Gọi lại hỏi lịch học). Bấm **«Tạo lịch hẹn»**.
    *Bạn thấy:* thông báo «Đã tạo lịch hẹn.»; lịch hiện ở khối lịch hẹn của hồ sơ và ở màn Lịch hẹn.
    [ẢNH: ts-11-ts9-b2]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 3. **Xem việc trong ngày.** Vào **Lịch hẹn**: các thẻ «Quá hạn», «Hôm nay», «Sắp tới» cho biết việc cần làm; xem dạng danh sách, bảng thẻ hoặc lịch tuần.
    *Bạn thấy:* mỗi lịch một dòng/thẻ với mã hồ sơ bấm được, giờ hẹn, trạng thái, nút thao tác.
    [ẢNH: ts-11-ts9-b3]
