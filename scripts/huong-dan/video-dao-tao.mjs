@@ -412,6 +412,70 @@ const BAI = {
       chung,
       7,
     ),
+  // DT8 «Duyệt hoặc từ chối lớp» (Trưởng cơ sở, tài khoản truongcs.cs5): 6 bước; xác nhận và DUYỆT THẬT lớp mẫu «MAU-DT7» ở Đã trình; bước 5 (Từ chối) chỉ mở menu rồi đóng, không bấm Từ chối.
+  dt8: (b) =>
+    chayBai(
+      b,
+      'dt8',
+      vao('/crm/viec-cho-duyet'),
+      [
+        {
+          chu: 'Vào «Việc chờ tôi duyệt», lọc «Loại việc» là «Lớp», bấm vào dòng của lớp',
+          loc: (p) => p.locator('main tbody tr', { hasText: /K06-CB-S-009/ }).first(),
+          lam: async (p) => {
+            await p
+              .locator('main tbody tr', { hasText: /K06-CB-S-009/ })
+              .first()
+              .click();
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Đọc kỹ «Thông tin chung», «Thời gian và địa điểm» và mục «Time Table»',
+          loc: (p) => p.getByText('Time Table', { exact: true }).first(),
+        },
+        {
+          chu: 'Lớp «Đã trình»: «Hành động» → «Xác nhận», bấm «Xác nhận» ở hộp «Xác nhận lớp»',
+          loc: (p) => p.getByRole('button', { name: 'Hành động' }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Hành động' }).click();
+            await p.getByRole('menuitem', { name: 'Xác nhận' }).click();
+            await p.getByRole('button', { name: 'Xác nhận', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Lớp «Đã xác nhận»: «Hành động» → «Duyệt»; hộp «Duyệt lớp» cho biết dự kiến sinh bao nhiêu buổi, bấm «Duyệt»',
+          loc: (p) => p.getByRole('button', { name: 'Hành động' }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Hành động' }).click();
+            await p.getByRole('menuitem', { name: 'Duyệt' }).click();
+            await p.waitForTimeout(2000);
+            await p.getByRole('button', { name: 'Duyệt', exact: true }).click();
+            await p.waitForTimeout(3000);
+          },
+        },
+        {
+          chu: 'Từ chối: «Hành động» → «Từ chối», gõ «Lý do» bắt buộc (video chỉ mở menu, không bấm)',
+          loc: (p) => p.getByRole('button', { name: 'Hành động' }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Hành động' }).click();
+            await p.waitForTimeout(1500);
+            await p.keyboard.press('Escape');
+          },
+        },
+        {
+          chu: 'Kiểm lại sau khi duyệt: bấm nút «Buổi học» trên bản ghi lớp, xem danh sách buổi',
+          loc: (p) => p.getByRole('button', { name: /^Buổi học/ }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: /^Buổi học/ }).click();
+            await cho(p);
+          },
+        },
+      ],
+      chung,
+      6,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
