@@ -15,6 +15,7 @@ import { downloadCanvas, drawCard, loadImage } from '../gv/exportRender';
 import {
   EMPTY_PARENT_MESSAGE_STATE,
   buildParentMessageFilters,
+  keepOneStatus,
   clipMessage,
   messageCard,
   sessionLabel,
@@ -175,7 +176,7 @@ export function ParentMessageListPage() {
       <ListScreen
         config={config}
         state={state}
-        onStateChange={setState}
+        onStateChange={(next) => setState((prev) => keepOneStatus(prev, next))}
         view="list"
         onViewChange={() => undefined}
         rows={rows}
