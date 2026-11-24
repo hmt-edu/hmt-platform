@@ -9,3 +9,4 @@ design/
 supabase/
 CLAUDE.md
 PROMPT-*.md
+scripts/apps-script-kho-tep/*.gs

@@ -31,25 +31,30 @@ cap_nhat: 2026-11-24
 ## Các bước
 1. Vào «Chăm sóc khách hàng» → «Tất cả ticket», bấm «Tạo».
    *Bạn thấy:* trang «Ticket» với hai khối «Thông tin ticket» và «Liên kết và mức độ»; dòng «Mã» ghi «Cấp tự động, không sửa được.»
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs1-b1]
+   [ẢNH: cskh-cs1-b1]
 2. Chọn «Loại» (Đề nghị hoặc Khiếu nại), gõ «Tiêu đề», chọn «Kênh» (cách phụ huynh liên hệ).
    *Bạn thấy:* khi đổi «Loại», hai ô «Nhóm» và «Nhóm con» được xoá để bạn chọn lại.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs1-b2]
+   [ẢNH: cskh-cs1-b2]
 3. Ở «Người gửi», gõ tên, số điện thoại hoặc mã phụ huynh rồi chọn đúng người trong danh sách.
    *Bạn thấy:* dòng gợi ý có tên và mã phụ huynh; chọn xong tên hiện trong ô.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs1-b3]
+   [ẢNH: cskh-cs1-b3]
 4. Chọn «Nhóm», rồi «Nhóm con» (chỉ hiện nhóm con thuộc nhóm đã chọn). Nếu nhóm con đó cần học sinh thì ô «Học sinh» ở khối bên phải có dấu bắt buộc: tìm và chọn em. Gõ «Mô tả». «Mức độ» để trống thì hệ thống lấy mức mặc định của nhóm con.
    *Bạn thấy:* chọn «Nhóm con» xong, dưới ô «Mức độ» có gợi ý «mặc định …».
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs1-b4]
+   [ẢNH: cskh-cs1-b4]
 5. Bấm «Lưu».
    *Bạn thấy:* hệ thống mở thẳng ticket vừa tạo, có mã dạng DN-… (Đề nghị) hoặc KN-… (Khiếu nại), thanh trạng thái đứng ở «Mới» và «Hạn phản hồi», «Hạn xử lý» đã có giờ.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs1-b5]
+   [ẢNH: cskh-cs1-b5]
 6. Bấm «Giao ticket», chọn «Đội» và «Người phụ trách», bấm «Giao».
    *Bạn thấy:* báo «Đã giao ticket.»; trạng thái sang «Đã giao»; dòng thời gian bên phải ghi «Giao ticket.»
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs1-b6]
+   [ẢNH: cskh-cs1-b6]
+   [ẢNH: cskh-cs1-b6b]
 7. Người phụ trách xử lý: bấm bước «Đang xử lý» trên thanh trạng thái (bấm «Chuyển»), ghi trao đổi ở ô «Ghi chú» rồi «Gửi ghi chú». Xong việc thì bấm bước «Đã xử lý», **gõ «Kết quả»** rồi «Chuyển». Cuối cùng bấm bước «Đã đóng».
    *Bạn thấy:* mỗi lần đổi bước, dòng thời gian ghi «Đổi trạng thái: … → ….» và có báo «Đã đổi trạng thái ticket.»
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs1-b7]
+   [ẢNH: cskh-cs1-b7a]
+   [ẢNH: cskh-cs1-b7b]
+   [ẢNH: cskh-cs1-b7c]
+   [ẢNH: cskh-cs1-b7e]
+   [ẢNH: cskh-cs1-b7d]
 
 ⚠ **Đóng ticket có nghiệp vụ đi kèm** (bảo lưu, chuyển lớp, dừng học, hoàn học phí, chuyển phí, đổi lịch, cập nhật hồ sơ) hiện hộp «Đóng ticket làm tay» và **bắt buộc** ghi «Ghi chú làm tay». Với loại này nên làm phiếu nghiệp vụ trước (bài «Phiếu nghiệp vụ: cách làm chung và duyệt từng cấp»).
 

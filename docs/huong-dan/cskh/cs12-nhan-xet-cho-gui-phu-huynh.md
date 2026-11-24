@@ -19,7 +19,7 @@ cap_nhat: 2026-11-24
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô chọn cơ sở ở thanh trên đúng cơ sở bạn phụ trách (CSKH chỉ thấy lời nhắn của cơ sở mình).
 - [ ] Bạn có Zalo (hoặc cách liên hệ phụ huynh bạn vẫn dùng) sẵn trên máy.
-- [ ] Chip «Trạng thái» đang ở «Chờ gửi». Đây là mặc định khi mở màn.
+- [ ] Ô lọc «Trạng thái» đang ở «Chờ gửi». Đây là mặc định khi mở màn.
 
 ## Luật cần nhớ (lời thường)
 - Hệ thống **không tự gửi** gì cho phụ huynh. Bạn sao chép hoặc xuất ảnh, tự gửi, rồi bấm «Đánh dấu đã gửi».
@@ -30,35 +30,36 @@ cap_nhat: 2026-11-24
 
 ## Các bước
 1. Vào «Chăm sóc khách hàng» → «Nhận xét chờ gửi».
-   *Bạn thấy:* tiêu đề «Nhận xét chờ gửi phụ huynh», bảng có các cột «Học sinh», «Lớp», «Buổi», «Phụ huynh», «Lời nhắn», «Trạng thái», «Thao tác»; chip «Chờ gửi» kèm số lượng.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs12-b1]
+   *Bạn thấy:* tiêu đề «Nhận xét chờ gửi phụ huynh», bảng có các cột «Học sinh», «Lớp», «Buổi», «Phụ huynh», «Lời nhắn», «Trạng thái», «Thao tác»; ô lọc «Trạng thái: Chờ gửi» kèm số lượng.
+   [ẢNH: cskh-cs12-b1]
 2. Tìm đúng em (nếu danh sách dài): gõ tên em hoặc mã lớp vào ô «Tìm tên em hoặc mã lớp…».
    *Bạn thấy:* danh sách thu lại còn dòng khớp.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs12-b2]
+   [ẢNH: cskh-cs12-b2]
 3. Bấm tên em (chữ gạch chân ở cột «Học sinh») để đọc đầy đủ.
    *Bạn thấy:* hộp «Lời nhắn gửi phụ huynh», dưới tiêu đề ghi «tên em · mã lớp · tên phụ huynh», bên trong là toàn bộ lời nhắn và hai nút «Sao chép», «Xuất ảnh».
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs12-b3]
+   [ẢNH: cskh-cs12-b3]
 4. Bấm «Sao chép» (dán vào Zalo) hoặc «Xuất ảnh» (tải về một ảnh có logo, tên tệp dạng «loi-nhan-<tên em>.png», rồi gửi ảnh qua Zalo).
    *Bạn thấy:* báo «Đã sao chép lời nhắn.»; hoặc trình duyệt tải ảnh về máy.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs12-b4]
+   [ẢNH: cskh-cs12-b4]
 5. Mở Zalo, gửi đúng cho **phụ huynh của em đó** (kiểm lại tên phụ huynh ở dòng phụ đề của hộp).
    *Bạn thấy:* tin đã gửi trong Zalo.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs12-b5]
+   [CHƯA CHỤP: bước làm ngoài hệ thống (Zalo của bạn), không chụp được]
 6. Quay lại hệ thống, bấm «Đánh dấu đã gửi» (trong hộp, hoặc ở cột «Thao tác» của dòng).
-   *Bạn thấy:* báo «Đã đánh dấu đã gửi.»; dòng đó mất khỏi «Chờ gửi» và xuất hiện ở chip «Đã gửi» kèm giờ.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs12-b6]
-7. Làm tiếp các dòng còn lại; hết hàng thì màn báo «Chưa có nhận xét nào chờ gửi». Muốn kiểm lại việc đã làm, bấm chip «Đã gửi».
+   *Bạn thấy:* báo «Đã đánh dấu đã gửi.»; dòng đó mất khỏi «Chờ gửi» và xuất hiện khi lọc «Trạng thái: Đã gửi», kèm giờ.
+   [ẢNH: cskh-cs12-b6]
+7. Làm tiếp các dòng còn lại; hết hàng thì màn báo «Chưa có nhận xét nào chờ gửi». Muốn kiểm lại việc đã làm, bấm «Filters» → «Trạng thái», bỏ chọn «Chờ gửi» rồi chọn «Đã gửi» (chọn cả hai cùng lúc thì danh sách hiện trống).
    *Bạn thấy:* cột «Trạng thái» ghi «Đã gửi» kèm ngày giờ.
-   [CHƯA CHỤP: cần staging; ảnh dự kiến cskh-cs12-b7]
+   [ẢNH: cskh-cs12-b7a]
+   [ẢNH: cskh-cs12-b7]
 
 ## Sau bước này
 - **Ai làm tiếp:** không ai; phụ huynh đọc tin và có thể trả lời bạn qua Zalo. Phụ huynh phản hồi, khiếu nại thì tạo ticket (bài «Tạo ticket và xử lý»).
-- **Bạn xem ở đâu:** chip «Đã gửi» ở chính màn này; đầu việc hằng ngày là mở màn này kiểm số ở chip «Chờ gửi».
+- **Bạn xem ở đâu:** bộ lọc «Trạng thái: Đã gửi» ở chính màn này; đầu việc hằng ngày là mở màn này kiểm số ở «Trạng thái: Chờ gửi».
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
 |---|---|
-| Bấm «Đánh dấu đã gửi» nhưng chưa gửi cho phụ huynh | Màn không có nút bỏ đánh dấu. Gửi ngay lời nhắn đó (vào chip «Đã gửi» mở lại, sao chép) rồi ghi chú cho đồng nghiệp biết |
+| Bấm «Đánh dấu đã gửi» nhưng chưa gửi cho phụ huynh | Màn không có nút bỏ đánh dấu. Gửi ngay lời nhắn đó (lọc «Trạng thái: Đã gửi», mở lại, sao chép) rồi ghi chú cho đồng nghiệp biết |
 | Gửi nhầm phụ huynh | Báo ngay Trưởng cơ sở, xin lỗi phụ huynh nhận nhầm và gửi lại đúng người; tạo ticket nếu phụ huynh phản ánh |
 | «Xuất ảnh» không tải được | Dùng «Sao chép» thay thế |
 
@@ -73,18 +74,18 @@ cap_nhat: 2026-11-24
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** `cskh1.cs5` (CSKH).
-- **Dùng:** bộ dữ liệu mẫu của bạn (menu tài khoản → «Dữ liệu mẫu của tôi»). Bộ có buổi học mẫu đã hoàn tất kèm nhận xét «[MẪU] …» của lớp Toán mẫu. Mở chip «Đã gửi» để tập bước 3 và 4 (đọc, sao chép, xuất ảnh).
+- **Dùng:** bộ dữ liệu mẫu của bạn (menu tài khoản → «Dữ liệu mẫu của tôi»). Bộ có buổi học mẫu đã hoàn tất kèm nhận xét «[MẪU] …» của lớp Toán mẫu. Lọc «Trạng thái: Đã gửi» để tập bước 3 và 4 (đọc, sao chép, xuất ảnh).
 - Chưa có trong bộ mẫu: lời nhắn ở trạng thái «Chờ gửi» (nhận xét mẫu được tạo sẵn ở trạng thái đã gửi), nên bước 6 chưa tập được trên dữ liệu mẫu.
 
 ## Tự kiểm: bạn làm được khi
-- [ ] Mở được lời nhắn «[MẪU]» ở chip «Đã gửi», sao chép được và xuất được ảnh.
+- [ ] Mở được lời nhắn «[MẪU]» khi lọc «Đã gửi», sao chép được và xuất được ảnh.
 - [ ] Bạn nói được thứ tự đúng: sao chép hoặc xuất ảnh, tự gửi Zalo, rồi mới bấm «Đánh dấu đã gửi»; và vì sao không tự sửa lời nhắn.
 
 **Bước trước:** (giáo viên chấm xong nhận xét buổi học) · **Bước sau:** Tạo ticket khi phụ huynh phản hồi
 
 ## Ghi chú cho người soát (không hiển thị cho người học)
 - **Vênh bài cũ §15:** bài cũ nói «vào hàng nhận xét chờ gửi ở mục Chăm sóc KH». Tên menu thật là «Chăm sóc khách hàng» → «Nhận xét chờ gửi». Bài cũ nói «Mở từng nhận xét, đọc nội dung giáo viên đã viết»: lời nhắn là chữ **hệ thống soạn từ điểm và nhận xét** (R-V2-39); màn ghi nhãn «Lời nhắn», bài mới dùng «lời nhắn».
-- Bài cũ không nêu «Sao chép», «Xuất ảnh», chip «Chờ gửi»/«Đã gửi», nút «Đánh dấu đã gửi» ở cột «Thao tác»: đã bổ sung theo `ParentMessageListPage.tsx`.
+- Bài cũ không nêu «Sao chép», «Xuất ảnh», ô lọc «Trạng thái» («Chờ gửi»/«Đã gửi»), nút «Đánh dấu đã gửi» ở cột «Thao tác»: đã bổ sung theo `ParentMessageListPage.tsx`.
 - Không có nút «bỏ đánh dấu đã gửi» (hàm `mark_parent_message_sent` chỉ ghi lần đầu). Bài ghi rõ ở «Làm nhầm thì sao».
 - Menu mục này không có cờ tính năng AFTERSALE (chỉ cần quyền Ticket · Sửa), khác với «Tất cả ticket».
 - Chưa xác định: hàng chờ có loại trừ phụ huynh đã có tài khoản cổng hay không (hàm chỉ thấy lọc theo em có mặt và lời nhắn không trống). Bài chỉ nói «dùng khi phụ huynh chưa có cổng».

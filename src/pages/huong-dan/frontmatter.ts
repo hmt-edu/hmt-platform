@@ -2,7 +2,7 @@
 // Dạng: dòng «khoá: giá trị» nằm giữa hai dòng «---» ở đầu tệp; mảng viết «[a, b]». Không dùng thư viện ngoài.
 //   title (bắt buộc) · group: bat-dau | vai | tra-cuu (bắt buộc) · slug (mặc định: đường dẫn bỏ .md, «/» thành «-»)
 //   no (số hiện trước tên, nhóm «Bắt đầu») · order (số, nhỏ lên trước) · role (nhãn nút «Bạn là ai?») · portals: [crm, gv] (mặc định crm)
-//   priority: P1|P2|P3 · flow (mã luồng trong KE-NGHIEP-VU) · screens: [mã màn] · checked (ngày đi thử lần cuối, yyyy-mm-dd)
+//   parent (khoá phân hệ làm «cha» trên menu, mặc định lấy từ phan_he) · priority: P1|P2|P3 · flow (mã luồng trong KE-NGHIEP-VU) · screens: [mã màn] · checked (ngày đi thử lần cuối, yyyy-mm-dd)
 
 export type GuideGroup = 'bat-dau' | 'vai' | 'tra-cuu';
 export const GUIDE_GROUP_KEYS: GuideGroup[] = ['bat-dau', 'vai', 'tra-cuu'];
@@ -19,11 +19,25 @@ export type GuideMeta = {
   portals: GuidePortal[];
   priority?: string;
   flow?: string;
+  /** Khoá phân hệ làm «cha» trên menu (chỉ bài nhóm «vai»); không có thì bài đứng riêng. */
+  parent?: string;
   screens: string[];
   checked?: string;
   /** Đường dẫn tệp tính từ docs/huong-dan, ví dụ «03-cskh.md» hoặc «tu-van/nhap-lead.md». */
   file: string;
 };
+
+/** Khoá cha từ chữ viết tự do: bỏ dấu, chữ thường, khoảng trắng thành gạch nối («Chăm sóc khách hàng» → cham-soc-khach-hang). */
+export function parentKey(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/đ/gi, 'd')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
 
 const FENCE = /^---[ \t]*$/;
 const DEFAULT_ORDER = 1000; // allow-number: thứ tự mặc định cho bài chưa đặt order (sắp xếp mục lục), không phải số nghiệp vụ
@@ -111,6 +125,8 @@ export function metaFromSource(file: string, text: string): GuideMeta | null {
     (str(f.id) ? (str(f.id) ?? '').toLowerCase() : file.replace(/\.md$/, '').replace(/\//g, '-'));
   if (!/^[a-z0-9-]+$/.test(slug))
     fail(`«slug» chỉ gồm chữ thường không dấu, số, gạch nối: ${slug}`);
+  const parentText = str(f.parent) ?? str(f.phan_he);
+  const parent = parentText !== undefined ? parentKey(parentText) : undefined;
   const no = str(f.no);
   const role = str(f.role);
   const priority = str(f.priority) ?? str(f.uu_tien);
@@ -123,6 +139,7 @@ export function metaFromSource(file: string, text: string): GuideMeta | null {
     ...(no !== undefined ? { no } : {}),
     order,
     ...(role !== undefined ? { role } : {}),
+    ...(parent ? { parent } : {}),
     portals: portals.length > 0 ? (portals as GuidePortal[]) : ['crm'],
     ...(priority !== undefined ? { priority } : {}),
     ...(flow !== undefined ? { flow } : {}),

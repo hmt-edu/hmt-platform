@@ -70,7 +70,7 @@ checked: 2026-11-24
 |---|---|---|
 | «Lead cần ở nhóm con C4C "Đủ điều kiện tạo cơ hội" mới tạo được cơ hội. Đổi giai đoạn của lead trước.» (HMT_LEAD_CHUA_DU_DIEU_KIEN) | Lead chưa ở C4C | Đổi giai đoạn lead lên «Khách hàng tiềm năng» và chọn nhóm con C4C |
 | «Lead này đã có cơ hội … Xác nhận nếu vẫn muốn tạo thêm.» (HMT_LEAD_DA_CO_CO_HOI) | Chưa tích ô xác nhận | Mở cơ hội cũ, hoặc tích «Tôi xác nhận…» nếu thật sự cần cơ hội mới |
-| «Lead lỗi: Hồ sơ này đã gộp vào bản khác» (HMT_BAN_GHI_DA_GOP) | Lead đã gộp, không dùng nữa | Mở lead gốc đã gộp |
+| «Lead này đã gộp vào bản khác, không tạo cơ hội được.» (HMT_BAN_GHI_DA_GOP) | Lead đã gộp, không dùng nữa | Mở lead gốc đã gộp |
 
 ## Hỏi đáp
 - **Vì sao nút «Tạo cơ hội» mờ?** Lead chưa ở C4C, hoặc bạn chưa có quyền tạo cơ hội. Rê chuột vào nút để đọc lý do.

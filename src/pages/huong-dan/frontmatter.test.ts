@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   metaFromSource,
   parseFrontmatterFields,
+  parentKey,
   sortGuideMetas,
   splitFrontmatter,
   stripFrontmatter,
@@ -81,5 +82,22 @@ describe('Phần đầu kiểu quy cách đợt 1 (id, ten, vai, uu_tien…)', (
       screens: ['BH-01', 'BH-02'],
       portals: ['crm', 'gv'],
     });
+  });
+});
+
+describe('Khoá cha của menu (A-23-49)', () => {
+  it('parentKey bỏ dấu, chữ thường, gạch nối', () => {
+    expect(parentKey('Chăm sóc khách hàng')).toBe('cham-soc-khach-hang');
+    expect(parentKey('Đào tạo')).toBe('dao-tao');
+    expect(parentKey('quan-tri')).toBe('quan-tri');
+  });
+
+  it('parent lấy từ «parent», không có thì từ «phan_he»', () => {
+    const a = metaFromSource('x/a.md', '---\nten: A\nphan_he: Thu chi\n---\nthân');
+    expect(a?.parent).toBe('thu-chi');
+    const b = metaFromSource('x/b.md', '---\nten: B\nphan_he: thu-chi\nparent: dao-tao\n---\nthân');
+    expect(b?.parent).toBe('dao-tao');
+    const c = metaFromSource('x/c.md', '---\ntitle: C\ngroup: bat-dau\n---\nthân');
+    expect(c?.parent).toBeUndefined();
   });
 });
