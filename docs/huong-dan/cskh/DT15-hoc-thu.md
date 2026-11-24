@@ -51,8 +51,8 @@ nguoi_viet: Code D
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Cơ hội thuộc cơ sở khác với buổi học.» | cơ hội ở cơ sở khác | chọn buổi của đúng cơ sở của em |
-| «Cơ hội này đã dùng hết số buổi học thử cho phép (N buổi).» | đã học thử đủ số buổi cho phép | báo tư vấn tuyển sinh chốt đơn; cần thêm buổi thì hỏi Trưởng cơ sở |
+| «Cơ hội thuộc cơ sở khác với buổi học.» (mã HMT_HOC_THU_KHAC_CO_SO) | cơ hội ở cơ sở khác | chọn buổi của đúng cơ sở của em |
+| «Cơ hội này đã dùng hết số buổi học thử cho phép (N buổi).» (mã HMT_HOC_THU_VUOT_HAN_MUC) | đã học thử đủ số buổi cho phép | báo tư vấn tuyển sinh chốt đơn; cần thêm buổi thì hỏi Trưởng cơ sở |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH giả và phân hệ Học thử đã bật ở cơ sở tập. Nếu chưa bật, bài này chỉ để đọc.

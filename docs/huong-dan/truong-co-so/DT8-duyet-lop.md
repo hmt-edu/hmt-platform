@@ -56,7 +56,7 @@ nguoi_viet: Code D
 ⚠ **Sau «Duyệt», lớp không quay về Nháp được.** Sai giáo viên, giờ, phòng thì bảo CSKH bấm «Sửa» và chỉnh Time Table từ ngày áp dụng; sai thông tin khác thì huỷ lớp (chưa có buổi Done) và tạo lớp mới.
 
 ## Sau bước này
-- **Ai làm tiếp:** CSKH xếp học sinh vào lớp (bài «Xếp lớp cho ghi danh»). Giáo viên thấy buổi ở cổng giáo viên.
+- **Ai làm tiếp:** CSKH xếp học sinh vào lớp (bài «Xếp lớp cho ghi danh đang chờ»). Giáo viên thấy buổi ở cổng giáo viên.
 - **Bạn xem ở đâu:** Đào tạo → Lớp học, cột «Tình trạng duyệt» là «Đã duyệt», cột «Vận hành» là «Chưa khai giảng» cho đến buổi đầu hoàn thành.
 
 ## Làm nhầm thì sao
@@ -69,11 +69,11 @@ nguoi_viet: Code D
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Từ chối lớp cần ghi lý do.» | để trống ô «Lý do» | gõ lý do rồi bấm lại |
-| «Trình lớp cần có thời khoá biểu (ít nhất một khung giờ).» | lớp chưa có khung giờ | trả lớp về CSKH thêm Time Table |
+| «Từ chối lớp cần ghi lý do.» (mã HMT_LOP_CAN_LY_DO) | để trống ô «Lý do» | gõ lý do rồi bấm lại |
+| «Trình lớp cần có thời khoá biểu (ít nhất một khung giờ).» (mã HMT_LOP_THIEU_THOI_KHOA_BIEU) | lớp chưa có khung giờ | trả lớp về CSKH thêm Time Table |
 | «Lớp đang ở "…" không chuyển được sang "…".» | lớp đã đổi bước (người khác vừa làm) | tải lại trang, xem trạng thái hiện tại |
-| «Không huỷ được lớp đã có buổi Done.» | lớp đã có buổi hoàn thành | không huỷ; đóng lớp khi kết thúc |
-| «Không đóng được lớp, còn học sinh còn giờ: …» | còn em còn giờ trong lớp | xử lý giờ của các em được liệt kê (chuyển lớp, hoàn phí…) rồi đóng |
+| «Không huỷ được lớp đã có buổi Done.» (mã HMT_LOP_DA_CO_BUOI_DONE) | lớp đã có buổi hoàn thành | không huỷ; đóng lớp khi kết thúc |
+| «Không đóng được lớp, còn học sinh còn giờ: …» (mã HMT_LOP_CON_HOC_SINH_CON_GIO) | còn em còn giờ trong lớp | xử lý giờ của các em được liệt kê (chuyển lớp, hoàn phí…) rồi đóng |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** hai tài khoản cùng cơ sở: CSKH (cskh.cs1 hoặc cskh.cs5) và Trưởng cơ sở (truongcs.cs1 hoặc truongcs.cs5), đều là tài khoản giả.

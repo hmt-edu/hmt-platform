@@ -46,7 +46,7 @@ di_thu: chưa
 7. Bấm **«Mở buổi»** ở dòng cần xử lý để xem chi tiết, rồi gọi hoặc nhắn giáo viên theo lý do hiện trên dòng.
    *Bạn thấy:* bản ghi buổi; nút «Nhắc GV» có thể đang mờ vì cổng giáo viên chưa có chỗ đọc thông báo: **nhắc bằng điện thoại hoặc tin nhắn**.
 
-⚠ Bạn **không** sửa được điểm danh chính thức. Buổi đã «Hoàn thành» mà điểm danh sai thì Trưởng cơ sở bấm «Sửa điểm danh» kèm lý do (xem bài «Huỷ buổi, dời một buổi» cho các nút khác của buổi).
+⚠ Bạn **không** sửa được điểm danh chính thức. Buổi đã «Hoàn thành» mà điểm danh sai thì Trưởng cơ sở bấm «Sửa điểm danh» kèm lý do (xem bài «Huỷ buổi và dời một buổi» cho các nút khác của buổi).
 
 ## Sau bước này
 - **Ai làm tiếp:** giáo viên hoàn tất buổi ở cổng giáo viên; Trưởng cơ sở sửa điểm danh sau khi hoàn thành nếu cần.
@@ -61,9 +61,9 @@ di_thu: chưa
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Chỉ chốt danh sách buổi đang ở Nháp.» | buổi đã chốt hoặc đã xong | không cần chốt nữa |
-| «Buổi chưa chốt danh sách nên chưa điểm danh được.» | buổi còn Nháp | chốt danh sách trước |
-| «Chỉ nhắc với buổi Đã chốt mà giáo viên chưa hoàn tất.» | buổi chưa tới mức cần nhắc | không làm gì thêm |
+| «Chỉ chốt danh sách buổi đang ở Nháp.» (mã HMT_BUOI_KHONG_CHOT_DUOC) | buổi đã chốt hoặc đã xong | không cần chốt nữa |
+| «Buổi chưa chốt danh sách nên chưa điểm danh được.» (mã HMT_BUOI_CHUA_CHOT) | buổi còn Nháp | chốt danh sách trước |
+| «Chỉ nhắc với buổi Đã chốt mà giáo viên chưa hoàn tất.» (mã HMT_BUOI_KHONG_CAN_NHAC) | buổi chưa tới mức cần nhắc | không làm gì thêm |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH (cskh.cs5); Trưởng cơ sở (truongcs.cs5) khi cần sửa điểm danh.

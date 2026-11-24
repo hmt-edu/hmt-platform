@@ -17,7 +17,7 @@ nguoi_viet: Code D
 **Ai làm:** CSKH, Trưởng cơ sở. **Màn:** Đào tạo → Lịch tuần cơ sở; bản ghi lớp → «Học sinh».
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Phân hệ «Lịch tuần cơ sở» đã bật cho cơ sở của bạn (nếu không, nhờ Quản trị).
+- [ ] Phân hệ «Lịch tuần cơ sở và học sinh của lớp» đã bật cho cơ sở của bạn (nếu không, nhờ Quản trị).
 - [ ] Bạn biết mình đang xem cơ sở nào (CSKH và Trưởng cơ sở chỉ thấy cơ sở của mình).
 
 ## Luật cần nhớ (lời thường)
@@ -44,11 +44,11 @@ nguoi_viet: Code D
 2. Đọc các cột: «Mã học sinh», «Học sinh», «Ghi danh», «Cơ sở phụ trách», «Hình thức học», «Ngày vào», «Ngày rời», «Tình trạng».
    *Bạn thấy:* em đang học có «Đã xếp lớp»; em đã nghỉ có ngày rời và «Đã rời».
    [ẢNH: dt11-b4]
-3. Muốn thêm em vào lớp: bấm **«Xếp thêm»** (có quyền sửa ghi danh mới thấy). Nút dẫn sang «Hàng chờ xếp lớp» (bài «Xếp lớp cho ghi danh»).
+3. Muốn thêm em vào lớp: bấm **«Xếp thêm»** (có quyền sửa ghi danh mới thấy). Nút dẫn sang «Hàng chờ xếp lớp» (bài «Xếp lớp cho ghi danh đang chờ»).
 4. Bấm **«Quay lại lớp …»** để về bản ghi lớp.
 
 ## Sau bước này
-- **Ai làm tiếp:** có trùng phòng hoặc giáo viên thì người xếp lịch sửa Time Table của lớp (bài «Tạo lớp, thời khoá biểu»).
+- **Ai làm tiếp:** có trùng phòng hoặc giáo viên thì người xếp lịch sửa Time Table của lớp (bài «Tạo lớp, thời khoá biểu và trình duyệt»).
 - **Bạn xem ở đâu:** màn Lịch tuần cơ sở mỗi đầu tuần.
 
 ## Làm nhầm thì sao
@@ -62,7 +62,7 @@ Hai màn này chỉ để xem; không có gì phải hoàn tác.
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH giả (cskh.cs5).
-- **Dùng:** mở «Lịch tuần cơ sở» tuần này ở CS5, đổi «Theo giáo viên», rồi mở một lớp Toán mẫu và xem «Học sinh».
+- **Dùng:** mở «Lịch tuần cơ sở và học sinh của lớp» tuần này ở CS5, đổi «Theo giáo viên», rồi mở một lớp Toán mẫu và xem «Học sinh».
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn tìm được buổi của một lớp trong tuần sau.

@@ -17,9 +17,9 @@ nguoi_viet: Code D
 **Ai làm:** CSKH, Trưởng cơ sở có quyền sửa lớp. **Màn:** Đào tạo → Lớp học → bản ghi lớp → «Sửa».
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Lớp đang ở **«Đã duyệt»**. Lớp chưa duyệt thì sửa theo bài «Tạo lớp, thời khoá biểu».
+- [ ] Lớp đang ở **«Đã duyệt»**. Lớp chưa duyệt thì sửa theo bài «Tạo lớp, thời khoá biểu và trình duyệt».
 - [ ] Bạn biết **từ ngày nào** áp dụng (không sớm hơn hôm nay) và đã báo giáo viên, phụ huynh.
-- [ ] Chỉ đổi **một buổi** (dạy thay, dời một buổi)? Đừng dùng bài này: xem bài «Huỷ buổi, dời một buổi» hoặc đổi giáo viên ngay trên buổi đó.
+- [ ] Chỉ đổi **một buổi** (dạy thay, dời một buổi)? Đừng dùng bài này: xem bài «Huỷ buổi và dời một buổi» hoặc đổi giáo viên ngay trên buổi đó.
 
 ## Luật cần nhớ (lời thường)
 - Lớp đã duyệt chỉ sửa được **Time Table** (giáo viên, trợ giảng, phòng, giờ, thứ, cách lặp), **CSKH phụ trách** và **Sĩ số tối đa**. Thông tin khác đã khoá.
@@ -46,7 +46,7 @@ nguoi_viet: Code D
 
 ## Sau bước này
 - **Ai làm tiếp:** báo giáo viên mới và phụ huynh về lịch mới (hệ thống không tự báo).
-- **Bạn xem ở đâu:** «Đào tạo → Lịch tuần cơ sở» (bài «Lịch tuần cơ sở») và «Buổi học» lọc theo lớp.
+- **Bạn xem ở đâu:** «Đào tạo → Lịch tuần cơ sở» (bài «Lịch tuần cơ sở và học sinh của lớp») và «Buổi học» lọc theo lớp.
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
@@ -58,10 +58,10 @@ nguoi_viet: Code D
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Ngày áp dụng không được sớm hơn hôm nay.» | chọn ngày quá khứ | chọn từ hôm nay trở đi |
-| «Lớp đã duyệt chỉ sửa được CSKH phụ trách và sĩ số tối đa.» | đã sửa ô khác Time Table | chỉ sửa Time Table, CSKH phụ trách, sĩ số tối đa |
-| «Lớp đã đóng hoặc đã huỷ không sửa được thời khoá biểu.» | lớp không còn hoạt động | không sửa; tạo lớp mới nếu cần |
-| «Giờ kết thúc phải sau giờ bắt đầu.» | nhập ngược giờ | sửa lại khung giờ |
+| «Ngày áp dụng không được sớm hơn hôm nay.» (mã HMT_LOP_NGAY_AP_DUNG_SAI) | chọn ngày quá khứ | chọn từ hôm nay trở đi |
+| «Lớp đã duyệt chỉ sửa được CSKH phụ trách và sĩ số tối đa.» (mã HMT_LOP_DA_KHOA) | đã sửa ô khác Time Table | chỉ sửa Time Table, CSKH phụ trách, sĩ số tối đa |
+| «Lớp đã đóng hoặc đã huỷ không sửa được thời khoá biểu.» (mã HMT_LOP_DA_KHOA) | lớp không còn hoạt động | không sửa; tạo lớp mới nếu cần |
+| «Giờ kết thúc phải sau giờ bắt đầu.» (mã HMT_BUOI_GIO_SAI) | nhập ngược giờ | sửa lại khung giờ |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH giả (cskh.cs5).
