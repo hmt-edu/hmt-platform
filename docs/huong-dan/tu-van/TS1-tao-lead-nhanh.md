@@ -33,11 +33,9 @@ checked: 2026-11-24
 1. Vào **Lead**, bấm **«Tạo»**.
    *Bạn thấy:* trang lead mới, các khối «Thông tin phụ huynh», «Thông tin học sinh», «Nhu cầu»; ô «Sub-stage» ghi «Chưa có».
    [ẢNH: ts03-ts1-b1]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Điền «Họ tên» và «Số điện thoại» (hai ô bắt buộc). Nhập xong số điện thoại, bấm ra ngoài ô.
    *Bạn thấy:* nếu số đã có, ngay dưới ô hiện khung vàng «Số điện thoại này đã có trong hệ thống», kèm nhóm «Lead đã có» hoặc «Phụ huynh đã có» và liên kết «Mở bản ghi trùng». Nếu số mới thì không có gì hiện.
    [ẢNH: ts03-ts1-b2]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 3. Nếu có khung vàng: bấm «Mở bản ghi trùng» để xem hồ sơ cũ. Nếu đúng là cùng khách, **không tạo mới**: dùng hồ sơ cũ (xem bài «Chăm sóc lead»). Nếu là khách khác, quay lại và làm tiếp bước 4.
    *Bạn thấy:* hồ sơ lead hoặc phụ huynh cũ.
 4. Điền thêm nếu biết: «Tên học sinh», «Năm sinh» (4 chữ số), «Trường học», «Nhu cầu».
@@ -45,7 +43,6 @@ checked: 2026-11-24
 5. Ở khối «Nguồn và phụ trách»: chọn «Cơ sở», «Nhân sự phụ trách» (có thể chọn «Bạn»), «Source». Nếu Source có kênh con thì chọn thêm «Sub-source». «Chiến dịch» chọn nếu có.
    *Bạn thấy:* ô nào còn thiếu thì viền báo đỏ khi lưu.
    [ẢNH: ts03-ts1-b5]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 6. Bấm **«Lưu»**.
    *Bạn thấy:* nếu số điện thoại chưa có: thông báo «Đã tạo lead LD-…», trang chuyển sang lead vừa tạo. Nếu số đã có: hộp **«Số điện thoại này đã có khách hàng»** với hai nút «Vẫn tạo mới» và «Gắn vào hồ sơ có sẵn».
 7. Khi hộp cảnh báo hiện:

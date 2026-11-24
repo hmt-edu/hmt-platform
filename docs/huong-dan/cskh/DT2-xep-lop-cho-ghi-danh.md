@@ -31,10 +31,10 @@ di_thu: chưa
 ## Các bước
 1. Vào menu **Đào tạo → Hàng chờ xếp lớp**.
    *Bạn thấy:* danh sách em đang «Chờ xếp lớp» của cơ sở; mỗi dòng có cột «Xử lý».
-   [CHƯA CHỤP: chưa chụp được trên staging đêm nay; ảnh dự kiến gd06-dt2-b1]
+   [ẢNH: dt2-b1]
 2. Tìm em cần xếp, bấm **«Xếp lớp»** ở cuối dòng (hoặc mở bản ghi ghi danh rồi bấm «Xếp lớp»).
    *Bạn thấy:* hộp «Xếp lớp cho ghi danh», dòng đầu ghi tên em và số ghi danh đang chờ.
-   [CHƯA CHỤP: gd03-dt2-b2]
+   [ẢNH: dt2-b2]
 3. Ở «Cách xếp lớp» chọn **«Theo nhóm lớp»** (xếp một lần cả lớp Đại và lớp Hình của em) hoặc **«Một lớp lẻ»**.
    *Bạn thấy:* «Theo nhóm lớp» hiện danh sách «Nhóm lớp phù hợp»; «Một lớp lẻ» hiện từng lớp để chọn. Không có nhóm phù hợp thì chỉ có «Một lớp lẻ».
 4. Chọn nhóm hoặc lớp. Lớp hiện mờ nghĩa là không xếp được: đọc lý do ngay bên dưới (hết chỗ, trùng giờ, sai khối...).
@@ -43,7 +43,7 @@ di_thu: chưa
    *Bạn thấy:* ô «Ngày vào lớp» đã điền ngày hợp lệ.
 6. Bấm **«Xếp lớp»** ở cuối hộp (nút bên cạnh nút đóng hộp).
    *Bạn thấy:* thông báo «Đã xếp lớp.» (hoặc «Đã xếp lớp cho 2 ghi danh.»); em biến mất khỏi hàng chờ.
-   [CHƯA CHỤP: gd03-dt2-b6]
+   [ẢNH: dt2-b6]
 7. Mở bản ghi ghi danh để kiểm: «Dòng xếp lớp» có lớp và «Ngày vào», tình trạng là «Đã xếp lớp».
 
 ⚠ **Xếp rồi không có nút «Bỏ xếp».** Xếp sai lớp thì đổi lớp bằng phiếu «Chuyển lớp» qua ticket Đề nghị (xem bài Phiếu Chuyển lớp).

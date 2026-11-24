@@ -27,15 +27,15 @@ cap_nhat: 2026-11-24
 
 ## Các bước
 1. Ở bản ghi cơ hội bấm **«Tạo báo giá»**.
-   *Bạn thấy:* trang báo giá mới, khối dòng gói còn trống. [CHƯA CHỤP: chờ tài khoản staging]
+   *Bạn thấy:* trang báo giá mới, khối dòng gói còn trống. [ẢNH: bh1-b1] [ẢNH: bh1-b2]
 2. Bấm **«Chọn gói…»**, chọn gói, chọn em học, nhập số lượng giờ (và giờ tặng nếu có).
-   *Bạn thấy:* dòng có đơn giá và thành tiền tự tính. [CHƯA CHỤP]
+   *Bạn thấy:* dòng có đơn giá và thành tiền tự tính. [ẢNH: bh1-b3]
 3. Thêm chiết khấu theo chính sách nếu có (chọn trong danh sách chính sách, không gõ số).
-   *Bạn thấy:* tổng chiết khấu và thành tiền cập nhật; vượt trần thì hiện hộp vàng cảnh báo. [CHƯA CHỤP]
+   *Bạn thấy:* tổng chiết khấu và thành tiền cập nhật; vượt trần thì hiện hộp vàng cảnh báo.
 4. Bấm **Lưu**, rồi bấm **«Gửi»**.
-   *Bạn thấy:* thông báo «Đã gửi báo giá.», tình trạng đổi từ Nháp sang Đã gửi; ô «Hạn hiệu lực» có ngày cụ thể. [CHƯA CHỤP]
-5. Bấm **«In»** để có bản in đưa hoặc gửi phụ huynh.
-   *Bạn thấy:* trang bản in sạch, không có nút của hệ thống. [CHƯA CHỤP]
+   *Bạn thấy:* thông báo «Đã gửi báo giá.», tình trạng đổi từ Nháp sang Đã gửi; ô «Hạn hiệu lực» có ngày cụ thể. [ẢNH: bh1-b4]
+5. Mở menu **«Hành động»** (góc phải trên) và bấm **«In»** để có bản in đưa hoặc gửi phụ huynh.
+   *Bạn thấy:* trang bản in sạch, không có nút của hệ thống. [ẢNH: bh1-b5]
 
 ⚠ **Đã bấm «Gửi» là coi như đã đưa phụ huynh.** Sai nội dung thì «Huỷ báo giá» (menu «Hành động») và lập báo giá mới, đừng để hai báo giá cùng hiệu lực.
 

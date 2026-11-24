@@ -34,7 +34,6 @@ checked: 2026-11-24
 1. Vào **Lead**, tìm lead (ô tìm theo tên hoặc số điện thoại), mở bản ghi.
    *Bạn thấy:* thanh giai đoạn ở đầu trang, ô «Sub-stage», các nút «Lịch hẹn», «Cơ hội» có số đếm.
    [ẢNH: ts02-ts3-b1]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Gọi khách, rồi bấm giai đoạn đúng kết quả trên thanh giai đoạn.
    | Kết quả cuộc gọi | Giai đoạn | Nhóm con gợi ý |
    |---|---|---|
@@ -44,7 +43,6 @@ checked: 2026-11-24
    | Khách có nhu cầu thật | C4 Khách hàng tiềm năng | C4A Cần gửi thêm thông tin, C4B Cần trao đổi thêm, C4C Đủ điều kiện tạo cơ hội |
    *Bạn thấy:* hộp **«Chuyển sang …»** với ô «Sub-stage» (có dấu *).
    [ẢNH: ts02-ts3-b2]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 3. Chọn «Sub-stage», bấm **«Chuyển giai đoạn»**.
    *Bạn thấy:* thông báo «Đã chuyển sang C… …» kèm nút «Hoàn tác» (không có «Hoàn tác» khi lead đang ở C4D).
 4. Chỉ đổi nhóm con trong cùng giai đoạn: chọn lại ở ô «Sub-stage» ngay trên trang lead.
@@ -54,7 +52,6 @@ checked: 2026-11-24
 6. Khi khách có nhu cầu thật: chuyển lên **C4** và chọn **C4C «Đủ điều kiện tạo cơ hội»**. Khi đó nút **«Tạo cơ hội»** hết mờ (bài «Tạo cơ hội từ lead»).
    *Bạn thấy:* nút «Tạo cơ hội» màu cam, bấm được.
    [ẢNH: ts02-ts3-b6]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 7. Đổi người chăm hoặc nhờ người khác hỗ trợ: menu **«Hành động»** → «Giao người phụ trách». Gộp hai hồ sơ của cùng một khách: «Gộp trùng».
    *Bạn thấy:* hộp chọn người; xong có thông báo «Đã giao … cho …».
 

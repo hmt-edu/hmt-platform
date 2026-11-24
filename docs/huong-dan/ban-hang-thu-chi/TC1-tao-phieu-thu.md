@@ -15,7 +15,7 @@ cap_nhat: 2026-11-24
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Đơn đang **«Đã duyệt»** (nút «Tạo phiếu thu» mờ nếu chưa).
-- [ ] Bạn đã nhận tiền thật và có chứng từ (ảnh chuyển khoản, biên lai ngân hàng).
+- [ ] Bạn đã nhận tiền thật (và có mã giao dịch nếu chuyển khoản).
 - [ ] Bạn biết khoản này thuộc **đợt** nào của điều khoản thanh toán (xem tab «Thanh toán» của đơn: đợt, hạn đóng, còn phải thu).
 
 ## Cần nhớ
@@ -24,10 +24,14 @@ cap_nhat: 2026-11-24
 - Khi Kế toán duyệt, hệ thống tự sinh **khoản tiền vào** và, nếu tổng tiền vào đạt cọc tối thiểu, sinh **ghi danh**. Bạn không tạo tay hai thứ này.
 
 ## Các bước
-1. Ở đơn «Đã duyệt» bấm **«Tạo phiếu thu»**. *Bạn thấy:* hộp «Tạo phiếu thu» có «Số tiền» (gợi ý phần còn thu) và «Hình thức». [CHƯA CHỤP: chờ tài khoản staging]
-2. Nhập «Số tiền», chọn «Hình thức», bấm **«Tạo phiếu nháp»**. *Bạn thấy:* phiếu mới, tình trạng Nháp. [CHƯA CHỤP]
-3. Trong phiếu điền ngày nhận, mã giao dịch, đính chứng từ; ở «Chia tiền vào dòng đơn» chia khoản vào đúng các dòng đơn (tổng chia bằng tổng phiếu). [CHƯA CHỤP]
-4. Bấm **«Trình quản lý»**. *Bạn thấy:* tình trạng thành Đã gửi, phiếu chờ quản lý duyệt. [CHƯA CHỤP]
+1. Ở đơn «Đã duyệt» bấm **«Tạo phiếu thu»** (cạnh nút «Cho học trước»). [ẢNH: tc1-b1]
+2. Ở hộp «Tạo phiếu thu» (ghi rõ «Đơn DH-…»): «Số tiền» đã gợi ý sẵn theo đợt kế tiếp của điều khoản thanh toán (ví dụ đợt 1 là 880.000 đ), bạn sửa lại đúng số phụ huynh thật sự đóng. Chọn «Hình thức» (Tiền mặt, Chuyển khoản, Quẹt thẻ), bấm **«Tạo phiếu nháp»**. [ẢNH: tc1-b2]
+   *Bạn thấy:* thông báo «Đã tạo phiếu thu nháp PT-…», trang phiếu thu tình trạng **Nháp**.
+3. Trong phiếu, kiểm và điền: «Ngày nhận», «Mã giao dịch» (nếu chuyển khoản), «Người nhận tiền», «Cơ sở thu tiền», «Tài khoản nhận» (bấm **Sửa** nếu cần đổi). «Chia tiền vào dòng đơn» để trống thì hệ thống chia theo tỉ lệ giữa các dòng đơn; muốn dồn vào dòng nào thì chọn dòng đó. [ẢNH: tc1-b3]
+4. Bấm **«Trình quản lý»**. Cạnh nút có dòng «Người duyệt: …» cho biết ai sẽ duyệt. [ẢNH: tc1-b4]
+   *Bạn thấy:* tình trạng thành **Đã gửi**, dòng «Đã trình, chờ quản lý duyệt. Trong lúc chờ không sửa được; còn Huỷ được khi phiếu chưa duyệt.» [ẢNH: tc1-b5]
+
+Ở CS5, bạn **không đưa biên nhận in cho phụ huynh** ở bước này; nút «In biên nhận» chỉ dùng khi quản lý cơ sở yêu cầu.
 
 ## Sau bước này
 - **Ai làm tiếp:** quản lý duyệt (bài «Duyệt phiếu thu: bước quản lý»), rồi Kế toán (bài «Kế toán duyệt phiếu thu»).
@@ -45,7 +49,7 @@ cap_nhat: 2026-11-24
 | Thấy câu gì | Nghĩa là | Làm gì |
 |---|---|---|
 | Báo ở ô «Số tiền» | vượt phần còn phải thu | nhập lại số ≤ còn phải thu |
-| Chia tiền không khớp tổng | tổng chia khác số tiền phiếu | chỉnh lại phần chia |
+| Báo lỗi ở phần chia tiền | số chia vào dòng đơn không hợp lệ | để trống ô chia (hệ thống chia tỉ lệ) hoặc chỉnh lại |
 
 ## Hỏi đáp
 - **Vì sao chưa có ghi danh sau khi kế toán duyệt?** Tổng tiền đã vào chưa đạt cọc tối thiểu; thu thêm phiếu nữa.

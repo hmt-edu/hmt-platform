@@ -35,15 +35,12 @@ checked: 2026-11-24
 1. Vào **Lead**, bấm **«Nhập»**.
    *Bạn thấy:* hộp «Nhập lead từ file», ba bước «Tải file», «Ghép cột», «Xem trước».
    [ẢNH: ts04-ts2-b1]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Kéo file CSV vào khung, hoặc bấm «chọn file».
    *Bạn thấy:* tên file, số dòng, số cột. Nếu file quá dòng cho phép: khung đỏ «File có … dòng, tối đa … dòng mỗi lần nhập. Tách file rồi chọn lại.»
    [ẢNH: ts04-ts2-b2]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 3. Sang bước «Ghép cột». Hệ thống tự ghép cột có tên quen (ví dụ «Họ tên phụ huynh», «SĐT»). Kiểm từng dòng ở bảng «Cột trong file» ↔ «Trường trong hệ thống»; sai thì chọn lại.
    *Bạn thấy:* cột chưa ghép có nhãn «Chưa ghép». Thiếu cột bắt buộc: khung đỏ «Chưa ghép cột bắt buộc: Tên phụ huynh, SĐT.» (chỉ hiện trường còn thiếu).
    [ẢNH: ts04-ts2-b3]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 4. Chọn giá trị mặc định cho cả lô nếu file không có cột đó: «Source», «Sub-source», «Chiến dịch», «Cơ sở» (nếu bạn xem nhiều cơ sở), «Người phụ trách».
    *Bạn thấy:* các ô mặc định; «Người phụ trách» để trống thì lead giao cho chính bạn.
 5. Bấm tiếp sang «Xem trước».
