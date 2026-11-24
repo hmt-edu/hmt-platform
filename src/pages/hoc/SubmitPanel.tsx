@@ -1,11 +1,11 @@
 // HT-04 Nộp bài (cổng Học sinh): chọn ảnh/PDF, xem lại, nộp (khung HT04_dt_trong, _da_chon, _xem_lai, _dang_nop, _loi_tep, _loi_mang, _da_nop; HT04_pc).
 // Luật: R-LMS-02 (nộp muộn), R-LMS-03 (chấm rồi khoá), R-LMS-04 (giới hạn đọc từ tham số file_*). Máy chủ kiểm lại mọi giới hạn.
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { errorOf, useDb, useIntSetting } from '../../lib/db';
+import { errorOf, rpc, useDb } from '../../lib/db';
 import { compressImage } from '../../lib/files/imageCompress';
 import { outputMime, validateBatch } from '../../lib/files/imageProcess';
-import { submitAssignment, uploadFiles, type FileToUpload } from '../../lib/files/fileApi';
+import { submitPages, type SubmitPage, type SubmitStage } from '../../lib/files/submitFlow';
 import { Button } from '../../ui/Button';
 import { Alert } from '../../ui/Feedback';
 import { formatFileSize } from '../../ui/lmsFiles';
@@ -13,10 +13,25 @@ import { formatFileSize } from '../../ui/lmsFiles';
 const MB = 1024 * 1024; // allow-number: đổi MB sang byte
 
 type Step = 'CHON' | 'XEM_LAI' | 'DANG_NOP';
-interface Picked {
+interface Picked extends SubmitPage {
   key: string;
   file: File;
   url: string | null; // xem trước (ảnh); PDF không có
+}
+
+/** Giới hạn tệp lấy từ máy chủ (hàm riêng, vì học sinh không đọc được Cài đặt trực tiếp). */
+interface FileLimits {
+  max_mb: number;
+  max_count: number;
+  max_total_mb: number;
+  max_pages: number;
+}
+
+function stageText(s: SubmitStage): string {
+  if (s.phase === 'prepare') return 'Đang chuẩn bị ảnh…';
+  if (s.phase === 'upload') return `Đã gửi ${s.done} / ${s.total} trang…`;
+  if (s.phase === 'retry') return `Mạng chập chờn, đang thử lại lần ${s.attempt}…`;
+  return 'Đang chốt bài nộp…';
 }
 
 export function SubmitPanel({
@@ -32,9 +47,12 @@ export function SubmitPanel({
 }) {
   const supabase = useDb();
   const queryClient = useQueryClient();
-  const maxMb = useIntSetting('file_max_mb');
-  const maxCount = useIntSetting('file_max_count_per_upload');
-  const maxTotalMb = useIntSetting('file_max_total_mb_per_upload');
+  const limitsQuery = useQuery({
+    queryKey: ['file-upload-limits'],
+    queryFn: () => rpc<FileLimits>(supabase, 'file_upload_limits'),
+    staleTime: 5 * 60 * 1000, // allow-number: giới hạn ít đổi, giữ 5 phút
+  });
+  const fl = limitsQuery.data;
   const [step, setStep] = useState<Step>('CHON');
   const [picked, setPicked] = useState<Picked[]>([]);
   const [problems, setProblems] = useState<string[]>([]);
@@ -49,12 +67,17 @@ export function SubmitPanel({
     return () => urls.forEach((u) => URL.revokeObjectURL(u));
   }, []);
 
+  // Giới hạn CẢ BÀI: số trang tối đa (không phải số tệp mỗi lần tải); tổng dung lượng kiểm theo từng đợt ở máy chủ.
   const limits = useMemo(
     () =>
-      maxMb === null || maxCount === null || maxTotalMb === null
-        ? null
-        : { maxBytes: maxMb * MB, maxCount, maxTotalBytes: maxTotalMb * MB },
-    [maxMb, maxCount, maxTotalMb],
+      fl
+        ? {
+            maxBytes: fl.max_mb * MB,
+            maxCount: fl.max_pages,
+            maxTotalBytes: Number.MAX_SAFE_INTEGER,
+          }
+        : null,
+    [fl],
   );
 
   function addFiles(list: FileList | null) {
@@ -73,7 +96,18 @@ export function SubmitPanel({
       ...incoming.map((file) => {
         const url = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
         if (url) urlsRef.current.push(url);
-        return { key: `${file.name}-${file.size}-${crypto.randomUUID()}`, file, url };
+        return {
+          key: `${file.name}-${file.size}-${crypto.randomUUID()}`,
+          file,
+          url,
+          fileId: null,
+          prepare: async () => {
+            if (file.type === 'application/pdf')
+              return { blob: file, thumb: null, mime: outputMime(file.type) };
+            const img = await compressImage(file, { keepColor: false });
+            return { blob: img.blob, thumb: img.thumb, mime: img.mime };
+          },
+        };
       }),
     ]);
   }
@@ -82,30 +116,15 @@ export function SubmitPanel({
     setError(null);
     setStep('DANG_NOP');
     try {
-      setProgress('Đang chuẩn bị ảnh…');
-      const files: FileToUpload[] = [];
-      for (const p of picked) {
-        if (p.file.type === 'application/pdf') {
-          files.push({ blob: p.file, thumb: null, mime: outputMime(p.file.type) });
-        } else {
-          const img = await compressImage(p.file, { keepColor: false });
-          files.push({ blob: img.blob, thumb: img.thumb, mime: img.mime });
-        }
-      }
-      const ids = await uploadFiles(
-        supabase,
-        { kind: 'BAI_NOP', assignmentId, studentId, files },
-        (s) =>
-          setProgress(
-            s.phase === 'prepare'
-              ? 'Đang chuẩn bị ảnh…'
-              : s.phase === 'retry'
-                ? `Mạng chập chờn, đang thử lại lần ${s.attempt ?? 1}…`
-                : `Đang gửi ${files.length} trang…`,
-          ),
-      );
-      setProgress('Đang chốt bài nộp…');
-      await submitAssignment(supabase, assignmentId, ids);
+      if (!fl) throw new Error('Chưa tải được giới hạn tệp.');
+      // Mã tệp của các trang đã tải được giữ trong `picked`: «Thử lại» không tải lại ảnh đã lên kho.
+      await submitPages(supabase, {
+        assignmentId,
+        studentId,
+        pages: picked,
+        maxPerBatch: fl.max_count,
+        onStage: (st) => setProgress(stageText(st)),
+      });
       await queryClient.invalidateQueries({ queryKey: ['portal-assignment'] });
       await queryClient.invalidateQueries({ queryKey: ['portal-assignments'] });
       setPicked([]);
@@ -117,9 +136,11 @@ export function SubmitPanel({
   }
 
   const hint =
-    limits === null
-      ? 'Đang tải giới hạn…'
-      : `Ảnh hoặc PDF. Tối đa ${maxMb} MB mỗi tệp, ${maxCount} tệp mỗi lần. Ảnh tự nén.`;
+    fl === undefined
+      ? limitsQuery.isError
+        ? 'Chưa tải được giới hạn tệp, thử lại sau.'
+        : 'Đang tải giới hạn…'
+      : `Ảnh hoặc PDF. Tối đa ${fl.max_mb} MB mỗi tệp, ${fl.max_pages} trang mỗi bài. Ảnh tự nén.`;
 
   if (step === 'DANG_NOP')
     return (
