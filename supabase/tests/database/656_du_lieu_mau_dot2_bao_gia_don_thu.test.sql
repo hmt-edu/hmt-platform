@@ -70,7 +70,7 @@ select is((select count(*) from app.sales_order where is_demo and status_code = 
 select is((select count(*) from app.receipt where is_demo and status_code = 'NHAP'), 2::bigint, 'Đúng: 2 phiếu thu mẫu ở Nháp (không duyệt, không sinh khoản tiền vào)');
 select is((select count(*) from app.receipt r join app.sales_order o on o.id = r.order_id where r.is_demo and r.amount >= o.total_amount), 1::bigint, 'Đúng: một phiếu thu đủ, một phiếu thiếu một phần');
 select is((select count(*) from app.demo_data_item where set_id = (select id from s1) and entity_type in ('QUOTATION', 'ORDER', 'RECEIPT')), 12::bigint, 'Đúng: mỗi báo giá, đơn, phiếu thu có dòng demo_data_item (6 + 4 + 2)');
-select is((select count(*) from app.student where is_demo), 2::bigint, 'Đúng: hồ sơ học sinh do duyệt hai đơn tạo ra thuộc bộ (is_demo)');
+select is((select count(distinct l.student_id) from app.sales_order_line l join app.sales_order o on o.id = l.order_id join app.student st on st.id = l.student_id where o.is_demo and st.is_demo), 2::bigint, 'Đúng: hồ sơ học sinh do duyệt hai đơn tạo ra thuộc bộ (is_demo)');
 select is((select count(*) from app.opportunity where is_demo and stage_code = 'L8'), 4::bigint, 'Ràng buộc 4: 4 cơ hội mẫu có đơn được nâng lên L8');
 
 -- Luật mã: cấp bằng hàm thật như bản thật.
