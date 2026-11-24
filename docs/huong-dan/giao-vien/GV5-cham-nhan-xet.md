@@ -29,7 +29,7 @@ checked: 2026-11-24
 - Không tự lưu: bấm «Lưu» để ghi.
 
 ## Các bước
-1. Ở trang «Buổi dạy», bấm «Mở» ở bước 3.
+1. Ở trang «Buổi dạy», bấm «Mở» ở bước 3. **Lần đầu vào buổi này**, màn ghi «Chưa mở nhận xét của buổi»: bấm nút «Mở nhận xét của buổi» (hệ thống tạo 9 tiêu chí của môn).
    *Bạn thấy:* «Tiến độ nhận xét» và danh sách học sinh có mặt.
    [ẢNH: GV5/02]
 2. Bấm tên một em, rồi với từng tiêu chí chọn mức 1–5 (hoặc «Chưa đủ căn cứ»).
@@ -56,7 +56,7 @@ checked: 2026-11-24
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Chưa mở nhận xét của buổi» | Chưa điểm danh xong | Làm bước 1 trước |
+| «Chưa mở nhận xét của buổi» | Lần đầu vào buổi, nhận xét chưa được mở (chưa có 9 tiêu chí) | Bấm «Mở nhận xét của buổi». Không thấy nút: buổi chưa chốt danh sách hoặc đã Done (chỉ xem), báo vận hành |
 | «Chỉ nhận xét em có mặt trong buổi.» | Em đang vắng | Sửa điểm danh nếu em có đi học |
 | «Buổi đã Done: giáo viên không sửa nhận xét, điểm. Tạo ticket cho vận hành để sửa kèm lý do.» | Buổi đã Hoàn tất | Tạo ticket cho vận hành |
 
