@@ -52,6 +52,8 @@ select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'dem
 -- Luật khoá: công tắc tắt hoặc chạy thật thì không đổ lead.
 select is(pg_temp.err($$select app.create_demo_data_set()$$), 'HMT_DEMO_TAT', 'Luật khoá môi trường: chưa có khoá STAGING thì không tạo bộ, không có lead mẫu');
 select pg_temp.sudo($$insert into app.deployment_env (env_code) values ('STAGING')$$);
+-- Aftersale bật rõ ràng cho CS5 (không phụ thuộc công tắc mặc định): bộ mẫu có phần ticket.
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'AFTERSALE', id, true from app.branch where code = 'CS5' on conflict (module_code, branch_id) do update set enabled = true$$);
 
 create temp table s1 (id uuid);
 grant all on s1 to public;

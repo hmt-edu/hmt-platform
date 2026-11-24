@@ -57,6 +57,8 @@ set local role authenticated;
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'demo_data_enabled'$$);
 select pg_temp.sudo($$insert into app.deployment_env (env_code) values ('STAGING')$$);
+-- Aftersale bật rõ ràng cho CS5 (không phụ thuộc công tắc mặc định): bộ mẫu có phần ticket.
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'AFTERSALE', id, true from app.branch where code = 'CS5' on conflict (module_code, branch_id) do update set enabled = true$$);
 
 -- Bộ đầu do CSKH tạo: lead, cơ hội (mảnh F) rồi báo giá, đơn, phiếu thu (mảnh B).
 insert into s1 select app.create_demo_data_set();
@@ -70,7 +72,7 @@ select is((select count(*) from app.sales_order where is_demo and status_code = 
 select is((select count(*) from app.receipt where is_demo and status_code = 'NHAP'), 2::bigint, 'Đúng: 2 phiếu thu mẫu ở Nháp (không duyệt, không sinh khoản tiền vào)');
 select is((select count(*) from app.receipt r join app.sales_order o on o.id = r.order_id where r.is_demo and r.amount >= o.total_amount), 1::bigint, 'Đúng: một phiếu thu đủ, một phiếu thiếu một phần');
 select is((select count(*) from app.demo_data_item where set_id = (select id from s1) and entity_type in ('QUOTATION', 'ORDER', 'RECEIPT')), 12::bigint, 'Đúng: mỗi báo giá, đơn, phiếu thu có dòng demo_data_item (6 + 4 + 2)');
-select is((select count(*) from app.student where is_demo), 2::bigint, 'Đúng: hồ sơ học sinh do duyệt hai đơn tạo ra thuộc bộ (is_demo)');
+select is((select count(distinct l.student_id) from app.sales_order_line l join app.sales_order o on o.id = l.order_id join app.student st on st.id = l.student_id where o.is_demo and st.is_demo), 2::bigint, 'Đúng: hồ sơ học sinh do duyệt hai đơn tạo ra thuộc bộ (is_demo)');
 select is((select count(*) from app.opportunity where is_demo and stage_code = 'L8'), 4::bigint, 'Ràng buộc 4: 4 cơ hội mẫu có đơn được nâng lên L8');
 
 -- Luật mã: cấp bằng hàm thật như bản thật.

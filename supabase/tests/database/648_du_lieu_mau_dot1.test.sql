@@ -57,6 +57,8 @@ select is(app.demo_data_available(), false, 'Luật khoá môi trường: nút D
 
 -- Luật (1): môi trường staging nhưng công tắc tắt thì chặn.
 select pg_temp.sudo($$insert into app.deployment_env (env_code) values ('STAGING')$$);
+-- Aftersale bật rõ ràng cho CS5 (không phụ thuộc công tắc mặc định): bộ mẫu có phần ticket.
+select pg_temp.sudo($$insert into app.feature_flag (module_code, branch_id, enabled) select 'AFTERSALE', id, true from app.branch where code = 'CS5' on conflict (module_code, branch_id) do update set enabled = true$$);
 select pg_temp.sudo($$update app.setting_def set value = 'false' where key = 'demo_data_enabled'$$);
 select is(pg_temp.err($$select app.create_demo_data_set()$$), 'HMT_DEMO_TAT',
   'Luật công tắc: staging nhưng demo_data_enabled tắt thì tạo bộ bị chặn');
