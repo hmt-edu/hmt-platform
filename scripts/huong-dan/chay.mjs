@@ -245,6 +245,156 @@ const BAI = {
         },
       ],
     ),
+  // Vai Tư vấn tuyển sinh (chỉ xem, không ghi): lead → giai đoạn → cơ hội → lịch hẹn. Chạy với HD_TAI_KHOAN=sale.cs5@…
+  'tu-van': (b) =>
+    chayBai(
+      b,
+      'tu-van',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/lead`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Lead mới nằm ở danh sách Lead',
+          loc: (p) => p.locator('main tbody tr').nth(1),
+          lam: async (p) => {
+            await p.locator('main tbody tr').nth(1).click();
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Giai đoạn của lead hiện ở thanh trên',
+          loc: (p) => p.getByText(/^C1 /).first().locator('xpath=../..'),
+        },
+        {
+          chu: 'Đủ điều kiện thì Tạo cơ hội',
+          loc: (p) => p.getByRole('button', { name: /Tạo cơ hội/ }),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/co-hoi`);
+            await p.waitForLoadState('networkidle');
+            await p.locator('main tbody tr').nth(1).click();
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Cơ hội: chuyển giai đoạn L1 đến L8',
+          loc: (p) => p.getByText(/^L1 /).first().locator('xpath=../..'),
+        },
+        {
+          chu: 'Có tư vấn xong thì Tạo báo giá',
+          loc: (p) => p.getByRole('button', { name: 'Tạo báo giá', exact: true }),
+        },
+        {
+          chu: 'Lên lịch hẹn ngay ở cột ghi chú',
+          loc: (p) => p.getByRole('button', { name: 'Lên lịch hẹn', exact: true }),
+        },
+      ],
+    ),
+  // Vai Kế toán (chỉ xem, không bấm duyệt): trang chủ → phiếu thu chờ kế toán. Chạy với HD_TAI_KHOAN=ketoan.cs5@…
+  'ke-toan': (b) =>
+    chayBai(
+      b,
+      'ke-toan',
+      async (p) => {
+        await dangNhap(p);
+      },
+      [
+        {
+          chu: 'Trang chủ: việc chờ bạn duyệt',
+          loc: (p) => p.getByText('Việc chờ tôi duyệt').first(),
+        },
+        {
+          chu: 'Vào Bán hàng và thu chi, mở Phiếu thu',
+          loc: (p) =>
+            p
+              .getByRole('link', { name: 'Bán hàng và thu chi' })
+              .or(p.getByText('Bán hàng và thu chi').first()),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/phieu-thu`);
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Tìm phiếu ở tình trạng Chờ kế toán',
+          loc: (p) => p.locator('main tbody tr', { hasText: 'Chờ kế toán' }).first(),
+          lam: async (p) => {
+            await p
+              .locator('main tbody tr', { hasText: 'Chờ kế toán' })
+              .first()
+              .locator('a')
+              .first()
+              .click();
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Đối chiếu số tiền, đơn hàng rồi Duyệt phiếu thu',
+          loc: (p) => p.getByRole('button', { name: 'Duyệt phiếu thu', exact: true }),
+        },
+        {
+          chu: 'Không khớp thì bấm Từ chối',
+          loc: (p) => p.getByRole('button', { name: 'Từ chối', exact: true }),
+        },
+      ],
+    ),
+  // «Dữ liệu mẫu của tôi» (#667): tạo một bộ [MẪU] rồi xoá đúng bộ đó. CHỈ staging, tài khoản giả. Chạy với HD_TAI_KHOAN=sale.cs5@…
+  'du-lieu-mau': (b) =>
+    chayBai(
+      b,
+      'du-lieu-mau',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/du-lieu-mau`);
+        await p.waitForLoadState('networkidle');
+        // Dọn các bộ còn sót của tài khoản giả (tối đa 3 bộ/người) trước khi quay.
+        const xoa = p.getByRole('button', { name: 'Xoá bộ', exact: true });
+        for (let i = 0; i < 5 && (await xoa.count()) > 0; i++) {
+          await xoa.first().click();
+          await xoa.last().click();
+          await p.waitForTimeout(2000);
+        }
+        await p.reload();
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Mở «Dữ liệu mẫu của tôi» từ menu tài khoản',
+          loc: (p) => p.getByRole('heading', { name: 'Dữ liệu mẫu của tôi' }),
+        },
+        {
+          chu: 'Bấm Tạo bộ dữ liệu mẫu',
+          loc: (p) => p.getByRole('button', { name: 'Tạo bộ dữ liệu mẫu', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tạo bộ dữ liệu mẫu', exact: true }).click();
+            await p
+              .getByRole('button', { name: 'Xoá bộ', exact: true })
+              .first()
+              .waitFor({ timeout: 30000 });
+          },
+        },
+        {
+          chu: 'Bộ mới hiện ở danh sách; dữ liệu trong bộ ghi «[MẪU]»',
+          loc: (p) => p.locator('main ul > li').first(),
+        },
+        {
+          chu: 'Dùng xong thì bấm Xoá bộ',
+          loc: (p) => p.getByRole('button', { name: 'Xoá bộ', exact: true }).first(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Xoá bộ', exact: true }).first().click();
+          },
+        },
+        {
+          chu: 'Xác nhận Xoá bộ (không khôi phục được)',
+          loc: (p) => p.getByRole('button', { name: 'Xoá bộ', exact: true }).last(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Xoá bộ', exact: true }).last().click();
+            await p.waitForTimeout(1500);
+          },
+        },
+      ],
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';

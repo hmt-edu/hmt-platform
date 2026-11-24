@@ -21,7 +21,7 @@ Vai: Giáo viên, Trợ giảng (thấy các buổi mình được phân công).
 | Thấy gì | Nghĩa là | Làm gì |
 |---|---|---|
 | «Buổi chưa chốt danh sách.» / «Chưa có danh sách để điểm danh» | CSKH chưa chốt danh sách buổi | nhờ CSKH chốt danh sách |
-| «Buổi đã Hoàn thành: chỉ xem.» | buổi đã Done | sửa sau Done do Trưởng cơ sở (xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so)) |
+| «Buổi đã Hoàn thành: chỉ xem.» | buổi đã Done | sửa sau Done do Trưởng cơ sở (xem bài «Vai: Trưởng cơ sở» trong hướng dẫn cổng CRM) |
 | «Bạn không xem được buổi này» | buổi không phân công cho bạn | kiểm lại lịch hoặc báo CSKH |
 
 - **Ảnh:** [ẢNH: gv-diem-danh], [ẢNH: gv-diem-danh-luu]
@@ -70,3 +70,12 @@ Mục «Lớp» → mở lớp → tạo ticket (ví dụ học sinh nghỉ nhi�
 ## 12. Xem ticket của lớp mình
 «Lớp của tôi» → liên kết «Ticket của lớp tôi»: danh sách ticket bạn tạo hoặc của lớp bạn được phân công, kèm trạng thái. Chỉ xem trạng thái và nội dung bạn được phép thấy; không có số tiền và ghi chú nội bộ. **Ảnh:** [ẢNH: gv-ticket-ds]
 
+## 13. Chấm điểm bài kiểm tra
+- **Các bước:** mở buổi kiểm tra → «Chấm kiểm tra». Chấm **từng em**, nhập điểm, «Nhận xét chung» và «Định hướng cải thiện» nếu cần, rồi lưu: «Đã lưu điểm kiểm tra».
+- **Lỗi thường gặp:** «Buổi kiểm tra chưa đặt điểm tối đa và cách nhập điểm» → nhờ CSKH đặt; «Chưa điểm danh» → điểm danh trước; «Buổi đã Hoàn thành» → giáo viên không sửa được điểm nữa.
+
+## 14. Bài đã giao của lớp
+«Lớp» → mở lớp → «Bài đã giao»: xem các bài đã giao cho lớp, tạo bài mới và chấm bài từng em. Lớp chưa giao bài nào thì màn báo «Lớp này chưa giao bài nào».
+
+## 15. Xuất nhận xét
+Ở màn chấm nhận xét có phần «Xuất nhận xét»: chọn «Định dạng» là ảnh (PNG, mỗi em một tệp) hoặc PDF khổ A4 (qua hộp thoại in, chọn Lưu thành PDF) để gửi phụ huynh.

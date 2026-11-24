@@ -6,7 +6,12 @@ import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { StopMoneyPreviewSection } from './StopMoneyPreviewSection';
-import { MONEY_MODES, TRANSFER_BRANCH_KIND, TRANSFER_KINDS } from './businessTaskForm';
+import {
+  MONEY_MODES,
+  REFUND_KINDS,
+  TRANSFER_BRANCH_KIND,
+  TRANSFER_KINDS,
+} from './businessTaskForm';
 import { useDestBranches } from './useTaskCreate';
 import { useAccess } from '../../nav/AccessContext';
 import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
@@ -328,6 +333,24 @@ export function TaskRecordPage() {
                     />
                   )}
                 </>
+              )}
+            </DetailSection>
+          </div>
+        )}
+        {task.task_type === 'HOAN_PHI' && (
+          <div className="mt-6">
+            <DetailSection title="Hoàn học phí">
+              <DetailField
+                label="Hình thức hoàn"
+                mode="view"
+                value={REFUND_KINDS.find((k) => k.value === task.payload.kind)?.label ?? ''}
+              />
+              {task.payload.kind === 'MOT_PHAN' && (
+                <DetailField
+                  label="Số giờ hoàn"
+                  mode="view"
+                  value={task.payload.hours !== undefined ? String(task.payload.hours) : ''}
+                />
               )}
             </DetailSection>
           </div>

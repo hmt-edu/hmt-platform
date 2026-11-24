@@ -59,6 +59,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 | `HMT_CHI_KE_TOAN_DUYET_TIEN` | chỉ vai Kế toán duyệt tiền (Admin và vai khác không duyệt) |
 | Người duyệt quản lý trùng người duyệt kế toán | hệ thống chặn; nhờ người khác duyệt |
 
+- **Video (18 giây: tìm phiếu Chờ kế toán, Duyệt hoặc Từ chối):** [VIDEO: huong-dan-ke-toan-phieu-thu]
 - **Ảnh:** [ẢNH: phieu-thu-cho-ke-toan], [ẢNH: phieu-thu-duyet], [ẢNH: phieu-thu-tu-choi]
 
 ## 4. Khoản tiền vào và hoàn tác khoản

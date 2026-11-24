@@ -33,8 +33,8 @@ export type TaskOptions = {
   }[];
 };
 
-/** Loại phiếu nghiệp vụ tạo bằng hộp thoại chung: Bảo lưu (kèm gia hạn, tiếp tục học), Chuyển lớp, Dừng học, Chuyển phí. */
-export type BusinessType = 'BAO_LUU' | 'CHUYEN_LOP' | 'DUNG_HOC' | 'CHUYEN_PHI';
+/** Loại phiếu nghiệp vụ tạo bằng hộp thoại chung: Bảo lưu (kèm gia hạn, tiếp tục học), Chuyển lớp, Dừng học, Chuyển phí, Hoàn học phí. */
+export type BusinessType = 'BAO_LUU' | 'CHUYEN_LOP' | 'DUNG_HOC' | 'CHUYEN_PHI' | 'HOAN_PHI';
 
 /** Loại chuyển chọn được ở phiếu Chuyển lớp. Chuyển cơ sở (R-GD-10, R-CS-07) chỉ chọn cơ sở mới; lớp mới do quản lý cơ sở đích chọn ở cấp duyệt của họ (migration 568). */
 export const TRANSFER_KINDS = [
@@ -100,7 +100,17 @@ export const MONEY_MODES: { value: MoneyMode; label: string }[] = [
   { value: 'GIU_SO_DU', label: 'Giữ số dư (không trừ phí)' },
 ];
 
+/** Hình thức hoàn của phiếu Hoàn học phí (CSN06c, R-TIEN-28, R-TIEN-31): toàn bộ (giá gốc, trừ phí) hoặc một phần (số giờ × giá sau chiết khấu). */
+export type RefundKind = 'TOAN_BO' | 'MOT_PHAN';
+export const REFUND_KINDS: { value: RefundKind; label: string }[] = [
+  { value: 'TOAN_BO', label: 'Hoàn toàn bộ' },
+  { value: 'MOT_PHAN', label: 'Hoàn một phần' },
+];
+
 export type BusinessDraft = {
+  /** Phiếu Hoàn học phí: hình thức hoàn và số giờ hoàn (chỉ khi hoàn một phần). */
+  refundKind: RefundKind | '';
+  refundHours: string;
   /** Phiếu Dừng học: ngày dừng (chỉ ghi nhận) và cách xử lý tiền còn lại. */
   stopDate: string;
   /** Chuyển phí: đơn nhận (tuỳ chọn, chỉ tham khảo). */
@@ -121,6 +131,8 @@ export type DestBranch = { id: string; code: string; name: string };
 export type BusinessErrors = Partial<Record<keyof BusinessDraft, string>>;
 
 export const EMPTY_BUSINESS_DRAFT: BusinessDraft = {
+  refundKind: '',
+  refundHours: '',
   stopDate: '',
   orderId: '',
   moneyMode: '',
@@ -145,7 +157,12 @@ export function validateBusinessDraft(
   else if (draft.enrollmentId === '') e.enrollmentId = 'Chọn ghi danh.';
   if (draft.reasonCode === '') e.reasonCode = 'Chọn lý do.';
   if (draft.reason.trim() === '') e.reason = 'Nhập lý do của phiếu.';
-  if (type === 'DUNG_HOC') {
+  if (type === 'HOAN_PHI') {
+    // Hoàn học phí (CSN06c): thêm hình thức hoàn; hoàn một phần cần số giờ lớn hơn 0. Luật chặn thật ở hàm DB (R-TIEN-28, R-TIEN-31, HMT_HOAN_PHI_*).
+    if (draft.refundKind === '') e.refundKind = 'Chọn hình thức hoàn.';
+    else if (draft.refundKind === 'MOT_PHAN' && !(Number(draft.refundHours.replace(',', '.')) > 0))
+      e.refundHours = 'Nhập số giờ hoàn lớn hơn 0.';
+  } else if (type === 'DUNG_HOC') {
     // Dừng học (CSN06e): thêm Ngày dừng và Xử lý tiền còn lại; luật chặn thật ở hàm DB (R-GD-16, R-TIEN-28).
     if (draft.stopDate === '') e.stopDate = 'Chọn ngày dừng.';
     if (draft.moneyMode === '') e.moneyMode = 'Chọn cách xử lý tiền còn lại.';
@@ -178,6 +195,16 @@ export function buildBusinessPayload(
   draft: BusinessDraft,
   holdId: string | null = null,
 ) {
+  if (type === 'HOAN_PHI')
+    return {
+      enrollment_id: draft.enrollmentId,
+      reason_code: draft.reasonCode,
+      note: draft.reason.trim(),
+      kind: draft.refundKind,
+      ...(draft.refundKind === 'MOT_PHAN'
+        ? { hours: Number(draft.refundHours.replace(',', '.')) }
+        : {}),
+    };
   if (type === 'DUNG_HOC')
     return {
       enrollment_id: draft.enrollmentId,
