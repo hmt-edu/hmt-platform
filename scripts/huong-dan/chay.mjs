@@ -409,8 +409,8 @@ const BAI = {
         },
       ],
     ),
-  // Video KHỚP TỪNG BƯỚC bài TS1 (tạo lead nhanh, cảnh báo trùng SĐT): 7 bước, chữ «Bước n/7» cùng chữ với bài docs/huong-dan/tu-van/TS1-tao-lead-nhanh.md.
-  // Dùng số mẫu 0999 000 241 của bộ «[MẪU]» để thấy cảnh báo trùng; KHÔNG lưu lead (bước 7 đóng hộp bằng dấu X). Chạy với HD_TAI_KHOAN=sale.cs5@…
+  // Video KHỚP TỪNG BƯỚC bài TS1 (tạo lead nhanh, LUỒNG CHÍNH: số mới, không trùng): 5 bước, chữ «Bước n/5» cùng chữ với bài docs/huong-dan/tu-van/TS1-tao-lead-nhanh.md.
+  // Số điện thoại ngẫu nhiên dải 0998 (chưa có); LƯU lead «[MẪU]» trên staging (Admin huỷ nếu cần). Chạy với HD_TAI_KHOAN=sale.cs5@…
   ts1: (b) =>
     chayBai(
       b,
@@ -431,18 +431,16 @@ const BAI = {
           },
         },
         {
-          chu: 'Điền «Họ tên» và «Số điện thoại», bấm ra ngoài ô',
+          chu: 'Điền «Họ tên» và «Số điện thoại» (số mới), bấm ra ngoài ô',
           loc: (p) => p.getByLabel('Họ tên', { exact: true }),
           lam: async (p) => {
             await p.getByLabel('Họ tên', { exact: true }).fill('[MẪU] Phụ huynh tập TS1');
-            await p.getByLabel('Số điện thoại', { exact: true }).fill('0999000241');
+            await p
+              .getByLabel('Số điện thoại', { exact: true })
+              .fill(`0998${Math.floor(100000 + Math.random() * 900000)}`);
             await p.getByLabel('Họ tên', { exact: true }).click();
-            await p.waitForTimeout(2500);
+            await p.waitForTimeout(2000);
           },
-        },
-        {
-          chu: 'Có khung vàng: bấm «Mở bản ghi trùng» để xem hồ sơ cũ',
-          loc: (p) => p.getByText('Mở bản ghi trùng').first(),
         },
         {
           chu: 'Điền thêm nếu biết: «Tên học sinh», «Năm sinh», «Trường học»',
@@ -471,9 +469,55 @@ const BAI = {
           },
         },
         {
-          chu: 'Bấm «Lưu»',
+          chu: 'Bấm «Lưu»: hiện «Đã tạo lead LD-…», lead ở «C1 Data mới»',
           loc: nutTen('Lưu'),
           lam: async (p) => {
+            await nutTen('Lưu')(p).click();
+            await p.waitForTimeout(3000);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      5,
+    ),
+  // Video KHỚP bài TS1b (NGOẠI LỆ: cảnh báo trùng số điện thoại): 4 bước (bắt đầu từ trang tạo lead), KHÔNG lưu lead (bước 4 đóng hộp bằng dấu X). Số mẫu 0999 000 241 của bộ «[MẪU]».
+  ts1b: (b) =>
+    chayBai(
+      b,
+      'ts1b',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/lead/moi`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Nhập «Số điện thoại» đã có, bấm ra ngoài ô: hiện khung vàng',
+          loc: (p) => p.getByLabel('Số điện thoại', { exact: true }),
+          lam: async (p) => {
+            await p.getByLabel('Họ tên', { exact: true }).fill('[MẪU] Phụ huynh tập TS1b');
+            await p.getByLabel('Số điện thoại', { exact: true }).fill('0999000241');
+            await p.getByLabel('Họ tên', { exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Bấm «Mở bản ghi trùng» để xem hồ sơ cũ; cùng khách thì không tạo mới',
+          loc: (p) => p.getByText('Mở bản ghi trùng').first(),
+        },
+        {
+          chu: 'Khách khác: điền các ô còn lại, chọn «Source» rồi bấm «Lưu»',
+          loc: (p) => p.getByLabel('Source', { exact: true }),
+          lam: async (p) => {
+            await p.getByLabel('Source', { exact: true }).click();
+            await p.getByRole('option', { name: 'Walk-in', exact: true }).click();
+            await p.waitForTimeout(800);
+            await p.evaluate(() => {
+              document.querySelectorAll('*').forEach((e) => {
+                if (e.scrollTop > 0) e.scrollTop = 0;
+              });
+            });
+            await p.waitForTimeout(400);
             await nutTen('Lưu')(p).click();
             await p.waitForTimeout(2500);
           },
@@ -490,7 +534,7 @@ const BAI = {
         },
       ],
       { width: 1280, height: 720 },
-      7,
+      4,
     ),
 };
 
