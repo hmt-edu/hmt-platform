@@ -8,6 +8,20 @@ import { spawnSync } from 'node:child_process';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { chromium } from '@playwright/test';
+import { createHmac } from 'node:crypto';
+const maTotp = (khoa) => {
+  const bang = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bit = '';
+  for (const c of khoa.replace(/[\s=]/g, '').toUpperCase())
+    bit += bang.indexOf(c).toString(2).padStart(5, '0');
+  const byte = [];
+  for (let i = 0; i + 8 <= bit.length; i += 8) byte.push(parseInt(bit.slice(i, i + 8), 2));
+  const dem = Buffer.alloc(8);
+  dem.writeBigUInt64BE(BigInt(Math.floor(Date.now() / 30000)));
+  const h = createHmac('sha1', Buffer.from(byte)).update(dem).digest();
+  const o = h[19] & 15;
+  return String((h.readUInt32BE(o) & 0x7fffffff) % 1e6).padStart(6, '0');
+};
 
 const APP = (process.env.STAGING_URL ?? '').replace(/\/$/, '');
 const PW = process.env.STAGING_PASSWORD ?? '';
@@ -153,7 +167,34 @@ const dangNhap = async (page) => {
   });
   if (!r.ok) throw new Error(`Đăng nhập API lỗi ${r.status}`);
   const khoa = `sb-${new URL(SB_URL).hostname.split('.')[0]}-auth-token`;
-  const phien = JSON.stringify(await r.json());
+  let dl = await r.json();
+  // Tài khoản Admin có hai bước: HD_TOTP (khoá TOTP của tài khoản giả, chỉ qua biến môi trường) → nâng phiên lên aal2 bằng API Auth.
+  if (process.env.HD_TOTP) {
+    const H = {
+      apikey: SB_KEY,
+      authorization: `Bearer ${dl.access_token}`,
+      'content-type': 'application/json',
+    };
+    const nguoi = await (await fetch(`${SB_URL}/auth/v1/user`, { headers: H })).json();
+    const yeuTo = (nguoi.factors ?? []).find((x) => x.status === 'verified');
+    if (yeuTo) {
+      const th = await (
+        await fetch(`${SB_URL}/auth/v1/factors/${yeuTo.id}/challenge`, {
+          method: 'POST',
+          headers: H,
+          body: '{}',
+        })
+      ).json();
+      const xm = await fetch(`${SB_URL}/auth/v1/factors/${yeuTo.id}/verify`, {
+        method: 'POST',
+        headers: H,
+        body: JSON.stringify({ challenge_id: th.id, code: maTotp(process.env.HD_TOTP) }),
+      });
+      if (!xm.ok) throw new Error(`Xác minh hai bước lỗi ${xm.status}`);
+      dl = await xm.json();
+    }
+  }
+  const phien = JSON.stringify(dl);
   await page.addInitScript(([k, v]) => localStorage.setItem(k, v), [khoa, phien]);
   await page.goto(`${APP}/crm`);
   await page.waitForURL(/\/crm/, { timeout: 30000 });
@@ -646,6 +687,74 @@ const BAI = {
       ],
       chung,
       7,
+    ),
+  // QT1 «Người dùng: tạo» (Admin admin.cs1 + HD_TOTP): 5 bước; TẠO THẬT một tài khoản giả [MẪU] trên staging (email .invalid).
+  qt1: (b) =>
+    chayBai(
+      b,
+      'qt1',
+      vao('/crm/quan-tri/nguoi-dung'),
+      [
+        {
+          chu: 'Vào Quản trị → Người dùng, bấm «Tạo người dùng»',
+          loc: (p) => p.getByRole('button', { name: 'Tạo người dùng' }).first(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tạo người dùng' }).first().click();
+            await p.getByText('Tài khoản nhân viên, giáo viên, trợ giảng.').waitFor();
+          },
+        },
+        {
+          chu: 'Điền «Tên hiển thị», «Tên đăng nhập» và «Email»',
+          loc: (p) => p.getByLabel('Tên hiển thị', { exact: true }),
+          lam: async (p) => {
+            const so = Date.now() % 100000;
+            await p.getByLabel('Tên hiển thị', { exact: true }).fill(`[MẪU] Nhân viên tập ${so}`);
+            await p.getByLabel('Tên đăng nhập', { exact: true }).fill(`mau.qt1.${so}`);
+            await p
+              .getByLabel('Email', { exact: true })
+              .fill(`mau.qt1.${so}@thu.hoamatoan.invalid`);
+            await p.waitForTimeout(1200);
+          },
+        },
+        {
+          chu: 'Chọn «Cơ sở», «Loại nhân sự», rồi bấm «Thêm vai trò» để chọn vai trò',
+          loc: (p) => p.getByRole('button', { name: 'Thêm vai trò' }),
+          lam: async (p) => {
+            await p.getByRole('combobox', { name: 'Cơ sở' }).click();
+            await p.getByRole('option').first().click();
+            await p.getByRole('combobox', { name: 'Loại nhân sự' }).click();
+            await p.getByRole('option').first().click();
+            await p.getByRole('button', { name: 'Thêm vai trò' }).click();
+            await p.waitForTimeout(800);
+            await p.getByText('Chăm sóc, vận hành lớp', { exact: true }).last().click();
+            await p.getByRole('heading', { name: 'Tạo người dùng' }).click();
+            await p.waitForTimeout(800);
+          },
+        },
+        {
+          chu: 'Bấm «Tạo tài khoản»: hiện hộp «Mật khẩu tạm»',
+          loc: (p) => p.getByRole('button', { name: 'Tạo tài khoản' }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tạo tài khoản' }).click();
+            await p.getByText('Mật khẩu tạm').first().waitFor({ timeout: 30000 });
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Chép mật khẩu, giao cho người dùng, rồi bấm «Xong»',
+          loc: (p) => p.getByRole('button', { name: 'Chép mật khẩu' }),
+          lam: async (p) => {
+            await p
+              .getByRole('button', { name: 'Chép mật khẩu' })
+              .click()
+              .catch(() => {});
+            await p.waitForTimeout(1200);
+            await p.getByRole('button', { name: 'Xong', exact: true }).click();
+          },
+        },
+      ],
+      chung,
+      5,
     ),
 };
 
