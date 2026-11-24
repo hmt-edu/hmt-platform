@@ -48,7 +48,7 @@ Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (G
 - **Kết quả:** ghi danh sang «Đã xếp lớp», lớp hiện thêm học sinh, chỗ trống của lớp giảm.
 - **Lỗi thường gặp:** lớp không hiện trong danh sách là do chưa duyệt, hết chỗ hoặc sai môn, khối, cơ sở (chọn lớp khác). Báo trùng giờ nghĩa là em đã có lớp trùng giờ (đổi lớp hoặc ngày vào). Xếp xong vẫn «Chờ xếp lớp»: tải lại trang, nếu vẫn vậy thì báo quản trị kèm mã ghi danh.
 - **Ảnh:** [ẢNH: ghi-danh-cho-xep], [ẢNH: ghi-danh-xep-lop], [ẢNH: ghi-danh-so-gio]
-- Điều chỉnh giờ («Điều chỉnh giờ») là việc của quản lý cơ sở, xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so).
+- Điều chỉnh giờ («Điều chỉnh giờ») là việc của quản lý cơ sở (bớt giờ) và Kế toán (cộng giờ), xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so).
 
 ## 3. Tạo lớp và trình duyệt
 
@@ -123,8 +123,8 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 2. Chọn loại phiếu nếu hộp hỏi, điền các ô (xem từng loại ở các bài dưới) và lý do. Lưu.
 3. Mở phiếu ở **Phiếu nghiệp vụ**, kiểm lại thông tin, bấm **«Gửi duyệt»**.
 4. Chờ các cấp duyệt. Xem bảng «Duyệt» trong phiếu: từng cấp, người duyệt, kết quả, giờ.
-5. Phiếu «Đã duyệt» thì người tạo bấm **«Thực hiện»**. Hộp «Thực hiện phiếu?» nhắc: hồ sơ sẽ được cập nhật theo nội dung phiếu, ticket chuyển sang «Đã xử lý», và **không hoàn tác bằng nút**. Bấm «Thực hiện» để xác nhận.
-6. Nếu phiếu «Từ chối»: đọc lý do, sửa phiếu, gửi lại. Nhập nhầm thì bấm «Huỷ phiếu»; phiếu không xoá được, chỉ chuyển sang Huỷ.
+5. Phiếu «Đã duyệt» thì CSKH (hoặc Trưởng cơ sở) bấm **«Thực hiện»**. Hộp «Thực hiện phiếu?» nhắc: hồ sơ sẽ được cập nhật theo nội dung phiếu, ticket chuyển sang «Đã xử lý», và **không hoàn tác bằng nút**. Bấm «Thực hiện» để xác nhận.
+6. Nếu phiếu «Từ chối»: đọc lý do rồi tạo **phiếu mới** từ ticket gốc (phiếu đã từ chối không gửi lại được). Nhập nhầm thì bấm «Huỷ phiếu»; phiếu không xoá được, chỉ chuyển sang Huỷ.
 
 - **Kết quả:** phiếu «Đã thực hiện»; ticket tự sang «Đã xử lý», người phụ trách đóng tay.
 - **Lỗi thường gặp:**
@@ -171,7 +171,7 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 2. Chọn **Ghi danh**, **Loại chuyển**, **Lý do**.
 3. Chuyển trong cơ sở: chọn **Lớp mới** và **Hiệu lực từ buổi**.
 4. Chuyển cơ sở: chọn **Cơ sở mới**. Lớp mới do quản lý cơ sở đích chọn ở cấp duyệt của họ.
-5. Gửi duyệt, chờ duyệt, bấm «Thực hiện».
+5. Gửi duyệt, chờ duyệt; duyệt xong CSKH (hoặc Trưởng cơ sở) bấm «Thực hiện».
 
 - **Kết quả:** học sinh rời lớp cũ và vào lớp mới theo hiệu lực trong phiếu.
 - **Lỗi thường gặp:** lớp mới hết chỗ hoặc trùng giờ thì hệ thống báo trên màn, chọn lớp khác.
@@ -184,12 +184,12 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 1. Làm bước 1 đến 2 của bài 7, chọn «Dừng học».
 2. Chọn **Ghi danh**, **Lý do**, **Ngày dừng**.
 3. Chọn **Xử lý tiền còn lại**:
-   - «Hoàn tiền (sang phiếu Hoàn học phí)»: hoàn học phí còn lại, có trừ phí xử lý; sau khi dừng học sẽ có phiếu Hoàn học phí (bài 12).
+   - «Hoàn tiền (sang phiếu Hoàn học phí)»: hoàn học phí còn lại, có trừ phí xử lý; khi duyệt xong bấm «Thực hiện», hệ thống tính hoàn và tạo phiếu chi ngay, không sinh thêm phiếu Hoàn học phí để duyệt lại.
    - «Giữ số dư (không trừ phí)»: phần tiền còn lại thành số dư của phụ huynh để dùng lần sau.
 4. Đọc dòng giải thích dưới ô: dừng học đóng ghi danh, giờ tặng còn lại bị huỷ; ngày dừng chỉ để ghi nhận, không đổi cách tính giờ.
 5. Gửi duyệt, chờ duyệt, bấm «Thực hiện».
 
-- **Kết quả:** ghi danh đóng. Chọn giữ số dư thì số dư tăng; chọn hoàn tiền thì phiếu hoàn đi tiếp theo bài 12.
+- **Kết quả:** ghi danh đóng. Chọn giữ số dư thì số dư tăng; chọn hoàn tiền thì tiền hoàn đã được tính và phiếu chi đã tạo khi bấm «Thực hiện».
 - **Lỗi thường gặp:** chọn ghi danh của em khác hay của cơ sở khác sẽ bị chặn.
 - **Ảnh:** [ẢNH: phieu-dung-hoc-tao], [ẢNH: phieu-dung-hoc-hoan-tien], [ẢNH: phieu-dung-hoc-giu-so-du]
 
@@ -197,7 +197,7 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 
 **Mục tiêu:** hoàn tiền học phí còn lại cho phụ huynh, qua hai cấp duyệt.
 
-1. Phiếu này thường sinh ra sau phiếu Dừng học đã chọn «Hoàn tiền» (bài 11). Mở phiếu ở **Phiếu nghiệp vụ**.
+1. Phiếu này tạo từ ticket «Hoàn học phí» (nhóm Học phí), không phải từ phiếu Dừng học: phiếu Dừng học chọn «Hoàn tiền» đã hoàn luôn khi bấm «Thực hiện» (bài 11). Mở phiếu ở **Phiếu nghiệp vụ**.
 2. Xem bảng tính hoàn: số đã đóng, trừ giờ đã học theo giá gốc, phần còn lại, trừ phí xử lý, **số tiền hoàn**. Số này do hệ thống tính và chụp lại lúc tạo phiếu; màn chỉ hiện kết quả, không sửa tay.
 3. Chọn **Hình thức hoàn** (chuyển khoản hoặc tiền mặt) và tài khoản nhận nếu chuyển khoản.
 4. Bấm «Gửi duyệt». Quản lý cơ sở duyệt cấp 1, kế toán duyệt cấp 2. Duyệt xong bấm «Thực hiện».
