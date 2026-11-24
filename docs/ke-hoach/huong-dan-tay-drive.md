@@ -58,7 +58,7 @@ Chỗ nào ghi «NHÃN» thì thay bằng `staging` hoặc `prod` tuỳ lần l�
 
 ## Thẻ 7. Thư mục gốc: KHÔNG tạo tay
 
-Với phạm vi `drive.file`, ứng dụng chỉ thấy thư mục **do chính nó tạo**; thư mục anh tạo tay trên Drive nhiều khả năng ứng dụng không ghi vào được (CHƯA CHẮC, Code sẽ thử). Vì vậy **không tạo thư mục tay**. Lần thử một tệp giả, Code cho Edge Function tự tạo thư mục `HMT-NHÃN` rồi báo `folder_id`; anh dán `DRIVE_ROOT_FOLDER_ID` ở thẻ 9. Bước tay còn lại ở thẻ này: không có.
+Với phạm vi `drive.file`, ứng dụng chỉ thấy thư mục **do chính nó tạo**; thư mục anh tạo tay trên Drive nhiều khả năng ứng dụng không ghi vào được (CHƯA CHẮC, Code sẽ thử). Vì vậy **không tạo thư mục tay**. Edge Function `file-setup` (PR #704, chỉ Admin gọi, Code chạy giúp) tự tạo thư mục `HMT-NHÃN` rồi báo `folder_id`; anh dán `DRIVE_ROOT_FOLDER_ID` ở thẻ 9. Bước tay còn lại ở thẻ này: không có.
 
 ## Thẻ 8. Dán bí mật
 
