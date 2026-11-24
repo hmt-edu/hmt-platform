@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildBusinessPayload,
+  enrollmentSelectableFor,
   holdEnrollmentChoices,
   runningHold,
   classChoices,
@@ -260,5 +261,18 @@ describe('phiếu Hoàn học phí tạo từ ticket (CSN06c, L9)', () => {
   });
   it('không gắn học sinh thì chặn tạo phiếu', () => {
     expect(validateBusinessDraft('HOAN_PHI', base, false).enrollmentId).toBeDefined();
+  });
+});
+
+describe('D-23-50: ghi danh Chờ xếp lớp chỉ chọn được ở phiếu Hoàn học phí và Dừng học', () => {
+  it('Hoàn học phí và Dừng học nhận Chờ xếp lớp', () => {
+    expect(enrollmentSelectableFor('HOAN_PHI', 'CHO_XEP_LOP')).toBe(true);
+    expect(enrollmentSelectableFor('DUNG_HOC', 'CHO_XEP_LOP')).toBe(true);
+  });
+  it('Bảo lưu, Chuyển lớp, Chuyển phí ẩn Chờ xếp lớp, tình trạng khác vẫn chọn được', () => {
+    for (const t of ['BAO_LUU', 'CHUYEN_LOP', 'CHUYEN_PHI']) {
+      expect(enrollmentSelectableFor(t, 'CHO_XEP_LOP')).toBe(false);
+      expect(enrollmentSelectableFor(t, 'DANG_HOC')).toBe(true);
+    }
   });
 });

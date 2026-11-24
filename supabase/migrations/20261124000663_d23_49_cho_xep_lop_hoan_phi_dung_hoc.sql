@@ -349,7 +349,8 @@ begin
     end if;
     if p_type = 'CHUYEN_PHI' then
       -- CS-10 (anh chốt 23:17, R-GD-10 mục 9): ghi danh cũ phải còn hiệu lực; phụ huynh nhận số dư tuỳ chọn (anh chị em), trống thì giữ ở phụ huynh của ghi danh.
-      if v_enr.status_code not in ('CHO_XEP_LOP', 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
+      -- D-23-50: Chuyển phí chưa cho ghi danh Chờ xếp lớp (chờ anh Trường chốt): giữ danh sách cũ.
+      if v_enr.status_code not in ('DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
         perform app.raise_error('HMT_PHIEU_DU_LIEU_SAI', 'Ghi danh này không còn hiệu lực để chuyển phí.');
       end if;
       if nullif(p_payload ->> 'to_parent_id', '') is not null
@@ -449,7 +450,8 @@ begin
   end if;
   -- Luật trạng thái: ghi danh còn hiệu lực lúc tạo và lúc trình duyệt (sau khi thực hiện, ghi danh đổi trạng thái nên không kiểm lại).
   v_status_check := tg_op = 'INSERT' or new.status_code = 'CHO_DUYET';
-  if v_status_check and e.status_code not in ('CHO_XEP_LOP', 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
+  -- D-23-50: chỉ phiếu Hoàn học phí và Dừng học nhận ghi danh Chờ xếp lớp (anh chốt 24/11); Bảo lưu, Chuyển lớp, Chuyển phí... giữ danh sách cũ để không tạo, gửi duyệt rồi mới bị chặn ở bước Thực hiện.
+  if v_status_check and e.status_code not in (case when new.task_type in ('HOAN_PHI', 'DUNG_HOC') then 'CHO_XEP_LOP' else 'DA_XEP_LOP' end, 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
     perform app.raise_error('HMT_PHIEU_DU_LIEU_SAI', 'Ghi danh này không còn hiệu lực.');
   end if;
   if tg_op = 'INSERT' then
@@ -541,4 +543,40 @@ begin
        where c.branch_id = t.branch_id and c.status_code = 'DA_DUYET' and coalesce(app.class_seats_left(c.id), 1) > 0), '[]'::jsonb)
   );
 end;
-$$;select set_config('hmt.migration', '', false);
+$$;-- D-23-50: app.ticket_task_check_waiting_enrollment: phiếu Bảo lưu, Chuyển lớp, Đổi lịch... KHÔNG nhận ghi danh «Chờ xếp lớp» (chưa có lớp; chỉ Hoàn học phí và Dừng học nhận, anh chốt 24/11).
+-- Báo NGAY lúc tạo và lúc gửi duyệt thay vì chờ bước Thực hiện. NỘI BỘ (trigger). Lỗi: HMT_PHIEU_DU_LIEU_SAI. Hoàn học phí, Dừng học, Chuyển phí do trigger phạm vi (ticket_task_check_scope) kiểm.
+create or replace function app.ticket_task_check_waiting_enrollment()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_enr uuid;
+begin
+  if new.task_type in ('HOAN_PHI', 'DUNG_HOC', 'CHUYEN_PHI') or app.is_migration() then
+    return new;
+  end if;
+  -- Chỉ kiểm lúc tạo và lúc Nháp sang Chờ duyệt.
+  if tg_op = 'UPDATE' and (new.status_code is not distinct from old.status_code or new.status_code <> 'CHO_DUYET') then
+    return new;
+  end if;
+  begin
+    v_enr := nullif(new.payload ->> 'enrollment_id', '')::uuid;
+  exception when others then
+    v_enr := null;
+  end;
+  if v_enr is not null and exists (select from app.enrollment e where e.id = v_enr and e.status_code = 'CHO_XEP_LOP') then
+    perform app.raise_error('HMT_PHIEU_DU_LIEU_SAI', 'Ghi danh Chờ xếp lớp chưa có lớp nên chỉ hoàn phí hoặc dừng học được. Hãy xếp lớp trước.');
+  end if;
+  return new;
+end;
+$$;
+revoke execute on function app.ticket_task_check_waiting_enrollment() from public, anon, authenticated;
+
+drop trigger if exists ticket_task_kiem_cho_xep_lop on app.ticket_task;
+create trigger ticket_task_kiem_cho_xep_lop
+  before insert or update of status_code on app.ticket_task
+  for each row execute function app.ticket_task_check_waiting_enrollment();
+
+select set_config('hmt.migration', '', false);
