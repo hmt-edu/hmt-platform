@@ -11,7 +11,7 @@ select set_config('hmt.migration', 'on', false);
 --           last_session: {date, class_code, status_name} hoặc null, new_reviews: số nhận xét trong 14 ngày}],
 --           attention: [{kind: GIO_THAP|DE_NGHI, student_id, student_name, hours_left, projected_end, ticket_id, title, step, updated_at}]}.
 -- Luật: giờ còn, ngày hết dự kiến, giờ còn thấp tính đúng như ph_hours_orders (một nguồn công thức); buổi gần nhất = buổi đã Done có điểm danh của em;
--- trạng thái buổi lấy theo ô giáo viên (R-DD-02), chưa có thì để trống; nhận xét mới = nhận xét có nội dung của buổi trong khoảng gần đây;
+-- trạng thái buổi lấy theo ô giáo viên (R-DD-02), chưa có thì để trống; nhận xét mới = nhận xét có nội dung, của buổi Done, đã gửi phụ huynh, trong 14 ngày gần đây (nháp, buổi chưa Done không đếm);
 -- việc cần chú ý: giờ còn thấp, và đề nghị Đề nghị/Khiếu nại chưa Đóng (bước 1 đến 3).
 create or replace function app.ph_home()
 returns jsonb
@@ -56,9 +56,11 @@ begin
     -- Nhận xét mới: nhận xét có nội dung trong 14 ngày gần đây.
     select count(*) into v_new
       from app.session_attendance a
-      join app.class_session cs on cs.id = a.session_id and cs.session_date >= v_today - 14 -- allow-number: cửa sổ «mới» theo khung PH01
+      join app.class_session cs on cs.id = a.session_id and cs.status_code = 'DONE' and cs.session_date >= v_today - 14 -- allow-number: cửa sổ «mới» theo khung PH01
       join app.session_student_review r on r.attendance_id = a.id
-     where a.student_id = c.id and a.is_active and nullif(btrim(coalesce(r.teacher_comment, '')), '') is not null;
+     -- Mức chặt (Chat chốt 03:35, cùng app.portal_reviews): chỉ buổi Done và nhận xét ĐÃ GỬI phụ huynh; nháp không đếm.
+     where a.student_id = c.id and a.is_active and nullif(btrim(coalesce(r.teacher_comment, '')), '') is not null
+       and r.parent_sent_at is not null;
 
     v_children := v_children || jsonb_build_object(
       'id', c.id, 'full_name', c.full_name,

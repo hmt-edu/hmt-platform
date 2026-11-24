@@ -59,6 +59,20 @@ select pg_temp.sudo($$
 $$);
 select pg_temp.sudo($$update app.ticket set status_code = 'DA_DONG', closed_at = now(), resolved_at = now(), resolution = 'Xong' where code = 'DN-F653-3'$$);
 
+
+-- Nhận xét mới (mức chặt): em Một có 3 buổi: (a) Done, đã gửi PH → đếm; (b) Done, nháp chưa gửi → không đếm; (c) chưa Done, đã gửi → không đếm.
+select pg_temp.sudo($$
+  insert into app.class (code, branch_id, year_code, subject_code, grade_code, class_type_code, level_code, start_date, total_sessions)
+  select 'LOP653', b.id, '2627', 'TOAN', 'K08', 'CB', 'A', current_date - 30, 10 from app.branch b where b.code = 'CS1';
+  insert into app.class_session (class_id, branch_id, session_no, session_date, start_time, end_time, status_code, type_code)
+  select c.id, c.branch_id, v.no, current_date - v.no, '18:00', '19:30', v.st, 'CHINH' from app.class c, (values (1, 'DONE'), (2, 'DONE'), (3, 'DA_CHOT')) v (no, st) where c.code = 'LOP653';
+  insert into app.session_attendance (session_id, class_id, branch_id, student_id, teacher_status_code)
+  select cs.id, cs.class_id, cs.branch_id, (select id from app.student where code = 'HS653001'), 'CO_MAT' from app.class_session cs join app.class c on c.id = cs.class_id and c.code = 'LOP653';
+  insert into app.session_student_review (attendance_id, session_id, branch_id, teacher_comment, parent_sent_at)
+  select a.id, a.session_id, a.branch_id, 'Nhận xét giả ' || cs.session_no, case when cs.session_no in (1, 3) then now() end
+    from app.session_attendance a join app.class_session cs on cs.id = a.session_id join app.class c on c.id = cs.class_id and c.code = 'LOP653';
+$$);
+
 -- ===== Phụ huynh ph1 (cùng SĐT với PH653002) =====
 select pg_temp.claims(pg_temp.uid('ph1'));
 set local role authenticated;
@@ -68,6 +82,8 @@ select is(jsonb_array_length(app.ph_home() -> 'attention'), 2, 'PH-01: việc c�
 select ok(not exists (select 1 from jsonb_array_elements(app.ph_home() -> 'attention') a where a ->> 'title' like '%F653-9' or a ->> 'title' like '%F653-3'), 'Luật quyền riêng: không lộ ticket nhà khác, ticket đã đóng');
 select is((select min((a ->> 'step')::int) from jsonb_array_elements(app.ph_home() -> 'attention') a), 1, 'PH-01: ticket Mới ở bước 1');
 select is((select max((a ->> 'step')::int) from jsonb_array_elements(app.ph_home() -> 'attention') a), 3, 'PH-01: ticket Đã xử lý ở bước 3');
+select is((select (c ->> 'new_reviews')::int from jsonb_array_elements(app.ph_home() -> 'children') c where c ->> 'full_name' = 'Em 653 Một'), 1, 'PH-01: nhận xét mới chỉ đếm buổi Done đã gửi phụ huynh (nháp, buổi chưa Done không đếm)');
+select is((select c #>> '{last_session,class_code}' from jsonb_array_elements(app.ph_home() -> 'children') c where c ->> 'full_name' = 'Em 653 Một'), 'LOP653', 'PH-01: buổi gần nhất là buổi Done');
 select ok(not (app.ph_home() #> '{children,0}' ? 'branch_id'), 'PH-01: không lộ cột nội bộ của học sinh');
 reset role;
 
