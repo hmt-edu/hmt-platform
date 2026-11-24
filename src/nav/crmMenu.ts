@@ -270,7 +270,6 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'nhan-xet-cho-gui',
         requires: can('TICKET', 'SUA'),
         stage: '',
-        feature: 'AFTERSALE',
       },
       {
         code: 'CS-07',
