@@ -223,5 +223,5 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 
 ### Trưởng cơ sở
 - **Nghĩa:** người phụ trách một cơ sở: duyệt đơn, phiếu, ticket nhạy cảm và nhận thông báo khi phụ huynh không đồng ý phương án xử lý.
-- **Ví dụ:** Trưởng cơ sở duyệt đơn của nhân viên tuyển sinh.
+- **Ví dụ:** quản lý trực tiếp của nhân viên tuyển sinh (thường là Trưởng cơ sở) duyệt đơn của nhân viên đó.
 - **Nơi gặp:** mọi nhóm menu; nút «Duyệt».
