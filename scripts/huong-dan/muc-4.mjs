@@ -67,9 +67,6 @@ async function chup(browser, ten, { account, viewport = DESKTOP, route, truoc, l
 }
 
 const KT = 'ketoan.cs5';
-  await p.locator('main tbody tr').first().click();
-  await p.waitForTimeout(2500);
-};
 const SHOTS = {
   'ke-toan-trang-chu': { account: KT, route: '/crm' },
   'ke-toan-viec-cho-toi-duyet': { account: KT, route: '/crm/viec-cho-duyet' },
