@@ -582,6 +582,71 @@ const BAI = {
       chung,
       3,
     ),
+  // DT6 «Phiếu tái tục» (CSKH): 7 bước; KHÔNG ghi gì lên staging (chỉ mở hộp rồi đóng). Bước 3 (Giao) chỉ chỉ vào dòng đầu vì phiếu mẫu đã có người phụ trách; bước 6 hộp «Gói» còn trống vì staging chưa có Gói bán.
+  dt6: (b) =>
+    chayBai(
+      b,
+      'dt6',
+      vao('/crm/tai-tuc'),
+      [
+        {
+          chu: 'Vào «Tái tục»: mặc định là danh sách, các dòng phiếu theo giai đoạn',
+          loc: (p) => p.getByRole('heading', { name: 'Tái tục' }).first(),
+        },
+        {
+          chu: 'Lọc việc của mình: bộ lọc «Phụ trách» chọn «Của tôi» hoặc «Chưa giao»',
+          loc: (p) => p.getByRole('button', { name: 'Filters', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Filters', exact: true }).click();
+            await p.waitForTimeout(1500);
+            await p.keyboard.press('Escape');
+          },
+        },
+        {
+          chu: 'Phiếu chưa có người phụ trách: bấm «Giao», chọn «Người phụ trách», bấm «Giao»',
+          loc: (p) => p.locator('main tbody tr').first(),
+        },
+        {
+          chu: 'Bấm một dòng để mở phiếu: xem tab «Tổng quan», «Giờ học»; ghi ý phụ huynh rồi «Lưu»',
+          loc: (p) => p.locator('main tbody tr', { hasText: 'TT000004' }).first(),
+          lam: async (p) => {
+            await p.locator('main tbody tr', { hasText: 'TT000004' }).first().click();
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Sau cuộc gọi, bấm «Chuyển giai đoạn», chọn «Giai đoạn mới», bấm «Chuyển»',
+          loc: (p) => p.getByRole('button', { name: 'Chuyển giai đoạn', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Chuyển giai đoạn', exact: true }).click();
+            await p.waitForTimeout(2000);
+            await p.keyboard.press('Escape');
+          },
+        },
+        {
+          chu: 'Phiếu ở L6 Đồng ý tái tục: bấm «Tạo đơn», chọn «Gói», nhập «Số giờ», bấm «Tạo đơn nháp»',
+          loc: (p) => p.getByRole('button', { name: 'Tạo đơn', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tạo đơn', exact: true }).click();
+            await p.waitForTimeout(2500);
+            await p.keyboard.press('Escape');
+            await p.goto(`${APP}/crm/tai-tuc`);
+            await cho(p);
+          },
+        },
+        {
+          chu: 'Tạo tay một phiếu: ở danh sách «Tái tục» bấm «Tạo», nhập «Mã ghi danh của học sinh»',
+          loc: (p) => p.getByRole('button', { name: 'Tạo', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tạo', exact: true }).click();
+            await p.waitForTimeout(2000);
+            await p.keyboard.press('Escape');
+          },
+        },
+      ],
+      chung,
+      7,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
