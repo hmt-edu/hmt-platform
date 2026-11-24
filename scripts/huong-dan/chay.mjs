@@ -9,6 +9,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { chromium } from '@playwright/test';
 import { NHAN } from './nhan.mjs';
+import { baiCskhGv } from './bai-cskh-gv.mjs';
 
 const APP = (process.env.STAGING_URL ?? '').replace(/\/$/, '');
 const PW = process.env.STAGING_PASSWORD ?? '';
@@ -1888,6 +1889,8 @@ const BAI = {
       4,
     ),
 };
+
+Object.assign(BAI, baiCskhGv({ chayBai, APP, dangNhap, nutTen }));
 
 const chon = process.argv[2] ?? 'tat-ca';
 const ds = chon === 'tat-ca' ? Object.keys(BAI) : [chon];
