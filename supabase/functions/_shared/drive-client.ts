@@ -97,10 +97,10 @@ export function createDriveClient(config: DriveConfig, fetchFn: FetchLike = fetc
       return location;
     },
     /** Metadata tệp để xác nhận đúng cỡ sau khi tải (file-upload-done). */
-    async getFileInfo(id: string): Promise<{ id: string; size: number; mimeType: string; trashed: boolean }> {
-      const res = await call(`${API}/files/${encodeURIComponent(id)}?fields=id,size,mimeType,trashed`);
-      const b = (await res.json()) as { id: string; size?: string; mimeType: string; trashed?: boolean };
-      return { id: b.id, size: Number(b.size ?? 0), mimeType: b.mimeType, trashed: Boolean(b.trashed) };
+    async getFileInfo(id: string): Promise<{ id: string; name: string; size: number; mimeType: string; trashed: boolean }> {
+      const res = await call(`${API}/files/${encodeURIComponent(id)}?fields=id,name,size,mimeType,trashed`);
+      const b = (await res.json()) as { id: string; name?: string; size?: string; mimeType: string; trashed?: boolean };
+      return { id: b.id, name: b.name ?? '', size: Number(b.size ?? 0), mimeType: b.mimeType, trashed: Boolean(b.trashed) };
     },
     /** Tải nội dung tệp (file-view làm trung gian); trả Response để chuyển tiếp dòng dữ liệu, không giữ cả tệp trong bộ nhớ. */
     async download(id: string): Promise<Response> {
