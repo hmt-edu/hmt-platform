@@ -76,8 +76,10 @@ export function buildFileDeps(authorization: string): { deps: FileDeps; callerId
       if (error) throw new FlowError('HMT_LOI', 'Chưa ghi được sổ tệp, thử lại.', 500); // allow-number: mã HTTP
     },
     async minFreeGb() {
-      const { data } = await admin.from('setting_def').select('value').eq('key', 'file_storage_min_free_gb').maybeSingle();
-      return Number((data as { value: string } | null)?.value);
+      const { data, error } = await admin.from('setting_def').select('value').eq('key', 'file_storage_min_free_gb').maybeSingle();
+      // Không đọc được tham số thì KHÔNG lặng lẽ bỏ chặn mềm theo dung lượng: báo lỗi để biết (soát 00:08).
+      if (error || !data) throw new FlowError('HMT_LOI', 'Chưa đọc được tham số dung lượng kho tệp, thử lại.', 500); // allow-number: mã HTTP
+      return Number((data as { value: string }).value);
     },
     async sha256(bytes) {
       const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
