@@ -28,10 +28,10 @@ if (!APP.startsWith('https://') || /prod/i.test(APP) || !PW || !SB_URL || !SB_KE
 const CAM = '#EF6925';
 
 /** Chèn khung cam, số tròn, chú thích quanh phần tử và thanh phụ đề đáy; con trỏ giả bám theo chuột. */
-async function ve(page, loc, so, chu) {
+async function ve(page, loc, so, chu, tong) {
   const box = loc ? await loc.first().boundingBox() : null;
   await page.evaluate(
-    ({ box, so, chu, CAM }) => {
+    ({ box, so, chu, tong, CAM }) => {
       document.getElementById('hd-lop')?.remove();
       const lop = document.createElement('div');
       lop.id = 'hd-lop';
@@ -47,13 +47,13 @@ async function ve(page, loc, so, chu) {
         lop.append(k);
       }
       const d = document.createElement('div');
-      d.textContent = `${so}. ${chu}`;
+      d.textContent = tong ? `Bước ${so}/${tong}: ${chu}` : `${so}. ${chu}`;
       d.style.cssText =
         'position:absolute;left:50%;bottom:20px;transform:translateX(-50%);max-width:92%;background:#211C16;color:#fff;padding:10px 18px;border-radius:10px;font:600 18px system-ui;text-align:center;border:2px solid #EF6925';
       lop.append(d);
       document.body.append(lop);
     },
-    { box, so, chu, CAM },
+    { box, so, chu, tong, CAM },
   );
 }
 
@@ -75,7 +75,14 @@ async function conTro(context) {
 }
 
 /** Một bài: dựng ngữ cảnh có quay video, chạy từng bước {chu, loc, lam}; mỗi bước chụp ảnh khung rồi mới làm. */
-async function chayBai(browser, ten, vaoTruoc, cacBuoc, khung = { width: 1280, height: 720 }) {
+async function chayBai(
+  browser,
+  ten,
+  vaoTruoc,
+  cacBuoc,
+  khung = { width: 1280, height: 720 },
+  tong = 0,
+) {
   const dir = join(OUT, ten);
   mkdirSync(dir, { recursive: true });
   const context = await browser.newContext({ viewport: khung, recordVideo: { dir, size: khung } });
@@ -92,7 +99,7 @@ async function chayBai(browser, ten, vaoTruoc, cacBuoc, khung = { width: 1280, h
       const hop = await loc.first().boundingBox();
       if (hop) await page.mouse.move(hop.x + hop.width / 2, hop.y + hop.height / 2, { steps: 12 });
     }
-    await ve(page, loc, so, b.chu);
+    await ve(page, loc, so, b.chu, tong);
     await page.waitForTimeout(DUNG);
     const anh = `buoc-${so}.png`;
     await page.screenshot({ path: join(dir, anh) });
@@ -394,6 +401,89 @@ const BAI = {
           },
         },
       ],
+    ),
+  // Video KHỚP TỪNG BƯỚC bài TS1 (tạo lead nhanh, cảnh báo trùng SĐT): 7 bước, chữ «Bước n/7» cùng chữ với bài docs/huong-dan/tu-van/TS1-tao-lead-nhanh.md.
+  // Dùng số mẫu 0999 000 241 của bộ «[MẪU]» để thấy cảnh báo trùng; KHÔNG lưu lead (bước 7 đóng hộp bằng dấu X). Chạy với HD_TAI_KHOAN=sale.cs5@…
+  ts1: (b) =>
+    chayBai(
+      b,
+      'ts1',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/lead`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Vào Lead, bấm «Tạo»',
+          loc: nutTen('Tạo'),
+          lam: async (p) => {
+            await nutTen('Tạo')(p).click();
+            await p.waitForURL(/\/crm\/lead\/moi/);
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Điền «Họ tên» và «Số điện thoại», bấm ra ngoài ô',
+          loc: (p) => p.getByLabel('Họ tên', { exact: true }),
+          lam: async (p) => {
+            await p.getByLabel('Họ tên', { exact: true }).fill('[MẪU] Phụ huynh tập TS1');
+            await p.getByLabel('Số điện thoại', { exact: true }).fill('0999000241');
+            await p.getByLabel('Họ tên', { exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Có khung vàng: bấm «Mở bản ghi trùng» để xem hồ sơ cũ',
+          loc: (p) => p.getByText('Mở bản ghi trùng').first(),
+        },
+        {
+          chu: 'Điền thêm nếu biết: «Tên học sinh», «Năm sinh», «Trường học»',
+          loc: (p) => p.getByLabel('Tên học sinh', { exact: true }),
+          lam: async (p) => {
+            await p.getByLabel('Tên học sinh', { exact: true }).fill('[MẪU] Học sinh tập TS1');
+            await p.getByLabel('Năm sinh', { exact: true }).fill('2014');
+            await p.getByLabel('Trường học', { exact: true }).fill('[MẪU] Trường tập');
+            await p.getByLabel('Source', { exact: true }).scrollIntoViewIfNeeded();
+            await p.waitForTimeout(600);
+          },
+        },
+        {
+          chu: 'Khối «Nguồn và phụ trách»: chọn «Cơ sở», «Nhân sự phụ trách», «Source»',
+          loc: (p) => p.getByLabel('Source', { exact: true }),
+          lam: async (p) => {
+            await p.getByLabel('Source', { exact: true }).click();
+            await p.getByRole('option', { name: 'Walk-in', exact: true }).click();
+            await p.waitForTimeout(800);
+            await p.evaluate(() => {
+              document.querySelectorAll('*').forEach((e) => {
+                if (e.scrollTop > 0) e.scrollTop = 0;
+              });
+            });
+            await p.waitForTimeout(400);
+          },
+        },
+        {
+          chu: 'Bấm «Lưu»',
+          loc: nutTen('Lưu'),
+          lam: async (p) => {
+            await nutTen('Lưu')(p).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Hộp cảnh báo: «Gắn vào hồ sơ có sẵn» nếu cùng khách, «Vẫn tạo mới» nếu khách khác; chưa chắc thì đóng bằng dấu X',
+          loc: (p) => p.getByRole('button', { name: 'Vẫn tạo mới', exact: true }),
+          lam: (p) =>
+            p
+              .locator('button[aria-label*="óng"], button[aria-label="Close"]')
+              .first()
+              .click()
+              .catch(() => {}),
+        },
+      ],
+      { width: 1280, height: 720 },
+      7,
     ),
 };
 
