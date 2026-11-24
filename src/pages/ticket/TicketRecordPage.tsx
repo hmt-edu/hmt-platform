@@ -382,6 +382,7 @@ export function TicketRecordPage() {
                 'DUNG_HOC',
                 'DOI_LICH',
                 'CHUYEN_PHI',
+                'HOAN_PHI',
               ].includes(ticket.business_type ?? '') &&
                 !(record.data?.tasks ?? []).some((k) =>
                   ['NHAP', 'CHO_DUYET', 'DA_DUYET'].includes(k.status_code),
@@ -586,7 +587,8 @@ export function TicketRecordPage() {
       {(ticket.business_type === 'BAO_LUU' ||
         ticket.business_type === 'CHUYEN_LOP' ||
         ticket.business_type === 'DUNG_HOC' ||
-        ticket.business_type === 'CHUYEN_PHI') && (
+        ticket.business_type === 'CHUYEN_PHI' ||
+        ticket.business_type === 'HOAN_PHI') && (
         <BusinessTaskDialog
           type={ticket.business_type}
           ticketId={ticket.id}

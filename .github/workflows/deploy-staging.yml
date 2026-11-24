@@ -99,6 +99,13 @@ jobs:
           STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
         run: psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f supabase/seed.sql
 
+      # Bật dữ liệu mẫu CHỈ ở hmt-staging: dòng khoá môi trường STAGING + công tắc demo_data_enabled (E-23-32). Chạy lại được.
+      # Bản chạy thật (hmt-deploy) không có bước này nên không có dòng STAGING và hàm dữ liệu mẫu luôn từ chối.
+      - name: Bật dữ liệu mẫu trên hmt-staging
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f supabase/seed-staging-demo-flag.sql
+
       # Thử quyền ghi bảng Auth của hàm admin_reset_mfa (Đ49): giao dịch hoàn tác, không để lại dữ liệu. Không đạt thì chỉ cảnh báo
       # (hàm chưa được giao diện dùng) để báo anh quyết quay lại Edge Function; không chặn lượt triển khai.
       - name: Thử quyền ghi bảng Auth trên hmt-staging
@@ -148,6 +155,7 @@ jobs:
           trap 'rm -f "$env_file"' EXIT
           {
             echo "HMT_ALLOW_STAGING_PREVIEWS=true"
+            echo "HMT_ALLOW_LOCAL_ORIGINS=true"
             echo "HMT_ALLOWED_ORIGINS=https://hmt-staging.pages.dev"
             key="$(printf '%s' "$STAGING_SUPABASE_SECRET_KEY" | tr -d '[:space:]')"
             if [ -n "$key" ]; then echo "HMT_SECRET_KEY=$key"; fi

@@ -395,6 +395,7 @@ const TeacherSchedulePage = lazyScreen(
   () => import('../pages/gv/TeacherSchedulePage'),
   'TeacherSchedulePage',
 );
+const ParentHomePage = lazyScreen(() => import('../pages/ph/ParentHomePage'), 'ParentHomePage');
 const StudentSchedulePage = lazyScreen(
   () => import('../pages/hoc/StudentSchedulePage'),
   'StudentSchedulePage',
@@ -416,8 +417,30 @@ const StudentAssignmentPage = lazyScreen(
   () => import('../pages/hoc/StudentAssignmentPage'),
   'StudentAssignmentPage',
 );
-const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
+const ParentResultsPage = lazyScreen(
+  () => import('../pages/ph/ParentResultsPage'),
+  'ParentResultsPage',
+);
+const ParentRequestsPage = lazyScreen(
+  () => import('../pages/ph/ParentRequestsPages'),
+  'ParentRequestsPage',
+);
+const ParentRequestNewPage = lazyScreen(
+  () => import('../pages/ph/ParentRequestsPages'),
+  'ParentRequestNewPage',
+);
+const ParentRequestDetailPage = lazyScreen(
+  () => import('../pages/ph/ParentRequestsPages'),
+  'ParentRequestDetailPage',
+);
+const ParentSchedulePage = lazyScreen(
+  () => import('../pages/ph/ParentSchedulePage'),
+  'ParentSchedulePage',
+);
+const ParentFeesPage = lazyScreen(() => import('../pages/ph/ParentFeesPage'), 'ParentFeesPage');
+const ParentOrderPage = lazyScreen(() => import('../pages/ph/ParentOrderPage'), 'ParentOrderPage');
 const ProfilePage = lazyScreen(() => import('../pages/common/ProfilePage'), 'ProfilePage');
+const DemoDataPage = lazyScreen(() => import('../pages/du-lieu-mau/DemoDataPage'), 'DemoDataPage');
 const GuidePage = lazyScreen(() => import('../pages/huong-dan/GuidePage'), 'GuidePage');
 const HomePage = lazyScreen(() => import('../pages/HomePage'), 'HomePage');
 const DetailDemoPage = lazyScreen(() => import('../pages/dev/DetailDemoPage'), 'DetailDemoPage');
@@ -427,8 +450,6 @@ const PatternPage = lazyScreen(() => import('../pages/dev/PatternPage'), 'Patter
 
 // Trang mẫu thành phần: chỉ có ở bản thử nghiệm, xem trước và local; bản chạy thật không có route này.
 const SHOW_PATTERNS = parseAppEnv(import.meta.env.VITE_APP_ENV) !== 'production';
-
-const GD4 = 'giai đoạn 4';
 
 export const routes: RouteObject[] = [
   {
@@ -479,6 +500,7 @@ export const routes: RouteObject[] = [
           { index: true, element: <CrmHome /> },
           { path: 'huong-dan/:slug?', element: <GuidePage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: 'du-lieu-mau', element: <DemoDataPage /> },
           {
             path: 'lead',
             element: (
@@ -1251,6 +1273,7 @@ export const routes: RouteObject[] = [
         ),
         children: [
           { index: true, element: <TeacherTodayPage /> },
+          { path: 'huong-dan/:slug?', element: <GuidePage /> },
           { path: 'lich-day', element: <TeacherSchedulePage /> },
           { path: 'gio-day', element: <TeacherHoursPage /> },
           { path: 'lop', element: <TeacherClassesPage /> },
@@ -1275,6 +1298,7 @@ export const routes: RouteObject[] = [
           { path: 'buoi/:sessionId/cham-kiem-tra', element: <ExamGradingPage /> },
           { path: 'buoi/:id/diem-danh', element: <TeacherAttendancePage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: 'du-lieu-mau', element: <DemoDataPage /> },
           { path: '*', element: <NotFoundView /> },
         ],
       },
@@ -1293,6 +1317,7 @@ export const routes: RouteObject[] = [
           { path: 'ket-qua', element: <StudentResultsPage /> },
           { path: 'ket-qua/nhan-xet', element: <StudentReviewsPage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: 'du-lieu-mau', element: <DemoDataPage /> },
           { path: '*', element: <NotFoundView /> },
         ],
       },
@@ -1304,8 +1329,17 @@ export const routes: RouteObject[] = [
           </RequirePortal>
         ),
         children: [
-          { index: true, element: <PortalTabPage title="Trang chủ" stage={GD4} /> },
+          { index: true, element: <ParentHomePage /> },
+          { path: 'ket-qua', element: <ParentResultsPage /> },
+          { path: 'ket-qua/nhan-xet', element: <ParentResultsPage /> },
+          { path: 'hoc-phi', element: <ParentFeesPage /> },
+          { path: 'hoc-phi/:orderId', element: <ParentOrderPage /> },
+          { path: 'lich', element: <ParentSchedulePage /> },
+          { path: 'de-nghi', element: <ParentRequestsPage /> },
+          { path: 'de-nghi/moi', element: <ParentRequestNewPage /> },
+          { path: 'de-nghi/:ticketId', element: <ParentRequestDetailPage /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
+          { path: 'du-lieu-mau', element: <DemoDataPage /> },
           { path: '*', element: <NotFoundView /> },
         ],
       },

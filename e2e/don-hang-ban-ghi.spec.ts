@@ -66,7 +66,9 @@ test('Mở đơn từ BH-06; Nháp: thông tin chung, chưa có quản lý trự
       'true',
     );
   }
-  await expect(page.getByText('Stage chỉ đọc, đổi bằng nút bên dưới.')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Stage chỉ đọc, đổi bằng nút bên dưới.' }),
+  ).toBeVisible();
   // Khối thông tin: nhãn "Người duyệt" (không dùng "Quản lý cơ sở", "Trưởng cơ sở"), không có Hình thức thanh toán, Cơ sở thu tiền.
   // So canvas BH05: ba khối Thông tin chung, Người xử lý và cơ sở, Thanh toán (tiêu đề khối riêng).
   for (const name of ['Thông tin chung', 'Người xử lý và cơ sở', 'Thanh toán']) {

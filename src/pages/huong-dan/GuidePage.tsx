@@ -3,15 +3,21 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useLocation, useParams } from 'react-router';
+import { ButtonLink } from '../../ui/Button';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { TextField } from '../../ui/Field';
 import { GuideMarkdown } from './GuideMarkdown';
 import {
-  DEFAULT_SECTION,
-  GUIDE_SECTIONS,
+  defaultSectionFor,
+  sectionsFor,
+  type GuidePortal,
+  GUIDE_GROUPS,
+  GUIDE_SLUG_ALIASES,
   findSection,
   loadSource,
+  neighbours,
   searchGuide,
+  sectionLabel,
   type GuideSection,
 } from './guideIndex';
 import { outline, parseMarkdown, plainText, type Block } from './markdown';
@@ -50,13 +56,13 @@ function searchLines(blocks: Block[]) {
   return lines;
 }
 
-function SearchResults({ term }: { term: string }) {
+function SearchResults({ term, portal }: { term: string; portal: GuidePortal }) {
   const sources = useQuery({
-    queryKey: ['huong-dan', 'tat-ca'],
+    queryKey: ['huong-dan', 'tat-ca', portal],
     staleTime: GUIDE_STALE_MS,
     queryFn: async () =>
       Promise.all(
-        GUIDE_SECTIONS.map(async (section) => ({
+        sectionsFor(portal).map(async (section) => ({
           section,
           lines: searchLines(parseMarkdown(await loadSource(section))),
         })),
@@ -86,7 +92,7 @@ function SearchResults({ term }: { term: string }) {
       {hits.map((h, idx) => (
         <li key={idx} className="rounded-card border border-border bg-surface p-3">
           <Link
-            to={`/crm/huong-dan/${h.section.slug}${h.headingId ? `#${h.headingId}` : ''}`}
+            to={`/${portal}/huong-dan/${h.section.slug}${h.headingId ? `#${h.headingId}` : ''}`}
             className="font-semibold text-accent underline focus-ring"
           >
             {h.section.title}
@@ -99,11 +105,63 @@ function SearchResults({ term }: { term: string }) {
   );
 }
 
+/** Khối «Bạn là ai?» ở đầu hướng dẫn: mỗi vai một nút tới bài của vai đó. */
+function WhoAreYou({ portal }: { portal: GuidePortal }) {
+  const roles = sectionsFor(portal).filter((x) => x.roleLabel !== undefined);
+  return (
+    <section
+      aria-labelledby="ban-la-ai"
+      className="mb-4 rounded-card border border-border bg-surface-subtle p-card"
+    >
+      <h2 id="ban-la-ai" className="text-h3">
+        Bạn là ai? Bấm vào vai của bạn
+      </h2>
+      <ul className="mt-2 flex flex-wrap gap-2">
+        {roles.map((r) => (
+          <li key={r.slug}>
+            <ButtonLink to={`/${portal}/huong-dan/${r.slug}`} variant="secondary">
+              {r.roleLabel}
+            </ButtonLink>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** Cuối bài: bài trước và bài sau theo đúng thứ tự menu. */
+function PrevNext({ slug, portal }: { slug: string; portal: GuidePortal }) {
+  const { prev, next } = neighbours(slug, portal);
+  if (!prev && !next) return null;
+  return (
+    <nav
+      aria-label="Bài trước và bài sau"
+      className="mt-6 flex flex-wrap justify-between gap-2 border-t border-border pt-3"
+    >
+      {prev ? (
+        <Link to={`/${portal}/huong-dan/${prev.slug}`} className="text-accent underline focus-ring">
+          ‹ Bài trước: {sectionLabel(prev)}
+        </Link>
+      ) : (
+        <span />
+      )}
+      {next && (
+        <Link to={`/${portal}/huong-dan/${next.slug}`} className="text-accent underline focus-ring">
+          Bài sau: {sectionLabel(next)} ›
+        </Link>
+      )}
+    </nav>
+  );
+}
+
 export function GuidePage() {
   const { slug } = useParams();
   const location = useLocation();
+  const portal: GuidePortal = location.pathname.startsWith('/gv/') ? 'gv' : 'crm';
+  const first = defaultSectionFor(portal);
   const [term, setTerm] = useState('');
-  const section = findSection(slug);
+  const found = findSection(slug);
+  const section = found && sectionsFor(portal).includes(found) ? found : undefined;
   const { query, blocks } = useSectionBlocks(section);
   const searching = term.trim().length >= 2;
 
@@ -115,14 +173,16 @@ export function GuidePage() {
       ?.scrollIntoView({ block: 'start' });
   }, [location.hash, blocks]);
 
-  if (slug === undefined) return <Navigate to={`/crm/huong-dan/${DEFAULT_SECTION.slug}`} replace />;
+  if (slug !== undefined && GUIDE_SLUG_ALIASES[slug] !== undefined)
+    return <Navigate to={`/${portal}/huong-dan/${GUIDE_SLUG_ALIASES[slug]}`} replace />;
+  if (slug === undefined) return <Navigate to={`/${portal}/huong-dan/${first.slug}`} replace />;
   if (!section) {
     return (
       <StateView
         kind="not-found"
         title="Không có mục hướng dẫn này"
         actions={
-          <Link to={`/crm/huong-dan/${DEFAULT_SECTION.slug}`} className="underline focus-ring">
+          <Link to={`/${portal}/huong-dan/${first.slug}`} className="underline focus-ring">
             Về mục đầu
           </Link>
         }
@@ -144,20 +204,31 @@ export function GuidePage() {
             placeholder="Ví dụ: xếp lớp, phiếu thu"
           />
         </div>
-        <ul className="space-y-1">
-          {GUIDE_SECTIONS.map((s) => (
-            <li key={s.slug}>
-              <Link
-                to={`/crm/huong-dan/${s.slug}`}
-                onClick={() => setTerm('')}
-                aria-current={!searching && s.slug === section.slug ? 'page' : undefined}
-                className="touch-target focus-ring flex items-center rounded-control px-2 py-1.5 text-body hover:bg-hover aria-[current=page]:bg-hover aria-[current=page]:font-semibold"
-              >
-                {s.no}. {s.title}
-              </Link>
-            </li>
+        <div className="space-y-3">
+          {GUIDE_GROUPS.map((g) => (
+            <div key={g.key}>
+              <p className="px-2 pb-1 text-caption font-semibold uppercase text-fg-muted">
+                {g.title}
+              </p>
+              <ul className="space-y-1">
+                {sectionsFor(portal)
+                  .filter((x) => x.group === g.key)
+                  .map((x) => (
+                    <li key={x.slug}>
+                      <Link
+                        to={`/${portal}/huong-dan/${x.slug}`}
+                        onClick={() => setTerm('')}
+                        aria-current={!searching && x.slug === section.slug ? 'page' : undefined}
+                        className="touch-target focus-ring flex items-center rounded-control px-2 py-1.5 text-body hover:bg-hover aria-[current=page]:bg-hover aria-[current=page]:font-semibold"
+                      >
+                        {sectionLabel(x)}
+                      </Link>
+                    </li>
+                  ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </div>
       </nav>
 
       <main
@@ -165,7 +236,7 @@ export function GuidePage() {
         aria-live="polite"
       >
         {searching ? (
-          <SearchResults term={term.trim()} />
+          <SearchResults term={term.trim()} portal={portal} />
         ) : query.isPending ? (
           <Spinner label="Đang tải hướng dẫn…" />
         ) : query.isError ? (
@@ -182,7 +253,9 @@ export function GuidePage() {
         ) : (
           <div className="flex flex-col gap-4 xl:flex-row">
             <article className="min-w-0 flex-1">
+              {section.slug === first.slug && <WhoAreYou portal={portal} />}
               <GuideMarkdown blocks={blocks} />
+              <PrevNext slug={section.slug} portal={portal} />
             </article>
             {toc.length > 0 && (
               <aside
@@ -196,7 +269,7 @@ export function GuidePage() {
                     .map((t) => (
                       <li key={t.id}>
                         <Link
-                          to={`/crm/huong-dan/${section.slug}#${t.id}`}
+                          to={`/${portal}/huong-dan/${section.slug}#${t.id}`}
                           className="focus-ring hover:underline"
                         >
                           {t.text}

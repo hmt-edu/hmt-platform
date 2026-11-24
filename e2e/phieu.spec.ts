@@ -36,7 +36,7 @@ const completeButton = (page: Page) =>
 const toastText = (page: Page, text: string | RegExp) => page.getByText(text).first();
 const dialogOf = (page: Page, name: string | RegExp) => page.getByRole('dialog', { name });
 const actionMenu = async (page: Page, item: string | RegExp) => {
-  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('button', { name: 'Hành động', exact: true }).click();
   await page.getByRole('menuitem', { name: item }).click();
 };
 /** Mở ô chọn rồi chọn mục đầu tiên (danh mục thật, tên có thể đổi). */
@@ -151,7 +151,7 @@ test('Trang phiếu Chờ giáo viên chấm: thanh trạng thái chỉ đọc, 
     'aria-current',
     'step',
   );
-  await expect(page.getByText(/^Stage chỉ đọc/)).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Stage chỉ đọc/ })).toBeVisible();
   // Bước khác bị khoá: bấm báo lý do, không đổi.
   await stageBar(page)
     .getByRole('button', { name: /^Hoàn thành/ })
@@ -233,13 +233,15 @@ test('Phiếu Nháp: Đổi lịch, Sửa phòng và tên đề, Huỷ chọn l�
   await cancel.getByLabel('Ghi chú').fill('Phụ huynh báo bận');
   await cancel.getByRole('button', { name: 'Huỷ phiếu' }).click();
   await expect(toastText(page, 'Đã huỷ phiếu.')).toBeVisible();
-  await expect(page.getByText('Phiếu đã huỷ. Mở lại để đưa về Nháp.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Mở lại' })).toBeVisible();
-  await page.getByRole('button', { name: 'Mở lại' }).click();
+  await expect(
+    page.getByRole('button', { name: 'Phiếu đã huỷ. Mở lại để đưa về Nháp.' }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mở lại', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Mở lại', exact: true }).click();
   const reopen = dialogOf(page, 'Mở lại phiếu');
-  await expect(reopen.getByRole('button', { name: 'Mở lại' })).toBeDisabled();
+  await expect(reopen.getByRole('button', { name: 'Mở lại', exact: true })).toBeDisabled();
   await reopen.getByLabel(/^Lý do/).fill('Phụ huynh đổi ý');
-  await reopen.getByRole('button', { name: 'Mở lại' }).click();
+  await reopen.getByRole('button', { name: 'Mở lại', exact: true }).click();
   await expect(toastText(page, 'Đã mở lại phiếu về Nháp.')).toBeVisible();
   await expect(stageBar(page).getByRole('button', { name: /^Nháp/ })).toHaveAttribute(
     'aria-current',

@@ -154,10 +154,13 @@ const STUDENT_TABS: ShellTab[] = [
 
 const PARENT_TABS: ShellTab[] = [
   { to: '/ph', label: 'Trang chủ', icon: 'home', end: true },
-  { to: '/ph/tai-khoan', label: 'Tài khoản', icon: 'user' },
+  { to: '/ph/ket-qua', label: 'Kết quả', icon: 'results' },
+  { to: '/ph/hoc-phi', label: 'Học phí', icon: 'sales' },
+  { to: '/ph/lich', label: 'Lịch', icon: 'calendar' },
+  { to: '/ph/de-nghi', label: 'Đề nghị', icon: 'inbox' },
 ];
 
-/** Khung cổng phụ huynh (trang đích tạm của CHUNG-23: cổng PH-01.. làm ở giai đoạn sau). */
+/** Khung cổng phụ huynh (PH-01..05): thanh dưới 5 mục; Tài khoản mở từ hình đại diện ở thanh trên (khung không vẽ mục Tài khoản). */
 export function ParentShell() {
   return (
     <TabShell

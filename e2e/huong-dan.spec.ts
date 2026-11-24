@@ -36,3 +36,31 @@ test('Hướng dẫn: mục không có thì báo không có mục, có đường
   await page.getByRole('link', { name: 'Về mục đầu' }).click();
   await expect(page).toHaveURL(/\/crm\/huong-dan\/bat-dau$/);
 });
+
+test('Hướng dẫn: menu chia ba nhóm không trùng, «Bạn là ai?» dẫn tới bài của vai, có Bài trước/Bài sau, địa chỉ cũ chuyển sang mục mới (A-23-37)', async ({
+  page,
+}) => {
+  await enterAs(page, 'sale.cs5');
+  await page.goto('/crm/huong-dan');
+  const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
+  for (const group of ['Bắt đầu', 'Hướng dẫn theo vai trò', 'Tra cứu'])
+    await expect(nav.getByText(group, { exact: true })).toBeVisible();
+  // Không còn mục trùng: mỗi tên mục xuất hiện một lần.
+  const names = (await nav.getByRole('link').allTextContents()).map((t) => t.trim());
+  expect(new Set(names).size).toBe(names.length);
+  // Khối «Bạn là ai?»: bấm vai Kế toán thì sang bài của vai đó.
+  await expect(page.getByRole('heading', { name: /Bạn là ai/ })).toBeVisible();
+  await page
+    .getByRole('region', { name: /Bạn là ai/ })
+    .getByRole('link', { name: 'Kế toán', exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/crm\/huong-dan\/theo-vai-ke-toan$/);
+  // Cuối bài: Bài trước / Bài sau.
+  const pager = page.getByRole('navigation', { name: 'Bài trước và bài sau' });
+  await expect(pager.getByRole('link')).toHaveCount(2);
+  await pager.getByRole('link', { name: /Bài sau/ }).click();
+  await expect(page).not.toHaveURL(/theo-vai-ke-toan$/);
+  // Địa chỉ cũ (trước khi gộp menu) chuyển sang mục mới.
+  await page.goto('/crm/huong-dan/sale');
+  await expect(page).toHaveURL(/\/crm\/huong-dan\/theo-vai-tu-van$/);
+});

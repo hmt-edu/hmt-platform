@@ -1,8 +1,8 @@
-# 3. Hướng dẫn cho Kế toán (cổng CRM)
+# Vai: Kế toán (cổng CRM)
 
-Vai: **Kế toán**. Đọc `00-gioi-thieu.md` trước nếu bạn mới. Chữ trong dấu «…» là chữ trên màn thật; chỗ chèn ảnh ghi `[ẢNH: tên-kịch-bản]`, ảnh chụp sau trên staging bằng tài khoản giả. Dữ liệu trong ví dụ là giả.
+Vai: **Kế toán**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
-Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng và thu chi** (Đơn hàng, Phiếu thu, Khoản tiền vào, Công nợ, Phiếu chi, Số dư khách hàng, Chờ kế toán duyệt). Chỉ hiện mục bạn có quyền. Lần đầu đăng nhập bạn phải thiết lập **xác thực hai bước**.
+Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng và thu chi** (Đơn hàng, Phiếu thu, Khoản tiền vào, Công nợ, Phiếu chi, Số dư khách hàng, Chờ kế toán duyệt). Chỉ hiện mục bạn có quyền. 
 
 **Nguyên tắc tiền (nhớ kỹ):**
 
@@ -55,10 +55,11 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 
 | Mã | Làm gì |
 |---|---|
-| `HMT_KHONG_CO_QUYEN` | tài khoản không phải Kế toán, hoặc chưa qua bước hai bước |
+| `HMT_KHONG_CO_QUYEN` | tài khoản không phải Kế toán |
 | `HMT_CHI_KE_TOAN_DUYET_TIEN` | chỉ vai Kế toán duyệt tiền (Admin và vai khác không duyệt) |
 | Người duyệt quản lý trùng người duyệt kế toán | hệ thống chặn; nhờ người khác duyệt |
 
+- **Video (18 giây: tìm phiếu Chờ kế toán, Duyệt hoặc Từ chối):** [VIDEO: huong-dan-ke-toan-phieu-thu]
 - **Ảnh:** [ẢNH: phieu-thu-cho-ke-toan], [ẢNH: phieu-thu-duyet], [ẢNH: phieu-thu-tu-choi]
 
 ## 4. Khoản tiền vào và hoàn tác khoản
@@ -118,4 +119,4 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 
 ## Khi gặp lỗi
 
-Lỗi từ hệ thống hiện thẳng câu tiếng Việt trên màn. Cần báo: chụp màn hình, ghi mã phiếu và câu lỗi, gửi Trưởng cơ sở. Việc của Trưởng cơ sở xem `03-truong-co-so.md`.
+Lỗi từ hệ thống hiện thẳng câu tiếng Việt trên màn. Cần báo: chụp màn hình, ghi mã phiếu và câu lỗi, gửi Trưởng cơ sở. Việc của Trưởng cơ sở xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so).

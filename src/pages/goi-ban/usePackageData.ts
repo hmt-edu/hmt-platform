@@ -4,6 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { fetchRows, rpc, useDb } from '../../lib/db';
+import { sanitizeSearchTerm } from './packageLogic';
 
 export type PackageRow = {
   id: string;
@@ -35,7 +36,7 @@ export function usePackagePage(filters: PackageFilters, offset: number, limit: n
         .select(COLUMNS, { count: 'exact' })
         .order('is_active', { ascending: false })
         .order('code');
-      const q = filters.q.trim().replace(/[%,()]/g, ' ');
+      const q = sanitizeSearchTerm(filters.q);
       if (q !== '') query = query.or(`code.ilike.%${q}%,name.ilike.%${q}%,legacy_ref.ilike.%${q}%`);
       if (filters.status !== '') query = query.eq('is_active', filters.status === 'active');
       if (filters.type !== '') query = query.eq('package_type_code', filters.type);

@@ -33,6 +33,29 @@ export function useTaskFields(enabled: boolean) {
   });
 }
 
+/** Lý do hoàn phí (danh mục REFUND_REASON) cho phiếu Hoàn học phí; danh mục nhỏ, đọc một lần. */
+export function useRefundReasons(enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['refund-reasons'],
+    enabled,
+    staleTime: Infinity,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .schema('app')
+        .from('catalog_item')
+        .select('code, name')
+        .eq('catalog_code', 'REFUND_REASON')
+        .eq('is_active', true)
+        .order('sort_order')
+        .order('name')
+        .returns<{ code: string; name: string }[]>();
+      if (error) throw errorOf(error);
+      return data;
+    },
+  });
+}
+
 /** Tạo phiếu ở bước Nháp (app.create_ticket_task); trả id và mã phiếu. */
 export function createTicketTask(
   supabase: SupabaseClient,

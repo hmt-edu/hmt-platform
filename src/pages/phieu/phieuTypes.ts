@@ -48,6 +48,9 @@ export type TaskDetail = {
     note?: string;
     stop_date?: string;
     money_mode?: string;
+    /** Phiếu Hoàn học phí: hình thức hoàn (TOAN_BO, MOT_PHAN) và số giờ hoàn (chỉ khi một phần). */
+    kind?: string;
+    hours?: number;
   };
   result: {
     entity?: string;

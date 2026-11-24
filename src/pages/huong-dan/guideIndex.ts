@@ -1,53 +1,153 @@
 // Danh mục tài liệu Hướng dẫn (A-23-30). Nội dung lấy từ docs/huong-dan/*.md, nhúng lúc build (không máy chủ, không dịch vụ ngoài).
 // Muốn thêm hay đổi thứ tự mục: sửa mảng GUIDE_SECTIONS (slug là đường dẫn /crm/huong-dan/<slug>).
 
-export type GuideSection = { slug: string; no: number; title: string; file: string };
+export type GuideGroup = 'bat-dau' | 'vai' | 'tra-cuu';
+export type GuideSection = {
+  slug: string;
+  /** Số thứ tự hiện trước tên (chỉ nhóm «Bắt đầu»); các nhóm khác không đánh số. */
+  no?: string;
+  title: string;
+  file: string;
+  group: GuideGroup;
+  /** Mục dành cho một vai: dùng cho khối «Bạn là ai?» ở đầu hướng dẫn. */
+  roleLabel?: string;
+};
 
-// Thứ tự: 0 giới thiệu (mục mở đầu, slug bat-dau là đường mặc định), 1 bắt đầu nhanh, 2 thao tác cơ bản, 3 theo vai, 4 từ điển, 5 hỏi đáp,
-// rồi các hướng dẫn chi tiết theo vai (bản đầu, còn dùng). Mọi file .md trong docs/huong-dan (trừ README, CHUP-ANH) phải có ở đây: guideIndex.test.ts giữ.
+/** Tiêu đề nhóm trên menu (chữ nhỏ, không bấm được). */
+export const GUIDE_GROUPS: { key: GuideGroup; title: string }[] = [
+  { key: 'bat-dau', title: 'Bắt đầu' },
+  { key: 'vai', title: 'Hướng dẫn theo vai trò' },
+  { key: 'tra-cuu', title: 'Tra cứu' },
+];
+
+// MỘT danh sách, không trùng. Thứ tự ở đây là thứ tự menu và thứ tự «Bài trước / Bài sau». Slug bat-dau là đường mặc định.
+// Mọi file .md trong docs/huong-dan (trừ README, CHUP-ANH) phải có ở đây: guideIndex.test.ts giữ.
 export const GUIDE_SECTIONS: GuideSection[] = [
-  { slug: 'bat-dau', no: 0, title: 'Giới thiệu hệ thống', file: '00-gioi-thieu.md' },
-  { slug: 'bat-dau-nhanh', no: 1, title: 'Bắt đầu nhanh', file: '01-bat-dau-nhanh.md' },
+  {
+    slug: 'bat-dau',
+    no: '0',
+    title: 'Giới thiệu hệ thống',
+    file: '00-gioi-thieu.md',
+    group: 'bat-dau',
+  },
+  {
+    slug: 'bat-dau-nhanh',
+    no: '1',
+    title: 'Bắt đầu nhanh',
+    file: '01-bat-dau-nhanh.md',
+    group: 'bat-dau',
+  },
   {
     slug: 'thao-tac-co-ban',
-    no: 2,
+    no: '2',
     title: 'Thao tác cơ bản dùng chung',
     file: '02-thao-tac-co-ban.md',
+    group: 'bat-dau',
   },
   {
     slug: 'theo-vai-tu-van',
-    no: 3,
-    title: 'Theo vai: Tư vấn tuyển sinh',
+    title: 'Vai: Tư vấn tuyển sinh',
     file: '03-tu-van-tuyen-sinh.md',
+    group: 'vai',
+    roleLabel: 'Tư vấn tuyển sinh',
   },
-  { slug: 'theo-vai-cskh', no: 4, title: 'Theo vai: CSKH và vận hành lớp', file: '03-cskh.md' },
-  { slug: 'theo-vai-ke-toan', no: 5, title: 'Theo vai: Kế toán', file: '03-ke-toan.md' },
+  {
+    slug: 'theo-vai-cskh',
+    title: 'Vai: CSKH và vận hành lớp',
+    file: '03-cskh.md',
+    group: 'vai',
+    roleLabel: 'CSKH và vận hành lớp',
+  },
+  {
+    slug: 'theo-vai-ke-toan',
+    title: 'Vai: Kế toán',
+    file: '03-ke-toan.md',
+    group: 'vai',
+    roleLabel: 'Kế toán',
+  },
   {
     slug: 'theo-vai-truong-co-so',
-    no: 6,
-    title: 'Theo vai: Trưởng cơ sở',
+    title: 'Vai: Trưởng cơ sở',
     file: '03-truong-co-so.md',
+    group: 'vai',
+    roleLabel: 'Trưởng cơ sở',
   },
-  { slug: 'tu-dien', no: 7, title: 'Từ điển thuật ngữ', file: '04-tu-dien.md' },
-  { slug: 'hoi-dap', no: 8, title: 'Hỏi đáp và lỗi thường gặp', file: '05-hoi-dap.md' },
   {
-    slug: 'chung',
-    no: 9,
-    title: 'Hướng dẫn chung (đăng nhập, menu, tìm và lọc)',
-    file: 'chung.md',
+    slug: 'theo-vai-hoc-sinh',
+    title: 'Vai: Học sinh',
+    file: '03-hoc-sinh.md',
+    group: 'vai',
+    roleLabel: 'Học sinh',
   },
-  { slug: 'sale', no: 10, title: 'Sale và Tuyển sinh', file: 'sale.md' },
-  { slug: 'cham-soc-khach-hang', no: 11, title: 'Chăm sóc khách hàng', file: 'cskh.md' },
-  { slug: 'ke-toan', no: 12, title: 'Kế toán', file: 'ke-toan.md' },
-  { slug: 'truong-co-so', no: 13, title: 'Trưởng cơ sở', file: 'truong-co-so.md' },
-  { slug: 'giao-vien', no: 14, title: 'Giáo viên', file: 'giao-vien.md' },
-  { slug: 'quan-tri', no: 15, title: 'Quản trị', file: 'quan-tri.md' },
+  {
+    slug: 'theo-vai-phu-huynh',
+    title: 'Vai: Phụ huynh',
+    file: '03-phu-huynh.md',
+    group: 'vai',
+    roleLabel: 'Phụ huynh',
+  },
+  {
+    slug: 'giao-vien',
+    title: 'Vai: Giáo viên',
+    file: 'giao-vien.md',
+    group: 'vai',
+    roleLabel: 'Giáo viên',
+  },
+  {
+    slug: 'quan-tri',
+    title: 'Vai: Quản trị',
+    file: 'quan-tri.md',
+    group: 'vai',
+    roleLabel: 'Quản trị',
+  },
+  { slug: 'tu-dien', title: 'Từ điển thuật ngữ', file: '04-tu-dien.md', group: 'tra-cuu' },
+  { slug: 'hoi-dap', title: 'Hỏi đáp và lỗi thường gặp', file: '05-hoi-dap.md', group: 'tra-cuu' },
 ];
+
+export type GuidePortal = 'crm' | 'gv';
+
+/** Cổng giáo viên (A-23-38) chỉ hiện ba bài: thao tác cơ bản, bài vai Giáo viên, hỏi đáp. */
+const GV_SLUGS = ['thao-tac-co-ban', 'giao-vien', 'hoi-dap'];
+
+/** Các mục hiện ở một cổng, giữ đúng thứ tự menu chung. */
+export const sectionsFor = (portal: GuidePortal): GuideSection[] =>
+  portal === 'gv' ? GUIDE_SECTIONS.filter((s) => GV_SLUGS.includes(s.slug)) : GUIDE_SECTIONS;
+
+/** Mục mở đầu tiên của cổng (cổng CRM: giới thiệu; cổng Giáo viên: bài vai Giáo viên). */
+export const defaultSectionFor = (portal: GuidePortal): GuideSection =>
+  portal === 'gv' ? GUIDE_SECTIONS.find((s) => s.slug === 'giao-vien')! : DEFAULT_SECTION;
+
+/** Địa chỉ cũ (trước khi gộp menu) đổi sang mục mới, để liên kết đã gửi cho người dùng không chết. */
+export const GUIDE_SLUG_ALIASES: Record<string, string> = {
+  chung: 'bat-dau-nhanh',
+  sale: 'theo-vai-tu-van',
+  'cham-soc-khach-hang': 'theo-vai-cskh',
+  'ke-toan': 'theo-vai-ke-toan',
+  'truong-co-so': 'theo-vai-truong-co-so',
+};
+
+/** Tên mục để hiện: «0. Giới thiệu hệ thống» (có số) hoặc «Vai: Kế toán» (không số). */
+export const sectionLabel = (s: GuideSection) =>
+  s.no !== undefined ? `${s.no}. ${s.title}` : s.title;
+
+/** Mục liền trước và liền sau theo đúng thứ tự menu. */
+export function neighbours(
+  slug: string,
+  portal: GuidePortal = 'crm',
+): { prev?: GuideSection; next?: GuideSection } {
+  const list = sectionsFor(portal);
+  const i = list.findIndex((s) => s.slug === slug);
+  if (i < 0) return {};
+  const prev = list[i - 1];
+  const next = list[i + 1];
+  return { ...(prev ? { prev } : {}), ...(next ? { next } : {}) };
+}
 
 export const DEFAULT_SECTION = GUIDE_SECTIONS[0]!;
 
 export function findSection(slug: string | undefined): GuideSection | undefined {
-  return GUIDE_SECTIONS.find((s) => s.slug === slug);
+  const target = slug !== undefined ? (GUIDE_SLUG_ALIASES[slug] ?? slug) : slug;
+  return GUIDE_SECTIONS.find((s) => s.slug === target);
 }
 
 const loaders = import.meta.glob('../../../docs/huong-dan/*.md', {

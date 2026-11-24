@@ -11,10 +11,14 @@ export interface CorsConfig {
   allowedOrigins: string[];
   /** Chỉ bật trên thử nghiệm (biến HMT_ALLOW_STAGING_PREVIEWS=true). */
   allowStagingPreviews: boolean;
+  /** Nhận nguồn localhost (biến HMT_ALLOW_LOCAL_ORIGINS=true): chỉ local và thử nghiệm; bản chạy thật KHÔNG đặt (bảo mật A-23-36). */
+  allowLocalOrigins?: boolean;
 }
 
 export function isOriginAllowed(origin: string, config: CorsConfig): boolean {
-  if ([...LOCAL_ORIGINS, ...config.allowedOrigins].includes(origin)) return true;
+  if (config.allowedOrigins.includes(origin)) return true;
+  // Luật: nguồn localhost chỉ nhận khi bật cờ riêng (local, thử nghiệm); chạy thật không đặt cờ nên không nhận.
+  if (config.allowLocalOrigins === true && LOCAL_ORIGINS.includes(origin)) return true;
   // Luật: trang xem trước của thử nghiệm chỉ được gọi Edge Function thử nghiệm, không gọi bản chạy thật.
   return config.allowStagingPreviews && STAGING_PREVIEW.test(origin);
 }
