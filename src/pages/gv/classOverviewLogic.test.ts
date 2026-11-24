@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   attendanceText,
   homeworkSessions,
+  nextSession,
   scoreText,
   shortDate,
   slotText,
@@ -49,5 +50,26 @@ describe('GV-11: chữ hiển thị', () => {
     expect(
       homeworkSessions([ses('a', 'Bài 1'), ses('b', null), ses('c', '   ')]).map((x) => x.id),
     ).toEqual(['a']);
+  });
+});
+
+describe('nextSession (GV-11 Buổi tiếp theo)', () => {
+  const mk = (date: string, status: string) =>
+    ({ id: date + status, session_date: date, status_code: status }) as never;
+  it('bỏ buổi Huỷ và Hoàn thành, lấy buổi còn dạy sớm nhất', () => {
+    const list = [
+      mk('2026-12-07', 'HUY_KHONG_PHI'),
+      mk('2026-12-09', 'NHAP'),
+      mk('2026-11-30', 'DONE'),
+    ];
+    expect(nextSession(list, '2026-11-30')?.session_date).toBe('2026-12-09');
+  });
+  it('buổi hôm nay chưa chốt vẫn là buổi tiếp theo; không còn buổi thì không có', () => {
+    expect(nextSession([mk('2026-11-30', 'DA_CHOT')], '2026-11-30')?.session_date).toBe(
+      '2026-11-30',
+    );
+    expect(
+      nextSession([mk('2026-11-29', 'NHAP'), mk('2026-12-01', 'HUY_CO_PHI')], '2026-11-30'),
+    ).toBeUndefined();
   });
 });

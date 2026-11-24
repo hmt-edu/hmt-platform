@@ -81,6 +81,19 @@ export function homeworkSessions(sessions: Session[]): Session[] {
   return sessions.filter((x) => (x.homework_text ?? '').trim() !== '');
 }
 
+/**
+ * Buổi tiếp theo của lớp (GV-11): buổi còn dạy (Nháp hoặc Đã chốt, không Huỷ, không Hoàn thành) từ hôm nay trở đi, sớm nhất.
+ * `todayKey` là ngày theo giờ Việt Nam (yyyy-mm-dd), không phải ngày UTC.
+ */
+export function nextSession(sessions: Session[], todayKey: string): Session | undefined {
+  return sessions
+    .filter(
+      (x) =>
+        (x.status_code === 'NHAP' || x.status_code === 'DA_CHOT') && x.session_date >= todayKey,
+    )
+    .sort((a, b) => a.session_date.localeCompare(b.session_date))[0];
+}
+
 /** "24/10" từ yyyy-mm-dd */
 export function shortDate(dateKey: string): string {
   return `${dateKey.slice(8, 10)}/${dateKey.slice(5, 7)}`; // allow-number: cắt chuỗi yyyy-mm-dd
