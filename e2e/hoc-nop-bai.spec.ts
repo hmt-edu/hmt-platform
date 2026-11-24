@@ -97,7 +97,7 @@ test('HT-04: chọn quá số trang tối đa của cả bài thì bị chặn, 
   await stub(page, { maxPages: 2 });
   await openAssignment(page);
   await page.getByLabel('Chọn tệp bài làm').setInputFiles([png(1), png(2), png(3)]);
-  await expect(page.getByText(/tối đa 2 tệp/)).toBeVisible();
+  await expect(page.getByText(/Mỗi bài nộp tối đa 2 trang\./)).toBeVisible();
   await expect(page.getByText(/trang đã chọn/)).toHaveCount(0);
 });
 

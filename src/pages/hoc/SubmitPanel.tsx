@@ -86,7 +86,12 @@ export function SubmitPanel({
     const next = [...picked.map((p) => p.file), ...incoming];
     const errors = validateBatch(next, limits);
     if (errors.length > 0) {
-      setProblems(errors.map((e) => e.message));
+      // Giới hạn ở đây là của CẢ BÀI (số trang), không phải số tệp mỗi lần tải: đổi câu cho đúng nghĩa.
+      setProblems(
+        errors.map((e) =>
+          e.code === 'QUA_NHIEU_TEP' ? `Mỗi bài nộp tối đa ${limits.maxCount} trang.` : e.message,
+        ),
+      );
       return;
     }
     setProblems([]);
