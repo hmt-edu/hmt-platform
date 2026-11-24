@@ -11,10 +11,10 @@ cap_nhat: 2026-11-24
 # Duyệt phiếu thu: bước quản lý
 
 **Làm xong bạn có:** phiếu thu chuyển sang «Chờ kế toán», hoặc về Nháp kèm lý do từ chối.
-**Ai làm:** người duyệt bước quản lý: quản lý trực tiếp của người lập phiếu; người lập chưa có quản lý trực tiếp thì Trưởng cơ sở (cơ sở nhiều Trưởng cơ sở thì ai duyệt trước có hiệu lực). **Màn:** Phiếu thu → «Chờ tôi duyệt».
+**Ai làm:** người duyệt bước quản lý: quản lý trực tiếp của người lập phiếu; người lập chưa có quản lý trực tiếp thì Trưởng cơ sở (cơ sở nhiều Trưởng cơ sở thì ai duyệt trước có hiệu lực). **Màn:** Việc chờ tôi duyệt.
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Phiếu hiện ở «Việc chờ tôi duyệt» của bạn (tình trạng «Đã gửi»).
+- [ ] Phiếu hiện ở «Việc chờ tôi duyệt» của bạn (tình trạng «Đã gửi»); mở phiếu thấy nút «Duyệt (chuyển Kế toán)».
 - [ ] Bạn **không phải người lập** phiếu này.
 
 ## Cần nhớ
@@ -22,10 +22,11 @@ cap_nhat: 2026-11-24
 - Bạn duyệt là xác nhận phiếu **ghi đúng** số tiền, đúng đơn, đúng phần chia. Việc đối chiếu sao kê là của Kế toán.
 
 ## Các bước
-1. Vào **Phiếu thu**, lọc **«Chờ tôi duyệt»**, mở phiếu. [CHƯA CHỤP: chờ tài khoản staging]
-2. Kiểm «Số tiền», chứng từ đính kèm, «Chia tiền vào dòng đơn» khớp đơn. [CHƯA CHỤP]
-3. Đồng ý: duyệt. *Bạn thấy:* phiếu sang «Chờ kế toán». [CHƯA CHỤP]
-4. Không đồng ý: bấm **«Từ chối phiếu thu»**, ghi lý do. *Bạn thấy:* phiếu về Nháp, lý do ở dòng thời gian. [CHƯA CHỤP]
+1. Vào **Việc chờ tôi duyệt**, bấm mã phiếu «PT-…» (hoặc **Phiếu thu**, lọc «Chờ tôi duyệt»). [ẢNH: tc2-b1]
+2. Mở phiếu: thanh trên có hai nút **«Duyệt (chuyển Kế toán)»** và **«Từ chối»**. Kiểm «Số tiền», «Hình thức», «Ngày nhận», «Người lập», đơn hàng và tab «Chia về các dòng đơn». [ẢNH: tc2-b2]
+3. Đồng ý: bấm **«Duyệt (chuyển Kế toán)»**. Hộp «Duyệt phiếu thu … (quản lý)» tóm tắt phiếu; tích ô **«Đã kiểm tra số tiền, hình thức nhận và đơn hàng của phiếu»** rồi bấm **«Xác nhận duyệt»** («Quay lại» để thôi). [ẢNH: tc2-b3]
+   *Bạn thấy:* thông báo «Đã duyệt, chuyển Kế toán.», tình trạng **Chờ kế toán**, dòng thời gian ghi «Quản lý duyệt». Chưa sinh khoản tiền vào, chưa cấp giờ: chỉ khi Kế toán duyệt. [ẢNH: tc2-b4]
+4. Không đồng ý: bấm **«Từ chối»** (ở thanh trên hoặc nút «Từ chối…» trong hộp duyệt) và ghi lý do. *Bạn thấy:* phiếu về Nháp, lý do ở dòng thời gian.
 
 ## Sau bước này
 - **Ai làm tiếp:** Kế toán duyệt bước cuối (bài «Kế toán duyệt phiếu thu»). Bị từ chối thì người lập sửa và trình lại.
