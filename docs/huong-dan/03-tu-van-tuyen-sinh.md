@@ -28,10 +28,10 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiể
 | Khách hàng tiềm năng | khách có nhu cầu thật |
 
 4. Menu «Hành động»: «Giao người phụ trách» (đổi người chăm), «Gộp trùng» (một khách có hai hồ sơ), «Hoàn tác» (hoàn tác thao tác vừa làm khi còn cho phép).
-5. Bấm **«Lên lịch hẹn»** để hẹn gọi hoặc hẹn gặp (xem bài 3). Khi khách là «Khách hàng tiềm năng», bấm **«Tạo cơ hội»**.
+5. Bấm **«Lên lịch hẹn»** để hẹn gọi hoặc hẹn gặp (xem bài 3). Nút **«Tạo cơ hội»** chỉ bấm được khi lead ở nhóm con **«Đủ điều kiện tạo cơ hội»** (C4C). Lead ở C1 đến C3 hoặc C4A, C4B thì nút mờ kèm lý do; khi đổi sang giai đoạn C2, C3, C4 bạn phải chọn một nhóm con.
 
 - **Kết quả:** lead đúng giai đoạn; lịch hẹn hiện ở khối «Lịch hẹn»; cơ hội mới gắn với lead.
-- **Lỗi thường gặp:** «Số điện thoại này đã có hồ sơ» là trùng số: xem hồ sơ cũ rồi «Gộp trùng», hoặc «Vẫn dùng số này» khi thật sự hai người. Nút «Tạo cơ hội» mờ kèm lý do: rê chuột đọc lý do và bổ sung phần còn thiếu. Báo «không có quyền» nghĩa là khách thuộc cơ sở khác.
+- **Lỗi thường gặp:** «Số điện thoại này đã có hồ sơ» là trùng số: xem hồ sơ cũ rồi «Gộp trùng», hoặc «Vẫn tạo mới» (ở hộp báo trùng khi tạo lead) khi thật sự hai người. Khi bạn **sửa** số điện thoại của lead có sẵn, hộp báo trùng có nút «Vẫn dùng số này». Nút «Tạo cơ hội» mờ kèm lý do: rê chuột đọc lý do và bổ sung phần còn thiếu. Báo «không có quyền» nghĩa là khách thuộc cơ sở khác.
 - **Video (24 giây: lead, giai đoạn, cơ hội, báo giá, lịch hẹn):** [VIDEO: huong-dan-tu-van-tong-quan]
 - **Ảnh:** [ẢNH: lead-ds], [ẢNH: lead-ban-ghi], [ẢNH: lead-giai-doan], [ẢNH: lead-tao-co-hoi]
 
@@ -42,7 +42,7 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiể
 1. Vào **Cơ hội**, mở một cơ hội. Thanh giai đoạn ở đầu bản ghi cho biết đang ở đâu; bấm giai đoạn kế để chuyển (hộp thoại «Chuyển sang …» hỏi thêm khi cần).
 2. Các giai đoạn theo thứ tự: **Khách hàng mới → Chưa liên hệ được → Không có nhu cầu → Khách hàng tiềm năng → Đồng ý tham gia test → Đã tham gia test → Tư vấn → Đăng ký học**. Mỗi giai đoạn có giai đoạn con để ghi chi tiết (ví dụ «Bận gọi lại sau», «Tiềm năng, cần tư vấn thêm», «Cần đặt lịch tư vấn»).
 3. Từ «Đồng ý tham gia test» trở đi phải có **tên và năm sinh học sinh**; thiếu thì hộp thoại báo ô còn trống, điền rồi chuyển lại.
-4. «Đã tham gia test» do hệ thống tự chuyển khi phiếu kiểm tra «Hoàn thành»; bạn chỉ chọn giai đoạn con học lực (xuất sắc, tốt, khá, trung bình, yếu) sau khi có kết quả.
+4. «Đã tham gia test» do hệ thống tự chuyển: ngay khi phiếu kiểm tra sang «Chờ giáo viên chấm» (em đã nộp bài), cơ hội lên giai đoạn này với nhóm con «chưa có kết quả test»; khi phiếu «Hoàn thành», nhóm con thành «có kết quả test, cần phân loại». Bạn chỉ chọn nhóm con học lực (xuất sắc, tốt, khá, trung bình, yếu) sau khi có kết quả.
 5. Muốn sang «Tư vấn» hoặc «Đăng ký học» mà chưa có phiếu kiểm tra hoàn thành: hộp thoại bắt chọn **lý do bỏ qua test**. Còn phiếu kiểm tra đang dở thì bị chặn, hoàn thành hoặc huỷ phiếu đó trước.
 6. «Đăng ký học» có giai đoạn con (PH đặt cọc, PH thanh toán chia để trả, PH hoàn thành 100% học phí) và **không hoàn tác**: hộp thoại yêu cầu xác nhận. Giai đoạn con «PH hoàn thành 100% học phí» do hệ thống nâng khi thu đủ tiền.
 7. Các nút liên kết có số đếm: «Lead gốc», «Phụ huynh», «Lịch hẹn», «Kiểm tra», «Báo giá», «Đơn hàng». Nút số 0 và chưa dùng được thì mờ.
@@ -84,12 +84,14 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiể
 
 **Mục tiêu:** chốt đơn từ báo giá, chọn lớp cho từng dòng, trình người duyệt.
 
-1. Từ cơ hội bấm **«Tạo đơn hàng»** (hoặc chuyển báo giá thành đơn).
+**Thứ tự thật ở cơ sở:** phụ huynh đóng tiền trước (tư vấn viên thu, không có biên nhận in cho phụ huynh), rồi bạn chuyển cơ hội sang **«Đăng ký học» (L8)**, rồi mới lập đơn trên hệ thống. Đơn từ cơ hội **chỉ lập được khi cơ hội đang ở L8**; chưa ở L8 thì nút «Tạo đơn hàng» mờ.
+
+1. Khi cơ hội đã ở L8, bấm **«Tạo đơn hàng»** (hoặc chuyển báo giá thành đơn).
 2. Ở «Dòng đơn»: chọn gói, số lượng, điều khoản thanh toán; mỗi dòng bấm **«Chọn lớp»** để chọn lớp (chỉ lớp đã duyệt, còn chỗ, đúng môn, khối, cơ sở) và buổi hoặc ngày vào lớp.
-3. Lưu đơn, rồi bấm **«Trình duyệt»**. Đơn đi cho người duyệt đã chốt.
+3. Lưu đơn, rồi bấm **«Trình duyệt»**. Đơn đi cho **quản lý trực tiếp của bạn** duyệt (không nhất thiết là Trưởng cơ sở; Trưởng cơ sở lập đơn thì tự duyệt bước này).
 4. Khi đơn «Đã duyệt», bấm «Tạo phiếu thu» để thu tiền.
 
-- **Kết quả:** đơn đi Nháp → Đã trình → Đã duyệt; sau khi thu đủ và duyệt phiếu thu, mỗi dòng sinh một ghi danh để CSKH xếp lớp.
+- **Kết quả:** đơn đi Nháp → Đã trình → Đã duyệt; khi Kế toán duyệt phiếu thu mà tiền đã vào từ mức **cọc tối thiểu** trở lên, mỗi dòng sinh một ghi danh để CSKH xếp lớp (không cần thu đủ 100%).
 - **Lỗi thường gặp:** «Chưa trình được» hoặc «Có em chưa đủ thông tin»: điền đủ thông tin học sinh ở dòng đơn rồi trình lại (hoặc bấm «Vẫn trình» nếu hệ thống cho phép). Lớp không hiện trong danh sách là hết chỗ hoặc sai môn, khối: chọn lớp khác. Không thấy «Huỷ đơn»: chỉ người lập huỷ đơn Nháp; đơn đã trình do người duyệt huỷ; đơn đã có phiếu thu phải qua ticket hoàn tiền.
 - **Ảnh:** [ẢNH: don-hang-dong-don], [ẢNH: don-hang-chon-lop], [ẢNH: don-hang-trinh]
 
@@ -102,7 +104,7 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiể
 3. Lưu (Nháp), rồi bấm **«Trình quản lý»**.
 4. Nếu bị «Từ chối phiếu thu» (phiếu về Nháp) thì sửa theo lý do rồi trình lại. Bấm «Huỷ phiếu thu» khi nhập nhầm (chỉ phiếu chưa duyệt).
 
-- **Kết quả:** phiếu đi hai bước duyệt (Trưởng cơ sở rồi Kế toán); duyệt xong sinh khoản tiền vào và ghi danh.
+- **Kết quả:** phiếu đi hai bước duyệt (quản lý trực tiếp của người lập rồi Kế toán); duyệt xong sinh khoản tiền vào và ghi danh.
 - **Lỗi thường gặp:** số tiền vượt phần còn phải thu thì báo tại ô. Phiếu đã duyệt không sửa được; muốn sửa phải để Kế toán đảo khoản.
 - **Ảnh:** [ẢNH: phieu-thu-tao], [ẢNH: phieu-thu-trinh]
 
