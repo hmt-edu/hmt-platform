@@ -32,16 +32,19 @@ create table app.stored_file (
 );
 comment on table app.stored_file is 'Sổ tệp ở kho tệp (khoá tệp + cờ). Chỉ Edge Function ghi (khoá dịch vụ); đọc theo quyền xem bài giao.';
 
--- Chỉ mục (lý do): lớp + thời điểm cho danh sách theo lớp; bài giao và bài nộp cho khoá ngoại và màn chấm; học sinh cho việc dọn theo hạng;
--- (bài, học sinh, mã băm) duy nhất khi còn dùng: chặn nộp trùng; delete_after cho việc dọn hằng đêm; CHO_TAI cho dọn tệp tải dở.
-create index stored_file_class_created_idx on app.stored_file (class_id, created_at);
+-- Chỉ mục (lý do từng cái; DB Free 500 MB nên chỉ giữ cái cần, F-23-50):
+--  - khoá chính, storage_key duy nhất (có sẵn): tra theo id và theo khoá tệp.
+--  - stored_file_assignment_idx: khoá ngoại bài giao, và điều kiện RLS (lms_assignment_visible) chạy theo cột này.
+--  - stored_file_submission_idx: khoá ngoại bài nộp, màn chấm lấy tệp theo bài nộp (một phần: chỉ dòng có bài nộp).
+--  - stored_file_dedup_uq: duy nhất (bài, học sinh, mã băm) khi chưa DA_XOA: chặn nộp trùng; cũng phục vụ tra theo học sinh trong một bài.
+--  - stored_file_due_idx: việc dọn hằng đêm tìm tệp tới hạn delete_after (một phần: chỉ DANG_DUNG).
+--  - stored_file_purge_idx: việc dọn dòng DA_XOA cũ theo hạn file_log_keep_days (một phần: chỉ DA_XOA).
+-- Bỏ so với bản đầu: (lớp, thời điểm), học sinh, cơ sở, CHO_TAI: bảng nhỏ, việc dọn tệp tải dở quét theo trạng thái trên dữ liệu ít; thêm khi đo thấy chậm.
 create index stored_file_assignment_idx on app.stored_file (assignment_id);
 create index stored_file_submission_idx on app.stored_file (submission_id) where submission_id is not null;
-create index stored_file_student_idx on app.stored_file (student_id) where student_id is not null;
-create index stored_file_branch_idx on app.stored_file (branch_id);
 create unique index stored_file_dedup_uq on app.stored_file (assignment_id, student_id, sha256) where kind = 'BAI_NOP' and status <> 'DA_XOA';
 create index stored_file_due_idx on app.stored_file (delete_after) where status = 'DANG_DUNG';
-create index stored_file_pending_idx on app.stored_file (created_at) where status = 'CHO_TAI';
+create index stored_file_purge_idx on app.stored_file (cleaned_at) where status = 'DA_XOA';
 select app.apply_standard('app.stored_file');
 
 -- RLS: đọc theo quyền xem bài giao (cùng luật bảng LMS, 597). Học sinh và phụ huynh KHÔNG đọc trực tiếp: cổng đi qua Edge Function file-view-url
@@ -59,10 +62,12 @@ insert into app.setting_def (key, name, value_type, unit, min_value, max_value, 
    'Học sinh đã Dừng học quá số ngày này: ảnh vào hạng 1 (xoá, không xuất Drive). Quay lại trong hạn thì thoát hạng 1.'),
   ('file_cleanup_dry_run', 'Việc dọn tệp chỉ chạy thử', 'BOOL', null, null, null, 'true', false, 'HOC_TAP', 'F-23-46',
    'Bật: việc dọn hằng đêm chỉ liệt kê, chưa xoá. Admin tắt khi đã kiểm danh sách.'),
-  ('file_max_bytes', 'Dung lượng tối đa mỗi tệp', 'INT', 'MB', 1, 50, '20', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 20 MB mỗi tệp (thay 10 MB của R-LMS-04).'),
+  ('file_max_mb', 'Dung lượng tối đa mỗi tệp', 'INT', 'MB', 1, 50, '20', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 20 MB mỗi tệp (thay 10 MB của R-LMS-04).'),
   ('file_max_count_per_upload', 'Số tệp tối đa mỗi lần nộp', 'INT', 'tệp', 1, 30, '10', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 10 tệp mỗi lần.'),
   ('file_max_total_mb_per_upload', 'Tổng dung lượng tối đa mỗi lần nộp', 'INT', 'MB', 1, 200, '50', false, 'HOC_TAP', 'F-23-46', 'Anh chốt 24/11: 50 MB tổng mỗi lần.'),
   ('file_storage_soft_limit_percent', 'Chặn mềm dung lượng kho tệp', 'INT', '%', 50, 100, '80', false, 'HOC_TAP', 'F-23-46',
    'Tổng dung lượng chạm mức này (so với hạn mức miễn phí của nơi lưu) thì chặn tải mới và báo Admin, để không tự phát sinh tiền.'),
+  ('file_log_keep_days', 'Số ngày giữ dòng sổ tệp đã xoá', 'INT', 'ngày', 30, 730, '180', false, 'HOC_TAP', 'F-23-50',
+   'Dòng stored_file đã DA_XOA quá số ngày này thì việc dọn xoá hẳn khỏi sổ (giữ DB trong 500 MB của gói Free). Nhật ký audit_log vẫn còn bản ghi thao tác.'),
   ('file_storage_free_gb', 'Hạn mức miễn phí của kho tệp', 'INT', 'GB', 1, 1000, '15', false, 'HOC_TAP', 'F-23-46', 'Google Drive miễn phí: 15 GB cho cả tài khoản (anh chốt 24/11).')
 on conflict (key) do nothing;

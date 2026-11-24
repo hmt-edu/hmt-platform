@@ -24,8 +24,12 @@ select is((select count(*)::int from pg_policies where schemaname = 'app' and ta
 select is((select value from app.setting_def where key = 'file_retention_days'), '90', 'Tham số: hạn giữ mặc định 90 ngày');
 select is((select value from app.setting_def where key = 'file_retention_after_leave_days'), '30', 'Tham số: 30 ngày sau Dừng học');
 select is((select value from app.setting_def where key = 'file_cleanup_dry_run'), 'true', 'Tham số: việc dọn chạy thử lúc đầu');
-select is((select array_agg(value order by key) from app.setting_def where key in ('file_max_bytes', 'file_max_count_per_upload', 'file_max_total_mb_per_upload')),
-          array['20', '10', '50'], 'Tham số: giới hạn anh chốt 20 MB mỗi tệp, 10 tệp mỗi lần, 50 MB tổng');
+select is((select array_agg(value order by key) from app.setting_def where key in ('file_max_mb', 'file_max_count_per_upload', 'file_max_total_mb_per_upload')),
+          array['10', '20', '50'], 'Tham số: giới hạn anh chốt 20 MB mỗi tệp, 10 tệp mỗi lần, 50 MB tổng');
+
+select is((select value from app.setting_def where key = 'file_log_keep_days'), '180', 'Tham số: giữ dòng sổ tệp đã xoá 180 ngày rồi dọn');
+select is((select count(*)::int from pg_indexes where schemaname = 'app' and tablename = 'stored_file' and indexname ~ '_(idx|uq)$'), 5,
+          'Hiệu năng: chỉ giữ 5 chỉ mục cần (bài giao, bài nộp, chặn trùng, tới hạn, dọn dòng đã xoá), mỗi cái có lý do trong migration');
 
 -- Ràng buộc: dựng dòng giả, bỏ kiểm khoá ngoại (replica) chỉ để thử check và chỉ mục duy nhất.
 set local session_replication_role = replica;

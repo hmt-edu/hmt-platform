@@ -89,7 +89,7 @@ begin
     -- Chụp hạn giữ lúc tải lên (cấu hình có hiệu lực: không tính lại sau này).
     'delete_after', ((now() at time zone 'Asia/Ho_Chi_Minh')::date + app.file_setting_int('file_retention_days', a.branch_id)::integer),
     'limits', jsonb_build_object(
-      'max_bytes', app.file_setting_int('file_max_bytes', a.branch_id)::bigint * 1048576, -- allow-number: MB sang byte
+      'max_bytes', app.file_setting_int('file_max_mb', a.branch_id)::bigint * 1048576, -- allow-number: MB sang byte
       'max_count', app.file_setting_int('file_max_count_per_upload', a.branch_id)::integer,
       'max_total_bytes', app.file_setting_int('file_max_total_mb_per_upload', a.branch_id)::bigint * 1048576)); -- allow-number: MB sang byte
 end;
