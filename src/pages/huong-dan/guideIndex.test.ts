@@ -95,8 +95,9 @@ describe('Hướng dẫn cổng Giáo viên (A-23-38)', () => {
   it('bài trước/sau của cổng Giáo viên không nhảy sang bài CRM', () => {
     expect(neighbours('giao-vien', 'gv')).toMatchObject({
       prev: { slug: 'thao-tac-co-ban' },
-      next: { slug: 'hoi-dap' },
+      next: { slug: 'giao-vien-gv1-hom-nay' },
     });
+    expect(neighbours('giao-vien-gv8-viec-can-lam', 'gv').next).toMatchObject({ slug: 'hoi-dap' });
     expect(neighbours('hoi-dap', 'gv').next).toBeUndefined();
   });
 });
