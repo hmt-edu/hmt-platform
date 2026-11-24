@@ -78,3 +78,13 @@ Mã script đã được kiểm bằng Drive giả (7 bài: mật khẩu, thư m
 8. Đọc tệp lớn: `read` một PDF 20 MB (base64 ≈ 27 MB) có trả được trong hạn thời gian không; nếu không thì giảm giới hạn tệp hoặc đọc theo đoạn.
 
 Nếu phép 1 hoặc 3 không đạt thì khuyến nghị quay lại OAuth (kèm cách lo trang chính sách riêng tư: một trang tĩnh trên Cloudflare Pages của chính dự án là đủ cho «Publish app»; làm được không cần tên miền riêng, CHƯA CHẮC Google chấp nhận).
+
+## 6. Vì sao ~15 giây mỗi ảnh và đã làm gì (F-24-05, đo 25/11)
+
+**Số đo:** ping 1,1–2,3 s; lưu 200 KB 5 s, 1 MB 5,4 s (thời gian gần như KHÔNG phụ thuộc cỡ ảnh); đọc 1 MB 4,3 s; ~19 MB lưu hoặc đọc ~33 s. Ra-soat 01:42: tải lên một ảnh ~15 s.
+
+**Nút cổ chai là số lần gọi nối tiếp tới Apps Script (mỗi lần ~2–5 s, đa phần là khởi động và thao tác Drive), không phải nén ảnh ở trình duyệt** (nén ảnh cỡ vài trăm KB mất dưới 1 s trên điện thoại; chưa đo bằng ảnh thật nên ghi là ước lượng) và không phải cỡ tệp. Mỗi ảnh trước đây tốn khoảng ba lần gọi nối tiếp: hỏi dung lượng (`quota`), lưu ảnh đầy, lưu ảnh thu nhỏ, cộng ghi sổ DB (nhanh). 3 × ~5 s ≈ 15 s, khớp số đo. Nhiều ảnh trong một lô còn cộng dồn vì lưu từng ảnh nối tiếp.
+
+**Đã làm (Edge Function `file-upload`):** ảnh đầy và ảnh thu nhỏ của MỌI tệp trong lô được gửi vào kho CÙNG LÚC; dự kiến một ảnh còn ~2 lần gọi chờ (dung lượng, rồi lưu song song) ≈ 8–10 s, lô nhiều ảnh gần như không dài thêm. Kiểm thử bằng kho giả (đã gửi đủ 4 lời gọi mà chưa cái nào xong). **Chưa đo lại trên staging.**
+
+**Còn có thể làm nếu chưa đủ nhanh (chưa làm, cần đo trước):** (1) gộp hỏi dung lượng vào lời gọi lưu (một lần gọi thay hai) hoặc giữ kết quả dung lượng trong vài phút; (2) thêm việc `saveMany` ở script: một lời gọi lưu cả ảnh đầy lẫn thu nhỏ (đổi `Code.gs`, anh phải dán lại và Triển khai phiên bản mới); (3) bỏ bước tạo thư mục con mỗi lần (script tìm thư mục theo tên rồi mới tạo); (4) giao diện hiện tiến trình «đang lưu ảnh 2/3» để 8–10 s không như treo.
