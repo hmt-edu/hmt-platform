@@ -298,17 +298,15 @@ const BAI = {
           },
         },
         {
-          chu: 'Bấm «Xếp lớp» ở cuối hộp: hiện «Đã xếp lớp.»',
+          chu: 'Bấm «Xếp lớp» ở cuối hộp: hiện «Đã xếp lớp.» (video không bấm, để giữ nguyên hàng chờ dùng chung)',
           loc: (p) => p.getByRole('dialog').getByRole('button', { name: 'Xếp lớp', exact: true }),
           lam: async (p) => {
-            await p
-              .getByRole('dialog')
-              .getByRole('button', { name: 'Xếp lớp', exact: true })
-              .click();
-            await p.waitForTimeout(2500);
+            await p.waitForTimeout(1500);
+            await p.keyboard.press('Escape');
+            await p.waitForTimeout(800);
             await p.goto(`${APP}/crm/ghi-danh`);
             await cho(p);
-            await p.locator('main tbody tr', { hasText: globalThis.hsXep }).first().click();
+            await p.locator('main tbody tr').first().click();
             await cho(p);
           },
         },
@@ -785,6 +783,7 @@ const BAI = {
           chu: 'Sửa tên hoặc địa chỉ rồi bấm «Lưu»',
           loc: (p) => p.getByRole('button', { name: 'Lưu', exact: true }),
           lam: async (p) => {
+            globalThis.diaChiCu = await p.getByLabel('Địa chỉ').inputValue();
             await p.getByLabel('Địa chỉ').fill('[MẪU] Địa chỉ tập');
             await p.getByRole('button', { name: 'Lưu', exact: true }).click();
             await p.waitForTimeout(2500);
@@ -826,6 +825,12 @@ const BAI = {
             await p.waitForTimeout(1200);
             await p.getByRole('button', { name: 'Ngừng phòng', exact: true }).click();
             await p.waitForTimeout(2500);
+            // Trả lại địa chỉ CS3 như cũ để giữ nguyên staging (ngoài nội dung bài).
+            await p.getByRole('button', { name: 'Sửa cơ sở' }).click();
+            await p.waitForTimeout(1200);
+            await p.getByLabel('Địa chỉ').fill(globalThis.diaChiCu ?? '');
+            await p.getByRole('button', { name: 'Lưu', exact: true }).click();
+            await p.waitForTimeout(2000);
           },
         },
       ],
