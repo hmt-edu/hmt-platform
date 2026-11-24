@@ -17,6 +17,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test",
+    "check:huong-dan": "node scripts/kiem-huong-dan.mjs",
     "check:hardcode": "node scripts/check-hardcoded.mjs && node scripts/check-ma-ky-thuat.mjs",
     "check:all": "bash scripts/check-all.sh",
     "db:start": "supabase start",
