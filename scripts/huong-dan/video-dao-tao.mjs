@@ -1027,6 +1027,44 @@ const BAI = {
       chung,
       4,
     ),
+  // QT9b «Bảng giá» (Admin): 4 bước; bước 4 chỉ chỉ vào «Lưu bảng giá mới», KHÔNG bấm (bảng giá đã lưu không sửa lại được).
+  qt9b: (b) =>
+    chayBai(
+      b,
+      'qt9b',
+      vao('/crm/cau-hinh/bang-gia'),
+      [
+        {
+          chu: 'Chọn «Giá hiệu lực tại ngày» để xem bảng giá; lọc bằng «Tìm gói», «Loại gói», «Môn», «Khối»',
+          loc: (p) => p.getByLabel('Giá hiệu lực tại ngày'),
+        },
+        {
+          chu: 'Bấm «Thêm bảng giá mới»',
+          loc: (p) => p.getByRole('button', { name: 'Thêm bảng giá mới', exact: true }),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Thêm bảng giá mới', exact: true }).click();
+            await p.waitForTimeout(2000);
+          },
+        },
+        {
+          chu: 'Chọn ngày «Hiệu lực từ», chọn gói, nhập giá chung: hiện dòng tóm tắt',
+          loc: (p) => p.getByRole('dialog').getByLabel('Hiệu lực từ').first(),
+          lam: async (p) => {
+            await p.getByRole('dialog').getByLabel('Hiệu lực từ').first().fill('01/03/2027');
+            await p.getByLabel('Giá offline chung').fill('300000');
+            await p.getByLabel('Giá online chung').fill('250000');
+            await p.getByRole('dialog').locator('tbody tr').first().getByRole('checkbox').check();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Bấm «Lưu bảng giá mới» (video không bấm)',
+          loc: (p) => p.getByRole('button', { name: 'Lưu bảng giá mới', exact: true }),
+        },
+      ],
+      chung,
+      4,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
