@@ -33,6 +33,7 @@ Mỗi bài theo khuôn: mục tiêu, các bước đánh số, kết quả mong 
 
 - **Kết quả:** lead đúng giai đoạn; lịch hẹn hiện ở khối «Lịch hẹn»; cơ hội mới gắn với lead.
 - **Lỗi thường gặp:** «Số điện thoại này đã có hồ sơ» là trùng số: xem hồ sơ cũ rồi «Gộp trùng», hoặc «Vẫn dùng số này» khi thật sự hai người. Nút «Tạo cơ hội» mờ kèm lý do: rê chuột đọc lý do và bổ sung phần còn thiếu. Báo «không có quyền» nghĩa là khách thuộc cơ sở khác.
+- **Video (24 giây: lead, giai đoạn, cơ hội, báo giá, lịch hẹn):** [VIDEO: huong-dan-tu-van-tong-quan]
 - **Ảnh:** [ẢNH: lead-ds], [ẢNH: lead-ban-ghi], [ẢNH: lead-giai-doan], [ẢNH: lead-tao-co-hoi]
 
 ## 2. Đi một cơ hội qua các giai đoạn

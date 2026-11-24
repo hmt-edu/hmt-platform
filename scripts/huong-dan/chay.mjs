@@ -245,6 +245,100 @@ const BAI = {
         },
       ],
     ),
+  // Vai Tư vấn tuyển sinh (chỉ xem, không ghi): lead → giai đoạn → cơ hội → lịch hẹn. Chạy với HD_TAI_KHOAN=sale.cs5@…
+  'tu-van': (b) =>
+    chayBai(
+      b,
+      'tu-van',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/lead`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Lead mới nằm ở danh sách Lead',
+          loc: (p) => p.locator('main tbody tr').nth(1),
+          lam: async (p) => {
+            await p.locator('main tbody tr').nth(1).click();
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Giai đoạn của lead hiện ở thanh trên',
+          loc: (p) => p.getByText(/^C1 /).first().locator('xpath=../..'),
+        },
+        {
+          chu: 'Đủ điều kiện thì Tạo cơ hội',
+          loc: (p) => p.getByRole('button', { name: /Tạo cơ hội/ }),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/co-hoi`);
+            await p.waitForLoadState('networkidle');
+            await p.locator('main tbody tr').nth(1).click();
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Cơ hội: chuyển giai đoạn L1 đến L8',
+          loc: (p) => p.getByText(/^L1 /).first().locator('xpath=../..'),
+        },
+        {
+          chu: 'Có tư vấn xong thì Tạo báo giá',
+          loc: (p) => p.getByRole('button', { name: 'Tạo báo giá', exact: true }),
+        },
+        {
+          chu: 'Lên lịch hẹn ngay ở cột ghi chú',
+          loc: (p) => p.getByRole('button', { name: 'Lên lịch hẹn', exact: true }),
+        },
+      ],
+    ),
+  // Vai Kế toán (chỉ xem, không bấm duyệt): trang chủ → phiếu thu chờ kế toán. Chạy với HD_TAI_KHOAN=ketoan.cs5@…
+  'ke-toan': (b) =>
+    chayBai(
+      b,
+      'ke-toan',
+      async (p) => {
+        await dangNhap(p);
+      },
+      [
+        {
+          chu: 'Trang chủ: việc chờ bạn duyệt',
+          loc: (p) => p.getByText('Việc chờ tôi duyệt').first(),
+        },
+        {
+          chu: 'Vào Bán hàng và thu chi, mở Phiếu thu',
+          loc: (p) =>
+            p
+              .getByRole('link', { name: 'Bán hàng và thu chi' })
+              .or(p.getByText('Bán hàng và thu chi').first()),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/phieu-thu`);
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Tìm phiếu ở tình trạng Chờ kế toán',
+          loc: (p) => p.locator('main tbody tr', { hasText: 'Chờ kế toán' }).first(),
+          lam: async (p) => {
+            await p
+              .locator('main tbody tr', { hasText: 'Chờ kế toán' })
+              .first()
+              .locator('a')
+              .first()
+              .click();
+            await p.waitForLoadState('networkidle');
+          },
+        },
+        {
+          chu: 'Đối chiếu số tiền, đơn hàng rồi Duyệt phiếu thu',
+          loc: (p) => p.getByRole('button', { name: 'Duyệt phiếu thu', exact: true }),
+        },
+        {
+          chu: 'Không khớp thì bấm Từ chối',
+          loc: (p) => p.getByRole('button', { name: 'Từ chối', exact: true }),
+        },
+      ],
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
