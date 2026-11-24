@@ -14,6 +14,7 @@ export function ParentSchedulePage() {
     <ScheduleView
       key={child?.id}
       childrenQuery={children}
+      parentView
       studentId={child?.id}
       chips={<ChildChips items={list} value={child?.id ?? ''} onChange={setPicked} />}
     />
