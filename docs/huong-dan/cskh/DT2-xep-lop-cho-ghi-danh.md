@@ -33,7 +33,7 @@ di_thu: chưa
    *Bạn thấy:* danh sách em đang «Chờ xếp lớp» của cơ sở; mỗi dòng có cột «Xử lý».
    [ẢNH: dt2-b1]
 2. Tìm em cần xếp, bấm **«Xếp lớp»** ở cuối dòng (hoặc mở bản ghi ghi danh rồi bấm «Xếp lớp»).
-   *Bạn thấy:* hộp «Xếp lớp cho ghi danh đang chờ», dòng đầu ghi tên em và số ghi danh đang chờ.
+   *Bạn thấy:* hộp «Xếp lớp cho ghi danh», dòng đầu ghi tên em và số ghi danh đang chờ.
    [ẢNH: dt2-b2]
 3. Ở «Cách xếp lớp» chọn **«Theo nhóm lớp»** (xếp một lần cả lớp Đại và lớp Hình của em) hoặc **«Một lớp lẻ»**.
    *Bạn thấy:* «Theo nhóm lớp» hiện danh sách «Nhóm lớp phù hợp»; «Một lớp lẻ» hiện từng lớp để chọn. Không có nhóm phù hợp thì chỉ có «Một lớp lẻ».

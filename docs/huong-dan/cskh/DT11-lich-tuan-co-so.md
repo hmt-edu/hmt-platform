@@ -17,7 +17,7 @@ nguoi_viet: Code D
 **Ai làm:** CSKH, Trưởng cơ sở. **Màn:** Đào tạo → Lịch tuần cơ sở; bản ghi lớp → «Học sinh».
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Phân hệ «Lịch tuần cơ sở và học sinh của lớp» đã bật cho cơ sở của bạn (nếu không, nhờ Quản trị).
+- [ ] Phân hệ «Lịch tuần cơ sở» đã bật cho cơ sở của bạn (nếu không, nhờ Quản trị).
 - [ ] Bạn biết mình đang xem cơ sở nào (CSKH và Trưởng cơ sở chỉ thấy cơ sở của mình).
 
 ## Luật cần nhớ (lời thường)
@@ -62,7 +62,7 @@ Hai màn này chỉ để xem; không có gì phải hoàn tác.
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản CSKH giả (cskh.cs5).
-- **Dùng:** mở «Lịch tuần cơ sở và học sinh của lớp» tuần này ở CS5, đổi «Theo giáo viên», rồi mở một lớp Toán mẫu và xem «Học sinh».
+- **Dùng:** mở «Lịch tuần cơ sở» tuần này ở CS5, đổi «Theo giáo viên», rồi mở một lớp Toán mẫu và xem «Học sinh».
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn tìm được buổi của một lớp trong tuần sau.
