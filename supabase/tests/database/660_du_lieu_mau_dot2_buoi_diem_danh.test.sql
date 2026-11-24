@@ -130,7 +130,7 @@ select is(pg_temp.n((select id from s1), 'att'), 6::bigint, 'Đúng: bộ đầu
 -- E-23-34: buổi sinh muộn của lớp mẫu thừa hưởng cờ mẫu và thuộc đúng bộ; xoá bộ thì bộ ở trạng thái đã xoá cùng buổi đó.
 select pg_temp.sudo($$insert into app.class_session select (jsonb_populate_record(null::app.class_session,
   to_jsonb(s) || jsonb_build_object('id', gen_random_uuid(), 'session_no', 99, 'is_demo', false))).*
-  from app.class_session s where s.is_demo and s.class_id = (select c.id from app.class c where c.is_demo and c.status_code = 'DA_DUYET' order by c.created_at limit 1) limit 1$$);
+  from app.class_session s where s.is_demo and s.class_id = (select c.id from app.class c where c.is_demo and c.status_code = 'DA_DUYET' and c.id in (select entity_id from app.demo_data_item where set_id = (select id from s1) and entity_type = 'CLASS') order by c.code limit 1) limit 1$$);
 select is(pg_temp.sql_count($$select count(*) from app.class_session where session_no = 99 and is_demo$$), 1::bigint,
   'E-23-34: buổi sinh muộn của lớp mẫu mang cờ is_demo');
 select is(pg_temp.sql_count($$select count(*) from app.demo_data_item i join app.class_session s on s.id = i.entity_id
