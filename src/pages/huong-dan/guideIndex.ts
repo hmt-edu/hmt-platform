@@ -73,6 +73,20 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     roleLabel: 'Trưởng cơ sở',
   },
   {
+    slug: 'theo-vai-hoc-sinh',
+    title: 'Vai: Học sinh',
+    file: '03-hoc-sinh.md',
+    group: 'vai',
+    roleLabel: 'Học sinh',
+  },
+  {
+    slug: 'theo-vai-phu-huynh',
+    title: 'Vai: Phụ huynh',
+    file: '03-phu-huynh.md',
+    group: 'vai',
+    roleLabel: 'Phụ huynh',
+  },
+  {
     slug: 'giao-vien',
     title: 'Vai: Giáo viên',
     file: 'giao-vien.md',
