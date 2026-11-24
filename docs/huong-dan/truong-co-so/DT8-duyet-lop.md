@@ -44,7 +44,8 @@ nguoi_viet: Code D
    [ẢNH: dt8-b3b]
 4. Lớp đang «Đã xác nhận»: menu «Hành động» → «Duyệt». Hộp «Duyệt lớp» cho biết dự kiến sinh bao nhiêu buổi và ngày kết thúc dự kiến. Bấm «Duyệt».
    *Bạn thấy:* thông báo «Duyệt xong. Đã sinh N buổi.»; thanh bước sang «Đã duyệt»; nút «Buổi học» trên bản ghi có số buổi.
-   [CHƯA CHỤP: không có dữ liệu mẫu ở bước này trên staging]
+   [ẢNH: dt8-b4a]
+   [ẢNH: dt8-b4b]
 5. **Từ chối:** menu «Hành động» → «Từ chối» (có ở lớp «Đã trình» và «Đã xác nhận»). Gõ «Lý do» (bắt buộc), bấm «Từ chối».
    *Bạn thấy:* thông báo «Từ chối xong.»; lớp ở trạng thái Từ chối, lý do hiện ở dòng thời gian bên phải để CSKH đọc.
    [ẢNH: dt8-b5]
@@ -95,5 +96,5 @@ nguoi_viet: Code D
 2. Lớp ở Từ chối: bài nói «CSKH Đưa về Nháp rồi trình lại»; code (classLabels) còn cho sửa thẳng ở Từ chối rồi trình lại. Hai cách đều đúng.
 3. Vênh luật ↔ màn: luật R-LOP-01 nói «Đã trình, Đã xác nhận có thêm đường về Nháp: người trình và quản lý cơ sở đều bấm được». Màn khớp (transition NHAP có quyền SUA; DB kiểm người trình hoặc quyền DUYET).
 4. Bài nói «thanh bước chỉ để xem»: đúng với code (onSelect rỗng, ghi chú «Stage chỉ đọc»).
-5. Ảnh chụp trên staging 24/11; bước ghi [CHƯA CHỤP] cần chụp lại khi có dữ liệu mẫu.
+5. Ảnh chụp trên staging 24/11; bước duyệt chụp bằng lớp mẫu «CS5-2627-ANH-K06-CB-S-008» (đã duyệt, sinh 8 buổi).
 -->
