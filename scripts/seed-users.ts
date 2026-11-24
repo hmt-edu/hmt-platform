@@ -53,6 +53,61 @@ export const SEED_USERS: SeedUser[] = [
   // Học sinh thứ hai chỉ cho bài e2e đổi mật khẩu lần đầu đến hết (đổi thật nên không dùng chung với HS900001; seed lại mỗi lần chạy).
 ];
 
+export type PracticeBranch = { code: string; is_office: boolean };
+
+/** Số tài khoản tập mỗi cơ sở dạy học: tư vấn tuyển sinh và CSKH (E-23-39). */
+const PRACTICE_PER_BRANCH = 3;
+
+/**
+ * Tài khoản TẬP cho buổi đào tạo (E-23-39): theo từng cơ sở dạy học (không phải văn phòng) lấy từ DB, không viết cứng danh sách cơ sở.
+ * Mỗi cơ sở: 1 Quản lý cơ sở, 3 Tư vấn tuyển sinh, 3 CSKH. Toàn hệ thống: 1 Kế toán, 1 Trưởng nhóm Marketing, 1 Ban Giám Đốc (Admin).
+ * Chưa có vai Vận hành riêng (CSKH đã là «chăm sóc, vận hành lớp») nên không tạo tài khoản Vận hành.
+ * Tên đăng nhập: ql.cs5, tvts1.cs5..tvts3.cs5, cskh1.cs5..cskh3.cs5, ketoan.tap, mkt.tap, bgd.tap. Chạy lại không nhân đôi (khoá theo tên).
+ */
+export function buildPracticeUsers(branches: PracticeBranch[]): SeedUser[] {
+  const teaching = branches.filter((b) => !b.is_office);
+  const office = branches.find((b) => b.is_office) ?? branches[0];
+  const users: SeedUser[] = [];
+  for (const b of teaching) {
+    const low = b.code.toLowerCase();
+    users.push({
+      key: `ql.${low}`,
+      name: `Quản lý ${b.code} (giả)`,
+      branch: b.code,
+      roles: ['BRANCH_MANAGER'],
+    });
+    for (let i = 1; i <= PRACTICE_PER_BRANCH; i += 1) {
+      users.push({
+        key: `tvts${i}.${low}`,
+        name: `TVTS ${i} ${b.code} (giả)`,
+        branch: b.code,
+        roles: ['SALES'],
+      });
+    }
+    for (let i = 1; i <= PRACTICE_PER_BRANCH; i += 1) {
+      users.push({
+        key: `cskh${i}.${low}`,
+        name: `CSKH ${i} ${b.code} (giả)`,
+        branch: b.code,
+        roles: ['CSKH'],
+      });
+    }
+  }
+  if (office) {
+    users.push(
+      { key: 'ketoan.tap', name: 'Kế toán tập (giả)', branch: office.code, roles: ['ACCOUNTANT'] },
+      {
+        key: 'mkt.tap',
+        name: 'Trưởng nhóm Marketing tập (giả)',
+        branch: office.code,
+        roles: ['MARKETING_MANAGER'],
+      },
+      { key: 'bgd.tap', name: 'Ban Giám Đốc tập (giả)', branch: office.code, roles: ['ADMIN'] },
+    );
+  }
+  return users;
+}
+
 /** Quản lý trực tiếp mặc định của Sale, CSKH giả (người → quản lý), theo cơ sở. Dùng khi SEED_ASSIGN_MANAGERS=1. */
 export const SEED_MANAGERS: Record<string, string> = {
   'sale.cs1': 'truongcs.cs1',
@@ -118,7 +173,16 @@ async function main() {
   const existing = await authAdmin(API_URL, SECRET_KEY, '/users?per_page=1000');
   const byEmail = new Map((existing.users ?? []).map((u) => [u.email, u.id]));
 
-  for (const user of SEED_USERS) {
+  // Tài khoản tập cho đào tạo: chỉ khi đặt SEED_PRACTICE=1 (mật khẩu vẫn chỉ từ biến môi trường).
+  let users = SEED_USERS;
+  if (process.env.SEED_PRACTICE === '1') {
+    const branches = await db.query<PracticeBranch>(
+      'select code, is_office from app.branch where is_active order by sort_order, code',
+    );
+    users = [...SEED_USERS, ...buildPracticeUsers(branches.rows)];
+  }
+
+  for (const user of users) {
     const email = seedEmail(user);
     let id = byEmail.get(email);
     if (id) {
@@ -184,7 +248,7 @@ async function main() {
     console.log('Đã gán sẵn quản lý trực tiếp cho Sale, CSKH giả (chỉ chỗ đang trống).');
   }
   await db.end();
-  console.log(`Đã tạo/cập nhật ${SEED_USERS.length} tài khoản giả.`);
+  console.log(`Đã tạo/cập nhật ${users.length} tài khoản giả.`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

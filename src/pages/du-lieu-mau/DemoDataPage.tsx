@@ -37,7 +37,8 @@ export function DemoDataPage() {
         <div>
           <h1 className="text-h3">Dữ liệu mẫu của tôi</h1>
           <p className="text-caption text-fg-muted">
-            Bộ dữ liệu giả gắn cơ sở đang chọn, ghi rõ «[MẪU]». Không gửi tin thật cho ai.
+            Bộ dữ liệu giả gắn cơ sở đang chọn, ghi rõ «[MẪU]». Không gửi tin thật cho ai. Phiếu
+            «Cập nhật hồ sơ» mẫu do chính bạn tạo sẽ chờ người khác cùng cơ sở duyệt.
           </p>
         </div>
         <Button

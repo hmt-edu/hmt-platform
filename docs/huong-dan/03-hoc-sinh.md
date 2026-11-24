@@ -1,3 +1,12 @@
+---
+title: Vai: Học sinh
+slug: theo-vai-hoc-sinh
+group: vai
+order: 80
+role: Học sinh
+portals: [crm]
+---
+
 # Vai: Học sinh (cổng Học tập)
 
 Vai: **Học sinh**. Cổng Học tập dùng trên **điện thoại** là chính (laptop cũng mở được). Chữ trong dấu «…» là chữ hiện trên màn. Chưa biết đăng nhập thế nào thì đọc [Bắt đầu nhanh](/crm/huong-dan/bat-dau-nhanh), phần «Học sinh».
