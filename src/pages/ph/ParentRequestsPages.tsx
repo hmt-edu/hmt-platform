@@ -1,12 +1,13 @@
 // PH-04 Đề nghị và khiếu nại (cổng Phụ huynh, điện thoại 390): danh sách, gửi mới, theo dõi 4 bước, xác nhận phương án, chấm hài lòng.
 // Khung PH04_ds, PH04_gui, PH04_chi_tiet, PH04_phuong_an, PH04_hai_long, PH04_tai, PH04_trong, PH04_loi, PH04_loi_gui (canvas 9189).
-// «Không đồng ý phương án» (PH04_khong_dong_y) chưa làm: chờ hàm DB (xem mô tả PR).
+// «Không đồng ý phương án» (PH04_khong_dong_y): hộp thoại trên màn phương án, gọi app.ph_reject_proposal (mig 643).
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { errorOf, rpc, useDb } from '../../lib/db';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
+import { FormDialog } from '../../ui/Dialogs';
 import { Alert, StateView } from '../../ui/Feedback';
 import { Field, INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { useToast } from '../../ui/toastContext';
@@ -228,6 +229,8 @@ export function ParentRequestDetailPage() {
   const toast = useToast();
   const { ticketId } = useParams();
   const [score, setScore] = useState<number | null>(null);
+  const [rejecting, setRejecting] = useState(false);
+  const [reason, setReason] = useState('');
   const key = ['ph-ticket', ticketId];
   const query = useQuery({
     queryKey: key,
@@ -243,6 +246,18 @@ export function ParentRequestDetailPage() {
   const confirm = useMutation({
     mutationFn: () => rpc<null>(supabase, 'ph_confirm_option', { p_ticket_id: ticketId }),
     onSuccess: () => done('Đã gửi xác nhận'),
+  });
+  const reject = useMutation({
+    mutationFn: () =>
+      rpc<{ id: string; code: string; reopened: boolean }>(supabase, 'ph_reject_proposal', {
+        p_ticket_id: ticketId,
+        p_reason: reason,
+      }),
+    onSuccess: () => {
+      setRejecting(false);
+      setReason('');
+      done('Đã gửi, nhân viên chăm sóc sẽ liên hệ lại');
+    },
   });
   const rate = useMutation({
     mutationFn: () =>
@@ -327,6 +342,9 @@ export function ParentRequestDetailPage() {
               <Button loading={confirm.isPending} onClick={() => confirm.mutate()}>
                 Đồng ý phương án
               </Button>
+              <Button variant="secondary" onClick={() => setRejecting(true)}>
+                Không đồng ý
+              </Button>
             </>
           )}
         </section>
@@ -363,6 +381,25 @@ export function ParentRequestDetailPage() {
       {d.satisfaction !== null && (
         <p className="text-fg-muted">Quý phụ huynh đã đánh giá {d.satisfaction}/5.</p>
       )}
+      <FormDialog
+        open={rejecting}
+        onOpenChange={setRejecting}
+        title="Không đồng ý phương án"
+        confirmLabel="Gửi"
+        canSubmit={reason.trim() !== ''}
+        busy={reject.isPending}
+        error={reject.isError ? errorOf(reject.error).message : null}
+        onSubmit={() => reject.mutate()}
+      >
+        <TextAreaField
+          label="Lý do không đồng ý"
+          required
+          rows={4}
+          help="Bắt buộc. Nhân viên chăm sóc sẽ đọc và liên hệ lại."
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
+      </FormDialog>
     </div>
   );
 }
