@@ -584,6 +584,189 @@ const BAI = {
       3,
     );
   },
+  // TC6: xem Khoản tiền vào, bật cột «Hoàn tác». Bản thử nghiệm tắt tham số hoàn tác nên KHÔNG có bước 3 (hộp Hoàn tác); chạy với ketoan.cs5.
+  tc6: (b) =>
+    chayBai(
+      b,
+      'tc6',
+      async (p) => {
+        await dangNhap(p, EMAIL('ketoan.cs5'));
+        await p.goto(`${APP}/crm/phieu-thu`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Vào «Khoản tiền vào»: các cột «Cơ sở», «Phiếu thu», «Đơn hàng», «Số tiền (đ)», «Loại»',
+          loc: (p) => p.getByRole('heading', { level: 1 }).first(),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/khoan-tien-vao`);
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Bấm «Cột» và bật «Hoàn tác»; ở dòng khoản sai bấm «Hoàn tác khoản tiền» (chỉ hiện khi cơ sở bật tham số)',
+          loc: nutTen('Cột'),
+          lam: async (p) => {
+            await nutTen('Cột')(p).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      2,
+    ),
+  // TC7: xem Công nợ (2 bước). Thu nợ đầu kỳ là video riêng tc7b.
+  tc7: (b) =>
+    chayBai(
+      b,
+      'tc7',
+      async (p) => {
+        await dangNhap(p, EMAIL('ketoan.cs5'));
+        await p.goto(`${APP}/crm/cong-no`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Vào «Công nợ»: «Phụ huynh», «Đơn hàng», «Đợt», «Hạn đóng», «Phải đóng (đ)», «Còn nợ (đ)», «Tình trạng»',
+          loc: (p) => p.locator('main table').first(),
+        },
+        {
+          chu: 'Lọc sắp đến hạn hoặc quá hạn; «Group By» theo Cơ sở, Sale, Tình trạng nếu cần',
+          loc: nutTen('Group By'),
+          lam: async (p) => {
+            await nutTen('Group By')(p).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      2,
+    ),
+  // TC7b: Thu nợ đầu kỳ (3 bước; dừng ở phiếu nháp rồi «Trình»). Tạo một phiếu nợ đầu kỳ «[MẪU]» trên staging.
+  tc7b: (b) =>
+    chayBai(
+      b,
+      'tc7b',
+      async (p) => {
+        await dangNhap(p, EMAIL('ketoan.cs5'));
+        await p.goto(`${APP}/crm/phieu-thu`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Vào «Phiếu thu» và bấm «Thu nợ đầu kỳ»',
+          loc: nutTen('Thu nợ đầu kỳ'),
+          lam: async (p) => {
+            await nutTen('Thu nợ đầu kỳ')(p).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Chọn «Phụ huynh», chọn «Em», nhập «Số tiền», chọn «Hình thức», bấm «Tạo phiếu nháp»',
+          loc: (p) => p.getByRole('dialog'),
+          lam: async (p) => {
+            const hop = p.getByRole('dialog');
+            await hop.getByRole('button', { name: /Tìm phụ huynh/ }).click();
+            await p.keyboard.type('[MẪU]');
+            await p.waitForTimeout(2000);
+            await p.getByRole('option').first().click();
+            await hop.getByRole('button', { name: 'Em', exact: true }).click();
+            await p.getByRole('option').first().click();
+            await hop.getByLabel('Số tiền').fill('500000');
+            await hop.getByRole('button', { name: 'Hình thức', exact: true }).click();
+            await p.getByRole('option', { name: 'Tiền mặt', exact: true }).click();
+            await p.waitForTimeout(1000);
+            await hop.getByRole('button', { name: 'Tạo phiếu nháp', exact: true }).click();
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Trình phiếu; Kế toán duyệt',
+          loc: (p) => p.getByRole('button', { name: /^Trình/ }).first(),
+        },
+      ],
+      { width: 1280, height: 720 },
+      3,
+    ),
+  // TC9: xem phiếu chi «Chờ chi». KHÔNG bấm «Ghi nhận đã chi» (không hoàn tác được; dữ liệu của người khác): dừng ở hộp rồi «Huỷ».
+  tc9: (b) =>
+    chayBai(
+      b,
+      'tc9',
+      async (p) => {
+        await dangNhap(p, EMAIL('ketoan.cs5'));
+        await p.goto(`${APP}/crm/phieu-chi`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Vào «Phiếu chi» (menu Bán hàng và thu chi), bấm mã phiếu',
+          loc: (p) => p.getByText('PC-CS5-2611-0002', { exact: true }),
+          lam: async (p) => {
+            await p.getByText('PC-CS5-2611-0002', { exact: true }).first().click();
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Bảng «Khoản» cho thấy cách tính; bạn không sửa số',
+          loc: (p) => p.getByText('Số tiền hoàn').first(),
+        },
+        {
+          chu: 'Bấm «Ghi nhận đã chi», chọn «Hình thức chi»; hộp nhắc «Không hoàn tác được»',
+          loc: nutTen('Ghi nhận đã chi'),
+          lam: async (p) => {
+            await nutTen('Ghi nhận đã chi')(p).click();
+            await p.waitForTimeout(2500);
+            await p.getByRole('button', { name: 'Quay lại', exact: true }).click();
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      3,
+    ),
+  // BH4b (ngoại lệ): Trưởng cơ sở TỪ CHỐI đơn, đơn về Nháp. Tự tạo một đơn «Đã trình» trước khi quay.
+  bh4b: async (b) => {
+    const { url: don } = await taoDonDaTrinh(b);
+    return chayBai(
+      b,
+      'bh4b',
+      async (p) => {
+        await dangNhap(p, EMAIL('truongcs.cs5'));
+        await p.goto(don);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Chưa đồng ý: bấm «Từ chối» ở thanh trên',
+          loc: nutTen('Từ chối'),
+          lam: async (p) => {
+            await nutTen('Từ chối')(p).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Chọn lý do (lý do «Khác» phải ghi chú), rồi bấm «Xác nhận từ chối»',
+          loc: (p) => p.getByText('Chọn lý do…').first(),
+          lam: async (p) => {
+            await p.getByText('Chọn lý do…').first().click();
+            await p.getByRole('option').first().click();
+            await p.waitForTimeout(1200);
+            await p.getByRole('button', { name: 'Xác nhận từ chối', exact: true }).click();
+            await p.waitForTimeout(3000);
+          },
+        },
+        {
+          chu: 'Đơn về «Nháp»; lý do nằm ở dòng thời gian',
+          loc: (p) => p.getByText('Từ chối').first(),
+        },
+      ],
+      { width: 1280, height: 720 },
+      3,
+    );
+  },
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
