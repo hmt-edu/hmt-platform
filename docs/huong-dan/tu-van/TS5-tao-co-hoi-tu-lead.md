@@ -39,17 +39,11 @@ checked: 2026-11-24
 3. Tích chọn **các em** sẽ đi cùng cơ hội này.
    *Bạn thấy:* mỗi em một ô tích, ghi tên, năm sinh, mã học sinh nếu có.
    [ẢNH: ts-06-ts5-b3]
-4. **Nếu lead đã có cơ hội**: đầu hộp hiện khung vàng «Lead này đã có N cơ hội đang dùng», liệt kê mã, giai đoạn, tên em. Chọn một trong ba:
-   - **«Mở cơ hội cũ»**: đóng hộp và mở cơ hội đã có (nên chọn trước tiên).
-   - **«Thêm em vào cơ hội cũ»**: chép các em vừa tích sang cơ hội đã có rồi mở cơ hội đó, không tạo cơ hội mới.
-   - **Vẫn tạo thêm**: tích ô «Tôi xác nhận: vẫn tạo thêm cơ hội mới cho lead này», rồi sang bước 5.
-   *Bạn thấy:* nếu chọn mở hoặc thêm em, bạn sang trang cơ hội cũ; nếu tạo thêm, nút xác nhận đổi thành «Vẫn tạo thêm».
-   [ẢNH: ts-06-ts5-b4]
-5. Bấm **«Tạo cơ hội»** (hoặc «Vẫn tạo thêm» khi lead đã có cơ hội).
+4. Bấm **«Tạo cơ hội»** trong hộp. Nếu hộp hiện khung vàng «Lead này đã có … cơ hội đang dùng», dừng lại và làm theo bài «Lead đã có cơ hội khi tạo cơ hội».
    *Bạn thấy:* trang cơ hội mới, thanh giai đoạn ở **L1 Khách hàng mới**, mã cơ hội dạng CO…
    [ẢNH: ts-08-ts5-b5]
    [CHƯA CHỤP: cần chụp trên staging CS5]
-6. Quay lại lead: nhóm con đã là **C4D «Tạo cơ hội thành công»**.
+5. Quay lại lead: nhóm con đã là **C4D «Tạo cơ hội thành công»**.
    *Bạn thấy:* lead có liên kết sang cơ hội vừa tạo.
 
 ⚠ Tạo cơ hội thứ hai cho cùng lead dễ làm khách bị chăm trùng. Chỉ tạo khi đã hỏi lại người đang chăm cơ hội cũ.

@@ -702,6 +702,244 @@ const BAI = {
       6,
     );
   },
+  // Video KHỚP TỪNG BƯỚC bài TS9 (lịch hẹn): 7 bước đúng bài; bước 6 (Huỷ) chỉ mở hộp rồi đóng, không huỷ thật lịch của người khác.
+  ts9: (b) => {
+    const ngay = (n) => {
+      const d = new Date(Date.now() + n * 86400000 + 7 * 3600000);
+      const f = (x) => String(x).padStart(2, '0');
+      return `${f(d.getUTCDate())}/${f(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}`;
+    };
+    const hang = (p, chuoi) => p.locator('tr', { hasText: chuoi }).first();
+    return chayBai(
+      b,
+      'ts9',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/lead`);
+        await p.waitForLoadState('networkidle');
+        await p.locator('main input').first().fill('[MẪU] Phụ huynh tập TS1');
+        await p.waitForTimeout(2500);
+        await p.locator('main tbody tr').first().click();
+        await p.waitForTimeout(2500);
+      },
+      [
+        {
+          chu: 'Tạo lịch hẹn: từ bản ghi lead bấm «Lên lịch hẹn»',
+          loc: (p) => p.getByText(/Lên lịch hẹn/).first(),
+          lam: async (p) => {
+            await p
+              .getByText(/Lên lịch hẹn/)
+              .first()
+              .click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Chọn loại hoạt động, ngày, giờ, ghi chú rồi bấm «Tạo lịch hẹn»',
+          loc: (p) => p.getByRole('dialog'),
+          lam: async (p) => {
+            const d = p.getByRole('dialog');
+            await d.getByRole('button', { name: 'Ngày mai', exact: true }).click();
+            await d.getByRole('button', { name: '09:00', exact: true }).click();
+            await d.locator('textarea').first().fill('[MẪU] Gọi lại hỏi lịch học');
+            await p.waitForTimeout(800);
+            await d.getByRole('button', { name: 'Tạo lịch hẹn', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Xem việc trong ngày: vào «Lịch hẹn», xem các nhóm «Hôm nay», «Sắp tới»',
+          loc: (p) => p.getByText('Sắp tới').first(),
+          lam: async (p) => {
+            await p.goto(`${APP}/crm/lich-hen`);
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(2000);
+          },
+        },
+        {
+          chu: 'Dời lịch: ở lịch «Chưa làm» bấm «Dời», chọn ngày mới, giờ mới, bấm «Dời lịch»',
+          loc: (p) => hang(p, `${ngay(1)} 09:00`).getByRole('button', { name: 'Dời', exact: true }),
+          lam: async (p) => {
+            await hang(p, `${ngay(1)} 09:00`)
+              .getByRole('button', { name: 'Dời', exact: true })
+              .click();
+            await p.waitForTimeout(1200);
+            const d = p.getByRole('dialog');
+            await d.getByRole('button', { name: 'Ngày kia', exact: true }).click();
+            await d.getByRole('button', { name: '10:00', exact: true }).click();
+            await p.waitForTimeout(800);
+            await d.getByRole('button', { name: 'Dời lịch', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Hoàn thành lịch: bấm «Hoàn thành», chọn «Kết quả», bấm «Hoàn thành»',
+          loc: (p) =>
+            hang(p, `${ngay(2)} 10:00`).getByRole('button', { name: 'Hoàn thành', exact: true }),
+          lam: async (p) => {
+            await hang(p, `${ngay(2)} 10:00`)
+              .getByRole('button', { name: 'Hoàn thành', exact: true })
+              .click();
+            await p.waitForTimeout(1200);
+            const d = p.getByRole('dialog');
+            await d.getByRole('combobox').first().click();
+            await p.getByRole('option').first().click();
+            await p.waitForTimeout(800);
+            await d.getByRole('button', { name: 'Hoàn thành', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Huỷ lịch: bấm «Huỷ», chọn lý do, bấm «Huỷ lịch hẹn»',
+          loc: (p) =>
+            p
+              .locator('tr', { has: p.getByRole('button', { name: 'Dời', exact: true }) })
+              .first()
+              .getByRole('button', { name: 'Huỷ', exact: true }),
+          lam: async (p) => {
+            await p
+              .locator('tr', { has: p.getByRole('button', { name: 'Dời', exact: true }) })
+              .first()
+              .getByRole('button', { name: 'Huỷ', exact: true })
+              .click();
+            await p.waitForTimeout(1500);
+            await p.keyboard.press('Escape');
+            await p.waitForTimeout(800);
+          },
+        },
+        {
+          chu: 'Mở lại: ở lịch Hoàn thành hoặc Huỷ bấm «Mở lại», xác nhận ở hộp «Mở lại lịch hẹn?»',
+          loc: (p) =>
+            hang(p, `${ngay(2)} 10:00`).getByRole('button', { name: 'Mở lại', exact: true }),
+          lam: async (p) => {
+            await hang(p, `${ngay(2)} 10:00`)
+              .getByRole('button', { name: 'Mở lại', exact: true })
+              .click();
+            await p.waitForTimeout(1200);
+            await p
+              .locator('[role=dialog],[role=alertdialog]')
+              .getByRole('button', { name: /Mở lại/ })
+              .last()
+              .click();
+            await p.waitForTimeout(2000);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      7,
+    );
+  },
+  // Video KHỚP TỪNG BƯỚC bài TS5 (tạo cơ hội từ lead, LUỒNG CHÍNH): 5 bước. Dùng lead «[MẪU] Phụ huynh tập TS1» ở C4C chưa có cơ hội (TẠO THẬT một cơ hội L1 trên staging).
+  ts5: (b) =>
+    chayBai(
+      b,
+      'ts5',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/lead`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Mở Lead, tìm và mở lead cần tạo cơ hội',
+          loc: (p) => p.locator('main input').first(),
+          lam: async (p) => {
+            await p.locator('main input').first().fill('[MẪU] Phụ huynh tập TS1');
+            await p.waitForTimeout(2500);
+            await p.locator('main tbody tr').first().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Bấm «Tạo cơ hội» (nút ở đầu bản ghi)',
+          loc: nutTen('Tạo cơ hội'),
+          lam: async (p) => {
+            await nutTen('Tạo cơ hội')(p).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Tích chọn các em sẽ đi cùng cơ hội này',
+          loc: (p) => p.getByRole('dialog').getByRole('checkbox').first(),
+          lam: async (p) => {
+            const c = p.getByRole('dialog').getByRole('checkbox').first();
+            if (!(await c.isChecked())) await c.check();
+            await p.waitForTimeout(600);
+          },
+        },
+        {
+          chu: 'Bấm «Tạo cơ hội» trong hộp: trang cơ hội mới ở L1',
+          loc: (p) =>
+            p.getByRole('dialog').getByRole('button', { name: 'Tạo cơ hội', exact: true }),
+          lam: async (p) => {
+            await p
+              .getByRole('dialog')
+              .getByRole('button', { name: 'Tạo cơ hội', exact: true })
+              .click();
+            await p.waitForTimeout(3000);
+          },
+        },
+        {
+          chu: 'Quay lại lead: nhóm con đã là C4D «Tạo cơ hội thành công»',
+          loc: (p) => p.locator('main').first(),
+          lam: async (p) => {
+            await p.goBack();
+            await p.waitForTimeout(2500);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      5,
+    ),
+  // Video bài TS5b (NGOẠI LỆ: lead đã có cơ hội): 4 bước, KHÔNG tạo gì thêm (đóng hộp bằng Esc).
+  ts5b: (b) =>
+    chayBai(
+      b,
+      'ts5b',
+      async (p) => {
+        await dangNhap(p);
+        await p.goto(`${APP}/crm/lead`);
+        await p.waitForLoadState('networkidle');
+        await p.locator('main input').first().fill('[MẪU] Phụ huynh tập TS1');
+        await p.waitForTimeout(2500);
+        await p.locator('main tbody tr').first().click();
+        await p.waitForTimeout(2500);
+      },
+      [
+        {
+          chu: 'Ở lead đã có cơ hội, bấm «Tạo cơ hội»',
+          loc: nutTen('Tạo cơ hội'),
+          lam: async (p) => {
+            await nutTen('Tạo cơ hội')(p).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Tích chọn các em: đầu hộp hiện khung vàng «Lead này đã có … cơ hội đang dùng»',
+          loc: (p) => p.getByText(/đã có .* cơ hội đang dùng/).first(),
+          lam: async (p) => {
+            const c = p.getByRole('dialog').getByRole('checkbox').first();
+            if (!(await c.isChecked())) await c.check();
+            await p.waitForTimeout(600);
+          },
+        },
+        {
+          chu: 'Chọn một trong ba: «Mở cơ hội cũ», «Thêm em vào cơ hội cũ» hoặc vẫn tạo thêm',
+          loc: (p) => p.getByRole('button', { name: 'Mở cơ hội cũ', exact: true }),
+        },
+        {
+          chu: 'Vẫn tạo thêm: tích ô xác nhận rồi bấm «Vẫn tạo thêm»',
+          loc: (p) => p.getByRole('dialog').getByRole('checkbox').last(),
+          lam: async (p) => {
+            await p.getByRole('dialog').getByRole('checkbox').last().check();
+            await p.waitForTimeout(1500);
+            await p.keyboard.press('Escape');
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      4,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
