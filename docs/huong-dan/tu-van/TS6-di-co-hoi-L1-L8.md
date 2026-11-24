@@ -35,25 +35,20 @@ checked: 2026-11-24
 1. Mở **Cơ hội**, mở cơ hội cần chăm.
    *Bạn thấy:* thanh giai đoạn L1–L8 ở đầu bản ghi, giai đoạn hiện tại sáng; các nút liên kết «Lead gốc», «Phụ huynh», «Lịch hẹn», «Kiểm tra», «Báo giá», «Đơn hàng» có số đếm.
    [ẢNH: ts-08-ts6-b1]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Sau mỗi lần liên hệ, bấm giai đoạn phía trước trên thanh (hoặc kéo thẻ ở Kanban sang cột kế). Chọn **nhóm con** và ghi chú nếu hộp «Chuyển giai đoạn» hỏi, rồi bấm **«Chuyển giai đoạn»**.
    *Bạn thấy:* giai đoạn mới và nhóm con hiện trên thanh; lịch sử cơ hội có thêm một dòng.
    [ẢNH: ts-09-ts6-b2]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 3. **Từ L5**: nếu hộp báo «Chưa chuyển sang L5 được. Từ L5 bắt buộc có:» với «Tên học sinh (đang trống)» hoặc «Năm sinh học sinh (đang trống)», bấm **«Đi tới ô cần điền»**, điền đủ rồi chuyển lại.
    *Bạn thấy:* sau khi điền, chuyển giai đoạn thành công.
    [ẢNH: ts-09-ts6-b3]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 4. **Phiếu kiểm tra** (bài «Tạo phiếu kiểm tra»): sau khi tạo phiếu, hệ thống tự gắn nhóm con L5. Khi học sinh làm bài xong và phiếu sang «Chờ GV chấm», cơ hội tự lên **L6 (L6A)**; giáo viên chấm xong phiếu «Hoàn thành» thì thành **L6B**. Bạn chọn nhóm con học lực L6C đến L6G theo kết quả.
    *Bạn thấy:* giai đoạn tự đổi mà bạn không bấm; thanh ghi nhóm con mới.
 5. **Sang L7 «Tư vấn»**: chuyển như bước 2. Nếu cơ hội chưa có phiếu kiểm tra hoàn thành, hộp hiện «Lý do bỏ qua test»: chọn một lý do («Học sinh cũ đã biết trình độ», «Phụ huynh không muốn test», «Đã có kết quả test nơi khác», «Khác»; chọn «Khác» thì phải ghi chú). Còn phiếu dang dở thì hộp báo «Chưa chuyển sang L7 được. Cơ hội còn phiếu kiểm tra đang dở»: bấm «Mở phiếu …» rồi hoàn thành hoặc huỷ phiếu.
    *Bạn thấy:* khi đủ điều kiện, hộp có dòng xanh «Phiếu … đã Hoàn thành» và chuyển được.
    [ẢNH: ts-09-ts6-b5]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 6. **Sang L8 «Đăng ký học»** chỉ sau khi phụ huynh **đã thanh toán**. Bấm L8, ở ô «Sub-stage» chọn nhóm con («L8A PH đặt cọc», «L8B PH thanh toán chia để trả» hoặc «L8C PH hoàn thành 100% học phí»), tích **«Tôi xác nhận: Chuyển L8 không hoàn tác được»**, bấm **«Chuyển L8»**.
    *Bạn thấy:* cơ hội ở L8; nút «Tạo đơn hàng» của cơ hội sáng lên.
    [ẢNH: ts-09-ts6-b6]
-   [CHƯA CHỤP: cần chụp trên staging CS5]
 7. Lập đơn từ cơ hội L8 (bài «Lập đơn hàng»). Đơn **chỉ lập được từ cơ hội ở L8**.
    *Bạn thấy:* đơn hàng mới gắn với cơ hội; số đếm «Đơn hàng» tăng.
 
