@@ -51,3 +51,9 @@ Chuỗi dữ liệu cố định, dừng ở trạng thái chờ duyệt; SĐT d
 - Lỗi: buổi mẫu tự Done (cron) làm `deduct_session_hours` chèn dòng `TRU_BUOI` với `is_demo = false`, không vào `demo_data_item`: lọt báo cáo giờ và xoá bộ không gỡ được.
 - Sửa: trigger `hour_ledger_inherit_demo` (trước khi chèn): ghi danh là ghi danh mẫu thì dòng sổ giờ mang `is_demo` và vào `demo_data_item` đúng bộ. Không đổi luật trừ giờ. Ghi danh thật không bị đụng.
 - Dọn một lần trong migration: dòng sổ giờ đã lọt của ghi danh mẫu được gắn cờ và ghi vào bộ (tắt trigger chỉ-thêm của sổ giờ trong migration này, chỉ đổi cột `is_demo`).
+
+### Đợt 2, phần P1 chờ xử lý (migration 666, E-23-39 phần 2, E-23-43, CAO: dữ liệu đào tạo và tiền, chỉ staging)
+- `app.demo_make_p1(bộ, cơ sở)` đổ thêm vào mỗi bộ, mỗi mục một khối riêng (mục nào lỗi thì bỏ qua, ghi `demo_data_set.notice`, các mục khác vẫn làm): `demo_make_student_test` (phiếu kiểm tra đầu vào Nháp cho cơ hội L8, hàm thật `create_student_test`), `demo_submit_receipt` (gửi phiếu thu thiếu một phần, hàm thật `submit_receipt`; bị bỏ qua nếu quản lý trực tiếp của người bấm thiếu quyền Duyệt phiếu thu), `demo_make_waiting_enrollments` (2 ghi danh Chờ xếp lớp, không lớp), `demo_make_hold_and_refund` (bảo lưu Chờ duyệt bằng `create_enrollment_hold` + `submit_enrollment_hold`; hoàn phí Chờ quản lý chèn trực tiếp, số liệu minh hoạ vì `compute_refund` đòi tiền đã phân bổ từ phiếu thu được Kế toán duyệt), `demo_make_pending_review` (1 nhận xét buổi Done chưa gửi phụ huynh).
+- Thêm cờ `is_demo` cho `student_test`, `enrollment_hold`, `refund_request`; `app.demo_tag` thêm STUDENT_TEST, ENROLLMENT_HOLD, REFUND_REQUEST.
+- Hạn mức mặc định nâng từ 3 lên 6 bộ mỗi người, từ 10 lên 30 bộ mỗi cơ sở (tham số `demo_data_max_per_user`, `demo_data_max_per_branch`, vẫn đổi được ở màn Cài đặt).
+- Chưa làm: yêu cầu Dừng học chờ duyệt (cần ticket Dừng học và ghi danh có đơn).

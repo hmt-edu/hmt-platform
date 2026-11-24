@@ -11,6 +11,8 @@ portals: [crm]
 
 Vai: chăm sóc khách hàng (CSKH) và vận hành lớp. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
+**Vai «Vận hành» (tạm thời):** hệ thống chưa có vai Vận hành riêng. Người làm vận hành lớp dùng **vai CSKH** và có đúng quyền của CSKH; các tài khoản tập «Vận hành 1…3» (vh1, vh2, vh3) cũng được gán vai CSKH. Khi có vai Vận hành riêng, bài này sẽ cập nhật.
+
 Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (Ghi danh, Lớp, Buổi học, Điểm danh trong ngày), **Chăm sóc KH** (Tất cả ticket, Phiếu nghiệp vụ). Chỉ hiện mục bạn có quyền. Phân hệ chưa bật ở cơ sở của bạn sẽ báo «Phân hệ chưa bật».
 
 

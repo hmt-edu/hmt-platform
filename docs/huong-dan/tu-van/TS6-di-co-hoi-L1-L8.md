@@ -64,7 +64,7 @@ checked: 2026-11-24
 | «Từ giai đoạn L5 trở lên mỗi em bắt buộc có tên và năm sinh.» (HMT_THIEU_HOC_SINH) | Thiếu tên hoặc năm sinh học sinh | Điền ở khối học sinh rồi chuyển lại |
 | «Cơ hội còn phiếu kiểm tra đang dở: … Hoàn thành hoặc huỷ phiếu trước.» (HMT_PHIEU_DANG_DO) | Có phiếu chưa xong | Mở phiếu, hoàn thành hoặc huỷ |
 | «Cơ hội chưa có phiếu kiểm tra hoàn thành: chọn lý do bỏ qua test.» (HMT_THIEU_LY_DO) | Chưa test mà sang L7/L8 | Chọn «Lý do bỏ qua test» |
-| «Chọn lý do "Khác" thì phải ghi chú.» (HMT_THIEU_GHI_CHU) | Lý do «Khác» cần ghi chú | Viết ghi chú |
+| «Chọn "Khác" thì phải ghi chú lý do bỏ qua test.» (HMT_THIEU_GHI_CHU) | Lý do «Lý do khác» cần ghi chú | Viết ghi chú |
 | «Chuyển L8 phải chọn nhóm con L8A, L8B hoặc L8C.» (HMT_L8_CAN_NHOM_CON) | Chưa chọn nhóm con | Chọn nhóm con ở ô «Sub-stage» |
 | «Chuyển sang L8 không hoàn tác được: xác nhận để tiếp tục.» (HMT_L8_CAN_XAC_NHAN) | Chưa tích xác nhận | Tích ô xác nhận |
 | «Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng.» (HMT_CHUA_O_L8) | Lập đơn khi chưa ở L8 | Chuyển L8 sau khi phụ huynh đóng tiền |

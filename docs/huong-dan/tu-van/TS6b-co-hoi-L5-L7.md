@@ -24,7 +24,7 @@ checked: 2026-11-24
    [ẢNH: ts-09-ts6-b3]
 2. **Phiếu kiểm tra** (bài «Tạo phiếu kiểm tra»): sau khi tạo phiếu, hệ thống tự gắn nhóm con L5. Khi học sinh làm bài xong và phiếu sang «Chờ GV chấm», cơ hội tự lên **L6 (L6A)**; giáo viên chấm xong phiếu «Hoàn thành» thì thành **L6B**. Bạn chọn nhóm con học lực L6C đến L6G theo kết quả.
    *Bạn thấy:* giai đoạn tự đổi mà bạn không bấm; thanh ghi nhóm con mới.
-3. **Sang L7 «Tư vấn»**: chuyển như bước 2 của bài «Đi cơ hội qua L1–L8». Nếu cơ hội chưa có phiếu kiểm tra hoàn thành, hộp hiện «Lý do bỏ qua test»: chọn một lý do («Học sinh cũ đã biết trình độ», «Phụ huynh không muốn test», «Đã có kết quả test nơi khác», «Khác»; chọn «Khác» thì phải ghi chú). Còn phiếu dang dở thì hộp báo «Chưa chuyển sang L7 được. Cơ hội còn phiếu kiểm tra đang dở»: bấm «Mở phiếu …» rồi hoàn thành hoặc huỷ phiếu.
+3. **Sang L7 «Tư vấn»**: chuyển như bước 2 của bài «Đi cơ hội qua L1–L8». Nếu cơ hội chưa có phiếu kiểm tra hoàn thành, hộp hiện «Lý do bỏ qua test»: chọn một lý do («PH từ chối làm bài test», «Học sinh đã có kết quả đánh giá trước đó», «Đã đủ thông tin trình độ qua trao đổi», «Ghi danh nhanh theo chương trình khuyến mãi», «Lý do khác»; chọn «Lý do khác» thì phải ghi chú). Còn phiếu dang dở thì hộp báo «Chưa chuyển sang L7 được. Cơ hội còn phiếu kiểm tra đang dở»: bấm «Mở phiếu …» rồi hoàn thành hoặc huỷ phiếu.
    *Bạn thấy:* khi đủ điều kiện, hộp có dòng xanh «Phiếu … đã Hoàn thành» và chuyển được.
    [ẢNH: ts-09-ts6-b5]
 
@@ -34,4 +34,4 @@ checked: 2026-11-24
 | «Từ giai đoạn L5 trở lên mỗi em bắt buộc có tên và năm sinh.» (HMT_THIEU_HOC_SINH) | Thiếu tên hoặc năm sinh học sinh | Điền ở khối học sinh rồi chuyển lại |
 | «Cơ hội còn phiếu kiểm tra đang dở: … Hoàn thành hoặc huỷ phiếu trước.» (HMT_PHIEU_DANG_DO) | Có phiếu chưa xong | Mở phiếu, hoàn thành hoặc huỷ |
 | «Cơ hội chưa có phiếu kiểm tra hoàn thành: chọn lý do bỏ qua test.» (HMT_THIEU_LY_DO) | Chưa test mà sang L7/L8 | Chọn «Lý do bỏ qua test» |
-| «Chọn lý do "Khác" thì phải ghi chú.» (HMT_THIEU_GHI_CHU) | Lý do «Khác» cần ghi chú | Viết ghi chú |
+| «Chọn lý do "Lý do khác" thì phải ghi chú.» (HMT_THIEU_GHI_CHU) | Lý do «Lý do khác» cần ghi chú | Viết ghi chú |
