@@ -82,6 +82,29 @@ async function layBuoi(browser) {
   return href;
 }
 
+// Buổi ĐÃ DONE có đủ em (lớp tiếng Anh K07 của gv.cs5): chỉ xem. Tìm từ «Lịch dạy» → Tuần trước, không viết cứng mã buổi.
+async function layBuoiDone(browser) {
+  const ctx = await browser.newContext({ viewport: PHONE });
+  const [k, v] = await phien(TK);
+  await ctx.addInitScript(([k, v]) => localStorage.setItem(k, v), [k, v]);
+  const page = await ctx.newPage();
+  await page.goto(`${APP}/gv/lich-day`);
+  await page.waitForTimeout(3000);
+  await page.getByRole('button', { name: 'Tuần trước' }).click();
+  await page.waitForTimeout(2000);
+  await page.getByRole('button', { name: /Thứ Bảy 21\/11/ }).click();
+  await page.waitForTimeout(2000);
+  await page
+    .locator('main a, main button')
+    .filter({ hasText: /Buổi 1/ })
+    .first()
+    .click();
+  await page.waitForTimeout(3500);
+  const u = new URL(page.url()).pathname;
+  await ctx.close();
+  return /\/gv\/buoi\//.test(u) ? u : null;
+}
+
 const btn = (ten) => (p) =>
   p.getByRole('button', { name: ten }).or(p.getByRole('link', { name: ten }));
 const THANH_DUOI = (p) => p.locator('nav').last();
@@ -158,6 +181,48 @@ try {
         },
       });
     }
+  }
+
+  const done = await layBuoiDone(browser);
+  if (!done) console.log('Không tìm được buổi Done mẫu: bỏ qua ảnh chế độ chỉ xem');
+  if (done) {
+    if (co('GV3'))
+      await chup(browser, 'GV3', '03', {
+        route: `${done}/diem-danh`,
+        loc: (p) => p.getByText('Buổi đã Hoàn thành: chỉ xem.'),
+      });
+    if (co('GV4'))
+      await chup(browser, 'GV4', '04', {
+        route: `${done}/noi-dung`,
+        loc: (p) => p.getByText(/Buổi này đã Done hoặc đã đóng/),
+      });
+    if (co('GV5')) {
+      await chup(browser, 'GV5', '02', {
+        route: `${done}/cham-nhan-xet`,
+        loc: (p) => p.getByText('Tiến độ nhận xét'),
+      });
+      await chup(browser, 'GV5', '03', {
+        route: `${done}/cham-nhan-xet`,
+        loc: (p) => p.getByRole('button', { name: /^Em Anh 1/ }).first(),
+      });
+      await chup(browser, 'GV5', '04', {
+        route: `${done}/cham-nhan-xet`,
+        truoc: async (p) => {
+          await p.getByText('Xuất nhận xét', { exact: true }).first().scrollIntoViewIfNeeded();
+        },
+        loc: (p) => p.getByText('Xuất nhận xét', { exact: true }).first(),
+      });
+    }
+    if (co('GV6'))
+      await chup(browser, 'GV6', '02', {
+        route: `${done}/cham-btvn`,
+        loc: (p) => p.getByText('Buổi đầu của lớp').first(),
+      });
+    if (co('GV7'))
+      await chup(browser, 'GV7', '03', {
+        route: done,
+        loc: (p) => p.getByText(/Buổi đã Done/).first(),
+      });
   }
 } finally {
   await browser.close();

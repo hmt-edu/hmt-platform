@@ -30,7 +30,8 @@ di_thu: chờ
    *Bạn thấy:* nếu không có BTVN cần chấm: «Buổi đầu của lớp, chưa có buổi trước. Không đòi, không chặn» và nhãn «Bỏ qua».
    [ẢNH: GV6/01]
 2. Bấm «Mở», chọn trạng thái cho từng em.
-   [CHƯA CHỤP: buổi mẫu chưa có BTVN của buổi trước để chấm]
+   [ẢNH: GV6/02]
+   (Ảnh là buổi đầu của lớp: «Lớp chưa có buổi trước nên không có BTVN để chấm. Bước này tự bỏ qua, không chặn Hoàn thành…». Buổi có BTVN trước thì màn hiện danh sách em để chọn trạng thái; ảnh bước chọn chưa chụp được vì lớp mẫu chưa có buổi như vậy [CHƯA CHỤP: cần buổi 2 có BTVN buổi 1].)
 3. Với em «Đã chấm», chọn điểm 1–5; thêm ghi chú nếu cần.
 4. Bấm lưu.
    *Bạn thấy:* «Đã lưu chấm BTVN».

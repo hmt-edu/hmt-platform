@@ -35,6 +35,8 @@ di_thu: chờ
    *Bạn thấy:* ô nhập BTVN; để trống vẫn lưu được.
    [ẢNH: GV4/03]
 4. Bấm «Lưu».
+   [ẢNH: GV4/04]
+   (Ảnh là buổi đã hoàn tất: màn ghi «Buổi này đã Done hoặc đã đóng nên chỉ xem. Cần sửa thì tạo ticket cho vận hành.»)
    *Bạn thấy:* «Đã lưu nội dung buổi». Muốn sang bước kế thì bấm «Bước tiếp ›».
 
 ## Sau bước này

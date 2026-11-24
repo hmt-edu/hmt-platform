@@ -36,7 +36,8 @@ di_thu: chờ
    *Bạn thấy:* khung «Kiểm còn thiếu» ngắn dần.
 4. Khi không còn thiếu, bấm «Hoàn tất» trong tấm trượt.
    *Bạn thấy:* buổi báo «Buổi đã Done», hiện dấu Đúng hạn hoặc Trễ hạn.
-   [CHƯA CHỤP: buổi mẫu chưa đủ điều kiện để hoàn tất mà không làm thay đổi dữ liệu dùng chung]
+   [ẢNH: GV7/03]
+   (Ảnh là buổi đã hoàn tất: «Buổi đã Done. Trễ hạn 32 giờ (hệ thống ghi lúc Done, không đổi khi sửa sau).» và tiến độ 3/3 bước. Ảnh bấm «Hoàn tất» thật chưa chụp để không đổi dữ liệu dùng chung [CHƯA CHỤP].)
 
 ⚠ **Hoàn tất không hoàn tác bằng nút.** Sau Done giáo viên không sửa điểm danh, nhận xét, nội dung nữa.
 

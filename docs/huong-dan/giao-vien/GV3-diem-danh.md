@@ -32,7 +32,8 @@ di_thu: chờ
    [ẢNH: GV3/01]
 2. Chọn trạng thái cho từng em. Muốn nhanh: chọn các em vắng trước rồi bấm «Còn lại: Có mặt» để đặt các em chưa chọn.
    *Bạn thấy:* mỗi em hiện đúng trạng thái đã chọn; dòng «Chưa lưu thay đổi» xuất hiện.
-   [CHƯA CHỤP: lớp mẫu của giáo viên chưa có học sinh trong danh sách buổi nên chưa chụp bước chọn]
+   [ẢNH: GV3/03]
+   (Ảnh là buổi đã hoàn tất của lớp mẫu «CS5-2627-ANH-K07-CB-A-001», chỉ để xem: mỗi em có bốn nút trạng thái. Buổi chưa hoàn tất thì bạn bấm được.)
 3. Bấm «Lưu điểm danh».
    *Bạn thấy:* thông báo «Đã lưu điểm danh», dòng tóm tắt dạng «Có mặt 3 · Vắng có phép 1», và gợi ý «Bước tiếp: Nội dung buổi ›».
    [ẢNH: GV3/02]

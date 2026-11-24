@@ -21,25 +21,26 @@ di_thu: chờ
 - [ ] Bạn biết em nào có mặt: chỉ em **có mặt** mới được nhận xét.
 
 ## Luật cần nhớ (lời thường)
-- Điện thoại chấm **từng em một**, có nút chuyển em trước/sau. (Máy tính có bảng chấm nhanh.)
-- Mỗi tiêu chí chọn mức **1 đến 5**, mỗi mức có mô tả. **Để trống không phải 0**: trống nghĩa là chưa chấm.
-- Có chỗ «Nhận xét chung» và «Định hướng cải thiện»; khi đã có điểm thì có gợi ý lời nhắn cho phụ huynh.
-- Tiêu chí không áp dụng cả buổi có thể tắt ở phần cài đặt chấm của buổi (phải còn ít nhất một tiêu chí).
-- Không tự lưu: bấm lưu để ghi.
+- Nhận xét có **9 tiêu chí**, chia 3 nhóm: **Thái độ** (Tập trung, Chủ động, Tự giác), **Tiếp thu kiến thức** (3 tiêu chí theo môn) và **Năng lực vận dụng** (3 tiêu chí theo môn).
+- Mỗi tiêu chí có các lựa chọn: mức **1 đến 5** (có mô tả mức) hoặc **«Chưa đủ căn cứ»** (buổi này chưa đủ để chấm tiêu chí đó). Ô chưa chọn gì thì tính là **«Chưa đánh giá»**, không phải 0 điểm. Muốn sửa một ô đã chấm, bấm «Chấm lại ô này».
+- Điện thoại chấm **từng em một**: bấm tên em ở danh sách «Học sinh» hoặc «‹ Em trước» / «Em kế ›». Đầu trang có «Tiến độ nhận xét» (ví dụ «Đủ 8/8 em có mặt»), mỗi em có nhãn «Đủ» khi chấm xong.
+- «Nhận xét chung» và «Định hướng cải thiện» **không bắt buộc**; có «Xem trước lời nhắn phụ huynh».
+- «Tiêu chí của buổi»: tắt một tiêu chí thì cả lớp ghi «Không áp dụng» cho tiêu chí đó. Chỉ tắt khi buổi không có hoạt động cho tiêu chí; em làm không được thì chấm điểm thấp, không tắt. Phải còn ít nhất một tiêu chí.
+- Không tự lưu: bấm «Lưu» để ghi.
 
 ## Các bước
 1. Ở trang «Buổi dạy», bấm «Mở» ở bước 3.
-   *Bạn thấy:* nhận xét của em đầu tiên với các tiêu chí.
-   [ẢNH: GV5/01]
-2. Với từng tiêu chí, chọn mức 1–5 theo mô tả.
-   *Bạn thấy:* mức đã chọn được tô; điểm hiện ngay.
-   [CHƯA CHỤP: lớp mẫu của giáo viên chưa có học sinh có mặt]
-3. Điền «Nhận xét chung» và «Định hướng cải thiện» nếu cần; xem gợi ý lời nhắn phụ huynh.
-   [CHƯA CHỤP: như trên]
-4. Bấm lưu, rồi chuyển sang em kế bằng nút trước/sau. Làm hết các em có mặt.
-   *Bạn thấy:* «Đã lưu nhận xét».
-5. Muốn gửi phụ huynh: dùng nút «Xuất nhận xét» (xuất PDF hoặc ảnh khi em đã lưu đủ), hoặc «Xuất nhận xét cả lớp».
-   [CHƯA CHỤP: cần có nhận xét đã lưu]
+   *Bạn thấy:* «Tiến độ nhận xét» và danh sách học sinh có mặt.
+   [ẢNH: GV5/02]
+2. Bấm tên một em, rồi với từng tiêu chí chọn mức 1–5 (hoặc «Chưa đủ căn cứ»).
+   *Bạn thấy:* dòng «Em 1/8 · tên em», «Đã chấm 9/9 · Điểm trung bình …» cập nhật theo mức bạn chọn; mỗi ô đã chấm hiện «Đã đánh giá · Mức … · lời mô tả».
+   [ẢNH: GV5/03]
+   (Ảnh là buổi đã hoàn tất, chỉ để xem nên các nút mờ; buổi chưa hoàn tất thì bạn bấm được.)
+3. Điền «Nhận xét chung» và «Định hướng cải thiện» nếu cần; bấm «Xem trước lời nhắn phụ huynh».
+4. Bấm «Lưu», rồi sang em kế bằng «Em kế ›». Làm hết các em có mặt.
+   *Bạn thấy:* «Đã lưu nhận xét»; em chấm đủ có nhãn «Đủ».
+5. Muốn gửi phụ huynh: cuối trang bấm «Xuất nhận xét» (một em) hoặc «Xuất cả lớp» để tạo PDF hoặc ảnh, rồi tự gửi vào nhóm Zalo. Tệp tạo ngay trên trình duyệt, không lưu lên máy chủ.
+   [ẢNH: GV5/04]
 
 ## Sau bước này
 - **Ai làm tiếp:** CSKH xem «Nhận xét chờ gửi» để gửi phụ huynh. Phụ huynh và học sinh chỉ thấy nhận xét khi buổi đã Hoàn tất (Done) và đã gửi cho phụ huynh.
@@ -60,7 +61,7 @@ di_thu: chờ
 | «Buổi đã Done: giáo viên không sửa nhận xét, điểm. Tạo ticket cho vận hành để sửa kèm lý do.» | Buổi đã Hoàn tất | Tạo ticket cho vận hành |
 
 ## Hỏi đáp
-- **Để trống một tiêu chí được không?** Được, nhưng hệ thống coi là chưa chấm, không phải 0 điểm.
+- **Để trống một tiêu chí được không?** Được lưu, nhưng tiêu chí đó là «Chưa đánh giá», không phải 0 điểm.
 - **Em vắng có phải nhận xét?** Không, chỉ em có mặt.
 
 ## Tập trên dữ liệu mẫu
