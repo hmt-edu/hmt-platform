@@ -952,6 +952,81 @@ const BAI = {
       6,
     );
   },
+  // QT9a «Gói bán» (Admin): 4 bước; TẠO THẬT gói «[MẪU] Gói tập QT9» (Lớp chung, Toán, khối 6) rồi NGỪNG BÁN chính gói đó.
+  qt9a: (b) =>
+    chayBai(
+      b,
+      'qt9a',
+      vao('/crm/cau-hinh/goi-ban'),
+      [
+        {
+          chu: 'Vào Cấu hình → Gói bán, bấm «Tạo gói»',
+          loc: (p) =>
+            p
+              .getByRole('link', { name: 'Gói bán', exact: true })
+              .or(p.getByRole('heading', { name: 'Gói bán' }))
+              .first(),
+          lam: async (p) => {
+            await p.getByRole('button', { name: 'Tạo gói', exact: true }).click();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Chọn «Loại gói», rồi «Môn», «Khối từ», «Khối đến»: «Mã gói» tự hiện',
+          loc: (p) => p.getByRole('button', { name: 'Tạo gói', exact: true }),
+          lam: async (p) => {
+            const chon = async (ten, chu) => {
+              await p.getByRole('combobox', { name: ten }).click();
+              await p
+                .getByRole('option', chu ? { name: chu } : {})
+                .first()
+                .click();
+              await p.waitForTimeout(500);
+            };
+            await chon('Loại gói', 'Lớp chung');
+            await chon('Môn', 'Toán');
+            await chon('Khối từ', '6');
+            await chon('Khối đến', '6');
+            await p.waitForTimeout(800);
+          },
+        },
+        {
+          chu: 'Điền «Tên gói» rồi bấm «Tạo gói»: hiện «Đã tạo gói …»',
+          loc: (p) => p.getByLabel('Tên gói', { exact: true }),
+          lam: async (p) => {
+            await p
+              .getByLabel('Tên gói', { exact: true })
+              .fill(`[MẪU] Gói tập QT9 ${Date.now() % 10000}`);
+            await p.waitForTimeout(800);
+            await p
+              .getByRole('dialog')
+              .getByRole('button', { name: 'Tạo gói', exact: true })
+              .click();
+            await p.waitForTimeout(3000);
+          },
+        },
+        {
+          chu: 'Đổi tên: «Sửa» ở dòng gói; muốn ngừng: «Ngừng» rồi «Ngừng bán»',
+          loc: (p) =>
+            p
+              .locator('tr', { hasText: '[MẪU] Gói tập QT9' })
+              .first()
+              .getByRole('button', { name: 'Ngừng' }),
+          lam: async (p) => {
+            await p
+              .locator('tr', { hasText: '[MẪU] Gói tập QT9' })
+              .first()
+              .getByRole('button', { name: 'Ngừng' })
+              .click();
+            await p.waitForTimeout(1200);
+            await p.getByRole('button', { name: 'Ngừng bán', exact: true }).click();
+            await p.waitForTimeout(2500);
+          },
+        },
+      ],
+      chung,
+      4,
+    ),
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
