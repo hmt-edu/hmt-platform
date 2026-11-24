@@ -47,6 +47,13 @@ screens: [CHUNG-04, CHUNG-05, CHUNG-07]
 1. Bấm tên mình ở góc trên → «Đăng xuất».
 2. Dùng máy chung (quán net, máy của đồng nghiệp) thì **luôn đăng xuất** khi xong việc.
 
+## Thông báo
+1. Nhìn biểu tượng chuông «Thông báo» ở thanh trên; số cạnh chuông là số chưa đọc (tự cập nhật mỗi phút).
+2. Bấm chuông: hộp «Thông báo» hiện các mục mới nhất. Lọc «Tất cả» hoặc «Chưa đọc».
+3. Bấm một thông báo để đọc và mở đúng bản ghi liên quan. «Đánh dấu tất cả đã đọc» để đọc hết một lần.
+   *Lưu ý:* mỗi người chỉ thấy thông báo của mình.
+   [ẢNH: thong-bao]
+
 ## Làm nhầm thì sao
 | Nhầm gì | Làm gì |
 |---|---|

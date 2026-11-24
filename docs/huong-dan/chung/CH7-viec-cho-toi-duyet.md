@@ -55,3 +55,5 @@ screens: [CHUNG-15]
 
 ## Tập trên dữ liệu mẫu
 Trong «Dữ liệu mẫu của tôi» (menu tài khoản) tạo một bộ mẫu. Phiếu mẫu do chính bạn tạo chờ **người khác** cùng cơ sở duyệt: nhờ một người cùng vai mở mục này để thử bước duyệt.
+
+> Video (tạo một bộ, xem danh sách, xoá bộ): [VIDEO: huong-dan-du-lieu-mau]
