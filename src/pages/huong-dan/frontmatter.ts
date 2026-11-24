@@ -90,23 +90,32 @@ export function metaFromSource(file: string, text: string): GuideMeta | null {
   } catch (e) {
     return fail(e instanceof Error ? e.message : String(e));
   }
-  const title = str(f.title) ?? fail('thiếu «title»');
-  const group = str(f.group) ?? fail('thiếu «group» (bat-dau, vai hoặc tra-cuu)');
+  // Chấp nhận cả kiểu viết theo quy cách đợt 1 (HUONG-DAN-DOT1-QUY-CACH): id, ten, vai, phan_he, ma_man, uu_tien, cap_nhat.
+  const title = str(f.title) ?? str(f.ten) ?? fail('thiếu «title» (hoặc «ten»)');
+  const group =
+    str(f.group) ??
+    (f.ten !== undefined ? 'vai' : fail('thiếu «group» (bat-dau, vai hoặc tra-cuu)'));
   if (!GUIDE_GROUP_KEYS.includes(group as GuideGroup)) fail(`«group» không hợp lệ: ${group}`);
-  const portals = list(f.portals);
+  const portals = list(f.portals).length
+    ? list(f.portals)
+    : list(f.vai).includes('giao-vien')
+      ? ['crm', 'gv']
+      : [];
   for (const p of portals)
     if (!GUIDE_PORTAL_KEYS.includes(p as GuidePortal)) fail(`«portals» không hợp lệ: ${p}`);
   const orderText = str(f.order);
   const order = orderText === undefined ? DEFAULT_ORDER : Number(orderText);
   if (!Number.isFinite(order)) fail(`«order» phải là số: ${orderText}`);
-  const slug = str(f.slug) ?? file.replace(/\.md$/, '').replace(/\//g, '-');
+  const slug =
+    str(f.slug) ??
+    (str(f.id) ? (str(f.id) ?? '').toLowerCase() : file.replace(/\.md$/, '').replace(/\//g, '-'));
   if (!/^[a-z0-9-]+$/.test(slug))
     fail(`«slug» chỉ gồm chữ thường không dấu, số, gạch nối: ${slug}`);
   const no = str(f.no);
   const role = str(f.role);
-  const priority = str(f.priority);
-  const flow = str(f.flow);
-  const checked = str(f.checked);
+  const priority = str(f.priority) ?? str(f.uu_tien);
+  const flow = str(f.flow) ?? str(f.id);
+  const checked = str(f.checked) ?? str(f.cap_nhat);
   return {
     slug,
     title,
@@ -117,7 +126,7 @@ export function metaFromSource(file: string, text: string): GuideMeta | null {
     portals: portals.length > 0 ? (portals as GuidePortal[]) : ['crm'],
     ...(priority !== undefined ? { priority } : {}),
     ...(flow !== undefined ? { flow } : {}),
-    screens: list(f.screens),
+    screens: list(f.screens).length ? list(f.screens) : list(f.ma_man),
     ...(checked !== undefined ? { checked } : {}),
     file,
   };
