@@ -284,6 +284,115 @@ export function baiCskhGv({ chayBai, APP, dangNhap, nutTen }) {
         5,
       );
     },
+    // CS3 · 7 bước, cùng thứ tự bài docs/huong-dan/cskh/cs3-phieu-nghiep-vu-va-duyet.md. Dùng loại phiếu đơn giản nhất (Cập nhật hồ sơ, một cấp) nên bước 5 chỉ chỉ ra «bỏ qua»; bước 7 quay lại ticket gốc và đóng ticket làm tay.
+    cs3: async (b) => {
+      const ticketUrl = await taoTicketNgam(b, 'Đề nghị', '[MẪU] Chung quy trình phiếu cs3', {
+        nhom: 'Hồ sơ',
+        nhomCon: 'Cập nhật thông tin học sinh, phụ huynh',
+        hocSinh: true,
+      });
+      let phieuUrl = '';
+      const EM = process.env.HD_TAI_KHOAN;
+      const hop = (p) => p.getByRole('dialog');
+      return chayBai(
+        b,
+        'cs3',
+        async (p) => {
+          await dangNhap(p);
+          await p.goto(ticketUrl);
+          await cho(p);
+        },
+        [
+          {
+            chu: 'Mở ticket, bấm «Tạo phiếu»',
+            loc: nutTen('Tạo phiếu'),
+            lam: async (p) => {
+              await nutTen('Tạo phiếu')(p).click();
+              await p.waitForTimeout(1200);
+            },
+          },
+          {
+            chu: 'Điền các ô của loại phiếu và ô «Lý do», bấm «Tạo phiếu»',
+            loc: (p) => hop(p).getByRole('textbox', { name: 'Trường', exact: true }),
+            lam: async (p) => {
+              await hop(p)
+                .getByRole('textbox', { name: 'Trường', exact: true })
+                .fill('[MẪU] THCS Cầu Giấy');
+              await hop(p)
+                .getByLabel('Lý do', { exact: true })
+                .fill('[MẪU] Phụ huynh báo trường mới');
+              await p.waitForTimeout(600);
+              await hop(p).getByRole('button', { name: 'Tạo phiếu', exact: true }).click();
+              await p.waitForURL(/\/crm\/phieu-nghiep-vu\/(?!moi)/, { timeout: 20000 });
+              await cho(p);
+              phieuUrl = p.url();
+            },
+          },
+          {
+            chu: 'Đọc lại «Thông tin phiếu», kiểm khối «Duyệt», rồi bấm «Gửi duyệt»',
+            loc: nutTen('Gửi duyệt'),
+            lam: async (p) => {
+              await nutTen('Gửi duyệt')(p).click();
+              await p.waitForTimeout(1200);
+              const xn = hop(p).getByRole('button', { name: 'Gửi duyệt', exact: true });
+              if (await xn.count()) await xn.click();
+              await p.waitForTimeout(1800);
+            },
+          },
+          {
+            chu: 'Người duyệt cấp 1 (Trưởng cơ sở) mở phiếu, bấm «Duyệt», rồi «Duyệt» trong hộp «Duyệt phiếu»',
+            loc: null,
+            lam: async (p) => {
+              await doiTaiKhoan(p, 'truongcs.cs5@thu.hoamatoan.invalid', phieuUrl);
+              await nutTen('Duyệt')(p).click();
+              await p.waitForTimeout(1000);
+              await hop(p).getByRole('button', { name: 'Duyệt', exact: true }).click();
+              await p.waitForTimeout(2000);
+            },
+          },
+          {
+            chu: 'Phiếu có cấp kế toán thì Kế toán duyệt cấp 2; phiếu chỉ một cấp thì bỏ qua bước này',
+            loc: (p) => p.getByText('Duyệt xong lúc').first(),
+            lam: (p) => p.waitForTimeout(1500),
+          },
+          {
+            chu: 'CSKH mở phiếu «Đã duyệt», bấm «Thực hiện», rồi «Thực hiện» trong hộp «Thực hiện phiếu?»',
+            loc: null,
+            lam: async (p) => {
+              await doiTaiKhoan(p, EM, phieuUrl);
+              await nutTen('Thực hiện')(p).click();
+              await p.waitForTimeout(1200);
+              await p
+                .getByRole('alertdialog')
+                .getByRole('button', { name: 'Thực hiện', exact: true })
+                .click();
+              await p.waitForTimeout(4000);
+            },
+          },
+          {
+            chu: 'Quay lại ticket gốc, kiểm thấy phiếu, rồi chuyển ticket sang «Đã đóng» (ghi chú làm tay)',
+            loc: null,
+            lam: async (p) => {
+              await p.goto(ticketUrl);
+              await cho(p);
+              await p.waitForTimeout(1500);
+              await p
+                .getByRole('button', { name: /Đã đóng/ })
+                .first()
+                .click();
+              await p.waitForTimeout(1200);
+              await hop(p)
+                .getByLabel('Ghi chú làm tay')
+                .fill('[MẪU] Đã làm theo phiếu cập nhật hồ sơ');
+              await hop(p).getByRole('button', { name: 'Đóng ticket', exact: true }).click();
+              await p.waitForTimeout(2500);
+            },
+          },
+        ],
+        K,
+        7,
+      );
+    },
     // CS4 · 7 bước, cùng thứ tự bài docs/huong-dan/cskh/cs4-phieu-cap-nhat-ho-so.md. Ticket tạo sẵn ngoài video; bước 6 đổi sang Trưởng cơ sở duyệt (người khác người tạo), bước 7 quay lại CSKH.
     cs4: async (b) => {
       const ticketUrl = await taoTicketNgam(b, 'Đề nghị', '[MẪU] Cập nhật trường học của em', {
