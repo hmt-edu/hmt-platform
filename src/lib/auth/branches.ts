@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from './authContext';
+import { toHmtError } from '../db';
 
 export type BranchName = { code: string; name: string };
 
@@ -18,7 +19,7 @@ export function useBranchNames() {
     queryFn: async (): Promise<BranchName[]> => {
       if (!supabase) return [];
       const result = await supabase.rpc('login_branch_names');
-      if (result.error) throw new Error(result.error.message);
+      if (result.error) throw toHmtError(result.error);
       return (result.data ?? []) as BranchName[];
     },
   });

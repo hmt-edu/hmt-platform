@@ -395,6 +395,8 @@ deno_version = 2
 # Thử nghiệm, chạy thật đặt khoá thật trong Edge Function secrets (docs/van-hanh/chong-do-mat-khau.md).
 [edge_runtime.secrets]
 HMT_TURNSTILE_SECRET = "1x0000000000000000000000000000000AA"
+# Chỉ local: nhận nguồn localhost (bản chạy thật không đặt, A-23-36).
+HMT_ALLOW_LOCAL_ORIGINS = "true"
 
 [analytics]
 # HMT: tắt Logflare local cho nhẹ máy; bật lại khi cần xem log.

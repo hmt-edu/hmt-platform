@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { buildPackageCode, gradeRangeError, isHourType, packageDialogText } from './packageLogic';
+import {
+  buildPackageCode,
+  gradeRangeError,
+  isHourType,
+  packageDialogText,
+  sanitizeSearchTerm,
+} from './packageLogic';
 
 const base = { type: 'LC', subject: 'TOAN', gradeFrom: 'K09', gradeTo: '', suffix: '' };
 
@@ -51,5 +57,11 @@ describe('chữ ô Mã cũ ở hộp Tạo gói (So canvas CH01_tao_ma_cu, đợ
     expect(packageDialogText.legacyCreateHelp).toBe(
       'Không bắt buộc. Mã cũ trên Sheet, dùng để tìm kiếm.',
     );
+  });
+
+  it('chữ tìm: bỏ dấu phẩy, ngoặc, nháy, sao, %; gộp khoảng trắng', () => {
+    expect(sanitizeSearchTerm('  LC-TOAN,(K09)  ')).toBe('LC-TOAN K09');
+    expect(sanitizeSearchTerm('a%b_c"d\\e*f')).toBe('a b_c d e f');
+    expect(sanitizeSearchTerm('x),name.ilike.%')).toBe('x name.ilike.');
   });
 });

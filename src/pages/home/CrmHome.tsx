@@ -13,6 +13,7 @@ import { Icon } from '../../ui/icons';
 import { HOME_BLOCKS, visibleHomeBlocks } from './homeBlocks';
 import { RoleBlock } from './roleBlocks';
 import { useAppointmentsToday } from './useAppointmentsToday';
+import { toHmtError } from '../../lib/db';
 
 /** Vai trò làm việc ở cổng CRM để Admin xem thử bố cục (đọc từ bảng vai trò, không viết cứng tên vai trò). */
 function usePreviewRoles() {
@@ -34,7 +35,7 @@ function usePreviewPermissions(roleCode: string | null) {
         .select('role_code, module_code, action_code, scope_code')
         .eq('is_active', true)
         .eq('role_code', roleCode);
-      if (error) throw new Error(error.message);
+      if (error) throw toHmtError(error);
       return data ?? [];
     },
   });
