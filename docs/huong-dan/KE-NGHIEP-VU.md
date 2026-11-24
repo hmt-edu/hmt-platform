@@ -180,40 +180,84 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 ## Ước lượng khối lượng
 - **Số bài:** khoảng **100 bài** (mỗi luồng một bài; các luồng cùng màn nhỏ có thể gộp một bài). Có 33 luồng ❌ cần viết mới, 16 luồng ◐ cần viết lại đủ bước, 63 luồng ✅ cần **rà lại từng bước, thêm ảnh khung nổi bật và bảng lỗi HMT_…**.
 - **Ảnh:** trung bình 4 ảnh một bài (mỗi bước chính một ảnh có khung nổi bật): khoảng **400 ảnh**. Đã có 75 ảnh (nhiều ảnh là ảnh danh sách/bản ghi, chưa phải ảnh từng bước); cần thêm khoảng 330. Dung lượng hiện 8,5 MB cho 75 ảnh (≈ 113 KB/ảnh).
-- **Video (≤ 60 giây, chỉ luồng chính P1):** khoảng **25 video** (51 luồng P1, gộp video theo nhóm: ví dụ Tư vấn 4, Kế toán 3, CSKH 5, Trưởng cơ sở 3, Giáo viên 4, Quản trị 3, Chung 3). Đã có 6 video; cần thêm khoảng 19.
+- **Video (độ dài theo nội dung cần truyền đạt, không cố định; anh chốt 24/11; chỉ luồng chính P1):** khoảng **25 video** (51 luồng P1, gộp video theo nhóm: ví dụ Tư vấn 4, Kế toán 3, CSKH 5, Trưởng cơ sở 3, Giáo viên 4, Quản trị 3, Chung 3). Đã có 6 video; cần thêm khoảng 19.
 - **Dung lượng:** video mp4 nén hiện có 116–272 KB mỗi cái (26–60 giây); đặt trần **≤ 1 MB mỗi video** (mục tiêu ≤ 400 KB) thì 25 video ≤ 10 MB (thực tế ~5 MB). Ảnh nên xuất PNG tối ưu hoặc WebP **≤ 80 KB/ảnh**: 400 ảnh ≈ 32 MB. **Tổng `public/huong-dan/` dự kiến ≤ 45 MB** (hiện 9,6 MB). Đề xuất đặt trần cứng 60 MB cho thư mục này; vượt thì chuyển video sang Cloudflare R2 (giai đoạn 4 theo CLAUDE.md) chứ không đẩy vào repo. Cloudflare Pages gói Free chấp nhận (giới hạn 20.000 tệp, mỗi tệp 25 MB); mỗi lần build tải lên ~45 MB tĩnh, không ảnh hưởng băng thông Supabase.
 - **Rủi ro cần anh chốt:** (1) ảnh chụp tự động (`npm run chup-anh`) hiện lưu ngoài repo và chỉ chụp trang danh sách/bản ghi; ảnh từng bước trong hộp thoại cần mở hộp thoại tự động, chưa làm; (2) video quay trên bản thử nghiệm phải dùng dữ liệu giả, không tên thật; (3) mỗi lần đổi giao diện phải chụp lại ảnh liên quan (nên gắn tên ảnh với mã màn để biết ảnh nào cũ).
 
-## Đề xuất MẪU MỘT BÀI
-Mọi bài dùng cùng khuôn (một bài một luồng; tên file theo vai và luồng, ví dụ `tu-van/nhap-lead-tu-file.md`):
+## Mẫu một bài (bản 24/11, thay mẫu cũ; theo báo cáo đánh giá mục 5)
+
+Mọi bài dùng cùng khuôn. Tên tệp theo vai và luồng (ví dụ `tu-van/lap-don-hang.md`); **mục lục tự sinh từ phần đầu**, xem `README.md` cùng thư mục. Chữ trong «…» phải **chép đúng chữ trên màn** (công cụ kiểm sẽ dò). Luật viết bằng lời thường; mã luật (R-…) chỉ ghi trong phiếu kiểm, không đưa cho người học.
 
 ```
-# <Tên luồng bằng động từ: «Nhập lead từ file CSV»>
+---
+title: Lập đơn hàng cho khách đã đóng tiền
+group: vai
+slug: tu-van-lap-don-hang
+order: 50
+role: Tư vấn tuyển sinh
+portals: [crm]
+priority: P1
+flow: bh3
+screens: [BH-05, BH-08]
+checked: 2026-11-26
+checked_commit: <mã commit main lúc đi thử>
+author: <người viết>
+tested_by: <người đi thử>
+---
 
-**Mục tiêu:** một câu: làm xong thì được gì.
-**Ai làm:** vai (Tư vấn tuyển sinh, CSKH…). **Màn:** tên màn trong menu (không ghi mã màn).
-**Điều kiện trước:** quyền cần có; dữ liệu cần có trước (ví dụ «cơ hội đã ở L4»); phân hệ phải bật ở cơ sở.
+# Lập đơn hàng cho khách đã đóng tiền
 
-## Các bước
-1. <Việc phải làm, một câu, tên nút đúng chữ trên màn trong «».>
-   [ẢNH: ma-man-buoc-1]   (khung nổi bật quanh nút/trường của bước)
-2. ...
-(tối đa 7 bước; dài hơn thì tách bài)
+**Làm xong bạn có:** một đơn hàng đã trình, chờ quản lý của bạn duyệt.
+**Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Cơ hội → bản ghi cơ hội.
 
-## Kết quả mong đợi
-Màn báo gì («Đã lưu …»), trạng thái đổi thế nào, ai nhận việc tiếp theo.
+> Video: [VIDEO: bh3]  (độ dài theo nội dung)
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
 
-## Lỗi thường gặp
-| Thấy gì (mã lỗi) | Nghĩa là | Làm gì |
+## Trước khi bắt đầu, kiểm
+- [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của khách.
+- [ ] Cơ hội đang ở **L8 Đăng ký học**; chưa ở L8 thì nút «Tạo đơn hàng» mờ.
+- [ ] Mỗi em trong «Danh sách em» có đủ họ tên và năm sinh.
+
+## Luật cần nhớ (lời thường, tối đa 3 gạch)
+- Phụ huynh đóng tiền trước, rồi mới ghi đơn trên hệ thống.
+- Một lớp một dòng đơn. Không chọn lớp cũng được: em nằm ở «Chờ xếp lớp».
+
+## Các bước (tối đa 7; dài hơn thì tách bài)
+1. Bấm «Tạo đơn hàng».
+   *Bạn thấy:* trang đơn mới, khối «Dòng đơn» trống.
+   [ẢNH: bh05-bh3-b1]
+2. Bấm «Chọn gói…», chọn gói, nhập «Số lượng».
+   *Bạn thấy:* dòng đơn có giá; «Tổng tiền» tự tính, không sửa tay.
+   [ẢNH: bh05-bh3-b2]
+
+⚠ **Bước N không hoàn tác bằng nút.** (đặt cảnh báo nổi bật ngay trước bước không hoàn tác)
+
+## Sau bước này
+- **Ai làm tiếp:** quản lý trực tiếp của bạn duyệt đơn.
+- **Bạn xem ở đâu để biết đã xong:** Đơn hàng → lọc «Của tôi».
+
+## Làm nhầm thì sao
+| Nhầm gì | Sửa thế nào |
+|---|---|
+| Đơn còn Nháp | sửa thẳng, hoặc «Huỷ đơn hàng» |
+| Đơn đã trình | nhờ người duyệt «Từ chối» → đơn về Nháp → sửa → trình lại |
+
+## Lỗi hay gặp (3–5 dòng; đủ ở trang «Tra mã lỗi»)
+| Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| HMT_… «câu tiếng Việt máy báo» | giải thích một câu | bước xử lý, hoặc báo ai |
 
-## Xem thêm
-Liên kết sang bài trước/sau trong luồng.
+## Tập trên dữ liệu mẫu
+- **Cần:** số tài khoản và vai (luồng có người duyệt thì cần ít nhất hai tài khoản).
+- **Dùng:** bản ghi «[MẪU] …» trong «Dữ liệu mẫu của tôi».
 
-[VIDEO: ten-luong]  (chỉ luồng chính, ≤ 60 giây, 1280×720 hoặc 720 rộng cho điện thoại, mp4 nén, không tiếng, có chú thích chữ)
+## Tự kiểm: bạn làm được khi
+- [ ] Có một bản ghi «[MẪU]» của bạn ở đúng trạng thái kết quả (nhìn thấy được trên hệ thống).
+- [ ] Bạn nói được ai làm tiếp và bạn làm gì khi bị từ chối.
+
+**Bước trước:** … · **Bước sau:** …
 ```
-Quy ước: ảnh `[ẢNH: tên]` và video `[VIDEO: tên]` theo `CHUP-ANH.md` (không dùng `![](…)`); tên ảnh bắt đầu bằng mã luồng ở bản kê này (ví dụ `ts2-buoc1`); chữ trên màn lấy đúng từ giao diện (không đoán), mã lỗi lấy từ hàm DB; bài nào viết xong thì ghi ngày kiểm lần cuối ở đầu bài để biết bài nào cũ.
+
+Quy ước: mỗi bước một dòng «Bạn thấy»; ảnh cắt vùng quanh khung đánh dấu, tên `<mã màn>-<mã luồng>-b<số>`; ảnh điện thoại chụp 390×844; ghi `checked`, `checked_commit`, `tested_by` sau khi đi thử xong. Phần đầu có thêm khoá khác ngoài danh sách ở `README.md` thì công cụ bỏ qua, không lỗi.
 
 ## Gợi ý chia việc
 1. **Đợt 1 (P1, 51 luồng)** theo vai để mỗi người một tệp: Tư vấn (TS1–3, 5, 6, 9–11; BH1, 3), Kế toán (TC1–3, 6, 7, 9), CSKH (DT1, 2, 6, 7, 12, 13; CS1–4, 12), Trưởng cơ sở (BH4, TC2, DT8, 14), Giáo viên (GV1, 3–8), Quản trị (QT1, 4, 6, 8, 9), Chung (CH1–5, 7, 8, 10).
