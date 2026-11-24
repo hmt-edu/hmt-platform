@@ -421,6 +421,10 @@ const ParentResultsPage = lazyScreen(
   () => import('../pages/ph/ParentResultsPage'),
   'ParentResultsPage',
 );
+const ParentSchedulePage = lazyScreen(
+  () => import('../pages/ph/ParentSchedulePage'),
+  'ParentSchedulePage',
+);
 const ParentFeesPage = lazyScreen(() => import('../pages/ph/ParentFeesPage'), 'ParentFeesPage');
 const ParentOrderPage = lazyScreen(() => import('../pages/ph/ParentOrderPage'), 'ParentOrderPage');
 const PortalTabPage = lazyScreen(() => import('../pages/common/PortalPages'), 'PortalTabPage');
@@ -1320,7 +1324,7 @@ export const routes: RouteObject[] = [
           { path: 'ket-qua/nhan-xet', element: <ParentResultsPage /> },
           { path: 'hoc-phi', element: <ParentFeesPage /> },
           { path: 'hoc-phi/:orderId', element: <ParentOrderPage /> },
-          { path: 'lich', element: <PortalTabPage title="Lịch" stage={GD4} /> },
+          { path: 'lich', element: <ParentSchedulePage /> },
           { path: 'de-nghi', element: <PortalTabPage title="Đề nghị" stage={GD4} /> },
           { path: 'tai-khoan', element: <ProfilePage /> },
           { path: 'du-lieu-mau', element: <DemoDataPage /> },
