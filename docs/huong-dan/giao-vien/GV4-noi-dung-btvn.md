@@ -1,14 +1,14 @@
 ---
-ma_luong: gv4
-ten: Ghi nội dung buổi và giao BTVN
-vai: [giao-vien, tro-giang]
-phan_he: Đào tạo
-cong: gv
-ma_man: [GV-06]
-uu_tien: P1
-cap_nhat: 2026-11-24
-nguoi_viet: Tester 2
-di_thu: chờ
+title: Ghi nội dung buổi và giao BTVN
+slug: giao-vien-gv4-noi-dung-btvn
+group: vai
+order: 104
+role: Giáo viên
+portals: [gv]
+priority: P1
+flow: GV4
+screens: [GV-06]
+checked: 2026-11-24
 ---
 
 # Ghi nội dung buổi và giao BTVN

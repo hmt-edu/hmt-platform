@@ -1,14 +1,14 @@
 ---
-ma_luong: gv5
-ten: Chấm nhận xét từng em và xuất nhận xét
-vai: [giao-vien, tro-giang]
-phan_he: Đào tạo
-cong: gv
-ma_man: [GV-07, GV07X]
-uu_tien: P1
-cap_nhat: 2026-11-24
-nguoi_viet: Tester 2
-di_thu: chờ
+title: Chấm nhận xét từng em và xuất nhận xét
+slug: giao-vien-gv5-cham-nhan-xet
+group: vai
+order: 105
+role: Giáo viên
+portals: [gv]
+priority: P1
+flow: GV5
+screens: [GV-07, GV07X]
+checked: 2026-11-24
 ---
 
 # Chấm nhận xét từng em và xuất nhận xét

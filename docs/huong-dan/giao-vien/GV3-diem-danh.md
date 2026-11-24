@@ -1,14 +1,14 @@
 ---
-ma_luong: gv3
-ten: Điểm danh buổi học
-vai: [giao-vien, tro-giang]
-phan_he: Đào tạo
-cong: gv
-ma_man: [GV-04, GV-05]
-uu_tien: P1
-cap_nhat: 2026-11-24
-nguoi_viet: Tester 2
-di_thu: chờ
+title: Điểm danh buổi học
+slug: giao-vien-gv3-diem-danh
+group: vai
+order: 103
+role: Giáo viên
+portals: [gv]
+priority: P1
+flow: GV3
+screens: [GV-04, GV-05]
+checked: 2026-11-24
 ---
 
 # Điểm danh buổi học

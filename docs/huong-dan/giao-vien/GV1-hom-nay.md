@@ -1,14 +1,14 @@
 ---
-ma_luong: gv1
-ten: Xem buổi hôm nay và việc sắp trễ hạn
-vai: [giao-vien, tro-giang]
-phan_he: Đào tạo
-cong: gv
-ma_man: [GV-01, GV-02]
-uu_tien: P1
-cap_nhat: 2026-11-24
-nguoi_viet: Tester 2
-di_thu: chờ
+title: Xem buổi hôm nay và việc sắp trễ hạn
+slug: giao-vien-gv1-hom-nay
+group: vai
+order: 101
+role: Giáo viên
+portals: [gv]
+priority: P1
+flow: GV1
+screens: [GV-01, GV-02]
+checked: 2026-11-24
 ---
 
 # Xem buổi hôm nay và việc sắp trễ hạn

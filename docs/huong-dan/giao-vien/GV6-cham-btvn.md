@@ -1,14 +1,14 @@
 ---
-ma_luong: gv6
-ten: Chấm BTVN của buổi trước
-vai: [giao-vien, tro-giang]
-phan_he: Đào tạo
-cong: gv
-ma_man: [GV-08]
-uu_tien: P1
-cap_nhat: 2026-11-24
-nguoi_viet: Tester 2
-di_thu: chờ
+title: Chấm BTVN của buổi trước
+slug: giao-vien-gv6-cham-btvn
+group: vai
+order: 106
+role: Giáo viên
+portals: [gv]
+priority: P1
+flow: GV6
+screens: [GV-08]
+checked: 2026-11-24
 ---
 
 # Chấm BTVN của buổi trước

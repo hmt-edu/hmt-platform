@@ -1,14 +1,14 @@
 ---
-ma_luong: gv7
-ten: Kiểm còn thiếu và Hoàn tất buổi
-vai: [giao-vien, tro-giang]
-phan_he: Đào tạo
-cong: gv
-ma_man: [GV-04, GV-09]
-uu_tien: P1
-cap_nhat: 2026-11-24
-nguoi_viet: Tester 2
-di_thu: chờ
+title: Kiểm còn thiếu và Hoàn tất buổi
+slug: giao-vien-gv7-hoan-tat-buoi
+group: vai
+order: 107
+role: Giáo viên
+portals: [gv]
+priority: P1
+flow: GV7
+screens: [GV-04, GV-09]
+checked: 2026-11-24
 ---
 
 # Kiểm còn thiếu và Hoàn tất buổi

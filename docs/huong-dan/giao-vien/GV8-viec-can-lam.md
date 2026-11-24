@@ -1,14 +1,14 @@
 ---
-ma_luong: gv8
-ten: Việc cần làm và việc quá hạn
-vai: [giao-vien, tro-giang]
-phan_he: Đào tạo
-cong: gv
-ma_man: [GV-12]
-uu_tien: P1
-cap_nhat: 2026-11-24
-nguoi_viet: Tester 2
-di_thu: chờ
+title: Việc cần làm và việc quá hạn
+slug: giao-vien-gv8-viec-can-lam
+group: vai
+order: 108
+role: Giáo viên
+portals: [gv]
+priority: P1
+flow: GV8
+screens: [GV-12]
+checked: 2026-11-24
 ---
 
 # Việc cần làm và việc quá hạn
