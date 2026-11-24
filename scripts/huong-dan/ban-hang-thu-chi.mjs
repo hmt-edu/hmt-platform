@@ -228,6 +228,43 @@ const taoDonDaDuyet = async (browser) => {
   return url;
 };
 
+/** Sale tạo phiếu thu nháp cho đơn `url` và trình quản lý: trả địa chỉ phiếu «Đã gửi». */
+const taoPhieuDaGui = (browser, url) =>
+  chuanBi(browser, 'sale.cs5', async (p) => {
+    await p.goto(url);
+    await p.waitForLoadState('networkidle');
+    await nutTen('Tạo phiếu thu')(p).click();
+    await p.getByRole('dialog').getByText('Chọn hình thức').click();
+    await p.getByRole('option', { name: 'Tiền mặt', exact: true }).click();
+    await p
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Tạo phiếu nháp', exact: true })
+      .click();
+    await p
+      .getByText(/Đã tạo phiếu thu nháp/)
+      .first()
+      .waitFor({ timeout: 15000 });
+    await p.waitForLoadState('networkidle');
+    await nutTen('Trình quản lý')(p).click();
+    await p.getByText('Đã trình, chờ quản lý duyệt.').first().waitFor({ timeout: 15000 });
+    const ma = (await p.locator('main').innerText()).match(/PT-[A-Z0-9]+-\d+-\d+/)?.[0] ?? '';
+    return { url: p.url(), ma };
+  });
+
+/** Trưởng cơ sở duyệt phiếu `url` (tích ô xác nhận): phiếu sang «Chờ kế toán». */
+const truongDuyetPhieu = (browser, url) =>
+  chuanBi(browser, 'truongcs.cs5', async (p) => {
+    await p.goto(url);
+    await p.waitForLoadState('networkidle');
+    await nutTen('Duyệt (chuyển Kế toán)')(p).click();
+    await p.getByRole('dialog').getByRole('checkbox').check();
+    await p
+      .getByRole('dialog')
+      .getByRole('button', { name: 'Xác nhận duyệt', exact: true })
+      .click();
+    await p.getByText('Đã duyệt, chuyển Kế toán.').first().waitFor({ timeout: 15000 });
+  });
+
 const BAI = {
   // BH1: lập báo giá, gửi, in (luồng chính, 5 bước). Tạo thêm một báo giá mới ở cơ hội mẫu.
   bh1: (b) =>
@@ -441,6 +478,110 @@ const BAI = {
       ],
       { width: 1280, height: 720 },
       4,
+    );
+  },
+  // TC2: Trưởng cơ sở duyệt phiếu thu (4 bước, bước 4 từ chối chỉ nêu). Tự tạo phiếu «Đã gửi» trước khi quay.
+  tc2: async (b) => {
+    const { url: phieu, ma } = await taoPhieuDaGui(b, await taoDonDaDuyet(b));
+    return chayBai(
+      b,
+      'tc2',
+      async (p) => {
+        await dangNhap(p, EMAIL('truongcs.cs5'));
+        await p.goto(`${APP}/crm/viec-cho-duyet`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Vào «Việc chờ tôi duyệt», bấm mã phiếu «PT-…»',
+          loc: (p) => p.getByText(ma, { exact: true }),
+          lam: async (p) => {
+            await p.getByText(ma, { exact: true }).first().click();
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Kiểm «Số tiền», «Hình thức», «Ngày nhận», «Người lập» và đơn hàng',
+          loc: nutTen('Duyệt (chuyển Kế toán)'),
+        },
+        {
+          chu: 'Bấm «Duyệt (chuyển Kế toán)», tích ô xác nhận rồi bấm «Xác nhận duyệt»',
+          loc: nutTen('Duyệt (chuyển Kế toán)'),
+          lam: async (p) => {
+            await nutTen('Duyệt (chuyển Kế toán)')(p).click();
+            await p.waitForTimeout(1500);
+            await p.getByRole('dialog').getByRole('checkbox').check();
+            await p.waitForTimeout(1200);
+            await p
+              .getByRole('dialog')
+              .getByRole('button', { name: 'Xác nhận duyệt', exact: true })
+              .click();
+            await p.getByText('Đã duyệt, chuyển Kế toán.').first().waitFor({ timeout: 15000 });
+          },
+        },
+        {
+          chu: 'Phiếu sang «Chờ kế toán»; chưa sinh khoản tiền vào, chưa cấp giờ',
+          loc: (p) => p.getByText('Chờ kế toán').first(),
+        },
+      ],
+      { width: 1280, height: 720 },
+      4,
+    );
+  },
+  // TC3: Kế toán duyệt phiếu thu (đủ cọc thì sinh ghi danh). Tự tạo phiếu «Chờ kế toán» trước khi quay.
+  tc3: async (b) => {
+    const { url: phieu, ma } = await taoPhieuDaGui(b, await taoDonDaDuyet(b));
+    await truongDuyetPhieu(b, phieu);
+    return chayBai(
+      b,
+      'tc3',
+      async (p) => {
+        await dangNhap(p, EMAIL('ketoan.cs5'));
+        await p.goto(`${APP}/crm/viec-cho-duyet`);
+        await p.waitForLoadState('networkidle');
+      },
+      [
+        {
+          chu: 'Vào «Việc chờ tôi duyệt», bấm mã phiếu «PT-…»',
+          loc: (p) => p.getByText(ma, { exact: true }),
+          lam: async (p) => {
+            await p.getByText(ma, { exact: true }).first().click();
+            await p.waitForLoadState('networkidle');
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Đối chiếu số tiền, hình thức, đơn hàng rồi bấm «Duyệt phiếu thu»',
+          loc: nutTen('Duyệt phiếu thu'),
+          lam: async (p) => {
+            await nutTen('Duyệt phiếu thu')(p).click();
+            await p.waitForTimeout(2000);
+            const hop = p.getByRole('dialog');
+            const o = hop.getByRole('checkbox');
+            if ((await o.count()) > 0) await o.first().check();
+            await p.waitForTimeout(1500);
+          },
+        },
+        {
+          chu: 'Bấm «Xác nhận duyệt»: sinh khoản tiền vào; đủ cọc thì sinh ghi danh',
+          loc: (p) =>
+            p
+              .getByRole('dialog')
+              .getByRole('button', { name: /Xác nhận duyệt|Duyệt/ })
+              .last(),
+          lam: async (p) => {
+            await p
+              .getByRole('dialog')
+              .getByRole('button', { name: /Xác nhận duyệt|Duyệt/ })
+              .last()
+              .click();
+            await p.waitForTimeout(3500);
+          },
+        },
+      ],
+      { width: 1280, height: 720 },
+      3,
     );
   },
 };
