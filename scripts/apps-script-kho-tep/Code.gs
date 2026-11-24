@@ -8,6 +8,8 @@
  */
 
 var DEPTH_LIMIT = 8; // số cấp thư mục tối đa khi kiểm một tệp có nằm trong thư mục gốc không
+var MAX_BYTES = 21 * 1024 * 1024; // trần cỡ MỘT tệp lưu (giới hạn nghiệp vụ 20 MB, chừa dư); Edge Function đã kiểm trước, đây là lớp chặn thứ hai nếu ai biết URL và mật khẩu
+var MIN_FREE_BYTES = 1024 * 1024 * 1024; // luôn chừa ít nhất 1 GB trống trong tài khoản (sao lưu đêm, thư): còn dưới mức này thì từ chối lưu
 var NAME_RE = /^[A-Za-z0-9_][A-Za-z0-9_.-]{0,63}$/; // tên thư mục con và tên tệp: không bắt đầu bằng dấu chấm, không dấu cách, không ký tự lạ, không tên học sinh
 
 function out_(obj) {
@@ -92,6 +94,11 @@ function doPost(e) {
       case 'save': {
         if (typeof req.name !== 'string' || !NAME_RE.test(req.name)) return fail_('TEN_SAI', 'Tên tệp không hợp lệ.');
         if (typeof req.mimeType !== 'string' || typeof req.dataBase64 !== 'string') return fail_('YEU_CAU_SAI', 'Thiếu dữ liệu.');
+        // Luật trần cỡ: chuỗi base64 dài hơn mức tương ứng MAX_BYTES thì từ chối, chưa giải mã.
+        if (req.dataBase64.length > Math.ceil((MAX_BYTES * 4) / 3) + 4) return fail_('QUA_LON', 'Tệp quá lớn.');
+        // Luật chừa dung lượng: sau khi lưu phải còn ít nhất MIN_FREE_BYTES trống.
+        var free = DriveApp.getStorageLimit() - DriveApp.getStorageUsed();
+        if (free - Math.ceil((req.dataBase64.length * 3) / 4) < MIN_FREE_BYTES) return fail_('HET_CHO', 'Kho đầy, báo quản trị viên.');
         var folder = ensureFolders_(Array.isArray(req.path) ? req.path : []);
         var blob = Utilities.newBlob(Utilities.base64Decode(req.dataBase64), req.mimeType, req.name);
         var file = folder.createFile(blob);

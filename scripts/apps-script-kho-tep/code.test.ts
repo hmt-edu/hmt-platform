@@ -10,7 +10,7 @@ interface Reply {
   [k: string]: unknown;
 }
 type Node = { id: string; parents: Node[]; name: string };
-function setup(secret = 'S3CRET-OK') {
+function setup(secret = 'S3CRET-OK', quota = { used: 5, limit: 10 * 1024 ** 3 }) {
   const root: Node = { id: 'ROOT', parents: [], name: 'HMT' };
   const other: Node = { id: 'OTHER', parents: [], name: 'SAOLUU' };
   const inside: Node = { id: 'IN1', parents: [root], name: 'a' };
@@ -51,8 +51,8 @@ function setup(secret = 'S3CRET-OK') {
         if (!n) throw new Error('khong co');
         return wrap(n);
       },
-      getStorageUsed: () => 5,
-      getStorageLimit: () => 10,
+      getStorageUsed: () => quota.used,
+      getStorageLimit: () => quota.limit,
     },
     Drive: { Files: { remove: vi.fn((id: string) => removed.push(id)) } },
     Utilities: { newBlob: () => ({}), base64Decode: () => [], base64Encode: () => 'AQI=' },
@@ -118,7 +118,34 @@ describe('Apps Script kho tệp', () => {
     expect(setup().call({ action: 'quota', secret: 'S3CRET-OK' })).toEqual({
       ok: true,
       usage: 5,
-      limit: 10,
+      limit: 10 * 1024 ** 3,
     });
+  });
+  it('luật trần cỡ: tệp lớn hơn trần bị từ chối trước khi giải mã', () => {
+    const { call } = setup();
+    const r = call({
+      action: 'save',
+      secret: 'S3CRET-OK',
+      name: 'a.pdf',
+      path: [],
+      mimeType: 'application/pdf',
+      dataBase64: 'A'.repeat(30 * 1024 * 1024),
+    });
+    expect(r.code).toBe('QUA_LON');
+  });
+  it('luật chừa dung lượng: còn dưới 1 GB trống thì từ chối lưu, đủ thì lưu', () => {
+    const base = {
+      action: 'save',
+      secret: 'S3CRET-OK',
+      name: 'a.webp',
+      path: [],
+      mimeType: 'image/webp',
+      dataBase64: 'AQI=',
+    };
+    const gb = 1024 ** 3;
+    expect(setup('S3CRET-OK', { used: 15 * gb - gb / 2, limit: 15 * gb }).call(base).code).toBe(
+      'HET_CHO',
+    );
+    expect(setup('S3CRET-OK', { used: 5 * gb, limit: 15 * gb }).call(base).ok).toBe(true);
   });
 });

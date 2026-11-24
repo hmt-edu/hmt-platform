@@ -31,11 +31,14 @@ Kết luận tạm: Apps Script gỡ được hai vướng của OAuth nhưng **
 - **Tách staging và chạy thật:** hai script, hai thư mục gốc, hai mật khẩu, không chung giá trị. Chạy thật do anh đăng bằng tài khoản chạy thật, chỉ trên trình duyệt, dán secret ở `hmt-deploy`/Supabase `hmt-prod` trên web. Staging **không** có quyền nào vào script prod (khác URL, khác mật khẩu).
 - Tài khoản chủ script bật xác minh 2 bước. Ai sửa được script là sửa được mọi thứ: không chia sẻ dự án script cho ai khác.
 - Không lưu dữ liệu thật trong script (không nhật ký nội dung); tên tệp là uuid.
-- Khuyến nghị tách tài khoản kho tệp khỏi tài khoản đang giữ sao lưu đêm để giảm tầm ảnh hưởng nếu có sự cố; nếu dùng chung thì ràng buộc thư mục gốc ở trên là lớp chặn duy nhất.
+- **BẮT BUỘC (soát 16:11, mức CAO):** script staging chạy bằng **tài khoản Google riêng**, KHÔNG phải tài khoản đang giữ sao lưu đêm prod. Lý do: mật khẩu staging nằm ở Supabase staging (Code, CI đọc được); nếu script cùng tài khoản với sao lưu prod thì lộ mật khẩu staging là chạm được toàn Drive đó. Prod: tài khoản chạy thật, hai script, hai mật khẩu.
+- **Trần trong script (soát, mức VỪA):** mỗi tệp ≤ 21 MB (`MAX_BYTES`, từ chối `QUA_LON` trước khi giải mã) và luôn chừa ≥ 1 GB trống (`MIN_FREE_BYTES`, từ chối `HET_CHO`), để người biết URL và mật khẩu cũng không làm đầy Drive. Có kiểm thử.
+- **Cách giảm mạnh hơn, CHƯA thử (phép 7, mục 5):** khai `oauthScopes` trong `appsscript.json` chỉ `drive.file` để script chỉ thấy tệp do chính nó tạo (thư mục gốc phải do script tạo, không tạo tay; dung lượng đọc bằng Drive.About.get). Chưa rõ DriveApp và `Drive.Files.remove` có chạy đủ dưới phạm vi này không; đo ở staging rồi mới đổi hướng dẫn.
+- Khuyến nghị tách tài khoản kho tệp khỏi tài khoản giữ sao lưu đêm cũng áp cho chạy thật nếu làm được; nếu dùng chung thì ràng buộc thư mục gốc ở trên là lớp chặn duy nhất.
 
 ## 4. Hướng dẫn anh làm tay (staging trước, ~5 bước, ~15 phút)
 
-Đăng nhập tài khoản chủ Drive trong cửa sổ ẩn danh. Chữ trong «» là chữ trên màn hình Google (có thể lệch đôi chút; lệch thì chụp màn hình gửi Chat). Không gửi mật khẩu vào chat.
+Đăng nhập **tài khoản Google riêng của kho tệp staging (không phải tài khoản giữ sao lưu đêm)** trong cửa sổ ẩn danh. Chữ trong «» là chữ trên màn hình Google (có thể lệch đôi chút; lệch thì chụp màn hình gửi Chat). Không gửi mật khẩu vào chat.
 
 **Bước 0 (một lần).** Mở `drive.google.com` > «+ Mới» > «Thư mục mới», tên `HMT-staging` > «Tạo». Mở thư mục, thanh địa chỉ có `.../folders/XXXX`: chép `XXXX` (đây là `ROOT_FOLDER_ID`, không phải bí mật). Tạo một chuỗi ngẫu nhiên 40 ký tự ở trình quản lý mật khẩu (chữ và số), chép làm `SECRET`.
 
@@ -53,7 +56,7 @@ Kết quả cuối: báo Chat «Xong staging Apps Script» (kèm `ROOT_FOLDER_ID
 
 ## 5. Phép thử (CHƯA làm: cần script đã đăng ở bước 4)
 
-Mã script đã được kiểm bằng Drive giả (5 bài: mật khẩu, thư mục gốc, tên, xoá vĩnh viễn, dung lượng), **chưa chạy trên Google thật**. Còn phải đo ở staging, mỗi phép ghi kết quả vào PR:
+Mã script đã được kiểm bằng Drive giả (7 bài: mật khẩu, thư mục gốc, tên, xoá vĩnh viễn, dung lượng, trần cỡ, chừa dung lượng), **chưa chạy trên Google thật**. Còn phải đo ở staging, mỗi phép ghi kết quả vào PR:
 
 1. POST có thân 200 KB, 500 KB, 1 MB qua Edge Function: có theo chuyển hướng 302 của Apps Script không; trả đúng JSON không.
 2. Thời gian phản hồi lần «lạnh» và lần «ấm» (đo 10 lần).
@@ -61,5 +64,7 @@ Mã script đã được kiểm bằng Drive giả (5 bài: mật khẩu, thư m
 4. Xoá vĩnh viễn thật: tệp biến mất, `getStorageUsed` giảm, không còn trong thùng rác.
 5. Sai mật khẩu: bị từ chối; tệp ngoài thư mục gốc (một tệp thử anh tạo ở nơi khác) không đọc, không xoá được.
 6. Edge Function chuyển tiếp xem ảnh: đúng loại, ảnh mở được.
+7. Phạm vi hẹp `drive.file`: thêm `oauthScopes` chỉ `drive.file` vào `appsscript.json`, để script tự tạo thư mục gốc; thử `save`, `read`, `remove`, `quota` còn chạy không; thử một tệp tạo tay ngoài kho có bị từ chối không. Đạt thì đổi hướng dẫn bước 0 và 3.
+8. Đọc tệp lớn: `read` một PDF 20 MB (base64 ≈ 27 MB) có trả được trong hạn thời gian không; nếu không thì giảm giới hạn tệp hoặc đọc theo đoạn.
 
 Nếu phép 1 hoặc 3 không đạt thì khuyến nghị quay lại OAuth (kèm cách lo trang chính sách riêng tư: một trang tĩnh trên Cloudflare Pages của chính dự án là đủ cho «Publish app»; làm được không cần tên miền riêng, CHƯA CHẮC Google chấp nhận).
