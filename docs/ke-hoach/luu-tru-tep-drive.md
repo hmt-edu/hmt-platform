@@ -13,8 +13,8 @@ Giới hạn đã chốt: 20 MB mỗi tệp, 10 tệp mỗi lần, 50 MB tổng 
 - **Ảnh thu nhỏ** 20–30 KB tạo ở trình duyệt; danh sách chỉ tải ảnh thu nhỏ.
 - **Chặn nộp trùng** bằng SHA-256 (chỉ mục duy nhất ở bảng `stored_file`).
 - Bảng `stored_file` + RLS + chỉ mục (#692): cột `storage_key` giờ là **id tệp Drive**, `thumb_storage_key` là id ảnh thu nhỏ.
-- Luật dọn hạng 1/2/3 (anh duyệt 23/11): Hạng 1 = ảnh của học sinh đã Dừng học sau 30 ngày chờ; Hạng 2 = học sinh mọi ghi danh đã kết thúc, không còn lớp đang học hay bảo lưu; Hạng 3 = ảnh quá hạn giữ của học sinh đang học. Bảo lưu và Tạm nghỉ không vào hạng 1, 2; quay lại trong 30 ngày thì thoát hạng 1; không bao giờ xoá ảnh của học sinh còn ghi danh hoạt động. Chỉ tệp bài làm; điểm, nhận xét, trạng thái nộp ở lại Postgres; sau xoá màn hiện «Ảnh đã được dọn theo quy định lưu trữ». Chạy hằng đêm, theo lô, **có chế độ chạy thử** (`file_cleanup_dry_run` bật lúc đầu), chỉ Admin đổi tham số hay bấm xoá tay; ghi nhật ký (lớp, tháng, số tệp, người, thời điểm).
-- Chặn mềm ở 80% hạn mức và báo Admin; khoá chỉ trong secret của Edge Function; staging dùng thư mục Drive riêng; không khoá chạy thật trên máy Mac.
+- Luật dọn hạng 1/2/3 (anh duyệt 23/11): Hạng 1 = ảnh của học sinh đã Dừng học sau 30 ngày chờ; Hạng 2 = học sinh mọi ghi danh đã kết thúc, không còn lớp đang học hay bảo lưu; Hạng 3 = ảnh quá hạn giữ của học sinh đang học: **xoá hẳn** (anh chốt 24/11: xoá vĩnh viễn trên Drive và đánh dấu `stored_file` là DA_XOA, KHÔNG lưu trữ). Bảo lưu và Tạm nghỉ không vào hạng 1, 2; quay lại trong 30 ngày thì thoát hạng 1; không bao giờ xoá ảnh của học sinh còn ghi danh hoạt động. Chỉ tệp bài làm; điểm, nhận xét, trạng thái nộp ở lại Postgres; sau xoá màn hiện «Ảnh đã được dọn theo quy định lưu trữ». Chạy hằng đêm, theo lô, **có chế độ chạy thử** (`file_cleanup_dry_run` bật lúc đầu), chỉ Admin đổi tham số hay bấm xoá tay; ghi nhật ký (lớp, tháng, số tệp, người, thời điểm).
+- Chặn mềm theo **dung lượng còn trống tối thiểu** (tham số `file_storage_min_free_gb`, mặc định 3 GB; tài khoản Drive còn giữ sao lưu đêm nên không tính theo % của riêng ảnh) và báo Admin; khoá chỉ trong secret của Edge Function; staging dùng thư mục Drive riêng; không khoá chạy thật trên máy Mac.
 
 ## 1. Xác thực Drive
 
@@ -40,7 +40,7 @@ Luồng chung:
 
 1. Trình duyệt nén ảnh, tính SHA-256, tạo ảnh thu nhỏ.
 2. Gọi Edge Function `file-upload-start` với danh sách tệp (loại, cỡ, mã băm, buổi hoặc bài nộp đích) và phiên đăng nhập.
-3. Edge Function kiểm: quyền (học sinh nộp bài của chính mình; giáo viên của lớp đính kèm; bằng hàm DB kiểu `app.assert_*`), loại và cỡ theo tham số, công tắc tính năng theo cơ sở, chống gửi dồn, **trùng mã băm**, **chặn mềm 80% dung lượng**.
+3. Edge Function kiểm: quyền (học sinh nộp bài của chính mình; giáo viên của lớp đính kèm; bằng hàm DB kiểu `app.assert_*`), loại và cỡ theo tham số, công tắc tính năng theo cơ sở, chống gửi dồn, **trùng mã băm**, **chặn mềm khi dung lượng còn trống dưới mức tối thiểu**.
 4. Cách A: trả địa chỉ phiên cho từng tệp và ảnh thu nhỏ; cách B: nhận tệp. Ghi dòng `stored_file` trạng thái `CHO_TAI`.
 5. Xong: gọi `file-upload-done` kèm id tệp Drive; Edge Function hỏi Drive (metadata) xác nhận đúng cỡ rồi đổi `DANG_DUNG`. Tệp `CHO_TAI` quá 1 giờ: việc dọn xoá vĩnh viễn khỏi Drive và đánh `DA_XOA`.
 6. Lỗi giữa chừng: giao diện cho thử lại; trình duyệt giữ tệp.
@@ -70,10 +70,10 @@ Giả định 500 em, 19.500 ảnh/tháng (không phải số đo):
 
 | Cỡ mỗi ảnh | Hạn giữ | Dung lượng ổn định (chưa kể ảnh thu nhỏ ~15%) |
 | ---------- | ------- | --------------------------------------------- |
-| 150 KB     | 90 ngày | khoảng 8,8 GB (trong 15 GB)                   |
-| 300 KB     | 90 ngày | khoảng 17,5 GB (**vượt** 15 GB)               |
+| 150 KB     | 60 ngày | khoảng 5,9 GB (trong 15 GB)                   |
+| 300 KB     | 60 ngày | khoảng 11,7 GB (sát giới hạn khi cộng sao lưu) |
 
-Đề xuất: **hạn giữ mặc định 90 ngày nếu nén ≤ 150 KB, rút còn 60 ngày nếu thử nén ra lớn hơn** (anh chưa chốt hạn giữ; là **tham số** `file_retention_days`). 15 GB tính **chung cả tài khoản Google** (Gmail, Drive khác): **quyết định: kho tệp dùng TÀI KHOẢN GOOGLE RIÊNG** (không chung với sao lưu đêm và hộp thư vận hành; mỗi môi trường một tài khoản, xem mục 8). Không còn là câu hỏi mở. Chặn mềm khi tổng dung lượng chạm 80% (`file_storage_soft_limit_percent`, hạn mức `file_storage_free_gb` = 15) và báo Admin; Edge Function hỏi dung lượng còn lại của Drive (`about.get`).
+**Anh chốt 24/11: hạn giữ mặc định 60 ngày** (tham số `file_retention_days`, đổi được; ảnh quá hạn xoá hẳn, không lưu trữ). 15 GB tính **chung cả tài khoản Google** (Gmail, Drive khác): **quyết định: kho tệp dùng TÀI KHOẢN GOOGLE RIÊNG** (không chung với sao lưu đêm và hộp thư vận hành; mỗi môi trường một tài khoản, xem mục 8). Không còn là câu hỏi mở. **Chặn mềm theo dung lượng còn trống** (anh chốt 24/11): Edge Function hỏi `about.get` (dùng cả tài khoản, đã gồm sao lưu đêm và Gmail); còn trống (hạn mức trừ đã dùng) dưới `file_storage_min_free_gb` (mặc định 3 GB) thì chặn tải mới và báo Admin; Edge Function hỏi dung lượng còn lại của Drive (`about.get`).
 
 ## 7. Thư mục và bảng DB
 
@@ -109,7 +109,7 @@ Làm **hai lần**, một cho staging, một cho chạy thật (khác tài kho�
 1. Đồng ý OAuth refresh token + scope `drive.file` + «In production»?
 2. Thử cách A (tải thẳng lên Drive) trước, rơi về B nếu CORS không qua?
 3. ~~Tài khoản Google riêng cho kho tệp?~~ Đã chốt: riêng, mỗi môi trường một tài khoản (mục 6, 8).
-4. Hạn giữ 90 ngày (nén ≤ 150 KB) / 60 ngày (nếu lớn hơn) làm mặc định?
+4. ~~Hạn giữ mặc định~~ Đã chốt 24/11: 60 ngày.
 
-5. Hạng 3 «xoá thẳng sau hạn» khác luật 23/11 (lưu trữ rồi xoá): chờ anh xác nhận; đề xuất xoá hẳn sau hạn.
+5. ~~Hạng 3 xoá thẳng~~ Đã chốt 24/11: xoá hẳn sau hạn, không lưu trữ (đổi luật 23/11).
 6. Ảnh HEIC không gửi nguyên: trình duyệt đổi sang WebP; không đổi được thì báo trước khi nộp (#693).
