@@ -1024,6 +1024,84 @@ const BAI = {
       4,
     );
   },
+  // Video KHỚP TỪNG BƯỚC bài KH1 (tìm khách, hồ sơ 360°): 7 bước, chỉ đọc (menu «Hành động» mở rồi đóng, không sửa gì).
+  kh1: (b) => {
+    const tim = (p) => p.getByPlaceholder(/Tìm tên/).first();
+    const mo = async (p, route) => {
+      await p.goto(`${APP}${route}`);
+      await p.waitForLoadState('networkidle');
+      await p.waitForTimeout(1500);
+    };
+    const menu = async (p) => {
+      await p.getByRole('button', { name: 'Hành động', exact: true }).click();
+      await p.waitForTimeout(1500);
+      await p.keyboard.press('Escape');
+      await p.waitForTimeout(600);
+    };
+    return chayBai(
+      b,
+      'kh1',
+      async (p) => {
+        await dangNhap(p);
+        await mo(p, '/crm/phu-huynh');
+      },
+      [
+        {
+          chu: 'Vào Khách hàng → Phụ huynh, gõ vào ô tìm tên, số điện thoại, mã',
+          loc: tim,
+          lam: async (p) => {
+            await tim(p).fill('[MẪU]');
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Bấm một dòng để mở hồ sơ phụ huynh',
+          loc: (p) => p.locator('main tbody tr').first(),
+          lam: async (p) => {
+            await p.locator('main tbody tr').first().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Xem các con: tab «Các con»; tab «Đơn hàng» và «Phiếu thu» cho biết đã mua và đóng gì',
+          loc: (p) => p.getByText('Các con', { exact: true }).first(),
+          lam: async (p) => {
+            await p.getByText('Các con', { exact: true }).first().click();
+            await p.waitForTimeout(2000);
+            await mo(p, '/crm/hoc-sinh');
+          },
+        },
+        {
+          chu: 'Muốn tìm học sinh: Khách hàng → Học sinh, gõ vào ô tìm tên, mã',
+          loc: tim,
+          lam: async (p) => {
+            await tim(p).fill('[MẪU]');
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Mở hồ sơ học sinh (hồ sơ 360°) với các tab «Tổng quan», «Học tập», «Điểm danh»',
+          loc: (p) => p.locator('main tbody tr').first(),
+          lam: async (p) => {
+            await p.locator('main tbody tr').first().click();
+            await p.waitForTimeout(2500);
+          },
+        },
+        {
+          chu: 'Cần sửa thông tin: menu «Hành động» → «Sửa», đổi ô cần đổi rồi lưu',
+          loc: (p) => p.getByRole('button', { name: 'Hành động', exact: true }),
+          lam: menu,
+        },
+        {
+          chu: 'Việc khác trong menu «Hành động»: «Gộp», «Tạo ticket», «Cấp tài khoản»',
+          loc: (p) => p.getByRole('button', { name: 'Hành động', exact: true }),
+          lam: menu,
+        },
+      ],
+      { width: 1280, height: 720 },
+      7,
+    );
+  },
 };
 
 const chon = process.argv[2] ?? 'tat-ca';
