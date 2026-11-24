@@ -1,18 +1,12 @@
 // Dựng khối markdown của trang Hướng dẫn thành giao diện (A-23-30). Mọi chữ đưa ra dạng văn bản, không chèn HTML thô.
 import { useState, type ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router';
+import { loadVideoManifest } from './videoManifest';
 import type { Block, Inline, ListItem } from './markdown';
 
-/** Ảnh hoặc video nhúng từ public/huong-dan/. Chưa có file thì ẨN (không hiện chữ kỹ thuật cho người dùng) và báo lên để ẩn cả dòng «Ảnh:». */
-function Media({
-  kind,
-  name,
-  onMissing,
-}: {
-  kind: 'image' | 'video';
-  name: string;
-  onMissing: () => void;
-}) {
+/** Ảnh nhúng từ public/huong-dan/anh (video: xem GuideVideo, theo manifest). Chưa có file thì ẨN (không hiện chữ kỹ thuật cho người dùng) và báo lên để ẩn cả dòng «Ảnh:». */
+function Media({ kind, name, onMissing }: { kind: 'image'; name: string; onMissing: () => void }) {
   const [missing, setMissing] = useState(false);
   if (missing) return null;
   const fail = () => {
@@ -30,14 +24,41 @@ function Media({
       />
     );
   }
+  return null;
+}
+
+const VIDEO_STALE_MS = 3_600_000; // allow-number: giữ danh sách video trong bộ nhớ một giờ (trình bày), không phải số nghiệp vụ
+
+/** Video lấy theo manifest (Drive hoặc tệp). Chưa có thì hiện «Video đang cập nhật», không ẩn dòng. */
+function GuideVideo({ name }: { name: string }) {
+  const manifest = useQuery({
+    queryKey: ['huong-dan', 'video-manifest'],
+    staleTime: VIDEO_STALE_MS,
+    queryFn: loadVideoManifest,
+  });
+  const label = name.replace(/-/g, ' ');
+  if (manifest.isPending) return <p className="my-2 text-caption text-fg-muted">Đang tải video…</p>;
+  const source = manifest.data?.[name];
+  if (!source) return <p className="my-2 text-caption text-fg-muted">Video đang cập nhật.</p>;
+  if (source.kind === 'drive') {
+    return (
+      <iframe
+        src={source.src}
+        title={label}
+        loading="lazy"
+        sandbox="allow-scripts allow-same-origin allow-presentation"
+        allowFullScreen
+        className="my-2 block aspect-video w-full max-w-3xl rounded-control border border-border"
+      />
+    );
+  }
   return (
     <video
-      src={`/huong-dan/video/${name}.mp4`}
+      src={source.src}
       controls
       preload="none"
-      aria-label={name.replace(/-/g, ' ')}
+      aria-label={label}
       className="my-2 block max-w-full rounded-control border border-border"
-      onError={fail}
     />
   );
 }
@@ -96,7 +117,7 @@ function Inlines({
           case 'image':
             return <Media key={key} kind="image" name={it.name} onMissing={onMissing} />;
           case 'video':
-            return <Media key={key} kind="video" name={it.name} onMissing={onMissing} />;
+            return <GuideVideo key={key} name={it.name} />;
         }
       })}
     </>

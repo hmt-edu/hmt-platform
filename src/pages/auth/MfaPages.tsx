@@ -24,7 +24,7 @@ function useTotpDevices() {
   });
 }
 
-/** DN03 · Xác thực hai bước: nhập mã 6 số sau khi đăng nhập (Admin, Kế toán). Không có mã dự phòng. */
+/** DN03 · Xác thực hai bước: nhập mã 6 số sau khi đăng nhập (Admin). Không có mã dự phòng. */
 export function MfaVerifyPage() {
   const { supabase, claims, refresh } = useAuth();
   const devices = useTotpDevices();
@@ -79,7 +79,7 @@ export function MfaVerifyPage() {
           <AuthNote center>
             Mất điện thoại? Liên hệ quản trị viên để đặt lại xác thực hai bước
           </AuthNote>
-          <AuthNote center>Bắt buộc với tài khoản Admin và Kế toán.</AuthNote>
+          <AuthNote center>Bắt buộc với tài khoản Admin.</AuthNote>
         </form>
       )}
       <SignOutLink />
@@ -104,7 +104,7 @@ export function MfaSetupPage() {
       title={step === 1 ? 'Bật xác thực hai bước' : 'Nhập mã từ ứng dụng'}
       subtitle={
         step === 1
-          ? 'Tài khoản Admin và Kế toán phải bật trước khi dùng hệ thống. Cài ứng dụng xác thực (Google Authenticator, Microsoft Authenticator…) rồi quét mã dưới đây.'
+          ? 'Tài khoản Admin phải bật trước khi dùng hệ thống. Cài ứng dụng xác thực (Google Authenticator, Microsoft Authenticator…) rồi quét mã dưới đây.'
           : 'Nhập mã 6 số ứng dụng đang hiện để xác nhận đã cài đúng.'
       }
       eyebrow={step === 1 ? 'BƯỚC 1/2 · QUÉT MÃ' : 'BƯỚC 2/2 · NHẬP MÃ'}

@@ -1,3 +1,12 @@
+---
+title: Bắt đầu nhanh
+slug: bat-dau-nhanh
+group: bat-dau
+no: 1
+order: 20
+portals: [crm]
+---
+
 # 1. Bắt đầu nhanh
 
 Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giáo viên, trợ giảng, học sinh, phụ huynh. Chữ trong dấu «…» là chữ hiện trên màn.
@@ -89,6 +98,8 @@ Dành cho mọi người dùng lần đầu vào hệ thống: nhân viên, giá
 - **Ảnh:** [ẢNH: menu-tai-khoan]
 
 ## Dữ liệu mẫu
-_(Để trống: viết sau khi tính năng chạy.)_
+Dữ liệu mẫu là bộ dữ liệu giả để tập dùng, tạo ở «Dữ liệu mẫu của tôi» trong menu tài khoản (mọi dòng ghi «[MẪU]»; không gửi tin thật).
+
+- **Phiếu «Cập nhật hồ sơ» mẫu do chính bạn tạo sẽ chờ NGƯỜI KHÁC cùng cơ sở duyệt.** Người lập phiếu không tự duyệt phiếu của mình, nên phiếu này **không** hiện trong «Việc chờ tôi duyệt» của bạn. Muốn thử bước duyệt: nhờ một Trưởng cơ sở khác của cơ sở đó mở «Việc chờ tôi duyệt».
 
 - **Video (26 giây: tạo một bộ, xem danh sách, xoá bộ):** [VIDEO: huong-dan-du-lieu-mau]

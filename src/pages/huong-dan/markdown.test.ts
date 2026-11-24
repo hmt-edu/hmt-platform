@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { fold, searchGuide, type GuideSection } from './guideIndex';
+import { fold, searchGuide, type SearchSection } from './guideIndex';
 import { outline, parseInline, parseMarkdown, plainText, safeHref, slugify } from './markdown';
 
 describe('Hướng dẫn: bộ phân tích markdown (A-23-30)', () => {
@@ -70,13 +70,7 @@ describe('Hướng dẫn: bộ phân tích markdown (A-23-30)', () => {
 });
 
 describe('Hướng dẫn: tìm kiếm (A-23-30)', () => {
-  const section: GuideSection = {
-    slug: 'x',
-    no: '1',
-    title: 'Mục X',
-    file: 'x.md',
-    group: 'bat-dau',
-  };
+  const section: SearchSection = { slug: 'x', title: 'Mục X' };
   const docs = [
     {
       section,

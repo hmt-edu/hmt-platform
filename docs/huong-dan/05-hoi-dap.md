@@ -1,3 +1,11 @@
+---
+title: Hỏi đáp và lỗi thường gặp
+slug: hoi-dap
+group: tra-cuu
+order: 130
+portals: [crm, gv]
+---
+
 # Hỏi đáp và lỗi thường gặp
 
 Đọc nhanh khi gặp câu báo lỗi hoặc thấy một nút «mất». Chữ trong dấu «…» là chữ trên màn thật. Hệ thống luôn hiện **câu tiếng Việt** ngay trên màn; nếu cần báo người hỗ trợ, chụp màn hình kèm câu đó và mã khách hoặc mã đơn (dữ liệu trong ví dụ là giả). Gợi ý: gõ vài chữ của câu báo lỗi vào ô tìm của trang Hướng dẫn.
