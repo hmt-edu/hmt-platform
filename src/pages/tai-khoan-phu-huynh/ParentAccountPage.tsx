@@ -1,6 +1,6 @@
 // QT-17 Tài khoản phụ huynh (danh sách, khuôn K03; canvas QT17_* chưa lưu trong repo: làm theo ghi chú Design 23/11 và khuôn QT-13/QT-02).
 // Phụ huynh đăng nhập bằng MÃ PH + mật khẩu trung tâm cấp (CHUNG-23). Chưa cấp: Cấp tài khoản. Đang dùng: Đặt lại mật khẩu, Khoá.
-// Đã khoá: chỉ Đặt lại mật khẩu (KHÔNG có Mở khoá, theo bản đồ màn hình). Khoá không bắt lý do. Mật khẩu tạm hiện MỘT lần ở hộp K4g, không lưu,
+// Đã khoá: Đặt lại mật khẩu + Mở khoá (anh Trường chốt 24/11 23:52: Quản trị mở lại được phụ huynh bị khoá; Đặt lại mật khẩu KHÔNG gỡ khoá). Khoá không bắt lý do. Mật khẩu tạm hiện MỘT lần ở hộp K4g, không lưu,
 // không gửi email. Chỉ Admin đã xác thực hai bước (như QT-13). Lọc, tìm, phân trang ở máy chủ.
 import { useMemo, useState } from 'react';
 import { Button } from '../../ui/Button';
@@ -11,7 +11,7 @@ import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import { useToast } from '../../ui/toastContext';
 import { ActionConfirmDialog, TempPasswordDialog } from '../nguoi-dung/UserDialogs';
-import { resetUserPassword } from '../nguoi-dung/useUserData';
+import { resetUserPassword, unlockUser } from '../nguoi-dung/useUserData';
 import { EMPTY_PARENT_ACCOUNT_STATE, buildParentAccountConfig } from './parentAccountConfig';
 import { buildParentAccountFilters } from './parentAccountFilters';
 import type { ParentAccountRow } from './parentAccountTypes';
@@ -34,6 +34,7 @@ export function ParentAccountPage() {
   const [issuing, setIssuing] = useState<ParentAccountRow | null>(null);
   const [resetting, setResetting] = useState<ParentAccountRow | null>(null);
   const [locking, setLocking] = useState<ParentAccountRow | null>(null);
+  const [unlocking, setUnlocking] = useState<ParentAccountRow | null>(null);
   const [temp, setTemp] = useState<{ password: string; name: string } | null>(null);
 
   const canEdit = access.can('ADMIN', 'SUA');
@@ -64,6 +65,9 @@ export function ParentAccountPage() {
             <span className="flex flex-wrap gap-1.5">
               <Button onClick={() => setResetting(row)}>Đặt lại mật khẩu</Button>
               {row.state === 'HOAT_DONG' && <Button onClick={() => setLocking(row)}>Khoá</Button>}
+              {row.state === 'BI_KHOA' && (
+                <Button onClick={() => setUnlocking(row)}>Mở khoá</Button>
+              )}
             </span>
           );
         },
@@ -139,10 +143,20 @@ export function ParentAccountPage() {
         onOpenChange={(open) => !open && setLocking(null)}
         name={locking ? `${locking.parent_code} ${locking.full_name}` : ''}
         title="Khoá tài khoản"
-        description="Phụ huynh không đăng nhập được nữa và bị đăng xuất khỏi mọi thiết bị. Muốn vào lại thì Đặt lại mật khẩu."
+        description="Phụ huynh không đăng nhập được nữa và bị đăng xuất khỏi mọi thiết bị. Muốn vào lại thì Mở khoá."
         confirmLabel="Khoá"
         onConfirm={() => lockParentAccount(supabase, locking?.user_id ?? '')}
         onDone={() => done(`Đã khoá tài khoản của ${locking?.full_name ?? 'phụ huynh'}.`)}
+      />
+      <ActionConfirmDialog
+        open={unlocking !== null}
+        onOpenChange={(open) => !open && setUnlocking(null)}
+        name={unlocking ? `${unlocking.parent_code} ${unlocking.full_name}` : ''}
+        title="Mở khoá tài khoản"
+        description="Phụ huynh đăng nhập lại được bằng mật khẩu hiện có. Quên mật khẩu thì Đặt lại mật khẩu."
+        confirmLabel="Mở khoá"
+        onConfirm={() => unlockUser(supabase, unlocking?.user_id ?? '')}
+        onDone={() => done(`Đã mở khoá tài khoản của ${unlocking?.full_name ?? 'phụ huynh'}.`)}
       />
       <TempPasswordDialog
         password={temp?.password ?? null}
