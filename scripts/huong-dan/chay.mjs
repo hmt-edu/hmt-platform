@@ -100,13 +100,20 @@ async function chayBai(
       if (hop) await page.mouse.move(hop.x + hop.width / 2, hop.y + hop.height / 2, { steps: 12 });
     }
     await ve(page, loc, so, b.chu, tong);
-    await page.waitForTimeout(DUNG);
+    // Phụ đề phải đọc kịp (anh chốt 24/11): tối thiểu 3 giây, khoảng 1 giây cho mỗi 13 ký tự; video khớp từng bước (tong > 0) dùng mức này.
+    await page.waitForTimeout(tong ? Math.max(3000, Math.ceil((b.chu.length / 13) * 1000)) : DUNG);
     const anh = `buoc-${so}.png`;
     await page.screenshot({ path: join(dir, anh) });
     ghi.push({ so, chu: b.chu, anh });
-    await goKhung(page);
+    // Video khớp từng bước: GIỮ phụ đề trong lúc thao tác và lúc màn đổi (bước sau tự thay phụ đề); bản cũ gỡ khung trước khi làm.
+    if (!tong) await goKhung(page);
+    else
+      await page.evaluate(() => {
+        const lop = document.getElementById('hd-lop');
+        while (lop && lop.children.length > 1) lop.firstElementChild.remove(); // gỡ khung, giữ phụ đề
+      });
     await b.lam?.(page, loc);
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(tong ? 1200 : 500);
   }
   const video = page.video();
   await context.close();
