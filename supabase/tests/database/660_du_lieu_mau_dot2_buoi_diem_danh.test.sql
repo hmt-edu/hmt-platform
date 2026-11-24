@@ -1,4 +1,4 @@
--- Dữ liệu mẫu đợt 2, mảnh buổi học, điểm danh, nội dung, bài tập, nhận xét (migration 658; E-23-31, E-23-33). Dữ liệu giả.
+-- Dữ liệu mẫu đợt 2, mảnh buổi học, điểm danh, nội dung, bài tập, nhận xét (migration 660; E-23-31, E-23-33). Dữ liệu giả.
 begin;
 create extension if not exists pgtap with schema extensions;
 select no_plan();
@@ -126,6 +126,21 @@ select is(pg_temp.n((select id from s2), 'att'), 6::bigint, 'Đúng: bộ của 
 select pg_temp.claims(pg_temp.uid('gv5'), 'aal1');
 select is(pg_temp.err($$insert into s2 select app.create_demo_data_set()$$), null, 'Quyết định 5: Giáo viên (không được phân công lớp mẫu) vẫn tạo được bộ');
 select is(pg_temp.n((select id from s1), 'att'), 6::bigint, 'Đúng: bộ đầu không bị đổi thêm khi tạo bộ khác');
+
+-- E-23-34: buổi sinh muộn của lớp mẫu thừa hưởng cờ mẫu và thuộc đúng bộ; xoá bộ thì bộ ở trạng thái đã xoá cùng buổi đó.
+select pg_temp.sudo($$insert into app.class_session select (jsonb_populate_record(null::app.class_session,
+  to_jsonb(s) || jsonb_build_object('id', gen_random_uuid(), 'session_no', 99, 'is_demo', false))).*
+  from app.class_session s where s.is_demo and s.class_id = (select c.id from app.class c where c.is_demo and c.status_code = 'DA_DUYET' order by c.created_at limit 1) limit 1$$);
+select is(pg_temp.sql_count($$select count(*) from app.class_session where session_no = 99 and is_demo$$), 1::bigint,
+  'E-23-34: buổi sinh muộn của lớp mẫu mang cờ is_demo');
+select is(pg_temp.sql_count($$select count(*) from app.demo_data_item i join app.class_session s on s.id = i.entity_id
+  where i.entity_type = 'SESSION' and s.session_no = 99$$), 1::bigint,
+  'E-23-34: buổi sinh muộn nằm trong bộ của lớp mẫu (xoá bộ thì buổi bị ẩn)');
+select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
+select is(pg_temp.err(format($$select app.delete_demo_data_set(%L)$$, (select id from s1))), null, 'E-23-34: chủ bộ xoá được bộ');
+select is(pg_temp.sql_count($$select count(*) from app.demo_data_item i join app.demo_data_set d on d.id = i.set_id
+  join app.class_session s on s.id = i.entity_id where i.entity_type = 'SESSION' and s.session_no = 99 and d.status_code = 'DA_XOA'$$), 1::bigint,
+  'E-23-34: xoá bộ → buổi mẫu sinh muộn thuộc bộ đã xoá (bị ẩn)');
 
 -- Luật khoá: công tắc tắt thì không tạo bộ, không phát sinh điểm danh mới.
 select pg_temp.sudo($$update app.setting_def set value = 'false' where key = 'demo_data_enabled'$$);

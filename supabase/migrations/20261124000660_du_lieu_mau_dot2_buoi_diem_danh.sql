@@ -160,3 +160,42 @@ begin
   return v_id;
 end;
 $$;
+
+-- ---------------------------------------------------------------------------
+-- E-23-34: buổi sinh MUỘN của lớp mẫu (duyệt lớp sau, phân lớp, buổi bù/bổ trợ) phải mang cờ mẫu.
+-- Làm gì: trước khi chèn buổi, nếu lớp là lớp mẫu thì đặt is_demo = true và ghi demo_data_item vào đúng bộ của lớp.
+-- Ai gọi: trigger, không gọi tay. Luật: xoá bộ ẩn được cả buổi sinh sau (ra-soát báo buổi mất cờ mẫu).
+-- Chỉ mục: dùng demo_data_item_entity_idx (entity_type, entity_id) để tìm bộ của lớp.
+-- ---------------------------------------------------------------------------
+create or replace function app.class_session_inherit_demo()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_set uuid;
+begin
+  if new.is_demo then
+    return new;
+  end if;
+  -- Luật: chỉ lớp mẫu truyền cờ cho buổi.
+  select i.set_id into v_set
+    from app.demo_data_item i
+    join app.class c on c.id = new.class_id and c.is_demo
+   where i.entity_type = 'CLASS' and i.entity_id = new.class_id
+   limit 1;
+  if v_set is not null then
+    new.is_demo := true;
+    insert into app.demo_data_item (set_id, entity_type, entity_id, created_by, updated_by)
+    values (v_set, 'SESSION', new.id, auth.uid(), auth.uid())
+    on conflict (set_id, entity_type, entity_id) do nothing;
+  end if;
+  return new;
+end;
+$$;
+revoke all on function app.class_session_inherit_demo() from public, anon, authenticated;
+
+create trigger class_session_inherit_demo
+  before insert on app.class_session
+  for each row execute function app.class_session_inherit_demo();
