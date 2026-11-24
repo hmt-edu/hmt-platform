@@ -50,7 +50,7 @@ screens: [CHUNG-15]
 
 ## Hỏi đáp
 - **Có duyệt một lượt nhiều việc được không?** Không, mỗi việc duyệt riêng.
-- **Sao việc tôi vừa lập không hiện ở đây?** Người lập không tự duyệt; việc đó chờ người khác.
+- **Sao việc tôi vừa lập không hiện ở đây?** Người lập không tự duyệt; đơn hàng, phiếu thu chờ quản lý trực tiếp duyệt (Trưởng cơ sở lập thì tự qua cấp của mình).
 - **Mục này có ở cổng Giáo viên không?** Không, chỉ ở cổng CRM.
 
 ## Tập trên dữ liệu mẫu

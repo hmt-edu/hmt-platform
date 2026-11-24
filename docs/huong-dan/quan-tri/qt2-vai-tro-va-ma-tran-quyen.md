@@ -21,7 +21,7 @@ cap_nhat: 2026-11-24
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn là Admin. Vai khác không thấy mục này.
 - [ ] Chỉ **xem**: không cần gì thêm.
-- [ ] Muốn **sửa**: tham số «Cho phép sửa ma trận quyền» (Quản trị → Cài đặt tham số, nhóm Đăng nhập, bảo mật) đang **Bật**. Đang tắt thì trên màn Ma trận quyền có dòng cảnh báo vàng «Sửa ma trận quyền đang tắt…» và không có nút «Sửa». Bật xong, làm xong việc thì nên tắt lại.
+- [ ] Muốn **sửa**: tham số «Cho phép sửa ma trận quyền» (Quản trị → Tham số nghiệp vụ, nhóm Đăng nhập, bảo mật) đang **Bật**. Đang tắt thì trên màn Ma trận quyền có dòng cảnh báo vàng «Sửa ma trận quyền đang tắt…» và không có nút «Sửa». Bật xong, làm xong việc thì nên tắt lại.
 - [ ] Bạn đã biết chính xác vai trò nào, phân hệ nào, hành động nào cần đổi, và ai đồng ý.
 
 ## Luật cần nhớ (lời thường)
@@ -59,7 +59,7 @@ cap_nhat: 2026-11-24
 |---|---|
 | Chọn nhầm ô, chưa lưu | Chọn lại giá trị cũ, hoặc bấm **Huỷ** để bỏ hết thay đổi |
 | Đã lưu nhầm | Bấm **Sửa**, đặt lại các ô như cũ (xem giá trị cũ trong «Lịch sử thay đổi gần đây»), **Lưu thay đổi** (thành phiên bản mới; không có nút «quay về phiên bản cũ») |
-| Quên tắt công tắc sửa sau khi xong | Vào Cài đặt tham số, tắt «Cho phép sửa ma trận quyền» |
+| Quên tắt công tắc sửa sau khi xong | Vào Tham số nghiệp vụ, tắt «Cho phép sửa ma trận quyền» |
 
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
@@ -75,7 +75,7 @@ cap_nhat: 2026-11-24
 - **Đổi quyền có xoá dữ liệu cũ không?** Không. Chỉ đổi người nào thấy và làm được gì từ lúc lưu.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** `bgd.tap` (Admin) trên **staging**; một tài khoản vai khác (ví dụ `ql.cs5`) để thử thấy khác đi.
+- **Cần:** `bgd.tap` (Admin) trên **staging**; một tài khoản vai khác (ví dụ `ql.cs5`, Trưởng cơ sở) để thử thấy khác đi.
 - **Dùng:** bật công tắc sửa, đổi một ô ít quan trọng của vai tập, lưu, nhờ tài khoản vai đó tải lại để thấy khác; rồi đặt lại như cũ và tắt công tắc.
 - Chưa có trong bộ mẫu: vai trò riêng dành cho việc tập quyền.
 
