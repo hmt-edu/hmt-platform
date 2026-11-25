@@ -17,6 +17,7 @@ import {
   useFeatureModules,
   useRefreshFeatures,
 } from './useFeatureData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 type Change = { module: FeatureModule; branchId: string; next: boolean };
 
@@ -79,12 +80,11 @@ export function FeatureFlagsPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <h1 className="text-h1">Công tắc tính năng</h1>
-      <p className="text-body text-fg-muted">
-        Bật từng phân hệ cho từng cơ sở (chạy CS5 trước). Chưa có công tắc nghĩa là Tắt. Hàm nghiệp
-        vụ trong DB cũng kiểm công tắc này.
-      </p>
+    <PageFrame>
+      <PageHeader
+        title="Công tắc tính năng"
+        description="Bật từng phân hệ cho từng cơ sở (chạy CS5 trước). Chưa có công tắc nghĩa là Tắt. Hàm nghiệp vụ trong DB cũng kiểm công tắc này."
+      />
       <section
         aria-label="Công tắc theo phân hệ và cơ sở"
         className="min-w-0 rounded-box border border-border bg-surface"
@@ -110,6 +110,7 @@ export function FeatureFlagsPage() {
           </div>
         ) : modules.data && flags.data ? (
           <LineTable
+            wrap
             caption="Công tắc tính năng theo phân hệ và cơ sở"
             columns={columns}
             rows={modules.data}
@@ -160,6 +161,6 @@ export function FeatureFlagsPage() {
             .finally(() => setBusy(false));
         }}
       />
-    </div>
+    </PageFrame>
   );
 }

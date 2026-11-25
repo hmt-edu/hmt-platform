@@ -46,6 +46,7 @@ import {
   useRefreshPolicies,
   type NamedCode,
 } from './usePolicyData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 const STATUS_TONE: Record<PolicyStatus, TagTone> = {
   ACTIVE: 'success',
@@ -225,6 +226,7 @@ export function DiscountPolicyPage() {
     key: (p: P) => string,
   ) => (
     <LineTable
+      wrap
       caption={caption}
       columns={columns}
       rows={rows}
@@ -235,13 +237,15 @@ export function DiscountPolicyPage() {
   );
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-h1">Chính sách chiết khấu</h1>
-        <Button icon="history" onClick={() => setHistoryOpen(true)}>
-          Lịch sử thay đổi
-        </Button>
-      </div>
+    <PageFrame>
+      <PageHeader
+        title="Chính sách chiết khấu"
+        actions={
+          <Button icon="history" onClick={() => setHistoryOpen(true)}>
+            Lịch sử thay đổi
+          </Button>
+        }
+      />
       <PolicyHistoryDialog open={historyOpen} onOpenChange={setHistoryOpen} />
       {failed ? (
         <StateView
@@ -339,7 +343,7 @@ export function DiscountPolicyPage() {
           }}
         />
       )}
-    </div>
+    </PageFrame>
   );
 }
 

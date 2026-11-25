@@ -26,6 +26,7 @@ import {
   useCampaigns,
   useRefreshCampaigns,
 } from './useCampaignData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 export function CampaignPage() {
   const supabase = useDb();
@@ -93,17 +94,16 @@ export function CampaignPage() {
 
   const total = list.data?.total ?? 0;
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-h1">Chiến dịch marketing</h1>
-        <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
-          Tạo chiến dịch
-        </Button>
-      </div>
-      <p className="text-body text-fg-muted">
-        Chiến dịch gắn vào lead để biết lead đến từ đợt quảng bá nào. Ai vào được cổng CRM cũng tạo
-        được. Chiến dịch ngừng không còn chọn được cho lead mới; lead cũ giữ nguyên.
-      </p>
+    <PageFrame>
+      <PageHeader
+        title="Chiến dịch marketing"
+        description="Chiến dịch gắn vào lead để biết lead đến từ đợt quảng bá nào. Ai vào được cổng CRM cũng tạo được. Chiến dịch ngừng không còn chọn được cho lead mới; lead cũ giữ nguyên."
+        actions={
+          <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
+            Tạo chiến dịch
+          </Button>
+        }
+      />
       <div className="flex flex-wrap items-end gap-3">
         <TextField
           label="Tìm chiến dịch"
@@ -139,6 +139,7 @@ export function CampaignPage() {
           </div>
         ) : list.data ? (
           <LineTable
+            wrap
             caption="Chiến dịch marketing"
             columns={columns}
             rows={list.data.rows}
@@ -172,7 +173,7 @@ export function CampaignPage() {
           }}
         />
       )}
-    </div>
+    </PageFrame>
   );
 }
 

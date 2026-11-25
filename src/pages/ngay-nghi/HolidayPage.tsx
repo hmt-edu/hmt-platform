@@ -24,6 +24,7 @@ import {
   useHolidaySessions,
   useRefreshHolidays,
 } from './useHolidayData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 type Editing = { holiday: Holiday | null };
 
@@ -104,30 +105,29 @@ export function HolidayPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-h1">Ngày nghỉ lễ</h1>
-        <div className="flex flex-wrap items-center gap-2">
-          <Select
-            label="Năm"
-            value={String(year)}
-            onChange={(v) => setYear(Number(v))}
-            options={[thisYear - 1, thisYear, thisYear + 1, thisYear + 2].map((y) => ({
-              value: String(y),
-              label: `Năm ${y}`,
-            }))}
-          />
-          {canCreate && (
-            <Button variant="primary" icon="plus" onClick={() => setEditing({ holiday: null })}>
-              Thêm ngày nghỉ
-            </Button>
-          )}
-        </div>
-      </div>
-      <p className="text-body text-fg-muted">
-        Ngày nghỉ dùng để tính ngày kết thúc lớp. Thêm ngày nghỉ sau khi đã sinh buổi thì xem các
-        buổi bị ảnh hưởng, rồi dời ở màn Buổi học.
-      </p>
+    <PageFrame>
+      <PageHeader
+        title="Ngày nghỉ lễ"
+        description="Ngày nghỉ dùng để tính ngày kết thúc lớp. Thêm ngày nghỉ sau khi đã sinh buổi thì xem các buổi bị ảnh hưởng, rồi dời ở màn Buổi học."
+        actions={
+          <>
+            <Select
+              label="Năm"
+              value={String(year)}
+              onChange={(v) => setYear(Number(v))}
+              options={[thisYear - 1, thisYear, thisYear + 1, thisYear + 2].map((y) => ({
+                value: String(y),
+                label: `Năm ${y}`,
+              }))}
+            />
+            {canCreate && (
+              <Button variant="primary" icon="plus" onClick={() => setEditing({ holiday: null })}>
+                Thêm ngày nghỉ
+              </Button>
+            )}
+          </>
+        }
+      />
       <section
         aria-label="Danh sách ngày nghỉ"
         className="min-w-0 rounded-box border border-border bg-surface"
@@ -144,6 +144,7 @@ export function HolidayPage() {
           </div>
         ) : holidays.data ? (
           <LineTable
+            wrap
             caption={`Ngày nghỉ năm ${year}`}
             columns={columns}
             rows={holidays.data}
@@ -171,7 +172,7 @@ export function HolidayPage() {
         />
       )}
       {viewing && <SessionsDialog holiday={viewing} onClose={() => setViewing(null)} />}
-    </div>
+    </PageFrame>
   );
 }
 
@@ -282,6 +283,7 @@ function SessionsDialog({ holiday, onClose }: { holiday: Holiday; onClose: () =>
             <b>{sessions.data.total}</b> buổi chưa diễn ra trùng ngày nghỉ. Dời buổi ở màn Buổi học.
           </p>
           <LineTable
+            wrap
             caption="Buổi bị ảnh hưởng"
             columns={[
               { key: 'class', header: 'Lớp', cell: (s) => s.class_code },

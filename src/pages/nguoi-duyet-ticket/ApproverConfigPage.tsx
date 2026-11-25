@@ -23,6 +23,7 @@ import {
   type ApproverRule,
   type LevelCode,
 } from './approverConfig';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 export function ApproverConfigPage() {
   const access = useAccess();
@@ -40,14 +41,11 @@ export function ApproverConfigPage() {
     );
   const rules = query.data;
   return (
-    <div className="flex flex-col gap-3 p-4">
-      <header>
-        <h1 className="text-h2">Người duyệt ticket</h1>
-        <p className="text-caption text-fg-muted">
-          Ai duyệt phiếu nghiệp vụ của từng nhóm con ticket, theo thứ tự duyệt. Sửa có ngày hiệu
-          lực; phiếu đã lập giữ cấp duyệt lúc lập.
-        </p>
-      </header>
+    <PageFrame>
+      <PageHeader
+        title="Người duyệt ticket"
+        description="Ai duyệt phiếu nghiệp vụ của từng nhóm con ticket, theo thứ tự duyệt. Sửa có ngày hiệu lực; phiếu đã lập giữ cấp duyệt lúc lập."
+      />
       {rules.length === 0 ? (
         <StateView kind="empty" title="Chưa có loại phiếu nào">
           Cấu hình do hệ thống khai báo.
@@ -127,7 +125,7 @@ export function ApproverConfigPage() {
           </ul>
         </FormDialog>
       )}
-    </div>
+    </PageFrame>
   );
 }
 

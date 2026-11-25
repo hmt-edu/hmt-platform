@@ -34,6 +34,7 @@ import {
   useFrames,
   useRefreshFrames,
 } from './useFrameData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 const STATUS_FILTER = [
   { value: 'DANG_DUNG', label: 'Đang dùng' },
@@ -127,7 +128,7 @@ export function CurriculumFramePage() {
 
   if (!canView) {
     return (
-      <div className="mx-auto max-w-[1280px] p-4 md:p-6">
+      <div className="min-w-0">
         <StateView
           kind="forbidden"
           title="Bạn không có quyền xem màn này"
@@ -146,15 +147,17 @@ export function CurriculumFramePage() {
 
   const total = frames.data?.total ?? 0;
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-h1">Khung chương trình</h1>
-        {canCreate && (
-          <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
-            Tạo bản mới
-          </Button>
-        )}
-      </div>
+    <PageFrame>
+      <PageHeader
+        title="Khung chương trình"
+        actions={
+          canCreate && (
+            <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
+              Tạo bản mới
+            </Button>
+          )
+        }
+      />
       <div className="grid grid-cols-2 gap-2 md:grid-cols-5" role="group" aria-label="Bộ lọc">
         <OptionalSelect
           label="Môn"
@@ -208,6 +211,7 @@ export function CurriculumFramePage() {
           </div>
         ) : frames.data ? (
           <LineTable
+            wrap
             caption="Khung chương trình"
             columns={columns}
             rows={frames.data.rows}
@@ -280,7 +284,7 @@ export function CurriculumFramePage() {
         error={stopError}
         onConfirm={() => void confirmStop()}
       />
-    </div>
+    </PageFrame>
   );
 }
 

@@ -18,6 +18,7 @@ import { useLeadCatalogs } from '../lead/useCatalogs';
 import { AddPricesDialog } from './AddPricesDialog';
 import { priceUnit, toDateKey, type PriceCell } from './priceLogic';
 import { usePricePage, useRefreshPrices, type PriceFilters, type PriceRow } from './usePriceData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 export function PriceCellView({ cell, type }: { cell: PriceCell; type: string }) {
   if (cell.state === 'CO_GIA') {
@@ -117,21 +118,18 @@ export function PriceListPage() {
   }, [rows, catalogs]);
 
   return (
-    <div className="mx-auto flex max-w-[1100px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-h1">Bảng giá</h1>
-          <p className="mt-1 text-body text-fg-muted">
-            Giá của từng gói theo hình thức học, tại ngày chọn. Giá đã tạo không sửa được: muốn đổi,
-            thêm giá với ngày hiệu lực mới. Đơn đã tạo giữ giá lúc tạo.
-          </p>
-        </div>
-        {canAdd && (
-          <Button variant="primary" icon="plus" onClick={() => setAdding(true)}>
-            Thêm bảng giá mới
-          </Button>
-        )}
-      </div>
+    <PageFrame>
+      <PageHeader
+        title="Bảng giá"
+        description="Giá của từng gói theo hình thức học, tại ngày chọn. Giá đã tạo không sửa được: muốn đổi, thêm giá với ngày hiệu lực mới. Đơn đã tạo giữ giá lúc tạo."
+        actions={
+          canAdd && (
+            <Button variant="primary" icon="plus" onClick={() => setAdding(true)}>
+              Thêm bảng giá mới
+            </Button>
+          )
+        }
+      />
       <div className="flex flex-wrap items-end gap-3">
         <DateInput
           label="Giá hiệu lực tại ngày"
@@ -235,6 +233,6 @@ export function PriceListPage() {
           toast({ title: message });
         }}
       />
-    </div>
+    </PageFrame>
   );
 }

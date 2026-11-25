@@ -140,7 +140,7 @@ export function LoginLogPage() {
   const exportConfig = useMemo(() => buildExportConfig(modules.data ?? []), [modules.data]);
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-3 p-4 md:p-6">
+    <div className="flex min-w-0 flex-col gap-3">
       <Tabs
         label="Nhật ký đăng nhập và xuất file"
         value={tab}
