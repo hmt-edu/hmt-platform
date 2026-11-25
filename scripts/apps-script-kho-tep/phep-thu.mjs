@@ -1,12 +1,43 @@
 // Phép thử kho tệp Apps Script ở STAGING (F-23-58/59, mục 5 của docs/ke-hoach/kho-tep-apps-script.md).
-// Chạy: APPS_SCRIPT_URL=... APPS_SCRIPT_SHARED_SECRET=... [OUTSIDE_FILE_ID=...] node scripts/apps-script-kho-tep/phep-thu.mjs
-// Khoá chỉ đọc từ biến môi trường, không in ra. Dừng nếu thư mục gốc script trả về không có chữ «staging» (tránh chạm bản chạy thật).
+// Chạy (KHÔNG gõ mật khẩu trên dòng lệnh: lộ trong lịch sử shell). Trong zsh:
+//   read -s "APPS_SCRIPT_SHARED_SECRET?Mật khẩu: " && export APPS_SCRIPT_SHARED_SECRET
+//   read -s "APPS_SCRIPT_URL?URL: " && export APPS_SCRIPT_URL   (hoặc không đặt, script sẽ hỏi ẩn)
+//   node scripts/apps-script-kho-tep/phep-thu.mjs     (tuỳ chọn: OUTSIDE_FILE_ID=... đặt trước lệnh node)
+// Thiếu biến thì script HỎI ẨN (không hiện ký tự gõ). Khoá chỉ đọc từ biến môi trường hoặc hỏi ẩn, không in ra. Dừng nếu thư mục gốc script trả về không có chữ «staging» (tránh chạm bản chạy thật).
 // Chỉ lưu tệp giả (byte ngẫu nhiên) vào thư mục con PHEP-THU, thử xong xoá vĩnh viễn. In kết quả để dán vào PR #708.
 // OUTSIDE_FILE_ID (tuỳ chọn): id một tệp anh tạo tay NGOÀI thư mục gốc, để thử script không đọc/xoá được.
 import { randomBytes } from 'node:crypto';
 
-const url = process.env.APPS_SCRIPT_URL ?? '';
-const secret = process.env.APPS_SCRIPT_SHARED_SECRET ?? '';
+/** Hỏi ẩn một giá trị trên cửa sổ dòng lệnh (không hiện ký tự gõ, không vào lịch sử shell). Không có cửa sổ tương tác thì trả rỗng. */
+async function askHidden(/** @type {string} */ label) {
+  if (!process.stdin.isTTY) return '';
+  process.stdout.write(label);
+  process.stdin.setRawMode(true);
+  process.stdin.resume();
+  process.stdin.setEncoding('utf8');
+  return new Promise((resolve) => {
+    let value = '';
+    const onData = (/** @type {string} */ ch) => {
+      for (const c of ch) {
+        if (c === '\r' || c === '\n') {
+          process.stdin.setRawMode(false);
+          process.stdin.pause();
+          process.stdin.off('data', onData);
+          process.stdout.write('\n');
+          resolve(value.trim());
+          return;
+        }
+        if (c === '\u0003') process.exit(130); // Ctrl+C
+        if (c === '\u007f') value = value.slice(0, -1);
+        else value += c;
+      }
+    };
+    process.stdin.on('data', onData);
+  });
+}
+
+const url = process.env.APPS_SCRIPT_URL || (await askHidden('URL script (ẩn): '));
+const secret = process.env.APPS_SCRIPT_SHARED_SECRET || (await askHidden('Mật khẩu chung (ẩn): '));
 if (!url.startsWith('https://script.google.com/') || !secret) {
   console.error('Thiếu hoặc sai APPS_SCRIPT_URL / APPS_SCRIPT_SHARED_SECRET.');
   process.exit(2);
