@@ -204,4 +204,30 @@ describe('Khối «Bạn là ai?» mỗi vai một nút (A-24-05)', () => {
     expect(out.map((b) => b.label)).toEqual(['Mọi người', 'Tư vấn tuyển sinh', 'Quản trị', 'Lạ']);
     expect(out.find((b) => b.label === 'Tư vấn tuyển sinh')?.section.slug).toBe('c1');
   });
+
+  it('bài nhóm «vai» thắng bài nhóm «bắt đầu» đứng trước (Quản trị → bài vai Quản trị)', () => {
+    const mk = (slug: string, role: string, group: 'bat-dau' | 'vai') =>
+      ({
+        slug,
+        title: slug,
+        roleLabel: role,
+        group,
+        portals: ['crm'],
+        meta: {},
+      }) as unknown as (typeof GUIDE_SECTIONS)[number];
+    const out = roleButtons([
+      mk('xac-thuc', 'Quản trị', 'bat-dau'),
+      mk('quan-tri', 'Quản trị', 'vai'),
+    ]);
+    expect(out.find((b) => b.label === 'Quản trị')?.section.slug).toBe('quan-tri');
+  });
+
+  it('dữ liệu thật: nút của mỗi vai có bài nhóm «vai» thì trỏ vào bài nhóm «vai»', () => {
+    const list = sectionsFor('crm');
+    for (const b of roleButtons(list)) {
+      if (list.some((s) => s.roleLabel === b.label && s.group === 'vai')) {
+        expect(b.section.group).toBe('vai');
+      }
+    }
+  });
 });

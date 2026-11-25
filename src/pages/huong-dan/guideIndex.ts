@@ -147,11 +147,14 @@ const ROLE_ORDER = [
   'Người có quyền duyệt',
 ];
 
-/** Mỗi nhãn vai MỘT nút, trỏ tới bài đầu tiên mang nhãn đó; xếp theo ROLE_ORDER. */
+/** Mỗi nhãn vai MỘT nút, trỏ tới bài nhóm «vai» đầu tiên mang nhãn đó (không có thì bài đầu tiên bất kỳ); xếp theo ROLE_ORDER. */
 export function roleButtons(sections: GuideSection[]): { label: string; section: GuideSection }[] {
   const first = new Map<string, GuideSection>();
   for (const s of sections) {
-    if (s.roleLabel !== undefined && !first.has(s.roleLabel)) first.set(s.roleLabel, s);
+    if (s.roleLabel === undefined) continue;
+    const cur = first.get(s.roleLabel);
+    // Bài nhóm «vai» thắng bài nhóm «bắt đầu» dù đứng sau (A-24-06: «Quản trị» không mở bài Xác thực hai bước).
+    if (cur === undefined || (cur.group !== 'vai' && s.group === 'vai')) first.set(s.roleLabel, s);
   }
   const rank = (label: string) => {
     const i = ROLE_ORDER.indexOf(label);
