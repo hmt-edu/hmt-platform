@@ -6,8 +6,9 @@ test.skip(!PASSWORD, 'Cần SEED_PASSWORD (tài khoản giả).');
 
 /** Điện thoại: menu thu gọn sau nút «Mục lục» (A-24-09); máy tính không có nút này. */
 async function openToc(page: Page) {
+  if ((page.viewportSize()?.width ?? 0) >= 1024) return;
   const nut = page.getByRole('button', { name: /^Mục lục/ });
-  if (await nut.isVisible()) await nut.click();
+  if ((await nut.getAttribute('aria-expanded')) === 'false') await nut.click();
 }
 
 test('Hướng dẫn: mở từ menu tài khoản, đổi mục, tìm kiếm trong tài liệu', async ({ page }) => {
@@ -17,14 +18,15 @@ test('Hướng dẫn: mở từ menu tài khoản, đổi mục, tìm kiếm tro
   await expect(page.getByRole('heading', { level: 1, name: 'Hướng dẫn sử dụng' })).toBeVisible();
   const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
   const links = nav.getByRole('link');
+  await openToc(page);
   // Không dò chữ hay số của từng mục (danh mục mục tăng dần): mục đầu đang chọn, bấm mục thứ hai thì đường dẫn và mục chọn đổi theo.
   await expect(links.first()).toHaveAttribute('aria-current', 'page');
   await expect(page.locator('main h2, main h3').first()).toBeVisible();
   await expectAccessible(page);
 
-  await openToc(page);
   await links.nth(1).click();
   await expect(page).not.toHaveURL(/\/crm\/huong-dan\/bat-dau$/);
+  await openToc(page);
   await expect(links.nth(1)).toHaveAttribute('aria-current', 'page');
   await expect(page.getByRole('heading', { level: 1, name: 'Hướng dẫn sử dụng' })).toBeVisible();
 
