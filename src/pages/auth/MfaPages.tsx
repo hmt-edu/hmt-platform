@@ -119,6 +119,8 @@ export function MfaSetupPage() {
           onDone={() => void navigate('/dang-nhap', { replace: true })}
         />
       )}
+      {/* Đường thoát cả hai bước (anh gặp 25/11: bị kẹt, không về đăng nhập được). */}
+      <SignOutLink />
     </AuthLayout>
   );
 }
