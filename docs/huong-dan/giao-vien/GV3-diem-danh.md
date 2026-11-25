@@ -4,7 +4,7 @@ slug: giao-vien-gv3-diem-danh
 group: vai
 order: 103
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P1
 flow: GV3
 screens: [GV-04, GV-05]

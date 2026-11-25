@@ -4,7 +4,7 @@ slug: giao-vien-gv8-viec-can-lam
 group: vai
 order: 108
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P1
 flow: GV8
 screens: [GV-12]

@@ -4,7 +4,7 @@ slug: giao-vien-gv2-lich-day
 group: vai
 order: 102
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P2
 flow: GV2
 screens: [GV-03]

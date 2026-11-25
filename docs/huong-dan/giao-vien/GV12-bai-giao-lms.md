@@ -4,7 +4,7 @@ slug: giao-vien-gv12-bai-giao-lms
 group: vai
 order: 112
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P2
 flow: GV12
 screens: [GV-17, GV-18]

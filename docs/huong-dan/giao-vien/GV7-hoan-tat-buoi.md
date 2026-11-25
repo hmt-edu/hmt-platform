@@ -4,7 +4,7 @@ slug: giao-vien-gv7-hoan-tat-buoi
 group: vai
 order: 107
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P1
 flow: GV7
 screens: [GV-04, GV-09]
