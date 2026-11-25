@@ -90,3 +90,14 @@ test('Hướng dẫn: menu «Theo vai trò»: mỗi vai một mục bấm mở/�
   await expect(nav.getByRole('button', { expanded: true }).first()).toBeVisible();
   await expect(nav.locator('a[aria-current="page"]')).toHaveCount(1);
 });
+
+test('Hướng dẫn: máy tính, cột menu dính đầu màn khi cuộn nội dung, có thanh cuộn riêng (A-24-08)', async ({
+  page,
+}) => {
+  test.skip((page.viewportSize()?.width ?? 0) < 1024, 'Điện thoại: menu xếp trên nội dung');
+  await enterAs(page, 'sale.cs5');
+  await page.goto('/crm/huong-dan');
+  const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
+  await expect(nav).toHaveCSS('position', 'sticky');
+  await expect(nav).toHaveCSS('overflow-y', 'auto');
+});

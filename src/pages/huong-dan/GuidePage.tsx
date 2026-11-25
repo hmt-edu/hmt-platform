@@ -254,7 +254,10 @@ export function GuidePage() {
   const tree = buildRoleTree(sectionsFor(portal));
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-4 lg:flex-row">
-      <nav aria-label="Mục hướng dẫn" className="shrink-0 lg:w-64">
+      <nav
+        aria-label="Mục hướng dẫn"
+        className="shrink-0 lg:sticky lg:top-[calc(var(--spacing-topbar)+1rem)] lg:max-h-[calc(100dvh-var(--spacing-topbar)-2rem)] lg:w-64 lg:self-start lg:overflow-y-auto"
+      >
         <h1 className="mb-2 text-h1">Hướng dẫn sử dụng</h1>
         <div className="mb-3">
           <TextField
@@ -334,7 +337,7 @@ export function GuidePage() {
             {toc.length > 0 && (
               <aside
                 aria-label="Trong mục này"
-                className="shrink-0 text-caption xl:sticky xl:top-4 xl:w-56 xl:self-start"
+                className="shrink-0 text-caption xl:sticky xl:top-[calc(var(--spacing-topbar)+1rem)] xl:max-h-[calc(100dvh-var(--spacing-topbar)-2rem)] xl:w-56 xl:self-start xl:overflow-y-auto"
               >
                 <p className="mb-1 font-semibold text-fg-muted">Trong mục này</p>
                 <ul className="space-y-1">
