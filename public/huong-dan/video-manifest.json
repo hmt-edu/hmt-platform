@@ -1,10 +1,226 @@
 {
   "videos": {
-    "huong-dan-dang-nhap": { "url": "/huong-dan/video/huong-dan-dang-nhap.mp4" },
-    "huong-dan-danh-sach": { "url": "/huong-dan/video/huong-dan-danh-sach.mp4" },
-    "huong-dan-du-lieu-mau": { "url": "/huong-dan/video/huong-dan-du-lieu-mau.mp4" },
-    "huong-dan-ghi-chu": { "url": "/huong-dan/video/huong-dan-ghi-chu.mp4" },
-    "huong-dan-ke-toan-phieu-thu": { "url": "/huong-dan/video/huong-dan-ke-toan-phieu-thu.mp4" },
-    "huong-dan-tu-van-tong-quan": { "url": "/huong-dan/video/huong-dan-tu-van-tong-quan.mp4" }
+    "huong-dan-dang-nhap": {
+      "url": "/huong-dan/video/huong-dan-dang-nhap.mp4"
+    },
+    "huong-dan-danh-sach": {
+      "url": "/huong-dan/video/huong-dan-danh-sach.mp4"
+    },
+    "huong-dan-du-lieu-mau": {
+      "url": "/huong-dan/video/huong-dan-du-lieu-mau.mp4"
+    },
+    "huong-dan-ghi-chu": {
+      "url": "/huong-dan/video/huong-dan-ghi-chu.mp4"
+    },
+    "huong-dan-ke-toan-phieu-thu": {
+      "url": "/huong-dan/video/huong-dan-ke-toan-phieu-thu.mp4"
+    },
+    "huong-dan-tu-van-tong-quan": {
+      "url": "/huong-dan/video/huong-dan-tu-van-tong-quan.mp4"
+    },
+    "bh1": {
+      "url": "/huong-dan/video/bh1.mp4"
+    },
+    "bh3": {
+      "url": "/huong-dan/video/bh3.mp4"
+    },
+    "bh4": {
+      "url": "/huong-dan/video/bh4.mp4"
+    },
+    "bh4b": {
+      "url": "/huong-dan/video/bh4b.mp4"
+    },
+    "ch1-dang-nhap": {
+      "url": "/huong-dan/video/ch1-dang-nhap.mp4"
+    },
+    "ch1-doi-mat-khau": {
+      "url": "/huong-dan/video/ch1-doi-mat-khau.mp4"
+    },
+    "ch1-quen-mat-khau": {
+      "url": "/huong-dan/video/ch1-quen-mat-khau.mp4"
+    },
+    "ch10": {
+      "url": "/huong-dan/video/ch10.mp4"
+    },
+    "ch3-chon-co-so": {
+      "url": "/huong-dan/video/ch3-chon-co-so.mp4"
+    },
+    "ch3-dang-xuat": {
+      "url": "/huong-dan/video/ch3-dang-xuat.mp4"
+    },
+    "ch3-thong-bao": {
+      "url": "/huong-dan/video/ch3-thong-bao.mp4"
+    },
+    "ch4-cot": {
+      "url": "/huong-dan/video/ch4-cot.mp4"
+    },
+    "ch4-fav": {
+      "url": "/huong-dan/video/ch4-fav.mp4"
+    },
+    "ch4-filters": {
+      "url": "/huong-dan/video/ch4-filters.mp4"
+    },
+    "ch4-group": {
+      "url": "/huong-dan/video/ch4-group.mp4"
+    },
+    "ch4-tim": {
+      "url": "/huong-dan/video/ch4-tim.mp4"
+    },
+    "ch5-ghi-chu": {
+      "url": "/huong-dan/video/ch5-ghi-chu.mp4"
+    },
+    "ch5-mo": {
+      "url": "/huong-dan/video/ch5-mo.mp4"
+    },
+    "ch5-sua": {
+      "url": "/huong-dan/video/ch5-sua.mp4"
+    },
+    "ch5-tao": {
+      "url": "/huong-dan/video/ch5-tao.mp4"
+    },
+    "ch7": {
+      "url": "/huong-dan/video/ch7.mp4"
+    },
+    "ch8": {
+      "url": "/huong-dan/video/ch8.mp4"
+    },
+    "ch9": {
+      "url": "/huong-dan/video/ch9.mp4"
+    },
+    "cs1": {
+      "url": "/huong-dan/video/cs1.mp4"
+    },
+    "cs12": {
+      "url": "/huong-dan/video/cs12.mp4"
+    },
+    "cs2": {
+      "url": "/huong-dan/video/cs2.mp4"
+    },
+    "cs3": {
+      "url": "/huong-dan/video/cs3.mp4"
+    },
+    "cs4": {
+      "url": "/huong-dan/video/cs4.mp4"
+    },
+    "dt1": {
+      "url": "/huong-dan/video/dt1.mp4"
+    },
+    "dt12": {
+      "url": "/huong-dan/video/dt12.mp4"
+    },
+    "dt13": {
+      "url": "/huong-dan/video/dt13.mp4"
+    },
+    "dt14": {
+      "url": "/huong-dan/video/dt14.mp4"
+    },
+    "dt14b": {
+      "url": "/huong-dan/video/dt14b.mp4"
+    },
+    "dt2": {
+      "url": "/huong-dan/video/dt2.mp4"
+    },
+    "dt6": {
+      "url": "/huong-dan/video/dt6.mp4"
+    },
+    "dt7": {
+      "url": "/huong-dan/video/dt7.mp4"
+    },
+    "dt8": {
+      "url": "/huong-dan/video/dt8.mp4"
+    },
+    "gv1": {
+      "url": "/huong-dan/video/gv1.mp4"
+    },
+    "gv3": {
+      "url": "/huong-dan/video/gv3.mp4"
+    },
+    "gv4": {
+      "url": "/huong-dan/video/gv4.mp4"
+    },
+    "gv5": {
+      "url": "/huong-dan/video/gv5.mp4"
+    },
+    "gv6": {
+      "url": "/huong-dan/video/gv6.mp4"
+    },
+    "gv7": {
+      "url": "/huong-dan/video/gv7.mp4"
+    },
+    "gv8": {
+      "url": "/huong-dan/video/gv8.mp4"
+    },
+    "kh1": {
+      "url": "/huong-dan/video/kh1.mp4"
+    },
+    "qt4": {
+      "url": "/huong-dan/video/qt4.mp4"
+    },
+    "qt6": {
+      "url": "/huong-dan/video/qt6.mp4"
+    },
+    "qt8": {
+      "url": "/huong-dan/video/qt8.mp4"
+    },
+    "qt9a": {
+      "url": "/huong-dan/video/qt9a.mp4"
+    },
+    "qt9b": {
+      "url": "/huong-dan/video/qt9b.mp4"
+    },
+    "qt9c": {
+      "url": "/huong-dan/video/qt9c.mp4"
+    },
+    "qt9d": {
+      "url": "/huong-dan/video/qt9d.mp4"
+    },
+    "tc1": {
+      "url": "/huong-dan/video/tc1.mp4"
+    },
+    "tc2": {
+      "url": "/huong-dan/video/tc2.mp4"
+    },
+    "tc3": {
+      "url": "/huong-dan/video/tc3.mp4"
+    },
+    "tc6": {
+      "url": "/huong-dan/video/tc6.mp4"
+    },
+    "tc7": {
+      "url": "/huong-dan/video/tc7.mp4"
+    },
+    "tc9": {
+      "url": "/huong-dan/video/tc9.mp4"
+    },
+    "ts1": {
+      "url": "/huong-dan/video/ts1.mp4"
+    },
+    "ts10": {
+      "url": "/huong-dan/video/ts10.mp4"
+    },
+    "ts11": {
+      "url": "/huong-dan/video/ts11.mp4"
+    },
+    "ts1b": {
+      "url": "/huong-dan/video/ts1b.mp4"
+    },
+    "ts2": {
+      "url": "/huong-dan/video/ts2.mp4"
+    },
+    "ts3": {
+      "url": "/huong-dan/video/ts3.mp4"
+    },
+    "ts5": {
+      "url": "/huong-dan/video/ts5.mp4"
+    },
+    "ts5b": {
+      "url": "/huong-dan/video/ts5b.mp4"
+    },
+    "ts6": {
+      "url": "/huong-dan/video/ts6.mp4"
+    },
+    "ts9": {
+      "url": "/huong-dan/video/ts9.mp4"
+    }
   }
 }
