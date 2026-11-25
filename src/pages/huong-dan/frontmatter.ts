@@ -16,6 +16,8 @@ export type GuideMeta = {
   no?: string;
   order: number;
   role?: string;
+  /** Các vai dùng bài (khoá, từ «vai»); vai đầu tiên là vai chính xếp bài trên menu. */
+  roles: string[];
   portals: GuidePortal[];
   priority?: string;
   flow?: string;
@@ -139,6 +141,7 @@ export function metaFromSource(file: string, text: string): GuideMeta | null {
     ...(no !== undefined ? { no } : {}),
     order,
     ...(role !== undefined ? { role } : {}),
+    roles: list(f.vai),
     ...(parent ? { parent } : {}),
     portals: portals.length > 0 ? (portals as GuidePortal[]) : ['crm'],
     ...(priority !== undefined ? { priority } : {}),

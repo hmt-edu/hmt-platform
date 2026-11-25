@@ -6,7 +6,9 @@ import {
   GUIDE_SECTIONS,
   GUIDE_SLUG_ALIASES,
   findSection,
-  buildParentTree,
+  buildRoleTree,
+  GUIDE_ROLES,
+  isRoleOverview,
   childLabel,
   menuOrder,
   roleButtons,
@@ -107,49 +109,67 @@ describe('Hướng dẫn cổng Giáo viên (A-23-38)', () => {
   });
 });
 
-describe('Menu hai cấp cha/con (A-23-49)', () => {
-  const sec = (slug: string, parent: string | undefined, order: number, flow?: string) =>
+describe('Menu theo vai (A-24-07)', () => {
+  const sec = (
+    slug: string,
+    roles: string[],
+    order: number,
+    opts: { flow?: string; parent?: string; title?: string; roleLabel?: string } = {},
+  ) =>
     ({
       slug,
-      title: `Bài ${slug}`,
+      title: opts.title ?? `Bài ${slug}`,
       file: `${slug}.md`,
       group: 'vai',
-      ...(parent ? { parent } : {}),
+      ...(opts.parent ? { parent: opts.parent } : {}),
+      ...(opts.roleLabel ? { roleLabel: opts.roleLabel } : {}),
       portals: ['crm'],
-      meta: { order, ...(flow ? { flow } : {}) },
+      meta: { order, roles, ...(opts.flow ? { flow: opts.flow } : {}) },
     }) as unknown as (typeof GUIDE_SECTIONS)[number];
 
-  it('cha theo thứ tự khai báo, con theo order rồi mã luồng tự nhiên (qt2 trước qt10)', () => {
-    const tree = buildParentTree([
-      sec('a', 'quan-tri', 1000, 'qt10'),
-      sec('b', 'quan-tri', 1000, 'qt2'),
-      sec('c', 'thu-chi', 1000, 'tc1'),
-      sec('d', 'quan-tri', 5, 'qt99'),
+  it('vai theo thứ tự khai báo; trong vai: Tổng quan trước, rồi order, phân hệ, mã luồng tự nhiên (ts2 trước ts10)', () => {
+    const tree = buildRoleTree([
+      sec('a', ['quan-tri'], 1000, { flow: 'qt10' }),
+      sec('b', ['quan-tri'], 1000, { flow: 'qt2' }),
+      sec('c', ['tu-van'], 1000, { flow: 'ts1' }),
+      sec('d', ['quan-tri'], 5, { flow: 'qt99' }),
+      sec('e', ['quan-tri'], 9999, { title: 'Vai: Quản trị' }),
     ]);
-    expect(tree.map((n) => n.title)).toEqual(['Thu chi', 'Quản trị']);
-    expect(tree[1]?.children.map((c) => c.slug)).toEqual(['d', 'b', 'a']);
+    expect(tree.map((n) => n.title)).toEqual(['Tư vấn tuyển sinh', 'Quản trị']);
+    expect(tree[1]?.children.map((c) => c.slug)).toEqual(['e', 'd', 'b', 'a']);
   });
 
-  it('«cskh» và «cham-soc-khach-hang» gộp một cha; khoá lạ xếp cuối; bài không cha không vào cây', () => {
-    const tree = buildParentTree([
-      sec('x', 'cskh', 1000),
-      sec('y', 'cham-soc-khach-hang', 1000),
-      sec('z', 'la-hoac', 1000),
-      sec('w', undefined, 1000),
+  it('bài dùng chung nhiều vai chỉ xếp một chỗ (vai đầu trong «vai»); bài không thuộc vai nào thì không vào cây', () => {
+    const tree = buildRoleTree([
+      sec('x', ['ke-toan', 'cskh'], 1000),
+      sec('y', ['chung'], 1000),
+      sec('z', [], 1000),
     ]);
-    expect(tree.map((n) => n.title)).toEqual(['Chăm sóc khách hàng', 'la-hoac']);
-    expect(tree[0]?.children).toHaveLength(2);
+    expect(tree.map((n) => n.title)).toEqual(['Kế toán']);
+    expect(tree[0]?.children.map((c) => c.slug)).toEqual(['x']);
   });
 
-  it('chữ «con» có mã luồng khi mã hợp lệ, không thì chỉ tên', () => {
-    expect(childLabel(sec('a', 'chung', 1, 'qt10a'))).toBe('QT10A · Bài a');
-    expect(childLabel(sec('a', 'chung', 1, 'mot-id-dai-dong'))).toBe('Bài a');
+  it('chữ «con»: «Tổng quan» cho bài «Vai: …», có mã luồng khi hợp lệ, không thì chỉ tên', () => {
+    expect(childLabel(sec('o', ['cskh'], 1, { title: 'Vai: CSKH' }))).toBe('Tổng quan');
+    expect(childLabel(sec('a', ['cskh'], 1, { flow: 'qt10a' }))).toBe('QT10A · Bài a');
+    expect(childLabel(sec('a', ['cskh'], 1, { flow: 'mot-id-dai-dong' }))).toBe('Bài a');
   });
 
-  it('mọi bài nhóm «vai» có phan_he đều thành «con» của một cha', () => {
-    const roi = GUIDE_SECTIONS.filter((s) => s.group === 'vai' && s.parent !== undefined);
-    const inTree = buildParentTree(GUIDE_SECTIONS).flatMap((n) => n.children);
-    expect(inTree.map((s) => s.slug).sort()).toEqual(roi.map((s) => s.slug).sort());
+  it('dữ liệu thật: mỗi bài nhóm «vai» đúng MỘT chỗ trên menu, không vai nào trống', () => {
+    const vai = GUIDE_SECTIONS.filter((s) => s.group === 'vai');
+    const tree = buildRoleTree(GUIDE_SECTIONS);
+    const slugs = tree.flatMap((n) => n.children.map((c) => c.slug));
+    expect(new Set(slugs).size).toBe(slugs.length);
+    expect(slugs.sort()).toEqual(vai.map((s) => s.slug).sort());
+    expect(tree.map((n) => n.key)).toEqual(GUIDE_ROLES.map((r) => r.key));
+    for (const n of tree) expect(n.children.length, `vai ${n.title} trống`).toBeGreaterThan(0);
+  });
+
+  it('mỗi vai có đúng một bài «Tổng quan» đứng đầu', () => {
+    for (const n of buildRoleTree(GUIDE_SECTIONS)) {
+      expect(n.children.filter(isRoleOverview).length, n.title).toBe(1);
+      expect(isRoleOverview(n.children[0]!), n.title).toBe(true);
+    }
   });
 });
 

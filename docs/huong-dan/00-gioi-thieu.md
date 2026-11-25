@@ -2,7 +2,6 @@
 title: Giới thiệu hệ thống
 slug: bat-dau
 group: bat-dau
-no: 0
 order: 10
 portals: [crm]
 ---

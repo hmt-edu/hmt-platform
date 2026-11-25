@@ -27,11 +27,11 @@ export type GuideSection = {
 /** Tiêu đề nhóm trên menu (chữ nhỏ, không bấm được). */
 export const GUIDE_GROUPS: { key: GuideGroup; title: string }[] = [
   { key: 'bat-dau', title: 'Bắt đầu' },
-  { key: 'vai', title: 'Hướng dẫn theo vai trò' },
+  { key: 'vai', title: 'Theo vai trò' },
   { key: 'tra-cuu', title: 'Tra cứu' },
 ];
 
-/** Các «cha» (phân hệ) trên menu, đúng thứ tự hiện. Bài có `parent` (hoặc `phan_he`) trùng khoá thì là «con». Khoá lạ vẫn hiện, xếp cuối. */
+/** Phân hệ: dùng để sắp bài trong một vai (bài cùng vai xếp theo phân hệ rồi theo mã luồng). */
 export const GUIDE_PARENTS: { key: string; title: string }[] = [
   { key: 'tu-van', title: 'Tư vấn tuyển sinh' },
   { key: 'ban-hang', title: 'Bán hàng' },
@@ -45,53 +45,72 @@ export const GUIDE_PARENTS: { key: string; title: string }[] = [
   { key: 'cau-hinh', title: 'Cấu hình' },
 ];
 
-export type GuideParentNode = { key: string; title: string; children: GuideSection[] };
+/** Các vai trên menu, đúng thứ tự hiện (A-24-07): khoá trong «vai» của bài, tên hiện, nhãn «role» của bài tổng quan. */
+export const GUIDE_ROLES: { key: string; title: string }[] = [
+  { key: 'tu-van', title: 'Tư vấn tuyển sinh' },
+  { key: 'cskh', title: 'CSKH và vận hành lớp' },
+  { key: 'ke-toan', title: 'Kế toán' },
+  { key: 'truong-co-so', title: 'Trưởng cơ sở' },
+  { key: 'giao-vien', title: 'Giáo viên' },
+  { key: 'hoc-sinh', title: 'Học sinh' },
+  { key: 'phu-huynh', title: 'Phụ huynh' },
+  { key: 'quan-tri', title: 'Quản trị' },
+];
+
+export type GuideRoleNode = { key: string; title: string; children: GuideSection[] };
 
 const collator = new Intl.Collator('vi', { numeric: true });
 
-/** Chữ hiện của «con»: mã luồng (nếu có, ví dụ «QT10A») và tên. */
-export const childLabel = (s: GuideSection): string =>
-  s.meta.flow && /^[a-z]{1,4}\d+[a-z]?$/i.test(s.meta.flow)
-    ? `${s.meta.flow.toUpperCase()} · ${s.title}`
-    : s.title;
+/** Bài tổng quan của một vai (tiêu đề «Vai: …»): luôn đứng đầu vai, hiện là «Tổng quan». */
+export const isRoleOverview = (s: GuideSection): boolean => s.title.startsWith('Vai: ');
 
-/**
- * Cây menu hai cấp từ các mục nhóm «vai» có cha: cha theo thứ tự GUIDE_PARENTS (khoá lạ xếp cuối), con theo `order`,
- * rồi theo mã luồng (số tự nhiên: qt2 trước qt10), rồi theo tên. Cha trùng tên (cskh và cham-soc-khach-hang) gộp một.
- */
-export function buildParentTree(sections: GuideSection[]): GuideParentNode[] {
-  const nodes = new Map<string, GuideParentNode>();
-  const titleOf = new Map(GUIDE_PARENTS.map((p) => [p.key, p.title]));
-  const merged = (key: string) => titleOf.get(key) ?? key;
-  for (const s of sections) {
-    if (s.group !== 'vai' || s.parent === undefined) continue;
-    const title = merged(s.parent);
-    const node = nodes.get(title) ?? { key: s.parent, title, children: [] };
-    node.children.push(s);
-    nodes.set(title, node);
-  }
-  const rank = (title: string) => {
-    const i = GUIDE_PARENTS.findIndex((p) => p.title === title);
-    return i < 0 ? GUIDE_PARENTS.length : i;
-  };
-  return [...nodes.values()]
-    .sort((a, b) => rank(a.title) - rank(b.title) || collator.compare(a.title, b.title))
-    .map((n) => ({
-      ...n,
-      children: [...n.children].sort(
-        (a, b) =>
-          a.meta.order - b.meta.order ||
-          collator.compare(a.meta.flow ?? '', b.meta.flow ?? '') ||
-          collator.compare(a.title, b.title),
-      ),
-    }));
+/** Chữ hiện của «con»: «Tổng quan», hoặc mã luồng (nếu có, ví dụ «QT10A») và tên. */
+export const childLabel = (s: GuideSection): string =>
+  isRoleOverview(s)
+    ? 'Tổng quan'
+    : s.meta.flow && /^[a-z]{1,4}\d+[a-z]?$/i.test(s.meta.flow)
+      ? `${s.meta.flow.toUpperCase()} · ${s.title}`
+      : s.title;
+
+/** Vai chính của bài nhóm «vai»: nhãn «role» của bài (nếu khớp tên một vai), không thì vai đầu tiên trong «vai». */
+export function mainRoleKey(s: GuideSection): string | undefined {
+  const byLabel = GUIDE_ROLES.find((r) => r.title === s.roleLabel);
+  if (byLabel) return byLabel.key;
+  const first = s.meta.roles[0];
+  return GUIDE_ROLES.some((r) => r.key === first) ? first : undefined;
 }
 
-/** Mục con thuộc một cha (để biết cha nào mở sẵn). */
-export const parentTitleOf = (s: GuideSection): string | undefined =>
-  s.group === 'vai' && s.parent !== undefined
-    ? (GUIDE_PARENTS.find((p) => p.key === s.parent)?.title ?? s.parent)
-    : undefined;
+const parentRank = (s: GuideSection): number => {
+  const i = GUIDE_PARENTS.findIndex((p) => p.key === s.parent);
+  return i < 0 ? GUIDE_PARENTS.length : i;
+};
+
+/**
+ * Cây menu theo VAI (A-24-07): mỗi vai một mục gập/mở chứa đúng các bài của vai đó, mỗi bài đúng một chỗ.
+ * Trong vai: «Tổng quan» trước, rồi theo `order` (bài đã đặt), rồi phân hệ, rồi mã luồng (số tự nhiên: ts2 trước ts10), rồi tên.
+ * Vai theo thứ tự GUIDE_ROLES; vai không có bài thì không hiện.
+ */
+export function buildRoleTree(sections: GuideSection[]): GuideRoleNode[] {
+  const nodes = new Map<string, GuideSection[]>();
+  for (const s of sections) {
+    if (s.group !== 'vai') continue;
+    const key = mainRoleKey(s);
+    if (key === undefined) continue;
+    nodes.set(key, [...(nodes.get(key) ?? []), s]);
+  }
+  return GUIDE_ROLES.filter((r) => nodes.has(r.key)).map((r) => ({
+    key: r.key,
+    title: r.title,
+    children: [...(nodes.get(r.key) ?? [])].sort(
+      (a, b) =>
+        Number(isRoleOverview(b)) - Number(isRoleOverview(a)) ||
+        a.meta.order - b.meta.order ||
+        parentRank(a) - parentRank(b) ||
+        collator.compare(a.meta.flow ?? '', b.meta.flow ?? '') ||
+        collator.compare(a.title, b.title),
+    ),
+  }));
+}
 
 // Mục lục TỰ SINH từ phần đầu (frontmatter) của mọi bài trong docs/huong-dan/**/*.md (xem frontmatter.ts):
 // thêm bài = thêm tệp có phần đầu, không sửa tệp này. Thứ tự: nhóm, rồi «order», rồi đường dẫn. Slug «bat-dau» là đường mặc định.
@@ -165,19 +184,17 @@ export function roleButtons(sections: GuideSection[]): { label: string; section:
     .sort((a, b) => rank(a.label) - rank(b.label));
 }
 
-/** Tên mục để hiện: «0. Giới thiệu hệ thống» (có số) hoặc «Vai: Kế toán» (không số). */
+/** Tên mục để hiện: «0. Giới thiệu hệ thống» (có số) hoặc «Kế toán» (bỏ chữ «Vai:»). */
 export const sectionLabel = (s: GuideSection) =>
-  s.no !== undefined ? `${s.no}. ${s.title}` : s.title;
+  s.no !== undefined ? `${s.no}. ${s.title}` : s.title.replace(/^Vai: /, '');
 
-/** Thứ tự đọc đúng như menu: Bắt đầu, vai (không cha), rồi từng cha với các con, rồi Tra cứu. */
+/** Thứ tự đọc đúng như menu: Bắt đầu, rồi từng vai với các bài của vai, rồi Tra cứu. */
 export function menuOrder(portal: GuidePortal = 'crm'): GuideSection[] {
   const list = sectionsFor(portal);
-  const flat = (g: GuideGroup) =>
-    list.filter((s) => s.group === g && !(g === 'vai' && s.parent !== undefined));
+  const flat = (g: GuideGroup) => list.filter((s) => s.group === g);
   return [
     ...flat('bat-dau'),
-    ...flat('vai'),
-    ...buildParentTree(list).flatMap((n) => n.children),
+    ...buildRoleTree(list).flatMap((n) => n.children),
     ...flat('tra-cuu'),
   ];
 }

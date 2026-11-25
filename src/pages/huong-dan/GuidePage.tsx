@@ -1,7 +1,7 @@
 // Hướng dẫn sử dụng (A-23-30): menu trái theo mục, nội dung đọc từ docs/huong-dan/*.md nhúng lúc build, tìm kiếm trong tài liệu.
 // Mọi người đã đăng nhập cổng CRM đều xem được; không gọi máy chủ dữ liệu.
 import { useQuery } from '@tanstack/react-query';
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, Navigate, useLocation, useParams } from 'react-router';
 import { ButtonLink } from '../../ui/Button';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -14,9 +14,9 @@ import {
   sectionsFor,
   type GuidePortal,
   GUIDE_GROUPS,
-  buildParentTree,
+  buildRoleTree,
   childLabel,
-  type GuideParentNode,
+  type GuideRoleNode,
   GUIDE_SLUG_ALIASES,
   findSection,
   loadSource,
@@ -160,7 +160,7 @@ function PrevNext({ slug, portal }: { slug: string; portal: GuidePortal }) {
   );
 }
 
-/** Một «cha» (phân hệ) trên menu: bấm để mở/đóng, mở sẵn khi đang đọc bài của nó. Cùng kiểu nút với menu trái của cổng CRM. */
+/** Một vai trên menu: bấm để mở/đóng, mở sẵn khi đang đọc bài của nó. Cùng kiểu nút với menu trái của cổng CRM. */
 function ParentMenu({
   node,
   portal,
@@ -168,7 +168,7 @@ function ParentMenu({
   searching,
   onPick,
 }: {
-  node: GuideParentNode;
+  node: GuideRoleNode;
   portal: GuidePortal;
   currentSlug: string;
   searching: boolean;
@@ -177,7 +177,7 @@ function ParentMenu({
   const hasActive = !searching && node.children.some((c) => c.slug === currentSlug);
   const [open, setOpen] = useState(hasActive);
   const expanded = open || hasActive;
-  const panelId = `huong-dan-cha-${node.key}`;
+  const panelId = `huong-dan-vai-${node.key}`;
   return (
     <li>
       <button
@@ -251,7 +251,7 @@ export function GuidePage() {
   }
 
   const toc = outline(blocks);
-  const tree = buildParentTree(sectionsFor(portal));
+  const tree = buildRoleTree(sectionsFor(portal));
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-4 lg:flex-row">
       <nav aria-label="Mục hướng dẫn" className="shrink-0 lg:w-64">
@@ -267,50 +267,40 @@ export function GuidePage() {
         </div>
         <div className="space-y-3">
           {GUIDE_GROUPS.map((g) => (
-            <Fragment key={g.key}>
-              <div>
-                <p className="px-2 pb-1 text-caption font-semibold uppercase text-fg-muted">
-                  {g.title}
-                </p>
-                <ul className="space-y-1">
-                  {sectionsFor(portal)
-                    .filter(
-                      (x) => x.group === g.key && !(g.key === 'vai' && x.parent !== undefined),
-                    )
-                    .map((x) => (
-                      <li key={x.slug}>
-                        <Link
-                          to={`/${portal}/huong-dan/${x.slug}`}
-                          onClick={() => setTerm('')}
-                          aria-current={!searching && x.slug === section.slug ? 'page' : undefined}
-                          className="touch-target focus-ring flex items-center rounded-control px-2 py-1.5 text-body hover:bg-hover aria-[current=page]:bg-hover aria-[current=page]:font-semibold"
-                        >
-                          {sectionLabel(x)}
-                        </Link>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-              {g.key === 'vai' && tree.length > 0 && (
-                <div>
-                  <p className="px-2 pb-1 text-caption font-semibold uppercase text-fg-muted">
-                    Theo phân hệ
-                  </p>
-                  <ul className="space-y-1">
-                    {tree.map((n) => (
+            <div key={g.key}>
+              <p className="px-2 pb-1 text-caption font-semibold uppercase text-fg-muted">
+                {g.title}
+              </p>
+              <ul className="space-y-1">
+                {g.key === 'vai'
+                  ? tree.map((n) => (
                       <ParentMenu
-                        key={n.title}
+                        key={n.key}
                         node={n}
                         portal={portal}
                         currentSlug={section.slug}
                         searching={searching}
                         onPick={() => setTerm('')}
                       />
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </Fragment>
+                    ))
+                  : sectionsFor(portal)
+                      .filter((x) => x.group === g.key)
+                      .map((x) => (
+                        <li key={x.slug}>
+                          <Link
+                            to={`/${portal}/huong-dan/${x.slug}`}
+                            onClick={() => setTerm('')}
+                            aria-current={
+                              !searching && x.slug === section.slug ? 'page' : undefined
+                            }
+                            className="touch-target focus-ring flex items-center rounded-control px-2 py-1.5 text-body hover:bg-hover aria-[current=page]:bg-hover aria-[current=page]:font-semibold"
+                          >
+                            {sectionLabel(x)}
+                          </Link>
+                        </li>
+                      ))}
+              </ul>
+            </div>
           ))}
         </div>
       </nav>
