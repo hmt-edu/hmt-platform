@@ -5,20 +5,23 @@ import { Button } from '../../ui/Button';
 import { downloadText } from '../lead/csv';
 import { ImportDataDialog } from './ImportDataDialog';
 import { IMPORT_KIND_ROWS, kindConfig, sampleCsvText, type ImportKindConfig } from './importKinds';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 export function ImportDataPage() {
   const [open, setOpen] = useState<ImportKindConfig | null>(null);
   return (
-    <div className="mx-auto flex max-w-[960px] flex-col gap-4 p-4 md:p-6">
-      <div>
-        <h1 className="text-h1">Nhập dữ liệu</h1>
-        <p className="mt-1 text-body text-fg-muted">
-          Nạp dữ liệu từ hệ thống cũ theo từng loại, đúng thứ tự gợi ý: loại nào cần dữ liệu có
-          trước thì nạp sau. Mỗi lần: chọn loại, tải file CSV, xem trước từng dòng (hợp lệ, trùng,
-          lỗi), rồi nạp. Dòng đã có thì bỏ qua, không ghi đè, không tự gộp. Loại ghi{' '}
-          <strong>Sắp có</strong> chưa nạp được.
-        </p>
-      </div>
+    <PageFrame>
+      <PageHeader
+        title="Nhập dữ liệu"
+        description={
+          <>
+            Nạp dữ liệu từ hệ thống cũ theo từng loại, đúng thứ tự gợi ý: loại nào cần dữ liệu có
+            trước thì nạp sau. Mỗi lần: chọn loại, tải file CSV, xem trước từng dòng (hợp lệ, trùng,
+            lỗi), rồi nạp. Dòng đã có thì bỏ qua, không ghi đè, không tự gộp. Loại ghi{' '}
+            <strong>Sắp có</strong> chưa nạp được.
+          </>
+        }
+      />
       <div className="overflow-x-auto rounded-control border border-border bg-surface">
         <table className="w-full text-left text-body" aria-label="Loại dữ liệu nạp">
           <thead className="bg-canvas text-caption text-fg-muted">
@@ -81,6 +84,6 @@ export function ImportDataPage() {
       {open && (
         <ImportDataDialog config={open} open onOpenChange={(next) => !next && setOpen(null)} />
       )}
-    </div>
+    </PageFrame>
   );
 }

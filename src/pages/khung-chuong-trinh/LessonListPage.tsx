@@ -33,7 +33,7 @@ export function LessonListPage() {
 
   if (!canView) {
     return (
-      <div className="mx-auto max-w-[1280px] p-4 md:p-6">
+      <div className="min-w-0">
         <StateView
           kind="forbidden"
           title="Bạn không có quyền xem màn này"
@@ -51,7 +51,7 @@ export function LessonListPage() {
   }
   if (detail.isError) {
     return (
-      <div className="mx-auto max-w-[1280px] p-4 md:p-6">
+      <div className="min-w-0">
         <StateView
           kind="error"
           title="Không tải được khung chương trình"
@@ -188,7 +188,7 @@ export function LessonListPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
+    <div className="flex min-w-0 flex-col gap-4">
       <nav aria-label="Đường dẫn" className="text-caption text-fg-muted">
         <Link className="underline" to="/crm/cau-hinh/khung-chuong-trinh">
           Khung chương trình
@@ -196,7 +196,7 @@ export function LessonListPage() {
       </nav>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <h1 className="text-h1 tabular">{frame.code}</h1>
+          <h1 className="font-display text-h2 tabular">{frame.code}</h1>
           <Tag tone={frame.status_code === 'DANG_DUNG' ? 'success' : 'neutral'}>
             {STATUS_NAME[frame.status_code]}
           </Tag>
@@ -234,6 +234,7 @@ export function LessonListPage() {
         className="min-w-0 rounded-box border border-border bg-surface"
       >
         <LineTable
+          wrap
           caption={`Bài học của ${frame.code}`}
           columns={columns}
           rows={lessons}

@@ -47,6 +47,7 @@ import {
   useSessionTypeForms,
   useRefreshCatalogs,
 } from './useCatalogData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 const MODE_TONE: Record<CatalogMode, 'neutral' | 'warning' | 'info'> = {
   open: 'neutral',
@@ -121,13 +122,15 @@ export function CatalogPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-h1">Danh mục</h1>
-        <Button icon="history" disabled={selected === null} onClick={() => setHistoryOpen(true)}>
-          Lịch sử thay đổi
-        </Button>
-      </div>
+    <PageFrame>
+      <PageHeader
+        title="Danh mục"
+        actions={
+          <Button icon="history" disabled={selected === null} onClick={() => setHistoryOpen(true)}>
+            Lịch sử thay đổi
+          </Button>
+        }
+      />
       <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
         <CatalogList
           list={list}
@@ -225,7 +228,7 @@ export function CatalogPage() {
         onOpenChange={(o) => !o && setStopping(null)}
         onDone={done}
       />
-    </div>
+    </PageFrame>
   );
 }
 
@@ -549,6 +552,7 @@ function CatalogPanel({
           </Alert>
         )}
         <LineTable<TreeRow>
+          wrap
           caption={`Các mục của ${rootName}`}
           rows={rows}
           rowKey={(r) => r.node.id}

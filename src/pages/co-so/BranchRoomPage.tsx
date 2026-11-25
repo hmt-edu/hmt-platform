@@ -30,6 +30,7 @@ import {
   useBranchesAndRooms,
   useRefreshBranches,
 } from './useBranchData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 export function BranchRoomPage() {
   const supabase = useDb();
@@ -116,8 +117,8 @@ export function BranchRoomPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <h1 className="text-h1">Cơ sở và phòng học</h1>
+    <PageFrame>
+      <PageHeader title="Cơ sở và phòng học" />
       {!canEdit && (
         <Alert tone="info">Bạn chỉ xem được; chỉ Quản trị sửa được cơ sở và phòng học.</Alert>
       )}
@@ -184,6 +185,7 @@ export function BranchRoomPage() {
                 )}
               </div>
               <LineTable
+                wrap
                 caption={`Phòng học ${branch.code}`}
                 columns={columns}
                 rows={rooms}
@@ -229,7 +231,7 @@ export function BranchRoomPage() {
         busy={busy}
         onConfirm={() => stopping && void toggle(stopping, false)}
       />
-    </div>
+    </PageFrame>
   );
 }
 

@@ -19,6 +19,7 @@ import {
   type PackageFilters,
   type PackageRow,
 } from './usePackageData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Mọi trạng thái' },
@@ -62,21 +63,23 @@ export function PackageListPage() {
   };
 
   return (
-    <div className="mx-auto flex max-w-[1100px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-h1">Gói bán</h1>
-          <p className="mt-1 text-body text-fg-muted">
+    <PageFrame>
+      <PageHeader
+        title="Gói bán"
+        description={
+          <>
             {list.isSuccess ? `${total} gói bán. ` : ''}Mã gói theo Loại-Môn-Khối, không chứa hình
             thức. Giá nằm ở Bảng giá.
-          </p>
-        </div>
-        {canCreate && (
-          <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
-            Tạo gói
-          </Button>
-        )}
-      </div>
+          </>
+        }
+        actions={
+          canCreate && (
+            <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>
+              Tạo gói
+            </Button>
+          )
+        }
+      />
       <div className="flex flex-wrap items-end gap-3">
         <div className="min-w-[240px] flex-1">
           <TextField
@@ -195,6 +198,6 @@ export function PackageListPage() {
         onOpenChange={(o) => !o && setToggling(null)}
         onDone={done}
       />
-    </div>
+    </PageFrame>
   );
 }

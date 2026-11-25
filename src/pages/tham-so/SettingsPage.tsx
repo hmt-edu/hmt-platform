@@ -34,6 +34,7 @@ import {
   useSettingDefs,
   useSettingOverrides,
 } from './useSettingsData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 type Target = { def: SettingDef; branchId: string | null };
 
@@ -166,13 +167,15 @@ export function SettingsPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-h1">Cài đặt tham số nghiệp vụ</h1>
-        <Button icon="history" onClick={() => setHistory('all')}>
-          Lịch sử thay đổi
-        </Button>
-      </div>
+    <PageFrame>
+      <PageHeader
+        title="Cài đặt tham số nghiệp vụ"
+        actions={
+          <Button icon="history" onClick={() => setHistory('all')}>
+            Lịch sử thay đổi
+          </Button>
+        }
+      />
       <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
         <nav
           aria-label="Nhóm tham số"
@@ -241,6 +244,7 @@ export function SettingsPage() {
                 </span>
               </h2>
               <LineTable
+                wrap
                 caption={`Tham số nhóm ${selected.label}`}
                 columns={columns}
                 rows={selected.items}
@@ -312,7 +316,7 @@ export function SettingsPage() {
           );
         }}
       />
-    </div>
+    </PageFrame>
   );
 }
 

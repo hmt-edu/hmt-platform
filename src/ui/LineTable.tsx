@@ -43,6 +43,7 @@ export function LineTable<Row>({
   rowAccent,
   below,
   scrollFocusable = false,
+  wrap = false,
   empty,
 }: {
   caption: string;
@@ -60,6 +61,8 @@ export function LineTable<Row>({
   below?: ((row: Row, index: number) => ReactNode) | undefined;
   /** Vùng cuộn nhận bàn phím (bảng chỉ đọc, không ô nào bấm được). */
   scrollFocusable?: boolean | undefined;
+  /** Màn cấu hình/quản trị (F-24-16, G2): bảng chạy theo bề rộng khung, chữ dài xuống dòng; chỉ cuộn ngang khi thật cần. */
+  wrap?: boolean | undefined;
   empty?: ReactNode | undefined;
 }) {
   // Q-82: vệt mờ ở mép phải khi còn cột bị che; mất khi đã cuộn tới cuối (hoặc bảng vừa khung).
@@ -89,7 +92,10 @@ export function LineTable<Row>({
         className="line-scroll relative overflow-x-auto rounded-box"
         {...(scrollFocusable ? { tabIndex: 0, role: 'region', 'aria-label': caption } : {})}
       >
-        <table aria-label={caption} className="w-max min-w-full border-collapse text-body">
+        <table
+          aria-label={caption}
+          className={cn('border-collapse text-body', wrap ? 'w-full' : 'w-max min-w-full')}
+        >
           <thead className="bg-surface-subtle text-caption font-semibold text-fg-label">
             <tr className="h-table-head">
               {columns.map((c) => (
@@ -97,7 +103,8 @@ export function LineTable<Row>({
                   key={c.key}
                   scope="col"
                   className={cn(
-                    'px-2.5 whitespace-nowrap first:pl-4 last:pr-4',
+                    'px-2.5 first:pl-4 last:pr-4',
+                    !wrap && 'whitespace-nowrap',
                     ALIGN[c.align ?? 'left'],
                     c.width,
                   )}
@@ -121,7 +128,8 @@ export function LineTable<Row>({
                     <td
                       key={c.key}
                       className={cn(
-                        'px-2.5 py-2 align-middle whitespace-nowrap first:pl-4 last:pr-4',
+                        'px-2.5 py-2 align-middle first:pl-4 last:pr-4',
+                        wrap ? 'break-words' : 'whitespace-nowrap',
                         ALIGN[c.align ?? 'left'],
                         c.width,
                         c === columns[0] && rowAccent?.(row) === 'danger' && ACCENT.danger,

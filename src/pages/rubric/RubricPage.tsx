@@ -37,6 +37,7 @@ import {
   useRubric,
   useRubricSubjects,
 } from './useRubricData';
+import { PageHeader } from '../../ui/PageHeader';
 
 const DEFAULT_SUBJECT = 'TOAN';
 
@@ -49,20 +50,17 @@ export function RubricPage() {
   const rubric = useRubric(set, versionId);
 
   const header = (
-    <div className="flex flex-col gap-1">
-      <h1 className="text-h2">Rubric nhận xét</h1>
-      <p className="text-body text-fg-muted">
-        Mô tả mức 1 đến 5 hiện cho giáo viên khi chấm nhận xét. Sửa chỉ áp cho buổi tạo sau lúc sửa;
-        kết quả cũ giữ tiêu chí đã chấm.
-      </p>
-    </div>
+    <PageHeader
+      title="Rubric nhận xét"
+      description="Mô tả mức 1 đến 5 hiện cho giáo viên khi chấm nhận xét. Sửa chỉ áp cho buổi tạo sau lúc sửa; kết quả cũ giữ tiêu chí đã chấm."
+    />
   );
 
   if (rubric.isError) {
     const error = errorOf(rubric.error);
     const forbidden = error.code === FORBIDDEN_CODE;
     return (
-      <div className="mx-auto flex max-w-6xl flex-col gap-4">
+      <div className="flex min-w-0 flex-col gap-4">
         {header}
         <StateView
           kind={forbidden ? 'forbidden' : 'error'}
@@ -80,7 +78,7 @@ export function RubricPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-4">
       {header}
       <div role="group" aria-label="Nội dung rubric" className="flex gap-1">
         <Button

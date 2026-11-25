@@ -27,6 +27,7 @@ import {
   type TermInstallment,
 } from './termLogic';
 import { createTerm, setTermActive, useRefreshTerms, useTerms } from './useTermData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 export function PaymentTermPage() {
   const access = useAccess();
@@ -81,15 +82,17 @@ export function PaymentTermPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-h1">Điều khoản thanh toán</h1>
-        {canCreate && (
-          <Button variant="primary" icon="plus" onClick={() => setCreating({ from: null })}>
-            Thêm điều khoản
-          </Button>
-        )}
-      </div>
+    <PageFrame>
+      <PageHeader
+        title="Điều khoản thanh toán"
+        actions={
+          canCreate && (
+            <Button variant="primary" icon="plus" onClick={() => setCreating({ from: null })}>
+              Thêm điều khoản
+            </Button>
+          )
+        }
+      />
       {terms.isError ? (
         <StateView
           kind="error"
@@ -169,6 +172,7 @@ export function PaymentTermPage() {
                   </div>
                 </div>
                 <LineTable
+                  wrap
                   caption={`Các đợt của ${selected.name}`}
                   columns={columns}
                   rows={[...selected.installments].sort((a, b) => a.seq - b.seq)}
@@ -198,7 +202,7 @@ export function PaymentTermPage() {
           }}
         />
       )}
-    </div>
+    </PageFrame>
   );
 }
 

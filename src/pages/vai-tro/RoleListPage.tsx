@@ -10,6 +10,7 @@ import { TextField } from '../../ui/Field';
 import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { filterRoles, IDLE_GROUP_LABEL, portalsLabel, type RoleSummary } from './roleLogic';
 import { useRoleSummaries, useScopeNames } from './useRoleData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 export function RoleListPage() {
   const roles = useRoleSummaries();
@@ -72,12 +73,11 @@ export function RoleListPage() {
   ];
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <h1 className="text-h1">Vai trò</h1>
-      <p className="text-body text-fg-muted">
-        Các vai trò hệ thống và phạm vi dữ liệu mặc định. Vai trò là danh mục hệ thống nên không
-        thêm hay xoá ở đây; muốn đổi quyền của một vai trò, mở ma trận quyền.
-      </p>
+    <PageFrame>
+      <PageHeader
+        title="Vai trò"
+        description="Các vai trò hệ thống và phạm vi dữ liệu mặc định. Vai trò là danh mục hệ thống nên không thêm hay xoá ở đây; muốn đổi quyền của một vai trò, mở ma trận quyền."
+      />
       <section
         aria-label="Danh sách vai trò"
         className="min-w-0 rounded-box border border-border bg-surface"
@@ -109,6 +109,7 @@ export function RoleListPage() {
           </div>
         ) : (
           <LineTable
+            wrap
             caption="Các vai trò"
             columns={columns}
             rows={rows}
@@ -118,6 +119,6 @@ export function RoleListPage() {
           />
         )}
       </section>
-    </div>
+    </PageFrame>
   );
 }

@@ -37,6 +37,7 @@ import {
   useRefreshMatrix,
   useRoles,
 } from './useMatrixData';
+import { PageFrame, PageHeader } from '../../ui/PageHeader';
 
 export function PermissionMatrixPage() {
   const access = useAccess();
@@ -101,18 +102,20 @@ export function PermissionMatrixPage() {
   };
 
   return (
-    <div className="mx-auto flex max-w-[1280px] flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* CHUNG-26: đang sửa mà có ô đã đổi thì hỏi trước khi rời trang. */}
-        <UnsavedGuard when={editing && draft.size > 0} />
-        <h1 className="text-h1">Ma trận quyền</h1>
-        {current && (
-          <p className="text-body text-fg-muted">
-            Hiện hành: <b>phiên bản {current.version_no}</b> · lưu lúc{' '}
-            {formatDateTime(current.saved_at)}
-          </p>
-        )}
-      </div>
+    <PageFrame>
+      {/* CHUNG-26: đang sửa mà có ô đã đổi thì hỏi trước khi rời trang. */}
+      <UnsavedGuard when={editing && draft.size > 0} />
+      <PageHeader
+        title="Ma trận quyền"
+        description={
+          current && (
+            <>
+              Hiện hành: <b>phiên bản {current.version_no}</b> · lưu lúc{' '}
+              {formatDateTime(current.saved_at)}
+            </>
+          )
+        }
+      />
       {failed ? (
         <StateView
           kind="error"
@@ -314,6 +317,6 @@ export function PermissionMatrixPage() {
           </section>
         </>
       )}
-    </div>
+    </PageFrame>
   );
 }
