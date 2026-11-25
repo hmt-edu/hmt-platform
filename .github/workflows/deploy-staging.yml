@@ -280,6 +280,10 @@ jobs:
           SEED_ASSIGN_MANAGERS: '1'
           # Tài khoản tập cho đào tạo (ql, tvts, cskh, vh theo cơ sở; ketoan.tap, mkt.tap, bgd.tap). Chỉ thử nghiệm.
           SEED_PRACTICE: '1'
+          # Mật khẩu RIÊNG của tài khoản tập (khác STAGING_SEED_PASSWORD của Tester). Thiếu secret thì không tạo tài khoản tập.
+          SEED_PRACTICE_PASSWORD: ${{ secrets.STAGING_PRACTICE_PASSWORD }}
+          # Đặt biến repo STAGING_PRACTICE_RESET = 1 cho MỘT lần chạy để đặt lại mật khẩu tài khoản tập đã có; xong thì xoá biến.
+          SEED_PRACTICE_RESET: ${{ vars.STAGING_PRACTICE_RESET }}
         run: |
           if [ -z "$SECRET_KEY" ] || [ -z "$SEED_PASSWORD" ]; then
             echo "::warning::Chưa có STAGING_SUPABASE_SECRET_KEY hoặc STAGING_SEED_PASSWORD: chưa tạo tài khoản giả."

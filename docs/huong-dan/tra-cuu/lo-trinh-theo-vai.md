@@ -12,6 +12,8 @@ priority: P1
 
 Menu hướng dẫn nhóm bài theo **phân hệ**. Trang này gom lại theo **vai trò**: mỗi vai liệt kê các bài vai đó làm, theo thứ tự công việc thật. Bấm tên bài để mở. Mỗi vai còn có bài tổng quan «Vai: …» ở nhóm «Hướng dẫn theo vai trò».
 
+Bản tập chỉ dùng dữ liệu giả: không nhập tên, số điện thoại thật.
+
 ## Ngày đầu tiên (mọi vai)
 1. [Giới thiệu hệ thống](/crm/huong-dan/bat-dau): hệ thống chạy trên gì, mỗi phần để làm gì.
 2. [Đăng nhập, đổi mật khẩu, quên mật khẩu](/crm/huong-dan/chung-dang-nhap).
