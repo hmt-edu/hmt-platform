@@ -220,6 +220,7 @@ export function GuidePage() {
   const portal: GuidePortal = location.pathname.startsWith('/gv/') ? 'gv' : 'crm';
   const first = defaultSectionFor(portal);
   const [term, setTerm] = useState('');
+  const [tocOpen, setTocOpen] = useState(false);
   const found = findSection(slug);
   const section = found && sectionsFor(portal).includes(found) ? found : undefined;
   const { query, blocks } = useSectionBlocks(section);
@@ -252,6 +253,10 @@ export function GuidePage() {
 
   const toc = outline(blocks);
   const tree = buildRoleTree(sectionsFor(portal));
+  const pick = () => {
+    setTerm('');
+    setTocOpen(false);
+  };
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-4 lg:flex-row">
       <nav
@@ -268,7 +273,20 @@ export function GuidePage() {
             placeholder="Ví dụ: xếp lớp, phiếu thu"
           />
         </div>
-        <div className="space-y-3">
+        <button
+          type="button"
+          aria-expanded={tocOpen}
+          aria-controls="huong-dan-muc-luc"
+          onClick={() => setTocOpen(!tocOpen)}
+          className="touch-target focus-ring mb-2 flex w-full items-center gap-2 rounded-control border border-border bg-surface px-3 py-2 text-left text-body font-medium lg:hidden"
+        >
+          <span className="shrink-0">Mục lục</span>
+          <span className="min-w-0 flex-1 truncate text-fg-muted">
+            {searching ? 'Đang tìm' : sectionLabel(section)}
+          </span>
+          <Icon name={tocOpen ? 'chevronDown' : 'chevronRight'} size={16} className="shrink-0" />
+        </button>
+        <div id="huong-dan-muc-luc" className={cn('space-y-3 lg:block', !tocOpen && 'hidden')}>
           {GUIDE_GROUPS.map((g) => (
             <div key={g.key}>
               <p className="px-2 pb-1 text-caption font-semibold uppercase text-fg-muted">
@@ -283,7 +301,7 @@ export function GuidePage() {
                         portal={portal}
                         currentSlug={section.slug}
                         searching={searching}
-                        onPick={() => setTerm('')}
+                        onPick={pick}
                       />
                     ))
                   : sectionsFor(portal)
@@ -292,7 +310,7 @@ export function GuidePage() {
                         <li key={x.slug}>
                           <Link
                             to={`/${portal}/huong-dan/${x.slug}`}
-                            onClick={() => setTerm('')}
+                            onClick={pick}
                             aria-current={
                               !searching && x.slug === section.slug ? 'page' : undefined
                             }

@@ -1,8 +1,14 @@
 // Hướng dẫn sử dụng (A-23-30): mọi người đăng nhập cổng CRM đều mở được; menu theo mục, đọc nội dung, tìm trong tài liệu.
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { PASSWORD, enterAs, expectAccessible } from './helpers';
 
 test.skip(!PASSWORD, 'Cần SEED_PASSWORD (tài khoản giả).');
+
+/** Điện thoại: menu thu gọn sau nút «Mục lục» (A-24-09); máy tính không có nút này. */
+async function openToc(page: Page) {
+  const nut = page.getByRole('button', { name: /^Mục lục/ });
+  if (await nut.isVisible()) await nut.click();
+}
 
 test('Hướng dẫn: mở từ menu tài khoản, đổi mục, tìm kiếm trong tài liệu', async ({ page }) => {
   await enterAs(page, 'sale.cs5');
@@ -16,6 +22,7 @@ test('Hướng dẫn: mở từ menu tài khoản, đổi mục, tìm kiếm tro
   await expect(page.locator('main h2, main h3').first()).toBeVisible();
   await expectAccessible(page);
 
+  await openToc(page);
   await links.nth(1).click();
   await expect(page).not.toHaveURL(/\/crm\/huong-dan\/bat-dau$/);
   await expect(links.nth(1)).toHaveAttribute('aria-current', 'page');
@@ -43,6 +50,7 @@ test('Hướng dẫn: menu chia ba nhóm không trùng, «Bạn là ai?» dẫn 
   await enterAs(page, 'sale.cs5');
   await page.goto('/crm/huong-dan');
   const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
+  await openToc(page);
   for (const group of ['Bắt đầu', 'Theo vai trò', 'Tra cứu'])
     await expect(nav.getByText(group, { exact: true })).toBeVisible();
   // Không còn mục trùng: mỗi tên mục xuất hiện một lần.
@@ -79,15 +87,21 @@ test('Hướng dẫn: menu «Theo vai trò»: mỗi vai một mục bấm mở/�
   await enterAs(page, 'sale.cs5');
   await page.goto('/crm/huong-dan');
   const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
+  await openToc(page);
   await expect(nav.getByText('Theo phân hệ')).toHaveCount(0);
   await expect(nav.getByText(/^Vai: /)).toHaveCount(0);
-  const cha = nav.getByRole('button', { expanded: false }).first();
+  const cha = nav.locator('button[aria-controls^="huong-dan-vai-"][aria-expanded="false"]').first();
   await expect(cha).toBeVisible();
   await cha.click();
-  await expect(nav.getByRole('button', { expanded: true }).first()).toBeVisible();
+  await expect(
+    nav.locator('button[aria-controls^="huong-dan-vai-"][aria-expanded="true"]').first(),
+  ).toBeVisible();
   const con = nav.locator('ul[id^="huong-dan-vai-"] a').first();
   await con.click();
-  await expect(nav.getByRole('button', { expanded: true }).first()).toBeVisible();
+  await openToc(page);
+  await expect(
+    nav.locator('button[aria-controls^="huong-dan-vai-"][aria-expanded="true"]').first(),
+  ).toBeVisible();
   await expect(nav.locator('a[aria-current="page"]')).toHaveCount(1);
 });
 
@@ -100,4 +114,22 @@ test('Hướng dẫn: máy tính, cột menu dính đầu màn khi cuộn nội 
   const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
   await expect(nav).toHaveCSS('position', 'sticky');
   await expect(nav).toHaveCSS('overflow-y', 'auto');
+});
+
+test('Hướng dẫn: điện thoại, menu thu gọn sau nút «Mục lục», mặc định đóng, bấm mở thấy đủ nhóm, chọn bài thì đóng lại (A-24-09)', async ({
+  page,
+}) => {
+  test.skip((page.viewportSize()?.width ?? 0) >= 1024, 'Máy tính: menu dính, không có nút');
+  await enterAs(page, 'sale.cs5');
+  await page.goto('/crm/huong-dan');
+  const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
+  const nut = nav.getByRole('button', { name: /^Mục lục/ });
+  await expect(nut).toHaveAttribute('aria-expanded', 'false');
+  await expect(nav.getByText('Theo vai trò', { exact: true })).toBeHidden();
+  await nut.click();
+  await expect(nut).toHaveAttribute('aria-expanded', 'true');
+  for (const group of ['Bắt đầu', 'Theo vai trò', 'Tra cứu'])
+    await expect(nav.getByText(group, { exact: true })).toBeVisible();
+  await nav.getByRole('link').nth(1).click();
+  await expect(nut).toHaveAttribute('aria-expanded', 'false');
 });
