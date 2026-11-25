@@ -12,6 +12,8 @@ priority: P1
 
 Người mới nên đọc theo thứ tự dưới đây. Bài nào ghi «(sắp có)» là bài đang được viết.
 
+Bản tập chỉ dùng dữ liệu giả: không nhập tên, số điện thoại thật.
+
 ## Ngày đầu tiên (mọi vai)
 1. [Giới thiệu hệ thống](/crm/huong-dan/bat-dau): hệ thống chạy trên gì, mỗi phần để làm gì.
 2. [Đăng nhập, đổi mật khẩu, quên mật khẩu](/crm/huong-dan/chung-dang-nhap).

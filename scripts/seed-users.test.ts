@@ -1,6 +1,6 @@
 // E-23-39: tài khoản tập theo cơ sở lấy từ danh sách cơ sở, không viết cứng.
 import { describe, expect, it } from 'vitest';
-import { buildPracticeUsers } from './seed-users';
+import { SEED_USERS, buildPracticeUsers } from './seed-users';
 
 const branches = [
   { code: 'CS1', is_office: false },
@@ -18,6 +18,7 @@ describe('buildPracticeUsers', () => {
       expect(of.filter((u) => u.roles[0] === 'SALES')).toHaveLength(3);
       expect(of.filter((u) => u.key.startsWith('cskh'))).toHaveLength(3);
       expect(of.filter((u) => u.key.startsWith('vh'))).toHaveLength(3);
+      expect(of.filter((u) => u.roles[0] === 'TEACHER')).toHaveLength(3);
     }
     expect(users.filter((u) => u.branch === 'CS3').map((u) => u.key)).toEqual([
       'ketoan.tap',
@@ -35,12 +36,17 @@ describe('buildPracticeUsers', () => {
 
   it('thêm cơ sở mới thì có thêm tài khoản (không viết cứng cơ sở); tên giả rõ ràng', () => {
     const more = buildPracticeUsers([...branches, { code: 'CS7', is_office: false }]);
-    expect(more.length - users.length).toBe(10);
+    expect(more.length - users.length).toBe(13);
     expect(users.every((u) => u.name.endsWith('(giả)'))).toBe(true);
   });
 
+  it('mọi tài khoản tập đánh dấu practice (dùng mật khẩu riêng), tài khoản thử của Tester thì không', () => {
+    expect(users.every((u) => u.practice === true)).toBe(true);
+    expect(SEED_USERS.some((u) => u.practice)).toBe(false);
+  });
+
   it('không đụng tên đăng nhập của tài khoản e2e hiện có', () => {
-    const existing = new Set(['ketoan2.cs5', 'ketoan3.cs5', 'ketoan4.cs5', 'sale.cs5', 'cskh.cs5']);
+    const existing = new Set(SEED_USERS.map((u) => u.key));
     expect(users.some((u) => existing.has(u.key))).toBe(false);
   });
 });

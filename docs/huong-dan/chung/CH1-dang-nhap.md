@@ -18,6 +18,8 @@ screens: [P1-01, P1-02, P1-03]
 > Video: [VIDEO: huong-dan-dang-nhap]
 > Không xem được video thì làm theo các bước dưới, đủ để làm.
 
+> Bản tập chỉ dùng dữ liệu giả: không nhập tên, số điện thoại thật.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn đã nhận email (hoặc mã) và mật khẩu tạm từ quản trị viên hoặc bộ phận chăm sóc khách hàng.
 - [ ] Bạn đang mở đúng địa chỉ hệ thống do trung tâm gửi.

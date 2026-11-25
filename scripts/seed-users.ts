@@ -2,6 +2,9 @@
 // Mỗi vai trò ít nhất một tài khoản, nhân viên ở CS1 và CS5. Chạy lại nhiều lần không nhân đôi.
 // Biến môi trường: API_URL, SECRET_KEY (khoá secret của project), DB_URL, SEED_PASSWORD.
 // Mật khẩu giả không nằm trong repo: đọc từ SEED_PASSWORD (local: .env.local; staging: GitHub secret).
+// SEED_PRACTICE=1 thêm tài khoản TẬP (mật khẩu riêng SEED_PRACTICE_PASSWORD, khác SEED_PASSWORD; thiếu biến này thì KHÔNG tạo tài khoản tập).
+// Tài khoản tập chỉ được đặt mật khẩu khi TẠO MỚI (kèm buộc đổi mật khẩu lần đầu để tập bài CH1); các lần deploy sau không đặt lại mật khẩu,
+// không bật lại cờ đổi mật khẩu. Muốn đặt lại tất cả trước buổi học: chạy với SEED_PRACTICE_RESET=1.
 // SEED_ASSIGN_MANAGERS=1 (chỉ bước triển khai staging đặt): gán sẵn Quản lý trực tiếp (R-HT-06) cho Sale, CSKH giả = Trưởng cơ sở cùng cơ sở, CHỈ khi
 // đang để trống (không ghi đè quản lý đã gán tay ở màn Người dùng). Local, CI không đặt biến này vì bài Playwright cần Sale chưa có quản lý.
 import pg from 'pg';
@@ -15,6 +18,8 @@ export type SeedUser = {
   roles: string[];
   locked?: boolean;
   student?: boolean;
+  /** Tài khoản TẬP cho đào tạo: mật khẩu riêng (SEED_PRACTICE_PASSWORD), không dùng chung với tài khoản thử của Tester. */
+  practice?: boolean;
 };
 
 /** Danh sách tài khoản giả: key = phần trước @ (học sinh: mã HS). */
@@ -60,8 +65,8 @@ const PRACTICE_PER_BRANCH = 3;
 
 /**
  * Tài khoản TẬP cho buổi đào tạo (E-23-39): theo từng cơ sở dạy học (không phải văn phòng) lấy từ DB, không viết cứng danh sách cơ sở.
- * Mỗi cơ sở: 1 Quản lý cơ sở, 3 Tư vấn tuyển sinh, 3 CSKH, 3 Vận hành (tạm vai CSKH). Toàn hệ thống: 1 Kế toán, 1 Trưởng nhóm Marketing, 1 Ban Giám Đốc (Admin).
- *  * Tên đăng nhập: ql.cs5, tvts1.cs5..tvts3.cs5, cskh1.cs5..cskh3.cs5, vh1.cs5..vh3.cs5, ketoan.tap, mkt.tap, bgd.tap. Chạy lại không nhân đôi (khoá theo tên).
+ * Mỗi cơ sở: 1 Quản lý cơ sở, 3 Tư vấn tuyển sinh, 3 CSKH, 3 Vận hành (tạm vai CSKH), 3 Giáo viên (gvtap1..3; không dùng gv1..gv3 vì gv2.cs5 đã là tài khoản e2e). Toàn hệ thống: 1 Kế toán, 1 Trưởng nhóm Marketing, 1 Ban Giám Đốc (Admin).
+ *  * Tên đăng nhập: ql.cs5, tvts1.cs5..tvts3.cs5, cskh1.cs5..cskh3.cs5, vh1.cs5..vh3.cs5, gvtap1.cs5..gvtap3.cs5, ketoan.tap, mkt.tap, bgd.tap. Chạy lại không nhân đôi (khoá theo tên).
  */
 export function buildPracticeUsers(branches: PracticeBranch[]): SeedUser[] {
   const teaching = branches.filter((b) => !b.is_office);
@@ -100,6 +105,14 @@ export function buildPracticeUsers(branches: PracticeBranch[]): SeedUser[] {
         roles: ['CSKH'],
       });
     }
+    for (let i = 1; i <= PRACTICE_PER_BRANCH; i += 1) {
+      users.push({
+        key: `gvtap${i}.${low}`,
+        name: `Giáo viên tập ${i} ${b.code} (giả)`,
+        branch: b.code,
+        roles: ['TEACHER'],
+      });
+    }
   }
   if (office) {
     users.push(
@@ -113,7 +126,7 @@ export function buildPracticeUsers(branches: PracticeBranch[]): SeedUser[] {
       { key: 'bgd.tap', name: 'Ban Giám Đốc tập (giả)', branch: office.code, roles: ['ADMIN'] },
     );
   }
-  return users;
+  return users.map((u) => ({ ...u, practice: true }));
 }
 
 /** Quản lý trực tiếp mặc định của Sale, CSKH giả (người → quản lý), theo cơ sở. Dùng khi SEED_ASSIGN_MANAGERS=1. */
@@ -158,7 +171,13 @@ async function authAdmin(
 }
 
 async function main() {
-  const { API_URL, SECRET_KEY, DB_URL, SEED_PASSWORD } = process.env;
+  const {
+    API_URL,
+    SECRET_KEY,
+    DB_URL,
+    SEED_PASSWORD,
+    SEED_PRACTICE_PASSWORD: PRACTICE_PASSWORD,
+  } = process.env;
   if (!API_URL || !SECRET_KEY || !DB_URL || !SEED_PASSWORD) {
     throw new Error('Thiếu API_URL, SECRET_KEY, DB_URL hoặc SEED_PASSWORD.');
   }
@@ -187,21 +206,40 @@ async function main() {
     const branches = await db.query<PracticeBranch>(
       'select code, is_office from app.branch where is_active order by sort_order, code',
     );
-    users = [...SEED_USERS, ...buildPracticeUsers(branches.rows)];
+    // Tài khoản tập cần mật khẩu RIÊNG, khác mật khẩu tài khoản thử của Tester; thiếu thì không tạo (không đụng mật khẩu Tester).
+    if (!PRACTICE_PASSWORD) {
+      console.warn('Chưa có SEED_PRACTICE_PASSWORD: bỏ qua tài khoản tập.');
+    } else if (PRACTICE_PASSWORD === SEED_PASSWORD) {
+      throw new Error('SEED_PRACTICE_PASSWORD phải khác SEED_PASSWORD.');
+    } else if (!(
+      PRACTICE_PASSWORD.length >= 8 &&
+      /\p{L}/u.test(PRACTICE_PASSWORD) &&
+      /\d/.test(PRACTICE_PASSWORD)
+    )) {
+      throw new Error('SEED_PRACTICE_PASSWORD phải đủ 8 ký tự, có chữ và số.');
+    } else {
+      users = [...SEED_USERS, ...buildPracticeUsers(branches.rows)];
+    }
   }
+  const resetPractice = process.env.SEED_PRACTICE_RESET === '1';
 
   for (const user of users) {
     const email = seedEmail(user);
     let id = byEmail.get(email);
+    const password = user.practice ? (PRACTICE_PASSWORD ?? '') : SEED_PASSWORD;
+    // Tài khoản tập đã có: KHÔNG đặt lại mật khẩu mỗi lần deploy (người học đổi rồi sẽ bị trả về mật khẩu cũ), trừ khi chạy tay với SEED_PRACTICE_RESET=1.
+    const keepPassword = Boolean(id) && user.practice === true && !resetPractice;
     if (id) {
-      await authAdmin(API_URL, SECRET_KEY, `/users/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify({ password: SEED_PASSWORD }),
-      });
+      if (!keepPassword) {
+        await authAdmin(API_URL, SECRET_KEY, `/users/${id}`, {
+          method: 'PUT',
+          body: JSON.stringify({ password }),
+        });
+      }
     } else {
       const created = await authAdmin(API_URL, SECRET_KEY, '/users', {
         method: 'POST',
-        body: JSON.stringify({ email, password: SEED_PASSWORD, email_confirm: true }),
+        body: JSON.stringify({ email, password, email_confirm: true }),
       });
       id = created.id;
       if (!id) throw new Error(`Không tạo được tài khoản ${email}.`);
@@ -211,7 +249,8 @@ async function main() {
        values ($1, $2, $3, (select id from app.branch where code = $4), $5, $6, $7, $8)
        on conflict (id) do update set display_name = excluded.display_name, branch_id = excluded.branch_id,
          is_locked = excluded.is_locked, lock_reason = excluded.lock_reason,
-         must_change_password = excluded.must_change_password, failed_login_count = 0, temp_locked_until = null`,
+         must_change_password = case when $9::boolean then app.user_account.must_change_password else excluded.must_change_password end,
+         failed_login_count = 0, temp_locked_until = null`,
       [
         id,
         user.name,
@@ -220,11 +259,13 @@ async function main() {
         user.student ? user.key : null,
         Boolean(user.locked),
         user.locked ? 'Tài khoản giả để thử khoá' : null,
-        Boolean(user.student),
+        // Tài khoản tập: tạo mới hoặc đặt lại thì buộc đổi mật khẩu lần đầu (tập bài CH1); còn lại giữ nguyên trạng thái.
+        Boolean(user.student) || Boolean(user.practice),
+        keepPassword,
       ],
     );
-    // Học sinh: chụp mã băm mật khẩu tạm để buộc đổi mật khẩu lần đầu.
-    if (user.student) {
+    // Học sinh, tài khoản tập vừa tạo/đặt lại: chụp mã băm mật khẩu tạm để buộc đổi mật khẩu lần đầu.
+    if (user.student || (user.practice && !keepPassword)) {
       await db.query('select app.remember_temp_password($1)', [id]);
     }
     await db.query(
