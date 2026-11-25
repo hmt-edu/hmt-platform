@@ -3,7 +3,7 @@ title: Xác thực hai bước
 slug: chung-hai-buoc
 group: bat-dau
 order: 22
-role: Quản trị viên
+role: Quản trị
 portals: [crm]
 priority: P1
 flow: CH2

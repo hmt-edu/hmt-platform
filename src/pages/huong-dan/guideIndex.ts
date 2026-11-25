@@ -132,6 +132,39 @@ export const GUIDE_SLUG_ALIASES: Record<string, string> = {
   'truong-co-so': 'theo-vai-truong-co-so',
 };
 
+/** Thứ tự nút ở khối «Bạn là ai?» (nhãn lạ xếp cuối, theo thứ tự xuất hiện). */
+const ROLE_ORDER = [
+  'Mọi người',
+  'Người mới',
+  'Tư vấn tuyển sinh',
+  'CSKH và vận hành lớp',
+  'Kế toán',
+  'Trưởng cơ sở',
+  'Giáo viên',
+  'Học sinh',
+  'Phụ huynh',
+  'Quản trị',
+  'Người có quyền duyệt',
+];
+
+/** Mỗi nhãn vai MỘT nút, trỏ tới bài nhóm «vai» đầu tiên mang nhãn đó (không có thì bài đầu tiên bất kỳ); xếp theo ROLE_ORDER. */
+export function roleButtons(sections: GuideSection[]): { label: string; section: GuideSection }[] {
+  const first = new Map<string, GuideSection>();
+  for (const s of sections) {
+    if (s.roleLabel === undefined) continue;
+    const cur = first.get(s.roleLabel);
+    // Bài nhóm «vai» thắng bài nhóm «bắt đầu» dù đứng sau (A-24-06: «Quản trị» không mở bài Xác thực hai bước).
+    if (cur === undefined || (cur.group !== 'vai' && s.group === 'vai')) first.set(s.roleLabel, s);
+  }
+  const rank = (label: string) => {
+    const i = ROLE_ORDER.indexOf(label);
+    return i < 0 ? ROLE_ORDER.length : i;
+  };
+  return [...first.entries()]
+    .map(([label, section]) => ({ label, section }))
+    .sort((a, b) => rank(a.label) - rank(b.label));
+}
+
 /** Tên mục để hiện: «0. Giới thiệu hệ thống» (có số) hoặc «Vai: Kế toán» (không số). */
 export const sectionLabel = (s: GuideSection) =>
   s.no !== undefined ? `${s.no}. ${s.title}` : s.title;
