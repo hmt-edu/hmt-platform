@@ -64,7 +64,7 @@ Kết quả cuối: báo Chat «Xong staging Apps Script» (kèm `ROOT_FOLDER_ID
 
 Phần dưới là danh sách phép thử gốc.
 
-**Chạy các phép thử:** người có URL và mật khẩu (anh, hoặc ai anh giao) chạy `APPS_SCRIPT_URL=… APPS_SCRIPT_SHARED_SECRET=… node scripts/apps-script-kho-tep/phep-thu.mjs` (tuỳ chọn `OUTSIDE_FILE_ID` = id một tệp tạo tay ngoài thư mục gốc). Script chỉ đọc khoá từ biến môi trường, dừng nếu thư mục gốc không có chữ «staging», chỉ lưu tệp giả vào thư mục `PHEP-THU` rồi xoá vĩnh viễn; kết quả dán vào PR. Phép 3 (hạn mức/ngày) và 7 (`drive.file`) làm tay, theo dõi nhiều ngày.
+**Chạy các phép thử:** người có URL và mật khẩu (anh, hoặc ai anh giao) chạy `node scripts/apps-script-kho-tep/phep-thu.mjs`; script **hỏi ẩn** URL và mật khẩu (không hiện ký tự gõ, không vào lịch sử shell). Hoặc nạp trước bằng `read -s "APPS_SCRIPT_SHARED_SECRET?Mật khẩu: " && export APPS_SCRIPT_SHARED_SECRET` (zsh). **Không gõ mật khẩu trên dòng lệnh, không dán vào chat.** Tuỳ chọn `OUTSIDE_FILE_ID` = id một tệp tạo tay ngoài thư mục gốc (không phải bí mật). Script chỉ đọc khoá từ biến môi trường, dừng nếu thư mục gốc không có chữ «staging», chỉ lưu tệp giả vào thư mục `PHEP-THU` rồi xoá vĩnh viễn; kết quả dán vào PR. Phép 3 (hạn mức/ngày) và 7 (`drive.file`) làm tay, theo dõi nhiều ngày.
 
 Mã script đã được kiểm bằng Drive giả (7 bài: mật khẩu, thư mục gốc, tên, xoá vĩnh viễn, dung lượng, trần cỡ, chừa dung lượng), **chưa chạy trên Google thật**. Còn phải đo ở staging, mỗi phép ghi kết quả vào PR:
 
