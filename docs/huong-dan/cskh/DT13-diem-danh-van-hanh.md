@@ -17,6 +17,9 @@ di_thu: chưa
 **Làm xong bạn có:** biết em nào hôm nay vắng hoặc chưa đến, đã gọi nhắc và ghi lại lý do liên hệ.
 **Ai làm:** CSKH. **Màn:** Đào tạo → Điểm danh trong ngày; Đào tạo → Điểm danh vận hành.
 
+> Video: [VIDEO: dt13]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của bạn.
 - [ ] Buổi cần ghi đã **«Đã chốt»** (buổi còn Nháp chưa có danh sách em; xem bài «Xem buổi học hôm nay và theo dõi buổi chưa hoàn tất»).

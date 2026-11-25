@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn có:** kết quả bài tập về nhà của buổi trước cho từng em.
 **Ai làm:** Giáo viên, Trợ giảng. **Màn:** Buổi dạy → bước 4 «Chấm BTVN buổi trước». **Dùng trên điện thoại.**
 
+> Video: [VIDEO: gv6]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Buổi trước **có giao** BTVN. Nếu đây là buổi đầu của lớp hoặc buổi trước không giao BTVN, bước 4 hiện «Bỏ qua» kèm chữ báo và bạn không phải làm gì.
 

@@ -16,6 +16,9 @@ screens: [P1-01, P1-02, P1-03]
 **Ai làm:** mọi người dùng. Nhân viên, giáo viên, trợ giảng đăng nhập bằng email; học sinh và phụ huynh đăng nhập bằng **mã**, không phải số điện thoại.
 
 > Video: [VIDEO: huong-dan-dang-nhap]
+> Video: [VIDEO: ch1-dang-nhap]
+> Video: [VIDEO: ch1-doi-mat-khau]
+> Video: [VIDEO: ch1-quen-mat-khau]
 > Không xem được video thì làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm

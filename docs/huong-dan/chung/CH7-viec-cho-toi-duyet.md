@@ -57,3 +57,4 @@ screens: [CHUNG-15]
 Trong «Dữ liệu mẫu của tôi» (menu tài khoản) tạo một bộ mẫu. Phiếu mẫu do chính bạn tạo chờ **người khác** có quyền duyệt cùng cơ sở (quản lý trực tiếp của bạn, hoặc Trưởng cơ sở): nhờ họ mở mục này để thử bước duyệt.
 
 > Video (tạo một bộ, xem danh sách, xoá bộ): [VIDEO: huong-dan-du-lieu-mau]
+> Video: [VIDEO: ch7]

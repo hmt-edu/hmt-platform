@@ -16,7 +16,7 @@ nguoi_viet: Code D
 **Làm xong bạn có:** lớp đã duyệt và các buổi học được sinh sẵn, hoặc lớp bị từ chối kèm lý do để CSKH sửa.
 **Ai làm:** Trưởng cơ sở (quản lý cơ sở). **Màn:** menu Tổng quan → Việc chờ tôi duyệt, rồi bản ghi lớp ở Đào tạo → Lớp học.
 
-> Video: [VIDEO: dt8] (chưa dựng)
+> Video: [VIDEO: dt8]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm

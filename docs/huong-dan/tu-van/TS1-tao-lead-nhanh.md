@@ -16,7 +16,7 @@ checked: 2026-11-24
 **Làm xong bạn có:** một lead mới có mã, đang ở giai đoạn «C1 Data mới».
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Tuyển sinh → Lead.
 
-> Video: [VIDEO: tu-van-tong-quan]
+> Video: [VIDEO: ts1]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm

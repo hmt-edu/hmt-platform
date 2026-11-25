@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn có:** trạng thái từng em trong buổi đã được lưu (đây là điểm danh **chính thức**).
 **Ai làm:** Giáo viên, Trợ giảng. **Màn:** Hôm nay → mở buổi → «Điểm danh». **Dùng trên điện thoại.**
 
+> Video: [VIDEO: gv3]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn mở đúng buổi (tên lớp, ngày giờ ghi ở đầu trang).
 - [ ] CSKH đã **chốt danh sách** của buổi. Chưa chốt thì màn báo «Buổi chưa chốt danh sách.» và chưa điểm danh được.

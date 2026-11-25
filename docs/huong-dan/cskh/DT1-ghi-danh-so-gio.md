@@ -17,6 +17,9 @@ di_thu: chưa
 **Làm xong bạn có:** biết em này đang ở tình trạng nào, còn bao nhiêu giờ, và vì sao số giờ như vậy.
 **Ai làm:** CSKH, Trưởng cơ sở. **Màn:** Đào tạo → Ghi danh.
 
+> Video: [VIDEO: dt1]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của em. Bạn chỉ thấy ghi danh của cơ sở mình.
 - [ ] Bạn có mã học sinh hoặc tên em (hỏi phụ huynh nếu chưa có).

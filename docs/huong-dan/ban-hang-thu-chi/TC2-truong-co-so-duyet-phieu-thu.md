@@ -13,6 +13,9 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** phiếu thu chuyển sang «Chờ kế toán», hoặc về Nháp kèm lý do từ chối.
 **Ai làm:** người duyệt bước quản lý: quản lý trực tiếp của người lập phiếu; người lập chưa có quản lý trực tiếp thì Trưởng cơ sở (cơ sở nhiều Trưởng cơ sở thì ai duyệt trước có hiệu lực). **Màn:** Việc chờ tôi duyệt.
 
+> Video: [VIDEO: tc2]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Phiếu hiện ở «Việc chờ tôi duyệt» của bạn (tình trạng «Đã gửi»); mở phiếu thấy nút «Duyệt (chuyển Kế toán)».
 - [ ] Bạn **không phải người lập** phiếu này.

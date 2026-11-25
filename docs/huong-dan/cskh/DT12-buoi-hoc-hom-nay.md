@@ -17,6 +17,9 @@ di_thu: chưa
 **Làm xong bạn có:** biết hôm nay cơ sở có những buổi nào, buổi nào đã chốt danh sách, và buổi nào giáo viên chưa hoàn tất.
 **Ai làm:** CSKH, Trưởng cơ sở. **Màn:** Đào tạo → Buổi học; Đào tạo → Buổi chưa hoàn tất.
 
+> Video: [VIDEO: dt12]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của bạn.
 - [ ] Bạn biết mã lớp hoặc tên giáo viên cần tìm.

@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn có:** biết khách này đã có hồ sơ và không tạo trùng, hoặc tạo lead mới có mã khi thật sự là khách khác.
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Tuyển sinh → Lead. Đây là trường hợp ngoại lệ của bài «Tạo lead nhanh».
 
+> Video: [VIDEO: ts1b]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 > Làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm

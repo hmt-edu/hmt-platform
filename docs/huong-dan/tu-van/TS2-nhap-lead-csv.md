@@ -17,6 +17,7 @@ checked: 2026-11-24
 **Ai làm:** Tư vấn tuyển sinh, CSKH, Trưởng cơ sở (ai có quyền tạo lead). **Màn:** Tuyển sinh → Lead → «Nhập».
 
 > Video: chưa có.
+> Video: [VIDEO: ts2]
 > Làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm

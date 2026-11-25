@@ -15,6 +15,9 @@ screens: [CHUNG-16, CHUNG-17, CHUNG-24]
 **Làm xong bạn có:** hiểu từng màn báo lỗi thường gặp nghĩa là gì và việc cần làm tiếp theo.
 **Ai làm:** mọi người dùng.
 
+> Video: [VIDEO: ch10]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Cách đọc nhanh
 | Màn thấy | Nghĩa là | Làm gì |
 |---|---|---|

@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn có:** mở lại cơ hội cũ, thêm em vào cơ hội đó, hoặc (khi thật sự cần) một cơ hội thứ hai cho cùng lead.
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Lead → «Tạo cơ hội». Đây là trường hợp ngoại lệ của bài «Tạo cơ hội từ lead».
 
+> Video: [VIDEO: ts5b]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 > Làm theo các bước dưới, đủ để làm.
 
 ## Luật cần nhớ (lời thường)

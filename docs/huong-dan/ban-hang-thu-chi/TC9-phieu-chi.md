@@ -13,6 +13,9 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** tiền hoàn đã chi cho phụ huynh và phiếu chi ở «Đã chi».
 **Ai làm:** Kế toán ghi nhận chi; Trưởng cơ sở xem (không thấy nút «Ghi nhận đã chi»). **Màn:** **Phiếu chi**.
 
+> Video: [VIDEO: tc9]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Cần nhớ
 - Phiếu chi **không tạo tay**: hệ thống tạo khi yêu cầu «Hoàn học phí» đã được duyệt đủ hai cấp (Trưởng cơ sở rồi Kế toán) và CSKH (hoặc Trưởng cơ sở) bấm «Thực hiện». Phiếu mới ở «Chờ chi».
 - Một người **không duyệt hai cấp** của cùng một phiếu nghiệp vụ.

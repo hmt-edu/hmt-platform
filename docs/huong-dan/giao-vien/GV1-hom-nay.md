@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn biết:** hôm nay bạn dạy buổi nào và buổi nào sắp hết hạn hoàn tất.
 **Ai làm:** Giáo viên, Trợ giảng. **Màn:** Cổng Giáo viên → «Hôm nay». **Dùng trên điện thoại.**
 
+> Video: [VIDEO: gv1]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn đã đăng nhập và đang ở **Cổng Giáo viên** (nếu bạn vừa là nhân viên vừa là giáo viên: bấm tên bạn ở góc trên, chọn «Sang cổng Giáo viên»).
 - [ ] Thanh dưới màn hình có 5 mục: «Hôm nay», «Lịch dạy», «Lớp», «Cần làm», «Tài khoản».

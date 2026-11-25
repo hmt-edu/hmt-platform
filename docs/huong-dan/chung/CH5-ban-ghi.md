@@ -16,6 +16,10 @@ screens: [K04]
 **Ai làm:** mọi người dùng cổng CRM, theo quyền của mình.
 
 > Video (mở cơ hội, viết và gửi ghi chú): [VIDEO: huong-dan-ghi-chu]
+> Video: [VIDEO: ch5-tao]
+> Video: [VIDEO: ch5-mo]
+> Video: [VIDEO: ch5-sua]
+> Video: [VIDEO: ch5-ghi-chu]
 
 ## Luật cần nhớ
 - **Không xoá hẳn bản ghi.** Huỷ là đổi trạng thái, có hộp xác nhận (đôi khi bắt nhập lý do).

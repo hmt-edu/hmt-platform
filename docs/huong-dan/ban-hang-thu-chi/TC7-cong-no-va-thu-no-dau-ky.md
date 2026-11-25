@@ -13,6 +13,9 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** biết đơn nào còn phải thu, đến hạn hay quá hạn; thu được khoản nợ từ trước khi dùng hệ thống.
 **Ai làm:** Kế toán, Trưởng cơ sở xem công nợ; người có nút «Thu nợ đầu kỳ» lập phiếu thu nợ đầu kỳ, Kế toán duyệt. **Màn:** **Công nợ**; **Phiếu thu** → «Thu nợ đầu kỳ».
 
+> Video: [VIDEO: tc7]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Cần nhớ
 - Công nợ lấy từ **điều khoản thanh toán** của đơn (đợt, hạn đóng).
 - **Nợ đầu kỳ** là khoản phụ huynh còn nợ từ trước khi dùng hệ thống. Phiếu thu nợ đầu kỳ **không cần đơn hàng** và **chỉ Kế toán duyệt, không qua quản lý**; số tiền không vượt nợ còn lại của em.

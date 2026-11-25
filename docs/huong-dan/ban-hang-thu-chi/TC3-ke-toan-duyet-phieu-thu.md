@@ -13,6 +13,9 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** phiếu «Đã duyệt» (hệ thống tự sinh khoản tiền vào và ghi danh) hoặc phiếu về Nháp kèm lý do.
 **Ai làm:** Kế toán (chỉ vai Kế toán duyệt tiền; Admin và vai khác không duyệt). **Màn:** **Hàng chờ kế toán duyệt**.
 
+> Video: [VIDEO: tc3]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn có sao kê ngân hàng hoặc chứng từ để đối chiếu.
 - [ ] Phiếu đã qua bước quản lý (tình trạng «Chờ kế toán»). Phiếu **Thu nợ đầu kỳ** không qua quản lý: vào thẳng hàng chờ của bạn.

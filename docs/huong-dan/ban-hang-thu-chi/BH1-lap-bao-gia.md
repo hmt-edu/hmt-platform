@@ -13,6 +13,9 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** một báo giá đã gửi cho phụ huynh, có giá, chiết khấu và hạn hiệu lực rõ ràng.
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Cơ hội → bản ghi cơ hội → «Tạo báo giá».
 
+> Video: [VIDEO: bh1]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 > Báo giá **không bắt buộc**. Phụ huynh đã đồng ý ngay thì bạn có thể lập đơn hàng luôn (bài «Lập đơn hàng»).
 
 ## Trước khi bắt đầu, kiểm

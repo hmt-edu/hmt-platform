@@ -17,6 +17,9 @@ di_thu: chưa
 **Làm xong bạn có:** em đã vào đúng lớp, từ đúng ngày, và ghi danh chuyển sang «Đã xếp lớp».
 **Ai làm:** CSKH (Trưởng cơ sở làm thay được). **Màn:** Đào tạo → Hàng chờ xếp lớp.
 
+> Video: [VIDEO: dt2]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của em.
 - [ ] Lớp định xếp **đã được duyệt** (lớp Nháp, Đã trình chưa xếp được: làm bài «Tạo lớp, thời khoá biểu và trình duyệt», chờ Trưởng cơ sở duyệt).

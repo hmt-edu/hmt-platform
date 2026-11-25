@@ -16,7 +16,7 @@ nguoi_viet: Code D
 **Làm xong bạn có:** một lớp có đủ thời khoá biểu, đã trình, đang chờ quản lý cơ sở xác nhận và duyệt.
 **Ai làm:** CSKH. **Màn:** menu Đào tạo → Lớp học.
 
-> Video: [VIDEO: dt7] (chưa dựng)
+> Video: [VIDEO: dt7]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm
