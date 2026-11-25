@@ -4,7 +4,7 @@ slug: giao-vien-gv9-lop-cua-toi
 group: vai
 order: 109
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P2
 flow: GV9
 screens: [GV-10, GV-11, GV-13]

@@ -4,7 +4,7 @@ slug: giao-vien-gv13-cham-kiem-tra
 group: vai
 order: 113
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P2
 flow: GV13
 screens: [GV-15]

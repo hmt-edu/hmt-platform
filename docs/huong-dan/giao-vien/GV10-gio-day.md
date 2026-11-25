@@ -4,7 +4,7 @@ slug: giao-vien-gv10-gio-day
 group: vai
 order: 110
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P2
 flow: GV10
 screens: [GV-16]
