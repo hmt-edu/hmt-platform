@@ -20,6 +20,7 @@ import {
   GUIDE_SLUG_ALIASES,
   findSection,
   loadSource,
+  roleButtons,
   neighbours,
   searchGuide,
   sectionLabel,
@@ -112,7 +113,7 @@ function SearchResults({ term, portal }: { term: string; portal: GuidePortal }) 
 
 /** Khối «Bạn là ai?» ở đầu hướng dẫn: mỗi vai một nút tới bài của vai đó. */
 function WhoAreYou({ portal }: { portal: GuidePortal }) {
-  const roles = sectionsFor(portal).filter((x) => x.roleLabel !== undefined);
+  const roles = roleButtons(sectionsFor(portal));
   return (
     <section
       aria-labelledby="ban-la-ai"
@@ -123,9 +124,9 @@ function WhoAreYou({ portal }: { portal: GuidePortal }) {
       </h2>
       <ul className="mt-2 flex flex-wrap gap-2">
         {roles.map((r) => (
-          <li key={r.slug}>
-            <ButtonLink to={`/${portal}/huong-dan/${r.slug}`} variant="secondary">
-              {r.roleLabel}
+          <li key={r.label}>
+            <ButtonLink to={`/${portal}/huong-dan/${r.section.slug}`} variant="secondary">
+              {r.label}
             </ButtonLink>
           </li>
         ))}

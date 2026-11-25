@@ -9,6 +9,7 @@ import {
   buildParentTree,
   childLabel,
   menuOrder,
+  roleButtons,
   neighbours,
 } from './guideIndex';
 import { stripFrontmatter } from './frontmatter';
@@ -165,5 +166,42 @@ describe('Thứ tự đọc theo menu (A-23-49)', () => {
     const { prev, next } = neighbours(mid.slug);
     expect(prev?.slug).toBe(list[list.indexOf(mid) - 1]?.slug);
     expect(next?.slug).toBe(list[list.indexOf(mid) + 1]?.slug);
+  });
+});
+
+describe('Khối «Bạn là ai?» mỗi vai một nút (A-24-05)', () => {
+  it('không nhãn nào xuất hiện hai lần, mỗi nút trỏ tới bài có đúng nhãn đó', () => {
+    for (const portal of ['crm', 'gv'] as const) {
+      const buttons = roleButtons(sectionsFor(portal));
+      const labels = buttons.map((b) => b.label);
+      expect(new Set(labels).size).toBe(labels.length);
+      for (const b of buttons) expect(b.section.roleLabel).toBe(b.label);
+    }
+  });
+
+  it('nhãn gần trùng «Quản trị viên» đã gộp vào «Quản trị»', () => {
+    const labels = GUIDE_SECTIONS.map((s) => s.roleLabel);
+    expect(labels).not.toContain('Quản trị viên');
+  });
+
+  it('giữ thứ tự hợp lý và bài đầu của vai; nhãn lạ xếp cuối', () => {
+    const mk = (slug: string, role: string) =>
+      ({
+        slug,
+        title: slug,
+        roleLabel: role,
+        group: 'vai',
+        portals: ['crm'],
+        meta: {},
+      }) as unknown as (typeof GUIDE_SECTIONS)[number];
+    const out = roleButtons([
+      mk('a1', 'Quản trị'),
+      mk('b1', 'Lạ'),
+      mk('c1', 'Tư vấn tuyển sinh'),
+      mk('c2', 'Tư vấn tuyển sinh'),
+      mk('d1', 'Mọi người'),
+    ]);
+    expect(out.map((b) => b.label)).toEqual(['Mọi người', 'Tư vấn tuyển sinh', 'Quản trị', 'Lạ']);
+    expect(out.find((b) => b.label === 'Tư vấn tuyển sinh')?.section.slug).toBe('c1');
   });
 });

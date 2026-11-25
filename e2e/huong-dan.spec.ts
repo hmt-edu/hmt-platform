@@ -50,6 +50,14 @@ test('Hướng dẫn: menu chia ba nhóm không trùng, «Bạn là ai?» dẫn 
   expect(new Set(names).size).toBe(names.length);
   // Khối «Bạn là ai?»: bấm vai Kế toán thì sang bài của vai đó.
   await expect(page.getByRole('heading', { name: /Bạn là ai/ })).toBeVisible();
+  // Mỗi vai đúng MỘT nút (A-24-05).
+  const roleNames = (
+    await page
+      .getByRole('region', { name: /Bạn là ai/ })
+      .getByRole('link')
+      .allTextContents()
+  ).map((t) => t.trim());
+  expect(new Set(roleNames).size).toBe(roleNames.length);
   await page
     .getByRole('region', { name: /Bạn là ai/ })
     .getByRole('link', { name: 'Kế toán', exact: true })
