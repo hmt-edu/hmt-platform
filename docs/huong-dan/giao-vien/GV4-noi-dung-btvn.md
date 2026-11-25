@@ -4,7 +4,7 @@ slug: giao-vien-gv4-noi-dung-btvn
 group: vai
 order: 104
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P1
 flow: GV4
 screens: [GV-06]

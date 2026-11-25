@@ -4,7 +4,7 @@ slug: giao-vien-gv1-hom-nay
 group: vai
 order: 101
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P1
 flow: GV1
 screens: [GV-01, GV-02]

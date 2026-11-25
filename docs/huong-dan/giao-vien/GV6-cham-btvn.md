@@ -4,7 +4,7 @@ slug: giao-vien-gv6-cham-btvn
 group: vai
 order: 106
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P1
 flow: GV6
 screens: [GV-08]

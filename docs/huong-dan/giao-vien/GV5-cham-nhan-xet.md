@@ -4,7 +4,7 @@ slug: giao-vien-gv5-cham-nhan-xet
 group: vai
 order: 105
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P1
 flow: GV5
 screens: [GV-07, GV07X]

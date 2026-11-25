@@ -4,7 +4,7 @@ slug: giao-vien-gv11-ticket-tu-cong-giao-vien
 group: vai
 order: 111
 role: Giáo viên
-portals: [gv]
+portals: [crm, gv]
 priority: P2
 flow: GV11
 screens: [GV-14]
