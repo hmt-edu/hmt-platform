@@ -59,7 +59,7 @@ checked: 2026-11-24
 - **Số điện thoại trùng với lead của sale khác thì sao?** Bạn vẫn thấy cảnh báo; nếu hồ sơ thuộc cơ sở khác bạn không mở được bản ghi trùng, hỏi Trưởng cơ sở.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `sale.cs5` (hoặc `cskh.cs5`) trên môi trường thử.
+- **Cần:** tài khoản `tvts1–3.cs5` (hoặc `cskh1–3.cs5`) trên môi trường thử.
 - **Dùng:** Menu tài khoản → «Dữ liệu mẫu của tôi» tạo bộ mẫu; nhập số mẫu của bộ (dải 0999 000 xxx) để thấy cảnh báo, rồi đóng hộp bằng dấu X, không lưu.
 
 ## Tự kiểm: bạn làm được khi

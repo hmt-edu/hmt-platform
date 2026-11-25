@@ -85,7 +85,7 @@ checked: 2026-11-24
 - **Ai đổi được giai đoạn?** Người có quyền sửa lead trong cơ sở của bạn; bản đã gộp thì không ai đổi.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `sale.cs5` (hoặc `cskh.cs5`).
+- **Cần:** tài khoản `tvts1–3.cs5` (hoặc `cskh1–3.cs5`).
 - **Dùng:** lead «[MẪU] …» ở C1 trong bộ dữ liệu mẫu của bạn (Menu tài khoản → «Dữ liệu mẫu của tôi»).
 
 ## Tự kiểm: bạn làm được khi

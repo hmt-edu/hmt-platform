@@ -59,7 +59,8 @@ checked: 2026-11-24
 - **Em nộp muộn thì sao?** Chỉ nhận khi bật «Nhận bài muộn».
 
 ## Tập trên dữ liệu mẫu
-- **Dùng:** `gv.cs5`, lớp «CS5-2627-ANH-K07-CB-A-001» có bài mẫu «Bài thử T2-D: đọc đoạn 1». Khi tập giao bài mới, ghi «[MẪU]» đầu tiêu đề.
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Dùng:** một lớp mẫu trong bộ vừa tạo. Khi tập giao bài mới, ghi «[MẪU]» đầu tiêu đề.
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn mở được màn «Giao bài trên LMS».

@@ -52,7 +52,8 @@ checked: 2026-11-24
 - **Buổi trợ giảng có tính không?** Có, theo vai của bạn trong buổi đó.
 
 ## Tập trên dữ liệu mẫu
-- **Dùng:** `gv.cs5`, tháng 11/2026: 2 buổi, 3 giờ, 1 buổi trễ hạn (số mẫu để tập, đổi theo dữ liệu).
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Dùng:** giờ dạy của tháng này, tính từ các buổi mẫu trong bộ vừa tạo (số đổi theo dữ liệu).
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn đổi được sang tháng trước.

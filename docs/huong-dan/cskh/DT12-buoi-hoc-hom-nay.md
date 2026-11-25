@@ -69,7 +69,7 @@ di_thu: chưa
 | «Chỉ nhắc với buổi Đã chốt mà giáo viên chưa hoàn tất.» (mã HMT_BUOI_KHONG_CAN_NHAC) | buổi chưa tới mức cần nhắc | không làm gì thêm |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH (cskh.cs5); Trưởng cơ sở (truongcs.cs5) khi cần sửa điểm danh.
+- **Cần:** tài khoản CSKH (cskh1–3.cs5); Trưởng cơ sở (ql.cs5) khi cần sửa điểm danh.
 - **Dùng:** lớp Toán [MẪU] trong «Dữ liệu mẫu của tôi» có 8 buổi; bộ có sẵn buổi đã điểm danh và buổi Hoàn thành.
 
 ## Hỏi đáp

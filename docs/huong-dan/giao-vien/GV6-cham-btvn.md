@@ -62,7 +62,8 @@ checked: 2026-11-24
 - **Không giao BTVN buổi trước có làm sai gì không?** Không, bước này tự bỏ qua.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** lớp có buổi trước đã giao BTVN và buổi hiện tại.
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Cần thêm:** lớp có buổi trước đã giao BTVN và buổi hiện tại.
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Màn hiện «Đã lưu chấm BTVN» hoặc bước ghi «Bỏ qua».

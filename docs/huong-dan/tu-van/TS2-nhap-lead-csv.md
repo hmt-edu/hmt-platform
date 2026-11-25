@@ -82,7 +82,7 @@ checked: 2026-11-24
 - **Tiếng Việt bị lỗi font?** Lưu lại bằng «CSV UTF-8».
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `cskh.cs5` hoặc `sale.cs5`.
+- **Cần:** tài khoản `tvts1–3.cs5` hoặc `cskh1–3.cs5`.
 - **Dùng:** tạo file CSV nhỏ 5 dòng với số mẫu 0999 000 xxx, trong đó 1 dòng trùng số bộ dữ liệu mẫu của bạn và 1 dòng thiếu số; xem trước, nhập.
 
 ## Tự kiểm: bạn làm được khi

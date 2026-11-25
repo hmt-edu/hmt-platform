@@ -82,7 +82,7 @@ nguoi_viet: Code D
 | «Ngày áp dụng không được sớm hơn hôm nay.» (mã HMT_LOP_NGAY_AP_DUNG_SAI) | lớp đã duyệt, chọn ngày quá khứ | chọn từ hôm nay trở đi |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH (cskh.cs1 hoặc cskh.cs5, tài khoản giả) và một tài khoản Trưởng cơ sở cùng cơ sở để duyệt.
+- **Cần:** tài khoản CSKH (cskh1–3.cs5, tài khoản giả) và một tài khoản Trưởng cơ sở cùng cơ sở để duyệt.
 - **Dùng:** tạo bộ «Dữ liệu mẫu của tôi» để xem lớp Toán mẫu (đã duyệt, đã có buổi) và lớp Tiếng Anh mẫu (đang ở Đã trình). Tạo thêm **một lớp mới của bạn**, đặt tên chung nhóm là «[MẪU] của tôi», rồi trình.
 
 ## Tự kiểm: bạn làm được khi

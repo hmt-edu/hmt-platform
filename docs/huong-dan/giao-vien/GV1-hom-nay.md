@@ -60,8 +60,8 @@ checked: 2026-11-24
 - **Tôi là trợ giảng, có thấy buổi không?** Có, các buổi bạn được phân công, kèm nhãn «Trợ giảng».
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản giáo viên mẫu (ví dụ `gv.cs5`, hỏi quản trị mật khẩu thử nghiệm).
-- **Dùng:** lớp «CS5-2627-TOAN-K08-CB-A-001».
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Dùng:** buổi dạy hôm nay trong bộ mẫu vừa tạo.
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn nói được hôm nay mình có mấy buổi dạy.

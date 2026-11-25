@@ -46,4 +46,4 @@ cap_nhat: 2026-11-24
 - **Phiếu bị từ chối đi đâu?** Về Nháp; lần trình lại đi lại hai bước.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản Kế toán (ketoan.cs5) và phiếu đã được quản lý duyệt (làm cặp với bài «Duyệt phiếu thu: bước quản lý»).
+- **Cần:** tài khoản Kế toán (ketoan.tap, đăng nhập hai bước) và phiếu đã được quản lý duyệt (làm cặp với bài «Duyệt phiếu thu: bước quản lý»).

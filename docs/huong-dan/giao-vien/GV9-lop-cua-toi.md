@@ -55,7 +55,8 @@ checked: 2026-11-24
 - **Vì sao không thấy số điện thoại phụ huynh?** Giáo viên chỉ xem thông tin học tập; liên hệ phụ huynh do CSKH làm.
 
 ## Tập trên dữ liệu mẫu
-- **Dùng:** `gv.cs5`, lớp «CS5-2627-ANH-K07-CB-A-001» có 8 em mẫu và một buổi đã hoàn thành.
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Dùng:** các lớp mẫu trong bộ vừa tạo.
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn mở được hồ sơ rút gọn của một em.

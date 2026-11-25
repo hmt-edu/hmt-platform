@@ -82,7 +82,7 @@ nguoi_viet: Code D
 | «Phiếu tái tục này đã có đơn đang xử lý.» (mã HMT_PHIEU_DA_CO_DON) | đã tạo đơn từ phiếu này | mở tab «Báo giá và đơn», làm tiếp trên đơn đó |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH của cơ sở bạn (cskh.cs1 hoặc cskh.cs5, tài khoản giả).
+- **Cần:** tài khoản CSKH của cơ sở bạn (cskh1–3.cs5, tài khoản giả).
 - **Dùng:** Menu tài khoản → «Dữ liệu mẫu của tôi» → tạo bộ. Bộ có lớp Toán mẫu đã duyệt và 3 em đã ghi danh, mỗi em 20 giờ.
 - **Chưa có sẵn:** bộ dữ liệu mẫu **chưa có phiếu tái tục**. Bạn tập bằng bước 7: lấy mã ghi danh của một em mẫu ở màn «Ghi danh» rồi «Tạo». Sau đó tập bước 4, 5 trên phiếu vừa tạo. Bước 6 (Tạo đơn) cần gói bán và bảng giá đang hiệu lực ở cơ sở; nếu «Gói» trống, báo quản trị.
 

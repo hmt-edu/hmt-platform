@@ -86,7 +86,7 @@ checked: 2026-11-24
 - **Hoàn thành lịch có tự đổi giai đoạn lead, cơ hội không?** Không. Muốn đổi giai đoạn thì làm riêng ở hồ sơ.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `sale.cs5` (hoặc `cskh.cs5`).
+- **Cần:** tài khoản `tvts1–3.cs5` (hoặc `cskh1–3.cs5`).
 - **Dùng:** lead và cơ hội «[MẪU] …» của bạn. Tạo một lịch gọi điện, dời, hoàn thành với «Hẹn gọi lại» và ngày kế tiếp; tạo thêm một lịch rồi huỷ và mở lại.
 
 ## Tự kiểm: bạn làm được khi

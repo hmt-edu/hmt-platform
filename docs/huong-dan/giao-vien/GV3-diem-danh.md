@@ -67,8 +67,8 @@ checked: 2026-11-24
 - **Cột ghi chú vận hành là gì?** CSKH ghi để bạn tham khảo, bạn chỉ xem.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản giáo viên mẫu và một buổi đã chốt danh sách có em.
-- **Dùng:** lớp «CS5-2627-TOAN-K08-CB-A-001», buổi 1 (sau khi CSKH chốt danh sách).
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Dùng:** buổi dạy hôm nay của bộ vừa tạo (cần danh sách đã chốt có em; chưa có thì nhờ CSKH chốt).
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Màn hiện «Đã lưu điểm danh».

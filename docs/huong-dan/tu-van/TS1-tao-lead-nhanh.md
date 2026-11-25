@@ -69,7 +69,7 @@ checked: 2026-11-24
 - **Khách không cho số điện thoại?** Hệ thống bắt buộc có số. Hỏi lại khách, không nhập số giả.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `sale.cs5` (hoặc `cskh.cs5`) trên môi trường thử.
+- **Cần:** tài khoản `tvts1–3.cs5` (hoặc `cskh1–3.cs5`) trên môi trường thử.
 - **Dùng:** Menu tài khoản → «Dữ liệu mẫu của tôi» tạo bộ mẫu; thử tạo lead mới với một số chưa có trong bộ. Số mẫu dùng dải 0999 000 xxx, không dùng số thật.
 
 ## Tự kiểm: bạn làm được khi
