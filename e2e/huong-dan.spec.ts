@@ -43,7 +43,7 @@ test('Hướng dẫn: menu chia ba nhóm không trùng, «Bạn là ai?» dẫn 
   await enterAs(page, 'sale.cs5');
   await page.goto('/crm/huong-dan');
   const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
-  for (const group of ['Bắt đầu', 'Hướng dẫn theo vai trò', 'Tra cứu'])
+  for (const group of ['Bắt đầu', 'Theo vai trò', 'Tra cứu'])
     await expect(nav.getByText(group, { exact: true })).toBeVisible();
   // Không còn mục trùng: mỗi tên mục xuất hiện một lần.
   const names = (await nav.getByRole('link').allTextContents()).map((t) => t.trim());
@@ -73,19 +73,31 @@ test('Hướng dẫn: menu chia ba nhóm không trùng, «Bạn là ai?» dẫn 
   await expect(page).toHaveURL(/\/crm\/huong-dan\/theo-vai-tu-van$/);
 });
 
-test('Hướng dẫn: menu «Theo phân hệ» có cha bấm mở/đóng, con là bài; vào bài con thì cha mở sẵn (A-23-49)', async ({
+test('Hướng dẫn: menu «Theo vai trò»: mỗi vai một mục bấm mở/đóng, không có nhóm «Theo phân hệ», không chữ «Vai:»; vào bài con thì vai mở sẵn (A-24-07)', async ({
   page,
 }) => {
   await enterAs(page, 'sale.cs5');
   await page.goto('/crm/huong-dan');
   const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
-  await expect(nav.getByText('Theo phân hệ', { exact: true })).toBeVisible();
+  await expect(nav.getByText('Theo phân hệ')).toHaveCount(0);
+  await expect(nav.getByText(/^Vai: /)).toHaveCount(0);
   const cha = nav.getByRole('button', { expanded: false }).first();
   await expect(cha).toBeVisible();
   await cha.click();
   await expect(nav.getByRole('button', { expanded: true }).first()).toBeVisible();
-  const con = nav.locator('ul[id^="huong-dan-cha-"] a').first();
+  const con = nav.locator('ul[id^="huong-dan-vai-"] a').first();
   await con.click();
   await expect(nav.getByRole('button', { expanded: true }).first()).toBeVisible();
   await expect(nav.locator('a[aria-current="page"]')).toHaveCount(1);
+});
+
+test('Hướng dẫn: máy tính, cột menu dính đầu màn khi cuộn nội dung, có thanh cuộn riêng (A-24-08)', async ({
+  page,
+}) => {
+  test.skip((page.viewportSize()?.width ?? 0) < 1024, 'Điện thoại: menu xếp trên nội dung');
+  await enterAs(page, 'sale.cs5');
+  await page.goto('/crm/huong-dan');
+  const nav = page.getByRole('navigation', { name: 'Mục hướng dẫn' });
+  await expect(nav).toHaveCSS('position', 'sticky');
+  await expect(nav).toHaveCSS('overflow-y', 'auto');
 });

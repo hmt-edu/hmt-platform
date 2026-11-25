@@ -2,6 +2,8 @@
 id: ch9
 ten: Xuất danh sách ra file
 vai: [chung]
+group: bat-dau
+order: 30
 phan_he: chung
 ma_man: [CHUNG-18]
 uu_tien: P2

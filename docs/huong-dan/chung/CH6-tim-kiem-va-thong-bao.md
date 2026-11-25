@@ -2,6 +2,8 @@
 id: ch6
 ten: Tìm kiếm toàn hệ thống và chuông thông báo
 vai: [chung]
+group: bat-dau
+order: 26
 phan_he: chung
 ma_man: [CHUNG-11, CHUNG-12]
 uu_tien: P2
