@@ -55,7 +55,7 @@ checked: 2026-11-24
 - **«Bài Nộp sau» là gì?** BTVN của em đã chọn «Nộp sau»; em nộp thì bạn cập nhật kết quả.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `gv1–3.cs5` (mỗi người một tài khoản). Vào «Tài khoản» → «Dữ liệu mẫu của tôi» (cổng giáo viên, /gv/du-lieu-mau) → tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
 - **Dùng:** việc cần làm sinh từ buổi trong bộ mẫu vừa tạo.
 
 ## Tự kiểm: bạn làm được khi

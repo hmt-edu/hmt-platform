@@ -65,7 +65,7 @@ checked: 2026-11-24
 - **Buổi quá hạn từ hôm trước làm ở đâu?** «Cần làm» → «Mở».
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `gv1–3.cs5` (mỗi người một tài khoản). Vào «Tài khoản» → «Dữ liệu mẫu của tôi» (cổng giáo viên, /gv/du-lieu-mau) → tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
 - **Dùng:** buổi dạy hôm nay của bộ mẫu bạn vừa tạo (buổi Done là trừ giờ, không mở lại, nên chỉ hoàn tất trên bộ của chính bạn): mở «Hoàn tất» để xem danh sách còn thiếu (đừng xác nhận nếu chưa tập hết các bước).
 
 ## Tự kiểm: bạn làm được khi

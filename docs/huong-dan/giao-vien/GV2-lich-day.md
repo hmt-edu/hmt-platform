@@ -55,7 +55,7 @@ checked: 2026-11-24
 - **Vì sao có chữ «Giờ dạy của tôi» ở góc phải?** Là đường vào màn giờ dạy (xem bài «Giờ dạy của tôi»).
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `gv1–3.cs5` (mỗi người một tài khoản). Vào «Tài khoản» → «Dữ liệu mẫu của tôi» (cổng giáo viên, /gv/du-lieu-mau) → tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Cần:** tài khoản `gvtap1–3.cs5` (mỗi người một tài khoản). Bấm ảnh đại diện ở góc trên bên phải, chọn «Dữ liệu mẫu của tôi» trong menu (cổng giáo viên, /gv/du-lieu-mau), rồi tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
 - **Dùng:** các buổi mẫu trong tuần này của bộ vừa tạo.
 
 ## Tự kiểm: bạn làm được khi
