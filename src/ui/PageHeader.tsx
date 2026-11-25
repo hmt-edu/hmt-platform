@@ -30,11 +30,11 @@ export function PageHeader({
       data-page-header
       className="flex min-h-14 flex-wrap items-center justify-between gap-x-3 gap-y-2"
     >
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1 basis-72">
         <h1 className="font-display text-h2">{title}</h1>
         {description ? <p className="mt-1 text-body text-fg-muted">{description}</p> : null}
       </div>
-      {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
     </header>
   );
 }
