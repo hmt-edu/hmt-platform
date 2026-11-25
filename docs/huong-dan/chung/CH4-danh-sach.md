@@ -18,6 +18,11 @@ screens: [K03]
 > Các nhãn **Filters**, **Group By**, **Favorites**, **Save to Favorites**, **Calendar** viết bằng tiếng Anh và **giữ nguyên**, không dịch.
 
 > Video: [VIDEO: huong-dan-danh-sach]
+> Video: [VIDEO: ch4-tim]
+> Video: [VIDEO: ch4-filters]
+> Video: [VIDEO: ch4-group]
+> Video: [VIDEO: ch4-fav]
+> Video: [VIDEO: ch4-cot]
 
 ## Thanh công cụ, từ trái sang phải
 Ô tìm (chữ gợi ý khác theo màn, ví dụ «Tìm mã, phụ huynh, SĐT, tên em…») · «Làm mới» · «Cột» · «Kiểu xem» (chỉ màn có thêm kiểu, ví dụ «Danh sách» | «Kanban», hoặc **Calendar**) · «Trường ngày» · «Khoảng thời gian» · **Filters** · **Group By** · **Favorites** · «Trang trước» / «Trang sau».

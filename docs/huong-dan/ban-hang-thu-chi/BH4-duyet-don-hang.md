@@ -13,6 +13,10 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** đơn «Đã duyệt» (hoặc đơn về Nháp kèm lý do từ chối).
 **Ai làm:** người lập **trình**; **người duyệt** là quản lý trực tiếp của người lập. Người lập chưa có quản lý trực tiếp thì **Trưởng cơ sở** duyệt (cơ sở nhiều Trưởng cơ sở thì ai duyệt trước có hiệu lực). Trưởng cơ sở lập đơn thì đơn tự qua bước này. Admin duyệt thay khi người duyệt vắng. Cơ sở chưa có Trưởng cơ sở nào thì hệ thống chặn và báo rõ.
 
+> Video: [VIDEO: bh4]
+> Video: [VIDEO: bh4b]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn là người duyệt của đơn này: đơn hiện ở **Việc chờ tôi duyệt** của bạn.
 - [ ] Đã mở đơn «Đã trình» và đọc đủ: dòng đơn, em, lớp, ngày vào lớp, chiết khấu, điều khoản thanh toán.

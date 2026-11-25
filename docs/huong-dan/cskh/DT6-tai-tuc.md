@@ -16,7 +16,7 @@ nguoi_viet: Code D
 **Làm xong bạn có:** biết em nào sắp hết giờ, đã gọi cho phụ huynh và ghi lại kết quả, và khi phụ huynh đồng ý thì có một đơn tái tục ở trạng thái nháp.
 **Ai làm:** CSKH (phụ trách phiếu), Tư vấn tuyển sinh (xem, tạo tay). **Màn:** menu Chăm sóc khách hàng → Tái tục.
 
-> Video: [VIDEO: dt6] (chưa dựng)
+> Video: [VIDEO: dt6]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm

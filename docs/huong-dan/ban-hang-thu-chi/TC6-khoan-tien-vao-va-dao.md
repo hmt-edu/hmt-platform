@@ -13,6 +13,9 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** biết tiền đã vào những khoản nào; một khoản sai được hoàn tác bằng khoản âm, không xoá.
 **Ai làm:** Kế toán, Trưởng cơ sở xem; hoàn tác do người có quyền (không thấy nút là không có quyền). **Màn:** **Khoản tiền vào**.
 
+> Video: [VIDEO: tc6]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Cần nhớ
 - Sổ này **chỉ đọc**: khoản tiền vào do hệ thống tự sinh khi phiếu thu được duyệt. Không ai tạo, sửa hay xoá tay.
 - Sửa sai bằng **«Hoàn tác»**: hệ thống thêm một khoản **âm** trỏ về khoản gốc, khoản gốc giữ nguyên và hiện «Đã hoàn tác». Không hoàn tác được hai lần.

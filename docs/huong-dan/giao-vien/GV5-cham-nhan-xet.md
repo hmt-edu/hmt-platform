@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn có:** nhận xét của từng em có mặt được lưu, sẵn sàng gửi phụ huynh.
 **Ai làm:** Giáo viên, Trợ giảng. **Màn:** Buổi dạy → bước 3 «Chấm nhận xét từng em». **Dùng trên điện thoại.**
 
+> Video: [VIDEO: gv5]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn đã **lưu điểm danh** (bước 3 ghi «Chờ điểm danh» và chưa mở được cho đến khi điểm danh xong).
 - [ ] Bạn biết em nào có mặt: chỉ em **có mặt** mới được nhận xét.

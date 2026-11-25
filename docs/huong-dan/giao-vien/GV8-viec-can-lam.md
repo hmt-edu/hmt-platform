@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn biết:** buổi nào chưa hoàn tất, bài BTVN nào đang chờ bạn cập nhật, và vào đúng việc để làm.
 **Ai làm:** Giáo viên, Trợ giảng. **Màn:** Thanh dưới → «Cần làm». **Dùng trên điện thoại.**
 
+> Video: [VIDEO: gv8]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Thanh dưới có «Cần làm»; số đỏ cạnh nó là số việc đang chờ bạn.
 

@@ -17,6 +17,10 @@ di_thu: chưa
 **Làm xong bạn có:** buổi được huỷ (có buổi thêm vào cuối lịch nếu trung tâm huỷ) hoặc buổi được dời sang ngày, giờ, phòng mới.
 **Ai làm:** Trưởng cơ sở, CSKH có quyền sửa buổi. **Màn:** Đào tạo → Buổi học → bản ghi buổi.
 
+> Video: [VIDEO: dt14]
+> Video: [VIDEO: dt14b]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Buổi **chưa hoàn thành** và chưa huỷ (Nháp hoặc Đã chốt). Buổi đã hoàn thành không huỷ, không dời được.
 - [ ] Bạn biết **lý do thật**: cả lớp nghỉ (trung tâm huỷ) hay một học sinh xin nghỉ buổi học riêng.

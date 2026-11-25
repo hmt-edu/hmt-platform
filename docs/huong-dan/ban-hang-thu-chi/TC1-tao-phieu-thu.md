@@ -13,6 +13,9 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** một phiếu thu đã gửi quản lý, ghi đúng khoản phụ huynh đã đóng.
 **Ai làm:** Tư vấn tuyển sinh, CSKH có quyền lập phiếu thu. **Màn:** Đơn hàng → bản ghi đơn «Đã duyệt» → «Tạo phiếu thu».
 
+> Video: [VIDEO: tc1]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Đơn đang **«Đã duyệt»** (nút «Tạo phiếu thu» mờ nếu chưa).
 - [ ] Bạn đã nhận tiền thật (và có mã giao dịch nếu chuyển khoản).

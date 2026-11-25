@@ -13,7 +13,10 @@ cap_nhat: 2026-11-24
 **Làm xong bạn có:** gói bán có giá theo ngày hiệu lực, chính sách chiết khấu và điều khoản chia đợt để nhân viên chọn khi lập báo giá, đơn.
 **Ai làm:** Admin (quyền Cấu hình bán hàng). **Màn:** menu **Cấu hình** → **Gói bán**, **Bảng giá**, **Chính sách chiết khấu**, **Điều khoản thanh toán**.
 
-> Video: [VIDEO: qt9]
+> Video: [VIDEO: qt9a]
+> Video: [VIDEO: qt9b]
+> Video: [VIDEO: qt9c]
+> Video: [VIDEO: qt9d]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
 
 Bài này gồm bốn việc nhỏ cùng chủ đề. **Bài dài hơn 7 bước, nên tách** thành bốn bài khi làm video: (A) Gói bán, (B) Bảng giá, (C) Chiết khấu, (D) Điều khoản thanh toán. Ở dưới mỗi việc có tối đa 7 bước.

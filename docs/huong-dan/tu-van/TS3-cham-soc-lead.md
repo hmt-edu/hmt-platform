@@ -16,7 +16,7 @@ checked: 2026-11-24
 **Làm xong bạn có:** lead ở đúng giai đoạn và nhóm con theo kết quả liên hệ, và khi khách có nhu cầu thật thì lead sẵn sàng tạo cơ hội.
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Tuyển sinh → Lead → mở một lead.
 
-> Video: [VIDEO: tu-van-tong-quan]
+> Video: [VIDEO: ts3]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm

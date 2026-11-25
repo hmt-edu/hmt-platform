@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn có:** buổi chuyển sang **Done** (đã hoàn tất), được đóng dấu Đúng hạn hoặc Trễ hạn.
 **Ai làm:** Giáo viên, Trợ giảng. **Màn:** Buổi dạy → nút «Hoàn tất». **Dùng trên điện thoại.**
 
+> Video: [VIDEO: gv7]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Điểm danh, nội dung buổi, chấm nhận xét đã xong (và chấm BTVN buổi trước nếu có). Chưa xong cũng bấm «Hoàn tất» được để **xem còn thiếu gì**.
 

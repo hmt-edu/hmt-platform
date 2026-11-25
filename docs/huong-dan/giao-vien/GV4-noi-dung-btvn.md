@@ -16,6 +16,9 @@ checked: 2026-11-24
 **Làm xong bạn có:** nội dung đã dạy được lưu, và bài tập về nhà (BTVN) nếu bạn có giao.
 **Ai làm:** Giáo viên, Trợ giảng. **Màn:** Buổi dạy → bước 2 «Nội dung buổi và BTVN». **Dùng trên điện thoại.**
 
+> Video: [VIDEO: gv4]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn mở đúng buổi (xem tên lớp, ngày giờ, «Loại buổi» ở đầu trang). Loại buổi do người xếp lịch chọn, bạn không đổi.
 

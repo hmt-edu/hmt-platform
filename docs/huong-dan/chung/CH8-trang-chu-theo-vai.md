@@ -15,6 +15,9 @@ screens: [CHUNG-14]
 **Làm xong bạn có:** đọc được trang chủ «Việc của tôi hôm nay» và biết bấm vào đâu để xử lý việc đang chờ.
 **Ai làm:** mọi người dùng cổng CRM. Cổng Giáo viên có màn «Hôm nay» và «Cần làm» riêng.
 
+> Video: [VIDEO: ch8]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Luật cần nhớ
 - Mỗi khối chỉ hiện việc **thuộc quyền của bạn** và thuộc phân hệ đang bật ở cơ sở. Đồng nghiệp khác vai có thể thấy khối khác: không phải lỗi.
 - Khối chưa có dữ liệu thì không hiện thẻ trống hay số giả.

@@ -15,6 +15,11 @@ screens: [CHUNG-04, CHUNG-05, CHUNG-07]
 **Làm xong bạn có:** biết tìm mục cần ở menu, xem đúng cơ sở, đổi cổng khi có nhiều cổng, và đăng xuất an toàn.
 **Ai làm:** mọi người dùng.
 
+> Video: [VIDEO: ch3-chon-co-so]
+> Video: [VIDEO: ch3-thong-bao]
+> Video: [VIDEO: ch3-dang-xuat]
+> Không xem được video? Làm theo các bước dưới, đủ để làm.
+
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn đã đăng nhập (bài «Đăng nhập, đổi mật khẩu, quên mật khẩu»).
 
