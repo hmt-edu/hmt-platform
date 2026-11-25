@@ -46,7 +46,7 @@ async function measure(page: Page, code: string): Promise<Frame> {
       left: Math.round(fr.left),
       right: Math.round(fr.right),
       titlePx: parseFloat(getComputedStyle(h1).fontSize),
-      sameRow: btn ? Math.abs(btn.getBoundingClientRect().top - h1.getBoundingClientRect().top) < 40 : null,
+      sameRow: btn ? btn.getBoundingClientRect().top < h1.parentElement.getBoundingClientRect().bottom - 1 : null,
       overflow: Math.max(0, main.scrollWidth - main.clientWidth),
     };
   })()`);
