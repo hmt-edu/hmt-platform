@@ -55,7 +55,8 @@ checked: 2026-11-24
 - **«Bài Nộp sau» là gì?** BTVN của em đã chọn «Nộp sau»; em nộp thì bạn cập nhật kết quả.
 
 ## Tập trên dữ liệu mẫu
-- **Dùng:** tài khoản giáo viên mẫu `gv.cs5`: có một buổi quá hạn của lớp «CS5-2627-TOAN-K08-CB-A-001».
+- **Cần:** tài khoản `gv1–3.cs5` (mỗi người một tài khoản). Vào «Tài khoản» → «Dữ liệu mẫu của tôi» (cổng giáo viên, /gv/du-lieu-mau) → tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Dùng:** việc cần làm sinh từ buổi trong bộ mẫu vừa tạo.
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn mở được buổi quá hạn từ «Cần làm».

@@ -73,7 +73,7 @@ Em chưa học buổi nào, nên **số hoàn = số tiền đã đóng − phí
 | «Ghi danh này không còn hiệu lực.» | em đã Dừng, Hoàn phí, Kết thúc hoặc Huỷ | không làm thêm phiếu tiền cho ghi danh này |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH (cskh.cs5) và Trưởng cơ sở (truongcs.cs5).
+- **Cần:** tài khoản CSKH (cskh1–3.cs5) và Trưởng cơ sở (ql.cs5).
 - **Dùng:** Menu tài khoản → «Dữ liệu mẫu của tôi» có sẵn 3 ghi danh [MẪU] **đã xếp lớp** để tập bước 1–5. Bộ mẫu **chưa có** ghi danh «Chờ xếp lớp» để tập bước 6; muốn tập thì lập một đơn không chọn lớp theo bài «Lập đơn hàng, chọn lớp và ngày vào lớp» rồi chờ duyệt.
 
 ## Hỏi đáp

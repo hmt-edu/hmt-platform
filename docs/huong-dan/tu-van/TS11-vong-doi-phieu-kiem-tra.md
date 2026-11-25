@@ -79,7 +79,7 @@ checked: 2026-11-24
 - **Phiếu «Đưa về Nháp» có làm cơ hội lùi không?** Không.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** `sale.cs5` (hoặc `cskh.cs5`); một giáo viên mẫu để làm «GV chấm».
+- **Cần:** `tvts1–3.cs5` (hoặc `cskh1–3.cs5`); một giáo viên mẫu để làm «GV chấm».
 - **Dùng:** phiếu «[MẪU]» tạo ở bài trước. Đi hết Nháp → Hoàn thành, rồi thử «Lùi về Nháp» có lý do.
 
 ## Tự kiểm: bạn làm được khi

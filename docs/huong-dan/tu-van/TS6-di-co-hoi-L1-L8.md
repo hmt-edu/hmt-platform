@@ -75,7 +75,7 @@ checked: 2026-11-24
 - **Kéo thả ở Kanban có khác không?** Kéo thẻ sang cột phía trước mở cùng hộp «Chuyển giai đoạn»; không kéo lùi được.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `sale.cs5` (và một tài khoản Trưởng cơ sở nếu tập tiếp đến duyệt đơn).
+- **Cần:** tài khoản `tvts1–3.cs5` (và một tài khoản Trưởng cơ sở nếu tập tiếp đến duyệt đơn).
 - **Dùng:** cơ hội «[MẪU] …» ở L1 hoặc L2: đi lần lượt tới L4, điền tên và năm sinh em để lên L5, rồi tập L7 với «Lý do bỏ qua test».
 
 ## Tự kiểm: bạn làm được khi

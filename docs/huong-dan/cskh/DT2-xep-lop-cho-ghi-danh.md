@@ -69,7 +69,7 @@ di_thu: chưa
 | «Chỉ ghi danh Chờ xếp lớp mới xếp lớp lần đầu.» (mã HMT_GHI_DANH_KHONG_CHO_XEP) | em đã có lớp rồi | dùng phiếu «Chuyển lớp» |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH (cskh.cs5); Trưởng cơ sở (truongcs.cs5) để duyệt lớp nếu cần.
+- **Cần:** tài khoản CSKH (cskh1–3.cs5); Trưởng cơ sở (ql.cs5) để duyệt lớp nếu cần.
 - **Dùng:** lớp Toán [MẪU] đã duyệt trong «Dữ liệu mẫu của tôi». Bộ mẫu **chưa có** em «Chờ xếp lớp» (3 em mẫu đã vào lớp); muốn tập thì lập một đơn không chọn lớp ở bài «Lập đơn hàng, chọn lớp và ngày vào lớp», chờ duyệt đơn và duyệt phiếu thu, em sẽ xuất hiện ở hàng chờ.
 
 ## Hỏi đáp

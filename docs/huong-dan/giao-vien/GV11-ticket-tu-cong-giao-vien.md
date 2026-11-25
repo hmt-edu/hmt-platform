@@ -54,7 +54,8 @@ checked: 2026-11-24
 - **Tạo xong sửa được không?** Bài này chưa có bước sửa; nhắn CSKH nếu cần đổi.
 
 ## Tập trên dữ liệu mẫu
-- **Dùng:** `gv.cs5`, lớp «CS5-2627-ANH-K07-CB-A-001». Ghi «[MẪU]» đầu tiêu đề khi tập.
+- **Cần:** tài khoản `gv1–3.cs5` (mỗi người một tài khoản). Vào «Tài khoản» → «Dữ liệu mẫu của tôi» (cổng giáo viên, /gv/du-lieu-mau) → tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Dùng:** một lớp mẫu trong bộ vừa tạo. Ghi «[MẪU]» đầu tiêu đề khi tập.
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Bạn mở được màn «Tạo ticket» và nói được ô nào bắt buộc.

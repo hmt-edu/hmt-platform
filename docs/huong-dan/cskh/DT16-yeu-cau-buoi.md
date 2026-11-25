@@ -78,7 +78,7 @@ nguoi_viet: Code D
 | «Lớp chưa có học sinh.» | lớp chưa xếp em nào | xếp em vào lớp trước |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** CSKH giả (cskh.cs5) để tạo; Trưởng cơ sở giả (truongcs.cs5) để duyệt.
+- **Cần:** CSKH giả (cskh1–3.cs5) để tạo; Trưởng cơ sở giả (ql.cs5) để duyệt.
 - **Dùng:** lớp Toán mẫu đã duyệt trong «Dữ liệu mẫu của tôi». Tạo một yêu cầu học bù «[MẪU]», rồi nhờ Trưởng cơ sở duyệt, hoặc huỷ yêu cầu của chính bạn.
 
 ## Tự kiểm: bạn làm được khi

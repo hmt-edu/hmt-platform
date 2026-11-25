@@ -82,7 +82,7 @@ checked: 2026-11-24
 - **Không thấy nút «Tạo lịch Test»?** Kiểm bạn đang ở bản ghi cơ hội (không phải lead) và cơ hội chưa bị gộp.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `sale.cs5` (hoặc `cskh.cs5`).
+- **Cần:** tài khoản `tvts1–3.cs5` (hoặc `cskh1–3.cs5`).
 - **Dùng:** cơ hội «[MẪU] …» đã ở L5 trở đi trong bộ dữ liệu mẫu của bạn (Menu tài khoản → «Dữ liệu mẫu của tôi»). Bộ mẫu chưa có cơ hội L5: đi một cơ hội «[MẪU]» tới L5 bằng bài «Đi cơ hội qua L1–L8» (nhớ điền tên và năm sinh em từ L5).
 
 ## Tự kiểm: bạn làm được khi

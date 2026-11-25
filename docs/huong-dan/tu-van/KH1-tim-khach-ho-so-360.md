@@ -76,7 +76,7 @@ checked: 2026-11-24
 - **Muốn xuất danh sách?** Chỉ Admin có nút xuất.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** `sale.cs5` và `cskh.cs5`.
+- **Cần:** `tvts1–3.cs5` và `cskh1–3.cs5`.
 - **Dùng:** phụ huynh «[MẪU] …» (số điện thoại dải 0999 000 …). Tìm theo số, mở hồ sơ, xem tab «Các con».
 
 ## Tự kiểm: bạn làm được khi

@@ -58,7 +58,7 @@ Màn này chỉ để xem, không có thao tác ghi nên không có gì phải h
 | «Chưa có học sinh sắp hết giờ» | không em nào chạm ngưỡng, hoặc bộ lọc đang quá hẹp | bấm xoá bộ lọc; nếu vẫn trống thì không có em nào cần tái tục |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH giả (cskh.cs5).
+- **Cần:** tài khoản CSKH giả (cskh1–3.cs5).
 - **Dùng:** mở màn «Sắp hết giờ» ở CS5: có sẵn vài em lớp Toán lớp 9 còn khoảng 8 đến 9 giờ. Lọc «Tình trạng» rồi mở lớp của một em.
 
 ## Tự kiểm: bạn làm được khi

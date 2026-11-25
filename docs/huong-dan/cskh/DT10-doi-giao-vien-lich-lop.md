@@ -64,7 +64,7 @@ nguoi_viet: Code D
 | «Giờ kết thúc phải sau giờ bắt đầu.» (mã HMT_BUOI_GIO_SAI) | nhập ngược giờ | sửa lại khung giờ |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH giả (cskh.cs5).
+- **Cần:** tài khoản CSKH giả (cskh1–3.cs5).
 - **Dùng:** lớp Toán mẫu đã duyệt do bạn tạo trong «Dữ liệu mẫu của tôi». Chọn ngày áp dụng là ngày mai, bấm «Xem trước số buổi đổi». Chỉ lưu trên lớp «[MẪU]» của bạn, không sửa lớp của người khác.
 
 ## Tự kiểm: bạn làm được khi

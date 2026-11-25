@@ -64,7 +64,7 @@ cap_nhat: 2026-11-24
 | «Chưa có thông báo.» | chưa có ai gửi thông báo cho bạn | Không cần làm gì |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản tập bất kỳ (ví dụ `sale.cs5`) trên **staging**. Vai Vận hành tập tạm bằng quyền CSKH (anh Trường chốt 24/11).
+- **Cần:** tài khoản tập bất kỳ (ví dụ `tvts1–3.cs5`) trên **staging**. Vai Vận hành tập tạm bằng quyền CSKH (anh Trường chốt 24/11).
 - **Dùng:** gõ một phần tên học sinh mẫu không dấu, chọn kết quả; mở chuông, lọc «Chưa đọc», bấm một thông báo.
 - Chưa có trong bộ mẫu: thông báo sẵn cho tài khoản tập (nếu chuông trống, nhờ người khác giao việc hoặc duyệt cho bạn để sinh thông báo).
 

@@ -61,7 +61,8 @@ checked: 2026-11-24
 - **BTVN này em nào làm?** BTVN giao ở buổi này được chấm ở buổi **sau** (bài «Chấm BTVN của buổi trước»).
 
 ## Tập trên dữ liệu mẫu
-- **Dùng:** lớp «CS5-2627-TOAN-K08-CB-A-001», buổi 1; thử ghi hai dòng nội dung và một BTVN «[MẪU] Bài 1».
+- **Cần:** tài khoản `gv1–3.cs5` (mỗi người một tài khoản). Vào «Tài khoản» → «Dữ liệu mẫu của tôi» (cổng giáo viên, /gv/du-lieu-mau) → tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Dùng:** buổi dạy hôm nay của bộ mẫu bạn vừa tạo; thử ghi hai dòng nội dung và một BTVN «[MẪU] Bài 1».
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Màn hiện «Đã lưu nội dung buổi».

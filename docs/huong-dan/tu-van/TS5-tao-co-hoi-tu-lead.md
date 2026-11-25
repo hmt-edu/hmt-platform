@@ -72,7 +72,7 @@ checked: 2026-11-24
 - **Khách chưa có lead, vào thẳng cơ hội được không?** Được: trong **Cơ hội** có thể tạo trực tiếp (chọn nguồn, nhập danh sách em). Bài này chỉ nói đường từ lead.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản `sale.cs5` (hoặc `cskh.cs5`).
+- **Cần:** tài khoản `tvts1–3.cs5` (hoặc `cskh1–3.cs5`).
 - **Dùng:** một lead «[MẪU] …» trong «Dữ liệu mẫu của tôi». Đổi nhóm con lead sang C4C, rồi tạo cơ hội theo các bước trên; thử cả lần tạo thứ hai để thấy khung vàng.
 
 ## Tự kiểm: bạn làm được khi

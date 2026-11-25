@@ -67,7 +67,7 @@ di_thu: chưa
 | «Phân hệ chưa bật» | cơ sở chưa bật màn Điểm danh trong ngày | nhờ Quản trị bật |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH (cskh.cs5).
+- **Cần:** tài khoản CSKH (cskh1–3.cs5).
 - **Dùng:** buổi của lớp Toán [MẪU] đã có điểm danh trong «Dữ liệu mẫu của tôi». Vì buổi mẫu nằm trong quá khứ hoặc đã hoàn thành, một số buổi chỉ xem; chỉ ghi được ở buổi đang «Đã chốt».
 
 ## Hỏi đáp

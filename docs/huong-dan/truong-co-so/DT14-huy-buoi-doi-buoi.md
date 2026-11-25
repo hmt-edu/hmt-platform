@@ -73,7 +73,7 @@ di_thu: chưa
 | «Lý do "Khác" cần ghi chú.» (mã HMT_CAN_GHI_CHU) | chọn lý do «Khác» mà chưa ghi «Ghi chú» | ghi lý do cụ thể vào «Ghi chú» |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản Trưởng cơ sở (truongcs.cs5).
+- **Cần:** tài khoản Trưởng cơ sở (ql.cs5).
 - **Dùng:** một buổi **sắp tới** (chưa hoàn thành) của lớp Toán [MẪU] trong «Dữ liệu mẫu của tôi». Huỷ rồi dời thử trên các buổi khác nhau; dữ liệu mẫu xoá được cả bộ.
 
 ## Hỏi đáp

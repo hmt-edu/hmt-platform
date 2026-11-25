@@ -61,7 +61,7 @@ Hai màn này chỉ để xem; không có gì phải hoàn tác.
 | «Phân hệ chưa bật» | cơ sở chưa bật màn này | nhờ Quản trị |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** tài khoản CSKH giả (cskh.cs5).
+- **Cần:** tài khoản CSKH giả (cskh1–3.cs5).
 - **Dùng:** mở «Lịch tuần cơ sở» tuần này ở CS5, đổi «Theo giáo viên», rồi mở một lớp Toán mẫu và xem «Học sinh».
 
 ## Tự kiểm: bạn làm được khi

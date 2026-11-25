@@ -76,7 +76,7 @@ nguoi_viet: Code D
 | «Không đóng được lớp, còn học sinh còn giờ: …» (mã HMT_LOP_CON_HOC_SINH_CON_GIO) | còn em còn giờ trong lớp | xử lý giờ của các em được liệt kê (chuyển lớp, hoàn phí…) rồi đóng |
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** hai tài khoản cùng cơ sở: CSKH (cskh.cs1 hoặc cskh.cs5) và Trưởng cơ sở (truongcs.cs1 hoặc truongcs.cs5), đều là tài khoản giả.
+- **Cần:** hai tài khoản cùng cơ sở: CSKH (cskh1–3.cs5) và Trưởng cơ sở (ql.cs5), đều là tài khoản giả.
 - **Dùng:** bộ «Dữ liệu mẫu của tôi» có lớp Tiếng Anh mẫu đang ở «Đã trình»: đúng để tập «Xác nhận» rồi «Duyệt» hoặc «Từ chối». Lớp Toán mẫu đã duyệt sẵn, dùng để xem các buổi đã sinh.
 
 ## Tự kiểm: bạn làm được khi

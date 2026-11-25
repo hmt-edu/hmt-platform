@@ -65,7 +65,8 @@ checked: 2026-11-24
 - **Em vắng có phải nhận xét?** Không, chỉ em có mặt.
 
 ## Tập trên dữ liệu mẫu
-- **Cần:** buổi đã chốt danh sách, đã điểm danh có ít nhất một em có mặt.
+- **Cần:** tài khoản `gv1–3.cs5` (mỗi người một tài khoản). Vào «Tài khoản» → «Dữ liệu mẫu của tôi» (cổng giáo viên, /gv/du-lieu-mau) → tạo bộ mẫu: buổi dạy hôm nay được gán cho chính bạn. Mỗi người MỘT bộ; tập xong bấm «Xoá bộ».
+- **Cần thêm:** buổi đã chốt danh sách, đã điểm danh có ít nhất một em có mặt.
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Mọi em có mặt hiện «Đã lưu nhận xét».
