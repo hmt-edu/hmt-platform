@@ -35,8 +35,16 @@ Menu của em ở thanh dưới (điện thoại) hoặc menu trái (laptop): **
 4. Bài đã chấm có khối «Kết quả»: điểm (ví dụ «4/5»), trạng thái và lời phê của giáo viên.
 5. Bấm «Về danh sách bài tập» để quay lại; bấm «Xem thêm» nếu danh sách còn dài.
 
+**Nộp bài (bài còn hạn, hoặc quá hạn mà thầy cô vẫn nhận):**
+1. Mở bài, cuộn xuống phần «Thêm bài làm của em». Bấm «Chụp ảnh» (chụp trang bài làm) hoặc «Chọn tệp» (ảnh hay PDF có sẵn trong máy). Chọn nhiều trang được; số trang tối đa và dung lượng mỗi tệp hiện ngay dưới nút. Ảnh được nén tự động.
+2. Bấm dấu × trên một trang để bỏ trang đó. Thứ tự trang là thứ tự em chọn.
+3. Bấm «Xem lại trước khi nộp»: kiểm các trang, thấy câu «nộp bây giờ là đúng hạn» hoặc cảnh báo nộp muộn.
+4. Bấm «Nộp bài» và **đừng đóng màn** trong lúc đang gửi. Mạng yếu thì màn tự thử lại.
+5. Báo lỗi (ví dụ mất mạng) thì các trang vẫn còn: bấm «Thử lại»; ảnh đã gửi không phải gửi lại.
+6. Muốn sửa sau khi nộp: nếu bài cho nộp lại và thầy cô chưa chấm thì bấm «Nộp lại» (mỗi lần nộp là một lần mới). Chấm rồi thì bài bị khoá.
+
 - **Kết quả:** em biết bài nào cần làm trước, bài nào đã có điểm.
-- **Lỗi thường gặp:** «Bài đã quá hạn và không nhận bài muộn.» thì bài đó không nộp được nữa, hỏi thầy cô. «Không thấy bài tập» nghĩa là bài không còn hoặc không dành cho em. Hiện cổng chưa có nút nộp bài: **nộp bài online sắp có**; trước mắt em nộp theo hướng dẫn của thầy cô.
+- **Lỗi thường gặp:** «Bài đã quá hạn và không nhận bài muộn.» thì bài đó không nộp được nữa, hỏi thầy cô. «Không thấy bài tập» nghĩa là bài không còn hoặc không dành cho em. Không thấy nút «Nộp bài» thì bài đã nộp xong, đã chấm hoặc đã quá hạn.
 - **Ảnh:** [ẢNH: hoc-sinh-bai-tap], [ẢNH: hoc-sinh-chi-tiet-bai]
 
 ## 3. Lịch học
@@ -74,7 +82,3 @@ Menu của em ở thanh dưới (điện thoại) hoặc menu trái (laptop): **
 
 - **Lỗi thường gặp:** quên mật khẩu thì nhờ thầy cô hoặc bộ phận chăm sóc khách hàng ở cơ sở cấp lại; không tự khôi phục trên màn.
 - **Ảnh:** [ẢNH: hoc-sinh-tai-khoan]
-
-## Màn sắp có
-
-Nộp bài online (chụp ảnh, tải tệp) chưa có trên cổng. Khi có sẽ bổ sung vào bài này.
