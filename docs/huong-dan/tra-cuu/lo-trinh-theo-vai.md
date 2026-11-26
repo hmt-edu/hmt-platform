@@ -40,13 +40,13 @@ Theo thứ tự việc thật: lead, cơ hội, hẹn và kiểm tra, báo giá,
 - [Tạo cơ hội từ lead](/crm/huong-dan/tu-van-ts5): Một cơ hội mới từ lead.
 - [Lead đã có cơ hội khi tạo cơ hội](/crm/huong-dan/tu-van-ts5b): Xử lý khi lead đã có cơ hội.
 - [Đi cơ hội qua các giai đoạn L1 đến L8](/crm/huong-dan/tu-van-ts6): Cơ hội đi đúng từ L1 đến L8.
-- [Đi cơ hội từ L5 đến L7 (tên em, phiếu kiểm tra, lý do bỏ qua test)](/crm/huong-dan/tu-van-ts6b): Điền tên em, phiếu kiểm tra, lý do bỏ qua test ở L5–L7.
+- [Đi cơ hội từ L5 đến L7 (tên em, phiếu Test, lý do bỏ qua test)](/crm/huong-dan/tu-van-ts6b): Điền tên em, phiếu Test, lý do bỏ qua test ở L5–L7.
 - [Lịch hẹn: tạo, dời, hoàn thành, huỷ](/crm/huong-dan/tu-van-ts9): Lịch hẹn tạo, dời, hoàn thành, huỷ.
 
-**3. Kiểm tra đầu vào**
+**3. Phiếu Test**
 
-- [Tạo phiếu kiểm tra từ cơ hội](/crm/huong-dan/tu-van-ts10): Phiếu kiểm tra đầu vào từ cơ hội.
-- [Vòng đời phiếu kiểm tra](/crm/huong-dan/tu-van-ts11): Đưa phiếu kiểm tra từ Nháp đến Hoàn thành, gợi ý lớp.
+- [Tạo phiếu Test từ cơ hội](/crm/huong-dan/tu-van-ts10): Phiếu Test từ cơ hội.
+- [Vòng đời phiếu Test](/crm/huong-dan/tu-van-ts11): Đưa phiếu Test từ Nháp đến Hoàn thành, gợi ý lớp.
 
 **4. Báo giá và đơn hàng**
 

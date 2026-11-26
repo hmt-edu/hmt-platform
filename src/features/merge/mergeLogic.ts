@@ -41,7 +41,7 @@ const MOVE_LABEL: Record<string, string> = {
   enrollments: 'Ghi danh',
   attendance: 'Dòng điểm danh',
   balance_entries: 'Dòng số dư khách hàng',
-  tests: 'Phiếu kiểm tra',
+  tests: 'Phiếu Test',
   notes: 'Ghi chú',
 };
 
@@ -67,7 +67,7 @@ export function matchSentence(
     return `Hai phụ huynh cùng SĐT ${phoneLabel}. Chọn bản giữ lại; mọi dữ liệu (lead, cơ hội, học sinh, đơn, phiếu thu, số dư, ghi danh, ghi chú) của bản kia chuyển sang bản giữ lại.`;
   }
   if (entity === 'STUDENT') {
-    return `Hai học sinh cùng phụ huynh (SĐT ${phoneLabel}). Chọn bản giữ lại; mọi dữ liệu (ghi danh, điểm danh, phiếu kiểm tra, số dư, ghi chú) của bản kia chuyển sang bản giữ lại.`;
+    return `Hai học sinh cùng phụ huynh (SĐT ${phoneLabel}). Chọn bản giữ lại; mọi dữ liệu (ghi danh, điểm danh, phiếu Test, số dư, ghi chú) của bản kia chuyển sang bản giữ lại.`;
   }
   const why = entity === 'LEAD' ? `cùng SĐT ${phoneLabel}` : `cùng phụ huynh (SĐT ${phoneLabel})`;
   return `Hai ${noun} ${why}. Chọn bản giữ lại; lịch hẹn và ghi chú của bản kia chuyển sang bản giữ lại.`;

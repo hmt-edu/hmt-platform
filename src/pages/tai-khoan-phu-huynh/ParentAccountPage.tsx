@@ -109,7 +109,7 @@ export function ParentAccountPage() {
         onSortChange={() => undefined}
         emptyMessage={{
           title: 'Chưa có phụ huynh',
-          hint: 'Không có phụ huynh nào trong bộ lọc này. Hồ sơ phụ huynh tự sinh khi có phiếu kiểm tra đầu vào hoặc đơn được duyệt.',
+          hint: 'Không có phụ huynh nào trong bộ lọc này. Hồ sơ phụ huynh tự sinh khi có phiếu Test hoặc đơn được duyệt.',
         }}
       />
       <ActionConfirmDialog

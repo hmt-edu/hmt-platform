@@ -1,5 +1,5 @@
 ---
-title: Vòng đời phiếu kiểm tra
+title: Vòng đời phiếu Test
 group: vai
 slug: tu-van-ts11
 order: 48
@@ -11,16 +11,16 @@ screens: [TS-16, TS-17, GV-15]
 checked: 2026-11-24
 ---
 
-# Vòng đời phiếu kiểm tra
+# Vòng đời phiếu Test
 
 **Làm xong bạn có:** một phiếu đi hết các bước Nháp → Đang test → Chờ giáo viên chấm → Hoàn thành, và cơ hội tự cập nhật giai đoạn theo.
-**Ai làm:** Tư vấn tuyển sinh, CSKH (giáo viên chỉ chấm điểm ở bước 5). **Màn:** Tuyển sinh → Phiếu kiểm tra → bản ghi phiếu.
+**Ai làm:** Tư vấn tuyển sinh, CSKH (giáo viên chỉ chấm điểm ở bước 5). **Màn:** Tuyển sinh → Phiếu Test → bản ghi phiếu.
 
 > Video: [VIDEO: ts11]
 > Không xem được video? Làm theo các bước dưới là đủ.
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Đã có phiếu «Nháp» (bài «Tạo phiếu kiểm tra từ cơ hội»).
+- [ ] Đã có phiếu «Nháp» (bài «Tạo phiếu Test từ cơ hội»).
 - [ ] Phiếu đã chọn **Phòng** và **GV chấm** (ở khối «Lịch và phụ trách»). GV chấm bắt buộc có trước khi bấm «Hoàn thành».
 - [ ] Bạn là người tạo, người phụ trách hoặc có quyền sửa phiếu; nếu không, các nút đổi trạng thái sẽ không hiện.
 
@@ -32,7 +32,7 @@ checked: 2026-11-24
 - Đưa phiếu về Nháp **không** kéo cơ hội lùi giai đoạn.
 
 ## Các bước
-1. Mở **Phiếu kiểm tra** (menu Tuyển sinh), mở phiếu cần xử lý. Đến giờ test, bấm **«Bắt đầu test»**.
+1. Mở **Phiếu Test** (menu Tuyển sinh), mở phiếu cần xử lý. Đến giờ test, bấm **«Bắt đầu test»**.
    *Bạn thấy:* thông báo «Đã bắt đầu test.», trạng thái «Đang test».
    [ẢNH: ts17-ts11-b1] [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Em làm bài xong, bấm **«Nộp bài»**.
@@ -51,7 +51,7 @@ checked: 2026-11-24
 
 ## Sau bước này
 - **Ai làm tiếp:** bạn tư vấn lớp, lên «Tư vấn» rồi «Đăng ký học» cho cơ hội; giáo viên chấm bài ở cổng Giáo viên.
-- **Bạn xem ở đâu:** Phiếu kiểm tra → lọc «Tôi tạo» / «Tôi phụ trách»; cơ hội → thẻ «Kiểm tra» hiện điểm.
+- **Bạn xem ở đâu:** Phiếu Test → lọc «Tôi tạo» / «Tôi phụ trách»; cơ hội → thẻ «Kiểm tra» hiện điểm.
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
@@ -86,4 +86,4 @@ checked: 2026-11-24
 - [ ] Phiếu «[MẪU]» đã «Hoàn thành» với điểm và nhận xét.
 - [ ] Bạn nói được cơ hội nằm ở nhóm con nào sau «Nộp bài» và sau «Hoàn thành».
 
-**Bước trước:** Tạo phiếu kiểm tra từ cơ hội · **Bước sau:** Đi cơ hội qua L1–L8 (từ L6 trở đi)
+**Bước trước:** Tạo phiếu Test từ cơ hội · **Bước sau:** Đi cơ hội qua L1–L8 (từ L6 trở đi)

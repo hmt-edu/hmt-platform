@@ -37,7 +37,7 @@ export function buildTestConfig(
   const name = (catalog: string, code: string) => catalogs.name(catalog, code) ?? code;
   return {
     screenCode: TEST_SCREEN_CODE,
-    title: 'Kiểm tra đầu vào',
+    title: 'Phiếu Test',
     searchPlaceholder: 'Tìm tên, SĐT, mã (cả mã cũ)…',
     columns: [
       { key: 'code', label: 'Mã PKT', locked: true, render: (r) => <Code>{r.code}</Code> },

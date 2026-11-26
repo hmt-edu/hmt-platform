@@ -82,7 +82,7 @@ export function TestRecordPage() {
         actions={
           <>
             <Link to="/crm/phieu-kiem-tra" className="font-medium text-link hover:underline">
-              Về danh sách Kiểm tra đầu vào
+              Về danh sách Phiếu Test
             </Link>
             {!forbidden && !missing && (
               <Button onClick={() => void query.refetch()}>Thử lại</Button>
@@ -246,7 +246,7 @@ function TestView({ record }: { record: TestRecord }) {
   return (
     <>
       <RecordDetail
-        kind="Phiếu kiểm tra"
+        kind="Phiếu Test"
         title={title}
         mode={mode}
         dirty={dirty}
@@ -670,7 +670,7 @@ function TestView({ record }: { record: TestRecord }) {
       <ReasonDialog
         open={cancelOpen}
         onOpenChange={setCancelOpen}
-        title="Huỷ phiếu kiểm tra"
+        title="Huỷ phiếu Test"
         description={`${record.code} · ${record.student_name}`}
         options={catalogs.options('TEST_CANCEL_REASON').map((o) => ({
           ...o,

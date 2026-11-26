@@ -49,7 +49,7 @@ Mọi con số nghiệp vụ như hạn mức, phí xử lý, số ngày nhắc 
 Đây là sợi dây chính, từ người hỏi thăm đến buổi học:
 
 ```
-Lead  →  Cơ hội  →  (Phiếu kiểm tra đầu vào)  →  Báo giá  →  Đơn hàng  →  Phiếu thu
+Lead  →  Cơ hội  →  (Phiếu Test)  →  Báo giá  →  Đơn hàng  →  Phiếu thu
                                                                               │
                                                                               ▼
                               Buổi học  ←  Lớp  ←  Xếp lớp  ←  Ghi danh (quỹ giờ)  ←  Học sinh
@@ -57,7 +57,7 @@ Lead  →  Cơ hội  →  (Phiếu kiểm tra đầu vào)  →  Báo giá  →
 
 - **Lead:** một lượt khách quan tâm (gọi, để lại số, đăng ký). Có nguồn, giai đoạn, người phụ trách. Hệ thống cảnh báo khi số điện thoại trùng với lead hay phụ huynh đã có.
 - **Cơ hội:** lead đã đủ nghiêm túc để tư vấn. Đi qua các giai đoạn chỉ tiến về phía trước. Từ giai đoạn gần chốt phải có tên và năm sinh học sinh.
-- **Phiếu kiểm tra đầu vào:** xếp lịch, giáo viên chấm, kết quả dùng để tư vấn lớp phù hợp.
+- **Phiếu Test:** xếp lịch, giáo viên chấm, kết quả dùng để tư vấn lớp phù hợp.
 - **Báo giá → Đơn hàng:** báo giá chọn gói, số giờ, chiết khấu; chuyển thành đơn khi phụ huynh đồng ý, chọn lớp và ngày vào học. Đơn qua bước **duyệt** của quản lý cơ sở.
 - **Phiếu thu:** tiền thu về cho đơn, có thể nhiều đợt. Kế toán duyệt. Duyệt xong mới có giờ học.
 - **Học sinh và phụ huynh:** hồ sơ khách hàng. Một phụ huynh có thể có nhiều em; một em có thể có nhiều ghi danh.
@@ -71,7 +71,7 @@ Mã của từng bản ghi (lead, cơ hội, đơn, phiếu thu, ghi danh, lớp
 
 ## 5. Từng phân hệ dùng để làm gì
 
-**Tuyển sinh.** Quản lý lead và cơ hội trên danh sách hoặc bảng kéo theo giai đoạn; nhập lead từ tệp; giao người phụ trách; gộp lead hoặc cơ hội trùng; lịch hẹn gọi, gặp, nhắn của từng người (quá hạn, hôm nay, sắp tới); phiếu kiểm tra đầu vào. Người làm chính: sale, CSKH.
+**Tuyển sinh.** Quản lý lead và cơ hội trên danh sách hoặc bảng kéo theo giai đoạn; nhập lead từ tệp; giao người phụ trách; gộp lead hoặc cơ hội trùng; lịch hẹn gọi, gặp, nhắn của từng người (quá hạn, hôm nay, sắp tới); phiếu Test. Người làm chính: sale, CSKH.
 
 **Bán hàng.** Báo giá, gửi báo giá, chuyển thành đơn hàng, trình và duyệt đơn. Có thể cho học trước, đóng tiền sau nếu quản lý cơ sở bật trên đơn đã duyệt. Người làm chính: sale, quản lý cơ sở.
 
