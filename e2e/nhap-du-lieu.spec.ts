@@ -214,7 +214,7 @@ test('Nhập Cơ hội: báo cáo theo giai đoạn, dòng thiếu thông tin em
   const report = dialog.getByLabel('Báo cáo cơ hội');
   await expect(report).toContainText('L2: 1');
   await expect(report).toContainText('L5: 1');
-  await expect(report.getByText(/dòng thiếu thông tin em/)).toContainText('1');
+  await expect(report.getByText(/dòng thiếu thông tin học sinh/)).toContainText('1');
   // Không in họ tên, SĐT; cảnh báo nêu rõ thiếu thông tin em.
   await expect(dialog.getByText('Chị Cơ Hội')).toHaveCount(0);
   await expect(dialog.getByText(/Thiếu thông tin em \(dữ liệu cũ\)/)).toBeVisible();

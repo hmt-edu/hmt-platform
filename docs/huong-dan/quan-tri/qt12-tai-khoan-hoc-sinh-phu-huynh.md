@@ -37,12 +37,12 @@ cap_nhat: 2026-11-24
    *Bạn thấy:* bảng Mã HS, Học sinh, Phụ huynh, Cơ sở, Tài khoản (Chưa cấp / Đang dùng / Đã khoá), Đổi mật khẩu lần đầu, Đăng nhập gần nhất. Lọc theo Tài khoản và Cơ sở.
    [CHƯA CHỤP: cần staging; ảnh dự kiến quan-tri-qt12-b1]
 2. Học sinh «Chưa cấp»: bấm **Cấp tài khoản** ở dòng, rồi **Cấp tài khoản** trong hộp xác nhận.
-   *Bạn thấy:* hộp «Mật khẩu tạm» ghi tên em, mật khẩu to ở giữa, nút **Chép mật khẩu** (đổi thành «Đã chép») và **Xong**. Thông báo «Đã cấp tài khoản cho <tên>.»
+   *Bạn thấy:* hộp «Mật khẩu tạm» ghi tên học sinh, mật khẩu to ở giữa, nút **Chép mật khẩu** (đổi thành «Đã chép») và **Xong**. Thông báo «Đã cấp tài khoản cho <tên>.»
    [CHƯA CHỤP: cần staging; ảnh dự kiến quan-tri-qt12-b2]
-3. Bấm **Chép mật khẩu**, gửi cho em hoặc phụ huynh theo cách riêng, rồi bấm **Xong**.
+3. Bấm **Chép mật khẩu**, gửi cho học sinh hoặc phụ huynh theo cách riêng, rồi bấm **Xong**.
    ⚠ Bấm «Xong» khi chưa chép, hệ thống nhắc một lần; bấm lần nữa là đóng và mật khẩu mất.
-4. Cấp cho nhiều em: tích chọn các dòng «Chưa cấp», bấm **Cấp tài khoản (N)** trên thanh thao tác, rồi **Cấp và tải file**.
-   *Bạn thấy:* một file tải về gồm Mã HS (tên đăng nhập), Học sinh, Mật khẩu tạm, Lỗi. Thông báo «Đã cấp N tài khoản. File vừa tải chứa mật khẩu tạm, chỉ có một lần này.» Nếu có em lỗi: «Đã cấp X/Y em; Z em lỗi (xem cột Lỗi trong file vừa tải).»
+4. Cấp cho nhiều học sinh: tích chọn các dòng «Chưa cấp», bấm **Cấp tài khoản (N)** trên thanh thao tác, rồi **Cấp và tải file**.
+   *Bạn thấy:* một file tải về gồm Mã HS (tên đăng nhập), Học sinh, Mật khẩu tạm, Lỗi. Thông báo «Đã cấp N tài khoản. File vừa tải chứa mật khẩu tạm, chỉ có một lần này.» Nếu có học sinh lỗi: «Đã cấp X/Y học sinh; Z học sinh lỗi (xem cột Lỗi trong file vừa tải).»
    ⚠ File là nơi duy nhất có mật khẩu; giữ kín và xoá sau khi giao.
 5. Đã có tài khoản: **Đặt lại mật khẩu** (hộp «Đặt lại mật khẩu» → xác nhận → hộp «Mật khẩu tạm»), **Khoá** (chọn lý do, bấm «Khoá»), hoặc **Mở khoá** nếu đang khoá.
    *Bạn thấy:* «Đã đặt lại mật khẩu cho <tên>.», «Đã khoá tài khoản của <tên>.» hoặc «Đã mở khoá tài khoản của <tên>.»
@@ -73,13 +73,13 @@ cap_nhat: 2026-11-24
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
 | «Chưa có học sinh» / «Chưa có phụ huynh» | bộ lọc không có dòng nào | Bỏ bớt bộ lọc. Chưa có hồ sơ học sinh thì chờ phiếu kiểm tra đầu vào hoặc đơn được duyệt |
-| Em lỗi trong file cấp hàng loạt (cột «Lỗi») | cấp riêng em đó không được | Đọc cột «Lỗi»; cấp lại riêng em đó |
+| Học sinh lỗi trong file cấp hàng loạt (cột «Lỗi») | cấp riêng học sinh đó không được | Đọc cột «Lỗi»; cấp lại riêng học sinh đó |
 | Lỗi đỏ trong hộp xác nhận | máy chủ từ chối | Đọc câu trong hộp; không rõ thì báo Admin hệ thống |
 | Chép mật khẩu không được | trình duyệt chặn bộ nhớ tạm | Bôi đen mật khẩu rồi sao chép tay |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** `bgd.tap` (Admin) trên **staging**; một học sinh và một phụ huynh giả chưa có tài khoản.
-- **Dùng:** cấp tài khoản cho một em, đặt lại mật khẩu, khoá rồi mở khoá; với phụ huynh: cấp, khoá, mở khoá, đặt lại. Không chép mật khẩu của người thật vào chat hay ghi chú.
+- **Dùng:** cấp tài khoản cho một học sinh, đặt lại mật khẩu, khoá rồi mở khoá; với phụ huynh: cấp, khoá, mở khoá, đặt lại. Không chép mật khẩu của người thật vào chat hay ghi chú.
 - Vai Vận hành tập tạm bằng quyền CSKH (anh Trường chốt 24/11): menu này đòi quyền Admin nên CSKH **không vào được**; tập bằng `bgd.tap`.
 - Chưa có trong bộ mẫu: học sinh, phụ huynh giả dành riêng cho việc tập.
 

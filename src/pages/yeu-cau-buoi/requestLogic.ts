@@ -70,7 +70,7 @@ export function targetText(
   r: Pick<RequestRow, 'kind' | 'subject_name' | 'class_code' | 'student_count' | 'student_names'>,
 ): string {
   if (r.kind !== 'CUNG_CO') return r.student_names.join(', ');
-  return `Cả lớp ${r.subject_name ?? r.class_code} (${r.student_count} em)`;
+  return `Cả lớp ${r.subject_name ?? r.class_code} (${r.student_count} học sinh)`;
 }
 
 /** "dd/mm/yyyy · 18:00–19:30" */
@@ -110,7 +110,7 @@ export function validateSupport(d: {
   teacherId: string;
 }): SupportError {
   const e: SupportError = {};
-  if (d.studentIds.length === 0) e.students = 'Chọn ít nhất một em cần bổ trợ.';
+  if (d.studentIds.length === 0) e.students = 'Chọn ít nhất một học sinh cần bổ trợ.';
   if (d.date === '') e.date = 'Chọn ngày buổi bổ trợ.';
   if (d.start === '') e.start = 'Nhập giờ bắt đầu.';
   if (d.end === '') e.end = 'Nhập giờ kết thúc.';
@@ -132,7 +132,7 @@ export function validateMakeup(d: {
   const e: MakeupError = validateSupport({ ...d, teacherId: 'x' });
   delete e.teacher;
   if (e.date) e.date = 'Chọn ngày buổi học bù.';
-  if (d.studentIds.length === 0) e.students = 'Chọn ít nhất một em học bù.';
+  if (d.studentIds.length === 0) e.students = 'Chọn ít nhất một học sinh học bù.';
   if (d.reason.trim() === '') e.reason = 'Nhập lý do học bù.';
   return e;
 }

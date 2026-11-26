@@ -199,18 +199,18 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
     >
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Em" required help={createTestText.emHelp}>
+          <Field label="Học sinh" required help={createTestText.emHelp}>
             {(field) => (
               <Select
                 id={field.id}
-                label="Em"
+                label="Học sinh"
                 value={emId}
                 onChange={setEmId}
                 options={opportunity.students.map((s) => ({
                   value: s.id,
                   label: `${emLabel(s)}${s.birth_year ? ` · sinh ${s.birth_year}` : ''}`,
                 }))}
-                placeholder="Chọn em"
+                placeholder="Chọn học sinh"
                 className="w-full"
               />
             )}

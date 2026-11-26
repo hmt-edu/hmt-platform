@@ -20,13 +20,13 @@ Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (G
 
 1. Mở **Tất cả ticket**, bấm lọc «Quá hạn» rồi «Sắp quá hạn»: xử lý việc trễ trước.
 2. Bấm lọc «Của tôi» để xem việc được giao riêng cho bạn.
-3. Mở **Điểm danh trong ngày**: gọi nhắc em chưa tới hoặc vắng.
-4. Mở **Ghi danh**, hàng chờ «Chờ xếp lớp»: xếp lớp cho em mới.
+3. Mở **Điểm danh trong ngày**: gọi nhắc học sinh chưa tới hoặc vắng.
+4. Mở **Ghi danh**, hàng chờ «Chờ xếp lớp»: xếp lớp cho học sinh mới.
 5. Cuối ngày mở **Phiếu nghiệp vụ**: phiếu đã duyệt đang chờ bạn bấm «Thực hiện».
 
 ## 1. Tìm khách và xem hồ sơ
 
-**Mục tiêu:** tìm phụ huynh hay học sinh và xem toàn cảnh một em trước khi trả lời họ.
+**Mục tiêu:** tìm phụ huynh hay học sinh và xem toàn cảnh một học sinh trước khi trả lời họ.
 
 1. Vào **Phụ huynh** hoặc **Học sinh** ở menu Khách hàng.
 2. Gõ tên hoặc số điện thoại vào ô tìm; lọc thêm theo tình trạng, khối, lớp nếu cần.
@@ -46,7 +46,7 @@ Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (G
 4. Kiểm lại ở «Dòng xếp lớp» (lớp, ngày vào, ngày rời) và «Quỹ giờ» (giờ cấp, giờ tặng, còn lại). Bấm **«Sổ giờ»** để xem từng dòng cộng trừ giờ (chỉ xem).
 
 - **Kết quả:** ghi danh sang «Đã xếp lớp», lớp hiện thêm học sinh, chỗ trống của lớp giảm.
-- **Lỗi thường gặp:** lớp không hiện trong danh sách là do chưa duyệt, hết chỗ hoặc sai môn, khối, cơ sở (chọn lớp khác). Báo trùng giờ nghĩa là em đã có lớp trùng giờ (đổi lớp hoặc ngày vào). Xếp xong vẫn «Chờ xếp lớp»: tải lại trang, nếu vẫn vậy thì báo quản trị kèm mã ghi danh.
+- **Lỗi thường gặp:** lớp không hiện trong danh sách là do chưa duyệt, hết chỗ hoặc sai môn, khối, cơ sở (chọn lớp khác). Báo trùng giờ nghĩa là học sinh đã có lớp trùng giờ (đổi lớp hoặc ngày vào). Xếp xong vẫn «Chờ xếp lớp»: tải lại trang, nếu vẫn vậy thì báo quản trị kèm mã ghi danh.
 - **Ảnh:** [ẢNH: ghi-danh-cho-xep], [ẢNH: ghi-danh-xep-lop], [ẢNH: ghi-danh-so-gio]
 - Điều chỉnh giờ («Điều chỉnh giờ») là việc của quản lý cơ sở (bớt giờ) và Kế toán (cộng giờ), xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so).
 
@@ -65,12 +65,12 @@ Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (G
 
 ## 4. Điểm danh vận hành và theo dõi buổi học
 
-**Mục tiêu:** biết hôm nay em nào chưa tới, gọi nhắc và ghi lại đã liên hệ thế nào.
+**Mục tiêu:** biết hôm nay học sinh nào chưa tới, gọi nhắc và ghi lại đã liên hệ thế nào.
 
-1. Vào **Điểm danh trong ngày**: danh sách buổi hôm nay, em chưa tới hoặc vắng.
-2. Ghi trạng thái phía vận hành và **lý do liên hệ** (ví dụ không nghe máy, đã nhắc). Có thể ghi cho nhiều em một lúc.
+1. Vào **Điểm danh trong ngày**: danh sách buổi hôm nay, học sinh chưa tới hoặc vắng.
+2. Ghi trạng thái phía vận hành và **lý do liên hệ** (ví dụ không nghe máy, đã nhắc). Có thể ghi cho nhiều học sinh một lúc.
 3. Mở **Buổi học**, vào một buổi: hai cột «Trung tâm điểm danh» và «Điểm danh giáo viên (chính thức)». Dòng «Lệch» đánh dấu hai bên khác nhau.
-4. Cần thêm em học thử vào buổi thì bấm «Thêm học thử». Cần chốt danh sách thì bấm «Chốt danh sách».
+4. Cần thêm học sinh học thử vào buổi thì bấm «Thêm học thử». Cần chốt danh sách thì bấm «Chốt danh sách».
 
 - **Kết quả:** điểm danh vận hành lưu riêng. Giáo viên quyết định điểm danh chính thức ở cổng giáo viên.
 - **Lỗi thường gặp:** không sửa được điểm danh chính thức (việc của giáo viên). Sửa sau khi buổi đã hoàn tất do quản lý cơ sở làm bằng «Sửa điểm danh».
@@ -190,7 +190,7 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 5. Gửi duyệt, chờ duyệt, bấm «Thực hiện».
 
 - **Kết quả:** ghi danh đóng. Chọn giữ số dư thì số dư tăng; chọn hoàn tiền thì tiền hoàn đã được tính và phiếu chi đã tạo khi bấm «Thực hiện».
-- **Lỗi thường gặp:** chọn ghi danh của em khác hay của cơ sở khác sẽ bị chặn.
+- **Lỗi thường gặp:** chọn ghi danh của học sinh khác hay của cơ sở khác sẽ bị chặn.
 - **Ảnh:** [ẢNH: phieu-dung-hoc-tao], [ẢNH: phieu-dung-hoc-hoan-tien], [ẢNH: phieu-dung-hoc-giu-so-du]
 
 ## 12. Phiếu Hoàn học phí
@@ -209,7 +209,7 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 
 ## 13. Phiếu Chuyển phí
 
-**Mục tiêu:** chuyển phần học phí còn lại của em này sang một đơn nhận khác (đơn nhận do bạn chọn ở phiếu).
+**Mục tiêu:** chuyển phần học phí còn lại của học sinh này sang một đơn nhận khác (đơn nhận do bạn chọn ở phiếu).
 
 1. Làm bước 1 đến 2 của bài 7, chọn «Chuyển phí».
 2. Chọn **Ghi danh** nguồn, **Kiểu chuyển**, và **Đơn nhận (tham khảo)**.
@@ -228,7 +228,7 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 2. Chọn buổi sắp tới cần dời, hoặc chọn ca cố định cần đổi, và lịch mới.
 3. Gửi duyệt, chờ duyệt, bấm «Thực hiện».
 
-- **Kết quả:** lịch học của em đổi theo phiếu.
+- **Kết quả:** lịch học của học sinh đổi theo phiếu.
 - **Lỗi thường gặp:** hệ thống chặn kèm câu lý do ngay trên màn khi buổi hay lịch chọn không hợp lệ; đọc câu đó rồi chọn lại.
 - **Ảnh:** [ẢNH: phieu-doi-lich]
 

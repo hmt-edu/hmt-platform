@@ -114,9 +114,11 @@ export function ProspectStudents({
                 icon="plus"
                 disabled={fullText !== null || pageEditing}
                 onClick={() => setDialog({ kind: 'add' })}
-                {...(pageEditing ? { title: 'Lưu hoặc Huỷ chỉnh sửa trước khi thêm em.' } : {})}
+                {...(pageEditing
+                  ? { title: 'Lưu hoặc Huỷ chỉnh sửa trước khi thêm học sinh.' }
+                  : {})}
               >
-                Thêm em
+                Thêm học sinh
               </Button>
             )}
             {fullText && <span className="text-caption text-fg-muted">{fullText}</span>}
@@ -144,7 +146,7 @@ export function ProspectStudents({
             )}
             {canEdit && !selected.student_id && (
               <Button disabled={locked} onClick={() => setDialog({ kind: 'edit', line: selected })}>
-                Sửa em
+                Sửa học sinh
               </Button>
             )}
             {canEdit && (
@@ -152,7 +154,7 @@ export function ProspectStudents({
                 disabled={locked}
                 onClick={() => setDialog({ kind: 'remove', line: selected })}
               >
-                Bỏ em
+                Bỏ học sinh
               </Button>
             )}
           </div>
@@ -183,7 +185,7 @@ export function ProspectStudents({
           onDone={() => {
             setDialog(null);
             ems.select(null);
-            toast({ title: 'Đã bỏ em khỏi danh sách.' });
+            toast({ title: 'Đã bỏ học sinh khỏi danh sách.' });
             onChanged();
           }}
         />
@@ -319,7 +321,7 @@ function EmDialog({
           recordId,
           picking ? { student_id: childId } : emPayload(draft),
         );
-      onSaved(line ? 'Đã lưu em.' : 'Đã thêm em.');
+      onSaved(line ? 'Đã lưu học sinh.' : 'Đã thêm học sinh.');
     } catch (e) {
       setError(errorOf(e).message);
     } finally {
@@ -331,8 +333,8 @@ function EmDialog({
     <FormDialog
       open
       onOpenChange={(open) => !open && onClose()}
-      title={line ? 'Sửa em' : 'Thêm em'}
-      confirmLabel={line ? 'Lưu' : 'Thêm em'}
+      title={line ? 'Sửa học sinh' : 'Thêm học sinh'}
+      confirmLabel={line ? 'Lưu' : 'Thêm học sinh'}
       canSubmit={canSubmit}
       busy={busy}
       error={error}
@@ -342,7 +344,7 @@ function EmDialog({
         {!line && <p className="text-caption text-fg-muted">{addEmText.note(entity)}</p>}
         {canPickExisting && (
           <fieldset className="flex gap-4">
-            <legend className="sr-only">Cách thêm em</legend>
+            <legend className="sr-only">Cách thêm học sinh</legend>
             <label className="flex items-center gap-2 text-body">
               <input
                 type="radio"
@@ -350,7 +352,7 @@ function EmDialog({
                 checked={mode === 'new'}
                 onChange={() => setMode('new')}
               />
-              Em mới
+              Học sinh mới
             </label>
             <label className="flex items-center gap-2 text-body">
               <input
@@ -391,7 +393,7 @@ function EmDialog({
         ) : (
           <>
             <TextField
-              label="Họ tên em"
+              label="Họ tên học sinh"
               required
               value={draft.fullName}
               error={tried ? errors.fullName : undefined}
@@ -456,9 +458,9 @@ function RemoveDialog({
     <ConfirmDialog
       open
       onOpenChange={(open) => !open && onClose()}
-      title={`Bỏ em ${emLabel(line)}?`}
-      description="Em bị bỏ khỏi danh sách em. Hồ sơ học sinh (nếu có) không bị xoá. Em đã có phiếu kiểm tra, báo giá hoặc đơn thì không bỏ được."
-      confirmLabel="Bỏ em"
+      title={`Bỏ học sinh ${emLabel(line)}?`}
+      description="Học sinh bị bỏ khỏi danh sách. Hồ sơ học sinh (nếu có) không bị xoá. Học sinh đã có phiếu kiểm tra, báo giá hoặc đơn thì không bỏ được."
+      confirmLabel="Bỏ học sinh"
       tone="danger"
       busy={busy}
       error={error}

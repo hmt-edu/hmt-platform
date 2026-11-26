@@ -188,24 +188,24 @@ test('Thông tin học sinh: thêm em mới (chỉ bắt buộc họ tên), thi�
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.low, seeded.mainId);
   const section = page.getByRole('region', { name: 'Thông tin học sinh' });
-  await section.getByRole('button', { name: 'Thêm em' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Thêm em' });
+  await section.getByRole('button', { name: 'Thêm học sinh' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Thêm học sinh' });
   await expect(
     dialog.getByText(
-      'Thêm em chỉ ghi nhận vào lead. Hồ sơ học sinh được tạo khi tạo phiếu kiểm tra hoặc duyệt đơn.',
+      'Thêm học sinh chỉ ghi nhận vào lead. Hồ sơ học sinh được tạo khi tạo phiếu kiểm tra hoặc duyệt đơn.',
     ),
   ).toBeVisible();
-  await dialog.getByRole('button', { name: 'Thêm em' }).click();
+  await dialog.getByRole('button', { name: 'Thêm học sinh' }).click();
   await expect(dialog.getByText('Nhập họ tên của em.')).toBeVisible();
-  await dialog.getByLabel('Họ tên em').fill('Em thêm bằng e2e');
-  await dialog.getByRole('button', { name: 'Thêm em' }).click();
+  await dialog.getByLabel('Họ tên học sinh').fill('Em thêm bằng e2e');
+  await dialog.getByRole('button', { name: 'Thêm học sinh' }).click();
   await expect(dialog).toHaveCount(0);
   await expect(section.getByRole('button', { name: /Em thêm bằng e2e/ })).toBeVisible();
   await section.getByRole('button', { name: /Em thêm bằng e2e/ }).click();
-  await section.getByRole('button', { name: 'Bỏ em' }).click();
+  await section.getByRole('button', { name: 'Bỏ học sinh' }).click();
   await page
-    .getByRole('alertdialog', { name: /Bỏ em Em thêm bằng e2e/ })
-    .getByRole('button', { name: 'Bỏ em' })
+    .getByRole('alertdialog', { name: /Bỏ học sinh Em thêm bằng e2e/ })
+    .getByRole('button', { name: 'Bỏ học sinh' })
     .click();
   await expect(section.getByRole('button', { name: /Em thêm bằng e2e/ })).toHaveCount(0);
 });
@@ -220,7 +220,7 @@ test('Thông tin học sinh một khối: đổi thẻ em thì sáu trường đ
   await expect(page).toHaveURL(/\/crm$/);
   await page.goto(`/crm/lead/${seeded.mainId}`);
   const section = page.getByRole('region', { name: 'Thông tin học sinh' });
-  await expect(page.getByRole('heading', { name: 'Danh sách em' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Danh sách học sinh' })).toHaveCount(0);
 
   // Em đầu lưu cùng lead, rồi hiện thành thẻ em đầu (danh sách và trang bản ghi cùng một nguồn).
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
@@ -229,11 +229,11 @@ test('Thông tin học sinh một khối: đổi thẻ em thì sáu trường đ
   await expect(toastText(page, 'Đã lưu.')).toBeVisible();
   await expect(section.getByRole('button', { name: first })).toBeVisible();
 
-  await section.getByRole('button', { name: 'Thêm em' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Thêm em' });
-  await dialog.getByLabel('Họ tên em').fill(second);
+  await section.getByRole('button', { name: 'Thêm học sinh' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Thêm học sinh' });
+  await dialog.getByLabel('Họ tên học sinh').fill(second);
   await dialog.getByLabel('Trường học').fill('Trường Hai');
-  await dialog.getByRole('button', { name: 'Thêm em' }).click();
+  await dialog.getByRole('button', { name: 'Thêm học sinh' }).click();
   await expect(dialog).toHaveCount(0);
 
   await section.getByRole('button', { name: second }).click();
@@ -250,7 +250,7 @@ test('Thông tin học sinh một khối: đổi thẻ em thì sáu trường đ
   await section.getByRole('button', { name: first }).click();
   await section.getByLabel('Mục tiêu').fill('Mục tiêu em một');
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
-  await expect(toastText(page, /Còn thay đổi chưa lưu ở em/)).toBeVisible();
+  await expect(toastText(page, /Còn thay đổi chưa lưu ở học sinh/)).toBeVisible();
   await section.getByRole('button', { name: new RegExp(second) }).click();
   await expect(section.getByLabel('Mục tiêu')).toHaveValue('Mục tiêu em hai');
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();

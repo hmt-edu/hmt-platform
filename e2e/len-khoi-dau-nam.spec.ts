@@ -76,7 +76,7 @@ test('Admin: xem trước khối cũ và khối mới, lớp 12 tốt nghiệp, 
   await expect(page.getByRole('heading', { level: 1, name: 'Lên khối đầu năm học' })).toBeVisible();
   await page
     .getByRole('main')
-    .getByPlaceholder(/Tìm tên em/)
+    .getByPlaceholder(/Tìm tên học sinh/)
     .fill('HS9918');
   const a = page.getByRole('row', { name: new RegExp(CODE_A) });
   const b = page.getByRole('row', { name: new RegExp(CODE_B) });

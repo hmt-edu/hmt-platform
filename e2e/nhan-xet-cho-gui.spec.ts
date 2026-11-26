@@ -14,7 +14,7 @@ test('CS-16: CSKH mở Nhận xét chờ gửi, có ô tìm kiếm, không báo 
   await expect(
     page.getByRole('heading', { level: 1, name: 'Nhận xét chờ gửi phụ huynh' }),
   ).toBeVisible();
-  await expect(page.getByPlaceholder('Tìm tên em hoặc mã lớp…')).toBeVisible();
+  await expect(page.getByPlaceholder('Tìm tên học sinh hoặc mã lớp…')).toBeVisible();
   await expect(page.getByText('Bạn không có quyền xem trang này')).toHaveCount(0);
   await expectAccessible(page);
 });
@@ -75,7 +75,7 @@ test.describe('CS-16 đánh dấu đã gửi', () => {
   }) => {
     await enterAs(page, 'cskh.cs1');
     await page.goto('/crm/nhan-xet-cho-gui');
-    await page.getByPlaceholder('Tìm tên em hoặc mã lớp…').fill(studentName);
+    await page.getByPlaceholder('Tìm tên học sinh hoặc mã lớp…').fill(studentName);
     const row = page.getByRole('row').filter({ hasText: studentName });
     await expect(row).toContainText('Chờ gửi');
     await row.getByRole('button', { name: 'Đánh dấu đã gửi' }).click();

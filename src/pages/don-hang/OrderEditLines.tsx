@@ -356,7 +356,7 @@ export function OrderEditLines({
                       onChange={(v) => onChangeAdded(a.key, { studentId: v })}
                       options={students.map((st) => ({
                         value: st.id,
-                        label: `${st.full_name ?? 'Em chưa có tên'}${st.birth_year ? ` · ${st.birth_year}` : ''}`,
+                        label: `${st.full_name ?? 'Học sinh chưa có tên'}${st.birth_year ? ` · ${st.birth_year}` : ''}`,
                       }))}
                     />
                   </td>
@@ -425,7 +425,9 @@ export function OrderEditLines({
         <Button icon="plus" onClick={onAdd}>
           Thêm dòng
         </Button>
-        <span className="text-caption text-fg-muted">Chưa thấy em? Thêm em ở cơ hội.</span>
+        <span className="text-caption text-fg-muted">
+          Chưa thấy học sinh? Thêm học sinh ở cơ hội.
+        </span>
       </div>
     </div>
   );

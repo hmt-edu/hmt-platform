@@ -58,7 +58,7 @@ cap_nhat: 2026-11-24
 
 ## Sau bước này
 - **Ai làm tiếp:** nạp loại kế tiếp theo thứ tự (cột «Cần có trước»). Giao mật khẩu tạm cho từng người (nếu nạp Người dùng).
-- **Bạn xem ở đâu:** màn **Người dùng** với người dùng đã nạp; các màn Phụ huynh, Học sinh, Lớp… với loại tương ứng. Loại Cơ hội: hộp kết quả có thêm «Báo cáo cơ hội hợp lệ» (theo giai đoạn, dòng thiếu thông tin em).
+- **Bạn xem ở đâu:** màn **Người dùng** với người dùng đã nạp; các màn Phụ huynh, Học sinh, Lớp… với loại tương ứng. Loại Cơ hội: hộp kết quả có thêm «Báo cáo cơ hội hợp lệ» (theo giai đoạn, dòng thiếu thông tin học sinh).
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |

@@ -5,7 +5,7 @@ import type { TestStatus } from './testTypes';
 /** Chữ hộp Tạo phiếu kiểm tra theo canvas 9933 (TS15_hop); giữ một chỗ để bài kiểm khoá chữ. */
 export const createTestText = {
   ownerHelp: 'Mặc định là người tạo phiếu; nhận lịch hẹn nhắc và theo dõi lịch test.',
-  emHelp: 'Chưa thấy em? Đóng hộp này và bấm + Thêm em ở cột Thông tin học sinh.',
+  emHelp: 'Chưa thấy học sinh? Đóng hộp này và bấm + Thêm học sinh ở cột Thông tin học sinh.',
   submitHint: 'Chọn Ngày test và Giờ test để bật nút Tạo phiếu.',
 };
 

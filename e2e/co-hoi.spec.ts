@@ -296,7 +296,7 @@ test('Tạo cơ hội từ lead: hộp xác nhận; tạo xong mở cơ hội L1
   const dialog = dialogOf(page, 'Tạo cơ hội từ lead');
   await expect(dialog.getByText(/bắt đầu ở giai đoạn L1/)).toBeVisible();
   await expect(dialog.getByText(/đã có .* cơ hội/)).toHaveCount(0);
-  await expect(dialog.getByText('Em đưa sang cơ hội')).toBeVisible();
+  await expect(dialog.getByText('Học sinh đưa sang cơ hội')).toBeVisible();
   await dialog.getByRole('button', { name: 'Tạo cơ hội' }).click();
   await expect(toastText(page, /Đã tạo cơ hội CO\d+/)).toBeVisible();
   await expect(page).toHaveURL(/\/crm\/co-hoi\/[0-9a-f-]+$/);
@@ -314,7 +314,7 @@ test('Tạo cơ hội từ lead: hộp xác nhận; tạo xong mở cơ hội L1
   const again = dialogOf(page, 'Tạo cơ hội từ lead');
   await expect(again.getByText(/Lead này đã có 1 cơ hội đang dùng/)).toBeVisible();
   await expect(again.getByRole('button', { name: 'Vẫn tạo thêm' })).toBeDisabled();
-  await expect(again.getByRole('button', { name: 'Thêm em vào cơ hội cũ' })).toBeVisible();
+  await expect(again.getByRole('button', { name: 'Thêm học sinh vào cơ hội cũ' })).toBeVisible();
   await again.getByRole('button', { name: 'Mở cơ hội cũ' }).click();
   await expect(page).toHaveURL(/\/crm\/co-hoi\/[0-9a-f-]+$/);
 });

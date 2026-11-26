@@ -40,7 +40,7 @@ Theo thứ tự việc thật: lead, cơ hội, hẹn và kiểm tra, báo giá,
 - [Tạo cơ hội từ lead](/crm/huong-dan/tu-van-ts5): Một cơ hội mới từ lead.
 - [Lead đã có cơ hội khi tạo cơ hội](/crm/huong-dan/tu-van-ts5b): Xử lý khi lead đã có cơ hội.
 - [Đi cơ hội qua các giai đoạn L1 đến L8](/crm/huong-dan/tu-van-ts6): Cơ hội đi đúng từ L1 đến L8.
-- [Đi cơ hội từ L5 đến L7 (tên em, phiếu kiểm tra, lý do bỏ qua test)](/crm/huong-dan/tu-van-ts6b): Điền tên em, phiếu kiểm tra, lý do bỏ qua test ở L5–L7.
+- [Đi cơ hội từ L5 đến L7 (tên học sinh, phiếu kiểm tra, lý do bỏ qua test)](/crm/huong-dan/tu-van-ts6b): Điền tên học sinh, phiếu kiểm tra, lý do bỏ qua test ở L5–L7.
 - [Lịch hẹn: tạo, dời, hoàn thành, huỷ](/crm/huong-dan/tu-van-ts9): Lịch hẹn tạo, dời, hoàn thành, huỷ.
 
 **3. Kiểm tra đầu vào**
@@ -66,7 +66,7 @@ Theo thứ tự việc thật: lead, cơ hội, hẹn và kiểm tra, báo giá,
 
 **6. Tái tục**
 
-- [Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay](/crm/huong-dan/dt6): Biết em nào sắp hết giờ, đã gọi cho phụ huynh và ghi lại kết quả, và khi phụ huynh đồng ý thì có một đơn tái tục ở trạng thái nháp.
+- [Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay](/crm/huong-dan/dt6): Biết học sinh nào sắp hết giờ, đã gọi cho phụ huynh và ghi lại kết quả, và khi phụ huynh đồng ý thì có một đơn tái tục ở trạng thái nháp.
 
 **7. Dùng chung**
 
@@ -81,8 +81,8 @@ Chưa có vai «Vận hành» riêng: người vận hành lớp dùng vai CSKH.
 **1. Khách và ghi danh**
 
 - [Tìm khách và xem hồ sơ phụ huynh, học sinh](/crm/huong-dan/tu-van-kh1): Tìm phụ huynh, học sinh và xem hồ sơ đầy đủ.
-- [Xem ghi danh, quỹ giờ và sổ giờ của một em](/crm/huong-dan/dt1-ghi-danh-so-gio): Biết em này đang ở tình trạng nào, còn bao nhiêu giờ, và vì sao số giờ như vậy.
-- [Xếp lớp cho ghi danh đang chờ](/crm/huong-dan/dt2-xep-lop-cho-ghi-danh): Em đã vào đúng lớp, từ đúng ngày, và ghi danh chuyển sang «Đã xếp lớp».
+- [Xem ghi danh, quỹ giờ và sổ giờ của một học sinh](/crm/huong-dan/dt1-ghi-danh-so-gio): Biết học sinh này đang ở tình trạng nào, còn bao nhiêu giờ, và vì sao số giờ như vậy.
+- [Xếp lớp cho ghi danh đang chờ](/crm/huong-dan/dt2-xep-lop-cho-ghi-danh): Học sinh đã vào đúng lớp, từ đúng ngày, và ghi danh chuyển sang «Đã xếp lớp».
 
 **2. Lớp và lịch**
 
@@ -96,9 +96,9 @@ Chưa có vai «Vận hành» riêng: người vận hành lớp dùng vai CSKH.
 
 **3. Điểm danh và học sinh sắp hết giờ**
 
-- [Điểm danh vận hành trong ngày, gọi nhắc em vắng](/crm/huong-dan/dt13-diem-danh-van-hanh): Biết em nào hôm nay vắng hoặc chưa đến, đã gọi nhắc và ghi lại lý do liên hệ.
+- [Điểm danh vận hành trong ngày, gọi nhắc học sinh vắng](/crm/huong-dan/dt13-diem-danh-van-hanh): Biết học sinh nào hôm nay vắng hoặc chưa đến, đã gọi nhắc và ghi lại lý do liên hệ.
 - [Xem học sinh sắp hết giờ](/crm/huong-dan/dt5): Danh sách học sinh sắp hết giờ hoặc đã hết giờ ở cơ sở của bạn, để gọi phụ huynh tái tục sớm.
-- [Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay](/crm/huong-dan/dt6): Biết em nào sắp hết giờ, đã gọi cho phụ huynh và ghi lại kết quả, và khi phụ huynh đồng ý thì có một đơn tái tục ở trạng thái nháp.
+- [Phiếu tái tục: xem danh sách, đổi giai đoạn, tạo tay](/crm/huong-dan/dt6): Biết học sinh nào sắp hết giờ, đã gọi cho phụ huynh và ghi lại kết quả, và khi phụ huynh đồng ý thì có một đơn tái tục ở trạng thái nháp.
 
 **4. Ticket và khiếu nại**
 
@@ -133,7 +133,7 @@ Chưa có vai «Vận hành» riêng: người vận hành lớp dùng vai CSKH.
 
 - [Trình và duyệt, từ chối đơn hàng](/crm/huong-dan/bh4): Đơn «Đã duyệt» (hoặc đơn về Nháp kèm lý do từ chối).
 - [Từ chối báo giá (lý do)](/crm/huong-dan/bh2): Báo giá chuyển sang «Từ chối», có ghi lý do, để cả đội biết phụ huynh không nhận báo giá này.
-- [Bật «Cho học trước, đóng tiền sau»](/crm/huong-dan/bh5): Em được học ngay các buổi đầu dù phụ huynh chưa đóng tiền.
+- [Bật «Cho học trước, đóng tiền sau»](/crm/huong-dan/bh5): Học sinh được học ngay các buổi đầu dù phụ huynh chưa đóng tiền.
 - [Huỷ đơn hàng (lý do)](/crm/huong-dan/bh6): Đơn chuyển sang «Huỷ» (chỉ còn xem), có ghi lý do.
 - [Ưu đãi linh hoạt (chiết khấu tay trên dòng đơn)](/crm/huong-dan/bh7): Một dòng đơn được giảm thêm một số % do chính bạn nhập, để chốt phụ huynh khi các chính sách cố định chưa đủ.
 - [Duyệt phiếu thu: bước quản lý](/crm/huong-dan/tc2): Phiếu thu chuyển sang «Chờ kế toán», hoặc về Nháp kèm lý do từ chối.
@@ -188,7 +188,7 @@ Dùng cổng Giáo viên trên điện thoại: «Tài khoản» ở thanh dư�
 **2. Sau buổi**
 
 - [Ghi nội dung buổi và giao BTVN](/crm/huong-dan/giao-vien-gv4-noi-dung-btvn).
-- [Chấm nhận xét từng em và xuất nhận xét](/crm/huong-dan/giao-vien-gv5-cham-nhan-xet).
+- [Chấm nhận xét từng học sinh và xuất nhận xét](/crm/huong-dan/giao-vien-gv5-cham-nhan-xet).
 - [Chấm BTVN của buổi trước](/crm/huong-dan/giao-vien-gv6-cham-btvn).
 - [Chấm điểm bài kiểm tra của buổi](/crm/huong-dan/giao-vien-gv13-cham-kiem-tra).
 - [Kiểm còn thiếu và Hoàn tất buổi](/crm/huong-dan/giao-vien-gv7-hoan-tat-buoi).

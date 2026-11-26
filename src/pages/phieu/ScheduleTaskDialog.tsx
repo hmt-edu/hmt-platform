@@ -143,7 +143,7 @@ export function ScheduleTaskDialog({
           <p className="text-caption text-fg-muted">
             {draft.action === 'DOI_BUOI'
               ? 'Dời một buổi chưa diễn ra của lớp; trùng phòng hoặc giáo viên chỉ cảnh báo, không chặn.'
-              : 'Học bù không trừ giờ. Quản lý cơ sở duyệt xong thì hệ thống sinh một buổi loại Học bù mới cho em (không chọn buổi có sẵn).'}
+              : 'Học bù không trừ giờ. Quản lý cơ sở duyệt xong thì hệ thống sinh một buổi loại Học bù mới cho học sinh (không chọn buổi có sẵn).'}
           </p>
         </>
       )}

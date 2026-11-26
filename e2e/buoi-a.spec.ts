@@ -70,7 +70,7 @@ test('BUOI-02: buổi Nháp có nút Chốt danh sách; chốt xong thì thành 
 test('BUOI-03: ghi trạng thái trung tâm, Lưu, tải lại vẫn còn; không tự lưu', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto(`/crm/diem-danh/buoi/${seed.chot}`);
-  await expect(page.getByText('Đã ghi 0/3 em')).toBeVisible();
+  await expect(page.getByText('Đã ghi 0/3 học sinh')).toBeVisible();
   await pickOption(
     page,
     page.getByRole('combobox', { name: `Trung tâm điểm danh · ${seed.names[0]}` }),
@@ -80,7 +80,7 @@ test('BUOI-03: ghi trạng thái trung tâm, Lưu, tải lại vẫn còn; khôn
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu điểm danh vận hành', { exact: true })).toBeVisible();
   await page.reload();
-  await expect(page.getByText('Đã ghi 1/3 em')).toBeVisible();
+  await expect(page.getByText('Đã ghi 1/3 học sinh')).toBeVisible();
 });
 
 test('BUOI-11: em giáo viên ghi Vắng hiện ở danh sách, em Có mặt không hiện; Ghi lý do rồi đọc lại', async ({
