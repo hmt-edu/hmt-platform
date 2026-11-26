@@ -16,7 +16,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Lớp**, **B
 **Nguyên tắc duyệt (nhớ kỹ):**
 
 - Phiếu ở cấp **«Quản lý cơ sở»** do **Trưởng cơ sở đúng cơ sở** duyệt. **Admin được duyệt thay** Trưởng cơ sở ở cấp này. **Kế toán không duyệt** cấp này.
-- Phiếu **tiền** (có cấp Kế toán): cấp quản lý cơ sở vẫn do Trưởng cơ sở duyệt; Admin không duyệt tiền.
+- Phiếu **tiền** (có cấp Kế toán): cấp quản lý cơ sở vẫn do Trưởng cơ sở duyệt; Admin hệ thống duyệt thay được.
 - Người tạo phiếu không tự duyệt phiếu của mình; một người không duyệt hai cấp của cùng một phiếu.
 - Trưởng cơ sở của cơ sở khác không duyệt được phiếu của cơ sở bạn.
 
