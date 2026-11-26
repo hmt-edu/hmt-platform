@@ -273,6 +273,16 @@ select is(pg_temp.err($$select app.finish_session(pg_temp.s('p', 3))$$), 'HMT_KH
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.finish_session(pg_temp.s('p', 3))$$), 'HMT_KHONG_CO_QUYEN', 'R-GIO-09 chặn: vai chỉ xem điểm danh');
 
+-- ---------- Phạm vi hẹp không nhập thay, không Done hàng loạt (R-GIO-11, R-GIO-12) ----------
+select pg_temp.sudo($$update app.permission set scope_code = 'DUOC_PHAN_CONG' where role_code = 'BRANCH_MANAGER' and module_code = 'ATTENDANCE' and action_code = 'DUYET' and is_active$$);
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is(pg_temp.err($$select app.enter_for_teacher(pg_temp.s('p', 3), 'DIEM_DANH', '{}', 'Lý do giả')$$), 'HMT_KHONG_CO_QUYEN', 'R-GIO-11 chặn: phạm vi Được phân công không nhập thay');
+select is(pg_temp.err($$select pg_temp.bulk(array[3], 'Lý do giả')$$), 'HMT_KHONG_CO_QUYEN', 'R-GIO-12 chặn: phạm vi Được phân công không Done hàng loạt');
+select pg_temp.sudo($$update app.permission set scope_code = 'CUA_TOI' where role_code = 'BRANCH_MANAGER' and module_code = 'ATTENDANCE' and action_code = 'DUYET' and is_active$$);
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is(pg_temp.err($$select app.enter_for_teacher(pg_temp.s('p', 3), 'DIEM_DANH', '{}', 'Lý do giả')$$), 'HMT_KHONG_CO_QUYEN', 'R-GIO-11 chặn: phạm vi Của tôi không nhập thay');
+select is(pg_temp.err($$select pg_temp.bulk(array[3], 'Lý do giả')$$), 'HMT_KHONG_CO_QUYEN', 'R-GIO-12 chặn: phạm vi Của tôi không Done hàng loạt');
+
 -- ---------- Hàm nội bộ ----------
 select ok(not has_function_privilege('authenticated', 'app.apply_session_done(uuid, text, text, boolean)', 'execute'), 'Chặn: hàm Done nội bộ không gọi được từ ngoài');
 select ok(not has_function_privilege('authenticated', 'app.bulk_finish_one(uuid, text)', 'execute'), 'Chặn: hàm Done từng buổi không gọi được từ ngoài');

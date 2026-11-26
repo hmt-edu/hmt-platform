@@ -132,7 +132,8 @@ begin
     perform app.raise_error('HMT_KHONG_TIM_THAY', 'Có buổi không tìm thấy hoặc chọn trùng.');
   end if;
   for r in select distinct branch_id from app.class_session where id = any (p_session_ids) loop
-    perform app.assert_can('ATTENDANCE', 'DUYET', r.branch_id);
+    -- Phạm vi hẹp (Được phân công, Của tôi) không tính là cả cơ sở: khớp chính sách đọc nhật ký nhập thay (mig 422, R1c).
+    perform app.assert_can_wide('ATTENDANCE', 'DUYET', r.branch_id);
   end loop;
 end;
 $$;

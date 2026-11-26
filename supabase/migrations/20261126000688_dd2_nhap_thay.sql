@@ -65,7 +65,8 @@ begin
   if s.id is null then
     perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy buổi học.');
   end if;
-  perform app.assert_can('ATTENDANCE', 'DUYET', s.branch_id);
+  -- Phạm vi hẹp (Được phân công, Của tôi) không tính là cả cơ sở: khớp chính sách đọc session_proxy_entry (mig 422, R1c).
+  perform app.assert_can_wide('ATTENDANCE', 'DUYET', s.branch_id);
   if btrim(coalesce(p_reason, '')) = '' then
     perform app.raise_error('HMT_CAN_LY_DO', 'Nhập thay cần ghi lý do.');
   end if;
