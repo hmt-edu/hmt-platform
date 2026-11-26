@@ -24,7 +24,7 @@ export type LoginFormProps = {
   product?: Product | undefined;
   loginLabel: string;
   loginInputMode?: 'email' | 'text' | 'tel' | undefined;
-  /** Chữ mờ trong ô tên đăng nhập (bản vẽ: ten@hoamatoan.vn, HS000212). */
+  /** Chữ mờ trong ô tên đăng nhập. */
   loginPlaceholder?: string | undefined;
   /** Chữ nút gửi (học sinh: "Vào học"). */
   submitLabel?: string | undefined;

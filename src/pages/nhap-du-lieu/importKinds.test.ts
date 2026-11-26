@@ -17,7 +17,7 @@ describe('Bảng chọn loại QT-18 (Q-209)', () => {
       'Ghi danh',
       'Số dư',
       'Cơ hội',
-      'Phiếu test',
+      'Phiếu Test',
     ]);
   });
 

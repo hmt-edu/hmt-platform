@@ -26,7 +26,7 @@ async function login(page: Page, account: string) {
 async function openTest(page: Page, account: string, id: string) {
   await login(page, account);
   await page.goto(`/crm/phieu-kiem-tra/${id}`);
-  await expect(page.getByRole('heading', { level: 1, name: 'Phiếu kiểm tra' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Phiếu Test' })).toBeVisible();
 }
 
 const stageBar = (page: Page) => page.getByRole('navigation', { name: 'Giai đoạn' });
@@ -53,7 +53,7 @@ test('Danh sách: không có Tạo, có Group By, tìm theo dấu; tên học si
   const setup = setupOf(testInfo.project.name);
   await login(page, setup.account);
   await page.goto('/crm/phieu-kiem-tra');
-  await expect(page.getByRole('heading', { level: 1, name: 'Kiểm tra đầu vào' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Phiếu Test' })).toBeVisible();
   // Tuần này là mặc định; phiếu dựng giả có thể ở tuần sau, nên bỏ mốc thời gian rồi tìm theo dấu.
   await pickOption(
     page,
@@ -62,8 +62,8 @@ test('Danh sách: không có Tạo, có Group By, tìm theo dấu; tên học si
   );
   await page.getByPlaceholder(/Tìm tên, SĐT, mã/).fill(setup.mark);
   const list = isPhone(page)
-    ? page.getByRole('list', { name: 'Kiểm tra đầu vào' })
-    : page.getByRole('table', { name: 'Kiểm tra đầu vào' });
+    ? page.getByRole('list', { name: 'Phiếu Test' })
+    : page.getByRole('table', { name: 'Phiếu Test' });
   await expect(list.getByText(seeded.test.edit.code).first()).toBeVisible();
   await expect(list.getByText(seeded.test.review.code).first()).toBeVisible();
   // Phiếu chỉ tạo từ trang Cơ hội.
@@ -91,8 +91,8 @@ test('Group By trạng thái: mở nhóm chỉ ra đúng phiếu của nhóm (l�
   if (isPhone(page)) await page.getByRole('button', { name: 'Áp dụng' }).click();
   else await page.keyboard.press('Escape');
   const list = isPhone(page)
-    ? page.getByRole('list', { name: 'Kiểm tra đầu vào' })
-    : page.getByRole('table', { name: 'Kiểm tra đầu vào' });
+    ? page.getByRole('list', { name: 'Phiếu Test' })
+    : page.getByRole('table', { name: 'Phiếu Test' });
   const review = page.getByRole('button', { name: /^Chờ giáo viên chấm \(\d+\)$/ });
   await expect(review).toBeVisible();
   await review.click();
@@ -227,7 +227,7 @@ test('Phiếu Nháp: Đổi lịch, Sửa phòng và tên đề, Huỷ chọn l�
   await expect(page.getByText('Toán 9 cơ bản – đề 2').first()).toBeVisible();
   // Huỷ bắt chọn lý do.
   await actionMenu(page, 'Huỷ phiếu');
-  const cancel = page.getByRole('alertdialog', { name: 'Huỷ phiếu kiểm tra' });
+  const cancel = page.getByRole('alertdialog', { name: 'Huỷ phiếu Test' });
   await expect(cancel.getByRole('button', { name: 'Huỷ phiếu' })).toBeDisabled();
   await pickFirst(page, cancel.getByRole('combobox', { name: 'Lý do' }));
   await cancel.getByLabel('Ghi chú').fill('Phụ huynh báo bận');
@@ -293,7 +293,7 @@ test('Tạo phiếu từ cơ hội: chọn đủ ô, giờ nhắc tự điền, 
   await login(page, setup.account);
   await page.goto(`/crm/co-hoi/${seeded.opportunity.fresh.id}`);
   await page.getByRole('button', { name: 'Tạo lịch Test' }).click();
-  const dialog = dialogOf(page, 'Tạo phiếu kiểm tra');
+  const dialog = dialogOf(page, 'Tạo phiếu Test');
   await expect(dialog.getByRole('combobox', { name: 'Học sinh' })).toContainText(
     seeded.student.fresh,
   );

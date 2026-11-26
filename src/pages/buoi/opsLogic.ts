@@ -4,8 +4,8 @@ import type { OpsEntry } from './useSessionData';
 import type { OpsSheet, OpsStudent } from './sessionTypes';
 
 export type OpsCell = { status: string | null; reason: string | null; note: string };
-/** Chỉ các em đã sửa so với máy chủ. */
-export type OpsDraft = Record<string, OpsCell>;
+/** Chỉ các em đã sửa so với máy chủ, và chỉ những ô đã sửa (ô khác theo máy chủ, kể cả ô vừa chép từ giáo viên). */
+export type OpsDraft = Record<string, Partial<OpsCell>>;
 
 export const savedCell = (s: OpsStudent): OpsCell => ({
   status: s.ops_status_code,
@@ -13,32 +13,35 @@ export const savedCell = (s: OpsStudent): OpsCell => ({
   note: s.ops_note ?? '',
 });
 
-export const cellOf = (s: OpsStudent, draft: OpsDraft): OpsCell =>
-  draft[s.student_id] ?? savedCell(s);
-
-const same = (a: OpsCell, b: OpsCell) =>
-  a.status === b.status && a.reason === b.reason && a.note.trim() === b.note.trim();
+export const cellOf = (s: OpsStudent, draft: OpsDraft): OpsCell => ({
+  ...savedCell(s),
+  ...draft[s.student_id],
+});
 
 /** Sửa một em; sửa về đúng giá trị đã lưu thì bỏ khỏi bản nháp (không còn "chưa lưu"). */
 export function patchDraft(draft: OpsDraft, s: OpsStudent, patch: Partial<OpsCell>): OpsDraft {
   const next = { ...draft };
-  const cell = { ...cellOf(s, draft), ...patch };
-  if (same(cell, savedCell(s))) delete next[s.student_id];
+  const saved = savedCell(s);
+  const cell = { ...draft[s.student_id], ...patch };
+  if (cell.status === saved.status) delete cell.status;
+  if (cell.reason === saved.reason) delete cell.reason;
+  if (cell.note?.trim() === saved.note.trim()) delete cell.note;
+  if (Object.keys(cell).length === 0) delete next[s.student_id];
   else next[s.student_id] = cell;
   return next;
 }
 
-/** Danh sách gửi máy chủ: chỉ em đã sửa. */
+/** Danh sách gửi máy chủ: chỉ em đã sửa, mỗi em chỉ ô đã sửa (máy chủ giữ ô không gửi). */
 export function buildOpsEntries(students: OpsStudent[], draft: OpsDraft): OpsEntry[] {
   return students
     .filter((s) => s.student_id in draft)
     .map((s) => {
-      const c = cellOf(s, draft);
+      const { status, reason, note } = draft[s.student_id] ?? {};
       return {
         student_id: s.student_id,
-        status_code: c.status,
-        contact_reason_code: c.reason,
-        note: c.note.trim() === '' ? null : c.note.trim(),
+        ...(status !== undefined && { status_code: status }),
+        ...(reason !== undefined && { contact_reason_code: reason }),
+        ...(note !== undefined && { note: note.trim() === '' ? null : note.trim() }),
       };
     });
 }

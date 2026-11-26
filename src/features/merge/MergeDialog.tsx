@@ -292,7 +292,7 @@ function MergeForm({ open, onOpenChange, entity, current, onMerged }: MergeDialo
                   )}
                   {entity === 'OPPORTUNITY' && (move.tests ?? 0) > 0 && (
                     <p className="text-body">
-                      Phiếu kiểm tra ({move.tests}) cũng chuyển sang {keepCode}.
+                      Phiếu Test ({move.tests}) cũng chuyển sang {keepCode}.
                     </p>
                   )}
                   <ItemList
@@ -367,7 +367,7 @@ function sideRows(
       ['Khối', side.grade ? String(side.grade) : '—'],
       ['Cơ sở', side.branch_code],
       ['Ngày tạo', formatDate(side.created_at)],
-      ['Ghi danh · phiếu kiểm tra', `${c.enrollments ?? 0} · ${c.tests ?? 0}`],
+      ['Ghi danh · phiếu Test', `${c.enrollments ?? 0} · ${c.tests ?? 0}`],
       ['Dòng điểm danh · ghi chú', `${c.attendance ?? 0} · ${side.notes}`],
     ];
   }
@@ -387,7 +387,7 @@ function sideRows(
     ['Ngày tạo', formatDate(side.created_at)],
     entity === 'LEAD'
       ? ['Cơ hội', String(side.opportunities ?? 0)]
-      : ['Phiếu kiểm tra', String(side.tests ?? 0)],
+      : ['Phiếu Test', String(side.tests ?? 0)],
     ['Lịch hẹn · ghi chú', `${side.appointments} lịch hẹn · ${side.notes} ghi chú`],
   ];
 }

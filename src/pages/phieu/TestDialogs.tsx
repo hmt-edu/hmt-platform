@@ -119,7 +119,7 @@ function ResultForm({
                 {...field}
                 inputMode="decimal"
                 value={score}
-                placeholder="7,5"
+                placeholder="Nhập điểm từ 0 đến 10"
                 onChange={(e) => setScore(e.target.value)}
                 className={INPUT_CLASS}
               />

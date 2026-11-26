@@ -87,7 +87,7 @@ export const CRM_MENU: MenuGroup[] = [
       },
       {
         code: 'TS-16',
-        label: 'Phiếu kiểm tra',
+        label: 'Phiếu Test',
         slug: 'phieu-kiem-tra',
         requires: can('STUDENT_TEST'),
         stage: GD1,

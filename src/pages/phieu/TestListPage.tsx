@@ -358,7 +358,7 @@ export function TestListPage() {
       sort={sort}
       onSortChange={(next) => setSort(next?.key === 'time' ? next : null)}
       emptyMessage={{
-        title: 'Chưa có phiếu kiểm tra',
+        title: 'Chưa có phiếu Test',
         hint: 'Phiếu được tạo từ trang Cơ hội (từ L5 trở đi). Khi có phiếu, danh sách sẽ hiện ở đây.',
       }}
       parent={
@@ -366,7 +366,7 @@ export function TestListPage() {
           ? {
               entityLabel: 'Cơ hội',
               code: parentCode,
-              childLabel: 'Kiểm tra đầu vào',
+              childLabel: 'Phiếu Test',
               onOpenParent: () => void navigate(`/crm/co-hoi/${parentOpp}`),
               onClear: () => setParams({}),
             }

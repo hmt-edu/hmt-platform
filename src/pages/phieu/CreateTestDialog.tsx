@@ -189,7 +189,7 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
       open
       onOpenChange={onOpenChange}
       wide
-      title="Tạo phiếu kiểm tra"
+      title="Tạo phiếu Test"
       subtitle={`Từ cơ hội ${opportunity.code} · Phụ huynh ${opportunity.parent_name}`}
       confirmLabel="Tạo phiếu"
       canSubmit={canSubmit}

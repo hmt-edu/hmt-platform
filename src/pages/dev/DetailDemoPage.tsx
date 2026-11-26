@@ -24,7 +24,7 @@ const STEPS: StageStep[] = [
   {
     code: 'L6',
     label: 'Đã tham gia test',
-    lockedReason: 'Hệ thống tự chuyển khi phiếu kiểm tra Hoàn thành.',
+    lockedReason: 'Hệ thống tự chuyển khi phiếu Test Hoàn thành.',
   },
   { code: 'L7', label: 'Tư vấn' },
   { code: 'L8', label: 'Đăng ký học' },

@@ -48,7 +48,7 @@ async function save(browser: Browser, page: Page, name: string, designName: stri
   await composer.close();
 }
 
-test('Phiếu kiểm tra: danh sách, Kanban, Lịch, bản ghi, hộp tạo (máy tính)', async ({
+test('Phiếu Test: danh sách, Kanban, Lịch, bản ghi, hộp tạo (máy tính)', async ({
   page,
   browser,
 }, testInfo) => {
@@ -77,19 +77,19 @@ test('Phiếu kiểm tra: danh sách, Kanban, Lịch, bản ghi, hộp tạo (m�
     await save(browser, page, 'TS16c_pc', 'TS16c');
 
     await page.goto(`/crm/phieu-kiem-tra/${seeded.test.review.id}`);
-    await expect(page.getByRole('heading', { level: 1, name: 'Phiếu kiểm tra' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Phiếu Test' })).toBeVisible();
     await save(browser, page, 'TS17_pc', 'TS17');
 
     await page.goto(`/crm/co-hoi/${seeded.opportunity.fresh.id}`);
     await page.getByRole('button', { name: 'Tạo lịch Test' }).click();
-    await expect(page.getByRole('dialog', { name: 'Tạo phiếu kiểm tra' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Tạo phiếu Test' })).toBeVisible();
     await save(browser, page, 'TS15_pc', 'TS15');
   } finally {
     await clearMark(setup.mark);
   }
 });
 
-test('Phiếu kiểm tra: danh sách, Kanban, Lịch, bản ghi, hộp tạo (điện thoại, chỉ bản dựng)', async ({
+test('Phiếu Test: danh sách, Kanban, Lịch, bản ghi, hộp tạo (điện thoại, chỉ bản dựng)', async ({
   page,
   browser,
 }, testInfo) => {
@@ -118,12 +118,12 @@ test('Phiếu kiểm tra: danh sách, Kanban, Lịch, bản ghi, hộp tạo (đ
     await save(browser, page, 'TS16c_mb', 'TS16c');
 
     await page.goto(`/crm/phieu-kiem-tra/${seeded.test.review.id}`);
-    await expect(page.getByRole('heading', { level: 1, name: 'Phiếu kiểm tra' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Phiếu Test' })).toBeVisible();
     await save(browser, page, 'TS17_mb', 'TS17');
 
     await page.goto(`/crm/co-hoi/${seeded.opportunity.fresh.id}`);
     await page.getByRole('button', { name: 'Tạo lịch Test' }).click();
-    await expect(page.getByRole('dialog', { name: 'Tạo phiếu kiểm tra' })).toBeVisible();
+    await expect(page.getByRole('dialog', { name: 'Tạo phiếu Test' })).toBeVisible();
     await save(browser, page, 'TS15_mb', 'TS15');
   } finally {
     await clearMark(setup.mark);

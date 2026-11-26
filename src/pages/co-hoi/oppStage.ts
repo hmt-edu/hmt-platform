@@ -80,7 +80,7 @@ export type SubstageRule = {
  */
 export function substageRule(stage: string, current: string | null, codes: string[]): SubstageRule {
   if (stage === L5) {
-    return { allowed: [], lockedReason: 'Nhóm con L5 do hệ thống gắn theo các phiếu kiểm tra.' };
+    return { allowed: [], lockedReason: 'Nhóm con L5 do hệ thống gắn theo các phiếu Test.' };
   }
   if (stage === 'L8' && current === L8C) {
     return {
@@ -115,6 +115,6 @@ export function substageChoicesForMove(target: string, codes: string[]): string[
 /** Lý do không bấm tay vào một giai đoạn (L6 do hệ thống chuyển, R-CRM-13); null nếu bấm được. */
 export function lockedStageReason(stage: string): string | null {
   return stage === SYSTEM_STAGE
-    ? 'L6 do hệ thống chuyển khi phiếu kiểm tra Hoàn thành, không bấm tay được.'
+    ? 'L6 do hệ thống chuyển khi phiếu Test Hoàn thành, không bấm tay được.'
     : null;
 }

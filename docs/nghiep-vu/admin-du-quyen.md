@@ -12,5 +12,15 @@ Bảng quyền đã cấp vai Admin mọi phân hệ, mọi hành động, toàn
 
 Giữ nguyên với cả Admin: không tự duyệt phiếu mình tạo; một người không duyệt hai cấp của cùng một phiếu.
 
-## Phần tiền (chưa làm, chờ anh chốt)
-R-HT-01, migration 455, `can_approve_as_manager` (phiếu thu) và các cấp «Kế toán», «phiếu có cấp kế toán» vẫn chặn Admin như cũ.
+## Phần tiền (anh Trường chốt 26/11 15:35, E-26-05c)
+| Chỗ | Admin nay | Vai khác |
+|---|---|---|
+| Quyền `ACCOUNTING · DUYET`, `RECEIPT · DUYET` | Có, toàn hệ thống | Không đổi; chốt chặn chỉ cho Kế toán và Admin |
+| Phiếu thu, thu nợ đầu kỳ | Duyệt cả hai bước, kể cả phiếu mình lập | Hai người khác nhau, không tự duyệt |
+| Đảo khoản, phiếu chi, áp số dư, cộng giờ (quyền Kế toán · Duyệt) | Làm được | Chỉ Kế toán |
+| Hoàn phí, dừng học | Tự duyệt, duyệt cả hai bước | Như cũ |
+| Phiếu nghiệp vụ có cấp Kế toán | Duyệt mọi cấp, kể cả phiếu mình tạo | Như cũ |
+
+Nhật ký: bảng `app.admin_approval_log` (chỉ thêm; người có Quản trị · Xem đọc được) ghi `TU_DUYET` và `HAI_BUOC` theo chứng từ, bước, người. Mọi lần duyệt khác vẫn nằm trong lịch sử chứng từ và nhật ký thao tác như trước. Chưa có màn xem nhật ký này.
+
+Phiếu **không** dính tiền (chuyển cơ sở, bảo lưu, chuyển lớp…) giữ nguyên luật tự duyệt và hai cấp như trước đợt này.

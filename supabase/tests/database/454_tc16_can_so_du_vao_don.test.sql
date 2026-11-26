@@ -210,7 +210,9 @@ select is(pg_temp.err($$select app.apply_customer_balance_to_order(pg_temp.o('d3
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.apply_customer_balance_to_order(pg_temp.o('d3'), 500000)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Tuyển sinh không cấn được');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.apply_customer_balance_to_order(pg_temp.o('d3'), 500000)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Admin không duyệt tiền (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.apply_customer_balance_to_order(pg_temp.o('d3'), 500000)$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Vai không có quyền duyệt tiền bị chặn (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select is(pg_temp.bal3(), 3000000::bigint, 'Các ca bị chặn không đổi số dư');
 
 -- ================= Đúng: cấn 500.000 =================
