@@ -159,7 +159,6 @@ function ReasonBody({ row, onClose }: { row: AbsentRow; onClose: () => void }) {
       await save.mutateAsync([
         {
           student_id: row.student_id,
-          status_code: row.ops_status_code,
           contact_reason_code: reason === '' ? null : reason,
           note: note.trim() === '' ? null : note.trim(),
         },

@@ -45,11 +45,22 @@ describe('bản nháp điểm danh vận hành', () => {
     expect(Object.keys(d1)).toEqual(['a']);
     expect(Object.keys(patchDraft(d1, s1, { status: 'CO_MAT' }))).toEqual([]);
   });
-  it('chỉ gửi em đã sửa, ghi chú rỗng thành null', () => {
+  it('chỉ gửi em đã sửa và ô đã sửa', () => {
     const d = patchDraft({}, s2, { reason: 'KHONG_NGHE_MAY' });
     expect(buildOpsEntries([s1, s2], d)).toEqual([
-      { student_id: 'b', status_code: null, contact_reason_code: 'KHONG_NGHE_MAY', note: null },
+      { student_id: 'b', contact_reason_code: 'KHONG_NGHE_MAY' },
     ]);
+  });
+  it('máy chủ đổi trạng thái khi đang sửa lý do: không gửi lại trạng thái cũ', () => {
+    const d = patchDraft({}, s2, { reason: 'KHONG_NGHE_MAY' });
+    const moi = { ...s2, ops_status_code: 'CO_MAT' };
+    expect(cellOf(moi, d).status).toBe('CO_MAT');
+    expect(buildOpsEntries([moi], d)[0]).not.toHaveProperty('status_code');
+  });
+  it('xoá trạng thái và ghi chú rỗng gửi null', () => {
+    const co = { ...s2, ops_status_code: 'CO_MAT', ops_note: 'Cũ' };
+    const d = patchDraft(patchDraft({}, co, { status: null }), co, { note: ' ' });
+    expect(buildOpsEntries([co], d)).toEqual([{ student_id: 'b', status_code: null, note: null }]);
   });
   it('đếm em đã có trạng thái kể cả bản nháp', () => {
     expect(countOpsMarked([s1, s2], {})).toBe(1);

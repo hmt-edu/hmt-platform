@@ -222,3 +222,16 @@ Chưa làm: sửa điểm sau Done (qua ticket, chỉ quản lý đào tạo), �
 **Done ngay khi giáo viên lưu bước cuối (A-23-12, migration 624, QĐ-Đ294).** `app.complete_session_if_ready(buổi)` (nội bộ, không ai gọi trực tiếp) được `set_attendance_teacher`, `save_session_content`, `save_review_grading`, `save_homework_grading`, `save_exam_grading` gọi ở cuối: khoá buổi; Đã chốt và `session_pending_reason` trống thì gọi `mark_session_done` (trừ giờ một lần, đóng dấu Đúng/Trễ hạn). Chưa đủ, chưa hết giờ hoặc đã Done thì không làm gì. Lỗi (vd. `HMT_QUY_GIO_AM`) được bắt: lưu của giáo viên vẫn thành công, buổi giữ Đã chốt, lỗi ghi `app.session_auto_done_error`. Lịch tự Done vẫn chạy cho buổi còn lại.
 
 **LOP-09 một dòng mỗi em (A-23-13, migration 624).** `app.list_class_students` và `app.class_student_group_counts` chỉ giữ một dòng đang học mỗi em trong lớp (ghi danh cũ nhất); `hours_left` là tổng giờ còn của các ghi danh còn hiệu lực của em trong lớp. Trừ giờ buổi: `build_session_roster` chọn ghi danh cũ nhất đủ giờ cho cả buổi (R-GIO-04).
+
+## Hai cột điểm danh (migration 685, DD1 phần 1, anh Trường duyệt 26/11)
+
+Luật: R-DD-02 đến R-DD-05.
+
+| Hàm | Thay đổi |
+| --- | --- |
+| `set_attendance_teacher` | Lưu ô giáo viên thì chép sang ô vận hành khi ô đó trống hoặc còn là ô chép (`ops_source = 'GIAO_VIEN'`); giáo viên bỏ trống thì ô chép trống theo. Ô vận hành tự ghi không bị đè |
+| `set_attendance_ops` | Mỗi dòng chỉ ghi khoá được gửi (`status_code`, `contact_reason_code`, `note`). Trạng thái khác giá trị đang có thì thành ô vận hành tự ghi (`ops_source = 'VAN_HANH'`, kèm người và giờ) |
+| `write_attendance_ops` | Nội bộ: ghi một dòng phía vận hành |
+| `upsale_candidates`, `get_upsale_ticket`, view `report.class_attendance` | Số buổi vắng, chuyên cần chỉ đọc cột giáo viên |
+
+`absent_today_list` và `absent_today_group_counts` (gọi nhắc trong ngày) vẫn đọc cả cột vận hành. Buổi giáo viên đã ghi trước migration này không được chép bù. Điều kiện Done mới (khớp hai cột, Done tay) thuộc phần 2.

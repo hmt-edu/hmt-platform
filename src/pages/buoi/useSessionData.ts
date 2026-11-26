@@ -97,11 +97,12 @@ export function useRefreshSessions() {
   }, [client]);
 }
 
+/** Khoá không gửi thì máy chủ giữ giá trị đang có; gửi null là xoá. */
 export type OpsEntry = {
   student_id: string;
-  status_code: string | null;
-  contact_reason_code: string | null;
-  note: string | null;
+  status_code?: string | null;
+  contact_reason_code?: string | null;
+  note?: string | null;
 };
 
 /** Ghi điểm danh phía vận hành, lý do liên hệ (app.set_attendance_ops, D1c). Luật do máy chủ quyết. */
