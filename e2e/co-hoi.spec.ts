@@ -69,7 +69,7 @@ test('Kanban: đủ tám cột L1 đến L8, cơ hội đúng cột', async ({ p
   await expect(page.getByText(/^Cơ hội chỉ đi tới/)).toBeVisible();
 });
 
-test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dùng được mờ, tab Kiểm tra đầu vào', async ({
+test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dùng được mờ, không còn tab Kiểm tra đầu vào', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -100,14 +100,8 @@ test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dù
   await expect(page.getByRole('button', { name: /^Đính kèm \(\d+\)$/ })).toHaveCount(0);
   // Nhóm con L5 do hệ thống gắn: ô khoá.
   await expect(page.getByLabel('Sub-stage')).toHaveAttribute('readonly', '');
-  // Tab phiếu: mã phiếu là liên kết sang màn Phiếu kiểm tra (P3e-2).
-  // Một phiếu duy nhất: nút "Kiểm tra" mở thẳng phiếu (P3e-2); tab bên dưới vẫn liệt kê phiếu.
-  await page.getByRole('tab', { name: /Kiểm tra đầu vào/ }).click();
-  await expect(page.getByRole('tab', { name: /Kiểm tra đầu vào \(1\)/ })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await expect(page.getByRole('link', { name: /^PKT\d+$/ })).toBeVisible();
+  // Phiếu kiểm tra chỉ đi từ nút liên kết «Kiểm tra», không còn tab ở khối dưới (A-26-04).
+  await expect(page.getByRole('tab', { name: /Kiểm tra đầu vào/ })).toHaveCount(0);
   await expectAccessible(page);
 });
 
