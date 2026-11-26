@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>CHUNG-14 · Trang chủ bản rút gọn (điện thoại)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/hmt/handoff/hmt-tokens.css">
+<link rel="stylesheet" href="ds/hmt/components/bundle.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap&amp;subset=vietnamese">
+<style>
+body{margin:0;font-family:var(--font-ui);background:var(--bg-page);color:var(--text-primary)}
+a{color:var(--text-link)}a:hover{color:var(--brand-800)}
+</style>
+</helmet>
+<div data-ix="root" style="position:relative;width:390px;height:844px;overflow:hidden;background:var(--bg-page)"><style>[data-bd][hidden]{display:none!important}.hmt-app-x{}</style><div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--bg-surface);border-bottom:1px solid var(--divider)"><span class="hmt-iconbtn" aria-label="Mở menu"><svg class="hmt-ic" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span><b style="font-family:var(--font-heading);font-size:17px;flex:1">Việc của tôi</b><span class="hmt-avatar">TH</span></div><div style="padding:12px 16px 24px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;height:calc(100% - 58px);box-sizing:border-box"><div><b style="font-family:var(--font-heading);font-size:17px">Trang chủ</b><br><span class="hmt-help">26/11/2026 · Vài việc gấp nhất</span></div><div style="display:flex;gap:8px"><div class="hmt-box hmt-box-pad" style="flex:1;display:flex;flex-direction:column;align-items:stretch;text-align:left;gap:0;border-top:4px solid var(--danger-solid);padding:8px 10px"><span class="hmt-help">Làm ngay</span><b style="font-family:var(--font-heading);font-size:20px">3</b></div><div class="hmt-box hmt-box-pad" style="flex:1;display:flex;flex-direction:column;align-items:stretch;text-align:left;gap:0;border-top:4px solid var(--warning-solid);padding:8px 10px"><span class="hmt-help">Hôm nay</span><b style="font-family:var(--font-heading);font-size:20px">4</b></div><div class="hmt-box hmt-box-pad" style="flex:1;display:flex;flex-direction:column;align-items:stretch;text-align:left;gap:0;border-top:4px solid var(--info-solid);padding:8px 10px"><span class="hmt-help">Sắp tới</span><b style="font-family:var(--font-heading);font-size:20px">2</b></div></div><div class="hmt-box hmt-box-pad" style="display:flex;flex-direction:column;align-items:stretch;text-align:left;gap:4px"><div style="display:flex;align-items:center;gap:8px"><b style="flex:1">Gấp nhất</b><button class="hmt-btn hmt-btn-sm" type="button" style="white-space:nowrap">Xem tất cả</button></div><div style="padding:10px 0;border-top:1px solid var(--bg-subtle);display:flex;gap:8px;align-items:center"><div style="flex:1;min-width:0"><b style="font-size:14px">Gọi lead mới LD000231</b><br><span class="hmt-help">Nguyễn Thị Lan</span></div><button class="hmt-btn hmt-btn-primary hmt-btn-sm" type="button" style="white-space:nowrap">Mở</button></div><div style="padding:10px 0;border-top:1px solid var(--bg-subtle);display:flex;gap:8px;align-items:center"><div style="flex:1;min-width:0"><b style="font-size:14px">Lịch hẹn quá hạn 2 ngày</b><br><span class="hmt-help">Nguyễn Thị Lan</span></div><button class="hmt-btn hmt-btn-primary hmt-btn-sm" type="button" style="white-space:nowrap">Mở</button></div><div style="padding:10px 0;border-top:1px solid var(--bg-subtle);display:flex;gap:8px;align-items:center"><div style="flex:1;min-width:0"><b style="font-size:14px">Phiếu test lúc 17:30</b><br><span class="hmt-help">Trần Văn Bình</span></div><button class="hmt-btn hmt-btn-primary hmt-btn-sm" type="button" style="white-space:nowrap">Mở</button></div></div></div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return { yes: true }; }
+  componentDidMount() {
+    const R = document.querySelector('[data-ix=root]');
+    this._h = (e) => {
+      if (!R.contains(e.target)) return;
+      const t = e.target.closest('[data-tg]');
+      if (t) { const b = R.querySelector('[data-bd="' + t.getAttribute('data-tg') + '"]'); if (b) { b.hidden = !b.hidden; t.setAttribute('aria-expanded', b.hidden ? 'false' : 'true'); } return; }
+      const o = e.target.closest('[data-open]');
+      if (o) { const d = R.querySelector('[data-dlg="' + o.getAttribute('data-open') + '"]'); if (d) d.style.display = 'flex'; return; }
+      const c = e.target.closest('[data-close]');
+      if (c) { const d = c.closest('[data-dlg]'); if (d) d.style.display = 'none'; return; }
+      const sg = e.target.closest('[data-seg] button');
+      if (sg) { sg.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === sg ? 'true' : 'false')); }
+    };
+    document.addEventListener('click', this._h);
+  }
+  componentWillUnmount() { document.removeEventListener('click', this._h); }
+}
+</script>
+</body>
+</html>
