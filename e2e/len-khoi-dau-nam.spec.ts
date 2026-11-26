@@ -85,7 +85,7 @@ test('Admin: xem trước khối cũ và khối mới, lớp 12 tốt nghiệp, 
   await a.getByRole('checkbox').check();
   await page.getByRole('button', { name: 'Loại trừ khỏi đợt' }).click();
   await expect(a.getByText('Loại trừ', { exact: true })).toBeVisible();
-  await expect(page.getByTestId('promotion-summary')).toContainText('loại trừ 1 em');
+  await expect(page.getByTestId('promotion-summary')).toContainText('loại trừ 1 học sinh');
 });
 
 test('Nhân viên không phải Admin: không vào được màn Lên khối', async ({ page }) => {

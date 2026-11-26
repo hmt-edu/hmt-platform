@@ -196,7 +196,7 @@ test('Thông tin học sinh: thêm em mới (chỉ bắt buộc họ tên), thi�
     ),
   ).toBeVisible();
   await dialog.getByRole('button', { name: 'Thêm học sinh' }).click();
-  await expect(dialog.getByText('Nhập họ tên của em.')).toBeVisible();
+  await expect(dialog.getByText('Nhập họ tên của học sinh.')).toBeVisible();
   await dialog.getByLabel('Họ tên học sinh').fill('Em thêm bằng e2e');
   await dialog.getByRole('button', { name: 'Thêm học sinh' }).click();
   await expect(dialog).toHaveCount(0);
