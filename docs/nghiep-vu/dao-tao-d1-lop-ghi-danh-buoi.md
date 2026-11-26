@@ -235,3 +235,19 @@ Luật: R-DD-02 đến R-DD-05.
 | `upsale_candidates`, `get_upsale_ticket`, view `report.class_attendance` | Số buổi vắng, chuyên cần chỉ đọc cột giáo viên |
 
 `absent_today_list` và `absent_today_group_counts` (gọi nhắc trong ngày) vẫn đọc cả cột vận hành. Buổi giáo viên đã ghi trước migration này không được chép bù. Điều kiện Done mới (khớp hai cột, Done tay) thuộc phần 2.
+
+## Điều kiện Done, Done tay, Done hàng loạt, nhập thay (C-26-05 PR-DD2, migration 686–688)
+
+Luật R-GIO-06, 07, 09, 11, 12; R-GV-05. Sổ giờ (`deduct_session_hours`) không đổi.
+
+| Hàm | Ai gọi | Làm gì |
+|---|---|---|
+| `finish_session(buổi)` | Điểm danh · Sửa theo phạm vi (giáo viên, trợ giảng của buổi; vận hành, quản lý cơ sở, Admin) | Done tay. Đủ điều kiện thì Done; chưa đủ thì trả `{done:false, missing:[…]}` |
+| `bulk_finish_sessions(buổi[], lý do)` | Điểm danh · Duyệt ở cơ sở của từng buổi | Done hàng loạt; trả `{done, skipped:[{session_id, class_code, session_no, reason}]}`. Số buổi tối đa: tham số `session_bulk_done_max` |
+| `enter_for_teacher(buổi, loại, dữ liệu, lý do)` | Điểm danh · Duyệt | Nhập thay `DIEM_DANH`, `NHAN_XET`, `DIEM`, `BTVN` khi buổi chưa Done; ghi `session_proxy_entry` |
+
+- Điều kiện Done thêm: ô vận hành bằng ô giáo viên ở mọi dòng. `session_pending_reason` trả **mọi** điều còn thiếu, nối bằng dấu cách. Vận hành sửa cho khớp thì Done ngay.
+- Dấu Đúng hạn hoặc Trễ hạn đóng khi phần giáo viên đủ (`stamp_teacher_completion`), không chờ khớp; đóng một lần.
+- `class_session`: `done_mode` (`TU_DONG`, `TAY`, `HANG_LOAT`), `done_by`, `done_reason`, `done_missing_review` (cờ Thiếu nhận xét).
+- Người không phải giáo viên, trợ giảng của buổi không gọi thẳng được hàm ghi điểm danh, nhận xét, điểm, chấm BTVN (`HMT_CAN_NHAP_THAY`).
+- Nội bộ: `session_teacher_missing`, `session_review_missing`, `session_missing`, `apply_session_done`, `bulk_finish_one`, `assert_bulk_finish_input`, `assert_teacher_or_proxy`, `apply_proxy_entry`.
