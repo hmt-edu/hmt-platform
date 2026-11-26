@@ -388,7 +388,10 @@ function FormView({ record }: { record: ClassRecord | null }) {
           {editing ? record.status_name : 'Nháp'}. Mã lớp tự cấp khi lưu.
         </p>
         {rejected && (
-          <Alert tone="warning" title="Lớp bị từ chối">
+          <Alert
+            tone="warning"
+            title={`Lớp bị từ chối${rejected.actor_name ? ` bởi ${rejected.actor_name}` : ''}`}
+          >
             {rejected.note ? `Lý do: ${rejected.note}. ` : ''}Sửa rồi bấm {saveLabel}; ở màn lớp bấm
             «Đưa về Nháp» rồi trình lại.
           </Alert>

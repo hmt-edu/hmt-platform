@@ -43,7 +43,7 @@ export function ClassChatter({ record }: { record: ClassRecord }) {
         kind: 'system' as const,
         id: `ev-${i}`,
         at: e.created_at,
-        author: '',
+        author: e.actor_name ?? '',
         text: `${EVENT_LABEL[e.event_code] ?? e.event_code}${e.note ? `: ${e.note}` : ''}`,
       }))}
     />
