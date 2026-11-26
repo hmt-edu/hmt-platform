@@ -100,6 +100,8 @@ test('Sale tạo phiếu thu nháp từ đơn Đã duyệt, sửa ghi chú, trì
   await expect(page.getByRole('button', { name: 'Trình quản lý' })).toHaveCount(0);
   // Cột phải chuẩn "Ghi chú & hoạt động" (Q-52): sự kiện của phiếu là các mục dòng thời gian, không còn nhãn "Lịch sử xử lý".
   const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  // Dòng thời gian mặc định tab Ghi chú: sự kiện hệ thống xem ở «Tất cả».
+  await timeline.getByRole('button', { name: 'Tất cả', exact: true }).click();
   await expect(timeline.getByText('Tạo phiếu thu', { exact: true })).toBeVisible();
   await expect(timeline.getByText('Trình quản lý duyệt', { exact: true })).toBeVisible();
   await expect(page.getByText('Lịch sử xử lý')).toHaveCount(0);

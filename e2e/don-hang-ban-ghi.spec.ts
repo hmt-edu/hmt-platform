@@ -149,6 +149,8 @@ test('Nháp bị từ chối: lý do và ghi chú nằm ở dòng thời gian (k
   // Không còn khối "Lịch sử xử lý" cuối trang (Q-48): sự kiện nằm ở dòng thời gian bên phải.
   await expect(page.getByText('Lịch sử xử lý')).toHaveCount(0);
   const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  // Dòng thời gian mặc định tab Ghi chú: sự kiện hệ thống xem ở «Tất cả».
+  await timeline.getByRole('button', { name: 'Tất cả', exact: true }).click();
   await expect(timeline.getByText('Từ chối', { exact: true })).toBeVisible();
 });
 
