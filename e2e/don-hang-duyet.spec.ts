@@ -2,7 +2,7 @@
 // về Nháp. Người khác không thấy nút. Máy tính và điện thoại (hộp thoại dùng cho cả hai, BH-07 "Cả hai"). Dữ liệu giả dựng bằng don-hang-seed.ts.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, DOMAIN, enterAs, expectAccessible } from './helpers';
+import { PASSWORD, DOMAIN, enterAs, expectAccessible, showAllTimeline } from './helpers';
 import { DB_URL, approveSetupOf, clearMark, seedOrders, type SeededOrders } from './don-hang-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
@@ -91,6 +91,7 @@ test('Trưởng cơ sở thấy cảnh báo vượt trần (không ô tích) và
   await dialog.getByRole('button', { name: 'Duyệt', exact: true }).click();
   await expect(page.getByText('Đã duyệt đơn hàng.').first()).toBeVisible();
   await expect(page.getByText('Đã duyệt · khoá').first()).toBeVisible();
+  await showAllTimeline(page);
   await expect(page.getByText(/Duyệt đơn vượt trần/).first()).toBeVisible();
 });
 

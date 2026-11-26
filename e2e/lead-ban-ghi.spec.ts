@@ -163,9 +163,14 @@ test('Sửa rồi Lưu; thiếu thông tin thì báo tại ô; Huỷ không lưu
   await expect(toastText(page, 'Đã lưu.')).toBeVisible();
   await expect(page.getByRole('article').getByText('Ôn thi vào lớp 10 (E2E)')).toBeVisible();
   // Lịch sử thay đổi hiện ở cột Ghi chú và hoạt động.
-  await expect(
-    page.getByRole('region', { name: 'Ghi chú & hoạt động' }).getByText('Nhu cầu'),
-  ).toBeVisible();
+  const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  // Mở bản ghi: tab «Ghi chú» đang chọn (F-26-02); lịch sử hệ thống xem ở «Tất cả».
+  await expect(timeline.getByRole('button', { name: 'Ghi chú', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await timeline.getByRole('button', { name: 'Tất cả', exact: true }).click();
+  await expect(timeline.getByText('Nhu cầu')).toBeVisible();
 });
 
 // Hộp chọn nhóm con khi đổi giai đoạn (R-CRM-41): chọn nhóm con rồi bấm "Chuyển giai đoạn".

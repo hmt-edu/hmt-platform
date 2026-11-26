@@ -3,7 +3,7 @@
 // Dữ liệu giả có dấu riêng mỗi lần chạy (mã GDC42…), dọn sau bài; không dùng chung với bài khác.
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, isPhone, pickOption } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, isPhone, pickOption, showAllTimeline } from './helpers';
 import { DB_URL } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng ghi danh và ticket giả).');
@@ -74,6 +74,7 @@ async function runTask(
   await dialog.getByRole('button', { name: 'Tạo phiếu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/phieu-nghiep-vu\/[0-9a-f-]{36}$/);
   await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
   const taskUrl = page.url();
   // Trưởng cơ sở đăng nhập ở ngữ cảnh riêng (không dùng chung phiên với CSKH).
@@ -86,12 +87,14 @@ async function runTask(
     const approve = manager.getByRole('dialog', { name: 'Duyệt phiếu' });
     await approve.getByLabel('Ghi chú').fill('Đồng ý');
     await approve.getByRole('button', { name: 'Duyệt', exact: true }).click();
+    await showAllTimeline(manager);
     await expect(manager.getByText('Chờ duyệt → Đã duyệt.')).toBeVisible();
     await manager.getByRole('button', { name: 'Thực hiện', exact: true }).click();
     await manager
       .getByRole('alertdialog')
       .getByRole('button', { name: 'Thực hiện', exact: true })
       .click();
+    await showAllTimeline(manager);
     await expect(manager.getByText('Thực hiện phiếu. Đã duyệt → Đã thực hiện.')).toBeVisible();
   } finally {
     await context.close();
@@ -199,6 +202,7 @@ test('Khiếu nại: CSKH tạo, nâng cấp lên Quản lý cơ sở rồi Ban 
   await dialog.getByLabel('Lý do nâng cấp').fill('Quá hạn phản hồi.');
   await dialog.getByRole('button', { name: 'Nâng cấp lên Quản lý cơ sở' }).click();
   await expect(page.getByText('Quản lý cơ sở', { exact: true })).toBeVisible();
+  await showAllTimeline(page);
   await expect(page.getByText(/Nâng cấp lên Quản lý cơ sở: Quá hạn phản hồi/)).toBeVisible();
   await page.getByRole('button', { name: 'Nâng cấp', exact: true }).click();
   const second = page.getByRole('dialog', { name: 'Nâng cấp khiếu nại' });
