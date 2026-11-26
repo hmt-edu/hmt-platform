@@ -24,7 +24,7 @@ checked: 2026-11-24
 - [ ] Biết ít nhất một trong: tên, số điện thoại, mã (phụ huynh), mã cũ (học sinh).
 
 ## Luật cần nhớ (lời thường)
-- **Không có nút tạo phụ huynh hay học sinh bằng tay.** Hồ sơ phụ huynh tự sinh khi tạo cơ hội (khớp theo số điện thoại; trùng số thì dùng hồ sơ có sẵn). Hồ sơ học sinh tự sinh khi tạo phiếu kiểm tra hoặc khi đơn hàng được duyệt. Muốn có khách mới, tạo lead rồi cơ hội.
+- **Không có nút tạo phụ huynh hay học sinh bằng tay.** Hồ sơ phụ huynh tự sinh khi tạo cơ hội (khớp theo số điện thoại; trùng số thì dùng hồ sơ có sẵn). Hồ sơ học sinh tự sinh khi tạo phiếu Test hoặc khi đơn hàng được duyệt. Muốn có khách mới, tạo lead rồi cơ hội.
 - Hồ sơ **«Cơ sở tiếp nhận»** bạn chỉ xem; đổi cơ sở do Admin làm qua ticket «Chuyển cơ sở».
 - Hồ sơ đã gộp (trùng với hồ sơ khác) chỉ xem được, hãy mở hồ sơ còn lại.
 - Xuất danh sách chỉ Admin làm được.
@@ -34,7 +34,7 @@ checked: 2026-11-24
    *Bạn thấy:* danh sách có cột «Mã», «Họ tên», «Tình trạng», «Cơ sở tiếp nhận», «Đang học tại», «SĐT», «Số con». Không có kết quả thì hiện «Chưa có phụ huynh».
    [ẢNH: kh01-kh1-b1] [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Bấm một dòng để mở **hồ sơ phụ huynh**. Các tab: «Tổng quan», «Các con», «Đơn hàng», «Phiếu thu», «Ticket», «Tài chính». Khối «Thông tin phụ huynh» có tỉnh/thành, phường/xã, «Cơ sở tiếp nhận», «Đang học tại».
-   *Bạn thấy:* các nút liên kết có số đếm: «Con», «Cơ hội», «Phiếu test», «Ghi danh», «Phiếu thu». Nút «Cơ hội», «Phiếu test», «Ghi danh» có thể mờ kèm chỉ dẫn mở từ menu Tuyển sinh hoặc Đào tạo.
+   *Bạn thấy:* các nút liên kết có số đếm: «Con», «Cơ hội», «Phiếu Test», «Ghi danh», «Phiếu thu». Nút «Cơ hội», «Phiếu Test», «Ghi danh» có thể mờ kèm chỉ dẫn mở từ menu Tuyển sinh hoặc Đào tạo.
    [ẢNH: kh02-kh1-b2] [CHƯA CHỤP: cần chụp trên staging CS5]
 3. Xem các con: tab **«Các con»**, bấm tên con để mở hồ sơ học sinh. Tab «Đơn hàng» và «Phiếu thu» cho biết phụ huynh đã mua và đóng gì. Không có dữ liệu thì hiện «Chưa có học sinh», «Chưa có đơn hàng», «Chưa có phiếu thu».
    *Bạn thấy:* danh sách con, đơn, phiếu thu của đúng phụ huynh đó.
@@ -42,7 +42,7 @@ checked: 2026-11-24
    *Bạn thấy:* danh sách học sinh; «Chưa có học sinh» nếu chưa có.
    [ẢNH: kh04-kh1-b4] [CHƯA CHỤP: cần chụp trên staging CS5]
 5. Mở **hồ sơ học sinh** (hồ sơ 360°). Các tab: «Tổng quan», «Học tập», «Điểm danh», «Điểm kiểm tra», «Chăm sóc» (chưa có dữ liệu), «Đề nghị & khiếu nại». Khối «Thông tin học sinh» có «Họ tên», «Ngày sinh», «Năm sinh», «Khối», «Trường học», «Mục tiêu», «Phụ huynh», «Tình trạng».
-   *Bạn thấy:* các nút liên kết «Ghi danh», «Lớp», «Phiếu test» có số đếm; «Điểm kiểm tra trong lớp» và «Phiếu kiểm tra đầu vào» ở các tab tương ứng.
+   *Bạn thấy:* các nút liên kết «Ghi danh», «Lớp», «Phiếu Test» có số đếm; «Điểm kiểm tra trong lớp» và «Phiếu Test» ở các tab tương ứng.
    [ẢNH: kh05-kh1-b5] [CHƯA CHỤP: cần chụp trên staging CS5]
 6. Cần sửa thông tin: menu **«Hành động» → «Sửa»**, đổi ô cần đổi rồi lưu (báo «Đã lưu.»). Học sinh: **năm sinh bắt buộc**.
    *Bạn thấy:* các ô chuyển sang nhập được; «Cơ sở tiếp nhận» vẫn chỉ đọc.
@@ -71,7 +71,7 @@ checked: 2026-11-24
 | Báo «không có quyền» khi mở hồ sơ | khách thuộc cơ sở khác | báo Trưởng cơ sở |
 
 ## Hỏi đáp
-- **Muốn tạo phụ huynh mới thì sao?** Tạo lead rồi tạo cơ hội: hồ sơ phụ huynh tự sinh. Hồ sơ học sinh sinh khi tạo phiếu kiểm tra hoặc duyệt đơn.
+- **Muốn tạo phụ huynh mới thì sao?** Tạo lead rồi tạo cơ hội: hồ sơ phụ huynh tự sinh. Hồ sơ học sinh sinh khi tạo phiếu Test hoặc duyệt đơn.
 - **Một phụ huynh có con học hai cơ sở?** Cột «Đang học tại» liệt kê các cơ sở đó.
 - **Muốn xuất danh sách?** Chỉ Admin có nút xuất.
 

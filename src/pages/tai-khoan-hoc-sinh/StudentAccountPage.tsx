@@ -166,7 +166,7 @@ export function StudentAccountPage() {
         onSortChange={() => undefined}
         emptyMessage={{
           title: 'Chưa có học sinh',
-          hint: 'Không có học sinh nào trong bộ lọc này. Hồ sơ học sinh tự sinh khi có phiếu kiểm tra đầu vào hoặc đơn được duyệt.',
+          hint: 'Không có học sinh nào trong bộ lọc này. Hồ sơ học sinh tự sinh khi có phiếu Test hoặc đơn được duyệt.',
         }}
       />
       <ActionConfirmDialog

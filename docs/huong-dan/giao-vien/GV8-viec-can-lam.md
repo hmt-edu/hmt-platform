@@ -29,7 +29,7 @@ checked: 2026-11-24
 
 ## Các bước
 1. Bấm «Cần làm» ở thanh dưới.
-   *Bạn thấy:* các nhóm «Buổi chưa hoàn tất», «Bài Nộp sau chờ cập nhật», «Phiếu test chờ chấm», mỗi nhóm kèm số việc.
+   *Bạn thấy:* các nhóm «Buổi chưa hoàn tất», «Bài Nộp sau chờ cập nhật», «Phiếu Test chờ chấm», mỗi nhóm kèm số việc.
    [ẢNH: GV8/01]
 2. Ở mỗi buổi chưa hoàn tất, đọc dòng «quá hạn … giờ» (hoặc «còn … giờ») và lý do bên dưới (ví dụ «Giáo viên chưa nhập nội dung buổi.»).
 3. Bấm «Mở» ở dòng muốn làm.

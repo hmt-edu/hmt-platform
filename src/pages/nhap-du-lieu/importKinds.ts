@@ -185,9 +185,9 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
   },
   {
     kind: 'PHIEU_TEST',
-    title: 'Phiếu test',
+    title: 'Phiếu Test',
     description:
-      'Phiếu kiểm tra đầu vào đã làm, gắn vào cơ hội theo số điện thoại. Phiếu xong có điểm thành "Hoàn thành (dữ liệu cũ)". Nạp Cơ hội và Học sinh trước. Dòng lỗi không chặn dòng đúng.',
+      'Phiếu Test đã làm, gắn vào cơ hội theo số điện thoại. Phiếu xong có điểm thành "Hoàn thành (dữ liệu cũ)". Nạp Cơ hội và Học sinh trước. Dòng lỗi không chặn dòng đúng.',
     columns: [
       'ma_cu',
       'sdt_ph',
@@ -204,7 +204,7 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
     ],
     required: ['ma_cu', 'sdt_ph', 'ngay_test', 'ho_ten_hs', 'khoi', 'trang_thai_phieu'],
     viaFunction: false,
-    subject: 'Phiếu test',
+    subject: 'Phiếu Test',
     training: true,
   },
   {
@@ -285,8 +285,8 @@ export const IMPORT_KIND_ROWS: ImportKindRow[] = [
     kind: 'CO_HOI',
   },
   {
-    title: 'Phiếu test',
-    description: 'Phiếu kiểm tra đầu vào đã làm.',
+    title: 'Phiếu Test',
+    description: 'Phiếu Test đã làm.',
     needs: 'Cơ hội, Học sinh',
     kind: 'PHIEU_TEST',
   },
@@ -405,7 +405,7 @@ const COLUMN_MEANING: Record<string, string> = {
   tinh_trang_cu: 'Tình trạng ở hệ thống cũ',
   tinh_trang_moi: 'Tình trạng ghi danh',
   trang_thai: 'Trạng thái tài khoản',
-  trang_thai_phieu: 'Trạng thái phiếu test',
+  trang_thai_phieu: 'Trạng thái phiếu Test',
   trinh_do: 'Trình độ',
   truong: 'Trường học',
   username: 'Tên đăng nhập',

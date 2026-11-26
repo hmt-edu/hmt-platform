@@ -20,8 +20,8 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | TS7 | Kanban cơ hội: kéo thả chỉ đi tới | SA | TS-07 | ◐ 02 §2.7 | chuyen-kanban | P2 |
 | TS8 | Gộp lead / cơ hội trùng | SA, CS, BM | TS-10 | ❌ | — | P2 |
 | TS9 | Lịch hẹn: tạo, dời, hoàn thành 1 bấm, huỷ | SA, CS | TS-11, TS-13 | ✅ §3 | lich-hen-ds, lich-hen-bang-the, lich-tuan | P1 |
-| TS10 | Tạo phiếu kiểm tra từ cơ hội (môn, khối, hình thức, lịch) | SA, CS | TS-15 | ❌ | — | P1 |
-| TS11 | Phiếu kiểm tra: Nháp → Đang test → Chờ GV chấm → Hoàn thành; huỷ; gợi ý lớp | SA, CS | TS-16, TS-17 | ❌ | — | P1 |
+| TS10 | Tạo phiếu Test từ cơ hội (môn, khối, hình thức, lịch) | SA, CS | TS-15 | ❌ | — | P1 |
+| TS11 | Phiếu Test: Nháp → Đang test → Chờ GV chấm → Hoàn thành; huỷ; gợi ý lớp | SA, CS | TS-16, TS-17 | ❌ | — | P1 |
 | TS12 | Giáo viên chấm kiểm tra đầu vào | GV | GV-15 | ◐ giao-vien §13 | — | P2 |
 | TS13 | Chiến dịch marketing (xem và gắn vào lead) | AD, SA | CH-08 | ❌ | — | P3 |
 

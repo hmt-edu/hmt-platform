@@ -127,7 +127,7 @@ test.describe('K3 Chi tiết', () => {
     // Bước khoá là aria-disabled nên Playwright không tự bấm; ép bấm như người dùng thật.
     await page.getByRole('button', { name: /L6/ }).click({ force: true });
     await expect(
-      page.getByText('Hệ thống tự chuyển khi phiếu kiểm tra Hoàn thành.').first(),
+      page.getByText('Hệ thống tự chuyển khi phiếu Test Hoàn thành.').first(),
     ).toBeVisible();
   });
 });
