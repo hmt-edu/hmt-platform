@@ -18,7 +18,7 @@ cap_nhat: 2026-11-24
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Ticket gốc là ticket **Đề nghị**, có nhóm con gắn nghiệp vụ (ví dụ «Bảo lưu», «Chuyển lớp cùng môn», «Dừng học», «Hoàn học phí», «Cập nhật thông tin học sinh, phụ huynh»), và chưa «Đã đóng», «Đã huỷ».
-- [ ] Ticket đã gắn đúng học sinh (các phiếu về ghi danh đều cần em).
+- [ ] Ticket đã gắn đúng học sinh (các phiếu về ghi danh đều cần học sinh).
 - [ ] Không có dòng đỏ «Tính năng … chưa bật ở cơ sở này.» ở đầu ticket. Có dòng đó thì nút «Tạo phiếu» mờ: báo Trưởng cơ sở hoặc quản trị.
 - [ ] Ticket chưa có phiếu nào đang mở (Nháp, Chờ duyệt, Đã duyệt). Mỗi ticket chỉ có một phiếu đang mở, nên nút «Tạo phiếu» chỉ hiện khi không có phiếu đó.
 

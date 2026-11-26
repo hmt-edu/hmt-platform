@@ -43,7 +43,7 @@ export function buildOrderConfig(catalogs: LeadCatalogs, access: AccessView): Li
   return {
     screenCode: ORDER_SCREEN_CODE,
     title: 'Đơn hàng',
-    searchPlaceholder: 'Tìm mã, phụ huynh, SĐT, tên em…',
+    searchPlaceholder: 'Tìm mã, phụ huynh, SĐT, tên học sinh…',
     columns: [
       {
         key: 'code',

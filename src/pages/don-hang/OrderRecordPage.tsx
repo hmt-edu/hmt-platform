@@ -229,7 +229,7 @@ function OrderView({ record }: { record: OrderRecord }) {
   const cancelBlock = record.cancel_block ?? null;
   const cancelBlockedText =
     cancelBlock === 'GHI_DANH'
-      ? 'Đã bật cho học trước và em đã học buổi: đi qua ticket hoàn tiền.'
+      ? 'Đã bật cho học trước và học sinh đã học buổi: đi qua ticket hoàn tiền.'
       : cancelBlock === 'PHIEU_THU'
         ? 'Đơn đã có phiếu thu: đi qua ticket hoàn tiền.'
         : undefined;
@@ -894,8 +894,8 @@ function OrderView({ record }: { record: OrderRecord }) {
             </Notice>
           )}
           {record.status_code === 'NHAP' && record.has_incomplete_students && (
-            <Notice tone="warning" title="Có em chưa đủ thông tin">
-              Mỗi em cần họ tên và năm sinh trước khi trình. Bổ sung ở cơ hội rồi quay lại.
+            <Notice tone="warning" title="Có học sinh chưa đủ thông tin">
+              Mỗi học sinh cần họ tên và năm sinh trước khi trình. Bổ sung ở cơ hội rồi quay lại.
             </Notice>
           )}
           <section className="flex min-w-0 flex-col">

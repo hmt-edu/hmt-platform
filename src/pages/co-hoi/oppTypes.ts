@@ -63,7 +63,7 @@ export type OppBoardColumn = {
   rows: OppBoardCard[];
 };
 
-/** Một phiếu kiểm tra trong tab "Kiểm tra đầu vào" (tên danh mục do máy chủ trả). */
+/** Một phiếu kiểm tra của cơ hội (tên danh mục do máy chủ trả). */
 export type OppTest = {
   id: string;
   code: string;

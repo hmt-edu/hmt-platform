@@ -240,7 +240,7 @@ export function SessionRecordPage() {
           <div className="mt-6">
             <Alert tone="info">
               Buổi ở Nháp: danh sách chưa chốt. Hệ thống tự chốt trước giờ bắt đầu, hoặc bấm Chốt
-              danh sách để chốt ngay. Em ghi danh sau ngày buổi không lọt vào danh sách.
+              danh sách để chốt ngay. Học sinh ghi danh sau ngày buổi không lọt vào danh sách.
             </Alert>
           </div>
         )}
@@ -269,7 +269,9 @@ export function SessionRecordPage() {
                   Chưa có danh sách. Danh sách chốt khi buổi chuyển sang Đã chốt.
                 </p>
               ) : students.length === 0 ? (
-                <p className="text-body text-fg-muted">Buổi không có em nào trong danh sách.</p>
+                <p className="text-body text-fg-muted">
+                  Buổi không có học sinh nào trong danh sách.
+                </p>
               ) : (
                 <div className="overflow-x-auto rounded-control border border-border">
                   <table aria-label="Danh sách và điểm danh" className="w-full text-body">
@@ -304,8 +306,8 @@ export function SessionRecordPage() {
                 </div>
               )}
               <p className="text-caption text-fg-muted">
-                Một em một dòng. Ô của giáo viên quyết định trạng thái chính thức. Thẻ Lệch: điểm
-                danh của trung tâm khác của giáo viên, chỉ để đối chiếu.
+                Một học sinh một dòng. Ô của giáo viên quyết định trạng thái chính thức. Thẻ Lệch:
+                điểm danh của trung tâm khác của giáo viên, chỉ để đối chiếu.
               </p>
             </section>
 
@@ -315,7 +317,7 @@ export function SessionRecordPage() {
                   id="buoi02-excluded"
                   className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
                 >
-                  Em không vào danh sách
+                  Học sinh không vào danh sách
                 </h3>
                 <ul className="flex flex-col gap-1 text-body">
                   {excluded.map((e) => (
@@ -379,7 +381,7 @@ export function SessionRecordPage() {
         open={confirming}
         onOpenChange={setConfirming}
         title="Chốt danh sách buổi này?"
-        description="Danh sách em chốt ngay theo ghi danh hiện tại. Ghi danh sinh sau không lọt vào danh sách."
+        description="Danh sách học sinh chốt ngay theo ghi danh hiện tại. Ghi danh sinh sau không lọt vào danh sách."
         confirmLabel="Chốt danh sách"
         cancelLabel="Để sau"
         busy={close.isPending}

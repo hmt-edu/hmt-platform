@@ -22,7 +22,7 @@ checked: 2026-11-24
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của khách.
 - [ ] Đã có cơ hội (tạo từ lead: bài «Tạo cơ hội từ lead»).
-- [ ] Từ L5 trở đi mỗi em phải có **tên và năm sinh**; nên điền sớm ở khối học sinh của cơ hội.
+- [ ] Từ L5 trở đi mỗi học sinh phải có **tên và năm sinh**; nên điền sớm ở khối học sinh của cơ hội.
 
 ## Luật cần nhớ (lời thường)
 - Cơ hội **chỉ đi tới, không lùi**. Giai đoạn đã qua bị khoá và không có nút Hoàn tác, nên chuyển cẩn thận.
@@ -76,7 +76,7 @@ checked: 2026-11-24
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản `tvts1–3.cs5` (và một tài khoản Trưởng cơ sở nếu tập tiếp đến duyệt đơn).
-- **Dùng:** cơ hội «[MẪU] …» ở L1 hoặc L2: đi lần lượt tới L4, điền tên và năm sinh em để lên L5, rồi tập L7 với «Lý do bỏ qua test».
+- **Dùng:** cơ hội «[MẪU] …» ở L1 hoặc L2: đi lần lượt tới L4, điền tên và năm sinh học sinh để lên L5, rồi tập L7 với «Lý do bỏ qua test».
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Có một cơ hội «[MẪU]» ở L4 hoặc cao hơn, có đủ tên và năm sinh học sinh.

@@ -26,7 +26,7 @@ checked: 2026-11-24
 
 ## Luật cần nhớ (lời thường)
 - Thanh trạng thái chỉ **đọc**, đổi trạng thái bằng nút bên dưới. Có bốn trạng thái: **Nháp → Đang test → Chờ giáo viên chấm → Hoàn thành**. Ngoài ra có «Huỷ».
-- Khi em **nộp bài** (phiếu sang «Chờ giáo viên chấm»), cơ hội tự lên **L6**, nhóm con «L6A». Khi phiếu **Hoàn thành**, nhóm con tự thành «L6B» (có kết quả, cần phân loại). Bạn tự chọn L6C đến L6G (học xuất sắc … yếu) sau đó. Không tự chọn L6A, L6B.
+- Khi học sinh **nộp bài** (phiếu sang «Chờ giáo viên chấm»), cơ hội tự lên **L6**, nhóm con «L6A». Khi phiếu **Hoàn thành**, nhóm con tự thành «L6B» (có kết quả, cần phân loại). Bạn tự chọn L6C đến L6G (học xuất sắc … yếu) sau đó. Không tự chọn L6A, L6B.
 - Muốn «Hoàn thành» phải có đủ **giáo viên chấm, điểm, nhận xét**.
 - Phiếu đã Hoàn thành không huỷ thẳng: phải đưa về Nháp (có lý do) rồi mới huỷ.
 - Đưa phiếu về Nháp **không** kéo cơ hội lùi giai đoạn.
@@ -35,7 +35,7 @@ checked: 2026-11-24
 1. Mở **Phiếu Test** (menu Tuyển sinh), mở phiếu cần xử lý. Đến giờ test, bấm **«Bắt đầu test»**.
    *Bạn thấy:* thông báo «Đã bắt đầu test.», trạng thái «Đang test».
    [ẢNH: ts17-ts11-b1] [CHƯA CHỤP: cần chụp trên staging CS5]
-2. Em làm bài xong, bấm **«Nộp bài»**.
+2. Học sinh làm bài xong, bấm **«Nộp bài»**.
    *Bạn thấy:* «Đã nộp bài, chờ giáo viên chấm.», trạng thái «Chờ giáo viên chấm»; cơ hội sang L6A.
 3. Nếu **GV chấm** còn trống: bấm sửa phiếu, ở khối «Kết quả» chọn «GV chấm» rồi lưu (ô nào đổi, hệ thống báo «Đã lưu.»). Giáo viên được giao sẽ chấm và nộp kết quả trong cổng Giáo viên.
    *Bạn thấy:* tên giáo viên ở ô «GV chấm».

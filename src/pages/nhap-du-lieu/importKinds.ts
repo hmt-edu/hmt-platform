@@ -46,7 +46,7 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
     kind: 'CO_HOI',
     title: 'Cơ hội',
     description:
-      'Cơ hội kèm phụ huynh và lead gốc, đúng giai đoạn trong file. Nạp Người dùng trước (người phụ trách). Cơ hội từ L5 thiếu tên hoặc năm sinh em vẫn nạp, đánh dấu thiếu thông tin em.',
+      'Cơ hội kèm phụ huynh và lead gốc, đúng giai đoạn trong file. Nạp Người dùng trước (người phụ trách). Cơ hội từ L5 thiếu tên hoặc năm sinh học sinh vẫn nạp, đánh dấu thiếu thông tin học sinh.',
     columns: [
       'ma_cu',
       'ngay_tao',
@@ -348,7 +348,7 @@ const COLUMN_MEANING: Record<string, string> = {
   co_so: 'Mã cơ sở (CS1 đến CS5)',
   co_so_truy_cap: 'Các cơ sở người dùng được vào, cách nhau dấu chấm phẩy',
   cong_no_phai_thu_dong: 'Công nợ phải thu, tính bằng đồng',
-  danh_sach_em: 'Tên các em, cách nhau dấu chấm phẩy',
+  danh_sach_em: 'Tên các học sinh, cách nhau dấu chấm phẩy',
   dia_chi: 'Địa chỉ',
   diem: 'Điểm bài test (dấu phẩy hoặc dấu chấm)',
   email: 'Email',
@@ -377,7 +377,7 @@ const COLUMN_MEANING: Record<string, string> = {
   medium: 'Kênh trong danh mục nguồn',
   mon: 'Môn học (trống là Toán)',
   nam_hoc: 'Năm học',
-  nam_sinh: 'Năm sinh của em',
+  nam_sinh: 'Năm sinh của học sinh',
   ngay_chot: 'Ngày chốt số dư (trống: theo tham số)',
   ngay_khai_giang: 'Ngày khai giảng (yyyy-mm-dd)',
   ngay_sinh: 'Ngày sinh (yyyy-mm-dd)',

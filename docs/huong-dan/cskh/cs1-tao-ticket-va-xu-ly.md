@@ -19,7 +19,7 @@ cap_nhat: 2026-11-24
 ## Trước khi bắt đầu, kiểm
 - [ ] Menu «Chăm sóc khách hàng» có mục «Tất cả ticket». Không thấy thì cơ sở của bạn chưa bật tính năng này: báo Trưởng cơ sở hoặc quản trị.
 - [ ] Ô chọn cơ sở ở thanh trên đúng cơ sở của phụ huynh đang gọi.
-- [ ] Bạn biết phụ huynh (người gửi) là ai. Nếu việc liên quan đến một em, biết tên hoặc mã em đó.
+- [ ] Bạn biết phụ huynh (người gửi) là ai. Nếu việc liên quan đến một học sinh, biết tên hoặc mã học sinh đó.
 
 ## Luật cần nhớ (lời thường)
 - Có hai loại ticket bạn tạo tay: **Đề nghị** (khách muốn làm một việc, ví dụ bảo lưu, chuyển lớp) và **Khiếu nại** (khách không hài lòng). Chọn sai loại thì đổi được lúc mới tiếp nhận.
@@ -38,7 +38,7 @@ cap_nhat: 2026-11-24
 3. Ở «Người gửi», gõ tên, số điện thoại hoặc mã phụ huynh rồi chọn đúng người trong danh sách.
    *Bạn thấy:* dòng gợi ý có tên và mã phụ huynh; chọn xong tên hiện trong ô.
    [ẢNH: cskh-cs1-b3]
-4. Chọn «Nhóm», rồi «Nhóm con» (chỉ hiện nhóm con thuộc nhóm đã chọn). Nếu nhóm con đó cần học sinh thì ô «Học sinh» ở khối bên phải có dấu bắt buộc: tìm và chọn em. Gõ «Mô tả». «Mức độ» để trống thì hệ thống lấy mức mặc định của nhóm con.
+4. Chọn «Nhóm», rồi «Nhóm con» (chỉ hiện nhóm con thuộc nhóm đã chọn). Nếu nhóm con đó cần học sinh thì ô «Học sinh» ở khối bên phải có dấu bắt buộc: tìm và chọn học sinh. Gõ «Mô tả». «Mức độ» để trống thì hệ thống lấy mức mặc định của nhóm con.
    *Bạn thấy:* chọn «Nhóm con» xong, dưới ô «Mức độ» có gợi ý «mặc định …».
    [ẢNH: cskh-cs1-b4]
 5. Bấm «Lưu».
@@ -74,7 +74,7 @@ cap_nhat: 2026-11-24
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
 | «Nhập tiêu đề.» / «Chọn kênh tiếp nhận.» / «Chọn phụ huynh (người gửi).» / «Chọn nhóm con.» / «Nhập mô tả.» | Thiếu ô bắt buộc (hiện dưới ô đó) | Điền ô báo lỗi rồi «Lưu» lại |
-| «Nhóm con này bắt buộc chọn học sinh.» (mã HMT_TICKET_THIEU_HOC_SINH) | Nhóm con cần gắn một em | Chọn em ở «Học sinh» |
+| «Nhóm con này bắt buộc chọn học sinh.» (mã HMT_TICKET_THIEU_HOC_SINH) | Nhóm con cần gắn một học sinh | Chọn học sinh ở «Học sinh» |
 | «Chuyển sang Đã xử lý cần ghi kết quả.» (HMT_TICKET_THIEU_KET_QUA) | Chưa gõ «Kết quả» | Gõ kết quả rồi «Chuyển» |
 | «Huỷ ticket cần ghi lý do.» (HMT_TICKET_THIEU_LY_DO) | Chưa ghi lý do huỷ | Gõ lý do |
 | «Cần chọn đội và người phụ trách (giao ticket) trước.» (HMT_TICKET_CHUA_GIAO) | Chưa giao mà muốn sang «Đã giao» | Dùng «Giao ticket», chọn cả «Đội» và «Người phụ trách» |

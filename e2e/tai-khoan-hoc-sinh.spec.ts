@@ -70,7 +70,7 @@ test('Admin: tìm theo mã HS thấy em «Chưa cấp», mở hộp cấp tài k
   await expect(page.getByRole('heading', { level: 1, name: 'Tài khoản học sinh' })).toBeVisible();
   await page
     .getByRole('main')
-    .getByPlaceholder(/Tìm tên em/)
+    .getByPlaceholder(/Tìm tên học sinh/)
     .fill(CODE);
   const row = page.getByRole('row', { name: new RegExp(CODE) });
   await expect(row).toBeVisible();

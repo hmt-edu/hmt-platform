@@ -52,7 +52,7 @@ export type EmErrors = { fullName?: string; birthYear?: string };
 /** Lỗi từng ô. `requireYear`: cơ hội từ L5 trở lên bắt buộc năm sinh (R-CRM-03); ngày sinh đủ thì suy ra năm. `nowYear`: năm hiện tại (truyền vào để kiểm thử). */
 export function validateEmDraft(d: EmDraft, requireYear: boolean, nowYear: number): EmErrors {
   const errors: EmErrors = {};
-  if (d.fullName.trim() === '') errors.fullName = 'Nhập họ tên của em.';
+  if (d.fullName.trim() === '') errors.fullName = 'Nhập họ tên của học sinh.';
   const year = d.birthYear.trim();
   if (
     year !== '' &&
@@ -60,7 +60,7 @@ export function validateEmDraft(d: EmDraft, requireYear: boolean, nowYear: numbe
   ) {
     errors.birthYear = 'Năm sinh gồm 4 chữ số, không ở tương lai.';
   } else if (requireYear && year === '' && d.birthDate === '') {
-    errors.birthYear = 'Từ giai đoạn L5 trở lên mỗi em bắt buộc có năm sinh.';
+    errors.birthYear = 'Từ giai đoạn L5 trở lên mỗi học sinh bắt buộc có năm sinh.';
   }
   return errors;
 }
@@ -98,33 +98,33 @@ export function dirtyEmIds(students: ProspectStudent[], drafts: Record<string, E
 
 /** Câu báo sau khi Lưu mà em khác còn thay đổi chưa lưu. */
 export function unsavedEmText(names: string[]): string {
-  return `Còn thay đổi chưa lưu ở em: ${names.join(', ')}. Chọn thẻ em đó rồi bấm Lưu.`;
+  return `Còn thay đổi chưa lưu ở học sinh: ${names.join(', ')}. Chọn thẻ học sinh đó rồi bấm Lưu.`;
 }
 
 /** Câu báo khi bản ghi đã lưu mà em đang chọn bị máy chủ từ chối. */
 export function emSaveFailedText(record: 'lead' | 'cơ hội', name: string, message: string): string {
-  return `Đã lưu ${record}, chưa lưu được em ${name}: ${message}`;
+  return `Đã lưu ${record}, chưa lưu được học sinh ${name}: ${message}`;
 }
 
 /** Câu khi danh sách đã đủ số em tối đa; null khi còn thêm được. */
 export function fullListText(count: number, max: number | null): string | null {
-  return max !== null && count >= max ? `Đã đủ ${max} em` : null;
+  return max !== null && count >= max ? `Đã đủ ${max} học sinh` : null;
 }
 
 /** Tên hiển thị của một em trên thẻ. */
 export function emLabel(s: ProspectStudent): string {
-  return s.full_name?.trim() ? s.full_name : 'Em chưa có tên';
+  return s.full_name?.trim() ? s.full_name : 'Học sinh chưa có tên';
 }
 
 /** Câu khi danh sách trống. */
 export function emptyListText(entity: 'LEAD' | 'OPPORTUNITY'): string {
-  return `${entity === 'LEAD' ? 'Lead' : 'Cơ hội'} chưa có em. Bấm “+ Thêm em” để ghi họ tên, năm sinh của em.`;
+  return `${entity === 'LEAD' ? 'Lead' : 'Cơ hội'} chưa có học sinh. Bấm “+ Thêm học sinh” để ghi họ tên, năm sinh của học sinh.`;
 }
 
 /** Chữ hộp «Thêm em» (K08c). */
 export const addEmText = {
   note: (entity: 'LEAD' | 'OPPORTUNITY') =>
-    `Thêm em chỉ ghi nhận vào ${entity === 'LEAD' ? 'lead' : 'cơ hội'}. Hồ sơ học sinh được tạo khi tạo phiếu kiểm tra hoặc duyệt đơn.`,
+    `Thêm học sinh chỉ ghi nhận vào ${entity === 'LEAD' ? 'lead' : 'cơ hội'}. Hồ sơ học sinh được tạo khi tạo phiếu kiểm tra hoặc duyệt đơn.`,
   existingNote: (parentName: string, parentCode: string) =>
     `Con đã có hồ sơ của phụ huynh ${parentName} (${parentCode}).`,
 };
@@ -157,9 +157,10 @@ export function uniqueEms(students: ProspectStudent[]): ProspectStudent[] {
 
 /** Chữ hộp «Tạo cơ hội từ lead» phần chọn em (TS-06). */
 export const pickEmText = {
-  heading: 'Em đưa sang cơ hội',
-  none: 'Chưa chọn em nào: cơ hội sẽ không có em. Thêm em sau ở hồ sơ cơ hội.',
-  tooMany: (max: number) => `Chọn tối đa ${max} em.`,
-  existing: 'Chọn Mở cơ hội cũ, Thêm em vào cơ hội cũ, hoặc Vẫn tạo thêm để mở thêm một cơ hội.',
-  addToExisting: 'Thêm em vào cơ hội cũ',
+  heading: 'Học sinh đưa sang cơ hội',
+  none: 'Chưa chọn học sinh nào: cơ hội sẽ không có học sinh. Thêm học sinh sau ở hồ sơ cơ hội.',
+  tooMany: (max: number) => `Chọn tối đa ${max} học sinh.`,
+  existing:
+    'Chọn Mở cơ hội cũ, Thêm học sinh vào cơ hội cũ, hoặc Vẫn tạo thêm để mở thêm một cơ hội.',
+  addToExisting: 'Thêm học sinh vào cơ hội cũ',
 };

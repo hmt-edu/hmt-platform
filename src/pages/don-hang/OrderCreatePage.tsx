@@ -369,7 +369,7 @@ function OpportunityForm({
               totalLabel="Tổng cộng đơn hàng"
             />
             <p className="text-caption text-fg-muted">
-              Chưa thấy em? Thêm em ở cơ hội. Lớp và ngày vào lớp chọn sau khi tạo đơn.
+              Chưa thấy học sinh? Thêm học sinh ở cơ hội. Lớp và ngày vào lớp chọn sau khi tạo đơn.
             </p>
           </section>
           <TermSection termId={termId} onChange={setTermId} />
@@ -622,8 +622,8 @@ function QuotationForm({
             </table>
           </div>
           <p className="text-caption text-fg-muted">
-            {students} em · {kept.length} dòng. Lớp và ngày vào lớp chọn sau khi tạo đơn. Tổng tiền
-            do hệ thống tính khi Lưu.
+            {students} học sinh · {kept.length} dòng. Lớp và ngày vào lớp chọn sau khi tạo đơn. Tổng
+            tiền do hệ thống tính khi Lưu.
           </p>
           {kept.length === 0 && (
             <Alert tone="warning">Đơn cần ít nhất một dòng: bỏ hết thì không lưu được.</Alert>

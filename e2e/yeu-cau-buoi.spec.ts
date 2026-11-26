@@ -206,7 +206,7 @@ test('BUOI-09: từ bản ghi lớp mở Yêu cầu bổ trợ; form báo lỗi;
     page.getByRole('heading', { level: 1, name: 'Tạo yêu cầu học bổ trợ' }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Gửi duyệt' }).click();
-  await expect(page.getByText('Chọn ít nhất một em cần bổ trợ.')).toBeVisible();
+  await expect(page.getByText('Chọn ít nhất một học sinh cần bổ trợ.')).toBeVisible();
   await expect(page.getByText('Chọn giáo viên.')).toBeVisible();
   await expectAccessible(page);
   await page.getByRole('checkbox', { name: new RegExp(STUDENT_A) }).check();
@@ -257,7 +257,7 @@ test('BUOI-07: từ bản ghi lớp mở Yêu cầu học bù; lý do bắt bu�
   await expect(page.getByRole('heading', { level: 1, name: 'Tạo yêu cầu học bù' })).toBeVisible();
   await page.getByRole('button', { name: 'Gửi duyệt' }).click();
   await expect(page.getByText('Nhập lý do học bù.')).toBeVisible();
-  await expect(page.getByText('Chọn ít nhất một em học bù.')).toBeVisible();
+  await expect(page.getByText('Chọn ít nhất một học sinh học bù.')).toBeVisible();
   await expectAccessible(page);
   await page.getByRole('checkbox', { name: new RegExp(STUDENT_A) }).check();
   await page.getByLabel('Ngày', { exact: true }).fill(inDays(13));
