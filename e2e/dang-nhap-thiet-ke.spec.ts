@@ -103,7 +103,7 @@ test('DN02: học sinh "Chào em", có khối nhắc quên mật khẩu và liê
   await expect(page.getByText('Đăng nhập để xem bài tập, lịch học và kết quả.')).toBeVisible();
   await expect(page.getByLabel('Mã học sinh', { exact: true })).toHaveAttribute(
     'placeholder',
-    'HS000212',
+    'Nhập mã học sinh',
   );
   await expect(page.getByRole('button', { name: 'Vào học', exact: true })).toBeVisible();
   await expect(

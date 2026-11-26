@@ -78,7 +78,9 @@ select pg_temp.claims(pg_temp.uid('cskh'), 'aal1');
 select lives_ok($$select app.submit_opening_debt_receipt((select id from rc where key = 'D'))$$, 'CSKH gửi phiếu của mình');
 -- R-HT-01 vẫn đúng: Admin không duyệt tiền.
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.approve_opening_debt_receipt((select id from rc where key = 'D'))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Admin vẫn không duyệt phiếu thu nợ đầu kỳ');
+select pg_temp.claims(pg_temp.uid('cskh'), 'aal1');
+select is(pg_temp.err($$select app.approve_opening_debt_receipt((select id from rc where key = 'D'))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Vai không có quyền duyệt tiền không duyệt phiếu thu nợ đầu kỳ');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select is((app.approve_opening_debt_receipt((select id from rc where key = 'D')) ->> 'remaining')::bigint, 0::bigint, 'Ca đúng cũ vẫn chạy: CSKH lập và gửi, Kế toán duyệt, nợ về 0');
 

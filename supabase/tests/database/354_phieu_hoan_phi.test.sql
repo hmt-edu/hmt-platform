@@ -217,9 +217,11 @@ insert into tt select app.create_ticket_task((select (j ->> 'id')::uuid from tk)
 select is((select status_code from app.ticket_task where id = (select (j ->> 'id')::uuid from tt)), 'NHAP', 'Đúng: phiếu Hoàn học phí tạo ở Nháp');
 select app.submit_ticket_task((select (j ->> 'id')::uuid from tt));
 
--- Cấp 1 (quản lý cơ sở): Admin và kế toán không duyệt thay (R-HT-01); quản lý cơ sở duyệt được.
+-- Cấp 1 (quản lý cơ sở): vai khác và kế toán không duyệt thay (R-HT-01); quản lý cơ sở duyệt được.
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Admin không duyệt cấp quản lý cơ sở của phiếu tiền (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Vai không có quyền duyệt tiền không duyệt cấp quản lý cơ sở của phiếu tiền (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: kế toán không duyệt thay cấp quản lý cơ sở');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
@@ -229,7 +231,9 @@ select is(pg_temp.hrs(pg_temp.d1e()), 8.00::numeric, 'Chưa hoàn gì khi phiế
 
 -- Cấp 2 (kế toán): Admin và quản lý cơ sở (đã duyệt cấp 1) không duyệt; kế toán duyệt được.
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Admin không duyệt cấp kế toán (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Vai không có quyền duyệt tiền không duyệt cấp kế toán (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(pg_temp.err($$select app.approve_ticket_task((select (j ->> 'id')::uuid from tt))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: quản lý cơ sở không duyệt cấp kế toán');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');

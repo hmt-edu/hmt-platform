@@ -96,7 +96,13 @@ export type ClassRecord = Omit<ClassRow, 'enrolled' | 'branch_code' | 'subject_n
     teacher_names: string | null;
   }[];
   clash_warnings: { kind?: string; message?: string }[] | unknown[];
-  events: { event_code: string; created_at: string; note: string | null }[];
+  events: {
+    event_code: string;
+    created_at: string;
+    note: string | null;
+    /** Tên người làm; chưa có khi máy chủ chưa trả (migration 689). */
+    actor_name?: string | null | undefined;
+  }[];
 };
 
 export type WeekSession = {

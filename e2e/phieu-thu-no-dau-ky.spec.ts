@@ -119,7 +119,7 @@ test('Phiếu Thu nợ đầu kỳ hiện ở danh sách, cột Đơn hàng khô
   await expect(row.getByRole('link', { name: /^DH-/ })).toHaveCount(0);
 });
 
-// Ca chặn quyền (R-V2-15, R-HT-01, thẻ C25): CSKH gửi thẳng Kế toán nhưng không có nút Duyệt; Admin không có nút Duyệt tiền; Kế toán khác người lập duyệt được.
+// Ca chặn quyền (R-V2-15, R-HT-01, thẻ C25): CSKH gửi thẳng Kế toán nhưng không có nút Duyệt; Admin có nút Duyệt tiền (R-HT-01, 26/11); Kế toán khác người lập duyệt được.
 test('Phiếu nợ đầu kỳ: CSKH gửi kế toán, không có nút Duyệt', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto(receiptPath);
@@ -131,11 +131,12 @@ test('Phiếu nợ đầu kỳ: CSKH gửi kế toán, không có nút Duyệt',
 });
 
 // Mỗi bài một phiên đăng nhập mới (đăng nhập Admin ngay sau CSKH trong cùng trang không có ô Email).
-test('Phiếu nợ đầu kỳ: Admin không có nút Duyệt tiền (R-HT-01)', async ({ page }) => {
+test('Phiếu nợ đầu kỳ: Admin có nút Duyệt tiền (R-HT-01)', async ({ page }) => {
   await enterAsAdmin(page, 'quantri.cs1');
   await page.goto(receiptPath);
   await expect(page.getByText(/chờ Kế toán duyệt/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
+  // Chỉ kiểm có nút, không bấm: bài sau dùng lại phiếu này cho Kế toán duyệt.
+  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toBeVisible();
 });
 
 test('Phiếu nợ đầu kỳ: Kế toán khác người lập duyệt được, phiếu Đã duyệt', async ({ page }) => {

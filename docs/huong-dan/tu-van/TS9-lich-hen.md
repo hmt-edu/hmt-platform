@@ -27,7 +27,7 @@ checked: 2026-11-24
 - Lịch có ba trạng thái: **Chưa làm**, **Hoàn thành**, **Huỷ**. Lịch Hoàn thành hoặc Huỷ không chuyển thẳng cho nhau; phải «Mở lại» về Chưa làm trước.
 - Hoàn thành lịch: bấm một lần, rồi ghi kết quả. Ô «Hẹn lần sau» để trống thì không tạo lịch kế tiếp.
 - Lịch hẹn kế tiếp (hẹn lần sau) phải ở **tương lai**.
-- Lịch hẹn nhắc tự sinh từ phiếu kiểm tra vẫn dời, hoàn thành, huỷ như lịch thường.
+- Lịch hẹn nhắc tự sinh từ phiếu Test vẫn dời, hoàn thành, huỷ như lịch thường.
 
 ## Các bước
 1. **Tạo lịch hẹn.** Từ bản ghi lead hoặc cơ hội bấm **«Lên lịch hẹn»** (hoặc ở màn **Lịch hẹn** bấm «Tạo»).
@@ -93,4 +93,4 @@ checked: 2026-11-24
 - [ ] Có một lịch «[MẪU]» đã Hoàn thành và một lịch kế tiếp sinh ra từ «Hẹn lần sau».
 - [ ] Bạn nói được khác nhau giữa «Dời», «Huỷ» và «Mở lại».
 
-**Bước trước:** Chăm sóc lead · **Bước sau:** Tạo phiếu kiểm tra
+**Bước trước:** Chăm sóc lead · **Bước sau:** Tạo phiếu Test

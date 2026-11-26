@@ -15,7 +15,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 
 **Nguyên tắc tiền (nhớ kỹ):**
 
-- Chỉ vai **Kế toán** duyệt bước kế toán của phiếu tiền. **Admin KHÔNG duyệt tiền.**
+- Vai **Kế toán** duyệt bước kế toán của phiếu tiền; **Admin hệ thống** cũng duyệt được (kể cả hai bước), mỗi lần như vậy được ghi nhật ký.
 - Hai bước duyệt của một phiếu phải do **hai người khác nhau**. Người tạo không tự duyệt phiếu của mình.
 - Không có nút xoá. Sai thì **huỷ** (phiếu chưa duyệt) hoặc **hoàn tác khoản tiền** (đã duyệt, tạo khoản đảo âm).
 - Kế toán chỉ duyệt phiếu nghiệp vụ ở **cấp Kế toán**. Phiếu ở cấp «Quản lý cơ sở» (Cập nhật hồ sơ, Bảo lưu…) là việc của Trưởng cơ sở hoặc Admin: bạn không thấy nút «Duyệt» ở đó và phiếu đó không nằm trong «Việc chờ tôi duyệt» của bạn.

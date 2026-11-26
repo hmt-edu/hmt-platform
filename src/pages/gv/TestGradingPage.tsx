@@ -42,7 +42,7 @@ export function TestGradingPage() {
     return (
       <StateView
         kind={forbidden ? 'forbidden' : 'error'}
-        title={forbidden ? 'Bạn không xem được mục này' : 'Không mở được phiếu kiểm tra'}
+        title={forbidden ? 'Bạn không xem được mục này' : 'Không mở được phiếu Test'}
         actions={
           forbidden ? (
             <ButtonLink to="/gv" variant="primary">
@@ -55,7 +55,7 @@ export function TestGradingPage() {
           )
         }
       >
-        {forbidden ? 'Giáo viên chỉ thấy phiếu kiểm tra được giao cho mình chấm.' : error.message}
+        {forbidden ? 'Giáo viên chỉ thấy phiếu Test được giao cho mình chấm.' : error.message}
       </StateView>
     );
   }
@@ -104,7 +104,7 @@ function TestForm({ sheet }: { sheet: TestSheet }) {
         <Link to="/gv/viec-can-lam" className="inline-flex min-h-11 items-center underline">
           Cần làm
         </Link>
-        {' › Chấm kiểm tra đầu vào'}
+        {' › Chấm phiếu Test'}
       </nav>
       <header className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">

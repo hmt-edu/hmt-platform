@@ -82,7 +82,7 @@ export function TestRecordPage() {
         actions={
           <>
             <Link to="/crm/phieu-kiem-tra" className="font-medium text-link hover:underline">
-              Về danh sách Kiểm tra đầu vào
+              Về danh sách Phiếu Test
             </Link>
             {!forbidden && !missing && (
               <Button onClick={() => void query.refetch()}>Thử lại</Button>
@@ -199,6 +199,11 @@ function TestView({ record }: { record: TestRecord }) {
     ...(s === status ? {} : { lockedReason: stepLock }),
   }));
   const backTarget = STEP_BACK_TARGET[status];
+  const hasResult =
+    record.score !== null ||
+    !!record.result_note ||
+    !!record.suggested_level ||
+    !!record.suggested_framework;
   const readyToComplete =
     record.grader_id !== null && record.score !== null && !!record.result_note;
 
@@ -246,7 +251,7 @@ function TestView({ record }: { record: TestRecord }) {
   return (
     <>
       <RecordDetail
-        kind="Phiếu kiểm tra"
+        kind="Phiếu Test"
         title={title}
         mode={mode}
         dirty={dirty}
@@ -399,7 +404,8 @@ function TestView({ record }: { record: TestRecord }) {
       >
         <div className="grid grid-cols-1 gap-x-10 gap-y-6 lg:grid-cols-2">
           <div className="flex flex-col gap-6">
-            <DetailSection title="Bài test">
+            <DetailSection title="Học sinh và bài test">
+              <DetailField label="Học sinh" mode="view" value={record.student_name} />
               <DetailField
                 label="Môn"
                 mode="view"
@@ -465,31 +471,6 @@ function TestView({ record }: { record: TestRecord }) {
                 }
               />
               <DetailField
-                label="GV chấm"
-                mode={mode}
-                value={record.grader_name ?? ''}
-                editor={
-                  <OptionalSelect
-                    label="GV chấm"
-                    value={draft.grader_id}
-                    onChange={(v) => set('grader_id', v)}
-                    options={[
-                      ...(record.grader_id &&
-                      !(graders.data ?? []).some((g) => g.id === record.grader_id)
-                        ? [
-                            {
-                              value: record.grader_id,
-                              label: record.grader_name ?? 'Giáo viên hiện tại',
-                            },
-                          ]
-                        : []),
-                      ...(graders.data ?? []).map((g) => ({ value: g.id, label: g.name })),
-                    ]}
-                    placeholder="Chọn giáo viên"
-                  />
-                }
-              />
-              <DetailField
                 label="Người phụ trách"
                 mode={mode}
                 value={record.owner_name ?? ''}
@@ -523,65 +504,119 @@ function TestView({ record }: { record: TestRecord }) {
                   )
                 }
               />
+              <DetailField label="Người tạo" mode="view" value={record.created_by_name ?? ''} />
+              <DetailField label="Tạo lúc" mode="view" value={formatDateTime(record.created_at)} />
+              <DetailField
+                label="Cơ sở tạo phiếu"
+                mode="view"
+                value={`${record.created_branch_code} ${record.created_branch_name}`}
+              />
+              <DetailField
+                label="Cơ hội"
+                mode="view"
+                value={
+                  <Link
+                    to={`/crm/co-hoi/${record.opportunity_id}`}
+                    state={fromState}
+                    className="font-medium text-link hover:underline"
+                  >
+                    {record.opportunity_code}
+                  </Link>
+                }
+              />
             </DetailSection>
           </div>
           <div className="flex flex-col gap-6">
             <DetailSection title="Kết quả">
               <DetailField
-                label="Điểm"
-                mode="view"
-                value={
-                  record.score === null ? (
-                    ''
-                  ) : (
-                    <span>
-                      <b className="font-display text-h2 tabular">
-                        {String(record.score).replace('.', ',')}
-                      </b>
-                      <span className="text-fg-muted"> / 10</span>
-                    </span>
-                  )
+                label="GV chấm"
+                mode={mode}
+                value={record.grader_name ?? ''}
+                editor={
+                  <OptionalSelect
+                    label="GV chấm"
+                    value={draft.grader_id}
+                    onChange={(v) => set('grader_id', v)}
+                    options={[
+                      ...(record.grader_id &&
+                      !(graders.data ?? []).some((g) => g.id === record.grader_id)
+                        ? [
+                            {
+                              value: record.grader_id,
+                              label: record.grader_name ?? 'Giáo viên hiện tại',
+                            },
+                          ]
+                        : []),
+                      ...(graders.data ?? []).map((g) => ({ value: g.id, label: g.name })),
+                    ]}
+                    placeholder="Chọn giáo viên"
+                  />
                 }
               />
-              <DetailField
-                label="Trình độ đề xuất"
-                mode="view"
-                value={
-                  record.suggested_level ? <Tag tone="success">{record.suggested_level}</Tag> : ''
-                }
-              />
-              <DetailField
-                label="Phân loại đề xuất"
-                mode="view"
-                value={record.suggested_framework ?? ''}
-              />
-              <DetailField label="Lớp đề xuất" mode="view" value="" />
-              <DetailField
-                label="Nhận xét"
-                mode="view"
-                value={
-                  record.result_note ? (
-                    <span className="whitespace-pre-line">{record.result_note}</span>
-                  ) : (
-                    ''
-                  )
-                }
-              />
-              {record.result_entered_by_name && (
-                <DetailField
-                  label="Nhập bởi"
-                  mode="view"
-                  value={
-                    <>
-                      {record.result_entered_by_name}
-                      {record.result_on_behalf && (
-                        <Tag tone="warning">
-                          <span className="ml-0">nhập thay</span>
-                        </Tag>
-                      )}
-                    </>
-                  }
-                />
+              {hasResult ? (
+                <>
+                  <DetailField
+                    label="Điểm"
+                    mode="view"
+                    value={
+                      record.score === null ? (
+                        ''
+                      ) : (
+                        <span>
+                          <b className="font-display text-h2 tabular">
+                            {String(record.score).replace('.', ',')}
+                          </b>
+                          <span className="text-fg-muted"> / 10</span>
+                        </span>
+                      )
+                    }
+                  />
+                  <DetailField
+                    label="Trình độ đề xuất"
+                    mode="view"
+                    value={
+                      record.suggested_level ? (
+                        <Tag tone="success">{record.suggested_level}</Tag>
+                      ) : (
+                        ''
+                      )
+                    }
+                  />
+                  <DetailField
+                    label="Phân loại đề xuất"
+                    mode="view"
+                    value={record.suggested_framework ?? ''}
+                  />
+                  <DetailField
+                    label="Nhận xét"
+                    mode="view"
+                    value={
+                      record.result_note ? (
+                        <span className="whitespace-pre-line">{record.result_note}</span>
+                      ) : (
+                        ''
+                      )
+                    }
+                  />
+                  {record.result_entered_by_name && (
+                    <DetailField
+                      label="Nhập bởi"
+                      mode="view"
+                      value={
+                        <>
+                          {record.result_entered_by_name}
+                          {record.result_on_behalf && (
+                            <Tag tone="warning">
+                              <span className="ml-0">nhập thay</span>
+                            </Tag>
+                          )}
+                        </>
+                      }
+                    />
+                  )}
+                </>
+              ) : (
+                <p className="text-body text-fg-muted">Chưa có kết quả</p>
               )}
             </DetailSection>
             {cancelled && (
@@ -592,30 +627,6 @@ function TestView({ record }: { record: TestRecord }) {
             )}
           </div>
         </div>
-        <p className="mt-6 flex flex-wrap gap-x-8 gap-y-1 border-t border-border pt-3 text-caption text-fg-muted">
-          <span>
-            Người tạo phiếu <b className="text-fg">{record.created_by_name ?? ''}</b>
-          </span>
-          <span>
-            Cơ sở tạo phiếu{' '}
-            <b className="text-fg">
-              {record.created_branch_code} {record.created_branch_name}
-            </b>
-          </span>
-          <span>
-            Tạo lúc <b className="text-fg">{formatDateTime(record.created_at)}</b>
-          </span>
-          <span>
-            Cơ hội{' '}
-            <Link
-              to={`/crm/co-hoi/${record.opportunity_id}`}
-              state={fromState}
-              className="font-medium text-link hover:underline"
-            >
-              {record.opportunity_code}
-            </Link>
-          </span>
-        </p>
       </RecordDetail>
 
       {appointments.dialogs}
@@ -670,7 +681,7 @@ function TestView({ record }: { record: TestRecord }) {
       <ReasonDialog
         open={cancelOpen}
         onOpenChange={setCancelOpen}
-        title="Huỷ phiếu kiểm tra"
+        title="Huỷ phiếu Test"
         description={`${record.code} · ${record.student_name}`}
         options={catalogs.options('TEST_CANCEL_REASON').map((o) => ({
           ...o,

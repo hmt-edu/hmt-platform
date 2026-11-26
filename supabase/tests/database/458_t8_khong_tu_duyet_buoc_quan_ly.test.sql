@@ -205,18 +205,17 @@ select pg_temp.sudo($$insert into app.ticket (code, ticket_type, branch_id, titl
     from app.enrollment e where e.id = pg_temp.d3e()$$);
 select lives_ok($$insert into rf select 'ra', app.create_refund_request(pg_temp.d1e(), 'MOT_PHAN', 3, 'KHONG_HOP', 'Admin tạo', 'DN-T8')$$, 'Chuẩn bị: Admin tạo yêu cầu hoàn phí');
 select lives_ok($$select app.submit_refund_request(pg_temp.f('ra'))$$, 'Chuẩn bị: Admin trình');
-select is(pg_temp.err($$select app.approve_refund_manager(pg_temp.f('ra'))$$), 'HMT_HOAN_PHI_TU_DUYET', 'T8 chặn: Admin tạo không tự duyệt bước quản lý hoàn phí');
-select is((select status_code from app.refund_request where id = pg_temp.f('ra')), 'CHO_QL', 'Yêu cầu vẫn Chờ quản lý sau khi bị chặn');
-select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
-select lives_ok($$select app.approve_refund_manager(pg_temp.f('ra'))$$, 'Đúng: Trưởng cơ sở khác duyệt được');
+select lives_ok($$select app.approve_refund_manager(pg_temp.f('ra'))$$, 'R-HT-01 (26/11): Admin được tự duyệt bước quản lý hoàn phí');
+select is((select status_code from app.refund_request where id = pg_temp.f('ra')), 'CHO_KE_TOAN', 'Sang chờ kế toán');
+select is((select count(*)::int from app.admin_approval_log where entity_id = pg_temp.f('ra') and flag = 'TU_DUYET' and step = 'QUAN_LY'), 1, 'Ghi cờ Admin tự duyệt');
 
 -- ================= Dừng học: tương tự =================
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select lives_ok($$insert into st select 'sa', app.create_enrollment_stop(pg_temp.d3e(), 'KHONG_HOP', 'Admin tạo', 'DN-T8S')$$, 'Chuẩn bị: Admin tạo yêu cầu dừng học');
 select lives_ok($$select app.submit_enrollment_stop(pg_temp.s('sa'))$$, 'Chuẩn bị: Admin trình');
-select is(pg_temp.err($$select app.approve_stop_manager(pg_temp.s('sa'))$$), 'HMT_DUNG_HOC_TU_DUYET', 'T8 chặn: Admin tạo không tự duyệt bước quản lý dừng học');
-select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
-select lives_ok($$select app.approve_stop_manager(pg_temp.s('sa'))$$, 'Đúng: Trưởng cơ sở khác duyệt được');
+select lives_ok($$select app.approve_stop_manager(pg_temp.s('sa'))$$, 'R-HT-01 (26/11): Admin được tự duyệt bước quản lý dừng học');
+select is((select status_code from app.enrollment_stop where id = pg_temp.s('sa')), 'CHO_KE_TOAN', 'Sang chờ kế toán');
+select is((select count(*)::int from app.admin_approval_log where entity_id = pg_temp.s('sa') and flag = 'TU_DUYET' and step = 'QUAN_LY'), 1, 'Ghi cờ Admin tự duyệt');
 
 select * from finish();
 rollback;

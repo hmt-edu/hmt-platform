@@ -1,5 +1,5 @@
 ---
-title: Tạo phiếu kiểm tra từ cơ hội
+title: Tạo phiếu Test từ cơ hội
 group: vai
 slug: tu-van-ts10
 order: 47
@@ -11,9 +11,9 @@ screens: [TS-08, TS-15, TS-16]
 checked: 2026-11-24
 ---
 
-# Tạo phiếu kiểm tra từ cơ hội
+# Tạo phiếu Test từ cơ hội
 
-**Làm xong bạn có:** một phiếu kiểm tra đầu vào ở trạng thái «Nháp», có ngày giờ test và một lịch hẹn nhắc phụ huynh.
+**Làm xong bạn có:** một phiếu Test ở trạng thái «Nháp», có ngày giờ test và một lịch hẹn nhắc phụ huynh.
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Cơ hội → bản ghi cơ hội.
 
 > Video: [VIDEO: ts10]
@@ -23,7 +23,7 @@ checked: 2026-11-24
 - [ ] Ô chọn cơ sở ở thanh trên đúng cơ sở của khách.
 - [ ] Cơ hội đang ở giai đoạn **L5 trở đi** (xem thanh giai đoạn đầu bản ghi). Chưa tới L5 thì nút «Tạo lịch Test» mờ; rê chuột sẽ thấy «Chỉ tạo phiếu khi cơ hội ở L5 trở đi».
 - [ ] Cơ hội đã có tên và năm sinh của em cần test (khối «Danh sách em»). Chưa có em thì thêm em trước.
-- [ ] Bạn có quyền tạo phiếu kiểm tra. Không có thì nút mờ kèm «Bạn không có quyền tạo phiếu kiểm tra».
+- [ ] Bạn có quyền tạo phiếu Test. Không có thì nút mờ kèm «Bạn không có quyền tạo phiếu Test».
 
 ## Luật cần nhớ (lời thường)
 - Một phiếu cho **một em**. Nếu cơ hội có hai em cần test thì tạo hai phiếu; một cơ hội có thể có nhiều phiếu.
@@ -35,7 +35,7 @@ checked: 2026-11-24
 
 ## Các bước
 1. Mở **Cơ hội**, mở cơ hội cần test, bấm **«Tạo lịch Test»** ở đầu bản ghi.
-   *Bạn thấy:* hộp «Tạo phiếu kiểm tra», dòng phụ ghi mã cơ hội và tên phụ huynh.
+   *Bạn thấy:* hộp «Tạo phiếu Test», dòng phụ ghi mã cơ hội và tên phụ huynh.
    [ẢNH: ts08-ts10-b1] [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Ô **«Em»**: chọn em cần test (hiện tên và năm sinh). Không thấy em? Đóng hộp, bấm «+ Thêm em» ở khối thông tin học sinh rồi quay lại.
    *Bạn thấy:* tên em hiện trong ô.
@@ -53,11 +53,11 @@ checked: 2026-11-24
    *Bạn thấy:* thông báo tạo xong, trang phiếu mới ở trạng thái **Nháp**; cơ hội có thêm một dòng ở thẻ «Kiểm tra».
    [ẢNH: ts17-ts10-b7] [CHƯA CHỤP: cần chụp trên staging CS5]
 
-⚠ Sau bước 7 **không sửa được** môn, khối, hình thức bằng ô trên phiếu. Muốn đổi các ô đó, huỷ phiếu rồi tạo phiếu mới (xem bài «Vòng đời phiếu kiểm tra»). Riêng ngày giờ đổi bằng nút «Đổi lịch» khi phiếu còn Nháp.
+⚠ Sau bước 7 **không sửa được** môn, khối, hình thức bằng ô trên phiếu. Muốn đổi các ô đó, huỷ phiếu rồi tạo phiếu mới (xem bài «Vòng đời phiếu Test»). Riêng ngày giờ đổi bằng nút «Đổi lịch» khi phiếu còn Nháp.
 
 ## Sau bước này
-- **Ai làm tiếp:** bạn hoặc CSKH chọn **phòng** và **GV chấm** ở trang phiếu; đến giờ test bạn bấm «Bắt đầu test» (bài «Vòng đời phiếu kiểm tra»).
-- **Bạn xem ở đâu:** menu **Tuyển sinh → Phiếu kiểm tra** (lọc «Tôi tạo», «Tôi phụ trách»), hoặc nút «Kiểm tra» trên cơ hội. Lịch hẹn nhắc hiện ở **Lịch hẹn**.
+- **Ai làm tiếp:** bạn hoặc CSKH chọn **phòng** và **GV chấm** ở trang phiếu; đến giờ test bạn bấm «Bắt đầu test» (bài «Vòng đời phiếu Test»).
+- **Bạn xem ở đâu:** menu **Tuyển sinh → Phiếu Test** (lọc «Tôi tạo», «Tôi phụ trách»), hoặc nút «Kiểm tra» trên cơ hội. Lịch hẹn nhắc hiện ở **Lịch hẹn**.
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
@@ -89,4 +89,4 @@ checked: 2026-11-24
 - [ ] Có một phiếu «[MẪU]» ở «Nháp», ngày test ở tương lai.
 - [ ] Bạn nói được vì sao khối chọn ở hộp tạo phiếu và nút mờ khi cơ hội dưới L5.
 
-**Bước trước:** Đi cơ hội qua L1–L8 · **Bước sau:** Vòng đời phiếu kiểm tra
+**Bước trước:** Đi cơ hội qua L1–L8 · **Bước sau:** Vòng đời phiếu Test

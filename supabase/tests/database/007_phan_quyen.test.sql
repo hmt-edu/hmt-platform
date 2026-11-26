@@ -257,14 +257,14 @@ reset role;
 select set_config('request.jwt.claims', '', true);
 select is((select array_agg(distinct role_code order by role_code) from app.permission
             where module_code in ('RECEIPT', 'ACCOUNTING') and action_code = 'DUYET' and is_active),
-          '{ACCOUNTANT,BRANCH_MANAGER}'::text[], 'Duyệt phiếu thu: Kế toán (bước kế toán) và Trưởng cơ sở (bước quản lý, B2); ADMIN không');
+          '{ACCOUNTANT,ADMIN,BRANCH_MANAGER}'::text[], 'Duyệt phiếu thu: Kế toán, Trưởng cơ sở (B2) và Admin hệ thống (R-HT-01, 26/11)');
 select is((select count(*)::int from app.permission where module_code = 'UPSALE' and action_code = 'DUYET' and is_active), 0,
           'Phiếu tái tục: không vai trò nào có quyền Duyệt');
 
 -- Kế toán vắng: Admin tạm gán vai trò ACCOUNTANT cho người làm thay (ở đây: chính Admin).
 set local role authenticated;
 select pg_temp.claims((select id from u where key = 'admin'), 'aal2');
-select ok(not app.has_permission('RECEIPT', 'DUYET'), 'ADMIN: không duyệt phiếu thu');
+select ok(app.has_permission('RECEIPT', 'DUYET') and app.has_permission('ACCOUNTING', 'DUYET'), 'R-HT-01: ADMIN duyệt được phiếu thu, cả bước kế toán');
 select is(pg_temp.err($$select app.admin_set_roles((select id from u where key = 'admin'), '{ADMIN,ACCOUNTANT}')$$), null,
           'Kế toán vắng: Admin tạm gán vai trò ACCOUNTANT được');
 select pg_temp.claims((select id from u where key = 'admin'), 'aal2');
