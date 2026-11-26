@@ -744,7 +744,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
             {text('parent_phone', 'Số điện thoại', {
               required: true,
               show: formatPhone,
-              placeholder: '0912 000 121',
+              placeholder: 'Nhập số điện thoại',
               onBlur: () => void checkPhoneDuplicate(),
             })}
             {creating &&
@@ -868,7 +868,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                       aria-label="Năm sinh"
                       inputMode="numeric"
                       value={draft.student_birth_year}
-                      placeholder="VD 2012 (bắt buộc từ L5)"
+                      placeholder="Nhập 4 chữ số (bắt buộc từ L5)"
                       onChange={(e) => set('student_birth_year', e.target.value)}
                       aria-invalid={errors.student_birth_year ? true : undefined}
                       className={INPUT_CLASS}
@@ -879,7 +879,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                   placeholder: 'Tên trường',
                 })}
                 {text('self_rating', 'Học lực tự đánh giá', {
-                  placeholder: 'VD Khá, yếu phần Hình',
+                  placeholder: 'Ví dụ: Khá, yếu phần Hình',
                 })}
                 {text('goal', 'Mục tiêu', {
                   placeholder: 'Mục tiêu của học sinh',

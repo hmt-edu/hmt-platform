@@ -227,7 +227,9 @@ select is(pg_temp.err($$select app.approve_refund_accountant((select id from rfx
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
 select is(pg_temp.err($$select app.approve_refund_accountant((select id from rfx where key = 'x'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Trưởng cơ sở không duyệt bước kế toán');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.approve_refund_accountant((select id from rfx where key = 'x'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Admin không duyệt bước kế toán (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.approve_refund_accountant((select id from rfx where key = 'x'))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: Vai không có quyền duyệt tiền bị chặn ở bước kế toán (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select is((select status_code from app.refund_request where id = (select id from rfx where key = 'x')), 'CHO_KE_TOAN', 'Các ca bị chặn không đổi yêu cầu: vẫn Chờ kế toán');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select lives_ok($$select app.approve_refund_accountant((select id from rfx where key = 'x'))$$, 'Đúng: Kế toán duyệt bước kế toán');

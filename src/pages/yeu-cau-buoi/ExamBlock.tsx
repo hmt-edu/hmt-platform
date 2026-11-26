@@ -59,7 +59,7 @@ export function ExamBlock({
           <TextField
             label="Điểm tối đa"
             inputMode="decimal"
-            placeholder="Mặc định 10"
+            help="Mặc định 10"
             value={value.maxScore}
             error={errors.maxScore ?? null}
             onChange={(e) => set({ maxScore: e.target.value })}

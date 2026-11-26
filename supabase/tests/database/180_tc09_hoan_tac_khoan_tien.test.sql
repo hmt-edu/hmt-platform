@@ -182,7 +182,9 @@ select pg_temp.sudo($$insert into app.setting_branch (setting_key, branch_id, va
 
 -- ---- R-HT-01: Admin, Quản lý, Sale không hoàn tác ----
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.reverse_money_in(pg_temp.mid('m', 2), 'NHAP_SAI_SO_TIEN')$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Admin không hoàn tác khoản tiền');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.reverse_money_in(pg_temp.mid('m', 2), 'NHAP_SAI_SO_TIEN')$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Vai không có quyền duyệt tiền không hoàn tác khoản tiền');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(pg_temp.err($$select app.reverse_money_in(pg_temp.mid('m', 2), 'NHAP_SAI_SO_TIEN')$$), 'HMT_KHONG_CO_QUYEN', 'Quản lý cơ sở không hoàn tác khoản tiền');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');

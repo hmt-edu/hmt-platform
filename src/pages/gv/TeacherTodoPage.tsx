@@ -86,7 +86,7 @@ export function TeacherTodoPage() {
           headingLevel={2}
           actions={<ButtonLink to="/gv">Về trang Hôm nay</ButtonLink>}
         >
-          Không có buổi chưa hoàn tất, bài Nộp sau hay phiếu test chờ chấm.
+          Không có buổi chưa hoàn tất, bài Nộp sau hay phiếu Test chờ chấm.
         </StateView>
       </div>
     );
@@ -192,10 +192,10 @@ export function TeacherTodoPage() {
             className="rounded-control border border-border p-3 text-body"
             data-testid="gv12-tests-empty"
           >
-            <span className="font-semibold">Không có phiếu test chờ chấm.</span>
+            <span className="font-semibold">Không có phiếu Test chờ chấm.</span>
           </p>
         ) : (
-          <ul className="flex flex-col gap-2" aria-label="Phiếu test chờ chấm">
+          <ul className="flex flex-col gap-2" aria-label="Phiếu Test chờ chấm">
             {tests.data.rows.map((p) => (
               <li
                 key={p.test_id}
@@ -204,7 +204,7 @@ export function TeacherTodoPage() {
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold">{p.student_name ?? 'Học sinh'}</p>
                   <p className="text-caption text-fg-muted">
-                    {p.exam_name ?? p.subject_name ?? 'Kiểm tra đầu vào'} · làm bài{' '}
+                    {p.exam_name ?? p.subject_name ?? 'Phiếu Test'} · làm bài{' '}
                     {formatDateTime(p.scheduled_at)}
                   </p>
                   <p className="text-caption font-medium">Chờ chấm</p>

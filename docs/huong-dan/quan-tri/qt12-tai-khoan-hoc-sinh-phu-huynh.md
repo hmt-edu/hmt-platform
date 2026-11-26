@@ -20,7 +20,7 @@ cap_nhat: 2026-11-24
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn là Admin. Vai không có quyền Admin không thấy hai mục menu này; vào được màn mà không có quyền Sửa thì không thấy nút thao tác.
-- [ ] Hồ sơ học sinh hoặc phụ huynh **đã có** (hồ sơ học sinh tự sinh khi có phiếu kiểm tra đầu vào hoặc đơn được duyệt). Màn này không tạo hồ sơ.
+- [ ] Hồ sơ học sinh hoặc phụ huynh **đã có** (hồ sơ học sinh tự sinh khi có phiếu Test hoặc đơn được duyệt). Màn này không tạo hồ sơ.
 - [ ] Bạn có cách chuyển mật khẩu tạm cho người nhận (hệ thống **không gửi email**).
 
 ## Luật cần nhớ (lời thường)
@@ -72,7 +72,7 @@ cap_nhat: 2026-11-24
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì / báo ai |
 |---|---|---|
-| «Chưa có học sinh» / «Chưa có phụ huynh» | bộ lọc không có dòng nào | Bỏ bớt bộ lọc. Chưa có hồ sơ học sinh thì chờ phiếu kiểm tra đầu vào hoặc đơn được duyệt |
+| «Chưa có học sinh» / «Chưa có phụ huynh» | bộ lọc không có dòng nào | Bỏ bớt bộ lọc. Chưa có hồ sơ học sinh thì chờ phiếu Test đầu vào hoặc đơn được duyệt |
 | Học sinh lỗi trong file cấp hàng loạt (cột «Lỗi») | cấp riêng học sinh đó không được | Đọc cột «Lỗi»; cấp lại riêng học sinh đó |
 | Lỗi đỏ trong hộp xác nhận | máy chủ từ chối | Đọc câu trong hộp; không rõ thì báo Admin hệ thống |
 | Chép mật khẩu không được | trình duyệt chặn bộ nhớ tạm | Bôi đen mật khẩu rồi sao chép tay |

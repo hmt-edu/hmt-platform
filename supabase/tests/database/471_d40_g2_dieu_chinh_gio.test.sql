@@ -196,7 +196,9 @@ select is((select value from app.setting_def where key = 'hours_adjust_max_per_c
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 5, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_KHONG_CO_QUYEN', 'G2 chặn: Trưởng cơ sở không cộng giờ (cộng giờ cần Kế toán)');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 5, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_KHONG_CO_QUYEN', 'G2 chặn: Admin không cộng giờ (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 5, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_KHONG_CO_QUYEN', 'G2 chặn: Vai không có quyền duyệt tiền không cộng giờ (R-HT-01)');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 5, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), null, 'G2 đúng: Kế toán cộng được 5 giờ');
 select is(pg_temp.enb(), 13::numeric, 'Quỹ giờ tăng đúng 5 (8 thành 13)');

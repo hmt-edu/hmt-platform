@@ -178,6 +178,8 @@ export function RecordDetail({
   quietEdit = false,
   showEdit,
   menuWhileEditing = false,
+  saveLabel = 'Lưu',
+  stickyHeader,
   stage,
   stageNote,
   stageShowCode = true,
@@ -212,6 +214,10 @@ export function RecordDetail({
   readOnly?: boolean | undefined;
   /** Nút Sửa viền (không cam) khi màn có nút bước tiếp theo cam («một màn một nút cam»: Lead, Cơ hội). */
   quietEdit?: boolean | undefined;
+  /** Chữ nút lưu khi đang sửa hoặc tạo (Lớp: «Lưu nháp», «Lưu thay đổi» theo khung LOP03_*). */
+  saveLabel?: string | undefined;
+  /** Biểu mẫu dài: ghim thanh tiêu đề để luôn thấy nút Lưu, Huỷ. */
+  stickyHeader?: boolean | undefined;
   /** Chữ nút Sửa ở thanh tiêu đề (Đơn hàng: "Sửa đơn"). */
   editLabel?: string | undefined;
   /** Hiện nút Sửa; mặc định theo `!readOnly`. Đơn hàng, Phiếu thu khoá thanh giai đoạn (readOnly) nhưng vẫn hiện nút Sửa khi có quyền. */
@@ -245,7 +251,12 @@ export function RecordDetail({
   return (
     <div className="flex flex-col gap-3.5">
       <UnsavedGuard when={editing && dirty} />
-      <header className="flex flex-wrap items-center gap-2 rounded-box border border-border bg-surface px-3 py-2.5">
+      <header
+        className={cn(
+          'flex flex-wrap items-center gap-2 rounded-box border border-border bg-surface px-3 py-2.5',
+          stickyHeader && 'sticky top-topbar z-[9]',
+        )}
+      >
         <h1 className="mr-1 font-display text-h2">{kind}</h1>
         {editing ? (
           <>
@@ -256,7 +267,7 @@ export function RecordDetail({
               disabled={saveDisabled}
               onClick={onSave}
             >
-              Lưu
+              {saveLabel}
             </Button>
             <Button onClick={onCancel} disabled={saving}>
               Huỷ
