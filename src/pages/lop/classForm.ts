@@ -77,7 +77,7 @@ export function isoWeekday(day: string): number {
   return d === 0 ? 7 : d; // allow-number: Chủ nhật = 7 theo ISO
 }
 
-/** Ngày đầu tiên từ ngày khai giảng trở đi rơi đúng thứ của khung (buổi đầu mặc định). */
+/** Ngày đầu tiên từ ngày bắt đầu trở đi rơi đúng thứ của khung (buổi đầu mặc định). */
 export function firstDateOnOrAfter(startDate: string, weekday: number): string {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) return '';
   const diff = (weekday - isoWeekday(startDate) + 7) % 7; // allow-number: bảy ngày một tuần
@@ -113,8 +113,11 @@ export function validateForm(f: ClassFormState, full: boolean, approvedEdit: boo
     if (!f.typeCode) e.typeCode = 'Chọn phân loại.';
     if (!f.deliveryModeCode) e.deliveryModeCode = 'Chọn hình thức học.';
     if (f.typeCode && f.typeCode !== PRIVATE_TYPE && !f.levelCode) e.levelCode = 'Chọn trình độ.';
+    // R-LOP-07: khung chương trình bắt buộc với lớp chung, tuỳ chọn với lớp riêng.
+    if (f.typeCode && f.typeCode !== PRIVATE_TYPE && !f.curriculumRef.trim())
+      e.curriculumRef = 'Lớp chung bắt buộc có khung chương trình.';
     if (!(Number(f.totalSessions) > 0)) e.totalSessions = 'Nhập tổng số buổi lớn hơn 0.';
-    if (!f.startDate) e.startDate = 'Chọn ngày khai giảng.';
+    if (!f.startDate) e.startDate = 'Chọn ngày bắt đầu.';
     if (f.maxStudents !== '' && !(Number(f.maxStudents) >= 0))
       e.maxStudents = 'Sĩ số tối đa từ 0 trở lên (0 là không giới hạn).';
     if (f.groupMode === 'EXISTING' && !f.groupId) e.groupId = 'Chọn nhóm có sẵn.';
@@ -226,7 +229,7 @@ export function formFromRecord(r: ClassRecord): ClassFormState {
   };
 }
 
-/** Tóm tắt tự sinh từ các khung giờ đang nhập: lịch học, phòng, giáo viên và trợ giảng (chỉ đọc, canvas LOP-03). */
+/** Tóm tắt tự sinh từ các khung giờ đang nhập: lịch học, phòng, giáo viên, trợ giảng (chỉ đọc, canvas LOP-03). */
 export function slotSummary(
   slots: SlotDraft[],
   opt:
@@ -236,7 +239,7 @@ export function slotSummary(
         rooms: { id: string; name: string }[];
       }
     | undefined,
-): { schedule: string; rooms: string; staff: string } {
+): { schedule: string; rooms: string; teachers: string; assistants: string } {
   const name = (list: { id: string; name: string }[] | undefined, id: string) =>
     list?.find((x) => x.id === id)?.name ?? '';
   const uniq = (xs: string[]) => [...new Set(xs.filter((x) => x !== ''))];
@@ -246,10 +249,36 @@ export function slotSummary(
     .map((x) => `${WEEKDAY_LABEL[x.weekday] ?? ''} ${x.start}–${x.end}`)
     .join('; ');
   const rooms = uniq(sorted.map((x) => name(opt?.rooms, x.roomId))).join(', ');
-  const staff = uniq(
-    sorted.flatMap((x) => [name(opt?.teachers, x.teacherId), name(opt?.assistants, x.assistantId)]),
-  ).join(', ');
-  return { schedule: schedule || 'Chưa có khung giờ', rooms: rooms || '—', staff: staff || '—' };
+  const teachers = uniq(sorted.map((x) => name(opt?.teachers, x.teacherId))).join(', ');
+  const assistants = uniq(sorted.map((x) => name(opt?.assistants, x.assistantId))).join(', ');
+  return {
+    schedule: schedule || 'Chưa có khung giờ',
+    rooms: rooms || '—',
+    teachers: teachers || '—',
+    assistants: assistants || '—',
+  };
+}
+
+/** Câu tóm tắt lỗi đầu biểu mẫu (khung LOP03_loi): số ô chưa hợp lệ ở thông tin lớp và ở thời khoá biểu theo thứ; không lỗi thì null. */
+export function errorSummary(
+  errors: FormErrors,
+  slots: Pick<SlotDraft, 'key' | 'weekday'>[],
+  saveLabel: string,
+): string | null {
+  const keys = Object.keys(errors).filter((k) => errors[k] !== undefined);
+  if (keys.length === 0) return null;
+  const bad = slots.filter((s) => keys.includes(`slot-${s.key}`));
+  const timetable = bad.length + (keys.includes('applyFrom') ? 1 : 0);
+  const info = keys.length - timetable;
+  const days = [...new Set(bad.map((s) => s.weekday))]
+    .sort((a, b) => a - b)
+    .map((d) => WEEKDAY_LABEL[d] ?? '')
+    .join(', ');
+  const parts = [
+    info > 0 ? `${info} ở thông tin lớp` : '',
+    timetable > 0 ? `${timetable} ở thời khoá biểu${days ? `: ${days}` : ''}` : '',
+  ].filter(Boolean);
+  return `Còn ${keys.length} chỗ chưa hợp lệ (${parts.join(', ')}). Sửa các ô đỏ rồi bấm ${saveLabel} lại.`;
 }
 
 /** Ngưỡng giờ một khung giờ bị coi là dài bất thường (chỉ nhắc ở giao diện, không chặn; báo cáo T2: 12:30–23:30 lưu được không cảnh báo). */
