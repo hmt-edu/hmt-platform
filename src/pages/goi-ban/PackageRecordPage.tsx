@@ -72,7 +72,7 @@ export function PackageRecordPage() {
     void refresh();
     toast({ title: message });
   };
-  const grade = (code: string | null) => (code ? (catalogs.name('GRADE', code) ?? code) : '—');
+  const grade = (code: string | null) => (code ? (catalogs.name('GRADE', code) ?? code) : '');
 
   const columns: LineColumn<PriceRow>[] = [
     {
@@ -144,7 +144,7 @@ export function PackageRecordPage() {
               value={
                 pkg.subject_code
                   ? (catalogs.name('SUBJECT', pkg.subject_code) ?? pkg.subject_code)
-                  : '—'
+                  : ''
               }
             />
             <DetailField
@@ -158,7 +158,7 @@ export function PackageRecordPage() {
                   : grade(pkg.grade_from_code)
               }
             />
-            <DetailField label="Mã cũ (Sheet)" mode="view" value={pkg.legacy_ref ?? '—'} />
+            <DetailField label="Mã cũ (Sheet)" mode="view" value={pkg.legacy_ref ?? ''} />
           </DetailSection>
           <DetailSection title="Giá đang hiệu lực">
             {MODE_CODES.map((mode) => (
