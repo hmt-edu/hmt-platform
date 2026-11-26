@@ -370,7 +370,7 @@ export function Chatter({
   headerRight?: ReactNode | undefined;
   today?: Date | undefined;
 }) {
-  const [filter, setFilter] = useState<ChatterFilter>('all');
+  const [filter, setFilter] = useState<ChatterFilter>('notes');
   const shown = entries.filter(
     (e) => filter === 'all' || (filter === 'notes' ? e.kind === 'note' : e.kind !== 'note'),
   );

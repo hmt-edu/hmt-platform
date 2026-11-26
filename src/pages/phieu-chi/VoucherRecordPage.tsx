@@ -262,7 +262,7 @@ function VoucherView({ record }: { record: VoucherRecord }) {
           <section className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
             <dl className="flex min-w-0 flex-col">
               <DetailField label="Phiếu chi" mode="view" value={v.code} />
-              <DetailField label="Ticket hoàn tiền" mode="view" value={r.ticket_ref ?? '—'} />
+              <DetailField label="Ticket hoàn tiền" mode="view" value={r.ticket_ref ?? ''} />
               <DetailField label="Phụ huynh" mode="view" value={v.parent_name} />
               <DetailField label="Mã phụ huynh" mode="view" value={v.parent_code} />
               <DetailField
@@ -292,18 +292,14 @@ function VoucherView({ record }: { record: VoucherRecord }) {
                 />
               )}
               {/* Canvas TC11: ba trường «Hình thức chi», «Tài khoản nhận» (chữ tự do), «Ngày chi dự kiến». */}
-              <DetailField label="Hình thức chi" mode="view" value={v.payment_method ?? '—'} />
-              <DetailField
-                label="Tài khoản nhận"
-                mode="view"
-                value={v.payout_account_note ?? '—'}
-              />
+              <DetailField label="Hình thức chi" mode="view" value={v.payment_method ?? ''} />
+              <DetailField label="Tài khoản nhận" mode="view" value={v.payout_account_note ?? ''} />
               <DetailField
                 label="Ngày chi dự kiến"
                 mode="view"
-                value={v.planned_on ? formatDate(v.planned_on) : '—'}
+                value={v.planned_on ? formatDate(v.planned_on) : ''}
               />
-              {v.pay_note && <DetailField label="Ghi chú chi" mode="view" value={v.pay_note} />}
+              <DetailField label="Ghi chú chi" mode="view" value={v.pay_note ?? ''} />
             </dl>
           </section>
           <Table

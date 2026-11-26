@@ -213,13 +213,7 @@ function CreateForm({
           </h3>
           <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
             <dl className="flex min-w-0 flex-col">
-              <DetailField
-                label="Mã báo giá"
-                hint="cấp khi Lưu, không sửa"
-                keepEmpty
-                mode="view"
-                value=""
-              />
+              <DetailField label="Mã báo giá" hint="cấp khi Lưu, không sửa" mode="view" value="" />
               <DetailField label="Phụ huynh" mode="view" value={parent} />
               <DetailField
                 label="Cơ hội"

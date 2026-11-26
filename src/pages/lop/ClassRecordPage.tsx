@@ -220,7 +220,7 @@ function ClassView({ record }: { record: ClassRecord }) {
             <DetailField
               mode="view"
               label="Vận hành"
-              value={record.operating_status ? OPERATING_LABEL[record.operating_status] : '—'}
+              value={record.operating_status ? OPERATING_LABEL[record.operating_status] : ''}
             />
             <DetailField
               mode="view"

@@ -2,7 +2,7 @@
 // Dữ liệu giả dựng bằng hàm nghiệp vụ với quyền Admin: bật AFTERSALE cho CS5, phụ huynh, học sinh, ticket DN_04_01 và một phiếu Nháp. Mã có dấu riêng mỗi lần chạy.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, isPhone } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, isPhone, showAllTimeline } from './helpers';
 import { DB_URL } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phiếu giả).');
@@ -87,6 +87,7 @@ test('CSKH mở phiếu Nháp và trình duyệt', async ({ page }) => {
   await openTask(page);
   await expect(page.getByText('Trường E2E').first()).toBeVisible();
   await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
 });
 
@@ -98,11 +99,13 @@ test('Trưởng cơ sở duyệt rồi thực hiện phiếu', async ({ page }) 
   const dialog = page.getByRole('dialog', { name: 'Duyệt phiếu' });
   await dialog.getByLabel('Ghi chú').fill('Đồng ý');
   await dialog.getByRole('button', { name: 'Duyệt', exact: true }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Chờ duyệt → Đã duyệt.')).toBeVisible();
   await page.getByRole('button', { name: 'Thực hiện', exact: true }).click();
   await page
     .getByRole('alertdialog')
     .getByRole('button', { name: 'Thực hiện', exact: true })
     .click();
+  await showAllTimeline(page);
   await expect(page.getByText('Thực hiện phiếu. Đã duyệt → Đã thực hiện.')).toBeVisible();
 });

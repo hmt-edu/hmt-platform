@@ -3,7 +3,7 @@
 // Không sửa logic: chỉ kiểm giao diện nối đúng hàm DB đã có (migration 567, 618, 621). Chạy trên máy tính (bài ghi dữ liệu).
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, pickOption } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, pickOption, showAllTimeline } from './helpers';
 import { DB_URL } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng ghi danh và ticket giả).');
@@ -63,6 +63,7 @@ async function approveAndExecute(browser: Browser, page: Page, taskUrl: string) 
       const dialog = approver.getByRole('dialog', { name: 'Duyệt phiếu' });
       await dialog.getByLabel('Ghi chú').fill('Đồng ý');
       await dialog.getByRole('button', { name: 'Duyệt', exact: true }).click();
+      await showAllTimeline(approver);
       await expect(approver.getByText(/Duyệt\..*Đồng ý/).first()).toBeVisible();
     } finally {
       await context.close();
@@ -74,6 +75,7 @@ async function approveAndExecute(browser: Browser, page: Page, taskUrl: string) 
     .getByRole('alertdialog')
     .getByRole('button', { name: 'Thực hiện', exact: true })
     .click();
+  await showAllTimeline(page);
   await expect(page.getByText('Thực hiện phiếu. Đã duyệt → Đã thực hiện.')).toBeVisible();
 }
 
@@ -246,6 +248,7 @@ test('CS-10 Chuyển phí: xem trước bảng tính, chặn đơn nhận nhỏ 
   await dialog.getByRole('button', { name: 'Tạo phiếu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/phieu-nghiep-vu\/[0-9a-f-]{36}$/);
   await page.getByRole('button', { name: /Trình duyệt|Gửi duyệt/ }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
   await approveAndExecute(browser, page, page.url());
   // Thực hiện: giữ thành số dư khách hàng, không tự hoàn tiền.
@@ -279,6 +282,7 @@ test('CS-14 Dừng học (Giữ số dư): trang phiếu hiện Ngày dừng và
   await expect(page.getByText('Ngày dừng', { exact: true })).toBeVisible();
   await expect(page.getByText(/Giữ số dư \(không trừ phí\)/)).toBeVisible();
   await page.getByRole('button', { name: /Trình duyệt|Gửi duyệt/ }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
   await approveAndExecute(browser, page, page.url());
   expect(await enrollmentStatus(`GDE2EFDB${tag}`)).not.toBe('DANG_HOC');
