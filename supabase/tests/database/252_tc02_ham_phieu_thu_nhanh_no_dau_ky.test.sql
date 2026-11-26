@@ -88,7 +88,9 @@ select is((select assigned_approver_id from app.receipt where id = (select v fro
 -- ---- approve_receipt_accounting (hàm cũ): chỉ Kế toán, chuyển sang nhánh nợ đầu kỳ ----
 select is(pg_temp.err($$select app.approve_receipt_accounting((select v from rid))$$), 'HMT_KHONG_CO_QUYEN', 'CSKH không duyệt được qua hàm cũ');
 select pg_temp.claims((select id from u where key = 'admin'), 'aal2');
-select is(pg_temp.err($$select app.approve_receipt_accounting((select v from rid))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Admin không duyệt tiền qua hàm cũ');
+select pg_temp.claims((select id from u where key = 'cskh'), 'aal1');
+select is(pg_temp.err($$select app.approve_receipt_accounting((select v from rid))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Vai không có quyền duyệt tiền không duyệt tiền qua hàm cũ');
+select pg_temp.claims((select id from u where key = 'admin'), 'aal2');
 select pg_temp.claims((select id from u where key = 'ke'), 'aal2');
 select is(app.approve_receipt_accounting((select v from rid)) ->> 'remaining', '0', 'Kế toán duyệt qua hàm cũ: nợ còn lại về 0 (3.000.000 đã thu đủ)');
 select is((select status_code from app.receipt where id = (select v from rid)), 'DA_DUYET', 'Phiếu Đã duyệt');
