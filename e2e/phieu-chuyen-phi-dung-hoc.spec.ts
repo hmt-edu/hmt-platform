@@ -63,6 +63,7 @@ async function approveAndExecute(browser: Browser, page: Page, taskUrl: string) 
       const dialog = approver.getByRole('dialog', { name: 'Duyệt phiếu' });
       await dialog.getByLabel('Ghi chú').fill('Đồng ý');
       await dialog.getByRole('button', { name: 'Duyệt', exact: true }).click();
+      await showAllTimeline(approver);
       await expect(approver.getByText(/Duyệt\..*Đồng ý/).first()).toBeVisible();
     } finally {
       await context.close();
