@@ -23,6 +23,15 @@ export type MenuEntry = {
   stage: string;
   /** Công tắc tính năng (danh mục MODULE) riêng của mục này, ngoài công tắc của cả nhóm; tắt thì ẩn mục và mở thẳng đường dẫn báo chưa bật. */
   feature?: string | undefined;
+  /** Công tắc phân hệ vẫn phải bật khi mục được đặt ở nhóm khác phân hệ của nó (vd Sắp hết giờ nằm ở Chăm sóc khách hàng). */
+  moduleFeature?: string | undefined;
+  /**
+   * Mục là một tab của mục khác (đường dẫn mục cha, cùng nhóm): không có dòng riêng trên menu, đường dẫn giữ nguyên.
+   * Quyền và công tắc vẫn kiểm theo chính mục này; người không thấy mục cha thì mục này hiện thành dòng menu.
+   */
+  tabOf?: string | undefined;
+  /** Chữ trên tab khi khác nhãn mục. */
+  tabLabel?: string | undefined;
 };
 
 export type MenuGroup = {
@@ -92,18 +101,11 @@ export const CRM_MENU: MenuGroup[] = [
     entries: [
       { code: 'KH-01', label: 'Phụ huynh', slug: 'phu-huynh', requires: can('PARENT'), stage: '' },
       { code: 'KH-04', label: 'Học sinh', slug: 'hoc-sinh', requires: can('STUDENT'), stage: '' },
-      {
-        code: 'KH-08',
-        label: 'Lên khối đầu năm',
-        slug: 'len-khoi-dau-nam',
-        requires: can('ADMIN'),
-        stage: '',
-      },
     ],
   },
   {
     id: 'ban-hang',
-    label: 'Bán hàng và thu chi',
+    label: 'Bán hàng',
     icon: 'sales',
     feature: 'BAN_HANG',
     entries: [
@@ -115,6 +117,14 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('SALES_ORDER'),
         stage: '',
       },
+    ],
+  },
+  {
+    id: 'ke-toan',
+    label: 'Kế toán',
+    icon: 'payment',
+    feature: 'BAN_HANG',
+    entries: [
       {
         code: 'TC-01',
         label: 'Phiếu thu',
@@ -128,6 +138,8 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cho-ke-toan-duyet',
         requires: can('RECEIPT', 'DUYET'),
         stage: GD1,
+        tabOf: 'phieu-thu',
+        tabLabel: 'Chờ kế toán duyệt',
       },
       {
         code: 'TC-08',
@@ -186,14 +198,8 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cho-xep-lop',
         requires: can('ENROLLMENT', 'SUA'),
         stage: GD2,
-      },
-      {
-        code: 'GD-07',
-        label: 'Sắp hết giờ',
-        slug: 'sap-het-gio',
-        requires: can('ENROLLMENT'),
-        stage: '',
-        feature: 'SAP_HET_GIO',
+        tabOf: 'ghi-danh',
+        tabLabel: 'Chờ xếp lớp',
       },
       { code: 'LOP-01', label: 'Lớp học', slug: 'lop', requires: can('CLASS'), stage: '' },
       {
@@ -217,6 +223,7 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('SESSION'),
         stage: '',
         feature: 'YEU_CAU_BUOI',
+        tabOf: 'buoi-hoc',
       },
       {
         code: 'BUOI-15',
@@ -278,6 +285,7 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('TICKET', 'DUYET'),
         stage: '',
         feature: 'AFTERSALE',
+        tabOf: 'phieu-nghiep-vu',
       },
       {
         code: 'TT-01',
@@ -292,6 +300,16 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'doi-chieu-tai-tuc',
         requires: can('UPSALE'),
         stage: '',
+        tabOf: 'tai-tuc',
+      },
+      {
+        code: 'GD-07',
+        label: 'Sắp hết giờ',
+        slug: 'sap-het-gio',
+        requires: can('ENROLLMENT'),
+        stage: '',
+        feature: 'SAP_HET_GIO',
+        moduleFeature: 'VAN_HANH_LOP',
       },
     ],
   },
@@ -335,6 +353,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/goi-ban',
         requires: can('CONFIG_SALES'),
         stage: GD1,
+        sub: 'Bán hàng',
       },
       {
         code: 'CH-03',
@@ -342,6 +361,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/bang-gia',
         requires: can('CONFIG_SALES'),
         stage: GD1,
+        sub: 'Bán hàng',
       },
       {
         code: 'CH-04',
@@ -349,6 +369,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/chiet-khau',
         requires: can('CONFIG_SALES'),
         stage: GD1,
+        sub: 'Bán hàng',
       },
       {
         code: 'CH-09',
@@ -356,6 +377,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/dieu-khoan-thanh-toan',
         requires: can('CONFIG_SALES'),
         stage: GD1,
+        sub: 'Bán hàng',
       },
       {
         code: 'CH-08',
@@ -363,6 +385,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/chien-dich',
         requires: { kind: 'always' }, // R-CRM-11 (19/11): mọi vai trò vào được cổng CRM đều xem và tạo được
         stage: GD1,
+        sub: 'Bán hàng',
       },
       {
         code: 'CH-05',
@@ -370,6 +393,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/khung-chuong-trinh',
         requires: can('CONFIG_TRAINING'),
         stage: GD2,
+        sub: 'Đào tạo',
       },
       {
         code: 'CH-07',
@@ -377,6 +401,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/rubric',
         requires: can('CONFIG_TRAINING'),
         stage: GD2,
+        sub: 'Đào tạo',
       },
       {
         code: 'QT-14',
@@ -384,6 +409,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/ngay-nghi',
         requires: can('HOLIDAY'),
         stage: GD2,
+        sub: 'Đào tạo',
       },
       {
         code: 'CSN-08',
@@ -391,6 +417,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/nhom-ticket',
         requires: can('ADMIN'),
         stage: GD2,
+        sub: 'Chăm sóc',
       },
       {
         code: 'CSN-09',
@@ -398,6 +425,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/sla-ticket',
         requires: can('ADMIN'),
         stage: GD2,
+        sub: 'Chăm sóc',
       },
       {
         code: 'QT-15',
@@ -405,6 +433,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'cau-hinh/nguoi-duyet-ticket',
         requires: can('ADMIN'),
         stage: GD2,
+        sub: 'Chăm sóc',
       },
     ],
   },
@@ -419,48 +448,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'quan-tri/nguoi-dung',
         requires: can('ADMIN'),
         stage: B4,
-      },
-      {
-        code: 'QT-04',
-        label: 'Vai trò',
-        slug: 'quan-tri/vai-tro',
-        requires: can('ADMIN'),
-        stage: B4,
-      },
-      {
-        code: 'QT-05',
-        label: 'Ma trận quyền',
-        slug: 'quan-tri/ma-tran-quyen',
-        requires: can('ADMIN'),
-        stage: B4,
-      },
-      {
-        code: 'QT-06',
-        label: 'Danh mục',
-        slug: 'quan-tri/danh-muc',
-        requires: can('ADMIN'),
-        stage: B4,
-      },
-      {
-        code: 'QT-08',
-        label: 'Cơ sở và phòng',
-        slug: 'quan-tri/co-so',
-        requires: can('ADMIN'),
-        stage: B4,
-      },
-      {
-        code: 'QT-09',
-        label: 'Tham số nghiệp vụ',
-        slug: 'quan-tri/tham-so',
-        requires: can('ADMIN'),
-        stage: B4,
-      },
-      {
-        code: 'QT-10',
-        label: 'Công tắc tính năng',
-        slug: 'quan-tri/cong-tac',
-        requires: can('ADMIN'),
-        stage: B4,
+        sub: 'Tài khoản',
       },
       {
         code: 'QT-16',
@@ -468,6 +456,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'quan-tri/giao-vien',
         requires: can('ADMIN'),
         stage: GD2,
+        sub: 'Tài khoản',
       },
       {
         code: 'QT-13',
@@ -475,6 +464,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'quan-tri/tai-khoan-hoc-sinh',
         requires: can('ADMIN'),
         stage: B4,
+        sub: 'Tài khoản',
       },
       {
         code: 'QT-17',
@@ -482,20 +472,55 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'quan-tri/tai-khoan-phu-huynh',
         requires: can('ADMIN'),
         stage: B4,
+        sub: 'Tài khoản',
       },
       {
-        code: 'QT-11',
-        label: 'Nhật ký',
-        slug: 'quan-tri/nhat-ky',
+        code: 'QT-04',
+        label: 'Vai trò',
+        slug: 'quan-tri/vai-tro',
         requires: can('ADMIN'),
         stage: B4,
+        sub: 'Quyền',
       },
       {
-        code: 'QT-12',
-        label: 'Nhật ký đăng nhập, xuất file',
-        slug: 'quan-tri/nhat-ky-dang-nhap',
+        code: 'QT-05',
+        label: 'Ma trận quyền',
+        slug: 'quan-tri/ma-tran-quyen',
         requires: can('ADMIN'),
         stage: B4,
+        sub: 'Quyền',
+      },
+      {
+        code: 'QT-06',
+        label: 'Danh mục',
+        slug: 'quan-tri/danh-muc',
+        requires: can('ADMIN'),
+        stage: B4,
+        sub: 'Hệ thống',
+      },
+      {
+        code: 'QT-08',
+        label: 'Cơ sở và phòng',
+        slug: 'quan-tri/co-so',
+        requires: can('ADMIN'),
+        stage: B4,
+        sub: 'Hệ thống',
+      },
+      {
+        code: 'QT-09',
+        label: 'Tham số nghiệp vụ',
+        slug: 'quan-tri/tham-so',
+        requires: can('ADMIN'),
+        stage: B4,
+        sub: 'Hệ thống',
+      },
+      {
+        code: 'QT-10',
+        label: 'Công tắc tính năng',
+        slug: 'quan-tri/cong-tac',
+        requires: can('ADMIN'),
+        stage: B4,
+        sub: 'Hệ thống',
       },
       {
         code: 'QT-18',
@@ -503,6 +528,31 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'quan-tri/nhap-du-lieu',
         requires: can('ADMIN'),
         stage: B4,
+        sub: 'Hệ thống',
+      },
+      {
+        code: 'KH-08',
+        label: 'Lên khối đầu năm',
+        slug: 'len-khoi-dau-nam',
+        requires: can('ADMIN'),
+        stage: '',
+        sub: 'Hệ thống',
+      },
+      {
+        code: 'QT-11',
+        label: 'Nhật ký',
+        slug: 'quan-tri/nhat-ky',
+        requires: can('ADMIN'),
+        stage: B4,
+        sub: 'Nhật ký',
+      },
+      {
+        code: 'QT-12',
+        label: 'Nhật ký đăng nhập, xuất file',
+        slug: 'quan-tri/nhat-ky-dang-nhap',
+        requires: can('ADMIN'),
+        stage: B4,
+        sub: 'Nhật ký',
       },
     ],
   },
@@ -532,6 +582,10 @@ export function entryAllowed(entry: MenuEntry, access: MenuAccess): boolean {
   }
 }
 
+function entryFeaturesOn(entry: MenuEntry, access: MenuAccess): boolean {
+  return [entry.moduleFeature, entry.feature].every((f) => !f || access.featureOn(f));
+}
+
 /** Menu một người thấy: bỏ mục không có quyền, bỏ nhóm bị tắt công tắc hoặc không còn mục nào. */
 export function visibleMenu(menu: MenuGroup[], access: MenuAccess): MenuGroup[] {
   return menu
@@ -539,8 +593,7 @@ export function visibleMenu(menu: MenuGroup[], access: MenuAccess): MenuGroup[] 
     .map((group) => ({
       ...group,
       entries: group.entries.filter(
-        (e) =>
-          entryAllowed(e, access) && (!e.feature || access.isAdmin || access.featureOn(e.feature)),
+        (e) => entryAllowed(e, access) && (access.isAdmin || entryFeaturesOn(e, access)),
       ),
     }))
     .filter((group) => group.entries.length > 0);
@@ -560,9 +613,33 @@ export function checkRoute(menu: MenuGroup[], slug: string, access: MenuAccess):
     if (!entryAllowed(entry, access)) return { status: 'forbidden' };
     if (!access.isAdmin) {
       if (group.feature && !access.featureOn(group.feature)) return { status: 'feature-off' };
-      if (entry.feature && !access.featureOn(entry.feature)) return { status: 'feature-off' };
+      if (!entryFeaturesOn(entry, access)) return { status: 'feature-off' };
     }
     return { status: 'ok', group, entry };
   }
   return { status: 'not-found' };
+}
+
+/** Dòng hiện trên thanh bên: bỏ mục đã là tab của một mục đang thấy trong cùng nhóm. */
+export function sidebarEntries(group: MenuGroup): MenuEntry[] {
+  return group.entries.filter((e) => !e.tabOf || !group.entries.some((p) => p.slug === e.tabOf));
+}
+
+export type RouteTab = { slug: string; label: string };
+
+/**
+ * Thanh tab của trang đang mở (theo menu đã lọc quyền): mục cha rồi các mục con. Trang không thuộc cụm tab nào,
+ * hoặc người xem chỉ thấy một mục của cụm, thì rỗng.
+ */
+export function routeTabs(menu: MenuGroup[], slug: string): RouteTab[] {
+  for (const group of menu) {
+    const entry = group.entries.find((e) => e.slug === slug);
+    if (!entry) continue;
+    const root = entry.tabOf ?? entry.slug;
+    const parent = group.entries.find((e) => e.slug === root);
+    const children = group.entries.filter((e) => e.tabOf === root);
+    if (!parent || children.length === 0) return [];
+    return [parent, ...children].map((e) => ({ slug: e.slug, label: e.tabLabel ?? e.label }));
+  }
+  return [];
 }

@@ -11,7 +11,7 @@ portals: [crm]
 
 Vai: **Trưởng cơ sở** (quản lý cơ sở). Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
-Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Lớp**, **Buổi học**, **Ghi danh**, **Bán hàng và thu chi**, **Phiếu nghiệp vụ**. Bạn chỉ thấy và duyệt việc của **cơ sở mình**.
+Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Lớp**, **Buổi học**, **Ghi danh**, **Bán hàng**, **Kế toán**, **Phiếu nghiệp vụ**. Bạn chỉ thấy và duyệt việc của **cơ sở mình**.
 
 **Nguyên tắc duyệt (nhớ kỹ):**
 
