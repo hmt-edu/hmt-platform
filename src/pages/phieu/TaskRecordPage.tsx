@@ -279,21 +279,27 @@ export function TaskRecordPage() {
                 ))}
               </tbody>
             </table>
-            <DetailField
-              label="Trình lúc"
-              mode="view"
-              value={task.submitted_at ? formatDateTime(task.submitted_at) : ''}
-            />
-            <DetailField
-              label="Duyệt xong lúc"
-              mode="view"
-              value={task.approved_at ? formatDateTime(task.approved_at) : ''}
-            />
-            <DetailField
-              label="Thực hiện lúc"
-              mode="view"
-              value={task.executed_at ? formatDateTime(task.executed_at) : ''}
-            />
+            {task.submitted_at && (
+              <DetailField
+                label="Trình lúc"
+                mode="view"
+                value={formatDateTime(task.submitted_at)}
+              />
+            )}
+            {task.approved_at && (
+              <DetailField
+                label="Duyệt xong lúc"
+                mode="view"
+                value={formatDateTime(task.approved_at)}
+              />
+            )}
+            {task.executed_at && (
+              <DetailField
+                label="Thực hiện lúc"
+                mode="view"
+                value={formatDateTime(task.executed_at)}
+              />
+            )}
           </DetailSection>
         </div>
         {(task.task_type === 'BAO_LUU' || task.task_type === 'CHUYEN_LOP') && (

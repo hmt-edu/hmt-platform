@@ -143,20 +143,20 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
       <section className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
         <dl className="flex min-w-0 flex-col">
           <DetailField label="Phiếu tái tục" mode="view" value={t.code} />
-          <DetailField label="Học sinh" mode="view" value={record.student?.name ?? '—'} />
-          <DetailField label="Mã học sinh" mode="view" value={record.student?.code ?? '—'} />
+          <DetailField label="Học sinh" mode="view" value={record.student?.name ?? ''} />
+          <DetailField label="Mã học sinh" mode="view" value={record.student?.code ?? ''} />
           <DetailField label="Lớp" mode="view" value={record.class.code} />
           <DetailField
             label="Giáo viên lớp hiện tại"
             mode="view"
-            value={record.class.teacher_name ?? '—'}
+            value={record.class.teacher_name ?? ''}
           />
           <DetailField
             label={`Ghi danh liên quan (${record.enrollments.length})`}
             mode="view"
             value={
               record.enrollments.length === 0
-                ? '—'
+                ? ''
                 : record.enrollments
                     .map((e) => `${e.code} · còn ${formatNumber(e.hours_left)} giờ`)
                     .join('; ')
@@ -164,22 +164,22 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
           />
         </dl>
         <dl className="flex min-w-0 flex-col">
-          <DetailField label="Phụ huynh" mode="view" value={record.parent?.name ?? '—'} />
+          <DetailField label="Phụ huynh" mode="view" value={record.parent?.name ?? ''} />
           <DetailField
             label="Số điện thoại"
             mode="view"
-            value={record.parent ? formatPhone(record.parent.phone) : '—'}
+            value={record.parent ? formatPhone(record.parent.phone) : ''}
           />
-          <DetailField label="Email" mode="view" value={record.parent?.email ?? '—'} />
+          <DetailField label="Email" mode="view" value={record.parent?.email ?? ''} />
           <DetailField
             label="Giờ còn"
             mode="view"
-            value={t.hours_left === null ? '—' : `${formatNumber(t.hours_left)} giờ`}
+            value={t.hours_left === null ? '' : `${formatNumber(t.hours_left)} giờ`}
           />
           <DetailField
             label="Ngày hết giờ dự kiến"
             mode="view"
-            value={t.expected_end_date ? formatDate(t.expected_end_date) : '—'}
+            value={t.expected_end_date ? formatDate(t.expected_end_date) : ''}
           />
         </dl>
       </section>
@@ -227,7 +227,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
         value={
           record.hours.last_purchase
             ? `${formatNumber(record.hours.last_purchase.hours)} giờ · ${formatMonth(record.hours.last_purchase.at)}`
-            : '—'
+            : ''
         }
       />
       <DetailField label="Đã học" mode="view" value={`${formatNumber(record.hours.used)} giờ`} />
@@ -236,7 +236,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
         mode="view"
         value={`${record.hours.absences_window} buổi`}
       />
-      <DetailField label="Campaign" mode="view" value={t.campaign_label ?? '—'} />
+      <DetailField label="Campaign" mode="view" value={t.campaign_label ?? ''} />
     </dl>
   );
 
