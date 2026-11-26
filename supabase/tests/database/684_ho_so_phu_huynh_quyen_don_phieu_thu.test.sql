@@ -99,5 +99,13 @@ update app.permission set is_active = false where role_code = 'CSKH' and module_
 select is(pg_temp.seen('cskh1', 'receipts'), '|0', 'Không có quyền Xem phiếu thu: không thấy phiếu thu, số đếm 0');
 select is(pg_temp.seen('cskh1', 'orders'), 'CS1|1', 'Không có quyền Xem phiếu thu: quyền đơn hàng không đổi');
 
+-- Phạm vi hẹp (Admin cấp ở QT-05) không được tính là «cả cơ sở». Dùng hai ô quyền còn đang bật: đơn hàng của CSKH, phiếu thu của Tư vấn.
+update app.permission set scope_code = 'DUOC_PHAN_CONG'
+ where is_active and action_code = 'XEM' and (role_code, module_code) in (('CSKH', 'SALES_ORDER'), ('SALES', 'RECEIPT'));
+select is(pg_temp.seen('cskh2', 'orders'), '|0', 'Phạm vi hẹp (Được phân công) ở Xem đơn hàng: khối đơn của hồ sơ phụ huynh rỗng');
+select is(pg_temp.seen('tuvan2', 'receipts'), '|0', 'Phạm vi hẹp (Được phân công) ở Xem phiếu thu: khối phiếu thu của hồ sơ phụ huynh rỗng');
+select is(pg_temp.seen('cskh2', 'orders'), pg_temp.listed('cskh2', 'list_orders'), 'Phạm vi hẹp: đơn trên hồ sơ khớp danh sách đơn');
+select is(pg_temp.seen('tuvan2', 'receipts'), pg_temp.listed('tuvan2', 'list_receipts'), 'Phạm vi hẹp: phiếu thu trên hồ sơ khớp danh sách phiếu thu');
+
 select * from finish();
 rollback;

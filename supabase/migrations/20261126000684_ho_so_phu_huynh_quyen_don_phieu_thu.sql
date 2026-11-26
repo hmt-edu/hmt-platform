@@ -1,6 +1,7 @@
 -- D-26-07: app.get_parent_record (security definer) chỉ trả đơn hàng, phiếu thu (và số đếm của chúng) mà người gọi được xem.
 -- Ai gọi: người có quyền Xem phụ huynh. Hai khối đơn hàng, phiếu thu xét thêm quyền của từng phân hệ.
--- Lọc bằng app.can_see_branch, cùng luật với chính sách sales_order_read, receipt_read: không có quyền thì danh sách rỗng, số đếm 0.
+-- Lọc bằng app.can_see_branch_wide (chỉ Toàn hệ thống hoặc Cơ sở mình, phạm vi hẹp không tính), cùng luật với chính sách sales_order_read, receipt_read
+-- và list_orders, list_receipts (migration 422, 460, 461): không có quyền thì danh sách rỗng, số đếm 0.
 -- Phần còn lại giữ nguyên migration 573; quyền gọi hàm giữ nguyên.
 
 create or replace function app.get_parent_record(p_parent_id uuid)
@@ -36,18 +37,18 @@ begin
                             from app.student s where s.parent_id = p.id and s.record_status = 'DANG_DUNG'), '[]'::jsonb),
     'orders', coalesce((select jsonb_agg(jsonb_build_object('id', o.id, 'code', o.code, 'status_code', o.status_code, 'total_amount', o.total_amount, 'created_at', o.created_at) order by o.created_at desc)
                           from (select * from app.sales_order x
-                                 where x.parent_id = p.id and app.can_see_branch('SALES_ORDER', 'XEM', x.branch_id) -- quyền Xem đơn hàng
+                                 where x.parent_id = p.id and app.can_see_branch_wide('SALES_ORDER', 'XEM', x.branch_id) -- quyền Xem đơn hàng
                                  order by x.created_at desc limit 50) o), '[]'::jsonb), -- allow-number: 50 dòng mới nhất mỗi loại trên bản ghi
     'receipts', coalesce((select jsonb_agg(jsonb_build_object('id', r.id, 'code', r.code, 'status_code', r.status_code, 'amount', r.amount, 'paid_on', r.paid_on) order by r.created_at desc)
                             from (select * from app.receipt x
-                                   where x.parent_id = p.id and app.can_see_branch('RECEIPT', 'XEM', x.branch_id) -- quyền Xem phiếu thu
+                                   where x.parent_id = p.id and app.can_see_branch_wide('RECEIPT', 'XEM', x.branch_id) -- quyền Xem phiếu thu
                                    order by x.created_at desc limit 50) r), '[]'::jsonb), -- allow-number: 50 dòng mới nhất mỗi loại trên bản ghi
     'counts', jsonb_build_object(
       'children', (select count(*) from app.student s where s.parent_id = p.id and s.record_status = 'DANG_DUNG'),
       'opportunities', (select count(*) from app.opportunity o where o.parent_id = p.id and o.record_status = 'DANG_DUNG'),
       'tests', (select count(*) from app.student_test t join app.student s on s.id = t.student_id where s.parent_id = p.id),
       'enrollments', (select count(*) from app.enrollment e where e.parent_id = p.id),
-      'orders', (select count(*) from app.sales_order o where o.parent_id = p.id and app.can_see_branch('SALES_ORDER', 'XEM', o.branch_id)),
-      'receipts', (select count(*) from app.receipt r where r.parent_id = p.id and app.can_see_branch('RECEIPT', 'XEM', r.branch_id))));
+      'orders', (select count(*) from app.sales_order o where o.parent_id = p.id and app.can_see_branch_wide('SALES_ORDER', 'XEM', o.branch_id)),
+      'receipts', (select count(*) from app.receipt r where r.parent_id = p.id and app.can_see_branch_wide('RECEIPT', 'XEM', r.branch_id))));
 end;
 $$;
