@@ -743,7 +743,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
               ) : (
                 <>
                   <DetailField
-                    label="Em"
+                    label="Học sinh"
                     mode="view"
                     value={record.opening_student ? record.opening_student.name : ''}
                   />

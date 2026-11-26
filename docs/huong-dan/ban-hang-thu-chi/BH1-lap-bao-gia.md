@@ -20,7 +20,7 @@ cap_nhat: 2026-11-24
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của khách.
-- [ ] Mỗi em trong «Danh sách em» của cơ hội có đủ họ tên và năm sinh.
+- [ ] Mỗi học sinh trong «Danh sách học sinh» của cơ hội có đủ họ tên và năm sinh.
 - [ ] Bạn biết gói nào, bao nhiêu giờ, hình thức học nào (Học tại trung tâm hay Học online). Gói chưa có giá cho hình thức đó thì không chọn được: nhờ Admin bổ sung bảng giá.
 
 ## Cần nhớ
@@ -31,7 +31,7 @@ cap_nhat: 2026-11-24
 ## Các bước
 1. Ở bản ghi cơ hội bấm **«Tạo báo giá»**.
    *Bạn thấy:* trang báo giá mới, khối dòng gói còn trống. [ẢNH: bh1-b1] [ẢNH: bh1-b2]
-2. Bấm **«Chọn gói…»**, chọn gói, chọn em học, nhập số lượng giờ (và giờ tặng nếu có).
+2. Bấm **«Chọn gói…»**, chọn gói, chọn học sinh học, nhập số lượng giờ (và giờ tặng nếu có).
    *Bạn thấy:* dòng có đơn giá và thành tiền tự tính. [ẢNH: bh1-b3]
 3. Thêm chiết khấu theo chính sách nếu có (chọn trong danh sách chính sách, không gõ số).
    *Bạn thấy:* tổng chiết khấu và thành tiền cập nhật; vượt trần thì hiện hộp vàng cảnh báo.

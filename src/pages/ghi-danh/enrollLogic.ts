@@ -26,9 +26,9 @@ export function disabledReason(cls: MatchingClass): string | null {
     const f = cls.clash_first;
     // Canvas GD03_trung_gio: nêu buổi trùng đầu tiên (ngày, giờ, lớp) khi máy chủ trả; chưa có thì chỉ nêu số buổi.
     if (f) {
-      return `Trùng buổi ${formatDate(f.date)}, ${f.start_time.slice(0, 5)}–${f.end_time.slice(0, 5)} với lớp ${f.class_code} mà em đang học (xét theo từng buổi thật)`;
+      return `Trùng buổi ${formatDate(f.date)}, ${f.start_time.slice(0, 5)}–${f.end_time.slice(0, 5)} với lớp ${f.class_code} mà học sinh đang học (xét theo từng buổi thật)`;
     }
-    return `Trùng ${cls.clash_sessions} buổi với lớp em đang học`;
+    return `Trùng ${cls.clash_sessions} buổi với lớp mà học sinh đang học`;
   }
   return null;
 }
@@ -118,7 +118,7 @@ export function enrollmentNotice(
     return {
       tone: 'info',
       title: range ? `Đang bảo lưu${range}.` : 'Đang bảo lưu.',
-      text: 'Giờ còn lại giữ nguyên, em ra khỏi danh sách các buổi trong thời gian này.',
+      text: 'Giờ còn lại giữ nguyên, học sinh ra khỏi danh sách các buổi trong thời gian này.',
     };
   }
   if (status === 'CHO_XEP_LOP') {
@@ -136,7 +136,7 @@ export function enrollmentNotice(
         hours.negative_limit_sessions != null && hours.negative_limit_hours != null
           ? `${hours.negative_limit_sessions} buổi (${hours.negative_limit_hours} giờ)`
           : 'theo hạn mức «Cho học trước tối đa»'
-      }, hiện −${Math.abs(hours.remaining)} giờ. Quá hạn mức thì em bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale.`,
+      }, hiện −${Math.abs(hours.remaining)} giờ. Quá hạn mức thì học sinh bị loại khỏi danh sách các buổi sau, kèm cảnh báo cho vận hành và sale.`,
     };
   }
   if (hours.remaining === 0 && hours.granted + hours.gifted > 0 && status === 'DANG_HOC') {

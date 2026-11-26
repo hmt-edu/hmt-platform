@@ -32,7 +32,7 @@ const em: ProspectStudent = {
 describe('Danh sách em: kiểm biểu mẫu (R-CRM-23, R-CRM-03)', () => {
   it('em mới chỉ bắt buộc họ tên; năm sinh không bắt buộc', () => {
     expect(validateEmDraft({ ...EMPTY_EM_DRAFT, fullName: 'Em A' }, false, NOW)).toEqual({});
-    expect(validateEmDraft(EMPTY_EM_DRAFT, false, NOW).fullName).toBe('Nhập họ tên của em.');
+    expect(validateEmDraft(EMPTY_EM_DRAFT, false, NOW).fullName).toBe('Nhập họ tên của học sinh.');
   });
   it('năm sinh nhập thì 4 chữ số và không ở tương lai', () => {
     const d = { ...EMPTY_EM_DRAFT, fullName: 'Em A' };
@@ -43,7 +43,7 @@ describe('Danh sách em: kiểm biểu mẫu (R-CRM-23, R-CRM-03)', () => {
   it('từ L5 bắt buộc năm sinh; có ngày sinh thì đủ', () => {
     const d = { ...EMPTY_EM_DRAFT, fullName: 'Em A' };
     expect(validateEmDraft(d, true, NOW).birthYear).toBe(
-      'Từ giai đoạn L5 trở lên mỗi em bắt buộc có năm sinh.',
+      'Từ giai đoạn L5 trở lên mỗi học sinh bắt buộc có năm sinh.',
     );
     expect(validateEmDraft({ ...d, birthDate: '2012-03-15' }, true, NOW)).toEqual({});
   });
@@ -71,21 +71,21 @@ describe('Danh sách em: dữ liệu gửi và câu chữ', () => {
     });
   });
   it('«Đã đủ N em» chỉ khi chạm số em tối đa; chưa biết tối đa thì không khoá', () => {
-    expect(fullListText(5, 5)).toBe('Đã đủ 5 em');
+    expect(fullListText(5, 5)).toBe('Đã đủ 5 học sinh');
     expect(fullListText(4, 5)).toBeNull();
     expect(fullListText(9, null)).toBeNull();
   });
   it('chữ theo canvas TS-02/TS-08: danh sách trống, hộp Thêm em, con có sẵn', () => {
     expect(emptyListText('OPPORTUNITY')).toBe(
-      'Cơ hội chưa có em. Bấm “+ Thêm em” để ghi họ tên, năm sinh của em.',
+      'Cơ hội chưa có học sinh. Bấm “+ Thêm học sinh” để ghi họ tên, năm sinh của học sinh.',
     );
     expect(addEmText.note('OPPORTUNITY')).toBe(
-      'Thêm em chỉ ghi nhận vào cơ hội. Hồ sơ học sinh được tạo khi tạo phiếu kiểm tra hoặc duyệt đơn.',
+      'Thêm học sinh chỉ ghi nhận vào cơ hội. Hồ sơ học sinh được tạo khi tạo phiếu kiểm tra hoặc duyệt đơn.',
     );
     expect(addEmText.existingNote('Chị Lê Thu Hằng', 'PH000061')).toBe(
       'Con đã có hồ sơ của phụ huynh Chị Lê Thu Hằng (PH000061).',
     );
-    expect(emLabel({ ...em, full_name: null })).toBe('Em chưa có tên');
+    expect(emLabel({ ...em, full_name: null })).toBe('Học sinh chưa có tên');
   });
 });
 
@@ -107,8 +107,8 @@ describe('Chọn em khi tạo cơ hội (TS-06)', () => {
     expect(uniqueEms([d, { ...d, id: 'e' }]).map((x) => x.id)).toEqual(['d']);
   });
   it('chữ theo canvas TS-06', () => {
-    expect(pickEmText.tooMany(5)).toBe('Chọn tối đa 5 em.');
-    expect(pickEmText.addToExisting).toBe('Thêm em vào cơ hội cũ');
+    expect(pickEmText.tooMany(5)).toBe('Chọn tối đa 5 học sinh.');
+    expect(pickEmText.addToExisting).toBe('Thêm học sinh vào cơ hội cũ');
   });
 });
 
@@ -149,7 +149,7 @@ describe('Thông tin học sinh một khối (A-26-01)', () => {
 
   it('câu báo nêu tên em còn chưa lưu', () => {
     expect(unsavedEmText(['An', 'Bình'])).toBe(
-      'Còn thay đổi chưa lưu ở em: An, Bình. Chọn thẻ em đó rồi bấm Lưu.',
+      'Còn thay đổi chưa lưu ở học sinh: An, Bình. Chọn thẻ học sinh đó rồi bấm Lưu.',
     );
   });
 });

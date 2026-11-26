@@ -298,8 +298,8 @@ export function BusinessTaskDialog({
         </>
       ) : type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC' ? (
         <p className="text-caption text-fg-muted">
-          Khi thực hiện, bảo lưu kết thúc và em về hàng chờ xếp lớp, giữ nguyên số giờ còn lại. CSKH
-          xếp lớp như thường; em vào danh sách buổi sau khi được xếp lớp.
+          Khi thực hiện, bảo lưu kết thúc và học sinh về hàng chờ xếp lớp, giữ nguyên số giờ còn
+          lại. CSKH xếp lớp như thường; học sinh vào danh sách buổi sau khi được xếp lớp.
         </p>
       ) : type === 'BAO_LUU' ? (
         <TextField

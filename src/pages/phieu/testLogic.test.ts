@@ -103,7 +103,7 @@ describe('chữ hộp Tạo phiếu Test (So canvas TS-15)', () => {
     );
     expect(createTestText.submitHint).toBe('Chọn Ngày test và Giờ test để bật nút Tạo phiếu.');
     expect(createTestText.emHelp).toBe(
-      'Chưa thấy em? Đóng hộp này và bấm + Thêm em ở cột Thông tin học sinh.',
+      'Chưa thấy học sinh? Đóng hộp này và bấm + Thêm học sinh ở cột Thông tin học sinh.',
     );
   });
 });

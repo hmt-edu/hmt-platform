@@ -19,11 +19,11 @@ Phụ huynh đóng tiền cho tư vấn **trước**, rồi bạn mới ghi đơ
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của khách.
 - [ ] Cơ hội đang ở **L8 (Đăng ký học)** trên thanh giai đoạn. Chưa ở L8 thì nút «Tạo đơn hàng» mờ: chuyển giai đoạn trước (bài «Đi một cơ hội qua các giai đoạn»). Nhóm con L8A, L8B, L8C: chọn theo hộp trên màn.
-- [ ] Mỗi em có đủ họ tên và năm sinh.
+- [ ] Mỗi học sinh có đủ họ tên và năm sinh.
 
 ## Cần nhớ
 - **Một lớp một dòng đơn.** Học hai môn là hai dòng.
-- **Chọn lớp là tuỳ chọn, làm sau khi đã Lưu đơn (nút «Sửa đơn»).** Không chọn lớp thì em nằm ở «Chờ xếp lớp», CSKH xếp sau.
+- **Chọn lớp là tuỳ chọn, làm sau khi đã Lưu đơn (nút «Sửa đơn»).** Không chọn lớp thì học sinh nằm ở «Chờ xếp lớp», CSKH xếp sau.
 - **Đã chọn lớp thì bắt buộc có ngày vào lớp**; hệ thống chặn khi trình nếu thiếu. Không bao giờ tự lấy ngày duyệt phiếu thu.
 - **Ghi danh (quyền học) sinh khi tiền đã vào đạt mức cọc tối thiểu** (mặc định 1.000.000 đ), không cần thu đủ cả đơn.
 
@@ -53,13 +53,13 @@ Phụ huynh đóng tiền cho tư vấn **trước**, rồi bạn mới ghi đơ
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì |
 |---|---|---|
-| «Có em chưa đủ thông tin» | thiếu họ tên hoặc năm sinh | điền ở dòng đơn rồi trình lại (hoặc «Vẫn trình» nếu hộp cho) |
+| «Có học sinh chưa đủ thông tin» | thiếu họ tên hoặc năm sinh | điền ở dòng đơn rồi trình lại (hoặc «Vẫn trình» nếu hộp cho) |
 | Nút «Tạo đơn hàng» mờ | cơ hội chưa ở L8 | chuyển giai đoạn |
 | Lớp không hiện | hết chỗ hoặc sai môn, khối, cơ sở | chọn lớp khác |
 | Chặn khi trình: thiếu ngày vào lớp | đã chọn lớp nhưng chưa chọn ngày | chọn «Ngày vào lớp» |
 
 ## Hỏi đáp
-- **Phụ huynh chưa quyết lớp?** Bỏ trống lớp; em vào «Chờ xếp lớp».
+- **Phụ huynh chưa quyết lớp?** Bỏ trống lớp; học sinh vào «Chờ xếp lớp».
 - **Vì sao chưa thấy ghi danh sau khi duyệt đơn?** Ghi danh chỉ sinh khi **kế toán duyệt phiếu thu** và tổng tiền vào đạt cọc tối thiểu.
 - **Vì sao không thấy «Huỷ đơn»?** Người lập chỉ huỷ được đơn Nháp; đơn đã trình do người duyệt huỷ; đơn đã có phiếu thu không huỷ được.
 

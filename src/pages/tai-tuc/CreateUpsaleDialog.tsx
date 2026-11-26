@@ -43,7 +43,7 @@ function CreateForm({ open, onOpenChange, onCreated }: Props) {
   const help = preview.isError
     ? errorOf(preview.error).message
     : code.trim().length < 3 // allow-number: khớp ngưỡng tra mã ở useUpsalePreview
-      ? 'Phiếu tạo theo (học sinh, lớp): nhập mã của bất kỳ ghi danh nào của em trong lớp đó.'
+      ? 'Phiếu tạo theo (học sinh, lớp): nhập mã của bất kỳ ghi danh nào của học sinh trong lớp đó.'
       : preview.isPending
         ? 'Đang tra mã…'
         : preview.data?.found

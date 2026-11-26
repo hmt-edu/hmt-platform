@@ -25,7 +25,7 @@ screens: [K03]
 > Video: [VIDEO: ch4-cot]
 
 ## Thanh công cụ, từ trái sang phải
-Ô tìm (chữ gợi ý khác theo màn, ví dụ «Tìm mã, phụ huynh, SĐT, tên em…») · «Làm mới» · «Cột» · «Kiểu xem» (chỉ màn có thêm kiểu, ví dụ «Danh sách» | «Kanban», hoặc **Calendar**) · «Trường ngày» · «Khoảng thời gian» · **Filters** · **Group By** · **Favorites** · «Trang trước» / «Trang sau».
+Ô tìm (chữ gợi ý khác theo màn, ví dụ «Tìm mã, phụ huynh, SĐT, tên học sinh…») · «Làm mới» · «Cột» · «Kiểu xem» (chỉ màn có thêm kiểu, ví dụ «Danh sách» | «Kanban», hoặc **Calendar**) · «Trường ngày» · «Khoảng thời gian» · **Filters** · **Group By** · **Favorites** · «Trang trước» / «Trang sau».
 [ẢNH: danh-sach-thanh-cong-cu]
 
 ## Tìm kiếm

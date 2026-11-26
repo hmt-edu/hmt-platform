@@ -294,7 +294,9 @@ test('Tạo phiếu từ cơ hội: chọn đủ ô, giờ nhắc tự điền, 
   await page.goto(`/crm/co-hoi/${seeded.opportunity.fresh.id}`);
   await page.getByRole('button', { name: 'Tạo lịch Test' }).click();
   const dialog = dialogOf(page, 'Tạo phiếu Test');
-  await expect(dialog.getByRole('combobox', { name: 'Em' })).toContainText(seeded.student.fresh);
+  await expect(dialog.getByRole('combobox', { name: 'Học sinh' })).toContainText(
+    seeded.student.fresh,
+  );
   await expect(dialog.getByRole('button', { name: 'Tạo phiếu' })).toBeDisabled();
   await pickFirst(page, dialog.getByRole('combobox', { name: 'Lớp' }));
   await pickFirst(page, dialog.getByRole('combobox', { name: 'Môn' }));

@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
-import { useFromState, useNavigateFrom } from '../../layout/crumbTrail';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 import { MergeDialog } from '../../features/merge/MergeDialog';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
@@ -21,7 +21,7 @@ import { useAccess } from '../../nav/AccessContext';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Button } from '../../ui/Button';
-import { Table, Tag, type TagTone } from '../../ui/Data';
+import { Tag } from '../../ui/Data';
 import { StateView, Spinner } from '../../ui/Feedback';
 import { INPUT_CLASS, TextAreaField } from '../../ui/Field';
 import { Icon } from '../../ui/icons';
@@ -59,14 +59,6 @@ import {
   useOpportunity,
   useRefreshOppRecord,
 } from './useOppData';
-
-const TEST_TONE: Record<string, TagTone> = {
-  COMPLETED: 'success',
-  CANCELLED: 'neutral',
-  TEACHER_REVIEW: 'warning',
-  TESTING: 'info',
-  DRAFT: 'neutral',
-};
 
 export function OpportunityRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -108,7 +100,6 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const supabase = useDb();
   const navigate = useNavigate();
   const openFrom = useNavigateFrom();
-  const fromState = useFromState();
   const toast = useToast();
   const access = useAccess();
   const catalogs = useLeadCatalogs();
@@ -338,66 +329,6 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const tag = appointmentTag(record.next_appointment_at);
   const sourceName = catalogs.name('SOURCE', record.source_code);
   const sourceType = catalogs.name('SOURCE_TYPE', record.source_type_code);
-
-  const testsTable = (
-    <div className="flex flex-col gap-2">
-      <Table<OppTest>
-        caption="Phiếu kiểm tra đầu vào"
-        rows={record.tests}
-        rowKey={(t) => t.id}
-        rowLabel={(t) => t.code}
-        columns={[
-          {
-            key: 'code',
-            header: 'Mã phiếu',
-            cell: (t) => (
-              <Link
-                to={`/crm/phieu-kiem-tra/${t.id}`}
-                state={fromState}
-                className="font-medium text-link hover:underline"
-              >
-                {t.code}
-              </Link>
-            ),
-          },
-          {
-            key: 'status',
-            header: 'Trạng thái',
-            cell: (t) => (
-              <Tag tone={TEST_TONE[t.status_code] ?? 'neutral'}>{t.status ?? t.status_code}</Tag>
-            ),
-          },
-          {
-            key: 'at',
-            header: 'Ngày giờ test',
-            cell: (t) => <span className="tabular">{formatDateTime(t.scheduled_at)}</span>,
-          },
-          {
-            key: 'test',
-            header: 'Bài test · cơ sở',
-            cell: (t) =>
-              [t.subject, t.mode, t.level, t.test_branch_code].filter(Boolean).join(' · '),
-          },
-          {
-            key: 'result',
-            header: 'Kết quả',
-            cell: (t) =>
-              t.score !== null
-                ? `Điểm ${String(t.score).replace('.', ',')}/10`
-                : t.cancel_reason
-                  ? `Lý do huỷ: ${t.cancel_reason}`
-                  : '',
-          },
-        ]}
-        empty={
-          <p className="px-4 py-6 text-center text-fg-muted">Cơ hội chưa có phiếu kiểm tra.</p>
-        }
-      />
-      <p className="text-caption text-fg-muted">
-        Một cơ hội có thể có nhiều phiếu. Tạo phiếu chỉ khi cơ hội ở L5 trở đi.
-      </p>
-    </div>
-  );
 
   return (
     <>
@@ -828,11 +759,6 @@ function OpportunityView({ record }: { record: OppRecord }) {
                     )}
                   </dl>
                 ),
-              },
-              {
-                value: 'tests',
-                label: `Kiểm tra đầu vào (${record.tests_total})`,
-                content: testsTable,
               },
             ]}
           />

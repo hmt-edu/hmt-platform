@@ -38,13 +38,13 @@ nguoi_viet: Code D
    *Bạn thấy:* mở bản ghi của lớp có buổi đó.
 
 ## Các bước (học sinh của lớp)
-1. Ở bản ghi lớp, bấm **«Học sinh»** (số bên cạnh là số em).
+1. Ở bản ghi lớp, bấm **«Học sinh»** (số bên cạnh là số học sinh).
    *Bạn thấy:* danh sách «Học sinh của lớp».
    [ẢNH: dt11-b3]
 2. Đọc các cột: «Mã học sinh», «Học sinh», «Ghi danh», «Cơ sở phụ trách», «Hình thức học», «Ngày vào», «Ngày rời», «Tình trạng».
-   *Bạn thấy:* em đang học có «Đã xếp lớp»; em đã nghỉ có ngày rời và «Đã rời».
+   *Bạn thấy:* học sinh đang học có «Đã xếp lớp»; học sinh đã nghỉ có ngày rời và «Đã rời».
    [ẢNH: dt11-b4]
-3. Muốn thêm em vào lớp: bấm **«Xếp thêm»** (có quyền sửa ghi danh mới thấy). Nút dẫn sang «Hàng chờ xếp lớp» (bài «Xếp lớp cho ghi danh đang chờ»).
+3. Muốn thêm học sinh vào lớp: bấm **«Xếp thêm»** (có quyền sửa ghi danh mới thấy). Nút dẫn sang «Hàng chờ xếp lớp» (bài «Xếp lớp cho ghi danh đang chờ»).
 4. Bấm **«Quay lại lớp …»** để về bản ghi lớp.
 
 ## Sau bước này

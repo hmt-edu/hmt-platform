@@ -28,7 +28,7 @@ di_thu: chưa
 
 ## Luật cần nhớ (lời thường)
 - **Trung tâm huỷ (cả lớp nghỉ):** không tính phí; hệ thống **tự thêm một buổi vào cuối lịch** và dời bài học theo. Bạn xem trước ngày buổi thêm ngay trong hộp huỷ.
-- **Học sinh huỷ** chỉ dùng cho **lớp riêng**, bắt buộc có lý do, và **người huỷ chọn**: «Huỷ có tính phí (không bù)» hoặc «Huỷ không tính phí (xếp buổi bù)». Lớp nhiều em thì luôn là trung tâm huỷ.
+- **Học sinh huỷ** chỉ dùng cho **lớp riêng**, bắt buộc có lý do, và **người huỷ chọn**: «Huỷ có tính phí (không bù)» hoặc «Huỷ không tính phí (xếp buổi bù)». Lớp nhiều học sinh thì luôn là trung tâm huỷ.
 - **Dời một buổi** chỉ đổi cho buổi này; giáo viên và thời khoá biểu của lớp không đổi. Trùng phòng hoặc trùng giáo viên chỉ **cảnh báo**, vẫn lưu được.
 
 ## Các bước (huỷ buổi)
@@ -43,7 +43,7 @@ di_thu: chưa
 4. Với **học sinh huỷ**: chọn «Lý do huỷ», rồi chọn «Huỷ có tính phí (không bù)» hoặc «Huỷ không tính phí (xếp buổi bù)».
    *Bạn thấy:* chọn không tính phí thì có lời nhắc xếp buổi bù ở bước sau.
 5. Bấm **«Xác nhận huỷ buổi»**.
-   *Bạn thấy:* thông báo «Đã huỷ buổi»; buổi mang trạng thái huỷ. Huỷ có tính phí thì giờ của em bị trừ cho buổi này; các kiểu huỷ khác không trừ.
+   *Bạn thấy:* thông báo «Đã huỷ buổi»; buổi mang trạng thái huỷ. Huỷ có tính phí thì giờ của học sinh bị trừ cho buổi này; các kiểu huỷ khác không trừ.
 
 ## Các bước (dời một buổi)
 1. Mở buổi, bấm **«Dời»**.
@@ -71,7 +71,7 @@ di_thu: chưa
 |---|---|---|
 | «Chỉ huỷ được buổi chưa Done và chưa huỷ. Buổi đã Done sai thì sửa điểm danh kèm lý do.» (mã HMT_BUOI_KHONG_HUY_DUOC) | buổi đã hoàn thành hoặc đã huỷ | dùng «Sửa điểm danh» nếu điểm danh sai |
 | «Chỉ dời buổi chưa Done và chưa huỷ.» (mã HMT_BUOI_KHONG_SUA_DUOC) | buổi đã hoàn thành hoặc đã huỷ | không dời được |
-| «Lý do của học sinh chỉ dùng cho lớp riêng. Lớp chung huỷ vì lý do của trung tâm.» (mã HMT_HUY_BUOI_HS_CHI_LOP_RIENG) | chọn «Học sinh huỷ» cho lớp nhiều em | chọn «Trung tâm huỷ» |
+| «Lý do của học sinh chỉ dùng cho lớp riêng. Lớp chung huỷ vì lý do của trung tâm.» (mã HMT_HUY_BUOI_HS_CHI_LOP_RIENG) | chọn «Học sinh huỷ» cho lớp nhiều học sinh | chọn «Trung tâm huỷ» |
 | «Chọn huỷ có tính phí hoặc không tính phí.» (mã HMT_HUY_BUOI_CAN_CHON_KIEU) | chưa chọn kiểu khi học sinh huỷ | chọn một trong hai |
 | «Giờ kết thúc phải sau giờ bắt đầu.» (mã HMT_BUOI_GIO_SAI) | nhập giờ ngược | sửa lại giờ |
 | «Lý do "Khác" cần ghi chú.» (mã HMT_CAN_GHI_CHU) | chọn lý do «Khác» mà chưa ghi «Ghi chú» | ghi lý do cụ thể vào «Ghi chú» |
@@ -81,7 +81,7 @@ di_thu: chưa
 - **Dùng:** một buổi **sắp tới** (chưa hoàn thành) của lớp Toán [MẪU] trong «Dữ liệu mẫu của tôi». Huỷ rồi dời thử trên các buổi khác nhau; dữ liệu mẫu xoá được cả bộ.
 
 ## Hỏi đáp
-- **Huỷ buổi có trừ giờ của em không?** Không với huỷ của trung tâm và «Huỷ không tính phí»; chỉ «Huỷ có tính phí (không bù)» của lớp riêng mới trừ giờ của em.
+- **Huỷ buổi có trừ giờ của học sinh không?** Không với huỷ của trung tâm và «Huỷ không tính phí»; chỉ «Huỷ có tính phí (không bù)» của lớp riêng mới trừ giờ của học sinh.
 - **Dời buổi có đổi giáo viên không?** Không. Đổi giáo viên cho một buổi là việc khác («Đổi giáo viên» ở bản ghi buổi).
 - **Muốn đổi lịch cố định cả lớp thì sao?** Không dời từng buổi; xem bài đổi lịch cố định của lớp (đợt sau).
 

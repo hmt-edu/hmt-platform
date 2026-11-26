@@ -152,7 +152,7 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
               ))}
             </ul>
             <p className="mt-1">
-              Chỉ tạo thêm khi cần cơ hội mới (ví dụ em khác trong nhà cần test).{' '}
+              Chỉ tạo thêm khi cần cơ hội mới (ví dụ học sinh khác trong nhà cần test).{' '}
               {pickEmText.existing}
             </p>
           </Alert>
@@ -167,7 +167,9 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
         </dl>
         <fieldset className="flex flex-col gap-1">
           <legend className="text-body font-semibold">{pickEmText.heading}</legend>
-          {choices.length === 0 && <p className="text-body text-fg-muted">Lead chưa có em.</p>}
+          {choices.length === 0 && (
+            <p className="text-body text-fg-muted">Lead chưa có học sinh.</p>
+          )}
           {choices.map((s) => (
             <Checkbox
               key={s.id}

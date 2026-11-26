@@ -28,7 +28,7 @@ import { UNIT_LABEL } from './quoteRecord';
 import type { DiscountPolicy, GiftPolicy, OppStudent, SellablePackage } from './useQuoteData';
 
 function studentLabel(s: OppStudent): string {
-  const name = s.full_name ?? `Em thứ ${String(s.position)}`;
+  const name = s.full_name ?? `Học sinh thứ ${String(s.position)}`;
   return s.birth_year ? `${name} · ${String(s.birth_year)}` : name;
 }
 
@@ -245,7 +245,7 @@ export function QuoteLineGrid({
             label={`Học sinh dòng ${String(index + 1)}`}
             value={row.studentId}
             onChange={(v) => update(row.key, { studentId: v })}
-            placeholder="Chọn em…"
+            placeholder="Chọn học sinh…"
             options={students.map((s) => ({ value: s.id, label: studentLabel(s) }))}
             disabled={disabled}
             requiredEmpty={row.studentId === ''}
@@ -468,9 +468,9 @@ export function QuoteLineGrid({
   return (
     <div className="flex flex-col gap-2">
       <p className="text-caption text-fg-muted">
-        Chưa thấy em?{' '}
+        Chưa thấy học sinh?{' '}
         <Link to={opportunityHref} className="font-medium text-link hover:underline">
-          Thêm em ở cơ hội.
+          Thêm học sinh ở cơ hội.
         </Link>
       </p>
       <LineTable<EditRow>
@@ -505,7 +505,7 @@ export function QuoteLineGrid({
             <div className="flex flex-col gap-0.5">
               {needsStudent && (
                 <p className="text-fg-muted">
-                  {gift ? 'Chọn em để thêm quà' : 'Chọn em để xem giá'}
+                  {gift ? 'Chọn học sinh để thêm quà' : 'Chọn học sinh để xem giá'}
                 </p>
               )}
               {calcError && (

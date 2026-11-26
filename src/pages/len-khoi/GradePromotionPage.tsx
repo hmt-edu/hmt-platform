@@ -85,7 +85,7 @@ export function GradePromotionPage() {
     () => ({
       screenCode: 'KH-08',
       title: 'Lên khối đầu năm học',
-      searchPlaceholder: 'Tìm tên em, mã HS…',
+      searchPlaceholder: 'Tìm tên học sinh, mã HS…',
       columns: [
         { key: 'code', label: 'Mã HS', locked: true, render: (r) => <Code>{r.code}</Code> },
         {
@@ -148,7 +148,7 @@ export function GradePromotionPage() {
       setSelected(new Set());
       await refresh();
       toast({
-        title: `Đã lên khối ${result.promoted} em, ${result.graduated} em tốt nghiệp${result.excluded > 0 ? `, ${result.excluded} em loại trừ` : ''}.`,
+        title: `Đã lên khối ${result.promoted} học sinh, ${result.graduated} học sinh tốt nghiệp${result.excluded > 0 ? `, ${result.excluded} học sinh loại trừ` : ''}.`,
       });
     } catch (e) {
       setError(errorOf(e).message);
@@ -166,7 +166,7 @@ export function GradePromotionPage() {
       setUndoing(null);
       await refresh();
       toast({
-        title: `Đã hoàn tác: khôi phục ${result.restored} em${result.kept > 0 ? `, giữ nguyên ${result.kept} em đã được sửa khối sau đợt` : ''}.`,
+        title: `Đã hoàn tác: khôi phục ${result.restored} học sinh${result.kept > 0 ? `, giữ nguyên ${result.kept} học sinh đã được sửa khối sau đợt` : ''}.`,
       });
     } catch (e) {
       setError(errorOf(e).message);
@@ -226,13 +226,13 @@ export function GradePromotionPage() {
         sort={null}
         onSortChange={() => undefined}
         emptyMessage={{
-          title: 'Không có em nào đủ điều kiện lên khối',
-          hint: 'Chỉ em đang học và đã có khối. Em bảo lưu, đã dừng học, chưa có khối, đã tốt nghiệp được bỏ qua.',
+          title: 'Không có học sinh nào đủ điều kiện lên khối',
+          hint: 'Chỉ học sinh đang học và đã có khối. Học sinh bảo lưu, đã dừng học, chưa có khối, đã tốt nghiệp được bỏ qua.',
         }}
       />
       {summary && (
         <p className="mx-4 mt-3 text-sm text-fg-muted" data-testid="promotion-summary">
-          {`Sẽ chạy ${after?.total ?? 0} em (${after?.promoting ?? 0} lên khối, ${after?.graduating ?? 0} tốt nghiệp), loại trừ ${excluded.size} em. Bỏ qua: ${summary.skipped.khong_dang_hoc} em bảo lưu hoặc đã dừng học, ${summary.skipped.tiem_nang} em chưa ghi danh, ${summary.skipped.chua_co_khoi} em chưa có khối, ${summary.skipped.da_tot_nghiep} em đã tốt nghiệp, ${summary.skipped.da_len_khoi_nam_nay} em đã lên khối trong năm học này${summary.last_run_at ? ` (lần chạy trước ${formatDate(summary.last_run_at)})` : ''}.`}
+          {`Sẽ chạy ${after?.total ?? 0} học sinh (${after?.promoting ?? 0} lên khối, ${after?.graduating ?? 0} tốt nghiệp), loại trừ ${excluded.size} học sinh. Bỏ qua: ${summary.skipped.khong_dang_hoc} học sinh bảo lưu hoặc đã dừng học, ${summary.skipped.tiem_nang} học sinh chưa ghi danh, ${summary.skipped.chua_co_khoi} học sinh chưa có khối, ${summary.skipped.da_tot_nghiep} học sinh đã tốt nghiệp, ${summary.skipped.da_len_khoi_nam_nay} học sinh đã lên khối trong năm học này${summary.last_run_at ? ` (lần chạy trước ${formatDate(summary.last_run_at)})` : ''}.`}
         </p>
       )}
       <section className="mx-4 mt-6 pb-8" aria-labelledby="batches-heading">
@@ -301,7 +301,7 @@ export function GradePromotionPage() {
           { label: 'Tốt nghiệp (lớp 12)', value: String(after?.graduating ?? 0) },
           { label: 'Loại trừ', value: String(excluded.size) },
         ]}
-        description="Mỗi em lên một khối; lớp 12 chuyển sang tốt nghiệp. Hoàn tác cả đợt được trong số ngày cho phép."
+        description="Mỗi học sinh lên một khối; lớp 12 chuyển sang tốt nghiệp. Hoàn tác cả đợt được trong số ngày cho phép."
         confirmLabel="Lên khối"
         busy={busy}
         error={error}
@@ -316,7 +316,7 @@ export function GradePromotionPage() {
           { label: 'Lên khối', value: String(undoing?.promoted ?? 0) },
           { label: 'Tốt nghiệp', value: String(undoing?.graduated ?? 0) },
         ]}
-        description="Trả khối cũ cho cả đợt. Em đã được sửa khối tay sau đợt thì giữ nguyên."
+        description="Trả khối cũ cho cả đợt. Học sinh đã được sửa khối tay sau đợt thì giữ nguyên."
         confirmLabel="Hoàn tác"
         tone="danger"
         busy={busy}

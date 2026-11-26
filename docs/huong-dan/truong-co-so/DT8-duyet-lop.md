@@ -73,7 +73,7 @@ nguoi_viet: Code D
 | «Trình lớp cần có thời khoá biểu (ít nhất một khung giờ).» (mã HMT_LOP_THIEU_THOI_KHOA_BIEU) | lớp chưa có khung giờ | trả lớp về CSKH thêm Time Table |
 | «Lớp đang ở "…" không chuyển được sang "…".» | lớp đã đổi bước (người khác vừa làm) | tải lại trang, xem trạng thái hiện tại |
 | «Không huỷ được lớp đã có buổi Done.» (mã HMT_LOP_DA_CO_BUOI_DONE) | lớp đã có buổi hoàn thành | không huỷ; đóng lớp khi kết thúc |
-| «Không đóng được lớp, còn học sinh còn giờ: …» (mã HMT_LOP_CON_HOC_SINH_CON_GIO) | còn em còn giờ trong lớp | xử lý giờ của các em được liệt kê (chuyển lớp, hoàn phí…) rồi đóng |
+| «Không đóng được lớp, còn học sinh còn giờ: …» (mã HMT_LOP_CON_HOC_SINH_CON_GIO) | còn học sinh còn giờ trong lớp | xử lý giờ của các học sinh được liệt kê (chuyển lớp, hoàn phí…) rồi đóng |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** hai tài khoản cùng cơ sở: CSKH (cskh1–3.cs5) và Trưởng cơ sở (ql.cs5), đều là tài khoản giả.

@@ -55,7 +55,7 @@ Báo giá đã gửi khách thì khoá. Cần đổi thì tạo báo giá mới.
 **12. Tôi không sửa được đơn: «Đơn đã trình: không sửa được. Nhờ người duyệt từ chối để đưa về Nháp.»**
 Đơn đã trình thì khoá dòng, tổng tiền, điều khoản và lớp. Nhờ người duyệt bấm từ chối; đơn về Nháp, sửa rồi trình lại.
 
-**13. Báo «Chọn điều khoản thanh toán trước khi trình đơn.» hoặc «Có em chưa đủ thông tin».**
+**13. Báo «Chọn điều khoản thanh toán trước khi trình đơn.» hoặc «Có học sinh chưa đủ thông tin».**
 Mở dòng đơn, chọn điều khoản thanh toán và điền đủ tên, năm sinh học sinh rồi trình lại.
 
 **14. Báo «Chỉ tạo phiếu thu từ đơn đã duyệt.»**
@@ -76,7 +76,7 @@ Giữa lúc tạo và lúc duyệt có thêm buổi học hoặc khoản tiền,
 ## D. Khách hàng, lead, cơ hội
 
 **19. Báo «Phụ huynh này đã có học sinh trùng họ tên và năm sinh.» hoặc số điện thoại đã có hồ sơ.**
-Em (hoặc khách) đã có trong hệ thống. Mở hồ sơ có sẵn dùng tiếp; nếu thật sự là hai người thì chọn «Vẫn dùng số này». Hai hồ sơ cùng một khách: dùng «Gộp trùng» (gộp không hoàn tác, hệ thống hỏi xác nhận).
+Học sinh (hoặc khách) đã có trong hệ thống. Mở hồ sơ có sẵn dùng tiếp; nếu thật sự là hai người thì chọn «Vẫn dùng số này». Hai hồ sơ cùng một khách: dùng «Gộp trùng» (gộp không hoàn tác, hệ thống hỏi xác nhận).
 
 **20. Không chuyển được cơ hội sang giai đoạn «Đồng ý tham gia test» trở đi: «Từ giai đoạn L5 trở lên mỗi em bắt buộc có tên và năm sinh.»**
 Điền «Tên học sinh» và «Năm sinh học sinh» trên cơ hội rồi chuyển lại.
@@ -87,7 +87,7 @@ Lịch Gọi điện bắt buộc ô «Kết quả» khi quản lý bật tham s
 ## E. Lớp, buổi học, giáo viên
 
 **22. Tôi không chọn được lớp khi xếp lớp.**
-Lớp chỉ hiện khi đã duyệt, còn chỗ, đúng môn, khối và cơ sở. Báo «Lớp đã hết chỗ.» thì chọn lớp khác. Báo «Lớp mới trùng lớp đang học» là em đã học lớp đó.
+Lớp chỉ hiện khi đã duyệt, còn chỗ, đúng môn, khối và cơ sở. Báo «Lớp đã hết chỗ.» thì chọn lớp khác. Báo «Lớp mới trùng lớp đang học» là học sinh đã học lớp đó.
 
 **23. Phiếu nghiệp vụ (bảo lưu, chuyển lớp, huỷ…) bị chặn.**
 Đọc câu trên màn, thường là một trong: thiếu lý do («Huỷ phiếu cần ghi lý do», «Từ chối phải ghi lý do»); phiếu đã xong hoặc đã đóng («Phiếu đã xong hoặc đã đóng, không huỷ được»); phiếu tái tục đã có đơn đang xử lý; người tạo tự duyệt. Làm bước còn thiếu hoặc nhờ người khác duyệt.
@@ -102,7 +102,7 @@ Khi duyệt yêu cầu buổi, hệ thống **cảnh báo** trùng giờ giáo v
 Giờ dạy của tháng đã chốt thì khoá, không mở lại. Cần điều chỉnh thì hỏi kế toán cách xử lý.
 
 **27. Báo «Ghi danh này không còn hiệu lực … nên không điều chỉnh giờ được.»**
-Ghi danh đã dừng, hoàn phí, hoàn thành, chuyển lớp hoặc huỷ nên không cộng trừ giờ nữa. Điều chỉnh ở ghi danh còn hiệu lực của em.
+Ghi danh đã dừng, hoàn phí, hoàn thành, chuyển lớp hoặc huỷ nên không cộng trừ giờ nữa. Điều chỉnh ở ghi danh còn hiệu lực của học sinh.
 
 ## F. Ticket chăm sóc khách hàng
 

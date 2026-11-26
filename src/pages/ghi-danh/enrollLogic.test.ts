@@ -48,7 +48,9 @@ describe('Hộp chọn lớp: chữ và gợi ý', () => {
     expect(defaultStart({ ...cls, upcoming: [], has_sessions: false })).toBe('');
   });
   it('lý do mờ khi trùng buổi, không có thì null (lớp luân phiên máy chủ trả 0)', () => {
-    expect(disabledReason({ ...cls, clash_sessions: 3 })).toBe('Trùng 3 buổi với lớp em đang học');
+    expect(disabledReason({ ...cls, clash_sessions: 3 })).toBe(
+      'Trùng 3 buổi với lớp mà học sinh đang học',
+    );
     expect(disabledReason(cls)).toBeNull();
   });
   it('chữ sĩ số', () => {
