@@ -461,7 +461,6 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
     label: string,
     extra?: {
       required?: boolean;
-      keepEmpty?: boolean;
       hint?: string;
       placeholder?: string;
       show?: (value: string) => string;
@@ -471,7 +470,6 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
     <DetailField
       label={label}
       required={extra?.required}
-      keepEmpty={extra?.keepEmpty}
       hint={extra?.hint}
       mode={mode}
       value={extra?.show ? extra.show(view[key]) : view[key]}
@@ -839,12 +837,10 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
             firstFields={
               <>
                 {text('student_name', 'Tên học sinh', {
-                  keepEmpty: true,
                   hint: 'bắt buộc từ L5',
                   placeholder: 'Tên (bắt buộc từ L5)',
                 })}
                 <DetailField
-                  keepEmpty
                   label="Ngày sinh"
                   mode={mode}
                   value={
@@ -862,7 +858,6 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                   }
                 />
                 <DetailField
-                  keepEmpty
                   label="Năm sinh"
                   hint="bắt buộc từ L5"
                   mode={mode}
@@ -881,15 +876,12 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                   }
                 />
                 {text('school', 'Trường học', {
-                  keepEmpty: true,
                   placeholder: 'Tên trường',
                 })}
                 {text('self_rating', 'Học lực tự đánh giá', {
-                  keepEmpty: true,
                   placeholder: 'VD Khá, yếu phần Hình',
                 })}
                 {text('goal', 'Mục tiêu', {
-                  keepEmpty: true,
                   placeholder: 'Mục tiêu của học sinh',
                 })}
               </>

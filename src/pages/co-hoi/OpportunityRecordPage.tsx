@@ -315,11 +315,10 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const text = (
     key: 'student_name' | 'school' | 'self_rating' | 'goal',
     label: string,
-    extra?: { keepEmpty?: boolean; hint?: string; placeholder?: string },
+    extra?: { hint?: string; placeholder?: string },
   ) => (
     <DetailField
       label={label}
-      keepEmpty={extra?.keepEmpty}
       hint={extra?.hint}
       mode={mode}
       value={view[key]}
@@ -677,12 +676,10 @@ function OpportunityView({ record }: { record: OppRecord }) {
             firstFields={
               <>
                 {text('student_name', 'Tên học sinh', {
-                  keepEmpty: true,
                   hint: 'bắt buộc từ L5',
                   placeholder: 'Tên (bắt buộc từ L5)',
                 })}
                 <DetailField
-                  keepEmpty
                   label="Ngày sinh"
                   mode={mode}
                   value={
@@ -700,7 +697,6 @@ function OpportunityView({ record }: { record: OppRecord }) {
                   }
                 />
                 <DetailField
-                  keepEmpty
                   label="Năm sinh"
                   hint="bắt buộc từ L5"
                   mode={mode}
@@ -719,15 +715,12 @@ function OpportunityView({ record }: { record: OppRecord }) {
                   }
                 />
                 {text('school', 'Trường học', {
-                  keepEmpty: true,
                   placeholder: 'Tên trường',
                 })}
                 {text('self_rating', 'Học lực tự đánh giá', {
-                  keepEmpty: true,
                   placeholder: 'VD Khá, yếu phần Hình',
                 })}
                 {text('goal', 'Mục tiêu', {
-                  keepEmpty: true,
                   placeholder: 'Mục tiêu của học sinh',
                 })}
               </>

@@ -222,14 +222,12 @@ function EmFields({
     <>
       <DetailField
         label="Tên học sinh"
-        keepEmpty
         mode={fieldMode}
         value={line.full_name ?? ''}
         editor={text('fullName', 'Tên học sinh')}
       />
       <DetailField
         label="Ngày sinh"
-        keepEmpty
         mode={fieldMode}
         value={line.birth_date ? formatDate(`${line.birth_date}T00:00:00+07:00`) : ''}
         editor={
@@ -243,28 +241,24 @@ function EmFields({
       />
       <DetailField
         label="Năm sinh"
-        keepEmpty
         mode={fieldMode}
         value={line.birth_year === null ? '' : String(line.birth_year)}
         editor={text('birthYear', 'Năm sinh')}
       />
       <DetailField
         label="Trường học"
-        keepEmpty
         mode={fieldMode}
         value={line.school ?? ''}
         editor={text('school', 'Trường học')}
       />
       <DetailField
         label="Học lực tự đánh giá"
-        keepEmpty
         mode={fieldMode}
         value={line.self_rating ?? ''}
         editor={text('selfRating', 'Học lực tự đánh giá')}
       />
       <DetailField
         label="Mục tiêu"
-        keepEmpty
         mode={fieldMode}
         value={line.goal ?? ''}
         editor={text('goal', 'Mục tiêu')}
