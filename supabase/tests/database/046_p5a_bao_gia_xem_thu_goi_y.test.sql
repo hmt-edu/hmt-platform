@@ -235,14 +235,14 @@ select pg_temp.sudo($$alter table app.quotation enable trigger quotation_fill_st
 select is(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'popular', '[]'::jsonb, 'Đ228: báo giá cũ hơn quotation_popular_window_days (90 ngày) không tính');
 select pg_temp.sudo($$update app.setting_def set value = '365' where key = 'quotation_popular_window_days'$$);
 select is(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'popular', '["LC-TOAN-K09", "DV-CSGK"]'::jsonb, 'Đ228: nới cửa sổ lên 365 ngày thì tính lại');
--- Giới hạn kết quả: không tải cả bảng.
+-- B-26-03: ô chọn cần đủ sản phẩm (bảng cấu hình nhỏ), nhiều hơn cỡ trang vẫn trả hết.
 select pg_temp.sudo($$insert into app.sales_package (code, name, package_type_code) select 'TL-LIM' || lpad(g::text, 3, '0'), 'Gói thử ' || g, 'TL' from generate_series(1, 25) g$$);
 select pg_temp.sudo($$insert into app.package_price (package_id, delivery_mode_code, unit_price, effective_from)
   select id, 'OFF', 100000, date '2026-01-01' from app.sales_package where code like 'TL-LIM%'$$);
 select pg_temp.sudo($$update app.setting_def set value = '20' where key = 'list_page_size_max'$$);
-select is(jsonb_array_length(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages'), 21, 'Gói bán: 20 gói đầu theo list_page_size_max, cộng 1 gói gợi ý nằm ngoài trang');
+select is(jsonb_array_length(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages'), (app.list_sellable_packages(pg_temp.oid('0900011001')) ->> 'total')::int, 'B-26-03: trả mọi sản phẩm bán, không cắt theo list_page_size_max');
 select ok((app.list_sellable_packages(pg_temp.oid('0900011001')) ->> 'total')::int > 20, 'Gói bán: vẫn báo tổng số gói thật');
-select is((select count(*)::int from jsonb_array_elements(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages') x where x ->> 'code' = 'VNN-TOAN-K09'), 1, 'Gói bán: gói gợi ý nằm ngoài trang đầu vẫn có chi tiết');
+select is((select count(*)::int from jsonb_array_elements(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages') x where x ->> 'code' = 'VNN-TOAN-K09'), 1, 'Gói bán: gói gợi ý có chi tiết');
 select is((select count(*)::int from jsonb_array_elements(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages') x where x ->> 'code' in (select jsonb_array_elements_text(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'suggested'))), 2, 'Gói bán: mọi gói gợi ý đều có chi tiết trong packages');
 select is((select count(*)::int from jsonb_array_elements(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'packages') x where x ->> 'code' in (select jsonb_array_elements_text(app.list_sellable_packages(pg_temp.oid('0900011001')) -> 'popular'))), 2, 'Gói bán: mọi gói Hay dùng đều có chi tiết trong packages');
 select pg_temp.sudo($$update app.setting_def set value = '50' where key = 'list_page_size_max'$$);
