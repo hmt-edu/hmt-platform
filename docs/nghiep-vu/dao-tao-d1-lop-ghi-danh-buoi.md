@@ -216,6 +216,7 @@ Chưa làm: sửa điểm sau Done (qua ticket, chỉ quản lý đào tạo), �
 - Kiểm thử: pgTAP `574_lop02_03_hinh_thuc_hoc_xem_truoc.test.sql`; Vitest `classForm.test.ts`, `enrollLogic.test.ts`; e2e `lop.spec.ts`.
 
 - **R-LOP-14 kiểm môn theo khối (migration 589)**: `create_class` chặn khi tham số `class_subject_grade_check_enabled` bật: khối từ `algebra_geometry_split_grade` trở lên không tạo lớp chung `TOAN`, khối dưới không tạo `DAI`, `HINH`, lớp riêng `LR` được miễn; lỗi `HMT_LOP_MON_SAI_KHOI`. Mặc định TẮT, Admin bật khi go-live. Kiểm thử pgTAP `589_rlop14_kiem_mon_theo_khoi.test.sql`.
+- **R-LOP-07 khung chương trình khi trình lớp (migration 689)**: `transition_class` gọi `assert_class_curriculum` khi trình; tham số `class_curriculum_required_enabled` bật thì lớp chung chưa có khung không trình được (`HMT_LOP_THIEU_KHUNG_CHUONG_TRINH`), lớp riêng `LR` được miễn, lưu nháp không bị chặn. Mặc định TẮT, Admin bật khi go-live. Khi bật, nạp lớp từ Sheet và dữ liệu mẫu không có khung cũng bị chặn. Kiểm thử pgTAP `689_rlop07_khung_bat_buoc_khi_trinh.test.sql`.
 
 **Nhãn buổi học bù, bổ trợ (A-23-18, G18, migration 630).** `app.renumber_class_sessions` chỉ đánh «Buổi N» cho buổi mà `app.session_type_numbered(loại)` trả đúng (mọi loại trừ HOC_BU, BO_TRO; củng cố, kiểm tra vẫn chiếm số). Buổi bù, bổ trợ có `session_no` null, giao diện hiện tên loại buổi (danh mục SESSION_TYPE). `session_cancel_preview` và `generate_class_sessions` dùng chung quy tắc này. Trừ giờ, chốt tháng, sổ giờ không dùng `session_no`.
 

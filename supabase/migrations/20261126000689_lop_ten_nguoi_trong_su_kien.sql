@@ -71,3 +71,129 @@ begin
                from (select * from app.class_event ev where ev.class_id = c.id order by ev.created_at desc limit 20) z), '[]'::jsonb)); -- allow-number: 20 sự kiện mới nhất
 end;
 $$;
+
+-- D-26-09 (phần a, anh Trường chốt 27/11): R-LOP-07 «khung chương trình bắt buộc với lớp chung» kiểm ở máy chủ lúc TRÌNH, sau tham số
+-- class_curriculum_required_enabled, mặc định TẮT, Admin bật khi go-live (như migration 589). Không chặn lúc lưu nên lớp nháp không vỡ.
+-- Khi BẬT: lớp chung nạp từ Sheet (import_one_class tự Trình) và dữ liệu mẫu không có khung sẽ bị chặn; hai hàm đó giữ nguyên.
+select set_config('hmt.migration', 'on', false);
+
+insert into app.setting_def (key, name, value_type, unit, min_value, max_value, value, allow_branch_override, module, legacy_ref, description)
+values ('class_curriculum_required_enabled', 'Bắt buộc khung chương trình khi trình lớp chung', 'BOOL', null, null, null, 'false', false, 'VAN_HANH_LOP', 'R-LOP-07',
+        'Bật: lớp chung chưa chọn khung chương trình thì không trình được; lớp riêng được miễn. Tắt: máy chủ không kiểm.')
+on conflict (key) do nothing;
+
+-- app.assert_class_curriculum(lớp): chặn khi tham số bật, lớp không phải lớp riêng (LR) và chưa có khung chương trình.
+-- Chỉ app.transition_class gọi (nội bộ, quyền đã kiểm ở đó). Đầu vào: mã lớp. Kết quả: không trả gì, lỗi HMT_LOP_THIEU_KHUNG_CHUONG_TRINH.
+create or replace function app.assert_class_curriculum(p_class_id uuid)
+returns void
+language plpgsql
+stable
+set search_path = ''
+as $$
+declare
+  c app.class;
+begin
+  select * into c from app.class where id = p_class_id;
+  -- Luật R-LOP-07: lớp riêng được miễn.
+  if app.get_setting_bool('class_curriculum_required_enabled', c.branch_id)
+     and c.class_type_code <> 'LR' and btrim(coalesce(c.curriculum_ref, '')) = '' then
+    perform app.raise_error('HMT_LOP_THIEU_KHUNG_CHUONG_TRINH',
+      'Lớp chung cần có khung chương trình mới trình được. Chọn khung ở màn Sửa lớp; chưa có khung thì tạo ở Cấu hình, Khung chương trình.');
+  end if;
+end;
+$$;
+revoke execute on function app.assert_class_curriculum(uuid) from public, anon, authenticated;
+
+-- app.transition_class(lớp, đích, ghi chú): đổi tình trạng duyệt. Mỗi đường đi một đoạn kiểm, theo R-LOP-01:
+--   Nháp→[Đã trình, Huỷ]; Đã trình→[Đã xác nhận, Từ chối, Nháp, Huỷ]; Đã xác nhận→[Đã duyệt, Từ chối, Nháp, Huỷ];
+--   Đã duyệt→[Đã đóng, Huỷ]; Từ chối→[Nháp, Huỷ].
+-- Quyền: Trình, Từ chối→Nháp, Nháp→Huỷ: Lớp học · Sửa; Xác nhận, Duyệt, Từ chối, Đóng: Lớp học · Duyệt; Đưa về Nháp (từ Đã trình, Đã xác nhận):
+--   người trình hoặc người có quyền Duyệt; Huỷ lớp đã trình trở đi: Lớp học · Huỷ.
+-- Kết quả: {to, sessions_created, warnings[]}.
+create or replace function app.transition_class(p_id uuid, p_to text, p_note text default null)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  c app.class;
+  v_event text;
+  v_created integer := 0;
+  v_names text[];
+begin
+  select * into c from app.class where id = p_id for update;
+  if c.id is null then
+    perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy lớp.');
+  end if;
+  -- Luật R-LOP-01: đường đi hợp lệ.
+  if not ((c.status_code = 'NHAP' and p_to in ('DA_TRINH', 'HUY'))
+       or (c.status_code = 'DA_TRINH' and p_to in ('DA_XAC_NHAN', 'TU_CHOI', 'NHAP', 'HUY'))
+       or (c.status_code = 'DA_XAC_NHAN' and p_to in ('DA_DUYET', 'TU_CHOI', 'NHAP', 'HUY'))
+       or (c.status_code = 'DA_DUYET' and p_to in ('DA_DONG', 'HUY'))
+       or (c.status_code = 'TU_CHOI' and p_to in ('NHAP', 'HUY'))) then
+    perform app.raise_error('HMT_LOP_CHUYEN_SAI', format('Lớp đang ở "%s" không chuyển được sang "%s".',
+      (select name from app.catalog_item where catalog_code = 'CLASS_STATUS' and code = c.status_code),
+      (select name from app.catalog_item where catalog_code = 'CLASS_STATUS' and code = p_to)));
+  end if;
+
+  -- Quyền theo từng đường đi (R-LOP-02).
+  if p_to = 'DA_TRINH' or (c.status_code = 'TU_CHOI' and p_to = 'NHAP') or (c.status_code = 'NHAP' and p_to = 'HUY') then
+    perform app.assert_can('CLASS', 'SUA', c.branch_id);
+  elsif p_to = 'NHAP' then
+    -- Đưa về Nháp từ Đã trình, Đã xác nhận: người trình hoặc quản lý cơ sở đều bấm được.
+    if c.submitted_by is distinct from auth.uid() then
+      perform app.assert_can('CLASS', 'DUYET', c.branch_id);
+    else
+      perform app.assert_can('CLASS', 'SUA', c.branch_id);
+    end if;
+  elsif p_to = 'HUY' then
+    perform app.assert_can('CLASS', 'HUY', c.branch_id);
+  else
+    perform app.assert_can('CLASS', 'DUYET', c.branch_id);
+  end if;
+
+  -- Luật R-LOP-03: trình lớp bắt buộc có thời khoá biểu.
+  if p_to = 'DA_TRINH' and not exists (select from app.class_slot where class_id = p_id and is_active) then
+    perform app.raise_error('HMT_LOP_THIEU_THOI_KHOA_BIEU', 'Trình lớp cần có thời khoá biểu (ít nhất một khung giờ).');
+  end if;
+  -- Luật R-LOP-07: trình lớp chung phải có khung chương trình (sau tham số, xem app.assert_class_curriculum).
+  if p_to = 'DA_TRINH' then
+    perform app.assert_class_curriculum(p_id);
+  end if;
+  -- Từ chối bắt buộc nêu lý do.
+  if p_to = 'TU_CHOI' and btrim(coalesce(p_note, '')) = '' then
+    perform app.raise_error('HMT_LOP_CAN_LY_DO', 'Từ chối lớp cần ghi lý do.');
+  end if;
+  -- Luật R-LOP-04: đóng lớp bị chặn nếu còn học sinh còn giờ (liệt kê tên).
+  if p_to = 'DA_DONG' then
+    v_names := app.class_students_with_hours(p_id);
+    if coalesce(array_length(v_names, 1), 0) > 0 then
+      perform app.raise_error('HMT_LOP_CON_HOC_SINH_CON_GIO', 'Không đóng được lớp, còn học sinh còn giờ: ' || array_to_string(v_names, ', ') || '.');
+    end if;
+  end if;
+  -- Luật R-LOP-04: huỷ lớp bị chặn nếu đã có buổi Done.
+  if p_to = 'HUY' and exists (select from app.class_session where class_id = p_id and status_code = 'DONE') then
+    perform app.raise_error('HMT_LOP_DA_CO_BUOI_DONE', 'Không huỷ được lớp đã có buổi Done.');
+  end if;
+
+  update app.class set status_code = p_to,
+         submitted_by = case when p_to = 'DA_TRINH' then auth.uid() when p_to = 'NHAP' then null else submitted_by end
+   where id = p_id;
+
+  -- Luật R-LOP-03: duyệt xong thì tự sinh buổi từ thời khoá biểu.
+  if p_to = 'DA_DUYET' then
+    v_created := app.generate_class_sessions(p_id, c.start_date);
+  end if;
+  -- Huỷ lớp: các buổi chưa Done chuyển Huỷ không tính phí.
+  if p_to = 'HUY' then
+    update app.class_session set status_code = 'HUY_KHONG_PHI' where class_id = p_id and status_code in ('NHAP', 'DA_CHOT');
+  end if;
+
+  v_event := case p_to when 'DA_TRINH' then 'TRINH' when 'DA_XAC_NHAN' then 'XAC_NHAN' when 'DA_DUYET' then 'DUYET'
+                       when 'TU_CHOI' then 'TU_CHOI' when 'NHAP' then 'VE_NHAP' when 'DA_DONG' then 'DONG' else 'HUY' end;
+  perform app.class_add_event(p_id, v_event, c.status_code, p_to, p_note);
+  return jsonb_build_object('to', p_to, 'sessions_created', v_created,
+                            'warnings', case when p_to = 'DA_DUYET' then app.class_clash_warnings(p_id) else '[]'::jsonb end);
+end;
+$$;
