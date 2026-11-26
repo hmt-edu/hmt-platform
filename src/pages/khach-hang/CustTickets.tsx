@@ -1,35 +1,112 @@
-// Tab «Ticket» ở hồ sơ phụ huynh (KH-02) và học sinh (KH-05), canvas 9933 (KH02_ticket): ticket của phụ huynh, học sinh đó.
-// Một lần gọi app.list_tickets mỗi trang (lọc parent_id hoặc student_id ở máy chủ, migration 600); chạy dưới RLS ticket nên người không có quyền thấy 0 dòng.
+// Tab «Ticket» ở hồ sơ phụ huynh (KH02_ticket) và «Đề nghị & khiếu nại» ở hồ sơ học sinh (KH05_de_nghi), canvas 9933.
+// Một lần gọi app.list_tickets mỗi trang (lọc parent_id hoặc student_id ở máy chủ, migration 600); chạy dưới RLS ticket nên chỉ thấy ticket trong quyền.
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
-import { Pagination, Tag } from '../../ui/Data';
-import { StateView, Spinner } from '../../ui/Feedback';
-import { useLeadCatalogs } from '../lead/useCatalogs';
+import { useAccess } from '../../nav/AccessContext';
+import { Button } from '../../ui/Button';
+import { Pagination, Tag, type Column } from '../../ui/Data';
+import { StateView } from '../../ui/Feedback';
+import { useLeadCatalogs, type LeadCatalogs } from '../lead/useCatalogs';
 import { TYPE_LABEL, ticketStatusTone } from '../ticket/ticketConfig';
-import type { TicketPage } from '../ticket/ticketTypes';
+import type { TicketPage, TicketRow } from '../ticket/ticketTypes';
+import { CustTable } from './CustTable';
+import { NO_VALUE } from './custColumns';
+import type { CustTicketOwner } from './useCustTickets';
 
-export type CustTicketOwner = { key: 'parent_id' | 'student_id'; id: string };
+function ticketColumns(owner: CustTicketOwner['key'], catalogs: LeadCatalogs): Column<TicketRow>[] {
+  const code: Column<TicketRow> = {
+    key: 'code',
+    header: 'Mã',
+    primary: true,
+    cell: (t) => (
+      <Link to={`/crm/ticket/${t.id}`} className="font-medium text-link hover:underline">
+        {t.code}
+      </Link>
+    ),
+  };
+  const type: Column<TicketRow> = {
+    key: 'type',
+    header: 'Loại',
+    cell: (t) => TYPE_LABEL[t.ticket_type] ?? t.ticket_type,
+  };
+  const due: Column<TicketRow> = {
+    key: 'due',
+    header: 'Hạn',
+    cell: (t) => (
+      <span className="flex flex-wrap items-center gap-1">
+        {formatDateTime(t.resolve_due_at)}
+        {t.sla_state === 'QUA_HAN' && <Tag tone="danger">Quá hạn</Tag>}
+      </span>
+    ),
+  };
+  const status = (header: string): Column<TicketRow> => ({
+    key: 'status',
+    header,
+    cell: (t) => (
+      <Tag tone={ticketStatusTone(t.status_code)} dot>
+        {catalogs.name('TICKET_STATUS', t.status_code) ?? t.status_code}
+      </Tag>
+    ),
+  });
+  if (owner === 'parent_id') {
+    // KH02_ticket: Loại, Mã, Học sinh, Hạn, Tình trạng.
+    return [
+      type,
+      code,
+      { key: 'student', header: 'Học sinh', cell: (t) => t.student_name ?? NO_VALUE },
+      due,
+      status('Tình trạng'),
+    ];
+  }
+  // KH05_de_nghi: Mã, Loại, Nhóm › nhóm con, Nội dung, kết quả, Người xử lý, Cơ sở, Hạn, Trạng thái.
+  return [
+    code,
+    type,
+    {
+      key: 'group',
+      header: 'Nhóm › nhóm con',
+      cell: (t) => [t.group_name, t.category_name].filter(Boolean).join(' › ') || NO_VALUE,
+    },
+    { key: 'title', header: 'Nội dung, kết quả', cell: (t) => t.title },
+    { key: 'assignee', header: 'Người xử lý', cell: (t) => t.assignee_name ?? 'Chưa giao' },
+    { key: 'branch', header: 'Cơ sở', cell: (t) => t.branch_code },
+    due,
+    status('Trạng thái'),
+  ];
+}
 
-export function CustTickets({ owner }: { owner: CustTicketOwner }) {
+export function CustTickets({
+  owner,
+  ticketType,
+  onClearType,
+}: {
+  owner: CustTicketOwner;
+  /** Chỉ hiện một loại ticket (bấm nút số «Khiếu nại»). */
+  ticketType?: string | undefined;
+  onClearType?: (() => void) | undefined;
+}) {
   const supabase = useDb();
+  const access = useAccess();
   const catalogs = useLeadCatalogs();
+  const allowed = access.can('TICKET', 'XEM');
   const pageSize = useIntSetting('list_page_size_default');
-  const [page, setPage] = useState(1);
+  const [paging, setPaging] = useState({ key: '', page: 1 });
+  const key = ticketType ?? '';
+  const page = paging.key === key ? paging.page : 1;
   const query = useQuery({
-    queryKey: ['cust-tickets', owner.key, owner.id, page, pageSize],
-    enabled: pageSize !== null,
+    queryKey: ['cust-tickets', owner.key, owner.id, key, page, pageSize],
+    enabled: allowed && pageSize !== null,
     placeholderData: keepPreviousData,
     queryFn: () =>
       rpc<TicketPage>(supabase, 'list_tickets', {
-        p_filters: { [owner.key]: owner.id },
+        p_filters: { [owner.key]: owner.id, ...(ticketType ? { ticket_type: ticketType } : {}) },
         p_limit: pageSize,
         p_offset: (page - 1) * (pageSize ?? 0),
       }),
   });
-  if (query.isPending || pageSize === null) return <Spinner label="Đang tải ticket…" />;
   if (query.isError) {
     return (
       <StateView kind="error" title="Không tải được ticket" headingLevel={2}>
@@ -37,29 +114,33 @@ export function CustTickets({ owner }: { owner: CustTicketOwner }) {
       </StateView>
     );
   }
-  const { rows, total } = query.data;
-  if (total === 0) return <p className="py-2 text-fg-muted">Chưa có ticket nào.</p>;
+  const total = query.data?.total ?? 0;
   return (
     <div className="flex flex-col gap-2">
-      <ul className="flex flex-col divide-y divide-border">
-        {rows.map((t) => (
-          <li key={t.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-            <span className="flex min-w-0 flex-col">
-              <Link to={`/crm/ticket/${t.id}`} className="font-medium text-link hover:underline">
-                {t.code} · {t.title}
-              </Link>
-              <span className="text-caption text-fg-muted">
-                {TYPE_LABEL[t.ticket_type] ?? t.ticket_type}
-                {t.category_name ? ` · ${t.category_name}` : ''} · {formatDateTime(t.created_at)}
-              </span>
-            </span>
-            <Tag tone={ticketStatusTone(t.status_code)}>
-              {catalogs.name('TICKET_STATUS', t.status_code) ?? t.status_code}
-            </Tag>
-          </li>
-        ))}
-      </ul>
-      <Pagination page={page} pageSize={pageSize} total={total} onPageChange={setPage} />
+      {ticketType && (
+        <p className="flex flex-wrap items-center gap-2">
+          <span>Đang lọc loại: {TYPE_LABEL[ticketType] ?? ticketType}</span>
+          <Button variant="ghost" onClick={onClearType}>
+            Xem tất cả loại
+          </Button>
+        </p>
+      )}
+      <CustTable
+        caption="Ticket"
+        columns={ticketColumns(owner.key, catalogs)}
+        rows={query.data?.rows ?? []}
+        rowKey={(t) => t.id}
+        loading={allowed && query.isPending}
+        empty={allowed ? 'Chưa có ticket nào.' : 'Bạn không có quyền xem ticket.'}
+      />
+      {total > 0 && pageSize !== null && (
+        <Pagination
+          page={page}
+          pageSize={pageSize}
+          total={total}
+          onPageChange={(p) => setPaging({ key, page: p })}
+        />
+      )}
     </div>
   );
 }
