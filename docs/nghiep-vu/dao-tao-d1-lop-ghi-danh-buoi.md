@@ -1,5 +1,7 @@
 # Đào tạo D1: Lớp, Ghi danh, Sổ giờ, Buổi học, Điểm danh (DB)
 
+> **26/11/2026, anh Trường chốt luật điểm danh và Done buổi mới (CHƯA làm trong mã):** R-DD-02 đến R-DD-06, R-GIO-06, R-GIO-07, R-GIO-09 đến R-GIO-12, R-GV-05, R-V2-35 (và làm rõ R-GV-04, R-V2-20: mã đã tính em Đi muộn) trong `docs/spec/04-luat-nghiep-vu.md`. Phần dưới mô tả mã đang chạy. Những chỗ mã sẽ phải đổi: điều kiện Done xét thêm hai cột khớp; chép ô giáo viên sang ô vận hành; dấu Đúng/Trễ hạn tách khỏi lúc Done; Done tay, nhập thay, Done hàng loạt; cờ vắng và báo cáo chỉ đọc cột giáo viên.
+
 Làm bởi Code 2, 10/11/2026. Migration 100 (Lớp), 101 (Ghi danh, Sổ giờ), 102 (Buổi, Điểm danh, Trừ giờ). **Gộp sau #205 và Q-137.**
 Luật: `docs/spec/04` mục 3 (R-GD), 4 (R-LOP), 5 (R-BUOI, R-GIO), 6 (R-DD), 7 (R-GV-08); R-V2-17..21. Chưa có giao diện (D3) và chưa nạp dữ liệu cũ (D1e).
 

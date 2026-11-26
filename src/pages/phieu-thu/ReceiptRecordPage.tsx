@@ -319,7 +319,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
           <DetailField
             label="Mã giao dịch"
             mode={editing ? 'edit' : 'view'}
-            value={record.txn_ref ?? '—'}
+            value={record.txn_ref ?? ''}
             editor={
               <TextField
                 label="Mã giao dịch"
@@ -340,7 +340,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             required
             hint="mặc định người lập"
             mode={editing ? 'edit' : 'view'}
-            value={record.receiver_name ?? '—'}
+            value={record.receiver_name ?? ''}
             editor={
               <ReceiverPicker
                 draft={draft}
@@ -369,7 +369,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
             label="Tài khoản nhận"
             hint="không bắt buộc"
             mode={canSetAccount ? 'edit' : 'view'}
-            value={record.receiving_account ?? '—'}
+            value={record.receiving_account ?? ''}
             editor={
               <Select
                 label="Tài khoản nhận"
@@ -419,7 +419,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
           <DetailField
             label="Ghi chú"
             mode={editing ? 'edit' : 'view'}
-            value={record.note ?? '—'}
+            value={record.note ?? ''}
             editor={
               <TextField
                 label="Ghi chú"
@@ -699,12 +699,12 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                   )
                 }
               />
-              <DetailField label="Phụ huynh" mode="view" value={record.parent?.name ?? '—'} />
-              <DetailField label="Mã phụ huynh" mode="view" value={record.parent?.code ?? '—'} />
+              <DetailField label="Phụ huynh" mode="view" value={record.parent?.name ?? ''} />
+              <DetailField label="Mã phụ huynh" mode="view" value={record.parent?.code ?? ''} />
               <DetailField
                 label="SĐT"
                 mode="view"
-                value={record.parent ? formatPhone(record.parent.phone) : '—'}
+                value={record.parent ? formatPhone(record.parent.phone) : ''}
               />
             </dl>
             <dl className="flex min-w-0 flex-col">
@@ -719,11 +719,11 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                   label="Lý do huỷ"
                   mode="view"
                   value={
-                    [record.cancel_reason, record.cancel_note].filter(Boolean).join(': ') || '—'
+                    [record.cancel_reason, record.cancel_note].filter(Boolean).join(': ') || ''
                   }
                 />
               )}
-              <DetailField label="Người lập" mode="view" value={record.created_by_name ?? '—'} />
+              <DetailField label="Người lập" mode="view" value={record.created_by_name ?? ''} />
               <DetailField label="Lập lúc" mode="view" value={formatDateTime(record.created_at)} />
               {'paid' in payment ? (
                 <>
@@ -745,7 +745,7 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                   <DetailField
                     label="Em"
                     mode="view"
-                    value={record.opening_student ? record.opening_student.name : '—'}
+                    value={record.opening_student ? record.opening_student.name : ''}
                   />
                   <DetailField
                     label="Nợ đầu kỳ còn lại của phụ huynh"

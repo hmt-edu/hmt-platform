@@ -163,9 +163,14 @@ test('Sửa rồi Lưu; thiếu thông tin thì báo tại ô; Huỷ không lưu
   await expect(toastText(page, 'Đã lưu.')).toBeVisible();
   await expect(page.getByRole('article').getByText('Ôn thi vào lớp 10 (E2E)')).toBeVisible();
   // Lịch sử thay đổi hiện ở cột Ghi chú và hoạt động.
-  await expect(
-    page.getByRole('region', { name: 'Ghi chú & hoạt động' }).getByText('Nhu cầu'),
-  ).toBeVisible();
+  const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  // Mở bản ghi: tab «Ghi chú» đang chọn (F-26-02); lịch sử hệ thống xem ở «Tất cả».
+  await expect(timeline.getByRole('button', { name: 'Ghi chú', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await timeline.getByRole('button', { name: 'Tất cả', exact: true }).click();
+  await expect(timeline.getByText('Nhu cầu')).toBeVisible();
 });
 
 // Hộp chọn nhóm con khi đổi giai đoạn (R-CRM-41): chọn nhóm con rồi bấm "Chuyển giai đoạn".
@@ -177,12 +182,12 @@ async function pickSubstage(page: Page, code: string) {
   await dialog.getByRole('button', { name: 'Chuyển giai đoạn' }).click();
 }
 
-test('Danh sách em: thêm em mới (chỉ bắt buộc họ tên), thiếu họ tên báo tại ô, bỏ em', async ({
+test('Thông tin học sinh: thêm em mới (chỉ bắt buộc họ tên), thiếu họ tên báo tại ô, bỏ em', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.low, seeded.mainId);
-  const section = page.getByRole('region', { name: 'Danh sách em' });
+  const section = page.getByRole('region', { name: 'Thông tin học sinh' });
   await section.getByRole('button', { name: 'Thêm em' }).click();
   const dialog = page.getByRole('dialog', { name: 'Thêm em' });
   await expect(
@@ -203,6 +208,56 @@ test('Danh sách em: thêm em mới (chỉ bắt buộc họ tên), thiếu họ
     .getByRole('button', { name: 'Bỏ em' })
     .click();
   await expect(section.getByRole('button', { name: /Em thêm bằng e2e/ })).toHaveCount(0);
+});
+
+test('Thông tin học sinh một khối: đổi thẻ em thì sáu trường đổi theo; Lưu lưu em đang chọn, em khác chưa lưu thì báo, không mất dữ liệu (A-26-01)', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  const first = `${setup.mark} Em Một`;
+  const second = `${setup.mark} Em Hai`;
+  await enterAs(page, setup.low);
+  await expect(page).toHaveURL(/\/crm$/);
+  await page.goto(`/crm/lead/${seeded.mainId}`);
+  const section = page.getByRole('region', { name: 'Thông tin học sinh' });
+  await expect(page.getByRole('heading', { name: 'Danh sách em' })).toHaveCount(0);
+
+  // Em đầu lưu cùng lead, rồi hiện thành thẻ em đầu (danh sách và trang bản ghi cùng một nguồn).
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  await section.getByLabel('Tên học sinh').fill(first);
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(toastText(page, 'Đã lưu.')).toBeVisible();
+  await expect(section.getByRole('button', { name: first })).toBeVisible();
+
+  await section.getByRole('button', { name: 'Thêm em' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Thêm em' });
+  await dialog.getByLabel('Họ tên em').fill(second);
+  await dialog.getByLabel('Trường học').fill('Trường Hai');
+  await dialog.getByRole('button', { name: 'Thêm em' }).click();
+  await expect(dialog).toHaveCount(0);
+
+  await section.getByRole('button', { name: second }).click();
+  await expect(section.getByText('Trường Hai')).toBeVisible();
+  await section.getByRole('button', { name: first }).click();
+  await expect(section.getByText('Trường Hai')).toHaveCount(0);
+  // Trường trống vẫn hiện nhãn.
+  await expect(section.getByText('Mục tiêu', { exact: true })).toBeVisible();
+
+  // Sửa cả hai em, đang chọn em đầu rồi Lưu: em hai chưa lưu thì báo và còn nguyên.
+  await page.getByRole('button', { name: 'Sửa', exact: true }).click();
+  await section.getByRole('button', { name: second }).click();
+  await section.getByLabel('Mục tiêu').fill('Mục tiêu em hai');
+  await section.getByRole('button', { name: first }).click();
+  await section.getByLabel('Mục tiêu').fill('Mục tiêu em một');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(toastText(page, /Còn thay đổi chưa lưu ở em/)).toBeVisible();
+  await section.getByRole('button', { name: new RegExp(second) }).click();
+  await expect(section.getByLabel('Mục tiêu')).toHaveValue('Mục tiêu em hai');
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
+  await expect(section.getByText('Mục tiêu em hai')).toBeVisible();
+  await section.getByRole('button', { name: first }).click();
+  await expect(section.getByText('Mục tiêu em một')).toBeVisible();
 });
 
 test('Đổi giai đoạn tự do có Hoàn tác, bắt chọn nhóm con; đổi nhóm con', async ({
