@@ -223,7 +223,9 @@ select is((pg_temp.reas('PHIEU_THU', 'r1', 'bm1b', 'BI_KHOA') ->> 'to_approver_i
 select is(pg_temp.aid('PHIEU_THU', 'r1'), pg_temp.uid('bm1b'), 'Người được giao của phiếu thu đã đổi');
 select is(pg_temp.rst('r1'), 'DA_GUI', 'Chuyển KHÔNG đổi trạng thái: phiếu vẫn chờ quản lý');
 select is(pg_temp.rev('r1'), 'TAO,GUI,CHUYEN_NGUOI_DUYET', 'Lịch sử phiếu thu ghi sự kiện chuyển người duyệt');
-select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('r1'))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Admin không tự duyệt thay bước quản lý phiếu thu (chỉ chuyển)');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('r1'))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Vai không có quyền duyệt tiền bị chặn ở bước quản lý phiếu thu');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
 select lives_ok($$select app.approve_receipt_manager(pg_temp.r('r1'))$$, 'Người nhận mới duyệt được bước quản lý');
 select is(pg_temp.rst('r1'), 'CHO_KE_TOAN', 'Duyệt xong sang chờ kế toán');

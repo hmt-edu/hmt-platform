@@ -281,6 +281,7 @@ tự kiểm quyền người gọi.
 - Tạo người dùng (QT-03): Edge Function `create` không nhận mật khẩu thì sinh mật khẩu tạm (cùng độ dài, chính sách như nạp), trả một lần cho hộp K4g, không lưu, không ghi nhật ký.
 
 ## Chốt chặn Admin không duyệt tiền (migration 455, sửa Q1 của Soát)
+> **26/11/2026:** luật này đã đổi. Admin hệ thống duyệt được việc tiền (migration 683, xem `admin-du-quyen.md`); các câu «Admin không duyệt» trong tài liệu này là luật cũ. Vai khác không đổi.
 
 Trigger `permission_admin_no_money_approval` trên bảng quyền chặn mọi đường ghi ô ADMIN × Kế toán · Duyệt đang bật (hàm lưu ma trận, `set_permission`, SQL): lỗi `HMT_CHI_KE_TOAN_DUYET_TIEN` (R-HT-01). Admin tạm gán vai trò Kế toán cho người cụ thể vẫn là việc cố ý, không nằm trong ma trận ADMIN.
 

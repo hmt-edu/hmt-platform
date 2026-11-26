@@ -202,7 +202,7 @@ test('Người lập huỷ phiếu chưa duyệt: chọn lý do, phiếu về Hu
 });
 
 // Q-100, TC-05: Kế toán duyệt phiếu thu. Phiếu thứ hai (số tiền nhỏ, phiếu đầu đã huỷ ở bài trên) đi hết đường: Sale trình, Trưởng cơ sở duyệt, rồi
-// Kế toán duyệt thì hệ thống sinh khoản tiền vào (R-TIEN-01); Admin KHÔNG có nút Duyệt (R-HT-01). Kế toán và Admin giả riêng của file này.
+// Kế toán duyệt thì hệ thống sinh khoản tiền vào (R-TIEN-01); Admin cũng có nút Duyệt (R-HT-01, 26/11). Kế toán và Admin giả riêng của file này.
 const ACCOUNTANT = 'ketoan.cs5';
 const ADMIN = 'quantri.cs1';
 const SECOND_AMOUNT = '200000';
@@ -233,12 +233,13 @@ test('Phiếu thứ hai: Trưởng cơ sở duyệt chuyển Kế toán', async 
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
 });
 
-test('Admin không có nút Duyệt phiếu thu (R-HT-01), thấy phiếu nhưng chỉ xem', async ({ page }) => {
+test('Admin có nút Duyệt phiếu thu ở bước Kế toán (R-HT-01)', async ({ page }) => {
   await enterAsAdmin(page, ADMIN);
   await page.goto(receipt2Url);
   await expect(page.getByRole('heading', { level: 2, name: /^PT-/ })).toBeVisible();
   await expect(page.getByText(/Quản lý đã duyệt, chờ Kế toán duyệt/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toHaveCount(0);
+  // Chỉ kiểm có nút, không bấm: bài sau dùng lại phiếu này cho Kế toán duyệt.
+  await expect(page.getByRole('button', { name: 'Duyệt phiếu thu' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Duyệt (chuyển Kế toán)' })).toHaveCount(0);
 });
 

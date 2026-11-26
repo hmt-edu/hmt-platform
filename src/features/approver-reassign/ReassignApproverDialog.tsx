@@ -73,7 +73,7 @@ function ReassignForm({
       open={open}
       onOpenChange={onOpenChange}
       title={`Chuyển người duyệt ${subject}`}
-      subtitle="Admin không duyệt ở bước quản lý. Chọn quản lý khác của cơ sở để nhận duyệt. Việc chuyển được ghi nhật ký."
+      subtitle="Chọn quản lý khác của cơ sở để nhận duyệt. Việc chuyển được ghi nhật ký."
       confirmLabel="Chuyển"
       canSubmit={toId !== '' && reason !== '' && (!needsNote || note.trim() !== '')}
       busy={busy}

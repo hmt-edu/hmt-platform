@@ -96,7 +96,9 @@ select is((select assigned_approver_id from app.receipt where id = (select (v ->
 -- ---- Duyệt: chỉ Kế toán (R-HT-01) ----
 select is(pg_temp.err($$select app.approve_opening_debt_receipt((select (v ->> 'id')::uuid from rc))$$), 'HMT_KHONG_CO_QUYEN', 'CSKH không duyệt được phiếu');
 select pg_temp.claims((select id from u where key = 'admin'), 'aal2');
-select is(pg_temp.err($$select app.approve_opening_debt_receipt((select (v ->> 'id')::uuid from rc))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Admin không duyệt được phiếu thu tiền');
+select pg_temp.claims((select id from u where key = 'cskh'), 'aal1');
+select is(pg_temp.err($$select app.approve_opening_debt_receipt((select (v ->> 'id')::uuid from rc))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Vai không có quyền duyệt tiền không duyệt được phiếu thu tiền');
+select pg_temp.claims((select id from u where key = 'admin'), 'aal2');
 select pg_temp.claims((select id from u where key = 'ke'), 'aal2');
 create temp table ap (v jsonb);
 grant all on ap to public;

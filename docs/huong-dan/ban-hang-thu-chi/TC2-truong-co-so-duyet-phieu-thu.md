@@ -21,7 +21,7 @@ cap_nhat: 2026-11-24
 - [ ] Bạn **không phải người lập** phiếu này.
 
 ## Cần nhớ
-- Bước quản lý và bước Kế toán là **hai người khác nhau**; Admin không duyệt thay Kế toán.
+- Bước quản lý và bước Kế toán là **hai người khác nhau**; riêng Admin hệ thống được duyệt cả hai bước, có ghi nhật ký.
 - Bạn duyệt là xác nhận phiếu **ghi đúng** số tiền, đúng đơn, đúng phần chia. Việc đối chiếu sao kê là của Kế toán.
 
 ## Các bước
