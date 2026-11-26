@@ -18,6 +18,15 @@ test.beforeAll(async () => {
        select 'VAN_HANH_LOP', id, true from app.branch where code = 'CS5'
        on conflict (module_code, branch_id) do update set enabled = true`,
     );
+    // Lớp chung bắt buộc có khung chương trình (R-LOP-07): khung giả Toán cơ bản cho mọi khối của năm học đang chọn.
+    const year = new Date().getFullYear();
+    const yearCode = `${String(year).slice(2)}${String(year + 1).slice(2)}`;
+    await db.query(
+      `insert into app.curriculum_frame (code, subject_code, grade_code, level_code, year_code)
+       select 'E2ELOP-' || code || '-' || $1, 'TOAN', code, 'CB', $1 from app.catalog_item where catalog_code = 'GRADE'
+       on conflict do nothing`,
+      [yearCode],
+    );
   } finally {
     await db.end();
   }
@@ -34,7 +43,7 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   const mark = legacy(testInfo.project.name);
   await enterAs(page, 'truongcs.cs5');
   await page.goto('/crm/lop/tao');
-  await expect(page.getByRole('heading', { level: 1, name: 'Tạo lớp mới' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'Tạo lớp mới' })).toBeVisible();
   await expectAccessible(page);
 
   // Nút Lưu nháp khi còn thiếu: báo từng trường.
@@ -53,21 +62,27 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   // LOP-03 (anh Trường chốt 20/11): Hình thức học là ô chọn (mặc định Offline); Tổ chức lớp không phải ô nhập, tự suy từ Phân loại (Cơ bản = Học chung).
   await expect(page.getByLabel('Hình thức học')).toHaveValue('OFF');
   await page.getByLabel('Hình thức học').selectOption({ label: 'OMO' });
-  await expect(page.getByLabel('Tổ chức lớp')).toHaveValue('Học chung');
-  await expect(page.getByLabel('Tổ chức lớp')).not.toBeEditable();
-  // A50: Khung chương trình và Bài bắt đầu là ô chọn (lấy từ khung ở CH-05), không còn ô gõ chữ; chưa có khung khớp thì chỉ còn «— Chọn —».
-  await expect(page.getByLabel('Khung chương trình')).toBeVisible();
+  await expect(page.locator('dt', { hasText: 'Tổ chức lớp' }).locator('+ dd')).toHaveText(
+    'Học chung',
+  );
+  await expect(page.getByRole('combobox', { name: 'Tổ chức lớp' })).toHaveCount(0);
+  // A50: Khung chương trình và Bài bắt đầu là ô chọn (lấy từ khung ở CH-05). R-LOP-07: lớp chung bắt buộc có khung.
+  await page.getByRole('button', { name: 'Lưu nháp' }).click();
+  await expect(page.getByText('Lớp chung bắt buộc có khung chương trình.')).toBeVisible();
+  await expect(page.getByText(/^Còn \d+ chỗ chưa hợp lệ/)).toBeVisible();
   await expect(page.getByLabel('Bài bắt đầu')).toBeDisabled();
+  await page.getByRole('combobox', { name: 'Khung chương trình' }).selectOption({ index: 1 });
   await page.getByLabel('Tổng số buổi').fill('12');
-  await page.getByLabel('Ngày khai giảng').fill('2027-01-05');
+  await page.getByLabel('Ngày bắt đầu').fill('2027-01-05');
   // Một khung giờ Thứ 3 (ngày 05/01/2027 là Thứ 3).
-  // Time Table là 7 tab theo thứ (Thứ 2 … Chủ nhật); mỗi tab chỉ hiện khung giờ của ngày đó, tab có số khung giờ.
-  await expect(page.getByRole('tab')).toHaveCount(7);
-  await page.getByRole('tab', { name: /^Thứ 3/ }).click();
-  await page.getByRole('button', { name: 'Thêm khung giờ' }).click();
-  await expect(page.getByRole('tab', { name: /^Thứ 3\s*1$/ })).toBeVisible();
+  // Time Table 7 thứ xếp dọc (khung LOP03_*): thứ nào cũng thấy, tiêu đề thứ kèm số khung giờ.
+  await expect(page.getByRole('region', { name: /^Time Table (Thứ|Chủ nhật)/ })).toHaveCount(7);
+  await page.getByRole('button', { name: 'Thêm khung giờ Thứ 3' }).click();
+  await expect(page.getByRole('heading', { name: 'Thứ 3 (1)' })).toBeVisible();
   // «Xem trước ngày kết thúc dự kiến»: tính ở máy chủ từ khung giờ đang nhập, chưa lưu.
-  await expect(page.getByLabel('Kết thúc dự kiến')).toHaveValue(/^\d{2}\/\d{2}\/\d{4}$/);
+  await expect(page.locator('dt', { hasText: 'Kết thúc dự kiến' }).locator('+ dd')).toHaveText(
+    /^\d{2}\/\d{2}\/\d{4}$/,
+  );
   await page.getByRole('button', { name: 'Lưu nháp' }).click();
   await expect(page).toHaveURL(/\/crm\/lop\/[0-9a-f-]{36}$/);
   const recordUrl = page.url();
