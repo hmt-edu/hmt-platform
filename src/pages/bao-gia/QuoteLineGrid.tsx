@@ -468,7 +468,7 @@ export function QuoteLineGrid({
   return (
     <div className="flex flex-col gap-2">
       <p className="text-caption text-fg-muted">
-        Chưa thấy em?{' '}
+        Chưa thấy học sinh?{' '}
         <Link to={opportunityHref} className="font-medium text-link hover:underline">
           Thêm học sinh ở cơ hội.
         </Link>
