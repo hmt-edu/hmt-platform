@@ -8,7 +8,7 @@ const oppPage: Crumb[] = [
 ];
 const own: Crumb[] = [
   { label: 'Tuyển sinh' },
-  { label: 'Phiếu kiểm tra', to: '/crm/phieu-kiem-tra' },
+  { label: 'Phiếu Test', to: '/crm/phieu-kiem-tra' },
   { label: 'PKT000001 · Em Giả A' },
 ];
 
@@ -26,13 +26,13 @@ describe('mergeTrail', () => {
   it('không có trang gốc thì giữ đường dẫn theo menu', () => {
     expect(mergeTrail(null, own, '/crm/phieu-kiem-tra/x')).toEqual(own);
   });
-  it('nối tiếp trang gốc: Tuyển sinh / Cơ hội / tên cơ hội / Phiếu kiểm tra / mã phiếu (lỗi 26/10)', () => {
+  it('nối tiếp trang gốc: Tuyển sinh / Cơ hội / tên cơ hội / Phiếu Test / mã phiếu (lỗi 26/10)', () => {
     const from = trailOf({ crumbs: oppPage, here: '/crm/co-hoi/abc' });
     expect(mergeTrail(from, own, '/crm/phieu-kiem-tra/x').map((c) => c.label)).toEqual([
       'Tuyển sinh',
       'Cơ hội',
       'Em Giả A · Phụ huynh Giả B',
-      'Phiếu kiểm tra',
+      'Phiếu Test',
       'PKT000001 · Em Giả A',
     ]);
   });

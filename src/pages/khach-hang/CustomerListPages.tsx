@@ -244,7 +244,7 @@ export function StudentListPage() {
       onRowClick={(r) => void navigate(studentPath(r.id))}
       emptyMessage={{
         title: 'Chưa có học sinh',
-        hint: 'Học sinh được tạo tự động từ phiếu kiểm tra, cơ hội. Đổi bộ lọc để xem tiếp.',
+        hint: 'Học sinh được tạo tự động từ phiếu Test, cơ hội. Đổi bộ lọc để xem tiếp.',
       }}
     />
   );

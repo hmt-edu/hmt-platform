@@ -161,7 +161,9 @@ select is(pg_temp.err($$select app.save_receipt(pg_temp.r('p1'), '{"amount": 500
 select is(pg_temp.err($$select pg_temp.sudo('update app.receipt set amount = 1 where id = pg_temp.r(''p1'')')$$), 'HMT_PHIEU_THU_DA_KHOA', 'Phiếu đã gửi: số tiền khoá ngay ở bảng');
 select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('p1'))$$), 'HMT_KHONG_CO_QUYEN', 'Người lập (Sale) không có quyền Duyệt phiếu thu');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('p1'))$$), 'HMT_KHONG_CO_QUYEN', 'R-TIEN-01: Admin không duyệt thay bước quản lý của phiếu thu');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('p1'))$$), 'HMT_KHONG_CO_QUYEN', 'R-TIEN-01: Vai không có quyền duyệt tiền không duyệt bước quản lý của phiếu thu');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select pg_temp.claims(pg_temp.uid('bm1b'), 'aal1');
 select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('p1'))$$), 'HMT_KHONG_PHAI_NGUOI_DUYET', 'Có quyền Duyệt nhưng không phải người đã chốt thì chặn');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');

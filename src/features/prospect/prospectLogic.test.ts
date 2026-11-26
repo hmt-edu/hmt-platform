@@ -11,6 +11,8 @@ import {
   uniqueEms,
   validateEmDraft,
   type ProspectStudent,
+  dirtyEmIds,
+  unsavedEmText,
 } from './prospectLogic';
 
 const NOW = 2026;
@@ -107,5 +109,47 @@ describe('Chọn em khi tạo cơ hội (TS-06)', () => {
   it('chữ theo canvas TS-06', () => {
     expect(pickEmText.tooMany(5)).toBe('Chọn tối đa 5 em.');
     expect(pickEmText.addToExisting).toBe('Thêm em vào cơ hội cũ');
+  });
+});
+
+describe('Thông tin học sinh một khối (A-26-01)', () => {
+  it('năm sinh để trống mà có ngày sinh thì gửi năm của ngày sinh; trống cả hai thì null', () => {
+    const d = { ...EMPTY_EM_DRAFT, fullName: 'Em A' };
+    expect(emPayload({ ...d, birthDate: '2013-05-05' }).birth_year).toBe(2013);
+    expect(emPayload({ ...d, birthDate: '2013-05-05', birthYear: '2012' }).birth_year).toBe(2012);
+    expect(emPayload(d).birth_year).toBeNull();
+  });
+
+  const em = (id: string, patch: Partial<ProspectStudent> = {}): ProspectStudent => ({
+    id,
+    position: 1,
+    student_id: null,
+    student_code: null,
+    full_name: `Em ${id}`,
+    birth_date: null,
+    birth_year: null,
+    school: null,
+    self_rating: null,
+    goal: null,
+    ...patch,
+  });
+
+  it('chỉ tính em từ số 2, chưa gắn hồ sơ, bản nháp khác dữ liệu đã lưu', () => {
+    const list = [em('a'), em('b'), em('c'), em('d', { student_id: 's' })];
+    const changed = (s: ProspectStudent) => ({ ...draftOfStudent(s), goal: 'Mới' });
+    expect(
+      dirtyEmIds(list, {
+        a: changed(list[0]!),
+        b: changed(list[1]!),
+        c: { ...draftOfStudent(list[2]!), school: '  ' },
+        d: changed(list[3]!),
+      }),
+    ).toEqual(['b']);
+  });
+
+  it('câu báo nêu tên em còn chưa lưu', () => {
+    expect(unsavedEmText(['An', 'Bình'])).toBe(
+      'Còn thay đổi chưa lưu ở em: An, Bình. Chọn thẻ em đó rồi bấm Lưu.',
+    );
   });
 });

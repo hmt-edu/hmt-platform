@@ -18,7 +18,7 @@ export function LoginPage() {
       subtitle="Dành cho nhân viên, giáo viên và trợ giảng."
       loginLabel="Email"
       loginInputMode="email"
-      loginPlaceholder="ten@hoamatoan.vn"
+      loginPlaceholder="Nhập email"
       wrongText="Email hoặc mật khẩu không đúng. Kiểm tra lại rồi thử lần nữa."
       footer={
         <>
@@ -46,7 +46,7 @@ export function StudentLoginPage() {
       subtitle="Đăng nhập để xem bài tập, lịch học và kết quả."
       product="lms"
       loginLabel="Mã học sinh"
-      loginPlaceholder="HS000212"
+      loginPlaceholder="Nhập mã học sinh"
       submitLabel="Vào học"
       wrongText="Mã học sinh hoặc mật khẩu chưa đúng. Em kiểm tra lại nhé."
       footer={

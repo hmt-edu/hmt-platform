@@ -207,7 +207,9 @@ select is(jsonb_array_length(app.list_receipts('{"waiting_manager": true}') -> '
 select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
 select is(jsonb_array_length(app.list_receipts('{"waiting_manager": true}') -> 'rows'), 0, 'R-V2-12: Trưởng cơ sở CS5 không thấy phiếu CS1');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('r1'))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Admin không duyệt thay bước quản lý của phiếu thu TRUONG_CS (Admin không có quyền Duyệt phiếu thu)');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('r1'))$$), 'HMT_KHONG_CO_QUYEN', 'R-HT-01: Vai không có quyền duyệt tiền bị chặn ở bước quản lý của phiếu thu TRUONG_CS');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 -- Sale thường (cùng cơ sở, kể cả người lập phiếu) không duyệt được bước quản lý của phiếu route TRUONG_CS (R-V2-12).
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.approve_receipt_manager(pg_temp.r('r1'))$$), 'HMT_KHONG_CO_QUYEN', 'R-V2-12: Sale thường cùng cơ sở không duyệt được phiếu thu TRUONG_CS');

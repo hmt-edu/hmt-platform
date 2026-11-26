@@ -12,6 +12,7 @@ import {
   remainingClassPath,
   longSlotWarning,
   slotSummary,
+  errorSummary,
   teacherOptionLabel,
   slotsPayload,
   validateForm,
@@ -27,6 +28,7 @@ const valid: ClassFormState = {
   gradeCode: 'K09',
   typeCode: 'CB',
   levelCode: 'A',
+  curriculumRef: 'DAI-K09-CB-2627',
   totalSessions: '24',
   startDate: '2026-11-17',
   slots: [{ ...newSlot(2, '2026-11-17'), key: 's1', firstDate: '2026-11-17' }],
@@ -196,7 +198,12 @@ describe('slotSummary (tóm tắt tự sinh từ Time Table, LOP-03)', () => {
     rooms: [{ id: 'r1', name: 'P201' }],
   };
   it('chưa có khung giờ thì báo rõ', () => {
-    expect(slotSummary([], opt)).toEqual({ schedule: 'Chưa có khung giờ', rooms: '—', staff: '—' });
+    expect(slotSummary([], opt)).toEqual({
+      schedule: 'Chưa có khung giờ',
+      rooms: '—',
+      teachers: '—',
+      assistants: '—',
+    });
   });
   it('sắp theo thứ rồi giờ, gộp phòng và người trùng', () => {
     const out = slotSummary(
@@ -208,7 +215,8 @@ describe('slotSummary (tóm tắt tự sinh từ Time Table, LOP-03)', () => {
     );
     expect(out.schedule).toBe('Thứ 3 18:00–19:30; Thứ 5 08:00–09:30');
     expect(out.rooms).toBe('P201');
-    expect(out.staff).toBe('Cô Lan, Anh Nam');
+    expect(out.teachers).toBe('Cô Lan');
+    expect(out.assistants).toBe('Anh Nam');
   });
 });
 
@@ -321,5 +329,35 @@ describe('Hình thức học, Tổ chức lớp, Tạo lớp còn lại (LOP-02/
   });
   it('địa chỉ không có tham số thì không điền sẵn gì', () => {
     expect(prefillFromParams(new URLSearchParams(''))).toEqual({});
+  });
+});
+
+describe('errorSummary (câu tóm tắt lỗi, LOP-03)', () => {
+  it('không lỗi thì không hiện', () => {
+    expect(errorSummary({}, [], 'Lưu nháp')).toBeNull();
+  });
+  it('đếm riêng thông tin lớp và thời khoá biểu theo thứ', () => {
+    const slots = [
+      { key: 'a', weekday: 6 },
+      { key: 'b', weekday: 3 },
+      { key: 'c', weekday: 1 },
+    ];
+    expect(errorSummary({ startDate: 'x', 'slot-a': 'y', 'slot-b': 'z' }, slots, 'Lưu nháp')).toBe(
+      'Còn 3 chỗ chưa hợp lệ (1 ở thông tin lớp, 2 ở thời khoá biểu: Thứ 4, Thứ 7). Sửa các ô đỏ rồi bấm Lưu nháp lại.',
+    );
+  });
+});
+
+describe('R-LOP-07: khung chương trình theo phân loại', () => {
+  it('lớp chung bắt buộc có khung, lớp riêng thì không', () => {
+    const common = validateForm({ ...EMPTY_FORM, typeCode: 'CB' }, true, false);
+    expect(common.curriculumRef).toBe('Lớp chung bắt buộc có khung chương trình.');
+    const own = validateForm({ ...EMPTY_FORM, typeCode: 'LR' }, true, false);
+    expect(own.curriculumRef).toBeUndefined();
+  });
+  it('lớp đã trình, đã duyệt không đòi lại khung', () => {
+    expect(
+      validateForm({ ...EMPTY_FORM, typeCode: 'CB' }, false, true).curriculumRef,
+    ).toBeUndefined();
   });
 });

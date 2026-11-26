@@ -1,5 +1,5 @@
 ---
-title: Vòng đời phiếu kiểm tra
+title: Vòng đời phiếu Test
 group: vai
 slug: tu-van-ts11
 order: 48
@@ -11,17 +11,17 @@ screens: [TS-16, TS-17, GV-15]
 checked: 2026-11-24
 ---
 
-# Vòng đời phiếu kiểm tra
+# Vòng đời phiếu Test
 
 **Làm xong bạn có:** một phiếu đi hết các bước Nháp → Đang test → Chờ giáo viên chấm → Hoàn thành, và cơ hội tự cập nhật giai đoạn theo.
-**Ai làm:** Tư vấn tuyển sinh, CSKH (giáo viên chỉ chấm điểm ở bước 5). **Màn:** Tuyển sinh → Phiếu kiểm tra → bản ghi phiếu.
+**Ai làm:** Tư vấn tuyển sinh, CSKH (giáo viên chỉ chấm điểm ở bước 5). **Màn:** Tuyển sinh → Phiếu Test → bản ghi phiếu.
 
 > Video: [VIDEO: ts11]
 > Không xem được video? Làm theo các bước dưới là đủ.
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Đã có phiếu «Nháp» (bài «Tạo phiếu kiểm tra từ cơ hội»).
-- [ ] Phiếu đã chọn **Phòng** và **GV chấm** (ở khối «Lịch và phụ trách»). GV chấm bắt buộc có trước khi bấm «Hoàn thành».
+- [ ] Đã có phiếu «Nháp» (bài «Tạo phiếu Test từ cơ hội»).
+- [ ] Phiếu đã chọn **Phòng** (khối «Lịch và phụ trách») và **GV chấm** (khối «Kết quả»). GV chấm bắt buộc có trước khi bấm «Hoàn thành».
 - [ ] Bạn là người tạo, người phụ trách hoặc có quyền sửa phiếu; nếu không, các nút đổi trạng thái sẽ không hiện.
 
 ## Luật cần nhớ (lời thường)
@@ -32,14 +32,14 @@ checked: 2026-11-24
 - Đưa phiếu về Nháp **không** kéo cơ hội lùi giai đoạn.
 
 ## Các bước
-1. Mở **Phiếu kiểm tra** (menu Tuyển sinh), mở phiếu cần xử lý. Đến giờ test, bấm **«Bắt đầu test»**.
+1. Mở **Phiếu Test** (menu Tuyển sinh), mở phiếu cần xử lý. Đến giờ test, bấm **«Bắt đầu test»**.
    *Bạn thấy:* thông báo «Đã bắt đầu test.», trạng thái «Đang test».
    [ẢNH: ts17-ts11-b1] [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Em làm bài xong, bấm **«Nộp bài»**.
    *Bạn thấy:* «Đã nộp bài, chờ giáo viên chấm.», trạng thái «Chờ giáo viên chấm»; cơ hội sang L6A.
-3. Nếu **GV chấm** còn trống: ở khối «Lịch và phụ trách» chọn «GV chấm» rồi lưu (ô nào đổi, hệ thống báo «Đã lưu.»). Giáo viên được giao sẽ chấm và nộp kết quả trong cổng Giáo viên.
+3. Nếu **GV chấm** còn trống: bấm sửa phiếu, ở khối «Kết quả» chọn «GV chấm» rồi lưu (ô nào đổi, hệ thống báo «Đã lưu.»). Giáo viên được giao sẽ chấm và nộp kết quả trong cổng Giáo viên.
    *Bạn thấy:* tên giáo viên ở ô «GV chấm».
-4. Giáo viên nhập xong thì khối «Kết quả» hiện «Điểm», «Trình độ đề xuất», «Phân loại đề xuất», «Nhận xét». Giáo viên vắng, bạn có thể bấm **«Nhập kết quả»** thay (hộp «Nhập kết quả»: «Điểm (0–10)» bắt buộc, «Giáo viên chấm», «Trình độ đề xuất», «Phân loại đề xuất», «Nhận xét»); lịch sử ghi «nhập thay».
+4. Chưa nhập thì khối «Kết quả» ghi «Chưa có kết quả». Giáo viên nhập xong thì khối này hiện «Điểm», «Trình độ đề xuất», «Phân loại đề xuất», «Nhận xét». Giáo viên vắng, bạn có thể bấm **«Nhập kết quả»** thay (hộp «Nhập kết quả»: «Điểm (0–10)» bắt buộc, «Giáo viên chấm», «Trình độ đề xuất», «Phân loại đề xuất», «Nhận xét»); lịch sử ghi «nhập thay».
    *Bạn thấy:* khối «Kết quả» có điểm dạng «7,5/10».
    [ẢNH: ts17-ts11-b4] [CHƯA CHỤP: cần chụp trên staging CS5]
 5. Bấm **«Hoàn thành»**. Nút mờ kèm «Cần giáo viên chấm, điểm và nhận xét trước khi Hoàn thành» nghĩa là còn thiếu một trong ba thứ đó.
@@ -51,7 +51,7 @@ checked: 2026-11-24
 
 ## Sau bước này
 - **Ai làm tiếp:** bạn tư vấn lớp, lên «Tư vấn» rồi «Đăng ký học» cho cơ hội; giáo viên chấm bài ở cổng Giáo viên.
-- **Bạn xem ở đâu:** Phiếu kiểm tra → lọc «Tôi tạo» / «Tôi phụ trách»; cơ hội → thẻ «Kiểm tra» hiện điểm.
+- **Bạn xem ở đâu:** Phiếu Test → lọc «Tôi tạo» / «Tôi phụ trách»; cơ hội → thẻ «Kiểm tra» hiện điểm.
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
@@ -86,4 +86,4 @@ checked: 2026-11-24
 - [ ] Phiếu «[MẪU]» đã «Hoàn thành» với điểm và nhận xét.
 - [ ] Bạn nói được cơ hội nằm ở nhóm con nào sau «Nộp bài» và sau «Hoàn thành».
 
-**Bước trước:** Tạo phiếu kiểm tra từ cơ hội · **Bước sau:** Đi cơ hội qua L1–L8 (từ L6 trở đi)
+**Bước trước:** Tạo phiếu Test từ cơ hội · **Bước sau:** Đi cơ hội qua L1–L8 (từ L6 trở đi)

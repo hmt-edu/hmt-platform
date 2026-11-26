@@ -43,7 +43,7 @@ const CHILD_LABEL: Record<string, string> = {
   'lich-hen': 'Lịch hẹn',
   'bao-gia': 'Báo giá',
   'don-hang': 'Đơn hàng',
-  'kiem-tra': 'Kiểm tra đầu vào',
+  'kiem-tra': 'Phiếu Test',
 };
 
 const CONFIG: ListConfig<Appointment> = {

@@ -141,7 +141,7 @@ function StageForm({
         {plan.kind === 'blocked-tests' && (
           <Alert
             tone="danger"
-            title={`Chưa chuyển sang ${target} được. Cơ hội còn phiếu kiểm tra đang dở:`}
+            title={`Chưa chuyển sang ${target} được. Cơ hội còn phiếu Test đang dở:`}
           >
             <ul className="mt-1 list-disc pl-5">
               {plan.tests.length > 0
@@ -172,7 +172,7 @@ function StageForm({
         )}
         {plan.kind === 'skip-test' && (
           <Alert tone="warning">
-            Cơ hội chưa có phiếu kiểm tra (hoặc mọi phiếu đều Huỷ). Chọn lý do bỏ qua test để chuyển
+            Cơ hội chưa có phiếu Test (hoặc mọi phiếu đều Huỷ). Chọn lý do bỏ qua test để chuyển
             tiếp.
           </Alert>
         )}

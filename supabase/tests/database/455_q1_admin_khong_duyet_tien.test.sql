@@ -39,18 +39,18 @@ select u.id, v.role from u join (values ('admin', 'ADMIN'), ('sales', 'SALES')) 
 create temp table base as select app.permission_current_version() as v;
 grant select on base to authenticated;
 
-select is((select count(*)::int from app.permission where role_code = 'ADMIN' and module_code = 'ACCOUNTING' and action_code = 'DUYET' and is_active), 0, 'Ban đầu: Admin không có Kế toán · Duyệt');
+select is((select count(*)::int from app.permission where role_code = 'ADMIN' and module_code = 'ACCOUNTING' and action_code = 'DUYET' and is_active), 1, 'R-HT-01 (26/11): Admin có Kế toán · Duyệt');
 select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'permission_matrix_edit_enabled'$$);
 set local role authenticated;
 select pg_temp.claims((select id from u where key = 'admin'), 'aal2');
 -- Tái hiện lỗ của Soát: cờ bật, Admin lưu ô ADMIN × ACCOUNTING × DUYET.
-select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(pg_temp.cell('ADMIN', 'ACCOUNTING', 'DUYET', 'TOAN_HE_THONG')))$$), 'HMT_CHI_KE_TOAN_DUYET_TIEN',
-          'Chặn: Admin không lưu được ô ADMIN × Kế toán · Duyệt qua ma trận');
-select is((select count(*)::int from app.permission where role_code = 'ADMIN' and module_code = 'ACCOUNTING' and action_code = 'DUYET' and is_active), 0, 'Lần lưu bị hoàn tác: Admin vẫn không có quyền');
+select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(pg_temp.cell('SALES', 'ACCOUNTING', 'DUYET', 'TOAN_HE_THONG')))$$), 'HMT_CHI_KE_TOAN_DUYET_TIEN',
+          'Chặn: không lưu được ô Tuyển sinh × Kế toán · Duyệt qua ma trận');
+select is((select count(*)::int from app.permission where role_code = 'SALES' and module_code = 'ACCOUNTING' and action_code = 'DUYET' and is_active), 0, 'Lần lưu bị hoàn tác: Tuyển sinh vẫn không có quyền');
 -- Q1b của Soát: danh sách cho phép, không chỉ chặn ADMIN. Trưởng cơ sở cũng không được cấp Kế toán · Duyệt.
 select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(pg_temp.cell('BRANCH_MANAGER', 'ACCOUNTING', 'DUYET', 'CO_SO')))$$), 'HMT_CHI_KE_TOAN_DUYET_TIEN',
           'Q1b chặn: Trưởng cơ sở không được cấp Kế toán · Duyệt qua ma trận');
-select is((select count(*)::int from app.permission where role_code <> 'ACCOUNTANT' and module_code = 'ACCOUNTING' and action_code = 'DUYET' and is_active), 0, 'Chỉ Kế toán có Kế toán · Duyệt');
+select is((select count(*)::int from app.permission where role_code not in ('ACCOUNTANT', 'ADMIN') and module_code = 'ACCOUNTING' and action_code = 'DUYET' and is_active), 0, 'Chỉ Kế toán và Admin hệ thống có Kế toán · Duyệt');
 -- Không chặn nhầm: ô khác vẫn lưu được.
 select is(pg_temp.save(jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'HUY', 'CO_SO'))) > 0, true, 'Đúng: ô khác vẫn lưu được');
 
