@@ -62,7 +62,13 @@ test('GV-03: lịch tháng: bấm Tháng thấy ô hôm nay có buổi; đổi t
   const todayDay = new Date()
     .toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' })
     .slice(8, 10);
-  const dayButton = page.getByRole('button', { name: `Xem tuần của ngày ${todayDay}` });
+  // Lưới tháng có thể hiện cả ngày cùng số của tháng trước/sau (vd. 26/10 và 26/11): chỉ lấy ô của tháng hiện tại.
+  const todayMonth = new Date()
+    .toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' })
+    .slice(5, 7);
+  const dayButton = page
+    .getByRole('gridcell', { name: new RegExp(` ${todayDay}/${todayMonth}, `) })
+    .getByRole('button', { name: `Xem tuần của ngày ${todayDay}` });
   // Ô hôm nay có ít nhất một buổi (mỗi ô chỉ hiện vài buổi đầu, phần còn lại ghi "+n buổi").
   const isNarrow = (page.viewportSize()?.width ?? 1280) < 640;
   if (!isNarrow) {
