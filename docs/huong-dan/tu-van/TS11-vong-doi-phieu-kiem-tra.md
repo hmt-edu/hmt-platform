@@ -21,7 +21,7 @@ checked: 2026-11-24
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Đã có phiếu «Nháp» (bài «Tạo phiếu Test từ cơ hội»).
-- [ ] Phiếu đã chọn **Phòng** và **GV chấm** (ở khối «Lịch và phụ trách»). GV chấm bắt buộc có trước khi bấm «Hoàn thành».
+- [ ] Phiếu đã chọn **Phòng** (khối «Lịch và phụ trách») và **GV chấm** (khối «Kết quả»). GV chấm bắt buộc có trước khi bấm «Hoàn thành».
 - [ ] Bạn là người tạo, người phụ trách hoặc có quyền sửa phiếu; nếu không, các nút đổi trạng thái sẽ không hiện.
 
 ## Luật cần nhớ (lời thường)
@@ -37,9 +37,9 @@ checked: 2026-11-24
    [ẢNH: ts17-ts11-b1] [CHƯA CHỤP: cần chụp trên staging CS5]
 2. Em làm bài xong, bấm **«Nộp bài»**.
    *Bạn thấy:* «Đã nộp bài, chờ giáo viên chấm.», trạng thái «Chờ giáo viên chấm»; cơ hội sang L6A.
-3. Nếu **GV chấm** còn trống: ở khối «Lịch và phụ trách» chọn «GV chấm» rồi lưu (ô nào đổi, hệ thống báo «Đã lưu.»). Giáo viên được giao sẽ chấm và nộp kết quả trong cổng Giáo viên.
+3. Nếu **GV chấm** còn trống: bấm sửa phiếu, ở khối «Kết quả» chọn «GV chấm» rồi lưu (ô nào đổi, hệ thống báo «Đã lưu.»). Giáo viên được giao sẽ chấm và nộp kết quả trong cổng Giáo viên.
    *Bạn thấy:* tên giáo viên ở ô «GV chấm».
-4. Giáo viên nhập xong thì khối «Kết quả» hiện «Điểm», «Trình độ đề xuất», «Phân loại đề xuất», «Nhận xét». Giáo viên vắng, bạn có thể bấm **«Nhập kết quả»** thay (hộp «Nhập kết quả»: «Điểm (0–10)» bắt buộc, «Giáo viên chấm», «Trình độ đề xuất», «Phân loại đề xuất», «Nhận xét»); lịch sử ghi «nhập thay».
+4. Chưa nhập thì khối «Kết quả» ghi «Chưa có kết quả». Giáo viên nhập xong thì khối này hiện «Điểm», «Trình độ đề xuất», «Phân loại đề xuất», «Nhận xét». Giáo viên vắng, bạn có thể bấm **«Nhập kết quả»** thay (hộp «Nhập kết quả»: «Điểm (0–10)» bắt buộc, «Giáo viên chấm», «Trình độ đề xuất», «Phân loại đề xuất», «Nhận xét»); lịch sử ghi «nhập thay».
    *Bạn thấy:* khối «Kết quả» có điểm dạng «7,5/10».
    [ẢNH: ts17-ts11-b4] [CHƯA CHỤP: cần chụp trên staging CS5]
 5. Bấm **«Hoàn thành»**. Nút mờ kèm «Cần giáo viên chấm, điểm và nhận xét trước khi Hoàn thành» nghĩa là còn thiếu một trong ba thứ đó.

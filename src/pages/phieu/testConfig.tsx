@@ -39,6 +39,7 @@ export function buildTestConfig(
     screenCode: TEST_SCREEN_CODE,
     title: 'Phiếu Test',
     searchPlaceholder: 'Tìm tên, SĐT, mã (cả mã cũ)…',
+    // Tám cột đầu hiện mặc định (F-26-05); các cột sau bật ở nút «Cột».
     columns: [
       { key: 'code', label: 'Mã PKT', locked: true, render: (r) => <Code>{r.code}</Code> },
       {
@@ -55,23 +56,20 @@ export function buildTestConfig(
           </Link>
         ),
       },
-      { key: 'creator', label: 'Người tạo', render: (r) => r.created_by_name ?? '' },
-      { key: 'subject', label: 'Môn', render: (r) => name('SUBJECT', r.subject_code) },
-      { key: 'mode', label: 'Hình thức', render: (r) => name('TEST_MODE', r.mode_code) },
-      { key: 'level', label: 'Cấp độ', render: (r) => name('TEST_LEVEL', r.level_code) },
+      {
+        key: 'status',
+        label: 'Trạng thái',
+        render: (r) => <Tag tone={TEST_TONE[r.status_code]}>{STATUS_LABEL[r.status_code]}</Tag>,
+      },
       {
         key: 'time',
         label: 'Ngày giờ test',
         sortable: true,
         render: (r) => <span className="tabular">{formatDateTime(r.scheduled_at)}</span>,
       },
-      { key: 'test_branch', label: 'Cơ sở test', render: (r) => r.test_branch_code },
+      { key: 'subject', label: 'Môn', render: (r) => name('SUBJECT', r.subject_code) },
+      { key: 'mode', label: 'Hình thức', render: (r) => name('TEST_MODE', r.mode_code) },
       { key: 'owner', label: 'Người phụ trách', render: (r) => r.owner_name ?? '' },
-      {
-        key: 'grader',
-        label: 'GV chấm',
-        render: (r) => r.grader_name ?? <span className="text-fg-muted">—</span>,
-      },
       {
         key: 'score',
         label: 'Điểm',
@@ -83,20 +81,40 @@ export function buildTestConfig(
           ),
       },
       {
-        key: 'status',
-        label: 'Trạng thái',
-        render: (r) => <Tag tone={TEST_TONE[r.status_code]}>{STATUS_LABEL[r.status_code]}</Tag>,
+        key: 'grader',
+        label: 'GV chấm',
+        defaultVisible: false,
+        render: (r) => r.grader_name ?? <span className="text-fg-muted">—</span>,
+      },
+      {
+        key: 'level',
+        label: 'Cấp độ',
+        defaultVisible: false,
+        render: (r) => name('TEST_LEVEL', r.level_code),
+      },
+      {
+        key: 'test_branch',
+        label: 'Cơ sở test',
+        defaultVisible: false,
+        render: (r) => r.test_branch_code,
+      },
+      {
+        key: 'creator',
+        label: 'Người tạo',
+        defaultVisible: false,
+        render: (r) => r.created_by_name ?? '',
       },
       {
         key: 'opportunity',
         label: 'Cơ hội gốc',
+        defaultVisible: false,
         render: (r) => (
           <Link to={`/crm/co-hoi/${r.opportunity_id}`} className="text-link hover:underline">
             {r.opportunity_code}
           </Link>
         ),
       },
-      { key: 'branch', label: 'Cơ sở tạo', render: (r) => r.branch_code },
+      { key: 'branch', label: 'Cơ sở tạo', defaultVisible: false, render: (r) => r.branch_code },
     ],
     quickGroups: [
       {
