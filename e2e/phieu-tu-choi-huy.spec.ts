@@ -2,7 +2,7 @@
 // Dữ liệu giả dựng bằng hàm nghiệp vụ với quyền Admin: bật AFTERSALE cho CS5, phụ huynh, học sinh, ticket DN_04_01 và một phiếu Nháp. Mã có dấu riêng mỗi lần chạy.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, isPhone } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, isPhone, showAllTimeline } from './helpers';
 import { DB_URL } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phiếu giả).');
@@ -96,6 +96,7 @@ test('Trưởng cơ sở từ chối phiếu: lý do bắt buộc, phiếu sang 
   await expect(dialog.getByRole('button', { name: 'Từ chối', exact: true })).toBeDisabled();
   await dialog.getByLabel('Lý do').fill('Thiếu giấy tờ.');
   await dialog.getByRole('button', { name: 'Từ chối', exact: true }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Chờ duyệt → Từ chối.')).toBeVisible();
   await expect(page.getByText('Thiếu giấy tờ.').first()).toBeVisible();
 });
@@ -109,5 +110,6 @@ test('CSKH huỷ phiếu Nháp của mình: lý do bắt buộc, phiếu sang Đ
   await expect(dialog.getByRole('button', { name: 'Huỷ phiếu', exact: true })).toBeDisabled();
   await dialog.getByLabel('Lý do').fill('Nhập nhầm.');
   await dialog.getByRole('button', { name: 'Huỷ phiếu', exact: true }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Nháp → Đã huỷ.')).toBeVisible();
 });

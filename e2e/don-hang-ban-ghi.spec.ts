@@ -2,7 +2,7 @@
 // khung "chưa có quản lý trực tiếp"; tab Dòng đơn, Thanh toán, Ghi danh; Đã thu, Còn phải thu "—" (Đ269); mở từ BH-06 và từ báo giá.
 // Dữ liệu giả dựng bằng don-hang-seed.ts (seedOrderRecords). Ảnh chụp máy tính: mặc định ra thư mục tạm; SO_SANH_GHI_VAO_REPO=1 thì ghi vào docs/anh-chup/bh05/.
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible, isPhone, shotPath } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, shotPath, showAllTimeline } from './helpers';
 import {
   DB_URL,
   clearMark,
@@ -129,6 +129,7 @@ test('Nháp bị từ chối: lý do và ghi chú nằm ở dòng thời gian (k
   await openOrder(page, setup.sale, setup.mark, seeded.records.rejected);
   // Q-77: bỏ khối đỏ "Đơn bị từ chối"; lý do từ chối nằm ở dòng thời gian bên phải.
   await expect(page.getByRole('status').filter({ hasText: 'Đơn bị từ chối' })).toHaveCount(0);
+  await showAllTimeline(page);
   await expect(page.getByRole('complementary').getByText('Từ chối').first()).toBeVisible();
   await expect(
     page.getByRole('complementary').getByText(/Chiết khấu dòng 2 chưa có văn bản phê duyệt/),

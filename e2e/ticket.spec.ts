@@ -2,7 +2,14 @@
 // Dữ liệu giả: bật phân hệ AFTERSALE cho CS5 và dựng một phụ huynh giả có dấu riêng mỗi dự án; ticket tạo bằng giao diện.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, expectAccessible, isPhone, pickSearchedOption } from './helpers';
+import {
+  PASSWORD,
+  enterAs,
+  expectAccessible,
+  isPhone,
+  pickSearchedOption,
+  showAllTimeline,
+} from './helpers';
 import { DB_URL, setupOf } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phụ huynh giả).');
@@ -78,6 +85,7 @@ test('Tạo khiếu nại: thiếu ô thì báo tại ô; đủ thì lưu và m�
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page).toHaveURL(/\/crm\/ticket\/[0-9a-f-]{36}$/);
   await expect(page.getByText(/^KN-CS5-\d{4}-\d{4}$/).first()).toBeVisible();
+  await showAllTimeline(page);
   await expect(page.getByText('Tạo ticket.')).toBeVisible();
   await expectAccessible(page);
 });
@@ -99,11 +107,13 @@ test('Chi tiết: thêm ghi chú; Đã xử lý cần kết quả; huỷ cần l
   await expect(page).toHaveURL(/\/crm\/ticket\/[0-9a-f-]{36}$/);
   await page.getByRole('combobox', { name: 'Ghi chú' }).first().fill('Đã gọi lại phụ huynh.');
   await page.getByRole('button', { name: 'Gửi ghi chú' }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Đã gọi lại phụ huynh.')).toBeVisible();
   // Khiếu nại có phần riêng: sửa và lưu, giá trị hiện ở chi tiết và dòng thời gian ghi lại.
   await page.getByRole('button', { name: 'Sửa phần riêng' }).click();
   await page.getByLabel('Mong muốn của khách').fill('Đổi giáo viên giảng lại.');
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Đổi giáo viên giảng lại.')).toBeVisible();
   await expect(page.getByText('Cập nhật phần riêng của khiếu nại.')).toBeVisible();
   // Phân loại lại: đổi mức độ thì hạn tính lại và dòng thời gian ghi «Đổi mức độ».
@@ -112,12 +122,14 @@ test('Chi tiết: thêm ghi chú; Đã xử lý cần kết quả; huỷ cần l
   await dialog.getByLabel('Mức độ').click();
   await page.getByRole('option', { name: 'Thấp' }).click();
   await dialog.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Đổi mức độ.')).toBeVisible();
   // Huỷ không ghi lý do: nút Huỷ ticket mờ cho tới khi có lý do (canvas CSN-04).
   await page.getByRole('button', { name: /Đã huỷ/ }).click();
   await expect(page.getByRole('button', { name: 'Huỷ ticket', exact: true })).toBeDisabled();
   await page.getByLabel('Lý do huỷ').fill('Phụ huynh rút khiếu nại.');
   await page.getByRole('button', { name: 'Huỷ ticket', exact: true }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Đổi trạng thái: Mới → Đã huỷ.')).toBeVisible();
 });
 
@@ -151,5 +163,6 @@ test('Khách huỷ (CS-12): chỉ ticket Đề nghị có nút; lý do bắt bu�
   ).toBeDisabled();
   await dialog.getByLabel('Lý do khách huỷ').fill('Gia đình đổi kế hoạch.');
   await dialog.getByRole('button', { name: 'Xác nhận khách huỷ', exact: true }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Khách huỷ: Gia đình đổi kế hoạch.', { exact: true })).toBeVisible();
 });
