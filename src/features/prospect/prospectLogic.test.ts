@@ -113,6 +113,13 @@ describe('Chọn em khi tạo cơ hội (TS-06)', () => {
 });
 
 describe('Thông tin học sinh một khối (A-26-01)', () => {
+  it('năm sinh để trống mà có ngày sinh thì gửi năm của ngày sinh; trống cả hai thì null', () => {
+    const d = { ...EMPTY_EM_DRAFT, fullName: 'Em A' };
+    expect(emPayload({ ...d, birthDate: '2013-05-05' }).birth_year).toBe(2013);
+    expect(emPayload({ ...d, birthDate: '2013-05-05', birthYear: '2012' }).birth_year).toBe(2012);
+    expect(emPayload(d).birth_year).toBeNull();
+  });
+
   const em = (id: string, patch: Partial<ProspectStudent> = {}): ProspectStudent => ({
     id,
     position: 1,

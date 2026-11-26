@@ -13,7 +13,7 @@ import {
 } from './prospectLogic';
 import { updateProspectStudent } from './useProspect';
 
-export type PendingEm = { id: string; draft: EmDraft; error: string | null };
+export type PendingEm = { id: string; name: string; draft: EmDraft; error: string | null };
 
 export function saveEm(supabase: SupabaseClient, em: PendingEm) {
   return updateProspectStudent(supabase, em.id, emPayload(em.draft));
@@ -40,7 +40,8 @@ export function useEmEditing(students: ProspectStudent[]) {
       if (!selected || !dirtyIds.includes(selected.id)) return null;
       const draft = drafts[selected.id]!;
       const errors = validateEmDraft(draft, requireYear, new Date().getFullYear());
-      return { id: selected.id, draft, error: errors.fullName ?? errors.birthYear ?? null };
+      const error = errors.fullName ?? errors.birthYear ?? null;
+      return { id: selected.id, name: emLabel(selected), draft, error };
     },
     /** Tên các em KHÔNG đang chọn mà còn thay đổi chưa lưu. */
     othersAfterSave: (): string[] =>

@@ -65,14 +65,16 @@ export function validateEmDraft(d: EmDraft, requireYear: boolean, nowYear: numbe
   return errors;
 }
 
-/** Dữ liệu gửi hàm thêm, sửa em. Ô trống gửi null (sửa em thì xoá ô). */
+/** Dữ liệu gửi hàm thêm, sửa em. Ô trống gửi null (sửa em thì xoá ô). Năm sinh để trống mà có ngày sinh thì gửi năm của ngày sinh
+ * (hàm sửa em nhận null là xoá năm, không tự suy; từ L5 sẽ bị từ chối). */
 export function emPayload(d: EmDraft): Record<string, unknown> {
   const blank = (v: string) => (v.trim() === '' ? null : v.trim());
   const year = d.birthYear.trim();
   return {
     full_name: d.fullName.trim(),
     birth_date: d.birthDate === '' ? null : d.birthDate,
-    birth_year: year === '' ? null : Number(year),
+    birth_year:
+      year !== '' ? Number(year) : d.birthDate !== '' ? Number(d.birthDate.slice(0, 4)) : null,
     school: blank(d.school),
     self_rating: blank(d.selfRating),
     goal: blank(d.goal),
@@ -97,6 +99,11 @@ export function dirtyEmIds(students: ProspectStudent[], drafts: Record<string, E
 /** Câu báo sau khi Lưu mà em khác còn thay đổi chưa lưu. */
 export function unsavedEmText(names: string[]): string {
   return `Còn thay đổi chưa lưu ở em: ${names.join(', ')}. Chọn thẻ em đó rồi bấm Lưu.`;
+}
+
+/** Câu báo khi bản ghi đã lưu mà em đang chọn bị máy chủ từ chối. */
+export function emSaveFailedText(record: 'lead' | 'cơ hội', name: string, message: string): string {
+  return `Đã lưu ${record}, chưa lưu được em ${name}: ${message}`;
 }
 
 /** Câu khi danh sách đã đủ số em tối đa; null khi còn thêm được. */

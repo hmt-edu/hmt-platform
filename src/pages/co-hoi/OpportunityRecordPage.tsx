@@ -12,7 +12,7 @@ import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { ProspectStudents } from '../../features/prospect/ProspectStudents';
-import { unsavedEmText } from '../../features/prospect/prospectLogic';
+import { emSaveFailedText, unsavedEmText } from '../../features/prospect/prospectLogic';
 import { saveEm, useEmEditing } from '../../features/prospect/useEmEditing';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, rpc, useDb } from '../../lib/db';
@@ -202,7 +202,18 @@ function OpportunityView({ record }: { record: OppRecord }) {
         p_id: record.id,
         p_data: oppPayload(draft),
       });
-      if (em) await saveEm(supabase, em);
+      if (em) {
+        try {
+          await saveEm(supabase, em);
+        } catch (e) {
+          // Giữ thẻ và bản nháp của em đó; phần cơ hội đã lưu nên bản nháp của trang lấy theo dữ liệu mới.
+          await refreshRecord();
+          const saved = queryClient.getQueryData<OppRecord>(['opp-record', record.id]);
+          if (saved) setDraft(toOppDraft(saved));
+          toast({ tone: 'danger', title: emSaveFailedText('cơ hội', em.name, errorOf(e).message) });
+          return;
+        }
+      }
       const others = ems.othersAfterSave();
       await refreshRecord();
       if (em) ems.discard(em.id);
@@ -216,8 +227,6 @@ function OpportunityView({ record }: { record: OppRecord }) {
         toast({ title: `Đã lưu. ${unsavedEmText(others)}` });
       }
     } catch (e) {
-      // Bản ghi có thể đã lưu mà em chưa lưu được: tải lại để không hiện dữ liệu cũ.
-      if (em) void refreshRecord();
       const error = errorOf(e);
       if (error.code === 'HMT_THIEU_HOC_SINH') {
         ems.select(null);

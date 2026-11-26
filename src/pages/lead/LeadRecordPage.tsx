@@ -32,7 +32,7 @@ import type { OpportunityPage } from '../co-hoi/oppTypes';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { ProspectStudents } from '../../features/prospect/ProspectStudents';
-import { unsavedEmText } from '../../features/prospect/prospectLogic';
+import { emSaveFailedText, unsavedEmText } from '../../features/prospect/prospectLogic';
 import { saveEm, useEmEditing } from '../../features/prospect/useEmEditing';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Button } from '../../ui/Button';
@@ -263,7 +263,18 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           p_data: payload,
           p_confirm_duplicate: confirmDuplicate,
         });
-        if (em) await saveEm(supabase, em);
+        if (em) {
+          try {
+            await saveEm(supabase, em);
+          } catch (e) {
+            // Giữ thẻ và bản nháp của em đó; phần lead đã lưu nên bản nháp của trang lấy theo dữ liệu mới.
+            await refreshRecord();
+            const saved = queryClient.getQueryData<LeadRecord>(['lead-record', record.id]);
+            if (saved) setDraft(toDraft(saved));
+            toast({ tone: 'danger', title: emSaveFailedText('lead', em.name, errorOf(e).message) });
+            return;
+          }
+        }
         const others = ems.othersAfterSave();
         await refreshRecord();
         if (em) ems.discard(em.id);
@@ -278,8 +289,6 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         }
       }
     } catch (e) {
-      // Bản ghi có thể đã lưu mà em chưa lưu được: tải lại để không hiện dữ liệu cũ.
-      if (em) void refreshRecord();
       const error = errorOf(e);
       if (error.code === 'HMT_SDT_TRUNG') {
         if (creating) {
