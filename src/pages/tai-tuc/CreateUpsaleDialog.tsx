@@ -68,7 +68,7 @@ function CreateForm({ open, onOpenChange, onCreated }: Props) {
         value={code}
         onChange={(e) => setCode(e.target.value)}
         help={help}
-        placeholder="GD000288"
+        placeholder="Nhập mã ghi danh"
       />
     </FormDialog>
   );

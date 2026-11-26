@@ -38,7 +38,7 @@ import {
 } from './useOppData';
 
 const NOTE =
-  'Cơ hội chỉ đi tới, không lùi. L6 do hệ thống chuyển khi phiếu kiểm tra Hoàn thành; L8 chọn tay sau khi đã thu tiền. Kéo thẻ vào cột phía trước thì hiện hộp chuyển giai đoạn.';
+  'Cơ hội chỉ đi tới, không lùi. L6 do hệ thống chuyển khi phiếu Test Hoàn thành; L8 chọn tay sau khi đã thu tiền. Kéo thẻ vào cột phía trước thì hiện hộp chuyển giai đoạn.';
 
 const BAR_SEGMENTS = [
   { key: 'upcoming', label: 'Sắp tới', tone: 'success' },

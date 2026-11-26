@@ -80,6 +80,6 @@ cap_nhat: 2026-11-24
 
 ## Ghi chú cho người soát (không hiển thị cho người học)
 - Nhãn «Xuất» và thông báo từ `OpportunityListPage.tsx` (hàm `exportFile`); giới hạn mặc định từ tham số `export_max_rows` = 5000 (migration 20261019000033; admin đổi được ở Cài đặt tham số).
-- Danh sách có nút Xuất theo mã: Cơ hội, Lịch hẹn, Người dùng (chỉ Admin), Báo giá, Đơn hàng, Phiếu kiểm tra; Báo cáo trễ hạn có «Xuất CSV» riêng. Danh sách khác (Lớp: học sinh) chưa có nút. Chưa kiểm nút có hiện đúng theo vai trên staging.
+- Danh sách có nút Xuất theo mã: Cơ hội, Lịch hẹn, Người dùng (chỉ Admin), Báo giá, Đơn hàng, Phiếu Test; Báo cáo trễ hạn có «Xuất CSV» riêng. Danh sách khác (Lớp: học sinh) chưa có nút. Chưa kiểm nút có hiện đúng theo vai trên staging.
 - Mã hoá file (UTF-8, có dấu BOM hay không) chưa kiểm: cần mở thử bằng Excel.
 - Bản đồ màn hình CHUNG-18 mô tả «Chọn cột, phạm vi, định dạng»; màn thật tải thẳng CSV, không có hộp chọn cột. Bài theo màn thật.
