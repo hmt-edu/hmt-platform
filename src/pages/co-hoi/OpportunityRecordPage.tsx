@@ -2,6 +2,7 @@
 // (chỉ thông tin học sinh, nhu cầu, người hỗ trợ; phụ huynh và nguồn sửa ở nơi khác, R-CRM-27), đổi giai đoạn bằng
 // change_opportunity_stage qua hộp TS-09 (chỉ đi tới, không Hoàn tác, R-CRM-02). Lịch hẹn ở cột phải (TS-13, R-CRM-04).
 // Nút Tạo báo giá, Tạo đơn hàng (P5), Đính kèm (giai đoạn 4), Gộp trùng (P3f) chưa dùng được nên mờ hoặc ẩn.
+import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
@@ -11,6 +12,8 @@ import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { ProspectStudents } from '../../features/prospect/ProspectStudents';
+import { unsavedEmText } from '../../features/prospect/prospectLogic';
+import { saveEm, useEmEditing } from '../../features/prospect/useEmEditing';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, rpc, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
@@ -110,6 +113,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const access = useAccess();
   const catalogs = useLeadCatalogs();
   const refreshRecord = useRefreshOppRecord(record.id);
+  const queryClient = useQueryClient();
 
   const merged = record.record_status === 'DA_GOP';
   const phone = useMedia(NARROW_TABLE);
@@ -150,7 +154,9 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const [testOpen, setTestOpen] = useState(false);
 
   const editing = mode !== 'view';
-  const dirty = editing && JSON.stringify(draft) !== JSON.stringify(initial);
+  const ems = useEmEditing(record.students ?? []);
+  const dirty =
+    editing && (JSON.stringify(draft) !== JSON.stringify(initial) || ems.dirtyIds.length > 0);
   const view: OppDraft = editing ? draft : initial;
   const set = <K extends keyof OppDraft>(key: K, value: OppDraft[K]) => {
     setDraft((d) => ({ ...d, [key]: value }));
@@ -180,27 +186,50 @@ function OpportunityView({ record }: { record: OppRecord }) {
   async function save() {
     const found = validateOppDraft(draft, record.stage_code);
     setErrors(found);
-    if (Object.keys(found).length > 0) return;
+    if (Object.keys(found).length > 0) {
+      // Ô lỗi của em đầu nằm ở thẻ em đầu: mở thẻ đó để người dùng thấy.
+      if (found.student_name || found.student_birth_year) ems.select(null);
+      return;
+    }
+    const em = ems.pending(stageIndex(record.stage_code) >= stageIndex('L5'));
+    if (em?.error) {
+      toast({ tone: 'danger', title: em.error });
+      return;
+    }
     setSaving(true);
     try {
       await rpc<null>(supabase, 'update_opportunity', {
         p_id: record.id,
         p_data: oppPayload(draft),
       });
+      if (em) await saveEm(supabase, em);
+      const others = ems.othersAfterSave();
       await refreshRecord();
-      setMode('view');
-      toast({ title: 'Đã lưu.' });
+      if (em) ems.discard(em.id);
+      if (others.length === 0) {
+        setMode('view');
+        toast({ title: 'Đã lưu.' });
+      } else {
+        // Còn em khác chưa lưu: ở lại chế độ sửa, bản nháp của trang lấy theo dữ liệu vừa lưu.
+        const fresh = queryClient.getQueryData<OppRecord>(['opp-record', record.id]);
+        if (fresh) setDraft(toOppDraft(fresh));
+        toast({ title: `Đã lưu. ${unsavedEmText(others)}` });
+      }
     } catch (e) {
+      // Bản ghi có thể đã lưu mà em chưa lưu được: tải lại để không hiện dữ liệu cũ.
+      if (em) void refreshRecord();
       const error = errorOf(e);
-      if (error.code === 'HMT_THIEU_HOC_SINH')
+      if (error.code === 'HMT_THIEU_HOC_SINH') {
+        ems.select(null);
         setErrors((x) => ({ ...x, student_name: error.message }));
-      else toast({ tone: 'danger', title: error.message });
+      } else toast({ tone: 'danger', title: error.message });
     } finally {
       setSaving(false);
     }
   }
 
   function cancelEdit() {
+    ems.reset();
     setDraft(initial);
     setErrors({});
     setMode('view');
@@ -277,10 +306,11 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const text = (
     key: 'student_name' | 'school' | 'self_rating' | 'goal',
     label: string,
-    extra?: { hint?: string; placeholder?: string },
+    extra?: { keepEmpty?: boolean; hint?: string; placeholder?: string },
   ) => (
     <DetailField
       label={label}
+      keepEmpty={extra?.keepEmpty}
       hint={extra?.hint}
       mode={mode}
       value={view[key]}
@@ -371,6 +401,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
         saving={saving}
         readOnly={!canEdit}
         onEdit={() => {
+          ems.reset();
           setDraft(initial);
           setErrors({});
           setMode('edit');
@@ -624,50 +655,6 @@ function OpportunityView({ record }: { record: OppRecord }) {
               }
             />
           </DetailSection>
-          <DetailSection title="Thông tin học sinh">
-            {text('student_name', 'Tên học sinh', {
-              hint: 'bắt buộc từ L5',
-              placeholder: 'Tên (bắt buộc từ L5)',
-            })}
-            <DetailField
-              label="Ngày sinh"
-              mode={mode}
-              value={
-                view.student_birth_date
-                  ? formatDate(`${view.student_birth_date}T00:00:00+07:00`)
-                  : ''
-              }
-              editor={
-                <DateInput
-                  label="Ngày sinh"
-                  compact
-                  value={isoToDate(draft.student_birth_date)}
-                  onChange={(d) => set('student_birth_date', dateToIso(d))}
-                />
-              }
-            />
-            <DetailField
-              label="Năm sinh"
-              hint="bắt buộc từ L5"
-              mode={mode}
-              value={view.student_birth_year}
-              error={errors.student_birth_year ?? null}
-              editor={
-                <input
-                  aria-label="Năm sinh"
-                  inputMode="numeric"
-                  value={draft.student_birth_year}
-                  placeholder="VD 2012 (bắt buộc từ L5)"
-                  onChange={(e) => set('student_birth_year', e.target.value)}
-                  aria-invalid={errors.student_birth_year ? true : undefined}
-                  className={INPUT_CLASS}
-                />
-              }
-            />
-            {text('school', 'Trường học', { placeholder: 'Tên trường' })}
-            {text('self_rating', 'Học lực tự đánh giá', { placeholder: 'VD Khá, yếu phần Hình' })}
-            {text('goal', 'Mục tiêu', { placeholder: 'Mục tiêu của học sinh' })}
-          </DetailSection>
           <ProspectStudents
             entity="OPPORTUNITY"
             recordId={record.id}
@@ -675,8 +662,67 @@ function OpportunityView({ record }: { record: OppRecord }) {
             parent={{ id: record.parent_id, code: record.parent_code, name: record.parent_name }}
             requireYear={stageIndex(record.stage_code) >= stageIndex('L5')}
             canEdit={canEdit}
-            pageEditing={mode !== 'view'}
+            mode={mode}
+            ems={ems}
             onChanged={() => void refreshRecord()}
+            firstFields={
+              <>
+                {text('student_name', 'Tên học sinh', {
+                  keepEmpty: true,
+                  hint: 'bắt buộc từ L5',
+                  placeholder: 'Tên (bắt buộc từ L5)',
+                })}
+                <DetailField
+                  keepEmpty
+                  label="Ngày sinh"
+                  mode={mode}
+                  value={
+                    view.student_birth_date
+                      ? formatDate(`${view.student_birth_date}T00:00:00+07:00`)
+                      : ''
+                  }
+                  editor={
+                    <DateInput
+                      label="Ngày sinh"
+                      compact
+                      value={isoToDate(draft.student_birth_date)}
+                      onChange={(d) => set('student_birth_date', dateToIso(d))}
+                    />
+                  }
+                />
+                <DetailField
+                  keepEmpty
+                  label="Năm sinh"
+                  hint="bắt buộc từ L5"
+                  mode={mode}
+                  value={view.student_birth_year}
+                  error={errors.student_birth_year ?? null}
+                  editor={
+                    <input
+                      aria-label="Năm sinh"
+                      inputMode="numeric"
+                      value={draft.student_birth_year}
+                      placeholder="VD 2012 (bắt buộc từ L5)"
+                      onChange={(e) => set('student_birth_year', e.target.value)}
+                      aria-invalid={errors.student_birth_year ? true : undefined}
+                      className={INPUT_CLASS}
+                    />
+                  }
+                />
+                {text('school', 'Trường học', {
+                  keepEmpty: true,
+                  placeholder: 'Tên trường',
+                })}
+                {text('self_rating', 'Học lực tự đánh giá', {
+                  keepEmpty: true,
+                  placeholder: 'VD Khá, yếu phần Hình',
+                })}
+                {text('goal', 'Mục tiêu', {
+                  keepEmpty: true,
+                  placeholder: 'Mục tiêu của học sinh',
+                })}
+              </>
+            }
           />
         </div>
         <div className="mt-6">

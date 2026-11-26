@@ -1,10 +1,12 @@
-// Danh sách em của lead, cơ hội (TS-02, TS-08, canvas 9933; R-CRM-23): thẻ em, «+ Thêm em», sửa, bỏ em.
-// Em đã gắn hồ sơ học sinh chỉ đọc ở đây («Sửa ở hồ sơ học sinh»). Điều khiển mờ khi màn đang ở chế độ sửa (tránh lệch với bản nháp của màn).
+// Khối «Thông tin học sinh» của lead, cơ hội (TS-02, TS-08, canvas 9933; R-CRM-23; A-26-01): thẻ em, «+ Thêm em», sáu trường của em đang chọn, sửa, bỏ em.
+// Em đầu: ô nhập của trang (lưu cùng bản ghi). Em từ số 2: ô nhập ở đây, bản nháp ở useEmEditing; đã gắn hồ sơ học sinh thì chỉ đọc («Sửa ở hồ sơ học sinh»).
+// Thêm, Sửa em, Bỏ em mờ khi màn đang ở chế độ sửa (tránh lệch với bản nháp của màn).
 // Luật do hàm DB kiểm; hộp chỉ hiện lỗi của chúng. Số em tối đa lấy từ tham số prospect_max_students.
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatDate } from '../../lib/format';
+import { DetailField, type DetailMode } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
 import { Field, TextField } from '../../ui/Field';
@@ -30,19 +32,22 @@ import {
   useParentChildren,
   type Entity,
 } from './useProspect';
+import type { EmEditing } from './useEmEditing';
 
 type Props = {
   entity: Entity;
-  /** Id lead hoặc cơ hội. */
-  recordId: string;
+  /** Id lead hoặc cơ hội; chưa có (đang tạo) thì không có thẻ em và nút «Thêm em». */
+  recordId?: string | undefined;
   students: ProspectStudent[];
   /** Cơ hội: phụ huynh để chọn con có sẵn. */
   parent?: { id: string; code: string; name: string } | undefined;
   /** Từ L5 trở lên (cơ hội): bắt buộc năm sinh. */
   requireYear: boolean;
   canEdit: boolean;
-  /** Màn đang ở chế độ sửa: khoá các nút để không lệch bản nháp. */
-  pageEditing: boolean;
+  mode: DetailMode;
+  ems: EmEditing;
+  /** Sáu trường của em đầu, nối với bản nháp của trang. */
+  firstFields: ReactNode;
   onChanged: () => void;
 };
 
@@ -53,20 +58,22 @@ export function ProspectStudents({
   parent,
   requireYear,
   canEdit,
-  pageEditing,
+  mode,
+  ems,
+  firstFields,
   onChanged,
 }: Props) {
   const supabase = useDb();
   const toast = useToast();
   const max = useIntSetting('prospect_max_students');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [dialog, setDialog] = useState<
     | { kind: 'add' }
     | { kind: 'edit'; line: ProspectStudent }
     | { kind: 'remove'; line: ProspectStudent }
     | null
   >(null);
-  const selected = students.find((s) => s.id === selectedId) ?? students[0] ?? null;
+  const { selected } = ems;
+  const pageEditing = mode !== 'view';
   const fullText = fullListText(students.length, max);
   const locked = !canEdit || pageEditing;
 
@@ -76,91 +83,82 @@ export function ProspectStudents({
         id="prospect-students-title"
         className="mb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase"
       >
-        Danh sách em
+        Thông tin học sinh
       </h3>
       <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          {students.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              aria-pressed={selected?.id === s.id}
-              onClick={() => setSelectedId(s.id)}
-              className={`rounded-control border px-3 py-1.5 text-body ${
-                selected?.id === s.id
-                  ? 'border-accent bg-accent-subtle font-semibold'
-                  : 'border-border bg-surface'
-              }`}
-            >
-              {emLabel(s)}
-              {s.student_code && (
-                <span className="ml-2 text-caption text-fg-muted">{s.student_code}</span>
-              )}
-            </button>
-          ))}
-          {canEdit && (
-            <Button
-              icon="plus"
-              disabled={fullText !== null || pageEditing}
-              onClick={() => setDialog({ kind: 'add' })}
-              {...(pageEditing ? { title: 'Lưu hoặc Huỷ chỉnh sửa trước khi thêm em.' } : {})}
-            >
-              Thêm em
-            </Button>
-          )}
-          {fullText && <span className="text-caption text-fg-muted">{fullText}</span>}
-        </div>
-        {selected === null ? (
+        {recordId !== undefined && (
+          <div className="flex flex-wrap items-center gap-2">
+            {students.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                aria-pressed={selected?.id === s.id}
+                onClick={() => ems.select(s.id)}
+                className={`rounded-control border px-3 py-1.5 text-body ${
+                  selected?.id === s.id
+                    ? 'border-accent bg-accent-subtle font-semibold'
+                    : 'border-border bg-surface'
+                }`}
+              >
+                {emLabel(s)}
+                {s.student_code && (
+                  <span className="ml-2 text-caption text-fg-muted">{s.student_code}</span>
+                )}
+                {ems.dirtyIds.includes(s.id) && (
+                  <span className="ml-2 text-caption text-fg-muted">chưa lưu</span>
+                )}
+              </button>
+            ))}
+            {canEdit && (
+              <Button
+                icon="plus"
+                disabled={fullText !== null || pageEditing}
+                onClick={() => setDialog({ kind: 'add' })}
+                {...(pageEditing ? { title: 'Lưu hoặc Huỷ chỉnh sửa trước khi thêm em.' } : {})}
+              >
+                Thêm em
+              </Button>
+            )}
+            {fullText && <span className="text-caption text-fg-muted">{fullText}</span>}
+          </div>
+        )}
+        {recordId !== undefined && selected === null && !pageEditing && (
           <p className="text-body text-fg-muted">{emptyListText(entity)}</p>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <dl className="grid grid-cols-1 gap-y-1">
-              <Row label="Tên học sinh" value={selected.full_name} />
-              <Row
-                label="Ngày sinh"
-                value={
-                  selected.birth_date ? formatDate(`${selected.birth_date}T00:00:00+07:00`) : null
-                }
-              />
-              <Row
-                label="Năm sinh"
-                value={selected.birth_year === null ? null : String(selected.birth_year)}
-              />
-              <Row label="Trường học" value={selected.school} />
-              <Row label="Học lực tự đánh giá" value={selected.self_rating} />
-              <Row label="Mục tiêu" value={selected.goal} />
-            </dl>
-            <div className="flex flex-wrap items-center gap-2">
-              {selected.student_id ? (
-                <Link
-                  className="text-body font-medium text-link hover:underline"
-                  to={`/crm/hoc-sinh/${selected.student_id}`}
-                >
-                  Sửa ở hồ sơ học sinh
-                </Link>
-              ) : (
-                canEdit && (
-                  <Button
-                    disabled={locked}
-                    onClick={() => setDialog({ kind: 'edit', line: selected })}
-                  >
-                    Sửa em
-                  </Button>
-                )
-              )}
-              {canEdit && (
-                <Button
-                  disabled={locked}
-                  onClick={() => setDialog({ kind: 'remove', line: selected })}
-                >
-                  Bỏ em
-                </Button>
-              )}
-            </div>
+        )}
+        <dl className="flex flex-col">
+          {ems.isFirst || selected === null ? (
+            firstFields
+          ) : (
+            <EmFields key={selected.id} line={selected} mode={mode} ems={ems} />
+          )}
+        </dl>
+        {selected !== null && (
+          <div className="flex flex-wrap items-center gap-2">
+            {selected.student_id && (
+              <Link
+                className="text-body font-medium text-link hover:underline"
+                to={`/crm/hoc-sinh/${selected.student_id}`}
+              >
+                Sửa ở hồ sơ học sinh
+              </Link>
+            )}
+            {canEdit && !selected.student_id && (
+              <Button disabled={locked} onClick={() => setDialog({ kind: 'edit', line: selected })}>
+                Sửa em
+              </Button>
+            )}
+            {canEdit && (
+              <Button
+                disabled={locked}
+                onClick={() => setDialog({ kind: 'remove', line: selected })}
+              >
+                Bỏ em
+              </Button>
+            )}
           </div>
         )}
       </div>
-      {dialog?.kind === 'add' || dialog?.kind === 'edit' ? (
+      {recordId !== undefined && (dialog?.kind === 'add' || dialog?.kind === 'edit') ? (
         <EmDialog
           key={dialog.kind === 'edit' ? dialog.line.id : 'add'}
           entity={entity}
@@ -184,7 +182,7 @@ export function ProspectStudents({
           onClose={() => setDialog(null)}
           onDone={() => {
             setDialog(null);
-            setSelectedId(null);
+            ems.select(null);
             toast({ title: 'Đã bỏ em khỏi danh sách.' });
             onChanged();
           }}
@@ -194,14 +192,84 @@ export function ProspectStudents({
   );
 }
 
-/** Một dòng nhãn và giá trị; giá trị trống thì ẩn cả dòng (K06: không hiện «—» tràn lan). Giá trị dài xuống dòng trong ô của mình, không đè lên nhãn. */
-function Row({ label, value }: { label: string; value: string | null }) {
-  if (value === null || value === '') return null;
+const FIELD_INPUT = 'w-full rounded-control border border-border px-3 py-2';
+
+/** Sáu trường của một em từ số 2: xem, hoặc sửa khi trang đang sửa (em đã gắn hồ sơ luôn chỉ đọc). Trường trống vẫn hiện nhãn. */
+function EmFields({
+  line,
+  mode,
+  ems,
+}: {
+  line: ProspectStudent;
+  mode: DetailMode;
+  ems: EmEditing;
+}) {
+  const draft = ems.draftOf(line);
+  const fieldMode: DetailMode = line.student_id ? 'view' : mode;
+  const text = (
+    key: 'fullName' | 'birthYear' | 'school' | 'selfRating' | 'goal',
+    label: string,
+  ) => (
+    <input
+      aria-label={label}
+      value={draft[key]}
+      inputMode={key === 'birthYear' ? 'numeric' : undefined}
+      onChange={(e) => ems.change(line, { [key]: e.target.value })}
+      className={FIELD_INPUT}
+    />
+  );
   return (
-    <div className="flex gap-2">
-      <dt className="w-40 shrink-0 text-body text-fg-muted">{label}</dt>
-      <dd className="min-w-0 text-body break-words">{value}</dd>
-    </div>
+    <>
+      <DetailField
+        label="Tên học sinh"
+        keepEmpty
+        mode={fieldMode}
+        value={line.full_name ?? ''}
+        editor={text('fullName', 'Tên học sinh')}
+      />
+      <DetailField
+        label="Ngày sinh"
+        keepEmpty
+        mode={fieldMode}
+        value={line.birth_date ? formatDate(`${line.birth_date}T00:00:00+07:00`) : ''}
+        editor={
+          <DateInput
+            label="Ngày sinh"
+            compact
+            value={isoToDate(draft.birthDate)}
+            onChange={(d) => ems.change(line, { birthDate: dateToIso(d) })}
+          />
+        }
+      />
+      <DetailField
+        label="Năm sinh"
+        keepEmpty
+        mode={fieldMode}
+        value={line.birth_year === null ? '' : String(line.birth_year)}
+        editor={text('birthYear', 'Năm sinh')}
+      />
+      <DetailField
+        label="Trường học"
+        keepEmpty
+        mode={fieldMode}
+        value={line.school ?? ''}
+        editor={text('school', 'Trường học')}
+      />
+      <DetailField
+        label="Học lực tự đánh giá"
+        keepEmpty
+        mode={fieldMode}
+        value={line.self_rating ?? ''}
+        editor={text('selfRating', 'Học lực tự đánh giá')}
+      />
+      <DetailField
+        label="Mục tiêu"
+        keepEmpty
+        mode={fieldMode}
+        value={line.goal ?? ''}
+        editor={text('goal', 'Mục tiêu')}
+      />
+    </>
   );
 }
 

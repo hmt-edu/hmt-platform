@@ -79,6 +79,26 @@ export function emPayload(d: EmDraft): Record<string, unknown> {
   };
 }
 
+/** Em từ số 2 có bản nháp khác dữ liệu đã lưu (em đầu do trang theo dõi; em đã gắn hồ sơ chỉ đọc). */
+export function dirtyEmIds(students: ProspectStudent[], drafts: Record<string, EmDraft>): string[] {
+  return students
+    .slice(1)
+    .filter((s) => {
+      const d = drafts[s.id];
+      return (
+        d !== undefined &&
+        !s.student_id &&
+        JSON.stringify(emPayload(d)) !== JSON.stringify(emPayload(draftOfStudent(s)))
+      );
+    })
+    .map((s) => s.id);
+}
+
+/** Câu báo sau khi Lưu mà em khác còn thay đổi chưa lưu. */
+export function unsavedEmText(names: string[]): string {
+  return `Còn thay đổi chưa lưu ở em: ${names.join(', ')}. Chọn thẻ em đó rồi bấm Lưu.`;
+}
+
 /** Câu khi danh sách đã đủ số em tối đa; null khi còn thêm được. */
 export function fullListText(count: number, max: number | null): string | null {
   return max !== null && count >= max ? `Đã đủ ${max} em` : null;
