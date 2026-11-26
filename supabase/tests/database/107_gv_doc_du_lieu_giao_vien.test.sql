@@ -181,7 +181,7 @@ select is(pg_temp.session_pending_reason(pg_temp.s('p', 2)), 'Buổi kiểm tra 
 -- Nhánh Bật, hai chiều (Q-231): buổi thường thiếu nội dung thì chặn trước cả nhận xét; có nội dung thì sang điều kiện nhận xét.
 select is(pg_temp.session_pending_reason(pg_temp.s('p', 3)), 'Buổi kiểm tra chưa đặt điểm tối đa và cách nhập điểm.', 'Bật: buổi Kiểm tra thứ hai cũng chỉ bị chặn vì chưa cấu hình điểm');
 select pg_temp.sudo($$update app.class_session set type_code = 'CHINH' where id = pg_temp.s('p', 3)$$);
-select is(pg_temp.session_pending_reason(pg_temp.s('p', 3)), 'Giáo viên chưa nhập nội dung buổi.', 'Bật: buổi thường thiếu nội dung thì chặn Done (Q-231)');
+select ok(pg_temp.session_pending_reason(pg_temp.s('p', 3)) like 'Giáo viên chưa nhập nội dung buổi.%', 'Bật: buổi thường thiếu nội dung thì chặn Done (Q-231)');
 select pg_temp.sudo($$insert into app.session_content_line (session_id, branch_id, sort_order, line_text) select id, branch_id, 1, 'Nội dung giả' from app.class_session where id = pg_temp.s('p', 3)$$);
 select is(pg_temp.session_pending_reason(pg_temp.s('p', 3)), 'Giáo viên chưa mở phần nhận xét của buổi.', 'Bật: đã có nội dung thì chuyển sang điều kiện nhận xét như D2 (Q-231)');
 

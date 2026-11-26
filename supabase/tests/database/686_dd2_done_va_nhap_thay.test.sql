@@ -258,7 +258,7 @@ set local role authenticated;
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 create temp table r2 as select pg_temp.bulk(array[3], 'Lý do giả') as v;
 select is((select v -> 'skipped' -> 0 ->> 'reason' from r2), 'Lỗi giả của buổi 3', 'Buổi lỗi được báo riêng');
-select is(pg_temp.ses(3) || ' / ' || pg_temp.deducted(3), 'DA_CHOT|-|false|true|true / 0|0', 'Buổi lỗi giữ Đã chốt, không trừ giờ nửa vời');
+select is(pg_temp.ses(3) || ' / ' || pg_temp.deducted(3), 'DA_CHOT|-|false|false|- / 0|0', 'Buổi lỗi giữ Đã chốt: không trừ giờ, không đóng dấu nửa vời');
 reset role;
 drop trigger zz_boom on app.class_session;
 set local role authenticated;

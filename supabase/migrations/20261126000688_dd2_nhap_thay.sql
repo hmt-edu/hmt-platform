@@ -262,3 +262,5 @@ begin
   return v_n;
 end;
 $$;
+
+grant execute on function app.enter_for_teacher(uuid, text, jsonb, text) to authenticated;

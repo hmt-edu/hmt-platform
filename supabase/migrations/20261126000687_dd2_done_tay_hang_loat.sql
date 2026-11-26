@@ -139,3 +139,5 @@ $$;
 
 revoke execute on function app.bulk_finish_one(uuid, text) from public, anon, authenticated;
 revoke execute on function app.assert_bulk_finish_input(uuid[], text, integer) from public, anon, authenticated;
+
+grant execute on function app.finish_session(uuid), app.bulk_finish_sessions(uuid[], text) to authenticated;
