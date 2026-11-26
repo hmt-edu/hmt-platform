@@ -52,13 +52,13 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
 
   const year = new Date().getFullYear();
   await page
-    .getByLabel('Năm học')
+    .getByLabel('Năm học', { exact: true })
     .selectOption(`${String(year).slice(2)}${String(year + 1).slice(2)}`);
   await page.getByLabel('Mã lớp cũ (Sheet)').fill(mark);
-  await page.getByLabel('Môn học').selectOption({ label: 'Toán' });
-  await page.getByLabel('Khối').selectOption({ index: 5 });
-  await page.getByLabel('Phân loại').selectOption({ label: 'Cơ bản' });
-  await page.getByLabel('Trình độ').selectOption({ index: 1 });
+  await page.getByLabel('Môn học', { exact: true }).selectOption({ label: 'Toán' });
+  await page.getByLabel('Khối', { exact: true }).selectOption({ index: 5 });
+  await page.getByLabel('Phân loại', { exact: true }).selectOption({ label: 'Cơ bản' });
+  await page.getByLabel('Trình độ', { exact: true }).selectOption({ index: 1 });
   // LOP-03 (anh Trường chốt 20/11): Hình thức học là ô chọn (mặc định Offline); Tổ chức lớp không phải ô nhập, tự suy từ Phân loại (Cơ bản = Học chung).
   await expect(page.getByLabel('Hình thức học')).toHaveValue('OFF');
   await page.getByLabel('Hình thức học').selectOption({ label: 'OMO' });
