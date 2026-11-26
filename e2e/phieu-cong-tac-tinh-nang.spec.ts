@@ -5,7 +5,7 @@
 // Dữ liệu giả dựng bằng SQL và hàm nghiệp vụ với quyền Admin; mã có dấu riêng mỗi lần chạy; cuối bài trả công tắc về bật.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, pickOption } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, pickOption, showAllTimeline } from './helpers';
 import { DB_URL } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng ticket giả).');
@@ -130,6 +130,7 @@ test('Bật lại: tạo, gửi duyệt, duyệt; tắt giữa chừng thì hộ
   await expect(page).toHaveURL(/\/crm\/phieu-nghiep-vu\/[0-9a-f-]{36}$/);
   taskUrl = page.url();
   await page.getByRole('button', { name: /Trình duyệt|Gửi duyệt/ }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.')).toBeVisible();
   const context = await browser.newContext();
   try {
@@ -140,6 +141,7 @@ test('Bật lại: tạo, gửi duyệt, duyệt; tắt giữa chừng thì hộ
     const approve = manager.getByRole('dialog', { name: 'Duyệt phiếu' });
     await approve.getByLabel('Ghi chú').fill('Đồng ý');
     await approve.getByRole('button', { name: 'Duyệt', exact: true }).click();
+    await showAllTimeline(manager);
     await expect(manager.getByText('Chờ duyệt → Đã duyệt.')).toBeVisible();
   } finally {
     await context.close();

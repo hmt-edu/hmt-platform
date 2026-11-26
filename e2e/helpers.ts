@@ -253,3 +253,11 @@ export async function showAllColumns(page: Page) {
   if (phone) await page.getByRole('button', { name: 'Áp dụng' }).click();
   else await page.keyboard.press('Escape');
 }
+
+/** Dòng thời gian mặc định mở tab «Ghi chú» (F-26-02): muốn đọc sự kiện hệ thống thì chọn «Tất cả». */
+export async function showAllTimeline(page: Page) {
+  await page
+    .getByRole('region', { name: 'Ghi chú & hoạt động' })
+    .getByRole('button', { name: 'Tất cả', exact: true })
+    .click();
+}

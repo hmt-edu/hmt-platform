@@ -133,6 +133,8 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
   // Dòng thời gian bên phải (Q-51): một mục "Sửa đơn" cho lần lưu, mỗi thay đổi một dòng (giá trị cũ → mới, tên điều khoản, không mã nội bộ),
   // tổng tiền ở dòng cuối (cũ → mới khi sự kiện liền trước đã có ảnh chụp; đơn dựng sẵn trong seed thì chỉ số mới).
   const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  // Dòng thời gian mặc định tab Ghi chú: sự kiện hệ thống xem ở «Tất cả».
+  await timeline.getByRole('button', { name: 'Tất cả', exact: true }).click();
   await expect(timeline.getByText('Sửa đơn', { exact: true })).toBeVisible();
   await expect(timeline.getByText(/dòng 1 .*số giờ .* → 9/)).toBeVisible();
   await expect(timeline.getByText(/điều khoản thanh toán .* → .*Chia ba đợt/)).toBeVisible();
@@ -187,6 +189,8 @@ test('Thêm dòng khi sửa (Q-67): chọn gói, em, số lượng; Lưu thì m�
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
   const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  // Dòng thời gian mặc định tab Ghi chú: sự kiện hệ thống xem ở «Tất cả».
+  await timeline.getByRole('button', { name: 'Tất cả', exact: true }).click();
   await expect(
     timeline.getByText(/thêm dòng \d+ \(LC-TOAN-K09\): số giờ 3, chiết khấu 5%/),
   ).toBeVisible();
@@ -205,6 +209,8 @@ test('Đơn chuyển từ báo giá Nháp sửa được; bỏ dòng; nhật ký
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Đã lưu đơn.').first()).toBeVisible();
   const timeline = page.getByRole('region', { name: 'Ghi chú & hoạt động' });
+  // Dòng thời gian mặc định tab Ghi chú: sự kiện hệ thống xem ở «Tất cả».
+  await timeline.getByRole('button', { name: 'Tất cả', exact: true }).click();
   await expect(timeline.getByText(/Sửa đơn \(đã sửa so với báo giá .*\)/)).toBeVisible();
   await expect(timeline.getByText(/dòng 1 .*số giờ .* → 11/)).toBeVisible();
 });
