@@ -223,6 +223,7 @@ export function Table<Row>({
   onGroupToggle,
   rowMuted,
   onRowClick,
+  keepHeader = false,
 }: {
   /** Tên bảng cho trình đọc màn hình. */
   caption: string;
@@ -252,6 +253,8 @@ export function Table<Row>({
   rowMuted?: ((row: Row) => boolean) | undefined;
   /** Bấm vào chỗ trống của dòng thì mở bản ghi (bấm nút, liên kết, ô chọn trong dòng vẫn làm việc của chúng). */
   onRowClick?: ((row: Row) => void) | undefined;
+  /** Không có dòng nào vẫn hiện đủ đầu cột, `empty` nằm trong thân bảng (hồ sơ 360°: tab trống vẫn thấy cột). */
+  keepHeader?: boolean | undefined;
 }) {
   const [toggled, setToggled] = useState<ReadonlySet<string>>(new Set());
   const items: DisplayItem<Row>[] = groups
@@ -302,11 +305,13 @@ export function Table<Row>({
     else onSortChange(null);
   };
 
-  if (!loading && (groups ? groups.length === 0 : rows.length === 0)) {
+  const isEmpty = !loading && (groups ? groups.length === 0 : rows.length === 0);
+  if (isEmpty && !keepHeader) {
     return <div className="rounded-card border border-border bg-surface">{empty}</div>;
   }
 
-  if (narrow) {
+  // Bảng trống giữ đầu cột cũng hiện dạng bảng trên điện thoại (cuộn ngang) vì thẻ không có đầu cột.
+  if (narrow && !isEmpty) {
     const first = columns.find((c) => c.primary) ?? columns[0];
     const rest = columns.filter((c) => c !== first);
     return (
@@ -454,6 +459,11 @@ export function Table<Row>({
           </tr>
         </thead>
         <tbody>
+          {isEmpty && (
+            <tr>
+              <td colSpan={columns.length + (selectable ? 1 : 0)}>{empty}</td>
+            </tr>
+          )}
           {loading
             ? Array.from({ length: skeletonRows }, (_, i) => (
                 <tr key={i} className="h-row border-b border-surface-subtle last:border-b-0">

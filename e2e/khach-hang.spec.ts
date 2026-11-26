@@ -77,6 +77,11 @@ test('KH-01 → KH-02: tìm phụ huynh theo SĐT, mở bản ghi, thấy hai co
   // KH-02: tab Ticket mở được (phụ huynh giả chưa có ticket), không còn mờ «ticket làm sau».
   await page.getByRole('tab', { name: 'Ticket' }).click();
   await expect(page.getByText('Chưa có ticket nào.')).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Hạn' })).toBeVisible();
+  // Tab Tài chính bấm được và hiện đủ cột dù chưa có dữ liệu.
+  await page.getByRole('tab', { name: 'Tài chính' }).click();
+  await expect(page.getByRole('columnheader', { name: 'Thành tiền' })).toBeVisible();
+  await expectAccessible(page);
 });
 
 test('KH-04 → KH-05: tìm học sinh, hồ sơ 360° là Tiềm năng, chưa có ghi danh', async ({
@@ -94,8 +99,12 @@ test('KH-04 → KH-05: tìm học sinh, hồ sơ 360° là Tiềm năng, chưa c
   await expect(page.getByText('Tiềm năng').first()).toBeVisible();
   await page.getByRole('tab', { name: 'Học tập' }).click();
   await expect(page.getByText('Chưa có ghi danh.')).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Ngày hết phí' })).toBeVisible();
   await page.getByRole('tab', { name: 'Điểm danh' }).click();
   await expect(page.getByText('Chưa có điểm danh.')).toBeVisible();
+  await page.getByRole('tab', { name: 'Chăm sóc' }).click();
+  await expect(page.getByRole('columnheader', { name: 'Hài lòng' })).toBeVisible();
+  await expect(page.getByText('Chưa có dữ liệu chăm sóc.')).toBeVisible();
   // KH-05: tab «Đề nghị & khiếu nại» mở được (học sinh giả chưa có ticket).
   await page.getByRole('tab', { name: 'Đề nghị & khiếu nại' }).click();
   await expect(page.getByText('Chưa có ticket nào.')).toBeVisible();
