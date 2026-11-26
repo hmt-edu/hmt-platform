@@ -494,3 +494,12 @@ Dùng cho hộp TS-06 «Tạo cơ hội từ lead». Trước đây chỉ chép 
 | `app.create_opportunity(lead, p_data, p_confirm_existing, p_student_ids)` | Quyền Cơ hội · Tạo và Lead · Xem ở cơ sở của lead (như trước) | Thêm tham số `p_student_ids` (id dòng em của lead): `null` = chép TẤT CẢ em, mảng rỗng = 0 em. Bản ba tham số bị bỏ (gọi cũ vẫn chạy, `p_data` ghi đè em đầu như trước) | R-CRM-23: mặc định chọn hết, được chọn 0 em; em không thuộc lead (HMT_EM_KHONG_THUOC_LEAD); em trùng (cùng hồ sơ học sinh, hoặc cùng họ tên chuẩn hoá và năm sinh) chỉ chép một dòng; vượt `prospect_max_students` (HMT_EM_TOI_DA). Các luật khác giữ nguyên (C4C, R-CRM-01, R-CRM-09) |
 | `app.add_lead_students_to_opportunity(cơ hội, p_student_ids)` | Quyền Sửa cơ hội và Xem lead ở cơ sở của cơ hội | «Thêm em vào cơ hội cũ»: chép em của CHÍNH lead đã sinh cơ hội đó (`null` = tất cả); bỏ em đã có; trả danh sách em đầy đủ | HMT_EM_KHONG_THUOC_LEAD; HMT_EM_TOI_DA (chặn cả thao tác); từ L5 mỗi em phải có tên và năm sinh (R-CRM-03, HMT_THIEU_HOC_SINH); cơ hội đã gộp chỉ xem (HMT_BAN_GHI_DA_GOP) |
 Hàm trong `app.prospect_copy_lines` dùng chung hai hàm trên (không mở cho API).
+
+## Tạo cơ hội trực tiếp, không qua lead (migration 672, Code E, 26/11/2026)
+`app.opportunity.lead_id` được phép trống; **trống = cơ hội tạo trực tiếp** (báo cáo dùng điều kiện này). Phần giao diện làm ở thẻ sau.
+
+| Hàm | Ai gọi | Việc | Luật, lỗi |
+|---|---|---|---|
+| `app.create_opportunity_direct(p_data, p_students, p_confirm_duplicate, p_parent_id)` | Quyền Cơ hội · Tạo ở cơ sở của cơ hội; giao người khác cần Giao việc; có em thì cần thêm Cơ hội · Sửa | Tạo cơ hội L1 với phụ huynh có sẵn (`p_parent_id`) hoặc mới (`parent_name`, `parent_phone`), nguồn, người phụ trách, nhu cầu, danh sách em. Trả `{id, code, parent_id, parent_code}` | R-CRM-01: trùng SĐT với lead, cơ hội đang dùng thì `HMT_SDT_TRUNG` kèm mã (ngoài phạm vi không lộ mã), xác nhận lần hai mới tạo. R-CRM-23 (`HMT_EM_TOI_DA`, `HMT_THIEU_TEN_EM`), R-CRM-27/28, spec 06 mục 1.1 (`HMT_THIEU_NGUON`, `HMT_NGUON_SAI`) |
+
+Hàm trong (không mở cho API): `app.assert_new_source`, `app.assert_no_phone_duplicate`. `list_opportunities`, `export_opportunities` nối lead bằng left join; `add_lead_students_to_opportunity` báo `HMT_CO_HOI_KHONG_CO_LEAD` khi cơ hội không có lead. R-CRM-03 (từ L5 em đủ tên, năm sinh) vẫn do trigger cơ hội kiểm.
