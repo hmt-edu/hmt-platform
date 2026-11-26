@@ -29,7 +29,7 @@ cap_nhat: 2026-11-24
 - Quyền = **vai trò × phân hệ × hành động**, mỗi ô có một **phạm vi dữ liệu** (ví dụ chỉ cơ sở của mình, hoặc toàn bộ) hoặc «Không có».
 - Mỗi lần **Lưu thay đổi** tạo một **phiên bản mới**, có hiệu lực ngay. Không có «lưu nháp».
 - Phân hệ **Quản trị** chỉ cấp cho Admin: ô của vai khác ở phân hệ này bị mờ, không sửa được.
-- Chỉ vai **Kế toán** được có quyền «Kế toán · Duyệt» (duyệt tiền). Admin và vai khác không duyệt tiền, hệ thống chặn nếu gán.
+- Chỉ vai **Kế toán** và **Admin hệ thống** được có quyền «Kế toán · Duyệt» (duyệt tiền). Gán cho vai khác thì hệ thống chặn.
 
 ## Các bước
 1. Vào **Quản trị** → **Vai trò**. Xem bảng các vai trò, hoặc gõ vào ô «Tìm vai trò» (tên hoặc mã).

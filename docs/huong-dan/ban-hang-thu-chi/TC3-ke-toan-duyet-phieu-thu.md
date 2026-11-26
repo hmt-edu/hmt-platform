@@ -11,7 +11,7 @@ cap_nhat: 2026-11-24
 # Kế toán duyệt hoặc từ chối phiếu thu
 
 **Làm xong bạn có:** phiếu «Đã duyệt» (hệ thống tự sinh khoản tiền vào và ghi danh) hoặc phiếu về Nháp kèm lý do.
-**Ai làm:** Kế toán (chỉ vai Kế toán duyệt tiền; Admin và vai khác không duyệt). **Màn:** **Hàng chờ kế toán duyệt**.
+**Ai làm:** Kế toán. Admin hệ thống cũng duyệt được (mỗi lần tự duyệt hoặc duyệt cả hai bước được ghi nhật ký); vai khác không duyệt. **Màn:** **Hàng chờ kế toán duyệt**.
 
 > Video: [VIDEO: tc3]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
@@ -19,7 +19,7 @@ cap_nhat: 2026-11-24
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn có sao kê ngân hàng hoặc chứng từ để đối chiếu.
 - [ ] Phiếu đã qua bước quản lý (tình trạng «Chờ kế toán»). Phiếu **Thu nợ đầu kỳ** không qua quản lý: vào thẳng hàng chờ của bạn.
-- [ ] Bạn không phải người đã duyệt bước quản lý của phiếu này.
+- [ ] Bạn không phải người đã duyệt bước quản lý của phiếu này (chỉ Admin hệ thống được duyệt cả hai bước).
 
 ## Các bước
 1. Vào **Hàng chờ kế toán duyệt** (menu Bán hàng và thu chi; hoặc **Phiếu thu**, lọc «Chờ kế toán»), bấm mã phiếu. [ẢNH: tc3-b1]
@@ -37,9 +37,9 @@ cap_nhat: 2026-11-24
 ## Lỗi hay gặp
 | Mã | Nghĩa là | Làm gì |
 |---|---|---|
-| `HMT_KHONG_CO_QUYEN` | tài khoản không phải Kế toán | đăng nhập đúng tài khoản |
-| `HMT_CHI_KE_TOAN_DUYET_TIEN` | chỉ vai Kế toán duyệt tiền | nhờ Kế toán |
-| Người duyệt quản lý trùng người duyệt kế toán | hệ thống chặn | nhờ người khác duyệt |
+| `HMT_KHONG_CO_QUYEN` | tài khoản không phải Kế toán hay Admin hệ thống | đăng nhập đúng tài khoản |
+| `HMT_CHI_KE_TOAN_DUYET_TIEN` | chỉ Kế toán hoặc Admin hệ thống duyệt tiền | nhờ Kế toán |
+| Người duyệt quản lý trùng người duyệt kế toán | hệ thống chặn (trừ Admin hệ thống) | nhờ người khác duyệt |
 
 ## Hỏi đáp
 - **Duyệt xong vì sao chưa có ghi danh?** Tổng tiền vào của đơn chưa đạt cọc tối thiểu.

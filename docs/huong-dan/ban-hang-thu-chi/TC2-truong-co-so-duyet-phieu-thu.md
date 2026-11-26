@@ -40,7 +40,7 @@ cap_nhat: 2026-11-24
 |---|---|
 | Duyệt nhầm, Kế toán chưa duyệt | báo Kế toán «Từ chối phiếu thu»; phiếu về Nháp, người lập trình lại |
 | Từ chối nhầm | báo người lập trình lại |
-| Cần đổi người duyệt (người duyệt vắng) | Admin dùng «Chuyển người duyệt» (Admin chỉ chuyển, không duyệt thay bước quản lý) |
+| Cần đổi người duyệt (người duyệt vắng) | Admin duyệt thay, hoặc dùng «Chuyển người duyệt» |
 
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì |

@@ -65,7 +65,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 | Mã | Làm gì |
 |---|---|
 | `HMT_KHONG_CO_QUYEN` | tài khoản không phải Kế toán |
-| `HMT_CHI_KE_TOAN_DUYET_TIEN` | chỉ vai Kế toán duyệt tiền (Admin và vai khác không duyệt) |
+| `HMT_CHI_KE_TOAN_DUYET_TIEN` | chỉ Kế toán hoặc Admin hệ thống duyệt tiền |
 | Người duyệt quản lý trùng người duyệt kế toán | hệ thống chặn; nhờ người khác duyệt |
 
 - **Video (18 giây: tìm phiếu Chờ kế toán, Duyệt hoặc Từ chối):** [VIDEO: huong-dan-ke-toan-phieu-thu]
