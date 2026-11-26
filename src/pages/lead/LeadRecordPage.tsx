@@ -32,6 +32,8 @@ import type { OpportunityPage } from '../co-hoi/oppTypes';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { ProspectStudents } from '../../features/prospect/ProspectStudents';
+import { emSaveFailedText, unsavedEmText } from '../../features/prospect/prospectLogic';
+import { saveEm, useEmEditing } from '../../features/prospect/useEmEditing';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
@@ -192,7 +194,11 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   }, [exitTo, navigate]);
 
   const editing = mode !== 'view';
-  const dirty = editing && exitTo === null && JSON.stringify(draft) !== JSON.stringify(initial);
+  const ems = useEmEditing(record?.students ?? []);
+  const dirty =
+    editing &&
+    exitTo === null &&
+    (JSON.stringify(draft) !== JSON.stringify(initial) || ems.dirtyIds.length > 0);
   const view: LeadDraft = editing ? draft : initial;
   const set = <K extends keyof LeadDraft>(key: K, value: LeadDraft[K]) => {
     setDraft((d) => ({ ...d, [key]: value }));
@@ -219,6 +225,8 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
     const found = validateDraft(draft, { creating, channelRequired: channelOptions.length > 0 });
     setErrors(found);
     if (Object.keys(found).length > 0) {
+      // Ô lỗi của em đầu nằm ở thẻ em đầu: mở thẻ đó trước khi đưa con trỏ tới.
+      if (found.student_name || found.student_birth_year) ems.select(null);
       // T2-01: báo ngay ở đầu trang và đưa con trỏ tới ô lỗi đầu tiên, không để lỗi nằm im dưới màn hình.
       toast({
         tone: 'danger',
@@ -229,6 +237,11 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         first?.scrollIntoView({ block: 'center' });
         first?.focus();
       });
+      return;
+    }
+    const em = ems.pending(false);
+    if (em?.error) {
+      toast({ tone: 'danger', title: em.error });
       return;
     }
     setSaving(true);
@@ -250,9 +263,30 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           p_data: payload,
           p_confirm_duplicate: confirmDuplicate,
         });
+        if (em) {
+          try {
+            await saveEm(supabase, em);
+          } catch (e) {
+            // Giữ thẻ và bản nháp của em đó; phần lead đã lưu nên bản nháp của trang lấy theo dữ liệu mới.
+            await refreshRecord();
+            const saved = queryClient.getQueryData<LeadRecord>(['lead-record', record.id]);
+            if (saved) setDraft(toDraft(saved));
+            toast({ tone: 'danger', title: emSaveFailedText('lead', em.name, errorOf(e).message) });
+            return;
+          }
+        }
+        const others = ems.othersAfterSave();
         await refreshRecord();
-        setMode('view');
-        toast({ title: 'Đã lưu.' });
+        if (em) ems.discard(em.id);
+        if (others.length === 0) {
+          setMode('view');
+          toast({ title: 'Đã lưu.' });
+        } else {
+          // Còn em khác chưa lưu: ở lại chế độ sửa, bản nháp của trang lấy theo dữ liệu vừa lưu.
+          const fresh = queryClient.getQueryData<LeadRecord>(['lead-record', record.id]);
+          if (fresh) setDraft(toDraft(fresh));
+          toast({ title: `Đã lưu. ${unsavedEmText(others)}` });
+        }
       }
     } catch (e) {
       const error = errorOf(e);
@@ -275,6 +309,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   }
 
   function cancelEdit() {
+    ems.reset();
     setDraft(initial);
     setErrors({});
     if (creating) setExitTo('/crm/lead');
@@ -469,6 +504,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         saving={saving}
         readOnly={!canEdit}
         onEdit={() => {
+          ems.reset();
           setDraft(initial);
           setErrors({});
           setMode('edit');
@@ -789,61 +825,68 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
               }
             />
           </DetailSection>
-          <DetailSection title="Thông tin học sinh">
-            {text('student_name', 'Tên học sinh', {
-              hint: 'bắt buộc từ L5',
-              placeholder: 'Tên (bắt buộc từ L5)',
-            })}
-            <DetailField
-              label="Ngày sinh"
-              mode={mode}
-              value={
-                view.student_birth_date
-                  ? formatDate(`${view.student_birth_date}T00:00:00+07:00`)
-                  : ''
-              }
-              editor={
-                <DateInput
+          <ProspectStudents
+            entity="LEAD"
+            recordId={record?.id}
+            students={record?.students ?? []}
+            requireYear={false}
+            canEdit={canEdit}
+            mode={mode}
+            ems={ems}
+            onChanged={() => void refreshRecord()}
+            firstFields={
+              <>
+                {text('student_name', 'Tên học sinh', {
+                  hint: 'bắt buộc từ L5',
+                  placeholder: 'Tên (bắt buộc từ L5)',
+                })}
+                <DetailField
                   label="Ngày sinh"
-                  compact
-                  value={isoToDate(draft.student_birth_date)}
-                  onChange={(d) => set('student_birth_date', dateToIso(d))}
+                  mode={mode}
+                  value={
+                    view.student_birth_date
+                      ? formatDate(`${view.student_birth_date}T00:00:00+07:00`)
+                      : ''
+                  }
+                  editor={
+                    <DateInput
+                      label="Ngày sinh"
+                      compact
+                      value={isoToDate(draft.student_birth_date)}
+                      onChange={(d) => set('student_birth_date', dateToIso(d))}
+                    />
+                  }
                 />
-              }
-            />
-            <DetailField
-              label="Năm sinh"
-              hint="bắt buộc từ L5"
-              mode={mode}
-              value={view.student_birth_year}
-              error={errors.student_birth_year ?? null}
-              editor={
-                <input
-                  aria-label="Năm sinh"
-                  inputMode="numeric"
-                  value={draft.student_birth_year}
-                  placeholder="VD 2012 (bắt buộc từ L5)"
-                  onChange={(e) => set('student_birth_year', e.target.value)}
-                  aria-invalid={errors.student_birth_year ? true : undefined}
-                  className={INPUT_CLASS}
+                <DetailField
+                  label="Năm sinh"
+                  hint="bắt buộc từ L5"
+                  mode={mode}
+                  value={view.student_birth_year}
+                  error={errors.student_birth_year ?? null}
+                  editor={
+                    <input
+                      aria-label="Năm sinh"
+                      inputMode="numeric"
+                      value={draft.student_birth_year}
+                      placeholder="VD 2012 (bắt buộc từ L5)"
+                      onChange={(e) => set('student_birth_year', e.target.value)}
+                      aria-invalid={errors.student_birth_year ? true : undefined}
+                      className={INPUT_CLASS}
+                    />
+                  }
                 />
-              }
-            />
-            {text('school', 'Trường học', { placeholder: 'Tên trường' })}
-            {text('self_rating', 'Học lực tự đánh giá', { placeholder: 'VD Khá, yếu phần Hình' })}
-            {text('goal', 'Mục tiêu', { placeholder: 'Mục tiêu của học sinh' })}
-          </DetailSection>
-          {record && (
-            <ProspectStudents
-              entity="LEAD"
-              recordId={record.id}
-              students={record.students ?? []}
-              requireYear={false}
-              canEdit={canEdit}
-              pageEditing={mode !== 'view'}
-              onChanged={() => void refreshRecord()}
-            />
-          )}
+                {text('school', 'Trường học', {
+                  placeholder: 'Tên trường',
+                })}
+                {text('self_rating', 'Học lực tự đánh giá', {
+                  placeholder: 'VD Khá, yếu phần Hình',
+                })}
+                {text('goal', 'Mục tiêu', {
+                  placeholder: 'Mục tiêu của học sinh',
+                })}
+              </>
+            }
+          />
         </div>
         <div className="mt-6">
           <Tabs

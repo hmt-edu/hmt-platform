@@ -4,7 +4,7 @@
 // Chỉ máy tính (phiếu nghiệp vụ ghi dữ liệu).
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, pickOption } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, pickOption, showAllTimeline } from './helpers';
 import { DB_URL } from './lich-hen-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng lớp, ghi danh và ticket giả).');
@@ -180,6 +180,7 @@ test('CSKH cơ sở đi: tạo phiếu Chuyển cơ sở từ ticket và trình 
   await expect(page).toHaveURL(/\/crm\/phieu-nghiep-vu\/[0-9a-f-]{36}$/);
   taskUrl = page.url();
   await page.getByRole('button', { name: 'Gửi duyệt' }).click();
+  await showAllTimeline(page);
   await expect(page.getByText('Trình duyệt. Nháp → Chờ duyệt.', { exact: true })).toBeVisible();
 });
 
@@ -232,6 +233,7 @@ test('Thực hiện: ghi danh sang lớp của cơ sở đích, giờ giữ nguy
       .getByRole('alertdialog')
       .getByRole('button', { name: 'Thực hiện', exact: true })
       .click();
+    await showAllTimeline(page);
     await expect(
       page.getByText('Thực hiện phiếu. Đã duyệt → Đã thực hiện.', { exact: true }),
     ).toBeVisible();
