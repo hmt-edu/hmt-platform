@@ -186,18 +186,18 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-GIO-08 | **(24/10)** Giáo viên **không thấy danh sách điểm danh** trước khi buổi Đã chốt (R-GIO-02, R-GIO-03; không hiện danh sách tạm); vẫn nhập được nội dung buổi. | [CHỐT] |
 | R-GIO-09 | **(26/11, chưa làm trong mã)** **Done tay:** giáo viên của buổi, người có quyền điểm danh phía vận hành, quản lý cơ sở và Admin bấm được. Hệ thống kiểm đúng điều kiện R-GIO-06 rồi Done ngay; chưa đủ thì không Done và liệt kê điều còn thiếu. | [CHỐT 26/11] |
 | R-GIO-10 | **(26/11, chưa làm trong mã)** Quá `teacher_session_complete_hours` sau khi buổi kết thúc mà chưa Done: buổi hiện ở “Việc của tôi” của quản lý cơ sở. | [CHỐT 26/11] |
-| R-GIO-11 | **(26/11, chưa làm trong mã)** Quản lý cơ sở (hoặc Admin) **nhập thay** giáo viên điểm danh, nhận xét, điểm khi buổi chưa Done: bắt buộc lý do, nhật ký ghi người nhập thay. Ngoại lệ của R-GV-08. | [CHỐT 26/11] |
-| R-GIO-12 | **(26/11, chưa làm trong mã)** **Done hàng loạt** (quản lý cơ sở, Admin): chọn nhiều buổi, bắt buộc lý do. Bỏ qua điều kiện khớp hai cột, dòng nội dung buổi, nhận xét, chấm BTVN và nhập điểm. **Không** bỏ qua điểm danh của giáo viên: buổi chưa đủ bị loại khỏi lượt và báo rõ. Buổi Done khi còn thiếu nội dung hoặc nhận xét được gắn cờ **Thiếu nhận xét**; ghi nhật ký từng buổi. Giờ trừ theo R-GIO-01 như mọi buổi Done. | [CHỐT 26/11] |
+| R-GIO-11 | **(26/11, chưa làm trong mã)** Quản lý cơ sở (hoặc Admin) **nhập thay** giáo viên điểm danh, nhận xét, điểm khi buổi chưa Done: bắt buộc lý do, nhật ký ghi người nhập thay. Ngoại lệ của R-GV-08. **(27/11)** Quyền nhập thay là `ATTENDANCE` · Duyệt. | [CHỐT 26/11] |
+| R-GIO-12 | **(26/11, chưa làm trong mã)** **Done hàng loạt** (quản lý cơ sở, Admin): chọn nhiều buổi, bắt buộc lý do. Bỏ qua điều kiện khớp hai cột, dòng nội dung buổi, nhận xét, chấm BTVN và nhập điểm. **Không** bỏ qua điểm danh của giáo viên: buổi chưa đủ bị loại khỏi lượt và báo rõ. Buổi Done khi còn thiếu nội dung hoặc nhận xét được gắn cờ **Thiếu nhận xét**; ghi nhật ký từng buổi. Giờ trừ theo R-GIO-01 như mọi buổi Done. **(27/11)** Mỗi lượt tối đa 50 buổi, là tham số cấu hình (mặc định 50), không viết cứng. Buổi đã Done còn cờ Thiếu nhận xét thì giáo viên **không bổ sung** nữa; quản lý cơ sở sửa theo R-GIO-07. | [CHỐT 26/11] |
 
 ## 6. Điểm danh
 
 | Mã | Luật | |
 |---|---|---|
 | R-DD-01 | Trạng thái: Có mặt, Đi muộn, Vắng có phép, Vắng không phép; trống = chưa điểm danh. | [CHỐT] |
-| R-DD-02 | Điểm danh hai phía: vận hành và giáo viên ghi riêng; **ô của giáo viên quyết định trạng thái chính thức**. **(26/11, chưa làm trong mã)** Mọi tính toán (giờ, cờ vắng, báo cáo, lời nhắn phụ huynh) chỉ đọc cột Giáo viên. Trừ giờ không đổi: có tên trong danh sách và buổi Done (R-GIO-01). | [CHỐT] |
+| R-DD-02 | Điểm danh hai phía: vận hành và giáo viên ghi riêng; **ô của giáo viên quyết định trạng thái chính thức**. **(26/11, chưa làm trong mã)** Mọi tính toán (giờ, cờ vắng, báo cáo, lời nhắn phụ huynh) chỉ đọc cột Giáo viên. Trừ giờ không đổi: có tên trong danh sách và buổi Done (R-GIO-01). **(27/11)** Riêng danh sách gọi nhắc lấy cột Giáo viên, ô Giáo viên còn trống thì lấy cột Vận hành. | [CHỐT] |
 | R-DD-03 | Vận hành ghi kèm lý do liên hệ (danh mục: Không nghe máy, Đã nhắc vào lớp, Đã vào lớp, Xin nghỉ học…). **(26/11, chưa làm trong mã)** Lý do liên hệ và ghi chú nằm ở cột **Liên hệ phụ huynh**, tách khỏi cột trạng thái Vận hành, không dùng để so khớp. | [CHỐT] |
 | R-DD-04 | **(26/11, chưa làm trong mã)** Giáo viên lưu một ô mà ô Vận hành cùng dòng đang trống thì hệ thống chép sang. Ô được chép **đi theo** giáo viên khi giáo viên đổi, cho tới khi vận hành tự ghi ô đó. | [CHỐT 26/11] |
-| R-DD-05 | **(26/11, chưa làm trong mã)** Giáo viên thấy trạng thái phía vận hành ở cột “Vận hành”, chỉ xem; không thấy cột Liên hệ phụ huynh (R-GV-13). Mỗi bên chỉ sửa cột của mình. | [CHỐT 26/11] |
+| R-DD-05 | **(26/11, chưa làm trong mã)** Giáo viên thấy trạng thái phía vận hành ở cột “Vận hành”, chỉ xem; không thấy cột Liên hệ phụ huynh (R-GV-13). Mỗi bên chỉ sửa cột của mình. **(27/11)** Vận hành **không xoá** ô mình đã tích về trống, chỉ đổi sang giá trị khác. | [CHỐT 26/11] |
 | R-DD-06 | **(26/11, chưa làm trong mã)** Hai cột lệch nhau ở buổi chưa Done thì hiện ở “Việc của tôi” của giáo viên và của vận hành. | [CHỐT 26/11] |
 
 ## 7. Cổng giáo viên
