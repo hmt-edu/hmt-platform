@@ -133,7 +133,7 @@ Luật: R-LOP-01, R-LOP-05, R-LOP-08, R-LOP-14, R-LOP-15. Chỉ đọc; ghi vẫ
 | Hàm                                                  | Việc                                                                                                                                  |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `list_classes(bộ lọc, sắp xếp, limit, offset)`       | LOP-01: lọc tình trạng duyệt, vận hành, cơ sở, môn, khối, phân loại; tìm theo mã lớp hoặc mã cũ; sĩ số, chỗ còn lại, lịch học, giáo viên |
-| `get_class_record(lớp)`                              | LOP-02: thông tin, khung giờ, học sinh đang xếp (không số điện thoại), đếm buổi, 100 buổi, cảnh báo trùng, 20 sự kiện gần nhất         |
+| `get_class_record(lớp)`                              | LOP-02: thông tin, khung giờ, học sinh đang xếp (không số điện thoại), đếm buổi, 100 buổi, cảnh báo trùng, 20 sự kiện gần nhất; sự kiện kèm tên người làm (mig 689) |
 | `week_sessions(cơ sở, từ ngày, đến ngày)`            | LOP-08: buổi trong tối đa 14 ngày, cờ trùng phòng, trùng giáo viên ở cấp buổi thật (chỉ cảnh báo)                                      |
 | `list_class_form_options(cơ sở)`                     | LOP-03: giáo viên, trợ giảng, CSKH, phòng, nhóm lớp của cơ sở                                                                         |
 
