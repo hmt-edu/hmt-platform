@@ -36,6 +36,7 @@ import {
   useUpsaleOrders,
   useUpsaleRecord,
 } from './useUpsaleData';
+import { FromLink } from '../../layout/FromLink';
 
 export function UpsaleRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -57,6 +58,7 @@ export function UpsaleRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/tai-tuc" className="font-medium text-link hover:underline">
               Về danh sách Tái tục
             </Link>
@@ -412,9 +414,9 @@ function OrdersTab({ orders }: { orders: UpsaleOrderRow[] }) {
     <ul className="flex flex-col gap-2">
       {orders.map((o) => (
         <li key={o.id} className="flex flex-wrap items-center gap-2">
-          <Link className="font-medium text-link hover:underline" to={`/crm/don-hang/${o.id}`}>
+          <FromLink className="font-medium text-link hover:underline" to={`/crm/don-hang/${o.id}`}>
             {o.code}
-          </Link>
+          </FromLink>
           <span className="text-fg-muted">
             {ORDER_STATUS[o.status_code] ?? o.status_code} · {formatMoney(o.total_amount)} ·{' '}
             {formatDate(o.created_at)}

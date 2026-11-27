@@ -17,6 +17,7 @@ import { useLeadCatalogs } from '../lead/useCatalogs';
 import { receiptStamp } from './receiptRecord';
 import type { ReceiptRecord } from './receiptTypes';
 import { useReceipt } from './useReceiptData';
+import { FromLink } from '../../layout/FromLink';
 
 export function ReceiptPrintPage() {
   const { id } = useParams<{ id: string }>();
@@ -38,6 +39,7 @@ export function ReceiptPrintPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/phieu-thu" className="font-medium text-link hover:underline">
               Về danh sách Phiếu thu
             </Link>
@@ -66,9 +68,12 @@ function ReceiptPrint({ record }: { record: ReceiptRecord }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3 print:hidden">
-        <Link to={`/crm/phieu-thu/${record.id}`} className="font-medium text-link hover:underline">
+        <FromLink
+          to={`/crm/phieu-thu/${record.id}`}
+          className="font-medium text-link hover:underline"
+        >
           {`‹ Phiếu thu ${record.code}`}
-        </Link>
+        </FromLink>
         <span className="flex-1" />
         <span className="text-caption text-fg-muted">Chọn “Lưu thành PDF” để tải</span>
         <Button icon="file" onClick={() => window.print()}>

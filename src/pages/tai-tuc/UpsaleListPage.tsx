@@ -2,7 +2,6 @@
 // Lọc, phân trang làm ở máy chủ; chỉ giữ trang đang xem. Nút Tạo (TT-03) cho người có quyền Tạo; cột Xử lý có Giao (quyền Giao việc).
 // Bấm một dòng mở bản ghi phiếu (TT-02).
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
 import { KanbanBoard } from '../../list/Kanban';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
@@ -31,11 +30,12 @@ import {
   useUpsaleGroupCounts,
   useUpsalePage,
 } from './useUpsaleData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 export function UpsaleListPage() {
   const access = useAccess();
   const toast = useToast();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const refreshData = useRefreshUpsale();
   const catalogs = useLeadCatalogs();
   const [assigning, setAssigning] = useState<UpsaleRow | null>(null);
@@ -149,7 +149,7 @@ export function UpsaleListPage() {
             : []
         }
         rows={rows}
-        onRowClick={(r) => void navigate(`/crm/tai-tuc/${r.id}`)}
+        onRowClick={(r) => openFrom(`/crm/tai-tuc/${r.id}`)}
         rowKey={(r) => r.id}
         rowLabel={(r) => `${r.code} ${r.student_name}`}
         loading={activeQuery.isPending || activeQuery.isPlaceholderData}

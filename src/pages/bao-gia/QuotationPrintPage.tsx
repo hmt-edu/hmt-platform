@@ -17,6 +17,7 @@ import { hoursText, maskPhone, overdueText, printStamp } from './quotePrint';
 import { discountText, giftValueText, quantityText } from './quoteRecord';
 import type { QuotationRecord } from './quoteTypes';
 import { useQuotation } from './useQuoteData';
+import { FromLink } from '../../layout/FromLink';
 
 export function QuotationPrintPage() {
   const { id } = useParams<{ id: string }>();
@@ -38,6 +39,7 @@ export function QuotationPrintPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/bao-gia" className="font-medium text-link hover:underline">
               Về danh sách Báo giá
             </Link>
@@ -69,9 +71,12 @@ function QuotationPrint({ record }: { record: QuotationRecord }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3 print:hidden">
-        <Link to={`/crm/bao-gia/${record.id}`} className="font-medium text-link hover:underline">
+        <FromLink
+          to={`/crm/bao-gia/${record.id}`}
+          className="font-medium text-link hover:underline"
+        >
           {`‹ Báo giá ${record.code}`}
-        </Link>
+        </FromLink>
         <span className="flex-1" />
         <span className="text-caption text-fg-muted">Chọn “Lưu thành PDF” để tải</span>
         <Button icon="file" onClick={() => window.print()}>
