@@ -4,7 +4,7 @@
 // chuyển (R-CRM-13); thả vào cột hợp lệ mở hộp TS-09.
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
 import { KanbanBoard } from '../../list/Kanban';
 import { forwardOnlyRule } from '../../list/kanbanLogic';
@@ -37,6 +37,7 @@ import {
   useOppPage,
   useRefreshOpps,
 } from './useOppData';
+import { FromLink } from '../../layout/FromLink';
 
 const NOTE =
   'Cơ hội chỉ đi tới, không lùi. L6 do hệ thống chuyển khi phiếu Test Hoàn thành; L8 chọn tay sau khi đã thu tiền. Kéo thẻ vào cột phía trước thì hiện hộp chuyển giai đoạn.';
@@ -82,7 +83,6 @@ function sortParam(sort: SortState): string | undefined {
 
 export function OpportunityListPage() {
   const supabase = useDb();
-  const navigate = useNavigate();
   const openFrom = useNavigateFrom();
   const access = useAccess();
   const toast = useToast();
@@ -335,7 +335,7 @@ export function OpportunityListPage() {
           if (spec) leaves.toggle(key, spec.filters, open);
         }}
         rowMuted={(r) => r.record_status === 'DA_GOP'}
-        onRowClick={(r) => void navigate(`/crm/co-hoi/${r.id}`)}
+        onRowClick={(r) => openFrom(`/crm/co-hoi/${r.id}`)}
         kanban={
           board.isPending ? (
             <Spinner label="Đang tải Kanban…" />
@@ -392,8 +392,8 @@ export function OpportunityListPage() {
             refresh();
             toast({ title: `Đã chuyển sang ${stageName}.` });
           }}
-          onFillMissing={(id) => void navigate(`/crm/co-hoi/${id}`)}
-          onOpenTest={(testId) => void navigate(`/crm/phieu-kiem-tra/${testId}`)}
+          onFillMissing={(id) => openFrom(`/crm/co-hoi/${id}`)}
+          onOpenTest={(testId) => openFrom(`/crm/phieu-kiem-tra/${testId}`)}
         />
       )}
       <AssignDialog
@@ -431,9 +431,9 @@ function OppCard({
   return (
     <div className="flex flex-col gap-1.5">
       <Code>{card.code}</Code>
-      <Link to={`/crm/co-hoi/${card.id}`} className="font-semibold hover:underline">
+      <FromLink to={`/crm/co-hoi/${card.id}`} className="font-semibold hover:underline">
         {oppTitle(card)}
-      </Link>
+      </FromLink>
       <p className="text-caption text-fg-muted">
         {formatPhone(card.parent_phone)} · {card.branch_code}
       </p>

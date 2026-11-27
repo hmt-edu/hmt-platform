@@ -55,6 +55,10 @@ export function itemLink(
       return { to: '/crm/diem-danh', label: 'Mở điểm danh' };
     case 'RENEWAL':
       return { to: `/crm/tai-tuc/${item.entity_id}`, label: 'Mở hồ sơ' };
+    case 'TICKET_OVERDUE':
+      return { to: `/crm/ticket/${item.entity_id}`, label: 'Mở ticket' };
+    case 'DEBT_OVERDUE':
+      return { to: `/crm/don-hang/${item.entity_id}`, label: 'Mở đơn' };
   }
 }
 
@@ -71,12 +75,18 @@ export function dueText(
   now: Date = new Date(),
 ): string | null {
   if (item.due_at === null || item.signal === 'RENEWAL') return null;
+  // Công nợ chỉ có ngày đến hạn, không có giờ.
+  if (item.signal === 'DEBT_OVERDUE') return `Hạn ${formatDate(item.due_at)}`;
   const text =
     formatDate(item.due_at) === formatDate(now)
       ? formatTime(item.due_at)
       : formatDateTime(item.due_at);
   const prefix =
-    item.signal === 'APPROVAL' ? 'Gửi' : item.signal === 'SESSION_PENDING' ? 'Hạn' : null;
+    item.signal === 'APPROVAL'
+      ? 'Gửi'
+      : item.signal === 'SESSION_PENDING' || item.signal === 'TICKET_OVERDUE'
+        ? 'Hạn'
+        : null;
   if (prefix) return `${prefix} ${text}`;
   return item.signal === 'APPOINTMENT' ? `Hẹn ${text}` : text;
 }
@@ -85,7 +95,9 @@ export function dueText(
 export function cardTitle(card: WorkCard): string {
   if (card.parent_name) return card.parent_name;
   if (card.phone) return card.phone;
-  return card.items[0]?.signal === 'APPROVAL' ? 'Việc chờ duyệt' : 'Buổi học';
+  const signal = card.items[0]?.signal;
+  if (signal === 'TICKET_OVERDUE') return 'Ticket';
+  return signal === 'APPROVAL' ? 'Việc chờ duyệt' : 'Buổi học';
 }
 
 export function cardTag(

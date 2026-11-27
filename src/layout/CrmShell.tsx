@@ -3,11 +3,19 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { useAuth } from '../lib/auth/authContext';
 import { ALL_BRANCHES } from '../nav/access';
 import { useAccess } from '../nav/AccessContext';
-import { CRM_MENU, routeTabs, sidebarEntries, visibleMenu, type MenuGroup } from '../nav/crmMenu';
+import {
+  CRM_MENU,
+  routeModes,
+  routeTabs,
+  sidebarEntries,
+  visibleMenu,
+  type MenuGroup,
+} from '../nav/crmMenu';
 import { IconButton } from '../ui/Button';
 import { cn } from '../ui/cn';
 import { Icon } from '../ui/icons';
 import { Drawer, Select } from '../ui/Overlays';
+import { ButtonLink } from '../ui/Button';
 import { RouteTabs } from '../ui/RouteTabs';
 import { AccountMenu } from './AccountMenu';
 import { CrumbTailContext, FilteredListContext } from './CrumbTail';
@@ -187,7 +195,9 @@ export function CrmShell() {
   const [filteredList, setFilteredList] = useState(false);
   // Chỉ bỏ tầng danh sách khi danh sách lọc được mở từ một bản ghi (có đường dẫn gốc).
   const dropLast = filteredList && fromOf(location.state) !== null;
-  const tabs = routeTabs(menu, pathname.replace(/^\/crm\/?/, ''));
+  const slug = pathname.replace(/^\/crm\/?/, '');
+  const tabs = routeTabs(menu, slug);
+  const modes = routeModes(menu, slug);
   const crumbsValue = useMemo(
     () => ({ crumbs, here: `${pathname}${search}`, dropLast }),
     [crumbs, pathname, search, dropLast],
@@ -326,7 +336,22 @@ export function CrmShell() {
                     <RouteTabs
                       label="Các màn cùng mục"
                       items={tabs.map((t) => ({ to: crmPath(t.slug), label: t.label }))}
+                      activeTo={modes[0] ? crmPath(modes[0].slug) : undefined}
                     />
+                  )}
+                  {modes.length > 0 && (
+                    <nav aria-label="Chế độ xem" className="mb-3 flex flex-wrap gap-1">
+                      {modes.map((m) => (
+                        <ButtonLink
+                          key={m.slug}
+                          to={crmPath(m.slug)}
+                          variant={m.slug === slug ? 'primary' : 'secondary'}
+                          aria-current={m.slug === slug ? 'page' : undefined}
+                        >
+                          {m.label}
+                        </ButtonLink>
+                      ))}
+                    </nav>
                   )}
                   <Outlet />
                 </div>

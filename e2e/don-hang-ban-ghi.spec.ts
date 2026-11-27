@@ -11,6 +11,13 @@ import {
   type SeededRecords,
 } from './don-hang-seed';
 
+// Không có việc gì khác để làm thì «Hành động» chỉ còn mục In (BH-12).
+async function expectOnlyPrint(page: Page) {
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await expect(page.getByRole('menuitem')).toHaveText(['In']);
+  await page.keyboard.press('Escape');
+}
+
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng đơn hàng giả).');
 test.describe.configure({ mode: 'serial' });
 
@@ -121,9 +128,26 @@ test('Đã trình: chờ người duyệt đã chốt; Đã duyệt · khoá: n�
     await page.goto(orderUrl);
   }
   // Đơn Đã duyệt: Sale lập không phải người duyệt đã chốt nên không có mục Huỷ đơn (R-TIEN-38).
-  await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
+  await expectOnlyPrint(page);
   await expect(page.getByText(/Đơn đã duyệt và khoá/)).toBeVisible();
   await shot(page, 'bh05-da-duyet');
+});
+
+test('BH-12: In từ menu Hành động; bản in đơn Đã duyệt ghi đúng tình trạng, đủ khối', async ({
+  page,
+}, testInfo) => {
+  const setup = recordSetupOf(testInfo.project.name);
+  await openOrder(page, setup.sale, setup.mark, seeded.orders.dduyet);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'In', exact: true }).click();
+  await expect(page).toHaveURL(/\/crm\/don-hang\/[0-9a-f-]+\/in$/);
+  const sheet = page.getByRole('article', { name: 'ĐƠN HÀNG' });
+  await expect(sheet.getByText(seeded.orders.dduyet, { exact: true })).toBeVisible();
+  await expect(sheet.getByText('ĐÃ DUYỆT', { exact: true })).toBeVisible();
+  await expect(sheet.getByText('Phụ huynh xác nhận')).toBeVisible();
+  await expect(sheet.getByText('Bằng chữ')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Tải PDF' })).toBeVisible();
+  await expectAccessible(page);
 });
 
 test('Nháp bị từ chối: lý do và ghi chú nằm ở dòng thời gian (không còn khối đỏ); hai dòng đơn; tab Thanh toán và Ghi danh', async ({
@@ -233,7 +257,7 @@ test('Trình thành công: CSKH có quản lý trực tiếp trình đơn, thàn
   await expect(page.getByRole('button', { name: 'Trình duyệt' })).toHaveCount(0);
   await shot(page, 'bh05-sau-trinh');
   // Người lập (CSKH) không huỷ được đơn Đã trình (R-TIEN-38): không có mục Huỷ đơn.
-  await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
+  await expectOnlyPrint(page);
 });
 
 // R-V2-12 (Q-114, Q-117): Sale chưa có quản lý trực tiếp vẫn trình được; đơn đi tới Trưởng cơ sở, người duyệt không chốt một người.
@@ -296,7 +320,7 @@ test('Huỷ đơn Nháp: hộp có lý do từ danh mục, "Khác" bắt ghi ch�
   await dialog.getByRole('button', { name: 'Xác nhận huỷ' }).click();
   await expect(page.getByText('Đã huỷ đơn.').first()).toBeVisible();
   await expect(page.getByText(/Đơn đã huỷ: Khách đổi ý/)).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
+  await expectOnlyPrint(page);
   await shot(page, 'bh05-sau-huy');
 });
 
@@ -307,7 +331,7 @@ test('Điện thoại: đơn Nháp có nút Trình, không có mục Huỷ đơn
   const setup = recordSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, setup.mark, seeded.records.thieuEm);
   await expect(page.getByRole('button', { name: 'Trình duyệt' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
+  await expectOnlyPrint(page);
 });
 
 test('Đơn Nháp chỉ người lập huỷ (R-TIEN-38): CSKH không phải người lập nên không có mục Huỷ đơn', async ({
@@ -316,5 +340,5 @@ test('Đơn Nháp chỉ người lập huỷ (R-TIEN-38): CSKH không phải ng�
   test.skip(isPhone(page), 'Điện thoại chỉ đọc (Đ248).');
   const setup = recordSetupOf(testInfo.project.name);
   await openOrder(page, seeded.cskh, setup.mark, seeded.records.thieuEm);
-  await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
+  await expectOnlyPrint(page);
 });

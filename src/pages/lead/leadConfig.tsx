@@ -1,6 +1,5 @@
 // Cấu hình màn Lead cho khuôn danh sách K1: cột, lọc nhanh, trường lọc nâng cao, trường nhóm (TS-01).
 // Mọi lọc, nhóm làm ở máy chủ nên cấu hình không có hàm `test`/`value` chạy ở trình duyệt.
-import { Link } from 'react-router';
 import { formatDate } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Code, Tag } from '../../ui/Data';
@@ -8,6 +7,7 @@ import type { ListConfig, ListState } from '../../list/types';
 import { appointmentTag, codeAndName, formatPhone } from './leadFormat';
 import type { LeadRow } from './leadTypes';
 import type { LeadCatalogs } from './useCatalogs';
+import { FromLink } from '../../layout/FromLink';
 
 export const LEAD_SCREEN_CODE = 'TS-01';
 
@@ -40,9 +40,9 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
         primary: true,
         sortable: true,
         render: (r) => (
-          <Link to={`/crm/lead/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/lead/${r.id}`} className="font-medium text-link hover:underline">
             {r.parent_name}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'phone', label: 'SĐT', render: (r) => formatPhone(r.parent_phone) },

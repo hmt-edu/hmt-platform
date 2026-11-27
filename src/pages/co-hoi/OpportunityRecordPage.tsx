@@ -79,6 +79,7 @@ export function OpportunityRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/co-hoi" className="font-medium text-link hover:underline">
               Về danh sách Cơ hội
             </Link>
@@ -773,6 +774,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
           onMerged={(keepId, keepCode) => {
             toast({ title: `Đã gộp vào ${keepCode}.` });
             if (keepId === record.id) void refreshRecord();
+            // duong-dan-menu: bản đang xem đã gộp, không còn để quay lại
             else void navigate(`/crm/co-hoi/${keepId}`, { replace: true });
           }}
         />

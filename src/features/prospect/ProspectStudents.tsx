@@ -3,7 +3,6 @@
 // Thêm, Sửa em, Bỏ em mờ khi màn đang ở chế độ sửa (tránh lệch với bản nháp của màn).
 // Luật do hàm DB kiểm; hộp chỉ hiện lỗi của chúng. Số em tối đa lấy từ tham số prospect_max_students.
 import { useState, type ReactNode } from 'react';
-import { Link } from 'react-router';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatDate } from '../../lib/format';
 import { DetailField, type DetailMode } from '../../record/Detail';
@@ -33,6 +32,7 @@ import {
   type Entity,
 } from './useProspect';
 import type { EmEditing } from './useEmEditing';
+import { FromLink } from '../../layout/FromLink';
 
 type Props = {
   entity: Entity;
@@ -137,12 +137,12 @@ export function ProspectStudents({
         {selected !== null && (
           <div className="flex flex-wrap items-center gap-2">
             {selected.student_id && (
-              <Link
+              <FromLink
                 className="text-body font-medium text-link hover:underline"
                 to={`/crm/hoc-sinh/${selected.student_id}`}
               >
                 Sửa ở hồ sơ học sinh
-              </Link>
+              </FromLink>
             )}
             {canEdit && !selected.student_id && (
               <Button disabled={locked} onClick={() => setDialog({ kind: 'edit', line: selected })}>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  engagementTag,
   hasHiddenMoney,
   parentCards,
   parentFlags,
@@ -35,6 +36,8 @@ const student: StudentSummary = {
   last_score: null,
   care_staff: null,
   absence_limit: 3,
+  overdue_days: null,
+  engagement: null,
 };
 
 describe('Hồ sơ 360°: thẻ tóm tắt và cờ', () => {
@@ -68,5 +71,23 @@ describe('Hồ sơ 360°: thẻ tóm tắt và cờ', () => {
       studentFlags({ ...student, attendance: { ...student.attendance, absent_streak: n } });
     expect(at(2)).toEqual([]);
     expect(at(3)).toEqual([{ target: 'attendance', label: 'Vắng liên tiếp · 3 buổi' }]);
+  });
+  it('học sinh có đơn quá hạn thì có cờ nợ (R-CRM-44)', () => {
+    expect(studentFlags({ ...student, overdue_days: 5 })).toEqual([
+      { target: 'finance', label: 'Nợ quá hạn 5 ngày' },
+    ]);
+  });
+  it('Mức gắn bó luôn kèm lý do, mỗi lý do mở đúng chỗ (R-CRM-44)', () => {
+    expect(
+      engagementTag({ level: 'NGUY_CO', score: 3, reasons: ['NO_QUA_HAN', 'LAU_CHUA_LIEN_HE'] }),
+    ).toEqual({
+      tone: 'danger',
+      label: 'Mức gắn bó: Nguy cơ',
+      reasons: [
+        { label: 'nợ quá hạn', target: 'finance' },
+        { label: 'lâu chưa liên hệ', target: 'contacts' },
+      ],
+    });
+    expect(engagementTag({ level: 'KHOE', score: 0, reasons: [] }).reasons).toEqual([]);
   });
 });

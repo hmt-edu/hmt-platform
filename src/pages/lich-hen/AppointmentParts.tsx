@@ -1,6 +1,5 @@
 // Các phần dùng chung của màn Lịch hẹn: nút thao tác theo trạng thái và quyền (dòng, thẻ Kanban, khung chi tiết Lịch),
 // liên kết hồ sơ gắn.
-import { Link } from 'react-router';
 import { formatDateTime } from '../../lib/format';
 import { Button, ButtonLink } from '../../ui/Button';
 import { Code, Tag } from '../../ui/Data';
@@ -12,6 +11,7 @@ import {
   recordPath,
   type AppointmentRow,
 } from './appointmentTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export type RowActions = {
   canEdit: boolean;
@@ -88,9 +88,9 @@ export function RecordLink({ row }: { row: AppointmentRow }) {
     <span className="inline-flex flex-wrap items-baseline gap-1.5">
       <span className="text-caption text-fg-muted">{RECORD_KIND_LABEL[kind]}</span>
       {path ? (
-        <Link to={path} className="font-medium text-link hover:underline">
+        <FromLink to={path} className="font-medium text-link hover:underline">
           {row.record_code}
-        </Link>
+        </FromLink>
       ) : (
         <Code>{row.record_code}</Code>
       )}

@@ -267,8 +267,9 @@ function OrderView({ record }: { record: OrderRecord }) {
           },
         ]
     : [];
-  // TC-16: mục «Dùng số dư» đứng trước các mục huỷ đơn.
+  // BH-12: «In» đứng đầu như báo giá, in ở mọi tình trạng. TC-16: mục «Dùng số dư» đứng trước các mục huỷ đơn.
   const menuItems: MenuItem[] = [
+    { kind: 'action', label: 'In', onSelect: () => openFrom(`/crm/don-hang/${record.id}/in`) },
     ...(canUseBalance
       ? [{ kind: 'action' as const, label: 'Dùng số dư', onSelect: () => setBalanceOpen(true) }]
       : []),
@@ -743,7 +744,7 @@ function OrderView({ record }: { record: OrderRecord }) {
           onSelect: () => undefined,
         }}
         stageNote="Stage chỉ đọc, đổi bằng nút bên dưới."
-        menu={menuItems.length > 0 ? { label: 'Hành động', items: menuItems } : undefined}
+        menu={{ label: 'Hành động', items: menuItems }}
         businessActions={
           <>
             {record.status_code === 'NHAP' && (

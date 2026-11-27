@@ -31,3 +31,14 @@ Cờ:
 | `app.list_record_upsale(lọc parent_id hoặc student_id)` | Tái tục · Xem | Phiếu tái tục, phiếu đang mở đứng trước, kèm số buổi vắng trong cửa sổ cờ rủi ro |
 
 Tab «Tài khoản» của phụ huynh dùng lại hàm của QT-17, chỉ quản trị viên.
+
+## Mức gắn bó (migration 700, R-CRM-44)
+
+| Hàm | Làm gì |
+|---|---|
+| `app.get_student_summary(học sinh)` | Thẻ tóm tắt cũ cộng `overdue_days` và `engagement` {level, score, reasons} |
+| `app.student_overdue_days(học sinh)` (hàm trong) | Số ngày quá hạn của đơn đã duyệt có dòng của em, chỉ đơn người gọi xem được |
+| `app.student_engagement(thẻ, ngày quá hạn, cơ sở)` (hàm trong) | Cộng điểm cờ đang bật, xếp mức theo hai ngưỡng |
+
+- Chỉ học sinh Đang học; người chỉ có phạm vi «được phân công» không nhận.
+- Đơn có nhiều con thì nợ quá hạn của đơn tính cho từng em có dòng trong đơn.

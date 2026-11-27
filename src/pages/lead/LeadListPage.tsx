@@ -2,7 +2,6 @@
 // Lọc, sắp xếp, phân trang, Group By, số đếm Kanban đều tính ở máy chủ; trình duyệt chỉ giữ trang đang xem.
 // Nút Tạo, Nhập và dấu "+" ở cột C1 hiện cho ai có quyền Lead · Tạo (Tạo mở màn Tạo, P3c-2; Nhập mở hộp TS-04, P3f; CSKH nhập được).
 import { useMemo, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
 import { KanbanBoard } from '../../list/Kanban';
 import { freeMoveRule } from '../../list/kanbanLogic';
@@ -38,6 +37,8 @@ import {
   useLeafRows,
   useRefreshLeads,
 } from './useLeadData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
+import { FromLink } from '../../layout/FromLink';
 
 const NOTE =
   'Lead kéo thả tự do hai chiều giữa C1–C4, mọi lần đổi đều ghi lịch sử. C4D do hệ thống tự gắn khi tạo cơ hội thành công.';
@@ -75,7 +76,7 @@ const EXPORT_COLUMNS = [
 
 export function LeadListPage() {
   const supabase = useDb();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const access = useAccess();
   const toast = useToast();
   const refreshData = useRefreshLeads();
@@ -331,7 +332,7 @@ export function LeadListPage() {
                   label: 'Tạo',
                   icon: 'plus' as const,
                   primary: true,
-                  onClick: () => void navigate('/crm/lead/moi'),
+                  onClick: () => openFrom('/crm/lead/moi'),
                 },
               ]
             : []),
@@ -393,7 +394,7 @@ export function LeadListPage() {
           if (spec) leaves.toggle(key, spec.filters, open);
         }}
         rowMuted={(r) => r.record_status !== 'DANG_DUNG'}
-        onRowClick={(r) => void navigate(`/crm/lead/${r.id}`)}
+        onRowClick={(r) => openFrom(`/crm/lead/${r.id}`)}
         kanban={
           board.isPending ? (
             <Spinner label="Đang tải Kanban…" />
@@ -431,7 +432,7 @@ export function LeadListPage() {
               onLoadMore={() => setPaging({ ...current, more: moreCards + 1 })}
               {...(canCreate
                 ? {
-                    onAdd: () => void navigate('/crm/lead/moi'),
+                    onAdd: () => openFrom('/crm/lead/moi'),
                     // Lead mới luôn bắt đầu ở C1 (R-CRM-39): dấu "+" chỉ ở cột đầu.
                     showAdd: (code: string) => code === columns[0]?.code,
                   }
@@ -505,9 +506,9 @@ function LeadCard({
   return (
     <div className="flex flex-col gap-1.5">
       <Code>{card.code}</Code>
-      <Link to={`/crm/lead/${card.id}`} className="font-semibold hover:underline">
+      <FromLink to={`/crm/lead/${card.id}`} className="font-semibold hover:underline">
         {leadTitle(card)}
-      </Link>
+      </FromLink>
       <p className="text-caption text-fg-muted">
         {formatPhone(card.parent_phone)} · {card.branch_code}
       </p>
