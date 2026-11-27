@@ -1,5 +1,5 @@
-// Cấu hình danh sách phiếu tái tục cho khuôn K03: TT-01 (canvas 9933 TT01). Cột: Phiếu, Học sinh, Lớp, Ghi danh (n), Giờ còn, Hết giờ dự kiến, Campaign,
-// Giai đoạn, Sub-stage, Phụ trách, Xử lý. Lọc nhanh: Giai đoạn, Phụ trách, Rủi ro. Lọc, sắp xếp, phân trang làm ở máy chủ.
+// Cấu hình danh sách phiếu tái tục cho khuôn K03: TT-01. Cột (anh Trường chốt 27/11): Phiếu, Học sinh, Phụ huynh, Môn, Lớp, Giờ còn, Hết giờ dự kiến, Phụ trách,
+// Liên hệ gần nhất, Giai đoạn, Xử lý; Ghi danh (n), Campaign, Sub-stage ẩn sẵn. Phụ huynh, Môn, Liên hệ gần nhất: máy chủ chưa trả. Lọc, sắp xếp, phân trang ở máy chủ.
 import { formatDate } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
@@ -53,8 +53,9 @@ export function buildUpsaleConfig(
           </span>
         ),
       },
+      { key: 'parent', label: 'Phụ huynh', render: () => MUTED },
+      { key: 'subject', label: 'Môn', render: () => MUTED },
       { key: 'class', label: 'Lớp', render: (r) => r.class_code },
-      { key: 'enrollments', label: 'Ghi danh (n)', render: (r) => r.enrollment_count },
       {
         key: 'hours',
         label: 'Giờ còn',
@@ -65,7 +66,8 @@ export function buildUpsaleConfig(
         label: 'Hết giờ dự kiến',
         render: (r) => (r.expected_end_date ? formatDate(r.expected_end_date) : MUTED),
       },
-      { key: 'campaign', label: 'Campaign', render: (r) => r.campaign_label ?? MUTED },
+      { key: 'owner', label: 'Phụ trách', render: (r) => r.owner_name ?? 'chưa giao' },
+      { key: 'last-contact', label: 'Liên hệ gần nhất', render: () => MUTED },
       {
         key: 'stage',
         label: 'Giai đoạn',
@@ -76,18 +78,26 @@ export function buildUpsaleConfig(
         ),
       },
       {
+        key: 'enrollments',
+        label: 'Ghi danh (n)',
+        defaultVisible: false,
+        render: (r) => r.enrollment_count,
+      },
+      {
+        key: 'campaign',
+        label: 'Campaign',
+        defaultVisible: false,
+        render: (r) => r.campaign_label ?? MUTED,
+      },
+      {
         key: 'substage',
         label: 'Sub-stage',
+        defaultVisible: false,
         render: (r) =>
-          r.substage_code ? (
-            <span>
-              {r.substage_code} {catalogs.name('UPSALE_SUBSTAGE', r.substage_code) ?? ''}
-            </span>
-          ) : (
-            MUTED
-          ),
+          r.substage_code
+            ? (catalogs.name('UPSALE_SUBSTAGE', r.substage_code) ?? r.substage_code)
+            : MUTED,
       },
-      { key: 'owner', label: 'Phụ trách', render: (r) => r.owner_name ?? 'chưa giao' },
       {
         key: 'actions',
         label: 'Xử lý',
