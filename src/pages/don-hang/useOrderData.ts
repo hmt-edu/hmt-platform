@@ -1,4 +1,5 @@
 // Gọi dữ liệu màn Đơn hàng (BH-06): danh sách phân trang ở máy chủ và Xuất. Giao diện KHÔNG tính tiền; chỉ hiện kết quả của hàm cơ sở dữ liệu.
+import type { TermInstallment } from '../dieu-khoan/termLogic';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { useCallback } from 'react';
@@ -166,7 +167,7 @@ export type PolicyOption = {
   /** Chính sách hệ thống "Ưu đãi linh hoạt" (R-V2-45). */
   is_flexible?: boolean | undefined;
 };
-export type TermOption = { id: string; name: string };
+export type TermOption = { id: string; name: string; installments?: TermInstallment[] };
 
 /** Chính sách chiết khấu đang dùng và điều khoản thanh toán đang dùng, cho chế độ sửa đơn (ít dòng, đọc một lần khi mở sửa). */
 export function useOrderEditOptions(enabled: boolean) {
@@ -188,7 +189,9 @@ export function useOrderEditOptions(enabled: boolean) {
         supabase
           .schema('app')
           .from('payment_term')
-          .select('id, name')
+          .select(
+            'id, name, installments:payment_term_installment(seq, share_percent, fixed_amount, due_days)',
+          )
           .eq('is_active', true)
           .order('name'),
         // Hạn mức Ưu đãi linh hoạt mỗi dòng (R-V2-45): đọc từ Cài đặt, không viết cứng.

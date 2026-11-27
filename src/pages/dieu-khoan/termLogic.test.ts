@@ -6,6 +6,7 @@ import {
   describeInstallments,
   installmentsError,
   shareLabel,
+  termLabel,
   toPayload,
   type Draft,
 } from './termLogic';
@@ -81,5 +82,33 @@ describe('CH-09 gửi và hiển thị', () => {
     expect(shareLabel({ seq: 1, share_percent: null, fixed_amount: 1, due_days: 0 }, true)).toBe(
       'Số tiền cố định',
     );
+  });
+});
+
+describe('Ô chọn điều khoản: tên ghép lịch đợt', () => {
+  const inst = (seq: number, share: number | null, fixedAmount: number | null, days: number) => ({
+    seq,
+    share_percent: share,
+    fixed_amount: fixedAmount,
+    due_days: days,
+  });
+  it('chia phần trăm, số kiểu Việt', () => {
+    expect(
+      termLabel({
+        name: 'Đặt cọc',
+        installments: [inst(2, 66.67, null, 14), inst(1, 33.33, null, 0)],
+      }),
+    ).toBe('Đặt cọc · 33,33% + 66,67% sau 14 ngày');
+  });
+  it('đợt 1 số tiền cố định thì các đợt sau là phần còn lại', () => {
+    expect(
+      termLabel({ name: 'Cọc', installments: [inst(1, null, 1000000, 0), inst(2, 100, null, 30)] }),
+    ).toBe('Cọc · 1.000.000 đ + 100% phần còn lại sau 30 ngày');
+  });
+  it('đóng ngay một lần hoặc chưa có lịch đợt thì chỉ hiện tên', () => {
+    expect(termLabel({ name: 'Đóng một lần', installments: [inst(1, 100, null, 0)] })).toBe(
+      'Đóng một lần',
+    );
+    expect(termLabel({ name: 'Đóng một lần' })).toBe('Đóng một lần');
   });
 });

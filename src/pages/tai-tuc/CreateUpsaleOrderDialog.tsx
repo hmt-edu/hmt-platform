@@ -11,6 +11,8 @@ import { Select } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import type { UpsaleTicketDetail } from './upsaleTypes';
 import { createUpsaleOrder, useUpsaleOrderOptions } from './useUpsaleData';
+import { useOrderEditOptions } from '../don-hang/useOrderData';
+import { termLabel } from '../dieu-khoan/termLogic';
 
 type Props = {
   open: boolean;
@@ -38,6 +40,7 @@ function OrderForm({ open, onOpenChange, ticket, onDone }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const data = options.data;
+  const editOptions = useOrderEditOptions(true);
   const mode = data?.delivery_mode_code ?? null;
   const pkg = data?.packages.find((p) => p.id === packageId);
 
@@ -131,7 +134,11 @@ function OrderForm({ open, onOpenChange, ticket, onDone }: Props) {
               onChange={setTermId}
               options={[
                 { value: '', label: 'Chưa chọn' },
-                ...(data?.terms ?? []).map((t) => ({ value: t.id, label: t.name })),
+                ...(data?.terms ?? []).map((t) => ({
+                  value: t.id,
+                  // Lịch đợt lấy từ cùng nguồn với ô chọn của đơn hàng; chưa tải xong thì hiện tên.
+                  label: termLabel(editOptions.data?.terms.find((x) => x.id === t.id) ?? t),
+                })),
               ]}
               className="w-full"
             />

@@ -10,6 +10,8 @@ import {
   statusOf,
   todayVn,
   type FormValues,
+  nameDigitWarning,
+  policyLabel,
 } from './policyLogic';
 
 const base: FormValues = {
@@ -96,5 +98,19 @@ describe('CH-04 cột Áp dụng cho, Giá trị', () => {
   it('Giá trị: áp đúng mức thì hiện mức, không thì Tuỳ chọn', () => {
     expect(discountAppliedLabel(policy as never)).toBe('Tuỳ chọn');
     expect(discountAppliedLabel({ ...policy, fixed_value: true } as never)).toBe('10%');
+  });
+});
+
+describe('Tên ghép mức, tên không ghi số', () => {
+  const p = { name: 'Đăng ký sớm', kind: 'PERCENT' as const, max_value: 5, fixed_value: true };
+  it('mức áp đúng và mức trần', () => {
+    expect(policyLabel(p)).toBe('Đăng ký sớm · 5%');
+    expect(policyLabel({ ...p, kind: 'GIFT_HOURS', max_value: 4, fixed_value: false })).toBe(
+      'Đăng ký sớm · tối đa 4 giờ',
+    );
+  });
+  it('chỉ cảnh báo khi tên có con số', () => {
+    expect(nameDigitWarning('Đăng ký sớm 5%')).toContain('Tên đang có con số');
+    expect(nameDigitWarning('Đăng ký sớm')).toBeUndefined();
   });
 });
