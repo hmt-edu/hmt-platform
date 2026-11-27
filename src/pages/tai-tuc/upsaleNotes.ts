@@ -10,7 +10,7 @@ export function upsaleStageNote(
   lostReasonName: string | null,
   /** Ngưỡng giờ, ngày từ tham số upsale_hours_left_threshold, upsale_days_left_threshold (không viết cứng); chưa đọc được thì bỏ phần ngưỡng. */
   thresholds: { hours: number | null; days: number | null },
-  /** Số đếm thật của phiếu: câu không được nói «đã gửi», «đã có đơn» khi số bằng 0. */
+  /** Số đếm thật của phiếu: câu không được nói «đã gửi», «đã có đơn» khi số bằng 0 (anh Trường 27/11). */
   counts: { sentQuotes: number; orders: number },
 ): UpsaleNote | null {
   if (t.stage_code === 'L1') {
@@ -39,14 +39,16 @@ export function upsaleStageNote(
           : 'Phụ huynh đồng ý tái tục.',
     };
   }
-  if (t.stage_code === 'L7') {
-    const text =
-      counts.orders > 0
-        ? 'Đã có đơn, chờ phụ huynh đóng tiền.'
-        : counts.sentQuotes > 0
-          ? 'Đã gửi báo giá, chờ phụ huynh đóng tiền.'
-          : 'Dự thu: chờ phụ huynh đóng tiền.';
-    return { tone: 'info', text };
+  if (t.stage_code === 'L7' && counts.orders > 0) {
+    return { tone: 'info', text: 'Đã có đơn, chờ phụ huynh đóng tiền.' };
+  }
+  if (t.stage_code === 'L7' && counts.sentQuotes > 0) {
+    return { tone: 'info', text: 'Đã gửi báo giá, chờ phụ huynh đóng tiền.' };
   }
   return null;
+}
+
+/** Thứ tự thanh giai đoạn: theo danh mục, riêng «Không tái tục» (L5) đứng cuối vì là nhánh kết thúc, không phải bước đi qua. */
+export function orderStages<T extends { value: string }>(stages: T[]): T[] {
+  return [...stages.filter((s) => s.value !== 'L5'), ...stages.filter((s) => s.value === 'L5')];
 }

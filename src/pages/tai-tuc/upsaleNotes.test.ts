@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { upsaleStageNote } from './upsaleNotes';
+import { orderStages, upsaleStageNote } from './upsaleNotes';
 
 const T = { hours: 10, days: 30 };
 const NONE = { sentQuotes: 0, orders: 0 };
@@ -24,17 +24,27 @@ describe('upsaleStageNote (TT-02)', () => {
     );
   });
   it('L6A chưa gửi báo giá thì chờ gửi; gửi rồi thì không còn câu đó', () => {
-    const t = { ...base, stage_code: 'L6', substage_code: 'L6A' };
-    expect(upsaleStageNote(t, null, T, NONE)?.text).toMatch(/Chờ gửi báo giá/);
-    expect(upsaleStageNote(t, null, T, { sentQuotes: 1, orders: 0 })?.text).not.toMatch(/Chờ gửi/);
+    const s = { ...base, stage_code: 'L6', substage_code: 'L6A' };
+    expect(upsaleStageNote(s, null, T, NONE)?.text).toMatch(/Chờ gửi báo giá/);
+    expect(upsaleStageNote(s, null, T, { sentQuotes: 1, orders: 0 })?.text).not.toMatch(/Chờ gửi/);
   });
   it('L7: câu khớp số đếm, không nói tự sang L8', () => {
-    const t = { ...base, stage_code: 'L7' };
-    expect(upsaleStageNote(t, null, T, NONE)?.text).not.toMatch(/Đã gửi báo giá|L8/);
-    expect(upsaleStageNote(t, null, T, { sentQuotes: 1, orders: 0 })?.text).toMatch(/Đã gửi/);
-    expect(upsaleStageNote(t, null, T, { sentQuotes: 1, orders: 1 })?.text).toMatch(/Đã có đơn/);
+    const s = { ...base, stage_code: 'L7' };
+    expect(upsaleStageNote(s, null, T, { sentQuotes: 1, orders: 0 })?.text).toMatch(/Đã gửi/);
+    expect(upsaleStageNote(s, null, T, { sentQuotes: 1, orders: 1 })?.text).toMatch(/Đã có đơn/);
+    expect(upsaleStageNote(s, null, T, { sentQuotes: 1, orders: 0 })?.text).not.toMatch(/L8/);
   });
   it('giai đoạn khác: không có câu', () => {
     expect(upsaleStageNote({ ...base, stage_code: 'L3' }, null, T, NONE)).toBeNull();
+  });
+});
+
+describe('bố cục TT-02 (A-27-19)', () => {
+  it('L7 không có báo giá, đơn nào đếm được thì không nói «đã gửi báo giá»', () => {
+    expect(upsaleStageNote({ ...base, stage_code: 'L7' }, null, T, NONE)).toBeNull();
+  });
+  it('thanh giai đoạn: «Không tái tục» đứng cuối, các bước khác giữ thứ tự', () => {
+    const stages = ['L4', 'L5', 'L6', 'L8'].map((value) => ({ value }));
+    expect(orderStages(stages).map((s) => s.value)).toEqual(['L4', 'L6', 'L8', 'L5']);
   });
 });
