@@ -204,7 +204,7 @@ export function QuoteLineGrid({
           size="sm"
           icon="plus"
           disabled={disabled}
-          aria-label={layout === 'tao' ? `Thêm chiết khấu dòng ${String(index + 1)}` : undefined}
+          aria-label={layout === 'tao' ? `Thêm ưu đãi dòng ${String(index + 1)}` : undefined}
           onClick={() => setPolicyFor(row.key)}
         >
           {layout === 'tao' ? 'Thêm' : 'Chính sách'}
@@ -391,12 +391,12 @@ export function QuoteLineGrid({
     layout === 'tao'
       ? {
           key: 'discount',
-          header: 'Chiết khấu',
+          header: 'Ưu đãi',
           cell: (row, index) => discountCell(row, index),
         }
       : {
           key: 'discount',
-          header: 'Loại chiết khấu',
+          header: 'Loại ưu đãi',
           cell: (row, index) => discountCell(row, index),
         },
     ...(layout === 'tao'
@@ -515,7 +515,7 @@ export function QuoteLineGrid({
               )}
               {gift && (
                 <p className="text-fg-muted">
-                  {`Quà tặng: không tính vào trần chiết khấu${cap_ === null ? '' : ` ${String(cap_)}%`}, không có chiết khấu.`}
+                  {`Quà tặng: không tính vào trần ưu đãi${cap_ === null ? '' : ` ${String(cap_)}%`}, không giảm thêm.`}
                 </p>
               )}
               {issue && (

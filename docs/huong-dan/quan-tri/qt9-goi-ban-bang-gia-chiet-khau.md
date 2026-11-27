@@ -1,6 +1,6 @@
 ---
 id: qt9
-ten: Gói bán, bảng giá, chiết khấu, điều khoản thanh toán
+ten: Gói bán, bảng giá, ưu đãi, điều khoản thanh toán
 vai: [quan-tri]
 phan_he: cau-hinh
 ma_man: [CH-01, CH-02, CH-03, CH-04, CH-09]
@@ -8,10 +8,10 @@ uu_tien: P1
 cap_nhat: 2026-11-24
 ---
 
-# Gói bán, bảng giá có ngày hiệu lực, chiết khấu, điều khoản thanh toán
+# Gói bán, bảng giá có ngày hiệu lực, ưu đãi, điều khoản thanh toán
 
-**Làm xong bạn có:** gói bán có giá theo ngày hiệu lực, chính sách chiết khấu và điều khoản chia đợt để nhân viên chọn khi lập báo giá, đơn.
-**Ai làm:** Admin (quyền Cấu hình bán hàng). **Màn:** menu **Cấu hình** → **Gói bán**, **Bảng giá**, **Chính sách chiết khấu**, **Điều khoản thanh toán**.
+**Làm xong bạn có:** gói bán có giá theo ngày hiệu lực, chính sách ưu đãi và điều khoản chia đợt để nhân viên chọn khi lập báo giá, đơn.
+**Ai làm:** Admin (quyền Cấu hình bán hàng). **Màn:** menu **Cấu hình** → **Gói bán**, **Bảng giá**, **Chính sách ưu đãi**, **Điều khoản thanh toán**.
 
 > Video: [VIDEO: qt9a]
 > Video: [VIDEO: qt9b]
@@ -19,14 +19,14 @@ cap_nhat: 2026-11-24
 > Video: [VIDEO: qt9d]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
 
-Bài này gồm bốn việc nhỏ cùng chủ đề. **Bài dài hơn 7 bước, nên tách** thành bốn bài khi làm video: (A) Gói bán, (B) Bảng giá, (C) Chiết khấu, (D) Điều khoản thanh toán. Ở dưới mỗi việc có tối đa 7 bước.
+Bài này gồm bốn việc nhỏ cùng chủ đề. **Bài dài hơn 7 bước, nên tách** thành bốn bài khi làm video: (A) Gói bán, (B) Bảng giá, (C) Ưu đãi, (D) Điều khoản thanh toán. Ở dưới mỗi việc có tối đa 7 bước.
 
 ⚠ **Đây là thao tác thật trên môi trường đang dùng.** Giá và chính sách ảnh hưởng đơn mới ngay khi tới ngày hiệu lực. Tập thì chỉ tập trên staging.
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn là Admin (hoặc vai có quyền Cấu hình bán hàng; vai chỉ xem thì không có nút tạo, sửa).
 - [ ] Bạn biết **ngày hiệu lực** của giá hoặc chính sách mới.
-- [ ] Bạn đã thống nhất mức giá, mức chiết khấu với người có thẩm quyền; số trong ví dụ chỉ để tập.
+- [ ] Bạn đã thống nhất mức giá, mức ưu đãi với người có thẩm quyền; số trong ví dụ chỉ để tập.
 
 ## Luật cần nhớ (lời thường)
 - **Giá và chính sách chỉ thêm mới, không sửa lại**. Muốn đổi giá: thêm giá mới với ngày hiệu lực mới. Đơn đã lập **giữ giá lúc tạo**, không tính lại.
@@ -34,7 +34,7 @@ Bài này gồm bốn việc nhỏ cùng chủ đề. **Bài dài hơn 7 bước
 - **Mã gói** tự ghép theo Loại-Môn-Khối (khối từ - khối đến nếu nhiều khối), **không chứa hình thức** (offline, online). Mã, loại, môn, khối không đổi sau khi tạo; chỉ đổi được «Tên gói» và «Mã cũ (Sheet)».
 - **Gói không có số giờ**: số giờ nhập khi lập dòng đơn. Giá tính theo giờ; dịch vụ tính theo tháng, tài liệu theo bộ; dịch vụ, tài liệu **không có giá online**.
 - **Giá để trống = không bán hình thức đó** từ ngày hiệu lực. Khác với «Chưa có giá» (chờ cập nhật, chưa phải ngừng bán).
-- **Chiết khấu**: có kiểu phần trăm hoặc giờ tặng; nhiều chiết khấu trên một dòng thì cộng dồn, tổng không quá trần (đổi trần ở Tham số nghiệp vụ); vượt trần thì hệ thống chỉ cảnh báo, không chặn và không cần duyệt thêm (R-V2-11). Quà tặng (tài liệu, dịch vụ giá 0 đ) không tính vào trần.
+- **Ưu đãi**: có kiểu phần trăm hoặc giờ tặng; nhiều ưu đãi trên một dòng thì cộng dồn, tổng không quá trần (đổi trần ở Tham số nghiệp vụ); vượt trần thì hệ thống chỉ cảnh báo, không chặn và không cần duyệt thêm (R-V2-11). Quà tặng (tài liệu, dịch vụ giá 0 đ) không tính vào trần.
 - **Điều khoản thanh toán** đã tạo **không sửa được**; muốn đổi thì «Tạo bản mới». Lịch đóng dùng để theo dõi công nợ, nhắc hạn; **không chặn học**.
 
 ## A. Gói bán (menu Cấu hình → Gói bán)
@@ -69,12 +69,12 @@ Thêm giá cho **một** gói: mở gói (bấm dòng ở «Gói bán») → «T
 
 ⚠ **Lưu bảng giá không sửa lại được.** Sai giá thì thêm giá mới với ngày hiệu lực mới (có thể ngay hôm nay); không xoá dòng giá cũ.
 
-## C. Chính sách chiết khấu (menu Cấu hình → Chính sách chiết khấu)
-1. Mở trang; chọn tab «Chiết khấu» (hoặc «Quà tặng»).
+## C. Chính sách ưu đãi (menu Cấu hình → Chính sách ưu đãi)
+1. Mở trang; chọn tab «Ưu đãi» (hoặc «Quà tặng»).
    *Bạn thấy:* bảng chính sách: «Tên chính sách», «Kiểu» (% hoặc Giờ tặng), «Giá trị», «Mức tối đa», «Áp dụng cho», «Hiệu lực từ – đến», «Nhóm gói», «Cơ sở», «Cần duyệt», «Trạng thái».
    [CHƯA CHỤP: cần staging; ảnh dự kiến quan-tri-qt9-b9]
-2. Bấm «Thêm chiết khấu» (hoặc «Thêm quà tặng»).
-   *Bạn thấy:* hộp «Thêm chính sách chiết khấu» với «Tên chính sách», «Kiểu», «Mức tối đa (%)» hoặc «Mức tối đa (giờ)», «Hiệu lực từ», «Hiệu lực đến», «Cơ sở», «Áp dụng cho», «Cần duyệt (quản lý cơ sở duyệt)», «Nhóm gói».
+2. Bấm «Thêm ưu đãi» (hoặc «Thêm quà tặng»).
+   *Bạn thấy:* hộp «Thêm chính sách ưu đãi» với «Tên chính sách», «Kiểu», «Mức tối đa (%)» hoặc «Mức tối đa (giờ)», «Hiệu lực từ», «Hiệu lực đến», «Cơ sở», «Áp dụng cho», «Cần duyệt (quản lý cơ sở duyệt)», «Nhóm gói».
    [CHƯA CHỤP: cần staging; ảnh dự kiến quan-tri-qt9-b10]
 3. Điền các ô; để trống «Cơ sở» nghĩa là «Tất cả cơ sở»; chọn ít nhất một «Nhóm gói» và một nơi «Áp dụng cho» (Báo giá, Đơn, Phiếu thu). Tick «Áp đúng mức này (nhân viên không nhập)» nếu chính sách cố định, không để nhân viên tự điền. Bấm «Lưu».
    *Bạn thấy:* «Đã lưu chính sách.» và dòng mới ở bảng. Nếu thiếu: «Chưa lưu được: còn N chỗ cần sửa (…).»
@@ -100,7 +100,7 @@ Chính sách có nhãn «Hệ thống» (Ưu đãi linh hoạt) không sửa, kh
    [CHƯA CHỤP: cần staging; ảnh dự kiến quan-tri-qt9-b16]
 
 ## Sau bước này
-- **Ai làm tiếp:** Tư vấn tuyển sinh, CSKH chọn gói, giá, chiết khấu, điều khoản khi lập báo giá hoặc đơn từ ngày hiệu lực.
+- **Ai làm tiếp:** Tư vấn tuyển sinh, CSKH chọn gói, giá, ưu đãi, điều khoản khi lập báo giá hoặc đơn từ ngày hiệu lực.
 - **Bạn xem ở đâu:** mở lại từng màn; mọi sửa cấu hình có trong nhật ký thao tác.
 
 ## Làm nhầm thì sao
@@ -109,7 +109,7 @@ Chính sách có nhãn «Hệ thống» (Ưu đãi linh hoạt) không sửa, kh
 | Sai tên gói | «Sửa» ở dòng gói |
 | Sai mã, loại, môn hoặc khối của gói | Không đổi được: «Ngừng bán» gói sai, tạo gói mới |
 | Sai giá | Thêm giá mới với ngày hiệu lực đúng; không sửa giá cũ. Đơn đã lập vẫn giữ giá cũ |
-| Sai chính sách chiết khấu | «Sửa» ở dòng, hoặc «Ngừng» và thêm mới. Loại (% hay giờ tặng) không đổi được |
+| Sai chính sách ưu đãi | «Sửa» ở dòng, hoặc «Ngừng» và thêm mới. Loại (% hay giờ tặng) không đổi được |
 | Sai điều khoản thanh toán | «Tạo bản mới»; bản cũ «Ngừng» nếu không dùng |
 
 ## Lỗi hay gặp
@@ -123,11 +123,11 @@ Chính sách có nhãn «Hệ thống» (Ưu đãi linh hoạt) không sửa, kh
 | «Gói dịch vụ, tài liệu không có giá online.» (HMT_GOI_KHONG_CO_ONLINE) | nhập giá online cho dịch vụ, tài liệu | bỏ giá online |
 | «Tổng phần trăm các đợt chia theo % phải đúng 100 (đang …).» (HMT_DIEU_KHOAN_SAI) | các đợt % chưa cộng đủ 100 | chỉnh lại |
 | «Chỉ đợt 1 được là số tiền cố định.» | đợt sau không chọn được số tiền cố định | đổi sang % |
-| «Phần trăm không quá 100.» / «Mức tối đa phải lớn hơn 0.» | mức chiết khấu sai | nhập lại |
+| «Phần trăm không quá 100.» / «Mức tối đa phải lớn hơn 0.» | mức ưu đãi sai | nhập lại |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** `bgd.tap` (Admin) trên **staging**.
-- **Dùng:** tạo gói tên «[MẪU] gói tập» với môn, khối bất kỳ; thêm giá offline 100.000 đ hiệu lực từ hôm nay (số này chỉ để tập); thêm một chiết khấu 5% tên «[MẪU] tập»; thêm điều khoản «[MẪU] chia 2 đợt» (đợt 1 50%, đợt 2 50%). Sau đó «Ngừng bán» gói mẫu và «Ngừng» chính sách mẫu.
+- **Dùng:** tạo gói tên «[MẪU] gói tập» với môn, khối bất kỳ; thêm giá offline 100.000 đ hiệu lực từ hôm nay (số này chỉ để tập); thêm một ưu đãi 5% tên «[MẪU] tập»; thêm điều khoản «[MẪU] chia 2 đợt» (đợt 1 50%, đợt 2 50%). Sau đó «Ngừng bán» gói mẫu và «Ngừng» chính sách mẫu.
 - Chưa có trong bộ mẫu: gói, chính sách dành riêng để tập. Không đụng gói, giá, chính sách thật đang dùng.
 
 ## Tự kiểm: bạn làm được khi

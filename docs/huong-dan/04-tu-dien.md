@@ -44,8 +44,8 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 - **Ví dụ:** chiến dịch «Tuyển sinh hè» chạy tháng 5 đến tháng 6.
 - **Nơi gặp:** «Cấu hình» (chiến dịch marketing).
 
-### Chiết khấu
-- **Nghĩa:** phần giá giảm theo chính sách (gói, lộ trình, ưu đãi). Chiết khấu được **chụp lại lúc tạo đơn**, đổi chính sách sau không làm đổi đơn cũ.
+### Ưu đãi
+- **Nghĩa:** phần giá giảm theo chính sách (gói, lộ trình, đợt khuyến mại). Ưu đãi được **chụp lại lúc tạo đơn**, đổi chính sách sau không làm đổi đơn cũ.
 - **Ví dụ:** đơn tạo hôm nay giảm 10%; tuần sau chính sách đổi, đơn này vẫn giảm 10%.
 - **Nơi gặp:** đơn hàng, báo giá; cấu hình ở «Cấu hình».
 

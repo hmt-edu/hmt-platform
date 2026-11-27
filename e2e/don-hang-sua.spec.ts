@@ -78,7 +78,7 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
   await openOrder(page, setup.sale, seeded.records.rejected);
   // Q-163 (khung BH05_nhap_xem): Đơn Xem cũng có câu trần dưới bảng (đơn chưa vượt trần: chữ thường, không hộp vàng).
   const capText =
-    /^Chiết khấu cộng dồn; giờ tặng quy ra % tính vào trần \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/;
+    /^Ưu đãi cộng dồn; giờ tặng quy ra % tính vào trần \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/;
   await expect(page.getByText(capText)).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: capText })).toHaveCount(0);
   await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
@@ -98,7 +98,7 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
     'Ngày vào lớp',
     'Số lượng',
     'Đơn giá',
-    'Chiết khấu',
+    'Ưu đãi',
     'Tổng %',
     'Giảm',
     'Thành tiền',
@@ -108,7 +108,7 @@ test('Sửa đơn bị từ chối: đổi số giờ, chọn điều khoản, l
   // Khung BH05_chip_*: câu trần luôn hiện dưới bảng khi sửa (hộp vàng chỉ khi bản đã lưu vượt trần).
   await expect(
     page.getByText(
-      /^Chiết khấu cộng dồn; giờ tặng quy ra % tính vào trần \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
+      /^Ưu đãi cộng dồn; giờ tặng quy ra % tính vào trần \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
     ),
   ).toBeVisible();
   // Quy tắc lưới một dòng một hàng: tên học sinh, sản phẩm, tiêu đề cột không xuống dòng (bảng cuộn ngang).
@@ -173,12 +173,12 @@ test('Thêm dòng khi sửa (Q-67): chọn gói, em, số lượng; Lưu thì m�
   await expect(page.getByText('Nhập số lượng lớn hơn 0.')).toBeVisible();
   await page.getByLabel('Số lượng dòng mới 1').fill('3');
   // Q-69: chọn chiết khấu ngay lúc thêm (loại, %), một lần Lưu là xong; máy chủ tính.
-  await page.getByRole('combobox', { name: 'Thêm chính sách chiết khấu dòng mới 1' }).click();
+  await page.getByRole('combobox', { name: 'Thêm chính sách ưu đãi dòng mới 1' }).click();
   await page.getByRole('option', { name: 'Giảm thương lượng' }).click();
   await page.getByLabel('Giá trị Giảm thương lượng dòng mới 1').fill('5');
   await expect(page.getByText('Chưa tính lại, bấm Lưu để cập nhật.')).toBeVisible();
   // Chip Ưu đãi linh hoạt (R-V2-45, Q-151): vượt hạn mức 5% thì chữ đỏ dưới chip và Lưu mờ; bỏ chip (✕) thì Lưu mở lại.
-  await page.getByRole('combobox', { name: 'Thêm chính sách chiết khấu dòng mới 1' }).click();
+  await page.getByRole('combobox', { name: 'Thêm chính sách ưu đãi dòng mới 1' }).click();
   await page.getByRole('option', { name: 'Ưu đãi linh hoạt' }).click();
   await page.getByLabel('Giá trị Ưu đãi linh hoạt dòng mới 1').fill('9');
   await expect(page.getByText('Ưu đãi linh hoạt tối đa 5%')).toBeVisible();

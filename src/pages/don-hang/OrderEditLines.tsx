@@ -127,7 +127,7 @@ function DiscountEditor({
         })}
         {addable.length > 0 && (
           <Select
-            label={`Thêm chính sách chiết khấu ${label}`}
+            label={`Thêm chính sách ưu đãi ${label}`}
             value=""
             placeholder="+ Thêm"
             onChange={(id) => {
@@ -196,7 +196,7 @@ export function OrderEditLines({
               <th className="px-2 py-2">Ngày vào lớp</th>
               <th className="px-2 py-2">Số lượng</th>
               <th className="px-2 py-2 text-right">Đơn giá</th>
-              <th className="px-2 py-2">Chiết khấu</th>
+              <th className="px-2 py-2">Ưu đãi</th>
               <th className="px-2 py-2 text-right">Tổng %</th>
               <th className="px-2 py-2 text-right">Giảm</th>
               <th className="px-2 py-2 text-right">Thành tiền</th>

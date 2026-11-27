@@ -79,7 +79,7 @@ test('Mở đơn từ BH-06; Nháp: thông tin chung, chưa có quản lý trự
   await expect(page.getByText('Cơ sở thu tiền')).toHaveCount(0);
   // Tổng niêm yết, Tổng chiết khấu, Thành tiền do máy chủ trả; Đã thu, Còn phải thu là "—" (Đ269).
   await expect(page.getByText('Tổng niêm yết')).toBeVisible();
-  await expect(page.getByText('Tổng chiết khấu')).toBeVisible();
+  await expect(page.getByText('Tổng ưu đãi')).toBeVisible();
   await expect(
     page.locator('dl', { has: page.getByText('Tổng niêm yết') }).getByText('Thành tiền'),
   ).toBeVisible();

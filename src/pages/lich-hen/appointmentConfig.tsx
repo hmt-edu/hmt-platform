@@ -10,7 +10,7 @@ import { Icon } from '../../ui/icons';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import { AppointmentButtons, RecordLink, type RowActions } from './AppointmentParts';
 import { STATUS_TONE } from './appointmentTone';
-import { STATUS_LABEL, type AppointmentRow } from './appointmentTypes';
+import { STATUS_LABEL, type AppointmentRow, recordKind } from './appointmentTypes';
 
 export const APPOINTMENT_SCREEN_CODE = 'TS-11';
 
@@ -140,7 +140,10 @@ export function buildAppointmentConfig(
       {
         key: 'kind',
         label: 'Loại hồ sơ',
-        value: (r) => (r.lead_id ? 'LEAD' : r.opportunity_id ? 'OPPORTUNITY' : 'STUDENT_TEST'),
+        value: (r) => {
+          const kind = recordKind(r);
+          return kind === 'TEST' ? 'STUDENT_TEST' : kind;
+        },
       },
     ],
     dateFields: [{ key: 'time', label: 'Thời gian' }],

@@ -34,16 +34,14 @@ test.afterAll(clean);
 async function open(page: Page) {
   await enterAsAdmin(page, 'quantri.cs5');
   await page.goto('/crm/cau-hinh/chiet-khau');
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Chính sách chiết khấu' }),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Chính sách ưu đãi' })).toBeVisible();
 }
 
 test('Hai tab Chiết khấu và Quà tặng; chính sách Ưu đãi linh hoạt của hệ thống không có nút Sửa', async ({
   page,
 }) => {
   await open(page);
-  await expect(page.getByRole('tab', { name: /^Chiết khấu/ })).toBeVisible();
+  await expect(page.getByRole('tab', { name: /^Ưu đãi/ })).toBeVisible();
   await expect(page.getByRole('tab', { name: /^Quà tặng/ })).toBeVisible();
   const flexible = page.getByRole('row', { name: /Ưu đãi linh hoạt/ });
   await expect(flexible).toContainText('Hệ thống');
@@ -63,7 +61,7 @@ test('Thêm chiết khấu: thiếu thì báo tóm tắt; đủ thì lưu, rồi
 }) => {
   test.setTimeout(90_000);
   await open(page);
-  await page.getByRole('button', { name: 'Thêm chiết khấu' }).click();
+  await page.getByRole('button', { name: 'Thêm ưu đãi' }).click();
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('textbox', { name: /Tên chính sách/ }).fill(NAME);
   await dialog.getByRole('button', { name: 'Lưu' }).click();

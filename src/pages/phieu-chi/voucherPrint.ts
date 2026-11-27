@@ -23,7 +23,7 @@ export function voucherPrintRows(r: VoucherRecord['refund']): PrintRow[] {
       : [
           {
             key: 'hours',
-            label: `Giờ hoàn × giá sau chiết khấu (${n(r.hours_refund)} giờ × ${n(r.unit_price_net)} đ)`,
+            label: `Giờ hoàn × giá sau ưu đãi (${n(r.hours_refund)} giờ × ${n(r.unit_price_net)} đ)`,
             amount: r.base_amount,
           },
         ];

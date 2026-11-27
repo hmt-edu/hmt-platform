@@ -96,7 +96,7 @@ export function ApproveOrderDialog({ record, open, onOpenChange, onDone, onRejec
           </Alert>
         )}
         {over.length > 0 && (
-          <Alert tone="warning" title={`Chiết khấu vượt trần ${capPercentText(cap)}.`}>
+          <Alert tone="warning" title={`Ưu đãi vượt trần ${capPercentText(cap)}.`}>
             {over.map((l) => (
               <span key={l.line_no} className="block">
                 {`Dòng ${l.line_no}${l.student_name ? ` (${l.student_name})` : ''}: cộng dồn ${l.total_percent_text}% so với trần ${capPercentText(cap)}.`}

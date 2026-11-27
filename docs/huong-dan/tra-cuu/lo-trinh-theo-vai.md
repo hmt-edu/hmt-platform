@@ -50,12 +50,12 @@ Theo thứ tự việc thật: lead, cơ hội, hẹn và kiểm tra, báo giá,
 
 **4. Báo giá và đơn hàng**
 
-- [Lập báo giá, in và gửi phụ huynh](/crm/huong-dan/bh1): Một báo giá đã gửi cho phụ huynh, có giá, chiết khấu và hạn hiệu lực rõ ràng.
+- [Lập báo giá, in và gửi phụ huynh](/crm/huong-dan/bh1): Một báo giá đã gửi cho phụ huynh, có giá, ưu đãi và hạn hiệu lực rõ ràng.
 - [Từ chối báo giá (lý do)](/crm/huong-dan/bh2): Báo giá chuyển sang «Từ chối», có ghi lý do, để cả đội biết phụ huynh không nhận báo giá này.
 - [Lập đơn hàng, chọn lớp và ngày vào lớp](/crm/huong-dan/bh3): Một đơn hàng đã trình, chờ người duyệt.
 - [Trình và duyệt, từ chối đơn hàng](/crm/huong-dan/bh4): Đơn «Đã duyệt» (hoặc đơn về Nháp kèm lý do từ chối).
 - [Huỷ đơn hàng (lý do)](/crm/huong-dan/bh6): Đơn chuyển sang «Huỷ» (chỉ còn xem), có ghi lý do.
-- [Ưu đãi linh hoạt (chiết khấu tay trên dòng đơn)](/crm/huong-dan/bh7): Một dòng đơn được giảm thêm một số % do chính bạn nhập, để chốt phụ huynh khi các chính sách cố định chưa đủ.
+- [Ưu đãi linh hoạt (nhập % tay trên dòng đơn)](/crm/huong-dan/bh7): Một dòng đơn được giảm thêm một số % do chính bạn nhập, để chốt phụ huynh khi các chính sách cố định chưa đủ.
 
 **5. Thu tiền và nợ**
 
@@ -113,7 +113,7 @@ Chưa có vai «Vận hành» riêng: người vận hành lớp dùng vai CSKH.
 
 **6. Báo giá, đơn hàng, thu tiền (khi hỗ trợ)**
 
-- [Lập báo giá, in và gửi phụ huynh](/crm/huong-dan/bh1): Một báo giá đã gửi cho phụ huynh, có giá, chiết khấu và hạn hiệu lực rõ ràng.
+- [Lập báo giá, in và gửi phụ huynh](/crm/huong-dan/bh1): Một báo giá đã gửi cho phụ huynh, có giá, ưu đãi và hạn hiệu lực rõ ràng.
 - [Lập đơn hàng, chọn lớp và ngày vào lớp](/crm/huong-dan/bh3): Một đơn hàng đã trình, chờ người duyệt.
 - [Huỷ đơn hàng (lý do)](/crm/huong-dan/bh6): Đơn chuyển sang «Huỷ» (chỉ còn xem), có ghi lý do.
 - [Tạo phiếu thu từ đơn hàng (đợt, hạn, hình thức)](/crm/huong-dan/tc1): Một phiếu thu đã gửi quản lý, ghi đúng khoản phụ huynh đã đóng.
@@ -135,7 +135,7 @@ Chưa có vai «Vận hành» riêng: người vận hành lớp dùng vai CSKH.
 - [Từ chối báo giá (lý do)](/crm/huong-dan/bh2): Báo giá chuyển sang «Từ chối», có ghi lý do, để cả đội biết phụ huynh không nhận báo giá này.
 - [Bật «Cho học trước, đóng tiền sau»](/crm/huong-dan/bh5): Học sinh được học ngay các buổi đầu dù phụ huynh chưa đóng tiền.
 - [Huỷ đơn hàng (lý do)](/crm/huong-dan/bh6): Đơn chuyển sang «Huỷ» (chỉ còn xem), có ghi lý do.
-- [Ưu đãi linh hoạt (chiết khấu tay trên dòng đơn)](/crm/huong-dan/bh7): Một dòng đơn được giảm thêm một số % do chính bạn nhập, để chốt phụ huynh khi các chính sách cố định chưa đủ.
+- [Ưu đãi linh hoạt (nhập % tay trên dòng đơn)](/crm/huong-dan/bh7): Một dòng đơn được giảm thêm một số % do chính bạn nhập, để chốt phụ huynh khi các chính sách cố định chưa đủ.
 - [Duyệt phiếu thu: bước quản lý](/crm/huong-dan/tc2): Phiếu thu chuyển sang «Chờ kế toán», hoặc về Nháp kèm lý do từ chối.
 - [Huỷ phiếu thu (lý do)](/crm/huong-dan/tc4): Phiếu thu nhập nhầm chuyển sang «Huỷ», có ghi lý do, không chia tiền vào đơn.
 - [Khoản tiền vào (sổ thu tiền) và hoàn tác khoản](/crm/huong-dan/tc6): Biết tiền đã vào những khoản nào.
@@ -215,7 +215,7 @@ Dùng cổng Giáo viên trên điện thoại: «Tài khoản» ở thanh dư�
 
 - [Cơ sở và phòng học](/crm/huong-dan/qt4): Tên và địa chỉ cơ sở đúng, và danh sách phòng học của từng cơ sở (mã, tên, sức chứa) để chọn khi xếp lớp.
 - [Công tắc tính năng theo cơ sở](/crm/huong-dan/qt6): Một phân hệ (ví dụ Vận hành lớp, Hoàn phí) được bật hoặc tắt đúng cho cơ sở bạn muốn.
-- [Gói bán, bảng giá, chiết khấu, điều khoản thanh toán](/crm/huong-dan/qt9): Gói bán có giá theo ngày hiệu lực, chính sách chiết khấu và điều khoản chia đợt để nhân viên chọn khi lập báo giá, đơn.
+- [Gói bán, bảng giá, ưu đãi, điều khoản thanh toán](/crm/huong-dan/qt9): Gói bán có giá theo ngày hiệu lực, chính sách ưu đãi và điều khoản chia đợt để nhân viên chọn khi lập báo giá, đơn.
 
 **3. Chương trình học**
 

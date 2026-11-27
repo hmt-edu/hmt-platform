@@ -1,6 +1,6 @@
 # HMT Platform: bản đồ màn hình
 
-> Ghi chú của repo (12/10/2026): chép từ `HMT_BAN_DO_MAN_HINH.md` của anh Trường; các dòng CHUNG-02, CHUNG-03, CHUNG-08, CHUNG-13, QT-08, QT-13 đã sửa theo chốt của anh chiều 12/10 (đánh dấu **(chốt 12/10)**). Mã luật `R-*` xem `docs/spec/04-luat-nghiep-vu.md`. **Bước 4 điều chỉnh TC-05, TC-09, TC-11**: Admin không duyệt phiếu thu, đảo khoản, phiếu chi trực tiếp (R-HT-01); cột Vai trò của ba màn này còn ghi "KT, AD". Chi tiết: `docs/nghiep-vu/doi-chieu-luat-1210.md`.
+> Ghi chú của repo (12/10/2026): chép từ `HMT_BAN_DO_MAN_HINH.md` của anh Trường; các dòng CHUNG-02, CHUNG-03, CHUNG-08, CHUNG-13, QT-08, QT-13 đã sửa theo chốt của anh chiều 12/10 (đánh dấu **(chốt 12/10)**). Mã luật `R-*` xem `docs/spec/04-luat-nghiep-vu.md`. **TC-05, TC-09, TC-11 (26/11, thay ghi chú bước 4)**: Admin duyệt được phiếu thu, đảo khoản, phiếu chi (R-HT-01), nên cột Vai trò "KT, AD" của ba màn này đúng. Chi tiết: `docs/nghiep-vu/doi-chieu-luat-1210.md`.
 
 > **Canvas hiện hành (cập nhật 23/11/2026, E-23-19).** Bản đồ này liệt kê màn; khung vẽ nằm ở các thư mục `design/`. Bản hiện hành: HMT Platform `design/hmt-canvas-9933/` v152 (repo đang giữ bản nhập v150); Bán hàng & Thu chi bổ sung `design/hmt-canvas-abea/` v16 (repo v15); Đào tạo & Giáo viên `design/hmt-canvas-9189/` v60 (repo v58); Quản trị và Nạp dữ liệu `design/hmt-canvas-dc47/` giữ nguyên; cổng Học tập, Phụ huynh `design/hmt-hoc-tap-phu-huynh/` (HT 41, PH 29 khung, #605). Chỗ nào repo còn bản cũ thì khung mới (đổi tên vai trò, sửa DN, PH04) chưa có trong thư mục: làm theo luật và ghi chú của Design, hỏi nếu vênh. `design/hmt-canvas-fcd1/` và `design/hmt-platform/` (P5) chỉ để đối chiếu; thứ tự ưu tiên khi nguồn vênh nhau xem `CLAUDE.md`.
 
@@ -218,7 +218,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | TC-12 | Bản in phiếu chi | Bản in · K13 | C | Máy tính | KT, AD | Mẫu phiếu chi | In; Tải PDF | — | R-TIEN-28, R-TIEN-08 |
 | TC-14 | Số dư khách hàng (tiền dư giữ lại) | Danh sách · K03 | C | Máy tính | KT, BM, AD | Tiền dư của phụ huynh sau chuyển phí, dùng cho đơn sau | Xem lịch sử; Cấn vào đơn mới | KH-02 | R-CS-03, R-TIEN-33 |
 | TC-16 | Dùng số dư khách hàng cho đơn mới | Hộp thoại · K08 | C | Máy tính | KT, CS, AD | Trừ số dư, ghi vào đơn mới như một khoản tiền vào | Xác nhận | BH-05 | R-CS-03, R-TIEN-33 |
-| TC-17 | Quản lý duyệt phiếu thu | Hộp thoại · K08 | B | Máy tính | BM, AD | Phiếu thu đã trình chờ quản lý trực tiếp của người lập (Trưởng cơ sở lập thì tự duyệt bước này; Admin không duyệt thay, quản lý vắng thì Admin dùng "Chuyển người duyệt" sang người khác đủ điều kiện, có nhật ký); duyệt thì phiếu sang "Chờ kế toán", từ chối thì về Nháp kèm lý do. Hàng chờ của quản lý nằm trong CHUNG-15 | Duyệt; Từ chối (lý do) | TC-05 | R-TIEN-01, R-HT-06 |
+| TC-17 | Quản lý duyệt phiếu thu | Hộp thoại · K08 | B | Máy tính | BM, AD | Phiếu thu đã trình chờ quản lý trực tiếp của người lập (Trưởng cơ sở lập thì tự duyệt bước này; Admin duyệt thay được, kể cả cả hai bước và phiếu mình lập, có nhật ký (26/11, R-HT-01); quản lý vắng thì Admin cũng có thể dùng "Chuyển người duyệt" sang người khác đủ điều kiện); duyệt thì phiếu sang "Chờ kế toán", từ chối thì về Nháp kèm lý do. Hàng chờ của quản lý nằm trong CHUNG-15 | Duyệt; Từ chối (lý do) | TC-05 | R-TIEN-01, R-HT-06 |
 
 ### Ghi danh
 

@@ -74,17 +74,17 @@ test('Trưởng cơ sở thấy cảnh báo vượt trần (không ô tích) và
 }, testInfo) => {
   const setup = approveSetupOf(testInfo.project.name);
   await openOrder(page, setup.manager, seeded.orders.nhap);
-  await expect(page.getByRole('status').filter({ hasText: /Chiết khấu vượt trần/ })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: /Ưu đãi vượt trần/ })).toBeVisible();
   // Q-163 (BH05_chip_vuot_tran): bản đã lưu vượt trần thì câu trần dưới bảng nằm trong hộp cảnh báo vàng, cả ở Đơn Xem.
   await expect(
     page.getByRole('status').filter({
       hasText:
-        /^Chiết khấu cộng dồn; giờ tặng quy ra % tính vào trần \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
+        /^Ưu đãi cộng dồn; giờ tặng quy ra % tính vào trần \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
     }),
   ).toBeVisible();
   await page.getByRole('button', { name: 'Duyệt', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Duyệt đơn hàng' });
-  await expect(dialog.getByText(/Chiết khấu vượt trần/)).toBeVisible();
+  await expect(dialog.getByText(/Ưu đãi vượt trần/)).toBeVisible();
   await expect(dialog.getByText(/Chỉ cảnh báo, không chặn/)).toBeVisible();
   await expect(dialog.getByRole('checkbox')).toHaveCount(0);
   await expectAccessible(page);
