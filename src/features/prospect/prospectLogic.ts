@@ -116,6 +116,19 @@ export function emLabel(s: ProspectStudent): string {
   return s.full_name?.trim() ? s.full_name : 'Học sinh chưa có tên';
 }
 
+/** Một học sinh trong ô chọn: tên là chữ chính, năm sinh (và mã HS nếu có) là chữ phụ mờ, không ghép vào tên (F-26-05). */
+export function studentLabel(s: {
+  full_name: string | null;
+  birth_year: number | null;
+  student_code?: string | null | undefined;
+}): { label: string; hint?: string } {
+  const label = s.full_name?.trim() ? s.full_name : 'Học sinh chưa có tên';
+  const hint = [s.birth_year ? `sinh ${s.birth_year}` : '', s.student_code ?? '']
+    .filter((part) => part !== '')
+    .join(' · ');
+  return hint === '' ? { label } : { label, hint };
+}
+
 /** Câu khi danh sách trống. */
 export function emptyListText(entity: 'LEAD' | 'OPPORTUNITY'): string {
   return `${entity === 'LEAD' ? 'Lead' : 'Cơ hội'} chưa có học sinh. Bấm “+ Thêm học sinh” để ghi họ tên, năm sinh của học sinh.`;
