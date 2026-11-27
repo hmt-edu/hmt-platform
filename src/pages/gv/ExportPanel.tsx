@@ -9,7 +9,7 @@ import { Field } from '../../ui/Field';
 import { Select } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { cardFileName, type ExportCard } from './exportCard';
-import { downloadCanvas } from '../../print/canvasFile';
+import { canShareImages, downloadCanvas, shareOrDownloadCanvases } from '../../print/canvasFile';
 import { cardsToPrintHtml, drawCard, loadImage, printHtml } from './exportRender';
 import { useMarkExported } from './useExported';
 
@@ -50,7 +50,9 @@ export function ExportPanel({
   const ready = items.filter((i) => i.card !== null);
   const chosen = scope === 'ONE' ? (current && current.card ? [current] : []) : ready;
 
-  async function run() {
+  const shareable = format === 'PNG' && canShareImages();
+
+  async function run(share = false) {
     setBusy(true);
     setError(null);
     try {
@@ -59,11 +61,15 @@ export function ExportPanel({
       );
       if (format === 'PNG') {
         const logo = await loadImage(logoUrl);
-        for (const item of withCard) {
-          await downloadCanvas(
-            drawCard(item.card, logo),
-            cardFileName(classCode, sessionDate, item.name, 'png'),
-          );
+        const images = withCard.map((item) => ({
+          canvas: drawCard(item.card, logo),
+          fileName: cardFileName(classCode, sessionDate, item.name, 'png'),
+        }));
+        if (share) {
+          // Đóng bảng chia sẻ thì chưa gửi gì: giữ hộp thoại, không đặt dấu «Đã xuất».
+          if ((await shareOrDownloadCanvases(images)) === 'cancelled') return;
+        } else {
+          for (const image of images) await downloadCanvas(image.canvas, image.fileName);
         }
       } else {
         await printHtml(
@@ -145,6 +151,15 @@ export function ExportPanel({
               />
             )}
           </Field>
+          {shareable && (
+            <Button
+              variant="secondary"
+              disabled={chosen.length === 0 || busy}
+              onClick={() => void run(true)}
+            >
+              Chia sẻ (Zalo…)
+            </Button>
+          )}
         </FormDialog>
       )}
     </section>
