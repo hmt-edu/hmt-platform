@@ -831,7 +831,11 @@ function OrderView({ record }: { record: OrderRecord }) {
             count: receiptCount,
             hidden: !access.can('RECEIPT', 'XEM'),
             onOpen: () =>
-              openFrom(onlyReceiptId ? `/crm/phieu-thu/${onlyReceiptId}` : '/crm/phieu-thu'),
+              openFrom(
+                onlyReceiptId
+                  ? `/crm/phieu-thu/${onlyReceiptId}`
+                  : `/crm/phieu-thu?don=${record.id}&ma=${encodeURIComponent(record.code)}`,
+              ),
           },
           {
             key: 'ghi-danh',
