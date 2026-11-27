@@ -804,7 +804,7 @@ begin
                   from app.upsale_ticket_event ev where ev.ticket_id = t.id), '[]'::jsonb),
     'actions', to_jsonb(array_remove(array[
       case when v_open and app.can_see_branch('UPSALE', 'GIAO_VIEC', t.branch_id) then 'giao' end,
-      case when t.stage_code in ('L1', 'L2', 'L3', 'L4', 'L6') and app.can_see_branch('UPSALE', 'SUA', t.branch_id) then 'doi_giai_doan' end,
+      case when app.can_see_branch('UPSALE', 'SUA', t.branch_id) then 'doi_giai_doan' end,
       case when app.can_see_branch('UPSALE', 'SUA', t.branch_id) then 'sua_ghi_chu' end,
       -- Luật R-GD-13 (27/11): tạo báo giá, tạo đơn ở mọi giai đoạn, theo quyền.
       case when app.can_see_branch('UPSALE', 'SUA', t.branch_id) and app.can_see_branch('QUOTATION', 'TAO', t.branch_id) then 'tao_bao_gia' end,
@@ -812,3 +812,70 @@ begin
 end;
 $$;
 
+-- app.change_upsale_stage(phiếu, giai đoạn mới, lý do, ghi chú, nhóm con): người có Phiếu tái tục · Sửa đổi giai đoạn BẰNG TAY. Trả {id, stage_code, substage_code}.
+-- Luật R-GD-13 (anh chốt 27/11): đổi được giữa mọi giai đoạn L1 đến L8, đi tới hoặc lùi; hệ thống không còn tự đặt L7, L8.
+-- Lấy từ 20261118000410_tt_a_phieu_tai_tuc.sql; thêm tham số nhóm con nên bỏ hàm cũ.
+drop function app.change_upsale_stage(uuid, text, text, text);
+create function app.change_upsale_stage(p_id uuid, p_to text, p_reason_code text default null, p_note text default null, p_substage text default null)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  t app.upsale_ticket;
+  v_item app.catalog_item;
+  v_sub text;
+  v_note text := nullif(btrim(coalesce(p_note, '')), '');
+begin
+  select * into t from app.upsale_ticket where id = p_id for update;
+  if t.id is null then
+    perform app.raise_error('HMT_KHONG_TIM_THAY', 'Không tìm thấy phiếu tái tục.');
+  end if;
+  perform app.assert_can('UPSALE', 'SUA', t.branch_id);
+  perform app.require_feature('BAN_HANG', t.branch_id);
+  if p_to is null or p_to not in ('L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8') then
+    perform app.raise_error('HMT_GIAI_DOAN_KHONG_HOP_LE', 'Giai đoạn mới không hợp lệ.');
+  end if;
+  -- Nhóm con (danh mục 06 mục 1.4): L1 theo nguồn phiếu, L7 người dùng chọn L7A hoặc L7B, L8 chỉ có L8A.
+  v_sub := case p_to
+             when 'L1' then case t.origin_code when 'HE_THONG' then 'L1A' else 'L1B' end
+             when 'L7' then p_substage
+             when 'L8' then 'L8A'
+           end;
+  if p_to = 'L7' and coalesce(p_substage, '') not in ('L7A', 'L7B') then
+    perform app.raise_error('HMT_GIAI_DOAN_KHONG_HOP_LE', 'Chọn nhóm con của Dự thu.');
+  end if;
+  -- Cùng giai đoạn chỉ được đổi nhóm con.
+  if p_to = t.stage_code and v_sub is not distinct from t.substage_code then
+    perform app.raise_error('HMT_GIAI_DOAN_KHONG_HOP_LE', 'Phiếu đang ở giai đoạn này.');
+  end if;
+  -- Luật R-GD-13: L5 Không tái tục bắt buộc lý do từ danh mục; «Khác» cần ghi chú.
+  if p_to = 'L5' then
+    select * into v_item from app.catalog_item where catalog_code = 'RENEWAL_LOST_REASON' and code = p_reason_code and is_active;
+    if v_item.id is null then
+      perform app.raise_error('HMT_LY_DO_THIEU', 'Chọn lý do không tái tục.');
+    end if;
+    if v_item.requires_note and v_note is null then
+      perform app.raise_error('HMT_LY_DO_THIEU', 'Chọn "Khác" thì ghi chú lý do.');
+    end if;
+  end if;
+  -- Luật R-GD-13: mỗi học sinh ở mỗi lớp tối đa một phiếu đang mở; mở lại phiếu đã kết thúc thì kiểm trước.
+  if t.stage_code in ('L5', 'L8') and p_to not in ('L5', 'L8')
+     and exists (select from app.upsale_ticket o
+                  where o.student_id = t.student_id and o.class_id = t.class_id and o.id <> t.id and o.stage_code not in ('L5', 'L8')) then
+    perform app.raise_error('HMT_DA_CO_PHIEU_TAI_TUC', 'Học sinh này đã có phiếu tái tục đang mở ở lớp này.');
+  end if;
+  -- L5, L8 là kết thúc: ghi thời điểm đóng; rời khỏi thì bỏ ngày đóng và lý do.
+  update app.upsale_ticket
+     set stage_code = p_to, substage_code = v_sub,
+         lost_reason_code = case when p_to = 'L5' then p_reason_code end,
+         lost_note = case when p_to = 'L5' then v_note end,
+         closed_at = case when p_to in ('L5', 'L8') then now() end
+   where id = p_id;
+  perform app.upsale_add_event(p_id, 'DOI_GIAI_DOAN', t.stage_code, p_to, p_note);
+  return jsonb_build_object('id', p_id, 'stage_code', p_to, 'substage_code', v_sub);
+end;
+$$;
+revoke execute on function app.change_upsale_stage(uuid, text, text, text, text) from public, anon;
+grant execute on function app.change_upsale_stage(uuid, text, text, text, text) to authenticated;

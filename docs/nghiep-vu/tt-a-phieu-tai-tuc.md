@@ -66,4 +66,4 @@ Phần này thay các câu ở trên về «chỉ L6», «một đơn đang số
 - Bỏ `reconcile_upsale_orders`; lịch đêm chỉ còn sinh phiếu. Giai đoạn đổi bằng tay.
 - Sửa báo giá Nháp của phiếu cũng cần Phiếu tái tục · Sửa.
 - Giao diện: TT-02 có «Tạo báo giá», «Tạo đơn» theo `actions` của `get_upsale_ticket` ở mọi giai đoạn; form báo giá dùng chung (`/crm/bao-gia/tao?phieu=`), học sinh là em của phiếu; tab «Báo giá và đơn» và banner đọc theo số đếm thật.
-- Chưa làm: đổi giai đoạn tay sang L7, L8 (`change_upsale_stage` còn chặn; chờ Chat chốt).
+- `change_upsale_stage(phiếu, giai đoạn, lý do, ghi chú, nhóm con)`: đổi tay giữa mọi giai đoạn L1 đến L8. L5 bắt lý do; L7 chọn L7A hoặc L7B; L8 là L8A; vào L5, L8 ghi ngày đóng, rời ra thì bỏ; mở lại bị chặn nếu (học sinh, lớp) đã có phiếu mở khác.

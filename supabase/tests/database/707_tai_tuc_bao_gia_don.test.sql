@@ -111,5 +111,19 @@ select is((select count(*)::int from app.sales_order o join app.sales_order_line
 select is((pg_temp.tk('TT917071')).stage_code, 'L5', 'Gửi báo giá và tạo đơn không đổi giai đoạn');
 select is(app.get_upsale_ticket(pg_temp.tid('TT917071')) -> 'actions' @> '["tao_bao_gia", "tao_don"]'::jsonb, true, 'Phiếu ở L5 vẫn có Tạo báo giá, Tạo đơn');
 
+-- ---- Đổi giai đoạn bằng tay giữa mọi giai đoạn (R-GD-13, 27/11) ----
+select is(app.get_upsale_ticket(pg_temp.tid('TT917071')) -> 'actions' @> '["doi_giai_doan"]'::jsonb, true, 'Phiếu ở L5 vẫn có Chuyển giai đoạn');
+select is(app.change_upsale_stage(pg_temp.tid('TT917071'), 'L7', null, null, 'L7B') ->> 'substage_code', 'L7B', 'L5 sang L7B bằng tay');
+select is((pg_temp.tk('TT917071')).closed_at is null and (pg_temp.tk('TT917071')).lost_reason_code is null, true, 'Rời L5 thì bỏ ngày đóng và lý do');
+select is(app.change_upsale_stage(pg_temp.tid('TT917071'), 'L7', null, null, 'L7A') ->> 'substage_code', 'L7A', 'Đổi nhóm con trong L7');
+select is(pg_temp.err($$select app.change_upsale_stage(pg_temp.tid('TT917071'), 'L7', null, null, 'L7A')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'Không đổi gì thì bị chặn');
+select is(app.change_upsale_stage(pg_temp.tid('TT917071'), 'L8') ->> 'substage_code', 'L8A', 'Sang L8 bằng tay, nhóm con L8A');
+select is((pg_temp.tk('TT917071')).closed_at is not null, true, 'L8 ghi thời điểm kết thúc');
+select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id, parent_id, class_id, stage_code, origin_code)
+  select 'TT917074', branch_id, student_id, parent_id, class_id, 'L1', 'TAY' from app.upsale_ticket where code = 'TT917071'$$);
+select is(pg_temp.err($$select app.change_upsale_stage(pg_temp.tid('TT917071'), 'L6')$$), 'HMT_DA_CO_PHIEU_TAI_TUC', 'Mở lại phiếu khi đã có phiếu mở khác thì bị chặn');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is(pg_temp.err($$select app.change_upsale_stage(pg_temp.tid('TT917072'), 'L2')$$), 'HMT_KHONG_CO_QUYEN', 'Thiếu Phiếu tái tục · Sửa thì không đổi giai đoạn');
+
 select * from finish();
 rollback;

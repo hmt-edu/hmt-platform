@@ -140,12 +140,14 @@ export function changeUpsaleStage(
   to: string,
   reasonCode: string | null,
   note: string | null,
+  substage: string | null,
 ): Promise<void> {
   return rpc<void>(supabase, 'change_upsale_stage', {
     p_id: id,
     p_to: to,
     p_reason_code: reasonCode,
     p_note: note,
+    p_substage: substage,
   });
 }
 
