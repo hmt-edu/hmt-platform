@@ -72,15 +72,18 @@ grant select on ids to authenticated;
 
 -- ---------- Tiền khác cơ sở (VỪA soát #821) ----------
 -- Sổ số dư: nợ đầu kỳ 300.000 ở CS1, 700.000 ở CS5. Đơn giả đã duyệt ở CS5, quá hạn 5 ngày.
-insert into app.customer_balance_entry (parent_id, branch_id, entry_type, amount)
-select (select p from ids), b.id, 'DAU_KY_CONG_NO', case b.code when 'CS1' then -300000 else -700000 end
+insert into app.customer_balance_entry (parent_id, branch_id, entry_type, amount, entry_date)
+select (select p from ids), b.id, 'DAU_KY_CONG_NO', case b.code when 'CS1' then -300000 else -700000 end, (now() at time zone 'Asia/Ho_Chi_Minh')::date
   from app.branch b where b.code in ('CS1', 'CS5');
+-- Đơn đã duyệt bị khoá không cho thêm lịch đóng tiền: tắt trigger tạm trong giao dịch thử (như bài 435).
+set local session_replication_role = 'replica';
 insert into app.sales_order (code, branch_id, renewal_ticket_id, parent_id, status_code, priced_on, total_amount, created_by)
 values ('DH-TT-695', (select id from app.branch where code = 'CS5'), gen_random_uuid(), (select p from ids), 'DA_DUYET',
         (now() at time zone 'Asia/Ho_Chi_Minh')::date, 400000, pg_temp.uid('admin'));
 insert into app.sales_order_installment (order_id, branch_id, seq, due_days, amount, due_date)
 select o.id, o.branch_id, 1, 0, 400000, (now() at time zone 'Asia/Ho_Chi_Minh')::date - 5
   from app.sales_order o where o.code = 'DH-TT-695';
+set local session_replication_role = 'origin';
 
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
