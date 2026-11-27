@@ -155,7 +155,7 @@ function ClassView({ record }: { record: ClassRecord }) {
         onEdit={() => openFrom(editClassPath(record.id))}
         onSave={() => undefined}
         onCancel={() => undefined}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         menu={menu.length > 0 ? { label: 'Hành động', items: menu } : undefined}
         asideLabel="Ghi chú và hoạt động"
         aside={<ClassChatter record={record} />}

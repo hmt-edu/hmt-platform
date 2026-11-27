@@ -242,7 +242,7 @@ function StudentView({ record }: { record: StudentRecord }) {
           setErrors({});
           setMode('view');
         }}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         menu={{
           label: 'Hành động',
           items: [

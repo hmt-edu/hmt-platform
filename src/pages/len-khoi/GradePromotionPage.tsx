@@ -203,7 +203,7 @@ export function GradePromotionPage() {
               ]
             : []
         }
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         selected={canRun ? selected : undefined}
         onSelectedChange={canRun ? setSelected : undefined}
         bulk={

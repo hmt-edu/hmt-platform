@@ -137,7 +137,7 @@ export function StudentAccountPage() {
         error={errorText}
         onRetry={() => void list.refetch()}
         actions={[]}
-        onRefresh={() => void refreshData()}
+        onRefresh={() => refreshData()}
         selected={canEdit ? selected : undefined}
         onSelectedChange={canEdit ? setSelected : undefined}
         bulk={

@@ -50,7 +50,7 @@ export function ApprovalsPage() {
       loading={list.isPending || list.isPlaceholderData}
       error={list.isError ? errorOf(list.error).message : null}
       onRetry={() => void list.refetch()}
-      onRefresh={() => void refreshData()}
+      onRefresh={() => refreshData()}
       onRowClick={(r) => void navigate(approvalPath(r))}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,

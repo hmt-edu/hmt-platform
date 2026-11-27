@@ -358,7 +358,7 @@ export function TicketRecordPage() {
         onEdit={() => undefined}
         onSave={() => undefined}
         onCancel={() => undefined}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         headerActions={
           canEdit && !closed ? (
             <>

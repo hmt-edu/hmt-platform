@@ -110,7 +110,7 @@ export function EnrollmentListPage() {
       loading={active.isPending || active.isPlaceholderData}
       error={active.isError ? errorOf(active.error).message : null}
       onRetry={() => void active.refetch()}
-      onRefresh={() => void refreshData()}
+      onRefresh={() => refreshData()}
       onRowClick={(r) => openFrom(`/crm/ghi-danh/${r.id}`)}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,

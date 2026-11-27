@@ -569,7 +569,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
               }
             : undefined
         }
-        onRefresh={() => void refreshRecord()}
+        onRefresh={() => refreshRecord()}
         stage={
           stageSteps.length > 0
             ? {

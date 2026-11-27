@@ -9,6 +9,8 @@ import { cn } from '../ui/cn';
 import { Icon, type IconName } from '../ui/icons';
 import { DropdownMenu, type MenuItem } from '../ui/Overlays';
 import { UnsavedGuard } from '../ui/Dialogs';
+import { RefreshStatus } from '../ui/RefreshStatus';
+import { useRefreshAction } from '../ui/useRefreshAction';
 import { StageBar, type StageStep } from '../ui/Stage';
 import { smartTarget, type SmartTarget, type SmartZeroBehavior } from './smartButton';
 
@@ -210,7 +212,7 @@ export function RecordDetail({
   attachments?: { count: number } | undefined;
   menu?: { label: string; items: MenuItem[] } | undefined;
   pager?: DetailPager | undefined;
-  onRefresh?: (() => void) | undefined;
+  onRefresh?: (() => unknown) | undefined;
   /** Chỉ đọc (bản "Đã gộp", hoặc người xem không có quyền Sửa): ẩn Sửa và các nút cạnh Sửa, khoá thanh giai đoạn. */
   readOnly?: boolean | undefined;
   /** Nút Sửa viền (không cam) khi màn có nút bước tiếp theo cam («một màn một nút cam»: Lead, Cơ hội). */
@@ -249,6 +251,7 @@ export function RecordDetail({
   /** Tên vùng bên phải cho trình đọc màn hình (mặc định: ghi chú và hoạt động). */
   asideLabel?: string | undefined;
 }) {
+  const reload = useRefreshAction(onRefresh);
   const creating = mode === 'create';
   const editing = mode !== 'view';
   return (
@@ -329,7 +332,16 @@ export function RecordDetail({
             </div>
           )}
           {onRefresh && !creating && (
-            <IconButton icon="refresh" label="Làm mới" bordered onClick={onRefresh} />
+            <>
+              <RefreshStatus state={reload} />
+              <IconButton
+                icon="refresh"
+                label="Làm mới"
+                bordered
+                loading={reload.busy}
+                onClick={reload.refresh}
+              />
+            </>
           )}
         </div>
       </header>

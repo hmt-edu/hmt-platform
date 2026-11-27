@@ -39,7 +39,7 @@ export function Button({
       className={buttonClass({ variant, size, disabled: inactive, fullWidth, align, className })}
     >
       {loading ? (
-        <Icon name="loading" size={16} className="animate-spin" />
+        <Icon name="loading" size={16} className="animate-spin motion-reduce:animate-none" />
       ) : (
         icon && <Icon name={icon} size={16} />
       )}
@@ -73,10 +73,14 @@ export function IconButton({
   label,
   bordered = false,
   className,
+  loading = false,
+  disabled,
   ...rest
 }: {
   icon: IconName;
   label: string;
+  /** Đang xử lý: khoá nút, biểu tượng quay. */
+  loading?: boolean | undefined;
   /** Có viền (kiểu .hmt-iconbtn-b) khi đứng riêng trên thanh công cụ. */
   bordered?: boolean | undefined;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>) {
@@ -84,6 +88,8 @@ export function IconButton({
     <button
       type="button"
       {...rest}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       aria-label={label}
       title={label}
       className={cn(
@@ -92,7 +98,10 @@ export function IconButton({
         className,
       )}
     >
-      <Icon name={icon} />
+      <Icon
+        name={loading ? 'loading' : icon}
+        className={loading ? 'animate-spin motion-reduce:animate-none' : undefined}
+      />
     </button>
   );
 }

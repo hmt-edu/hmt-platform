@@ -70,7 +70,7 @@ export function TaskDestinationListPage() {
       loading={list.isPending}
       error={list.isError ? errorOf(list.error).message : null}
       onRetry={() => void list.refetch()}
-      onRefresh={() => void list.refetch()}
+      onRefresh={() => list.refetch()}
       pager={{ from: rows.length === 0 ? 0 : 1, to: rows.length, total: rows.length }}
       emptyMessage={{
         title: 'Chưa có phiếu chuyển cơ sở nào chờ bạn',

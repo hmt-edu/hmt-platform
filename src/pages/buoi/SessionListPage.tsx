@@ -116,7 +116,7 @@ export function SessionListPage() {
       loading={active.isPending || active.isPlaceholderData}
       error={active.isError ? errorOf(active.error).message : null}
       onRetry={() => void active.refetch()}
-      onRefresh={() => void refreshData()}
+      onRefresh={() => refreshData()}
       actions={
         classId
           ? [

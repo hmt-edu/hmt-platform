@@ -54,7 +54,7 @@ export function EnrollmentQueuePage() {
         loading={list.isPending || list.isPlaceholderData}
         error={list.isError ? errorOf(list.error).message : null}
         onRetry={() => void list.refetch()}
-        onRefresh={() => void refreshData()}
+        onRefresh={() => refreshData()}
         pager={{
           from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
           to: page * (pageSize ?? 0) + rows.length,

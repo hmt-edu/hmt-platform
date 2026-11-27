@@ -43,7 +43,7 @@ export function AuditLogPage() {
       error={list.isError ? errorOf(list.error).message : null}
       onRetry={() => void list.refetch()}
       actions={[]}
-      onRefresh={() => void list.refetch()}
+      onRefresh={() => list.refetch()}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
         to: page * (pageSize ?? 0) + rows.length,

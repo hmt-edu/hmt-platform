@@ -79,7 +79,7 @@ export function TaskDestinationPage() {
         onEdit={() => undefined}
         onSave={() => undefined}
         onCancel={() => undefined}
-        onRefresh={() => void record.refetch()}
+        onRefresh={() => record.refetch()}
         headerActions={
           <>
             <Button

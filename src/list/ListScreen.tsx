@@ -10,6 +10,8 @@ import { StateView } from '../ui/Feedback';
 import { Icon, type IconName } from '../ui/icons';
 import { Select } from '../ui/Overlays';
 import { useMedia } from '../ui/useMedia';
+import { RefreshStatus } from '../ui/RefreshStatus';
+import { useRefreshAction } from '../ui/useRefreshAction';
 import { FavoritesList, SaveFilterForm } from './Favorites';
 import { ListForbidden } from './ListForbidden';
 import type { ListForbiddenSpec } from './forbiddenSpec';
@@ -89,7 +91,7 @@ export function ListScreen<Row>({
   forbidden?: ListForbiddenSpec | undefined;
   onRetry?: (() => void) | undefined;
   actions?: Action[] | undefined;
-  onRefresh?: (() => void) | undefined;
+  onRefresh?: (() => unknown) | undefined;
   searchHint?: string | undefined;
   /** Phân trang kiểu "1–8 / 8" ở thanh trên; không truyền thì ẩn. */
   pager?:
@@ -137,6 +139,7 @@ export function ListScreen<Row>({
   useFilteredListCrumb(parent !== undefined);
   const [open, setOpen] = useState<'filters' | 'group' | 'cols' | 'fav' | 'save' | null>(null);
   const [advanced, setAdvanced] = useState(false);
+  const reload = useRefreshAction(onRefresh);
   // Điện thoại: thay đổi nằm trong bản nháp tới khi bấm Áp dụng.
   const [draft, setDraft] = useState<ListState>(state);
   const working = sheet ? draft : state;
@@ -325,9 +328,12 @@ export function ListScreen<Row>({
         )}
         <div className="ml-auto flex items-center gap-2">
           {onRefresh && (
-            <Button icon="refresh" onClick={onRefresh}>
-              Làm mới
-            </Button>
+            <>
+              <RefreshStatus state={reload} showTime />
+              <Button icon="refresh" loading={reload.busy} onClick={reload.refresh}>
+                Làm mới
+              </Button>
+            </>
           )}
           {visibleView === 'list' && (
             <PanelHost

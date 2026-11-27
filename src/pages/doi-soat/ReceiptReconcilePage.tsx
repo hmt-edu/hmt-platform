@@ -121,7 +121,7 @@ export function ReceiptReconcilePage() {
         error={errorText}
         onRetry={() => void list.refetch()}
         actions={[]}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         selected={selected}
         onSelectedChange={setSelected}
         belowToolbar={

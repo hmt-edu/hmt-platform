@@ -195,7 +195,7 @@ export function OrderListPage() {
             ]
           : []
       }
-      onRefresh={() => void refreshData()}
+      onRefresh={() => refreshData()}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
         to: page * (pageSize ?? 0) + rows.length,
