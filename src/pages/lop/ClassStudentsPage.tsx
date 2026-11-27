@@ -1,5 +1,6 @@
 // LOP-09 Học sinh của lớp (danh sách, khuôn K03; canvas 9933 khung LOP09): mọi dòng xếp lớp của một lớp, đang học và đã rời. Lọc, tìm, sắp xếp, phân trang ở máy chủ
 // (app.list_class_students). «Xếp thêm» dẫn tới Hàng chờ xếp lớp (GD-06). «Xuất» chưa làm: ma trận quyền chưa có quyền Xuất cho phân hệ Lớp (chờ anh chốt).
+import { useCrumbTail } from '../../layout/CrumbTail';
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { ListScreen } from '../../list/ListScreen';
@@ -32,6 +33,7 @@ export function ClassStudentsPage() {
   const navigate = useNavigate();
   const catalogs = useLeadCatalogs();
   const classRecord = useClassRecord(id).data;
+  useCrumbTail(classRecord ? `${classRecord.code} · Học sinh` : null);
   const pageSize = useIntSetting('list_page_size_default');
 
   const [state, setState] = useState<ListState>(EMPTY_CLASS_STUDENT_STATE);
@@ -135,7 +137,7 @@ export function ClassStudentsPage() {
               {
                 label: 'Xếp thêm',
                 icon: 'plus' as const,
-                onClick: () => void navigate('/crm/ghi-danh/cho-xep-lop'),
+                onClick: () => void navigate('/crm/cho-xep-lop'),
               },
             ]
           : []),

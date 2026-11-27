@@ -116,6 +116,14 @@ test('Đã trình: chờ người duyệt đã chốt; Đã duyệt · khoá: n�
   } else {
     await expect(page.getByRole('button', { name: 'Tạo phiếu thu' })).toBeEnabled();
   }
+  // Nút số «Phiếu thu» khi không đúng một phiếu: mở danh sách lọc theo đơn này, không phải mọi phiếu.
+  if (!isPhone(page)) {
+    const orderUrl = page.url();
+    await page.getByRole('button', { name: /^Phiếu thu/ }).click();
+    await expect(page).toHaveURL(/\/crm\/phieu-thu\?don=[0-9a-f-]{36}&ma=/);
+    await expect(page.getByText(`Đơn hàng: ${seeded.orders.dduyet}`)).toBeVisible();
+    await page.goto(orderUrl);
+  }
   // Đơn Đã duyệt: Sale lập không phải người duyệt đã chốt nên không có mục Huỷ đơn (R-TIEN-38).
   await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
   await expect(page.getByText(/Đơn đã duyệt và khoá/)).toBeVisible();

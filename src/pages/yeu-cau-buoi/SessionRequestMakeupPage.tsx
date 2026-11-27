@@ -1,6 +1,7 @@
 // BUOI-07 Tạo yêu cầu học bù (khuôn K07 giản lược). Luật R-BUOI-03 thắng canvas BUOI07: duyệt thì SINH BUỔI MỚI loại Học bù, không chọn buổi có sẵn của lớp khác.
 // Tạo từ lớp (?lop=): chọn các em học bù, ngày, giờ, giáo viên (tuỳ chọn; bỏ trống thì lấy giáo viên khung giờ của lớp), phòng, LÝ DO bắt buộc.
 // Không trừ giờ, không gắn buổi gốc. Lưu nháp hoặc Gửi duyệt mới cấp mã YB (app.save_makeup_request); quản lý cơ sở duyệt (R-BUOI-10).
+import { useCrumbTail } from '../../layout/CrumbTail';
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { errorOf } from '../../lib/db';
@@ -16,6 +17,7 @@ import { ExamBlock } from './ExamBlock';
 import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './examFields';
 
 export function SessionRequestMakeupPage() {
+  useCrumbTail('Tạo yêu cầu học bù');
   const [params] = useSearchParams();
   const classId = params.get('lop') ?? undefined;
   const record = useClassRecord(classId);
