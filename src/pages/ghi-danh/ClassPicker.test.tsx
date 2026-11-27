@@ -56,3 +56,29 @@ describe('ClassPicker: cảnh báo lệch hình thức học', () => {
     expect(screen.queryByText(/lệch hình thức học/)).toBeNull();
   });
 });
+
+describe('ClassPicker khi không có lớp (anh Trường 27/11)', () => {
+  const empty = (emptyText?: string) =>
+    render(
+      <ClassPicker
+        classes={[]}
+        value={{ classId: null, date: '' }}
+        onChange={() => undefined}
+        name="t"
+        emptyText={emptyText}
+      />,
+    );
+
+  it('nói đúng nguyên nhân được truyền vào (ghi danh chưa có gói)', () => {
+    empty('Ghi danh chưa có gói nên chưa tìm được lớp phù hợp.');
+    expect(screen.getByRole('status').textContent).toBe(
+      'Ghi danh chưa có gói nên chưa tìm được lớp phù hợp.',
+    );
+  });
+
+  it('mặc định giữ câu cũ và không giữ chỗ cho ô Ngày vào lớp', () => {
+    const { container } = empty();
+    expect(screen.getByRole('status').textContent).toContain('chưa có lớp đã duyệt còn chỗ');
+    expect(container.querySelector('.min-h-24')).toBeNull();
+  });
+});

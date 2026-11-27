@@ -1,4 +1,4 @@
-// Cấu hình các màn danh sách cụm Ghi danh cho khuôn K03: GD-01 Ghi danh, GD-06 Hàng chờ xếp lớp, GD-04 Sổ giờ. Cột và chữ theo canvas GD01, GD04, GD06.
+// Cấu hình các màn danh sách cụm Ghi danh cho khuôn K03: GD-01 Ghi danh, GD-04 Sổ giờ. Cột và chữ theo canvas GD01, GD04.
 // Lọc, sắp xếp, phân trang làm ở máy chủ nên cấu hình không có hàm `test` chạy ở trình trình duyệt. Giao diện không tính giờ: số do hàm DB trả.
 
 import { formatDate, formatNumber } from '../../lib/format';
@@ -6,12 +6,10 @@ import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
 import type { LeadCatalogs } from '../lead/useCatalogs';
-import { waitingDaysLabel } from './waitingDays';
-import type { EnrollmentRow, LedgerRow, QueueRow } from './enrollTypes';
+import type { EnrollmentRow, LedgerRow } from './enrollTypes';
 import { FromLink } from '../../layout/FromLink';
 
 export const ENROLL_SCREEN_CODE = 'GD-01';
-export const QUEUE_SCREEN_CODE = 'GD-06';
 export const LEDGER_SCREEN_CODE = 'GD-04';
 
 const MUTED = <span className="text-fg-muted">—</span>;
@@ -33,6 +31,8 @@ const hours = (n: number) => formatNumber(n);
 export function buildEnrollConfig(
   catalogs: LeadCatalogs,
   access: AccessView,
+  /** Mở hộp Xếp lớp (GD-03) ngay trên dòng Chờ xếp lớp; chỉ truyền khi có quyền Ghi danh · Sửa. */
+  onAssign?: (row: EnrollmentRow) => void,
 ): ListConfig<EnrollmentRow> {
   const statusOptions = catalogs.filterOptions('ENROLLMENT_STATUS');
   return {
@@ -63,7 +63,22 @@ export function buildEnrollConfig(
       {
         key: 'class',
         label: 'Lớp',
-        render: (r) => r.class_code ?? <span className="text-fg-muted">chưa có lớp</span>,
+        // Nút «Xếp lớp» nằm trong cột Lớp, không thêm cột riêng: cột thứ chín bị ẩn mặc định (DEFAULT_MAX_COLUMNS).
+        render: (r) =>
+          r.class_code ?? (
+            <span className="inline-flex items-center gap-2 whitespace-nowrap">
+              <span className="text-fg-muted">chưa có lớp</span>
+              {onAssign && r.status_code === 'CHO_XEP_LOP' && (
+                <button
+                  type="button"
+                  className="focus-ring tap text-link hover:underline"
+                  onClick={() => onAssign(r)}
+                >
+                  Xếp lớp
+                </button>
+              )}
+            </span>
+          ),
       },
       { key: 'granted', label: 'Giờ cấp', numeric: true, render: (r) => hours(r.granted_hours) },
       { key: 'used', label: 'Đã học', numeric: true, render: (r) => hours(r.used_hours) },
@@ -108,63 +123,6 @@ export function buildEnrollConfig(
       { key: 'class', label: 'Lớp', value: (r) => r.class_id ?? '' },
       { key: 'status', label: 'Tình trạng', value: (r) => r.status_code },
     ],
-    dateFields: [],
-    views: ['list'],
-  };
-}
-
-/** GD-06: lý do chờ luôn là "Chưa có lớp" (hàng chờ chỉ gồm ghi danh Chờ xếp lớp, R-GD-05). */
-export function buildQueueConfig(
-  catalogs: LeadCatalogs,
-  onAssign: (row: QueueRow) => void,
-  canAssign: boolean,
-): ListConfig<QueueRow> {
-  const modeOptions = catalogs.filterOptions('STUDY_MODE');
-  return {
-    screenCode: QUEUE_SCREEN_CODE,
-    title: 'Hàng chờ xếp lớp',
-    searchPlaceholder: 'Tìm mã ghi danh, tên học sinh…',
-    columns: [
-      {
-        key: 'code',
-        label: 'Ghi danh',
-        locked: true,
-        primary: true,
-        render: (r) => (
-          <FromLink to={`/crm/ghi-danh/${r.id}`} className="font-medium text-link hover:underline">
-            {r.code}
-          </FromLink>
-        ),
-      },
-      { key: 'student', label: 'Học sinh', render: (r) => r.student_name },
-      { key: 'subject', label: 'Môn', render: (r) => r.package_name ?? r.package_code ?? MUTED },
-      { key: 'mode', label: 'Hình thức', render: (r) => r.delivery_mode_name ?? MUTED },
-      { key: 'reason', label: 'Lý do chờ', render: () => 'Chưa có lớp' },
-      {
-        key: 'since',
-        label: 'Chờ từ',
-        render: (r) => `${formatDate(r.waiting_since)} · ${waitingDaysLabel(r.waiting_since)}`,
-      },
-      {
-        key: 'action',
-        label: 'Xử lý',
-        render: (r) =>
-          canAssign ? (
-            <button
-              type="button"
-              className="focus-ring text-link hover:underline"
-              onClick={() => onAssign(r)}
-            >
-              Xếp lớp
-            </button>
-          ) : (
-            MUTED
-          ),
-      },
-    ],
-    quickGroups: [{ key: 'mode', label: 'Hình thức học', options: modeOptions }],
-    filterFields: [{ key: 'mode', label: 'Hình thức học', type: 'multi', options: modeOptions }],
-    groupFields: [],
     dateFields: [],
     views: ['list'],
   };

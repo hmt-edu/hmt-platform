@@ -43,10 +43,6 @@ const EnrollmentListPage = lazyScreen(
   () => import('../pages/ghi-danh/EnrollmentListPage'),
   'EnrollmentListPage',
 );
-const EnrollmentQueuePage = lazyScreen(
-  () => import('../pages/ghi-danh/EnrollmentQueuePage'),
-  'EnrollmentQueuePage',
-);
 const EnrollmentRecordPage = lazyScreen(
   () => import('../pages/ghi-danh/EnrollmentRecordPage'),
   'EnrollmentRecordPage',
@@ -786,11 +782,8 @@ export const routes: RouteObject[] = [
           },
           {
             path: 'cho-xep-lop',
-            element: (
-              <GatedCrmEntry slug="cho-xep-lop">
-                <EnrollmentQueuePage />
-              </GatedCrmEntry>
-            ),
+            // Hàng chờ xếp lớp đã bỏ (27/11): đường dẫn cũ mở danh sách Ghi danh đã lọc Chờ xếp lớp.
+            element: <Navigate to="/crm/ghi-danh?loc=cho-xep-lop" replace />,
           },
           {
             path: 'buoi-hoc',
