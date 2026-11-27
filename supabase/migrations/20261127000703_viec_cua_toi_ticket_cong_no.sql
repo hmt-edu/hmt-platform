@@ -1,4 +1,4 @@
--- Migration 699 (E-27-04, anh Trường OK 27/11/2026): «VIỆC CỦA TÔI» thêm hai tín hiệu: ticket quá hạn và công nợ quá hạn,
+-- Migration 703 (E-27-04, anh Trường OK 27/11/2026): «VIỆC CỦA TÔI» thêm hai tín hiệu: ticket quá hạn và công nợ quá hạn,
 -- để Trang chủ rút gọn dùng. Hai hàm con mới; app.list_my_work và app.snooze_work chỉ thêm hai nguồn.
 -- «Để sau»: hai tín hiệu mới hoãn được như các việc thường (chỉ cấm việc chờ duyệt và buổi chưa điểm danh).
 -- Chỉ mục: không thêm; đi theo ticket_assignee_status_idx, ticket_branch_status_due_idx, sales_order_creator_idx,
