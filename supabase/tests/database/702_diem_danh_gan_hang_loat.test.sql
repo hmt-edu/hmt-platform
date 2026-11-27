@@ -161,10 +161,12 @@ grant execute on all functions in schema pg_temp to public;
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select app.close_session(pg_temp.s('p', 1));
 select app.close_session(pg_temp.s('p', 2));
--- Mỗi em của buổi 1 và 2, cùng trạng thái.
-create function pg_temp.hai_buoi(p_status text) returns jsonb language sql stable security definer as $$
-  select jsonb_agg(jsonb_build_object('session_id', session_id, 'student_id', student_id, 'status_code', p_status))
-    from app.session_attendance where session_id in (pg_temp.s('p', 1), pg_temp.s('p', 2)) and is_active $$;
+-- Mỗi em của buổi 1 và 2, cùng trạng thái. Chụp danh sách khi còn là người cơ sở CS1: hàm tạo sau «set role» chạy theo RLS của người gọi.
+create temp table ds as select session_id, student_id from app.session_attendance
+ where session_id in (pg_temp.s('p', 1), pg_temp.s('p', 2)) and is_active;
+grant select on ds to authenticated;
+create function pg_temp.hai_buoi(p_status text) returns jsonb language sql stable as $$
+  select jsonb_agg(jsonb_build_object('session_id', session_id, 'student_id', student_id, 'status_code', p_status)) from ds $$;
 create function pg_temp.vh(p_n integer) returns text language sql stable security definer as $$
   select count(*) filter (where ops_status_code = 'CO_MAT') || '/' || count(*)
     from app.session_attendance where session_id = pg_temp.s('p', p_n) and is_active $$;
@@ -175,10 +177,9 @@ grant select on n to authenticated;
 -- Chặn trước khi ghi.
 select is(pg_temp.err($$select app.set_attendance_ops_bulk('[]')$$), 'HMT_CHUA_CHON_EM', 'Chặn: chưa chọn em');
 select is(pg_temp.err($$select app.set_attendance_ops_bulk(pg_temp.hai_buoi(''))$$), 'HMT_THIEU_TRANG_THAI', 'Chặn: thiếu trạng thái');
-select pg_temp.sudo($$update app.setting_def set value = '1' where key = 'list_page_size_default'$$);
-select pg_temp.sudo($$update app.setting_def set value = '1' where key = 'list_page_size_max'$$);
-select is(pg_temp.err($$select app.set_attendance_ops_bulk(pg_temp.hai_buoi('CO_MAT'))$$), 'HMT_QUA_SO_DONG', 'Chặn: quá số dòng một lượt (tham số)');
-select pg_temp.sudo($$update app.setting_def set value = '100' where key = 'list_page_size_max'$$);
+select is(pg_temp.err($$select app.set_attendance_ops_bulk(
+    (select jsonb_agg(pg_temp.hai_buoi('CO_MAT') -> 0) from generate_series(1, app.get_setting_int('list_page_size_max')::int + 1)))$$),
+  'HMT_QUA_SO_DONG', 'Chặn: quá số dòng một lượt (tham số)');
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(pg_temp.err($$select app.set_attendance_ops_bulk(pg_temp.hai_buoi('CO_MAT'))$$), 'HMT_KHONG_CO_QUYEN', 'R-DD-02 chặn: giáo viên không ghi cột Vận hành');
 select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
