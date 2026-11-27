@@ -154,7 +154,7 @@ function UserView({ record }: { record: UserRecord }) {
         onEdit={() => undefined}
         onSave={() => undefined}
         onCancel={() => undefined}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         menu={menu.length > 0 ? { label: 'Hành động', items: menu } : undefined}
         asideLabel="Lịch sử đăng nhập"
         aside={<LoginHistory record={record} />}

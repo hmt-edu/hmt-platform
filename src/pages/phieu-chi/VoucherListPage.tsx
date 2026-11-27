@@ -96,7 +96,7 @@ export function VoucherListPage() {
         if (spec) leaves.toggle(key, spec.filters, open);
       }}
       actions={[]}
-      onRefresh={() => void refreshData()}
+      onRefresh={() => refreshData()}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
         to: page * (pageSize ?? 0) + rows.length,

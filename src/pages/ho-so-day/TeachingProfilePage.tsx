@@ -205,7 +205,7 @@ export function TeachingProfilePage() {
             ? [{ label: 'Tạo hồ sơ', icon: 'plus' as const, onClick: () => setEditing('new') }]
             : []
         }
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         pager={{
           from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
           to: page * (pageSize ?? 0) + rows.length,

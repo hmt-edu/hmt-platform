@@ -268,7 +268,7 @@ function TestView({ record }: { record: TestRecord }) {
           setMode('view');
         }}
         menu={menuItems.length > 0 ? { label: 'Hành động', items: menuItems } : undefined}
-        onRefresh={() => void refreshRecord()}
+        onRefresh={() => refreshRecord()}
         stage={{
           steps,
           current: cancelled ? '' : status,

@@ -44,7 +44,7 @@ function LogList<T>({
   pageSize: number | null;
   rowKey: (r: T) => string;
   rowLabel: (r: T) => string;
-  onRefresh: () => void;
+  onRefresh: () => unknown;
 }) {
   const rows = query.data?.rows ?? [];
   const total = query.data?.total ?? 0;
@@ -160,7 +160,7 @@ export function LoginLogPage() {
                 pageSize={pageSize}
                 rowKey={(r) => String(r.id)}
                 rowLabel={(r) => r.login_name}
-                onRefresh={() => void logins.refetch()}
+                onRefresh={() => logins.refetch()}
               />
             ),
           },
@@ -178,7 +178,7 @@ export function LoginLogPage() {
                 pageSize={pageSize}
                 rowKey={(r) => String(r.id)}
                 rowLabel={(r) => r.module_code}
-                onRefresh={() => void exports.refetch()}
+                onRefresh={() => exports.refetch()}
               />
             ),
           },

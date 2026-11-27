@@ -246,7 +246,7 @@ function ParentView({ record }: { record: ParentRecord }) {
         onEdit={() => void startEdit()}
         onSave={() => void save()}
         onCancel={cancelEdit}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         menu={{
           label: 'Hành động',
           items: [

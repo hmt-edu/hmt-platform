@@ -44,7 +44,7 @@ export function BalanceListPage() {
       error={errorText}
       onRetry={() => void list.refetch()}
       actions={[]}
-      onRefresh={() => void refreshData()}
+      onRefresh={() => refreshData()}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
         to: page * (pageSize ?? 0) + rows.length,

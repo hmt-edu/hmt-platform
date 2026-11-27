@@ -135,7 +135,7 @@ export function MoneyInListPage() {
           if (spec) leaves.toggle(key, spec.filters, open);
         }}
         actions={[]}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         pager={{
           from: total === 0 ? 0 : page * size + 1,
           to: page * size + rows.length,
@@ -290,7 +290,7 @@ export function ReceivableListPage() {
           if (spec) leaves.toggle(key, spec.filters, open);
         }}
         actions={[]}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         pager={{
           from: total === 0 ? 0 : page * size + 1,
           to: page * size + rows.length,

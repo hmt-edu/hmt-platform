@@ -146,7 +146,7 @@ function SessionList({ classId, startPending }: { classId: string | null; startP
         loading={active.isPending || active.isPlaceholderData}
         error={active.isError ? errorOf(active.error).message : null}
         onRetry={() => void active.refetch()}
-        onRefresh={() => void refreshData()}
+        onRefresh={() => refreshData()}
         actions={
           classId
             ? [

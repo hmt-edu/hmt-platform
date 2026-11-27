@@ -380,7 +380,7 @@ function OpportunityView({ record }: { record: OppRecord }) {
               }
             : undefined
         }
-        onRefresh={() => void refreshRecord()}
+        onRefresh={() => refreshRecord()}
         stage={
           stageSteps.length > 0
             ? {

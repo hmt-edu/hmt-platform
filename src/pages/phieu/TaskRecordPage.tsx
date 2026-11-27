@@ -131,7 +131,7 @@ export function TaskRecordPage() {
         onEdit={() => undefined}
         onSave={() => undefined}
         onCancel={() => undefined}
-        onRefresh={() => void refresh()}
+        onRefresh={() => refresh()}
         headerActions={
           <>
             {task.status_code === 'NHAP' && canEdit && (
