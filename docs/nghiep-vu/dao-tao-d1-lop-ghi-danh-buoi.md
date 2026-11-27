@@ -91,6 +91,8 @@ Chưa có: bài tập về nhà, màn cấu hình đánh giá (CH-07, sau 17/11)
 
 `app.import_training_records(loại, hàng, nạp thật, tên file)` (Admin, cùng hợp đồng với `app.import_records`): loại LOP, GHI_DANH, BUOI_HOC, DIEM_DANH. Xem trước hoàn tác; nạp thật ghi nhật ký. Báo cáo có `summary.errors_by_type` (mã lỗi → số dòng) và `summary.classes_without_teacher`. Lớp nạp chỉ sinh buổi từ `opening_balance_date` (Q-199). Mỗi ghi danh một dòng Số dư đầu kỳ mang ngày chốt (`hour_ledger.entry_date`, Q-177). Buổi, điểm danh cũ vào `legacy_session_record`, `legacy_attendance_record` (chỉ đọc); `app.legacy_hours_reconciliation(mã lớp cũ, chỉ dòng lệch)` so giờ đã học ghi trong file với điểm danh cũ. Luật R-V2-30, R-V2-32, R-V2-33, Q-186..188, Q-199, Q-200.
 
+Màn «Điểm danh» (migration 701, C-27-07): `attendance_board({from, to, branch_id, class_id, quick})` (Buổi học · Xem toàn hệ thống hoặc cơ sở mình; mỗi học sinh một dòng, kèm số đếm theo cột Vận hành và danh sách lớp); `attendance_call_list({from, to, branch_id, start_time, no_reason})` (Điểm danh · Sửa; vắng, đi muộn hoặc chưa ai điểm danh khi buổi đã bắt đầu, lấy cột Giáo viên trước; số điện thoại phụ huynh chỉ khi có Phụ huynh · Xem). Khoảng ngày tối đa: tham số `attendance_range_max_days`. Không theo công tắc `DIEM_DANH_TRONG_NGAY`.
+
 ## Cụm Ghi danh: hàm đọc và chọn lớp (migration 113, 114; GD-01, GD-02, GD-03, GD-04, GD-06, BH-08)
 
 Luật: R-GD-05 (hàng chờ CHỈ ghi danh Chờ xếp lớp), R-GD-04 (sổ giờ chỉ thêm), R-GD-06, R-GD-08, R-GD-14, R-GD-15 (xếp lớp, ngày vào lớp, lớp luân phiên không báo trùng), R-GD-18 (chuyển phí kèm mã ticket), R-GV-13 (giáo viên không đọc ghi danh, sổ giờ). Giao diện không tính giờ; số do hàm trả.
