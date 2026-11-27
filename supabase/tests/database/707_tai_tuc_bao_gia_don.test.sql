@@ -50,8 +50,8 @@ select pg_temp.sudo($$insert into app.enrollment_class (enrollment_id, class_id,
 select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time)
   select c.id, c.branch_id, current_date + n, '18:00', '19:30' from app.class c, generate_series(1, 3) n where c.code = 'LOP707'$$);
 -- Phiếu: A ở L6, B ở L1, C ở L6 nhưng không còn học ở lớp.
-select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id, parent_id, class_id, stage_code, substage_code, origin_code)
-  select v.code, s.branch_id, s.id, s.parent_id, c.id, v.st, null, 'TAY'
+select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id, parent_id, class_id, stage_code, substage_code, origin_code, lost_reason_code)
+  select v.code, s.branch_id, s.id, s.parent_id, c.id, v.st, null, 'TAY', case when v.st = 'L5' then 'KHAC' end
     from (values ('TT917071', 'HS707A', 'L5'), ('TT917072', 'HS707B', 'L1'), ('TT917073', 'HS707C', 'L6')) v (code, sc, st)
     join app.student s on s.code = v.sc, app.class c where c.code = 'LOP707'$$);
 

@@ -67,7 +67,7 @@ begin
 end;
 $$;
 
--- Lấy từ 20261027000055_p5a_bao_gia_xem_thu_goi_y.sql; chỉ bỏ kiểm học sinh khi nguồn là phiếu tái tục.
+-- Lấy từ 20261027000055_p5a_bao_gia_xem_thu_goi_y.sql, câu cảnh báo theo mig 697; chỉ bỏ kiểm học sinh khi nguồn là phiếu tái tục.
 create or replace function app.preview_quotation_lines(p_opportunity_id uuid, p_lines jsonb)
 returns jsonb
 language plpgsql
@@ -104,7 +104,7 @@ begin
     -- Luật R-TIEN-29 (D3): vượt trần là cảnh báo, không chặn.
     if (r ->> 'over_cap')::boolean then
       v_warnings := v_warnings || jsonb_build_object('code', 'HMT_VUOT_TRAN', 'line_no', v_n,
-        'message', format('Dòng %s: chiết khấu (gồm giờ tặng) vượt trần %s%%. Đơn cần người duyệt tích đồng ý.', v_n,
+        'message', format('Dòng %s: ưu đãi (gồm giờ tặng) vượt trần %s%%. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.', v_n,
                           app.get_setting('discount_total_cap_percent')));
     end if;
   end loop;
@@ -112,7 +112,7 @@ begin
 end;
 $$;
 
--- Lấy từ 20261126000676_dong_tang_tinh_tien.sql; thêm nguồn phiếu tái tục.
+-- Lấy từ 20261126000676_dong_tang_tinh_tien.sql, câu cảnh báo theo mig 697; thêm nguồn phiếu tái tục.
 create or replace function app.save_quotation(p_id uuid, p_opportunity_id uuid, p_lines jsonb)
 returns jsonb
 language plpgsql
@@ -213,7 +213,7 @@ begin
     -- Luật R-TIEN-29 (D3): vượt trần vẫn lưu, trả cảnh báo.
     if (r ->> 'over_cap')::boolean then
       v_warnings := v_warnings || jsonb_build_object('code', 'HMT_VUOT_TRAN', 'line_no', v_n,
-        'message', format('Dòng %s: chiết khấu (gồm giờ tặng) vượt trần %s%%. Đơn cần người duyệt tích đồng ý.', v_n,
+        'message', format('Dòng %s: ưu đãi (gồm giờ tặng) vượt trần %s%%. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.', v_n,
                           app.get_setting('discount_total_cap_percent')));
     end if;
   end loop;
