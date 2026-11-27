@@ -2,6 +2,7 @@
 // Lọc, sắp xếp, phân trang, Group By, số đếm Kanban đều tính ở máy chủ; trình duyệt chỉ giữ trang đang xem.
 // Không có nút Tạo (cơ hội chỉ tạo từ trang Lead, TS-06) và Nhập (P3f). Kéo thẻ Kanban chỉ đi tới (R-CRM-02), L6 do hệ thống
 // chuyển (R-CRM-13); thả vào cột hợp lệ mở hộp TS-09.
+import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
@@ -82,6 +83,7 @@ function sortParam(sort: SortState): string | undefined {
 export function OpportunityListPage() {
   const supabase = useDb();
   const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const access = useAccess();
   const toast = useToast();
   const refreshData = useRefreshOpps();
@@ -322,7 +324,7 @@ export function OpportunityListPage() {
                 entityLabel: 'Lead',
                 code: parentCode,
                 childLabel: 'Cơ hội',
-                onOpenParent: () => void navigate(`/crm/lead/${parentLead}`),
+                onOpenParent: () => void openFrom(`/crm/lead/${parentLead}`),
                 onClear: () => setParams({}),
               }
             : undefined

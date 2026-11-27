@@ -33,6 +33,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run test
       - run: npm run check:hardcode
+      # Chỉ báo số chỗ mở trang không mang đường dẫn trang gốc, không trượt.
+      - run: npm run check:duong-dan
       - run: npm run check:huong-dan # chỉ cảnh báo, luôn thoát 0 (A-23-42)
 
       - if: inputs.format-check

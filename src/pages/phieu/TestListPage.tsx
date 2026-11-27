@@ -1,6 +1,7 @@
 // TS-16 Kiểm tra đầu vào (danh sách), TS16b (Kanban), TS16c (Lịch): khuôn K1, K2, K5 nối các hàm phiếu trong cơ sở dữ liệu.
 // Lọc, sắp xếp, phân trang, Group By, số đếm Kanban đều tính ở máy chủ. Phiếu chỉ tạo từ trang Cơ hội (TS-15, R-CRM-05) nên không
 // có nút Tạo; đổi trạng thái bằng nút trên thẻ (Bắt đầu test, Nộp bài) hoặc ở trang phiếu, không kéo thả.
+import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { CalendarView, type CalendarKind, type CalendarMode } from '../../list/Calendar';
@@ -107,6 +108,7 @@ function sortParam(sort: SortState): string {
 export function TestListPage() {
   const supabase = useDb();
   const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const access = useAccess();
   const toast = useToast();
   const { claims } = useAuth();
@@ -367,7 +369,7 @@ export function TestListPage() {
               entityLabel: 'Cơ hội',
               code: parentCode,
               childLabel: 'Phiếu Test',
-              onOpenParent: () => void navigate(`/crm/co-hoi/${parentOpp}`),
+              onOpenParent: () => void openFrom(`/crm/co-hoi/${parentOpp}`),
               onClear: () => setParams({}),
             }
           : undefined

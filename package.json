@@ -19,6 +19,7 @@
     "e2e": "playwright test",
     "check:huong-dan": "node scripts/kiem-huong-dan.ts",
     "check:hardcode": "node scripts/check-hardcoded.mjs && node scripts/check-ma-ky-thuat.mjs",
+    "check:duong-dan": "node scripts/check-duong-dan.mjs",
     "check:all": "bash scripts/check-all.sh",
     "db:start": "supabase start",
     "db:stop": "supabase stop",
