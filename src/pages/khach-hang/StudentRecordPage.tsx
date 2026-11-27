@@ -1,5 +1,5 @@
 // KH-05 Học sinh (hồ sơ 360°, khuôn K06): thông tin, ghi danh và lớp, điểm danh, điểm kiểm tra, phiếu kiểm tra đầu vào; nút liên kết có số đếm;
-// ghi chú và hoạt động (Chatter). Mọi tab bấm được và luôn hiện đủ cột (khung KH05_*). Không có Tạo tay (R-CRM-27). Sửa (KH-06) gọi update_student; cơ sở tiếp nhận chỉ xem (R-CRM-28). Gộp, Tạo ticket, tài khoản học tập: chưa làm, hiện mờ kèm chú thích.
+// ghi chú và hoạt động (Chatter). Mọi tab bấm được và luôn hiện đủ cột (khung KH05_*). Không có Tạo tay (R-CRM-27). Sửa (KH-06) gọi update_student; cơ sở tiếp nhận chỉ xem (R-CRM-28). Tạo ticket chưa làm: hiện mờ kèm chú thích. Tài khoản app học sinh: xem StudentAccount.
 // Giáo viên được phân công xem hồ sơ trong lớp mình nhưng không thấy SĐT phụ huynh (R-GV-13): máy chủ trả null.
 import { useState } from 'react';
 import { MergeDialog } from '../../features/merge/MergeDialog';
@@ -30,6 +30,7 @@ import {
 } from './StudentTabs';
 import { useComplaintCount, useOpenTicketCount } from './useCustTickets';
 import { parentPath, studentPath } from './custConfig';
+import { useStudentAccount } from './StudentAccount';
 import { useRefreshCustomers, useStudentRecord } from './useCustData';
 
 const FORMAT = {
@@ -128,6 +129,7 @@ function StudentView({ record }: { record: StudentRecord }) {
   const openTickets = useOpenTicketCount({ key: 'student_id', id: record.id }, canTickets);
   const complaints = useComplaintCount(record.id, canTickets);
   const [ticketType, setTicketType] = useState<string | undefined>();
+  const account = useStudentAccount(record);
   // Gộp trùng dùng quyền Duyệt (R-CRM-25); bản đã gộp chỉ đọc.
   const canMerge = access.can('STUDENT', 'DUYET') && !merged;
   const [mergeOpen, setMergeOpen] = useState(false);
@@ -231,12 +233,7 @@ function StudentView({ record }: { record: StudentRecord }) {
               onSelect: () => undefined,
               unavailable: 'Ticket chăm sóc làm sau',
             },
-            {
-              kind: 'action',
-              label: 'Cấp tài khoản',
-              onSelect: () => undefined,
-              unavailable: 'Tài khoản học tập chưa bật',
-            },
+            ...account.menuItems,
           ],
         }}
         smart={[
@@ -478,6 +475,7 @@ function StudentView({ record }: { record: StudentRecord }) {
             />
           </DetailSection>
         )}
+        {tab === 'overview' && account.section}
         {tab === 'study' && <StudentStudyTab record={record} />}
         {tab === 'attendance' && <StudentAttendanceTab record={record} />}
         {tab === 'exam' && <StudentExamTab record={record} />}
@@ -486,10 +484,11 @@ function StudentView({ record }: { record: StudentRecord }) {
           <CustTickets
             owner={{ key: 'student_id', id: record.id }}
             ticketType={ticketType}
-            onClearType={() => setTicketType(undefined)}
+            onTypeChange={setTicketType}
           />
         )}
       </RecordDetail>
+      {account.dialogs}
       {canMerge && (
         <MergeDialog
           open={mergeOpen}
