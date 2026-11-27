@@ -441,7 +441,7 @@ function ParentView({ record }: { record: ParentRecord }) {
         {tab === 'orders' && <ParentOrdersTab record={record} />}
         {tab === 'receipts' && <ParentReceiptsTab record={record} />}
         {tab === 'tickets' && <CustTickets owner={{ key: 'parent_id', id: record.id }} />}
-        {tab === 'finance' && <ParentFinanceTab />}
+        {tab === 'finance' && <ParentFinanceTab record={record} />}
       </RecordDetail>
       {canMerge && (
         <MergeDialog

@@ -1,60 +1,99 @@
 // Tab Học tập, Điểm danh, Điểm kiểm tra, Chăm sóc của hồ sơ học sinh (khung KH05_hoc_tap, _diem_danh, _diem_danh_chi_tiet,
 // _diem_kiem_tra, _cham_soc, canvas 9933). Cột chưa có trong app.get_student_record để gạch, không điền chữ thay thế.
+import { useState } from 'react';
 import { Link } from 'react-router';
-import { formatDate, formatNumber } from '../../lib/format';
+import { formatDate, formatDateTime, formatNumber } from '../../lib/format';
+import { useAccess } from '../../nav/AccessContext';
 import { Tag, type Column } from '../../ui/Data';
+import { OptionalSelect } from '../../ui/OptionalSelect';
+import { statusTone } from '../ghi-danh/enrollConfig';
+import type { EnrollmentRow } from '../ghi-danh/enrollTypes';
+import { useLeadCatalogs } from '../lead/useCatalogs';
+import { TEST_TONE } from '../phieu/testConfig';
+import { STATUS_LABEL, type TestRow } from '../phieu/testTypes';
 import { CustSection, CustTable } from './CustTable';
 import { blankColumns, NO_VALUE } from './custColumns';
 import { ATTENDANCE_LABEL, type StudentRecord } from './custTypes';
+import { PagedTable } from './PagedTable';
+
+const STUDY_COLUMNS: Column<EnrollmentRow>[] = [
+  {
+    key: 'class',
+    header: 'Lớp',
+    primary: true,
+    cell: (e) => (
+      <span className="flex flex-col">
+        {e.class_id && e.class_code ? (
+          <Link className="font-medium text-link hover:underline" to={`/crm/lop/${e.class_id}`}>
+            {e.class_code}
+          </Link>
+        ) : (
+          'Chưa xếp lớp'
+        )}
+        <span className="text-caption text-fg-muted">
+          <Link className="text-link hover:underline" to={`/crm/ghi-danh/${e.id}`}>
+            {e.code}
+          </Link>
+          {e.package_name ? ` · ${e.package_name}` : ''}
+        </span>
+      </span>
+    ),
+  },
+  ...blankColumns<EnrollmentRow>([
+    'Giáo viên',
+    'Lịch học',
+    'Ngày bắt đầu',
+    'Ngày kết thúc',
+    'Ngày hết phí',
+  ]),
+  {
+    key: 'status',
+    header: 'Tình trạng',
+    cell: (e) => (
+      <Tag tone={statusTone(e.status_code)} dot>
+        {e.status_name}
+      </Tag>
+    ),
+  },
+  {
+    key: 'granted',
+    header: 'Giờ đăng ký',
+    numeric: true,
+    cell: (e) => formatNumber(e.granted_hours),
+  },
+  ...blankColumns<EnrollmentRow>(['Đã phân bổ cho lớp'], ['Đã phân bổ cho lớp']),
+  { key: 'used', header: 'Đã học', numeric: true, cell: (e) => formatNumber(e.used_hours) },
+  { key: 'left', header: 'Còn lại', numeric: true, cell: (e) => formatNumber(e.remaining_hours) },
+];
 
 export function StudentStudyTab({ record }: { record: StudentRecord }) {
-  type Row = StudentRecord['enrollments'][number];
-  const columns: Column<Row>[] = [
-    {
-      key: 'class',
-      header: 'Lớp',
-      primary: true,
-      cell: (e) => (
-        <span className="flex flex-col">
-          {e.class_id && e.class_code ? (
-            <Link className="font-medium text-link hover:underline" to={`/crm/lop/${e.class_id}`}>
-              {e.class_code}
-            </Link>
-          ) : (
-            'Chưa xếp lớp'
-          )}
-          <span className="text-caption text-fg-muted">
-            {e.code} · {e.subject_name ?? e.subject_code}
-          </span>
-        </span>
-      ),
-    },
-    ...blankColumns<Row>([
-      'Giáo viên',
-      'Lịch học',
-      'Ngày bắt đầu',
-      'Ngày kết thúc',
-      'Ngày hết phí',
-    ]),
-    {
-      key: 'status',
-      header: 'Tình trạng',
-      cell: (e) => <Tag>{e.status_name ?? e.status_code}</Tag>,
-    },
-    ...blankColumns<Row>(
-      ['Giờ đăng ký', 'Đã phân bổ cho lớp', 'Đã học'],
-      ['Giờ đăng ký', 'Đã phân bổ cho lớp', 'Đã học'],
-    ),
-    { key: 'left', header: 'Còn lại', numeric: true, cell: (e) => formatNumber(e.hours_left) },
-  ];
+  const allowed = useAccess().can('ENROLLMENT', 'XEM');
+  const catalogs = useLeadCatalogs();
+  const [status, setStatus] = useState('');
   return (
-    <CustTable
-      caption="Ghi danh và lớp"
-      columns={columns}
-      rows={record.enrollments}
-      rowKey={(e) => e.id}
-      empty="Chưa có ghi danh."
-    />
+    <div className="flex flex-col gap-2">
+      <div className="max-w-xs">
+        <OptionalSelect
+          label="Tình trạng ghi danh"
+          value={status}
+          onChange={setStatus}
+          options={catalogs.filterOptions('ENROLLMENT_STATUS')}
+          placeholder="Mọi tình trạng"
+        />
+      </div>
+      <PagedTable
+        caption="Ghi danh và lớp"
+        fn="enrollment_list"
+        filters={{ student_id: record.id, ...(status ? { status: [status] } : {}) }}
+        sort="code_desc"
+        columns={STUDY_COLUMNS}
+        rowKey={(e) => e.id}
+        allowed={allowed}
+        empty={status ? 'Không có ghi danh ở tình trạng này.' : 'Chưa có ghi danh.'}
+        denied="Bạn không có quyền xem ghi danh."
+        total={record.counts.enrollments}
+      />
+    </div>
   );
 }
 
@@ -182,13 +221,82 @@ export function StudentExamTab({ record }: { record: StudentRecord }) {
     ...blankColumns<Row>(['TB lớp', 'Nhận xét giáo viên', 'Người nhập'], ['TB lớp']),
   ];
   return (
-    <CustTable
-      caption="Chi tiết các bài kiểm tra"
-      columns={columns}
-      rows={rows}
-      rowKey={(r) => r.key}
-      empty="Chưa có điểm kiểm tra."
-    />
+    <div className="flex flex-col gap-3">
+      <CustSection title="Chi tiết các bài kiểm tra">
+        <CustTable
+          caption="Chi tiết các bài kiểm tra"
+          columns={columns}
+          rows={rows}
+          rowKey={(r) => r.key}
+          empty="Chưa có điểm kiểm tra."
+        />
+      </CustSection>
+      <StudentTestsSection record={record} />
+    </div>
+  );
+}
+
+const TEST_COLUMNS: Column<TestRow>[] = [
+  {
+    key: 'code',
+    header: 'Mã',
+    primary: true,
+    cell: (t) => (
+      <Link to={`/crm/phieu-kiem-tra/${t.id}`} className="font-medium text-link hover:underline">
+        {t.code}
+      </Link>
+    ),
+  },
+  { key: 'subject', header: 'Môn', cell: (t) => <SubjectName code={t.subject_code} /> },
+  { key: 'time', header: 'Ngày giờ test', cell: (t) => formatDateTime(t.scheduled_at) },
+  { key: 'branch', header: 'Cơ sở test', cell: (t) => t.test_branch_code },
+  { key: 'grader', header: 'GV chấm', cell: (t) => t.grader_name ?? NO_VALUE },
+  {
+    key: 'score',
+    header: 'Điểm',
+    numeric: true,
+    cell: (t) => (t.score === null ? NO_VALUE : formatNumber(t.score)),
+  },
+  {
+    key: 'status',
+    header: 'Trạng thái',
+    cell: (t) => <Tag tone={TEST_TONE[t.status_code]}>{STATUS_LABEL[t.status_code]}</Tag>,
+  },
+];
+
+function SubjectName({ code }: { code: string }) {
+  return useLeadCatalogs().name('SUBJECT', code) ?? code;
+}
+
+function StudentTestsSection({ record }: { record: StudentRecord }) {
+  const allowed = useAccess().can('STUDENT_TEST', 'XEM');
+  const [status, setStatus] = useState('');
+  return (
+    <CustSection title="Phiếu Test">
+      <div className="flex flex-col gap-2">
+        <div className="max-w-xs">
+          <OptionalSelect
+            label="Trạng thái phiếu Test"
+            value={status}
+            onChange={setStatus}
+            options={Object.entries(STATUS_LABEL).map(([value, label]) => ({ value, label }))}
+            placeholder="Mọi trạng thái"
+          />
+        </div>
+        <PagedTable
+          caption="Phiếu Test"
+          fn="list_student_tests"
+          filters={{ student_id: record.id, ...(status ? { status: [status] } : {}) }}
+          sort="time_desc"
+          columns={TEST_COLUMNS}
+          rowKey={(t) => t.id}
+          allowed={allowed}
+          empty={status ? 'Không có phiếu Test ở trạng thái này.' : 'Chưa có phiếu Test.'}
+          denied="Bạn không có quyền xem phiếu Test."
+          total={record.counts.tests}
+        />
+      </div>
+    </CustSection>
   );
 }
 

@@ -11,7 +11,7 @@ portals: [crm]
 
 Vai: **Tư vấn tuyển sinh**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
-Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu Test), **Bán hàng và thu chi** (Báo giá, Đơn hàng, Phiếu thu). Chỉ hiện mục bạn có quyền; bạn chỉ thấy khách của cơ sở mình.
+Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu Test), **Bán hàng** (Báo giá, Đơn hàng), **Kế toán** (Phiếu thu). Chỉ hiện mục bạn có quyền; bạn chỉ thấy khách của cơ sở mình.
 
 
 ## Việc hằng ngày của bạn (gợi ý thứ tự)

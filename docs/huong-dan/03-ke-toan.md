@@ -11,7 +11,7 @@ portals: [crm]
 
 Vai: **Kế toán**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
-Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng và thu chi** (Đơn hàng, Phiếu thu, Khoản tiền vào, Công nợ, Phiếu chi, Số dư khách hàng, Chờ kế toán duyệt). Chỉ hiện mục bạn có quyền. 
+Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng** (Đơn hàng), **Kế toán** (Phiếu thu có tab «Chờ kế toán duyệt», Khoản tiền vào, Công nợ, Phiếu chi, Số dư khách hàng). Chỉ hiện mục bạn có quyền. 
 
 **Nguyên tắc tiền (nhớ kỹ):**
 

@@ -22,7 +22,7 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 ### Báo giá
 - **Nghĩa:** bảng giá gửi phụ huynh trước khi chốt đơn; không bắt buộc. Có hạn hiệu lực tính từ ngày bấm Gửi; quá hạn chỉ hiện nhãn «Đã quá hạn N ngày», không tự đổi trạng thái.
 - **Ví dụ:** gửi báo giá gói Toán 9 cho phụ huynh cân nhắc, sau đó chuyển thành đơn.
-- **Nơi gặp:** «Bán hàng và thu chi».
+- **Nơi gặp:** «Bán hàng».
 
 ### Bảo lưu
 - **Nghĩa:** tạm dừng học một thời gian mà **giữ lại số giờ còn**, sau đó học lại. Phải qua ticket đề nghị và được duyệt.
@@ -72,7 +72,7 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 ### Công nợ
 - **Nghĩa:** số tiền khách còn **thiếu** so với tổng đơn (đơn đã duyệt nhưng phiếu thu chưa đủ). Màn phụ huynh hiện «Còn thiếu …».
 - **Ví dụ:** đơn 7.200.000 đ, đã thu 4.800.000 đ, còn thiếu 2.400.000 đ.
-- **Nơi gặp:** «Bán hàng và thu chi»; cổng Phụ huynh, mục «Học phí».
+- **Nơi gặp:** «Kế toán»; cổng Phụ huynh, mục «Học phí».
 
 ### Cơ hội
 - **Nghĩa:** một **lead** đã đủ điều kiện, đang được tư vấn để chốt học. Cơ hội đi qua các giai đoạn (Stage) theo thứ tự, **chỉ đi tới, không lùi**.
@@ -102,7 +102,7 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 ### Đơn hàng
 - **Nghĩa:** cam kết mua của phụ huynh (gói, số giờ, giá). Sau khi duyệt thì **khoá**, không sửa trực tiếp. Một đơn có thể có nhiều phiếu thu (đặt cọc, trả nhiều đợt).
 - **Ví dụ:** đơn gói Hình 9, 36 giờ.
-- **Nơi gặp:** «Bán hàng và thu chi»; phụ huynh xem ở cổng Phụ huynh.
+- **Nơi gặp:** «Bán hàng»; phụ huynh xem ở cổng Phụ huynh.
 
 ### Favorites / Save to Favorites
 - **Nghĩa:** lưu bộ lọc, nhóm đang dùng thành lối tắt để mở lại nhanh.
@@ -132,7 +132,7 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 ### Hoàn phí
 - **Nghĩa:** trả lại tiền cho phụ huynh khi dừng học (chỉ qua ticket đề nghị đã duyệt). Số tiền hoàn tính lại theo giá gốc cho số giờ đã học và trừ phí xử lý theo tham số của hệ thống.
 - **Ví dụ:** học sinh học 12/36 giờ rồi dừng, hệ thống tính số tiền hoàn.
-- **Nơi gặp:** ticket «Đề nghị» (nhóm «Học phí»), «Bán hàng và thu chi».
+- **Nơi gặp:** ticket «Đề nghị» (nhóm «Học phí»), «Kế toán».
 
 ### Khiếu nại
 - **Nghĩa:** loại ticket phụ huynh **phản ánh điều chưa hài lòng**. Đóng khiếu nại phải ghi mức hài lòng của phụ huynh từ 1 đến 5.
@@ -142,7 +142,7 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 ### Khoản tiền vào
 - **Nghĩa:** số tiền hệ thống ghi nhận **sau khi phiếu thu được duyệt**. Tiền vào là cơ sở để cấp giờ học.
 - **Ví dụ:** phiếu thu 4.800.000 đ được kế toán duyệt, khoản tiền vào cùng số đó được ghi.
-- **Nơi gặp:** «Bán hàng và thu chi».
+- **Nơi gặp:** «Kế toán».
 
 ### Lead
 - **Nghĩa:** người (phụ huynh hoặc học sinh) quan tâm, **mới có thông tin liên hệ**, chưa tư vấn sâu. Lead đủ điều kiện thì tạo thành cơ hội.
@@ -172,17 +172,17 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 ### Phiếu chi
 - **Nghĩa:** chứng từ tiền **chi ra** của cơ sở (cần duyệt).
 - **Ví dụ:** chi hoàn tiền cho phụ huynh sau khi dừng học.
-- **Nơi gặp:** «Bán hàng và thu chi».
+- **Nơi gặp:** «Kế toán».
 
 ### Phiếu tái tục
 - **Nghĩa:** việc nhắc và theo dõi phụ huynh **học tiếp** khi giờ còn lại sắp hết. Theo dõi theo giai đoạn: Chờ tái tục, Đã liên hệ, Đang tư vấn, Đang cân nhắc, Không tái tục (bắt buộc chọn lý do), Đồng ý tái tục, Dự thu, Hoàn thành tái tục. Mỗi học sinh ở mỗi lớp có tối đa một phiếu đang mở.
 - **Ví dụ:** học sinh còn 4 giờ, phiếu tái tục nhắc CSKH gọi phụ huynh.
-- **Nơi gặp:** «Bán hàng và thu chi», danh sách và Kanban phiếu tái tục.
+- **Nơi gặp:** «Chăm sóc khách hàng», danh sách và Kanban phiếu tái tục.
 
 ### Phiếu thu
 - **Nghĩa:** chứng từ **thu tiền** của phụ huynh cho một đơn. Duyệt hai bước: quản lý trực tiếp, rồi kế toán. Bị từ chối thì về Nháp để sửa và trình lại.
 - **Ví dụ:** phiếu thu đặt cọc 4.800.000 đ.
-- **Nơi gặp:** «Bán hàng và thu chi».
+- **Nơi gặp:** «Kế toán».
 
 ### Quỹ giờ
 - **Nghĩa:** tổng giờ học còn lại của một ghi danh (giờ mua + giờ tặng − giờ đã học). Mỗi buổi Done trừ giờ. Phụ huynh thấy ở «Học phí và giờ học» cùng ngày hết dự kiến.
@@ -192,7 +192,7 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 ### Số dư khách hàng
 - **Nghĩa:** phần tiền của phụ huynh được **giữ lại** (ví dụ khi dừng học chọn không hoàn) để dùng cho khoá sau.
 - **Ví dụ:** dừng học, giữ số dư để đăng ký môn khác.
-- **Nơi gặp:** hồ sơ phụ huynh, «Bán hàng và thu chi».
+- **Nơi gặp:** hồ sơ phụ huynh, «Kế toán».
 
 ### Source / Source type / Sub-source
 - **Nghĩa:** nơi lead đến từ đâu: **Source type** (loại nguồn: Marketing, Telemarketing, Event, Ban Giám Đốc) → **Source** (nguồn) → **Medium** (kênh). Chọn nguồn có kênh thì bắt buộc chọn kênh.
@@ -207,7 +207,7 @@ Các nhãn tiếng Anh **giữ nguyên trên màn**, không dịch: Filters, Gro
 ### Tái tục
 - **Nghĩa:** phụ huynh **đăng ký học tiếp** sau khi hết hoặc sắp hết giờ. Xem **Phiếu tái tục**.
 - **Ví dụ:** đóng thêm gói 36 giờ khi quỹ giờ còn 4 giờ.
-- **Nơi gặp:** «Bán hàng và thu chi».
+- **Nơi gặp:** «Chăm sóc khách hàng».
 
 ### Test đầu vào
 - **Nghĩa:** bài kiểm tra xếp trình độ trước khi vào học. Kết quả giúp phân loại và tư vấn lớp phù hợp.

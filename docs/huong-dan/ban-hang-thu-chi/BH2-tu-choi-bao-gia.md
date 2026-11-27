@@ -11,7 +11,7 @@ cap_nhat: 2026-11-24
 # Từ chối báo giá
 
 **Làm xong bạn có:** báo giá chuyển sang «Từ chối», có ghi lý do, để cả đội biết phụ huynh không nhận báo giá này.
-**Ai làm:** Tư vấn tuyển sinh, CSKH, Trưởng cơ sở có quyền sửa báo giá. **Màn:** Bán hàng và thu chi → Báo giá → mở một báo giá.
+**Ai làm:** Tư vấn tuyển sinh, CSKH, Trưởng cơ sở có quyền sửa báo giá. **Màn:** Bán hàng → Báo giá → mở một báo giá.
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Báo giá đang **«Đã gửi»**. Báo giá Nháp thì không có nút «Từ chối» (dùng «Huỷ báo giá» nếu không cần nữa).

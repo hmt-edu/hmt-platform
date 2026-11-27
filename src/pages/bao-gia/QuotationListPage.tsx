@@ -179,7 +179,7 @@ export function QuotationListPage() {
       rowLabel={(r) => `${r.code} ${r.parent_name}`}
       loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
-      forbidden={listForbiddenOf(activeQuery.error, 'báo giá', 'Bán hàng và thu chi')}
+      forbidden={listForbiddenOf(activeQuery.error, 'báo giá', 'Bán hàng')}
       onRetry={() => void activeQuery.refetch()}
       groupTree={grouped ? grouping?.tree : undefined}
       onGroupToggle={(key, open) => {

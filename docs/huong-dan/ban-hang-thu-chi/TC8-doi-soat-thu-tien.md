@@ -11,7 +11,7 @@ cap_nhat: 2026-11-24
 # Đối soát thu tiền với sao kê
 
 **Làm xong bạn có:** những phiếu thu bạn đã thấy trên sao kê ngân hàng (hoặc đã đếm tiền mặt) được đánh dấu **«Đã khớp»**, phần còn lại là «Chưa khớp» để theo dõi.
-**Ai làm:** Kế toán (và Admin). **Màn:** Bán hàng và thu chi → **Đối soát thu tiền**.
+**Ai làm:** Kế toán (và Admin). **Màn:** Kế toán → **Đối soát thu tiền**.
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn có sao kê ngân hàng của ngày cần đối soát (và sổ tiền mặt nếu có thu tiền mặt).
