@@ -64,45 +64,27 @@ select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 -- ---- Luật ----
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), '[]'::jsonb)$$), 'HMT_DON_KHONG_DONG', 'Đơn cần ít nhất một dòng');
-select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917002'), pg_temp.lines())$$), 'HMT_PHIEU_CHUA_DONG_Y', 'R-GD-13: phiếu chưa L6 không tạo được đơn');
+select is((app.create_order_from_upsale_ticket(pg_temp.tid('TT917002'), pg_temp.lines()) ->> 'code') ~ '^DH-', true, 'R-GD-13 (27/11): phiếu ở L1 cũng tạo được đơn');
+select is((pg_temp.tk('TT917002')).stage_code, 'L1', 'Tạo đơn không đổi giai đoạn của phiếu');
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917003'), pg_temp.lines())$$), 'HMT_HOC_SINH_KHONG_O_LOP', 'R-GD-13: học sinh không còn học ở lớp thì không tạo được đơn');
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines(), null, current_date + 30)$$), 'HMT_NGAY_VAO_LOP_SAI', 'Ngày vào lớp không phải buổi của lớp: báo ngay lúc tạo đơn');
 -- ---- Tạo đúng ----
 select is((app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines()) ->> 'code') ~ '^DH-', true, 'Tạo đơn từ phiếu L6: ra mã đơn DH');
-select is((pg_temp.tk('TT917001')).stage_code || (pg_temp.tk('TT917001')).substage_code, 'L7L7B', 'Phiếu sang L7B trong cùng giao dịch');
+select is((pg_temp.tk('TT917001')).stage_code, 'L6', 'R-GD-13 (27/11): tạo đơn xong phiếu giữ nguyên giai đoạn');
 select is((select count(*)::int from app.sales_order where renewal_ticket_id = pg_temp.tid('TT917001') and opportunity_id is null and status_code = 'NHAP'), 1, 'Đơn Nháp gốc là phiếu (không có cơ hội)');
 select is((select count(*)::int from app.sales_order_line l join app.sales_order o on o.id = l.order_id
             where o.renewal_ticket_id = pg_temp.tid('TT917001') and l.student_id = (select id from app.student where code = 'HS417A')
               and l.class_id = (select id from app.class where code = 'LOP417') and l.delivery_mode_code = 'OFF' and l.prospect_student_id is null), 1,
           'Dòng đơn: đúng học sinh, lớp của phiếu, hình thức học giữ như ghi danh cũ');
 select is((select total_amount > 0 from app.sales_order where renewal_ticket_id = pg_temp.tid('TT917001')), true, 'Tổng tiền tính bằng bảng giá');
-select is((select string_agg(event_type, ',' order by seq) from app.upsale_ticket_event where ticket_id = pg_temp.tid('TT917001')), 'DOI_GIAI_DOAN', 'Nhật ký phiếu ghi bước sang L7');
-select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines())$$), 'HMT_PHIEU_CHUA_DONG_Y', 'Phiếu đã sang L7 không tạo đơn thứ hai');
-select is(jsonb_array_length(app.list_upsale_orders(pg_temp.tid('TT917001'))), 1, 'Tab Báo giá và đơn: một đơn');
--- ---- Đối soát ----
-select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
-select is(pg_temp.err($$select app.reconcile_upsale_orders()$$), 'HMT_KHONG_CO_QUYEN', 'CSKH không chạy đối soát');
-select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(app.reconcile_upsale_orders() ->> 'completed', '0', 'Đối soát: đơn Nháp chưa thu đủ thì phiếu giữ L7B');
--- Đơn Huỷ: phiếu về L6.
+select is((app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines()) ->> 'code') ~ '^DH-', true, 'R-GD-13 (27/11): không giới hạn số đơn, tạo được đơn thứ hai');
+select is(jsonb_array_length(app.list_upsale_orders(pg_temp.tid('TT917001'))), 2, 'Tab Báo giá và đơn: hai đơn');
+select hasnt_function('app', 'reconcile_upsale_orders', 'R-GD-13 (27/11): bỏ hàm tự chuyển giai đoạn theo đơn');
 reset role;
 select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
-select pg_temp.sudo($$update app.sales_order set status_code = 'HUY' where renewal_ticket_id = (select id from app.upsale_ticket where code = 'TT917001')$$);
-set local role authenticated;
-select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(app.reconcile_upsale_orders() ->> 'reopened', '1', 'Đối soát: đơn Huỷ thì phiếu về L6');
-select is((pg_temp.tk('TT917001')).stage_code, 'L6', 'Phiếu về L6 để tạo đơn khác');
--- Tạo đơn mới rồi cho đóng đủ (tổng 0 coi như đã thu đủ): phiếu sang L8A.
-select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
-select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines());
-reset role;
-select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
-select pg_temp.sudo($$update app.sales_order set status_code = 'DA_DUYET', total_amount = 0 where renewal_ticket_id = (select id from app.upsale_ticket where code = 'TT917001') and status_code = 'NHAP'$$);
-set local role authenticated;
-select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(app.reconcile_upsale_orders() ->> 'completed', '1', 'Đối soát: đơn Đã duyệt đã thu đủ thì phiếu hoàn thành');
-select is((pg_temp.tk('TT917001')).stage_code || (pg_temp.tk('TT917001')).substage_code, 'L8L8A', 'Phiếu ở L8A Đã đóng đủ');
-select isnt((pg_temp.tk('TT917001')).closed_at, null, 'L8 ghi thời điểm kết thúc');
+select pg_temp.sudo($$update app.sales_order set status_code = 'DA_DUYET', total_amount = 0
+  where id = (select id from app.sales_order where renewal_ticket_id = (select id from app.upsale_ticket where code = 'TT917001') order by code limit 1)$$);
+select is((pg_temp.tk('TT917001')).stage_code, 'L6', 'Đơn duyệt và thu đủ không tự chuyển phiếu');
 
 -- ---- Ghi danh mới vào đúng lớp của phiếu (hàm sẵn có create_enrollments_for_order): không vào hàng chờ xếp lớp ----
 reset role;

@@ -53,3 +53,14 @@ Nhãn «Tái tục MM/YYYY» tính từ ngày hết giờ dự kiến, không c�
 ## TT-D2b (migration 418): hộp «Tạo đơn» ở TT-02
 
 `app.list_upsale_order_options(phiếu)` (chỉ đọc; cần cả Đơn hàng · Tạo và Phiếu tái tục · Sửa) trả gói bán được cho lớp (đúng môn, tính theo giờ, có giá hôm nay), hình thức học giữ như ghi danh cũ, điều khoản thanh toán đang dùng, các buổi sắp tới của lớp. Màn TT-02 ở L6 có nút «Tạo đơn» (hộp: gói, số giờ, ngày vào lớp, điều khoản); tạo xong mở trang đơn Nháp; tab «Báo giá và đơn» liệt kê đơn của phiếu. Giá chỉ để xem; tiền tính ở máy chủ. Báo giá từ phiếu: chưa làm (chờ Chat chốt).
+
+## C-27-10 (migration 707, anh chốt 27/11): báo giá và đơn từ phiếu ở mọi giai đoạn
+
+Phần này thay các câu ở trên về «chỉ L6», «một đơn đang sống» và đối soát tự chuyển giai đoạn.
+
+- `app.quotation` có đúng một trong `opportunity_id` và `upsale_ticket_id`; cơ sở, phụ huynh lấy từ phiếu; mọi dòng là em của phiếu.
+- `save_quotation(null, mã, dòng)`, `preview_quotation_lines`, `list_sellable_packages`, `list_applicable_discount_policies`, `list_applicable_gift_policies`: tham số `p_opportunity_id` nhận mã cơ hội HOẶC mã phiếu.
+- Quyền trên phiếu: Báo giá (hoặc Đơn hàng) như cũ và Phiếu tái tục · Sửa.
+- `create_order_from_quotation` cho báo giá của phiếu: đơn gắn phiếu và lớp, không đòi cơ hội ở L8.
+- `create_order_from_upsale_ticket`: mọi giai đoạn, không giới hạn số đơn, không đổi giai đoạn.
+- Bỏ `reconcile_upsale_orders`; lịch đêm chỉ còn sinh phiếu. Giai đoạn đổi bằng tay.
