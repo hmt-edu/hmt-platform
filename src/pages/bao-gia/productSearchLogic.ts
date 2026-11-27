@@ -26,7 +26,8 @@ export function productRows(data: SellablePackages, name: Names): ProductRow[] {
     const gradeCodes = pkg.grade_codes?.length
       ? pkg.grade_codes
       : [...new Set([pkg.grade_from_code, pkg.grade_to_code].filter((c): c is string => !!c))];
-    const gradeNames = gradeCodes.map((c) => name('GRADE', c) ?? c);
+    // Sản phẩm dùng danh mục khối riêng (có Chuyên sâu, SAT, 5NC…); không thấy mới tra khối của học sinh.
+    const gradeNames = gradeCodes.map((c) => name('PRODUCT_GRADE', c) ?? name('GRADE', c) ?? c);
     const grade = pkg.grade_label ?? gradeNames.join(', ');
     const type = typeName.get(pkg.package_type_code) ?? pkg.package_type_code;
     const subject = pkg.subject_code ? (name('SUBJECT', pkg.subject_code) ?? pkg.subject_code) : '';
