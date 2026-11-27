@@ -82,7 +82,7 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu Test)
 **Mục tiêu:** báo giá gói học cho phụ huynh, có ưu đãi theo chính sách.
 
 1. Từ cơ hội bấm **«Tạo báo giá»**.
-2. Mỗi dòng: chọn gói (nút «Chọn gói…»), nhập số lượng, giờ tặng nếu có, rồi thêm ưu đãi theo chính sách. Tổng tiền do hệ thống tính, không nhập tay.
+2. Mỗi dòng: chọn sản phẩm (ô «Tìm sản phẩm», gõ không dấu được), nhập số lượng, giờ tặng nếu có, rồi thêm ưu đãi theo chính sách. Tổng tiền do hệ thống tính, không nhập tay.
 3. Lưu. Màn bản ghi có «In» (bản in cho phụ huynh), «Từ chối báo giá» (khách từ chối, ghi lý do), «Huỷ báo giá».
 
 - **Kết quả:** báo giá ở tình trạng Nháp rồi gửi khách; số đếm «Báo giá» trên cơ hội tăng.

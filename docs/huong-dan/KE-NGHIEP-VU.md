@@ -226,7 +226,7 @@ tested_by: <người đi thử>
 1. Bấm «Tạo đơn hàng».
    *Bạn thấy:* trang đơn mới, khối «Dòng đơn» trống.
    [ẢNH: bh05-bh3-b1]
-2. Bấm «Chọn gói…», chọn gói, nhập «Số lượng».
+2. Bấm «Tìm sản phẩm», chọn sản phẩm, nhập «Số lượng».
    *Bạn thấy:* dòng đơn có giá; «Tổng tiền» tự tính, không sửa tay.
    [ẢNH: bh05-bh3-b2]
 

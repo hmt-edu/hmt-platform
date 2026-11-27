@@ -140,7 +140,7 @@ export function useOpportunityStudents(opportunityId: string, enabled: boolean) 
   });
 }
 
-/** Gói bán cho hộp chọn gói (Hay dùng, Gợi ý theo cơ hội, Tất cả gói; lọc loại gói). */
+/** Gói bán cho ô tìm sản phẩm (Hay dùng, Gợi ý theo cơ hội, toàn bộ sản phẩm đang bán). */
 export type SellablePackage = {
   id: string;
   code: string;
@@ -148,6 +148,11 @@ export type SellablePackage = {
   package_type_code: string;
   unit_code: 'GIO' | 'THANG' | 'BO';
   prices: Record<string, number>;
+  subject_code?: string | null;
+  grade_from_code?: string | null;
+  grade_to_code?: string | null;
+  grade_codes?: string[] | null;
+  grade_label?: string | null;
 };
 export type SellablePackages = {
   types: { code: string; name: string }[];

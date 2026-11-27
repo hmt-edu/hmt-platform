@@ -20,7 +20,7 @@ import {
   type EditRow,
   type RowIssue,
 } from './quoteEdit';
-import { QuotePackageDialog } from './QuotePackageDialog';
+import { ProductSearch } from './ProductSearch';
 import { QuoteGiftDialog } from './QuoteGiftDialog';
 import { studentLabel } from '../../features/prospect/prospectLogic';
 import { QuotePolicyDialog } from './QuotePolicyDialog';
@@ -80,7 +80,6 @@ export function QuoteLineGrid({
   layout: 'tao' | 'sua';
 }) {
   const catalogs = useLeadCatalogs();
-  const [pickFor, setPickFor] = useState<string | null>(null);
   const [policyFor, setPolicyFor] = useState<string | null>(null);
   const [giftOpen, setGiftOpen] = useState(false);
   const giftById = new Map(giftPolicies.map((g) => [g.id, g]));
@@ -119,7 +118,6 @@ export function QuoteLineGrid({
       mode,
       calc: null,
     });
-    setPickFor(null);
   }
 
   /** Tổng % chiết khấu máy chủ vừa trả (gồm giờ tặng quy ra %); chưa có hoặc 0 thì null. */
@@ -268,24 +266,29 @@ export function QuoteLineGrid({
             <span className="min-w-0 truncate">{row.packageName}</span>
           </span>
         ) : (
-          <button
-            type="button"
-            disabled={disabled}
-            onClick={() => setPickFor(row.key)}
-            aria-label={`${row.packageId === '' ? 'Chọn gói…' : `${row.packageCode} · ${row.packageName}`} (Gói dòng ${String(index + 1)})`}
-            title={row.packageId === '' ? undefined : `${row.packageCode} · ${row.packageName}`}
-            className="focus-ring flex h-control w-full items-center rounded-control border border-border-strong bg-surface px-2.5 text-left hover:bg-hover disabled:opacity-60"
-          >
-            {/* Một dòng như các ô bên cạnh, tên gói dài thì cắt bớt; đầy đủ ở chú thích khi rê chuột. */}
-            {row.packageId === '' ? (
-              <span className="text-fg-muted">Chọn gói…</span>
-            ) : (
-              <span className="min-w-0 truncate">
-                <span className="font-medium">{row.packageCode}</span>
-                <span className="text-caption text-fg-muted">{` · ${row.packageName}`}</span>
-              </span>
-            )}
-          </button>
+          <ProductSearch
+            opportunityId={opportunityId}
+            onPick={(pkg) => pickPackage(row, pkg)}
+            trigger={
+              <button
+                type="button"
+                disabled={disabled}
+                aria-label={`${row.packageId === '' ? 'Tìm sản phẩm' : `${row.packageCode} · ${row.packageName}`} (Gói dòng ${String(index + 1)})`}
+                title={row.packageId === '' ? undefined : `${row.packageCode} · ${row.packageName}`}
+                className="focus-ring flex h-control w-full items-center rounded-control border border-border-strong bg-surface px-2.5 text-left hover:bg-hover disabled:opacity-60"
+              >
+                {/* Một dòng như các ô bên cạnh, tên gói dài thì cắt bớt; đầy đủ ở chú thích khi rê chuột. */}
+                {row.packageId === '' ? (
+                  <span className="text-fg-muted">Tìm sản phẩm</span>
+                ) : (
+                  <span className="min-w-0 truncate">
+                    <span className="font-medium">{row.packageCode}</span>
+                    <span className="text-caption text-fg-muted">{` · ${row.packageName}`}</span>
+                  </span>
+                )}
+              </button>
+            }
+          />
         ),
     },
     {
@@ -602,15 +605,6 @@ export function QuoteLineGrid({
                 },
             ),
           });
-        }}
-      />
-      <QuotePackageDialog
-        open={pickFor !== null}
-        onOpenChange={(open) => !open && setPickFor(null)}
-        opportunityId={opportunityId}
-        onPick={(pkg) => {
-          const row = rows.find((r) => r.key === pickFor);
-          if (row) pickPackage(row, pkg);
         }}
       />
     </div>

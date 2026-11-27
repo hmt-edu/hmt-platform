@@ -55,7 +55,7 @@ import { OrderEditLines } from './OrderEditLines';
 import { PayLaterDialog } from './PayLaterDialog';
 import { useOrderPayLater } from './usePayLater';
 import { UseBalanceDialog } from './UseBalanceDialog';
-import { QuotePackageDialog } from '../bao-gia/QuotePackageDialog';
+import { ProductSearch } from '../bao-gia/ProductSearch';
 import { useOpportunityStudents } from '../bao-gia/useQuoteData';
 import { orderEventEntries, reasonLine } from './orderEventEntries';
 import {
@@ -166,7 +166,6 @@ function OrderView({ record }: { record: OrderRecord }) {
       record.approval_route === 'QUAN_LY',
   );
   const [editing, setEditing] = useState(false);
-  const [pickOpen, setPickOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
   const [draft, setDraft] = useState<OrderDraft | null>(null);
@@ -346,7 +345,6 @@ function OrderView({ record }: { record: OrderRecord }) {
           }
         : prev,
     );
-    setPickOpen(false);
   }
   // Vượt hạn mức Ưu đãi linh hoạt: nút Lưu mờ (Q-151), chữ đỏ ở chip của dòng.
   const limitBlocked =
@@ -585,7 +583,15 @@ function OrderView({ record }: { record: OrderRecord }) {
             today={todayKey}
             stale={dirty}
             students={students.data ?? []}
-            onAdd={() => setPickOpen(true)}
+            addControl={
+              record.opportunity_id && (
+                <ProductSearch
+                  opportunityId={record.opportunity_id}
+                  onPick={addPackage}
+                  trigger={<Button icon="plus">Thêm dòng</Button>}
+                />
+              )
+            }
             onChangeAdded={patchAdded}
             onRemoveAdded={removeAdded}
             lineClasses={lineClasses}
@@ -1106,14 +1112,6 @@ function OrderView({ record }: { record: OrderRecord }) {
           void submit();
         }}
       />
-      {record.opportunity_id && (
-        <QuotePackageDialog
-          open={pickOpen}
-          onOpenChange={setPickOpen}
-          opportunityId={record.opportunity_id}
-          onPick={addPackage}
-        />
-      )}
       <ApproveOrderDialog
         record={record}
         open={approveOpen}

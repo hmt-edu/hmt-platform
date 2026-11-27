@@ -2,7 +2,15 @@
 // Dữ liệu giả dựng bằng hàm nghiệp vụ (xem bao-gia-seed.ts), tìm bằng dấu riêng của từng dự án.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, enterAs, expectAccessible, isPhone, shotPath, showAllColumns } from './helpers';
+import {
+  PASSWORD,
+  enterAs,
+  expectAccessible,
+  isPhone,
+  shotPath,
+  showAllColumns,
+  pickProduct,
+} from './helpers';
 import { DB_URL, clearMark, seed, setupOf, type Seeded } from './bao-gia-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng báo giá giả).');
@@ -402,7 +410,7 @@ test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khu
   await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toBeVisible();
 });
 
-test('BH-02 sửa Nháp: hộp Chọn gói, thêm dòng mới (chọn em, gói, số lượng), Huỷ bỏ thay đổi', async ({
+test('BH-02 sửa Nháp: ô tìm sản phẩm, thêm dòng mới (chọn em, gói, số lượng), Huỷ bỏ thay đổi', async ({
   page,
 }, testInfo) => {
   test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Sửa.');
@@ -414,13 +422,9 @@ test('BH-02 sửa Nháp: hộp Chọn gói, thêm dòng mới (chọn em, gói, 
   await page.getByRole('combobox', { name: 'Học sinh dòng 3' }).click();
   await page.getByRole('option', { name: /Em Nháp Một/ }).click();
   await page.getByRole('button', { name: 'Gói dòng 3' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Chọn gói' });
-  await expect(dialog.getByText('TẤT CẢ GÓI', { exact: false })).toBeVisible();
-  await expect(dialog.getByText(/Giá lấy từ bảng giá đang hiệu lực/)).toBeVisible();
-  await dialog
-    .getByRole('button', { name: /LC-TOAN-K09/ })
-    .first()
-    .click();
+  const dialog = page.getByRole('dialog', { name: 'Tìm sản phẩm' });
+  await expect(dialog.getByText(/gõ không dấu vẫn tìm được/)).toBeVisible();
+  await pickProduct(page, 'LC-TOAN-K09');
   await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Gói dòng 3' })).toContainText('LC-TOAN-K09');
   await page.getByLabel('Số lượng dòng 3').fill('3');
@@ -544,11 +548,7 @@ test('BH-02 sửa Nháp: dòng mới mặc định em đầu của cơ hội (R-
     'Em Nháp Một',
   );
   await page.getByRole('button', { name: 'Gói dòng 3' }).click();
-  await page
-    .getByRole('dialog', { name: 'Chọn gói' })
-    .getByRole('button', { name: /LC-TOAN-K09/ })
-    .first()
-    .click();
+  await pickProduct(page, 'LC-TOAN-K09');
   await page.getByLabel('Số lượng dòng 3').fill('4');
   await expect(row3.getByText('880.000')).toBeVisible();
   // Đổi sang em khác vẫn được.
@@ -595,7 +595,9 @@ test('BH-02 sửa Nháp: thêm quà tặng qua chính sách quà tặng; vượt
   await expect(gift.getByText(/không quá 1\./)).toHaveCount(0);
   // Thêm dòng gói mới sau khi đã có quà: dòng gói đứng trước dòng quà.
   await page.getByRole('button', { name: 'Thêm dòng' }).click();
-  await expect(page.getByRole('rowgroup', { name: 'Dòng 3' }).getByText('Chọn gói…')).toBeVisible();
+  await expect(
+    page.getByRole('rowgroup', { name: 'Dòng 3' }).getByText('Tìm sản phẩm'),
+  ).toBeVisible();
   await expect(
     page.getByRole('rowgroup', { name: 'Dòng 4' }).getByText('Quà tặng', { exact: true }),
   ).toBeVisible();
@@ -748,11 +750,7 @@ test('Tạo báo giá: nhập dòng, Lưu mới cấp mã và tạo báo giá Nh
     'Thành tiền',
   ]);
   await page.getByRole('button', { name: 'Gói dòng 1' }).click();
-  await page
-    .getByRole('dialog', { name: 'Chọn gói' })
-    .getByRole('button', { name: /LC-TOAN-K09/ })
-    .first()
-    .click();
+  await pickProduct(page, 'LC-TOAN-K09');
   // Chưa nhập số lượng: Lưu báo lỗi theo khung, chưa tạo bản ghi.
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('Bắt buộc nhập số lượng.')).toBeVisible();
