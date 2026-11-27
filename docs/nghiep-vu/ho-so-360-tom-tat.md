@@ -21,3 +21,12 @@ Cờ:
 | Lâu chưa liên hệ | Từ `contact_stale_days` ngày; chưa liên hệ lần nào thì đếm từ ngày tạo hồ sơ |
 | Vắng liên tiếp | Từ `absence_streak_sessions` buổi gần nhất đều vắng |
 | Thiếu nhận xét | Buổi em có mặt bị Done khi còn thiếu (cờ R-GIO-12) trong `attendance_rate_window_days` ngày |
+
+## Tab Lịch hẹn, Tái tục (migration 696)
+
+| Hàm | Ai gọi | Trả |
+|---|---|---|
+| `app.list_record_appointments(lọc parent_id hoặc student_id)` | Lịch hẹn · Xem (Toàn hệ thống hoặc Cơ sở mình) | Phụ huynh: lịch gắn thẳng, gắn con, gắn cơ hội và lead của cơ hội, gắn phiếu kiểm tra của con. Học sinh: gắn thẳng và gắn phiếu kiểm tra của em |
+| `app.list_record_upsale(lọc parent_id hoặc student_id)` | Tái tục · Xem | Phiếu tái tục, phiếu đang mở đứng trước, kèm số buổi vắng trong cửa sổ cờ rủi ro |
+
+Tab «Tài khoản» của phụ huynh dùng lại hàm của QT-17, chỉ quản trị viên.

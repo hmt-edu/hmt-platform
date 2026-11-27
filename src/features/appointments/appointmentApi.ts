@@ -76,6 +76,28 @@ export function useTestUpcoming(testId: string | null) {
   });
 }
 
+/** Lịch Chưa làm liên quan hồ sơ phụ huynh, học sinh (khối "Hoạt động sắp tới"), gần nhất trước. */
+export function useCustomerUpcoming(owner: CustomerOwner | null) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['record-upcoming', owner?.key ?? null, owner?.id ?? null],
+    enabled: owner !== null,
+    queryFn: () =>
+      rpc<{ total: number; rows: (UpcomingAppointment & { branch_id: string })[] }>(
+        supabase,
+        'list_record_appointments',
+        {
+          p_filters: { [owner?.key ?? 'parent_id']: owner?.id, status: ['CHUA_LAM'] },
+          p_sort: 'time_asc',
+          p_limit: null,
+          p_offset: 0,
+        },
+      ),
+  });
+}
+
+export type CustomerOwner = { key: 'parent_id' | 'student_id'; id: string };
+
 export async function createOpportunityAppointment(
   supabase: SupabaseClient,
   args: {
@@ -182,6 +204,7 @@ export const APPOINTMENT_RELATED_KEYS = [
   'lead-list',
   'lead-board',
   'opp-upcoming',
+  'record-upcoming',
   'opp-record',
   'opp-list',
   'opp-board',
