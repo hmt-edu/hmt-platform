@@ -19,4 +19,17 @@
 
 Tham số mới (ghi đè được theo cơ sở): `work_now_window_hours` (mặc định 2), `work_soon_days` (mặc định 3). Hai tham số này đọc theo **cơ sở của người xem**.
 
-Chưa làm (PR sau): «Để sau» (`work_snooze`), lead chưa liên hệ, cơ hội lâu không hoạt động, chưa báo phụ huynh, vắng liên tiếp, ticket, công nợ, báo giá sắp hết hạn.
+## «Để sau» (migration 691)
+
+`app.snooze_work(p_signal, p_entity_id, p_until, p_note)` hoãn một việc trong danh sách **của tôi**; trả `{snooze_until, snooze_count, remaining}`. Bảng `app.work_snooze` (mỗi người một dòng cho một việc; chỉ đọc dòng của mình, không ghi thẳng).
+
+| Luật | Lỗi |
+|---|---|
+| Không hoãn việc chờ duyệt, buổi chưa điểm danh (đang diễn ra hoặc đã hết giờ) | `HMT_VIEC_KHONG_HOAN` |
+| Hạn sau lúc bấm, không quá `work_snooze_max_days` ngày (mặc định 3) | `HMT_HAN_DE_SAU_SAI` |
+| Mỗi người hoãn một việc không quá `work_snooze_max_times` lần (mặc định 2) | `HMT_HET_LUOT_DE_SAU` |
+| Việc phải đang nằm trong danh sách của người gọi (không hoãn hộ) | `HMT_VIEC_KHONG_CON` |
+
+Hai tham số ghi đè được theo cơ sở, đọc theo **cơ sở của việc**. Hoãn theo người dùng: danh sách của tôi ẩn việc đó và không đếm; chế độ cả đội và người phụ trách khác vẫn thấy, mỗi mục có `snoozed_until`.
+
+Chưa làm (PR sau): xem lại và bỏ hoãn việc đã để sau, lead chưa liên hệ, cơ hội lâu không hoạt động, chưa báo phụ huynh, vắng liên tiếp, ticket, công nợ, báo giá sắp hết hạn.
