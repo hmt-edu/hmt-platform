@@ -12,13 +12,39 @@ export function isChunkLoadError(error: unknown): boolean {
   return error instanceof Error && CHUNK_ERROR.test(error.message);
 }
 
-/** Tự tải lại trang một lần khi lỗi do tệp cũ; trả false nếu không phải lỗi đó hoặc vừa tải lại xong (để hiện khung lỗi). */
-export function reloadOnStaleChunk(
+const ENTRY_SCRIPT = /<script[^>]*type="module"[^>]*\ssrc="([^"]+)"/;
+
+/**
+ * Máy chủ đã có bản khác bản đang chạy chưa: so tên tệp gốc trong index.html mới tải với tệp gốc của trang đang mở.
+ * Cần kiểm vì Safari báo cùng câu lỗi khi người dùng chuyển trang giữa lúc đang tải; tải lại lúc đó sẽ chặn mất lần chuyển.
+ */
+export async function hasNewVersion(
+  current: string | null | undefined = document
+    .querySelector('script[type="module"][src]')
+    ?.getAttribute('src'),
+  fetcher: typeof fetch = fetch,
+): Promise<boolean> {
+  if (!current) return false;
+  try {
+    const response = await fetcher('/', { cache: 'no-store' });
+    if (!response.ok) return false;
+    const latest = ENTRY_SCRIPT.exec(await response.text())?.[1];
+    return latest !== undefined && latest !== current;
+  } catch {
+    return false; // Mất mạng hoặc trang đang chuyển đi: để nguyên.
+  }
+}
+
+/** Tự tải lại trang một lần khi lỗi do tệp của bản cũ; trả false nếu không phải (để hiện khung lỗi). */
+export async function reloadOnStaleChunk(
   error: unknown,
-  reload: () => void = () => window.location.reload(),
-  now: number = Date.now(),
-): boolean {
-  if (!isChunkLoadError(error)) return false;
+  {
+    reload = () => window.location.reload(),
+    now = Date.now(),
+    isNewVersion = () => hasNewVersion(),
+  }: { reload?: () => void; now?: number; isNewVersion?: () => Promise<boolean> } = {},
+): Promise<boolean> {
+  if (!isChunkLoadError(error) || !(await isNewVersion())) return false;
   try {
     const last = Number(window.sessionStorage.getItem(KEY) ?? 0);
     if (now - last < MIN_GAP_MS) return false;

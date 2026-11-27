@@ -14,9 +14,9 @@ export function lazyScreen<M extends Record<K, ComponentType<never>>, K extends 
   const Screen = lazy(() =>
     load().then(
       (m) => ({ default: m[name] as unknown as ComponentType<Record<string, unknown>> }),
-      (error: unknown) => {
+      async (error: unknown) => {
         // Tệp màn của bản cũ không còn (B-27-05): tải lại trang, giữ vòng quay cho tới khi trang mới lên.
-        if (reloadOnStaleChunk(error)) return new Promise<never>(() => {});
+        if (await reloadOnStaleChunk(error)) return new Promise<never>(() => {});
         throw error;
       },
     ),
