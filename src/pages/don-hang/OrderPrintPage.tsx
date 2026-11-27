@@ -2,6 +2,7 @@
 // Quyền = quyền xem đơn. Nút "In" và "Tải PDF" cùng mở hộp in của trình duyệt. Giao diện KHÔNG tính tiền (R-TIEN-13).
 import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
+import { FromLink } from '../../layout/FromLink';
 import { amountInWords } from '../../lib/amountInWords';
 import { HmtError, errorOf } from '../../lib/db';
 import { formatDate, formatMoney, formatNumber } from '../../lib/format';
@@ -38,6 +39,7 @@ export function OrderPrintPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/don-hang" className="font-medium text-link hover:underline">
               Về danh sách Đơn hàng
             </Link>
@@ -68,9 +70,12 @@ function OrderPrint({ record }: { record: OrderRecord }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3 print:hidden">
-        <Link to={`/crm/don-hang/${record.id}`} className="font-medium text-link hover:underline">
+        <FromLink
+          to={`/crm/don-hang/${record.id}`}
+          className="font-medium text-link hover:underline"
+        >
           {`‹ Đơn hàng ${record.code}`}
-        </Link>
+        </FromLink>
         <span className="flex-1" />
         <span className="text-caption text-fg-muted">Chọn “Lưu thành PDF” để tải</span>
         <Button icon="file" onClick={() => window.print()}>
