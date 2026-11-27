@@ -4,7 +4,15 @@
 // Dựng từng đoạn: đoạn 1 (lead đến đơn Nháp), đoạn 2 (trình, duyệt đơn, phiếu thu, kế toán duyệt, ghi danh Chờ xếp lớp), đoạn 3 (xếp lớp, chốt buổi, giáo viên điểm danh, Done, trừ giờ). Còn thiếu: nhận xét GV-07.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, enterAsAdmin, loginStaff, pickOption } from './helpers';
+import {
+  DOMAIN,
+  PASSWORD,
+  enterAs,
+  enterAsAdmin,
+  loginStaff,
+  pickOption,
+  pickProduct,
+} from './helpers';
 import { DB_URL } from './bao-gia-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dữ liệu giả).');
@@ -110,11 +118,7 @@ test('6. Tạo đơn hàng từ cơ hội L8 bằng giao diện UI-O4', async ({
   await page.getByRole('button', { name: 'Tạo đơn hàng', exact: true }).click();
   await expect(page.getByRole('heading', { level: 2, name: 'Tạo đơn hàng' })).toBeVisible();
   await page.getByRole('button', { name: 'Gói dòng 1' }).click();
-  await page
-    .getByRole('dialog', { name: 'Chọn gói' })
-    .getByRole('button', { name: /LC-TOAN-K09/ })
-    .first()
-    .click();
+  await pickProduct(page, 'LC-TOAN-K09');
   await page.getByLabel('Số lượng dòng 1').fill('10');
   await page.getByLabel('Kiểu thanh toán').click();
   await page.getByRole('option').first().click();

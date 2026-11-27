@@ -3,7 +3,7 @@
 // không hiện mã nội bộ. Máy tính (điện thoại chỉ đọc, Đ248). Dữ liệu giả dựng bằng don-hang-seed.ts.
 import { expect, test, type Page } from '@playwright/test';
 import pg from 'pg';
-import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, expectAccessible, isPhone, pickProduct } from './helpers';
 import {
   DB_URL,
   clearMark,
@@ -160,11 +160,8 @@ test('Thêm dòng khi sửa (Q-67): chọn gói, em, số lượng; Lưu thì m�
   await openOrder(page, setup.sale, seeded.records.rejected);
   await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
   await page.getByRole('button', { name: 'Thêm dòng' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Chọn gói' });
-  await dialog
-    .getByRole('button', { name: /LC-TOAN-K09/ })
-    .first()
-    .click();
+  const dialog = page.getByRole('dialog', { name: 'Tìm sản phẩm' });
+  await pickProduct(page, 'LC-TOAN-K09');
   await expect(dialog).toHaveCount(0);
   // Dòng mới chưa có giá: chọn em và số lượng, Lưu bị khoá tới khi hợp lệ (lỗi tại chỗ).
   await expect(page.getByText('Chọn học sinh.')).toBeVisible();

@@ -2,7 +2,7 @@
 // Máy tính (điện thoại ẩn nút, Đ248). Dữ liệu giả dựng bằng bao-gia-seed.ts (báo giá Đã gửi, Từ chối), cơ hội của báo giá Từ chối được đặt ở L8.
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, expectAccessible, isPhone } from './helpers';
+import { PASSWORD, enterAs, expectAccessible, isPhone, pickProduct } from './helpers';
 import { DB_URL, clearMark, seed, type Seeded } from './bao-gia-seed';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng báo giá giả).');
@@ -152,11 +152,7 @@ test('Cơ hội L8: Tạo đơn hàng mở form trắng, nhập dòng, Lưu tạ
   await expect(page.getByRole('heading', { level: 2, name: 'Tạo đơn hàng' })).toBeVisible();
   await expect(page.getByText('Không qua báo giá')).toBeVisible();
   await page.getByRole('button', { name: 'Gói dòng 1' }).click();
-  await page
-    .getByRole('dialog', { name: 'Chọn gói' })
-    .getByRole('button', { name: /LC-TOAN-K09/ })
-    .first()
-    .click();
+  await pickProduct(page, 'LC-TOAN-K09');
   await page.getByLabel('Kiểu thanh toán').click();
   await page.getByRole('option').first().click();
   // Chưa nhập số lượng thì chưa tạo.
@@ -172,11 +168,7 @@ test('Cơ hội L8: Tạo đơn hàng mở form trắng, nhập dòng, Lưu tạ
   await page.goto(`/crm/co-hoi/${l8OppId}`);
   await page.getByRole('button', { name: 'Tạo đơn hàng', exact: true }).click();
   await page.getByRole('button', { name: 'Gói dòng 1' }).click();
-  await page
-    .getByRole('dialog', { name: 'Chọn gói' })
-    .getByRole('button', { name: /LC-TOAN-K09/ })
-    .first()
-    .click();
+  await pickProduct(page, 'LC-TOAN-K09');
   await page.getByLabel('Số lượng dòng 1').fill('2');
   await page.getByLabel('Kiểu thanh toán').click();
   await page.getByRole('option').first().click();
