@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CATALOGS,
   activeOptions,
   childOptions,
   filterOptions,
@@ -121,5 +122,12 @@ describe('optionsAppliesTo (kênh hệ thống không chọn tay, D-23-38)', () 
     expect(optionsAppliesTo(all, 'TICKET_CHANNEL', 'HE_THONG').map((o) => o.value)).toContain(
       'PH_KHONG_DONG_Y',
     );
+  });
+});
+
+describe('danh mục được nạp', () => {
+  it('có đủ danh mục của màn Điểm danh (ô thiếu danh mục sẽ rỗng mà không báo lỗi)', () => {
+    expect(CATALOGS).toContain('ATTENDANCE_STATUS');
+    expect(CATALOGS).toContain('ATTENDANCE_CONTACT_REASON');
   });
 });

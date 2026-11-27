@@ -120,12 +120,12 @@ export function approverLine(
   return expectedApproverText(record, viewerIsCreator);
 }
 
-/** Nút Trình: đơn Nháp, người xem có quyền Đơn hàng · Sửa và Bán hàng đang bật (Đ173); điện thoại chỉ đọc (Đ248). Máy chủ kiểm lại. */
+/** Nút Trình: đơn Nháp, người xem có quyền Đơn hàng · Sửa và Bán hàng đang bật (Đ173); cả trên điện thoại (B-27-09). Máy chủ kiểm lại. */
 export function canSubmitOrder(
   record: Pick<OrderRecord, 'status_code'>,
-  can: { edit: boolean; featureOn: boolean; phone: boolean },
+  can: { edit: boolean; featureOn: boolean },
 ): boolean {
-  return record.status_code === 'NHAP' && can.edit && can.featureOn && !can.phone;
+  return record.status_code === 'NHAP' && can.edit && can.featureOn;
 }
 
 /**

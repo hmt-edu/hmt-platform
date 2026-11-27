@@ -1,6 +1,6 @@
 // BH-02 Tạo báo giá từ cơ hội (khung BH02_tao, R-CRM-19, R-TIEN-02): bấm "Tạo báo giá" trên bản ghi cơ hội chỉ mở form trắng; chưa có bản ghi, chưa cấp
 // mã. Bấm Lưu mới tạo báo giá Nháp và cấp mã (app.save_quotation); bấm Huỷ thì bỏ hết, về cơ hội. Danh sách báo giá không có nút Tạo.
-// Chỉ nhánh gốc cơ hội; nhánh gốc phiếu tái tục (TT-02, L6 và L7) làm riêng. Điện thoại giữ bản chỉ đọc (Đ248): không có màn này.
+// Chỉ nhánh gốc cơ hội; nhánh gốc phiếu tái tục (TT-02, L6 và L7) làm riêng. Điện thoại cũng lập được (B-27-09, anh cho phép 27/11).
 import { useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router';
@@ -15,7 +15,6 @@ import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
-import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useToast } from '../../ui/toastContext';
 import { useOpportunity } from '../co-hoi/useOppData';
 import { formatPhone } from '../lead/leadFormat';
@@ -41,7 +40,6 @@ import { FromLink } from '../../layout/FromLink';
 export function QuotationCreatePage() {
   const [params] = useSearchParams();
   const opportunityId = params.get('co-hoi') ?? undefined;
-  const phone = useMedia(NARROW_TABLE);
   const access = useAccess();
   const query = useOpportunity(opportunityId);
   const back = opportunityId === undefined ? '/crm/co-hoi' : `/crm/co-hoi/${opportunityId}`;
@@ -55,12 +53,6 @@ export function QuotationCreatePage() {
     return (
       <StateView kind="not-found" title="Chưa chọn cơ hội" actions={backLink}>
         Báo giá chỉ tạo từ bản ghi cơ hội: mở cơ hội rồi bấm Tạo báo giá.
-      </StateView>
-    );
-  if (phone)
-    return (
-      <StateView kind="forbidden" title="Tạo báo giá chỉ có trên máy tính" actions={backLink}>
-        Trên điện thoại báo giá chỉ xem được.
       </StateView>
     );
   if (query.isPending) return <Spinner label="Đang tải cơ hội…" />;

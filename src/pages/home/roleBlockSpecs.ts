@@ -148,7 +148,7 @@ export const ROLE_BLOCK_SPECS = {
   },
   sessionsToday: {
     title: 'Buổi hôm nay',
-    to: '/crm/diem-danh-trong-ngay',
+    to: '/crm/diem-danh',
     empty: 'Hôm nay không có buổi nào.',
     load: async (supabase, branch, showBranch) => {
       // Hàm điểm danh trong ngày (BUOI-15) lọc theo ngày Việt Nam và theo cơ sở đang chọn như các khối khác.
