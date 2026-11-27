@@ -213,6 +213,7 @@ function StudentView({ record }: { record: StudentRecord }) {
         dirty={dirty}
         saving={saving}
         readOnly={!canEdit}
+        headerActions={account.actions}
         onEdit={startEdit}
         onSave={() => void save()}
         onCancel={() => {
@@ -253,7 +254,6 @@ function StudentView({ record }: { record: StudentRecord }) {
               onSelect: () => undefined,
               unavailable: 'Ticket chăm sóc làm sau',
             },
-            ...account.menuItems,
           ],
         }}
         summary={

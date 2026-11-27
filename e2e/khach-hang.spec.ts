@@ -174,9 +174,12 @@ test('KH-05: Admin thấy khối tài khoản app và mở hộp cấp tài kho�
   await page.goto('/crm/hoc-sinh');
   await page.getByPlaceholder('Tìm tên, mã, mã cũ…').fill(name);
   await page.getByRole('link', { name }).first().click();
-  await expect(page.getByText('Chưa cấp', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Hành động' }).click();
-  await page.getByRole('menuitem', { name: 'Cấp tài khoản' }).click();
-  await expect(page.getByText(/Tên đăng nhập là mã học sinh/)).toBeVisible();
+  await expect(page.getByText('Chưa có tài khoản', { exact: true })).toBeVisible();
+  // R-CRM-32, KH05_tk_chua_co: chỉ có nút Cấp, ở đầu hồ sơ và trong khối; không còn trong menu Hành động.
+  const issue = page.getByRole('button', { name: 'Cấp tài khoản', exact: true });
+  await expect(issue).toHaveCount(2);
+  await expect(page.getByRole('button', { name: 'Khoá tài khoản' })).toHaveCount(0);
+  await issue.first().click();
+  await expect(page.getByText(/CHỈ HIỆN MỘT LẦN/)).toBeVisible();
   await page.getByRole('button', { name: 'Huỷ' }).click();
 });
