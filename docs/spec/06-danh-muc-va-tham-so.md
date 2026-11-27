@@ -175,3 +175,6 @@ Thêm vào các mục trên khi viết migration; chỗ [CHỜ] chưa làm.
 | Tham số | Số ngày không liên hệ thì cờ «Lâu chưa liên hệ» | 30 ngày, Admin chỉnh được (khai báo ở migration 695, cùng cờ) | [CHỐT] |
 | Tham số | Số buổi vắng liên tiếp thì cờ «Vắng liên tiếp» | 3 buổi, Admin chỉnh được (khai báo ở migration 695, cùng cờ) | [CHỐT] |
 | Tham số | Số ngày tính chuyên cần trên hồ sơ học sinh và cờ «Thiếu nhận xét» (`attendance_rate_window_days`) | 30 ngày (khung KH05 ghi «30 ngày gần nhất»), Admin chỉnh được | Code đề xuất, chờ Chat duyệt |
+| Tham số | Mức gắn bó: điểm mỗi cờ (`engagement_points_*`, 6 tham số) | Vắng liên tiếp 2, Nợ quá hạn 2, bốn cờ còn lại 1; 0–10, ghi đè theo cơ sở (R-CRM-44) | [CHỐT] |
+| Tham số | Mức gắn bó: tính hay không từng cờ (`engagement_count_*`, 6 công tắc) | Tính cả sáu | [CHỐT] |
+| Tham số | Mức gắn bó: ngưỡng «Cần chú ý», «Nguy cơ» (`engagement_warn_score`, `engagement_risk_score`) | 1 và 3 điểm | [CHỐT] |

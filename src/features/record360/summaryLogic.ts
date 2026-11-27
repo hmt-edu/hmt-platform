@@ -37,7 +37,43 @@ export type StudentSummary = CommonSummary & {
   last_score: { score: number; max_score: number | null; session_date: string } | null;
   care_staff: { name: string; branch_code: string } | null;
   absence_limit: number;
+  /** Số ngày nợ quá hạn của đơn có em này; null khi không nợ hoặc không được xem. */
+  overdue_days: number | null;
+  /** R-CRM-44: máy chủ tính; null khi em không Đang học hoặc người xem không đủ phạm vi. */
+  engagement: Engagement | null;
 };
+
+export type Engagement = {
+  level: 'KHOE' | 'CAN_CHU_Y' | 'NGUY_CO';
+  score: number;
+  reasons: string[];
+};
+
+const LEVEL: Record<Engagement['level'], { name: string; tone: 'success' | 'warning' | 'danger' }> =
+  {
+    KHOE: { name: 'Khoẻ', tone: 'success' },
+    CAN_CHU_Y: { name: 'Cần chú ý', tone: 'warning' },
+    NGUY_CO: { name: 'Nguy cơ', tone: 'danger' },
+  };
+const REASON: Record<string, { label: string; target: FlagTarget }> = {
+  VANG_LIEN_TIEP: { label: 'vắng liên tiếp', target: 'attendance' },
+  NO_QUA_HAN: { label: 'nợ quá hạn', target: 'finance' },
+  SAP_HET_GIO: { label: 'sắp hết giờ', target: 'upsale' },
+  TICKET_QUA_HAN: { label: 'ticket quá hạn', target: 'tickets' },
+  LAU_CHUA_LIEN_HE: { label: 'lâu chưa liên hệ', target: 'contacts' },
+  THIEU_NHAN_XET: { label: 'thiếu nhận xét', target: 'review' },
+};
+
+/** Nhãn «Mức gắn bó»: màu luôn đi kèm lý do, bấm lý do mở đúng chỗ (R-CRM-44). */
+export function engagementTag(e: Engagement) {
+  const level = LEVEL[e.level];
+  const reasons = e.reasons.flatMap((code) => REASON[code] ?? []);
+  return {
+    tone: level.tone,
+    label: `Mức gắn bó: ${level.name}`,
+    reasons,
+  };
+}
 
 export type SummaryCard = {
   key: string;
@@ -194,6 +230,9 @@ export function studentFlags(s: StudentSummary): SummaryFlag[] {
     ...(streak >= s.absence_limit
       ? [{ target: 'attendance' as const, label: `Vắng liên tiếp · ${streak} buổi` }]
       : []),
+    ...(s.overdue_days === null
+      ? []
+      : [{ target: 'finance' as const, label: `Nợ quá hạn ${s.overdue_days} ngày` }]),
     ...ticketFlag(s.tickets),
     ...(s.expiring
       ? [
