@@ -47,6 +47,8 @@ export function buildLeadFilters(state: ListState, today: Date = new Date()): Le
   const appointment = pick(APPOINTMENT, state.quick.appt);
   if (appointment.length > 0) filters.appointment = appointment;
   if ((state.quick.status ?? []).includes('merged')) filters.include_merged = true;
+  // «Thùng rác»: chỉ lead Đã gộp và Đã huỷ (R-CRM-45).
+  if ((state.quick.status ?? []).includes('trash')) filters.trash = true;
 
   for (const cond of state.conditions) {
     const values = valuesOf(cond);

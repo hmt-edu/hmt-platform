@@ -1,5 +1,5 @@
 // LOP-09 Học sinh của lớp (danh sách, khuôn K03; canvas 9933 khung LOP09): mọi dòng xếp lớp của một lớp, đang học và đã rời. Lọc, tìm, sắp xếp, phân trang ở máy chủ
-// (app.list_class_students). «Xếp thêm» dẫn tới Hàng chờ xếp lớp (GD-06). «Xuất» chưa làm: ma trận quyền chưa có quyền Xuất cho phân hệ Lớp (chờ anh chốt).
+// (app.list_class_students). «Xếp thêm» dẫn tới danh sách Ghi danh lọc Chờ xếp lớp. «Xuất» chưa làm: ma trận quyền chưa có quyền Xuất cho phân hệ Lớp (chờ anh chốt).
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useMemo, useState } from 'react';
 import { useParams } from 'react-router';
@@ -138,7 +138,7 @@ export function ClassStudentsPage() {
               {
                 label: 'Xếp thêm',
                 icon: 'plus' as const,
-                onClick: () => openFrom('/crm/cho-xep-lop'),
+                onClick: () => openFrom('/crm/ghi-danh?loc=cho-xep-lop'),
               },
             ]
           : []),

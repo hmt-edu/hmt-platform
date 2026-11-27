@@ -1,4 +1,4 @@
-// GD-03 Xếp lớp cho ghi danh (hộp thoại, mở từ GD-06 Hàng chờ xếp lớp và GD-02 Ghi danh): hai cách: "Theo nhóm lớp" (ghi danh Đại vào lớp Đại, ghi danh Hình
+// GD-03 Xếp lớp cho ghi danh (hộp thoại, mở từ GD-01 danh sách và GD-02 Ghi danh): hai cách: "Theo nhóm lớp" (ghi danh Đại vào lớp Đại, ghi danh Hình
 // vào lớp Hình của cùng học sinh, một giao dịch) hoặc "Một lớp lẻ". Chỉ lớp đã duyệt, còn chỗ, đúng gói; lớp trùng buổi hiện mờ kèm lý do (R-GD-14, R-GD-15).
 // Mọi luật kiểm cuối cùng ở máy chủ (app.assign_enrollment_class); trùng giờ thật vẫn báo lỗi có mã ở đó.
 import { useMemo, useState } from 'react';
@@ -89,16 +89,17 @@ function AssignBody({ data, onClose }: { data: AssignOptions; onClose: () => voi
 
   return (
     <div className="flex flex-col gap-3">
-      <div role="radiogroup" aria-label="Cách xếp lớp" className="flex flex-wrap gap-2">
-        {hasGroups && (
+      {/* Chỉ có một cách xếp thì không hiện nút chọn cách (anh Trường 27/11). */}
+      {hasGroups && (
+        <div role="radiogroup" aria-label="Cách xếp lớp" className="flex flex-wrap gap-2">
           <ModeButton on={mode === 'group'} onClick={() => setMode('group')}>
             Theo nhóm lớp
           </ModeButton>
-        )}
-        <ModeButton on={mode === 'single'} onClick={() => setMode('single')}>
-          Một lớp lẻ
-        </ModeButton>
-      </div>
+          <ModeButton on={mode === 'single'} onClick={() => setMode('single')}>
+            Một lớp lẻ
+          </ModeButton>
+        </div>
+      )}
 
       {mode === 'group' && group && (
         <div className="flex flex-col gap-2">
@@ -178,15 +179,22 @@ function AssignBody({ data, onClose }: { data: AssignOptions; onClose: () => voi
 
       {mode === 'single' && (
         <div className="flex flex-col gap-2">
-          <p className="text-caption text-fg-muted">
-            Chọn từng ghi danh một lớp: dùng khi học sinh không học theo nhóm.
-          </p>
+          {hasGroups && (
+            <p className="text-caption text-fg-muted">
+              Chọn từng ghi danh một lớp: dùng khi học sinh không học theo nhóm.
+            </p>
+          )}
           <ClassPicker
             classes={data.classes}
             value={pick}
             onChange={setPick}
             name="lop-le"
             enrollMode={data.enrollment.delivery_mode_code}
+            emptyText={
+              data.enrollment.package_id === null
+                ? 'Ghi danh chưa có gói nên chưa tìm được lớp phù hợp.'
+                : undefined
+            }
           />
         </div>
       )}

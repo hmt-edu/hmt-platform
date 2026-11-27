@@ -57,7 +57,7 @@ select is(pg_temp.save(jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'HUY', 'C
 select is((select saved_by from app.permission_version where version_no = (select v + 1 from base)), (select id from u where key = 'admin'), 'Lịch sử ghi người lưu');
 select ok((select saved_at from app.permission_version where version_no = (select v + 1 from base)) is not null, 'Lịch sử ghi lúc lưu');
 select is((select array[from_scope, to_scope] from app.permission_change c join app.permission_version v on v.id = c.version_id
-           where v.version_no = (select v + 1 from base) and c.role_code = 'SALES'), array[null, 'CO_SO'], 'Lịch sử ghi giá trị trước và sau');
+           where v.version_no = (select v + 1 from base) and c.role_code = 'SALES'), array['CUA_TOI', 'CO_SO'], 'Lịch sử ghi giá trị trước và sau');
 
 -- ADMIN không tự gỡ hoặc thu hẹp quyền Quản trị (chống tự khoá).
 select is(pg_temp.err($$select pg_temp.save(jsonb_build_array(pg_temp.cell('ADMIN', 'ADMIN', 'SUA', null)))$$), 'HMT_ADMIN_GIU_QUYEN_QUAN_TRI',

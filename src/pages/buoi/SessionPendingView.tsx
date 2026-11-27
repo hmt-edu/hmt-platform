@@ -1,13 +1,9 @@
-// BUOI-12 Buổi chưa hoàn tất (khuôn K03): buổi Đã chốt đã kết thúc mà giáo viên chưa hoàn tất, kèm hạn (R-GV-05) và lý do chưa Done (R-GIO-06). "Nhắc GV" ghi một
-// thông báo cho giáo viên của buổi (app.remind_teacher_session); cổng giáo viên CHƯA có chỗ đọc thông báo nên nút "Nhắc GV" tạm mờ kèm chữ giải thích (Chat 11/11, làm sau 17/11).
-// Hàm DB và hook useRemindTeacher giữ nguyên để bật lại khi có hộp thông báo. "Mở buổi" sang BUOI-02.
-// Done hàng loạt (R-GIO-12): Điểm danh · Duyệt, chọn dòng ở danh sách, lý do bắt buộc; số buổi tối đa là tham số session_bulk_done_max.
+// Danh sách Buổi học (BUOI-01) khi bật lọc nhanh «Chưa hoàn tất»: buổi Đã chốt đã kết thúc mà giáo viên chưa hoàn tất, kèm hạn (R-GV-05) và lý do chưa Done
+// (R-GIO-06). "Nhắc GV" ghi một thông báo cho giáo viên của buổi (app.remind_teacher_session); cổng giáo viên CHƯA có chỗ đọc thông báo nên nút "Nhắc GV" tạm mờ
+// kèm chữ giải thích (Chat 11/11, làm sau 17/11). Hàm DB và hook useRemindTeacher giữ nguyên để bật lại khi có hộp thông báo. "Mở" sang BUOI-02.
 import { useMemo, useState } from 'react';
 import { ListScreen } from '../../list/ListScreen';
-import { Button } from '../../ui/Button';
-import { BulkActionBar } from '../../ui/Data';
-import { Alert } from '../../ui/Feedback';
-import { BulkDoneDialog } from './BulkDoneDialog';
+import { useBulkDone } from './bulkDone';
 import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeafRows } from '../lead/useLeadData';
 import { useToast } from '../../ui/toastContext';
@@ -16,21 +12,18 @@ import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
 import { useAccess } from '../../nav/AccessContext';
 import { buildPendingConfig } from './sessionConfig';
-import {
-  EMPTY_ABSENT_STATE,
-  PENDING_GROUP_FIELD_OF,
-  buildPendingFilters,
-  pendingGroupFilter,
-  sessionNoLabel,
-} from './sessionLogic';
-import type { BulkFinishResult, PendingRow } from './sessionTypes';
+import { PENDING_GROUP_FIELD_OF, buildPendingFilters, pendingGroupFilter } from './sessionLogic';
+import type { PendingRow } from './sessionTypes';
 import { usePendingGroupCounts, usePendingPage, useRefreshSessions } from './useSessionData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
-export function SessionPendingPage() {
+type Props = { state: ListState; onStateChange: (next: ListState) => void };
+
+export function SessionPendingView({ state, onStateChange }: Props) {
   const access = useAccess();
   const refreshData = useRefreshSessions();
+  const openFrom = useNavigateFrom();
   const pageSize = useIntSetting('list_page_size_default');
-  const [state, setState] = useState<ListState>(EMPTY_ABSENT_STATE);
   const [view, setView] = useState<ViewMode>('list');
   const [paging, setPaging] = useState({ key: '', page: 0 });
   const debouncedSearch = useDebounced(state.search);
@@ -48,11 +41,7 @@ export function SessionPendingPage() {
   );
   const grouped = groupFields.length > 0;
   const [tick, setTick] = useState(0);
-  const canBulk = access.can('ATTENDANCE', 'DUYET');
-  const bulkMax = useIntSetting('session_bulk_done_max');
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [bulkOpen, setBulkOpen] = useState(false);
-  const [bulkResult, setBulkResult] = useState<BulkFinishResult | null>(null);
+  const bulkDone = useBulkDone(() => setTick((t) => t + 1));
   const list = usePendingPage(filters, page * (pageSize ?? 0), pageSize, !grouped);
   const counts = usePendingGroupCounts(filters, groupFields);
   const leaves = useLeafRows<PendingRow>(
@@ -86,41 +75,10 @@ export function SessionPendingPage() {
   return (
     <>
       <ListScreen
-        {...(canBulk ? { selected, onSelectedChange: setSelected } : {})}
-        bulk={
-          canBulk ? (
-            <>
-              {bulkResult && (
-                <Alert tone={bulkResult.skipped.length > 0 ? 'warning' : 'success'}>
-                  <b>
-                    Đã Done {bulkResult.done.length} buổi, bỏ qua {bulkResult.skipped.length}.
-                  </b>
-                  <ul className="list-disc pl-5">
-                    {bulkResult.skipped.map((x) => (
-                      <li key={x.session_id}>
-                        {x.class_code} {sessionNoLabel(x.session_no)}: {x.reason}
-                      </li>
-                    ))}
-                  </ul>
-                </Alert>
-              )}
-              <BulkActionBar count={selected.size} onClear={() => setSelected(new Set())}>
-                <Button
-                  disabled={bulkMax === null || selected.size > bulkMax}
-                  onClick={() => setBulkOpen(true)}
-                >
-                  Done hàng loạt
-                </Button>
-                {bulkMax !== null && selected.size > bulkMax && (
-                  <span className="text-caption">Mỗi lượt tối đa {bulkMax} buổi.</span>
-                )}
-              </BulkActionBar>
-            </>
-          ) : undefined
-        }
+        {...bulkDone.listProps}
         config={config}
         state={state}
-        onStateChange={setState}
+        onStateChange={onStateChange}
         view={view}
         onViewChange={setView}
         rows={rows}
@@ -151,21 +109,13 @@ export function SessionPendingPage() {
                   : {}),
               }
         }
+        onRowClick={(r) => openFrom(`/crm/buoi-hoc/${r.id}`)}
         emptyMessage={{
           title: 'Không có buổi nào chưa hoàn tất',
           hint: 'Buổi đã chốt mà giáo viên chưa hoàn tất trong hạn sẽ hiện ở đây.',
         }}
       />
-      <BulkDoneDialog
-        sessionIds={[...selected]}
-        open={bulkOpen}
-        onClose={() => setBulkOpen(false)}
-        onDone={(result) => {
-          setBulkResult(result);
-          setSelected(new Set());
-          setTick((t) => t + 1);
-        }}
-      />
+      {bulkDone.dialog}
     </>
   );
 }

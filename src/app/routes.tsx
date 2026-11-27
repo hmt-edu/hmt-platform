@@ -43,10 +43,6 @@ const EnrollmentListPage = lazyScreen(
   () => import('../pages/ghi-danh/EnrollmentListPage'),
   'EnrollmentListPage',
 );
-const EnrollmentQueuePage = lazyScreen(
-  () => import('../pages/ghi-danh/EnrollmentQueuePage'),
-  'EnrollmentQueuePage',
-);
 const EnrollmentRecordPage = lazyScreen(
   () => import('../pages/ghi-danh/EnrollmentRecordPage'),
   'EnrollmentRecordPage',
@@ -72,10 +68,6 @@ const SessionRecordPage = lazyScreen(
   'SessionRecordPage',
 );
 const SessionOpsPage = lazyScreen(() => import('../pages/buoi/SessionOpsPage'), 'SessionOpsPage');
-const SessionPendingPage = lazyScreen(
-  () => import('../pages/buoi/SessionPendingPage'),
-  'SessionPendingPage',
-);
 const AttendancePage = lazyScreen(
   () => import('../pages/diem-danh/AttendancePage'),
   'AttendancePage',
@@ -240,6 +232,10 @@ const QuotationPrintPage = lazyScreen(
 const OpportunityRecordPage = lazyScreen(
   () => import('../pages/co-hoi/OpportunityRecordPage'),
   'OpportunityRecordPage',
+);
+const OpportunityCreatePage = lazyScreen(
+  () => import('../pages/co-hoi/OpportunityCreatePage'),
+  'OpportunityCreatePage',
 );
 const ImportDataPage = lazyScreen(
   () => import('../pages/nhap-du-lieu/ImportDataPage'),
@@ -527,6 +523,14 @@ export const routes: RouteObject[] = [
             ),
           },
           {
+            path: 'co-hoi/moi',
+            element: (
+              <GatedCrmEntry slug="co-hoi" need={['OPPORTUNITY', 'TAO']}>
+                <OpportunityCreatePage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
             path: 'co-hoi',
             element: (
               <GatedCrmEntry slug="co-hoi">
@@ -786,11 +790,8 @@ export const routes: RouteObject[] = [
           },
           {
             path: 'cho-xep-lop',
-            element: (
-              <GatedCrmEntry slug="cho-xep-lop">
-                <EnrollmentQueuePage />
-              </GatedCrmEntry>
-            ),
+            // Hàng chờ xếp lớp đã bỏ (27/11): đường dẫn cũ mở danh sách Ghi danh đã lọc Chờ xếp lớp.
+            element: <Navigate to="/crm/ghi-danh?loc=cho-xep-lop" replace />,
           },
           {
             path: 'buoi-hoc',
@@ -842,11 +843,7 @@ export const routes: RouteObject[] = [
           },
           {
             path: 'buoi-chua-done',
-            element: (
-              <GatedCrmEntry slug="buoi-chua-done">
-                <SessionPendingPage />
-              </GatedCrmEntry>
-            ),
+            element: <Navigate to="/crm/buoi-hoc?loc=chua-hoan-tat" replace />,
           },
           {
             path: 'diem-danh',

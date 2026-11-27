@@ -7,8 +7,9 @@ export type OppStatus = 'DANG_DUNG' | 'DA_GOP';
 export type OpportunityRow = {
   id: string;
   code: string;
-  lead_id: string;
-  lead_code: string;
+  /** Trống = cơ hội tạo trực tiếp, không qua lead. */
+  lead_id: string | null;
+  lead_code: string | null;
   parent_id: string;
   parent_code: string;
   parent_name: string;
@@ -92,8 +93,9 @@ export type OppRecord = {
   code: string;
   /** Danh sách em (app.prospect_students_json). */
   students: ProspectStudent[];
-  lead_id: string;
-  lead_code: string;
+  /** Trống = cơ hội tạo trực tiếp, không qua lead. */
+  lead_id: string | null;
+  lead_code: string | null;
   parent_id: string;
   parent_code: string;
   parent_name: string;

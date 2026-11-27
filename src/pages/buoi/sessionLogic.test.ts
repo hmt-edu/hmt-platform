@@ -12,7 +12,11 @@ import {
   sessionSortParam,
   ymd,
   doneModeLabel,
+  adjustPendingMode,
+  isPendingMode,
+  withPendingFilter,
 } from './sessionLogic';
+import type { ListState } from '../../list/types';
 
 const NOW = new Date('2026-10-20T03:00:00Z'); // 10:00 ngày 20/10/2026 giờ Việt Nam
 const STATUSES = ['NHAP', 'DA_CHOT', 'DONE'];
@@ -117,5 +121,44 @@ describe('doneModeLabel', () => {
   });
   it('buổi Done cũ chưa ghi cách hoàn tất thì không hiện', () => {
     expect(doneModeLabel({ done_mode: null, done_by_name: null, done_reason: null })).toBeNull();
+  });
+});
+
+describe('BUOI-01 lọc nhanh «Chưa hoàn tất»', () => {
+  const on = (s: ListState): ListState => ({
+    ...s,
+    quick: { ...s.quick, pending: ['CHUA_HOAN_TAT'] },
+  });
+
+  it('bật lọc thì bỏ mốc hôm nay và các điều kiện, nhóm mà danh sách chưa hoàn tất không hiểu', () => {
+    const next = adjustPendingMode(
+      {
+        ...EMPTY_SESSION_STATE,
+        group: ['date', 'teacher'],
+        conditions: [
+          { id: '1', field: 'session_date', op: 'from', value: '2026-11-01' },
+          { id: '2', field: 'branch', op: 'eq', value: 'cs5' },
+        ],
+      },
+      on(EMPTY_SESSION_STATE),
+    );
+    expect(isPendingMode(next)).toBe(true);
+    expect(next.datePreset).toBe('');
+  });
+
+  it('bỏ lọc thì về mốc hôm nay và bỏ lọc Hạn', () => {
+    const pending = withPendingFilter(EMPTY_SESSION_STATE);
+    const next = adjustPendingMode(pending, {
+      ...pending,
+      quick: { pending: [], kind: ['QUA_HAN'] },
+    });
+    expect(isPendingMode(next)).toBe(false);
+    expect(next.datePreset).toBe('today');
+    expect(next.quick.kind).toBeUndefined();
+  });
+
+  it('không đổi chế độ thì giữ nguyên trạng thái', () => {
+    const next = { ...EMPTY_SESSION_STATE, search: 'T9' };
+    expect(adjustPendingMode(EMPTY_SESSION_STATE, next)).toBe(next);
   });
 });

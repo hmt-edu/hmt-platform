@@ -26,6 +26,8 @@ import { appointmentTag, formatPhone, leadTitle } from './leadFormat';
 import type { BoardCard, BoardColumn, LeadRow } from './leadTypes';
 import { useLeadCatalogs } from './useCatalogs';
 import { LeadStageDialog } from './LeadStageDialog';
+import { BulkCancelLeadDialog, RestoreLeadDialog } from './BulkLeadDialogs';
+import { CancelLeadDialog } from './CancelLeadDialog';
 import { canRestore, selectableSubstages } from './leadStage';
 import {
   assignLeads,
@@ -33,6 +35,7 @@ import {
   exportLeads,
   useGroupCounts,
   useLeadBoard,
+  useLeadCancelOptions,
   useLeadPage,
   useLeafRows,
   useRefreshLeads,
@@ -72,6 +75,7 @@ const EXPORT_COLUMNS = [
   { key: 'next_appointment_at', label: 'Lịch hẹn kế tiếp' },
   { key: 'created_at', label: 'Ngày tạo' },
   { key: 'record_status', label: 'Trạng thái' },
+  { key: 'cancel_reason', label: 'Lý do huỷ' },
 ];
 
 export function LeadListPage() {
@@ -81,13 +85,18 @@ export function LeadListPage() {
   const toast = useToast();
   const refreshData = useRefreshLeads();
   const catalogs = useLeadCatalogs();
-  const config = useMemo(() => buildLeadConfig(catalogs, access), [catalogs, access]);
-
   const pageSize = useIntSetting('list_page_size_default');
   const maxPage = useIntSetting('list_page_size_max');
   const cardsPerColumn = useIntSetting('kanban_cards_per_column');
 
   const [state, setState] = useState<ListState>(EMPTY_LEAD_STATE);
+  const trash = (state.quick.status ?? []).includes('trash');
+  const config = useMemo(
+    () => buildLeadConfig(catalogs, access, { trash }),
+    [catalogs, access, trash],
+  );
+  const cancelOptions = useLeadCancelOptions().data;
+  const [bulkAction, setBulkAction] = useState<'cancel' | 'restore' | null>(null);
   const [view, setView] = useState<ViewMode>('list');
   const [sort, setSort] = useState<SortState>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -384,6 +393,18 @@ export function LeadListPage() {
                   Assign
                 </Button>
               )}
+              {/* Phạm vi hẹp (Tư vấn) chỉ huỷ từng cái. */}
+              {!trash &&
+                (cancelOptions?.bulk || (cancelOptions?.single && selected.size === 1)) && (
+                  <Button variant="danger" icon="trash" onClick={() => setBulkAction('cancel')}>
+                    Huỷ
+                  </Button>
+                )}
+              {trash && cancelOptions?.restore && (
+                <Button icon="refresh" onClick={() => setBulkAction('restore')}>
+                  Khôi phục
+                </Button>
+              )}
             </BulkActionBar>
           ) : undefined
         }
@@ -461,6 +482,42 @@ export function LeadListPage() {
               true,
             )
           }
+        />
+      )}
+      {bulkAction === 'cancel' &&
+        (cancelOptions?.bulk ? (
+          <BulkCancelLeadDialog
+            ids={[...selected]}
+            max={cancelOptions.bulk_max}
+            onClose={() => setBulkAction(null)}
+            onDone={(r) => {
+              select(new Set());
+              refresh();
+              if (r.skipped.length === 0) toast({ title: `Đã huỷ ${r.done} lead.` });
+            }}
+          />
+        ) : (
+          <CancelLeadDialog
+            leadId={[...selected][0] ?? ''}
+            summary={selectedCodes.join(', ')}
+            open
+            onClose={() => setBulkAction(null)}
+            onCancelled={() => {
+              select(new Set());
+              refresh();
+              toast({ title: 'Đã huỷ lead nhập nhầm.' });
+            }}
+          />
+        ))}
+      {bulkAction === 'restore' && (
+        <RestoreLeadDialog
+          ids={[...selected]}
+          onClose={() => setBulkAction(null)}
+          onDone={(r) => {
+            select(new Set());
+            refresh();
+            if (r.skipped.length === 0) toast({ title: `Đã khôi phục ${r.done} lead.` });
+          }}
         />
       )}
       <ImportLeadsDialog

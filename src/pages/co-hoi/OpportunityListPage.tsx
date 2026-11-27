@@ -1,6 +1,6 @@
 // TS-07 Cơ hội (danh sách) và Kanban L1–L8: khuôn K1 và K2 nối với các hàm Cơ hội trong cơ sở dữ liệu.
 // Lọc, sắp xếp, phân trang, Group By, số đếm Kanban đều tính ở máy chủ; trình duyệt chỉ giữ trang đang xem.
-// Không có nút Tạo (cơ hội chỉ tạo từ trang Lead, TS-06) và Nhập (P3f). Kéo thẻ Kanban chỉ đi tới (R-CRM-02), L6 do hệ thống
+// Nút Tạo mở trang tạo cơ hội trực tiếp (R-CRM-01; tạo từ lead là TS-06). Chưa có Nhập (P3f). Kéo thẻ Kanban chỉ đi tới (R-CRM-02), L6 do hệ thống
 // chuyển (R-CRM-13); thả vào cột hợp lệ mở hộp TS-09.
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
@@ -250,6 +250,7 @@ export function OpportunityListPage() {
   const selectedBranches = [...selectedInfo.values()].map((i) => i.branch);
 
   const canExport = access.can('OPPORTUNITY', 'XUAT');
+  const canCreate = access.can('OPPORTUNITY', 'TAO');
   const canAssign = access.can('OPPORTUNITY', 'GIAO_VIEC');
   const canEdit = access.can('OPPORTUNITY', 'SUA');
 
@@ -271,8 +272,18 @@ export function OpportunityListPage() {
         }
         error={errorText}
         onRetry={() => void activeQuery.refetch()}
-        actions={
-          canExport
+        actions={[
+          ...(canCreate
+            ? [
+                {
+                  label: 'Tạo',
+                  icon: 'plus' as const,
+                  primary: true,
+                  onClick: () => openFrom('/crm/co-hoi/moi'),
+                },
+              ]
+            : []),
+          ...(canExport
             ? [
                 {
                   label: 'Xuất',
@@ -281,8 +292,8 @@ export function OpportunityListPage() {
                   loading: exporting,
                 },
               ]
-            : []
-        }
+            : []),
+        ]}
         onRefresh={refresh}
         pager={
           view === 'kanban'
@@ -316,7 +327,7 @@ export function OpportunityListPage() {
         }
         emptyMessage={{
           title: 'Chưa có cơ hội',
-          hint: 'Cơ hội được tạo từ trang Lead. Khi có cơ hội, danh sách sẽ hiện ở đây.',
+          hint: 'Bấm Tạo, hoặc tạo cơ hội từ trang Lead.',
         }}
         parent={
           parentLead

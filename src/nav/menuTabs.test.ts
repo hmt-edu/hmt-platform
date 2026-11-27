@@ -31,7 +31,6 @@ describe('menu đợt 1 (A-26-11)', () => {
   });
 
   it.each([
-    ['ghi-danh', 'cho-xep-lop'],
     ['quan-tri/nhat-ky', 'quan-tri/nhat-ky-dang-nhap'],
     ['phieu-thu', 'cho-ke-toan-duyet'],
     ['tai-tuc', 'doi-chieu-tai-tuc'],
@@ -47,11 +46,13 @@ describe('menu đợt 1 (A-26-11)', () => {
   it('Đào tạo còn 5 mục; Buổi học và Điểm danh gom tab, đường dẫn cũ vẫn mở được (C-27-06)', () => {
     const menu = visibleMenu(CRM_MENU, admin);
     expect(sidebar('dao-tao')).toEqual(['ghi-danh', 'lop', 'buoi-hoc', 'diem-danh', 'sap-het-gio']);
-    expect(routeTabs(menu, 'lich-tuan').map((t) => t.label)).toEqual([
-      'Buổi học',
-      'Yêu cầu buổi',
-      'Chưa hoàn tất',
-    ]);
+    // 27/11 (A-27-17): bỏ tab Yêu cầu buổi, Chưa hoàn tất, Chờ xếp lớp; hai đường dẫn buổi vẫn mở được.
+    for (const slug of ['ghi-danh', 'buoi-hoc', 'lich-tuan', 'yeu-cau-buoi', 'buoi-chua-done']) {
+      expect(routeTabs(menu, slug)).toEqual([]);
+    }
+    for (const slug of ['yeu-cau-buoi', 'buoi-chua-done']) {
+      expect(menu.flatMap(sidebarEntries).map((e) => e.slug)).not.toContain(slug);
+    }
     // Lịch tuần là chế độ xem của Buổi học (C-27-07 3a), giữ đường dẫn và quyền riêng.
     for (const slug of ['buoi-hoc', 'lich-tuan']) {
       expect(routeModes(menu, slug).map((t) => t.label)).toEqual(['Danh sách', 'Lịch tuần']);
@@ -61,7 +62,7 @@ describe('menu đợt 1 (A-26-11)', () => {
     expect(routeModes(visibleMenu(CRM_MENU, noClass), 'buoi-hoc')).toEqual([]);
     // Một màn «Điểm danh» (C-27-07 4c), tab trong màn.
     expect(routeTabs(menu, 'diem-danh')).toEqual([]);
-    for (const slug of ['lich-tuan', 'buoi-chua-done', 'diem-danh']) {
+    for (const slug of ['lich-tuan', 'yeu-cau-buoi', 'buoi-chua-done', 'diem-danh']) {
       expect(checkRoute(CRM_MENU, slug, admin).status).toBe('ok');
     }
   });
@@ -80,11 +81,8 @@ describe('menu đợt 1 (A-26-11)', () => {
     expect(slugs).toContain('phieu-chuyen-co-so-den');
   });
 
-  it('công tắc riêng của tab vẫn giữ: tắt Yêu cầu buổi thì mất tab đó', () => {
-    const off: MenuAccess = { ...admin, featureOn: (f) => f !== 'YEU_CAU_BUOI' };
-    expect(routeTabs(visibleMenu(CRM_MENU, off), 'buoi-hoc').map((t) => t.slug)).not.toContain(
-      'yeu-cau-buoi',
-    );
+  it('mục ẩn vẫn theo công tắc riêng: tắt Yêu cầu buổi thì đường dẫn bị chặn', () => {
+    const off: MenuAccess = { ...admin, isAdmin: false, featureOn: (f) => f !== 'YEU_CAU_BUOI' };
     expect(checkRoute(CRM_MENU, 'yeu-cau-buoi', off).status).toBe('feature-off');
   });
 

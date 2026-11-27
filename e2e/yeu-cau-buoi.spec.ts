@@ -293,6 +293,15 @@ test('BUOI-07: Trưởng cơ sở duyệt yêu cầu học bù thì buổi Học
   await expect(page.getByText('Học bù').first()).toBeVisible();
 });
 
+test('BUOI-08: từ bản ghi lớp mở Yêu cầu củng cố, lớp được chọn sẵn', async ({ page }) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto(`/crm/lop/${classId}`);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'Yêu cầu củng cố' }).click();
+  await expect(page).toHaveURL(new RegExp(`/crm/yeu-cau-buoi/tao-cung-co\\?lop=${classId}&ma=`));
+  await expect(page.getByRole('combobox', { name: 'Lớp', exact: true })).toContainText(classCode);
+});
+
 test('BUOI-07, BUOI-09: Sale chỉ xem lớp, không có mục Yêu cầu học bù, Yêu cầu bổ trợ (thiếu quyền Buổi học · Tạo)', async ({
   page,
 }) => {
