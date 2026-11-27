@@ -71,12 +71,14 @@ select is(pg_temp.err($$select app.create_upsale_ticket(pg_temp.sid('HS410B'), p
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is((select count(*)::int from app.upsale_ticket), 1, 'RLS: CSKH cùng cơ sở thấy phiếu');
 
+-- Từ migration 709 Trưởng cơ sở có Phiếu tái tục · Sửa; bài này tắt ô đó trong giao dịch để vẫn có một vai Xem được mà thiếu Sửa.
+select pg_temp.sudo($$update app.permission set is_active = false where role_code = 'BRANCH_MANAGER' and module_code = 'UPSALE' and action_code = 'SUA'$$);
 -- ---- Giao việc ----
 select is(pg_temp.err($$select app.assign_upsale_ticket((select id from app.upsale_ticket limit 1), pg_temp.uid('cskh1'))$$), 'HMT_KHONG_CO_QUYEN', 'CSKH không có quyền Giao việc (chỉ Xem, Tạo, Sửa)');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((app.assign_upsale_ticket((select id from app.upsale_ticket limit 1), pg_temp.uid('cskh1')) ->> 'owner_id')::uuid, pg_temp.uid('cskh1'), 'Trưởng cơ sở giao phiếu cho CSKH');
 select is(pg_temp.err($$select app.assign_upsale_ticket((select id from app.upsale_ticket limit 1), pg_temp.uid('cskh5'))$$), 'HMT_NGUOI_PHU_TRACH_SAI', 'Giao cho người cơ sở khác bị chặn');
-select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L2')$$), 'HMT_KHONG_CO_QUYEN', 'Trưởng cơ sở chỉ Xem, Giao việc: không đổi giai đoạn');
+select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L2')$$), 'HMT_KHONG_CO_QUYEN', 'Thiếu Phiếu tái tục · Sửa: không đổi giai đoạn');
 
 -- ---- Đổi giai đoạn ----
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');

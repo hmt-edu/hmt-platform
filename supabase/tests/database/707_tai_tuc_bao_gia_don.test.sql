@@ -67,12 +67,14 @@ select throws_ok($$insert into app.quotation (code, branch_id, parent_id, priced
 select throws_ok($$insert into app.quotation (code, branch_id, parent_id, priced_on, opportunity_id, upsale_ticket_id)
   select 'BG707Y', branch_id, id, current_date, gen_random_uuid(), pg_temp.tid('TT917071') from app.parent where code = 'PH707'$$, '23514', null, 'Báo giá có cả cơ hội và phiếu bị chặn');
 
+-- Từ migration 709 Trưởng cơ sở có Phiếu tái tục · Sửa; bài này tắt ô đó trong giao dịch để vẫn có một vai Xem được mà thiếu Sửa.
+select pg_temp.sudo($$update app.permission set is_active = false where role_code = 'BRANCH_MANAGER' and module_code = 'UPSALE' and action_code = 'SUA'$$);
 set local role authenticated;
 -- ---- Quyền ----
 select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
 select is(pg_temp.err($$select app.save_quotation(null, pg_temp.tid('TT917071'), pg_temp.qline())$$), 'HMT_KHONG_CO_QUYEN', 'Kế toán không tạo báo giá từ phiếu');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(pg_temp.err($$select app.save_quotation(null, pg_temp.tid('TT917071'), pg_temp.qline())$$), 'HMT_KHONG_CO_QUYEN', 'Trưởng cơ sở chưa có Phiếu tái tục · Sửa: không tạo báo giá từ phiếu');
+select is(pg_temp.err($$select app.save_quotation(null, pg_temp.tid('TT917071'), pg_temp.qline())$$), 'HMT_KHONG_CO_QUYEN', 'Thiếu Phiếu tái tục · Sửa: không tạo báo giá từ phiếu');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.save_quotation(null, gen_random_uuid(), pg_temp.qline())$$), 'HMT_KHONG_TIM_THAY', 'Mã nguồn không phải cơ hội hay phiếu');
 

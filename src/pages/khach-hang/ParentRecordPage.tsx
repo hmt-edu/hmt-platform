@@ -40,6 +40,7 @@ const FORMAT = {
     phone_2: 'Số điện thoại 2',
     address: 'Địa chỉ',
     relative_name: 'Người thân',
+    email: 'Email',
   },
 };
 
@@ -48,6 +49,7 @@ type ParentDraft = {
   phone: string;
   phone_2: string;
   relative_name: string;
+  email: string;
   province_code: string;
   ward_code: string;
   address: string;
@@ -62,6 +64,7 @@ function toParentDraft(
     phone: r.phone,
     phone_2: r.phone_2 ?? '',
     relative_name: r.relative_name ?? '',
+    email: r.email ?? '',
     province_code: refs?.province_code ?? '',
     ward_code: refs?.ward_code ?? '',
     address: r.address ?? '',
@@ -192,6 +195,7 @@ function ParentView({ record }: { record: ParentRecord }) {
           phone: draft.phone,
           phone_2: draft.phone_2,
           relative_name: draft.relative_name,
+          email: draft.email,
           province_code: draft.province_code === '' ? null : draft.province_code,
           ward_code: draft.ward_code === '' ? null : draft.ward_code,
           address: draft.address,
@@ -204,6 +208,7 @@ function ParentView({ record }: { record: ParentRecord }) {
       const error = errorOf(e);
       if (error.code === 'HMT_SDT_SAI' || error.code === 'HMT_SDT_TRUNG')
         setErrors((x) => ({ ...x, phone: error.message }));
+      else if (error.code === 'HMT_EMAIL_SAI') setErrors((x) => ({ ...x, email: error.message }));
       else if (error.code === 'HMT_THIEU_THONG_TIN')
         setErrors((x) => ({ ...x, full_name: error.message }));
       else toast({ tone: 'danger', title: error.message });
@@ -405,6 +410,7 @@ function ParentView({ record }: { record: ParentRecord }) {
             {text('phone', 'Số điện thoại', true)}
             {text('phone_2', 'Số điện thoại 2')}
             {text('relative_name', 'Người thân')}
+            {text('email', 'Email')}
             <DetailField
               mode={mode}
               label="Tỉnh/Thành phố"

@@ -72,7 +72,6 @@ export type UpsaleRecord = {
     name: string;
     phone: string;
     email: string | null;
-    zalo: boolean | null;
   } | null;
   student: { id: string; code: string; name: string; birth_year: number | null } | null;
   class: {

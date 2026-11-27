@@ -55,12 +55,14 @@ select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id
     from (values ('TT917001', 'HS417A', 'L6'), ('TT917002', 'HS417B', 'L1'), ('TT917003', 'HS417C', 'L6')) v (code, sc, st)
     join app.student s on s.code = v.sc, app.class c where c.code = 'LOP417'$$);
 
+-- Từ migration 709 Trưởng cơ sở có Phiếu tái tục · Sửa; bài này tắt ô đó trong giao dịch để vẫn có một vai Xem được mà thiếu Sửa.
+select pg_temp.sudo($$update app.permission set is_active = false where role_code = 'BRANCH_MANAGER' and module_code = 'UPSALE' and action_code = 'SUA'$$);
 set local role authenticated;
 -- ---- Quyền: mỗi bước kiểm riêng ----
 select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines())$$), 'HMT_KHONG_CO_QUYEN', 'Kế toán không tạo đơn từ phiếu');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines())$$), 'HMT_KHONG_CO_QUYEN', 'Trưởng cơ sở chỉ Xem, Giao việc phiếu tái tục: không đủ quyền Sửa phiếu để tạo đơn');
+select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines())$$), 'HMT_KHONG_CO_QUYEN', 'Thiếu Phiếu tái tục · Sửa: không đủ quyền để tạo đơn');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 -- ---- Luật ----
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), '[]'::jsonb)$$), 'HMT_DON_KHONG_DONG', 'Đơn cần ít nhất một dòng');
