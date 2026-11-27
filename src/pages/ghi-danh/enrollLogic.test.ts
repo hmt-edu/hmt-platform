@@ -12,6 +12,7 @@ import {
   weekdayLabel,
   parseHours,
 } from './enrollLogic';
+import { EMPTY_ENROLL_STATE, buildEnrollFilters, initialEnrollState } from './enrollFilters';
 import type { MatchingClass } from './enrollTypes';
 
 const cls: MatchingClass = {
@@ -166,5 +167,14 @@ describe('GD-02, GD-03: số liệu từ hàm đọc (migration 591)', () => {
       },
     };
     expect(disabledReason(c)).toContain('Trùng buổi 03/11/2026, 18:00–19:30 với lớp L1');
+  });
+});
+
+describe('đường dẫn Hàng chờ xếp lớp cũ (A-27-17)', () => {
+  it('?loc=cho-xep-lop bật sẵn lọc nhanh Chờ xếp lớp; không có thì danh sách như thường', () => {
+    expect(buildEnrollFilters(initialEnrollState('cho-xep-lop'), ['CHO_XEP_LOP'])).toEqual({
+      status: ['CHO_XEP_LOP'],
+    });
+    expect(initialEnrollState(null)).toBe(EMPTY_ENROLL_STATE);
   });
 });

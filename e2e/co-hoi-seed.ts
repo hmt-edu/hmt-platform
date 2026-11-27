@@ -26,7 +26,9 @@ export async function clear(db: pg.Client, mark: string): Promise<void> {
   await db.query('begin');
   await db.query("set local session_replication_role = 'replica'");
   const leads = `(select id from app.lead where parent_name like $1)`;
-  const opps = `(select id from app.opportunity where lead_id in ${leads})`;
+  // Cơ hội tạo trực tiếp không có lead: dọn theo phụ huynh mang dấu.
+  const opps = `(select id from app.opportunity where lead_id in ${leads}
+    or parent_id in (select id from app.parent where full_name like $1))`;
   const like = [`%${mark}%`];
   await db.query(
     `delete from app.note where (entity_type = 'LEAD' and entity_id in ${leads}) or (entity_type = 'OPPORTUNITY' and entity_id in ${opps})`,
@@ -37,7 +39,7 @@ export async function clear(db: pg.Client, mark: string): Promise<void> {
     like,
   );
   await db.query(`delete from app.student_test where opportunity_id in ${opps}`, like);
-  await db.query(`delete from app.opportunity where lead_id in ${leads}`, like);
+  await db.query(`delete from app.opportunity where id in ${opps}`, like);
   await db.query('delete from app.lead where parent_name like $1', like);
   await db.query(
     'delete from app.student where parent_id in (select id from app.parent where full_name like $1)',

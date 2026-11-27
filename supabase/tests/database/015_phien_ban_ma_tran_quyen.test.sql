@@ -65,7 +65,7 @@ select is((select saved_by from app.permission_version where version_no = (selec
           'Phiên bản ghi người lưu');
 select is((select array[from_scope, to_scope] from app.permission_change c
            join app.permission_version v on v.id = c.version_id where v.version_no = (select v + 1 from base) and c.role_code = 'SALES'),
-          array[null, 'CO_SO'], 'Ô đã đổi ghi từ (chưa có quyền) sang CO_SO');
+          array['CUA_TOI', 'CO_SO'], 'Ô đã đổi ghi từ (lead của mình, R-CRM-45) sang CO_SO');
 
 -- Luật: phiên bản đang xem phải là hiện hành.
 select is(pg_temp.err($$select app.save_permission_matrix((select v - 1 from base), jsonb_build_array(pg_temp.cell('SALES', 'LEAD', 'HUY', 'CHINH_MINH')))$$),

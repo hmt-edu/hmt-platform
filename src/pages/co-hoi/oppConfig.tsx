@@ -143,7 +143,7 @@ export function buildOppConfig(
       {
         key: 'status',
         label: 'Trạng thái bản ghi',
-        options: [{ value: 'merged', label: 'Đã gộp', hint: 'hiện cả bản đã gộp (chỉ đọc)' }],
+        options: [{ value: 'merged', label: 'Hiện cả cơ hội đã gộp (chỉ xem, không sửa được)' }],
       },
     ],
     filterFields: [

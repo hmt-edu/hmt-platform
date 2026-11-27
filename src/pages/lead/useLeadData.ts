@@ -199,6 +199,27 @@ export async function exportLeads(
 }
 
 /** Tải lại mọi dữ liệu màn Lead sau một thao tác ghi. */
+export type CancelOptions = {
+  single: boolean;
+  bulk: boolean;
+  bulk_max: number | null;
+  restore: boolean;
+};
+
+export type BulkResult = {
+  done: number;
+  skipped: { id: string; code: string | null; reason: string }[];
+};
+
+/** Người đăng nhập được huỷ, khôi phục lead tới đâu (máy chủ vẫn kiểm lại khi làm, R-CRM-45, 46). */
+export function useLeadCancelOptions() {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['lead-cancel-options'],
+    queryFn: () => rpc<CancelOptions>(supabase, 'lead_cancel_options'),
+  });
+}
+
 export function useRefreshLeads() {
   const client = useQueryClient();
   return useCallback(async () => {

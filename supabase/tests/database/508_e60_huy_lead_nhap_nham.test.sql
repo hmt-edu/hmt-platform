@@ -62,10 +62,11 @@ select app.create_opportunity((select id from t where k = 'coh'));
 insert into t select 'moi', (app.create_lead(pg_temp.lead_data('0900060004'))->>'id')::uuid;
 select pg_temp.sudo($$update app.lead set stage_code = 'C4', substage_code = 'C4C' where id = (select id from t where k = 'moi')$$);
 
--- ---------- Chặn: không phải Admin ----------
-select is(pg_temp.err($$select app.cancel_wrong_lead((select id from t where k = 'trong'), 'Nhập nhầm')$$), 'HMT_KHONG_CO_QUYEN', 'CHUNG-20: Sale không được huỷ lead nhập nhầm');
-select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(pg_temp.err($$select app.cancel_wrong_lead((select id from t where k = 'trong'), 'Nhập nhầm')$$), 'HMT_KHONG_CO_QUYEN', 'CHUNG-20: Trưởng cơ sở không được huỷ lead nhập nhầm');
+-- ---------- Chặn: không đúng quyền (R-CRM-45, anh chốt 26/11 đổi CHUNG-20; quyền theo vai trò thử đủ ở bài 704) ----------
+select pg_temp.claims(pg_temp.uid('sales1b'), 'aal1');
+select is(pg_temp.err($$select app.cancel_wrong_lead((select id from t where k = 'trong'), 'Nhập nhầm')$$), 'HMT_KHONG_CO_QUYEN', 'R-CRM-45: Tư vấn không phụ trách thì không huỷ được');
+select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
+select is(pg_temp.err($$select app.cancel_wrong_lead((select id from t where k = 'trong'), 'Nhập nhầm')$$), 'HMT_KHONG_CO_QUYEN', 'R-CRM-45: Tư vấn cơ sở khác không huỷ được');
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(pg_temp.err($$select app.cancel_wrong_lead((select id from t where k = 'trong'), 'Nhập nhầm')$$), 'HMT_KHONG_CO_QUYEN', 'CHUNG-20: CSKH không được huỷ lead nhập nhầm');
 

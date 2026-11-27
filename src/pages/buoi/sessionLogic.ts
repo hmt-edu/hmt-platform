@@ -16,6 +16,47 @@ export const EMPTY_SESSION_STATE: ListState = {
   datePreset: 'today',
 };
 
+// Lọc nhanh «Chưa hoàn tất» của BUOI-01 (thay màn Buổi chưa hoàn tất): bật thì danh sách đọc session_pending_list.
+export const PENDING_QUICK_KEY = 'pending';
+export const PENDING_QUICK_VALUE = 'CHUA_HOAN_TAT';
+export const PENDING_URL_VALUE = 'chua-hoan-tat';
+export const PENDING_QUICK_GROUP = {
+  key: PENDING_QUICK_KEY,
+  label: 'Hoàn tất',
+  options: [{ value: PENDING_QUICK_VALUE, label: 'Chưa hoàn tất' }],
+};
+
+export const isPendingMode = (state: ListState) =>
+  (state.quick[PENDING_QUICK_KEY] ?? []).includes(PENDING_QUICK_VALUE);
+
+/** Bật lọc: danh sách chưa hoàn tất gồm mọi ngày nên bỏ mốc ngày, bỏ nhóm và điều kiện mà nó không hiểu. */
+export function withPendingFilter(state: ListState): ListState {
+  return {
+    ...state,
+    quick: { ...state.quick, [PENDING_QUICK_KEY]: [PENDING_QUICK_VALUE] },
+    conditions: state.conditions.filter((c) => c.field === 'branch' || c.field === 'kind'),
+    group: state.group.filter((g) => g === 'teacher'),
+    columns: [],
+    datePreset: '',
+  };
+}
+
+/** Đổi trạng thái màn: vào hoặc ra lọc «Chưa hoàn tất» thì chỉnh phần không dùng chung giữa hai danh sách. */
+export function adjustPendingMode(prev: ListState, next: ListState): ListState {
+  if (isPendingMode(prev) === isPendingMode(next)) return next;
+  if (isPendingMode(next)) return withPendingFilter(next);
+  const quick = Object.fromEntries(
+    Object.entries(next.quick).filter(([key]) => key !== 'kind' && key !== PENDING_QUICK_KEY),
+  );
+  return {
+    ...next,
+    quick,
+    conditions: next.conditions.filter((c) => c.field !== 'kind'),
+    columns: [],
+    datePreset: next.datePreset || EMPTY_SESSION_STATE.datePreset,
+  };
+}
+
 export const EMPTY_ABSENT_STATE: ListState = { ...EMPTY_SESSION_STATE, datePreset: '' };
 
 function valuesOf(cond: Condition): string[] {

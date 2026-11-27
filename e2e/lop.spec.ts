@@ -102,12 +102,12 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   // Smart button mở danh sách của lớp, có nút quay lại lớp.
   await page.getByRole('button', { name: /^Học sinh/ }).click();
   await expect(page).toHaveURL(/\/crm\/lop\/[0-9a-f-]{36}\/hoc-sinh$/);
-  // Đường dẫn trên thanh trên có tên trang (không «…»), và «Xếp thêm» mở đúng màn Chờ xếp lớp.
+  // Đường dẫn trên thanh trên có tên trang (không «…»), và «Xếp thêm» mở danh sách Ghi danh lọc Chờ xếp lớp.
   const crumbs = page.getByRole('navigation', { name: 'Đường dẫn' }).first();
   await expect(crumbs).toContainText('· Học sinh');
   const studentsUrl = page.url();
   await page.getByRole('button', { name: 'Xếp thêm' }).click();
-  await expect(page).toHaveURL(/\/crm\/cho-xep-lop$/);
+  await expect(page).toHaveURL(/\/crm\/ghi-danh\?loc=cho-xep-lop$/);
   await page.goto(studentsUrl);
   await page.getByRole('button', { name: /^Quay lại lớp/ }).click();
   await expect(page).toHaveURL(recordUrl);

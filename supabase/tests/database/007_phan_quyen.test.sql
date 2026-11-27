@@ -84,7 +84,7 @@ select is((app.custom_access_token_hook(jsonb_build_object('user_id', (select id
 set local role authenticated;
 select pg_temp.claims((select id from u where key = 'sales5'), 'aal1');
 select ok(app.has_permission('LEAD', 'TAO'), 'SALES: tạo được lead');
-select ok(not app.has_permission('LEAD', 'HUY'), 'SALES: không huỷ được lead');
+select is(app.permission_scope('LEAD', 'HUY'), 'CUA_TOI', 'SALES: chỉ huỷ lead của mình (R-CRM-45)');
 select ok(not app.has_permission('ADMIN', 'XEM'), 'SALES: không có quyền Quản trị');
 select ok(app.can_see_branch('LEAD', 'XEM', (select id from app.branch where code = 'CS5')), 'SALES CS5: thấy dữ liệu CS5');
 select ok(not app.can_see_branch('LEAD', 'XEM', (select id from app.branch where code = 'CS1')), 'SALES CS5: KHÔNG thấy dữ liệu CS1');

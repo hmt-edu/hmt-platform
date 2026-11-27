@@ -1,4 +1,4 @@
-// CHUNG-20 · Hộp «Huỷ lead nhập nhầm» (K08, chỉ Admin). Máy chủ (app.cancel_wrong_lead) quyết định: chỉ Admin, lý do bắt buộc,
+// CHUNG-20 · Hộp «Huỷ lead nhập nhầm» (K08). Máy chủ (app.cancel_wrong_lead) quyết định: quyền theo ma trận (R-CRM-45), lý do bắt buộc,
 // chặn khi lead đã có cơ hội hoặc lịch hẹn. Không xoá: lead chuyển sang «Đã huỷ», mọi lần huỷ ghi nhật ký.
 import { useState } from 'react';
 import { errorOf, rpc, useDb } from '../../lib/db';

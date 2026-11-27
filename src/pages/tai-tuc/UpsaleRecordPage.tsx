@@ -1,24 +1,18 @@
-// TT-02 Phiếu tái tục (bản ghi, khuôn K06; canvas 9933 TT02_*): thanh giai đoạn chỉ đọc (đổi bằng nút «Chuyển giai đoạn»), thông tin phụ huynh, học sinh, lớp,
-// giờ còn, ngày hết giờ dự kiến, hai ô tự do (Mục tiêu/nhu cầu tiếp theo, Lộ trình tiếp theo), tab Giờ học, Báo giá và đơn (làm ở PR sau), Tình hình học tập (mờ, chưa dùng).
+// TT-02 Phiếu tái tục (bản ghi, khuôn K06; bố cục anh Trường chốt 27/11): thanh giai đoạn chỉ đọc («Không tái tục» cuối), nút, câu theo giai đoạn, rồi một trang
+// liền: Liên hệ, Giờ học, Ghi danh, Báo giá và đơn, Tình hình học tập, Kết quả tái tục. Số máy chủ chưa trả thì ghi «chưa có dữ liệu», không tự tính.
 // Giao diện KHÔNG tính giờ, không tự đoán quyền: số liệu và việc làm được do get_upsale_ticket trả. Điện thoại chỉ đọc (Đ248).
 import { useCrumbTail } from '../../layout/CrumbTail';
-import { useState } from 'react';
+import { useRef, useState, type ReactNode, type Ref } from 'react';
 import { Link, useParams } from 'react-router';
 import { RecordDetail, DetailField } from '../../record/Detail';
 import { HmtError, errorOf, useDb, useIntSetting } from '../../lib/db';
-import {
-  formatDate,
-  formatDateTime,
-  formatMoney,
-  formatMonth,
-  formatNumber,
-} from '../../lib/format';
+import { formatDate, formatDateTime, formatMoney, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { Button } from '../../ui/Button';
 import { Chatter } from '../../ui/Chatter';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { TextAreaField } from '../../ui/Field';
-import { Tabs } from '../../ui/Overlays';
+import { LineTable } from '../../ui/LineTable';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
@@ -28,7 +22,7 @@ import { AssignUpsaleDialog } from './AssignUpsaleDialog';
 import { ChangeUpsaleStageDialog } from './ChangeUpsaleStageDialog';
 import { CreateUpsaleOrderDialog } from './CreateUpsaleOrderDialog';
 import { upsaleEventEntries } from './upsaleEventEntries';
-import { upsaleStageNote } from './upsaleNotes';
+import { orderStages, upsaleStageNote } from './upsaleNotes';
 import type { UpsaleOrderRow, UpsaleRecord } from './upsaleTypes';
 import {
   saveUpsaleNotes,
@@ -37,6 +31,9 @@ import {
   useUpsaleRecord,
 } from './useUpsaleData';
 import { FromLink } from '../../layout/FromLink';
+
+/** Ô máy chủ chưa trả số liệu: nói rõ, để không hiểu nhầm là «chưa có» thật. */
+const NO_DATA = <span className="text-fg-muted">chưa có dữ liệu</span>;
 
 export function UpsaleRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -86,7 +83,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const t = record.ticket;
   useCrumbTail(t.code);
   const refresh = useRefreshUpsaleRecord(t.id);
-  const [tab, setTab] = useState('overview');
+  const ordersRef = useRef<HTMLElement>(null);
   const [dialog, setDialog] = useState<'stage' | 'assign' | 'order' | null>(null);
   const [goal, setGoal] = useState(t.next_goal ?? '');
   const [roadmap, setRoadmap] = useState(t.next_roadmap ?? '');
@@ -103,7 +100,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const dirty = goal !== (t.next_goal ?? '') || roadmap !== (t.next_roadmap ?? '');
   const forbiddenAll = !access.can('UPSALE', 'XEM');
 
-  const steps: StageStep[] = catalogs.options('UPSALE_STAGE').map((o) => ({
+  const steps: StageStep[] = orderStages(catalogs.options('UPSALE_STAGE')).map((o) => ({
     code: o.value,
     label: o.label,
     fullLabel: `${o.value} ${o.label}`,
@@ -132,116 +129,16 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
       ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
       : null,
     { hours: hoursThreshold, days: daysThreshold },
+    orders.data?.length ?? 0,
   );
 
-  const overview = (
-    <div className="flex flex-col gap-6">
-      {stageNote && <Alert tone={stageNote.tone}>{stageNote.text}</Alert>}
-      {t.risk_flag && (
-        <Alert tone="warning">
-          Học sinh vắng từ{' '}
-          {record.hours.window_days > 0 ? `${record.hours.absences_window} buổi` : ''} trong{' '}
-          {record.hours.window_days} ngày gần nhất ở lớp này (cờ rủi ro).
-        </Alert>
-      )}
-      <section className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
-        <dl className="flex min-w-0 flex-col">
-          <DetailField label="Phiếu tái tục" mode="view" value={t.code} />
-          <DetailField label="Học sinh" mode="view" value={record.student?.name ?? ''} />
-          <DetailField label="Mã học sinh" mode="view" value={record.student?.code ?? ''} />
-          <DetailField label="Lớp" mode="view" value={record.class.code} />
-          <DetailField
-            label="Giáo viên lớp hiện tại"
-            mode="view"
-            value={record.class.teacher_name ?? ''}
-          />
-          <DetailField
-            label={`Ghi danh liên quan (${record.enrollments.length})`}
-            mode="view"
-            value={
-              record.enrollments.length === 0
-                ? ''
-                : record.enrollments
-                    .map((e) => `${e.code} · còn ${formatNumber(e.hours_left)} giờ`)
-                    .join('; ')
-            }
-          />
-        </dl>
-        <dl className="flex min-w-0 flex-col">
-          <DetailField label="Phụ huynh" mode="view" value={record.parent?.name ?? ''} />
-          <DetailField
-            label="Số điện thoại"
-            mode="view"
-            value={record.parent ? formatPhone(record.parent.phone) : ''}
-          />
-          <DetailField label="Email" mode="view" value={record.parent?.email ?? ''} />
-          <DetailField
-            label="Giờ còn"
-            mode="view"
-            value={t.hours_left === null ? '' : `${formatNumber(t.hours_left)} giờ`}
-          />
-          <DetailField
-            label="Ngày hết giờ dự kiến"
-            mode="view"
-            value={t.expected_end_date ? formatDate(t.expected_end_date) : ''}
-          />
-        </dl>
-      </section>
-      <section className="flex flex-col gap-3">
-        <TextAreaField
-          label="Mục tiêu / nhu cầu tiếp theo"
-          value={goal}
-          onChange={(e) => setGoal(e.target.value)}
-          rows={3}
-          disabled={!can('sua_ghi_chu')}
-        />
-        <TextAreaField
-          label="Lộ trình tiếp theo"
-          value={roadmap}
-          onChange={(e) => setRoadmap(e.target.value)}
-          rows={3}
-          disabled={!can('sua_ghi_chu')}
-        />
-        {can('sua_ghi_chu') && (
-          <span>
-            <Button
-              variant="primary"
-              loading={saving}
-              disabled={!dirty}
-              onClick={() => void save()}
-            >
-              Lưu
-            </Button>
-          </span>
-        )}
-      </section>
-    </div>
-  );
-
-  const hours = (
-    <dl className="flex flex-col">
-      <DetailField
-        label="Đã mua (gồm giờ tặng)"
-        mode="view"
-        value={`${formatNumber(record.hours.bought)} giờ`}
-      />
-      <DetailField
-        label="Đã mua gần nhất"
-        mode="view"
-        value={
-          record.hours.last_purchase
-            ? `${formatNumber(record.hours.last_purchase.hours)} giờ · ${formatMonth(record.hours.last_purchase.at)}`
-            : ''
-        }
-      />
-      <DetailField label="Đã học" mode="view" value={`${formatNumber(record.hours.used)} giờ`} />
-      <DetailField
-        label={`Vắng ${record.hours.window_days} ngày`}
-        mode="view"
-        value={`${record.hours.absences_window} buổi`}
-      />
-      <DetailField label="Campaign" mode="view" value={t.campaign_label ?? ''} />
-    </dl>
+  const lostReason = t.lost_reason_code
+    ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
+    : '';
+  const purchase = record.hours.last_purchase;
+  const absences = `${record.hours.absences_window} buổi`;
+  const field = (label: string, value: ReactNode) => (
+    <DetailField label={label} mode="view" value={value} />
   );
 
   return (
@@ -261,7 +158,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
         subStage={
           t.substage_code ? (
             <span className="text-caption text-fg-label">
-              Sub-stage: {t.substage_code} {catalogs.name('UPSALE_SUBSTAGE', t.substage_code) ?? ''}
+              Sub-stage: {catalogs.name('UPSALE_SUBSTAGE', t.substage_code) ?? t.substage_code}
             </span>
           ) : undefined
         }
@@ -303,7 +200,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
             icon: 'payment',
             count: orders.data?.length ?? 0,
             unavailable: 'Phiếu chưa có đơn',
-            onOpen: () => setTab('quotes'),
+            onOpen: () => ordersRef.current?.scrollIntoView({ block: 'start' }),
           },
           {
             key: 'ghi-danh',
@@ -331,41 +228,131 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
               {error}
             </Alert>
           )}
-          {t.stage_code === 'L6' && (
-            <Alert tone="info">
-              Phụ huynh đã đồng ý tái tục. Tạo báo giá hoặc tạo đơn từ phiếu này; gửi báo giá thì
-              phiếu sang L7 Dự thu.
+          {stageNote && <Alert tone={stageNote.tone}>{stageNote.text}</Alert>}
+          {t.risk_flag && record.hours.absences_window > 0 && (
+            <Alert tone="warning">
+              Học sinh vắng {absences} trong {record.hours.window_days} ngày gần nhất ở lớp này (cờ
+              rủi ro).
             </Alert>
           )}
-          {t.stage_code === 'L5' && (
-            <Alert tone="info">
-              Không tái tục:{' '}
-              {catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ??
-                t.lost_reason_code ??
-                '—'}
-              {t.lost_note ? `. ${t.lost_note}` : ''} ·{' '}
-              {t.closed_at ? formatDateTime(t.closed_at) : ''}
-            </Alert>
-          )}
-          <Tabs
-            label="Phiếu tái tục"
-            value={tab}
-            onChange={setTab}
-            items={[
-              { value: 'overview', label: 'Tổng quan', content: overview },
-              { value: 'hours', label: 'Giờ học', content: hours },
-              {
-                value: 'quotes',
-                label: 'Báo giá và đơn',
-                content: <OrdersTab orders={orders.data ?? []} />,
-              },
-              {
-                value: 'learning',
-                label: 'Tình hình học tập',
-                content: <p className="text-fg-muted">Tab này bật ở giai đoạn Giáo viên.</p>,
-              },
-            ]}
-          />
+
+          <Block title="Liên hệ">
+            <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+              <dl className="flex min-w-0 flex-col">
+                {field('Phụ huynh', record.parent?.name ?? '')}
+                {field('Số điện thoại', record.parent ? formatPhone(record.parent.phone) : '')}
+                {field('Email', record.parent?.email ?? '')}
+                {field('Học sinh', record.student?.name ?? '')}
+                {field('Mã học sinh', record.student?.code ?? '')}
+              </dl>
+              <dl className="flex min-w-0 flex-col">
+                {field('Người phụ trách', t.owner_name ?? 'chưa giao')}
+                {field('Lần liên hệ gần nhất', NO_DATA)}
+                {field('Ngày hẹn gọi lại', NO_DATA)}
+              </dl>
+            </div>
+          </Block>
+
+          <Block title="Giờ học">
+            <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
+              <dl className="flex min-w-0 flex-col">
+                {field('Đã mua (gồm giờ tặng)', `${formatNumber(record.hours.bought)} giờ`)}
+                {field('Giờ tặng', NO_DATA)}
+                {field('Đã học', `${formatNumber(record.hours.used)} giờ`)}
+                {field('Giờ còn', t.hours_left === null ? '' : `${formatNumber(t.hours_left)} giờ`)}
+                {field(
+                  'Ngày hết giờ dự kiến',
+                  t.expected_end_date ? formatDate(t.expected_end_date) : '',
+                )}
+                {field(`Vắng ${record.hours.window_days} ngày`, absences)}
+              </dl>
+              <dl className="flex min-w-0 flex-col">
+                {field('Mua gần nhất: ngày', purchase ? formatDate(purchase.at) : '')}
+                {field('Mua gần nhất: gói', NO_DATA)}
+                {field(
+                  'Mua gần nhất: số giờ',
+                  purchase ? `${formatNumber(purchase.hours)} giờ` : '',
+                )}
+                {field('Campaign', t.campaign_label ?? '')}
+              </dl>
+            </div>
+          </Block>
+
+          <Block title={`Ghi danh (${record.enrollments.length})`}>
+            <LineTable
+              caption="Ghi danh của phiếu"
+              scrollFocusable
+              rows={record.enrollments}
+              rowKey={(e) => e.id}
+              empty={<p className="p-3 text-fg-muted">Chưa có ghi danh đang học ở lớp này.</p>}
+              columns={[
+                { key: 'code', header: 'Ghi danh', cell: (e) => e.code },
+                { key: 'class', header: 'Lớp', cell: () => record.class.code },
+                { key: 'subject', header: 'Môn', cell: () => NO_DATA },
+                {
+                  key: 'teacher',
+                  header: 'Giáo viên',
+                  cell: () => record.class.teacher_name ?? '',
+                },
+                {
+                  key: 'left',
+                  header: 'Giờ còn',
+                  align: 'right',
+                  cell: (e) => formatNumber(e.hours_left),
+                },
+                { key: 'end', header: 'Ngày hết', cell: () => NO_DATA },
+              ]}
+            />
+          </Block>
+
+          <Block title="Báo giá và đơn" ref={ordersRef}>
+            <OrdersTable orders={orders.data ?? []} />
+          </Block>
+
+          <Block title="Tình hình học tập">
+            <dl className="flex flex-col">
+              {field(
+                'Chuyên cần',
+                `Vắng ${absences} trong ${record.hours.window_days} ngày gần nhất`,
+              )}
+              {field('Nhận xét gần nhất', NO_DATA)}
+            </dl>
+          </Block>
+
+          <Block title="Kết quả tái tục">
+            <TextAreaField
+              label="Mục tiêu / nhu cầu tiếp theo"
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
+              rows={3}
+              disabled={!can('sua_ghi_chu')}
+            />
+            <TextAreaField
+              label="Lộ trình tiếp theo"
+              value={roadmap}
+              onChange={(e) => setRoadmap(e.target.value)}
+              rows={3}
+              disabled={!can('sua_ghi_chu')}
+            />
+            {can('sua_ghi_chu') && (
+              <span>
+                <Button
+                  variant="primary"
+                  loading={saving}
+                  disabled={!dirty}
+                  onClick={() => void save()}
+                >
+                  Lưu
+                </Button>
+              </span>
+            )}
+            {t.stage_code === 'L5' && (
+              <dl className="flex flex-col">
+                {field('Lý do không tái tục', [lostReason, t.lost_note].filter(Boolean).join('. '))}
+                {field('Ngày đóng phiếu', t.closed_at ? formatDateTime(t.closed_at) : '')}
+              </dl>
+            )}
+          </Block>
         </div>
       </RecordDetail>
       <ChangeUpsaleStageDialog
@@ -404,25 +391,60 @@ const ORDER_STATUS: Record<string, string> = {
   HUY: 'Huỷ',
 };
 
-/** Tab «Báo giá và đơn»: đơn sinh ra từ phiếu (báo giá từ phiếu làm ở PR sau). */
-function OrdersTab({ orders }: { orders: UpsaleOrderRow[] }) {
-  if (orders.length === 0)
-    return (
-      <p className="text-fg-muted">Chưa có báo giá hay đơn tái tục. Tạo từ các nút phía trên.</p>
-    );
+/** Một khối của trang phiếu: tiêu đề và nội dung. */
+function Block({
+  title,
+  children,
+  ref,
+}: {
+  title: string;
+  children: ReactNode;
+  ref?: Ref<HTMLElement>;
+}) {
   return (
-    <ul className="flex flex-col gap-2">
-      {orders.map((o) => (
-        <li key={o.id} className="flex flex-wrap items-center gap-2">
-          <FromLink className="font-medium text-link hover:underline" to={`/crm/don-hang/${o.id}`}>
-            {o.code}
-          </FromLink>
-          <span className="text-fg-muted">
-            {ORDER_STATUS[o.status_code] ?? o.status_code} · {formatMoney(o.total_amount)} ·{' '}
-            {formatDate(o.created_at)}
-          </span>
-        </li>
-      ))}
-    </ul>
+    <section ref={ref} aria-label={title} className="flex min-w-0 flex-col gap-2">
+      <h3 className="text-body-lg font-semibold">{title}</h3>
+      {children}
+    </section>
+  );
+}
+
+/** Đơn sinh ra từ phiếu (máy chủ chưa trả báo giá và số đã thu). */
+function OrdersTable({ orders }: { orders: UpsaleOrderRow[] }) {
+  return (
+    <LineTable
+      caption="Báo giá và đơn của phiếu"
+      rows={orders}
+      rowKey={(o) => o.id}
+      empty={<p className="p-3 text-fg-muted">Chưa có đơn tái tục nào.</p>}
+      columns={[
+        {
+          key: 'code',
+          header: 'Số',
+          cell: (o) => (
+            <FromLink
+              className="font-medium text-link hover:underline"
+              to={`/crm/don-hang/${o.id}`}
+            >
+              {o.code}
+            </FromLink>
+          ),
+        },
+        { key: 'type', header: 'Loại', cell: () => 'Đơn hàng' },
+        {
+          key: 'status',
+          header: 'Trạng thái',
+          cell: (o) => ORDER_STATUS[o.status_code] ?? o.status_code,
+        },
+        {
+          key: 'amount',
+          header: 'Số tiền',
+          align: 'right',
+          cell: (o) => formatMoney(o.total_amount),
+        },
+        { key: 'date', header: 'Ngày', cell: (o) => formatDate(o.created_at) },
+        { key: 'paid', header: 'Đã thu', align: 'right', cell: () => NO_DATA },
+      ]}
+    />
   );
 }

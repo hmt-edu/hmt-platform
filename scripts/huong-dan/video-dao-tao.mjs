@@ -257,10 +257,10 @@ const BAI = {
       vao('/crm/ghi-danh'),
       [
         {
-          chu: 'Vào menu Đào tạo → Hàng chờ xếp lớp',
-          loc: (p) => p.getByRole('link', { name: 'Hàng chờ xếp lớp', exact: true }),
+          chu: 'Vào menu Đào tạo → Ghi danh, lọc «Chờ xếp lớp»',
+          loc: (p) => p.getByRole('link', { name: 'Ghi danh', exact: true }),
           lam: async (p) => {
-            await p.goto(`${APP}/crm/cho-xep-lop`);
+            await p.goto(`${APP}/crm/ghi-danh?loc=cho-xep-lop`);
             await cho(p);
           },
         },
@@ -276,8 +276,8 @@ const BAI = {
           },
         },
         {
-          chu: 'Ở «Cách xếp lớp» chọn «Theo nhóm lớp» hoặc «Một lớp lẻ» (không có nhóm phù hợp thì chỉ có «Một lớp lẻ»)',
-          loc: (p) => p.getByText('Một lớp lẻ', { exact: true }).first(),
+          chu: 'Có nhóm lớp phù hợp thì chọn «Theo nhóm lớp» hoặc «Một lớp lẻ»; không có nhóm thì hộp hiện thẳng danh sách lớp',
+          loc: (p) => p.getByRole('dialog', { name: 'Xếp lớp cho ghi danh' }),
         },
         {
           chu: 'Chọn nhóm hoặc lớp; lớp hiện mờ là không xếp được, đọc lý do bên dưới',

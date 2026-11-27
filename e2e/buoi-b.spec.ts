@@ -90,12 +90,13 @@ test('BUOI-05: giờ kết thúc không sau giờ bắt đầu thì chưa cho x�
   await expect(dialog.getByRole('button', { name: 'Xác nhận' })).toBeDisabled();
 });
 
-test('BUOI-12: buổi Đã chốt đã kết thúc có trong danh sách kèm hạn; nút Nhắc GV mờ kèm chữ giải thích', async ({
+test('BUOI-01 lọc «Chưa hoàn tất» (đường cũ chuyển về): có buổi Đã chốt đã kết thúc kèm hạn; nút Nhắc GV mờ kèm chữ giải thích', async ({
   page,
 }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/buoi-chua-done');
-  await expect(page.getByRole('heading', { level: 1, name: 'Buổi chưa hoàn tất' })).toBeVisible();
+  await expect(page).toHaveURL(/\/crm\/buoi-hoc\?loc=chua-hoan-tat$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Buổi học' })).toBeVisible();
   await page.getByRole('searchbox').fill(classCode);
   await showAllColumns(page);
   const row = page.getByRole('row').filter({ hasText: classCode }).first();

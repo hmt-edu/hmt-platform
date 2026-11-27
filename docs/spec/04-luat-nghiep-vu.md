@@ -204,7 +204,7 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-DD-04 | **(26/11, đã làm: migration 685)** Giáo viên lưu một ô mà ô Vận hành cùng dòng đang trống thì hệ thống chép sang. Ô được chép **đi theo** giáo viên khi giáo viên đổi, cho tới khi vận hành tự ghi ô đó. | [CHỐT 26/11] |
 | R-DD-05 | **(26/11, chưa làm trong mã)** Giáo viên thấy trạng thái phía vận hành ở cột “Vận hành”, chỉ xem; không thấy cột Liên hệ phụ huynh (R-GV-13). Mỗi bên chỉ sửa cột của mình. **(27/11)** Vận hành **không xoá** ô mình đã tích về trống, chỉ đổi sang giá trị khác. | [CHỐT 26/11] |
 | R-DD-06 | **(26/11, chưa làm trong mã)** Hai cột lệch nhau ở buổi chưa Done thì hiện ở “Việc của tôi” của giáo viên và của vận hành. | [CHỐT 26/11] |
-| R-DD-07 | **(27/11)** Một màn **Điểm danh** (gộp BUOI-11 và BUOI-15), mọi buổi trong khoảng ngày chọn (tối đa theo tham số `attendance_range_max_days`). Tab **Theo buổi** cần Buổi học · Xem; tab **Cần gọi** (vắng, đi muộn, hoặc chưa ai điểm danh khi buổi đã bắt đầu) và mọi thao tác ghi cần Điểm danh · Sửa. Gán cùng lúc nhiều học sinh theo đúng quyền, phạm vi cơ sở và khoá như ghi từng em. Màn không theo công tắc `DIEM_DANH_TRONG_NGAY` (hiện cho mọi cơ sở). | [CHỐT 27/11] |
+| R-DD-07 | **(27/11)** Một màn **Điểm danh** (gộp BUOI-11 và BUOI-15), mọi buổi trong khoảng ngày chọn (tối đa theo tham số `attendance_range_max_days`). Tab **Theo buổi** cần Buổi học · Xem; tab **Cần gọi** (vắng, đi muộn, hoặc chưa ai điểm danh khi buổi đã bắt đầu) và mọi thao tác ghi cần Điểm danh · Sửa. Gán cùng lúc nhiều học sinh theo đúng quyền, phạm vi cơ sở và khoá như ghi từng em. **[ĐỀ XUẤT, chờ anh]** Màn không theo công tắc `DIEM_DANH_TRONG_NGAY` (hiện cho mọi cơ sở). | [CHỐT 27/11] |
 
 ## 7. Cổng giáo viên
 
