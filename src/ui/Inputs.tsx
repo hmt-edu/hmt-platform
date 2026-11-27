@@ -1,5 +1,5 @@
 // Ô nhập chuyên biệt của biểu mẫu (K07): chọn có tìm (Combobox), ngày (DateInput, DateRange), tiền, đính kèm.
-import { useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import { Command } from 'cmdk';
 import { DayPicker, type DateRange as PickerRange } from 'react-day-picker';
 import { vi } from 'react-day-picker/locale';
@@ -305,6 +305,7 @@ export type DateRangeValue = { from: Date; to: Date; preset?: string | undefined
 const PRESETS = [
   { key: 'today', label: 'Hôm nay' },
   { key: 'week', label: 'Tuần này' },
+  { key: 'last-week', label: 'Tuần trước' },
   { key: 'month', label: 'Tháng này' },
   { key: 'last-month', label: 'Tháng trước' },
 ] as const;
@@ -315,13 +316,25 @@ export function DateRange({
   value,
   onChange,
   today = new Date(),
+  defaultOpen = false,
+  onClose,
 }: {
   label: string;
   value: DateRangeValue;
   onChange: (value: DateRangeValue) => void;
   today?: Date | undefined;
+  /** Mở lịch ngay khi hiện ra (người dùng vừa chọn "Tuỳ chọn khoảng ngày…"). */
+  defaultOpen?: boolean | undefined;
+  /** Người dùng đóng lịch mà không chọn gì. */
+  onClose?: (() => void) | undefined;
 }) {
   const [open, setOpen] = useState(false);
+  // Mở sau một nhịp: ô chọn vừa đóng còn lấy lại tiêu điểm, mở ngay thì lịch bị đóng liền.
+  useEffect(() => {
+    if (!defaultOpen) return;
+    const timer = window.setTimeout(() => setOpen(true), 50); // allow-number: chờ giao diện đóng ô chọn, không phải số nghiệp vụ
+    return () => window.clearTimeout(timer);
+  }, [defaultOpen]);
   const [draft, setDraft] = useState<PickerRange | undefined>(undefined);
   const presetLabel = PRESETS.find((p) => p.key === value?.preset)?.label;
   const text = value
@@ -338,6 +351,7 @@ export function DateRange({
       onOpenChange={(next) => {
         setOpen(next);
         if (next) setDraft(value ? { from: value.from, to: value.to } : undefined);
+        else onClose?.();
       }}
       trigger={
         <button type="button" aria-label={`${label}: ${text}`} className={INPUT_BUTTON_CLASS}>
