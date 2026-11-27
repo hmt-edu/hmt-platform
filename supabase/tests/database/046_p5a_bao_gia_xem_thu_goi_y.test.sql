@@ -160,6 +160,9 @@ select is(app.preview_quotation_lines(pg_temp.oid('0900011001'), jsonb_build_arr
 select is(app.preview_quotation_lines(pg_temp.oid('0900011001'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900011001', 1), 'LC-TOAN-K09', 'OFF', 48,
           jsonb_build_array(pg_temp.disc('GIAM_6_THANG'), pg_temp.disc('GIAM_THUONG_LUONG', 10), pg_temp.disc('TANG_GIO', 4)))) ) -> 'lines' -> 0 ->> 'needs_acknowledgement', 'true',
           'Xem thử: vượt trần đặt cờ cần tích đồng ý');
+select ok(app.preview_quotation_lines(pg_temp.oid('0900011001'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900011001', 1), 'LC-TOAN-K09', 'OFF', 48,
+          jsonb_build_array(pg_temp.disc('GIAM_6_THANG'), pg_temp.disc('GIAM_THUONG_LUONG', 10), pg_temp.disc('TANG_GIO', 4)))) ) -> 'warnings' -> 0 ->> 'message'
+          like 'Dòng 1: ưu đãi (gồm giờ tặng) vượt trần %. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.', 'R-V2-11: câu cảnh báo vượt trần dùng «ưu đãi», không đòi tích đồng ý');
 -- Làm tròn (R-TIEN-37).
 select is(app.preview_quotation_lines(pg_temp.oid('0900011001'), jsonb_build_array(pg_temp.line(pg_temp.ps('0900011001', 1), 'LC-TOAN-K09', 'OFF', 0.33,
           jsonb_build_array(pg_temp.disc('GIAM_THUONG_LUONG', 3.33))))) -> 'lines' -> 0 ->> 'discount_amount', '2417', 'R-TIEN-37: xem thử làm tròn chiết khấu xuống (2.417)');
