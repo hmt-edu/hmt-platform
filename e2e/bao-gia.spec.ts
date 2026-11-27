@@ -156,7 +156,7 @@ test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút
     'Đơn vị',
     'Giờ tặng',
     'Đơn giá',
-    'Loại chiết khấu',
+    'Loại ưu đãi',
     '%',
     'Giảm',
     'Thành tiền',
@@ -199,7 +199,7 @@ async function expectPrint(page: Page, code: string, want: { stamp: string | nul
   await expect(sheet.locator('.k13-blank')).toHaveCount(want.due ? 0 : 1);
   // Hai dòng tổng do máy chủ trả (migration 062): niêm yết trừ chiết khấu bằng thành tiền, trình duyệt không cộng.
   await expect(sheet.getByText('Tổng niêm yết')).toBeVisible();
-  await expect(sheet.getByText('Tổng chiết khấu')).toBeVisible();
+  await expect(sheet.getByText('Tổng ưu đãi')).toBeVisible();
   await expect(sheet.getByText('Bằng chữ')).toBeVisible();
   await expect(sheet.getByText(/đồng$/)).toBeVisible();
   // Khuôn: không in điện thoại cơ sở và khẩu hiệu.
@@ -247,7 +247,7 @@ test('BH-03: Nháp để trống hạn và có nhãn BẢN NHÁP; Từ chối c�
   await expectPrint(page, seeded.code.overdue, { stamp: null, due: true });
   await expect(paper(page).getByText(/Đã quá hạn \d+ ngày/)).toBeVisible();
   // Báo giá này có chính sách chiết khấu: tổng chiết khấu hiện số tiền giảm, có dấu trừ.
-  await expect(paper(page).locator('.k13-tr', { hasText: 'Tổng chiết khấu' })).toContainText(
+  await expect(paper(page).locator('.k13-tr', { hasText: 'Tổng ưu đãi' })).toContainText(
     /− [\d.]+/,
   );
   await shot(page, testInfo, 'bh03-qua-han');
@@ -339,9 +339,7 @@ async function expectLineGrid(page: Page, headers: string[]) {
   await expect(page.getByText('Kéo thanh ngang để xem các cột bên phải.')).toBeVisible();
   // Trần chiết khấu (tham số cài đặt, mặc định 20%) hiện dưới bảng ở cả Tạo và Sửa, như khung BH02_sua.
   await expect(
-    page.getByText(
-      /^Trần chiết khấu mỗi dòng \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
-    ),
+    page.getByText(/^Trần ưu đãi mỗi dòng \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/),
   ).toBeVisible();
   const overflow = await page.evaluate<number>(
     'document.documentElement.scrollWidth - document.documentElement.clientWidth',
@@ -374,7 +372,7 @@ test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khu
     'Đơn vị',
     'Giờ tặng',
     'Đơn giá',
-    'Loại chiết khấu',
+    'Loại ưu đãi',
     '%',
     'Giảm',
     'Thành tiền',
@@ -484,7 +482,7 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   await expect(page.getByText('5.500.000 đ')).toBeVisible();
   // Hộp Chọn chính sách chiết khấu: chọn "áp đúng mức" 5%.
   await row1.getByRole('button', { name: 'Chính sách' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Chọn chính sách chiết khấu' });
+  const dialog = page.getByRole('dialog', { name: 'Chọn chính sách ưu đãi' });
   await expect(dialog.getByText(/tối đa một chính sách tặng giờ/)).toBeVisible();
   await expectAccessible(page);
   await dialog.getByLabel(/Giảm khi đóng 6 tháng/).check();
@@ -502,7 +500,7 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   await page.getByLabel('Giờ tặng dòng 1').fill('4');
   // Khung BH02_chip_vuot_tran: câu trần hiện trong hộp cảnh báo vàng (role status), vẫn Lưu được (R-V2-11).
   const capBox = page.getByRole('status').filter({
-    hasText: /^Trần chiết khấu mỗi dòng \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
+    hasText: /^Trần ưu đãi mỗi dòng \d+%\. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được\.$/,
   });
   await expect(capBox).toBeVisible();
   await expect(page.getByRole('button', { name: 'Lưu', exact: true })).toBeEnabled();
@@ -568,7 +566,7 @@ test('BH-02 sửa Nháp: thêm quà tặng qua chính sách quà tặng; vượt
   await expect(total).toContainText('5.280.000 đ');
   await page.getByRole('button', { name: 'Thêm quà tặng' }).click();
   const dialog = page.getByRole('dialog', { name: 'Chọn chính sách quà tặng' });
-  await expect(dialog.getByText(/không tính vào trần chiết khấu/)).toBeVisible();
+  await expect(dialog.getByText(/không tính vào trần ưu đãi/)).toBeVisible();
   await expectAccessible(page);
   await dialog.getByRole('button', { name: /Tặng bộ tài liệu Toán/ }).click();
   // Dòng quà đánh số tiếp theo dòng gói; chưa chọn em thì ghi "Chọn học sinh để thêm quà".
@@ -740,7 +738,7 @@ test('Tạo báo giá: nhập dòng, Lưu mới cấp mã và tạo báo giá Nh
     'Đơn vị',
     'Giờ tặng',
     'Đơn giá',
-    'Chiết khấu',
+    'Ưu đãi',
     'Tổng %',
     'Thành tiền',
   ]);
@@ -757,9 +755,9 @@ test('Tạo báo giá: nhập dòng, Lưu mới cấp mã và tạo báo giá Nh
   await page.getByLabel('Số lượng dòng 1').fill('3');
   await expect(page.locator('p', { hasText: 'Tổng cộng báo giá' })).toContainText('660.000 đ');
   // Chip Ưu đãi linh hoạt (R-V2-45, Q-151): thêm bằng "Thêm", gõ % ngay trong chip; vượt hạn mức 5% thì chữ đỏ dưới chip và Lưu mờ.
-  await page.getByRole('button', { name: 'Thêm chiết khấu dòng 1' }).click();
+  await page.getByRole('button', { name: 'Thêm ưu đãi dòng 1' }).click();
   await page
-    .getByRole('dialog', { name: 'Chọn chính sách chiết khấu' })
+    .getByRole('dialog', { name: 'Chọn chính sách ưu đãi' })
     .getByLabel(/Ưu đãi linh hoạt/)
     .check();
   await page.getByRole('dialog').getByRole('button', { name: 'Áp dụng' }).click();

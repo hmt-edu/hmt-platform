@@ -16,7 +16,7 @@ function amountText(p: DiscountPolicy): string {
 function kindText(p: DiscountPolicy): string {
   const approval = p.requires_approval ? 'cần duyệt' : 'không cần duyệt';
   return p.kind === 'PERCENT'
-    ? `Loại: % chiết khấu · ${approval}`
+    ? `Loại: giảm theo % · ${approval}`
     : `Loại: giờ tặng (tối đa một chính sách) · ${approval}`;
 }
 
@@ -70,13 +70,13 @@ function PolicyBody({
     <Dialog
       open
       onOpenChange={onOpenChange}
-      title="Chọn chính sách chiết khấu"
+      title="Chọn chính sách ưu đãi"
       description="Chọn nhiều chính sách thì cộng dồn, nhưng tối đa một chính sách tặng giờ (Đ174)."
       wide
       footer={
         <>
           <span className="mr-auto self-center text-body text-fg-muted">
-            Tổng chiết khấu: <b className="text-fg tabular">{totalText}</b>
+            Tổng ưu đãi: <b className="text-fg tabular">{totalText}</b>
           </span>
           <Button onClick={() => onOpenChange(false)}>Huỷ</Button>
           <Button
@@ -92,7 +92,7 @@ function PolicyBody({
       }
     >
       {policies.length === 0 ? (
-        <p className="text-fg-muted">Chưa có chính sách chiết khấu nào áp dụng được.</p>
+        <p className="text-fg-muted">Chưa có chính sách ưu đãi nào áp dụng được.</p>
       ) : (
         <ul className="flex flex-col">
           {policies.map((p) => {

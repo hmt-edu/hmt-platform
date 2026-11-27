@@ -145,7 +145,7 @@ function QuotationPrint({ record }: { record: QuotationRecord }) {
                 <b>{formatNumber(record.gross_total)}</b>
               </div>
               <div className="k13-tr">
-                <span>Tổng chiết khấu</span>
+                <span>Tổng ưu đãi</span>
                 <b>
                   {record.discount_total > 0 ? `− ${formatNumber(record.discount_total)}` : '0'}
                 </b>
@@ -186,7 +186,7 @@ function QuotationPrint({ record }: { record: QuotationRecord }) {
                 <th className="r" style={{ width: '10%' }}>
                   Đơn giá
                 </th>
-                <th style={{ width: '14%' }}>Chiết khấu · chính sách</th>
+                <th style={{ width: '14%' }}>Ưu đãi · chính sách</th>
                 <th className="r" style={{ width: '13%' }}>
                   Thành tiền
                 </th>

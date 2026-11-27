@@ -365,7 +365,7 @@ export const CRM_MENU: MenuGroup[] = [
       },
       {
         code: 'CH-04',
-        label: 'Chính sách chiết khấu',
+        label: 'Chính sách ưu đãi',
         slug: 'cau-hinh/chiet-khau',
         requires: can('CONFIG_SALES'),
         stage: GD1,

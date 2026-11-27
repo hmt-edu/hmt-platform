@@ -213,7 +213,7 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 
 1. Làm bước 1 đến 2 của bài 7, chọn «Chuyển phí».
 2. Chọn **Ghi danh** nguồn, **Kiểu chuyển**, và **Đơn nhận (tham khảo)**.
-3. Xem **Bảng tính chuyển phí**: giờ mua, giờ đã học, giá sau chiết khấu, đã đóng, giá trị chuyển, giờ tặng bị huỷ, giá trị đơn nhận, phụ huynh đóng thêm (nếu có).
+3. Xem **Bảng tính chuyển phí**: giờ mua, giờ đã học, giá sau ưu đãi, đã đóng, giá trị chuyển, giờ tặng bị huỷ, giá trị đơn nhận, phụ huynh đóng thêm (nếu có).
 4. Gửi duyệt, chờ duyệt, bấm «Thực hiện».
 
 - **Kết quả:** phiếu «Đã thực hiện» theo đúng bảng tính; phần phụ huynh phải đóng thêm (nếu có) hiện trong bảng. Số dư giữ lại xem ở hồ sơ phụ huynh.
