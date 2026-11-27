@@ -387,7 +387,7 @@ test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì n
   await page.getByRole('button', { name: 'Báo giá 0' }).click();
   await expect(page).toHaveURL(/\/crm\/bao-gia\?co-hoi=/);
   await expect(items).toHaveCount(4);
-  await page.getByRole('button', { name: seeded.opportunity.gated.code }).click();
+  await page.getByRole('button', { name: seeded.opportunity.gated.code, exact: true }).click();
   await expect(page).toHaveURL(new RegExp(`/crm/co-hoi/${seeded.opportunity.gated.id}$`));
   await expect(items).toHaveCount(3);
 });
