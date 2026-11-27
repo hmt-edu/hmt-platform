@@ -19,7 +19,7 @@ cap_nhat: 2026-11-24
 - [ ] Phụ huynh đã đồng ý mức giảm. Ưu đãi linh hoạt **không cần lý do**, nhưng hệ thống ghi lại ai nhập bao nhiêu % trên dòng nào.
 
 ## Cần nhớ
-- Đây là ưu đãi **tự nhập %**. Các ưu đãi khác không tự nhập tự do: «Giảm khi đóng 6 tháng» có mức cố định; «Giảm thương lượng» (tối đa 10%) và «Tặng giờ học» (tối đa 4 giờ) có trần riêng.
+- Đây là ưu đãi **tự nhập %**. Các ưu đãi khác không tự nhập tự do: «Giảm khi đóng lộ trình» có mức cố định; «Giảm thương lượng» (tối đa 10%) và «Tặng giờ học» (tối đa 4 giờ) có trần riêng.
 - Tổng ưu đãi một dòng (cộng dồn các loại, giờ tặng quy ra %) **chạm trần 20%** thì chỉ cảnh báo, vẫn lưu và trình được; người duyệt sẽ xem xét kỹ.
 - Giao diện **không tự tính tiền**: sau khi nhập, bấm **Lưu** thì số tiền mới được tính.
 

@@ -22,14 +22,16 @@ import {
 } from './quoteEdit';
 import { QuotePackageDialog } from './QuotePackageDialog';
 import { QuoteGiftDialog } from './QuoteGiftDialog';
+import { studentLabel } from '../../features/prospect/prospectLogic';
 import { QuotePolicyDialog } from './QuotePolicyDialog';
 import { percentText, quoteCapText, type RowCalc } from './quotePreview';
 import { UNIT_LABEL } from './quoteRecord';
 import type { DiscountPolicy, GiftPolicy, OppStudent, SellablePackage } from './useQuoteData';
 
-function studentLabel(s: OppStudent): string {
-  const name = s.full_name ?? `Học sinh thứ ${String(s.position)}`;
-  return s.birth_year ? `${name} · ${String(s.birth_year)}` : name;
+/** Học sinh chưa có tên thì gọi theo thứ tự trong cơ hội để phân biệt được. */
+function studentOption(s: OppStudent) {
+  const full_name = s.full_name ?? `Học sinh thứ ${String(s.position)}`;
+  return { value: s.id, ...studentLabel({ full_name, birth_year: s.birth_year }) };
 }
 
 /** Số hiện ở ô Đơn giá, Giảm, Thành tiền: số máy chủ vừa trả; chưa có lần tính nào thì số đã lưu của dòng chưa đổi; còn lại "—". */
@@ -246,7 +248,7 @@ export function QuoteLineGrid({
             value={row.studentId}
             onChange={(v) => update(row.key, { studentId: v })}
             placeholder="Chọn học sinh…"
-            options={students.map((s) => ({ value: s.id, label: studentLabel(s) }))}
+            options={students.map(studentOption)}
             disabled={disabled}
             requiredEmpty={row.studentId === ''}
             className="w-full"

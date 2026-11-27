@@ -28,6 +28,7 @@ import {
 } from './termLogic';
 import { createTerm, setTermActive, useRefreshTerms, useTerms } from './useTermData';
 import { PageFrame, PageHeader } from '../../ui/PageHeader';
+import { nameDigitWarning } from '../chiet-khau/policyLogic';
 
 export function PaymentTermPage() {
   const access = useAccess();
@@ -70,7 +71,9 @@ export function PaymentTermPage() {
       align: 'right',
       width: 'w-36',
       cell: (i) =>
-        i.fixed_amount !== null ? `${formatNumber(i.fixed_amount)} đ` : `${i.share_percent ?? 0}%`,
+        i.fixed_amount !== null
+          ? `${formatNumber(i.fixed_amount)} đ`
+          : `${formatNumber(i.share_percent ?? 0)}%`,
     },
     {
       key: 'due',
@@ -277,6 +280,7 @@ function TermForm({
           <TextField
             label="Tên điều khoản"
             required
+            help={nameDigitWarning(name)}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />

@@ -31,7 +31,7 @@ Luật: `docs/spec/04` mục 3 (R-GD), 4 (R-LOP), 5 (R-BUOI, R-GIO), 6 (R-DD), 7
 | `preview_class_end_date(cơ sở, ngày bắt đầu, số buổi, khung giờ)`     | Lớp học · Xem, cơ sở của lớp      | R-LOP-09, 12, 13 (chỉ đọc, không ghi; migration 574) |
 | `class_operating_status`, `class_clash_warnings`, `compute_class_schedule` | Đọc                          | R-LOP-05, 08, 09                              |
 | `assign_enrollment_class(ghi danh, lớp, ngày vào)`                    | Ghi danh · Sửa                    | R-GD-05, 06, 08, 15                           |
-| `adjust_enrollment_hours(ghi danh, giờ, lý do, ghi chú)`              | Ghi danh · Duyệt (Trưởng cơ sở, Admin) | R-GD-04, R-GD-18                         |
+| `adjust_enrollment_hours(ghi danh, giờ, lý do, ghi chú)`              | Ghi danh · Duyệt (Trưởng cơ sở, Admin) hoặc Kế toán · Duyệt (Kế toán); cả cộng và bớt (migration 690) | R-GD-04, R-GD-18                         |
 | `close_session(buổi)`                                                 | Buổi học · Sửa (không phải GV)    | R-BUOI-02, R-GIO-02, 03, 04                   |
 | `set_attendance_teacher(buổi, danh sách)`                             | Giáo viên được phân công          | R-DD-01, 02, R-GIO-08, R-GV-08                |
 | `set_attendance_ops(buổi, danh sách)`                                 | Điểm danh · Sửa (không phải GV)   | R-DD-02, 03                                   |
@@ -246,7 +246,7 @@ Luật R-GIO-06, 07, 09, 11, 12; R-GV-05. Sổ giờ (`deduct_session_hours`) kh
 | `finish_session(buổi)` | Điểm danh · Sửa theo phạm vi (giáo viên, trợ giảng của buổi; vận hành, quản lý cơ sở, Admin) | Done tay. Đủ điều kiện thì Done; chưa đủ thì trả `{done:false, missing:[…]}` |
 | `bulk_finish_sessions(buổi[], lý do)` | Điểm danh · Duyệt ở cơ sở của từng buổi | Done hàng loạt; trả `{done, skipped:[{session_id, class_code, session_no, reason}]}`. Số buổi tối đa: tham số `session_bulk_done_max` |
 | `enter_for_teacher(buổi, loại, dữ liệu, lý do)` | Điểm danh · Duyệt | Nhập thay `DIEM_DANH`, `NHAN_XET`, `DIEM`, `BTVN` khi buổi chưa Done; ghi `session_proxy_entry` |
-| `session_done_info(buổi)` | Buổi · Xem phía vận hành (như `session_record`) | Cho BUOI-02 (mig 692): cách hoàn tất, người bấm, lý do, cờ Thiếu nhận xét, điều còn thiếu, các lượt nhập thay |
+| `session_done_info(buổi)` | Buổi · Xem phía vận hành (như `session_record`) | Cho BUOI-02 (mig 692): cách hoàn tất, người bấm, lý do, cờ Thiếu nhận xét, điều còn thiếu, các lượt nhập thay (mig 698: chỉ người có Điểm danh · Duyệt thấy) |
 
 - Điều kiện Done thêm: ô vận hành bằng ô giáo viên ở mọi dòng. `session_pending_reason` trả **mọi** điều còn thiếu, nối bằng dấu cách. Vận hành sửa cho khớp thì Done ngay.
 - Dấu Đúng hạn hoặc Trễ hạn đóng khi phần giáo viên đủ (`stamp_teacher_completion`), không chờ khớp; đóng một lần.

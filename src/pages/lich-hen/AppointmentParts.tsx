@@ -1,9 +1,17 @@
 // Các phần dùng chung của màn Lịch hẹn: nút thao tác theo trạng thái và quyền (dòng, thẻ Kanban, khung chi tiết Lịch),
 // liên kết hồ sơ gắn.
 import { Link } from 'react-router';
-import { Button } from '../../ui/Button';
-import { Code } from '../../ui/Data';
-import { RECORD_KIND_LABEL, recordKind, recordPath, type AppointmentRow } from './appointmentTypes';
+import { formatDateTime } from '../../lib/format';
+import { Button, ButtonLink } from '../../ui/Button';
+import { Code, Tag } from '../../ui/Data';
+import { STATUS_TONE } from './appointmentTone';
+import {
+  RECORD_KIND_LABEL,
+  STATUS_LABEL,
+  recordKind,
+  recordPath,
+  type AppointmentRow,
+} from './appointmentTypes';
 
 export type RowActions = {
   canEdit: boolean;
@@ -87,5 +95,42 @@ export function RecordLink({ row }: { row: AppointmentRow }) {
         <Code>{row.record_code}</Code>
       )}
     </span>
+  );
+}
+
+/** Khung chi tiết khi bấm một ô trên Lịch (Lịch hẹn, Việc của tôi). */
+export function CalendarDetail({
+  row,
+  activity,
+  actions,
+}: {
+  row: AppointmentRow;
+  activity: string;
+  actions: RowActions;
+}) {
+  return (
+    <div className="flex w-[320px] max-w-full flex-col gap-2 p-3">
+      <div className="flex items-start justify-between gap-2">
+        <p className="font-semibold">
+          {activity} · {row.title}
+        </p>
+        <Tag tone={STATUS_TONE[row.status]}>{STATUS_LABEL[row.status]}</Tag>
+      </div>
+      {row.record_label && (
+        <p className="text-body">
+          <Code>{row.record_code ?? ''}</Code> {row.record_label}
+        </p>
+      )}
+      <p className="text-caption text-fg-muted">
+        {formatDateTime(row.scheduled_at)}
+        {row.owner_name ? ` · ${row.owner_name}` : ''}
+      </p>
+      {!row.student_test_id && recordPath(row) && (
+        <ButtonLink variant="primary" icon="arrowRight" to={recordPath(row) ?? ''}>
+          Mở {RECORD_KIND_LABEL[recordKind(row)].toLowerCase()} {row.record_code}
+        </ButtonLink>
+      )}
+      <AppointmentButtons row={row} actions={actions} />
+    </div>
   );
 }

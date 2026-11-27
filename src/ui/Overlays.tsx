@@ -262,7 +262,8 @@ export function Select({
   invalid?: boolean | undefined;
   value: string;
   onChange: (value: string) => void;
-  options: { value: string; label: string }[];
+  /** `hint`: chữ phụ mờ dưới tên, chỉ hiện trong danh sách xổ xuống (ô đã chọn chỉ hiện tên). */
+  options: { value: string; label: string; hint?: string | undefined }[];
   icon?: IconName | undefined;
   className?: string | undefined;
   /** Chữ hiện khi chưa chọn (value rỗng). */
@@ -304,7 +305,16 @@ export function Select({
                   'data-[state=checked]:bg-selected data-[state=checked]:font-semibold data-[state=checked]:text-on-selected',
                 )}
               >
-                <RadixSelect.ItemText>{option.label}</RadixSelect.ItemText>
+                <span className="min-w-0">
+                  <span className="block">
+                    <RadixSelect.ItemText>{option.label}</RadixSelect.ItemText>
+                  </span>
+                  {option.hint && (
+                    <span className="block text-caption font-normal text-fg-muted">
+                      {option.hint}
+                    </span>
+                  )}
+                </span>
               </RadixSelect.Item>
             ))}
           </RadixSelect.Viewport>

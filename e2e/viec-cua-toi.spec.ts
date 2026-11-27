@@ -23,3 +23,18 @@ test('sale.cs5: mở Việc của tôi thấy tiêu đề, ba nhóm và danh sá
   ).toBeVisible();
   await expectAccessible(page);
 });
+
+test('sale.cs5: tab Lịch tuần hiện lưới tuần, chú thích màu, nút Tạo lịch hẹn mở hộp thoại', async ({
+  page,
+}) => {
+  await enterAs(page, 'sale.cs5');
+  await page.goto('/crm/viec-cua-toi');
+  await page.getByRole('tab', { name: 'Lịch tuần' }).click();
+  await expect(page).toHaveURL(/xem=tuan/);
+  await expect(page.getByRole('button', { name: 'Hôm nay', exact: true })).toBeVisible();
+  await expect(page.getByText('Đã hoàn thành', { exact: true })).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Tháng' })).toHaveCount(0);
+  await expectAccessible(page);
+  await page.getByRole('button', { name: 'Tạo lịch hẹn' }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+});

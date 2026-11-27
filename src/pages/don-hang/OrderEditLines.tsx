@@ -1,6 +1,7 @@
 // Bảng dòng đơn ở chế độ SỬA (UI-O3, canvas BH05_nhap): mỗi dòng sửa số giờ, hình thức, chính sách chiết khấu (chip, ✕ để bỏ, "+ Thêm"), bỏ dòng.
 // Học sinh, gói giữ nguyên; thêm dòng, thêm em để bước tạo đơn từ cơ hội (dùng chung ô chọn gói, học sinh). Giao diện KHÔNG tính tiền: Thành tiền
 // hiện số máy chủ đã tính lần lưu trước, tính lại khi bấm Lưu (R-TIEN-13).
+import { studentLabel } from '../../features/prospect/prospectLogic';
 import { formatDate, formatNumber } from '../../lib/format';
 import { discountText } from '../bao-gia/quoteRecord';
 import { Button } from '../../ui/Button';
@@ -19,6 +20,7 @@ import type { OppStudent } from '../bao-gia/useQuoteData';
 import type { OrderLineClass } from '../ghi-danh/enrollTypes';
 import type { OrderLine, OrderLineDiscount } from './orderTypes';
 import type { PolicyOption } from './useOrderData';
+import { policyLabel } from '../chiet-khau/policyLogic';
 
 type Props = {
   lines: OrderLine[];
@@ -142,7 +144,7 @@ function DiscountEditor({
                 },
               ]);
             }}
-            options={addable.map((p) => ({ value: p.id, label: p.name }))}
+            options={addable.map((p) => ({ value: p.id, label: policyLabel(p) }))}
           />
         )}
       </span>
@@ -194,7 +196,7 @@ export function OrderEditLines({
               <th className="px-2 py-2">Hình thức</th>
               <th className="px-2 py-2">Mã lớp</th>
               <th className="px-2 py-2">Ngày vào lớp</th>
-              <th className="px-2 py-2">Số lượng</th>
+              <th className="px-2 py-2 text-right">Số lượng</th>
               <th className="px-2 py-2 text-right">Đơn giá</th>
               <th className="px-2 py-2">Ưu đãi</th>
               <th className="px-2 py-2 text-right">Tổng %</th>
@@ -354,10 +356,7 @@ export function OrderEditLines({
                       value={a.studentId}
                       placeholder="Chọn học sinh"
                       onChange={(v) => onChangeAdded(a.key, { studentId: v })}
-                      options={students.map((st) => ({
-                        value: st.id,
-                        label: `${st.full_name ?? 'Học sinh chưa có tên'}${st.birth_year ? ` · ${st.birth_year}` : ''}`,
-                      }))}
+                      options={students.map((st) => ({ value: st.id, ...studentLabel(st) }))}
                     />
                   </td>
                   <td className="px-2 py-2">

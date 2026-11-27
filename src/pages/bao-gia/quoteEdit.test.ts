@@ -51,7 +51,7 @@ const LINE = {
       id: 'd1',
       policy_id: 'pol1',
       policy_code: 'GIAM_6_THANG',
-      policy_name: 'Giảm khi đóng 6 tháng',
+      policy_name: 'Giảm khi đóng lộ trình',
       kind: 'PERCENT',
       applied_value: 5,
       requires_approval: false,
@@ -81,7 +81,7 @@ describe('quoteEdit', () => {
       unitCode: 'GIO',
     });
     expect(row?.discounts).toEqual([
-      { policyId: 'pol1', name: 'Giảm khi đóng 6 tháng', value: '5' },
+      { policyId: 'pol1', name: 'Giảm khi đóng lộ trình', value: '5' },
     ]);
     expect(row?.calc?.lineTotal).toBe(2090000);
   });

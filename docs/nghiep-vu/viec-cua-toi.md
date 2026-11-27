@@ -36,5 +36,7 @@ Chưa làm (PR sau): xem lại và bỏ hoãn việc đã để sau, lead chưa 
 
 ## Giao diện đợt 1 (`/crm/viec-cua-toi`, canvas 1bcc)
 Danh sách việc **của tôi**, ba ô đếm, ba nhóm, thẻ theo phụ huynh, phân trang theo thẻ, một lần gọi `list_my_work`; lọc theo cơ sở đang chọn. Mỗi việc có một nút mở màn nơi làm việc đó (việc chờ duyệt đi qua «Việc chờ tôi duyệt»; lịch hẹn mở danh sách lịch hẹn vì lịch hẹn chưa có trang riêng).
-Chưa dựng: «Để sau» và «Đã để sau», Cả đội, Lịch tuần, Tạo lịch hẹn, nút Gọi/Hoàn thành/Dời trên dòng, mã phụ huynh trên thẻ, Trang chủ rút gọn.
+Tab **Lịch tuần** (VC06, địa chỉ `?xem=tuan`, cần Lịch hẹn · Xem): lịch hẹn và phiếu Test **của tôi** trong tuần (Chưa làm, Hoàn thành; không hiện lịch Huỷ), qua `list_appointments`; bấm một ô để Hoàn thành, Dời, Huỷ, Mở lại hoặc mở hồ sơ. Nút **Tạo lịch hẹn** ở đầu màn (cần Lịch hẹn · Tạo). Các hộp thao tác dùng chung với màn Lịch hẹn (`useAppointmentActions`).
+`/crm/lich-hen` **chưa** chuyển hướng: màn cũ còn giữ danh sách lịch theo từng hồ sơ, Giao hàng loạt, Xuất, Kanban mà canvas 1bcc chưa vẽ.
+Chưa dựng: «Để sau» và «Đã để sau», Cả đội, nút Gọi/Hoàn thành/Dời trên dòng, mã phụ huynh trên thẻ, Trang chủ rút gọn.
 

@@ -34,6 +34,7 @@ import {
   type FormValues,
   type GiftPolicy,
   type PolicyStatus,
+  nameDigitWarning,
 } from './policyLogic';
 import {
   saveDiscountPolicy,
@@ -170,12 +171,14 @@ export function DiscountPolicyPage() {
     {
       key: 'value',
       header: 'Giá trị',
+      align: 'right',
       width: 'w-28',
       cell: (p) => discountAppliedLabel(p),
     },
     {
       key: 'max',
       header: 'Mức tối đa',
+      align: 'right',
       width: 'w-32',
       cell: (p) => discountValueLabel(p),
     },
@@ -202,6 +205,7 @@ export function DiscountPolicyPage() {
     {
       key: 'max',
       header: 'Mức tối đa',
+      align: 'right',
       width: 'w-40',
       cell: (p) => `${p.max_quantity.toLocaleString('vi-VN')} / đơn`,
     },
@@ -460,7 +464,11 @@ function PolicyForm({
           onChange={(e) => set({ name: e.target.value })}
           invalid={!!show('name')}
           error={show('name')}
-          help={p ? `Mã ${p.code}, không đổi.` : undefined}
+          help={
+            [p ? `Mã ${p.code}, không đổi.` : '', nameDigitWarning(v.name) ?? '']
+              .filter(Boolean)
+              .join(' ') || undefined
+          }
         />
         {isGift ? (
           <Field label="Loại quà" required>
