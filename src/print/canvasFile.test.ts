@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { shareOrDownloadCanvas } from './canvasFile';
+import { canShareImages, shareOrDownloadCanvas, shareOrDownloadCanvases } from './canvasFile';
 
 const canvas = {
   toBlob: (done: (b: Blob) => void) => done(new Blob(['x'], { type: 'image/png' })),
@@ -47,5 +47,22 @@ describe('Tải ảnh (PNG) của bản in', () => {
     const refused = setup(true, () => Promise.reject(new DOMException('', 'NotAllowedError')));
     await expect(shareOrDownloadCanvas(canvas, 'BG1.png')).resolves.toBe('downloaded');
     expect(refused).toEqual(['BG1.png']);
+  });
+
+  it('nhiều ảnh (xuất cả lớp): một lần chia sẻ gửi đủ các tệp', async () => {
+    const share = vi.fn<(data: ShareData) => Promise<void>>().mockResolvedValue(undefined);
+    setup(true, share as unknown as () => Promise<void>);
+    expect(canShareImages()).toBe(true);
+    await shareOrDownloadCanvases([
+      { canvas, fileName: 'a.png' },
+      { canvas, fileName: 'b.png' },
+    ]);
+    expect(share).toHaveBeenCalledTimes(1);
+    expect(share.mock.calls[0]?.[0].files?.map((f) => f.name)).toEqual(['a.png', 'b.png']);
+  });
+
+  it('máy tính không có nút chia sẻ', () => {
+    setup(false, () => Promise.resolve());
+    expect(canShareImages()).toBe(false);
   });
 });

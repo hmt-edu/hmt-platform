@@ -1,5 +1,5 @@
 // Đầu hồ sơ 360° (canvas a8d7): hàng «Làm nhanh», thẻ tóm tắt, cờ cảnh báo. Một lần gọi cho mỗi hồ sơ (app.get_*_summary).
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { rpc, useDb } from '../../lib/db';
@@ -23,6 +23,7 @@ import {
   type SummaryCard,
   type SummaryFlag,
 } from './summaryLogic';
+import { recordSummaryKey, useRecordSummary } from './useRecordSummary';
 
 type Props = {
   entityType: 'PARENT' | 'STUDENT';
@@ -48,14 +49,8 @@ export function RecordSummary(props: Props) {
   const refreshAppointments = useRefreshAppointmentData();
   const [calling, setCalling] = useState(false);
   const [booking, setBooking] = useState(false);
-  const queryKey = ['record-summary', entityType, entityId];
-  const query = useQuery<ParentSummary | StudentSummary>({
-    queryKey,
-    queryFn: () =>
-      entityType === 'PARENT'
-        ? rpc<ParentSummary>(supabase, 'get_parent_summary', { p_parent_id: entityId })
-        : rpc<StudentSummary>(supabase, 'get_student_summary', { p_student_id: entityId }),
-  });
+  const queryKey = recordSummaryKey(entityType, entityId);
+  const query = useRecordSummary(entityType, entityId);
   const data = query.data;
   const view = data ? toView(data) : null;
   const refresh = async () => {
