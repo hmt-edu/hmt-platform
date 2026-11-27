@@ -1,7 +1,7 @@
 // BH-05 Tạo đơn hàng (UI-O4, khung BH05_tao_trang_moi và BH05_tao_moi của canvas bổ sung, Đ259, R-CRM-19, R-TIEN-02, R-TIEN-14, R-CRM-16, R-TIEN-39).
 // Bấm "Tạo đơn hàng" (ở cơ hội L8) hoặc "Chuyển thành đơn" (ở báo giá Đã gửi) chỉ mở form trắng: chưa có bản ghi, chưa cấp mã. Bấm Lưu mới tạo đơn Nháp
 // (app.create_order_from_opportunity hoặc app.create_order_from_quotation) rồi mở bản ghi đơn; bấm Huỷ thì bỏ hết. Giao diện KHÔNG tính tiền (R-TIEN-13):
-// đơn giá, chiết khấu, thành tiền do máy chủ. Lớp và ngày vào lớp chọn sau ở BH-08 (Đ214). Điện thoại giữ bản chỉ đọc (Đ248): không có màn này.
+// đơn giá, chiết khấu, thành tiền do máy chủ. Lớp và ngày vào lớp chọn sau ở BH-08 (Đ214). Điện thoại cũng lập được (B-27-09).
 //  ?co-hoi=<id>  đơn không qua báo giá: thêm từng dòng như Tạo báo giá; cơ hội đã có đơn Nháp thì hộp BH-11 (Mở đơn cũ / Vẫn tạo).
 //  ?bao-gia=<id> đơn từ báo giá: lấy hết các dòng chưa nằm trong đơn nào, bỏ bớt bằng ✕ (dòng bỏ ra vẫn còn trên báo giá).
 import { useMemo, useState } from 'react';
@@ -21,7 +21,6 @@ import { Tag } from '../../ui/Data';
 import { ConfirmDialog } from '../../ui/Dialogs';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import type { StageStep } from '../../ui/Stage';
-import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useToast } from '../../ui/toastContext';
 import {
   blankRow,
@@ -53,7 +52,6 @@ export function OrderCreatePage() {
   const [params] = useSearchParams();
   const opportunityId = params.get('co-hoi') ?? undefined;
   const quotationId = params.get('bao-gia') ?? undefined;
-  const phone = useMedia(NARROW_TABLE);
   const access = useAccess();
   const back =
     quotationId !== undefined
@@ -70,12 +68,6 @@ export function OrderCreatePage() {
     return (
       <StateView kind="not-found" title="Chưa chọn nguồn của đơn" actions={backLink}>
         Đơn hàng chỉ tạo từ cơ hội ở L8 (Tạo đơn hàng) hoặc từ báo giá Đã gửi (Chuyển thành đơn).
-      </StateView>
-    );
-  if (phone)
-    return (
-      <StateView kind="forbidden" title="Tạo đơn hàng chỉ có trên máy tính" actions={backLink}>
-        Trên điện thoại đơn hàng chỉ xem được.
       </StateView>
     );
   if (!access.can('SALES_ORDER', 'TAO') || !access.featureOn('BAN_HANG'))

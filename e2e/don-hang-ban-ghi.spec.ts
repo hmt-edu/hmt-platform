@@ -65,14 +65,10 @@ test('Mở đơn từ BH-06; Nháp: thông tin chung, chưa có quản lý trự
   // Q-77: MỘT dòng cạnh nút Trình, không còn khối vàng "Cần xử lý trước khi trình". R-V2-12: không còn ca chặn nên nút không mờ.
   await expect(page.getByText('Cần xử lý trước khi trình')).toHaveCount(0);
   await expect(page.getByText(/Chưa có quản lý trực tiếp để duyệt/)).toHaveCount(0);
-  if (isPhone(page)) {
-    await expect(page.getByRole('button', { name: 'Trình duyệt' })).toHaveCount(0);
-  } else {
-    await expect(page.getByRole('button', { name: 'Trình duyệt' })).not.toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
-  }
+  await expect(page.getByRole('button', { name: 'Trình duyệt' })).not.toHaveAttribute(
+    'aria-disabled',
+    'true',
+  );
   await expect(
     page.getByRole('button', { name: 'Stage chỉ đọc, đổi bằng nút bên dưới.' }),
   ).toBeVisible();
@@ -328,13 +324,13 @@ test('Huỷ đơn Nháp: hộp có lý do từ danh mục, "Khác" bắt ghi ch�
   await shot(page, 'bh05-sau-huy');
 });
 
-test('Điện thoại: đơn chỉ đọc, không có nút Trình và mục Huỷ đơn (Đ248)', async ({
+test('Điện thoại: đơn Nháp có nút Trình, không có mục Huỷ đơn (B-27-09)', async ({
   page,
 }, testInfo) => {
   test.skip(!isPhone(page), 'Chỉ áp cho điện thoại.');
   const setup = recordSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, setup.mark, seeded.records.thieuEm);
-  await expect(page.getByRole('button', { name: 'Trình duyệt' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Trình duyệt' })).toBeVisible();
   await expectOnlyPrint(page);
 });
 

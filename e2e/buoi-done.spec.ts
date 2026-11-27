@@ -42,3 +42,17 @@ test('BUOI-02: Trưởng cơ sở nhập thay điểm danh kèm lý do; bản gh
   await expect(page.getByText('Đã nhập thay điểm danh', { exact: true })).toBeVisible();
   await expect(page.getByText(/Lý do: Giáo viên giả bị ốm/)).toBeVisible();
 });
+
+test('BUOI-01: Trưởng cơ sở chọn dòng thì có Done hàng loạt', async ({ page }) => {
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto('/crm/buoi-hoc');
+  await page.getByRole('row').nth(1).getByRole('checkbox').check();
+  await expect(page.getByRole('button', { name: 'Done hàng loạt' })).toBeEnabled();
+});
+
+test('BUOI-01: CSKH không có ô chọn dòng', async ({ page }) => {
+  await enterAs(page, 'cskh.cs5');
+  await page.goto('/crm/buoi-hoc');
+  await expect(page.getByRole('row').nth(1)).toBeVisible();
+  await expect(page.getByRole('row').nth(1).getByRole('checkbox')).toHaveCount(0);
+});

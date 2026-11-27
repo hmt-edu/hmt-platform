@@ -36,6 +36,8 @@ export type MenuEntry = {
   modeLabel?: string | undefined;
   /** Lối tắt tới một mục đã khai ở nhóm khác (cùng đường dẫn): chỉ hiện trên menu; mở đường dẫn và breadcrumb theo mục gốc. */
   alias?: true | undefined;
+  /** Không hiện trên thanh bên và thanh tab; vẫn mở được bằng đường dẫn (quyền, công tắc, đường dẫn trên đầu trang như thường). */
+  hidden?: true | undefined;
 };
 
 export type MenuGroup = {
@@ -202,16 +204,6 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'ghi-danh',
         requires: can('ENROLLMENT'),
         stage: GD2,
-        tabLabel: 'Tất cả ghi danh',
-      },
-      {
-        code: 'GD-06',
-        label: 'Hàng chờ xếp lớp',
-        slug: 'cho-xep-lop',
-        requires: can('ENROLLMENT', 'SUA'),
-        stage: GD2,
-        tabOf: 'ghi-danh',
-        tabLabel: 'Chờ xếp lớp',
       },
       { code: 'LOP-01', label: 'Lớp học', slug: 'lop', requires: can('CLASS'), stage: '' },
       {
@@ -229,6 +221,7 @@ export const CRM_MENU: MenuGroup[] = [
         stage: '',
         feature: 'YEU_CAU_BUOI',
         tabOf: 'buoi-hoc',
+        hidden: true,
       },
       {
         code: 'LOP-08',
@@ -246,25 +239,15 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('SESSION'),
         stage: GD2,
         tabOf: 'buoi-hoc',
-        tabLabel: 'Chưa hoàn tất',
+        hidden: true,
       },
       {
         code: 'BUOI-11',
         label: 'Điểm danh',
         slug: 'diem-danh',
-        requires: can('ATTENDANCE', 'SUA'),
-        stage: GD2,
-        tabLabel: 'Cần gọi',
-      },
-      {
-        code: 'BUOI-15',
-        label: 'Điểm danh trong ngày',
-        slug: 'diem-danh-trong-ngay',
+        // Màn gộp (C-27-07 4c): tab «Theo buổi» cần Buổi học · Xem; tab «Cần gọi» và ghi cần Điểm danh · Sửa (màn tự kiểm).
         requires: can('SESSION'),
-        stage: '',
-        feature: 'DIEM_DANH_TRONG_NGAY',
-        tabOf: 'diem-danh',
-        tabLabel: 'Theo buổi',
+        stage: GD2,
       },
       // C-27-06 (canvas «Đào tạo — menu và điểm danh»): Sắp hết giờ hiện ở cả Đào tạo và Chăm sóc khách hàng.
       {
@@ -652,7 +635,9 @@ export function checkRoute(menu: MenuGroup[], slug: string, access: MenuAccess):
 
 /** Dòng hiện trên thanh bên: bỏ mục đã là tab của một mục đang thấy trong cùng nhóm. */
 export function sidebarEntries(group: MenuGroup): MenuEntry[] {
-  return group.entries.filter((e) => !e.tabOf || !group.entries.some((p) => p.slug === e.tabOf));
+  return group.entries.filter(
+    (e) => !e.hidden && (!e.tabOf || !group.entries.some((p) => p.slug === e.tabOf)),
+  );
 }
 
 export type RouteTab = { slug: string; label: string };
@@ -689,7 +674,7 @@ export function routeTabs(menu: MenuGroup[], slug: string): RouteTab[] {
     if (!entry) continue;
     const root = entry.tabOf ?? entry.slug;
     const parent = group.entries.find((e) => e.slug === root);
-    const children = group.entries.filter((e) => e.tabOf === root && !e.modeLabel);
+    const children = group.entries.filter((e) => e.tabOf === root && !e.modeLabel && !e.hidden);
     if (!parent || children.length === 0) return [];
     return [parent, ...children].map((e) => ({ slug: e.slug, label: e.tabLabel ?? e.label }));
   }

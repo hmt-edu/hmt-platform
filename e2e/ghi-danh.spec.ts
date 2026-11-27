@@ -1,4 +1,4 @@
-// Cụm Ghi danh: GD-01 danh sách, GD-02 bản ghi, GD-04 sổ giờ, GD-06 hàng chờ, GD-03 xếp lớp. Máy tính (màn Đào tạo ưu tiên máy tính). Dữ liệu giả dựng bằng ghi-danh-seed.ts.
+// Cụm Ghi danh: GD-01 danh sách, GD-02 bản ghi, GD-04 sổ giờ, bộ lọc Chờ xếp lớp, GD-03 xếp lớp. Máy tính (màn Đào tạo ưu tiên máy tính). Dữ liệu giả dựng bằng ghi-danh-seed.ts.
 import { expect, test } from '@playwright/test';
 import { PASSWORD, enterAs, expectAccessible, showAllColumns } from './helpers';
 import { DB_URL } from './bao-gia-seed';
@@ -69,19 +69,21 @@ test('GD-02: ghi danh Chờ xếp lớp có câu «Chưa có lớp. Bấm Xếp 
   await expect(page.getByText('Chưa có lớp.', { exact: true })).toHaveCount(0);
 });
 
-test('GD-06, GD-03: hàng chờ chỉ có ghi danh Chờ xếp lớp; xếp một lớp lẻ thì rời hàng chờ', async ({
+test('GD-01, GD-03: lọc Chờ xếp lớp chỉ có ghi danh Chờ xếp lớp; xếp lớp ngay trên danh sách thì rời bộ lọc', async ({
   page,
 }) => {
   await enterAs(page, 'cskh.cs5');
+  // Đường dẫn Hàng chờ xếp lớp cũ chuyển sang danh sách Ghi danh đã lọc.
   await page.goto('/crm/cho-xep-lop');
-  await expect(page.getByRole('heading', { level: 1, name: 'Hàng chờ xếp lớp' })).toBeVisible();
+  await expect(page).toHaveURL(/\/crm\/ghi-danh\?loc=cho-xep-lop$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Ghi danh' })).toBeVisible();
   await page.getByRole('searchbox').fill(seed.tag);
-  const table = page.getByRole('table', { name: 'Hàng chờ xếp lớp' });
+  const table = page.getByRole('table', { name: 'Ghi danh' });
   await expect(table.getByRole('link', { name: seed.waiting.code })).toBeVisible();
-  // Ghi danh Đang học không vào hàng chờ (R-GD-05).
+  // Ghi danh Đang học không lọt bộ lọc Chờ xếp lớp (R-GD-05).
   await expect(table.getByRole('link', { name: seed.learning.code })).toHaveCount(0);
   await expect(table.getByRole('row', { name: new RegExp(seed.waiting.code) })).toContainText(
-    'Chưa có lớp',
+    'chưa có lớp',
   );
   await table
     .getByRole('row', { name: new RegExp(seed.waiting.code) })
@@ -89,7 +91,10 @@ test('GD-06, GD-03: hàng chờ chỉ có ghi danh Chờ xếp lớp; xếp mộ
     .click();
   const dialog = page.getByRole('dialog', { name: 'Xếp lớp cho ghi danh' });
   await expect(dialog).toBeVisible();
-  await dialog.getByRole('radio', { name: 'Một lớp lẻ' }).click();
+  // Nút chọn cách xếp chỉ hiện khi có nhóm lớp phù hợp (hai cách).
+  const single = dialog.getByRole('radio', { name: 'Một lớp lẻ' });
+  await expect(single.or(dialog.getByRole('list', { name: 'Lớp phù hợp' })).first()).toBeVisible();
+  if (await single.isVisible()) await single.click();
   await dialog.getByRole('radio', { name: new RegExp(seed.classCode) }).check();
   await expect(dialog.getByRole('button', { name: 'Xếp lớp', exact: true })).toBeEnabled();
   await dialog.getByRole('button', { name: 'Xếp lớp', exact: true }).click();

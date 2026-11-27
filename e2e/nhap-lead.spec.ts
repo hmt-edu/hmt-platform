@@ -77,6 +77,9 @@ test('Nhập CSV: tải file, ghép cột (báo cột thừa), xem trước đ�
   const dialog = await openImport(page, setup.account);
   // Bước 1: chưa có file thì Tiếp mờ.
   await expect(dialog.getByRole('button', { name: 'Tiếp' })).toBeDisabled();
+  const downloading = page.waitForEvent('download');
+  await dialog.getByRole('button', { name: 'Tải file mẫu' }).click();
+  expect((await downloading).suggestedFilename()).toBe('mau-nhap-lead.csv');
   await dialog.getByLabel('Chọn file CSV').setInputFiles({
     name: file.name,
     mimeType: 'text/csv',

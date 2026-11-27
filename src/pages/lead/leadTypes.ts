@@ -26,6 +26,8 @@ export type LeadRow = {
   created_at: string;
   record_status: LeadStatus;
   merged_into_code: string | null;
+  /** Lý do huỷ (chỉ có ở lead Đã huỷ). */
+  cancel_reason?: string | null;
 };
 
 export type LeadPage = { total: number; rows: LeadRow[] };

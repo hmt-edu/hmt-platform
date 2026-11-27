@@ -178,7 +178,7 @@ test('Bản "Đã gộp" ẩn mặc định, hiện khi chọn Trạng thái b�
   await openLeads(page, setup.sale, setup.mark);
   await expect(list(page).getByText(seeded.names.over)).toBeVisible();
   await expect(list(page).getByText(seeded.names.merged)).toHaveCount(0);
-  await pickFilters(page, ['Đã gộp']);
+  await pickFilters(page, ['Hiện cả lead đã gộp (chỉ xem, không sửa được)']);
   await showAllColumns(page);
   await expect(list(page).getByText(seeded.names.merged)).toBeVisible();
   await expect(list(page).getByText(/^vào LD/)).toBeVisible();
@@ -321,4 +321,30 @@ test('Hộp Assign: chọn nhiều lead, giao cho nhân sự cùng cơ sở', as
   await dialog.getByRole('button', { name: 'Assign', exact: true }).click();
   await expect(page.getByText('Đã giao 2 lead cho Sale CS5 (giả).').first()).toBeVisible();
   await expect(page.getByText('Đã chọn 2')).toHaveCount(0);
+});
+
+// Đặt cuối tệp (chạy lần lượt): bài này huỷ hai lead nên các bài trước cần đủ sáu lead.
+test('Huỷ lead hàng loạt có lý do, «Thùng rác» hiện lead đã huỷ kèm lý do', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await openLeads(page, setup.manager, setup.mark);
+  await page.getByLabel(new RegExp(`^Chọn LD\\d+ ${seeded.names.giaoA}`)).check();
+  await page.getByLabel(new RegExp(`^Chọn LD\\d+ ${seeded.names.giaoB}`)).check();
+  await page.getByRole('button', { name: 'Huỷ', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Huỷ lead nhập nhầm' });
+  await expect(dialog.getByRole('button', { name: 'Huỷ lead', exact: true })).toBeDisabled();
+  await expectAccessible(page);
+  await dialog.getByRole('textbox', { name: /Lý do/ }).fill('Nhập thử hai lần');
+  await dialog.getByRole('button', { name: 'Huỷ lead', exact: true }).click();
+  await expect(page.getByText('Đã huỷ 2 lead.').first()).toBeVisible();
+  await expect(list(page).getByText(seeded.names.giaoA)).toHaveCount(0);
+  await pickFilters(page, ['Thùng rác']);
+  await showAllColumns(page);
+  await expect(list(page).getByText(seeded.names.giaoA)).toBeVisible();
+  await expect(list(page).getByText('Nhập thử hai lần').first()).toBeVisible();
+  await expect(list(page).getByText(seeded.names.over)).toHaveCount(0);
+  // Khôi phục chỉ Admin.
+  await page.getByLabel(new RegExp(`^Chọn LD\\d+ ${seeded.names.giaoA}`)).check();
+  await expect(page.getByRole('button', { name: 'Khôi phục', exact: true })).toHaveCount(0);
 });
