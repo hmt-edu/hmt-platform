@@ -111,7 +111,8 @@ export function rowsFromRecord(record: Pick<QuotationRecord, 'lines'>): EditRow[
   return record.lines.map((l) => ({
     key: newRowKey(),
     kind: l.line_kind,
-    studentId: l.prospect_student_id ?? '',
+    // Báo giá của phiếu tái tục: dòng không có em của cơ hội, chỉ có hồ sơ học sinh.
+    studentId: l.prospect_student_id ?? l.student_id ?? '',
     packageId: l.package_id,
     packageCode: l.package_code,
     packageName: l.package_name,

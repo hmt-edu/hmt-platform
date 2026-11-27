@@ -1,4 +1,4 @@
-// «Tạo đơn» từ phiếu tái tục ở L6 (khuôn K4 ③ FormDialog; canvas 9933 TT02_l6): chọn gói, số giờ, điều khoản thanh toán, ngày vào lớp (một buổi sắp tới của lớp).
+// «Tạo đơn» từ phiếu tái tục ở mọi giai đoạn (khuôn K4 ③ FormDialog; canvas 9933 TT02_l6): chọn gói, số giờ, điều khoản thanh toán, ngày vào lớp (một buổi sắp tới của lớp).
 // Học sinh, lớp, hình thức học lấy từ phiếu và ghi danh cũ (R-GD-13), KHÔNG chọn ở đây. Tiền tính ở máy chủ khi tạo (giá hiện chỉ để xem, đơn vị đồng mỗi giờ).
 // Hàm create_order_from_upsale_ticket kiểm hai quyền (Đơn hàng · Tạo, Phiếu tái tục · Sửa), một giao dịch; hộp chỉ hiện lỗi của hàm.
 import { useState } from 'react';
@@ -146,7 +146,7 @@ function OrderForm({ open, onOpenChange, ticket, onDone }: Props) {
         </Field>
         <p className="text-caption text-fg-muted">
           Học sinh, lớp và hình thức học lấy từ phiếu. Đơn tạo ở trạng thái Nháp rồi mở trang đơn;
-          phiếu sang L7B.
+          giai đoạn của phiếu giữ nguyên.
         </p>
       </div>
     </FormDialog>

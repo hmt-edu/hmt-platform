@@ -1,5 +1,5 @@
 // TT-02 Phiếu tái tục (bản ghi, khuôn K06; canvas 9933 TT02_*): thanh giai đoạn chỉ đọc (đổi bằng nút «Chuyển giai đoạn»), thông tin phụ huynh, học sinh, lớp,
-// giờ còn, ngày hết giờ dự kiến, hai ô tự do (Mục tiêu/nhu cầu tiếp theo, Lộ trình tiếp theo), tab Giờ học, Báo giá và đơn (làm ở PR sau), Tình hình học tập (mờ, chưa dùng).
+// giờ còn, ngày hết giờ dự kiến, hai ô tự do (Mục tiêu/nhu cầu tiếp theo, Lộ trình tiếp theo), tab Giờ học, Báo giá và đơn, Tình hình học tập (mờ, chưa dùng).
 // Giao diện KHÔNG tính giờ, không tự đoán quyền: số liệu và việc làm được do get_upsale_ticket trả. Điện thoại chỉ đọc (Đ248).
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useState } from 'react';
@@ -34,9 +34,12 @@ import {
   saveUpsaleNotes,
   useRefreshUpsaleRecord,
   useUpsaleOrders,
+  useUpsaleQuotes,
   useUpsaleRecord,
 } from './useUpsaleData';
 import { FromLink } from '../../layout/FromLink';
+import { useNavigateFrom } from '../../layout/crumbTrail';
+import type { QuotationRow } from '../bao-gia/quoteTypes';
 
 export function UpsaleRecordPage() {
   const { id } = useParams<{ id: string }>();
@@ -94,12 +97,13 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const [error, setError] = useState<string | null>(null);
   const orders = useUpsaleOrders(t.id);
   const can = (a: UpsaleRecord['actions'][number]) => record.actions.includes(a) && !phone;
-  // Tạo đơn: phiếu ở L6, cần cả quyền Đơn hàng · Tạo và Phiếu tái tục · Sửa (máy chủ kiểm lại từng bước).
-  const canCreateOrder =
-    t.stage_code === 'L6' &&
-    can('doi_giai_doan') &&
-    access.can('SALES_ORDER', 'TAO') &&
-    access.featureOn('BAN_HANG');
+  // Báo giá và đơn tạo được ở mọi giai đoạn, không giới hạn số đơn (R-GD-13); quyền do máy chủ trả và kiểm lại.
+  const canCreateQuote = can('tao_bao_gia') && access.featureOn('BAN_HANG');
+  const canCreateOrder = can('tao_don') && access.featureOn('BAN_HANG');
+  const openFrom = useNavigateFrom();
+  const canSeeQuotes = access.can('QUOTATION', 'XEM');
+  const quotes = useUpsaleQuotes(t.id, canSeeQuotes);
+  const quoteCount = quotes.data?.total ?? 0;
   const dirty = goal !== (t.next_goal ?? '') || roadmap !== (t.next_roadmap ?? '');
   const forbiddenAll = !access.can('UPSALE', 'XEM');
 
@@ -107,9 +111,6 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
     code: o.value,
     label: o.label,
     fullLabel: `${o.value} ${o.label}`,
-    ...(o.value === 'L7' || o.value === 'L8'
-      ? { lockedReason: 'Hệ thống tự chuyển khi có báo giá, đơn.' }
-      : {}),
   }));
 
   async function save() {
@@ -132,6 +133,10 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
       ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
       : null,
     { hours: hoursThreshold, days: daysThreshold },
+    {
+      sentQuotes: (quotes.data?.rows ?? []).filter((q) => q.status_code === 'DA_GUI').length,
+      orders: (orders.data ?? []).filter((o) => o.status_code !== 'HUY').length,
+    },
   );
 
   const overview = (
@@ -272,6 +277,11 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
                 Chuyển giai đoạn
               </Button>
             )}
+            {canCreateQuote && (
+              <Button variant="primary" onClick={() => openFrom(`/crm/bao-gia/tao?phieu=${t.id}`)}>
+                Tạo báo giá
+              </Button>
+            )}
             {canCreateOrder && (
               <Button variant="primary" onClick={() => setDialog('order')}>
                 Tạo đơn
@@ -293,17 +303,25 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
             key: 'bao-gia',
             label: 'Báo giá',
             icon: 'file',
-            count: 0,
-            unavailable: 'Làm ở PR sau (tạo báo giá từ phiếu)',
-            onOpen: () => undefined,
+            count: quoteCount,
+            // Có `unavailable` là nút mờ, nên chỉ đặt khi chưa mở được gì.
+            ...(quoteCount > 0
+              ? { onOpen: () => setTab('quotes') }
+              : {
+                  unavailable: canSeeQuotes
+                    ? 'Phiếu chưa có báo giá'
+                    : 'Bạn không có quyền xem báo giá',
+                  onOpen: () => undefined,
+                }),
           },
           {
             key: 'don-hang',
             label: 'Đơn hàng',
             icon: 'payment',
             count: orders.data?.length ?? 0,
-            unavailable: 'Phiếu chưa có đơn',
-            onOpen: () => setTab('quotes'),
+            ...((orders.data?.length ?? 0) > 0
+              ? { onOpen: () => setTab('quotes') }
+              : { unavailable: 'Phiếu chưa có đơn', onOpen: () => undefined }),
           },
           {
             key: 'ghi-danh',
@@ -331,12 +349,6 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
               {error}
             </Alert>
           )}
-          {t.stage_code === 'L6' && (
-            <Alert tone="info">
-              Phụ huynh đã đồng ý tái tục. Tạo báo giá hoặc tạo đơn từ phiếu này; gửi báo giá thì
-              phiếu sang L7 Dự thu.
-            </Alert>
-          )}
           {t.stage_code === 'L5' && (
             <Alert tone="info">
               Không tái tục:{' '}
@@ -357,7 +369,13 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
               {
                 value: 'quotes',
                 label: 'Báo giá và đơn',
-                content: <OrdersTab orders={orders.data ?? []} />,
+                content: (
+                  <OrdersTab
+                    quotes={quotes.data?.rows ?? []}
+                    orders={orders.data ?? []}
+                    quoteStatus={(code) => catalogs.name('QUOTATION_STATUS', code) ?? code}
+                  />
+                ),
               },
               {
                 value: 'learning',
@@ -404,14 +422,33 @@ const ORDER_STATUS: Record<string, string> = {
   HUY: 'Huỷ',
 };
 
-/** Tab «Báo giá và đơn»: đơn sinh ra từ phiếu (báo giá từ phiếu làm ở PR sau). */
-function OrdersTab({ orders }: { orders: UpsaleOrderRow[] }) {
-  if (orders.length === 0)
+/** Tab «Báo giá và đơn»: báo giá và đơn sinh ra từ phiếu. */
+function OrdersTab({
+  quotes,
+  orders,
+  quoteStatus,
+}: {
+  quotes: QuotationRow[];
+  orders: UpsaleOrderRow[];
+  quoteStatus: (code: string) => string;
+}) {
+  if (quotes.length === 0 && orders.length === 0)
     return (
       <p className="text-fg-muted">Chưa có báo giá hay đơn tái tục. Tạo từ các nút phía trên.</p>
     );
   return (
     <ul className="flex flex-col gap-2">
+      {quotes.map((q) => (
+        <li key={q.id} className="flex flex-wrap items-center gap-2">
+          <FromLink className="font-medium text-link hover:underline" to={`/crm/bao-gia/${q.id}`}>
+            {q.code}
+          </FromLink>
+          <span className="text-fg-muted">
+            {quoteStatus(q.display_status_code)} · {formatMoney(q.total_amount)} ·{' '}
+            {formatDate(q.created_at)}
+          </span>
+        </li>
+      ))}
       {orders.map((o) => (
         <li key={o.id} className="flex flex-wrap items-center gap-2">
           <FromLink className="font-medium text-link hover:underline" to={`/crm/don-hang/${o.id}`}>

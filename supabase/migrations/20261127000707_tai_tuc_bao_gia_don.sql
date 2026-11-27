@@ -173,7 +173,8 @@ begin
     v_id := v_q.id;
     v_opp := (select o from app.opportunity o where o.id = v_q.opportunity_id);
     if v_q.upsale_ticket_id is not null then
-      select * into t from app.upsale_ticket where id = v_q.upsale_ticket_id;
+      -- Luật R-GD-13: sửa báo giá của phiếu cũng cần Phiếu tái tục · Sửa.
+      t := app.assert_upsale_sales_access(v_q.upsale_ticket_id);
       v_opp.branch_id := v_q.branch_id;
     end if;
     delete from app.quotation_line_discount where line_id in (select id from app.quotation_line where quotation_id = v_id);
@@ -767,10 +768,12 @@ begin
   return jsonb_build_object(
     'ticket', app.upsale_ticket_row(t) || jsonb_build_object(
       'lost_reason_code', t.lost_reason_code, 'lost_note', t.lost_note, 'next_goal', t.next_goal, 'next_roadmap', t.next_roadmap,
-      'closed_at', t.closed_at, 'created_by_name', app.staff_display_name(t.created_by)),
+      'closed_at', t.closed_at, 'created_by_name', app.staff_display_name(t.created_by),
+      'branch_id', t.branch_id), -- cho form báo giá từ phiếu: hạn hiệu lực theo cơ sở của phiếu
     'parent', (select jsonb_build_object('id', p.id, 'code', p.code, 'name', p.full_name, 'phone', p.phone, 'email', null, 'zalo', null)
                  from app.parent p where p.id = t.parent_id),
-    'student', (select jsonb_build_object('id', s.id, 'code', s.code, 'name', s.full_name) from app.student s where s.id = t.student_id),
+    'student', (select jsonb_build_object('id', s.id, 'code', s.code, 'name', s.full_name, 'birth_year', s.birth_year)
+                  from app.student s where s.id = t.student_id),
     'class', jsonb_build_object('id', t.class_id, 'code', (select code from app.class where id = t.class_id),
       'teacher_name', (select u.display_name from app.class_slot cs join app.user_account u on u.id = cs.teacher_id
                         where cs.class_id = t.class_id and cs.is_active order by cs.weekday, cs.start_time limit 1)),

@@ -10,6 +10,8 @@ export function upsaleStageNote(
   lostReasonName: string | null,
   /** Ngưỡng giờ, ngày từ tham số upsale_hours_left_threshold, upsale_days_left_threshold (không viết cứng); chưa đọc được thì bỏ phần ngưỡng. */
   thresholds: { hours: number | null; days: number | null },
+  /** Số đếm thật của phiếu: câu không được nói «đã gửi», «đã có đơn» khi số bằng 0. */
+  counts: { sentQuotes: number; orders: number },
 ): UpsaleNote | null {
   if (t.stage_code === 'L1') {
     if (t.origin_code !== 'HE_THONG') return null;
@@ -32,16 +34,19 @@ export function upsaleStageNote(
     return {
       tone: 'info',
       text:
-        t.substage_code === 'L6A'
+        t.substage_code === 'L6A' && counts.sentQuotes === 0
           ? 'Phụ huynh đồng ý tái tục. Chờ gửi báo giá.'
           : 'Phụ huynh đồng ý tái tục.',
     };
   }
   if (t.stage_code === 'L7') {
-    return {
-      tone: 'info',
-      text: 'Đã gửi báo giá, chờ phụ huynh đóng tiền. Đóng đủ thì phiếu tự sang L8 Hoàn thành tái tục.',
-    };
+    const text =
+      counts.orders > 0
+        ? 'Đã có đơn, chờ phụ huynh đóng tiền.'
+        : counts.sentQuotes > 0
+          ? 'Đã gửi báo giá, chờ phụ huynh đóng tiền.'
+          : 'Dự thu: chờ phụ huynh đóng tiền.';
+    return { tone: 'info', text };
   }
   return null;
 }

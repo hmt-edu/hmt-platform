@@ -64,3 +64,6 @@ Phần này thay các câu ở trên về «chỉ L6», «một đơn đang số
 - `create_order_from_quotation` cho báo giá của phiếu: đơn gắn phiếu và lớp, không đòi cơ hội ở L8.
 - `create_order_from_upsale_ticket`: mọi giai đoạn, không giới hạn số đơn, không đổi giai đoạn.
 - Bỏ `reconcile_upsale_orders`; lịch đêm chỉ còn sinh phiếu. Giai đoạn đổi bằng tay.
+- Sửa báo giá Nháp của phiếu cũng cần Phiếu tái tục · Sửa.
+- Giao diện: TT-02 có «Tạo báo giá», «Tạo đơn» theo `actions` của `get_upsale_ticket` ở mọi giai đoạn; form báo giá dùng chung (`/crm/bao-gia/tao?phieu=`), học sinh là em của phiếu; tab «Báo giá và đơn» và banner đọc theo số đếm thật.
+- Chưa làm: đổi giai đoạn tay sang L7, L8 (`change_upsale_stage` còn chặn; chờ Chat chốt).

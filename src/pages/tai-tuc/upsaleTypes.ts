@@ -48,6 +48,8 @@ export type UpsaleTicketDetail = UpsaleRow & {
   next_roadmap: string | null;
   closed_at: string | null;
   created_by_name: string | null;
+  /** Từ migration 707: cho form báo giá của phiếu. */
+  branch_id: string;
 };
 
 export type UpsaleEvent = {
@@ -60,7 +62,7 @@ export type UpsaleEvent = {
   created_by_name: string | null;
 };
 
-export type UpsaleAction = 'giao' | 'doi_giai_doan' | 'sua_ghi_chu';
+export type UpsaleAction = 'giao' | 'doi_giai_doan' | 'sua_ghi_chu' | 'tao_bao_gia' | 'tao_don';
 
 export type UpsaleRecord = {
   ticket: UpsaleTicketDetail;
@@ -72,7 +74,7 @@ export type UpsaleRecord = {
     email: string | null;
     zalo: boolean | null;
   } | null;
-  student: { id: string; code: string; name: string } | null;
+  student: { id: string; code: string; name: string; birth_year: number | null } | null;
   class: { id: string; code: string; teacher_name: string | null };
   enrollments: { id: string; code: string; status_code: string; hours_left: number }[];
   hours: {

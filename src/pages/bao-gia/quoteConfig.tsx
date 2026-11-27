@@ -72,7 +72,8 @@ export function buildQuoteConfig(
         key: 'opportunity',
         defaultVisible: false,
         label: 'Cơ hội',
-        render: (r) => <Code>{r.opportunity_code}</Code>,
+        // Báo giá của phiếu tái tục hiện mã phiếu.
+        render: (r) => <Code>{r.opportunity_code ?? r.upsale_ticket_code}</Code>,
       },
       { key: 'branch', defaultVisible: false, label: 'Cơ sở', render: (r) => r.branch_code },
       {

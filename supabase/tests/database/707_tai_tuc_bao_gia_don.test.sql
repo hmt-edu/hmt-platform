@@ -86,6 +86,9 @@ select is((select count(*)::int from app.quotation q join app.upsale_ticket t on
 select is((select count(*)::int from app.quotation_line l where l.quotation_id = pg_temp.qid('TT917071')
             and l.prospect_student_id is null and l.student_id = (select id from app.student where code = 'HS707A')), 1, 'Dòng báo giá là em của phiếu');
 select is((app.save_quotation(pg_temp.qid('TT917071'), null, pg_temp.qline()) ->> 'code') ~ '^BG-', true, 'Sửa báo giá Nháp của phiếu');
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is(pg_temp.err($$select app.save_quotation(pg_temp.qid('TT917071'), null, pg_temp.qline())$$), 'HMT_KHONG_CO_QUYEN', 'Thiếu Phiếu tái tục · Sửa: không sửa báo giá của phiếu');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(app.get_quotation(pg_temp.qid('TT917071')) ->> 'upsale_ticket_code', 'TT917071', 'Bản ghi báo giá có mã phiếu');
 select is(app.get_quotation(pg_temp.qid('TT917071')) -> 'lines' -> 0 ->> 'student_name', 'Em A', 'Bản ghi báo giá có tên em');
 select is(app.list_quotations(jsonb_build_object('upsale_ticket_id', pg_temp.tid('TT917071'))) ->> 'total', '1', 'Lọc báo giá của phiếu');
