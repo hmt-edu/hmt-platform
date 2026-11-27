@@ -8,7 +8,9 @@ import { cn } from '../ui/cn';
 import { Table, type Column, type SortState, type TableGroup } from '../ui/Data';
 import { StateView } from '../ui/Feedback';
 import { Icon, type IconName } from '../ui/icons';
+import { DateRange } from '../ui/Inputs';
 import { Select } from '../ui/Overlays';
+import { customRangeDays, customRangePreset } from '../lib/dateRange';
 import { useMedia } from '../ui/useMedia';
 import { RefreshStatus } from '../ui/RefreshStatus';
 import { useRefreshAction } from '../ui/useRefreshAction';
@@ -43,6 +45,9 @@ type Action = {
   primary?: boolean;
   loading?: boolean;
 };
+
+// Giá trị riêng của ô "Khoảng thời gian" khi đang chọn khoảng ngày.
+const CUSTOM = 'custom';
 
 export function ListScreen<Row>({
   config,
@@ -140,6 +145,9 @@ export function ListScreen<Row>({
   const [open, setOpen] = useState<'filters' | 'group' | 'cols' | 'fav' | 'save' | null>(null);
   const [advanced, setAdvanced] = useState(false);
   const reload = useRefreshAction(onRefresh);
+  const [pickingRange, setPickingRange] = useState(false);
+  const customRange = customRangeDays(state.datePreset);
+  const showRange = pickingRange || customRange !== null;
   // Điện thoại: thay đổi nằm trong bản nháp tới khi bấm Áp dụng.
   const [draft, setDraft] = useState<ListState>(state);
   const working = sheet ? draft : state;
@@ -376,7 +384,7 @@ export function ListScreen<Row>({
 
       <div className="flex flex-wrap items-center gap-2">
         {config.dateFields.length > 0 && (
-          <div className="inline-flex gap-0">
+          <div className="inline-flex flex-wrap gap-0">
             <Select
               label="Trường ngày"
               icon="calendar"
@@ -387,14 +395,36 @@ export function ListScreen<Row>({
             />
             <Select
               label="Khoảng thời gian"
-              value={state.datePreset === '' ? 'all' : state.datePreset}
-              onChange={(v) => onStateChange({ ...state, datePreset: v === 'all' ? '' : v })}
-              options={DATE_PRESETS.map((p) => ({
-                value: p.key === '' ? 'all' : p.key,
-                label: p.label,
-              }))}
+              value={showRange ? CUSTOM : state.datePreset === '' ? 'all' : state.datePreset}
+              onChange={(v) => {
+                if (v === CUSTOM) return setPickingRange(true);
+                setPickingRange(false);
+                onStateChange({ ...state, datePreset: v === 'all' ? '' : v });
+              }}
+              options={[
+                ...DATE_PRESETS.map((p) => ({
+                  value: p.key === '' ? 'all' : p.key,
+                  label: p.label,
+                })),
+                { value: CUSTOM, label: 'Tuỳ chọn khoảng ngày…' },
+              ]}
               className="-ml-px rounded-l-none"
             />
+            {showRange && (
+              <DateRange
+                label="Từ ngày đến ngày"
+                value={customRange}
+                defaultOpen={pickingRange}
+                onClose={() => setPickingRange(false)}
+                onChange={(range) => {
+                  setPickingRange(false);
+                  const datePreset = !range
+                    ? ''
+                    : (range.preset ?? customRangePreset(range.from, range.to));
+                  onStateChange({ ...state, datePreset });
+                }}
+              />
+            )}
           </div>
         )}
         <div className={cn('ml-auto flex flex-wrap items-center gap-2', sheet && 'w-full')}>

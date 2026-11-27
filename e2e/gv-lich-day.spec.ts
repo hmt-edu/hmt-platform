@@ -44,7 +44,7 @@ test('GV-03: đổi tuần: tuần sau không có buổi hôm nay, quay lại Tu
   await expect(page.locator(link(seed.chot))).toBeVisible();
   await page.getByRole('button', { name: 'Tuần sau' }).click();
   await expect(page.locator(link(seed.chot))).toHaveCount(0);
-  await page.getByRole('button', { name: 'Tuần này' }).click();
+  await page.getByRole('button', { name: 'Tuần này', exact: true }).click();
   await expect(page.locator(link(seed.chot))).toBeVisible();
 });
 

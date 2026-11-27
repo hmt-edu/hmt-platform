@@ -1,5 +1,25 @@
-// Mốc nhanh của khoảng ngày (Hôm nay, Tuần này, Tháng này, Tháng trước). Tuần bắt đầu từ thứ Hai.
+// Mốc nhanh của khoảng ngày (Hôm nay, Tuần này, Tuần trước, Tháng này, Tháng trước) và khoảng tự chọn. Tuần bắt đầu từ thứ Hai.
 import { startOfVnDate, vnDayBounds } from './vnDay';
+
+// Khoảng tự chọn nằm ngay trong chuỗi mốc ("range:2026-11-01:2026-11-15") nên mọi bộ lọc và bộ lọc đã lưu dùng chung một đường (L1).
+const CUSTOM_RANGE = /^range:(\d{4})-(\d{2})-(\d{2}):(\d{4})-(\d{2})-(\d{2})$/;
+
+const dayKey = (d: Date) => {
+  const pad = (n: number) => String(n).padStart(2, '0'); // allow-number: độ rộng hai chữ số của ngày, tháng
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+
+export function customRangePreset(from: Date, to: Date): string {
+  return `range:${dayKey(from)}:${dayKey(to)}`;
+}
+
+/** Ngày đầu, ngày cuối của khoảng tự chọn; null nếu `preset` không phải khoảng tự chọn. */
+export function customRangeDays(preset: string): { from: Date; to: Date } | null {
+  const match = CUSTOM_RANGE.exec(preset);
+  if (!match) return null;
+  const [y1 = 0, m1 = 1, d1 = 1, y2 = 0, m2 = 1, d2 = 1] = match.slice(1).map(Number);
+  return { from: new Date(y1, m1 - 1, d1), to: new Date(y2, m2 - 1, d2) };
+}
 
 /**
  * Khoảng ngày của một mốc nhanh. Tuần bắt đầu từ thứ Hai. `to` tính hết ngày.
@@ -20,6 +40,15 @@ export function datePresetRange(preset: string, today: Date): { from: Date; to: 
       const monday = new Date(day.getTime() - ((day.getDay() + WEEK - 1) % WEEK) * DAY);
       return { from: monday, to: new Date(endOf(new Date(monday.getTime() + (WEEK - 1) * DAY))) };
     }
+    case 'last-week': {
+      const monday = new Date(
+        day.getFullYear(),
+        day.getMonth(),
+        day.getDate() - ((day.getDay() + WEEK - 1) % WEEK) - WEEK,
+      );
+      const sunday = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + WEEK - 1);
+      return { from: monday, to: new Date(endOf(sunday)) };
+    }
     case 'month':
       return {
         from: new Date(day.getFullYear(), day.getMonth(), 1),
@@ -30,8 +59,10 @@ export function datePresetRange(preset: string, today: Date): { from: Date; to: 
         from: new Date(day.getFullYear(), day.getMonth() - 1, 1),
         to: new Date(endOf(new Date(day.getFullYear(), day.getMonth(), 0))),
       };
-    default:
-      return null;
+    default: {
+      const custom = customRangeDays(preset);
+      return custom && { from: custom.from, to: new Date(endOf(custom.to)) };
+    }
   }
 }
 
@@ -62,7 +93,5 @@ export function datePresetDateKeys(
 ): { from: string; to: string } | null {
   const days = datePresetRange(preset, today);
   if (!days) return null;
-  const pad = (n: number) => String(n).padStart(2, '0'); // allow-number: độ rộng hai chữ số của ngày, tháng
-  const key = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  return { from: key(days.from), to: key(days.to) };
+  return { from: dayKey(days.from), to: dayKey(days.to) };
 }
