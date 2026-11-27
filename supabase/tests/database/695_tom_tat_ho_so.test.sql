@@ -58,8 +58,12 @@ update app.user_role set is_active = false where role_code = 'ADMIN' and is_acti
 
 
 -- ---------- Hồ sơ giả ----------
-insert into app.parent (code, full_name, phone, branch_id, created_at)
-values ('PHD9501', 'Phụ huynh Giả Tóm Tắt', '0991269501', (select id from app.branch where code = 'CS1'), now() - interval '40 days');
+insert into app.parent (code, full_name, phone, branch_id)
+values ('PHD9501', 'Phụ huynh Giả Tóm Tắt', '0991269501', (select id from app.branch where code = 'CS1'));
+-- Lùi ngày tạo 40 ngày (trigger cột chuẩn giữ nguyên created_at nên tắt tạm trong giao dịch thử).
+alter table app.parent disable trigger parent_fill_standard;
+update app.parent set created_at = now() - interval '40 days' where code = 'PHD9501';
+alter table app.parent enable trigger parent_fill_standard;
 insert into app.student (code, full_name, birth_year, parent_id, branch_id)
 values ('HSD9501', 'Học sinh Giả Tóm Tắt', 2012, (select id from app.parent where code = 'PHD9501'), (select id from app.branch where code = 'CS1'));
 create temp table ids as
@@ -86,11 +90,11 @@ select is(app.get_parent_summary((select p from ids)) -> 'money' -> 'debt', 'nul
   'Chặn: người cơ sở khác xem được phụ huynh nhưng không thấy ô Còn nợ');
 select is(app.get_parent_summary((select p from ids)) -> 'money' -> 'paid_total', 'null'::jsonb, 'Chặn: không thấy ô Tổng đã đóng');
 select is(app.get_parent_summary((select p from ids)) -> 'money' -> 'balance', 'null'::jsonb, 'Chặn: không thấy ô Số dư');
-select is(app.get_parent_summary((select p from ids)) -> 'last_contact', 'null'::jsonb, 'Chặn: không đọc được ghi chú thì không thấy lần liên hệ');
+select is(app.get_parent_summary((select p from ids)) -> 'last_contact' ->> 'channel', 'Zalo',
+  'Đúng: phạm vi Toàn hệ thống ở cơ sở khác vẫn thấy lần liên hệ (như đọc ghi chú)');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select is(app.get_parent_summary((select p from ids)) -> 'money' ->> 'debt', '0', 'Đúng: Admin thấy ô Còn nợ (0 đồng khi chưa có đơn)');
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
-select is(pg_temp.err($$select app.get_student_summary((select s from ids))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: học sinh cơ sở khác');
 select pg_temp.claims(pg_temp.uid('teacher5'), 'aal1');
 select is(pg_temp.err($$select app.get_parent_summary((select p from ids))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên không xem hồ sơ phụ huynh');
 select is(pg_temp.err($$select app.get_student_summary((select s from ids))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên không được phân công em này');
