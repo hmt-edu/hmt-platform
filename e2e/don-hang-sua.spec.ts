@@ -192,7 +192,7 @@ test('Thêm dòng khi sửa (Q-67): chọn gói, em, số lượng; Lưu thì m�
   // Dòng thời gian mặc định tab Ghi chú: sự kiện hệ thống xem ở «Tất cả».
   await timeline.getByRole('button', { name: 'Tất cả', exact: true }).click();
   await expect(
-    timeline.getByText(/thêm dòng \d+ \(LC-TOAN-K09\): số giờ 3, chiết khấu 5%/),
+    timeline.getByText(/thêm dòng \d+ \(LC-TOAN-K09\): số giờ 3, ưu đãi 5%/),
   ).toBeVisible();
 });
 
