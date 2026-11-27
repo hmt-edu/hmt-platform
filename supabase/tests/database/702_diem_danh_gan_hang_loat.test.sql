@@ -198,7 +198,13 @@ select is(pg_temp.err($$select app.set_attendance_ops_bulk(pg_temp.hai_buoi('CO_
   || jsonb_build_array(jsonb_build_object('session_id', pg_temp.s('f', 1), 'student_id', pg_temp.st(1), 'status_code', 'CO_MAT')))$$),
   'HMT_BUOI_CHUA_CHOT', 'Chặn: buổi chưa chốt hoặc đã Done');
 
+-- R-DD-03: lý do liên hệ và ghi chú đã ghi trước không mất khi gán cùng lúc (chỉ ghi khoá được gửi, mig 685).
+select app.set_attendance_ops(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', (select student_id from ds where session_id = pg_temp.s('p', 1) order by student_id limit 1),
+  'contact_reason_code', 'KHAC', 'note', 'Ghi chú giả')));
 select is(app.set_attendance_ops_bulk(pg_temp.hai_buoi('CO_MAT')), (select total from n)::int, 'R-DD-02: gán cùng lúc hai buổi');
+select is((select concat_ws('|', ops_status_code, contact_reason_code, ops_note) from app.session_attendance
+            where session_id = pg_temp.s('p', 1) and student_id = (select student_id from ds where session_id = pg_temp.s('p', 1) order by student_id limit 1)),
+          'CO_MAT|KHAC|Ghi chú giả', 'R-DD-03: gán cùng lúc giữ lý do liên hệ và ghi chú đã có');
 select ok(split_part(pg_temp.vh(1), '/', 1) = split_part(pg_temp.vh(1), '/', 2) and split_part(pg_temp.vh(2), '/', 1) = split_part(pg_temp.vh(2), '/', 2),
   'Cột Vận hành của cả hai buổi đã ghi');
 
