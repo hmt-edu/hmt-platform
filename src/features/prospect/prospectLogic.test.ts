@@ -13,6 +13,7 @@ import {
   type ProspectStudent,
   dirtyEmIds,
   unsavedEmText,
+  studentLabel,
 } from './prospectLogic';
 
 const NOW = 2026;
@@ -151,5 +152,19 @@ describe('Thông tin học sinh một khối (A-26-01)', () => {
     expect(unsavedEmText(['An', 'Bình'])).toBe(
       'Còn thay đổi chưa lưu ở học sinh: An, Bình. Chọn thẻ học sinh đó rồi bấm Lưu.',
     );
+  });
+});
+
+describe('studentLabel: tên và năm sinh tách nhau (F-26-05)', () => {
+  it('năm sinh và mã học sinh là chữ phụ, không ghép vào tên', () => {
+    expect(studentLabel({ full_name: 'Em Giả', birth_year: 2012, student_code: 'HS-1' })).toEqual({
+      label: 'Em Giả',
+      hint: 'sinh 2012 · HS-1',
+    });
+  });
+  it('không có năm sinh thì không có chữ phụ; chưa có tên thì ghi rõ', () => {
+    expect(studentLabel({ full_name: '  ', birth_year: null })).toEqual({
+      label: 'Học sinh chưa có tên',
+    });
   });
 });

@@ -1,0 +1,92 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-27T05:10:00Z"
+ },
+ "title": "HMT Ô tìm sản phẩm",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 260,
+   "w": 1440,
+   "h": 900,
+   "title": "Báo giá · ô tìm sản phẩm (bấm vào ô)",
+   "is_interactive": true
+  },
+  "DonHang.dc.html": {
+   "x": 1520,
+   "y": 260,
+   "w": 1440,
+   "h": 900,
+   "title": "Đơn hàng · gõ «toan 6» không dấu vẫn tìm được",
+   "is_interactive": true
+  },
+  "KhongThay.dc.html": {
+   "x": 0,
+   "y": 1280,
+   "w": 1440,
+   "h": 700,
+   "title": "Không có kết quả · «Không thấy sản phẩm»",
+   "is_interactive": true
+  },
+  "BaoGiaMobile.dc.html": {
+   "x": 3040,
+   "y": 260,
+   "w": 390,
+   "h": 844,
+   "title": "Điện thoại · tấm kéo từ dưới"
+  },
+  "BaoGiaIn.dc.html": {
+   "x": 1520,
+   "y": 1280,
+   "w": 874,
+   "h": 1230,
+   "title": "Bản in Báo giá · A4 dọc («BẢNG HỌC PHÍ»)"
+  },
+  "DonHangIn.dc.html": {
+   "x": 2474,
+   "y": 1280,
+   "w": 874,
+   "h": 1230,
+   "title": "Bản in Đơn hàng · A4 dọc, cùng khuôn với Báo giá"
+  },
+  "DonHangInMobile.dc.html": {
+   "x": 3428,
+   "y": 1280,
+   "w": 390,
+   "h": 700,
+   "title": "Bản in Đơn hàng · điện thoại (ẩn nút In)"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "DonHang.dc.html",
+  "KhongThay.dc.html",
+  "BaoGiaMobile.dc.html",
+  "BaoGiaIn.dc.html",
+  "DonHangIn.dc.html",
+  "DonHangInMobile.dc.html"
+ ],
+ "notes": {
+  "t": {
+   "x": 0,
+   "y": 100,
+   "text": "HMT · Ô tìm sản phẩm thay hộp «Chọn gói»",
+   "kind": "title1",
+   "maxW": 3400
+  },
+  "n1": {
+   "x": 3428,
+   "y": 2080,
+   "w": 300,
+   "fill": "orange",
+   "text": "Một ô dùng chung cho Báo giá, Đơn hàng và thêm dòng hàng. Chip lọc đổi giá trị mỗi lần bấm. Hai bản in dùng một khuôn, chỉ khác tiêu đề, nhãn Hạn hiệu lực / Ngày đặt và số chứng từ."
+  }
+ },
+ "designSystems": []
+}

@@ -150,7 +150,14 @@ describe('menu CRM theo quyền', () => {
   });
 
   it('mã màn và đường dẫn trong menu không trùng nhau', () => {
-    const entries = CRM_MENU.flatMap((g) => g.entries);
+    const all = CRM_MENU.flatMap((g) => g.entries);
+    // Lối tắt (alias) lặp lại mục gốc có chủ đích: phải trỏ đúng một mục gốc cùng mã.
+    for (const alias of all.filter((e) => e.alias)) {
+      expect(
+        all.filter((e) => !e.alias && e.slug === alias.slug && e.code === alias.code),
+      ).toHaveLength(1);
+    }
+    const entries = all.filter((e) => !e.alias);
     expect(new Set(entries.map((e) => e.slug)).size).toBe(entries.length);
     expect(new Set(entries.map((e) => e.code)).size).toBe(entries.length);
   });
