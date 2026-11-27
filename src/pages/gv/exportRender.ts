@@ -115,27 +115,6 @@ export function drawCard(card: ExportCard, logo: HTMLImageElement | null): HTMLC
   return canvas;
 }
 
-/** Tải canvas về máy dạng PNG (không qua máy chủ). */
-export function downloadCanvas(canvas: HTMLCanvasElement, fileName: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        reject(new Error('Không tạo được ảnh.'));
-        return;
-      }
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      resolve();
-    }, 'image/png');
-  });
-}
-
 /** HTML in A4: mỗi phiếu một trang (ngắt trang), có logo và tên trung tâm. Giáo viên chọn «Lưu thành PDF» ở hộp thoại in. */
 export function cardsToPrintHtml(cards: ExportCard[], logoUrl: string): string {
   const page = (c: ExportCard) => {

@@ -6,6 +6,7 @@ import { useCrumbTail } from '../../layout/CrumbTail';
 import { amountInWords } from '../../lib/amountInWords';
 import { HmtError, errorOf } from '../../lib/db';
 import { formatDate, formatMoney, formatNumber } from '../../lib/format';
+import { PrintImageButton } from '../../print/PrintImageButton';
 import { PrintSheet } from '../../print/PrintSheet';
 import { Button } from '../../ui/Button';
 import { Spinner, StateView } from '../../ui/Feedback';
@@ -73,6 +74,7 @@ function ReceiptPrint({ record }: { record: ReceiptRecord }) {
         <Button icon="file" onClick={() => window.print()}>
           Tải PDF
         </Button>
+        <PrintImageButton code={record.code} />
         {!phone && (
           <Button variant="primary" icon="printer" onClick={() => window.print()}>
             In

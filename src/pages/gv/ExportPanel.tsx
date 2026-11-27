@@ -9,7 +9,8 @@ import { Field } from '../../ui/Field';
 import { Select } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { cardFileName, type ExportCard } from './exportCard';
-import { cardsToPrintHtml, downloadCanvas, drawCard, loadImage, printHtml } from './exportRender';
+import { downloadCanvas } from '../../print/canvasFile';
+import { cardsToPrintHtml, drawCard, loadImage, printHtml } from './exportRender';
 import { useMarkExported } from './useExported';
 
 export type ExportItem = {

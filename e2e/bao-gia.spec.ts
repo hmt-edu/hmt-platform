@@ -228,6 +228,11 @@ test('BH-03: In từ menu Hành động; bản in Đã gửi có đủ khối, n
     await inButton.click();
     expect(await page.evaluate('window.printed')).toBe(2);
   }
+  // Tải ảnh (PNG): tệp tên theo mã chứng từ. Tắt chia sẻ tệp để điện thoại giả lập cũng tải về.
+  await page.evaluate('navigator.canShare = undefined');
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Tải ảnh (PNG)' }).click();
+  expect((await download).suggestedFilename()).toBe(`${seeded.code.sent}.png`);
   await expectAccessible(page);
   await shot(page, testInfo, 'bh03-da-gui');
 });

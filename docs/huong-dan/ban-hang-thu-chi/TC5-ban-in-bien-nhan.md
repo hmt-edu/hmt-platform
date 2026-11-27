@@ -47,7 +47,7 @@ cap_nhat: 2026-11-27
 ## Hỏi đáp
 - **Vì sao số điện thoại bị che?** Để lộ ít thông tin khi giấy đi ra ngoài; trong hệ thống bạn vẫn thấy đủ.
 - **In lại nhiều lần được không?** Được; mỗi lần ghi «In ngày» theo ngày in.
-- **Phụ huynh cần PDF để gửi qua Zalo?** Dùng «Tải PDF», chọn «Lưu thành PDF», rồi gửi như file bình thường.
+- **Phụ huynh cần gửi qua Zalo?** Bấm **«Tải ảnh (PNG)»**: trên điện thoại hiện bảng chia sẻ để chọn Zalo (máy không có thì ảnh được tải về), trên máy tính ảnh được tải về. Cần PDF thì dùng «Tải PDF», chọn «Lưu thành PDF».
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản Tư vấn, CSKH hoặc Kế toán.
