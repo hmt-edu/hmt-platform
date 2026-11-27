@@ -135,8 +135,11 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
       sentQuotes: (quotes.data?.rows ?? []).filter((q) => q.status_code === 'DA_GUI').length,
       orders: (orders.data ?? []).filter((o) => o.status_code !== 'HUY').length,
     },
+    can('giao'),
   );
   const toDocuments = () => ordersRef.current?.scrollIntoView({ block: 'start' });
+  // Điện thoại và người không có quyền: không dựng thanh nút rỗng, không nhắc nút không có.
+  const hasActions = can('doi_giai_doan') || canCreateQuote || canCreateOrder || can('giao');
 
   const lostReason = t.lost_reason_code
     ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
@@ -169,7 +172,9 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
         onCancel={() => undefined}
         stageShowCode={false}
         stage={{ steps, current: t.stage_code, forwardOnly: true, onSelect: () => undefined }}
-        stageNote="Stage chỉ đọc, đổi bằng nút bên dưới."
+        stageNote={
+          can('doi_giai_doan') ? 'Stage chỉ đọc, đổi bằng nút bên dưới.' : 'Stage chỉ đọc.'
+        }
         subStage={
           t.substage_code ? (
             <span className="text-caption text-fg-label">
@@ -178,24 +183,29 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
           ) : undefined
         }
         businessActions={
-          <span className="flex flex-wrap items-center gap-2">
-            {can('doi_giai_doan') && (
-              <Button variant="primary" onClick={() => setDialog('stage')}>
-                Chuyển giai đoạn
-              </Button>
-            )}
-            {canCreateQuote && (
-              <Button variant="primary" onClick={() => openFrom(`/crm/bao-gia/tao?phieu=${t.id}`)}>
-                Tạo báo giá
-              </Button>
-            )}
-            {canCreateOrder && (
-              <Button variant="primary" onClick={() => setDialog('order')}>
-                Tạo đơn
-              </Button>
-            )}
-            {can('giao') && <Button onClick={() => setDialog('assign')}>Giao</Button>}
-          </span>
+          hasActions ? (
+            <span className="flex flex-wrap items-center gap-2">
+              {can('doi_giai_doan') && (
+                <Button variant="primary" onClick={() => setDialog('stage')}>
+                  Chuyển giai đoạn
+                </Button>
+              )}
+              {canCreateQuote && (
+                <Button
+                  variant="primary"
+                  onClick={() => openFrom(`/crm/bao-gia/tao?phieu=${t.id}`)}
+                >
+                  Tạo báo giá
+                </Button>
+              )}
+              {canCreateOrder && (
+                <Button variant="primary" onClick={() => setDialog('order')}>
+                  Tạo đơn
+                </Button>
+              )}
+              {can('giao') && <Button onClick={() => setDialog('assign')}>Giao</Button>}
+            </span>
+          ) : undefined
         }
         smart={[
           {
@@ -269,7 +279,10 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
               <dl className="flex min-w-0 flex-col">
                 {field('Phụ huynh', record.parent?.name ?? '')}
                 {field('Số điện thoại', record.parent ? formatPhone(record.parent.phone) : '')}
-                {field('Email', record.parent?.email ?? '')}
+                {field(
+                  'Email',
+                  record.parent?.email || <span className="text-fg-muted">Chưa có</span>,
+                )}
                 {field('Học sinh', record.student?.name ?? '')}
                 {field('Mã học sinh', record.student?.code ?? '')}
               </dl>
@@ -306,7 +319,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
                   'Mua gần nhất: số giờ',
                   purchase ? `${formatNumber(purchase.hours)} giờ` : '',
                 )}
-                {field('Campaign', t.campaign_label ?? '')}
+                {field('Tháng hết giờ', t.campaign_label ?? '')}
               </dl>
             </div>
           </Block>

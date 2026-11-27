@@ -44,8 +44,9 @@ export function StageBar({
   useEffect(() => {
     currentRef.current?.scrollIntoView({ inline: 'center', block: 'nearest' });
   }, [current]);
+  // `relative`: chữ sr-only (định vị tuyệt đối) nằm trong vùng cuộn, không làm cả trang tràn ngang trên điện thoại.
   return (
-    <nav aria-label={label} className={cn('overflow-x-auto', disabled && 'opacity-50')}>
+    <nav aria-label={label} className={cn('relative overflow-x-auto', disabled && 'opacity-50')}>
       <ol className="flex w-full flex-nowrap">
         {steps.map((step, i) => {
           const isCurrent = i === index;

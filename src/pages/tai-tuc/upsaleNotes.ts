@@ -12,6 +12,8 @@ export function upsaleStageNote(
   thresholds: { hours: number | null; days: number | null },
   /** Số đếm thật của phiếu: câu không được nói «đã gửi», «đã có đơn» khi số bằng 0 (anh Trường 27/11). */
   counts: { sentQuotes: number; orders: number },
+  /** Người xem đang có nút «Giao» trên màn (điện thoại và người không có quyền thì không). */
+  canAssign: boolean,
 ): UpsaleNote | null {
   if (t.stage_code === 'L1') {
     if (t.origin_code !== 'HE_THONG') return null;
@@ -21,7 +23,7 @@ export function upsaleStageNote(
         : 'giờ còn ít hoặc sắp tới ngày hết giờ dự kiến';
     return {
       tone: 'info',
-      text: `Phiếu do hệ thống tự sinh vì ${why}. Bấm Giao để chọn người phụ trách.`,
+      text: `Phiếu do hệ thống tự sinh vì ${why}.${canAssign ? ' Bấm Giao để chọn người phụ trách.' : ''}`,
     };
   }
   if (t.stage_code === 'L5') {
