@@ -170,12 +170,14 @@ export function DiscountPolicyPage() {
     {
       key: 'value',
       header: 'Giá trị',
+      align: 'right',
       width: 'w-28',
       cell: (p) => discountAppliedLabel(p),
     },
     {
       key: 'max',
       header: 'Mức tối đa',
+      align: 'right',
       width: 'w-32',
       cell: (p) => discountValueLabel(p),
     },
@@ -202,6 +204,7 @@ export function DiscountPolicyPage() {
     {
       key: 'max',
       header: 'Mức tối đa',
+      align: 'right',
       width: 'w-40',
       cell: (p) => `${p.max_quantity.toLocaleString('vi-VN')} / đơn`,
     },
