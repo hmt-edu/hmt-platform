@@ -200,6 +200,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'ghi-danh',
         requires: can('ENROLLMENT'),
         stage: GD2,
+        tabLabel: 'Tất cả ghi danh',
       },
       {
         code: 'GD-06',

@@ -6,6 +6,7 @@ import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
 import type { LeadCatalogs } from '../lead/useCatalogs';
+import { waitingDaysLabel } from './waitingDays';
 import type { EnrollmentRow, LedgerRow, QueueRow } from './enrollTypes';
 
 export const ENROLL_SCREEN_CODE = 'GD-01';
@@ -138,7 +139,11 @@ export function buildQueueConfig(
       { key: 'subject', label: 'Môn', render: (r) => r.package_name ?? r.package_code ?? MUTED },
       { key: 'mode', label: 'Hình thức', render: (r) => r.delivery_mode_name ?? MUTED },
       { key: 'reason', label: 'Lý do chờ', render: () => 'Chưa có lớp' },
-      { key: 'since', label: 'Chờ từ', render: (r) => formatDate(r.waiting_since) },
+      {
+        key: 'since',
+        label: 'Chờ từ',
+        render: (r) => `${formatDate(r.waiting_since)} · ${waitingDaysLabel(r.waiting_since)}`,
+      },
       {
         key: 'action',
         label: 'Xử lý',
