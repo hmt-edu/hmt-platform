@@ -182,6 +182,8 @@ Luật: R-V2-19, R-GV-02, R-GV-03, R-GV-04, R-GV-08, R-GV-13. Các hàm ghi (`op
 
 Chưa làm (ghi trong báo cáo): «Theo tiêu chí» (chấm theo cột), «Cả lớp», xuất nhận xét (GV07X), màn nhập điểm Kiểm tra (GV-07K), chống ghi đè nhận xét (sau 17/11).
 
+Ghi nhiều buổi một lượt (migration 702, màn «Điểm danh»): `set_attendance_ops_bulk([{session_id, student_id, status_code}])`. Gom theo buổi rồi gọi `set_attendance_ops`, một giao dịch, tối đa `list_page_size_max` dòng; quyền, khoá buổi Done và tự Done như ghi từng buổi.
+
 ## Cụm Buổi B: huỷ, dời, theo dõi buổi chưa hoàn tất (migration 123)
 
 Thêm cột `cancel_reason_code`, `cancel_note` cho buổi (lưu lý do huỷ; buổi huỷ trước migration 123 để trống). `app.cancel_session` thay bản 102, luật huỷ giữ nguyên, chỉ thêm lưu lý do. `session_list`, `session_record` (migration 120) thay bản mới hiện lý do huỷ.
