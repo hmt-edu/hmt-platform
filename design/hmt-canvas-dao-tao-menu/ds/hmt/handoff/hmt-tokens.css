@@ -1,0 +1,118 @@
+/* HMT Platform — biến CSS thuần, cùng tên với hệ thiết kế (dùng khi không có Tailwind). Sinh từ tokens.json. */
+:root {
+  --logo-orange: #EF6926;
+  --logo-ink: #010101;
+  --brand-50: #FFF4ED;
+  --brand-100: #FFE4D3;
+  --brand-200: #FDC6A6;
+  --brand-300: #FAA87D;
+  --brand-400: #F4844A;
+  --brand-500: #EF6926;
+  --brand-600: #CB4D0E;
+  --brand-700: #AB420F;
+  --brand-800: #8C3510;
+  --brand-900: #652910;
+  --neutral-0: #FFFFFF;
+  --neutral-50: #FAF7F3;
+  --neutral-100: #F1EDE7;
+  --neutral-200: #E3DDD5;
+  --neutral-300: #CFC7BD;
+  --neutral-400: #ABA197;
+  --neutral-500: #8A8076;
+  --neutral-600: #6B6157;
+  --neutral-700: #524A41;
+  --neutral-800: #2E2821;
+  --neutral-900: #211C16;
+  --success-solid: #1F7A3E;
+  --success-bg: #E3F2E8;
+  --success-text: #1F7A3E;
+  --warning-solid: #C99700;
+  --warning-bg: #FDF1C7;
+  --warning-text: #7A5C00;
+  --danger-solid: #B42335;
+  --danger-bg: #FBE4E7;
+  --danger-text: #8A1626;
+  --info-solid: #1F5FAD;
+  --info-bg: #E2ECF8;
+  --info-text: #1F5FAD;
+  --info-border: #B9CFEC;
+  --success-border: #BAD9C4;
+  --warning-border: #F2DE9D;
+  --danger-border: #ECBBC2;
+  --action-primary-bg: var(--brand-600);
+  --action-primary-bg-hover: var(--brand-700);
+  --action-primary-text: var(--neutral-0);
+  --action-danger-fg: var(--danger-solid);
+  --action-danger-bg: var(--neutral-0);
+  --input-border: var(--neutral-500);
+  --divider: var(--neutral-200);
+  --icon-warning: var(--warning-text);
+  --attendance-late-bg: var(--warning-solid);
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-label: var(--neutral-700);
+  --text-disabled: var(--neutral-500);
+  --text-link: var(--brand-700);
+  --text-on-dark: var(--neutral-200);
+  --bg-page: var(--neutral-50);
+  --bg-surface: var(--neutral-0);
+  --bg-subtle: var(--neutral-100);
+  --bg-hover: var(--brand-50);
+  --bg-selected: var(--brand-100);
+  --border-selected: var(--brand-700);
+  --sidebar-bg: var(--neutral-900);
+  --sidebar-bg-hover: var(--neutral-800);
+  --sidebar-text: var(--neutral-200);
+  --sidebar-text-muted: var(--neutral-400);
+  --sidebar-marker: var(--brand-500);
+  --stage-current-bg: var(--brand-500);
+  --focus: var(--brand-600);
+  --overlay: rgba(33, 28, 22, 0.38);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(33, 28, 22, 0.06);
+  --shadow-md: 0 8px 24px rgba(33, 28, 22, 0.14);
+  --shadow-lg: 0 16px 48px rgba(33, 28, 22, 0.25);
+  --focus-ring: 0 0 0 2px #FFFFFF, 0 0 0 4px #CB4D0E;
+  --border-1: 1px;
+  --border-2: 2px;
+  --border-3: 3px;
+  --control-sm: 26px;
+  --control-md: 32px;
+  --control-lg: 40px;
+  --stage-height: 34px;
+  --table-head-height: 32px;
+  --table-row-height: 36px;
+  --topbar-height: 52px;
+  --sidebar-wide: 236px;
+  --sidebar-narrow: 64px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-heading: "Be Vietnam Pro", "Inter", system-ui, sans-serif;
+}
+.title-record { font-family: var(--font-heading); font-size: 26px; line-height: 32px; font-weight: 600;letter-spacing:-0.01em; }
+.title-page { font-family: var(--font-heading); font-size: 20px; line-height: 28px; font-weight: 600; }
+.title-section { font-family: var(--font-heading); font-size: 16px; line-height: 24px; font-weight: 600; }
+.title-block { font-family: var(--font-heading); font-size: 14px; line-height: 20px; font-weight: 600; }
+.body { font-family: var(--font-ui); font-size: 13px; line-height: 20px; font-weight: 400; }
+.body-strong { font-family: var(--font-ui); font-size: 13px; line-height: 20px; font-weight: 600; }
+.body-touch { font-family: var(--font-ui); font-size: 15px; line-height: 22px; font-weight: 400; }
+.button { font-family: var(--font-ui); font-size: 13px; line-height: 20px; font-weight: 500; }
+.label { font-family: var(--font-ui); font-size: 12px; line-height: 16px; font-weight: 600; }
+.small { font-family: var(--font-ui); font-size: 12px; line-height: 16px; font-weight: 400; }
+.code { font-family: var(--font-ui); font-size: 12px; line-height: 16px; font-weight: 500;font-variant-numeric:tabular-nums; }
+.number-xl { font-family: var(--font-ui); font-size: 34px; line-height: 40px; font-weight: 700;font-variant-numeric:tabular-nums; }
+.number-lg { font-family: var(--font-ui); font-size: 26px; line-height: 32px; font-weight: 700;font-variant-numeric:tabular-nums; }
+.number-md { font-family: var(--font-ui); font-size: 16px; line-height: 20px; font-weight: 600;font-variant-numeric:tabular-nums; }
+.number { font-family: var(--font-ui); font-size: 13px; line-height: 20px; font-weight: 400;font-variant-numeric:tabular-nums; }
