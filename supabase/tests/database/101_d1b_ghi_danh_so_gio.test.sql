@@ -155,7 +155,7 @@ select lives_ok($$select app.assign_enrollment_class(pg_temp.e('6'), pg_temp.c('
 -- ================= Sổ giờ chỉ thêm, điều chỉnh (R-GD-04, R-GD-18) =================
 select pg_temp.sudo($$select app.add_opening_hours(pg_temp.e('1'), 6, 'DOT-1')$$);
 select is(app.enrollment_hours_balance(pg_temp.e('1')), 6.00::numeric, 'Số dư đầu kỳ ghi vào sổ giờ (R-V2-33)');
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 1, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: CSKH không điều chỉnh giờ (GD-05: chỉ Trưởng cơ sở, Admin)');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 1, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: CSKH không điều chỉnh giờ (GD-05: chỉ Trưởng cơ sở, Admin, Kế toán)');
 select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 1, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: quản lý cơ sở khác không điều chỉnh giờ ghi danh CS1');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
@@ -168,10 +168,8 @@ select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 10000
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 1000000000, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_GIO_DIEU_CHINH_SAI', 'F7 chặn: số cực lớn không còn lỗi tràn số 22003');
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 0.001, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_GIO_DIEU_CHINH_SAI', 'F7 chặn: làm tròn 2 số lẻ ra 0 không còn lỗi ràng buộc 23514');
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), -0.004, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_GIO_DIEU_CHINH_SAI', 'F7 chặn: số âm làm tròn ra 0 cũng bị chặn');
--- G2 (migration 471): cộng giờ cần Kế toán · Duyệt nên Trưởng cơ sở bị chặn (bài cộng giờ thành công của Kế toán nằm ở 471).
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.e('1'), 2, 'BU_GIO_LOI_TRUNG_TAM')$$), 'HMT_KHONG_CO_QUYEN', 'G2 chặn: Trưởng cơ sở không cộng giờ (R-GD-04)');
--- Dòng +2 dựng bằng quyền chủ (như việc Kế toán cộng giờ) để các bài sau giữ nguyên số liệu.
-select pg_temp.sudo($$insert into app.hour_ledger (enrollment_id, branch_id, entry_type, hours, reason_code) select e.id, e.branch_id, 'DIEU_CHINH', 2, 'BU_GIO_LOI_TRUNG_TAM' from app.enrollment e where e.id = pg_temp.e('1')$$);
+-- Migration 690 (anh chốt 27/11): Trưởng cơ sở được cộng giờ ở cơ sở mình (đủ ba vai nằm ở 471).
+select is(app.adjust_enrollment_hours(pg_temp.e('1'), 2, 'BU_GIO_LOI_TRUNG_TAM'), 8.00::numeric, 'Đúng: Trưởng cơ sở cộng 2 giờ, số dư 8 (R-GD-04)');
 select is(app.adjust_enrollment_hours(pg_temp.e('1'), -3, 'SUA_SAI_DANH_SACH_DIEM_DANH'), 5.00::numeric, 'Đúng: dòng ngược dấu bớt 3 giờ, số dư 5 (R-GD-04)');
 select is((select count(*)::int from app.hour_ledger where enrollment_id = pg_temp.e('1')), 3, 'Sổ giờ có 3 dòng (đầu kỳ, +2, −3), không dòng nào bị sửa');
 select is(pg_temp.err($$select pg_temp.sudo('update app.hour_ledger set hours = 99 where enrollment_id = ''' || pg_temp.e('1') || '''')$$), 'HMT_SO_GIO_CHI_THEM', 'Chặn: sửa dòng sổ giờ (R-GD-04)');
