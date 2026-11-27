@@ -75,15 +75,42 @@ export type UpsaleRecord = {
     zalo: boolean | null;
   } | null;
   student: { id: string; code: string; name: string; birth_year: number | null } | null;
-  class: { id: string; code: string; teacher_name: string | null };
+  class: {
+    id: string;
+    code: string;
+    teacher_name: string | null;
+    /** Từ migration 708: khung giờ trong tuần (1 = Thứ hai) và buổi sắp tới gần nhất. */
+    slots: { weekday: number; start_time: string; end_time: string }[];
+    next_session: { date: string; start_time: string; end_time: string } | null;
+  };
   enrollments: { id: string; code: string; status_code: string; hours_left: number }[];
   hours: {
     bought: number;
     used: number;
     absences_window: number;
     window_days: number;
-    /** Lần cấp giờ mua mới nhất (migration 623); null khi chưa có. */
-    last_purchase: { hours: number; at: string } | null;
+    /** Từ migration 708. */
+    gifted: number;
+    sessions_left: number | null;
+    /** Ghi danh mua gần nhất (migration 708); null khi chưa có. Đơn giá, học phí chỉ có khi được xem Đơn hàng. */
+    last_purchase: {
+      hours: number;
+      at: string;
+      package_name: string | null;
+      unit_code: string | null;
+      unit_price: number | null;
+      amount: number | null;
+    } | null;
+  };
+  /** Từ migration 708: lần liên hệ gần nhất và lịch hẹn đang chờ sớm nhất của phụ huynh hoặc học sinh. */
+  contact: {
+    last: {
+      at: string;
+      channel_code: string;
+      result_code: string;
+      by_name: string | null;
+    } | null;
+    next_appointment_at: string | null;
   };
   events: UpsaleEvent[];
   actions: UpsaleAction[];

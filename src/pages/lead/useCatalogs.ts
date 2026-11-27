@@ -15,6 +15,8 @@ export type CatalogItem = {
 type Campaign = { id: string; name: string; is_active: boolean };
 
 export const CATALOGS = [
+  'CONTACT_CHANNEL',
+  'CONTACT_RESULT',
   'LEAD_STAGE',
   'LEAD_SUBSTAGE',
   'OPP_STAGE',

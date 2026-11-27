@@ -97,12 +97,12 @@ select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code 
 select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'hours' ->> 'window_days', '30', 'Bản ghi: cửa sổ xét vắng 30 ngày');
 select is(jsonb_array_length(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'events'), 1, 'Bản ghi: một sự kiện Tạo');
 
--- TT-02 «Đã mua gần nhất» (migration 623): lần cấp giờ mua (CAP_MUA) mới nhất của em ở lớp; chưa mua thì null; giờ tặng không tính.
+-- TT-02 «Đã mua gần nhất» (migration 623, 708): ghi danh mua gần nhất của em ở lớp (cộng các dòng CAP_MUA); chưa mua thì null; giờ tặng không tính.
 select is(app.get_upsale_ticket(pg_temp.ticket_of('HS414A')) -> 'hours' -> 'last_purchase', 'null'::jsonb, 'Đã mua gần nhất: chưa có lần mua thì null');
 select pg_temp.sudo($$insert into app.hour_ledger (enrollment_id, branch_id, entry_type, hours, created_at)
   select e.id, e.branch_id, v.t, v.h, v.at from app.enrollment e,
   (values ('CAP_MUA', 40, now() - interval '60 days'), ('CAP_MUA', 30, now() - interval '10 days'), ('CAP_TANG', 5, now())) v (t, h, at) where e.code = 'GD414A'$$);
-select is((app.get_upsale_ticket(pg_temp.ticket_of('HS414A')) -> 'hours' -> 'last_purchase' ->> 'hours')::numeric, 30::numeric, 'Đã mua gần nhất: lấy lần CAP_MUA mới nhất, không lấy giờ tặng');
+select is((app.get_upsale_ticket(pg_temp.ticket_of('HS414A')) -> 'hours' -> 'last_purchase' ->> 'hours')::numeric, 70::numeric, 'Đã mua gần nhất: gộp các lần cấp giờ của một ghi danh (migration 708), không lấy giờ tặng');
 select is(app.get_upsale_ticket(pg_temp.ticket_of('HS414B')) -> 'hours' -> 'last_purchase', 'null'::jsonb, 'Đã mua gần nhất: không lẫn sang em khác');
 select pg_temp.claims(pg_temp.uid('cskh5'), 'aal1');
 select is(pg_temp.err($$select app.get_upsale_ticket(pg_temp.anyt())$$), 'HMT_KHONG_CO_QUYEN', 'Cơ sở khác: không xem được bản ghi phiếu');

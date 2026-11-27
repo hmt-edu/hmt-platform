@@ -143,6 +143,15 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
     : '';
   const purchase = record.hours.last_purchase;
   const absences = `${record.hours.absences_window} buổi`;
+  const lastContact = record.contact.last;
+  // Ngày giờ · kênh · kết quả của lần liên hệ gần nhất (một thông tin: lần liên hệ).
+  const lastContactText = lastContact
+    ? [
+        formatDateTime(lastContact.at),
+        catalogs.name('CONTACT_CHANNEL', lastContact.channel_code) ?? lastContact.channel_code,
+        catalogs.name('CONTACT_RESULT', lastContact.result_code) ?? lastContact.result_code,
+      ].join(' · ')
+    : '';
   const field = (label: string, value: ReactNode) => (
     <DetailField label={label} mode="view" value={value} />
   );
@@ -266,8 +275,13 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
               </dl>
               <dl className="flex min-w-0 flex-col">
                 {field('Người phụ trách', t.owner_name ?? 'chưa giao')}
-                {field('Lần liên hệ gần nhất', NO_DATA)}
-                {field('Ngày hẹn gọi lại', NO_DATA)}
+                {field('Lần liên hệ gần nhất', lastContactText)}
+                {field(
+                  'Ngày hẹn gọi lại',
+                  record.contact.next_appointment_at
+                    ? formatDateTime(record.contact.next_appointment_at)
+                    : '',
+                )}
               </dl>
             </div>
           </Block>
@@ -276,7 +290,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
             <div className="grid grid-cols-1 gap-x-8 lg:grid-cols-2">
               <dl className="flex min-w-0 flex-col">
                 {field('Đã mua (gồm giờ tặng)', `${formatNumber(record.hours.bought)} giờ`)}
-                {field('Giờ tặng', NO_DATA)}
+                {field('Giờ tặng', `${formatNumber(record.hours.gifted)} giờ`)}
                 {field('Đã học', `${formatNumber(record.hours.used)} giờ`)}
                 {field('Giờ còn', t.hours_left === null ? '' : `${formatNumber(t.hours_left)} giờ`)}
                 {field(
@@ -287,7 +301,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
               </dl>
               <dl className="flex min-w-0 flex-col">
                 {field('Mua gần nhất: ngày', purchase ? formatDate(purchase.at) : '')}
-                {field('Mua gần nhất: gói', NO_DATA)}
+                {field('Mua gần nhất: gói', purchase?.package_name ?? '')}
                 {field(
                   'Mua gần nhất: số giờ',
                   purchase ? `${formatNumber(purchase.hours)} giờ` : '',
