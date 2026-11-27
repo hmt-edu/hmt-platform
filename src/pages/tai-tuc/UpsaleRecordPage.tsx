@@ -1,6 +1,7 @@
 // TT-02 Phiếu tái tục (bản ghi, khuôn K06; canvas 9933 TT02_*): thanh giai đoạn chỉ đọc (đổi bằng nút «Chuyển giai đoạn»), thông tin phụ huynh, học sinh, lớp,
 // giờ còn, ngày hết giờ dự kiến, hai ô tự do (Mục tiêu/nhu cầu tiếp theo, Lộ trình tiếp theo), tab Giờ học, Báo giá và đơn (làm ở PR sau), Tình hình học tập (mờ, chưa dùng).
 // Giao diện KHÔNG tính giờ, không tự đoán quyền: số liệu và việc làm được do get_upsale_ticket trả. Điện thoại chỉ đọc (Đ248).
+import { useCrumbTail } from '../../layout/CrumbTail';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { RecordDetail, DetailField } from '../../record/Detail';
@@ -81,6 +82,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const daysThreshold = useIntSetting('upsale_days_left_threshold');
   const phone = useMedia(NARROW_TABLE);
   const t = record.ticket;
+  useCrumbTail(t.code);
   const refresh = useRefreshUpsaleRecord(t.id);
   const [tab, setTab] = useState('overview');
   const [dialog, setDialog] = useState<'stage' | 'assign' | 'order' | null>(null);

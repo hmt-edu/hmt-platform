@@ -23,6 +23,9 @@ import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
 import { CustTickets } from './CustTickets';
+import { AppointmentTab, UpsaleTab } from './FollowUpTabs';
+import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
+import { useLeadCatalogs } from '../lead/useCatalogs';
 import { STUDENT_STATUS_LABEL, type StudentRecord } from './custTypes';
 import {
   StudentAttendanceTab,
@@ -134,6 +137,19 @@ function StudentView({ record }: { record: StudentRecord }) {
   const complaints = useComplaintCount(record.id, canTickets);
   const [ticketType, setTicketType] = useState<string | undefined>();
   const account = useStudentAccount(record);
+  const catalogs = useLeadCatalogs();
+  const appointments = useOpportunityAppointments({
+    opportunityId: '',
+    branchId: '',
+    label: `${record.code} · ${record.full_name}`,
+    catalogs,
+    canEdit: access.can('APPOINTMENT', 'SUA') && !merged,
+    canCancel: access.can('APPOINTMENT', 'HUY') && !merged,
+    refresh: async () => {
+      await refresh();
+    },
+    upcomingOfCustomer: { key: 'student_id', id: record.id },
+  });
   // Gộp trùng dùng quyền Duyệt (R-CRM-25); bản đã gộp chỉ đọc.
   const canMerge = access.can('STUDENT', 'DUYET') && !merged;
   const [mergeOpen, setMergeOpen] = useState(false);
@@ -251,7 +267,7 @@ function StudentView({ record }: { record: StudentRecord }) {
             }
             onFlag={(t) => {
               setTicketType(undefined);
-              setTab(t === 'tickets' ? 'tickets' : 'attendance');
+              setTab(t === 'tickets' || t === 'upsale' ? t : 'attendance');
             }}
             onChatter={(target) => setFocus((f) => ({ target, seq: (f?.seq ?? 0) + 1 }))}
           />
@@ -322,6 +338,7 @@ function StudentView({ record }: { record: StudentRecord }) {
             createdText="Tạo học sinh."
             canWrite={!merged}
             focus={focus}
+            upcoming={access.can('APPOINTMENT', 'XEM') ? appointments.upcoming : undefined}
           />
         }
         asideLabel="Ghi chú và hoạt động"
@@ -354,6 +371,8 @@ function StudentView({ record }: { record: StudentRecord }) {
             { key: 'exam', label: 'Điểm kiểm tra' },
             { key: 'care', label: 'Chăm sóc' },
             { key: 'tickets', label: 'Đề nghị & khiếu nại' },
+            { key: 'upsale', label: 'Tái tục' },
+            { key: 'appointments', label: 'Lịch hẹn' },
           ]}
         />
         {tab === 'overview' && (
@@ -501,6 +520,8 @@ function StudentView({ record }: { record: StudentRecord }) {
         {tab === 'attendance' && <StudentAttendanceTab record={record} />}
         {tab === 'exam' && <StudentExamTab record={record} />}
         {tab === 'care' && <StudentCareTab />}
+        {tab === 'upsale' && <UpsaleTab owner={{ key: 'student_id', id: record.id }} />}
+        {tab === 'appointments' && <AppointmentTab owner={{ key: 'student_id', id: record.id }} />}
         {tab === 'tickets' && (
           <CustTickets
             owner={{ key: 'student_id', id: record.id }}
@@ -510,6 +531,7 @@ function StudentView({ record }: { record: StudentRecord }) {
         )}
       </RecordDetail>
       {account.dialogs}
+      {appointments.dialogs}
       {canMerge && (
         <MergeDialog
           open={mergeOpen}

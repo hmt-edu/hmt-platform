@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { addLeadStudentsToOpportunity } from '../../features/prospect/useProspect';
 import {
-  emLabel,
+  studentLabel,
   pickEmText,
   uniqueEms,
   type ProspectStudent,
@@ -173,7 +173,7 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
           {choices.map((s) => (
             <Checkbox
               key={s.id}
-              label={`${emLabel(s)}${s.birth_year ? ` · sinh ${s.birth_year}` : ''}${s.student_code ? ` · ${s.student_code}` : ''}`}
+              label={<StudentChoice {...studentLabel(s)} />}
               checked={picked.has(s.id)}
               onChange={() =>
                 setPicked((cur) => {
@@ -205,5 +205,14 @@ function CreateForm({ onOpenChange, lead, catalogs, onCreated, onOpenExisting }:
         )}
       </div>
     </FormDialog>
+  );
+}
+
+function StudentChoice({ label, hint }: { label: string; hint?: string }) {
+  return (
+    <span className="min-w-0">
+      {label}
+      {hint && <span className="ml-2 text-caption text-fg-muted">{hint}</span>}
+    </span>
   );
 }

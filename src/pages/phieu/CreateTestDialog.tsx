@@ -19,7 +19,7 @@ import { Field, INPUT_CLASS } from '../../ui/Field';
 import { DateInput } from '../../ui/Inputs';
 import { Select } from '../../ui/Overlays';
 import type { LeadCatalogs } from '../lead/useCatalogs';
-import { emLabel, type ProspectStudent } from '../../features/prospect/prospectLogic';
+import { studentLabel, type ProspectStudent } from '../../features/prospect/prospectLogic';
 import { createTestText, defaultReminder } from './testLogic';
 import { createTest } from './useTestData';
 
@@ -206,10 +206,7 @@ function CreateForm({ onOpenChange, opportunity, catalogs, onCreated }: Props) {
                 label="Học sinh"
                 value={emId}
                 onChange={setEmId}
-                options={opportunity.students.map((s) => ({
-                  value: s.id,
-                  label: `${emLabel(s)}${s.birth_year ? ` · sinh ${s.birth_year}` : ''}`,
-                }))}
+                options={opportunity.students.map((s) => ({ value: s.id, ...studentLabel(s) }))}
                 placeholder="Chọn học sinh"
                 className="w-full"
               />

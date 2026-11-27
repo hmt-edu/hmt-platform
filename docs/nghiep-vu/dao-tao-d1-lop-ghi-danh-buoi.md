@@ -31,7 +31,7 @@ Luật: `docs/spec/04` mục 3 (R-GD), 4 (R-LOP), 5 (R-BUOI, R-GIO), 6 (R-DD), 7
 | `preview_class_end_date(cơ sở, ngày bắt đầu, số buổi, khung giờ)`     | Lớp học · Xem, cơ sở của lớp      | R-LOP-09, 12, 13 (chỉ đọc, không ghi; migration 574) |
 | `class_operating_status`, `class_clash_warnings`, `compute_class_schedule` | Đọc                          | R-LOP-05, 08, 09                              |
 | `assign_enrollment_class(ghi danh, lớp, ngày vào)`                    | Ghi danh · Sửa                    | R-GD-05, 06, 08, 15                           |
-| `adjust_enrollment_hours(ghi danh, giờ, lý do, ghi chú)`              | Ghi danh · Duyệt (Trưởng cơ sở, Admin) | R-GD-04, R-GD-18                         |
+| `adjust_enrollment_hours(ghi danh, giờ, lý do, ghi chú)`              | Ghi danh · Duyệt (Trưởng cơ sở, Admin) hoặc Kế toán · Duyệt (Kế toán); cả cộng và bớt (migration 690) | R-GD-04, R-GD-18                         |
 | `close_session(buổi)`                                                 | Buổi học · Sửa (không phải GV)    | R-BUOI-02, R-GIO-02, 03, 04                   |
 | `set_attendance_teacher(buổi, danh sách)`                             | Giáo viên được phân công          | R-DD-01, 02, R-GIO-08, R-GV-08                |
 | `set_attendance_ops(buổi, danh sách)`                                 | Điểm danh · Sửa (không phải GV)   | R-DD-02, 03                                   |

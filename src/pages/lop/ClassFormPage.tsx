@@ -2,6 +2,7 @@
 // (mỗi thứ nhiều khung giờ; mỗi khung có giáo viên, trợ giảng, phòng, cách lặp, buổi đầu). Mã lớp tự cấp, không sửa các trường nằm trong mã.
 // Nháp, Từ chối: sửa mọi trường được phép. Đã trình, Đã xác nhận, Đã duyệt: chỉ Time Table (Đã duyệt: áp dụng từ ngày, xem trước số buổi đổi).
 // Lưu nháp xong bấm Trình ở màn lớp (R-LOP-02, R-LOP-03). Trùng phòng, trùng giáo viên chỉ cảnh báo, không chặn (R-LOP-08).
+import { useCrumbTail } from '../../layout/CrumbTail';
 import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Button } from '../../ui/Button';
@@ -88,6 +89,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
   const navigate = useNavigate();
   const refresh = useRefreshClasses();
   const [searchParams] = useSearchParams();
+  useCrumbTail(record ? `${record.code} · Sửa` : 'Tạo lớp mới');
   const catalogs = useClassCatalogs();
   const editing = record !== null;
   const kind = record ? editKind(record.status_code) : 'FULL';

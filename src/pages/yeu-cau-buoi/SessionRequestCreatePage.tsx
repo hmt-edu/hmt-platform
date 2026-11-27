@@ -2,6 +2,7 @@
 // bản ghi và cấp mã YB (app.save_session_request, app.submit_session_request). Cả lớp tham gia (buổi củng cố trừ giờ như buổi thường). Duyệt thì chèn buổi và dời nhãn bài
 // các buổi sau (máy chủ). Chưa làm: ô chọn "Học sinh" riêng từng em và bảng xem trước dời nhãn bài của khung (lệch khung, ghi trong PR); không bắt ghi nhận phụ huynh đồng ý (R-BUOI-10).
 // Điện thoại giữ bản chỉ đọc cho nút duyệt (R-HT-05) nhưng form tạo dùng được.
+import { useCrumbTail } from '../../layout/CrumbTail';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -21,6 +22,7 @@ import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './exam
 const CLASS_LIMIT = 100; // allow-number: trần số lớp liệt kê trong ô chọn (tối đa 100 một lần gọi, quy ước phân trang)
 
 export function SessionRequestCreatePage() {
+  useCrumbTail('Tạo yêu cầu buổi củng cố');
   const supabase = useDb();
   const navigate = useNavigate();
   const toast = useToast();

@@ -1,6 +1,7 @@
 // BUOI-09 Tạo yêu cầu học bổ trợ (khuôn K07 giản lược; canvas BUOI09_tao, R-BUOI-05, R-BUOI-10): TẠO TỪ LỚP, không chọn lại lớp (mở từ menu Hành động của bản ghi lớp, ?lop=). Chọn các
 // em yếu cần kèm thêm (kèm giờ còn lại), ngày, giờ, giáo viên, phòng. Học bổ trợ không trừ giờ học sinh nhưng vẫn tính vào giờ dạy của giáo viên (căn cứ lương). Lưu nháp hoặc Gửi duyệt
 // mới tạo bản ghi và cấp mã YB (app.save_support_request). Quản lý cơ sở duyệt. Chưa làm: gợi ý em yếu theo điểm (chọn tay).
+import { useCrumbTail } from '../../layout/CrumbTail';
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { errorOf } from '../../lib/db';
@@ -17,6 +18,7 @@ import { ExamBlock } from './ExamBlock';
 import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './examFields';
 
 export function SessionRequestSupportPage() {
+  useCrumbTail('Tạo yêu cầu học bổ trợ');
   const [params] = useSearchParams();
   const classId = params.get('lop') ?? undefined;
   const record = useClassRecord(classId);

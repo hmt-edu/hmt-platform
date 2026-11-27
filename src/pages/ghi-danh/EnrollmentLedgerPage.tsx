@@ -1,5 +1,6 @@
 // GD-04 Sổ giờ của ghi danh (danh sách, khuôn K03): mọi dòng cộng, trừ giờ, nguồn (buổi, phiếu thu, điều chỉnh, phiếu chuyển phí); chỉ thêm, không sửa (R-GD-04).
 // Mở từ GD-02 (đường dẫn /crm/ghi-danh/:id/so-gio). Nút Điều chỉnh giờ (GD-05) nằm ở bản ghi ghi danh (GD-02).
+import { useCrumbTail } from '../../layout/CrumbTail';
 import { Link, useParams } from 'react-router';
 import { useMemo, useState } from 'react';
 import { ListScreen } from '../../list/ListScreen';
@@ -13,6 +14,7 @@ import { useEnrollmentLedger, useEnrollmentRecord } from './useEnrollmentData';
 export function EnrollmentLedgerPage() {
   const { id } = useParams();
   const record = useEnrollmentRecord(id);
+  useCrumbTail(record.data ? `${record.data.enrollment.code} · Sổ giờ` : null);
   const config = useMemo(() => buildLedgerConfig(), []);
   const pageSize = useIntSetting('list_page_size_default');
   const [state, setState] = useState<ListState>(EMPTY_ENROLL_STATE);

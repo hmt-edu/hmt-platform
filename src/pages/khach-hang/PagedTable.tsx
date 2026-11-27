@@ -22,7 +22,13 @@ export function PagedTable<Row>({
 }: {
   caption: string;
   /** Hàm danh sách ở cơ sở dữ liệu, trả { total, rows }. */
-  fn: 'list_orders' | 'list_receipts' | 'enrollment_list' | 'list_student_tests';
+  fn:
+    | 'list_orders'
+    | 'list_receipts'
+    | 'enrollment_list'
+    | 'list_student_tests'
+    | 'list_record_appointments'
+    | 'list_record_upsale';
   filters: Record<string, unknown>;
   sort: string;
   columns: Column<Row>[];

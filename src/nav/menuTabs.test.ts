@@ -31,7 +31,7 @@ describe('menu đợt 1 (A-26-11)', () => {
 
   it.each([
     ['ghi-danh', 'cho-xep-lop'],
-    ['buoi-hoc', 'yeu-cau-buoi'],
+    ['quan-tri/nhat-ky', 'quan-tri/nhat-ky-dang-nhap'],
     ['phieu-thu', 'cho-ke-toan-duyet'],
     ['tai-tuc', 'doi-chieu-tai-tuc'],
     ['phieu-nghiep-vu', 'phieu-chuyen-co-so-den'],
@@ -41,6 +41,21 @@ describe('menu đợt 1 (A-26-11)', () => {
     expect(routeTabs(menu, child).map((t) => t.slug)).toEqual([parent, child]);
     expect(checkRoute(CRM_MENU, child, admin).status).toBe('ok');
     expect(menu.flatMap(sidebarEntries).map((e) => e.slug)).not.toContain(child);
+  });
+
+  it('Đào tạo còn 5 mục; Buổi học và Điểm danh gom tab, đường dẫn cũ vẫn mở được (C-27-06)', () => {
+    const menu = visibleMenu(CRM_MENU, admin);
+    expect(sidebar('dao-tao')).toEqual(['ghi-danh', 'lop', 'buoi-hoc', 'diem-danh', 'sap-het-gio']);
+    expect(routeTabs(menu, 'lich-tuan').map((t) => t.label)).toEqual([
+      'Buổi học',
+      'Yêu cầu buổi',
+      'Lịch tuần',
+      'Chưa hoàn tất',
+    ]);
+    expect(routeTabs(menu, 'diem-danh').map((t) => t.label)).toEqual(['Cần gọi', 'Theo buổi']);
+    for (const slug of ['lich-tuan', 'buoi-chua-done', 'diem-danh-trong-ngay']) {
+      expect(checkRoute(CRM_MENU, slug, admin).status).toBe('ok');
+    }
   });
 
   it('thiếu quyền tab con thì không có thanh tab', () => {
@@ -57,15 +72,17 @@ describe('menu đợt 1 (A-26-11)', () => {
     expect(slugs).toContain('phieu-chuyen-co-so-den');
   });
 
-  it('công tắc riêng của tab vẫn giữ: tắt Yêu cầu buổi thì Buổi học không còn tab', () => {
+  it('công tắc riêng của tab vẫn giữ: tắt Yêu cầu buổi thì mất tab đó', () => {
     const off: MenuAccess = { ...admin, featureOn: (f) => f !== 'YEU_CAU_BUOI' };
-    expect(routeTabs(visibleMenu(CRM_MENU, off), 'buoi-hoc')).toEqual([]);
+    expect(routeTabs(visibleMenu(CRM_MENU, off), 'buoi-hoc').map((t) => t.slug)).not.toContain(
+      'yeu-cau-buoi',
+    );
     expect(checkRoute(CRM_MENU, 'yeu-cau-buoi', off).status).toBe('feature-off');
   });
 
-  it('Sắp hết giờ nằm ở Chăm sóc khách hàng, vẫn theo công tắc Vận hành lớp', () => {
+  it('Sắp hết giờ ở cả Đào tạo và Chăm sóc khách hàng, vẫn theo công tắc Vận hành lớp', () => {
     expect(sidebar('cham-soc')).toContain('sap-het-gio');
-    expect(sidebar('dao-tao')).not.toContain('sap-het-gio');
+    expect(sidebar('dao-tao')).toContain('sap-het-gio');
     const off: MenuAccess = { ...admin, featureOn: (f) => f !== 'VAN_HANH_LOP' };
     expect(checkRoute(CRM_MENU, 'sap-het-gio', off).status).toBe('feature-off');
   });

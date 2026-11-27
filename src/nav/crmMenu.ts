@@ -32,6 +32,8 @@ export type MenuEntry = {
   tabOf?: string | undefined;
   /** Chữ trên tab khi khác nhãn mục. */
   tabLabel?: string | undefined;
+  /** Lối tắt tới một mục đã khai ở nhóm khác (cùng đường dẫn): chỉ hiện trên menu; mở đường dẫn và breadcrumb theo mục gốc. */
+  alias?: true | undefined;
 };
 
 export type MenuGroup = {
@@ -198,6 +200,7 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'ghi-danh',
         requires: can('ENROLLMENT'),
         stage: GD2,
+        tabLabel: 'Tất cả ghi danh',
       },
       {
         code: 'GD-06',
@@ -209,13 +212,6 @@ export const CRM_MENU: MenuGroup[] = [
         tabLabel: 'Chờ xếp lớp',
       },
       { code: 'LOP-01', label: 'Lớp học', slug: 'lop', requires: can('CLASS'), stage: '' },
-      {
-        code: 'LOP-08',
-        label: 'Lịch tuần cơ sở',
-        slug: 'lich-tuan',
-        requires: can('CLASS'),
-        stage: '',
-      },
       {
         code: 'BUOI-01',
         label: 'Buổi học',
@@ -233,19 +229,13 @@ export const CRM_MENU: MenuGroup[] = [
         tabOf: 'buoi-hoc',
       },
       {
-        code: 'BUOI-15',
-        label: 'Điểm danh trong ngày',
-        slug: 'diem-danh-trong-ngay',
-        requires: can('SESSION'),
+        code: 'LOP-08',
+        label: 'Lịch tuần cơ sở',
+        slug: 'lich-tuan',
+        requires: can('CLASS'),
         stage: '',
-        feature: 'DIEM_DANH_TRONG_NGAY',
-      },
-      {
-        code: 'BUOI-11',
-        label: 'Điểm danh vận hành',
-        slug: 'diem-danh',
-        requires: can('ATTENDANCE', 'SUA'),
-        stage: GD2,
+        tabOf: 'buoi-hoc',
+        tabLabel: 'Lịch tuần',
       },
       {
         code: 'BUOI-12',
@@ -253,6 +243,36 @@ export const CRM_MENU: MenuGroup[] = [
         slug: 'buoi-chua-done',
         requires: can('SESSION'),
         stage: GD2,
+        tabOf: 'buoi-hoc',
+        tabLabel: 'Chưa hoàn tất',
+      },
+      {
+        code: 'BUOI-11',
+        label: 'Điểm danh',
+        slug: 'diem-danh',
+        requires: can('ATTENDANCE', 'SUA'),
+        stage: GD2,
+        tabLabel: 'Cần gọi',
+      },
+      {
+        code: 'BUOI-15',
+        label: 'Điểm danh trong ngày',
+        slug: 'diem-danh-trong-ngay',
+        requires: can('SESSION'),
+        stage: '',
+        feature: 'DIEM_DANH_TRONG_NGAY',
+        tabOf: 'diem-danh',
+        tabLabel: 'Theo buổi',
+      },
+      // C-27-06 (canvas «Đào tạo — menu và điểm danh»): Sắp hết giờ hiện ở cả Đào tạo và Chăm sóc khách hàng.
+      {
+        code: 'GD-07',
+        label: 'Sắp hết giờ',
+        slug: 'sap-het-gio',
+        requires: can('ENROLLMENT'),
+        stage: '',
+        feature: 'SAP_HET_GIO',
+        alias: true,
       },
     ],
   },
@@ -450,6 +470,13 @@ export const CRM_MENU: MenuGroup[] = [
     icon: 'settings',
     entries: [
       {
+        code: 'KH-08',
+        label: 'Lên khối đầu năm',
+        slug: 'len-khoi-dau-nam',
+        requires: can('ADMIN'),
+        stage: '',
+      },
+      {
         code: 'QT-01',
         label: 'Người dùng',
         slug: 'quan-tri/nguoi-dung',
@@ -538,28 +565,22 @@ export const CRM_MENU: MenuGroup[] = [
         sub: 'Hệ thống',
       },
       {
-        code: 'KH-08',
-        label: 'Lên khối đầu năm',
-        slug: 'len-khoi-dau-nam',
-        requires: can('ADMIN'),
-        stage: '',
-        sub: 'Hệ thống',
-      },
-      {
         code: 'QT-11',
         label: 'Nhật ký',
         slug: 'quan-tri/nhat-ky',
         requires: can('ADMIN'),
         stage: B4,
         sub: 'Nhật ký',
+        tabLabel: 'Nhật ký nghiệp vụ',
       },
       {
         code: 'QT-12',
-        label: 'Nhật ký đăng nhập, xuất file',
+        label: 'Nhật ký hệ thống',
         slug: 'quan-tri/nhat-ky-dang-nhap',
         requires: can('ADMIN'),
         stage: B4,
         sub: 'Nhật ký',
+        tabOf: 'quan-tri/nhat-ky',
       },
     ],
   },
@@ -615,7 +636,7 @@ export type RouteCheck =
 /** Mở thẳng một đường dẫn: có quyền không, phân hệ có bật không (CHUNG-16, CHUNG-24). */
 export function checkRoute(menu: MenuGroup[], slug: string, access: MenuAccess): RouteCheck {
   for (const group of menu) {
-    const entry = group.entries.find((e) => e.slug === slug);
+    const entry = group.entries.find((e) => e.slug === slug && !e.alias);
     if (!entry) continue;
     if (!entryAllowed(entry, access)) return { status: 'forbidden' };
     if (!access.isAdmin) {

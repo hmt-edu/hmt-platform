@@ -1,6 +1,7 @@
 // CH-06 Khung chương trình, danh sách bài học (khuôn K10, canvas 1aab CH06_*; Admin sửa, người khác chỉ xem, máy tính).
 // Luật R-LOP-07 (18/11/2026): chưa khoá sửa bài kể cả khi đã có lớp dùng; không xoá bài; mã bài cấp một lần, không đổi khi đổi thứ tự; tên bài dùng làm nhãn bài từng buổi.
 // Khác khung: khung vẽ «kéo tay nắm để đổi thứ tự»; bản này đổi bằng nút Lên, Xuống (dùng được bằng bàn phím, không thêm thư viện), ghi vào PR. Nút «Nhập từ file» chỉ là nút mờ: khung chưa có hộp thoại (thiếu khuôn T5).
+import { useCrumbTail } from '../../layout/CrumbTail';
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { errorOf, useDb } from '../../lib/db';
@@ -23,6 +24,7 @@ export function LessonListPage() {
   const toast = useToast();
   const refresh = useRefreshFrame();
   const detail = useFrameDetail(id);
+  useCrumbTail(detail.data?.frame.code ?? null);
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<Lesson | null>(null);
   const [draft, setDraft] = useState({ title: '', hint: '' });
