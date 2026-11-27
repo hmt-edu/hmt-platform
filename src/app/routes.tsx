@@ -72,10 +72,6 @@ const SessionRecordPage = lazyScreen(
   'SessionRecordPage',
 );
 const SessionOpsPage = lazyScreen(() => import('../pages/buoi/SessionOpsPage'), 'SessionOpsPage');
-const SessionPendingPage = lazyScreen(
-  () => import('../pages/buoi/SessionPendingPage'),
-  'SessionPendingPage',
-);
 const AttendancePage = lazyScreen(
   () => import('../pages/diem-danh/AttendancePage'),
   'AttendancePage',
@@ -842,11 +838,7 @@ export const routes: RouteObject[] = [
           },
           {
             path: 'buoi-chua-done',
-            element: (
-              <GatedCrmEntry slug="buoi-chua-done">
-                <SessionPendingPage />
-              </GatedCrmEntry>
-            ),
+            element: <Navigate to="/crm/buoi-hoc?loc=chua-hoan-tat" replace />,
           },
           {
             path: 'diem-danh',
