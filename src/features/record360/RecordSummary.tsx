@@ -9,6 +9,7 @@ import { Button } from '../../ui/Button';
 import { cn } from '../../ui/cn';
 import { useToast } from '../../ui/toastContext';
 import { AppointmentDialog } from '../appointments/AppointmentDialog';
+import { useRefreshAppointmentData } from '../appointments/appointmentApi';
 import { LogContactDialog } from '../contacts/LogContactDialog';
 import {
   hasHiddenMoney,
@@ -32,7 +33,7 @@ type Props = {
   readOnly: boolean;
   /** Đường dẫn tạo ticket; không có thì nút mờ. */
   ticketPath: string | null;
-  onFlag: (target: Exclude<FlagTarget, 'upsale' | 'contacts'>) => void;
+  onFlag: (target: Exclude<FlagTarget, 'contacts'>) => void;
   onChatter: (target: 'note' | 'contacts') => void;
 };
 
@@ -44,6 +45,7 @@ export function RecordSummary(props: Props) {
   const toast = useToast();
   const queryClient = useQueryClient();
   const catalogs = useLeadCatalogs();
+  const refreshAppointments = useRefreshAppointmentData();
   const [calling, setCalling] = useState(false);
   const [booking, setBooking] = useState(false);
   const queryKey = ['record-summary', entityType, entityId];
@@ -60,6 +62,8 @@ export function RecordSummary(props: Props) {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey }),
       queryClient.invalidateQueries({ queryKey: ['chatter', entityType, entityId] }),
+      queryClient.invalidateQueries({ queryKey: ['parent-record', 'tab'] }),
+      refreshAppointments(),
     ]);
   };
   const upsalePath =
@@ -68,9 +72,7 @@ export function RecordSummary(props: Props) {
 
   const flag = (target: FlagTarget) => {
     if (target === 'contacts') props.onChatter('contacts');
-    else if (target !== 'upsale') props.onFlag(target);
-    else if (upsalePath) void navigate(upsalePath);
-    else props.onFlag('review');
+    else props.onFlag(target);
   };
 
   const writable = !readOnly && data?.contact_visible === true;

@@ -23,6 +23,9 @@ import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
 import { CustTickets } from './CustTickets';
+import { AppointmentTab, UpsaleTab } from './FollowUpTabs';
+import { ParentAccountTab } from './ParentAccountTab';
+import { useOpportunityAppointments } from '../../features/appointments/useRecordAppointments';
 import { ParentFinanceTab, ParentOrdersTab, ParentReceiptsTab } from './ParentTabs';
 import { useOpenTicketCount } from './useCustTickets';
 import { parentPath, studentPath } from './custConfig';
@@ -119,6 +122,18 @@ function ParentView({ record }: { record: ParentRecord }) {
   const supabase = useDb();
   const toast = useToast();
   const catalogs = useLeadCatalogs();
+  const appointments = useOpportunityAppointments({
+    opportunityId: '',
+    branchId: '',
+    label: `${record.code} · ${record.full_name}`,
+    catalogs,
+    canEdit: access.can('APPOINTMENT', 'SUA') && record.record_status !== 'DA_GOP',
+    canCancel: access.can('APPOINTMENT', 'HUY') && record.record_status !== 'DA_GOP',
+    refresh: async () => {
+      await refresh();
+    },
+    upcomingOfCustomer: { key: 'parent_id', id: record.id },
+  });
   const canEdit = access.can('PARENT', 'SUA') && !merged;
   const openTickets = useOpenTicketCount(
     { key: 'parent_id', id: record.id },
@@ -278,9 +293,9 @@ function ParentView({ record }: { record: ParentRecord }) {
             label={`${record.code} · ${record.full_name}`}
             readOnly={merged}
             ticketPath={newTicketForParentPath(record.id, record.code)}
-            // Tab Tái tục làm ở PR sau: «Sắp hết giờ» chưa có phiếu và «Thiếu nhận xét» mở tab Các con.
+            // «Thiếu nhận xét» mở tab Các con.
             onFlag={(t) =>
-              setTab(t === 'finance' ? 'finance' : t === 'tickets' ? 'tickets' : 'children')
+              setTab(t === 'finance' || t === 'tickets' || t === 'upsale' ? t : 'children')
             }
             onChatter={(target) => setFocus((f) => ({ target, seq: (f?.seq ?? 0) + 1 }))}
           />
@@ -344,6 +359,7 @@ function ParentView({ record }: { record: ParentRecord }) {
             createdText="Tạo phụ huynh."
             canWrite={!merged}
             focus={focus}
+            upcoming={access.can('APPOINTMENT', 'XEM') ? appointments.upcoming : undefined}
           />
         }
         asideLabel="Ghi chú và hoạt động"
@@ -376,6 +392,9 @@ function ParentView({ record }: { record: ParentRecord }) {
             { key: 'receipts', label: 'Phiếu thu' },
             { key: 'tickets', label: 'Ticket' },
             { key: 'finance', label: 'Tài chính' },
+            { key: 'upsale', label: 'Tái tục' },
+            { key: 'appointments', label: 'Lịch hẹn' },
+            { key: 'account', label: 'Tài khoản' },
           ]}
         />
         {tab === 'overview' && (
@@ -460,7 +479,11 @@ function ParentView({ record }: { record: ParentRecord }) {
         {tab === 'receipts' && <ParentReceiptsTab record={record} />}
         {tab === 'tickets' && <CustTickets owner={{ key: 'parent_id', id: record.id }} />}
         {tab === 'finance' && <ParentFinanceTab record={record} />}
+        {tab === 'upsale' && <UpsaleTab owner={{ key: 'parent_id', id: record.id }} />}
+        {tab === 'appointments' && <AppointmentTab owner={{ key: 'parent_id', id: record.id }} />}
+        {tab === 'account' && <ParentAccountTab record={record} />}
       </RecordDetail>
+      {appointments.dialogs}
       {canMerge && (
         <MergeDialog
           open={mergeOpen}

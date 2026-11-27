@@ -10,7 +10,9 @@ import {
   completeAppointment,
   createOpportunityAppointment,
   rescheduleAppointment,
+  useCustomerUpcoming,
   useOpportunityUpcoming,
+  type CustomerOwner,
   useRefreshAppointmentData,
   useTestUpcoming,
   type UpcomingAppointment,
@@ -32,6 +34,7 @@ export function useOpportunityAppointments({
   canCancel,
   refresh,
   upcomingOfTest,
+  upcomingOfCustomer,
 }: {
   opportunityId: string;
   branchId: string;
@@ -43,6 +46,8 @@ export function useOpportunityAppointments({
   refresh: () => Promise<void>;
   /** Trang phiếu kiểm tra: khối "Hoạt động sắp tới" là lịch nhắc của phiếu này; Tạo vẫn gắn với cơ hội của phiếu. */
   upcomingOfTest?: string | undefined;
+  /** Hồ sơ phụ huynh, học sinh: chỉ khối "Hoạt động sắp tới" (nút Hẹn ở hàng Làm nhanh tạo lịch riêng). */
+  upcomingOfCustomer?: CustomerOwner | undefined;
 }): { upcoming: ReactNode; dialogs: ReactNode; openCreate: () => void } {
   const supabase = useDb();
   const toast = useToast();
@@ -52,9 +57,16 @@ export function useOpportunityAppointments({
     await Promise.all([refresh(), refreshRelated()]);
   }, [refresh, refreshRelated]);
   const undo = useUndoAppointment(refreshAll);
-  const ofOpportunity = useOpportunityUpcoming(upcomingOfTest === undefined ? opportunityId : null);
+  const ofCustomer = useCustomerUpcoming(upcomingOfCustomer ?? null);
+  const ofOpportunity = useOpportunityUpcoming(
+    upcomingOfTest === undefined && !upcomingOfCustomer ? opportunityId : null,
+  );
   const ofTest = useTestUpcoming(upcomingOfTest ?? null);
-  const query = upcomingOfTest === undefined ? ofOpportunity : ofTest;
+  const query = upcomingOfCustomer
+    ? ofCustomer
+    : upcomingOfTest === undefined
+      ? ofOpportunity
+      : ofTest;
   const [createOpen, setCreateOpen] = useState(false);
   const [moving, setMoving] = useState<Row | null>(null);
   const [canceling, setCanceling] = useState<UpcomingAppointment | null>(null);
@@ -80,7 +92,13 @@ export function useOpportunityAppointments({
       canCancel={canCancel}
       busyId={null}
       onComplete={(row) => setCompleting(row)}
-      onReschedule={(row) => setMoving({ ...row, branchId })}
+      onReschedule={(row) =>
+        // Lịch của hồ sơ phụ huynh, học sinh mang cơ sở riêng của từng lịch.
+        setMoving({
+          ...row,
+          branchId: ofCustomer.data?.rows.find((r) => r.id === row.id)?.branch_id ?? branchId,
+        })
+      }
       onCancel={(row) => {
         setCancelError(null);
         setCanceling(row);
