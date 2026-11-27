@@ -3,7 +3,7 @@
 import { Link } from 'react-router';
 import { Button } from '../../ui/Button';
 import { Code } from '../../ui/Data';
-import { RECORD_KIND_LABEL, recordKind, type AppointmentRow } from './appointmentTypes';
+import { RECORD_KIND_LABEL, recordKind, recordPath, type AppointmentRow } from './appointmentTypes';
 
 export type RowActions = {
   canEdit: boolean;
@@ -74,26 +74,13 @@ export function AppointmentButtons({
 /** "Lead LD000232", "Cơ hội CO000121", "Phiếu PKT000105": mã có liên kết sang bản ghi. */
 export function RecordLink({ row }: { row: AppointmentRow }) {
   const kind = recordKind(row);
+  const path = recordPath(row);
   if (!row.record_code) return <span className="text-fg-muted">—</span>;
   return (
     <span className="inline-flex flex-wrap items-baseline gap-1.5">
       <span className="text-caption text-fg-muted">{RECORD_KIND_LABEL[kind]}</span>
-      {kind === 'LEAD' && row.lead_id ? (
-        <Link to={`/crm/lead/${row.lead_id}`} className="font-medium text-link hover:underline">
-          {row.record_code}
-        </Link>
-      ) : kind === 'OPPORTUNITY' && row.opportunity_id ? (
-        <Link
-          to={`/crm/co-hoi/${row.opportunity_id}`}
-          className="font-medium text-link hover:underline"
-        >
-          {row.record_code}
-        </Link>
-      ) : kind === 'TEST' && row.student_test_id ? (
-        <Link
-          to={`/crm/phieu-kiem-tra/${row.student_test_id}`}
-          className="font-medium text-link hover:underline"
-        >
+      {path ? (
+        <Link to={path} className="font-medium text-link hover:underline">
           {row.record_code}
         </Link>
       ) : (
