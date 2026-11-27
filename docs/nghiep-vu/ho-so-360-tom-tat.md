@@ -9,7 +9,8 @@ Chỉ đọc, một lần gọi cho mỗi hồ sơ.
 
 Quyền trong thẻ:
 - Tổng đã đóng, Số dư: xem được phiếu thu ở cơ sở của phụ huynh. Còn nợ: xem được đơn hàng. Không có quyền thì ô trả rỗng, giao diện ghi «Ẩn».
-- Số ngày nợ quá hạn (không kèm tiền) luôn trả để dựng cờ, theo khung `KH02_360_an_tien`.
+- Số dư và nợ đầu kỳ chỉ cộng dòng sổ số dư ở cơ sở người xem được.
+- Số ngày nợ quá hạn (không kèm tiền) chỉ tính từ đơn người xem được; không xem được đơn thì không có cờ (khác khung `KH02_360_an_tien`, làm theo quyền, Chat chốt 27/11).
 - Liên hệ chỉ tính ghi chú người gọi đọc được. Người phạm vi «được phân công» (giáo viên) không nhận CSKH, ticket, liên hệ (R-GV-13).
 
 Cờ:
