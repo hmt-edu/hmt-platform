@@ -1,4 +1,4 @@
--- Migration 471 (Code D): thẻ D40, sửa G2 của Soát: điều chỉnh giờ tay có trần, chặn ghi danh đóng, cộng giờ cần Kế toán. R-GIO-01, R-GIO-04, R-HT-01. Dữ liệu giả.
+-- Migration 471 (Code D): thẻ D40, sửa G2 của Soát: điều chỉnh giờ tay có trần, chặn ghi danh đóng, ba vai cộng và bớt giờ (migration 690). R-GIO-01, R-GIO-04, R-HT-01. Dữ liệu giả.
 -- Dựng đơn thật (cơ hội → đơn → phiếu thu → kế toán duyệt) như 064; hai hàm cấp giờ là nội bộ nên gọi bằng quyền chủ.
 -- Đảo khoản (R-TIEN-26) chưa có ở main nên chưa kiểm phần giờ giảm theo tiền đảo.
 begin;
@@ -192,14 +192,23 @@ select pg_temp.sudo($$create function pg_temp.enb() returns numeric language sql
 select pg_temp.sudo($$grant execute on function pg_temp.enb() to public$$);
 select is((select value from app.setting_def where key = 'hours_adjust_max_per_call'), '20', 'Tham số trần mặc định 20 giờ');
 
--- ================= (c) Cộng giờ: chỉ Kế toán =================
+-- ================= (c) Cộng và bớt giờ: Trưởng cơ sở, Admin, Kế toán (anh chốt 27/11, migration 690) =================
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 1, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_KHONG_CO_QUYEN', 'R-GD-04 chặn: Tư vấn không cộng giờ');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), -1, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_KHONG_CO_QUYEN', 'R-GD-04 chặn: Tư vấn không bớt giờ');
+select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 1, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_KHONG_CO_QUYEN', 'R-GD-04 chặn: Trưởng cơ sở khác cơ sở không cộng giờ');
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 5, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_KHONG_CO_QUYEN', 'G2 chặn: Trưởng cơ sở không cộng giờ (cộng giờ cần Kế toán)');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 2, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), null, 'R-GD-04 đúng: Trưởng cơ sở cộng 2 giờ');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 5, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_KHONG_CO_QUYEN', 'G2 chặn: Admin không cộng giờ (R-HT-01)');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 1, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), null, 'R-GD-04 đúng: Admin cộng 1 giờ');
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
-select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 5, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), null, 'G2 đúng: Kế toán cộng được 5 giờ');
-select is(pg_temp.enb(), 13::numeric, 'Quỹ giờ tăng đúng 5 (8 thành 13)');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), -3, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), null, 'R-GD-04 đúng: Kế toán bớt 3 giờ');
+select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 5, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), null, 'R-GD-04 đúng: Kế toán cộng 5 giờ');
+select is(pg_temp.enb(), 13::numeric, 'Quỹ giờ 8 + 2 + 1 - 3 + 5 = 13');
+select is((select count(*)::int from app.enrollment where id = pg_temp.d1e()), 1, 'Kế toán xem được ghi danh (Ghi danh · Xem, migration 690)');
+select is(app.permission_scope('ENROLLMENT', 'SUA'), null, 'Kế toán không có Ghi danh · Sửa');
+select is(app.permission_scope('ENROLLMENT', 'DUYET'), null, 'Kế toán không có Ghi danh · Duyệt');
 
 -- ================= (b) Trần mỗi lần =================
 select is(pg_temp.err($$select app.adjust_enrollment_hours(pg_temp.d1e(), 21, 'SUA_SAI_DANH_SACH_DIEM_DANH')$$), 'HMT_GIO_DIEU_CHINH_VUOT_TRAN', 'G2 chặn: cộng 21 giờ vượt trần 20');

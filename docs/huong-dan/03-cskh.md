@@ -48,7 +48,7 @@ Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (G
 - **Kết quả:** ghi danh sang «Đã xếp lớp», lớp hiện thêm học sinh, chỗ trống của lớp giảm.
 - **Lỗi thường gặp:** lớp không hiện trong danh sách là do chưa duyệt, hết chỗ hoặc sai môn, khối, cơ sở (chọn lớp khác). Báo trùng giờ nghĩa là em đã có lớp trùng giờ (đổi lớp hoặc ngày vào). Xếp xong vẫn «Chờ xếp lớp»: tải lại trang, nếu vẫn vậy thì báo quản trị kèm mã ghi danh.
 - **Ảnh:** [ẢNH: ghi-danh-cho-xep], [ẢNH: ghi-danh-xep-lop], [ẢNH: ghi-danh-so-gio]
-- Điều chỉnh giờ («Điều chỉnh giờ») là việc của quản lý cơ sở (bớt giờ) và Kế toán (cộng giờ), xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so).
+- Điều chỉnh giờ («Điều chỉnh giờ») là việc của quản lý cơ sở, Kế toán và Admin (cộng hoặc bớt), xem [bài Trưởng cơ sở](/crm/huong-dan/theo-vai-truong-co-so).
 
 ## 3. Tạo lớp và trình duyệt
 

@@ -1,4 +1,4 @@
-// GD-05 Điều chỉnh giờ ở bản ghi ghi danh: chỉ Trưởng cơ sở (Ghi danh · Duyệt), bắt buộc lý do; bớt quá quỹ giờ bị chặn (R-GD-18); sổ giờ chỉ thêm dòng (R-GD-04).
+// GD-05 Điều chỉnh giờ ở bản ghi ghi danh: Trưởng cơ sở, Admin (Ghi danh · Duyệt) hoặc Kế toán (Kế toán · Duyệt), bắt buộc lý do; bớt quá quỹ giờ bị chặn (R-GD-18); sổ giờ chỉ thêm dòng (R-GD-04).
 // Máy tính (màn Đào tạo chỉ có bản máy tính). Dữ liệu giả dựng bằng ghi-danh-seed.ts (ghi danh Đang học, quỹ 24 giờ).
 import { expect, test } from '@playwright/test';
 import { PASSWORD, enterAs, pickOption } from './helpers';
@@ -18,14 +18,14 @@ test.beforeAll(async ({}, testInfo) => {
   seed = await seedGhiDanh(testInfo.project.name);
 });
 
-test('GD-05: CSKH không có nút Điều chỉnh giờ (thiếu quyền Ghi danh · Duyệt)', async ({ page }) => {
+test('GD-05: CSKH không có nút Điều chỉnh giờ (thiếu quyền duyệt)', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto(`/crm/ghi-danh/${seed.learning.id}`);
   await expect(page.getByRole('heading', { level: 2, name: seed.learning.code })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Điều chỉnh giờ' })).toHaveCount(0);
 });
 
-test('GD-05 (G2): Trưởng cơ sở bớt quá trần thì bị chặn, cộng giờ cần Kế toán, bớt giờ kèm lý do thì sổ giờ có dòng Điều chỉnh', async ({
+test('GD-05 (G2): Trưởng cơ sở bớt quá trần thì bị chặn, bớt giờ kèm lý do thì sổ giờ có dòng Điều chỉnh', async ({
   page,
 }) => {
   await enterAs(page, 'truongcs.cs5');
@@ -44,12 +44,6 @@ test('GD-05 (G2): Trưởng cơ sở bớt quá trần thì bị chặn, cộng 
   await save.click();
   // G2 (b): trần mỗi lần là tham số hours_adjust_max_per_call (mặc định 20 giờ), kiểm trước quỹ.
   await expect(dialog.getByText(/Mỗi lần chỉ điều chỉnh tối đa/)).toBeVisible();
-  // G2 (c): cộng giờ cần Kế toán · Duyệt, Trưởng cơ sở bị chặn.
-  await dialog.getByLabel(/Số giờ/).fill('2');
-  await save.click();
-  await expect(
-    dialog.getByText('Bạn không có quyền thực hiện thao tác này ở cơ sở này.'),
-  ).toBeVisible();
   // Bớt giờ trong trần và trong quỹ thì được.
   await dialog.getByLabel(/Số giờ/).fill('-2');
   await save.click();

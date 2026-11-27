@@ -130,12 +130,12 @@ Mở **Buổi học** → bản ghi buổi; các nút ở đầu bản ghi theo 
 
 ## 9. Điều chỉnh giờ của ghi danh
 
-**Mục tiêu:** thêm dòng **trừ** giờ (có lý do), không sửa dòng cũ. **Cộng** giờ (số dương) chỉ Kế toán làm được vì giờ là tiền (R-GIO-01); bạn gặp ghi danh thiếu giờ thì nhờ Kế toán.
+**Mục tiêu:** thêm dòng **cộng** hoặc **bớt** giờ (có lý do), không sửa dòng cũ. Giờ là tiền (R-GIO-01) nên mọi lần đều được ghi lại.
 
 1. **Ghi danh** → mở ghi danh → **«Điều chỉnh giờ»**.
-2. Trong hộp «Điều chỉnh giờ»: nhập «Số giờ» (bạn nhập số âm để bớt; số dương chỉ Kế toán nhập được), chọn «Lý do», ghi «Ghi chú».
+2. Trong hộp «Điều chỉnh giờ»: nhập «Số giờ» (số dương để cộng, số âm để bớt), chọn «Lý do», ghi «Ghi chú».
 3. Bấm **«Thêm dòng điều chỉnh»**. Kiểm ở **«Sổ giờ»**.
-- **Quyền:** Trưởng cơ sở chỉ **BỚT giờ** (số âm). **CỘNG giờ** (số dương) chỉ Kế toán làm (R-GIO-04); nhờ Kế toán nếu cần cộng. Mỗi lần có trần theo tham số «hours_adjust_max_per_call».
+- **Quyền:** Trưởng cơ sở (ghi danh của cơ sở mình), Kế toán và Admin đều **cộng** (số dương) và **bớt** (số âm) được. Mỗi lần có trần theo tham số «hours_adjust_max_per_call».
 
 - **Kết quả:** sổ giờ có dòng điều chỉnh mới; «Còn lại» đổi theo.
 - **Lỗi thường gặp:** lý do bắt buộc; «Quỹ giờ của ghi danh không đủ để bớt số giờ này.» (HMT_QUY_GIO_AM) là bớt quá số giờ còn lại; nếu máy chủ từ chối thì câu lý do tiếng Việt hiện ngay trong hộp.

@@ -76,8 +76,8 @@ export function EnrollmentRecordPage() {
   const view = 'view' as const;
   const inStages = STEPS.some((s) => s.code === e.status_code);
   const canAssign = e.status_code === 'CHO_XEP_LOP' && access.can('ENROLLMENT', 'SUA');
-  // Điều chỉnh giờ: chỉ Ghi danh · Duyệt (Trưởng cơ sở, Admin), GD-05, R-GD-04.
-  const canAdjust = access.can('ENROLLMENT', 'DUYET');
+  // Điều chỉnh giờ (GD-05, R-GD-04): Ghi danh · Duyệt (Trưởng cơ sở, Admin) hoặc Kế toán · Duyệt (Kế toán).
+  const canAdjust = access.can('ENROLLMENT', 'DUYET') || access.can('ACCOUNTING', 'DUYET');
   const notice = enrollmentNotice(e.status_code, hours, {
     holdStart: e.hold_start,
     holdEnd: e.hold_end,

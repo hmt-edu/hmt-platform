@@ -53,6 +53,8 @@ Người nhiều vai trò lấy phạm vi rộng nhất trong các vai trò có 
     cơ sở mình, chốt 11/10/2026). Đơn hàng sinh từ tái tục duyệt như đơn thường (`SALES_ORDER`).
 - Số dòng mặc định (sau PR 6e): ADMIN 160 (trừ Duyệt tiền, Duyệt tái tục; có Xem, Xuất Tài khoản), BRANCH_MANAGER 122, CSKH 51, SALES 43,
   ACCOUNTANT 16, TEACHER 15, TA 15, STUDENT 3.
+- Migration 690 (anh chốt 27/11): Kế toán thêm **Xem Ghi danh** toàn hệ thống (không Tạo, Sửa, Duyệt) để mở màn Ghi danh và
+  điều chỉnh giờ (quyền điều chỉnh là Kế toán · Duyệt).
 
 ## Tách phân hệ quyền (PR 6e, anh Trường chốt 12/10 và 16/10)
 Trước: cả menu Cấu hình và Quản trị dùng chung quyền "Quản trị · Xem", nên chỉ Admin thấy menu Cấu hình. Sau: Quản trị giữ
