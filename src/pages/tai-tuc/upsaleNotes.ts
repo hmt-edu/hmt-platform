@@ -10,8 +10,8 @@ export function upsaleStageNote(
   lostReasonName: string | null,
   /** Ngưỡng giờ, ngày từ tham số upsale_hours_left_threshold, upsale_days_left_threshold (không viết cứng); chưa đọc được thì bỏ phần ngưỡng. */
   thresholds: { hours: number | null; days: number | null },
-  /** Số báo giá, đơn màn đang đếm được; câu nói «đã gửi báo giá» chỉ hiện khi số đếm khớp (anh Trường 27/11). */
-  documents: number,
+  /** Số đếm thật của phiếu: câu không được nói «đã gửi», «đã có đơn» khi số bằng 0 (anh Trường 27/11). */
+  counts: { sentQuotes: number; orders: number },
   /** Người xem đang có nút «Giao» trên màn (điện thoại và người không có quyền thì không). */
   canAssign: boolean,
 ): UpsaleNote | null {
@@ -36,16 +36,16 @@ export function upsaleStageNote(
     return {
       tone: 'info',
       text:
-        t.substage_code === 'L6A'
+        t.substage_code === 'L6A' && counts.sentQuotes === 0
           ? 'Phụ huynh đồng ý tái tục. Chờ gửi báo giá.'
           : 'Phụ huynh đồng ý tái tục.',
     };
   }
-  if (t.stage_code === 'L7' && documents > 0) {
-    return {
-      tone: 'info',
-      text: 'Đã gửi báo giá, chờ phụ huynh đóng tiền. Đóng đủ thì phiếu tự sang L8 Hoàn thành tái tục.',
-    };
+  if (t.stage_code === 'L7' && counts.orders > 0) {
+    return { tone: 'info', text: 'Đã có đơn, chờ phụ huynh đóng tiền.' };
+  }
+  if (t.stage_code === 'L7' && counts.sentQuotes > 0) {
+    return { tone: 'info', text: 'Đã gửi báo giá, chờ phụ huynh đóng tiền.' };
   }
   return null;
 }

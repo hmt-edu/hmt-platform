@@ -8,8 +8,11 @@ export type QuotationRow = {
   parent_code: string;
   parent_name: string;
   parent_phone: string;
-  opportunity_id: string;
-  opportunity_code: string;
+  /** Báo giá gắn đúng MỘT trong cơ hội hoặc phiếu tái tục (R-GD-13). */
+  opportunity_id: string | null;
+  opportunity_code: string | null;
+  upsale_ticket_id: string | null;
+  upsale_ticket_code: string | null;
   student_name: string | null;
   /** Tên các em theo thứ tự dòng, không trùng (list_quotations từ migration 053). */
   student_names: string[];
@@ -65,6 +68,8 @@ export type QuotationLine = {
   line_no: number;
   line_kind: 'ENROL' | 'GIFT';
   prospect_student_id: string | null;
+  /** Hồ sơ học sinh; báo giá của phiếu tái tục chỉ có trường này. */
+  student_id?: string | null;
   package_id: string;
   package_code: string;
   package_name: string;
@@ -101,8 +106,11 @@ export type QuotationRecord = {
   legacy_ref: string | null;
   branch_id: string;
   branch_code: string;
-  opportunity_id: string;
-  opportunity_code: string;
+  /** Báo giá gắn đúng MỘT trong cơ hội hoặc phiếu tái tục (R-GD-13). */
+  opportunity_id: string | null;
+  opportunity_code: string | null;
+  upsale_ticket_id: string | null;
+  upsale_ticket_code: string | null;
   parent_id: string;
   parent_code: string;
   parent_name: string;

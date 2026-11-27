@@ -1,6 +1,6 @@
 // BH-02 Tạo báo giá từ cơ hội (khung BH02_tao, R-CRM-19, R-TIEN-02): bấm "Tạo báo giá" trên bản ghi cơ hội chỉ mở form trắng; chưa có bản ghi, chưa cấp
 // mã. Bấm Lưu mới tạo báo giá Nháp và cấp mã (app.save_quotation); bấm Huỷ thì bỏ hết, về cơ hội. Danh sách báo giá không có nút Tạo.
-// Chỉ nhánh gốc cơ hội; nhánh gốc phiếu tái tục (TT-02, L6 và L7) làm riêng. Điện thoại cũng lập được (B-27-09, anh cho phép 27/11).
+// Hai nguồn, cùng một form (R-GD-13): ?co-hoi= (cơ hội) hoặc ?phieu= (phiếu tái tục, mọi giai đoạn). Điện thoại cũng lập được (B-27-09, anh cho phép 27/11).
 import { useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { Link, useNavigate, useSearchParams, useLocation } from 'react-router';
@@ -34,10 +34,85 @@ import {
   useDiscountPolicies,
   useOpportunityStudents,
   useRefreshQuotations,
+  type OppStudent,
 } from './useQuoteData';
+import { useUpsaleRecord } from '../tai-tuc/useUpsaleData';
+import { branchLabel } from '../don-hang/orderBranch';
 import { FromLink } from '../../layout/FromLink';
 
+/** Nơi sinh ra báo giá: cơ hội hoặc phiếu tái tục. */
+type Source = {
+  /** Mã nội bộ gửi lên máy chủ (cơ hội hoặc phiếu). */
+  id: string;
+  code: string;
+  href: string;
+  label: 'Cơ hội' | 'Phiếu tái tục';
+  /** Chỉ có ở phiếu tái tục: em của phiếu. */
+  ticketStudent?: OppStudent;
+};
+
 export function QuotationCreatePage() {
+  const [params] = useSearchParams();
+  const ticketId = params.get('phieu');
+  return ticketId === null ? <FromOpportunity /> : <FromTicket ticketId={ticketId} />;
+}
+
+function FromTicket({ ticketId }: { ticketId: string }) {
+  const access = useAccess();
+  const query = useUpsaleRecord(ticketId);
+  const href = `/crm/tai-tuc/${ticketId}`;
+  const backLink = (
+    <Link to={href} className="font-medium text-link hover:underline">
+      Về phiếu tái tục
+    </Link>
+  );
+  if (query.isPending) return <Spinner label="Đang tải phiếu tái tục…" />;
+  if (query.isError) {
+    const forbidden = query.error instanceof HmtError && query.error.code === 'HMT_KHONG_CO_QUYEN';
+    return (
+      <StateView
+        kind={forbidden ? 'forbidden' : 'error'}
+        title={forbidden ? 'Bạn không có quyền xem phiếu tái tục này' : 'Không tải được phiếu'}
+        actions={backLink}
+      >
+        {errorOf(query.error).message}
+      </StateView>
+    );
+  }
+  const { ticket, parent, student, actions } = query.data;
+  if (
+    !actions.includes('tao_bao_gia') ||
+    !access.featureOn('BAN_HANG') ||
+    parent === null ||
+    student === null
+  )
+    return (
+      <StateView kind="forbidden" title="Bạn chưa lập được báo giá ở cơ sở này" actions={backLink}>
+        Cần quyền lập báo giá, quyền sửa phiếu tái tục và phân hệ Bán hàng đã bật ở cơ sở của phiếu.
+      </StateView>
+    );
+  return (
+    <CreateForm
+      source={{
+        id: ticket.id,
+        code: ticket.code,
+        href,
+        label: 'Phiếu tái tục',
+        ticketStudent: {
+          id: student.id,
+          position: 1,
+          full_name: student.name,
+          birth_year: student.birth_year,
+        },
+      }}
+      branchId={ticket.branch_id}
+      parent={`${parent.name} · ${parent.code} · ${formatPhone(parent.phone)}`}
+      branch={branchLabel(ticket.branch_code, access.teachingBranches)}
+    />
+  );
+}
+
+function FromOpportunity() {
   const [params] = useSearchParams();
   const opportunityId = params.get('co-hoi') ?? undefined;
   const access = useAccess();
@@ -83,9 +158,8 @@ export function QuotationCreatePage() {
     );
   return (
     <CreateForm
-      opportunityId={opp.id}
+      source={{ id: opp.id, code: opp.code, href: `/crm/co-hoi/${opp.id}`, label: 'Cơ hội' }}
       branchId={opp.branch_id}
-      opportunityCode={opp.code}
       parent={`${opp.parent_name} · ${opp.parent_code} · ${formatPhone(opp.parent_phone)}`}
       branch={`${opp.branch_code} ${opp.branch_name}`}
     />
@@ -93,15 +167,13 @@ export function QuotationCreatePage() {
 }
 
 function CreateForm({
-  opportunityId,
-  opportunityCode,
+  source,
   branchId,
   parent,
   branch,
 }: {
-  opportunityId: string;
+  source: Source;
   branchId: string;
-  opportunityCode: string;
   parent: string;
   branch: string;
 }) {
@@ -114,7 +186,9 @@ function CreateForm({
   const catalogs = useLeadCatalogs();
   const validityDays = useIntSetting('quotation_validity_days', branchId); // theo cơ sở của cơ hội, cùng nguồn với hàm Gửi; // hạn hiệu lực báo giá (R-TIEN-05), khung BH02: «N ngày kể từ ngày Gửi»
   const refreshList = useRefreshQuotations();
-  const students = useOpportunityStudents(opportunityId, true);
+  const opportunityId = source.id;
+  const backLabel = source.label === 'Cơ hội' ? 'Về cơ hội' : 'Về phiếu tái tục';
+  const students = useOpportunityStudents(opportunityId, source.ticketStudent === undefined);
   const discountPolicies = useDiscountPolicies(opportunityId, true);
   useCrumbTail('Tạo báo giá');
   const [rows, setRows] = useState<EditRow[]>(() => [blankRow()]);
@@ -125,7 +199,7 @@ function CreateForm({
   const [saved, setSaved] = useState(false);
 
   // R-TIEN-35: dòng đầu mặc định em đầu của cơ hội (đổi được), đặt một lần khi danh sách em về.
-  const firstStudent = students.data?.[0]?.id;
+  const firstStudent = source.ticketStudent?.id ?? students.data?.[0]?.id;
   if (!seeded && firstStudent !== undefined) {
     setSeeded(true);
     setRows((cur) =>
@@ -180,7 +254,7 @@ function CreateForm({
       onEdit={() => undefined}
       onSave={() => void save()}
       // Huỷ: bỏ hết, chưa có bản ghi (R-CRM-19); về bản ghi cơ hội.
-      onCancel={() => openFrom(`/crm/co-hoi/${opportunityId}`)}
+      onCancel={() => openFrom(source.href)}
       stageShowCode={false}
       stage={{ steps, current: '', forwardOnly: true, onSelect: () => undefined }}
       stageNote="Chưa lưu: báo giá chưa có giai đoạn. Bấm Lưu để tạo ở giai đoạn Nháp."
@@ -193,7 +267,13 @@ function CreateForm({
         </span>
       }
       smart={[
-        { key: 'co-hoi', label: 'Cơ hội', icon: 'recruit', count: 0, onOpen: () => undefined },
+        {
+          key: 'nguon',
+          label: source.label,
+          icon: 'recruit',
+          count: 0,
+          onOpen: () => undefined,
+        },
         { key: 'phu-huynh', label: 'Phụ huynh', icon: 'user', count: 0, onOpen: () => undefined },
         { key: 'don-hang', label: 'Đơn hàng', icon: 'file', count: 0, onOpen: () => undefined },
       ]}
@@ -213,14 +293,11 @@ function CreateForm({
               <DetailField label="Mã báo giá" hint="cấp khi Lưu, không sửa" mode="view" value="" />
               <DetailField label="Phụ huynh" mode="view" value={parent} />
               <DetailField
-                label="Cơ hội"
+                label={source.label}
                 mode="view"
                 value={
-                  <FromLink
-                    to={`/crm/co-hoi/${opportunityId}`}
-                    className="font-medium text-link hover:underline"
-                  >
-                    {opportunityCode}
+                  <FromLink to={source.href} className="font-medium text-link hover:underline">
+                    {source.code}
                   </FromLink>
                 }
               />
@@ -249,6 +326,7 @@ function CreateForm({
           </h3>
           <QuoteLineEditor
             opportunityId={opportunityId}
+            ticketStudent={source.ticketStudent}
             rows={rows}
             onRowsChange={setRows}
             issues={issues}
@@ -259,8 +337,8 @@ function CreateForm({
           />
         </section>
         <p>
-          <Button variant="text" onClick={() => openFrom(`/crm/co-hoi/${opportunityId}`)}>
-            Về cơ hội
+          <Button variant="text" onClick={() => openFrom(source.href)}>
+            {backLabel}
           </Button>
         </p>
       </div>

@@ -13,7 +13,7 @@ import { DetailField, RecordDetail } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Tag, type TagTone } from '../../ui/Data';
 import { LineTable, type LineColumn } from '../../ui/LineTable';
-import { Spinner, StateView } from '../../ui/Feedback';
+import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
 import type { MenuItem } from '../../ui/Overlays';
@@ -45,6 +45,7 @@ import {
   useQuotation,
   useRefreshQuotation,
 } from './useQuoteData';
+import { useUpsaleRecord } from '../tai-tuc/useUpsaleData';
 import { FromLink } from '../../layout/FromLink';
 
 const STATUS_TONE: Record<string, TagTone> = {
@@ -130,9 +131,28 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const phone = useMedia(NARROW_TABLE);
   const [editing, setEditing] = useState(false);
   const [rows, setRows] = useState<EditRow[]>([]);
-  const discountPolicies = useDiscountPolicies(record.opportunity_id, editing);
+  // Mã nguồn của báo giá: cơ hội, hoặc phiếu tái tục (R-GD-13).
+  const fromTicket = Boolean(record.upsale_ticket_id);
+  const sourceId = record.opportunity_id ?? record.upsale_ticket_id ?? '';
+  const sourceHref = fromTicket ? `/crm/tai-tuc/${sourceId}` : `/crm/co-hoi/${sourceId}`;
+  const sourceLabel = fromTicket ? 'Phiếu tái tục' : 'Cơ hội';
+  const sourceCode = (fromTicket ? record.upsale_ticket_code : record.opportunity_code) ?? '';
+  const discountPolicies = useDiscountPolicies(sourceId, editing);
+  const ticket = useUpsaleRecord(editing ? (record.upsale_ticket_id ?? undefined) : undefined);
+  const ticketStudent = ticket.data?.student
+    ? {
+        id: ticket.data.student.id,
+        position: 1,
+        full_name: ticket.data.student.name,
+        birth_year: ticket.data.student.birth_year,
+      }
+    : undefined;
   // R-CRM-16: đơn chỉ lưu được khi cơ hội ở L8; biết trước để khoá nút Chuyển thành đơn và nêu lý do (T2-03). Không đọc được cơ hội thì để nút mở, máy chủ vẫn kiểm khi Lưu.
-  const opportunity = useOpportunity(record.opportunity_id, access.can('OPPORTUNITY', 'XEM'));
+  // Báo giá của phiếu tái tục không đòi giai đoạn nào (R-GD-13).
+  const opportunity = useOpportunity(
+    record.opportunity_id ?? undefined,
+    access.can('OPPORTUNITY', 'XEM'),
+  );
   const notL8 = opportunity.data !== undefined && opportunity.data.stage_code !== 'L8';
   const [baseline, setBaseline] = useState('');
   const [saving, setSaving] = useState(false);
@@ -172,7 +192,9 @@ function QuotationView({ record }: { record: QuotationRecord }) {
       : []),
   ];
 
-  const canEditDraft = canChange && record.status_code === 'NHAP';
+  // Báo giá của phiếu: sửa cần thêm Phiếu tái tục · Sửa (máy chủ kiểm lại).
+  const canEditDraft =
+    canChange && record.status_code === 'NHAP' && (!fromTicket || access.can('UPSALE', 'SUA'));
   const dirty = editing && rowsSignature(rows) !== baseline;
 
   function startEdit() {
@@ -198,7 +220,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
     if (found.length > 0) return;
     setSaving(true);
     try {
-      await saveQuotation(supabase, record.id, record.opportunity_id, buildSaveLines(rows));
+      await saveQuotation(supabase, record.id, sourceId, buildSaveLines(rows));
       await refresh();
       stopEdit();
       toast({ title: 'Đã lưu báo giá.' });
@@ -453,11 +475,11 @@ function QuotationView({ record }: { record: QuotationRecord }) {
         }
         smart={[
           {
-            key: 'co-hoi',
-            label: 'Cơ hội',
+            key: 'nguon',
+            label: sourceLabel,
             icon: 'recruit',
             count: 1,
-            onOpen: () => openFrom(`/crm/co-hoi/${record.opportunity_id}`),
+            onOpen: () => openFrom(sourceHref),
           },
           {
             key: 'phu-huynh',
@@ -549,14 +571,11 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                 <DetailField label="Mã phụ huynh" mode="view" value={record.parent_code} />
                 <DetailField label="SĐT" mode="view" value={formatPhone(record.parent_phone)} />
                 <DetailField
-                  label="Cơ hội"
+                  label={sourceLabel}
                   mode="view"
                   value={
-                    <FromLink
-                      to={`/crm/co-hoi/${record.opportunity_id}`}
-                      className="font-medium text-link hover:underline"
-                    >
-                      {record.opportunity_code}
+                    <FromLink to={sourceHref} className="font-medium text-link hover:underline">
+                      {sourceCode}
                     </FromLink>
                   }
                 />
@@ -608,9 +627,16 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             <h3 className="mb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase">
               Gói học
             </h3>
-            {editing ? (
+            {editing && fromTicket && !ticketStudent ? (
+              ticket.isError ? (
+                <Alert tone="danger">{errorOf(ticket.error).message}</Alert>
+              ) : (
+                <Spinner label="Đang tải phiếu tái tục…" />
+              )
+            ) : editing ? (
               <QuoteLineEditor
-                opportunityId={record.opportunity_id}
+                opportunityId={sourceId}
+                ticketStudent={ticketStudent}
                 rows={rows}
                 onRowsChange={setRows}
                 issues={issues}
