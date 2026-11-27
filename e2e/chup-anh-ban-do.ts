@@ -67,7 +67,7 @@ export const ROLES: Role[] = [
     account: 'cskh.cs5',
     kind: 'crm',
     shots: [
-      { name: 'ghi-danh-cho-xep', route: '/crm/cho-xep-lop' },
+      { name: 'ghi-danh-cho-xep', route: '/crm/ghi-danh?loc=cho-xep-lop' },
       {
         name: 'ghi-danh-xep-lop',
         route: '/crm/ghi-danh',

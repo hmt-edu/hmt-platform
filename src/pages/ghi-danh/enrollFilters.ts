@@ -1,4 +1,4 @@
-// Đổi trạng thái màn danh sách (ListState) thành bộ lọc gửi enrollment_list, enrollment_queue. Hàm thuần, có kiểm thử.
+// Đổi trạng thái màn danh sách (ListState) thành bộ lọc gửi enrollment_list. Hàm thuần, có kiểm thử.
 // Cùng nhóm lọc nhanh là HOẶC, khác nhóm là VÀ (R-CRM-07). Lọc, sắp xếp, phân trang làm ở máy chủ.
 import type { Condition, ListState } from '../../list/types';
 import type { SortState } from '../../ui/Data';
@@ -13,6 +13,13 @@ export const EMPTY_ENROLL_STATE: ListState = {
   dateField: '',
   datePreset: '',
 };
+
+/** Trạng thái mở đầu của danh sách: `?loc=cho-xep-lop` bật sẵn bộ lọc nhanh «Chờ xếp lớp» (đường dẫn Hàng chờ xếp lớp cũ chuyển về đây). */
+export function initialEnrollState(preset: string | null): ListState {
+  return preset === 'cho-xep-lop'
+    ? { ...EMPTY_ENROLL_STATE, quick: { status: ['CHO_XEP_LOP'] } }
+    : EMPTY_ENROLL_STATE;
+}
 
 function valuesOf(cond: Condition): string[] {
   return (Array.isArray(cond.value) ? cond.value : [cond.value])

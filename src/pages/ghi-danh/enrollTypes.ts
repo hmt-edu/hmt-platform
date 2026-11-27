@@ -20,19 +20,6 @@ export type EnrollmentRow = {
 };
 export type EnrollmentPage = { total: number; rows: EnrollmentRow[] };
 
-export type QueueRow = {
-  id: string;
-  code: string;
-  student_id: string;
-  student_name: string;
-  package_code: string | null;
-  package_name: string | null;
-  delivery_mode_code: string | null;
-  delivery_mode_name: string | null;
-  waiting_since: string;
-};
-export type QueuePage = { total: number; rows: QueueRow[] };
-
 export type EnrollmentRecord = {
   enrollment: {
     id: string;

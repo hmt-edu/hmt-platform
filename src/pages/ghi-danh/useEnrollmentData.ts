@@ -11,7 +11,6 @@ import type {
   LedgerPage,
   MatchingClass,
   OrderLineClass,
-  QueuePage,
 } from './enrollTypes';
 
 export type EnrollFilters = Record<string, unknown>;
@@ -32,21 +31,6 @@ export function useEnrollmentPage(
       rpc<EnrollmentPage>(supabase, 'enrollment_list', {
         p_filters: filters,
         p_sort: sort ?? 'code_desc',
-        p_limit: limit,
-        p_offset: offset,
-      }),
-  });
-}
-
-export function useEnrollmentQueue(filters: EnrollFilters, offset: number, limit: number | null) {
-  const supabase = useDb();
-  return useQuery({
-    queryKey: ['enrollment-queue', filters, offset, limit],
-    enabled: limit !== null,
-    placeholderData: keepPreviousData,
-    queryFn: () =>
-      rpc<QueuePage>(supabase, 'enrollment_queue', {
-        p_filters: filters,
         p_limit: limit,
         p_offset: offset,
       }),
@@ -148,7 +132,7 @@ export function useRefreshEnrollments() {
   const queryClient = useQueryClient();
   return useCallback(async () => {
     await Promise.all(
-      ['enrollment-list', 'enrollment-queue', 'enrollment-record', 'enrollment-ledger'].map((key) =>
+      ['enrollment-list', 'enrollment-record', 'enrollment-ledger'].map((key) =>
         queryClient.invalidateQueries({ queryKey: [key] }),
       ),
     );
