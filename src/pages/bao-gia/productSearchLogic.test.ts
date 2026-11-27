@@ -50,4 +50,21 @@ describe('Ô tìm sản phẩm', () => {
       productGroups(rows, { popular: [], suggested: [] }, '', NO_FILTERS)[0]?.rows,
     ).toHaveLength(2);
   });
+  it('khối chỉ có ở danh mục Khối của sản phẩm hiện tên, lọc và tìm được', () => {
+    const own: Record<string, string> = { K05NC: '5NC', SAT: 'SAT' };
+    const products = productRows(
+      {
+        ...data,
+        packages: [pkg('LC-SAT', 'Luyện thi', 'ANH', 'SAT'), pkg('LC-NC', 'Toán', 'TOAN', 'K05NC')],
+      },
+      (catalog, code) => (catalog === 'PRODUCT_GRADE' ? own[code] : names[code]),
+    );
+    expect(products.map((r) => r.grade)).toEqual(['SAT', '5NC']);
+    expect(filterValues(products, 'grade')).toEqual(['5NC', 'SAT']);
+    expect(
+      productGroups(products, data, '5nc', NO_FILTERS).flatMap((g) =>
+        g.rows.map((r) => r.pkg.code),
+      ),
+    ).toEqual(['LC-NC']);
+  });
 });

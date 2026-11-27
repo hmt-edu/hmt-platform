@@ -26,6 +26,7 @@ const CATALOGS = [
   'TEST_LEVEL',
   'SUBJECT',
   'GRADE',
+  'PRODUCT_GRADE',
   'LEVEL',
   'FRAMEWORK_LEVEL',
   'SOURCE_TYPE',
