@@ -8,7 +8,8 @@ import { useNavigate, type NavigateOptions } from 'react-router';
 export type Crumb = { label: string; to?: string };
 
 /** Đường dẫn đang hiện của trang hiện tại và địa chỉ của nó (đường dẫn + chuỗi lọc), để trang con nối tiếp. */
-export type CrumbsValue = { crumbs: Crumb[]; here: string };
+/** `dropLast`: đang ở danh sách lọc theo bản ghi cha, trang mở từ đây không giữ tầng danh sách. */
+export type CrumbsValue = { crumbs: Crumb[]; here: string; dropLast?: boolean };
 export const CrumbsContext = createContext<CrumbsValue>({ crumbs: [], here: '' });
 
 const pathOf = (to: string | undefined) => (to ?? '').split('?')[0];
@@ -18,6 +19,7 @@ const pathOf = (to: string | undefined) => (to ?? '').split('?')[0];
  * trỏ về chính trang gốc để bấm quay lại được.
  */
 export function trailOf(value: CrumbsValue): Crumb[] {
+  if (value.dropLast) return value.crumbs.slice(0, -1);
   return value.crumbs.map((c, i) =>
     i === value.crumbs.length - 1 && !c.to && value.here ? { ...c, to: value.here } : c,
   );
@@ -25,7 +27,7 @@ export function trailOf(value: CrumbsValue): Crumb[] {
 
 /**
  * Nối đường dẫn của trang gốc với đường dẫn dựng từ menu của trang đích (`own`: nhóm, mục, và tên bản ghi nếu có).
- * Bỏ nhóm của trang đích (đã nằm trong đường dẫn gốc). Nếu trang đích đã có trong đường dẫn gốc (quay lại một trang đã đi qua)
+ * Chỉ nối MỤC CUỐI của trang đích (tên bản ghi hoặc tên trang), bỏ nhóm và tầng danh sách ở giữa (H1). Nếu trang đích đã có trong đường dẫn gốc (quay lại một trang đã đi qua)
  * thì cắt đường dẫn gốc tới đó, không nối dài thêm.
  */
 export function mergeTrail(from: Crumb[] | null, own: Crumb[], destPath: string): Crumb[] {
@@ -36,7 +38,7 @@ export function mergeTrail(from: Crumb[] | null, own: Crumb[], destPath: string)
     const lastIndex = cut.length - 1;
     return cut.map((c, i) => (i === lastIndex ? { label: c.label } : c));
   }
-  return [...from, ...own.slice(1)];
+  return [...from, ...own.slice(-1)];
 }
 
 /** Mở một trang từ trang hiện tại và nối tiếp đường dẫn (smart button, dòng bảng, liên kết). */

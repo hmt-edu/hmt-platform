@@ -1,8 +1,9 @@
 // BH-06 Đơn hàng (danh sách): khuôn K03 nối với list_orders. Lọc, sắp xếp, phân trang làm ở máy chủ; trình duyệt chỉ giữ trang đang xem.
 // Không có nút Tạo (đơn sinh từ báo giá, cơ hội, phiếu tái tục; R-CRM-19, R-TIEN-02); có nút Xuất cho vai có quyền Xuất (Trưởng cơ sở, Kế toán, Admin, Đ105).
 // Giao diện không tính tiền: tổng tiền do hàm cơ sở dữ liệu trả. Chưa có màn bản ghi đơn (BH-05) nên dòng chưa mở được.
+import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
@@ -45,7 +46,7 @@ const EXPORT_COLUMNS = [
 ];
 
 export function OrderListPage() {
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const supabase = useDb();
   const access = useAccess();
   const toast = useToast();
@@ -160,7 +161,7 @@ export function OrderListPage() {
               entityLabel: 'Cơ hội',
               code: parentCode,
               childLabel: 'Đơn hàng',
-              onOpenParent: () => void navigate(`/crm/co-hoi/${parentOpp}`),
+              onOpenParent: () => void openFrom(`/crm/co-hoi/${parentOpp}`),
               onClear: () => setParams({}),
             }
           : undefined

@@ -10,3 +10,14 @@ export function useCrumbTail(label: string | null): void {
     return () => set(null);
   }, [label, set]);
 }
+
+export const FilteredListContext = createContext<(filtered: boolean) => void>(() => undefined);
+
+/** Danh sách đang lọc theo bản ghi cha báo cho khung ứng dụng: mở một dòng thì bỏ tầng danh sách khỏi đường dẫn. */
+export function useFilteredListCrumb(filtered: boolean): void {
+  const set = useContext(FilteredListContext);
+  useEffect(() => {
+    set(filtered);
+    return () => set(false);
+  }, [filtered, set]);
+}

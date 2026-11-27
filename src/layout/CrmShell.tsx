@@ -10,7 +10,7 @@ import { Icon } from '../ui/icons';
 import { Drawer, Select } from '../ui/Overlays';
 import { RouteTabs } from '../ui/RouteTabs';
 import { AccountMenu } from './AccountMenu';
-import { CrumbTailContext } from './CrumbTail';
+import { CrumbTailContext, FilteredListContext } from './CrumbTail';
 import { GlobalSearch } from './GlobalSearch';
 import { NotificationBell } from './NotificationBell';
 import { CrumbsContext, fromOf, mergeTrail, type Crumb } from './crumbTrail';
@@ -182,11 +182,15 @@ export function CrmShell() {
   const menu = useMemo(() => visibleMenu(CRM_MENU, access), [access]);
   const [tail, setTail] = useState<string | null>(null);
   const crumbs = useBreadcrumb(menu, tail);
-  const { pathname, search } = useLocation();
+  const location = useLocation();
+  const { pathname, search } = location;
+  const [filteredList, setFilteredList] = useState(false);
+  // Chỉ bỏ tầng danh sách khi danh sách lọc được mở từ một bản ghi (có đường dẫn gốc).
+  const dropLast = filteredList && fromOf(location.state) !== null;
   const tabs = routeTabs(menu, pathname.replace(/^\/crm\/?/, ''));
   const crumbsValue = useMemo(
-    () => ({ crumbs, here: `${pathname}${search}` }),
-    [crumbs, pathname, search],
+    () => ({ crumbs, here: `${pathname}${search}`, dropLast }),
+    [crumbs, pathname, search, dropLast],
   );
   const branchName = access.branchName(claims?.branchCode ?? null);
   const roleLines = [access.roleNames.join(', '), branchName].filter((line): line is string =>
@@ -213,131 +217,133 @@ export function CrmShell() {
 
   return (
     <CrumbTailContext.Provider value={setTail}>
-      <CrumbsContext.Provider value={crumbsValue}>
-        <div className="flex min-h-dvh bg-canvas">
-          <aside
-            className={cn(
-              'sticky top-0 hidden h-dvh shrink-0 flex-col bg-sidebar text-sidebar-fg lg:flex',
-              collapsed ? 'w-sidebar-narrow' : 'w-sidebar',
-            )}
-          >
-            {/* Đầu thanh bên trắng, cao bằng thanh trên (.hmt-sb-head). */}
-            <div
+      <FilteredListContext.Provider value={setFilteredList}>
+        <CrumbsContext.Provider value={crumbsValue}>
+          <div className="flex min-h-dvh bg-canvas">
+            <aside
               className={cn(
-                'flex h-topbar shrink-0 items-center border-b border-border bg-surface',
-                collapsed ? 'justify-center' : 'gap-2 pr-2 pl-3.5',
+                'sticky top-0 hidden h-dvh shrink-0 flex-col bg-sidebar text-sidebar-fg lg:flex',
+                collapsed ? 'w-sidebar-narrow' : 'w-sidebar',
               )}
             >
-              {!collapsed && (
-                <p className="min-w-0 flex-1 truncate font-display text-h3 font-bold text-fg">
-                  CRM
-                </p>
-              )}
-              <IconButton
-                icon="collapse"
-                label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
-                onClick={toggleCollapsed}
-              />
-            </div>
-            <nav
-              aria-label="Menu CRM"
-              className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-2.5 pb-3.5"
-            >
-              {collapsed ? (
-                <ul className="flex flex-col items-center gap-0.5">
-                  {menu.map((group) => (
-                    <li key={group.id}>
-                      <button
-                        type="button"
-                        aria-label={`${group.label} (mở rộng menu)`}
-                        title={group.label}
-                        onClick={toggleCollapsed}
-                        className="focus-ring flex size-10 items-center justify-center rounded-control text-sidebar-fg hover:bg-sidebar-hover hover:text-neutral-0"
-                      >
-                        <Icon name={group.icon} />
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                menuList()
-              )}
-            </nav>
-          </aside>
-
-          <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-10 flex h-topbar shrink-0 items-center gap-3 border-b border-border bg-surface px-3 lg:gap-4 lg:px-5">
-              <IconButton
-                icon="menu"
-                label="Mở menu"
-                className="lg:hidden"
-                onClick={() => setDrawerOpen(true)}
-              />
-              <nav aria-label="Đường dẫn" className="min-w-0 flex-1">
-                <ol className="flex min-w-0 items-center gap-1.5 text-body text-fg-muted">
-                  {crumbs.map((crumb, index) => {
-                    const last = index === crumbs.length - 1;
-                    return (
-                      <li
-                        key={crumb.label}
-                        className={cn(
-                          'flex items-center gap-1.5',
-                          last ? 'min-w-0' : 'shrink-0',
-                          // Điện thoại hẹp: chỉ hiện hai mục cuối (mục cha và trang hiện tại), đủ để quay lại.
-                          index < crumbs.length - 2 && 'hidden md:flex',
-                        )}
-                      >
-                        {index > 0 && <Icon name="chevronRight" size={16} className="shrink-0" />}
-                        {crumb.to && !last ? (
-                          <Link
-                            to={crumb.to}
-                            className="focus-ring truncate text-link hover:underline"
-                          >
-                            {crumb.label}
-                          </Link>
-                        ) : (
-                          <span
-                            aria-current={last ? 'page' : undefined}
-                            className={cn('truncate', last && 'font-semibold text-fg')}
-                          >
-                            {crumb.label}
-                          </span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ol>
-              </nav>
-              <GlobalSearch />
-              <div className="ml-auto hidden shrink-0 lg:block">
-                <BranchPicker className="w-56" />
-              </div>
-              <NotificationBell />
-              <AccountMenu portal="crm" roleLines={roleLines} />
-            </header>
-            <main className="min-w-0 flex-1">
-              <div className="p-4 lg:p-5">
-                {tabs.length > 0 && (
-                  <RouteTabs
-                    label="Các màn cùng mục"
-                    items={tabs.map((t) => ({ to: crmPath(t.slug), label: t.label }))}
-                  />
+              {/* Đầu thanh bên trắng, cao bằng thanh trên (.hmt-sb-head). */}
+              <div
+                className={cn(
+                  'flex h-topbar shrink-0 items-center border-b border-border bg-surface',
+                  collapsed ? 'justify-center' : 'gap-2 pr-2 pl-3.5',
                 )}
-                <Outlet />
+              >
+                {!collapsed && (
+                  <p className="min-w-0 flex-1 truncate font-display text-h3 font-bold text-fg">
+                    CRM
+                  </p>
+                )}
+                <IconButton
+                  icon="collapse"
+                  label={collapsed ? 'Mở rộng menu' : 'Thu gọn menu'}
+                  onClick={toggleCollapsed}
+                />
               </div>
-            </main>
-          </div>
+              <nav
+                aria-label="Menu CRM"
+                className="min-h-0 flex-1 overflow-y-auto px-2.5 pt-2.5 pb-3.5"
+              >
+                {collapsed ? (
+                  <ul className="flex flex-col items-center gap-0.5">
+                    {menu.map((group) => (
+                      <li key={group.id}>
+                        <button
+                          type="button"
+                          aria-label={`${group.label} (mở rộng menu)`}
+                          title={group.label}
+                          onClick={toggleCollapsed}
+                          className="focus-ring flex size-10 items-center justify-center rounded-control text-sidebar-fg hover:bg-sidebar-hover hover:text-neutral-0"
+                        >
+                          <Icon name={group.icon} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  menuList()
+                )}
+              </nav>
+            </aside>
 
-          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="CRM">
-            <div className="bg-sidebar px-2.5 py-2.5 text-sidebar-fg">
-              <div className="pb-2.5 [&_button]:w-full">
-                <BranchPicker className="w-full" />
-              </div>
-              <nav aria-label="Menu CRM">{menuList(() => setDrawerOpen(false))}</nav>
+            <div className="flex min-w-0 flex-1 flex-col">
+              <header className="sticky top-0 z-10 flex h-topbar shrink-0 items-center gap-3 border-b border-border bg-surface px-3 lg:gap-4 lg:px-5">
+                <IconButton
+                  icon="menu"
+                  label="Mở menu"
+                  className="lg:hidden"
+                  onClick={() => setDrawerOpen(true)}
+                />
+                <nav aria-label="Đường dẫn" className="min-w-0 flex-1">
+                  <ol className="flex min-w-0 items-center gap-1.5 text-body text-fg-muted">
+                    {crumbs.map((crumb, index) => {
+                      const last = index === crumbs.length - 1;
+                      return (
+                        <li
+                          key={`${index}-${crumb.label}`}
+                          className={cn(
+                            'flex items-center gap-1.5',
+                            last ? 'min-w-0' : 'shrink-0',
+                            // Điện thoại hẹp: chỉ hiện hai mục cuối (mục cha và trang hiện tại), đủ để quay lại.
+                            index < crumbs.length - 2 && 'hidden md:flex',
+                          )}
+                        >
+                          {index > 0 && <Icon name="chevronRight" size={16} className="shrink-0" />}
+                          {crumb.to && !last ? (
+                            <Link
+                              to={crumb.to}
+                              className="focus-ring truncate text-link hover:underline"
+                            >
+                              {crumb.label}
+                            </Link>
+                          ) : (
+                            <span
+                              aria-current={last ? 'page' : undefined}
+                              className={cn('truncate', last && 'font-semibold text-fg')}
+                            >
+                              {crumb.label}
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </nav>
+                <GlobalSearch />
+                <div className="ml-auto hidden shrink-0 lg:block">
+                  <BranchPicker className="w-56" />
+                </div>
+                <NotificationBell />
+                <AccountMenu portal="crm" roleLines={roleLines} />
+              </header>
+              <main className="min-w-0 flex-1">
+                <div className="p-4 lg:p-5">
+                  {tabs.length > 0 && (
+                    <RouteTabs
+                      label="Các màn cùng mục"
+                      items={tabs.map((t) => ({ to: crmPath(t.slug), label: t.label }))}
+                    />
+                  )}
+                  <Outlet />
+                </div>
+              </main>
             </div>
-          </Drawer>
-        </div>
-      </CrumbsContext.Provider>
+
+            <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} title="CRM">
+              <div className="bg-sidebar px-2.5 py-2.5 text-sidebar-fg">
+                <div className="pb-2.5 [&_button]:w-full">
+                  <BranchPicker className="w-full" />
+                </div>
+                <nav aria-label="Menu CRM">{menuList(() => setDrawerOpen(false))}</nav>
+              </div>
+            </Drawer>
+          </div>
+        </CrumbsContext.Provider>
+      </FilteredListContext.Provider>
     </CrumbTailContext.Provider>
   );
 }

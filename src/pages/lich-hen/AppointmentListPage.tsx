@@ -1,8 +1,9 @@
 // TS-11 Lịch hẹn: danh sách (TS11b), Kanban (TS11c), Lịch ngày, tuần, tháng (TS11_K5) trên khuôn K1, K2, K5.
 // Lọc, sắp xếp, phân trang, tìm kiếm làm ở máy chủ. Hoàn thành, Dời, Huỷ, Mở lại là thao tác một bấm hoặc một hộp thoại
 // (R-CRM-04); không đổi giai đoạn, không tạo việc, không báo ai. Tạo từ đây gắn với một lead (cơ hội thêm khi có TS-08).
+import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { Button } from '../../ui/Button';
 import { activityIcon } from '../../features/appointments/appointmentApi';
 import { useAppointmentActions } from '../../features/appointments/useAppointmentActions';
@@ -140,7 +141,7 @@ export function AppointmentListPage() {
   const maxPage = useIntSetting('list_page_size_max');
   const cardsPerColumn = useIntSetting('kanban_cards_per_column');
 
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   // Mở từ nút "Lịch hẹn" của trang Lead: chỉ lịch hẹn của lead đó, mọi thời gian (bỏ chip thì về danh sách chung).
   const [params, setParams] = useSearchParams();
   const parentLead = params.get('lead');
@@ -490,7 +491,7 @@ export function AppointmentListPage() {
                 code: parentCode,
                 childLabel: 'Lịch hẹn',
                 onOpenParent: () =>
-                  void navigate(
+                  void openFrom(
                     parentLead
                       ? `/crm/lead/${parentLead}`
                       : parentOpp
