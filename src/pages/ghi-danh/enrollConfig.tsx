@@ -63,7 +63,22 @@ export function buildEnrollConfig(
       {
         key: 'class',
         label: 'Lớp',
-        render: (r) => r.class_code ?? <span className="text-fg-muted">chưa có lớp</span>,
+        // Nút «Xếp lớp» nằm trong cột Lớp, không thêm cột riêng: cột thứ chín bị ẩn mặc định (DEFAULT_MAX_COLUMNS).
+        render: (r) =>
+          r.class_code ?? (
+            <span className="inline-flex items-center gap-2 whitespace-nowrap">
+              <span className="text-fg-muted">chưa có lớp</span>
+              {onAssign && r.status_code === 'CHO_XEP_LOP' && (
+                <button
+                  type="button"
+                  className="focus-ring tap text-link hover:underline"
+                  onClick={() => onAssign(r)}
+                >
+                  Xếp lớp
+                </button>
+              )}
+            </span>
+          ),
       },
       { key: 'granted', label: 'Giờ cấp', numeric: true, render: (r) => hours(r.granted_hours) },
       { key: 'used', label: 'Đã học', numeric: true, render: (r) => hours(r.used_hours) },
@@ -83,26 +98,6 @@ export function buildEnrollConfig(
           </Tag>
         ),
       },
-      ...(onAssign
-        ? [
-            {
-              key: 'action',
-              label: 'Xử lý',
-              render: (r: EnrollmentRow) =>
-                r.status_code === 'CHO_XEP_LOP' ? (
-                  <button
-                    type="button"
-                    className="focus-ring text-link hover:underline"
-                    onClick={() => onAssign(r)}
-                  >
-                    Xếp lớp
-                  </button>
-                ) : (
-                  MUTED
-                ),
-            },
-          ]
-        : []),
     ],
     quickGroups: [{ key: 'status', label: 'Tình trạng', options: statusOptions }],
     filterFields: [
