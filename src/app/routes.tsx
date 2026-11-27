@@ -1,4 +1,4 @@
-import type { RouteObject } from 'react-router';
+import { Navigate, type RouteObject } from 'react-router';
 import { parseAppEnv } from '../lib/env';
 import { NotFoundView, RouteErrorPage } from '../pages/common/StatePages';
 import { NoPortalPage, RequirePortal, RootRedirect } from './guards';
@@ -76,9 +76,9 @@ const SessionPendingPage = lazyScreen(
   () => import('../pages/buoi/SessionPendingPage'),
   'SessionPendingPage',
 );
-const AbsentTodayPage = lazyScreen(
-  () => import('../pages/buoi/AbsentTodayPage'),
-  'AbsentTodayPage',
+const AttendancePage = lazyScreen(
+  () => import('../pages/diem-danh/AttendancePage'),
+  'AttendancePage',
 );
 const HomeworkGradingPage = lazyScreen(
   () => import('../pages/gv/HomeworkGradingPage'),
@@ -366,10 +366,6 @@ const TeacherHoursPage = lazyScreen(
 const TeacherStudentPage = lazyScreen(
   () => import('../pages/gv/TeacherStudentPage'),
   'TeacherStudentPage',
-);
-const DayAttendancePage = lazyScreen(
-  () => import('../pages/diem-danh-ngay/DayAttendancePage'),
-  'DayAttendancePage',
 );
 const ExpiringListPage = lazyScreen(
   () => import('../pages/sap-het-gio/ExpiringListPage'),
@@ -778,14 +774,8 @@ export const routes: RouteObject[] = [
               </GatedCrmEntry>
             ),
           },
-          {
-            path: 'diem-danh-trong-ngay',
-            element: (
-              <GatedCrmEntry slug="diem-danh-trong-ngay">
-                <DayAttendancePage />
-              </GatedCrmEntry>
-            ),
-          },
+          // Đường cũ của «Điểm danh trong ngày» chuyển sang màn «Điểm danh».
+          { path: 'diem-danh-trong-ngay', element: <Navigate to="/crm/diem-danh" replace /> },
           {
             path: 'sap-het-gio',
             element: (
@@ -862,7 +852,7 @@ export const routes: RouteObject[] = [
             path: 'diem-danh',
             element: (
               <GatedCrmEntry slug="diem-danh">
-                <AbsentTodayPage />
+                <AttendancePage />
               </GatedCrmEntry>
             ),
           },

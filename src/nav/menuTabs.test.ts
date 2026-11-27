@@ -59,8 +59,9 @@ describe('menu đợt 1 (A-26-11)', () => {
     expect(routeModes(menu, 'yeu-cau-buoi')).toEqual([]);
     const noClass: MenuAccess = { ...admin, isAdmin: false, can: (m) => m !== 'CLASS' };
     expect(routeModes(visibleMenu(CRM_MENU, noClass), 'buoi-hoc')).toEqual([]);
-    expect(routeTabs(menu, 'diem-danh').map((t) => t.label)).toEqual(['Cần gọi', 'Theo buổi']);
-    for (const slug of ['lich-tuan', 'buoi-chua-done', 'diem-danh-trong-ngay']) {
+    // Một màn «Điểm danh» (C-27-07 4c), tab trong màn.
+    expect(routeTabs(menu, 'diem-danh')).toEqual([]);
+    for (const slug of ['lich-tuan', 'buoi-chua-done', 'diem-danh']) {
       expect(checkRoute(CRM_MENU, slug, admin).status).toBe('ok');
     }
   });

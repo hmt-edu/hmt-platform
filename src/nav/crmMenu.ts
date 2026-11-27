@@ -252,19 +252,9 @@ export const CRM_MENU: MenuGroup[] = [
         code: 'BUOI-11',
         label: 'Điểm danh',
         slug: 'diem-danh',
-        requires: can('ATTENDANCE', 'SUA'),
-        stage: GD2,
-        tabLabel: 'Cần gọi',
-      },
-      {
-        code: 'BUOI-15',
-        label: 'Điểm danh trong ngày',
-        slug: 'diem-danh-trong-ngay',
+        // Màn gộp (C-27-07 4c): tab «Theo buổi» cần Buổi học · Xem; tab «Cần gọi» và ghi cần Điểm danh · Sửa (màn tự kiểm).
         requires: can('SESSION'),
-        stage: '',
-        feature: 'DIEM_DANH_TRONG_NGAY',
-        tabOf: 'diem-danh',
-        tabLabel: 'Theo buổi',
+        stage: GD2,
       },
       // C-27-06 (canvas «Đào tạo — menu và điểm danh»): Sắp hết giờ hiện ở cả Đào tạo và Chăm sóc khách hàng.
       {
