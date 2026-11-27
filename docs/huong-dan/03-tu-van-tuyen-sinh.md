@@ -11,7 +11,7 @@ portals: [crm]
 
 Vai: **Tư vấn tuyển sinh**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
-Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiểm tra), **Bán hàng và thu chi** (Báo giá, Đơn hàng, Phiếu thu). Chỉ hiện mục bạn có quyền; bạn chỉ thấy khách của cơ sở mình.
+Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu Test), **Bán hàng** (Báo giá, Đơn hàng), **Kế toán** (Phiếu thu). Chỉ hiện mục bạn có quyền; bạn chỉ thấy khách của cơ sở mình.
 
 
 ## Việc hằng ngày của bạn (gợi ý thứ tự)
@@ -52,12 +52,12 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiể
 2. Các giai đoạn theo thứ tự: **Khách hàng mới → Chưa liên hệ được → Không có nhu cầu → Khách hàng tiềm năng → Đồng ý tham gia test → Đã tham gia test → Tư vấn → Đăng ký học**. Mỗi giai đoạn có giai đoạn con để ghi chi tiết (ví dụ «Bận gọi lại sau», «Tiềm năng, cần tư vấn thêm», «Cần đặt lịch tư vấn»).
 3. Từ «Đồng ý tham gia test» trở đi phải có **tên và năm sinh học sinh**; thiếu thì hộp thoại báo ô còn trống, điền rồi chuyển lại.
 4. «Đã tham gia test» (L6) do hệ thống tự chuyển, bạn không bấm tay: ngay khi học sinh **đã làm bài và phiếu chờ giáo viên chấm**, cơ hội lên L6 với nhóm con **L6A «chưa có kết quả test»**; khi phiếu **«Hoàn thành»** nhóm con tự đổi thành **L6B «có kết quả test, cần phân loại»**. Sau đó bạn chọn tay nhóm con phân loại học lực theo danh sách trên màn.
-5. Muốn sang «Tư vấn» hoặc «Đăng ký học» mà chưa có phiếu kiểm tra hoàn thành: hộp thoại bắt chọn **lý do bỏ qua test**. Còn phiếu kiểm tra đang dở thì bị chặn, hoàn thành hoặc huỷ phiếu đó trước.
+5. Muốn sang «Tư vấn» hoặc «Đăng ký học» mà chưa có phiếu Test hoàn thành: hộp thoại bắt chọn **lý do bỏ qua test**. Còn phiếu Test đang dở thì bị chặn, hoàn thành hoặc huỷ phiếu đó trước.
 6. «Đăng ký học» (L8) bấm **sau khi phụ huynh đã đóng tiền thật** (xem bài 5), có giai đoạn con L8A, L8B, L8C (PH đặt cọc, PH thanh toán chia để trả, PH hoàn thành 100% học phí) và **không hoàn tác**: hộp thoại yêu cầu xác nhận. Trên màn hiện tại bạn **chọn nhóm con trong ô «Sub-stage»** khi chuyển sang L8; L8C chọn khi phụ huynh đóng đủ 100% ngay lần đầu, và nhóm con này do hệ thống nâng khi thu đủ tiền.
 7. Các nút liên kết có số đếm: «Lead gốc», «Phụ huynh», «Lịch hẹn», «Kiểm tra», «Báo giá», «Đơn hàng». Nút số 0 và chưa dùng được thì mờ.
 
 - **Kết quả:** cơ hội đúng giai đoạn; các nút liên kết đếm đúng.
-- **Lỗi thường gặp:** chuyển giai đoạn bị chặn kèm câu lý do trên màn (thiếu thông tin học sinh, còn phiếu kiểm tra dang dở): đọc câu đó, làm bước còn thiếu rồi chuyển lại. Giai đoạn nào do hệ thống tự gắn thì không chọn tay được.
+- **Lỗi thường gặp:** chuyển giai đoạn bị chặn kèm câu lý do trên màn (thiếu thông tin học sinh, còn phiếu Test dang dở): đọc câu đó, làm bước còn thiếu rồi chuyển lại. Giai đoạn nào do hệ thống tự gắn thì không chọn tay được.
 - **Ảnh:** [ẢNH: co-hoi-thanh-giai-doan], [ẢNH: co-hoi-chuyen-giai-doan], [ẢNH: co-hoi-bo-qua-test], [ẢNH: co-hoi-lien-ket]
 
 ## 3. Lịch hẹn và hộp «Hoàn thành lịch hẹn»
@@ -79,10 +79,10 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiể
 
 ## 4. Lập báo giá
 
-**Mục tiêu:** báo giá gói học cho phụ huynh, có chiết khấu theo chính sách.
+**Mục tiêu:** báo giá gói học cho phụ huynh, có ưu đãi theo chính sách.
 
 1. Từ cơ hội bấm **«Tạo báo giá»**.
-2. Mỗi dòng: chọn gói (nút «Chọn gói…»), nhập số lượng, giờ tặng nếu có, rồi thêm chiết khấu theo chính sách. Tổng tiền do hệ thống tính, không nhập tay.
+2. Mỗi dòng: chọn gói (nút «Chọn gói…»), nhập số lượng, giờ tặng nếu có, rồi thêm ưu đãi theo chính sách. Tổng tiền do hệ thống tính, không nhập tay.
 3. Lưu. Màn bản ghi có «In» (bản in cho phụ huynh), «Từ chối báo giá» (khách từ chối, ghi lý do), «Huỷ báo giá».
 
 - **Kết quả:** báo giá ở tình trạng Nháp rồi gửi khách; số đếm «Báo giá» trên cơ hội tăng.
@@ -101,7 +101,7 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu kiể
 4. Khi đơn «Đã duyệt», bấm «Tạo phiếu thu» để thu tiền.
 
 - **Kết quả:** đơn đi Nháp → Đã trình → Đã duyệt; khi tổng tiền đã vào của đơn **đạt mức cọc tối thiểu** (một tham số của hệ thống do Admin đặt) và phiếu thu được duyệt, mỗi dòng sinh một ghi danh. Dòng đã chọn lớp thì ghi danh vào lớp đó; dòng chưa chọn lớp thì ghi danh ở «Chờ xếp lớp» để CSKH xếp sau.
-- **Lỗi thường gặp:** «Chưa trình được» hoặc «Có em chưa đủ thông tin»: điền đủ thông tin học sinh ở dòng đơn rồi trình lại (hoặc bấm «Vẫn trình» nếu hệ thống cho phép). Lớp không hiện trong danh sách là hết chỗ hoặc sai môn, khối: chọn lớp khác. Không thấy «Huỷ đơn»: chỉ người lập huỷ đơn Nháp; đơn đã trình do người duyệt huỷ; đơn đã có phiếu thu phải qua ticket hoàn tiền.
+- **Lỗi thường gặp:** «Chưa trình được» hoặc «Có học sinh chưa đủ thông tin»: điền đủ thông tin học sinh ở dòng đơn rồi trình lại (hoặc bấm «Vẫn trình» nếu hệ thống cho phép). Lớp không hiện trong danh sách là hết chỗ hoặc sai môn, khối: chọn lớp khác. Không thấy «Huỷ đơn»: chỉ người lập huỷ đơn Nháp; đơn đã trình do người duyệt huỷ; đơn đã có phiếu thu phải qua ticket hoàn tiền.
 - **Ảnh:** [ẢNH: don-hang-dong-don], [ẢNH: don-hang-chon-lop], [ẢNH: don-hang-trinh]
 
 ## 6. Lập phiếu thu

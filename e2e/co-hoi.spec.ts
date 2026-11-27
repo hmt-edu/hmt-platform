@@ -69,7 +69,7 @@ test('Kanban: đủ tám cột L1 đến L8, cơ hội đúng cột', async ({ p
   await expect(page.getByText(/^Cơ hội chỉ đi tới/)).toBeVisible();
 });
 
-test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dùng được mờ, tab Kiểm tra đầu vào', async ({
+test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dùng được mờ, không còn tab Kiểm tra đầu vào', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -100,14 +100,8 @@ test('Trang Cơ hội: thanh giai đoạn, sáu nút liên kết, nút chưa dù
   await expect(page.getByRole('button', { name: /^Đính kèm \(\d+\)$/ })).toHaveCount(0);
   // Nhóm con L5 do hệ thống gắn: ô khoá.
   await expect(page.getByLabel('Sub-stage')).toHaveAttribute('readonly', '');
-  // Tab phiếu: mã phiếu là liên kết sang màn Phiếu kiểm tra (P3e-2).
-  // Một phiếu duy nhất: nút "Kiểm tra" mở thẳng phiếu (P3e-2); tab bên dưới vẫn liệt kê phiếu.
-  await page.getByRole('tab', { name: /Kiểm tra đầu vào/ }).click();
-  await expect(page.getByRole('tab', { name: /Kiểm tra đầu vào \(1\)/ })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await expect(page.getByRole('link', { name: /^PKT\d+$/ })).toBeVisible();
+  // Phiếu kiểm tra chỉ đi từ nút liên kết «Kiểm tra», không còn tab ở khối dưới (A-26-04).
+  await expect(page.getByRole('tab', { name: /Kiểm tra đầu vào/ })).toHaveCount(0);
   await expectAccessible(page);
 });
 
@@ -162,7 +156,7 @@ test('R-CRM-12: còn phiếu dang dở thì chặn L7, nêu mã phiếu, nút m�
   await openRecord(page, setup.account, seeded.opportunity.gated.id);
   await stageBar(page).getByRole('button', { name: /^L7/ }).click();
   const dialog = dialogOf(page, /Chuyển sang L7/);
-  await expect(dialog.getByText(/Cơ hội còn phiếu kiểm tra đang dở/)).toBeVisible();
+  await expect(dialog.getByText(/Cơ hội còn phiếu Test đang dở/)).toBeVisible();
   await expect(dialog.getByRole('button', { name: /^Mở phiếu PKT/ })).toBeEnabled();
   await expect(dialog.getByRole('button', { name: 'Chuyển giai đoạn' })).toBeDisabled();
 });
@@ -174,7 +168,7 @@ test('R-CRM-14, 16: bỏ qua test bắt lý do; L8 bắt nhóm con và xác nh�
   await openRecord(page, setup.account, seeded.opportunity.skip.id);
   await stageBar(page).getByRole('button', { name: /^L7/ }).click();
   const skip = dialogOf(page, /Chuyển sang L7/);
-  await expect(skip.getByText(/chưa có phiếu kiểm tra/)).toBeVisible();
+  await expect(skip.getByText(/chưa có phiếu Test/)).toBeVisible();
   await expect(skip.getByRole('button', { name: 'Chuyển giai đoạn' })).toBeDisabled();
   // Lý do "Lý do khác" (BQ5) bắt ghi chú.
   await pickOption(page, skip.getByRole('combobox', { name: 'Lý do bỏ qua test' }), /^Lý do khác$/);
@@ -302,7 +296,7 @@ test('Tạo cơ hội từ lead: hộp xác nhận; tạo xong mở cơ hội L1
   const dialog = dialogOf(page, 'Tạo cơ hội từ lead');
   await expect(dialog.getByText(/bắt đầu ở giai đoạn L1/)).toBeVisible();
   await expect(dialog.getByText(/đã có .* cơ hội/)).toHaveCount(0);
-  await expect(dialog.getByText('Em đưa sang cơ hội')).toBeVisible();
+  await expect(dialog.getByText('Học sinh đưa sang cơ hội')).toBeVisible();
   await dialog.getByRole('button', { name: 'Tạo cơ hội' }).click();
   await expect(toastText(page, /Đã tạo cơ hội CO\d+/)).toBeVisible();
   await expect(page).toHaveURL(/\/crm\/co-hoi\/[0-9a-f-]+$/);
@@ -320,7 +314,7 @@ test('Tạo cơ hội từ lead: hộp xác nhận; tạo xong mở cơ hội L1
   const again = dialogOf(page, 'Tạo cơ hội từ lead');
   await expect(again.getByText(/Lead này đã có 1 cơ hội đang dùng/)).toBeVisible();
   await expect(again.getByRole('button', { name: 'Vẫn tạo thêm' })).toBeDisabled();
-  await expect(again.getByRole('button', { name: 'Thêm em vào cơ hội cũ' })).toBeVisible();
+  await expect(again.getByRole('button', { name: 'Thêm học sinh vào cơ hội cũ' })).toBeVisible();
   await again.getByRole('button', { name: 'Mở cơ hội cũ' }).click();
   await expect(page).toHaveURL(/\/crm\/co-hoi\/[0-9a-f-]+$/);
 });
@@ -348,7 +342,7 @@ test('R-CRM-34: cơ hội L6 do hệ thống gắn L6A, ô Sub-stage hiện L6A 
   await expect(page.getByRole('combobox', { name: 'Sub-stage' })).toContainText(/L6C/);
 });
 
-test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì nối tiếp "Cơ hội / <tên cơ hội> / Phiếu kiểm tra / mã phiếu", sống qua tải lại, bấm tên cơ hội quay về', async ({
+test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì nối tiếp "Cơ hội / <tên cơ hội> / Phiếu Test / mã phiếu", sống qua tải lại, bấm tên cơ hội quay về', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -361,7 +355,7 @@ test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì n
   if (isPhone(page)) {
     // Điện thoại: chỉ hiện hai mục cuối (mục cha "Phiếu kiểm tra" và mã phiếu), mục đầu ẩn.
     await expect(items).toHaveCount(2);
-    await expect(items.first()).toContainText('Phiếu kiểm tra');
+    await expect(items.first()).toContainText('Phiếu Test');
     await expect(crumbs.locator('li')).toHaveCount(5);
     return;
   }
@@ -372,7 +366,7 @@ test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì n
     'href',
     `/crm/co-hoi/${seeded.opportunity.gated.id}`,
   );
-  await expect(crumbs.getByRole('link', { name: 'Phiếu kiểm tra' })).toHaveAttribute(
+  await expect(crumbs.getByRole('link', { name: 'Phiếu Test' })).toHaveAttribute(
     'href',
     '/crm/phieu-kiem-tra',
   );
@@ -388,7 +382,7 @@ test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì n
   // Vào thẳng địa chỉ phiếu (không có trang gốc): đường dẫn theo menu như cũ.
   await page.goto(testUrl);
   await expect(items).toHaveCount(3);
-  await expect(items.nth(1)).toContainText('Phiếu kiểm tra');
+  await expect(items.nth(1)).toContainText('Phiếu Test');
 });
 
 test('Cơ hội hiện ghi chú của lead gốc kèm nhãn "Từ Lead LD…"; ghi chú của cơ hội không có nhãn', async ({

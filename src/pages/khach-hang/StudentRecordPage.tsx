@@ -1,5 +1,5 @@
 // KH-05 Học sinh (hồ sơ 360°, khuôn K06): thông tin, ghi danh và lớp, điểm danh, điểm kiểm tra, phiếu kiểm tra đầu vào; nút liên kết có số đếm;
-// ghi chú và hoạt động (Chatter). Không có Tạo tay (R-CRM-27). Sửa (KH-06) gọi update_student; cơ sở tiếp nhận chỉ xem (R-CRM-28). Gộp, Tạo ticket, tài khoản học tập: chưa làm, hiện mờ kèm chú thích.
+// ghi chú và hoạt động (Chatter). Mọi tab bấm được và luôn hiện đủ cột (khung KH05_*). Không có Tạo tay (R-CRM-27). Sửa (KH-06) gọi update_student; cơ sở tiếp nhận chỉ xem (R-CRM-28). Tạo ticket chưa làm: hiện mờ kèm chú thích. Tài khoản app học sinh: xem StudentAccount.
 // Giáo viên được phân công xem hồ sơ trong lớp mình nhưng không thấy SĐT phụ huynh (R-GV-13): máy chủ trả null.
 import { useState } from 'react';
 import { MergeDialog } from '../../features/merge/MergeDialog';
@@ -21,8 +21,16 @@ import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
 import { CustTickets } from './CustTickets';
-import { ATTENDANCE_LABEL, STUDENT_STATUS_LABEL, type StudentRecord } from './custTypes';
-import { studentPath } from './custConfig';
+import { STUDENT_STATUS_LABEL, type StudentRecord } from './custTypes';
+import {
+  StudentAttendanceTab,
+  StudentCareTab,
+  StudentExamTab,
+  StudentStudyTab,
+} from './StudentTabs';
+import { useComplaintCount, useOpenTicketCount } from './useCustTickets';
+import { parentPath, studentPath } from './custConfig';
+import { useStudentAccount } from './StudentAccount';
 import { useRefreshCustomers, useStudentRecord } from './useCustData';
 
 const FORMAT = {
@@ -113,11 +121,15 @@ function StudentView({ record }: { record: StudentRecord }) {
   const [tab, setTab] = useState('overview');
   useCrumbTail(`${record.full_name} · ${record.code}`);
   const merged = record.record_status === 'DA_GOP';
-  const summary = Object.entries(record.attendance_summary);
   const access = useAccess();
   const supabase = useDb();
   const toast = useToast();
   const canEdit = access.can('STUDENT', 'SUA') && !merged;
+  const canTickets = access.can('TICKET', 'XEM');
+  const openTickets = useOpenTicketCount({ key: 'student_id', id: record.id }, canTickets);
+  const complaints = useComplaintCount(record.id, canTickets);
+  const [ticketType, setTicketType] = useState<string | undefined>();
+  const account = useStudentAccount(record);
   // Gộp trùng dùng quyền Duyệt (R-CRM-25); bản đã gộp chỉ đọc.
   const canMerge = access.can('STUDENT', 'DUYET') && !merged;
   const [mergeOpen, setMergeOpen] = useState(false);
@@ -221,12 +233,7 @@ function StudentView({ record }: { record: StudentRecord }) {
               onSelect: () => undefined,
               unavailable: 'Ticket chăm sóc làm sau',
             },
-            {
-              kind: 'action',
-              label: 'Cấp tài khoản',
-              onSelect: () => undefined,
-              unavailable: 'Tài khoản học tập chưa bật',
-            },
+            ...account.menuItems,
           ],
         }}
         smart={[
@@ -253,6 +260,38 @@ function StudentView({ record }: { record: StudentRecord }) {
             count: record.counts.tests,
             hidden: !access.can('STUDENT_TEST', 'XEM'),
             onOpen: () => setTab('exam'),
+          },
+          {
+            key: 'ticket-mo',
+            label: 'Ticket mở',
+            icon: 'results',
+            count: openTickets ?? 0,
+            hidden: openTickets === undefined,
+            onOpen: () => {
+              setTicketType(undefined);
+              setTab('tickets');
+            },
+          },
+          {
+            key: 'khieu-nai',
+            label: 'Khiếu nại',
+            icon: 'results',
+            count: complaints ?? 0,
+            hidden: complaints === undefined,
+            onOpen: () => {
+              setTicketType('KN');
+              setTab('tickets');
+            },
+          },
+          {
+            key: 'phu-huynh',
+            label: 'Phụ huynh',
+            icon: 'training',
+            count: record.parent ? 1 : 0,
+            hidden: !record.parent || !access.can('PARENT', 'XEM'),
+            onOpen: () => {
+              if (record.parent) void navigate(parentPath(record.parent.id));
+            },
           },
         ]}
         aside={
@@ -292,14 +331,8 @@ function StudentView({ record }: { record: StudentRecord }) {
             { key: 'study', label: 'Học tập' },
             { key: 'attendance', label: 'Điểm danh' },
             { key: 'exam', label: 'Điểm kiểm tra' },
-            { key: 'care', label: 'Chăm sóc', note: 'Chưa có dữ liệu (chăm sóc làm sau)' },
-            access.can('TICKET', 'XEM')
-              ? { key: 'tickets', label: 'Đề nghị & khiếu nại' }
-              : {
-                  key: 'tickets',
-                  label: 'Đề nghị & khiếu nại',
-                  note: 'Bạn không có quyền xem ticket',
-                },
+            { key: 'care', label: 'Chăm sóc' },
+            { key: 'tickets', label: 'Đề nghị & khiếu nại' },
           ]}
         />
         {tab === 'overview' && (
@@ -442,103 +475,20 @@ function StudentView({ record }: { record: StudentRecord }) {
             />
           </DetailSection>
         )}
-        {tab === 'study' &&
-          (record.enrollments.length === 0 ? (
-            <p className="py-2 text-fg-muted">Chưa có ghi danh.</p>
-          ) : (
-            <ul className="flex flex-col divide-y divide-border">
-              {record.enrollments.map((e) => (
-                <li key={e.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                  <span>
-                    <span className="font-medium">{e.code}</span>{' '}
-                    <span className="text-fg-muted">{e.subject_name ?? e.subject_code}</span>
-                  </span>
-                  <span className="text-caption text-fg-muted">
-                    {e.status_name ?? e.status_code}
-                    {e.class_id && e.class_code ? (
-                      <>
-                        {' · '}
-                        <Link className="text-link hover:underline" to={`/crm/lop/${e.class_id}`}>
-                          {e.class_code}
-                        </Link>
-                      </>
-                    ) : (
-                      ' · chưa xếp lớp'
-                    )}
-                    {` · còn ${e.hours_left} giờ`}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ))}
-        {tab === 'attendance' && (
-          <div className="flex flex-col gap-2">
-            <p className="text-fg-muted">
-              {summary.length === 0
-                ? 'Chưa có điểm danh.'
-                : summary.map(([k, n]) => `${ATTENDANCE_LABEL[k] ?? k}: ${n}`).join(' · ')}
-            </p>
-            <ul className="flex flex-col divide-y divide-border">
-              {record.attendance.map((a, i) => (
-                <li key={i} className="flex flex-wrap justify-between gap-2 py-1.5">
-                  <span>
-                    {formatDate(a.session_date)} {a.start_time.slice(0, 5)} · {a.class_code}
-                  </span>
-                  <span className="text-caption text-fg-muted">
-                    {ATTENDANCE_LABEL[a.status ?? 'CHUA'] ?? a.status}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {tab === 'tickets' && <CustTickets owner={{ key: 'student_id', id: record.id }} />}
-        {tab === 'exam' && (
-          <div className="flex flex-col gap-3">
-            <DetailSection title="Điểm kiểm tra trong lớp">
-              {record.exam_scores.length === 0 ? (
-                <p className="py-2 text-fg-muted">Chưa có điểm kiểm tra.</p>
-              ) : (
-                <ul className="flex flex-col divide-y divide-border">
-                  {record.exam_scores.map((x, i) => (
-                    <li key={i} className="flex flex-wrap justify-between gap-2 py-1.5">
-                      <span>
-                        {formatDate(x.session_date)} · {x.class_code}
-                      </span>
-                      <span className="tabular font-medium">
-                        {x.total_score ?? '—'}
-                        {x.max_score ? ` / ${x.max_score}` : ''}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </DetailSection>
-            <DetailSection title="Phiếu kiểm tra đầu vào">
-              {record.tests.length === 0 ? (
-                <p className="py-2 text-fg-muted">Chưa có phiếu kiểm tra.</p>
-              ) : (
-                <ul className="flex flex-col divide-y divide-border">
-                  {record.tests.map((t) => (
-                    <li key={t.id} className="flex flex-wrap justify-between gap-2 py-1.5">
-                      <Link
-                        to={`/crm/phieu-kiem-tra/${t.id}`}
-                        className="font-medium text-link hover:underline"
-                      >
-                        {t.code}
-                      </Link>
-                      <span className="text-caption text-fg-muted">
-                        {t.scheduled_at ? formatDate(t.scheduled_at) : '—'}
-                        {t.score !== null ? ` · điểm ${t.score}` : ''}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </DetailSection>
-          </div>
+        {tab === 'overview' && account.section}
+        {tab === 'study' && <StudentStudyTab record={record} />}
+        {tab === 'attendance' && <StudentAttendanceTab record={record} />}
+        {tab === 'exam' && <StudentExamTab record={record} />}
+        {tab === 'care' && <StudentCareTab />}
+        {tab === 'tickets' && (
+          <CustTickets
+            owner={{ key: 'student_id', id: record.id }}
+            ticketType={ticketType}
+            onTypeChange={setTicketType}
+          />
         )}
       </RecordDetail>
+      {account.dialogs}
       {canMerge && (
         <MergeDialog
           open={mergeOpen}

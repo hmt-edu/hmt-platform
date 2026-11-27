@@ -175,7 +175,7 @@ export function OrderListPage() {
       rowLabel={(r) => `${r.code} ${r.parent_name}`}
       loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
-      forbidden={listForbiddenOf(activeQuery.error, 'đơn hàng', 'Bán hàng và thu chi')}
+      forbidden={listForbiddenOf(activeQuery.error, 'đơn hàng', 'Bán hàng')}
       onRetry={() => void activeQuery.refetch()}
       groupTree={grouped ? grouping?.tree : undefined}
       onGroupToggle={(key, open) => {

@@ -4,13 +4,13 @@
 // R-V2-11 (anh chốt 06/11, A4): vượt trần chiết khấu chỉ CẢNH BÁO, không có ô tích đồng ý; nhật ký ghi người duyệt và tổng % lúc duyệt.
 import { useState } from 'react';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
-import { formatMoney } from '../../lib/format';
+import { formatMoney, formatNumber } from '../../lib/format';
 import { Button } from '../../ui/Button';
 import { Alert } from '../../ui/Feedback';
 import { Dialog } from '../../ui/Overlays';
 import { ReasonDialog } from '../../ui/Dialogs';
 import { useLeadCatalogs } from '../lead/useCatalogs';
-import { capPercentText, overCapLines } from './orderApprove';
+import { capPercentText, overCapLines, percentText } from './orderApprove';
 import { editedNoteText } from './orderEventEntries';
 import { editedFromQuotationNote } from './orderRecord';
 import type { OrderRecord } from './orderTypes';
@@ -96,7 +96,7 @@ export function ApproveOrderDialog({ record, open, onOpenChange, onDone, onRejec
           </Alert>
         )}
         {over.length > 0 && (
-          <Alert tone="warning" title={`Chiết khấu vượt trần ${capPercentText(cap)}.`}>
+          <Alert tone="warning" title={`Ưu đãi vượt trần ${capPercentText(cap)}.`}>
             {over.map((l) => (
               <span key={l.line_no} className="block">
                 {`Dòng ${l.line_no}${l.student_name ? ` (${l.student_name})` : ''}: cộng dồn ${l.total_percent_text}% so với trần ${capPercentText(cap)}.`}
@@ -135,7 +135,7 @@ export function ApproveOrderDialog({ record, open, onOpenChange, onDone, onRejec
               <span className="tabular text-right">
                 <span className="block">{formatMoney(l.line_total)}</span>
                 <span className="block text-caption text-fg-muted">
-                  {`Giờ ${l.quantity} + ${l.gifted_quantity} · giảm ${l.discount_percent + l.gift_percent}%`}
+                  {`Giờ ${formatNumber(l.quantity)} + ${formatNumber(l.gifted_quantity)} · ưu đãi ${percentText(l.discount_percent + l.gift_percent)}%`}
                 </span>
               </span>
             </li>

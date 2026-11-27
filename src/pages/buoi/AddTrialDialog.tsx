@@ -116,7 +116,7 @@ function Body({ sessionId, onClose }: { sessionId: string; onClose: () => void }
             onChange={setStudentRow}
             options={(students.data ?? []).map((s) => ({
               value: s.id,
-              label: s.full_name ?? `Em ${s.position}`,
+              label: s.full_name ?? `Học sinh ${s.position}`,
             }))}
             placeholder={students.isPending ? 'Đang tải…' : 'Chọn học sinh'}
           />

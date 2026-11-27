@@ -111,7 +111,7 @@ export function StudentAccountPage() {
         failed > 0
           ? {
               tone: 'warning',
-              title: `Đã cấp ${ok.length}/${results.length} em; ${failed} em lỗi (xem cột Lỗi trong file vừa tải). File chứa mật khẩu tạm, chỉ có một lần này.`,
+              title: `Đã cấp ${ok.length}/${results.length} học sinh; ${failed} học sinh lỗi (xem cột Lỗi trong file vừa tải). File chứa mật khẩu tạm, chỉ có một lần này.`,
             }
           : {
               title: `Đã cấp ${ok.length} tài khoản. File vừa tải chứa mật khẩu tạm, chỉ có một lần này.`,
@@ -166,7 +166,7 @@ export function StudentAccountPage() {
         onSortChange={() => undefined}
         emptyMessage={{
           title: 'Chưa có học sinh',
-          hint: 'Không có học sinh nào trong bộ lọc này. Hồ sơ học sinh tự sinh khi có phiếu kiểm tra đầu vào hoặc đơn được duyệt.',
+          hint: 'Không có học sinh nào trong bộ lọc này. Hồ sơ học sinh tự sinh khi có phiếu Test hoặc đơn được duyệt.',
         }}
       />
       <ActionConfirmDialog
@@ -174,7 +174,7 @@ export function StudentAccountPage() {
         onOpenChange={(open) => !open && setIssuing(null)}
         name={issuing ? `${issuing.student_code} ${issuing.full_name}` : ''}
         title="Cấp tài khoản học sinh"
-        description="Tên đăng nhập là mã HS. Hệ thống sinh mật khẩu tạm, hiện một lần; em đổi mật khẩu ở lần đăng nhập đầu."
+        description="Tên đăng nhập là mã HS. Hệ thống sinh mật khẩu tạm, hiện một lần; học sinh đổi mật khẩu ở lần đăng nhập đầu."
         confirmLabel="Cấp tài khoản"
         onConfirm={async () => {
           const password = await issueStudentAccount(supabase, issuing?.student_code ?? '');
@@ -187,7 +187,7 @@ export function StudentAccountPage() {
         onOpenChange={(open) => !open && setIssuingMany(null)}
         name={`${issuingMany?.length ?? 0} học sinh chưa có tài khoản`}
         title="Cấp tài khoản hàng loạt"
-        description="Mỗi em một tài khoản, tên đăng nhập là mã HS. Mật khẩu tạm của cả đợt nằm trong một file tải về, chỉ có một lần; hệ thống không lưu."
+        description="Mỗi học sinh một tài khoản, tên đăng nhập là mã HS. Mật khẩu tạm của cả đợt nằm trong một file tải về, chỉ có một lần; hệ thống không lưu."
         confirmLabel="Cấp và tải file"
         onConfirm={() => issueMany(issuingMany ?? [])}
         onDone={() => undefined}
@@ -197,7 +197,7 @@ export function StudentAccountPage() {
         onOpenChange={(open) => !open && setResetting(null)}
         name={resetting ? `${resetting.student_code} ${resetting.full_name}` : ''}
         title="Đặt lại mật khẩu"
-        description="Hệ thống sinh mật khẩu tạm mới, hiện một lần; mật khẩu cũ hết hiệu lực và em bị đăng xuất khỏi mọi thiết bị."
+        description="Hệ thống sinh mật khẩu tạm mới, hiện một lần; mật khẩu cũ hết hiệu lực và học sinh bị đăng xuất khỏi mọi thiết bị."
         confirmLabel="Đặt lại mật khẩu"
         onConfirm={async () => {
           const password = await resetUserPassword(supabase, resetting?.user_id ?? '');
@@ -217,7 +217,7 @@ export function StudentAccountPage() {
         onOpenChange={(open) => !open && setUnlocking(null)}
         name={unlocking?.full_name ?? ''}
         title="Mở khoá tài khoản"
-        description="Em đăng nhập lại được bằng mật khẩu hiện có."
+        description="Học sinh đăng nhập lại được bằng mật khẩu hiện có."
         confirmLabel="Mở khoá"
         onConfirm={() => unlockUser(supabase, unlocking?.user_id ?? '')}
         onDone={() => done(`Đã mở khoá tài khoản của ${unlocking?.full_name ?? 'học sinh'}.`)}

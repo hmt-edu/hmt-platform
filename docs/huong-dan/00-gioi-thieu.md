@@ -40,7 +40,7 @@ Phần này để bạn hiểu vì sao hệ thống hành xử như vậy, khôn
 
 1. **Chỉ thêm, không sửa lịch sử.** Sổ giờ, phiếu thu, nhật ký thao tác là dạng chỉ thêm dòng mới. Làm sai thì tạo dòng điều chỉnh hoặc đảo khoản, có lý do; dòng cũ vẫn còn để tra.
 2. **Không xoá, chỉ đổi trạng thái.** Huỷ, ngừng, đóng đều là đổi trạng thái. Hồ sơ vẫn xem lại được.
-3. **Bản ghi chụp lại số lúc tạo.** Báo giá, đơn hàng, phiếu hoàn giữ nguyên giá, số giờ, chiết khấu tại lúc tạo. Sau này bảng giá hay tham số đổi thì bản ghi cũ **không** bị tính lại.
+3. **Bản ghi chụp lại số lúc tạo.** Báo giá, đơn hàng, phiếu hoàn giữ nguyên giá, số giờ, ưu đãi tại lúc tạo. Sau này bảng giá hay tham số đổi thì bản ghi cũ **không** bị tính lại.
 
 Mọi con số nghiệp vụ như hạn mức, phí xử lý, số ngày nhắc đều là **tham số cấu hình**, người quản trị đổi trong «Cài đặt tham số» và có nhật ký. Mỗi cơ sở có thể có giá trị riêng.
 
@@ -49,7 +49,7 @@ Mọi con số nghiệp vụ như hạn mức, phí xử lý, số ngày nhắc 
 Đây là sợi dây chính, từ người hỏi thăm đến buổi học:
 
 ```
-Lead  →  Cơ hội  →  (Phiếu kiểm tra đầu vào)  →  Báo giá  →  Đơn hàng  →  Phiếu thu
+Lead  →  Cơ hội  →  (Phiếu Test)  →  Báo giá  →  Đơn hàng  →  Phiếu thu
                                                                               │
                                                                               ▼
                               Buổi học  ←  Lớp  ←  Xếp lớp  ←  Ghi danh (quỹ giờ)  ←  Học sinh
@@ -57,13 +57,13 @@ Lead  →  Cơ hội  →  (Phiếu kiểm tra đầu vào)  →  Báo giá  →
 
 - **Lead:** một lượt khách quan tâm (gọi, để lại số, đăng ký). Có nguồn, giai đoạn, người phụ trách. Hệ thống cảnh báo khi số điện thoại trùng với lead hay phụ huynh đã có.
 - **Cơ hội:** lead đã đủ nghiêm túc để tư vấn. Đi qua các giai đoạn chỉ tiến về phía trước. Từ giai đoạn gần chốt phải có tên và năm sinh học sinh.
-- **Phiếu kiểm tra đầu vào:** xếp lịch, giáo viên chấm, kết quả dùng để tư vấn lớp phù hợp.
-- **Báo giá → Đơn hàng:** báo giá chọn gói, số giờ, chiết khấu; chuyển thành đơn khi phụ huynh đồng ý, chọn lớp và ngày vào học. Đơn qua bước **duyệt** của quản lý cơ sở.
+- **Phiếu Test:** xếp lịch, giáo viên chấm, kết quả dùng để tư vấn lớp phù hợp.
+- **Báo giá → Đơn hàng:** báo giá chọn gói, số giờ, ưu đãi; chuyển thành đơn khi phụ huynh đồng ý, chọn lớp và ngày vào học. Đơn qua bước **duyệt** của quản lý cơ sở.
 - **Phiếu thu:** tiền thu về cho đơn, có thể nhiều đợt. Kế toán duyệt. Duyệt xong mới có giờ học.
-- **Học sinh và phụ huynh:** hồ sơ khách hàng. Một phụ huynh có thể có nhiều em; một em có thể có nhiều ghi danh.
-- **Ghi danh:** gắn một em với một môn/gói đã mua, mang theo **quỹ giờ** (giờ được cấp, đã dùng, còn lại, giờ tặng). Mọi cộng trừ giờ nằm trong **sổ giờ** của ghi danh. Ghi danh có các tình trạng như Chờ xếp lớp, Đã xếp lớp, Đang học, Bảo lưu, Hoàn thành, Chuyển lớp, Dừng, Hoàn phí.
+- **Học sinh và phụ huynh:** hồ sơ khách hàng. Một phụ huynh có thể có nhiều học sinh; một học sinh có thể có nhiều ghi danh.
+- **Ghi danh:** gắn một học sinh với một môn/gói đã mua, mang theo **quỹ giờ** (giờ được cấp, đã dùng, còn lại, giờ tặng). Mọi cộng trừ giờ nằm trong **sổ giờ** của ghi danh. Ghi danh có các tình trạng như Chờ xếp lớp, Đã xếp lớp, Đang học, Bảo lưu, Hoàn thành, Chuyển lớp, Dừng, Hoàn phí.
 - **Lớp:** có giáo viên, thời khoá biểu, phòng, sĩ số. Lớp mới đi qua các bước nháp, trình, xác nhận, duyệt.
-- **Buổi học:** sinh tự động theo thời khoá biểu của lớp. Giáo viên điểm danh, ghi nội dung, giao bài, nhận xét. Khi buổi hoàn tất, hệ thống **tự trừ giờ** của từng em có mặt. Vắng, học bù, huỷ buổi, dời buổi đều có luật riêng.
+- **Buổi học:** sinh tự động theo thời khoá biểu của lớp. Giáo viên điểm danh, ghi nội dung, giao bài, nhận xét. Khi buổi hoàn tất, hệ thống **tự trừ giờ** của từng học sinh có mặt. Vắng, học bù, huỷ buổi, dời buổi đều có luật riêng.
 - **Ticket và phiếu nghiệp vụ (chăm sóc sau bán):** mọi yêu cầu sau khi đã học (khiếu nại, bảo lưu, chuyển lớp, chuyển cơ sở, dừng học, hoàn học phí, chuyển phí, đổi lịch, cập nhật hồ sơ) bắt đầu bằng một **ticket**. Việc cần duyệt hoặc làm thật tách thành **phiếu nghiệp vụ** gắn với ticket, có hai cấp duyệt khi liên quan tiền.
 - **Phiếu tái tục:** tự sinh khi ghi danh sắp hết giờ hoặc sắp hết hạn, để CSKH và sale gọi tư vấn mua tiếp.
 
@@ -71,7 +71,7 @@ Mã của từng bản ghi (lead, cơ hội, đơn, phiếu thu, ghi danh, lớp
 
 ## 5. Từng phân hệ dùng để làm gì
 
-**Tuyển sinh.** Quản lý lead và cơ hội trên danh sách hoặc bảng kéo theo giai đoạn; nhập lead từ tệp; giao người phụ trách; gộp lead hoặc cơ hội trùng; lịch hẹn gọi, gặp, nhắn của từng người (quá hạn, hôm nay, sắp tới); phiếu kiểm tra đầu vào. Người làm chính: sale, CSKH.
+**Tuyển sinh.** Quản lý lead và cơ hội trên danh sách hoặc bảng kéo theo giai đoạn; nhập lead từ tệp; giao người phụ trách; gộp lead hoặc cơ hội trùng; lịch hẹn gọi, gặp, nhắn của từng người (quá hạn, hôm nay, sắp tới); phiếu Test. Người làm chính: sale, CSKH.
 
 **Bán hàng.** Báo giá, gửi báo giá, chuyển thành đơn hàng, trình và duyệt đơn. Có thể cho học trước, đóng tiền sau nếu quản lý cơ sở bật trên đơn đã duyệt. Người làm chính: sale, quản lý cơ sở.
 
@@ -83,7 +83,7 @@ Mã của từng bản ghi (lead, cơ hội, đơn, phiếu thu, ghi danh, lớp
 
 **Chăm sóc khách hàng.** Ticket và phiếu nghiệp vụ cho khiếu nại, bảo lưu, chuyển lớp, chuyển cơ sở, dừng học, hoàn học phí, chuyển phí, đổi lịch, cập nhật hồ sơ. Có hạn xử lý theo loại, bảng việc cần duyệt, hàng nhận xét chờ gửi phụ huynh. Người làm chính: CSKH, quản lý cơ sở, kế toán.
 
-**Cổng giáo viên.** Hôm nay dạy gì, điểm danh, nội dung buổi và giao bài, chấm từng em theo mẫu nhận xét, chấm bài tập, hoàn tất buổi, xem căn cứ tính lương. Làm gọn cho điện thoại.
+**Cổng giáo viên.** Hôm nay dạy gì, điểm danh, nội dung buổi và giao bài, chấm từng học sinh theo mẫu nhận xét, chấm bài tập, hoàn tất buổi, xem căn cứ tính lương. Làm gọn cho điện thoại.
 
 **Học tập và phụ huynh.** Học sinh nhận và nộp bài, xem điểm và nhận xét; phụ huynh xem kết quả của con. (Giai đoạn sau; xem tiến độ mới nhất để biết phần nào đã mở.)
 
@@ -109,7 +109,7 @@ Mỗi tính năng lớn có **công tắc theo cơ sở**; phân hệ chưa bậ
 - **Từ khách hỏi đến học:** lead, gọi và hẹn, cơ hội, kiểm tra đầu vào, báo giá, đơn, duyệt, phiếu thu, kế toán duyệt, ghi danh, xếp lớp, học.
 - **Đóng tiền nhiều đợt:** đợt đầu cấp giờ theo tỉ lệ; đủ tiền mới cấp thêm và giờ tặng. Thu nhầm thì đảo khoản, không sửa.
 - **Mở lớp đến buổi đầu:** tạo lớp nháp, thời khoá biểu, trình, duyệt, buổi tự sinh, xếp học sinh, tự chốt danh sách.
-- **Một buổi học:** vận hành nhắc, giáo viên điểm danh, ghi nội dung và giao bài, chấm từng em, hoàn tất; buổi chuyển Done và trừ giờ.
+- **Một buổi học:** vận hành nhắc, giáo viên điểm danh, ghi nội dung và giao bài, chấm từng học sinh, hoàn tất; buổi chuyển Done và trừ giờ.
 - **Huỷ, dời, bù:** trung tâm huỷ hay dời buổi; học sinh xin học bù thì quản lý duyệt.
 - **Tái tục:** phiếu tự sinh, CSKH gọi tư vấn, báo giá hay đơn mới, thu tiền.
 - **Bảo lưu, chuyển lớp, dừng học:** ticket, duyệt, thực hiện; tiền còn lại có thể hoàn hoặc giữ làm số dư.

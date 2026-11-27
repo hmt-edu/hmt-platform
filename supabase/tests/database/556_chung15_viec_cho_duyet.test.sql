@@ -109,11 +109,11 @@ select is(pg_temp.kinds(pg_temp.items()), 'HOAN_PHI,PHIEU_NGHIEP_VU,PHIEU_THU', 
 select is((pg_temp.items('{"kind": "PHIEU_THU"}') -> 'rows' -> 0 ->> 'code'), 'PT556B', 'CHUNG-15: Kế toán chỉ thấy phiếu thu đã qua cấp quản lý');
 reset role;
 
--- ---- Admin: không duyệt tiền (R-HT-01) ----
+-- ---- Admin: duyệt được cả việc tiền (R-HT-01, 26/11) ----
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 set local role authenticated;
-select ok(pg_temp.kinds(pg_temp.items()) not like '%PHIEU_THU%', 'CHUNG-15: Admin không thấy phiếu thu (R-HT-01: không duyệt tiền, chỉ chuyển người duyệt)');
-select is((pg_temp.items('{"kind": "HOAN_PHI"}') ->> 'total')::int, 1, 'CHUNG-15: Admin chỉ thấy hoàn phí cấp quản lý, không thấy cấp Kế toán (như hàm duyệt)');
+select ok(pg_temp.kinds(pg_temp.items()) like '%PHIEU_THU%', 'CHUNG-15: Admin thấy phiếu thu chờ duyệt (R-HT-01, 26/11)');
+select is((pg_temp.items('{"kind": "HOAN_PHI"}') ->> 'total')::int, 2, 'CHUNG-15: Admin thấy hoàn phí cả cấp quản lý và cấp Kế toán (như hàm duyệt)');
 select ok(pg_temp.kinds(pg_temp.items()) like '%DON_HANG%' and pg_temp.kinds(pg_temp.items()) like '%LOP%', 'CHUNG-15: Admin duyệt thay đơn và thấy lớp');
 select is((pg_temp.items('{"branch_id": null}') ->> 'total')::int > 0, true, 'CHUNG-15: Admin thấy việc nhiều cơ sở');
 select is((pg_temp.items(jsonb_build_object('branch_id', (select id from app.branch where code = 'CS2'))) ->> 'total')::int, 1, 'CHUNG-15: lọc cơ sở CS2');

@@ -28,7 +28,7 @@ import { UNIT_LABEL } from './quoteRecord';
 import type { DiscountPolicy, GiftPolicy, OppStudent, SellablePackage } from './useQuoteData';
 
 function studentLabel(s: OppStudent): string {
-  const name = s.full_name ?? `Em thứ ${String(s.position)}`;
+  const name = s.full_name ?? `Học sinh thứ ${String(s.position)}`;
   return s.birth_year ? `${name} · ${String(s.birth_year)}` : name;
 }
 
@@ -204,7 +204,7 @@ export function QuoteLineGrid({
           size="sm"
           icon="plus"
           disabled={disabled}
-          aria-label={layout === 'tao' ? `Thêm chiết khấu dòng ${String(index + 1)}` : undefined}
+          aria-label={layout === 'tao' ? `Thêm ưu đãi dòng ${String(index + 1)}` : undefined}
           onClick={() => setPolicyFor(row.key)}
         >
           {layout === 'tao' ? 'Thêm' : 'Chính sách'}
@@ -245,7 +245,7 @@ export function QuoteLineGrid({
             label={`Học sinh dòng ${String(index + 1)}`}
             value={row.studentId}
             onChange={(v) => update(row.key, { studentId: v })}
-            placeholder="Chọn em…"
+            placeholder="Chọn học sinh…"
             options={students.map((s) => ({ value: s.id, label: studentLabel(s) }))}
             disabled={disabled}
             requiredEmpty={row.studentId === ''}
@@ -391,12 +391,12 @@ export function QuoteLineGrid({
     layout === 'tao'
       ? {
           key: 'discount',
-          header: 'Chiết khấu',
+          header: 'Ưu đãi',
           cell: (row, index) => discountCell(row, index),
         }
       : {
           key: 'discount',
-          header: 'Loại chiết khấu',
+          header: 'Loại ưu đãi',
           cell: (row, index) => discountCell(row, index),
         },
     ...(layout === 'tao'
@@ -468,9 +468,9 @@ export function QuoteLineGrid({
   return (
     <div className="flex flex-col gap-2">
       <p className="text-caption text-fg-muted">
-        Chưa thấy em?{' '}
+        Chưa thấy học sinh?{' '}
         <Link to={opportunityHref} className="font-medium text-link hover:underline">
-          Thêm em ở cơ hội.
+          Thêm học sinh ở cơ hội.
         </Link>
       </p>
       <LineTable<EditRow>
@@ -505,7 +505,7 @@ export function QuoteLineGrid({
             <div className="flex flex-col gap-0.5">
               {needsStudent && (
                 <p className="text-fg-muted">
-                  {gift ? 'Chọn em để thêm quà' : 'Chọn em để xem giá'}
+                  {gift ? 'Chọn học sinh để thêm quà' : 'Chọn học sinh để xem giá'}
                 </p>
               )}
               {calcError && (
@@ -515,7 +515,7 @@ export function QuoteLineGrid({
               )}
               {gift && (
                 <p className="text-fg-muted">
-                  {`Quà tặng: không tính vào trần chiết khấu${cap_ === null ? '' : ` ${String(cap_)}%`}, không có chiết khấu.`}
+                  {`Quà tặng: không tính vào trần ưu đãi${cap_ === null ? '' : ` ${String(cap_)}%`}, không giảm thêm.`}
                 </p>
               )}
               {issue && (

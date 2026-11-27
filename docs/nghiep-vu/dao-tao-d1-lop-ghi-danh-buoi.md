@@ -133,7 +133,7 @@ Luật: R-LOP-01, R-LOP-05, R-LOP-08, R-LOP-14, R-LOP-15. Chỉ đọc; ghi vẫ
 | Hàm                                                  | Việc                                                                                                                                  |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
 | `list_classes(bộ lọc, sắp xếp, limit, offset)`       | LOP-01: lọc tình trạng duyệt, vận hành, cơ sở, môn, khối, phân loại; tìm theo mã lớp hoặc mã cũ; sĩ số, chỗ còn lại, lịch học, giáo viên |
-| `get_class_record(lớp)`                              | LOP-02: thông tin, khung giờ, học sinh đang xếp (không số điện thoại), đếm buổi, 100 buổi, cảnh báo trùng, 20 sự kiện gần nhất         |
+| `get_class_record(lớp)`                              | LOP-02: thông tin, khung giờ, học sinh đang xếp (không số điện thoại), đếm buổi, 100 buổi, cảnh báo trùng, 20 sự kiện gần nhất; sự kiện kèm tên người làm (mig 689) |
 | `week_sessions(cơ sở, từ ngày, đến ngày)`            | LOP-08: buổi trong tối đa 14 ngày, cờ trùng phòng, trùng giáo viên ở cấp buổi thật (chỉ cảnh báo)                                      |
 | `list_class_form_options(cơ sở)`                     | LOP-03: giáo viên, trợ giảng, CSKH, phòng, nhóm lớp của cơ sở                                                                         |
 
@@ -216,9 +216,40 @@ Chưa làm: sửa điểm sau Done (qua ticket, chỉ quản lý đào tạo), �
 - Kiểm thử: pgTAP `574_lop02_03_hinh_thuc_hoc_xem_truoc.test.sql`; Vitest `classForm.test.ts`, `enrollLogic.test.ts`; e2e `lop.spec.ts`.
 
 - **R-LOP-14 kiểm môn theo khối (migration 589)**: `create_class` chặn khi tham số `class_subject_grade_check_enabled` bật: khối từ `algebra_geometry_split_grade` trở lên không tạo lớp chung `TOAN`, khối dưới không tạo `DAI`, `HINH`, lớp riêng `LR` được miễn; lỗi `HMT_LOP_MON_SAI_KHOI`. Mặc định TẮT, Admin bật khi go-live. Kiểm thử pgTAP `589_rlop14_kiem_mon_theo_khoi.test.sql`.
+- **R-LOP-07 khung chương trình khi trình lớp (migration 689)**: `transition_class` gọi `assert_class_curriculum` khi trình; tham số `class_curriculum_required_enabled` bật thì lớp chung chưa có khung không trình được (`HMT_LOP_THIEU_KHUNG_CHUONG_TRINH`), lớp riêng `LR` được miễn, lưu nháp không bị chặn. Mặc định TẮT, Admin bật khi go-live. Khi bật, nạp lớp từ Sheet và dữ liệu mẫu không có khung cũng bị chặn. Kiểm thử pgTAP `689_rlop07_khung_bat_buoc_khi_trinh.test.sql`.
 
 **Nhãn buổi học bù, bổ trợ (A-23-18, G18, migration 630).** `app.renumber_class_sessions` chỉ đánh «Buổi N» cho buổi mà `app.session_type_numbered(loại)` trả đúng (mọi loại trừ HOC_BU, BO_TRO; củng cố, kiểm tra vẫn chiếm số). Buổi bù, bổ trợ có `session_no` null, giao diện hiện tên loại buổi (danh mục SESSION_TYPE). `session_cancel_preview` và `generate_class_sessions` dùng chung quy tắc này. Trừ giờ, chốt tháng, sổ giờ không dùng `session_no`.
 
 **Done ngay khi giáo viên lưu bước cuối (A-23-12, migration 624, QĐ-Đ294).** `app.complete_session_if_ready(buổi)` (nội bộ, không ai gọi trực tiếp) được `set_attendance_teacher`, `save_session_content`, `save_review_grading`, `save_homework_grading`, `save_exam_grading` gọi ở cuối: khoá buổi; Đã chốt và `session_pending_reason` trống thì gọi `mark_session_done` (trừ giờ một lần, đóng dấu Đúng/Trễ hạn). Chưa đủ, chưa hết giờ hoặc đã Done thì không làm gì. Lỗi (vd. `HMT_QUY_GIO_AM`) được bắt: lưu của giáo viên vẫn thành công, buổi giữ Đã chốt, lỗi ghi `app.session_auto_done_error`. Lịch tự Done vẫn chạy cho buổi còn lại.
 
 **LOP-09 một dòng mỗi em (A-23-13, migration 624).** `app.list_class_students` và `app.class_student_group_counts` chỉ giữ một dòng đang học mỗi em trong lớp (ghi danh cũ nhất); `hours_left` là tổng giờ còn của các ghi danh còn hiệu lực của em trong lớp. Trừ giờ buổi: `build_session_roster` chọn ghi danh cũ nhất đủ giờ cho cả buổi (R-GIO-04).
+
+## Hai cột điểm danh (migration 685, DD1 phần 1, anh Trường duyệt 26/11)
+
+Luật: R-DD-02 đến R-DD-05.
+
+| Hàm | Thay đổi |
+| --- | --- |
+| `set_attendance_teacher` | Lưu ô giáo viên thì chép sang ô vận hành khi ô đó trống hoặc còn là ô chép (`ops_source = 'GIAO_VIEN'`); giáo viên bỏ trống thì ô chép trống theo. Ô vận hành tự ghi không bị đè |
+| `set_attendance_ops` | Mỗi dòng chỉ ghi khoá được gửi (`status_code`, `contact_reason_code`, `note`). Trạng thái khác giá trị đang có thì thành ô vận hành tự ghi (`ops_source = 'VAN_HANH'`, kèm người và giờ) |
+| `write_attendance_ops` | Nội bộ: ghi một dòng phía vận hành |
+| `upsale_candidates`, `get_upsale_ticket`, view `report.class_attendance` | Số buổi vắng, chuyên cần chỉ đọc cột giáo viên |
+
+`absent_today_list` và `absent_today_group_counts` (gọi nhắc trong ngày) vẫn đọc cả cột vận hành. Buổi giáo viên đã ghi trước migration này không được chép bù. Điều kiện Done mới (khớp hai cột, Done tay) thuộc phần 2.
+
+## Điều kiện Done, Done tay, Done hàng loạt, nhập thay (C-26-05 PR-DD2, migration 686–688)
+
+Luật R-GIO-06, 07, 09, 11, 12; R-GV-05. Sổ giờ (`deduct_session_hours`) không đổi.
+
+| Hàm | Ai gọi | Làm gì |
+|---|---|---|
+| `finish_session(buổi)` | Điểm danh · Sửa theo phạm vi (giáo viên, trợ giảng của buổi; vận hành, quản lý cơ sở, Admin) | Done tay. Đủ điều kiện thì Done; chưa đủ thì trả `{done:false, missing:[…]}` |
+| `bulk_finish_sessions(buổi[], lý do)` | Điểm danh · Duyệt ở cơ sở của từng buổi | Done hàng loạt; trả `{done, skipped:[{session_id, class_code, session_no, reason}]}`. Số buổi tối đa: tham số `session_bulk_done_max` |
+| `enter_for_teacher(buổi, loại, dữ liệu, lý do)` | Điểm danh · Duyệt | Nhập thay `DIEM_DANH`, `NHAN_XET`, `DIEM`, `BTVN` khi buổi chưa Done; ghi `session_proxy_entry` |
+| `session_done_info(buổi)` | Buổi · Xem phía vận hành (như `session_record`) | Cho BUOI-02 (mig 692): cách hoàn tất, người bấm, lý do, cờ Thiếu nhận xét, điều còn thiếu, các lượt nhập thay (mig 698: chỉ người có Điểm danh · Duyệt thấy) |
+
+- Điều kiện Done thêm: ô vận hành bằng ô giáo viên ở mọi dòng. `session_pending_reason` trả **mọi** điều còn thiếu, nối bằng dấu cách. Vận hành sửa cho khớp thì Done ngay.
+- Dấu Đúng hạn hoặc Trễ hạn đóng khi phần giáo viên đủ (`stamp_teacher_completion`), không chờ khớp; đóng một lần.
+- `class_session`: `done_mode` (`TU_DONG`, `TAY`, `HANG_LOAT`), `done_by`, `done_reason`, `done_missing_review` (cờ Thiếu nhận xét).
+- Người không phải giáo viên, trợ giảng của buổi không gọi thẳng được hàm ghi điểm danh, nhận xét, điểm, chấm BTVN (`HMT_CAN_NHAP_THAY`).
+- Nội bộ: `session_teacher_missing`, `session_review_missing`, `session_missing`, `apply_session_done`, `bulk_finish_one`, `assert_bulk_finish_input`, `assert_teacher_or_proxy`, `apply_proxy_entry`.

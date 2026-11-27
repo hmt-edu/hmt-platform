@@ -127,8 +127,8 @@ function Form({
         </Alert>
       )}
       <h2 className="text-body font-semibold">Buổi học bổ trợ</h2>
-      <fieldset className="flex flex-col gap-1" aria-label="Em yếu cần bổ trợ">
-        <legend className="text-body font-semibold">Em yếu cần bổ trợ *</legend>
+      <fieldset className="flex flex-col gap-1" aria-label="Học sinh yếu cần bổ trợ">
+        <legend className="text-body font-semibold">Học sinh yếu cần bổ trợ *</legend>
         {students.length === 0 ? (
           <p className="text-body text-fg-muted">Lớp chưa có học sinh.</p>
         ) : (

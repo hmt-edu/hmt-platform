@@ -79,7 +79,7 @@ test('Mở đơn từ BH-06; Nháp: thông tin chung, chưa có quản lý trự
   await expect(page.getByText('Cơ sở thu tiền')).toHaveCount(0);
   // Tổng niêm yết, Tổng chiết khấu, Thành tiền do máy chủ trả; Đã thu, Còn phải thu là "—" (Đ269).
   await expect(page.getByText('Tổng niêm yết')).toBeVisible();
-  await expect(page.getByText('Tổng chiết khấu')).toBeVisible();
+  await expect(page.getByText('Tổng ưu đãi')).toBeVisible();
   await expect(
     page.locator('dl', { has: page.getByText('Tổng niêm yết') }).getByText('Thành tiền'),
   ).toBeVisible();
@@ -194,7 +194,7 @@ test('Trình: đơn thiếu năm sinh bị chặn và chỉ đúng em (R-TIEN-35
   test.skip(isPhone(page), 'Điện thoại chỉ đọc: không có nút Trình (Đ248).');
   const setup = recordSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, setup.mark, seeded.records.thieuEm);
-  await expect(page.getByText(/Mỗi em cần họ tên và năm sinh trước khi trình/)).toBeVisible();
+  await expect(page.getByText(/Mỗi học sinh cần họ tên và năm sinh trước khi trình/)).toBeVisible();
   await page.getByRole('button', { name: 'Trình duyệt' }).click({ force: true }); // aria-disabled (Q-77): vẫn bấm được để máy chủ nêu lý do
   const notice = page.getByRole('status').filter({ hasText: 'Chưa trình được' });
   await expect(notice).toContainText('Dòng 1: thiếu năm sinh của em');

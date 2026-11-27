@@ -170,12 +170,14 @@ export function DiscountPolicyPage() {
     {
       key: 'value',
       header: 'Giá trị',
+      align: 'right',
       width: 'w-28',
       cell: (p) => discountAppliedLabel(p),
     },
     {
       key: 'max',
       header: 'Mức tối đa',
+      align: 'right',
       width: 'w-32',
       cell: (p) => discountValueLabel(p),
     },
@@ -202,6 +204,7 @@ export function DiscountPolicyPage() {
     {
       key: 'max',
       header: 'Mức tối đa',
+      align: 'right',
       width: 'w-40',
       cell: (p) => `${p.max_quantity.toLocaleString('vi-VN')} / đơn`,
     },
@@ -239,7 +242,7 @@ export function DiscountPolicyPage() {
   return (
     <PageFrame>
       <PageHeader
-        title="Chính sách chiết khấu"
+        title="Chính sách ưu đãi"
         actions={
           <Button icon="history" onClick={() => setHistoryOpen(true)}>
             Lịch sử thay đổi
@@ -274,15 +277,15 @@ export function DiscountPolicyPage() {
           items={[
             {
               value: 'discount',
-              label: 'Chiết khấu',
+              label: 'Ưu đãi',
               count: discounts.data.length,
               content: (
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-body text-fg-muted">
-                      Nhiều chiết khấu trên một dòng thì cộng dồn; tổng không quá trần chiết khấu
-                      (tham số, đổi ở Tham số nghiệp vụ). Giờ tặng tính vào trần: giờ tặng ÷ giờ
-                      mua. Vượt trần phải quản lý cơ sở duyệt.
+                      Nhiều chính sách trên một dòng thì cộng dồn; tổng không quá trần ưu đãi (tham
+                      số, đổi ở Tham số nghiệp vụ). Giờ tặng tính vào trần: giờ tặng ÷ giờ mua. Vượt
+                      trần chỉ cảnh báo, vẫn lưu và gửi được.
                     </p>
                     {canCreate && (
                       <Button
@@ -290,14 +293,14 @@ export function DiscountPolicyPage() {
                         icon="plus"
                         onClick={() => setEditing({ kind: 'discount', policy: null })}
                       >
-                        Thêm chiết khấu
+                        Thêm ưu đãi
                       </Button>
                     )}
                   </div>
-                  {table(discountColumns, discounts.data, 'Chính sách chiết khấu', (p) => p.id)}
+                  {table(discountColumns, discounts.data, 'Chính sách ưu đãi', (p) => p.id)}
                   <p className="text-caption text-fg-muted">
-                    Ngừng một chính sách thì không hiện ở chỗ chọn mới; đơn cũ giữ nguyên chiết khấu
-                    đã chụp lúc tạo. Không xoá.
+                    Ngừng một chính sách thì không hiện ở chỗ chọn mới; đơn cũ giữ nguyên ưu đãi đã
+                    chụp lúc tạo. Không xoá.
                   </p>
                 </div>
               ),
@@ -310,7 +313,7 @@ export function DiscountPolicyPage() {
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="text-body text-fg-muted">
-                      Quà tặng là tài liệu, dịch vụ (dòng giá 0 đ). Không tính vào trần chiết khấu.
+                      Quà tặng là tài liệu, dịch vụ (dòng giá 0 đ). Không tính vào trần ưu đãi.
                     </p>
                     {canCreate && (
                       <Button
@@ -437,8 +440,8 @@ function PolicyForm({
       ? 'Sửa chính sách quà tặng'
       : 'Thêm chính sách quà tặng'
     : p
-      ? 'Sửa chính sách chiết khấu'
-      : 'Thêm chính sách chiết khấu';
+      ? 'Sửa chính sách ưu đãi'
+      : 'Thêm chính sách ưu đãi';
   return (
     <FormDialog
       open

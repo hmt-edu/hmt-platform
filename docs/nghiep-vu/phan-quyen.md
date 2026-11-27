@@ -132,7 +132,7 @@ Cột `app.user_account.manager_id`: quản lý trực tiếp của nhân viên 
 | `app.can_approve_as_manager(người lập, loại 'DON' hoặc 'PHIEU_THU', người duyệt đã chốt)` | Người đang đăng nhập có duyệt được ở bước quản lý không: người duyệt đã chốt lúc trình (hoặc tính theo hiện tại nếu chưa chốt); riêng **đơn**, Admin (đã qua hai bước) duyệt thay; **phiếu thu** Admin không duyệt thay (R-HT-01) | Hàm duyệt (P5) |
 | `app.is_branch_manager_at(người, mô-đun, cơ sở)` | Có phải Trưởng cơ sở đang hoạt động, có quyền Duyệt ở cơ sở đó không (migration 083). `can_approve_as_manager` nhận thêm route và cơ sở của chứng từ: route `TRUONG_CS` thì mọi Trưởng cơ sở của cơ sở duyệt được; ai duyệt trước thì có hiệu lực, người sau gặp lỗi sai trạng thái. Hàng chờ `list_orders` (waiting_me), `export_orders`, `list_receipts` (waiting_manager) tính cả chứng từ `TRUONG_CS` của cơ sở mình | Hàm duyệt, từ chối, huỷ đơn; duyệt, từ chối phiếu thu |
 
-Người duyệt **chốt lúc trình** (Q-P5, đã vào R-HT-06; phiếu thu Admin không duyệt thay: Q-P8, R-TIEN-01): hàm trình ghi người duyệt vào đơn; đổi quản lý sau đó không đổi người duyệt đơn đã trình. Chưa có bảng đơn, phiếu thu nên các hàm trên chờ P5 gọi. Kiểm thử: `supabase/tests/database/028_quan_ly_truc_tiep.test.sql`.
+Người duyệt **chốt lúc trình** (Q-P5, đã vào R-HT-06; phiếu thu: từ 26/11 Admin duyệt thay được, thay Q-P8, R-TIEN-01): hàm trình ghi người duyệt vào đơn; đổi quản lý sau đó không đổi người duyệt đơn đã trình. Chưa có bảng đơn, phiếu thu nên các hàm trên chờ P5 gọi. Kiểm thử: `supabase/tests/database/028_quan_ly_truc_tiep.test.sql`.
 
 ## Token và RLS
 - Hook `app.custom_access_token_hook` ghi vào token: vai trò, cơ sở, cổng được vào, cổng chỉ xem, cần hai bước,
@@ -283,6 +283,7 @@ tự kiểm quyền người gọi.
 - Tạo người dùng (QT-03): Edge Function `create` không nhận mật khẩu thì sinh mật khẩu tạm (cùng độ dài, chính sách như nạp), trả một lần cho hộp K4g, không lưu, không ghi nhật ký.
 
 ## Chốt chặn Admin không duyệt tiền (migration 455, sửa Q1 của Soát)
+> **26/11/2026:** luật này đã đổi. Admin hệ thống duyệt được việc tiền (migration 683, xem `admin-du-quyen.md`); các câu «Admin không duyệt» trong tài liệu này là luật cũ. Vai khác không đổi.
 
 Trigger `permission_admin_no_money_approval` trên bảng quyền chặn mọi đường ghi ô ADMIN × Kế toán · Duyệt đang bật (hàm lưu ma trận, `set_permission`, SQL): lỗi `HMT_CHI_KE_TOAN_DUYET_TIEN` (R-HT-01). Admin tạm gán vai trò Kế toán cho người cụ thể vẫn là việc cố ý, không nằm trong ma trận ADMIN.
 

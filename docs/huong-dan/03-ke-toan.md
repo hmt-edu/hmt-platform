@@ -11,11 +11,11 @@ portals: [crm]
 
 Vai: **Kế toán**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
-Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng và thu chi** (Đơn hàng, Phiếu thu, Khoản tiền vào, Công nợ, Phiếu chi, Số dư khách hàng, Chờ kế toán duyệt). Chỉ hiện mục bạn có quyền. 
+Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng** (Đơn hàng), **Kế toán** (Phiếu thu có tab «Chờ kế toán duyệt», Khoản tiền vào, Công nợ, Phiếu chi, Số dư khách hàng). Chỉ hiện mục bạn có quyền. 
 
 **Nguyên tắc tiền (nhớ kỹ):**
 
-- Chỉ vai **Kế toán** duyệt bước kế toán của phiếu tiền. **Admin KHÔNG duyệt tiền.**
+- Vai **Kế toán** duyệt bước kế toán của phiếu tiền; **Admin hệ thống** cũng duyệt được (kể cả hai bước), mỗi lần như vậy được ghi nhật ký.
 - Hai bước duyệt của một phiếu phải do **hai người khác nhau**. Người tạo không tự duyệt phiếu của mình.
 - Không có nút xoá. Sai thì **huỷ** (phiếu chưa duyệt) hoặc **hoàn tác khoản tiền** (đã duyệt, tạo khoản đảo âm).
 - Kế toán chỉ duyệt phiếu nghiệp vụ ở **cấp Kế toán**. Phiếu ở cấp «Quản lý cơ sở» (Cập nhật hồ sơ, Bảo lưu…) là việc của Trưởng cơ sở hoặc Admin: bạn không thấy nút «Duyệt» ở đó và phiếu đó không nằm trong «Việc chờ tôi duyệt» của bạn.
@@ -65,7 +65,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Bán hàng v
 | Mã | Làm gì |
 |---|---|
 | `HMT_KHONG_CO_QUYEN` | tài khoản không phải Kế toán |
-| `HMT_CHI_KE_TOAN_DUYET_TIEN` | chỉ vai Kế toán duyệt tiền (Admin và vai khác không duyệt) |
+| `HMT_CHI_KE_TOAN_DUYET_TIEN` | chỉ Kế toán hoặc Admin hệ thống duyệt tiền |
 | Người duyệt quản lý trùng người duyệt kế toán | hệ thống chặn; nhờ người khác duyệt |
 
 - **Video (18 giây: tìm phiếu Chờ kế toán, Duyệt hoặc Từ chối):** [VIDEO: huong-dan-ke-toan-phieu-thu]

@@ -11,7 +11,7 @@ cap_nhat: 2026-11-24
 # Số dư khách hàng và dùng số dư cho đơn mới
 
 **Làm xong bạn có:** biết phụ huynh còn bao nhiêu tiền dư, và khi phụ huynh mua đơn mới thì **cấn** số dư đó vào đơn thay cho thu tiền lần nữa.
-**Ai làm:** xem số dư: Kế toán, Trưởng cơ sở, Admin. **Cấn số dư vào đơn:** Kế toán. **Màn:** Bán hàng và thu chi → **Số dư khách hàng**; cấn ở bản ghi đơn «Đã duyệt» → «Hành động» → «Dùng số dư».
+**Ai làm:** xem số dư: Kế toán, Trưởng cơ sở, Admin. **Cấn số dư vào đơn:** Kế toán. **Màn:** Kế toán → **Số dư khách hàng**; cấn ở bản ghi đơn «Đã duyệt» → «Hành động» → «Dùng số dư».
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Phụ huynh **đang có số dư** (tìm ở danh sách; ô «Số dư» lọc «Còn tiền dư»).

@@ -294,7 +294,7 @@ export function EnrollmentRecordPage() {
               )}
               {peers && peers.peers.length > 0 && (
                 <p className="text-body">
-                  Em có {peers.peers.length + 1} ghi danh ở lớp này ({e.code} còn{' '}
+                  Học sinh có {peers.peers.length + 1} ghi danh ở lớp này ({e.code} còn{' '}
                   {formatNumber(hours.remaining)} giờ
                   {peers.peers
                     .map((p) => `, ${p.code} còn ${formatNumber(p.remaining)} giờ`)

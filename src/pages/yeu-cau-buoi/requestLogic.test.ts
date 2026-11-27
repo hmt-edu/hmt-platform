@@ -27,7 +27,7 @@ describe('yêu cầu buổi (BUOI-08, BUOI-10)', () => {
         student_count: 4,
         student_names: [],
       }),
-    ).toBe('Cả lớp Đại số 9 (4 em)');
+    ).toBe('Cả lớp Đại số 9 (4 học sinh)');
     expect(
       targetText({
         kind: 'CUNG_CO',
@@ -36,7 +36,7 @@ describe('yêu cầu buổi (BUOI-08, BUOI-10)', () => {
         student_count: 0,
         student_names: [],
       }),
-    ).toBe('Cả lớp C1 (0 em)');
+    ).toBe('Cả lớp C1 (0 học sinh)');
   });
   it('whenText: ngày dd/mm/yyyy và giờ hh:mm', () => {
     expect(
@@ -74,7 +74,7 @@ describe('yêu cầu buổi (BUOI-08, BUOI-10)', () => {
     expect(
       validateSupport({ studentIds: [], date: '', start: '', end: '', teacherId: '' }),
     ).toEqual({
-      students: 'Chọn ít nhất một em cần bổ trợ.',
+      students: 'Chọn ít nhất một học sinh cần bổ trợ.',
       date: 'Chọn ngày buổi bổ trợ.',
       start: 'Nhập giờ bắt đầu.',
       end: 'Nhập giờ kết thúc.',
@@ -101,7 +101,7 @@ describe('yêu cầu buổi (BUOI-08, BUOI-10)', () => {
   });
   it('validateMakeup: lý do bắt buộc, giáo viên không bắt buộc', () => {
     expect(validateMakeup({ studentIds: [], date: '', start: '', end: '', reason: ' ' })).toEqual({
-      students: 'Chọn ít nhất một em học bù.',
+      students: 'Chọn ít nhất một học sinh học bù.',
       date: 'Chọn ngày buổi học bù.',
       start: 'Nhập giờ bắt đầu.',
       end: 'Nhập giờ kết thúc.',

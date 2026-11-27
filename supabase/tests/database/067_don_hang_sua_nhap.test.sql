@@ -176,7 +176,7 @@ select is(pg_temp.lq('e1', 3, 'line_total'), '765600', 'Q-69: thành tiền dòn
 select is(pg_temp.lq('e1', 3, 'over_cap'), 'false', 'Q-69: dưới trần 20% thì chưa vượt trần');
 select is((select count(*)::int from app.sales_order_line_discount d join app.sales_order_line l on l.id = d.line_id
             where l.order_id = pg_temp.o('e1') and l.line_no = 3), 2, 'Q-69: hai chính sách được ghi vào dòng mới (chụp lại lúc thêm)');
-select ok(pg_temp.note('e1', 'SUA') like E'Sửa đơn\nthêm dòng 3 (LC-TOAN-K09): số giờ 4, chiết khấu 13%', 'Q-69: dòng thời gian ghi đủ mã gói, số giờ, chiết khấu');
+select ok(pg_temp.note('e1', 'SUA') like E'Sửa đơn\nthêm dòng 3 (LC-TOAN-K09): số giờ 4, ưu đãi 13%', 'Q-69: dòng thời gian ghi đủ mã gói, số giờ, chiết khấu');
 select is(pg_temp.err($$select app.edit_order(pg_temp.o('e1'), jsonb_build_array(jsonb_build_object('add',
           pg_temp.line(pg_temp.ps('0900008001', 2), 'LC-TOAN-K09', 'OFF', 4, jsonb_build_array(pg_temp.disc('GIAM_6_THANG'), pg_temp.disc('GIAM_6_THANG'))))))$$),
           'HMT_CHINH_SACH_TRUNG', 'Q-69 chặn: cùng một chính sách chọn hai lần ở dòng mới');
@@ -189,7 +189,7 @@ select is(app.edit_order(pg_temp.o('e1'), jsonb_build_array(jsonb_build_object('
           pg_temp.line(pg_temp.ps('0900008001', 2), 'LC-TOAN-K09', 'OFF', 10, jsonb_build_array(pg_temp.disc('GIAM_6_THANG'), pg_temp.disc('GIAM_THUONG_LUONG', 10), pg_temp.disc('TANG_GIO', 4)))))) ->> 'changed', 'true',
           'Q-69: tổng chiết khấu vượt trần 20% vẫn thêm được (chỉ cảnh báo, không chặn)');
 select is(pg_temp.lq('e1', 4, 'over_cap'), 'true', 'Q-69: dòng vượt trần được ghi cờ vượt trần để hộp Duyệt cảnh báo');
-select ok(pg_temp.note('e1', 'SUA') like E'Sửa đơn\nthêm dòng 4 (LC-TOAN-K09): số giờ 10, chiết khấu 15%, tặng 4 giờ', 'Q-69: dòng thời gian ghi cả chiết khấu và giờ tặng của dòng vượt trần');
+select ok(pg_temp.note('e1', 'SUA') like E'Sửa đơn\nthêm dòng 4 (LC-TOAN-K09): số giờ 10, ưu đãi 15%, tặng 4 giờ', 'Q-69: dòng thời gian ghi cả chiết khấu và giờ tặng của dòng vượt trần');
 select is(app.edit_order(pg_temp.o('e1'), '[{"line_no": 4, "remove": true}, {"line_no": 3, "remove": true}]') ->> 'changed', 'true', 'Q-69: bỏ hai dòng vừa thêm (trả đơn về như trước)');
 select is(app.edit_order(pg_temp.o('e1'), '[{"line_no": 2, "remove": true}]') ->> 'changed', 'true', 'Q-67: bỏ dòng vừa thêm (trả đơn về như trước)');
 select is(pg_temp.nlines('e1'), 1, 'Q-67: đơn e1 lại một dòng cho các bài sau');

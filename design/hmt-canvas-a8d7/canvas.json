@@ -1,0 +1,364 @@
+{
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-26T20:00:00Z"
+ },
+ "title": "HMT Hồ sơ 360°",
+ "launch": {
+  "view": "canvas"
+ },
+ "pages": [],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 0,
+   "w": 1440,
+   "h": 140,
+   "title": "Hồ sơ 360° · KH-02 phụ huynh, KH-05 học sinh"
+  },
+  "KH02_360.dc.html": {
+   "x": 0,
+   "y": 260,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Hồ sơ phụ huynh 360° · Tổng quan",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_360_an_tien.dc.html": {
+   "x": 1520,
+   "y": 260,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Hồ sơ phụ huynh · không có quyền xem tiền (ẩn ô tiền)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_360_khong_co.dc.html": {
+   "x": 3040,
+   "y": 260,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Hồ sơ phụ huynh · không có cờ cảnh báo",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_ghi_nhan_lien_he.dc.html": {
+   "x": 4560,
+   "y": 260,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Hộp «Ghi nhận liên hệ» (mở từ nút Gọi hoặc nút trong khối bên phải)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_tai_khoan.dc.html": {
+   "x": 6080,
+   "y": 260,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Tab Tài khoản phụ huynh",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_tai_tuc.dc.html": {
+   "x": 0,
+   "y": 1420,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Tab Tái tục (phụ huynh)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_tai_tuc_trong.dc.html": {
+   "x": 1520,
+   "y": 1420,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Tab Tái tục · trống",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_lich_hen.dc.html": {
+   "x": 3040,
+   "y": 1420,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Tab Lịch hẹn (phụ huynh)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_lich_hen_trong.dc.html": {
+   "x": 4560,
+   "y": 1420,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH02 · Tab Lịch hẹn · trống",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_360.dc.html": {
+   "x": 0,
+   "y": 2580,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Hồ sơ học sinh 360° · Tổng quan (chưa có tài khoản)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_360_khong_co.dc.html": {
+   "x": 1520,
+   "y": 2580,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Hồ sơ học sinh · không có cờ cảnh báo",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tai_tuc.dc.html": {
+   "x": 3040,
+   "y": 2580,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Tab Tái tục (học sinh)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tai_tuc_trong.dc.html": {
+   "x": 4560,
+   "y": 2580,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Tab Tái tục · trống",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_lich_hen.dc.html": {
+   "x": 6080,
+   "y": 2580,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Tab Lịch hẹn (học sinh)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_chua_co.dc.html": {
+   "x": 0,
+   "y": 3740,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Tài khoản app học sinh · Chưa có tài khoản (chỉ nút Cấp)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_hoat_dong.dc.html": {
+   "x": 1520,
+   "y": 3740,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Tài khoản app học sinh · Đang hoạt động (Đặt lại, Khoá)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_da_khoa.dc.html": {
+   "x": 3040,
+   "y": 3740,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Tài khoản app học sinh · Đã khoá (nút Mở khoá)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_khong_quyen.dc.html": {
+   "x": 4560,
+   "y": 3740,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Tài khoản app học sinh · không có quyền QT-13 (ẩn nút)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_hop_cap.dc.html": {
+   "x": 0,
+   "y": 4900,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Hộp xác nhận «Cấp tài khoản»",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_hop_cap_ket_qua.dc.html": {
+   "x": 1520,
+   "y": 4900,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Hộp «Mật khẩu tạm» (hiện một lần) sau khi Cấp hoặc Đặt lại",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_hop_dat_lai.dc.html": {
+   "x": 3040,
+   "y": 4900,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Hộp xác nhận «Đặt lại mật khẩu»",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_hop_khoa.dc.html": {
+   "x": 4560,
+   "y": 4900,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Hộp xác nhận «Khoá tài khoản»",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_tk_hop_mo_khoa.dc.html": {
+   "x": 6080,
+   "y": 4900,
+   "w": 1440,
+   "h": 1000,
+   "title": "KH05 · Hộp xác nhận «Mở khoá tài khoản»",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_dt.dc.html": {
+   "x": 0,
+   "y": 6060,
+   "w": 390,
+   "h": 844,
+   "title": "KH02 · Hồ sơ phụ huynh 360° (điện thoại)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH02_dt_tai_tuc.dc.html": {
+   "x": 1520,
+   "y": 6060,
+   "w": 390,
+   "h": 844,
+   "title": "KH02 · Tab Tái tục (điện thoại, bảng thành thẻ)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_dt.dc.html": {
+   "x": 3040,
+   "y": 6060,
+   "w": 390,
+   "h": 844,
+   "title": "KH05 · Hồ sơ học sinh 360° (điện thoại) · chưa có tài khoản",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_dt_ghi_nhan.dc.html": {
+   "x": 4560,
+   "y": 6060,
+   "w": 390,
+   "h": 844,
+   "title": "KH05 · Hộp «Ghi nhận liên hệ» (điện thoại, tấm trượt)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_dt_tk_hoat_dong.dc.html": {
+   "x": 0,
+   "y": 7064,
+   "w": 390,
+   "h": 844,
+   "title": "KH05 · Tài khoản app học sinh (điện thoại) · Đang hoạt động",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_dt_tk_da_khoa.dc.html": {
+   "x": 1520,
+   "y": 7064,
+   "w": 390,
+   "h": 844,
+   "title": "KH05 · Tài khoản app học sinh (điện thoại) · Đã khoá",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_dt_tk_khong_quyen.dc.html": {
+   "x": 3040,
+   "y": 7064,
+   "w": 390,
+   "h": 844,
+   "title": "KH05 · Tài khoản app học sinh (điện thoại) · không có quyền QT-13",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_dt_tk_hop_dat_lai.dc.html": {
+   "x": 4560,
+   "y": 7064,
+   "w": 390,
+   "h": 844,
+   "title": "KH05 · Hộp xác nhận «Đặt lại mật khẩu» (điện thoại)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_dt_tk_hop_ket_qua.dc.html": {
+   "x": 6080,
+   "y": 7064,
+   "w": 390,
+   "h": 844,
+   "title": "KH05 · Hộp «Mật khẩu tạm» (điện thoại)",
+   "expand": "fill",
+   "is_interactive": true
+  },
+  "KH05_dt_tk_hop_mo_khoa.dc.html": {
+   "x": 7600,
+   "y": 7064,
+   "w": 390,
+   "h": 844,
+   "title": "KH05 · Hộp xác nhận «Mở khoá tài khoản» (điện thoại)",
+   "expand": "fill",
+   "is_interactive": true
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "KH02_360.dc.html",
+  "KH02_360_an_tien.dc.html",
+  "KH02_360_khong_co.dc.html",
+  "KH02_ghi_nhan_lien_he.dc.html",
+  "KH02_tai_khoan.dc.html",
+  "KH02_tai_tuc.dc.html",
+  "KH02_tai_tuc_trong.dc.html",
+  "KH02_lich_hen.dc.html",
+  "KH02_lich_hen_trong.dc.html",
+  "KH05_360.dc.html",
+  "KH05_360_khong_co.dc.html",
+  "KH05_tai_tuc.dc.html",
+  "KH05_tai_tuc_trong.dc.html",
+  "KH05_lich_hen.dc.html",
+  "KH05_tk_chua_co.dc.html",
+  "KH05_tk_hoat_dong.dc.html",
+  "KH05_tk_da_khoa.dc.html",
+  "KH05_tk_khong_quyen.dc.html",
+  "KH05_tk_hop_cap.dc.html",
+  "KH05_tk_hop_cap_ket_qua.dc.html",
+  "KH05_tk_hop_dat_lai.dc.html",
+  "KH05_tk_hop_khoa.dc.html",
+  "KH05_tk_hop_mo_khoa.dc.html",
+  "KH02_dt.dc.html",
+  "KH02_dt_tai_tuc.dc.html",
+  "KH05_dt.dc.html",
+  "KH05_dt_ghi_nhan.dc.html",
+  "KH05_dt_tk_hoat_dong.dc.html",
+  "KH05_dt_tk_da_khoa.dc.html",
+  "KH05_dt_tk_khong_quyen.dc.html",
+  "KH05_dt_tk_hop_dat_lai.dc.html",
+  "KH05_dt_tk_hop_ket_qua.dc.html",
+  "KH05_dt_tk_hop_mo_khoa.dc.html"
+ ],
+ "notes": {},
+ "designSystems": [
+  {
+   "artifact": "https://claude.ai/artifact/3Yco5qmVbyDiyfZm9HcJqN",
+   "copiedAt": "2026-11-26T19:10:40Z",
+   "namespace": "hmt",
+   "title": "HMT Platform",
+   "version": "1792124962-8639"
+  }
+ ]
+}

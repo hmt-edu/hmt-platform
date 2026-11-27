@@ -39,7 +39,7 @@ export function buildQuoteConfig(
   return {
     screenCode: QUOTE_SCREEN_CODE,
     title: 'Báo giá',
-    searchPlaceholder: 'Tìm mã, phụ huynh, SĐT, tên em…',
+    searchPlaceholder: 'Tìm mã, phụ huynh, SĐT, tên học sinh…',
     columns: [
       {
         key: 'code',

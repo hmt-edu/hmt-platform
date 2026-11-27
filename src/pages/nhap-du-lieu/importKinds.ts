@@ -46,7 +46,7 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
     kind: 'CO_HOI',
     title: 'Cơ hội',
     description:
-      'Cơ hội kèm phụ huynh và lead gốc, đúng giai đoạn trong file. Nạp Người dùng trước (người phụ trách). Cơ hội từ L5 thiếu tên hoặc năm sinh em vẫn nạp, đánh dấu thiếu thông tin em.',
+      'Cơ hội kèm phụ huynh và lead gốc, đúng giai đoạn trong file. Nạp Người dùng trước (người phụ trách). Cơ hội từ L5 thiếu tên hoặc năm sinh học sinh vẫn nạp, đánh dấu thiếu thông tin học sinh.',
     columns: [
       'ma_cu',
       'ngay_tao',
@@ -185,9 +185,9 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
   },
   {
     kind: 'PHIEU_TEST',
-    title: 'Phiếu test',
+    title: 'Phiếu Test',
     description:
-      'Phiếu kiểm tra đầu vào đã làm, gắn vào cơ hội theo số điện thoại. Phiếu xong có điểm thành "Hoàn thành (dữ liệu cũ)". Nạp Cơ hội và Học sinh trước. Dòng lỗi không chặn dòng đúng.',
+      'Phiếu Test đã làm, gắn vào cơ hội theo số điện thoại. Phiếu xong có điểm thành "Hoàn thành (dữ liệu cũ)". Nạp Cơ hội và Học sinh trước. Dòng lỗi không chặn dòng đúng.',
     columns: [
       'ma_cu',
       'sdt_ph',
@@ -204,7 +204,7 @@ export const IMPORT_KINDS: ImportKindConfig[] = [
     ],
     required: ['ma_cu', 'sdt_ph', 'ngay_test', 'ho_ten_hs', 'khoi', 'trang_thai_phieu'],
     viaFunction: false,
-    subject: 'Phiếu test',
+    subject: 'Phiếu Test',
     training: true,
   },
   {
@@ -285,8 +285,8 @@ export const IMPORT_KIND_ROWS: ImportKindRow[] = [
     kind: 'CO_HOI',
   },
   {
-    title: 'Phiếu test',
-    description: 'Phiếu kiểm tra đầu vào đã làm.',
+    title: 'Phiếu Test',
+    description: 'Phiếu Test đã làm.',
     needs: 'Cơ hội, Học sinh',
     kind: 'PHIEU_TEST',
   },
@@ -348,7 +348,7 @@ const COLUMN_MEANING: Record<string, string> = {
   co_so: 'Mã cơ sở (CS1 đến CS5)',
   co_so_truy_cap: 'Các cơ sở người dùng được vào, cách nhau dấu chấm phẩy',
   cong_no_phai_thu_dong: 'Công nợ phải thu, tính bằng đồng',
-  danh_sach_em: 'Tên các em, cách nhau dấu chấm phẩy',
+  danh_sach_em: 'Tên các học sinh, cách nhau dấu chấm phẩy',
   dia_chi: 'Địa chỉ',
   diem: 'Điểm bài test (dấu phẩy hoặc dấu chấm)',
   email: 'Email',
@@ -377,7 +377,7 @@ const COLUMN_MEANING: Record<string, string> = {
   medium: 'Kênh trong danh mục nguồn',
   mon: 'Môn học (trống là Toán)',
   nam_hoc: 'Năm học',
-  nam_sinh: 'Năm sinh của em',
+  nam_sinh: 'Năm sinh của học sinh',
   ngay_chot: 'Ngày chốt số dư (trống: theo tham số)',
   ngay_khai_giang: 'Ngày khai giảng (yyyy-mm-dd)',
   ngay_sinh: 'Ngày sinh (yyyy-mm-dd)',
@@ -405,7 +405,7 @@ const COLUMN_MEANING: Record<string, string> = {
   tinh_trang_cu: 'Tình trạng ở hệ thống cũ',
   tinh_trang_moi: 'Tình trạng ghi danh',
   trang_thai: 'Trạng thái tài khoản',
-  trang_thai_phieu: 'Trạng thái phiếu test',
+  trang_thai_phieu: 'Trạng thái phiếu Test',
   trinh_do: 'Trình độ',
   truong: 'Trường học',
   username: 'Tên đăng nhập',

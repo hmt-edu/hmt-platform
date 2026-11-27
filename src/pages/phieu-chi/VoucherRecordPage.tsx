@@ -159,7 +159,7 @@ function VoucherView({ record }: { record: VoucherRecord }) {
       : [
           {
             key: 'hours',
-            label: 'Giờ hoàn × giá sau chiết khấu',
+            label: 'Giờ hoàn × giá sau ưu đãi',
             how: `${n(r.hours_refund)} giờ × ${n(r.unit_price_net)} đ`,
             amount: r.base_amount,
           },
@@ -363,7 +363,7 @@ function VoucherView({ record }: { record: VoucherRecord }) {
             label="Tài khoản nhận"
             value={plan.accountNote}
             onChange={(e) => setPlan({ ...plan, accountNote: e.target.value })}
-            placeholder="Ví dụ: Techcombank …5544 (chữ tự do)"
+            placeholder="Ghi ngân hàng, số tài khoản (chữ tự do)"
             maxLength={ACCOUNT_NOTE_MAX}
           />
           <DateInput

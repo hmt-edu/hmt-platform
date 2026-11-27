@@ -189,8 +189,8 @@ export function BusinessTaskDialog({
           )}
           <p className="text-caption text-fg-muted">
             Hoàn toàn bộ: hoàn theo giá gốc, trừ giờ đã học và phí xử lý; giờ tặng không hoàn. Hoàn
-            một phần: số giờ hoàn × giá sau chiết khấu, trừ phí xử lý. Số tiền do máy chủ tính và
-            chụp lại lúc thực hiện. Cần quản lý cơ sở rồi kế toán duyệt; hoàn xong sinh phiếu chi.
+            một phần: số giờ hoàn × giá sau ưu đãi, trừ phí xử lý. Số tiền do máy chủ tính và chụp
+            lại lúc thực hiện. Cần quản lý cơ sở rồi kế toán duyệt; hoàn xong sinh phiếu chi.
           </p>
         </>
       ) : type === 'CHUYEN_PHI' ? (
@@ -232,7 +232,7 @@ export function BusinessTaskDialog({
                   <td className="text-right">{feePreview.data.hours_used} giờ</td>
                 </tr>
                 <tr>
-                  <td>Giá sau chiết khấu</td>
+                  <td>Giá sau ưu đãi</td>
                   <td className="text-right">{formatMoney(feePreview.data.unit_price_net)}</td>
                 </tr>
                 <tr>
@@ -263,7 +263,7 @@ export function BusinessTaskDialog({
             </table>
           )}
           <p className="text-caption text-fg-muted">
-            Chuyển phí: ghi danh cũ dừng; giờ mua còn lại × giá sau chiết khấu giữ thành số dư khách
+            Chuyển phí: ghi danh cũ dừng; giờ mua còn lại × giá sau ưu đãi giữ thành số dư khách
             hàng, không trừ phí, không tự hoàn tiền; giờ tặng còn lại bị huỷ. Bảng trên chỉ tham
             khảo, số dư chưa trừ vào đơn nhận; tính lại khi thực hiện phiếu. Cần quản lý cơ sở rồi
             kế toán duyệt.
@@ -292,14 +292,14 @@ export function BusinessTaskDialog({
           )}
           <p className="text-caption text-fg-muted">
             Dừng học đóng ghi danh; giờ tặng còn lại bị huỷ. Hoàn tiền: hoàn phí toàn bộ theo giá
-            gốc, trừ phí xử lý. Giữ số dư: giờ mua còn lại × giá sau chiết khấu, không trừ phí. Ngày
+            gốc, trừ phí xử lý. Giữ số dư: giờ mua còn lại × giá sau ưu đãi, không trừ phí. Ngày
             dừng chỉ ghi nhận, không đổi cách tính giờ. Cần quản lý cơ sở rồi kế toán duyệt.
           </p>
         </>
       ) : type === 'BAO_LUU' && draft.holdMode === 'TIEP_TUC' ? (
         <p className="text-caption text-fg-muted">
-          Khi thực hiện, bảo lưu kết thúc và em về hàng chờ xếp lớp, giữ nguyên số giờ còn lại. CSKH
-          xếp lớp như thường; em vào danh sách buổi sau khi được xếp lớp.
+          Khi thực hiện, bảo lưu kết thúc và học sinh về hàng chờ xếp lớp, giữ nguyên số giờ còn
+          lại. CSKH xếp lớp như thường; học sinh vào danh sách buổi sau khi được xếp lớp.
         </p>
       ) : type === 'BAO_LUU' ? (
         <TextField

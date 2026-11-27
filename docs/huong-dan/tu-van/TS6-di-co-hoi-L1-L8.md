@@ -22,13 +22,13 @@ checked: 2026-11-24
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của khách.
 - [ ] Đã có cơ hội (tạo từ lead: bài «Tạo cơ hội từ lead»).
-- [ ] Từ L5 trở đi mỗi em phải có **tên và năm sinh**; nên điền sớm ở khối học sinh của cơ hội.
+- [ ] Từ L5 trở đi mỗi học sinh phải có **tên và năm sinh**; nên điền sớm ở khối học sinh của cơ hội.
 
 ## Luật cần nhớ (lời thường)
 - Cơ hội **chỉ đi tới, không lùi**. Giai đoạn đã qua bị khoá và không có nút Hoàn tác, nên chuyển cẩn thận.
 - Tám giai đoạn theo thứ tự: **L1 Khách hàng mới → L2 Chưa liên hệ được → L3 Không có nhu cầu → L4 Khách hàng tiềm năng → L5 Đồng ý tham gia test → L6 Đã tham gia test → L7 Tư vấn → L8 Đăng ký học.** Mỗi giai đoạn có nhóm con để ghi chi tiết (ví dụ L2C «Bận gọi lại sau», L4B «Tiềm năng, cần tư vấn thêm», L7A «Cần đặt lịch tư vấn»).
-- **L5** và **L6** do hệ thống tự đổi theo phiếu kiểm tra: phiếu «Chờ GV chấm» đưa cơ hội lên L6 nhóm con L6A; phiếu «Hoàn thành» đưa lên L6B. Bạn không bấm tay vào L6; sau khi có kết quả chỉ chọn nhóm con học lực (L6C xuất sắc … L6G yếu).
-- Sang **L7** hoặc **L8** cần có phiếu kiểm tra Hoàn thành; chưa có thì phải chọn «Lý do bỏ qua test». Còn phiếu dang dở (Nháp, Đang test, Chờ GV chấm) thì bị chặn.
+- **L5** và **L6** do hệ thống tự đổi theo phiếu Test: phiếu «Chờ GV chấm» đưa cơ hội lên L6 nhóm con L6A; phiếu «Hoàn thành» đưa lên L6B. Bạn không bấm tay vào L6; sau khi có kết quả chỉ chọn nhóm con học lực (L6C xuất sắc … L6G yếu).
+- Sang **L7** hoặc **L8** cần có phiếu Test Hoàn thành; chưa có thì phải chọn «Lý do bỏ qua test». Còn phiếu dang dở (Nháp, Đang test, Chờ GV chấm) thì bị chặn.
 - **Thứ tự thật khi bán hàng:** phụ huynh đóng tiền cho tư vấn tuyển sinh trước (không có biên nhận in cho phụ huynh), **rồi mới** chuyển L8 và lập đơn. L8 **không hoàn tác**.
 
 ## Các bước
@@ -70,16 +70,16 @@ checked: 2026-11-24
 | «Cơ hội cần ở L8 (phụ huynh đã thanh toán) mới tạo được đơn hàng.» (HMT_CHUA_O_L8) | Lập đơn khi chưa ở L8 | Chuyển L8 sau khi phụ huynh đóng tiền |
 
 ## Hỏi đáp
-- **Vì sao tôi không bấm được L6?** L6 do hệ thống chuyển khi phiếu kiểm tra có kết quả; màn ghi «L6 do hệ thống chuyển khi phiếu kiểm tra Hoàn thành, không bấm tay được.»
+- **Vì sao tôi không bấm được L6?** L6 do hệ thống chuyển khi phiếu Test có kết quả; màn ghi «L6 do hệ thống chuyển khi phiếu Test Hoàn thành, không bấm tay được.»
 - **Phụ huynh chưa muốn test thì sao?** Chuyển L7 và chọn «Lý do bỏ qua test», ví dụ «Phụ huynh không muốn test».
 - **Kéo thả ở Kanban có khác không?** Kéo thẻ sang cột phía trước mở cùng hộp «Chuyển giai đoạn»; không kéo lùi được.
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản `tvts1–3.cs5` (và một tài khoản Trưởng cơ sở nếu tập tiếp đến duyệt đơn).
-- **Dùng:** cơ hội «[MẪU] …» ở L1 hoặc L2: đi lần lượt tới L4, điền tên và năm sinh em để lên L5, rồi tập L7 với «Lý do bỏ qua test».
+- **Dùng:** cơ hội «[MẪU] …» ở L1 hoặc L2: đi lần lượt tới L4, điền tên và năm sinh học sinh để lên L5, rồi tập L7 với «Lý do bỏ qua test».
 
 ## Tự kiểm: bạn làm được khi
 - [ ] Có một cơ hội «[MẪU]» ở L4 hoặc cao hơn, có đủ tên và năm sinh học sinh.
 - [ ] Bạn nói được vì sao L6 không bấm tay và vì sao chỉ chuyển L8 sau khi phụ huynh đã đóng tiền.
 
-**Bước trước:** Tạo cơ hội từ lead · **Bước sau:** Tạo phiếu kiểm tra; Lập đơn hàng
+**Bước trước:** Tạo cơ hội từ lead · **Bước sau:** Tạo phiếu Test; Lập đơn hàng

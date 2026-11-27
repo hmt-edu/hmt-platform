@@ -24,7 +24,7 @@ cap_nhat: 2026-11-24
 ## Luật cần nhớ (lời thường)
 - Hệ thống **không tự gửi** gì cho phụ huynh. Bạn sao chép hoặc xuất ảnh, tự gửi, rồi bấm «Đánh dấu đã gửi».
 - Lời nhắn là chữ hệ thống soạn từ nhận xét và điểm giáo viên chấm. **Bạn chỉ đọc, sao chép, không sửa nội dung.** Thấy lời nhắn sai thì báo giáo viên hoặc Trưởng cơ sở chứ không tự sửa trước khi gửi.
-- Chỉ những em **có mặt** và đã được giáo viên chấm xong mới có lời nhắn trong hàng.
+- Chỉ những học sinh **có mặt** và đã được giáo viên chấm xong mới có lời nhắn trong hàng.
 - Đã đánh dấu «Đã gửi» thì nút đánh dấu mất đi; bấm lại không đổi giờ gửi đã ghi.
 - Màn này dùng khi phụ huynh chưa có cổng phụ huynh, nên bạn gửi tay qua Zalo.
 
@@ -32,16 +32,16 @@ cap_nhat: 2026-11-24
 1. Vào «Chăm sóc khách hàng» → «Nhận xét chờ gửi».
    *Bạn thấy:* tiêu đề «Nhận xét chờ gửi phụ huynh», bảng có các cột «Học sinh», «Lớp», «Buổi», «Phụ huynh», «Lời nhắn», «Trạng thái», «Thao tác»; ô lọc «Trạng thái: Chờ gửi» kèm số lượng.
    [ẢNH: cskh-cs12-b1]
-2. Tìm đúng em (nếu danh sách dài): gõ tên em hoặc mã lớp vào ô «Tìm tên em hoặc mã lớp…».
+2. Tìm đúng học sinh (nếu danh sách dài): gõ tên học sinh hoặc mã lớp vào ô «Tìm tên học sinh hoặc mã lớp…».
    *Bạn thấy:* danh sách thu lại còn dòng khớp.
    [ẢNH: cskh-cs12-b2]
-3. Bấm tên em (chữ gạch chân ở cột «Học sinh») để đọc đầy đủ.
-   *Bạn thấy:* hộp «Lời nhắn gửi phụ huynh», dưới tiêu đề ghi «tên em · mã lớp · tên phụ huynh», bên trong là toàn bộ lời nhắn và hai nút «Sao chép», «Xuất ảnh».
+3. Bấm tên học sinh (chữ gạch chân ở cột «Học sinh») để đọc đầy đủ.
+   *Bạn thấy:* hộp «Lời nhắn gửi phụ huynh», dưới tiêu đề ghi «tên học sinh · mã lớp · tên phụ huynh», bên trong là toàn bộ lời nhắn và hai nút «Sao chép», «Xuất ảnh».
    [ẢNH: cskh-cs12-b3]
-4. Bấm «Sao chép» (dán vào Zalo) hoặc «Xuất ảnh» (tải về một ảnh có logo, tên tệp dạng «loi-nhan-<tên em>.png», rồi gửi ảnh qua Zalo).
+4. Bấm «Sao chép» (dán vào Zalo) hoặc «Xuất ảnh» (tải về một ảnh có logo, tên tệp dạng «loi-nhan-<tên học sinh>.png», rồi gửi ảnh qua Zalo).
    *Bạn thấy:* báo «Đã sao chép lời nhắn.»; hoặc trình duyệt tải ảnh về máy.
    [ẢNH: cskh-cs12-b4]
-5. Mở Zalo, gửi đúng cho **phụ huynh của em đó** (kiểm lại tên phụ huynh ở dòng phụ đề của hộp).
+5. Mở Zalo, gửi đúng cho **phụ huynh của học sinh đó** (kiểm lại tên phụ huynh ở dòng phụ đề của hộp).
    *Bạn thấy:* tin đã gửi trong Zalo.
    [CHƯA CHỤP: bước làm ngoài hệ thống (Zalo của bạn), không chụp được]
 6. Quay lại hệ thống, bấm «Đánh dấu đã gửi» (trong hộp, hoặc ở cột «Thao tác» của dòng).
@@ -88,7 +88,7 @@ cap_nhat: 2026-11-24
 - Bài cũ không nêu «Sao chép», «Xuất ảnh», ô lọc «Trạng thái» («Chờ gửi»/«Đã gửi»), nút «Đánh dấu đã gửi» ở cột «Thao tác»: đã bổ sung theo `ParentMessageListPage.tsx`.
 - Không có nút «bỏ đánh dấu đã gửi» (hàm `mark_parent_message_sent` chỉ ghi lần đầu). Bài ghi rõ ở «Làm nhầm thì sao».
 - Menu mục này không có cờ tính năng AFTERSALE (chỉ cần quyền Ticket · Sửa), khác với «Tất cả ticket».
-- Chưa xác định: hàng chờ có loại trừ phụ huynh đã có tài khoản cổng hay không (hàm chỉ thấy lọc theo em có mặt và lời nhắn không trống). Bài chỉ nói «dùng khi phụ huynh chưa có cổng».
-- Phần «Xuất ảnh» tên tệp lấy từ code (`loi-nhan-${tên em}.png`).
+- Chưa xác định: hàng chờ có loại trừ phụ huynh đã có tài khoản cổng hay không (hàm chỉ thấy lọc theo học sinh có mặt và lời nhắn không trống). Bài chỉ nói «dùng khi phụ huynh chưa có cổng».
+- Phần «Xuất ảnh» tên tệp lấy từ code (`loi-nhan-${tên học sinh}.png`).
 - Nhận xét mẫu được tạo sẵn với `parent_sent_at = now()` (migration 660), nên hàng «Chờ gửi» trống ở bộ mẫu: bước 6 không tập được trừ khi có lời nhắn mới (chưa có cách tạo từ cổng giáo viên trên tài khoản tập).
 - Bước trước ghi theo luồng; chưa có bài giáo viên tương ứng được liên kết.

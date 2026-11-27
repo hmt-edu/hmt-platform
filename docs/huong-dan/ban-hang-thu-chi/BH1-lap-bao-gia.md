@@ -10,7 +10,7 @@ cap_nhat: 2026-11-24
 
 # Lập báo giá, in và gửi phụ huynh
 
-**Làm xong bạn có:** một báo giá đã gửi cho phụ huynh, có giá, chiết khấu và hạn hiệu lực rõ ràng.
+**Làm xong bạn có:** một báo giá đã gửi cho phụ huynh, có giá, ưu đãi và hạn hiệu lực rõ ràng.
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Cơ hội → bản ghi cơ hội → «Tạo báo giá».
 
 > Video: [VIDEO: bh1]
@@ -20,21 +20,21 @@ cap_nhat: 2026-11-24
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của khách.
-- [ ] Mỗi em trong «Danh sách em» của cơ hội có đủ họ tên và năm sinh.
+- [ ] Mỗi học sinh trong «Danh sách học sinh» của cơ hội có đủ họ tên và năm sinh.
 - [ ] Bạn biết gói nào, bao nhiêu giờ, hình thức học nào (Học tại trung tâm hay Học online). Gói chưa có giá cho hình thức đó thì không chọn được: nhờ Admin bổ sung bảng giá.
 
 ## Cần nhớ
 - Tổng tiền do hệ thống tính, **không nhập tay**.
-- Nhiều chiết khấu trên một dòng thì **cộng dồn** (5% và 10% là 15%). Giờ tặng cũng tính vào chiết khấu. Tổng vượt mức trần (20%, xem số đang áp dụng ở hộp cảnh báo) thì hệ thống **chỉ cảnh báo**, vẫn lưu và gửi được; người duyệt đơn sẽ thấy dòng vượt trần.
+- Nhiều ưu đãi trên một dòng thì **cộng dồn** (5% và 10% là 15%). Giờ tặng cũng tính vào ưu đãi. Tổng vượt mức trần (20%, xem số đang áp dụng ở hộp cảnh báo) thì hệ thống **chỉ cảnh báo**, vẫn lưu và gửi được; người duyệt đơn sẽ thấy dòng vượt trần.
 - Báo giá có hạn hiệu lực, đếm từ ngày bạn bấm Gửi (số ngày hiện ngay dưới ô «Hạn hiệu lực»).
 
 ## Các bước
 1. Ở bản ghi cơ hội bấm **«Tạo báo giá»**.
    *Bạn thấy:* trang báo giá mới, khối dòng gói còn trống. [ẢNH: bh1-b1] [ẢNH: bh1-b2]
-2. Bấm **«Chọn gói…»**, chọn gói, chọn em học, nhập số lượng giờ (và giờ tặng nếu có).
+2. Bấm **«Chọn gói…»**, chọn gói, chọn học sinh học, nhập số lượng giờ (và giờ tặng nếu có).
    *Bạn thấy:* dòng có đơn giá và thành tiền tự tính. [ẢNH: bh1-b3]
-3. Thêm chiết khấu theo chính sách nếu có (chọn trong danh sách chính sách, không gõ số).
-   *Bạn thấy:* tổng chiết khấu và thành tiền cập nhật; vượt trần thì hiện hộp vàng cảnh báo.
+3. Thêm ưu đãi theo chính sách nếu có (chọn trong danh sách chính sách, không gõ số).
+   *Bạn thấy:* tổng ưu đãi và thành tiền cập nhật; vượt trần thì hiện hộp vàng cảnh báo.
 4. Bấm **Lưu**, rồi bấm **«Gửi»**.
    *Bạn thấy:* thông báo «Đã gửi báo giá.», tình trạng đổi từ Nháp sang Đã gửi; ô «Hạn hiệu lực» có ngày cụ thể. [ẢNH: bh1-b4]
 5. Mở menu **«Hành động»** (góc phải trên) và bấm **«In»** để có bản in đưa hoặc gửi phụ huynh.
@@ -62,7 +62,7 @@ cap_nhat: 2026-11-24
 ## Hỏi đáp
 - **Phụ huynh hỏi hạn báo giá?** Xem «Hạn hiệu lực» trên báo giá; quá hạn thì lập báo giá mới.
 - **Có bắt buộc báo giá trước đơn không?** Không.
-- **Chiết khấu vượt trần có bị chặn không?** Không chặn ở báo giá; người duyệt đơn sẽ xem xét.
+- **Ưu đãi vượt trần có bị chặn không?** Không chặn ở báo giá; người duyệt đơn sẽ xem xét.
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** 1 tài khoản Tư vấn hoặc CSKH.

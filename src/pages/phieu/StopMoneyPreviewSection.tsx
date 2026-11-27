@@ -41,7 +41,7 @@ export function StopMoneyPreviewSection({
               <>
                 {d.refund_kind === 'MOT_PHAN' ? (
                   <Row
-                    label={`Giờ hoàn × giá sau chiết khấu (${d.hours_refund ?? 0} giờ)`}
+                    label={`Giờ hoàn × giá sau ưu đãi (${d.hours_refund ?? 0} giờ)`}
                     value={formatMoney(d.base_amount ?? 0)}
                   />
                 ) : (
@@ -75,7 +75,7 @@ export function StopMoneyPreviewSection({
             <>
               <Row label="Giờ còn lại" value={`${d.hours_left ?? 0} giờ`} />
               <Row label="Giờ tặng bị huỷ" value={`${d.hours_cancelled ?? 0} giờ`} />
-              <Row label="Giá sau chiết khấu" value={formatMoney(d.unit_price_net ?? 0)} />
+              <Row label="Giá sau ưu đãi" value={formatMoney(d.unit_price_net ?? 0)} />
               <Row
                 label="Số dư giữ lại cho phụ huynh"
                 value={formatMoney(d.balance_amount ?? 0)}

@@ -193,7 +193,7 @@ function AssignBody({ data, onClose }: { data: AssignOptions; onClose: () => voi
 
       {data.sibling_hint && (
         <Alert tone="info">
-          Em mới có ghi danh {data.sibling_hint.have_subject_name}, chưa có{' '}
+          Học sinh mới có ghi danh {data.sibling_hint.have_subject_name}, chưa có{' '}
           {data.sibling_hint.missing_subject_name}. Chỉ nhắc, không chặn xếp lớp.
         </Alert>
       )}

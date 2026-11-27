@@ -297,8 +297,8 @@ const BAI = {
           },
         },
         {
-          chu: 'Thêm chiết khấu theo chính sách nếu có (chọn trong danh sách, không gõ số)',
-          loc: (p) => p.getByRole('button', { name: 'Thêm chiết khấu dòng 1' }),
+          chu: 'Thêm ưu đãi theo chính sách nếu có (chọn trong danh sách, không gõ số)',
+          loc: (p) => p.getByRole('button', { name: 'Thêm ưu đãi dòng 1' }),
         },
         {
           chu: 'Bấm «Lưu», rồi bấm «Gửi»',
@@ -656,7 +656,7 @@ const BAI = {
       },
       [
         {
-          chu: 'Vào «Phiếu chi» (menu Bán hàng và thu chi), bấm mã phiếu',
+          chu: 'Vào «Phiếu chi» (menu Kế toán), bấm mã phiếu',
           loc: (p) => p.getByText('PC-CS5-2611-0002', { exact: true }),
           lam: async (p) => {
             await p.getByText('PC-CS5-2611-0002', { exact: true }).first().click();

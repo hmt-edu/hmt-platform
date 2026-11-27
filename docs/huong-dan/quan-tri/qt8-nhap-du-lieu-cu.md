@@ -25,7 +25,7 @@ cap_nhat: 2026-11-24
 - [ ] Với loại thuộc đào tạo (Lớp, Ghi danh…): cơ sở trong file đã được **bật phân hệ Vận hành lớp** ở bài «Công tắc tính năng theo cơ sở», nếu chưa thì sẽ bị chặn.
 
 ## Luật cần nhớ (lời thường)
-- Nạp **theo từng loại**, đúng thứ tự: Người dùng, Lớp, Phụ huynh, Học sinh, Ghi danh, Số dư, Cơ hội, Phiếu test. Loại nào cần dữ liệu có trước thì nạp sau.
+- Nạp **theo từng loại**, đúng thứ tự: Người dùng, Lớp, Phụ huynh, Học sinh, Ghi danh, Số dư, Cơ hội, Phiếu Test. Loại nào cần dữ liệu có trước thì nạp sau.
 - Dòng **đã có** thì bị bỏ qua (báo «Trùng»), **không ghi đè, không tự gộp**. Nạp lại cùng file không làm nhân đôi.
 - Dòng **lỗi** không được nạp. Một số loại (Ghi danh, Số dư) **không nạp từng phần**: còn một dòng lỗi là không nạp cả loại; phải sửa file hết lỗi mới nạp được.
 - **Không mang mật khẩu của hệ thống cũ sang.** Khi nạp Người dùng, hệ thống tạo **mật khẩu tạm mới** cho từng người, hiện **một lần**, bạn tải file giao từng người; họ đổi mật khẩu ở lần đăng nhập đầu.
@@ -58,7 +58,7 @@ cap_nhat: 2026-11-24
 
 ## Sau bước này
 - **Ai làm tiếp:** nạp loại kế tiếp theo thứ tự (cột «Cần có trước»). Giao mật khẩu tạm cho từng người (nếu nạp Người dùng).
-- **Bạn xem ở đâu:** màn **Người dùng** với người dùng đã nạp; các màn Phụ huynh, Học sinh, Lớp… với loại tương ứng. Loại Cơ hội: hộp kết quả có thêm «Báo cáo cơ hội hợp lệ» (theo giai đoạn, dòng thiếu thông tin em).
+- **Bạn xem ở đâu:** màn **Người dùng** với người dùng đã nạp; các màn Phụ huynh, Học sinh, Lớp… với loại tương ứng. Loại Cơ hội: hộp kết quả có thêm «Báo cáo cơ hội hợp lệ» (theo giai đoạn, dòng thiếu thông tin học sinh).
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
@@ -93,7 +93,7 @@ cap_nhat: 2026-11-24
 
 ## Ghi chú cho người soát (không hiển thị cho người học)
 - Tên menu và tiêu đề trang là «Nhập dữ liệu»; bản đồ màn hình (QT-18) ghi «Nhập dữ liệu cũ»; bài dùng chữ trên màn.
-- Bản đồ màn hình QT-18 nói chỉ có ba loại (Người dùng, Phụ huynh, Học sinh); mã nguồn hiện có tám loại (thêm Lớp, Ghi danh, Số dư, Cơ hội, Phiếu test). Bài theo mã nguồn (importKinds.ts). Tên «Ghi danh» đã xác nhận trong importKinds.ts.
+- Bản đồ màn hình QT-18 nói chỉ có ba loại (Người dùng, Phụ huynh, Học sinh); mã nguồn hiện có tám loại (thêm Lớp, Ghi danh, Số dư, Cơ hội, Phiếu Test). Bài theo mã nguồn (importKinds.ts). Tên «Ghi danh» đã xác nhận trong importKinds.ts.
 - Giới hạn «tối đa N dòng mỗi lần» là tham số; bài không ghi con số.
 - Bước tải trong hộp: bước 2 «Tải file» có nút «Tiếp»; ở «Xem trước» nút tiếp là «Nạp thật» và nút lùi là «Đổi file» (theo ImportDataDialog).
 - Chưa xác nhận trên staging: «Báo cáo nạp» (lỗi theo loại) hiện với loại nào; không mô tả chi tiết.

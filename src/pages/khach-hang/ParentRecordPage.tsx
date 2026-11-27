@@ -1,6 +1,6 @@
 // KH-02 Phụ huynh (bản ghi, khuôn K06): thông tin, các con, đơn hàng, phiếu thu; nút liên kết có số đếm; ghi chú và hoạt động (Chatter).
 // Không có Tạo tay (R-CRM-27). Sửa (KH-03) gọi update_parent; cơ sở tiếp nhận chỉ xem (R-CRM-28, Admin đổi qua ticket Chuyển cơ sở).
-// Gộp (KH-07), Tạo ticket (CS-04) chưa làm: hiện mờ kèm chú thích. Ticket và Tài chính: chưa có dữ liệu.
+// Mọi tab bấm được và luôn hiện đủ cột (khung KH02_*): cột chưa có dữ liệu để gạch; tab Tài chính mới có đầu cột.
 import { useState } from 'react';
 import { MergeDialog } from '../../features/merge/MergeDialog';
 import { formatPhone } from '../lead/leadFormat';
@@ -13,7 +13,7 @@ import { INPUT_CLASS } from '../../ui/Field';
 import { OptionalSelect } from '../../ui/OptionalSelect';
 import { useToast } from '../../ui/toastContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
-import { formatDate, formatMoney } from '../../lib/format';
+import { formatDate } from '../../lib/format';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { newTicketForParentPath } from './custFilters';
@@ -21,6 +21,8 @@ import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
 import { CustTabs } from './CustTabs';
 import { CustTickets } from './CustTickets';
+import { ParentFinanceTab, ParentOrdersTab, ParentReceiptsTab } from './ParentTabs';
+import { useOpenTicketCount } from './useCustTickets';
 import { parentPath, studentPath } from './custConfig';
 import { STUDENT_STATUS_LABEL, type ParentRecord } from './custTypes';
 import { useParentRecord, useRefreshCustomers } from './useCustData';
@@ -115,6 +117,10 @@ function ParentView({ record }: { record: ParentRecord }) {
   const toast = useToast();
   const catalogs = useLeadCatalogs();
   const canEdit = access.can('PARENT', 'SUA') && !merged;
+  const openTickets = useOpenTicketCount(
+    { key: 'parent_id', id: record.id },
+    access.can('TICKET', 'XEM'),
+  );
   // Gộp trùng dùng quyền Duyệt (R-CRM-25); bản đã gộp chỉ đọc.
   const canMerge = access.can('PARENT', 'DUYET') && !merged;
   const [mergeOpen, setMergeOpen] = useState(false);
@@ -294,8 +300,15 @@ function ParentView({ record }: { record: ParentRecord }) {
             icon: 'training',
             count: record.counts.enrollments,
             hidden: !access.can('ENROLLMENT', 'XEM'),
-            unavailable: 'Màn Ghi danh sắp có',
-            onOpen: () => undefined,
+            onOpen: () => setTab('finance'),
+          },
+          {
+            key: 'ticket-mo',
+            label: 'Ticket mở',
+            icon: 'results',
+            count: openTickets ?? 0,
+            hidden: openTickets === undefined,
+            onOpen: () => setTab('tickets'),
           },
           {
             key: 'phieu-thu',
@@ -343,14 +356,8 @@ function ParentView({ record }: { record: ParentRecord }) {
             { key: 'children', label: 'Các con' },
             { key: 'orders', label: 'Đơn hàng' },
             { key: 'receipts', label: 'Phiếu thu' },
-            access.can('TICKET', 'XEM')
-              ? { key: 'tickets', label: 'Ticket' }
-              : { key: 'tickets', label: 'Ticket', note: 'Bạn không có quyền xem ticket' },
-            {
-              key: 'finance',
-              label: 'Tài chính',
-              note: 'Chưa có dữ liệu (số dư, công nợ làm sau)',
-            },
+            { key: 'tickets', label: 'Ticket' },
+            { key: 'finance', label: 'Tài chính' },
           ]}
         />
         {tab === 'overview' && (
@@ -431,47 +438,10 @@ function ParentView({ record }: { record: ParentRecord }) {
               ))}
             </ul>
           ))}
-        {tab === 'orders' &&
-          (record.orders.length === 0 ? (
-            <p className="py-2 text-fg-muted">Chưa có đơn hàng.</p>
-          ) : (
-            <ul className="flex flex-col divide-y divide-border">
-              {record.orders.map((o) => (
-                <li key={o.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                  <Link
-                    to={`/crm/don-hang/${o.id}`}
-                    className="font-medium text-link hover:underline"
-                  >
-                    {o.code}
-                  </Link>
-                  <span className="text-caption text-fg-muted">
-                    {formatDate(o.created_at)} · {formatMoney(o.total_amount)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ))}
+        {tab === 'orders' && <ParentOrdersTab record={record} />}
+        {tab === 'receipts' && <ParentReceiptsTab record={record} />}
         {tab === 'tickets' && <CustTickets owner={{ key: 'parent_id', id: record.id }} />}
-        {tab === 'receipts' &&
-          (record.receipts.length === 0 ? (
-            <p className="py-2 text-fg-muted">Chưa có phiếu thu.</p>
-          ) : (
-            <ul className="flex flex-col divide-y divide-border">
-              {record.receipts.map((r) => (
-                <li key={r.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-                  <Link
-                    to={`/crm/phieu-thu/${r.id}`}
-                    className="font-medium text-link hover:underline"
-                  >
-                    {r.code}
-                  </Link>
-                  <span className="text-caption text-fg-muted">
-                    {r.paid_on ? formatDate(r.paid_on) : '—'} · {formatMoney(r.amount)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          ))}
+        {tab === 'finance' && <ParentFinanceTab record={record} />}
       </RecordDetail>
       {canMerge && (
         <MergeDialog

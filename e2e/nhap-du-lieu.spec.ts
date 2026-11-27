@@ -35,7 +35,7 @@ test('Nhập Phụ huynh: xem trước đếm đúng, lọc, nạp thật, tải
   await expect(page.getByRole('button', { name: 'Nhập lớp' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Nhập ghi danh' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Nhập số dư' })).toBeEnabled();
-  await expect(page.getByRole('button', { name: 'Nhập phiếu test' })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Nhập phiếu Test' })).toBeEnabled();
   await expect(page.getByRole('button', { name: 'Tải file mẫu phụ huynh' })).toBeEnabled();
   await expectAccessible(page);
   await page.getByRole('button', { name: 'Nhập phụ huynh' }).click();
@@ -214,7 +214,7 @@ test('Nhập Cơ hội: báo cáo theo giai đoạn, dòng thiếu thông tin em
   const report = dialog.getByLabel('Báo cáo cơ hội');
   await expect(report).toContainText('L2: 1');
   await expect(report).toContainText('L5: 1');
-  await expect(report.getByText(/dòng thiếu thông tin em/)).toContainText('1');
+  await expect(report.getByText(/dòng thiếu thông tin học sinh/)).toContainText('1');
   // Không in họ tên, SĐT; cảnh báo nêu rõ thiếu thông tin em.
   await expect(dialog.getByText('Chị Cơ Hội')).toHaveCount(0);
   await expect(dialog.getByText(/Thiếu thông tin em \(dữ liệu cũ\)/)).toBeVisible();

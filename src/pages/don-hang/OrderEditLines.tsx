@@ -127,7 +127,7 @@ function DiscountEditor({
         })}
         {addable.length > 0 && (
           <Select
-            label={`Thêm chính sách chiết khấu ${label}`}
+            label={`Thêm chính sách ưu đãi ${label}`}
             value=""
             placeholder="+ Thêm"
             onChange={(id) => {
@@ -194,9 +194,9 @@ export function OrderEditLines({
               <th className="px-2 py-2">Hình thức</th>
               <th className="px-2 py-2">Mã lớp</th>
               <th className="px-2 py-2">Ngày vào lớp</th>
-              <th className="px-2 py-2">Số lượng</th>
+              <th className="px-2 py-2 text-right">Số lượng</th>
               <th className="px-2 py-2 text-right">Đơn giá</th>
-              <th className="px-2 py-2">Chiết khấu</th>
+              <th className="px-2 py-2">Ưu đãi</th>
               <th className="px-2 py-2 text-right">Tổng %</th>
               <th className="px-2 py-2 text-right">Giảm</th>
               <th className="px-2 py-2 text-right">Thành tiền</th>
@@ -356,7 +356,7 @@ export function OrderEditLines({
                       onChange={(v) => onChangeAdded(a.key, { studentId: v })}
                       options={students.map((st) => ({
                         value: st.id,
-                        label: `${st.full_name ?? 'Em chưa có tên'}${st.birth_year ? ` · ${st.birth_year}` : ''}`,
+                        label: `${st.full_name ?? 'Học sinh chưa có tên'}${st.birth_year ? ` · ${st.birth_year}` : ''}`,
                       }))}
                     />
                   </td>
@@ -425,7 +425,9 @@ export function OrderEditLines({
         <Button icon="plus" onClick={onAdd}>
           Thêm dòng
         </Button>
-        <span className="text-caption text-fg-muted">Chưa thấy em? Thêm em ở cơ hội.</span>
+        <span className="text-caption text-fg-muted">
+          Chưa thấy học sinh? Thêm học sinh ở cơ hội.
+        </span>
       </div>
     </div>
   );

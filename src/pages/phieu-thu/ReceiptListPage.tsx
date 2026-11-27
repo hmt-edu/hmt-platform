@@ -145,7 +145,7 @@ export function ReceiptListPage({ waitingAccounting = false }: { waitingAccounti
         forbidden={listForbiddenOf(
           activeQuery.error,
           waitingAccounting ? 'phiếu thu chờ duyệt' : 'phiếu thu',
-          'Bán hàng và thu chi',
+          'Kế toán',
         )}
         onRetry={() => void activeQuery.refetch()}
         groupTree={grouped ? grouping?.tree : undefined}

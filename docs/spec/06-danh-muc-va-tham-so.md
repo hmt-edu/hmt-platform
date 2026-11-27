@@ -165,3 +165,12 @@ Thêm vào các mục trên khi viết migration; chỗ [CHỜ] chưa làm.
 | Tham số | Số ngày "Hết hạn" (nhãn) của đơn, báo giá | 14 ngày từ lúc Gửi (`quotation_validity_days` đã có cho báo giá) | [CHỐT] |
 | Tham số | Ngày chốt giờ học | 17/11/2026 | [CHỐT] |
 | Dữ liệu | Số giờ gói 6 tháng của 12 sản phẩm; giá online TOAN-V12-TH1, TOAN-BN-TH1 | anh báo sau | [CHỜ] |
+
+## Ghi nhận liên hệ và cờ hồ sơ (Chat chốt 27/11/2026; R-CRM-43)
+
+| Loại | Tên | Giá trị mặc định | Trạng thái |
+|---|---|---|---|
+| Danh mục mở | Kênh liên hệ (`CONTACT_CHANNEL`) | Gọi điện, Zalo, Gặp trực tiếp, Khác | [CHỐT] |
+| Danh mục mở | Kết quả liên hệ (`CONTACT_RESULT`) | Nghe máy, đã trao đổi; Không nghe máy; Hẹn gọi lại; Từ chối | [CHỐT] |
+| Tham số | Số ngày không liên hệ thì cờ «Lâu chưa liên hệ» | 30 ngày, Admin chỉnh được (khai báo ở migration 695, cùng cờ) | [CHỐT] |
+| Tham số | Số buổi vắng liên tiếp thì cờ «Vắng liên tiếp» | 3 buổi, Admin chỉnh được (khai báo ở migration 695, cùng cờ) | [CHỐT] |

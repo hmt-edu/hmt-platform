@@ -128,19 +128,19 @@ function OpeningDebtForm({ open, onOpenChange }: Props) {
           )}
         </Field>
         <Field
-          label="Em"
+          label="Học sinh"
           required
           error={debts.isError ? errorOf(debts.error).message : null}
           help={
             debts.data
-              ? `Tổng nợ đầu kỳ còn lại của phụ huynh: ${formatMoney(debts.data.parent_remaining)} (cộng nợ các em).`
+              ? `Tổng nợ đầu kỳ còn lại của phụ huynh: ${formatMoney(debts.data.parent_remaining)} (cộng nợ các học sinh).`
               : 'Chọn phụ huynh trước.'
           }
         >
           {(f) => (
             <Select
               id={f.id}
-              label="Em"
+              label="Học sinh"
               value={studentId}
               onChange={(v) => {
                 setStudentId(v);
@@ -150,7 +150,7 @@ function OpeningDebtForm({ open, onOpenChange }: Props) {
                 value: s.id,
                 label: `${s.name} · nợ còn ${formatMoney(s.remaining)}${s.credit > 0 ? ` · thu thừa ${formatMoney(s.credit)}` : ''}`,
               }))}
-              placeholder={debts.isPending && parentId !== '' ? 'Đang tải…' : 'Chọn em'}
+              placeholder={debts.isPending && parentId !== '' ? 'Đang tải…' : 'Chọn học sinh'}
               disabled={parentId === '' || debts.isPending}
               className="w-full"
             />
@@ -163,8 +163,8 @@ function OpeningDebtForm({ open, onOpenChange }: Props) {
           onChange={setAmount}
           help={
             student
-              ? `Không vượt nợ còn lại của em: ${formatMoney(student.remaining)}. Đơn vị: đồng.`
-              : 'Không vượt nợ còn lại của em. Đơn vị: đồng.'
+              ? `Không vượt nợ còn lại của học sinh: ${formatMoney(student.remaining)}. Đơn vị: đồng.`
+              : 'Không vượt nợ còn lại của học sinh. Đơn vị: đồng.'
           }
         />
         <Field label="Hình thức" required>

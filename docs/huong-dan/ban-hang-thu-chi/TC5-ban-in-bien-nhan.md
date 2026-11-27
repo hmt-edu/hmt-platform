@@ -5,7 +5,7 @@ vai: [tu-van, cskh, ke-toan]
 phan_he: thu-chi
 ma_man: [TC-07]
 uu_tien: P2
-cap_nhat: 2026-11-24
+cap_nhat: 2026-11-27
 ---
 
 # In biên nhận phiếu thu
@@ -14,7 +14,6 @@ cap_nhat: 2026-11-24
 **Ai làm:** Tư vấn, CSKH, Kế toán (ai xem được phiếu thu thì in được). **Màn:** Phiếu thu → mở phiếu → «In biên nhận».
 
 ## Trước khi bắt đầu, kiểm
-- [ ] **Ở CS5, Tư vấn tuyển sinh thu tiền và không đưa biên nhận in cho phụ huynh ở bước thu.** [CẦN CHỐT: luật chỉ có «có bản in biên nhận» (R-TIEN-08); quy định «chỉ in khi Trưởng cơ sở yêu cầu» chưa có nguồn, chờ anh Trường chốt].
 - [ ] Máy tính nối được máy in, hoặc bạn chọn «Lưu thành PDF» trong hộp in.
 
 ## Cần nhớ
@@ -29,7 +28,7 @@ cap_nhat: 2026-11-24
 3. In xong, **hai bên ký**: «Người nộp tiền» và «Người nhận tiền» (tên người lập phiếu đã in sẵn).
 
 ## Sau bước này
-- **Ai làm tiếp:** bạn đưa bản đã ký cho phụ huynh khi được yêu cầu; giữ một bản theo quy định của cơ sở.
+- **Ai làm tiếp:** bạn đưa bản đã ký cho phụ huynh; giữ một bản theo quy định của cơ sở.
 - **Bạn xem ở đâu:** quay lại phiếu thu bằng nút «‹ Phiếu thu PT-…» ở đầu trang bản in.
 
 ## Làm nhầm thì sao

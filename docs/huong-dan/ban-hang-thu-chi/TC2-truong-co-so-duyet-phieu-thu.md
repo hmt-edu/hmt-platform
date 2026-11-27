@@ -21,7 +21,7 @@ cap_nhat: 2026-11-24
 - [ ] Bạn **không phải người lập** phiếu này.
 
 ## Cần nhớ
-- Bước quản lý và bước Kế toán là **hai người khác nhau**; Admin không duyệt thay Kế toán.
+- Bước quản lý và bước Kế toán là **hai người khác nhau**; riêng Admin hệ thống được duyệt cả hai bước, có ghi nhật ký.
 - Bạn duyệt là xác nhận phiếu **ghi đúng** số tiền, đúng đơn, đúng phần chia. Việc đối chiếu sao kê là của Kế toán.
 
 ## Các bước
@@ -40,7 +40,7 @@ cap_nhat: 2026-11-24
 |---|---|
 | Duyệt nhầm, Kế toán chưa duyệt | báo Kế toán «Từ chối phiếu thu»; phiếu về Nháp, người lập trình lại |
 | Từ chối nhầm | báo người lập trình lại |
-| Cần đổi người duyệt (người duyệt vắng) | Admin dùng «Chuyển người duyệt» (Admin chỉ chuyển, không duyệt thay bước quản lý) |
+| Cần đổi người duyệt (người duyệt vắng) | Admin duyệt thay, hoặc dùng «Chuyển người duyệt» |
 
 ## Lỗi hay gặp
 | Thấy câu gì | Nghĩa là | Làm gì |

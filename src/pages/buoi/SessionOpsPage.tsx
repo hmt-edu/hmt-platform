@@ -84,7 +84,7 @@ export function SessionOpsPage() {
         </h2>
         {sheet.listed && (
           <Tag tone="neutral">
-            Đã ghi {countOpsMarked(sheet.students, draft)}/{total} em
+            Đã ghi {countOpsMarked(sheet.students, draft)}/{total} học sinh
           </Tag>
         )}
         {dirty && <Tag tone="warning">Chưa lưu</Tag>}
@@ -117,11 +117,11 @@ export function SessionOpsPage() {
       )}
       {sheet.listed && !done && (
         <p className="text-caption text-fg-muted">
-          Mỗi em một thẻ. Chưa chọn nghĩa là chưa làm. Ô Giáo viên (chính thức) chỉ đọc.
+          Mỗi học sinh một thẻ. Chưa chọn nghĩa là chưa làm. Ô Giáo viên (chính thức) chỉ đọc.
         </p>
       )}
       {sheet.listed && (
-        <ul className="flex flex-col gap-2" aria-label="Danh sách em">
+        <ul className="flex flex-col gap-2" aria-label="Danh sách học sinh">
           {sheet.students.map((st) => {
             const c = cellOf(st, draft);
             const teacher = sheet.statuses.find((x) => x.code === st.teacher_status_code)?.name;
@@ -185,7 +185,7 @@ export function SessionOpsPage() {
       {error && <Alert tone="danger">{error}</Alert>}
       <p className="text-caption text-fg-muted">
         Cột Giáo viên (chính thức) chỉ đọc: ô của giáo viên quyết định trạng thái chính thức. Lý do
-        liên hệ ghi được cho mọi trạng thái. Em chưa chọn nghĩa là chưa làm.
+        liên hệ ghi được cho mọi trạng thái. Học sinh chưa chọn nghĩa là chưa làm.
       </p>
     </div>
   );

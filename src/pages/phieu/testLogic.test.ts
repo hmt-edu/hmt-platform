@@ -96,14 +96,14 @@ describe('điểm (R-CRM-10: 0–10, một chữ số thập phân)', () => {
   });
 });
 
-describe('chữ hộp Tạo phiếu kiểm tra (So canvas TS-15)', () => {
+describe('chữ hộp Tạo phiếu Test (So canvas TS-15)', () => {
   it('dòng gợi ý Người phụ trách và dòng nhắc bật nút Tạo phiếu đúng khung TS15_hop', () => {
     expect(createTestText.ownerHelp).toBe(
       'Mặc định là người tạo phiếu; nhận lịch hẹn nhắc và theo dõi lịch test.',
     );
     expect(createTestText.submitHint).toBe('Chọn Ngày test và Giờ test để bật nút Tạo phiếu.');
     expect(createTestText.emHelp).toBe(
-      'Chưa thấy em? Đóng hộp này và bấm + Thêm em ở cột Thông tin học sinh.',
+      'Chưa thấy học sinh? Đóng hộp này và bấm + Thêm học sinh ở cột Thông tin học sinh.',
     );
   });
 });

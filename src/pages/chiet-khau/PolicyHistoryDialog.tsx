@@ -66,7 +66,7 @@ export function PolicyHistoryDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="Lịch sử thay đổi"
-      description="Chính sách chiết khấu và quà tặng, ghi từ mới đến cũ. Không ai sửa hay xoá được nhật ký."
+      description="Chính sách ưu đãi và quà tặng, ghi từ mới đến cũ. Không ai sửa hay xoá được nhật ký."
       wide
       footer={<Button onClick={() => onOpenChange(false)}>Đóng</Button>}
     >

@@ -3,11 +3,12 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import { useAuth } from '../lib/auth/authContext';
 import { ALL_BRANCHES } from '../nav/access';
 import { useAccess } from '../nav/AccessContext';
-import { CRM_MENU, visibleMenu, type MenuGroup } from '../nav/crmMenu';
+import { CRM_MENU, routeTabs, sidebarEntries, visibleMenu, type MenuGroup } from '../nav/crmMenu';
 import { IconButton } from '../ui/Button';
 import { cn } from '../ui/cn';
 import { Icon } from '../ui/icons';
 import { Drawer, Select } from '../ui/Overlays';
+import { RouteTabs } from '../ui/RouteTabs';
 import { AccountMenu } from './AccountMenu';
 import { CrumbTailContext } from './CrumbTail';
 import { GlobalSearch } from './GlobalSearch';
@@ -45,7 +46,11 @@ function MenuGroupSection({
   onNavigate?: (() => void) | undefined;
 }) {
   const location = useLocation();
-  const hasActive = group.entries.some((e) => location.pathname === crmPath(e.slug));
+  const entries = sidebarEntries(group);
+  const current = group.entries.find((e) => location.pathname === crmPath(e.slug));
+  const hasActive = current !== undefined;
+  // Đang ở một tab thì dòng menu của mục cha được tô.
+  const activeTabParent = entries.some((e) => e.slug === current?.tabOf) ? current?.tabOf : null;
   const [open, setOpen] = useState(hasActive || group.id === 'tong-quan');
   const expanded = open || hasActive;
   const panelId = `menu-${group.id}`;
@@ -72,10 +77,9 @@ function MenuGroupSection({
       </button>
       {expanded && (
         <ul id={panelId} className="mt-0.5 flex flex-col gap-0.5">
-          {group.entries.map((entry, index) => {
+          {entries.map((entry, index) => {
             // Tiêu đề nhóm con hiện một lần, trước mục đầu tiên của nhóm con đó.
-            const heading =
-              entry.sub && entry.sub !== group.entries[index - 1]?.sub ? entry.sub : null;
+            const heading = entry.sub && entry.sub !== entries[index - 1]?.sub ? entry.sub : null;
             return (
               <li key={entry.code}>
                 {heading && (
@@ -83,7 +87,14 @@ function MenuGroupSection({
                     {heading}
                   </p>
                 )}
-                <NavLink to={crmPath(entry.slug)} end onClick={onNavigate} className={entryClass}>
+                <NavLink
+                  to={crmPath(entry.slug)}
+                  end
+                  onClick={onNavigate}
+                  className={({ isActive }) =>
+                    entryClass({ isActive: isActive || entry.slug === activeTabParent })
+                  }
+                >
                   <span className="truncate">{entry.label}</span>
                 </NavLink>
               </li>
@@ -131,8 +142,14 @@ function menuBreadcrumb(menu: MenuGroup[], tail: string | null, pathname: string
   for (const group of menu) {
     const entry = group.entries.find((e) => crmPath(e.slug) === pathname);
     if (entry) {
-      return pathname === '/crm'
-        ? [{ label: entry.label }]
+      if (pathname === '/crm') return [{ label: entry.label }];
+      const tabParent = group.entries.find((e) => e.slug === entry.tabOf);
+      return tabParent
+        ? [
+            { label: group.label },
+            { label: tabParent.label, to: crmPath(tabParent.slug) },
+            { label: entry.tabLabel ?? entry.label },
+          ]
         : [{ label: group.label }, { label: entry.label }];
     }
     const parent = group.entries.find(
@@ -166,6 +183,7 @@ export function CrmShell() {
   const [tail, setTail] = useState<string | null>(null);
   const crumbs = useBreadcrumb(menu, tail);
   const { pathname, search } = useLocation();
+  const tabs = routeTabs(menu, pathname.replace(/^\/crm\/?/, ''));
   const crumbsValue = useMemo(
     () => ({ crumbs, here: `${pathname}${search}` }),
     [crumbs, pathname, search],
@@ -299,6 +317,12 @@ export function CrmShell() {
             </header>
             <main className="min-w-0 flex-1">
               <div className="p-4 lg:p-5">
+                {tabs.length > 0 && (
+                  <RouteTabs
+                    label="Các màn cùng mục"
+                    items={tabs.map((t) => ({ to: crmPath(t.slug), label: t.label }))}
+                  />
+                )}
                 <Outlet />
               </div>
             </main>
