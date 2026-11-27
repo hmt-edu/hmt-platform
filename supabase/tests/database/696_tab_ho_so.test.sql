@@ -95,5 +95,9 @@ select is(pg_temp.err($$select app.list_record_appointments(jsonb_build_object('
 select is(pg_temp.err($$select app.list_record_upsale(jsonb_build_object('student_id', (select s from ids)))$$), 'HMT_KHONG_CO_QUYEN',
   'Chặn: tài khoản học sinh không xem phiếu tái tục');
 
+reset role;
+select ok(position('ops_status_code' in pg_get_functiondef('app.list_record_upsale(jsonb,text,integer,integer)'::regprocedure)) = 0,
+  'R-DD-02: số buổi vắng ở tab Tái tục chỉ đọc cột Giáo viên, không đọc cột vận hành');
+
 select * from finish();
 rollback;
