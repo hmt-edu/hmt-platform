@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState, type ReactNode } from 'react';
 import { FORBIDDEN_CODE, HmtError, rpc, useDb } from '../../lib/db';
 import { Button } from '../../ui/Button';
-import { Chatter, type ChatterEntry, type Person } from '../../ui/Chatter';
+import { Chatter, type ChatterEntry, type ChatterFocus, type Person } from '../../ui/Chatter';
 import { useToast } from '../../ui/toastContext';
 import { LogContactDialog } from '../contacts/LogContactDialog';
 import {
@@ -28,6 +28,7 @@ export function RecordChatter({
   upcoming,
   headerRight,
   canWrite,
+  focus,
 }: {
   entityType: string;
   entityId: string;
@@ -44,6 +45,7 @@ export function RecordChatter({
   headerRight?: ReactNode | undefined;
   /** Bản ghi chỉ đọc (Đã gộp): tắt ô viết ghi chú. */
   canWrite?: boolean | undefined;
+  focus?: ChatterFocus | undefined;
 }) {
   const supabase = useDb();
   const queryClient = useQueryClient();
@@ -82,6 +84,7 @@ export function RecordChatter({
     <>
       <Chatter
         contacts={contacts}
+        focus={focus}
         entries={entries}
         status={
           query.isPending ? 'loading' : forbidden ? 'forbidden' : query.isError ? 'error' : 'ready'

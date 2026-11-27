@@ -37,16 +37,19 @@ export function LogContactDialog({
   entityId,
   onClose,
   onSaved,
+  initialChannel = '',
 }: {
   entityType: string;
   entityId: string;
   onClose: () => void;
   onSaved: () => Promise<void>;
+  /** Kênh chọn sẵn (nút «Gọi» ở hàng Làm nhanh). */
+  initialChannel?: string | undefined;
 }) {
   const supabase = useDb();
   const options = useContactOptions();
   const [draft, setDraft] = useState<ContactDraft>({
-    channel: '',
+    channel: initialChannel,
     result: '',
     body: '',
     nextDate: null,

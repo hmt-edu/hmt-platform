@@ -185,6 +185,7 @@ export function RecordDetail({
   stageShowCode = true,
   businessActions,
   subStage,
+  summary,
   smart,
   smartZero,
   children,
@@ -239,6 +240,8 @@ export function RecordDetail({
   stageShowCode?: boolean | undefined;
   businessActions?: ReactNode | undefined;
   subStage?: ReactNode | undefined;
+  /** Khối đầu hồ sơ trên hàng nút liên kết (Làm nhanh, thẻ tóm tắt, cờ cảnh báo của hồ sơ 360°). */
+  summary?: ReactNode | undefined;
   smart?: SmartItem[] | undefined;
   smartZero?: SmartZeroBehavior | undefined;
   children: ReactNode;
@@ -365,6 +368,7 @@ export function RecordDetail({
             </div>
           )}
           {/* Bản ghi chưa lưu thì chưa có gì liên quan: ẩn cả hàng nút (không hiện nút mờ số 0). */}
+          {!creating && summary}
           {smart && !creating && <SmartButtons items={smart} zero={smartZero} />}
           <article className="rounded-box border border-border bg-surface px-6 pt-5 pb-6">
             <h2 className="mb-4 font-display text-h1">

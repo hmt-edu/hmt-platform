@@ -1,7 +1,7 @@
 // Cột phải của bản ghi (K3): "Ghi chú & hoạt động". Ô viết ghi chú (gõ @ nhắc đồng nghiệp), hoạt động sắp tới
 // (nơi dùng truyền vào), dòng thời gian chia theo ngày với bộ lọc Tất cả / Ghi chú / Hệ thống.
 // Thành phần chỉ lo hiển thị và gõ; dữ liệu do nơi dùng truyền vào (xem src/features/chatter).
-import { useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { formatDmy } from '../lib/dateText';
 import { formatTime } from '../lib/format';
 import { Button, IconButton } from './Button';
@@ -352,6 +352,8 @@ function dayLabel(iso: string, today: Date): string {
   return same ? `Hôm nay · ${formatDmy(date)}` : formatDmy(date);
 }
 
+export type ChatterFocus = { target: 'note' | 'contacts'; seq: number };
+
 export function Chatter({
   entries,
   status,
@@ -365,6 +367,7 @@ export function Chatter({
   headerRight,
   today = new Date(),
   contacts = false,
+  focus,
 }: {
   entries: ChatterEntry[];
   status: 'ready' | 'loading' | 'error' | 'forbidden';
@@ -383,8 +386,21 @@ export function Chatter({
   today?: Date | undefined;
   /** Bản ghi có ghi nhận liên hệ (phụ huynh, học sinh): hiện thêm bộ lọc «Liên hệ». */
   contacts?: boolean | undefined;
+  /** Nút ngoài khung (Làm nhanh, cờ cảnh báo) đưa người dùng tới ô ghi chú hoặc dòng «Liên hệ»; mỗi lần bấm tăng `seq`. */
+  focus?: ChatterFocus | undefined;
 }) {
   const [filter, setFilter] = useState<ChatterFilter>('notes');
+  const sectionRef = useRef<HTMLElement>(null);
+  const [seen, setSeen] = useState(0);
+  if (focus && focus.seq !== seen) {
+    setSeen(focus.seq);
+    setFilter(focus.target === 'contacts' ? 'contacts' : 'notes');
+  }
+  useEffect(() => {
+    if (!focus) return;
+    sectionRef.current?.scrollIntoView({ block: 'nearest' });
+    if (focus.target === 'note') sectionRef.current?.querySelector('textarea')?.focus();
+  }, [focus]);
   const shown = entries.filter((e) => inFilter(e, filter));
   // Gom theo ngày, giữ thứ tự mới nhất trước.
   const days: { label: string; items: ChatterEntry[] }[] = [];
@@ -407,6 +423,7 @@ export function Chatter({
 
   return (
     <section
+      ref={sectionRef}
       aria-label="Ghi chú & hoạt động"
       aria-disabled={disabled || undefined}
       inert={disabled}

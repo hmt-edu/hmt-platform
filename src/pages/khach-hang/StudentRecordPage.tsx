@@ -16,6 +16,8 @@ import { useToast } from '../../ui/toastContext';
 import { dateToIso, isoToDate } from '../lead/leadRecord';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
+import { RecordSummary } from '../../features/record360/RecordSummary';
+import type { ChatterFocus } from '../../ui/Chatter';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Tag } from '../../ui/Data';
 import { Spinner, StateView } from '../../ui/Feedback';
@@ -30,6 +32,7 @@ import {
 } from './StudentTabs';
 import { useComplaintCount, useOpenTicketCount } from './useCustTickets';
 import { parentPath, studentPath } from './custConfig';
+import { newTicketForParentPath } from './custFilters';
 import { useStudentAccount } from './StudentAccount';
 import { useRefreshCustomers, useStudentRecord } from './useCustData';
 
@@ -119,6 +122,7 @@ function StudentView({ record }: { record: StudentRecord }) {
   const refresh = useRefreshCustomers();
   const navigate = useNavigate();
   const [tab, setTab] = useState('overview');
+  const [focus, setFocus] = useState<ChatterFocus | undefined>();
   useCrumbTail(`${record.full_name} · ${record.code}`);
   const merged = record.record_status === 'DA_GOP';
   const access = useAccess();
@@ -236,6 +240,22 @@ function StudentView({ record }: { record: StudentRecord }) {
             ...account.menuItems,
           ],
         }}
+        summary={
+          <RecordSummary
+            entityType="STUDENT"
+            entityId={record.id}
+            label={`${record.code} · ${record.full_name}`}
+            readOnly={merged}
+            ticketPath={
+              record.parent ? newTicketForParentPath(record.parent.id, record.parent.code) : null
+            }
+            onFlag={(t) => {
+              setTicketType(undefined);
+              setTab(t === 'tickets' ? 'tickets' : 'attendance');
+            }}
+            onChatter={(target) => setFocus((f) => ({ target, seq: (f?.seq ?? 0) + 1 }))}
+          />
+        }
         smart={[
           {
             key: 'ghi-danh',
@@ -301,6 +321,7 @@ function StudentView({ record }: { record: StudentRecord }) {
             format={FORMAT}
             createdText="Tạo học sinh."
             canWrite={!merged}
+            focus={focus}
           />
         }
         asideLabel="Ghi chú và hoạt động"
