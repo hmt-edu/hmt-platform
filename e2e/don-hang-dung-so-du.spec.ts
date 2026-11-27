@@ -91,7 +91,9 @@ async function openOrder(page: Page, account: string, code: string) {
 
 test('Sale lập đơn không có mục «Dùng số dư» (chỉ Kế toán)', async ({ page }, testInfo) => {
   await openOrder(page, balanceSetupOf(testInfo.project.name).sale, seeded.orders.dduyet);
-  await expect(page.getByRole('button', { name: 'Hành động' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await expect(page.getByRole('menuitem', { name: 'In', exact: true })).toBeVisible();
+  await expect(page.getByRole('menuitem', { name: 'Dùng số dư' })).toHaveCount(0);
 });
 
 test('Cờ tắt: máy chủ từ chối; cờ bật: cấn được và số dư giảm', async ({ page }, testInfo) => {

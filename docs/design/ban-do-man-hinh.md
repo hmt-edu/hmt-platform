@@ -160,6 +160,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | BH-09 | Bật "Cho học trước, đóng tiền sau" | Hộp thoại · K08 | B | Máy tính | BM, AD | Trên đơn đã duyệt chưa thu tiền; hiện hạn mức buổi | Bật; Tắt | — | R-GD-12 |
 | BH-10 | Huỷ đơn hàng (lý do) | Hộp thoại · K08 | C | Máy tính | SA, BM, AD | Huỷ đơn chưa có tiền; đơn đã có tiền phải qua ticket hoàn tiền | Xác nhận | CS-05 | R-TIEN-03, R-CS-02 |
 | BH-11 | Cảnh báo cơ hội đã có đơn nháp | Hộp thoại · K08 | C | Máy tính | SA, CS, AD | Trước khi lập đơn mới: hiện đơn nháp đang có, mở đơn cũ hoặc vẫn tạo | Mở đơn cũ; Vẫn tạo | BH-05 | R-TIEN-39 |
+| BH-12 | Bản in đơn hàng | Bản in · K13 | B | Máy tính | SA, CS, BM, KT, AD | Bản A4 như BH-03; in ở mọi tình trạng, nhãn theo tình trạng thật (Bản nháp, Đã trình, Đã duyệt, Đã huỷ) | In; Tải PDF; Tải ảnh (PNG) | — | R-TIEN-13 |
 
 ### Thu chi
 
