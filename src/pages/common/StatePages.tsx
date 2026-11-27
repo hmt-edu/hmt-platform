@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 import { useAuth } from '../../lib/auth/authContext';
 import { homePortal } from '../../lib/auth/claims';
@@ -68,15 +69,25 @@ export function NotFoundView() {
 
 const HTTP_NOT_FOUND = 404; // allow-number: mã HTTP "không tìm thấy", không phải số nghiệp vụ
 
+const DETAIL_MAX_LENGTH = 200; // allow-number: cắt câu lỗi kỹ thuật cho gọn khung, không phải số nghiệp vụ
+
+/** Mã lỗi hiện trên khung: câu của HMT, mã HTTP, hoặc tên và câu của lỗi thật để báo lại được. */
+function errorDetail(error: unknown): string {
+  if (isRouteErrorResponse(error)) return `HTTP ${error.status}`;
+  if (error instanceof HmtError) return error.message;
+  const text = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+  return text.slice(0, DETAIL_MAX_LENGTH);
+}
+
 /** CHUNG-17 · Lỗi hệ thống: thông báo dễ hiểu, kèm mã lỗi để báo IT. */
 export function RouteErrorPage() {
   const error = useRouteError();
+  // Ghi ra Console để người hỗ trợ xem được cả vết lỗi (B-27-05).
+  useEffect(() => {
+    console.error('[HMT] Trang lỗi:', error);
+  }, [error]);
   if (isRouteErrorResponse(error) && error.status === HTTP_NOT_FOUND) return <NotFoundView />;
-  const detail = isRouteErrorResponse(error)
-    ? `HTTP ${error.status}`
-    : error instanceof HmtError
-      ? error.message
-      : 'Lỗi không rõ';
+  const detail = errorDetail(error);
   return (
     <StateView
       kind="error"
