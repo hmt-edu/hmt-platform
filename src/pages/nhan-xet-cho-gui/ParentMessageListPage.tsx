@@ -11,7 +11,8 @@ import { Button } from '../../ui/Button';
 import { FormDialog } from '../../ui/Dialogs';
 import { useToast } from '../../ui/toastContext';
 import logoUrl from '../../../design/hmt-p0-p2/assets/Logo-HMT-cropped.svg';
-import { downloadCanvas, drawCard, loadImage } from '../gv/exportRender';
+import { downloadCanvas } from '../../print/canvasFile';
+import { drawCard, loadImage } from '../gv/exportRender';
 import {
   EMPTY_PARENT_MESSAGE_STATE,
   buildParentMessageFilters,

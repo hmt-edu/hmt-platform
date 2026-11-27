@@ -6,6 +6,7 @@ import { useCrumbTail } from '../../layout/CrumbTail';
 import { amountInWords } from '../../lib/amountInWords';
 import { HmtError, errorOf } from '../../lib/db';
 import { formatDate, formatMoney, formatNumber } from '../../lib/format';
+import { PrintImageButton } from '../../print/PrintImageButton';
 import { PrintSheet } from '../../print/PrintSheet';
 import { Button } from '../../ui/Button';
 import { Spinner, StateView } from '../../ui/Feedback';
@@ -76,6 +77,7 @@ function QuotationPrint({ record }: { record: QuotationRecord }) {
         <Button icon="file" onClick={() => window.print()}>
           Tải PDF
         </Button>
+        <PrintImageButton code={record.code} />
         {/* Điện thoại không có máy in: ẩn nút In, giữ Tải PDF (khuôn K13). */}
         {!phone && (
           <Button variant="primary" icon="printer" onClick={() => window.print()}>
