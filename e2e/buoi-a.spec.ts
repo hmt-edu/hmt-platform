@@ -83,27 +83,23 @@ test('BUOI-03: ghi trạng thái trung tâm, Lưu, tải lại vẫn còn; khôn
   await expect(page.getByText('Đã ghi 1/3 học sinh')).toBeVisible();
 });
 
-test('BUOI-11: em giáo viên ghi Vắng hiện ở danh sách, em Có mặt không hiện; Ghi lý do rồi đọc lại', async ({
+test('Điểm danh: tab Cần gọi hiện em giáo viên ghi Vắng, không hiện em Có mặt; ghi lý do rồi đọc lại', async ({
   page,
 }) => {
   await markAsAssistant(seed.chot, seed.names[1], 'VANG_KHONG_PHEP');
   await markAsAssistant(seed.chot, seed.names[2], 'CO_MAT');
   await enterAs(page, 'cskh.cs5');
-  await page.goto('/crm/diem-danh');
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Học sinh vắng / chưa đến' }),
-  ).toBeVisible();
-  await page.getByRole('searchbox').fill('Em E2E');
-  // Buổi "khác" của seed cũng có em này nhưng chưa ai ghi (Chưa đến): chỉ xét dòng Vắng của buổi giáo viên đã ghi.
-  const row = page.getByRole('row').filter({ hasText: seed.names[1] }).filter({ hasText: 'Vắng' });
+  await page.goto('/crm/diem-danh?tab=can-goi');
+  await expect(page.getByRole('heading', { level: 1, name: 'Điểm danh' })).toBeVisible();
+  const table = page.getByRole('table', { name: 'Cần gọi' });
+  // Buổi "khác" của seed cũng có em này nhưng chưa ai ghi: chỉ xét dòng Vắng của buổi giáo viên đã ghi.
+  const row = table.getByRole('row').filter({ hasText: seed.names[1] }).filter({ hasText: 'Vắng' });
   await expect(row).toBeVisible();
   await expect(
-    page.getByRole('row').filter({ hasText: seed.names[2] }).filter({ hasText: 'Vắng' }),
+    table.getByRole('row').filter({ hasText: seed.names[2] }).filter({ hasText: 'Vắng' }),
   ).toHaveCount(0);
-  await row.getByRole('button', { name: 'Ghi lý do' }).click();
-  const dialog = page.getByRole('dialog', { name: 'Ghi lý do liên hệ' });
-  await pickOption(page, dialog.getByRole('combobox', { name: 'Lý do liên hệ' }), 'Không nghe máy');
-  await dialog.getByRole('button', { name: 'Lưu' }).click();
+  await pickOption(page, row.getByRole('combobox', { name: 'Lý do liên hệ' }), 'Không nghe máy');
+  await row.getByRole('button', { name: 'Lưu' }).click();
   await expect(page.getByText('Đã ghi lý do liên hệ', { exact: true })).toBeVisible();
   await expect(row).toContainText('Không nghe máy');
 });

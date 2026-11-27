@@ -178,3 +178,4 @@ Thêm vào các mục trên khi viết migration; chỗ [CHỜ] chưa làm.
 | Tham số | Mức gắn bó: điểm mỗi cờ (`engagement_points_*`, 6 tham số) | Vắng liên tiếp 2, Nợ quá hạn 2, bốn cờ còn lại 1; 0–10, ghi đè theo cơ sở (R-CRM-44) | [CHỐT] |
 | Tham số | Mức gắn bó: tính hay không từng cờ (`engagement_count_*`, 6 công tắc) | Tính cả sáu | [CHỐT] |
 | Tham số | Mức gắn bó: ngưỡng «Cần chú ý», «Nguy cơ» (`engagement_warn_score`, `engagement_risk_score`) | 1 và 3 điểm | [CHỐT] |
+| Tham số | Huỷ lead hàng loạt: tối đa mỗi lần của người có phạm vi cơ sở (`lead_cancel_bulk_max`) | 100 lead; 1–500, ghi đè theo cơ sở (R-CRM-45) | [CHỐT] |

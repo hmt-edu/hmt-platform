@@ -38,11 +38,16 @@ async function openOrder(page: Page, account: string, code: string) {
   await expect(page.getByRole('heading', { level: 2, name: code })).toBeVisible();
 }
 
-test('Điện thoại chỉ đọc: không có nút Sửa đơn', async ({ page }, testInfo) => {
+test('Điện thoại: đơn Nháp có nút Sửa đơn, mở được ô tìm sản phẩm dạng tấm kéo (B-27-09)', async ({
+  page,
+}, testInfo) => {
   test.skip(!isPhone(page), 'Chỉ kiểm bản điện thoại.');
   const setup = editSetupOf(testInfo.project.name);
   await openOrder(page, setup.sale, seeded.records.rejected);
-  await expect(page.getByRole('button', { name: 'Sửa đơn' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Sửa đơn' }).first().click();
+  await page.getByRole('button', { name: 'Thêm dòng' }).click();
+  await expect(page.getByRole('dialog', { name: 'Tìm sản phẩm' })).toBeVisible();
+  await expectAccessible(page);
 });
 
 test('Đơn bị từ chối (Q-49, Q-58): Sửa đơn ở thanh tiêu đề, nút chuyển giai đoạn là Trình lại; trình khi chưa sửa thì hỏi lại, không chặn', async ({

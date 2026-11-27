@@ -78,7 +78,7 @@ export const ROLES: Role[] = [
       { name: 'lop-tao', route: '/crm/lop' },
       { name: 'lop-trinh', route: '/crm/lop', row: true },
       { name: 'buoi-ban-ghi', route: '/crm/buoi-hoc', row: true },
-      { name: 'diem-danh-trong-ngay', route: '/crm/diem-danh-trong-ngay' },
+      { name: 'diem-danh', route: '/crm/diem-danh' },
       { name: 'hoc-sinh-ho-so', route: '/crm/hoc-sinh', row: true },
       { name: 'phu-huynh-ds', route: '/crm/phu-huynh' },
       { name: 'ticket-ds', route: '/crm/ticket' },
