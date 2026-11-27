@@ -64,7 +64,7 @@ export function HolidayPage() {
       width: 'w-32',
       cell: (h) => <b>{formatDate(h.holiday_date)}</b>,
     },
-    { key: 'name', header: 'Tên ngày nghỉ', cell: (h) => h.name },
+    { key: 'name', header: 'Tên ngày nghỉ', width: 'min-w-48', cell: (h) => h.name },
     {
       key: 'scope',
       header: 'Áp dụng cho',
@@ -83,9 +83,8 @@ export function HolidayPage() {
       key: 'actions',
       header: 'Thao tác',
       headerSrOnly: 'Thao tác',
-      width: 'w-72',
       cell: (h) => (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-col items-start gap-1 whitespace-nowrap xl:flex-row">
           <Button variant="text" onClick={() => setViewing(h)}>
             Xem buổi bị ảnh hưởng
           </Button>

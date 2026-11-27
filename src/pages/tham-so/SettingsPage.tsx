@@ -81,6 +81,7 @@ export function SettingsPage() {
     {
       key: 'name',
       header: 'Tham số',
+      width: 'min-w-60',
       cell: (d) => (
         <div className="flex flex-col">
           <span className="font-semibold">{d.name}</span>
@@ -91,6 +92,7 @@ export function SettingsPage() {
     {
       key: 'value',
       header: 'Giá trị hiện tại',
+      align: 'right',
       width: 'w-32',
       cell: (d) => <b>{formatSettingValue(d, d.value)}</b>,
     },
@@ -111,7 +113,7 @@ export function SettingsPage() {
     {
       key: 'override',
       header: 'Ghi đè theo cơ sở',
-      width: 'w-56',
+      width: 'w-44',
       cell: (d) => {
         if (!d.allow_branch_override) return <span className="text-fg-muted">Không</span>;
         const list = overridesOf(d.key);
@@ -145,9 +147,8 @@ export function SettingsPage() {
       key: 'actions',
       header: 'Thao tác',
       headerSrOnly: 'Thao tác',
-      width: 'w-48',
       cell: (d) => (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-col items-start gap-1 whitespace-nowrap xl:flex-row">
           {canEdit && (
             <Button variant="text" onClick={() => setEditing({ def: d, branchId: null })}>
               Sửa
@@ -176,7 +177,7 @@ export function SettingsPage() {
           </Button>
         }
       />
-      <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
+      <div className="grid gap-4 xl:grid-cols-[240px_minmax(0,1fr)]">
         <nav
           aria-label="Nhóm tham số"
           className="flex flex-col rounded-box border border-border bg-surface"

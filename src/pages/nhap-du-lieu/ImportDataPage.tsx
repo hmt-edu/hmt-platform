@@ -42,14 +42,14 @@ export function ImportDataPage() {
               return (
                 <tr key={row.title} className="border-t border-border align-top">
                   <td className="px-3 py-3 text-fg-muted">{index + 1}</td>
-                  <td className="px-3 py-3 font-semibold">{row.title}</td>
+                  <td className="px-3 py-3 font-semibold whitespace-nowrap">{row.title}</td>
                   <td className="px-3 py-3 text-fg-muted">{row.description}</td>
                   <td className="px-3 py-3 text-fg-muted">{row.needs}</td>
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-3 whitespace-nowrap">
                     {config ? 'Sẵn sàng' : <span className="text-fg-muted">Sắp có</span>}
                   </td>
                   <td className="px-3 py-3">
-                    <div className="flex flex-wrap justify-end gap-2">
+                    <div className="flex flex-col items-end gap-2 whitespace-nowrap xl:flex-row xl:justify-end">
                       {config && (
                         <Button
                           variant="secondary"
