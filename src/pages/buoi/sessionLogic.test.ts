@@ -11,6 +11,7 @@ import {
   sessionNoLabel,
   sessionSortParam,
   ymd,
+  doneModeLabel,
 } from './sessionLogic';
 
 const NOW = new Date('2026-10-20T03:00:00Z'); // 10:00 ngày 20/10/2026 giờ Việt Nam
@@ -102,5 +103,19 @@ describe('BUOI-12, BUOI-04, BUOI-05', () => {
     });
     expect(moveArgsOf('2026-10-20', '19:30', '18:00', null)).toBeNull();
     expect(moveArgsOf('', '18:00', '19:30', null)).toBeNull();
+  });
+});
+
+describe('doneModeLabel', () => {
+  it('ghi cách hoàn tất, người bấm, lý do (R-GIO-09, R-GIO-12)', () => {
+    expect(
+      doneModeLabel({ done_mode: 'HANG_LOAT', done_by_name: 'Giả A', done_reason: 'Chốt tháng' }),
+    ).toBe('Done hàng loạt · Giả A · Lý do: Chốt tháng');
+    expect(doneModeLabel({ done_mode: 'TU_DONG', done_by_name: null, done_reason: null })).toBe(
+      'Tự động',
+    );
+  });
+  it('buổi Done cũ chưa ghi cách hoàn tất thì không hiện', () => {
+    expect(doneModeLabel({ done_mode: null, done_by_name: null, done_reason: null })).toBeNull();
   });
 });

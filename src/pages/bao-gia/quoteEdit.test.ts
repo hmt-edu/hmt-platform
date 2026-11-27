@@ -174,7 +174,7 @@ describe('quoteEdit', () => {
     };
     const disc = (value: string) => [{ policyId: 'pol', name: 'Giảm', value }];
     expect(validateRows([{ ...base, discounts: disc('abc') }])[0]?.message).toBe(
-      'Mức chiết khấu hoặc giờ tặng không hợp lệ.',
+      'Mức ưu đãi hoặc giờ tặng không hợp lệ.',
     );
     expect(validateRows([{ ...base, discounts: disc('') }])).toEqual([]);
     expect(validateRows([{ ...base, discounts: disc('7,5') }])).toEqual([]);

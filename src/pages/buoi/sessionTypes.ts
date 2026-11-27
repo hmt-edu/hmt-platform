@@ -139,3 +139,18 @@ export type PendingRow = {
   reason: string | null;
 };
 export type PendingPage = { total: number; rows: PendingRow[] };
+
+/** Cách hoàn tất, cờ Thiếu nhận xét, điều còn thiếu và các lượt nhập thay (app.session_done_info). */
+export type DoneInfo = {
+  done_mode: 'TU_DONG' | 'TAY' | 'HANG_LOAT' | null;
+  done_by_name: string | null;
+  done_reason: string | null;
+  missing_review: boolean;
+  missing: string[];
+  proxies: { kind: string; reason: string; by_name: string | null; at: string }[];
+};
+export type FinishResult = { done: boolean; missing: string[] };
+export type BulkFinishResult = {
+  done: string[];
+  skipped: { session_id: string; class_code: string; session_no: number | null; reason: string }[];
+};

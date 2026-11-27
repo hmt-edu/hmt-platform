@@ -304,7 +304,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
     },
     {
       key: 'discount-type',
-      header: 'Loại chiết khấu',
+      header: 'Loại ưu đãi',
       cell: (l) => {
         const names =
           l.line_kind === 'GIFT'
@@ -377,9 +377,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
       />
       <div className="flex flex-wrap items-center justify-between gap-2 text-caption text-fg-muted">
         {capPercent !== null ? (
-          <p>
-            Chiết khấu (gồm giờ tặng) vượt {capPercent}% thì cần Trưởng cơ sở duyệt; vẫn lưu được
-          </p>
+          <p>Ưu đãi (gồm giờ tặng) vượt {capPercent}% thì chỉ cảnh báo, vẫn lưu và gửi được.</p>
         ) : (
           <span />
         )}

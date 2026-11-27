@@ -246,6 +246,7 @@ Luật R-GIO-06, 07, 09, 11, 12; R-GV-05. Sổ giờ (`deduct_session_hours`) kh
 | `finish_session(buổi)` | Điểm danh · Sửa theo phạm vi (giáo viên, trợ giảng của buổi; vận hành, quản lý cơ sở, Admin) | Done tay. Đủ điều kiện thì Done; chưa đủ thì trả `{done:false, missing:[…]}` |
 | `bulk_finish_sessions(buổi[], lý do)` | Điểm danh · Duyệt ở cơ sở của từng buổi | Done hàng loạt; trả `{done, skipped:[{session_id, class_code, session_no, reason}]}`. Số buổi tối đa: tham số `session_bulk_done_max` |
 | `enter_for_teacher(buổi, loại, dữ liệu, lý do)` | Điểm danh · Duyệt | Nhập thay `DIEM_DANH`, `NHAN_XET`, `DIEM`, `BTVN` khi buổi chưa Done; ghi `session_proxy_entry` |
+| `session_done_info(buổi)` | Buổi · Xem phía vận hành (như `session_record`) | Cho BUOI-02 (mig 692): cách hoàn tất, người bấm, lý do, cờ Thiếu nhận xét, điều còn thiếu, các lượt nhập thay |
 
 - Điều kiện Done thêm: ô vận hành bằng ô giáo viên ở mọi dòng. `session_pending_reason` trả **mọi** điều còn thiếu, nối bằng dấu cách. Vận hành sửa cho khớp thì Done ngay.
 - Dấu Đúng hạn hoặc Trễ hạn đóng khi phần giáo viên đủ (`stamp_teacher_completion`), không chờ khớp; đóng một lần.

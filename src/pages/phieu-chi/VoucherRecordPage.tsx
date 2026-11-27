@@ -159,7 +159,7 @@ function VoucherView({ record }: { record: VoucherRecord }) {
       : [
           {
             key: 'hours',
-            label: 'Giờ hoàn × giá sau chiết khấu',
+            label: 'Giờ hoàn × giá sau ưu đãi',
             how: `${n(r.hours_refund)} giờ × ${n(r.unit_price_net)} đ`,
             amount: r.base_amount,
           },

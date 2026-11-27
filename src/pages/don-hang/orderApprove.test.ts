@@ -40,7 +40,7 @@ describe('orderApprove', () => {
 describe('orderCapText (khung BH05_chip_*)', () => {
   it('đúng chữ khung, trần lấy từ tham số', () => {
     expect(orderCapText(20)).toBe(
-      'Chiết khấu cộng dồn; giờ tặng quy ra % tính vào trần 20%. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.',
+      'Ưu đãi cộng dồn; giờ tặng quy ra % tính vào trần 20%. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.',
     );
     expect(orderCapText(25)).toContain('trần 25%.');
     expect(orderCapText(null)).toContain('trần đã cấu hình.');
