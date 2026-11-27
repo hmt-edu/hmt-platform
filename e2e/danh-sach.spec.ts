@@ -188,3 +188,23 @@ test('K5 Calendar: tuần, tháng, ngày; bấm sự kiện mở thao tác', asy
   await expect(page.getByRole('button', { name: 'Hoàn thành', exact: true })).toBeVisible();
   await page.keyboard.press('Escape');
 });
+
+test('L1: lọc theo khoảng ngày tự chọn, chip hiện hai ngày, chọn lại «Tất cả thời gian»', async ({
+  page,
+}) => {
+  const select = page.getByRole('combobox', { name: 'Khoảng thời gian' });
+  await select.click();
+  await page.getByRole('option', { name: 'Tuỳ chọn khoảng ngày…' }).click();
+  const grid = page.getByRole('grid');
+  await grid.getByText('10', { exact: true }).click();
+  await grid.getByText('15', { exact: true }).click();
+  await expect(
+    page.getByRole('button', { name: /Từ ngày đến ngày: 10\/\d\d\/\d{4} – 15\/\d\d\/\d{4}/ }),
+  ).toBeVisible();
+  await expect(page.getByRole('button', { name: /Bỏ điều kiện: Ngày tạo: 10/ })).toBeVisible();
+  await expectAccessible(page);
+
+  await select.click();
+  await page.getByRole('option', { name: 'Tất cả thời gian' }).click();
+  await expect(page.getByRole('button', { name: /Từ ngày đến ngày/ })).toHaveCount(0);
+});

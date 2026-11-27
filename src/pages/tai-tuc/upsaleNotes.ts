@@ -10,6 +10,8 @@ export function upsaleStageNote(
   lostReasonName: string | null,
   /** Ngưỡng giờ, ngày từ tham số upsale_hours_left_threshold, upsale_days_left_threshold (không viết cứng); chưa đọc được thì bỏ phần ngưỡng. */
   thresholds: { hours: number | null; days: number | null },
+  /** Số báo giá, đơn màn đang đếm được; câu nói «đã gửi báo giá» chỉ hiện khi số đếm khớp (anh Trường 27/11). */
+  documents: number,
 ): UpsaleNote | null {
   if (t.stage_code === 'L1') {
     if (t.origin_code !== 'HE_THONG') return null;
@@ -37,11 +39,16 @@ export function upsaleStageNote(
           : 'Phụ huynh đồng ý tái tục.',
     };
   }
-  if (t.stage_code === 'L7') {
+  if (t.stage_code === 'L7' && documents > 0) {
     return {
       tone: 'info',
       text: 'Đã gửi báo giá, chờ phụ huynh đóng tiền. Đóng đủ thì phiếu tự sang L8 Hoàn thành tái tục.',
     };
   }
   return null;
+}
+
+/** Thứ tự thanh giai đoạn: theo danh mục, riêng «Không tái tục» (L5) đứng cuối vì là nhánh kết thúc, không phải bước đi qua. */
+export function orderStages<T extends { value: string }>(stages: T[]): T[] {
+  return [...stages.filter((s) => s.value !== 'L5'), ...stages.filter((s) => s.value === 'L5')];
 }

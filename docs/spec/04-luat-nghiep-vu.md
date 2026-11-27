@@ -199,11 +199,12 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | Mã | Luật | |
 |---|---|---|
 | R-DD-01 | Trạng thái: Có mặt, Đi muộn, Vắng có phép, Vắng không phép; trống = chưa điểm danh. | [CHỐT] |
-| R-DD-02 | Điểm danh hai phía: vận hành và giáo viên ghi riêng; **ô của giáo viên quyết định trạng thái chính thức**. **(26/11, chưa làm trong mã)** Mọi tính toán (giờ, cờ vắng, báo cáo, lời nhắn phụ huynh) chỉ đọc cột Giáo viên. Trừ giờ không đổi: có tên trong danh sách và buổi Done (R-GIO-01). **(27/11)** Riêng danh sách gọi nhắc lấy cột Giáo viên, ô Giáo viên còn trống thì lấy cột Vận hành. | [CHỐT] |
-| R-DD-03 | Vận hành ghi kèm lý do liên hệ (danh mục: Không nghe máy, Đã nhắc vào lớp, Đã vào lớp, Xin nghỉ học…). **(26/11, chưa làm trong mã)** Lý do liên hệ và ghi chú nằm ở cột **Liên hệ phụ huynh**, tách khỏi cột trạng thái Vận hành, không dùng để so khớp. | [CHỐT] |
-| R-DD-04 | **(26/11, chưa làm trong mã)** Giáo viên lưu một ô mà ô Vận hành cùng dòng đang trống thì hệ thống chép sang. Ô được chép **đi theo** giáo viên khi giáo viên đổi, cho tới khi vận hành tự ghi ô đó. | [CHỐT 26/11] |
+| R-DD-02 | Điểm danh hai phía: vận hành và giáo viên ghi riêng; **ô của giáo viên quyết định trạng thái chính thức**. **(26/11, đã làm: migration 685)** Mọi tính toán (giờ, cờ vắng, báo cáo, lời nhắn phụ huynh) chỉ đọc cột Giáo viên. Trừ giờ không đổi: có tên trong danh sách và buổi Done (R-GIO-01). **(27/11)** Riêng danh sách gọi nhắc lấy cột Giáo viên, ô Giáo viên còn trống thì lấy cột Vận hành. | [CHỐT] |
+| R-DD-03 | Vận hành ghi kèm lý do liên hệ (danh mục: Không nghe máy, Đã nhắc vào lớp, Đã vào lớp, Xin nghỉ học…). **(26/11, đã làm: migration 685)** Lý do liên hệ và ghi chú nằm ở cột **Liên hệ phụ huynh**, tách khỏi cột trạng thái Vận hành, không dùng để so khớp. | [CHỐT] |
+| R-DD-04 | **(26/11, đã làm: migration 685)** Giáo viên lưu một ô mà ô Vận hành cùng dòng đang trống thì hệ thống chép sang. Ô được chép **đi theo** giáo viên khi giáo viên đổi, cho tới khi vận hành tự ghi ô đó. | [CHỐT 26/11] |
 | R-DD-05 | **(26/11, chưa làm trong mã)** Giáo viên thấy trạng thái phía vận hành ở cột “Vận hành”, chỉ xem; không thấy cột Liên hệ phụ huynh (R-GV-13). Mỗi bên chỉ sửa cột của mình. **(27/11)** Vận hành **không xoá** ô mình đã tích về trống, chỉ đổi sang giá trị khác. | [CHỐT 26/11] |
 | R-DD-06 | **(26/11, chưa làm trong mã)** Hai cột lệch nhau ở buổi chưa Done thì hiện ở “Việc của tôi” của giáo viên và của vận hành. | [CHỐT 26/11] |
+| R-DD-07 | **(27/11)** Một màn **Điểm danh** (gộp BUOI-11 và BUOI-15), mọi buổi trong khoảng ngày chọn (tối đa theo tham số `attendance_range_max_days`). Tab **Theo buổi** cần Buổi học · Xem; tab **Cần gọi** (vắng, đi muộn, hoặc chưa ai điểm danh khi buổi đã bắt đầu) và mọi thao tác ghi cần Điểm danh · Sửa. Gán cùng lúc nhiều học sinh theo đúng quyền, phạm vi cơ sở và khoá như ghi từng em. **[ĐỀ XUẤT, chờ anh]** Màn không theo công tắc `DIEM_DANH_TRONG_NGAY` (hiện cho mọi cơ sở). | [CHỐT 27/11] |
 
 ## 7. Cổng giáo viên
 

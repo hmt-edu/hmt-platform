@@ -256,7 +256,13 @@ export function CalendarView({
           })}
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        // Lưới rộng hơn màn điện thoại: vùng cuộn ngang phải tới được bằng bàn phím, kể cả khi tuần không có ô nào.
+        <div
+          className="focus-ring overflow-x-auto"
+          tabIndex={0}
+          role="region"
+          aria-label="Lưới lịch"
+        >
           <div
             className="grid min-w-[640px]"
             style={
