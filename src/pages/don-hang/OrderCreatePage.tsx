@@ -44,6 +44,7 @@ import {
   getOpportunityDraftOrder,
   useRefreshOrders,
 } from './useOrderData';
+import { termLabel } from '../dieu-khoan/termLogic';
 
 const STEP_CODES = ['NHAP', 'DA_TRINH', 'DA_DUYET'];
 
@@ -427,7 +428,10 @@ function TermSection({ termId, onChange }: { termId: string; onChange: (id: stri
               value={termId}
               placeholder="Chọn điều khoản"
               onChange={onChange}
-              options={(options.data?.terms ?? []).map((t) => ({ value: t.id, label: t.name }))}
+              options={(options.data?.terms ?? []).map((t) => ({
+                value: t.id,
+                label: termLabel(t),
+              }))}
             />
           }
         />

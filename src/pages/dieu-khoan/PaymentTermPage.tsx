@@ -28,6 +28,7 @@ import {
 } from './termLogic';
 import { createTerm, setTermActive, useRefreshTerms, useTerms } from './useTermData';
 import { PageFrame, PageHeader } from '../../ui/PageHeader';
+import { nameDigitWarning } from '../chiet-khau/policyLogic';
 
 export function PaymentTermPage() {
   const access = useAccess();
@@ -277,6 +278,7 @@ function TermForm({
           <TextField
             label="Tên điều khoản"
             required
+            help={nameDigitWarning(name)}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />

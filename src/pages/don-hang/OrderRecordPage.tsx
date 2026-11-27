@@ -84,6 +84,7 @@ import { ChooseClassDialog, type ChooseClassTarget } from '../ghi-danh/ChooseCla
 import { setOrderLineClass, useOrderLineClasses } from '../ghi-danh/useEnrollmentData';
 import { mergeLineClasses, type PendingClass } from './pendingClasses';
 import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
+import { termLabel } from '../dieu-khoan/termLogic';
 
 const ORDER_CHANGE_FORMAT = { labels: {} } satisfies FieldFormat;
 
@@ -1020,7 +1021,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                       onChange={(v) => setDraft((prev) => (prev ? { ...prev, termId: v } : prev))}
                       options={(editOptions.data?.terms ?? []).map((t) => ({
                         value: t.id,
-                        label: t.name,
+                        label: termLabel(t),
                       }))}
                       className="w-full"
                     />

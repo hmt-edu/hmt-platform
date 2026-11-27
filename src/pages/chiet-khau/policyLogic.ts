@@ -157,3 +157,22 @@ export function discountValueLabel(p: DiscountPolicy): string {
   const n = p.max_value.toLocaleString('vi-VN');
   return p.kind === 'PERCENT' ? `${n}%` : `${n} giờ`;
 }
+
+/** Cảnh báo (không chặn) khi tên có con số: mức, số đợt, số ngày đã có ô riêng, tên ghi số sẽ lặp hoặc sai khi đổi mức. */
+export function nameDigitWarning(name: string): string | undefined {
+  return /\d/.test(name)
+    ? 'Tên đang có con số. Mức, số ngày đã có ô riêng nên tên không cần ghi số.'
+    : undefined;
+}
+
+/** Chữ trong ô chọn chính sách: tên ghép mức từ dữ liệu, "Đăng ký sớm · 5%", "Ưu đãi của cơ sở · tối đa 10%". */
+export function policyLabel(p: {
+  name: string;
+  kind: 'PERCENT' | 'GIFT_HOURS';
+  max_value: number;
+  fixed_value: boolean;
+}): string {
+  const n = p.max_value.toLocaleString('vi-VN');
+  const level = p.kind === 'PERCENT' ? `${n}%` : `${n} giờ`;
+  return `${p.name} · ${p.fixed_value ? level : `tối đa ${level}`}`;
+}
