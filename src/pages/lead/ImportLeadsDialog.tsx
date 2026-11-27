@@ -7,6 +7,7 @@ import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { foldText } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
+import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import { StepDialog } from '../../ui/Dialogs';
 import { Alert, Spinner } from '../../ui/Feedback';
@@ -15,7 +16,9 @@ import { Icon } from '../../ui/icons';
 import { OptionalSelect } from '../../ui/OptionalSelect';
 import { Select } from '../../ui/Overlays';
 import { cn } from '../../ui/cn';
+import { downloadText } from './csv';
 import { parseCsv, type CsvTable } from './importCsv';
+import { SAMPLE_MARK, dropSampleRows, leadTemplateCsv } from './importTemplate';
 import {
   IMPORT_FIELDS,
   autoMap,
@@ -165,11 +168,21 @@ function ImportForm({
       }),
   });
 
+  // File mẫu: giá trị Source, Sub-source lấy từ danh mục đang dùng tại lúc tải.
+  const sourceOptions = catalogs.options('SOURCE');
+  function downloadTemplate() {
+    const sources = sourceOptions.map((s) => ({
+      name: s.label,
+      channels: catalogs.childrenOf('SOURCE_CHANNEL', 'SOURCE', s.value).map((c) => c.label),
+    }));
+    downloadText('mau-nhap-lead.csv', leadTemplateCsv(sources));
+  }
+
   async function readFile(picked: File | undefined) {
     if (!picked) return;
     setFileError(null);
     try {
-      const table = parseCsv(await picked.text());
+      const table = dropSampleRows(parseCsv(await picked.text()));
       if (table.rows.length === 0)
         throw new Error('File chưa có dòng dữ liệu nào (chỉ có dòng tên cột).');
       setFile({ name: picked.name, table });
@@ -274,6 +287,18 @@ function ImportForm({
             Nhận file CSV (.csv), dòng đầu là tên cột. Từ Excel, lưu bằng “CSV UTF-8” rồi tải lên.
             {maxRows !== null && ` Tối đa ${maxRows} dòng mỗi lần.`}
           </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              icon="download"
+              disabled={sourceOptions.length === 0}
+              onClick={downloadTemplate}
+            >
+              Tải file mẫu
+            </Button>
+            <span className="text-caption text-fg-muted">
+              Cột có dấu * là bắt buộc. Dòng bắt đầu bằng {SAMPLE_MARK} được bỏ qua khi nhập.
+            </span>
+          </div>
           {fileError && <Alert tone="danger">{fileError}</Alert>}
           {overLimit && file && maxRows !== null && (
             <Alert tone="danger">
