@@ -1,6 +1,7 @@
 // Logic thuần của khuôn danh sách: trạng thái bộ lọc, chip, tóm tắt, lọc trong trình duyệt, nhóm, khoảng ngày.
 // Không phụ thuộc giao diện nên có kiểm thử; màn dữ liệu lớn dùng `ListState` để dựng truy vấn ở máy chủ.
-import { datePresetInstants, datePresetRange } from '../lib/dateRange';
+import { customRangeDays, datePresetInstants, datePresetRange } from '../lib/dateRange';
+import { formatDmy } from '../lib/dateText';
 import {
   OPERATORS_BY_TYPE,
   type Condition,
@@ -19,9 +20,17 @@ export const DATE_PRESETS = [
   { key: '', label: 'Tất cả thời gian' },
   { key: 'today', label: 'Hôm nay' },
   { key: 'week', label: 'Tuần này' },
+  { key: 'last-week', label: 'Tuần trước' },
   { key: 'month', label: 'Tháng này' },
   { key: 'last-month', label: 'Tháng trước' },
 ] as const;
+
+/** Chữ của mốc đang chọn; khoảng tự chọn hiện "dd/mm/yyyy – dd/mm/yyyy". */
+export function datePresetLabel(preset: string): string {
+  const custom = customRangeDays(preset);
+  if (custom) return `${formatDmy(custom.from)} – ${formatDmy(custom.to)}`;
+  return DATE_PRESETS.find((p) => p.key === preset)?.label ?? preset;
+}
 
 export function emptyState<Row>(config: ListConfig<Row>): ListState {
   return {
@@ -125,11 +134,10 @@ export function chipsOf<Row>(state: ListState, config: ListConfig<Row>): Chip[] 
   }
   if (state.datePreset !== '') {
     const field = config.dateFields.find((f) => f.key === state.dateField);
-    const preset = DATE_PRESETS.find((p) => p.key === state.datePreset);
     chips.push({
       id: 'date',
       kind: 'date',
-      label: `${field?.label ?? 'Thời gian'}: ${preset?.label ?? state.datePreset}`,
+      label: `${field?.label ?? 'Thời gian'}: ${datePresetLabel(state.datePreset)}`,
     });
   }
   return chips;
