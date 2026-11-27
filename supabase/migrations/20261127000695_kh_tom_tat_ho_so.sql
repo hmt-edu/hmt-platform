@@ -95,7 +95,9 @@ as $$
 $$;
 
 -- app.parent_money_summary: Tổng đã đóng, Còn nợ (kèm số ngày quá hạn), Số dư của phụ huynh. Hàm trong.
--- Quyền từng ô như migration 684: không xem được thì ô trả null. Số ngày quá hạn (không kèm tiền) luôn trả để dựng cờ (khung KH02_360_an_tien).
+-- Quyền từng ô như migration 684: không xem được thì ô trả null.
+-- Số dư và nợ đầu kỳ chỉ cộng dòng sổ số dư ở cơ sở người xem được (lọc từng dòng theo cơ sở của dòng).
+-- Số ngày quá hạn (dựng cờ) chỉ tính từ đơn người xem được: không lộ nợ ngoài quyền.
 create or replace function app.parent_money_summary(p_parent app.parent)
 returns jsonb
 language sql
@@ -112,17 +114,21 @@ as $$
     select i.due_date, i.amount,
            o.paid - coalesce(sum(i.amount) over (partition by i.order_id order by i.seq rows between unbounded preceding and 1 preceding), 0) as paid_left
       from ord o join app.sales_order_installment i on i.order_id = o.id
+     where o.seen
   )
   select jsonb_build_object(
     'paid_total', case when app.can_see_branch_wide('RECEIPT', 'XEM', p_parent.branch_id) then
         coalesce((select sum(m.amount) from app.money_in m where m.parent_id = p_parent.id and app.can_see_branch_wide('RECEIPT', 'XEM', m.branch_id)), 0)
-        + coalesce((select sum(b.amount) from app.customer_balance_entry b where b.parent_id = p_parent.id and b.entry_type in ('THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY')), 0) end,
+        + coalesce((select sum(b.amount) from app.customer_balance_entry b where b.parent_id = p_parent.id and b.entry_type in ('THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY')
+                   and app.can_see_branch_wide('RECEIPT', 'XEM', b.branch_id)), 0) end,
     'debt', case when app.can_see_branch_wide('SALES_ORDER', 'XEM', p_parent.branch_id) then
         coalesce((select sum(greatest(o.total_amount - o.paid, 0)) from ord o where o.seen), 0)
         + greatest(-coalesce((select sum(b.amount) from app.customer_balance_entry b
-                               where b.parent_id = p_parent.id and b.entry_type in ('DAU_KY_CONG_NO', 'THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY')), 0), 0) end,
+                               where b.parent_id = p_parent.id and b.entry_type in ('DAU_KY_CONG_NO', 'THU_NO_DAU_KY', 'DAO_THU_NO_DAU_KY')
+                                 and app.can_see_branch_wide('SALES_ORDER', 'XEM', b.branch_id)), 0), 0) end,
     'balance', case when app.can_see_branch_wide('RECEIPT', 'XEM', p_parent.branch_id) then
-        coalesce((select sum(b.amount) from app.customer_balance_entry b where b.parent_id = p_parent.id), 0) end,
+        coalesce((select sum(b.amount) from app.customer_balance_entry b
+                   where b.parent_id = p_parent.id and app.can_see_branch_wide('RECEIPT', 'XEM', b.branch_id)), 0) end,
     'overdue_days', (select (now() at time zone 'Asia/Ho_Chi_Minh')::date - min(i.due_date) from inst i
                       where i.due_date < (now() at time zone 'Asia/Ho_Chi_Minh')::date and i.amount > greatest(i.paid_left, 0)));
 $$;

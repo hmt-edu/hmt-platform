@@ -120,7 +120,7 @@ begin
              'owner_name', app.staff_display_name(p.owner_id), 'risk', p.risk_flag,
              'absences', (select count(*) from app.session_attendance sa join app.class_session cs on cs.id = sa.session_id
                            where sa.student_id = p.student_id and cs.class_id = p.class_id and sa.is_active
-                             and coalesce(sa.teacher_status_code, sa.ops_status_code) in ('VANG_CO_PHEP', 'VANG_KHONG_PHEP')
+                             and sa.teacher_status_code in ('VANG_CO_PHEP', 'VANG_KHONG_PHEP')
                              and cs.session_date > v_today - app.get_setting_int('absence_risk_window_days', p.branch_id)::integer))
              order by (p.closed_at is not null), p.created_at desc, p.id), '[]'::jsonb))
     into v_result

@@ -70,6 +70,21 @@ create temp table ids as
   select (select id from app.parent where code = 'PHD9501') as p, (select id from app.student where code = 'HSD9501') as s;
 grant select on ids to authenticated;
 
+-- ---------- Tiền khác cơ sở (VỪA soát #821) ----------
+-- Sổ số dư: nợ đầu kỳ 300.000 ở CS1, 700.000 ở CS5. Đơn giả đã duyệt ở CS5, quá hạn 5 ngày.
+insert into app.customer_balance_entry (parent_id, branch_id, entry_type, amount, entry_date)
+select (select p from ids), b.id, 'DAU_KY_CONG_NO', case b.code when 'CS1' then -300000 else -700000 end, (now() at time zone 'Asia/Ho_Chi_Minh')::date
+  from app.branch b where b.code in ('CS1', 'CS5');
+-- Đơn đã duyệt bị khoá không cho thêm lịch đóng tiền: tắt trigger tạm trong giao dịch thử (như bài 435).
+set local session_replication_role = 'replica';
+insert into app.sales_order (code, branch_id, renewal_ticket_id, parent_id, status_code, priced_on, total_amount, created_by)
+values ('DH-TT-695', (select id from app.branch where code = 'CS5'), gen_random_uuid(), (select p from ids), 'DA_DUYET',
+        (now() at time zone 'Asia/Ho_Chi_Minh')::date, 400000, pg_temp.uid('admin'));
+insert into app.sales_order_installment (order_id, branch_id, seq, due_days, amount, due_date)
+select o.id, o.branch_id, 1, 0, 400000, (now() at time zone 'Asia/Ho_Chi_Minh')::date - 5
+  from app.sales_order o where o.code = 'DH-TT-695';
+set local session_replication_role = 'origin';
+
 set local role authenticated;
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(app.get_parent_summary((select p from ids)) ->> 'children_total', '1', 'Thẻ Con: đếm con đang dùng');
@@ -93,7 +108,17 @@ select is(app.get_parent_summary((select p from ids)) -> 'money' -> 'balance', '
 select is(app.get_parent_summary((select p from ids)) -> 'last_contact' ->> 'channel', 'Zalo',
   'Đúng: phạm vi Toàn hệ thống ở cơ sở khác vẫn thấy lần liên hệ (như đọc ghi chú)');
 select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
-select is(app.get_parent_summary((select p from ids)) -> 'money' ->> 'debt', '0', 'Đúng: Admin thấy ô Còn nợ (0 đồng khi chưa có đơn)');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select is(app.get_parent_summary((select p from ids)) -> 'money' ->> 'debt', '300000',
+  'Chặn: Còn nợ không cộng nợ đầu kỳ và đơn ở cơ sở khác');
+select is(app.get_parent_summary((select p from ids)) -> 'money' ->> 'balance', '-300000',
+  'Chặn: Số dư không cộng dòng sổ ở cơ sở khác');
+select is(app.get_parent_summary((select p from ids)) -> 'money' -> 'overdue_days', 'null'::jsonb,
+  'Chặn: cờ nợ quá hạn không dựng từ đơn ngoài quyền xem');
+select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
+select is(app.get_parent_summary((select p from ids)) -> 'money' ->> 'debt', '1400000',
+  'Đúng: Admin thấy nợ mọi cơ sở (đơn và nợ đầu kỳ)');
+select is(app.get_parent_summary((select p from ids)) -> 'money' ->> 'overdue_days', '5', 'Đúng: Admin thấy số ngày quá hạn');
 select pg_temp.claims(pg_temp.uid('sales5'), 'aal1');
 select pg_temp.claims(pg_temp.uid('teacher5'), 'aal1');
 select is(pg_temp.err($$select app.get_parent_summary((select p from ids))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: giáo viên không xem hồ sơ phụ huynh');
