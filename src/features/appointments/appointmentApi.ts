@@ -175,6 +175,7 @@ export const APPOINTMENT_RELATED_KEYS = [
   'appointment-list',
   'appointment-board',
   'appointment-calendar',
+  'my-work',
   'appointment-groups',
   'appointment-overdue',
   'lead-upcoming',
