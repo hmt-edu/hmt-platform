@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { scanSource } from './check-duong-dan.mjs';
 
@@ -17,5 +18,24 @@ describe('check:duong-dan', () => {
       "const c = () => navigate('/crm/lop');",
     ].join('\n');
     expect(scanSource(source)).toEqual([]);
+  });
+  it('phân hệ Tuyển sinh: mọi chỗ mở trang đều nối tiếp đường dẫn trang gốc (H1 PR2)', () => {
+    const files = [
+      'src/pages/lead/LeadListPage.tsx',
+      'src/pages/lead/LeadRecordPage.tsx',
+      'src/pages/lead/leadConfig.tsx',
+      'src/pages/co-hoi/OpportunityListPage.tsx',
+      'src/pages/co-hoi/OpportunityRecordPage.tsx',
+      'src/pages/co-hoi/oppConfig.tsx',
+      'src/pages/phieu/TestListPage.tsx',
+      'src/pages/phieu/TestRecordPage.tsx',
+      'src/pages/phieu/testConfig.tsx',
+      'src/pages/lich-hen/AppointmentParts.tsx',
+      'src/features/prospect/ProspectStudents.tsx',
+    ];
+    const found = files.flatMap((file) =>
+      scanSource(readFileSync(file, 'utf8'), file).map((f) => `${file}:${f.line}`),
+    );
+    expect(found).toEqual([]);
   });
 });

@@ -81,6 +81,7 @@ export function TestRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/phieu-kiem-tra" className="font-medium text-link hover:underline">
               Về danh sách Phiếu Test
             </Link>
