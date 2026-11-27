@@ -65,6 +65,9 @@ export type OrderLineDiscount = {
 };
 
 export type OrderLine = {
+  /** Giá niêm yết chụp lúc tính giá, chỉ để hiện «Giá trị quà»; và cờ dòng tặng 100% (mig 676). */
+  list_unit_price?: number | null;
+  is_gift_line?: boolean;
   id: string;
   line_no: number;
   line_kind: 'ENROL' | 'GIFT';

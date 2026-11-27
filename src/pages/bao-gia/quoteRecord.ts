@@ -1,4 +1,5 @@
 // Hàm thuần của bản ghi Báo giá (BH-02): các bước hiện trên thanh tình trạng, nhãn đơn vị, chữ chiết khấu. Có kiểm thử.
+import { formatNumber } from '../../lib/format';
 import type { QuotationLine, QuotationRecord } from './quoteTypes';
 
 /** Các bước hiện trên thanh tình trạng: luồng thường Nháp, Đã gửi, Đã chuyển đơn; Từ chối và Huỷ thay bước cuối. */
@@ -38,4 +39,20 @@ export function quantityNumber(line: Pick<QuotationLine, 'quantity'>): string {
 /** Số lượng viết gọn kèm đơn vị ("10 giờ"). */
 export function quantityText(line: Pick<QuotationLine, 'quantity' | 'unit_code'>): string {
   return `${quantityNumber(line)} ${UNIT_LABEL[line.unit_code]}`;
+}
+
+/**
+ * «Giá trị quà» của dòng quà hoặc dòng tặng 100%: giá niêm yết MỘT đơn vị do máy chủ chụp (không nhân số lượng ở trình duyệt).
+ * Dòng thường, hoặc dòng quà cũ chưa chụp giá, thì rỗng.
+ */
+export function giftValueText(line: {
+  line_kind: 'ENROL' | 'GIFT';
+  is_gift_line?: boolean;
+  list_unit_price?: number | null;
+  quantity: number;
+}): string {
+  const gift = line.line_kind === 'GIFT' || line.is_gift_line === true;
+  if (!gift || !line.list_unit_price) return '';
+  const per = line.quantity === 1 ? '' : ' mỗi đơn vị';
+  return `Giá trị quà: ${formatNumber(line.list_unit_price)} đ${per}`;
 }

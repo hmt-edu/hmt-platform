@@ -13,7 +13,7 @@ import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useBranchInfo } from '../common/useBranchInfo';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { hoursText, maskPhone, overdueText, printStamp } from './quotePrint';
-import { discountText, quantityText } from './quoteRecord';
+import { discountText, giftValueText, quantityText } from './quoteRecord';
 import type { QuotationRecord } from './quoteTypes';
 import { useQuotation } from './useQuoteData';
 
@@ -207,7 +207,12 @@ function QuotationPrint({ record }: { record: QuotationRecord }) {
                     <td>{gift ? '—' : modeName(l.delivery_mode_code)}</td>
                     <td className="r">{gift ? quantityText(l) : hoursText(l.quantity)}</td>
                     <td className="r">{gift ? '—' : hoursText(l.gifted_quantity)}</td>
-                    <td className="r">{formatNumber(l.unit_price)}</td>
+                    <td className="r">
+                      {formatNumber(l.unit_price)}
+                      {giftValueText(l) !== '' && (
+                        <span className="k13-sm">{giftValueText(l)}</span>
+                      )}
+                    </td>
                     <td>
                       {discount === '' ? '—' : discount}
                       {l.discount_amount > 0 && (
