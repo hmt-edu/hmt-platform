@@ -2,13 +2,18 @@
 // Một lần gọi app.list_my_work, phân trang theo thẻ ở máy chủ. Việc gốc xong thì dòng tự mất; không có nút hoàn thành riêng.
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
+import { useAppointmentActions } from '../../features/appointments/useAppointmentActions';
 import { ALL_BRANCHES } from '../../nav/access';
 import { useAccess } from '../../nav/AccessContext';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { Button, ButtonLink } from '../../ui/Button';
 import { Pagination, Skeleton, Tag } from '../../ui/Data';
 import { Avatar, StateView } from '../../ui/Feedback';
+import { Tabs } from '../../ui/Overlays';
 import { PageFrame, PageHeader } from '../../ui/PageHeader';
+import { useLeadCatalogs } from '../lead/useCatalogs';
+import { MyWorkWeek } from './MyWorkWeek';
 import { URGENCY_GROUPS, cardTag, cardTitle, dueText, itemLink } from './workLogic';
 import type { WorkCard, WorkPage } from './workTypes';
 
@@ -96,12 +101,23 @@ export function MyWorkPage() {
   const data = query.data;
   const now = new Date(query.dataUpdatedAt);
 
-  return (
-    <PageFrame>
-      <PageHeader
-        title="Việc của tôi"
-        description="Hệ thống tự gom từ dữ liệu. Việc gốc xong thì dòng tự mất, không cần bấm hoàn thành riêng."
-      />
+  const appointmentActions = useAppointmentActions(useLeadCatalogs());
+  const [params, setParams] = useSearchParams();
+  const canSeeWeek = access.can('APPOINTMENT', 'XEM');
+  const view = canSeeWeek && params.get('xem') === 'tuan' ? 'week' : 'list';
+  const setView = (next: string) =>
+    setParams(
+      (prev) => {
+        const out = new URLSearchParams(prev);
+        if (next === 'week') out.set('xem', 'tuan');
+        else out.delete('xem');
+        return out;
+      },
+      { replace: true },
+    );
+
+  const list = (
+    <div className="flex flex-col gap-4">
       {query.isError ? (
         <StateView
           kind="error"
@@ -177,6 +193,40 @@ export function MyWorkPage() {
           )}
         </>
       )}
+    </div>
+  );
+
+  return (
+    <PageFrame>
+      <PageHeader
+        title="Việc của tôi"
+        description="Hệ thống tự gom từ dữ liệu. Việc gốc xong thì dòng tự mất, không cần bấm hoàn thành riêng."
+        actions={
+          access.can('APPOINTMENT', 'TAO') ? (
+            <Button variant="primary" icon="plus" onClick={appointmentActions.openCreate}>
+              Tạo lịch hẹn
+            </Button>
+          ) : undefined
+        }
+      />
+      {canSeeWeek ? (
+        <Tabs
+          label="Kiểu xem"
+          value={view}
+          onChange={setView}
+          items={[
+            { value: 'list', label: 'Danh sách', content: list },
+            {
+              value: 'week',
+              label: 'Lịch tuần',
+              content: <MyWorkWeek branchId={branchId} actionsApi={appointmentActions} />,
+            },
+          ]}
+        />
+      ) : (
+        list
+      )}
+      {appointmentActions.dialogs}
     </PageFrame>
   );
 }
