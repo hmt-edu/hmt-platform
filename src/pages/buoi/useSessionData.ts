@@ -5,6 +5,9 @@ import { rpc, useDb } from '../../lib/db';
 import type { GroupCounts } from '../lead/leadTypes';
 import type {
   AbsentPage,
+  BulkFinishResult,
+  DoneInfo,
+  FinishResult,
   CancelPreview,
   MoveCheck,
   MoveOptions,
@@ -87,6 +90,7 @@ export function useRefreshSessions() {
       [
         'session-list',
         'session-record',
+        'session-done-info',
         'session-absent',
         'session-ops-sheet',
         'session-pending',
@@ -329,5 +333,57 @@ export function useAbsentGroupCounts(filters: SessionFilters, fields: string[]) 
         p_filters: filters,
         p_fields: fields,
       }),
+  });
+}
+
+/** Cách hoàn tất, cờ, điều còn thiếu của một buổi (app.session_done_info). */
+export function useDoneInfo(sessionId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['session-done-info', sessionId],
+    enabled,
+    retry: false,
+    queryFn: () => rpc<DoneInfo>(supabase, 'session_done_info', { p_session_id: sessionId }),
+  });
+}
+
+/** Done tay (app.finish_session, R-GIO-09): chưa đủ điều kiện thì không Done, trả danh sách còn thiếu. */
+export function useFinishSession() {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (sessionId: string) =>
+      rpc<FinishResult>(supabase, 'finish_session', { p_session_id: sessionId }),
+    onSuccess: () => refresh(),
+  });
+}
+
+/** Done hàng loạt (app.bulk_finish_sessions, R-GIO-12): lý do bắt buộc, buổi chưa đủ bị loại kèm lý do. */
+export function useBulkFinish() {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (a: { sessionIds: string[]; reason: string }) =>
+      rpc<BulkFinishResult>(supabase, 'bulk_finish_sessions', {
+        p_session_ids: a.sessionIds,
+        p_reason: a.reason,
+      }),
+    onSuccess: () => refresh(),
+  });
+}
+
+/** Nhập thay điểm danh giáo viên (app.enter_for_teacher, R-GIO-11): lý do bắt buộc. */
+export function useProxyAttendance(sessionId: string) {
+  const supabase = useDb();
+  const refresh = useRefreshSessions();
+  return useMutation({
+    mutationFn: (a: { entries: { student_id: string; status_code: string }[]; reason: string }) =>
+      rpc<number>(supabase, 'enter_for_teacher', {
+        p_session_id: sessionId,
+        p_kind: 'DIEM_DANH',
+        p_payload: { entries: a.entries },
+        p_reason: a.reason,
+      }),
+    onSuccess: () => refresh(),
   });
 }

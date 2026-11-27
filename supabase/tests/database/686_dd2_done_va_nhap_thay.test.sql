@@ -283,6 +283,15 @@ select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(pg_temp.err($$select app.enter_for_teacher(pg_temp.s('p', 3), 'DIEM_DANH', '{}', 'Lý do giả')$$), 'HMT_KHONG_CO_QUYEN', 'R-GIO-11 chặn: phạm vi Của tôi không nhập thay');
 select is(pg_temp.err($$select pg_temp.bulk(array[3], 'Lý do giả')$$), 'HMT_KHONG_CO_QUYEN', 'R-GIO-12 chặn: phạm vi Của tôi không Done hàng loạt');
 
+-- ---------- Thông tin Done cho BUOI-02 (mig 692) ----------
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is((select concat_ws('|', v ->> 'done_mode', v ->> 'done_by_name', v ->> 'missing_review', jsonb_array_length(v -> 'proxies'), v -> 'proxies' -> 0 ->> 'reason')
+             from (select app.session_done_info(pg_temp.s('p', 2)) as v) x),
+          'HANG_LOAT|Giả bm1|true|1|Giáo viên giả bị ốm', 'R-GIO-11, 12: đọc cách hoàn tất, người bấm, cờ và lượt nhập thay');
+select ok(jsonb_array_length(app.session_done_info(pg_temp.s('p', 3)) -> 'missing') > 0, 'R-GIO-09: buổi Đã chốt trả danh sách còn thiếu');
+select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
+select is(pg_temp.err($$select app.session_done_info(pg_temp.s('p', 2))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: quản lý cơ sở khác không đọc');
+
 -- ---------- Hàm nội bộ ----------
 select ok(not has_function_privilege('authenticated', 'app.apply_session_done(uuid, text, text, boolean)', 'execute'), 'Chặn: hàm Done nội bộ không gọi được từ ngoài');
 select ok(not has_function_privilege('authenticated', 'app.bulk_finish_one(uuid, text)', 'execute'), 'Chặn: hàm Done từng buổi không gọi được từ ngoài');
