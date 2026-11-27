@@ -37,7 +37,42 @@ export type StudentSummary = CommonSummary & {
   last_score: { score: number; max_score: number | null; session_date: string } | null;
   care_staff: { name: string; branch_code: string } | null;
   absence_limit: number;
+  /** Số ngày nợ quá hạn của đơn có em này; null khi không nợ hoặc không được xem. */
+  overdue_days: number | null;
+  /** R-CRM-44: máy chủ tính; null khi em không Đang học hoặc người xem không đủ phạm vi. */
+  engagement: Engagement | null;
 };
+
+export type Engagement = {
+  level: 'KHOE' | 'CAN_CHU_Y' | 'NGUY_CO';
+  score: number;
+  reasons: string[];
+};
+
+const LEVEL: Record<Engagement['level'], { name: string; tone: 'success' | 'warning' | 'danger' }> =
+  {
+    KHOE: { name: 'Khoẻ', tone: 'success' },
+    CAN_CHU_Y: { name: 'Cần chú ý', tone: 'warning' },
+    NGUY_CO: { name: 'Nguy cơ', tone: 'danger' },
+  };
+const REASON: Record<string, string> = {
+  VANG_LIEN_TIEP: 'vắng liên tiếp',
+  NO_QUA_HAN: 'nợ quá hạn',
+  SAP_HET_GIO: 'sắp hết giờ',
+  TICKET_QUA_HAN: 'ticket quá hạn',
+  LAU_CHUA_LIEN_HE: 'lâu chưa liên hệ',
+  THIEU_NHAN_XET: 'thiếu nhận xét',
+};
+
+/** Nhãn «Mức gắn bó»: màu luôn đi kèm lý do, không chỉ màu (R-CRM-44). */
+export function engagementTag(e: Engagement) {
+  const level = LEVEL[e.level];
+  const reasons = e.reasons.map((r) => REASON[r] ?? r).join(', ');
+  return {
+    tone: level.tone,
+    label: `Mức gắn bó: ${level.name} · ${reasons || 'không có cảnh báo được tính'}`,
+  };
+}
 
 export type SummaryCard = {
   key: string;
@@ -194,6 +229,9 @@ export function studentFlags(s: StudentSummary): SummaryFlag[] {
     ...(streak >= s.absence_limit
       ? [{ target: 'attendance' as const, label: `Vắng liên tiếp · ${streak} buổi` }]
       : []),
+    ...(s.overdue_days === null
+      ? []
+      : [{ target: 'finance' as const, label: `Nợ quá hạn ${s.overdue_days} ngày` }]),
     ...ticketFlag(s.tickets),
     ...(s.expiring
       ? [

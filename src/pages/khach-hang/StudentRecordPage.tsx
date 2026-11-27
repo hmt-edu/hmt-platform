@@ -17,6 +17,8 @@ import { dateToIso, isoToDate } from '../lead/leadRecord';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { RecordSummary } from '../../features/record360/RecordSummary';
+import { engagementTag } from '../../features/record360/summaryLogic';
+import { useRecordSummary } from '../../features/record360/useRecordSummary';
 import type { ChatterFocus } from '../../ui/Chatter';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Tag } from '../../ui/Data';
@@ -137,6 +139,11 @@ function StudentView({ record }: { record: StudentRecord }) {
   const complaints = useComplaintCount(record.id, canTickets);
   const [ticketType, setTicketType] = useState<string | undefined>();
   const account = useStudentAccount(record);
+  const summary = useRecordSummary('STUDENT', record.id).data;
+  const engagement =
+    summary && 'engagement' in summary && summary.engagement
+      ? engagementTag(summary.engagement)
+      : null;
   const catalogs = useLeadCatalogs();
   const appointments = useOpportunityAppointments({
     opportunityId: '',
@@ -266,6 +273,11 @@ function StudentView({ record }: { record: StudentRecord }) {
               record.parent ? newTicketForParentPath(record.parent.id, record.parent.code) : null
             }
             onFlag={(t) => {
+              // Học sinh không có tab Tài chính: nợ nằm ở hồ sơ phụ huynh.
+              if (t === 'finance' && record.parent) {
+                void navigate(parentPath(record.parent.id));
+                return;
+              }
               setTicketType(undefined);
               setTab(t === 'tickets' || t === 'upsale' ? t : 'attendance');
             }}
@@ -360,6 +372,7 @@ function StudentView({ record }: { record: StudentRecord }) {
           <Tag tone={record.status === 'DANG_HOC' ? 'success' : 'neutral'}>
             {STUDENT_STATUS_LABEL[record.status]}
           </Tag>
+          {engagement && <Tag tone={engagement.tone}>{engagement.label}</Tag>}
         </div>
         <CustTabs
           active={tab}
