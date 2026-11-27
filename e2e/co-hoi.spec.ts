@@ -73,7 +73,8 @@ test('Tạo cơ hội trực tiếp: chặn ô trống; lưu xong mở cơ hội
   await page.getByLabel('Họ tên', { exact: true }).fill(name);
   await page.getByLabel('Số điện thoại', { exact: true }).fill(phone);
   const combo = (label: string) => page.getByRole('combobox', { name: label, exact: true });
-  await pickOption(page, combo('Source type'), 'Marketing');
+  // Khớp cả chữ: «Marketing» còn nằm trong «Telemarketing».
+  await pickOption(page, combo('Source type'), /^Marketing$/);
   await pickOption(page, combo('Source'), 'Website');
   await expectAccessible(page);
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
