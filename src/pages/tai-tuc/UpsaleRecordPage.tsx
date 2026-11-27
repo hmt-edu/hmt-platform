@@ -28,9 +28,12 @@ import {
   saveUpsaleNotes,
   useRefreshUpsaleRecord,
   useUpsaleOrders,
+  useUpsaleQuotes,
   useUpsaleRecord,
 } from './useUpsaleData';
 import { FromLink } from '../../layout/FromLink';
+import { useNavigateFrom } from '../../layout/crumbTrail';
+import type { QuotationRow } from '../bao-gia/quoteTypes';
 
 /** Ô máy chủ chưa trả số liệu: nói rõ, để không hiểu nhầm là «chưa có» thật. */
 const NO_DATA = <span className="text-fg-muted">chưa có dữ liệu</span>;
@@ -91,12 +94,14 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const [error, setError] = useState<string | null>(null);
   const orders = useUpsaleOrders(t.id);
   const can = (a: UpsaleRecord['actions'][number]) => record.actions.includes(a) && !phone;
-  // Tạo đơn: phiếu ở L6, cần cả quyền Đơn hàng · Tạo và Phiếu tái tục · Sửa (máy chủ kiểm lại từng bước).
-  const canCreateOrder =
-    t.stage_code === 'L6' &&
-    can('doi_giai_doan') &&
-    access.can('SALES_ORDER', 'TAO') &&
-    access.featureOn('BAN_HANG');
+  // Báo giá và đơn tạo được ở mọi giai đoạn, không giới hạn số đơn (R-GD-13); quyền do máy chủ trả và kiểm lại.
+  const canCreateQuote = can('tao_bao_gia') && access.featureOn('BAN_HANG');
+  const canCreateOrder = can('tao_don') && access.featureOn('BAN_HANG');
+  const openFrom = useNavigateFrom();
+  const canSeeQuotes = access.can('QUOTATION', 'XEM');
+  const quotes = useUpsaleQuotes(t.id, canSeeQuotes);
+  const quoteCount = quotes.data?.total ?? 0;
+  const orderCount = orders.data?.length ?? 0;
   const dirty = goal !== (t.next_goal ?? '') || roadmap !== (t.next_roadmap ?? '');
   const forbiddenAll = !access.can('UPSALE', 'XEM');
 
@@ -104,9 +109,6 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
     code: o.value,
     label: o.label,
     fullLabel: `${o.value} ${o.label}`,
-    ...(o.value === 'L7' || o.value === 'L8'
-      ? { lockedReason: 'Hệ thống tự chuyển khi có báo giá, đơn.' }
-      : {}),
   }));
 
   async function save() {
@@ -129,8 +131,12 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
       ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
       : null,
     { hours: hoursThreshold, days: daysThreshold },
-    orders.data?.length ?? 0,
+    {
+      sentQuotes: (quotes.data?.rows ?? []).filter((q) => q.status_code === 'DA_GUI').length,
+      orders: (orders.data ?? []).filter((o) => o.status_code !== 'HUY').length,
+    },
   );
+  const toDocuments = () => ordersRef.current?.scrollIntoView({ block: 'start' });
 
   const lostReason = t.lost_reason_code
     ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
@@ -169,6 +175,11 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
                 Chuyển giai đoạn
               </Button>
             )}
+            {canCreateQuote && (
+              <Button variant="primary" onClick={() => openFrom(`/crm/bao-gia/tao?phieu=${t.id}`)}>
+                Tạo báo giá
+              </Button>
+            )}
             {canCreateOrder && (
               <Button variant="primary" onClick={() => setDialog('order')}>
                 Tạo đơn
@@ -190,17 +201,25 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
             key: 'bao-gia',
             label: 'Báo giá',
             icon: 'file',
-            count: 0,
-            unavailable: 'Làm ở PR sau (tạo báo giá từ phiếu)',
-            onOpen: () => undefined,
+            count: quoteCount,
+            // Có `unavailable` là nút mờ, nên chỉ đặt khi chưa mở được gì.
+            ...(quoteCount > 0
+              ? { onOpen: toDocuments }
+              : {
+                  unavailable: canSeeQuotes
+                    ? 'Phiếu chưa có báo giá'
+                    : 'Bạn không có quyền xem báo giá',
+                  onOpen: () => undefined,
+                }),
           },
           {
             key: 'don-hang',
             label: 'Đơn hàng',
             icon: 'payment',
-            count: orders.data?.length ?? 0,
-            unavailable: 'Phiếu chưa có đơn',
-            onOpen: () => ordersRef.current?.scrollIntoView({ block: 'start' }),
+            count: orderCount,
+            ...(orderCount > 0
+              ? { onOpen: toDocuments }
+              : { unavailable: 'Phiếu chưa có đơn', onOpen: () => undefined }),
           },
           {
             key: 'ghi-danh',
@@ -306,7 +325,11 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
           </Block>
 
           <Block title="Báo giá và đơn" ref={ordersRef}>
-            <OrdersTable orders={orders.data ?? []} />
+            <DocumentsTable
+              quotes={quotes.data?.rows ?? []}
+              orders={orders.data ?? []}
+              quoteStatus={(code) => catalogs.name('QUOTATION_STATUS', code) ?? code}
+            />
           </Block>
 
           <Block title="Tình hình học tập">
@@ -409,40 +432,71 @@ function Block({
   );
 }
 
-/** Đơn sinh ra từ phiếu (máy chủ chưa trả báo giá và số đã thu). */
-function OrdersTable({ orders }: { orders: UpsaleOrderRow[] }) {
+type DocumentRow = {
+  id: string;
+  code: string;
+  to: string;
+  type: 'Báo giá' | 'Đơn hàng';
+  status: string;
+  total_amount: number;
+  created_at: string;
+};
+
+/** Báo giá và đơn sinh ra từ phiếu (máy chủ chưa trả số đã thu). */
+function DocumentsTable({
+  quotes,
+  orders,
+  quoteStatus,
+}: {
+  quotes: QuotationRow[];
+  orders: UpsaleOrderRow[];
+  quoteStatus: (code: string) => string;
+}) {
+  const rows: DocumentRow[] = [
+    ...quotes.map((q) => ({
+      id: q.id,
+      code: q.code,
+      to: `/crm/bao-gia/${q.id}`,
+      type: 'Báo giá' as const,
+      status: quoteStatus(q.display_status_code),
+      total_amount: q.total_amount,
+      created_at: q.created_at,
+    })),
+    ...orders.map((o) => ({
+      id: o.id,
+      code: o.code,
+      to: `/crm/don-hang/${o.id}`,
+      type: 'Đơn hàng' as const,
+      status: ORDER_STATUS[o.status_code] ?? o.status_code,
+      total_amount: o.total_amount,
+      created_at: o.created_at,
+    })),
+  ];
   return (
     <LineTable
       caption="Báo giá và đơn của phiếu"
-      rows={orders}
-      rowKey={(o) => o.id}
-      empty={<p className="p-3 text-fg-muted">Chưa có đơn tái tục nào.</p>}
+      rows={rows}
+      rowKey={(r) => r.id}
+      empty={<p className="p-3 text-fg-muted">Chưa có báo giá hay đơn tái tục nào.</p>}
       columns={[
         {
           key: 'code',
           header: 'Số',
-          cell: (o) => (
-            <FromLink
-              className="font-medium text-link hover:underline"
-              to={`/crm/don-hang/${o.id}`}
-            >
-              {o.code}
+          cell: (r) => (
+            <FromLink className="font-medium text-link hover:underline" to={r.to}>
+              {r.code}
             </FromLink>
           ),
         },
-        { key: 'type', header: 'Loại', cell: () => 'Đơn hàng' },
-        {
-          key: 'status',
-          header: 'Trạng thái',
-          cell: (o) => ORDER_STATUS[o.status_code] ?? o.status_code,
-        },
+        { key: 'type', header: 'Loại', cell: (r) => r.type },
+        { key: 'status', header: 'Trạng thái', cell: (r) => r.status },
         {
           key: 'amount',
           header: 'Số tiền',
           align: 'right',
-          cell: (o) => formatMoney(o.total_amount),
+          cell: (r) => formatMoney(r.total_amount),
         },
-        { key: 'date', header: 'Ngày', cell: (o) => formatDate(o.created_at) },
+        { key: 'date', header: 'Ngày', cell: (r) => formatDate(r.created_at) },
         { key: 'paid', header: 'Đã thu', align: 'right', cell: () => NO_DATA },
       ]}
     />

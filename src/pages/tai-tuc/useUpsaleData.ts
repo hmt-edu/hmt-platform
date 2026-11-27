@@ -1,4 +1,5 @@
 // Gọi dữ liệu màn Phiếu tái tục: danh sách phân trang ở máy chủ, Kanban một lần gọi, thao tác tạo, giao (máy chủ kiểm quyền, luật, công tắc).
+import type { QuotationPage } from '../bao-gia/quoteTypes';
 import type { GroupCounts } from '../lead/leadTypes';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -139,12 +140,14 @@ export function changeUpsaleStage(
   to: string,
   reasonCode: string | null,
   note: string | null,
+  substage: string | null,
 ): Promise<void> {
   return rpc<void>(supabase, 'change_upsale_stage', {
     p_id: id,
     p_to: to,
     p_reason_code: reasonCode,
     p_note: note,
+    p_substage: substage,
   });
 }
 
@@ -177,6 +180,19 @@ export function useUpsaleOrders(ticketId: string) {
   return useQuery({
     queryKey: ['upsale-orders', ticketId],
     queryFn: () => rpc<UpsaleOrderRow[]>(supabase, 'list_upsale_orders', { p_ticket_id: ticketId }),
+  });
+}
+
+/** Báo giá của phiếu (tab «Báo giá và đơn»): trang đầu theo list_quotations, kèm tổng số. */
+export function useUpsaleQuotes(ticketId: string, enabled: boolean) {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['quotation-list', 'upsale', ticketId],
+    enabled,
+    queryFn: () =>
+      rpc<QuotationPage>(supabase, 'list_quotations', {
+        p_filters: { upsale_ticket_id: ticketId },
+      }),
   });
 }
 

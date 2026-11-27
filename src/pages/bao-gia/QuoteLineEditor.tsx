@@ -6,11 +6,17 @@ import { Button } from '../../ui/Button';
 import { Alert } from '../../ui/Feedback';
 import { flexibleLimitIssues, pruneIssues, type EditRow, type RowIssue } from './quoteEdit';
 import { QuoteLineGrid } from './QuoteLineGrid';
-import { useDiscountPolicies, useGiftPolicies, useOpportunityStudents } from './useQuoteData';
+import {
+  useDiscountPolicies,
+  useGiftPolicies,
+  useOpportunityStudents,
+  type OppStudent,
+} from './useQuoteData';
 import { useQuotePreview } from './useQuotePreview';
 
 export function QuoteLineEditor({
   opportunityId,
+  ticketStudent,
   rows,
   onRowsChange,
   issues,
@@ -20,7 +26,10 @@ export function QuoteLineEditor({
   layout,
   totalLabel = 'Tổng cộng báo giá',
 }: {
+  /** Mã nguồn của báo giá: cơ hội, hoặc phiếu tái tục khi có ticketStudent. */
   opportunityId: string;
+  /** Báo giá từ phiếu tái tục: học sinh là em của phiếu, không chọn em khác. */
+  ticketStudent?: OppStudent | undefined;
   rows: EditRow[];
   onRowsChange: (rows: EditRow[]) => void;
   issues: RowIssue[];
@@ -33,7 +42,8 @@ export function QuoteLineEditor({
   totalLabel?: string;
 }) {
   const capPercent = useIntSetting('discount_total_cap_percent');
-  const students = useOpportunityStudents(opportunityId, true);
+  const students = useOpportunityStudents(opportunityId, ticketStudent === undefined);
+  const studentsLoading = ticketStudent === undefined && students.isPending;
   const policies = useDiscountPolicies(opportunityId, true);
   const giftPolicies = useGiftPolicies(opportunityId, true);
   const limitIssues = flexibleLimitIssues(rows, policies.data ?? []);
@@ -60,12 +70,12 @@ export function QuoteLineEditor({
           onRowsChange(next);
           onIssuesChange(pruneIssues(issues, next));
         }}
-        students={students.data ?? []}
+        students={ticketStudent ? [ticketStudent] : (students.data ?? [])}
         opportunityId={opportunityId}
-        opportunityHref={`/crm/co-hoi/${opportunityId}`}
+        opportunityHref={ticketStudent ? null : `/crm/co-hoi/${opportunityId}`}
         issues={issues}
         limitIssues={limitIssues}
-        disabled={saving || students.isPending}
+        disabled={saving || studentsLoading}
         policies={policies.data ?? []}
         giftPolicies={giftPolicies.data ?? []}
         calcs={preview.calcs}

@@ -66,7 +66,8 @@ export function QuoteLineGrid({
   onChange: (rows: EditRow[]) => void;
   students: OppStudent[];
   opportunityId: string;
-  opportunityHref: string;
+  /** null: báo giá từ phiếu tái tục, không thêm học sinh. */
+  opportunityHref: string | null;
   issues: RowIssue[];
   /** Vượt hạn mức Ưu đãi linh hoạt: chữ đỏ dưới chip của dòng, nút Lưu mờ (Q-151). */
   limitIssues: RowIssue[];
@@ -472,12 +473,14 @@ export function QuoteLineGrid({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-caption text-fg-muted">
-        Chưa thấy học sinh?{' '}
-        <Link to={opportunityHref} className="font-medium text-link hover:underline">
-          Thêm học sinh ở cơ hội.
-        </Link>
-      </p>
+      {opportunityHref !== null && (
+        <p className="text-caption text-fg-muted">
+          Chưa thấy học sinh?{' '}
+          <Link to={opportunityHref} className="font-medium text-link hover:underline">
+            Thêm học sinh ở cơ hội.
+          </Link>
+        </p>
+      )}
       <LineTable<EditRow>
         caption="Gói học (đang sửa)"
         // Vùng cuộn nhận bàn phím: lúc danh sách em còn tải, mọi ô trong bảng bị khoá nên không có phần tử nào focus được (axe scrollable-region-focusable).
