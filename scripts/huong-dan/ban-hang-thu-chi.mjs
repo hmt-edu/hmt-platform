@@ -170,7 +170,8 @@ const CO_HOI = process.env.HD_CO_HOI ?? '11fce0a4-513c-4304-a5db-e6c27e2707dc'; 
 async function taoBaoGiaDaGui(p) {
   await p.goto(`${APP}/crm/bao-gia/tao?co-hoi=${CO_HOI}`);
   await p.waitForLoadState('networkidle');
-  await p.getByText('Chọn gói…').first().click();
+  await p.getByText('Tìm sản phẩm').first().click();
+  await p.getByRole('combobox', { name: 'Tìm sản phẩm' }).fill('Lớp chung Toán 9');
   await p.getByText('Lớp chung Toán 9').first().click();
   await p.getByLabel('Số lượng dòng 1', { exact: true }).fill('10');
   await nutTen('Lưu')(p).click();
@@ -287,10 +288,11 @@ const BAI = {
           },
         },
         {
-          chu: 'Bấm «Chọn gói…», chọn gói, chọn em học, nhập số lượng giờ',
-          loc: (p) => p.getByText('Chọn gói…').first(),
+          chu: 'Bấm «Tìm sản phẩm», chọn sản phẩm, chọn em học, nhập số lượng giờ',
+          loc: (p) => p.getByText('Tìm sản phẩm').first(),
           lam: async (p) => {
-            await p.getByText('Chọn gói…').first().click();
+            await p.getByText('Tìm sản phẩm').first().click();
+            await p.getByRole('combobox', { name: 'Tìm sản phẩm' }).fill('Lớp chung Toán 9');
             await p.getByText('Lớp chung Toán 9').first().click();
             await p.getByLabel('Số lượng dòng 1', { exact: true }).fill('10');
             await p.waitForTimeout(1200);

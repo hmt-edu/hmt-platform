@@ -1,7 +1,7 @@
 // GD-02 Ghi danh (bản ghi, khuôn K06, chỉ đọc): thông tin ghi danh, quỹ giờ (cấp, tặng, đã học, còn lại), dòng xếp lớp và lịch sử chuyển lớp, nút Xếp lớp (khi Chờ xếp lớp)
 // và Sổ giờ. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Điều chỉnh giờ (GD-05, Ghi danh · Duyệt). Chưa làm ở cụm này: Tạo ticket (CS-04, sau 17/11), "Tạo phiếu thu tái tục thủ
 // công" (TT-03 đã bỏ). Ngày hết giờ dự kiến, hạn gói (chỉ dự báo) chưa tính: hiện "—". Giao diện không tính giờ: số do hàm DB trả.
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useState } from 'react';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
@@ -21,6 +21,7 @@ import { AssignClassDialog } from './AssignClassDialog';
 import { statusTone } from './enrollConfig';
 import { enrollmentNotice } from './enrollLogic';
 import { useEnrollmentLedger, useEnrollmentRecord, useSameClassPeers } from './useEnrollmentData';
+import { FromLink } from '../../layout/FromLink';
 
 const END_REASON: Record<string, string> = {
   CHUYEN_LOP: 'Đã chuyển lớp',
@@ -171,9 +172,12 @@ export function EnrollmentRecordPage() {
               mode={view}
               value={
                 e.order_id && e.order_code ? (
-                  <Link to={`/crm/don-hang/${e.order_id}`} className="text-link hover:underline">
+                  <FromLink
+                    to={`/crm/don-hang/${e.order_id}`}
+                    className="text-link hover:underline"
+                  >
                     {e.order_code}
-                  </Link>
+                  </FromLink>
                 ) : (
                   ''
                 )

@@ -35,6 +35,7 @@ import {
   useRefreshFrames,
 } from './useFrameData';
 import { PageFrame, PageHeader } from '../../ui/PageHeader';
+import { FromLink } from '../../layout/FromLink';
 
 const STATUS_FILTER = [
   { value: 'DANG_DUNG', label: 'Đang dùng' },
@@ -91,12 +92,12 @@ export function CurriculumFramePage() {
       key: 'code',
       header: 'Mã khung',
       cell: (f) => (
-        <Link
+        <FromLink
           className="tabular font-semibold text-link underline"
           to={`/crm/cau-hinh/khung-chuong-trinh/${f.id}`}
         >
           {f.code}
-        </Link>
+        </FromLink>
       ),
     },
     { key: 'subject', header: 'Môn', cell: (f) => f.subject_name },

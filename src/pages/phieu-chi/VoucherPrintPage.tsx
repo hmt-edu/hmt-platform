@@ -14,6 +14,7 @@ import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import type { VoucherRecord } from './voucherTypes';
 import { useVoucher } from './useVoucherData';
 import { voucherPrintRows } from './voucherPrint';
+import { FromLink } from '../../layout/FromLink';
 
 export function VoucherPrintPage() {
   const { id } = useParams<{ id: string }>();
@@ -35,6 +36,7 @@ export function VoucherPrintPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/phieu-chi" className="font-medium text-link hover:underline">
               Về danh sách Phiếu chi
             </Link>
@@ -61,9 +63,9 @@ function VoucherPrint({ record }: { record: VoucherRecord }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3 print:hidden">
-        <Link to={`/crm/phieu-chi/${v.id}`} className="font-medium text-link hover:underline">
+        <FromLink to={`/crm/phieu-chi/${v.id}`} className="font-medium text-link hover:underline">
           {`‹ Phiếu chi ${v.code}`}
-        </Link>
+        </FromLink>
         <span className="flex-1" />
         <span className="text-caption text-fg-muted">Chọn “Lưu thành PDF” để tải</span>
         <Button icon="file" onClick={() => window.print()}>

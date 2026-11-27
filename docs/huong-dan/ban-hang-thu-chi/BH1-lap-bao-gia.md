@@ -31,7 +31,7 @@ cap_nhat: 2026-11-24
 ## Các bước
 1. Ở bản ghi cơ hội bấm **«Tạo báo giá»**.
    *Bạn thấy:* trang báo giá mới, khối dòng gói còn trống. [ẢNH: bh1-b1] [ẢNH: bh1-b2]
-2. Bấm **«Chọn gói…»**, chọn gói, chọn học sinh học, nhập số lượng giờ (và giờ tặng nếu có).
+2. Bấm **«Tìm sản phẩm»**, gõ tên hoặc mã rồi chọn, chọn học sinh học, nhập số lượng giờ (và giờ tặng nếu có).
    *Bạn thấy:* dòng có đơn giá và thành tiền tự tính. [ẢNH: bh1-b3]
 3. Thêm ưu đãi theo chính sách nếu có (chọn trong danh sách chính sách, không gõ số).
    *Bạn thấy:* tổng ưu đãi và thành tiền cập nhật; vượt trần thì hiện hộp vàng cảnh báo.

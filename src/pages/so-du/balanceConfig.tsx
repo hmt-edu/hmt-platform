@@ -1,10 +1,10 @@
 // Cấu hình màn Số dư khách hàng (TC-14) cho khuôn danh sách K03: cột, lọc nhanh, trường lọc. Lọc, phân trang làm ở máy chủ.
 // Chỉ xem. Nút «Cấn vào đơn mới» (TC-16) làm sau cùng Code C, nên chưa có ở đây.
-import { Link } from 'react-router';
 import { formatDate, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import type { ListConfig, ListState } from '../../list/types';
 import type { BalanceRow } from './balanceTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const BALANCE_SCREEN_CODE = 'TC-14';
 
@@ -30,12 +30,12 @@ export function buildBalanceConfig(access: AccessView): ListConfig<BalanceRow> {
         locked: true,
         primary: true,
         render: (r) => (
-          <Link
+          <FromLink
             to={`/crm/so-du-khach-hang/${r.parent_id}`}
             className="font-medium text-link hover:underline"
           >
             {r.parent_name}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'code', label: 'Mã phụ huynh', render: (r) => r.parent_code },

@@ -2,7 +2,7 @@
 // Mã cấp tự động khi lưu (AS-01); hạn phản hồi, hạn xử lý tính ở máy chủ lúc tạo (AS-07).
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
@@ -21,6 +21,7 @@ import {
   type TicketDraft,
 } from './ticketCreate';
 import { createTicket, useTicketCategories } from './useTicketData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 type Person = {
   id: string;
@@ -56,6 +57,8 @@ const toOption = (p: Person): ComboOption => ({
 export function TicketCreatePage() {
   const supabase = useDb();
   const navigate = useNavigate();
+  const location = useLocation();
+  const openFrom = useNavigateFrom();
   const catalogs = useLeadCatalogs();
   const categories = useTicketCategories();
   // Mở từ nút «Tạo ticket hoàn tiền» của Đơn hàng (BH05_huy_chan): điền sẵn phụ huynh (tìm theo mã) và nhóm Hoàn tiền; người dùng sửa được.
@@ -78,8 +81,10 @@ export function TicketCreatePage() {
   const students = usePeople('list_students', studentQ, true);
   useCrumbTail('Tạo mới');
   useEffect(() => {
-    if (createdId !== null) void navigate(`/crm/ticket/${createdId}`);
-  }, [createdId, navigate]);
+    // Trang vừa tạo thay chỗ biểu mẫu trên đường dẫn: giữ nguyên đường dẫn gốc.
+    if (createdId !== null)
+      void navigate(`/crm/ticket/${createdId}`, { state: location.state as unknown });
+  }, [createdId, navigate, location.state]);
 
   const all = categories.data ?? [];
   const category = all.find((c) => c.code === draft.categoryCode) ?? null;
@@ -116,7 +121,7 @@ export function TicketCreatePage() {
       saving={saving}
       onEdit={() => undefined}
       onSave={() => void save()}
-      onCancel={() => void navigate('/crm/ticket')}
+      onCancel={() => openFrom('/crm/ticket')}
       aside={null}
     >
       {failure && <Alert tone="danger">{failure}</Alert>}

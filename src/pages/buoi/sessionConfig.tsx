@@ -1,6 +1,6 @@
 // Cấu hình hai màn danh sách cụm Buổi A cho khuôn K03: BUOI-01 Buổi học và BUOI-11 Học sinh vắng / chưa đến. Cột và chữ theo canvas BUOI01, BUOI11.
 // Lọc, sắp xếp, phân trang làm ở máy chủ nên cấu hình không có hàm `test` chạy ở trình duyệt.
-import { Link } from 'react-router';
+
 import { formatDate } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
@@ -8,6 +8,7 @@ import type { ListConfig } from '../../list/types';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import { deadlineLabel, sessionNoLabel } from './sessionLogic';
 import type { AbsentRow, PendingRow, SessionRow } from './sessionTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const SESSION_SCREEN_CODE = 'BUOI-01';
 export const ABSENT_SCREEN_CODE = 'BUOI-11';
@@ -59,9 +60,9 @@ export function buildSessionConfig(
         primary: true,
         sortable: true,
         render: (r) => (
-          <Link to={`/crm/buoi-hoc/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/buoi-hoc/${r.id}`} className="font-medium text-link hover:underline">
             {r.start_time}–{r.end_time}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'date', label: 'Ngày', render: (r) => formatDate(r.session_date) },
@@ -86,9 +87,9 @@ export function buildSessionConfig(
         key: 'open',
         label: 'Xử lý',
         render: (r) => (
-          <Link to={`/crm/buoi-hoc/${r.id}`} className="focus-ring text-link hover:underline">
+          <FromLink to={`/crm/buoi-hoc/${r.id}`} className="focus-ring text-link hover:underline">
             Mở
-          </Link>
+          </FromLink>
         ),
       },
     ],
@@ -164,12 +165,12 @@ export function buildAbsentConfig(
             >
               Ghi lý do
             </button>
-            <Link
+            <FromLink
               to={`/crm/diem-danh/buoi/${r.session_id}`}
               className="focus-ring text-link hover:underline"
             >
               Mở buổi
-            </Link>
+            </FromLink>
           </span>
         ),
       },
@@ -240,9 +241,9 @@ export function buildPendingConfig(access: AccessView, canRemind: boolean): List
                 </span>
               </span>
             )}
-            <Link to={`/crm/buoi-hoc/${r.id}`} className="focus-ring text-link hover:underline">
+            <FromLink to={`/crm/buoi-hoc/${r.id}`} className="focus-ring text-link hover:underline">
               Mở buổi
-            </Link>
+            </FromLink>
           </span>
         ),
       },

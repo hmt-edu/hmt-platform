@@ -261,3 +261,13 @@ export async function showAllTimeline(page: Page) {
     .getByRole('button', { name: 'Tất cả', exact: true })
     .click();
 }
+
+// Ô tìm sản phẩm đang mở: gõ mã rồi bấm dòng kết quả.
+export async function pickProduct(page: Page, code: string) {
+  await page.getByRole('combobox', { name: 'Tìm sản phẩm' }).fill(code);
+  await page
+    .getByRole('option', { name: new RegExp(code) })
+    .first()
+    .click();
+  await expect(page.getByRole('combobox', { name: 'Tìm sản phẩm' })).toHaveCount(0);
+}

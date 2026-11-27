@@ -1,7 +1,7 @@
 // GD-01 Ghi danh (danh sách, khuôn K03): nối với enrollment_list. Lọc, sắp xếp, phân trang làm ở máy chủ; chỉ giữ trang đang xem. Không có nút Tạo (ghi danh sinh từ dòng
 // đơn khi tiền vào đủ cọc, R-GD-01). Bấm mã hoặc dòng để mở GD-02.
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
@@ -26,10 +26,11 @@ import {
   useEnrollmentPage,
   useRefreshEnrollments,
 } from './useEnrollmentData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 export function EnrollmentListPage() {
   const access = useAccess();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const refreshData = useRefreshEnrollments();
   const catalogs = useLeadCatalogs();
   const config = useMemo(() => buildEnrollConfig(catalogs, access), [catalogs, access]);
@@ -110,7 +111,7 @@ export function EnrollmentListPage() {
       error={active.isError ? errorOf(active.error).message : null}
       onRetry={() => void active.refetch()}
       onRefresh={() => void refreshData()}
-      onRowClick={(r) => void navigate(`/crm/ghi-danh/${r.id}`)}
+      onRowClick={(r) => openFrom(`/crm/ghi-danh/${r.id}`)}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
         to: page * (pageSize ?? 0) + rows.length,

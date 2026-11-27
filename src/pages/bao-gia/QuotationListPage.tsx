@@ -3,7 +3,7 @@
 // Giao diện không tính tiền: tổng tiền, quá hạn đều do hàm cơ sở dữ liệu trả.
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
@@ -51,7 +51,6 @@ const EXPORT_COLUMNS = [
 
 export function QuotationListPage() {
   const supabase = useDb();
-  const navigate = useNavigate();
   const openFrom = useNavigateFrom();
   const access = useAccess();
   const toast = useToast();
@@ -212,7 +211,7 @@ export function QuotationListPage() {
       }}
       sort={sort}
       onSortChange={(next) => setSort(nextQuoteSort(next))}
-      onRowClick={(r) => void navigate(`/crm/bao-gia/${r.id}`)}
+      onRowClick={(r) => openFrom(`/crm/bao-gia/${r.id}`)}
       emptyMessage={{
         title: 'Chưa có báo giá nào',
         hint: 'Báo giá sinh từ cơ hội: mở cơ hội rồi bấm Tạo báo giá. Danh sách này không có nút Tạo.',

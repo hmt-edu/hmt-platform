@@ -2,7 +2,7 @@
 // Một lần gọi app.list_tickets mỗi trang (lọc parent_id hoặc student_id ở máy chủ, migration 600); chạy dưới RLS ticket nên chỉ thấy ticket trong quyền.
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link } from 'react-router';
+
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
@@ -16,6 +16,7 @@ import { useTicketCategories } from '../ticket/useTicketData';
 import { CustTable } from './CustTable';
 import { NO_VALUE } from './custColumns';
 import type { CustTicketOwner } from './useCustTickets';
+import { FromLink } from '../../layout/FromLink';
 
 function ticketColumns(owner: CustTicketOwner['key'], catalogs: LeadCatalogs): Column<TicketRow>[] {
   const code: Column<TicketRow> = {
@@ -23,9 +24,9 @@ function ticketColumns(owner: CustTicketOwner['key'], catalogs: LeadCatalogs): C
     header: 'Mã',
     primary: true,
     cell: (t) => (
-      <Link to={`/crm/ticket/${t.id}`} className="font-medium text-link hover:underline">
+      <FromLink to={`/crm/ticket/${t.id}`} className="font-medium text-link hover:underline">
         {t.code}
-      </Link>
+      </FromLink>
     ),
   };
   const type: Column<TicketRow> = {

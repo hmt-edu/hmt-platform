@@ -1,7 +1,7 @@
 // QT-04 Vai trò (bản đồ màn hình: Danh sách · K10, Admin, máy tính): các vai trò hệ thống và phạm vi mặc định, cổng vào, hai bước, số người đang dùng, số ô quyền; nút «Mở ma trận» sang QT-05.
 // Chỉ đọc: không thêm, sửa, ngừng vai trò (vai trò là danh mục hệ thống, sửa quyền ở QT-05). Không có khung canvas riêng (BAN-DO-VIEC: «Thiếu khung canvas»): dựng từ khuôn K10 và các thành phần dùng chung.
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
+
 import { errorOf } from '../../lib/db';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
@@ -11,6 +11,7 @@ import { LineTable, type LineColumn } from '../../ui/LineTable';
 import { filterRoles, IDLE_GROUP_LABEL, portalsLabel, type RoleSummary } from './roleLogic';
 import { useRoleSummaries, useScopeNames } from './useRoleData';
 import { PageFrame, PageHeader } from '../../ui/PageHeader';
+import { FromLink } from '../../layout/FromLink';
 
 export function RoleListPage() {
   const roles = useRoleSummaries();
@@ -61,13 +62,13 @@ export function RoleListPage() {
       headerSrOnly: 'Thao tác',
       width: 'w-36',
       cell: (r) => (
-        <Link
+        <FromLink
           to={`/crm/quan-tri/ma-tran-quyen?vai-tro=${encodeURIComponent(r.code)}`}
           className="text-link hover:underline"
           aria-label={`Mở ma trận quyền của ${r.name}`}
         >
           Mở ma trận
-        </Link>
+        </FromLink>
       ),
     },
   ];

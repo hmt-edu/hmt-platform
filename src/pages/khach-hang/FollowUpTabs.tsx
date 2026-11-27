@@ -15,6 +15,7 @@ import {
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { upsaleStageTone } from '../tai-tuc/upsaleConfig';
 import { PagedTable } from './PagedTable';
+import { FromLink } from '../../layout/FromLink';
 
 const NONE = '—';
 
@@ -106,9 +107,9 @@ export function UpsaleTab({ owner }: { owner: CustomerOwner }) {
       header: 'Môn, lớp',
       primary: true,
       cell: (r) => (
-        <Link className="text-link hover:underline" to={`/crm/tai-tuc/${r.id}`}>
+        <FromLink className="text-link hover:underline" to={`/crm/tai-tuc/${r.id}`}>
           {r.subject_name ?? NONE} ({r.class_code})
-        </Link>
+        </FromLink>
       ),
     },
     {

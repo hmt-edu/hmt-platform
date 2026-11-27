@@ -1,7 +1,7 @@
 // BUOI-03 Điểm danh trong ngày (biểu mẫu K12, đường dẫn /crm/diem-danh/buoi/:id): vận hành ghi trạng thái trung tâm, lý do liên hệ và ghi chú cho từng em; cột giáo viên
 // chỉ đọc (R-DD-02, R-DD-03). Không tự lưu: bấm Lưu mới ghi (app.set_attendance_ops). Buổi Nháp: chưa có danh sách (R-GIO-08). Buổi Done: chỉ xem; sửa sau Done ở BUOI-14 (cụm sau).
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf } from '../../lib/db';
 import { formatDate } from '../../lib/format';
@@ -22,6 +22,7 @@ import {
 } from './opsLogic';
 import { classLabel, sessionNoLabel } from './sessionLogic';
 import { useOpsSheet, useSaveOps } from './useSessionData';
+import { FromLink } from '../../layout/FromLink';
 
 export function SessionOpsPage() {
   const { id } = useParams();
@@ -98,9 +99,9 @@ export function SessionOpsPage() {
             Lưu
           </Button>
         )}
-        <Link to={`/crm/buoi-hoc/${sess.id}`} className="focus-ring text-link hover:underline">
+        <FromLink to={`/crm/buoi-hoc/${sess.id}`} className="focus-ring text-link hover:underline">
           Về bản ghi buổi
-        </Link>
+        </FromLink>
       </div>
 
       {!sheet.listed && (

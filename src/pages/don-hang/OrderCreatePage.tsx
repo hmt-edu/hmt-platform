@@ -6,7 +6,7 @@
 //  ?bao-gia=<id> đơn từ báo giá: lấy hết các dòng chưa nằm trong đơn nào, bỏ bớt bằng ✕ (dòng bỏ ra vẫn còn trên báo giá).
 import { useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, useDb } from '../../lib/db';
@@ -45,6 +45,7 @@ import {
   useRefreshOrders,
 } from './useOrderData';
 import { termLabel } from '../dieu-khoan/termLogic';
+import { FromLink } from '../../layout/FromLink';
 
 const STEP_CODES = ['NHAP', 'DA_TRINH', 'DA_DUYET'];
 
@@ -249,6 +250,7 @@ function OpportunityForm({
   branch: string;
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const openFrom = useNavigateFrom();
   const supabase = useDb();
   const toast = useToast();
@@ -307,7 +309,10 @@ function OpportunityForm({
         setSaved(true);
         setExisting(null);
       });
-      void navigate(`/crm/don-hang/${created.id}`, { replace: true });
+      void navigate(`/crm/don-hang/${created.id}`, {
+        replace: true,
+        state: location.state as unknown,
+      });
     } catch (e) {
       const err = errorOf(e);
       if (err.code === 'HMT_CO_DON_NHAP') {
@@ -332,7 +337,7 @@ function OpportunityForm({
         }
         onSave={() => void save(false)}
         // Huỷ: bỏ hết, chưa có bản ghi (R-CRM-19); về bản ghi cơ hội.
-        onCancel={() => void navigate(`/crm/co-hoi/${opportunityId}`)}
+        onCancel={() => openFrom(`/crm/co-hoi/${opportunityId}`)}
       >
         <div className="flex flex-col gap-6">
           <Header
@@ -341,16 +346,12 @@ function OpportunityForm({
             source={
               <span>
                 Không qua báo giá: tạo từ cơ hội{' '}
-                <Link
+                <FromLink
                   to={`/crm/co-hoi/${opportunityId}`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openFrom(`/crm/co-hoi/${opportunityId}`);
-                  }}
                   className="font-medium text-link hover:underline"
                 >
                   {opportunityCode}
-                </Link>
+                </FromLink>
               </span>
             }
           />
@@ -375,7 +376,7 @@ function OpportunityForm({
           </section>
           <TermSection termId={termId} onChange={setTermId} />
           <p>
-            <Button variant="text" onClick={() => void navigate(`/crm/co-hoi/${opportunityId}`)}>
+            <Button variant="text" onClick={() => openFrom(`/crm/co-hoi/${opportunityId}`)}>
               Về cơ hội
             </Button>
           </p>
@@ -389,12 +390,12 @@ function OpportunityForm({
           <span className="flex flex-col gap-2">
             <span>{existing?.message}</span>
             {existing?.id && (
-              <Link
+              <FromLink
                 to={`/crm/don-hang/${existing.id}`}
                 className="font-medium text-link hover:underline"
               >
                 Mở đơn cũ {existing.code}
-              </Link>
+              </FromLink>
             )}
           </span>
         }
@@ -505,6 +506,8 @@ function QuotationForm({
   lines: QuotationLine[];
 }) {
   const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
+  const location = useLocation();
   const supabase = useDb();
   const toast = useToast();
   const refreshOrders = useRefreshOrders();
@@ -532,7 +535,10 @@ function QuotationForm({
       await refreshOrders();
       toast({ title: `Đã tạo đơn hàng ${created.code}.` });
       flushSync(() => setSaved(true));
-      void navigate(`/crm/don-hang/${created.id}`, { replace: true });
+      void navigate(`/crm/don-hang/${created.id}`, {
+        replace: true,
+        state: location.state as unknown,
+      });
     } catch (e) {
       setError(errorOf(e).message);
     } finally {
@@ -548,7 +554,7 @@ function QuotationForm({
       saveDisabled={kept.length === 0 || termId === ''}
       onSave={() => void save()}
       // Huỷ: bỏ hết, chưa có bản ghi; về báo giá.
-      onCancel={() => void navigate(`/crm/bao-gia/${quotationId}`)}
+      onCancel={() => openFrom(`/crm/bao-gia/${quotationId}`)}
     >
       <div className="flex flex-col gap-6">
         <Header
@@ -557,12 +563,12 @@ function QuotationForm({
           source={
             <span>
               Báo giá{' '}
-              <Link
+              <FromLink
                 to={`/crm/bao-gia/${quotationId}`}
                 className="font-medium text-link hover:underline"
               >
                 {quotationCode}
-              </Link>
+              </FromLink>
             </span>
           }
         />

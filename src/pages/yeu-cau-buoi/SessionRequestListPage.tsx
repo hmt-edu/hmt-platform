@@ -2,7 +2,7 @@
 // người tạo Huỷ yêu cầu Nháp hoặc Chờ duyệt. Máy chủ quyết quyền và trạng thái (app.list_session_requests, can_approve); phân trang ở máy chủ (50 dòng).
 // Loại Củng cố (BUOI-08) và Bổ trợ (BUOI-09; tạo từ bản ghi lớp). Chưa có khung chỉ riêng cho bản lọc giản lược này: dựng theo K03, ghi vào PR. Điện thoại: thẻ từng yêu cầu (R-HT-05).
 import { useState } from 'react';
-import { Link } from 'react-router';
+
 import { errorOf } from '../../lib/db';
 import { useAccess } from '../../nav/AccessContext';
 import { Button, ButtonLink } from '../../ui/Button';
@@ -30,6 +30,7 @@ import {
   useRejectRequest,
   useRequestPage,
 } from './useRequestData';
+import { FromLink } from '../../layout/FromLink';
 
 const PAGE_SIZE = 50; // allow-number: mặc định phân trang danh sách (quy ước hiệu năng, tối đa 100)
 const FILTERS: { key: string; label: string; status: string[] | null }[] = [
@@ -125,9 +126,9 @@ export function SessionRequestListPage() {
         <span className="text-caption text-fg-muted">chỉ Trưởng cơ sở duyệt</span>
       )}
       {r.status_code === 'DA_DUYET' && r.created_session_id && (
-        <Link className="text-link underline" to={`/crm/buoi-hoc/${r.created_session_id}`}>
+        <FromLink className="text-link underline" to={`/crm/buoi-hoc/${r.created_session_id}`}>
           Mở buổi
-        </Link>
+        </FromLink>
       )}
     </span>
   );

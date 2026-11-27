@@ -5,7 +5,7 @@
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import { errorOf, rpc, useDb } from '../../lib/db';
 import { Button } from '../../ui/Button';
 import { Alert, Spinner } from '../../ui/Feedback';
@@ -18,6 +18,7 @@ import { validateDraft, type DraftError } from './requestLogic';
 import { useSaveRequest } from './useRequestData';
 import { ExamBlock } from './ExamBlock';
 import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './examFields';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 const CLASS_LIMIT = 100; // allow-number: trần số lớp liệt kê trong ô chọn (tối đa 100 một lần gọi, quy ước phân trang)
 
@@ -25,6 +26,8 @@ export function SessionRequestCreatePage() {
   useCrumbTail('Tạo yêu cầu buổi củng cố');
   const supabase = useDb();
   const navigate = useNavigate();
+  const location = useLocation();
+  const openFrom = useNavigateFrom();
   const toast = useToast();
   const save = useSaveRequest();
   const [classId, setClassId] = useState('');
@@ -80,7 +83,7 @@ export function SessionRequestCreatePage() {
         tone: 'success',
         title: send ? `Đã gửi duyệt ${saved.code}` : `Đã lưu nháp ${saved.code}`,
       });
-      void navigate('/crm/yeu-cau-buoi', { replace: true });
+      void navigate('/crm/yeu-cau-buoi', { replace: true, state: location.state as unknown });
     } catch (e) {
       setError(errorOf(e).message);
     }
@@ -181,7 +184,7 @@ export function SessionRequestCreatePage() {
         <Button disabled={save.isPending} onClick={() => void submit(false)}>
           Lưu nháp
         </Button>
-        <Button variant="text" onClick={() => void navigate('/crm/yeu-cau-buoi')}>
+        <Button variant="text" onClick={() => openFrom('/crm/yeu-cau-buoi')}>
           Huỷ
         </Button>
       </div>

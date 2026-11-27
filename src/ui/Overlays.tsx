@@ -332,9 +332,12 @@ export function Popover({
   open,
   onOpenChange,
   className,
+  label,
 }: {
   trigger: ReactNode;
   children: ReactNode;
+  /** Tên khung nổi cho trình đọc màn hình. */
+  label?: string | undefined;
   align?: 'start' | 'end' | undefined;
   open?: boolean | undefined;
   onOpenChange?: ((open: boolean) => void) | undefined;
@@ -348,6 +351,7 @@ export function Popover({
       <RadixPopover.Trigger asChild>{trigger}</RadixPopover.Trigger>
       <RadixPopover.Portal>
         <RadixPopover.Content
+          aria-label={label}
           align={align}
           sideOffset={4}
           className={cn(

@@ -3,7 +3,6 @@
 // luật (số tiền không vượt nợ còn lại của em, cờ, quyền) do hàm tạo kiểm; hộp chỉ hiện lỗi của hàm.
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { errorOf, rpc, useDb, useIntSetting } from '../../lib/db';
 import { formatMoney } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
@@ -14,6 +13,7 @@ import { Select } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { useRefreshReceipts } from './useReceiptData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 type ParentHit = { id: string; code: string; full_name: string; phone?: string | null };
 type DebtByStudent = {
@@ -31,7 +31,7 @@ export function OpeningDebtDialog(props: Props) {
 
 function OpeningDebtForm({ open, onOpenChange }: Props) {
   const supabase = useDb();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const toast = useToast();
   const catalogs = useLeadCatalogs();
   const refresh = useRefreshReceipts();
@@ -87,7 +87,7 @@ function OpeningDebtForm({ open, onOpenChange }: Props) {
       await refresh();
       onOpenChange(false);
       toast({ title: `Đã tạo phiếu thu nợ đầu kỳ ${result.code}.` });
-      void navigate(`/crm/phieu-thu/${result.id}`);
+      openFrom(`/crm/phieu-thu/${result.id}`);
     } catch (e) {
       setError(errorOf(e).message);
     } finally {

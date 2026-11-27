@@ -1,6 +1,7 @@
 // Bảng dòng đơn ở chế độ SỬA (UI-O3, canvas BH05_nhap): mỗi dòng sửa số giờ, hình thức, chính sách chiết khấu (chip, ✕ để bỏ, "+ Thêm"), bỏ dòng.
 // Học sinh, gói giữ nguyên; thêm dòng, thêm em để bước tạo đơn từ cơ hội (dùng chung ô chọn gói, học sinh). Giao diện KHÔNG tính tiền: Thành tiền
 // hiện số máy chủ đã tính lần lưu trước, tính lại khi bấm Lưu (R-TIEN-13).
+import type { ReactNode } from 'react';
 import { studentLabel } from '../../features/prospect/prospectLogic';
 import { formatDate, formatNumber } from '../../lib/format';
 import { discountText } from '../bao-gia/quoteRecord';
@@ -34,8 +35,8 @@ type Props = {
   stale: boolean;
   /** Học sinh (em) của cơ hội để chọn cho dòng mới; thêm em làm ở cơ hội. */
   students: OppStudent[];
-  /** Mở hộp chọn gói để thêm một dòng (Q-67, canvas BH05_nhap_sua). */
-  onAdd: () => void;
+  /** Nút «Thêm dòng» kèm ô tìm sản phẩm (Q-67, canvas BH05_nhap_sua). */
+  addControl: ReactNode;
   onChangeAdded: (key: string, patch: Partial<AddedLine>) => void;
   onRemoveAdded: (key: string) => void;
   /** Mã lớp, ngày vào lớp đang chọn của từng dòng (BH-08), theo số dòng. */
@@ -167,7 +168,7 @@ export function OrderEditLines({
   today,
   stale,
   students,
-  onAdd,
+  addControl,
   onChangeAdded,
   onRemoveAdded,
   lineClasses,
@@ -421,9 +422,7 @@ export function OrderEditLines({
         </table>
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <Button icon="plus" onClick={onAdd}>
-          Thêm dòng
-        </Button>
+        {addControl}
         <span className="text-caption text-fg-muted">
           Chưa thấy học sinh? Thêm học sinh ở cơ hội.
         </span>

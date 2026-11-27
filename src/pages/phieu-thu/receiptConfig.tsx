@@ -1,12 +1,12 @@
 // Cấu hình màn Phiếu thu (TC-01, TC-04) cho khuôn danh sách K03: cột, lọc nhanh, trường lọc nâng cao. Lọc, sắp xếp, phân trang làm ở máy chủ.
 // Phiếu thu chỉ tạo từ đơn Đã duyệt (R-TIEN-02) nên không có nút Tạo ở danh sách; nút Tạo phiếu thu nằm ở bản ghi đơn hàng.
-import { Link } from 'react-router';
 import { formatDate, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig, ListState } from '../../list/types';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import type { ReceiptRow } from './receiptTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const RECEIPT_SCREEN_CODE = 'TC-01';
 
@@ -47,9 +47,9 @@ export function buildReceiptConfig(
         locked: true,
         primary: true,
         render: (r) => (
-          <Link to={`/crm/phieu-thu/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/phieu-thu/${r.id}`} className="font-medium text-link hover:underline">
             {r.code}
-          </Link>
+          </FromLink>
         ),
       },
       {
@@ -57,9 +57,9 @@ export function buildReceiptConfig(
         label: 'Đơn hàng',
         render: (r) =>
           r.order_id ? (
-            <Link to={`/crm/don-hang/${r.order_id}`} className="text-link hover:underline">
+            <FromLink to={`/crm/don-hang/${r.order_id}`} className="text-link hover:underline">
               {r.order_code}
-            </Link>
+            </FromLink>
           ) : (
             <span className="text-fg-muted">Thu nợ đầu kỳ</span>
           ),

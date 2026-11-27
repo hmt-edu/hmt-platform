@@ -3,7 +3,7 @@
 // Chỉ nhánh gốc cơ hội; nhánh gốc phiếu tái tục (TT-02, L6 và L7) làm riêng. Điện thoại giữ bản chỉ đọc (Đ248): không có màn này.
 import { useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { Link, useNavigate, useSearchParams, useLocation } from 'react-router';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, useDb, useIntSetting } from '../../lib/db';
@@ -36,6 +36,7 @@ import {
   useOpportunityStudents,
   useRefreshQuotations,
 } from './useQuoteData';
+import { FromLink } from '../../layout/FromLink';
 
 export function QuotationCreatePage() {
   const [params] = useSearchParams();
@@ -113,6 +114,7 @@ function CreateForm({
   branch: string;
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const openFrom = useNavigateFrom();
   const supabase = useDb();
   const toast = useToast();
@@ -164,7 +166,10 @@ function CreateForm({
       toast({ title: `Đã tạo báo giá ${created.code}.` });
       // Đã lưu: tắt cảnh báo rời trang (không còn thay đổi chưa lưu) rồi mở bản ghi vừa tạo.
       flushSync(() => setSaved(true));
-      void navigate(`/crm/bao-gia/${created.id}`, { replace: true });
+      void navigate(`/crm/bao-gia/${created.id}`, {
+        replace: true,
+        state: location.state as unknown,
+      });
     } catch (e) {
       setSaveError(errorOf(e).message);
     } finally {
@@ -183,7 +188,7 @@ function CreateForm({
       onEdit={() => undefined}
       onSave={() => void save()}
       // Huỷ: bỏ hết, chưa có bản ghi (R-CRM-19); về bản ghi cơ hội.
-      onCancel={() => void navigate(`/crm/co-hoi/${opportunityId}`)}
+      onCancel={() => openFrom(`/crm/co-hoi/${opportunityId}`)}
       stageShowCode={false}
       stage={{ steps, current: '', forwardOnly: true, onSelect: () => undefined }}
       stageNote="Chưa lưu: báo giá chưa có giai đoạn. Bấm Lưu để tạo ở giai đoạn Nháp."
@@ -219,16 +224,12 @@ function CreateForm({
                 label="Cơ hội"
                 mode="view"
                 value={
-                  <Link
+                  <FromLink
                     to={`/crm/co-hoi/${opportunityId}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openFrom(`/crm/co-hoi/${opportunityId}`);
-                    }}
                     className="font-medium text-link hover:underline"
                   >
                     {opportunityCode}
-                  </Link>
+                  </FromLink>
                 }
               />
               <DetailField label="Cơ sở" mode="view" value={branch} />
@@ -266,7 +267,7 @@ function CreateForm({
           />
         </section>
         <p>
-          <Button variant="text" onClick={() => void navigate(`/crm/co-hoi/${opportunityId}`)}>
+          <Button variant="text" onClick={() => openFrom(`/crm/co-hoi/${opportunityId}`)}>
             Về cơ hội
           </Button>
         </p>
