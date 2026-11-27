@@ -174,6 +174,7 @@ export function TaskDestinationPage() {
           </DetailSection>
         </div>
         <p className="mt-4 text-caption text-fg-muted">
+          {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
           <Link className="text-link underline" to="/crm/phieu-chuyen-co-so-den">
             ← Về danh sách phiếu chuyển cơ sở đến
           </Link>

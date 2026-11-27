@@ -3,7 +3,7 @@
 // mới tạo bản ghi và cấp mã YB (app.save_support_request). Quản lý cơ sở duyệt. Chưa làm: gợi ý em yếu theo điểm (chọn tay).
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams, useLocation } from 'react-router';
 import { errorOf } from '../../lib/db';
 import { formatNumber } from '../../lib/format';
 import { Button } from '../../ui/Button';
@@ -16,6 +16,8 @@ import { validateSupport, type SupportError } from './requestLogic';
 import { useSaveSupport } from './useRequestData';
 import { ExamBlock } from './ExamBlock';
 import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './examFields';
+import { useNavigateFrom } from '../../layout/crumbTrail';
+import { FromLink } from '../../layout/FromLink';
 
 export function SessionRequestSupportPage() {
   useCrumbTail('Tạo yêu cầu học bổ trợ');
@@ -23,9 +25,9 @@ export function SessionRequestSupportPage() {
   const classId = params.get('lop') ?? undefined;
   const record = useClassRecord(classId);
   const back = (
-    <Link className="text-link underline" to={classId ? `/crm/lop/${classId}` : '/crm/lop'}>
+    <FromLink className="text-link underline" to={classId ? `/crm/lop/${classId}` : '/crm/lop'}>
       Về lớp
-    </Link>
+    </FromLink>
   );
   if (classId === undefined)
     return (
@@ -68,6 +70,8 @@ function Form({
   students: { student_id: string; full_name: string; hours_left: number }[];
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const openFrom = useNavigateFrom();
   const toast = useToast();
   const save = useSaveSupport();
   const options = useClassFormOptions(branchId);
@@ -110,7 +114,7 @@ function Form({
         tone: 'success',
         title: send ? `Đã gửi duyệt ${saved.code}` : `Đã lưu nháp ${saved.code}`,
       });
-      void navigate('/crm/yeu-cau-buoi', { replace: true });
+      void navigate('/crm/yeu-cau-buoi', { replace: true, state: location.state as unknown });
     } catch (e) {
       setError(errorOf(e).message);
     }
@@ -217,7 +221,7 @@ function Form({
         <Button disabled={save.isPending} onClick={() => void submit(false)}>
           Lưu nháp
         </Button>
-        <Button variant="text" onClick={() => void navigate(`/crm/lop/${classId}`)}>
+        <Button variant="text" onClick={() => openFrom(`/crm/lop/${classId}`)}>
           Huỷ
         </Button>
       </div>

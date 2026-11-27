@@ -31,6 +31,7 @@ import { useOpenTicketCount } from './useCustTickets';
 import { parentPath, studentPath } from './custConfig';
 import { STUDENT_STATUS_LABEL, type ParentRecord } from './custTypes';
 import { useParentRecord, useRefreshCustomers } from './useCustData';
+import { FromLink } from '../../layout/FromLink';
 
 const FORMAT = {
   labels: {
@@ -97,6 +98,7 @@ export function ParentRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/phu-huynh" className="font-medium text-link hover:underline">
               Về danh sách Phụ huynh
             </Link>
@@ -368,12 +370,12 @@ function ParentView({ record }: { record: ParentRecord }) {
           <p role="status" className="rounded-control bg-canvas p-3">
             Hồ sơ này đã gộp vào hồ sơ khác.{' '}
             {record.merged_into_id && (
-              <Link
+              <FromLink
                 className="font-medium text-link hover:underline"
                 to={`/crm/phu-huynh/${record.merged_into_id}`}
               >
                 Mở hồ sơ đích
-              </Link>
+              </FromLink>
             )}
           </p>
         )}

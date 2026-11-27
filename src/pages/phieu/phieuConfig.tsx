@@ -1,11 +1,12 @@
 // Cấu hình danh sách phiếu nghiệp vụ cho khuôn K03: CS-05 (canvas CSN05). Cột: mã phiếu, loại phiếu, ticket gốc, học sinh, trạng thái, cấp duyệt,
 // người duyệt kế tiếp, cơ sở, ngày tạo. Lọc nhanh: Hàng chờ (Chờ tôi duyệt, Chờ kế toán), Loại phiếu, Trạng thái. Lọc, phân trang làm ở máy chủ.
-import { Link } from 'react-router';
+
 import { formatDateTime } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import type { ListConfig } from '../../list/types';
 import { Tag, type TagTone } from '../../ui/Data';
 import { LEVEL_ROLE_LABEL, TASK_STATUS_LABEL, TASK_TYPE_LABEL, type TaskRow } from './phieuTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const TASK_SCREEN_CODE = 'CS-05';
 const MUTED = <span className="text-fg-muted">—</span>;
@@ -42,13 +43,13 @@ export function buildTaskConfig(access: AccessView): ListConfig<TaskRow> {
         key: 'ticket',
         label: 'Ticket gốc',
         render: (r) => (
-          <Link
+          <FromLink
             className="text-link underline"
             to={`/crm/ticket/${r.ticket_id}`}
             onClick={(e) => e.stopPropagation()}
           >
             {r.ticket_code}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'student', label: 'Học sinh', render: (r) => r.student_name ?? MUTED },

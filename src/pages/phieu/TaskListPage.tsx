@@ -1,6 +1,6 @@
 // CS-05 Phiếu nghiệp vụ (danh sách, khuôn K03, canvas CSN05): nối với list_ticket_tasks. Lọc, phân trang làm ở máy chủ; chỉ giữ trang đang xem.
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
@@ -10,13 +10,14 @@ import { buildTaskConfig } from './phieuConfig';
 import { EMPTY_TASK_STATE, buildTaskFilters } from './phieuFilters';
 import { TASK_STATUS_LABEL, TASK_TYPE_LABEL, type TaskRow } from './phieuTypes';
 import { useRefreshTasks, useTaskPage } from './usePhieuData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 const TYPE_CODES = Object.keys(TASK_TYPE_LABEL);
 const STATUS_CODES = Object.keys(TASK_STATUS_LABEL);
 
 export function TaskListPage() {
   const access = useAccess();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const refreshData = useRefreshTasks();
   const config = useMemo(() => buildTaskConfig(access), [access]);
   const pageSize = useIntSetting('list_page_size_default');
@@ -44,7 +45,7 @@ export function TaskListPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.ticket_code}`}
-      onRowClick={(r) => void navigate(`/crm/phieu-nghiep-vu/${r.id}`)}
+      onRowClick={(r) => openFrom(`/crm/phieu-nghiep-vu/${r.id}`)}
       loading={list.isPending || list.isPlaceholderData}
       error={list.isError ? errorOf(list.error).message : null}
       onRetry={() => void list.refetch()}

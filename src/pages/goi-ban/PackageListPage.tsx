@@ -1,6 +1,6 @@
 // CH-01 Gói bán (cấu hình bán hàng, khuôn K10): danh sách gói (mã, tên, loại, môn, khối, trạng thái), Tạo gói, Sửa tên và mã cũ,
 // Ngừng bán / Dùng lại. Không xoá gói. Gói không có số giờ (số giờ nhập khi lập dòng đơn). Lọc, tìm, phân trang ở máy chủ.
-import { Link } from 'react-router';
+
 import { useState } from 'react';
 import { errorOf, useIntSetting } from '../../lib/db';
 import { useDebounced } from '../../lib/useDebounced';
@@ -20,6 +20,7 @@ import {
   type PackageRow,
 } from './usePackageData';
 import { PageFrame, PageHeader } from '../../ui/PageHeader';
+import { FromLink } from '../../layout/FromLink';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'Mọi trạng thái' },
@@ -129,12 +130,12 @@ export function PackageListPage() {
               header: 'Mã gói',
               primary: true,
               cell: (r) => (
-                <Link
+                <FromLink
                   className="font-medium text-action-link underline"
                   to={`/crm/cau-hinh/goi-ban/${r.id}`}
                 >
                   {r.code}
-                </Link>
+                </FromLink>
               ),
             },
             { key: 'name', header: 'Tên gói', cell: (r) => r.name },

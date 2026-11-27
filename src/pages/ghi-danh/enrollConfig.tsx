@@ -1,6 +1,6 @@
 // Cấu hình các màn danh sách cụm Ghi danh cho khuôn K03: GD-01 Ghi danh, GD-06 Hàng chờ xếp lớp, GD-04 Sổ giờ. Cột và chữ theo canvas GD01, GD04, GD06.
 // Lọc, sắp xếp, phân trang làm ở máy chủ nên cấu hình không có hàm `test` chạy ở trình trình duyệt. Giao diện không tính giờ: số do hàm DB trả.
-import { Link } from 'react-router';
+
 import { formatDate, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
@@ -8,6 +8,7 @@ import type { ListConfig } from '../../list/types';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import { waitingDaysLabel } from './waitingDays';
 import type { EnrollmentRow, LedgerRow, QueueRow } from './enrollTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const ENROLL_SCREEN_CODE = 'GD-01';
 export const QUEUE_SCREEN_CODE = 'GD-06';
@@ -46,9 +47,9 @@ export function buildEnrollConfig(
         primary: true,
         sortable: true,
         render: (r) => (
-          <Link to={`/crm/ghi-danh/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/ghi-danh/${r.id}`} className="font-medium text-link hover:underline">
             {r.code}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'student', label: 'Học sinh', sortable: true, render: (r) => r.student_name },
@@ -130,9 +131,9 @@ export function buildQueueConfig(
         locked: true,
         primary: true,
         render: (r) => (
-          <Link to={`/crm/ghi-danh/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/ghi-danh/${r.id}`} className="font-medium text-link hover:underline">
             {r.code}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'student', label: 'Học sinh', render: (r) => r.student_name },
