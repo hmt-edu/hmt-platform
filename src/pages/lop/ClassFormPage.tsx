@@ -4,7 +4,7 @@
 // Lưu nháp xong bấm Trình ở màn lớp (R-LOP-02, R-LOP-03). Trùng phòng, trùng giáo viên chỉ cảnh báo, không chặn (R-LOP-08).
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router';
 import { Button } from '../../ui/Button';
 import { INPUT_CLASS } from '../../ui/Field';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -49,6 +49,8 @@ import {
   useClassRecord,
   useRefreshClasses,
 } from './useClassData';
+import { FromLink } from '../../layout/FromLink';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 type Warnings = { message?: string }[];
 
@@ -69,6 +71,7 @@ export function ClassFormPage() {
         kind="error"
         title="Không tải được lớp"
         actions={
+          // duong-dan-menu: không tải được bản ghi, về danh sách chung
           <Link to="/crm/lop" className="font-medium text-link hover:underline">
             Về danh sách Lớp
           </Link>
@@ -87,6 +90,8 @@ function FormView({ record }: { record: ClassRecord | null }) {
   const { claims } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const openFrom = useNavigateFrom();
   const refresh = useRefreshClasses();
   const [searchParams] = useSearchParams();
   useCrumbTail(record ? `${record.code} · Sửa` : 'Tạo lớp mới');
@@ -181,7 +186,8 @@ function FormView({ record }: { record: ClassRecord | null }) {
       void refresh();
       setWarnings(warn);
       toast({ title: editing ? 'Đã lưu lớp.' : 'Đã lưu nháp. Bấm Trình ở màn lớp để gửi duyệt.' });
-      if (warn.length === 0) void navigate(classPath(classId));
+      if (warn.length === 0)
+        void navigate(classPath(classId), { state: location.state as unknown });
       else setForm(initial);
     } catch (e) {
       setSaveError(errorOf(e).message);
@@ -381,7 +387,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
       stickyHeader
       onEdit={() => undefined}
       onSave={() => void save()}
-      onCancel={() => void navigate(editing ? classPath(record.id) : '/crm/lop')}
+      onCancel={() => openFrom(editing ? classPath(record.id) : '/crm/lop')}
       aside={editing ? <ClassChatter record={record} /> : null}
       asideLabel="Ghi chú và hoạt động"
     >
@@ -410,7 +416,9 @@ function FormView({ record }: { record: ClassRecord | null }) {
             <Button
               size="sm"
               className="mt-2"
-              onClick={() => void navigate(classPath(record?.id ?? ''))}
+              onClick={() =>
+                void navigate(classPath(record?.id ?? ''), { state: location.state as unknown })
+              }
               disabled={!record}
             >
               Về hồ sơ lớp
@@ -428,12 +436,12 @@ function FormView({ record }: { record: ClassRecord | null }) {
         {missingFrame && (
           <Alert tone="warning">
             Môn/khối này chưa có khung chương trình, tạo ở{' '}
-            <Link
+            <FromLink
               to="/crm/cau-hinh/khung-chuong-trinh"
               className="font-medium text-link hover:underline"
             >
               Cấu hình › Khung chương trình
-            </Link>
+            </FromLink>
             .
           </Alert>
         )}

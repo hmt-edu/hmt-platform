@@ -40,6 +40,7 @@ import { parentPath, studentPath } from './custConfig';
 import { newTicketForParentPath } from './custFilters';
 import { useStudentAccount } from './StudentAccount';
 import { useRefreshCustomers, useStudentRecord } from './useCustData';
+import { FromLink } from '../../layout/FromLink';
 
 const FORMAT = {
   labels: {
@@ -109,6 +110,7 @@ export function StudentRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/hoc-sinh" className="font-medium text-link hover:underline">
               Về danh sách Học sinh
             </Link>
@@ -364,12 +366,12 @@ function StudentView({ record }: { record: StudentRecord }) {
           <p role="status" className="rounded-control bg-canvas p-3">
             Hồ sơ này đã gộp vào hồ sơ khác.{' '}
             {record.merged_into_id && (
-              <Link
+              <FromLink
                 className="font-medium text-link hover:underline"
                 to={`/crm/hoc-sinh/${record.merged_into_id}`}
               >
                 Mở hồ sơ đích
-              </Link>
+              </FromLink>
             )}
           </p>
         )}
@@ -515,12 +517,12 @@ function StudentView({ record }: { record: StudentRecord }) {
               label="Phụ huynh"
               value={
                 record.parent ? (
-                  <Link
+                  <FromLink
                     className="font-medium text-link hover:underline"
                     to={`/crm/phu-huynh/${record.parent.id}`}
                   >
                     {record.parent.full_name}
-                  </Link>
+                  </FromLink>
                 ) : (
                   ''
                 )

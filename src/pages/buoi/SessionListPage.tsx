@@ -1,7 +1,7 @@
 // BUOI-01 Buổi học (danh sách, khuôn K03): nối với session_list. Mặc định lọc hôm nay. Lọc, sắp xếp, phân trang làm ở máy chủ. Bấm dòng mở BUOI-02.
 // Chưa có bộ lọc theo giáo viên, lớp riêng (chỉ tìm theo mã lớp): thêm khi có ô chọn giáo viên dùng chung.
 import { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
@@ -23,10 +23,11 @@ import {
 import type { SessionRow } from './sessionTypes';
 import { useClassRecord } from '../lop/useClassData';
 import { useRefreshSessions, useSessionGroupCounts, useSessionPage } from './useSessionData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 export function SessionListPage() {
   const access = useAccess();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const refreshData = useRefreshSessions();
   const catalogs = useLeadCatalogs();
   const config = useMemo(() => buildSessionConfig(catalogs, access), [catalogs, access]);
@@ -122,12 +123,12 @@ export function SessionListPage() {
               {
                 label: `Quay lại lớp ${classRecord?.code ?? ''}`.trim(),
                 icon: 'back' as const,
-                onClick: () => void navigate(`/crm/lop/${classId}`),
+                onClick: () => openFrom(`/crm/lop/${classId}`),
               },
             ]
           : []
       }
-      onRowClick={(r) => void navigate(`/crm/buoi-hoc/${r.id}`)}
+      onRowClick={(r) => openFrom(`/crm/buoi-hoc/${r.id}`)}
       pager={{
         from: total === 0 ? 0 : page * (pageSize ?? 0) + 1,
         to: page * (pageSize ?? 0) + rows.length,

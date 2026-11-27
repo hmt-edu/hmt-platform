@@ -16,6 +16,7 @@ import { useToast } from '../../ui/toastContext';
 import { STATUS_NAME, yearLabel } from './frameLogic';
 import { moveLesson, nextLessonCode, type Lesson } from './lessonLogic';
 import { reorderLessons, saveLesson, useFrameDetail, useRefreshFrame } from './useFrameData';
+import { FromLink } from '../../layout/FromLink';
 
 export function LessonListPage() {
   const { id } = useParams();
@@ -192,9 +193,9 @@ export function LessonListPage() {
   return (
     <div className="flex min-w-0 flex-col gap-4">
       <nav aria-label="Đường dẫn" className="text-caption text-fg-muted">
-        <Link className="underline" to="/crm/cau-hinh/khung-chuong-trinh">
+        <FromLink className="underline" to="/crm/cau-hinh/khung-chuong-trinh">
           Khung chương trình
-        </Link>
+        </FromLink>
       </nav>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">

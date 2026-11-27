@@ -1,5 +1,5 @@
 // CS-07 «Phiếu chuyển cơ sở đến»: danh sách phiếu chờ quản lý cơ sở ĐÍCH (đến lượt) chọn lớp và duyệt. Chưa có khung riêng: dựng từ khuôn danh sách K03 (chờ Design xác nhận).
-import { useNavigate } from 'react-router';
+
 import { ListScreen } from '../../list/ListScreen';
 import type { ListConfig, ListState } from '../../list/types';
 import { errorOf } from '../../lib/db';
@@ -7,6 +7,7 @@ import { formatDateTime } from '../../lib/format';
 import { useState } from 'react';
 import type { DestinationRow } from './destinationTypes';
 import { useDestinationList } from './useDestination';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 const CONFIG: ListConfig<DestinationRow> = {
   screenCode: 'CS-07',
@@ -43,7 +44,7 @@ const EMPTY: ListState = {
 };
 
 export function TaskDestinationListPage() {
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const [state, setState] = useState<ListState>(EMPTY);
   const list = useDestinationList();
   const q = state.search.trim().toLowerCase();
@@ -65,7 +66,7 @@ export function TaskDestinationListPage() {
       rows={rows}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.student_name ?? ''}`}
-      onRowClick={(r) => void navigate(`/crm/phieu-chuyen-co-so-den/${r.id}`)}
+      onRowClick={(r) => openFrom(`/crm/phieu-chuyen-co-so-den/${r.id}`)}
       loading={list.isPending}
       error={list.isError ? errorOf(list.error).message : null}
       onRetry={() => void list.refetch()}

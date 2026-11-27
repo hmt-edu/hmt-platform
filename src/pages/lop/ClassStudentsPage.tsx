@@ -2,7 +2,7 @@
 // (app.list_class_students). «Xếp thêm» dẫn tới Hàng chờ xếp lớp (GD-06). «Xuất» chưa làm: ma trận quyền chưa có quyền Xuất cho phân hệ Lớp (chờ anh chốt).
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { ListScreen } from '../../list/ListScreen';
 import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeafRows } from '../lead/useLeadData';
@@ -26,11 +26,12 @@ import {
   type ClassStudentRow,
 } from './classStudents';
 import { buildClassStudentsConfig } from './classStudentsConfig';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 export function ClassStudentsPage() {
   const { id } = useParams();
   const access = useAccess();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const catalogs = useLeadCatalogs();
   const classRecord = useClassRecord(id).data;
   useCrumbTail(classRecord ? `${classRecord.code} · Học sinh` : null);
@@ -130,14 +131,14 @@ export function ClassStudentsPage() {
         {
           label: `Quay lại lớp ${classRecord?.code ?? ''}`.trim(),
           icon: 'back' as const,
-          onClick: () => void navigate(`/crm/lop/${id ?? ''}`),
+          onClick: () => openFrom(`/crm/lop/${id ?? ''}`),
         },
         ...(canAssign
           ? [
               {
                 label: 'Xếp thêm',
                 icon: 'plus' as const,
-                onClick: () => void navigate('/crm/cho-xep-lop'),
+                onClick: () => openFrom('/crm/cho-xep-lop'),
               },
             ]
           : []),
@@ -161,7 +162,7 @@ export function ClassStudentsPage() {
       }
       sort={sort}
       onSortChange={(next) => setSort(next?.key === 'start' || next?.key === 'hours' ? next : null)}
-      onRowClick={(r) => void navigate(`/crm/ghi-danh/${r.enrollment_id}`)}
+      onRowClick={(r) => openFrom(`/crm/ghi-danh/${r.enrollment_id}`)}
       emptyMessage={{
         title: 'Chưa có học sinh',
         hint: 'Lớp chưa có học sinh nào trong bộ lọc này.',

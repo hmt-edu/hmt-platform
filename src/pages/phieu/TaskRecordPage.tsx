@@ -1,7 +1,7 @@
 // CS-06 Chi tiết phiếu nghiệp vụ (canvas CSN06): thông tin phiếu, thanh trạng thái, các nút theo trạng thái (Trình, Duyệt, Từ chối, Thực hiện, Huỷ),
 // nội dung Cập nhật hồ sơ (trước/sau) và dòng thời gian. Luật chặn thật ở hàm DB (AS-10, R-CS-07); nút chỉ là gợi ý theo `can_approve` và quyền.
 import { useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
@@ -42,6 +42,7 @@ import {
   useTaskRecord,
   type TaskAction,
 } from './usePhieuData';
+import { FromLink } from '../../layout/FromLink';
 
 const STEPS: StageStep[] = ['NHAP', 'CHO_DUYET', 'DA_DUYET', 'DA_THUC_HIEN'].map((code) => ({
   code,
@@ -227,9 +228,9 @@ export function TaskRecordPage() {
               label="Ticket gốc"
               mode="view"
               value={
-                <Link className="text-link underline" to={`/crm/ticket/${ticket.id}`}>
+                <FromLink className="text-link underline" to={`/crm/ticket/${ticket.id}`}>
                   {ticket.code} · {ticket.title}
-                </Link>
+                </FromLink>
               }
             />
             <DetailField label="Học sinh" mode="view" value={ticket.student_name ?? ''} />

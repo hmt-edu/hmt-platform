@@ -1,7 +1,7 @@
 // Tab Học tập, Điểm danh, Điểm kiểm tra, Chăm sóc của hồ sơ học sinh (khung KH05_hoc_tap, _diem_danh, _diem_danh_chi_tiet,
 // _diem_kiem_tra, _cham_soc, canvas 9933). Cột chưa có trong app.get_student_record để gạch, không điền chữ thay thế.
 import { useState } from 'react';
-import { Link } from 'react-router';
+
 import { formatDate, formatDateTime, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
 import { Tag, type Column } from '../../ui/Data';
@@ -15,6 +15,7 @@ import { CustSection, CustTable } from './CustTable';
 import { blankColumns, NO_VALUE } from './custColumns';
 import { ATTENDANCE_LABEL, type StudentRecord } from './custTypes';
 import { PagedTable } from './PagedTable';
+import { FromLink } from '../../layout/FromLink';
 
 const STUDY_COLUMNS: Column<EnrollmentRow>[] = [
   {
@@ -24,16 +25,16 @@ const STUDY_COLUMNS: Column<EnrollmentRow>[] = [
     cell: (e) => (
       <span className="flex flex-col">
         {e.class_id && e.class_code ? (
-          <Link className="font-medium text-link hover:underline" to={`/crm/lop/${e.class_id}`}>
+          <FromLink className="font-medium text-link hover:underline" to={`/crm/lop/${e.class_id}`}>
             {e.class_code}
-          </Link>
+          </FromLink>
         ) : (
           'Chưa xếp lớp'
         )}
         <span className="text-caption text-fg-muted">
-          <Link className="text-link hover:underline" to={`/crm/ghi-danh/${e.id}`}>
+          <FromLink className="text-link hover:underline" to={`/crm/ghi-danh/${e.id}`}>
             {e.code}
-          </Link>
+          </FromLink>
           {e.package_name ? ` · ${e.package_name}` : ''}
         </span>
       </span>
@@ -206,12 +207,12 @@ export function StudentExamTab({ record }: { record: StudentRecord }) {
         <span className="flex flex-col">
           {r.kind}
           {r.test && (
-            <Link
+            <FromLink
               to={`/crm/phieu-kiem-tra/${r.test.id}`}
               className="font-medium text-link hover:underline"
             >
               {r.test.code}
-            </Link>
+            </FromLink>
           )}
         </span>
       ),
@@ -242,9 +243,12 @@ const TEST_COLUMNS: Column<TestRow>[] = [
     header: 'Mã',
     primary: true,
     cell: (t) => (
-      <Link to={`/crm/phieu-kiem-tra/${t.id}`} className="font-medium text-link hover:underline">
+      <FromLink
+        to={`/crm/phieu-kiem-tra/${t.id}`}
+        className="font-medium text-link hover:underline"
+      >
         {t.code}
-      </Link>
+      </FromLink>
     ),
   },
   { key: 'subject', header: 'Môn', cell: (t) => <SubjectName code={t.subject_code} /> },
