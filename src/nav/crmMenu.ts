@@ -32,6 +32,8 @@ export type MenuEntry = {
   tabOf?: string | undefined;
   /** Chữ trên tab khi khác nhãn mục. */
   tabLabel?: string | undefined;
+  /** Mục con này không là tab mà là một CHẾ ĐỘ XEM của mục cha (nút chuyển «Danh sách | …»). */
+  modeLabel?: string | undefined;
   /** Lối tắt tới một mục đã khai ở nhóm khác (cùng đường dẫn): chỉ hiện trên menu; mở đường dẫn và breadcrumb theo mục gốc. */
   alias?: true | undefined;
 };
@@ -235,7 +237,7 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('CLASS'),
         stage: '',
         tabOf: 'buoi-hoc',
-        tabLabel: 'Lịch tuần',
+        modeLabel: 'Lịch tuần',
       },
       {
         code: 'BUOI-12',
@@ -655,6 +657,28 @@ export function sidebarEntries(group: MenuGroup): MenuEntry[] {
 
 export type RouteTab = { slug: string; label: string };
 
+/** Chữ của chế độ xem gốc (mục cha) trên nút chuyển chế độ. */
+const LIST_MODE_LABEL = 'Danh sách';
+
+/**
+ * Nút chuyển chế độ xem của trang đang mở: chỉ hiện ở mục cha và các mục là chế độ của nó, khi người xem thấy cả mục cha lẫn ít nhất một chế độ.
+ */
+export function routeModes(menu: MenuGroup[], slug: string): RouteTab[] {
+  for (const group of menu) {
+    const entry = group.entries.find((e) => e.slug === slug);
+    if (!entry) continue;
+    const root = entry.modeLabel ? entry.tabOf : entry.slug;
+    const parent = group.entries.find((e) => e.slug === root);
+    const modes = group.entries.filter((e) => e.tabOf === root && e.modeLabel);
+    if (!parent || modes.length === 0) return [];
+    return [
+      { slug: parent.slug, label: LIST_MODE_LABEL },
+      ...modes.map((e) => ({ slug: e.slug, label: e.modeLabel ?? e.label })),
+    ];
+  }
+  return [];
+}
+
 /**
  * Thanh tab của trang đang mở (theo menu đã lọc quyền): mục cha rồi các mục con. Trang không thuộc cụm tab nào,
  * hoặc người xem chỉ thấy một mục của cụm, thì rỗng.
@@ -665,7 +689,7 @@ export function routeTabs(menu: MenuGroup[], slug: string): RouteTab[] {
     if (!entry) continue;
     const root = entry.tabOf ?? entry.slug;
     const parent = group.entries.find((e) => e.slug === root);
-    const children = group.entries.filter((e) => e.tabOf === root);
+    const children = group.entries.filter((e) => e.tabOf === root && !e.modeLabel);
     if (!parent || children.length === 0) return [];
     return [parent, ...children].map((e) => ({ slug: e.slug, label: e.tabLabel ?? e.label }));
   }
