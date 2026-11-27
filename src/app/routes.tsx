@@ -241,6 +241,10 @@ const OpportunityRecordPage = lazyScreen(
   () => import('../pages/co-hoi/OpportunityRecordPage'),
   'OpportunityRecordPage',
 );
+const OpportunityCreatePage = lazyScreen(
+  () => import('../pages/co-hoi/OpportunityCreatePage'),
+  'OpportunityCreatePage',
+);
 const ImportDataPage = lazyScreen(
   () => import('../pages/nhap-du-lieu/ImportDataPage'),
   'ImportDataPage',
@@ -527,6 +531,14 @@ export const routes: RouteObject[] = [
             element: (
               <GatedCrmEntry slug="lead">
                 <LeadRecordPage />
+              </GatedCrmEntry>
+            ),
+          },
+          {
+            path: 'co-hoi/moi',
+            element: (
+              <GatedCrmEntry slug="co-hoi" need={['OPPORTUNITY', 'TAO']}>
+                <OpportunityCreatePage />
               </GatedCrmEntry>
             ),
           },

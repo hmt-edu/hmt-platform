@@ -34,7 +34,7 @@ const stageBar = (page: Page) => page.getByRole('navigation', { name: 'Giai đo�
 const toastText = (page: Page, text: string | RegExp) => page.getByText(text).first();
 const dialogOf = (page: Page, name: string | RegExp) => page.getByRole('dialog', { name });
 
-test('Danh sách: không có Tạo, Nhập; có Group By, Kanban; bấm dòng mở cơ hội', async ({
+test('Danh sách: có Tạo, không Nhập; có Group By, Kanban; bấm dòng mở cơ hội', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -47,13 +47,43 @@ test('Danh sách: không có Tạo, Nhập; có Group By, Kanban; bấm dòng m�
     : page.getByRole('table', { name: 'Cơ hội' });
   await expect(list.getByText(seeded.opportunity.fresh.code).first()).toBeVisible();
   await expect(list.getByText(seeded.opportunity.skip.code).first()).toBeVisible();
-  // Cơ hội chỉ tạo từ trang Lead; nhập file để P3f.
-  await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toHaveCount(0);
+  // Tạo trực tiếp (R-CRM-01); nhập file chưa làm.
+  await expect(page.getByRole('button', { name: 'Tạo', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Nhập', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Group By' })).toBeVisible();
   await expectAccessible(page);
   await list.getByRole('link', { name: 'Em Mới' }).first().click();
   await expect(page).toHaveURL(new RegExp(`/crm/co-hoi/${seeded.opportunity.fresh.id}$`));
+});
+
+test('Tạo cơ hội trực tiếp: chặn ô trống; lưu xong mở cơ hội L1 không có lead gốc', async ({
+  page,
+}, testInfo) => {
+  const setup = setupOf(testInfo.project.name);
+  await login(page, setup.account);
+  await page.goto('/crm/co-hoi');
+  await page.getByRole('button', { name: 'Tạo', exact: true }).click();
+  await expect(page).toHaveURL(/\/crm\/co-hoi\/moi$/);
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page.getByText('Nhập họ tên phụ huynh.')).toBeVisible();
+  await expect(page.getByText('Chọn source type.')).toBeVisible();
+
+  const name = `Chị ${setup.mark} tructiep`;
+  const phone = `09${String(Date.now()).slice(-7)}${isPhone(page) ? '1' : '0'}`;
+  await page.getByLabel('Họ tên', { exact: true }).fill(name);
+  await page.getByLabel('Số điện thoại', { exact: true }).fill(phone);
+  const combo = (label: string) => page.getByRole('combobox', { name: label, exact: true });
+  await pickOption(page, combo('Source type'), 'Marketing');
+  await pickOption(page, combo('Source'), 'Website');
+  await expectAccessible(page);
+  await page.getByRole('button', { name: 'Lưu', exact: true }).click();
+  await expect(page).toHaveURL(/\/crm\/co-hoi\/[0-9a-f-]{36}$/);
+  await expect(toastText(page, /^Đã tạo cơ hội CO\d+\./)).toBeVisible();
+  await expect(stageBar(page).getByRole('button', { name: /^L1/ })).toHaveAttribute(
+    'aria-current',
+    'step',
+  );
+  await expect(page.getByRole('button', { name: /Lead gốc/ })).toHaveCount(0);
 });
 
 test('Kanban: đủ tám cột L1 đến L8, cơ hội đúng cột', async ({ page }, testInfo) => {

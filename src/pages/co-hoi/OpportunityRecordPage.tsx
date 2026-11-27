@@ -518,6 +518,8 @@ function OpportunityView({ record }: { record: OppRecord }) {
             label: 'Lead gốc',
             icon: 'recruit',
             count: 1,
+            // Cơ hội tạo trực tiếp không có lead gốc (R-CRM-01).
+            hidden: record.lead_id === null,
             onOpen: () => openFrom(`/crm/lead/${record.lead_id}`),
           },
         ]}
@@ -754,7 +756,11 @@ function OpportunityView({ record }: { record: OppRecord }) {
                         </Tag>
                       }
                     />
-                    <DetailField label="Lead gốc" mode="view" value={record.lead_code} />
+                    <DetailField
+                      label="Lead gốc"
+                      mode="view"
+                      value={record.lead_code ?? 'Không có (tạo trực tiếp)'}
+                    />
                     {record.legacy_ref && (
                       <DetailField label="Mã cũ (Sheet)" mode="view" value={record.legacy_ref} />
                     )}
