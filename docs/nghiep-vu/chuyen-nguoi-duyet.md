@@ -1,9 +1,9 @@
 # R-V2-44 «Chuyển người duyệt» (migration 400; PR #82; cờ `approver_reassign_enabled` TẮT mặc định)
 
-Luật: `docs/spec/04-luat-nghiep-vu.md` R-V2-44 (chốt 18/11), R-HT-01 (Admin không duyệt tiền), R-HT-06, R-V2-41. Khung: canvas 9933 `TC17_admin`.
+Luật: `docs/spec/04-luat-nghiep-vu.md` R-V2-44 (chốt 18/11), R-HT-01 (Admin duyệt được việc tiền), R-HT-06, R-V2-41. Khung: canvas 9933 `TC17_admin`.
 
 ## Việc làm được
-Admin (đã xác thực hai bước) đổi **người được giao duyệt bước quản lý** của đơn `DA_TRINH` hoặc phiếu thu `DA_GUI` có đường duyệt `QUAN_LY`. Admin **không** duyệt, không từ chối thay. Chứng từ vẫn ở đúng trạng thái và đúng `approval_route`; chỉ `assigned_approver_id` đổi. Đường `TRUONG_CS` (mọi Trưởng cơ sở duyệt được) và `TU_DUYET` không cần chuyển.
+Admin (đã xác thực hai bước) đổi **người được giao duyệt bước quản lý** của đơn `DA_TRINH` hoặc phiếu thu `DA_GUI` có đường duyệt `QUAN_LY`. Thao tác chuyển này **không** duyệt, không từ chối thay (Admin muốn duyệt thì dùng nút duyệt, R-HT-01). Chứng từ vẫn ở đúng trạng thái và đúng `approval_route`; chỉ `assigned_approver_id` đổi. Đường `TRUONG_CS` (mọi Trưởng cơ sở duyệt được) và `TU_DUYET` không cần chuyển.
 
 ## Điều kiện (mỗi điều kiện một lỗi có mã, câu tiếng Việt hiện thẳng ở hộp)
 | Điều kiện | Lỗi |

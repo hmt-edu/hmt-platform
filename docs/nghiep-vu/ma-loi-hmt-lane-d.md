@@ -4,7 +4,7 @@ Thẻ D21, 18/11/2026. Quét `raise_error` trong các migration 212, 231, 232, 2
 
 | Mã | Câu hiển thị (bản mới nhất) | Migration |
 | --- | --- | --- |
-| `HMT_CHI_KE_TOAN_DUYET_TIEN` | Chỉ vai trò Kế toán được có quyền Kế toán · Duyệt (Admin và các vai trò khác không duyệt tiền). Gán vai trò Kế toán cho người cụ thể khi cần. | 000455 |
+| `HMT_CHI_KE_TOAN_DUYET_TIEN` | Chỉ vai trò Kế toán và Admin hệ thống được có quyền Kế toán · Duyệt (từ mig 683); vai khác không duyệt tiền. Gán vai trò Kế toán cho người cụ thể khi cần. | 000455 |
 | `HMT_CUNG_NGUOI_DUYET_HAI_BUOC` | Một người không duyệt cả bước quản lý và bước kế toán của cùng một yêu cầu. | 000455 |
 | `HMT_DON_CO_GHI_DANH` | Đơn đã có ghi danh còn hiệu lực (cho học trước), không huỷ được. Dừng học hoặc hoàn phí ghi danh trước. | 000451 |
 | `HMT_DON_DA_CO_PHIEU_THU` | Đơn đã có phiếu thu, không huỷ được. | 000451 |
