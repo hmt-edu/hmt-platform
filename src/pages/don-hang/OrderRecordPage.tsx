@@ -669,11 +669,13 @@ function OrderView({ record }: { record: OrderRecord }) {
               {
                 key: 'amount',
                 header: 'Số tiền (đ)',
+                numeric: true,
                 cell: (i) => <span className="tabular">{formatNumber(i.amount)}</span>,
               },
               {
                 key: 'paid',
                 header: 'Đã đóng (đ)',
+                numeric: true,
                 cell: () => <span className="text-fg-muted">—</span>,
               },
             ]}

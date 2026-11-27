@@ -70,7 +70,9 @@ export function PaymentTermPage() {
       align: 'right',
       width: 'w-36',
       cell: (i) =>
-        i.fixed_amount !== null ? `${formatNumber(i.fixed_amount)} đ` : `${i.share_percent ?? 0}%`,
+        i.fixed_amount !== null
+          ? `${formatNumber(i.fixed_amount)} đ`
+          : `${formatNumber(i.share_percent ?? 0)}%`,
     },
     {
       key: 'due',
