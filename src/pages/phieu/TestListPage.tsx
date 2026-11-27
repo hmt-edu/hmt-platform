@@ -3,7 +3,7 @@
 // có nút Tạo; đổi trạng thái bằng nút trên thẻ (Bắt đầu test, Nộp bài) hoặc ở trang phiếu, không kéo thả.
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { CalendarView, type CalendarKind, type CalendarMode } from '../../list/Calendar';
 import { calendarWindowVn, vnToday, type CalendarEvent } from '../../list/calendarLogic';
 import { KanbanBoard } from '../../list/Kanban';
@@ -39,6 +39,7 @@ import {
   useTestGroupCounts,
   useTestPage,
 } from './useTestData';
+import { FromLink } from '../../layout/FromLink';
 
 const NOTE =
   'Phiếu đổi trạng thái bằng nút trên thẻ (Bắt đầu test, Nộp bài) hoặc trong trang phiếu; không kéo thả. Phiếu tạo từ trang Cơ hội (từ L5 trở đi).';
@@ -107,7 +108,6 @@ function sortParam(sort: SortState): string {
 
 export function TestListPage() {
   const supabase = useDb();
-  const navigate = useNavigate();
   const openFrom = useNavigateFrom();
   const access = useAccess();
   const toast = useToast();
@@ -379,7 +379,7 @@ export function TestListPage() {
         const spec = grouping?.specs.get(key);
         if (spec) leaves.toggle(key, spec.filters, open);
       }}
-      onRowClick={(r) => void navigate(`/crm/phieu-kiem-tra/${r.id}`)}
+      onRowClick={(r) => openFrom(`/crm/phieu-kiem-tra/${r.id}`)}
       kanban={
         board.isPending ? (
           <Spinner label="Đang tải Kanban…" />
@@ -482,12 +482,12 @@ function TestCard({
   return (
     <div className="flex flex-col gap-1.5">
       <Code>{card.code}</Code>
-      <Link
+      <FromLink
         to={`/crm/phieu-kiem-tra/${card.id}`}
         className="font-semibold text-link hover:underline"
       >
         {card.student_name}
-      </Link>
+      </FromLink>
       <p className="text-caption text-fg-muted">{kind}</p>
       <p
         className={

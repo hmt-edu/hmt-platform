@@ -5,9 +5,12 @@ import { cn } from './cn';
 export function RouteTabs({
   label,
   items,
+  activeTo,
 }: {
   label: string;
   items: { to: string; label: string }[];
+  /** Tab vẫn sáng khi đang ở một đường dẫn khác (chế độ xem của tab đó). */
+  activeTo?: string | undefined;
 }) {
   return (
     <nav
@@ -22,7 +25,7 @@ export function RouteTabs({
           className={({ isActive }) =>
             cn(
               'focus-ring tap -mb-px inline-flex h-control items-center border-b-2 px-3 text-body whitespace-nowrap',
-              isActive
+              isActive || item.to === activeTo
                 ? 'border-brand-500 font-semibold text-brand-800'
                 : 'border-transparent font-medium text-fg-label',
             )

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CRM_MENU,
   checkRoute,
+  routeModes,
   routeTabs,
   sidebarEntries,
   visibleMenu,
@@ -49,9 +50,15 @@ describe('menu đợt 1 (A-26-11)', () => {
     expect(routeTabs(menu, 'lich-tuan').map((t) => t.label)).toEqual([
       'Buổi học',
       'Yêu cầu buổi',
-      'Lịch tuần',
       'Chưa hoàn tất',
     ]);
+    // Lịch tuần là chế độ xem của Buổi học (C-27-07 3a), giữ đường dẫn và quyền riêng.
+    for (const slug of ['buoi-hoc', 'lich-tuan']) {
+      expect(routeModes(menu, slug).map((t) => t.label)).toEqual(['Danh sách', 'Lịch tuần']);
+    }
+    expect(routeModes(menu, 'yeu-cau-buoi')).toEqual([]);
+    const noClass: MenuAccess = { ...admin, isAdmin: false, can: (m) => m !== 'CLASS' };
+    expect(routeModes(visibleMenu(CRM_MENU, noClass), 'buoi-hoc')).toEqual([]);
     // Một màn «Điểm danh» (C-27-07 4c), tab trong màn.
     expect(routeTabs(menu, 'diem-danh')).toEqual([]);
     for (const slug of ['lich-tuan', 'buoi-chua-done', 'diem-danh']) {

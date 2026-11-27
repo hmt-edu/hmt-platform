@@ -8,7 +8,9 @@ export type WorkSignal =
   | 'SESSION_PENDING'
   | 'SESSION_NO_ATTENDANCE'
   | 'ABSENT_TODAY'
-  | 'RENEWAL';
+  | 'RENEWAL'
+  | 'TICKET_OVERDUE'
+  | 'DEBT_OVERDUE';
 
 export type WorkItem = {
   signal: WorkSignal;

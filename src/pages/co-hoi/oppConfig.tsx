@@ -1,6 +1,5 @@
 // Cấu hình màn Cơ hội cho khuôn danh sách K1: cột, lọc nhanh, trường lọc nâng cao, trường nhóm (TS-07).
 // Mọi lọc, nhóm làm ở máy chủ nên cấu hình không có hàm `test`/`value` chạy ở trình duyệt.
-import { Link } from 'react-router';
 import { formatDate } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Code, Tag } from '../../ui/Data';
@@ -8,6 +7,7 @@ import type { ListConfig, ListState } from '../../list/types';
 import { appointmentTag, codeAndName, formatPhone } from '../lead/leadFormat';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import type { OpportunityRow } from './oppTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const OPP_SCREEN_CODE = 'TS-07';
 
@@ -48,9 +48,9 @@ export function buildOppConfig(
         primary: true,
         sortable: true,
         render: (r) => (
-          <Link to={`/crm/co-hoi/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/co-hoi/${r.id}`} className="font-medium text-link hover:underline">
             {r.student_name ?? <span className="text-fg-muted">Chưa có học sinh</span>}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'parent', label: 'Phụ huynh', render: (r) => r.parent_name },

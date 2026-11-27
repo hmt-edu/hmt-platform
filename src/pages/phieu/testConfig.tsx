@@ -1,12 +1,12 @@
 // Cấu hình màn Phiếu kiểm tra cho khuôn danh sách K1 (TS-16): cột, lọc nhanh, trường lọc nâng cao, trường nhóm.
 // Mọi lọc, nhóm làm ở máy chủ nên cấu hình không có hàm `test`/`value` chạy ở trình duyệt.
-import { Link } from 'react-router';
 import { formatDateTime, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import type { ListConfig, ListState } from '../../list/types';
 import { Code, Tag, type TagTone } from '../../ui/Data';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import { STATUS_LABEL, type TestRow, type TestStatus } from './testTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const TEST_SCREEN_CODE = 'TS-16';
 
@@ -48,12 +48,12 @@ export function buildTestConfig(
         locked: true,
         primary: true,
         render: (r) => (
-          <Link
+          <FromLink
             to={`/crm/phieu-kiem-tra/${r.id}`}
             className="font-medium text-link hover:underline"
           >
             {r.student_name}
-          </Link>
+          </FromLink>
         ),
       },
       {
@@ -109,9 +109,9 @@ export function buildTestConfig(
         label: 'Cơ hội gốc',
         defaultVisible: false,
         render: (r) => (
-          <Link to={`/crm/co-hoi/${r.opportunity_id}`} className="text-link hover:underline">
+          <FromLink to={`/crm/co-hoi/${r.opportunity_id}`} className="text-link hover:underline">
             {r.opportunity_code}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'branch', label: 'Cơ sở tạo', defaultVisible: false, render: (r) => r.branch_code },

@@ -4,7 +4,7 @@
 // phân trang "n / tổng" chưa có nên chưa hiện.
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams, useLocation } from 'react-router';
 import { AssignDialog } from '../../features/assign/AssignDialog';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
@@ -68,6 +68,7 @@ import { LeadStageDialog } from './LeadStageDialog';
 import { CancelLeadDialog } from './CancelLeadDialog';
 import { SYSTEM_SUBSTAGE, canRestore, selectableSubstages } from './leadStage';
 import { useLeadCatalogs } from './useCatalogs';
+import { FromLink } from '../../layout/FromLink';
 
 /** Giai đoạn con do hệ thống gắn (R-CRM-09): ô khoá, không đặt lại bằng tay nên rời khỏi thì không có Hoàn tác. */
 const CREATE_OPP_BLOCKED_REASON =
@@ -116,6 +117,7 @@ export function LeadRecordPage({ creating = false }: { creating?: boolean }) {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/lead" className="font-medium text-link hover:underline">
               Về danh sách Lead
             </Link>
@@ -135,6 +137,7 @@ export function LeadRecordPage({ creating = false }: { creating?: boolean }) {
 function LeadRecordView({ record }: { record: LeadRecord | null }) {
   const supabase = useDb();
   const navigate = useNavigate();
+  const location = useLocation();
   const openFrom = useNavigateFrom();
   const toast = useToast();
   const access = useAccess();
@@ -190,8 +193,9 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   // Rời trang có chủ ý (tạo xong, Huỷ khi Tạo): bỏ cờ "chưa lưu" rồi mới chuyển, để hộp hỏi rời trang không hiện.
   const [exitTo, setExitTo] = useState<string | null>(null);
   useEffect(() => {
-    if (exitTo !== null) void navigate(exitTo, { replace: true });
-  }, [exitTo, navigate]);
+    // Bản ghi mới thay tầng «Tạo mới», giữ chuỗi nơi mở.
+    if (exitTo !== null) void navigate(exitTo, { replace: true, state: location.state as unknown });
+  }, [exitTo, navigate, location.state]);
 
   const editing = mode !== 'view';
   const ems = useEmEditing(record?.students ?? []);
@@ -514,7 +518,11 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
         headerActions={
           <>
             {canCreate && (
-              <Button icon="plus" onClick={() => void navigate('/crm/lead/moi')}>
+              <Button
+                icon="plus"
+                // duong-dan-menu: lead mới không thuộc bản ghi đang xem
+                onClick={() => void navigate('/crm/lead/moi')}
+              >
                 Tạo
               </Button>
             )}
@@ -766,7 +774,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                     {(() => {
                       const first = inlineDup.rows.find((d) => d.visible);
                       return first ? (
-                        <Link
+                        <FromLink
                           to={
                             first.kind === 'LEAD'
                               ? `/crm/lead/${first.id}`
@@ -775,7 +783,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                           className="font-medium text-link hover:underline"
                         >
                           Mở bản ghi trùng
-                        </Link>
+                        </FromLink>
                       ) : null;
                     })()}
                   </div>
@@ -1130,6 +1138,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           onMerged={(keepId, keepCode) => {
             toast({ title: `Đã gộp vào ${keepCode}.` });
             if (keepId === record.id) void refreshRecord();
+            // duong-dan-menu: bản đang xem đã gộp, không còn để quay lại
             else void navigate(`/crm/lead/${keepId}`, { replace: true });
           }}
         />
@@ -1321,9 +1330,9 @@ function duplicateGroups(rows: Duplicate[]) {
   const line = (d: Duplicate) =>
     d.visible ? (
       d.kind === 'LEAD' ? (
-        <Link to={`/crm/lead/${d.id}`} className="font-medium text-link hover:underline">
+        <FromLink to={`/crm/lead/${d.id}`} className="font-medium text-link hover:underline">
           {d.code} · {d.label}
-        </Link>
+        </FromLink>
       ) : (
         `${d.code} · ${d.label}`
       )
