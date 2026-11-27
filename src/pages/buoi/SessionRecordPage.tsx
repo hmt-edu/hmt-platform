@@ -1,7 +1,8 @@
 // BUOI-02 Buổi học (bản ghi, khuôn K06, chỉ đọc): thanh Nháp → Đã chốt → Hoàn thành, thông tin buổi, danh sách và điểm danh hai cột (trung tâm, giáo viên chính thức),
 // em không vào danh sách kèm lý do, nhận xét của giáo viên, lý do chưa Done. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage.
 // Nút: Chốt danh sách (buổi Nháp), Điểm danh vận hành (buổi Đã chốt, sang BUOI-03), Dời (BUOI-05), Huỷ (BUOI-04). Sửa điểm danh sau Done (BUOI-14, Điểm danh · Duyệt). Đổi giáo viên (BUOI-13, dạy thay). Đổi giáo viên, Thêm học thử: BUOI-13, BUOI-06 (cụm sau).
-// Chưa làm (làm sau 17/11): ghi chú và dòng thời gian, "Báo nghỉ trước", "Đưa về Nháp", "Xác nhận hoàn thành" (Done do hệ thống, mark_session_done là hàm nội bộ).
+// Done (DD2): Done tay (R-GIO-09), Nhập thay điểm danh (R-GIO-11), cách hoàn tất và cờ Thiếu nhận xét (R-GIO-12). Nhập thay nhận xét, điểm, BTVN chờ Design.
+// Chưa làm (làm sau 17/11): "Báo nghỉ trước", "Đưa về Nháp".
 // Lệch khung có chủ đích: nhãn lớp "môn + mã lớp" (như cụm Lớp), không có "Nhãn bài" riêng ngoài bài bắt đầu của lớp.
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
@@ -19,14 +20,15 @@ import { AddTrialDialog } from './AddTrialDialog';
 import { ChangeStaffDialog } from './ChangeStaffDialog';
 import { CorrectAttendanceDialog } from './CorrectAttendanceDialog';
 import { MoveSessionDialog } from './MoveSessionDialog';
+import { ProxyAttendanceDialog } from './ProxyAttendanceDialog';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { CustTabs } from '../khach-hang/CustTabs';
 import type { StageStep } from '../../ui/Stage';
 import { useToast } from '../../ui/toastContext';
 import { sessionTone } from './sessionConfig';
-import { EXCLUDED_LABEL, classLabel, sessionNoLabel } from './sessionLogic';
-import { useCloseSession, useSessionRecord } from './useSessionData';
+import { EXCLUDED_LABEL, classLabel, doneModeLabel, sessionNoLabel } from './sessionLogic';
+import { useCloseSession, useDoneInfo, useFinishSession, useSessionRecord } from './useSessionData';
 
 const STEPS: StageStep[] = [
   { code: 'NHAP', label: 'Nháp' },
@@ -56,6 +58,11 @@ export function SessionRecordPage() {
   const openFrom = useNavigateFrom();
   const toast = useToast();
   const close = useCloseSession();
+  const finish = useFinishSession();
+  const status = query.data?.session.status_code;
+  const doneInfo = useDoneInfo(id ?? '', status === 'DA_CHOT' || status === 'DONE');
+  const [proxying, setProxying] = useState(false);
+  const [missing, setMissing] = useState<string[]>([]);
   const [confirming, setConfirming] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [moving, setMoving] = useState(false);
@@ -96,6 +103,11 @@ export function SessionRecordPage() {
   const inStages = STEPS.some((st) => st.code === s.status_code);
   const canClose = s.status_code === 'NHAP' && access.can('SESSION', 'SUA');
   const canOps = s.status_code === 'DA_CHOT' && access.can('ATTENDANCE', 'SUA');
+  // Nhập thay giáo viên (R-GIO-11): chỉ Điểm danh · Duyệt, buổi chưa Done. Done tay (R-GIO-09) đi cùng quyền Điểm danh · Sửa.
+  const canProxy =
+    s.status_code === 'DA_CHOT' && access.can('ATTENDANCE', 'DUYET') && students.length > 0;
+  const info = doneInfo.data;
+  const doneBy = s.status_code === 'DONE' && info ? doneModeLabel(info) : null;
   // Dời, huỷ được tới khi buổi Done (R-BUOI-09); giáo viên không có quyền Sửa buổi nên không thấy.
   const canEditSession =
     ['NHAP', 'DA_CHOT'].includes(s.status_code) && access.can('SESSION', 'SUA');
@@ -116,6 +128,18 @@ export function SessionRecordPage() {
       setConfirming(false);
     } catch (e) {
       setConfirming(false);
+      setActionError(errorOf(e).message);
+    }
+  }
+
+  async function doFinish() {
+    setActionError(null);
+    setMissing([]);
+    try {
+      const result = await finish.mutateAsync(s.id);
+      if (result.done) toast({ tone: 'success', title: 'Buổi đã Done' });
+      else setMissing(result.missing);
+    } catch (e) {
       setActionError(errorOf(e).message);
     }
   }
@@ -160,6 +184,12 @@ export function SessionRecordPage() {
                 Điểm danh vận hành
               </Button>
             )}
+            {canOps && (
+              <Button loading={finish.isPending} onClick={() => void doFinish()}>
+                Done tay
+              </Button>
+            )}
+            {canProxy && <Button onClick={() => setProxying(true)}>Nhập thay</Button>}
             {canTrial && <Button onClick={() => setAddingTrial(true)}>Thêm học thử</Button>}
             {canEditSession && <Button onClick={() => setMoving(true)}>Dời</Button>}
             {canEditSession && (
@@ -167,6 +197,7 @@ export function SessionRecordPage() {
             )}
             {canEditSession && <Button onClick={() => setCancelling(true)}>Huỷ</Button>}
             {canCorrect && <Button onClick={() => setCorrecting(true)}>Sửa điểm danh</Button>}
+            {info?.missing_review && <Tag tone="warning">Thiếu nhận xét</Tag>}
             {!inStages && <Tag tone={sessionTone(s.status_code)}>{s.status_name}</Tag>}
           </span>
         }
@@ -189,6 +220,16 @@ export function SessionRecordPage() {
         ]}
       >
         {actionError && <Alert tone="danger">{actionError}</Alert>}
+        {missing.length > 0 && (
+          <Alert tone="warning">
+            <b>Chưa Done được. Còn thiếu:</b>
+            <ul className="list-disc pl-5">
+              {missing.map((m) => (
+                <li key={m}>{m}</li>
+              ))}
+            </ul>
+          </Alert>
+        )}
         <div className="grid gap-6 md:grid-cols-2">
           <DetailSection title="Thông tin buổi">
             <DetailField
@@ -197,6 +238,15 @@ export function SessionRecordPage() {
               value={sessionNoLabel(s.session_no, s.type_name)}
             />
             <DetailField label="Tình trạng" mode={view} value={s.status_name} />
+            {doneBy && <DetailField label="Cách hoàn tất" mode={view} value={doneBy} />}
+            {info?.proxies.map((p) => (
+              <DetailField
+                key={p.at}
+                label="Nhập thay"
+                mode={view}
+                value={`${p.by_name ?? ''} · ${formatDateTime(p.at)} · Lý do: ${p.reason}`}
+              />
+            ))}
             <DetailField label="Môn" mode={view} value={s.subject_name ?? ''} />
             <DetailField
               label="Lớp"
@@ -370,6 +420,12 @@ export function SessionRecordPage() {
         assistantId={s.assistant_id}
         open={changingStaff}
         onClose={() => setChangingStaff(false)}
+      />
+      <ProxyAttendanceDialog
+        sessionId={s.id}
+        students={students}
+        open={proxying}
+        onClose={() => setProxying(false)}
       />
       <CorrectAttendanceDialog
         sessionId={s.id}

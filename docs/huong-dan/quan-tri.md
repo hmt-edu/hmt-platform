@@ -9,7 +9,7 @@ portals: [crm]
 
 # Vai: Quản trị (Admin)
 
-Vai: Admin hệ thống. Admin cần **thiết lập hai bước** khi đăng nhập (xem [Bắt đầu nhanh](/crm/huong-dan/chung-dang-nhap)). Admin xem được mọi cơ sở, nhưng **không duyệt tiền** (phiếu thu, hoàn phí, phiếu chi do Kế toán duyệt). Menu **Quản trị** và **Cấu hình**.
+Vai: Admin hệ thống. Admin cần **thiết lập hai bước** khi đăng nhập (xem [Bắt đầu nhanh](/crm/huong-dan/chung-dang-nhap)). Admin xem được mọi cơ sở, và **duyệt được cả việc tiền** (phiếu thu, hoàn phí, phiếu chi), kể cả khi Kế toán vắng; lần tự duyệt hoặc duyệt cả hai bước được ghi nhật ký. Menu **Quản trị** và **Cấu hình**.
 
 ## 1. Tạo người dùng
 - **Mục đích:** cấp tài khoản cho nhân viên, giáo viên, trợ giảng.
@@ -46,7 +46,7 @@ Vai: Admin hệ thống. Admin cần **thiết lập hai bước** khi đăng nh
 
 ## 6. Vai trò và ma trận quyền (xem, không đổi trong lúc vận hành)
 - **Các bước:** **Vai trò** (`/crm/quan-tri/vai-tro`, ô «Tìm vai trò») và **Ma trận quyền** (`/crm/quan-tri/ma-tran-quyen`). Mỗi lần lưu ma trận là một phiên bản, hiệu lực ngay; không đổi cấu trúc quyền trong cơ sở dữ liệu. Chỉ vai Kế toán được có quyền «Kế toán · Duyệt» (hệ thống chặn nếu gán cho vai khác, `HMT_CHI_KE_TOAN_DUYET_TIEN`).
-- **Lỗi thường gặp:** Admin không tự duyệt tiền dù có mọi quyền khác. **Ảnh:** [ẢNH: vai-tro-ds], [ẢNH: ma-tran-quyen]
+- **Lỗi thường gặp:** gán quyền duyệt tiền cho vai khác Kế toán và Admin thì hệ thống chặn. **Ảnh:** [ẢNH: vai-tro-ds], [ẢNH: ma-tran-quyen]
 
 ## 7. Nhật ký
 - **Các bước:** **Nhật ký thao tác** (`/crm/quan-tri/nhat-ky`) cho mọi sửa cấu hình và dữ liệu (chỉ thêm, không sửa); **Nhật ký đăng nhập** (`/crm/quan-tri/nhat-ky-dang-nhap`) cho lần đăng nhập, có xuất file; mở khoá tạm khi người dùng bị khoá do nhập sai.

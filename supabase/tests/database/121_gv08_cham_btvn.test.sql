@@ -134,7 +134,7 @@ select is(jsonb_array_length(app.homework_grading_sheet(pg_temp.s('p', 2)) -> 'a
 select is((app.homework_grading_sheet(pg_temp.s('p', 2)) ->> 'present')::int, 2, 'Số em cần có trạng thái: 2');
 select is((app.homework_grading_sheet(pg_temp.s('p', 2)) ->> 'done')::int, 1, 'Em 2 vắng buổi giao bài đã tính có trạng thái; em 1 chưa: 1/2');
 select is(app.session_overview(pg_temp.s('p', 2)) -> 'homework_missing', to_jsonb(array['Em giả D2 1']), 'Tiến độ buổi liệt kê tên em còn thiếu');
-select is(app.session_overview(pg_temp.s('p', 2)) ->> 'pending_reason', 'Giáo viên chưa chấm BTVN buổi trước cho 1 em.', 'Q-272: tham số Bật thì thiếu chấm BTVN buổi trước chặn Done và nêu lý do');
+select ok(app.session_overview(pg_temp.s('p', 2)) ->> 'pending_reason' like 'Giáo viên chưa chấm BTVN buổi trước cho 1 em.%', 'Q-272: tham số Bật thì thiếu chấm BTVN buổi trước chặn Done và nêu lý do');
 
 select is(pg_temp.err($$select app.save_homework_grading(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'DA_CHAM')))$$), 'HMT_DIEM_KHONG_HOP_LE', 'Chặn: Đã chấm cần điểm');
 select is(pg_temp.err($$select app.save_homework_grading(pg_temp.s('p', 2), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'LAM_CHUA_XONG', 'score', 6)))$$), 'HMT_DIEM_KHONG_HOP_LE', 'Chặn: điểm ngoài 1 đến 5');
@@ -144,7 +144,7 @@ select is(app.save_homework_grading(pg_temp.s('p', 2), jsonb_build_array(
   jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'DA_CHAM', 'score', 4, 'note', 'Làm tốt', 'expected_version', 0))), 1, 'Giáo viên chấm em 1: Đã chấm 4 điểm');
 select is((app.homework_grading_sheet(pg_temp.s('p', 2)) ->> 'done')::int, 2, 'Sau khi chấm: 2/2 em có trạng thái');
 select is(app.session_overview(pg_temp.s('p', 2)) ->> 'homework_missing', '[]', 'Không còn em thiếu');
-select isnt(app.session_overview(pg_temp.s('p', 2)) ->> 'pending_reason', 'Giáo viên chưa chấm BTVN buổi trước cho 1 em.', 'Đủ trạng thái thì hết lý do BTVN');
+select ok(coalesce(app.session_overview(pg_temp.s('p', 2)) ->> 'pending_reason', '') not like '%chưa chấm BTVN buổi trước%', 'Đủ trạng thái thì hết lý do BTVN');
 select is((select e -> 'result' ->> 'score' from jsonb_array_elements(app.homework_grading_sheet(pg_temp.s('p', 2)) -> 'students') e where e ->> 'student_id' = pg_temp.st(1)::text), '4', 'Điểm đã lưu');
 
 -- Không làm không phải điểm 0 (R-GV-12): không có điểm.
@@ -174,9 +174,9 @@ select is((select count(*)::int from jsonb_array_elements(app.homework_grading_s
 select pg_temp.sudo($$alter table app.homework_result disable trigger user$$);
 select pg_temp.sudo($$delete from app.homework_result where session_id = pg_temp.s('p', 1) and student_id = pg_temp.st(1)$$);
 select pg_temp.sudo($$alter table app.homework_result enable trigger user$$);
-select is(app.session_overview(pg_temp.s('p', 2)) ->> 'pending_reason', 'Giáo viên chưa chấm BTVN buổi trước cho 1 em.', 'Bật: thiếu một em thì chặn');
+select ok(app.session_overview(pg_temp.s('p', 2)) ->> 'pending_reason' like 'Giáo viên chưa chấm BTVN buổi trước cho 1 em.%', 'Bật: thiếu một em thì chặn');
 select pg_temp.sudo($$update app.setting_def set value = 'false' where key = 'session_done_requires_review'$$);
-select isnt(app.session_overview(pg_temp.s('p', 2)) ->> 'pending_reason', 'Giáo viên chưa chấm BTVN buổi trước cho 1 em.', 'Tắt: bước chấm BTVN không chặn Done (Q-272)');
+select ok(coalesce(app.session_overview(pg_temp.s('p', 2)) ->> 'pending_reason', '') not like '%chưa chấm BTVN buổi trước%', 'Tắt: bước chấm BTVN không chặn Done (Q-272)');
 select pg_temp.sudo($$update app.setting_def set value = 'true' where key = 'session_done_requires_review'$$);
 
 -- ================= Quyền (R-GV-08, R-GV-13) =================
