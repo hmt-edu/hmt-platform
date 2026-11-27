@@ -494,7 +494,7 @@ function OrderView({ record }: { record: OrderRecord }) {
     },
     {
       key: 'discount-type',
-      header: 'Chiết khấu',
+      header: 'Ưu đãi',
       // Chip một hàng (canvas BH05 xem): tên chính sách kèm mức đã áp; quà tặng ghi tên chính sách quà.
       cell: (l: OrderLine) => {
         const chips =
@@ -561,9 +561,9 @@ function OrderView({ record }: { record: OrderRecord }) {
           )}
           {record.quotation_code && (
             <Notice tone="warning">
-              Đơn chuyển từ báo giá {record.quotation_code}: sửa số giờ, hình thức, chiết khấu, bỏ
-              dòng, thêm dòng được. Lưu thì nhật ký ghi “Đơn đã sửa so với báo giá” kèm giá trị cũ,
-              mới. Giá niêm yết giữ theo ngày của báo giá.
+              Đơn chuyển từ báo giá {record.quotation_code}: sửa số giờ, hình thức, ưu đãi, bỏ dòng,
+              thêm dòng được. Lưu thì nhật ký ghi “Đơn đã sửa so với báo giá” kèm giá trị cũ, mới.
+              Giá niêm yết giữ theo ngày của báo giá.
             </Notice>
           )}
           <OrderEditLines
@@ -617,7 +617,7 @@ function OrderView({ record }: { record: OrderRecord }) {
       >
         <TotalRow label="Tổng niêm yết" value={formatMoney(record.gross_total)} />
         <TotalRow
-          label="Tổng chiết khấu"
+          label="Tổng ưu đãi"
           value={record.discount_total > 0 ? `− ${formatMoney(record.discount_total)}` : '0 đ'}
         />
         <TotalRow label="Thành tiền" value={formatMoney(record.total_amount)} strong />
@@ -858,7 +858,7 @@ function OrderView({ record }: { record: OrderRecord }) {
             ) : null;
           })()}
           {record.status_code === 'DA_TRINH' && overCapLines(record.lines).length > 0 && (
-            <Notice tone="warning" title={`Chiết khấu vượt trần ${capPercentText(cap)}`}>
+            <Notice tone="warning" title={`Ưu đãi vượt trần ${capPercentText(cap)}`}>
               {overCapLines(record.lines)
                 .map((l) => `Dòng ${l.line_no}: ${l.total_percent_text}%`)
                 .join('; ')}

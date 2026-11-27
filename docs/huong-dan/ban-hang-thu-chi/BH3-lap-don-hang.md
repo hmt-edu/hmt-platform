@@ -33,7 +33,7 @@ Phụ huynh đóng tiền cho tư vấn **trước**, rồi bạn mới ghi đơ
 2. Chọn **«Điều khoản thanh toán»** (bắt buộc mới Lưu được: ví dụ «Chia ba đợt 40, 30, 30» hoặc «Cọc rồi đóng phần còn lại»), rồi bấm **Lưu**.
    *Bạn thấy:* thông báo «Đã tạo đơn hàng …», tình trạng **Nháp**. Nếu đợt 1 nhỏ hơn mức cọc tối thiểu thì có khung vàng cảnh báo: chỉ cảnh báo, kiểm lại cho đúng ý phụ huynh. [ẢNH: bh3-b2]
 3. Bấm **«Sửa đơn»**. Ở dòng đơn bấm **«Chọn lớp»**, chọn lớp, rồi chọn **«Ngày vào lớp»** (danh sách buổi sắp tới của lớp), bấm **«Chọn»**, rồi **Lưu**. Chưa quyết lớp thì chọn «Chưa chọn lớp (ghi danh ở Chờ xếp lớp, vận hành xếp sau)».
-   *Bạn thấy:* dòng đơn có «Mã lớp» và «Ngày vào lớp»; dòng thời gian ghi «Sửa đơn». Ở bước này vẫn sửa được số giờ, hình thức, chiết khấu, thêm hoặc bỏ dòng. [ẢNH: bh3-b3]
+   *Bạn thấy:* dòng đơn có «Mã lớp» và «Ngày vào lớp»; dòng thời gian ghi «Sửa đơn». Ở bước này vẫn sửa được số giờ, hình thức, ưu đãi, thêm hoặc bỏ dòng. [ẢNH: bh3-b3]
 4. Bấm **«Trình duyệt»**. Cạnh nút có dòng «Người duyệt: …» cho biết ai sẽ duyệt.
    *Bạn thấy:* thông báo «Đã trình đơn.», tình trạng **Đã trình**, dòng «Đơn đã trình, chờ … duyệt. Trong lúc chờ không sửa được dòng.» [ẢNH: bh3-b4] [ẢNH: bh3-b5]
 

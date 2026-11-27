@@ -162,8 +162,8 @@ export function validateRows(rows: EditRow[]): RowIssue[] {
       issues.push({
         rowKey: row.key,
         lineNo: i + 1,
-        message: 'Mức chiết khấu hoặc giờ tặng không hợp lệ.',
-        summary: `Dòng ${String(i + 1)} có mức chiết khấu hoặc giờ tặng không hợp lệ.`,
+        message: 'Mức ưu đãi hoặc giờ tặng không hợp lệ.',
+        summary: `Dòng ${String(i + 1)} có mức ưu đãi hoặc giờ tặng không hợp lệ.`,
       });
     }
   });

@@ -68,5 +68,5 @@ export function percentText(value: number): string {
 
 /** Câu trần chiết khấu mỗi dòng của Báo giá (khung BH02_chip_*, R-V2-11); N đọc từ tham số, chưa tải xong thì chữ chung. */
 export function quoteCapText(cap: number | null): string {
-  return `Trần chiết khấu mỗi dòng ${cap === null ? 'đã cấu hình' : `${String(cap)}%`}. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.`;
+  return `Trần ưu đãi mỗi dòng ${cap === null ? 'đã cấu hình' : `${String(cap)}%`}. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.`;
 }

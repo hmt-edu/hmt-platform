@@ -42,7 +42,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | BH4 | Trình và duyệt / từ chối đơn hàng | BM, AD | BH-07 | ✅ 03-truong-co-so §4 | don-hang-duyet | P1 |
 | BH5 | Bật «Cho học trước, đóng tiền sau» | BM, AD | BH-09 | ◐ (nhắc trong 03-truong-co-so) | — | P2 |
 | BH6 | Huỷ đơn hàng (lý do) | SA, BM | BH-10 | ❌ | — | P2 |
-| BH7 | Ưu đãi linh hoạt, chiết khấu trên dòng đơn | SA, BM | BH-05 | ❌ | — | P2 |
+| BH7 | Ưu đãi linh hoạt trên dòng đơn | SA, BM | BH-05 | ❌ | — | P2 |
 
 ## 4. Thu chi (phiếu thu, tiền vào, phiếu chi, số dư, công nợ)
 | # | Luồng | Vai | Màn | Phủ | Ảnh/video | Ưu tiên |
@@ -125,7 +125,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | QT6 | Công tắc tính năng theo cơ sở | AD | QT-10 | ✅ §5 | — | P1 |
 | QT7 | Nhật ký thao tác; nhật ký đăng nhập và xuất file | AD | QT-11, QT-12 | ✅ §7 | — | P3 |
 | QT8 | Nhập dữ liệu cũ (CSV: chọn loại, xem trước, nạp) | AD | QT-18 | ❌ | — | P1 |
-| QT9 | Gói bán, bảng giá có ngày hiệu lực, chiết khấu, điều khoản thanh toán | AD | CH-01..04, CH-09 | ❌ | — | P1 |
+| QT9 | Gói bán, bảng giá có ngày hiệu lực, ưu đãi, điều khoản thanh toán | AD | CH-01..04, CH-09 | ❌ | — | P1 |
 | QT10 | Khung chương trình, rubric nhận xét | AD | CH-05..07 | ✅ qt10a, qt10b | — | P2 |
 | QT11 | Hồ sơ giáo viên, trợ giảng | AD, BM | QT-16 | ✅ qt11 | — | P2 |
 | QT12 | Tài khoản học sinh, phụ huynh (cấp, khoá, đặt lại) | CS, AD | QT-13, QT-17 | ✅ qt12 | — | P2 |

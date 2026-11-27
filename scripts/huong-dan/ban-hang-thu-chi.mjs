@@ -297,8 +297,8 @@ const BAI = {
           },
         },
         {
-          chu: 'Thêm chiết khấu theo chính sách nếu có (chọn trong danh sách, không gõ số)',
-          loc: (p) => p.getByRole('button', { name: 'Thêm chiết khấu dòng 1' }),
+          chu: 'Thêm ưu đãi theo chính sách nếu có (chọn trong danh sách, không gõ số)',
+          loc: (p) => p.getByRole('button', { name: 'Thêm ưu đãi dòng 1' }),
         },
         {
           chu: 'Bấm «Lưu», rồi bấm «Gửi»',

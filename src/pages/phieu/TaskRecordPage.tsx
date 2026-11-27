@@ -379,8 +379,8 @@ export function TaskRecordPage() {
               />
               <p className="text-caption text-fg-muted">
                 Dừng học đóng ghi danh; giờ tặng còn lại huỷ. Hoàn tiền: hoàn phí toàn bộ theo giá
-                gốc, trừ phí xử lý. Giữ số dư: giờ mua còn lại × giá sau chiết khấu, không trừ phí.
-                Ngày dừng chỉ ghi nhận, không đổi cách tính giờ.
+                gốc, trừ phí xử lý. Giữ số dư: giờ mua còn lại × giá sau ưu đãi, không trừ phí. Ngày
+                dừng chỉ ghi nhận, không đổi cách tính giờ.
               </p>
             </DetailSection>
           </div>
