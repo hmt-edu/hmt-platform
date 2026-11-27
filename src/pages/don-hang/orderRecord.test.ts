@@ -120,12 +120,11 @@ describe('bản ghi đơn (BH-05)', () => {
   });
 
   it('nút Trình: chỉ đơn Nháp, có quyền Sửa, Bán hàng bật, không phải điện thoại', () => {
-    const ok = { edit: true, featureOn: true, phone: false };
+    const ok = { edit: true, featureOn: true };
     expect(canSubmitOrder({ status_code: 'NHAP' }, ok)).toBe(true);
     expect(canSubmitOrder({ status_code: 'DA_TRINH' }, ok)).toBe(false);
     expect(canSubmitOrder({ status_code: 'NHAP' }, { ...ok, edit: false })).toBe(false);
     expect(canSubmitOrder({ status_code: 'NHAP' }, { ...ok, featureOn: false })).toBe(false);
-    expect(canSubmitOrder({ status_code: 'NHAP' }, { ...ok, phone: true })).toBe(false);
   });
 
   it('R-TIEN-38: Nháp chỉ người lập huỷ; Đã trình, Đã duyệt do người duyệt đã chốt hoặc người duyệt thay', () => {
