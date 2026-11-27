@@ -56,6 +56,8 @@ Tổng hợp các luật nghiệp vụ đã chốt với anh Trường (cập nh
 | R-CRM-39 | **(19/10)** **Giai đoạn khởi đầu của lead:** lead mới tạo luôn bắt đầu ở C1 (Data mới); người dùng không chọn giai đoạn lúc tạo. Sau đó giai đoạn lead đổi theo R-CRM-09. | [CHỐT] |
 | R-CRM-40 | **(26/10)** Lead tạo cơ hội khi đang ở nhóm con C4C (Đủ điều kiện tạo cơ hội). Lead ở C1 đến C3, C4A, C4B thì nút Tạo cơ hội mờ kèm lý do. Lead đã C4D vẫn tạo thêm được, qua hộp xác nhận R-CRM-01. | [CHỐT] |
 | R-CRM-41 | **(26/10)** Lead đổi sang giai đoạn có nhóm con chọn tay (C2, C3, C4) thì bắt buộc chọn một nhóm con; hiển thị hộp chọn nhóm con như cơ hội, áp cả Kanban. C1 không có nhóm con. C4D do hệ thống gắn khi tạo cơ hội, người dùng không chọn (R-CRM-09). | [CHỐT] |
+| R-CRM-42 | **(27/11)** Lịch hẹn gắn đúng một hồ sơ trong: lead, cơ hội, phiếu kiểm tra, **phụ huynh, học sinh** (lịch hẹn gắn được PH/HS). Lịch gắn PH/HS lấy cơ sở của hồ sơ, theo đúng quyền Lịch hẹn; gộp hồ sơ thì lịch đi theo hồ sơ giữ lại. | [CHỐT] |
+| R-CRM-43 | **(27/11)** **Ghi nhận liên hệ** trên hồ sơ phụ huynh, học sinh: kênh (Gọi điện, Zalo, Gặp trực tiếp, Khác), kết quả (danh mục Kết quả liên hệ: Nghe máy, đã trao đổi; Không nghe máy; Hẹn gọi lại; Từ chối), nội dung bắt buộc, hẹn lần sau tuỳ chọn (tạo lịch hẹn cho chính hồ sơ, người ghi phụ trách; cần quyền tạo lịch hẹn). Ai thêm được ghi chú trên hồ sơ thì ghi được. Không có bảng riêng: là ghi chú có kênh và kết quả, xem ở dòng thời gian lọc «Liên hệ» (R-CRM-30). Hồ sơ đã gộp không ghi được. | [CHỐT] |
 
 ## 2. Bán hàng và tiền
 

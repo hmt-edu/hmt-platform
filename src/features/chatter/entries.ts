@@ -9,6 +9,9 @@ export type NoteRow = {
   mention_names: string[];
   /** Ghi chú của lead gốc hiện ở cơ hội: "Lead LD000012"; ghi chú của chính bản ghi thì null. */
   source_label?: string | null;
+  /** Tên kênh và kết quả khi ghi chú là một lần liên hệ (migration 694). */
+  contact_channel?: string | null;
+  contact_result?: string | null;
 };
 export type HistoryRow = {
   id: number;
@@ -98,6 +101,7 @@ export function buildEntries(
       body: n.body,
       mentions: n.mention_names,
       ...(n.source_label ? { source: n.source_label } : {}),
+      ...(n.contact_channel ? { contact: `${n.contact_channel} · ${n.contact_result ?? ''}` } : {}),
     })),
     ...history.flatMap<ChatterEntry>((h) => {
       if (h.action === 'I') {

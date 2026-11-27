@@ -21,6 +21,8 @@ export type ChatterEntry =
       mentions: string[];
       /** Ghi chú đến từ bản ghi khác (lead gốc của cơ hội): "Lead LD000012". */
       source?: string | undefined;
+      /** Ghi chú là một lần liên hệ: "Gọi điện · Nghe máy, đã trao đổi". */
+      contact?: string | undefined;
     }
   | { kind: 'change'; id: string; at: string; author: string; changes: ChatterChange[] }
   | { kind: 'system'; id: string; at: string; author: string; text: string }
@@ -37,13 +39,21 @@ export type ChatterEntry =
     };
 
 export type Person = { id: string; name: string; hint?: string | undefined };
-export type ChatterFilter = 'all' | 'notes' | 'system';
+export type ChatterFilter = 'all' | 'notes' | 'contacts' | 'system';
 
 const FILTERS: { value: ChatterFilter; label: string }[] = [
   { value: 'all', label: 'Tất cả' },
   { value: 'notes', label: 'Ghi chú' },
+  { value: 'contacts', label: 'Liên hệ' },
   { value: 'system', label: 'Hệ thống' },
 ];
+
+/** Dòng thuộc bộ lọc nào: lần liên hệ tách khỏi ghi chú thường. */
+function inFilter(e: ChatterEntry, filter: ChatterFilter): boolean {
+  if (filter === 'all') return true;
+  if (filter === 'system') return e.kind !== 'note';
+  return e.kind === 'note' && (e.contact !== undefined) === (filter === 'contacts');
+}
 
 /** Tô đậm các tên được nhắc (@Tên) trong nội dung ghi chú. */
 function renderBody(body: string, mentions: string[]): ReactNode {
@@ -277,7 +287,8 @@ function Entry({ entry }: { entry: ChatterEntry }) {
           <b className="font-semibold text-fg">{entry.author}</b>
           {' · '}
           <span className="tabular">{formatTime(entry.at)}</span>
-          {entry.kind === 'note' && ' · Ghi chú'}
+          {entry.kind === 'note' &&
+            (entry.contact === undefined ? ' · Ghi chú' : ` · Liên hệ · ${entry.contact}`)}
           {entry.kind === 'note' && entry.source && (
             <>
               {' · '}
@@ -353,6 +364,7 @@ export function Chatter({
   upcoming,
   headerRight,
   today = new Date(),
+  contacts = false,
 }: {
   entries: ChatterEntry[];
   status: 'ready' | 'loading' | 'error' | 'forbidden';
@@ -369,11 +381,11 @@ export function Chatter({
   /** Góc phải của tiêu đề (nút Theo dõi). */
   headerRight?: ReactNode | undefined;
   today?: Date | undefined;
+  /** Bản ghi có ghi nhận liên hệ (phụ huynh, học sinh): hiện thêm bộ lọc «Liên hệ». */
+  contacts?: boolean | undefined;
 }) {
   const [filter, setFilter] = useState<ChatterFilter>('notes');
-  const shown = entries.filter(
-    (e) => filter === 'all' || (filter === 'notes' ? e.kind === 'note' : e.kind !== 'note'),
-  );
+  const shown = entries.filter((e) => inFilter(e, filter));
   // Gom theo ngày, giữ thứ tự mới nhất trước.
   const days: { label: string; items: ChatterEntry[] }[] = [];
   for (const entry of shown) {
@@ -415,7 +427,7 @@ export function Chatter({
       <div className="border-t border-border px-4 pt-2.5 pb-2">
         <p className="mb-1.5 text-caption font-semibold text-fg-muted">DÒNG THỜI GIAN</p>
         <div role="group" aria-label="Lọc dòng thời gian" className="flex flex-wrap gap-1.5">
-          {FILTERS.map((item) => (
+          {FILTERS.filter((item) => contacts || item.value !== 'contacts').map((item) => (
             <button
               key={item.value}
               type="button"
@@ -446,8 +458,14 @@ export function Chatter({
           </StateView>
         )}
         {status === 'ready' && shown.length === 0 && (
-          <StateView kind="empty" title="Chưa có ghi chú" headingLevel={2}>
-            Ghi chú của bản ghi này sẽ hiện ở đây. Gõ @ để nhắc đồng nghiệp.
+          <StateView
+            kind="empty"
+            title={filter === 'contacts' ? 'Chưa có lần liên hệ' : 'Chưa có ghi chú'}
+            headingLevel={2}
+          >
+            {filter === 'contacts'
+              ? 'Các lần ghi nhận liên hệ sẽ hiện ở đây.'
+              : 'Ghi chú của bản ghi này sẽ hiện ở đây. Gõ @ để nhắc đồng nghiệp.'}
           </StateView>
         )}
         {status === 'ready' &&

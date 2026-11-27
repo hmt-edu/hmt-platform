@@ -54,6 +54,9 @@ import {
   STATUS_LABEL,
   type AppointmentRow,
   type AssignAppointmentsResult,
+  recordKind,
+  recordPath,
+  RECORD_KIND_LABEL,
 } from './appointmentTypes';
 import {
   KANBAN_STATUSES,
@@ -893,13 +896,9 @@ function CalendarDetail({
         {formatDateTime(row.scheduled_at)}
         {row.owner_name ? ` · ${row.owner_name}` : ''}
       </p>
-      {(row.lead_id || row.opportunity_id) && (
-        <ButtonLink
-          variant="primary"
-          icon="arrowRight"
-          to={row.lead_id ? `/crm/lead/${row.lead_id}` : `/crm/co-hoi/${row.opportunity_id}`}
-        >
-          {row.lead_id ? `Mở lead ${row.lead_code}` : `Mở cơ hội ${row.opportunity_code}`}
+      {!row.student_test_id && recordPath(row) && (
+        <ButtonLink variant="primary" icon="arrowRight" to={recordPath(row) ?? ''}>
+          Mở {RECORD_KIND_LABEL[recordKind(row)].toLowerCase()} {row.record_code}
         </ButtonLink>
       )}
       <AppointmentButtons row={row} actions={actions} />
