@@ -12,7 +12,15 @@ import { PageFrame, PageHeader } from '../../ui/PageHeader';
 import { URGENCY_GROUPS, cardTag, cardTitle, dueText, itemLink } from './workLogic';
 import type { WorkCard, WorkPage } from './workTypes';
 
-function Card({ card, now }: { card: WorkCard; now: Date }) {
+function Card({
+  card,
+  now,
+  canTakeAttendance,
+}: {
+  card: WorkCard;
+  now: Date;
+  canTakeAttendance: boolean;
+}) {
   const title = cardTitle(card);
   const tag = cardTag(card, now);
   return (
@@ -39,7 +47,7 @@ function Card({ card, now }: { card: WorkCard; now: Date }) {
       </div>
       <ul className="divide-y divide-border">
         {card.items.map((item) => {
-          const link = itemLink(item);
+          const link = itemLink(item, canTakeAttendance);
           const due = dueText(item, now);
           return (
             <li
@@ -145,7 +153,12 @@ export function MyWorkPage() {
                     ) : (
                       <ul className="flex flex-col gap-3">
                         {cards.map((card) => (
-                          <Card key={card.group_key} card={card} now={now} />
+                          <Card
+                            key={card.group_key}
+                            card={card}
+                            now={now}
+                            canTakeAttendance={access.can('ATTENDANCE', 'SUA')}
+                          />
                         ))}
                       </ul>
                     )}

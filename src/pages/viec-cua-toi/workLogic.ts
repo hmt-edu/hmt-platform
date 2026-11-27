@@ -33,10 +33,10 @@ export const URGENCY_GROUPS: {
 ];
 
 /** Nút mở của một việc: màn nơi làm việc đó. Việc chờ duyệt đi qua màn «Việc chờ tôi duyệt» (màn chuyên). */
-export function itemLink(item: Pick<WorkItem, 'signal' | 'entity_id'>): {
-  to: string;
-  label: string;
-} {
+export function itemLink(
+  item: Pick<WorkItem, 'signal' | 'entity_id'>,
+  canTakeAttendance = false,
+): { to: string; label: string } {
   switch (item.signal) {
     case 'APPOINTMENT':
       return { to: '/crm/lich-hen', label: 'Mở lịch hẹn' };
@@ -47,7 +47,10 @@ export function itemLink(item: Pick<WorkItem, 'signal' | 'entity_id'>): {
     case 'SESSION_PENDING':
       return { to: `/crm/buoi-hoc/${item.entity_id}`, label: 'Mở buổi' };
     case 'SESSION_NO_ATTENDANCE':
-      return { to: `/crm/buoi-hoc/${item.entity_id}`, label: 'Mở điểm danh' };
+      // Màn điểm danh vận hành cần quyền Điểm danh · Sửa; không có thì mở bản ghi buổi.
+      return canTakeAttendance
+        ? { to: `/crm/diem-danh/buoi/${item.entity_id}`, label: 'Mở điểm danh' }
+        : { to: `/crm/buoi-hoc/${item.entity_id}`, label: 'Mở buổi' };
     case 'ABSENT_TODAY':
       return { to: '/crm/diem-danh', label: 'Mở điểm danh' };
     case 'RENEWAL':

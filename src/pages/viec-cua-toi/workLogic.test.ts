@@ -34,6 +34,12 @@ describe('Việc của tôi', () => {
     expect(itemLink(item({ signal: 'RENEWAL' })).to).toBe('/crm/tai-tuc/x');
   });
 
+  it('buổi chưa điểm danh: có quyền sửa điểm danh thì mở màn điểm danh vận hành, không thì mở buổi', () => {
+    const pending = item({ signal: 'SESSION_NO_ATTENDANCE' });
+    expect(itemLink(pending, true)).toEqual({ to: '/crm/diem-danh/buoi/x', label: 'Mở điểm danh' });
+    expect(itemLink(pending)).toEqual({ to: '/crm/buoi-hoc/x', label: 'Mở buổi' });
+  });
+
   it('chữ hạn: hôm nay chỉ ghi giờ, ngày khác ghi cả ngày', () => {
     expect(dueText(item({}), now)).toBe('Hẹn 16:00');
     expect(dueText(item({ due_at: '2026-11-24T07:00:00Z' }), now)).toContain('24/11/2026');
