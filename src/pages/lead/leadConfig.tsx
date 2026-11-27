@@ -22,7 +22,11 @@ export const EMPTY_LEAD_STATE: ListState = {
   datePreset: '',
 };
 
-export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): ListConfig<LeadRow> {
+export function buildLeadConfig(
+  catalogs: LeadCatalogs,
+  access: AccessView,
+  options: { trash?: boolean } = {},
+): ListConfig<LeadRow> {
   const stageLabel = (code: string) => codeAndName(code, catalogs.name('LEAD_STAGE', code));
   const withCode = (catalog: string) =>
     catalogs.options(catalog).map((o) => ({ value: o.value, label: `${o.value} ${o.label}` }));
@@ -85,6 +89,19 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
             <Tag>{stageLabel(r.stage_code)}</Tag>
           ),
       },
+      // Chỉ có khi đang xem «Thùng rác»: vì sao lead nằm ở đó.
+      ...(options.trash
+        ? [
+            {
+              key: 'reason',
+              label: 'Lý do',
+              render: (r: LeadRow) =>
+                r.record_status === 'DA_GOP'
+                  ? `Đã gộp vào ${r.merged_into_code ?? ''}`
+                  : (r.cancel_reason ?? ''),
+            },
+          ]
+        : []),
       {
         key: 'substage',
         defaultVisible: false,
@@ -142,7 +159,10 @@ export function buildLeadConfig(catalogs: LeadCatalogs, access: AccessView): Lis
       {
         key: 'status',
         label: 'Trạng thái bản ghi',
-        options: [{ value: 'merged', label: 'Đã gộp', hint: 'hiện cả bản đã gộp (chỉ đọc)' }],
+        options: [
+          { value: 'merged', label: 'Hiện cả lead đã gộp (chỉ xem, không sửa được)' },
+          { value: 'trash', label: 'Thùng rác', hint: 'chỉ lead Đã gộp và Đã huỷ' },
+        ],
       },
     ],
     filterFields: [

@@ -63,8 +63,9 @@ import {
   type LeadDraft,
   type LeadRecord,
 } from './leadRecord';
-import { changeLeadStage } from './useLeadData';
+import { changeLeadStage, useLeadCancelOptions } from './useLeadData';
 import { LeadStageDialog } from './LeadStageDialog';
+import { RestoreLeadDialog } from './BulkLeadDialogs';
 import { CancelLeadDialog } from './CancelLeadDialog';
 import { SYSTEM_SUBSTAGE, canRestore, selectableSubstages } from './leadStage';
 import { useLeadCatalogs } from './useCatalogs';
@@ -150,7 +151,14 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
   // Lead đã huỷ nhập nhầm (CHUNG-20) cũng chỉ xem, như bản đã gộp.
   const cancelled = record?.record_status === 'DA_HUY';
   const locked = merged || cancelled;
-  const canCancelLead = access.can('ADMIN', 'TAO') && record?.record_status === 'DANG_DUNG';
+  const cancelOptions = useLeadCancelOptions().data;
+  // Phạm vi hẹp chỉ huỷ lead mình phụ trách (R-CRM-45).
+  const canCancelLead =
+    record?.record_status === 'DANG_DUNG' &&
+    Boolean(cancelOptions?.single) &&
+    (Boolean(cancelOptions?.bulk) || record.owner_id === claims?.userId);
+  const canRestoreLead = cancelled && Boolean(cancelOptions?.restore);
+  const [restoreOpen, setRestoreOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const canEdit = access.can('LEAD', 'SUA') && !locked;
   const canAssign = access.can('LEAD', 'GIAO_VIEC') && !locked;
@@ -534,7 +542,7 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           </>
         }
         menu={
-          (canAssign || canMerge || canCancelLead) && record
+          (canAssign || canMerge || canCancelLead || canRestoreLead) && record
             ? {
                 label: 'Hành động',
                 items: [
@@ -562,6 +570,15 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
                           kind: 'action' as const,
                           label: 'Huỷ lead nhập nhầm',
                           onSelect: () => setCancelOpen(true),
+                        },
+                      ]
+                    : []),
+                  ...(canRestoreLead
+                    ? [
+                        {
+                          kind: 'action' as const,
+                          label: 'Khôi phục lead đã huỷ',
+                          onSelect: () => setRestoreOpen(true),
                         },
                       ]
                     : []),
@@ -1120,6 +1137,16 @@ function LeadRecordView({ record }: { record: LeadRecord | null }) {
           onClose={() => setCancelOpen(false)}
           onCancelled={() => {
             toast({ title: 'Đã huỷ lead nhập nhầm.' });
+            void refreshRecord();
+          }}
+        />
+      )}
+      {record && restoreOpen && (
+        <RestoreLeadDialog
+          ids={[record.id]}
+          onClose={() => setRestoreOpen(false)}
+          onDone={(r) => {
+            if (r.done > 0) toast({ title: 'Đã khôi phục lead.' });
             void refreshRecord();
           }}
         />

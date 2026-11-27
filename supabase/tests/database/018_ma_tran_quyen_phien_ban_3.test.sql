@@ -22,9 +22,9 @@ select is((select min(to_scope) from app.permission_change c join app.permission
           'CO_SO', 'Phạm vi cơ sở mình');
 
 select is(pg_temp.perms('SALES', array['LEAD', 'OPPORTUNITY']),
-          array['LEAD:DUYET:CO_SO', 'LEAD:GIAO_VIEC:CO_SO', 'LEAD:SUA:CO_SO', 'LEAD:TAO:CO_SO', 'LEAD:XEM:CO_SO',
+          array['LEAD:DUYET:CO_SO', 'LEAD:GIAO_VIEC:CO_SO', 'LEAD:HUY:CUA_TOI', 'LEAD:SUA:CO_SO', 'LEAD:TAO:CO_SO', 'LEAD:XEM:CO_SO',
                 'OPPORTUNITY:DUYET:CO_SO', 'OPPORTUNITY:GIAO_VIEC:CO_SO', 'OPPORTUNITY:SUA:CO_SO', 'OPPORTUNITY:TAO:CO_SO',
-                'OPPORTUNITY:XEM:CO_SO'], 'Tuyển sinh: Lead, Cơ hội có thêm Giao việc và Duyệt (gộp trùng)');
+                'OPPORTUNITY:XEM:CO_SO'], 'Tuyển sinh: Lead, Cơ hội có thêm Giao việc và Duyệt (gộp trùng); huỷ lead của mình (R-CRM-45)');
 select is(pg_temp.perms('SALES', array['PARENT', 'STUDENT']),
           array['PARENT:DUYET:CO_SO', 'PARENT:SUA:CO_SO', 'PARENT:XEM:TOAN_HE_THONG',
                 'STUDENT:DUYET:CO_SO', 'STUDENT:SUA:CO_SO', 'STUDENT:XEM:TOAN_HE_THONG'],
