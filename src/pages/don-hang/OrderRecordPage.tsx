@@ -2,7 +2,7 @@
 // theo khung, tab Dòng đơn (lưới K06c chỉ đọc), Thanh toán (lịch đóng tiền), Ghi danh (làm ở phân hệ sau), Ghi chú và hoạt động.
 // UI-O2b: nút Trình duyệt (Nháp) và mục Huỷ đơn (R-TIEN-38, hộp K08 có lý do từ danh mục); Duyệt, Từ chối (UI-O2c) và sửa Nháp (UI-O3) có ở
 // các PR sau. Giao diện KHÔNG tính tiền (R-TIEN-13): mọi con số do get_order trả. Đọc không bị chặn khi tắt Bán hàng (Đ181); Trình, Huỷ cần
-// Bán hàng đang bật (Đ173), máy chủ kiểm lại. Điện thoại chỉ đọc (Đ248): ẩn Trình, Huỷ.
+// Bán hàng đang bật (Đ173), máy chủ kiểm lại. Điện thoại: sửa và trình Nháp được (B-27-09), ẩn Huỷ (Đ248).
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import type { FieldFormat } from '../../features/chatter/entries';
@@ -216,7 +216,6 @@ function OrderView({ record }: { record: OrderRecord }) {
   const canSubmit = canSubmitOrder(record, {
     edit: access.can('SALES_ORDER', 'SUA'),
     featureOn,
-    phone,
   });
   const canCancel = canCancelOrder(record, {
     userId: claims?.userId ?? '',
@@ -277,8 +276,8 @@ function OrderView({ record }: { record: OrderRecord }) {
   ];
   const errorLines = submitError ? errorLineNumbers(submitError.message) : [];
 
-  // Đơn Nháp sửa được khi người xem có quyền Sửa (can_submit cùng điều kiện quyền, trạng thái, công tắc), máy tính; điện thoại chỉ đọc (Đ248).
-  const canEdit = record.status_code === 'NHAP' && record.can_submit && !phone;
+  // Đơn Nháp sửa được khi người xem có quyền Sửa (can_submit cùng điều kiện quyền, trạng thái, công tắc), cả trên điện thoại (B-27-09).
+  const canEdit = record.status_code === 'NHAP' && record.can_submit;
   // Em của cơ hội để chọn cho dòng mới thêm khi sửa (Q-67); đơn không sinh từ cơ hội thì không thêm dòng được.
   const students = useOpportunityStudents(
     record.opportunity_id ?? '',

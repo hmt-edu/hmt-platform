@@ -18,7 +18,6 @@ import { useCrumbTail } from '../../layout/CrumbTail';
 import { HmtError, errorOf, rpc, useDb } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
-import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
@@ -107,7 +106,6 @@ function OpportunityView({ record }: { record: OppRecord }) {
   const queryClient = useQueryClient();
 
   const merged = record.record_status === 'DA_GOP';
-  const phone = useMedia(NARROW_TABLE);
   // Tạo báo giá (R-CRM-19): cần quyền lập báo giá, phân hệ Bán hàng bật, cơ hội chưa gộp; máy chủ kiểm lại khi Lưu.
   const quoteReason: { ok: true } | { ok: false; reason: string } = merged
     ? { ok: false, reason: 'Cơ hội đã gộp vào bản khác, không tạo báo giá.' }
@@ -399,28 +397,24 @@ function OpportunityView({ record }: { record: OppRecord }) {
         quietEdit
         businessActions={
           <>
-            {/* R-CRM-19, R-TIEN-02: Tạo báo giá chỉ nằm ở bản ghi cơ hội, bấm chỉ mở form trắng. Điện thoại giữ bản chỉ đọc (Đ248): ẩn nút. */}
-            {!phone && (
-              <Button
-                variant={!orderReason.ok && quoteReason.ok ? 'primary' : 'secondary'}
-                disabled={!quoteReason.ok}
-                title={quoteReason.ok ? undefined : quoteReason.reason}
-                onClick={() => openFrom(`/crm/bao-gia/tao?co-hoi=${record.id}`)}
-              >
-                Tạo báo giá
-              </Button>
-            )}
-            {/* R-CRM-16, R-CRM-19, R-TIEN-39: Tạo đơn hàng chỉ ở cơ hội L8, bấm chỉ mở form trắng. Điện thoại ẩn nút (Đ248). */}
-            {!phone && (
-              <Button
-                variant={orderReason.ok ? 'primary' : 'secondary'}
-                disabled={!orderReason.ok}
-                title={orderReason.ok ? undefined : orderReason.reason}
-                onClick={() => openFrom(`/crm/don-hang/tao?co-hoi=${record.id}`)}
-              >
-                Tạo đơn hàng
-              </Button>
-            )}
+            {/* R-CRM-19, R-TIEN-02: Tạo báo giá chỉ nằm ở bản ghi cơ hội, bấm chỉ mở form trắng. Có cả trên điện thoại (B-27-09). */}
+            <Button
+              variant={!orderReason.ok && quoteReason.ok ? 'primary' : 'secondary'}
+              disabled={!quoteReason.ok}
+              title={quoteReason.ok ? undefined : quoteReason.reason}
+              onClick={() => openFrom(`/crm/bao-gia/tao?co-hoi=${record.id}`)}
+            >
+              Tạo báo giá
+            </Button>
+            {/* R-CRM-16, R-CRM-19, R-TIEN-39: Tạo đơn hàng chỉ ở cơ hội L8, bấm chỉ mở form trắng. Có cả trên điện thoại (B-27-09). */}
+            <Button
+              variant={orderReason.ok ? 'primary' : 'secondary'}
+              disabled={!orderReason.ok}
+              title={orderReason.ok ? undefined : orderReason.reason}
+              onClick={() => openFrom(`/crm/don-hang/tao?co-hoi=${record.id}`)}
+            >
+              Tạo đơn hàng
+            </Button>
           </>
         }
         subStage={
