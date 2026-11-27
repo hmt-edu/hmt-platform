@@ -14,7 +14,7 @@ export type CatalogItem = {
 };
 type Campaign = { id: string; name: string; is_active: boolean };
 
-const CATALOGS = [
+export const CATALOGS = [
   'LEAD_STAGE',
   'LEAD_SUBSTAGE',
   'OPP_STAGE',
@@ -50,6 +50,7 @@ const CATALOGS = [
   'SESSION_STATUS',
   'SESSION_CANCEL_REASON',
   'ATTENDANCE_STATUS',
+  'ATTENDANCE_CONTACT_REASON',
   'HOURS_ADJUST_REASON',
   'ORDER_CANCEL_REASON',
   'REASSIGN_REASON',
