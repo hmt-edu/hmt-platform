@@ -71,6 +71,7 @@ export function UserRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/quan-tri/nguoi-dung" className="font-medium text-link hover:underline">
               Về danh sách Người dùng
             </Link>

@@ -1,7 +1,7 @@
 // CS-01 Ticket (danh sách, khuôn K03, canvas CSN-01): nối với list_tickets. Lọc, phân trang làm ở máy chủ; chỉ giữ trang đang xem.
 // Phân hệ Aftersale tắt ở cơ sở thì hiện câu trung tính (công tắc kiểm cả ở giao diện và trong hàm DB, AS-13).
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+
 import { KanbanBoard } from '../../list/Kanban';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
@@ -28,11 +28,12 @@ import {
   useTicketGroupCounts,
   useTicketPage,
 } from './useTicketData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 export function TicketListPage() {
   const access = useAccess();
   const toast = useToast();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const refreshData = useRefreshTickets();
   const catalogs = useLeadCatalogs();
   const config = useMemo(() => buildTicketConfig(catalogs, access), [catalogs, access]);
@@ -136,13 +137,13 @@ export function TicketListPage() {
                 label: 'Tạo',
                 icon: 'plus' as const,
                 primary: true,
-                onClick: () => void navigate('/crm/ticket/moi'),
+                onClick: () => openFrom('/crm/ticket/moi'),
               },
             ]
           : []
       }
       rows={rows}
-      onRowClick={(r) => void navigate(`/crm/ticket/${r.id}`)}
+      onRowClick={(r) => openFrom(`/crm/ticket/${r.id}`)}
       rowKey={(r) => r.id}
       rowLabel={(r) => `${r.code} ${r.title}`}
       loading={activeQuery.isPending || activeQuery.isPlaceholderData}

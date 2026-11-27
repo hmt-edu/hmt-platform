@@ -5,7 +5,7 @@
 // Chưa làm (làm sau 17/11): "Báo nghỉ trước", "Đưa về Nháp".
 // Lệch khung có chủ đích: nhãn lớp "môn + mã lớp" (như cụm Lớp), không có "Nhãn bài" riêng ngoài bài bắt đầu của lớp.
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { errorOf } from '../../lib/db';
@@ -29,6 +29,7 @@ import { useToast } from '../../ui/toastContext';
 import { sessionTone } from './sessionConfig';
 import { EXCLUDED_LABEL, classLabel, doneModeLabel, sessionNoLabel } from './sessionLogic';
 import { useCloseSession, useDoneInfo, useFinishSession, useSessionRecord } from './useSessionData';
+import { FromLink } from '../../layout/FromLink';
 
 const STEPS: StageStep[] = [
   { code: 'NHAP', label: 'Nháp' },
@@ -252,9 +253,9 @@ export function SessionRecordPage() {
               label="Lớp"
               mode={view}
               value={
-                <Link to={`/crm/lop/${s.class_id}`} className="text-link hover:underline">
+                <FromLink to={`/crm/lop/${s.class_id}`} className="text-link hover:underline">
                   {s.class_code}
-                </Link>
+                </FromLink>
               }
             />
             <DetailField label="Ngày" mode={view} value={formatDate(s.session_date)} />

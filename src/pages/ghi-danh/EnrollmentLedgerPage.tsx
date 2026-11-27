@@ -10,6 +10,7 @@ import { StateView } from '../../ui/Feedback';
 import { buildLedgerConfig } from './enrollConfig';
 import { EMPTY_ENROLL_STATE } from './enrollFilters';
 import { useEnrollmentLedger, useEnrollmentRecord } from './useEnrollmentData';
+import { FromLink } from '../../layout/FromLink';
 
 export function EnrollmentLedgerPage() {
   const { id } = useParams();
@@ -44,14 +45,15 @@ export function EnrollmentLedgerPage() {
   return (
     <div className="flex flex-col gap-2">
       <p className="px-4 pt-3 text-body text-fg-muted">
+        {/* duong-dan-menu: màn Ghi danh chung, không phải trang con */}
         <Link to="/crm/ghi-danh" className="text-link hover:underline">
           Ghi danh
         </Link>
         {' › '}
         {record.data && (
-          <Link to={`/crm/ghi-danh/${id}`} className="text-link hover:underline">
+          <FromLink to={`/crm/ghi-danh/${id}`} className="text-link hover:underline">
             {record.data.enrollment.code}
-          </Link>
+          </FromLink>
         )}
         {' › Sổ giờ'}
       </p>

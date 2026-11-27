@@ -3,7 +3,7 @@
 // Không trừ giờ, không gắn buổi gốc. Lưu nháp hoặc Gửi duyệt mới cấp mã YB (app.save_makeup_request); quản lý cơ sở duyệt (R-BUOI-10).
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams, useLocation } from 'react-router';
 import { errorOf } from '../../lib/db';
 import { Button } from '../../ui/Button';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -15,6 +15,8 @@ import { validateMakeup, type MakeupError } from './requestLogic';
 import { useSaveMakeup } from './useRequestData';
 import { ExamBlock } from './ExamBlock';
 import { EMPTY_EXAM, validateExam, type ExamError, type ExamInput } from './examFields';
+import { useNavigateFrom } from '../../layout/crumbTrail';
+import { FromLink } from '../../layout/FromLink';
 
 export function SessionRequestMakeupPage() {
   useCrumbTail('Tạo yêu cầu học bù');
@@ -22,9 +24,9 @@ export function SessionRequestMakeupPage() {
   const classId = params.get('lop') ?? undefined;
   const record = useClassRecord(classId);
   const back = (
-    <Link className="text-link underline" to={classId ? `/crm/lop/${classId}` : '/crm/lop'}>
+    <FromLink className="text-link underline" to={classId ? `/crm/lop/${classId}` : '/crm/lop'}>
       Về lớp
-    </Link>
+    </FromLink>
   );
   if (classId === undefined)
     return (
@@ -67,6 +69,8 @@ function Form({
   students: { student_id: string; full_name: string }[];
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const openFrom = useNavigateFrom();
   const toast = useToast();
   const save = useSaveMakeup();
   const options = useClassFormOptions(branchId);
@@ -109,7 +113,7 @@ function Form({
         tone: 'success',
         title: send ? `Đã gửi duyệt ${saved.code}` : `Đã lưu nháp ${saved.code}`,
       });
-      void navigate('/crm/yeu-cau-buoi', { replace: true });
+      void navigate('/crm/yeu-cau-buoi', { replace: true, state: location.state as unknown });
     } catch (e) {
       setError(errorOf(e).message);
     }
@@ -212,7 +216,7 @@ function Form({
         <Button disabled={save.isPending} onClick={() => void submit(false)}>
           Lưu nháp
         </Button>
-        <Button variant="text" onClick={() => void navigate(`/crm/lop/${classId}`)}>
+        <Button variant="text" onClick={() => openFrom(`/crm/lop/${classId}`)}>
           Huỷ
         </Button>
       </div>

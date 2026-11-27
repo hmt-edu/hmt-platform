@@ -2,7 +2,7 @@
 // Thao tác trong menu Hành động theo tình trạng duyệt (LOP-05: Trình, Xác nhận, Duyệt, Từ chối, Đưa về Nháp, Huỷ; LOP-06: Đóng, Huỷ,
 // bị chặn thì hộp thoại hiện lý do máy chủ trả, có tên học sinh). Sửa dẫn tới LOP-03. Quyền thật do máy chủ kiểm.
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { ClassChatter } from './ClassChatter';
 import { Button } from '../../ui/Button';
@@ -29,6 +29,8 @@ import { editClassPath } from './classConfig';
 import { organizationText, remainingClassPath } from './classForm';
 import { OPERATING_LABEL, type ClassRecord } from './classTypes';
 import { transitionClass, useClassRecord, useRefreshClasses } from './useClassData';
+import { FromLink } from '../../layout/FromLink';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 export function ClassRecordPage() {
   const { id } = useParams();
@@ -49,6 +51,7 @@ export function ClassRecordPage() {
         title={forbidden ? 'Bạn không có quyền xem lớp này' : 'Không tải được lớp'}
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/lop" className="font-medium text-link hover:underline">
               Về danh sách Lớp
             </Link>
@@ -67,7 +70,7 @@ function ClassView({ record }: { record: ClassRecord }) {
   const supabase = useDb();
   const toast = useToast();
   const access = useAccess();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const refresh = useRefreshClasses();
   const [pending, setPending] = useState<Transition | null>(null);
   const [note, setNote] = useState('');
@@ -86,12 +89,12 @@ function ClassView({ record }: { record: ClassRecord }) {
           {
             kind: 'action' as const,
             label: 'Yêu cầu bổ trợ',
-            onSelect: () => void navigate(`/crm/yeu-cau-buoi/tao-bo-tro?lop=${record.id}`),
+            onSelect: () => openFrom(`/crm/yeu-cau-buoi/tao-bo-tro?lop=${record.id}`),
           },
           {
             kind: 'action' as const,
             label: 'Yêu cầu học bù',
-            onSelect: () => void navigate(`/crm/yeu-cau-buoi/tao-hoc-bu?lop=${record.id}`),
+            onSelect: () => openFrom(`/crm/yeu-cau-buoi/tao-hoc-bu?lop=${record.id}`),
           },
         ]
       : []),
@@ -149,7 +152,7 @@ function ClassView({ record }: { record: ClassRecord }) {
         readOnly
         showEdit={Boolean(edit) && allowed('SUA')}
         editLabel="Sửa"
-        onEdit={() => void navigate(editClassPath(record.id))}
+        onEdit={() => openFrom(editClassPath(record.id))}
         onSave={() => undefined}
         onCancel={() => undefined}
         onRefresh={() => void refresh()}
@@ -162,14 +165,14 @@ function ClassView({ record }: { record: ClassRecord }) {
             label: 'Học sinh',
             icon: 'training',
             count: record.students.length,
-            onOpen: () => void navigate(`/crm/lop/${record.id}/hoc-sinh`),
+            onOpen: () => openFrom(`/crm/lop/${record.id}/hoc-sinh`),
           },
           {
             key: 'buoi-hoc',
             label: 'Buổi học',
             icon: 'calendar',
             count: counts.reduce((sum, [, n]) => sum + n, 0),
-            onOpen: () => void navigate(`/crm/buoi-hoc?lop=${record.id}`),
+            onOpen: () => openFrom(`/crm/buoi-hoc?lop=${record.id}`),
           },
         ]}
         stageShowCode={false}
@@ -281,9 +284,9 @@ function ClassView({ record }: { record: ClassRecord }) {
                 {(record.group_classes ?? []).map((g) => (
                   <li key={g.id} className="flex flex-wrap items-center gap-x-3">
                     <span className="text-caption text-fg-muted">Lớp còn lại của nhóm:</span>
-                    <Link className="font-medium text-link underline" to={`/crm/lop/${g.id}`}>
+                    <FromLink className="font-medium text-link underline" to={`/crm/lop/${g.id}`}>
                       {[g.subject_name, g.code].filter(Boolean).join(' · ')}
-                    </Link>
+                    </FromLink>
                     {g.teacher_names && <span className="text-fg-muted">GV {g.teacher_names}</span>}
                     <Tag>{g.status_name ?? g.status_code}</Tag>
                   </li>
@@ -295,7 +298,7 @@ function ClassView({ record }: { record: ClassRecord }) {
                   <div className="py-1">
                     <Button
                       variant="secondary"
-                      onClick={() => void navigate(remainingClassPath(record))}
+                      onClick={() => openFrom(remainingClassPath(record))}
                     >
                       Tạo lớp còn lại cho nhóm này
                     </Button>

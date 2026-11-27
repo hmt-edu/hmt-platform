@@ -2,7 +2,7 @@
 // trạng thái điểm danh phía vận hành và phía giáo viên (ô giáo viên là chính thức, R-DD-02), tình trạng ghi, và "PH báo nghỉ n" (lý do liên hệ XIN_NGHI_HOC). Sửa điểm danh ở màn buổi,
 // không ở đây. Máy chủ quyết quyền, cờ và tính toán (app.session_day_attendance); phân trang 50 dòng ở máy chủ; phân hệ DIEM_DANH_TRONG_NGAY tắt mặc định.
 import { useState } from 'react';
-import { Link } from 'react-router';
+
 import { errorOf } from '../../lib/db';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
@@ -12,6 +12,7 @@ import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { countsText, noticeText, stateName, stateTone, type DayRow } from './dayLogic';
 import { useDayPage } from './useDayData';
+import { FromLink } from '../../layout/FromLink';
 
 const PAGE_SIZE = 50; // allow-number: mặc định phân trang danh sách (quy ước hiệu năng, tối đa 100)
 const FILTERS: { key: string; label: string; state: string[] | null; notice: boolean | null }[] = [
@@ -36,9 +37,9 @@ export function DayAttendancePage() {
   );
 
   const sessionLink = (r: DayRow) => (
-    <Link className="text-link underline" to={`/crm/buoi-hoc/${r.session_id}`}>
+    <FromLink className="text-link underline" to={`/crm/buoi-hoc/${r.session_id}`}>
       {r.class_code} · {r.session_no ? `Buổi ${r.session_no}` : 'Buổi'}
-    </Link>
+    </FromLink>
   );
 
   return (
@@ -150,9 +151,9 @@ export function DayAttendancePage() {
                   <td className="px-3 py-2">{noticeText(r.notice)}</td>
                   <td className="px-3 py-2">{r.cskh_name ?? '—'}</td>
                   <td className="px-3 py-2">
-                    <Link className="text-link underline" to={`/crm/buoi-hoc/${r.session_id}`}>
+                    <FromLink className="text-link underline" to={`/crm/buoi-hoc/${r.session_id}`}>
                       Xem
-                    </Link>
+                    </FromLink>
                   </td>
                 </tr>
               ))}

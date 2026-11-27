@@ -1,7 +1,7 @@
 // CH-02 Gói bán (bản ghi, khuôn K06; bản đồ màn hình: Thông tin gói, các giá theo hiệu lực; Sửa, Thêm giá mới; sang CH-03 Bảng giá). Không có khung canvas riêng (CH01_* là danh sách):
 // dựng từ khuôn bản ghi chỉ đọc + hộp Sửa, Thêm giá của CH-01. Giá chỉ thêm, không sửa (giá cũ giữ nguyên cho đơn đã lập: R-TIEN-10, chụp lại giá lúc tạo).
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatMoney } from '../../lib/format';
@@ -30,6 +30,7 @@ import {
 import { ActivePackageDialog, EditPackageDialog } from './PackageDialogs';
 import { addPackagePrice, usePackageRecord, useRefreshPackageRecord } from './usePackageRecord';
 import type { PackageRow } from './usePackageData';
+import { FromLink } from '../../layout/FromLink';
 
 export function PackageRecordPage() {
   const { id } = useParams();
@@ -120,9 +121,9 @@ export function PackageRecordPage() {
                 {pkg.is_active ? 'Ngừng' : 'Dùng lại'}
               </Button>
             )}
-            <Link className="text-body text-action-link underline" to="/crm/cau-hinh/bang-gia">
+            <FromLink className="text-body text-action-link underline" to="/crm/cau-hinh/bang-gia">
               Xem bảng giá
-            </Link>
+            </FromLink>
             <Tag tone={pkg.is_active ? 'success' : 'neutral'}>
               {pkg.is_active ? 'Đang bán' : 'Ngừng'}
             </Tag>

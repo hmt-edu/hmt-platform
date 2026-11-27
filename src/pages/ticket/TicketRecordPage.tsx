@@ -3,7 +3,7 @@
 // Giao ticket (chọn đội, người phụ trách) và tạo mới làm ở lát sau: danh sách người giao cần mở rộng hàm máy chủ.
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf, useDb, useIntSetting } from '../../lib/db';
 import { formatDate, formatDateTime } from '../../lib/format';
@@ -45,6 +45,8 @@ import {
   updateTicketComplaint,
   useTicketRecord,
 } from './useTicketData';
+import { FromLink } from '../../layout/FromLink';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 const TYPE_NAME = { DN: 'Đề nghị', KN: 'Khiếu nại', GV: 'Ticket giáo viên' } as const;
 
@@ -77,7 +79,7 @@ export function TicketRecordPage() {
   const categories = useTicketCategories();
   const [reclassOpen, setReclassOpen] = useState(false);
   const [reclass, setReclass] = useState({ type: '', group: '', category: '', priority: '' });
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const [taskOpen, setTaskOpen] = useState(false);
   const [taskDraft, setTaskDraft] = useState<TaskDraft>(EMPTY_TASK_DRAFT);
   const [taskShow, setTaskShow] = useState(false);
@@ -275,7 +277,7 @@ export function TicketRecordPage() {
       });
       setTaskOpen(false);
       toast({ tone: 'success', title: 'Đã tạo phiếu ở bước Nháp.' });
-      void navigate(`/crm/phieu-nghiep-vu/${created.id}`);
+      openFrom(`/crm/phieu-nghiep-vu/${created.id}`);
     } catch (cause) {
       setError(errorOf(cause).message);
     } finally {
@@ -298,7 +300,7 @@ export function TicketRecordPage() {
       });
       setTaskOpen(false);
       toast({ tone: 'success', title: 'Đã tạo phiếu ở bước Nháp.' });
-      void navigate(`/crm/phieu-nghiep-vu/${created.id}`);
+      openFrom(`/crm/phieu-nghiep-vu/${created.id}`);
     } catch (cause) {
       setError(errorOf(cause).message);
     } finally {
@@ -552,9 +554,9 @@ export function TicketRecordPage() {
               <ul className="flex flex-col gap-1">
                 {record.data?.tasks.map((k) => (
                   <li key={k.id}>
-                    <Link className="text-link underline" to={`/crm/phieu-nghiep-vu/${k.id}`}>
+                    <FromLink className="text-link underline" to={`/crm/phieu-nghiep-vu/${k.id}`}>
                       {k.code}
-                    </Link>{' '}
+                    </FromLink>{' '}
                     {TASK_TYPE_LABEL[k.task_type] ?? k.task_type} ·{' '}
                     {TASK_STATUS_LABEL[k.status_code] ?? k.status_code}
                   </li>
@@ -569,9 +571,9 @@ export function TicketRecordPage() {
               <ul className="flex flex-col gap-1">
                 {record.data?.children.map((c) => (
                   <li key={c.id}>
-                    <Link className="text-link underline" to={`/crm/ticket/${c.id}`}>
+                    <FromLink className="text-link underline" to={`/crm/ticket/${c.id}`}>
                       {c.code}
-                    </Link>{' '}
+                    </FromLink>{' '}
                     {c.category_name} · {statusName(c.status_code)} ·{' '}
                     {c.assignee_name ?? 'Chưa giao'}
                   </li>
