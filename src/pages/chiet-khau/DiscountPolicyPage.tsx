@@ -34,6 +34,7 @@ import {
   type FormValues,
   type GiftPolicy,
   type PolicyStatus,
+  nameDigitWarning,
 } from './policyLogic';
 import {
   saveDiscountPolicy,
@@ -463,7 +464,11 @@ function PolicyForm({
           onChange={(e) => set({ name: e.target.value })}
           invalid={!!show('name')}
           error={show('name')}
-          help={p ? `Mã ${p.code}, không đổi.` : undefined}
+          help={
+            [p ? `Mã ${p.code}, không đổi.` : '', nameDigitWarning(v.name) ?? '']
+              .filter(Boolean)
+              .join(' ') || undefined
+          }
         />
         {isGift ? (
           <Field label="Loại quà" required>

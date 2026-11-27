@@ -485,7 +485,7 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   const dialog = page.getByRole('dialog', { name: 'Chọn chính sách ưu đãi' });
   await expect(dialog.getByText(/tối đa một chính sách tặng giờ/)).toBeVisible();
   await expectAccessible(page);
-  await dialog.getByLabel(/Giảm khi đóng 6 tháng/).check();
+  await dialog.getByLabel(/Giảm khi đóng lộ trình/).check();
   await dialog.getByRole('button', { name: 'Áp dụng' }).click();
   await expect(row1.getByText(/5% \(áp đúng mức\)/)).toBeVisible();
   // Cột % của bảng Sửa (BH02_sua) là Tổng chiết khấu máy chủ trả.
@@ -523,7 +523,7 @@ test('BH-02 sửa Nháp: chính sách chiết khấu, Tổng chiết khấu, T�
   const saved = view.getByRole('row', { name: /Em Nháp Một/ });
   await expect(saved.getByRole('cell', { name: '4', exact: true })).toBeVisible();
   await expect(saved.getByRole('cell', { name: '25%', exact: true })).toBeVisible();
-  await expect(saved.getByRole('cell', { name: /Giảm khi đóng 6 tháng/ })).toBeVisible();
+  await expect(saved.getByRole('cell', { name: /Giảm khi đóng lộ trình/ })).toBeVisible();
 });
 
 test('BH-02 sửa Nháp: dòng mới mặc định em đầu của cơ hội (R-TIEN-35), đổi được; chọn gói và số lượng thì tính giá', async ({

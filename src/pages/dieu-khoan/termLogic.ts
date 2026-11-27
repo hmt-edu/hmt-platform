@@ -1,6 +1,6 @@
 // CH-09 Điều khoản thanh toán: logic thuần (mã từ tên, kiểm các đợt trước khi gửi, nhãn). Luật R-TIEN-07; hàm DB create_payment_term kiểm lần nữa (câu lỗi của DB là câu thật).
 // Điều khoản đã tạo KHÔNG sửa: đổi là tạo bản mới cùng mã (version + 1); đơn cũ giữ lịch đã sinh.
-import { foldText } from '../../lib/format';
+import { foldText, formatMoney, formatNumber } from '../../lib/format';
 
 export type TermInstallment = {
   seq: number;
@@ -88,4 +88,23 @@ export function toPayload(drafts: Draft[]) {
 export function shareLabel(i: TermInstallment, hasFixedFirst: boolean): string {
   if (i.fixed_amount !== null) return 'Số tiền cố định';
   return i.seq === 1 || !hasFixedFirst ? '% của tổng đơn' : '% của phần còn lại sau đợt 1';
+}
+
+/** Chữ trong ô chọn điều khoản: tên ghép lịch đợt từ dữ liệu, "Đặt cọc thường · 30% + 70% sau 14 ngày". */
+export function termLabel(t: {
+  name: string;
+  installments?: TermInstallment[] | undefined;
+}): string {
+  const sorted = [...(t.installments ?? [])].sort((a, b) => a.seq - b.seq);
+  // Một đợt đóng ngay thì tên là đủ.
+  if (sorted.length === 0 || (sorted.length === 1 && sorted[0]?.due_days === 0)) return t.name;
+  const hasFixedFirst = sorted[0]?.fixed_amount !== null;
+  const parts = sorted.map((i) => {
+    const amount =
+      i.fixed_amount !== null
+        ? formatMoney(i.fixed_amount)
+        : `${formatNumber(i.share_percent ?? 0)}%${hasFixedFirst ? ' phần còn lại' : ''}`;
+    return i.due_days > 0 ? `${amount} sau ${formatNumber(i.due_days)} ngày` : amount;
+  });
+  return `${t.name} · ${parts.join(' + ')}`;
 }

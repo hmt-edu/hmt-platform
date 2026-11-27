@@ -20,6 +20,7 @@ import type { OppStudent } from '../bao-gia/useQuoteData';
 import type { OrderLineClass } from '../ghi-danh/enrollTypes';
 import type { OrderLine, OrderLineDiscount } from './orderTypes';
 import type { PolicyOption } from './useOrderData';
+import { policyLabel } from '../chiet-khau/policyLogic';
 
 type Props = {
   lines: OrderLine[];
@@ -143,7 +144,7 @@ function DiscountEditor({
                 },
               ]);
             }}
-            options={addable.map((p) => ({ value: p.id, label: p.name }))}
+            options={addable.map((p) => ({ value: p.id, label: policyLabel(p) }))}
           />
         )}
       </span>
