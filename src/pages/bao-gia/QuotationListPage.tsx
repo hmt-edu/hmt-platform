@@ -1,6 +1,7 @@
 // BH-01 Báo giá (danh sách): khuôn K03 nối với list_quotations. Lọc, sắp xếp, phân trang làm ở máy chủ; trình duyệt chỉ giữ trang đang xem.
 // Không có nút Tạo (báo giá sinh từ cơ hội, R-TIEN-02); có nút Xuất cho vai có quyền Xuất (Trưởng cơ sở, Kế toán, Admin, Đ105).
 // Giao diện không tính tiền: tổng tiền, quá hạn đều do hàm cơ sở dữ liệu trả.
+import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
@@ -51,6 +52,7 @@ const EXPORT_COLUMNS = [
 export function QuotationListPage() {
   const supabase = useDb();
   const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const access = useAccess();
   const toast = useToast();
   const refreshData = useRefreshQuotations();
@@ -164,7 +166,7 @@ export function QuotationListPage() {
               entityLabel: 'Cơ hội',
               code: parentCode,
               childLabel: 'Báo giá',
-              onOpenParent: () => void navigate(`/crm/co-hoi/${parentOpp}`),
+              onOpenParent: () => void openFrom(`/crm/co-hoi/${parentOpp}`),
               onClear: () => setParams({}),
             }
           : undefined

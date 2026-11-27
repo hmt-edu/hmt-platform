@@ -342,7 +342,7 @@ test('R-CRM-34: cơ hội L6 do hệ thống gắn L6A, ô Sub-stage hiện L6A 
   await expect(page.getByRole('combobox', { name: 'Sub-stage' })).toContainText(/L6C/);
 });
 
-test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì nối tiếp "Cơ hội / <tên cơ hội> / Phiếu Test / mã phiếu", sống qua tải lại, bấm tên cơ hội quay về', async ({
+test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì nối tiếp "Cơ hội / <tên cơ hội> / mã phiếu", sống qua tải lại, bấm tên cơ hội quay về', async ({
   page,
 }, testInfo) => {
   const setup = setupOf(testInfo.project.name);
@@ -353,27 +353,25 @@ test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì n
   await expect(page).toHaveURL(/\/crm\/phieu-kiem-tra\/[0-9a-f-]+$/);
   const items = crumbs.getByRole('listitem');
   if (isPhone(page)) {
-    // Điện thoại: chỉ hiện hai mục cuối (mục cha "Phiếu kiểm tra" và mã phiếu), mục đầu ẩn.
+    // Điện thoại: chỉ hiện hai mục cuối (tên cơ hội và mã phiếu), mục đầu ẩn.
     await expect(items).toHaveCount(2);
-    await expect(items.first()).toContainText('Phiếu Test');
-    await expect(crumbs.locator('li')).toHaveCount(5);
+    await expect(items.first()).toContainText(oppTitle);
+    await expect(crumbs.locator('li')).toHaveCount(4);
     return;
   }
-  await expect(items).toHaveCount(5);
+  await expect(items).toHaveCount(4);
   await expect(items.nth(1)).toContainText('Cơ hội');
   await expect(crumbs.getByRole('link', { name: 'Cơ hội' })).toHaveAttribute('href', '/crm/co-hoi');
   await expect(crumbs.getByRole('link', { name: oppTitle })).toHaveAttribute(
     'href',
     `/crm/co-hoi/${seeded.opportunity.gated.id}`,
   );
-  await expect(crumbs.getByRole('link', { name: 'Phiếu Test' })).toHaveAttribute(
-    'href',
-    '/crm/phieu-kiem-tra',
-  );
+  // H1: không còn tầng danh sách «Phiếu Test» giữa cơ hội và phiếu.
+  await expect(crumbs.getByRole('link', { name: 'Phiếu Test' })).toHaveCount(0);
   await expect(items.last()).toContainText(/^PKT\d+/);
   // Tải lại trang: đường dẫn vẫn nối tiếp (nằm trong lịch sử trình duyệt).
   await page.reload();
-  await expect(items).toHaveCount(5);
+  await expect(items).toHaveCount(4);
   // Bấm tên cơ hội trong đường dẫn: về đúng cơ hội, đường dẫn không nối dài.
   const testUrl = page.url();
   await crumbs.getByRole('link', { name: oppTitle }).click();
@@ -383,6 +381,15 @@ test('Đường dẫn theo trang gốc: từ cơ hội bấm "Kiểm tra" thì n
   await page.goto(testUrl);
   await expect(items).toHaveCount(3);
   await expect(items.nth(1)).toContainText('Phiếu Test');
+
+  // Từ danh sách lọc theo cơ hội: bấm mã cha trong trang thì về đúng chuỗi của cơ hội, không nối dài.
+  await openRecord(page, setup.account, seeded.opportunity.gated.id);
+  await page.getByRole('button', { name: 'Báo giá 0' }).click();
+  await expect(page).toHaveURL(/\/crm\/bao-gia\?co-hoi=/);
+  await expect(items).toHaveCount(4);
+  await page.getByRole('button', { name: seeded.opportunity.gated.code }).click();
+  await expect(page).toHaveURL(new RegExp(`/crm/co-hoi/${seeded.opportunity.gated.id}$`));
+  await expect(items).toHaveCount(3);
 });
 
 test('Cơ hội hiện ghi chú của lead gốc kèm nhãn "Từ Lead LD…"; ghi chú của cơ hội không có nhãn', async ({

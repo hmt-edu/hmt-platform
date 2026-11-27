@@ -1,6 +1,7 @@
 // Khuôn K1 Danh sách: tiêu đề + nút hành động, tìm kiếm, kiểu xem (danh sách, Kanban, Calendar), Ngày, Filters,
 // Group By, Favorites, Cột, chip điều kiện, bảng (có nhóm hai cấp), phân trang. Mọi nội dung nghiệp vụ do
 // cấu hình truyền vào; khung không viết cứng bộ lọc của màn nào.
+import { useFilteredListCrumb } from '../layout/CrumbTail';
 import { useState, type ReactNode } from 'react';
 import { Button, IconButton } from '../ui/Button';
 import { cn } from '../ui/cn';
@@ -133,6 +134,7 @@ export function ListScreen<Row>({
 }) {
   const sheet = useMedia('(max-width: 639px)');
   usePersistedColumns(config.screenCode, state, onStateChange);
+  useFilteredListCrumb(parent !== undefined);
   const [open, setOpen] = useState<'filters' | 'group' | 'cols' | 'fav' | 'save' | null>(null);
   const [advanced, setAdvanced] = useState(false);
   // Điện thoại: thay đổi nằm trong bản nháp tới khi bấm Áp dụng.
