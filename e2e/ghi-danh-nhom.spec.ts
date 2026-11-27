@@ -23,7 +23,7 @@ test('GD-03: theo nhóm lớp xếp cả hai ghi danh vào đúng lớp của t�
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/cho-xep-lop');
   await page.getByRole('searchbox').fill(seed.tag);
-  const queue = page.getByRole('table', { name: 'Hàng chờ xếp lớp' });
+  const queue = page.getByRole('table', { name: 'Ghi danh' });
   await expect(queue.getByRole('link', { name: seed.daiEnrollment })).toBeVisible();
   await expect(queue.getByRole('link', { name: seed.hinhEnrollment })).toBeVisible();
   await queue
@@ -44,7 +44,7 @@ test('GD-03: theo nhóm lớp xếp cả hai ghi danh vào đúng lớp của t�
   );
   await dialog.getByRole('button', { name: 'Xếp lớp', exact: true }).click();
   await expect(page.getByText('Đã xếp lớp cho 2 ghi danh.', { exact: true })).toBeVisible();
-  // Cả hai rời hàng chờ.
+  // Cả hai rời bộ lọc Chờ xếp lớp.
   await expect(queue.getByRole('link', { name: seed.daiEnrollment })).toHaveCount(0);
   await expect(queue.getByRole('link', { name: seed.hinhEnrollment })).toHaveCount(0);
   // Danh sách ghi danh: cả hai Đã xếp lớp, mỗi ghi danh đúng lớp của mình.

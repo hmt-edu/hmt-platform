@@ -126,7 +126,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
   const [cancelNote, setCancelNote] = useState('');
-  // Sửa Nháp (K06c): lưới dòng sửa tại chỗ. Điện thoại giữ bản chỉ đọc, ẩn nút Sửa (Đ248) cho tới khi Design vẽ lưới điện thoại.
+  // Sửa Nháp (K06c): lưới dòng sửa tại chỗ, cả trên điện thoại (B-27-09; lưới cuộn ngang). Chuyển thành đơn vẫn chỉ máy tính.
   const phone = useMedia(NARROW_TABLE);
   const [editing, setEditing] = useState(false);
   const [rows, setRows] = useState<EditRow[]>([]);
@@ -172,7 +172,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
       : []),
   ];
 
-  const canEditDraft = canChange && record.status_code === 'NHAP' && !phone;
+  const canEditDraft = canChange && record.status_code === 'NHAP';
   const dirty = editing && rowsSignature(rows) !== baseline;
 
   function startEdit() {

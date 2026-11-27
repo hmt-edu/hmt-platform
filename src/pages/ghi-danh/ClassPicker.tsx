@@ -25,6 +25,7 @@ export function ClassPicker({
   allowLater = false,
   laterLabel = 'Chưa chọn lớp',
   enrollMode,
+  emptyText = 'Không có lớp phù hợp: chưa có lớp đã duyệt còn chỗ đúng môn, khối, cơ sở của gói này.',
 }: {
   classes: MatchingClass[];
   value: ClassPick;
@@ -36,6 +37,8 @@ export function ClassPicker({
   laterLabel?: string;
   /** Hình thức học của ghi danh: lớp lệch hình thức chỉ hiện cảnh báo, không chặn. */
   enrollMode?: string | null | undefined;
+  /** Câu khi không có lớp nào, nói đúng nguyên nhân. */
+  emptyText?: string | undefined;
 }) {
   const chosen = classes.find((c) => c.id === value.classId) ?? null;
   return (
@@ -97,41 +100,41 @@ export function ClassPicker({
       </ul>
       {classes.length === 0 && (
         <p role="status" className="text-body text-fg-muted">
-          Không có lớp phù hợp: chưa có lớp đã duyệt còn chỗ đúng môn, khối, cơ sở của gói này.
+          {emptyText}
         </p>
       )}
-      {/* Giữ chỗ cố định cho ô Ngày vào lớp: chọn lớp không làm hộp dài ra, nút Xếp lớp không dịch xuống (T2-21: bấm lần đầu không ăn). */}
-      <div className="flex min-h-24 flex-col gap-1">
-        {!chosen && classes.length > 0 && (
-          <p className="text-caption text-fg-muted">Chọn lớp để chọn ngày vào lớp.</p>
-        )}
-        {chosen && (
-          <div className="flex flex-col gap-1">
-            {chosen.has_sessions ? (
-              <Select
-                label="Ngày vào lớp"
-                value={value.date}
-                onChange={(date) => onChange({ ...value, date })}
-                options={chosen.upcoming.map((u) => ({
-                  value: u.date,
-                  label: upcomingLabel(u.date, u.session_no),
-                }))}
-                placeholder="Chọn buổi vào lớp"
-              />
-            ) : (
-              <>
-                <DateInput
+      {/* Giữ chỗ cố định cho ô Ngày vào lớp: chọn lớp không làm hộp dài ra, nút Xếp lớp không dịch xuống (T2-21: bấm lần đầu không ăn). Không có lớp nào để chọn thì không giữ chỗ. */}
+      {classes.length > 0 && (
+        <div className="flex min-h-24 flex-col gap-1">
+          {!chosen && <p className="text-caption text-fg-muted">Chọn lớp để chọn ngày vào lớp.</p>}
+          {chosen && (
+            <div className="flex flex-col gap-1">
+              {chosen.has_sessions ? (
+                <Select
                   label="Ngày vào lớp"
-                  value={keyToDate(value.date)}
-                  min={keyToDate(chosen.class_start_date) ?? undefined}
-                  onChange={(d) => onChange({ ...value, date: d ? dateKey(d) : '' })}
+                  value={value.date}
+                  onChange={(date) => onChange({ ...value, date })}
+                  options={chosen.upcoming.map((u) => ({
+                    value: u.date,
+                    label: upcomingLabel(u.date, u.session_no),
+                  }))}
+                  placeholder="Chọn buổi vào lớp"
                 />
-                <p className="text-caption text-fg-muted">{startHint(chosen)}</p>
-              </>
-            )}
-          </div>
-        )}
-      </div>
+              ) : (
+                <>
+                  <DateInput
+                    label="Ngày vào lớp"
+                    value={keyToDate(value.date)}
+                    min={keyToDate(chosen.class_start_date) ?? undefined}
+                    onChange={(d) => onChange({ ...value, date: d ? dateKey(d) : '' })}
+                  />
+                  <p className="text-caption text-fg-muted">{startHint(chosen)}</p>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

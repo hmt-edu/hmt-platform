@@ -172,10 +172,8 @@ test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút
   await expect(page.getByText('Tổng thành tiền')).toBeVisible();
   await expect(page.locator('b', { hasText: '3.300.000 đ' })).toBeVisible();
   await expect(page.getByText('Chưa thấy học sinh? Thêm học sinh ở cơ hội.')).toHaveCount(0);
-  // Đ248: điện thoại giữ bản chỉ đọc, ẩn nút Sửa; máy tính có nút Sửa.
-  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toHaveCount(
-    isPhone(page) ? 0 : 1,
-  );
+  // B-27-09: Nháp sửa được cả trên điện thoại.
+  await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toHaveCount(1);
   await expectAccessible(page);
 });
 
@@ -413,7 +411,6 @@ test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khu
 test('BH-02 sửa Nháp: ô tìm sản phẩm, thêm dòng mới (chọn em, gói, số lượng), Huỷ bỏ thay đổi', async ({
   page,
 }, testInfo) => {
-  test.skip(isPhone(page), 'Đ248: điện thoại chỉ đọc, không có nút Sửa.');
   const setup = setupOf(testInfo.project.name);
   await openRecord(page, setup.sale, setup.mark, seeded.code.draft);
   await page.getByRole('button', { name: 'Sửa', exact: true }).click();
@@ -707,10 +704,6 @@ test('Tạo báo giá: nút nằm ở bản ghi cơ hội (máy tính), ẩn tr�
   const setup = setupOf(testInfo.project.name);
   await openOpportunityOfQuote(page, setup, seeded.code.sent);
   const create = page.getByRole('button', { name: 'Tạo báo giá', exact: true });
-  if (isPhone(page)) {
-    await expect(create).toHaveCount(0);
-    return;
-  }
   await expect(create).toBeEnabled();
   await create.click();
   await expect(page).toHaveURL(/\/crm\/bao-gia\/tao\?co-hoi=/);

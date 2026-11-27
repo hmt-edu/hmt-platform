@@ -1,11 +1,19 @@
 // Ô tìm sản phẩm dùng chung cho lưới sửa Nháp Báo giá, tạo và sửa Đơn hàng (canvas «HMT Ô tìm sản phẩm»). Thay hộp «Chọn gói»:
 // bấm là hiện ngay «Hay dùng», «Gợi ý theo cơ hội»; gõ không dấu; chip lọc; mũi tên, Enter, Esc. Danh sách do list_sellable_packages trả.
-import { useId, useState, type KeyboardEvent, type ReactNode } from 'react';
+import {
+  cloneElement,
+  useId,
+  useState,
+  type KeyboardEvent,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { errorOf } from '../../lib/db';
 import { Button } from '../../ui/Button';
 import { Spinner } from '../../ui/Feedback';
-import { Popover, Select } from '../../ui/Overlays';
+import { Dialog, Popover, Select } from '../../ui/Overlays';
 import { cn } from '../../ui/cn';
+import { NARROW_TABLE, useMedia } from '../../ui/useMedia';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import {
   NO_FILTERS,
@@ -200,10 +208,30 @@ export function ProductSearch({
 }: {
   opportunityId: string;
   /** Nút mở ô tìm. */
-  trigger: ReactNode;
+  trigger: ReactElement<{ onClick?: () => void }>;
   onPick: (pkg: SellablePackage) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const phone = useMedia(NARROW_TABLE);
+  const panel: ReactNode = (
+    <Panel
+      opportunityId={opportunityId}
+      onPick={(pkg) => {
+        setOpen(false);
+        onPick(pkg);
+      }}
+    />
+  );
+  // Điện thoại: tấm kéo từ dưới lên (hộp thoại dùng chung); máy tính: khung nổi cạnh ô.
+  if (phone)
+    return (
+      <>
+        {cloneElement(trigger, { onClick: () => setOpen(true) })}
+        <Dialog open={open} onOpenChange={setOpen} title="Tìm sản phẩm">
+          {panel}
+        </Dialog>
+      </>
+    );
   return (
     <Popover
       label="Tìm sản phẩm"
@@ -212,13 +240,7 @@ export function ProductSearch({
       onOpenChange={setOpen}
       className="max-h-[var(--radix-popover-content-available-height)] w-[760px] overflow-y-auto"
     >
-      <Panel
-        opportunityId={opportunityId}
-        onPick={(pkg) => {
-          setOpen(false);
-          onPick(pkg);
-        }}
-      />
+      {panel}
     </Popover>
   );
 }

@@ -6,13 +6,12 @@ import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
 import type { LeadCatalogs } from '../lead/useCatalogs';
-import { deadlineLabel, sessionNoLabel } from './sessionLogic';
+import { PENDING_QUICK_GROUP, deadlineLabel, sessionNoLabel } from './sessionLogic';
 import type { AbsentRow, PendingRow, SessionRow } from './sessionTypes';
 import { FromLink } from '../../layout/FromLink';
 
 export const SESSION_SCREEN_CODE = 'BUOI-01';
 export const ABSENT_SCREEN_CODE = 'BUOI-11';
-export const PENDING_SCREEN_CODE = 'BUOI-12';
 
 const MUTED = <span className="text-fg-muted">—</span>;
 
@@ -44,6 +43,7 @@ const branchField = (access: AccessView) =>
 export function buildSessionConfig(
   catalogs: LeadCatalogs,
   access: AccessView,
+  withPending = true,
 ): ListConfig<SessionRow> {
   const statusOptions = catalogs
     .filterOptions('SESSION_STATUS')
@@ -93,7 +93,10 @@ export function buildSessionConfig(
         ),
       },
     ],
-    quickGroups: [{ key: 'status', label: 'Tình trạng', options: statusOptions }],
+    quickGroups: [
+      ...(withPending ? [PENDING_QUICK_GROUP] : []),
+      { key: 'status', label: 'Tình trạng', options: statusOptions },
+    ],
     filterFields: [
       { key: 'status', label: 'Tình trạng', type: 'multi', options: statusOptions },
       { key: 'session_date', label: 'Ngày học', type: 'date', ops: ['from', 'to'] },
@@ -195,8 +198,9 @@ const PENDING_KINDS = [
 /** BUOI-12: buổi Đã chốt đã kết thúc mà giáo viên chưa hoàn tất; "Nhắc GV" tạm mờ (cổng giáo viên chưa có hộp thông báo, Chat 11/11), "Mở buổi" sang BUOI-02. */
 export function buildPendingConfig(access: AccessView, canRemind: boolean): ListConfig<PendingRow> {
   return {
-    screenCode: PENDING_SCREEN_CODE,
-    title: 'Buổi chưa hoàn tất',
+    // Cùng mã màn với BUOI-01 để bộ lọc yêu thích dùng chung.
+    screenCode: SESSION_SCREEN_CODE,
+    title: 'Buổi học',
     searchPlaceholder: 'Tìm mã lớp…',
     columns: [
       {
@@ -248,7 +252,7 @@ export function buildPendingConfig(access: AccessView, canRemind: boolean): List
         ),
       },
     ],
-    quickGroups: [{ key: 'kind', label: 'Hạn', options: PENDING_KINDS }],
+    quickGroups: [PENDING_QUICK_GROUP, { key: 'kind', label: 'Hạn', options: PENDING_KINDS }],
     filterFields: [
       { key: 'kind', label: 'Hạn', type: 'multi', options: PENDING_KINDS },
       ...branchField(access),

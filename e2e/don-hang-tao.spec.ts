@@ -65,7 +65,6 @@ test.afterAll(async ({}, testInfo) => {
 });
 
 test('Cơ hội chưa ở L8: nút Tạo đơn hàng mờ kèm lý do (R-CRM-16)', async ({ page }, testInfo) => {
-  test.skip(isPhone(page), 'Đ248: điện thoại ẩn nút Tạo đơn hàng.');
   await enterAs(page, setupOf(testInfo.project.name).sale);
   await page.goto(`/crm/co-hoi/${sentOppId}`);
   const create = page.getByRole('button', { name: 'Tạo đơn hàng', exact: true });

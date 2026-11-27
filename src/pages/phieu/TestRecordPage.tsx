@@ -382,6 +382,7 @@ function TestView({ record }: { record: TestRecord }) {
             label: 'Lead gốc',
             icon: 'recruit',
             count: 1,
+            hidden: record.lead_id === null,
             onOpen: () => openFrom(`/crm/lead/${record.lead_id}`),
           },
         ]}

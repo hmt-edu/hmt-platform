@@ -4,7 +4,6 @@ import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
 import type { GroupCounts } from '../lead/leadTypes';
 import type {
-  AbsentPage,
   BulkFinishResult,
   DoneInfo,
   FinishResult,
@@ -35,26 +34,6 @@ export function useSessionPage(
       rpc<SessionPage>(supabase, 'session_list', {
         p_filters: filters,
         p_sort: sort,
-        p_limit: limit,
-        p_offset: offset,
-      }),
-  });
-}
-
-export function useAbsentPage(
-  filters: SessionFilters,
-  offset: number,
-  limit: number | null,
-  enabled = true,
-) {
-  const supabase = useDb();
-  return useQuery({
-    queryKey: ['session-absent', filters, offset, limit],
-    enabled: enabled && limit !== null,
-    placeholderData: keepPreviousData,
-    queryFn: () =>
-      rpc<AbsentPage>(supabase, 'absent_today_list', {
-        p_filters: filters,
         p_limit: limit,
         p_offset: offset,
       }),
@@ -314,22 +293,6 @@ export function usePendingGroupCounts(filters: SessionFilters, fields: string[])
     retry: false,
     queryFn: () =>
       rpc<GroupCounts>(supabase, 'session_pending_group_counts', {
-        p_filters: filters,
-        p_fields: fields,
-      }),
-  });
-}
-
-/** Số dòng điểm danh trong ngày theo trường nhóm (Group By ở máy chủ): app.absent_today_group_counts, bộ lọc giống absent_today_list. */
-export function useAbsentGroupCounts(filters: SessionFilters, fields: string[]) {
-  const supabase = useDb();
-  return useQuery({
-    queryKey: ['session-absent-groups', filters, fields],
-    enabled: fields.length > 0,
-    placeholderData: keepPreviousData,
-    retry: false,
-    queryFn: () =>
-      rpc<GroupCounts>(supabase, 'absent_today_group_counts', {
         p_filters: filters,
         p_fields: fields,
       }),

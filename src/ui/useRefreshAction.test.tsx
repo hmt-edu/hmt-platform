@@ -1,5 +1,8 @@
+import { QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
+import { createElement, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { HmtQueryClient } from '../lib/query';
 import { useRefreshAction } from './useRefreshAction';
 
 describe('K1 nút «Làm mới» có trạng thái đang tải', () => {
@@ -34,5 +37,33 @@ describe('K1 nút «Làm mới» có trạng thái đang tải', () => {
     act(() => result.current.refresh());
     expect(onRefresh).toHaveBeenCalledTimes(2);
     await act(() => vi.advanceTimersByTimeAsync(500));
+  });
+
+  // B-27-14: dùng invalidateQueries thật (nuốt lỗi), không giả.
+  it.each([
+    ['máy chủ lỗi', true],
+    ['máy chủ trả được', false],
+  ])('làm mới bằng invalidateQueries, %s: báo đúng kết quả', async (_, broken) => {
+    const client = new HmtQueryClient({ defaultOptions: { queries: { retry: false } } });
+    let fail = false;
+    const wrapper = ({ children }: { children: ReactNode }) =>
+      createElement(QueryClientProvider, { client }, children);
+    const { result } = renderHook(
+      () => {
+        useQuery({
+          queryKey: ['ds'],
+          queryFn: () => (fail ? Promise.reject(new Error('lỗi')) : Promise.resolve(1)),
+        });
+        return useRefreshAction(() => client.invalidateQueries({ queryKey: ['ds'] }));
+      },
+      { wrapper },
+    );
+    await act(() => vi.advanceTimersByTimeAsync(10));
+    fail = broken;
+    act(() => result.current.refresh());
+    await act(() => vi.advanceTimersByTimeAsync(700));
+    expect(result.current.busy).toBe(false);
+    expect(result.current.failed).toBe(broken);
+    expect(result.current.updatedAt === null).toBe(broken);
   });
 });

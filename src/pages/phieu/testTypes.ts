@@ -74,8 +74,9 @@ export type TestRecord = {
   opportunity_id: string;
   opportunity_code: string;
   opportunity_stage_code: string;
-  lead_id: string;
-  lead_code: string;
+  /** Trống = cơ hội tạo trực tiếp, không qua lead. */
+  lead_id: string | null;
+  lead_code: string | null;
   student_id: string;
   student_code: string;
   student_name: string;

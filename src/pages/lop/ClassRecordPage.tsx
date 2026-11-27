@@ -81,7 +81,7 @@ function ClassView({ record }: { record: ClassRecord }) {
   const edit = editKind(record.status_code);
   const allowed = (action: Transition['action']) => access.can('CLASS', action);
   const menu: MenuItem[] = [
-    // BUOI-09, BUOI-07: yêu cầu học bổ trợ (R-BUOI-05) và học bù (R-BUOI-03) tạo từ lớp đã duyệt; có quyền tạo yêu cầu buổi và phân hệ YEU_CAU_BUOI bật.
+    // BUOI-09, BUOI-07, BUOI-08: yêu cầu học bổ trợ (R-BUOI-05), học bù (R-BUOI-03) và củng cố (R-BUOI-04) tạo từ lớp đã duyệt; có quyền tạo yêu cầu buổi và phân hệ YEU_CAU_BUOI bật.
     ...(record.status_code === 'DA_DUYET' &&
     access.can('SESSION', 'TAO') &&
     access.featureOn('YEU_CAU_BUOI')
@@ -95,6 +95,12 @@ function ClassView({ record }: { record: ClassRecord }) {
             kind: 'action' as const,
             label: 'Yêu cầu học bù',
             onSelect: () => openFrom(`/crm/yeu-cau-buoi/tao-hoc-bu?lop=${record.id}`),
+          },
+          {
+            kind: 'action' as const,
+            label: 'Yêu cầu củng cố',
+            onSelect: () =>
+              openFrom(`/crm/yeu-cau-buoi/tao-cung-co?lop=${record.id}&ma=${record.code}`),
           },
         ]
       : []),

@@ -278,16 +278,19 @@ test('13. TẮT: dựng lớp Đại số khối 9 CS5 đã duyệt, giáo viên
   }
 });
 
-test('14. CSKH xếp lớp cho ghi danh trong hàng chờ (GD-06, GD-03)', async ({ page }) => {
+test('14. CSKH xếp lớp cho ghi danh đang Chờ xếp lớp (GD-01, GD-03)', async ({ page }) => {
   await enterAs(page, 'cskh.cs5');
   await page.goto('/crm/cho-xep-lop');
   await page.getByRole('searchbox').fill(STUDENT);
-  const table = page.getByRole('table', { name: 'Hàng chờ xếp lớp' });
+  const table = page.getByRole('table', { name: 'Ghi danh' });
   const row = table.getByRole('row').filter({ hasText: STUDENT });
   await expect(row).toHaveCount(1);
   await row.getByRole('button', { name: 'Xếp lớp' }).click();
   const dialog = dialogOf(page, 'Xếp lớp cho ghi danh');
-  await dialog.getByRole('radio', { name: 'Một lớp lẻ' }).click();
+  // Nút chọn cách xếp chỉ hiện khi có nhóm lớp phù hợp (hai cách).
+  const single = dialog.getByRole('radio', { name: 'Một lớp lẻ' });
+  await expect(single.or(dialog.getByRole('list', { name: 'Lớp phù hợp' })).first()).toBeVisible();
+  if (await single.isVisible()) await single.click();
   await dialog.getByRole('radio', { name: new RegExp(state.classCode) }).check();
   await dialog.getByRole('button', { name: 'Xếp lớp', exact: true }).click();
   await expect(page.getByText('Đã xếp lớp.', { exact: true })).toBeVisible();
