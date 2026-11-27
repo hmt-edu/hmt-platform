@@ -15,6 +15,8 @@ import { useToast } from '../../ui/toastContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { formatDate } from '../../lib/format';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
+import { RecordSummary } from '../../features/record360/RecordSummary';
+import type { ChatterFocus } from '../../ui/Chatter';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { newTicketForParentPath } from './custFilters';
 import { Tag } from '../../ui/Data';
@@ -110,6 +112,7 @@ function ParentView({ record }: { record: ParentRecord }) {
   const refresh = useRefreshCustomers();
   const navigate = useNavigate();
   const [tab, setTab] = useState('overview');
+  const [focus, setFocus] = useState<ChatterFocus | undefined>();
   useCrumbTail(`${record.full_name} · ${record.code}`);
   const merged = record.record_status === 'DA_GOP';
   const access = useAccess();
@@ -268,6 +271,20 @@ function ParentView({ record }: { record: ParentRecord }) {
             },
           ],
         }}
+        summary={
+          <RecordSummary
+            entityType="PARENT"
+            entityId={record.id}
+            label={`${record.code} · ${record.full_name}`}
+            readOnly={merged}
+            ticketPath={newTicketForParentPath(record.id, record.code)}
+            // Tab Tái tục làm ở PR sau: «Sắp hết giờ» chưa có phiếu và «Thiếu nhận xét» mở tab Các con.
+            onFlag={(t) =>
+              setTab(t === 'finance' ? 'finance' : t === 'tickets' ? 'tickets' : 'children')
+            }
+            onChatter={(target) => setFocus((f) => ({ target, seq: (f?.seq ?? 0) + 1 }))}
+          />
+        }
         smart={[
           {
             key: 'con',
@@ -326,6 +343,7 @@ function ParentView({ record }: { record: ParentRecord }) {
             format={FORMAT}
             createdText="Tạo phụ huynh."
             canWrite={!merged}
+            focus={focus}
           />
         }
         asideLabel="Ghi chú và hoạt động"
