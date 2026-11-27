@@ -62,3 +62,21 @@ describe('Việc của tôi', () => {
     expect(cardTitle(card({ items: [item({ signal: 'SESSION_PENDING' })] }))).toBe('Buổi học');
   });
 });
+
+describe('ticket và công nợ quá hạn', () => {
+  it('mở đúng bản ghi, ghi hạn; công nợ chỉ ghi ngày; ticket giáo viên không phụ huynh có tên thẻ riêng', () => {
+    const ticket = item({
+      signal: 'TICKET_OVERDUE',
+      entity_id: 't1',
+      due_at: '2026-11-20T03:00:00Z',
+    });
+    const debt = item({ signal: 'DEBT_OVERDUE', entity_id: 'o1', due_at: '2026-11-19T17:00:00Z' });
+    expect(itemLink(ticket)).toEqual({ to: '/crm/ticket/t1', label: 'Mở ticket' });
+    expect(itemLink(debt)).toEqual({ to: '/crm/don-hang/o1', label: 'Mở đơn' });
+    const now = new Date('2026-11-27T05:00:00Z');
+    expect(dueText(ticket, now)).toMatch(/^Hạn 20\/11\/2026/);
+    expect(dueText(debt, now)).toBe('Hạn 20/11/2026');
+    expect(isOverdue(debt, now)).toBe(true);
+    expect(cardTitle(card({ items: [ticket] }))).toBe('Ticket');
+  });
+});

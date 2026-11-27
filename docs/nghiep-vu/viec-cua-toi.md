@@ -16,6 +16,8 @@
 | `SESSION_NO_ATTENDANCE` | Buổi đang diễn ra, chưa điểm danh; công tắc `DIEM_DANH_TRONG_NGAY` | Buổi học · Xem | như trên | Làm ngay |
 | `ABSENT_TODAY` | Vắng hôm nay, chưa ghi lý do liên hệ | Điểm danh · Sửa | CSKH lớp | Làm ngay |
 | `RENEWAL` | Phiếu tái tục mở, chạm `upsale_hours_left_threshold` hoặc `upsale_days_left_threshold` | Tái tục · Xem | người phụ trách | hết giờ hoặc quá ngày: Làm ngay; còn lại Sắp tới |
+| `TICKET_OVERDUE` (699) | Ticket chưa xử lý xong, đã quá hạn xử lý (như `QUA_HAN` ở danh sách ticket) | Ticket · Xem (kể cả phạm vi Được phân công) | người phụ trách | Làm ngay |
+| `DEBT_OVERDUE` (699) | Đơn Đã duyệt còn đợt quá hạn chưa thu đủ, một việc mỗi đơn; chưa tính nợ đầu kỳ | Đơn hàng · Xem | người lập đơn | Làm ngay |
 
 Tham số mới (ghi đè được theo cơ sở): `work_now_window_hours` (mặc định 2), `work_soon_days` (mặc định 3). Hai tham số này đọc theo **cơ sở của người xem**.
 
@@ -32,7 +34,9 @@ Tham số mới (ghi đè được theo cơ sở): `work_now_window_hours` (mặ
 
 Hai tham số ghi đè được theo cơ sở, đọc theo **cơ sở của việc**. Hoãn theo người dùng: danh sách của tôi ẩn việc đó và không đếm; chế độ cả đội và người phụ trách khác vẫn thấy, mỗi mục có `snoozed_until`.
 
-Chưa làm (PR sau): xem lại và bỏ hoãn việc đã để sau, lead chưa liên hệ, cơ hội lâu không hoạt động, chưa báo phụ huynh, vắng liên tiếp, ticket, công nợ, báo giá sắp hết hạn.
+Chưa làm (PR sau): xem lại và bỏ hoãn việc đã để sau, lead chưa liên hệ, cơ hội lâu không hoạt động, chưa báo phụ huynh, vắng liên tiếp, ticket sắp quá hạn, công nợ nợ đầu kỳ, báo giá sắp hết hạn.
+
+Hai tín hiệu của migration 699 được «Để sau» như các việc thường.
 
 ## Giao diện đợt 1 (`/crm/viec-cua-toi`, canvas 1bcc)
 Danh sách việc **của tôi**, ba ô đếm, ba nhóm, thẻ theo phụ huynh, phân trang theo thẻ, một lần gọi `list_my_work`; lọc theo cơ sở đang chọn. Mỗi việc có một nút mở màn nơi làm việc đó (việc chờ duyệt đi qua «Việc chờ tôi duyệt»; lịch hẹn mở danh sách lịch hẹn vì lịch hẹn chưa có trang riêng).
