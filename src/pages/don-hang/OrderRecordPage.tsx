@@ -71,6 +71,7 @@ import {
   lineError,
 } from './orderEdit';
 import { ApproveOrderDialog, RejectOrderDialog } from './OrderApproveDialogs';
+import { giftValueText } from '../bao-gia/quoteRecord';
 import {
   capPercentText,
   orderCapText,
@@ -490,7 +491,14 @@ function OrderView({ record }: { record: OrderRecord }) {
       key: 'price',
       align: 'right',
       header: 'Đơn giá',
-      cell: (l: OrderLine) => <span className="tabular">{formatNumber(l.unit_price)}</span>,
+      cell: (l: OrderLine) => (
+        <span className="tabular">
+          {formatNumber(l.unit_price)}
+          {giftValueText(l) !== '' && (
+            <span className="block text-caption text-fg-muted">{giftValueText(l)}</span>
+          )}
+        </span>
+      ),
     },
     {
       key: 'discount-type',
