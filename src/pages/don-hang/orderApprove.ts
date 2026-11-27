@@ -30,7 +30,7 @@ export function capPercentText(cap: number | null): string {
 
 /** Câu dưới bảng Đơn đang sửa (khung BH05_chip_*, R-V2-11): giờ tặng quy ra % tính vào trần; N đọc từ tham số. */
 export function orderCapText(cap: number | null): string {
-  return `Chiết khấu cộng dồn; giờ tặng quy ra % tính vào trần ${capPercentText(cap)}. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.`;
+  return `Ưu đãi cộng dồn; giờ tặng quy ra % tính vào trần ${capPercentText(cap)}. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.`;
 }
 
 /** Làm tròn một chữ số thập phân để hiện (8,33 thành 8,3 như khung BH05_nhap_xem); không dùng để tính tiền. */

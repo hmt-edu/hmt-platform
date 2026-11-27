@@ -183,3 +183,25 @@ export function absentGroupFilter(field: string, key: string): SessionFilters {
   if (field === 'status' && key !== '') return { kind: key };
   return {};
 }
+
+const DONE_MODE_LABEL = {
+  TU_DONG: 'Tự động',
+  TAY: 'Done tay',
+  HANG_LOAT: 'Done hàng loạt',
+} as const;
+
+/** Câu "cách hoàn tất" của buổi Done (R-GIO-09, R-GIO-12); buổi Done trước khi có cột này thì trả null. */
+export function doneModeLabel(info: {
+  done_mode: keyof typeof DONE_MODE_LABEL | null;
+  done_by_name: string | null;
+  done_reason: string | null;
+}): string | null {
+  if (!info.done_mode) return null;
+  return [
+    DONE_MODE_LABEL[info.done_mode],
+    info.done_by_name,
+    info.done_reason && `Lý do: ${info.done_reason}`,
+  ]
+    .filter(Boolean)
+    .join(' · ');
+}

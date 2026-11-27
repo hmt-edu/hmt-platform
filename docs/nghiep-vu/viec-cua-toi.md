@@ -33,3 +33,8 @@ Tham số mới (ghi đè được theo cơ sở): `work_now_window_hours` (mặ
 Hai tham số ghi đè được theo cơ sở, đọc theo **cơ sở của việc**. Hoãn theo người dùng: danh sách của tôi ẩn việc đó và không đếm; chế độ cả đội và người phụ trách khác vẫn thấy, mỗi mục có `snoozed_until`.
 
 Chưa làm (PR sau): xem lại và bỏ hoãn việc đã để sau, lead chưa liên hệ, cơ hội lâu không hoạt động, chưa báo phụ huynh, vắng liên tiếp, ticket, công nợ, báo giá sắp hết hạn.
+
+## Giao diện đợt 1 (`/crm/viec-cua-toi`, canvas 1bcc)
+Danh sách việc **của tôi**, ba ô đếm, ba nhóm, thẻ theo phụ huynh, phân trang theo thẻ, một lần gọi `list_my_work`; lọc theo cơ sở đang chọn. Mỗi việc có một nút mở màn nơi làm việc đó (việc chờ duyệt đi qua «Việc chờ tôi duyệt»; lịch hẹn mở danh sách lịch hẹn vì lịch hẹn chưa có trang riêng).
+Chưa dựng: «Để sau» và «Đã để sau», Cả đội, Lịch tuần, Tạo lịch hẹn, nút Gọi/Hoàn thành/Dời trên dòng, mã phụ huynh trên thẻ, Trang chủ rút gọn.
+

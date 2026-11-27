@@ -1077,14 +1077,14 @@ const BAI = {
       vao('/crm/cau-hinh/chiet-khau'),
       [
         {
-          chu: 'Mở Cấu hình → Chính sách chiết khấu; chọn tab «Chiết khấu» (hoặc «Quà tặng»)',
-          loc: (p) => p.getByRole('tab', { name: /Chiết khấu/ }).first(),
+          chu: 'Mở Cấu hình → Chính sách ưu đãi; chọn tab «Ưu đãi» (hoặc «Quà tặng»)',
+          loc: (p) => p.getByRole('tab', { name: /Ưu đãi/ }).first(),
         },
         {
-          chu: 'Bấm «Thêm chiết khấu»: hiện hộp «Thêm chính sách chiết khấu»',
-          loc: (p) => p.getByRole('button', { name: 'Thêm chiết khấu', exact: true }),
+          chu: 'Bấm «Thêm ưu đãi»: hiện hộp «Thêm chính sách ưu đãi»',
+          loc: (p) => p.getByRole('button', { name: 'Thêm ưu đãi', exact: true }),
           lam: async (p) => {
-            await p.getByRole('button', { name: 'Thêm chiết khấu', exact: true }).click();
+            await p.getByRole('button', { name: 'Thêm ưu đãi', exact: true }).click();
             await p.waitForTimeout(1500);
           },
         },

@@ -15,7 +15,7 @@ export type PolicyHistoryRow = {
 export type PolicyHistoryPage = { total: number; rows: PolicyHistoryRow[] };
 
 export const POLICY_KIND_LABEL: Record<PolicyHistoryRow['kind'], string> = {
-  DISCOUNT: 'Chiết khấu',
+  DISCOUNT: 'Ưu đãi',
   GIFT: 'Quà tặng',
 };
 

@@ -53,8 +53,8 @@ di_thu: chưa
 ## Tiền hoàn tính thế nào với học sinh «Chờ xếp lớp»
 Học sinh chưa học buổi nào, nên **số hoàn = số tiền đã đóng − phí xử lý**. Tỷ lệ phí xử lý do công ty cài sẵn (bản mặc định là 10%); bạn **không nhập số tiền**, hệ thống tự tính và hiện ở phiếu. Giờ tặng không hoàn.
 - **Hoàn toàn bộ:** hoàn hết phần tiền đã đóng (trừ phí xử lý); ghi danh chuyển sang «Hoàn phí».
-- **Hoàn một phần:** nhập «Số giờ hoàn»; tiền = số giờ hoàn × giá sau chiết khấu, trừ phí xử lý. Ghi danh vẫn «Chờ xếp lớp».
-- **Dừng học:** ở ô «Xử lý tiền còn lại» chọn Hoàn tiền (như hoàn toàn bộ) hoặc Giữ số dư (giờ mua còn lại × giá sau chiết khấu, **không** trừ phí, thành số dư của phụ huynh). Ghi danh sang «Dừng».
+- **Hoàn một phần:** nhập «Số giờ hoàn»; tiền = số giờ hoàn × giá sau ưu đãi, trừ phí xử lý. Ghi danh vẫn «Chờ xếp lớp».
+- **Dừng học:** ở ô «Xử lý tiền còn lại» chọn Hoàn tiền (như hoàn toàn bộ) hoặc Giữ số dư (giờ mua còn lại × giá sau ưu đãi, **không** trừ phí, thành số dư của phụ huynh). Ghi danh sang «Dừng».
 - **Chuyển phí:** chuyển phần còn lại thành số dư cho phụ huynh nhận (cùng cơ sở); ghi danh sang «Dừng».
 
 ## Sau bước này

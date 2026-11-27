@@ -91,6 +91,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
+| VC-01 | Việc của tôi | Danh sách thẻ · canvas 1bcc VC01, VC02, VC07 | A | Máy tính + điện thoại | Mọi vai CRM | Việc còn phải làm của người đăng nhập, ba nhóm Làm ngay, Hôm nay, Sắp tới, gom theo phụ huynh | Mở hồ sơ | CHUNG-15, TS-11 | |
 | CHUNG-15 | Hàng việc chờ tôi duyệt (gộp mọi loại) | Danh sách · K03 | A | Cả hai | BM, KT, AD | Một chỗ thấy mọi thứ chờ mình duyệt: đơn, phiếu thu, lớp, yêu cầu buổi, ticket, chiết khấu vượt trần | Duyệt; Từ chối; Mở bản ghi | BH-07, TC-17, TC-05, LOP-05, BUOI-10, CS-08 | R-TIEN-01, R-LOP-02, R-BUOI-03, R-CS-07, S03-22, R-HT-05 |
 | CHUNG-21 | Đính kèm tệp (tải lên, xem trước) | Hộp thoại · K08 · CHUNG21_trong, _co_tep, _dang_tai, _loi, _xem, _dt_trong, _dt_dang_tai | C | Cả hai | Tất cả NV, GV | Tải ảnh, PDF vào ghi chú trao đổi hoặc chứng từ | Tải lên; Xem; Gỡ | — | S03-13, R-CS-09 |
 

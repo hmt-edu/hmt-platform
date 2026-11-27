@@ -76,7 +76,7 @@ describe('quotePreview', () => {
 describe('quoteCapText (khung BH02_chip_*)', () => {
   it('N lấy từ tham số; chưa tải thì chữ chung, không viết cứng 20', () => {
     expect(quoteCapText(20)).toBe(
-      'Trần chiết khấu mỗi dòng 20%. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.',
+      'Trần ưu đãi mỗi dòng 20%. Vượt trần chỉ cảnh báo, vẫn lưu và gửi được.',
     );
     expect(quoteCapText(15)).toContain('mỗi dòng 15%.');
     expect(quoteCapText(null)).toContain('đã cấu hình');

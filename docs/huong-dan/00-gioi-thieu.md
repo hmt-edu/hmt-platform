@@ -40,7 +40,7 @@ Phần này để bạn hiểu vì sao hệ thống hành xử như vậy, khôn
 
 1. **Chỉ thêm, không sửa lịch sử.** Sổ giờ, phiếu thu, nhật ký thao tác là dạng chỉ thêm dòng mới. Làm sai thì tạo dòng điều chỉnh hoặc đảo khoản, có lý do; dòng cũ vẫn còn để tra.
 2. **Không xoá, chỉ đổi trạng thái.** Huỷ, ngừng, đóng đều là đổi trạng thái. Hồ sơ vẫn xem lại được.
-3. **Bản ghi chụp lại số lúc tạo.** Báo giá, đơn hàng, phiếu hoàn giữ nguyên giá, số giờ, chiết khấu tại lúc tạo. Sau này bảng giá hay tham số đổi thì bản ghi cũ **không** bị tính lại.
+3. **Bản ghi chụp lại số lúc tạo.** Báo giá, đơn hàng, phiếu hoàn giữ nguyên giá, số giờ, ưu đãi tại lúc tạo. Sau này bảng giá hay tham số đổi thì bản ghi cũ **không** bị tính lại.
 
 Mọi con số nghiệp vụ như hạn mức, phí xử lý, số ngày nhắc đều là **tham số cấu hình**, người quản trị đổi trong «Cài đặt tham số» và có nhật ký. Mỗi cơ sở có thể có giá trị riêng.
 
@@ -58,7 +58,7 @@ Lead  →  Cơ hội  →  (Phiếu Test)  →  Báo giá  →  Đơn hàng  →
 - **Lead:** một lượt khách quan tâm (gọi, để lại số, đăng ký). Có nguồn, giai đoạn, người phụ trách. Hệ thống cảnh báo khi số điện thoại trùng với lead hay phụ huynh đã có.
 - **Cơ hội:** lead đã đủ nghiêm túc để tư vấn. Đi qua các giai đoạn chỉ tiến về phía trước. Từ giai đoạn gần chốt phải có tên và năm sinh học sinh.
 - **Phiếu Test:** xếp lịch, giáo viên chấm, kết quả dùng để tư vấn lớp phù hợp.
-- **Báo giá → Đơn hàng:** báo giá chọn gói, số giờ, chiết khấu; chuyển thành đơn khi phụ huynh đồng ý, chọn lớp và ngày vào học. Đơn qua bước **duyệt** của quản lý cơ sở.
+- **Báo giá → Đơn hàng:** báo giá chọn gói, số giờ, ưu đãi; chuyển thành đơn khi phụ huynh đồng ý, chọn lớp và ngày vào học. Đơn qua bước **duyệt** của quản lý cơ sở.
 - **Phiếu thu:** tiền thu về cho đơn, có thể nhiều đợt. Kế toán duyệt. Duyệt xong mới có giờ học.
 - **Học sinh và phụ huynh:** hồ sơ khách hàng. Một phụ huynh có thể có nhiều học sinh; một học sinh có thể có nhiều ghi danh.
 - **Ghi danh:** gắn một học sinh với một môn/gói đã mua, mang theo **quỹ giờ** (giờ được cấp, đã dùng, còn lại, giờ tặng). Mọi cộng trừ giờ nằm trong **sổ giờ** của ghi danh. Ghi danh có các tình trạng như Chờ xếp lớp, Đã xếp lớp, Đang học, Bảo lưu, Hoàn thành, Chuyển lớp, Dừng, Hoàn phí.
