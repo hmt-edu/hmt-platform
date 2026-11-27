@@ -1,6 +1,5 @@
 // Cấu hình hai màn cụm Thu tiền cho khuôn danh sách K03: TC-08 Khoản tiền vào và TC-13 Công nợ. Chỉ đọc; lọc, sắp xếp, phân trang làm ở máy chủ.
 // TC-08: không có nút Tạo (khoản tiền vào tự sinh khi Kế toán duyệt phiếu, R-TIEN-01). TC-09 Hoàn tác khoản tiền: nút ở từng dòng (chỉ Kế toán, R-HT-01). Xuất chưa có trong đợt này.
-import { Link } from 'react-router';
 import { formatDate, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Button } from '../../ui/Button';
@@ -12,6 +11,7 @@ import {
   type MoneyInRow,
   type ReceivableRow,
 } from './treasuryTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const MONEY_IN_SCREEN_CODE = 'TC-08';
 export const RECEIVABLE_SCREEN_CODE = 'TC-13';
@@ -71,9 +71,9 @@ export function buildMoneyInConfig(
         // Khoản đảo không có phiếu thu (receipt_id rỗng): để trống.
         render: (r) =>
           r.receipt_id ? (
-            <Link to={`/crm/phieu-thu/${r.receipt_id}`} className="text-link hover:underline">
+            <FromLink to={`/crm/phieu-thu/${r.receipt_id}`} className="text-link hover:underline">
               {r.receipt_code}
-            </Link>
+            </FromLink>
           ) : (
             ''
           ),
@@ -84,9 +84,9 @@ export function buildMoneyInConfig(
         // Khoản thu nợ đầu kỳ (TC-02) không có đơn: ghi nhãn thay cho link.
         render: (r) =>
           r.order_id ? (
-            <Link to={`/crm/don-hang/${r.order_id}`} className="text-link hover:underline">
+            <FromLink to={`/crm/don-hang/${r.order_id}`} className="text-link hover:underline">
               {r.order_code}
-            </Link>
+            </FromLink>
           ) : (
             <Tag tone="neutral">Nợ đầu kỳ</Tag>
           ),
@@ -172,12 +172,12 @@ export function buildReceivableConfig(access: AccessView): ListConfig<Receivable
         locked: true,
         primary: true,
         render: (r) => (
-          <Link
+          <FromLink
             to={`/crm/don-hang/${r.order_id}`}
             className="font-medium text-link hover:underline"
           >
             {r.order_code}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'parent', label: 'Phụ huynh', render: (r) => r.parent_name },

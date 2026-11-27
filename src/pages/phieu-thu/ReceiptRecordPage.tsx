@@ -56,6 +56,7 @@ import {
   useReceiverOptions,
   useRefreshReceipt,
 } from './useReceiptData';
+import { FromLink } from '../../layout/FromLink';
 
 const toDate = (key: string): Date | null => {
   const [y, m, d] = key.split('-').map(Number);
@@ -87,6 +88,7 @@ export function ReceiptRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/phieu-thu" className="font-medium text-link hover:underline">
               Về danh sách Phiếu thu
             </Link>
@@ -688,12 +690,12 @@ function ReceiptView({ record }: { record: ReceiptRecord }) {
                 mode="view"
                 value={
                   record.order ? (
-                    <Link
+                    <FromLink
                       className="font-medium text-link hover:underline"
                       to={`/crm/don-hang/${record.order.id}`}
                     >
                       {record.order.code}
-                    </Link>
+                    </FromLink>
                   ) : (
                     'Thu nợ đầu kỳ · không có đơn'
                   )

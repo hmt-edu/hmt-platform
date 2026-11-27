@@ -3,7 +3,6 @@
 // tình trạng gợi ý. Không sinh phiếu tái tục (R-V2-25), không có nút tạo tay (R-TIEN-02). Phân hệ SAP_HET_GIO tắt mặc định (cờ theo cơ sở).
 // Máy chủ quyết quyền, cờ và tính toán (app.list_expiring_enrollments); phân trang ở máy chủ. Cột «Phiếu tái tục» (canvas GD07, F51) lấy mã phiếu đang mở do máy chủ trả (migration 561).
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListConfig, ListState } from '../../list/types';
 import { errorOf, useIntSetting } from '../../lib/db';
@@ -28,6 +27,7 @@ import { useLeafRows } from '../lead/useLeadData';
 import { useToast } from '../../ui/toastContext';
 import { formatDate } from '../../lib/format';
 import { vnToday } from '../../list/calendarLogic';
+import { FromLink } from '../../layout/FromLink';
 
 const STATUS_OPTIONS: { value: ExpiringStatus; label: string }[] = [
   { value: 'SAP_HET_GIO', label: statusName('SAP_HET_GIO') },
@@ -62,9 +62,9 @@ const CONFIG: ListConfig<ExpiringRow> = {
       key: 'class',
       label: 'Lớp',
       render: (r) => (
-        <Link className="text-link hover:underline" to={`/crm/lop/${r.class_id}`}>
+        <FromLink className="text-link hover:underline" to={`/crm/lop/${r.class_id}`}>
           {r.class_code}
-        </Link>
+        </FromLink>
       ),
     },
     {
@@ -93,9 +93,9 @@ const CONFIG: ListConfig<ExpiringRow> = {
       label: 'Phiếu tái tục',
       render: (r) =>
         r.upsale_id && r.upsale_code ? (
-          <Link className="text-link hover:underline" to={`/crm/tai-tuc/${r.upsale_id}`}>
+          <FromLink className="text-link hover:underline" to={`/crm/tai-tuc/${r.upsale_id}`}>
             {r.upsale_code}
-          </Link>
+          </FromLink>
         ) : (
           <span className="text-fg-muted">{noUpsaleText(r.status_code)}</span>
         ),

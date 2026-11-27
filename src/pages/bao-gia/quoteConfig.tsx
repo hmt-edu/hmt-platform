@@ -1,7 +1,6 @@
 // Cấu hình màn Báo giá (BH-01) cho khuôn danh sách K03: cột, lọc nhanh, trường lọc nâng cao. Cột và chữ theo canvas v118 (BH01).
 // Mọi lọc, sắp xếp, phân trang làm ở máy chủ nên cấu hình không có hàm `test` chạy ở trình duyệt. Không có nút Tạo: báo giá chỉ sinh
 // từ cơ hội hoặc phiếu tái tục (R-TIEN-02).
-import { Link } from 'react-router';
 import { formatDate, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Code, Tag, type TagTone } from '../../ui/Data';
@@ -9,6 +8,7 @@ import type { ListConfig, ListState } from '../../list/types';
 import { formatPhone } from '../lead/leadFormat';
 import type { LeadCatalogs } from '../lead/useCatalogs';
 import type { QuotationRow } from './quoteTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const QUOTE_SCREEN_CODE = 'BH-01';
 
@@ -47,9 +47,9 @@ export function buildQuoteConfig(
         locked: true,
         primary: true,
         render: (r) => (
-          <Link to={`/crm/bao-gia/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/bao-gia/${r.id}`} className="font-medium text-link hover:underline">
             <Code>{r.code}</Code>
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'parent', label: 'Phụ huynh', render: (r) => r.parent_name },

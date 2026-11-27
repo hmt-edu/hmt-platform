@@ -2,7 +2,6 @@
 // Học sinh, lớp, hình thức học lấy từ phiếu và ghi danh cũ (R-GD-13), KHÔNG chọn ở đây. Tiền tính ở máy chủ khi tạo (giá hiện chỉ để xem, đơn vị đồng mỗi giờ).
 // Hàm create_order_from_upsale_ticket kiểm hai quyền (Đơn hàng · Tạo, Phiếu tái tục · Sửa), một giao dịch; hộp chỉ hiện lỗi của hàm.
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { errorOf, useDb } from '../../lib/db';
 import { formatDate, formatMoney } from '../../lib/format';
 import { FormDialog } from '../../ui/Dialogs';
@@ -13,6 +12,7 @@ import type { UpsaleTicketDetail } from './upsaleTypes';
 import { createUpsaleOrder, useUpsaleOrderOptions } from './useUpsaleData';
 import { useOrderEditOptions } from '../don-hang/useOrderData';
 import { termLabel } from '../dieu-khoan/termLogic';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 type Props = {
   open: boolean;
@@ -28,7 +28,7 @@ export function CreateUpsaleOrderDialog(props: Props) {
 
 function OrderForm({ open, onOpenChange, ticket, onDone }: Props) {
   const supabase = useDb();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const toast = useToast();
   const options = useUpsaleOrderOptions(ticket.id, true);
   const [packageId, setPackageId] = useState('');
@@ -59,7 +59,7 @@ function OrderForm({ open, onOpenChange, ticket, onDone }: Props) {
       await onDone();
       onOpenChange(false);
       toast({ title: `Đã tạo đơn nháp ${result.code}.` });
-      void navigate(`/crm/don-hang/${result.id}`);
+      openFrom(`/crm/don-hang/${result.id}`);
     } catch (e) {
       setError(errorOf(e).message);
     } finally {

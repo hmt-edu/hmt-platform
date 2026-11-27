@@ -1,11 +1,11 @@
 // Cấu hình màn Phiếu chi (TC-10) cho khuôn danh sách K03: cột, lọc nhanh, trường lọc nâng cao. Lọc, phân trang làm ở máy chủ.
 // Phiếu chi chỉ sinh khi Kế toán duyệt yêu cầu hoàn phí (R-TIEN-34), không tạo tay nên không có nút Tạo.
-import { Link } from 'react-router';
 import { formatDate, formatNumber } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
 import type { ListConfig, ListState } from '../../list/types';
 import type { VoucherRow } from './voucherTypes';
+import { FromLink } from '../../layout/FromLink';
 
 export const VOUCHER_SCREEN_CODE = 'TC-10';
 
@@ -45,9 +45,9 @@ export function buildVoucherConfig(access: AccessView): ListConfig<VoucherRow> {
         locked: true,
         primary: true,
         render: (r) => (
-          <Link to={`/crm/phieu-chi/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/phieu-chi/${r.id}`} className="font-medium text-link hover:underline">
             {r.code}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'ticket', label: 'Ticket hoàn tiền', render: (r) => r.ticket_ref ?? '—' },

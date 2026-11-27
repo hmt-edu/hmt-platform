@@ -2,7 +2,6 @@
 // phần còn lại. Hàm DB create_receipt kiểm quyền, công tắc Bán hàng, số tiền không vượt phần còn thu của đơn (khung vẽ tạo phiếu rỗng rồi điền:
 // DB cần số tiền > 0 ngay lúc tạo nên hộp này hỏi trước hai ô cốt lõi).
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
 import { errorOf, useDb } from '../../lib/db';
 import { FormDialog } from '../../ui/Dialogs';
 import { Field } from '../../ui/Field';
@@ -11,6 +10,7 @@ import { Select } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { createReceipt, useRefreshReceipt } from './useReceiptData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 type Props = {
   open: boolean;
@@ -29,7 +29,7 @@ export function CreateReceiptDialog(props: Props) {
 
 function CreateForm({ open, onOpenChange, orderId, orderCode, receivable, suggested }: Props) {
   const supabase = useDb();
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const toast = useToast();
   const catalogs = useLeadCatalogs();
   const refresh = useRefreshReceipt('', orderId);
@@ -53,7 +53,7 @@ function CreateForm({ open, onOpenChange, orderId, orderCode, receivable, sugges
       await refresh();
       onOpenChange(false);
       toast({ title: `Đã tạo phiếu thu nháp ${result.code}.` });
-      void navigate(`/crm/phieu-thu/${result.id}`);
+      openFrom(`/crm/phieu-thu/${result.id}`);
     } catch (e) {
       setError(errorOf(e).message);
     } finally {

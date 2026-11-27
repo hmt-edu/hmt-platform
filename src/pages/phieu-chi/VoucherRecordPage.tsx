@@ -44,6 +44,7 @@ export function VoucherRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/phieu-chi" className="font-medium text-link hover:underline">
               Về danh sách Phiếu chi
             </Link>
