@@ -42,6 +42,8 @@ export type ParentRecord = {
   full_name: string;
   phone: string;
   phone_2: string | null;
+  /** Từ migration 709. */
+  email: string | null;
   relative_name: string | null;
   address: string | null;
   ward_name: string | null;

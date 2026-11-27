@@ -67,3 +67,10 @@ Phần này thay các câu ở trên về «chỉ L6», «một đơn đang số
 - Sửa báo giá Nháp của phiếu cũng cần Phiếu tái tục · Sửa.
 - Giao diện: TT-02 có «Tạo báo giá», «Tạo đơn» theo `actions` của `get_upsale_ticket` ở mọi giai đoạn; form báo giá dùng chung (`/crm/bao-gia/tao?phieu=`), học sinh là em của phiếu; tab «Báo giá và đơn» và banner đọc theo số đếm thật.
 - `change_upsale_stage(phiếu, giai đoạn, lý do, ghi chú, nhóm con)`: đổi tay giữa mọi giai đoạn L1 đến L8. L5 bắt lý do; L7 chọn L7A hoặc L7B; L8 là L8A; vào L5, L8 ghi ngày đóng, rời ra thì bỏ; mở lại bị chặn nếu (học sinh, lớp) đã có phiếu mở khác.
+
+## Cập nhật 28/11/2026 (migration 708, 709)
+
+- `app.upsale_ticket_live(phiếu)`: giờ còn, ngày hết giờ dự kiến tính lúc đọc (R-GD-13); danh sách, Kanban, bản ghi dùng số này. Lọc, sắp xếp vẫn theo cột đã ghi.
+- `app.get_upsale_ticket` gọi thêm `upsale_hours_info`, `upsale_last_purchase`, `upsale_class_info`, `upsale_contact_info` (hàm nội bộ).
+- Trưởng cơ sở có Phiếu tái tục · Sửa ở cơ sở mình (709): chuyển giai đoạn, ghi chú; tạo báo giá, đơn khi có thêm quyền Báo giá · Tạo, Đơn hàng · Tạo.
+- `app.parent.email` (709): không bắt buộc, chữ thường; sửa bằng `app.update_parent` (lỗi `HMT_EMAIL_SAI`).
