@@ -93,7 +93,10 @@ select is(app.get_quotation(pg_temp.qid('TT917071')) ->> 'upsale_ticket_code', '
 select is(app.get_quotation(pg_temp.qid('TT917071')) -> 'lines' -> 0 ->> 'student_name', 'Em A', 'Bản ghi báo giá có tên em');
 select is(app.list_quotations(jsonb_build_object('upsale_ticket_id', pg_temp.tid('TT917071'))) ->> 'total', '1', 'Lọc báo giá của phiếu');
 select is(app.list_quotations(jsonb_build_object('upsale_ticket_id', pg_temp.tid('TT917071'))) -> 'rows' -> 0 ->> 'student_name', 'Em A', 'Danh sách: báo giá của phiếu không bị rớt, có tên em');
+-- Xuất chỉ dành cho người có quyền Xuất (Kế toán).
+select pg_temp.claims(pg_temp.uid('ke1'), 'aal2');
 select is((app.export_quotations(jsonb_build_object('upsale_ticket_id', pg_temp.tid('TT917071')))::text) like '%TT917071%', true, 'Xuất: báo giá của phiếu có mã phiếu');
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 
 -- ---- Gửi rồi tạo đơn ----
 select app.send_quotation(pg_temp.qid('TT917071'));
