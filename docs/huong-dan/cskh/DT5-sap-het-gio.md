@@ -14,7 +14,7 @@ nguoi_viet: Code D
 # Xem học sinh sắp hết giờ
 
 **Làm xong bạn có:** danh sách học sinh sắp hết giờ hoặc đã hết giờ ở cơ sở của bạn, để gọi phụ huynh tái tục sớm.
-**Ai làm:** CSKH, Trưởng cơ sở. **Màn:** Đào tạo → Sắp hết giờ.
+**Ai làm:** CSKH, Trưởng cơ sở. **Màn:** Chăm sóc khách hàng → Sắp hết giờ.
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Phân hệ này đã bật cho cơ sở của bạn. Nếu màn hiện «Phân hệ chưa bật», nhờ Quản trị.
@@ -27,7 +27,7 @@ nguoi_viet: Code D
 - Ghi danh đang bảo lưu hoặc đã dừng học không tính vào danh sách.
 
 ## Các bước
-1. Vào menu **Đào tạo → Sắp hết giờ**.
+1. Vào menu **Chăm sóc khách hàng → Sắp hết giờ**.
    *Bạn thấy:* bảng các học sinh sắp hết giờ, mỗi dòng một học sinh trong một lớp; bên dưới thanh công cụ có câu ghi ngưỡng giờ và ngưỡng ngày đang dùng.
    [ẢNH: dt5-b1]
 2. Đọc từng cột: «Học sinh», «Lớp», «Ghi danh», «Giờ còn», «Hết giờ dự kiến», «Hạn gói (dự báo)», «Tình trạng», «Phiếu tái tục».

@@ -15,7 +15,7 @@ di_thu: chưa
 # Xếp lớp cho ghi danh đang chờ
 
 **Làm xong bạn có:** học sinh đã vào đúng lớp, từ đúng ngày, và ghi danh chuyển sang «Đã xếp lớp».
-**Ai làm:** CSKH (Trưởng cơ sở làm thay được). **Màn:** Đào tạo → Hàng chờ xếp lớp.
+**Ai làm:** CSKH (Trưởng cơ sở làm thay được). **Màn:** Đào tạo → Ghi danh, tab «Chờ xếp lớp».
 
 > Video: [VIDEO: dt2]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
@@ -32,7 +32,7 @@ di_thu: chưa
 - Toán từ khối 7 học cả Đại số và Hình học là **hai ghi danh riêng**, mỗi ghi danh một quỹ giờ. Có thể xếp cả hai một lần bằng «Theo nhóm lớp».
 
 ## Các bước
-1. Vào menu **Đào tạo → Hàng chờ xếp lớp**.
+1. Vào menu **Đào tạo → Ghi danh**, bấm tab **Chờ xếp lớp**.
    *Bạn thấy:* danh sách học sinh đang «Chờ xếp lớp» của cơ sở; mỗi dòng có cột «Xử lý».
    [ẢNH: dt2-b1]
 2. Tìm học sinh cần xếp, bấm **«Xếp lớp»** ở cuối dòng (hoặc mở bản ghi ghi danh rồi bấm «Xếp lớp»).

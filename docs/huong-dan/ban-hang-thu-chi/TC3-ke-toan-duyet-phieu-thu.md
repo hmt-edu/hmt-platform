@@ -11,7 +11,7 @@ cap_nhat: 2026-11-24
 # Kế toán duyệt hoặc từ chối phiếu thu
 
 **Làm xong bạn có:** phiếu «Đã duyệt» (hệ thống tự sinh khoản tiền vào và ghi danh) hoặc phiếu về Nháp kèm lý do.
-**Ai làm:** Kế toán (chỉ vai Kế toán duyệt tiền; Admin và vai khác không duyệt). **Màn:** **Hàng chờ kế toán duyệt**.
+**Ai làm:** Kế toán (chỉ vai Kế toán duyệt tiền; Admin và vai khác không duyệt). **Màn:** Kế toán → **Phiếu thu**, tab **Chờ kế toán duyệt**.
 
 > Video: [VIDEO: tc3]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
@@ -22,7 +22,7 @@ cap_nhat: 2026-11-24
 - [ ] Bạn không phải người đã duyệt bước quản lý của phiếu này.
 
 ## Các bước
-1. Vào **Hàng chờ kế toán duyệt** (menu Bán hàng và thu chi; hoặc **Phiếu thu**, lọc «Chờ kế toán»), bấm mã phiếu. [ẢNH: tc3-b1]
+1. Vào menu **Kế toán → Phiếu thu**, bấm tab **Chờ kế toán duyệt** (hoặc ở tab Phiếu thu lọc «Chờ kế toán»), bấm mã phiếu. [ẢNH: tc3-b1]
 2. Đối chiếu «Số tiền», «Hình thức», «Ngày nhận», «Mã giao dịch», «Tài khoản nhận», «Người nhận tiền», «Cơ sở thu tiền» với sao kê hoặc chứng từ; xem tab «Chia về các dòng đơn». [ẢNH: tc3-b2]
 3. Khớp: bấm **«Duyệt phiếu thu»**. Hộp «Duyệt phiếu thu … (kế toán)» nhắc «tiền được ghi nhận và chia về các dòng đơn, sinh khoản tiền vào. Không hoàn tác bằng nút.» Tích ô **«Đã kiểm tra số tiền, hình thức nhận và đơn hàng của phiếu»** rồi bấm **«Xác nhận duyệt»**. [ẢNH: tc3-b3]
    *Bạn thấy:* thông báo «Đã duyệt phiếu thu, tiền đã ghi nhận.», tình trạng **Đã duyệt**, dòng «Tiền đã ghi nhận (KTV-…)», «Đã thu» tăng và «Còn phải thu» giảm. [ẢNH: tc3-b4]

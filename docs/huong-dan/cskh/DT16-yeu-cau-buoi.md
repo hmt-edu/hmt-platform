@@ -14,7 +14,7 @@ nguoi_viet: Code D
 # Yêu cầu học bù, buổi củng cố, học bổ trợ
 
 **Làm xong bạn có:** một yêu cầu buổi gửi Trưởng cơ sở duyệt; duyệt xong hệ thống sinh buổi mới vào lịch của lớp.
-**Ai làm:** CSKH tạo; Trưởng cơ sở duyệt hoặc từ chối. **Màn:** Đào tạo → Yêu cầu buổi.
+**Ai làm:** CSKH tạo; Trưởng cơ sở duyệt hoặc từ chối. **Màn:** Đào tạo → Buổi học, tab «Yêu cầu buổi».
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Phân hệ «Yêu cầu buổi» đã bật cho cơ sở (nếu không, menu «Hành động» của lớp không có «Yêu cầu học bù», «Yêu cầu bổ trợ»; nhờ Quản trị).
@@ -44,7 +44,7 @@ nguoi_viet: Code D
    *Bạn thấy:* yêu cầu có mã và hiện ở danh sách «Yêu cầu buổi» với tình trạng chờ duyệt.
 
 **Buổi củng cố**
-1. Vào **Đào tạo → Yêu cầu buổi**, bấm **«Tạo yêu cầu buổi củng cố»**.
+1. Vào **Đào tạo → Buổi học**, tab **Yêu cầu buổi**, bấm **«Tạo yêu cầu buổi củng cố»**.
    [ẢNH: dt16-b1]
 2. Ở «Lớp» gõ mã lớp hoặc tên môn rồi chọn lớp; dòng «Học sinh: cả lớp» hiện ra.
 3. Chọn «Ngày buổi củng cố», «Giờ bắt đầu», «Giờ kết thúc», «Phòng»; «Ghi chú (không bắt buộc)».
@@ -52,7 +52,7 @@ nguoi_viet: Code D
 4. Bấm **«Gửi duyệt»** hoặc **«Lưu nháp»**.
 
 ## Các bước (Trưởng cơ sở duyệt)
-1. Vào **Đào tạo → Yêu cầu buổi** (hoặc «Việc chờ tôi duyệt»), lọc **«Chờ duyệt»**.
+1. Vào **Đào tạo → Buổi học**, tab **Yêu cầu buổi** (hoặc «Việc chờ tôi duyệt»), lọc **«Chờ duyệt»**.
    *Bạn thấy:* các yêu cầu với «Loại», «Mã», «Ngày giờ», «Người tạo», «Tình trạng».
 2. Bấm **«Duyệt»**. Nếu hộp «Trùng giờ, vẫn duyệt?» hiện các dòng trùng, đọc rồi xác nhận nếu vẫn muốn duyệt.
    *Bạn thấy:* yêu cầu thành đã duyệt và buổi mới hiện ở «Buổi học» của lớp.
