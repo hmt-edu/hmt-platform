@@ -29,6 +29,7 @@ export function BalanceHistoryPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/so-du-khach-hang" className="font-medium text-link hover:underline">
               Về danh sách Số dư khách hàng
             </Link>
@@ -49,6 +50,7 @@ function History({ data }: { data: BalanceHistory }) {
   useCrumbTail(data.parent.name);
   return (
     <div className="flex flex-col gap-4">
+      {/* duong-dan-menu: nút về danh sách */}
       <Link to="/crm/so-du-khach-hang" className="font-medium text-link hover:underline">
         ‹ Số dư khách hàng
       </Link>

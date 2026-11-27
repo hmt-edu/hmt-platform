@@ -1,9 +1,9 @@
 // Cấu hình màn TC-15 Đối soát thu tiền (khuôn K03/K09): cột theo canvas 9933 khung TC15. Lọc, tìm, sắp xếp, phân trang ở máy chủ.
-import { Link } from 'react-router';
 import { formatDate, formatNumber } from '../../lib/format';
 import type { ListConfig } from '../../list/types';
 import { Tag } from '../../ui/Data';
 import { NO_ACCOUNT, type ReconcileRow } from './reconcile';
+import { FromLink } from '../../layout/FromLink';
 
 export const RECONCILE_SCREEN_CODE = 'TC-15';
 
@@ -33,9 +33,9 @@ export function buildReconcileConfig(opts: {
         locked: true,
         primary: true,
         render: (r) => (
-          <Link to={`/crm/phieu-thu/${r.id}`} className="font-medium text-link hover:underline">
+          <FromLink to={`/crm/phieu-thu/${r.id}`} className="font-medium text-link hover:underline">
             {r.code}
-          </Link>
+          </FromLink>
         ),
       },
       { key: 'branch', label: 'Cơ sở thu', render: (r) => r.collect_branch_code },

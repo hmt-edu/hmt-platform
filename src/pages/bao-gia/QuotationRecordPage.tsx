@@ -45,6 +45,7 @@ import {
   useQuotation,
   useRefreshQuotation,
 } from './useQuoteData';
+import { FromLink } from '../../layout/FromLink';
 
 const STATUS_TONE: Record<string, TagTone> = {
   NHAP: 'neutral',
@@ -91,6 +92,7 @@ export function QuotationRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/bao-gia" className="font-medium text-link hover:underline">
               Về danh sách Báo giá
             </Link>
@@ -353,12 +355,12 @@ function QuotationView({ record }: { record: QuotationRecord }) {
       cell: (l) =>
         l.order_code ? (
           <span className="flex flex-wrap items-center gap-1.5">
-            <Link
+            <FromLink
               to={`/crm/don-hang/${l.order_id ?? ''}`}
               className="font-medium text-link hover:underline"
             >
               {l.order_code}
-            </Link>
+            </FromLink>
             <Tag tone={ORDER_TONE[l.order_status_code ?? ''] ?? 'neutral'}>
               {catalogs.name('ORDER_STATUS', l.order_status_code) ?? l.order_status_code}
             </Tag>
@@ -550,12 +552,12 @@ function QuotationView({ record }: { record: QuotationRecord }) {
                   label="Cơ hội"
                   mode="view"
                   value={
-                    <Link
+                    <FromLink
                       to={`/crm/co-hoi/${record.opportunity_id}`}
                       className="font-medium text-link hover:underline"
                     >
                       {record.opportunity_code}
-                    </Link>
+                    </FromLink>
                   }
                 />
                 <DetailField
@@ -622,6 +624,7 @@ function QuotationView({ record }: { record: QuotationRecord }) {
             )}
           </section>
           <p>
+            {/* duong-dan-menu: không có bản ghi, về danh sách chung */}
             <Button variant="text" onClick={() => void navigate('/crm/bao-gia')}>
               Về danh sách Báo giá
             </Button>

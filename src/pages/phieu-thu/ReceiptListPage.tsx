@@ -1,7 +1,7 @@
 // TC-01 Phiếu thu (danh sách) và TC-04 Chờ kế toán duyệt: khuôn K03 nối list_receipts. Lọc, sắp xếp, phân trang làm ở máy chủ.
 // Phiếu thu có đơn chỉ tạo từ đơn Đã duyệt (R-TIEN-02); riêng «Thu nợ đầu kỳ» (R-V2-15, không cần đơn) tạo bằng nút ở đầu danh sách. TC-04 là cùng màn với bộ lọc cố định Chờ kế toán.
 import { useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { listForbiddenOf } from '../../list/forbiddenSpec';
 import { ListScreen } from '../../list/ListScreen';
 import type { ListState, ViewMode } from '../../list/types';
@@ -24,6 +24,7 @@ import {
 import { OpeningDebtDialog } from './OpeningDebtDialog';
 import type { ReceiptRow } from './receiptTypes';
 import { useReceiptGroupCounts, useReceiptPage, useRefreshReceipts } from './useReceiptData';
+import { useNavigateFrom } from '../../layout/crumbTrail';
 
 export function ReceiptListPage({ waitingAccounting = false }: { waitingAccounting?: boolean }) {
   const access = useAccess();
@@ -71,7 +72,7 @@ export function ReceiptListPage({ waitingAccounting = false }: { waitingAccounti
   const [view, setView] = useState<ViewMode>('list');
   const [sort, setSort] = useState<SortState>(null);
   const [paging, setPaging] = useState({ key: '', page: 0 });
-  const navigate = useNavigate();
+  const openFrom = useNavigateFrom();
   const [params, setParams] = useSearchParams();
   const parentOrder = waitingAccounting ? null : params.get('don');
   const parentCode = params.get('ma') ?? '';
@@ -147,7 +148,7 @@ export function ReceiptListPage({ waitingAccounting = false }: { waitingAccounti
                 entityLabel: 'Đơn hàng',
                 code: parentCode,
                 childLabel: 'Phiếu thu',
-                onOpenParent: () => void navigate(`/crm/don-hang/${parentOrder}`),
+                onOpenParent: () => openFrom(`/crm/don-hang/${parentOrder}`),
                 onClear: () => setParams({}),
               }
             : undefined

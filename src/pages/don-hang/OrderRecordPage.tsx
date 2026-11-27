@@ -86,6 +86,7 @@ import { setOrderLineClass, useOrderLineClasses } from '../ghi-danh/useEnrollmen
 import { mergeLineClasses, type PendingClass } from './pendingClasses';
 import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
 import { termLabel } from '../dieu-khoan/termLogic';
+import { FromLink } from '../../layout/FromLink';
 
 const ORDER_CHANGE_FORMAT = { labels: {} } satisfies FieldFormat;
 
@@ -117,6 +118,7 @@ export function OrderRecordPage() {
         }
         actions={
           <>
+            {/* duong-dan-menu: không tải được bản ghi, về danh sách chung */}
             <Link to="/crm/don-hang" className="font-medium text-link hover:underline">
               Về danh sách Đơn hàng
             </Link>
@@ -949,12 +951,12 @@ function OrderView({ record }: { record: OrderRecord }) {
                     label="Cơ hội"
                     mode="view"
                     value={
-                      <Link
+                      <FromLink
                         to={`/crm/co-hoi/${record.opportunity_id}`}
                         className="font-medium text-link hover:underline"
                       >
                         {record.opportunity_code}
-                      </Link>
+                      </FromLink>
                     }
                   />
                 )}
@@ -963,12 +965,12 @@ function OrderView({ record }: { record: OrderRecord }) {
                     label="Báo giá"
                     mode="view"
                     value={
-                      <Link
+                      <FromLink
                         to={`/crm/bao-gia/${record.quotation_id}`}
                         className="font-medium text-link hover:underline"
                       >
                         {record.quotation_code}
-                      </Link>
+                      </FromLink>
                     }
                   />
                 )}
@@ -1066,6 +1068,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                     Ghi danh sinh khi tiền đã vào đủ cọc tối thiểu
                     {depositMin !== null ? ` ${formatMoney(depositMin)}` : ''} (mỗi dòng đơn một ghi
                     danh). Xem ở màn{' '}
+                    {/* duong-dan-menu: màn Ghi danh chung, không phải trang con */}
                     <Link to="/crm/ghi-danh" className="text-link hover:underline">
                       Ghi danh
                     </Link>
