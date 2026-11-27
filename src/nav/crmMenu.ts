@@ -62,6 +62,13 @@ export const CRM_MENU: MenuGroup[] = [
     entries: [
       { code: 'CHUNG-14', label: 'Trang chủ', slug: '', requires: { kind: 'always' }, stage: '' },
       {
+        code: 'VC-01',
+        label: 'Việc của tôi',
+        slug: 'viec-cua-toi',
+        requires: { kind: 'always' },
+        stage: GD1,
+      },
+      {
         code: 'CHUNG-15',
         label: 'Việc chờ tôi duyệt',
         slug: 'viec-cho-duyet',
