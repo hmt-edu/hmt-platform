@@ -1,7 +1,7 @@
 // Tab «Theo buổi» (canvas «Đào tạo — menu và điểm danh», khung Main): số đếm, lọc nhanh, nhóm theo ngày rồi theo lớp, bấm trạng thái là tự lưu,
 // chọn nhiều để gán cùng lúc. Cột Giáo viên chỉ xem; buổi Done khoá. Quyền, khoá và tự Done do máy chủ quyết.
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router';
+import { FromLink } from '../../layout/FromLink';
 import { errorOf } from '../../lib/db';
 import { formatDate } from '../../lib/format';
 import { Button } from '../../ui/Button';
@@ -167,9 +167,9 @@ export function BoardTab({
                       onChange={(e) => toggle(keys, e.target.checked)}
                     />
                   )}
-                  <Link to={`/crm/buoi-hoc/${sessionId}`} className="focus-ring text-link">
+                  <FromLink to={`/crm/buoi-hoc/${sessionId}`} className="focus-ring text-link">
                     <b>{title}</b>
-                  </Link>
+                  </FromLink>
                   <span className="text-caption text-fg-muted">
                     {[`${head.start_time}–${head.end_time}`, head.room_name, head.teacher_name]
                       .filter(Boolean)
