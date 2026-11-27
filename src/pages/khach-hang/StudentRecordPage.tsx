@@ -17,7 +17,7 @@ import { dateToIso, isoToDate } from '../lead/leadRecord';
 import { formatDate, formatDateTime } from '../../lib/format';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { RecordSummary } from '../../features/record360/RecordSummary';
-import { engagementTag } from '../../features/record360/summaryLogic';
+import { engagementTag, type FlagTarget } from '../../features/record360/summaryLogic';
 import { useRecordSummary } from '../../features/record360/useRecordSummary';
 import type { ChatterFocus } from '../../ui/Chatter';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
@@ -211,6 +211,19 @@ function StudentView({ record }: { record: StudentRecord }) {
     }
   }
 
+  function openChatter(target: 'note' | 'contacts') {
+    setFocus((f) => ({ target, seq: (f?.seq ?? 0) + 1 }));
+  }
+  function openFlag(t: Exclude<FlagTarget, 'contacts'>) {
+    // Học sinh không có tab Tài chính: nợ nằm ở hồ sơ phụ huynh.
+    if (t === 'finance' && record.parent) {
+      void navigate(parentPath(record.parent.id));
+      return;
+    }
+    setTicketType(undefined);
+    setTab(t === 'tickets' || t === 'upsale' ? t : 'attendance');
+  }
+
   return (
     <>
       <RecordDetail
@@ -272,16 +285,8 @@ function StudentView({ record }: { record: StudentRecord }) {
             ticketPath={
               record.parent ? newTicketForParentPath(record.parent.id, record.parent.code) : null
             }
-            onFlag={(t) => {
-              // Học sinh không có tab Tài chính: nợ nằm ở hồ sơ phụ huynh.
-              if (t === 'finance' && record.parent) {
-                void navigate(parentPath(record.parent.id));
-                return;
-              }
-              setTicketType(undefined);
-              setTab(t === 'tickets' || t === 'upsale' ? t : 'attendance');
-            }}
-            onChatter={(target) => setFocus((f) => ({ target, seq: (f?.seq ?? 0) + 1 }))}
+            onFlag={openFlag}
+            onChatter={openChatter}
           />
         }
         smart={[
@@ -372,7 +377,26 @@ function StudentView({ record }: { record: StudentRecord }) {
           <Tag tone={record.status === 'DANG_HOC' ? 'success' : 'neutral'}>
             {STUDENT_STATUS_LABEL[record.status]}
           </Tag>
-          {engagement && <Tag tone={engagement.tone}>{engagement.label}</Tag>}
+          {engagement && (
+            <>
+              <Tag tone={engagement.tone}>{engagement.label}</Tag>
+              {engagement.reasons.length === 0 && (
+                <span className="text-caption text-fg-muted">không có cảnh báo được tính</span>
+              )}
+              {engagement.reasons.map((r) => (
+                <Button
+                  key={r.target}
+                  size="sm"
+                  variant="text"
+                  onClick={() =>
+                    r.target === 'contacts' ? openChatter('contacts') : openFlag(r.target)
+                  }
+                >
+                  {r.label}
+                </Button>
+              ))}
+            </>
+          )}
         </div>
         <CustTabs
           active={tab}

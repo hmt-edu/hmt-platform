@@ -55,22 +55,23 @@ const LEVEL: Record<Engagement['level'], { name: string; tone: 'success' | 'warn
     CAN_CHU_Y: { name: 'Cần chú ý', tone: 'warning' },
     NGUY_CO: { name: 'Nguy cơ', tone: 'danger' },
   };
-const REASON: Record<string, string> = {
-  VANG_LIEN_TIEP: 'vắng liên tiếp',
-  NO_QUA_HAN: 'nợ quá hạn',
-  SAP_HET_GIO: 'sắp hết giờ',
-  TICKET_QUA_HAN: 'ticket quá hạn',
-  LAU_CHUA_LIEN_HE: 'lâu chưa liên hệ',
-  THIEU_NHAN_XET: 'thiếu nhận xét',
+const REASON: Record<string, { label: string; target: FlagTarget }> = {
+  VANG_LIEN_TIEP: { label: 'vắng liên tiếp', target: 'attendance' },
+  NO_QUA_HAN: { label: 'nợ quá hạn', target: 'finance' },
+  SAP_HET_GIO: { label: 'sắp hết giờ', target: 'upsale' },
+  TICKET_QUA_HAN: { label: 'ticket quá hạn', target: 'tickets' },
+  LAU_CHUA_LIEN_HE: { label: 'lâu chưa liên hệ', target: 'contacts' },
+  THIEU_NHAN_XET: { label: 'thiếu nhận xét', target: 'review' },
 };
 
-/** Nhãn «Mức gắn bó»: màu luôn đi kèm lý do, không chỉ màu (R-CRM-44). */
+/** Nhãn «Mức gắn bó»: màu luôn đi kèm lý do, bấm lý do mở đúng chỗ (R-CRM-44). */
 export function engagementTag(e: Engagement) {
   const level = LEVEL[e.level];
-  const reasons = e.reasons.map((r) => REASON[r] ?? r).join(', ');
+  const reasons = e.reasons.flatMap((code) => REASON[code] ?? []);
   return {
     tone: level.tone,
-    label: `Mức gắn bó: ${level.name} · ${reasons || 'không có cảnh báo được tính'}`,
+    label: `Mức gắn bó: ${level.name}`,
+    reasons,
   };
 }
 

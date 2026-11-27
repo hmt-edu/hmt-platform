@@ -32,7 +32,7 @@ values
   ('engagement_warn_score', 'Mức gắn bó: số điểm bắt đầu «Cần chú ý»', 'INT', 'điểm', 1, 60, '1', true, 'CSKH', 'R-CRM-44',
    'Tổng điểm từ mức này thì học sinh là «Cần chú ý»; thấp hơn là «Khoẻ».'),
   ('engagement_risk_score', 'Mức gắn bó: số điểm bắt đầu «Nguy cơ»', 'INT', 'điểm', 1, 60, '3', true, 'CSKH', 'R-CRM-44',
-   'Tổng điểm từ mức này thì học sinh là «Nguy cơ».');
+   'Tổng điểm từ mức này thì học sinh là «Nguy cơ». Đặt cao hơn mức «Cần chú ý», nếu thấp hơn thì không còn ai là «Cần chú ý».');
 
 -- app.student_overdue_days: số ngày quá hạn lâu nhất của đợt đóng tiền chưa đủ, trong các đơn đã duyệt có dòng của học sinh này.
 -- Hàm trong. Chỉ tính đơn người gọi xem được (R-CRM-44: không có quyền xem tiền thì cờ nợ không tính, không hiện). Không trả số tiền.

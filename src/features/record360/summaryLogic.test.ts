@@ -77,15 +77,17 @@ describe('Hồ sơ 360°: thẻ tóm tắt và cờ', () => {
       { target: 'finance', label: 'Nợ quá hạn 5 ngày' },
     ]);
   });
-  it('Mức gắn bó luôn kèm lý do, không chỉ màu (R-CRM-44)', () => {
+  it('Mức gắn bó luôn kèm lý do, mỗi lý do mở đúng chỗ (R-CRM-44)', () => {
     expect(
       engagementTag({ level: 'NGUY_CO', score: 3, reasons: ['NO_QUA_HAN', 'LAU_CHUA_LIEN_HE'] }),
     ).toEqual({
       tone: 'danger',
-      label: 'Mức gắn bó: Nguy cơ · nợ quá hạn, lâu chưa liên hệ',
+      label: 'Mức gắn bó: Nguy cơ',
+      reasons: [
+        { label: 'nợ quá hạn', target: 'finance' },
+        { label: 'lâu chưa liên hệ', target: 'contacts' },
+      ],
     });
-    expect(engagementTag({ level: 'KHOE', score: 0, reasons: [] }).label).toBe(
-      'Mức gắn bó: Khoẻ · không có cảnh báo được tính',
-    );
+    expect(engagementTag({ level: 'KHOE', score: 0, reasons: [] }).reasons).toEqual([]);
   });
 });
