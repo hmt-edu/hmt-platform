@@ -30,7 +30,7 @@ export function buildStudentAccountConfig(
   return {
     screenCode: STUDENT_ACCOUNT_SCREEN_CODE,
     title: 'Tài khoản học sinh',
-    searchPlaceholder: 'Tìm tên em, mã HS, tên phụ huynh…',
+    searchPlaceholder: 'Tìm tên học sinh, mã HS, tên phụ huynh…',
     columns: [
       {
         key: 'code',

@@ -25,7 +25,7 @@ di_thu: chưa
 - [ ] Bạn biết mã lớp hoặc tên giáo viên cần tìm.
 
 ## Luật cần nhớ (lời thường)
-- Buổi đi qua ba bước: **Nháp** → **Đã chốt** → **Hoàn thành**. Chốt danh sách là lúc hệ thống lấy danh sách em theo ghi danh **hiện tại**; em ghi danh sau đó **không** lọt vào buổi đã chốt.
+- Buổi đi qua ba bước: **Nháp** → **Đã chốt** → **Hoàn thành**. Chốt danh sách là lúc hệ thống lấy danh sách học sinh theo ghi danh **hiện tại**; học sinh ghi danh sau đó **không** lọt vào buổi đã chốt.
 - Giáo viên **chỉ thấy danh sách điểm danh khi buổi đã chốt**. Hệ thống tự chốt đúng lịch; bạn chỉ chốt tay khi cần gấp.
 - Buổi tự sang **Hoàn thành** khi giáo viên đã làm xong các mục bắt buộc của buổi (điểm danh, nội dung buổi; có giai đoạn cần cả nhận xét). Giáo viên có một hạn sau giờ kết thúc buổi để hoàn tất; quá hạn thì buổi hiện ở «Buổi chưa hoàn tất».
 - Tình trạng buổi đổi bằng nút trong bản ghi, **không** bấm trực tiếp lên thanh bước.
@@ -40,9 +40,9 @@ di_thu: chưa
    *Bạn thấy:* thanh Nháp → Đã chốt → Hoàn thành, khối «Thông tin buổi» (lớp, môn, giáo viên, trợ giảng, giờ học, phòng) và «Danh sách và điểm danh».
    [ẢNH: dt12-b3]
 4. Buổi còn **Nháp** mà cần chốt ngay: bấm **«Chốt danh sách»**, đọc câu hỏi «Chốt danh sách buổi này?», bấm **«Chốt danh sách»** lần nữa để xác nhận.
-   *Bạn thấy:* thông báo «Đã chốt danh sách»; buổi sang «Đã chốt» và hiện danh sách em.
+   *Bạn thấy:* thông báo «Đã chốt danh sách»; buổi sang «Đã chốt» và hiện danh sách học sinh.
 5. Xem «Danh sách và điểm danh»: hai cột **«Trung tâm điểm danh»** và **«Điểm danh giáo viên (chính thức)»**. Dòng đánh dấu «Lệch» là hai bên ghi khác nhau; **cột của giáo viên quyết định**.
-   *Bạn thấy:* mỗi em một dòng kèm «Giờ trừ» khi buổi đã hoàn thành.
+   *Bạn thấy:* mỗi học sinh một dòng kèm «Giờ trừ» khi buổi đã hoàn thành.
 6. Để theo dõi buổi giáo viên chưa hoàn tất, vào **Đào tạo → Buổi chưa hoàn tất**.
    *Bạn thấy:* các buổi đã kết thúc nhưng chưa «Hoàn thành», kèm «Hạn hoàn tất», «Lý do chưa hoàn tất» (thiếu điểm danh, thiếu nhận xét...) và tình trạng «Còn hạn» hoặc «Quá hạn».
    [ẢNH: dt12-b6]
@@ -58,7 +58,7 @@ di_thu: chưa
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
 |---|---|
-| Chốt danh sách quá sớm, thiếu em mới ghi danh | nhờ Trưởng cơ sở xử lý (em ghi danh sau không tự vào buổi đã chốt); hỏi Quản trị |
+| Chốt danh sách quá sớm, thiếu học sinh mới ghi danh | nhờ Trưởng cơ sở xử lý (học sinh ghi danh sau không tự vào buổi đã chốt); hỏi Quản trị |
 | Nhầm lớp, nhầm buổi | chưa làm gì ảnh hưởng; mở lại đúng buổi |
 
 ## Lỗi hay gặp
@@ -73,8 +73,8 @@ di_thu: chưa
 - **Dùng:** lớp Toán [MẪU] trong «Dữ liệu mẫu của tôi» có 8 buổi; bộ có sẵn buổi đã điểm danh và buổi Hoàn thành.
 
 ## Hỏi đáp
-- **Vì sao giáo viên không thấy danh sách em?** Buổi chưa chốt danh sách.
-- **Vì sao một em ghi danh hôm nay không có trong buổi hôm nay?** Buổi đã chốt trước khi em ghi danh.
+- **Vì sao giáo viên không thấy danh sách học sinh?** Buổi chưa chốt danh sách.
+- **Vì sao một học sinh ghi danh hôm nay không có trong buổi hôm nay?** Buổi đã chốt trước khi học sinh ghi danh.
 - **«Hạn hoàn tất» là bao lâu?** Là số giờ sau khi buổi kết thúc do công ty đặt (hiện 8 giờ); hạn hiện ngay trên dòng.
 
 ## Tự kiểm: bạn làm được khi

@@ -88,7 +88,7 @@ export function VoucherListPage() {
       rowLabel={(r) => `${r.code} ${r.parent_name}`}
       loading={activeQuery.isPending || activeQuery.isPlaceholderData}
       error={errorText}
-      forbidden={listForbiddenOf(activeQuery.error, 'phiếu chi', 'Bán hàng và thu chi')}
+      forbidden={listForbiddenOf(activeQuery.error, 'phiếu chi', 'Kế toán')}
       onRetry={() => void activeQuery.refetch()}
       groupTree={grouped ? grouping?.tree : undefined}
       onGroupToggle={(key, open) => {

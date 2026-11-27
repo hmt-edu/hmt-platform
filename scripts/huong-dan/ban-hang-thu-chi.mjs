@@ -656,7 +656,7 @@ const BAI = {
       },
       [
         {
-          chu: 'Vào «Phiếu chi» (menu Bán hàng và thu chi), bấm mã phiếu',
+          chu: 'Vào «Phiếu chi» (menu Kế toán), bấm mã phiếu',
           loc: (p) => p.getByText('PC-CS5-2611-0002', { exact: true }),
           lam: async (p) => {
             await p.getByText('PC-CS5-2611-0002', { exact: true }).first().click();

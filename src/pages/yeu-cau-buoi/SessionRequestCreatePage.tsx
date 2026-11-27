@@ -123,7 +123,7 @@ export function SessionRequestCreatePage() {
       {errors.class && <p className="text-caption text-danger-text">{errors.class}</p>}
       <p className="text-body">
         Học sinh: <b>cả lớp</b>
-        {chosen ? ` (${chosen.enrolled} em đang học)` : ''}
+        {chosen ? ` (${chosen.enrolled} học sinh đang học)` : ''}
       </p>
       <TextField
         label="Ngày buổi củng cố"

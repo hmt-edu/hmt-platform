@@ -19,7 +19,7 @@ cap_nhat: 2026-11-24
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Bạn là người duyệt của đơn này: đơn hiện ở **Việc chờ tôi duyệt** của bạn.
-- [ ] Đã mở đơn «Đã trình» và đọc đủ: dòng đơn, em, lớp, ngày vào lớp, chiết khấu, điều khoản thanh toán.
+- [ ] Đã mở đơn «Đã trình» và đọc đủ: dòng đơn, học sinh, lớp, ngày vào lớp, chiết khấu, điều khoản thanh toán.
 
 ## Cần nhớ
 - Người lập **không tự duyệt** đơn của mình (trừ Trưởng cơ sở lập đơn).

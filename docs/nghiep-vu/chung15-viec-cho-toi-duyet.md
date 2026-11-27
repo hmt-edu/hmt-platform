@@ -7,7 +7,7 @@ Chỉ việc ĐẾN LƯỢT vai của người gọi, theo đúng điều kiện
 | Loại (`kind`)       | Điều kiện                                                                                                     | Cấp          |
 | ------------------- | ------------------------------------------------------------------------------------------------------------- | ------------ |
 | DON_HANG            | đơn Đã trình, `can_approve_as_manager` (quản lý, Trưởng cơ sở route TRUONG_CS, Admin duyệt thay)              | 1/1          |
-| PHIEU_THU           | Đã gửi: `can_approve_as_manager` (Admin không duyệt tiền, R-HT-01); Chờ kế toán: ACCOUNTING · Duyệt          | 1/2, 2/2     |
+| PHIEU_THU           | Đã gửi: `can_approve_as_manager` (Admin duyệt thay được, R-HT-01); Chờ kế toán: ACCOUNTING · Duyệt          | 1/2, 2/2     |
 | LOP                 | Đã trình (Xác nhận), Đã xác nhận (Duyệt): CLASS · Duyệt                                                       | 1/2, 2/2     |
 | YEU_CAU_BUOI        | Chờ duyệt: SESSION · Duyệt                                                                                    | 1/1          |
 | HOAN_PHI, DUNG_HOC  | Chờ QL: ENROLLMENT · Duyệt; Chờ kế toán: ACCOUNTING · Duyệt                                                   | 1/2, 2/2     |

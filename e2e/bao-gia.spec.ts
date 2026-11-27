@@ -163,7 +163,7 @@ test('BH-02 chỉ đọc: báo giá Nháp hai em, tổng tiền, không có nút
   ]);
   await expect(page.getByText('Tổng thành tiền')).toBeVisible();
   await expect(page.locator('b', { hasText: '3.300.000 đ' })).toBeVisible();
-  await expect(page.getByText('Chưa thấy em? Thêm em ở cơ hội.')).toHaveCount(0);
+  await expect(page.getByText('Chưa thấy học sinh? Thêm học sinh ở cơ hội.')).toHaveCount(0);
   // Đ248: điện thoại giữ bản chỉ đọc, ẩn nút Sửa; máy tính có nút Sửa.
   await expect(page.getByRole('button', { name: 'Sửa', exact: true })).toHaveCount(
     isPhone(page) ? 0 : 1,
@@ -380,7 +380,7 @@ test('BH-02 sửa Nháp: lưới K06c, thiếu số lượng báo lỗi theo khu
     'Thành tiền',
   ]);
   await expectScrollAffordance(page, 'Gói học (đang sửa)');
-  await expect(page.getByRole('link', { name: 'Thêm em ở cơ hội.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Thêm học sinh ở cơ hội.' })).toBeVisible();
   await expectAccessible(page);
   // Xoá số lượng dòng 1: báo lỗi theo khung, chưa lưu.
   await page.getByLabel('Số lượng dòng 1').fill('');
@@ -571,7 +571,7 @@ test('BH-02 sửa Nháp: thêm quà tặng qua chính sách quà tặng; vượt
   await expect(dialog.getByText(/không tính vào trần chiết khấu/)).toBeVisible();
   await expectAccessible(page);
   await dialog.getByRole('button', { name: /Tặng bộ tài liệu Toán/ }).click();
-  // Dòng quà đánh số tiếp theo dòng gói; chưa chọn em thì ghi "Chọn em để thêm quà".
+  // Dòng quà đánh số tiếp theo dòng gói; chưa chọn em thì ghi "Chọn học sinh để thêm quà".
   const gift = page.getByRole('rowgroup', { name: 'Dòng 3' });
   await expect(gift.getByText('Quà tặng', { exact: true })).toBeVisible();
   await expect(gift.getByText('TL-MATOAN')).toBeVisible();

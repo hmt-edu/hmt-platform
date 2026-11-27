@@ -526,8 +526,8 @@ function SummaryBlock({ summary }: { summary: ImportSummary | TrainingSummary })
         )}
       </p>
       <p>
-        <b className="tabular">{summary.missing_student_info}</b> dòng thiếu thông tin em (dữ liệu
-        cũ), cần bổ sung tên và năm sinh em trước khi tiến tới ghi danh.
+        <b className="tabular">{summary.missing_student_info}</b> dòng thiếu thông tin học sinh (dữ
+        liệu cũ), cần bổ sung tên và năm sinh học sinh trước khi tiến tới ghi danh.
       </p>
       <p>
         <b className="tabular">{summary.attached_parent}</b> dòng gắn vào phụ huynh có sẵn (trùng số

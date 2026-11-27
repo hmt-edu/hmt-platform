@@ -28,7 +28,7 @@ screens: [CHUNG-04, CHUNG-05, CHUNG-07]
 - Người chỉ thuộc một cơ sở chỉ thấy dữ liệu cơ sở mình.
 
 ## Tìm mục ở menu
-1. **Cổng CRM (máy tính):** menu bên trái chia nhóm: «Tổng quan» («Trang chủ», «Việc chờ tôi duyệt»), «Tuyển sinh», «Khách hàng», «Bán hàng và thu chi», «Đào tạo», «Chăm sóc khách hàng»… Bấm tên nhóm để mở các mục con.
+1. **Cổng CRM (máy tính):** menu bên trái chia nhóm: «Tổng quan» («Trang chủ», «Việc chờ tôi duyệt»), «Tuyển sinh», «Khách hàng», «Bán hàng», «Kế toán», «Đào tạo», «Chăm sóc khách hàng»… Bấm tên nhóm để mở các mục con. Vài màn là tab ở đầu trang của một mục (ví dụ «Ghi danh» có tab «Chờ xếp lớp»).
    [ẢNH: menu-crm]
 2. **Cổng Giáo viên (điện thoại):** thanh dưới có «Hôm nay», «Lịch dạy», «Lớp», «Cần làm», «Tài khoản».
    [ẢNH: thanh-duoi-giao-vien]

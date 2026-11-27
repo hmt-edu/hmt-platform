@@ -22,12 +22,12 @@ checked: 2026-11-24
 ## Trước khi bắt đầu, kiểm
 - [ ] Ô «Cơ sở» ở thanh trên đúng cơ sở của khách.
 - [ ] Lead đã ở nhóm con **C4C «Đủ điều kiện tạo cơ hội»** (xem ô «Sub-stage» của lead). Chưa ở C4C thì nút «Tạo cơ hội» bị mờ: rê chuột vào nút sẽ thấy câu «Lead cần ở nhóm con C4C "Đủ điều kiện tạo cơ hội" mới tạo được cơ hội. Đổi giai đoạn của lead trước.» Hãy đổi giai đoạn lead trước (bài «Chăm sóc lead»).
-- [ ] Lead có ít nhất một em trong khối thông tin học sinh (nếu chưa có thì hộp sẽ báo «Lead chưa có em.»).
+- [ ] Lead có ít nhất một học sinh trong khối thông tin học sinh (nếu chưa có thì hộp sẽ báo «Lead chưa có học sinh.»).
 
 ## Luật cần nhớ (lời thường)
 - Cơ hội mới **luôn bắt đầu ở L1**. Sau khi tạo, lead tự chuyển về nhóm con C4D «Tạo cơ hội thành công»; bạn không phải đổi tay.
 - Hồ sơ phụ huynh được khớp theo **số điện thoại**; chưa có thì hệ thống tự tạo mới.
-- Lead đã có cơ hội thì hệ thống nhắc bạn: thường chỉ cần mở lại cơ hội cũ hoặc thêm em vào đó. Chỉ tạo cơ hội thứ hai khi thật sự cần (ví dụ em khác trong nhà cần test).
+- Lead đã có cơ hội thì hệ thống nhắc bạn: thường chỉ cần mở lại cơ hội cũ hoặc thêm học sinh vào đó. Chỉ tạo cơ hội thứ hai khi thật sự cần (ví dụ học sinh khác trong nhà cần test).
 
 ## Các bước
 1. Mở **Lead**, tìm và mở lead cần tạo cơ hội.
@@ -36,8 +36,8 @@ checked: 2026-11-24
 2. Bấm **«Tạo cơ hội»** (nút ở đầu bản ghi).
    *Bạn thấy:* hộp «Tạo cơ hội từ lead», dòng phụ ghi mã lead và tên phụ huynh, kèm «Phụ huynh», «Nhu cầu».
    [ẢNH: ts-06-ts5-b2]
-3. Tích chọn **các em** sẽ đi cùng cơ hội này.
-   *Bạn thấy:* mỗi em một ô tích, ghi tên, năm sinh, mã học sinh nếu có.
+3. Tích chọn **các học sinh** sẽ đi cùng cơ hội này.
+   *Bạn thấy:* mỗi học sinh một ô tích, ghi tên, năm sinh, mã học sinh nếu có.
    [ẢNH: ts-06-ts5-b3]
 4. Bấm **«Tạo cơ hội»** trong hộp. Nếu hộp hiện khung vàng «Lead này đã có … cơ hội đang dùng», dừng lại và làm theo bài «Lead đã có cơ hội khi tạo cơ hội».
    *Bạn thấy:* trang cơ hội mới, thanh giai đoạn ở **L1 Khách hàng mới**, mã cơ hội dạng CO…
@@ -55,7 +55,7 @@ checked: 2026-11-24
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
 |---|---|
-| Chọn nhầm em | Mở cơ hội, sửa danh sách em (khi cơ hội còn ở giai đoạn đầu) |
+| Chọn nhầm học sinh | Mở cơ hội, sửa danh sách học sinh (khi cơ hội còn ở giai đoạn đầu) |
 | Tạo cơ hội thừa cho cùng lead | Nhờ Trưởng cơ sở hoặc người có quyền «Gộp trùng» hai cơ hội |
 | Cơ hội tạo từ nhầm lead | Cơ hội chỉ đi tới, không xoá; báo Trưởng cơ sở để xử lý |
 
@@ -69,7 +69,7 @@ checked: 2026-11-24
 ## Hỏi đáp
 - **Vì sao nút «Tạo cơ hội» mờ?** Lead chưa ở C4C, hoặc bạn chưa có quyền tạo cơ hội. Rê chuột vào nút để đọc lý do.
 - **Cơ hội mới có ở L1 luôn không?** Có, mọi cơ hội mới đều ở L1; muốn lên cao hơn thì đi từng giai đoạn.
-- **Khách chưa có lead, vào thẳng cơ hội được không?** Được: trong **Cơ hội** có thể tạo trực tiếp (chọn nguồn, nhập danh sách em). Bài này chỉ nói đường từ lead.
+- **Khách chưa có lead, vào thẳng cơ hội được không?** Được: trong **Cơ hội** có thể tạo trực tiếp (chọn nguồn, nhập danh sách học sinh). Bài này chỉ nói đường từ lead.
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** tài khoản `tvts1–3.cs5` (hoặc `cskh1–3.cs5`).

@@ -90,7 +90,7 @@ test('CSKH tạo phiếu Thu nợ đầu kỳ cho một em, số tiền vượt 
   await parent.click();
   await page.getByPlaceholder('Gõ để tìm (không cần dấu)').fill(PARENT);
   await page.getByRole('option', { name: new RegExp(PARENT) }).click();
-  await dialog.getByRole('combobox', { name: 'Em' }).click();
+  await dialog.getByRole('combobox', { name: 'Học sinh' }).click();
   await expect(page.getByRole('option', { name: new RegExp(`${STUDENT}.*nợ còn`) })).toBeVisible();
   await page.getByRole('option', { name: new RegExp(STUDENT) }).click();
   await dialog.getByRole('combobox', { name: 'Hình thức' }).click();
@@ -158,7 +158,7 @@ test('Phiếu nợ đầu kỳ: Kế toán tự lập, tự gửi không tự du
   await dialog.getByRole('combobox', { name: 'Phụ huynh' }).click();
   await page.getByPlaceholder('Gõ để tìm (không cần dấu)').fill(PARENT);
   await page.getByRole('option', { name: new RegExp(PARENT) }).click();
-  await dialog.getByRole('combobox', { name: 'Em' }).click();
+  await dialog.getByRole('combobox', { name: 'Học sinh' }).click();
   await page.getByRole('option', { name: new RegExp(STUDENT) }).click();
   await dialog.getByRole('combobox', { name: 'Hình thức' }).click();
   await page.getByRole('option', { name: 'Tiền mặt' }).click();

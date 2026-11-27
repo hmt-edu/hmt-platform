@@ -2,7 +2,7 @@
 // Dữ liệu giả dựng bằng SQL trực tiếp (không dữ liệu thật), dọn sau bài. Tài khoản Trưởng cơ sở CS5 giả.
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
-import { PASSWORD, enterAs, expectAccessible } from './helpers';
+import { PASSWORD, enterAs, enterAsAdmin, expectAccessible } from './helpers';
 
 const DB_URL = process.env.DB_URL ?? '';
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL.');
@@ -77,6 +77,12 @@ test('KH-01 → KH-02: tìm phụ huynh theo SĐT, mở bản ghi, thấy hai co
   // KH-02: tab Ticket mở được (phụ huynh giả chưa có ticket), không còn mờ «ticket làm sau».
   await page.getByRole('tab', { name: 'Ticket' }).click();
   await expect(page.getByText('Chưa có ticket nào.')).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Hạn' })).toBeVisible();
+  // Tab Tài chính bấm được và hiện đủ cột dù chưa có dữ liệu.
+  await page.getByRole('tab', { name: 'Tài chính' }).click();
+  await expect(page.getByRole('columnheader', { name: 'Thành tiền' })).toBeVisible();
+  await expect(page.getByText('Chưa có ghi danh.')).toBeVisible();
+  await expectAccessible(page);
 });
 
 test('KH-04 → KH-05: tìm học sinh, hồ sơ 360° là Tiềm năng, chưa có ghi danh', async ({
@@ -94,8 +100,14 @@ test('KH-04 → KH-05: tìm học sinh, hồ sơ 360° là Tiềm năng, chưa c
   await expect(page.getByText('Tiềm năng').first()).toBeVisible();
   await page.getByRole('tab', { name: 'Học tập' }).click();
   await expect(page.getByText('Chưa có ghi danh.')).toBeVisible();
+  await expect(page.getByRole('columnheader', { name: 'Ngày hết phí' })).toBeVisible();
+  await page.getByRole('tab', { name: 'Điểm kiểm tra' }).click();
+  await expect(page.getByText('Chưa có phiếu Test.')).toBeVisible();
   await page.getByRole('tab', { name: 'Điểm danh' }).click();
   await expect(page.getByText('Chưa có điểm danh.')).toBeVisible();
+  await page.getByRole('tab', { name: 'Chăm sóc' }).click();
+  await expect(page.getByRole('columnheader', { name: 'Hài lòng' })).toBeVisible();
+  await expect(page.getByText('Chưa có dữ liệu chăm sóc.')).toBeVisible();
   // KH-05: tab «Đề nghị & khiếu nại» mở được (học sinh giả chưa có ticket).
   await page.getByRole('tab', { name: 'Đề nghị & khiếu nại' }).click();
   await expect(page.getByText('Chưa có ticket nào.')).toBeVisible();
@@ -128,4 +140,43 @@ test('KH-03, KH-06: nhân viên Sale sửa phụ huynh và học sinh; số đi�
   await page.getByLabel('Trường học', { exact: true }).fill('THCS Mẫu E2E');
   await page.getByRole('button', { name: 'Lưu', exact: true }).click();
   await expect(page.getByText('THCS Mẫu E2E').first()).toBeVisible();
+});
+
+// Quyền đọc từng vai: tab của hồ sơ phụ huynh mở được, đủ cột, không báo lỗi tải.
+for (const account of ['sale.cs5', 'cskh.cs5']) {
+  test(`KH-02: ${account} mở các tab Đơn hàng, Phiếu thu, Tài chính`, async ({
+    page,
+  }, testInfo) => {
+    const sfx = suffix(testInfo.project.name);
+    await enterAs(page, account);
+    await page.goto('/crm/phu-huynh');
+    await page.getByPlaceholder('Tìm tên, số điện thoại, mã…').fill(phone(testInfo.project.name));
+    await page
+      .getByRole('link', { name: `Phụ huynh E2EKH ${sfx}` })
+      .first()
+      .click();
+    await page.getByRole('tab', { name: 'Đơn hàng' }).click();
+    await expect(page.getByText('Chưa có đơn hàng.')).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Đã đóng (đ)' })).toBeVisible();
+    await page.getByRole('tab', { name: 'Phiếu thu' }).click();
+    await expect(page.getByText('Chưa có phiếu thu.')).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Người nhận tiền' })).toBeVisible();
+    await page.getByRole('tab', { name: 'Tài chính' }).click();
+    await expect(page.getByText('Chưa có ghi danh.')).toBeVisible();
+    await expect(page.getByText(/Không tải được/)).toHaveCount(0);
+    await expectAccessible(page);
+  });
+}
+
+test('KH-05: Admin thấy khối tài khoản app và mở hộp cấp tài khoản', async ({ page }, testInfo) => {
+  const name = `Em E2EKH ${suffix(testInfo.project.name)} 2`;
+  await enterAsAdmin(page, 'quantri.cs5');
+  await page.goto('/crm/hoc-sinh');
+  await page.getByPlaceholder('Tìm tên, mã, mã cũ…').fill(name);
+  await page.getByRole('link', { name }).first().click();
+  await expect(page.getByText('Chưa cấp', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Hành động' }).click();
+  await page.getByRole('menuitem', { name: 'Cấp tài khoản' }).click();
+  await expect(page.getByText(/Tên đăng nhập là mã học sinh/)).toBeVisible();
+  await page.getByRole('button', { name: 'Huỷ' }).click();
 });

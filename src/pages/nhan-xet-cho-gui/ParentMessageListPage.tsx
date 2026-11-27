@@ -80,7 +80,7 @@ export function ParentMessageListPage() {
     () => ({
       screenCode: 'CS-16',
       title: 'Nhận xét chờ gửi phụ huynh',
-      searchPlaceholder: 'Tìm tên em hoặc mã lớp…',
+      searchPlaceholder: 'Tìm tên học sinh hoặc mã lớp…',
       columns: [
         {
           key: 'student',

@@ -18,7 +18,7 @@ cap_nhat: 2026-11-24
 
 ## Cần nhớ
 - Công nợ lấy từ **điều khoản thanh toán** của đơn (đợt, hạn đóng).
-- **Nợ đầu kỳ** là khoản phụ huynh còn nợ từ trước khi dùng hệ thống. Phiếu thu nợ đầu kỳ **không cần đơn hàng** và **chỉ Kế toán duyệt, không qua quản lý**; số tiền không vượt nợ còn lại của em.
+- **Nợ đầu kỳ** là khoản phụ huynh còn nợ từ trước khi dùng hệ thống. Phiếu thu nợ đầu kỳ **không cần đơn hàng** và **chỉ Kế toán duyệt, không qua quản lý**; số tiền không vượt nợ còn lại của học sinh.
 - Tính năng này **tắt mặc định** theo cơ sở: chưa bật thì không thu được.
 
 ## Các bước (xem công nợ)
@@ -27,9 +27,9 @@ cap_nhat: 2026-11-24
 
 ## Các bước (thu nợ đầu kỳ)
 1. Vào **Phiếu thu** → bấm **«Thu nợ đầu kỳ»**. [ẢNH: tc7-b2]
-2. Hộp «Thu nợ đầu kỳ»: chọn «Phụ huynh» (tìm theo tên, số điện thoại, mã), chọn «Em», nhập «Số tiền», chọn «Hình thức», bấm **«Tạo phiếu nháp»**. [ẢNH: tc7-b3]
+2. Hộp «Thu nợ đầu kỳ»: chọn «Phụ huynh» (tìm theo tên, số điện thoại, mã), chọn «Học sinh», nhập «Số tiền», chọn «Hình thức», bấm **«Tạo phiếu nháp»**. [ẢNH: tc7-b3]
    *Bạn thấy:* phiếu thu nháp loại nợ đầu kỳ. Phiếu không có đơn hàng và không có bước quản lý.
-3. Trình phiếu; **Kế toán** duyệt (bài «Kế toán duyệt phiếu thu»). *Bạn thấy:* nợ đầu kỳ còn lại của em giảm đúng số đã duyệt.
+3. Trình phiếu; **Kế toán** duyệt (bài «Kế toán duyệt phiếu thu»). *Bạn thấy:* nợ đầu kỳ còn lại của học sinh giảm đúng số đã duyệt.
 
 ## Sau bước này
 - **Ai làm tiếp:** Kế toán duyệt (nợ đầu kỳ không qua quản lý).

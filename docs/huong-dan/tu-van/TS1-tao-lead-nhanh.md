@@ -65,7 +65,7 @@ checked: 2026-11-24
 | «Cơ sở văn phòng (Hội sở) không có lead.» (HMT_CO_SO_VAN_PHONG) | đang chọn cơ sở văn phòng | chọn một cơ sở có học sinh |
 
 ## Hỏi đáp
-- **Hai anh em của cùng một phụ huynh thì tạo mấy lead?** Một lead, ghi học sinh đầu. Em còn lại thêm khi tạo cơ hội.
+- **Hai anh học sinh của cùng một phụ huynh thì tạo mấy lead?** Một lead, ghi học sinh đầu. Học sinh còn lại thêm khi tạo cơ hội.
 - **Khách không cho số điện thoại?** Hệ thống bắt buộc có số. Hỏi lại khách, không nhập số giả.
 
 ## Tập trên dữ liệu mẫu

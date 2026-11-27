@@ -13,7 +13,7 @@ checked: 2026-11-24
 
 # Lead đã có cơ hội khi tạo cơ hội
 
-**Làm xong bạn có:** mở lại cơ hội cũ, thêm em vào cơ hội đó, hoặc (khi thật sự cần) một cơ hội thứ hai cho cùng lead.
+**Làm xong bạn có:** mở lại cơ hội cũ, thêm học sinh vào cơ hội đó, hoặc (khi thật sự cần) một cơ hội thứ hai cho cùng lead.
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Lead → «Tạo cơ hội». Đây là trường hợp ngoại lệ của bài «Tạo cơ hội từ lead».
 
 > Video: [VIDEO: ts5b]
@@ -22,19 +22,19 @@ checked: 2026-11-24
 > Làm theo các bước dưới, đủ để làm.
 
 ## Luật cần nhớ (lời thường)
-- Lead đã có cơ hội thì hệ thống nhắc bạn: thường chỉ cần mở lại cơ hội cũ hoặc thêm em vào đó. Chỉ tạo cơ hội thứ hai khi thật sự cần (ví dụ em khác trong nhà cần test).
+- Lead đã có cơ hội thì hệ thống nhắc bạn: thường chỉ cần mở lại cơ hội cũ hoặc thêm học sinh vào đó. Chỉ tạo cơ hội thứ hai khi thật sự cần (ví dụ học sinh khác trong nhà cần test).
 
 ## Các bước
 1. Ở lead đã có cơ hội, bấm **«Tạo cơ hội»**.
    *Bạn thấy:* hộp «Tạo cơ hội từ lead».
-2. Tích chọn **các em** sẽ đi cùng.
-   *Bạn thấy:* đầu hộp hiện khung vàng «Lead này đã có N cơ hội đang dùng», liệt kê mã, giai đoạn, tên em.
+2. Tích chọn **các học sinh** sẽ đi cùng.
+   *Bạn thấy:* đầu hộp hiện khung vàng «Lead này đã có N cơ hội đang dùng», liệt kê mã, giai đoạn, tên học sinh.
    [ẢNH: ts-06-ts5-b4]
 3. Chọn một trong ba:
    - **«Mở cơ hội cũ»**: đóng hộp và mở cơ hội đã có (nên chọn trước tiên).
-   - **«Thêm em vào cơ hội cũ»**: chép các em vừa tích sang cơ hội đã có rồi mở cơ hội đó, không tạo cơ hội mới.
+   - **«Thêm học sinh vào cơ hội cũ»**: chép các học sinh vừa tích sang cơ hội đã có rồi mở cơ hội đó, không tạo cơ hội mới.
    - **Vẫn tạo thêm**: tích ô «Tôi xác nhận: vẫn tạo thêm cơ hội mới cho lead này», rồi sang bước 4.
-   *Bạn thấy:* nếu chọn mở hoặc thêm em, bạn sang trang cơ hội cũ; nếu tạo thêm, nút xác nhận đổi thành «Vẫn tạo thêm».
+   *Bạn thấy:* nếu chọn mở hoặc thêm học sinh, bạn sang trang cơ hội cũ; nếu tạo thêm, nút xác nhận đổi thành «Vẫn tạo thêm».
 4. Khi chọn «Vẫn tạo thêm»: bấm **«Vẫn tạo thêm»**.
    *Bạn thấy:* trang cơ hội mới ở **L1 Khách hàng mới**.
 

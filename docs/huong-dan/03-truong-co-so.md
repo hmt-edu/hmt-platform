@@ -11,7 +11,7 @@ portals: [crm]
 
 Vai: **Trưởng cơ sở** (quản lý cơ sở). Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
-Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Lớp**, **Buổi học**, **Ghi danh**, **Bán hàng và thu chi**, **Phiếu nghiệp vụ**. Bạn chỉ thấy và duyệt việc của **cơ sở mình**.
+Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Lớp**, **Buổi học**, **Ghi danh**, **Bán hàng**, **Kế toán**, **Phiếu nghiệp vụ**. Bạn chỉ thấy và duyệt việc của **cơ sở mình**.
 
 **Nguyên tắc duyệt (nhớ kỹ):**
 
@@ -110,7 +110,7 @@ Menu của bạn: **Trang chủ**, **Việc chờ tôi duyệt**, **Lớp**, **B
 
 - **Các bước:** ở menu «Hành động» của lớp chọn **«Đóng lớp»** hoặc **«Huỷ lớp»**.
 - **Kết quả:** lớp đóng hoặc huỷ.
-- **Lỗi thường gặp:** đóng bị chặn khi còn em còn giờ (liệt kê tên em); huỷ bị chặn khi đã có buổi Done (liệt kê buổi). Xử lý các em hoặc buổi đó trước.
+- **Lỗi thường gặp:** đóng bị chặn khi còn học sinh còn giờ (liệt kê tên học sinh); huỷ bị chặn khi đã có buổi Done (liệt kê buổi). Xử lý các học sinh hoặc buổi đó trước.
 - **Ảnh:** [ẢNH: lop-dong-bi-chan]
 
 ## 8. Buổi học: huỷ, dời, đổi giáo viên, sửa điểm danh
@@ -120,7 +120,7 @@ Mở **Buổi học** → bản ghi buổi; các nút ở đầu bản ghi theo 
 1. **«Huỷ»**: trung tâm huỷ (không tính phí, tự thêm buổi cuối) hoặc học sinh huỷ lớp riêng (bắt buộc lý do, chọn có hoặc không tính phí).
 2. **«Dời»**: đổi ngày, giờ, phòng; trùng phòng hoặc giáo viên chỉ cảnh báo.
 3. **«Đổi giáo viên»**: chọn giáo viên, trợ giảng cho buổi.
-4. **«Thêm học thử»**: thêm em học thử vào buổi.
+4. **«Thêm học thử»**: thêm học sinh học thử vào buổi.
 5. **«Sửa điểm danh»**: sửa điểm danh sau khi buổi Done, kèm lý do (có nhật ký).
 
 - **Kết quả:** thông báo thành công; dòng sổ giờ điều chỉnh khi cần.

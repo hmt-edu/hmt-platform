@@ -344,11 +344,8 @@ const BAI = {
           loc: (p) => p.getByText('Việc chờ tôi duyệt').first(),
         },
         {
-          chu: 'Vào Bán hàng và thu chi, mở Phiếu thu',
-          loc: (p) =>
-            p
-              .getByRole('link', { name: 'Bán hàng và thu chi' })
-              .or(p.getByText('Bán hàng và thu chi').first()),
+          chu: 'Vào Kế toán, mở Phiếu thu',
+          loc: (p) => p.getByRole('link', { name: 'Kế toán' }).or(p.getByText('Kế toán').first()),
           lam: async (p) => {
             await p.goto(`${APP}/crm/phieu-thu`);
             await p.waitForLoadState('networkidle');

@@ -11,7 +11,7 @@ portals: [crm]
 
 Vai: **Tư vấn tuyển sinh**. Nếu bạn mới, đọc trước [Giới thiệu hệ thống](/crm/huong-dan/bat-dau). Chữ trong dấu «…» là chữ hiện trên màn.
 
-Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu Test), **Bán hàng và thu chi** (Báo giá, Đơn hàng, Phiếu thu). Chỉ hiện mục bạn có quyền; bạn chỉ thấy khách của cơ sở mình.
+Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu Test), **Bán hàng** (Báo giá, Đơn hàng), **Kế toán** (Phiếu thu). Chỉ hiện mục bạn có quyền; bạn chỉ thấy khách của cơ sở mình.
 
 
 ## Việc hằng ngày của bạn (gợi ý thứ tự)
@@ -101,7 +101,7 @@ Menu của bạn: **Tuyển sinh** (Lead, Cơ hội, Lịch hẹn, Phiếu Test)
 4. Khi đơn «Đã duyệt», bấm «Tạo phiếu thu» để thu tiền.
 
 - **Kết quả:** đơn đi Nháp → Đã trình → Đã duyệt; khi tổng tiền đã vào của đơn **đạt mức cọc tối thiểu** (một tham số của hệ thống do Admin đặt) và phiếu thu được duyệt, mỗi dòng sinh một ghi danh. Dòng đã chọn lớp thì ghi danh vào lớp đó; dòng chưa chọn lớp thì ghi danh ở «Chờ xếp lớp» để CSKH xếp sau.
-- **Lỗi thường gặp:** «Chưa trình được» hoặc «Có em chưa đủ thông tin»: điền đủ thông tin học sinh ở dòng đơn rồi trình lại (hoặc bấm «Vẫn trình» nếu hệ thống cho phép). Lớp không hiện trong danh sách là hết chỗ hoặc sai môn, khối: chọn lớp khác. Không thấy «Huỷ đơn»: chỉ người lập huỷ đơn Nháp; đơn đã trình do người duyệt huỷ; đơn đã có phiếu thu phải qua ticket hoàn tiền.
+- **Lỗi thường gặp:** «Chưa trình được» hoặc «Có học sinh chưa đủ thông tin»: điền đủ thông tin học sinh ở dòng đơn rồi trình lại (hoặc bấm «Vẫn trình» nếu hệ thống cho phép). Lớp không hiện trong danh sách là hết chỗ hoặc sai môn, khối: chọn lớp khác. Không thấy «Huỷ đơn»: chỉ người lập huỷ đơn Nháp; đơn đã trình do người duyệt huỷ; đơn đã có phiếu thu phải qua ticket hoàn tiền.
 - **Ảnh:** [ẢNH: don-hang-dong-don], [ẢNH: don-hang-chon-lop], [ẢNH: don-hang-trinh]
 
 ## 6. Lập phiếu thu

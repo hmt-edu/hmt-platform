@@ -14,19 +14,19 @@ nguoi_viet: Code D
 # Yêu cầu học bù, buổi củng cố, học bổ trợ
 
 **Làm xong bạn có:** một yêu cầu buổi gửi Trưởng cơ sở duyệt; duyệt xong hệ thống sinh buổi mới vào lịch của lớp.
-**Ai làm:** CSKH tạo; Trưởng cơ sở duyệt hoặc từ chối. **Màn:** Đào tạo → Yêu cầu buổi.
+**Ai làm:** CSKH tạo; Trưởng cơ sở duyệt hoặc từ chối. **Màn:** Đào tạo → Buổi học, tab «Yêu cầu buổi».
 
 ## Trước khi bắt đầu, kiểm
 - [ ] Phân hệ «Yêu cầu buổi» đã bật cho cơ sở (nếu không, menu «Hành động» của lớp không có «Yêu cầu học bù», «Yêu cầu bổ trợ»; nhờ Quản trị).
 - [ ] Lớp đang **«Đã duyệt»** (lớp chưa duyệt không tạo được yêu cầu buổi).
-- [ ] Bạn biết loại nào cần: **học bù** (em nghỉ, học lại), **củng cố** (thêm buổi cả lớp, tính tiền như buổi thường), **bổ trợ** (kèm em yếu).
+- [ ] Bạn biết loại nào cần: **học bù** (học sinh nghỉ, học lại), **củng cố** (thêm buổi cả lớp, tính tiền như buổi thường), **bổ trợ** (kèm học sinh yếu).
 
 ## Luật cần nhớ (lời thường)
 | Loại | Trừ giờ học sinh? | Tạo từ đâu | Ghi chú |
 |---|---|---|---|
 | Học bù | **Không** | bản ghi lớp | không gắn với buổi gốc, bắt buộc có lý do |
 | Củng cố | **Có**, như buổi thường | màn Yêu cầu buổi | chèn buổi vào lịch, dời nhãn bài các buổi sau; không bắt buộc phụ huynh đồng ý trong hệ thống |
-| Bổ trợ | **Không**, nhưng tính giờ dạy của giáo viên | bản ghi lớp | chọn em yếu và giáo viên |
+| Bổ trợ | **Không**, nhưng tính giờ dạy của giáo viên | bản ghi lớp | chọn học sinh yếu và giáo viên |
 - **Chỉ Trưởng cơ sở duyệt.** CSKH chỉ tạo, xem và huỷ yêu cầu của mình.
 - Duyệt thì mới sinh buổi. Trùng giờ chỉ cảnh báo, người duyệt vẫn duyệt được.
 
@@ -36,15 +36,15 @@ nguoi_viet: Code D
    *Bạn thấy:* hai mục **«Yêu cầu bổ trợ»** và **«Yêu cầu học bù»**.
    [ẢNH: dt16-b2]
 2. Chọn một mục. Lớp đã được chọn sẵn, không chọn lại.
-3. **Học bù:** chọn **«Em học bù»**, chọn «Ngày», «Giờ bắt đầu», «Giờ kết thúc» (để trống thì theo khung giờ của lớp), «Phòng», nhập **«Lý do học bù»**.
+3. **Học bù:** chọn **«Học sinh học bù»**, chọn «Ngày», «Giờ bắt đầu», «Giờ kết thúc» (để trống thì theo khung giờ của lớp), «Phòng», nhập **«Lý do học bù»**.
    [ẢNH: dt16-b3]
-4. **Bổ trợ:** chọn **«Em yếu cần bổ trợ»** (mỗi em hiện số giờ còn), «Ngày», «Giờ», **«Giáo viên»**, «Phòng»; «Ghi chú» không bắt buộc.
+4. **Bổ trợ:** chọn **«Học sinh yếu cần bổ trợ»** (mỗi học sinh hiện số giờ còn), «Ngày», «Giờ», **«Giáo viên»**, «Phòng»; «Ghi chú» không bắt buộc.
    [ẢNH: dt16-b5]
 5. Bấm **«Gửi duyệt»**; chưa chắc thì bấm **«Lưu nháp»**. **«Huỷ»** để bỏ.
    *Bạn thấy:* yêu cầu có mã và hiện ở danh sách «Yêu cầu buổi» với tình trạng chờ duyệt.
 
 **Buổi củng cố**
-1. Vào **Đào tạo → Yêu cầu buổi**, bấm **«Tạo yêu cầu buổi củng cố»**.
+1. Vào **Đào tạo → Buổi học**, tab **Yêu cầu buổi**, bấm **«Tạo yêu cầu buổi củng cố»**.
    [ẢNH: dt16-b1]
 2. Ở «Lớp» gõ mã lớp hoặc tên môn rồi chọn lớp; dòng «Học sinh: cả lớp» hiện ra.
 3. Chọn «Ngày buổi củng cố», «Giờ bắt đầu», «Giờ kết thúc», «Phòng»; «Ghi chú (không bắt buộc)».
@@ -52,7 +52,7 @@ nguoi_viet: Code D
 4. Bấm **«Gửi duyệt»** hoặc **«Lưu nháp»**.
 
 ## Các bước (Trưởng cơ sở duyệt)
-1. Vào **Đào tạo → Yêu cầu buổi** (hoặc «Việc chờ tôi duyệt»), lọc **«Chờ duyệt»**.
+1. Vào **Đào tạo → Buổi học**, tab **Yêu cầu buổi** (hoặc «Việc chờ tôi duyệt»), lọc **«Chờ duyệt»**.
    *Bạn thấy:* các yêu cầu với «Loại», «Mã», «Ngày giờ», «Người tạo», «Tình trạng».
 2. Bấm **«Duyệt»**. Nếu hộp «Trùng giờ, vẫn duyệt?» hiện các dòng trùng, đọc rồi xác nhận nếu vẫn muốn duyệt.
    *Bạn thấy:* yêu cầu thành đã duyệt và buổi mới hiện ở «Buổi học» của lớp.
@@ -75,7 +75,7 @@ nguoi_viet: Code D
 |---|---|---|
 | «Chỉ lớp đã duyệt mới có yêu cầu học bù.» (hoặc củng cố, bổ trợ) (mã HMT_LOP_CHUA_DUYET) | lớp chưa «Đã duyệt» | chờ lớp được duyệt |
 | «Chưa chọn lớp» | mở form học bù/bổ trợ không đi từ bản ghi lớp | mở lớp, chọn lại từ menu «Hành động» |
-| «Lớp chưa có học sinh.» | lớp chưa xếp em nào | xếp em vào lớp trước |
+| «Lớp chưa có học sinh.» | lớp chưa xếp học sinh nào | xếp học sinh vào lớp trước |
 
 ## Tập trên dữ liệu mẫu
 - **Cần:** CSKH giả (cskh1–3.cs5) để tạo; Trưởng cơ sở giả (ql.cs5) để duyệt.

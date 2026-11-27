@@ -1,5 +1,5 @@
 ---
-title: Đi cơ hội từ L5 đến L7 (tên em, phiếu Test, lý do bỏ qua test)
+title: Đi cơ hội từ L5 đến L7 (tên học sinh, phiếu Test, lý do bỏ qua test)
 group: vai
 slug: tu-van-ts6b
 order: 45
@@ -13,7 +13,7 @@ checked: 2026-11-24
 
 # Đi cơ hội từ L5 đến L7
 
-**Làm xong bạn có:** cơ hội qua L5, L6, L7 đúng luật (có tên và năm sinh em, phiếu Test hoặc lý do bỏ qua test).
+**Làm xong bạn có:** cơ hội qua L5, L6, L7 đúng luật (có tên và năm sinh học sinh, phiếu Test hoặc lý do bỏ qua test).
 **Ai làm:** Tư vấn tuyển sinh, CSKH. **Màn:** Cơ hội. Đây là phần ngoại lệ của bài «Đi cơ hội qua L1–L8».
 
 > Làm theo các bước dưới, đủ để làm.
