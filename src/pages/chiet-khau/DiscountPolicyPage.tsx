@@ -100,7 +100,11 @@ export function DiscountPolicyPage() {
       key: 'valid',
       header: 'Hiệu lực từ – đến',
       width: 'w-44',
-      cell: (p) => `${formatDate(p.valid_from)} – ${p.valid_to ? formatDate(p.valid_to) : '…'}`,
+      cell: (p) => (
+        <span className="whitespace-nowrap">
+          {`${formatDate(p.valid_from)} – ${p.valid_to ? formatDate(p.valid_to) : '…'}`}
+        </span>
+      ),
     },
     {
       key: 'types',
@@ -110,7 +114,12 @@ export function DiscountPolicyPage() {
           ? 'Mọi nhóm'
           : p.package_type_codes.map(typeName).join(', '),
     },
-    { key: 'branch', header: 'Cơ sở', cell: (p) => branchesLabel(p.branch_ids, branchCode) },
+    {
+      key: 'branch',
+      header: 'Cơ sở',
+      width: 'min-w-24',
+      cell: (p) => branchesLabel(p.branch_ids, branchCode),
+    },
     {
       key: 'approval',
       header: 'Cần duyệt',
@@ -130,10 +139,11 @@ export function DiscountPolicyPage() {
       key: 'actions',
       header: 'Thao tác',
       headerSrOnly: 'Thao tác',
-      width: 'w-40',
+      // Bảng rộng hơn khung ở màn hẹp: giữ cột nút dính mép phải để không mất «Sửa», «Ngừng».
+      width: 'sticky right-0 [&:is(td)]:bg-surface [&:is(th)]:bg-surface-subtle',
       cell: (p) =>
         canEdit && !locked(p) ? (
-          <div className="flex gap-1">
+          <div className="flex flex-col items-start gap-1 whitespace-nowrap max-xl:pr-6 xl:flex-row">
             <Button variant="text" onClick={() => open(p)}>
               Sửa
             </Button>
@@ -155,8 +165,9 @@ export function DiscountPolicyPage() {
     {
       key: 'name',
       header: 'Tên chính sách',
+      width: 'min-w-44',
       cell: (p) => (
-        <span className="flex items-center gap-2">
+        <span className="flex flex-wrap items-center gap-2">
           <b>{p.name}</b>
           {p.is_flexible && <Tag tone="info">Hệ thống</Tag>}
         </span>
@@ -245,9 +256,22 @@ export function DiscountPolicyPage() {
       <PageHeader
         title="Chính sách ưu đãi"
         actions={
-          <Button icon="history" onClick={() => setHistoryOpen(true)}>
-            Lịch sử thay đổi
-          </Button>
+          <>
+            <Button icon="history" onClick={() => setHistoryOpen(true)}>
+              Lịch sử thay đổi
+            </Button>
+            {canCreate && !failed && !loading && (
+              <Button
+                variant="primary"
+                icon="plus"
+                onClick={() =>
+                  setEditing({ kind: tab === 'gift' ? 'gift' : 'discount', policy: null })
+                }
+              >
+                {tab === 'gift' ? 'Thêm quà tặng' : 'Thêm ưu đãi'}
+              </Button>
+            )}
+          </>
         }
       />
       <PolicyHistoryDialog open={historyOpen} onOpenChange={setHistoryOpen} />
@@ -282,21 +306,12 @@ export function DiscountPolicyPage() {
               count: discounts.data.length,
               content: (
                 <div className="flex flex-col gap-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
                     <p className="text-body text-fg-muted">
                       Nhiều chính sách trên một dòng thì cộng dồn; tổng không quá trần ưu đãi (tham
                       số, đổi ở Tham số nghiệp vụ). Giờ tặng tính vào trần: giờ tặng ÷ giờ mua. Vượt
                       trần chỉ cảnh báo, vẫn lưu và gửi được.
                     </p>
-                    {canCreate && (
-                      <Button
-                        variant="primary"
-                        icon="plus"
-                        onClick={() => setEditing({ kind: 'discount', policy: null })}
-                      >
-                        Thêm ưu đãi
-                      </Button>
-                    )}
                   </div>
                   {table(discountColumns, discounts.data, 'Chính sách ưu đãi', (p) => p.id)}
                   <p className="text-caption text-fg-muted">
@@ -312,19 +327,10 @@ export function DiscountPolicyPage() {
               count: gifts.data.length,
               content: (
                 <div className="flex flex-col gap-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
                     <p className="text-body text-fg-muted">
                       Quà tặng là tài liệu, dịch vụ (dòng giá 0 đ). Không tính vào trần ưu đãi.
                     </p>
-                    {canCreate && (
-                      <Button
-                        variant="primary"
-                        icon="plus"
-                        onClick={() => setEditing({ kind: 'gift', policy: null })}
-                      >
-                        Thêm quà tặng
-                      </Button>
-                    )}
                   </div>
                   {table(giftColumns, gifts.data, 'Chính sách quà tặng', (p) => p.id)}
                 </div>

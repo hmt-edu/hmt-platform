@@ -37,7 +37,7 @@ export function RoleListPage() {
       width: 'w-44',
       cell: (r) => scopeName(r.default_scope),
     },
-    { key: 'portals', header: 'Cổng vào', cell: (r) => portalsLabel(r) },
+    { key: 'portals', header: 'Cổng vào', width: 'min-w-32', cell: (r) => portalsLabel(r) },
     {
       key: 'mfa',
       header: 'Hai bước',
