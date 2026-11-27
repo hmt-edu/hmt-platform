@@ -79,7 +79,7 @@ export function useStudentAccount(record: StudentRecord) {
     : !issued
       ? 'Chưa có mật khẩu'
       : row.state === 'HOAT_DONG' && canManage
-        ? 'Không hiển thị · bấm “Đặt lại mật khẩu” để tạo mới'
+        ? 'Không hiển thị · bấm «Đặt lại mật khẩu» để tạo mới'
         : 'Không hiển thị';
 
   const section = (
@@ -93,20 +93,24 @@ export function useStudentAccount(record: StudentRecord) {
       {canView &&
         (query.isError ? (
           <p role="alert">{errorOf(query.error).message}</p>
+        ) : row === null ? (
+          <p className="text-body text-fg-muted">
+            {query.isPending ? 'Đang tải tài khoản' : 'Không tìm thấy tài khoản của học sinh này'}
+          </p>
         ) : (
           <>
             <DetailField
               mode="view"
               label="Tên đăng nhập"
               hint="mã học sinh"
-              value={!row ? '' : issued ? row.student_code : 'Chưa cấp'}
+              value={issued ? row.student_code : 'Chưa cấp'}
             />
-            <DetailField mode="view" label="Trạng thái" value={row ? STATE_TEXT[row.state] : ''} />
+            <DetailField mode="view" label="Trạng thái" value={STATE_TEXT[row.state]} />
             <DetailField mode="view" label="Mật khẩu" value={passwordText} />
             <DetailField
               mode="view"
               label="Đăng nhập gần nhất"
-              value={row?.last_login_at ? formatDateTime(row.last_login_at) : '—'}
+              value={row.last_login_at ? formatDateTime(row.last_login_at) : '—'}
             />
           </>
         ))}
