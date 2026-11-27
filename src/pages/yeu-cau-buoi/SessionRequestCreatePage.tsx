@@ -5,7 +5,7 @@
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router';
+import { useNavigate, useLocation, useSearchParams } from 'react-router';
 import { errorOf, rpc, useDb } from '../../lib/db';
 import { Button } from '../../ui/Button';
 import { Alert, Spinner } from '../../ui/Feedback';
@@ -30,8 +30,10 @@ export function SessionRequestCreatePage() {
   const openFrom = useNavigateFrom();
   const toast = useToast();
   const save = useSaveRequest();
-  const [classId, setClassId] = useState('');
-  const [search, setSearch] = useState('');
+  // Mở từ bản ghi lớp (?lop=, ?ma=): chọn sẵn lớp đó và tìm theo mã để lớp nằm trong danh sách chọn.
+  const [params] = useSearchParams();
+  const [classId, setClassId] = useState(params.get('lop') ?? '');
+  const [search, setSearch] = useState(params.get('ma') ?? '');
   const [date, setDate] = useState('');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
