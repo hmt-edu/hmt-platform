@@ -170,13 +170,17 @@ select is(pg_temp.err($$select app.set_attendance_ops(pg_temp.s('p', 1), jsonb_b
 select is(app.set_attendance_ops(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'CO_MAT', 'contact_reason_code', 'DA_NHAC_VAO_LOP'))),
           1, 'Đúng: vận hành ghi trạng thái và lý do liên hệ (R-DD-03)');
 -- Chưa Done được: giáo viên chưa điểm danh.
-select is(pg_temp.session_pending_reason(pg_temp.s('p', 1)), 'Giáo viên chưa điểm danh 1 em.', 'Lý do chưa Done: giáo viên chưa điểm danh (R-GIO-06)');
+select ok(pg_temp.session_pending_reason(pg_temp.s('p', 1)) like 'Giáo viên chưa điểm danh 1 em.%', 'Lý do chưa Done: giáo viên chưa điểm danh (R-GIO-06)');
 select is(pg_temp.err($$select pg_temp.sudo('select app.mark_session_done(''' || pg_temp.s('p', 1) || '''::uuid)')$$), 'HMT_BUOI_CHUA_DONE_DUOC', 'Chặn: Done khi giáo viên chưa điểm danh xong (R-GIO-06)');
 select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 select is(app.set_attendance_teacher(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'VANG_KHONG_PHEP'))), 1,
           'Đúng: giáo viên điểm danh (Vắng không phép)');
 select is((select ops_status_code from app.session_attendance where session_id = pg_temp.s('p', 1) and student_id = pg_temp.st(1)), 'CO_MAT', 'Ô vận hành giữ riêng (Có mặt)');
 select is((select teacher_status_code from app.session_attendance where session_id = pg_temp.s('p', 1) and student_id = pg_temp.st(1)), 'VANG_KHONG_PHEP', 'Ô giáo viên quyết định trạng thái chính thức (R-DD-02)');
+-- Migration 686 (R-GIO-06, 26/11): hai cột phải khớp mới Done, vận hành sửa ô của mình cho khớp.
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select app.set_attendance_ops(pg_temp.s('p', 1), jsonb_build_array(jsonb_build_object('student_id', pg_temp.st(1), 'status_code', 'VANG_KHONG_PHEP')));
+select pg_temp.claims(pg_temp.uid('gv1'), 'aal1');
 
 -- ================= Done và trừ giờ (R-GIO-01, 04, R-GD-05, R-GD-18, R-GD-12) =================
 select pg_temp.sudo($$select pg_temp.fillreview(pg_temp.s('p', 1))$$);
