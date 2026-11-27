@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { discountText, quantityText, statusSteps } from './quoteRecord';
+import { discountText, quantityText, statusSteps, giftValueText } from './quoteRecord';
 import type { QuotationLine } from './quoteTypes';
 
 const line = (over: Partial<QuotationLine>): QuotationLine => ({
@@ -57,5 +57,26 @@ describe('bản ghi Báo giá (BH-02)', () => {
     expect(quantityText({ quantity: 0.5, unit_code: 'GIO' })).toBe('0,5 giờ');
     expect(quantityText({ quantity: 3, unit_code: 'THANG' })).toBe('3 tháng');
     expect(quantityText({ quantity: 1, unit_code: 'BO' })).toBe('1 bộ');
+  });
+});
+
+describe('giftValueText', () => {
+  it('dòng quà và dòng tặng hiện giá niêm yết một đơn vị', () => {
+    expect(giftValueText({ line_kind: 'GIFT', list_unit_price: 150000, quantity: 1 })).toBe(
+      'Giá trị quà: 150.000 đ',
+    );
+    expect(
+      giftValueText({
+        line_kind: 'ENROL',
+        is_gift_line: true,
+        list_unit_price: 190000,
+        quantity: 10,
+      }),
+    ).toBe('Giá trị quà: 190.000 đ mỗi đơn vị');
+  });
+
+  it('dòng thường, dòng quà cũ chưa chụp giá thì rỗng', () => {
+    expect(giftValueText({ line_kind: 'ENROL', list_unit_price: 190000, quantity: 10 })).toBe('');
+    expect(giftValueText({ line_kind: 'GIFT', list_unit_price: null, quantity: 1 })).toBe('');
   });
 });

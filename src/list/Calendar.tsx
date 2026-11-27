@@ -22,7 +22,7 @@ export type CalendarKind = {
   label: string;
   icon: IconName;
   /** Nền, chữ, viền của sự kiện theo tông của hệ thiết kế. */
-  tone: 'info' | 'brand' | 'success' | 'warning' | 'neutral';
+  tone: 'info' | 'brand' | 'success' | 'warning' | 'danger' | 'neutral';
 };
 
 export type CalendarMode = 'day' | 'week' | 'month';
@@ -32,6 +32,7 @@ const TONE: Record<CalendarKind['tone'], string> = {
   brand: 'border-brand-200 bg-brand-100 text-brand-800',
   success: 'border-transparent bg-success-subtle text-on-success-subtle',
   warning: 'border-transparent bg-warning-subtle text-on-warning-subtle',
+  danger: 'border-transparent bg-danger-subtle text-on-danger-subtle',
   neutral: 'border-transparent bg-surface-subtle text-fg-muted',
 };
 
@@ -72,6 +73,8 @@ export function CalendarView({
   onResourceModeChange,
   renderDetail,
   now,
+  modes = ['day', 'week', 'month'],
+  legend,
 }: {
   events: CalendarEvent[];
   kinds: CalendarKind[];
@@ -91,6 +94,10 @@ export function CalendarView({
   renderDetail: (event: CalendarEvent, close: () => void) => ReactNode;
   /** Giờ hiện tại để vẽ vạch "bây giờ"; không truyền thì không vẽ. */
   now?: Date | undefined;
+  /** Các kiểu xem cho chọn (một kiểu thì không hiện nút chọn). */
+  modes?: CalendarMode[];
+  /** Chú thích thay cho dải chú thích theo loại, Hoàn thành, Huỷ. */
+  legend?: ReactNode;
 }) {
   // Sự kiện đổi sang giờ treo tường Việt Nam trước khi nhóm theo ngày và vẽ theo giờ (R-HT-07); nội dung chi tiết chỉ dùng id.
   const events = useMemo(
@@ -154,16 +161,18 @@ export function CalendarView({
         <IconButton icon="chevronRight" label="Kỳ sau" onClick={() => shift(1)} />
         <h2 className="tabular mx-2 font-display text-h3">{rangeTitle(mode, anchor)}</h2>
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <Segmented
-            label="Kiểu xem lịch"
-            value={mode}
-            onChange={(v) => onModeChange(v as CalendarMode)}
-            options={[
-              { value: 'day', label: 'Ngày' },
-              { value: 'week', label: 'Tuần' },
-              { value: 'month', label: 'Tháng' },
-            ]}
-          />
+          {modes.length > 1 && (
+            <Segmented
+              label="Kiểu xem lịch"
+              value={mode}
+              onChange={(v) => onModeChange(v as CalendarMode)}
+              options={[
+                { value: 'day', label: 'Ngày' },
+                { value: 'week', label: 'Tuần' },
+                { value: 'month', label: 'Tháng' },
+              ].filter((o) => modes.includes(o.value as CalendarMode))}
+            />
+          )}
           {resources && onResourceModeChange && (
             <Segmented
               label="Nhóm lịch"
@@ -179,21 +188,23 @@ export function CalendarView({
           )}
         </div>
       </div>
-      <ul className="flex flex-wrap gap-3 border-b border-border px-4 py-2 text-caption text-fg-label">
-        {kinds.map((k) => (
-          <li key={k.key} className="inline-flex items-center gap-1.5">
-            <span aria-hidden="true" className={cn('size-3 rounded-tag border', TONE[k.tone])} />
-            <Icon name={k.icon} size={16} />
-            {k.label}
+      {legend ?? (
+        <ul className="flex flex-wrap gap-3 border-b border-border px-4 py-2 text-caption text-fg-label">
+          {kinds.map((k) => (
+            <li key={k.key} className="inline-flex items-center gap-1.5">
+              <span aria-hidden="true" className={cn('size-3 rounded-tag border', TONE[k.tone])} />
+              <Icon name={k.icon} size={16} />
+              {k.label}
+            </li>
+          ))}
+          <li className="inline-flex items-center gap-1.5">
+            <Icon name="done" size={16} /> Hoàn thành
           </li>
-        ))}
-        <li className="inline-flex items-center gap-1.5">
-          <Icon name="done" size={16} /> Hoàn thành
-        </li>
-        <li className="inline-flex items-center gap-1.5">
-          <Icon name="cancelled" size={16} /> Huỷ
-        </li>
-      </ul>
+          <li className="inline-flex items-center gap-1.5">
+            <Icon name="cancelled" size={16} /> Huỷ
+          </li>
+        </ul>
+      )}
 
       {mode === 'month' ? (
         <div className="grid grid-cols-7">

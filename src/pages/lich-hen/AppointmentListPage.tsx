@@ -3,23 +3,9 @@
 // (R-CRM-04); không đổi giai đoạn, không tạo việc, không báo ai. Tạo từ đây gắn với một lead (cơ hội thêm khi có TS-08).
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
-import { Button, ButtonLink } from '../../ui/Button';
-import {
-  activityIcon,
-  cancelAppointment,
-  completeAppointment,
-  createLeadAppointment,
-  createOpportunityAppointment,
-  reopenAppointment,
-  rescheduleAppointment,
-} from '../../features/appointments/appointmentApi';
-import { AppointmentDialog } from '../../features/appointments/AppointmentDialog';
-import {
-  CompleteAppointmentDialog,
-  type CompleteArgs,
-} from '../../features/appointments/CompleteAppointmentDialog';
-import { useUndoAppointment } from '../../features/appointments/useUndoAppointment';
-import { RecordPicker, type PickedRecord } from '../../features/appointments/RecordPicker';
+import { Button } from '../../ui/Button';
+import { activityIcon } from '../../features/appointments/appointmentApi';
+import { useAppointmentActions } from '../../features/appointments/useAppointmentActions';
 import { AssignDialog } from '../../features/assign/AssignDialog';
 import { useAssignableStaff } from '../../features/assign/useAssignableStaff';
 import { KanbanBoard } from '../../list/Kanban';
@@ -32,8 +18,8 @@ import { formatDateTime } from '../../lib/format';
 import { useDebounced } from '../../lib/useDebounced';
 import { vnDayBounds } from '../../lib/vnDay';
 import { useAccess } from '../../nav/AccessContext';
-import { BulkActionBar, Code, Tag, type SortState } from '../../ui/Data';
-import { BlockingDialog, ConfirmDialog, ReasonDialog } from '../../ui/Dialogs';
+import { BulkActionBar, Tag, type SortState } from '../../ui/Data';
+import { BlockingDialog } from '../../ui/Dialogs';
 import { Alert, Avatar, Spinner } from '../../ui/Feedback';
 import { useToast } from '../../ui/toastContext';
 import { downloadText, toCsv } from '../lead/csv';
@@ -41,7 +27,13 @@ import { buildLeadGroupTree } from '../lead/leadGroups';
 import { useLeafRows } from '../lead/useLeadData';
 import { useLeadCatalogs } from '../lead/useCatalogs';
 import { EMPTY_APPOINTMENT_STATE, buildAppointmentConfig } from './appointmentConfig';
-import { AppointmentButtons, RecordLink, type RowActions } from './AppointmentParts';
+import {
+  AppointmentButtons,
+  CalendarDetail,
+  RecordLink,
+  type RowActions,
+} from './AppointmentParts';
+import { closingActions } from './closingActions';
 import { peopleWithAppointments } from './appointmentPeople';
 import { STATUS_TONE } from './appointmentTone';
 import {
@@ -54,9 +46,6 @@ import {
   STATUS_LABEL,
   type AppointmentRow,
   type AssignAppointmentsResult,
-  recordKind,
-  recordPath,
-  RECORD_KIND_LABEL,
 } from './appointmentTypes';
 import {
   KANBAN_STATUSES,
@@ -145,7 +134,6 @@ export function AppointmentListPage() {
   const access = useAccess();
   const toast = useToast();
   const refreshData = useRefreshAppointments();
-  const undoAppointment = useUndoAppointment(refreshData);
   const catalogs = useLeadCatalogs();
 
   const pageSize = useIntSetting('list_page_size_default');
@@ -185,19 +173,6 @@ export function AppointmentListPage() {
   const [assignResult, setAssignResult] = useState<AssignAppointmentsResult | null>(null);
   const [exporting, setExporting] = useState(false);
   const [resourceMode, setResourceMode] = useState<'all' | 'people'>('all');
-  const [creating, setCreating] = useState(false);
-  const [picked, setPicked] = useState<PickedRecord | null>(null);
-  const [moving, setMoving] = useState<AppointmentRow | null>(null);
-  const [canceling, setCanceling] = useState<AppointmentRow | null>(null);
-  const [completing, setCompleting] = useState<AppointmentRow | null>(null);
-  const [cancelBusy, setCancelBusy] = useState(false);
-  const [cancelError, setCancelError] = useState<string | null>(null);
-  const [reopening, setReopening] = useState<AppointmentRow | null>(null);
-  const [reopenBusy, setReopenBusy] = useState(false);
-  const [reopenError, setReopenError] = useState<string | null>(null);
-
-  const canEdit = access.can('APPOINTMENT', 'SUA');
-  const canCancel = access.can('APPOINTMENT', 'HUY');
   const canCreate = access.can('APPOINTMENT', 'TAO');
   const canAssign = access.can('APPOINTMENT', 'GIAO_VIEC');
   const canExport = access.can('APPOINTMENT', 'XUAT');
@@ -307,33 +282,12 @@ export function AppointmentListPage() {
           ? counts
           : list;
   const errorText = activeQuery?.isError ? errorOf(activeQuery.error).message : null;
-  const activityName = (code: string) => catalogs.name('ACTIVITY_TYPE', code) ?? code;
-
-  const branchIdOf = (code: string) =>
-    access.teachingBranches.find((b) => b.code === code)?.id ?? '';
-
-  /** Hộp «Hoàn thành lịch hẹn» (TS-11): lỗi ném lại để hộp hiện câu lỗi. */
-  async function completeWith(id: string, args: CompleteArgs) {
-    await completeAppointment(supabase, id, args);
-    await refreshData();
-    toast({ title: 'Đã hoàn thành lịch hẹn.', action: undoAppointment(id) });
-  }
-
-  const actions: RowActions = {
-    canEdit,
-    canCancel,
-    busyId: null,
-    onComplete: (row) => setCompleting(row),
-    onReschedule: setMoving,
-    onCancel: (row) => {
-      setCancelError(null);
-      setCanceling(row);
-    },
-    onReopen: (row) => {
-      setReopenError(null);
-      setReopening(row);
-    },
-  };
+  const {
+    actions,
+    activityName,
+    openCreate,
+    dialogs: actionDialogs,
+  } = useAppointmentActions(catalogs);
 
   const config = useMemo(
     () =>
@@ -345,7 +299,7 @@ export function AppointmentListPage() {
       ),
     // actions đổi mỗi lần vẽ nhưng chỉ chứa các hàm gọi lại ổn định theo trạng thái dưới đây.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [catalogs, access, staff.data, canEdit, canCancel],
+    [catalogs, access, staff.data],
   );
 
   const { start, end } = vnDayBounds();
@@ -481,8 +435,7 @@ export function AppointmentListPage() {
                   icon: 'plus' as const,
                   primary: true,
                   onClick: () => {
-                    setPicked(null);
-                    setCreating(true);
+                    openCreate();
                   },
                 },
               ]
@@ -618,25 +571,7 @@ export function AppointmentListPage() {
                   <CalendarDetail
                     row={row}
                     activity={activityName(row.activity_code)}
-                    actions={{
-                      ...actions,
-                      onComplete: (r) => {
-                        close();
-                        actions.onComplete(r);
-                      },
-                      onReschedule: (r) => {
-                        close();
-                        actions.onReschedule(r);
-                      },
-                      onCancel: (r) => {
-                        close();
-                        actions.onCancel(r);
-                      },
-                      onReopen: (r) => {
-                        close();
-                        actions.onReopen(r);
-                      },
-                    }}
+                    actions={closingActions(actions, close)}
                   />
                 );
               }}
@@ -655,136 +590,7 @@ export function AppointmentListPage() {
         }
       />
 
-      <CompleteAppointmentDialog
-        open={completing !== null}
-        onOpenChange={(o) => !o && setCompleting(null)}
-        target={
-          completing
-            ? {
-                id: completing.id,
-                activityCode: completing.activity_code,
-                isAutoReminder: completing.is_auto_reminder,
-                label: `${activityName(completing.activity_code)} · ${completing.title}`,
-                context: [
-                  completing.record_code,
-                  completing.record_label,
-                  formatDateTime(completing.scheduled_at),
-                ]
-                  .filter(Boolean)
-                  .join(' · '),
-              }
-            : null
-        }
-        resultOptions={catalogs.options('APPOINTMENT_RESULT')}
-        onComplete={completeWith}
-      />
-      <AppointmentDialog
-        open={creating}
-        onOpenChange={setCreating}
-        target={picked}
-        targetPicker={<RecordPicker value={picked} onChange={setPicked} />}
-        activityOptions={catalogs.options('ACTIVITY_TYPE')}
-        onCreate={async (args) => {
-          if (!picked) return;
-          const noteText = args.note.trim();
-          const args2 = {
-            activityCode: args.activityCode,
-            scheduledAt: args.scheduledAt,
-            title: noteText === '' ? activityName(args.activityCode) : noteText,
-            ownerId: args.ownerId,
-          };
-          if (picked.kind === 'OPPORTUNITY') {
-            await createOpportunityAppointment(supabase, {
-              ...args2,
-              opportunityId: picked.recordId,
-            });
-          } else {
-            await createLeadAppointment(supabase, { ...args2, leadId: picked.recordId });
-          }
-          await refreshData();
-          toast({ title: 'Đã tạo lịch hẹn.' });
-        }}
-        onReschedule={() => Promise.resolve()}
-      />
-      {moving && (
-        <AppointmentDialog
-          open
-          onOpenChange={(open) => !open && setMoving(null)}
-          target={{ label: moving.record_label ?? '', branchId: branchIdOf(moving.branch_code) }}
-          activityOptions={[]}
-          reschedule={{
-            id: moving.id,
-            label:
-              moving.title === activityName(moving.activity_code)
-                ? moving.title
-                : `${activityName(moving.activity_code)} · ${moving.title}`,
-            scheduledAt: moving.scheduled_at,
-            ownerId: moving.owner_id,
-            ownerName: moving.owner_name,
-            branchId: branchIdOf(moving.branch_code),
-          }}
-          onCreate={() => Promise.resolve()}
-          onReschedule={async (args) => {
-            await rescheduleAppointment(supabase, args);
-            await refreshData();
-            toast({ title: 'Đã dời lịch hẹn.' });
-          }}
-        />
-      )}
-      <ReasonDialog
-        open={canceling !== null}
-        onOpenChange={(open) => !open && setCanceling(null)}
-        title="Huỷ lịch hẹn"
-        description={
-          canceling ? `${activityName(canceling.activity_code)} · ${canceling.title}` : undefined
-        }
-        options={catalogs.options('APPOINTMENT_CANCEL_REASON').map((o) => ({
-          ...o,
-          needsNote: catalogs.requiresNote('APPOINTMENT_CANCEL_REASON', o.value),
-        }))}
-        confirmLabel="Huỷ lịch hẹn"
-        busy={cancelBusy}
-        error={cancelError}
-        onConfirm={(result) => {
-          if (!canceling) return;
-          setCancelBusy(true);
-          setCancelError(null);
-          void cancelAppointment(supabase, canceling.id, result.option, result.note)
-            .then(refreshData)
-            .then(() => {
-              setCanceling(null);
-              toast({ title: 'Đã huỷ lịch hẹn.', action: undoAppointment(canceling.id) });
-            })
-            .catch((e: unknown) => setCancelError(errorOf(e).message))
-            .finally(() => setCancelBusy(false));
-        }}
-      />
-      <ConfirmDialog
-        open={reopening !== null}
-        onOpenChange={(open) => !open && setReopening(null)}
-        title="Mở lại lịch hẹn?"
-        description={
-          reopening
-            ? `${activityName(reopening.activity_code)} · ${reopening.title} đang ${STATUS_LABEL[reopening.status].toLowerCase()}. Mở lại sẽ đưa về Chưa làm, không đổi giai đoạn, không tạo việc, không gửi thông báo. Lịch sử có ghi lần mở lại.`
-            : undefined
-        }
-        confirmLabel="Mở lại"
-        busy={reopenBusy}
-        error={reopenError}
-        onConfirm={() => {
-          if (!reopening) return;
-          setReopenBusy(true);
-          setReopenError(null);
-          void reopenAppointment(supabase, reopening.id)
-            .then(refreshData)
-            .then(() => {
-              setReopening(null);
-              toast({ title: 'Đã mở lại lịch hẹn.' });
-            })
-            .catch((e: unknown) => setReopenError(errorOf(e).message))
-            .finally(() => setReopenBusy(false));
-        }}
-      />
+      {actionDialogs}
       <AssignDialog
         open={assignOpen}
         onOpenChange={setAssignOpen}
@@ -865,42 +671,6 @@ function AppointmentCard({
         </Tag>
         {row.owner_name && <Avatar name={row.owner_name} />}
       </div>
-      <AppointmentButtons row={row} actions={actions} />
-    </div>
-  );
-}
-
-function CalendarDetail({
-  row,
-  activity,
-  actions,
-}: {
-  row: AppointmentRow;
-  activity: string;
-  actions: RowActions;
-}) {
-  return (
-    <div className="flex w-[320px] max-w-full flex-col gap-2 p-3">
-      <div className="flex items-start justify-between gap-2">
-        <p className="font-semibold">
-          {activity} · {row.title}
-        </p>
-        <Tag tone={STATUS_TONE[row.status]}>{STATUS_LABEL[row.status]}</Tag>
-      </div>
-      {row.record_label && (
-        <p className="text-body">
-          <Code>{row.record_code ?? ''}</Code> {row.record_label}
-        </p>
-      )}
-      <p className="text-caption text-fg-muted">
-        {formatDateTime(row.scheduled_at)}
-        {row.owner_name ? ` · ${row.owner_name}` : ''}
-      </p>
-      {!row.student_test_id && recordPath(row) && (
-        <ButtonLink variant="primary" icon="arrowRight" to={recordPath(row) ?? ''}>
-          Mở {RECORD_KIND_LABEL[recordKind(row)].toLowerCase()} {row.record_code}
-        </ButtonLink>
-      )}
       <AppointmentButtons row={row} actions={actions} />
     </div>
   );

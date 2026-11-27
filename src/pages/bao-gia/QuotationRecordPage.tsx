@@ -34,7 +34,7 @@ import {
   type RowIssue,
 } from './quoteEdit';
 import { percentText } from './quotePreview';
-import { UNIT_LABEL, quantityNumber, statusSteps } from './quoteRecord';
+import { UNIT_LABEL, giftValueText, quantityNumber, statusSteps } from './quoteRecord';
 import type { QuotationLine, QuotationRecord } from './quoteTypes';
 import {
   cancelQuotation,
@@ -300,7 +300,14 @@ function QuotationView({ record }: { record: QuotationRecord }) {
       key: 'price',
       header: 'Đơn giá',
       align: 'right',
-      cell: (l) => <span className="tabular">{formatNumber(l.unit_price)}</span>,
+      cell: (l) => (
+        <span className="tabular">
+          {formatNumber(l.unit_price)}
+          {giftValueText(l) !== '' && (
+            <span className="block text-caption text-fg-muted">{giftValueText(l)}</span>
+          )}
+        </span>
+      ),
     },
     {
       key: 'discount-type',

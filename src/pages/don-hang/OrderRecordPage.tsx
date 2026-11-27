@@ -71,6 +71,7 @@ import {
   lineError,
 } from './orderEdit';
 import { ApproveOrderDialog, RejectOrderDialog } from './OrderApproveDialogs';
+import { giftValueText } from '../bao-gia/quoteRecord';
 import {
   capPercentText,
   orderCapText,
@@ -84,6 +85,7 @@ import { ChooseClassDialog, type ChooseClassTarget } from '../ghi-danh/ChooseCla
 import { setOrderLineClass, useOrderLineClasses } from '../ghi-danh/useEnrollmentData';
 import { mergeLineClasses, type PendingClass } from './pendingClasses';
 import { useOrderPayment, useReceiptPage } from '../phieu-thu/useReceiptData';
+import { termLabel } from '../dieu-khoan/termLogic';
 
 const ORDER_CHANGE_FORMAT = { labels: {} } satisfies FieldFormat;
 
@@ -490,7 +492,14 @@ function OrderView({ record }: { record: OrderRecord }) {
       key: 'price',
       align: 'right',
       header: 'Đơn giá',
-      cell: (l: OrderLine) => <span className="tabular">{formatNumber(l.unit_price)}</span>,
+      cell: (l: OrderLine) => (
+        <span className="tabular">
+          {formatNumber(l.unit_price)}
+          {giftValueText(l) !== '' && (
+            <span className="block text-caption text-fg-muted">{giftValueText(l)}</span>
+          )}
+        </span>
+      ),
     },
     {
       key: 'discount-type',
@@ -669,11 +678,13 @@ function OrderView({ record }: { record: OrderRecord }) {
               {
                 key: 'amount',
                 header: 'Số tiền (đ)',
+                numeric: true,
                 cell: (i) => <span className="tabular">{formatNumber(i.amount)}</span>,
               },
               {
                 key: 'paid',
                 header: 'Đã đóng (đ)',
+                numeric: true,
                 cell: () => <span className="text-fg-muted">—</span>,
               },
             ]}
@@ -1020,7 +1031,7 @@ function OrderView({ record }: { record: OrderRecord }) {
                       onChange={(v) => setDraft((prev) => (prev ? { ...prev, termId: v } : prev))}
                       options={(editOptions.data?.terms ?? []).map((t) => ({
                         value: t.id,
-                        label: t.name,
+                        label: termLabel(t),
                       }))}
                       className="w-full"
                     />

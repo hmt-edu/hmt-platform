@@ -285,10 +285,16 @@ select is(pg_temp.err($$select pg_temp.bulk(array[3], 'Lý do giả')$$), 'HMT_K
 
 -- ---------- Thông tin Done cho BUOI-02 (mig 692) ----------
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select is(jsonb_array_length(app.session_done_info(pg_temp.s('p', 2)) -> 'proxies'), 0, 'R-GIO-11 chặn: phạm vi hẹp không thấy lượt nhập thay');
+select pg_temp.sudo($$update app.permission set scope_code = 'CO_SO' where role_code = 'BRANCH_MANAGER' and module_code = 'ATTENDANCE' and action_code = 'DUYET' and is_active$$);
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((select concat_ws('|', v ->> 'done_mode', v ->> 'done_by_name', v ->> 'missing_review', jsonb_array_length(v -> 'proxies'), v -> 'proxies' -> 0 ->> 'reason')
              from (select app.session_done_info(pg_temp.s('p', 2)) as v) x),
           'HANG_LOAT|Giả bm1|true|1|Giáo viên giả bị ốm', 'R-GIO-11, 12: đọc cách hoàn tất, người bấm, cờ và lượt nhập thay');
 select ok(jsonb_array_length(app.session_done_info(pg_temp.s('p', 3)) -> 'missing') > 0, 'R-GIO-09: buổi Đã chốt trả danh sách còn thiếu');
+select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
+select is((select concat_ws('|', v ->> 'done_mode', jsonb_array_length(v -> 'proxies')) from (select app.session_done_info(pg_temp.s('p', 2)) as v) x),
+          'HANG_LOAT|0', 'R-GIO-11 chặn: vai chỉ xem buổi không thấy người và lý do nhập thay');
 select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
 select is(pg_temp.err($$select app.session_done_info(pg_temp.s('p', 2))$$), 'HMT_KHONG_CO_QUYEN', 'Chặn: quản lý cơ sở khác không đọc');
 
