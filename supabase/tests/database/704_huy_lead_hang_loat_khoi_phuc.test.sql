@@ -136,5 +136,13 @@ select ok(exists (select from app.note where entity_id = pg_temp.lid('b') and bo
 select is(pg_temp.err($$update app.lead set parent_name = 'Đổi' where id = pg_temp.lid('c')$$) is not null, true,
           'CHUNG-20: lead đã huỷ vẫn chỉ xem');
 
+-- Trùng số: trong lúc lead nằm «Đã huỷ», số đó đã được tạo lead mới.
+insert into t select 'moi', (app.create_lead(pg_temp.lead_data('0900704001'))->>'id')::uuid;
+insert into r select 'trung', app.restore_cancelled_leads(array[pg_temp.lid('a')]);
+select is((select (v ->> 'done')::int from r where k = 'trung'), 0, 'R-CRM-46 chặn: số đang có lead dùng thì không khôi phục');
+select ok((select v -> 'skipped' -> 0 ->> 'reason' like '%' || l.code || '%' from r, app.lead l
+            where r.k = 'trung' and l.id = pg_temp.lid('moi')), 'R-CRM-46: dòng bỏ qua nêu mã bản đang dùng');
+select is((select record_status from app.lead where id = pg_temp.lid('a')), 'DA_HUY', 'R-CRM-46: lead vẫn Đã huỷ');
+
 select * from finish();
 rollback;

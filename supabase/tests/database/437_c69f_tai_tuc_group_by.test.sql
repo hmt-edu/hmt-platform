@@ -39,6 +39,15 @@ select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id
   select v.c, (select id from app.branch where code = v.b), gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), v.s, v.ss,
          case when v.c = 'TTC69-3' then (select id from u where key = 'admin') end, 'TAY', date '2026-12-15'
     from (values ('TTC69-1', 'CS5', 'L1', 'L1B'), ('TTC69-2', 'CS5', 'L1', 'L1A'), ('TTC69-3', 'CS5', 'L2', 'L2B'), ('TTC69-4', 'CS1', 'L1', 'L1B')) v (c, b, s, ss)$$);
+-- C-27-17: đợt tái tục tính lúc đọc, nên mỗi phiếu cần ghi danh đang học còn giờ và lớp có khung giờ (3 giờ, 1,5 giờ mỗi tuần).
+select pg_temp.sudo($$insert into app.enrollment (code, student_id, parent_id, branch_id, status_code)
+  select 'GD-' || code, student_id, parent_id, branch_id, 'DANG_HOC' from app.upsale_ticket where code like 'TTC69%'$$);
+select pg_temp.sudo($$insert into app.enrollment_class (enrollment_id, class_id, branch_id, start_date)
+  select e.id, t.class_id, t.branch_id, current_date from app.upsale_ticket t join app.enrollment e on e.code = 'GD-' || t.code$$);
+select pg_temp.sudo($$insert into app.hour_ledger (enrollment_id, branch_id, entry_type, hours)
+  select id, branch_id, 'CAP_MUA', 3 from app.enrollment where code like 'GD-TTC69%'$$);
+select pg_temp.sudo($$insert into app.class_slot (class_id, branch_id, weekday, start_time, end_time, first_date)
+  select class_id, branch_id, extract(isodow from current_date)::int, '18:00', '19:30', current_date from app.upsale_ticket where code like 'TTC69%'$$);
 select pg_temp.sudo($$set local session_replication_role = 'origin'$$);
 
 set local role authenticated;
@@ -46,7 +55,7 @@ select pg_temp.claims(pg_temp.uid('admin'), 'aal2');
 select is((app.upsale_group_counts('{"q": "TTC69"}'::jsonb, array['stage']) ->> 'total')::int, 4, 'Group By giai đoạn: tổng 4 phiếu tái tục giả');
 select is((select (g ->> 'count')::int from jsonb_array_elements(app.upsale_group_counts('{"q": "TTC69"}'::jsonb, array['stage']) -> 'groups') g where g ->> 'k1' = 'L1'), 3, 'Nhóm L1 có 3 phiếu');
 select is(jsonb_array_length(app.upsale_group_counts('{"q": "TTC69"}'::jsonb, array['stage', 'substage']) -> 'groups'), 3, 'Hai cấp giai đoạn, nhóm con: ba nhóm lá (L1·L1B, L1·L1A, L2·L2B)');
-select is((select g ->> 'l1' from jsonb_array_elements(app.upsale_group_counts('{"q": "TTC69"}'::jsonb, array['campaign']) -> 'groups') g), 'Tái tục 12/2026', 'Nhãn nhóm đợt tái tục theo tháng hết giờ dự kiến');
+select is((select g ->> 'l1' from jsonb_array_elements(app.upsale_group_counts('{"q": "TTC69"}'::jsonb, array['campaign']) -> 'groups') g), 'Tái tục ' || to_char((now() at time zone 'Asia/Ho_Chi_Minh')::date + 14, 'MM/YYYY'), 'Nhãn nhóm đợt tái tục theo tháng hết giờ dự kiến');
 select is((select g ->> 'l1' from jsonb_array_elements(app.upsale_group_counts('{"q": "TTC69"}'::jsonb, array['owner']) -> 'groups') g where g ->> 'k1' = (select id::text from u where key = 'admin')), 'Giả admin', 'Nhãn nhóm phụ trách là tên người');
 select is((app.upsale_group_counts('{"q": "TTC69", "owner_id": null}'::jsonb, array['stage']) ->> 'total')::int, 4, 'Bộ lọc owner_id rỗng không lọc');
 select is((app.upsale_group_counts(jsonb_build_object('q', 'TTC69', 'owner_id', (select id from u where key = 'admin')), array['stage']) ->> 'total')::int, 1, 'Bộ lọc owner_id áp dụng cho số đếm (mở nhóm phụ trách)');

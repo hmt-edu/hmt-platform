@@ -25,7 +25,7 @@ export const EMPTY_LEAD_STATE: ListState = {
 export function buildLeadConfig(
   catalogs: LeadCatalogs,
   access: AccessView,
-  options: { trash?: boolean } = {},
+  options: { trash?: boolean; importBatches?: { value: string; label: string }[] | undefined } = {},
 ): ListConfig<LeadRow> {
   const stageLabel = (code: string) => codeAndName(code, catalogs.name('LEAD_STAGE', code));
   const withCode = (catalog: string) =>
@@ -200,6 +200,18 @@ export function buildLeadConfig(
                 value: b.id,
                 label: `${b.code} ${b.name}`,
               })),
+            },
+          ]
+        : []),
+      // Chỉ hiện khi đã có lần nhập từ file.
+      ...(options.importBatches?.length
+        ? [
+            {
+              key: 'import_batch',
+              label: 'Lần nhập',
+              type: 'select' as const,
+              ops: ['eq' as const],
+              options: options.importBatches,
             },
           ]
         : []),

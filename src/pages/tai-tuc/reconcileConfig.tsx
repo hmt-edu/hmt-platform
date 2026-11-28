@@ -1,10 +1,11 @@
 // Cấu hình bảng TT-04 Đối chiếu tái tục theo tháng (canvas 9933 TT04) cho khuôn K03. Cột: Học sinh, Lớp, Ghi danh (n), Cơ sở, Giờ còn, Hết giờ dự kiến,
-// Campaign, Lý do chưa có phiếu, Xử lý. Lọc, tìm kiếm, phân trang làm ở máy chủ; tháng đổi bằng bộ lọc Campaign.
+// Campaign, Lý do chưa có phiếu, Xử lý. Lọc, tìm kiếm, phân trang làm ở máy chủ; tháng đổi bằng bộ lọc Campaign. Ghi danh (n): số đếm, bấm mở danh sách mã.
 import { formatDate } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
+import { EnrollmentCodes } from './EnrollmentCodes';
 import { reasonLabel } from './reconcileLogic';
 import type { ReconcileRow } from './reconcileTypes';
 
@@ -35,7 +36,12 @@ export function buildReconcileConfig(
         ),
       },
       { key: 'class', label: 'Lớp', render: (r) => r.class_code },
-      { key: 'enroll', label: 'Ghi danh (n)', render: (r) => r.enrollment_codes ?? MUTED },
+      {
+        key: 'enroll',
+        label: 'Ghi danh (n)',
+        render: (r) =>
+          r.enrollment_codes ? <EnrollmentCodes codes={r.enrollment_codes} /> : MUTED,
+      },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
       {
         key: 'hours',

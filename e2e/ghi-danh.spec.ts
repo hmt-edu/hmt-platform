@@ -44,11 +44,10 @@ test('GD-02, GD-04: bản ghi nêu quỹ giờ và lớp; Sổ giờ nêu dòng 
   // Không có nút "Tạo phiếu thu tái tục thủ công" (TT-03 đã bỏ) và ghi danh Đang học không có nút Xếp lớp.
   await expect(page.getByRole('button', { name: /tái tục/i })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Xếp lớp', exact: true })).toHaveCount(0);
-  // GD-02 (canvas GD02): tab Sổ giờ có bảng xem nhanh và nút mở sổ đầy đủ.
-  await page.getByRole('tab', { name: 'Sổ giờ', exact: true }).click();
+  // GD-02 một trang, không tab (28/11): sổ giờ gần nhất nằm ngay trên trang, nút mở sổ đầy đủ.
+  await expect(page.getByRole('tab')).toHaveCount(0);
   await expect(page.getByRole('table', { name: 'Sổ giờ gần đây' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Mở sổ giờ đầy đủ' })).toBeVisible();
-  await page.getByRole('button', { name: 'Sổ giờ', exact: true }).click();
+  await page.getByRole('button', { name: 'Xem sổ đầy đủ' }).click();
   await expect(page).toHaveURL(new RegExp(`/ghi-danh/${seed.learning.id}/so-gio$`));
   await showAllColumns(page);
   const ledger = page.getByRole('table', { name: 'Sổ giờ' });
@@ -62,7 +61,7 @@ test('GD-02: ghi danh Chờ xếp lớp có câu «Chưa có lớp. Bấm Xếp 
   await enterAs(page, 'cskh.cs5');
   await page.goto(`/crm/ghi-danh/${seed.waiting.id}`);
   await expect(page.getByText('Bấm Xếp lớp để chọn lớp và ngày vào lớp.').first()).toBeVisible();
-  await expect(page.getByText('Ngày hết giờ dự kiến chưa có (chưa có lớp)')).toBeVisible();
+  await expect(page.getByText(/ngày kết thúc dự kiến Chưa có lớp/)).toBeVisible();
   await page.goto(`/crm/ghi-danh/${seed.learning.id}`);
   await expect(page.getByRole('heading', { level: 2, name: seed.learning.code })).toBeVisible();
   await expect(page.getByText('Quỹ giờ bằng 0.')).toHaveCount(0);
