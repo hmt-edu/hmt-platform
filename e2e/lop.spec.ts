@@ -75,10 +75,15 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await page.getByLabel('Tổng số buổi').fill('12');
   await page.getByLabel('Ngày bắt đầu').fill('2027-01-05');
   // Một khung giờ Thứ 3 (ngày 05/01/2027 là Thứ 3).
-  // Time Table 7 thứ xếp dọc (khung LOP03_*): thứ nào cũng thấy, tiêu đề thứ kèm số khung giờ.
-  await expect(page.getByRole('region', { name: /^Time Table (Thứ|Chủ nhật)/ })).toHaveCount(7);
+  // Time Table tab theo thứ như bản ghi: một bảng và một nút thêm cho thứ đang chọn, mặc định Thứ 2.
+  await expect(page.getByRole('tab', { name: /^(Thứ|Chủ nhật)/ })).toHaveCount(7);
+  await expect(page.getByRole('tab', { name: 'Thứ 2' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('button', { name: /^Thêm khung giờ/ })).toHaveCount(1);
+  await page.getByRole('tab', { name: 'Thứ 3' }).click();
   await page.getByRole('button', { name: 'Thêm khung giờ Thứ 3' }).click();
-  await expect(page.getByRole('heading', { name: 'Thứ 3 (1)' })).toBeVisible();
+  await expect(page.getByRole('tab', { name: /^Thứ 3\s*1$/ })).toBeVisible();
+  await expect(page.getByLabel('Thứ 3 giờ bắt đầu')).toBeVisible();
+  await expectAccessible(page);
   // «Xem trước ngày kết thúc dự kiến»: tính ở máy chủ từ khung giờ đang nhập, chưa lưu.
   await expect(page.locator('dt', { hasText: 'Kết thúc dự kiến' }).locator('+ dd')).toHaveText(
     /^\d{2}\/\d{2}\/\d{4}$/,
@@ -138,6 +143,50 @@ test('LOP-03 tạo lớp, LOP-01 tìm, LOP-02 hồ sơ, LOP-05 Trình, LOP-06 Hu
   await page.getByRole('menuitem', { name: 'Huỷ lớp' }).click();
   await page.getByRole('button', { name: 'Huỷ lớp' }).last().click();
   await expect(page.getByText('Huỷ lớp xong.').first()).toBeVisible();
+});
+
+test('LOP-03 sửa lớp đã duyệt: Time Table mở đúng thứ có khung, không tràn ngang trang', async ({
+  page,
+}) => {
+  const db = new pg.Client({ connectionString: DB_URL });
+  await db.connect();
+  let classId: string;
+  try {
+    // Tạo và duyệt một lớp Thứ 4 bằng chính các hàm nghiệp vụ, dưới quyền Trưởng cơ sở CS5 giả.
+    await db.query('begin');
+    await db.query(
+      `select set_config('request.jwt.claims', (app.custom_access_token_hook(jsonb_build_object('user_id', id,
+         'claims', jsonb_build_object('sub', id, 'role', 'authenticated', 'aal', 'aal1'))) -> 'claims')::text, true)
+         from app.user_account where login_name = 'truongcs.cs5@thu.hoamatoan.invalid'`,
+    );
+    const created = await db.query<{ id: string }>(
+      `select app.create_class(jsonb_build_object(
+         'branch_id', (select id from app.branch where code = 'CS5'), 'year_code', '2627', 'subject_code', 'TOAN',
+         'grade_code', 'K06', 'class_type_code', 'CB', 'level_code', 'A', 'max_students', 0,
+         'start_date', '2027-01-06', 'total_sessions', 4,
+         'curriculum_ref', (select code from app.curriculum_frame where subject_code = 'TOAN' and grade_code = 'K06' limit 1),
+         'slots', jsonb_build_array(jsonb_build_object('weekday', 3, 'start_time', '18:00', 'end_time', '19:30',
+           'repeat_weeks', 1, 'first_date', '2027-01-06')))) ->> 'id' as id`,
+    );
+    classId = created.rows[0]?.id ?? '';
+    for (const status of ['DA_TRINH', 'DA_XAC_NHAN', 'DA_DUYET'])
+      await db.query('select app.transition_class($1, $2)', [classId, status]);
+    await db.query('commit');
+  } finally {
+    await db.end();
+  }
+
+  await enterAs(page, 'truongcs.cs5');
+  await page.goto(`/crm/lop/${classId}/sua`);
+  await expect(page.getByLabel('Áp dụng thay đổi Time Table từ ngày')).toBeVisible();
+  // weekday 3 là Thứ 4.
+  await expect(page.getByRole('tab', { name: /^Thứ 4/ })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByLabel('Thứ 4 giờ bắt đầu')).toHaveValue(/^18:00/);
+  const overflow = await page.evaluate<number>(
+    'document.documentElement.scrollWidth - document.documentElement.clientWidth',
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+  await expectAccessible(page);
 });
 
 test('LOP-08: lịch tuần cơ sở mở được, đổi tuần', async ({ page }) => {

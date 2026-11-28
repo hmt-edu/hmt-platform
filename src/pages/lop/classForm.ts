@@ -100,6 +100,11 @@ export function newSlot(weekday: number, startDate: string): SlotDraft {
   };
 }
 
+/** Tab Time Table mở sẵn: thứ đầu tuần có khung giờ, chưa có khung nào thì Thứ 2. */
+export function defaultDayTab(slots: { weekday: number }[]): string {
+  return String(slots.length > 0 ? Math.min(...slots.map((s) => s.weekday)) : 1);
+}
+
 export type FormErrors = Partial<Record<string, string>>;
 
 /** Kiểm hợp lệ phía giao diện (máy chủ kiểm lại). `full` = Nháp, Từ chối hoặc Tạo; `false` = chỉ Time Table (Đã trình, Đã xác nhận, Đã duyệt). */

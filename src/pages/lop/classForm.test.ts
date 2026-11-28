@@ -11,6 +11,7 @@ import {
   prefillFromParams,
   remainingClassPath,
   longSlotWarning,
+  defaultDayTab,
   slotSummary,
   errorSummary,
   teacherOptionLabel,
@@ -359,5 +360,14 @@ describe('R-LOP-07: khung chương trình theo phân loại', () => {
     expect(
       validateForm({ ...EMPTY_FORM, typeCode: 'CB' }, false, true).curriculumRef,
     ).toBeUndefined();
+  });
+});
+
+describe('defaultDayTab (tab Time Table mở sẵn)', () => {
+  it('mở thứ đầu tuần có khung giờ', () => {
+    expect(defaultDayTab([{ weekday: 7 }, { weekday: 3 }])).toBe('3');
+  });
+  it('chưa có khung giờ thì Thứ 2', () => {
+    expect(defaultDayTab([])).toBe('1');
   });
 });
