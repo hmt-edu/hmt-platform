@@ -1,6 +1,6 @@
 // GD-02 Ghi danh (bản ghi, khuôn K06, chỉ đọc): thông tin ghi danh, quỹ giờ (cấp, tặng, đã học, còn lại), dòng xếp lớp và lịch sử chuyển lớp, nút Xếp lớp (khi Chờ xếp lớp)
 // và Sổ giờ. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Điều chỉnh giờ (GD-05, Ghi danh · Duyệt). Chưa làm ở cụm này: Tạo ticket (CS-04, sau 17/11), "Tạo phiếu thu tái tục thủ
-// công" (TT-03 đã bỏ). Ngày hết giờ dự kiến, hạn gói (chỉ dự báo) chưa tính: hiện "—". Giao diện không tính giờ: số do hàm DB trả.
+// công" (TT-03 đã bỏ). Ngày hết giờ dự kiến do hàm DB trả (theo lịch buổi của lớp; chưa có lớp thì «Chưa có lớp»); hạn gói chưa tính. Giao diện không tính giờ: số do hàm DB trả.
 import { useParams } from 'react-router';
 import { useState } from 'react';
 import { useNavigateFrom } from '../../layout/crumbTrail';
@@ -194,7 +194,13 @@ export function EnrollmentRecordPage() {
             <DetailField
               label="End Date (dự kiến, chỉ dự báo)"
               mode={view}
-              value={e.expected_end_date ? formatDate(e.expected_end_date) : ''}
+              value={
+                classes.length === 0
+                  ? 'Chưa có lớp'
+                  : e.expected_end_date
+                    ? formatDate(e.expected_end_date)
+                    : ''
+              }
             />
             <DetailField
               label="Hạn gói (chỉ dự báo)"
@@ -310,7 +316,7 @@ export function EnrollmentRecordPage() {
               <p className="text-caption text-fg-muted">
                 {classes.length === 0 && 'Ngày hết giờ dự kiến chưa có (chưa có lớp): '}
                 {classes.length > 0 && 'Ngày hết giờ dự kiến '}
-                cộng lịch của lớp đang học, chỉ để dự báo, không chặn gì.
+                tính theo lịch buổi sắp tới của lớp đang học, chỉ để dự báo, không chặn gì.
               </p>
             </section>
           </>

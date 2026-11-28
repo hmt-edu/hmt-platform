@@ -48,6 +48,9 @@ select pg_temp.sudo($$insert into app.hour_ledger (enrollment_id, branch_id, ent
   select id, branch_id, 'CAP_MUA', 3 from app.enrollment where code like 'GD-TTC69%'$$);
 select pg_temp.sudo($$insert into app.class_slot (class_id, branch_id, weekday, start_time, end_time, first_date)
   select class_id, branch_id, extract(isodow from current_date)::int, '18:00', '19:30', current_date from app.upsale_ticket where code like 'TTC69%'$$);
+select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time)
+  select t.class_id, t.branch_id, (now() at time zone 'Asia/Ho_Chi_Minh')::date + 7 * n, '18:00', '19:30'
+    from app.upsale_ticket t, generate_series(1, 2) n where t.code like 'TTC69%'$$);
 select pg_temp.sudo($$set local session_replication_role = 'origin'$$);
 
 set local role authenticated;

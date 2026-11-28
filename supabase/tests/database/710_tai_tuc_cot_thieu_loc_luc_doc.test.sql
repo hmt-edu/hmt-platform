@@ -44,7 +44,7 @@ select pg_temp.sudo($$insert into app.class (code, branch_id, year_code, subject
 select pg_temp.sudo($$insert into app.class_slot (class_id, branch_id, weekday, start_time, end_time, first_date)
   select c.id, c.branch_id, extract(isodow from current_date)::int, '18:00', '19:30', current_date from app.class c where c.code = 'LOP710'$$);
 select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time, status_code)
-  select c.id, c.branch_id, current_date + v.n, '18:00', '19:30', v.st from app.class c, (values (-7, 'NHAP'), (7, 'HUY_KHONG_PHI'), (14, 'NHAP')) v (n, st) where c.code = 'LOP710'$$);
+  select c.id, c.branch_id, current_date + v.n, '18:00', '19:30', v.st from app.class c, (values (-7, 'NHAP'), (7, 'HUY_KHONG_PHI'), (14, 'NHAP'), (21, 'NHAP'), (28, 'NHAP'), (35, 'NHAP'), (42, 'NHAP'), (49, 'NHAP')) v (n, st) where c.code = 'LOP710'$$);
 -- Em A: ghi danh cũ A (mua 24, còn học), ghi danh mới B bị đảo hết tiền (4,55 rồi -4,55), ghi danh C đang bảo lưu (không tính giờ còn).
 select pg_temp.sudo($$insert into app.enrollment (code, student_id, parent_id, branch_id, status_code)
   select v.code, s.id, s.parent_id, s.branch_id, v.st
@@ -91,7 +91,7 @@ create function pg_temp.today() returns date language sql stable as $$ select (n
 create function pg_temp.codes(p_filters jsonb) returns text[] language sql stable as $$
   select array(select r ->> 'code' from jsonb_array_elements(app.list_upsale_tickets(p_filters) -> 'rows') with ordinality as t (r, o)
                 where r ->> 'code' like 'TT91710%' order by o) $$;
--- Giờ còn 4,5 (A) + 3 (D) = 7,5 giờ, 1,5 giờ mỗi tuần: 5 tuần.
+-- Giờ còn 4,5 (A) + 3 (D) = 7,5 giờ, mỗi buổi 1,5 giờ từ ngày +14: hết 4,5 giờ ở buổi +28, hết 7,5 giờ ở buổi +42.
 -- ---- Dòng danh sách và bản ghi ----
 select is(pg_temp.row_of('TT917101') ->> 'parent_name', 'Phụ huynh giả 710', 'TT-01: dòng có phụ huynh');
 select is(pg_temp.row_of('TT917101') ->> 'subject_code', 'TOAN', 'TT-01: dòng có môn của lớp');
@@ -100,19 +100,19 @@ select is(pg_temp.row_of('TT917101') -> 'last_contact' ->> 'body', null, 'Liên 
 select is((select e ->> 'subject_code' from jsonb_array_elements(pg_temp.get('TT917101') -> 'enrollments') e where e ->> 'code' = 'GD710A'),
           'TOAN', 'Ghi danh không ghi môn thì lấy môn của lớp');
 select is((select (e ->> 'expected_end_date')::date from jsonb_array_elements(pg_temp.get('TT917101') -> 'enrollments') e where e ->> 'code' = 'GD710A'),
-          pg_temp.today() + 21, 'R-GIO-04: ghi danh vào lớp sớm hết trước (4,5 giờ, 3 tuần)');
+          pg_temp.today() + 28, 'R-GIO-04: ghi danh vào lớp sớm hết trước (4,5 giờ)');
 select is((select (e ->> 'expected_end_date')::date from jsonb_array_elements(pg_temp.get('TT917101') -> 'enrollments') e where e ->> 'code' = 'GD710D'),
-          pg_temp.today() + 35, 'R-GIO-04: ghi danh sau hết sau khi trừ xong ghi danh trước (7,5 giờ, 5 tuần)');
+          pg_temp.today() + 42, 'R-GIO-04: ghi danh sau hết sau khi trừ xong ghi danh trước (7,5 giờ)');
 select is((select e -> 'expected_end_date' from jsonb_array_elements(pg_temp.get('TT917101') -> 'enrollments') e where e ->> 'code' = 'GD710C'),
           'null'::jsonb, 'Ghi danh bảo lưu không có ngày hết');
 select is(pg_temp.get('TT917101') -> 'last_review' ->> 'comment', 'Nhận xét giả đã Done', 'Nhận xét gần nhất chỉ lấy buổi đã Done');
 select is(pg_temp.get('TT917102') -> 'last_review', 'null'::jsonb, 'Chưa có nhận xét thì để trống');
 -- ---- Lọc, sắp, nhóm theo ngày tính lúc đọc ----
-select is(pg_temp.codes(jsonb_build_object('campaign_month', to_char(pg_temp.today() + 35, 'YYYY-MM'))), array['TT917101'],
+select is(pg_temp.codes(jsonb_build_object('campaign_month', to_char(pg_temp.today() + 42, 'YYYY-MM'))), array['TT917101'],
           'Lọc Campaign theo ngày tính lúc đọc, phiếu tạo tay không bị sót');
 select is(pg_temp.codes('{}'), array['TT917101', 'TT917102'], 'Sắp theo hết giờ dùng ngày tính lúc đọc: phiếu không còn giờ xuống cuối dù cột ghi sẵn sớm hơn');
 select is((select (g ->> 'count')::int from jsonb_array_elements(app.upsale_group_counts('{"q": "TT91710"}', array['campaign']) -> 'groups') g
-            where g ->> 'k1' = to_char(pg_temp.today() + 35, 'YYYY-MM')), 1, 'Nhóm theo đợt tái tục dùng ngày tính lúc đọc');
+            where g ->> 'k1' = to_char(pg_temp.today() + 42, 'YYYY-MM')), 1, 'Nhóm theo đợt tái tục dùng ngày tính lúc đọc');
 select is((select (g ->> 'count')::int from jsonb_array_elements(app.upsale_group_counts('{"q": "TT91710"}', array['campaign']) -> 'groups') g
             where g ->> 'k1' = ''), 1, 'Phiếu không còn giờ vào nhóm Chưa có');
 select is((select count(*)::int from app.upsale_live(null) v where v.ticket_id in (pg_temp.tid('TT917101'), pg_temp.tid('TT917102'))), 2,

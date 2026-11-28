@@ -80,3 +80,10 @@ Phần này thay các câu ở trên về «chỉ L6», «một đơn đang số
 - `app.upsale_live(các phiếu)`: giờ còn, ngày hết giờ dự kiến tính một lượt; bản ghi, danh sách, bộ lọc Campaign, sắp xếp, Group By dùng chung. `upsale_ticket_live` gọi lại hàm này. Màn Đối chiếu vẫn theo cột đã ghi.
 - Dòng danh sách, Kanban, bản ghi trả thêm `parent_name`, `subject_code`, `last_contact` (`app.upsale_row_extra`).
 - `get_upsale_ticket`: mỗi ghi danh có `subject_code`, `expected_end_date` (trừ lần lượt theo R-GIO-04); `last_review` = nhận xét giáo viên gần nhất ở buổi đã Done mà người xem được thấy. `list_upsale_orders` trả `paid_amount`.
+
+## Cập nhật 28/11/2026 (migration 712, C-27-18)
+
+- `create_order_from_upsale_ticket`, `create_order_from_quotation` (báo giá của phiếu): chỉ khi phiếu ở L8, không giới hạn số đơn (lỗi `HMT_PHIEU_CHUA_O_L8`, R-GD-13). `actions` chỉ có `tao_don` ở L8; `tao_bao_gia` mọi giai đoạn.
+- Ngày dự kiến hết giờ theo lịch buổi thật: `app.class_schedule` (buổi từ hôm nay, Nháp hoặc Đã chốt, loại buổi trừ giờ). Dùng cho `upsale_live`, `upsale_candidates`, `app.enrollment_expected_end` (trang Ghi danh, ghi danh trên phiếu).
+- Chưa có lớp, hết giờ, hoặc lịch đã sinh không đủ học hết số giờ còn: để trống.
+- Tab Tái tục ở hồ sơ phụ huynh, học sinh trả giờ còn, ngày hết giờ tính lúc đọc.
