@@ -48,6 +48,9 @@ select pg_temp.sudo($$insert into app.class (code, branch_id, year_code, subject
   select c.code, b.id, '2627', 'TOAN', 'K09', 'CB', 'A', current_date, 10 from app.branch b, (values ('LOP553'), ('LOP553B')) c (code) where b.code = 'CS1'$$);
 select pg_temp.sudo($$insert into app.class_slot (class_id, branch_id, weekday, start_time, end_time, first_date)
   select c.id, c.branch_id, 1, '18:00', '19:30', date_trunc('week', current_date)::date from app.class c where c.code in ('LOP553', 'LOP553B')$$);
+-- Ngày dự kiến hết giờ theo lịch buổi thật (R-GD-13, 28/11): mỗi tuần một buổi 1,5 giờ.
+select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time)
+  select c.id, c.branch_id, (now() at time zone 'Asia/Ho_Chi_Minh')::date + 7 * n, '18:00', '19:30' from app.class c, generate_series(1, 40) n where c.code in ('LOP553', 'LOP553B')$$);
 -- Ghi danh: A giờ ít (sinh phiếu), B giờ nhiều (không), C giờ ít nhưng từng L5 (không sinh lại), D giờ ít nhưng Bảo lưu (không), E đã Dừng, F chuyển lớp.
 select pg_temp.sudo($$insert into app.enrollment (code, student_id, parent_id, branch_id, status_code)
   select 'GD553' || right(s.code, 1), s.id, s.parent_id, s.branch_id, v.st

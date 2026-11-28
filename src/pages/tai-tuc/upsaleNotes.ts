@@ -10,8 +10,8 @@ export function upsaleStageNote(
   lostReasonName: string | null,
   /** Ngưỡng giờ, ngày từ tham số upsale_hours_left_threshold, upsale_days_left_threshold (không viết cứng); chưa đọc được thì bỏ phần ngưỡng. */
   thresholds: { hours: number | null; days: number | null },
-  /** Số đếm thật của phiếu: câu không được nói «đã gửi», «đã có đơn» khi số bằng 0 (anh Trường 27/11). */
-  counts: { sentQuotes: number; orders: number },
+  /** Số đếm thật của phiếu: câu không được nói «đã gửi» khi số bằng 0 (anh Trường 27/11). */
+  counts: { sentQuotes: number },
   /** Người xem đang có nút «Giao» trên màn (điện thoại và người không có quyền thì không). */
   canAssign: boolean,
 ): UpsaleNote | null {
@@ -40,9 +40,6 @@ export function upsaleStageNote(
           ? 'Phụ huynh đồng ý tái tục. Chờ gửi báo giá.'
           : 'Phụ huynh đồng ý tái tục.',
     };
-  }
-  if (t.stage_code === 'L7' && counts.orders > 0) {
-    return { tone: 'info', text: 'Đã có đơn, chờ phụ huynh đóng tiền.' };
   }
   if (t.stage_code === 'L7' && counts.sentQuotes > 0) {
     return { tone: 'info', text: 'Đã gửi báo giá, chờ phụ huynh đóng tiền.' };
