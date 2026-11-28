@@ -44,7 +44,7 @@ Không danh mục nào được xoá hay đổi mã.
 | 25 | Lý do điều chỉnh giờ | 1 | Mở | Sửa sai danh sách/điểm danh, Bù giờ do lỗi trung tâm, Tặng giờ chăm sóc (cần duyệt), Chuyển dữ liệu từ hệ thống cũ, Khác (bắt buộc ghi chú) |
 | 26 | Hình thức thu tiền | 1 | Mở | Tiền mặt, Chuyển khoản, Quẹt thẻ |
 | 27 | Tài khoản nhận tiền | 1, theo cơ sở | Mở | Do Kế toán khai |
-| 28 | Lý do không tái tục | 1 | Mở | Học phí, Chất lượng, Lịch học, Chuyển nhà, Học nơi khác, Đủ mục tiêu, Khác |
+| 28 | Lý do không tái tục | 1 | Mở | Học phí, Chất lượng, Lịch học, Chuyển nhà, Học nơi khác, Đủ mục tiêu, Khác. **(28/11)** Phiếu tái tục không còn bắt chọn danh mục này: giai đoạn con L5A đến L5G là lý do (1.4); danh mục giữ cho dữ liệu cũ |
 | 31 | Lý do đảo khoản tiền | 1 | Mở | Nhập sai số tiền, Trùng phiếu, Sai đơn hoặc sai khách, Khác |
 | 32 | Lý do khoá tài khoản | 1 | Mở | Nghỉ việc, Dừng học, Tạm nghỉ, Nghi lộ mật khẩu, Khác |
 | 33 | Lý do bỏ qua test **(16/10)** | 1 | Mở, luôn có một mục "Lý do khác" (bắt buộc ghi chú) | **(04/11, T3)** BQ1 PH từ chối làm bài test · BQ2 Học sinh đã có kết quả đánh giá trước đó · BQ3 Đã đủ thông tin trình độ qua trao đổi · BQ4 Ghi danh nhanh theo chương trình khuyến mãi · BQ5 Lý do khác. Bốn giá trị cũ (16/10) chuyển Ngừng |
@@ -93,16 +93,21 @@ Không có C3K.
 
 
 ### 1.4 Giai đoạn phiếu tái tục
-| Mã | Tên | Ghi chú |
+
+**(28/11 và 29/11, anh Trường chốt theo bảng Config; thay bảng cũ; migration 713)** Mọi giai đoạn đều có giai đoạn con. Phiếu **kết thúc** khi ở L5 (mọi giai đoạn con) hoặc L8C; còn lại là đang mở.
+
+| Mã | Tên | Giai đoạn con |
 |---|---|---|
-| L1 | Chờ tái tục | L1A Hệ thống sinh tự động · L1B Tạo thủ công |
-| L2 | Đã liên hệ | |
-| L3 | Đang tư vấn | Có lịch hẹn tư vấn |
-| L4 | Đang cân nhắc | |
-| L5 | Không tái tục | Kết thúc, bắt buộc chọn lý do (danh mục 28) |
-| L6 | Đồng ý tái tục | |
-| L7 | Dự thu | L7A Đã gửi báo giá · L7B Đã có đơn, chờ đóng tiền |
-| L8 | Hoàn thành tái tục | L8A Đã đóng đủ, đã cấp quỹ giờ mới |
+| L1 | Chờ tái tục | L1A Hệ thống sinh tự động · L1B Tạo thủ công · L1C Đã tiếp nhận, chờ xếp lịch gọi |
+| L2 | Tổng hợp thông tin | L2A Chờ nhận xét của giáo viên · L2B Chờ kết quả kiểm tra định kỳ · L2C Chờ xác nhận lộ trình tiếp theo · L2D Đã đủ thông tin, sẵn sàng tư vấn |
+| L3 | Chưa liên hệ được | L3A Không nghe máy · L3B Máy bận, hẹn gọi lại · L3C Sai số điện thoại · L3D Đã nhắn tin, chờ phản hồi · L3E Quá 3 lần không liên hệ được |
+| L4 | Đang tư vấn | L4A Phụ huynh đang cân nhắc · L4B Chờ phụ huynh họp gia đình · L4C Đang thương lượng học phí · L4D Vướng lịch học, cần đổi khung giờ · L4E Hẹn gặp trực tiếp tại cơ sở |
+| L5 | Không tái tục (kết thúc) | L5A Học phí vượt khả năng · L5B Không sắp xếp được lịch · L5C Chuyển nơi ở, chuyển trường · L5D Không hài lòng chất lượng · L5E Đã đạt mục tiêu, không học tiếp · L5F Chuyển sang trung tâm khác · L5G Lý do khác |
+| L6 | Tiềm năng tái tục | L6A Đồng ý học tiếp, chưa chốt gói · L6B Muốn đổi môn hoặc đổi lớp · L6C Muốn học thêm bổ trợ · L6D Hẹn tái tục vào kỳ sau |
+| L7 | Dự thu | L7A Đã gửi báo giá · L7B Đã chốt gói, hẹn ngày đóng · L7C Quá hẹn đóng, cần nhắc lại |
+| L8 | Hoàn thành tái tục | **Hệ thống tự đặt theo tiến độ đơn:** L8A Chờ lên đơn · L8B Đã lên đơn, chờ duyệt · L8C Đơn đã duyệt (kết thúc) |
+
+L8 của phiếu tái tục chỉ theo tiến độ đơn, không theo tiền; L8 của cơ hội (mục 1.3) giữ nguyên theo tiền.
 
 ## 2. Tham số Cài đặt
 
