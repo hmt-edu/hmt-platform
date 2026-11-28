@@ -87,3 +87,10 @@ Phần này thay các câu ở trên về «chỉ L6», «một đơn đang số
 - Ngày dự kiến hết giờ theo lịch buổi thật: `app.class_schedule` (buổi từ hôm nay, Nháp hoặc Đã chốt, loại buổi trừ giờ). Dùng cho `upsale_live`, `upsale_candidates`, `app.enrollment_expected_end` (trang Ghi danh, ghi danh trên phiếu).
 - Chưa có lớp, hết giờ, hoặc lịch đã sinh không đủ học hết số giờ còn: để trống.
 - Tab Tái tục ở hồ sơ phụ huynh, học sinh trả giờ còn, ngày hết giờ tính lúc đọc.
+
+## Cập nhật 28/11/2026 (migration 713, C-27-20, 20b)
+
+- Bộ giai đoạn, giai đoạn con theo `docs/spec/06` mục 1.4; L8A, L8B, L8C cùng tên với cơ hội.
+- `app.upsale_is_closed(giai đoạn, giai đoạn con)`: kết thúc khi L5 hoặc L8C; `closed_at` đặt đúng hai trường hợp đó. «Phiếu đang mở» ở mọi hàm và chỉ mục = `closed_at` rỗng.
+- `change_upsale_stage`: giai đoạn con bắt buộc, thuộc giai đoạn đích; L5 không bắt lý do danh mục.
+- Dữ liệu cũ: giai đoạn con rỗng hoặc sai thì lấy con đầu; L5 theo lý do cũ (HOC_PHI L5A, LICH_HOC L5B, CHUYEN_NHA L5C, CHAT_LUONG L5D, DU_MUC_TIEU L5E, HOC_NOI_KHAC L5F, còn lại L5G); L8 cũ thành L8C.

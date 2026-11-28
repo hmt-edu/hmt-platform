@@ -68,10 +68,10 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), '[]'::jsonb)$$), 'HMT_DON_KHONG_DONG', 'Đơn cần ít nhất một dòng');
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917002'), pg_temp.lines())$$), 'HMT_PHIEU_CHUA_O_L8', 'R-GD-13 (28/11): phiếu ở L1 không tạo được đơn');
 select is(app.get_upsale_ticket(pg_temp.tid('TT917002')) -> 'actions' ? 'tao_don', false, 'Chưa ở L8: không có nút Tạo đơn');
-select app.change_upsale_stage(pg_temp.tid('TT917002'), 'L8');
-select app.change_upsale_stage(pg_temp.tid('TT917003'), 'L8');
+select app.change_upsale_stage(pg_temp.tid('TT917002'), 'L8', p_substage => 'L8A');
+select app.change_upsale_stage(pg_temp.tid('TT917003'), 'L8', p_substage => 'L8A');
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917003'), pg_temp.lines())$$), 'HMT_HOC_SINH_KHONG_O_LOP', 'R-GD-13: học sinh không còn học ở lớp thì không tạo được đơn');
-select app.change_upsale_stage(pg_temp.tid('TT917001'), 'L8');
+select app.change_upsale_stage(pg_temp.tid('TT917001'), 'L8', p_substage => 'L8A');
 select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines(), null, current_date + 30)$$), 'HMT_NGAY_VAO_LOP_SAI', 'Ngày vào lớp không phải buổi của lớp: báo ngay lúc tạo đơn');
 -- ---- Tạo đúng ----
 select is((app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines()) ->> 'code') ~ '^DH-', true, 'R-GD-13 (28/11): phiếu ở L8 tạo được đơn, ra mã đơn DH');

@@ -4,7 +4,6 @@ export type UpsaleNote = { tone: 'info' | 'warning'; text: string };
 export function upsaleStageNote(
   t: {
     stage_code: string;
-    substage_code: string | null;
     origin_code: 'HE_THONG' | 'TAY';
   },
   lostReasonName: string | null,
@@ -30,15 +29,6 @@ export function upsaleStageNote(
     return {
       tone: 'info',
       text: lostReasonName ? `Không tái tục. Lý do: ${lostReasonName}.` : 'Không tái tục.',
-    };
-  }
-  if (t.stage_code === 'L6') {
-    return {
-      tone: 'info',
-      text:
-        t.substage_code === 'L6A' && counts.sentQuotes === 0
-          ? 'Phụ huynh đồng ý tái tục. Chờ gửi báo giá.'
-          : 'Phụ huynh đồng ý tái tục.',
     };
   }
   if (t.stage_code === 'L7' && counts.sentQuotes > 0) {

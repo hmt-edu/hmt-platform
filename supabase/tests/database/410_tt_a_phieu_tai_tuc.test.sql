@@ -78,18 +78,18 @@ select is(pg_temp.err($$select app.assign_upsale_ticket((select id from app.upsa
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is((app.assign_upsale_ticket((select id from app.upsale_ticket limit 1), pg_temp.uid('cskh1')) ->> 'owner_id')::uuid, pg_temp.uid('cskh1'), 'Trưởng cơ sở giao phiếu cho CSKH');
 select is(pg_temp.err($$select app.assign_upsale_ticket((select id from app.upsale_ticket limit 1), pg_temp.uid('cskh5'))$$), 'HMT_NGUOI_PHU_TRACH_SAI', 'Giao cho người cơ sở khác bị chặn');
-select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L2')$$), 'HMT_KHONG_CO_QUYEN', 'Thiếu Phiếu tái tục · Sửa: không đổi giai đoạn');
+select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L2', p_substage => 'L2A')$$), 'HMT_KHONG_CO_QUYEN', 'Thiếu Phiếu tái tục · Sửa: không đổi giai đoạn');
 
 -- ---- Đổi giai đoạn ----
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
-select is(app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L2') ->> 'stage_code', 'L2', 'L1 sang L2');
-select is((select substage_code from app.upsale_ticket limit 1), null, 'Rời L1 thì bỏ nhóm con');
-select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L7')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'L7 phải chọn nhóm con');
+select is(app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L2', p_substage => 'L2A') ->> 'stage_code', 'L2', 'L1 sang L2');
+select is((select substage_code from app.upsale_ticket limit 1), 'L2A', 'Giai đoạn con theo lựa chọn khi rời L1');
+select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L7')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'Phải chọn giai đoạn con');
 select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L9')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'Giai đoạn ngoài L1 đến L8 bị chặn');
-select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L5')$$), 'HMT_LY_DO_THIEU', 'L5 bắt buộc lý do');
-select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L5', 'KHAC')$$), 'HMT_LY_DO_THIEU', 'L5 lý do Khác bắt buộc ghi chú');
-select is(app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L1') ->> 'stage_code', 'L1', 'Quay về L1');
-select is((select substage_code from app.upsale_ticket limit 1), 'L1B', 'Về L1: nhóm con L1B (tạo tay)');
+select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L5')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'R-GD-13 (28/11): L5 phải chọn giai đoạn con (chính là lý do)');
+select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L5', p_substage => 'L2A')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'Giai đoạn con của giai đoạn khác bị chặn');
+select is(app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L1', p_substage => 'L1C') ->> 'stage_code', 'L1', 'Quay về L1');
+select is((select substage_code from app.upsale_ticket limit 1), 'L1C', 'Về L1: nhóm con theo lựa chọn (L1C)');
 
 -- ---- Sửa hai ô tự do ----
 select is(app.update_upsale_notes((select id from app.upsale_ticket limit 1), 'Muốn lên lớp nâng cao', null) ->> 'changed', 'true', 'Sửa mục tiêu: có đổi');
@@ -97,10 +97,10 @@ select is(app.update_upsale_notes((select id from app.upsale_ticket limit 1), 'M
 select is((select next_goal from app.upsale_ticket limit 1), 'Muốn lên lớp nâng cao', 'Mục tiêu đã lưu');
 
 -- ---- Kết thúc L5 ----
-select is(app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L5', 'HOC_PHI') ->> 'stage_code', 'L5', 'L5 Không tái tục kèm lý do Học phí');
+select is(app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L5', 'HOC_PHI', null, 'L5A') ->> 'stage_code', 'L5', 'L5 Không tái tục: giai đoạn con L5A, lý do danh mục kèm theo vẫn lưu');
 select is((select lost_reason_code from app.upsale_ticket limit 1), 'HOC_PHI', 'Lý do đã lưu');
 select isnt((select closed_at from app.upsale_ticket limit 1), null, 'L5 ghi thời điểm kết thúc');
-select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L5', 'HOC_PHI')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'Đang ở L5 không chuyển sang chính L5');
+select is(pg_temp.err($$select app.change_upsale_stage((select id from app.upsale_ticket limit 1), 'L5', p_substage => 'L5A')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'Đang ở L5 không chuyển sang chính L5');
 select is(pg_temp.err($$select app.update_upsale_notes((select id from app.upsale_ticket limit 1), 'x', null)$$), null, 'Sửa ghi chú vẫn được sau L5 (chỉ ghi nhật ký)');
 -- Phiếu L5 không chặn tạo tay phiếu mới (CSKH tạo tay L1B khi cần).
 select matches(app.create_upsale_ticket(pg_temp.sid('HS410A'), pg_temp.cid('LOP410')) ->> 'code', '^TT[0-9]{6}$', 'Sau L5 vẫn tạo tay được phiếu mới');

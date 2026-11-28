@@ -48,10 +48,10 @@ set local role authenticated;
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(app.get_upsale_ticket(pg_temp.tid('TT917091')) -> 'actions' @> '["giao", "doi_giai_doan", "sua_ghi_chu", "tao_bao_gia"]'::jsonb, true,
           'Trưởng cơ sở: Giao, Chuyển giai đoạn, Ghi chú, Tạo báo giá trên phiếu cơ sở mình');
-select is(app.change_upsale_stage(pg_temp.tid('TT917091'), 'L2') ->> 'stage_code', 'L2', 'Trưởng cơ sở chuyển được giai đoạn');
+select is(app.change_upsale_stage(pg_temp.tid('TT917091'), 'L2', p_substage => 'L2A') ->> 'stage_code', 'L2', 'Trưởng cơ sở chuyển được giai đoạn');
 -- ---- Trưởng cơ sở khác ----
 select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
-select is(pg_temp.err($$select app.change_upsale_stage(pg_temp.tid('TT917091'), 'L3')$$), 'HMT_KHONG_CO_QUYEN', 'Trưởng cơ sở khác không đổi được giai đoạn');
+select is(pg_temp.err($$select app.change_upsale_stage(pg_temp.tid('TT917091'), 'L3', p_substage => 'L3A')$$), 'HMT_KHONG_CO_QUYEN', 'Trưởng cơ sở khác không đổi được giai đoạn');
 
 -- ---- Email phụ huynh ----
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
