@@ -151,19 +151,6 @@ export function changeUpsaleStage(
   });
 }
 
-export function saveUpsaleNotes(
-  supabase: SupabaseClient,
-  id: string,
-  goal: string,
-  roadmap: string,
-): Promise<{ changed: boolean }> {
-  return rpc<{ changed: boolean }>(supabase, 'update_upsale_notes', {
-    p_id: id,
-    p_next_goal: goal,
-    p_next_roadmap: roadmap,
-  });
-}
-
 export function useUpsaleOrderOptions(ticketId: string, enabled: boolean) {
   const supabase = useDb();
   return useQuery({
