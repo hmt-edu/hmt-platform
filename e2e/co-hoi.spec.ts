@@ -85,6 +85,24 @@ test('Tạo cơ hội trực tiếp: chặn ô trống; lưu xong mở cơ hội
     'step',
   );
   await expect(page.getByRole('button', { name: /Lead gốc/ })).toHaveCount(0);
+
+  const code = (await toastText(page, /^Đã tạo cơ hội CO\d+\./).innerText()).match(/CO\d+/)![0];
+
+  // Lọc nhanh «Tạo trực tiếp» (E-27-14): số đếm là tổng của danh sách; tick vào thì chỉ còn cơ hội không qua lead.
+  await page.goto('/crm/co-hoi');
+  await page.getByPlaceholder(/Tìm tên, SĐT, mã/).fill(setup.mark);
+  const list = isPhone(page)
+    ? page.getByRole('list', { name: 'Cơ hội' })
+    : page.getByRole('table', { name: 'Cơ hội' });
+  await expect(list.getByText(seeded.opportunity.fresh.code).first()).toBeVisible();
+  await page.getByRole('button', { name: 'Filters', exact: true }).click();
+  const direct = page.getByRole('checkbox', { name: /^Tạo trực tiếp \(\d+\)$/ });
+  await expect(direct).toBeVisible();
+  await direct.check();
+  if (isPhone(page)) await page.getByRole('button', { name: 'Áp dụng' }).click();
+  else await page.keyboard.press('Escape');
+  await expect(list.getByText(seeded.opportunity.fresh.code)).toHaveCount(0);
+  await expect(list.getByText(code).first()).toBeVisible();
 });
 
 test('Kanban: đủ tám cột L1 đến L8, cơ hội đúng cột', async ({ page }, testInfo) => {
