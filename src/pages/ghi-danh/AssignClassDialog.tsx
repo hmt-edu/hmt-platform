@@ -7,8 +7,16 @@ import { Button } from '../../ui/Button';
 import { Alert, Spinner } from '../../ui/Feedback';
 import { Dialog, Select } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
+import { useLeadCatalogs } from '../lead/useCatalogs';
+import { ClassFilters } from './ClassFilters';
 import { ClassPicker, type ClassPick } from './ClassPicker';
-import { defaultStart, upcomingLabel } from './enrollLogic';
+import {
+  defaultStart,
+  filterClasses,
+  initialClassFilter,
+  upcomingLabel,
+  type ClassFilter,
+} from './enrollLogic';
 import type { AssignOptions } from './enrollTypes';
 import { assignEnrollments, useAssignOptions, useRefreshEnrollments } from './useEnrollmentData';
 
@@ -56,6 +64,19 @@ function AssignBody({ data, onClose }: { data: AssignOptions; onClose: () => voi
   const [pick, setPick] = useState<ClassPick>({ classId: null, date: '' });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const catalogs = useLeadCatalogs();
+  const [filter, setFilter] = useState<ClassFilter>(() =>
+    initialClassFilter(data.classes, data.enrollment.delivery_mode_code),
+  );
+  const shown = filterClasses(data.classes, filter);
+
+  function applyFilter(next: ClassFilter) {
+    setFilter(next);
+    // Lớp đang chọn bị lọc mất thì bỏ chọn, không xếp vào lớp người dùng không còn thấy.
+    if (!filterClasses(data.classes, next).some((c) => c.id === pick.classId)) {
+      setPick({ classId: null, date: '' });
+    }
+  }
 
   const group = data.groups.find((g) => g.group_id === groupId) ?? null;
   const entries = useMemo(() => {
@@ -184,16 +205,25 @@ function AssignBody({ data, onClose }: { data: AssignOptions; onClose: () => voi
               Chọn từng ghi danh một lớp: dùng khi học sinh không học theo nhóm.
             </p>
           )}
-          <ClassPicker
+          <ClassFilters
             classes={data.classes}
+            value={filter}
+            onChange={applyFilter}
+            gradeName={(code) => catalogs.name('GRADE', code) ?? code}
+            enrollMode={data.enrollment.delivery_mode_code}
+          />
+          <ClassPicker
+            classes={shown}
             value={pick}
             onChange={setPick}
             name="lop-le"
             enrollMode={data.enrollment.delivery_mode_code}
             emptyText={
               data.enrollment.package_id === null
-                ? 'Ghi danh chưa có gói nên chưa tìm được lớp phù hợp.'
-                : undefined
+                ? 'Ghi danh chưa có gói: hệ thống chưa đưa ra được danh sách lớp để lọc cho trường hợp này.'
+                : data.classes.length > 0
+                  ? 'Không có lớp phù hợp với bộ lọc.'
+                  : undefined
             }
           />
         </div>
