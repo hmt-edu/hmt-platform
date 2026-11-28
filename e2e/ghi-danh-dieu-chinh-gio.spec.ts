@@ -49,7 +49,7 @@ test('GD-05 (G2): Trưởng cơ sở bớt quá trần thì bị chặn, bớt g
   await save.click();
   // Thông báo hiện cả ở khung toast và vùng đọc màn hình của Radix (chữ khớp 2 phần tử, strict mode): lấy phần tử đầu.
   await expect(page.getByText(/Đã điều chỉnh giờ/).first()).toBeVisible();
-  await page.getByRole('button', { name: 'Sổ giờ', exact: true }).click();
+  await page.getByRole('button', { name: 'Xem sổ đầy đủ' }).click();
   await expect(page).toHaveURL(new RegExp(`/ghi-danh/${seed.learning.id}/so-gio$`));
   await expect(page.getByRole('table', { name: 'Sổ giờ' })).toContainText('Điều chỉnh');
 });
