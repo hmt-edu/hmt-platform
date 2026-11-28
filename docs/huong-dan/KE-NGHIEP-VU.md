@@ -94,7 +94,7 @@ Mục đích: liệt kê **mọi luồng nghiệp vụ** của từng phân hệ
 | CS9 | Phiếu Chuyển phí | CS, KT | CS-10 | ✅ §13 | — | P2 |
 | CS10 | Phiếu Đổi lịch, học bù | CS | CS-11 | ✅ §14 | — | P2 |
 | CS11 | Từ chối / khách huỷ ticket (lý do) | CS, BM | CS-12 | ◐ §5 | — | P2 |
-| CS12 | Hàng nhận xét chờ gửi phụ huynh | CS | CS-16 | ✅ §15 | nhan-xet-cho-gui | P1 |
+| CS12 | ~~Hàng nhận xét chờ gửi phụ huynh~~ (28/11 anh bỏ mục menu CS-16) | — | CS-16 | Bỏ | — | — |
 | CS13 | Cấu hình người duyệt ticket theo nhóm con | AD | QT-15 | ❌ | — | P3 |
 
 ## 7. Giáo viên (cổng điện thoại)

@@ -230,7 +230,7 @@ Hai chỉ số **tách riêng**, không gộp "Không làm" thành điểm 0:
   - Đề nghị: phản hồi 24 giờ, xử lý xong 2 ngày (hoàn tiền 7 ngày).
   - Hiện "còn x giờ" hoặc "quá hạn". Quá hạn thì tự nâng cấp.
 - **Thông tin trên ticket:** học sinh, phụ huynh, ghi danh, lớp, người bị khiếu nại, kênh tiếp nhận, người phụ trách, mô tả, đính kèm, phương án, kết quả, mức hài lòng.
-- **Nhận xét chờ gửi phụ huynh** (anh chốt 11/10): khi phụ huynh chưa có tài khoản, CSKH lấy lời nhắn sau buổi, sao chép hoặc xuất ảnh để gửi Zalo tay, rồi đánh dấu đã gửi.
+- **28/11 anh bỏ mục menu CS-16** «Nhận xét chờ gửi» (không còn màn ở CRM); giáo viên vẫn tự xuất ảnh ở màn chấm nhận xét của cổng giáo viên và tự gửi vào group Zalo lớp (R-V2-40 giữ nguyên). Luật cũ: **Nhận xét chờ gửi phụ huynh** (anh chốt 11/10): khi phụ huynh chưa có tài khoản, CSKH lấy lời nhắn sau buổi, sao chép hoặc xuất ảnh để gửi Zalo tay, rồi đánh dấu đã gửi.
 
 ### Quản trị và cấu hình (không viết cứng trong code)
 | Tầng | Gồm | Giao diện |
