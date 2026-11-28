@@ -1,5 +1,7 @@
 -- C-27-17 (migration 710): phiếu tái tục trả thêm phụ huynh, môn, liên hệ, nhận xét; lọc, sắp, nhóm theo ngày hết giờ tính lúc đọc. Luật R-GD-13, R-GIO-04. Dữ liệu giả.
 begin;
+-- Buổi giả đặt theo current_date, hàm đọc tính theo ngày Việt Nam: cùng múi giờ để bài không đỏ lúc 00:00 đến 07:00.
+set local timezone = 'Asia/Ho_Chi_Minh';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$

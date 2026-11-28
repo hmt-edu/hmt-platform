@@ -9,7 +9,7 @@ Nguồn canvas: các khung sidebar (`hmt-sb-l1`, `hmt-sb-l2`) trong `design/hmt-
 | LOP-01 | Lớp | Lớp học (PR F-MENU) |
 | BUOI-12 | Buổi chưa Done | Buổi chưa hoàn tất (PR F-MENU) |
 | TC-04 | Chờ kế toán duyệt | Hàng chờ kế toán duyệt |
-| CS-01 | Ticket | Tất cả ticket |
+| CS-01 | Ticket | Ticket (đổi 28/11) |
 | QT-08 | Cơ sở và phòng học | Cơ sở và phòng |
 | QT-11 | Nhật ký thao tác | Nhật ký |
 

@@ -99,7 +99,7 @@ describe('menu đợt 1 (A-26-11)', () => {
         .entries.map((e) => e.sub)
         .filter((s, i, all) => s !== all[i - 1]);
     expect(subs('cau-hinh')).toEqual(['Bán hàng', 'Đào tạo', 'Chăm sóc']);
-    expect(subs('quan-tri')).toEqual(['Tài khoản', 'Quyền', 'Hệ thống', 'Nhật ký']);
+    expect(subs('quan-tri')).toEqual(['Tài khoản', 'Quyền', 'Hệ thống', 'Nhật ký', undefined]);
     expect(sidebar('quan-tri')).toContain('len-khoi-dau-nam');
     expect(sidebar('khach-hang')).toEqual(['phu-huynh', 'hoc-sinh']);
   });

@@ -34,7 +34,7 @@ export function disabledReason(cls: MatchingClass): string | null {
 }
 
 /** Tên hình thức học để hiện trong câu cảnh báo. */
-const MODE_NAME: Record<string, string> = { OFF: 'Offline', ONL: 'Online', OMO: 'OMO' };
+export const MODE_NAME: Record<string, string> = { OFF: 'Offline', ONL: 'Online', OMO: 'OMO' };
 
 /**
  * Cảnh báo lệch hình thức khi xếp lớp (anh Trường chốt 20/11): CHỈ cảnh báo, không chặn.
@@ -147,4 +147,32 @@ export function enrollmentNotice(
     };
   }
   return null;
+}
+
+/** Bộ lọc trong hộp xếp lớp (anh Trường 28/11): người dùng tự lọc trong các lớp máy chủ cho phép xếp. Chuỗi rỗng là «Tất cả». */
+export type ClassFilter = { subject: string; grade: string; level: string; mode: string };
+
+/** Lớp thiếu hình thức học và lớp OMO nhận mọi hình thức. */
+const fitsMode = (classMode: string | undefined, mode: string) =>
+  mode === '' || !classMode || classMode === 'OMO' || classMode === mode;
+
+export function filterClasses(classes: MatchingClass[], f: ClassFilter): MatchingClass[] {
+  return classes.filter(
+    (c) =>
+      (f.subject === '' || c.subject_name === f.subject) &&
+      (f.grade === '' || c.grade_code === f.grade) &&
+      (f.level === '' || c.level_name === f.level) &&
+      fitsMode(c.delivery_mode_code, f.mode),
+  );
+}
+
+/** Điền sẵn hình thức học của ghi danh, chỉ khi có lớp hợp hình thức đó (không mở hộp ra danh sách trống). */
+export function initialClassFilter(
+  classes: MatchingClass[],
+  enrollMode: string | null | undefined,
+): ClassFilter {
+  const all = { subject: '', grade: '', level: '', mode: '' };
+  if (!enrollMode) return all;
+  const preset = { ...all, mode: enrollMode };
+  return filterClasses(classes, preset).length > 0 ? preset : all;
 }

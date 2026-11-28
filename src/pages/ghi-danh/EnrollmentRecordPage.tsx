@@ -1,5 +1,5 @@
 // GD-02 Ghi danh (bản ghi, khuôn K06, chỉ đọc): thông tin ghi danh, quỹ giờ (cấp, tặng, đã học, còn lại), dòng xếp lớp và lịch sử chuyển lớp, nút Xếp lớp (khi Chờ xếp lớp)
-// và Sổ giờ. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Điều chỉnh giờ (GD-05, Ghi danh · Duyệt). Chưa làm ở cụm này: Tạo ticket (CS-04, sau 17/11), "Tạo phiếu thu tái tục thủ
+// và Sổ giờ. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Điều chỉnh giờ (GD-05, Ghi danh · Duyệt). Chưa làm ở cụm này: Tạo ticket (CS-04), "Tạo phiếu thu tái tục thủ
 // công" (TT-03 đã bỏ). Ngày hết giờ dự kiến do hàm DB trả (theo lịch buổi của lớp; chưa có lớp thì «Chưa có lớp»); hạn gói chưa tính. Giao diện không tính giờ: số do hàm DB trả.
 import { useParams } from 'react-router';
 import { useState } from 'react';
@@ -73,7 +73,7 @@ export function EnrollmentRecordPage() {
       </StateView>
     );
   }
-  const { enrollment: e, hours, classes, tickets } = query.data;
+  const { enrollment: e, hours, classes } = query.data;
   const view = 'view' as const;
   const inStages = STEPS.some((s) => s.code === e.status_code);
   const canAssign = e.status_code === 'CHO_XEP_LOP' && access.can('ENROLLMENT', 'SUA');
@@ -144,14 +144,6 @@ export function EnrollmentRecordPage() {
                   onOpen: () => undefined,
                 }),
           },
-          {
-            key: 'ticket',
-            label: 'Ticket',
-            icon: 'service',
-            count: tickets,
-            unavailable: 'Ticket làm sau 17/11',
-            onOpen: () => undefined,
-          },
         ]}
       >
         <div className="grid gap-6 md:grid-cols-2">
@@ -217,11 +209,6 @@ export function EnrollmentRecordPage() {
             tabs={[
               { key: 'fund', label: 'Quỹ giờ và lớp' },
               { key: 'ledger', label: 'Sổ giờ' },
-              {
-                key: 'tickets',
-                label: 'Ticket liên quan',
-                note: 'Chưa có dữ liệu (ticket làm sau)',
-              },
             ]}
           />
         </div>
