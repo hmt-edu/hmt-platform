@@ -25,7 +25,7 @@ import { GROUP_FIELD_OF, buildLeadFilters } from '../lead/leadFilters';
 import { appointmentTag, codeAndName, formatPhone } from '../lead/leadFormat';
 import { useLeafRows } from '../lead/useLeadData';
 import { useLeadCatalogs } from '../lead/useCatalogs';
-import { EMPTY_OPP_STATE, buildOppConfig, oppTitle } from './oppConfig';
+import { EMPTY_OPP_STATE, buildOppConfig, directFilter, oppTitle } from './oppConfig';
 import { OPP_STAGE_ORDER, SYSTEM_STAGE } from './oppStage';
 import type { OppBoardCard, OppBoardColumn, OpportunityRow } from './oppTypes';
 import { StageMoveHost } from './StageMoveHost';
@@ -88,8 +88,6 @@ export function OpportunityListPage() {
   const toast = useToast();
   const refreshData = useRefreshOpps();
   const catalogs = useLeadCatalogs();
-  const config = useMemo(() => buildOppConfig(catalogs, access), [catalogs, access]);
-
   const pageSize = useIntSetting('list_page_size_default');
   const maxPage = useIntSetting('list_page_size_max');
   const cardsPerColumn = useIntSetting('kanban_cards_per_column');
@@ -116,10 +114,18 @@ export function OpportunityListPage() {
     () => ({
       ...buildLeadFilters({ ...state, search: debouncedSearch }),
       ...(parentLead ? { lead_id: parentLead } : {}),
+      ...directFilter(state),
     }),
     [state, debouncedSearch, parentLead],
   );
   const filtersKey = JSON.stringify(filters);
+  // Số ở lựa chọn «Tạo trực tiếp»: tổng của chính danh sách khi thêm lọc đó (chỉ cần số đếm nên lấy một dòng).
+  const direct = useOppPage({ ...filters, direct_only: true }, undefined, 0, 1, true);
+  const directTotal = direct.isPlaceholderData ? undefined : direct.data?.total;
+  const config = useMemo(
+    () => buildOppConfig(catalogs, access, directTotal),
+    [catalogs, access, directTotal],
+  );
   const sortValue = sortParam(sort);
   const groupFields = state.group.flatMap((k) => (GROUP_FIELD_OF[k] ? [GROUP_FIELD_OF[k]] : []));
   const grouped = groupFields.length > 0;

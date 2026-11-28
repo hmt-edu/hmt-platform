@@ -22,6 +22,11 @@ export const EMPTY_OPP_STATE: ListState = {
   datePreset: '',
 };
 
+/** Lọc nhanh «Tạo trực tiếp» → khoá `direct_only` của bốn hàm Cơ hội (lead_id trống, R-CRM-01). */
+export function directFilter(state: ListState): { direct_only?: true } {
+  return (state.quick.origin ?? []).includes('direct') ? { direct_only: true } : {};
+}
+
 /** Tên hiển thị của cơ hội: phụ huynh và học sinh (cơ hội chưa lưu môn, lớp). */
 export function oppTitle(row: { parent_name: string; student_name: string | null }): string {
   return row.student_name ? `${row.student_name} · ${row.parent_name}` : row.parent_name;
@@ -30,6 +35,8 @@ export function oppTitle(row: { parent_name: string; student_name: string | null
 export function buildOppConfig(
   catalogs: LeadCatalogs,
   access: AccessView,
+  /** Số cơ hội tạo trực tiếp theo bộ lọc đang xem (máy chủ đếm); chưa có thì không ghi số. */
+  directTotal?: number,
 ): ListConfig<OpportunityRow> {
   const stageLabel = (code: string) => codeAndName(code, catalogs.name('OPP_STAGE', code));
   const withCode = (catalog: string) =>
@@ -128,6 +135,17 @@ export function buildOppConfig(
         options: [
           { value: 'owner', label: 'Tôi phụ trách' },
           { value: 'support', label: 'Tôi hỗ trợ' },
+        ],
+      },
+      {
+        key: 'origin',
+        label: 'Cách tạo',
+        options: [
+          {
+            value: 'direct',
+            label: directTotal === undefined ? 'Tạo trực tiếp' : `Tạo trực tiếp (${directTotal})`,
+            hint: 'cơ hội không qua lead',
+          },
         ],
       },
       {
