@@ -1,17 +1,16 @@
-// GD-02 Ghi danh (bản ghi, khuôn K06, chỉ đọc): thông tin ghi danh, quỹ giờ (cấp, tặng, đã học, còn lại), dòng xếp lớp và lịch sử chuyển lớp, nút Xếp lớp (khi Chờ xếp lớp)
-// và Sổ giờ. Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Điều chỉnh giờ (GD-05, Ghi danh · Duyệt). Chưa làm ở cụm này: Tạo ticket (CS-04), "Tạo phiếu thu tái tục thủ
-// công" (TT-03 đã bỏ). Ngày hết giờ dự kiến, hạn gói (chỉ dự báo) chưa tính: hiện "—". Giao diện không tính giờ: số do hàm DB trả.
+// GD-02 Ghi danh (bản ghi, khuôn K06, chỉ đọc; bố cục anh Trường chốt 28/11): một trang cuộn, không tab: ba khối thông tin (Học sinh và phụ huynh; Gói và đơn hàng;
+// Lớp và thời gian), bốn ô số quỹ giờ, dòng xếp lớp, sổ giờ gần nhất. Ô trống hiện «—». Tình trạng đổi bằng nút nghiệp vụ, không bấm trên Stage. Nút Xếp lớp (khi
+// Chờ xếp lớp), Điều chỉnh giờ (GD-05). Chưa làm: Tạo ticket (CS-04). Giao diện không tính giờ: số do hàm DB trả.
 import { useParams } from 'react-router';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useNavigateFrom } from '../../layout/crumbTrail';
 import { useCrumbTail } from '../../layout/CrumbTail';
 import { errorOf } from '../../lib/db';
 import { formatDate, formatNumber } from '../../lib/format';
 import { useAccess } from '../../nav/AccessContext';
-import { DetailField, DetailSection, RecordDetail } from '../../record/Detail';
+import { DetailField, RecordDetail } from '../../record/Detail';
 import { RecordChatter } from '../../features/chatter/RecordChatter';
 import { Button } from '../../ui/Button';
-import { CustTabs } from '../khach-hang/CustTabs';
 import { Tag } from '../../ui/Data';
 import { LineTable } from '../../ui/LineTable';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
@@ -54,7 +53,6 @@ export function EnrollmentRecordPage() {
   const openFrom = useNavigateFrom();
   const [assigning, setAssigning] = useState(false);
   const [adjusting, setAdjusting] = useState(false);
-  const [tab, setTab] = useState('fund');
   useCrumbTail(query.data ? query.data.enrollment.code : null);
 
   if (query.isPending) return <Spinner />;
@@ -74,7 +72,13 @@ export function EnrollmentRecordPage() {
     );
   }
   const { enrollment: e, hours, classes } = query.data;
-  const view = 'view' as const;
+  const field = (label: string, value: ReactNode) => (
+    <DetailField
+      label={label}
+      mode="view"
+      value={value || <span className="text-fg-muted">—</span>}
+    />
+  );
   const inStages = STEPS.some((s) => s.code === e.status_code);
   const canAssign = e.status_code === 'CHO_XEP_LOP' && access.can('ENROLLMENT', 'SUA');
   // Điều chỉnh giờ (GD-05, R-GD-04): Ghi danh · Duyệt (Trưởng cơ sở, Admin) hoặc Kế toán · Duyệt (Kế toán).
@@ -89,7 +93,7 @@ export function EnrollmentRecordPage() {
       <RecordDetail
         kind="Ghi danh"
         title={e.code}
-        mode={view}
+        mode="view"
         readOnly
         showEdit={false}
         onEdit={() => undefined}
@@ -119,7 +123,6 @@ export function EnrollmentRecordPage() {
                 Xếp lớp
               </Button>
             )}
-            <Button onClick={() => openFrom(`/crm/ghi-danh/${e.id}/so-gio`)}>Sổ giờ</Button>
             {canAdjust && <Button onClick={() => setAdjusting(true)}>Điều chỉnh giờ</Button>}
             {!inStages && <Tag tone={statusTone(e.status_code)}>{e.status_name}</Tag>}
           </span>
@@ -146,162 +149,128 @@ export function EnrollmentRecordPage() {
           },
         ]}
       >
-        <div className="grid gap-6 md:grid-cols-2">
-          <DetailSection title="Thông tin ghi danh">
-            <DetailField
-              label="Ghi danh"
-              mode={view}
-              value={e.legacy_ref ? `${e.code} · mã cũ ${e.legacy_ref}` : e.code}
-            />
-            <DetailField label="Học sinh" mode={view} value={e.student_name} />
-            <DetailField label="Mã học sinh" mode={view} value={e.student_code} />
-            <DetailField label="Phụ huynh" mode={view} value={e.parent_name} />
-            <DetailField label="Mã phụ huynh" mode={view} value={e.parent_code} />
-            <DetailField label="Gói" mode={view} value={e.package_code ?? ''} />
-            <DetailField label="Hình thức học" mode={view} value={e.delivery_mode_name ?? ''} />
-            <DetailField
-              label="Đơn hàng"
-              mode={view}
-              value={
-                e.order_id && e.order_code ? (
-                  <FromLink
-                    to={`/crm/don-hang/${e.order_id}`}
-                    className="text-link hover:underline"
-                  >
-                    {e.order_code}
-                  </FromLink>
-                ) : (
-                  ''
-                )
-              }
-            />
-            <DetailField label="Tình trạng" mode={view} value={e.status_name} />
-            <DetailField label="Cơ sở" mode={view} value={`${e.branch_code} ${e.branch_name}`} />
-            <DetailField label="Ngày ghi danh" mode={view} value={formatDate(e.enrolled_on)} />
-            <DetailField
-              label="Start Date"
-              mode={view}
-              value={e.start_date ? formatDate(e.start_date) : ''}
-            />
-            <DetailField
-              label="End Date (dự kiến, chỉ dự báo)"
-              mode={view}
-              value={e.expected_end_date ? formatDate(e.expected_end_date) : ''}
-            />
-            <DetailField
-              label="Hạn gói (chỉ dự báo)"
-              mode={view}
-              value={e.package_deadline ? formatDate(e.package_deadline) : ''}
-            />
-          </DetailSection>
-        </div>
-
-        <div className="mt-6">
-          <CustTabs
-            active={tab}
-            onChange={setTab}
-            tabs={[
-              { key: 'fund', label: 'Quỹ giờ và lớp' },
-              { key: 'ledger', label: 'Sổ giờ' },
-            ]}
-          />
-        </div>
-        {tab === 'ledger' && (
-          <section className="mt-6 flex flex-col gap-2">
-            <p className="text-body text-fg-muted">
-              Sổ giờ chỉ thêm dòng, không sửa dòng cũ. Mọi cộng, trừ giờ của ghi danh nằm ở sổ giờ.
+        <div className="flex flex-col gap-5">
+          <InfoBlock title="Học sinh và phụ huynh">
+            {field('Học sinh', e.student_name)}
+            {field('Mã học sinh', e.student_code)}
+            {field('Phụ huynh', e.parent_name)}
+            {field('Mã phụ huynh', e.parent_code)}
+          </InfoBlock>
+          <InfoBlock title="Gói và đơn hàng">
+            {field('Gói', e.package_code)}
+            {field('Hình thức học', e.delivery_mode_name)}
+            {field(
+              'Đơn hàng',
+              e.order_id && e.order_code ? (
+                <FromLink to={`/crm/don-hang/${e.order_id}`} className="text-link hover:underline">
+                  {e.order_code}
+                </FromLink>
+              ) : null,
+            )}
+            {e.legacy_ref && field('Mã cũ', e.legacy_ref)}
+          </InfoBlock>
+          <div className="flex flex-col gap-1">
+            <InfoBlock title="Lớp và thời gian">
+              {field('Cơ sở', `${e.branch_code} ${e.branch_name}`)}
+              {field('Tình trạng', e.status_name)}
+              {field('Ngày ghi danh', formatDate(e.enrolled_on))}
+              {field('Ngày bắt đầu', e.start_date ? formatDate(e.start_date) : null)}
+            </InfoBlock>
+            {/* Số dự báo gom một dòng nhỏ; chưa có lớp thì không có ngày kết thúc dự kiến (anh Trường 28/11). */}
+            <p className="text-caption text-fg-muted">
+              Dự báo (không chặn gì): ngày kết thúc dự kiến{' '}
+              {classes.length === 0
+                ? 'Chưa có lớp'
+                : e.expected_end_date
+                  ? formatDate(e.expected_end_date)
+                  : '—'}{' '}
+              · hạn gói {e.package_deadline ? formatDate(e.package_deadline) : '—'}
             </p>
+          </div>
+
+          {notice && (
+            <Alert tone={notice.tone} title={notice.title}>
+              {notice.text}
+            </Alert>
+          )}
+          <section aria-label="Quỹ giờ" className="flex flex-col gap-2">
+            <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
+              Quỹ giờ
+            </h3>
+            <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+              <HourTile label="Giờ cấp" value={formatNumber(hours.granted)} />
+              <HourTile label="Giờ tặng" value={formatNumber(hours.gifted)} />
+              <HourTile label="Đã học" value={formatNumber(hours.used)} />
+              <HourTile label="Còn lại" value={`${formatNumber(hours.remaining)} giờ`} />
+            </dl>
+          </section>
+
+          <section className="flex flex-col gap-2" aria-labelledby="gd02-classes">
+            <h3
+              id="gd02-classes"
+              className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
+            >
+              Lớp đang học và lịch sử chuyển lớp (dòng xếp lớp)
+            </h3>
+            {classes.length === 0 ? (
+              <p className="text-body text-fg-muted">
+                Chưa có dòng xếp lớp. Bấm Xếp lớp để chọn lớp và ngày vào lớp.
+              </p>
+            ) : (
+              <div className="overflow-x-auto rounded-control border border-border">
+                <table aria-label="Dòng xếp lớp" className="w-full text-body">
+                  <thead className="bg-surface-subtle text-left text-caption text-fg-muted">
+                    <tr>
+                      <th className="px-3 py-2">Lớp</th>
+                      <th className="px-3 py-2">Ngày vào</th>
+                      <th className="px-3 py-2">Ngày rời</th>
+                      <th className="px-3 py-2 text-right">Giờ đã học tại lớp</th>
+                      <th className="px-3 py-2">Tình trạng</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {classes.map((c) => (
+                      <tr key={`${c.class_id}-${c.start_date}`} className="border-t border-border">
+                        <td className="px-3 py-2">{c.class_code}</td>
+                        <td className="px-3 py-2">{formatDate(c.start_date)}</td>
+                        <td className="px-3 py-2">{c.end_date ? formatDate(c.end_date) : '—'}</td>
+                        <td className="px-3 py-2 text-right tabular">
+                          {formatNumber(c.studied_hours)}
+                        </td>
+                        <td className="px-3 py-2">
+                          {c.end_reason ? (END_REASON[c.end_reason] ?? c.end_reason) : 'Đang học'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {peers && peers.peers.length > 0 && (
+              <p className="text-body">
+                Học sinh có {peers.peers.length + 1} ghi danh ở lớp này ({e.code} còn{' '}
+                {formatNumber(hours.remaining)} giờ
+                {peers.peers
+                  .map((p) => `, ${p.code} còn ${formatNumber(p.remaining)} giờ`)
+                  .join('')}
+                ). Giờ còn của lớp = tổng các ghi danh:{' '}
+                <b>{formatNumber(peers.total_remaining ?? 0)} giờ</b>.
+              </p>
+            )}
+          </section>
+
+          <section aria-label="Sổ giờ gần nhất" className="flex flex-col gap-2">
+            <h3 className="text-caption font-semibold tracking-wide text-fg-muted uppercase">
+              Sổ giờ gần nhất
+            </h3>
             <RecentLedger enrollmentId={e.id} />
             <div>
               <Button onClick={() => openFrom(`/crm/ghi-danh/${e.id}/so-gio`)}>
-                Mở sổ giờ đầy đủ
+                Xem sổ đầy đủ
               </Button>
             </div>
           </section>
-        )}
-        {tab === 'fund' && (
-          <>
-            {notice && (
-              <Alert tone={notice.tone} title={notice.title} className="mt-6">
-                {notice.text}
-              </Alert>
-            )}
-            <div className="mt-6 grid gap-6 md:grid-cols-2">
-              <DetailSection title="Quỹ giờ">
-                <DetailField label="Giờ cấp" mode={view} value={formatNumber(hours.granted)} />
-                <DetailField label="Giờ tặng" mode={view} value={formatNumber(hours.gifted)} />
-                <DetailField label="Đã học" mode={view} value={formatNumber(hours.used)} />
-                <DetailField
-                  label="Còn lại"
-                  mode={view}
-                  value={<b>{formatNumber(hours.remaining)} giờ</b>}
-                />
-              </DetailSection>
-            </div>
-
-            <section className="mt-6 flex flex-col gap-2" aria-labelledby="gd02-classes">
-              <h3
-                id="gd02-classes"
-                className="text-caption font-semibold tracking-wide text-fg-muted uppercase"
-              >
-                Lớp đang học và lịch sử chuyển lớp (dòng xếp lớp)
-              </h3>
-              {classes.length === 0 ? (
-                <p className="text-body text-fg-muted">
-                  Chưa có dòng xếp lớp. Bấm Xếp lớp để chọn lớp và ngày vào lớp.
-                </p>
-              ) : (
-                <div className="overflow-x-auto rounded-control border border-border">
-                  <table aria-label="Dòng xếp lớp" className="w-full text-body">
-                    <thead className="bg-surface-subtle text-left text-caption text-fg-muted">
-                      <tr>
-                        <th className="px-3 py-2">Lớp</th>
-                        <th className="px-3 py-2">Ngày vào</th>
-                        <th className="px-3 py-2">Ngày rời</th>
-                        <th className="px-3 py-2 text-right">Giờ đã học tại lớp</th>
-                        <th className="px-3 py-2">Tình trạng</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {classes.map((c) => (
-                        <tr
-                          key={`${c.class_id}-${c.start_date}`}
-                          className="border-t border-border"
-                        >
-                          <td className="px-3 py-2">{c.class_code}</td>
-                          <td className="px-3 py-2">{formatDate(c.start_date)}</td>
-                          <td className="px-3 py-2">{c.end_date ? formatDate(c.end_date) : '—'}</td>
-                          <td className="px-3 py-2 text-right tabular">
-                            {formatNumber(c.studied_hours)}
-                          </td>
-                          <td className="px-3 py-2">
-                            {c.end_reason ? (END_REASON[c.end_reason] ?? c.end_reason) : 'Đang học'}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-              {peers && peers.peers.length > 0 && (
-                <p className="text-body">
-                  Học sinh có {peers.peers.length + 1} ghi danh ở lớp này ({e.code} còn{' '}
-                  {formatNumber(hours.remaining)} giờ
-                  {peers.peers
-                    .map((p) => `, ${p.code} còn ${formatNumber(p.remaining)} giờ`)
-                    .join('')}
-                  ). Giờ còn của lớp = tổng các ghi danh:{' '}
-                  <b>{formatNumber(peers.total_remaining ?? 0)} giờ</b>.
-                </p>
-              )}
-              <p className="text-caption text-fg-muted">
-                {classes.length === 0 && 'Ngày hết giờ dự kiến chưa có (chưa có lớp): '}
-                {classes.length > 0 && 'Ngày hết giờ dự kiến '}
-                cộng lịch của lớp đang học, chỉ để dự báo, không chặn gì.
-              </p>
-            </section>
-          </>
-        )}
+        </div>
       </RecordDetail>
       <AdjustHoursDialog
         enrollmentId={e.id}
@@ -317,7 +286,28 @@ export function EnrollmentRecordPage() {
   );
 }
 
-/** Bốn dòng gần nhất của sổ giờ (khung GD02) ở tab Sổ giờ; nút mở sổ đầy đủ nằm ngay dưới. */
+/** Một khối thông tin của bản ghi, hai cột trên màn rộng (dt, dd chỉ lồng một lớp div trong dl). */
+function InfoBlock({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section aria-label={title} className="flex min-w-0 flex-col">
+      <h3 className="mb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase">
+        {title}
+      </h3>
+      <dl className="grid grid-cols-1 gap-x-8 md:grid-cols-2">{children}</dl>
+    </section>
+  );
+}
+
+function HourTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 rounded-card border border-border bg-surface p-3">
+      <dt className="text-caption font-semibold tracking-wide text-fg-muted uppercase">{label}</dt>
+      <dd className="tabular font-display text-display">{value}</dd>
+    </div>
+  );
+}
+
+/** Bốn dòng gần nhất của sổ giờ (khung GD02); nút mở sổ đầy đủ nằm ngay dưới. */
 const RECENT_LEDGER_ROWS = 4; // allow-number: số dòng sổ giờ xem nhanh ở bản ghi (canvas GD02)
 function RecentLedger({ enrollmentId }: { enrollmentId: string }) {
   const ledger = useEnrollmentLedger(enrollmentId, 0, RECENT_LEDGER_ROWS);
