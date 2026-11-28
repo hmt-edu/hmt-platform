@@ -74,3 +74,9 @@ Phần này thay các câu ở trên về «chỉ L6», «một đơn đang số
 - `app.get_upsale_ticket` gọi thêm `upsale_hours_info`, `upsale_last_purchase`, `upsale_class_info`, `upsale_contact_info` (hàm nội bộ).
 - Trưởng cơ sở có Phiếu tái tục · Sửa ở cơ sở mình (709): chuyển giai đoạn, ghi chú; tạo báo giá, đơn khi có thêm quyền Báo giá · Tạo, Đơn hàng · Tạo.
 - `app.parent.email` (709): không bắt buộc, chữ thường; sửa bằng `app.update_parent` (lỗi `HMT_EMAIL_SAI`).
+
+## Cập nhật 28/11/2026 (migration 710)
+
+- `app.upsale_live(các phiếu)`: giờ còn, ngày hết giờ dự kiến tính một lượt; bản ghi, danh sách, bộ lọc Campaign, sắp xếp, Group By dùng chung. `upsale_ticket_live` gọi lại hàm này. Màn Đối chiếu vẫn theo cột đã ghi.
+- Dòng danh sách, Kanban, bản ghi trả thêm `parent_name`, `subject_code`, `last_contact` (`app.upsale_row_extra`).
+- `get_upsale_ticket`: mỗi ghi danh có `subject_code`, `expected_end_date` (trừ lần lượt theo R-GIO-04); `last_review` = nhận xét giáo viên gần nhất ở buổi đã Done mà người xem được thấy. `list_upsale_orders` trả `paid_amount`.

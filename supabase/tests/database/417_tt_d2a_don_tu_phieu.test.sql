@@ -81,6 +81,7 @@ select is((select count(*)::int from app.sales_order_line l join app.sales_order
 select is((select total_amount > 0 from app.sales_order where renewal_ticket_id = pg_temp.tid('TT917001')), true, 'Tổng tiền tính bằng bảng giá');
 select is((app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines()) ->> 'code') ~ '^DH-', true, 'R-GD-13 (27/11): không giới hạn số đơn, tạo được đơn thứ hai');
 select is(jsonb_array_length(app.list_upsale_orders(pg_temp.tid('TT917001'))), 2, 'Tab Báo giá và đơn: hai đơn');
+select is((select count(*)::int from jsonb_array_elements(app.list_upsale_orders(pg_temp.tid('TT917001'))) o where (o ->> 'paid_amount')::bigint = 0), 2, 'C-27-17: đơn chưa thu trả số đã thu bằng 0');
 select hasnt_function('app', 'reconcile_upsale_orders', 'R-GD-13 (27/11): bỏ hàm tự chuyển giai đoạn theo đơn');
 reset role;
 select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
