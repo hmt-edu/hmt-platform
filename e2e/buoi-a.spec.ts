@@ -83,7 +83,7 @@ test('BUOI-03: ghi trạng thái trung tâm, Lưu, tải lại vẫn còn; khôn
   await expect(page.getByText('Đã ghi 1/3 học sinh')).toBeVisible();
 });
 
-test('Điểm danh: một bảng, lọc Chưa vào lớp hiện em giáo viên ghi Vắng, không hiện em Có mặt; ghi liên hệ rồi đọc lại', async ({
+test('Điểm danh: một bảng, lọc Vắng hiện em giáo viên ghi Vắng, không hiện em Có mặt; ghi liên hệ rồi đọc lại', async ({
   page,
 }) => {
   await markAsAssistant(seed.chot, seed.names[1], 'VANG_KHONG_PHEP');
@@ -92,7 +92,8 @@ test('Điểm danh: một bảng, lọc Chưa vào lớp hiện em giáo viên g
   await page.goto('/crm/diem-danh');
   await expect(page.getByRole('heading', { level: 1, name: 'Điểm danh' })).toBeVisible();
   await page.getByRole('button', { name: 'Filters' }).click();
-  await page.getByRole('checkbox', { name: /Chưa vào lớp/ }).check();
+  // Không lọc «Chưa vào lớp» ở đây: bộ lọc đó chỉ tính buổi đã bắt đầu nên phụ thuộc giờ chạy (luật được kiểm ở pgTAP 701).
+  await page.getByRole('checkbox', { name: /^Vắng/ }).check();
   await page.keyboard.press('Escape');
   const table = page.getByRole('table', { name: 'Điểm danh' });
   // Buổi "khác" của seed cũng có em này nhưng chưa ai ghi: chỉ xét dòng giáo viên đã tích Vắng.
