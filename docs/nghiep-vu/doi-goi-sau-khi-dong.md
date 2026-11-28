@@ -24,7 +24,10 @@ Kết quả đọc mã `app.cancel_order`, `app.order_has_receipt`, `app.cancel_
 
 Vì vậy trường hợp đã đặt cọc hoặc đã đóng một đợt (phiếu thu đã duyệt) **chỉ đi đường Chuyển phí**.
 
-## Chỗ mã chưa lo, cần anh chốt
+## Đơn cũ sau Chuyển phí (anh Trường OK 29/11 01:32, migration 715)
 
-- Chuyển phí **không đóng đơn cũ**: đơn cũ vẫn Đã duyệt, các đợt chưa thu vẫn hiện ở Công nợ và «Việc của tôi» (`app.list_receivables` lấy mọi đơn Đã duyệt còn đợt thiếu).
-- Nếu sau đó vẫn duyệt thêm phiếu thu vào đơn cũ, tiền được ghi nhưng ghi danh đã Dừng không được cấp thêm giờ (`app.sync_enrollment_hours` bỏ qua).
+- Khi phiếu Chuyển phí được thực hiện và **mọi dòng có tiền** của đơn cũ đã đóng ghi danh (Dừng hoặc Hoàn phí), đơn được đánh dấu «đã chuyển phí» (`fee_transferred_at`, `fee_transfer_ref`); tình trạng vẫn là Đã duyệt, đợt thu giữ nguyên.
+- Đơn có dấu: các đợt chưa thu không còn ở Công nợ, «Việc của tôi», nợ trên hồ sơ phụ huynh, mức gắn bó, cổng phụ huynh. Chặn lập, gửi, duyệt phiếu thu mới và dùng số dư (`HMT_DON_DA_CHUYEN_PHI`); vẫn huỷ, từ chối phiếu chưa duyệt và hoàn tác khoản tiền.
+- Đơn còn dòng khác (ghi danh còn hiệu lực, dịch vụ, tài liệu): **giữ nguyên công nợ cả đơn**, chỉ ghi lịch sử «Chuyển phí một phần».
+- Lần chuyển phí đã làm trước migration 715 không bị đụng.
+- Chưa làm: danh sách Đơn hàng vẫn tính «Còn phải thu» theo tổng tiền cho đơn có dấu.

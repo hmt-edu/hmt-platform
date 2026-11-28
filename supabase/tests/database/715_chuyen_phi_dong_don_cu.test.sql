@@ -231,9 +231,11 @@ select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
 select lives_ok($$select app.cancel_receipt(pg_temp.r('cho'), (select code from app.catalog_item where catalog_code = 'RECEIPT_CANCEL_REASON' and is_active and not requires_note limit 1))$$, 'Vẫn huỷ được phiếu chưa duyệt');
 
 -- ---- Hồ sơ phụ huynh không còn tính nợ của đơn đã chuyển phí ----
+reset role;
 create function pg_temp.no_ph(p_key text) returns bigint language sql security definer as $$
   select (app.parent_money_summary(p) ->> 'debt')::bigint from app.parent p where p.id = (pg_temp.ord(p_key)).parent_id $$;
 grant execute on function pg_temp.no_ph(text) to public;
+set local role authenticated;
 select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
 select is(pg_temp.no_ph('m'), 0::bigint, 'Hồ sơ phụ huynh: đơn đã chuyển phí không còn là nợ');
 select ok(pg_temp.no_ph('n') > 0, 'Hồ sơ phụ huynh khác vẫn tính nợ đơn thường');
