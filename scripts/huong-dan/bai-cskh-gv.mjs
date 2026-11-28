@@ -76,7 +76,7 @@ export function baiCskhGv({ chayBai, APP, dangNhap, nutTen }) {
         },
         [
           {
-            chu: 'Vào «Chăm sóc khách hàng» → «Tất cả ticket», bấm «Tạo»',
+            chu: 'Vào «Chăm sóc khách hàng» → «Ticket», bấm «Tạo»',
             loc: nutTen('Tạo'),
             lam: async (p) => {
               await nutTen('Tạo')(p).click();
@@ -482,81 +482,6 @@ export function baiCskhGv({ chayBai, APP, dangNhap, nutTen }) {
                 .getByRole('button', { name: 'Thực hiện', exact: true })
                 .click();
               await p.waitForTimeout(4000);
-            },
-          },
-        ],
-        K,
-        7,
-      );
-    },
-    // CS12 · 7 bước, cùng thứ tự bài docs/huong-dan/cskh/cs12-nhan-xet-cho-gui-phu-huynh.md. Cần dòng «Chờ gửi» sẵn có trên bản thử nghiệm (dữ liệu mẫu đợt 2).
-    cs12: (b) => {
-      const hop = (p) => p.getByRole('dialog');
-      return chayBai(
-        b,
-        'cs12',
-        async (p) => {
-          await dangNhap(p);
-          await p.goto(`${APP}/crm/nhan-xet-cho-gui`);
-          await cho(p);
-        },
-        [
-          {
-            chu: 'Vào «Chăm sóc khách hàng» → «Nhận xét chờ gửi»',
-            loc: (p) => p.getByRole('heading', { name: 'Nhận xét chờ gửi phụ huynh' }),
-            lam: (p) => p.waitForTimeout(800),
-          },
-          {
-            chu: 'Gõ tên em hoặc mã lớp vào ô «Tìm tên em hoặc mã lớp…»',
-            loc: (p) => p.getByPlaceholder('Tìm tên em hoặc mã lớp…'),
-            lam: async (p) => {
-              await p.getByPlaceholder('Tìm tên em hoặc mã lớp…').fill('[MẪU]');
-              await p.waitForTimeout(1500);
-            },
-          },
-          {
-            chu: 'Bấm tên em để đọc đầy đủ lời nhắn',
-            loc: (p) => p.locator('button.underline').first(),
-            lam: async (p) => {
-              await p.locator('button.underline').first().click();
-              await p.waitForTimeout(1000);
-            },
-          },
-          {
-            chu: 'Bấm «Sao chép» (hoặc «Xuất ảnh») rồi dán vào Zalo',
-            loc: (p) => hop(p).getByRole('button', { name: 'Sao chép', exact: true }),
-            lam: async (p) => {
-              await hop(p).getByRole('button', { name: 'Sao chép', exact: true }).click();
-              await p.waitForTimeout(1500);
-            },
-          },
-          {
-            chu: 'Mở Zalo, gửi đúng cho phụ huynh của em đó (kiểm tên phụ huynh ở dòng phụ đề)',
-            loc: (p) => hop(p).getByText('·').first(),
-            lam: (p) => p.waitForTimeout(1500),
-          },
-          {
-            chu: 'Quay lại hệ thống, bấm «Đánh dấu đã gửi»',
-            loc: (p) => hop(p).getByRole('button', { name: 'Đánh dấu đã gửi', exact: true }),
-            lam: async (p) => {
-              await hop(p).getByRole('button', { name: 'Đánh dấu đã gửi', exact: true }).click();
-              await p.waitForTimeout(2000);
-            },
-          },
-          {
-            chu: 'Kiểm lại việc đã làm: mở «Filters», chọn «Đã gửi»',
-            loc: (p) => p.getByRole('button', { name: 'Filters' }).first(),
-            lam: async (p) => {
-              await p.getByRole('button', { name: 'Filters' }).first().click();
-              await p
-                .getByLabel(/^Đã gửi/)
-                .first()
-                .check();
-              await p
-                .getByLabel(/^Chờ gửi/)
-                .first()
-                .uncheck();
-              await p.waitForTimeout(2000);
             },
           },
         ],

@@ -46,7 +46,7 @@ checked: 2026-11-24
    [ẢNH: GV5/04]
 
 ## Sau bước này
-- **Ai làm tiếp:** CSKH xem «Nhận xét chờ gửi» để gửi phụ huynh. Phụ huynh và học sinh chỉ thấy nhận xét khi buổi đã Hoàn tất (Done) và đã gửi cho phụ huynh.
+- **Ai làm tiếp:** Giáo viên tự xuất ảnh và gửi vào nhóm Zalo của lớp. Phụ huynh và học sinh chỉ thấy nhận xét khi buổi đã Hoàn tất (Done) và đã gửi cho phụ huynh.
 - **Bạn xem ở đâu:** trang «Buổi dạy», bước 3 chuyển «Đã làm».
 
 ## Làm nhầm thì sao

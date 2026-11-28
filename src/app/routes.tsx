@@ -125,10 +125,6 @@ const TaskDestinationPage = lazyScreen(
   () => import('../pages/phieu-den/TaskDestinationPage'),
   'TaskDestinationPage',
 );
-const ParentMessageListPage = lazyScreen(
-  () => import('../pages/nhan-xet-cho-gui/ParentMessageListPage'),
-  'ParentMessageListPage',
-);
 const TaskRecordPage = lazyScreen(() => import('../pages/phieu/TaskRecordPage'), 'TaskRecordPage');
 const GatedCrmEntry = lazyScreen(() => import('../pages/common/PortalPages'), 'GatedCrmEntry');
 const LeadListPage = lazyScreen(() => import('../pages/lead/LeadListPage'), 'LeadListPage');
@@ -722,14 +718,8 @@ export const routes: RouteObject[] = [
               </GatedCrmEntry>
             ),
           },
-          {
-            path: 'nhan-xet-cho-gui',
-            element: (
-              <GatedCrmEntry slug="nhan-xet-cho-gui">
-                <ParentMessageListPage />
-              </GatedCrmEntry>
-            ),
-          },
+          // 28/11 anh bỏ mục menu CS-16 «Nhận xét chờ gửi»: đường dẫn cũ về Trang chủ CRM.
+          { path: 'nhan-xet-cho-gui', element: <Navigate to="/crm" replace /> },
           {
             path: 'phieu-nghiep-vu/:id',
             element: (

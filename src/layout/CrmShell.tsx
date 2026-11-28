@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router';
+import { Link, Outlet, useLocation } from 'react-router';
 import { useAuth } from '../lib/auth/authContext';
 import { ALL_BRANCHES } from '../nav/access';
 import { useAccess } from '../nav/AccessContext';
@@ -7,8 +7,8 @@ import {
   CRM_MENU,
   routeModes,
   routeTabs,
-  sidebarEntries,
   visibleMenu,
+  type MenuEntry,
   type MenuGroup,
 } from '../nav/crmMenu';
 import { IconButton } from '../ui/Button';
@@ -17,7 +17,9 @@ import { Icon } from '../ui/icons';
 import { Drawer, Select } from '../ui/Overlays';
 import { ButtonLink } from '../ui/Button';
 import { RouteTabs } from '../ui/RouteTabs';
+import { activeSlug, shownSub } from '../nav/menuTree';
 import { AccountMenu } from './AccountMenu';
+import { CrmMenuGroup } from './CrmMenuGroup';
 import { CrumbTailContext, FilteredListContext } from './CrumbTail';
 import { GlobalSearch } from './GlobalSearch';
 import { NotificationBell } from './NotificationBell';
@@ -35,84 +37,6 @@ function readCollapsed(): boolean {
 }
 
 const crmPath = (slug: string) => (slug ? `/crm/${slug}` : '/crm');
-
-// Mục cấp 2 theo .hmt-sb-l2 của gói: chữ phụ, lề trái 37px; mục đang mở có vạch cam 3px bên trái.
-function entryClass({ isActive }: { isActive: boolean }): string {
-  return cn(
-    'focus-ring tap flex min-h-8 items-center rounded-control border-l-[3px] py-1.5 pr-2.5 pl-[37px] text-body',
-    isActive
-      ? 'border-sidebar-marker bg-sidebar-hover font-semibold text-neutral-0'
-      : 'border-transparent text-sidebar-fg-muted hover:bg-sidebar-hover hover:text-neutral-0',
-  );
-}
-
-function MenuGroupSection({
-  group,
-  onNavigate,
-}: {
-  group: MenuGroup;
-  onNavigate?: (() => void) | undefined;
-}) {
-  const location = useLocation();
-  const entries = sidebarEntries(group);
-  const current = group.entries.find((e) => location.pathname === crmPath(e.slug));
-  const hasActive = current !== undefined;
-  // Đang ở một tab thì dòng menu của mục cha được tô.
-  const activeTabParent = entries.some((e) => e.slug === current?.tabOf) ? current?.tabOf : null;
-  const [open, setOpen] = useState(hasActive || group.id === 'tong-quan');
-  const expanded = open || hasActive;
-  const panelId = `menu-${group.id}`;
-  return (
-    <li>
-      {/* Mục cấp 1 theo .hmt-sb-l1: biểu tượng 20px, chữ 13px/500, mũi tên ở cuối. */}
-      <button
-        type="button"
-        aria-expanded={expanded}
-        aria-controls={panelId}
-        onClick={() => setOpen(!expanded)}
-        className={cn(
-          'focus-ring tap flex min-h-9 w-full items-center gap-2.5 rounded-control px-2.5 py-2 text-left text-body font-medium hover:bg-sidebar-hover hover:text-neutral-0',
-          expanded ? 'bg-sidebar-hover text-neutral-0' : 'text-sidebar-fg',
-        )}
-      >
-        <Icon name={group.icon} className="shrink-0" />
-        <span className="min-w-0 flex-1 truncate">{group.label}</span>
-        <Icon
-          name={expanded ? 'chevronDown' : 'chevronRight'}
-          size={16}
-          className="shrink-0 text-sidebar-fg-muted"
-        />
-      </button>
-      {expanded && (
-        <ul id={panelId} className="mt-0.5 flex flex-col gap-0.5">
-          {entries.map((entry, index) => {
-            // Tiêu đề nhóm con hiện một lần, trước mục đầu tiên của nhóm con đó.
-            const heading = entry.sub && entry.sub !== entries[index - 1]?.sub ? entry.sub : null;
-            return (
-              <li key={entry.code}>
-                {heading && (
-                  <p className="pt-2 pb-0.5 pl-[37px] text-caption font-semibold text-sidebar-fg-muted">
-                    {heading}
-                  </p>
-                )}
-                <NavLink
-                  to={crmPath(entry.slug)}
-                  end
-                  onClick={onNavigate}
-                  className={({ isActive }) =>
-                    entryClass({ isActive: isActive || entry.slug === activeTabParent })
-                  }
-                >
-                  <span className="truncate">{entry.label}</span>
-                </NavLink>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </li>
-  );
-}
 
 function BranchPicker({ className }: { className?: string }) {
   const access = useAccess();
@@ -146,26 +70,33 @@ function useBreadcrumb(menu: MenuGroup[], tail: string | null): Crumb[] {
   return mergeTrail(fromOf(state), menuBreadcrumb(menu, tail, pathname), pathname);
 }
 
+/** Phần đầu đường dẫn theo ba bậc của menu: nhóm, rồi nhóm con nếu menu có hiện nhóm con đó. */
+function groupCrumbs(group: MenuGroup, entry: MenuEntry): Crumb[] {
+  const sub = shownSub(group, entry);
+  return sub ? [{ label: group.label }, { label: sub }] : [{ label: group.label }];
+}
+
 function menuBreadcrumb(menu: MenuGroup[], tail: string | null, pathname: string): Crumb[] {
   for (const group of menu) {
     const entry = group.entries.find((e) => crmPath(e.slug) === pathname);
     if (entry) {
       if (pathname === '/crm') return [{ label: entry.label }];
       const tabParent = group.entries.find((e) => e.slug === entry.tabOf);
+      const head = groupCrumbs(group, tabParent ?? entry);
       return tabParent
         ? [
-            { label: group.label },
+            ...head,
             { label: tabParent.label, to: crmPath(tabParent.slug) },
             { label: entry.tabLabel ?? entry.label },
           ]
-        : [{ label: group.label }, { label: entry.label }];
+        : [...head, { label: entry.label }];
     }
     const parent = group.entries.find(
       (e) => e.slug !== '' && pathname.startsWith(`${crmPath(e.slug)}/`),
     );
     if (parent) {
       return [
-        { label: group.label },
+        ...groupCrumbs(group, parent),
         { label: parent.label, to: crmPath(parent.slug) },
         { label: tail ?? '…' },
       ];
@@ -220,7 +151,7 @@ export function CrmShell() {
   const menuList = (onNavigate?: () => void) => (
     <ul className="flex flex-col gap-0.5">
       {menu.map((group) => (
-        <MenuGroupSection key={group.id} group={group} onNavigate={onNavigate} />
+        <CrmMenuGroup key={group.id} group={group} onNavigate={onNavigate} />
       ))}
     </ul>
   );
@@ -266,8 +197,9 @@ export function CrmShell() {
                           type="button"
                           aria-label={`${group.label} (mở rộng menu)`}
                           title={group.label}
+                          aria-current={activeSlug(group, pathname) !== null ? 'true' : undefined}
                           onClick={toggleCollapsed}
-                          className="focus-ring flex size-10 items-center justify-center rounded-control text-sidebar-fg hover:bg-sidebar-hover hover:text-neutral-0"
+                          className="focus-ring flex size-10 items-center justify-center rounded-control text-sidebar-fg hover:bg-sidebar-hover hover:text-neutral-0 aria-[current=true]:border-l-[3px] aria-[current=true]:border-sidebar-marker aria-[current=true]:text-neutral-0"
                         >
                           <Icon name={group.icon} />
                         </button>

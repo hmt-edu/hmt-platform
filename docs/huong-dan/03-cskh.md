@@ -13,12 +13,12 @@ Vai: chăm sóc khách hàng (CSKH) và vận hành lớp. Nếu bạn mới, đ
 
 **Vai «Vận hành» (tạm thời):** hệ thống chưa có vai Vận hành riêng. Người làm vận hành lớp dùng **vai CSKH** và có đúng quyền của CSKH; các tài khoản tập «Vận hành 1…3» (vh1, vh2, vh3) cũng được gán vai CSKH. Khi có vai Vận hành riêng, bài này sẽ cập nhật.
 
-Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (Ghi danh, Lớp, Buổi học, Điểm danh trong ngày), **Chăm sóc KH** (Tất cả ticket, Phiếu nghiệp vụ). Chỉ hiện mục bạn có quyền. Phân hệ chưa bật ở cơ sở của bạn sẽ báo «Phân hệ chưa bật».
+Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (Ghi danh, Lớp, Buổi học, Điểm danh trong ngày), **Chăm sóc KH** (Ticket, Phiếu nghiệp vụ). Chỉ hiện mục bạn có quyền. Phân hệ chưa bật ở cơ sở của bạn sẽ báo «Phân hệ chưa bật».
 
 
 ## Việc hằng ngày của bạn (gợi ý thứ tự)
 
-1. Mở **Tất cả ticket**, bấm lọc «Quá hạn» rồi «Sắp quá hạn»: xử lý việc trễ trước.
+1. Mở **Ticket**, bấm lọc «Quá hạn» rồi «Sắp quá hạn»: xử lý việc trễ trước.
 2. Bấm lọc «Của tôi» để xem việc được giao riêng cho bạn.
 3. Mở **Điểm danh trong ngày**: gọi nhắc học sinh chưa tới hoặc vắng.
 4. Mở **Ghi danh**, hàng chờ «Chờ xếp lớp»: xếp lớp cho học sinh mới.
@@ -80,7 +80,7 @@ Menu của bạn: **Khách hàng** (Phụ huynh, Học sinh), **Đào tạo** (G
 
 **Mục tiêu:** ghi nhận đề nghị hay khiếu nại của phụ huynh và xử lý đúng hạn.
 
-1. Vào **Tất cả ticket**. Lọc theo Đề nghị, Khiếu nại, Chờ đóng, Sắp quá hạn, Quá hạn, Của tôi. Có thể đổi sang bảng kéo (Kanban) để xem theo bước.
+1. Vào **Ticket**. Lọc theo Đề nghị, Khiếu nại, Chờ đóng, Sắp quá hạn, Quá hạn, Của tôi. Có thể đổi sang bảng kéo (Kanban) để xem theo bước.
 2. Bấm tạo ticket: chọn loại, kênh, người gửi, nhóm và nhóm con, học sinh (nếu có), mô tả. Lưu.
 3. Mở ticket. Bấm «Giao ticket» để chọn đội và người phụ trách. «Phân loại lại» đổi loại, nhóm, mức độ.
 4. Đẩy ticket đi theo thanh trạng thái: Mới, Đã giao, Đang xử lý, Đã xử lý, Đã đóng.
@@ -231,18 +231,6 @@ Mỗi phiếu đi qua: **Nháp → Chờ duyệt → Đã duyệt → Đã thự
 - **Kết quả:** lịch học của học sinh đổi theo phiếu.
 - **Lỗi thường gặp:** hệ thống chặn kèm câu lý do ngay trên màn khi buổi hay lịch chọn không hợp lệ; đọc câu đó rồi chọn lại.
 - **Ảnh:** [ẢNH: phieu-doi-lich]
-
-## 15. Hàng nhận xét chờ gửi phụ huynh
-
-**Mục tiêu:** gửi nhận xét của giáo viên cho phụ huynh khi chưa có cổng phụ huynh.
-
-1. Vào hàng nhận xét chờ gửi ở mục Chăm sóc KH.
-2. Mở từng nhận xét, đọc nội dung giáo viên đã viết.
-3. Gửi cho phụ huynh bằng cách bạn vẫn dùng (ví dụ Zalo), rồi **đánh dấu đã gửi**.
-
-- **Kết quả:** nhận xét có dấu đã gửi, không gửi trùng.
-- **Lỗi thường gặp:** quên đánh dấu thì nhận xét vẫn nằm trong hàng chờ.
-- **Ảnh:** [ẢNH: nhan-xet-cho-gui]
 
 ## Khi gặp sự cố
 

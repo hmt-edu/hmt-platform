@@ -116,7 +116,6 @@ const SHOTS = {
     },
   },
   'ticket-ban-ghi': { account: CS, route: '/crm/ticket', truoc: clickDong },
-  'nhan-xet-cho-gui': { account: CS, route: '/crm/nhan-xet-cho-gui' },
   // Trưởng cơ sở: chỉ xem.
   'truong-co-so-trang-chu': { account: TC, route: '/crm' },
   'viec-cho-toi-duyet-truong-co-so': { account: TC, route: '/crm/viec-cho-duyet' },
