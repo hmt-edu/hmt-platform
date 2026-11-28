@@ -94,7 +94,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const [error, setError] = useState<string | null>(null);
   const orders = useUpsaleOrders(t.id);
   const can = (a: UpsaleRecord['actions'][number]) => record.actions.includes(a) && !phone;
-  // Báo giá và đơn tạo được ở mọi giai đoạn, không giới hạn số đơn (R-GD-13); quyền do máy chủ trả và kiểm lại.
+  // Báo giá tạo ở mọi giai đoạn; đơn chỉ ở L8, không giới hạn số đơn (R-GD-13). Máy chủ trả việc làm được và kiểm lại.
   const canCreateQuote = can('tao_bao_gia') && access.featureOn('BAN_HANG');
   const canCreateOrder = can('tao_don') && access.featureOn('BAN_HANG');
   const openFrom = useNavigateFrom();
@@ -133,7 +133,6 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
     { hours: hoursThreshold, days: daysThreshold },
     {
       sentQuotes: (quotes.data?.rows ?? []).filter((q) => q.status_code === 'DA_GUI').length,
-      orders: (orders.data ?? []).filter((o) => o.status_code !== 'HUY').length,
     },
     can('giao'),
   );

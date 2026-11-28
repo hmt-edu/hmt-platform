@@ -286,7 +286,7 @@ select pg_temp.sudo($$insert into app.enrollment_class (enrollment_id, class_id,
 select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time)
   select c.id, c.branch_id, current_date + n, '18:00', '19:30' from app.class c, generate_series(1, 3) n where c.code = 'LOP676'$$);
 select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id, parent_id, class_id, stage_code, origin_code)
-  select 'TT976001', s.branch_id, s.id, s.parent_id, c.id, 'L6', 'TAY' from app.student s, app.class c where s.code = 'HS676A' and c.code = 'LOP676'$$);
+  select 'TT976001', s.branch_id, s.id, s.parent_id, c.id, 'L8', 'TAY' from app.student s, app.class c where s.code = 'HS676A' and c.code = 'LOP676'$$);
 select pg_temp.sudo($$create function pg_temp.tid() returns uuid language sql stable security definer as 'select id from app.upsale_ticket where code = ''TT976001'''$$);
 select pg_temp.sudo($$grant execute on function pg_temp.tid() to public$$);
 set local role authenticated;

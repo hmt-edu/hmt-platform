@@ -1,5 +1,7 @@
 -- C-27-12 (migration 708): số liệu phiếu tái tục tính lúc đọc; «Đã mua gần nhất» không ra giờ âm; liên hệ, buổi còn, buổi tới. Luật R-GD-13, R-TIEN-26. Dữ liệu giả.
 begin;
+-- Buổi giả đặt theo current_date, hàm đọc tính theo ngày Việt Nam: cùng múi giờ để bài không đỏ lúc 00:00 đến 07:00.
+set local timezone = 'Asia/Ho_Chi_Minh';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$
@@ -44,7 +46,7 @@ select pg_temp.sudo($$insert into app.class (code, branch_id, year_code, subject
 select pg_temp.sudo($$insert into app.class_slot (class_id, branch_id, weekday, start_time, end_time, first_date)
   select c.id, c.branch_id, extract(isodow from current_date)::int, '18:00', '19:30', current_date from app.class c where c.code = 'LOP708'$$);
 select pg_temp.sudo($$insert into app.class_session (class_id, branch_id, session_date, start_time, end_time, status_code)
-  select c.id, c.branch_id, current_date + v.n, '18:00', '19:30', v.st from app.class c, (values (-7, 'NHAP'), (7, 'HUY_KHONG_PHI'), (14, 'NHAP')) v (n, st) where c.code = 'LOP708'$$);
+  select c.id, c.branch_id, current_date + v.n, '18:00', '19:30', v.st from app.class c, (values (-7, 'NHAP'), (7, 'HUY_KHONG_PHI'), (14, 'NHAP'), (21, 'NHAP'), (28, 'NHAP')) v (n, st) where c.code = 'LOP708'$$);
 -- Em A: ghi danh cũ A (mua 24, còn học), ghi danh mới B bị đảo hết tiền (4,55 rồi -4,55), ghi danh C đang bảo lưu (không tính giờ còn).
 select pg_temp.sudo($$insert into app.enrollment (code, student_id, parent_id, branch_id, status_code)
   select v.code, s.id, s.parent_id, s.branch_id, v.st
@@ -69,9 +71,9 @@ set local role authenticated;
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 -- ---- Giờ còn, ngày hết giờ tính lúc đọc ----
 select is((pg_temp.get('TT917081') -> 'ticket' ->> 'hours_left')::numeric, 4.5, 'R-GD-13: giờ còn tính lúc đọc, kể cả giờ tặng, không tính ghi danh bảo lưu');
-select is((pg_temp.get('TT917081') -> 'ticket' ->> 'expected_end_date')::date, (now() at time zone 'Asia/Ho_Chi_Minh')::date + 21, 'Ngày hết giờ dự kiến: 4,5 giờ, 1,5 giờ mỗi tuần là 3 tuần');
+select is((pg_temp.get('TT917081') -> 'ticket' ->> 'expected_end_date')::date, (now() at time zone 'Asia/Ho_Chi_Minh')::date + 28, 'Ngày hết giờ dự kiến theo buổi thật: 4,5 giờ, buổi huỷ không tính, hết ở buổi ngày +28');
 select is(pg_temp.get('TT917081') -> 'ticket' ->> 'campaign_label',
-          'Tái tục ' || to_char((now() at time zone 'Asia/Ho_Chi_Minh')::date + 21, 'MM/YYYY'), 'Campaign theo ngày hết giờ tính lúc đọc');
+          'Tái tục ' || to_char((now() at time zone 'Asia/Ho_Chi_Minh')::date + 28, 'MM/YYYY'), 'Campaign theo ngày hết giờ tính lúc đọc');
 select is((pg_temp.row_of('TT917081') ->> 'hours_left')::numeric, 4.5, 'Danh sách trả cùng giờ còn với bản ghi');
 select is(app.upsale_board() -> 6 -> 'rows' -> 0 ->> 'hours_left' is not null or app.upsale_board() -> 6 -> 'rows' -> 1 ->> 'hours_left' is not null, true, 'Kanban L7 có giờ còn');
 select is(pg_temp.get('TT917082') -> 'ticket' -> 'hours_left', 'null'::jsonb, 'Không còn ghi danh hiệu lực: giờ còn để trống, không ghi 0');

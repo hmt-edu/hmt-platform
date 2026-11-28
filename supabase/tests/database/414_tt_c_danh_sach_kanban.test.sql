@@ -93,7 +93,7 @@ select is(pg_temp.err($$select app.upsale_target_of_enrollment('GD414A')$$), '42
 select pg_temp.claims(pg_temp.uid('cskh1'), 'aal1');
 select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'student' ->> 'name', 'Nguyễn Hà My', 'Bản ghi: học sinh');
 select is(jsonb_array_length(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'enrollments'), 1, 'Bản ghi: một ghi danh liên quan');
-select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'actions', '["doi_giai_doan", "sua_ghi_chu", "tao_bao_gia", "tao_don"]'::jsonb, 'Bản ghi: CSKH đổi giai đoạn, sửa ghi chú, tạo báo giá và đơn (R-GD-13); không có Giao việc');
+select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'actions', '["doi_giai_doan", "sua_ghi_chu", "tao_bao_gia"]'::jsonb, 'Bản ghi: CSKH đổi giai đoạn, sửa ghi chú, tạo báo giá; chưa ở L8 thì không có Tạo đơn (R-GD-13); không có Giao việc');
 select is(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'hours' ->> 'window_days', '30', 'Bản ghi: cửa sổ xét vắng 30 ngày');
 select is(jsonb_array_length(app.get_upsale_ticket((select id from app.upsale_ticket order by code limit 1)) -> 'events'), 1, 'Bản ghi: một sự kiện Tạo');
 

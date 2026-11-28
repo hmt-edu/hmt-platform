@@ -105,13 +105,17 @@ select app.send_quotation(pg_temp.qid('TT917071'));
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
 select is(pg_temp.err($$select app.create_order_from_quotation(pg_temp.qid('TT917071'))$$), 'HMT_KHONG_CO_QUYEN', 'Thiếu quyền thì không tạo đơn từ báo giá của phiếu');
 select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
-select is((app.create_order_from_quotation(pg_temp.qid('TT917071')) ->> 'code') ~ '^DH-', true, 'Tạo đơn từ báo giá của phiếu, không cần cơ hội L8');
+select is(pg_temp.err($$select app.create_order_from_quotation(pg_temp.qid('TT917071'))$$), 'HMT_PHIEU_CHUA_O_L8', 'R-GD-13 (28/11): đơn từ báo giá của phiếu cũng chỉ khi phiếu ở L8');
+select app.change_upsale_stage(pg_temp.tid('TT917071'), 'L8');
+select is((app.create_order_from_quotation(pg_temp.qid('TT917071')) ->> 'code') ~ '^DH-', true, 'Phiếu ở L8: tạo đơn từ báo giá, không cần cơ hội');
 select is((select count(*)::int from app.sales_order o join app.sales_order_line l on l.order_id = o.id
             where o.renewal_ticket_id = pg_temp.tid('TT917071') and o.opportunity_id is null and o.quotation_id = pg_temp.qid('TT917071')
               and l.class_id = (select id from app.class where code = 'LOP707') and l.enrol_start_date is not null), 1,
           'Đơn gắn phiếu, dòng gắn lớp và ngày vào lớp');
-select is((pg_temp.tk('TT917071')).stage_code, 'L5', 'Gửi báo giá và tạo đơn không đổi giai đoạn');
-select is(app.get_upsale_ticket(pg_temp.tid('TT917071')) -> 'actions' @> '["tao_bao_gia", "tao_don"]'::jsonb, true, 'Phiếu ở L5 vẫn có Tạo báo giá, Tạo đơn');
+select is((pg_temp.tk('TT917071')).stage_code, 'L8', 'Tạo đơn không đổi giai đoạn');
+select app.change_upsale_stage(pg_temp.tid('TT917071'), 'L5', 'KHAC', 'Lý do giả');
+select is(app.get_upsale_ticket(pg_temp.tid('TT917071')) -> 'actions' @> '["tao_bao_gia"]'::jsonb and not app.get_upsale_ticket(pg_temp.tid('TT917071')) -> 'actions' ? 'tao_don', true,
+          'Phiếu ở L5 vẫn có Tạo báo giá, không có Tạo đơn');
 
 -- ---- Đổi giai đoạn bằng tay giữa mọi giai đoạn (R-GD-13, 27/11) ----
 select is(app.get_upsale_ticket(pg_temp.tid('TT917071')) -> 'actions' @> '["doi_giai_doan"]'::jsonb, true, 'Phiếu ở L5 vẫn có Chuyển giai đoạn');

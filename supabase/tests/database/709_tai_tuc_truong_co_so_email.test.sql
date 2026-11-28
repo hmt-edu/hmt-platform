@@ -46,8 +46,8 @@ select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id
 set local role authenticated;
 -- ---- Trưởng cơ sở mình ----
 select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
-select is(app.get_upsale_ticket(pg_temp.tid('TT917091')) -> 'actions' @> '["giao", "doi_giai_doan", "sua_ghi_chu", "tao_bao_gia", "tao_don"]'::jsonb, true,
-          'Trưởng cơ sở: Giao, Chuyển giai đoạn, Ghi chú, Tạo báo giá, Tạo đơn trên phiếu cơ sở mình');
+select is(app.get_upsale_ticket(pg_temp.tid('TT917091')) -> 'actions' @> '["giao", "doi_giai_doan", "sua_ghi_chu", "tao_bao_gia"]'::jsonb, true,
+          'Trưởng cơ sở: Giao, Chuyển giai đoạn, Ghi chú, Tạo báo giá trên phiếu cơ sở mình');
 select is(app.change_upsale_stage(pg_temp.tid('TT917091'), 'L2') ->> 'stage_code', 'L2', 'Trưởng cơ sở chuyển được giai đoạn');
 -- ---- Trưởng cơ sở khác ----
 select pg_temp.claims(pg_temp.uid('bm5'), 'aal1');
