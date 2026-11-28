@@ -1,44 +1,18 @@
-// Gọi dữ liệu màn «Điểm danh»: một rpc cho mỗi tab (lọc, phân trang ở máy chủ); ghi cột Vận hành từng dòng hoặc nhiều dòng.
+// Gọi dữ liệu màn «Điểm danh»: một rpc đọc (lọc, nhóm, phân trang ở máy chủ); ghi cột Vận hành từng dòng hoặc nhiều dòng.
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { rpc, useDb } from '../../lib/db';
-import type { Board, CallList, Quick, RangeFilters } from './attendanceTypes';
+import type { Board, BoardFilters } from './attendanceTypes';
 
-export function useBoard(
-  filters: RangeFilters & { class_id?: string; quick?: Quick },
-  offset: number,
-  limit: number | null,
-  enabled: boolean,
-) {
+export function useBoard(filters: BoardFilters, offset: number, limit: number | null) {
   const supabase = useDb();
   return useQuery({
     queryKey: ['attendance-board', filters, offset, limit],
-    enabled: enabled && limit !== null,
+    enabled: limit !== null,
     placeholderData: keepPreviousData,
     retry: false,
     queryFn: () =>
       rpc<Board>(supabase, 'attendance_board', {
-        p_filters: filters,
-        p_limit: limit,
-        p_offset: offset,
-      }),
-  });
-}
-
-export function useCallList(
-  filters: RangeFilters & { start_time?: string; no_reason?: boolean },
-  offset: number,
-  limit: number | null,
-  enabled: boolean,
-) {
-  const supabase = useDb();
-  return useQuery({
-    queryKey: ['attendance-calls', filters, offset, limit],
-    enabled: enabled && limit !== null,
-    placeholderData: keepPreviousData,
-    retry: false,
-    queryFn: () =>
-      rpc<CallList>(supabase, 'attendance_call_list', {
         p_filters: filters,
         p_limit: limit,
         p_offset: offset,
@@ -52,7 +26,6 @@ function useRefreshAttendance() {
     await Promise.all(
       [
         'attendance-board',
-        'attendance-calls',
         'session-record',
         'session-list',
         'session-pending',

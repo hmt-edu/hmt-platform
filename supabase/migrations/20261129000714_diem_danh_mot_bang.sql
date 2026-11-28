@@ -34,11 +34,11 @@ begin
   -- Luật Đ35: nhóm tối đa hai cấp, khác nhau, chỉ theo trường cho phép.
   if cardinality(v_group) > 2 -- allow-number: luật Group By tối đa hai cấp, không phải số nghiệp vụ cấu hình
      or exists (select from unnest(v_group) x where x not in ('date', 'class', 'teacher', 'cskh'))
-     or v_group[1] = v_group[2] then
+     or v_group[1] = v_group[2] then -- allow-number: so cấp một với cấp hai
     perform app.raise_error('HMT_NHOM_SAI', 'Chọn tối đa hai trường nhóm khác nhau (ngày, lớp, giáo viên, phụ trách).');
   end if;
-  v_g1 := v_group[1];
-  v_g2 := v_group[2];
+  v_g1 := v_group[1]; -- allow-number: cấp nhóm thứ nhất
+  v_g2 := v_group[2]; -- allow-number: cấp nhóm thứ hai
   select * into r from app.attendance_range(p_filters);
   with base as materialized (
     select a.*, c.code as class_code, c.cskh_id

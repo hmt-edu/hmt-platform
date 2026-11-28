@@ -83,24 +83,34 @@ test('BUOI-03: ghi trạng thái trung tâm, Lưu, tải lại vẫn còn; khôn
   await expect(page.getByText('Đã ghi 1/3 học sinh')).toBeVisible();
 });
 
-test('Điểm danh: tab Cần gọi hiện em giáo viên ghi Vắng, không hiện em Có mặt; ghi lý do rồi đọc lại', async ({
+test('Điểm danh: một bảng, lọc Chưa vào lớp hiện em giáo viên ghi Vắng, không hiện em Có mặt; ghi liên hệ rồi đọc lại', async ({
   page,
 }) => {
   await markAsAssistant(seed.chot, seed.names[1], 'VANG_KHONG_PHEP');
   await markAsAssistant(seed.chot, seed.names[2], 'CO_MAT');
   await enterAs(page, 'cskh.cs5');
-  await page.goto('/crm/diem-danh?tab=can-goi');
+  await page.goto('/crm/diem-danh');
   await expect(page.getByRole('heading', { level: 1, name: 'Điểm danh' })).toBeVisible();
-  const table = page.getByRole('table', { name: 'Cần gọi' });
-  // Buổi "khác" của seed cũng có em này nhưng chưa ai ghi: chỉ xét dòng Vắng của buổi giáo viên đã ghi.
-  const row = table.getByRole('row').filter({ hasText: seed.names[1] }).filter({ hasText: 'Vắng' });
-  await expect(row).toBeVisible();
+  await page.getByRole('button', { name: 'Filters' }).click();
+  await page.getByRole('checkbox', { name: /Chưa vào lớp/ }).check();
+  await page.keyboard.press('Escape');
+  const table = page.getByRole('table', { name: 'Điểm danh' });
+  // Buổi "khác" của seed cũng có em này nhưng chưa ai ghi: chỉ xét dòng giáo viên đã tích Vắng.
+  const row = table
+    .getByRole('row')
+    .filter({ hasText: seed.names[1] })
+    .filter({ hasText: 'tích lúc' });
+  await expect(row).toContainText('Vắng');
   await expect(
-    table.getByRole('row').filter({ hasText: seed.names[2] }).filter({ hasText: 'Vắng' }),
+    table.getByRole('row').filter({ hasText: seed.names[2] }).filter({ hasText: 'tích lúc' }),
   ).toHaveCount(0);
-  await pickOption(page, row.getByRole('combobox', { name: 'Lý do liên hệ' }), 'Không nghe máy');
+  await pickOption(
+    page,
+    row.getByRole('combobox', { name: `Lý do liên hệ ${seed.names[1]}` }),
+    'Không nghe máy',
+  );
   await row.getByRole('button', { name: 'Lưu' }).click();
-  await expect(page.getByText('Đã ghi lý do liên hệ', { exact: true })).toBeVisible();
+  await expect(page.getByText('Đã ghi liên hệ phụ huynh', { exact: true })).toBeVisible();
   await expect(row).toContainText('Không nghe máy');
 });
 
