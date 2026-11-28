@@ -1,10 +1,11 @@
 // Cấu hình bảng TT-04 Đối chiếu tái tục theo tháng (canvas 9933 TT04) cho khuôn K03. Cột: Học sinh, Lớp, Ghi danh (n), Cơ sở, Giờ còn, Hết giờ dự kiến,
-// Campaign, Lý do chưa có phiếu, Xử lý. Lọc, tìm kiếm, phân trang làm ở máy chủ; tháng đổi bằng bộ lọc Campaign.
+// Tháng hết giờ, Lý do chưa có phiếu, Xử lý. Lọc, tìm kiếm, phân trang làm ở máy chủ; tháng đổi bằng bộ lọc «Tháng hết giờ». Ghi danh (n): số đếm, bấm mở danh sách mã.
 import { formatDate } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Button } from '../../ui/Button';
 import { Tag } from '../../ui/Data';
 import type { ListConfig } from '../../list/types';
+import { EnrollmentCodes } from './EnrollmentCodes';
 import { reasonLabel } from './reconcileLogic';
 import type { ReconcileRow } from './reconcileTypes';
 
@@ -35,7 +36,12 @@ export function buildReconcileConfig(
         ),
       },
       { key: 'class', label: 'Lớp', render: (r) => r.class_code },
-      { key: 'enroll', label: 'Ghi danh (n)', render: (r) => r.enrollment_codes ?? MUTED },
+      {
+        key: 'enroll',
+        label: 'Ghi danh (n)',
+        render: (r) =>
+          r.enrollment_codes ? <EnrollmentCodes codes={r.enrollment_codes} /> : MUTED,
+      },
       { key: 'branch', label: 'Cơ sở', render: (r) => r.branch_code },
       {
         key: 'hours',
@@ -47,7 +53,7 @@ export function buildReconcileConfig(
         label: 'Hết giờ dự kiến',
         render: (r) => (r.expected_end_date ? formatDate(r.expected_end_date) : MUTED),
       },
-      { key: 'campaign', label: 'Campaign', render: (r) => r.campaign_label },
+      { key: 'campaign', label: 'Tháng hết giờ', render: (r) => r.campaign_label },
       {
         key: 'reason',
         label: 'Lý do chưa có phiếu',
@@ -81,7 +87,7 @@ export function buildReconcileConfig(
       { key: 'missing', label: 'Phiếu', options: [{ value: 'missing', label: 'Còn thiếu phiếu' }] },
     ],
     filterFields: [
-      { key: 'month', label: 'Campaign (tháng hết giờ, YYYY-MM)', type: 'text', ops: ['eq'] },
+      { key: 'month', label: 'Tháng hết giờ (YYYY-MM)', type: 'text', ops: ['eq'] },
       ...(access.seesAllBranches
         ? [
             {
@@ -97,12 +103,12 @@ export function buildReconcileConfig(
           ]
         : []),
     ],
-    // Group By ở máy chủ (Kho #19, doi-chieu-group-by.md): Cơ sở (người xem nhiều cơ sở), Campaign, Lý do chưa có phiếu.
+    // Group By ở máy chủ (Kho #19, doi-chieu-group-by.md): Cơ sở (người xem nhiều cơ sở), Tháng hết giờ, Lý do chưa có phiếu.
     groupFields: [
       ...(access.seesAllBranches
         ? [{ key: 'branch', label: 'Cơ sở', value: (r: ReconcileRow) => r.branch_code }]
         : []),
-      { key: 'campaign', label: 'Campaign', value: (r) => r.campaign_label },
+      { key: 'campaign', label: 'Tháng hết giờ', value: (r) => r.campaign_label },
       {
         key: 'reason',
         label: 'Lý do chưa có phiếu',
