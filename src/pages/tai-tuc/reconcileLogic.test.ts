@@ -24,7 +24,7 @@ describe('đối chiếu tái tục (TT-04)', () => {
       filters: {},
     });
   });
-  it('đổi tháng bằng bộ lọc Tháng hết giờ; tháng sai định dạng bị bỏ', () => {
+  it('đổi tháng bằng bộ lọc Campaign; tháng sai định dạng bị bỏ', () => {
     expect(buildReconcileQuery(withCond('month', '2026-10'), NOW).month).toBe('2026-10');
     expect(buildReconcileQuery(withCond('month', '2026-13'), NOW).month).toBe('2026-11');
     expect(monthStart('2026-10')).toBe('2026-10-01');
