@@ -114,7 +114,8 @@ export type OrderEvent = {
     | 'SUA'
     | 'CANH_BAO_XEP_LOP'
     | 'CHO_HOC_TRUOC'
-    | 'CHUYEN_NGUOI_DUYET';
+    | 'CHUYEN_NGUOI_DUYET'
+    | 'CHUYEN_PHI';
   from_status: string | null;
   to_status: string | null;
   reason_code: string | null;
@@ -147,6 +148,9 @@ export type OrderRecord = {
   parent_phone: string;
   status_code: 'NHAP' | 'DA_TRINH' | 'DA_DUYET' | 'HUY';
   status: string | null;
+  /** Đơn đã chuyển phí hết: đợt chưa thu không còn phải thu, không nhận thêm tiền. */
+  fee_transferred_at?: string | null;
+  fee_transfer_ref?: string | null;
   payment_term_name: string | null;
   priced_on: string;
   total_amount: number;
