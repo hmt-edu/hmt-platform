@@ -14,20 +14,15 @@ import { Tag } from '../../ui/Data';
 import { ConfirmDialog, FormDialog } from '../../ui/Dialogs';
 import { TextAreaField } from '../../ui/Field';
 import { Alert, Spinner, StateView } from '../../ui/Feedback';
-import { LineTable } from '../../ui/LineTable';
-import { Tabs, type MenuItem } from '../../ui/Overlays';
+import type { MenuItem } from '../../ui/Overlays';
 import { useToast } from '../../ui/toastContext';
 import { editKind, transitionsFrom, type Transition } from './classTransitions';
-import {
-  NO_GROUP_TEXT,
-  WEEKDAY_LABEL,
-  classNotes,
-  recordSlotSummary,
-  timeText,
-} from './classLabels';
+import { NO_GROUP_TEXT, classNotes, recordSlotSummary, timeText } from './classLabels';
 import { editClassPath } from './classConfig';
 import { organizationText, remainingClassPath } from './classForm';
 import { OPERATING_LABEL, type ClassRecord } from './classTypes';
+import { ClassTimeTable } from './ClassTimeTable';
+import { defaultDayTab } from './classForm';
 import { transitionClass, useClassRecord, useRefreshClasses } from './useClassData';
 import { FromLink } from '../../layout/FromLink';
 import { useNavigateFrom } from '../../layout/crumbTrail';
@@ -147,7 +142,7 @@ function ClassView({ record }: { record: ClassRecord }) {
   const counts = Object.entries(record.session_counts);
   const notes = classNotes(record.status_code, record.slots.length);
   const summary = recordSlotSummary(record.slots);
-  const [dayTab, setDayTab] = useState(() => String(record.slots[0]?.weekday ?? 1));
+  const [dayTab, setDayTab] = useState(() => defaultDayTab(record.slots));
 
   return (
     <>
@@ -323,57 +318,19 @@ function ClassView({ record }: { record: ClassRecord }) {
             <p className="text-caption text-fg-muted">
               Bốn ô Lịch học, Phòng, Giáo viên, Trợ giảng của lớp tự sinh từ Time Table này.
             </p>
-            <Tabs
-              label="Time Table theo thứ"
-              value={dayTab}
-              onChange={setDayTab}
-              items={[1, 2, 3, 4, 5, 6, 7].map((day) => {
-                const slots = record.slots.filter((x) => x.weekday === day);
-                return {
-                  value: String(day),
-                  label: WEEKDAY_LABEL[day] ?? '',
-                  count: slots.length > 0 ? slots.length : undefined,
-                  content:
-                    slots.length === 0 ? (
-                      <p className="py-2 text-fg-muted">{WEEKDAY_LABEL[day]} không có khung giờ.</p>
-                    ) : (
-                      <LineTable
-                        caption={`Khung giờ ${WEEKDAY_LABEL[day]}`}
-                        rows={slots}
-                        rowKey={(x) => x.id}
-                        columns={[
-                          {
-                            key: 'time',
-                            header: 'Giờ',
-                            cell: (x) => `${timeText(x.start_time)}–${timeText(x.end_time)}`,
-                          },
-                          {
-                            key: 'teacher',
-                            header: 'Giáo viên',
-                            cell: (x) => x.teacher_name ?? '—',
-                          },
-                          {
-                            key: 'assistant',
-                            header: 'Trợ giảng',
-                            cell: (x) => x.assistant_name ?? '—',
-                          },
-                          { key: 'room', header: 'Phòng', cell: (x) => x.room_name ?? '—' },
-                          {
-                            key: 'repeat',
-                            header: 'Cách lặp',
-                            cell: (x) =>
-                              x.repeat_weeks > 1 ? `Mỗi ${x.repeat_weeks} tuần` : 'Hàng tuần',
-                          },
-                          {
-                            key: 'first',
-                            header: 'Buổi đầu tiên',
-                            cell: (x) => formatDate(x.first_date),
-                          },
-                        ]}
-                      />
-                    ),
-                };
-              })}
+            <ClassTimeTable
+              rows={record.slots}
+              day={dayTab}
+              onDayChange={setDayTab}
+              rowKey={(x) => x.id}
+              cells={{
+                time: (x) => `${timeText(x.start_time)}–${timeText(x.end_time)}`,
+                teacher: (x) => x.teacher_name ?? '—',
+                assistant: (x) => x.assistant_name ?? '—',
+                room: (x) => x.room_name ?? '—',
+                repeat: (x) => (x.repeat_weeks > 1 ? `Mỗi ${x.repeat_weeks} tuần` : 'Hàng tuần'),
+                first: (x) => formatDate(x.first_date),
+              }}
             />
             {notes.bottom && <p className="text-caption text-fg-muted">{notes.bottom}</p>}
           </DetailSection>

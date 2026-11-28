@@ -25,6 +25,7 @@ import { GROUP_FIELD_OF, buildLeadFilters, nextSort, sortParam } from './leadFil
 import { appointmentTag, formatPhone, leadTitle } from './leadFormat';
 import type { BoardCard, BoardColumn, LeadRow } from './leadTypes';
 import { useLeadCatalogs } from './useCatalogs';
+import { importBatchOption } from './importBatch';
 import { LeadStageDialog } from './LeadStageDialog';
 import { BulkCancelLeadDialog, RestoreLeadDialog } from './BulkLeadDialogs';
 import { CancelLeadDialog } from './CancelLeadDialog';
@@ -33,6 +34,7 @@ import {
   assignLeads,
   changeLeadStage,
   exportLeads,
+  useLeadImportBatches,
   useGroupCounts,
   useLeadBoard,
   useLeadCancelOptions,
@@ -91,9 +93,11 @@ export function LeadListPage() {
 
   const [state, setState] = useState<ListState>(EMPTY_LEAD_STATE);
   const trash = (state.quick.status ?? []).includes('trash');
+  const batches = useLeadImportBatches().data;
+  const importBatches = useMemo(() => batches?.map(importBatchOption), [batches]);
   const config = useMemo(
-    () => buildLeadConfig(catalogs, access, { trash }),
-    [catalogs, access, trash],
+    () => buildLeadConfig(catalogs, access, { trash, importBatches }),
+    [catalogs, access, trash, importBatches],
   );
   const cancelOptions = useLeadCancelOptions().data;
   const [bulkAction, setBulkAction] = useState<'cancel' | 'restore' | null>(null);

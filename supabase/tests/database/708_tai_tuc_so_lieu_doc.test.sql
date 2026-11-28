@@ -1,5 +1,7 @@
 -- C-27-12 (migration 708): số liệu phiếu tái tục tính lúc đọc; «Đã mua gần nhất» không ra giờ âm; liên hệ, buổi còn, buổi tới. Luật R-GD-13, R-TIEN-26. Dữ liệu giả.
 begin;
+-- Buổi giả đặt theo current_date, hàm đọc tính theo ngày Việt Nam: cùng múi giờ để bài không đỏ lúc 00:00 đến 07:00.
+set local timezone = 'Asia/Ho_Chi_Minh';
 create extension if not exists pgtap with schema extensions;
 select no_plan();
 create function pg_temp.err(p_sql text) returns text language plpgsql as $$

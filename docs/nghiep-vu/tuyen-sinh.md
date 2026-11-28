@@ -470,8 +470,9 @@ Anh Trường duyệt 19/11/2026, phương án A (chỉ Lead; cơ hội, phụ h
 |---|---|
 | `app.cancel_wrong_lead(p_id, p_reason)` | Quyền Lead · Huỷ (R-CRM-45): toàn hệ thống (Admin), cơ sở mình (Trưởng cơ sở), lead mình phụ trách (Tư vấn). Lý do bắt buộc. Chỉ lead Đang dùng. Chặn khi lead đã có cơ hội (`HMT_LEAD_CO_CO_HOI`) hoặc lịch hẹn (`HMT_LEAD_CO_LICH_HEN`). Đổi sang `DA_HUY`, ghi ghi chú, nhật ký. |
 | `app.cancel_wrong_leads(p_ids, p_reason)` | Huỷ nhiều lead một lý do. Cần phạm vi cơ sở trở lên; phạm vi cơ sở tối đa `lead_cancel_bulk_max` mỗi lần (`HMT_HUY_QUA_NHIEU`). Mỗi lead qua đủ luật huỷ từng cái; trả `{done, skipped: [{id, code, reason}]}`. |
-| `app.restore_cancelled_leads(p_ids)` | Chỉ Admin (R-CRM-46). Lead `DA_HUY` về `DANG_DUNG`; lý do huỷ cũ ghi vào ghi chú. |
+| `app.restore_cancelled_leads(p_ids)` | Chỉ Admin (R-CRM-46). Lead `DA_HUY` về `DANG_DUNG`; số điện thoại đang có lead hoặc cơ hội Đang dùng thì bỏ qua kèm mã bản đó; lý do huỷ cũ ghi vào ghi chú. |
 | `app.lead_cancel_options()` | `{single, bulk, bulk_max, restore}` để giao diện ẩn hiện nút. |
+| `app.list_lead_import_batches()` | (mig 711) Các lần nhập còn gắn lead, cho ô lọc «Lần nhập»; phạm vi theo Lead · Xem. `app.import_leads` ghi `lead.import_batch_id` = dòng `lead_import_log`; `list_leads`, `lead_board`, `lead_group_counts`, `export_leads` nhận bộ lọc `import_batch_id`. Huỷ cả lô: lọc rồi huỷ hàng loạt (R-CRM-45). |
 | Bộ lọc `trash` của `list_leads`, `lead_group_counts`, `export_leads` | «Thùng rác»: chỉ `DA_GOP`, `DA_HUY`, kèm `cancel_reason`. `include_merged` không còn kéo theo lead đã huỷ. |
 | `app.lead.record_status = 'DA_HUY'` + cột `cancel_reason`, `cancelled_at`, `cancelled_by` | Ràng buộc: có `DA_HUY` thì có đủ ba cột này, và ngược lại. |
 | Trigger `lead_a_da_huy_chi_xem` | Lead đã huỷ không sửa được (`HMT_LEAD_DA_HUY`), kể cả gộp trùng, đổi giai đoạn. |

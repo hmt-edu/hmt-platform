@@ -1,5 +1,5 @@
-// LOP-03 Tạo / sửa lớp (khuôn K07, khung RecordDetail): thông tin chung, thời gian và địa điểm, giáo viên và trợ giảng, CSKH, nhóm lớp (tuỳ chọn), Time Table 7 thứ xếp dọc
-// (mỗi thứ nhiều khung giờ; mỗi khung có giáo viên, trợ giảng, phòng, cách lặp, buổi đầu). Mã lớp tự cấp, không sửa các trường nằm trong mã.
+// LOP-03 Tạo / sửa lớp (khuôn K07, khung RecordDetail): thông tin chung, thời gian và địa điểm, giáo viên và trợ giảng, CSKH, nhóm lớp (tuỳ chọn), Time Table
+// chia tab theo thứ, cùng bảng với bản ghi lớp (mỗi thứ nhiều khung giờ; mỗi khung có giáo viên, trợ giảng, phòng, cách lặp, buổi đầu). Mã lớp tự cấp, không sửa các trường nằm trong mã.
 // Nháp, Từ chối: sửa mọi trường được phép. Đã trình, Đã xác nhận, Đã duyệt: chỉ Time Table (Đã duyệt: áp dụng từ ngày, xem trước số buổi đổi).
 // Lưu nháp xong bấm Trình ở màn lớp (R-LOP-02, R-LOP-03). Trùng phòng, trùng giáo viên chỉ cảnh báo, không chặn (R-LOP-08).
 import { useCrumbTail } from '../../layout/CrumbTail';
@@ -16,12 +16,14 @@ import { useAccess } from '../../nav/AccessContext';
 import { useToast } from '../../ui/toastContext';
 import { DetailField, DetailSection, RecordDetail, type DetailMode } from '../../record/Detail';
 import { ClassChatter } from './ClassChatter';
+import { ClassTimeTable, type TimeTableCells } from './ClassTimeTable';
 import { classPath } from './classConfig';
 import {
   EMPTY_FORM,
   GROUP_SUBJECTS,
   PRIVATE_TYPE,
   createPayload,
+  defaultDayTab,
   errorSummary,
   firstDateOnOrAfter,
   formFromRecord,
@@ -113,6 +115,7 @@ function FormView({ record }: { record: ClassRecord | null }) {
     return { ...EMPTY_FORM, branchId: branch, ...prefillFromParams(searchParams) };
   }, [record, access, claims?.branchCode, searchParams]);
   const [form, setForm] = useState<ClassFormState>(initial);
+  const [dayTab, setDayTab] = useState(() => defaultDayTab(initial.slots));
   const [tried, setTried] = useState(false);
   const [busy, setBusy] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -140,6 +143,10 @@ function FormView({ record }: { record: ClassRecord | null }) {
 
   async function save() {
     setTried(true);
+    // Lỗi khung giờ nằm ở thứ đang khuất thì mở tab thứ đó.
+    const badSlots = form.slots.filter((x) => errors[`slot-${x.key}`] !== undefined);
+    if (badSlots.length > 0 && !badSlots.some((x) => String(x.weekday) === dayTab))
+      setDayTab(defaultDayTab(badSlots));
     if (Object.keys(errors).length > 0 || busy) return;
     setBusy(true);
     setSaveError(null);
@@ -712,84 +719,44 @@ function FormView({ record }: { record: ClassRecord | null }) {
               )}
             </div>
           )}
-          {[1, 2, 3, 4, 5, 6, 7].map((day) => {
-            const slots = form.slots.filter((s) => s.weekday === day);
-            const bad = slots.filter((s) => err(`slot-${s.key}`) !== undefined).length;
-            return (
-              <section
-                key={day}
-                aria-label={`Time Table ${WEEKDAY_LABEL[day] ?? ''}`}
-                className="flex flex-col gap-2 border-t border-border pt-2"
+          <ClassTimeTable
+            rows={form.slots}
+            day={dayTab}
+            onDayChange={setDayTab}
+            rowKey={(x) => x.key}
+            cells={slotCells(opt, setSlot)}
+            action={(x) => (
+              <Button
+                size="sm"
+                onClick={() =>
+                  setForm((f) => ({ ...f, slots: f.slots.filter((y) => y.key !== x.key) }))
+                }
               >
-                <h4 className="font-semibold">
-                  {WEEKDAY_LABEL[day]}
-                  {slots.length > 0 && <span className="text-fg-muted"> ({slots.length})</span>}
-                  {bad > 0 && <span className="text-on-danger-subtle"> · {bad} lỗi</span>}
-                </h4>
-                {slots.length === 0 ? (
-                  <p className="text-caption text-fg-muted">
-                    Chưa có khung giờ nào cho {WEEKDAY_LABEL[day]}. Bấm Thêm khung giờ ở dưới.
-                  </p>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[56rem] border-collapse text-left text-body">
-                      <caption className="sr-only">Khung giờ của {WEEKDAY_LABEL[day]}</caption>
-                      <thead className="text-caption text-fg-muted">
-                        <tr>
-                          {[
-                            'Giờ bắt đầu',
-                            'Giờ kết thúc',
-                            'Giáo viên',
-                            'Trợ giảng',
-                            'Phòng',
-                            'Cách lặp (tuần)',
-                            'Buổi đầu',
-                          ].map((h) => (
-                            <th key={h} scope="col" className="px-1 pb-1 font-medium">
-                              {h}
-                            </th>
-                          ))}
-                          <th scope="col" className="px-1 pb-1">
-                            <span className="sr-only">Xoá</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {slots.map((s) => (
-                          <SlotRow
-                            key={s.key}
-                            s={s}
-                            dayLabel={WEEKDAY_LABEL[day] ?? ''}
-                            opt={opt}
-                            error={err(`slot-${s.key}`)}
-                            onChange={(patch) => setSlot(s.key, patch)}
-                            onRemove={() =>
-                              setForm((f) => ({
-                                ...f,
-                                slots: f.slots.filter((x) => x.key !== s.key),
-                              }))
-                            }
-                          />
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-                <div>
-                  <Button
-                    size="sm"
-                    icon="plus"
-                    aria-label={`Thêm khung giờ ${WEEKDAY_LABEL[day] ?? ''}`}
-                    onClick={() =>
-                      setForm((f) => ({ ...f, slots: [...f.slots, newSlot(day, f.startDate)] }))
-                    }
-                  >
-                    Thêm khung giờ
-                  </Button>
-                </div>
-              </section>
-            );
-          })}
+                Xoá
+              </Button>
+            )}
+            below={(x) =>
+              err(`slot-${x.key}`) || longSlotWarning(x.start, x.end) ? (
+                <SlotNote slot={x} error={err(`slot-${x.key}`)} />
+              ) : null
+            }
+            errorCount={(day) =>
+              form.slots.filter((x) => x.weekday === day && err(`slot-${x.key}`) !== undefined)
+                .length
+            }
+            footer={(day) => (
+              <Button
+                size="sm"
+                icon="plus"
+                aria-label={`Thêm khung giờ ${WEEKDAY_LABEL[day] ?? ''}`}
+                onClick={() =>
+                  setForm((f) => ({ ...f, slots: [...f.slots, newSlot(day, f.startDate)] }))
+                }
+              >
+                Thêm khung giờ
+              </Button>
+            )}
+          />
           <p className="text-caption text-fg-muted">
             Lưu nháp xong, bấm Trình ở màn lớp. Trình lớp bắt buộc có Time Table. Khung lặp mỗi 2
             tuần thì «Buổi đầu» quyết định tuần nào có buổi.
@@ -800,112 +767,99 @@ function FormView({ record }: { record: ClassRecord | null }) {
   );
 }
 
-function SlotRow({
-  s,
-  dayLabel,
-  opt,
-  error,
-  onChange,
-  onRemove,
-}: {
-  s: SlotDraft;
-  dayLabel: string;
-  opt:
-    | {
-        teachers: { id: string; name: string }[];
-        assistants: { id: string; name: string }[];
-        rooms: { id: string; name: string }[];
-      }
-    | undefined;
-  error: string | undefined;
-  onChange: (patch: Partial<SlotDraft>) => void;
-  onRemove: () => void;
-}) {
-  return (
-    <>
-      <tr className="align-top">
-        <td className="p-1">
-          <input
-            type="time"
-            className={INPUT_CLASS}
-            value={s.start}
-            onChange={(e) => onChange({ start: e.target.value })}
-            aria-label={`${dayLabel} giờ bắt đầu`}
-          />
-        </td>
-        <td className="p-1">
-          <input
-            type="time"
-            className={INPUT_CLASS}
-            value={s.end}
-            onChange={(e) => onChange({ end: e.target.value })}
-            aria-label={`${dayLabel} giờ kết thúc`}
-          />
-        </td>
-        <td className="p-1">
-          <PersonCell
-            label={`${dayLabel} giáo viên`}
-            value={s.teacherId}
-            people={opt?.teachers ?? []}
-            onChange={(v) => onChange({ teacherId: v })}
-          />
-        </td>
-        <td className="p-1">
-          <PersonCell
-            label={`${dayLabel} trợ giảng`}
-            value={s.assistantId}
-            people={opt?.assistants ?? []}
-            onChange={(v) => onChange({ assistantId: v })}
-          />
-        </td>
-        <td className="p-1">
-          <PersonCell
-            label={`${dayLabel} phòng`}
-            value={s.roomId}
-            people={opt?.rooms ?? []}
-            onChange={(v) => onChange({ roomId: v })}
-          />
-        </td>
-        <td className="p-1">
+type SlotOptions = Parameters<typeof PersonCell>[0]['people'];
+
+/** Ô sửa ngay trong dòng của Time Table; tên đọc của ô gắn thứ để phân biệt giữa các tab. */
+function slotCells(
+  opt: { teachers: SlotOptions; assistants: SlotOptions; rooms: SlotOptions } | undefined,
+  setSlot: (key: string, patch: Partial<SlotDraft>) => void,
+): TimeTableCells<SlotDraft> {
+  const label = (s: SlotDraft, field: string) => `${WEEKDAY_LABEL[s.weekday] ?? ''} ${field}`;
+  const input = (
+    s: SlotDraft,
+    name: string,
+    type: 'time' | 'date',
+    value: string,
+    patch: (v: string) => Partial<SlotDraft>,
+  ) => (
+    <input
+      type={type}
+      className={INPUT_CLASS}
+      value={value}
+      onChange={(e) => setSlot(s.key, patch(e.target.value))}
+      aria-label={label(s, name)}
+    />
+  );
+  const person = (
+    s: SlotDraft,
+    name: string,
+    value: string,
+    people: SlotOptions,
+    patch: (v: string) => Partial<SlotDraft>,
+  ) => (
+    <div className="w-44">
+      <PersonCell
+        label={label(s, name)}
+        value={value}
+        people={people}
+        onChange={(v) => setSlot(s.key, patch(v))}
+      />
+    </div>
+  );
+  return {
+    time: (s) => (
+      <div className="flex items-center gap-1">
+        <div className="w-28">
+          {input(s, 'giờ bắt đầu', 'time', s.start, (start) => ({ start }))}
+        </div>
+        <span aria-hidden="true">–</span>
+        <div className="w-28">{input(s, 'giờ kết thúc', 'time', s.end, (end) => ({ end }))}</div>
+      </div>
+    ),
+    teacher: (s) =>
+      person(s, 'giáo viên', s.teacherId, opt?.teachers ?? [], (teacherId) => ({ teacherId })),
+    assistant: (s) =>
+      person(s, 'trợ giảng', s.assistantId, opt?.assistants ?? [], (assistantId) => ({
+        assistantId,
+      })),
+    room: (s) => person(s, 'phòng', s.roomId, opt?.rooms ?? [], (roomId) => ({ roomId })),
+    repeat: (s) => (
+      <span className="flex items-center gap-1">
+        Mỗi
+        <span className="w-16">
           <input
             type="number"
             min={1}
             className={INPUT_CLASS}
             value={s.repeatWeeks}
-            onChange={(e) => onChange({ repeatWeeks: e.target.value })}
-            aria-label={`${dayLabel} cách lặp (tuần)`}
+            onChange={(e) => setSlot(s.key, { repeatWeeks: e.target.value })}
+            aria-label={label(s, 'cách lặp (tuần)')}
           />
-        </td>
-        <td className="p-1">
-          <input
-            type="date"
-            className={INPUT_CLASS}
-            value={s.firstDate}
-            onChange={(e) => onChange({ firstDate: e.target.value })}
-            aria-label={`${dayLabel} buổi đầu`}
-          />
-        </td>
-        <td className="p-1">
-          <Button size="sm" onClick={onRemove}>
-            Xoá
-          </Button>
-        </td>
-      </tr>
-      {!error && longSlotWarning(s.start, s.end) && (
-        <tr>
-          <td colSpan={8} role="status" className="px-1 pb-2 text-caption text-on-warning-subtle">
-            {longSlotWarning(s.start, s.end)}
-          </td>
-        </tr>
-      )}
-      {error && (
-        <tr>
-          <td colSpan={8} role="alert" className="px-1 pb-2 text-caption text-on-danger-subtle">
-            {error}
-          </td>
-        </tr>
-      )}
-    </>
+        </span>
+        tuần
+      </span>
+    ),
+    first: (s) => (
+      <div className="w-40">
+        {input(s, 'buổi đầu', 'date', s.firstDate, (firstDate) => ({ firstDate }))}
+      </div>
+    ),
+  };
+}
+
+function SlotNote({ slot, error }: { slot: SlotDraft; error: string | undefined }) {
+  if (error)
+    return (
+      <span role="alert" className="text-on-danger-subtle">
+        {error}
+      </span>
+    );
+  const warning = longSlotWarning(slot.start, slot.end);
+  if (!warning) return null;
+  return (
+    <span role="status" className="text-on-warning-subtle">
+      {warning}
+    </span>
   );
 }
 

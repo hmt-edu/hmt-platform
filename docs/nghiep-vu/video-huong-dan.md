@@ -52,7 +52,6 @@ Hướng đi anh Trường chốt 24/11: video quay bằng Playwright trên dữ
 | cs2 | Khiếu nại: xử lý, nâng cấp, mở lại | CS, BM | 2 | — |
 | cs3 | Phiếu nghiệp vụ, cách làm chung và duyệt từng cấp | CS, BM, KT | 2 | — |
 | cs4 | Phiếu Cập nhật hồ sơ | CS | 2 | — |
-| cs12 | Hàng nhận xét chờ gửi phụ huynh | CS | 2 | — |
 | gv1 | Hôm nay: xem buổi, việc sắp trễ hạn | GV, TG | 2 | — |
 | gv3 | Điểm danh (4 trạng thái, lưu) | GV, TG | 2 | — |
 | gv4 | Nội dung buổi và giao BTVN | GV, TG | 2 | — |

@@ -1,148 +1,140 @@
 {
- "v": 3,
- "createdOnFiles": {
-  "v": 1,
-  "at": "2026-11-27T04:55:00Z"
- },
- "title": "HMT Đào tạo — menu và điểm danh",
- "launch": {
-  "view": "canvas"
- },
- "pages": [],
- "boards": {
-  "Menu.dc.html": {
-   "x": 0,
-   "y": 260,
-   "w": 248,
-   "h": 1840,
-   "title": "Menu trái · vẽ lại một lần, áp cho mọi màn"
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-27T04:55:00Z"
   },
-  "Main.dc.html": {
-   "x": 328,
-   "y": 260,
-   "w": 1440,
-   "h": 1180,
-   "title": "Điểm danh · Theo buổi (máy tính)",
-   "is_interactive": true
+  "title": "HMT Đào tạo — menu và điểm danh",
+  "launch": {
+    "view": "canvas"
   },
-  "CanGoi.dc.html": {
-   "x": 1848,
-   "y": 260,
-   "w": 1440,
-   "h": 960,
-   "title": "Điểm danh · Cần gọi (máy tính)"
+  "pages": [],
+  "boards": {
+    "Menu.dc.html": {
+      "x": 0,
+      "y": 260,
+      "w": 248,
+      "h": 1840,
+      "title": "Menu trái · vẽ lại một lần, áp cho mọi màn"
+    },
+    "Main.dc.html": {
+      "x": 328,
+      "y": 260,
+      "w": 1560,
+      "h": 1180,
+      "title": "Điểm danh · một bảng (máy tính)",
+      "is_interactive": true
+    },
+    "DiemDanhMobile.dc.html": {
+      "x": 3368,
+      "y": 260,
+      "w": 390,
+      "h": 844,
+      "title": "Điểm danh · điện thoại",
+      "is_interactive": true
+    },
+    "MenuMobile.dc.html": {
+      "x": 3838,
+      "y": 260,
+      "w": 390,
+      "h": 844,
+      "title": "Menu điện thoại · thanh dưới + ngăn kéo"
+    },
+    "GhiDanh.dc.html": {
+      "x": 328,
+      "y": 1560,
+      "w": 1440,
+      "h": 760,
+      "title": "Ghi danh · tab Chờ xếp lớp"
+    },
+    "BuoiHoc.dc.html": {
+      "x": 1848,
+      "y": 1560,
+      "w": 1440,
+      "h": 760,
+      "title": "Buổi học · Danh sách"
+    },
+    "BuoiHocTuan.dc.html": {
+      "x": 328,
+      "y": 2440,
+      "w": 1440,
+      "h": 860,
+      "title": "Buổi học · Lịch tuần"
+    },
+    "BuoiHocMobile.dc.html": {
+      "x": 1848,
+      "y": 2440,
+      "w": 390,
+      "h": 844,
+      "title": "Buổi học · Lịch tuần (điện thoại)"
+    },
+    "DiemDanh7Ngay.dc.html": {
+      "x": 328,
+      "y": 4160,
+      "w": 1560,
+      "h": 1500,
+      "title": "Điểm danh · 7 ngày qua, nhóm theo ngày rồi theo lớp, lọc Chưa điểm danh",
+      "is_interactive": true
+    },
+    "DiemDanhMobile7Ngay.dc.html": {
+      "x": 1848,
+      "y": 4160,
+      "w": 390,
+      "h": 844,
+      "title": "Điểm danh · điện thoại · 7 ngày, nhóm theo ngày",
+      "is_interactive": true
+    },
+    "ManPhu.dc.html": {
+      "x": 328,
+      "y": 3420,
+      "w": 1560,
+      "h": 620,
+      "title": "Màn phụ · Chi tiết buổi, Done hàng loạt, Nhập thay giáo viên"
+    },
+    "NhatKy.dc.html": {
+      "x": 1848,
+      "y": 3420,
+      "w": 1440,
+      "h": 620,
+      "title": "Quản trị · Nhật ký (hai tab)"
+    }
   },
-  "DiemDanhMobile.dc.html": {
-   "x": 3368,
-   "y": 260,
-   "w": 390,
-   "h": 844,
-   "title": "Điểm danh · điện thoại",
-   "is_interactive": true
+  "order": [
+    "Main.dc.html",
+    "DiemDanhMobile.dc.html",
+    "Menu.dc.html",
+    "MenuMobile.dc.html",
+    "GhiDanh.dc.html",
+    "BuoiHoc.dc.html",
+    "BuoiHocTuan.dc.html",
+    "BuoiHocMobile.dc.html",
+    "ManPhu.dc.html",
+    "NhatKy.dc.html",
+    "DiemDanh7Ngay.dc.html",
+    "DiemDanhMobile7Ngay.dc.html"
+  ],
+  "notes": {
+    "n_title1": {
+      "x": 0,
+      "y": 100,
+      "text": "HMT Đào tạo · menu mới và điểm danh",
+      "kind": "title1",
+      "maxW": 4200
+    },
+    "n_menu": {
+      "x": 0,
+      "y": 2160,
+      "w": 300,
+      "fill": "orange",
+      "text": "Menu: Lịch hẹn đã bỏ khỏi Tuyển sinh. Đào tạo có 5 mục. CSKH thêm Sắp hết giờ. Cấu hình và Quản trị có nhóm con. Quản trị: mục «Nhật ký» riêng, bên trong hai tab (hệ thống, nghiệp vụ)."
+    },
+    "n_dd": {
+      "x": 328,
+      "y": 1470,
+      "w": 420,
+      "fill": "teal",
+      "text": "Điểm danh: màn cho mọi buổi trong khoảng ngày, «Hôm nay» chỉ là lọc mặc định. Bấm 4 nút là tự lưu. Cột Giáo viên chỉ xem; ô lệch tô cam kèm nhãn «Lệch». Buổi Done khoá hai cột."
+    }
   },
-  "MenuMobile.dc.html": {
-   "x": 3838,
-   "y": 260,
-   "w": 390,
-   "h": 844,
-   "title": "Menu điện thoại · thanh dưới + ngăn kéo"
-  },
-  "GhiDanh.dc.html": {
-   "x": 328,
-   "y": 1560,
-   "w": 1440,
-   "h": 760,
-   "title": "Ghi danh · tab Chờ xếp lớp"
-  },
-  "BuoiHoc.dc.html": {
-   "x": 1848,
-   "y": 1560,
-   "w": 1440,
-   "h": 760,
-   "title": "Buổi học · Danh sách"
-  },
-  "BuoiHocTuan.dc.html": {
-   "x": 328,
-   "y": 2440,
-   "w": 1440,
-   "h": 860,
-   "title": "Buổi học · Lịch tuần"
-  },
-  "BuoiHocMobile.dc.html": {
-   "x": 1848,
-   "y": 2440,
-   "w": 390,
-   "h": 844,
-   "title": "Buổi học · Lịch tuần (điện thoại)"
-  },
-  "DiemDanh7Ngay.dc.html": {
-   "x": 328,
-   "y": 4160,
-   "w": 1440,
-   "h": 1500,
-   "title": "Điểm danh · 7 ngày qua, nhóm theo ngày rồi theo lớp, lọc Chưa điểm danh",
-   "is_interactive": true
-  },
-  "DiemDanhMobile7Ngay.dc.html": {
-   "x": 1848,
-   "y": 4160,
-   "w": 390,
-   "h": 844,
-   "title": "Điểm danh · điện thoại · 7 ngày, nhóm theo ngày",
-   "is_interactive": true
-  },
-  "ManPhu.dc.html": {
-   "x": 328,
-   "y": 3420,
-   "w": 1560,
-   "h": 620,
-   "title": "Màn phụ · Chi tiết buổi, Done hàng loạt, Nhập thay giáo viên"
-  },
-  "NhatKy.dc.html": {
-   "x": 1848,
-   "y": 3420,
-   "w": 1440,
-   "h": 620,
-   "title": "Quản trị · Nhật ký (hai tab)"
-  }
- },
- "order": [
-  "Main.dc.html",
-  "CanGoi.dc.html",
-  "DiemDanhMobile.dc.html",
-  "Menu.dc.html",
-  "MenuMobile.dc.html",
-  "GhiDanh.dc.html",
-  "BuoiHoc.dc.html",
-  "BuoiHocTuan.dc.html",
-  "BuoiHocMobile.dc.html",
-  "ManPhu.dc.html",
-  "NhatKy.dc.html",
-  "DiemDanh7Ngay.dc.html",
-  "DiemDanhMobile7Ngay.dc.html"
- ],
- "notes": {
-  "n_title1": {
-   "x": 0,
-   "y": 100,
-   "text": "HMT Đào tạo · menu mới và điểm danh",
-   "kind": "title1",
-   "maxW": 4200
-  },
-  "n_menu": {
-   "x": 0,
-   "y": 2160,
-   "w": 300,
-   "fill": "orange",
-   "text": "Menu: Lịch hẹn đã bỏ khỏi Tuyển sinh. Đào tạo có 5 mục. CSKH thêm Sắp hết giờ. Cấu hình và Quản trị có nhóm con. Quản trị: mục «Nhật ký» riêng, bên trong hai tab (hệ thống, nghiệp vụ)."
-  },
-  "n_dd": {
-   "x": 328,
-   "y": 1470,
-   "w": 420,
-   "fill": "teal",
-   "text": "Điểm danh: màn cho mọi buổi trong khoảng ngày, «Hôm nay» chỉ là lọc mặc định. Bấm 4 nút là tự lưu. Cột Giáo viên chỉ xem; ô lệch tô cam kèm nhãn «Lệch». Buổi Done khoá hai cột."
-  }
- },
- "designSystems": []
+  "designSystems": []
 }

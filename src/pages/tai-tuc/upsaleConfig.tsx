@@ -1,5 +1,5 @@
 // Cấu hình danh sách phiếu tái tục cho khuôn K03: TT-01. Cột (anh Trường chốt 27/11): Phiếu, Học sinh, Phụ huynh, Môn, Lớp, Giờ còn, Hết giờ dự kiến, Phụ trách,
-// Liên hệ gần nhất, Giai đoạn, Xử lý; Ghi danh (n), Campaign, Sub-stage ẩn sẵn. Phụ huynh, Môn, Liên hệ gần nhất: máy chủ chưa trả. Lọc, sắp xếp, phân trang ở máy chủ.
+// Liên hệ gần nhất, Giai đoạn, Xử lý; Ghi danh (n), Tháng hết giờ, Sub-stage ẩn sẵn. Phụ huynh, Môn, Liên hệ gần nhất: máy chủ chưa trả. Lọc, sắp xếp, phân trang ở máy chủ.
 import { formatDate } from '../../lib/format';
 import type { AccessView } from '../../nav/access';
 import { Tag, type TagTone } from '../../ui/Data';
@@ -85,7 +85,7 @@ export function buildUpsaleConfig(
       },
       {
         key: 'campaign',
-        label: 'Campaign',
+        label: 'Tháng hết giờ',
         defaultVisible: false,
         render: (r) => r.campaign_label ?? MUTED,
       },
@@ -131,7 +131,7 @@ export function buildUpsaleConfig(
     filterFields: [
       {
         key: 'month',
-        label: 'Campaign (tháng hết giờ, YYYY-MM)',
+        label: 'Tháng hết giờ (YYYY-MM)',
         type: 'text',
         ops: ['eq'],
       },
@@ -154,7 +154,7 @@ export function buildUpsaleConfig(
     groupFields: [
       { key: 'stage', label: 'Giai đoạn', value: (r) => r.stage_code },
       { key: 'substage', label: 'Sub-stage', value: (r) => r.substage_code ?? '' },
-      { key: 'campaign', label: 'Campaign', value: (r) => r.campaign_label ?? '' },
+      { key: 'campaign', label: 'Tháng hết giờ', value: (r) => r.campaign_label ?? '' },
       { key: 'owner', label: 'Phụ trách', value: (r) => r.owner_id ?? '' },
       ...(access.seesAllBranches
         ? [{ key: 'branch', label: 'Cơ sở', value: (r: UpsaleRow) => r.branch_code }]

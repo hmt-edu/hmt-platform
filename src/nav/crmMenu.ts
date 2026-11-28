@@ -268,7 +268,7 @@ export const CRM_MENU: MenuGroup[] = [
     entries: [
       {
         code: 'CS-01',
-        label: 'Tất cả ticket',
+        label: 'Ticket',
         slug: 'ticket',
         requires: can('TICKET'),
         stage: '',
@@ -281,14 +281,6 @@ export const CRM_MENU: MenuGroup[] = [
         requires: can('TICKET'),
         stage: '',
         feature: 'AFTERSALE',
-      },
-      // CS-16 «Nhận xét chờ gửi» sống lại 23/11/2026 (anh Trường, sửa R-V2-40): CSKH gửi tay qua Zalo rồi đánh dấu đã gửi. Cần quyền sửa Ticket (giáo viên không có).
-      {
-        code: 'CS-16',
-        label: 'Nhận xét chờ gửi',
-        slug: 'nhan-xet-cho-gui',
-        requires: can('TICKET', 'SUA'),
-        stage: '',
       },
       {
         code: 'CS-07',
@@ -455,13 +447,6 @@ export const CRM_MENU: MenuGroup[] = [
     icon: 'settings',
     entries: [
       {
-        code: 'KH-08',
-        label: 'Lên khối đầu năm',
-        slug: 'len-khoi-dau-nam',
-        requires: can('ADMIN'),
-        stage: '',
-      },
-      {
         code: 'QT-01',
         label: 'Người dùng',
         slug: 'quan-tri/nguoi-dung',
@@ -566,6 +551,13 @@ export const CRM_MENU: MenuGroup[] = [
         stage: B4,
         sub: 'Nhật ký',
         tabOf: 'quan-tri/nhat-ky',
+      },
+      {
+        code: 'KH-08',
+        label: 'Lên khối đầu năm',
+        slug: 'len-khoi-dau-nam',
+        requires: can('ADMIN'),
+        stage: '',
       },
     ],
   },

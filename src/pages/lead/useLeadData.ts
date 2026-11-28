@@ -220,11 +220,31 @@ export function useLeadCancelOptions() {
   });
 }
 
+export type ImportBatch = {
+  id: string;
+  created_at: string;
+  file_name: string | null;
+  importer_name: string;
+  branch_code: string;
+  imported_count: number;
+  active_count: number;
+};
+
+/** Các lần nhập từ file còn gắn lead, mới nhất trước (ô lọc «Lần nhập», R-CRM-45). */
+export function useLeadImportBatches() {
+  const supabase = useDb();
+  return useQuery({
+    queryKey: ['lead-import-batches'],
+    queryFn: () => rpc<ImportBatch[]>(supabase, 'list_lead_import_batches'),
+  });
+}
+
 export function useRefreshLeads() {
   const client = useQueryClient();
   return useCallback(async () => {
     await Promise.all([
       client.invalidateQueries({ queryKey: ['lead-list'] }),
+      client.invalidateQueries({ queryKey: ['lead-import-batches'] }),
       client.invalidateQueries({ queryKey: ['lead-board'] }),
       client.invalidateQueries({ queryKey: ['lead-groups'] }),
     ]);
