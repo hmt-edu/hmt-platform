@@ -76,6 +76,7 @@ select is(pg_temp.err($$select app.create_order_from_upsale_ticket(pg_temp.tid('
 -- ---- Tạo đúng ----
 select is((app.create_order_from_upsale_ticket(pg_temp.tid('TT917001'), pg_temp.lines()) ->> 'code') ~ '^DH-', true, 'R-GD-13 (28/11): phiếu ở L8 tạo được đơn, ra mã đơn DH');
 select is((pg_temp.tk('TT917001')).stage_code, 'L8', 'R-GD-13: tạo đơn xong phiếu giữ nguyên giai đoạn');
+select is((pg_temp.tk('TT917001')).substage_code, 'L8B', 'R-GD-13 (28/11): có đơn, hệ thống chuyển L8B trong cùng giao dịch');
 select is((select count(*)::int from app.sales_order where renewal_ticket_id = pg_temp.tid('TT917001') and opportunity_id is null and status_code = 'NHAP'), 1, 'Đơn Nháp gốc là phiếu (không có cơ hội)');
 select is((select count(*)::int from app.sales_order_line l join app.sales_order o on o.id = l.order_id
             where o.renewal_ticket_id = pg_temp.tid('TT917001') and l.student_id = (select id from app.student where code = 'HS417A')
@@ -90,7 +91,8 @@ reset role;
 select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
 select pg_temp.sudo($$update app.sales_order set status_code = 'DA_DUYET', total_amount = 0
   where id = (select id from app.sales_order where renewal_ticket_id = (select id from app.upsale_ticket where code = 'TT917001') order by code limit 1)$$);
-select is((pg_temp.tk('TT917001')).stage_code, 'L8', 'Đơn duyệt và thu đủ không tự chuyển phiếu');
+select is((pg_temp.tk('TT917001')).stage_code, 'L8', 'Đơn duyệt không chuyển giai đoạn của phiếu');
+select is((pg_temp.tk('TT917001')).substage_code, 'L8B', 'Còn đơn chưa duyệt thì vẫn L8B');
 
 -- ---- Ghi danh mới vào đúng lớp của phiếu (hàm sẵn có create_enrollments_for_order): không vào hàng chờ xếp lớp ----
 reset role;

@@ -90,7 +90,9 @@ Phần này thay các câu ở trên về «chỉ L6», «một đơn đang số
 
 ## Cập nhật 28/11/2026 (migration 713, C-27-20, 20b)
 
-- Bộ giai đoạn, giai đoạn con theo `docs/spec/06` mục 1.4; L8A, L8B, L8C cùng tên với cơ hội.
+- Bộ giai đoạn, giai đoạn con theo `docs/spec/06` mục 1.4.
 - `app.upsale_is_closed(giai đoạn, giai đoạn con)`: kết thúc khi L5 hoặc L8C; `closed_at` đặt đúng hai trường hợp đó. «Phiếu đang mở» ở mọi hàm và chỉ mục = `closed_at` rỗng.
-- `change_upsale_stage`: giai đoạn con bắt buộc, thuộc giai đoạn đích; L5 không bắt lý do danh mục.
-- Dữ liệu cũ: giai đoạn con rỗng hoặc sai thì lấy con đầu; L5 theo lý do cũ (HOC_PHI L5A, LICH_HOC L5B, CHUYEN_NHA L5C, CHAT_LUONG L5D, DU_MUC_TIEU L5E, HOC_NOI_KHAC L5F, còn lại L5G); L8 cũ thành L8C.
+- `change_upsale_stage`: giai đoạn con bắt buộc, thuộc giai đoạn đích; L5 không bắt lý do danh mục. L8 không chọn giai đoạn con.
+- L8 theo tiến độ đơn (20d): `app.upsale_l8_substage` (không đơn còn sống L8A, mọi đơn đã duyệt L8C, còn lại L8B); trigger `sales_order_upsale_l8` gọi `app.upsale_sync_l8` trong cùng giao dịch, chỉ đi tới, ghi «Hệ thống chuyển L8B» hoặc L8C.
+- Dữ liệu cũ: giai đoạn con rỗng hoặc sai thì lấy con đầu; L5 theo lý do cũ (HOC_PHI L5A, LICH_HOC L5B, CHUYEN_NHA L5C, CHAT_LUONG L5D, DU_MUC_TIEU L5E, HOC_NOI_KHAC L5F, còn lại L5G); L8 cũ thành L8C, giữ đóng (29/11). L7 còn L7A đến L7C.
+- `list_orders`, `order_group_counts` nhận bộ lọc `upsale_ticket_id` (đơn của một phiếu).

@@ -113,6 +113,9 @@ select is((select count(*)::int from app.sales_order o join app.sales_order_line
               and l.class_id = (select id from app.class where code = 'LOP707') and l.enrol_start_date is not null), 1,
           'Đơn gắn phiếu, dòng gắn lớp và ngày vào lớp');
 select is((pg_temp.tk('TT917071')).stage_code, 'L8', 'Tạo đơn không đổi giai đoạn');
+select is(app.list_orders(jsonb_build_object('upsale_ticket_id', pg_temp.tid('TT917071'))) ->> 'total', '1', 'Lọc đơn của phiếu');
+select is(app.list_orders(jsonb_build_object('upsale_ticket_id', pg_temp.tid('TT917072'))) ->> 'total', '0', 'Phiếu chưa có đơn: lọc ra rỗng, không lộ đơn của phiếu khác');
+select is(app.order_group_counts(jsonb_build_object('upsale_ticket_id', pg_temp.tid('TT917072')), array['status']) ->> 'total', '0', 'Group By cũng lọc theo phiếu');
 select app.change_upsale_stage(pg_temp.tid('TT917071'), 'L5', 'KHAC', 'Lý do giả', 'L5G');
 select is(app.get_upsale_ticket(pg_temp.tid('TT917071')) -> 'actions' @> '["tao_bao_gia"]'::jsonb and not app.get_upsale_ticket(pg_temp.tid('TT917071')) -> 'actions' ? 'tao_don', true,
           'Phiếu ở L5 vẫn có Tạo báo giá, không có Tạo đơn');
@@ -123,7 +126,18 @@ select is(app.change_upsale_stage(pg_temp.tid('TT917071'), 'L7', null, null, 'L7
 select is((pg_temp.tk('TT917071')).closed_at is null and (pg_temp.tk('TT917071')).lost_reason_code is null, true, 'Rời L5 thì bỏ ngày đóng và lý do');
 select is(app.change_upsale_stage(pg_temp.tid('TT917071'), 'L7', null, null, 'L7A') ->> 'substage_code', 'L7A', 'Đổi nhóm con trong L7');
 select is(pg_temp.err($$select app.change_upsale_stage(pg_temp.tid('TT917071'), 'L7', null, null, 'L7A')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'Không đổi gì thì bị chặn');
-select is(app.change_upsale_stage(pg_temp.tid('TT917071'), 'L8', p_substage => 'L8C') ->> 'substage_code', 'L8C', 'Sang L8C bằng tay');
+select is(app.change_upsale_stage(pg_temp.tid('TT917071'), 'L8') ->> 'substage_code', 'L8B', 'R-GD-13 (28/11): vào L8 khi đã có đơn chưa duyệt, hệ thống đặt L8B');
+select is((pg_temp.tk('TT917071')).closed_at, null, 'L8B chưa kết thúc');
+select is(pg_temp.err($$select app.change_upsale_stage(pg_temp.tid('TT917071'), 'L8', p_substage => 'L8C')$$), 'HMT_GIAI_DOAN_KHONG_HOP_LE', 'Không tự chọn được giai đoạn con của L8');
+select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
+select pg_temp.sudo($$update app.sales_order set status_code = 'DA_DUYET' where renewal_ticket_id = (select id from app.upsale_ticket where code = 'TT917071')$$);
+select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
+select is((pg_temp.tk('TT917071')).substage_code, 'L8C', 'Mọi đơn còn sống đã duyệt: hệ thống chuyển L8C');
+select is((select count(*)::int from app.upsale_ticket_event where ticket_id = pg_temp.tid('TT917071') and note = 'Hệ thống chuyển L8C'), 1, 'Ghi lịch sử hệ thống chuyển L8C');
+select pg_temp.sudo($$select set_config('hmt.migration', 'on', true)$$);
+select pg_temp.sudo($$update app.sales_order set status_code = 'HUY' where renewal_ticket_id = (select id from app.upsale_ticket where code = 'TT917071')$$);
+select pg_temp.sudo($$select set_config('hmt.migration', '', true)$$);
+select is((pg_temp.tk('TT917071')).substage_code, 'L8C', 'Huỷ đơn không lùi khỏi L8C');
 select is((pg_temp.tk('TT917071')).closed_at is not null, true, 'L8C ghi thời điểm kết thúc');
 select pg_temp.sudo($$insert into app.upsale_ticket (code, branch_id, student_id, parent_id, class_id, stage_code, origin_code)
   select 'TT917074', branch_id, student_id, parent_id, class_id, 'L1', 'TAY' from app.upsale_ticket where code = 'TT917071'$$);

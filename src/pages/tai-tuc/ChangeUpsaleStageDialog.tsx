@@ -1,5 +1,5 @@
-// «Chuyển giai đoạn» của phiếu tái tục (khuôn K4 ③ FormDialog; canvas 9933 TT02_chuyen): chọn giai đoạn mới và giai đoạn con (bắt buộc ở mọi giai đoạn).
-// Đổi bằng tay giữa mọi giai đoạn L1 đến L8; ở L5 giai đoạn con chính là lý do không tái tục. Máy chủ kiểm quyền và luật; hộp chỉ hiện lỗi của hàm.
+// «Chuyển giai đoạn» của phiếu tái tục (khuôn K4 ③ FormDialog; canvas 9933 TT02_chuyen): chọn giai đoạn mới và giai đoạn con (bắt buộc, trừ L8).
+// Đổi bằng tay giữa mọi giai đoạn L1 đến L8; ở L5 giai đoạn con chính là lý do không tái tục; giai đoạn con của L8 do hệ thống đặt theo đơn. Máy chủ kiểm quyền và luật; hộp chỉ hiện lỗi của hàm.
 import { useState } from 'react';
 import { errorOf, useDb } from '../../lib/db';
 import { FormDialog } from '../../ui/Dialogs';
@@ -29,20 +29,30 @@ function ChangeForm({ open, onOpenChange, ticket, onDone }: Props) {
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Giữ cả giai đoạn đang đứng để đổi giai đoạn con.
+  // Giữ cả giai đoạn đang đứng để đổi giai đoạn con; L8 không chọn tay giai đoạn con nên đang ở L8 thì không liệt kê.
   const stageOptions = catalogs
     .options('UPSALE_STAGE')
+    .filter((o) => !(o.value === 'L8' && ticket.stage_code === 'L8'))
     .map((o) => ({ value: o.value, label: `${o.value} ${o.label}` }));
   const subOptions = catalogs
     .childrenOf('UPSALE_SUBSTAGE', 'UPSALE_STAGE', to || null)
     .filter((o) => o.value !== ticket.substage_code)
     .map((o) => ({ value: o.value, label: `${o.value} ${o.label}` }));
 
+  const choosesSub = to !== '' && to !== 'L8';
+
   async function submit() {
     setBusy(true);
     setError(null);
     try {
-      await changeUpsaleStage(supabase, ticket.id, to, null, note.trim() || null, sub);
+      await changeUpsaleStage(
+        supabase,
+        ticket.id,
+        to,
+        null,
+        note.trim() || null,
+        choosesSub ? sub : null,
+      );
       await onDone();
       onOpenChange(false);
     } catch (e) {
@@ -60,7 +70,7 @@ function ChangeForm({ open, onOpenChange, ticket, onDone }: Props) {
       subtitle={`${ticket.code} · ${ticket.student_name} · ${ticket.class_code}`}
       confirmLabel="Chuyển"
       cancelLabel="Đóng"
-      canSubmit={to !== '' && sub !== ''}
+      canSubmit={to !== '' && (!choosesSub || sub !== '')}
       busy={busy}
       error={error}
       onSubmit={() => void submit()}
@@ -82,7 +92,7 @@ function ChangeForm({ open, onOpenChange, ticket, onDone }: Props) {
             />
           )}
         </Field>
-        {to !== '' && (
+        {choosesSub && (
           <Field label="Sub-stage" required>
             {(field) => (
               <Select

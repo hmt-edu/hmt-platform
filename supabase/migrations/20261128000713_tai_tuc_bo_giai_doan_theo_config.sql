@@ -1,7 +1,7 @@
--- C-27-20, C-27-20b (anh Trường 28/11/2026 09:46, 09:53; rủi ro CAO: dữ liệu). Số migration chờ Chat xác nhận.
+-- C-27-20, 20b, 20c, 20d (anh Trường 28/11/2026 09:46 đến 10:02; rủi ro CAO: dữ liệu).
 -- (1) Thay bộ giai đoạn và giai đoạn con của phiếu tái tục theo bảng Config của anh (docs/spec/06 mục 1.4). Mã giai đoạn giữ nguyên, tên và nghĩa đổi.
---     L8A, L8B, L8C giống hệt cơ hội (R-CRM-16): tên lấy từ danh mục giai đoạn con cơ hội.
--- (2) Phiếu KẾT THÚC khi L5 (mọi giai đoạn con) hoặc L8C; closed_at đặt đúng hai trường hợp này. L8A, L8B còn xử lý.
+--     L8 chỉ theo TIẾN ĐỘ ĐƠN (không theo tiền; cơ hội giữ nguyên L8 theo tiền): L8A Chờ lên đơn, L8B Đã lên đơn chờ duyệt, L8C Đơn đã duyệt. Hệ thống tự đặt.
+-- (2) Phiếu KẾT THÚC khi L5 (mọi giai đoạn con) hoặc L8C. L8A, L8B còn xử lý.
 -- (3) Chuyển giai đoạn: bắt buộc chọn giai đoạn con thuộc giai đoạn đích; L5 không còn bắt lý do (L5A..L5G là lý do).
 -- (4) Dữ liệu cũ: xem khối «Dữ liệu cũ» bên dưới.
 select set_config('hmt.migration', 'on', false);
@@ -19,10 +19,10 @@ update app.catalog_item i set name = v.name
   ) v (code, name)
  where i.catalog_code = 'UPSALE_STAGE' and i.code = v.code;
 
--- Giai đoạn con: mã đã có thì đổi tên, thứ tự; mã mới thì thêm. L8 lấy đúng tên của giai đoạn con cơ hội.
+-- Giai đoạn con: mã đã có thì đổi tên, thứ tự; mã mới thì thêm.
 insert into app.catalog_item (catalog_code, code, name, sort_order, parent_id, extra)
 select 'UPSALE_SUBSTAGE', v.code,
-       coalesce(v.name, (select o.name from app.catalog_item o where o.catalog_code = 'OPP_SUBSTAGE' and o.code = v.code)), v.sort_order, p.id,
+       v.name, v.sort_order, p.id,
        case when v.stage = 'L5' or v.code = 'L8C' then '{"terminal": true}'::jsonb else '{}'::jsonb end
   from (values
   ('L1A', 'Hệ thống sinh tự động', 1, 'L1'),
@@ -55,17 +55,73 @@ select 'UPSALE_SUBSTAGE', v.code,
   ('L6D', 'Hẹn tái tục vào kỳ sau', 28, 'L6'),
   ('L7A', 'Đã gửi báo giá', 29, 'L7'),
   ('L7B', 'Đã chốt gói, hẹn ngày đóng', 30, 'L7'),
-  ('L7C', 'Đã đặt cọc, chờ đóng đủ', 31, 'L7'),
-  ('L7D', 'Quá hẹn đóng, cần nhắc lại', 32, 'L7'),
-  ('L8A', null, 33, 'L8'),
-  ('L8B', null, 34, 'L8'),
-  ('L8C', null, 35, 'L8')
+  ('L7C', 'Quá hẹn đóng, cần nhắc lại', 31, 'L7'),
+  ('L8A', 'Chờ lên đơn', 32, 'L8'),
+  ('L8B', 'Đã lên đơn, chờ duyệt', 33, 'L8'),
+  ('L8C', 'Đơn đã duyệt', 34, 'L8')
   ) v (code, name, sort_order, stage)
   join app.catalog_item p on p.catalog_code = 'UPSALE_STAGE' and p.code = v.stage
 on conflict (catalog_code, code) do update
   set name = excluded.name, sort_order = excluded.sort_order, parent_id = excluded.parent_id, extra = excluded.extra, is_active = true;
 
 update app.catalog set description = 'L5 Không tái tục và L8C là kết thúc phiếu; mỗi giai đoạn đều có giai đoạn con.' where code = 'UPSALE_STAGE';
+
+-- app.upsale_l8_substage(phiếu): giai đoạn con L8 theo đơn của phiếu. Luật R-GD-13 (28/11): không có đơn còn sống (khác Huỷ) là L8A; mọi đơn còn sống đã
+-- duyệt là L8C; còn lại (Nháp, Đã trình) là L8B. Nội bộ.
+create function app.upsale_l8_substage(p_ticket_id uuid)
+returns text
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select case when count(*) = 0 then 'L8A' when bool_and(o.status_code = 'DA_DUYET') then 'L8C' else 'L8B' end
+    from app.sales_order o where o.renewal_ticket_id = p_ticket_id and o.status_code <> 'HUY';
+$$;
+revoke execute on function app.upsale_l8_substage(uuid) from public, anon, authenticated;
+
+-- app.upsale_sync_l8(phiếu): phiếu đang ở L8 thì đặt giai đoạn con theo đơn. Chỉ đi tới (L8A, L8B, L8C), không lùi khi huỷ đơn; L8C ghi thời điểm kết thúc;
+-- ghi lịch sử «Hệ thống chuyển L8B/L8C». Nội bộ: gọi từ trigger của đơn hàng, cùng giao dịch lúc tạo, trình, duyệt, huỷ đơn.
+create function app.upsale_sync_l8(p_ticket_id uuid)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  t app.upsale_ticket;
+  v_sub text;
+begin
+  select * into t from app.upsale_ticket where id = p_ticket_id for update;
+  if t.id is null or t.stage_code <> 'L8' then
+    return;
+  end if;
+  v_sub := app.upsale_l8_substage(t.id);
+  if v_sub <= coalesce(t.substage_code, '') then
+    return;
+  end if;
+  update app.upsale_ticket
+     set substage_code = v_sub, closed_at = case when app.upsale_is_closed('L8', v_sub) then coalesce(closed_at, now()) else closed_at end
+   where id = t.id;
+  perform app.upsale_add_event(t.id, 'DOI_GIAI_DOAN', 'L8', 'L8', 'Hệ thống chuyển ' || v_sub);
+end;
+$$;
+revoke execute on function app.upsale_sync_l8(uuid) from public, anon, authenticated;
+
+create function app.tg_sales_order_upsale_l8()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  perform app.upsale_sync_l8(new.renewal_ticket_id);
+  return null;
+end;
+$$;
+revoke execute on function app.tg_sales_order_upsale_l8() from public, anon, authenticated;
+create trigger sales_order_upsale_l8 after insert or update of status_code, renewal_ticket_id on app.sales_order
+  for each row when (new.renewal_ticket_id is not null) execute function app.tg_sales_order_upsale_l8();
 
 -- app.upsale_is_closed(giai đoạn, giai đoạn con): phiếu đã kết thúc chưa. Luật R-GD-13 (28/11): L5, hoặc L8C.
 create function app.upsale_is_closed(p_stage text, p_substage text)
@@ -87,7 +143,7 @@ begin
 end $$;
 drop index app.upsale_ticket_open_uq;
 
--- Giai đoạn con rỗng hoặc không thuộc giai đoạn: đặt giai đoạn con đầu. L5 theo lý do cũ (không rõ thì L5G). L8 cũ nghĩa «đã đóng đủ» nên là L8C.
+-- Giai đoạn con rỗng hoặc không thuộc giai đoạn: đặt giai đoạn con đầu. L5 theo lý do cũ (không rõ thì L5G). L8 cũ nghĩa «đã đóng đủ» nên là L8C, giữ đóng (anh Trường OK 29/11 00:18).
 update app.upsale_ticket t
    set substage_code = case
          when t.stage_code = 'L5' then case t.lost_reason_code
@@ -125,14 +181,14 @@ begin
   if p_to is null or p_to not in ('L1', 'L2', 'L3', 'L4', 'L5', 'L6', 'L7', 'L8') then
     perform app.raise_error('HMT_GIAI_DOAN_KHONG_HOP_LE', 'Giai đoạn mới không hợp lệ.');
   end if;
-  -- Giai đoạn con: bắt buộc, đang dùng, thuộc đúng giai đoạn đích (docs/spec/06 mục 1.4).
-  v_sub := p_substage;
+  -- Giai đoạn con: bắt buộc, đang dùng, thuộc đúng giai đoạn đích (docs/spec/06 mục 1.4). Riêng L8 hệ thống đặt theo đơn của phiếu, người dùng không chọn.
+  v_sub := case when p_to = 'L8' then app.upsale_l8_substage(t.id) else p_substage end;
   if not exists (select from app.catalog_item s join app.catalog_item p on p.id = s.parent_id
                   where s.catalog_code = 'UPSALE_SUBSTAGE' and s.code = v_sub and s.is_active and p.code = p_to) then
     perform app.raise_error('HMT_GIAI_DOAN_KHONG_HOP_LE', 'Chọn giai đoạn con của giai đoạn mới.');
   end if;
-  -- Cùng giai đoạn chỉ được đổi giai đoạn con.
-  if p_to = t.stage_code and v_sub is not distinct from t.substage_code then
+  -- Cùng giai đoạn chỉ được đổi giai đoạn con; đang ở L8 thì không chuyển tay vào L8 nữa.
+  if p_to = t.stage_code and (p_to = 'L8' or v_sub is not distinct from t.substage_code) then
     perform app.raise_error('HMT_GIAI_DOAN_KHONG_HOP_LE', 'Phiếu đang ở giai đoạn này.');
   end if;
   -- Luật R-GD-13: mỗi học sinh ở mỗi lớp tối đa một phiếu đang mở; mở lại phiếu đã kết thúc thì kiểm trước.
@@ -154,6 +210,7 @@ end;
 $$;
 
 -- Các hàm dưới: «phiếu đang mở» = closed_at rỗng (trước đây: giai đoạn khác L5, L8).
+-- app.assign_upsale_ticket: giao phiếu cho người phụ trách. Phiếu đã kết thúc (L5, L8C) không giao nữa; L8A, L8B vẫn giao được.
 create or replace function app.assign_upsale_ticket(p_id uuid, p_owner_id uuid)
 returns jsonb
 language plpgsql
@@ -516,6 +573,180 @@ begin
      and (v_scope = 'TOAN_HE_THONG' or u.branch_id = v_my)
      and (p_branch is null or u.branch_id = p_branch)
      and (not p_mine or u.owner_id = v_me);
+end;
+$$;
+
+-- app.order_group_counts: thêm bộ lọc upsale_ticket_id (thân còn lại giữ nguyên bản migration 604).
+create or replace function app.order_group_counts(p_filters jsonb default '{}'::jsonb, p_fields text[] default array[]::text[])
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  v_scope text := app.permission_scope('SALES_ORDER', 'XEM');
+  v_my_branch uuid := app.current_branch_id();
+  v_q text := app.fold_text(nullif(btrim(coalesce(p_filters ->> 'q', '')), ''));
+  v_status text[] := array(select jsonb_array_elements_text(p_filters -> 'status'));
+  v_branch uuid := nullif(p_filters ->> 'branch_id', '')::uuid;
+  -- C95: người lập của bản ghi; dùng để mở một nhóm Group By «Sale».
+  v_creator uuid := nullif(p_filters ->> 'creator_id', '')::uuid;
+  v_opp uuid := nullif(p_filters ->> 'opportunity_id', '')::uuid;
+  v_quo uuid := nullif(p_filters ->> 'quotation_id', '')::uuid;
+  -- C-27-21: đơn của một phiếu tái tục (nút «Đơn hàng» trên phiếu).
+  v_ticket uuid := nullif(p_filters ->> 'upsale_ticket_id', '')::uuid;
+  v_parent uuid := nullif(p_filters ->> 'parent_id', '')::uuid;
+  v_mine boolean := coalesce((p_filters ->> 'mine')::boolean, false);
+  v_waiting boolean := coalesce((p_filters ->> 'waiting_me')::boolean, false);
+  v_from timestamptz := nullif(p_filters ->> 'created_from', '')::timestamptz;
+  v_to timestamptz := nullif(p_filters ->> 'created_to', '')::timestamptz;
+  v_f1 text := p_fields[1];
+  v_f2 text := p_fields[2]; -- allow-number: luật Group By tối đa hai cấp (K1_nhom), không phải số nghiệp vụ cấu hình
+  v_result jsonb;
+begin
+  -- Luật: quyền xem đơn hàng.
+  if v_scope is null then
+    perform app.raise_error('HMT_KHONG_CO_QUYEN', 'Bạn không có quyền xem danh sách đơn hàng.');
+  end if;
+  -- Luật Đ35: chỉ nhóm theo trường cho phép, tối đa hai cấp, hai cấp khác nhau.
+  if coalesce(cardinality(p_fields), 0) not between 1 and 2 -- allow-number: luật Group By tối đa hai cấp (K1_nhom), không phải số nghiệp vụ cấu hình
+     or exists (select from unnest(p_fields) x where x not in ('status', 'branch', 'sale'))
+     or (v_f2 is not null and v_f1 = v_f2) then
+    perform app.raise_error('HMT_NHOM_SAI', 'Chọn một hoặc hai trường nhóm khác nhau (tình trạng, cơ sở, sale).');
+  end if;
+  with f as not materialized (
+    select o.*
+      from app.sales_order o
+     where (v_scope = 'TOAN_HE_THONG' or (v_scope = 'CO_SO' and o.branch_id = v_my_branch))
+       and (v_q is null or o.search_text like '%' || v_q || '%')
+       and (cardinality(v_status) = 0 or o.status_code = any (v_status))
+       and (v_branch is null or o.branch_id = v_branch)
+       and (v_creator is null or o.created_by = v_creator)
+       and (v_opp is null or o.opportunity_id = v_opp)
+       and (v_quo is null or o.quotation_id = v_quo)
+       and (v_ticket is null or o.renewal_ticket_id = v_ticket)
+       and (v_parent is null or o.parent_id = v_parent)
+       and (not v_mine or o.created_by = auth.uid())
+       and (not v_waiting or (o.status_code = 'DA_TRINH' and (o.assigned_approver_id = auth.uid() or o.approval_route = 'TRUONG_CS' and (select app.is_branch_manager_at(auth.uid(), 'SALES_ORDER', o.branch_id)))))
+       and (v_from is null or o.created_at >= v_from)
+       and (v_to is null or o.created_at < v_to)
+  ),
+  keyed as (
+    select case v_f1 when 'status' then f.status_code when 'branch' then f.branch_id::text when 'sale' then f.created_by::text end as k1,
+           case v_f2 when 'status' then f.status_code when 'branch' then f.branch_id::text when 'sale' then f.created_by::text end as k2
+      from f
+  ),
+  grouped as (select k1, k2, count(*) as n from keyed group by k1, k2)
+  select jsonb_build_object(
+           'total', (select coalesce(sum(n), 0) from grouped),
+           'groups', coalesce(jsonb_agg(jsonb_build_object(
+             'k1', coalesce(g.k1, ''), 'l1', app.order_group_label(v_f1, g.k1),
+             'k2', case when v_f2 is null then null else coalesce(g.k2, '') end,
+             'l2', case when v_f2 is null then null else app.order_group_label(v_f2, g.k2) end,
+             'count', g.n) order by g.k1 nulls first, g.k2 nulls first), '[]'::jsonb))
+    into v_result
+    from grouped g;
+  return v_result;
+end;
+$$;
+
+-- app.list_orders: thêm bộ lọc upsale_ticket_id (thân còn lại giữ nguyên bản migration 604).
+create or replace function app.list_orders(
+  p_filters jsonb default '{}'::jsonb, p_sort text default 'created_desc', p_limit integer default null, p_offset integer default 0)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  v_scope text := app.permission_scope('SALES_ORDER', 'XEM');
+  v_my_branch uuid := app.current_branch_id();
+  v_limit integer := least(greatest(coalesce(p_limit, app.get_setting_int('list_page_size_default')), 1),
+                           app.get_setting_int('list_page_size_max'));
+  v_offset integer := greatest(coalesce(p_offset, 0), 0);
+  v_q text := app.fold_text(nullif(btrim(coalesce(p_filters ->> 'q', '')), ''));
+  v_status text[] := array(select jsonb_array_elements_text(p_filters -> 'status'));
+  v_branch uuid := nullif(p_filters ->> 'branch_id', '')::uuid;
+  -- C95: người lập của bản ghi; dùng để mở một nhóm Group By «Sale».
+  v_creator uuid := nullif(p_filters ->> 'creator_id', '')::uuid;
+  v_opp uuid := nullif(p_filters ->> 'opportunity_id', '')::uuid;
+  v_quo uuid := nullif(p_filters ->> 'quotation_id', '')::uuid;
+  -- C-27-21: đơn của một phiếu tái tục (nút «Đơn hàng» trên phiếu).
+  v_ticket uuid := nullif(p_filters ->> 'upsale_ticket_id', '')::uuid;
+  v_parent uuid := nullif(p_filters ->> 'parent_id', '')::uuid;
+  v_mine boolean := coalesce((p_filters ->> 'mine')::boolean, false);
+  v_waiting boolean := coalesce((p_filters ->> 'waiting_me')::boolean, false);
+  v_from timestamptz := nullif(p_filters ->> 'created_from', '')::timestamptz;
+  v_to timestamptz := nullif(p_filters ->> 'created_to', '')::timestamptz;
+  v_result jsonb;
+begin
+  if v_scope is null then
+    perform app.raise_error('HMT_KHONG_CO_QUYEN', 'Bạn không có quyền xem danh sách đơn hàng.');
+  end if;
+  -- not materialized: f dùng hai lần (đếm và lấy trang).
+  with f as not materialized (
+    select o.*
+      from app.sales_order o
+     where (v_scope = 'TOAN_HE_THONG' or (v_scope = 'CO_SO' and o.branch_id = v_my_branch))
+       and (v_q is null or o.search_text like '%' || v_q || '%')
+       and (cardinality(v_status) = 0 or o.status_code = any (v_status))
+       and (v_branch is null or o.branch_id = v_branch)
+       and (v_creator is null or o.created_by = v_creator)
+       and (v_opp is null or o.opportunity_id = v_opp)
+       and (v_quo is null or o.quotation_id = v_quo)
+       and (v_ticket is null or o.renewal_ticket_id = v_ticket)
+       and (v_parent is null or o.parent_id = v_parent)
+       and (not v_mine or o.created_by = auth.uid())
+       and (not v_waiting or (o.status_code = 'DA_TRINH' and (o.assigned_approver_id = auth.uid() or o.approval_route = 'TRUONG_CS' and (select app.is_branch_manager_at(auth.uid(), 'SALES_ORDER', o.branch_id)))))
+       and (v_from is null or o.created_at >= v_from)
+       and (v_to is null or o.created_at < v_to)
+  ),
+  page as (
+    select * from f
+     order by case when p_sort = 'created_asc' then f.created_at end asc,
+              case when p_sort = 'total_desc' then f.total_amount end desc,
+              f.created_at desc, f.id
+     limit v_limit offset v_offset
+  )
+  select jsonb_build_object(
+           'total', (select count(*) from f),
+           'rows', coalesce(jsonb_agg(jsonb_build_object(
+             'id', p.id, 'code', p.code, 'status_code', p.status_code,
+             'status', (select c.name from app.catalog_item c where c.catalog_code = 'ORDER_STATUS' and c.code = p.status_code),
+             'parent_id', p.parent_id, 'parent_code', par.code, 'parent_name', par.full_name, 'parent_phone', par.phone,
+             'opportunity_id', p.opportunity_id, 'opportunity_code', op.code,
+             'quotation_id', p.quotation_id, 'quotation_code', q.code,
+             'student_name', (select coalesce(s.full_name, v.full_name) from app.sales_order_line l
+                                left join app.prospect_student_v v on v.id = l.prospect_student_id
+                                left join app.student s on s.id = l.student_id
+                               where l.order_id = p.id order by l.line_no limit 1),
+             -- Tên các em theo thứ tự dòng, không trùng; chỉ gom cho các đơn của trang đang hiện (p là trang, không quét cả bảng).
+             'student_names', (select coalesce(jsonb_agg(x.nm order by x.first_line), '[]'::jsonb)
+                                 from (select coalesce(s.full_name, v.full_name) as nm, min(l.line_no) as first_line
+                                         from app.sales_order_line l
+                                         left join app.prospect_student_v v on v.id = l.prospect_student_id
+                                         left join app.student s on s.id = l.student_id
+                                        where l.order_id = p.id and coalesce(s.full_name, v.full_name) is not null
+                                        group by coalesce(s.full_name, v.full_name)) x),
+             'line_count', (select count(*) from app.sales_order_line l where l.order_id = p.id),
+             'total_amount', p.total_amount, 'needs_acknowledgement', p.needs_acknowledgement,
+             -- Tiền đã thu của đơn (khoản tiền vào, kể cả khoản âm hoàn tác) cho cột «Đã thu», «Còn phải thu», «Thu tiền» của canvas BH06; chỉ tính cho đơn của trang đang hiện.
+             'paid_amount', (select coalesce(sum(m.amount), 0)::bigint from app.money_in m where m.order_id = p.id),
+             'submitted_at', p.submitted_at, 'approved_at', p.approved_at, 'created_at', p.created_at, 'branch_code', b.code,
+             'created_by_name', app.staff_display_name(p.created_by),
+             'approver_name', app.staff_display_name(p.assigned_approver_id))
+             order by case when p_sort = 'created_asc' then p.created_at end asc,
+                      case when p_sort = 'total_desc' then p.total_amount end desc,
+                      p.created_at desc, p.id), '[]'::jsonb))
+    into v_result
+    from page p
+    join app.branch b on b.id = p.branch_id
+    join app.parent par on par.id = p.parent_id
+    left join app.opportunity op on op.id = p.opportunity_id
+    left join app.quotation q on q.id = p.quotation_id;
+  return v_result;
 end;
 $$;
 
