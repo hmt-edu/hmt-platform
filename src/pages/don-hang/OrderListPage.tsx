@@ -63,15 +63,17 @@ export function OrderListPage() {
 
   const [params, setParams] = useSearchParams();
   const parentOpp = params.get('co-hoi');
+  const parentTicket = params.get('phieu');
   const parentCode = params.get('ma') ?? '';
   const debouncedSearch = useDebounced(state.search);
   const filters = useMemo(
     () => ({
       ...buildOrderFilters({ ...state, search: debouncedSearch }),
-      // Mở từ nút số đếm của trang Cơ hội (K3): chỉ bản ghi của cơ hội đó; bỏ chip thì về danh sách chung.
+      // Mở từ nút số đếm của trang Cơ hội hoặc Phiếu tái tục (K3): chỉ bản ghi của gốc đó; bỏ chip thì về danh sách chung.
       ...(parentOpp ? { opportunity_id: parentOpp } : {}),
+      ...(parentTicket ? { upsale_ticket_id: parentTicket } : {}),
     }),
-    [state, debouncedSearch, parentOpp],
+    [state, debouncedSearch, parentOpp, parentTicket],
   );
   const sortValue = orderSortParam(sort);
   const pagingKey = `${JSON.stringify(filters)}|${sortValue}`;
@@ -156,12 +158,15 @@ export function OrderListPage() {
   return (
     <ListScreen
       parent={
-        parentOpp
+        parentOpp || parentTicket
           ? {
-              entityLabel: 'Cơ hội',
+              entityLabel: parentOpp ? 'Cơ hội' : 'Phiếu tái tục',
               code: parentCode,
               childLabel: 'Đơn hàng',
-              onOpenParent: () => void openFrom(`/crm/co-hoi/${parentOpp}`),
+              onOpenParent: () =>
+                void openFrom(
+                  parentOpp ? `/crm/co-hoi/${parentOpp}` : `/crm/tai-tuc/${parentTicket}`,
+                ),
               onClear: () => setParams({}),
             }
           : undefined

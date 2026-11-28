@@ -82,7 +82,14 @@ export type UpsaleRecord = {
     slots: { weekday: number; start_time: string; end_time: string }[];
     next_session: { date: string; start_time: string; end_time: string } | null;
   };
-  enrollments: { id: string; code: string; status_code: string; hours_left: number }[];
+  enrollments: {
+    id: string;
+    code: string;
+    status_code: string;
+    hours_left: number;
+    /** Từ migration 710. */
+    subject_code?: string | null;
+  }[];
   hours: {
     bought: number;
     used: number;

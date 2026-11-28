@@ -148,7 +148,7 @@ describe('mọi mã danh mục viết trong màn dùng useLeadCatalogs đều đ
   }
 
   it('dò được mã trong màn', () => {
-    expect(used).toContain('RENEWAL_LOST_REASON');
+    expect(used).toContain('UPSALE_SUBSTAGE');
     expect(used).toContain('RECEIVING_ACCOUNT');
   });
   it('không mã nào thiếu trong CATALOGS (thiếu thì ô chọn rỗng, không chuyển được L5)', () => {

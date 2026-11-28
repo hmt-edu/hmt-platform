@@ -49,7 +49,7 @@ test('TT-02 rộng 390px: trang không tràn ngang', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await enterAs(page, 'cskh.cs5');
   await page.goto(`/crm/tai-tuc/${ticketId}`);
-  await expect(page.getByRole('region', { name: 'Liên hệ' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Tái tục của' })).toBeVisible();
   const overflow = await page.evaluate<number>(
     'document.documentElement.scrollWidth - document.documentElement.clientWidth',
   );
