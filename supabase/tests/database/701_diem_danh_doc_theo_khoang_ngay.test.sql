@@ -175,17 +175,32 @@ create function pg_temp.f(p_extra jsonb default '{}') returns jsonb language sql
 grant execute on all functions in schema pg_temp to public;
 
 create temp table b as select app.attendance_board(pg_temp.f()) as v;
-select is((select (v ->> 'total')::int from b), (select n1 + n2 from n), 'Theo buổi: mỗi học sinh của mỗi buổi một dòng trong khoảng ngày');
-select is((select concat_ws('|', v -> 'summary' ->> 'late', v -> 'summary' ->> 'unmarked', v -> 'summary' ->> 'sessions', v -> 'summary' ->> 'incomplete_sessions') from b),
-          (select concat_ws('|', n1, n2, 2, 1) from n), 'Số đếm theo cột Vận hành, đếm buổi chưa đủ');
+select is((select (v ->> 'total')::int from b), (select n1 + n2 from n), 'R-DD-07: mỗi học sinh của mỗi buổi một dòng trong khoảng ngày');
+-- Buổi 1 giáo viên ghi Có mặt, vận hành ghi Đi muộn: trạng thái để đếm lấy ô Giáo viên (R-DD-02), và là lệch.
+select is((select concat_ws('|', v -> 'summary' ->> 'present', v -> 'summary' ->> 'late', v -> 'summary' ->> 'unmarked', v -> 'summary' ->> 'mismatch', v -> 'summary' ->> 'not_in_class') from b),
+          (select concat_ws('|', n1, 0, n2, n1, n2) from n), 'R-DD-02: số đếm lấy ô Giáo viên, trống thì ô Vận hành');
 select is((select v -> 'rows' -> 0 ->> 'session_date' from b), (pg_temp.past() + 7)::text, 'Ngày mới đứng trước');
-select is((select v -> 'rows' -> 0 ->> 'session_marked' || '/' || (v -> 'rows' -> 0 ->> 'session_total') from b), (select '0/' || n2 from n), 'Mỗi dòng kèm số đã điểm danh của buổi');
 select is((select jsonb_array_length(v -> 'classes') from b), 1, 'Trả danh sách lớp trong khoảng ngày');
-select is((app.attendance_board(pg_temp.f('{"quick": "CHUA"}')) ->> 'total')::int, (select n2 from n), 'Lọc nhanh Chưa điểm danh');
-select is((app.attendance_board(pg_temp.f('{"quick": "LECH"}')) ->> 'total')::int, (select n1 from n), 'Lọc nhanh Lệch');
-select is((app.attendance_board(pg_temp.f('{"quick": "LECH"}')) -> 'summary' ->> 'unmarked')::int, (select n2 from n), 'Lọc nhanh không đổi số đếm đầu trang');
-select is((app.attendance_board(pg_temp.f(), 1, 0) -> 'rows' ->> 0) is not null and jsonb_array_length(app.attendance_board(pg_temp.f(), 1, 0) -> 'rows') = 1, true, 'Phân trang ở máy chủ');
+select is((select concat_ws('|', v -> 'rows' -> 0 ->> 'parent_name', v -> 'rows' -> 0 ->> 'parent_phone', v -> 'rows' -> 0 ->> 'teacher_name',
+                            (v -> 'rows' -> 0 ->> 'student_code') like 'HSD1C0%') from b),
+          'Phụ huynh giả D1c|0900101002|Giả gv1|t', 'Dòng có học sinh, phụ huynh, số điện thoại, tên giáo viên');
+select is((select v -> 'rows' -> (select n2 from n) ->> 'teacher_marked_at' from b) is not null
+          and (select v -> 'rows' -> 0 ->> 'teacher_marked_at' from b) is null, true, 'Giờ giáo viên tích chỉ có ở dòng đã tích');
+select is((select jsonb_agg((x ->> 'count')::int) from b, jsonb_array_elements(v -> 'groups') x),
+          (select jsonb_build_array(n1, n2) from n), 'Mặc định nhóm ngày rồi lớp, đếm ở máy chủ');
+select is((app.attendance_board(pg_temp.f('{"group": []}')) -> 'groups'), '[]'::jsonb, 'Không nhóm');
+select is(app.attendance_board(pg_temp.f('{"group": ["teacher"]}')) -> 'groups' -> 0 ->> 'k1', 'Giả gv1', 'Nhóm theo giáo viên');
+select is((app.attendance_board(pg_temp.f('{"quick": ["CHUA_DIEM_DANH"]}')) ->> 'total')::int, (select n2 from n), 'Lọc nhanh Chưa điểm danh');
+select is((app.attendance_board(pg_temp.f('{"quick": ["CHUA_VAO_LOP"]}')) ->> 'total')::int, (select n2 from n), 'R-DD-07: Chưa vào lớp theo quy tắc gọi nhắc, ô Giáo viên Có mặt thì không tính');
+select is((app.attendance_board(pg_temp.f('{"quick": ["LECH"]}')) ->> 'total')::int, (select n1 from n), 'Lọc nhanh Lệch');
+select is((app.attendance_board(pg_temp.f('{"quick": ["LECH", "CHUA_DIEM_DANH"]}')) ->> 'total')::int, (select n1 + n2 from n), 'Chọn nhiều lọc nhanh là HOẶC');
+select is((app.attendance_board(pg_temp.f('{"quick": ["VANG", "DI_MUON"]}')) ->> 'total')::int, 0, 'Vắng, Đi muộn lấy ô Giáo viên');
+select is((app.attendance_board(pg_temp.f('{"quick": ["LECH"]}')) -> 'summary' ->> 'unmarked')::int, (select n2 from n), 'Lọc nhanh không đổi số đếm đầu trang');
+select is((app.attendance_board(pg_temp.f(jsonb_build_object('teacher_id', pg_temp.uid('gv2')))) ->> 'total')::int, 0, 'Lọc giáo viên');
+select is((app.attendance_board(pg_temp.f(jsonb_build_object('cskh_id', pg_temp.uid('cskh1')))) ->> 'total')::int, 0, 'Lọc phụ trách: lớp chưa giao thì không khớp');
+select is(jsonb_array_length(app.attendance_board(pg_temp.f(), 1, 0) -> 'rows'), 1, 'Phân trang ở máy chủ');
 select is((app.attendance_board('{}') ->> 'total')::int, 0, 'Không chọn ngày thì là hôm nay');
+select is(pg_temp.err($$select app.attendance_board('{"group": ["date", "date"]}')$$), 'HMT_NHOM_SAI', 'Chặn: hai cấp nhóm trùng');
 
 -- R-DD-02 (27/11): gọi nhắc theo cột Giáo viên, trống thì Vận hành. Buổi 1 giáo viên ghi có mặt: không cần gọi; buổi 2 chưa ai ghi: cần gọi.
 create temp table c as select app.attendance_call_list(pg_temp.f()) as v;
