@@ -11,6 +11,27 @@ alter table app.sales_order_event drop constraint sales_order_event_event_code_c
 alter table app.sales_order_event add constraint sales_order_event_event_code_check
   check (event_code in ('TAO', 'TRINH', 'DUYET', 'TU_CHOI', 'HUY', 'SUA', 'CANH_BAO_XEP_LOP', 'CHO_HOC_TRUOC', 'CHUYEN_NGUOI_DUYET', 'CHUYEN_PHI'));
 
+-- app.enrollment_overused_hours(ghi danh): số giờ đã học vượt giờ đã đóng tiền của dòng đơn (C-27-29, học trước R-GD-12). Dòng đã đóng đủ tiền
+-- (giờ cấp theo tiền bằng giờ mua) trả 0: học tiếp giờ tặng không phải nợ. Nội bộ.
+create function app.enrollment_overused_hours(p_enrollment_id uuid)
+returns numeric
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce((
+    select case when h.paid < l.quantity then greatest(h.used - h.paid, 0) else 0 end
+      from app.enrollment e
+      join app.sales_order_line l on l.id = e.order_line_id and l.line_total > 0
+      cross join lateral (
+        select coalesce(sum(g.hours) filter (where g.entry_type in ('CAP_MUA', 'DAU_KY')), 0) as paid,
+               coalesce(-sum(g.hours) filter (where g.entry_type = 'TRU_BUOI'), 0) as used
+          from app.hour_ledger g where g.enrollment_id = e.id) h
+     where e.id = p_enrollment_id), 0);
+$$;
+revoke execute on function app.enrollment_overused_hours(uuid) from public, anon, authenticated;
+
 -- app.close_transferred_order(đơn, mã ticket): gọi từ app.apply_fee_transfer, cùng giao dịch. Đặt dấu nếu đủ điều kiện, luôn ghi lịch sử. Nội bộ.
 create function app.close_transferred_order(p_order_id uuid, p_ticket_ref text)
 returns boolean
@@ -32,13 +53,15 @@ begin
     select from app.sales_order_line l
      where l.order_id = o.id and l.is_live and l.line_total > 0
        and (not exists (select from app.enrollment e where e.order_line_id = l.id)
-            or exists (select from app.enrollment e where e.order_line_id = l.id and e.status_code not in ('DUNG', 'HOAN_PHI'))));
+            or exists (select from app.enrollment e where e.order_line_id = l.id and e.status_code not in ('DUNG', 'HOAN_PHI'))))
+    -- C-27-29: ghi danh đã dừng mà học vượt giờ đã đóng (ví dụ dừng học khi còn thiếu) thì tiền buổi đã học vẫn là nợ.
+    and not exists (select from app.enrollment e where e.order_id = o.id and app.enrollment_overused_hours(e.id) > 0);
   if v_done then
     update app.sales_order set fee_transferred_at = now(), fee_transfer_ref = v_ref where id = o.id;
   end if;
   perform app.order_add_event(o.id, 'CHUYEN_PHI', o.status_code, o.status_code, null, null,
     concat_ws(' ', case when v_done then 'Đơn đã chuyển phí, các đợt chưa thu không còn phải thu.'
-                        else 'Chuyển phí một phần: đơn còn dòng khác nên công nợ giữ nguyên.' end, 'Ticket ' || v_ref));
+                        else 'Chuyển phí một phần: đơn còn dòng khác hoặc còn buổi đã học chưa đóng đủ nên công nợ giữ nguyên.' end, 'Ticket ' || v_ref));
   return v_done;
 end;
 $$;
@@ -94,6 +117,7 @@ declare
   v_amount bigint;
   v_parent uuid;
   v_id uuid;
+  v_over numeric;
 begin
   select * into e from app.enrollment where id = p_enrollment_id for update;
   if e.id is null then
@@ -101,6 +125,12 @@ begin
   end if;
   if e.status_code not in ('CHO_XEP_LOP', 'DA_XEP_LOP', 'DANG_HOC', 'BAO_LUU') then
     perform app.raise_error('HMT_CHUYEN_PHI_GHI_DANH_SAI', 'Ghi danh này không còn hiệu lực để chuyển phí.');
+  end if;
+  -- C-27-29: học vượt giờ đã đóng thì chưa chuyển phí được; thu đủ phần đã học vào đơn này trước.
+  v_over := app.enrollment_overused_hours(e.id);
+  if v_over > 0 then
+    perform app.raise_error('HMT_CHUYEN_PHI_HOC_VUOT_GIO',
+      format('Em đã học vượt %s giờ so với số giờ đã đóng tiền. Thu đủ tiền cho các buổi đã học vào đơn này rồi mới chuyển phí.', trim_scale(v_over)));
   end if;
   perform app.assert_catalog_code_active('TRANSFER_REASON', p_reason_code);
   v_parent := coalesce(p_to_parent_id, e.parent_id);

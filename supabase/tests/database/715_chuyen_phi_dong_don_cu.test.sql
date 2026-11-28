@@ -246,5 +246,42 @@ select is((pg_temp.ord('n')).fee_transferred_at, null, 'Đơn khác không bị 
 select ok(pg_temp.err($$select app.create_receipt(pg_temp.o('n'), jsonb_build_object('amount', 100000, 'payment_method_code', 'TIEN_MAT'))$$) is null, 'Đơn khác vẫn lập phiếu thu được');
 select is(has_function_privilege('authenticated', 'app.close_transferred_order(uuid, text)', 'execute'), false, 'Hàm nội bộ không gọi trực tiếp được');
 
+-- ---- C-27-29: học vượt giờ đã đóng thì chặn chuyển phí, công nợ giữ nguyên và vẫn thu được ----
+reset role;
+create function pg_temp.chuyen_n() returns uuid language sql security definer as $$
+  select app.apply_fee_transfer(e.id, null, (select code from app.catalog_item where catalog_code = 'TRANSFER_REASON' and is_active order by sort_order limit 1), 'thử', 'TK715N')
+    from app.enrollment e where e.order_id = pg_temp.o('n') $$;
+grant execute on function pg_temp.chuyen_n() to public;
+set local role authenticated;
+select pg_temp.claims(pg_temp.uid('bm1'), 'aal1');
+select pg_temp.pl('n');
+select is(pg_temp.nenr('n'), 1, 'Chuẩn bị: đơn n cho học trước, có ghi danh');
+reset role;
+select set_config('hmt.migration', 'on', true);
+insert into app.hour_ledger (enrollment_id, branch_id, entry_type, hours, session_id)
+select e.id, e.branch_id, 'TRU_BUOI', -3, (select s.id from app.class_session s where s.class_id = (select id from cl where key = 'q') order by s.session_date limit 1)
+  from app.enrollment e where e.order_id = (select id from os where key = 'n');
+select set_config('hmt.migration', '', true);
+set local role authenticated;
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select is(pg_temp.err($$select pg_temp.chuyen_n()$$), 'HMT_CHUYEN_PHI_HOC_VUOT_GIO', 'Chặn: học trước, chưa thu đủ thì không chuyển phí được');
+select is((pg_temp.ord('n')).fee_transferred_at, null, 'Bị chặn: đơn không bị đánh dấu');
+select ok(pg_temp.no_ph('n') > 0, 'Bị chặn: công nợ giữ nguyên');
+-- Dừng học khi còn thiếu rồi đóng đơn: vẫn giữ nợ.
+reset role;
+savepoint dung;
+select set_config('hmt.migration', 'on', true);
+update app.enrollment set status_code = 'DUNG' where order_id = (select id from os where key = 'n');
+select set_config('hmt.migration', '', true);
+select is(app.close_transferred_order((select id from os where key = 'n'), 'TK715N'), false, 'Ghi danh đã dừng mà học vượt giờ đã đóng: đơn không được đánh dấu');
+rollback to savepoint dung;
+set local role authenticated;
+select pg_temp.claims(pg_temp.uid('sales1'), 'aal1');
+select pg_temp.pay('n', (pg_temp.ord('n')).total_amount::bigint);
+select pg_temp.claims(pg_temp.uid('ke'), 'aal2');
+select lives_ok($$select pg_temp.chuyen_n()$$, 'Thu đủ phần đã học thì chuyển phí được');
+select ok((pg_temp.ord('n')).fee_transferred_at is not null, 'Sau đó đơn được đánh dấu');
+select is(has_function_privilege('authenticated', 'app.enrollment_overused_hours(uuid)', 'execute'), false, 'Hàm tính giờ vượt không gọi trực tiếp được');
+
 select * from finish();
 rollback;
