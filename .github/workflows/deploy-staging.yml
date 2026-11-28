@@ -311,6 +311,19 @@ jobs:
             exit 1
           fi
 
+      # Lớp, buổi, học sinh giả cho giáo viên tập gvtap1.cs5 (E-27-16): hôm qua đã Done, hôm nay chưa điểm danh, các ngày sau.
+      # CHỈ hmt-staging (hmt-deploy không có bước này; file còn tự kiểm khoá môi trường STAGING). Chạy lại được: còn buổi sắp tới thì bỏ qua.
+      # Lỗi ở đây không chặn lượt triển khai: chỉ cảnh báo.
+      - name: Nạp dữ liệu giả cổng Giáo viên vào hmt-staging
+        continue-on-error: true
+        env:
+          STAGING_DB_URL: ${{ secrets.STAGING_DB_URL }}
+        run: |
+          if ! psql "$STAGING_DB_URL" -X -v ON_ERROR_STOP=1 -q -f supabase/seed-staging-gv.sql; then
+            echo "::warning::seed-staging-gv.sql lỗi: tài khoản gvtap1.cs5 có thể chưa có lớp, buổi."
+            exit 1
+          fi
+
       - name: Build bản thử nghiệm
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
