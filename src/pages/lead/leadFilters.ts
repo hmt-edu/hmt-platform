@@ -61,6 +61,8 @@ export function buildLeadFilters(state: ListState, today: Date = new Date()): Le
       filters.campaign_id = values[0];
     } else if (cond.field === 'branch' && cond.op === 'eq') {
       filters.branch_id = values[0];
+    } else if (cond.field === 'import_batch' && cond.op === 'eq') {
+      filters.import_batch_id = values[0];
     } else if (cond.field === 'created' && cond.op === 'from') {
       const start = vnDayStartOf(values[0] ?? '');
       if (start) filters.created_from = start.toISOString();
