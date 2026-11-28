@@ -245,7 +245,7 @@ export const CRM_MENU: MenuGroup[] = [
         code: 'BUOI-11',
         label: 'Điểm danh',
         slug: 'diem-danh',
-        // Màn gộp (C-27-07 4c): tab «Theo buổi» cần Buổi học · Xem; tab «Cần gọi» và ghi cần Điểm danh · Sửa (màn tự kiểm).
+        // Một bảng (28/11): xem cần Buổi học · Xem; ghi cần Điểm danh · Sửa (màn tự kiểm).
         requires: can('SESSION'),
         stage: GD2,
       },
