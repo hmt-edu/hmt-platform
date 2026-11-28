@@ -131,3 +131,27 @@ describe('danh mục được nạp', () => {
     expect(CATALOGS).toContain('ATTENDANCE_CONTACT_REASON');
   });
 });
+
+describe('mọi mã danh mục viết trong màn dùng useLeadCatalogs đều được nạp', () => {
+  const sources = import.meta.glob<string>('/src/**/*.{ts,tsx}', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  });
+  const used = new Set<string>();
+  for (const [path, text] of Object.entries(sources)) {
+    if (path.includes('.test.') || !/\buseLeadCatalogs\(/.test(text)) continue;
+    for (const m of text.matchAll(
+      /\bcatalogs\.(?:name|options|filterOptions|optionsFor|requiresNote|childrenOf)\(\s*'([A-Z_]+)'/g,
+    ))
+      used.add(m[1] ?? '');
+  }
+
+  it('dò được mã trong màn', () => {
+    expect(used).toContain('RENEWAL_LOST_REASON');
+    expect(used).toContain('RECEIVING_ACCOUNT');
+  });
+  it('không mã nào thiếu trong CATALOGS (thiếu thì ô chọn rỗng, không chuyển được L5)', () => {
+    expect([...used].filter((code) => !CATALOGS.includes(code))).toEqual([]);
+  });
+});
