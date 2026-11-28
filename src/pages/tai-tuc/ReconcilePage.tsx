@@ -134,7 +134,7 @@ export function ReconcilePage() {
         <div className="flex flex-col gap-3 p-4 pt-0">
           <p className="text-body text-fg-muted">
             Tháng hết giờ: {query.month.slice(5)}/{query.month.slice(0, 4)}. Đổi tháng bằng bộ lọc
-            «Tháng hết giờ».
+            Campaign.
           </p>
           {s && (
             <>

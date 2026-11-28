@@ -26,8 +26,10 @@ describe('TT-04 Đối chiếu tái tục', () => {
     expect(screen.getByText('GD-02')).toBeTruthy();
   });
 
-  it('cột, bộ lọc và Group By ghi «Tháng hết giờ», không ghi Campaign', () => {
-    expect(JSON.stringify([config.filterFields, config.groupFields])).not.toContain('Campaign');
-    expect(config.columns.map((c) => c.label)).toContain('Tháng hết giờ');
+  it('cột, bộ lọc và Group By ghi «Campaign»', () => {
+    expect(JSON.stringify([config.filterFields, config.groupFields])).not.toContain(
+      'Tháng hết giờ',
+    );
+    expect(config.columns.map((c) => c.label)).toContain('Campaign');
   });
 });
