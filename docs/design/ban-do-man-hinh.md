@@ -12,6 +12,10 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 **Mã luật:** R-* xem file [luat-cho-thiet-ke.md](luat-cho-thiet-ke.md) (mục 4–5); S02-* luật xếp lớp; S03-* đăng nhập, quyền, cấu hình: bảng mã ở [ma-luat-S02-S03.md](ma-luat-S02-S03.md).
 
+## Menu CRM (anh Trường chốt 28/11/2026)
+
+Menu ba bậc: nhóm (biểu tượng, đậm, mũi tên) → nhóm con đóng/mở được (mũi tên, số mục, đường kẻ dọc làm trục cây) → mục. Nhóm và nhóm con đóng được cả khi đang chứa màn hiện tại; chuyển màn thì nhóm chứa nó tự mở. Mặc định chỉ nhóm con chứa màn đang xem được mở, mở/đóng tay thì trình duyệt nhớ. Nhóm con một mục hiện thẳng mục. Đường dẫn đầu trang theo ba bậc. Khung Menu trong `design/hmt-canvas-dao-tao-menu/` chưa vẽ lại theo luật này.
+
 ## Khuôn màn (đợt 5.1)
 
 | Mã | Khuôn | Gồm |
@@ -270,7 +274,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 | BUOI-08 | Yêu cầu buổi củng cố (tạo) | Biểu mẫu · K07 | B | Máy tính | CS, AD | Chèn buổi tính tiền như buổi thường; **(26/10, Đ167, R-BUOI-10)** không bắt buộc ghi nhận phụ huynh đồng ý, có ô Ghi chú (không bắt buộc); xem trước dời nhãn bài | Gửi duyệt | BUOI-10 | R-BUOI-04, R-BUOI-10 |
 | BUOI-09 | Yêu cầu học bổ trợ (tạo từ lớp) | Biểu mẫu · K07 | B | Cả hai | CS, GV, AD | Chọn em yếu, thời gian, GV; không trừ giờ, tính giờ dạy GV | Gửi duyệt | BUOI-10 | R-BUOI-05 |
 | BUOI-10 | Yêu cầu buổi (danh sách + duyệt) | Danh sách · K03 | B | Cả hai | BM, CS, AD | Học bù, củng cố, bổ trợ: chờ duyệt, đã duyệt, từ chối; chỉ Trưởng cơ sở duyệt, CSKH xem; duyệt thì sinh buổi **(27/11)** Không còn tab trên menu Buổi học; mở bằng đường dẫn, từ «Việc chờ tôi duyệt» | Duyệt; Từ chối | BUOI-02 | R-BUOI-03, R-BUOI-04, R-BUOI-05, R-HT-01, R-HT-05 |
-| BUOI-11 | Điểm danh **(26/11: gộp BUOI-11 và BUOI-15; 27/11: đã làm, #845)** | Danh sách · K03 | B | Cả hai | CS, AD | Chọn Hôm nay, Hôm qua, 7 ngày qua hoặc từ ngày đến ngày; lọc cơ sở, lớp. Tab «Theo buổi»: số đếm, lọc «Chưa điểm danh», «Lệch», nhóm theo ngày rồi lớp; bấm trạng thái phía vận hành là tự lưu; chọn nhiều để «Gán cùng lúc»; cột Giáo viên chỉ xem; buổi Done khoá. Tab «Cần gọi»: ghi lý do liên hệ, ghi chú ngay trên dòng; bấm số để gọi. Điện thoại hiện dùng cùng bố cục co lại **(27/11)** Vận hành không xoá ô mình tích về trống; danh sách gọi nhắc lấy cột giáo viên, trống thì lấy cột vận hành | Điểm danh; Gán cùng lúc; Ghi liên hệ phụ huynh; Mở buổi | BUOI-03 | R-DD-01, R-DD-02, R-DD-03, R-DD-04, R-DD-06, R-HT-05 |
+| BUOI-11 | Điểm danh **(26/11: gộp BUOI-11 và BUOI-15; 27/11: đã làm, #845; 28/11: đổi thành một bảng)** | Danh sách · K03 | B | Cả hai | CS, AD | Chọn ngày hoặc khoảng ngày (tối đa theo tham số). Một bảng, không tab: mỗi dòng một học sinh trong một buổi. Cột: Giờ, Lớp (tên rút gọn và mã), Học sinh (tên và mã), Phụ huynh và SĐT (bấm gọi; SĐT chỉ khi có Phụ huynh · Xem), Giáo viên (tên giáo viên của buổi), GV điểm danh (chỉ xem, kèm giờ tích), Vận hành (4 trạng thái, bấm là tự lưu, không xoá về trống), Lệch (tô cam), Liên hệ phụ huynh (lý do và ghi chú ngay tại dòng), Phụ trách. Lọc: ngày, cơ sở, lớp, giáo viên, phụ trách, trạng thái (Chưa vào lớp, Vắng, Đi muộn, Chưa điểm danh, Lệch). Nhóm mặc định ngày rồi lớp, đổi được sang giáo viên, phụ trách. Chọn nhiều để «Gán cùng lúc»; buổi Done khoá. **(28/11: bỏ tab «Cần gọi»; dựng lại sau canvas mới)** Điện thoại hiện dùng cùng bố cục co lại **(27/11)** Vận hành không xoá ô mình tích về trống; danh sách gọi nhắc lấy cột giáo viên, trống thì lấy cột vận hành | Điểm danh; Gán cùng lúc; Ghi liên hệ phụ huynh; Mở buổi | BUOI-03 | R-DD-01, R-DD-02, R-DD-03, R-DD-04, R-DD-06, R-HT-05 |
 | BUOI-12 | Theo dõi buổi chưa Done, GV chưa hoàn tất **(26/11: không còn màn riêng; chưa làm trong mã)** | Danh sách · K03 | B | Máy tính | BM, CS, AD | Thành bộ lọc “Chưa hoàn tất” của Buổi học (BUOI-01), giữ hạn và danh sách điều còn thiếu; buổi quá hạn hiện ở “Việc của tôi” của quản lý cơ sở **(27/11)** Done hàng loạt tối đa 50 buổi mỗi lượt (tham số) **(27/11)** Đã bỏ tab trên menu Buổi học (đường dẫn còn mở được) | Mở buổi; Done hàng loạt | BUOI-02 | R-GIO-06, R-GIO-10, R-GIO-12, R-GV-05 |
 | BUOI-13 | Đổi giáo viên / trợ giảng cho một buổi (dạy thay) | Hộp thoại · K08 | B | Máy tính | CS, BM, AD | Chọn người dạy thay cho buổi; giờ dạy tính cho người dạy thật; kiểm trùng lịch | Xác nhận | — | R-LOP-10, R-BUOI-05, R-LOP-11 |
 | BUOI-14 | Sửa điểm danh sau khi buổi Done | Hộp thoại · K08 | C | Máy tính | BM, AD | Chỉ Trưởng cơ sở, bắt buộc lý do; đổi giữa có mặt/vắng không đổi giờ (R-GIO-01); thêm/bớt em khỏi danh sách thì thêm dòng điều chỉnh sổ giờ | Xác nhận | GD-05 | R-GIO-01, R-GD-04, R-GIO-07 |
@@ -309,7 +313,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 
 | Mã | Tên màn | Loại · khuôn | Mức | Thiết bị | Vai trò | Nội dung | Hành động | Dẫn tới | Luật |
 |---|---|---|---|---|---|---|---|---|---|
-| CS-16 | Nhận xét chờ gửi phụ huynh | Danh sách · K03 · CSN10_ds, _xem, _tai, _trong, _loi, _quyen | B | Máy tính | CS, AD | Lời nhắn phụ huynh sau mỗi buổi đã chấm xong: xem, sao chép nhanh hoặc xuất ảnh để gửi Zalo tay, đánh dấu đã gửi | Sao chép; Xuất ảnh; Đánh dấu đã gửi | KH-05 | R-GV-04, R-CS-13 |
+| CS-16 | ~~Nhận xét chờ gửi phụ huynh~~ (28/11 anh bỏ mục menu CS-16; GV tự xuất ảnh gửi Zalo, R-V2-40) | Danh sách · K03 · CSN10_ds, _xem, _tai, _trong, _loi, _quyen | B | Máy tính | CS, AD | Lời nhắn phụ huynh sau mỗi buổi đã chấm xong: xem, sao chép nhanh hoặc xuất ảnh để gửi Zalo tay, đánh dấu đã gửi | Sao chép; Xuất ảnh; Đánh dấu đã gửi | KH-05 | R-GV-04, R-CS-13 |
 
 ### Cổng giáo viên
 
@@ -417,7 +421,7 @@ Danh sách bắt buộc cho Claude Design (chốt 11/10/2026). Mỗi dòng là m
 - **L8 Bảo lưu và quay lại:** Tạo ticket bảo lưu (CS-04) → Duyệt (CS-08) → Thực hiện bảo lưu (CS-09) → Quay lại sớm / gia hạn (CS-09)
 - **L9 Hoàn tiền:** Tạo ticket hoàn tiền (CS-04) → BM duyệt, KT duyệt (CS-08) → Bảng tính hoàn (CS-05) → Phiếu chi (TC-11) → In phiếu chi (TC-12)
 - **L10 Chuyển phí:** Tạo ticket (CS-04) → Duyệt (CS-08) → Thực hiện, sinh đơn mới (CS-10/BH-05) → Số dư giữ lại (TC-14)
-- **L16 Nhận xét tới phụ huynh (trước khi có cổng PH):** GV chấm, viết lời nhắn (GV-07) → CSKH lấy nhận xét chờ gửi (CS-16) → Gửi tay qua Zalo, đánh dấu đã gửi (CS-16)
+- **L16 Nhận xét tới phụ huynh (28/11 anh bỏ mục menu CS-16: giáo viên tự xuất ảnh ở cổng giáo viên và gửi vào group Zalo lớp, R-V2-40; luồng CSKH dưới đây không còn):** GV chấm, viết lời nhắn (GV-07) → CSKH lấy nhận xét chờ gửi (CS-16) → Gửi tay qua Zalo, đánh dấu đã gửi (CS-16)
 - **L11 Khiếu nại:** Tiếp nhận (CS-04) → Xác minh, phương án (CS-03) → Phụ huynh xác nhận (CS-03/PH-04) → Đóng / mở lại / nâng cấp (CS-13) → Báo cáo (BC-10)
 - **L12 Bài tập LMS:** GV giao bài (GV-17) → HS xem bài (HT-02/HT-03) → HS nộp (HT-04) → GV chấm (GV-18) → HS xem kết quả (HT-05) → PH xem (PH-02)
 - **L13 Quản trị nền:** Tạo người dùng (QT-03) → Phân vai trò, cơ sở (QT-02) → Sửa quyền (QT-05) → Sửa danh mục (QT-07) → Sửa tham số (QT-09) → Bật tính năng cho cơ sở (QT-10) → Xem nhật ký (QT-11)

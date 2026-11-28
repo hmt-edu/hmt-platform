@@ -11,7 +11,7 @@ cap_nhat: 2026-11-24
 # Khiếu nại: xử lý, nâng cấp, mở lại
 
 **Làm xong bạn có:** một ticket Khiếu nại có đủ dấu vết xử lý (người bị khiếu nại, nguyên nhân, kết quả) và được đóng kèm mức hài lòng của phụ huynh từ 1 đến 5.
-**Ai làm:** CSKH (Trưởng cơ sở cũng làm được). **Màn:** «Chăm sóc khách hàng» → «Tất cả ticket» → mở một ticket loại Khiếu nại (mã bắt đầu bằng KN-).
+**Ai làm:** CSKH (Trưởng cơ sở cũng làm được). **Màn:** «Chăm sóc khách hàng» → «Ticket» → mở một ticket loại Khiếu nại (mã bắt đầu bằng KN-).
 
 > Video: [VIDEO: cs2]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
@@ -58,7 +58,7 @@ cap_nhat: 2026-11-24
 
 ## Sau bước này
 - **Ai làm tiếp:** nâng cấp thì Quản lý cơ sở hoặc Ban giám đốc nhận việc xử lý khiếu nại đó.
-- **Bạn xem ở đâu:** «Tất cả ticket», chip «Loại» → «Khiếu nại». Khiếu nại đã xử lý mà chưa đóng quá vài ngày hiện chip «Chờ đóng» ở «Hạn xử lý»: nhớ gọi phụ huynh xác nhận rồi đóng.
+- **Bạn xem ở đâu:** «Ticket», chip «Loại» → «Khiếu nại». Khiếu nại đã xử lý mà chưa đóng quá vài ngày hiện chip «Chờ đóng» ở «Hạn xử lý»: nhớ gọi phụ huynh xác nhận rồi đóng.
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |

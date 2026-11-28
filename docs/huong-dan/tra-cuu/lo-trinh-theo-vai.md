@@ -104,7 +104,6 @@ Chưa có vai «Vận hành» riêng: người vận hành lớp dùng vai CSKH.
 
 - [Tạo ticket (loại, nhóm, nhóm con) và xử lý](/crm/huong-dan/cs1): Một ticket đã có mã, đã giao người phụ trách và được xử lý đến bước «Đã đóng» (hoặc «Đã huỷ» có lý do).
 - [Khiếu nại: xử lý, nâng cấp, mở lại](/crm/huong-dan/cs2): Một ticket Khiếu nại có đủ dấu vết xử lý (người bị khiếu nại, nguyên nhân, kết quả) và được đóng kèm mức hài lòng của phụ huynh từ 1 đến 5.
-- [Hàng nhận xét chờ gửi phụ huynh](/crm/huong-dan/cs12): Lời nhắn của giáo viên sau buổi học đã được gửi cho phụ huynh (qua Zalo bạn vẫn dùng) và được đánh dấu «Đã gửi», không bị gửi trùng.
 
 **5. Phiếu nghiệp vụ**
 

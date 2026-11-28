@@ -11,13 +11,13 @@ cap_nhat: 2026-11-24
 # Tạo ticket (loại, nhóm, nhóm con) và xử lý
 
 **Làm xong bạn có:** một ticket đã có mã, đã giao người phụ trách và được xử lý đến bước «Đã đóng» (hoặc «Đã huỷ» có lý do).
-**Ai làm:** CSKH (Tư vấn tuyển sinh và Trưởng cơ sở cũng tạo được). **Màn:** menu «Chăm sóc khách hàng» → «Tất cả ticket».
+**Ai làm:** CSKH (Tư vấn tuyển sinh và Trưởng cơ sở cũng tạo được). **Màn:** menu «Chăm sóc khách hàng» → «Ticket».
 
 > Video: [VIDEO: cs1]
 > Không xem được video? Làm theo các bước dưới, đủ để làm.
 
 ## Trước khi bắt đầu, kiểm
-- [ ] Menu «Chăm sóc khách hàng» có mục «Tất cả ticket». Không thấy thì cơ sở của bạn chưa bật tính năng này: báo Trưởng cơ sở hoặc quản trị.
+- [ ] Menu «Chăm sóc khách hàng» có mục «Ticket». Không thấy thì cơ sở của bạn chưa bật tính năng này: báo Trưởng cơ sở hoặc quản trị.
 - [ ] Ô chọn cơ sở ở thanh trên đúng cơ sở của phụ huynh đang gọi.
 - [ ] Bạn biết phụ huynh (người gửi) là ai. Nếu việc liên quan đến một học sinh, biết tên hoặc mã học sinh đó.
 
@@ -29,7 +29,7 @@ cap_nhat: 2026-11-24
 - Ticket của giáo viên do giáo viên tạo ở cổng giáo viên, bạn không tạo ở đây.
 
 ## Các bước
-1. Vào «Chăm sóc khách hàng» → «Tất cả ticket», bấm «Tạo».
+1. Vào «Chăm sóc khách hàng» → «Ticket», bấm «Tạo».
    *Bạn thấy:* trang «Ticket» với hai khối «Thông tin ticket» và «Liên kết và mức độ»; dòng «Mã» ghi «Cấp tự động, không sửa được.»
    [ẢNH: cskh-cs1-b1]
 2. Chọn «Loại» (Đề nghị hoặc Khiếu nại), gõ «Tiêu đề», chọn «Kênh» (cách phụ huynh liên hệ).
@@ -60,7 +60,7 @@ cap_nhat: 2026-11-24
 
 ## Sau bước này
 - **Ai làm tiếp:** người phụ trách xử lý; nếu nhóm con có nghiệp vụ thì bạn tạo phiếu và quản lý duyệt.
-- **Bạn xem ở đâu:** «Tất cả ticket». Bấm chip «Của tôi» để chỉ thấy việc của mình; chip «Hạn xử lý» gồm «Quá hạn», «Sắp quá hạn», «Chờ đóng» (đã xử lý nhưng quá số ngày chưa đóng). Có thể đổi sang xem «Kanban» (theo cột trạng thái), nhưng kéo thả không đổi được trạng thái: đổi bằng thanh trạng thái trong ticket.
+- **Bạn xem ở đâu:** «Ticket». Bấm chip «Của tôi» để chỉ thấy việc của mình; chip «Hạn xử lý» gồm «Quá hạn», «Sắp quá hạn», «Chờ đóng» (đã xử lý nhưng quá số ngày chưa đóng). Có thể đổi sang xem «Kanban» (theo cột trạng thái), nhưng kéo thả không đổi được trạng thái: đổi bằng thanh trạng thái trong ticket.
 
 ## Làm nhầm thì sao
 | Nhầm gì | Sửa thế nào |
