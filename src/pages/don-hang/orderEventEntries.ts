@@ -108,6 +108,8 @@ export function orderEventEntries(
       case 'CHUYEN_NGUOI_DUYET':
         // R-V2-44: Admin chuyển người duyệt; lời nhật ký (từ ai sang ai, lý do) do máy chủ ghi.
         return { ...base, title: 'Chuyển người duyệt', lines: noteLines(e.note) };
+      case 'CHUYEN_PHI':
+        return { ...base, title: 'Chuyển phí', lines: noteLines(e.note) };
       case 'TU_CHOI':
         return { ...base, title: 'Từ chối', lines: [reasonLine(e, name)].filter(Boolean) };
       case 'HUY':

@@ -179,7 +179,10 @@ function OrderView({ record }: { record: OrderRecord }) {
   const receiptsQuery = useReceiptPage({ order_id: record.id }, 'created_desc', 0, 1);
   const receiptCount = receiptsQuery.data?.total ?? 0;
   const onlyReceiptId = receiptCount === 1 ? (receiptsQuery.data?.rows[0]?.id ?? null) : null;
-  const canCreateReceipt = access.can('RECEIPT', 'TAO') && access.featureOn('BAN_HANG') && !phone;
+  // Đơn đã chuyển phí: không còn phải thu, không nhận thêm tiền (máy chủ chặn lại).
+  const feeTransferred = Boolean(record.fee_transferred_at);
+  const canCreateReceipt =
+    access.can('RECEIPT', 'TAO') && access.featureOn('BAN_HANG') && !phone && !feeTransferred;
   // BH-09 (R-GD-12): quản lý cơ sở (Đơn hàng · Duyệt) bật hoặc tắt «cho học trước» trên đơn đã duyệt; bật chỉ khi chưa thu tiền. Máy chủ kiểm lại, cờ tham số tắt mặc định.
   const payLaterQuery = useOrderPayLater(record.status_code === 'DA_DUYET' ? record.id : undefined);
   const payLaterOn = payLaterQuery.data === true;
@@ -188,6 +191,7 @@ function OrderView({ record }: { record: OrderRecord }) {
     access.can('SALES_ORDER', 'DUYET') &&
     access.featureOn('BAN_HANG') &&
     !phone &&
+    !feeTransferred &&
     (payLaterOn || (paymentQuery.data !== undefined && paymentQuery.data.paid === 0));
   // TC-16: Kế toán (Kế toán · Duyệt; Admin không có, R-HT-01) cấn số dư của phụ huynh vào đơn Đã duyệt còn thu. Máy chủ kiểm quyền, cờ, số tiền.
   const [balanceOpen, setBalanceOpen] = useState(false);
@@ -196,6 +200,7 @@ function OrderView({ record }: { record: OrderRecord }) {
     record.status_code === 'DA_DUYET' &&
     access.can('ACCOUNTING', 'DUYET') &&
     !phone &&
+    !feeTransferred &&
     orderRemaining > 0;
   const [cancelBusy, setCancelBusy] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
@@ -647,9 +652,11 @@ function OrderView({ record }: { record: OrderRecord }) {
         <TotalRow
           label="Còn phải thu"
           value={
-            receiptCount > 0 && paymentQuery.data ? formatMoney(paymentQuery.data.remaining) : '—'
+            !feeTransferred && receiptCount > 0 && paymentQuery.data
+              ? formatMoney(paymentQuery.data.remaining)
+              : '—'
           }
-          muted={receiptCount === 0}
+          muted={feeTransferred || receiptCount === 0}
         />
       </dl>
     </div>
@@ -899,6 +906,13 @@ function OrderView({ record }: { record: OrderRecord }) {
               Đơn đã huỷ
               {record.cancel_reason ? `: ${record.cancel_reason}` : ''}
               {record.cancel_note ? ` · ${record.cancel_note}` : ''}. Chỉ còn xem.
+            </Notice>
+          )}
+          {feeTransferred && (
+            <Notice tone="warning" title="Đơn đã chuyển phí">
+              Các đợt chưa thu không còn phải thu, không lập thêm phiếu thu vào đơn này
+              {record.fee_transfer_ref ? ` (ticket ${record.fee_transfer_ref})` : ''}. Thu vào đơn
+              mới.
             </Notice>
           )}
           {record.status_code === 'DA_DUYET' && (

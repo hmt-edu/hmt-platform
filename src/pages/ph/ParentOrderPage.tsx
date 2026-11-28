@@ -46,7 +46,11 @@ export function ParentOrderPage() {
             <dt className="text-fg-muted">Trạng thái</dt>
             <dd>
               <Tag tone={o.status === 'DA_THU_DU' ? 'success' : 'warning'}>
-                {o.status === 'DA_THU_DU' ? 'Đã thu đủ' : 'Còn thiếu'}
+                {o.status === 'DA_THU_DU'
+                  ? 'Đã thu đủ'
+                  : o.status === 'DA_CHUYEN_PHI'
+                    ? 'Đã chuyển phí'
+                    : 'Còn thiếu'}
               </Tag>
             </dd>
           </div>

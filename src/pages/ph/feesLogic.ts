@@ -7,7 +7,7 @@ export type FeeOrder = {
   code: string;
   name: string | null;
   hours: number | null;
-  status: string;
+  status?: string | null;
   total: number;
   paid: number;
   remaining: number;
@@ -27,12 +27,13 @@ export type OrderDetail = {
   total: number;
   paid: number;
   remaining: number;
-  status: 'DA_THU_DU' | 'CON_THIEU';
+  status: 'DA_THU_DU' | 'CON_THIEU' | 'DA_CHUYEN_PHI';
   receipts: FeeReceipt[];
 };
 
-/** «Đã thu đủ» hoặc «Còn thiếu 2.400.000 đ» cho dòng đơn. */
-export function orderStatusText(order: Pick<FeeOrder, 'remaining'>): string {
+/** «Đã thu đủ», «Còn thiếu 2.400.000 đ» hoặc «Đã chuyển phí» cho dòng đơn. */
+export function orderStatusText(order: Pick<FeeOrder, 'remaining' | 'status'>): string {
+  if (order.status === 'DA_CHUYEN_PHI') return 'Đã chuyển phí';
   return order.remaining > 0 ? `Còn thiếu ${formatMoney(order.remaining)}` : 'Đã thu đủ';
 }
 
