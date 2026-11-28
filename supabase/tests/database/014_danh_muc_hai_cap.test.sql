@@ -26,11 +26,11 @@ $$;
 
 -- #12 Giai đoạn phiếu tái tục (spec 06 mục 1.4).
 select is(pg_temp.names('UPSALE_STAGE'),
-          array['Chờ tái tục', 'Đã liên hệ', 'Đang tư vấn', 'Đang cân nhắc', 'Không tái tục', 'Đồng ý tái tục', 'Dự thu', 'Hoàn thành tái tục'],
+          array['Chờ tái tục', 'Tổng hợp thông tin', 'Chưa liên hệ được', 'Đang tư vấn', 'Không tái tục', 'Tiềm năng tái tục', 'Dự thu', 'Hoàn thành tái tục'],
           'Spec 06 #12: tám giai đoạn phiếu tái tục L1–L8');
-select is(pg_temp.children('UPSALE_SUBSTAGE', 'L1'), array['Hệ thống sinh tự động', 'Tạo thủ công'], 'Spec 06 #12: L1A, L1B');
-select is(pg_temp.children('UPSALE_SUBSTAGE', 'L7'), array['Đã gửi báo giá', 'Đã có đơn, chờ đóng tiền'], 'Spec 06 #12: L7A, L7B');
-select is(pg_temp.children('UPSALE_SUBSTAGE', 'L8'), array['Đã đóng đủ, đã cộng quỹ giờ'], 'Spec 06 #12: L8A');
+select is(pg_temp.children('UPSALE_SUBSTAGE', 'L1'), array['Hệ thống sinh tự động', 'Tạo thủ công', 'Đã tiếp nhận, chờ xếp lịch gọi'], 'Spec 06 #12: L1A đến L1C');
+select is(pg_temp.children('UPSALE_SUBSTAGE', 'L7'), array['Đã gửi báo giá', 'Đã chốt gói, hẹn ngày đóng', 'Quá hẹn đóng, cần nhắc lại'], 'Spec 06 #12: L7A đến L7C');
+select is(pg_temp.children('UPSALE_SUBSTAGE', 'L8'), array['Chờ lên đơn', 'Đã lên đơn, chờ duyệt', 'Đơn đã duyệt'], 'Spec 06 #12: L8A đến L8C theo tiến độ đơn');
 select is(pg_temp.err($$select app.catalog_add_item('UPSALE_STAGE', 'L9', 'Giai đoạn mới')$$), 'HMT_DANH_MUC_HE_THONG',
           'Khoá mục cha: không thêm giai đoạn phiếu tái tục');
 

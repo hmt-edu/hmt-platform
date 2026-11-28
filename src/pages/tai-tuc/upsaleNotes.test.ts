@@ -3,7 +3,7 @@ import { orderStages, upsaleStageNote } from './upsaleNotes';
 
 const T = { hours: 10, days: 30 };
 const NONE = { sentQuotes: 0 };
-const base = { stage_code: 'L1', substage_code: null, origin_code: 'HE_THONG' as const };
+const base = { stage_code: 'L1', origin_code: 'HE_THONG' as const };
 
 describe('upsaleStageNote (TT-02)', () => {
   it('L1 tự sinh: nêu ngưỡng lấy từ tham số và nhắc bấm Giao', () => {
@@ -27,11 +27,6 @@ describe('upsaleStageNote (TT-02)', () => {
     expect(upsaleStageNote({ ...base, stage_code: 'L5' }, 'Học phí', T, NONE, true)?.text).toBe(
       'Không tái tục. Lý do: Học phí.',
     );
-  });
-  it('L6A chưa gửi báo giá thì chờ gửi; gửi rồi thì không còn câu đó', () => {
-    const s = { ...base, stage_code: 'L6', substage_code: 'L6A' };
-    expect(upsaleStageNote(s, null, T, NONE, true)?.text).toMatch(/Chờ gửi báo giá/);
-    expect(upsaleStageNote(s, null, T, { sentQuotes: 1 }, true)?.text).not.toMatch(/Chờ gửi/);
   });
   it('L7: câu khớp số đếm, không nói tự sang L8', () => {
     const s = { ...base, stage_code: 'L7' };

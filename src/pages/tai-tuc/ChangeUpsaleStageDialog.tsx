@@ -1,5 +1,5 @@
-// «Chuyển giai đoạn» của phiếu tái tục (khuôn K4 ③ FormDialog; canvas 9933 TT02_chuyen): chọn giai đoạn mới; L5 Không tái tục bắt buộc lý do từ danh mục.
-// Đổi bằng tay giữa mọi giai đoạn L1 đến L8; L7 chọn thêm nhóm con (L8 chỉ có một nhóm con, máy chủ tự đặt). Máy chủ kiểm quyền và luật; hộp chỉ hiện lỗi của hàm.
+// «Chuyển giai đoạn» của phiếu tái tục (khuôn K4 ③ FormDialog; canvas 9933 TT02_chuyen): chọn giai đoạn mới và giai đoạn con (bắt buộc, trừ L8).
+// Đổi bằng tay giữa mọi giai đoạn L1 đến L8; ở L5 giai đoạn con chính là lý do không tái tục; giai đoạn con của L8 do hệ thống đặt theo đơn. Máy chủ kiểm quyền và luật; hộp chỉ hiện lỗi của hàm.
 import { useState } from 'react';
 import { errorOf, useDb } from '../../lib/db';
 import { FormDialog } from '../../ui/Dialogs';
@@ -25,22 +25,21 @@ function ChangeForm({ open, onOpenChange, ticket, onDone }: Props) {
   const supabase = useDb();
   const catalogs = useLeadCatalogs();
   const [to, setTo] = useState('');
-  const [reason, setReason] = useState('');
   const [sub, setSub] = useState('');
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Giữ cả giai đoạn đang đứng để đổi giai đoạn con; L8 không chọn tay giai đoạn con nên đang ở L8 thì không liệt kê.
   const stageOptions = catalogs
     .options('UPSALE_STAGE')
-    // L7 giữ lại khi phiếu đang ở L7 để đổi nhóm con.
-    .filter((o) => o.value !== ticket.stage_code || o.value === 'L7')
+    .filter((o) => !(o.value === 'L8' && ticket.stage_code === 'L8'))
     .map((o) => ({ value: o.value, label: `${o.value} ${o.label}` }));
-  const lost = to === 'L5';
-  const forecast = to === 'L7';
   const subOptions = catalogs
-    .options('UPSALE_SUBSTAGE')
-    .filter((o) => o.value.startsWith('L7') && o.value !== ticket.substage_code);
-  const needsNote = lost && catalogs.requiresNote('RENEWAL_LOST_REASON', reason);
+    .childrenOf('UPSALE_SUBSTAGE', 'UPSALE_STAGE', to || null)
+    .filter((o) => o.value !== ticket.substage_code)
+    .map((o) => ({ value: o.value, label: `${o.value} ${o.label}` }));
+
+  const choosesSub = to !== '' && to !== 'L8';
 
   async function submit() {
     setBusy(true);
@@ -50,9 +49,9 @@ function ChangeForm({ open, onOpenChange, ticket, onDone }: Props) {
         supabase,
         ticket.id,
         to,
-        lost ? reason : null,
+        null,
         note.trim() || null,
-        forecast ? sub : null,
+        choosesSub ? sub : null,
       );
       await onDone();
       onOpenChange(false);
@@ -71,12 +70,7 @@ function ChangeForm({ open, onOpenChange, ticket, onDone }: Props) {
       subtitle={`${ticket.code} · ${ticket.student_name} · ${ticket.class_code}`}
       confirmLabel="Chuyển"
       cancelLabel="Đóng"
-      canSubmit={
-        to !== '' &&
-        (!lost || reason !== '') &&
-        (!forecast || sub !== '') &&
-        (!needsNote || note.trim() !== '')
-      }
+      canSubmit={to !== '' && (!choosesSub || sub !== '')}
       busy={busy}
       error={error}
       onSubmit={() => void submit()}
@@ -88,14 +82,17 @@ function ChangeForm({ open, onOpenChange, ticket, onDone }: Props) {
               id={field.id}
               label="Giai đoạn mới"
               value={to}
-              onChange={setTo}
+              onChange={(value) => {
+                setTo(value);
+                setSub('');
+              }}
               options={stageOptions}
               placeholder="Chọn giai đoạn"
               className="w-full"
             />
           )}
         </Field>
-        {forecast && (
+        {choosesSub && (
           <Field label="Sub-stage" required>
             {(field) => (
               <Select
@@ -110,24 +107,8 @@ function ChangeForm({ open, onOpenChange, ticket, onDone }: Props) {
             )}
           </Field>
         )}
-        {lost && (
-          <Field label="Lý do không tái tục" required>
-            {(field) => (
-              <Select
-                id={field.id}
-                label="Lý do không tái tục"
-                value={reason}
-                onChange={setReason}
-                options={catalogs.options('RENEWAL_LOST_REASON')}
-                placeholder="Chọn lý do"
-                className="w-full"
-              />
-            )}
-          </Field>
-        )}
         <TextAreaField
           label="Ghi chú"
-          required={needsNote}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={3}

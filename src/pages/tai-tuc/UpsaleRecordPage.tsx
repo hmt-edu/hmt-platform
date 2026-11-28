@@ -125,11 +125,18 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
     }
   }
 
+  // Ở L5 giai đoạn con chính là lý do; phiếu cũ thiếu giai đoạn con thì lấy lý do danh mục đã lưu.
+  const lostReason =
+    t.stage_code !== 'L5'
+      ? ''
+      : t.substage_code
+        ? (catalogs.name('UPSALE_SUBSTAGE', t.substage_code) ?? t.substage_code)
+        : t.lost_reason_code
+          ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
+          : '';
   const stageNote = upsaleStageNote(
     t,
-    t.lost_reason_code
-      ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
-      : null,
+    lostReason || null,
     { hours: hoursThreshold, days: daysThreshold },
     {
       sentQuotes: (quotes.data?.rows ?? []).filter((q) => q.status_code === 'DA_GUI').length,
@@ -140,9 +147,6 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   // Điện thoại và người không có quyền: không dựng thanh nút rỗng, không nhắc nút không có.
   const hasActions = can('doi_giai_doan') || canCreateQuote || canCreateOrder || can('giao');
 
-  const lostReason = t.lost_reason_code
-    ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
-    : '';
   const purchase = record.hours.last_purchase;
   const absences = `${record.hours.absences_window} buổi`;
   const lastContact = record.contact.last;
