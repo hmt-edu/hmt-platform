@@ -62,3 +62,11 @@ Chuỗi dữ liệu cố định, dừng ở trạng thái chờ duyệt; SĐT d
 - Trước 668 lớp mẫu không có giáo viên: Lịch dạy (GV-02) trống với tài khoản giáo viên tập. `app.demo_make_teaching_today(bộ, cơ sở)` chọn giáo viên đang dùng của cơ sở (người bấm nếu là giáo viên, không thì giáo viên đầu theo tên đăng nhập), gán cho các buổi chưa dạy của lớp Toán mẫu và dời buổi kế tiếp (Nháp) về hôm nay. Không có giáo viên thì bỏ qua và ghi ghi chú của bộ.
 - `app.demo_make_p1` thêm một khối gọi hàm này (thân còn lại giữ như 666). Chỉ bộ tạo SAU 668 có buổi hôm nay; bộ cũ cần xoá và tạo lại.
 - Nhận xét chờ gửi (CS-16) đã có từ 666: 1 dòng chờ gửi mỗi bộ.
+
+## Dữ liệu cổng Giáo viên trên staging (E-27-16, `supabase/seed-staging-gv.sql`)
+Không phải migration, không phải «bộ dữ liệu mẫu»: chỉ `deploy-staging.yml` chạy (file tự kiểm dòng `STAGING` trong `app.deployment_env`), bản chạy thật không có.
+- Giáo viên tập `gvtap1.cs5`: 2 lớp CS5 (Toán có trợ giảng `tg.cs5`, Tiếng Anh), mỗi lớp 4 em giả, buổi mỗi ngày từ hôm qua, 30 buổi.
+- Buổi hôm qua Done (điểm danh, nhận xét, nội dung bằng hàm nghiệp vụ, có trừ giờ giả); hôm nay Đã chốt, chưa điểm danh; ngày sau Nháp.
+- Mỗi lần deploy: còn buổi từ ngày mai trở đi thì bỏ qua; hết thì tạo bộ mới. «Hôm qua đã Done» chỉ đúng ngày tạo; các ngày sau, buổi chưa dạy nằm ở «Cần làm».
+- Không xoá được bằng màn «Dữ liệu mẫu của tôi». Cần `SEED_PRACTICE_PASSWORD` (có tài khoản tập); thiếu thì bỏ qua.
+- Chạy local: `npm run db:seed-staging-gv` (sau `db:seed-users` có `SEED_PRACTICE=1` và dòng `STAGING`).
