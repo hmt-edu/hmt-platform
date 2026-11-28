@@ -23,6 +23,7 @@ import { ChangeUpsaleStageDialog } from './ChangeUpsaleStageDialog';
 import { CreateUpsaleOrderDialog } from './CreateUpsaleOrderDialog';
 import { upsaleEventEntries } from './upsaleEventEntries';
 import { orderStages, upsaleStageNote } from './upsaleNotes';
+import { useUpsaleContact } from './useUpsaleContact';
 import type { UpsaleOrderRow, UpsaleRecord } from './upsaleTypes';
 import {
   saveUpsaleNotes,
@@ -102,6 +103,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   const quotes = useUpsaleQuotes(t.id, canSeeQuotes);
   const quoteCount = quotes.data?.total ?? 0;
   const orderCount = orders.data?.length ?? 0;
+  const contact = useUpsaleContact(record, phone, refresh);
   const dirty = goal !== (t.next_goal ?? '') || roadmap !== (t.next_roadmap ?? '');
   const forbiddenAll = !access.can('UPSALE', 'XEM');
 
@@ -139,7 +141,12 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
   );
   const toDocuments = () => ordersRef.current?.scrollIntoView({ block: 'start' });
   // Điện thoại và người không có quyền: không dựng thanh nút rỗng, không nhắc nút không có.
-  const hasActions = can('doi_giai_doan') || canCreateQuote || canCreateOrder || can('giao');
+  const hasActions =
+    can('doi_giai_doan') ||
+    canCreateQuote ||
+    canCreateOrder ||
+    can('giao') ||
+    contact.buttons !== null;
 
   const lostReason = t.lost_reason_code
     ? (catalogs.name('RENEWAL_LOST_REASON', t.lost_reason_code) ?? t.lost_reason_code)
@@ -203,6 +210,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
                   Tạo đơn
                 </Button>
               )}
+              {contact.buttons}
               {can('giao') && <Button onClick={() => setDialog('assign')}>Giao</Button>}
             </span>
           ) : undefined
@@ -297,6 +305,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
                 )}
               </dl>
             </div>
+            {contact.history}
           </Block>
 
           <Block title="Giờ học">
@@ -405,6 +414,7 @@ function UpsaleView({ record }: { record: UpsaleRecord }) {
           </Block>
         </div>
       </RecordDetail>
+      {contact.dialogs}
       <ChangeUpsaleStageDialog
         open={dialog === 'stage'}
         onOpenChange={(o) => !o && setDialog(null)}

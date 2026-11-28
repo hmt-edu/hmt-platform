@@ -1,10 +1,10 @@
-// TT-02 trên điện thoại: bản ghi phiếu tái tục không tràn ngang (chữ ẩn của thanh giai đoạn từng làm trang rộng gấp đôi màn).
+// TT-02: điện thoại không tràn ngang (chữ ẩn của thanh giai đoạn từng làm trang rộng gấp đôi màn); ghi nhận liên hệ trên phiếu.
 import { expect, test } from '@playwright/test';
 import pg from 'pg';
 
 import { DB_URL } from './bao-gia-seed';
 import { seedGhiDanh } from './ghi-danh-seed';
-import { DOMAIN, PASSWORD, enterAs } from './helpers';
+import { DOMAIN, PASSWORD, enterAs, pickOption } from './helpers';
 
 test.skip(!PASSWORD || !DB_URL, 'Cần SEED_PASSWORD và DB_URL (dựng phiếu tái tục giả).');
 
@@ -49,9 +49,30 @@ test('TT-02 rộng 390px: trang không tràn ngang', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await enterAs(page, 'cskh.cs5');
   await page.goto(`/crm/tai-tuc/${ticketId}`);
-  await expect(page.getByRole('region', { name: 'Liên hệ' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Liên hệ', exact: true })).toBeVisible();
   const overflow = await page.evaluate<number>(
     'document.documentElement.scrollWidth - document.documentElement.clientWidth',
   );
   expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test('TT-02: ghi nhận liên hệ ngay trên phiếu, hiện ở lịch sử liên hệ', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'may-tinh', 'Điện thoại chỉ đọc (Đ248).');
+  await enterAs(page, 'cskh.cs5');
+  await page.goto(`/crm/tai-tuc/${ticketId}`);
+  await expect(page.getByRole('button', { name: 'Thêm lịch hẹn' })).toBeVisible();
+  await page.getByRole('button', { name: 'Ghi nhận liên hệ' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Ghi nhận liên hệ' });
+  await pickOption(page, dialog.getByRole('combobox', { name: 'Kênh *' }), /^Zalo$/);
+  // Mục đầu là «Chọn kết quả»: lấy mục thứ hai.
+  await dialog.getByRole('combobox', { name: 'Kết quả *' }).click();
+  await page.getByRole('option').nth(1).click();
+  await dialog.getByLabel('Nội dung *').fill('Hỏi phụ huynh về khoá sau');
+  await dialog.getByRole('button', { name: 'Lưu liên hệ' }).click();
+  await expect(dialog).toBeHidden();
+  await expect(
+    page.getByRole('region', { name: 'Liên hệ', exact: true }).getByRole('cell', { name: 'Zalo' }),
+  ).toBeVisible();
 });
